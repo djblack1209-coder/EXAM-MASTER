@@ -1,0 +1,206 @@
+{
+  "pages": [
+    {
+      "path": "src/pages/splash/index",
+      "style": {
+        "navigationBarTitleText": "Exam Master",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/index/index",
+      "style": {
+        "navigationBarTitleText": "Exam Master",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/practice/index",
+      "style": {
+        "navigationBarTitleText": "智能刷题",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/practice/do-quiz",
+      "style": {
+        "navigationBarTitleText": "刷题进行中",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/practice/pk-battle",
+      "style": {
+        "navigationBarTitleText": "PK 对战",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/practice/rank",
+      "style": {
+        "navigationBarTitleText": "学霸排行榜",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/practice/rank-list",
+      "style": {
+        "navigationBarTitleText": "学霸风云榜",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/practice/import-data",
+      "style": {
+        "navigationBarTitleText": "资料导入",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/practice/file-manager",
+      "style": {
+        "navigationBarTitleText": "文件管理",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/school/index",
+      "style": {
+        "navigationBarTitleText": "择校分析",
+        "navigationBarBackgroundColor": "#1A1A1A",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "src/pages/school/detail",
+      "style": {
+        "navigationBarTitleText": "院校详情",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/settings/index",
+      "style": {
+        "navigationBarTitleText": "系统设置",
+        "navigationBarBackgroundColor": "#1A1A1A",
+        "navigationStyle": "custom",
+        "animationType": "slide-in-right",
+        "animationDuration": 300
+      }
+    },
+    {
+      "path": "src/pages/social/friend-list",
+      "style": {
+        "navigationBarTitleText": "我的好友",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "个人中心",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/chat/index",
+      "style": {
+        "navigationBarTitleText": "AI 助教",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/chat/chat",
+      "style": {
+        "navigationBarTitleText": "智能对话",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/mistake/index",
+      "style": {
+        "navigationBarTitleText": "错题本",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/plan/index",
+      "style": {
+        "navigationBarTitleText": "我的学习计划",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/plan/create",
+      "style": {
+        "navigationBarTitleText": "创建学习计划",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
+      "path": "src/pages/universe/index",
+      "style": {
+        "navigationBarTitleText": "探索宇宙",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#000000"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "Exam Master",
+    "navigationBarBackgroundColor": "#1A1A1A",
+    "backgroundColor": "#121212",
+    "backgroundTextStyle": "light",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#8F939C",
+    "selectedColor": "#00E5FF",
+    "backgroundColor": "#1E1E1E",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "src/pages/index/index",
+        "text": "首页",
+        "iconPath": "/static/tabbar/home.png",
+        "selectedIconPath": "/static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "src/pages/practice/index",
+        "text": "刷题",
+        "iconPath": "/static/tabbar/practice.png",
+        "selectedIconPath": "/static/tabbar/practice-active.png"
+      },
+      {
+        "pagePath": "src/pages/school/index",
+        "text": "择校",
+        "iconPath": "/static/tabbar/school.png",
+        "selectedIconPath": "/static/tabbar/school-active.png"
+      },
+      {
+        "pagePath": "src/pages/profile/index",
+        "text": "我的",
+        "iconPath": "/static/tabbar/profile.png",
+        "selectedIconPath": "/static/tabbar/profile-active.png"
+      }
+    ]
+  },
+  "uniIdRouter": {}
+}

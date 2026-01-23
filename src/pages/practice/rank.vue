@@ -1,0 +1,1299 @@
+<template>
+	<view :class="['container', { 'dark-mode': isDark }]">
+		<view class="aurora-bg"></view>
+
+		<view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
+			<view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px' }">
+				<text class="nav-back" @tap="navBack">←</text>
+				<text class="nav-title">考研学霸榜</text>
+				<view class="placeholder"></view>
+			</view>
+		</view>
+
+		<!-- 加载动画 -->
+		<base-loading :visible="loading" text="加载排行榜数据..." :isDark="isDark" />
+		
+		<!-- 空状态 -->
+		<view class="empty-container" v-if="!loading && empty">
+			<base-empty icon="🏆" title="暂无排行榜数据" desc="快去刷题，成为第一个上榜的学霸吧！" :isDark="isDark" />
+			<button class="go-practice-btn" @tap="toPractice">去刷题</button>
+		</view>
+		
+		<!-- 排行榜内容 -->
+		<scroll-view 
+			scroll-y="true" 
+			class="rank-scroll" 
+			:style="{ paddingTop: (statusBarHeight + 50) + 'px' }"
+			enable-back-to-top="true"
+			v-else>
+			
+			<!-- 领奖台区域 -->
+			<view class="podium-section" v-if="rankList.length > 0">
+				<view class="podium-item rank-2" @tap="showFootprint(rankList[1])" v-if="rankList[1]">
+					<view class="avatar-wrap">
+						<image class="avatar" :src="rankList[1].avatar" mode="aspectFill"></image>
+						<view class="badge">2</view>
+					</view>
+					<text class="name">{{ rankList[1].name }}</text>
+					<text class="score">{{ rankList[1].score }}分</text>
+				</view>
+				
+				<view class="podium-item rank-1" @tap="showFootprint(rankList[0])" v-if="rankList[0]">
+					<view class="avatar-wrap">
+						<view class="crown-glow"></view>
+						<image class="avatar" :src="rankList[0].avatar" mode="aspectFill"></image>
+						<view class="badge">1</view>
+					</view>
+					<text class="name">{{ rankList[0].name }}</text>
+					<text class="score">{{ rankList[0].score }}分</text>
+				</view>
+				
+				<view class="podium-item rank-3" @tap="showFootprint(rankList[2])" v-if="rankList[2]">
+					<view class="avatar-wrap">
+						<image class="avatar" :src="rankList[2].avatar" mode="aspectFill"></image>
+						<view class="badge">3</view>
+					</view>
+					<text class="name">{{ rankList[2].name }}</text>
+					<text class="score">{{ rankList[2].score }}分</text>
+				</view>
+			</view>
+			
+			<!-- 排行榜列表 -->
+			<view class="list-section" v-if="otherRanks.length > 0">
+				<view class="glass-card rank-item" v-for="(item, index) in otherRanks" :key="index" @tap="showFootprint(item)">
+					<view class="rank-num-box">
+						<text class="rank-num">{{ index + 4 }}</text>
+					</view>
+					<image class="item-avatar" :src="item.avatar" mode="aspectFill"></image>
+					<view class="item-info">
+						<text class="item-name">{{ item.name }}</text>
+						<text class="item-desc">坚持 {{ item.days }} 天 · 已刷 {{ item.done }} 题</text>
+					</view>
+					<text class="item-score">{{ item.score }}</text>
+				</view>
+			</view>
+			
+			<!-- 只有我自己的情况 -->
+			<view class="only-me-container" v-else-if="list.length === 1">
+				<base-empty icon="🏆" title="只有你一个人上榜" desc="继续加油，保持领先！" :isDark="isDark" />
+			</view>
+			
+			<view class="footer-safe"></view>
+		</scroll-view>
+
+		<!-- 固定底部：我的排名 -->
+		<view class="my-rank-fixed">
+			<view class="my-rank-card">
+				<text class="rank-num">{{ myRank > 100 ? '99+' : myRank }}</text>
+				<image class="item-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill"></image>
+				<view class="item-info">
+					<text class="item-name">{{ userInfo.nickName || '考研人' }} (我)</text>
+					<text class="item-desc">{{ rankGapText }}</text>
+					<text class="item-score-text">分数: {{ myScore }}</text>
+				</view>
+				<button class="rank-btn" @tap="toPractice">去超车</button>
+			</view>
+		</view>
+		
+		<!-- 测试按钮（开发环境） -->
+		<view class="test-buttons" v-if="false">
+			<button class="test-btn" @tap="testUpdateScore(10)">测试 +10 分</button>
+			<button class="test-btn" @tap="loadRankData">刷新排行榜</button>
+		</view>
+
+		<!-- 学霸学习足迹 AI 分析名片弹窗 -->
+		<view class="footprint-mask" v-if="showFootprintModal" @tap="closePopup">
+			<view class="footprint-card glass-card" @tap.stop>
+				<view class="close-btn" @tap="closePopup">✕</view>
+				
+				<view class="card-header">
+					<image class="card-avatar" :src="activeUser.avatar || defaultAvatar" mode="aspectFill"></image>
+					<view class="header-info">
+						<text class="card-name">{{ activeUser.name }}</text>
+						<view class="ai-label">
+							<text class="sparkle-icon">✨</text>
+							<text>{{ aiPersona }}</text>
+						</view>
+					</view>
+				</view>
+
+				<view class="footprint-data-row">
+					<view class="data-item">
+						<text class="val">{{ activeUser.days || 0 }}</text>
+						<text class="lbl">坚持天数</text>
+					</view>
+					<view class="data-item">
+						<text class="val">{{ activeUser.score || 0 }}</text>
+						<text class="lbl">学霸分</text>
+					</view>
+					<view class="data-item">
+						<text class="val">{{ activeUser.done || 0 }}</text>
+						<text class="lbl">总刷题</text>
+					</view>
+				</view>
+
+				<view class="target-school-box" v-if="activeUser.target">
+					<text class="target-label">目标院校：</text>
+					<text class="target-val">{{ activeUser.target }}</text>
+				</view>
+
+				<view class="ai-analysis-content">
+					<view class="analysis-tag">✨ AI 足迹鉴定</view>
+					<scroll-view scroll-y="true" class="analysis-scroll">
+						<text class="analysis-text">{{ aiAnalysisText }}</text>
+					</scroll-view>
+				</view>
+
+				<button class="challenge-btn" @tap="startPK">向 TA 发起挑战</button>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+import { lafService } from '../../services/lafService.js'
+
+export default {
+	data() {
+		return {
+			statusBarHeight: 44,
+			capsuleMargin: 100,
+			userInfo: {},
+			defaultAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest',
+			myScore: 0,
+			myRank: 999,
+			// rankGapText 已移至 computed 中，不再在 data 中定义
+			showFootprintModal: false,
+			activeUser: {},
+			aiAnalysisText: 'AI 正在调阅该学霸的学习档案...',
+			aiPersona: '正在分析',
+			isAnalyzing: false,
+			isDark: false,
+			// 排行榜数据
+			loading: false, // 加载状态
+			refreshing: false, // 下拉刷新状态
+			empty: false, // 空状态
+			rankList: [], // 前三名数据
+			otherRanks: [], // 其他排名数据
+			list: [], // 完整排行榜数据
+			apiData: null // 原始 API 返回数据
+		};
+	},
+	computed: {
+		rankGapText() {
+			if (this.myRank <= 100) {
+				return `排名第 ${this.myRank} 名，继续加油！`;
+			}
+			const minScore = this.otherRanks.length > 0 ? this.otherRanks[this.otherRanks.length - 1].score : 1000;
+			const gap = minScore - this.myScore;
+			return gap > 0 ? `还差 ${gap} 分进入前百名` : '已进入前百名';
+		}
+	},
+	onLoad() {
+		this.initSystem();
+		this.loadUserData();
+		// 注意：calculateMyScore() 现在在 loadRankData() 完成后调用
+		this.loadRankData(); // 加载排行榜数据
+		
+		// 初始化主题
+		const savedTheme = uni.getStorageSync('theme_mode') || 'light';
+		this.isDark = savedTheme === 'dark';
+		
+		// 监听全局主题更新事件
+		uni.$on('themeUpdate', (mode) => {
+			this.isDark = mode === 'dark';
+		});
+	},
+	onShow() {
+		// TEST-10.3: 每次显示页面时刷新数据（从其他页面返回时）
+		console.log('[TEST-10.3] 📊 排行榜页面显示，准备刷新数据');
+		// 延迟一下，避免频繁刷新
+		setTimeout(() => {
+			console.log('[TEST-10.3] 📊 开始刷新排行榜数据');
+			this.loadRankData();
+		}, 300);
+		},
+	onUnload() {
+		// 移除事件监听
+		uni.$off('themeUpdate');
+	},
+	methods: {
+		initSystem() {
+			const sys = uni.getSystemInfoSync();
+			this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+			
+			// #ifdef MP-WECHAT
+			try {
+				const capsule = uni.getMenuButtonBoundingClientRect();
+				if (capsule && capsule.width > 0) {
+					const windowWidth = sys.windowWidth || sys.screenWidth;
+					this.capsuleMargin = windowWidth - capsule.left + 10;
+				} else {
+					this.capsuleMargin = 100;
+				}
+			} catch (e) {
+				console.log('获取胶囊按钮信息失败', e);
+				this.capsuleMargin = 100;
+			}
+			// #endif
+			// #ifndef MP-WECHAT
+			this.capsuleMargin = 20;
+			// #endif
+		},
+		
+		// 加载排行榜数据
+		async loadRankData() {
+			console.log('[TEST-9.1] 🏆 开始获取排行榜数据');
+			this.loading = true;
+			this.empty = false;
+			
+			try {
+				const userId = uni.getStorageSync('EXAM_USER_ID') || '';
+				console.log('[TEST-9.1] 📤 发送 API 请求:', {
+					url: '/rank-center',
+					action: 'get_rank',
+					userId: userId || '未登录'
+				});
+				
+				// 调用 rank-center 云函数获取排行榜数据
+				const res = await lafService.rankCenter({
+					action: 'get_rank',
+					userId: userId
+				});
+				
+				console.log('[TEST-9.1] 📥 API 响应:', {
+					code: res?.code,
+					hasData: !!res?.data,
+					dataType: Array.isArray(res?.data) ? 'array' : typeof res?.data,
+					dataLength: Array.isArray(res?.data) ? res.data.length : 0
+				});
+				
+				// 打印完整的后端返回数据（用于调试）
+				if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+					console.log('[TEST-9.1] 📊 后端返回的原始数据:', JSON.stringify(res.data, null, 2));
+					console.log('[TEST-9.1] 📊 第一条记录的详细信息:', {
+						_id: res.data[0]?._id,
+						nickName: res.data[0]?.nickName,
+						score: res.data[0]?.score,
+						scoreType: typeof res.data[0]?.score,
+						allFields: Object.keys(res.data[0] || {})
+					});
+				}
+				
+				this.apiData = res;
+				
+				if (res && res.code === 0 && res.data) {
+					// 数据规范化：确保 data 是数组
+					let list = Array.isArray(res.data) ? res.data : [];
+					
+					// 数据规范化：处理可能的对象格式 { list: [...], myRank: ... }
+					if (!Array.isArray(res.data) && res.data.list && Array.isArray(res.data.list)) {
+						console.log('[TEST-9.1] 📊 检测到对象格式，提取 list 字段');
+						list = res.data.list;
+						// 如果后端返回了 myRank，使用它
+						if (typeof res.data.myRank === 'number') {
+							this.myRank = res.data.myRank;
+							console.log('[TEST-9.1] ✅ 使用后端返回的 myRank:', this.myRank);
+						}
+					}
+					
+					// 数据规范化：确保每个项目都有必要的字段
+					list = list.map((item, index) => {
+						// 调试：打印原始 item 的 score 值
+						if (index === 0) {
+							console.log('[TEST-9.1] 🔍 数据规范化前，原始 item:', {
+								_id: item._id,
+								nickName: item.nickName,
+								score: item.score,
+								scoreType: typeof item.score,
+								allFields: Object.keys(item)
+							});
+						}
+						
+						const normalizedItem = {
+							nickName: item.nickName || item.name || '匿名用户',
+							name: item.nickName || item.name || '匿名用户',
+							score: Number(item.score) || 0,
+							days: Number(item.days) || 0,
+							done: Number(item.done) || 0,
+							target: item.target || '',
+							avatarUrl: item.avatarUrl || item.avatar || this.defaultAvatar,
+							avatar: item.avatarUrl || item.avatar || this.defaultAvatar,
+							_id: item._id || item.id || `user_${index}`
+						};
+						
+						// 调试：打印规范化后的 score 值
+						if (index === 0) {
+							console.log('[TEST-9.1] 🔍 数据规范化后，normalizedItem:', {
+								_id: normalizedItem._id,
+								nickName: normalizedItem.nickName,
+								score: normalizedItem.score,
+								scoreType: typeof normalizedItem.score
+							});
+						}
+						
+						return normalizedItem;
+					});
+					
+					// 排序验证：确保按分数降序排列
+					const originalOrder = list.map((item, idx) => ({ idx, score: item.score }));
+					list = list.sort((a, b) => {
+						const scoreA = Number(a.score) || 0;
+						const scoreB = Number(b.score) || 0;
+						return scoreB - scoreA; // 降序
+					});
+					
+					// 验证排序是否正确
+					const isSorted = this.validateSorting(list);
+					console.log('[TEST-9.1] 📊 排序验证:', {
+						isSorted,
+						top3Scores: list.slice(0, 3).map(item => item.score),
+						totalCount: list.length
+					});
+					
+					if (!isSorted) {
+						console.warn('[TEST-9.1] ⚠️ 数据未正确排序，已重新排序');
+					}
+					
+					this.list = list;
+					
+					// 处理前三名数据
+					this.rankList = list.slice(0, 3).map(item => ({
+						name: item.name,
+						score: item.score,
+						days: item.days,
+						done: item.done,
+						target: item.target,
+						avatar: item.avatar
+					}));
+					
+					// 处理其他排名数据
+					this.otherRanks = list.slice(3).map(item => ({
+						name: item.name,
+						score: item.score,
+						days: item.days,
+						done: item.done,
+						target: item.target,
+						avatar: item.avatar
+					}));
+					
+					// 计算我的排名和分数（在数据加载完成后）
+					// 优先使用后端返回的分数，而不是重新计算
+					this.calculateMyScoreAndRank();
+					
+					// 处理空状态
+					this.empty = list.length === 0;
+					
+					console.log('[TEST-9.1] ✅ 排行榜数据加载成功:', {
+						totalCount: list.length,
+						top3Count: this.rankList.length,
+						otherCount: this.otherRanks.length,
+						myRank: this.myRank,
+						myScore: this.myScore,
+						isEmpty: this.empty
+					});
+				} else {
+					// 数据获取失败
+					this.empty = true;
+					console.error('[TEST-9.1] ❌ 获取排行榜数据失败:', {
+						code: res?.code,
+						message: res?.message,
+						data: res?.data
+					});
+				}
+			} catch (error) {
+				console.error('[TEST-9.1] ❌ 调用排行榜 API 失败:', error);
+				this.empty = true;
+				uni.showToast({
+					title: '获取排行榜数据失败',
+					icon: 'none'
+				});
+			} finally {
+				this.loading = false;
+				console.log('[TEST-9.1] ✅ 排行榜加载流程结束');
+			}
+		},
+		
+		// 验证排序是否正确（降序）
+		validateSorting(list) {
+			if (list.length <= 1) return true;
+			for (let i = 0; i < list.length - 1; i++) {
+				const current = Number(list[i].score) || 0;
+				const next = Number(list[i + 1].score) || 0;
+				if (current < next) {
+					return false;
+				}
+			}
+			return true;
+		},
+		loadUserData() {
+			this.userInfo = uni.getStorageSync('userInfo') || { nickName: '考研人', avatarUrl: '' };
+		},
+		calculateMyScoreAndRank() {
+			const userId = uni.getStorageSync('EXAM_USER_ID') || '';
+			const myUserInfo = uni.getStorageSync('userInfo') || {};
+			const myNickName = myUserInfo.nickName || '';
+			
+			console.log('[TEST-9.1] 🔍 开始查找我的记录:', {
+				userId,
+				myNickName,
+				listLength: this.list?.length || 0
+			});
+			
+			// 优先从排行榜数据中查找我的记录（使用后端返回的真实分数）
+			if (this.list && this.list.length > 0) {
+				// 打印所有记录用于调试
+				console.log('[TEST-9.1] 🔍 排行榜中的所有记录:', this.list.map(item => ({
+					_id: item._id,
+					nickName: item.nickName,
+					name: item.name,
+					score: item.score
+				})));
+				
+				const myRecord = this.list.find(item => 
+					item._id === userId || 
+					item.nickName === myNickName ||
+					item.name === myNickName
+				);
+				
+				if (myRecord) {
+					// 如果找到了我的记录，检查后端返回的分数是否有效
+					const backendScore = Number(myRecord.score) || 0;
+					
+					console.log('[TEST-9.1] 🔍 找到我的记录:', {
+						_id: myRecord._id,
+						nickName: myRecord.nickName,
+						score: myRecord.score,
+						scoreType: typeof myRecord.score,
+						backendScore,
+						backendScoreType: typeof backendScore,
+						isValidScore: backendScore > 0
+					});
+					
+					// 如果后端返回的分数有效（> 0），使用后端分数
+					// 否则使用本地计算的分数（降级方案）
+					if (backendScore > 0) {
+						const oldScore = this.myScore; // 记录旧分数用于对比
+						this.myScore = backendScore;
+						this.myRank = this.list.indexOf(myRecord) + 1;
+						console.log('[TEST-9.1] ✅ 使用后端返回的分数和排名:', {
+							myScore: this.myScore,
+							myRank: this.myRank,
+							source: 'backend',
+							rawScore: myRecord.score
+						});
+						// TEST-10.3: 验证分数更新
+						console.log('[TEST-10.3] ✅ 排行榜分数已更新:', {
+							oldScore: oldScore,
+							newScore: this.myScore,
+							scoreIncrement: this.myScore - oldScore,
+							myRank: this.myRank,
+							source: 'backend'
+						});
+						return; // 使用后端数据，不再计算本地分数
+					} else {
+						console.warn('[TEST-9.1] ⚠️ 后端返回的分数无效（为 0 或不存在），使用本地计算的分数作为降级方案');
+						// 继续执行本地计算
+					}
+				} else {
+					console.log('[TEST-9.1] ⚠️ 未在排行榜中找到我的记录');
+				}
+			}
+			
+			// 如果没有在排行榜中找到我的记录，或后端分数无效，则计算本地分数
+			console.log('[TEST-9.1] 📊 使用本地计算的分数（降级方案）');
+			this.calculateMyScore();
+		},
+		
+		calculateMyScore() {
+			// 计算用户得分：基于刷题数量、坚持天数、正确率（仅当后端没有数据时使用）
+			const stats = uni.getStorageSync('study_stats') || {};
+			const mistakes = uni.getStorageSync('mistake_book') || [];
+			const bank = uni.getStorageSync('v30_bank') || [];
+			
+			// 计算坚持天数
+			const studyDays = Object.keys(stats).length || 1;
+			
+			// 计算总刷题数
+			const totalDone = Object.values(stats).reduce((sum, count) => sum + (count || 0), 0);
+			
+			// 计算正确率（假设错题本中的题目都是错的）
+			const correctCount = Math.max(0, totalDone - mistakes.length);
+			const accuracy = totalDone > 0 ? (correctCount / totalDone) : 0;
+			
+			// 得分计算：刷题数 * 10 + 坚持天数 * 20 + 正确率 * 100
+			this.myScore = Math.round(
+				totalDone * 10 + 
+				studyDays * 20 + 
+				accuracy * 100
+			);
+			
+			// 计算排名：基于分数计算排名
+			if (this.list && this.list.length > 0) {
+				const allScores = this.list.map(r => Number(r.score) || 0);
+				allScores.push(this.myScore);
+				allScores.sort((a, b) => b - a);
+				this.myRank = allScores.indexOf(this.myScore) + 1;
+				console.log('[TEST-9.1] 📊 基于本地分数计算排名:', this.myRank);
+			} else {
+				this.myRank = 999;
+			}
+			
+			console.log('[TEST-9.1] 📊 本地计算的分数和排名:', {
+				myScore: this.myScore,
+				myRank: this.myRank,
+				studyDays,
+				totalDone,
+				accuracy: (accuracy * 100).toFixed(1) + '%',
+				source: 'local'
+			});
+		},
+		navBack() { 
+			uni.navigateBack(); 
+		},
+		toPractice() { 
+			uni.switchTab({ url: '/src/pages/practice/index' }); 
+		},
+		async showFootprint(user) {
+			this.activeUser = user;
+			this.showFootprintModal = true;
+			this.aiAnalysisText = 'AI 正在调阅该学霸的学习档案...';
+			this.aiPersona = '正在分析';
+			await this.fetchFootprintAnalysis(user);
+		},
+		async fetchFootprintAnalysis(user) {
+			this.isAnalyzing = true;
+			this.aiAnalysisText = "AI 正在深度扫描足迹...";
+			
+			console.log('[rank] 🤖 调用后端代理进行学霸足迹分析...');
+
+			try {
+				// ✅ 使用后端代理调用（安全）- action: 'footprint'
+				const response = await lafService.proxyAI('footprint', {
+					name: user.name,
+					days: user.days || 0,
+					score: user.score || 0,
+					done: user.done || 0,
+					target: user.target || '未设定'
+				});
+
+				console.log('[rank] 📥 后端代理响应:', {
+					code: response?.code,
+					hasData: !!response?.data
+				});
+
+				if (response && response.code === 0 && response.data) {
+					const content = response.data.trim();
+					console.log('[rank] ✅ AI 足迹分析成功');
+					
+					// 尝试提取称号（第一句话或冒号前的内容）
+					const lines = content.split(/[。\n]/);
+					const firstLine = lines[0] || content;
+					if (firstLine.includes('：') || firstLine.includes(':')) {
+						this.aiPersona = firstLine.split(/[：:]/)[0].trim();
+						this.aiAnalysisText = content;
+					} else if (firstLine.length <= 12) {
+						this.aiPersona = firstLine;
+						this.aiAnalysisText = content;
+					} else {
+						this.aiPersona = "学霸先锋";
+						this.aiAnalysisText = content;
+					}
+				} else {
+					console.warn('[rank] ⚠️ AI 足迹分析响应异常，使用默认文案');
+					this.aiPersona = "学霸先锋";
+					this.aiAnalysisText = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
+				}
+			} catch (e) {
+				console.error('[rank] ❌ AI 足迹分析失败:', e);
+				this.aiPersona = "学霸先锋";
+				this.aiAnalysisText = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
+			} finally {
+				this.isAnalyzing = false;
+			}
+		},
+		closePopup() {
+			this.showFootprintModal = false;
+			this.activeUser = {};
+			this.aiAnalysisText = 'AI 正在调阅该学霸的学习档案...';
+			this.aiPersona = '正在分析';
+		},
+		startPK() {
+			this.closePopup();
+			// 确保 opponent 参数有效
+			const opponentName = this.activeUser?.name || this.activeUser?.nickName || '匿名用户';
+			uni.navigateTo({ 
+				url: `/src/pages/practice/pk-battle?opponent=${encodeURIComponent(opponentName)}`,
+				fail: (err) => {
+					console.error('[TEST-9.1] ❌ 跳转 PK 对战失败:', err);
+					uni.showToast({
+						title: '跳转失败，请稍后重试',
+						icon: 'none'
+					});
+				}
+			});
+		},
+		
+		// 测试方法：模拟分数更新（用于 TEST-9.3）
+		async testUpdateScore(scoreIncrement = 10) {
+			console.log('[TEST-9.3] 🧪 开始测试分数更新');
+			
+			const userId = uni.getStorageSync('EXAM_USER_ID') || '';
+			const userInfo = uni.getStorageSync('userInfo') || {};
+			
+			if (!userId) {
+				console.error('[TEST-9.3] ❌ 用户未登录，无法测试');
+				uni.showToast({
+					title: '请先登录',
+					icon: 'none'
+				});
+				return;
+			}
+			
+			// 计算新分数（当前分数 + 增量）
+			const currentScore = this.myScore || 20;
+			const newScore = currentScore + scoreIncrement;
+			
+			// 确保所有必要字段都有值（提供默认值）
+			const nickName = userInfo.nickName || userInfo.name || '考研人';
+			const avatarUrl = userInfo.avatarUrl || userInfo.avatar || this.defaultAvatar;
+			
+			console.log('[TEST-9.3] 📊 分数更新信息:', {
+				currentScore,
+				scoreIncrement,
+				newScore,
+				userId,
+				nickName,
+				hasAvatarUrl: !!avatarUrl
+			});
+			
+			try {
+				const updateData = {
+					action: 'update_score',
+					uid: userId, // 兼容旧版本后端
+					userId: userId, // Sealos 后端可能期望这个字段名
+					nickName: nickName, // 必须：昵称（有默认值）
+					avatarUrl: avatarUrl, // 必须：头像URL（有默认值）
+					score: newScore // 必须：分数
+				};
+				
+				console.log('[TEST-9.3] 📤 发送更新请求数据（完整）:', JSON.stringify(updateData, null, 2));
+				console.log('[TEST-9.3] 📤 字段验证:', {
+					hasUid: !!updateData.uid,
+					hasUserId: !!updateData.userId,
+					hasNickName: !!updateData.nickName,
+					hasAvatarUrl: !!updateData.avatarUrl,
+					hasScore: typeof updateData.score === 'number',
+					scoreValue: updateData.score,
+					uidValue: updateData.uid,
+					userIdValue: updateData.userId
+				});
+				
+				const res = await lafService.rankCenter(updateData);
+				
+				console.log('[TEST-9.3] 📥 更新响应（完整）:', JSON.stringify(res, null, 2));
+				console.log('[TEST-9.3] ✅ 分数更新成功:', {
+					code: res?.code,
+					message: res?.msg,
+					newRecord: res?.newRecord,
+					oldScore: currentScore,
+					newScore: newScore,
+					fullResponse: res
+				});
+				
+				// 刷新排行榜数据
+				await this.loadRankData();
+				
+				uni.showToast({
+					title: `分数已更新: ${currentScore} → ${newScore}`,
+					icon: 'success',
+					duration: 2000
+				});
+			} catch (error) {
+				console.error('[TEST-9.3] ❌ 分数更新失败:', error);
+				uni.showToast({
+					title: '分数更新失败',
+					icon: 'none'
+				});
+			}
+		}
+	}
+};
+</script>
+
+<style>
+/* --- 全局变量适配 --- */
+.container {
+	--neon-gold: #FFD700;
+	--neon-silver: #C0C0C0;
+	--neon-green: #2ECC71;
+	--neon-glow-gold: rgba(255, 215, 0, 0.4);
+	--neon-glow-green: rgba(46, 204, 113, 0.4);
+	--bg-main: #F8FAFC;
+	--card-bg: rgba(255, 255, 255, 0.8);
+	--card-border: rgba(0, 0, 0, 0.05);
+	--text-main: #1A1A1A;
+	--text-light: #A0AEC0;
+	
+	height: 100vh; 
+	background: var(--bg-main); 
+	position: relative; 
+	overflow: hidden;
+	transition: background 0.3s;
+}
+
+.container.dark-mode {
+	--neon-gold: #FFD700;
+	--neon-silver: #E2E8F0;
+	--neon-green: #00FF88;
+	--neon-glow-gold: rgba(255, 215, 0, 0.6);
+	--neon-glow-green: rgba(0, 255, 136, 0.6);
+	--bg-main: #163300;
+	--card-bg: rgba(30, 58, 15, 0.7);
+	--card-border: rgba(255, 255, 255, 0.1);
+	--text-main: #F8FAFC;
+	--text-light: #64748B;
+}
+
+/* 极光背景 */
+.aurora-bg {
+	position: absolute; 
+	top: 0; 
+	left: 0; 
+	width: 100%; 
+	height: 500rpx;
+	background: radial-gradient(circle at 50% 0%, rgba(46, 204, 113, 0.1), transparent);
+	filter: blur(60px);
+	z-index: 0;
+}
+
+.dark-mode .aurora-bg {
+	background: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.15), transparent);
+}
+
+/* 导航栏 */
+.nav-bar { 
+	position: fixed; 
+	top: 0; 
+	width: 100%; 
+	z-index: 100; 
+	background: var(--card-bg); 
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border-bottom: 1px solid var(--card-border);
+}
+.nav-content { 
+	height: 44px; 
+	display: flex; 
+	align-items: center; 
+	justify-content: space-between; 
+	padding: 0 30rpx; 
+}
+.nav-back {
+	font-size: 36rpx;
+	color: var(--text-main);
+	font-weight: bold;
+}
+.nav-title { 
+	font-size: 32rpx; 
+	font-weight: bold; 
+	color: var(--text-main); 
+}
+.placeholder { 
+	width: 36rpx; 
+}
+
+/* 滚动区域 */
+.rank-scroll { 
+	height: 100vh; 
+	padding: 0 30rpx; 
+	box-sizing: border-box; 
+	position: relative;
+	z-index: 1;
+}
+
+/* 领奖台荧光效果 */
+.podium-section { 
+	display: flex; 
+	align-items: flex-end; 
+	justify-content: center; 
+	padding: 60rpx 0; 
+	margin-bottom: 40rpx; 
+}
+.podium-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex: 1;
+	cursor: pointer;
+}
+.avatar-wrap {
+	position: relative;
+	border-radius: 50%;
+	padding: 6rpx;
+	background: #FFF;
+	transition: transform 0.3s;
+	margin-bottom: 20rpx;
+}
+.dark-mode .avatar-wrap {
+	background: #1E3A0F;
+}
+
+.avatar {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	display: block;
+}
+
+.badge {
+	position: absolute;
+	bottom: -10rpx;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 2rpx 16rpx;
+	border-radius: 20rpx;
+	color: #FFF;
+	font-size: 20rpx;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* 第一名样式 - 金色荧光 */
+.rank-1 .avatar-wrap {
+	width: 160rpx;
+	height: 160rpx;
+	box-shadow: 0 0 30rpx var(--neon-glow-gold);
+	border: 4rpx solid var(--neon-gold);
+}
+.dark-mode .rank-1 .avatar-wrap {
+	box-shadow: 0 0 50rpx var(--neon-glow-gold);
+}
+.rank-1 .badge {
+	background: var(--neon-gold);
+}
+
+/* 第一名皇冠光晕动画 */
+.crown-glow {
+	position: absolute;
+	top: -30rpx;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 40rpx;
+	height: 40rpx;
+	background: var(--neon-gold);
+	filter: blur(20rpx);
+	border-radius: 50%;
+	animation: pulse 2s infinite;
+	z-index: 5;
+}
+
+/* 第二名样式 - 银色 */
+.rank-2 .avatar-wrap {
+	width: 130rpx;
+	height: 130rpx;
+	border: 4rpx solid var(--neon-silver);
+}
+.rank-2 .badge {
+	background: var(--neon-silver);
+	color: #333;
+}
+
+/* 第三名样式 - 铜色 */
+.rank-3 .avatar-wrap {
+	width: 120rpx;
+	height: 120rpx;
+	border: 4rpx solid #CD7F32;
+}
+.rank-3 .badge {
+	background: #CD7F32;
+}
+
+.podium-item .name {
+	color: var(--text-main);
+	font-weight: bold;
+	margin-top: 20rpx;
+	font-size: 26rpx;
+	display: block;
+}
+.podium-item .score {
+	color: var(--neon-green);
+	font-weight: 900;
+	font-size: 22rpx;
+	display: block;
+	margin-top: 8rpx;
+}
+
+/* 排行榜列表 */
+.glass-card {
+	background: var(--card-bg);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border: 1px solid var(--card-border);
+	border-radius: 40rpx;
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+}
+
+/* 霓虹列表项 */
+.rank-item {
+	display: flex;
+	align-items: center;
+	padding: 30rpx;
+	margin-bottom: 25rpx;
+	border: 1px solid var(--card-border);
+	transition: transform 0.2s;
+	cursor: pointer;
+}
+.rank-item:active {
+	transform: scale(0.98);
+}
+/* 深色模式下的霓虹边框 */
+.dark-mode .rank-item {
+	border-left: 6rpx solid var(--neon-green);
+	box-shadow: 0 0 15rpx rgba(0, 255, 136, 0.1);
+}
+
+.rank-num-box {
+	width: 60rpx;
+	flex-shrink: 0;
+}
+.rank-num {
+	font-size: 36rpx;
+	font-weight: 900;
+	font-style: italic;
+	color: var(--text-light);
+}
+/* 深色模式下的排名数字荧光效果 */
+.dark-mode .rank-num {
+	color: var(--neon-green);
+	text-shadow: 0 0 10rpx var(--neon-glow-green);
+}
+
+.item-avatar {
+	width: 80rpx;
+	height: 80rpx;
+	border-radius: 40rpx;
+	margin: 0 25rpx;
+	flex-shrink: 0;
+}
+.item-info {
+	flex: 1;
+	overflow: hidden;
+}
+.item-name {
+	color: var(--text-main);
+	font-weight: bold;
+	font-size: 28rpx;
+	display: block;
+	margin-bottom: 4rpx;
+}
+.item-desc {
+	color: var(--text-light);
+	font-size: 20rpx;
+	display: block;
+}
+.item-score {
+	color: var(--text-main);
+	font-weight: 900;
+	font-size: 32rpx;
+	flex-shrink: 0;
+	margin-left: 20rpx;
+}
+
+/* 底部我的排名卡片 - 荧光绿背景 */
+.my-rank-fixed {
+	position: fixed;
+	bottom: 40rpx;
+	left: 30rpx;
+	right: 30rpx;
+	z-index: 100;
+}
+.my-rank-card {
+	background: var(--neon-green);
+	padding: 30rpx;
+	border-radius: 40rpx;
+	display: flex;
+	align-items: center;
+	box-shadow: 0 10rpx 40rpx rgba(0, 255, 136, 0.3);
+}
+.my-rank-card .rank-num,
+.my-rank-card .item-name {
+	color: #0F172A;
+}
+.my-rank-card .item-desc {
+	color: rgba(15, 23, 42, 0.7);
+}
+.my-rank-card .item-avatar {
+	border: 2rpx solid rgba(15, 23, 42, 0.2);
+}
+.rank-btn {
+	width: 140rpx;
+	height: 60rpx;
+	border-radius: 30rpx;
+	background: #0F172A;
+	color: #FFF;
+	font-size: 24rpx;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	margin-left: 20rpx;
+	flex-shrink: 0;
+	border: none;
+}
+.rank-btn::after {
+	border: none;
+}
+
+.footer-safe { 
+	height: 250rpx; 
+}
+
+/* 加载状态样式 */
+	.loading-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 60vh;
+	}
+	
+	/* 空状态样式 */
+	.empty-container,
+	.only-me-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		height: 60vh;
+		padding: 0 40rpx;
+	}
+	
+	.go-practice-btn {
+		margin-top: 40rpx;
+		width: 200rpx;
+		height: 80rpx;
+		background: var(--neon-green);
+		color: #FFF;
+		font-weight: bold;
+		border: none;
+		border-radius: 40rpx;
+		box-shadow: 0 10rpx 20rpx rgba(46, 204, 113, 0.2);
+	}
+	
+	.go-practice-btn::after {
+		border: none;
+	}
+	
+	/* 脉冲动画 - 皇冠光晕 */
+	@keyframes pulse {
+		0% {
+			transform: translateX(-50%) scale(0.8);
+			opacity: 0.5;
+		}
+		50% {
+			transform: translateX(-50%) scale(1.5);
+			opacity: 0.2;
+		}
+		100% {
+			transform: translateX(-50%) scale(0.8);
+			opacity: 0.5;
+		}
+	}
+	
+	/* 学霸学习足迹弹窗 */
+	.footprint-mask {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		z-index: 1000;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 40rpx;
+		box-sizing: border-box;
+		animation: fadeIn 0.3s;
+	}
+	
+	.footprint-card {
+		width: 100%;
+		max-width: 620rpx;
+		padding: 50rpx;
+		border-radius: 40rpx;
+		position: relative;
+		background: var(--card-bg);
+		backdrop-filter: blur(40px);
+		-webkit-backdrop-filter: blur(40px);
+		border: 1px solid var(--card-border);
+		box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.3);
+		animation: slideUp 0.3s;
+		max-height: 80vh;
+		overflow-y: auto;
+	}
+	
+	.close-btn {
+		position: absolute;
+		top: 30rpx;
+		right: 30rpx;
+		color: var(--text-light);
+		font-size: 32rpx;
+		width: 40rpx;
+		height: 40rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 10;
+	}
+	
+	.card-header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 40rpx;
+	}
+	.card-avatar {
+		width: 120rpx;
+		height: 120rpx;
+		border-radius: 60rpx;
+		border: 4rpx solid #2ECC71;
+		box-shadow: 0 4rpx 12rpx rgba(46, 204, 113, 0.3);
+	}
+	.header-info {
+		margin-left: 20rpx;
+		flex: 1;
+	}
+	.card-name {
+		font-size: 36rpx;
+		font-weight: 800;
+		color: var(--text-main);
+		display: block;
+		margin-bottom: 10rpx;
+	}
+	.ai-label {
+		display: inline-flex;
+		align-items: center;
+		background: rgba(46, 204, 113, 0.1);
+		color: var(--neon-green);
+		padding: 4rpx 12rpx;
+		border-radius: 10rpx;
+		gap: 6rpx;
+	}
+	.sparkle-icon {
+		font-size: 20rpx;
+	}
+	.ai-label text {
+		font-size: 20rpx;
+		font-weight: bold;
+	}
+	
+	.footprint-data-row {
+		display: flex;
+		justify-content: space-between;
+		padding: 30rpx 0;
+		border-top: 1rpx solid #EEE;
+		border-bottom: 1rpx solid #EEE;
+		margin-bottom: 30rpx;
+	}
+	.data-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		flex: 1;
+	}
+	.data-item .val {
+		font-size: 32rpx;
+		font-weight: 900;
+		color: var(--text-main);
+		display: block;
+	}
+	.data-item .lbl {
+		font-size: 20rpx;
+		color: var(--text-light);
+		margin-top: 6rpx;
+		display: block;
+	}
+	
+	.target-school-box {
+		padding: 20rpx 0;
+		border-bottom: 1rpx solid #EEE;
+		margin-bottom: 30rpx;
+	}
+	.target-label {
+		font-size: 24rpx;
+		color: var(--text-light);
+	}
+	.target-val {
+		font-size: 26rpx;
+		font-weight: bold;
+		color: var(--neon-green);
+		margin-left: 10rpx;
+	}
+	
+	.ai-analysis-content {
+		margin: 30rpx 0;
+	}
+	.analysis-tag {
+		display: inline-block;
+		background: var(--text-main);
+		color: var(--bg-main);
+		font-size: 18rpx;
+		padding: 4rpx 12rpx;
+		border-radius: 6rpx;
+		margin-bottom: 15rpx;
+	}
+	.analysis-scroll {
+		height: 150rpx;
+		max-height: 200rpx;
+	}
+	.analysis-text {
+		font-size: 26rpx;
+		color: var(--text-light);
+		line-height: 1.6;
+		white-space: pre-wrap;
+		word-wrap: break-word;
+		display: block;
+	}
+	
+	.challenge-btn {
+		width: 100%;
+		height: 90rpx;
+		line-height: 90rpx;
+		background: linear-gradient(135deg, var(--neon-green), #27AE60);
+		color: #FFF;
+		font-weight: bold;
+		font-size: 28rpx;
+		border-radius: 20rpx;
+		border: none;
+		margin-top: 20rpx;
+		box-shadow: 0 10rpx 20rpx rgba(46, 204, 113, 0.2);
+	}
+	.challenge-btn::after {
+		border: none;
+	}
+	
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+	
+	@keyframes slideUp {
+		from {
+			opacity: 0;
+			transform: translateY(50rpx) scale(0.9);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+</style>

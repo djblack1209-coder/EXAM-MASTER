@@ -1,0 +1,12 @@
+{
+  "name": "verify-invite-code",
+  "version": "1.0.0",
+  "description": "验证邀请码并发放奖励云函数",
+  "main": "index.js",
+  "keywords": ["invite", "code", "reward", "uni-cloud"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@dcloudio/uni-cloud": "latest"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "rank-center",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

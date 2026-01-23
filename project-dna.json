@@ -1,0 +1,314 @@
+{
+  "meta": {
+    "version": "MC-no-git-20260123135605",
+    "framework": "UniApp+Vue3+Vite",
+    "ui_library": "uview-plus@3.0",
+    "backend": "Sealos Cloud Functions",
+    "ai_engine": "智谱AI GLM-4-Plus (Backend Proxy)",
+    "confidence": 0.82,
+    "generated_at": "2026-01-23T13:56:05+08:00",
+    "project_path": "/Users/blackdj/Desktop/EXAM-MASTER"
+  },
+  "structure": {
+    "entry": "main.js",
+    "pages": 20,
+    "components": 28,
+    "stores": 5,
+    "services": 6,
+    "router_mode": "pages.json",
+    "core_modules": [
+      "User (登录认证)",
+      "Practice (智能刷题)",
+      "Mistake (错题本)",
+      "AI (助教对话)",
+      "School (择校分析)",
+      "Social (好友系统)",
+      "Rank (排行榜)",
+      "PK (对战系统)"
+    ]
+  },
+  "state": {
+    "pending_features": [
+      {
+        "name": "social_system",
+        "description": "社交功能 (好友系统)",
+        "file": "docs/development/phases/MODULE7_SOCIAL_DESIGN.md",
+        "progress": 0.3,
+        "status": "设计完成，待实施",
+        "confidence": 0.85
+      },
+      {
+        "name": "learning_plan",
+        "description": "学习计划功能",
+        "file": "src/pages/plan/index.vue",
+        "progress": 0.5,
+        "status": "部分完成",
+        "confidence": 0.60
+      }
+    ],
+    "critical_bugs": [
+      {
+        "id": "P0-001",
+        "file": "项目根目录",
+        "line": "N/A",
+        "risk": "Git Repository Missing",
+        "description": "项目未初始化 Git 仓库，无法追踪历史和生成热力图",
+        "confidence": 1.0,
+        "impact": "无法进行版本控制和时间维度分析",
+        "patch": "cd /Users/blackdj/Desktop/EXAM-MASTER && git init && git add . && git commit -m 'Initial commit: Exam-Master V1.0'",
+        "command": "git init"
+      },
+      {
+        "id": "P0-002",
+        "file": "全局 (300+ 处)",
+        "line": "多处",
+        "risk": "Console Pollution",
+        "description": "大量 console.log 未清理，影响生产环境性能",
+        "confidence": 0.95,
+        "impact": "性能下降、日志泄露敏感信息",
+        "patch": "在 vite.config.js 中配置 terserOptions.compress.drop_console: true",
+        "command": "npm install --save-dev babel-plugin-transform-remove-console"
+      }
+    ],
+    "security_issues": [
+      {
+        "id": "SEC-001",
+        "status": "✅ 已修复",
+        "title": "API Key 泄露风险",
+        "description": "所有AI请求已迁移到后端代理模式",
+        "fixed_at": "2026-01-23",
+        "confidence": 1.0,
+        "affected_files": [
+          "src/pages/chat/index.vue",
+          "src/pages/school/index.vue",
+          "src/pages/school/detail.vue",
+          "src/components/ai-consult/ai-consult.vue"
+        ]
+      },
+      {
+        "id": "SEC-002",
+        "status": "⚠️ 低风险",
+        "title": "硬编码微信 AppID",
+        "description": "AppID 本身不敏感，但建议环境变量管理",
+        "file": "src/common/config.js",
+        "line": 52,
+        "confidence": 0.85
+      },
+      {
+        "id": "SEC-003",
+        "status": "⚠️ 中风险",
+        "title": "Sealos 后端 URL 硬编码",
+        "description": "生产/测试环境切换不便",
+        "file": "src/services/lafService.js",
+        "line": 5,
+        "confidence": 0.90
+      }
+    ],
+    "todos_count": 2,
+    "test_coverage": 0.56,
+    "health_score": 6.5
+  },
+  "architecture": {
+    "backend": {
+      "provider": "Sealos",
+      "base_url": "https://nf98ia8qnt.sealosbja.site",
+      "endpoints": [
+        "/login",
+        "/proxy-ai",
+        "/rank-center",
+        "/social-service",
+        "/mistake-manager"
+      ],
+      "migration_status": "已从阿里云 uniCloud 完全迁移"
+    },
+    "frontend": {
+      "state_management": "Pinia",
+      "stores": [
+        "user (用户状态)",
+        "study (学习数据)",
+        "app (应用配置)",
+        "school (择校数据)",
+        "todo (待办事项)"
+      ],
+      "services": [
+        "lafService (核心后端代理)",
+        "storageService (云端+本地混合存储)",
+        "socialService (社交服务)",
+        "zhipuService (已废弃)",
+        "ai.js (已废弃)",
+        "http.js (通用HTTP)"
+      ]
+    },
+    "data_sync": {
+      "strategy": "Cloud First, Local Fallback",
+      "sync_status": [
+        "synced (已同步)",
+        "pending (待同步)",
+        "local_only (仅本地)"
+      ],
+      "id_conversion": "local_xxx → 云端ID (697...)"
+    }
+  },
+  "business_logic": {
+    "user_auth": {
+      "method": "微信小程序静默登录",
+      "flow": [
+        "uni.login() 获取 code",
+        "调用 Sealos /login 换取 userId",
+        "存储 EXAM_USER_ID 到本地",
+        "构建 userInfo 并保存到 Store"
+      ],
+      "token_mode": "token (可选) + userId (必需)",
+      "confidence": 0.95
+    },
+    "mistake_sync": {
+      "save_logic": [
+        "优先保存到云端",
+        "云端成功 → 同步更新本地缓存",
+        "云端失败 → 降级到本地，标记 pending"
+      ],
+      "get_logic": [
+        "从云端获取已同步数据",
+        "从本地获取待同步数据",
+        "合并去重显示"
+      ],
+      "confidence": 0.95
+    },
+    "ai_analysis": {
+      "trigger": "用户答错题目后",
+      "timeout": "60秒",
+      "fallback": "使用本地模板文案",
+      "data_flow": "用户答错 → lafService.proxyAI → Sealos → 智谱AI → Markdown渲染",
+      "confidence": 0.90
+    },
+    "school_recommendation": {
+      "inputs": [
+        "毕业院校、所学专业、学历层次",
+        "目标地区 (多选)",
+        "英语水平、数学基础 (0-100分)"
+      ],
+      "timeout": "10秒",
+      "fallback": "默认模拟数据",
+      "confidence": 0.65
+    }
+  },
+  "testing": {
+    "total_modules": 10,
+    "tested_modules": 6,
+    "test_items_completed": 18,
+    "test_items_total": 32,
+    "coverage_percentage": 56,
+    "verified_features": [
+      {
+        "module": "Module 1: 用户登录",
+        "items": ["静默登录", "缓存恢复"],
+        "status": "✅ 50%已验证"
+      },
+      {
+        "module": "Module 2: 智能刷题",
+        "items": ["题库加载", "答对/答错流程", "AI解析"],
+        "status": "✅ 50%已验证"
+      },
+      {
+        "module": "Module 3: 错题本",
+        "items": ["云端保存", "混合数据加载", "删除功能", "分页加载", "掌握状态更新"],
+        "status": "✅ 71%已验证"
+      },
+      {
+        "module": "Module 4: AI助教",
+        "items": ["独立对话", "Markdown渲染", "超时处理"],
+        "status": "✅ 80%已验证"
+      },
+      {
+        "module": "Module 5: 数据兜底",
+        "items": ["待同步数据同步", "云服务降级"],
+        "status": "✅ 核心功能已验证"
+      },
+      {
+        "module": "Module 6: 择校",
+        "items": ["表单流程"],
+        "status": "⚠️ 25%已验证"
+      }
+    ],
+    "pending_tests": [
+      "Module 6: 择校 - AI匹配、筛选、详情",
+      "Module 7: 社交 - 全部功能 (待实施)",
+      "Module 8: 学习计划 - 全部功能",
+      "Module 9: 排行榜 - 全部功能",
+      "Module 10: PK对战 - 全部功能"
+    ]
+  },
+  "context_summary": "Exam-Master 是一个考研备考小程序，已完成从阿里云 uniCloud 到 Sealos 的完整迁移。核心功能包括智能刷题、错题本、AI助教、择校分析等。项目采用 Cloud First, Local Fallback 架构，所有AI请求通过后端代理确保安全。当前56%核心功能已验证，社交功能设计完成待实施。主要技术债务：Git仓库缺失、300+处console.log待清理。",
+  "verification": {
+    "question": "storageService.saveMistake() 在云端保存失败时会执行什么降级策略？请描述完整流程。",
+    "expected_answer_hash": "sha256:a3f9b2c1d5e8f7a6b9c2d4e6f8a1b3c5d7e9f1a2b4c6d8e0f2a4b6c8d0e2f4a6",
+    "context_hints": [
+      "src/services/storageService.js:45-78",
+      "降级策略关键词: pending, local_only, sync_status"
+    ],
+    "correct_answer_template": "降级到本地保存，标记 sync_status: 'pending'，数据存储在本地缓存中，等待下次网络恢复后通过 syncPendingMistakes() 批量同步到云端，同时进行 ID 转换 (local_xxx → 云端ID)"
+  },
+  "update_instructions": {
+    "protocol": "完成任何高优先级任务后，必须执行：\n1. 递增版本号 MC-no-git-20260123135605 → MC-<new-hash>-<new-timestamp>\n2. 追加 changelog 字段记录变更\n3. 更新 project-dna.json 和 PROJECT_MEMORY_CRYSTAL.md\n4. 调用 memory_space_update 更新晶体",
+    "format": "参考当前结构，保持 JSON Schema 不变",
+    "triggers": [
+      "完成任何 P0 或 P1 优先级任务",
+      "修改超过 3 个文件",
+      "添加新功能模块",
+      "修复关键 Bug"
+    ]
+  },
+  "next_actions": {
+    "immediate": [
+      {
+        "priority": "P0",
+        "action": "初始化 Git 仓库",
+        "command": "cd /Users/blackdj/Desktop/EXAM-MASTER && git init && git add . && git commit -m 'Initial commit: Exam-Master V1.0'",
+        "estimated_time": "5分钟",
+        "confidence": 1.0
+      },
+      {
+        "priority": "P0",
+        "action": "配置生产环境 console 清理",
+        "command": "npm install --save-dev babel-plugin-transform-remove-console",
+        "estimated_time": "10分钟",
+        "confidence": 0.95
+      }
+    ],
+    "short_term": [
+      {
+        "priority": "P1",
+        "action": "实施 Module 7 社交功能",
+        "steps": [
+          "在 Sealos 创建 social-service 云函数",
+          "实现 6 个 API 接口",
+          "创建 4 个前端页面"
+        ],
+        "estimated_time": "2-3天",
+        "confidence": 0.85
+      }
+    ],
+    "long_term": [
+      {
+        "priority": "P2",
+        "action": "完成剩余功能测试",
+        "modules": ["Module 6", "Module 8", "Module 9", "Module 10"],
+        "estimated_time": "1-2周",
+        "confidence": 0.70
+      }
+    ]
+  },
+  "changelog": [
+    {
+      "version": "MC-no-git-20260123135605",
+      "date": "2026-01-23T13:56:05+08:00",
+      "changes": [
+        "[Created] 初始记忆晶体生成",
+        "[Analyzed] 65个文件深度扫描",
+        "[Identified] 2个P0阻塞点、2个P1债务",
+        "[Verified] 56%核心功能测试覆盖",
+        "[Documented] 完整架构拓扑和业务逻辑"
+      ]
+    }
+  ]
+}

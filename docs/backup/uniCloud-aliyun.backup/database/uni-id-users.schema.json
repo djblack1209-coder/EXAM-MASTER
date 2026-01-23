@@ -1,0 +1,84 @@
+{
+	"bsonType": "object",
+	"description": "用户信息表（uni-id 标准用户表简化版）",
+	"required": ["openid"],
+	"properties": {
+		"_id": {
+			"description": "存储文档 ID（数据库自动生成）"
+		},
+		"openid": {
+			"bsonType": "string",
+			"description": "微信OpenID",
+			"label": "微信OpenID",
+			"forceDefaultValue": {
+				"$env": "openid"
+			}
+		},
+		"nickname": {
+			"bsonType": "string",
+			"description": "用户昵称",
+			"label": "昵称",
+			"maxLength": 50,
+			"default": ""
+		},
+		"avatar": {
+			"bsonType": "string",
+			"description": "用户头像URL",
+			"label": "头像",
+			"maxLength": 500,
+			"default": ""
+		},
+		"created_at": {
+			"bsonType": "timestamp",
+			"description": "创建时间",
+			"label": "创建时间",
+			"forceDefaultValue": {
+				"$env": "now"
+			}
+		},
+		"last_login_date": {
+			"bsonType": "timestamp",
+			"description": "最后登录时间",
+			"label": "最后登录时间"
+		},
+		"status": {
+			"bsonType": "int",
+			"description": "用户状态：0-正常，1-禁用",
+			"label": "状态",
+			"default": 0,
+			"enum": [0, 1]
+		}
+	},
+	"permission": {
+		"read": "doc._id == auth.uid",
+		"create": false,
+		"update": "doc._id == auth.uid",
+		"delete": false
+	},
+	"indexes": [
+		{
+			"IndexName": "openid_unique",
+			"MongodIndexOptions": {
+				"Unique": true
+			},
+			"Keys": [
+				{
+					"Name": "openid",
+					"Direction": "1"
+				}
+			]
+		},
+		{
+			"IndexName": "openid_index",
+			"MongodIndexOptions": {
+				"Unique": false
+			},
+			"Keys": [
+				{
+					"Name": "openid",
+					"Direction": "1"
+				}
+			]
+		}
+	]
+}

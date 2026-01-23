@@ -1,0 +1,14 @@
+{
+  "name": "proxy-ai",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  },
+  "cloudfunction-config": {
+    "memorySize": 512,
+    "timeout": 60,
+    "triggers": [],
+    "path": "",
+    "runtime": "nodejs16"
+  }
+}

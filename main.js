@@ -1,0 +1,18 @@
+import { createSSRApp } from 'vue'
+import { createPinia } from 'pinia'
+import App from './App.vue'
+
+// 引入 Console 日志复制工具（开发环境自动加载）
+// 注意：微信小程序不支持动态 import，改为在 App.vue 中直接 require
+
+export function createApp() {
+  const app = createSSRApp(App)
+  const pinia = createPinia()
+  
+  app.use(pinia)
+  
+  return {
+    app,
+    pinia
+  }
+}
