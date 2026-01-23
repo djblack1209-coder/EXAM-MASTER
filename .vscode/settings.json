@@ -1,0 +1,48 @@
+{
+  "files.associations": {
+    "*.vue": "vue",
+    "*.nvue": "vue"
+  },
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/unpackage": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/unpackage": true,
+    "**/.vscode/*.log": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/unpackage/**": true
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "terminal.integrated.env.osx": {
+    "PROJECT_ROOT": "${workspaceFolder}"
+  },
+  "terminal.integrated.env.linux": {
+    "PROJECT_ROOT": "${workspaceFolder}"
+  },
+  "terminal.integrated.env.windows": {
+    "PROJECT_ROOT": "${workspaceFolder}"
+  },
+  "task.autoDetect": "on",
+  "task.quickOpen.detail": true,
+  "task.quickOpen.showAll": true
+}

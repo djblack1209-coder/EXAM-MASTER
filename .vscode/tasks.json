@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🚀 UI全自动更新",
+      "type": "shell",
+      "command": "bash .vscode/auto-update.sh",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "📊 查看状态面板",
+      "type": "shell",
+      "command": "code .vscode/update-status.md",
+      "problemMatcher": []
+    },
+    {
+      "label": "🧪 Console审计",
+      "type": "shell",
+      "command": "grep -r 'console\\.log' src/ --include='*.vue' --include='*.js' | tee .vscode/console-audit.log && echo '✅ 审计完成，查看 .vscode/console-audit.log'",
+      "problemMatcher": []
+    },
+    {
+      "label": "🏗️ 构建验证",
+      "type": "shell",
+      "command": "npm run build:mp-weixin && find dist/build/mp-weixin -name '*.js' -exec grep -l 'console\\.log' {} \\; | wc -l",
+      "problemMatcher": []
+    },
+    {
+      "label": "📈 生成质量报告",
+      "type": "shell",
+      "command": "bash .vscode/generate-report.sh",
+      "problemMatcher": []
+    }
+  ]
+}

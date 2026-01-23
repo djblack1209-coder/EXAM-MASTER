@@ -5,7 +5,13 @@ dist/
 
 # IDE
 .idea/
-.vscode/
+# .vscode/ - 保留VSC自动化配置
+.vscode/*.log
+.vscode/build.log
+.vscode/console-audit.log
+.vscode/hardcoded-*.log
+.vscode/auto-update-*.log
+.vscode/quality-report-*.md
 *.suo
 *.ntvs*
 *.njsproj
