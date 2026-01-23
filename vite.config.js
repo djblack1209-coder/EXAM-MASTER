@@ -16,5 +16,14 @@ export default defineConfig({
       '@/utils': path.resolve(__dirname, 'src/utils'),
       '@/static': path.resolve(__dirname, 'src/static')
     }
+  },
+  build: {
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
   }
 })

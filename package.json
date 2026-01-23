@@ -23,6 +23,7 @@
     "@dcloudio/types": "^3.3.2",
     "@dcloudio/uni-cli-shared": "^3.0.0-alpha-5000020260104004",
     "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-5000020260104004",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "miniprogram-automator": "^0.12.1",
     "pixelmatch": "^7.1.0",
     "pngjs": "^7.0.0",
