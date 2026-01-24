@@ -68,21 +68,21 @@ const progressValue = computed(() => {
   return Math.round((completed / props.todos.length) * 100)
 })
 
-// 获取优先级class - 根据优先级文本和索引分配不同颜色
+// 获取优先级class - 根据优先级文本分配不同颜色
 const getPriorityClass = (item, index) => {
-  // 根据优先级文本和索引分配颜色
-  if (item.priority === '优先') {
-    // 优先：根据索引分配不同颜色
-    // 索引0: 浅绿色，索引1: 浅粉色，索引3: 浅紫色
-    if (index === 0) return 'youxian-green'
-    if (index === 1) return 'youxian-pink'
-    if (index === 3) return 'youxian-purple'
-    return 'youxian-green'
-  } else if (item.priority === '重先') {
-    // 重先：浅黄色背景，黄色文字
-    return 'zhongxian-yellow'
+  // Priority: 绿色
+  if (item.priority === 'Priority') {
+    return 'priority-green'
+  } 
+  // Important: 黄色
+  else if (item.priority === 'Important') {
+    return 'important-yellow'
+  } 
+  // Normal: 灰色
+  else if (item.priority === 'Normal') {
+    return 'normal-gray'
   }
-  return 'youxian-green'
+  return 'priority-green'
 }
 
 // 切换待办状态
@@ -210,8 +210,8 @@ const onToggleTodo = (id) => {
           -webkit-font-smoothing: antialiased;
         }
 
-        /* 优先 - 浅绿色背景 + 绿色文字 */
-        &.priority-youxian-green {
+        /* Priority - 浅绿色背景 + 绿色文字 */
+        &.priority-priority-green {
           background: #D1FAE5;
 
           .priority-text {
@@ -219,30 +219,21 @@ const onToggleTodo = (id) => {
           }
         }
 
-        /* 优先 - 浅粉色背景 + 粉色文字 */
-        &.priority-youxian-pink {
-          background: #FCE7F3;
-
-          .priority-text {
-            color: #EC4899;
-          }
-        }
-
-        /* 优先 - 浅紫色背景 + 紫色文字 */
-        &.priority-youxian-purple {
-          background: #F3E8FF;
-
-          .priority-text {
-            color: #9333EA;
-          }
-        }
-
-        /* 重先 - 浅黄色背景 + 黄色文字 */
-        &.priority-zhongxian-yellow {
+        /* Important - 浅黄色背景 + 黄色文字 */
+        &.priority-important-yellow {
           background: #FEF3C7;
 
           .priority-text {
             color: #F59E0B;
+          }
+        }
+
+        /* Normal - 浅灰色背景 + 灰色文字 */
+        &.priority-normal-gray {
+          background: #F3F4F6;
+
+          .priority-text {
+            color: #6B7280;
           }
         }
       }
@@ -299,7 +290,7 @@ const onToggleTodo = (id) => {
       .item-priority {
 
         /* 深色模式下的优先级标签 */
-        &.priority-youxian-green {
+        &.priority-priority-green {
           background: rgba(159, 232, 112, 0.2);
 
           .priority-text {
@@ -307,27 +298,19 @@ const onToggleTodo = (id) => {
           }
         }
 
-        &.priority-youxian-pink {
-          background: rgba(236, 72, 153, 0.2);
-
-          .priority-text {
-            color: #F472B6;
-          }
-        }
-
-        &.priority-youxian-purple {
-          background: rgba(147, 51, 234, 0.2);
-
-          .priority-text {
-            color: #A78BFA;
-          }
-        }
-
-        &.priority-zhongxian-yellow {
+        &.priority-important-yellow {
           background: rgba(245, 158, 11, 0.2);
 
           .priority-text {
             color: #FCD34D;
+          }
+        }
+
+        &.priority-normal-gray {
+          background: rgba(156, 163, 175, 0.2);
+
+          .priority-text {
+            color: #9CA3AF;
           }
         }
       }

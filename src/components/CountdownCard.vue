@@ -2,16 +2,16 @@
 <template>
   <view class="countdown-card ds-touchable" :class="{ 'dark-mode': isDark }" @tap="onCardTap">
     <view class="card-header">
-      <text class="header-text ds-text-sm">考研倒计时</text>
+      <text class="header-text ds-text-sm">Exam Countdown</text>
     </view>
 
     <view class="countdown-number ds-flex">
       <text class="number ds-text-display">{{ daysRemaining }}</text>
-      <text class="unit ds-text-xl ds-font-semibold">天</text>
+      <text class="unit ds-text-xl ds-font-semibold">Days</text>
     </view>
 
     <view class="exam-date">
-      <text class="date-text ds-text-xs">考试日期：{{ examDate }}</text>
+      <text class="date-text ds-text-xs">Exam Date: {{ examDate }}</text>
     </view>
   </view>
 </template>
@@ -51,7 +51,7 @@ const examDate = computed(() => {
   const year = date.getFullYear()
   const month = date.getMonth() + 1
   const day = date.getDate()
-  return `${year}年${month}月${day}日`
+  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 })
 
 // 卡片点击事件

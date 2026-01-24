@@ -1,7 +1,7 @@
 <!-- REFACTOR: Modern practice banner with design system utilities -->
 <template>
   <view class="practice-banner ds-card ds-touchable" :class="{ 'dark-mode': isDark }" @tap="onBannerTap">
-    <text class="banner-text ds-text-xl ds-font-bold">刷题</text>
+    <text class="banner-text ds-text-xl ds-font-bold">Practice</text>
 
     <view class="banner-arrow ds-flex-center">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"
