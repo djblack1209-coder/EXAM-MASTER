@@ -1,34 +1,30 @@
 <template>
-  <view class="mistakes-card">
+  <view class="mistakes-card ds-card" :class="{ 'dark-mode': isDark }">
     <view class="card-header">
-      <text class="title">错题</text>
+      <text class="title ds-text-lg ds-font-semibold">错题</text>
     </view>
-    
-    <view class="card-content">
+
+    <view class="card-content ds-flex ds-flex-between">
       <!-- 左侧：猫咪插画 + 电池图标 -->
-      <view class="left-section">
+      <view class="left-section ds-flex ds-gap-md">
         <view class="cat-wrapper">
-          <image
-            class="cat-icon"
-            src="https://img.icons8.com/color/96/cat.png"
-            mode="aspectFit"
-          />
+          <image class="cat-icon" src="https://img.icons8.com/color/96/cat.png" mode="aspectFit" />
         </view>
-        <view class="battery-wrapper">
+        <view class="battery-wrapper ds-flex ds-flex-col ds-gap-xs">
           <view class="battery">
             <view class="battery-level" :style="{ width: batteryPercent + '%' }"></view>
           </view>
-          <text class="battery-text">{{ batteryPercent }}%</text>
+          <text class="battery-text ds-text-xs ds-font-semibold">{{ batteryPercent }}%</text>
         </view>
       </view>
-      
+
       <!-- 右侧：按钮和统计 -->
-      <view class="right-section">
-        <view class="action-btn" @tap="handleReview">
-          <text class="btn-text">再刷错题</text>
+      <view class="right-section ds-flex ds-flex-col ds-gap-sm">
+        <view class="action-btn ds-touchable" @tap="handleReview">
+          <text class="btn-text ds-text-sm ds-font-semibold">再刷错题</text>
           <text class="btn-arrow">›</text>
         </view>
-        <text class="stats-text">共 {{ mistakeCount }} 道错题</text>
+        <text class="stats-text ds-text-xs ds-text-secondary">共 {{ mistakeCount }} 道错题</text>
       </view>
     </view>
   </view>
@@ -37,6 +33,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { storageService } from '../../../services/storageService.js'
+
+// Props
+defineProps({
+  isDark: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const batteryPercent = ref(75)
 const mistakeCount = ref(0)
@@ -73,11 +77,12 @@ const handleReview = () => {
 
 <style lang="scss" scoped>
 .mistakes-card {
-  background-color: #FFFFFF;
+  background-color: var(--ds-bg-primary);
   border-radius: 24rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+  transition: all 150ms ease-out;
 }
 
 .card-header {
@@ -85,21 +90,15 @@ const handleReview = () => {
 }
 
 .title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333333;
+  color: var(--ds-text-primary);
 }
 
 .card-content {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .left-section {
-  display: flex;
   align-items: center;
-  gap: 20rpx;
 }
 
 .cat-wrapper {
@@ -116,20 +115,18 @@ const handleReview = () => {
 }
 
 .battery-wrapper {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10rpx;
 }
 
 .battery {
   width: 60rpx;
   height: 100rpx;
-  border: 4rpx solid #07C160;
+  border: 4rpx solid var(--ds-success);
   border-radius: 8rpx;
   position: relative;
   padding: 4rpx;
-  
+  transition: border-color 150ms ease-out;
+
   &::before {
     content: '';
     position: absolute;
@@ -138,45 +135,48 @@ const handleReview = () => {
     transform: translateX(-50%);
     width: 30rpx;
     height: 8rpx;
-    background-color: #07C160;
+    background-color: var(--ds-success);
     border-radius: 4rpx 4rpx 0 0;
+    transition: background-color 150ms ease-out;
   }
 }
 
 .battery-level {
   height: 100%;
-  background: linear-gradient(180deg, #07C160 0%, #05A850 100%);
+  background: linear-gradient(180deg, var(--ds-success) 0%, var(--ds-success-dark) 100%);
   border-radius: 4rpx;
-  transition: width 0.3s ease;
+  transition: width 300ms ease;
 }
 
 .battery-text {
-  font-size: 24rpx;
-  color: #07C160;
-  font-weight: 600;
+  color: var(--ds-success);
+  transition: color 150ms ease-out;
 }
 
 .right-section {
-  display: flex;
-  flex-direction: column;
   align-items: flex-end;
-  gap: 15rpx;
 }
 
 .action-btn {
-  background: linear-gradient(135deg, #07C160 0%, #05A850 100%);
+  background: linear-gradient(135deg, var(--ds-success) 0%, var(--ds-success-dark) 100%);
   padding: 20rpx 40rpx;
   border-radius: 50rpx;
   display: flex;
   align-items: center;
   gap: 10rpx;
   box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
+  transition: all 150ms ease-out;
+  min-height: 44px;
+  min-width: 44px;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.2);
+  }
 }
 
 .btn-text {
-  font-size: 28rpx;
   color: #FFFFFF;
-  font-weight: 600;
 }
 
 .btn-arrow {
@@ -186,7 +186,27 @@ const handleReview = () => {
 }
 
 .stats-text {
-  font-size: 24rpx;
-  color: #999999;
+  color: var(--ds-text-secondary);
+}
+
+/* 深色模式 */
+.dark-mode {
+  .mistakes-card {
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+  }
+
+  .action-btn {
+    background: linear-gradient(135deg, var(--ds-success) 0%, var(--ds-success-dark) 100%);
+    box-shadow: 0 8rpx 24rpx rgba(159, 232, 112, 0.3);
+
+    &:active {
+      box-shadow: 0 4rpx 12rpx rgba(159, 232, 112, 0.2);
+    }
+  }
+
+  .btn-text,
+  .btn-arrow {
+    color: #1c1c1e;
+  }
 }
 </style>

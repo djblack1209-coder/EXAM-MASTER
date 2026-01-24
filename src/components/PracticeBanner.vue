@@ -1,9 +1,11 @@
+<!-- REFACTOR: Modern practice banner with design system utilities -->
 <template>
-  <view class="practice-banner" @tap="onBannerTap">
-    <text class="banner-text">刷题</text>
-    
-    <view class="banner-arrow">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <view class="practice-banner ds-card ds-touchable" :class="{ 'dark-mode': isDark }" @tap="onBannerTap">
+    <text class="banner-text ds-text-xl ds-font-bold">刷题</text>
+
+    <view class="banner-arrow ds-flex-center">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"
+        stroke-linejoin="round">
         <path d="M9 18l6-6-6-6" />
       </svg>
     </view>
@@ -11,6 +13,14 @@
 </template>
 
 <script setup>
+// 定义props
+const props = defineProps({
+  isDark: {
+    type: Boolean,
+    default: false
+  }
+})
+
 // 定义emits
 const emit = defineEmits(['bannerTap'])
 
@@ -40,15 +50,15 @@ const onBannerTap = () => {
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  
+
   /* 占位符渐变背景 */
   background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
-  
+
   &:active {
     opacity: 0.85;
     transform: scale(0.98);
   }
-  
+
   .banner-text {
     font-size: 20px;
     font-weight: 700;
@@ -57,7 +67,7 @@ const onBannerTap = () => {
     position: relative;
     z-index: 1;
   }
-  
+
   .banner-arrow {
     width: 40px;
     height: 40px;
@@ -70,12 +80,28 @@ const onBannerTap = () => {
     z-index: 1;
     flex-shrink: 0;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
-    
+
     /* 练习卡片右箭头SVG */
     .banner-arrow svg {
       width: 24px;
       height: 24px;
     }
+  }
+}
+
+/* VISUAL: Dark mode styles */
+.practice-banner.dark-mode {
+  /* 深色模式下使用更深的渐变 */
+  background: linear-gradient(to right, #3a8fd9 0%, #00c4d4 100%);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+
+  .banner-text {
+    color: #FFFFFF;
+  }
+
+  .banner-arrow {
+    background: #9FE870;
+    box-shadow: 0px 2px 8px rgba(159, 232, 112, 0.3);
   }
 }
 </style>

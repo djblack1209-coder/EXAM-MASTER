@@ -1,16 +1,12 @@
 <template>
-  <view class="tools-section">
-    <view class="section-title">工具功能</view>
-    
+  <view class="tools-section" :class="{ 'dark-mode': isDark }">
+    <view class="section-title ds-text-lg ds-font-bold">工具功能</view>
+
     <view class="tools-grid">
-      <view 
-        v-for="tool in tools" 
-        :key="tool.id"
-        class="tool-item"
-        @click="handleToolClick(tool)"
-      >
-        <view class="tool-icon">{{ tool.icon }}</view>
-        <text class="tool-name">{{ tool.name }}</text>
+      <view v-for="tool in tools" :key="tool.id" class="tool-item ds-card ds-flex ds-touchable"
+        @click="handleToolClick(tool)">
+        <view class="tool-icon ds-flex">{{ tool.icon }}</view>
+        <text class="tool-name ds-text-sm ds-font-medium">{{ tool.name }}</text>
       </view>
     </view>
   </view>
@@ -18,6 +14,14 @@
 
 <script setup>
 import { ref } from 'vue'
+
+// Props
+defineProps({
+  isDark: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const tools = ref([
   {
@@ -36,7 +40,19 @@ const tools = ref([
 
 const handleToolClick = (tool) => {
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/f5c451ee-9a20-46e5-a996-fe0cc48cf454',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ToolsGrid.vue:handleToolClick',message:'tool_click',data:{toolId:tool.id,toolName:tool.name},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H7'})}).catch(()=>{});
+  fetch('http://127.0.0.1:7242/ingest/f5c451ee-9a20-46e5-a996-fe0cc48cf454', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      location: 'ToolsGrid.vue:handleToolClick',
+      message: 'tool_click',
+      data: { toolId: tool.id, toolName: tool.name },
+      timestamp: Date.now(),
+      sessionId: 'debug-session',
+      runId: 'pre-fix',
+      hypothesisId: 'H7'
+    })
+  }).catch(() => { })
   // #endregion
   uni.showToast({
     title: `打开${tool.name}`,
@@ -51,9 +67,7 @@ const handleToolClick = (tool) => {
 }
 
 .section-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333333;
+  color: var(--ds-text-primary);
   margin-bottom: 24rpx;
 }
 
@@ -64,14 +78,13 @@ const handleToolClick = (tool) => {
 }
 
 .tool-item {
-  background: #FFFFFF;
+  background: var(--ds-bg-primary);
   border-radius: 24rpx;
   padding: 32rpx;
-  display: flex;
   align-items: center;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s;
-  
+  transition: all 150ms ease-out;
+
   &:active {
     transform: scale(0.98);
   }
@@ -80,20 +93,25 @@ const handleToolClick = (tool) => {
 .tool-icon {
   width: 80rpx;
   height: 80rpx;
-  background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+  background: linear-gradient(135deg, var(--ds-success) 0%, #73D13D 100%);
   border-radius: 20rpx;
-  display: flex;
   align-items: center;
   justify-content: center;
   font-size: 48rpx;
   margin-right: 20rpx;
   flex-shrink: 0;
+  transition: background 150ms ease-out;
 }
 
 .tool-name {
-  font-size: 28rpx;
-  color: #333333;
-  font-weight: 500;
+  color: var(--ds-text-primary);
   flex: 1;
+}
+
+/* 深色模式 */
+.dark-mode {
+  .tool-item {
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+  }
 }
 </style>

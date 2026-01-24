@@ -1,0 +1,535 @@
+{
+    "manifestVersion": "1.0.0",
+    "projectName": "EXAM-MASTER",
+    "generatedAt": "2026-01-23T16:19:00+08:00",
+    "executionMode": "REAL_EXECUTION_YES",
+    "refactoringPath": "PATH_A",
+    "projectMetadata": {
+        "totalVueFiles": 45,
+        "totalNvueFiles": 0,
+        "conditionalCompilationBlocks": 60,
+        "highRiskFiles": [
+            "src/pages/index/index.vue",
+            "src/pages/practice/index.vue",
+            "src/pages/practice/do-quiz.vue",
+            "src/pages/practice/import-data.vue",
+            "src/pages/mistake/index.vue",
+            "src/pages/settings/index.vue",
+            "src/pages/universe/index.vue",
+            "src/pages/practice/rank.vue"
+        ],
+        "shadowIncompatibleFiles": []
+    },
+    "componentApiManifest": {
+        "components": {
+            "BottomNavbar": {
+                "path": "src/components/BottomNavbar.vue",
+                "type": "navigation",
+                "props": {},
+                "emits": [],
+                "methods": {
+                    "switchTab": {
+                        "signature": "(tab: string) => void",
+                        "description": "Switches to specified tab using uni.reLaunch"
+                    },
+                    "updateCurrentTab": {
+                        "signature": "() => void",
+                        "description": "Updates current tab based on route"
+                    }
+                },
+                "computed": {},
+                "refs": {
+                    "currentTab": "ref<string>"
+                },
+                "conditionalCompilation": false,
+                "dependencies": [
+                    "vue"
+                ],
+                "notes": "Pure CSS icons, no external assets required"
+            },
+            "CustomTabbar": {
+                "path": "src/components/custom-tabbar/custom-tabbar.vue",
+                "type": "navigation",
+                "props": {
+                    "activeIndex": {
+                        "type": "Number",
+                        "default": 0,
+                        "required": false
+                    },
+                    "isDark": {
+                        "type": "Boolean",
+                        "default": false,
+                        "required": false
+                    }
+                },
+                "emits": [],
+                "methods": {
+                    "initIcons": {
+                        "signature": "() => void",
+                        "description": "Initializes SVG data URI icons"
+                    },
+                    "checkMistakeStatus": {
+                        "signature": "() => void",
+                        "description": "Checks mistake book status for red dot"
+                    },
+                    "switchTab": {
+                        "signature": "(path: string, index: number) => void",
+                        "description": "Switches tab with vibration feedback"
+                    }
+                },
+                "computed": {},
+                "data": {
+                    "tabList": "Array<TabItem>"
+                },
+                "conditionalCompilation": false,
+                "dependencies": [
+                    "storageService"
+                ],
+                "notes": "Uses inline SVG data URIs, glassmorphism design"
+            },
+            "BaseEmpty": {
+                "path": "src/components/base-empty/base-empty.vue",
+                "type": "ui-state",
+                "props": {
+                    "icon": {
+                        "type": "String",
+                        "default": "📭",
+                        "required": false
+                    },
+                    "title": {
+                        "type": "String",
+                        "default": "暂无数据",
+                        "required": false
+                    },
+                    "desc": {
+                        "type": "String",
+                        "default": "",
+                        "required": false
+                    },
+                    "showButton": {
+                        "type": "Boolean",
+                        "default": false,
+                        "required": false
+                    },
+                    "buttonText": {
+                        "type": "String",
+                        "default": "去添加",
+                        "required": false
+                    },
+                    "isDark": {
+                        "type": "Boolean",
+                        "default": false,
+                        "required": false
+                    }
+                },
+                "emits": [
+                    "action"
+                ],
+                "methods": {
+                    "handleAction": {
+                        "signature": "() => void",
+                        "description": "Emits action event when button clicked"
+                    }
+                },
+                "computed": {},
+                "conditionalCompilation": false,
+                "dependencies": [],
+                "notes": "Simple empty state component with optional CTA"
+            },
+            "BaseLoading": {
+                "path": "src/components/base-loading/base-loading.vue",
+                "type": "ui-state",
+                "props": {
+                    "text": {
+                        "type": "String",
+                        "default": "加载中...",
+                        "required": false
+                    },
+                    "isDark": {
+                        "type": "Boolean",
+                        "default": false,
+                        "required": false
+                    }
+                },
+                "emits": [],
+                "methods": {},
+                "computed": {},
+                "conditionalCompilation": false,
+                "dependencies": [],
+                "notes": "Loading spinner component"
+            },
+            "BaseSkeleton": {
+                "path": "src/components/base-skeleton/base-skeleton.vue",
+                "type": "ui-state",
+                "props": {
+                    "rows": {
+                        "type": "Number",
+                        "default": 3,
+                        "required": false
+                    },
+                    "avatar": {
+                        "type": "Boolean",
+                        "default": false,
+                        "required": false
+                    }
+                },
+                "emits": [],
+                "methods": {},
+                "computed": {},
+                "conditionalCompilation": false,
+                "dependencies": [],
+                "notes": "Skeleton loading placeholder"
+            },
+            "HomeNavbar": {
+                "path": "src/components/HomeNavbar.vue",
+                "type": "navigation",
+                "props": {},
+                "emits": [],
+                "methods": {},
+                "computed": {},
+                "conditionalCompilation": false,
+                "dependencies": [],
+                "notes": "Home page navigation bar"
+            },
+            "CountdownCard": {
+                "path": "src/components/CountdownCard.vue",
+                "type": "display",
+                "props": {
+                    "targetDate": {
+                        "type": "String",
+                        "required": true
+                    }
+                },
+                "emits": [],
+                "methods": {},
+                "computed": {},
+                "conditionalCompilation": false,
+                "dependencies": [],
+                "notes": "Exam countdown display card"
+            },
+            "TodoList": {
+                "path": "src/components/TodoList.vue",
+                "type": "interactive",
+                "props": {
+                    "items": {
+                        "type": "Array",
+                        "required": true
+                    }
+                },
+                "emits": [
+                    "update",
+                    "delete"
+                ],
+                "methods": {},
+                "computed": {},
+                "conditionalCompilation": false,
+                "dependencies": [],
+                "notes": "Todo list management component"
+            },
+            "PracticeBanner": {
+                "path": "src/components/PracticeBanner.vue",
+                "type": "display",
+                "props": {},
+                "emits": [],
+                "methods": {},
+                "computed": {},
+                "conditionalCompilation": false,
+                "dependencies": [],
+                "notes": "Practice section banner"
+            },
+            "AiConsult": {
+                "path": "src/components/ai-consult/ai-consult.vue",
+                "type": "interactive",
+                "props": {},
+                "emits": [],
+                "methods": {},
+                "computed": {},
+                "conditionalCompilation": false,
+                "dependencies": [],
+                "notes": "AI consultation interface"
+            }
+        },
+        "pages": {
+            "index": {
+                "path": "src/pages/index/index.vue",
+                "conditionalCompilation": true,
+                "conditionalBlocks": 12,
+                "platforms": [
+                    "MP-WECHAT",
+                    "MP-WEIXIN",
+                    "H5"
+                ],
+                "criticalLogic": [
+                    "silentLogin flow",
+                    "setData force update",
+                    "getUserProfile",
+                    "share menu setup"
+                ],
+                "dependencies": [
+                    "useUserStore",
+                    "storageService"
+                ],
+                "notes": "CRITICAL: Contains complex WeChat-specific login logic with #ifdef blocks"
+            },
+            "practice/index": {
+                "path": "src/pages/practice/index.vue",
+                "conditionalCompilation": true,
+                "conditionalBlocks": 4,
+                "platforms": [
+                    "MP-WEIXIN",
+                    "MP-WECHAT",
+                    "H5"
+                ],
+                "criticalLogic": [
+                    "chooseMessageFile",
+                    "chooseFile"
+                ],
+                "dependencies": [],
+                "notes": "File upload logic differs by platform"
+            },
+            "practice/do-quiz": {
+                "path": "src/pages/practice/do-quiz.vue",
+                "conditionalCompilation": true,
+                "conditionalBlocks": 4,
+                "platforms": [
+                    "MP-WECHAT",
+                    "H5"
+                ],
+                "criticalLogic": [
+                    "capsule button positioning"
+                ],
+                "dependencies": [],
+                "notes": "Navigation bar height calculation platform-specific"
+            },
+            "practice/import-data": {
+                "path": "src/pages/practice/import-data.vue",
+                "conditionalCompilation": true,
+                "conditionalBlocks": 4,
+                "platforms": [
+                    "MP-WEIXIN",
+                    "H5"
+                ],
+                "criticalLogic": [
+                    "file selection APIs"
+                ],
+                "dependencies": [],
+                "notes": "File import differs by platform"
+            },
+            "mistake/index": {
+                "path": "src/pages/mistake/index.vue",
+                "conditionalCompilation": true,
+                "conditionalBlocks": 4,
+                "platforms": [
+                    "MP-WECHAT",
+                    "H5"
+                ],
+                "criticalLogic": [
+                    "saveImageToPhotosAlbum"
+                ],
+                "dependencies": [],
+                "notes": "Image save logic platform-specific"
+            },
+            "settings/index": {
+                "path": "src/pages/settings/index.vue",
+                "conditionalCompilation": true,
+                "conditionalBlocks": 8,
+                "platforms": [
+                    "MP-WECHAT",
+                    "H5"
+                ],
+                "criticalLogic": [
+                    "avatar upload",
+                    "nickname update",
+                    "login flow"
+                ],
+                "dependencies": [
+                    "useUserStore"
+                ],
+                "notes": "CRITICAL: User profile management with WeChat-specific APIs"
+            },
+            "universe/index": {
+                "path": "src/pages/universe/index.vue",
+                "conditionalCompilation": true,
+                "conditionalBlocks": 4,
+                "platforms": [
+                    "H5",
+                    "APP"
+                ],
+                "criticalLogic": [
+                    "requestAnimationFrame vs setTimeout"
+                ],
+                "dependencies": [],
+                "notes": "Animation loop differs by platform"
+            },
+            "practice/rank": {
+                "path": "src/pages/practice/rank.vue",
+                "conditionalCompilation": true,
+                "conditionalBlocks": 4,
+                "platforms": [
+                    "MP-WECHAT",
+                    "H5"
+                ],
+                "criticalLogic": [
+                    "capsule button positioning"
+                ],
+                "dependencies": [],
+                "notes": "Navigation bar height calculation platform-specific"
+            },
+            "school/index": {
+                "path": "src/pages/school/index.vue",
+                "conditionalCompilation": false,
+                "dependencies": [
+                    "AbilityForm",
+                    "EducationForm",
+                    "RegionForm",
+                    "ConfirmForm",
+                    "StepProgress"
+                ],
+                "notes": "Multi-step form with sub-components"
+            },
+            "profile/index": {
+                "path": "src/pages/profile/index.vue",
+                "conditionalCompilation": false,
+                "dependencies": [
+                    "UserProfile",
+                    "ProgressCircle",
+                    "ToolsGrid",
+                    "FriendsList"
+                ],
+                "notes": "User profile dashboard"
+            }
+        }
+    },
+    "testingBaseline": {
+        "visualRegressionTests": {
+            "status": "RUNNING",
+            "totalTests": 11,
+            "passed": 1,
+            "failed": 2,
+            "pending": 8,
+            "failedTests": [
+                "首页 - 学习统计面板",
+                "刷题中心 - 题库列表"
+            ],
+            "passedTests": [
+                "错题本 - 错题卡片"
+            ]
+        },
+        "unitTests": {
+            "status": "NOT_RUN",
+            "coverage": "UNKNOWN"
+        },
+        "e2eTests": {
+            "status": "NOT_RUN"
+        }
+    },
+    "riskAssessment": {
+        "highRiskOperations": [
+            "Conditional compilation blocks (60 instances)",
+            "WeChat-specific APIs (login, share, file upload)",
+            "Platform-specific animation loops",
+            "Native setData force updates"
+        ],
+        "mitigationStrategy": [
+            "Preserve all #ifdef/#ifndef blocks character-for-character",
+            "Wrap existing logic, never replace",
+            "Add design system classes alongside existing classes",
+            "Test each platform separately after refactor"
+        ]
+    },
+    "refactoringStrategy": {
+        "phase1": {
+            "name": "Global Design System Setup",
+            "files": [
+                "src/styles/design-system.scss",
+                "App.vue (import design system)",
+                "main.js (dark mode initialization)"
+            ],
+            "estimatedTime": "30 minutes"
+        },
+        "phase2": {
+            "name": "Dark Mode Robust Implementation",
+            "files": [
+                "App.vue (theme toggle logic)",
+                "src/pages/settings/index.vue (toggle UI)"
+            ],
+            "estimatedTime": "20 minutes"
+        },
+        "phase3": {
+            "name": "Component Refactoring (One-by-One)",
+            "order": [
+                "base-empty",
+                "base-loading",
+                "base-skeleton",
+                "custom-tabbar",
+                "BottomNavbar",
+                "HomeNavbar",
+                "CountdownCard",
+                "TodoList",
+                "PracticeBanner",
+                "practice/AiEntry",
+                "practice/MistakesCard",
+                "practice/RecentTools",
+                "practice/UploadCard",
+                "profile/UserProfile",
+                "profile/ProgressCircle",
+                "profile/ToolsGrid",
+                "profile/FriendsList",
+                "school/StepProgress",
+                "school/AbilityForm",
+                "school/EducationForm",
+                "school/RegionForm",
+                "school/ConfirmForm",
+                "ai-consult/ai-consult"
+            ],
+            "estimatedTime": "4-6 hours"
+        },
+        "phase4": {
+            "name": "Page Refactoring (Deepest to Shallowest)",
+            "order": [
+                "pages/splash/index",
+                "pages/universe/index",
+                "pages/chat/chat",
+                "pages/chat/index",
+                "pages/plan/create",
+                "pages/plan/index",
+                "pages/social/friend-list",
+                "pages/practice/file-manager",
+                "pages/practice/pk-battle",
+                "pages/practice/rank-list",
+                "pages/practice/rank",
+                "pages/practice/import-data",
+                "pages/practice/do-quiz",
+                "pages/school/detail",
+                "pages/school/index",
+                "pages/mistake/index",
+                "pages/practice/index",
+                "pages/profile/index",
+                "pages/settings/index",
+                "pages/index/index"
+            ],
+            "estimatedTime": "8-12 hours"
+        },
+        "phase5": {
+            "name": "Final Integration & Validation",
+            "tasks": [
+                "Run full visual regression suite",
+                "Test critical user flows",
+                "Verify dark mode on all pages",
+                "Check safe-area handling",
+                "Validate touch targets (≥44px)",
+                "Test on WeChat DevTools",
+                "Generate final manifest"
+            ],
+            "estimatedTime": "2-3 hours"
+        }
+    },
+    "equivalencePreservationRules": {
+        "rule1": "Template Structure Immutability - All v-if, v-for, :key, @click, v-model, uni.* directives FROZEN",
+        "rule2": "Script API Contract - Props, emits, methods, computed names & signatures FROZEN",
+        "rule3": "Style Class Preservation - Existing classes remain with original selectors, only ADD new .ds-* classes",
+        "rule4": "Conditional Compilation Sanctity - All #ifdef/#ifndef blocks copied VERBATIM",
+        "rule5": "NVUE Compatibility - Never use box-shadow in .nvue, always provide border fallback",
+        "breachProtocol": "If any rule cannot be guaranteed, output CRITICAL WARNING and HALT"
+    }
+}

@@ -1,16 +1,17 @@
+<!-- REFACTOR: Modern countdown card with design system utilities -->
 <template>
-  <view class="countdown-card" @tap="onCardTap">
+  <view class="countdown-card ds-touchable" :class="{ 'dark-mode': isDark }" @tap="onCardTap">
     <view class="card-header">
-      <text class="header-text">考研倒计时</text>
+      <text class="header-text ds-text-sm">考研倒计时</text>
     </view>
-    
-    <view class="countdown-number">
-      <text class="number">{{ daysRemaining }}</text>
-      <text class="unit">天</text>
+
+    <view class="countdown-number ds-flex">
+      <text class="number ds-text-display">{{ daysRemaining }}</text>
+      <text class="unit ds-text-xl ds-font-semibold">天</text>
     </view>
-    
+
     <view class="exam-date">
-      <text class="date-text">考试日期：{{ examDate }}</text>
+      <text class="date-text ds-text-xs">考试日期：{{ examDate }}</text>
     </view>
   </view>
 </template>
@@ -23,6 +24,10 @@ const props = defineProps({
   targetDate: {
     type: String,
     default: '2026-12-19'
+  },
+  isDark: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -73,16 +78,16 @@ const onCardTap = () => {
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
-  
+
   &:active {
     opacity: 0.85;
     transform: scale(0.98);
   }
-  
+
   .card-header {
     width: 100%;
     margin-bottom: 8px;
-    
+
     .header-text {
       font-size: 14px;
       color: rgba(255, 255, 255, 0.8);
@@ -90,7 +95,7 @@ const onCardTap = () => {
       -webkit-font-smoothing: antialiased;
     }
   }
-  
+
   .countdown-number {
     display: flex;
     align-items: baseline;
@@ -99,7 +104,7 @@ const onCardTap = () => {
     width: 100%;
     padding: 0 8px;
     box-sizing: border-box;
-    
+
     .number {
       font-size: 64px;
       font-weight: 700;
@@ -112,7 +117,7 @@ const onCardTap = () => {
       text-overflow: ellipsis;
       max-width: 100%;
     }
-    
+
     .unit {
       font-size: 24px;
       font-weight: 600;
@@ -122,17 +127,42 @@ const onCardTap = () => {
       flex-shrink: 0;
     }
   }
-  
+
   .exam-date {
     width: 100%;
     text-align: center;
-    
+
     .date-text {
       font-size: 12px;
       color: rgba(255, 255, 255, 0.8);
       font-weight: 400;
       -webkit-font-smoothing: antialiased;
     }
+  }
+}
+
+/* VISUAL: Dark mode styles */
+.countdown-card.dark-mode {
+  /* 深色模式渐变：深绿到深青 */
+  background: linear-gradient(135deg, #1a5f3a 0%, #1a4d5f 100%);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+
+  .card-header .header-text {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .countdown-number {
+    .number {
+      color: #FFFFFF;
+    }
+
+    .unit {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .exam-date .date-text {
+    color: rgba(255, 255, 255, 0.7);
   }
 }
 </style>

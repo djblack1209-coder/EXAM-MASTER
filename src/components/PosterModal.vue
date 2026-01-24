@@ -1,40 +1,43 @@
+<!-- REFACTOR: Modern poster modal with design system utilities -->
 <template>
-  <view v-if="visible" class="poster-mask" @tap="handleClose">
-    <view class="poster-card" @tap.stop>
-      <view class="close-icon-container" @tap="handleClose">
-        <image src="https://img.icons8.com/ios-glyphs/30/ffffff/multiply.png" style="width: 16px; height: 16px;"></image>
+  <view v-if="visible" class="poster-mask" :class="{ 'dark-mode': isDark }" @tap="handleClose">
+    <view class="poster-card ds-card" @tap.stop>
+      <view class="close-icon-container ds-touchable ds-touch-target ds-flex-center" @tap="handleClose">
+        <image src="https://img.icons8.com/ios-glyphs/30/ffffff/multiply.png" style="width: 16px; height: 16px;">
+        </image>
       </view>
-      
+
       <view class="poster-bg"></view>
-      
-      <view class="poster-content">
-        <view class="poster-header">
+
+      <view class="poster-content ds-flex-col ds-flex-center">
+        <view class="poster-header ds-flex ds-gap-xs">
           <image src="https://img.icons8.com/ios-filled/50/ffffff/open-book.png" class="poster-logo"></image>
-          <text class="poster-app-name">Exam-Master</text>
+          <text class="poster-app-name ds-font-semibold">Exam-Master</text>
         </view>
-        
-        <text class="poster-title">考研备考神器</text>
-        <text class="poster-subtitle">AI助力，一战成硕！</text>
-        
+
+        <text class="poster-title ds-text-display ds-font-bold">考研备考神器</text>
+        <text class="poster-subtitle ds-text-sm">AI助力，一战成硕！</text>
+
         <view class="white-ticket">
           <view class="ticket-dashed-box">
             <text class="ticket-code">EXAM2026</text>
             <text class="ticket-label">我的邀请码</text>
           </view>
         </view>
-        
+
         <view class="qr-section">
           <view class="qr-circle">
             <image src="https://img.icons8.com/ios/100/000000/qr-code--v1.png" class="qr-img"></image>
             <view class="qr-badge">
-              <image src="https://img.icons8.com/ios-filled/50/07C160/open-book.png" style="width:16px;height:16px;"></image>
+              <image src="https://img.icons8.com/ios-filled/50/07C160/open-book.png" style="width:16px;height:16px;">
+              </image>
             </view>
           </view>
           <text class="scan-text">扫码一起上岸</text>
         </view>
       </view>
     </view>
-    
+
     <view class="bottom-actions">
       <view class="action-btn save-btn" @tap="handleSave">
         <text>保存到相册</text>
@@ -50,6 +53,10 @@
 // defineProps 和 defineEmits 是编译器宏，无需手动导入
 const props = defineProps({
   visible: {
+    type: Boolean,
+    default: false
+  },
+  isDark: {
     type: Boolean,
     default: false
   }
@@ -112,7 +119,7 @@ const handleShare = () => {
   top: 16px;
   right: 16px;
   z-index: 20;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 50%;
   padding: 4px;
   width: 24px;
@@ -121,10 +128,10 @@ const handleShare = () => {
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
-  
+
   &:active {
     opacity: 0.7;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -182,7 +189,7 @@ const handleShare = () => {
 
 .poster-subtitle {
   font-size: 14px;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 30px;
   -webkit-font-smoothing: antialiased;
 }
@@ -194,7 +201,7 @@ const handleShare = () => {
   border-radius: 12px;
   padding: 10px 16px;
   margin-bottom: 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
 }
 
@@ -258,7 +265,7 @@ const handleShare = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .scan-text {
@@ -287,7 +294,7 @@ const handleShare = () => {
   font-weight: 600;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
-  
+
   &:active {
     opacity: 0.85;
     transform: scale(0.98);
@@ -300,7 +307,58 @@ const handleShare = () => {
 }
 
 .share-btn {
-  background-color: rgba(255,255,255,0.9);
+  background-color: rgba(255, 255, 255, 0.9);
   color: #07C160;
+}
+
+/* VISUAL: Dark mode styles */
+.poster-mask.dark-mode {
+  background: rgba(0, 0, 0, 0.9);
+
+  .poster-card {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+
+  /* 深色模式下渐变背景调整为更深的色调 */
+  .poster-bg {
+    background: linear-gradient(135deg, #05a050 0%, #003d99 50%, #e6a800 100%);
+  }
+
+  /* 票券在深色模式下使用浅色 */
+  .white-ticket {
+    background-color: #f5f5f5;
+  }
+
+  .ticket-dashed-box {
+    border-color: #9FE870;
+  }
+
+  .ticket-code {
+    color: #9FE870;
+  }
+
+  /* 二维码圆圈保持白色 */
+  .qr-circle {
+    background-color: #f5f5f5;
+  }
+
+  /* 底部按钮 */
+  .save-btn {
+    background-color: #9FE870;
+    color: #1c1c1e;
+
+    &:active {
+      background-color: #8DD760;
+    }
+  }
+
+  .share-btn {
+    background-color: rgba(245, 245, 245, 0.95);
+    color: #05a050;
+
+    &:active {
+      background-color: rgba(230, 230, 230, 0.95);
+    }
+  }
 }
 </style>

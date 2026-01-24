@@ -1,36 +1,27 @@
 <template>
-  <view class="user-profile-card" @click="handleCardClick">
-    <view class="profile-content">
+  <view class="user-profile-card ds-card ds-touchable" :class="{ 'dark-mode': isDark }" @click="handleCardClick">
+    <view class="profile-content ds-flex ds-flex-between">
       <!-- 左侧：用户头像 -->
-      <image 
-        v-if="isLogin && userInfo?.avatarUrl"
-        class="avatar" 
-        :src="userInfo.avatarUrl" 
-        mode="aspectFill"
-      />
+      <image v-if="isLogin && userInfo?.avatarUrl" class="avatar" :src="userInfo.avatarUrl" mode="aspectFill" />
       <view v-else class="avatar avatar-placeholder"></view>
-      
+
       <!-- 中间：用户信息 -->
       <view class="info-section">
-        <view class="nickname">{{ isLogin ? userInfo?.nickName || '考研同学' : '点击登录' }}</view>
-        <view v-if="isLogin" class="info-row">
-          <text class="info-text">报考院校：清华大学</text>
+        <view class="nickname ds-text-xl ds-font-bold">{{ isLogin ? userInfo?.nickName || '考研同学' : '点击登录' }}</view>
+        <view v-if="isLogin" class="info-row ds-flex ds-gap-xs">
+          <text class="info-text ds-text-sm">报考院校：清华大学</text>
           <text class="edit-icon">✏️</text>
         </view>
-        <view v-if="isLogin" class="info-row">
-          <text class="info-text">报考专业：计算机科学与技术</text>
+        <view v-if="isLogin" class="info-row ds-flex ds-gap-xs">
+          <text class="info-text ds-text-sm">报考专业：计算机科学与技术</text>
           <text class="edit-icon">✏️</text>
         </view>
       </view>
-      
+
       <!-- 右侧：查看计划按钮 -->
-      <view v-if="isLogin" class="plan-btn">
-        <image
-          class="calendar-icon"
-          src="https://img.icons8.com/color/96/calendar--v1.png"
-          mode="aspectFit"
-        />
-        <text class="plan-text">查看计划</text>
+      <view v-if="isLogin" class="plan-btn ds-flex ds-flex-col ds-touch-target">
+        <image class="calendar-icon" src="https://img.icons8.com/color/96/calendar--v1.png" mode="aspectFit" />
+        <text class="plan-text ds-text-xs ds-font-medium">查看计划</text>
       </view>
     </view>
   </view>
@@ -39,6 +30,14 @@
 <script setup>
 import { computed } from 'vue'
 import { useUserStore } from '../../stores/index.js'
+
+// Props
+defineProps({
+  isDark: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const userStore = useUserStore()
 
@@ -60,17 +59,20 @@ const handleCardClick = async () => {
 
 <style lang="scss" scoped>
 .user-profile-card {
-  background: #FFFFFF;
+  background: var(--ds-bg-primary);
   border-radius: 24rpx;
   padding: 32rpx;
   margin: 24rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+  transition: all 150ms ease-out;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .profile-content {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .avatar {
@@ -92,32 +94,25 @@ const handleCardClick = async () => {
 }
 
 .nickname {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333333;
+  color: var(--ds-text-primary);
   margin-bottom: 12rpx;
 }
 
 .info-row {
-  display: flex;
   align-items: center;
   margin-top: 8rpx;
 }
 
 .info-text {
-  font-size: 26rpx;
-  color: #666666;
-  margin-right: 8rpx;
+  color: var(--ds-text-secondary);
 }
 
 .edit-icon {
   font-size: 24rpx;
-  color: #52C41A;
+  color: var(--ds-success);
 }
 
 .plan-btn {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -130,8 +125,17 @@ const handleCardClick = async () => {
 }
 
 .plan-text {
-  font-size: 22rpx;
-  color: #52C41A;
-  font-weight: 500;
+  color: var(--ds-success);
+}
+
+/* 深色模式 */
+.dark-mode {
+  .user-profile-card {
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+  }
+
+  .avatar-placeholder {
+    background: #3a3a3c;
+  }
 }
 </style>

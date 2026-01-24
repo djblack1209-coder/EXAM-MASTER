@@ -1,117 +1,103 @@
 <template>
   <view class="settings-container">
-    <view class="nav-bar">
-      <text class="nav-title">设置</text>
+    <!-- 导航栏 - 添加设计系统工具类 -->
+    <view class="nav-bar ds-flex ds-flex-center">
+      <text class="nav-title ds-text-lg ds-font-semibold">设置</text>
     </view>
 
+    <!-- 用户卡片 - 优化布局 -->
     <view class="card user-card">
-      <view class="user-row">
-        <image 
-          src="https://img.icons8.com/color/96/user-male-circle--v1.png" 
-          class="user-avatar"
-          mode="aspectFit"
-        ></image>
+      <view class="user-row ds-flex">
+        <image src="https://img.icons8.com/color/96/user-male-circle--v1.png" class="user-avatar ds-rounded-full"
+          mode="aspectFit"></image>
         <view class="user-info">
-          <text class="user-name">{{ userInfo.name }}</text>
-          <view class="info-tag-row" @tap="handleEditSchool">
-            <text class="info-label">报考院校: {{ userInfo.school || '未设置' }}</text>
+          <text class="user-name ds-text-lg ds-font-bold">{{ userInfo.name }}</text>
+          <view class="info-tag-row ds-flex ds-touchable" @tap="handleEditSchool">
+            <text class="info-label ds-text-xs">报考院校: {{ userInfo.school || '未设置' }}</text>
             <image src="https://img.icons8.com/ios-glyphs/30/07C160/edit--v1.png" class="edit-icon"></image>
           </view>
-          <view class="info-tag-row" @tap="handleEditMajor">
-            <text class="info-label">报考专业: {{ userInfo.major || '未设置' }}</text>
+          <view class="info-tag-row ds-flex ds-touchable" @tap="handleEditMajor">
+            <text class="info-label ds-text-xs">报考专业: {{ userInfo.major || '未设置' }}</text>
             <image src="https://img.icons8.com/ios-glyphs/30/07C160/edit--v1.png" class="edit-icon"></image>
           </view>
         </view>
-        <view class="plan-btn" @tap="handleViewPlan">
+        <view class="plan-btn ds-flex-col ds-flex-center ds-touchable" @tap="handleViewPlan">
           <image src="https://img.icons8.com/fluency/48/calendar.png" class="plan-icon"></image>
-          <text class="plan-text">查看计划</text>
+          <text class="plan-text ds-text-xs">查看计划</text>
         </view>
       </view>
     </view>
 
-    <view class="card progress-card" @tap="handleViewProgress">
-      <view class="progress-circle">
-        <view class="inner-circle">
-          <text class="progress-num">{{ progressValue }}<text class="percent">%</text></text>
-          <text class="progress-desc">总计划完成度</text>
+    <!-- 进度卡片 - 优化样式 -->
+    <view class="card progress-card ds-flex-col ds-flex-center ds-touchable" @tap="handleViewProgress">
+      <view class="progress-circle ds-flex-center">
+        <view class="inner-circle ds-flex-col ds-flex-center">
+          <text class="progress-num ds-font-bold">{{ progressValue }}<text class="percent">%</text></text>
+          <text class="progress-desc ds-text-xs">总计划完成度</text>
         </view>
       </view>
-      <text class="click-hint">点击查看详细进度</text>
+      <text class="click-hint ds-text-xs ds-text-secondary">点击查看详细进度</text>
     </view>
 
-    <view class="section-header">工具功能</view>
-    <view class="tools-row">
-      <view class="tool-item" @tap="handleTool('essay')">
+    <!-- 工具功能 -->
+    <view class="section-header ds-text-sm ds-font-semibold">工具功能</view>
+    <view class="tools-row ds-flex ds-gap-xs">
+      <view class="tool-item ds-flex ds-touchable" @tap="handleTool('essay')">
         <image src="https://img.icons8.com/fluency/96/book.png" class="tool-icon"></image>
-        <text class="tool-name">作文功能句</text>
+        <text class="tool-name ds-text-sm ds-font-medium">作文功能句</text>
       </view>
-      <view class="tool-item" @tap="handleTool('calculator')">
+      <view class="tool-item ds-flex ds-touchable" @tap="handleTool('calculator')">
         <image src="https://img.icons8.com/fluency/96/calculator.png" class="tool-icon"></image>
-        <text class="tool-name">高等数学计算器</text>
+        <text class="tool-name ds-text-sm ds-font-medium">高等数学计算器</text>
       </view>
     </view>
-    
-    <view class="tools-row">
-      <view class="tool-item" @tap="navigateToFriends">
+
+    <view class="tools-row ds-flex ds-gap-xs">
+      <view class="tool-item ds-flex ds-touchable" @tap="navigateToFriends">
         <image src="https://img.icons8.com/fluency/96/conference-call.png" class="tool-icon"></image>
-        <text class="tool-name">我的好友</text>
+        <text class="tool-name ds-text-sm ds-font-medium">我的好友</text>
       </view>
-      <view class="tool-item" @tap="handleTool('settings')">
+      <view class="tool-item ds-flex ds-touchable" @tap="handleTool('settings')">
         <image src="https://img.icons8.com/fluency/96/settings.png" class="tool-icon"></image>
-        <text class="tool-name">设置</text>
+        <text class="tool-name ds-text-sm ds-font-medium">设置</text>
       </view>
     </view>
 
-    <view class="friend-header-row">
-      <text class="section-header">我的好友们</text>
-      <view class="invite-btn" @tap="showInviteModal = true">
-        <text>邀请好友</text>
+    <!-- 好友列表头部 -->
+    <view class="friend-header-row ds-flex ds-flex-between">
+      <text class="section-header ds-text-sm ds-font-semibold">我的好友们</text>
+      <view class="invite-btn ds-touchable" @tap="showInviteModal = true">
+        <text class="ds-text-xs ds-font-medium">邀请好友</text>
       </view>
     </view>
 
+    <!-- 好友列表 -->
     <view class="friend-list">
-      <view 
-        v-for="(friend, index) in friendList" 
-        :key="index"
-        class="card friend-item"
-        @tap="navigateToChat(friend.name)"
-      >
-        <image :src="friend.avatar" class="friend-avatar" mode="aspectFill"></image>
+      <view v-for="(friend, index) in friendList" :key="index" class="card friend-item ds-flex ds-touchable"
+        @tap="navigateToChat(friend.name)">
+        <image :src="friend.avatar" class="friend-avatar ds-rounded-full" mode="aspectFill"></image>
         <view class="friend-info">
-          <view class="name-row">
-            <text class="friend-name">{{ friend.name }}</text>
-            <view class="status-dot"></view>
+          <view class="name-row ds-flex">
+            <text class="friend-name ds-text-sm ds-font-semibold">{{ friend.name }}</text>
+            <view class="status-dot ds-rounded-full"></view>
           </view>
-          <text class="friend-detail">院校: {{ friend.school }}</text>
-          <text class="friend-detail">专业: {{ friend.major }}</text>
+          <text class="friend-detail ds-text-xs">院校: {{ friend.school }}</text>
+          <text class="friend-detail ds-text-xs">专业: {{ friend.major }}</text>
         </view>
-        <view class="friend-actions">
-          <image 
-            src="https://img.icons8.com/fluency/48/chat.png" 
-            class="action-icon"
-            @tap.stop="navigateToChat(friend.name)"
-          ></image>
-          <image 
-            src="https://img.icons8.com/fluency/48/rocket.png" 
-            class="action-icon"
-            @tap.stop="handleEncourage(friend)"
-          ></image>
+        <view class="friend-actions ds-flex ds-gap-xs">
+          <image src="https://img.icons8.com/fluency/48/chat.png" class="action-icon ds-touchable"
+            @tap.stop="navigateToChat(friend.name)"></image>
+          <image src="https://img.icons8.com/fluency/48/rocket.png" class="action-icon ds-touchable"
+            @tap.stop="handleEncourage(friend)"></image>
         </view>
       </view>
     </view>
 
     <view style="height: 100px;"></view>
 
-    <InviteModal 
-      v-model:visible="showInviteModal"
-      @close="showInviteModal = false"
-      @openPoster="handleOpenPoster"
-    />
-    
-    <PosterModal 
-      v-model:visible="showPosterModal"
-      @close="showPosterModal = false"
-    />
+    <InviteModal v-model:visible="showInviteModal" @close="showInviteModal = false" @openPoster="handleOpenPoster" />
+
+    <PosterModal v-model:visible="showPosterModal" @close="showPosterModal = false" />
 
     <!-- 底部导航栏：统一使用 CustomTabbar -->
     <custom-tabbar :activeIndex="3" :isDark="false"></custom-tabbar>
@@ -127,9 +113,9 @@ import PosterModal from '../../components/PosterModal.vue'
 
 // 隐藏系统原生 TabBar
 onShow(() => {
-	uni.hideTabBar({
-		animation: false
-	});
+  uni.hideTabBar({
+    animation: false
+  });
 })
 
 // 用户信息
@@ -267,7 +253,8 @@ const handleOpenPoster = () => {
   min-height: 100vh;
   background-color: #F8F9FB;
   padding: 0 16px;
-  padding-bottom: 80px; /* 为底部导航栏留出空间 */
+  padding-bottom: 80px;
+  /* 为底部导航栏留出空间 */
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
@@ -275,7 +262,8 @@ const handleOpenPoster = () => {
 /* 1. 导航栏 */
 .nav-bar {
   height: 44px;
-  margin-top: 44px; /* 避开刘海屏 */
+  margin-top: 44px;
+  /* 避开刘海屏 */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -293,11 +281,11 @@ const handleOpenPoster = () => {
 .card {
   background-color: white;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
   margin-bottom: 16px;
   padding: 20px;
   -webkit-tap-highlight-color: transparent;
-  
+
   &:active {
     opacity: 0.9;
     transform: scale(0.98);
@@ -337,7 +325,7 @@ const handleOpenPoster = () => {
   align-items: center;
   margin-bottom: 4px;
   -webkit-tap-highlight-color: transparent;
-  
+
   &:active {
     opacity: 0.7;
   }
@@ -363,7 +351,7 @@ const handleOpenPoster = () => {
   margin-left: 8px;
   -webkit-tap-highlight-color: transparent;
   flex-shrink: 0;
-  
+
   &:active {
     opacity: 0.7;
     transform: scale(0.95);
@@ -464,9 +452,9 @@ const handleOpenPoster = () => {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
   -webkit-tap-highlight-color: transparent;
-  
+
   &:active {
     opacity: 0.8;
     transform: scale(0.95);
@@ -503,7 +491,7 @@ const handleOpenPoster = () => {
   border-radius: 14px;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
-  
+
   &:active {
     opacity: 0.85;
     transform: scale(0.95);
@@ -570,7 +558,7 @@ const handleOpenPoster = () => {
   width: 28px;
   height: 28px;
   -webkit-tap-highlight-color: transparent;
-  
+
   &:active {
     opacity: 0.7;
     transform: scale(0.9);
@@ -580,50 +568,52 @@ const handleOpenPoster = () => {
 /* 深色模式适配 */
 .settings-container.dark-mode {
   background-color: #163300;
-  
+
   .nav-title {
     color: #ffffff;
   }
-  
+
   .card {
     background-color: #1e3a0f;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   }
-  
+
   .user-name {
     color: #ffffff;
   }
-  
+
   .info-label {
     color: #b0b0b0;
   }
-  
+
   .plan-text {
     color: #ffffff;
   }
-  
+
   .section-header {
     color: #ffffff;
   }
-  
+
   .tool-item {
     background-color: #1e3a0f;
   }
-  
+
   .tool-name {
     color: #ffffff;
   }
-  
+
   .friend-name {
     color: #ffffff;
   }
-  
+
   .progress-num {
-    color: #333; /* 保持进度条内部文字颜色 */
+    color: #333;
+    /* 保持进度条内部文字颜色 */
   }
-  
+
   .inner-circle {
-    background-color: #ffffff; /* 保持进度条内部背景 */
+    background-color: #ffffff;
+    /* 保持进度条内部背景 */
   }
 }
 </style>

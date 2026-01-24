@@ -3,29 +3,35 @@
  * 统一处理请求拦截、响应拦截、错误处理等
  */
 
-import { API_CONFIG } from '../../common/config.js'
+import config from '../config/index.js'
 import { useUserStore } from '../stores/index.js'
 
 /**
  * 请求拦截器
  */
-const requestInterceptor = (config) => {
+const requestInterceptor = (requestConfig) => {
   // 添加 token
   const userStore = useUserStore()
   if (userStore.token) {
-    config.header = {
-      ...config.header,
+    requestConfig.header = {
+      ...requestConfig.header,
       'Authorization': `Bearer ${userStore.token}`
     }
   }
 
   // 添加通用请求头
-  config.header = {
-    ...config.header,
+  requestConfig.header = {
+    ...requestConfig.header,
     'Content-Type': 'application/json'
   }
 
-  return config
+  // 调试日志
+  if (config.debug.enabled) {
+    console.log('🚀 [Request]', requestConfig.method || 'GET', requestConfig.url)
+    console.log('📦 [Request Data]', requestConfig.data)
+  }
+
+  return requestConfig
 }
 
 /**
@@ -53,15 +59,15 @@ const responseInterceptor = (response) => {
       title: '请先登录',
       icon: 'none'
     })
-    
+
     const userStore = useUserStore()
     userStore.logout()
-    
+
     // 跳转到首页（应用使用静默登录，无需登录页面）
     uni.reLaunch({
       url: '/src/pages/index/index'
     })
-    
+
     return Promise.reject({ message: '未授权' })
   } else {
     // 其他 HTTP 错误
@@ -78,12 +84,12 @@ const responseInterceptor = (response) => {
  */
 const errorHandler = (error) => {
   console.error('请求错误：', error)
-  
+
   uni.showToast({
     title: error.message || '网络请求失败',
     icon: 'none'
   })
-  
+
   return Promise.reject(error)
 }
 
@@ -96,21 +102,21 @@ class Http {
    */
   request(options) {
     // 合并配置
-    const config = {
+    const requestConfig = {
       url: options.url,
       method: options.method || 'GET',
       data: options.data || {},
       header: options.header || {},
-      timeout: options.timeout || API_CONFIG.timeout
+      timeout: options.timeout || config.api.timeout
     }
 
     // 如果 URL 不是完整地址，则添加 baseURL
-    if (!config.url.startsWith('http')) {
-      config.url = API_CONFIG.baseURL + config.url
+    if (!requestConfig.url.startsWith('http')) {
+      requestConfig.url = config.api.baseUrl + requestConfig.url
     }
 
     // 请求拦截
-    const interceptedConfig = requestInterceptor(config)
+    const interceptedConfig = requestInterceptor(requestConfig)
 
     // 返回 Promise
     return new Promise((resolve, reject) => {
@@ -181,10 +187,10 @@ class Http {
    */
   upload(url, filePath, formData = {}, options = {}) {
     const userStore = useUserStore()
-    
+
     return new Promise((resolve, reject) => {
       uni.uploadFile({
-        url: url.startsWith('http') ? url : API_CONFIG.baseURL + url,
+        url: url.startsWith('http') ? url : config.api.baseUrl + url,
         filePath,
         name: 'file',
         formData,

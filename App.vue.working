@@ -1,0 +1,20 @@
+<template>
+    <view class="app">
+        <text>Hello UniApp H5!</text>
+    </view>
+</template>
+
+<script>
+export default {
+    onLaunch() {
+        console.log('[App] Launch')
+    }
+}
+</script>
+
+<style>
+.app {
+    padding: 20px;
+    font-size: 16px;
+}
+</style>

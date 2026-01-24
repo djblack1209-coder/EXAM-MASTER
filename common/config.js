@@ -35,10 +35,9 @@ export const getApiKey = () => {
 
 // API基础配置
 export const API_CONFIG = {
-  // Sealos 后端服务地址（已在 lafService.js 中配置）
-  // 注意：前端环境不支持 process.env，使用编译时替换或直接写死
-  baseURL: 'https://nf98ia8qnt.sealosbja.site', // Sealos 后端服务
-  timeout: 30000
+  // ✅ 修复：移除 import.meta.env 依赖，直接使用默认值
+  baseURL: 'https://nf98ia8qnt.sealosbja.site',
+  timeout: 100000
 }
 
 // 应用配置
@@ -67,8 +66,8 @@ export const ROUTE_CONFIG = {
 // ⚠️ 注意：这是前端配置文件，只能配置 AppID
 // WX_SECRET_PLACEHOLDER
 export const WX_CONFIG = {
-  // AppID 直接硬编码（前端环境不支持 process.env）
-  appId: 'wx5bee888cf32215df' // 你的小程序 AppID
+  // ✅ 修复：移除 import.meta.env 依赖，直接使用默认值
+  appId: 'wx5bee888cf32215df'
   // ⚠️ 前端不包含 Secret，Secret 仅在 Sealos 后端通过环境变量读取
 }
 

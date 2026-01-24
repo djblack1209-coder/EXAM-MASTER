@@ -1,32 +1,26 @@
+<!-- REFACTOR: Modern home navbar with design system utilities -->
 <template>
-  <view class="home-navbar" :style="navbarStyle">
+  <view class="home-navbar ds-navbar" :class="{ 'dark-mode': isDark }" :style="navbarStyle">
     <!-- 状态栏占位 -->
     <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    
+
     <!-- 导航栏内容区 -->
-    <view class="navbar-content" :style="contentStyle">
+    <view class="navbar-content ds-flex ds-flex-between" :style="contentStyle">
       <!-- 左侧：头像 + 欢迎语 -->
-      <view class="navbar-left">
-        <image 
-          class="user-avatar" 
-          :src="userAvatar" 
-          mode="aspectFill"
-        ></image>
-        <text class="welcome-text">{{ welcomeText }}</text>
+      <view class="navbar-left ds-flex ds-gap-sm">
+        <image class="user-avatar ds-avatar" :src="userAvatar" mode="aspectFill"></image>
+        <text class="welcome-text ds-text-lg ds-font-semibold ds-text-primary">{{ welcomeText }}</text>
       </view>
-      
+
       <!-- 右侧：功能按钮 (避开胶囊) -->
-      <view 
-        class="navbar-right" 
-        :style="rightButtonStyle"
-      >
-        <view class="icon-btn" @tap="onHelp">
+      <view class="navbar-right ds-flex ds-gap-xs" :style="rightButtonStyle">
+        <view class="icon-btn ds-touchable ds-touch-target ds-flex-center" @tap="onHelp">
           <text class="icon-text">?</text>
         </view>
-        <view class="icon-btn" @tap="onMoreMenu">
+        <view class="icon-btn ds-touchable ds-touch-target ds-flex-center" @tap="onMoreMenu">
           <text class="icon-text">⋯</text>
         </view>
-        <view class="icon-btn" @tap="onCamera">
+        <view class="icon-btn ds-touchable ds-touch-target ds-flex-center" @tap="onCamera">
           <text class="icon-text">○</text>
         </view>
       </view>
@@ -47,6 +41,10 @@ const props = defineProps({
   userName: {
     type: String,
     default: 'Alex'
+  },
+  isDark: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -91,7 +89,7 @@ const rightButtonStyle = computed(() => {
   const gap = menuButton.value.top - statusBarHeight.value
   // 右侧安全距离：胶囊宽度 + 额外间距（确保不被遮挡）
   const rightSafeMargin = 12
-  
+
   return {
     top: (gap + 2) + 'px',
     right: (menuButton.value.width + rightSafeMargin) + 'px'
@@ -140,18 +138,18 @@ const onCamera = () => {
   left: 0;
   right: 0;
   z-index: 999;
-  /* 柔和渐变背景 - 蓝紫渐变 */
-  background: linear-gradient(to right, #EFF6FF 0%, #FAF5FF 100%);
-  /* 增强底部阴影效果 */
-  box-shadow: 0 1rpx 6rpx rgba(0, 0, 0, 0.08);
+  /* 透明背景 */
+  background: transparent;
+  /* 移除阴影 */
+  box-shadow: none;
   /* 性能优化 */
   transform: translateZ(0);
   will-change: transform;
-  
+
   .status-bar {
     width: 100%;
   }
-  
+
   .navbar-content {
     position: relative;
     width: 100%;
@@ -161,14 +159,14 @@ const onCamera = () => {
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
-    
+
     .navbar-left {
       display: flex;
       align-items: center;
       flex: 1;
       min-width: 0; // 防止文字溢出
       gap: 20rpx;
-      
+
       .user-avatar {
         width: 80rpx;
         height: 80rpx;
@@ -180,7 +178,7 @@ const onCamera = () => {
         transform: translateZ(0);
         backface-visibility: hidden;
       }
-      
+
       .welcome-text {
         font-size: 34rpx;
         font-weight: 600;
@@ -192,13 +190,13 @@ const onCamera = () => {
         -webkit-font-smoothing: antialiased;
       }
     }
-    
+
     .navbar-right {
       position: absolute;
       display: flex;
       align-items: center;
       gap: 20rpx;
-      
+
       .icon-btn {
         width: 68rpx;
         height: 68rpx;
@@ -212,17 +210,49 @@ const onCamera = () => {
         transform: translateZ(0);
         will-change: transform, background-color;
         -webkit-tap-highlight-color: transparent;
-        
+
         &:active {
           background: rgba(16, 185, 129, 0.2);
           transform: scale(0.92) translateZ(0);
         }
-        
+
         .icon-text {
           font-size: 40rpx;
           font-weight: 600;
           color: #4B5563;
         }
+      }
+    }
+  }
+}
+
+/* VISUAL: Dark mode styles */
+.home-navbar.dark-mode {
+  /* 深色模式透明背景 */
+  background: transparent;
+  box-shadow: none;
+
+  .navbar-left {
+    .user-avatar {
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.3);
+    }
+
+    .welcome-text {
+      color: var(--ds-color-text-primary, #FFFFFF);
+    }
+  }
+
+  .navbar-right {
+    .icon-btn {
+      background: rgba(159, 232, 112, 0.15);
+
+      &:active {
+        background: rgba(159, 232, 112, 0.25);
+      }
+
+      .icon-text {
+        color: #E5E7EB;
       }
     }
   }

@@ -1,16 +1,17 @@
+<!-- REFACTOR: Modern invite modal with design system utilities -->
 <template>
-  <view class="modal-mask" @click.self="$emit('close')">
-    <view class="modal-container" @tap.stop>
-      <view class="close-btn" @click="$emit('close')">
+  <view class="modal-mask" :class="{ 'dark-mode': isDark }" @click.self="$emit('close')">
+    <view class="modal-container ds-card" @tap.stop>
+      <view class="close-btn ds-touchable ds-touch-target ds-flex-center" @click="$emit('close')">
         <text class="close-icon-text">✕</text>
       </view>
 
-      <view class="header-brand">
+      <view class="header-brand ds-flex-col ds-flex-center ds-gap-xs">
         <text class="brand-logo-text">📚</text>
-        <text class="brand-name">Exam-Master</text>
+        <text class="brand-name ds-text-lg ds-font-bold">Exam-Master</text>
       </view>
-      <text class="title">邀请好友，研途有你</text>
-      <text class="subtitle">送TA一份备考神器，并肩作战，一战成硕！</text>
+      <text class="title ds-text-xl ds-font-bold ds-text-primary">邀请好友，研途有你</text>
+      <text class="subtitle ds-text-sm ds-text-secondary">送TA一份备考神器，并肩作战，一战成硕！</text>
 
       <view class="ticket-container">
         <view class="ticket-inner">
@@ -38,7 +39,7 @@
         <text class="wechat-icon-text">💬</text>
         <text class="btn-text">分享给微信好友</text>
       </view>
-      
+
       <view class="poster-btn" @click="openPoster">
         <text class="poster-icon-text">🎨</text>
         <text class="btn-text">生成分享海报</text>
@@ -53,6 +54,10 @@ export default {
     inviteCode: {
       type: String,
       default: 'EXAM8888'
+    },
+    isDark: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['close', 'openPoster'],
@@ -143,7 +148,7 @@ export default {
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
-  
+
   &:active {
     opacity: 0.6;
   }
@@ -192,12 +197,13 @@ export default {
   width: 100%;
   background-color: #07C160;
   border-radius: 12px;
-  padding: 8px; /* Outer spacing for dashed border */
+  padding: 8px;
+  /* Outer spacing for dashed border */
   margin-bottom: 20px;
 }
 
 .ticket-inner {
-  border: 2px dashed rgba(255,255,255,0.6);
+  border: 2px dashed rgba(255, 255, 255, 0.6);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -216,7 +222,7 @@ export default {
 
 .code-desc {
   font-size: 12px;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
   margin-top: 4px;
   -webkit-font-smoothing: antialiased;
 }
@@ -287,7 +293,7 @@ export default {
   font-weight: 500;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
-  
+
   &:active {
     opacity: 0.85;
     background-color: #05a050;
@@ -305,7 +311,7 @@ export default {
   margin-bottom: 12px;
   box-shadow: 0 4px 12px rgba(7, 193, 96, 0.3);
   -webkit-tap-highlight-color: transparent;
-  
+
   &:active {
     opacity: 0.85;
     transform: scale(0.98);
@@ -324,7 +330,7 @@ export default {
   margin-bottom: 16px;
   box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
   -webkit-tap-highlight-color: transparent;
-  
+
   &:active {
     opacity: 0.9;
     transform: scale(0.98);
@@ -375,5 +381,92 @@ export default {
   color: #999;
   margin-top: 4px;
   -webkit-font-smoothing: antialiased;
+}
+
+/* VISUAL: Dark mode styles */
+.modal-mask.dark-mode {
+  background: rgba(0, 0, 0, 0.8);
+
+  .modal-container {
+    background: var(--ds-color-surface-secondary, #1c1c1e);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  .close-icon-text {
+    color: #8E8E93;
+  }
+
+  .brand-name {
+    color: #9FE870;
+    /* Wise 绿色深色模式 */
+  }
+
+  .title {
+    color: var(--ds-color-text-primary, #FFFFFF);
+  }
+
+  .subtitle {
+    color: var(--ds-color-text-secondary, #8E8E93);
+  }
+
+  .ticket-container {
+    background-color: #9FE870;
+  }
+
+  .ticket-inner {
+    border-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .code-label {
+    color: #1c1c1e;
+  }
+
+  .code-desc {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .link-box {
+    background-color: #2c2c2e;
+  }
+
+  .link-text {
+    color: #8E8E93;
+  }
+
+  .copy-btn {
+    background-color: #9FE870;
+    color: #1c1c1e;
+
+    &:active {
+      background-color: #8DD760;
+    }
+  }
+
+  .qr-tip {
+    color: #8E8E93;
+  }
+
+  .wechat-btn {
+    background-color: #9FE870;
+    box-shadow: 0 4px 12px rgba(159, 232, 112, 0.3);
+
+    .btn-text {
+      color: #1c1c1e;
+    }
+
+    &:active {
+      background-color: #8DD760;
+    }
+  }
+
+  .poster-btn {
+    background-color: #FFA500;
+    border-color: #FF8C00;
+    box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
+
+    &:active {
+      background-color: #FF8C00;
+    }
+  }
 }
 </style>

@@ -11,33 +11,33 @@ hookSetData()
 export default {
 	onLaunch() {
 		console.log('App Launch')
-		
+
 		// 挂载 QA 工具到全局
 		if (typeof getApp === 'function') {
 			const app = getApp()
 			if (app) {
 				app.qa = qa
-				
+
 				// 注意：Console 日志复制工具已移除，请使用 Raycast 或其他工具
 			}
 		}
-		
+
 		// 初始化应用配置
 		// 注意：已移除原生tabBar配置，使用自定义BottomNavbar组件
 		// 注意：hideTabBar 需要在页面 onShow 中调用，不能在这里调用（会报错）
-		
+
 		// 读取保存的主题模式
 		const savedTheme = uni.getStorageSync('theme_mode') || 'light'
 		this.globalData.isDarkMode = savedTheme === 'dark'
 		this.applyTheme(savedTheme)
-		
+
 		// 全局监听主题切换事件
 		uni.$on('updateTheme', (mode) => {
 			const isDark = mode === 'dark'
 			this.globalData.isDarkMode = isDark
 			this.applyTheme(mode)
 		})
-		
+
 		// 执行静默登录
 		this.performSilentLogin()
 	},
@@ -59,7 +59,7 @@ export default {
 			try {
 				const userStore = useUserStore()
 				const result = await userStore.silentLogin()
-				
+
 				if (result.success) {
 					console.log('[App] 静默登录成功，用户ID:', result.userInfo?._id || result.userInfo?.id)
 				} else {
@@ -73,10 +73,10 @@ export default {
 		applyTheme(mode) {
 			// 保存主题模式
 			uni.setStorageSync('theme_mode', mode)
-			
+
 			// 触发全局主题更新事件，让所有页面响应
 			uni.$emit('themeUpdate', mode)
-			
+
 			// 更新状态栏颜色
 			this.updateNavigationBarColor(mode)
 		},
@@ -110,28 +110,30 @@ export default {
    ============================================ */
 page {
 	height: 100%;
-	
+
 	/* 基础颜色变量 - 浅色模式 (Wise 风格) */
 	--bg-main: #FFFFFF;
 	--bg-card: #FFFFFF;
 	--border-card: #EFEFEF;
-	--text-main: #163300; /* Wise Dark Green */
+	--text-main: #163300;
+	/* Wise Dark Green */
 	--text-title: #163300;
 	--text-body: #454545;
 	--text-light: #767676;
-	
+
 	/* 品牌色 */
-	--accent-green: #9FE870; /* Wise Lime */
+	--accent-green: #9FE870;
+	/* Wise Lime */
 	--accent-green-light: #F2F9EE;
 	--accent-blue: #00B9FF;
-	
+
 	/* 输入框 */
 	--input-bg: #F2F2F2;
 	--input-border: #E0E0E0;
-	
+
 	/* TabBar 背景 */
 	--tab-bg: #FFFFFF;
-	
+
 	/* 默认背景色和文字色 */
 	background-color: var(--bg-main);
 	color: var(--text-body);
@@ -142,26 +144,28 @@ page {
    深色模式 CSS 变量覆盖 - 增强对比度
    ============================================ */
 .dark-mode {
-	--bg-main: #163300; /* Wise Dark Green Background */
+	--bg-main: #163300;
+	/* Wise Dark Green Background */
 	--bg-card: rgba(255, 255, 255, 0.05);
 	--border-card: rgba(255, 255, 255, 0.1);
-	--text-main: #FFFFFF; 
-	--text-title: #FFFFFF; 
-	--text-body: #E2E8F0; 
-	--text-light: #A0AEC0; 
-	
+	--text-main: #FFFFFF;
+	--text-title: #FFFFFF;
+	--text-body: #E2E8F0;
+	--text-light: #A0AEC0;
+
 	/* 品牌色 */
-	--accent-green: #9FE870; /* Wise Lime */
+	--accent-green: #9FE870;
+	/* Wise Lime */
 	--accent-green-light: rgba(159, 232, 112, 0.2);
 	--accent-blue: #00B9FF;
-	
+
 	/* 输入框 */
 	--input-bg: rgba(255, 255, 255, 0.1);
 	--input-border: rgba(255, 255, 255, 0.2);
-	
+
 	/* TabBar 背景 */
 	--tab-bg: #163300;
-	
+
 	/* 深色模式下的极光背景 */
 	.aurora-bg {
 		opacity: 0.2;

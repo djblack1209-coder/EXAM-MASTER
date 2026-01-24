@@ -1,20 +1,16 @@
 <template>
-  <view class="recent-tools">
+  <view class="recent-tools ds-card" :class="{ 'dark-mode': isDark }">
     <view class="section-header">
-      <text class="title">最近</text>
+      <text class="title ds-text-lg ds-font-semibold">最近</text>
     </view>
-    
-    <view class="tools-grid">
-      <view 
-        class="tool-item" 
-        v-for="tool in tools" 
-        :key="tool.id"
-        @tap="handleToolClick(tool)"
-      >
-        <view class="tool-icon" :style="{ background: tool.bgColor }">
+
+    <view class="tools-grid ds-flex">
+      <view class="tool-item ds-flex ds-flex-col ds-gap-sm ds-touchable" v-for="tool in tools" :key="tool.id"
+        @tap="handleToolClick(tool)">
+        <view class="tool-icon ds-touch-target" :style="{ background: tool.bgColor }">
           <image class="icon-image" :src="tool.iconUrl" mode="aspectFit" />
         </view>
-        <text class="tool-name">{{ tool.name }}</text>
+        <text class="tool-name ds-text-xs ds-text-secondary">{{ tool.name }}</text>
       </view>
     </view>
   </view>
@@ -22,6 +18,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+
+// Props
+defineProps({
+  isDark: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const tools = ref([
   {
@@ -54,18 +58,31 @@ const handleToolClick = (tool) => {
 
 onMounted(() => {
   // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/f5c451ee-9a20-46e5-a996-fe0cc48cf454',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'RecentTools.vue:mounted',message:'recent_tools_icons',data:{tools:tools.value.map(item=>({name:item.name,icon:item.icon}))},timestamp:Date.now(),sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H4'})}).catch(()=>{});
+  fetch('http://127.0.0.1:7242/ingest/f5c451ee-9a20-46e5-a996-fe0cc48cf454', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      location: 'RecentTools.vue:mounted',
+      message: 'recent_tools_icons',
+      data: { tools: tools.value.map((item) => ({ name: item.name, icon: item.icon })) },
+      timestamp: Date.now(),
+      sessionId: 'debug-session',
+      runId: 'pre-fix',
+      hypothesisId: 'H4'
+    })
+  }).catch(() => { })
   // #endregion
 })
 </script>
 
 <style lang="scss" scoped>
 .recent-tools {
-  background-color: #FFFFFF;
+  background-color: var(--ds-bg-primary);
   border-radius: 24rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.04);
+  transition: all 150ms ease-out;
 }
 
 .section-header {
@@ -73,22 +90,16 @@ onMounted(() => {
 }
 
 .title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333333;
+  color: var(--ds-text-primary);
 }
 
 .tools-grid {
-  display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
 .tool-item {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 15rpx;
 }
 
 .tool-icon {
@@ -100,8 +111,8 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.15);
-  transition: transform 0.3s ease;
-  
+  transition: all 150ms ease-out;
+
   &:active {
     transform: scale(0.95);
   }
@@ -113,7 +124,17 @@ onMounted(() => {
 }
 
 .tool-name {
-  font-size: 24rpx;
-  color: #666666;
+  color: var(--ds-text-secondary);
+}
+
+/* 深色模式 */
+.dark-mode {
+  .recent-tools {
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+  }
+
+  .tool-icon {
+    box-shadow: 0 8rpx 24rpx rgba(159, 232, 112, 0.15);
+  }
 }
 </style>

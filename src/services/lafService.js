@@ -2,11 +2,20 @@
  * Sealos 后端服务封装
  * 已从阿里云 uniCloud 迁移到 Sealos
  */
+// ✅ 使用环境变量配置 API 基础 URL
+// 修复：移除 import.meta.env 依赖，直接使用默认值
 const BASE_URL = 'https://nf98ia8qnt.sealosbja.site';
 
 // 【测试模式】云服务不可用模拟开关
 // 设置为 true 时，所有 mistake-manager 请求将直接失败，用于测试降级逻辑
 const SIMULATE_CLOUD_FAILURE = false; // 测试完成，已改回正常模式
+
+// 启动时打印配置信息
+console.log('[LafService] 🔧 配置信息:', {
+  BASE_URL,
+  ENV: 'production',
+  TIMEOUT: 100000
+});
 
 export const lafService = {
   /**
@@ -20,33 +29,33 @@ export const lafService = {
     // 【测试模式】模拟云服务不可用
     if (SIMULATE_CLOUD_FAILURE && path.includes('mistake-manager')) {
       console.warn('[LafService] 🧪 【测试模式】模拟云服务不可用:', path);
-      return Promise.reject({ 
-        message: '模拟云服务不可用（测试模式）', 
+      return Promise.reject({
+        message: '模拟云服务不可用（测试模式）',
         error: new Error('Cloud service unavailable (TEST MODE)'),
         path: path
       });
     }
-    
+
     // 构建请求头
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers
     };
-    
+
     // 添加认证信息（如果需要）
     if (!options.skipAuth) {
       // 尝试从存储中获取 token 或 userId
       try {
         // 尝试多种可能的 token 存储键名
-        const token = uni.getStorageSync('EXAM_TOKEN') || 
-                     uni.getStorageSync('token') || 
-                     uni.getStorageSync('EXAM_USER_TOKEN');
-        
+        const token = uni.getStorageSync('EXAM_TOKEN') ||
+          uni.getStorageSync('token') ||
+          uni.getStorageSync('EXAM_USER_TOKEN');
+
         // 尝试多种可能的 userId 存储键名
-        const userId = uni.getStorageSync('EXAM_USER_ID') || 
-                      uni.getStorageSync('user_id') ||
-                      uni.getStorageSync('userId');
-        
+        const userId = uni.getStorageSync('EXAM_USER_ID') ||
+          uni.getStorageSync('user_id') ||
+          uni.getStorageSync('userId');
+
         console.log('[LafService] 🔐 认证信息检查:', {
           hasToken: !!token,
           hasUserId: !!userId,
@@ -54,7 +63,7 @@ export const lafService = {
           userId: userId,
           path: path
         });
-        
+
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;
           console.log('[LafService] ✅ 已添加 Authorization header (Bearer token)');
@@ -74,7 +83,7 @@ export const lafService = {
         console.warn('[LafService] 获取认证信息失败:', e);
       }
     }
-    
+
     return new Promise((resolve, reject) => {
       uni.request({
         url: BASE_URL + path,
@@ -129,10 +138,10 @@ export const lafService = {
 
     try {
       // 获取用户ID（可选，某些接口可能不需要）
-      const userId = uni.getStorageSync('EXAM_USER_ID') || 
-                     uni.getStorageSync('user_id') ||
-                     uni.getStorageSync('userId') ||
-                     'anonymous';
+      const userId = uni.getStorageSync('EXAM_USER_ID') ||
+        uni.getStorageSync('user_id') ||
+        uni.getStorageSync('userId') ||
+        'anonymous';
 
       // 构建请求体（符合后端 action/payload 契约）
       const requestData = {
@@ -174,13 +183,13 @@ export const lafService = {
         });
         return response; // 直接返回，包含 code: 0 和 success: true
       }
-      
+
       // 兼容旧格式：{ code: 0, data: {...} }
       if (response.code === 0) {
         console.log('[LafService] ✅ AI 响应成功 (旧格式)');
         return response;
       }
-      
+
       // 处理错误响应
       if (response.error || response.success === false) {
         const errorMsg = response.error || response.message || 'AI 服务异常';
@@ -200,7 +209,7 @@ export const lafService = {
         message: error.message,
         stack: error.stack
       });
-      
+
       // ✅ 修复：返回标准错误对象，而不是抛出
       // 这样调用方可以正常处理错误，而不会导致未捕获的异常
       return {
@@ -222,11 +231,11 @@ export const lafService = {
    */
   async proxyAI_legacy(messages, options = {}) {
     console.warn('[LafService] ⚠️ 使用了已废弃的 proxyAI_legacy 方法，请迁移到新版 proxyAI(action, payload)');
-    
+
     // 尝试将 messages 转换为 chat action
     const lastMessage = messages[messages.length - 1];
     const content = lastMessage?.content || '你好';
-    
+
     return await this.proxyAI('chat', { content }, options);
   },
 
