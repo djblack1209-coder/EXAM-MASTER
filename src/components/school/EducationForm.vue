@@ -1,5 +1,5 @@
 <template>
-  <view class="education-form ds-flex ds-flex-col" :class="{ ' ': isDark }">
+  <view class="education-form ds-flex ds-flex-col" :class="{ 'dark-mode': isDark }">
     <!-- 标题 -->
     <view class="education-form__title ds-text-display ds-font-semibold">Step 1: 教育背景</view>
 

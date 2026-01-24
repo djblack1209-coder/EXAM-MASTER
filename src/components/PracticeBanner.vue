@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern practice banner with design system utilities -->
 <template>
-  <view class="practice-banner ds-card ds-touchable" :class="{ ' ': isDark }" @tap="onBannerTap">
+  <view class="practice-banner ds-card ds-touchable" :class="{ 'dark-mode': isDark }" @tap="onBannerTap">
     <text class="banner-text ds-text-xl ds-font-bold">刷题</text>
 
     <view class="banner-arrow ds-flex-center">
@@ -90,7 +90,7 @@ const onBannerTap = () => {
 }
 
 /* VISUAL: Dark mode styles */
-.practice-banner. {
+.practice-banner.dark-mode {
   /* 深色模式下使用更深的渐变 */
   background: linear-gradient(to right, #3a8fd9 0%, #00c4d4 100%);
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);

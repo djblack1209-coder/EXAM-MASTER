@@ -1,5 +1,5 @@
 <template>
-  <view class="settings-container" :class="{ ' ': isDark }">
+  <view class="settings-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 - 添加设计系统工具类 -->
     <view class="top-nav">
       <text class="nav-title ds-text-display ds-font-bold">设置</text>
@@ -378,9 +378,11 @@ onShow(() => {
   // 强制同步导航栏颜色
   const isDark = uni.getStorageSync('theme_mode') === 'dark';
   uni.setNavigationBarColor({
-    frontColor: isDark ? 'var(--bg-card)' : 'var(--text-primary)',
-    backgroundColor: isDark ? 'var(--bg-body)' : 'var(--bg-card)',
+    frontColor: isDark ? '#ffffff' : '#000000',
+    backgroundColor: isDark ? '#0D1117' : '#F9FAFB',
     animation: { duration: 0 }
+  }).catch(err => {
+    console.log('设置导航栏颜色失败', err);
   });
 });
 
@@ -1179,7 +1181,7 @@ const selectTheme = (type) => {
 }
 
 /* 深色模式 */
-.settings-container. {
+.settings-container.dark-mode {
   --bg-body: var(--bg-body);
   --text-secondary: #E2E8F0;
   --text-primary: var(--bg-card);
@@ -1429,16 +1431,16 @@ const selectTheme = (type) => {
 }
 
 /* 深色模式下的用户卡片（Bitget风格） */
-. .user-card.wise-card {
+.dark-mode .user-card.wise-card {
   background: linear-gradient(135deg, #1a2840 0%, #2d4560 100%);
   box-shadow: 0 8px 24px rgba(10, 132, 255, 0.25);
 }
 
-. .user-card.wise-card::before {
+.dark-mode .user-card.wise-card::before {
   background: radial-gradient(circle, rgba(10, 132, 255, 0.2) 0%, transparent 70%);
 }
 
-. .user-card.wise-card:hover {
+.dark-mode .user-card.wise-card:hover {
   box-shadow: 0 12px 32px rgba(10, 132, 255, 0.35);
 }
 
@@ -2150,7 +2152,7 @@ const selectTheme = (type) => {
 .friend-entry-card:hover {
   background-color: rgba(0, 169, 109, 0.05);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-glow-brand);
 }
 
 .friend-entry-card:active {
@@ -2202,24 +2204,24 @@ const selectTheme = (type) => {
 }
 
 /* 深色模式下的好友入口卡片 */
-. .friend-entry-card {
+.dark-mode .friend-entry-card {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-. .friend-entry-card:hover {
+.dark-mode .friend-entry-card:hover {
   background-color: rgba(159, 232, 112, 0.1);
 }
 
-. .entry-title {
+.dark-mode .entry-title {
   color: var(--bg-card);
 }
 
-. .entry-desc {
+.dark-mode .entry-desc {
   color: #E2E8F0;
 }
 
-. .entry-arrow {
+.dark-mode .entry-arrow {
   color: #E2E8F0;
 }
 
@@ -2280,7 +2282,7 @@ const selectTheme = (type) => {
 .theme-option:hover {
   border-color: var(--brand-color, #00a96d);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-glow-brand);
 }
 
 .theme-option:last-child {
@@ -2328,21 +2330,21 @@ const selectTheme = (type) => {
 }
 
 /* 深色模式下的主题选择器 */
-. .theme-option {
+.dark-mode .theme-option {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-. .theme-option:hover {
+.dark-mode .theme-option:hover {
   border-color: var(--brand-color, var(--brand-color));
   background-color: rgba(159, 232, 112, 0.1);
 }
 
-. .theme-name {
+.dark-mode .theme-name {
   color: var(--bg-card);
 }
 
-. .theme-desc {
+.dark-mode .theme-desc {
   color: #E2E8F0;
 }
 

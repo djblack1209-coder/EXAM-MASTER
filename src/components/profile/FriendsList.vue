@@ -1,5 +1,5 @@
 <template>
-  <view v-if="isLogin" class="friends-section" :class="{ ' ': isDark }">
+  <view v-if="isLogin" class="friends-section" :class="{ 'dark-mode': isDark }">
     <!-- 标题栏 -->
     <view class="section-header ds-flex ds-flex-between">
       <text class="section-title ds-text-lg ds-font-bold">我的好友们</text>
@@ -39,7 +39,7 @@
       <view v-if="friends.length === 0" class="empty-tip ds-text-xs ds-text-secondary">暂无好友</view>
     </view>
   </view>
-  <view v-else class="friends-placeholder ds-card ds-text-sm ds-text-secondary" :class="{ ' ': isDark }">登录后查看好友
+  <view v-else class="friends-placeholder ds-card ds-text-sm ds-text-secondary" :class="{ 'dark-mode': isDark }">登录后查看好友
   </view>
 </template>
 

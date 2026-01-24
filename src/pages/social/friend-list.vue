@@ -1,10 +1,10 @@
 <template>
-	<view :class="['container', { ' ': isDark }]">
+	<view :class="['container', { 'dark-mode': isDark }]">
 		<!-- 自定义导航栏 -->
 		<view class="custom-navbar">
 			<!-- 状态栏占位 -->
 			<view class="status-bar"></view>
-			
+
 			<!-- 导航栏内容 -->
 			<view class="navbar-content">
 				<view class="navbar-left" @tap="goBack">
@@ -16,55 +16,36 @@
 				<view class="navbar-right"></view>
 			</view>
 		</view>
-		
+
 		<!-- 顶部搜索栏 -->
 		<view class="search-bar">
 			<view class="search-input-wrapper">
 				<text class="search-icon">🔍</text>
-				<input 
-					class="search-input" 
-					type="text" 
-					placeholder="搜索用户昵称"
-					v-model="searchKeyword"
-					@confirm="handleSearch"
-					confirm-type="search"
-				/>
+				<input class="search-input" type="text" placeholder="搜索用户昵称" v-model="searchKeyword"
+					@confirm="handleSearch" confirm-type="search" />
 				<text class="clear-icon" v-if="searchKeyword" @tap="clearSearch">✕</text>
 			</view>
 			<button class="search-btn" @tap="handleSearch" v-if="searchKeyword">
 				<text>搜索</text>
 			</button>
 		</view>
-		
+
 		<!-- Tabs 切换 -->
 		<view class="tabs-bar">
-			<view 
-				class="tab-item" 
-				:class="{ 'active': currentTab === 'friends' }"
-				@tap="switchTab('friends')"
-			>
+			<view class="tab-item" :class="{ 'active': currentTab === 'friends' }" @tap="switchTab('friends')">
 				<text class="tab-text">我的好友</text>
 				<view class="tab-indicator" v-if="currentTab === 'friends'"></view>
 			</view>
-			<view 
-				class="tab-item" 
-				:class="{ 'active': currentTab === 'requests' }"
-				@tap="switchTab('requests')"
-			>
+			<view class="tab-item" :class="{ 'active': currentTab === 'requests' }" @tap="switchTab('requests')">
 				<text class="tab-text">好友请求</text>
 				<view class="red-dot" v-if="pendingRequestsCount > 0">{{ pendingRequestsCount }}</view>
 				<view class="tab-indicator" v-if="currentTab === 'requests'"></view>
 			</view>
 		</view>
-		
+
 		<!-- 内容区域 -->
-		<scroll-view 
-			class="content-scroll" 
-			scroll-y 
-			:refresher-enabled="true"
-			:refresher-triggered="isRefreshing"
-			@refresherrefresh="onRefresh"
-		>
+		<scroll-view class="content-scroll" scroll-y :refresher-enabled="true" :refresher-triggered="isRefreshing"
+			@refresherrefresh="onRefresh">
 			<!-- 搜索结果模式 -->
 			<view v-if="isSearchMode">
 				<!-- 加载中 -->
@@ -72,15 +53,10 @@
 					<view class="loading-spinner"></view>
 					<text class="loading-text">搜索中...</text>
 				</view>
-				
+
 				<!-- 搜索结果 -->
 				<view class="search-results" v-else-if="searchResults.length > 0">
-					<view 
-						class="user-card" 
-						v-for="user in searchResults" 
-						:key="user._id"
-						@tap="handleAddFriend(user)"
-					>
+					<view class="user-card" v-for="user in searchResults" :key="user._id" @tap="handleAddFriend(user)">
 						<image class="avatar" :src="user.avatar || defaultAvatar" mode="aspectFill"></image>
 						<view class="info-section">
 							<text class="nickname">{{ user.nickname || '未命名' }}</text>
@@ -91,7 +67,7 @@
 						</button>
 					</view>
 				</view>
-				
+
 				<!-- 搜索无结果 -->
 				<view class="empty-state" v-else>
 					<text class="empty-icon">🔍</text>
@@ -99,7 +75,7 @@
 					<text class="empty-desc">试试搜索其他昵称</text>
 				</view>
 			</view>
-			
+
 			<!-- 我的好友 Tab -->
 			<view v-else-if="currentTab === 'friends'">
 				<!-- 加载中 -->
@@ -107,57 +83,50 @@
 					<view class="loading-spinner"></view>
 					<text class="loading-text">加载中...</text>
 				</view>
-				
+
 				<!-- 空状态 -->
 				<view class="empty-state" v-else-if="!isLoading && friendList.length === 0">
 					<text class="empty-icon">👥</text>
 					<text class="empty-title">还没有好友</text>
 					<text class="empty-desc">快去搜索添加好友，一起刷题吧！</text>
 				</view>
-				
+
 				<!-- 好友卡片列表 -->
 				<view class="friend-cards" v-else>
-				<view 
-					class="friend-card" 
-					v-for="friend in filteredFriendList" 
-					:key="friend.uid"
-					@tap="goToFriendProfile(friend)"
-				>
-					<!-- 头像 -->
-					<view class="avatar-wrapper">
-						<image 
-							class="avatar" 
-							:src="friend.avatar || defaultAvatar" 
-							mode="aspectFill"
-						></image>
-						<!-- 在线状态指示器（模拟） -->
-						<view class="online-indicator" v-if="isOnline(friend)"></view>
-					</view>
-					
-					<!-- 信息区 -->
-					<view class="info-section">
-						<view class="name-row">
-							<text class="nickname">{{ friend.nickname || '未命名' }}</text>
-							<text class="level-badge" v-if="friend.score">Lv.{{ Math.floor(friend.score / 100) }}</text>
+					<view class="friend-card" v-for="friend in filteredFriendList" :key="friend.uid"
+						@tap="goToFriendProfile(friend)">
+						<!-- 头像 -->
+						<view class="avatar-wrapper">
+							<image class="avatar" :src="friend.avatar || defaultAvatar" mode="aspectFill"></image>
+							<!-- 在线状态指示器（模拟） -->
+							<view class="online-indicator" v-if="isOnline(friend)"></view>
 						</view>
-						<text class="status-text">{{ getStatusText(friend) }}</text>
-					</view>
-					
-					<!-- 分数 -->
-					<view class="score-section">
-						<text class="score-value">{{ friend.score || 0 }}</text>
-						<text class="score-label">总分</text>
-					</view>
-					
-					<!-- PK 挑战按钮 -->
-					<button class="pk-btn" @tap.stop="handlePKChallenge(friend)">
-						<text class="pk-icon">🔥</text>
-						<text class="pk-text">PK</text>
-					</button>
+
+						<!-- 信息区 -->
+						<view class="info-section">
+							<view class="name-row">
+								<text class="nickname">{{ friend.nickname || '未命名' }}</text>
+								<text class="level-badge" v-if="friend.score">Lv.{{ Math.floor(friend.score / 100)
+									}}</text>
+							</view>
+							<text class="status-text">{{ getStatusText(friend) }}</text>
+						</view>
+
+						<!-- 分数 -->
+						<view class="score-section">
+							<text class="score-value">{{ friend.score || 0 }}</text>
+							<text class="score-label">总分</text>
+						</view>
+
+						<!-- PK 挑战按钮 -->
+						<button class="pk-btn" @tap.stop="handlePKChallenge(friend)">
+							<text class="pk-icon">🔥</text>
+							<text class="pk-text">PK</text>
+						</button>
 					</view>
 				</view>
 			</view>
-			
+
 			<!-- 好友请求 Tab -->
 			<view v-else-if="currentTab === 'requests'">
 				<!-- 加载中 -->
@@ -165,35 +134,27 @@
 					<view class="loading-spinner"></view>
 					<text class="loading-text">加载中...</text>
 				</view>
-				
+
 				<!-- 空状态 -->
 				<view class="empty-state" v-else-if="!isLoadingRequests && requestList.length === 0">
 					<text class="empty-icon">📬</text>
 					<text class="empty-title">暂无好友请求</text>
 					<text class="empty-desc">当有人向你发送好友请求时，会显示在这里</text>
 				</view>
-				
+
 				<!-- 请求卡片列表 -->
 				<view class="request-cards" v-else>
-					<view 
-						class="request-card" 
-						v-for="request in requestList" 
-						:key="request.from_uid"
-					>
+					<view class="request-card" v-for="request in requestList" :key="request.from_uid">
 						<!-- 头像 -->
-						<image 
-							class="avatar" 
-							:src="request.from_avatar || defaultAvatar" 
-							mode="aspectFill"
-						></image>
-						
+						<image class="avatar" :src="request.from_avatar || defaultAvatar" mode="aspectFill"></image>
+
 						<!-- 信息区 -->
 						<view class="info-section">
 							<text class="nickname">{{ request.from_nickname || '未命名' }}</text>
 							<text class="message" v-if="request.message">{{ request.message }}</text>
 							<text class="time">{{ formatTime(request.created_at) }}</text>
 						</view>
-						
+
 						<!-- 操作按钮 -->
 						<view class="action-btns">
 							<button class="accept-btn" @tap.stop="handleAccept(request)">
@@ -207,7 +168,7 @@
 				</view>
 			</view>
 		</scroll-view>
-		
+
 		<!-- 底部统计 -->
 		<view class="bottom-stats" v-if="friendList.length > 0">
 			<text class="stats-text">共 {{ friendList.length }} 位好友</text>
@@ -247,9 +208,9 @@ export default {
 			if (!this.searchKeyword.trim()) {
 				return this.friendList
 			}
-			
+
 			const keyword = this.searchKeyword.toLowerCase()
-			return this.friendList.filter(friend => 
+			return this.friendList.filter(friend =>
 				friend.nickname?.toLowerCase().includes(keyword)
 			)
 		}
@@ -285,7 +246,7 @@ export default {
 				}
 			})
 		},
-		
+
 		/**
 		 * 加载好友列表
 		 */
@@ -293,14 +254,14 @@ export default {
 			if (showLoading) {
 				this.isLoading = true
 			}
-			
+
 			try {
 				console.log('[FriendList] 开始加载好友列表')
-				
+
 				const res = await socialService.getFriendList('score', !showLoading)
-				
+
 				console.log('[FriendList] 加载结果:', res)
-				
+
 				if (res.code === 0) {
 					this.friendList = res.data || []
 					console.log('[FriendList] 好友数量:', this.friendList.length)
@@ -323,7 +284,7 @@ export default {
 				uni.stopPullDownRefresh()
 			}
 		},
-		
+
 		/**
 		 * 下拉刷新
 		 */
@@ -334,7 +295,7 @@ export default {
 			socialService.clearCache()
 			await this.loadFriendList(false)
 		},
-		
+
 		/**
 		 * 切换 Tab
 		 */
@@ -345,7 +306,7 @@ export default {
 			this.searchKeyword = ''
 			this.searchResults = []
 		},
-		
+
 		/**
 		 * 搜索用户（云端搜索）
 		 */
@@ -357,14 +318,14 @@ export default {
 				})
 				return
 			}
-			
+
 			console.log('[FriendList] 搜索用户:', this.searchKeyword)
 			this.isSearching = true
 			this.isSearchMode = true
-			
+
 			try {
 				const res = await socialService.searchUser(this.searchKeyword.trim())
-				
+
 				if (res.code === 0) {
 					this.searchResults = res.data || []
 					console.log('[FriendList] 搜索结果:', this.searchResults.length, '个用户')
@@ -385,7 +346,7 @@ export default {
 				this.isSearching = false
 			}
 		},
-		
+
 		/**
 		 * 清除搜索
 		 */
@@ -394,20 +355,20 @@ export default {
 			this.isSearchMode = false
 			this.searchResults = []
 		},
-		
+
 		/**
 		 * 加载好友请求列表
 		 */
 		async loadFriendRequests() {
 			this.isLoadingRequests = true
-			
+
 			try {
 				console.log('[FriendList] 开始加载好友请求列表')
-				
+
 				const res = await socialService.getFriendRequests()
-				
+
 				console.log('[FriendList] 好友请求结果:', res)
-				
+
 				if (res.code === 0) {
 					this.requestList = res.data || []
 					console.log('[FriendList] 好友请求数量:', this.requestList.length)
@@ -420,25 +381,25 @@ export default {
 				this.isLoadingRequests = false
 			}
 		},
-		
+
 		/**
 		 * 添加好友
 		 */
 		async handleAddFriend(user) {
 			console.log('[FriendList] 添加好友:', user.nickname)
-			
+
 			uni.showModal({
 				title: '添加好友',
 				content: `确定要添加 ${user.nickname} 为好友吗？`,
 				success: async (res) => {
 					if (res.confirm) {
 						uni.showLoading({ title: '发送中...' })
-						
+
 						try {
 							const result = await socialService.sendRequest(user._id, '你好，我想加你为好友')
-							
+
 							uni.hideLoading()
-							
+
 							if (result.code === 0) {
 								uni.showToast({
 									title: '好友请求已发送',
@@ -464,20 +425,20 @@ export default {
 				}
 			})
 		},
-		
+
 		/**
 		 * 接受好友请求
 		 */
 		async handleAccept(request) {
 			console.log('[FriendList] 接受好友请求:', request.from_nickname)
-			
+
 			uni.showLoading({ title: '处理中...' })
-			
+
 			try {
 				const res = await socialService.handleRequest(request.from_uid, 'accept')
-				
+
 				uni.hideLoading()
-				
+
 				if (res.code === 0) {
 					uni.showToast({
 						title: '已添加为好友',
@@ -501,25 +462,25 @@ export default {
 				})
 			}
 		},
-		
+
 		/**
 		 * 拒绝好友请求
 		 */
 		async handleReject(request) {
 			console.log('[FriendList] 拒绝好友请求:', request.from_nickname)
-			
+
 			uni.showModal({
 				title: '确认拒绝',
 				content: `确定要拒绝 ${request.from_nickname} 的好友请求吗？`,
 				success: async (res) => {
 					if (res.confirm) {
 						uni.showLoading({ title: '处理中...' })
-						
+
 						try {
 							const result = await socialService.handleRequest(request.from_uid, 'reject')
-							
+
 							uni.hideLoading()
-							
+
 							if (result.code === 0) {
 								uni.showToast({
 									title: '已拒绝',
@@ -545,7 +506,7 @@ export default {
 				}
 			})
 		},
-		
+
 		/**
 		 * 跳转到好友资料页
 		 */
@@ -560,13 +521,13 @@ export default {
 			// 	url: `/src/pages/social/friend-profile?uid=${friend.uid}`
 			// })
 		},
-		
+
 		/**
 		 * 发起 PK 挑战
 		 */
 		handlePKChallenge(friend) {
 			console.log('[FriendList] 发起 PK 挑战:', friend.nickname)
-			
+
 			uni.showModal({
 				title: '发起挑战',
 				content: `确定要向 ${friend.nickname} 发起 PK 挑战吗？`,
@@ -592,20 +553,20 @@ export default {
 				}
 			})
 		},
-		
+
 		/**
 		 * 判断好友是否在线（模拟）
 		 */
 		isOnline(friend) {
 			if (!friend.last_active) return false
-			
+
 			const now = Date.now()
 			const lastActive = friend.last_active
-			
+
 			// 5分钟内活跃视为在线
 			return (now - lastActive) < 5 * 60 * 1000
 		},
-		
+
 		/**
 		 * 获取状态文本
 		 */
@@ -613,19 +574,19 @@ export default {
 			if (this.isOnline(friend)) {
 				return '在线'
 			}
-			
+
 			if (!friend.last_active) {
 				return '很久未见'
 			}
-			
+
 			const now = Date.now()
 			const diff = now - friend.last_active
-			
+
 			// 计算时间差
 			const minutes = Math.floor(diff / (60 * 1000))
 			const hours = Math.floor(diff / (60 * 60 * 1000))
 			const days = Math.floor(diff / (24 * 60 * 60 * 1000))
-			
+
 			if (minutes < 60) {
 				return `${minutes}分钟前活跃`
 			} else if (hours < 24) {
@@ -636,20 +597,20 @@ export default {
 				return '很久未见'
 			}
 		},
-		
+
 		/**
 		 * 格式化时间
 		 */
 		formatTime(timestamp) {
 			if (!timestamp) return ''
-			
+
 			const now = Date.now()
 			const diff = now - timestamp
-			
+
 			const minutes = Math.floor(diff / (60 * 1000))
 			const hours = Math.floor(diff / (60 * 60 * 1000))
 			const days = Math.floor(diff / (24 * 60 * 60 * 1000))
-			
+
 			if (minutes < 1) {
 				return '刚刚'
 			} else if (minutes < 60) {
@@ -676,7 +637,7 @@ export default {
 	flex-direction: column;
 }
 
-.container. {
+.container.dark-mode {
 	background-color: var(--bg-body);
 }
 
@@ -691,7 +652,7 @@ export default {
 	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
-. .custom-navbar {
+.dark-mode .custom-navbar {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
 }
@@ -723,7 +684,7 @@ export default {
 	line-height: 1;
 }
 
-. .back-icon {
+.dark-mode .back-icon {
 	color: var(--brand-color);
 }
 
@@ -740,7 +701,7 @@ export default {
 	color: var(--bg-body);
 }
 
-. .navbar-title {
+.dark-mode .navbar-title {
 	color: var(--bg-card);
 }
 
@@ -759,7 +720,7 @@ export default {
 	margin-top: calc(var(--status-bar-height) + 88rpx);
 }
 
-. .search-bar {
+.dark-mode .search-bar {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom-color: rgba(255, 255, 255, 0.1);
 }
@@ -774,7 +735,7 @@ export default {
 	position: relative;
 }
 
-. .search-input-wrapper {
+.dark-mode .search-input-wrapper {
 	background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -791,7 +752,7 @@ export default {
 	background-color: transparent;
 }
 
-. .search-input {
+.dark-mode .search-input {
 	color: var(--bg-card);
 }
 
@@ -834,7 +795,7 @@ export default {
 	border-bottom: 1rpx solid #EFEFEF;
 }
 
-. .tabs-bar {
+.dark-mode .tabs-bar {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom-color: rgba(255, 255, 255, 0.1);
 }
@@ -860,7 +821,7 @@ export default {
 	font-weight: 600;
 }
 
-. .tab-item.active .tab-text {
+.dark-mode .tab-item.active .tab-text {
 	color: var(--brand-color);
 }
 
@@ -914,8 +875,13 @@ export default {
 }
 
 @keyframes spin {
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 .loading-text {
@@ -946,7 +912,7 @@ export default {
 	margin-bottom: 12rpx;
 }
 
-. .empty-title {
+.dark-mode .empty-title {
 	color: var(--bg-card);
 }
 
@@ -989,7 +955,7 @@ export default {
 	transition: all 0.3s;
 }
 
-. .friend-card {
+.dark-mode .friend-card {
 	background-color: rgba(255, 255, 255, 0.05);
 	border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
@@ -1023,7 +989,7 @@ export default {
 	border: 3rpx solid var(--bg-card);
 }
 
-. .online-indicator {
+.dark-mode .online-indicator {
 	border-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -1047,7 +1013,7 @@ export default {
 	color: var(--bg-body);
 }
 
-. .nickname {
+.dark-mode .nickname {
 	color: var(--bg-card);
 }
 
@@ -1075,7 +1041,7 @@ export default {
 	border-left: 1rpx solid #EFEFEF;
 }
 
-. .score-section {
+.dark-mode .score-section {
 	border-left-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -1136,7 +1102,7 @@ export default {
 	border-top: 1rpx solid #EFEFEF;
 }
 
-. .bottom-stats {
+.dark-mode .bottom-stats {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-top-color: rgba(255, 255, 255, 0.1);
 }
@@ -1163,7 +1129,7 @@ export default {
 	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
 }
 
-. .user-card {
+.dark-mode .user-card {
 	background-color: rgba(255, 255, 255, 0.05);
 	border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
@@ -1188,7 +1154,7 @@ export default {
 	color: var(--bg-body);
 }
 
-. .user-card .nickname {
+.dark-mode .user-card .nickname {
 	color: var(--bg-card);
 }
 
@@ -1236,7 +1202,7 @@ export default {
 	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
 }
 
-. .request-card {
+.dark-mode .request-card {
 	background-color: rgba(255, 255, 255, 0.05);
 	border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
@@ -1262,7 +1228,7 @@ export default {
 	color: var(--bg-body);
 }
 
-. .request-card .nickname {
+.dark-mode .request-card .nickname {
 	color: var(--bg-card);
 }
 

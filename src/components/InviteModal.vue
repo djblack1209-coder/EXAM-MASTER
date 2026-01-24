@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern invite modal with design system utilities -->
 <template>
-  <view class="modal-mask" :class="{ ' ': isDark }" @click.self="$emit('close')">
+  <view class="modal-mask" :class="{ 'dark-mode': isDark }" @click.self="$emit('close')">
     <view class="modal-container ds-card" @tap.stop>
       <view class="close-btn ds-touchable ds-touch-target ds-flex-center" @click="$emit('close')">
         <text class="close-icon-text">✕</text>
@@ -384,7 +384,7 @@ export default {
 }
 
 /* VISUAL: Dark mode styles */
-.modal-mask. {
+.modal-mask.dark-mode {
   background: rgba(0, 0, 0, 0.8);
 
   .modal-container {

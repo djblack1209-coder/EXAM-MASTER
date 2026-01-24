@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { ' ': isDark }]">
+	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 		
 		<view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -596,7 +596,7 @@ export default {
 }
 
 /* 深色模式荧光效果 */
-.container. {
+.container.dark-mode {
   --ball-bg: #1E293B;
   --wave-color: #00FF88;
   --ball-glow: rgba(0, 255, 136, 0.4);
@@ -618,7 +618,7 @@ export default {
 	z-index: 0;
 }
 
-. .aurora-bg {
+.dark-mode .aurora-bg {
 	background: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.15), transparent);
 }
 

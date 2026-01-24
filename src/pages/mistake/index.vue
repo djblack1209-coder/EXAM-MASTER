@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { ' ': isDark }]">
+	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<!-- 导航栏 - 添加设计系统工具类 -->
@@ -1339,7 +1339,7 @@ export default {
 		top: 0;
 		right: 40rpx;
 		background: rgba(46, 204, 113, 0.1);
-		color: #2ECC71;
+		color: var(--accent-warm);
 		font-size: 20rpx;
 		padding: 10rpx 20rpx;
 		border-radius: 0 0 20rpx 20rpx;
@@ -1373,7 +1373,7 @@ export default {
 		font-size: 28rpx;
 
 		&.correct {
-			color: #2ECC71;
+			color: var(--accent-warm);
 		}
 
 		&.wrong {
@@ -1399,7 +1399,7 @@ export default {
 
 	.correct-ans {
 		font-weight: bold;
-		color: #2ECC71;
+		color: var(--accent-warm);
 		margin-bottom: 20rpx;
 		font-size: 28rpx;
 		display: block;
@@ -1502,7 +1502,7 @@ export default {
 		margin-right: 10rpx;
 
 		&.correct {
-			color: #2ECC71;
+			color: var(--accent-warm);
 		}
 
 		&.wrong {
@@ -1589,7 +1589,7 @@ export default {
 			.modal-close-icon {
 				font-size: 40rpx;
 				color: #666;
-				line-height: 1;
+				line-height: var(--line-height-normal);
 				font-weight: 300;
 			}
 		}
@@ -1728,7 +1728,7 @@ export default {
 
 .clear-all-icon {
 	font-size: 36rpx;
-	line-height: 1;
+	line-height: var(--line-height-normal);
 }
 
 .clear-all-text {
@@ -1781,7 +1781,7 @@ export default {
 .export-icon {
 	font-size: 36rpx;
 	flex-shrink: 0;
-	line-height: 1;
+	line-height: var(--line-height-normal);
 	display: block;
 }
 
@@ -1844,7 +1844,7 @@ export default {
 	width: 120rpx;
 	height: 120rpx;
 	border: 6rpx solid #F0F0F0;
-	border-top-color: #2ECC71;
+	border-top-color: var(--accent-warm);
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
 }
@@ -1906,7 +1906,7 @@ export default {
 }
 
 /* 深色模式适配 */
-.container. {
+.container.dark-mode {
 	--bg-color: var(--bg-body);
 	--text-primary: var(--bg-card);
 	--text-sub: #b0b0b0;
@@ -1915,15 +1915,15 @@ export default {
 	background-color: var(--bg-color);
 }
 
-.container. .nav-title {
+.container.dark-mode .nav-title {
 	color: var(--text-primary);
 }
 
-.container. .nav-back {
+.container.dark-mode .nav-back {
 	color: var(--text-primary);
 }
 
-.container. .nav-clear-btn {
+.container.dark-mode .nav-clear-btn {
 	background: rgba(255, 59, 48, 0.2);
 
 	.clear-text {
@@ -1931,7 +1931,7 @@ export default {
 	}
 }
 
-.container. .clear-all-btn {
+.container.dark-mode .clear-all-btn {
 	background: rgba(255, 59, 48, 0.2);
 	border-color: rgba(255, 59, 48, 0.4);
 
@@ -1940,25 +1940,25 @@ export default {
 	}
 }
 
-.container. .question-text {
+.container.dark-mode .question-text {
 	color: var(--text-primary);
 }
 
-.container. .glass-card {
+.container.dark-mode .glass-card {
 	background: var(--card-bg);
 	border-color: var(--card-border);
 }
 
-.container. .mode-item {
+.container.dark-mode .mode-item {
 	color: var(--text-sub);
 }
 
-.container. .mode-item.active {
+.container.dark-mode .mode-item.active {
 	background: #2ECC71;
 	color: #FFF;
 }
 
-.container. .aurora-bg {
+.container.dark-mode .aurora-bg {
 	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, var(--bg-body) 100%) !important;
 	opacity: 0.8;
 }

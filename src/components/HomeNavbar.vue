@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern home navbar with design system utilities -->
 <template>
-  <view class="home-navbar ds-navbar" :class="{ ' ': isDark }" :style="navbarStyle">
+  <view class="home-navbar ds-navbar" :class="{ 'dark-mode': isDark }" :style="navbarStyle">
     <!-- 状态栏占位 -->
     <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
 
@@ -227,7 +227,7 @@ const onCamera = () => {
 }
 
 /* VISUAL: Dark mode styles */
-.home-navbar. {
+.home-navbar.dark-mode {
   /* 深色模式透明背景 */
   background: transparent;
   box-shadow: none;

@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { ' ': isDark }]">
+	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 		
 		<view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -456,53 +456,53 @@ export default {
 }
 
 /* 深色模式适配 */
-.container. {
+.container.dark-mode {
 	background-color: var(--bg-color);
 }
 
-.container. .nav-title {
+.container.dark-mode .nav-title {
 	color: var(--text-primary);
 }
 
-.container. .nav-back {
+.container.dark-mode .nav-back {
 	color: var(--text-primary);
 }
 
-.container. .glass-card {
+.container.dark-mode .glass-card {
 	background: var(--card-bg);
 	border-color: var(--card-border);
 }
 
-.container. .form-label {
+.container.dark-mode .form-label {
 	color: var(--text-primary);
 }
 
-.container. .form-input,
-.container. .form-textarea {
+.container.dark-mode .form-input,
+.container.dark-mode .form-textarea {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: rgba(255, 255, 255, 0.1);
 	color: var(--text-primary);
 }
 
-.container. .date-picker,
-.container. .time-picker {
+.container.dark-mode .date-picker,
+.container.dark-mode .time-picker {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: rgba(255, 255, 255, 0.1);
 }
 
-.container. .date-text,
-.container. .time-text {
+.container.dark-mode .date-text,
+.container.dark-mode .time-text {
 	color: var(--text-primary);
 }
 
-.container. .duration-btn,
-.container. .category-btn {
+.container.dark-mode .duration-btn,
+.container.dark-mode .category-btn {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: rgba(255, 255, 255, 0.1);
 	color: var(--text-primary);
 }
 
-.container. .aurora-bg {
+.container.dark-mode .aurora-bg {
 	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, #1e3a0f 100%) !important;
 }
 </style>

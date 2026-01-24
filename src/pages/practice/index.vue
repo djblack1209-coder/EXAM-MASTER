@@ -1,5 +1,5 @@
 <template>
-  <view class="practice-container" :class="{ ' ': isDark }">
+  <view class="practice-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav">
       <text class="nav-title">刷题中心</text>
@@ -1370,7 +1370,7 @@ export default {
 }
 
 /* 深色模式适配 - 增强对比度 */
-.practice-container. {
+.practice-container.dark-mode {
   --bg-body: var(--bg-body);
   --bg-secondary: #1a2e05;
   --text-primary: var(--bg-card);
@@ -1454,7 +1454,7 @@ export default {
 }
 
 .status-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-glow-brand);
   transform: translateY(-2px);
 }
 
@@ -1737,7 +1737,7 @@ export default {
 }
 
 .import-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-glow-brand);
   transform: translateY(-2px);
 }
 
@@ -2274,7 +2274,7 @@ export default {
 .modal-close-icon {
   font-size: 24px;
   color: #666;
-  line-height: 1;
+  line-height: var(--line-height-normal);
 }
 
 .modal-body {

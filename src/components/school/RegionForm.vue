@@ -1,5 +1,5 @@
 <template>
-  <view class="region-form ds-flex ds-flex-col" :class="{ ' ': isDark }">
+  <view class="region-form ds-flex ds-flex-col" :class="{ 'dark-mode': isDark }">
     <!-- 标题 -->
     <view class="region-form__title ds-text-display ds-font-semibold">Step 2: 目标地区</view>
 

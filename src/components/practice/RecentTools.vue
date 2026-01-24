@@ -1,5 +1,5 @@
 <template>
-  <view class="recent-tools ds-card" :class="{ ' ': isDark }">
+  <view class="recent-tools ds-card" :class="{ 'dark-mode': isDark }">
     <view class="section-header">
       <text class="title ds-text-lg ds-font-semibold">最近</text>
     </view>

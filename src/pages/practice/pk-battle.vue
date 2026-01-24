@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { ' ': isDark }]">
+	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<!-- 匹配阶段 -->
@@ -1412,7 +1412,7 @@ export default {
 	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
 	position: relative;
 }
-.container. {
+.container.dark-mode {
 	background: var(--bg-body);
 }
 

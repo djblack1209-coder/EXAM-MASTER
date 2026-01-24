@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { ' ': isDark }]">
+	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
@@ -582,7 +582,7 @@ export default {
 	position: relative; 
 	overflow: hidden; 
 }
-.container. { 
+.container.dark-mode { 
 	background: var(--bg-body); 
 	color: #FFF; 
 }
@@ -935,20 +935,20 @@ export default {
 }
 
 /* 深色模式适配 */
-.container. .glass-card {
+.container.dark-mode .glass-card {
 	background: rgba(30, 30, 30, 0.8) !important;
 	border-color: rgba(255, 255, 255, 0.1) !important;
 	color: #EEE !important;
 }
-.container. .q-content,
-.container. .opt-text {
+.container.dark-mode .q-content,
+.container.dark-mode .opt-text {
 	color: #FFF !important;
 }
-.container. .progress-text,
-.container. .timer-box {
+.container.dark-mode .progress-text,
+.container.dark-mode .timer-box {
 	color: #FFF !important;
 }
-.container. .back-icon {
+.container.dark-mode .back-icon {
 	color: #FFF !important;
 }
 </style>

@@ -47,7 +47,7 @@
 
                 <!-- 能力评级卡片 -->
                 <view class="stat-card">
-                    <image class="stat-icon" src="/ranking.png" mode="aspectFit"></image>
+                    <image class="stat-icon" src="/icon/loading-bar.png" mode="aspectFit"></image>
                     <view class="stat-content">
                         <text class="stat-value">{{ abilityRank }}</text>
                         <text class="stat-label">能力评级</text>

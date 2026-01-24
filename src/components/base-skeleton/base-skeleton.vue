@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern skeleton screen with design system utilities -->
 <template>
-  <view class="skeleton-container ds-container" :class="{ ' ': isDark }">
+  <view class="skeleton-container ds-container" :class="{ 'dark-mode': isDark }">
     <!-- VISUAL: Header skeleton with avatar and greeting -->
     <view class="skeleton-header ds-flex ds-gap-sm">
       <view class="skeleton-avatar"></view>
@@ -135,7 +135,7 @@ export default {
 }
 
 /* VISUAL: Dark mode skeleton colors - 优化对比度 */
-.skeleton-container. {
+.skeleton-container.dark-mode {
   --skeleton-bg: var(--ds-color-surface-secondary, #1c1c1e);
   --skeleton-line: #2c2c2e;
   --skeleton-highlight: #3a3a3c;

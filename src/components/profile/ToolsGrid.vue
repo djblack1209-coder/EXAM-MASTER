@@ -1,5 +1,5 @@
 <template>
-  <view class="tools-section" :class="{ ' ': isDark }">
+  <view class="tools-section" :class="{ 'dark-mode': isDark }">
     <view class="section-title ds-text-lg ds-font-bold">工具功能</view>
 
     <view class="tools-grid">

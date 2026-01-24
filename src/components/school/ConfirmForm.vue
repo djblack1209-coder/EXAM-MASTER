@@ -1,5 +1,5 @@
 <template>
-  <view class="confirm-form ds-flex ds-flex-col" :class="{ ' ': isDark }">
+  <view class="confirm-form ds-flex ds-flex-col" :class="{ 'dark-mode': isDark }">
     <!-- 标题 -->
     <view class="confirm-form__title ds-text-display ds-font-semibold">Step 4: 信息确认</view>
 

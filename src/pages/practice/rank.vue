@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { ' ': isDark }]">
+	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -742,7 +742,7 @@ export default {
 	transition: background 0.3s;
 }
 
-.container. {
+.container.dark-mode {
 	--neon-gold: #FFD700;
 	--neon-silver: #E2E8F0;
 	--neon-green: #00FF88;
@@ -767,7 +767,7 @@ export default {
 	z-index: 0;
 }
 
-. .aurora-bg {
+.dark-mode .aurora-bg {
 	background: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.15), transparent);
 }
 
@@ -835,7 +835,7 @@ export default {
 	transition: transform 0.3s;
 	margin-bottom: 20rpx;
 }
-. .avatar-wrap {
+.dark-mode .avatar-wrap {
 	background: #1E3A0F;
 }
 
@@ -868,7 +868,7 @@ export default {
 	box-shadow: 0 0 30rpx var(--neon-glow-gold);
 	border: 4rpx solid var(--neon-gold);
 }
-. .rank-1 .avatar-wrap {
+.dark-mode .rank-1 .avatar-wrap {
 	box-shadow: 0 0 50rpx var(--neon-glow-gold);
 }
 .rank-1 .badge {
@@ -950,7 +950,7 @@ export default {
 	transform: scale(0.98);
 }
 /* 深色模式下的霓虹边框 */
-. .rank-item {
+.dark-mode .rank-item {
 	border-left: 6rpx solid var(--neon-green);
 	box-shadow: 0 0 15rpx rgba(0, 255, 136, 0.1);
 }
@@ -966,7 +966,7 @@ export default {
 	color: var(--text-tertiary);
 }
 /* 深色模式下的排名数字荧光效果 */
-. .rank-num {
+.dark-mode .rank-num {
 	color: var(--neon-green);
 	text-shadow: 0 0 10rpx var(--neon-glow-green);
 }

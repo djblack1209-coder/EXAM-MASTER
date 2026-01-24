@@ -1,5 +1,5 @@
 <template>
-  <view class="mistakes-card ds-card" :class="{ ' ': isDark }">
+  <view class="mistakes-card ds-card" :class="{ 'dark-mode': isDark }">
     <view class="card-header">
       <text class="title ds-text-lg ds-font-semibold">错题</text>
     </view>

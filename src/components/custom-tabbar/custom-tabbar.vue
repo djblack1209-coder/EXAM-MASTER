@@ -1,5 +1,5 @@
 <template>
-	<view class="tabbar-container" :class="{ ' ': isDark }">
+	<view class="tabbar-container" :class="{ 'dark-mode': isDark }">
 		<!-- 磨砂玻璃背景层 -->
 		<view class="tabbar-blur-bg"></view>
 		<!-- 导航栏内容 -->
@@ -215,7 +215,7 @@ export default {
 }
 
 /* Dark Mode Adjustments - 磨砂玻璃白色背景 */
-. .tabbar-blur-bg {
+.dark-mode .tabbar-blur-bg {
 	background: rgba(255, 255, 255, 0.85);
 	backdrop-filter: blur(40rpx) saturate(180%);
 	-webkit-backdrop-filter: blur(40rpx) saturate(180%);
@@ -224,12 +224,12 @@ export default {
 		0 2rpx 12rpx rgba(0, 0, 0, 0.08);
 }
 
-. .tab-item.active .tab-label {
+.dark-mode .tab-item.active .tab-label {
 	color: #1A1A1A;
 	/* 深色模式：激活深色（白色背景上） */
 }
 
-. .tab-label {
+.dark-mode .tab-label {
 	color: #666666;
 	/* 深色模式：未激活灰色（白色背景上） */
 }

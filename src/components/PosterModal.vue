@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern poster modal with design system utilities -->
 <template>
-  <view v-if="visible" class="poster-mask" :class="{ ' ': isDark }" @tap="handleClose">
+  <view v-if="visible" class="poster-mask" :class="{ 'dark-mode': isDark }" @tap="handleClose">
     <view class="poster-card ds-card" @tap.stop>
       <view class="close-icon-container ds-touchable ds-touch-target ds-flex-center" @tap="handleClose">
         <image src="https://img.icons8.com/ios-glyphs/30/ffffff/multiply.png" style="width: 16px; height: 16px;">
@@ -312,7 +312,7 @@ const handleShare = () => {
 }
 
 /* VISUAL: Dark mode styles */
-.poster-mask. {
+.poster-mask.dark-mode {
   background: rgba(0, 0, 0, 0.9);
 
   .poster-card {

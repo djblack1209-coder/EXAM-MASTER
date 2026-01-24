@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern loading component with design system utilities -->
 <template>
-  <view v-if="visible" class="loading-container ds-flex-center" :class="{ ' ': isDark }">
+  <view v-if="visible" class="loading-container ds-flex-center" :class="{ 'dark-mode': isDark }">
     <view class="loading-content ds-flex-col ds-flex-center ds-gap-sm">
       <!-- VISUAL: Three-dot bounce animation -->
       <view class="loading-spinner ds-flex ds-gap-xs ds-flex-center">
@@ -79,7 +79,7 @@ export default {
   z-index: var(--ds-z-modal, 9999);
 
   /* VISUAL: Dark mode backdrop - 使用中性深色 */
-  &. {
+  &.dark-mode {
     background: rgba(28, 28, 30, 0.85);
 
     /* #ifndef APP-NVUE */
@@ -129,7 +129,7 @@ export default {
 }
 
 /* VISUAL: Dark mode text color */
-. .loading-text {
+.dark-mode .loading-text {
   color: var(--ds-color-text-primary, #E2E8F0);
 }
 

@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern todo list with design system utilities -->
 <template>
-  <view class="todo-list ds-card" :class="{ ' ': isDark }">
+  <view class="todo-list ds-card" :class="{ 'dark-mode': isDark }">
     <!-- 标题栏 -->
     <view class="list-header ds-flex ds-flex-between">
       <text class="header-title ds-text-xl ds-font-bold ds-text-primary">To do</text>
@@ -251,7 +251,7 @@ const onToggleTodo = (id) => {
 }
 
 /* VISUAL: Dark mode styles */
-.todo-list. {
+.todo-list.dark-mode {
   background: var(--ds-color-surface-secondary, #1c1c1e);
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
 

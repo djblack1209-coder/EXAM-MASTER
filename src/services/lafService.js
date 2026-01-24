@@ -130,10 +130,38 @@ export const lafService = {
    * await lafService.proxyAI('chat', { messages: [...] })
    */
   async proxyAI(action, payload, options = {}) {
+    // ✅ 前置参数校验 - 防止传空值给后端
+    if (!payload || typeof payload !== 'object') {
+      console.error('❌ [LafService] 参数错误: payload 必须是对象');
+      return {
+        code: -1,
+        success: false,
+        message: '参数错误: payload 不能为空',
+        data: null
+      };
+    }
+
+    // ✅ 检查 content 字段（对于 chat 类型的 action，content 是必需的）
+    if (action === 'chat' || action === 'analyze' || action === 'generate_questions') {
+      if (!payload.content || typeof payload.content !== 'string' || payload.content.trim() === '') {
+        console.error('❌ [LafService] 拦截: 尝试发送空内容给 AI');
+        return {
+          code: -1,
+          success: false,
+          message: '输入内容不能为空',
+          data: null
+        };
+      }
+      // 清理内容
+      payload.content = payload.content.trim();
+    }
+
     console.log('[LafService] 🚀 发起 AI 请求:', {
       action,
       payloadKeys: Object.keys(payload || {}),
-      payloadSample: JSON.stringify(payload).substring(0, 100)
+      payloadSample: JSON.stringify(payload).substring(0, 100),
+      hasContent: !!payload.content,
+      contentLength: payload.content ? payload.content.length : 0
     });
 
     try {
@@ -154,7 +182,12 @@ export const lafService = {
         requestData.userId = userId;
       }
 
-      console.log('[LafService] 📤 请求数据:', requestData);
+      console.log('[LafService] 📤 请求数据:', {
+        action: requestData.action,
+        hasContent: !!requestData.content,
+        contentPreview: requestData.content ? requestData.content.substring(0, 50) + '...' : 'N/A',
+        userId: userId
+      });
 
       const response = await this.request('/proxy-ai', requestData);
 

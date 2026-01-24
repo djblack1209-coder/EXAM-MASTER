@@ -1,5 +1,5 @@
 <template>
-  <view class="ai-consult-container" :class="{ ' ': isDark }" v-if="visible">
+  <view class="ai-consult-container" :class="{ 'dark-mode': isDark }" v-if="visible">
     <!-- 遮罩层 -->
     <view class="consult-mask" @tap="closeConsult"></view>
 
@@ -25,7 +25,7 @@
             <view class="message-avatar ds-flex">🤖</view>
             <view class="message-bubble">
               <text class="message-text ds-text-sm">您好！我是AI咨询助手，很高兴为您解答关于{{ schoolName
-                }}的考研问题。您可以咨询招生简章、历年分数线、专业设置等信息。</text>
+              }}的考研问题。您可以咨询招生简章、历年分数线、专业设置等信息。</text>
             </view>
           </view>
 
@@ -508,7 +508,7 @@ export default {
 }
 
 /* 深色模式 */
-. {
+.dark-mode {
   .consult-mask {
     background: rgba(0, 0, 0, 0.7);
   }

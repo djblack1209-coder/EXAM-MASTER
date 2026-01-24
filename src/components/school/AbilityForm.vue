@@ -1,5 +1,5 @@
 <template>
-  <view class="ability-form ds-flex ds-flex-col" :class="{ ' ': isDark }">
+  <view class="ability-form ds-flex ds-flex-col" :class="{ 'dark-mode': isDark }">
     <!-- 标题 -->
     <view class="ability-form__title ds-text-display ds-font-semibold">Step 3: 能力评估</view>
 

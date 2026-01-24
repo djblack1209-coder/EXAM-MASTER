@@ -1,6 +1,6 @@
 <template>
   <!-- REFACTOR: Wrapped in design system container, preserved all original directives -->
-  <view class="empty-container ds-flex-center ds-p-lg" :class="{ ' ': isDark }">
+  <view class="empty-container ds-flex-center ds-p-lg" :class="{ 'dark-mode': isDark }">
     <view class="empty-content ds-flex-col ds-flex-center ds-gap-md">
       <text class="empty-icon">{{ icon || '📭' }}</text>
       <text class="empty-title ds-text-lg ds-font-semibold ds-text-primary">{{ title || '暂无数据' }}</text>
@@ -75,7 +75,7 @@ export default {
 }
 
 /* VISUAL: Dark mode icon opacity adjustment */
-. .empty-icon {
+.dark-mode .empty-icon {
   opacity: 0.5;
 }
 

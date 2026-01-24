@@ -1,5 +1,5 @@
 <template>
-  <view class="step-progress" :class="{ ' ': isDark }">
+  <view class="step-progress" :class="{ 'dark-mode': isDark }">
     <view class="step-progress__container ds-flex ds-flex-between">
       <view v-for="(step, index) in steps" :key="index" class="step-progress__item ds-flex ds-flex-col">
         <!-- 圆点 -->

@@ -1,5 +1,5 @@
 <template>
-  <view class="apple-container" :class="{ ' ': isDark }">
+  <view class="apple-container" :class="{ 'dark-mode': isDark }">
     <!-- 苹果质感自定义导航栏 -->
     <view class="custom-navbar" :style="{ height: navBarHeight + 'px' }">
       <view class="navbar-status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
@@ -884,7 +884,7 @@ export default {
 }
 
 /* 深色模式样式 */
-.apple-container. {
+.apple-container.dark-mode {
   background-color: var(--bg-body);
 }
 
@@ -903,7 +903,7 @@ export default {
 }
 
 /* 深色模式下的导航栏 */
-.apple-container. .custom-navbar {
+.apple-container.dark-mode .custom-navbar {
   background: rgba(28, 28, 30, 0.8);
   border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
 }
@@ -937,7 +937,7 @@ export default {
   transform: scale(0.95);
 }
 
-.apple-container. .navbar-back-btn:active {
+.apple-container.dark-mode .navbar-back-btn:active {
   background: rgba(255, 255, 255, 0.1);
 }
 
@@ -949,7 +949,7 @@ export default {
   margin-left: -4px;
 }
 
-.apple-container. .back-icon {
+.apple-container.dark-mode .back-icon {
   color: var(--bg-card);
 }
 
@@ -968,7 +968,7 @@ export default {
   -webkit-font-smoothing: antialiased;
 }
 
-.apple-container. .navbar-title {
+.apple-container.dark-mode .navbar-title {
   color: var(--bg-card);
 }
 

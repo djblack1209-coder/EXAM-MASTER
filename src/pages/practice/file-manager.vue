@@ -1,5 +1,5 @@
 <template>
-  <view class="file-manager-container" :class="{ ' ': isDark }">
+  <view class="file-manager-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav">
       <view class="nav-left" @tap="goBack">
@@ -200,7 +200,7 @@ export default {
 }
 
 /* 深色模式 */
-.file-manager-container. {
+.file-manager-container.dark-mode {
   --bg-body: var(--bg-body);
   --text-secondary: #b0b0b0;
   --text-primary: var(--bg-card);

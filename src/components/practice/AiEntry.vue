@@ -3,7 +3,7 @@
   <view class="ai-entry-placeholder"></view>
 
   <!-- 固定底部的 AI 入口 -->
-  <view class="ai-entry-fixed" :class="{ ' ': isDark }">
+  <view class="ai-entry-fixed" :class="{ 'dark-mode': isDark }">
     <view class="section-header ds-flex ds-flex-between">
       <text class="title ds-text-lg ds-font-semibold">AI对话窗口</text>
     </view>

@@ -1,5 +1,5 @@
 <template>
-  <view class="upload-card ds-card ds-flex ds-flex-col ds-touchable" :class="{ ' ': isDark }"
+  <view class="upload-card ds-card ds-flex ds-flex-col ds-touchable" :class="{ 'dark-mode': isDark }"
     @tap="handleUpload">
     <view class="upload-icon ds-touch-target">
       <view class="cloud-icon">☁️</view>

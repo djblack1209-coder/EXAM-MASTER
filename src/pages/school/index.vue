@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { ' ': isDark }]">
+	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<view class="header-nav">
@@ -750,7 +750,7 @@ export default {
 	--card-border: rgba(0, 0, 0, 0.05);
 	--bg-hover: var(--bg-card);
 	--border-light: rgba(255, 255, 255, 0.6);
-	--brand-color: #2ECC71;
+	--brand-color: var(--accent-warm);
 	--brand-color-light: #EBFDF5;
 
 	min-height: 100vh;
@@ -760,7 +760,7 @@ export default {
 	transition: background-color 0.3s;
 }
 
-.container. {
+.container.dark-mode {
 	--bg-body: var(--bg-body);
 	--text-primary: var(--bg-card);
 	--text-secondary: #b0b0b0;
@@ -769,11 +769,11 @@ export default {
 	--card-border: #2d4e1f;
 	--bg-hover: rgba(255, 255, 255, 0.1);
 	--border-light: rgba(255, 255, 255, 0.2);
-	--brand-color: #2ECC71;
+	--brand-color: var(--accent-warm);
 	--brand-color-light: rgba(46, 204, 113, 0.2);
 }
 
-.container. .aurora-bg {
+.container.dark-mode .aurora-bg {
 	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, var(--bg-body) 100%) !important;
 	opacity: 0.8;
 }
@@ -833,13 +833,13 @@ export default {
 }
 
 /* 深色模式下的导航栏背景适配 */
-.container. .header-nav {
+.container.dark-mode .header-nav {
 	background: var(--bg-body) !important;
 	border-bottom: 1px solid #2d4e1f !important;
 }
 
-.container. .header-nav .nav-content .nav-back,
-.container. .header-nav .nav-content .nav-title {
+.container.dark-mode .header-nav .nav-content .nav-back,
+.container.dark-mode .header-nav .nav-content .nav-title {
 	color: var(--bg-card) !important;
 }
 
@@ -1180,7 +1180,7 @@ export default {
 		font-size: 32rpx;
 		font-weight: 800;
 		color: var(--brand-color);
-		line-height: 1;
+		line-height: var(--line-height-normal);
 	}
 
 	.mr-lbl {
@@ -1452,7 +1452,7 @@ export default {
 }
 
 /* 深色模式适配 - 极光背景 */
-.container. .aurora-bg {
+.container.dark-mode .aurora-bg {
 	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
 	opacity: 0.4;
 	filter: blur(120px);
