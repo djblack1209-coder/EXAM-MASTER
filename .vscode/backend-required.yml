@@ -1,0 +1,38 @@
+# 后端依赖清单
+# 生成时间: 2026-01-24 10:02:25
+
+backend_tests:
+  - name: AI功能测试
+    reason: 需要Sealos /proxy-ai接口
+    status: PENDING
+    calls: 51 处 lafService.proxyAI()
+    action: 提供真实API环境或使用Mock数据
+  
+  - name: 错题本云端同步
+    reason: 需要Sealos /mistake-manager接口
+    status: PENDING
+    calls: 95 处 storageService 调用
+    action: 验证云端保存和获取功能
+  
+  - name: 社交功能
+    reason: Module 7未实施
+    status: NOT_IMPLEMENTED
+    action: 参考 docs/development/phases/MODULE7_SOCIAL_DESIGN.md
+
+  - name: 排行榜功能
+    reason: 需要Sealos /rank-center接口
+    status: PENDING
+    action: 验证分数上传和排行榜获取
+
+  - name: PK对战功能
+    reason: 需要实时对战匹配服务
+    status: PENDING
+    action: 验证匹配逻辑和分数结算
+
+quality_metrics:
+  console_log_count: 436
+  console_files: 36
+  hardcoded_appid: 2
+  hardcoded_sealos: 3
+  laf_service_calls: 51
+  storage_service_calls: 95

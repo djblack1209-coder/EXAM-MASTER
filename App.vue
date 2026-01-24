@@ -1,42 +1,26 @@
 <script>
 import { useUserStore } from './src/stores'
 import { qa, injectInterceptor, hookSetData } from './src/utils/debug/qa.js'
+import { applyTheme, getCurrentTheme, watchTheme } from './src/design/theme-engine.js'
 
 // 必须在 App() 之前执行
 injectInterceptor()
 hookSetData()
 
-// 注意：Console 日志复制功能已移除，请使用 Raycast 或其他工具复制日志
-
 export default {
 	onLaunch() {
-		console.log('App Launch')
+		console.log('App Launch - GEMINI-ARCHITECT v9')
 
 		// 挂载 QA 工具到全局
 		if (typeof getApp === 'function') {
 			const app = getApp()
 			if (app) {
 				app.qa = qa
-
-				// 注意：Console 日志复制工具已移除，请使用 Raycast 或其他工具
 			}
 		}
 
-		// 初始化应用配置
-		// 注意：已移除原生tabBar配置，使用自定义BottomNavbar组件
-		// 注意：hideTabBar 需要在页面 onShow 中调用，不能在这里调用（会报错）
-
-		// 读取保存的主题模式
-		const savedTheme = uni.getStorageSync('theme_mode') || 'light'
-		this.globalData.isDarkMode = savedTheme === 'dark'
-		this.applyTheme(savedTheme)
-
-		// 全局监听主题切换事件
-		uni.$on('updateTheme', (mode) => {
-			const isDark = mode === 'dark'
-			this.globalData.isDarkMode = isDark
-			this.applyTheme(mode)
-		})
+		// 初始化双模主题系统
+		this.initThemeSystem()
 
 		// 执行静默登录
 		this.performSilentLogin()
@@ -44,14 +28,84 @@ export default {
 	onShow() {
 		console.log('App Show')
 		// 每次显示时同步主题
-		const savedTheme = uni.getStorageSync('theme_mode') || 'light'
-		this.globalData.isDarkMode = savedTheme === 'dark'
-		this.applyTheme(savedTheme)
+		const currentTheme = getCurrentTheme()
+		this.globalData.currentTheme = currentTheme
+		applyTheme(currentTheme)
 	},
 	onHide() {
 		console.log('App Hide')
 	},
 	methods: {
+		/**
+		 * 初始化双模主题系统
+		 */
+		initThemeSystem() {
+			// 读取保存的主题或使用系统主题
+			const savedTheme = uni.getStorageSync('theme_mode')
+			const currentTheme = savedTheme || getCurrentTheme()
+
+			this.globalData.currentTheme = currentTheme
+			this.globalData.isDarkMode = currentTheme === 'dark'
+
+			// 应用主题
+			applyTheme(currentTheme)
+
+			// 监听系统主题变化
+			watchTheme((theme) => {
+				// 如果用户没有手动设置主题，则跟随系统
+				const userSetTheme = uni.getStorageSync('theme_mode')
+				if (!userSetTheme) {
+					this.switchTheme(theme)
+				}
+			})
+
+			// 全局监听主题切换事件
+			uni.$on('updateTheme', (mode) => {
+				this.switchTheme(mode)
+			})
+
+			console.log('[ThemeEngine] 初始化完成，当前主题:', currentTheme)
+		},
+
+		/**
+		 * 切换主题
+		 */
+		switchTheme(theme) {
+			this.globalData.currentTheme = theme
+			this.globalData.isDarkMode = theme === 'dark'
+
+			// 应用设计令牌
+			applyTheme(theme)
+
+			// 保存用户选择
+			uni.setStorageSync('theme_mode', theme)
+
+			// 触发全局主题更新事件
+			uni.$emit('themeUpdate', theme)
+
+			// 更新状态栏颜色
+			this.updateNavigationBarColor(theme)
+
+			console.log('[ThemeEngine] 主题已切换:', theme)
+		},
+
+		/**
+		 * 更新导航栏颜色
+		 */
+		updateNavigationBarColor(theme) {
+			const isDark = theme === 'dark'
+			uni.setNavigationBarColor({
+				frontColor: isDark ? '#ffffff' : '#000000',
+				backgroundColor: isDark ? '#0D1117' : '#F9FAFB',
+				animation: {
+					duration: 300,
+					timingFunc: 'easeInOut'
+				}
+			}).catch(err => {
+				console.log('设置导航栏颜色失败', err)
+			})
+		},
+
 		/**
 		 * 执行静默登录
 		 */
@@ -64,125 +118,101 @@ export default {
 					console.log('[App] 静默登录成功，用户ID:', result.userInfo?._id || result.userInfo?.id)
 				} else {
 					console.warn('[App] 静默登录失败:', result.error?.message || '未知错误')
-					// 静默登录失败不影响应用使用，用户可以稍后手动登录
 				}
 			} catch (error) {
 				console.error('[App] 静默登录异常:', error)
 			}
-		},
-		applyTheme(mode) {
-			// 保存主题模式
-			uni.setStorageSync('theme_mode', mode)
-
-			// 触发全局主题更新事件，让所有页面响应
-			uni.$emit('themeUpdate', mode)
-
-			// 更新状态栏颜色
-			this.updateNavigationBarColor(mode)
-		},
-		updateNavigationBarColor(mode) {
-			const isDark = mode === 'dark'
-			uni.setNavigationBarColor({
-				frontColor: isDark ? '#ffffff' : '#000000',
-				backgroundColor: isDark ? '#163300' : '#F8FAFC',
-				animation: {
-					duration: 300,
-					timingFunc: 'easeInOut'
-				}
-			}).catch(err => {
-				console.log('设置导航栏颜色失败', err)
-			})
 		}
 	},
 	globalData: {
+		currentTheme: 'light',
 		isDarkMode: false,
-		qaLogs: [] // QA 日志容器
+		qaLogs: []
 	}
 }
 </script>
 
 <style lang="scss">
-/* 全局样式 */
+/* ============================================
+   GEMINI-ARCHITECT v9 全局样式系统
+   双模设计令牌 (Wise/Bitget)
+   ============================================ */
+
+/* 导入通用样式 */
 @import '@/common/styles/common.scss';
 
 /* ============================================
-   全局 CSS 变量定义 - 浅色模式（默认）
+   根元素配置
    ============================================ */
 page {
 	height: 100%;
 
-	/* 基础颜色变量 - 浅色模式 (Wise 风格) */
-	--bg-main: #FFFFFF;
+	/* 默认主题 (Wise - 白昼模式) */
+	--bg-body: #F9FAFB;
 	--bg-card: #FFFFFF;
-	--border-card: #EFEFEF;
-	--text-main: #163300;
-	/* Wise Dark Green */
-	--text-title: #163300;
-	--text-body: #454545;
-	--text-light: #767676;
+	--bg-hover: #F3F4F6;
+	--bg-active: #E5E7EB;
 
-	/* 品牌色 */
-	--accent-green: #9FE870;
-	/* Wise Lime */
-	--accent-green-light: #F2F9EE;
-	--accent-blue: #00B9FF;
+	--text-primary: #2F3542;
+	--text-secondary: #747D8C;
+	--text-tertiary: #A4B0BE;
+	--text-disabled: #CED6E0;
 
-	/* 输入框 */
-	--input-bg: #F2F2F2;
-	--input-border: #E0E0E0;
+	--brand-color: #9FE870;
+	--brand-hover: #8DD65A;
+	--brand-active: #7BC444;
 
-	/* TabBar 背景 */
-	--tab-bg: #FFFFFF;
+	--action-green: #00B894;
+	--action-blue: #0984E3;
+	--danger: #FF4757;
+	--warning: #FFA502;
+	--success: #26DE81;
+	--info: #4B7BEC;
 
-	/* 默认背景色和文字色 */
-	background-color: var(--bg-main);
-	color: var(--text-body);
-	transition: background-color 0.3s, color 0.3s;
+	--border-light: #E1E8ED;
+	--border-medium: #CED6E0;
+	--border-dark: #A4B0BE;
+
+	--radius-xs: 4px;
+	--radius-sm: 8px;
+	--radius-md: 16px;
+	--radius-lg: 24px;
+	--radius-xl: 32px;
+	--radius-full: 9999px;
+
+	--spacing-xs: 4px;
+	--spacing-sm: 8px;
+	--spacing-md: 16px;
+	--spacing-lg: 20px;
+	--spacing-xl: 24px;
+	--spacing-2xl: 32px;
+	--spacing-3xl: 40px;
+
+	--font-weight-regular: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+	--font-weight-extrabold: 800;
+
+	--shadow-1: 0 2px 8px rgba(0, 0, 0, 0.04);
+	--shadow-2: 0 4px 16px rgba(0, 0, 0, 0.08);
+	--shadow-3: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+	--transition-fast: 0.15s;
+	--transition: 0.3s;
+	--transition-slow: 0.5s;
+
+	--ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+	/* 应用背景和文字色 */
+	background-color: var(--bg-body);
+	color: var(--text-primary);
+	transition: background-color var(--transition) var(--ease),
+		color var(--transition) var(--ease);
 }
 
 /* ============================================
-   深色模式 CSS 变量覆盖 - 增强对比度
-   ============================================ */
-.dark-mode {
-	--bg-main: #163300;
-	/* Wise Dark Green Background */
-	--bg-card: rgba(255, 255, 255, 0.05);
-	--border-card: rgba(255, 255, 255, 0.1);
-	--text-main: #FFFFFF;
-	--text-title: #FFFFFF;
-	--text-body: #E2E8F0;
-	--text-light: #A0AEC0;
-
-	/* 品牌色 */
-	--accent-green: #9FE870;
-	/* Wise Lime */
-	--accent-green-light: rgba(159, 232, 112, 0.2);
-	--accent-blue: #00B9FF;
-
-	/* 输入框 */
-	--input-bg: rgba(255, 255, 255, 0.1);
-	--input-border: rgba(255, 255, 255, 0.2);
-
-	/* TabBar 背景 */
-	--tab-bg: #163300;
-
-	/* 深色模式下的极光背景 */
-	.aurora-bg {
-		opacity: 0.2;
-		filter: blur(120px);
-	}
-}
-
-/* ============================================
-   智能护眼模式（深夜模式）
-   当处于 23:00 - 05:00 时自动启用
-   ============================================ */
-.dark-mode.night-mode {
-	filter: sepia(20%);
-}
-
-/* ============================================
-   全局字体设置
+   全局字体系统
    ============================================ */
 page,
 view,
@@ -193,36 +223,81 @@ input,
 textarea,
 scroll-view {
 	box-sizing: border-box;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-	transition: background-color 0.3s, color 0.3s;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+		'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+		'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB',
+		'Microsoft YaHei', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 /* ============================================
-   全局组件样式（使用 CSS 变量）
+   全局组件样式（使用设计令牌）
    ============================================ */
 .glass-card {
 	background: var(--bg-card);
-	border: 1px solid var(--border-card);
-	color: var(--text-body);
+	border: 1px solid var(--border-light);
+	border-radius: var(--radius-md);
+	padding: var(--spacing-md);
+	color: var(--text-primary);
+	transition: all var(--transition) var(--ease);
 }
 
-.dark-mode .glass-card {
+.glass-card:hover {
+	background: var(--bg-hover);
+	border-color: var(--border-medium);
+}
+
+.glass-btn {
 	background: var(--bg-card);
-	border-color: var(--border-card);
-	color: var(--text-body);
+	border: 1px solid var(--border-light);
+	border-radius: var(--radius-sm);
+	padding: var(--spacing-sm) var(--spacing-md);
+	color: var(--text-primary);
+	font-weight: var(--font-weight-medium);
+	transition: all var(--transition-fast) var(--ease);
 }
 
-.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, #163300 0%, #1a2e05 50%, #0f3460 100%) !important;
+.glass-btn:active {
+	background: var(--bg-active);
+	transform: scale(0.98);
 }
 
-.dark-mode .header-nav {
-	background: rgba(22, 51, 0, 0.8) !important;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+/* ============================================
+   兼容旧版样式（逐步废弃）
+   ============================================ */
+.dark-mode {
+	/* 旧版深色模式类名，保留以兼容现有代码 */
+	--bg-main: var(--bg-body);
+	--bg-card: var(--bg-card);
+	--border-card: var(--border-light);
+	--text-main: var(--text-primary);
+	--text-title: var(--text-primary);
+	--text-body: var(--text-secondary);
+	--text-light: var(--text-tertiary);
+	--accent-green: var(--brand-color);
+	--accent-blue: var(--action-blue);
+	--input-bg: var(--bg-hover);
+	--input-border: var(--border-light);
+	--tab-bg: var(--bg-card);
 }
 
-.dark-mode .glass-btn {
-	background: rgba(255, 255, 255, 0.1) !important;
-	border: 1px solid rgba(255, 255, 255, 0.2) !important;
+/* ============================================
+   性能优化
+   ============================================ */
+/* 减少重绘 */
+.will-change-transform {
+	will-change: transform;
+}
+
+.will-change-opacity {
+	will-change: opacity;
+}
+
+/* GPU 加速 */
+.gpu-accelerated {
+	transform: translateZ(0);
+	backface-visibility: hidden;
+	perspective: 1000px;
 }
 </style>
