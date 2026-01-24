@@ -458,16 +458,18 @@ export default {
 			});
 		},
 
-		// 处理待办事项切换 - 简化版本
+		// 处理待办事项切换 - 通过ID查找，不依赖索引
 		handleToggleTodo(todoId) {
 			console.log('[Index] Toggle todo ID:', todoId);
 			
-			// 直接使用 $set 确保响应式更新
-			const index = this.todos.findIndex(t => t.id === todoId);
-			if (index !== -1) {
-				// 使用 Vue 的 $set 方法确保响应式
-				this.$set(this.todos[index], 'completed', !this.todos[index].completed);
-				console.log(`[Index] Todo ${todoId} is now:`, this.todos[index].completed ? 'completed' : 'active');
+			// 通过ID在原始todos数组中查找
+			const todo = this.todos.find(t => t.id === todoId);
+			if (todo) {
+				// 直接切换状态，Vue会自动检测变化
+				todo.completed = !todo.completed;
+				// 强制触发响应式更新
+				this.$forceUpdate();
+				console.log(`[Index] Todo ${todoId} is now:`, todo.completed ? 'completed' : 'active');
 			} else {
 				console.error('[Index] Todo not found:', todoId);
 			}
