@@ -269,6 +269,7 @@ const handleClick = (e) => {
     border-top-color: #FFFFFF;
     border-radius: var(--radius-full);
     animation: spin 0.6s linear infinite;
+    will-change: transform;
 }
 
 @keyframes spin {

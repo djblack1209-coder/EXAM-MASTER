@@ -195,6 +195,7 @@ const handleSliceClick = (slice, index) => {
     transform-style: preserve-3d;
     transform: rotateX(60deg) rotateZ(0deg);
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 
     .is-interactive & {
         &:hover {
@@ -215,6 +216,7 @@ const handleSliceClick = (slice, index) => {
     cursor: pointer;
     animation: sliceSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) backwards;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 
     &.slice-active {
         .slice-top {

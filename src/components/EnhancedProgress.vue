@@ -18,7 +18,7 @@
 
             <!-- 实际进度条 -->
             <view class="progress-bar" :class="progressClass" :style="{
-                width: `${progress}%`,
+                transform: `scaleX(${progress / 100})`,
                 background: progressGradient
             }"></view>
         </view>
@@ -194,7 +194,10 @@ const statusClass = computed(() => {
     height: 100%;
     border-radius: var(--radius-full);
     z-index: 2;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0;
+    transform-origin: left;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 
     // 品牌色光晕
     &.progress-bar--brand {

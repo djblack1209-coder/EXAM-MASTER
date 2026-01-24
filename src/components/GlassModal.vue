@@ -159,6 +159,7 @@ const handleCancel = () => {
     align-items: center;
     justify-content: center;
     animation: fadeIn 0.3s ease;
+    will-change: opacity;
 
     &.is-closing {
         animation: fadeOut 0.3s ease;
@@ -195,6 +196,7 @@ const handleCancel = () => {
     max-height: 80vh;
     display: flex;
     flex-direction: column;
+    will-change: transform, opacity;
 
     // 位置变体
     &.position-center {
@@ -209,6 +211,7 @@ const handleCancel = () => {
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         animation: slideInBottom 0.3s ease;
+        will-change: transform;
     }
 
     &.position-top {
@@ -219,6 +222,7 @@ const handleCancel = () => {
         border-top-left-radius: 0;
         border-top-right-radius: 0;
         animation: slideInTop 0.3s ease;
+        will-change: transform;
     }
 
     // 尺寸变体

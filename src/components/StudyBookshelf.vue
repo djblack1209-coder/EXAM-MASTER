@@ -32,7 +32,7 @@
 
                         <!-- 进度指示器 -->
                         <view class="book-progress-bar">
-                            <view class="progress-fill" :style="{ height: book.progress + '%' }"></view>
+                            <view class="progress-fill" :style="{ transform: `scaleY(${book.progress / 100})` }"></view>
                         </view>
                     </view>
                 </view>
@@ -170,6 +170,7 @@ const handleBookClick = (book) => {
     transform-style: preserve-3d;
     transform: rotateX(15deg) rotateY(-5deg);
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 
     .is-interactive & {
         &:hover {
@@ -212,6 +213,7 @@ const handleBookClick = (book) => {
     cursor: pointer;
     animation: bookSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
     transition: transform 0.3s ease;
+    will-change: transform;
 
     .is-interactive & {
         &:hover {
@@ -256,6 +258,7 @@ const handleBookClick = (book) => {
     border-radius: var(--radius-sm);
     transform: translateZ(15px);
     transition: box-shadow 0.3s ease;
+    will-change: box-shadow;
 
     .book-title {
         writing-mode: vertical-rl;
@@ -316,10 +319,13 @@ const handleBookClick = (book) => {
         bottom: 0;
         left: 0;
         width: 100%;
+        height: 0;
         background: linear-gradient(to top,
                 rgba(255, 255, 255, 0.3),
                 rgba(255, 255, 255, 0.1));
-        transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: bottom;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
     }
 }
 

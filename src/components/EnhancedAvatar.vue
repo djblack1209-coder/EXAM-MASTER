@@ -143,6 +143,7 @@ const handleError = (e) => {
 
         .avatar-container {
             transition: transform 0.3s ease;
+    will-change: transform;
 
             &:active {
                 transform: scale(0.95);
@@ -223,6 +224,7 @@ const handleError = (e) => {
     .indicator-dot {
         border-radius: 50%;
         animation: statusPulse 2s ease-in-out infinite;
+    will-change: transform, opacity;
     }
 
     &.indicator-online .indicator-dot {
