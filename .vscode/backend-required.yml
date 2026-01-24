@@ -1,5 +1,5 @@
 # 后端依赖清单
-# 生成时间: 2026-01-24 20:40:08
+# 生成时间: 2026-01-24 21:04:28
 
 backend_tests:
   - name: AI功能测试
@@ -30,8 +30,8 @@ backend_tests:
     action: 验证匹配逻辑和分数结算
 
 quality_metrics:
-  console_log_count: 444
-  console_files: 39
+  console_log_count: 446
+  console_files: 40
   hardcoded_appid: 2
   hardcoded_sealos: 3
   laf_service_calls: 53
