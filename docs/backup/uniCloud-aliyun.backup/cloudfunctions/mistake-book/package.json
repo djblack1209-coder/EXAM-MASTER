@@ -1,8 +1,0 @@
-{
-  "name": "mistake-book",
-  "version": "1.0.0",
-  "description": "错题本云对象",
-  "main": "index.obj.js",
-  "dependencies": {},
-  "devDependencies": {}
-}

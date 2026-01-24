@@ -1,8 +1,0 @@
-{
-  "name": "user-center",
-  "version": "1.0.0",
-  "description": "用户中心云对象",
-  "main": "index.obj.js",
-  "dependencies": {},
-  "devDependencies": {}
-}
