@@ -1,11 +1,11 @@
 # 后端依赖清单
-# 生成时间: 2026-01-23 15:27:15
+# 生成时间: 2026-01-24 08:50:32
 
 backend_tests:
   - name: AI功能测试
     reason: 需要Sealos /proxy-ai接口
     status: PENDING
-    calls: 53 处 lafService.proxyAI()
+    calls: 51 处 lafService.proxyAI()
     action: 提供真实API环境或使用Mock数据
   
   - name: 错题本云端同步
@@ -30,9 +30,9 @@ backend_tests:
     action: 验证匹配逻辑和分数结算
 
 quality_metrics:
-  console_log_count: 434
-  console_files: 31
-  hardcoded_appid: 0
-  hardcoded_sealos: 1
-  laf_service_calls: 53
+  console_log_count: 438
+  console_files: 37
+  hardcoded_appid: 2
+  hardcoded_sealos: 3
+  laf_service_calls: 51
   storage_service_calls: 95
