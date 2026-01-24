@@ -452,11 +452,18 @@ export default {
 		handleToggleTodo(todoId) {
 			console.log('Toggle todo:', todoId);
 			
-			// 找到对应的待办事项并切换状态
-			const todo = this.todos.find(t => t.id === todoId);
-			if (todo) {
-				todo.completed = !todo.completed;
-				console.log(`Todo ${todoId} toggled to:`, todo.completed);
+			// 找到对应的待办事项的索引
+			const index = this.todos.findIndex(t => t.id === todoId);
+			if (index !== -1) {
+				// 使用 Vue.set 或 $set 确保响应式更新
+				// 或者使用数组替换方式触发响应式
+				const newTodos = [...this.todos];
+				newTodos[index] = {
+					...newTodos[index],
+					completed: !newTodos[index].completed
+				};
+				this.todos = newTodos;
+				console.log(`Todo ${todoId} toggled to:`, newTodos[index].completed);
 			}
 		},
 
