@@ -198,8 +198,11 @@ import CustomTabbar from '../../components/custom-tabbar/custom-tabbar.vue';
 import BaseSkeleton from '../../components/base-skeleton/base-skeleton.vue';
 import TodoList from '../../components/TodoList.vue';
 import { getGreetingTime } from '../../utils/core/date';
-import { useTodoStore } from '../../stores';
+import { useStudyStore } from '../../stores/modules/study';
+import { useTodoStore } from '../../stores/modules/todo';
+import { useUserStore } from '../../stores/modules/user';
 import { lafService } from '../../services/lafService.js';
+import { storageService } from '../../services/storageService.js';
 
 export default {
 	components: {
@@ -215,23 +218,13 @@ export default {
 			scrollY: 0,
 			isDark: false,
 			
-			// 用户信息
-			userName: 'John',
-			userInitials: 'JD',
+			// Store实例
+			studyStore: null,
+			todoStore: null,
+			userStore: null,
 			
-			// 核心统计数据
-			totalQuestions: 1234,
-			finishedCount: 23,
-			accuracy: 78.5,
-			totalStudyDays: 14,
-			achievementCount: 23,
-
-			// 待办事项数据
-			todos: [
-				{ id: 1, text: '复习数学第三章', completed: false, priority: 'Priority' },
-				{ id: 2, text: '完成物理作业', completed: false, priority: 'Important' },
-				{ id: 3, text: '准备英语演讲', completed: false, priority: 'Normal' }
-			],
+			// 成就徽章数量（从本地存储获取）
+			achievementCount: 0,
 
 			// 知识点数据
 			knowledgePoints: [
@@ -272,6 +265,11 @@ export default {
 			this.isDark = mode === 'dark';
 		});
 
+		// 初始化Store
+		this.studyStore = useStudyStore();
+		this.todoStore = useTodoStore();
+		this.userStore = useUserStore();
+
 		this.loadData();
 	},
 
@@ -288,62 +286,201 @@ export default {
 		// 两种模式都按mastery排序（低到高）
 		sortedKnowledgePoints() {
 			return [...this.knowledgePoints].sort((a, b) => a.mastery - b.mastery);
+		},
+		
+		// 用户信息
+		userName() {
+			return this.userStore?.userInfo?.nickName || '学习者';
+		},
+		
+		userInitials() {
+			return this.getInitials(this.userName);
+		},
+		
+		// 学习统计数据
+		totalQuestions() {
+			return this.studyStore?.studyProgress?.totalQuestions || 0;
+		},
+		
+		finishedCount() {
+			return this.studyStore?.studyProgress?.completedQuestions || 0;
+		},
+		
+		accuracy() {
+			return parseFloat(this.studyStore?.accuracy || 0);
+		},
+		
+		totalStudyDays() {
+			return this.studyStore?.studyProgress?.studyDays || 0;
+		},
+		
+		// 待办事项数据
+		todos() {
+			if (!this.todoStore?.tasks) return [];
+			return this.todoStore.tasks.map(task => ({
+				id: task.id,
+				text: task.title,
+				completed: task.done,
+				priority: task.tag || task.priority
+			}));
 		}
 	},
 
 	methods: {
-		loadData() {
-			// 加载用户数据
-			const userInfo = uni.getStorageSync('userInfo') || {};
-			if (userInfo.nickName) {
-				this.userName = userInfo.nickName;
-				this.userInitials = this.getInitials(userInfo.nickName);
+		async loadData() {
+			try {
+				// 1. 恢复用户信息
+				this.userStore.restoreUserInfo();
+				
+				// 2. 恢复学习进度
+				this.studyStore.restoreProgress();
+				
+				// 3. 加载待办事项
+				this.todoStore.initTasks();
+				
+				// 4. 加载成就徽章数量
+				this.loadAchievements();
+				
+				// 5. 加载知识点数据
+				await this.loadKnowledgePoints();
+				
+				// 6. 加载学习轨迹
+				this.loadRecentActivities();
+				
+			} catch (error) {
+				console.error('[Index] 数据加载失败:', error);
+				uni.showToast({
+					title: '数据加载失败',
+					icon: 'none'
+				});
+			} finally {
+				setTimeout(() => {
+					this.isLoading = false;
+				}, 300);
 			}
-
-			// 加载统计数据
-			this.calculateStats();
-
-			setTimeout(() => {
-				this.isLoading = false;
-			}, 500);
 		},
 
 		refreshData() {
-			this.calculateStats();
+			// 刷新所有数据
+			this.studyStore.restoreProgress();
+			this.todoStore.initTasks();
+			this.userStore.restoreUserInfo();
+			this.loadAchievements();
+			this.loadKnowledgePoints();
+			this.loadRecentActivities();
 		},
-
-		calculateStats() {
-			const questionBank = uni.getStorageSync('v30_bank') || [];
-			const userAnswers = uni.getStorageSync('v30_user_answers') || {};
-			const studyStats = uni.getStorageSync('study_stats') || {};
-
-			this.totalQuestions = Array.isArray(questionBank) ? questionBank.length : 0;
-			this.finishedCount = Object.keys(userAnswers).length;
-
-			if (this.finishedCount > 0 && this.totalQuestions > 0) {
-				let correctCount = 0;
-				Object.keys(userAnswers).forEach(questionId => {
-					const question = questionBank.find(q => {
-						const qId = q.id || q._id || '';
-						return qId.toString() === questionId.toString();
-					});
-					if (question) {
-						const userAnswer = userAnswers[questionId];
-						const correctAnswer = question.answer || '';
-						if (userAnswer.toString().toUpperCase() === correctAnswer.toString().toUpperCase()) {
-							correctCount++;
-						}
+		
+		loadAchievements() {
+			// 从本地存储获取成就数量
+			const achievements = uni.getStorageSync('user_achievements') || [];
+			this.achievementCount = Array.isArray(achievements) ? achievements.length : 0;
+		},
+		
+		async loadKnowledgePoints() {
+			try {
+				// 从错题本获取数据
+				const mistakes = await storageService.getMistakes(1, 999);
+				const mistakeCount = mistakes?.data?.length || 0;
+				
+				// 从题库获取数据
+				const questionBank = uni.getStorageSync('v30_bank') || [];
+				const totalQuestions = questionBank.length;
+				
+				// 计算各类知识点
+				this.knowledgePoints = [
+					{ 
+						id: 1, 
+						title: '错题集', 
+						count: mistakeCount, 
+						icon: '🎯', 
+						mastery: mistakeCount > 0 ? Math.max(10, 100 - mistakeCount * 2) : 100, 
+						color: '#EF4444' 
+					},
+					{ 
+						id: 2, 
+						title: '热门考点', 
+						count: Math.floor(totalQuestions * 0.3), 
+						icon: '🔥', 
+						mastery: 45, 
+						color: '#F59E0B' 
+					},
+					{ 
+						id: 3, 
+						title: '练习题', 
+						count: totalQuestions, 
+						icon: '📝', 
+						mastery: this.finishedCount > 0 ? Math.min(95, (this.finishedCount / totalQuestions) * 100) : 0, 
+						color: '#00F2FF' 
+					},
+					{ 
+						id: 4, 
+						title: '核心概念', 
+						count: Math.floor(totalQuestions * 0.4), 
+						icon: '🧠', 
+						mastery: this.accuracy > 0 ? Math.min(95, this.accuracy) : 0, 
+						color: '#9FE870' 
+					},
+					{ 
+						id: 5, 
+						title: '公式定理', 
+						count: Math.floor(totalQuestions * 0.2), 
+						icon: '🧮', 
+						mastery: 60, 
+						color: '#A855F7' 
+					},
+					{ 
+						id: 6, 
+						title: '阅读理解', 
+						count: Math.floor(totalQuestions * 0.15), 
+						icon: '📖', 
+						mastery: 50, 
+						color: '#EC4899' 
 					}
-				});
-				this.accuracy = Math.round((correctCount / this.finishedCount) * 100 * 10) / 10;
+				];
+			} catch (error) {
+				console.error('[Index] 加载知识点失败:', error);
 			}
-
-			// 计算学习天数
-			let realStudyDays = 0;
-			Object.keys(studyStats).forEach(key => {
-				if (studyStats[key] > 0) realStudyDays++;
-			});
-			this.totalStudyDays = realStudyDays;
+		},
+		
+		loadRecentActivities() {
+			// 从学习历史获取最近活动
+			const history = this.studyStore?.questionHistory || [];
+			
+			if (history.length > 0) {
+				this.recentActivities = history.slice(0, 4).map(record => ({
+					title: `练习：${record.questionType || '综合题'}`,
+					subtitle: record.isCorrect ? '答对，继续保持' : '答错，已加入错题本',
+					time: this.formatTime(record.timestamp),
+					icon: record.isCorrect ? '✓' : '✗',
+					status: record.isCorrect ? 'completed' : 'in-progress'
+				}));
+			} else {
+				// 默认活动
+				this.recentActivities = [
+					{ title: '开始学习', subtitle: '欢迎使用Exam-Master', time: '刚刚', icon: '🎉', status: 'completed' }
+				];
+			}
+		},
+		
+		formatTime(timestamp) {
+			if (!timestamp) return '刚刚';
+			
+			const now = Date.now();
+			const diff = now - timestamp;
+			
+			const minute = 60 * 1000;
+			const hour = 60 * minute;
+			const day = 24 * hour;
+			
+			if (diff < minute) {
+				return '刚刚';
+			} else if (diff < hour) {
+				return `${Math.floor(diff / minute)}分钟前`;
+			} else if (diff < day) {
+				return `${Math.floor(diff / hour)}小时前`;
+			} else {
+				return `${Math.floor(diff / day)}天前`;
+			}
 		},
 
 		getInitials(name) {
@@ -420,11 +557,31 @@ export default {
 		},
 
 		navToPractice() {
-			uni.switchTab({ url: '/src/pages/practice/index' });
+			// 检查题库是否存在
+			const questionBank = uni.getStorageSync('v30_bank') || [];
+			if (questionBank.length === 0) {
+				uni.showModal({
+					title: '提示',
+					content: '题库为空，请先导入题目',
+					confirmText: '去导入',
+					success: (res) => {
+						if (res.confirm) {
+							uni.navigateTo({ url: '/src/pages/practice/import-data' });
+						}
+					}
+				});
+			} else {
+				uni.switchTab({ url: '/src/pages/practice/index' });
+			}
 		},
 
 		navToMockExam() {
-			uni.showToast({ title: 'Mock Exam coming soon', icon: 'none' });
+			uni.showModal({
+				title: '模拟考试',
+				content: '模拟考试功能正在开发中，敬请期待！\n\n将提供：\n• 真实考试环境模拟\n• 智能组卷\n• 详细成绩分析',
+				showCancel: false,
+				confirmText: '知道了'
+			});
 		},
 
 		navToStudyDetail() {
@@ -432,12 +589,38 @@ export default {
 		},
 
 		handleStatClick(type) {
-			console.log('Stat clicked:', type);
+			console.log('[Index] Stat clicked:', type);
+			
+			const routes = {
+				'questions': '/src/pages/practice/index',
+				'accuracy': '/src/pages/mistake/index',
+				'streak': '/src/pages/study-detail/index',
+				'achievements': '/src/pages/profile/index'
+			};
+			
+			if (routes[type]) {
+				if (type === 'questions' || type === 'accuracy') {
+					uni.switchTab({ url: routes[type] });
+				} else {
+					uni.navigateTo({ url: routes[type] });
+				}
+			}
 		},
 
 		handleKnowledgeClick(point) {
-			console.log('Knowledge point clicked:', point.title);
-			uni.showToast({ title: `${point.title} - ${point.mastery}% mastered`, icon: 'none' });
+			console.log('[Index] Knowledge point clicked:', point.title);
+			
+			if (point.title === '错题集') {
+				uni.switchTab({ url: '/src/pages/mistake/index' });
+			} else if (point.title === '练习题') {
+				uni.switchTab({ url: '/src/pages/practice/index' });
+			} else {
+				uni.showToast({ 
+					title: `${point.title} - 掌握度${point.mastery}%`, 
+					icon: 'none',
+					duration: 2000
+				});
+			}
 		},
 
 		handleEditPlan() {
@@ -448,20 +631,25 @@ export default {
 			});
 		},
 
-		// 处理待办事项切换 - 通过ID查找，不依赖索引
+		// 处理待办事项切换 - 调用Store方法
 		handleToggleTodo(todoId) {
 			console.log('[Index] Toggle todo ID:', todoId);
 			
-			// 通过ID在原始todos数组中查找
-			const todo = this.todos.find(t => t.id === todoId);
-			if (todo) {
-				// 直接切换状态，Vue会自动检测变化
-				todo.completed = !todo.completed;
-				// 强制触发响应式更新
-				this.$forceUpdate();
-				console.log(`[Index] Todo ${todoId} is now:`, todo.completed ? 'completed' : 'active');
-			} else {
-				console.error('[Index] Todo not found:', todoId);
+			try {
+				const success = this.todoStore.toggleTask(todoId);
+				if (success) {
+					console.log(`[Index] Todo ${todoId} toggled successfully`);
+					// 震动反馈
+					try {
+						if (typeof uni.vibrateShort === 'function') {
+							uni.vibrateShort();
+						}
+					} catch (e) {}
+				} else {
+					console.error('[Index] Todo not found:', todoId);
+				}
+			} catch (error) {
+				console.error('[Index] Toggle todo failed:', error);
 			}
 		},
 
