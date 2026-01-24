@@ -4,7 +4,7 @@
     <!-- 待办项列表 -->
     <view class="todo-items">
       <view 
-        v-for="(item, index) in sortedTodos" 
+        v-for="item in sortedTodos" 
         :key="item.id" 
         :class="['todo-item', isDark ? 'item-dark' : 'item-light', item.completed && 'item-completed']"
         @tap="onToggleTodo(item.id)"
