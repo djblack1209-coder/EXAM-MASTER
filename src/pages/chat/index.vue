@@ -117,10 +117,10 @@
 </template>
 
 <script>
-import { getApiKey } from '../../../common/config.js'
+import { getApiKey } from '../../common/config.js'
 import { storageService } from '../../services/storageService.js'
 import { lafService } from '../../services/lafService.js'
-import BaseSkeleton from '@/components/base-skeleton/base-skeleton.vue'
+import BaseSkeleton from '../../components/base-skeleton/base-skeleton.vue'
 
 export default {
 	components: {

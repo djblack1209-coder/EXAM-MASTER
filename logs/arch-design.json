@@ -1,41 +1,54 @@
 {
   "cycle_id": "v5.2-iter1",
+  "timestamp": "2026-01-25 07:40:34",
   "impact_analysis": {
     "affected_files": [
       "src/pages/practice/import-data.vue"
     ],
     "affected_components": [
-      "EnhancedProgress"
+      "EnhancedProgress.vue (已存在，无需修改)"
     ],
     "affected_services": [
-      "lafService"
-    ]
+      "lafService.js (无需修改，已支持 proxyAI)"
+    ],
+    "current_implementation": {
+      "progress_tracking": "基于批次计数（generatedCount），每批5题",
+      "progress_display": "已使用 EnhancedProgress 组件",
+      "error_handling": "基础错误捕获，但重试需重新选择文件",
+      "background_import": "已实现（onShow 自动恢复），但无通知",
+      "status_text": "动态状态文本已实现（importStatusText）"
+    }
   },
   "design_decisions": [
     {
-      "decision": "添加实时进度条组件",
-      "rationale": "提升用户感知，降低焦虑，避免误以为卡死",
-      "implementation": "在 AI 生成遮罩中集成 EnhancedProgress 组件，绑定 realProgress 变量"
-    },
-    {
       "decision": "优化进度计算逻辑",
-      "rationale": "当前 progressWidth 是动画效果，不反映真实进度",
-      "implementation": "使用 realProgress (0-100) 替代 progressWidth，基于 generatedCount/totalQuestionsLimit 计算"
+      "rationale": "当前进度基于批次（0-10批），用户看到的是批次进度而非题目进度。需要改为基于题目数量（0-50题），更直观。",
+      "implementation": "修改 realProgress 计算公式：realProgress = (totalQuestionsGenerated / (totalQuestionsLimit * batchQuestionCount)) * 100"
     },
     {
-      "decision": "添加预估剩余时间",
-      "rationale": "大文件上传时用户需要知道还要等多久",
-      "implementation": "基于已用时间和已完成批次计算平均速度，推算剩余时间"
+      "decision": "增强预估剩余时间算法",
+      "rationale": "当前算法基于批次平均时间，但首批3题和后续5题耗时不同，导致预估不准确。",
+      "implementation": "分段计算：首批3题单独计时，后续5题批次单独计时，加权平均预估剩余时间"
     },
     {
-      "decision": "增强错误提示",
-      "rationale": "当前错误提示不够友好，用户不知道具体原因",
-      "implementation": "errorInfo 对象包含 message/detail/canRetry，显示在错误卡片中"
+      "decision": "实现智能重试机制",
+      "rationale": "当前重试需要重新选择文件，用户体验差。需要缓存文件内容和解析结果。",
+      "implementation": "添加 cachedFileData 变量，保存文件路径和内容。重试时直接使用缓存，无需重新选择文件。"
     },
     {
-      "decision": "添加重试按钮",
-      "rationale": "上传失败后用户需要能够重试，而不是重新选择文件",
-      "implementation": "在错误卡片中添加重试按钮，保留 fileName 和 fullFileContent"
+      "decision": "添加系统通知",
+      "rationale": "后台导入完成后，用户可能在其他页面，需要通知提醒。",
+      "implementation": "使用 uni.showToast 在导入完成时显示通知（即使用户不在当前页面）"
+    },
+    {
+      "decision": "优化状态提示文案",
+      "rationale": "当前状态文案较简单，需要更详细的进度信息（如：正在导入第 X 题 / 共 Y 题）",
+      "implementation": "修改 importProgressText 计算属性，显示当前题目索引和总题目数"
+    },
+    {
+      "decision": "增加重复题目检测",
+      "rationale": "用户可能重复导入相同题库，需要自动跳过重复题目并提示。",
+      "implementation": "在 saveQuestions 方法中添加去重逻辑，统计 duplicateCount 并在进度文案中显示"
     }
   ],
   "refactor_plan": {
@@ -43,31 +56,73 @@
       "src/pages/practice/import-data.vue"
     ],
     "files_to_create": [],
-    "estimated_loc": 150,
-    "changes_detail": [
+    "modifications": [
       {
         "file": "src/pages/practice/import-data.vue",
         "changes": [
-          "在 template 中的 .ai-loading-mask 内集成 EnhancedProgress 组件",
-          "将 progressWidth 替换为 realProgress 绑定",
-          "在 computed 中优化 importDetailText，显示预估剩余时间",
-          "在 generateNextBatch 方法中完善 updateRealProgress 调用",
-          "在 catch 块中完善错误处理，设置 errorInfo 对象",
-          "添加 retryUpload 方法，支持失败后重试"
+          {
+            "location": "data() - 添加缓存变量",
+            "description": "添加 cachedFileData: null 用于保存文件信息，支持重试"
+          },
+          {
+            "location": "data() - 优化进度变量",
+            "description": "添加 firstBatchTime: 0, laterBatchAvgTime: 0 用于分段计时"
+          },
+          {
+            "location": "computed.importProgressText",
+            "description": "修改为显示题目级别进度：已生成 X 道题 / 共 Y 道题"
+          },
+          {
+            "location": "computed.importDetailText",
+            "description": "增强显示：进度 X% · 预计剩余 Y 秒 · 已跳过 Z 道重复题"
+          },
+          {
+            "location": "methods.handleUpload",
+            "description": "保存文件信息到 cachedFileData，支持重试时复用"
+          },
+          {
+            "location": "methods.generateNextBatch",
+            "description": "优化进度计算：改为题目级别（0-50题），分段计时预估剩余时间"
+          },
+          {
+            "location": "methods.saveQuestions",
+            "description": "添加去重逻辑：检测重复题目，统计 duplicateCount，自动跳过"
+          },
+          {
+            "location": "methods.retryGeneration",
+            "description": "使用 cachedFileData 重试，无需重新选择文件"
+          },
+          {
+            "location": "methods.finishGeneration",
+            "description": "添加系统通知：uni.showToast 提示导入完成"
+          }
         ]
       }
-    ]
+    ],
+    "estimated_loc": 180,
+    "complexity": "中等",
+    "risk_assessment": {
+      "high_risk": [],
+      "medium_risk": [
+        "进度计算逻辑修改可能影响现有动画效果"
+      ],
+      "low_risk": [
+        "添加缓存变量",
+        "优化文案显示",
+        "添加去重逻辑"
+      ]
+    }
   },
-  "technical_notes": {
-    "existing_progress_system": "当前使用 progressWidth (0-100) 作为动画效果，每 150ms +2，循环播放",
-    "new_progress_system": "使用 realProgress 反映真实进度，基于 generatedCount/totalQuestionsLimit 计算",
-    "progress_component": "EnhancedProgress.vue 已存在，支持百分比显示和动画效果",
-    "error_handling": "当前只有简单的 Toast 提示，需要增强为详细的错误卡片",
-    "retry_mechanism": "需要保留 fileName 和 fullFileContent，避免重新选择文件"
-  },
-  "performance_considerations": {
-    "progress_update_frequency": "每批次完成后更新一次，避免频繁计算",
-    "time_estimation_accuracy": "基于历史平均速度，前几批次可能不准确",
-    "error_recovery": "网络超时自动重试，其他错误需要用户手动重试"
-  }
+  "technical_notes": [
+    "EnhancedProgress 组件已完美支持所需功能，无需修改",
+    "lafService.proxyAI 已稳定运行，无需调整",
+    "重点优化用户感知：从批次进度改为题目进度",
+    "分段计时算法：首批3题 vs 后续5题批次，加权平均",
+    "去重算法：基于题目内容 hash 或题目文本对比"
+  ],
+  "performance_considerations": [
+    "缓存文件内容可能占用内存（最大约 1MB），可接受",
+    "去重算法复杂度 O(n)，题库规模小（50题），性能无影响",
+    "分段计时不增加额外计算开销"
+  ]
 }

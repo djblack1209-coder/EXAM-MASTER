@@ -1,56 +1,75 @@
 {
   "cycle_id": "v5.2-iter1",
-  "selected_feature": "优化上传题库体验",
+  "timestamp": "2026-01-25 07:39:21",
+  "selected_feature": "优化题库导入体验",
+  "rationale": "消除P0情绪低谷点（3/10），用户在导入题库时缺乏进度反馈和错误提示，直接影响首次使用体验。竞品分析显示，实时进度条和友好的错误处理是用户期望的核心功能。",
   "user_stories": [
     {
       "id": "US-001",
-      "as_a": "作为考研学生",
-      "i_want": "我想要看到上传进度的实时反馈",
-      "so_that": "以便于知道上传是否正常进行，避免误以为卡死",
+      "as_a": "考研备考学生",
+      "i_want": "看到实时的导入进度（百分比、题目数量、预计剩余时间）",
+      "so_that": "我能清楚知道导入进展，不会误以为程序卡死",
       "acceptance_criteria": [
-        "显示实时进度条（0-100%）",
-        "显示当前上传状态文本（准备中/上传中/处理中/完成）",
-        "上传成功后有明确的成功提示",
-        "上传失败时显示具体错误原因"
+        "显示当前导入进度百分比（0-100%）",
+        "显示已导入题目数量 / 总题目数量（如：50/200）",
+        "显示预计剩余时间（如：剩余 30 秒）",
+        "进度条平滑更新，无卡顿"
       ]
     },
     {
       "id": "US-002",
-      "as_a": "作为考研学生",
-      "i_want": "我想要在上传大文件时不会误以为程序卡死",
-      "so_that": "以便于耐心等待而不是反复重试",
+      "as_a": "考研备考学生",
+      "i_want": "在导入过程中看到清晰的状态提示",
+      "so_that": "我能理解当前正在发生什么，减少焦虑感",
       "acceptance_criteria": [
-        "上传大文件（>10MB）时显示预计剩余时间",
-        "显示已上传大小/总大小",
-        "提供取消上传的按钮"
+        "导入开始时显示"正在解析文件..."",
+        "导入中显示"正在导入第 X 题..."（每10题更新一次）",
+        "导入成功显示"成功导入 X 道题目"",
+        "导入失败显示具体错误原因（如"文件格式错误"、"网络超时"）"
       ]
     },
     {
       "id": "US-003",
-      "as_a": "作为考研学生",
-      "i_want": "我想要在上传失败时能够重试",
-      "so_that": "以便于不用重新选择文件",
+      "as_a": "考研备考学生",
+      "i_want": "导入失败时能快速重试，无需重新选择文件",
+      "so_that": "我能节省时间，不会因为重复操作而沮丧",
       "acceptance_criteria": [
-        "上传失败后显示重试按钮",
-        "保留已选择的文件信息",
-        "重试时从断点继续（如果支持）"
+        "文件格式错误时，提示支持的格式（JSON/TXT/Excel）",
+        "网络超时时，提示"网络不稳定，请稍后重试"并显示"重试"按钮",
+        "题目重复时，提示"检测到 X 道重复题目，已自动跳过"",
+        "点击"重试"按钮后，使用缓存的文件内容重新导入"
+      ]
+    },
+    {
+      "id": "US-004",
+      "as_a": "考研备考学生",
+      "i_want": "导入过程中能切换到其他页面，导入完成后自动通知我",
+      "so_that": "我能充分利用等待时间，不会被迫盯着进度条",
+      "acceptance_criteria": [
+        "导入过程中可以返回上一页或切换到其他页面",
+        "后台导入继续进行，不会中断",
+        "导入完成后显示系统通知（如"题库导入成功，共 200 道题"）",
+        "导入失败时保留已导入的题目（增量导入）"
       ]
     }
   ],
   "priority": "P0",
   "estimated_hours": 4,
-  "current_pain_point": {
-    "emotion_score": "3/10",
-    "target_score": "8/10",
-    "main_issues": [
-      "无进度反馈，用户焦虑",
-      "大文件上传时误以为卡死",
-      "失败后需要重新选择文件"
-    ]
+  "expected_outcome": {
+    "emotion_score_before": 3,
+    "emotion_score_after": 8,
+    "emotion_improvement": 5,
+    "user_satisfaction_improvement": "30%",
+    "first_use_churn_reduction": "20%"
   },
-  "success_metrics": {
-    "emotion_score_improvement": "+5分（3→8）",
-    "user_satisfaction": "预期提升 60%",
-    "upload_success_rate": "预期提升 20%"
-  }
+  "technical_dependencies": {
+    "frontend": "src/pages/practice/import-data.vue",
+    "backend": "uniCloud-aliyun/cloudfunctions/import-questions",
+    "services": "src/services/storageService.js"
+  },
+  "competitive_insights": [
+    "试题通：扫码快速入场，简化流程",
+    "疯狂刷题：智能推荐，离线下载",
+    "考研刷题小程序：清晰的题库分类，导入进度反馈"
+  ]
 }

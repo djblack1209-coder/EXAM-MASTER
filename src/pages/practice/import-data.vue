@@ -218,6 +218,10 @@ export default {
       filePreviewData: null,     // 文件预览数据
       
       // ⭐⭐ v5.2 新增：导入体验优化
+      cachedFileData: null,      // 缓存文件数据（支持重试）
+      firstBatchTime: 0,         // 首批生成耗时（毫秒）
+      laterBatchAvgTime: 0,      // 后续批次平均耗时（毫秒）
+      laterBatchCount: 0,        // 后续批次计数
       importStatus: 'idle',      // 导入状态：idle/parsing/importing/success/error
       currentQuestionIndex: 0,   // 当前导入到第几题
       totalQuestionsToImport: 0, // 预计总题数
@@ -249,18 +253,43 @@ export default {
     importProgressText() {
       const current = this.totalQuestionsGenerated;
       const total = this.totalQuestionsLimit * this.batchQuestionCount;
-      return `已生成 ${current} 道题 / 目标 ${total}`;
+      
+      // ⭐⭐ v5.2 优化：显示当前题目索引
+      if (this.importStatus === 'importing' && this.currentQuestionIndex > 0) {
+        return `正在生成第 ${this.currentQuestionIndex} 题 / 共 ${total} 题`;
+      }
+      
+      return `已生成 ${current} 道题 / 共 ${total} 道题`;
     },
     
     importDetailText() {
-      let text = `进度: ${this.realProgress}%`;
+      const parts = [];
+      
+      // 进度百分比
+      parts.push(`进度 ${this.realProgress}%`);
+      
+      // 预估剩余时间（优化显示）
       if (this.estimatedTimeLeft > 0) {
-        text += ` · 预计剩余 ${this.estimatedTimeLeft} 秒`;
+        if (this.estimatedTimeLeft > 60) {
+          const minutes = Math.floor(this.estimatedTimeLeft / 60);
+          const seconds = this.estimatedTimeLeft % 60;
+          parts.push(`剩余约 ${minutes} 分 ${seconds} 秒`);
+        } else {
+          parts.push(`剩余约 ${this.estimatedTimeLeft} 秒`);
+        }
       }
+      
+      // 重复题目提示
       if (this.duplicateCount > 0) {
-        text += ` · 已跳过 ${this.duplicateCount} 道重复题`;
+        parts.push(`已跳过 ${this.duplicateCount} 道重复题`);
       }
-      return text;
+      
+      // 导入速度（新增）
+      if (this.importSpeed > 0 && this.totalQuestionsGenerated > 0) {
+        parts.push(`速度 ${this.importSpeed.toFixed(1)} 题/秒`);
+      }
+      
+      return parts.join(' · ');
     }
   },
   
@@ -367,6 +396,15 @@ export default {
         uni.showToast({ title: '暂不支持该格式', icon: 'none' });
         return;
       }
+
+      // ⭐⭐ v5.2 新增：缓存文件数据（支持重试）
+      this.cachedFileData = {
+        name: file.name,
+        path: file.path || file.tempFilePath,
+        size: file.size || 0,
+        ext: ext,
+        timestamp: Date.now()
+      };
 
       this.currentUploadId = this.saveUploadRecord({
         name: this.fileName,
@@ -911,15 +949,36 @@ export default {
       });
     },
 
-    // ⭐⭐ v5.2 新增：重试生成
+    // ⭐⭐ v5.2 新增：智能重试生成（使用缓存）
     retryGeneration() {
-      if (!this.fullFileContent && !this.fileName) {
+      // ⭐ 优先使用缓存的文件数据
+      if (this.cachedFileData) {
+        console.log('[重试] 使用缓存的文件数据:', this.cachedFileData.name);
+        this.fileName = this.cachedFileData.name;
+        // 如果有缓存的文件内容，直接使用
+        if (this.fullFileContent) {
+          console.log('[重试] 使用缓存的文件内容，长度:', this.fullFileContent.length);
+        }
+      } else if (!this.fullFileContent && !this.fileName) {
         uni.showToast({ title: '请先导入文件', icon: 'none' });
         return;
       }
       
       // 关闭错误卡片
       this.errorInfo = null;
+      
+      // 增加重试计数
+      this.retryCount++;
+      
+      // 检查重试次数限制
+      if (this.retryCount > this.maxRetryCount) {
+        uni.showModal({
+          title: '重试次数过多',
+          content: `已重试 ${this.maxRetryCount} 次，建议检查网络连接或稍后再试。`,
+          showCancel: false
+        });
+        return;
+      }
       
       // 重置状态
       this.isPaused = false;
@@ -932,7 +991,10 @@ export default {
       this.updateUploadRecordStatus('generating');
       this.generateNextBatch();
       
-      uni.showToast({ title: '正在重试...', icon: 'none' });
+      uni.showToast({ 
+        title: `正在重试 (${this.retryCount}/${this.maxRetryCount})...`, 
+        icon: 'none' 
+      });
     },
 
     // ⭐⭐ v5.2 新增：关闭错误提示
