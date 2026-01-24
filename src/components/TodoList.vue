@@ -1,37 +1,27 @@
 <!-- REFACTOR: Modern todo list with design system utilities -->
 <template>
-  <view class="todo-list ds-card" :class="{ 'dark-mode': isDark }">
-    <!-- 标题栏 -->
-    <view class="list-header ds-flex ds-flex-between">
-      <text class="header-title ds-text-xl ds-font-bold ds-text-primary">待办事项</text>
-      <text class="header-progress ds-text-lg ds-font-bold">{{ progressValue }}%</text>
-    </view>
-
-    <!-- 进度条 -->
-    <view class="progress-bar">
-      <view class="progress-fill" :style="{ width: progressValue + '%' }"></view>
-    </view>
-
+  <view :class="['todo-list', isDark ? 'todo-dark' : 'todo-light']">
     <!-- 待办项列表 -->
-    <view class="todo-items ds-flex-col ds-gap-md">
-      <view v-for="(item, index) in todos" :key="item.id" class="todo-item" @tap="onToggleTodo(item.id)">
-        <!-- 左侧：状态图标和任务文字 -->
-        <view class="item-left">
-          <view class="item-status-icon" :class="{ 'is-completed': item.completed, 'unchecked': !item.completed }">
-            <svg v-if="item.completed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white"
-              stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          </view>
-
-          <text class="item-text" :class="{ 'is-completed': item.completed }">
-            {{ item.text }}
-          </text>
+    <view class="todo-items">
+      <view 
+        v-for="(item, index) in todos" 
+        :key="item.id" 
+        :class="['todo-item', isDark ? 'item-dark' : 'item-light']"
+        @tap="onToggleTodo(item.id)"
+      >
+        <!-- 左侧：状态图标 -->
+        <view :class="['item-checkbox', item.completed && 'checkbox-completed']">
+          <text v-if="item.completed" class="checkbox-icon">✓</text>
         </view>
 
+        <!-- 中间：任务文字 -->
+        <text :class="['item-text', item.completed && 'text-completed']">
+          {{ item.text }}
+        </text>
+
         <!-- 右侧：优先级标签 -->
-        <view class="item-priority" :class="'priority-' + getPriorityClass(item, index)">
-          <text class="priority-text">{{ item.priority || '优先' }}</text>
+        <view :class="['item-badge', 'badge-' + getPriorityClass(item)]">
+          <text class="badge-text">{{ item.priority || 'Priority' }}</text>
         </view>
       </view>
     </view>
@@ -45,11 +35,11 @@ import { computed } from 'vue'
 const props = defineProps({
   todos: {
     type: Array,
-    default: () => []
-  },
-  progress: {
-    type: Number,
-    default: null
+    default: () => [
+      { id: 1, text: '复习数学第三章', completed: false, priority: 'Priority' },
+      { id: 2, text: '完成物理作业', completed: true, priority: 'Important' },
+      { id: 3, text: '准备英语演讲', completed: false, priority: 'Normal' }
+    ]
   },
   isDark: {
     type: Boolean,
@@ -60,29 +50,13 @@ const props = defineProps({
 // 定义emits
 const emit = defineEmits(['toggleTodo'])
 
-// 计算完成进度
-const progressValue = computed(() => {
-  if (props.progress !== null) return props.progress
-  if (props.todos.length === 0) return 0
-  const completed = props.todos.filter(item => item.completed).length
-  return Math.round((completed / props.todos.length) * 100)
-})
-
-// 获取优先级class - 根据优先级文本分配不同颜色
-const getPriorityClass = (item, index) => {
-  // Priority: 绿色
-  if (item.priority === 'Priority') {
-    return 'priority-green'
-  } 
-  // Important: 黄色
-  else if (item.priority === 'Important') {
-    return 'important-yellow'
-  } 
-  // Normal: 灰色
-  else if (item.priority === 'Normal') {
-    return 'normal-gray'
-  }
-  return 'priority-green'
+// 获取优先级class
+const getPriorityClass = (item) => {
+  const priority = item.priority || 'Priority'
+  if (priority === 'Priority') return 'priority'
+  if (priority === 'Important') return 'important'
+  if (priority === 'Normal') return 'normal'
+  return 'priority'
 }
 
 // 切换待办状态
@@ -92,229 +66,162 @@ const onToggleTodo = (id) => {
 </script>
 
 <style lang="scss" scoped>
+/* ==================== 待办列表容器 ==================== */
 .todo-list {
   width: 100%;
-  background: var(--bg-card);
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  padding: 24px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
-  box-sizing: border-box;
-
-  .list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-
-    .header-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #212121;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .header-progress {
-      font-size: 18px;
-      font-weight: 700;
-      color: #07C160;
-      -webkit-font-smoothing: antialiased;
-    }
-  }
-
-  .progress-bar {
-    width: 100%;
-    height: 6px;
-    background: #E5E7EB;
-    border-radius: 3px;
-    margin-bottom: 16px;
-    overflow: hidden;
-
-    .progress-fill {
-      height: 6px;
-      background: #07C160;
-      border-radius: 3px;
-      transition: width 0.5s ease-in-out;
-    }
-  }
-
-  .todo-items {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-
-    .todo-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      -webkit-tap-highlight-color: transparent;
-      box-sizing: border-box;
-
-      .item-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex: 1;
-        min-width: 0;
-
-        .item-status-icon {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          transition: all 0.3s ease;
-
-          /* 未完成状态 - 空心灰圆圈 */
-          &.unchecked {
-            background: transparent;
-            border: 2px solid #9CA3AF;
-          }
-
-          /* 已完成状态 - 实心绿对勾 */
-          &.is-completed {
-            background: #07C160;
-            border: none;
-
-            /* 对勾SVG */
-            svg {
-              width: 16px;
-              height: 16px;
-            }
-          }
-        }
-
-        .item-text {
-          font-size: 16px;
-          font-weight: 400;
-          color: #212121;
-          -webkit-font-smoothing: antialiased;
-
-          &.is-completed {
-            text-decoration: line-through;
-            color: #9CA3AF;
-          }
-        }
-      }
-
-      .item-priority {
-        padding: 4px 12px;
-        border-radius: 6px;
-        flex-shrink: 0;
-
-        .priority-text {
-          font-size: 12px;
-          font-weight: 500;
-          -webkit-font-smoothing: antialiased;
-        }
-
-        /* Priority - 浅绿色背景 + 绿色文字 */
-        &.priority-priority-green {
-          background: #D1FAE5;
-
-          .priority-text {
-            color: #07C160;
-          }
-        }
-
-        /* Important - 浅黄色背景 + 黄色文字 */
-        &.priority-important-yellow {
-          background: #FEF3C7;
-
-          .priority-text {
-            color: #F59E0B;
-          }
-        }
-
-        /* Normal - 浅灰色背景 + 灰色文字 */
-        &.priority-normal-gray {
-          background: #F3F4F6;
-
-          .priority-text {
-            color: #6B7280;
-          }
-        }
-      }
-    }
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
 }
 
-/* VISUAL: Dark mode styles */
-.todo-list.dark-mode {
-  background: var(--ds-color-surface-secondary, #1c1c1e);
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+/* ==================== 待办项列表 ==================== */
+.todo-items {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
 
-  .list-header {
-    .header-title {
-      color: var(--ds-color-text-primary, var(--bg-card));
-    }
+/* ==================== 单个待办项 ==================== */
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 32rpx;
+  border-radius: 24rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1rpx solid;
+}
 
-    .header-progress {
-      color: var(--brand-color);
-      /* Wise 绿色深色模式 */
-    }
-  }
+/* 浅色模式 */
+.item-light {
+  background: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.3);
+}
 
-  .progress-bar {
-    background: #2c2c2e;
+.item-light:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+}
 
-    .progress-fill {
-      background: var(--brand-color);
-    }
-  }
+/* 深色模式 */
+.item-dark {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24rpx);
+  -webkit-backdrop-filter: blur(24rpx);
+  border-color: rgba(255, 255, 255, 0.1);
+}
 
-  .todo-items {
-    .todo-item {
-      .item-left {
-        .item-status-icon {
-          &.unchecked {
-            border-color: #6c757d;
-          }
+.item-dark:active {
+  transform: translateY(-2rpx);
+  box-shadow: 0 4rpx 16rpx rgba(0, 242, 255, 0.1);
+}
 
-          &.is-completed {
-            background: var(--brand-color);
-          }
-        }
+/* ==================== 复选框 ==================== */
+.item-checkbox {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2rpx solid #9CA3AF;
+  background: transparent;
+}
 
-        .item-text {
-          color: var(--ds-color-text-primary, var(--bg-card));
+.checkbox-completed {
+  background: #10B981;
+  border-color: #10B981;
+}
 
-          &.is-completed {
-            color: #6c757d;
-          }
-        }
-      }
+.checkbox-icon {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: 700;
+  line-height: 1;
+}
 
-      .item-priority {
+/* ==================== 任务文字 ==================== */
+.item-text {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 500;
+  line-height: 1.5;
+  min-width: 0;
+  word-break: break-word;
+}
 
-        /* 深色模式下的优先级标签 */
-        &.priority-priority-green {
-          background: rgba(159, 232, 112, 0.2);
+/* 浅色模式文字 */
+.todo-light .item-text {
+  color: #1A1D1F;
+}
 
-          .priority-text {
-            color: var(--brand-color);
-          }
-        }
+/* 深色模式文字 - 白色 */
+.todo-dark .item-text {
+  color: #FFFFFF;
+}
 
-        &.priority-important-yellow {
-          background: rgba(245, 158, 11, 0.2);
+/* 已完成状态 */
+.text-completed {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
 
-          .priority-text {
-            color: #FCD34D;
-          }
-        }
+/* ==================== 优先级标签 ==================== */
+.item-badge {
+  padding: 8rpx 24rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+}
 
-        &.priority-normal-gray {
-          background: rgba(156, 163, 175, 0.2);
+.badge-text {
+  font-size: 20rpx;
+  font-weight: 600;
+  line-height: 1;
+}
 
-          .priority-text {
-            color: #9CA3AF;
-          }
-        }
-      }
-    }
-  }
+/* Priority - 绿色 */
+.badge-priority {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.badge-priority .badge-text {
+  color: #10B981;
+}
+
+/* Important - 黄色 */
+.badge-important {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.badge-important .badge-text {
+  color: #F59E0B;
+}
+
+/* Normal - 灰色 */
+.badge-normal {
+  background: rgba(156, 163, 175, 0.1);
+}
+
+.badge-normal .badge-text {
+  color: #9CA3AF;
+}
+
+/* 深色模式下的标签增强对比度 */
+.todo-dark .badge-priority {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.todo-dark .badge-important {
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.todo-dark .badge-important .badge-text {
+  color: #FCD34D;
+}
+
+.todo-dark .badge-normal {
+  background: rgba(156, 163, 175, 0.2);
 }
 </style>
