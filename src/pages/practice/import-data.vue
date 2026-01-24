@@ -95,9 +95,9 @@
             <text class="ai-star">✨</text>
           </view>
           
-          <text class="loading-title">AI 正在分析...</text>
-          <text class="loading-step">已生成 {{ totalQuestionsGenerated }} 道题 / 目标 {{ totalQuestionsLimit * batchQuestionCount }}</text>
-          <text class="loading-progress">进度: {{ realProgress }}%{{ estimatedTimeLeft > 0 ? ' · 预计剩余 ' + estimatedTimeLeft + '秒' : '' }}</text>
+          <text class="loading-title">{{ importStatusText }}</text>
+          <text class="loading-step">{{ importProgressText }}</text>
+          <text class="loading-progress">{{ importDetailText }}</text>
           
           <text class="soup-text">"{{ currentSoup }}"</text>
           <view class="loading-actions">
@@ -189,6 +189,51 @@ export default {
       },
       showFilePreview: false,    // 显示文件预览确认
       filePreviewData: null,     // 文件预览数据
+      
+      // ⭐⭐ v5.2 新增：导入体验优化
+      importStatus: 'idle',      // 导入状态：idle/parsing/importing/success/error
+      currentQuestionIndex: 0,   // 当前导入到第几题
+      totalQuestionsToImport: 0, // 预计总题数
+      importErrorDetail: null,   // 详细错误信息
+      retryCount: 0,             // 重试次数
+      maxRetryCount: 3,          // 最大重试次数
+      canGoBack: true,           // 是否允许返回
+      duplicateCount: 0,         // 重复题目数量
+      importStartTime: 0,        // 导入开始时间
+      importSpeed: 0,            // 导入速度（题/秒）
+    }
+  },
+  
+  computed: {
+    // ⭐⭐ v5.2 新增：动态状态文本
+    importStatusText() {
+      if (this.importStatus === 'parsing') {
+        return '正在解析文件...';
+      } else if (this.importStatus === 'importing') {
+        return `正在导入第 ${this.currentQuestionIndex} 题...`;
+      } else if (this.importStatus === 'success') {
+        return '导入成功！';
+      } else if (this.importStatus === 'error') {
+        return '导入失败';
+      }
+      return 'AI 正在分析...';
+    },
+    
+    importProgressText() {
+      const current = this.totalQuestionsGenerated;
+      const total = this.totalQuestionsLimit * this.batchQuestionCount;
+      return `已生成 ${current} 道题 / 目标 ${total}`;
+    },
+    
+    importDetailText() {
+      let text = `进度: ${this.realProgress}%`;
+      if (this.estimatedTimeLeft > 0) {
+        text += ` · 预计剩余 ${this.estimatedTimeLeft} 秒`;
+      }
+      if (this.duplicateCount > 0) {
+        text += ` · 已跳过 ${this.duplicateCount} 道重复题`;
+      }
+      return text;
     }
   },
   
