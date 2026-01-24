@@ -35,19 +35,19 @@
 				
 				<view class="banner-content">
 					<view class="banner-text">
-						<text class="welcome-title">Welcome back, {{ userName }}!</text>
+						<text class="welcome-title">欢迎回来，{{ userName }}！</text>
 						<text class="welcome-subtitle">
-							You have <text class="highlight-text">{{ finishedCount }} questions</text> pending review. Keep up the momentum!
+							你有 <text class="highlight-text">{{ finishedCount }} 道题目</text> 待复习。继续保持学习势头！
 						</text>
 					</view>
 					<view class="banner-actions">
 						<view :class="['action-btn', 'btn-primary', isDark && 'animate-pulse-glow']" @tap="navToPractice">
 							<text class="btn-icon">⚡</text>
-							<text class="btn-text">Quick Practice</text>
+							<text class="btn-text">快速练习</text>
 						</view>
 						<view class="action-btn btn-outline" @tap="navToMockExam">
 							<text class="btn-icon">🕐</text>
-							<text class="btn-text">Mock Exam</text>
+							<text class="btn-text">模拟考试</text>
 						</view>
 					</view>
 				</view>
@@ -60,9 +60,9 @@
 						<text class="stat-icon">📚</text>
 					</view>
 					<view class="stat-content">
-						<text class="stat-title">Total Questions</text>
+						<text class="stat-title">题目总数</text>
 						<text class="stat-value">{{ totalQuestions }}</text>
-						<text class="stat-change positive">+12% this week</text>
+						<text class="stat-change positive">本周 +12%</text>
 					</view>
 				</view>
 
@@ -71,9 +71,9 @@
 						<text class="stat-icon">📈</text>
 					</view>
 					<view class="stat-content">
-						<text class="stat-title">Accuracy Rate</text>
+						<text class="stat-title">正确率</text>
 						<text class="stat-value">{{ accuracy }}%</text>
-						<text class="stat-change positive">+3.2% improvement</text>
+						<text class="stat-change positive">提升 +3.2%</text>
 					</view>
 				</view>
 
@@ -82,9 +82,9 @@
 						<text class="stat-icon">⚡</text>
 					</view>
 					<view class="stat-content">
-						<text class="stat-title">Study Streak</text>
-						<text class="stat-value">{{ totalStudyDays }} days</text>
-						<text class="stat-change positive">Personal best!</text>
+						<text class="stat-title">学习天数</text>
+						<text class="stat-value">{{ totalStudyDays }} 天</text>
+						<text class="stat-change positive">个人最佳！</text>
 					</view>
 				</view>
 
@@ -93,16 +93,16 @@
 						<text class="stat-icon">🏆</text>
 					</view>
 					<view class="stat-content">
-						<text class="stat-title">Achievements</text>
+						<text class="stat-title">成就徽章</text>
 						<text class="stat-value">{{ achievementCount }}</text>
-						<text class="stat-change neutral">2 new unlocked</text>
+						<text class="stat-change neutral">新解锁 2 个</text>
 					</view>
 				</view>
 			</view>
 
 			<!-- 知识点气泡场 -->
 			<view class="section-header">
-				<text class="section-title">Knowledge Points</text>
+				<text class="section-title">知识点</text>
 			</view>
 			<view :class="['knowledge-field', 'field-floating']">
 				<view 
@@ -126,7 +126,7 @@
 							<text class="bubble-icon">{{ point.icon }}</text>
 						</view>
 						<text class="bubble-title" :style="{ color: point.color }">{{ point.title }}</text>
-						<text class="bubble-count">{{ point.count }} items</text>
+						<text class="bubble-count">{{ point.count }} 项</text>
 						<view class="bubble-progress-wrapper">
 							<view class="bubble-progress-bar">
 								<view class="bubble-progress-fill" :style="{ width: point.mastery + '%', backgroundColor: point.color }"></view>
@@ -138,8 +138,8 @@
 
 			<!-- 学习轨迹 -->
 			<view class="section-header">
-				<text class="section-title">Learning Trajectory</text>
-				<text class="section-action" @tap="navToStudyDetail">View All</text>
+				<text class="section-title">学习轨迹</text>
+				<text class="section-action" @tap="navToStudyDetail">查看全部</text>
 			</view>
 			<view class="activity-list">
 				<view 
@@ -166,8 +166,8 @@
 			<!-- 模式说明 -->
 			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']">
 				<text class="mode-text">
-					<text class="mode-highlight">{{ isDark ? 'Dark Mode Active:' : 'Light Mode Active:' }}</text>
-					{{ isDark ? ' High-energy review mode with floating bubble cards. Perfect for quick sprints and data analysis.' : ' Structured learning mode with clean layouts. Optimized for long study sessions.' }}
+					<text class="mode-highlight">{{ isDark ? '深色模式：' : '浅色模式：' }}</text>
+					{{ isDark ? '高能复习模式，浮动气泡卡片设计。适合快速冲刺和数据分析。' : '结构化学习模式，简洁布局设计。适合长时间学习。' }}
 				</text>
 			</view>
 
@@ -216,20 +216,20 @@ export default {
 
 			// 知识点数据
 			knowledgePoints: [
-				{ id: 1, title: 'Error Set', count: 156, icon: '🎯', mastery: 35, color: '#EF4444' },
-				{ id: 2, title: 'Hot Topics', count: 89, icon: '🔥', mastery: 45, color: '#F59E0B' },
-				{ id: 3, title: 'Practice', count: 234, icon: '📝', mastery: 72, color: '#00F2FF' },
-				{ id: 4, title: 'Concepts', count: 312, icon: '🧠', mastery: 88, color: '#9FE870' },
-				{ id: 5, title: 'Formulas', count: 67, icon: '🧮', mastery: 60, color: '#A855F7' },
-				{ id: 6, title: 'Reading', count: 45, icon: '📖', mastery: 50, color: '#EC4899' }
+				{ id: 1, title: '错题集', count: 156, icon: '🎯', mastery: 35, color: '#EF4444' },
+				{ id: 2, title: '热门考点', count: 89, icon: '🔥', mastery: 45, color: '#F59E0B' },
+				{ id: 3, title: '练习题', count: 234, icon: '📝', mastery: 72, color: '#00F2FF' },
+				{ id: 4, title: '核心概念', count: 312, icon: '🧠', mastery: 88, color: '#9FE870' },
+				{ id: 5, title: '公式定理', count: 67, icon: '🧮', mastery: 60, color: '#A855F7' },
+				{ id: 6, title: '阅读理解', count: 45, icon: '📖', mastery: 50, color: '#EC4899' }
 			],
 
 			// 最近活动
 			recentActivities: [
-				{ title: 'Mock Exam: Mathematics', subtitle: 'Completed with 85% score', time: '2h ago', icon: '📚', status: 'completed' },
-				{ title: 'Error Review: Physics', subtitle: '12 questions reviewed', time: '5h ago', icon: '✅', status: 'completed' },
-				{ title: 'Daily Practice: Chemistry', subtitle: '15/30 questions done', time: 'Active', icon: '▶️', status: 'in-progress' },
-				{ title: 'Scheduled: Biology Review', subtitle: 'Tomorrow at 9:00 AM', time: 'Upcoming', icon: '📅', status: 'pending' }
+				{ title: '模拟考试：数学', subtitle: '完成，得分 85%', time: '2小时前', icon: '📚', status: 'completed' },
+				{ title: '错题复习：物理', subtitle: '已复习 12 道题', time: '5小时前', icon: '✅', status: 'completed' },
+				{ title: '每日练习：化学', subtitle: '已完成 15/30 题', time: '进行中', icon: '▶️', status: 'in-progress' },
+				{ title: '计划：生物复习', subtitle: '明天上午 9:00', time: '即将开始', icon: '📅', status: 'pending' }
 			]
 		};
 	},
@@ -335,9 +335,9 @@ export default {
 
 		getStatusText(status) {
 			const map = {
-				'completed': 'Done',
-				'in-progress': 'Active',
-				'pending': 'Pending'
+				'completed': '已完成',
+				'in-progress': '进行中',
+				'pending': '待开始'
 			};
 			return map[status] || status;
 		},
