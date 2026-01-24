@@ -174,7 +174,7 @@
 			<todo-list :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
 
 			<!-- 每日金句 -->
-			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']">
+			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;">
 				<text class="mode-text">
 					<text class="mode-highlight">💡 每日金句：</text>
 					{{ dailyQuote }}

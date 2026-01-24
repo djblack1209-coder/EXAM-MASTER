@@ -7,12 +7,10 @@
         v-for="(item, index) in sortedTodos" 
         :key="item.id" 
         :class="['todo-item', isDark ? 'item-dark' : 'item-light', item.completed && 'item-completed']"
+        @tap="onToggleTodo(item.id)"
       >
-        <!-- 左侧：状态图标 - 可点击 -->
-        <view 
-          :class="['item-checkbox', item.completed && 'checkbox-completed']"
-          @tap.stop="onToggleTodo(item.id)"
-        >
+        <!-- 左侧：状态图标 -->
+        <view :class="['item-checkbox', item.completed && 'checkbox-completed']">
           <text v-if="item.completed" class="checkbox-icon">✓</text>
         </view>
 
