@@ -3,7 +3,7 @@
   <view class="todo-list ds-card" :class="{ 'dark-mode': isDark }">
     <!-- 标题栏 -->
     <view class="list-header ds-flex ds-flex-between">
-      <text class="header-title ds-text-xl ds-font-bold ds-text-primary">To do</text>
+      <text class="header-title ds-text-xl ds-font-bold ds-text-primary">待办事项</text>
       <text class="header-progress ds-text-lg ds-font-bold">{{ progressValue }}%</text>
     </view>
 

@@ -4,7 +4,7 @@
         <view class="hot-picks-capsule" :class="getCardClass()" :style="cardContainerStyle">
             <!-- 卡片标题区域 -->
             <view class="capsule-header">
-                <text class="capsule-title">📊 Study Overview</text>
+                <text class="capsule-title">📊 学习概览</text>
                 <text class="capsule-arrow">→</text>
             </view>
 
@@ -14,21 +14,21 @@
                 <view class="data-bubble bubble-time" :style="bubbleStyles[0]" @tap.stop="navigateToDetail">
                     <image class="bubble-icon" :src="timeIcon" mode="aspectFit"></image>
                     <text class="bubble-value">{{ formatStudyTime(studyTime) }}</text>
-                    <text class="bubble-label">Study Time</text>
+                    <text class="bubble-label">学习时长</text>
                 </view>
 
                 <!-- 气泡2：完成率 -->
                 <view class="data-bubble bubble-progress" :style="bubbleStyles[1]" @tap.stop="navigateToDetail">
                     <image class="bubble-icon" :src="progressIcon" mode="aspectFit"></image>
                     <text class="bubble-value">{{ completionRate }}%</text>
-                    <text class="bubble-label">Completion</text>
+                    <text class="bubble-label">完成率</text>
                 </view>
 
                 <!-- 气泡3：能力评级 -->
                 <view class="data-bubble bubble-ability" :style="bubbleStyles[2]" @tap.stop="navigateToDetail">
                     <image class="bubble-icon" :src="abilityIcon" mode="aspectFit"></image>
                     <text class="bubble-value">{{ abilityRank }}</text>
-                    <text class="bubble-label">Ability Rank</text>
+                    <text class="bubble-label">能力评级</text>
                 </view>
             </view>
 
