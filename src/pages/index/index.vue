@@ -100,9 +100,9 @@
 				</view>
 			</view>
 
-			<!-- 知识点气泡场 -->
+			<!-- 概况气泡场 -->
 			<view class="section-header">
-				<text class="section-title">知识点</text>
+				<text class="section-title">概况</text>
 			</view>
 			<view :class="['knowledge-field', 'field-floating']">
 				<view 
@@ -171,13 +171,13 @@
 					<text class="edit-text">编辑计划</text>
 				</view>
 			</view>
-			<todo-list :is-dark="isDark"></todo-list>
+			<todo-list :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
 
-			<!-- 模式说明 -->
+			<!-- 每日金句 -->
 			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']">
 				<text class="mode-text">
-					<text class="mode-highlight">{{ isDark ? '深色模式：' : '浅色模式：' }}</text>
-					{{ isDark ? '高能复习模式，浮动气泡卡片设计。适合快速冲刺和数据分析。' : '结构化学习模式，简洁布局设计。适合长时间学习。' }}
+					<text class="mode-highlight">💡 每日金句：</text>
+					{{ dailyQuote }}
 				</text>
 			</view>
 
@@ -242,7 +242,10 @@ export default {
 				{ title: '错题复习：物理', subtitle: '已复习 12 道题', time: '5小时前', icon: '✓', status: 'completed' },
 				{ title: '每日练习：化学', subtitle: '已完成 15/30 题', time: '进行中', icon: '▶', status: 'in-progress' },
 				{ title: '计划：生物复习', subtitle: '明天上午 9:00', time: '即将开始', icon: '📅', status: 'pending' }
-			]
+			],
+
+			// 每日金句
+			dailyQuote: '成功不是终点，失败也不是终结，唯有勇气才是永恒。'
 		};
 	},
 
@@ -435,6 +438,16 @@ export default {
 				title: '编辑计划功能开发中', 
 				icon: 'none',
 				duration: 2000
+			});
+		},
+
+		// 处理待办事项切换
+		handleToggleTodo(todoId) {
+			console.log('Toggle todo:', todoId);
+			uni.showToast({
+				title: '待办事项已更新',
+				icon: 'success',
+				duration: 1500
 			});
 		},
 
