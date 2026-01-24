@@ -38,4 +38,4 @@ yarn-error.log*
 # Cache
 .cache/
 .temp/
-.tmp/
+.tmp/.vscode/settings.json
