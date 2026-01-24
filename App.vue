@@ -19,11 +19,22 @@ export default {
 			}
 		}
 
+		// 初始化全局错误捕捉
+		this.initGlobalErrorHandler()
+
 		// 初始化双模主题系统
 		this.initThemeSystem()
 
 		// 执行静默登录
 		this.performSilentLogin()
+	},
+	onError(error) {
+		// Vue 错误捕捉
+		this.handleGlobalError('Vue Error', error)
+	},
+	onUnhandledRejection(event) {
+		// Promise 未捕获的 rejection
+		this.handleGlobalError('Unhandled Promise Rejection', event.reason)
 	},
 	onShow() {
 		console.log('App Show')
@@ -107,6 +118,79 @@ export default {
 		},
 
 		/**
+		 * 初始化全局错误处理器
+		 */
+		initGlobalErrorHandler() {
+			// 创建错误日志目录
+			const errorLogs = []
+			this.globalData.errorLogs = errorLogs
+
+			// 监听全局错误事件
+			uni.onError((error) => {
+				this.handleGlobalError('Runtime Error', error)
+			})
+
+			// 监听未处理的 Promise rejection
+			uni.onUnhandledRejection((event) => {
+				this.handleGlobalError('Unhandled Promise Rejection', event.reason)
+			})
+
+			console.log('[ErrorHandler] 全局错误捕捉已初始化')
+		},
+
+		/**
+		 * 处理全局错误
+		 */
+		handleGlobalError(type, error) {
+			const errorInfo = {
+				type,
+				message: error?.message || String(error),
+				stack: error?.stack || '',
+				timestamp: new Date().toISOString(),
+				page: getCurrentPages().length > 0 ? getCurrentPages()[getCurrentPages().length - 1].route : 'unknown'
+			}
+
+			// 保存到内存
+			if (this.globalData.errorLogs) {
+				this.globalData.errorLogs.push(errorInfo)
+				// 只保留最近50条错误
+				if (this.globalData.errorLogs.length > 50) {
+					this.globalData.errorLogs.shift()
+				}
+			}
+
+			// 保存到本地存储（用于调试）
+			try {
+				const storedErrors = uni.getStorageSync('runtime_errors') || []
+				storedErrors.push(errorInfo)
+				// 只保留最近100条
+				if (storedErrors.length > 100) {
+					storedErrors.splice(0, storedErrors.length - 100)
+				}
+				uni.setStorageSync('runtime_errors', storedErrors)
+			} catch (e) {
+				console.error('[ErrorHandler] 保存错误日志失败:', e)
+			}
+
+			// 控制台输出
+			console.error(`[${type}]`, errorInfo.message)
+			if (errorInfo.stack) {
+				console.error('Stack:', errorInfo.stack)
+			}
+
+			// 在开发环境显示错误提示
+			// #ifdef MP-WEIXIN
+			if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion === 'develop') {
+				uni.showToast({
+					title: `错误: ${errorInfo.message.substring(0, 20)}...`,
+					icon: 'none',
+					duration: 3000
+				})
+			}
+			// #endif
+		},
+
+		/**
 		 * 执行静默登录
 		 */
 		async performSilentLogin() {
@@ -127,7 +211,8 @@ export default {
 	globalData: {
 		currentTheme: 'light',
 		isDarkMode: false,
-		qaLogs: []
+		qaLogs: [],
+		errorLogs: []
 	}
 }
 </script>
