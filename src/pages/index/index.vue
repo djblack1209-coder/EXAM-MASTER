@@ -444,11 +444,14 @@ export default {
 		// 处理待办事项切换
 		handleToggleTodo(todoId) {
 			console.log('Toggle todo:', todoId);
-			uni.showToast({
-				title: '待办事项已更新',
-				icon: 'success',
-				duration: 1500
-			});
+			// 震动反馈
+			try {
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort({ type: 'light' });
+				}
+			} catch (e) {
+				console.log('Vibration not supported');
+			}
 		},
 
 		// 滚动监听

@@ -4,13 +4,15 @@
     <!-- 待办项列表 -->
     <view class="todo-items">
       <view 
-        v-for="(item, index) in todos" 
+        v-for="(item, index) in sortedTodos" 
         :key="item.id" 
-        :class="['todo-item', isDark ? 'item-dark' : 'item-light']"
-        @tap="onToggleTodo(item.id)"
+        :class="['todo-item', isDark ? 'item-dark' : 'item-light', item.completed && 'item-completed']"
       >
-        <!-- 左侧：状态图标 -->
-        <view :class="['item-checkbox', item.completed && 'checkbox-completed']">
+        <!-- 左侧：状态图标 - 可点击 -->
+        <view 
+          :class="['item-checkbox', item.completed && 'checkbox-completed']"
+          @tap.stop="onToggleTodo(item.id)"
+        >
           <text v-if="item.completed" class="checkbox-icon">✓</text>
         </view>
 
@@ -29,7 +31,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 // 定义props
 const props = defineProps({
@@ -37,7 +39,7 @@ const props = defineProps({
     type: Array,
     default: () => [
       { id: 1, text: '复习数学第三章', completed: false, priority: 'Priority' },
-      { id: 2, text: '完成物理作业', completed: true, priority: 'Important' },
+      { id: 2, text: '完成物理作业', completed: false, priority: 'Important' },
       { id: 3, text: '准备英语演讲', completed: false, priority: 'Normal' }
     ]
   },
@@ -50,6 +52,17 @@ const props = defineProps({
 // 定义emits
 const emit = defineEmits(['toggleTodo'])
 
+// 本地待办列表状态
+const localTodos = ref([...props.todos])
+
+// 排序后的待办列表：未完成在前，已完成在后
+const sortedTodos = computed(() => {
+  return [...localTodos.value].sort((a, b) => {
+    if (a.completed === b.completed) return 0
+    return a.completed ? 1 : -1
+  })
+})
+
 // 获取优先级class
 const getPriorityClass = (item) => {
   const priority = item.priority || 'Priority'
@@ -61,6 +74,10 @@ const getPriorityClass = (item) => {
 
 // 切换待办状态
 const onToggleTodo = (id) => {
+  const todo = localTodos.value.find(t => t.id === id)
+  if (todo) {
+    todo.completed = !todo.completed
+  }
   emit('toggleTodo', id)
 }
 </script>
@@ -98,11 +115,6 @@ const onToggleTodo = (id) => {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-.item-light:active {
-  transform: translateY(-2rpx);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
-}
-
 /* 深色模式 */
 .item-dark {
   background: rgba(255, 255, 255, 0.05);
@@ -111,9 +123,9 @@ const onToggleTodo = (id) => {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-.item-dark:active {
-  transform: translateY(-2rpx);
-  box-shadow: 0 4rpx 16rpx rgba(0, 242, 255, 0.1);
+/* 已完成项目样式 */
+.item-completed {
+  opacity: 0.6;
 }
 
 /* ==================== 复选框 ==================== */
@@ -128,11 +140,29 @@ const onToggleTodo = (id) => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2rpx solid #9CA3AF;
   background: transparent;
+  cursor: pointer;
+}
+
+.item-checkbox:active {
+  transform: scale(0.9);
 }
 
 .checkbox-completed {
   background: #10B981;
   border-color: #10B981;
+  animation: checkboxPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes checkboxPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .checkbox-icon {
