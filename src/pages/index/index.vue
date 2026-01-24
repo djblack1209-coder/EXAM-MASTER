@@ -163,6 +163,16 @@
 				</view>
 			</view>
 
+			<!-- 待办事项清单 -->
+			<view class="section-header">
+				<text class="section-title">待办事项</text>
+				<view class="edit-plan-btn" @tap="handleEditPlan">
+					<text class="edit-icon">✏️</text>
+					<text class="edit-text">编辑计划</text>
+				</view>
+			</view>
+			<todo-list :is-dark="isDark"></todo-list>
+
 			<!-- 模式说明 -->
 			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']">
 				<text class="mode-text">
@@ -186,6 +196,7 @@
 <script>
 import CustomTabbar from '../../components/custom-tabbar/custom-tabbar.vue';
 import BaseSkeleton from '../../components/base-skeleton/base-skeleton.vue';
+import TodoList from '../../components/TodoList.vue';
 import { getGreetingTime } from '../../utils/core/date';
 import { useTodoStore } from '../../stores';
 import { lafService } from '../../services/lafService.js';
@@ -193,7 +204,8 @@ import { lafService } from '../../services/lafService.js';
 export default {
 	components: {
 		CustomTabbar,
-		BaseSkeleton
+		BaseSkeleton,
+		TodoList
 	},
 
 	data() {
@@ -416,6 +428,14 @@ export default {
 		handleKnowledgeClick(point) {
 			console.log('Knowledge point clicked:', point.title);
 			uni.showToast({ title: `${point.title} - ${point.mastery}% mastered`, icon: 'none' });
+		},
+
+		handleEditPlan() {
+			uni.showToast({ 
+				title: '编辑计划功能开发中', 
+				icon: 'none',
+				duration: 2000
+			});
 		},
 
 		// 滚动监听
@@ -1251,6 +1271,32 @@ export default {
 
 .mode-highlight {
 	color: var(--primary);
+	font-weight: 600;
+}
+
+/* ==================== 编辑计划按钮 ==================== */
+.edit-plan-btn {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	padding: 12rpx 24rpx;
+	border-radius: 20rpx;
+	background: var(--primary);
+	color: var(--primary-foreground);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.edit-plan-btn:active {
+	transform: scale(0.95);
+	opacity: 0.8;
+}
+
+.edit-icon {
+	font-size: 24rpx;
+}
+
+.edit-text {
+	font-size: 24rpx;
 	font-weight: 600;
 }
 
