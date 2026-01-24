@@ -96,7 +96,8 @@
           </view>
           
           <text class="loading-title">AI 正在分析...</text>
-          <text class="loading-step">已生成 {{ getGeneratedQuestionCount() }} 道题 / 目标 {{ totalQuestionsLimit * batchQuestionCount }}</text>
+          <text class="loading-step">已生成 {{ totalQuestionsGenerated }} 道题 / 目标 {{ totalQuestionsLimit * batchQuestionCount }}</text>
+          <text class="loading-progress">进度: {{ realProgress }}%{{ estimatedTimeLeft > 0 ? ' · 预计剩余 ' + estimatedTimeLeft + '秒' : '' }}</text>
           
           <text class="soup-text">"{{ currentSoup }}"</text>
           <view class="loading-actions">
@@ -1463,8 +1464,16 @@ export default {
 .loading-step {
   font-size: 14px;
   color: #A1A1AA;
-  margin-bottom: 40px;
+  margin-bottom: 8px;
   font-weight: 500;
+}
+
+.loading-progress {
+  font-size: 13px;
+  color: #0A84FF;
+  margin-bottom: 32px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .soup-text { 
