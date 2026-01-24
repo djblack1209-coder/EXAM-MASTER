@@ -684,7 +684,15 @@ export default {
       }
     },
 
-    // 6. 保存题目到本地存储
+    // ⭐⭐ v5.2-iter2 新增：生成题目hash（用于去重）
+    generateQuestionHash(question) {
+      // 使用题目文本+选项生成简单hash
+      const questionText = question.question || '';
+      const optionsText = Array.isArray(question.options) ? question.options.join('') : '';
+      return questionText + optionsText;
+    },
+
+    // 6. 保存题目到本地存储（含去重逻辑）
     saveQuestions(newQuestions) {
       console.log('[题库保存] 📥 开始保存题目');
       if (!Array.isArray(newQuestions) || newQuestions.length === 0) {
@@ -699,13 +707,33 @@ export default {
         const oldBank = uni.getStorageSync('v30_bank') || [];
         console.log('[题库保存] 📖 旧题库数量:', oldBank.length);
         
+        // ⭐⭐ v5.2-iter2: 去重逻辑
+        // 1. 构建旧题库hash集合
+        const oldHashes = new Set(oldBank.map(q => this.generateQuestionHash(q)));
+        console.log('[题库保存] 🔍 旧题库hash数量:', oldHashes.size);
+        
+        // 2. 过滤新题目（排除重复）
+        const uniqueQuestions = newQuestions.filter(q => {
+          const hash = this.generateQuestionHash(q);
+          return !oldHashes.has(hash);
+        });
+        
+        // 3. 统计重复数量
+        const duplicates = newQuestions.length - uniqueQuestions.length;
+        if (duplicates > 0) {
+          this.duplicateCount += duplicates;
+          console.log('[题库保存] ⚠️ 检测到重复题目:', duplicates, '道');
+        }
+        
+        console.log('[题库保存] ✅ 去重后新题目数量:', uniqueQuestions.length);
+        
         // 检查登录状态
         const userId = uni.getStorageSync('EXAM_USER_ID');
         const isLoggedIn = !!userId;
         console.log('[题库保存] 👤 用户登录状态:', { isLoggedIn, userId: userId || '未登录' });
         
-        // 合并
-        const merged = [...oldBank, ...newQuestions];
+        // ⭐⭐ v5.2-iter2: 使用去重后的题目合并
+        const merged = [...oldBank, ...uniqueQuestions];
         console.log('[题库保存] 💾 准备保存，合并后总数:', merged.length);
         
         // 未登录时：保留本地缓存（10-15道题）
@@ -798,23 +826,32 @@ export default {
       }
     },
 
-    // 7. 结束生成
+    // 7. 结束生成（⭐⭐ v5.2-iter2: 增强去重统计提示）
     finishGeneration(msg) {
       this.isLooping = false;
       this.isPaused = false;
       this.showMask = false;
       this.showSpeedModal = false; // 确保弹窗关闭
+      this.importStatus = 'success';
       this.updateUploadRecordStatus('completed');
       if (this.soupTimer) {
         clearInterval(this.soupTimer);
         this.soupTimer = null;
       }
       
+      // ⭐⭐ v5.2-iter2: 构建增强的完成消息（含去重统计）
+      let enhancedMsg = msg;
+      if (this.duplicateCount > 0) {
+        enhancedMsg = `${msg}\n\n成功导入 ${this.totalQuestionsGenerated} 道新题\n跳过 ${this.duplicateCount} 道重复题`;
+      } else {
+        enhancedMsg = `${msg}\n\n成功导入 ${this.totalQuestionsGenerated} 道新题`;
+      }
+      
       // 只有当用户还在这个页面时，才弹窗，否则静默结束
       // 修复：使用箭头函数确保 this 绑定
       uni.showModal({
         title: '✅ 题库装填完毕',
-        content: msg,
+        content: enhancedMsg,
         confirmText: '去刷题',
         success: (res) => {
           if (res.confirm) {

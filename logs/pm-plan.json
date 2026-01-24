@@ -1,75 +1,52 @@
 {
-  "cycle_id": "v5.2-iter1",
-  "timestamp": "2026-01-25 07:39:21",
-  "selected_feature": "优化题库导入体验",
-  "rationale": "消除P0情绪低谷点（3/10），用户在导入题库时缺乏进度反馈和错误提示，直接影响首次使用体验。竞品分析显示，实时进度条和友好的错误处理是用户期望的核心功能。",
+  "cycle_id": "v5.2-iter2",
+  "timestamp": "2026-01-25 07:45:41",
+  "selected_feature": "题目去重功能",
+  "rationale": "上一轮迭代（v5.2-iter1）遗留的P1问题。用户重复导入相同题库时，无法自动跳过重复题目，导致题库冗余，影响刷题体验。实现去重功能可以完善导入体验，将功能完整度从87.5%提升到100%。",
   "user_stories": [
     {
-      "id": "US-001",
+      "id": "US-005",
       "as_a": "考研备考学生",
-      "i_want": "看到实时的导入进度（百分比、题目数量、预计剩余时间）",
-      "so_that": "我能清楚知道导入进展，不会误以为程序卡死",
+      "i_want": "重复导入相同题库时，系统自动检测并跳过重复题目",
+      "so_that": "我的题库保持干净，不会有重复题目干扰刷题",
       "acceptance_criteria": [
-        "显示当前导入进度百分比（0-100%）",
-        "显示已导入题目数量 / 总题目数量（如：50/200）",
-        "显示预计剩余时间（如：剩余 30 秒）",
-        "进度条平滑更新，无卡顿"
+        "导入时自动检测重复题目（基于题目内容hash）",
+        "显示提示：'检测到 X 道重复题目，已自动跳过'",
+        "重复题目不计入导入进度",
+        "去重逻辑不影响导入性能（O(n)复杂度）"
       ]
     },
     {
-      "id": "US-002",
+      "id": "US-006",
       "as_a": "考研备考学生",
-      "i_want": "在导入过程中看到清晰的状态提示",
-      "so_that": "我能理解当前正在发生什么，减少焦虑感",
+      "i_want": "查看去重统计信息",
+      "so_that": "我能了解有多少题目被跳过，确认去重功能正常工作",
       "acceptance_criteria": [
-        "导入开始时显示"正在解析文件..."",
-        "导入中显示"正在导入第 X 题..."（每10题更新一次）",
-        "导入成功显示"成功导入 X 道题目"",
-        "导入失败显示具体错误原因（如"文件格式错误"、"网络超时"）"
-      ]
-    },
-    {
-      "id": "US-003",
-      "as_a": "考研备考学生",
-      "i_want": "导入失败时能快速重试，无需重新选择文件",
-      "so_that": "我能节省时间，不会因为重复操作而沮丧",
-      "acceptance_criteria": [
-        "文件格式错误时，提示支持的格式（JSON/TXT/Excel）",
-        "网络超时时，提示"网络不稳定，请稍后重试"并显示"重试"按钮",
-        "题目重复时，提示"检测到 X 道重复题目，已自动跳过"",
-        "点击"重试"按钮后，使用缓存的文件内容重新导入"
-      ]
-    },
-    {
-      "id": "US-004",
-      "as_a": "考研备考学生",
-      "i_want": "导入过程中能切换到其他页面，导入完成后自动通知我",
-      "so_that": "我能充分利用等待时间，不会被迫盯着进度条",
-      "acceptance_criteria": [
-        "导入过程中可以返回上一页或切换到其他页面",
-        "后台导入继续进行，不会中断",
-        "导入完成后显示系统通知（如"题库导入成功，共 200 道题"）",
-        "导入失败时保留已导入的题目（增量导入）"
+        "导入完成后显示去重统计：'成功导入 X 道新题，跳过 Y 道重复题'",
+        "实时更新 duplicateCount 变量",
+        "在 importDetailText 中显示去重信息"
       ]
     }
   ],
-  "priority": "P0",
-  "estimated_hours": 4,
+  "priority": "P1",
+  "estimated_hours": 2,
   "expected_outcome": {
-    "emotion_score_before": 3,
-    "emotion_score_after": 8,
-    "emotion_improvement": 5,
-    "user_satisfaction_improvement": "30%",
-    "first_use_churn_reduction": "20%"
+    "feature_completeness_before": "87.5%",
+    "feature_completeness_after": "100%",
+    "user_satisfaction_improvement": "15%",
+    "technical_debt_reduction": "1个P1问题解决"
   },
   "technical_dependencies": {
     "frontend": "src/pages/practice/import-data.vue",
-    "backend": "uniCloud-aliyun/cloudfunctions/import-questions",
-    "services": "src/services/storageService.js"
+    "services": "src/services/storageService.js",
+    "algorithm": "题目内容hash（MD5或简单字符串hash）"
   },
-  "competitive_insights": [
-    "试题通：扫码快速入场，简化流程",
-    "疯狂刷题：智能推荐，离线下载",
-    "考研刷题小程序：清晰的题库分类，导入进度反馈"
-  ]
+  "related_to_previous_iteration": {
+    "cycle_id": "v5.2-iter1",
+    "score": "92/100",
+    "remaining_issues": [
+      "题目去重功能（本轮解决）",
+      "系统通知优化（下轮解决）"
+    ]
+  }
 }
