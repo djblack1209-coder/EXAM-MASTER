@@ -1,13 +1,12 @@
-<!-- REFACTOR: Modern todo list with design system utilities -->
 <template>
   <view :class="['todo-list', isDark ? 'todo-dark' : 'todo-light']">
-    <!-- 待办项列表 -->
+    <!-- 待办项列表 - 不排序，按原始顺序显示 -->
     <view class="todo-items">
       <view 
-        v-for="item in sortedTodos" 
+        v-for="item in todos" 
         :key="item.id" 
         :class="['todo-item', isDark ? 'item-dark' : 'item-light', item.completed && 'item-completed']"
-        @tap="onToggleTodo(item.id)"
+        @tap="handleToggle(item.id)"
       >
         <!-- 左侧：状态图标 -->
         <view :class="['item-checkbox', item.completed && 'checkbox-completed']">
@@ -20,7 +19,7 @@
         </text>
 
         <!-- 右侧：优先级标签 -->
-        <view :class="['item-badge', 'badge-' + getPriorityClass(item)]">
+        <view :class="['item-badge', 'badge-' + getPriorityClass(item.priority)]">
           <text class="badge-text">{{ item.priority || 'Priority' }}</text>
         </view>
       </view>
@@ -29,17 +28,13 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { defineProps, defineEmits } from 'vue'
 
 // 定义props
 const props = defineProps({
   todos: {
     type: Array,
-    default: () => [
-      { id: 1, text: '复习数学第三章', completed: false, priority: 'Priority' },
-      { id: 2, text: '完成物理作业', completed: false, priority: 'Important' },
-      { id: 3, text: '准备英语演讲', completed: false, priority: 'Normal' }
-    ]
+    default: () => []
   },
   isDark: {
     type: Boolean,
@@ -50,33 +45,26 @@ const props = defineProps({
 // 定义emits
 const emit = defineEmits(['toggleTodo'])
 
-// 本地待办列表状态 - 直接使用 props.todos，不需要本地副本
-// 排序后的待办列表：未完成在前，已完成在后
-const sortedTodos = computed(() => {
-  return [...props.todos].sort((a, b) => {
-    if (a.completed === b.completed) return 0
-    return a.completed ? 1 : -1
-  })
-})
-
 // 获取优先级class
-const getPriorityClass = (item) => {
-  const priority = item.priority || 'Priority'
+const getPriorityClass = (priority) => {
+  if (!priority) return 'priority'
   if (priority === 'Priority') return 'priority'
   if (priority === 'Important') return 'important'
   if (priority === 'Normal') return 'normal'
   return 'priority'
 }
 
-// 切换待办状态 - 只触发事件，不修改本地状态
-const onToggleTodo = (id) => {
+// 处理点击切换
+const handleToggle = (id) => {
+  console.log('[TodoList] Clicked todo ID:', id)
+  
   // 震动反馈
   try {
-    if (typeof uni.vibrateShort === 'function') {
+    if (typeof uni !== 'undefined' && typeof uni.vibrateShort === 'function') {
       uni.vibrateShort({ type: 'light' })
     }
   } catch (e) {
-    console.log('Vibration not supported')
+    console.log('[TodoList] Vibration not supported')
   }
   
   // 触发父组件事件
