@@ -23,8 +23,11 @@
 				</view>
 			</view>
 			<view class="match-status">
-				<text class="status-title">{{ opponentFound ? '匹配成功！' : '正在寻找实力相当的研友...' }}</text>
+				<text class="status-title">{{ opponentFound ? '匹配成功！' : matchingStatusText }}</text>
 				<text class="status-tip" v-if="opponentFound">{{ opponent.name }} 已加入对战</text>
+				<text class="status-tip" v-if="!opponentFound" style="margin-top: 10rpx; font-size: 22rpx; color: rgba(255, 255, 255, 0.5);">
+					超时将自动匹配机器人对手
+				</text>
 			</view>
 			<view class="exit-btn" @tap="handleExit" v-if="!opponentFound">
 				<text>取消匹配</text>
@@ -212,6 +215,13 @@ export default {
 			isGeneratingShare: false, // 是否正在生成分享海报
 			isScoreUploaded: false, // 是否已上传分数（防止重复上传）
 			showRedWarning: false, // 是否显示红光警告
+			// 匹配状态相关
+			matchingTimer: null, // 匹配定时器
+			matchingTimeoutTimer: null, // 匹配超时定时器
+			matchingStatusTimer: null, // 匹配状态更新定时器
+			matchingStartTime: 0, // 匹配开始时间
+			matchingTimeout: 30000, // 匹配超时时间（30秒）
+			matchingStatusText: '正在寻找实力相当的研友...', // 匹配状态文本
 			// 战绩数据（用于分享海报）
 			accuracy: 0, // 正确率
 			averageTime: 0, // 平均答题时间（秒）
@@ -384,12 +394,20 @@ export default {
 				mockBotsCount: this.mockBots.length
 			});
 			
+			// 重置匹配状态
+			this.matchingStartTime = Date.now();
+			this.matchingTimeout = 30000; // 30秒超时
+			this.matchingStatusText = '正在寻找实力相当的研友...';
+			
+			// 启动匹配状态更新
+			this.startMatchingStatusUpdate();
+			
 			// 模拟匹配过程（1.5-3秒随机延迟）
 			const matchDelay = Math.random() * 1500 + 1500; // 1.5-3秒
 			
 			console.log('[TEST-10.1] ⏱️ 匹配延迟:', `${(matchDelay / 1000).toFixed(1)}秒`);
 			
-			setTimeout(() => {
+			this.matchingTimer = setTimeout(() => {
 				// 随机选择一个虚拟对手
 				const randomBot = this.mockBots[Math.floor(Math.random() * this.mockBots.length)];
 				this.opponent = { 
@@ -398,6 +416,10 @@ export default {
 					level: randomBot.level
 				};
 				this.opponentFound = true;
+				this.matchingStatusText = '匹配成功！正在建立连接...';
+				
+				// 停止状态更新
+				this.stopMatchingStatusUpdate();
 				
 				console.log('[TEST-10.1] ✅ 匹配成功！');
 				console.log('[TEST-10.1] 👥 对手信息:', {
@@ -407,6 +429,13 @@ export default {
 					opponentFound: this.opponentFound
 				});
 				
+				// 震动反馈
+				try {
+					if (typeof uni.vibrateShort === 'function') {
+						uni.vibrateShort();
+					}
+				} catch(e) {}
+				
 				// 1秒后进入对战
 				setTimeout(() => {
 					console.log('[TEST-10.1] ⚔️ 进入对战阶段');
@@ -415,6 +444,68 @@ export default {
 					this.startBattle();
 				}, 1000);
 			}, matchDelay);
+			
+			// 30秒超时处理
+			this.matchingTimeoutTimer = setTimeout(() => {
+				if (!this.opponentFound) {
+					console.log('[PK-BATTLE] ⏰ 匹配超时，转为机器人对战');
+					this.stopMatchingStatusUpdate();
+					this.handleMatchingTimeout();
+				}
+			}, this.matchingTimeout);
+		},
+		
+		startMatchingStatusUpdate() {
+			const statusTexts = [
+				'正在寻找实力相当的研友...',
+				'正在匹配中...',
+				'寻找对手中...',
+				'正在连接服务器...'
+			];
+			let index = 0;
+			
+			this.matchingStatusTimer = setInterval(() => {
+				if (!this.opponentFound) {
+					const elapsed = Date.now() - this.matchingStartTime;
+					const remaining = Math.max(0, Math.ceil((this.matchingTimeout - elapsed) / 1000));
+					
+					if (remaining > 0) {
+						index = (index + 1) % statusTexts.length;
+						this.matchingStatusText = `${statusTexts[index]} (${remaining}s)`;
+					}
+				}
+			}, 2000);
+		},
+		
+		stopMatchingStatusUpdate() {
+			if (this.matchingStatusTimer) {
+				clearInterval(this.matchingStatusTimer);
+				this.matchingStatusTimer = null;
+			}
+		},
+		
+		handleMatchingTimeout() {
+			// 超时后自动匹配机器人
+			const randomBot = this.mockBots[Math.floor(Math.random() * this.mockBots.length)];
+			this.opponent = { 
+				name: randomBot.name + ' (机器人)', 
+				avatar: randomBot.avatar,
+				level: randomBot.level
+			};
+			this.opponentFound = true;
+			this.matchingStatusText = '已为您匹配机器人对手';
+			
+			uni.showToast({
+				title: '已转为机器人对战',
+				icon: 'none',
+				duration: 2000
+			});
+			
+			// 1.5秒后进入对战
+			setTimeout(() => {
+				this.gameState = 'battle';
+				this.startBattle();
+			}, 1500);
 		},
 		startBattle() {
 			console.log('[TEST-10.1] 🎯 开始对战');
@@ -889,6 +980,17 @@ export default {
 				this.questionTimer = null;
 				console.log('[TEST-10.2] 🧹 已清除题目倒计时定时器');
 			}
+			
+			// 清除匹配相关定时器
+			if (this.matchingTimer) {
+				clearTimeout(this.matchingTimer);
+				this.matchingTimer = null;
+			}
+			if (this.matchingTimeoutTimer) {
+				clearTimeout(this.matchingTimeoutTimer);
+				this.matchingTimeoutTimer = null;
+			}
+			this.stopMatchingStatusUpdate();
 		},
 		resetGame() {
 			this.clearAllTimers();
