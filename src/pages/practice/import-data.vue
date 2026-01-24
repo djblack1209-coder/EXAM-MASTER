@@ -140,16 +140,16 @@ export default {
     return {
       // 导航栏相关
       statusBarHeight: 44,
-      navBarHeight: 88, // 标准导航栏高度 = 状态栏高度 + 44px
+      navBarHeight: 88,
       isDark: false,
       
       // 状态锁拆分
-      isLooping: false,    // 核心：控制是否继续连载（逻辑锁）
+      isLooping: false,
       isPaused: false,
-      showMask: false,     // 视觉：控制是否显示全屏动画（视觉锁）
-      showSpeedModal: false, // 新增：控制自定义弹窗显示
-      isRequestInFlight: false, // 新增：标记是否有 AI 请求正在进行中（防止重复请求）
-      progressTimer: null, // Apple AI 进度动画计时器
+      showMask: false,
+      showSpeedModal: false,
+      isRequestInFlight: false,
+      progressTimer: null,
       
       // UI 状态
       currentSoup: '',
@@ -164,16 +164,30 @@ export default {
       
       // 核心业务数据
       fileName: '',
-      fullFileContent: '', // 存储读取到的完整全书内容
-      readOffset: 0,       // 当前读取到了第几个字
-      chunkSize: 1000,     // 每次喂给 AI 1000字
-      generatedCount: 0,   // 已生成多少组
-      totalQuestionsLimit: 10, // 单次连载目标 (比如先出10组共50题)
+      fullFileContent: '',
+      readOffset: 0,
+      chunkSize: 1000,
+      generatedCount: 0,
+      totalQuestionsLimit: 10,
       batchQuestionCount: 5,
       uploadHistoryKey: 'imported_files',
       currentUploadId: '',
-      // Apple AI Loading 进度
       progressWidth: 0,
+      
+      // ⭐ 新增：增强的进度和状态管理
+      realProgress: 0,           // 真实进度百分比 (0-100)
+      estimatedTimeLeft: 0,      // 预估剩余时间（秒）
+      generationStartTime: 0,    // 生成开始时间戳
+      totalQuestionsGenerated: 0, // 已生成的题目总数
+      errorInfo: null,           // 错误信息对象 { message, detail, canRetry }
+      showErrorCard: false,      // 显示错误卡片
+      uploadStats: {             // 上传统计
+        totalSize: 0,
+        uploadedSize: 0,
+        speed: 0
+      },
+      showFilePreview: false,    // 显示文件预览确认
+      filePreviewData: null,     // 文件预览数据
     }
   },
   
@@ -348,6 +362,13 @@ export default {
       this.readOffset = 0;
       this.generatedCount = 0;
       this.progressWidth = 0; // 重置进度
+      
+      // ⭐ 初始化生成开始时间
+      this.generationStartTime = Date.now();
+      this.realProgress = 0;
+      this.estimatedTimeLeft = 0;
+      this.totalQuestionsGenerated = 0;
+      
       this.startSoupRotation(); 
       this.updateUploadRecordStatus('generating');
       
@@ -364,7 +385,7 @@ export default {
       return this.startAI();
     },
 
-    // 5. 分批生成逻辑 (核心递归) - 3秒首屏策略 + 防重复请求
+    // 5. 分批生成逻辑 (核心递归) - 3秒首屏策略 + 防重复请求 + 真实进度
     async generateNextBatch() {
       // 1. 检查是否强制停止
       if (!this.isLooping || this.isPaused) return;
@@ -375,11 +396,14 @@ export default {
         return;
       }
 
-      // 3. 新增：如果已经在请求了，就别重复发了
+      // 3. 如果已经在请求了，就别重复发了
       if (this.isRequestInFlight) {
         console.log('已有请求进行中，跳过本次调用');
         return;
       }
+      
+      // ⭐ 4. 更新真实进度
+      this.updateRealProgress();
 
       // ⚡️⚡️ 策略优化：第一波只出 3 题，追求极速；后续出 5 题，追求效率
       const currentBatchSize = this.batchQuestionCount;
@@ -864,6 +888,29 @@ export default {
         this.progressTimer = null;
         this.progressWidth = 0;
       }
+    },
+    
+    // ⭐ 14. 更新真实进度（新增）
+    updateRealProgress() {
+      // 计算真实进度百分比
+      this.realProgress = Math.round((this.generatedCount / this.totalQuestionsLimit) * 100);
+      
+      // 计算预估剩余时间
+      if (this.generatedCount > 0 && this.generationStartTime > 0) {
+        const elapsed = Date.now() - this.generationStartTime;
+        const avgTimePerBatch = elapsed / this.generatedCount;
+        const remainingBatches = this.totalQuestionsLimit - this.generatedCount;
+        this.estimatedTimeLeft = Math.round((avgTimePerBatch * remainingBatches) / 1000);
+      }
+      
+      // 更新已生成题目总数
+      this.totalQuestionsGenerated = this.generatedCount * this.batchQuestionCount;
+      
+      console.log('[进度更新]', {
+        realProgress: this.realProgress,
+        estimatedTimeLeft: this.estimatedTimeLeft,
+        totalQuestionsGenerated: this.totalQuestionsGenerated
+      });
     }
   }
 }
