@@ -12,6 +12,9 @@ dist/
 .vscode/hardcoded-*.log
 .vscode/auto-update-*.log
 .vscode/quality-report-*.md
+.vscode/backend-required.yml
+.vscode/manual-tasks.md
+.vscode/update-status.md
 *.suo
 *.ntvs*
 *.njsproj
