@@ -171,7 +171,7 @@
 					<text class="edit-text">编辑计划</text>
 				</view>
 			</view>
-			<todo-list :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
+			<todo-list :todos="todos" :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
 
 			<!-- 每日金句 -->
 			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;">
@@ -225,6 +225,13 @@ export default {
 			accuracy: 78.5,
 			totalStudyDays: 14,
 			achievementCount: 23,
+
+			// 待办事项数据
+			todos: [
+				{ id: 1, text: '复习数学第三章', completed: false, priority: 'Priority' },
+				{ id: 2, text: '完成物理作业', completed: false, priority: 'Important' },
+				{ id: 3, text: '准备英语演讲', completed: false, priority: 'Normal' }
+			],
 
 			// 知识点数据
 			knowledgePoints: [
@@ -444,13 +451,12 @@ export default {
 		// 处理待办事项切换
 		handleToggleTodo(todoId) {
 			console.log('Toggle todo:', todoId);
-			// 震动反馈
-			try {
-				if (typeof uni.vibrateShort === 'function') {
-					uni.vibrateShort({ type: 'light' });
-				}
-			} catch (e) {
-				console.log('Vibration not supported');
+			
+			// 找到对应的待办事项并切换状态
+			const todo = this.todos.find(t => t.id === todoId);
+			if (todo) {
+				todo.completed = !todo.completed;
+				console.log(`Todo ${todoId} toggled to:`, todo.completed);
 			}
 		},
 

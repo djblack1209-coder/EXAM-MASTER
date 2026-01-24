@@ -50,12 +50,10 @@ const props = defineProps({
 // 定义emits
 const emit = defineEmits(['toggleTodo'])
 
-// 本地待办列表状态
-const localTodos = ref([...props.todos])
-
+// 本地待办列表状态 - 直接使用 props.todos，不需要本地副本
 // 排序后的待办列表：未完成在前，已完成在后
 const sortedTodos = computed(() => {
-  return [...localTodos.value].sort((a, b) => {
+  return [...props.todos].sort((a, b) => {
     if (a.completed === b.completed) return 0
     return a.completed ? 1 : -1
   })
@@ -70,12 +68,18 @@ const getPriorityClass = (item) => {
   return 'priority'
 }
 
-// 切换待办状态
+// 切换待办状态 - 只触发事件，不修改本地状态
 const onToggleTodo = (id) => {
-  const todo = localTodos.value.find(t => t.id === id)
-  if (todo) {
-    todo.completed = !todo.completed
+  // 震动反馈
+  try {
+    if (typeof uni.vibrateShort === 'function') {
+      uni.vibrateShort({ type: 'light' })
+    }
+  } catch (e) {
+    console.log('Vibration not supported')
   }
+  
+  // 触发父组件事件
   emit('toggleTodo', id)
 }
 </script>
