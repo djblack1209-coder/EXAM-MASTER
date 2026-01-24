@@ -32,6 +32,11 @@ export const tokens = {
         '--success': '#26DE81',
         '--info': '#4B7BEC',
 
+        // 点缀色系统 (Phase 3新增)
+        '--accent-warm': '#FFB84D',      // 橙黄 - 学习进度、成就
+        '--accent-cool': '#4ECDC4',      // 青色 - 统计数据、冷静提示
+        '--accent-energy': '#FF6B6B',    // 珊瑚红 - 紧急提醒、倒计时
+
         // 边框色
         '--border-light': '#E1E8ED',
         '--border-medium': '#CED6E0',
@@ -65,6 +70,13 @@ export const tokens = {
         '--shadow-1': '0 2px 8px rgba(0,0,0,0.04)',
         '--shadow-2': '0 4px 16px rgba(0,0,0,0.08)',
         '--shadow-3': '0 8px 24px rgba(0,0,0,0.12)',
+
+        // 光晕阴影系统 (Phase 3新增)
+        '--shadow-glow-brand': '0 4px 12px rgba(159,232,112,0.3)',
+        '--shadow-glow-brand-strong': '0 4px 12px rgba(159,232,112,0.4), 0 0 20px rgba(159,232,112,0.2)',
+        '--shadow-glow-warm': '0 4px 12px rgba(255,184,77,0.3)',
+        '--shadow-glow-cool': '0 4px 12px rgba(78,205,196,0.3)',
+        '--shadow-glow-energy': '0 4px 12px rgba(255,107,107,0.3)',
 
         // 动画时长
         '--transition-fast': '0.15s',
@@ -107,6 +119,11 @@ export const tokens = {
         '--success': '#00F5A0',
         '--info': '#4D9FFF',
 
+        // 点缀色系统 (Phase 3新增 - 深色模式更鲜艳)
+        '--accent-warm': '#FFD700',      // 金黄 - 学习进度、成就
+        '--accent-cool': '#00F5FF',      // 霓虹青 - 统计数据、冷静提示
+        '--accent-energy': '#FF3366',    // 霓虹粉 - 紧急提醒、倒计时
+
         // 边框色
         '--border-light': 'rgba(255,255,255,0.08)',
         '--border-medium': 'rgba(255,255,255,0.12)',
@@ -140,6 +157,13 @@ export const tokens = {
         '--shadow-1': 'none',
         '--shadow-2': 'none',
         '--shadow-3': 'none',
+
+        // 光晕阴影系统 (Phase 3新增 - 深色模式光晕更强)
+        '--shadow-glow-brand': '0 0 20px rgba(0,242,255,0.4), 0 0 40px rgba(0,242,255,0.2)',
+        '--shadow-glow-brand-strong': '0 0 30px rgba(0,242,255,0.6), 0 0 60px rgba(0,242,255,0.3)',
+        '--shadow-glow-warm': '0 0 20px rgba(255,215,0,0.4), 0 0 40px rgba(255,215,0,0.2)',
+        '--shadow-glow-cool': '0 0 20px rgba(0,245,255,0.4), 0 0 40px rgba(0,245,255,0.2)',
+        '--shadow-glow-energy': '0 0 20px rgba(255,51,102,0.4), 0 0 40px rgba(255,51,102,0.2)',
 
         // 动画时长 (深色模式稍慢)
         '--transition-fast': '0.2s',
