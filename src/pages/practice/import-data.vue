@@ -88,11 +88,17 @@
         <view class="apple-ai-glow"></view>
         
         <view class="content-box">
-          <view class="apple-ai-indicator">
-            <view class="indicator-ring">
-              <view class="ring-progress" :style="{ width: progressWidth + '%' }"></view>
-            </view>
-            <text class="ai-star">✨</text>
+          <!-- ⭐ v5.2: 使用 EnhancedProgress 替代原有的环形进度 -->
+          <view class="progress-wrapper">
+            <EnhancedProgress
+              label="生成进度"
+              :currentValue="realProgress"
+              unit="%"
+              :progress="realProgress"
+              type="brand"
+              :showHint="true"
+              :hintText="importProgressText"
+            />
           </view>
           
           <text class="loading-title">{{ importStatusText }}</text>
@@ -102,6 +108,7 @@
           <text class="soup-text">"{{ currentSoup }}"</text>
           <view class="loading-actions">
             <button class="glass-btn ghost" @tap="pauseGeneration">暂停生成</button>
+            <button class="glass-btn danger" @tap="cancelGeneration">取消</button>
           </view>
         </view>
       </view>
@@ -130,13 +137,33 @@
       </view>
       <button class="glass-btn shine" @tap="resumeGeneration">继续生成</button>
     </view>
+
+    <!-- ⭐⭐ v5.2 新增：错误卡片（带重试按钮） -->
+    <view class="error-card-mask" v-if="errorInfo && errorInfo.canRetry">
+      <view class="error-card bounce-in">
+        <view class="error-icon-box">
+          <text class="error-icon">⚠️</text>
+        </view>
+        <text class="error-title">{{ errorInfo.message }}</text>
+        <text class="error-desc">{{ errorInfo.detail }}</text>
+        
+        <view class="error-actions">
+          <button class="glass-btn ghost" @tap="dismissError">关闭</button>
+          <button class="glass-btn shine" @tap="retryGeneration">重试</button>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script>
 import { lafService } from '../../services/lafService.js'
+import EnhancedProgress from '../../components/EnhancedProgress.vue'
 
 export default {
+  components: {
+    EnhancedProgress
+  },
   data() {
     return {
       // 导航栏相关
@@ -858,6 +885,59 @@ export default {
       this.showMask = false;
       this.updateUploadRecordStatus('paused');
       uni.showToast({ title: '已暂停生成', icon: 'none' });
+    },
+
+    // ⭐⭐ v5.2 新增：取消生成
+    cancelGeneration() {
+      uni.showModal({
+        title: '确认取消',
+        content: '确定要取消当前生成任务吗？已生成的题目将保留。',
+        confirmColor: '#FF453A',
+        success: (res) => {
+          if (res.confirm) {
+            this.isLooping = false;
+            this.isPaused = false;
+            this.showMask = false;
+            this.showSpeedModal = false;
+            this.updateUploadRecordStatus('cancelled');
+            this.stopProgressAnimation();
+            if (this.soupTimer) {
+              clearInterval(this.soupTimer);
+              this.soupTimer = null;
+            }
+            uni.showToast({ title: '已取消生成', icon: 'none' });
+          }
+        }
+      });
+    },
+
+    // ⭐⭐ v5.2 新增：重试生成
+    retryGeneration() {
+      if (!this.fullFileContent && !this.fileName) {
+        uni.showToast({ title: '请先导入文件', icon: 'none' });
+        return;
+      }
+      
+      // 关闭错误卡片
+      this.errorInfo = null;
+      
+      // 重置状态
+      this.isPaused = false;
+      this.isLooping = true;
+      this.showMask = true;
+      this.importStatus = 'importing';
+      
+      // 重新开始生成
+      this.startSoupRotation();
+      this.updateUploadRecordStatus('generating');
+      this.generateNextBatch();
+      
+      uni.showToast({ title: '正在重试...', icon: 'none' });
+    },
+
+    // ⭐⭐ v5.2 新增：关闭错误提示
+    dismissError() {
+      this.errorInfo = null;
     },
 
     resumeGeneration() {
@@ -1724,5 +1804,87 @@ export default {
 
 .glass-btn.shine::after {
   border: none;
+}
+
+.glass-btn.danger {
+  background: rgba(255, 69, 58, 0.1);
+  color: #FF453A;
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  margin-left: 10px;
+}
+
+.glass-btn.danger::after {
+  border: none;
+}
+
+/* ⭐⭐ v5.2 新增：错误卡片样式 */
+.error-card-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.error-card {
+  width: 300px;
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  border-radius: 24px;
+  padding: 30px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.error-icon-box {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #FF453A, #FF6B58);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(255, 69, 58, 0.4);
+}
+
+.error-icon {
+  font-size: 30px;
+}
+
+.error-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #FF453A;
+  margin-bottom: 12px;
+}
+
+.error-desc {
+  font-size: 14px;
+  color: #8F939C;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.error-actions {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.progress-wrapper {
+  width: 100%;
+  margin-bottom: 24px;
 }
 </style>

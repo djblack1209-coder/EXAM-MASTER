@@ -1,0 +1,56 @@
+{
+  "cycle_id": "v5.2-iter1",
+  "selected_feature": "优化上传题库体验",
+  "user_stories": [
+    {
+      "id": "US-001",
+      "as_a": "作为考研学生",
+      "i_want": "我想要看到上传进度的实时反馈",
+      "so_that": "以便于知道上传是否正常进行，避免误以为卡死",
+      "acceptance_criteria": [
+        "显示实时进度条（0-100%）",
+        "显示当前上传状态文本（准备中/上传中/处理中/完成）",
+        "上传成功后有明确的成功提示",
+        "上传失败时显示具体错误原因"
+      ]
+    },
+    {
+      "id": "US-002",
+      "as_a": "作为考研学生",
+      "i_want": "我想要在上传大文件时不会误以为程序卡死",
+      "so_that": "以便于耐心等待而不是反复重试",
+      "acceptance_criteria": [
+        "上传大文件（>10MB）时显示预计剩余时间",
+        "显示已上传大小/总大小",
+        "提供取消上传的按钮"
+      ]
+    },
+    {
+      "id": "US-003",
+      "as_a": "作为考研学生",
+      "i_want": "我想要在上传失败时能够重试",
+      "so_that": "以便于不用重新选择文件",
+      "acceptance_criteria": [
+        "上传失败后显示重试按钮",
+        "保留已选择的文件信息",
+        "重试时从断点继续（如果支持）"
+      ]
+    }
+  ],
+  "priority": "P0",
+  "estimated_hours": 4,
+  "current_pain_point": {
+    "emotion_score": "3/10",
+    "target_score": "8/10",
+    "main_issues": [
+      "无进度反馈，用户焦虑",
+      "大文件上传时误以为卡死",
+      "失败后需要重新选择文件"
+    ]
+  },
+  "success_metrics": {
+    "emotion_score_improvement": "+5分（3→8）",
+    "user_satisfaction": "预期提升 60%",
+    "upload_success_rate": "预期提升 20%"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "cycle_id": "v5.2-iter1",
+  "impact_analysis": {
+    "affected_files": [
+      "src/pages/practice/import-data.vue"
+    ],
+    "affected_components": [
+      "EnhancedProgress"
+    ],
+    "affected_services": [
+      "lafService"
+    ]
+  },
+  "design_decisions": [
+    {
+      "decision": "添加实时进度条组件",
+      "rationale": "提升用户感知，降低焦虑，避免误以为卡死",
+      "implementation": "在 AI 生成遮罩中集成 EnhancedProgress 组件，绑定 realProgress 变量"
+    },
+    {
+      "decision": "优化进度计算逻辑",
+      "rationale": "当前 progressWidth 是动画效果，不反映真实进度",
+      "implementation": "使用 realProgress (0-100) 替代 progressWidth，基于 generatedCount/totalQuestionsLimit 计算"
+    },
+    {
+      "decision": "添加预估剩余时间",
+      "rationale": "大文件上传时用户需要知道还要等多久",
+      "implementation": "基于已用时间和已完成批次计算平均速度，推算剩余时间"
+    },
+    {
+      "decision": "增强错误提示",
+      "rationale": "当前错误提示不够友好，用户不知道具体原因",
+      "implementation": "errorInfo 对象包含 message/detail/canRetry，显示在错误卡片中"
+    },
+    {
+      "decision": "添加重试按钮",
+      "rationale": "上传失败后用户需要能够重试，而不是重新选择文件",
+      "implementation": "在错误卡片中添加重试按钮，保留 fileName 和 fullFileContent"
+    }
+  ],
+  "refactor_plan": {
+    "files_to_modify": [
+      "src/pages/practice/import-data.vue"
+    ],
+    "files_to_create": [],
+    "estimated_loc": 150,
+    "changes_detail": [
+      {
+        "file": "src/pages/practice/import-data.vue",
+        "changes": [
+          "在 template 中的 .ai-loading-mask 内集成 EnhancedProgress 组件",
+          "将 progressWidth 替换为 realProgress 绑定",
+          "在 computed 中优化 importDetailText，显示预估剩余时间",
+          "在 generateNextBatch 方法中完善 updateRealProgress 调用",
+          "在 catch 块中完善错误处理，设置 errorInfo 对象",
+          "添加 retryUpload 方法，支持失败后重试"
+        ]
+      }
+    ]
+  },
+  "technical_notes": {
+    "existing_progress_system": "当前使用 progressWidth (0-100) 作为动画效果，每 150ms +2，循环播放",
+    "new_progress_system": "使用 realProgress 反映真实进度，基于 generatedCount/totalQuestionsLimit 计算",
+    "progress_component": "EnhancedProgress.vue 已存在，支持百分比显示和动画效果",
+    "error_handling": "当前只有简单的 Toast 提示，需要增强为详细的错误卡片",
+    "retry_mechanism": "需要保留 fileName 和 fullFileContent，避免重新选择文件"
+  },
+  "performance_considerations": {
+    "progress_update_frequency": "每批次完成后更新一次，避免频繁计算",
+    "time_estimation_accuracy": "基于历史平均速度，前几批次可能不准确",
+    "error_recovery": "网络超时自动重试，其他错误需要用户手动重试"
+  }
+}

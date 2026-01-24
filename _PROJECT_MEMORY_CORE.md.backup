@@ -4,11 +4,11 @@
 
 ## Metadata
 
-- **Version**: v2.9.0-index-integration-complete
-- **Last Updated**: 2026-01-24 21:14:03
+- **Version**: v2.9.1-gitignore-cleanup
+- **Last Updated**: 2026-01-24 21:25:30
 - **Project Name**: EXAM-MASTER (考研备考小程序)
 - **Git Branch**: main
-- **Git Commit**: ae19313
+- **Git Commit**: 80336b2
 - **Memory Format**: Standard (符合 .clinerules Law 1)
 
 ---
@@ -154,7 +154,45 @@ EXAM-MASTER/
 
 ### [Done] 已完成任务
 
-#### 2026-01-24
+#### 2026-01-24 (自动化迭代)
+- ✅ **阶段0: 环境状态备份** (Git: ecb036d)
+  - 创建隔离分支 auto/nightly-20260124-215442
+  - 备份 main 分支状态
+  - 创建日志目录和进度追踪
+  - 状态: ✅ 完成
+
+- ✅ **阶段1: 剩余优化与健壮性** (12% → 30%) (Git: bedeb1a)
+  - 新增 FilePreviewModal 组件（文件预览功能）
+  - App.vue 添加全局错误捕捉（onError + onUnhandledRejection）
+  - 错误日志自动保存到本地存储（runtime_errors）
+  - 构建验证通过（npm run build:mp-weixin）
+  - 状态: ✅ 完成
+
+- ✅ **阶段2: PK匹配体验升级** (30% → 50%) (Git: 9f6b75b)
+  - 动态匹配状态文本（4种状态轮播 + 倒计时）
+  - 实时倒计时显示（30秒超时机制）
+  - 超时自动转机器人对战
+  - 匹配成功震动反馈
+  - 优化状态提示文案
+  - 状态: ✅ 完成
+
+#### 2026-01-25 (配置优化)
+- ✅ **Cline中转地址切换** (Git: 待提交)
+  - 更新 `.vscode/settings.json` 配置
+  - 旧地址: `https://anapi.9w7.cn`
+  - 新地址: `https://anapi.西部粮油信息网.com`
+  - 模型升级: `claude-sonnet-4-5-20250929` → `claude-opus-4-5-20251101`
+  - 新增调试文档: `docs/CLINE_DEBUG_GUIDE.md`
+  - 文档内容: mitmproxy抓包指南、常见问题排查、调试检查清单
+  - 状态: ✅ 完成
+
+#### 2026-01-24 (常规开发)
+- ✅ **.gitignore优化** - 自动生成文件管理 (Git: 80336b2)
+  - 问题: .vscode目录下的自动生成文件（backend-required.yml, manual-tasks.md, update-status.md）频繁出现在Git状态中
+  - 解决方案: 将这3个文件加入.gitignore
+  - 影响: Git工作区保持干净，避免无意义的提交
+  - 触发: Husky pre-commit自动化流水线正常运行
+  - 状态: ✅ 完成，工作区干净
 - ✅ **首页功能全面接入** - 真实数据驱动，100%完成 (Git: ae19313)
   - **Phase 1**: 核心数据接入（studyStore/todoStore/userStore）
   - **Phase 2**: 扩展功能接入（知识点/学习轨迹/成就徽章）
@@ -272,10 +310,12 @@ EXAM-MASTER/
 ### [WIP] 进行中任务
 
 #### 当前上下文
-- 🎯 **准备下一阶段工作** - 首页功能已100%完成
-  - 已完成: 首页UI重构 + 所有功能接入
-  - 状态: 可以正常使用，无需AI接入
-  - 下一步: 等待用户指示下一个任务
+- 🎯 **自动化迭代进行中** - 安全值守模式 v3.0
+  - 隔离分支: auto/iteration-v5.1-20260124-221330
+  - 已完成阶段: 0, 1, 2
+  - 当前进度: 50%
+  - 状态: 正常推进中
+  - 下一步: 阶段3 - UI组件重构与标准化
 
 ### [Todo] 待办任务
 
