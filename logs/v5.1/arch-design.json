@@ -1,0 +1,220 @@
+{
+  "iteration_id": "#ITER-20260124-221330",
+  "timestamp": "2026-01-24 22:33:58",
+  "role": "Architect",
+  "analysis": {
+    "current_file": "src/pages/practice/import-data.vue",
+    "file_size": "~1500 lines",
+    "current_features": [
+      "文件选择（PDF/Word/TXT/MD）",
+      "AI批量生成题目（5题/批）",
+      "本地存储题库",
+      "基础进度显示（progressWidth动画）",
+      "鸡汤轮播",
+      "暂停/继续生成",
+      "极速体验弹窗（首批完成）"
+    ],
+    "existing_progress_system": {
+      "type": "模拟进度条",
+      "implementation": "progressWidth += 2 每150ms",
+      "limitation": "非真实进度，仅视觉反馈"
+    },
+    "existing_state_management": {
+      "isLooping": "生成循环开关",
+      "isPaused": "暂停状态",
+      "showMask": "加载遮罩显示",
+      "generatedCount": "已生成批次数",
+      "isRequestInFlight": "请求锁（防重复）"
+    },
+    "v5.2_enhancements": {
+      "added_fields": [
+        "realProgress (0-100)",
+        "estimatedTimeLeft (秒)",
+        "totalQuestionsGenerated",
+        "importStatus (idle/parsing/importing/success/error)",
+        "currentQuestionIndex",
+        "duplicateCount",
+        "importSpeed"
+      ],
+      "added_computed": [
+        "importStatusText",
+        "importProgressText",
+        "importDetailText"
+      ],
+      "status": "字段已定义，但未完全实现"
+    }
+  },
+  "technical_design": {
+    "phase_1_real_progress": {
+      "goal": "实现真实进度追踪",
+      "changes": [
+        {
+          "location": "data()",
+          "action": "确认v5.2字段已存在",
+          "fields": [
+            "realProgress",
+            "estimatedTimeLeft",
+            "totalQuestionsGenerated",
+            "importStartTime",
+            "importSpeed"
+          ]
+        },
+        {
+          "location": "startAI()",
+          "action": "初始化进度追踪",
+          "code": "this.importStartTime = Date.now(); this.realProgress = 0; this.importStatus = 'parsing';"
+        },
+        {
+          "location": "generateNextBatch()",
+          "action": "更新真实进度",
+          "logic": [
+            "每批次开始：this.importStatus = 'importing'",
+            "每批次完成：this.realProgress = Math.round((this.generatedCount / this.totalQuestionsLimit) * 100)",
+            "计算速度：this.importSpeed = this.totalQuestionsGenerated / ((Date.now() - this.importStartTime) / 1000)",
+            "预估剩余时间：this.estimatedTimeLeft = Math.round((this.totalQuestionsLimit - this.generatedCount) / this.importSpeed)"
+          ]
+        },
+        {
+          "location": "saveQuestions()",
+          "action": "检测重复题目",
+          "logic": [
+            "对比新题目与旧题库",
+            "统计重复数量：this.duplicateCount++",
+            "跳过重复题目"
+          ]
+        }
+      ]
+    },
+    "phase_2_status_text": {
+      "goal": "动态状态提示",
+      "changes": [
+        {
+          "location": "computed.importStatusText",
+          "action": "已实现，无需修改",
+          "states": {
+            "parsing": "正在解析文件...",
+            "importing": "正在导入第 X 题...",
+            "success": "导入成功！",
+            "error": "导入失败"
+          }
+        },
+        {
+          "location": "template",
+          "action": "使用computed属性",
+          "replace": "{{ importStatusText }} 替换硬编码文本"
+        }
+      ]
+    },
+    "phase_3_error_handling": {
+      "goal": "增强错误处理",
+      "changes": [
+        {
+          "location": "generateNextBatch() catch块",
+          "action": "分类错误并提供重试",
+          "error_types": {
+            "format_error": {
+              "message": "文件格式错误，请上传 JSON/TXT/Excel 格式",
+              "canRetry": false,
+              "action": "提示用户重新选择文件"
+            },
+            "network_timeout": {
+              "message": "网络不稳定，请稍后重试",
+              "canRetry": true,
+              "action": "显示重试按钮"
+            },
+            "duplicate_error": {
+              "message": "检测到 X 道重复题目，已自动跳过",
+              "canRetry": false,
+              "action": "继续导入"
+            }
+          }
+        },
+        {
+          "location": "template",
+          "action": "添加错误卡片",
+          "component": "<view class='error-card' v-if='importStatus === \"error\"'>"
+        }
+      ]
+    },
+    "phase_4_ux_optimization": {
+      "goal": "用户体验优化",
+      "changes": [
+        {
+          "feature": "禁用返回按钮",
+          "location": "handleBack()",
+          "logic": "if (this.importStatus === 'importing') { uni.showToast({ title: '导入中，请稍候...', icon: 'none' }); return; }"
+        },
+        {
+          "feature": "导入完成自动跳转",
+          "location": "finishGeneration()",
+          "logic": "setTimeout(() => { uni.switchTab({ url: '/src/pages/practice/index' }); }, 2000);"
+        },
+        {
+          "feature": "重试按钮",
+          "location": "template",
+          "component": "<button class='apple-btn secondary' @tap='retryImport' v-if='errorInfo && errorInfo.canRetry'>重试</button>"
+        }
+      ]
+    }
+  },
+  "implementation_plan": {
+    "step_1": {
+      "title": "Phase 1 - 真实进度追踪",
+      "files": ["src/pages/practice/import-data.vue"],
+      "methods": ["startAI", "generateNextBatch", "updateRealProgress"],
+      "estimated_time": "30分钟"
+    },
+    "step_2": {
+      "title": "Phase 2 - 动态状态文本",
+      "files": ["src/pages/practice/import-data.vue"],
+      "sections": ["template", "computed"],
+      "estimated_time": "20分钟"
+    },
+    "step_3": {
+      "title": "Phase 3 - 错误处理增强",
+      "files": ["src/pages/practice/import-data.vue"],
+      "methods": ["generateNextBatch", "handleError"],
+      "estimated_time": "40分钟"
+    },
+    "step_4": {
+      "title": "Phase 4 - UX优化",
+      "files": ["src/pages/practice/import-data.vue"],
+      "methods": ["handleBack", "finishGeneration", "retryImport"],
+      "estimated_time": "30分钟"
+    }
+  },
+  "risk_assessment": {
+    "low_risk": [
+      "真实进度计算（纯数学逻辑）",
+      "状态文本替换（computed已实现）"
+    ],
+    "medium_risk": [
+      "重复题目检测（需要对比算法）",
+      "错误分类逻辑（需要完善catch块）"
+    ],
+    "high_risk": [
+      "后台导入（涉及页面生命周期）",
+      "增量导入（需要修改saveQuestions逻辑）"
+    ]
+  },
+  "mvp_scope": {
+    "must_have": [
+      "真实进度百分比",
+      "已导入数量 / 总数量",
+      "动态状态文本（解析/导入中/成功/失败）",
+      "基础错误提示（格式/网络/重复）",
+      "重试按钮"
+    ],
+    "nice_to_have": [
+      "预计剩余时间",
+      "导入速度显示",
+      "后台导入",
+      "增量导入"
+    ],
+    "wont_have_this_iteration": [
+      "文件预览确认",
+      "上传统计（速度/大小）"
+    ]
+  },
+  "next_step": "DEV_IMPLEMENTATION"
+}

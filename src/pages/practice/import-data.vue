@@ -409,11 +409,16 @@ export default {
       this.generatedCount = 0;
       this.progressWidth = 0; // 重置进度
       
-      // ⭐ 初始化生成开始时间
+      // ⭐⭐ v5.3 Phase 1: 初始化真实进度追踪
+      this.importStartTime = Date.now();
       this.generationStartTime = Date.now();
       this.realProgress = 0;
       this.estimatedTimeLeft = 0;
       this.totalQuestionsGenerated = 0;
+      this.importStatus = 'parsing';
+      this.duplicateCount = 0;
+      this.importSpeed = 0;
+      this.currentQuestionIndex = 0;
       
       this.startSoupRotation(); 
       this.updateUploadRecordStatus('generating');
@@ -447,6 +452,10 @@ export default {
         console.log('已有请求进行中，跳过本次调用');
         return;
       }
+      
+      // ⭐⭐ v5.3 Phase 1: 批次开始，更新状态为importing
+      this.importStatus = 'importing';
+      this.currentQuestionIndex = this.generatedCount * this.batchQuestionCount + 1;
       
       // ⭐ 4. 更新真实进度
       this.updateRealProgress();
@@ -514,6 +523,7 @@ export default {
         if (!saved) {
           this.isLooping = false;
           this.isPaused = true;
+          this.importStatus = 'error';
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
           uni.showToast({ title: '解析失败，请重试', icon: 'none' });
@@ -521,6 +531,18 @@ export default {
         }
         this.readOffset += this.chunkSize;
         this.generatedCount++; // 这里的计数单位变成了"批次"
+        
+        // ⭐⭐ v5.3 Phase 1: 批次完成，更新真实进度
+        this.totalQuestionsGenerated = this.generatedCount * this.batchQuestionCount;
+        this.realProgress = Math.round((this.generatedCount / this.totalQuestionsLimit) * 100);
+        
+        // 计算导入速度和预估剩余时间
+        if (this.importStartTime > 0) {
+          const elapsedSeconds = (Date.now() - this.importStartTime) / 1000;
+          this.importSpeed = this.totalQuestionsGenerated / elapsedSeconds;
+          const remainingQuestions = (this.totalQuestionsLimit - this.generatedCount) * this.batchQuestionCount;
+          this.estimatedTimeLeft = Math.round(remainingQuestions / this.importSpeed);
+        }
         
         // ⚡️⚡️ 首批完成逻辑
         if (this.generatedCount === 1) {

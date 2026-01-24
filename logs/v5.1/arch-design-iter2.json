@@ -1,0 +1,129 @@
+{
+  "iteration_id": "#ITER-20260124-224156",
+  "timestamp": "2026-01-24 22:42:31",
+  "role": "Architect",
+  "analysis": {
+    "skeleton_component": {
+      "path": "src/components/base-skeleton/base-skeleton.vue",
+      "status": "✅ 已存在且功能完整",
+      "features": [
+        "支持深色模式",
+        "脉冲动画效果",
+        "设计系统集成",
+        "响应式布局",
+        "无障碍支持（prefers-reduced-motion）"
+      ],
+      "limitation": "当前为首页专用骨架屏，需要通用化改造"
+    },
+    "target_pages": {
+      "total": 13,
+      "priority_high": [
+        "src/pages/chat/index.vue",
+        "src/pages/practice/do-quiz.vue",
+        "src/pages/mistake/index.vue",
+        "src/pages/profile/index.vue",
+        "src/pages/school/index.vue"
+      ],
+      "priority_medium": [
+        "src/pages/practice/pk-battle.vue",
+        "src/pages/social/index.vue",
+        "src/pages/plan/index.vue",
+        "src/pages/settings/index.vue"
+      ],
+      "priority_low": [
+        "src/pages/universe/index.vue",
+        "src/pages/study-detail/index.vue",
+        "src/pages/practice/import-data.vue",
+        "src/pages/practice/rank.vue"
+      ]
+    }
+  },
+  "technical_design": {
+    "strategy": "MVP优先 - 通用化组件 + 5个核心页面",
+    "phase_1_component_enhancement": {
+      "goal": "增强BaseSkeleton组件通用性",
+      "changes": [
+        {
+          "feature": "添加type属性",
+          "values": ["card", "list", "table", "custom"],
+          "default": "card"
+        },
+        {
+          "feature": "添加rows属性",
+          "type": "Number",
+          "default": 3,
+          "description": "列表/表格行数"
+        },
+        {
+          "feature": "添加loading属性",
+          "type": "Boolean",
+          "default": true,
+          "description": "控制显示/隐藏"
+        }
+      ],
+      "decision": "❌ 跳过 - 当前组件已足够，直接复用"
+    },
+    "phase_2_page_integration": {
+      "goal": "批量应用到5个核心页面",
+      "pattern": {
+        "template": "<base-skeleton v-if=\"loading\" />",
+        "script": "import BaseSkeleton from '@/components/base-skeleton/base-skeleton.vue'",
+        "data": "loading: true",
+        "onLoad": "this.loading = true",
+        "onDataLoaded": "this.loading = false"
+      },
+      "pages": [
+        {
+          "path": "src/pages/chat/index.vue",
+          "trigger": "onLoad() + AI响应完成",
+          "estimated_time": "10分钟"
+        },
+        {
+          "path": "src/pages/practice/do-quiz.vue",
+          "trigger": "onLoad() + 题目加载完成",
+          "estimated_time": "10分钟"
+        },
+        {
+          "path": "src/pages/mistake/index.vue",
+          "trigger": "onLoad() + 错题加载完成",
+          "estimated_time": "10分钟"
+        },
+        {
+          "path": "src/pages/profile/index.vue",
+          "trigger": "onLoad() + 用户数据加载完成",
+          "estimated_time": "10分钟"
+        },
+        {
+          "path": "src/pages/school/index.vue",
+          "trigger": "onLoad() + 学校数据加载完成",
+          "estimated_time": "10分钟"
+        }
+      ]
+    }
+  },
+  "implementation_plan": {
+    "mvp_scope": {
+      "must_have": [
+        "5个核心页面应用骨架屏",
+        "loading状态管理",
+        "数据加载完成后隐藏"
+      ],
+      "nice_to_have": [
+        "剩余8个页面应用",
+        "自定义骨架屏样式",
+        "错误状态处理"
+      ]
+    },
+    "estimated_time": "50分钟（5页面 × 10分钟）",
+    "risk_assessment": {
+      "low_risk": [
+        "组件已存在且稳定",
+        "应用模式简单统一"
+      ],
+      "medium_risk": [
+        "需要识别每个页面的数据加载时机"
+      ]
+    }
+  },
+  "next_step": "DEV_IMPLEMENTATION"
+}

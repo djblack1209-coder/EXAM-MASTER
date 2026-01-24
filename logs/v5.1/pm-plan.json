@@ -1,0 +1,102 @@
+{
+  "iteration_id": "#ITER-20260124-221330",
+  "timestamp": "2026-01-24 22:33:18",
+  "role": "PM",
+  "story": {
+    "id": "Story-1",
+    "title": "优化题库导入体验",
+    "priority": "P0",
+    "value_score": "10/10",
+    "estimated_hours": 4,
+    "target_emotion": "3/10 → 8/10"
+  },
+  "acceptance_criteria": [
+    {
+      "id": "AC-1",
+      "category": "实时进度条",
+      "requirements": [
+        "显示当前导入进度（百分比）",
+        "显示已导入题目数量 / 总题目数量",
+        "显示预计剩余时间"
+      ]
+    },
+    {
+      "id": "AC-2",
+      "category": "状态提示",
+      "requirements": [
+        "导入开始时显示'正在解析文件...'",
+        "导入中显示'正在导入第 X 题...'",
+        "导入成功显示'成功导入 X 道题目'",
+        "导入失败显示具体错误原因"
+      ]
+    },
+    {
+      "id": "AC-3",
+      "category": "错误处理",
+      "requirements": [
+        "文件格式错误时，提示支持的格式",
+        "网络超时时，提示'网络不稳定，请稍后重试'",
+        "题目重复时，提示'检测到 X 道重复题目，已自动跳过'",
+        "提供'重试'按钮，无需重新选择文件"
+      ]
+    },
+    {
+      "id": "AC-4",
+      "category": "用户体验优化",
+      "requirements": [
+        "导入过程中禁用返回按钮",
+        "导入完成后自动跳转到题库列表",
+        "支持后台导入",
+        "导入失败时保留已导入的题目"
+      ]
+    }
+  ],
+  "technical_scope": {
+    "frontend": {
+      "file": "src/pages/practice/import-data.vue",
+      "changes": [
+        "添加进度条组件（uni-progress）",
+        "添加状态管理（loading/success/error）",
+        "添加错误处理逻辑",
+        "添加重试机制",
+        "优化UI交互"
+      ]
+    },
+    "backend": {
+      "service": "Sealos云函数 import-questions",
+      "changes": [
+        "返回实时进度数据",
+        "增强错误信息",
+        "支持增量导入",
+        "添加重复检测"
+      ]
+    },
+    "storage": {
+      "service": "storageService.js",
+      "changes": [
+        "优化云端+本地混合存储",
+        "添加导入状态持久化"
+      ]
+    }
+  },
+  "mvp_definition": {
+    "core_features": [
+      "实时进度条（百分比+数量）",
+      "状态提示（解析/导入中/成功/失败）",
+      "基础错误处理（格式/网络/重复）",
+      "重试按钮"
+    ],
+    "nice_to_have": [
+      "预计剩余时间",
+      "后台导入",
+      "增量导入"
+    ]
+  },
+  "success_metrics": {
+    "user_emotion": "8/10",
+    "completion_rate": "100%",
+    "error_rate": "<5%",
+    "user_satisfaction": "+30%"
+  },
+  "next_step": "ARCHITECT_DESIGN"
+}

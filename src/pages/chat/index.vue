@@ -1,7 +1,10 @@
 <template>
 	<view class="chat-container">
+		<!-- 骨架屏 -->
+		<base-skeleton v-if="loading" :isDark="isDark" />
+		
 		<!-- 导航栏 - 添加设计系统工具类 -->
-		<view class="custom-nav">
+		<view class="custom-nav" v-else>
 			<view class="nav-left ds-flex ds-touchable" @click="handleBack">
 				<text class="back-arrow">〈</text>
 				<text class="ds-text-sm">智能刷题</text>
@@ -117,10 +120,15 @@
 import { getApiKey } from '../../../common/config.js'
 import { storageService } from '../../services/storageService.js'
 import { lafService } from '../../services/lafService.js'
+import BaseSkeleton from '@/components/base-skeleton/base-skeleton.vue'
 
 export default {
+	components: {
+		BaseSkeleton
+	},
 	data() {
 		return {
+			loading: true,
 			chatUrl: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
 			messages: [
 				{ role: 'assistant', content: '你好！我是你的智能导师。我已经准备好为你解析这份资料中的难点。你想先从哪个章节开始？', time: '刚才', showTime: true }
@@ -136,10 +144,15 @@ export default {
 		};
 	},
 	onLoad() {
+		this.loading = true;
 		this.isDark = storageService.get('theme_mode', 'light') === 'dark';
 		uni.$on('themeUpdate', (mode) => {
 			this.isDark = mode === 'dark';
 		});
+		
+		setTimeout(() => {
+			this.loading = false;
+		}, 300);
 	},
 	onUnload() {
 		uni.$off('themeUpdate');
