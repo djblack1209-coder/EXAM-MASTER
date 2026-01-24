@@ -40,16 +40,16 @@
 							你有 <text class="highlight-text">{{ finishedCount }} 道题目</text> 待复习。继续保持学习势头！
 						</text>
 					</view>
-					<view class="banner-actions">
-						<view :class="['action-btn', 'btn-primary', isDark && 'animate-pulse-glow']" @tap="navToPractice">
-							<text class="btn-icon">⚡</text>
-							<text class="btn-text">快速练习</text>
-						</view>
-						<view class="action-btn btn-outline" @tap="navToMockExam">
-							<text class="btn-icon">🕐</text>
-							<text class="btn-text">模拟考试</text>
-						</view>
+				<view class="banner-actions">
+					<view :class="['action-btn', 'btn-primary', isDark && 'animate-pulse-glow']" @tap="navToPractice">
+						<text class="btn-icon">⚡</text>
+						<text class="btn-text">快速练习</text>
 					</view>
+					<view class="action-btn btn-outline" @tap="navToMockExam">
+						<text class="btn-icon">⏰</text>
+						<text class="btn-text">模拟考试</text>
+					</view>
+				</view>
 				</view>
 			</view>
 
@@ -57,7 +57,7 @@
 			<view class="stats-grid">
 				<view :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']" @tap="handleStatClick('questions')">
 					<view class="stat-icon-wrapper icon-primary">
-						<text class="stat-icon">📚</text>
+						<text class="stat-icon">✓</text>
 					</view>
 					<view class="stat-content">
 						<text class="stat-title">题目总数</text>
@@ -238,9 +238,9 @@ export default {
 
 			// 最近活动
 			recentActivities: [
-				{ title: '模拟考试：数学', subtitle: '完成，得分 85%', time: '2小时前', icon: '📚', status: 'completed' },
-				{ title: '错题复习：物理', subtitle: '已复习 12 道题', time: '5小时前', icon: '✅', status: 'completed' },
-				{ title: '每日练习：化学', subtitle: '已完成 15/30 题', time: '进行中', icon: '▶️', status: 'in-progress' },
+				{ title: '模拟考试：数学', subtitle: '完成，得分 85%', time: '2小时前', icon: '✓', status: 'completed' },
+				{ title: '错题复习：物理', subtitle: '已复习 12 道题', time: '5小时前', icon: '✓', status: 'completed' },
+				{ title: '每日练习：化学', subtitle: '已完成 15/30 题', time: '进行中', icon: '▶', status: 'in-progress' },
 				{ title: '计划：生物复习', subtitle: '明天上午 9:00', time: '即将开始', icon: '📅', status: 'pending' }
 			]
 		};
