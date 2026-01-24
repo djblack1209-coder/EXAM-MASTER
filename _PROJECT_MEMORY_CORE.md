@@ -4,11 +4,11 @@
 
 ## Metadata
 
-- **Version**: v2.9.0-index-integration-complete
-- **Last Updated**: 2026-01-24 21:14:03
+- **Version**: v2.9.1-gitignore-cleanup
+- **Last Updated**: 2026-01-24 21:25:30
 - **Project Name**: EXAM-MASTER (考研备考小程序)
 - **Git Branch**: main
-- **Git Commit**: ae19313
+- **Git Commit**: 80336b2
 - **Memory Format**: Standard (符合 .clinerules Law 1)
 
 ---
@@ -155,6 +155,12 @@ EXAM-MASTER/
 ### [Done] 已完成任务
 
 #### 2026-01-24
+- ✅ **.gitignore优化** - 自动生成文件管理 (Git: 80336b2)
+  - 问题: .vscode目录下的自动生成文件（backend-required.yml, manual-tasks.md, update-status.md）频繁出现在Git状态中
+  - 解决方案: 将这3个文件加入.gitignore
+  - 影响: Git工作区保持干净，避免无意义的提交
+  - 触发: Husky pre-commit自动化流水线正常运行
+  - 状态: ✅ 完成，工作区干净
 - ✅ **首页功能全面接入** - 真实数据驱动，100%完成 (Git: ae19313)
   - **Phase 1**: 核心数据接入（studyStore/todoStore/userStore）
   - **Phase 2**: 扩展功能接入（知识点/学习轨迹/成就徽章）
