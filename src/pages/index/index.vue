@@ -171,7 +171,7 @@
 					<text class="edit-text">编辑计划</text>
 				</view>
 			</view>
-			<todo-list :todos="sortedTodos" :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
+			<todo-list :todos="todos" :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
 
 			<!-- 每日金句 -->
 			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;">
@@ -288,16 +288,6 @@ export default {
 		// 两种模式都按mastery排序（低到高）
 		sortedKnowledgePoints() {
 			return [...this.knowledgePoints].sort((a, b) => a.mastery - b.mastery);
-		},
-		
-		// 排序后的待办事项：未完成在前，已完成在后
-		sortedTodos() {
-			return [...this.todos].sort((a, b) => {
-				// 如果完成状态相同，保持原顺序
-				if (a.completed === b.completed) return 0;
-				// 未完成的排在前面
-				return a.completed ? 1 : -1;
-			});
 		}
 	},
 
@@ -1301,14 +1291,15 @@ export default {
 }
 
 .mode-text {
-	font-size: 24rpx;
+	font-size: 32rpx;
 	color: var(--muted-foreground);
-	line-height: 1.6;
+	line-height: 1.8;
 }
 
 .mode-highlight {
 	color: var(--primary);
-	font-weight: 600;
+	font-weight: 700;
+	font-size: 34rpx;
 }
 
 /* ==================== 编辑计划按钮 ==================== */
