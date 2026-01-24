@@ -1,5 +1,5 @@
 <template>
-  <view class="step-progress" :class="{ 'dark-mode': isDark }">
+  <view class="step-progress" :class="{ ' ': isDark }">
     <view class="step-progress__container ds-flex ds-flex-between">
       <view v-for="(step, index) in steps" :key="index" class="step-progress__item ds-flex ds-flex-col">
         <!-- 圆点 -->
@@ -96,7 +96,7 @@ defineProps({
   }
 
   &__dot-check {
-    color: #FFFFFF;
+    color: var(--bg-card);
     font-size: 24rpx;
   }
 
@@ -131,7 +131,7 @@ defineProps({
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .step-progress__dot {
     &--current {
       box-shadow: 0 0 0 6rpx rgba(159, 232, 112, 0.18);

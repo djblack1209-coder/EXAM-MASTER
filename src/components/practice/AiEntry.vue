@@ -3,7 +3,7 @@
   <view class="ai-entry-placeholder"></view>
 
   <!-- 固定底部的 AI 入口 -->
-  <view class="ai-entry-fixed" :class="{ 'dark-mode': isDark }">
+  <view class="ai-entry-fixed" :class="{ ' ': isDark }">
     <view class="section-header ds-flex ds-flex-between">
       <text class="title ds-text-lg ds-font-semibold">AI对话窗口</text>
     </view>
@@ -22,7 +22,7 @@
 
       <!-- 底部输入行 -->
       <view class="input-row ds-flex ds-gap-md">
-        <input class="subject-input" v-model="subjectInput" placeholder="输入问题..." placeholder-style="color: #CCCCCC;" />
+        <input class="subject-input" v-model="subjectInput" placeholder="输入问题..." placeholder- />
         <view class="unlock-btn ds-touchable ds-touch-target" @tap="handleUnlock">
           <text class="btn-text ds-text-sm ds-font-semibold">开始对话</text>
         </view>
@@ -172,7 +172,7 @@ const handleUnlock = () => {
     transform: scale(0.98);
 
     .btn-text {
-      color: #FFFFFF;
+      color: var(--bg-card);
     }
   }
 }
@@ -183,7 +183,7 @@ const handleUnlock = () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .ai-entry-fixed {
     box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.3);
   }

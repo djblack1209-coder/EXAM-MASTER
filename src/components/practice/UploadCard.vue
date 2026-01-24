@@ -1,5 +1,5 @@
 <template>
-  <view class="upload-card ds-card ds-flex ds-flex-col ds-touchable" :class="{ 'dark-mode': isDark }"
+  <view class="upload-card ds-card ds-flex ds-flex-col ds-touchable" :class="{ ' ': isDark }"
     @tap="handleUpload">
     <view class="upload-icon ds-touch-target">
       <view class="cloud-icon">☁️</view>
@@ -64,7 +64,7 @@ const handleUpload = () => {
 
 .arrow-icon {
   font-size: 50rpx;
-  color: #FFFFFF;
+  color: var(--bg-card);
   font-weight: bold;
   margin-top: 10rpx;
 }
@@ -79,7 +79,7 @@ const handleUpload = () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .upload-card {
     box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
   }

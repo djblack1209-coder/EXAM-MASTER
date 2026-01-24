@@ -1,5 +1,5 @@
 <template>
-  <view class="apple-container" :class="{ 'dark-mode': isDark }">
+  <view class="apple-container" :class="{ ' ': isDark }">
     <!-- 苹果质感自定义导航栏 -->
     <view class="custom-navbar" :style="{ height: navBarHeight + 'px' }">
       <view class="navbar-status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
@@ -47,7 +47,7 @@
             </view>
           </view>
           <view class="close-btn-circle" @tap.stop="clearFile">
-            <text style="font-size: 16px; color: #8E8E93;">✕</text>
+            <text >✕</text>
           </view>
         </view>
       </view>
@@ -873,9 +873,9 @@ export default {
 /* --- 全局容器与背景 --- */
 .apple-container {
   min-height: 100vh;
-  background-color: #000000;
+  background-color: var(--text-primary);
   /* 增加微妙的顶部蓝色光晕 */
-  background-image: radial-gradient(circle at 50% 0%, rgba(10, 132, 255, 0.15) 0%, #000000 60%);
+  background-image: radial-gradient(circle at 50% 0%, rgba(10, 132, 255, 0.15) 0%, var(--text-primary) 60%);
   padding: 20px;
   padding-bottom: 120px; /* 为底部悬浮栏留空 */
   padding-top: calc(env(safe-area-inset-top) + 20px);
@@ -884,8 +884,8 @@ export default {
 }
 
 /* 深色模式样式 */
-.apple-container.dark-mode {
-  background-color: #163300;
+.apple-container. {
+  background-color: var(--bg-body);
 }
 
 /* --- 苹果质感自定义导航栏 --- */
@@ -903,7 +903,7 @@ export default {
 }
 
 /* 深色模式下的导航栏 */
-.apple-container.dark-mode .custom-navbar {
+.apple-container. .custom-navbar {
   background: rgba(28, 28, 30, 0.8);
   border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
 }
@@ -937,7 +937,7 @@ export default {
   transform: scale(0.95);
 }
 
-.apple-container.dark-mode .navbar-back-btn:active {
+.apple-container. .navbar-back-btn:active {
   background: rgba(255, 255, 255, 0.1);
 }
 
@@ -949,8 +949,8 @@ export default {
   margin-left: -4px;
 }
 
-.apple-container.dark-mode .back-icon {
-  color: #FFFFFF;
+.apple-container. .back-icon {
+  color: var(--bg-card);
 }
 
 .navbar-title-wrapper {
@@ -968,8 +968,8 @@ export default {
   -webkit-font-smoothing: antialiased;
 }
 
-.apple-container.dark-mode .navbar-title {
-  color: #FFFFFF;
+.apple-container. .navbar-title {
+  color: var(--bg-card);
 }
 
 .navbar-placeholder {
@@ -990,7 +990,7 @@ export default {
   display: block; 
   margin-bottom: 8px; 
   letter-spacing: 0.5px; 
-  color: #FFFFFF;
+  color: var(--bg-card);
 }
 
 .header-subtitle { 
@@ -1077,7 +1077,7 @@ export default {
   font-size: 17px; 
   font-weight: 600; 
   margin-bottom: 4px; 
-  color: #FFFFFF;
+  color: var(--bg-card);
 }
 
 .upload-sub-text { 
@@ -1116,7 +1116,7 @@ export default {
   font-weight: 600; 
   margin-bottom: 6px; 
   display: block; 
-  color: #FFFFFF;
+  color: var(--bg-card);
 }
 
 .fmeta-row { 
@@ -1131,7 +1131,7 @@ export default {
   border-radius: 4px; 
   margin-right: 8px; 
   font-weight: 700; 
-  color: #FFFFFF;
+  color: var(--bg-card);
 }
 
 .meta-size { 
@@ -1406,7 +1406,7 @@ export default {
 .loading-title {
   font-size: 22px;
   font-weight: 700;
-  color: #FFFFFF;
+  color: var(--bg-card);
   margin-bottom: 12px;
   letter-spacing: 0.5px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -1465,7 +1465,7 @@ export default {
 .pause-title {
   font-size: 14px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--bg-card);
 }
 
 .pause-desc {

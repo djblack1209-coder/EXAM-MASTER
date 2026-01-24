@@ -1,5 +1,5 @@
 <template>
-	<view class="tabbar-container" :class="{ 'dark-mode': isDark }">
+	<view class="tabbar-container" :class="{ ' ': isDark }">
 		<!-- 磨砂玻璃背景层 -->
 		<view class="tabbar-blur-bg"></view>
 		<!-- 导航栏内容 -->
@@ -32,9 +32,9 @@ export default {
 	},
 	data() {
 		// Wise 风格图标 (使用 Base64 SVG)
-		// 选中颜色: #9FE870 (Lime) or #163300 (Dark Green) depending on mode?
+		// 选中颜色: var(--brand-color) (Lime) or var(--bg-body) (Dark Green) depending on mode?
 		// Wise app usually uses bold black/dark icons for active state on light mode.
-		// Let's use the Accent Green (#9FE870) for active state in Dark Mode, and Dark Green (#163300) for active in Light Mode?
+		// Let's use the Accent Green (var(--brand-color)) for active state in Dark Mode, and Dark Green (var(--bg-body)) for active in Light Mode?
 		// Actually, let's stick to a consistent accent color.
 
 		const colorActive = '#2ECC71'; // Fallback
@@ -215,7 +215,7 @@ export default {
 }
 
 /* Dark Mode Adjustments - 磨砂玻璃白色背景 */
-.dark-mode .tabbar-blur-bg {
+. .tabbar-blur-bg {
 	background: rgba(255, 255, 255, 0.85);
 	backdrop-filter: blur(40rpx) saturate(180%);
 	-webkit-backdrop-filter: blur(40rpx) saturate(180%);
@@ -224,12 +224,12 @@ export default {
 		0 2rpx 12rpx rgba(0, 0, 0, 0.08);
 }
 
-.dark-mode .tab-item.active .tab-label {
+. .tab-item.active .tab-label {
 	color: #1A1A1A;
 	/* 深色模式：激活深色（白色背景上） */
 }
 
-.dark-mode .tab-label {
+. .tab-label {
 	color: #666666;
 	/* 深色模式：未激活灰色（白色背景上） */
 }

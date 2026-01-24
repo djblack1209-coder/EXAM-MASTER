@@ -1,5 +1,5 @@
 <template>
-  <view class="confirm-form ds-flex ds-flex-col" :class="{ 'dark-mode': isDark }">
+  <view class="confirm-form ds-flex ds-flex-col" :class="{ ' ': isDark }">
     <!-- 标题 -->
     <view class="confirm-form__title ds-text-display ds-font-semibold">Step 4: 信息确认</view>
 
@@ -232,7 +232,7 @@ const handleSubmit = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--bg-card);
   border: none;
   box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
   transition: all 150ms ease-out;
@@ -248,7 +248,7 @@ const handleSubmit = () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .info-card {
     box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
   }

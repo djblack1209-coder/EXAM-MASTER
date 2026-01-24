@@ -1,0 +1,189 @@
+{
+  "timestamp": "2026-01-24T02:05:14.443Z",
+  "targetDir": "/Users/blackdj/Desktop/EXAM-MASTER/src/components",
+  "dryRun": true,
+  "totalFiles": 25,
+  "modifiedFiles": 25,
+  "totalChanges": 54,
+  "results": [
+    {
+      "file": "src/components/CountdownCard.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (3处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/HomeNavbar.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/InviteModal.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (4处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/PosterModal.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (3处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/PracticeBanner.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (1处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/StudyOverview.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (3处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/TodoList.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (4处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (3处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/ai-consult/ai-consult.vue",
+      "changes": [
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/base-empty/base-empty.vue",
+      "changes": [
+        "替换CSS变量: --text-title -> --text-primary (1处)",
+        "替换CSS变量: --text-light -> --text-tertiary (1处)",
+        "替换CSS变量: --accent-green -> --brand-color (1处)",
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (1处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/base-loading/base-loading.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/base-skeleton/base-skeleton.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/custom-tabbar/custom-tabbar.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (2处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/practice/AiEntry.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除内联样式 (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/practice/MistakesCard.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/practice/RecentTools.vue",
+      "changes": [
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/practice/UploadCard.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/profile/FriendsList.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (2处)"
+      ]
+    },
+    {
+      "file": "src/components/profile/ProgressCircle.vue",
+      "changes": [
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/profile/ToolsGrid.vue",
+      "changes": [
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/profile/UserProfile.vue",
+      "changes": [
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/school/AbilityForm.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/school/ConfirmForm.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/school/EducationForm.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/school/RegionForm.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/components/school/StepProgress.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    }
+  ]
+}

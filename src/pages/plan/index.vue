@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view :class="['container', { ' ': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<!-- 导航栏 - 添加设计系统工具类 -->
@@ -376,45 +376,45 @@ export default {
 }
 
 /* 深色模式适配 */
-.container.dark-mode {
-	--bg-color: #163300;
-	--text-main: #ffffff;
+.container. {
+	--bg-color: var(--bg-body);
+	--text-primary: var(--bg-card);
 	--text-sub: #b0b0b0;
 	--card-bg: #1e3a0f;
 	--card-border: #2d4e1f;
 	background-color: var(--bg-color);
 }
 
-.container.dark-mode .nav-title {
-	color: var(--text-main);
+.container. .nav-title {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .nav-back,
-.container.dark-mode .nav-add {
-	color: var(--text-main);
+.container. .nav-back,
+.container. .nav-add {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .glass-card {
+.container. .glass-card {
 	background: var(--card-bg);
 	border-color: var(--card-border);
 }
 
-.container.dark-mode .plan-name,
-.container.dark-mode .meta-value {
-	color: var(--text-main);
+.container. .plan-name,
+.container. .meta-value {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .plan-goal {
+.container. .plan-goal {
 	color: var(--text-sub);
 }
 
-.container.dark-mode .meta-label {
+.container. .meta-label {
 	color: var(--text-sub);
 	opacity: 0.7;
 }
 
-.container.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, #163300 0%, #1a2e05 50%, #163300 100%) !important;
+.container. .aurora-bg {
+	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, var(--bg-body) 100%) !important;
 	opacity: 0.8;
 }
 </style>

@@ -158,7 +158,7 @@ export default {
 <style scoped>
 .rank-container {
   min-height: 100vh;
-  background: #163300;
+  background: var(--bg-body);
   padding: 20rpx;
   padding-bottom: calc(100rpx + env(safe-area-inset-bottom));
   position: relative;

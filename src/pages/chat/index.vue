@@ -313,9 +313,9 @@ ${optionsText}用户答案：${mistake.userAnswer}
 			console.log('[Chat] 🎨 开始渲染 Markdown，内容长度:', text.length);
 
 			// 根据深色模式动态设置颜色
-			const textColor = this.isDark ? '#ffffff' : '#000000';
+			const textColor = this.isDark ? 'var(--bg-card)' : 'var(--text-primary)';
 			const codeBlockBg = this.isDark ? '#2d4e1f' : '#F5F5F7';
-			const codeBlockColor = this.isDark ? '#b0b0b0' : '#000000';
+			const codeBlockColor = this.isDark ? '#b0b0b0' : 'var(--text-primary)';
 			const codeBlockBorder = this.isDark ? '#3d5e2f' : '#E5E5EA';
 			const quoteBorder = this.isDark ? '#4CAF50' : '#4CAF50';
 			const quoteBg = this.isDark ? '#1e3a0f' : '#F1F8F4';
@@ -540,7 +540,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 </script>
 
 <style scoped>
-/* Wise 风格：基于 Wise Bright Green (#9FE870) 的浅色背景 */
+/* Wise 风格：基于 Wise Bright Green (var(--brand-color)) 的浅色背景 */
 .chat-container {
 	height: 100vh;
 	background-color: #F0F9ED;
@@ -737,9 +737,9 @@ ${optionsText}用户答案：${mistake.userAnswer}
 
 /* Assistant 气泡：白色背景，深色文字，清晰可见 */
 .assistant .bubble {
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	/* 白色背景 */
-	color: #000000;
+	color: var(--text-primary);
 	/* 深色文字（纯黑，确保在白色背景上清晰可见） */
 	border-radius: 20rpx 20rpx 20rpx 6rpx;
 	border: 1px solid #E0E0E0;
@@ -757,7 +757,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 	bottom: 12rpx;
 	width: 16rpx;
 	height: 16rpx;
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	/* 白色背景 */
 	border-left: 1px solid #E0E0E0;
 	/* 浅灰边框 */
@@ -769,7 +769,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 /* User 气泡：Wise 风格 - 蓝色背景，白色文字 */
 .user .bubble {
 	background: #007AFF;
-	color: #FFFFFF;
+	color: var(--bg-card);
 	border-radius: 20rpx 20rpx 6rpx 20rpx;
 	box-shadow: 0 2rpx 8rpx rgba(0, 122, 255, 0.2);
 }
@@ -854,7 +854,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 }
 
 .up-icon {
-	color: #FFFFFF;
+	color: var(--bg-card);
 	font-size: 36rpx;
 	font-weight: 600;
 }
@@ -870,7 +870,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 	justify-content: space-around;
 	align-items: center;
 	padding: 24rpx 28rpx;
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	/* 白色背景 */
 	border: 1px solid #E0E0E0;
 	/* 浅灰边框 */
@@ -909,7 +909,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 
 /* Dark Mode Styles */
 .chat-container.dark-mode {
-	background-color: #163300;
+	background-color: var(--bg-body);
 }
 
 .chat-container.dark-mode .custom-nav {
@@ -918,7 +918,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 }
 
 .chat-container.dark-mode .nav-title {
-	color: #ffffff;
+	color: var(--bg-card);
 }
 
 .chat-container.dark-mode .nav-subtitle {
@@ -942,7 +942,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 
 .chat-container.dark-mode .assistant .bubble {
 	background-color: #1e3a0f;
-	color: #ffffff;
+	color: var(--bg-card);
 }
 
 .chat-container.dark-mode .assistant .bubble::after {
@@ -960,7 +960,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 }
 
 .chat-container.dark-mode .input-inner textarea {
-	color: #ffffff;
+	color: var(--bg-card);
 }
 
 .chat-container.dark-mode .send-btn {
@@ -1001,7 +1001,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 	width: 90%;
 	max-width: 700rpx;
 	max-height: 80vh;
-	background: #FFFFFF;
+	background: var(--bg-card);
 	border-radius: 30rpx;
 	display: flex;
 	flex-direction: column;
@@ -1059,7 +1059,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 	align-items: center;
 	padding: 24rpx;
 	margin-bottom: 16rpx;
-	background: #FFFFFF;
+	background: var(--bg-card);
 	border-radius: 20rpx;
 	border: 2rpx solid #E0E0E0;
 	transition: all 0.2s;
@@ -1089,7 +1089,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 }
 
 .checkbox-icon {
-	color: #FFFFFF;
+	color: var(--bg-card);
 	font-size: 28rpx;
 	font-weight: bold;
 }
@@ -1117,7 +1117,7 @@ ${optionsText}用户答案：${mistake.userAnswer}
 	gap: 20rpx;
 	padding: 30rpx 40rpx;
 	border-top: 1rpx solid #F0F0F0;
-	background: #FFFFFF;
+	background: var(--bg-card);
 }
 
 .modal-btn-select {

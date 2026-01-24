@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view :class="['container', { ' ': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<!-- 匹配阶段 -->
@@ -38,7 +38,7 @@
 		<view class="pk-container" v-if="gameState === 'battle'">
 			<view class="top-bar" :style="{ marginTop: '10px' }">
 				<view class="icon-btn" @tap="handleQuit">
-					<text style="font-size: 18px; color: #fff;">✕</text>
+					<text >✕</text>
 				</view>
 				<view class="round-badge">
 					<text>Round {{ currentIndex + 1 }} / {{ questions.length }}</text>
@@ -75,7 +75,7 @@
 				</view>
 				<text class="q-text">{{ currentQuestion.question || currentQuestion.title || '题目加载中...' }}</text>
 				<!-- 调试信息 -->
-				<view v-if="false" style="margin-top: 10rpx; font-size: 20rpx; color: #999;">
+				<view v-if="false" >
 					<text>题目索引: {{ currentIndex }} / {{ questions.length }}</text>
 					<text>选项数量: {{ currentQuestion?.options?.length || 0 }}</text>
 					<text>gameState: {{ gameState }}</text>
@@ -112,14 +112,14 @@
 			</view>
 			
 			<!-- 临时测试：显示当前状态 -->
-			<view v-if="false" style="position: fixed; top: 100px; left: 20px; background: rgba(0,0,0,0.8); color: #fff; padding: 20rpx; z-index: 9999; font-size: 24rpx;">
+			<view v-if="false" >
 				<text>gameState: {{ gameState }}</text>
 				<text>showAns: {{ showAns }}</text>
 				<text>options: {{ currentQuestion?.options?.length || 0 }}</text>
 			</view>
 			
 			<!-- 调试信息（开发环境） -->
-			<view class="debug-info" v-if="false" style="padding: 20rpx; background: rgba(0,0,0,0.5); color: #fff; font-size: 24rpx;">
+			<view class="debug-info" v-if="false" >
 				<text>gameState: {{ gameState }}</text>
 				<text>showAns: {{ showAns }}</text>
 				<text>currentIndex: {{ currentIndex }}</text>
@@ -1013,7 +1013,7 @@ export default {
 					ctx.fill();
 					
 					ctx.setFontSize(18);
-					ctx.setFillStyle('#FFFFFF');
+					ctx.setFillStyle('var(--bg-card)');
 					ctx.fillText(this.userInfo.nickName || '考研人', 100, 220);
 					
 					// 核心比分 - 巨大发光数字
@@ -1055,7 +1055,7 @@ export default {
 					ctx.setFillStyle('#FFD700');
 					ctx.fillText('🎯', 20 + (cardWidth - 10) / 2, cardY + 30);
 					ctx.setFontSize(16);
-					ctx.setFillStyle('#FFFFFF');
+					ctx.setFillStyle('var(--bg-card)');
 					ctx.fillText(`${this.accuracy}%`, 20 + (cardWidth - 10) / 2, cardY + 55);
 					ctx.setFontSize(11);
 					ctx.setFillStyle('rgba(255, 255, 255, 0.7)');
@@ -1068,7 +1068,7 @@ export default {
 					ctx.setFillStyle('#FFD700');
 					ctx.fillText('⚡', 20 + cardWidth + (cardWidth - 10) / 2, cardY + 30);
 					ctx.setFontSize(16);
-					ctx.setFillStyle('#FFFFFF');
+					ctx.setFillStyle('var(--bg-card)');
 					ctx.fillText(`${this.averageTime.toFixed(1)}s`, 20 + cardWidth + (cardWidth - 10) / 2, cardY + 55);
 					ctx.setFontSize(11);
 					ctx.setFillStyle('rgba(255, 255, 255, 0.7)');
@@ -1081,7 +1081,7 @@ export default {
 					ctx.setFillStyle('#FFD700');
 					ctx.fillText('📚', 20 + cardWidth * 2 + (cardWidth - 10) / 2, cardY + 30);
 					ctx.setFontSize(16);
-					ctx.setFillStyle('#FFFFFF');
+					ctx.setFillStyle('var(--bg-card)');
 					ctx.fillText(`${this.knowledgePoints.length}`, 20 + cardWidth * 2 + (cardWidth - 10) / 2, cardY + 55);
 					ctx.setFontSize(11);
 					ctx.setFillStyle('rgba(255, 255, 255, 0.7)');
@@ -1089,7 +1089,7 @@ export default {
 					
 					// -- 5. 底部：激励文案 --
 					ctx.setFontSize(14);
-					ctx.setFillStyle('#FFFFFF');
+					ctx.setFillStyle('var(--bg-card)');
 					ctx.fillText('保持状态，下一个状元就是你！', W / 2, 520);
 					
 					ctx.setFontSize(11);
@@ -1111,13 +1111,13 @@ export default {
 					
 					// -- 2. 头部：鼓励标题 --
 					ctx.setFontSize(28);
-					ctx.setFillStyle('#FFFFFF');
+					ctx.setFillStyle('var(--bg-card)');
 					ctx.setTextAlign('center');
 					ctx.fillText('惜败！差一点点就赢了', W / 2, 60);
 					
 					// -- 3. 核心对决区 --
 					ctx.setFontSize(64);
-					ctx.setFillStyle('#FFFFFF');
+					ctx.setFillStyle('var(--bg-card)');
 					ctx.fillText(this.myScore.toString(), W / 2, 180);
 					
 					ctx.setFontSize(14);
@@ -1148,7 +1148,7 @@ export default {
 					
 					// -- 6. 底部：鼓励文案 --
 					ctx.setFontSize(14);
-					ctx.setFillStyle('#FFFFFF');
+					ctx.setFillStyle('var(--bg-card)');
 					ctx.fillText('不服！再战一局', W / 2, 520);
 					
 					ctx.setFontSize(11);
@@ -1406,14 +1406,14 @@ export default {
 /* iOS 风格全局容器 */
 .container { 
 	min-height: 100vh; 
-	background-color: #000000; 
-	background-image: linear-gradient(180deg, #1C1C1E 0%, #000000 100%);
-	color: #FFFFFF;
+	background-color: var(--text-primary); 
+	background-image: linear-gradient(180deg, #1C1C1E 0%, var(--text-primary) 100%);
+	color: var(--bg-card);
 	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
 	position: relative;
 }
-.container.dark-mode {
-	background: #163300;
+.container. {
+	background: var(--bg-body);
 }
 
 /* 极光背景 */
@@ -1593,7 +1593,7 @@ export default {
 /* 全局：深空黑 */
 .pk-container {
 	min-height: 100vh;
-	background: radial-gradient(circle at center top, #2C2C2E 0%, #000000 100%);
+	background: radial-gradient(circle at center top, #2C2C2E 0%, var(--text-primary) 100%);
 	padding: 0 24px;
 	padding-top: calc(env(safe-area-inset-top, 0px) + 30px); /* 增加顶部间距，整体下移，避免与胶囊按钮重叠 */
 	padding-bottom: env(safe-area-inset-bottom, 0px); /* 底部安全区域 */
@@ -1750,7 +1750,7 @@ export default {
 	padding: 2px 6px;
 	border-radius: 4px;
 	font-weight: bold;
-	color: #FFFFFF;
+	color: var(--bg-card);
 }
 
 .timer-badge {
@@ -1805,7 +1805,7 @@ export default {
 	font-size: 17px;
 	line-height: 1.5;
 	font-weight: 500;
-	color: #FFFFFF;
+	color: var(--bg-card);
 }
 
 /* 选项列表 */
@@ -1957,7 +1957,7 @@ export default {
 	box-sizing: border-box; 
 	position: relative;
 	z-index: 10;
-	background: linear-gradient(135deg, #163300 0%, #0F2400 50%, #163300 100%);
+	background: linear-gradient(135deg, var(--bg-body) 0%, #0F2400 50%, var(--bg-body) 100%);
 	background-size: 200% 200%;
 	animation: gradientShift 8s ease infinite;
 }
@@ -1998,7 +1998,7 @@ export default {
 	letter-spacing: 4rpx;
 }
 .result-title.victory {
-	color: #9FE870; /* Wise 绿色 */
+	color: var(--brand-color); /* Wise 绿色 */
 	text-shadow: 0 0 30rpx rgba(159, 232, 112, 0.6),
 	             0 0 60rpx rgba(159, 232, 112, 0.3);
 }
@@ -2057,14 +2057,14 @@ export default {
 }
 
 .ai-title {
-	color: #9FE870; /* Wise 绿色 */
+	color: var(--brand-color); /* Wise 绿色 */
 	font-size: 28rpx;
 	font-weight: bold;
 	text-shadow: 0 0 10rpx rgba(159, 232, 112, 0.5);
 }
 
 .ai-text {
-	color: #FFFFFF;
+	color: var(--bg-card);
 	font-size: 28rpx;
 	line-height: 1.8;
 	text-align: left;
@@ -2117,7 +2117,7 @@ export default {
 	border-radius: 16rpx; 
 	font-size: 28rpx;
 	border: 1px solid rgba(159, 232, 112, 0.3);
-	color: #9FE870;
+	color: var(--brand-color);
 	padding: 20rpx 0;
 	font-weight: 600;
 	transition: all 0.3s ease;
@@ -2132,8 +2132,8 @@ export default {
 .btn-again { 
 	flex: 1; 
 	min-width: calc(50% - 10rpx);
-	background: linear-gradient(135deg, #9FE870, #7ED321); 
-	color: #163300; 
+	background: linear-gradient(135deg, var(--brand-color), #7ED321); 
+	color: var(--bg-body); 
 	border-radius: 16rpx; 
 	font-size: 28rpx;
 	border: none;
@@ -2153,7 +2153,7 @@ export default {
 	flex: 1;
 	min-width: calc(50% - 10rpx);
 	background: linear-gradient(135deg, #FFD700, #FFA500);
-	color: #163300;
+	color: var(--bg-body);
 	border-radius: 16rpx;
 	font-size: 28rpx;
 	border: none;

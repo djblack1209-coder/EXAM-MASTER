@@ -195,16 +195,16 @@ export default {
 
 /* Wise 主题背景 */
 .theme-wise .study-detail-page {
-    background: #FFFFFF;
+    background: var(--bg-card);
 }
 
 .theme-wise.dark-mode .study-detail-page {
-    background: #163300;
+    background: var(--bg-body);
 }
 
 /* Bitget 主题背景 */
 .theme-bitget .study-detail-page {
-    background: #000000;
+    background: var(--text-primary);
 }
 
 /* 透明导航栏 */
@@ -254,7 +254,7 @@ export default {
 
 .theme-wise.dark-mode .back-icon,
 .theme-bitget .back-icon {
-    color: #FFFFFF;
+    color: var(--bg-card);
 }
 
 .navbar-title {
@@ -271,7 +271,7 @@ export default {
 
 .theme-wise.dark-mode .navbar-title,
 .theme-bitget .navbar-title {
-    color: #FFFFFF;
+    color: var(--bg-card);
 }
 
 .theme-toggle {
@@ -319,7 +319,7 @@ export default {
 
 .theme-wise.dark-mode .page-title,
 .theme-bitget .page-title {
-    color: #FFFFFF;
+    color: var(--bg-card);
 }
 
 .page-subtitle {
@@ -382,7 +382,7 @@ export default {
 
 .theme-wise.dark-mode .stat-value,
 .theme-bitget .stat-value {
-    color: #FFFFFF;
+    color: var(--bg-card);
 }
 
 .stat-label {
@@ -416,7 +416,7 @@ export default {
 
 .theme-wise.dark-mode .section-title,
 .theme-bitget .section-title {
-    color: #FFFFFF;
+    color: var(--bg-card);
 }
 
 .section-subtitle {
@@ -466,7 +466,7 @@ export default {
 
 .theme-wise.dark-mode .placeholder-text,
 .theme-bitget .placeholder-text {
-    color: #FFFFFF;
+    color: var(--bg-card);
 }
 
 .placeholder-hint {

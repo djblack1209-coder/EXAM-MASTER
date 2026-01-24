@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view :class="['container', { ' ': isDark }]">
 		<view class="aurora-bg"></view>
 		
 		<view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -581,31 +581,31 @@ export default {
 	--ball-bg: #E8F5E9;
 	--wave-color: #2ECC71;
 	--ball-glow: rgba(46, 204, 113, 0.2);
-	--bg-main: #F8FAFC;
-	--text-title: #1A1A1A;
-	--text-light: #A0AEC0;
+	--bg-body: var(--bg-body);
+	--text-primary: #1A1A1A;
+	--text-tertiary: #A0AEC0;
 	--card-bg: rgba(255, 255, 255, 0.8);
 	--card-border: rgba(0, 0, 0, 0.05);
-	--accent-green: #2ECC71;
+	--brand-color: #2ECC71;
 	
 	min-height: 100vh;
-	background: var(--bg-main);
+	background: var(--bg-body);
 	position: relative;
 	overflow: hidden;
 	transition: background 0.3s;
 }
 
 /* 深色模式荧光效果 */
-.container.dark-mode {
+.container. {
   --ball-bg: #1E293B;
   --wave-color: #00FF88;
   --ball-glow: rgba(0, 255, 136, 0.4);
-  --bg-main: #163300;
-  --text-title: #F8FAFC;
-  --text-light: #64748B;
+  --bg-body: var(--bg-body);
+  --text-primary: var(--bg-body);
+  --text-tertiary: #64748B;
   --card-bg: rgba(30, 41, 59, 0.7);
   --card-border: rgba(255, 255, 255, 0.1);
-  --accent-green: #00FF88;
+  --brand-color: #00FF88;
 }
 
 .aurora-bg {
@@ -618,7 +618,7 @@ export default {
 	z-index: 0;
 }
 
-.dark-mode .aurora-bg {
+. .aurora-bg {
 	background: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.15), transparent);
 }
 
@@ -645,13 +645,13 @@ export default {
 	align-items: center;
 	justify-content: center;
 	font-size: 36rpx;
-	color: var(--text-title);
+	color: var(--text-primary);
 	font-weight: bold;
 }
 .nav-title {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: var(--text-title);
+	color: var(--text-primary);
 }
 .share-btn {
 	width: 60rpx;
@@ -660,7 +660,7 @@ export default {
 	align-items: center;
 	justify-content: flex-end;
 	font-size: 36rpx;
-	color: var(--text-title);
+	color: var(--text-primary);
 }
 
 .detail-scroll { 
@@ -689,7 +689,7 @@ export default {
 .school-name {
 	font-size: 40rpx;
 	font-weight: 800;
-	color: var(--text-title);
+	color: var(--text-primary);
 	display: block;
 	margin-bottom: 15rpx;
 }
@@ -719,18 +719,18 @@ export default {
 .stat-val {
 	font-size: 36rpx;
 	font-weight: 900;
-	color: var(--text-title);
+	color: var(--text-primary);
 }
 .stat-label {
 	font-size: 20rpx;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	margin-top: 8rpx;
 }
 
 .section-title {
 	font-size: 32rpx;
 	font-weight: 800;
-	color: var(--text-title);
+	color: var(--text-primary);
 	margin: 40rpx 0 20rpx 10rpx;
 }
 
@@ -739,7 +739,7 @@ export default {
 }
 .intro-text {
 	font-size: 28rpx;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	line-height: 1.8;
 }
 
@@ -757,13 +757,13 @@ export default {
 .major-name {
 	font-size: 30rpx;
 	font-weight: bold;
-	color: var(--text-title);
+	color: var(--text-primary);
 	display: block;
 	margin-bottom: 8rpx;
 }
 .major-code {
 	font-size: 22rpx;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	display: block;
 	margin-bottom: 4rpx;
 }
@@ -795,7 +795,7 @@ export default {
 	flex: 2;
 	height: 100rpx;
 	border-radius: 24rpx;
-	background: var(--accent-green);
+	background: var(--brand-color);
 	color: #FFF;
 	font-size: 30rpx;
 	font-weight: bold;
@@ -821,7 +821,7 @@ export default {
 .card-title {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: var(--text-title);
+	color: var(--text-primary);
 	margin-bottom: 40rpx;
 	display: flex;
 	align-items: center;
@@ -898,13 +898,13 @@ export default {
 .percent-content .num {
 	font-size: 56rpx;
 	font-weight: 900;
-	color: var(--text-title);
+	color: var(--text-primary);
 	text-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
 }
 .percent-content .unit {
 	font-size: 24rpx;
 	margin-left: 4rpx;
-	color: var(--text-title);
+	color: var(--text-primary);
 }
 
 .ball-glow {
@@ -933,7 +933,7 @@ export default {
 }
 .ai-summary {
 	font-size: 24rpx;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	line-height: 1.5;
 	display: block;
 }
@@ -942,7 +942,7 @@ export default {
 	margin-top: 40rpx;
 	height: 80rpx;
 	border-radius: 40rpx;
-	background: var(--accent-green);
+	background: var(--brand-color);
 	color: #FFF;
 	font-size: 26rpx;
 	font-weight: bold;

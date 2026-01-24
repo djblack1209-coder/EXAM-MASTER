@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern todo list with design system utilities -->
 <template>
-  <view class="todo-list ds-card" :class="{ 'dark-mode': isDark }">
+  <view class="todo-list ds-card" :class="{ ' ': isDark }">
     <!-- 标题栏 -->
     <view class="list-header ds-flex ds-flex-between">
       <text class="header-title ds-text-xl ds-font-bold ds-text-primary">To do</text>
@@ -94,7 +94,7 @@ const onToggleTodo = (id) => {
 <style lang="scss" scoped>
 .todo-list {
   width: 100%;
-  background: #FFFFFF;
+  background: var(--bg-card);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   padding: 24px;
@@ -251,17 +251,17 @@ const onToggleTodo = (id) => {
 }
 
 /* VISUAL: Dark mode styles */
-.todo-list.dark-mode {
+.todo-list. {
   background: var(--ds-color-surface-secondary, #1c1c1e);
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
 
   .list-header {
     .header-title {
-      color: var(--ds-color-text-primary, #FFFFFF);
+      color: var(--ds-color-text-primary, var(--bg-card));
     }
 
     .header-progress {
-      color: #9FE870;
+      color: var(--brand-color);
       /* Wise 绿色深色模式 */
     }
   }
@@ -270,7 +270,7 @@ const onToggleTodo = (id) => {
     background: #2c2c2e;
 
     .progress-fill {
-      background: #9FE870;
+      background: var(--brand-color);
     }
   }
 
@@ -283,12 +283,12 @@ const onToggleTodo = (id) => {
           }
 
           &.is-completed {
-            background: #9FE870;
+            background: var(--brand-color);
           }
         }
 
         .item-text {
-          color: var(--ds-color-text-primary, #FFFFFF);
+          color: var(--ds-color-text-primary, var(--bg-card));
 
           &.is-completed {
             color: #6c757d;
@@ -303,7 +303,7 @@ const onToggleTodo = (id) => {
           background: rgba(159, 232, 112, 0.2);
 
           .priority-text {
-            color: #9FE870;
+            color: var(--brand-color);
           }
         }
 

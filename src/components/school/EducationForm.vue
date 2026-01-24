@@ -1,5 +1,5 @@
 <template>
-  <view class="education-form ds-flex ds-flex-col" :class="{ 'dark-mode': isDark }">
+  <view class="education-form ds-flex ds-flex-col" :class="{ ' ': isDark }">
     <!-- 标题 -->
     <view class="education-form__title ds-text-display ds-font-semibold">Step 1: 教育背景</view>
 
@@ -282,7 +282,7 @@ const handleNext = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
+  color: var(--bg-card);
   border: none;
   transition: all 150ms ease-out;
 
@@ -302,7 +302,7 @@ const handleNext = () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .next-button {
     color: #1c1c1e;
 

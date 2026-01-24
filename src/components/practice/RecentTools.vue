@@ -1,5 +1,5 @@
 <template>
-  <view class="recent-tools ds-card" :class="{ 'dark-mode': isDark }">
+  <view class="recent-tools ds-card" :class="{ ' ': isDark }">
     <view class="section-header">
       <text class="title ds-text-lg ds-font-semibold">最近</text>
     </view>
@@ -128,7 +128,7 @@ onMounted(() => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .recent-tools {
     box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
   }

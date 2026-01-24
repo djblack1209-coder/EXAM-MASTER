@@ -1,5 +1,5 @@
 <template>
-  <view class="mistakes-card ds-card" :class="{ 'dark-mode': isDark }">
+  <view class="mistakes-card ds-card" :class="{ ' ': isDark }">
     <view class="card-header">
       <text class="title ds-text-lg ds-font-semibold">错题</text>
     </view>
@@ -176,12 +176,12 @@ const handleReview = () => {
 }
 
 .btn-text {
-  color: #FFFFFF;
+  color: var(--bg-card);
 }
 
 .btn-arrow {
   font-size: 36rpx;
-  color: #FFFFFF;
+  color: var(--bg-card);
   font-weight: bold;
 }
 
@@ -190,7 +190,7 @@ const handleReview = () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .mistakes-card {
     box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
   }

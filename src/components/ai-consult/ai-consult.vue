@@ -1,5 +1,5 @@
 <template>
-  <view class="ai-consult-container" :class="{ 'dark-mode': isDark }" v-if="visible">
+  <view class="ai-consult-container" :class="{ ' ': isDark }" v-if="visible">
     <!-- 遮罩层 -->
     <view class="consult-mask" @tap="closeConsult"></view>
 
@@ -508,7 +508,7 @@ export default {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .consult-mask {
     background: rgba(0, 0, 0, 0.7);
   }

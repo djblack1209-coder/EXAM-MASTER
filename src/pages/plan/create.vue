@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view :class="['container', { ' ': isDark }]">
 		<view class="aurora-bg"></view>
 		
 		<view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -314,7 +314,7 @@ export default {
 	width: 100%;
 	padding: 24rpx;
 	border-radius: 16rpx;
-	background: #FFFFFF;
+	background: var(--bg-card);
 	border: 2rpx solid rgba(0, 0, 0, 0.1);
 	font-size: 28rpx;
 	color: #1A1A1A;
@@ -336,7 +336,7 @@ export default {
 	justify-content: space-between;
 	padding: 24rpx;
 	border-radius: 16rpx;
-	background: #FFFFFF;
+	background: var(--bg-card);
 	border: 2rpx solid rgba(0, 0, 0, 0.1);
 	cursor: pointer;
 	transition: all 0.2s;
@@ -456,53 +456,53 @@ export default {
 }
 
 /* 深色模式适配 */
-.container.dark-mode {
+.container. {
 	background-color: var(--bg-color);
 }
 
-.container.dark-mode .nav-title {
-	color: var(--text-main);
+.container. .nav-title {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .nav-back {
-	color: var(--text-main);
+.container. .nav-back {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .glass-card {
+.container. .glass-card {
 	background: var(--card-bg);
 	border-color: var(--card-border);
 }
 
-.container.dark-mode .form-label {
-	color: var(--text-main);
+.container. .form-label {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .form-input,
-.container.dark-mode .form-textarea {
+.container. .form-input,
+.container. .form-textarea {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: rgba(255, 255, 255, 0.1);
-	color: var(--text-main);
+	color: var(--text-primary);
 }
 
-.container.dark-mode .date-picker,
-.container.dark-mode .time-picker {
+.container. .date-picker,
+.container. .time-picker {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: rgba(255, 255, 255, 0.1);
 }
 
-.container.dark-mode .date-text,
-.container.dark-mode .time-text {
-	color: var(--text-main);
+.container. .date-text,
+.container. .time-text {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .duration-btn,
-.container.dark-mode .category-btn {
+.container. .duration-btn,
+.container. .category-btn {
 	background: rgba(255, 255, 255, 0.05);
 	border-color: rgba(255, 255, 255, 0.1);
-	color: var(--text-main);
+	color: var(--text-primary);
 }
 
-.container.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, #163300 0%, #1a2e05 50%, #1e3a0f 100%) !important;
+.container. .aurora-bg {
+	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, #1e3a0f 100%) !important;
 }
 </style>

@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern home navbar with design system utilities -->
 <template>
-  <view class="home-navbar ds-navbar" :class="{ 'dark-mode': isDark }" :style="navbarStyle">
+  <view class="home-navbar ds-navbar" :class="{ ' ': isDark }" :style="navbarStyle">
     <!-- 状态栏占位 -->
     <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
 
@@ -172,7 +172,7 @@ const onCamera = () => {
         height: 80rpx;
         border-radius: 50%;
         /* 白色边框+阴影 */
-        border: 4rpx solid #FFFFFF;
+        border: 4rpx solid var(--bg-card);
         box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
         /* 性能优化 */
         transform: translateZ(0);
@@ -227,7 +227,7 @@ const onCamera = () => {
 }
 
 /* VISUAL: Dark mode styles */
-.home-navbar.dark-mode {
+.home-navbar. {
   /* 深色模式透明背景 */
   background: transparent;
   box-shadow: none;
@@ -239,7 +239,7 @@ const onCamera = () => {
     }
 
     .welcome-text {
-      color: var(--ds-color-text-primary, #FFFFFF);
+      color: var(--ds-color-text-primary, var(--bg-card));
     }
   }
 

@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view :class="['container', { ' ': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -729,30 +729,30 @@ export default {
 	--neon-green: #2ECC71;
 	--neon-glow-gold: rgba(255, 215, 0, 0.4);
 	--neon-glow-green: rgba(46, 204, 113, 0.4);
-	--bg-main: #F8FAFC;
+	--bg-body: var(--bg-body);
 	--card-bg: rgba(255, 255, 255, 0.8);
 	--card-border: rgba(0, 0, 0, 0.05);
-	--text-main: #1A1A1A;
-	--text-light: #A0AEC0;
+	--text-primary: #1A1A1A;
+	--text-tertiary: #A0AEC0;
 	
 	height: 100vh; 
-	background: var(--bg-main); 
+	background: var(--bg-body); 
 	position: relative; 
 	overflow: hidden;
 	transition: background 0.3s;
 }
 
-.container.dark-mode {
+.container. {
 	--neon-gold: #FFD700;
 	--neon-silver: #E2E8F0;
 	--neon-green: #00FF88;
 	--neon-glow-gold: rgba(255, 215, 0, 0.6);
 	--neon-glow-green: rgba(0, 255, 136, 0.6);
-	--bg-main: #163300;
+	--bg-body: var(--bg-body);
 	--card-bg: rgba(30, 58, 15, 0.7);
 	--card-border: rgba(255, 255, 255, 0.1);
-	--text-main: #F8FAFC;
-	--text-light: #64748B;
+	--text-primary: var(--bg-body);
+	--text-tertiary: #64748B;
 }
 
 /* 极光背景 */
@@ -767,7 +767,7 @@ export default {
 	z-index: 0;
 }
 
-.dark-mode .aurora-bg {
+. .aurora-bg {
 	background: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.15), transparent);
 }
 
@@ -791,13 +791,13 @@ export default {
 }
 .nav-back {
 	font-size: 36rpx;
-	color: var(--text-main);
+	color: var(--text-primary);
 	font-weight: bold;
 }
 .nav-title { 
 	font-size: 32rpx; 
 	font-weight: bold; 
-	color: var(--text-main); 
+	color: var(--text-primary); 
 }
 .placeholder { 
 	width: 36rpx; 
@@ -835,7 +835,7 @@ export default {
 	transition: transform 0.3s;
 	margin-bottom: 20rpx;
 }
-.dark-mode .avatar-wrap {
+. .avatar-wrap {
 	background: #1E3A0F;
 }
 
@@ -868,7 +868,7 @@ export default {
 	box-shadow: 0 0 30rpx var(--neon-glow-gold);
 	border: 4rpx solid var(--neon-gold);
 }
-.dark-mode .rank-1 .avatar-wrap {
+. .rank-1 .avatar-wrap {
 	box-shadow: 0 0 50rpx var(--neon-glow-gold);
 }
 .rank-1 .badge {
@@ -912,7 +912,7 @@ export default {
 }
 
 .podium-item .name {
-	color: var(--text-main);
+	color: var(--text-primary);
 	font-weight: bold;
 	margin-top: 20rpx;
 	font-size: 26rpx;
@@ -950,7 +950,7 @@ export default {
 	transform: scale(0.98);
 }
 /* 深色模式下的霓虹边框 */
-.dark-mode .rank-item {
+. .rank-item {
 	border-left: 6rpx solid var(--neon-green);
 	box-shadow: 0 0 15rpx rgba(0, 255, 136, 0.1);
 }
@@ -963,10 +963,10 @@ export default {
 	font-size: 36rpx;
 	font-weight: 900;
 	font-style: italic;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 }
 /* 深色模式下的排名数字荧光效果 */
-.dark-mode .rank-num {
+. .rank-num {
 	color: var(--neon-green);
 	text-shadow: 0 0 10rpx var(--neon-glow-green);
 }
@@ -983,19 +983,19 @@ export default {
 	overflow: hidden;
 }
 .item-name {
-	color: var(--text-main);
+	color: var(--text-primary);
 	font-weight: bold;
 	font-size: 28rpx;
 	display: block;
 	margin-bottom: 4rpx;
 }
 .item-desc {
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	font-size: 20rpx;
 	display: block;
 }
 .item-score {
-	color: var(--text-main);
+	color: var(--text-primary);
 	font-weight: 900;
 	font-size: 32rpx;
 	flex-shrink: 0;
@@ -1142,7 +1142,7 @@ export default {
 		position: absolute;
 		top: 30rpx;
 		right: 30rpx;
-		color: var(--text-light);
+		color: var(--text-tertiary);
 		font-size: 32rpx;
 		width: 40rpx;
 		height: 40rpx;
@@ -1171,7 +1171,7 @@ export default {
 	.card-name {
 		font-size: 36rpx;
 		font-weight: 800;
-		color: var(--text-main);
+		color: var(--text-primary);
 		display: block;
 		margin-bottom: 10rpx;
 	}
@@ -1209,12 +1209,12 @@ export default {
 	.data-item .val {
 		font-size: 32rpx;
 		font-weight: 900;
-		color: var(--text-main);
+		color: var(--text-primary);
 		display: block;
 	}
 	.data-item .lbl {
 		font-size: 20rpx;
-		color: var(--text-light);
+		color: var(--text-tertiary);
 		margin-top: 6rpx;
 		display: block;
 	}
@@ -1226,7 +1226,7 @@ export default {
 	}
 	.target-label {
 		font-size: 24rpx;
-		color: var(--text-light);
+		color: var(--text-tertiary);
 	}
 	.target-val {
 		font-size: 26rpx;
@@ -1240,8 +1240,8 @@ export default {
 	}
 	.analysis-tag {
 		display: inline-block;
-		background: var(--text-main);
-		color: var(--bg-main);
+		background: var(--text-primary);
+		color: var(--bg-body);
 		font-size: 18rpx;
 		padding: 4rpx 12rpx;
 		border-radius: 6rpx;
@@ -1253,7 +1253,7 @@ export default {
 	}
 	.analysis-text {
 		font-size: 26rpx;
-		color: var(--text-light);
+		color: var(--text-tertiary);
 		line-height: 1.6;
 		white-space: pre-wrap;
 		word-wrap: break-word;

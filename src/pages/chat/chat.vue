@@ -143,7 +143,7 @@ const handleSend = () => {
   justify-content: space-between;
   padding-left: 16px;
   padding-right: 16px;
-  background-color: #FFFFFF;
+  background-color: var(--bg-card);
   border-bottom: 1px solid #E5E5E5;
   z-index: 10;
   -webkit-tap-highlight-color: transparent;

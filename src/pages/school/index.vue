@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view :class="['container', { ' ': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<view class="header-nav">
@@ -742,39 +742,39 @@ export default {
 <style lang="scss" scoped>
 /* --- CSS 变量适配层 --- */
 .container {
-	--bg-main: #F8FAFC;
-	--text-title: #1A1A1A;
-	--text-body: #4A5568;
-	--text-light: #94A3B8;
+	--bg-body: var(--bg-body);
+	--text-primary: #1A1A1A;
+	--text-secondary: #4A5568;
+	--text-tertiary: #94A3B8;
 	--card-bg: rgba(255, 255, 255, 0.8);
 	--card-border: rgba(0, 0, 0, 0.05);
-	--input-bg: #FFFFFF;
-	--input-border: rgba(255, 255, 255, 0.6);
-	--accent-green: #2ECC71;
-	--accent-green-light: #EBFDF5;
+	--bg-hover: var(--bg-card);
+	--border-light: rgba(255, 255, 255, 0.6);
+	--brand-color: #2ECC71;
+	--brand-color-light: #EBFDF5;
 
 	min-height: 100vh;
-	background: var(--bg-main);
+	background: var(--bg-body);
 	position: relative;
 	overflow: hidden;
 	transition: background-color 0.3s;
 }
 
-.container.dark-mode {
-	--bg-main: #163300;
-	--text-title: #ffffff;
-	--text-body: #b0b0b0;
-	--text-light: #8899a6;
+.container. {
+	--bg-body: var(--bg-body);
+	--text-primary: var(--bg-card);
+	--text-secondary: #b0b0b0;
+	--text-tertiary: #8899a6;
 	--card-bg: #1e3a0f;
 	--card-border: #2d4e1f;
-	--input-bg: rgba(255, 255, 255, 0.1);
-	--input-border: rgba(255, 255, 255, 0.2);
-	--accent-green: #2ECC71;
-	--accent-green-light: rgba(46, 204, 113, 0.2);
+	--bg-hover: rgba(255, 255, 255, 0.1);
+	--border-light: rgba(255, 255, 255, 0.2);
+	--brand-color: #2ECC71;
+	--brand-color-light: rgba(46, 204, 113, 0.2);
 }
 
-.container.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, #163300 0%, #1a2e05 50%, #163300 100%) !important;
+.container. .aurora-bg {
+	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, var(--bg-body) 100%) !important;
 	opacity: 0.8;
 }
 
@@ -810,14 +810,14 @@ export default {
 
 		.nav-back {
 			font-size: 36rpx;
-			color: var(--text-title);
+			color: var(--text-primary);
 			font-weight: bold;
 		}
 
 		.nav-title {
 			font-size: 34rpx;
 			font-weight: 600;
-			color: var(--text-title);
+			color: var(--text-primary);
 		}
 
 		.nav-placeholder {
@@ -833,14 +833,14 @@ export default {
 }
 
 /* 深色模式下的导航栏背景适配 */
-.container.dark-mode .header-nav {
-	background: #163300 !important;
+.container. .header-nav {
+	background: var(--bg-body) !important;
 	border-bottom: 1px solid #2d4e1f !important;
 }
 
-.container.dark-mode .header-nav .nav-content .nav-back,
-.container.dark-mode .header-nav .nav-content .nav-title {
-	color: #FFFFFF !important;
+.container. .header-nav .nav-content .nav-back,
+.container. .header-nav .nav-content .nav-title {
+	color: var(--bg-card) !important;
 }
 
 .main-scroll {
@@ -850,7 +850,7 @@ export default {
 	box-sizing: border-box;
 	position: relative;
 	z-index: 1;
-	background: var(--bg-main);
+	background: var(--bg-body);
 }
 
 /* 通用玻璃卡片 - 使用 CSS 变量 */
@@ -883,9 +883,9 @@ export default {
 			opacity: 1;
 
 			.step-dot {
-				background: var(--accent-green);
+				background: var(--brand-color);
 				color: white;
-				border-color: var(--accent-green);
+				border-color: var(--brand-color);
 			}
 		}
 
@@ -893,33 +893,33 @@ export default {
 			width: 44rpx;
 			height: 44rpx;
 			border-radius: 22rpx;
-			border: 2rpx solid var(--text-title);
+			border: 2rpx solid var(--text-primary);
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			font-size: 24rpx;
 			transition: all 0.3s;
 			font-weight: bold;
-			color: var(--text-title);
+			color: var(--text-primary);
 		}
 
 		text {
 			font-size: 24rpx;
 			font-weight: bold;
-			color: var(--text-title);
+			color: var(--text-primary);
 		}
 	}
 
 	.step-line {
 		flex: 1;
 		height: 2rpx;
-		background: var(--border-card);
+		background: var(--border-light);
 		margin: 0 20rpx;
 		margin-top: -30rpx;
 		transition: all 0.3s;
 
 		&.active {
-			background: var(--accent-green);
+			background: var(--brand-color);
 		}
 	}
 }
@@ -934,14 +934,14 @@ export default {
 		.title {
 			font-size: 40rpx;
 			font-weight: 800;
-			color: var(--text-title);
+			color: var(--text-primary);
 			display: block;
 			margin-bottom: 10rpx;
 		}
 
 		.subtitle {
 			font-size: 24rpx;
-			color: var(--text-light);
+			color: var(--text-tertiary);
 		}
 	}
 }
@@ -952,48 +952,48 @@ export default {
 	.label {
 		font-size: 28rpx;
 		font-weight: 600;
-		color: var(--text-title);
+		color: var(--text-primary);
 		margin-bottom: 20rpx;
 		display: block;
 	}
 
 	.glass-input {
-		background: var(--input-bg);
-		border: 1rpx solid var(--input-border);
+		background: var(--bg-hover);
+		border: 1rpx solid var(--border-light);
 		border-radius: 24rpx;
 		height: 100rpx;
 		padding: 0 30rpx;
 		display: flex;
 		align-items: center;
 		font-size: 28rpx;
-		color: var(--text-title);
+		color: var(--text-primary);
 		box-sizing: border-box;
 		transition: all 0.3s;
 	}
 
 	.glass-input:focus-within {
-		border-color: var(--accent-green);
+		border-color: var(--brand-color);
 		box-shadow: 0 0 15rpx rgba(46, 204, 113, 0.3);
 	}
 
 	/* 修复占位符颜色 */
 	.ph-style {
-		color: var(--text-light) !important;
+		color: var(--text-tertiary) !important;
 		opacity: 0.7;
 	}
 
 	.placeholder-text {
-		color: var(--text-light) !important;
+		color: var(--text-tertiary) !important;
 		opacity: 0.7;
 	}
 
 	.picker-val {
 		justify-content: space-between;
-		color: var(--text-title);
+		color: var(--text-primary);
 
 		.picker-arrow {
 			font-size: 20rpx;
-			color: var(--text-light);
+			color: var(--text-tertiary);
 		}
 	}
 }
@@ -1005,20 +1005,20 @@ export default {
 	.tab-item {
 		flex: 1;
 		height: 100rpx;
-		background: var(--input-bg);
+		background: var(--bg-hover);
 		border: 1rpx solid var(--card-border);
 		border-radius: 24rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 28rpx;
-		color: var(--text-light);
+		color: var(--text-tertiary);
 		transition: all 0.2s;
 
 		&.active {
-			background: var(--accent-green-light);
-			border-color: var(--accent-green);
-			color: var(--accent-green);
+			background: var(--brand-color-light);
+			border-color: var(--brand-color);
+			color: var(--brand-color);
 			font-weight: bold;
 		}
 	}
@@ -1066,7 +1066,7 @@ export default {
 	justify-content: center;
 	gap: 10rpx;
 	padding: 20rpx;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	font-size: 24rpx;
 	margin-bottom: 30rpx;
 }
@@ -1087,12 +1087,12 @@ export default {
 .rh-title {
 	font-size: 32rpx;
 	font-weight: 700;
-	color: var(--text-title);
+	color: var(--text-primary);
 }
 
 .rh-filter {
 	font-size: 24rpx;
-	color: var(--text-title);
+	color: var(--text-primary);
 	background: var(--card-bg);
 	padding: 10rpx 20rpx;
 	border-radius: 20rpx;
@@ -1105,7 +1105,7 @@ export default {
 
 .filter-arrow {
 	font-size: 20rpx;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 }
 
 .school-card {
@@ -1124,7 +1124,7 @@ export default {
 		height: 96rpx;
 		border-radius: 16rpx;
 		margin-right: 24rpx;
-		background: var(--input-bg);
+		background: var(--bg-hover);
 		flex-shrink: 0;
 	}
 
@@ -1141,13 +1141,13 @@ export default {
 	.sc-name {
 		font-size: 32rpx;
 		font-weight: 700;
-		color: var(--text-title);
+		color: var(--text-primary);
 		margin-right: 16rpx;
 	}
 
 	.sc-loc {
 		font-size: 22rpx;
-		color: var(--text-light);
+		color: var(--text-tertiary);
 	}
 
 	.sc-tags {
@@ -1159,8 +1159,8 @@ export default {
 
 	.tag-item {
 		font-size: 20rpx;
-		color: var(--accent-green);
-		background: var(--accent-green-light);
+		color: var(--brand-color);
+		background: var(--brand-color-light);
 		padding: 4rpx 12rpx;
 		border-radius: 8rpx;
 		font-weight: 600;
@@ -1170,7 +1170,7 @@ export default {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		background: var(--accent-green-light);
+		background: var(--brand-color-light);
 		padding: 8rpx 16rpx;
 		border-radius: 16rpx;
 		flex-shrink: 0;
@@ -1179,13 +1179,13 @@ export default {
 	.mr-val {
 		font-size: 32rpx;
 		font-weight: 800;
-		color: var(--accent-green);
+		color: var(--brand-color);
 		line-height: 1;
 	}
 
 	.mr-lbl {
 		font-size: 18rpx;
-		color: var(--accent-green);
+		color: var(--brand-color);
 		opacity: 0.8;
 		margin-top: 4rpx;
 	}
@@ -1211,26 +1211,26 @@ export default {
 	font-size: 26rpx;
 	margin-bottom: 16rpx;
 	font-weight: 600;
-	color: var(--text-title);
+	color: var(--text-primary);
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
 }
 
 .mj-code {
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	margin-right: 12rpx;
 	font-weight: 400;
 }
 
 .mj-name {
 	margin-right: 12rpx;
-	color: var(--text-title);
+	color: var(--text-primary);
 }
 
 .mj-type {
 	font-size: 20rpx;
-	background: var(--input-bg);
+	background: var(--bg-hover);
 	padding: 2rpx 8rpx;
 	border-radius: 8rpx;
 	color: #666;
@@ -1293,25 +1293,25 @@ export default {
 
 .cf-btn.outline {
 	border: 1rpx solid var(--card-border);
-	color: var(--text-title);
-	background: var(--input-bg);
+	color: var(--text-primary);
+	background: var(--bg-hover);
 }
 
 .cf-btn.primary {
-	background: var(--accent-green);
+	background: var(--brand-color);
 	color: #FFF;
 	box-shadow: 0 8rpx 20rpx rgba(46, 204, 113, 0.2);
 }
 
 .cf-btn.disabled {
-	background: var(--input-bg);
-	color: var(--text-light);
+	background: var(--bg-hover);
+	color: var(--text-tertiary);
 	box-shadow: none;
 }
 
 .empty-tip {
 	text-align: center;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	font-size: 26rpx;
 	margin-top: 80rpx;
 	display: flex;
@@ -1321,7 +1321,7 @@ export default {
 }
 
 .reset-link {
-	color: var(--accent-green);
+	color: var(--brand-color);
 	text-decoration: underline;
 }
 
@@ -1356,12 +1356,12 @@ export default {
 .fp-title {
 	font-size: 36rpx;
 	font-weight: 700;
-	color: var(--text-title);
+	color: var(--text-primary);
 }
 
 .fp-reset {
 	font-size: 28rpx;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	padding: 8rpx 16rpx;
 }
 
@@ -1374,7 +1374,7 @@ export default {
 	font-weight: 600;
 	margin-bottom: 24rpx;
 	display: block;
-	color: var(--text-title);
+	color: var(--text-primary);
 }
 
 .tag-scroll {
@@ -1389,19 +1389,19 @@ export default {
 }
 
 .ft-item {
-	background: var(--input-bg);
+	background: var(--bg-hover);
 	padding: 16rpx 32rpx;
 	border-radius: 16rpx;
 	font-size: 26rpx;
-	color: var(--text-light);
+	color: var(--text-tertiary);
 	border: 1rpx solid var(--card-border);
 	transition: 0.2s;
 }
 
 .ft-item.active {
-	background: var(--accent-green-light);
-	color: var(--accent-green);
-	border-color: var(--accent-green);
+	background: var(--brand-color-light);
+	color: var(--brand-color);
+	border-color: var(--brand-color);
 	font-weight: 600;
 }
 
@@ -1452,7 +1452,7 @@ export default {
 }
 
 /* 深色模式适配 - 极光背景 */
-.container.dark-mode .aurora-bg {
+.container. .aurora-bg {
 	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
 	opacity: 0.4;
 	filter: blur(120px);

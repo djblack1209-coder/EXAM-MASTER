@@ -1,5 +1,5 @@
 <template>
-  <view class="progress-card ds-card ds-flex ds-flex-col ds-touchable" :class="{ 'dark-mode': isDark }"
+  <view class="progress-card ds-card ds-flex ds-flex-col ds-touchable" :class="{ ' ': isDark }"
     @click="handleViewDetail">
     <view class="progress-circle ds-flex">
       <!-- 外层圆环 - 使用 conic-gradient 实现 -->
@@ -123,7 +123,7 @@ const handleViewDetail = () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .progress-card {
     box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
   }

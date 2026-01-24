@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view :class="['container', { ' ': isDark }]">
 		<view class="aurora-bg"></view>
 
 		<!-- 导航栏 - 添加设计系统工具类 -->
@@ -671,8 +671,8 @@ export default {
 
 					// 定义主题色
 					const theme = {
-						bgStart: isDark ? '#163300' : '#E8F5E9',
-						bgEnd: isDark ? '#1E3A0F' : '#FFFFFF',
+						bgStart: isDark ? 'var(--bg-body)' : '#E8F5E9',
+						bgEnd: isDark ? '#1E3A0F' : 'var(--bg-card)',
 						titleColor: isDark ? '#2ECC71' : '#27AE60',
 						mainText: isDark ? '#F1F5F9' : '#1A1A1A',
 						subText: isDark ? '#94A3B8' : '#666666',
@@ -984,7 +984,7 @@ export default {
 			ctx.stroke();
 
 			// 绘制数据点圆点
-			ctx.setFillStyle('#FFFFFF');
+			ctx.setFillStyle('var(--bg-card)');
 			ctx.setStrokeStyle(theme.accent);
 			ctx.setLineWidth(2);
 			for (let i = 0; i < numPoints; i++) {
@@ -1548,7 +1548,7 @@ export default {
 			width: 90%;
 			max-width: 700rpx;
 			max-height: 85vh;
-			background: #FFFFFF;
+			background: var(--bg-card);
 			border-radius: 30rpx;
 			display: flex;
 			flex-direction: column;
@@ -1612,7 +1612,7 @@ export default {
 			gap: 20rpx;
 			padding: 30rpx 40rpx;
 			border-top: 1rpx solid #F0F0F0;
-			background: #FFFFFF;
+			background: var(--bg-card);
 
 			.modal-btn {
 				flex: 1;
@@ -1757,7 +1757,7 @@ export default {
 	min-width: 500rpx;
 	height: 100rpx;
 	background: linear-gradient(135deg, #2ECC71, #27AE60);
-	color: #FFFFFF;
+	color: var(--bg-card);
 	border-radius: 50rpx;
 	font-weight: bold;
 	display: flex;
@@ -1822,7 +1822,7 @@ export default {
 }
 
 .custom-loading-card {
-	background: #FFFFFF;
+	background: var(--bg-card);
 	border-radius: 30rpx;
 	padding: 60rpx 50rpx;
 	display: flex;
@@ -1906,24 +1906,24 @@ export default {
 }
 
 /* 深色模式适配 */
-.container.dark-mode {
-	--bg-color: #163300;
-	--text-main: #ffffff;
+.container. {
+	--bg-color: var(--bg-body);
+	--text-primary: var(--bg-card);
 	--text-sub: #b0b0b0;
 	--card-bg: #1e3a0f;
 	--card-border: #2d4e1f;
 	background-color: var(--bg-color);
 }
 
-.container.dark-mode .nav-title {
-	color: var(--text-main);
+.container. .nav-title {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .nav-back {
-	color: var(--text-main);
+.container. .nav-back {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .nav-clear-btn {
+.container. .nav-clear-btn {
 	background: rgba(255, 59, 48, 0.2);
 
 	.clear-text {
@@ -1931,7 +1931,7 @@ export default {
 	}
 }
 
-.container.dark-mode .clear-all-btn {
+.container. .clear-all-btn {
 	background: rgba(255, 59, 48, 0.2);
 	border-color: rgba(255, 59, 48, 0.4);
 
@@ -1940,26 +1940,26 @@ export default {
 	}
 }
 
-.container.dark-mode .question-text {
-	color: var(--text-main);
+.container. .question-text {
+	color: var(--text-primary);
 }
 
-.container.dark-mode .glass-card {
+.container. .glass-card {
 	background: var(--card-bg);
 	border-color: var(--card-border);
 }
 
-.container.dark-mode .mode-item {
+.container. .mode-item {
 	color: var(--text-sub);
 }
 
-.container.dark-mode .mode-item.active {
+.container. .mode-item.active {
 	background: #2ECC71;
 	color: #FFF;
 }
 
-.container.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, #163300 0%, #1a2e05 50%, #163300 100%) !important;
+.container. .aurora-bg {
+	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, var(--bg-body) 100%) !important;
 	opacity: 0.8;
 }
 </style>

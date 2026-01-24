@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern practice banner with design system utilities -->
 <template>
-  <view class="practice-banner ds-card ds-touchable" :class="{ 'dark-mode': isDark }" @tap="onBannerTap">
+  <view class="practice-banner ds-card ds-touchable" :class="{ ' ': isDark }" @tap="onBannerTap">
     <text class="banner-text ds-text-xl ds-font-bold">刷题</text>
 
     <view class="banner-arrow ds-flex-center">
@@ -62,7 +62,7 @@ const onBannerTap = () => {
   .banner-text {
     font-size: 20px;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--bg-card);
     -webkit-font-smoothing: antialiased;
     position: relative;
     z-index: 1;
@@ -90,17 +90,17 @@ const onBannerTap = () => {
 }
 
 /* VISUAL: Dark mode styles */
-.practice-banner.dark-mode {
+.practice-banner. {
   /* 深色模式下使用更深的渐变 */
   background: linear-gradient(to right, #3a8fd9 0%, #00c4d4 100%);
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
 
   .banner-text {
-    color: #FFFFFF;
+    color: var(--bg-card);
   }
 
   .banner-arrow {
-    background: #9FE870;
+    background: var(--brand-color);
     box-shadow: 0px 2px 8px rgba(159, 232, 112, 0.3);
   }
 }

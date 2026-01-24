@@ -1,5 +1,5 @@
 <template>
-  <view class="settings-container" :class="{ 'dark-mode': isDark }">
+  <view class="settings-container" :class="{ ' ': isDark }">
     <!-- 顶部导航 - 添加设计系统工具类 -->
     <view class="top-nav">
       <text class="nav-title ds-text-display ds-font-bold">设置</text>
@@ -378,8 +378,8 @@ onShow(() => {
   // 强制同步导航栏颜色
   const isDark = uni.getStorageSync('theme_mode') === 'dark';
   uni.setNavigationBarColor({
-    frontColor: isDark ? '#ffffff' : '#000000',
-    backgroundColor: isDark ? '#163300' : '#FFFFFF',
+    frontColor: isDark ? 'var(--bg-card)' : 'var(--text-primary)',
+    backgroundColor: isDark ? 'var(--bg-body)' : 'var(--bg-card)',
     animation: { duration: 0 }
   });
 });
@@ -526,13 +526,13 @@ const renderMarkdown = (text) => {
 
   let processed = text
     // 1. 处理标题符号 # ## ### -> 移除或转换为粗体
-    .replace(/^#{1,6}\s+(.*)$/gm, '<strong style="font-weight:700;color:#1C1C1E;font-size:16px;display:block;margin:8px 0;">$1</strong>')
+    .replace(/^#{1,6}\s+(.*)$/gm, '<strong >$1</strong>')
     // 2. 处理粗体 **text** -> <strong>text</strong>
-    .replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight:700;color:#1C1C1E;">$1</strong>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong >$1</strong>')
     // 3. 处理斜体 *text* -> <em>text</em>（但不在粗体处理之后，避免冲突）
     .replace(/(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)/g, '<em style="font-style:italic;">$1</em>')
     // 4. 处理代码 `code` -> <code>code</code>
-    .replace(/`([^`]+)`/g, '<code style="background:#F5F5F7;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px;">$1</code>')
+    .replace(/`([^`]+)`/g, '<code >$1</code>')
     // 5. 处理换行
     .replace(/\n/g, '<br/>')
     // 6. 清理多余的#符号（如果还有残留）
@@ -1155,12 +1155,12 @@ const selectTheme = (type) => {
 /* 基础样式 - 像素完美版 */
 .settings-container {
   min-height: 100vh;
-  background-color: var(--bg-main, #ffffff);
+  background-color: var(--bg-body, var(--bg-card));
   padding: 32rpx;
   /* 8px网格 */
   padding-bottom: 100px;
   box-sizing: border-box;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s ease;
 }
@@ -1179,16 +1179,16 @@ const selectTheme = (type) => {
 }
 
 /* 深色模式 */
-.settings-container.dark-mode {
-  --bg-main: #163300;
-  --text-body: #E2E8F0;
-  --text-title: #ffffff;
+.settings-container. {
+  --bg-body: var(--bg-body);
+  --text-secondary: #E2E8F0;
+  --text-primary: var(--bg-card);
   --card-bg: rgba(255, 255, 255, 0.05);
   --card-border: rgba(255, 255, 255, 0.1);
-  --accent-green: #9FE870;
-  --accent-blue: #00B9FF;
+  --brand-color: var(--brand-color);
+  --action-blue: #00B9FF;
   --danger-red: #ff453a;
-  --input-bg: rgba(255, 255, 255, 0.1);
+  --bg-hover: rgba(255, 255, 255, 0.1);
   --input-placeholder: #666666;
 }
 
@@ -1205,7 +1205,7 @@ const selectTheme = (type) => {
 .nav-title {
   font-size: 32px;
   font-weight: 700;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   line-height: 1.3;
   /* 大标题紧凑 */
   letter-spacing: -0.5px;
@@ -1214,7 +1214,7 @@ const selectTheme = (type) => {
 
 /* 用户信息卡片 - 全新顶级设计（紧凑、现代、高粘性） */
 .user-card.wise-card {
-  background: linear-gradient(135deg, var(--accent-green, #37B24D) 0%, var(--accent-green-dark, #2F9E44) 100%);
+  background: linear-gradient(135deg, var(--brand-color, #37B24D) 0%, var(--brand-color-dark, #2F9E44) 100%);
   border: none;
   border-radius: 24px;
   padding: 20px;
@@ -1429,16 +1429,16 @@ const selectTheme = (type) => {
 }
 
 /* 深色模式下的用户卡片（Bitget风格） */
-.dark-mode .user-card.wise-card {
+. .user-card.wise-card {
   background: linear-gradient(135deg, #1a2840 0%, #2d4560 100%);
   box-shadow: 0 8px 24px rgba(10, 132, 255, 0.25);
 }
 
-.dark-mode .user-card.wise-card::before {
+. .user-card.wise-card::before {
   background: radial-gradient(circle, rgba(10, 132, 255, 0.2) 0%, transparent 70%);
 }
 
-.dark-mode .user-card.wise-card:hover {
+. .user-card.wise-card:hover {
   box-shadow: 0 12px 32px rgba(10, 132, 255, 0.35);
 }
 
@@ -1487,7 +1487,7 @@ const selectTheme = (type) => {
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin: 0;
   line-height: 1.5;
   /* 添加呼吸感 */
@@ -1497,7 +1497,7 @@ const selectTheme = (type) => {
 
 .online-badge {
   font-size: 12px;
-  color: var(--accent-green, #00a96d);
+  color: var(--brand-color, #00a96d);
   background-color: rgba(0, 169, 109, 0.1);
   padding: 4px 12px;
   border-radius: 12px;
@@ -1507,7 +1507,7 @@ const selectTheme = (type) => {
   display: flex;
   align-items: center;
   gap: 4px;
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   color: white;
   padding: 6px 12px;
   border-radius: 16px;
@@ -1534,7 +1534,7 @@ const selectTheme = (type) => {
 
 /* AI导师列表 */
 .tutor-list {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   overflow: hidden;
@@ -1574,7 +1574,7 @@ const selectTheme = (type) => {
   display: block;
   font-size: 16px;
   font-weight: 500;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin-bottom: 4px;
   line-height: 1.5;
   /* 添加呼吸感 */
@@ -1584,7 +1584,7 @@ const selectTheme = (type) => {
 
 .tutor-role {
   font-size: 14px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   line-height: 1.5;
   /* 添加呼吸感 */
   letter-spacing: 0.3px;
@@ -1593,8 +1593,8 @@ const selectTheme = (type) => {
 
 .chat-btn {
   background-color: transparent;
-  border: 2px solid var(--accent-green, #00a96d);
-  color: var(--accent-green, #00a96d);
+  border: 2px solid var(--brand-color, #00a96d);
+  color: var(--brand-color, #00a96d);
   border-radius: 20px;
   padding: 8px 16px;
   font-size: 14px;
@@ -1604,14 +1604,14 @@ const selectTheme = (type) => {
 }
 
 .chat-btn:hover {
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   color: white;
   transform: scale(1.05);
 }
 
 /* 设置选项列表 */
 .settings-list {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   overflow: hidden;
@@ -1644,7 +1644,7 @@ const selectTheme = (type) => {
 .setting-title {
   font-size: 16px;
   font-weight: 500;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin-bottom: 4px;
   line-height: 1.5;
   /* 添加呼吸感 */
@@ -1654,7 +1654,7 @@ const selectTheme = (type) => {
 
 .setting-desc {
   font-size: 12px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   line-height: 1.5;
   /* 添加呼吸感 */
   letter-spacing: 0.3px;
@@ -1663,7 +1663,7 @@ const selectTheme = (type) => {
 
 .cache-size {
   font-size: 14px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
 }
 
 /* 退出登录按钮 */
@@ -1709,7 +1709,7 @@ const selectTheme = (type) => {
 }
 
 .modal-content {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 20px;
   width: 90%;
@@ -1730,18 +1730,18 @@ const selectTheme = (type) => {
 .modal-title {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .close-btn {
   font-size: 24px;
-  color: var(--text-light, #9e9e9e);
+  color: var(--text-tertiary, #9e9e9e);
   cursor: pointer;
   transition: color 0.2s ease;
 }
 
 .close-btn:hover {
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .modal-body {
@@ -1753,12 +1753,12 @@ const selectTheme = (type) => {
 .empty-targets {
   text-align: center;
   padding: 40px 20px;
-  color: var(--text-light, #9e9e9e);
+  color: var(--text-tertiary, #9e9e9e);
 }
 
 .add-btn {
   margin-top: 20px;
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   color: white;
   border: none;
   border-radius: 16px;
@@ -1770,7 +1770,7 @@ const selectTheme = (type) => {
 }
 
 .add-btn:hover {
-  background-color: var(--accent-green-dark, #008055);
+  background-color: var(--brand-color-dark, #008055);
   transform: translateY(-2px);
 }
 
@@ -1784,7 +1784,7 @@ const selectTheme = (type) => {
   display: flex;
   align-items: center;
   padding: 16px;
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 12px;
   transition: all 0.2s ease;
@@ -1812,13 +1812,13 @@ const selectTheme = (type) => {
   display: block;
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin-bottom: 4px;
 }
 
 .target-location {
   font-size: 12px;
-  color: var(--text-light, #9e9e9e);
+  color: var(--text-tertiary, #9e9e9e);
 }
 
 .target-actions {
@@ -1859,7 +1859,7 @@ const selectTheme = (type) => {
 .chat-panel {
   width: 100%;
   height: 75vh;
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
   padding: 24px;
@@ -1882,7 +1882,7 @@ const selectTheme = (type) => {
   align-items: center;
   gap: 12px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 /* 动态波形指示器 */
@@ -1896,7 +1896,7 @@ const selectTheme = (type) => {
 .speaking-indicator .bar {
   width: 3px;
   height: 40%;
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   border-radius: 2px;
   animation: bounce 0.5s infinite alternate;
 }
@@ -1972,14 +1972,14 @@ const selectTheme = (type) => {
 
 .msg-bubble.assistant {
   background-color: rgba(0, 169, 109, 0.1);
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   align-self: flex-start;
   margin-right: auto;
   border-bottom-left-radius: 4px;
 }
 
 .msg-bubble.user {
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   color: white;
   align-self: flex-end;
   margin-left: auto;
@@ -2031,12 +2031,12 @@ const selectTheme = (type) => {
 .chat-input-area input,
 .chat-input-area .chat-input {
   flex: 1;
-  background-color: var(--input-bg, #f5f5f5);
+  background-color: var(--bg-hover, #f5f5f5);
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 24px;
   padding: 12px 20px;
   font-size: 14px;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   min-height: 40px;
   box-sizing: border-box;
 }
@@ -2064,7 +2064,7 @@ const selectTheme = (type) => {
   min-width: 60px;
   height: 40px;
   padding: 0 16px;
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   color: white;
   border: none;
   border-radius: 20px;
@@ -2084,26 +2084,26 @@ const selectTheme = (type) => {
   flex: 1;
   height: 48px;
   background-color: rgba(0, 169, 109, 0.1);
-  border: 1px solid var(--accent-green, #00a96d);
+  border: 1px solid var(--brand-color, #00a96d);
   border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
-  color: var(--accent-green, #00a96d);
+  color: var(--brand-color, #00a96d);
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 14px;
 }
 
 .voice-press-btn.pressing {
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   color: white;
   transform: scale(0.98);
 }
 
 .chat-input-area button {
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   color: white;
   border: none;
   border-radius: 24px;
@@ -2122,20 +2122,20 @@ const selectTheme = (type) => {
 
 .close-icon {
   font-size: 24px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 4px;
 }
 
 .close-icon:hover {
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   transform: scale(1.1);
 }
 
 /* 我的好友入口卡片 */
 .friend-entry-card {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   padding: 20px;
@@ -2167,7 +2167,7 @@ const selectTheme = (type) => {
 .entry-icon {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #9FE870, #7ED321);
+  background: linear-gradient(135deg, var(--brand-color), #7ED321);
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -2185,41 +2185,41 @@ const selectTheme = (type) => {
 .entry-title {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .entry-desc {
   font-size: 13px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   opacity: 0.8;
 }
 
 .entry-arrow {
   font-size: 32px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   opacity: 0.4;
   font-weight: 300;
 }
 
 /* 深色模式下的好友入口卡片 */
-.dark-mode .friend-entry-card {
+. .friend-entry-card {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-.dark-mode .friend-entry-card:hover {
+. .friend-entry-card:hover {
   background-color: rgba(159, 232, 112, 0.1);
 }
 
-.dark-mode .entry-title {
-  color: #ffffff;
+. .entry-title {
+  color: var(--bg-card);
 }
 
-.dark-mode .entry-desc {
+. .entry-desc {
   color: #E2E8F0;
 }
 
-.dark-mode .entry-arrow {
+. .entry-arrow {
   color: #E2E8F0;
 }
 
@@ -2269,7 +2269,7 @@ const selectTheme = (type) => {
   align-items: center;
   padding: 20px;
   margin-bottom: 16px;
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 2px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   cursor: pointer;
@@ -2278,7 +2278,7 @@ const selectTheme = (type) => {
 }
 
 .theme-option:hover {
-  border-color: var(--accent-green, #00a96d);
+  border-color: var(--brand-color, #00a96d);
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
@@ -2311,44 +2311,44 @@ const selectTheme = (type) => {
 .theme-name {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .theme-desc {
   font-size: 13px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   opacity: 0.8;
 }
 
 .theme-check {
   font-size: 24px;
-  color: var(--accent-green, #00a96d);
+  color: var(--brand-color, #00a96d);
   font-weight: 700;
   margin-left: 12px;
 }
 
 /* 深色模式下的主题选择器 */
-.dark-mode .theme-option {
+. .theme-option {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-.dark-mode .theme-option:hover {
-  border-color: var(--accent-green, #9FE870);
+. .theme-option:hover {
+  border-color: var(--brand-color, var(--brand-color));
   background-color: rgba(159, 232, 112, 0.1);
 }
 
-.dark-mode .theme-name {
-  color: #ffffff;
+. .theme-name {
+  color: var(--bg-card);
 }
 
-.dark-mode .theme-desc {
+. .theme-desc {
   color: #E2E8F0;
 }
 
 .setting-arrow {
   font-size: 20px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   opacity: 0.4;
 }
 </style>

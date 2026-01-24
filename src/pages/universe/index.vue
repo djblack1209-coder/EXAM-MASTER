@@ -480,7 +480,7 @@ export default {
 			);
 			
 			// 4. 定义颜色（白色核心 -> 青色主体 -> 透明边缘）
-			gradient.addColorStop(0, '#FFFFFF');                    // 核心：亮白色
+			gradient.addColorStop(0, 'var(--bg-card)');                    // 核心：亮白色
 			gradient.addColorStop(0.3, '#B3F0FF');                  // 过渡：浅青色
 			gradient.addColorStop(0.6, '#00E5FF');                  // 主体：霓虹青色
 			gradient.addColorStop(1, 'rgba(0, 229, 255, 0)');      // 边缘：透明（发光效果）
@@ -541,7 +541,7 @@ export default {
 			// 中心黑洞
 			this.ctx.beginPath();
 			this.ctx.arc(x, y, size * 0.3, 0, Math.PI * 2);
-			this.ctx.fillStyle = '#000000';
+			this.ctx.fillStyle = 'var(--text-primary)';
 			this.ctx.fill();
 		},
 		
@@ -758,7 +758,7 @@ export default {
 	position: relative;
 	overflow: hidden;
 	/* 深空背景：中心深蓝，边缘黑色 */
-	background: radial-gradient(circle at center, #0B1021 0%, #000000 80%);
+	background: radial-gradient(circle at center, #0B1021 0%, var(--text-primary) 80%);
 }
 
 .cosmic-bg {
@@ -767,7 +767,7 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: linear-gradient(180deg, #0B1021 0%, #000000 100%);
+	background: linear-gradient(180deg, #0B1021 0%, var(--text-primary) 100%);
 	z-index: 0;
 	transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 	
@@ -792,13 +792,13 @@ export default {
 		padding: 0 30rpx;
 		
 		.nav-back {
-			color: #FFFFFF;
+			color: var(--bg-card);
 			font-size: 40rpx;
 			font-weight: 300;
 		}
 		
 		.nav-title {
-			color: #FFFFFF;
+			color: var(--bg-card);
 			font-size: 34rpx;
 			font-weight: 600;
 			font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
@@ -852,7 +852,7 @@ export default {
 		justify-content: space-between;
 		
 		.focus-text {
-			color: #FFFFFF;
+			color: var(--bg-card);
 			font-size: 28rpx;
 			font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
 			
@@ -890,7 +890,7 @@ export default {
 		margin-bottom: 40rpx;
 		
 		.card-title {
-			color: #FFFFFF;
+			color: var(--bg-card);
 			font-size: 48rpx;
 			font-weight: 700;
 			font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;

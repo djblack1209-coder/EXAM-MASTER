@@ -1,0 +1,213 @@
+{
+  "timestamp": "2026-01-24T02:06:48.464Z",
+  "targetDir": "/Users/blackdj/Desktop/EXAM-MASTER/src/pages",
+  "dryRun": false,
+  "totalFiles": 25,
+  "modifiedFiles": 20,
+  "totalChanges": 103,
+  "results": [
+    {
+      "file": "src/pages/chat/chat.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/chat/index.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (1处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (13处)",
+        "替换硬编码颜色: #000000 -> var(--text-primary) (3处)"
+      ]
+    },
+    {
+      "file": "src/pages/mistake/index.vue",
+      "changes": [
+        "替换CSS变量: --text-main -> --text-primary (4处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (4处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (7处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/plan/create.vue",
+      "changes": [
+        "替换CSS变量: --text-main -> --text-primary (6处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/plan/index.vue",
+      "changes": [
+        "替换CSS变量: --text-main -> --text-primary (4处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (3处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/practice/do-quiz.vue",
+      "changes": [
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #F8FAFC -> var(--bg-body) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/practice/file-manager.vue",
+      "changes": [
+        "替换CSS变量: --bg-main -> --bg-body (2处)",
+        "替换CSS变量: --text-title -> --text-primary (5处)",
+        "替换CSS变量: --text-body -> --text-secondary (4处)",
+        "替换CSS变量: --accent-blue -> --action-blue (1处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (3处)",
+        "替换硬编码颜色: #000000 -> var(--text-primary) (4处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/practice/import-data.vue",
+      "changes": [
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (8处)",
+        "替换硬编码颜色: #000000 -> var(--text-primary) (2处)",
+        "移除内联样式 (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/practice/index.vue",
+      "changes": [
+        "替换CSS变量: --bg-main -> --bg-body (3处)",
+        "替换CSS变量: --text-title -> --text-primary (13处)",
+        "替换CSS变量: --text-body -> --text-secondary (15处)",
+        "替换CSS变量: --text-light -> --text-tertiary (2处)",
+        "替换CSS变量: --accent-green -> --brand-color (12处)",
+        "替换CSS变量: --accent-blue -> --action-blue (5处)",
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (1处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (14处)",
+        "替换硬编码颜色: #000000 -> var(--text-primary) (12处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/practice/pk-battle.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (4处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (5处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (12处)",
+        "替换硬编码颜色: #000000 -> var(--text-primary) (3处)",
+        "移除内联样式 (4处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/practice/rank-list.vue",
+      "changes": [
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/practice/rank.vue",
+      "changes": [
+        "替换CSS变量: --bg-main -> --bg-body (4处)",
+        "替换CSS变量: --text-main -> --text-primary (10处)",
+        "替换CSS变量: --text-light -> --text-tertiary (8处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #F8FAFC -> var(--bg-body) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/profile/index.vue",
+      "changes": [
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (7处)"
+      ]
+    },
+    {
+      "file": "src/pages/school/detail.vue",
+      "changes": [
+        "替换CSS变量: --bg-main -> --bg-body (3处)",
+        "替换CSS变量: --text-title -> --text-primary (12处)",
+        "替换CSS变量: --text-light -> --text-tertiary (6处)",
+        "替换CSS变量: --accent-green -> --brand-color (4处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #F8FAFC -> var(--bg-body) (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/school/index.vue",
+      "changes": [
+        "替换CSS变量: --bg-main -> --bg-body (4处)",
+        "替换CSS变量: --text-title -> --text-primary (19处)",
+        "替换CSS变量: --text-body -> --text-secondary (2处)",
+        "替换CSS变量: --text-light -> --text-tertiary (15处)",
+        "替换CSS变量: --accent-green -> --brand-color (21处)",
+        "替换CSS变量: --input-bg -> --bg-hover (9处)",
+        "替换CSS变量: --input-border -> --border-light (3处)",
+        "替换CSS变量: --border-card -> --border-light (1处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (4处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (3处)",
+        "替换硬编码颜色: #F8FAFC -> var(--bg-body) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/settings/index.vue",
+      "changes": [
+        "替换CSS变量: --bg-main -> --bg-body (2处)",
+        "替换CSS变量: --text-title -> --text-primary (13处)",
+        "替换CSS变量: --text-body -> --text-secondary (11处)",
+        "替换CSS变量: --text-light -> --text-tertiary (3处)",
+        "替换CSS变量: --accent-green -> --brand-color (20处)",
+        "替换CSS变量: --accent-blue -> --action-blue (1处)",
+        "替换CSS变量: --input-bg -> --bg-hover (2处)",
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (3处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (2处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (13处)",
+        "替换硬编码颜色: #000000 -> var(--text-primary) (13处)",
+        "移除内联样式 (1处)",
+        "移除内联样式 (2处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/social/friend-list.vue",
+      "changes": [
+        "替换硬编码颜色: #9FE870 -> var(--brand-color) (10处)",
+        "替换硬编码颜色: #163300 -> var(--bg-body) (13处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (17处)",
+        "替换硬编码颜色: #F8FAFC -> var(--bg-body) (1处)",
+        "移除dark-mode类名 (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/splash/index.vue",
+      "changes": [
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/study-detail/index.vue",
+      "changes": [
+        "替换硬编码颜色: #163300 -> var(--bg-body) (1处)",
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (7处)",
+        "替换硬编码颜色: #000000 -> var(--text-primary) (1处)"
+      ]
+    },
+    {
+      "file": "src/pages/universe/index.vue",
+      "changes": [
+        "替换硬编码颜色: #FFFFFF -> var(--bg-card) (5处)",
+        "替换硬编码颜色: #000000 -> var(--text-primary) (3处)"
+      ]
+    }
+  ]
+}

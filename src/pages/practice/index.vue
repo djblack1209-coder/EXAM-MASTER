@@ -1,5 +1,5 @@
 <template>
-  <view class="practice-container" :class="{ 'dark-mode': isDark }">
+  <view class="practice-container" :class="{ ' ': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav">
       <text class="nav-title">刷题中心</text>
@@ -1339,19 +1339,19 @@ export default {
 /* 基础容器 - 基于设计系统 */
 .practice-container {
   /* Wise.com 配色方案 */
-  --bg-main: #ffffff;
+  --bg-body: var(--bg-card);
   --bg-secondary: #f8f9fa;
-  --text-title: #000000;
-  --text-body: #495057;
-  --text-light: #6c757d;
-  --accent-green: #00a96d;
-  --accent-green-light: #e8f5e9;
-  --accent-green-dark: #008055;
-  --accent-blue: #007aff;
-  --accent-blue-light: #e3f2fd;
+  --text-primary: var(--text-primary);
+  --text-secondary: #495057;
+  --text-tertiary: #6c757d;
+  --brand-color: #00a96d;
+  --brand-color-light: #e8f5e9;
+  --brand-color-dark: #008055;
+  --action-blue: #007aff;
+  --action-blue-light: #e3f2fd;
   --danger-red: #ff453a;
   --danger-red-light: #ffebee;
-  --card-bg: #ffffff;
+  --card-bg: var(--bg-card);
   --card-border: #e9ecef;
   --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -1360,27 +1360,27 @@ export default {
   --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
   min-height: 100vh;
-  background-color: var(--bg-main);
+  background-color: var(--bg-body);
   padding: 20px;
   padding-bottom: 100px;
   box-sizing: border-box;
-  color: var(--text-body);
+  color: var(--text-secondary);
   font-family: var(--font-main);
   transition: background-color 0.3s ease;
 }
 
 /* 深色模式适配 - 增强对比度 */
-.practice-container.dark-mode {
-  --bg-main: #163300;
+.practice-container. {
+  --bg-body: var(--bg-body);
   --bg-secondary: #1a2e05;
-  --text-title: #ffffff;
-  --text-body: #b0b0b0;
-  --text-light: #8E8E93;
-  --accent-green: #9FE870;
-  --accent-green-light: rgba(159, 232, 112, 0.15);
-  --accent-green-dark: #7BC950;
-  --accent-blue: #0A84FF;
-  --accent-blue-light: rgba(10, 132, 255, 0.15);
+  --text-primary: var(--bg-card);
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #8E8E93;
+  --brand-color: var(--brand-color);
+  --brand-color-light: rgba(159, 232, 112, 0.15);
+  --brand-color-dark: #7BC950;
+  --action-blue: #0A84FF;
+  --action-blue-light: rgba(10, 132, 255, 0.15);
   --danger-red: #FF453A;
   --danger-red-light: rgba(255, 69, 58, 0.15);
   --card-bg: #1e3a0f;
@@ -1405,7 +1405,7 @@ export default {
 .nav-title {
   font-size: 32px;
   font-weight: 700;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   letter-spacing: -0.5px;
   /* 优化字间距 */
   line-height: 1.2;
@@ -1444,7 +1444,7 @@ export default {
 
 /* 状态卡片 */
 .status-card {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   padding: 24px;
@@ -1470,7 +1470,7 @@ export default {
 
 .status-card.empty-state:hover {
   background: linear-gradient(135deg, rgba(0, 169, 109, 0.06), rgba(0, 122, 255, 0.06));
-  border-color: var(--accent-green, #00a96d);
+  border-color: var(--brand-color, #00a96d);
 }
 
 .empty-state-content {
@@ -1509,14 +1509,14 @@ export default {
 .empty-title {
   font-size: 22px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin: 0 0 12px 0;
   letter-spacing: -0.3px;
 }
 
 .empty-desc {
   font-size: 15px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   margin: 0 0 24px 0;
   line-height: 1.6;
   max-width: 280px;
@@ -1527,7 +1527,7 @@ export default {
   align-items: center;
   gap: 10px;
   padding: 14px 28px;
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   border-radius: 24px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 169, 109, 0.25);
@@ -1548,7 +1548,7 @@ export default {
 .action-text {
   font-size: 16px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--bg-card);
   letter-spacing: 0.3px;
 }
 
@@ -1620,13 +1620,13 @@ export default {
 .status-title {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin: 0 0 8px 0;
 }
 
 .status-desc {
   font-size: 14px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   margin: 0;
 }
 
@@ -1644,7 +1644,7 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   color: white;
   border: none;
   border-radius: 20px;
@@ -1693,7 +1693,7 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background-color: var(--accent-blue, #007aff);
+  background-color: var(--action-blue, #007aff);
   color: white;
   border: none;
   border-radius: 20px;
@@ -1727,7 +1727,7 @@ export default {
 .import-card {
   display: flex;
   align-items: center;
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   padding: 20px;
@@ -1756,18 +1756,18 @@ export default {
 .import-title {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin: 0 0 4px 0;
 }
 
 .import-desc {
   font-size: 14px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   margin: 0;
 }
 
 .import-arrow {
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
 }
 
 .arrow {
@@ -1777,7 +1777,7 @@ export default {
 
 /* 功能菜单 */
 .feature-menu {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   overflow: hidden;
@@ -1816,12 +1816,12 @@ export default {
 .menu-title {
   font-size: 16px;
   font-weight: 500;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin: 0;
 }
 
 .menu-arrow {
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
 }
 
 /* 进度条 */
@@ -1841,7 +1841,7 @@ export default {
 
 .progress-fill {
   height: 100%;
-  background-color: var(--accent-green, #00a96d);
+  background-color: var(--brand-color, #00a96d);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -1849,7 +1849,7 @@ export default {
 .progress-text {
   font-size: 14px;
   font-weight: 600;
-  color: var(--accent-green, #00a96d);
+  color: var(--brand-color, #00a96d);
 }
 
 /* AI 加载遮罩 */
@@ -1868,7 +1868,7 @@ export default {
 }
 
 .loading-card {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 20px;
   padding: 40px;
@@ -1970,7 +1970,7 @@ export default {
 .loading-title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin: 0 0 12px 0;
 }
 
@@ -2009,13 +2009,13 @@ export default {
 
 .loading-step {
   font-size: 14px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   margin: 0;
 }
 
 .inspiration-text {
   font-size: 16px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   font-style: italic;
   margin: 0;
   max-width: 300px;
@@ -2052,7 +2052,7 @@ export default {
 }
 
 .speed-card {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 20px;
   padding: 40px;
@@ -2078,19 +2078,19 @@ export default {
 .speed-title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin: 0 0 12px 0;
 }
 
 .speed-desc {
   font-size: 14px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   margin: 0 0 24px 0;
   line-height: 1.6;
 }
 
 .pause-banner {
-  background: var(--card-bg, #ffffff);
+  background: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   padding: 16px;
@@ -2110,17 +2110,17 @@ export default {
 .pause-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .pause-desc {
   font-size: 12px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
 }
 
 .pause-resume-btn {
-  background: var(--accent-green, #00a96d);
-  color: #ffffff;
+  background: var(--brand-color, #00a96d);
+  color: var(--bg-card);
   border: none;
   border-radius: 16px;
   padding: 8px 14px;
@@ -2136,7 +2136,7 @@ export default {
 .pause-btn {
   background: transparent;
   border: 1px solid rgba(0, 0, 0, 0.12);
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   border-radius: 16px;
   padding: 8px 14px;
   font-size: 12px;
@@ -2144,7 +2144,7 @@ export default {
 
 /* 题库生成进度条 */
 .generation-progress-bar {
-  background: var(--card-bg, #ffffff);
+  background: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   padding: 20px;
@@ -2165,13 +2165,13 @@ export default {
 
 .progress-label {
   font-size: 16px;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   font-weight: 500;
 }
 
 .progress-text {
   font-size: 14px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
 }
 
 .progress-bar-wrapper {
@@ -2240,7 +2240,7 @@ export default {
   position: relative;
   width: 85%;
   max-width: 500px;
-  background: var(--card-bg, #ffffff);
+  background: var(--card-bg, var(--bg-card));
   border-radius: 20px;
   overflow: hidden;
   z-index: 2;
@@ -2258,7 +2258,7 @@ export default {
 .modal-title {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .modal-close {
@@ -2289,13 +2289,13 @@ export default {
 
 .info-text {
   font-size: 16px;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   font-weight: 500;
 }
 
 .info-sub {
   font-size: 14px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
 }
 
 .modal-footer {
@@ -2321,7 +2321,7 @@ export default {
 
 .modal-btn.danger {
   background: #ff453a;
-  color: #ffffff;
+  color: var(--bg-card);
 }
 
 .modal-btn::after {

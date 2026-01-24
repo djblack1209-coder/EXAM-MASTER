@@ -1,5 +1,5 @@
 <template>
-    <view :class="['study-overview-container', themeStore.themeClass, { 'dark-mode': isDark }]" @tap="navigateToDetail">
+    <view :class="['study-overview-container', themeStore.themeClass, { ' ': isDark }]" @tap="navigateToDetail">
         <!-- Hot Picks 胶囊卡片容器 -->
         <view class="hot-picks-capsule" :class="getCardClass()" :style="cardContainerStyle">
             <!-- 卡片标题区域 -->
@@ -350,7 +350,7 @@ export default {
 
 /* 背景为绿色时：白色胶囊 + 黑色文字（通过父容器控制）*/
 .theme-wise .bg-green .hot-picks-capsule {
-    background: #FFFFFF;
+    background: var(--bg-card);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
@@ -367,7 +367,7 @@ export default {
 /* ============================================
    Wise 深色模式样式
    ============================================ */
-.theme-wise.dark-mode .hot-picks-capsule {
+.theme-wise. .hot-picks-capsule {
     background: linear-gradient(135deg, #1e3a0f 0%, #0d1f05 100%);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
@@ -380,7 +380,7 @@ export default {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-.theme-bitget.dark-mode .hot-picks-capsule {
+.theme-bitget. .hot-picks-capsule {
     background: linear-gradient(135deg, #1a2840 0%, #2d4560 100%);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
@@ -400,7 +400,7 @@ export default {
 .capsule-title {
     font-size: 32rpx;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--bg-card);
     letter-spacing: 0.5rpx;
 }
 
@@ -463,7 +463,7 @@ export default {
 .bubble-value {
     font-size: 40rpx;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--bg-card);
     line-height: 1;
     margin-bottom: 8rpx;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -501,7 +501,7 @@ export default {
     background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
 }
 
-.theme-wise.dark-mode .gyro-glow {
+.theme-wise. .gyro-glow {
     background: radial-gradient(circle, rgba(159, 232, 112, 0.3) 0%, transparent 70%);
 }
 
@@ -510,7 +510,7 @@ export default {
     background: radial-gradient(circle, rgba(10, 132, 255, 0.4) 0%, transparent 70%);
 }
 
-.theme-bitget.dark-mode .gyro-glow {
+.theme-bitget. .gyro-glow {
     background: radial-gradient(circle, rgba(64, 156, 255, 0.5) 0%, transparent 70%);
 }
 

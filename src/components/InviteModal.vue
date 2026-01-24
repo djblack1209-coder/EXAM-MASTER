@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern invite modal with design system utilities -->
 <template>
-  <view class="modal-mask" :class="{ 'dark-mode': isDark }" @click.self="$emit('close')">
+  <view class="modal-mask" :class="{ ' ': isDark }" @click.self="$emit('close')">
     <view class="modal-container ds-card" @tap.stop>
       <view class="close-btn ds-touchable ds-touch-target ds-flex-center" @click="$emit('close')">
         <text class="close-icon-text">✕</text>
@@ -131,7 +131,7 @@ export default {
 
 .modal-container {
   width: 320px;
-  background: #FFFFFF;
+  background: var(--bg-card);
   border-radius: 20px;
   padding: 24px 20px;
   position: relative;
@@ -384,7 +384,7 @@ export default {
 }
 
 /* VISUAL: Dark mode styles */
-.modal-mask.dark-mode {
+.modal-mask. {
   background: rgba(0, 0, 0, 0.8);
 
   .modal-container {
@@ -397,12 +397,12 @@ export default {
   }
 
   .brand-name {
-    color: #9FE870;
+    color: var(--brand-color);
     /* Wise 绿色深色模式 */
   }
 
   .title {
-    color: var(--ds-color-text-primary, #FFFFFF);
+    color: var(--ds-color-text-primary, var(--bg-card));
   }
 
   .subtitle {
@@ -410,7 +410,7 @@ export default {
   }
 
   .ticket-container {
-    background-color: #9FE870;
+    background-color: var(--brand-color);
   }
 
   .ticket-inner {
@@ -434,7 +434,7 @@ export default {
   }
 
   .copy-btn {
-    background-color: #9FE870;
+    background-color: var(--brand-color);
     color: #1c1c1e;
 
     &:active {
@@ -447,7 +447,7 @@ export default {
   }
 
   .wechat-btn {
-    background-color: #9FE870;
+    background-color: var(--brand-color);
     box-shadow: 0 4px 12px rgba(159, 232, 112, 0.3);
 
     .btn-text {

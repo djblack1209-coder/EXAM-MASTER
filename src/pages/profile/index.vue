@@ -567,10 +567,10 @@ const handleOpenPoster = () => {
 
 /* 深色模式适配 */
 .settings-container.dark-mode {
-  background-color: #163300;
+  background-color: var(--bg-body);
 
   .nav-title {
-    color: #ffffff;
+    color: var(--bg-card);
   }
 
   .card {
@@ -579,7 +579,7 @@ const handleOpenPoster = () => {
   }
 
   .user-name {
-    color: #ffffff;
+    color: var(--bg-card);
   }
 
   .info-label {
@@ -587,11 +587,11 @@ const handleOpenPoster = () => {
   }
 
   .plan-text {
-    color: #ffffff;
+    color: var(--bg-card);
   }
 
   .section-header {
-    color: #ffffff;
+    color: var(--bg-card);
   }
 
   .tool-item {
@@ -599,11 +599,11 @@ const handleOpenPoster = () => {
   }
 
   .tool-name {
-    color: #ffffff;
+    color: var(--bg-card);
   }
 
   .friend-name {
-    color: #ffffff;
+    color: var(--bg-card);
   }
 
   .progress-num {
@@ -612,7 +612,7 @@ const handleOpenPoster = () => {
   }
 
   .inner-circle {
-    background-color: #ffffff;
+    background-color: var(--bg-card);
     /* 保持进度条内部背景 */
   }
 }

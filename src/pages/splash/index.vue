@@ -58,7 +58,7 @@ onMounted(() => {
 }
 
 .splash-container.dark-mode {
-  background-color: #163300;
+  background-color: var(--bg-body);
 }
 
 /* 1. 内容区域 */

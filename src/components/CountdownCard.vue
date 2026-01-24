@@ -1,6 +1,6 @@
 <!-- REFACTOR: Modern countdown card with design system utilities -->
 <template>
-  <view class="countdown-card ds-touchable" :class="{ 'dark-mode': isDark }" @tap="onCardTap">
+  <view class="countdown-card ds-touchable" :class="{ ' ': isDark }" @tap="onCardTap">
     <view class="card-header">
       <text class="header-text ds-text-sm">考研倒计时</text>
     </view>
@@ -108,7 +108,7 @@ const onCardTap = () => {
     .number {
       font-size: 64px;
       font-weight: 700;
-      color: #FFFFFF;
+      color: var(--bg-card);
       line-height: 1;
       -webkit-font-smoothing: antialiased;
       letter-spacing: -2px;
@@ -121,7 +121,7 @@ const onCardTap = () => {
     .unit {
       font-size: 24px;
       font-weight: 600;
-      color: #FFFFFF;
+      color: var(--bg-card);
       margin-left: 4px;
       -webkit-font-smoothing: antialiased;
       flex-shrink: 0;
@@ -142,7 +142,7 @@ const onCardTap = () => {
 }
 
 /* VISUAL: Dark mode styles */
-.countdown-card.dark-mode {
+.countdown-card. {
   /* 深色模式渐变：深绿到深青 */
   background: linear-gradient(135deg, #1a5f3a 0%, #1a4d5f 100%);
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
@@ -153,7 +153,7 @@ const onCardTap = () => {
 
   .countdown-number {
     .number {
-      color: #FFFFFF;
+      color: var(--bg-card);
     }
 
     .unit {

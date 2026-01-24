@@ -1,5 +1,5 @@
 <template>
-  <view class="region-form ds-flex ds-flex-col" :class="{ 'dark-mode': isDark }">
+  <view class="region-form ds-flex ds-flex-col" :class="{ ' ': isDark }">
     <!-- 标题 -->
     <view class="region-form__title ds-text-display ds-font-semibold">Step 2: 目标地区</view>
 
@@ -183,7 +183,7 @@ const handleNext = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--bg-card);
   border: none;
   box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
   transition: all 150ms ease-out;
@@ -205,7 +205,7 @@ const handleNext = () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .city-tag {
     &--selected {
       background: linear-gradient(135deg, #1a3a2a 0%, #2a4a3a 100%);

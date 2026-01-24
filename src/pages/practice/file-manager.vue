@@ -1,5 +1,5 @@
 <template>
-  <view class="file-manager-container" :class="{ 'dark-mode': isDark }">
+  <view class="file-manager-container" :class="{ ' ': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav">
       <view class="nav-left" @tap="goBack">
@@ -191,22 +191,22 @@ export default {
 /* 基础样式 */
 .file-manager-container {
   min-height: 100vh;
-  background-color: var(--bg-main, #ffffff);
+  background-color: var(--bg-body, var(--bg-card));
   padding: 20px;
   box-sizing: border-box;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s ease;
 }
 
 /* 深色模式 */
-.file-manager-container.dark-mode {
-  --bg-main: #163300;
-  --text-body: #b0b0b0;
-  --text-title: #ffffff;
+.file-manager-container. {
+  --bg-body: var(--bg-body);
+  --text-secondary: #b0b0b0;
+  --text-primary: var(--bg-card);
   --card-bg: #1e3a0f;
   --card-border: #2d4e1f;
-  --accent-blue: #007aff;
+  --action-blue: #007aff;
   --danger-red: #ff453a;
 }
 
@@ -227,13 +227,13 @@ export default {
 
 .back-arrow {
   font-size: 24px;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .nav-title {
   font-size: 28px;
   font-weight: 700;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
 }
 
 .nav-right {
@@ -260,7 +260,7 @@ export default {
 
 /* 文件列表 */
 .file-list {
-  background-color: var(--card-bg, #ffffff);
+  background-color: var(--card-bg, var(--bg-card));
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   overflow: hidden;
@@ -311,7 +311,7 @@ export default {
 .file-name {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   line-height: 1.4;
   word-break: break-all;
   display: block;
@@ -321,7 +321,7 @@ export default {
   display: flex;
   gap: 12px;
   font-size: 13px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
 }
 
 .file-size,
@@ -414,7 +414,7 @@ export default {
 .empty-state {
   text-align: center;
   padding: 80px 20px;
-  color: var(--text-body, #495057);
+  color: var(--text-secondary, #495057);
 }
 
 .empty-icon {
@@ -427,7 +427,7 @@ export default {
 .empty-title {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-title, #000000);
+  color: var(--text-primary, var(--text-primary));
   margin: 0 0 8px 0;
 }
 

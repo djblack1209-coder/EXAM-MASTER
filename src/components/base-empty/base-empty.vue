@@ -1,6 +1,6 @@
 <template>
   <!-- REFACTOR: Wrapped in design system container, preserved all original directives -->
-  <view class="empty-container ds-flex-center ds-p-lg" :class="{ 'dark-mode': isDark }">
+  <view class="empty-container ds-flex-center ds-p-lg" :class="{ ' ': isDark }">
     <view class="empty-content ds-flex-col ds-flex-center ds-gap-md">
       <text class="empty-icon">{{ icon || '📭' }}</text>
       <text class="empty-title ds-text-lg ds-font-semibold ds-text-primary">{{ title || '暂无数据' }}</text>
@@ -75,13 +75,13 @@ export default {
 }
 
 /* VISUAL: Dark mode icon opacity adjustment */
-.dark-mode .empty-icon {
+. .empty-icon {
   opacity: 0.5;
 }
 
 .empty-title {
   /* VISUAL: Using ds-text-lg, ds-font-semibold, ds-text-primary utilities */
-  /* Legacy: font-size: 32rpx; font-weight: 600; color: var(--text-title, #163300); */
+  /* Legacy: font-size: 32rpx; font-weight: 600; color: var(--text-primary, var(--bg-body)); */
   margin-bottom: var(--ds-spacing-sm);
   /* Legacy: margin-bottom: 10rpx; */
 }
@@ -91,7 +91,7 @@ export default {
 
 .empty-desc {
   /* VISUAL: Using ds-text-base, ds-text-secondary utilities */
-  /* Legacy: font-size: 28rpx; color: var(--text-light, #767676); */
+  /* Legacy: font-size: 28rpx; color: var(--text-tertiary, #767676); */
   line-height: var(--ds-line-height-relaxed);
   /* Legacy: line-height: 1.6; */
   max-width: 500rpx;
@@ -107,8 +107,8 @@ export default {
   padding: var(--ds-spacing-sm) var(--ds-spacing-xl);
   /* Legacy: padding: 20rpx 60rpx; */
   background: var(--ds-color-accent-green) !important;
-  /* Legacy: background: var(--accent-green, #9FE870); */
-  color: #163300 !important;
+  /* Legacy: background: var(--brand-color, var(--brand-color)); */
+  color: var(--bg-body) !important;
   border-radius: var(--ds-radius-full) !important;
   /* Legacy: border-radius: 50rpx; */
   font-size: var(--ds-font-size-base) !important;

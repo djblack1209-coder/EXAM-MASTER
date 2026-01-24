@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view :class="['container', { ' ': isDark }]">
 		<!-- 自定义导航栏 -->
 		<view class="custom-navbar">
 			<!-- 状态栏占位 -->
@@ -671,13 +671,13 @@ export default {
 /* Wise 风格容器 */
 .container {
 	min-height: 100vh;
-	background-color: #F8FAFC;
+	background-color: var(--bg-body);
 	display: flex;
 	flex-direction: column;
 }
 
-.container.dark-mode {
-	background-color: #163300;
+.container. {
+	background-color: var(--bg-body);
 }
 
 /* 自定义导航栏 */
@@ -686,12 +686,12 @@ export default {
 	top: 0;
 	left: 0;
 	right: 0;
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	z-index: 999;
 	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
-.dark-mode .custom-navbar {
+. .custom-navbar {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
 }
@@ -718,13 +718,13 @@ export default {
 
 .back-icon {
 	font-size: 48rpx;
-	color: #163300;
+	color: var(--bg-body);
 	font-weight: 300;
 	line-height: 1;
 }
 
-.dark-mode .back-icon {
-	color: #9FE870;
+. .back-icon {
+	color: var(--brand-color);
 }
 
 .navbar-center {
@@ -737,11 +737,11 @@ export default {
 .navbar-title {
 	font-size: 36rpx;
 	font-weight: 600;
-	color: #163300;
+	color: var(--bg-body);
 }
 
-.dark-mode .navbar-title {
-	color: #FFFFFF;
+. .navbar-title {
+	color: var(--bg-card);
 }
 
 .navbar-right {
@@ -754,12 +754,12 @@ export default {
 	align-items: center;
 	gap: 12rpx;
 	padding: 24rpx 32rpx;
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	border-bottom: 1rpx solid #EFEFEF;
 	margin-top: calc(var(--status-bar-height) + 88rpx);
 }
 
-.dark-mode .search-bar {
+. .search-bar {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom-color: rgba(255, 255, 255, 0.1);
 }
@@ -774,7 +774,7 @@ export default {
 	position: relative;
 }
 
-.dark-mode .search-input-wrapper {
+. .search-input-wrapper {
 	background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -787,12 +787,12 @@ export default {
 .search-input {
 	flex: 1;
 	font-size: 28rpx;
-	color: #163300;
+	color: var(--bg-body);
 	background-color: transparent;
 }
 
-.dark-mode .search-input {
-	color: #FFFFFF;
+. .search-input {
+	color: var(--bg-card);
 }
 
 .search-input::placeholder {
@@ -806,8 +806,8 @@ export default {
 }
 
 .search-btn {
-	background: linear-gradient(135deg, #9FE870, #7ED321);
-	color: #163300;
+	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	color: var(--bg-body);
 	border-radius: 48rpx;
 	padding: 16rpx 32rpx;
 	font-size: 26rpx;
@@ -830,11 +830,11 @@ export default {
 /* Tabs 切换栏 */
 .tabs-bar {
 	display: flex;
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	border-bottom: 1rpx solid #EFEFEF;
 }
 
-.dark-mode .tabs-bar {
+. .tabs-bar {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-bottom-color: rgba(255, 255, 255, 0.1);
 }
@@ -856,12 +856,12 @@ export default {
 }
 
 .tab-item.active .tab-text {
-	color: #163300;
+	color: var(--bg-body);
 	font-weight: 600;
 }
 
-.dark-mode .tab-item.active .tab-text {
-	color: #9FE870;
+. .tab-item.active .tab-text {
+	color: var(--brand-color);
 }
 
 .tab-indicator {
@@ -871,7 +871,7 @@ export default {
 	transform: translateX(-50%);
 	width: 60rpx;
 	height: 6rpx;
-	background: linear-gradient(135deg, #9FE870, #7ED321);
+	background: linear-gradient(135deg, var(--brand-color), #7ED321);
 	border-radius: 3rpx;
 }
 
@@ -880,7 +880,7 @@ export default {
 	top: 20rpx;
 	right: 30%;
 	background-color: #FF3B30;
-	color: #FFFFFF;
+	color: var(--bg-card);
 	font-size: 20rpx;
 	padding: 2rpx 8rpx;
 	border-radius: 20rpx;
@@ -908,7 +908,7 @@ export default {
 	width: 80rpx;
 	height: 80rpx;
 	border: 6rpx solid rgba(159, 232, 112, 0.2);
-	border-top-color: #9FE870;
+	border-top-color: var(--brand-color);
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
 }
@@ -942,12 +942,12 @@ export default {
 .empty-title {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: #163300;
+	color: var(--bg-body);
 	margin-bottom: 12rpx;
 }
 
-.dark-mode .empty-title {
-	color: #FFFFFF;
+. .empty-title {
+	color: var(--bg-card);
 }
 
 .empty-desc {
@@ -957,8 +957,8 @@ export default {
 }
 
 .empty-btn {
-	background: linear-gradient(135deg, #9FE870, #7ED321);
-	color: #163300;
+	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	color: var(--bg-body);
 	border-radius: 48rpx;
 	padding: 24rpx 64rpx;
 	font-size: 28rpx;
@@ -979,7 +979,7 @@ export default {
 }
 
 .friend-card {
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	border-radius: 24rpx;
 	padding: 32rpx;
 	display: flex;
@@ -989,7 +989,7 @@ export default {
 	transition: all 0.3s;
 }
 
-.dark-mode .friend-card {
+. .friend-card {
 	background-color: rgba(255, 255, 255, 0.05);
 	border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
@@ -1020,10 +1020,10 @@ export default {
 	height: 20rpx;
 	background-color: #34C759;
 	border-radius: 50%;
-	border: 3rpx solid #FFFFFF;
+	border: 3rpx solid var(--bg-card);
 }
 
-.dark-mode .online-indicator {
+. .online-indicator {
 	border-color: rgba(255, 255, 255, 0.05);
 }
 
@@ -1044,16 +1044,16 @@ export default {
 .nickname {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: #163300;
+	color: var(--bg-body);
 }
 
-.dark-mode .nickname {
-	color: #FFFFFF;
+. .nickname {
+	color: var(--bg-card);
 }
 
 .level-badge {
 	background-color: rgba(159, 232, 112, 0.2);
-	color: #9FE870;
+	color: var(--brand-color);
 	font-size: 20rpx;
 	padding: 4rpx 12rpx;
 	border-radius: 8rpx;
@@ -1075,14 +1075,14 @@ export default {
 	border-left: 1rpx solid #EFEFEF;
 }
 
-.dark-mode .score-section {
+. .score-section {
 	border-left-color: rgba(255, 255, 255, 0.1);
 }
 
 .score-value {
 	font-size: 36rpx;
 	font-weight: 700;
-	color: #9FE870;
+	color: var(--brand-color);
 }
 
 .score-label {
@@ -1093,7 +1093,7 @@ export default {
 /* PK 挑战按钮 */
 .pk-btn {
 	background: linear-gradient(135deg, #FF6B35, #FF8C42);
-	color: #FFFFFF;
+	color: var(--bg-card);
 	border-radius: 48rpx;
 	padding: 16rpx 24rpx;
 	font-size: 24rpx;
@@ -1125,18 +1125,18 @@ export default {
 .pk-text {
 	font-size: 24rpx;
 	font-weight: 600;
-	color: #FFFFFF;
+	color: var(--bg-card);
 }
 
 /* 底部统计 */
 .bottom-stats {
 	padding: 24rpx 32rpx;
 	text-align: center;
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	border-top: 1rpx solid #EFEFEF;
 }
 
-.dark-mode .bottom-stats {
+. .bottom-stats {
 	background-color: rgba(255, 255, 255, 0.05);
 	border-top-color: rgba(255, 255, 255, 0.1);
 }
@@ -1154,7 +1154,7 @@ export default {
 }
 
 .user-card {
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	border-radius: 24rpx;
 	padding: 32rpx;
 	display: flex;
@@ -1163,7 +1163,7 @@ export default {
 	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
 }
 
-.dark-mode .user-card {
+. .user-card {
 	background-color: rgba(255, 255, 255, 0.05);
 	border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
@@ -1185,11 +1185,11 @@ export default {
 .user-card .nickname {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: #163300;
+	color: var(--bg-body);
 }
 
-.dark-mode .user-card .nickname {
-	color: #FFFFFF;
+. .user-card .nickname {
+	color: var(--bg-card);
 }
 
 .user-card .score-text {
@@ -1198,8 +1198,8 @@ export default {
 }
 
 .add-friend-btn {
-	background: linear-gradient(135deg, #9FE870, #7ED321);
-	color: #163300;
+	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	color: var(--bg-body);
 	border-radius: 48rpx;
 	padding: 16rpx 32rpx;
 	font-size: 24rpx;
@@ -1227,7 +1227,7 @@ export default {
 }
 
 .request-card {
-	background-color: #FFFFFF;
+	background-color: var(--bg-card);
 	border-radius: 24rpx;
 	padding: 32rpx;
 	display: flex;
@@ -1236,7 +1236,7 @@ export default {
 	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
 }
 
-.dark-mode .request-card {
+. .request-card {
 	background-color: rgba(255, 255, 255, 0.05);
 	border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
@@ -1259,11 +1259,11 @@ export default {
 .request-card .nickname {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: #163300;
+	color: var(--bg-body);
 }
 
-.dark-mode .request-card .nickname {
-	color: #FFFFFF;
+. .request-card .nickname {
+	color: var(--bg-card);
 }
 
 .request-card .message {
@@ -1285,8 +1285,8 @@ export default {
 }
 
 .accept-btn {
-	background: linear-gradient(135deg, #9FE870, #7ED321);
-	color: #163300;
+	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	color: var(--bg-body);
 	border-radius: 48rpx;
 	padding: 12rpx 28rpx;
 	font-size: 24rpx;

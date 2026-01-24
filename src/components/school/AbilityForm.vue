@@ -1,5 +1,5 @@
 <template>
-  <view class="ability-form ds-flex ds-flex-col" :class="{ 'dark-mode': isDark }">
+  <view class="ability-form ds-flex ds-flex-col" :class="{ ' ': isDark }">
     <!-- 标题 -->
     <view class="ability-form__title ds-text-display ds-font-semibold">Step 3: 能力评估</view>
 
@@ -177,7 +177,7 @@ const handleNext = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--bg-card);
   border: none;
   box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
   transition: all 150ms ease-out;
@@ -193,7 +193,7 @@ const handleNext = () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .next-button {
     color: #1c1c1e;
     box-shadow: 0 8rpx 24rpx rgba(159, 232, 112, 0.3);

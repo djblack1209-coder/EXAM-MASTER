@@ -1,5 +1,5 @@
 <template>
-  <view class="user-profile-card ds-card ds-touchable" :class="{ 'dark-mode': isDark }" @click="handleCardClick">
+  <view class="user-profile-card ds-card ds-touchable" :class="{ ' ': isDark }" @click="handleCardClick">
     <view class="profile-content ds-flex ds-flex-between">
       <!-- 左侧：用户头像 -->
       <image v-if="isLogin && userInfo?.avatarUrl" class="avatar" :src="userInfo.avatarUrl" mode="aspectFill" />
@@ -129,7 +129,7 @@ const handleCardClick = async () => {
 }
 
 /* 深色模式 */
-.dark-mode {
+. {
   .user-profile-card {
     box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
   }
