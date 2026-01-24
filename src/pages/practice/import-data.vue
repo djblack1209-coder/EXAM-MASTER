@@ -501,21 +501,52 @@ export default {
 
       } catch (e) {
         console.error("生成报错:", e);
-        // 超时重试逻辑 - 修复：使用箭头函数确保 this 绑定
+        
+        // ⭐ 增强错误处理：详细错误分类
+        let errorMessage = '生成失败';
+        let canRetry = false;
+        
         if (e.message && (e.message.includes('timeout') || e.message.includes('超时'))) {
+          errorMessage = '网络超时，正在重试...';
+          canRetry = true;
           // 静默重试，不打扰用户
           setTimeout(() => {
             if (this.isLooping) {
               this.generateNextBatch();
             }
           }, 2000);
+        } else if (e.message && e.message.includes('401')) {
+          errorMessage = '未登录，请先登录后重试';
+          canRetry = false;
+          this.isLooping = false;
+          this.isPaused = true;
+          this.updateUploadRecordStatus('failed');
+          this.showMask = false;
+          uni.showToast({ title: errorMessage, icon: 'none', duration: 3000 });
+        } else if (e.message && (e.message.includes('network') || e.message.includes('网络'))) {
+          errorMessage = '网络不稳定，请稍后重试';
+          canRetry = true;
+          this.isLooping = false;
+          this.isPaused = true;
+          this.updateUploadRecordStatus('failed');
+          this.showMask = false;
+          uni.showToast({ title: errorMessage, icon: 'none', duration: 3000 });
         } else {
-             this.isLooping = false; // 停止循环
-             this.isPaused = true;
-             this.updateUploadRecordStatus('failed');
-             this.showMask = false;  // 确保遮罩关闭
-             uni.showToast({ title: '网络中断，生成已暂停', icon: 'none' });
+          errorMessage = '生成失败，请重试';
+          canRetry = true;
+          this.isLooping = false;
+          this.isPaused = true;
+          this.updateUploadRecordStatus('failed');
+          this.showMask = false;
+          uni.showToast({ title: errorMessage, icon: 'none', duration: 3000 });
         }
+        
+        // 保存错误信息供重试使用
+        this.errorInfo = {
+          message: errorMessage,
+          detail: e.message || '未知错误',
+          canRetry: canRetry
+        };
       } finally {
         this.isRequestInFlight = false; // ⚡️ 解锁：无论成功失败，请求结束
       }
