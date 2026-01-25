@@ -25,8 +25,17 @@
 			</view>
 		</view>
 
-		<!-- 主内容区域 -->
-		<scroll-view scroll-y class="main-content" :style="{ height: scrollHeight + 'px' }" @scroll="handleScroll">
+		<!-- 主内容区域 - 添加下拉刷新 -->
+		<scroll-view 
+			scroll-y 
+			class="main-content" 
+			:style="{ height: scrollHeight + 'px' }" 
+			@scroll="handleScroll"
+			refresher-enabled
+			:refresher-triggered="isRefreshing"
+			@refresherrefresh="onPullDownRefresh"
+			@refresherrestore="onRefreshRestore"
+		>
 			<!-- 欢迎横幅 - 带装饰气泡 -->
 			<view :class="['welcome-banner', isDark ? 'banner-dark' : 'banner-light']">
 				<!-- 深色模式装饰气泡 -->
@@ -174,11 +183,14 @@
 			<todo-list :todos="todos" :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
 
 			<!-- 每日金句 -->
-			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;">
-				<text class="mode-text">
-					<text class="mode-highlight">💡 每日金句：</text>
-					{{ dailyQuote }}
-				</text>
+			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;" @tap="refreshDailyQuote">
+				<view class="quote-header">
+					<text class="mode-highlight">💡 每日金句</text>
+					<view :class="['refresh-btn', isRefreshingQuote && 'rotating']">
+						<text class="refresh-icon">🔄</text>
+					</view>
+				</view>
+				<text class="mode-text">{{ dailyQuote }}</text>
 			</view>
 
 			<!-- 底部间距 -->
@@ -194,9 +206,9 @@
 </template>
 
 <script>
-import CustomTabbar from '../../components/custom-tabbar/custom-tabbar.vue';
-import BaseSkeleton from '../../components/base-skeleton/base-skeleton.vue';
-import TodoList from '../../components/TodoList.vue';
+import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
+import BaseSkeleton from '../../components/base/base-skeleton/base-skeleton.vue';
+import TodoList from '../../components/common/TodoList.vue';
 import { getGreetingTime } from '../../utils/core/date';
 import { useStudyStore } from '../../stores/modules/study';
 import { useTodoStore } from '../../stores/modules/todo';
@@ -225,6 +237,9 @@ export default {
 			
 			// 成就徽章数量（从本地存储获取）
 			achievementCount: 0,
+			
+			// 下拉刷新状态
+			isRefreshing: false,
 
 			// 知识点数据
 			knowledgePoints: [
@@ -245,7 +260,20 @@ export default {
 			],
 
 			// 每日金句
-			dailyQuote: '成功不是终点，失败也不是终结，唯有勇气才是永恒。'
+			dailyQuote: '成功不是终点，失败也不是终结，唯有勇气才是永恒。',
+			isRefreshingQuote: false,
+			
+			// 备用金句库
+			quoteLibrary: [
+				'成功不是终点，失败也不是终结，唯有勇气才是永恒。',
+				'学习是一场马拉松，不是短跑。坚持到底，你就是赢家。',
+				'每一次努力都是在为未来的自己铺路。',
+				'困难只是暂时的，放弃才是永久的。',
+				'今天的汗水，是明天成功的基石。',
+				'不要害怕失败，害怕的应该是从未尝试。',
+				'知识改变命运，学习成就未来。',
+				'每一个不曾起舞的日子，都是对生命的辜负。'
+			]
 		};
 	},
 
@@ -368,6 +396,60 @@ export default {
 			this.loadAchievements();
 			this.loadKnowledgePoints();
 			this.loadRecentActivities();
+		},
+		
+		// 下拉刷新处理
+		async onPullDownRefresh() {
+			console.log('[Index] 下拉刷新触发');
+			this.isRefreshing = true;
+			
+			try {
+				// 震动反馈
+				try {
+					if (typeof uni.vibrateShort === 'function') {
+						uni.vibrateShort();
+					}
+				} catch (e) {}
+				
+				// 刷新所有数据
+				await Promise.all([
+					this.loadKnowledgePoints(),
+					this.loadRecentActivities()
+				]);
+				
+				// 刷新Store数据
+				this.studyStore.restoreProgress();
+				this.todoStore.initTasks();
+				this.userStore.restoreUserInfo();
+				this.loadAchievements();
+				
+				console.log('[Index] 数据刷新完成');
+				
+				// 显示成功提示
+				uni.showToast({
+					title: '刷新成功',
+					icon: 'success',
+					duration: 1500
+				});
+			} catch (error) {
+				console.error('[Index] 刷新失败:', error);
+				uni.showToast({
+					title: '刷新失败',
+					icon: 'none',
+					duration: 1500
+				});
+			} finally {
+				// 延迟关闭刷新状态，确保动画完整
+				setTimeout(() => {
+					this.isRefreshing = false;
+				}, 500);
+			}
+		},
+		
+		// 刷新恢复处理
+		onRefreshRestore() {
+			console.log('[Index] 刷新动画恢复');
+			this.isRefreshing = false;
 		},
 		
 		loadAchievements() {
@@ -656,6 +738,79 @@ export default {
 		// 滚动监听
 		handleScroll(e) {
 			this.scrollY = e.detail.scrollTop;
+		},
+		
+		// 刷新每日金句
+		async refreshDailyQuote() {
+			if (this.isRefreshingQuote) return;
+			
+			this.isRefreshingQuote = true;
+			
+			try {
+				// 震动反馈
+				try {
+					if (typeof uni.vibrateShort === 'function') {
+						uni.vibrateShort();
+					}
+				} catch (e) {}
+				
+				// 尝试使用AI生成金句
+				console.log('[Index] 请求AI生成每日金句...');
+				
+				const response = await lafService.proxyAI('chat', {
+					content: '请生成一句简短的励志金句，适合考研学生，不超过30个字，不要引号。'
+				});
+				
+				console.log('[Index] AI响应:', response);
+				
+				if (response && response.success && response.data) {
+					// 提取AI生成的内容
+					let newQuote = '';
+					
+					if (typeof response.data === 'string') {
+						newQuote = response.data.trim();
+					} else if (response.data.content) {
+						newQuote = response.data.content.trim();
+					} else if (response.data.text) {
+						newQuote = response.data.text.trim();
+					}
+					
+					// 清理引号
+					newQuote = newQuote.replace(/^["']|["']$/g, '');
+					
+					if (newQuote && newQuote.length > 0 && newQuote.length <= 50) {
+						this.dailyQuote = newQuote;
+						console.log('[Index] ✅ AI金句生成成功:', newQuote);
+						
+						uni.showToast({
+							title: '金句已刷新',
+							icon: 'success',
+							duration: 1500
+						});
+					} else {
+						throw new Error('AI返回内容格式不正确');
+					}
+				} else {
+					throw new Error('AI响应失败');
+				}
+				
+			} catch (error) {
+				console.error('[Index] AI生成金句失败，使用备用金句:', error);
+				
+				// 降级：从备用金句库随机选择
+				const randomIndex = Math.floor(Math.random() * this.quoteLibrary.length);
+				this.dailyQuote = this.quoteLibrary[randomIndex];
+				
+				uni.showToast({
+					title: '金句已刷新',
+					icon: 'success',
+					duration: 1500
+				});
+			} finally {
+				setTimeout(() => {
+					this.isRefreshingQuote = false;
+				}, 1000);
+			}
 		}
 	}
 };
@@ -1465,23 +1620,67 @@ export default {
 	font-weight: 500;
 }
 
-/* ==================== 模式说明 ==================== */
+/* ==================== 每日金句 ==================== */
 .mode-description {
 	padding: 48rpx;
 	border-radius: 32rpx;
-	text-align: center;
 	border: 1rpx solid var(--border);
 	margin-bottom: 32rpx;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mode-description:active {
+	transform: scale(0.98);
 }
 
 .desc-light {
 	background: rgba(243, 244, 246, 0.5);
 }
 
+.quote-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16rpx;
+	margin-bottom: 24rpx;
+}
+
+.refresh-btn {
+	width: 56rpx;
+	height: 56rpx;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--primary);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.refresh-btn:active {
+	transform: scale(0.9);
+}
+
+.refresh-icon {
+	font-size: 32rpx;
+	display: inline-block;
+	transition: transform 0.3s ease;
+}
+
+.rotating .refresh-icon {
+	animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
 .mode-text {
 	font-size: 32rpx;
 	color: var(--muted-foreground);
 	line-height: 1.8;
+	text-align: center;
 }
 
 .mode-highlight {

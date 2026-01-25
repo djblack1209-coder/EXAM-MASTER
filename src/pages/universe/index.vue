@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import CustomTabbar from '../../components/custom-tabbar/custom-tabbar.vue';
+import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
 
 export default {
 	components: {

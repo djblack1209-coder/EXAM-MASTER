@@ -184,8 +184,8 @@
 </template>
 
 <script>
-import CustomTabbar from '../../components/custom-tabbar/custom-tabbar.vue';
-import BaseSkeleton from '../../components/base-skeleton/base-skeleton.vue';
+import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
+import BaseSkeleton from '../../components/base/base-skeleton/base-skeleton.vue';
 import { getGreetingTime } from '../../utils/core/date';
 import { useTodoStore } from '../../stores';
 import { lafService } from '../../services/lafService.js';

@@ -236,7 +236,7 @@
 </template>
 
 <script>
-import CustomTabbar from '../../components/custom-tabbar/custom-tabbar.vue'
+import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue'
 import { storageService } from '../../services/storageService.js'
 import { lafService } from '../../services/lafService.js'
 import { getApiKey } from '../../../common/config.js'

@@ -99,7 +99,7 @@
 <script>
 import { lafService } from '../../services/lafService.js'
 import { storageService } from '../../services/storageService.js'
-import BaseLoading from '../../components/base-loading/base-loading.vue'
+import BaseLoading from '../../components/base/base-loading/base-loading.vue'
 
 export default {
 	components: {

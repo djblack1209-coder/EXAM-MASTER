@@ -1,0 +1,202 @@
+{
+  "cycle_id": "v5.8-iter1",
+  "audit": {
+    "status": "PASSED",
+    "checked_tasks": ["TASK-001", "TASK-002", "TASK-003", "TASK-004"],
+    "evidence_quality": {
+      "TASK-001": {
+        "valid": true,
+        "source_found": "market-intel.md 痛点2和痛点3 + 案例4",
+        "specificity": "高 (包含真实用户反馈和官方API文档)"
+      },
+      "TASK-002": {
+        "valid": true,
+        "source_found": "market-intel.md 案例3",
+        "specificity": "高 (包含竞品最佳实践)"
+      },
+      "TASK-003": {
+        "valid": true,
+        "source_found": "market-intel.md 痛点1 + 案例1",
+        "specificity": "高 (包含CSDN博客真实痛点)"
+      },
+      "TASK-004": {
+        "valid": true,
+        "source_found": "market-intel.md 案例1",
+        "specificity": "中 (基于用户体验保障原则)"
+      }
+    },
+    "rejection_reason": null,
+    "audit_summary": "所有4个任务的evidence字段均合格，包含具体的竞品名称、用户反馈来源、技术文档引用。证据链完整，可以追溯到market-intel.md中的对应内容。"
+  },
+  "impact_analysis": {
+    "affected_files": [
+      "src/pages/practice/import-data.vue"
+    ],
+    "affected_components": [
+      "EnhancedProgress"
+    ],
+    "affected_services": [
+      "lafService"
+    ],
+    "current_file_analysis": {
+      "file": "src/pages/practice/import-data.vue",
+      "total_lines": 1247,
+      "key_methods": [
+        "handleUpload (line 238)",
+        "generateNextBatch (line 363)",
+        "saveQuestions (line 548)",
+        "finishGeneration (line 677)",
+        "updateRealProgress (line 1178)"
+      ],
+      "existing_progress_tracking": {
+        "has_progress_bar": true,
+        "component": "EnhancedProgress",
+        "current_implementation": "realProgress (0-100), estimatedTimeLeft, importSpeed",
+        "status": "已有基础实现，需要增强"
+      },
+      "existing_error_handling": {
+        "has_error_card": true,
+        "has_retry_button": true,
+        "status": "已有基础实现，需要完善"
+      },
+      "upload_mechanism": {
+        "method": "handleUpload",
+        "uses_uni_uploadFile": false,
+        "current_approach": "直接读取文件内容，不涉及网络上传",
+        "note": "当前是本地文件解析，不是真正的上传。需要区分'文件解析'和'题目生成'两个阶段"
+      }
+    }
+  },
+  "design_decisions": [
+    {
+      "decision": "区分'文件解析'和'题目生成'两个阶段的进度显示",
+      "rationale": "基于代码分析，当前handleUpload只是读取文件内容，真正的'上传'是在generateNextBatch中调用AI生成题目。用户痛点'上传卡死'实际指的是'AI生成卡死'。因此需要在两个阶段都提供清晰的进度反馈。",
+      "implementation": "阶段1（文件解析）：显示'正在解析文件...'，使用文件大小计算进度。阶段2（AI生成）：显示'正在生成第X题...'，使用已生成题目数计算进度。",
+      "evidence_ref": "TASK-001, TASK-002"
+    },
+    {
+      "decision": "增强EnhancedProgress组件的实时更新",
+      "rationale": "当前realProgress已经存在，但更新频率不够高。根据uni-app官方文档（案例4），onProgressUpdate可以提供实时的进度回调。虽然当前不是真正的文件上传，但可以在generateNextBatch中模拟类似的实时更新机制。",
+      "implementation": "在generateNextBatch的每个批次开始时，立即更新realProgress和importStatusText。在AI请求进行中时，使用定时器模拟进度增长（从当前批次的0%到90%），避免用户感觉卡死。",
+      "evidence_ref": "TASK-001"
+    },
+    {
+      "decision": "优化状态提示文案的时机和内容",
+      "rationale": "当前importStatusText已经有基础实现，但文案不够详细。根据案例3（2026在线题库小程序）的最佳实践，需要在每个关键节点提供清晰的状态提示。",
+      "implementation": "新增状态：'parsing'（解析文件）、'uploading'（上传中，虽然当前不涉及）、'importing'（生成题目）、'success'（成功）、'error'（失败）。每个状态对应不同的emoji和文案。",
+      "evidence_ref": "TASK-002"
+    },
+    {
+      "decision": "完善错误处理的分类和重试逻辑",
+      "rationale": "当前errorInfo已经存在，但错误分类不够细致。根据痛点1（导入试题经常失败），需要区分'文件格式错误'、'网络超时'、'AI解析失败'等不同错误类型，并提供针对性的提示和重试策略。",
+      "implementation": "在generateNextBatch的catch块中，根据error.message进行分类：1) 包含'timeout'→网络超时，自动重试；2) 包含'401'→未登录，提示登录；3) 包含'JSON'→AI解析失败，提示重试；4) 其他→通用错误，提示重试。",
+      "evidence_ref": "TASK-003"
+    },
+    {
+      "decision": "在生成过程中禁用返回按钮",
+      "rationale": "当前canGoBack变量已存在但未使用。根据案例1（试题通）的'简化流程、提升体验'原则，需要防止用户在生成过程中误操作返回，导致任务中断。",
+      "implementation": "在startAI时设置canGoBack=false，在finishGeneration/cancelGeneration时恢复canGoBack=true。在handleBack方法中检查canGoBack，如果为false则显示确认弹窗。",
+      "evidence_ref": "TASK-004"
+    }
+  ],
+  "refactor_plan": {
+    "files_to_modify": [
+      "src/pages/practice/import-data.vue"
+    ],
+    "files_to_create": [],
+    "estimated_loc": 150,
+    "modification_details": [
+      {
+        "file": "src/pages/practice/import-data.vue",
+        "changes": [
+          {
+            "location": "data() - line 60-120",
+            "change": "新增变量：progressSimulationTimer（进度模拟定时器）、currentBatchProgress（当前批次进度0-100）",
+            "reason": "支持批次内的实时进度模拟"
+          },
+          {
+            "location": "computed.importStatusText - line 140-160",
+            "change": "优化文案：增加更多emoji，细化状态描述",
+            "reason": "提升用户体验，符合TASK-002要求"
+          },
+          {
+            "location": "computed.importProgressText - line 162-180",
+            "change": "优化进度显示：显示'正在生成第X题（共Y题）'",
+            "reason": "提供更清晰的进度反馈"
+          },
+          {
+            "location": "computed.importDetailText - line 182-210",
+            "change": "优化详情显示：优先显示导入速度，增加重复题目提示",
+            "reason": "提供更丰富的统计信息"
+          },
+          {
+            "location": "methods.handleUpload - line 238-310",
+            "change": "新增：文件解析阶段的进度反馈（importStatus='parsing'）",
+            "reason": "区分文件解析和题目生成两个阶段"
+          },
+          {
+            "location": "methods.generateNextBatch - line 363-520",
+            "change": "新增：批次内进度模拟（startBatchProgressSimulation），优化错误分类（网络超时/未登录/解析失败）",
+            "reason": "提供实时进度反馈，完善错误处理"
+          },
+          {
+            "location": "methods.handleBack - line 850-870",
+            "change": "新增：检查canGoBack，如果正在生成则显示确认弹窗",
+            "reason": "防止误操作中断任务"
+          },
+          {
+            "location": "methods - 新增方法",
+            "change": "新增：startBatchProgressSimulation()、stopBatchProgressSimulation()、formatFileSize()、formatTimeLeft()",
+            "reason": "支持批次内进度模拟和格式化显示"
+          }
+        ]
+      }
+    ]
+  },
+  "technical_notes": [
+    "⚠️ 重要发现：当前代码中的'上传'实际是'AI生成题目'，不是真正的文件上传。因此TASK-001的'上传进度条'需要理解为'生成进度条'。",
+    "✅ 优势：EnhancedProgress组件已存在，realProgress、estimatedTimeLeft、importSpeed等变量已实现，只需增强更新逻辑。",
+    "✅ 优势：errorInfo和重试机制已存在，只需完善错误分类和提示文案。",
+    "⚠️ 注意：当前代码已经有v5.2和v5.3的优化痕迹，说明之前已经做过类似的优化。本次迭代需要在现有基础上进一步增强，避免重复劳动。",
+    "📊 性能考虑：批次内进度模拟使用setInterval，需要在批次完成或取消时及时清理定时器，避免内存泄漏。"
+  ],
+  "risk_assessment": {
+    "low_risk": [
+      "优化状态提示文案（纯文本修改）",
+      "增强进度显示格式（计算逻辑优化）"
+    ],
+    "medium_risk": [
+      "批次内进度模拟（需要新增定时器逻辑）",
+      "错误分类优化（需要修改catch块逻辑）"
+    ],
+    "high_risk": [
+      "禁用返回按钮（可能影响用户体验，需要谨慎处理）"
+    ]
+  },
+  "testing_strategy": {
+    "unit_tests": [
+      "测试formatFileSize：输入1024字节，输出'1.00 KB'",
+      "测试formatTimeLeft：输入90秒，输出'1 分 30 秒'",
+      "测试错误分类：模拟不同错误类型，验证提示文案"
+    ],
+    "integration_tests": [
+      "测试文件解析阶段：选择文件后，验证importStatus='parsing'",
+      "测试题目生成阶段：开始生成后，验证importStatus='importing'",
+      "测试进度更新：生成过程中，验证realProgress从0增长到100",
+      "测试错误处理：模拟网络超时，验证自动重试逻辑",
+      "测试返回拦截：生成过程中点击返回，验证确认弹窗"
+    ],
+    "manual_tests": [
+      "测试用户体验：观察进度条是否流畅，文案是否清晰",
+      "测试边界情况：文件过大、网络断开、AI返回异常数据",
+      "测试重复题目：导入相同文件两次，验证去重逻辑和提示"
+    ]
+  },
+  "estimated_completion_time": "4小时",
+  "priority": "P0",
+  "dependencies": [
+    "EnhancedProgress组件（已存在）",
+    "lafService.proxyAI（已存在）",
+    "uni.showModal、uni.showToast（uni-app API）"
+  ]
+}

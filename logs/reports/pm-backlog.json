@@ -1,0 +1,82 @@
+{
+  "cycle_id": "v5.8-iter1",
+  "selected_feature": "优化题库导入体验",
+  "market_research_completed": true,
+  "intel_file": "logs/market-intel.md",
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "title": "添加实时上传进度条",
+      "action": "使用 uni.uploadFile 的 onProgressUpdate 监听上传进度，实时显示百分比、已上传大小、总大小",
+      "evidence": "情报简报痛点2和痛点3：多个用户反馈'上传卡死，不知道进度'、'没有进度反馈，以为卡死了'（来源：微信开放社区、知乎）。案例4（uni-app官方文档）提供了完整的技术实现方案，使用 onProgressUpdate 可获取 res.progress、res.totalBytesSent、res.totalBytesExpectedToSend。",
+      "priority": "P0",
+      "estimated_hours": 2,
+      "acceptance_criteria": [
+        "显示实时百分比（0-100%）",
+        "显示已上传大小 / 总大小（如 '2.5MB / 10MB'）",
+        "进度条视觉效果流畅，使用 EnhancedProgress 组件",
+        "上传完成后进度条显示 100%"
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "title": "优化状态提示文案",
+      "action": "在不同上传阶段显示清晰的状态提示",
+      "evidence": "情报简报案例3（2026在线题库小程序）的最佳实践：导入开始显示'正在解析文件...'，导入中显示'正在导入第X题...'，导入成功显示'成功导入X道题目'。这种清晰的状态提示可以减少用户焦虑感。",
+      "priority": "P0",
+      "estimated_hours": 1,
+      "acceptance_criteria": [
+        "选择文件后显示'正在解析文件...'",
+        "上传中显示'正在上传题库...'",
+        "上传成功显示'成功导入 X 道题目'",
+        "上传失败显示具体错误原因"
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "title": "完善错误处理与重试机制",
+      "action": "捕获上传失败错误，提供具体错误信息和重试按钮",
+      "evidence": "情报简报痛点1：CSDN博客明确提到'目前市面上刷题工具存下这些问题。4、导入试题经常失败'（来源：https://blog.csdn.net/qq_29145989/article/details/143724902）。案例1（试题通）的简化流程强调了错误处理的重要性。",
+      "priority": "P0",
+      "estimated_hours": 1.5,
+      "acceptance_criteria": [
+        "文件格式错误时，提示'文件格式不支持，请上传 JSON/TXT 格式'",
+        "网络超时时，提示'网络不稳定，请稍后重试'",
+        "上传失败后显示'重试'按钮，无需重新选择文件",
+        "错误信息使用 Toast 提示，3秒后自动消失"
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "title": "禁用上传中的返回操作",
+      "action": "上传过程中禁用返回按钮和页面跳转，防止误操作导致上传中断",
+      "evidence": "情报简报案例1（试题通）强调'简化流程、提升体验'。防止用户在上传过程中误操作返回，导致上传失败，这是基本的用户体验保障。",
+      "priority": "P1",
+      "estimated_hours": 0.5,
+      "acceptance_criteria": [
+        "上传中禁用页面返回按钮",
+        "上传中显示'上传中，请勿返回'提示",
+        "上传完成后恢复返回功能",
+        "上传失败后恢复返回功能"
+      ]
+    }
+  ],
+  "total_estimated_hours": 5,
+  "value_score": {
+    "user_value": 10,
+    "business_value": 9,
+    "technical_complexity": 6
+  },
+  "emotion_impact": {
+    "current_score": 3,
+    "target_score": 8,
+    "improvement": 5
+  },
+  "evidence_quality": {
+    "search_count": 3,
+    "case_studies": 4,
+    "user_pain_points": 4,
+    "technical_references": 1,
+    "all_tasks_have_evidence": true
+  }
+}

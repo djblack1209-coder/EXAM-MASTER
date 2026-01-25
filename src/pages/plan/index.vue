@@ -64,7 +64,7 @@
 
 <script>
 import { storageService } from '../../services/storageService.js'
-import BaseEmpty from '../../components/base-empty/base-empty.vue'
+import BaseEmpty from '../../components/base/base-empty/base-empty.vue'
 
 export default {
 	components: {

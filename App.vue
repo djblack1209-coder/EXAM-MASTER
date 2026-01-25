@@ -223,8 +223,8 @@ export default {
    双模设计令牌 (Wise/Bitget)
    ============================================ */
 
-/* 导入通用样式 */
-@import '@/common/styles/common.scss';
+/* 导入通用样式 - 使用 Sass 3.0 兼容语法 */
+@use '@/common/styles/common.scss' as common;
 
 /* ============================================
    根元素配置

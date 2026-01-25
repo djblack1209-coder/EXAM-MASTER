@@ -247,9 +247,9 @@
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 // UniApp 特有钩子
 import { onShow } from '@dcloudio/uni-app';
-import CustomTabbar from '../../components/custom-tabbar/custom-tabbar.vue';
-import InviteModal from '../../components/InviteModal.vue';
-import PosterModal from '../../components/PosterModal.vue';
+import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
+import InviteModal from '../../components/common/InviteModal.vue';
+import PosterModal from '../../components/common/PosterModal.vue';
 import { setTheme, isNightTime } from '../../utils/core/theme.js';
 import { getApiKey } from '../../../common/config.js';
 import { storageService } from '../../services/storageService.js';

@@ -223,7 +223,7 @@
 </template>
 
 <script>
-import CustomTabbar from '../../components/custom-tabbar/custom-tabbar.vue';
+import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
 import { lafService } from '../../services/lafService.js';
 
 export default {

@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import AiConsult from '../../components/ai-consult/ai-consult.vue';
+import AiConsult from '../../components/business/ai-consult/ai-consult.vue';
 import { lafService } from '../../services/lafService.js';
 
 export default {

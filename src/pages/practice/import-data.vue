@@ -158,7 +158,7 @@
 
 <script>
 import { lafService } from '../../services/lafService.js'
-import EnhancedProgress from '../../components/EnhancedProgress.vue'
+import EnhancedProgress from '../../components/common/EnhancedProgress.vue'
 
 export default {
   components: {
