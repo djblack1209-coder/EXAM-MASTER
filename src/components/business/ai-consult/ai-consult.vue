@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { lafService } from '../../services/lafService.js'
+import { lafService } from '../../../services/lafService.js'
 
 export default {
   name: 'AiConsult',

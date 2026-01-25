@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { storageService } from '../../services/storageService.js'
+import { storageService } from '../../../services/storageService.js'
 
 export default {
 	name: 'CustomTabbar',
@@ -31,15 +31,6 @@ export default {
 		isDark: { type: Boolean, default: false }
 	},
 	data() {
-		// Wise 风格图标 (使用 Base64 SVG)
-		// 选中颜色: var(--brand-color) (Lime) or var(--bg-body) (Dark Green) depending on mode?
-		// Wise app usually uses bold black/dark icons for active state on light mode.
-		// Let's use the Accent Green (var(--brand-color)) for active state in Dark Mode, and Dark Green (var(--bg-body)) for active in Light Mode?
-		// Actually, let's stick to a consistent accent color.
-
-		const colorActive = '#2ECC71'; // Fallback
-		const colorInactive = '#999999';
-
 		return {
 			tabList: [
 				{
@@ -66,7 +57,7 @@ export default {
 				{
 					text: '设置',
 					path: '/src/pages/settings/index',
-					icon: '/static/tabbar/profile.png', // Reusing profile icon for settings as placeholder if needed, or use specific settings icon
+					icon: '/static/tabbar/profile.png',
 					selectedIcon: '/static/tabbar/profile-active.png',
 					showDot: false
 				},
@@ -92,7 +83,7 @@ export default {
 		},
 		switchTab(path, index) {
 			if (this.activeIndex === index) return;
-			try { if (typeof uni.vibrateShort === 'function') uni.vibrateShort(); } catch (e) { }
+			try { if (typeof uni.vibrateShort === 'function') uni.vibrateShort(); } catch (_) { }
 
 			const currentItem = this.tabList[index];
 
@@ -108,7 +99,7 @@ export default {
 			setTimeout(() => {
 				uni.switchTab({
 					url: path,
-					fail: (err) => {
+					fail: () => {
 						uni.reLaunch({ url: path });
 					}
 				});
