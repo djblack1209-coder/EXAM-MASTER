@@ -236,57 +236,63 @@ export default {
   },
   
   computed: {
-    // ⭐⭐ v5.2 新增：动态状态文本
+    // ⭐⭐ v5.3 优化：动态状态文本（增强emoji和文案）
     importStatusText() {
       if (this.importStatus === 'parsing') {
-        return '正在解析文件...';
+        return '📖 正在解析文件...';
       } else if (this.importStatus === 'importing') {
-        return `正在导入第 ${this.currentQuestionIndex} 题...`;
+        return `✨ 正在生成第 ${this.currentQuestionIndex} 题...`;
       } else if (this.importStatus === 'success') {
-        return '导入成功！';
+        return '🎉 导入成功！';
       } else if (this.importStatus === 'error') {
-        return '导入失败';
+        return '❌ 导入失败';
       }
-      return 'AI 正在分析...';
+      return '🤖 AI 正在分析...';
     },
     
     importProgressText() {
       const current = this.totalQuestionsGenerated;
       const total = this.totalQuestionsLimit * this.batchQuestionCount;
       
-      // ⭐⭐ v5.2 优化：显示当前题目索引
+      // ⭐⭐ v5.3 优化：更直观的进度显示
       if (this.importStatus === 'importing' && this.currentQuestionIndex > 0) {
-        return `正在生成第 ${this.currentQuestionIndex} 题 / 共 ${total} 题`;
+        return `正在生成第 ${this.currentQuestionIndex} 题（共 ${total} 题）`;
       }
       
-      return `已生成 ${current} 道题 / 共 ${total} 道题`;
+      if (current === 0) {
+        return `准备生成 ${total} 道题目`;
+      }
+      
+      return `已生成 ${current} / ${total} 道题`;
     },
     
     importDetailText() {
       const parts = [];
       
-      // 进度百分比
-      parts.push(`进度 ${this.realProgress}%`);
+      // 进度百分比（增强显示）
+      if (this.realProgress > 0) {
+        parts.push(`📊 进度 ${this.realProgress}%`);
+      }
       
       // 预估剩余时间（优化显示）
-      if (this.estimatedTimeLeft > 0) {
+      if (this.estimatedTimeLeft > 0 && this.importStatus === 'importing') {
         if (this.estimatedTimeLeft > 60) {
           const minutes = Math.floor(this.estimatedTimeLeft / 60);
           const seconds = this.estimatedTimeLeft % 60;
-          parts.push(`剩余约 ${minutes} 分 ${seconds} 秒`);
+          parts.push(`⏱️ 剩余约 ${minutes} 分 ${seconds} 秒`);
         } else {
-          parts.push(`剩余约 ${this.estimatedTimeLeft} 秒`);
+          parts.push(`⏱️ 剩余约 ${this.estimatedTimeLeft} 秒`);
         }
       }
       
-      // 重复题目提示
-      if (this.duplicateCount > 0) {
-        parts.push(`已跳过 ${this.duplicateCount} 道重复题`);
+      // 导入速度（优先显示）
+      if (this.importSpeed > 0 && this.totalQuestionsGenerated > 0) {
+        parts.push(`⚡ ${this.importSpeed.toFixed(1)} 题/秒`);
       }
       
-      // 导入速度（新增）
-      if (this.importSpeed > 0 && this.totalQuestionsGenerated > 0) {
-        parts.push(`速度 ${this.importSpeed.toFixed(1)} 题/秒`);
+      // 重复题目提示（醒目显示）
+      if (this.duplicateCount > 0) {
+        parts.push(`🔄 已跳过 ${this.duplicateCount} 道重复题`);
       }
       
       return parts.join(' · ');
@@ -826,12 +832,12 @@ export default {
       }
     },
 
-    // 7. 结束生成（⭐⭐ v5.2-iter2: 增强去重统计提示）
+    // 7. 结束生成（⭐⭐ v5.3: 增强统计报告）
     finishGeneration(msg) {
       this.isLooping = false;
       this.isPaused = false;
       this.showMask = false;
-      this.showSpeedModal = false; // 确保弹窗关闭
+      this.showSpeedModal = false;
       this.importStatus = 'success';
       this.updateUploadRecordStatus('completed');
       if (this.soupTimer) {
@@ -839,20 +845,34 @@ export default {
         this.soupTimer = null;
       }
       
-      // ⭐⭐ v5.2-iter2: 构建增强的完成消息（含去重统计）
-      let enhancedMsg = msg;
+      // ⭐⭐ v5.3: 构建详细的统计报告
+      const totalTime = this.importStartTime > 0 ? Math.round((Date.now() - this.importStartTime) / 1000) : 0;
+      const avgSpeed = totalTime > 0 ? (this.totalQuestionsGenerated / totalTime).toFixed(1) : '0';
+      
+      let enhancedMsg = `${msg}\n\n`;
+      enhancedMsg += `📊 导入统计\n`;
+      enhancedMsg += `✅ 成功导入：${this.totalQuestionsGenerated} 道新题\n`;
+      
       if (this.duplicateCount > 0) {
-        enhancedMsg = `${msg}\n\n成功导入 ${this.totalQuestionsGenerated} 道新题\n跳过 ${this.duplicateCount} 道重复题`;
-      } else {
-        enhancedMsg = `${msg}\n\n成功导入 ${this.totalQuestionsGenerated} 道新题`;
+        enhancedMsg += `🔄 跳过重复：${this.duplicateCount} 道题\n`;
       }
       
-      // 只有当用户还在这个页面时，才弹窗，否则静默结束
-      // 修复：使用箭头函数确保 this 绑定
+      if (totalTime > 0) {
+        const minutes = Math.floor(totalTime / 60);
+        const seconds = totalTime % 60;
+        if (minutes > 0) {
+          enhancedMsg += `⏱️ 总耗时：${minutes} 分 ${seconds} 秒\n`;
+        } else {
+          enhancedMsg += `⏱️ 总耗时：${seconds} 秒\n`;
+        }
+        enhancedMsg += `⚡ 平均速度：${avgSpeed} 题/秒`;
+      }
+      
       uni.showModal({
-        title: '✅ 题库装填完毕',
+        title: '🎉 题库装填完毕',
         content: enhancedMsg,
-        confirmText: '去刷题',
+        confirmText: '立即刷题',
+        cancelText: '留在本页',
         success: (res) => {
           if (res.confirm) {
             uni.switchTab({ url: '/src/pages/practice/index' });
@@ -1168,26 +1188,50 @@ export default {
       }
     },
     
-    // ⭐ 14. 更新真实进度（新增）
+    // ⭐ 14. 更新真实进度（v5.3 优化：改进时间预估算法）
     updateRealProgress() {
       // 计算真实进度百分比
       this.realProgress = Math.round((this.generatedCount / this.totalQuestionsLimit) * 100);
       
-      // 计算预估剩余时间
+      // ⭐⭐ v5.3 优化：改进剩余时间预估算法（考虑首批和后续批次的时间差异）
       if (this.generatedCount > 0 && this.generationStartTime > 0) {
         const elapsed = Date.now() - this.generationStartTime;
-        const avgTimePerBatch = elapsed / this.generatedCount;
-        const remainingBatches = this.totalQuestionsLimit - this.generatedCount;
-        this.estimatedTimeLeft = Math.round((avgTimePerBatch * remainingBatches) / 1000);
+        
+        // 如果是第一批，记录首批耗时
+        if (this.generatedCount === 1) {
+          this.firstBatchTime = elapsed;
+        }
+        
+        // 如果已经有多批数据，使用更精确的预估
+        if (this.generatedCount > 1) {
+          // 计算后续批次的平均耗时
+          const laterBatchesTotalTime = elapsed - this.firstBatchTime;
+          this.laterBatchAvgTime = laterBatchesTotalTime / (this.generatedCount - 1);
+          
+          // 预估剩余时间 = 剩余批次 * 后续批次平均耗时
+          const remainingBatches = this.totalQuestionsLimit - this.generatedCount;
+          this.estimatedTimeLeft = Math.round((this.laterBatchAvgTime * remainingBatches) / 1000);
+        } else {
+          // 只有第一批数据时，使用首批耗时作为基准
+          const remainingBatches = this.totalQuestionsLimit - this.generatedCount;
+          this.estimatedTimeLeft = Math.round((this.firstBatchTime * remainingBatches) / 1000);
+        }
       }
       
       // 更新已生成题目总数
       this.totalQuestionsGenerated = this.generatedCount * this.batchQuestionCount;
       
+      // 计算导入速度
+      if (this.importStartTime > 0 && this.totalQuestionsGenerated > 0) {
+        const elapsedSeconds = (Date.now() - this.importStartTime) / 1000;
+        this.importSpeed = this.totalQuestionsGenerated / elapsedSeconds;
+      }
+      
       console.log('[进度更新]', {
         realProgress: this.realProgress,
         estimatedTimeLeft: this.estimatedTimeLeft,
-        totalQuestionsGenerated: this.totalQuestionsGenerated
+        totalQuestionsGenerated: this.totalQuestionsGenerated,
+        importSpeed: this.importSpeed.toFixed(2)
       });
     }
   }

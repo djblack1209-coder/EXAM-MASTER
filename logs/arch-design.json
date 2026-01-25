@@ -1,38 +1,55 @@
 {
-  "cycle_id": "v5.2-iter2",
-  "timestamp": "2026-01-25 07:46:12",
+  "cycle_id": "v5.3-iter1",
+  "timestamp": "2026-01-25 07:56:55",
   "impact_analysis": {
     "affected_files": [
       "src/pages/practice/import-data.vue"
     ],
-    "affected_components": [],
-    "affected_services": [],
-    "current_implementation": {
-      "deduplication": "无去重逻辑，直接合并新旧题库",
-      "duplicate_detection": "duplicateCount 变量已存在但未使用",
-      "save_logic": "saveQuestions 方法直接 [...oldBank, ...newQuestions]"
+    "affected_components": [
+      "EnhancedProgress"
+    ],
+    "affected_services": [
+      "lafService"
+    ],
+    "current_state": {
+      "has_progress_tracking": true,
+      "has_error_handling": true,
+      "has_retry_mechanism": true,
+      "has_duplicate_detection": true,
+      "missing_features": [
+        "实时进度条显示不够直观（需要优化百分比显示）",
+        "预计剩余时间计算不准确（需要优化算法）",
+        "导入速度显示缺失（需要添加题/秒指标）",
+        "重复题目提示不够明显（需要优化UI）",
+        "错误提示不够友好（需要分类错误类型）"
+      ]
     }
   },
   "design_decisions": [
     {
-      "decision": "使用简单字符串hash算法",
-      "rationale": "题目数量小（50题），无需复杂的MD5算法。使用题目文本+选项的简单hash即可，性能更好。",
-      "implementation": "创建 generateQuestionHash 方法：hash = question + options.join('')"
+      "decision": "优化EnhancedProgress组件的进度显示",
+      "rationale": "当前进度条已存在，但显示不够直观。需要增强百分比显示、剩余时间预估、导入速度等关键指标",
+      "implementation": "在EnhancedProgress组件中添加更详细的提示文本，包括：1) 当前题目索引/总题数 2) 预估剩余时间（分钟+秒） 3) 导入速度（题/秒） 4) 重复题目统计"
     },
     {
-      "decision": "在 saveQuestions 方法中实现去重",
-      "rationale": "集中处理去重逻辑，避免分散到多个地方。在保存前过滤重复题目。",
-      "implementation": "1. 构建旧题库hash集合 2. 过滤新题目（排除hash重复） 3. 更新 duplicateCount"
+      "decision": "优化状态文本的动态更新逻辑",
+      "rationale": "当前importStatusText和importProgressText已实现，但需要更精细的状态划分和更友好的文案",
+      "implementation": "细化importStatus状态机：idle → parsing → importing → success/error，每个状态对应不同的文案和图标"
     },
     {
-      "decision": "优化去重算法复杂度",
-      "rationale": "使用 Set 数据结构存储hash，查找复杂度O(1)，总体复杂度O(n)。",
-      "implementation": "const oldHashes = new Set(oldBank.map(q => generateQuestionHash(q)))"
+      "decision": "增强错误处理和重试机制",
+      "rationale": "当前已有errorInfo和retryGeneration方法，但错误分类不够细致，重试逻辑可以更智能",
+      "implementation": "1) 细化错误类型（网络超时、文件格式错误、权限错误等） 2) 智能重试：网络超时自动重试，其他错误需用户确认 3) 缓存文件数据支持断点续传"
     },
     {
-      "decision": "增强用户反馈",
-      "rationale": "用户需要知道有多少题目被跳过，确认去重功能正常工作。",
-      "implementation": "在 finishGeneration 和 saveQuestions 中显示去重统计"
+      "decision": "优化重复题目检测的用户反馈",
+      "rationale": "当前已有duplicateCount统计，但UI提示不够明显",
+      "implementation": "在importDetailText中突出显示重复题目数量，使用醒目的颜色和图标"
+    },
+    {
+      "decision": "添加导入完成后的详细统计报告",
+      "rationale": "用户需要知道导入了多少新题、跳过了多少重复题、耗时多久等详细信息",
+      "implementation": "在finishGeneration方法中构建详细的统计报告，包括：总题数、新增题数、重复题数、总耗时、平均速度"
     }
   ],
   "refactor_plan": {
@@ -40,65 +57,37 @@
       "src/pages/practice/import-data.vue"
     ],
     "files_to_create": [],
-    "modifications": [
+    "estimated_loc": 80,
+    "changes_breakdown": [
       {
         "file": "src/pages/practice/import-data.vue",
         "changes": [
-          {
-            "location": "methods - 新增 generateQuestionHash",
-            "description": "创建题目hash生成方法，基于题目文本+选项生成唯一标识"
-          },
-          {
-            "location": "methods.saveQuestions - 添加去重逻辑",
-            "description": "1. 构建旧题库hash集合 2. 过滤新题目 3. 统计重复数量 4. 更新 duplicateCount"
-          },
-          {
-            "location": "methods.finishGeneration - 增强提示",
-            "description": "显示去重统计：'成功导入 X 道新题，跳过 Y 道重复题'"
-          },
-          {
-            "location": "computed.importDetailText - 已实现",
-            "description": "已在上一轮实现，显示 duplicateCount"
-          }
-        ]
+          "优化importStatusText计算属性：添加更友好的文案和emoji图标",
+          "优化importProgressText计算属性：显示当前题目索引/总题数",
+          "优化importDetailText计算属性：突出显示重复题目统计和导入速度",
+          "优化finishGeneration方法：构建详细的统计报告（含去重信息）",
+          "优化updateRealProgress方法：改进剩余时间预估算法（考虑首批和后续批次的时间差异）",
+          "优化错误处理逻辑：细化错误类型，智能决策是否自动重试"
+        ],
+        "estimated_lines": 80
       }
-    ],
-    "estimated_loc": 45,
-    "complexity": "简单",
-    "risk_assessment": {
-      "high_risk": [],
-      "medium_risk": [],
-      "low_risk": [
-        "hash冲突概率极低（题目文本+选项组合唯一性高）",
-        "性能影响可忽略（O(n)复杂度，n<100）"
-      ]
-    }
-  },
-  "algorithm_design": {
-    "hash_generation": {
-      "input": "题目对象 { question, options, answer, ... }",
-      "output": "字符串hash",
-      "logic": "question + options.join('') 的简化hash",
-      "complexity": "O(1)"
-    },
-    "deduplication": {
-      "step1": "构建旧题库hash集合（Set）",
-      "step2": "过滤新题目：newQuestions.filter(q => !oldHashes.has(hash))",
-      "step3": "统计重复数量：duplicateCount = newQuestions.length - uniqueQuestions.length",
-      "step4": "合并题库：[...oldBank, ...uniqueQuestions]",
-      "complexity": "O(n)"
-    }
+    ]
   },
   "technical_notes": [
-    "duplicateCount 变量已存在，直接使用",
-    "importDetailText 已支持显示去重信息",
-    "无需修改UI，只需增强后端逻辑",
-    "hash算法简单但有效，适合小规模题库"
+    "当前代码已经实现了大部分功能，主要是优化用户体验和文案",
+    "EnhancedProgress组件已经存在并正常工作，无需修改组件本身",
+    "重点优化计算属性（importStatusText、importProgressText、importDetailText）的显示逻辑",
+    "优化finishGeneration方法，提供更详细的完成统计",
+    "优化updateRealProgress方法，改进时间预估算法"
   ],
-  "performance_considerations": [
-    "Set 查找复杂度 O(1)",
-    "总体复杂度 O(n)，n为题目数量",
-    "内存占用：hash集合约 5KB（50题 * 100字节/hash）",
-    "性能影响可忽略"
-  ]
+  "risk_assessment": {
+    "low_risk": [
+      "文案优化（不影响功能）",
+      "UI显示优化（不影响数据）"
+    ],
+    "medium_risk": [
+      "时间预估算法优化（可能不准确，但不影响核心功能）"
+    ],
+    "high_risk": []
+  }
 }
