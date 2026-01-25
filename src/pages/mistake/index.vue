@@ -19,6 +19,13 @@
 
 		<scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }"
 			@scrolltolower="loadMore" v-show="!isInitLoading">
+			<!-- 统计卡片区域 -->
+			<view class="stats-grid" v-if="mistakes.length > 0">
+				<stats-card title="错题总数" :value="mistakes.length" icon="📝" :isDark="isDark" />
+				<stats-card title="待复习" :value="pendingReviewCount" icon="🔄" change="需要巩固"
+					changeType="neutral" :isDark="isDark" />
+			</view>
+
 			<!-- 模式切换 - 优化布局 -->
 			<view class="mode-switch glass-card ds-flex ds-gap-xs" v-if="mistakes.length > 0">
 				<view :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'quiz' }]"
@@ -184,10 +191,12 @@
 import { lafService } from '../../services/lafService.js'
 import { storageService } from '../../services/storageService.js'
 import MistakeSkeleton from '../../components/base/mistake-skeleton/mistake-skeleton.vue'
+import StatsCard from '../../components/v0/StatsCard.vue'
 
 export default {
 	components: {
-		MistakeSkeleton
+		MistakeSkeleton,
+		StatsCard
 	},
 	data() {
 		return {
@@ -229,6 +238,12 @@ export default {
 	onUnload() {
 		// 移除事件监听
 		uni.$off('themeUpdate');
+	},
+	computed: {
+		// 待复习错题数量（错误次数>=2的题目）
+		pendingReviewCount() {
+			return this.mistakes.filter(item => (item.wrongCount || item.wrong_count || 1) >= 2).length;
+		}
 	},
 	onShow() {
 		this.loadData(true); // 重置并重新加载
@@ -1182,6 +1197,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* 统计卡片网格 */
+.stats-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 24rpx;
+	padding: 0 30rpx;
+	margin-bottom: 30rpx;
+}
+
 .container {
 	min-height: 100vh;
 	background: #F0F4F8;
