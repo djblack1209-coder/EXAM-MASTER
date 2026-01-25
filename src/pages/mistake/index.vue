@@ -2,8 +2,11 @@
 	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 
+		<!-- 骨架屏 -->
+		<mistake-skeleton v-if="isInitLoading" :isDark="isDark" />
+
 		<!-- 导航栏 - 添加设计系统工具类 -->
-		<view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
+		<view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }" v-show="!isInitLoading">
 			<view class="nav-content ds-flex ds-flex-between">
 				<text class="nav-back ds-touchable" @tap="goBack">←</text>
 				<text class="nav-title ds-text-lg ds-font-semibold">我的错题本</text>
@@ -15,7 +18,7 @@
 		</view>
 
 		<scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }"
-			@scrolltolower="loadMore">
+			@scrolltolower="loadMore" v-show="!isInitLoading">
 			<!-- 模式切换 - 优化布局 -->
 			<view class="mode-switch glass-card ds-flex ds-gap-xs" v-if="mistakes.length > 0">
 				<view :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'quiz' }]"
@@ -180,8 +183,12 @@
 <script>
 import { lafService } from '../../services/lafService.js'
 import { storageService } from '../../services/storageService.js'
+import MistakeSkeleton from '../../components/base/mistake-skeleton/mistake-skeleton.vue'
 
 export default {
+	components: {
+		MistakeSkeleton
+	},
 	data() {
 		return {
 			statusBarHeight: 44,
@@ -201,7 +208,8 @@ export default {
 			currentPage: 1,
 			pageSize: 20,
 			hasMore: true,
-			isLoading: false
+			isLoading: false,
+			isInitLoading: true // 初始骨架屏加载状态
 		};
 	},
 	onLoad(options) {
@@ -340,6 +348,7 @@ export default {
 				});
 			} finally {
 				this.isLoading = false;
+				this.isInitLoading = false; // 隐藏骨架屏
 			}
 		},
 		goBack() {

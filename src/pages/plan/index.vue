@@ -2,8 +2,11 @@
 	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 
+		<!-- 骨架屏 -->
+		<plan-skeleton v-if="isLoading" :isDark="isDark" />
+
 		<!-- 导航栏 - 添加设计系统工具类 -->
-		<view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
+		<view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }" v-show="!isLoading">
 			<view class="nav-content ds-flex ds-flex-between">
 				<text class="nav-back ds-touchable" @tap="goBack">←</text>
 				<text class="nav-title ds-text-lg ds-font-semibold">我的学习计划</text>
@@ -11,7 +14,7 @@
 			</view>
 		</view>
 
-		<scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
+		<scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }" v-show="!isLoading">
 			<!-- 空状态 -->
 			<base-empty v-if="plans.length === 0" icon="📅" title="还没有学习计划" desc="创建一个学习计划，让备考更有条理！" :show-button="true"
 				button-text="创建学习计划" :is-dark="isDark" @action="createPlan" />
@@ -65,15 +68,18 @@
 <script>
 import { storageService } from '../../services/storageService.js'
 import BaseEmpty from '../../components/base/base-empty/base-empty.vue'
+import PlanSkeleton from '../../components/base/plan-skeleton/plan-skeleton.vue'
 
 export default {
 	components: {
-		BaseEmpty
+		BaseEmpty,
+		PlanSkeleton
 	},
 	data() {
 		return {
 			statusBarHeight: 44,
 			isDark: false,
+			isLoading: true,
 			plans: []
 		};
 	},
@@ -101,6 +107,10 @@ export default {
 		loadPlans() {
 			// 从本地存储加载学习计划
 			this.plans = storageService.get('study_plans', []);
+			// 隐藏骨架屏
+			setTimeout(() => {
+				this.isLoading = false;
+			}, 300);
 		},
 		createPlan() {
 			// 跳转到创建计划页面

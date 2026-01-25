@@ -2,7 +2,10 @@
 	<view :class="['container', { 'dark-mode': isDark }]">
 		<view class="aurora-bg"></view>
 
-		<view class="header-nav">
+		<!-- 骨架屏 -->
+		<school-skeleton v-if="isLoading" :isDark="isDark" :step="currentStep" />
+
+		<view class="header-nav" v-show="!isLoading">
 			<view :style="{ height: statusBarHeight + 'px' }"></view>
 			<view class="nav-content">
 				<text class="nav-back" @tap="handleBack">←</text>
@@ -12,10 +15,10 @@
 		</view>
 
 		<!-- 占位符，避免内容被导航栏遮挡（使用标准导航栏高度） -->
-		<view :style="{ height: navBarHeight + 'px' }"></view>
+		<view :style="{ height: navBarHeight + 'px' }" v-show="!isLoading"></view>
 
 		<!-- 压缩顶部间距：去掉重复叠加的状态栏偏移，仅保留适度 paddingTop -->
-		<scroll-view scroll-y class="main-scroll" :style="{ paddingTop: '24px' }">
+		<scroll-view scroll-y class="main-scroll" :style="{ paddingTop: '24px' }" v-show="!isLoading">
 			<!-- 步骤进度条 - 添加设计系统工具类 -->
 			<view class="step-bar glass-card ds-flex ds-flex-center">
 				<view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 1 }]">
@@ -224,11 +227,13 @@
 
 <script>
 import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
+import SchoolSkeleton from '../../components/base/school-skeleton/school-skeleton.vue';
 import { lafService } from '../../services/lafService.js';
 
 export default {
 	components: {
-		CustomTabbar
+		CustomTabbar,
+		SchoolSkeleton
 	},
 	data() {
 		return {
@@ -237,6 +242,7 @@ export default {
 			currentStep: 1,
 			showFilter: false,
 			isDark: false,
+			isLoading: true, // 骨架屏加载状态
 
 			formData: { school: '', targetMajor: '', masterType: 'academic', degree: 'bk', englishCert: '' },
 			englishCertificates: ['无', 'B级', 'A级', '四级', '六级', '雅思', '托福', 'GRE', 'GMAT'],
@@ -367,6 +373,11 @@ export default {
 		uni.$on('themeUpdate', (mode) => {
 			this.isDark = mode === 'dark';
 		});
+
+		// 延迟隐藏骨架屏，模拟数据加载
+		setTimeout(() => {
+			this.isLoading = false;
+		}, 500);
 	},
 	onShow() {
 		// 隐藏系统原生 TabBar
