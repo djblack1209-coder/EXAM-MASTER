@@ -98,25 +98,13 @@
     <InviteModal v-model:visible="showInviteModal" @close="showInviteModal = false" @openPoster="handleOpenPoster" />
 
     <PosterModal v-model:visible="showPosterModal" @close="showPosterModal = false" />
-
-    <!-- 底部导航栏：统一使用 CustomTabbar -->
-    <custom-tabbar :activeIndex="3" :isDark="false"></custom-tabbar>
   </view>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
-import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue'
+import { ref } from 'vue'
 import InviteModal from '../../components/common/InviteModal.vue'
 import PosterModal from '../../components/common/PosterModal.vue'
-
-// 隐藏系统原生 TabBar
-onShow(() => {
-  uni.hideTabBar({
-    animation: false
-  });
-})
 
 // 用户信息
 const userInfo = ref({

@@ -1,23 +1,40 @@
 <template>
-	<view class="tabbar-container" :class="{ 'dark-mode': isDark }">
-		<!-- 磨砂玻璃背景层 -->
-		<view class="tabbar-blur-bg"></view>
-		<!-- 导航栏内容 -->
-		<view class="tabbar-bar">
-			<view v-for="(item, index) in tabList" :key="index"
-				:class="['tab-item', { 'active': activeIndex === index }]" @tap="switchTab(item.path, index)">
+	<!-- 外层定位容器：完全透明，不阻挡点击 -->
+	<view
+		class="tabbar-position-wrapper"
+		style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 999; background-color: transparent !important; background: transparent !important; pointer-events: none;"
+	>
+		<!-- 内层胶囊：唯一可见实体，恢复点击 -->
+		<view
+			class="tabbar-capsule"
+			style="pointer-events: auto;"
+			:class="{ 'dark-mode': isDark }"
+		>
+			<view
+				v-for="(item, index) in tabList"
+				:key="index"
+				class="tab-item"
+				:class="{ 'active': activeIndex === index }"
+				@tap="switchTab(item.path, index)"
+			>
 				<view class="icon-wrapper">
-					<!-- SVG Icon - 图1风格图标 -->
-					<image v-if="activeIndex === index" :src="item.selectedIcon" class="tab-icon" mode="aspectFit">
-					</image>
-					<image v-else :src="item.icon" class="tab-icon" mode="aspectFit"></image>
-
+					<image
+						v-if="activeIndex === index"
+						:src="item.selectedIcon"
+						class="tab-icon"
+						mode="aspectFit"
+					></image>
+					<image
+						v-else
+						:src="item.icon"
+						class="tab-icon"
+						mode="aspectFit"
+					></image>
 					<view class="red-dot" v-if="item.showDot"></view>
 				</view>
 				<text class="tab-label">{{ item.text }}</text>
 			</view>
 		</view>
-		<view class="safe-area-bottom"></view>
 	</view>
 </template>
 
@@ -76,8 +93,6 @@ export default {
 	},
 	methods: {
 		checkMistakeStatus() {
-			// 使用 storageService 获取错题数量（兼容云端和本地）
-			// 优先从本地缓存读取（性能考虑），如果需要实时数据可以调用 getMistakes
 			const mistakes = storageService.get('mistake_book', []);
 			this.tabList[1].showDot = mistakes.length > 0;
 		},
@@ -87,7 +102,6 @@ export default {
 
 			const currentItem = this.tabList[index];
 
-			// Handle non-tabbar pages manually
 			if (currentItem.text === '设置' || currentItem.text === '探索宇宙' || currentItem.text === '宇宙') {
 				uni.navigateTo({
 					url: path,
@@ -110,46 +124,30 @@ export default {
 </script>
 
 <style scoped>
-.tabbar-container {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	width: 100%;
-	z-index: 999;
-	background: transparent;
-	padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20rpx);
+/* 外层定位容器：绝对不能有任何背景色 */
+.tabbar-position-wrapper {
+	/* 所有背景相关属性都在 inline style 中用 !important 强制透明 */
 }
 
-/* 磨砂玻璃背景层 - 确保容纳图标+文字 */
-.tabbar-blur-bg {
-	position: absolute;
-	bottom: 20rpx;
-	left: 50%;
-	transform: translateX(-50%);
-	width: calc(100% - 48rpx);
-	height: 160rpx;
-	background: rgba(255, 255, 255, 0.8);
-	backdrop-filter: blur(40rpx) saturate(180%);
-	-webkit-backdrop-filter: blur(40rpx) saturate(180%);
-	border-radius: 80rpx;
-	border: 1rpx solid rgba(0, 0, 0, 0.06);
-	box-shadow: 0 -4rpx 32rpx rgba(0, 0, 0, 0.06),
-		0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-	z-index: 0;
-}
-
-.tabbar-bar {
-	position: absolute;
-	bottom: 20rpx;
-	left: 50%;
-	transform: translateX(-50%);
+/* 内层胶囊：唯一可见的实体元素 */
+.tabbar-capsule {
+	margin-left: 24rpx;
+	margin-right: 24rpx;
+	margin-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
+	height: 120rpx;
 	display: flex;
-	height: 160rpx;
 	align-items: center;
 	justify-content: space-around;
-	width: calc(100% - 48rpx);
-	z-index: 1;
-	padding: 0 16rpx;
+	background-color: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(40rpx) saturate(180%);
+	-webkit-backdrop-filter: blur(40rpx) saturate(180%);
+	border-radius: 60rpx;
+	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.1);
+}
+
+.tabbar-capsule.dark-mode {
+	background-color: rgba(255, 255, 255, 0.98);
+	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.15);
 }
 
 .tab-item {
@@ -159,73 +157,42 @@ export default {
 	align-items: center;
 	justify-content: center;
 	height: 100%;
-	position: relative;
-	padding: 20rpx 4rpx;
+	padding: 12rpx 4rpx;
 }
 
 .icon-wrapper {
 	position: relative;
-	width: 52rpx;
-	height: 52rpx;
-	margin-bottom: 8rpx;
+	width: 48rpx;
+	height: 48rpx;
+	margin-bottom: 6rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	flex-shrink: 0;
 }
 
 .tab-icon {
 	width: 100%;
 	height: 100%;
-	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.tab-item.active .icon-wrapper {
-	/* 激活状态 */
+	transition: transform 0.2s ease;
 }
 
 .tab-item.active .tab-icon {
-	transform: scale(1.08);
+	transform: scale(1.1);
 }
 
 .tab-label {
-	font-size: 24rpx;
-	color: #666666;
+	font-size: 22rpx;
+	color: #888888;
 	font-weight: 500;
-	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	letter-spacing: 0.4rpx;
 	line-height: 1.2;
 	white-space: nowrap;
-	flex-shrink: 0;
 }
 
 .tab-item.active .tab-label {
 	color: #1A1A1A;
-	/* 图1风格：激活黑色（深色模式为白色） */
 	font-weight: 600;
 }
 
-/* Dark Mode Adjustments - 磨砂玻璃白色背景 */
-.dark-mode .tabbar-blur-bg {
-	background: rgba(255, 255, 255, 0.85);
-	backdrop-filter: blur(40rpx) saturate(180%);
-	-webkit-backdrop-filter: blur(40rpx) saturate(180%);
-	border: 1rpx solid rgba(255, 255, 255, 0.2);
-	box-shadow: 0 -4rpx 32rpx rgba(0, 0, 0, 0.15),
-		0 2rpx 12rpx rgba(0, 0, 0, 0.08);
-}
-
-.dark-mode .tab-item.active .tab-label {
-	color: #1A1A1A;
-	/* 深色模式：激活深色（白色背景上） */
-}
-
-.dark-mode .tab-label {
-	color: #666666;
-	/* 深色模式：未激活灰色（白色背景上） */
-}
-
-/* Red Dot */
 .red-dot {
 	position: absolute;
 	top: -4rpx;
@@ -234,6 +201,6 @@ export default {
 	height: 16rpx;
 	background-color: #FF3B30;
 	border-radius: 50%;
-	border: 2rpx solid #FFF;
+	border: 2rpx solid #FFFFFF;
 }
 </style>

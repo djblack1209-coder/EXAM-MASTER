@@ -1,41 +1,49 @@
 <template>
-	<view :class="['dashboard-container', { 'dark': isDark }]">
-		<!-- 顶部导航栏 - 毛玻璃效果 + 滚动透明 -->
-		<view :class="['dashboard-header', isDark ? 'glass' : 'header-light', scrollY > 50 && 'header-scrolled']">
-			<view class="header-content">
-				<view class="header-left">
-					<!-- Wise/Bitget风格Logo -->
-					<view :class="['app-logo-new', isDark ? 'logo-bitget' : 'logo-wise']">
-						<view class="logo-icon">
-							<view class="logo-shape logo-shape-1"></view>
-							<view class="logo-shape logo-shape-2"></view>
-							<view class="logo-shape logo-shape-3"></view>
+	<!-- 最外层：页面容器 -->
+	<view :class="['page-wrapper', { 'page-dark': isDark }]">
+		<!-- 主容器：带背景色 -->
+		<view :class="['dashboard-container', { 'dark': isDark }]">
+			<!-- 顶部导航栏：外层定位容器完全透明 -->
+			<view
+				class="header-position-wrapper"
+				style="position: fixed; top: 0; left: 0; right: 0; z-index: 100; background-color: transparent !important; background: transparent !important; pointer-events: none;"
+			>
+				<!-- 状态栏占位：透明 -->
+				<view class="status-bar-placeholder" style="background: transparent !important;"></view>
+				<!-- 内容区域：恢复点击，背景透明（滚动后才显示毛玻璃） -->
+				<view
+					:class="['header-content-area', scrollY > 50 && 'header-scrolled']"
+					style="pointer-events: auto;"
+				>
+					<view class="header-left">
+						<!-- Wise/Bitget风格Logo -->
+						<view :class="['app-logo-new', isDark ? 'logo-bitget' : 'logo-wise']">
+							<view class="logo-icon">
+								<view class="logo-shape logo-shape-1"></view>
+								<view class="logo-shape logo-shape-2"></view>
+								<view class="logo-shape logo-shape-3"></view>
+							</view>
 						</view>
+						<text class="app-title">Exam-Master</text>
 					</view>
-					<text class="app-title">Exam-Master</text>
-				</view>
-				<view class="header-right">
-					<view class="theme-toggle" @tap="toggleTheme">
-						<text class="theme-icon">{{ isDark ? '🌙' : '☀️' }}</text>
-					</view>
-					<view :class="['user-avatar', isDark ? 'avatar-dark' : 'avatar-light']" @tap="handleUserClick">
-						<text class="avatar-text">{{ userInitials }}</text>
+					<view class="header-right">
+						<view class="theme-toggle" @tap="toggleTheme">
+							<text class="theme-icon">{{ isDark ? '🌙' : '☀️' }}</text>
+						</view>
+						<view :class="['user-avatar', isDark ? 'avatar-dark' : 'avatar-light']" @tap="handleUserClick">
+							<text class="avatar-text">{{ userInitials }}</text>
+						</view>
 					</view>
 				</view>
 			</view>
-		</view>
 
-		<!-- 主内容区域 - 添加下拉刷新 -->
-		<scroll-view 
-			scroll-y 
-			class="main-content" 
-			:style="{ height: scrollHeight + 'px' }" 
-			@scroll="handleScroll"
-			refresher-enabled
-			:refresher-triggered="isRefreshing"
-			@refresherrefresh="onPullDownRefresh"
-			@refresherrestore="onRefreshRestore"
-		>
+			<!-- 主内容区域：全屏 scroll-view -->
+			<scroll-view scroll-y class="main-content-fullscreen" @scroll="handleScroll">
+				<!-- 顶部占位：为导航栏留空 -->
+				<view :style="{ height: layoutInfo.navBarHeight + 'px' }"></view>
+
+				<!-- 内容包装器 -->
+				<view class="content-wrapper">
 			<!-- 欢迎横幅 - 带装饰气泡 -->
 			<view :class="['welcome-banner', isDark ? 'banner-dark' : 'banner-light']">
 				<!-- 深色模式装饰气泡 -->
@@ -183,25 +191,25 @@
 			<todo-list :todos="todos" :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
 
 			<!-- 每日金句 -->
-			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;" @tap="refreshDailyQuote">
-				<view class="quote-header">
-					<text class="mode-highlight">💡 每日金句</text>
-					<view :class="['refresh-btn', isRefreshingQuote && 'rotating']">
-						<text class="refresh-icon">🔄</text>
-					</view>
-				</view>
-				<text class="mode-text">{{ dailyQuote }}</text>
+			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;">
+				<text class="mode-text">
+					<text class="mode-highlight">💡 每日金句：</text>
+					{{ dailyQuote }}
+				</text>
 			</view>
+				</view>
+				<!-- 内容包装器结束 -->
 
-			<!-- 底部间距 -->
-			<view class="bottom-spacer"></view>
+				<!-- 底部占位：为 TabBar 留空 -->
+				<view :style="{ height: (layoutInfo.tabBarHeight + 20) + 'px', background: 'transparent' }"></view>
 		</scroll-view>
-
-		<!-- 底部导航栏 -->
-		<custom-tabbar :activeIndex="0" :isDark="isDark"></custom-tabbar>
 
 		<!-- 骨架屏 -->
 		<base-skeleton v-if="isLoading" :is-dark="isDark"></base-skeleton>
+		</view>
+
+		<!-- 底部导航栏：放在 dashboard-container 外部，避免继承绿色背景 -->
+		<custom-tabbar :activeIndex="0" :isDark="isDark"></custom-tabbar>
 	</view>
 </template>
 
@@ -226,9 +234,16 @@ export default {
 	data() {
 		return {
 			isLoading: true,
-			scrollHeight: 800,
 			scrollY: 0,
 			isDark: false,
+
+			// 沉浸式布局信息
+			layoutInfo: {
+				statusBarHeight: 44,
+				navBarHeight: 88,
+				tabBarHeight: 90,
+				safeAreaBottom: 0,
+			},
 			
 			// Store实例
 			studyStore: null,
@@ -237,9 +252,47 @@ export default {
 			
 			// 成就徽章数量（从本地存储获取）
 			achievementCount: 0,
+
+			// 按钮防重复点击状态
+			isNavigating: false,
 			
-			// 下拉刷新状态
-			isRefreshing: false,
+			// 每日金句相关
+			isRefreshingQuote: false,
+			quoteDate: '',
+			
+			// 励志金句库（30条精选）
+			quoteLibrary: [
+				'成功不是终点，失败也不是终结，唯有勇气才是永恒。',
+				'天才是1%的灵感加上99%的汗水。',
+				'不积跬步，无以至千里；不积小流，无以成江海。',
+				'宝剑锋从磨砺出，梅花香自苦寒来。',
+				'书山有路勤为径，学海无涯苦作舟。',
+				'业精于勤，荒于嬉；行成于思，毁于随。',
+				'黑发不知勤学早，白首方悔读书迟。',
+				'少壮不努力，老大徒伤悲。',
+				'读书破万卷，下笔如有神。',
+				'学而不思则罔，思而不学则殆。',
+				'知之者不如好之者，好之者不如乐之者。',
+				'三人行，必有我师焉。',
+				'温故而知新，可以为师矣。',
+				'学如逆水行舟，不进则退。',
+				'千里之行，始于足下。',
+				'路漫漫其修远兮，吾将上下而求索。',
+				'天行健，君子以自强不息。',
+				'有志者事竟成，破釜沉舟，百二秦关终属楚。',
+				'苦心人天不负，卧薪尝胆，三千越甲可吞吴。',
+				'世上无难事，只怕有心人。',
+				'只要功夫深，铁杵磨成针。',
+				'精诚所至，金石为开。',
+				'锲而不舍，金石可镂。',
+				'绳锯木断，水滴石穿。',
+				'不经一番寒彻骨，怎得梅花扑鼻香。',
+				'吃得苦中苦，方为人上人。',
+				'今日事今日毕，莫将今事待明日。',
+				'一寸光阴一寸金，寸金难买寸光阴。',
+				'勤能补拙是良训，一分辛苦一分才。',
+				'书籍是人类进步的阶梯。'
+			],
 
 			// 知识点数据
 			knowledgePoints: [
@@ -260,31 +313,13 @@ export default {
 			],
 
 			// 每日金句
-			dailyQuote: '成功不是终点，失败也不是终结，唯有勇气才是永恒。',
-			isRefreshingQuote: false,
-			
-			// 备用金句库
-			quoteLibrary: [
-				'成功不是终点，失败也不是终结，唯有勇气才是永恒。',
-				'学习是一场马拉松，不是短跑。坚持到底，你就是赢家。',
-				'每一次努力都是在为未来的自己铺路。',
-				'困难只是暂时的，放弃才是永久的。',
-				'今天的汗水，是明天成功的基石。',
-				'不要害怕失败，害怕的应该是从未尝试。',
-				'知识改变命运，学习成就未来。',
-				'每一个不曾起舞的日子，都是对生命的辜负。'
-			]
+			dailyQuote: '成功不是终点，失败也不是终结，唯有勇气才是永恒。'
 		};
 	},
 
 	onLoad() {
-		try {
-			const windowInfo = uni.getWindowInfo();
-			this.scrollHeight = (windowInfo.windowHeight || 800) - 120;
-		} catch (e) {
-			const sys = uni.getSystemInfoSync();
-			this.scrollHeight = (sys.windowHeight || 800) - 120;
-		}
+		// 初始化沉浸式布局信息
+		this.initLayoutInfo();
 
 		const savedTheme = uni.getStorageSync('theme_mode') || 'light';
 		this.isDark = savedTheme === 'dark';
@@ -297,6 +332,9 @@ export default {
 		this.studyStore = useStudyStore();
 		this.todoStore = useTodoStore();
 		this.userStore = useUserStore();
+
+		// 初始化每日金句
+		this.initDailyQuote();
 
 		this.loadData();
 	},
@@ -355,6 +393,39 @@ export default {
 	},
 
 	methods: {
+		// 初始化沉浸式布局信息
+		initLayoutInfo() {
+			try {
+				const windowInfo = uni.getWindowInfo();
+				const statusBarHeight = windowInfo.statusBarHeight || 44;
+				const safeAreaBottom = windowInfo.safeAreaInsets?.bottom || 0;
+
+				// 导航栏高度 = 状态栏 + 44px（标准导航栏高度）
+				const navBarHeight = statusBarHeight + 44;
+
+				// TabBar 高度 = 胶囊(60px) + margin(12px) + 安全区域
+				const tabBarHeight = 60 + 12 + safeAreaBottom;
+
+				this.layoutInfo = {
+					statusBarHeight,
+					navBarHeight,
+					tabBarHeight,
+					safeAreaBottom,
+				};
+
+				console.log('[Index] 布局信息初始化:', this.layoutInfo);
+			} catch (e) {
+				console.warn('[Index] 布局信息初始化失败，使用默认值:', e);
+				// 使用默认值
+				this.layoutInfo = {
+					statusBarHeight: 44,
+					navBarHeight: 88,
+					tabBarHeight: 90,
+					safeAreaBottom: 34,
+				};
+			}
+		},
+
 		async loadData() {
 			try {
 				// 1. 恢复用户信息
@@ -396,60 +467,6 @@ export default {
 			this.loadAchievements();
 			this.loadKnowledgePoints();
 			this.loadRecentActivities();
-		},
-		
-		// 下拉刷新处理
-		async onPullDownRefresh() {
-			console.log('[Index] 下拉刷新触发');
-			this.isRefreshing = true;
-			
-			try {
-				// 震动反馈
-				try {
-					if (typeof uni.vibrateShort === 'function') {
-						uni.vibrateShort();
-					}
-				} catch (e) {}
-				
-				// 刷新所有数据
-				await Promise.all([
-					this.loadKnowledgePoints(),
-					this.loadRecentActivities()
-				]);
-				
-				// 刷新Store数据
-				this.studyStore.restoreProgress();
-				this.todoStore.initTasks();
-				this.userStore.restoreUserInfo();
-				this.loadAchievements();
-				
-				console.log('[Index] 数据刷新完成');
-				
-				// 显示成功提示
-				uni.showToast({
-					title: '刷新成功',
-					icon: 'success',
-					duration: 1500
-				});
-			} catch (error) {
-				console.error('[Index] 刷新失败:', error);
-				uni.showToast({
-					title: '刷新失败',
-					icon: 'none',
-					duration: 1500
-				});
-			} finally {
-				// 延迟关闭刷新状态，确保动画完整
-				setTimeout(() => {
-					this.isRefreshing = false;
-				}, 500);
-			}
-		},
-		
-		// 刷新恢复处理
-		onRefreshRestore() {
-			console.log('[Index] 刷新动画恢复');
-			this.isRefreshing = false;
 		},
 		
 		loadAchievements() {
@@ -639,9 +656,14 @@ export default {
 		},
 
 		navToPractice() {
+			// 防止重复点击
+			if (this.isNavigating) return;
+			this.isNavigating = true;
+
 			// 检查题库是否存在
 			const questionBank = uni.getStorageSync('v30_bank') || [];
 			if (questionBank.length === 0) {
+				this.isNavigating = false;
 				uni.showModal({
 					title: '提示',
 					content: '题库为空，请先导入题目',
@@ -653,16 +675,30 @@ export default {
 					}
 				});
 			} else {
-				uni.switchTab({ url: '/src/pages/practice/index' });
+				uni.switchTab({
+					url: '/src/pages/practice/index',
+					complete: () => {
+						setTimeout(() => {
+							this.isNavigating = false;
+						}, 500);
+					}
+				});
 			}
 		},
 
 		navToMockExam() {
+			// 防止重复点击
+			if (this.isNavigating) return;
+			this.isNavigating = true;
+
 			uni.showModal({
 				title: '模拟考试',
 				content: '模拟考试功能正在开发中，敬请期待！\n\n将提供：\n• 真实考试环境模拟\n• 智能组卷\n• 详细成绩分析',
 				showCancel: false,
-				confirmText: '知道了'
+				confirmText: '知道了',
+				complete: () => {
+					this.isNavigating = false;
+				}
 			});
 		},
 
@@ -739,84 +775,104 @@ export default {
 		handleScroll(e) {
 			this.scrollY = e.detail.scrollTop;
 		},
+
+		// ==================== 每日金句功能 ====================
 		
-		// 刷新每日金句
-		async refreshDailyQuote() {
-			if (this.isRefreshingQuote) return;
+		/**
+		 * 初始化每日金句
+		 * 基于日期自动切换，每天显示不同的金句
+		 */
+		initDailyQuote() {
+			const today = new Date();
+			const dateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+			this.quoteDate = dateStr;
+			
+			// 检查是否有缓存的今日金句
+			const cachedQuote = uni.getStorageSync('daily_quote_cache');
+			const cachedDate = uni.getStorageSync('daily_quote_date');
+			
+			if (cachedDate === dateStr && cachedQuote) {
+				// 使用缓存的金句
+				this.dailyQuote = cachedQuote;
+				console.log('[Index] 使用缓存的每日金句');
+			} else {
+				// 生成新的每日金句
+				this.generateDailyQuote();
+			}
+		},
+		
+		/**
+		 * 生成每日金句
+		 * 使用日期作为种子，确保每天的金句固定但每天不同
+		 */
+		generateDailyQuote() {
+			const today = new Date();
+			const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+			
+			// 使用日期作为索引，确保每天固定
+			const index = dayOfYear % this.quoteLibrary.length;
+			this.dailyQuote = this.quoteLibrary[index];
+			
+			// 缓存到本地
+			const dateStr = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+			uni.setStorageSync('daily_quote_cache', this.dailyQuote);
+			uni.setStorageSync('daily_quote_date', dateStr);
+			
+			console.log('[Index] 生成新的每日金句:', this.dailyQuote);
+		},
+		
+		/**
+		 * 刷新每日金句
+		 * 点击金句卡片时触发，随机显示一条新金句
+		 */
+		refreshDailyQuote() {
+			if (this.isRefreshingQuote) return; // 防止重复点击
 			
 			this.isRefreshingQuote = true;
 			
+			// 震动反馈
 			try {
-				// 震动反馈
-				try {
-					if (typeof uni.vibrateShort === 'function') {
-						uni.vibrateShort();
-					}
-				} catch (e) {}
-				
-				// 尝试使用AI生成金句
-				console.log('[Index] 请求AI生成每日金句...');
-				
-				const response = await lafService.proxyAI('chat', {
-					content: '请生成一句简短的励志金句，适合考研学生，不超过30个字，不要引号。'
-				});
-				
-				console.log('[Index] AI响应:', response);
-				
-				if (response && response.success && response.data) {
-					// 提取AI生成的内容
-					let newQuote = '';
-					
-					if (typeof response.data === 'string') {
-						newQuote = response.data.trim();
-					} else if (response.data.content) {
-						newQuote = response.data.content.trim();
-					} else if (response.data.text) {
-						newQuote = response.data.text.trim();
-					}
-					
-					// 清理引号
-					newQuote = newQuote.replace(/^["']|["']$/g, '');
-					
-					if (newQuote && newQuote.length > 0 && newQuote.length <= 50) {
-						this.dailyQuote = newQuote;
-						console.log('[Index] ✅ AI金句生成成功:', newQuote);
-						
-						uni.showToast({
-							title: '金句已刷新',
-							icon: 'success',
-							duration: 1500
-						});
-					} else {
-						throw new Error('AI返回内容格式不正确');
-					}
-				} else {
-					throw new Error('AI响应失败');
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort();
 				}
+			} catch (e) {}
+			
+			// 随机选择一条不同的金句
+			let newIndex;
+			const currentQuote = this.dailyQuote;
+			do {
+				newIndex = Math.floor(Math.random() * this.quoteLibrary.length);
+			} while (this.quoteLibrary[newIndex] === currentQuote && this.quoteLibrary.length > 1);
+			
+			// 延迟显示新金句（模拟加载效果）
+			setTimeout(() => {
+				this.dailyQuote = this.quoteLibrary[newIndex];
+				this.isRefreshingQuote = false;
 				
-			} catch (error) {
-				console.error('[Index] AI生成金句失败，使用备用金句:', error);
+				// 更新缓存
+				uni.setStorageSync('daily_quote_cache', this.dailyQuote);
 				
-				// 降级：从备用金句库随机选择
-				const randomIndex = Math.floor(Math.random() * this.quoteLibrary.length);
-				this.dailyQuote = this.quoteLibrary[randomIndex];
-				
-				uni.showToast({
-					title: '金句已刷新',
-					icon: 'success',
-					duration: 1500
-				});
-			} finally {
-				setTimeout(() => {
-					this.isRefreshingQuote = false;
-				}, 1000);
-			}
+				console.log('[Index] 刷新每日金句:', this.dailyQuote);
+			}, 300);
 		}
 	}
 };
 </script>
 
 <style lang="scss" scoped>
+/* ==================== 页面最外层容器 ==================== */
+.page-wrapper {
+	min-height: 100vh;
+	position: relative;
+	/* 关键：最外层背景白色，这样 TabBar 下方不会显示绿色 */
+	background-color: #FFFFFF;
+}
+
+/* 深色模式下的页面背景 */
+.page-wrapper.page-dark {
+	background-color: #080808;
+}
+
 /* ==================== CSS变量定义 ==================== */
 .dashboard-container {
 	/* Light Mode - Wise Style (绿色背景) */
@@ -889,31 +945,64 @@ export default {
 }
 
 /* ==================== 顶部导航栏 ==================== */
+/* 外层定位容器：绝对不能有任何背景色 */
+.header-position-wrapper {
+	/* 所有背景相关属性都在 inline style 中用 !important 强制透明 */
+}
+
+/* 状态栏占位 */
+.status-bar-placeholder {
+	height: var(--status-bar-height, 44px);
+}
+
+/* 内容区域：默认透明背景 */
+.header-content-area {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 100rpx;
+	padding: 0 32rpx;
+	background: transparent;
+	transition: background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+/* 滚动后才显示毛玻璃效果 */
+.header-content-area.header-scrolled {
+	background: rgba(255, 255, 255, 0.85);
+	backdrop-filter: blur(20rpx);
+	-webkit-backdrop-filter: blur(20rpx);
+}
+
+.dashboard-container.dark .header-content-area.header-scrolled {
+	background: rgba(8, 8, 8, 0.85);
+}
+
+/* 旧样式保留兼容 */
 .dashboard-header {
-	position: sticky;
+	position: fixed;
 	top: 0;
-	z-index: 50;
+	left: 0;
+	right: 0;
+	z-index: 100;
 	width: 100%;
-	border-bottom: 1rpx solid var(--border);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	background: none !important;
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
 }
 
 .header-light {
-	background: rgba(159, 232, 112, 0.95);
-	backdrop-filter: blur(24rpx);
-	-webkit-backdrop-filter: blur(24rpx);
+	background: none !important;
+	background-color: transparent !important;
 }
 
-/* 滚动后的透明效果 */
-.header-scrolled {
-	background: var(--glass-bg) !important;
-	backdrop-filter: blur(40rpx) !important;
-	-webkit-backdrop-filter: blur(40rpx) !important;
-	box-shadow: 0 2rpx 16rpx rgba(0, 0, 0, 0.08);
-}
-
-.dashboard-container.dark .header-scrolled {
-	box-shadow: 0 2rpx 16rpx rgba(0, 242, 255, 0.1);
+.header-transparent {
+	background: none !important;
+	background-color: transparent !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	box-shadow: none !important;
+	border: none !important;
 }
 
 .header-content {
@@ -1130,10 +1219,23 @@ export default {
 	transform: scale(1.1) rotate(45deg);
 }
 
-/* ==================== 主内容区域 ==================== */
-.main-content {
+/* ==================== 主内容区域：沉浸式全屏布局 ==================== */
+.main-content-fullscreen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 100vh;
+	width: 100%;
+	z-index: 1;
+	box-sizing: border-box;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* 内容包装器 */
+.content-wrapper {
 	padding: 48rpx 32rpx;
-	padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
 }
 
 /* ==================== 欢迎横幅 ==================== */
@@ -1620,67 +1722,23 @@ export default {
 	font-weight: 500;
 }
 
-/* ==================== 每日金句 ==================== */
+/* ==================== 模式说明 ==================== */
 .mode-description {
 	padding: 48rpx;
 	border-radius: 32rpx;
+	text-align: center;
 	border: 1rpx solid var(--border);
 	margin-bottom: 32rpx;
-	cursor: pointer;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.mode-description:active {
-	transform: scale(0.98);
 }
 
 .desc-light {
 	background: rgba(243, 244, 246, 0.5);
 }
 
-.quote-header {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 16rpx;
-	margin-bottom: 24rpx;
-}
-
-.refresh-btn {
-	width: 56rpx;
-	height: 56rpx;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: var(--primary);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.refresh-btn:active {
-	transform: scale(0.9);
-}
-
-.refresh-icon {
-	font-size: 32rpx;
-	display: inline-block;
-	transition: transform 0.3s ease;
-}
-
-.rotating .refresh-icon {
-	animation: rotate 1s linear infinite;
-}
-
-@keyframes rotate {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
-}
-
 .mode-text {
 	font-size: 32rpx;
 	color: var(--muted-foreground);
 	line-height: 1.8;
-	text-align: center;
 }
 
 .mode-highlight {
@@ -1713,11 +1771,5 @@ export default {
 .edit-text {
 	font-size: 24rpx;
 	font-weight: 600;
-}
-
-/* ==================== 底部间距 ==================== */
-.bottom-spacer {
-	height: calc(140rpx + env(safe-area-inset-bottom));
-	min-height: 140rpx;
 }
 </style>
