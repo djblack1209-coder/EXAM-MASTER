@@ -232,31 +232,52 @@ export default {
       duplicateCount: 0,         // 重复题目数量
       importStartTime: 0,        // 导入开始时间
       importSpeed: 0,            // 导入速度（题/秒）
+      
+      // ⭐⭐ v5.8 新增：批次内进度模拟（TASK-001）
+      progressSimulationTimer: null,  // 进度模拟定时器
+      currentBatchProgress: 0,        // 当前批次进度 (0-100)
+      batchStartTime: 0,              // 当前批次开始时间
     }
   },
   
   computed: {
-    // ⭐⭐ v5.3 优化：动态状态文本（增强emoji和文案）
+    // ⭐⭐ v5.8 优化：动态状态文本（增强emoji和文案）- TASK-002
     importStatusText() {
       if (this.importStatus === 'parsing') {
         return '📖 正在解析文件...';
+      } else if (this.importStatus === 'uploading') {
+        return '📤 正在上传文件...';
       } else if (this.importStatus === 'importing') {
-        return `✨ 正在生成第 ${this.currentQuestionIndex} 题...`;
+        // v5.8: 显示更详细的进度信息
+        const batchNum = this.generatedCount + 1;
+        const totalBatch = this.totalQuestionsLimit;
+        return `✨ AI 正在生成第 ${batchNum}/${totalBatch} 批题目...`;
       } else if (this.importStatus === 'success') {
         return '🎉 导入成功！';
       } else if (this.importStatus === 'error') {
         return '❌ 导入失败';
+      } else if (this.importStatus === 'retrying') {
+        return `🔄 正在重试 (${this.retryCount}/${this.maxRetryCount})...`;
       }
       return '🤖 AI 正在分析...';
     },
     
+    // ⭐⭐ v5.8 优化：更直观的进度显示 - TASK-001
     importProgressText() {
       const current = this.totalQuestionsGenerated;
       const total = this.totalQuestionsLimit * this.batchQuestionCount;
       
-      // ⭐⭐ v5.3 优化：更直观的进度显示
-      if (this.importStatus === 'importing' && this.currentQuestionIndex > 0) {
-        return `正在生成第 ${this.currentQuestionIndex} 题（共 ${total} 题）`;
+      if (this.importStatus === 'parsing') {
+        return '正在解析文件内容...';
+      }
+      
+      if (this.importStatus === 'importing') {
+        // v5.8: 显示批次内的实时进度
+        if (this.currentBatchProgress > 0 && this.currentBatchProgress < 100) {
+          const estimatedCurrent = current + Math.floor(this.batchQuestionCount * this.currentBatchProgress / 100);
+          return `正在生成第 ${estimatedCurrent} 题（共 ${total} 题）`;
+        }
+        return `正在生成第 ${current + 1} 题（共 ${total} 题）`;
       }
       
       if (current === 0) {
@@ -266,23 +287,21 @@ export default {
       return `已生成 ${current} / ${total} 道题`;
     },
     
+    // ⭐⭐ v5.8 优化：详情显示 - TASK-001
     importDetailText() {
       const parts = [];
       
-      // 进度百分比（增强显示）
-      if (this.realProgress > 0) {
+      // v5.8: 显示更精确的进度（包含批次内进度）
+      if (this.importStatus === 'importing' && this.currentBatchProgress > 0) {
+        const preciseProgress = Math.round(this.realProgress + (this.currentBatchProgress / this.totalQuestionsLimit));
+        parts.push(`📊 进度 ${Math.min(preciseProgress, 99)}%`);
+      } else if (this.realProgress > 0) {
         parts.push(`📊 进度 ${this.realProgress}%`);
       }
       
       // 预估剩余时间（优化显示）
       if (this.estimatedTimeLeft > 0 && this.importStatus === 'importing') {
-        if (this.estimatedTimeLeft > 60) {
-          const minutes = Math.floor(this.estimatedTimeLeft / 60);
-          const seconds = this.estimatedTimeLeft % 60;
-          parts.push(`⏱️ 剩余约 ${minutes} 分 ${seconds} 秒`);
-        } else {
-          parts.push(`⏱️ 剩余约 ${this.estimatedTimeLeft} 秒`);
-        }
+        parts.push(`⏱️ ${this.formatTimeLeft(this.estimatedTimeLeft)}`);
       }
       
       // 导入速度（优先显示）
@@ -293,6 +312,11 @@ export default {
       // 重复题目提示（醒目显示）
       if (this.duplicateCount > 0) {
         parts.push(`🔄 已跳过 ${this.duplicateCount} 道重复题`);
+      }
+      
+      // v5.8: 文件大小显示（如果有）
+      if (this.cachedFileData && this.cachedFileData.size > 0 && this.importStatus === 'parsing') {
+        parts.push(`📁 ${this.formatFileSize(this.cachedFileData.size)}`);
       }
       
       return parts.join(' · ');
@@ -476,6 +500,9 @@ export default {
       this.isPaused = false;
       this.showMask = true;   // 开启遮罩（前5题期间）
       
+      // ⭐⭐ v5.8: 禁用返回按钮 - TASK-004
+      this.canGoBack = false;
+      
       this.readOffset = 0;
       this.generatedCount = 0;
       this.progressWidth = 0; // 重置进度
@@ -490,6 +517,10 @@ export default {
       this.duplicateCount = 0;
       this.importSpeed = 0;
       this.currentQuestionIndex = 0;
+      
+      // ⭐⭐ v5.8: 重置批次进度 - TASK-001
+      this.currentBatchProgress = 0;
+      this.retryCount = 0;
       
       this.startSoupRotation(); 
       this.updateUploadRecordStatus('generating');
@@ -527,6 +558,11 @@ export default {
       // ⭐⭐ v5.3 Phase 1: 批次开始，更新状态为importing
       this.importStatus = 'importing';
       this.currentQuestionIndex = this.generatedCount * this.batchQuestionCount + 1;
+      
+      // ⭐⭐ v5.8: 启动批次内进度模拟 - TASK-001
+      this.batchStartTime = Date.now();
+      this.currentBatchProgress = 0;
+      this.startBatchProgressSimulation();
       
       // ⭐ 4. 更新真实进度
       this.updateRealProgress();
@@ -603,6 +639,10 @@ export default {
         this.readOffset += this.chunkSize;
         this.generatedCount++; // 这里的计数单位变成了"批次"
         
+        // ⭐⭐ v5.8: 停止批次内进度模拟 - TASK-001
+        this.stopBatchProgressSimulation();
+        this.currentBatchProgress = 100;
+        
         // ⭐⭐ v5.3 Phase 1: 批次完成，更新真实进度
         this.totalQuestionsGenerated = this.generatedCount * this.batchQuestionCount;
         this.realProgress = Math.round((this.generatedCount / this.totalQuestionsLimit) * 100);
@@ -640,51 +680,100 @@ export default {
       } catch (e) {
         console.error("生成报错:", e);
         
-        // ⭐ 增强错误处理：详细错误分类
-        let errorMessage = '生成失败';
-        let canRetry = false;
+        // ⭐⭐ v5.8: 停止批次内进度模拟 - TASK-001
+        this.stopBatchProgressSimulation();
         
-        if (e.message && (e.message.includes('timeout') || e.message.includes('超时'))) {
-          errorMessage = '网络超时，正在重试...';
+        // ⭐⭐ v5.8 增强错误处理：详细错误分类 - TASK-003
+        let errorMessage = '生成失败';
+        let errorDetail = e.message || '未知错误';
+        let canRetry = false;
+        let autoRetry = false;
+        
+        // 错误分类逻辑
+        if (e.message && (e.message.includes('timeout') || e.message.includes('超时') || e.message.includes('ETIMEDOUT'))) {
+          // 网络超时：自动重试
+          errorMessage = '⏱️ 网络超时';
+          errorDetail = '请求超时，正在自动重试...';
           canRetry = true;
-          // 静默重试，不打扰用户
-          setTimeout(() => {
-            if (this.isLooping) {
-              this.generateNextBatch();
-            }
-          }, 2000);
-        } else if (e.message && e.message.includes('401')) {
-          errorMessage = '未登录，请先登录后重试';
+          autoRetry = true;
+          this.importStatus = 'retrying';
+        } else if (e.message && (e.message.includes('401') || e.message.includes('unauthorized'))) {
+          // 未登录：不自动重试
+          errorMessage = '🔐 未登录';
+          errorDetail = '请先登录后再试';
           canRetry = false;
           this.isLooping = false;
           this.isPaused = true;
+          this.canGoBack = true;
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
-          uni.showToast({ title: errorMessage, icon: 'none', duration: 3000 });
-        } else if (e.message && (e.message.includes('network') || e.message.includes('网络'))) {
-          errorMessage = '网络不稳定，请稍后重试';
+        } else if (e.message && (e.message.includes('network') || e.message.includes('网络') || e.message.includes('ECONNREFUSED'))) {
+          // 网络错误：可重试
+          errorMessage = '📶 网络不稳定';
+          errorDetail = '请检查网络连接后重试';
           canRetry = true;
           this.isLooping = false;
           this.isPaused = true;
+          this.canGoBack = true;
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
-          uni.showToast({ title: errorMessage, icon: 'none', duration: 3000 });
+        } else if (e.message && (e.message.includes('JSON') || e.message.includes('parse') || e.message.includes('Unexpected'))) {
+          // AI解析失败：可重试
+          errorMessage = '🤖 AI 解析失败';
+          errorDetail = 'AI 返回的数据格式异常，请重试';
+          canRetry = true;
+          autoRetry = this.retryCount < 2; // 自动重试2次
+          if (autoRetry) {
+            this.importStatus = 'retrying';
+          }
+        } else if (e.message && (e.message.includes('rate') || e.message.includes('limit') || e.message.includes('429'))) {
+          // 频率限制：延迟重试
+          errorMessage = '⚡ 请求过于频繁';
+          errorDetail = '请稍等片刻后重试';
+          canRetry = true;
+          this.isLooping = false;
+          this.isPaused = true;
+          this.canGoBack = true;
+          this.updateUploadRecordStatus('failed');
+          this.showMask = false;
         } else {
-          errorMessage = '生成失败，请重试';
+          // 其他错误：可重试
+          errorMessage = '❌ 生成失败';
+          errorDetail = e.message || '未知错误，请重试';
           canRetry = true;
           this.isLooping = false;
           this.isPaused = true;
+          this.canGoBack = true;
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
-          uni.showToast({ title: errorMessage, icon: 'none', duration: 3000 });
         }
         
         // 保存错误信息供重试使用
         this.errorInfo = {
           message: errorMessage,
-          detail: e.message || '未知错误',
+          detail: errorDetail,
           canRetry: canRetry
         };
+        this.importStatus = canRetry ? 'error' : 'error';
+        
+        // 自动重试逻辑
+        if (autoRetry && this.retryCount < this.maxRetryCount) {
+          this.retryCount++;
+          console.log(`[自动重试] 第 ${this.retryCount} 次重试...`);
+          uni.showToast({ 
+            title: `正在重试 (${this.retryCount}/${this.maxRetryCount})...`, 
+            icon: 'none',
+            duration: 2000
+          });
+          setTimeout(() => {
+            if (this.isLooping) {
+              this.generateNextBatch();
+            }
+          }, 2000);
+        } else if (!autoRetry) {
+          // 显示错误提示
+          uni.showToast({ title: errorMessage, icon: 'none', duration: 3000 });
+        }
       } finally {
         this.isRequestInFlight = false; // ⚡️ 解锁：无论成功失败，请求结束
       }
@@ -832,13 +921,15 @@ export default {
       }
     },
 
-    // 7. 结束生成（⭐⭐ v5.3: 增强统计报告）
+    // 7. 结束生成（⭐⭐ v5.8: 增强统计报告）
     finishGeneration(msg) {
       this.isLooping = false;
       this.isPaused = false;
       this.showMask = false;
       this.showSpeedModal = false;
       this.importStatus = 'success';
+      this.canGoBack = true;  // ⭐⭐ v5.8: 恢复返回按钮 - TASK-004
+      this.stopBatchProgressSimulation();  // ⭐⭐ v5.8: 停止进度模拟 - TASK-001
       this.updateUploadRecordStatus('completed');
       if (this.soupTimer) {
         clearInterval(this.soupTimer);
@@ -925,8 +1016,38 @@ export default {
       uni.switchTab({ url: '/src/pages/practice/index' });
     },
 
-    // 返回上一页
+    // ⭐⭐ v5.8 优化：返回上一页（增加生成中拦截）- TASK-004
     handleBack() {
+      // v5.8: 检查是否正在生成，如果是则显示确认弹窗
+      if (!this.canGoBack || this.isLooping) {
+        uni.showModal({
+          title: '⚠️ 任务进行中',
+          content: '当前正在生成题目，返回将中断任务。已生成的题目将保留，确定要返回吗？',
+          confirmText: '确定返回',
+          cancelText: '继续生成',
+          confirmColor: '#FF453A',
+          success: (res) => {
+            if (res.confirm) {
+              // 用户确认返回，停止生成
+              this.isLooping = false;
+              this.isPaused = false;
+              this.showMask = false;
+              this.showSpeedModal = false;
+              this.canGoBack = true;
+              this.stopBatchProgressSimulation();
+              this.updateUploadRecordStatus('cancelled');
+              
+              uni.navigateBack({
+                fail: () => {
+                  uni.switchTab({ url: '/src/pages/practice/index' });
+                }
+              });
+            }
+          }
+        });
+        return;
+      }
+      
       uni.navigateBack({
         fail: () => {
           // 如果无法返回，跳转到刷题首页
@@ -1185,6 +1306,56 @@ export default {
         clearInterval(this.progressTimer);
         this.progressTimer = null;
         this.progressWidth = 0;
+      }
+    },
+    
+    // ⭐⭐ v5.8 新增：启动批次内进度模拟 - TASK-001
+    startBatchProgressSimulation() {
+      // 清除旧的定时器
+      this.stopBatchProgressSimulation();
+      
+      // 每200ms更新一次批次内进度
+      this.progressSimulationTimer = setInterval(() => {
+        if (!this.isLooping || this.isPaused) {
+          this.stopBatchProgressSimulation();
+          return;
+        }
+        
+        // 模拟进度增长（从0到90%，留10%给实际完成）
+        if (this.currentBatchProgress < 90) {
+          // 使用非线性增长，开始快后面慢
+          const increment = Math.max(1, Math.floor((90 - this.currentBatchProgress) / 10));
+          this.currentBatchProgress = Math.min(90, this.currentBatchProgress + increment);
+        }
+      }, 200);
+    },
+    
+    // ⭐⭐ v5.8 新增：停止批次内进度模拟 - TASK-001
+    stopBatchProgressSimulation() {
+      if (this.progressSimulationTimer) {
+        clearInterval(this.progressSimulationTimer);
+        this.progressSimulationTimer = null;
+      }
+    },
+    
+    // ⭐⭐ v5.8 新增：格式化文件大小 - TASK-001
+    formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    },
+    
+    // ⭐⭐ v5.8 新增：格式化剩余时间 - TASK-001
+    formatTimeLeft(seconds) {
+      if (seconds <= 0) return '即将完成';
+      if (seconds < 60) {
+        return `剩余约 ${seconds} 秒`;
+      } else {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `剩余约 ${minutes} 分 ${secs} 秒`;
       }
     },
     
