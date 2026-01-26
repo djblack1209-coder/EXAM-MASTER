@@ -9,34 +9,6 @@
             }
         },
         {
-            "path": "src/pages/test-ultra-simple/index",
-            "style": {
-                "navigationBarTitleText": "超级简单测试",
-                "navigationStyle": "default"
-            }
-        },
-        {
-            "path": "src/pages/test-simple/index",
-            "style": {
-                "navigationBarTitleText": "测试页面",
-                "navigationStyle": "default"
-            }
-        },
-        {
-            "path": "src/pages/test-minimal/index",
-            "style": {
-                "navigationBarTitleText": "最小测试",
-                "navigationStyle": "default"
-            }
-        },
-        {
-            "path": "src/pages/test-debug/index",
-            "style": {
-                "navigationBarTitleText": "调试页面",
-                "navigationStyle": "default"
-            }
-        },
-        {
             "path": "src/pages/splash/index",
             "style": {
                 "navigationBarTitleText": "Exam Master",
@@ -193,6 +165,15 @@
                 "navigationBarTitleText": "学习详情",
                 "navigationStyle": "custom",
                 "navigationBarBackgroundColor": "#1A1A1A"
+            }
+        },
+        {
+            "path": "src/pages/tools/photo-search",
+            "style": {
+                "navigationBarTitleText": "拍照搜题",
+                "navigationStyle": "custom",
+                "navigationBarBackgroundColor": "#1A1A1A",
+                "enablePullDownRefresh": false
             }
         }
     ],

@@ -228,7 +228,7 @@ export default {
 <style lang="scss" scoped>
 .container {
 	min-height: 100vh;
-	background: #F0F4F8;
+	background: var(--bg-secondary);
 	position: relative;
 	overflow: hidden;
 }
@@ -238,7 +238,7 @@ export default {
 	top: 0;
 	width: 100%;
 	height: 500rpx;
-	background: linear-gradient(135deg, #A8E6CF 0%, #DCEDC1 100%);
+	background: linear-gradient(135deg, var(--success-light) 0%, var(--bg-success-light) 100%);
 	filter: blur(80px);
 	opacity: 0.6;
 	z-index: 0;
@@ -250,7 +250,7 @@ export default {
 	left: 0;
 	width: 100%;
 	z-index: 100;
-	background: rgba(255,255,255,0.1);
+	background: var(--bg-glass);
 	backdrop-filter: blur(20px);
 	.nav-content {
 		height: 50px;
@@ -260,13 +260,13 @@ export default {
 		padding: 0 30rpx;
 		.nav-back {
 			font-size: 36rpx;
-			color: #333;
+			color: var(--text-primary);
 			font-weight: bold;
 		}
 		.nav-title {
 			font-size: 34rpx;
 			font-weight: 600;
-			color: #1A1A1A;
+			color: var(--text-primary);
 		}
 		.nav-placeholder {
 			width: 36rpx;
@@ -284,13 +284,13 @@ export default {
 
 /* 通用玻璃卡片 */
 .glass-card {
-	background: rgba(255, 255, 255, 0.75);
+	background: var(--bg-card-glass);
 	backdrop-filter: blur(20px);
-	border: 1px solid rgba(255, 255, 255, 0.5);
+	border: 1px solid var(--border-glass);
 	border-radius: 40rpx;
 	padding: 30rpx;
 	margin-bottom: 30rpx;
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+	box-shadow: var(--shadow-lg);
 }
 
 .form-card {
@@ -305,7 +305,7 @@ export default {
 	display: block;
 	font-size: 28rpx;
 	font-weight: 600;
-	color: #2D3748;
+	color: var(--text-primary);
 	margin-bottom: 16rpx;
 }
 
@@ -315,18 +315,18 @@ export default {
 	padding: 24rpx;
 	border-radius: 16rpx;
 	background: var(--bg-card);
-	border: 2rpx solid rgba(0, 0, 0, 0.1);
+	border: 2rpx solid var(--border-light);
 	font-size: 28rpx;
-	color: #1A1A1A;
+	color: var(--text-primary);
 	box-sizing: border-box;
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.03);
+	box-shadow: var(--shadow-sm);
 	transition: all 0.3s;
 }
 
 .form-input:focus,
 .form-textarea:focus {
-	border-color: #2ECC71;
-	box-shadow: 0 0 0 4rpx rgba(46, 204, 113, 0.2);
+	border-color: var(--success-green);
+	box-shadow: var(--shadow-success);
 }
 
 .date-picker,
@@ -337,16 +337,16 @@ export default {
 	padding: 24rpx;
 	border-radius: 16rpx;
 	background: var(--bg-card);
-	border: 2rpx solid rgba(0, 0, 0, 0.1);
+	border: 2rpx solid var(--border-light);
 	cursor: pointer;
 	transition: all 0.2s;
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.03);
+	box-shadow: var(--shadow-sm);
 }
 
 .date-text,
 .time-text {
 	font-size: 28rpx;
-	color: #1A1A1A;
+	color: var(--text-primary);
 	font-weight: 500;
 }
 
@@ -366,17 +366,17 @@ export default {
 .category-btn {
 	padding: 16rpx 28rpx;
 	border-radius: 24rpx;
-	background: rgba(255, 255, 255, 0.5);
-	border: 1px solid rgba(0, 0, 0, 0.05);
+	background: var(--bg-tag);
+	border: 1px solid var(--border-light);
 	font-size: 26rpx;
-	color: #4A5568;
+	color: var(--text-secondary);
 	transition: all 0.2s;
 	cursor: pointer;
 	&.active {
-		background: #2ECC71;
-		color: white;
+		background: var(--success-green);
+		color: var(--text-inverse);
 		font-weight: bold;
-		border-color: #2ECC71;
+		border-color: var(--success-green);
 	}
 	&:active {
 		transform: scale(0.95);
@@ -398,27 +398,27 @@ export default {
 	transition: all 0.2s;
 	cursor: pointer;
 	&.low {
-		background: rgba(46, 204, 113, 0.1);
-		color: #2ECC71;
+		background: var(--bg-success-light);
+		color: var(--success-green);
 	}
 	&.medium {
-		background: rgba(241, 196, 15, 0.1);
-		color: #F1C40F;
+		background: var(--bg-warning-light);
+		color: var(--warning);
 	}
 	&.high {
-		background: rgba(231, 76, 60, 0.1);
-		color: #E74C3C;
+		background: var(--bg-danger-light);
+		color: var(--danger-red);
 	}
 	&.active {
-		color: white;
+		color: var(--text-inverse);
 		&.low {
-			background: #2ECC71;
+			background: var(--success-green);
 		}
 		&.medium {
-			background: #F1C40F;
+			background: var(--warning);
 		}
 		&.high {
-			background: #E74C3C;
+			background: var(--danger-red);
 		}
 	}
 	&:active {
@@ -440,9 +440,9 @@ export default {
 	border: none;
 	transition: all 0.2s;
 	&.primary {
-		background: #2ECC71;
-		color: white;
-		box-shadow: 0 10rpx 30rpx rgba(46, 204, 113, 0.3);
+		background: var(--success-green);
+		color: var(--text-inverse);
+		box-shadow: var(--shadow-success);
 	}
 	&[disabled] {
 		opacity: 0.5;
@@ -479,15 +479,15 @@ export default {
 
 .container.dark-mode .form-input,
 .container.dark-mode .form-textarea {
-	background: rgba(255, 255, 255, 0.05);
-	border-color: rgba(255, 255, 255, 0.1);
+	background: var(--bg-input-dark);
+	border-color: var(--border-dark);
 	color: var(--text-primary);
 }
 
 .container.dark-mode .date-picker,
 .container.dark-mode .time-picker {
-	background: rgba(255, 255, 255, 0.05);
-	border-color: rgba(255, 255, 255, 0.1);
+	background: var(--bg-input-dark);
+	border-color: var(--border-dark);
 }
 
 .container.dark-mode .date-text,
@@ -497,12 +497,12 @@ export default {
 
 .container.dark-mode .duration-btn,
 .container.dark-mode .category-btn {
-	background: rgba(255, 255, 255, 0.05);
-	border-color: rgba(255, 255, 255, 0.1);
+	background: var(--bg-input-dark);
+	border-color: var(--border-dark);
 	color: var(--text-primary);
 }
 
 .container.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, #1e3a0f 100%) !important;
+	background: linear-gradient(135deg, var(--bg-body) 0%, var(--bg-dark-gradient-1) 50%, var(--bg-glass) 100%) !important;
 }
 </style>

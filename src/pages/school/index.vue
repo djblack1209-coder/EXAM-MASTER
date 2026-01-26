@@ -229,6 +229,8 @@
 import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
 import SchoolSkeleton from '../../components/base/school-skeleton/school-skeleton.vue';
 import { lafService } from '../../services/lafService.js';
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js';
 
 export default {
 	components: {
@@ -323,6 +325,22 @@ export default {
 			filter: { location: '', tag: '' },
 			locations: ['北京', '上海', '浙江', '江苏', '湖北', '四川'],
 
+			/**
+			 * TODO [P0-CRITICAL]: 替换为真实后端数据
+			 * 
+			 * 当前问题：mockSchools 是硬编码的假数据，用户看到的学校推荐、匹配度、分数线都不真实
+			 * 
+			 * 修复方案：
+			 * 1. 在 submitForm() 方法中调用后端 API 获取推荐学校
+			 *    const schools = await lafService.getRecommendedSchools(this.formData);
+			 *    this.mockSchools = schools;
+			 * 
+			 * 2. 后端需要实现 school-query.js 云函数，根据用户背景返回匹配学校
+			 * 
+			 * 3. 数据库需要导入真实的学校数据（可参考 database/school_crawler_schema.sql）
+			 * 
+			 * 临时方案：当前使用示例数据供 UI 展示和流程测试
+			 */
 			mockSchools: [
 				{
 					id: 10003, name: "清华大学", location: "北京", matchRate: 98, isTarget: false,
@@ -436,23 +454,23 @@ export default {
 		},
 		bindMajorChange(e) {
 			this.formData.targetMajor = this.majorOptions[e.detail.value];
-			console.log('[school] 📚 选择专业:', this.formData.targetMajor);
+			logger.log('[school] 📚 选择专业:', this.formData.targetMajor);
 		},
 		// 调用智谱AI API获取真实院校推荐数据
 		async submitForm() {
-			console.log('[school] 📝 开始提交择校表单');
-			console.log('[school] 📊 表单数据:', JSON.stringify(this.formData, null, 2));
+			logger.log('[school] 📝 开始提交择校表单');
+			logger.log('[school] 📊 表单数据:', JSON.stringify(this.formData, null, 2));
 
 			if (!this.formData.school || !/^[一-龥a-zA-Z\s]+$/.test(this.formData.school)) {
-				console.warn('[school] ⚠️ 表单验证失败: 院校名称无效');
+				logger.warn('[school] ⚠️ 表单验证失败: 院校名称无效');
 				return uni.showToast({ title: '请输入有效的院校名称', icon: 'none' });
 			}
 			if (!this.formData.targetMajor) {
-				console.warn('[school] ⚠️ 表单验证失败: 报考专业为空');
+				logger.warn('[school] ⚠️ 表单验证失败: 报考专业为空');
 				return uni.showToast({ title: '请输入报考专业', icon: 'none' });
 			}
 
-			console.log('[school] ✅ 表单验证通过');
+			logger.log('[school] ✅ 表单验证通过');
 
 			try {
 				uni.vibrateShort();
@@ -470,11 +488,11 @@ export default {
 			// 设置超时保护（20秒后自动取消Loading并使用默认数据，优化用户体验）
 			let loadingTimeout = setTimeout(() => {
 				if (isTimeoutHandled) {
-					console.log('[school] ⏱️ 超时处理已执行，跳过重复处理');
+					logger.log('[school] ⏱️ 超时处理已执行，跳过重复处理');
 					return;
 				}
 				isTimeoutHandled = true;
-				console.warn('[school] ⏱️ AI 分析超时（10秒），自动降级到默认数据');
+				logger.warn('[school] ⏱️ AI 分析超时（10秒），自动降级到默认数据');
 				uni.hideLoading();
 				uni.showToast({
 					title: 'AI 分析超时，使用默认数据',
@@ -483,13 +501,13 @@ export default {
 				});
 				// 切换到结果页面，使用默认模拟数据
 				this.currentStep = 2;
-				console.log('[school] ✅ 超时降级：切换到结果页面 (Step 2)');
-				console.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
+				logger.log('[school] ✅ 超时降级：切换到结果页面 (Step 2)');
+				logger.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
 				loadingTimeout = null; // 标记已处理
 			}, 10000); // 10秒超时（优化：缩短超时时间，提升用户体验）
 
 			try {
-				console.log('[school] 🤖 调用后端代理进行择校匹配...');
+				logger.log('[school] 🤖 调用后端代理进行择校匹配...');
 
 				// ✅ 使用后端代理调用（安全）- action: 'recommend'
 				const response = await lafService.proxyAI('recommend', {
@@ -500,17 +518,17 @@ export default {
 					englishCert: this.formData.englishCert
 				});
 
-				console.log('[school] 📥 后端代理请求完成，开始处理响应...');
+				logger.log('[school] 📥 后端代理请求完成，开始处理响应...');
 
 				// 处理API响应
 				if (response && response.code === 0 && response.data) {
-					console.log('[school] ✅ API 响应解析成功');
+					logger.log('[school] ✅ API 响应解析成功');
 					const content = response.data;
-					console.log('[school]  AI 返回内容长度:', content.length);
+					logger.log('[school]  AI 返回内容长度:', content.length);
 
 					try {
 						const parsedData = JSON.parse(content);
-						console.log('[school] ✅ JSON 解析成功');
+						logger.log('[school] ✅ JSON 解析成功');
 
 						// 更新院校数据
 						let schoolsList = [];
@@ -520,9 +538,9 @@ export default {
 							schoolsList = parsedData.schools;
 						} else {
 							// 如果API返回格式不符合预期，使用默认模拟数据
-							console.warn('[school] ⚠️ API返回格式不符合预期，使用默认模拟数据');
-							console.log('[school] 📊 返回数据结构:', Object.keys(parsedData));
-							console.log('[school] 📄 返回数据预览:', JSON.stringify(parsedData).substring(0, 200));
+							logger.warn('[school] ⚠️ API返回格式不符合预期，使用默认模拟数据');
+							logger.log('[school] 📊 返回数据结构:', Object.keys(parsedData));
+							logger.log('[school] 📄 返回数据预览:', JSON.stringify(parsedData).substring(0, 200));
 						}
 
 						// 规范化数据格式，确保每个专业都有完整的 scores 数组
@@ -561,29 +579,29 @@ export default {
 							});
 
 							this.mockSchools = schoolsList;
-							console.log(`[school] ✅ 更新院校列表: ${schoolsList.length} 所院校（已规范化数据格式）`);
+							logger.log(`[school] ✅ 更新院校列表: ${schoolsList.length} 所院校（已规范化数据格式）`);
 						}
 					} catch (parseError) {
-						console.error('[school] ❌ JSON 解析失败:', parseError);
-						console.log('[school] 📄 原始内容预览:', content.substring(0, 200));
+						logger.error('[school] ❌ JSON 解析失败:', parseError);
+						logger.log('[school] 📄 原始内容预览:', content.substring(0, 200));
 					}
 				} else {
 					// 修复验证：明确记录 statusCode 解析情况
 					const statusCode = res?.statusCode;
 					if (statusCode === undefined) {
-						console.error('[school] ❌ API 响应异常: statusCode 为 undefined（修复前的问题）');
-						console.log('[school] 📊 响应对象结构:', {
+						logger.error('[school] ❌ API 响应异常: statusCode 为 undefined（修复前的问题）');
+						logger.log('[school] 📊 响应对象结构:', {
 							resType: typeof res,
 							resIsArray: Array.isArray(res),
 							resKeys: res ? Object.keys(res) : [],
 							resValue: res
 						});
 					} else if (statusCode !== 200) {
-						console.warn(`[school] ⚠️ AI API 响应异常: statusCode = ${statusCode} (非 200)`);
+						logger.warn(`[school] ⚠️ AI API 响应异常: statusCode = ${statusCode} (非 200)`);
 					} else {
-						console.warn('[school] ⚠️ AI API 响应格式异常: statusCode = 200 但缺少内容');
+						logger.warn('[school] ⚠️ AI API 响应格式异常: statusCode = 200 但缺少内容');
 					}
-					console.log('[school] 📊 响应详情:', {
+					logger.log('[school] 📊 响应详情:', {
 						statusCode: statusCode,
 						hasData: !!res?.data,
 						dataKeys: res?.data ? Object.keys(res.data) : []
@@ -599,15 +617,15 @@ export default {
 
 				// 如果30秒超时保护已经触发，不再重复处理
 				if (isTimeoutHandled) {
-					console.log('[school] ℹ️ 30秒超时保护已触发，跳过成功处理');
+					logger.log('[school] ℹ️ 30秒超时保护已触发，跳过成功处理');
 					return;
 				}
 
 				// 隐藏加载动画，切换到结果页面
 				uni.hideLoading();
 				this.currentStep = 2;
-				console.log('[school] ✅ 切换到结果页面 (Step 2)');
-				console.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
+				logger.log('[school] ✅ 切换到结果页面 (Step 2)');
+				logger.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
 				uni.showToast({ title: '匹配成功', icon: 'success' });
 			} catch (error) {
 				// 清除超时定时器
@@ -618,11 +636,11 @@ export default {
 
 				// 如果30秒超时保护已经触发，不再重复处理错误
 				if (isTimeoutHandled) {
-					console.log('[school] ℹ️ 30秒超时保护已触发，跳过错误处理');
+					logger.log('[school] ℹ️ 30秒超时保护已触发，跳过错误处理');
 					return;
 				}
 
-				console.error('[school] ❌ AI推荐失败:', error);
+				logger.error('[school] ❌ AI推荐失败:', error);
 
 				// 详细的错误处理和日志
 				let errorMsg = 'AI推荐失败，使用默认数据';
@@ -632,23 +650,23 @@ export default {
 					if (error.errMsg.includes('timeout') || error.errMsg.includes('time out') || error.errMsg.includes('超时')) {
 						errorMsg = 'AI 分析超时，使用默认数据';
 						errorType = 'timeout';
-						console.warn('[school] ⏱️ 请求超时（60秒）');
+						logger.warn('[school] ⏱️ 请求超时（60秒）');
 					} else if (error.statusCode === 401 || error.statusCode === 403) {
 						errorMsg = 'API Key 无效，使用默认数据';
 						errorType = 'auth';
-						console.error('[school] 🔑 API Key 错误:', error.statusCode);
+						logger.error('[school] 🔑 API Key 错误:', error.statusCode);
 					} else if (error.statusCode >= 500) {
 						errorMsg = 'AI 服务暂时不可用，使用默认数据';
 						errorType = 'server';
-						console.error('[school] 🖥️ 服务器错误:', error.statusCode);
+						logger.error('[school] 🖥️ 服务器错误:', error.statusCode);
 					} else if (error.errMsg.includes('fail') || error.errMsg.includes('网络')) {
 						errorMsg = '网络连接失败，使用默认数据';
 						errorType = 'network';
-						console.error('[school] 🌐 网络错误');
+						logger.error('[school] 🌐 网络错误');
 					}
 				}
 
-				console.log('[school] 📊 错误详情:', {
+				logger.log('[school] 📊 错误详情:', {
 					type: errorType,
 					message: errorMsg,
 					originalError: error.errMsg || error.message || error
@@ -665,10 +683,10 @@ export default {
 
 					// 切换到结果页面，使用默认模拟数据
 					this.currentStep = 2;
-					console.log('[school] ✅ 降级到默认数据，切换到结果页面 (Step 2)');
-					console.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
+					logger.log('[school] ✅ 降级到默认数据，切换到结果页面 (Step 2)');
+					logger.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
 				} else {
-					console.log('[school] ℹ️ 30秒超时保护已处理，跳过重复的错误处理');
+					logger.log('[school] ℹ️ 30秒超时保护已处理，跳过重复的错误处理');
 				}
 			}
 		},
@@ -704,12 +722,12 @@ export default {
 			});
 		},
 		navToDetail(id, openConsult = false) {
-			console.log(`[school] 🔗 跳转到详情页: id=${id}, openConsult=${openConsult}`);
+			logger.log(`[school] 🔗 跳转到详情页: id=${id}, openConsult=${openConsult}`);
 
 			// 查找对应的院校数据
 			const school = this.mockSchools.find(s => s.id == id || s.id === id);
 			if (school) {
-				console.log(`[school] 📊 找到院校数据:`, {
+				logger.log(`[school] 📊 找到院校数据:`, {
 					id: school.id,
 					name: school.name,
 					location: school.location,
@@ -724,23 +742,23 @@ export default {
 				uni.navigateTo({
 					url: `/pages/school/detail?id=${id}&data=${schoolDataStr}&openConsult=${openConsult}`,
 					success: () => {
-						console.log(`[school] ✅ 页面跳转成功: /pages/school/detail?id=${id}`);
+						logger.log(`[school] ✅ 页面跳转成功: /pages/school/detail?id=${id}`);
 					},
 					fail: (err) => {
-						console.error(`[school] ❌ 页面跳转失败:`, err);
+						logger.error(`[school] ❌ 页面跳转失败:`, err);
 						uni.showToast({ title: '页面跳转失败', icon: 'none' });
 					}
 				});
 			} else {
-				console.warn(`[school] ⚠️ 未找到院校数据，id=${id}，将使用详情页的 Mock 数据`);
+				logger.warn(`[school] ⚠️ 未找到院校数据，id=${id}，将使用详情页的 Mock 数据`);
 				// 即使找不到数据，也允许跳转，详情页会使用 Mock 数据
 				uni.navigateTo({
 					url: `/pages/school/detail?id=${id}&openConsult=${openConsult}`,
 					success: () => {
-						console.log(`[school] ✅ 页面跳转成功（使用详情页 Mock 数据）: /pages/school/detail?id=${id}`);
+						logger.log(`[school] ✅ 页面跳转成功（使用详情页 Mock 数据）: /pages/school/detail?id=${id}`);
 					},
 					fail: (err) => {
-						console.error(`[school] ❌ 页面跳转失败:`, err);
+						logger.error(`[school] ❌ 页面跳转失败:`, err);
 						uni.showToast({ title: '页面跳转失败', icon: 'none' });
 					}
 				});
@@ -751,42 +769,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* --- CSS 变量适配层 --- */
 .container {
-	--bg-body: var(--bg-body);
-	--text-primary: #1A1A1A;
-	--text-secondary: #4A5568;
-	--text-tertiary: #94A3B8;
-	--card-bg: rgba(255, 255, 255, 0.8);
-	--card-border: rgba(0, 0, 0, 0.05);
-	--bg-hover: var(--bg-card);
-	--border-light: rgba(255, 255, 255, 0.6);
-	--brand-color: var(--accent-warm);
-	--brand-color-light: #EBFDF5;
-
+	/* 强调色（页面特有） */
+	--accent-warm: #2ECC71;
+	--accent-cool: #007AFF;
+	
+	/* 状态色 */
+	--error: #FF3B30;
+	
 	min-height: 100vh;
-	background: var(--bg-body);
+	background: var(--bg-page);
 	position: relative;
 	overflow: hidden;
 	transition: background-color 0.3s;
-}
-
-.container.dark-mode {
-	--bg-body: var(--bg-body);
-	--text-primary: var(--bg-card);
-	--text-secondary: #b0b0b0;
-	--text-tertiary: #8899a6;
-	--card-bg: #1e3a0f;
-	--card-border: #2d4e1f;
-	--bg-hover: rgba(255, 255, 255, 0.1);
-	--border-light: rgba(255, 255, 255, 0.2);
-	--brand-color: var(--accent-warm);
-	--brand-color-light: rgba(46, 204, 113, 0.2);
-}
-
-.container.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, var(--bg-body) 100%) !important;
-	opacity: 0.8;
 }
 
 .aurora-bg {
@@ -794,9 +789,9 @@ export default {
 	top: 0;
 	width: 100%;
 	height: 500rpx;
-	background: linear-gradient(135deg, #A8E6CF 0%, #DCEDC1 100%);
+	background: linear-gradient(135deg, var(--accent-warm) 0%, var(--accent-cool) 100%);
 	filter: blur(80px);
-	opacity: 0.6;
+	opacity: 0.3;
 	z-index: 0;
 }
 
@@ -806,14 +801,13 @@ export default {
 	left: 0;
 	width: 100%;
 	z-index: 100;
-	background: var(--card-bg);
+	background: var(--bg-card);
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
-	border-bottom: 1px solid var(--card-border);
+	border-bottom: 1px solid var(--border-color);
 
 	.nav-content {
 		height: 44px;
-		/* 标准导航栏内容高度 */
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -821,14 +815,14 @@ export default {
 
 		.nav-back {
 			font-size: 36rpx;
-			color: var(--text-primary);
+			color: var(--text-main);
 			font-weight: bold;
 		}
 
 		.nav-title {
 			font-size: 34rpx;
 			font-weight: 600;
-			color: var(--text-primary);
+			color: var(--text-main);
 		}
 
 		.nav-placeholder {
@@ -837,50 +831,37 @@ export default {
 	}
 }
 
-/* 导航栏样式 */
-.header-nav {
-	background: var(--card-bg);
-	border-bottom: 1px solid var(--card-border);
-}
-
-/* 深色模式下的导航栏背景适配 */
-.container.dark-mode .header-nav {
-	background: var(--bg-body) !important;
-	border-bottom: 1px solid #2d4e1f !important;
-}
-
-.container.dark-mode .header-nav .nav-content .nav-back,
-.container.dark-mode .header-nav .nav-content .nav-title {
-	color: var(--bg-card) !important;
-}
-
 .main-scroll {
-	height: 100vh;
+	/* 修复：精确计算滚动区域高度，避免阻断感 */
+	height: calc(100vh - var(--nav-bar-height, 88px));
 	padding: 30rpx;
-	padding-bottom: calc(70px + env(safe-area-inset-bottom));
+	padding-bottom: calc(100px + env(safe-area-inset-bottom));
 	box-sizing: border-box;
 	position: relative;
 	z-index: 1;
-	background: var(--bg-body);
+	background: var(--bg-page);
+	/* 优化滚动性能 */
+	-webkit-overflow-scrolling: touch;
 }
 
-/* 通用玻璃卡片 - 使用 CSS 变量 */
 .glass-card {
-	background: var(--card-bg);
+	background: var(--bg-card);
 	backdrop-filter: blur(20px);
-	border: 1px solid var(--card-border);
+	border: 1px solid var(--border-color);
 	border-radius: 40rpx;
 	padding: 30rpx;
 	margin-bottom: 30rpx;
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+	box-shadow: var(--shadow-md);
 }
 
-/* 步骤进度条 */
 .step-bar {
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
 	padding: 40rpx;
+	/* 修复：确保进度栏不被导航栏遮挡 */
+	position: relative;
+	z-index: 10;
 
 	.step-item {
 		display: flex;
@@ -894,9 +875,9 @@ export default {
 			opacity: 1;
 
 			.step-dot {
-				background: var(--brand-color);
+				background: var(--accent-warm);
 				color: white;
-				border-color: var(--brand-color);
+				border-color: var(--accent-warm);
 			}
 		}
 
@@ -904,38 +885,37 @@ export default {
 			width: 44rpx;
 			height: 44rpx;
 			border-radius: 22rpx;
-			border: 2rpx solid var(--text-primary);
+			border: 2rpx solid var(--text-main);
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			font-size: 24rpx;
 			transition: all 0.3s;
 			font-weight: bold;
-			color: var(--text-primary);
+			color: var(--text-main);
 		}
 
 		text {
 			font-size: 24rpx;
 			font-weight: bold;
-			color: var(--text-primary);
+			color: var(--text-main);
 		}
 	}
 
 	.step-line {
 		flex: 1;
 		height: 2rpx;
-		background: var(--border-light);
+		background: var(--border-color);
 		margin: 0 20rpx;
 		margin-top: -30rpx;
 		transition: all 0.3s;
 
 		&.active {
-			background: var(--brand-color);
+			background: var(--accent-warm);
 		}
 	}
 }
 
-/* 表单卡片 */
 .form-card {
 	padding: 50rpx 40rpx;
 
@@ -945,14 +925,14 @@ export default {
 		.title {
 			font-size: 40rpx;
 			font-weight: 800;
-			color: var(--text-primary);
+			color: var(--text-main);
 			display: block;
 			margin-bottom: 10rpx;
 		}
 
 		.subtitle {
 			font-size: 24rpx;
-			color: var(--text-tertiary);
+			color: var(--text-sub);
 		}
 	}
 }
@@ -963,48 +943,47 @@ export default {
 	.label {
 		font-size: 28rpx;
 		font-weight: 600;
-		color: var(--text-primary);
+		color: var(--text-main);
 		margin-bottom: 20rpx;
 		display: block;
 	}
 
 	.glass-input {
-		background: var(--bg-hover);
-		border: 1rpx solid var(--border-light);
+		background: var(--muted);
+		border: 1rpx solid var(--border-color);
 		border-radius: 24rpx;
 		height: 100rpx;
 		padding: 0 30rpx;
 		display: flex;
 		align-items: center;
 		font-size: 28rpx;
-		color: var(--text-primary);
+		color: var(--text-main);
 		box-sizing: border-box;
 		transition: all 0.3s;
 	}
 
 	.glass-input:focus-within {
-		border-color: var(--brand-color);
+		border-color: var(--accent-warm);
 		box-shadow: 0 0 15rpx rgba(46, 204, 113, 0.3);
 	}
 
-	/* 修复占位符颜色 */
 	.ph-style {
-		color: var(--text-tertiary) !important;
+		color: var(--text-sub) !important;
 		opacity: 0.7;
 	}
 
 	.placeholder-text {
-		color: var(--text-tertiary) !important;
+		color: var(--text-sub) !important;
 		opacity: 0.7;
 	}
 
 	.picker-val {
 		justify-content: space-between;
-		color: var(--text-primary);
+		color: var(--text-main);
 
 		.picker-arrow {
 			font-size: 20rpx;
-			color: var(--text-tertiary);
+			color: var(--text-sub);
 		}
 	}
 }
@@ -1016,20 +995,20 @@ export default {
 	.tab-item {
 		flex: 1;
 		height: 100rpx;
-		background: var(--bg-hover);
-		border: 1rpx solid var(--card-border);
+		background: var(--muted);
+		border: 1rpx solid var(--border-color);
 		border-radius: 24rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 28rpx;
-		color: var(--text-tertiary);
+		color: var(--text-sub);
 		transition: all 0.2s;
 
 		&.active {
-			background: var(--brand-color-light);
-			border-color: var(--brand-color);
-			color: var(--brand-color);
+			background: rgba(46, 204, 113, 0.1);
+			border-color: var(--accent-warm);
+			color: var(--accent-warm);
 			font-weight: bold;
 		}
 	}
@@ -1038,8 +1017,8 @@ export default {
 .primary-btn {
 	margin-top: 60rpx;
 	height: 110rpx;
-	background: #2ECC71;
-	color: white;
+	background: var(--primary);
+	color: var(--primary-foreground);
 	border-radius: 30rpx;
 	font-size: 32rpx;
 	font-weight: bold;
@@ -1049,6 +1028,10 @@ export default {
 	gap: 15rpx;
 	box-shadow: 0 10rpx 30rpx rgba(46, 204, 113, 0.3);
 	border: none;
+	transition: all 0.3s ease;
+	/* 修复：确保按钮不被 tabbar 遮挡 */
+	position: relative;
+	z-index: 5;
 
 	&.pulse-btn {
 		animation: pulse 2s infinite;
@@ -1059,8 +1042,11 @@ export default {
 	}
 }
 
-@keyframes pulse {
+.dark-mode .primary-btn {
+	box-shadow: 0 10rpx 30rpx rgba(0, 242, 255, 0.3);
+}
 
+@keyframes pulse {
 	0%,
 	100% {
 		box-shadow: 0 10rpx 30rpx rgba(46, 204, 113, 0.3);
@@ -1071,15 +1057,31 @@ export default {
 	}
 }
 
+.dark-mode {
+	@keyframes pulse {
+		0%,
+		100% {
+			box-shadow: 0 10rpx 30rpx rgba(0, 242, 255, 0.3);
+		}
+
+		50% {
+			box-shadow: 0 10rpx 40rpx rgba(0, 242, 255, 0.5);
+		}
+	}
+}
+
 .info-tip {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 10rpx;
 	padding: 20rpx;
-	color: var(--text-tertiary);
+	color: var(--text-sub);
 	font-size: 24rpx;
 	margin-bottom: 30rpx;
+	/* 修复：确保提示文字不被 tabbar 遮挡 */
+	position: relative;
+	z-index: 5;
 }
 
 /* 结果区域 */
@@ -1098,25 +1100,25 @@ export default {
 .rh-title {
 	font-size: 32rpx;
 	font-weight: 700;
-	color: var(--text-primary);
+	color: var(--text-main);
 }
 
 .rh-filter {
 	font-size: 24rpx;
-	color: var(--text-primary);
-	background: var(--card-bg);
+	color: var(--text-main);
+	background: var(--bg-card);
 	padding: 10rpx 20rpx;
 	border-radius: 20rpx;
 	display: flex;
 	align-items: center;
 	gap: 8rpx;
-	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-	border: 1px solid var(--card-border);
+	box-shadow: var(--shadow-sm);
+	border: 1px solid var(--border-color);
 }
 
 .filter-arrow {
 	font-size: 20rpx;
-	color: var(--text-tertiary);
+	color: var(--text-sub);
 }
 
 .school-card {
@@ -1127,7 +1129,7 @@ export default {
 		align-items: flex-start;
 		margin-bottom: 24rpx;
 		padding-bottom: 24rpx;
-		border-bottom: 1rpx solid var(--card-border);
+		border-bottom: 1rpx solid var(--border-color);
 	}
 
 	.sc-logo {
@@ -1135,7 +1137,7 @@ export default {
 		height: 96rpx;
 		border-radius: 16rpx;
 		margin-right: 24rpx;
-		background: var(--bg-hover);
+		background: var(--muted);
 		flex-shrink: 0;
 	}
 
@@ -1152,13 +1154,13 @@ export default {
 	.sc-name {
 		font-size: 32rpx;
 		font-weight: 700;
-		color: var(--text-primary);
+		color: var(--text-main);
 		margin-right: 16rpx;
 	}
 
 	.sc-loc {
 		font-size: 22rpx;
-		color: var(--text-tertiary);
+		color: var(--text-sub);
 	}
 
 	.sc-tags {
@@ -1170,8 +1172,8 @@ export default {
 
 	.tag-item {
 		font-size: 20rpx;
-		color: var(--brand-color);
-		background: var(--brand-color-light);
+		color: var(--accent-warm);
+		background: rgba(46, 204, 113, 0.1);
 		padding: 4rpx 12rpx;
 		border-radius: 8rpx;
 		font-weight: 600;
@@ -1181,7 +1183,7 @@ export default {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		background: var(--brand-color-light);
+		background: rgba(46, 204, 113, 0.1);
 		padding: 8rpx 16rpx;
 		border-radius: 16rpx;
 		flex-shrink: 0;
@@ -1190,13 +1192,13 @@ export default {
 	.mr-val {
 		font-size: 32rpx;
 		font-weight: 800;
-		color: var(--brand-color);
+		color: var(--accent-warm);
 		line-height: var(--line-height-normal);
 	}
 
 	.mr-lbl {
 		font-size: 18rpx;
-		color: var(--brand-color);
+		color: var(--accent-warm);
 		opacity: 0.8;
 		margin-top: 4rpx;
 	}
@@ -1209,7 +1211,7 @@ export default {
 .major-item {
 	margin-bottom: 24rpx;
 	padding-bottom: 24rpx;
-	border-bottom: 1rpx solid var(--card-border);
+	border-bottom: 1rpx solid var(--border-color);
 
 	&:last-child {
 		margin-bottom: 0;
@@ -1222,36 +1224,36 @@ export default {
 	font-size: 26rpx;
 	margin-bottom: 16rpx;
 	font-weight: 600;
-	color: var(--text-primary);
+	color: var(--text-main);
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
 }
 
 .mj-code {
-	color: var(--text-tertiary);
+	color: var(--text-sub);
 	margin-right: 12rpx;
 	font-weight: 400;
 }
 
 .mj-name {
 	margin-right: 12rpx;
-	color: var(--text-primary);
+	color: var(--text-main);
 }
 
 .mj-type {
 	font-size: 20rpx;
-	background: var(--bg-hover);
+	background: var(--muted);
 	padding: 2rpx 8rpx;
 	border-radius: 8rpx;
-	color: #666;
+	color: var(--text-sub);
 	font-weight: 400;
 }
 
 .mj-scores {
 	display: flex;
 	justify-content: space-between;
-	background: #F9F9F9;
+	background: var(--muted);
 	padding: 16rpx 24rpx;
 	border-radius: 16rpx;
 }
@@ -1265,22 +1267,22 @@ export default {
 
 .sc-year {
 	font-size: 20rpx;
-	color: #999;
+	color: var(--text-sub);
 	margin-bottom: 4rpx;
 }
 
 .sc-num {
 	font-size: 28rpx;
 	font-weight: 700;
-	color: #333;
+	color: var(--text-main);
 }
 
 .sc-num.high {
-	color: #FF3B30;
+	color: var(--error);
 }
 
 .sc-num.sub {
-	color: #666;
+	color: var(--text-sub);
 	font-weight: 400;
 }
 
@@ -1303,26 +1305,31 @@ export default {
 }
 
 .cf-btn.outline {
-	border: 1rpx solid var(--card-border);
-	color: var(--text-primary);
-	background: var(--bg-hover);
+	border: 1rpx solid var(--border-color);
+	color: var(--text-main);
+	background: var(--muted);
 }
 
 .cf-btn.primary {
-	background: var(--brand-color);
-	color: #FFF;
+	background: var(--primary);
+	color: var(--primary-foreground);
 	box-shadow: 0 8rpx 20rpx rgba(46, 204, 113, 0.2);
+	transition: all 0.3s ease;
+}
+
+.dark-mode .cf-btn.primary {
+	box-shadow: 0 8rpx 20rpx rgba(0, 242, 255, 0.2);
 }
 
 .cf-btn.disabled {
-	background: var(--bg-hover);
-	color: var(--text-tertiary);
+	background: var(--muted);
+	color: var(--text-sub);
 	box-shadow: none;
 }
 
 .empty-tip {
 	text-align: center;
-	color: var(--text-tertiary);
+	color: var(--text-sub);
 	font-size: 26rpx;
 	margin-top: 80rpx;
 	display: flex;
@@ -1332,7 +1339,7 @@ export default {
 }
 
 .reset-link {
-	color: var(--brand-color);
+	color: var(--accent-warm);
 	text-decoration: underline;
 }
 
@@ -1367,12 +1374,12 @@ export default {
 .fp-title {
 	font-size: 36rpx;
 	font-weight: 700;
-	color: var(--text-primary);
+	color: var(--text-main);
 }
 
 .fp-reset {
 	font-size: 28rpx;
-	color: var(--text-tertiary);
+	color: var(--text-sub);
 	padding: 8rpx 16rpx;
 }
 
@@ -1385,7 +1392,7 @@ export default {
 	font-weight: 600;
 	margin-bottom: 24rpx;
 	display: block;
-	color: var(--text-primary);
+	color: var(--text-main);
 }
 
 .tag-scroll {
@@ -1400,26 +1407,26 @@ export default {
 }
 
 .ft-item {
-	background: var(--bg-hover);
+	background: var(--muted);
 	padding: 16rpx 32rpx;
 	border-radius: 16rpx;
 	font-size: 26rpx;
-	color: var(--text-tertiary);
-	border: 1rpx solid var(--card-border);
+	color: var(--text-sub);
+	border: 1rpx solid var(--border-color);
 	transition: 0.2s;
 }
 
 .ft-item.active {
-	background: var(--brand-color-light);
-	color: var(--brand-color);
-	border-color: var(--brand-color);
+	background: rgba(46, 204, 113, 0.1);
+	color: var(--accent-warm);
+	border-color: var(--accent-warm);
 	font-weight: 600;
 }
 
 .fp-confirm-btn {
 	width: 100%;
-	background: #2ECC71;
-	color: #FFF;
+	background: var(--primary);
+	color: var(--primary-foreground);
 	border-radius: 50rpx;
 	margin-top: 20rpx;
 	height: 100rpx;
@@ -1429,6 +1436,7 @@ export default {
 	font-weight: 700;
 	font-size: 32rpx;
 	border: none;
+	transition: all 0.3s ease;
 
 	&::after {
 		border: none;
@@ -1436,8 +1444,10 @@ export default {
 }
 
 .safe-area-bottom {
-	height: 80px;
+	/* 修复：增加底部安全区域高度，避免内容被 tabbar 遮挡 */
+	height: calc(100px + env(safe-area-inset-bottom));
 	width: 100%;
+	flex-shrink: 0;
 }
 
 @keyframes fadeIn {
@@ -1462,10 +1472,4 @@ export default {
 	}
 }
 
-/* 深色模式适配 - 极光背景 */
-.container.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
-	opacity: 0.4;
-	filter: blur(120px);
-}
 </style>

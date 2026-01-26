@@ -480,6 +480,85 @@ page {
     @include ds-tap-feedback;
 }
 
+/* ✅ PM要求：增强点击态反馈，消除"塑料感" */
+.ds-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s ease-out;
+    
+    &:active {
+        transform: scale(0.96);
+        opacity: 0.8;
+    }
+}
+
+/* 卡片点击态 - 带阴影变化 */
+.ds-card-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease-out;
+    
+    &:active {
+        transform: scale(0.98) translateY(2rpx);
+        box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* 按钮点击态 - 带发光效果 */
+.ds-btn-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s ease-out;
+    
+    &:active {
+        transform: scale(0.95);
+        filter: brightness(0.9);
+    }
+}
+
+/* 图标点击态 - 旋转效果 */
+.ds-icon-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease-out;
+    
+    &:active {
+        transform: scale(0.85) rotate(-5deg);
+        opacity: 0.7;
+    }
+}
+
+/* 列表项点击态 - 背景变化 */
+.ds-list-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s ease-out;
+    position: relative;
+    
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: currentColor;
+        opacity: 0;
+        transition: opacity 0.15s ease-out;
+        pointer-events: none;
+        border-radius: inherit;
+    }
+    
+    &:active::after {
+        opacity: 0.08;
+    }
+}
+
 /* Minimum Touch Target (44x44px) */
 .ds-touch-target {
     min-width: 88rpx;

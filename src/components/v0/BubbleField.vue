@@ -138,7 +138,6 @@ export default {
       }
     },
     handleBubbleClick(data) {
-      console.log('Bubble clicked:', data)
       this.$emit('bubble-click', data)
       
       // Navigate to detail page (example)

@@ -152,9 +152,10 @@ export default {
 <style lang="scss" scoped>
 .container {
 	min-height: 100vh;
-	background: #F0F4F8;
+	background: var(--bg-page);
 	position: relative;
 	overflow: hidden;
+	transition: background-color 0.3s;
 }
 
 .aurora-bg {
@@ -174,8 +175,10 @@ export default {
 	left: 0;
 	width: 100%;
 	z-index: 100;
-	background: rgba(255, 255, 255, 0.1);
+	background: var(--glass-bg);
 	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border-bottom: 1px solid var(--border-color);
 
 	.nav-content {
 		height: 50px;
@@ -186,19 +189,19 @@ export default {
 
 		.nav-back {
 			font-size: 36rpx;
-			color: #333;
+			color: var(--text-main);
 			font-weight: bold;
 		}
 
 		.nav-title {
 			font-size: 34rpx;
 			font-weight: 600;
-			color: #1A1A1A;
+			color: var(--text-main);
 		}
 
 		.nav-add {
 			font-size: 40rpx;
-			color: #333;
+			color: var(--text-main);
 			font-weight: bold;
 		}
 	}
@@ -224,14 +227,14 @@ export default {
 	}
 
 	.empty-text {
-		color: #999;
+		color: var(--text-sub);
 		font-size: 28rpx;
 		margin-bottom: 60rpx;
 		display: block;
 	}
 
 	.create-btn {
-		background: #2ECC71;
+		background: var(--success);
 		color: white;
 		border: none;
 		border-radius: 50rpx;
@@ -247,13 +250,15 @@ export default {
 
 /* 通用玻璃卡片 */
 .glass-card {
-	background: rgba(255, 255, 255, 0.75);
+	background: var(--bg-card);
 	backdrop-filter: blur(20px);
-	border: 1px solid rgba(255, 255, 255, 0.5);
+	-webkit-backdrop-filter: blur(20px);
+	border: 1px solid var(--border-color);
 	border-radius: 40rpx;
 	padding: 30rpx;
 	margin-bottom: 30rpx;
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+	box-shadow: var(--shadow-md);
+	transition: all 0.3s;
 }
 
 .plan-card {
@@ -270,7 +275,7 @@ export default {
 .plan-name {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: #2D3748;
+	color: var(--text-main);
 	flex: 1;
 	margin-right: 20rpx;
 }
@@ -282,24 +287,24 @@ export default {
 	font-weight: bold;
 
 	&.not_started {
-		background: rgba(156, 163, 175, 0.1);
-		color: #9CA3AF;
+		background: var(--muted);
+		color: var(--text-sub);
 	}
 
 	&.in_progress {
 		background: rgba(46, 204, 113, 0.1);
-		color: var(--accent-warm);
+		color: var(--success);
 	}
 
 	&.completed {
 		background: rgba(74, 144, 226, 0.1);
-		color: #4A90E2;
+		color: var(--info);
 	}
 }
 
 .plan-goal {
 	font-size: 26rpx;
-	color: #4A5568;
+	color: var(--text-sub);
 	line-height: 1.5;
 	margin-bottom: 30rpx;
 	display: block;
@@ -322,15 +327,16 @@ export default {
 .meta-label {
 	display: block;
 	font-size: 22rpx;
-	color: #9CA3AF;
+	color: var(--text-sub);
 	margin-bottom: 8rpx;
+	opacity: 0.8;
 }
 
 .meta-value {
 	display: block;
 	font-size: 26rpx;
 	font-weight: 600;
-	color: #2D3748;
+	color: var(--text-main);
 }
 
 .plan-footer {
@@ -338,7 +344,7 @@ export default {
 	align-items: center;
 	justify-content: space-between;
 	padding-top: 20rpx;
-	border-top: 1px solid rgba(0, 0, 0, 0.05);
+	border-top: 1px solid var(--border-color);
 }
 
 .category-tag {
@@ -349,17 +355,17 @@ export default {
 
 	&.low {
 		background: rgba(46, 204, 113, 0.1);
-		color: var(--accent-warm);
+		color: var(--success);
 	}
 
 	&.medium {
 		background: rgba(241, 196, 15, 0.1);
-		color: #F1C40F;
+		color: var(--warning);
 	}
 
 	&.high {
 		background: rgba(231, 76, 60, 0.1);
-		color: #E74C3C;
+		color: var(--danger);
 	}
 }
 
@@ -371,60 +377,24 @@ export default {
 
 	&.low {
 		background: rgba(46, 204, 113, 0.1);
-		color: var(--accent-warm);
+		color: var(--success);
 	}
 
 	&.medium {
 		background: rgba(241, 196, 15, 0.1);
-		color: #F1C40F;
+		color: var(--warning);
 	}
 
 	&.high {
 		background: rgba(231, 76, 60, 0.1);
-		color: #E74C3C;
+		color: var(--danger);
 	}
 }
 
-/* 深色模式适配 */
-.container.dark-mode {
-	--bg-color: var(--bg-body);
-	--text-primary: var(--bg-card);
-	--text-sub: #b0b0b0;
-	--card-bg: #1e3a0f;
-	--card-border: #2d4e1f;
-	background-color: var(--bg-color);
-}
-
-.container.dark-mode .nav-title {
-	color: var(--text-primary);
-}
-
-.container.dark-mode .nav-back,
-.container.dark-mode .nav-add {
-	color: var(--text-primary);
-}
-
-.container.dark-mode .glass-card {
-	background: var(--card-bg);
-	border-color: var(--card-border);
-}
-
-.container.dark-mode .plan-name,
-.container.dark-mode .meta-value {
-	color: var(--text-primary);
-}
-
-.container.dark-mode .plan-goal {
-	color: var(--text-sub);
-}
-
-.container.dark-mode .meta-label {
-	color: var(--text-sub);
-	opacity: 0.7;
-}
-
+/* 深色模式适配 - 极光背景 */
 .container.dark-mode .aurora-bg {
-	background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, var(--bg-body) 100%) !important;
-	opacity: 0.8;
+	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+	opacity: 0.4;
+	filter: blur(120px);
 }
 </style>

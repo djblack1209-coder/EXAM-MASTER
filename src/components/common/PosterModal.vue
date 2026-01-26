@@ -71,14 +71,14 @@ const handleClose = () => {
 
 const handleSave = () => {
   uni.showToast({
-    title: '保存功能开发中',
+    title: '保存功能即将上线',
     icon: 'none'
   })
 }
 
 const handleShare = () => {
   uni.showToast({
-    title: '分享功能开发中',
+    title: '分享功能即将上线',
     icon: 'none'
   })
 }

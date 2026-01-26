@@ -1,5 +1,5 @@
 <template>
-    <view :class="['study-detail-page', themeStore.themeClass]">
+    <view :class="['study-detail-page', themeClass]">
         <!-- 透明导航栏 -->
         <view class="transparent-navbar" :class="{ 'navbar-solid': scrolled }">
             <view class="navbar-content">
@@ -95,6 +95,8 @@
 
 <script>
 import { useThemeStore } from '../../stores'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
     name: 'StudyDetail',
@@ -109,6 +111,12 @@ export default {
             studyTime: 0,
             completionRate: 0,
             abilityRank: '-'
+        }
+    },
+    computed: {
+        // 安全获取主题类名
+        themeClass() {
+            return this.themeStore?.themeClass || (this.isDark ? 'dark' : 'light')
         }
     },
     onLoad() {
@@ -172,39 +180,72 @@ export default {
          * 加载学习数据
          */
         loadStudyData() {
-            // TODO: 从后端或本地存储加载真实数据
-            // 这里使用模拟数据
-            this.studyTime = 120
-            this.completionRate = 75
-            this.abilityRank = 'A'
+            // 从本地存储加载真实数据
+            try {
+                // 获取今日学习时长
+                const savedDate = uni.getStorageSync('study_date');
+                const today = new Date().toISOString().split('T')[0];
+                if (savedDate === today) {
+                    this.studyTime = uni.getStorageSync('today_study_time') || 0;
+                } else {
+                    this.studyTime = 0;
+                }
+                
+                // 获取完成率（从题库和学习记录计算）
+                const questionBank = uni.getStorageSync('v30_bank') || [];
+                const studyRecord = uni.getStorageSync('study_record') || {};
+                const totalQuestions = questionBank.length;
+                const completedQuestions = studyRecord.totalAnswered || 0;
+                
+                if (totalQuestions > 0) {
+                    this.completionRate = Math.round((completedQuestions / totalQuestions) * 100);
+                } else {
+                    this.completionRate = 0;
+                }
+                
+                // 获取能力评级（基于正确率）
+                const correctCount = studyRecord.correctCount || 0;
+                const totalAnswered = studyRecord.totalAnswered || 0;
+                if (totalAnswered > 0) {
+                    const accuracy = (correctCount / totalAnswered) * 100;
+                    if (accuracy >= 90) {
+                        this.abilityRank = 'S';
+                    } else if (accuracy >= 80) {
+                        this.abilityRank = 'A';
+                    } else if (accuracy >= 70) {
+                        this.abilityRank = 'B';
+                    } else if (accuracy >= 60) {
+                        this.abilityRank = 'C';
+                    } else {
+                        this.abilityRank = 'D';
+                    }
+                } else {
+                    this.abilityRank = '-';
+                }
+                
+                logger.log('[StudyDetail] 加载学习数据:', {
+                    studyTime: this.studyTime,
+                    completionRate: this.completionRate,
+                    abilityRank: this.abilityRank
+                });
+            } catch (error) {
+                logger.error('[StudyDetail] 加载学习数据失败:', error);
+                // 使用默认值
+                this.studyTime = 0;
+                this.completionRate = 0;
+                this.abilityRank = '-';
+            }
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-@import '../../styles/theme-wise.scss';
-@import '../../styles/theme-bitget.scss';
-
 /* 页面容器 */
 .study-detail-page {
     min-height: 100vh;
-    background: var(--theme-bg-primary);
+    background: var(--bg-page);
     transition: background-color 0.3s ease;
-}
-
-/* Wise 主题背景 */
-.theme-wise .study-detail-page {
-    background: var(--bg-card);
-}
-
-.theme-wise.dark-mode .study-detail-page {
-    background: var(--bg-body);
-}
-
-/* Bitget 主题背景 */
-.theme-bitget .study-detail-page {
-    background: var(--text-primary);
 }
 
 /* 透明导航栏 */
@@ -219,18 +260,11 @@ export default {
 }
 
 .navbar-solid {
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.theme-wise.dark-mode .navbar-solid {
-    background: rgba(30, 58, 15, 0.8);
-}
-
-.theme-bitget .navbar-solid {
-    background: rgba(28, 28, 30, 0.8);
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .navbar-content {
@@ -249,29 +283,19 @@ export default {
 
 .back-icon {
     font-size: 40rpx;
-    color: #111111;
-}
-
-.theme-wise.dark-mode .back-icon,
-.theme-bitget .back-icon {
-    color: var(--bg-card);
+    color: var(--text-main);
 }
 
 .navbar-title {
     font-size: 32rpx;
     font-weight: 600;
-    color: #111111;
+    color: var(--text-main);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
 .title-visible {
     opacity: 1;
-}
-
-.theme-wise.dark-mode .navbar-title,
-.theme-bitget .navbar-title {
-    color: var(--bg-card);
 }
 
 .theme-toggle {
@@ -281,18 +305,13 @@ export default {
     width: 64rpx;
     height: 64rpx;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--muted);
     transition: all 0.3s ease;
 }
 
 .theme-toggle:active {
     transform: scale(0.9);
-    background: rgba(0, 0, 0, 0.1);
-}
-
-.theme-wise.dark-mode .theme-toggle,
-.theme-bitget .theme-toggle {
-    background: rgba(255, 255, 255, 0.1);
+    opacity: 0.8;
 }
 
 .theme-icon {
@@ -313,24 +332,14 @@ export default {
     display: block;
     font-size: 48rpx;
     font-weight: 700;
-    color: #111111;
+    color: var(--text-main);
     margin-bottom: 16rpx;
-}
-
-.theme-wise.dark-mode .page-title,
-.theme-bitget .page-title {
-    color: var(--bg-card);
 }
 
 .page-subtitle {
     display: block;
     font-size: 28rpx;
-    color: #666666;
-}
-
-.theme-wise.dark-mode .page-subtitle,
-.theme-bitget .page-subtitle {
-    color: #8E8E93;
+    color: var(--text-sub);
 }
 
 /* 概况卡片 */
@@ -345,17 +354,11 @@ export default {
     display: flex;
     align-items: center;
     padding: 32rpx;
-    background: #F5F5F7;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 24rpx;
+    box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
-}
-
-.theme-wise.dark-mode .stat-card {
-    background: #1e3a0f;
-}
-
-.theme-bitget .stat-card {
-    background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
 }
 
 .stat-card:active {
@@ -376,24 +379,14 @@ export default {
     display: block;
     font-size: 40rpx;
     font-weight: 700;
-    color: #111111;
+    color: var(--text-main);
     margin-bottom: 8rpx;
-}
-
-.theme-wise.dark-mode .stat-value,
-.theme-bitget .stat-value {
-    color: var(--bg-card);
 }
 
 .stat-label {
     display: block;
     font-size: 24rpx;
-    color: #666666;
-}
-
-.theme-wise.dark-mode .stat-label,
-.theme-bitget .stat-label {
-    color: #8E8E93;
+    color: var(--text-sub);
 }
 
 /* 热力图区域 */
@@ -410,42 +403,24 @@ export default {
     display: block;
     font-size: 32rpx;
     font-weight: 600;
-    color: #111111;
+    color: var(--text-main);
     margin-bottom: 8rpx;
-}
-
-.theme-wise.dark-mode .section-title,
-.theme-bitget .section-title {
-    color: var(--bg-card);
 }
 
 .section-subtitle {
     display: block;
     font-size: 24rpx;
-    color: #666666;
-}
-
-.theme-wise.dark-mode .section-subtitle,
-.theme-bitget .section-subtitle {
-    color: #8E8E93;
+    color: var(--text-sub);
 }
 
 .heatmap-container,
 .chart-container {
-    background: #F5F5F7;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 24rpx;
     padding: 32rpx;
     min-height: 400rpx;
-}
-
-.theme-wise.dark-mode .heatmap-container,
-.theme-wise.dark-mode .chart-container {
-    background: #1e3a0f;
-}
-
-.theme-bitget .heatmap-container,
-.theme-bitget .chart-container {
-    background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+    box-shadow: var(--shadow-sm);
 }
 
 .heatmap-placeholder,
@@ -460,23 +435,13 @@ export default {
 .placeholder-text {
     font-size: 32rpx;
     font-weight: 600;
-    color: #111111;
+    color: var(--text-main);
     margin-bottom: 16rpx;
-}
-
-.theme-wise.dark-mode .placeholder-text,
-.theme-bitget .placeholder-text {
-    color: var(--bg-card);
 }
 
 .placeholder-hint {
     font-size: 24rpx;
-    color: #666666;
-}
-
-.theme-wise.dark-mode .placeholder-hint,
-.theme-bitget .placeholder-hint {
-    color: #8E8E93;
+    color: var(--text-sub);
 }
 
 /* 底部间距 */

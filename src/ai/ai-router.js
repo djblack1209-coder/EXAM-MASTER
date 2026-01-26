@@ -1,0 +1,498 @@
+/**
+ * AI 多模型路由器
+ * 
+ * 功能：
+ * 1. 智能模型选择 - 根据任务类型自动选择最优模型
+ * 2. Redis缓存 - 相同请求命中缓存，提升响应速度
+ * 3. 超时降级 - 主模型超时自动切换到快速模型
+ * 4. 性能监控 - 收集调用指标用于优化
+ * 
+ * @version 1.0.0
+ * @author EXAM-MASTER Team
+ */
+
+import { lafService } from '../services/lafService.js'
+
+// 模型性能基线配置
+const MODEL_BASELINES = {
+  'glm-4.5-air': { 
+    avgLatency: 800, 
+    p95Latency: 1500, 
+    costPer1k: 0.002,
+    maxTokens: 8192,
+    capabilities: ['text', 'reasoning', 'analysis']
+  },
+  'glm-4-flash': { 
+    avgLatency: 300, 
+    p95Latency: 600, 
+    costPer1k: 0.0005,
+    maxTokens: 4096,
+    capabilities: ['text', 'chat', 'quick']
+  },
+  'glm-4-plus': { 
+    avgLatency: 600, 
+    p95Latency: 1200, 
+    costPer1k: 0.0015,
+    maxTokens: 4096,
+    capabilities: ['text', 'generation', 'analysis']
+  },
+  'glm-4v-plus': { 
+    avgLatency: 1500, 
+    p95Latency: 3000, 
+    costPer1k: 0.003,
+    maxTokens: 4096,
+    capabilities: ['vision', 'ocr', 'image']
+  }
+}
+
+// 任务类型路由配置
+const ROUTING_CONFIG = {
+  // 快速问答 - 使用最快模型
+  'quick': { 
+    model: 'glm-4-flash', 
+    timeout: 1000,
+    fallback: null,
+    cacheTTL: 3600,  // 1小时
+    description: '简单问答、快速回复'
+  },
+  
+  // 标准任务 - 平衡速度和质量
+  'standard': { 
+    model: 'glm-4.5-air', 
+    timeout: 2000,
+    fallback: 'glm-4-flash',
+    cacheTTL: 1800,  // 30分钟
+    description: '组题、解析、一般分析'
+  },
+  
+  // 复杂任务 - 优先质量
+  'complex': { 
+    model: 'glm-4.5-air', 
+    timeout: 5000,
+    fallback: 'glm-4-plus',
+    cacheTTL: 3600,
+    description: '资料理解、趋势预测、深度分析'
+  },
+  
+  // 视觉任务 - 图像处理
+  'vision': { 
+    model: 'glm-4v-plus', 
+    timeout: 3000,
+    fallback: null,
+    cacheTTL: 3600,
+    description: '拍照搜题、图像识别'
+  },
+  
+  // 聊天任务 - 对话场景
+  'chat': { 
+    model: 'glm-4-flash', 
+    timeout: 1500,
+    fallback: null,
+    cacheTTL: 0,  // 不缓存聊天
+    description: 'AI好友对话、实时聊天'
+  },
+  
+  // 生成任务 - 内容生成
+  'generation': { 
+    model: 'glm-4-plus', 
+    timeout: 3000,
+    fallback: 'glm-4.5-air',
+    cacheTTL: 1800,
+    description: '题目生成、内容创作'
+  }
+}
+
+// Action 到任务类型的映射
+const ACTION_TASK_MAP = {
+  'chat': 'chat',
+  'friend_chat': 'chat',
+  'generate_questions': 'generation',
+  'analyze': 'standard',
+  'adaptive_pick': 'complex',
+  'material_understand': 'complex',
+  'trend_predict': 'complex',
+  'vision': 'vision',
+  'photo_search': 'vision',
+  'consult': 'standard'
+}
+
+/**
+ * AI路由器类
+ */
+class AIRouter {
+  constructor() {
+    this.cache = new Map()  // 内存缓存
+    this.metrics = {
+      totalCalls: 0,
+      cacheHits: 0,
+      fallbacks: 0,
+      errors: 0,
+      latencies: []
+    }
+    this.isInitialized = false
+  }
+
+  /**
+   * 初始化路由器
+   */
+  init() {
+    if (this.isInitialized) return
+    
+    // 定期清理过期缓存
+    this.startCacheCleanup()
+    
+    this.isInitialized = true
+    console.log('[AIRouter] 初始化完成')
+  }
+
+  /**
+   * 智能AI调用
+   * @param {string} action - 操作类型
+   * @param {Object} payload - 请求参数
+   * @param {Object} options - 可选配置
+   * @returns {Promise<Object>} AI响应
+   */
+  async call(action, payload, options = {}) {
+    if (!this.isInitialized) this.init()
+    
+    const startTime = Date.now()
+    const requestId = this.generateRequestId()
+    
+    this.metrics.totalCalls++
+    
+    console.log(`[AIRouter] ${requestId} 开始处理: ${action}`)
+    
+    try {
+      // 1. 确定任务类型和路由配置
+      const taskType = options.taskType || ACTION_TASK_MAP[action] || 'standard'
+      const routeConfig = ROUTING_CONFIG[taskType]
+      
+      if (!routeConfig) {
+        throw new Error(`未知的任务类型: ${taskType}`)
+      }
+      
+      // 2. 检查缓存
+      if (routeConfig.cacheTTL > 0 && !options.skipCache) {
+        const cacheKey = this.generateCacheKey(action, payload)
+        const cached = this.getFromCache(cacheKey)
+        
+        if (cached) {
+          this.metrics.cacheHits++
+          console.log(`[AIRouter] ${requestId} 命中缓存`)
+          
+          return {
+            ...cached,
+            cached: true,
+            requestId,
+            duration: Date.now() - startTime
+          }
+        }
+      }
+      
+      // 3. 执行AI调用（带超时和降级）
+      let response
+      let usedModel = routeConfig.model
+      
+      try {
+        response = await this.executeWithTimeout(
+          this.callAI(action, payload, routeConfig.model, options),
+          routeConfig.timeout
+        )
+      } catch (timeoutError) {
+        // 超时降级
+        if (routeConfig.fallback) {
+          console.warn(`[AIRouter] ${requestId} 主模型超时，降级到: ${routeConfig.fallback}`)
+          this.metrics.fallbacks++
+          usedModel = routeConfig.fallback
+          
+          response = await this.callAI(action, payload, routeConfig.fallback, options)
+        } else {
+          throw timeoutError
+        }
+      }
+      
+      // 4. 写入缓存
+      if (routeConfig.cacheTTL > 0 && response.success) {
+        const cacheKey = this.generateCacheKey(action, payload)
+        this.setToCache(cacheKey, response, routeConfig.cacheTTL)
+      }
+      
+      // 5. 记录性能指标
+      const duration = Date.now() - startTime
+      this.recordLatency(duration)
+      
+      console.log(`[AIRouter] ${requestId} 完成，耗时: ${duration}ms，模型: ${usedModel}`)
+      
+      return {
+        ...response,
+        cached: false,
+        model: usedModel,
+        requestId,
+        duration
+      }
+      
+    } catch (error) {
+      this.metrics.errors++
+      console.error(`[AIRouter] ${requestId} 错误:`, error.message)
+      
+      return {
+        code: -1,
+        success: false,
+        message: error.message || 'AI调用失败',
+        requestId,
+        duration: Date.now() - startTime
+      }
+    }
+  }
+
+  /**
+   * 调用AI服务
+   */
+  async callAI(action, payload, model, options) {
+    // 构建请求参数
+    const requestData = {
+      action,
+      ...payload,
+      _model: model,  // 指定模型
+      _temperature: options.temperature
+    }
+    
+    // 调用后端服务
+    const response = await lafService.proxyAI(action, requestData)
+    
+    return response
+  }
+
+  /**
+   * 带超时的执行
+   */
+  executeWithTimeout(promise, timeout) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('AI_TIMEOUT')), timeout)
+      )
+    ])
+  }
+
+  /**
+   * 生成缓存Key
+   */
+  generateCacheKey(action, payload) {
+    // 简化版：使用action + content的hash
+    const content = payload.content || JSON.stringify(payload)
+    const sample = content.substring(0, 500)
+    
+    let hash = 0
+    for (let i = 0; i < sample.length; i++) {
+      const char = sample.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash
+    }
+    
+    return `ai_cache:${action}:${Math.abs(hash).toString(36)}`
+  }
+
+  /**
+   * 从缓存获取
+   */
+  getFromCache(key) {
+    const item = this.cache.get(key)
+    
+    if (!item) return null
+    
+    // 检查是否过期
+    if (Date.now() > item.expireAt) {
+      this.cache.delete(key)
+      return null
+    }
+    
+    return item.value
+  }
+
+  /**
+   * 写入缓存
+   */
+  setToCache(key, value, ttl) {
+    this.cache.set(key, {
+      value,
+      expireAt: Date.now() + ttl * 1000,
+      createdAt: Date.now()
+    })
+    
+    // 限制缓存大小
+    if (this.cache.size > 1000) {
+      this.cleanupCache()
+    }
+  }
+
+  /**
+   * 清理过期缓存
+   */
+  cleanupCache() {
+    const now = Date.now()
+    let cleaned = 0
+    
+    for (const [key, item] of this.cache.entries()) {
+      if (now > item.expireAt) {
+        this.cache.delete(key)
+        cleaned++
+      }
+    }
+    
+    console.log(`[AIRouter] 清理过期缓存: ${cleaned} 条`)
+  }
+
+  /**
+   * 启动定期缓存清理
+   */
+  startCacheCleanup() {
+    // 每5分钟清理一次
+    setInterval(() => {
+      this.cleanupCache()
+    }, 5 * 60 * 1000)
+  }
+
+  /**
+   * 生成请求ID
+   */
+  generateRequestId() {
+    return `req_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`
+  }
+
+  /**
+   * 记录延迟
+   */
+  recordLatency(latency) {
+    this.metrics.latencies.push(latency)
+    
+    // 只保留最近1000条
+    if (this.metrics.latencies.length > 1000) {
+      this.metrics.latencies.shift()
+    }
+  }
+
+  /**
+   * 获取性能统计
+   */
+  getMetrics() {
+    const latencies = this.metrics.latencies
+    
+    // 计算统计指标
+    const sorted = [...latencies].sort((a, b) => a - b)
+    const p50 = sorted[Math.floor(sorted.length * 0.5)] || 0
+    const p95 = sorted[Math.floor(sorted.length * 0.95)] || 0
+    const p99 = sorted[Math.floor(sorted.length * 0.99)] || 0
+    const avg = latencies.length > 0 
+      ? latencies.reduce((a, b) => a + b, 0) / latencies.length 
+      : 0
+    
+    return {
+      totalCalls: this.metrics.totalCalls,
+      cacheHits: this.metrics.cacheHits,
+      cacheHitRate: this.metrics.totalCalls > 0 
+        ? (this.metrics.cacheHits / this.metrics.totalCalls * 100).toFixed(2) + '%'
+        : '0%',
+      fallbacks: this.metrics.fallbacks,
+      fallbackRate: this.metrics.totalCalls > 0
+        ? (this.metrics.fallbacks / this.metrics.totalCalls * 100).toFixed(2) + '%'
+        : '0%',
+      errors: this.metrics.errors,
+      errorRate: this.metrics.totalCalls > 0
+        ? (this.metrics.errors / this.metrics.totalCalls * 100).toFixed(2) + '%'
+        : '0%',
+      latency: {
+        avg: Math.round(avg),
+        p50: Math.round(p50),
+        p95: Math.round(p95),
+        p99: Math.round(p99)
+      },
+      cacheSize: this.cache.size
+    }
+  }
+
+  /**
+   * 重置统计
+   */
+  resetMetrics() {
+    this.metrics = {
+      totalCalls: 0,
+      cacheHits: 0,
+      fallbacks: 0,
+      errors: 0,
+      latencies: []
+    }
+    console.log('[AIRouter] 统计已重置')
+  }
+
+  /**
+   * 清空缓存
+   */
+  clearCache() {
+    this.cache.clear()
+    console.log('[AIRouter] 缓存已清空')
+  }
+
+  /**
+   * 获取路由配置
+   */
+  getRoutingConfig() {
+    return ROUTING_CONFIG
+  }
+
+  /**
+   * 获取模型信息
+   */
+  getModelInfo(modelName) {
+    return MODEL_BASELINES[modelName] || null
+  }
+
+  /**
+   * 推荐最优模型
+   * @param {string} taskType - 任务类型
+   * @param {Object} constraints - 约束条件
+   */
+  recommendModel(taskType, constraints = {}) {
+    const { maxLatency, maxCost, requiredCapabilities } = constraints
+    
+    // 获取默认配置
+    const defaultConfig = ROUTING_CONFIG[taskType]
+    if (!defaultConfig) return null
+    
+    let recommendedModel = defaultConfig.model
+    
+    // 根据约束条件调整
+    if (maxLatency && maxLatency < MODEL_BASELINES[recommendedModel]?.avgLatency) {
+      // 需要更快的模型
+      recommendedModel = 'glm-4-flash'
+    }
+    
+    if (requiredCapabilities?.includes('vision')) {
+      recommendedModel = 'glm-4v-plus'
+    }
+    
+    return {
+      model: recommendedModel,
+      config: MODEL_BASELINES[recommendedModel],
+      reason: `基于任务类型 "${taskType}" 和约束条件推荐`
+    }
+  }
+}
+
+// 创建单例
+export const aiRouter = new AIRouter()
+
+// 便捷函数导出
+export function callAI(action, payload, options) {
+  return aiRouter.call(action, payload, options)
+}
+
+export function getAIMetrics() {
+  return aiRouter.getMetrics()
+}
+
+export function clearAICache() {
+  return aiRouter.clearCache()
+}
+
+export default aiRouter

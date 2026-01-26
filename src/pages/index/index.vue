@@ -31,7 +31,7 @@
 							<text class="theme-icon">{{ isDark ? '🌙' : '☀️' }}</text>
 						</view>
 						<view :class="['user-avatar', isDark ? 'avatar-dark' : 'avatar-light']" @tap="handleUserClick">
-							<text class="avatar-text">{{ userInitials }}</text>
+							<text class="avatar-text" :class="{ 'avatar-icon': !userInitials }">{{ userInitials || '👤' }}</text>
 						</view>
 					</view>
 				</view>
@@ -70,6 +70,18 @@
 				</view>
 			</view>
 
+			<!-- ✅ P0-1: 新用户空状态引导 - 增强版 -->
+			<empty-state-home
+				v-if="isNewUser"
+				title="开启你的学习之旅"
+				subtitle="上传学习资料，AI 将为你智能生成专属题库，让备考更高效！"
+				hint="支持 PDF、Word、图片等多种格式"
+				:is-dark="isDark"
+				@upload="handleEmptyGuideAction({ type: 'new_user_onboarding' })"
+				@quickStart="handleQuickStart"
+				@tutorial="handleTutorial"
+			></empty-state-home>
+
 			<!-- 统计卡片网格 -->
 			<view class="stats-grid">
 				<view :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']" @tap="handleStatClick('questions')">
@@ -78,8 +90,8 @@
 					</view>
 					<view class="stat-content">
 						<text class="stat-title">题目总数</text>
-						<text class="stat-value">{{ totalQuestions }}</text>
-						<text class="stat-change positive">本周 +12%</text>
+						<text class="stat-value">{{ realTotalQuestions }}</text>
+						<text class="stat-change neutral">题库容量</text>
 					</view>
 				</view>
 
@@ -89,8 +101,8 @@
 					</view>
 					<view class="stat-content">
 						<text class="stat-title">正确率</text>
-						<text class="stat-value">{{ accuracy }}%</text>
-						<text class="stat-change positive">提升 +3.2%</text>
+						<text class="stat-value">{{ realAccuracy }}%</text>
+						<text class="stat-change" :class="realAccuracy >= 60 ? 'positive' : 'neutral'">{{ realAccuracy >= 60 ? '表现优秀' : '继续加油' }}</text>
 					</view>
 				</view>
 
@@ -100,8 +112,8 @@
 					</view>
 					<view class="stat-content">
 						<text class="stat-title">学习天数</text>
-						<text class="stat-value">{{ totalStudyDays }} 天</text>
-						<text class="stat-change positive">个人最佳！</text>
+						<text class="stat-value">{{ realStudyDays }} 天</text>
+						<text class="stat-change" :class="realStudyDays > 0 ? 'positive' : 'neutral'">{{ realStudyDays > 0 ? '坚持学习' : '开始学习' }}</text>
 					</view>
 				</view>
 
@@ -112,8 +124,23 @@
 					<view class="stat-content">
 						<text class="stat-title">成就徽章</text>
 						<text class="stat-value">{{ achievementCount }}</text>
-						<text class="stat-change neutral">新解锁 2 个</text>
+						<text class="stat-change neutral">{{ achievementCount > 0 ? '已解锁' : '待解锁' }}</text>
 					</view>
+				</view>
+			</view>
+			
+			<!-- ✅ 检查点1.5: 今日学习时长卡片 -->
+			<view :class="['study-time-card', isDark ? 'glass' : 'card-light']">
+				<view class="time-icon-wrapper">
+					<text class="time-icon">⏱️</text>
+				</view>
+				<view class="time-content">
+					<text class="time-label">今日学习</text>
+					<text class="time-value">{{ formatStudyTime(todayStudyTime) }}</text>
+				</view>
+				<view class="time-indicator" :class="{ 'indicator-active': studyTimerInterval }">
+					<view class="indicator-dot"></view>
+					<text class="indicator-text">{{ studyTimerInterval ? '计时中' : '已暂停' }}</text>
 				</view>
 			</view>
 
@@ -129,7 +156,8 @@
 						'bubble-card',
 						isDark ? 'bubble-card-dark' : 'bubble-card-light',
 						'bubble-size-' + getBubbleSize(point.mastery),
-						'bubble-float'
+						'bubble-float',
+						animatingBubbleId === point.id && 'bubble-animating'
 					]"
 					:style="getBubbleCardStyle(point, index)"
 					@tap="handleKnowledgeClick(point)"
@@ -188,14 +216,15 @@
 					<text class="edit-text">编辑计划</text>
 				</view>
 			</view>
-			<todo-list :todos="todos" :is-dark="isDark" @toggleTodo="handleToggleTodo"></todo-list>
+			<todo-list :todos="todos" :is-dark="isDark" @toggleTodo="handleToggleTodo" @editTodo="openTodoEditor"></todo-list>
 
 			<!-- 每日金句 -->
-			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;">
+			<view :class="['mode-description', isDark ? 'glass' : 'desc-light']" style="margin-top: 64rpx;" @tap="openQuotePoster">
 				<text class="mode-text">
 					<text class="mode-highlight">💡 每日金句：</text>
 					{{ dailyQuote }}
 				</text>
+				<text class="quote-hint">轻触查看海报</text>
 			</view>
 				</view>
 				<!-- 内容包装器结束 -->
@@ -210,6 +239,125 @@
 
 		<!-- 底部导航栏：放在 dashboard-container 外部，避免继承绿色背景 -->
 		<custom-tabbar :activeIndex="0" :isDark="isDark"></custom-tabbar>
+		
+		<!-- 公式定理弹窗 -->
+		<view class="formula-modal" v-if="showFormulaModal" @tap="showFormulaModal = false">
+			<view class="formula-content" @tap.stop>
+				<view class="formula-header">
+					<text class="formula-title">🧮 公式定理速查</text>
+					<view class="formula-close" @tap="showFormulaModal = false">
+						<text>×</text>
+					</view>
+				</view>
+				<scroll-view scroll-y class="formula-scroll">
+					<view 
+						v-for="(item, index) in formulaList" 
+						:key="index" 
+						class="formula-item"
+					>
+						<view class="formula-category">{{ item.category }}</view>
+						<text class="formula-name">{{ item.name }}</text>
+						<text class="formula-text">{{ item.formula }}</text>
+					</view>
+				</scroll-view>
+				<view class="formula-footer">
+					<text class="formula-tip">💡 更多公式正在整理中...</text>
+				</view>
+			</view>
+		</view>
+		
+		<!-- 每日金句海报弹窗 -->
+		<view class="quote-poster-modal" v-if="showQuotePoster" @tap="showQuotePoster = false">
+			<view class="quote-poster-content" @tap.stop>
+				<view class="poster-card" :class="{ 'poster-dark': isDark }">
+					<view class="poster-decoration">
+						<view class="poster-circle poster-circle-1"></view>
+						<view class="poster-circle poster-circle-2"></view>
+					</view>
+					<view class="poster-body">
+						<text class="poster-quote">"{{ dailyQuote }}"</text>
+						<text class="poster-author">—— {{ quoteAuthor }}</text>
+						<view class="poster-date">
+							<text>{{ getCurrentDate() }}</text>
+						</view>
+						<view class="poster-brand">
+							<text class="brand-name">Exam-Master</text>
+							<text class="brand-slogan">考研路上，与你同行</text>
+						</view>
+					</view>
+				</view>
+				<view class="poster-actions">
+					<view class="poster-btn poster-btn-secondary" @tap="showQuotePoster = false">
+						<text>关闭</text>
+					</view>
+					<view class="poster-btn poster-btn-primary" @tap="saveQuotePoster">
+						<text>保存图片</text>
+					</view>
+				</view>
+			</view>
+		</view>
+		
+		<!-- ✅ 自定义弹窗：题库为空 -->
+		<custom-modal
+			:visible="showEmptyBankModal"
+			type="upload"
+			title="📚 题库空空如也"
+			content="上传学习资料，AI 将为您智能生成专属题库，开启高效刷题之旅！"
+			confirm-text="去上传"
+			cancel-text="稍后再说"
+			:show-cancel="true"
+			:is-dark="isDark"
+			@confirm="handleEmptyBankConfirm"
+			@cancel="showEmptyBankModal = false"
+		/>
+		
+		<!-- ✅ 自定义弹窗：登录引导 -->
+		<custom-modal
+			:visible="showLoginModal"
+			type="study"
+			title="🎓 开启学霸之旅"
+			content="登录后可同步学习进度、错题本等数据，享受完整功能体验！"
+			confirm-text="微信登录"
+			cancel-text="暂不登录"
+			:show-cancel="true"
+			:is-dark="isDark"
+			@confirm="handleLoginConfirm"
+			@cancel="showLoginModal = false"
+		/>
+		
+		<!-- ✅ 自定义弹窗：模拟考试预告 -->
+		<custom-modal
+			:visible="showMockExamModal"
+			type="info"
+			title="🚀 模拟考试"
+			:content="mockExamModalContent"
+			confirm-text="知道了"
+			:show-cancel="false"
+			:is-dark="isDark"
+			@confirm="showMockExamModal = false"
+		/>
+		
+		<!-- ✅ 检查点1.2: 每日金句分享弹窗 -->
+		<share-modal
+			:visible="showShareModal"
+			:quote="dailyQuote"
+			:author="quoteAuthor"
+			:is-dark="isDark"
+			@close="showShareModal = false"
+			@favorite="handleQuoteFavorite"
+			@share="handleQuoteShare"
+		/>
+		
+		<!-- ✅ 检查点1.3: 待办事项编辑器 -->
+		<todo-editor
+			:visible="showTodoEditor"
+			:todo-data="editingTodo"
+			:is-dark="isDark"
+			@close="showTodoEditor = false"
+			@save="handleTodoSave"
+			@delete="handleTodoDelete"
+			@toggle="handleToggleTodo"
+		/>
 	</view>
 </template>
 
@@ -217,18 +365,40 @@
 import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
 import BaseSkeleton from '../../components/base/base-skeleton/base-skeleton.vue';
 import TodoList from '../../components/common/TodoList.vue';
+import EmptyGuide from '../../components/common/EmptyGuide.vue';
+import EmptyStateHome from '../../components/common/empty-state-home.vue';
+import ShareModal from '../../components/common/share-modal.vue';
+import TodoEditor from '../../components/common/todo-editor.vue';
+import CustomModal from '../../components/common/CustomModal.vue';
 import { getGreetingTime } from '../../utils/core/date';
 import { useStudyStore } from '../../stores/modules/study';
 import { useTodoStore } from '../../stores/modules/todo';
 import { useUserStore } from '../../stores/modules/user';
+import { useLearningTrajectoryStore } from '../../stores/modules/learning-trajectory-store';
 import { lafService } from '../../services/lafService.js';
 import { storageService } from '../../services/storageService.js';
+import { quoteHandler } from '../../utils/quote-interaction-handler.js';
+import { bubbleInteraction } from '../../utils/bubble-interaction.js';
+import { todoStorePatch } from '../../utils/todo-store-patch.js';
+// ✅ 检查点 5.1: 导入分析服务和页面追踪 Mixin
+import { analytics } from '../../utils/analytics/event-bus-analytics.js';
+import { trackingMixin } from '../../utils/analytics/tracking-mixin.js';
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js';
 
 export default {
+	// ✅ 检查点 5.1: 使用页面追踪 Mixin
+	mixins: [trackingMixin],
+	
 	components: {
 		CustomTabbar,
 		BaseSkeleton,
-		TodoList
+		TodoList,
+		EmptyGuide,
+		EmptyStateHome,
+		ShareModal,
+		TodoEditor,
+		CustomModal
 	},
 
 	data() {
@@ -249,12 +419,29 @@ export default {
 			studyStore: null,
 			todoStore: null,
 			userStore: null,
+			trajectoryStore: null,
 			
 			// 成就徽章数量（从本地存储获取）
 			achievementCount: 0,
 
 			// 按钮防重复点击状态
 			isNavigating: false,
+			
+			// ✅ 自定义弹窗状态
+			showEmptyBankModal: false,
+			showLoginModal: false,
+			showMockExamModal: false,
+			showShareModal: false,
+			showTodoEditor: false,
+			editingTodo: null,
+			modalConfig: {
+				type: 'info',
+				title: '',
+				content: '',
+				confirmText: '确定',
+				cancelText: '取消',
+				showCancel: true
+			},
 			
 			// 每日金句相关
 			isRefreshingQuote: false,
@@ -313,7 +500,34 @@ export default {
 			],
 
 			// 每日金句
-			dailyQuote: '成功不是终点，失败也不是终结，唯有勇气才是永恒。'
+			dailyQuote: '成功不是终点，失败也不是终结，唯有勇气才是永恒。',
+			
+			// 公式定理弹窗
+			showFormulaModal: false,
+			formulaList: [
+				{ name: '勾股定理', formula: 'a² + b² = c²', category: '几何' },
+				{ name: '求根公式', formula: 'x = (-b ± √(b²-4ac)) / 2a', category: '代数' },
+				{ name: '三角函数', formula: 'sin²θ + cos²θ = 1', category: '三角' },
+				{ name: '导数公式', formula: "(xⁿ)' = nxⁿ⁻¹", category: '微积分' },
+				{ name: '积分公式', formula: '∫xⁿdx = xⁿ⁺¹/(n+1) + C', category: '微积分' },
+				{ name: '等差数列', formula: 'aₙ = a₁ + (n-1)d', category: '数列' },
+				{ name: '等比数列', formula: 'aₙ = a₁ · qⁿ⁻¹', category: '数列' },
+				{ name: '排列公式', formula: 'Aₙᵐ = n!/(n-m)!', category: '排列组合' },
+				{ name: '组合公式', formula: 'Cₙᵐ = n!/[m!(n-m)!]', category: '排列组合' },
+				{ name: '二项式定理', formula: '(a+b)ⁿ = Σ Cₙᵏ aⁿ⁻ᵏbᵏ', category: '代数' }
+			],
+			
+			// 每日金句海报弹窗
+			showQuotePoster: false,
+			quoteAuthor: '古人云',
+			
+			// ✅ 检查点1.5: 学习时长相关
+			todayStudyTime: 0,
+			studyTimerInterval: null,
+			sessionStartTime: null,
+			
+			// ✅ 检查点1.4: 气泡动画状态
+			animatingBubbleId: null
 		};
 	},
 
@@ -332,9 +546,16 @@ export default {
 		this.studyStore = useStudyStore();
 		this.todoStore = useTodoStore();
 		this.userStore = useUserStore();
+		this.trajectoryStore = useLearningTrajectoryStore();
+		
+		// 初始化学习轨迹Store
+		this.trajectoryStore.init();
 
 		// 初始化每日金句
 		this.initDailyQuote();
+		
+		// ✅ 检查点1.5: 初始化学习计时器
+		this.initStudyTimer();
 
 		this.loadData();
 	},
@@ -342,10 +563,16 @@ export default {
 	onShow() {
 		uni.hideTabBar({ animation: false });
 		this.refreshData();
+		
+		// ✅ 检查点1.5: 恢复计时
+		this.startStudyTimer();
 	},
 
 	onUnload() {
 		uni.$off('themeUpdate');
+		
+		// ✅ 检查点1.5: 停止计时
+		this.stopStudyTimer();
 	},
 
 	computed: {
@@ -356,10 +583,19 @@ export default {
 		
 		// 用户信息
 		userName() {
-			return this.userStore?.userInfo?.nickName || '学习者';
+			return this.userStore?.userInfo?.nickName || '小伙伴';
+		},
+		
+		// 判断是否已登录
+		isLoggedIn() {
+			return !!(this.userStore?.isLogin || uni.getStorageSync('EXAM_USER_ID') || uni.getStorageSync('user_id'));
 		},
 		
 		userInitials() {
+			// 未登录时返回空（使用图标显示）
+			if (!this.isLoggedIn) return '';
+			// 默认用户名时也返回空
+			if (this.userName === '小伙伴') return '';
 			return this.getInitials(this.userName);
 		},
 		
@@ -380,6 +616,35 @@ export default {
 			return this.studyStore?.studyProgress?.studyDays || 0;
 		},
 		
+		// 真实统计数据（从题库和学习记录获取）
+		realTotalQuestions() {
+			const questionBank = uni.getStorageSync('v30_bank') || [];
+			return questionBank.length;
+		},
+		
+		realAccuracy() {
+			// 优先使用 store 中的正确率
+			const storeAccuracy = parseFloat(this.studyStore?.accuracy || 0);
+			if (storeAccuracy > 0) return storeAccuracy;
+			
+			// 从学习记录计算
+			const studyRecord = uni.getStorageSync('study_record') || {};
+			const correct = studyRecord.correctCount || 0;
+			const total = studyRecord.totalAnswered || 0;
+			if (total === 0) return 0;
+			return Math.round((correct / total) * 100);
+		},
+		
+		realStudyDays() {
+			// 优先使用 store 中的学习天数
+			const storeDays = this.studyStore?.studyProgress?.studyDays || 0;
+			if (storeDays > 0) return storeDays;
+			
+			// 从学习记录计算
+			const studyDates = uni.getStorageSync('study_dates') || [];
+			return studyDates.length;
+		},
+		
 		// 待办事项数据
 		todos() {
 			if (!this.todoStore?.tasks) return [];
@@ -389,6 +654,22 @@ export default {
 				completed: task.done,
 				priority: task.tag || task.priority
 			}));
+		},
+		
+		// ✅ P0-1: 空状态判断
+		isQuestionBankEmpty() {
+			const questionBank = uni.getStorageSync('v30_bank') || [];
+			return questionBank.length === 0;
+		},
+		
+		isNewUser() {
+			// 新用户判断：题库为空 且 学习天数为0
+			return this.isQuestionBankEmpty && this.totalStudyDays === 0;
+		},
+		
+		// ✅ 模拟考试弹窗内容
+		mockExamModalContent() {
+			return '模拟考试功能正在紧急开发中！\n\n即将提供：\n✓ 真实考试环境模拟\n✓ 智能组卷系统\n✓ 详细成绩分析\n\n敬请期待！';
 		}
 	},
 
@@ -413,9 +694,9 @@ export default {
 					safeAreaBottom,
 				};
 
-				console.log('[Index] 布局信息初始化:', this.layoutInfo);
+				logger.log('[Index] 布局信息初始化:', this.layoutInfo);
 			} catch (e) {
-				console.warn('[Index] 布局信息初始化失败，使用默认值:', e);
+				logger.warn('[Index] 布局信息初始化失败，使用默认值:', e);
 				// 使用默认值
 				this.layoutInfo = {
 					statusBarHeight: 44,
@@ -447,7 +728,7 @@ export default {
 				this.loadRecentActivities();
 				
 			} catch (error) {
-				console.error('[Index] 数据加载失败:', error);
+				logger.error('[Index] 数据加载失败:', error);
 				uni.showToast({
 					title: '数据加载失败',
 					icon: 'none'
@@ -537,7 +818,7 @@ export default {
 					}
 				];
 			} catch (error) {
-				console.error('[Index] 加载知识点失败:', error);
+				logger.error('[Index] 加载知识点失败:', error);
 			}
 		},
 		
@@ -583,11 +864,14 @@ export default {
 		},
 
 		getInitials(name) {
-			if (!name) return 'JD';
+			if (!name) return '';
+			// 如果是默认名称"小伙伴"，返回空（使用图标）
+			if (name === '小伙伴') return '';
 			const parts = name.split(' ');
 			if (parts.length >= 2) {
 				return (parts[0][0] + parts[1][0]).toUpperCase();
 			}
+			// 中文名取前两个字符
 			return name.substring(0, 2).toUpperCase();
 		},
 
@@ -610,13 +894,14 @@ export default {
 
 		// 获取气泡卡片样式（两种模式都使用绝对定位）
 		getBubbleCardStyle(point, index) {
+			// 调整位置避免气泡重叠，确保文字完全显示
 			const positions = [
-				{ top: '5%', left: '5%' },
-				{ top: '10%', right: '15%' },
-				{ top: '35%', left: '25%' },
-				{ bottom: '10%', right: '5%' },
-				{ top: '20%', left: '55%' },
-				{ bottom: '25%', left: '10%' }
+				{ top: '2%', left: '3%' },       // 错题集 - 左上
+				{ top: '2%', right: '3%' },      // 热门考点 - 右上
+				{ top: '32%', left: '3%' },      // 练习题 - 左中
+				{ top: '32%', right: '3%' },     // 核心概念 - 右中
+				{ bottom: '15%', left: '3%' },   // 公式定理 - 左下
+				{ bottom: '15%', right: '3%' }   // 阅读理解 - 右下
 			];
 			const pos = positions[index % positions.length];
 			
@@ -624,7 +909,7 @@ export default {
 				// 深色模式：光晕效果
 				return {
 					...pos,
-					zIndex: point.mastery,
+					zIndex: 10 + index,  // 使用固定的 z-index 顺序
 					animationDelay: `${index * 200}ms`,
 					boxShadow: `0 0 40rpx ${point.color}4D, 0 0 80rpx ${point.color}33`
 				};
@@ -632,7 +917,7 @@ export default {
 				// 浅色模式：白色阴影
 				return {
 					...pos,
-					zIndex: point.mastery,
+					zIndex: 10 + index,  // 使用固定的 z-index 顺序
 					animationDelay: `${index * 200}ms`,
 					boxShadow: `0 4rpx 16rpx rgba(255, 255, 255, 0.3)`
 				};
@@ -652,7 +937,30 @@ export default {
 		},
 
 		handleUserClick() {
-			uni.navigateTo({ url: '/src/pages/settings/index' });
+			// 震动反馈
+			try {
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort();
+				}
+			} catch (e) {}
+
+			// 检查登录状态
+			const isLoggedIn = this.userStore?.isLogin || false;
+			const hasUserId = uni.getStorageSync('EXAM_USER_ID') || uni.getStorageSync('user_id');
+			
+			if (!isLoggedIn && !hasUserId) {
+				// 未登录：显示微信一键登录弹窗
+				this.openLoginModal();
+			} else {
+				// 已登录：直接跳转到设置页
+				uni.navigateTo({ url: '/src/pages/settings/index' });
+			}
+		},
+		
+		// 显示登录引导弹窗
+		openLoginModal() {
+			// ✅ 使用自定义弹窗替换原生弹窗
+			this.showLoginModal = true;
 		},
 
 		navToPractice() {
@@ -660,23 +968,41 @@ export default {
 			if (this.isNavigating) return;
 			this.isNavigating = true;
 
+			// 震动反馈
+			try {
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort();
+				}
+			} catch (e) {}
+
 			// 检查题库是否存在
 			const questionBank = uni.getStorageSync('v30_bank') || [];
 			if (questionBank.length === 0) {
 				this.isNavigating = false;
-				uni.showModal({
-					title: '提示',
-					content: '题库为空，请先导入题目',
-					confirmText: '去导入',
-					success: (res) => {
-						if (res.confirm) {
-							uni.navigateTo({ url: '/src/pages/practice/import-data' });
-						}
-					}
-				});
+				
+				// ✅ 使用自定义弹窗替换原生弹窗
+				this.showEmptyBankModal = true;
 			} else {
+				// 跳转到刷题页面
 				uni.switchTab({
 					url: '/src/pages/practice/index',
+					success: () => {
+						logger.log('[Index] 成功跳转到刷题页面');
+					},
+					fail: (err) => {
+						logger.error('[Index] switchTab 失败:', err);
+						// 尝试使用 reLaunch 作为备选
+						uni.reLaunch({
+							url: '/src/pages/practice/index',
+							fail: (relaunchErr) => {
+								logger.error('[Index] reLaunch 也失败:', relaunchErr);
+								uni.showToast({
+									title: '页面跳转失败',
+									icon: 'none'
+								});
+							}
+						});
+					},
 					complete: () => {
 						setTimeout(() => {
 							this.isNavigating = false;
@@ -691,15 +1017,45 @@ export default {
 			if (this.isNavigating) return;
 			this.isNavigating = true;
 
-			uni.showModal({
-				title: '模拟考试',
-				content: '模拟考试功能正在开发中，敬请期待！\n\n将提供：\n• 真实考试环境模拟\n• 智能组卷\n• 详细成绩分析',
-				showCancel: false,
-				confirmText: '知道了',
-				complete: () => {
-					this.isNavigating = false;
+			// 震动反馈
+			try {
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort();
 				}
-			});
+			} catch (e) {}
+
+			// 检查题库是否存在
+			const questionBank = uni.getStorageSync('v30_bank') || [];
+			if (questionBank.length === 0) {
+				this.isNavigating = false;
+				
+				// ✅ 使用自定义弹窗替换原生弹窗
+				this.showEmptyBankModal = true;
+			} else if (questionBank.length < 10) {
+				this.isNavigating = false;
+				
+				// 题目太少 - 暂时保留原生弹窗（后续可替换）
+				uni.showModal({
+					title: '⚠️ 题目数量不足',
+					content: `当前题库仅有 ${questionBank.length} 道题，建议至少 10 道题目后再进行模拟考试。`,
+					confirmText: '继续上传',
+					cancelText: '先刷题',
+					success: (res) => {
+						if (res.confirm) {
+							uni.navigateTo({ url: '/src/pages/practice/import-data' });
+						} else {
+							uni.switchTab({ 
+								url: '/src/pages/practice/index',
+								fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+							});
+						}
+					}
+				});
+			} else {
+				this.isNavigating = false;
+				// ✅ 使用自定义弹窗替换原生弹窗
+				this.showMockExamModal = true;
+			}
 		},
 
 		navToStudyDetail() {
@@ -707,7 +1063,7 @@ export default {
 		},
 
 		handleStatClick(type) {
-			console.log('[Index] Stat clicked:', type);
+			logger.log('[Index] Stat clicked:', type);
 			
 			const routes = {
 				'questions': '/src/pages/practice/index',
@@ -717,46 +1073,151 @@ export default {
 			};
 			
 			if (routes[type]) {
-				if (type === 'questions' || type === 'accuracy') {
-					uni.switchTab({ url: routes[type] });
+				if (type === 'questions') {
+					// practice/index 是 tabBar 页面
+					uni.switchTab({ 
+						url: routes[type],
+						fail: () => uni.reLaunch({ url: routes[type] })
+					});
+				} else if (type === 'achievements') {
+					// profile/index 是 tabBar 页面
+					uni.switchTab({ 
+						url: routes[type],
+						fail: () => uni.reLaunch({ url: routes[type] })
+					});
 				} else {
+					// 其他页面使用 navigateTo
 					uni.navigateTo({ url: routes[type] });
 				}
 			}
 		},
 
-		handleKnowledgeClick(point) {
-			console.log('[Index] Knowledge point clicked:', point.title);
+		async handleKnowledgeClick(point) {
+			logger.log('[Index] Knowledge point clicked:', point.title);
 			
-			if (point.title === '错题集') {
-				uni.switchTab({ url: '/src/pages/mistake/index' });
-			} else if (point.title === '练习题') {
-				uni.switchTab({ url: '/src/pages/practice/index' });
-			} else {
-				uni.showToast({ 
-					title: `${point.title} - 掌握度${point.mastery}%`, 
-					icon: 'none',
-					duration: 2000
-				});
-			}
+			// ✅ 检查点1.4: 防止重复点击
+			if (this.animatingBubbleId === point.id) return;
+			
+			// ✅ 检查点1.4: 播放缩放动画
+			this.animatingBubbleId = point.id;
+			
+			// 震动反馈
+			try {
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort();
+				}
+			} catch (e) {}
+			
+			// ✅ 检查点1.4: 记录轨迹
+			await bubbleInteraction.handleClick(point, {
+				enableAnimation: true,
+				enableTracking: true,
+				onAnimationEnd: () => {
+					this.animatingBubbleId = null;
+				}
+			});
+			
+			// 根据气泡类型跳转到对应页面
+			const routeMap = {
+				'错题集': () => uni.navigateTo({ url: '/src/pages/mistake/index' }),
+				'练习题': () => uni.switchTab({ 
+					url: '/src/pages/practice/index',
+					fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+				}),
+				'热门考点': () => this.navToHotTopics(point),
+				'核心概念': () => this.navToConcepts(point),
+				'公式定理': () => this.navToFormulas(point),
+				'阅读理解': () => this.navToReading(point)
+			};
+			
+			// 延迟执行跳转，等待动画完成
+			setTimeout(() => {
+				const handler = routeMap[point.title];
+				if (handler) {
+					handler();
+				} else {
+					// 兜底：显示功能预告
+					uni.showToast({ 
+						title: `${point.icon} ${point.title}\n\n掌握度：${point.mastery}%\n题目数：${point.count} 项`, 
+						icon: 'none',
+						duration: 2000,
+						mask: true
+					});
+				}
+			}, 300);
+		},
+		
+		// 热门考点 - 跳转到练习页并筛选
+		navToHotTopics(point) {
+			uni.switchTab({ 
+				url: '/src/pages/practice/index',
+				success: () => {
+					uni.showToast({
+						title: `${point.icon} 热门考点\n\n共 ${point.count} 个考点\n正确率目标：${point.mastery}%`,
+						icon: 'none',
+						duration: 2000
+					});
+				},
+				fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+			});
+		},
+		
+		// 核心概念 - 显示概念列表
+		navToConcepts(point) {
+			uni.switchTab({ 
+				url: '/src/pages/practice/index',
+				success: () => {
+					uni.showToast({
+						title: `${point.icon} 核心概念\n\n共 ${point.count} 个概念\n掌握度：${point.mastery}%`,
+						icon: 'none',
+						duration: 2000
+					});
+				},
+				fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+			});
+		},
+		
+		// 公式定理 - 显示公式列表弹窗
+		navToFormulas(point) {
+			this.showFormulaModal = true;
+		},
+		
+		// 阅读理解 - 跳转到练习页
+		navToReading(point) {
+			uni.switchTab({ 
+				url: '/src/pages/practice/index',
+				success: () => {
+					uni.showToast({
+						title: `${point.icon} 阅读理解\n\n共 ${point.count} 篇\n正确率：${point.mastery}%`,
+						icon: 'none',
+						duration: 2000
+					});
+				},
+				fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+			});
 		},
 
 		handleEditPlan() {
-			uni.showToast({ 
-				title: '编辑计划功能开发中', 
-				icon: 'none',
-				duration: 2000
-			});
+			// 震动反馈
+			try {
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort();
+				}
+			} catch (e) {}
+
+			// ✅ 检查点1.3: 打开待办编辑器（新建模式）
+			this.editingTodo = null;
+			this.showTodoEditor = true;
 		},
 
 		// 处理待办事项切换 - 调用Store方法
 		handleToggleTodo(todoId) {
-			console.log('[Index] Toggle todo ID:', todoId);
+			logger.log('[Index] Toggle todo ID:', todoId);
 			
 			try {
 				const success = this.todoStore.toggleTask(todoId);
 				if (success) {
-					console.log(`[Index] Todo ${todoId} toggled successfully`);
+					logger.log(`[Index] Todo ${todoId} toggled successfully`);
 					// 震动反馈
 					try {
 						if (typeof uni.vibrateShort === 'function') {
@@ -764,16 +1225,61 @@ export default {
 						}
 					} catch (e) {}
 				} else {
-					console.error('[Index] Todo not found:', todoId);
+					logger.error('[Index] Todo not found:', todoId);
 				}
 			} catch (error) {
-				console.error('[Index] Toggle todo failed:', error);
+				logger.error('[Index] Toggle todo failed:', error);
 			}
 		},
 
 		// 滚动监听
 		handleScroll(e) {
 			this.scrollY = e.detail.scrollTop;
+		},
+
+		// ✅ P0-1: 处理空状态引导点击
+		handleEmptyGuideAction(event) {
+			logger.log('[Index] Empty guide action:', event.type);
+			
+			// 根据引导类型执行不同操作
+			switch (event.type) {
+				case 'new_user_onboarding':
+					// 新用户引导 - 跳转到资料导入页
+					uni.navigateTo({ url: '/src/pages/practice/import-data' });
+					break;
+				case 'empty_question_bank':
+					// 题库为空 - 跳转到资料导入页
+					uni.navigateTo({ url: '/src/pages/practice/import-data' });
+					break;
+				case 'empty_todo':
+					// 待办为空 - 跳转到创建计划页
+					uni.navigateTo({ url: '/src/pages/plan/create' });
+					break;
+				default:
+					// 默认跳转到资料导入页
+					uni.navigateTo({ url: '/src/pages/practice/import-data' });
+			}
+		},
+		
+		// ✅ 处理题库为空弹窗确认
+		handleEmptyBankConfirm() {
+			this.showEmptyBankModal = false;
+			uni.navigateTo({ url: '/src/pages/practice/import-data' });
+		},
+		
+		// ✅ 处理登录弹窗确认
+		handleLoginConfirm() {
+			this.showLoginModal = false;
+			uni.navigateTo({ 
+				url: '/src/pages/settings/index',
+				success: () => {
+					uni.showToast({
+						title: '请点击头像完成登录',
+						icon: 'none',
+						duration: 2000
+					});
+				}
+			});
 		},
 
 		// ==================== 每日金句功能 ====================
@@ -794,7 +1300,7 @@ export default {
 			if (cachedDate === dateStr && cachedQuote) {
 				// 使用缓存的金句
 				this.dailyQuote = cachedQuote;
-				console.log('[Index] 使用缓存的每日金句');
+				logger.log('[Index] 使用缓存的每日金句');
 			} else {
 				// 生成新的每日金句
 				this.generateDailyQuote();
@@ -818,7 +1324,7 @@ export default {
 			uni.setStorageSync('daily_quote_cache', this.dailyQuote);
 			uni.setStorageSync('daily_quote_date', dateStr);
 			
-			console.log('[Index] 生成新的每日金句:', this.dailyQuote);
+			logger.log('[Index] 生成新的每日金句:', this.dailyQuote);
 		},
 		
 		/**
@@ -852,8 +1358,232 @@ export default {
 				// 更新缓存
 				uni.setStorageSync('daily_quote_cache', this.dailyQuote);
 				
-				console.log('[Index] 刷新每日金句:', this.dailyQuote);
+				logger.log('[Index] 刷新每日金句:', this.dailyQuote);
 			}, 300);
+		},
+		
+		/**
+		 * 打开每日金句海报弹窗
+		 */
+		openQuotePoster() {
+			// 震动反馈
+			try {
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort();
+				}
+			} catch (e) {}
+			
+			// ✅ 检查点1.2: 打开分享弹窗
+			this.showShareModal = true;
+		},
+		
+		/**
+		 * 获取当前日期
+		 */
+		getCurrentDate() {
+			const now = new Date();
+			const year = now.getFullYear();
+			const month = now.getMonth() + 1;
+			const day = now.getDate();
+			const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+			const weekDay = weekDays[now.getDay()];
+			return `${year}年${month}月${day}日 星期${weekDay}`;
+		},
+		
+		/**
+		 * 保存金句海报到相册
+		 */
+		saveQuotePoster() {
+			// 震动反馈
+			try {
+				if (typeof uni.vibrateShort === 'function') {
+					uni.vibrateShort();
+				}
+			} catch (e) {}
+			
+			// ✅ 检查点1.2: 调用 quoteHandler 保存海报
+			quoteHandler.generatePoster(this.dailyQuote, this.quoteAuthor)
+				.then(result => {
+					if (result.success) {
+						quoteHandler.savePosterToAlbum(result.tempFilePath);
+					}
+				})
+				.catch(err => {
+					logger.error('[Index] 生成海报失败:', err);
+					uni.showToast({
+						title: '生成失败，请重试',
+						icon: 'none'
+					});
+				});
+		},
+		
+		// ✅ 检查点1.2: 处理金句收藏
+		handleQuoteFavorite(data) {
+			logger.log('[Index] Quote favorite:', data);
+		},
+		
+		// ✅ 检查点1.2: 处理金句分享
+		handleQuoteShare(data) {
+			logger.log('[Index] Quote share:', data);
+		},
+		
+		// ✅ 检查点1.3: 处理待办保存
+		handleTodoSave(todo) {
+			logger.log('[Index] Todo save:', todo);
+			
+			if (this.editingTodo) {
+				// 编辑模式
+				todoStorePatch.updateTodo(this.todoStore, todo);
+			} else {
+				// 新建模式
+				todoStorePatch.addTodo(this.todoStore, todo);
+			}
+			
+			this.showTodoEditor = false;
+			this.editingTodo = null;
+		},
+		
+		// ✅ 检查点1.3: 处理待办删除
+		handleTodoDelete(todoId) {
+			logger.log('[Index] Todo delete:', todoId);
+			todoStorePatch.deleteTodo(this.todoStore, todoId);
+			this.showTodoEditor = false;
+			this.editingTodo = null;
+		},
+		
+		// ✅ 检查点1.3: 打开待办编辑（编辑模式）
+		openTodoEditor(todo) {
+			this.editingTodo = {
+				id: todo.id,
+				text: todo.text,
+				priority: todo.priority,
+				completed: todo.completed
+			};
+			this.showTodoEditor = true;
+		},
+		
+		// ✅ 检查点1.1: 快速开始（加载示例题库）
+		handleQuickStart() {
+			uni.showLoading({ title: '加载示例题库...' });
+			
+			const demoQuestions = [
+				{
+					id: 'demo_1',
+					question: '以下哪个是 JavaScript 的基本数据类型？',
+					options: ['Array', 'Object', 'String', 'Function'],
+					answer: 2,
+					explanation: 'String 是 JavaScript 的基本数据类型之一。'
+				},
+				{
+					id: 'demo_2',
+					question: 'Vue 3 中，以下哪个是组合式 API？',
+					options: ['data()', 'methods', 'setup()', 'computed'],
+					answer: 2,
+					explanation: 'setup() 是 Vue 3 组合式 API 的入口函数。'
+				},
+				{
+					id: 'demo_3',
+					question: 'HTTP 状态码 404 表示什么？',
+					options: ['服务器错误', '请求成功', '资源未找到', '重定向'],
+					answer: 2,
+					explanation: '404 Not Found 表示请求的资源不存在。'
+				}
+			];
+			
+			uni.setStorageSync('v30_bank', demoQuestions);
+			
+			setTimeout(() => {
+				uni.hideLoading();
+				uni.showToast({ title: '示例题库已加载', icon: 'success' });
+				
+				setTimeout(() => {
+					// 使用正确的 tabBar 页面路径格式
+					uni.switchTab({ 
+						url: '/src/pages/practice/index',
+						fail: (err) => {
+							logger.error('[Index] switchTab 失败:', err);
+							// 备选方案：使用 reLaunch
+							uni.reLaunch({ url: '/src/pages/practice/index' });
+						}
+					});
+				}, 1500);
+			}, 800);
+		},
+		
+		// ✅ 检查点1.1: 查看教程
+		handleTutorial() {
+			uni.showModal({
+				title: '📖 快速上手教程',
+				content: '1. 上传学习资料（PDF/Word/图片）\n2. AI 自动提取知识点生成题目\n3. 开始刷题，错题自动收录\n4. 查看学习报告，持续进步',
+				confirmText: '开始上传',
+				cancelText: '稍后再说',
+				success: (res) => {
+					if (res.confirm) {
+						uni.navigateTo({ url: '/src/pages/practice/import-data' });
+					}
+				}
+			});
+		},
+		
+		// ✅ 检查点1.5: 初始化学习计时器
+		initStudyTimer() {
+			// 检查日期是否变化
+			const savedDate = uni.getStorageSync('study_date');
+			const today = new Date().toISOString().split('T')[0];
+			
+			if (savedDate !== today) {
+				// 新的一天，重置今日时长
+				this.todayStudyTime = 0;
+				uni.setStorageSync('study_date', today);
+				uni.setStorageSync('today_study_time', 0);
+				// 清除旧的会话开始时间
+				uni.removeStorageSync('session_start_time');
+			} else {
+				// 恢复今日时长（确保是数字类型）
+				const savedTime = uni.getStorageSync('today_study_time');
+				this.todayStudyTime = typeof savedTime === 'number' ? savedTime : 0;
+			}
+			
+			// 不再自动补偿断线时间，避免虚假数据
+			// 只有在用户实际使用应用时才计时
+			
+			logger.log('[Index] 学习计时器初始化，今日:', this.todayStudyTime, '分钟');
+		},
+		
+		// ✅ 检查点1.5: 开始计时（仅在刷题时调用）
+		startStudyTimer() {
+			// 首页不自动开始计时，只有在刷题页面才计时
+			// 这里只是恢复之前的状态显示
+			logger.log('[Index] 学习计时器状态检查，今日:', this.todayStudyTime, '分钟');
+		},
+		
+		// ✅ 检查点1.5: 停止计时
+		stopStudyTimer() {
+			if (this.studyTimerInterval) {
+				clearInterval(this.studyTimerInterval);
+				this.studyTimerInterval = null;
+			}
+			uni.removeStorageSync('session_start_time');
+		},
+		
+		// ✅ 检查点1.5: 保存学习时长
+		saveStudyTime() {
+			uni.setStorageSync('today_study_time', this.todayStudyTime);
+			uni.setStorageSync('study_date', new Date().toISOString().split('T')[0]);
+		},
+		
+		// ✅ 检查点1.5: 格式化学习时长
+		formatStudyTime(minutes) {
+			// 确保 minutes 是有效数字
+			if (!minutes || minutes <= 0) {
+				return '0 分钟';
+			}
+			const hours = Math.floor(minutes / 60);
+			const mins = minutes % 60;
+			if (hours > 0) {
+				return `${hours}小时${mins}分钟`;
+			}
+			return `${mins}分钟`;
 		}
 	}
 };
@@ -873,52 +1603,18 @@ export default {
 	background-color: #080808;
 }
 
-/* ==================== CSS变量定义 ==================== */
 .dashboard-container {
-	/* Light Mode - Wise Style (绿色背景) */
-	--background: #9FE870;
-	--foreground: #1A1D1F;
-	--card: #FFFFFF;
-	--card-foreground: #1A1D1F;
-	--primary: #FFFFFF;
-	--primary-foreground: #1A1D1F;
-	--muted: rgba(255, 255, 255, 0.3);
-	--muted-foreground: #2D3748;
-	--border: rgba(255, 255, 255, 0.3);
-	--brand: #FFFFFF;
-	--brand-glow: rgba(255, 255, 255, 0.3);
-	--glass-bg: rgba(255, 255, 255, 0.2);
-	--glass-border: rgba(255, 255, 255, 0.4);
-	
 	min-height: 100vh;
-	background-color: var(--background);
+	background-color: var(--bg-page);
 	position: relative;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.dashboard-container.dark {
-	/* Dark Mode - Bitget Style */
-	--background: #080808;
-	--foreground: #FFFFFF;
-	--card: #0D1117;
-	--card-foreground: #FFFFFF;
-	--primary: #00F2FF;
-	--primary-foreground: #080808;
-	--muted: #1A1C1E;
-	--muted-foreground: #9CA3AF;
-	--border: #2D2D2D;
-	--brand: #00F2FF;
-	--brand-glow: rgba(0, 242, 255, 0.3);
-	--glass-bg: rgba(255, 255, 255, 0.05);
-	--glass-border: rgba(255, 255, 255, 0.1);
-}
-
-/* ==================== 毛玻璃效果 ==================== */
 .glass {
-	background: var(--glass-bg);
+	background: var(--bg-glass);
 	backdrop-filter: blur(24rpx);
 	-webkit-backdrop-filter: blur(24rpx);
-	border: 1rpx solid var(--glass-border);
+	border: 1rpx solid var(--border);
 }
 
 /* ==================== 动画定义 ==================== */
@@ -929,10 +1625,10 @@ export default {
 
 @keyframes pulse-glow {
 	0%, 100% {
-		box-shadow: 0 0 40rpx var(--brand-glow), 0 0 80rpx var(--brand-glow);
+		box-shadow: 0 0 40rpx var(--primary-light), 0 0 80rpx var(--primary-light);
 	}
 	50% {
-		box-shadow: 0 0 60rpx var(--brand-glow), 0 0 120rpx var(--brand-glow);
+		box-shadow: 0 0 60rpx var(--primary-light), 0 0 120rpx var(--primary-light);
 	}
 }
 
@@ -966,15 +1662,10 @@ export default {
 	transition: background 0.3s ease, backdrop-filter 0.3s ease;
 }
 
-/* 滚动后才显示毛玻璃效果 */
 .header-content-area.header-scrolled {
-	background: rgba(255, 255, 255, 0.85);
+	background: var(--bg-glass);
 	backdrop-filter: blur(20rpx);
 	-webkit-backdrop-filter: blur(20rpx);
-}
-
-.dashboard-container.dark .header-content-area.header-scrolled {
-	background: rgba(8, 8, 8, 0.85);
 }
 
 /* 旧样式保留兼容 */
@@ -1047,7 +1738,7 @@ export default {
 .app-title {
 	font-size: 36rpx;
 	font-weight: 600;
-	color: var(--foreground);
+	color: var(--text-primary);
 }
 
 .header-right {
@@ -1085,18 +1776,24 @@ export default {
 }
 
 .avatar-light {
-	background: var(--primary);
-	color: var(--primary-foreground);
+	background: var(--bg-card);
+	color: var(--text-primary);
+	border: 2rpx solid var(--border);
 }
 
 .avatar-dark {
-	background: linear-gradient(135deg, rgba(0, 242, 255, 0.8), var(--primary));
+	background: var(--gradient-primary);
 	color: var(--primary-foreground);
 }
 
 .avatar-text {
 	font-size: 28rpx;
 	font-weight: 500;
+}
+
+/* 未登录时的图标样式 */
+.avatar-icon {
+	font-size: 36rpx;
 }
 
 /* ==================== Wise/Bitget风格Logo ==================== */
@@ -1116,16 +1813,14 @@ export default {
 	transform: scale(0.95);
 }
 
-/* Wise风格：绿色渐变 + 几何图形 */
 .logo-wise {
-	background: linear-gradient(135deg, #9FE870 0%, #7BC950 100%);
-	box-shadow: 0 4rpx 12rpx rgba(159, 232, 112, 0.3);
+	background: var(--gradient-primary);
+	box-shadow: var(--shadow-md);
 }
 
-/* Bitget风格：青色渐变 + 科技感 */
 .logo-bitget {
-	background: linear-gradient(135deg, #00F2FF 0%, #00B8D4 100%);
-	box-shadow: 0 4rpx 12rpx rgba(0, 242, 255, 0.3);
+	background: var(--gradient-primary);
+	box-shadow: var(--shadow-md);
 }
 
 .logo-icon {
@@ -1249,12 +1944,12 @@ export default {
 }
 
 .banner-light {
-	background: linear-gradient(135deg, rgba(159, 232, 112, 0.1) 0%, rgba(159, 232, 112, 0.05) 50%, transparent 100%);
+	background: var(--bg-secondary);
 }
 
 .banner-dark {
-	background: linear-gradient(135deg, #1A1C1E 0%, #0D0E10 100%);
-	border-color: var(--glass-border);
+	background: var(--bg-card);
+	border-color: var(--border);
 }
 
 .bubble-decoration {
@@ -1268,7 +1963,7 @@ export default {
 	top: -160rpx;
 	width: 512rpx;
 	height: 512rpx;
-	background: rgba(0, 242, 255, 0.1);
+	background: var(--primary-light);
 	filter: blur(120rpx);
 }
 
@@ -1277,7 +1972,7 @@ export default {
 	left: -80rpx;
 	width: 384rpx;
 	height: 384rpx;
-	background: rgba(159, 232, 112, 0.1);
+	background: var(--primary-light);
 	filter: blur(120rpx);
 }
 
@@ -1298,19 +1993,29 @@ export default {
 .welcome-title {
 	font-size: 56rpx;
 	font-weight: 700;
-	color: var(--foreground);
+	color: var(--text-primary);
 	line-height: 1.2;
 }
 
 .welcome-subtitle {
 	font-size: 28rpx;
-	color: var(--muted-foreground);
+	color: var(--text-sub);
 	line-height: 1.6;
+}
+
+/* 浅色模式下增强待复习文字对比度 */
+.banner-light .welcome-subtitle {
+	color: #4B5563;
 }
 
 .highlight-text {
 	color: var(--primary);
 	font-weight: 600;
+}
+
+/* 浅色模式下高亮文字使用深色 */
+.banner-light .highlight-text {
+	color: #059669;
 }
 
 .banner-actions {
@@ -1337,9 +2042,17 @@ export default {
 }
 
 .btn-outline {
-	background: transparent;
+	background: rgba(255, 255, 255, 0.6);
 	border: 2rpx solid var(--border);
-	color: var(--foreground);
+	color: var(--text-primary);
+	backdrop-filter: blur(8rpx);
+	-webkit-backdrop-filter: blur(8rpx);
+}
+
+/* 深色模式下的模拟考试按钮 */
+.banner-dark .btn-outline {
+	background: rgba(255, 255, 255, 0.15);
+	border-color: rgba(255, 255, 255, 0.2);
 }
 
 .action-btn:active {
@@ -1359,7 +2072,89 @@ export default {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 24rpx;
+	margin-bottom: 32rpx;
+}
+
+/* ==================== 检查点1.5: 今日学习时长卡片 ==================== */
+.study-time-card {
+	display: flex;
+	align-items: center;
+	gap: 24rpx;
+	padding: 24rpx 32rpx;
+	border-radius: 24rpx;
 	margin-bottom: 64rpx;
+	border: 1rpx solid var(--border);
+}
+
+.time-icon-wrapper {
+	width: 64rpx;
+	height: 64rpx;
+	border-radius: 16rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--primary-light);
+}
+
+.time-icon {
+	font-size: 32rpx;
+}
+
+.time-content {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 4rpx;
+}
+
+.time-label {
+	font-size: 24rpx;
+	color: var(--text-sub);
+}
+
+.time-value {
+	font-size: 32rpx;
+	font-weight: 700;
+	color: var(--text-primary);
+}
+
+.time-indicator {
+	display: flex;
+	align-items: center;
+	gap: 8rpx;
+	padding: 8rpx 16rpx;
+	border-radius: 20rpx;
+	background: rgba(156, 163, 175, 0.1);
+}
+
+.time-indicator.indicator-active {
+	background: rgba(16, 185, 129, 0.1);
+}
+
+.indicator-dot {
+	width: 12rpx;
+	height: 12rpx;
+	border-radius: 50%;
+	background: #9CA3AF;
+}
+
+.indicator-active .indicator-dot {
+	background: #10B981;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	0%, 100% { opacity: 1; transform: scale(1); }
+	50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.indicator-text {
+	font-size: 22rpx;
+	color: var(--text-sub);
+}
+
+.indicator-active .indicator-text {
+	color: #10B981;
 }
 
 .stat-card {
@@ -1378,7 +2173,7 @@ export default {
 
 .card-hover:active {
 	transform: translateY(-4rpx);
-	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-lg);
 }
 
 .stat-icon-wrapper {
@@ -1391,19 +2186,19 @@ export default {
 }
 
 .icon-primary {
-	background: rgba(159, 232, 112, 0.1);
+	background: var(--primary-light);
 }
 
 .icon-success {
-	background: rgba(52, 211, 153, 0.1);
+	background: var(--success-light);
 }
 
 .icon-warning {
-	background: rgba(245, 158, 11, 0.1);
+	background: var(--warning-light);
 }
 
 .icon-neutral {
-	background: rgba(156, 163, 175, 0.1);
+	background: var(--bg-secondary);
 }
 
 .stat-icon {
@@ -1418,14 +2213,14 @@ export default {
 
 .stat-title {
 	font-size: 24rpx;
-	color: var(--muted-foreground);
+	color: var(--text-sub);
 	font-weight: 500;
 }
 
 .stat-value {
 	font-size: 48rpx;
 	font-weight: 700;
-	color: var(--foreground);
+	color: var(--text-primary);
 	line-height: 1.2;
 }
 
@@ -1435,11 +2230,11 @@ export default {
 }
 
 .stat-change.positive {
-	color: #10B981;
+	color: var(--success);
 }
 
 .stat-change.neutral {
-	color: var(--muted-foreground);
+	color: var(--text-sub);
 }
 
 /* ==================== 章节标题 ==================== */
@@ -1453,7 +2248,7 @@ export default {
 .section-title {
 	font-size: 40rpx;
 	font-weight: 700;
-	color: var(--foreground);
+	color: var(--text-primary);
 }
 
 .section-action {
@@ -1484,24 +2279,35 @@ export default {
 	border-radius: 50%;
 }
 
-/* 浅色模式：白色背景 + 毛玻璃 */
+/* ✅ 检查点1.4: 气泡点击动画 */
+.bubble-animating {
+	animation: bubbleClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes bubbleClick {
+	0% { transform: scale(1); opacity: 1; }
+	30% { transform: scale(1.15); opacity: 0.9; }
+	60% { transform: scale(0.95); opacity: 1; }
+	100% { transform: scale(1); opacity: 1; }
+}
+
 .bubble-card-light {
-	background: rgba(255, 255, 255, 0.9);
+	background: var(--bg-card);
 	backdrop-filter: blur(24rpx);
 	-webkit-backdrop-filter: blur(24rpx);
 	border: 1rpx solid var(--border);
+	box-shadow: var(--shadow-sm);
 }
 
 .bubble-card-light:active {
 	transform: scale(1.05);
 }
 
-/* 深色模式：深色背景 + 毛玻璃 + 光晕 */
 .bubble-card-dark {
-	background: linear-gradient(135deg, #1A1C1E 0%, #0D0E10 100%);
+	background: var(--bg-card);
 	backdrop-filter: blur(24rpx);
 	-webkit-backdrop-filter: blur(24rpx);
-	border: 1rpx solid var(--glass-border);
+	border: 1rpx solid var(--border);
 }
 
 .bubble-card-dark:active {
@@ -1568,7 +2374,7 @@ export default {
 }
 
 .bubble-card-light .bubble-icon-wrapper {
-	background: var(--muted);
+	background: var(--bg-secondary);
 }
 
 .bubble-card-dark .bubble-icon-wrapper {
@@ -1588,7 +2394,7 @@ export default {
 
 .bubble-count {
 	font-size: 20rpx;
-	color: var(--muted-foreground);
+	color: var(--text-sub);
 }
 
 .bubble-progress-wrapper {
@@ -1600,7 +2406,7 @@ export default {
 .bubble-progress-bar {
 	width: 100%;
 	height: 4rpx;
-	background: var(--muted);
+	background: var(--bg-secondary);
 	border-radius: 2rpx;
 	overflow: hidden;
 }
@@ -1640,18 +2446,18 @@ export default {
 }
 
 .status-completed {
-	background: rgba(16, 185, 129, 0.1);
-	color: #10B981;
+	background: var(--success-light);
+	color: var(--success);
 }
 
 .status-in-progress {
-	background: rgba(0, 242, 255, 0.1);
-	color: #00F2FF;
+	background: var(--primary-light);
+	color: var(--primary);
 }
 
 .status-pending {
-	background: rgba(156, 163, 175, 0.1);
-	color: #9CA3AF;
+	background: var(--bg-secondary);
+	color: var(--text-sub);
 }
 
 .activity-icon {
@@ -1669,7 +2475,7 @@ export default {
 .activity-title {
 	font-size: 28rpx;
 	font-weight: 600;
-	color: var(--foreground);
+	color: var(--text-primary);
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -1677,7 +2483,7 @@ export default {
 
 .activity-subtitle {
 	font-size: 24rpx;
-	color: var(--muted-foreground);
+	color: var(--text-sub);
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -1693,7 +2499,7 @@ export default {
 
 .activity-time {
 	font-size: 20rpx;
-	color: var(--muted-foreground);
+	color: var(--text-sub);
 }
 
 .activity-badge {
@@ -1703,18 +2509,18 @@ export default {
 }
 
 .badge-completed {
-	background: rgba(16, 185, 129, 0.1);
-	color: #10B981;
+	background: var(--success-light);
+	color: var(--success);
 }
 
 .badge-in-progress {
-	background: rgba(0, 242, 255, 0.1);
-	color: #00F2FF;
+	background: var(--primary-light);
+	color: var(--primary);
 }
 
 .badge-pending {
-	background: rgba(156, 163, 175, 0.1);
-	color: #9CA3AF;
+	background: var(--bg-secondary);
+	color: var(--text-sub);
 }
 
 .badge-text {
@@ -1729,22 +2535,49 @@ export default {
 	text-align: center;
 	border: 1rpx solid var(--border);
 	margin-bottom: 32rpx;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+}
+
+.mode-description:active {
+	transform: scale(0.98);
+	opacity: 0.9;
 }
 
 .desc-light {
-	background: rgba(243, 244, 246, 0.5);
+	background: var(--bg-secondary);
+}
+
+/* 浅色模式下每日金句文字颜色 */
+.desc-light .mode-text {
+	color: #4B5563;
+}
+
+.desc-light .mode-highlight {
+	color: #059669;
 }
 
 .mode-text {
 	font-size: 32rpx;
-	color: var(--muted-foreground);
+	color: var(--text-sub);
 	line-height: 1.8;
+	display: block;
+	margin-bottom: 16rpx;
 }
 
 .mode-highlight {
 	color: var(--primary);
 	font-weight: 700;
 	font-size: 34rpx;
+}
+
+.quote-hint {
+	font-size: 24rpx;
+	color: var(--text-sub);
+	opacity: 0.6;
+	display: block;
+	margin-top: 16rpx;
 }
 
 /* ==================== 编辑计划按钮 ==================== */
@@ -1771,5 +2604,273 @@ export default {
 .edit-text {
 	font-size: 24rpx;
 	font-weight: 600;
+}
+
+/* ==================== 公式定理弹窗 ==================== */
+.formula-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(10rpx);
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.formula-content {
+	width: 90%;
+	max-width: 680rpx;
+	max-height: 80vh;
+	background: var(--bg-card);
+	border-radius: 32rpx;
+	overflow: hidden;
+	box-shadow: var(--shadow-xl);
+	animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+	from { transform: translateY(100rpx); opacity: 0; }
+	to { transform: translateY(0); opacity: 1; }
+}
+
+.formula-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 32rpx;
+	border-bottom: 1rpx solid var(--border);
+	background: var(--bg-secondary);
+}
+
+.formula-title {
+	font-size: 36rpx;
+	font-weight: 700;
+	color: var(--text-primary);
+}
+
+.formula-close {
+	width: 60rpx;
+	height: 60rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: var(--bg-card);
+	color: var(--text-sub);
+	font-size: 40rpx;
+}
+
+.formula-scroll {
+	max-height: 60vh;
+	padding: 24rpx;
+}
+
+.formula-item {
+	background: var(--bg-secondary);
+	border-radius: 20rpx;
+	padding: 24rpx;
+	margin-bottom: 20rpx;
+	border: 1rpx solid var(--border);
+}
+
+.formula-category {
+	display: inline-block;
+	background: var(--primary-light);
+	color: var(--primary);
+	font-size: 20rpx;
+	padding: 4rpx 16rpx;
+	border-radius: 10rpx;
+	margin-bottom: 12rpx;
+}
+
+.formula-name {
+	display: block;
+	font-size: 28rpx;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: 8rpx;
+}
+
+.formula-text {
+	display: block;
+	font-size: 32rpx;
+	font-weight: 700;
+	color: var(--primary);
+	font-family: 'Times New Roman', serif;
+}
+
+.formula-footer {
+	padding: 24rpx 32rpx;
+	border-top: 1rpx solid var(--border);
+	text-align: center;
+}
+
+.formula-tip {
+	font-size: 24rpx;
+	color: var(--text-sub);
+}
+
+/* ==================== 每日金句海报弹窗 ==================== */
+.quote-poster-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(20rpx);
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	animation: fadeIn 0.3s ease;
+}
+
+.quote-poster-content {
+	width: 90%;
+	max-width: 640rpx;
+	animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.poster-card {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	border-radius: 32rpx;
+	padding: 64rpx 48rpx;
+	position: relative;
+	overflow: hidden;
+	box-shadow: 0 40rpx 80rpx rgba(102, 126, 234, 0.4);
+}
+
+.poster-card.poster-dark {
+	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+	box-shadow: 0 40rpx 80rpx rgba(0, 0, 0, 0.5);
+}
+
+.poster-decoration {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+}
+
+.poster-circle {
+	position: absolute;
+	border-radius: 50%;
+	opacity: 0.2;
+}
+
+.poster-circle-1 {
+	width: 300rpx;
+	height: 300rpx;
+	background: white;
+	top: -100rpx;
+	right: -100rpx;
+}
+
+.poster-circle-2 {
+	width: 200rpx;
+	height: 200rpx;
+	background: white;
+	bottom: -50rpx;
+	left: -50rpx;
+}
+
+.poster-body {
+	position: relative;
+	z-index: 1;
+	text-align: center;
+}
+
+.poster-quote {
+	display: block;
+	font-size: 36rpx;
+	font-weight: 600;
+	color: white;
+	line-height: 1.8;
+	margin-bottom: 32rpx;
+	text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.poster-author {
+	display: block;
+	font-size: 26rpx;
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: 48rpx;
+}
+
+.poster-date {
+	margin-bottom: 48rpx;
+}
+
+.poster-date text {
+	font-size: 24rpx;
+	color: rgba(255, 255, 255, 0.7);
+	background: rgba(255, 255, 255, 0.15);
+	padding: 8rpx 24rpx;
+	border-radius: 20rpx;
+}
+
+.poster-brand {
+	border-top: 1rpx solid rgba(255, 255, 255, 0.2);
+	padding-top: 32rpx;
+}
+
+.brand-name {
+	display: block;
+	font-size: 28rpx;
+	font-weight: 700;
+	color: white;
+	margin-bottom: 8rpx;
+}
+
+.brand-slogan {
+	display: block;
+	font-size: 22rpx;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.poster-actions {
+	display: flex;
+	gap: 24rpx;
+	margin-top: 32rpx;
+}
+
+.poster-btn {
+	flex: 1;
+	height: 88rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 44rpx;
+	font-size: 28rpx;
+	font-weight: 600;
+	transition: all 0.3s ease;
+}
+
+.poster-btn:active {
+	transform: scale(0.95);
+}
+
+.poster-btn-secondary {
+	background: rgba(255, 255, 255, 0.2);
+	color: white;
+	backdrop-filter: blur(10rpx);
+}
+
+.poster-btn-primary {
+	background: white;
+	color: #667eea;
 }
 </style>

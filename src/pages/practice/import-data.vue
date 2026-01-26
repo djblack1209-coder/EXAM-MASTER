@@ -159,6 +159,8 @@
 <script>
 import { lafService } from '../../services/lafService.js'
 import EnhancedProgress from '../../components/common/EnhancedProgress.vue'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
   components: {
@@ -340,7 +342,7 @@ export default {
         this.isDark = mode === 'dark';
       });
     } catch (e) {
-      console.error('获取系统信息失败:', e);
+      logger.error('获取系统信息失败:', e);
     }
   },
   
@@ -348,7 +350,7 @@ export default {
     // ⚡️ 核心修复：回到页面时，自动恢复中断的生成任务
     // 判断条件：开关是开的 && 还没达到目标总数 && 当前没有请求在飞
     if (this.isLooping && !this.isPaused && this.generatedCount < this.totalQuestionsLimit && !this.isRequestInFlight) {
-      console.log('回到页面，检测到任务未完成，继续后台生成...');
+      logger.log('回到页面，检测到任务未完成，继续后台生成...');
       // 如果遮罩已关闭，说明首批已完成，静默继续
       if (!this.showMask) {
         this.generateNextBatch();
@@ -388,7 +390,7 @@ export default {
           that.handleUpload(file);
         },
         fail: (err) => {
-          console.error('文件选择失败:', err);
+          logger.error('文件选择失败:', err);
           uni.showToast({ title: '文件选择失败', icon: 'none' });
         }
       });
@@ -403,7 +405,7 @@ export default {
           that.handleUpload(file);
         },
         fail: (err) => {
-          console.error('文件选择失败:', err);
+          logger.error('文件选择失败:', err);
           uni.showToast({ title: '文件选择失败', icon: 'none' });
         }
       });
@@ -465,7 +467,7 @@ export default {
             }, 500);
           },
           fail: (err) => {
-            console.error('文件读取失败:', err);
+            logger.error('文件读取失败:', err);
             that.fullFileContent = ""; 
             uni.showToast({ title: '读取失败，仅使用文件名', icon: 'none' });
             // 即使失败也启动 AI 分析（使用文件名）
@@ -534,7 +536,7 @@ export default {
     // 4.1. startAIAnalysis 别名方法 - 修复：兼容可能的旧调用
     // 如果代码中有地方调用了 startAIAnalysis，这个方法会确保不报错
     async startAIAnalysis() {
-      console.warn('startAIAnalysis 已废弃，请使用 startAI');
+      logger.warn('startAIAnalysis 已废弃，请使用 startAI');
       return this.startAI();
     },
 
@@ -551,7 +553,7 @@ export default {
 
       // 3. 如果已经在请求了，就别重复发了
       if (this.isRequestInFlight) {
-        console.log('已有请求进行中，跳过本次调用');
+        logger.log('已有请求进行中，跳过本次调用');
         return;
       }
       
@@ -590,7 +592,7 @@ export default {
         
         // 处理响应
         if (response.code !== 0 || !response.data) {
-          console.error('[导入资料] AI响应异常:', response.message);
+          logger.error('[导入资料] AI响应异常:', response.message);
           this.isLooping = false;
           this.isPaused = true;
           this.updateUploadRecordStatus('failed');
@@ -611,8 +613,8 @@ export default {
             throw new Error('AI 返回格式不是数组');
           }
         } catch (parseError) {
-          console.error('[导入资料] JSON解析失败:', parseError);
-          console.error('[导入资料] 原始数据:', aiText.substring(0, 200));
+          logger.error('[导入资料] JSON解析失败:', parseError);
+          logger.error('[导入资料] 原始数据:', aiText.substring(0, 200));
           uni.showModal({
             title: '解析失败',
             content: 'AI 返回的数据格式不正确，请重试。',
@@ -678,7 +680,7 @@ export default {
         }, 1500);
 
       } catch (e) {
-        console.error("生成报错:", e);
+        logger.error("生成报错:", e);
         
         // ⭐⭐ v5.8: 停止批次内进度模拟 - TASK-001
         this.stopBatchProgressSimulation();
@@ -759,7 +761,7 @@ export default {
         // 自动重试逻辑
         if (autoRetry && this.retryCount < this.maxRetryCount) {
           this.retryCount++;
-          console.log(`[自动重试] 第 ${this.retryCount} 次重试...`);
+          logger.log(`[自动重试] 第 ${this.retryCount} 次重试...`);
           uni.showToast({ 
             title: `正在重试 (${this.retryCount}/${this.maxRetryCount})...`, 
             icon: 'none',
@@ -789,23 +791,23 @@ export default {
 
     // 6. 保存题目到本地存储（含去重逻辑）
     saveQuestions(newQuestions) {
-      console.log('[题库保存] 📥 开始保存题目');
+      logger.log('[题库保存] 📥 开始保存题目');
       if (!Array.isArray(newQuestions) || newQuestions.length === 0) {
-        console.warn('[题库保存] ⚠️ 题目数据无效');
+        logger.warn('[题库保存] ⚠️ 题目数据无效');
         return false;
       }
       
       try {
-        console.log('[题库保存] 📚 解析成功，新题目数量:', newQuestions.length);
+        logger.log('[题库保存] 📚 解析成功，新题目数量:', newQuestions.length);
         
         // 读取旧题库
         const oldBank = uni.getStorageSync('v30_bank') || [];
-        console.log('[题库保存] 📖 旧题库数量:', oldBank.length);
+        logger.log('[题库保存] 📖 旧题库数量:', oldBank.length);
         
         // ⭐⭐ v5.2-iter2: 去重逻辑
         // 1. 构建旧题库hash集合
         const oldHashes = new Set(oldBank.map(q => this.generateQuestionHash(q)));
-        console.log('[题库保存] 🔍 旧题库hash数量:', oldHashes.size);
+        logger.log('[题库保存] 🔍 旧题库hash数量:', oldHashes.size);
         
         // 2. 过滤新题目（排除重复）
         const uniqueQuestions = newQuestions.filter(q => {
@@ -817,19 +819,19 @@ export default {
         const duplicates = newQuestions.length - uniqueQuestions.length;
         if (duplicates > 0) {
           this.duplicateCount += duplicates;
-          console.log('[题库保存] ⚠️ 检测到重复题目:', duplicates, '道');
+          logger.log('[题库保存] ⚠️ 检测到重复题目:', duplicates, '道');
         }
         
-        console.log('[题库保存] ✅ 去重后新题目数量:', uniqueQuestions.length);
+        logger.log('[题库保存] ✅ 去重后新题目数量:', uniqueQuestions.length);
         
         // 检查登录状态
         const userId = uni.getStorageSync('EXAM_USER_ID');
         const isLoggedIn = !!userId;
-        console.log('[题库保存] 👤 用户登录状态:', { isLoggedIn, userId: userId || '未登录' });
+        logger.log('[题库保存] 👤 用户登录状态:', { isLoggedIn, userId: userId || '未登录' });
         
         // ⭐⭐ v5.2-iter2: 使用去重后的题目合并
         const merged = [...oldBank, ...uniqueQuestions];
-        console.log('[题库保存] 💾 准备保存，合并后总数:', merged.length);
+        logger.log('[题库保存] 💾 准备保存，合并后总数:', merged.length);
         
         // 未登录时：保留本地缓存（10-15道题）
         let finalBank = merged;
@@ -837,13 +839,13 @@ export default {
           // 如果题目总数超过15道，只保留最新的15道
           if (merged.length > 15) {
             finalBank = merged.slice(-15);
-            console.log('[题库保存] 📦 未登录状态：保留本地缓存', finalBank.length, '道题（最新15道）');
+            logger.log('[题库保存] 📦 未登录状态：保留本地缓存', finalBank.length, '道题（最新15道）');
           } else if (merged.length > 10) {
             finalBank = merged;
-            console.log('[题库保存] 📦 未登录状态：保留本地缓存', finalBank.length, '道题');
+            logger.log('[题库保存] 📦 未登录状态：保留本地缓存', finalBank.length, '道题');
           } else {
             finalBank = merged;
-            console.log('[题库保存] 📦 未登录状态：保留本地缓存', finalBank.length, '道题（少于10道，全部保留）');
+            logger.log('[题库保存] 📦 未登录状态：保留本地缓存', finalBank.length, '道题（少于10道，全部保留）');
           }
         }
         
@@ -851,27 +853,27 @@ export default {
         try {
           const backup = JSON.stringify(finalBank);
           uni.setStorageSync('v30_bank_backup', backup);
-          console.log('[题库保存] 💾 已创建备份');
+          logger.log('[题库保存] 💾 已创建备份');
         } catch (backupErr) {
-          console.warn('[题库保存] ⚠️ 备份失败（不影响主流程）:', backupErr);
+          logger.warn('[题库保存] ⚠️ 备份失败（不影响主流程）:', backupErr);
         }
         
         // 保存（未登录时只保存本地，不保存到云端）
         try {
           uni.setStorageSync('v30_bank', finalBank);
-          console.log('[题库保存] 💾 主数据保存完成（', isLoggedIn ? '已登录，可同步云端' : '未登录，仅本地缓存', '）');
+          logger.log('[题库保存] 💾 主数据保存完成（', isLoggedIn ? '已登录，可同步云端' : '未登录，仅本地缓存', '）');
         } catch (saveErr) {
-          console.error('[题库保存] ❌ 保存失败:', saveErr);
+          logger.error('[题库保存] ❌ 保存失败:', saveErr);
           // 尝试恢复备份
           try {
             const backup = uni.getStorageSync('v30_bank_backup');
             if (backup) {
               const restored = JSON.parse(backup);
               uni.setStorageSync('v30_bank', restored);
-              console.log('[题库保存] 🔄 已从备份恢复数据');
+              logger.log('[题库保存] 🔄 已从备份恢复数据');
             }
           } catch (restoreErr) {
-            console.error('[题库保存] ❌ 恢复备份也失败:', restoreErr);
+            logger.error('[题库保存] ❌ 恢复备份也失败:', restoreErr);
           }
           return false;
         }
@@ -880,7 +882,7 @@ export default {
         const saved = uni.getStorageSync('v30_bank') || [];
         const isSuccess = saved.length === finalBank.length;
         
-        console.log('[题库保存] ✅ 验证保存结果:', {
+        logger.log('[题库保存] ✅ 验证保存结果:', {
           savedCount: saved.length,
           expectedCount: finalBank.length,
           match: isSuccess,
@@ -889,34 +891,34 @@ export default {
         });
         
         if (!isSuccess) {
-          console.error('[题库保存] ❌ 保存验证失败！数据可能不完整');
+          logger.error('[题库保存] ❌ 保存验证失败！数据可能不完整');
           // 尝试从备份恢复
           try {
             const backup = uni.getStorageSync('v30_bank_backup');
             if (backup) {
               const restored = JSON.parse(backup);
               uni.setStorageSync('v30_bank', restored);
-              console.log('[题库保存] 🔄 已从备份恢复数据');
+              logger.log('[题库保存] 🔄 已从备份恢复数据');
             }
           } catch (restoreErr) {
-            console.error('[题库保存] ❌ 恢复备份失败:', restoreErr);
+            logger.error('[题库保存] ❌ 恢复备份失败:', restoreErr);
           }
           return false;
         }
         
         if (!isLoggedIn) {
-          console.log(`[题库保存] ✅ 未登录状态：成功存入 ${newQuestions.length} 道题，本地缓存总数: ${finalBank.length}（保留最新${finalBank.length}道）`);
+          logger.log(`[题库保存] ✅ 未登录状态：成功存入 ${newQuestions.length} 道题，本地缓存总数: ${finalBank.length}（保留最新${finalBank.length}道）`);
           uni.showToast({
             title: `已保存${newQuestions.length}道题（本地缓存）`,
             icon: 'none',
             duration: 2000
           });
         } else {
-          console.log(`[题库保存] ✅ 成功存入 ${newQuestions.length} 道题，当前总数: ${finalBank.length}`);
+          logger.log(`[题库保存] ✅ 成功存入 ${newQuestions.length} 道题，当前总数: ${finalBank.length}`);
         }
         return true;
       } catch (e) {
-        console.error("[题库保存] ❌ 保存失败", e);
+        logger.error("[题库保存] ❌ 保存失败", e);
         return false;
       }
     },
@@ -970,7 +972,7 @@ export default {
           }
         },
         fail: (err) => {
-          console.error('弹窗显示失败:', err);
+          logger.error('弹窗显示失败:', err);
         }
       });
     },
@@ -1025,7 +1027,7 @@ export default {
           content: '当前正在生成题目，返回将中断任务。已生成的题目将保留，确定要返回吗？',
           confirmText: '确定返回',
           cancelText: '继续生成',
-          confirmColor: '#FF453A',
+          confirmColor: 'var(--danger-red)',
           success: (res) => {
             if (res.confirm) {
               // 用户确认返回，停止生成
@@ -1062,7 +1064,7 @@ export default {
       uni.showModal({
         title: '⚠️ 危险操作',
         content: '确定清空所有本地题库吗？此操作不可恢复！\n\n建议：清空前请确保已备份数据。',
-        confirmColor: '#FF453A',
+        confirmColor: 'var(--danger-red)',
         success: (res) => {
           if (res.confirm) {
             // 清空前先创建备份（以防误操作）
@@ -1071,10 +1073,10 @@ export default {
               if (currentBank.length > 0) {
                 const backup = JSON.stringify(currentBank);
                 uni.setStorageSync('v30_bank_backup_before_clear', backup);
-                console.log('[导入资料] 💾 清空前已创建备份:', currentBank.length, '道题');
+                logger.log('[导入资料] 💾 清空前已创建备份:', currentBank.length, '道题');
               }
             } catch (backupErr) {
-              console.warn('[导入资料] ⚠️ 创建备份失败:', backupErr);
+              logger.warn('[导入资料] ⚠️ 创建备份失败:', backupErr);
             }
             
             uni.removeStorageSync('v30_bank');
@@ -1089,7 +1091,7 @@ export default {
           }
         },
         fail: (err) => {
-          console.error('确认弹窗失败:', err);
+          logger.error('确认弹窗失败:', err);
         }
       });
     },
@@ -1108,7 +1110,7 @@ export default {
       uni.showModal({
         title: '确认取消',
         content: '确定要取消当前生成任务吗？已生成的题目将保留。',
-        confirmColor: '#FF453A',
+        confirmColor: 'var(--danger-red)',
         success: (res) => {
           if (res.confirm) {
             this.isLooping = false;
@@ -1131,11 +1133,11 @@ export default {
     retryGeneration() {
       // ⭐ 优先使用缓存的文件数据
       if (this.cachedFileData) {
-        console.log('[重试] 使用缓存的文件数据:', this.cachedFileData.name);
+        logger.log('[重试] 使用缓存的文件数据:', this.cachedFileData.name);
         this.fileName = this.cachedFileData.name;
         // 如果有缓存的文件内容，直接使用
         if (this.fullFileContent) {
-          console.log('[重试] 使用缓存的文件内容，长度:', this.fullFileContent.length);
+          logger.log('[重试] 使用缓存的文件内容，长度:', this.fullFileContent.length);
         }
       } else if (!this.fullFileContent && !this.fileName) {
         uni.showToast({ title: '请先导入文件', icon: 'none' });
@@ -1200,7 +1202,7 @@ export default {
     },
 
     saveUploadRecord(record) {
-      console.log('[文件管理] 📝 开始保存文件记录:', record);
+      logger.log('[文件管理] 📝 开始保存文件记录:', record);
       const records = uni.getStorageSync(this.uploadHistoryKey) || [];
       const id = `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       const newRecord = {
@@ -1212,7 +1214,7 @@ export default {
         status: 'ready'
       };
       records.unshift(newRecord);
-      console.log('[文件管理] 💾 保存文件记录到存储:', {
+      logger.log('[文件管理] 💾 保存文件记录到存储:', {
         key: this.uploadHistoryKey,
         newRecord: newRecord,
         totalRecords: records.length,
@@ -1223,26 +1225,26 @@ export default {
       try {
         const backup = JSON.stringify(records);
         uni.setStorageSync('imported_files_backup', backup);
-        console.log('[文件管理] 💾 已创建备份');
+        logger.log('[文件管理] 💾 已创建备份');
       } catch (backupErr) {
-        console.warn('[文件管理] ⚠️ 备份失败（不影响主流程）:', backupErr);
+        logger.warn('[文件管理] ⚠️ 备份失败（不影响主流程）:', backupErr);
       }
       
       try {
         uni.setStorageSync(this.uploadHistoryKey, records);
-        console.log('[文件管理] 💾 主数据保存完成');
+        logger.log('[文件管理] 💾 主数据保存完成');
       } catch (saveErr) {
-        console.error('[文件管理] ❌ 保存失败:', saveErr);
+        logger.error('[文件管理] ❌ 保存失败:', saveErr);
         // 尝试恢复备份
         try {
           const backup = uni.getStorageSync('imported_files_backup');
           if (backup) {
             const restored = JSON.parse(backup);
             uni.setStorageSync(this.uploadHistoryKey, restored);
-            console.log('[文件管理] 🔄 已从备份恢复数据');
+            logger.log('[文件管理] 🔄 已从备份恢复数据');
           }
         } catch (restoreErr) {
-          console.error('[文件管理] ❌ 恢复备份也失败:', restoreErr);
+          logger.error('[文件管理] ❌ 恢复备份也失败:', restoreErr);
         }
         return id; // 即使保存失败，也返回 ID（避免阻塞流程）
       }
@@ -1251,24 +1253,24 @@ export default {
       const saved = uni.getStorageSync(this.uploadHistoryKey) || [];
       const isSuccess = saved.length === records.length;
       
-      console.log('[文件管理] ✅ 验证保存结果:', {
+      logger.log('[文件管理] ✅ 验证保存结果:', {
         savedCount: saved.length,
         expectedCount: records.length,
         match: isSuccess
       });
       
       if (!isSuccess) {
-        console.error('[文件管理] ❌ 保存验证失败！数据可能不完整');
+        logger.error('[文件管理] ❌ 保存验证失败！数据可能不完整');
         // 尝试从备份恢复
         try {
           const backup = uni.getStorageSync('imported_files_backup');
           if (backup) {
             const restored = JSON.parse(backup);
             uni.setStorageSync(this.uploadHistoryKey, restored);
-            console.log('[文件管理] 🔄 已从备份恢复数据');
+            logger.log('[文件管理] 🔄 已从备份恢复数据');
           }
         } catch (restoreErr) {
-          console.error('[文件管理] ❌ 恢复备份失败:', restoreErr);
+          logger.error('[文件管理] ❌ 恢复备份失败:', restoreErr);
         }
       }
       
@@ -1398,7 +1400,7 @@ export default {
         this.importSpeed = this.totalQuestionsGenerated / elapsedSeconds;
       }
       
-      console.log('[进度更新]', {
+      logger.log('[进度更新]', {
         realProgress: this.realProgress,
         estimatedTimeLeft: this.estimatedTimeLeft,
         totalQuestionsGenerated: this.totalQuestionsGenerated,
@@ -1413,19 +1415,17 @@ export default {
 /* --- 全局容器与背景 --- */
 .apple-container {
   min-height: 100vh;
-  background-color: var(--text-primary);
-  /* 增加微妙的顶部蓝色光晕 */
-  background-image: radial-gradient(circle at 50% 0%, rgba(10, 132, 255, 0.15) 0%, var(--text-primary) 60%);
+  background-color: var(--bg-page, #9FE870);
   padding: 20px;
   padding-bottom: 120px; /* 为底部悬浮栏留空 */
   padding-top: calc(env(safe-area-inset-top) + 20px);
   box-sizing: border-box;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 /* 深色模式样式 */
 .apple-container.dark-mode {
-  background-color: var(--bg-body);
+  background-color: var(--background, #080808);
 }
 
 /* --- 苹果质感自定义导航栏 --- */
@@ -1436,16 +1436,16 @@ export default {
   right: 0;
   z-index: 1000;
   /* 毛玻璃背景 - 苹果质感 */
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--bg-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 0.5px solid var(--border);
 }
 
 /* 深色模式下的导航栏 */
 .apple-container.dark-mode .custom-navbar {
-  background: rgba(28, 28, 30, 0.8);
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-glass);
+  border-bottom: 0.5px solid var(--border);
 }
 
 .navbar-status-bar {
@@ -1473,24 +1473,24 @@ export default {
 }
 
 .navbar-back-btn:active {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--bg-secondary);
   transform: scale(0.95);
 }
 
 .apple-container.dark-mode .navbar-back-btn:active {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--bg-secondary);
 }
 
 .back-icon {
   font-size: 32px;
   font-weight: 300;
-  color: #1A1A1A;
+  color: var(--text-primary);
   line-height: 1;
   margin-left: -4px;
 }
 
 .apple-container.dark-mode .back-icon {
-  color: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .navbar-title-wrapper {
@@ -1503,13 +1503,13 @@ export default {
 .navbar-title {
   font-size: 17px;
   font-weight: 600;
-  color: #1A1A1A;
+  color: var(--text-primary);
   letter-spacing: -0.41px;
   -webkit-font-smoothing: antialiased;
 }
 
 .apple-container.dark-mode .navbar-title {
-  color: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .navbar-placeholder {
@@ -1530,24 +1530,24 @@ export default {
   display: block; 
   margin-bottom: 8px; 
   letter-spacing: 0.5px; 
-  color: var(--bg-card);
+  color: var(--text-primary);
 }
 
 .header-subtitle { 
   font-size: 17px; 
-  color: #8E8E93; 
+  color: var(--text-tertiary); 
   font-weight: 500; 
 }
 
 /* --- 主体玻璃卡片 --- */
 .main-glass-card {
-  background: rgba(28, 28, 30, 0.6); /* iOS深色系背景色 */
+  background: var(--bg-glass);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
   position: relative;
 }
@@ -1563,28 +1563,28 @@ export default {
   width: 8px; 
   height: 8px; 
   border-radius: 50%; 
-  background: #3A3A3C; 
+  background: var(--bg-secondary); 
   margin-right: 8px; 
   transition: all 0.3s; 
 }
 
 .status-dot.active { 
-  background: #30D158; 
-  box-shadow: 0 0 10px rgba(48, 209, 88, 0.5); 
+  background: var(--success); 
+  box-shadow: var(--shadow-success); 
 }
 
 .status-text { 
   font-size: 13px; 
-  color: #AEAEB2; 
+  color: var(--text-tertiary); 
   font-weight: 500; 
 }
 
 /* --- 操作区：上传按钮 --- */
 .upload-trigger {
   height: 160px;
-  background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  background: var(--bg-glass);
   border-radius: 20px;
-  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border: 2px dashed var(--border);
   display: flex; 
   flex-direction: column; 
   align-items: center; 
@@ -1594,19 +1594,25 @@ export default {
 
 .upload-trigger:active { 
   transform: scale(0.98); 
-  background: rgba(255,255,255,0.08); 
+  background: var(--bg-secondary); 
 }
 
 .icon-circle {
   width: 56px; 
   height: 56px; 
-  background: #0A84FF; /* iOS Blue */
+  background: var(--primary); 
   border-radius: 50%; 
   display: flex; 
   align-items: center; 
   justify-content: center;
   margin-bottom: 16px; 
-  box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3);
+  box-shadow: var(--shadow-primary);
+}
+
+/* 深色模式下的图标圆圈 */
+.apple-container.dark-mode .icon-circle {
+  background: var(--brand, #00F2FF);
+  box-shadow: 0 4px 12px rgba(0, 242, 255, 0.3);
 }
 
 .icon-text {
@@ -1617,12 +1623,17 @@ export default {
   font-size: 17px; 
   font-weight: 600; 
   margin-bottom: 4px; 
-  color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* 深色模式下的上传文字 */
+.apple-container.dark-mode .upload-main-text {
+  color: var(--foreground, #FFFFFF);
 }
 
 .upload-sub-text { 
   font-size: 13px; 
-  color: #8E8E93; 
+  color: var(--text-tertiary); 
 }
 
 /* --- 操作区：文件胶囊 --- */
@@ -1631,19 +1642,24 @@ export default {
   align-items: center;
   padding: 16px; 
   border-radius: 18px;
-  background: rgba(44, 44, 46, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
 }
 
 .file-icon-box { 
   width: 48px; 
   height: 48px; 
-  background: rgba(255,255,255,0.05); 
+  background: var(--bg-secondary); 
   border-radius: 12px; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
   margin-right: 16px; 
+}
+
+/* 深色模式下的文件图标盒子 */
+.apple-container.dark-mode .file-icon-box {
+  background: var(--muted, #1A1C1E);
 }
 
 .file-info-col { 
@@ -1656,7 +1672,12 @@ export default {
   font-weight: 600; 
   margin-bottom: 6px; 
   display: block; 
-  color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* 深色模式下的文件名文字 */
+.apple-container.dark-mode .fname-text {
+  color: var(--foreground, #FFFFFF);
 }
 
 .fmeta-row { 
@@ -1667,22 +1688,22 @@ export default {
 .meta-tag { 
   font-size: 10px; 
   padding: 2px 6px; 
-  background: #0A84FF; 
+  background: var(--primary); 
   border-radius: 4px; 
   margin-right: 8px; 
   font-weight: 700; 
-  color: var(--bg-card);
+  color: var(--text-primary-foreground);
 }
 
 .meta-size { 
   font-size: 12px; 
-  color: #8E8E93; 
+  color: var(--text-tertiary); 
 }
 
 .close-btn-circle { 
   width: 28px; 
   height: 28px; 
-  background: rgba(142, 142, 147, 0.2); 
+  background: var(--bg-secondary); 
   border-radius: 50%; 
   display: flex; 
   align-items: center; 
@@ -1695,13 +1716,13 @@ export default {
   bottom: 30px; 
   left: 20px; 
   right: 20px;
-  background: rgba(28, 28, 30, 0.8);
+  background: var(--bg-card-dark);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-glass);
   border-radius: 28px;
   padding: 15px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-xl);
   z-index: 100;
   padding-bottom: calc(15px + env(safe-area-inset-bottom));
 }
@@ -1738,9 +1759,9 @@ export default {
 }
 
 .primary {
-  background: linear-gradient(135deg, #0A84FF, #005BEA);
-  color: white;
-  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+  background: linear-gradient(135deg, var(--info-blue), var(--primary-dark));
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-primary);
 }
 
 .primary.disabled { 
@@ -1750,8 +1771,8 @@ export default {
 }
 
 .secondary {
-  background: rgba(10, 132, 255, 0.1); 
-  color: #0A84FF;
+  background: var(--bg-info-light); 
+  color: var(--info-blue);
   height: 44px; 
   font-size: 15px;
 }
@@ -1762,7 +1783,7 @@ export default {
 
 .danger-ghost {
   background: transparent; 
-  color: #FF453A;
+  color: var(--danger-red);
   height: 44px; 
   font-size: 15px;
 }
@@ -1810,7 +1831,7 @@ export default {
   left: -50%; 
   width: 200%; 
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  background: radial-gradient(circle, var(--glow-light) 0%, transparent 60%);
   opacity: 0; 
   transition: opacity 0.5s; 
   pointer-events: none;
@@ -1823,7 +1844,7 @@ export default {
 /*  Apple AI Loading 样式 */
 .ai-loading-mask {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: var(--mask-dark);
   z-index: 9999;
   display: flex; align-items: center; justify-content: center;
   backdrop-filter: blur(15px);
@@ -1835,9 +1856,9 @@ export default {
   border-radius: 32px;
   position: relative;
   overflow: hidden;
-  background: rgba(24, 24, 27, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  background: var(--bg-card-dark);
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--shadow-2xl);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   transform: translateZ(0);
 }
@@ -1846,11 +1867,11 @@ export default {
 .apple-ai-gradient {
   position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
   background: linear-gradient(225deg, 
-    rgba(10, 132, 255, 0.15) 0%, 
-    rgba(0, 212, 255, 0.15) 25%, 
-    rgba(139, 92, 246, 0.15) 50%, 
-    rgba(236, 72, 153, 0.15) 75%, 
-    rgba(251, 146, 60, 0.15) 100%);
+    var(--info-blue-alpha) 0%, 
+    var(--primary-light-alpha) 25%, 
+    var(--primary-alpha) 50%, 
+    var(--danger-light-alpha) 75%, 
+    var(--warning-alpha) 100%);
   filter: blur(50px);
   animation: rotateGradient 8s linear infinite;
 }
@@ -1859,8 +1880,8 @@ export default {
 .apple-ai-glow {
   position: absolute; top: 0; left: 0; right: 0; bottom: 0;
   background: radial-gradient(circle at center, 
-    rgba(10, 132, 255, 0.05) 0%, 
-    rgba(10, 132, 255, 0) 70%);
+    var(--info-blue-alpha) 0%, 
+    transparent 70%);
   animation: pulseGlow 4s ease-in-out infinite;
 }
 
@@ -1900,7 +1921,7 @@ export default {
   border-radius: 50%;
   background: conic-gradient(
     transparent 0deg,
-    rgba(10, 132, 255, 0.1) 0deg 360deg
+    var(--info-blue-alpha) 0deg 360deg
   );
   display: flex;
   align-items: center;
@@ -1915,8 +1936,8 @@ export default {
   height: 100%;
   border-radius: 50%;
   background: conic-gradient(
-    rgba(10, 132, 255, 1) 0deg,
-    rgba(10, 132, 255, 0.8) 50deg,
+    var(--info-blue) 0deg,
+    var(--info-light) 50deg,
     transparent 180deg 360deg
   );
   transform: translate(-50%, -50%) rotate(-90deg);
@@ -1955,14 +1976,14 @@ export default {
 
 .loading-step {
   font-size: 14px;
-  color: #A1A1AA;
+  color: var(--text-tertiary);
   margin-bottom: 8px;
   font-weight: 500;
 }
 
 .loading-progress {
   font-size: 13px;
-  color: #0A84FF;
+  color: var(--info-blue);
   margin-bottom: 32px;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -1970,7 +1991,7 @@ export default {
 
 .soup-text { 
   font-size: 16px;
-  color: #E4E4E7;
+  color: var(--text-secondary);
   font-style: italic;
   line-height: 1.6;
   min-height: 60px;
@@ -1993,8 +2014,8 @@ export default {
   left: 20px;
   right: 20px;
   bottom: 120px;
-  background: rgba(30, 30, 30, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card-dark);
+  border: 1px solid var(--border-glass);
   border-radius: 16px;
   padding: 12px 16px;
   display: flex;
@@ -2018,7 +2039,7 @@ export default {
 
 .pause-desc {
   font-size: 12px;
-  color: #A1A1AA;
+  color: var(--text-tertiary);
 }
 
 /* 自定义极速体验弹窗 */
@@ -2028,7 +2049,7 @@ export default {
   left: 0; 
   right: 0; 
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--mask-dark);
   z-index: 10000;
   display: flex; 
   align-items: center; 
@@ -2040,15 +2061,15 @@ export default {
 /* 弹窗主体 */
 .speed-card {
   width: 300px;
-  background: rgba(30, 30, 30, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card-dark);
+  border: 1px solid var(--border-glass);
   border-radius: 24px;
   padding: 30px 24px;
   display: flex; 
   flex-direction: column; 
   align-items: center; 
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-2xl);
 }
 
 /* 弹窗动画 */
@@ -2064,13 +2085,13 @@ export default {
 .speed-icon-box {
   width: 60px; 
   height: 60px; 
-  background: linear-gradient(135deg, #FFD000, #FF9500);
+  background: linear-gradient(135deg, var(--warning-light), var(--warning));
   border-radius: 50%; 
   display: flex; 
   align-items: center; 
   justify-content: center;
   margin-bottom: 20px; 
-  box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+  box-shadow: var(--shadow-warning);
 }
 
 .speed-icon { 
@@ -2080,13 +2101,13 @@ export default {
 .speed-title { 
   font-size: 20px; 
   font-weight: bold; 
-  color: #fff; 
+  color: var(--text-inverse); 
   margin-bottom: 12px; 
 }
 
 .speed-desc { 
   font-size: 14px; 
-  color: #8F939C; 
+  color: var(--text-tertiary); 
   line-height: 1.6; 
   margin-bottom: 30px; 
 }
@@ -2100,9 +2121,9 @@ export default {
 
 /* 按钮升级 */
 .glass-btn.ghost {
-  background: rgba(255, 255, 255, 0.1); 
-  color: #fff; 
-  border: 1px solid rgba(255,255,255,0.2);
+  background: var(--bg-glass-light); 
+  color: var(--text-inverse); 
+  border: 1px solid var(--border-glass);
 }
 
 .glass-btn.ghost::after {
@@ -2110,9 +2131,9 @@ export default {
 }
 
 .glass-btn.shine {
-  background: linear-gradient(90deg, #00C6FB, #005BEA); 
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 91, 234, 0.4); 
+  background: linear-gradient(90deg, var(--info-light), var(--primary-dark)); 
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-primary); 
   border: none;
 }
 
@@ -2121,9 +2142,9 @@ export default {
 }
 
 .glass-btn.danger {
-  background: rgba(255, 69, 58, 0.1);
-  color: #FF453A;
-  border: 1px solid rgba(255, 69, 58, 0.3);
+  background: var(--bg-danger-light);
+  color: var(--danger-red);
+  border: 1px solid var(--border-danger);
   margin-left: 10px;
 }
 
@@ -2138,7 +2159,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--mask-dark);
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -2149,27 +2170,27 @@ export default {
 
 .error-card {
   width: 300px;
-  background: rgba(30, 30, 30, 0.9);
-  border: 1px solid rgba(255, 69, 58, 0.3);
+  background: var(--bg-card-dark);
+  border: 1px solid var(--border-danger);
   border-radius: 24px;
   padding: 30px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-2xl);
 }
 
 .error-icon-box {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #FF453A, #FF6B58);
+  background: linear-gradient(135deg, var(--danger-red), var(--danger-light));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
-  box-shadow: 0 0 20px rgba(255, 69, 58, 0.4);
+  box-shadow: var(--shadow-danger);
 }
 
 .error-icon {
@@ -2179,13 +2200,13 @@ export default {
 .error-title {
   font-size: 18px;
   font-weight: bold;
-  color: #FF453A;
+  color: var(--danger-red);
   margin-bottom: 12px;
 }
 
 .error-desc {
   font-size: 14px;
-  color: #8F939C;
+  color: var(--text-tertiary);
   line-height: 1.6;
   margin-bottom: 30px;
 }

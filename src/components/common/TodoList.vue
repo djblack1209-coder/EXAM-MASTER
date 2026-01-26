@@ -7,6 +7,7 @@
         :key="item.id" 
         :class="['todo-item', isDark ? 'item-dark' : 'item-light', item.completed && 'item-completed']"
         @tap="handleToggle(item.id)"
+        @longpress="handleLongPress(item)"
       >
         <!-- 左侧：状态图标 -->
         <view :class="['item-checkbox', item.completed && 'checkbox-completed']">
@@ -20,7 +21,7 @@
 
         <!-- 右侧：优先级标签 -->
         <view :class="['item-badge', 'badge-' + getPriorityClass(item.priority)]">
-          <text class="badge-text">{{ item.priority || 'Priority' }}</text>
+          <text class="badge-text">{{ item.priority || '日常' }}</text>
         </view>
       </view>
     </view>
@@ -29,6 +30,8 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 // 定义props
 const props = defineProps({
@@ -43,20 +46,21 @@ const props = defineProps({
 })
 
 // 定义emits
-const emit = defineEmits(['toggleTodo'])
+const emit = defineEmits(['toggleTodo', 'editTodo'])
 
 // 获取优先级class
 const getPriorityClass = (priority) => {
-  if (!priority) return 'priority'
-  if (priority === 'Priority') return 'priority'
-  if (priority === 'Important') return 'important'
-  if (priority === 'Normal') return 'normal'
-  return 'priority'
+  if (!priority) return 'normal'
+  // 支持中文标签映射
+  if (priority === '优先' || priority === 'Priority' || priority === 'high') return 'priority'
+  if (priority === '重要' || priority === 'Important' || priority === 'medium') return 'important'
+  if (priority === '日常' || priority === 'Normal' || priority === 'low') return 'normal'
+  return 'normal'
 }
 
 // 处理点击切换
 const handleToggle = (id) => {
-  console.log('[TodoList] Clicked todo ID:', id)
+  logger.log('[TodoList] Clicked todo ID:', id)
   
   // 震动反馈
   try {
@@ -64,11 +68,28 @@ const handleToggle = (id) => {
       uni.vibrateShort({ type: 'light' })
     }
   } catch (e) {
-    console.log('[TodoList] Vibration not supported')
+    logger.log('[TodoList] Vibration not supported')
   }
   
   // 触发父组件事件
   emit('toggleTodo', id)
+}
+
+// 处理长按编辑
+const handleLongPress = (item) => {
+  logger.log('[TodoList] Long press todo:', item)
+  
+  // 震动反馈
+  try {
+    if (typeof uni !== 'undefined' && typeof uni.vibrateShort === 'function') {
+      uni.vibrateShort({ type: 'medium' })
+    }
+  } catch (e) {
+    logger.log('[TodoList] Vibration not supported')
+  }
+  
+  // 触发编辑事件
+  emit('editTodo', item)
 }
 </script>
 
@@ -201,16 +222,16 @@ const handleToggle = (id) => {
   line-height: 1;
 }
 
-/* Priority - 绿色 */
+/* 优先 - 红色 */
 .badge-priority {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .badge-priority .badge-text {
-  color: #10B981;
+  color: #EF4444;
 }
 
-/* Important - 黄色 */
+/* 重要 - 黄色 */
 .badge-important {
   background: rgba(245, 158, 11, 0.1);
 }
@@ -219,7 +240,7 @@ const handleToggle = (id) => {
   color: #F59E0B;
 }
 
-/* Normal - 灰色 */
+/* 日常 - 灰色 */
 .badge-normal {
   background: rgba(156, 163, 175, 0.1);
 }
@@ -230,7 +251,11 @@ const handleToggle = (id) => {
 
 /* 深色模式下的标签增强对比度 */
 .todo-dark .badge-priority {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.todo-dark .badge-priority .badge-text {
+  color: #F87171;
 }
 
 .todo-dark .badge-important {

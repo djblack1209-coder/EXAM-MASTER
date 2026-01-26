@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "friends",
+  "description": "好友关系集合 - 存储用户好友关系",
+  "type": "object",
+  "required": ["user_id", "friend_id", "status"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID"
+    },
+    "friend_id": {
+      "type": "string",
+      "description": "好友用户ID"
+    },
+    "status": {
+      "type": "string",
+      "description": "关系状态",
+      "enum": ["pending", "accepted", "rejected", "blocked"],
+      "default": "pending"
+    },
+    "request_message": {
+      "type": "string",
+      "description": "好友请求附言",
+      "default": "",
+      "maxLength": 100
+    },
+    "requester_id": {
+      "type": "string",
+      "description": "发起请求的用户ID"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "accepted_at": {
+      "type": ["integer", "null"],
+      "description": "接受时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "friend_id": 1 }, "unique": true, "name": "idx_user_friend" },
+    { "key": { "user_id": 1, "status": 1 }, "name": "idx_user_status" },
+    { "key": { "friend_id": 1, "status": 1 }, "name": "idx_friend_status" },
+    { "key": { "requester_id": 1 }, "name": "idx_requester" }
+  ],
+  "examples": [
+    {
+      "_id": "fr_001",
+      "user_id": "user_001",
+      "friend_id": "user_002",
+      "status": "accepted",
+      "request_message": "一起学习吧！",
+      "requester_id": "user_001",
+      "created_at": 1737792000000,
+      "accepted_at": 1737878400000
+    }
+  ]
+}

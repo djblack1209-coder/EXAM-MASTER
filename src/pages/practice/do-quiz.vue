@@ -1,5 +1,5 @@
 <template>
-	<view :class="['container', { 'dark-mode': isDark }]">
+	<view class="container">
 		<view class="aurora-bg"></view>
 
 		<view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
@@ -47,10 +47,9 @@
 
 			<!-- AI Loading 状态 -->
 			<base-loading 
-				v-if="isAnalyzing" 
-				:text="'AI 正在深度解析逻辑...'"
-				:is-dark="isDark"
-			/>
+		v-if="isAnalyzing" 
+		:text="'AI 正在深度解析逻辑...'"
+	/>
 			
 			<!-- AI 反馈图层动画 -->
 			<view class="ai-feedback-layer" v-if="isAnalyzing">
@@ -93,6 +92,58 @@
 			
 			<view class="footer-placeholder"></view>
 		</scroll-view>
+		
+		<!-- ✅ 自定义弹窗：题库为空 -->
+		<custom-modal
+			:visible="showEmptyBankModal"
+			type="upload"
+			title="📚 题库空空如也"
+			content="请先去资料库导入学习资料，AI 将为您生成专属题目。"
+			confirm-text="去导入"
+			:show-cancel="false"
+			:is-dark="isDark"
+			@confirm="handleEmptyBankConfirm"
+		/>
+		
+		<!-- ✅ 自定义弹窗：恢复进度 -->
+		<custom-modal
+			:visible="showResumeModal"
+			type="info"
+			title="📝 检测到未完成的练习"
+			:content="resumeModalContent"
+			confirm-text="继续答题"
+			cancel-text="重新开始"
+			:show-cancel="true"
+			:is-dark="isDark"
+			@confirm="handleResumeConfirm"
+			@cancel="handleResumeCancel"
+		/>
+		
+		<!-- ✅ 自定义弹窗：确认退出 -->
+		<custom-modal
+			:visible="showExitModal"
+			type="warning"
+			title="确认退出？"
+			:content="answeredQuestions.length > 0 ? `已完成 ${answeredQuestions.length} 道题，进度将自动保存，下次可继续答题。` : '确定要退出吗？'"
+			confirm-text="确认退出"
+			cancel-text="继续答题"
+			:show-cancel="true"
+			:is-dark="isDark"
+			@confirm="handleExitConfirm"
+			@cancel="showExitModal = false"
+		/>
+		
+		<!-- ✅ 自定义弹窗：练习完成 -->
+		<custom-modal
+			:visible="showCompleteModal"
+			type="success"
+			title="🎉 练习完成"
+			:content="`本次共完成 ${questions.length} 道题目！`"
+			confirm-text="返回"
+			:show-cancel="false"
+			:is-dark="isDark"
+			@confirm="handleCompleteConfirm"
+		/>
 	</view>
 </template>
 
@@ -100,17 +151,37 @@
 import { lafService } from '../../services/lafService.js'
 import { storageService } from '../../services/storageService.js'
 import BaseLoading from '../../components/base/base-loading/base-loading.vue'
+import CustomModal from '../../components/common/CustomModal.vue'
+// ✅ P0-3: 导入自动保存功能
+import { 
+	saveQuizProgress, 
+	loadQuizProgress, 
+	clearQuizProgress, 
+	hasUnfinishedProgress,
+	getProgressSummary 
+} from '../../composables/useQuizAutoSave.js'
+// ✅ 检查点 5.1: 导入分析服务
+import { analytics } from '../../utils/analytics/event-bus-analytics.js'
+// ✅ 检查点 5.3: 导入自适应学习引擎
+import { 
+	adaptiveLearningEngine, 
+	generateAdaptiveSequence,
+	getNextRecommendedQuestion,
+	recordAnswer 
+} from '../../utils/learning/adaptive-learning-engine.js'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
 	components: {
-		BaseLoading
+		BaseLoading,
+		CustomModal
 	},
-		data() {
+	data() {
 		return {
 			statusBarHeight: 44,
 			navBarHeight: 88, // 标准导航栏高度 = 44 + 44
 			capsuleMargin: 100,
-			isDark: false,
 			questions: [],
 			currentIndex: 0,
 			userChoice: null,
@@ -121,6 +192,19 @@ export default {
 			showResult: false,
 			resultStatus: '', // 'correct' or 'wrong'
 			aiComment: '',
+			// ✅ P0-3: 已答题目记录（用于断点续答）
+			answeredQuestions: [],
+			// ✅ 自定义弹窗状态
+			showEmptyBankModal: false,
+			showResumeModal: false,
+			showExitModal: false,
+			showCompleteModal: false,
+			resumeModalContent: '',
+			isDark: false,
+			// ✅ 检查点 5.3: 自适应学习状态
+			isAdaptiveMode: true,  // 是否启用自适应模式
+			currentReviewQuestion: null,  // 当前复习题
+			answerStartTime: 0  // 答题开始时间（用于计算用时）
 		};
 	},
 	computed: {
@@ -148,14 +232,14 @@ export default {
 				// 支持 answer 为 'A'/'B'/'C'/'D'
 				if (['A', 'B', 'C', 'D'].includes(correctAnswer)) {
 					const isMatch = optionLabel === correctAnswer;
-					console.log('[do-quiz] 答案匹配:', { optionLabel, correctAnswer, isMatch });
+					logger.log('[do-quiz] 答案匹配:', { optionLabel, correctAnswer, isMatch });
 					return isMatch;
 				}
 				
 				// 兼容选项内容匹配（如果answer不是A/B/C/D，可能是选项内容）
 				const optionText = this.currentQuestion.options[idx] || '';
 				const isMatch = optionText.startsWith(correctAnswer) || optionText.includes(correctAnswer);
-				console.log('[do-quiz] 选项内容匹配:', { optionText, correctAnswer, isMatch });
+				logger.log('[do-quiz] 选项内容匹配:', { optionText, correctAnswer, isMatch });
 				return isMatch;
 			};
 		}
@@ -163,12 +247,20 @@ export default {
 	onLoad() {
 		this.initSystemUI();
 		this.loadQuestions();
-		this.startTimer();
+		
+		// ✅ 初始化主题
+		this.isDark = uni.getStorageSync('theme_mode') === 'dark';
+		
+		// ✅ P0-3: 检查是否有未完成的进度
+		this.checkUnfinishedProgress();
+		
+		// ✅ 检查点 5.1: 追踪开始刷题事件
+		analytics.trackStartPractice({
+			questionCount: this.questions.length,
+			mode: this.isAdaptiveMode ? 'adaptive' : 'normal'
+		});
 	},
 	onShow() {
-		// 每次进入页面时同步主题
-		this.isDark = storageService.get('theme_mode', 'light') === 'dark';
-		
 		// 监听全局主题切换事件，确保跟随应用设置实时切换
 		uni.$on('themeUpdate', (mode) => {
 			this.isDark = mode === 'dark';
@@ -180,64 +272,126 @@ export default {
 		}
 		// 移除主题事件监听，避免重复绑定
 		uni.$off('themeUpdate');
+		
+		// ✅ P0-3: 页面卸载时保存进度
+		this.saveCurrentProgress();
+	},
+	
+	// ✅ P0-3: 页面隐藏时也保存进度（应对小程序被杀死的情况）
+	onHide() {
+		this.saveCurrentProgress();
 	},
 	methods: {
-		initSystemUI() {
-			const sys = uni.getSystemInfoSync();
-			// 统一计算：状态栏高度
-			this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
-			// 标准导航栏高度 = 状态栏高度 + 44px
-			this.navBarHeight = this.statusBarHeight + 44;
-			
-			// #ifdef MP-WECHAT
-			try {
-				const capsule = uni.getMenuButtonBoundingClientRect();
-				if (capsule && capsule.width > 0) {
-					const windowWidth = sys.windowWidth || sys.screenWidth;
-					this.capsuleMargin = windowWidth - capsule.left + 10;
+		// ✅ P0-3: 检查未完成的进度
+		checkUnfinishedProgress() {
+			if (hasUnfinishedProgress()) {
+				const summary = getProgressSummary();
+				if (summary && summary.currentIndex > 0) {
+					// ✅ 使用自定义弹窗
+					this.resumeModalContent = `上次答到第 ${summary.currentIndex + 1} 题，用时 ${summary.formattedTime}（${summary.timeAgo}保存）。是否继续？`;
+					this.showResumeModal = true;
 				} else {
-					this.capsuleMargin = 100;
+					this.startTimer();
 				}
-			} catch (e) {
-				console.log('获取胶囊按钮信息失败', e);
+			} else {
+				this.startTimer();
+			}
+		},
+		
+		// ✅ P0-3: 恢复进度
+		restoreProgress() {
+			const progress = loadQuizProgress();
+			if (progress) {
+				this.currentIndex = progress.currentIndex || 0;
+				this.seconds = progress.seconds || 0;
+				this.answeredQuestions = progress.answeredQuestions || [];
+				this.aiComment = progress.aiComment || '';
+				
+				// 如果上次已作答但未进入下一题，重置作答状态
+				this.hasAnswered = false;
+				this.userChoice = null;
+				this.showResult = false;
+				
+				logger.log('[do-quiz] ✅ 进度已恢复:', {
+					currentIndex: this.currentIndex,
+					seconds: this.seconds,
+					answeredCount: this.answeredQuestions.length
+				});
+				
+				uni.showToast({
+					title: '进度已恢复',
+					icon: 'success',
+					duration: 1500
+				});
+			}
+			this.startTimer();
+		},
+		
+		// ✅ P0-3: 保存当前进度
+		saveCurrentProgress() {
+			// 只有在有题目且已开始答题时才保存
+			if (this.questions.length === 0 || this.currentIndex === 0 && !this.hasAnswered) {
+				return;
+			}
+			
+			// 如果已完成所有题目，清除进度
+			if (this.currentIndex >= this.questions.length - 1 && this.hasAnswered) {
+				clearQuizProgress();
+				logger.log('[do-quiz] 练习已完成，清除进度');
+				return;
+			}
+			
+			const success = saveQuizProgress({
+				currentIndex: this.currentIndex,
+				userChoice: this.userChoice,
+				hasAnswered: this.hasAnswered,
+				seconds: this.seconds,
+				aiComment: this.aiComment,
+				answeredQuestions: this.answeredQuestions
+			});
+			
+			if (success) {
+				logger.log('[do-quiz] ✅ 进度已自动保存');
+			}
+		},
+		
+		initSystemUI() {
+		const sys = uni.getSystemInfoSync();
+		// 统一计算：状态栏高度
+		this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+		// 标准导航栏高度 = 状态栏高度 + 44px
+		this.navBarHeight = this.statusBarHeight + 44;
+		
+		// #ifdef MP-WECHAT
+		try {
+			const capsule = uni.getMenuButtonBoundingClientRect();
+			if (capsule && capsule.width > 0) {
+				const windowWidth = sys.windowWidth || sys.screenWidth;
+				this.capsuleMargin = windowWidth - capsule.left + 10;
+			} else {
 				this.capsuleMargin = 100;
 			}
-			// #endif
-			// #ifndef MP-WECHAT
-			this.capsuleMargin = 20;
-			// #endif
-			
-			// 读取主题模式
-			this.isDark = storageService.get('theme_mode', 'light') === 'dark';
-		},
+		} catch (e) {
+			logger.log('获取胶囊按钮信息失败', e);
+			this.capsuleMargin = 100;
+		}
+		// #endif
+		// #ifndef MP-WECHAT
+		this.capsuleMargin = 20;
+		// #endif
+	},
 		loadQuestions() {
 			// 从本地存储读取题库
 			const bank = storageService.get('v30_bank', []);
 			
 			if (!bank || bank.length === 0) {
-				uni.showModal({
-					title: '题库空空如也',
-					content: '请先去资料库导入学习资料，AI 将为您生成专属题目。',
-					showCancel: false,
-					confirmText: '去导入',
-					success: (res) => {
-						if (res.confirm) {
-							uni.navigateTo({ 
-								url: '/src/pages/practice/import-data',
-								fail: () => {
-									uni.navigateBack();
-								}
-							});
-						} else {
-							uni.navigateBack();
-						}
-					}
-				});
+				// ✅ 使用自定义弹窗
+				this.showEmptyBankModal = true;
 				return;
 			}
 			
 			// 验证并标准化题目数据
-			this.questions = bank.map((q, index) => ({
+			let questions = bank.map((q, index) => ({
 				id: q.id || `q_${index}`,
 				question: q.question || q.title || `题目 ${index + 1}`,
 				options: Array.isArray(q.options) && q.options.length >= 4 ? q.options : [
@@ -252,16 +406,25 @@ export default {
 				type: q.type || '单选'
 			})).filter(q => q.question && q.question !== `题目 ${bank.indexOf(q) + 1}`); // 过滤无效题目
 			
-			if (this.questions.length === 0) {
-				uni.showModal({
-					title: '数据格式异常',
-					content: '题库数据格式不正确，请重新导入资料',
-					showCancel: false,
-					success: () => {
-						uni.navigateTo({ url: '/src/pages/practice/import-data' });
-					}
+			// ✅ 检查点 5.3: 使用自适应学习引擎优化题目序列
+			if (this.isAdaptiveMode && questions.length > 0) {
+				questions = generateAdaptiveSequence(questions, {
+					insertReviewQuestions: true,
+					prioritizeWeak: true,
+					maxReviewRatio: 0.3
 				});
+				logger.log('[do-quiz] ✅ 自适应学习模式已启用，题目序列已优化');
 			}
+			
+			this.questions = questions;
+			
+			if (this.questions.length === 0) {
+				// ✅ 使用自定义弹窗
+				this.showEmptyBankModal = true;
+			}
+			
+			// ✅ 记录答题开始时间
+			this.answerStartTime = Date.now();
 		},
 		// 从选项文本中提取标签（如 "A. 选项内容" -> "A"）
 		getOptionLabel(idx) {
@@ -301,8 +464,31 @@ export default {
 			this.resultStatus = isCorrect ? 'correct' : 'wrong';
 			this.hasAnswered = true;
 			
+			// ✅ P0-3: 记录已答题目
+			this.answeredQuestions.push({
+				index: this.currentIndex,
+				questionId: this.currentQuestion?.id,
+				userChoice: idx,
+				isCorrect: isCorrect,
+				timestamp: Date.now()
+			});
+			
+			// ✅ 检查点 5.3: 记录答题结果到自适应学习引擎
+			const timeSpent = Date.now() - this.answerStartTime;
+			recordAnswer(this.currentQuestion, isCorrect, timeSpent);
+			
+			// ✅ 检查点 5.1: 追踪完成题目事件
+			analytics.trackCompleteQuestion(this.currentQuestion?.id, isCorrect, {
+				timeSpent: timeSpent,
+				category: this.currentQuestion?.category,
+				isReview: this.currentQuestion?._isReview || false
+			});
+			
+			// ✅ P0-3: 每答一题自动保存进度
+			this.saveCurrentProgress();
+			
 			// 添加调试日志
-			console.log('[do-quiz] 答案判断:', {
+			logger.log('[do-quiz] 答案判断:', {
 				selectedIndex: idx,
 				selectedLabel: this.getOptionLabel(idx),
 				correctAnswer: this.currentQuestion.answer,
@@ -359,12 +545,12 @@ export default {
 					this.updateMistakeWithAI(this.aiComment);
 				} else {
 					// API 返回错误
-					console.warn('[do-quiz] AI 解析返回异常:', response.message);
+					logger.warn('[do-quiz] AI 解析返回异常:', response.message);
 					this.aiComment = "AI 解析暂时不可用，请结合参考答案进行复习。建议重新审视题干与选项的对应关系，查找知识点薄弱环节。";
 					this.saveToMistakes();
 				}
 			} catch (e) {
-				console.warn('[do-quiz] AI 解析请求失败，降级到本地解析:', e);
+				logger.warn('[do-quiz] AI 解析请求失败，降级到本地解析:', e);
 				
 				// 根据错误类型提供更详细的提示
 				let fallbackComment = "网络连接中断，AI 导师未能成功接入。建议重新审视题干与选项的对应关系，查看解析加深理解。";
@@ -377,7 +563,7 @@ export default {
 				}
 				
 				this.aiComment = fallbackComment;
-				console.log('[do-quiz] ✅ 已使用降级文案，错题将保存到本地');
+				logger.log('[do-quiz] ✅ 已使用降级文案，错题将保存到本地');
 				this.saveToMistakes();
 			} finally {
 				this.isAnalyzing = false; // 关闭扫描动画
@@ -425,7 +611,7 @@ export default {
 				const result = await storageService.saveMistake(mistakeData);
 				
 				if (result.success) {
-					console.log('[do-quiz] 错题已保存到云端:', result.id);
+					logger.log('[do-quiz] 错题已保存到云端:', result.id);
 					// 如果需要更新已有记录的错误次数，可以在这里处理
 					if (existingMistake && result.source === 'cloud') {
 						// 云端保存成功，更新本地缓存中的错误次数
@@ -439,10 +625,10 @@ export default {
 						}
 					}
 				} else {
-					console.warn('[do-quiz] 错题保存失败，已降级到本地:', result.error);
+					logger.warn('[do-quiz] 错题保存失败，已降级到本地:', result.error);
 				}
 			} catch (error) {
-				console.warn('[do-quiz] 保存错题异常，降级到本地存储:', error);
+				logger.warn('[do-quiz] 保存错题异常，降级到本地存储:', error);
 				// 异常时降级到本地保存
 				const mistakes = storageService.get('mistake_book', []);
 				const mistakeRecord = {
@@ -479,7 +665,7 @@ export default {
 				}
 				
 				storageService.save('mistake_book', mistakes, true);
-				console.log('[do-quiz] ✅ 已降级到本地保存，sync_status: pending');
+				logger.log('[do-quiz] ✅ 已降级到本地保存，sync_status: pending');
 			}
 		},
 		async updateMistakeWithAI(aiAnalysis) {
@@ -523,11 +709,34 @@ export default {
 			this.isAnalyzing = false;
 			
 			if (this.currentIndex < this.questions.length - 1) {
+				// ✅ 检查点 5.3: 检查是否需要插入复习题
+				if (this.isAdaptiveMode) {
+					const recommendation = getNextRecommendedQuestion(this.currentIndex, this.questions);
+					if (recommendation && recommendation.isReview) {
+						// 插入复习题
+						this.questions.splice(this.currentIndex + 1, 0, recommendation.question);
+						logger.log('[do-quiz] ✅ 插入复习题:', recommendation.reason);
+						
+						// 显示复习提示
+						uni.showToast({
+							title: '复习时间到！',
+							icon: 'none',
+							duration: 1500
+						});
+					}
+				}
+				
 				this.currentIndex++;
 				this.hasAnswered = false;
 				this.userChoice = null;
 				this.showResult = false;
 				this.aiComment = '';
+				
+				// ✅ 重置答题开始时间
+				this.answerStartTime = Date.now();
+				
+				// ✅ P0-3: 进入下一题时保存进度
+				this.saveCurrentProgress();
 				
 				// 震动反馈
 				try {
@@ -536,32 +745,67 @@ export default {
 					}
 				} catch(e) {}
 			} else {
-				// 练习完成
-				uni.showModal({
-					title: '🎉 练习完成',
-					content: `本次共完成 ${this.questions.length} 道题目！`,
-					showCancel: false,
-					confirmText: '返回',
-					success: () => {
-						uni.navigateBack();
-					}
+				// ✅ P0-3: 练习完成，清除进度
+				clearQuizProgress();
+				
+				// ✅ 检查点 5.1: 追踪完成练习事件
+				analytics.trackConversion('COMPLETE_SESSION', {
+					totalQuestions: this.questions.length,
+					correctCount: this.answeredQuestions.filter(a => a.isCorrect).length,
+					totalTime: this.seconds
 				});
+				
+				// ✅ 使用自定义弹窗
+				this.showCompleteModal = true;
 			}
 		},
 		handleExit() {
-			uni.showModal({
-				title: '确认退出？',
-				content: '当前进度将自动保存。',
-				success: (res) => { 
-					if (res.confirm) {
-						if (this.timer) {
-							clearInterval(this.timer);
-						}
-						uni.navigateBack();
-					}
+			// ✅ 使用自定义弹窗
+			this.showExitModal = true;
+		},
+		
+		// ✅ 处理退出确认
+		handleExitConfirm() {
+			this.showExitModal = false;
+			// P0-3: 退出前保存进度
+			this.saveCurrentProgress();
+			
+			if (this.timer) {
+				clearInterval(this.timer);
+			}
+			uni.navigateBack();
+		},
+		
+		// ✅ 处理题库为空确认
+		handleEmptyBankConfirm() {
+			this.showEmptyBankModal = false;
+			uni.navigateTo({ 
+				url: '/src/pages/practice/import-data',
+				fail: () => {
+					uni.navigateBack();
 				}
 			});
 		},
+		
+		// ✅ 处理恢复进度确认
+		handleResumeConfirm() {
+			this.showResumeModal = false;
+			this.restoreProgress();
+		},
+		
+		// ✅ 处理恢复进度取消（重新开始）
+		handleResumeCancel() {
+			this.showResumeModal = false;
+			clearQuizProgress();
+			this.startTimer();
+		},
+		
+		// ✅ 处理练习完成确认
+		handleCompleteConfirm() {
+			this.showCompleteModal = false;
+			uni.navigateBack();
+		},
+		
 		closeResult() {
 			// 关闭结果弹窗，但不进入下一题
 			this.showResult = false;
@@ -578,13 +822,9 @@ export default {
 /* 容器样式 */
 .container { 
 	min-height: 100vh; 
-	background: var(--bg-body); 
+	background: var(--bg-page); 
 	position: relative; 
 	overflow: hidden; 
-}
-.container.dark-mode { 
-	background: var(--bg-body); 
-	color: #FFF; 
 }
 
 /* 极光背景 */
@@ -594,8 +834,7 @@ export default {
 	left: 0; 
 	width: 100%; 
 	height: 600rpx;
-	background: radial-gradient(circle at 20% 20%, rgba(46, 204, 113, 0.15), transparent 50%),
-	            radial-gradient(circle at 80% 0%, rgba(74, 144, 226, 0.15), transparent 50%);
+	background: var(--gradient-aurora);
 	filter: blur(60px);
 	z-index: 0;
 }
@@ -606,7 +845,7 @@ export default {
 	top: 0; 
 	width: 100%; 
 	z-index: 100; 
-	background: rgba(255,255,255,0.1); 
+	background: var(--bg-glass); 
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
 }
@@ -624,18 +863,18 @@ export default {
 }
 .back-icon {
 	font-size: 36rpx;
-	color: #333;
+	color: var(--text-primary);
 	font-weight: bold;
 }
 .progress-text { 
 	font-size: 28rpx; 
 	font-weight: bold; 
-	color: #333; 
+	color: var(--text-primary); 
 }
 .timer-box { 
 	font-size: 24rpx; 
-	color: #666; 
-	background: rgba(0,0,0,0.05); 
+	color: var(--text-sub); 
+	background: var(--bg-secondary); 
 	padding: 4rpx 20rpx; 
 	border-radius: 20rpx;
 	display: flex;
@@ -657,21 +896,21 @@ export default {
 
 /* 玻璃卡片通用样式 */
 .glass-card {
-	background: rgba(255, 255, 255, 0.8); 
+	background: var(--bg-glass); 
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
-	border: 1px solid rgba(255, 255, 255, 0.5); 
+	border: 1px solid var(--border); 
 	border-radius: 40rpx;
 	padding: 40rpx; 
 	margin-bottom: 30rpx;
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+	box-shadow: var(--shadow-md);
 }
 
 /* 题目卡片 */
 .question-card .q-tag { 
 	display: inline-block; 
-	background: #2ECC71; 
-	color: #FFF; 
+	background: var(--primary); 
+	color: var(--text-primary-foreground); 
 	font-size: 20rpx; 
 	padding: 4rpx 16rpx; 
 	border-radius: 10rpx; 
@@ -681,7 +920,7 @@ export default {
 	font-size: 34rpx; 
 	font-weight: bold; 
 	line-height: 1.6; 
-	color: #1A1A1A; 
+	color: var(--text-primary); 
 	display: block;
 }
 
@@ -698,16 +937,16 @@ export default {
 	cursor: pointer;
 }
 .option-item.selected { 
-	border-color: #2ECC71; 
-	background: rgba(46, 204, 113, 0.1); 
+	border-color: var(--primary); 
+	background: var(--success-light); 
 }
 .option-item.correct {
-	border-color: #2ECC71;
-	background: rgba(46, 204, 113, 0.15);
+	border-color: var(--primary);
+	background: var(--success-light);
 }
 .option-item.wrong {
-	border-color: #E74C3C;
-	background: rgba(231, 76, 60, 0.1);
+	border-color: var(--danger);
+	background: var(--danger-light);
 }
 .option-item.disabled {
 	opacity: 0.5;
@@ -716,14 +955,14 @@ export default {
 .opt-index { 
 	width: 50rpx; 
 	font-weight: 900; 
-	color: #2ECC71; 
+	color: var(--primary); 
 	font-size: 32rpx;
 	flex-shrink: 0;
 }
 .opt-text { 
 	flex: 1; 
 	font-size: 30rpx; 
-	color: #4A5568; 
+	color: var(--text-sub); 
 	line-height: 1.5;
 }
 .select-indicator { 
@@ -733,7 +972,7 @@ export default {
 	align-items: center;
 	justify-content: center;
 	font-size: 32rpx;
-	color: #2ECC71;
+	color: var(--primary);
 	flex-shrink: 0;
 }
 
@@ -745,7 +984,7 @@ export default {
 	width: 100%; 
 	height: 100%;
 	z-index: 200; 
-	background: rgba(255,255,255,0.2); 
+	background: var(--overlay); 
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
 	display: flex; 
@@ -759,7 +998,7 @@ export default {
 	left: 0; 
 	width: 100%; 
 	height: 6rpx;
-	background: linear-gradient(90deg, transparent, #2ECC71, transparent);
+	background: linear-gradient(90deg, transparent, var(--primary), transparent);
 	animation: scanMove 2s infinite;
 }
 @keyframes scanMove { 
@@ -777,7 +1016,7 @@ export default {
 .pulse-ring { 
 	width: 140rpx; 
 	height: 140rpx; 
-	border: 4rpx solid #2ECC71; 
+	border: 4rpx solid var(--primary); 
 	border-radius: 50%; 
 	animation: ringPulse 1.5s infinite; 
 }
@@ -788,7 +1027,7 @@ export default {
 .ai-text { 
 	margin-top: 20rpx; 
 	font-weight: bold; 
-	color: #2ECC71; 
+	color: var(--primary); 
 	font-size: 28rpx;
 }
 
@@ -803,7 +1042,7 @@ export default {
 	border-radius: 40rpx; 
 	backdrop-filter: blur(30px);
 	-webkit-backdrop-filter: blur(30px);
-	box-shadow: 0 20rpx 60rpx rgba(0,0,0,0.15);
+	box-shadow: var(--shadow-xl);
 	animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 @keyframes slideUp { 
@@ -812,12 +1051,12 @@ export default {
 }
 
 .result-pop.correct { 
-	background: rgba(46, 204, 113, 0.95); 
-	color: #FFF; 
+	background: var(--success); 
+	color: var(--text-primary-foreground); 
 }
 .result-pop.wrong { 
-	background: rgba(231, 76, 60, 0.95); 
-	color: #FFF; 
+	background: var(--danger); 
+	color: var(--text-primary-foreground); 
 }
 
 .result-header { 
@@ -836,7 +1075,7 @@ export default {
 	align-items: center;
 	justify-content: center;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.2);
+	background: var(--overlay);
 	backdrop-filter: blur(10px);
 	cursor: pointer;
 	transition: all 0.3s;
@@ -844,14 +1083,14 @@ export default {
 }
 
 .result-icon-btn:active {
-	background: rgba(255, 255, 255, 0.35);
+	background: var(--bg-secondary);
 	transform: scale(0.95);
 }
 
 .result-icon {
 	font-size: 60rpx;
 	font-weight: bold;
-	color: #FFF;
+	color: var(--text-primary-foreground);
 }
 
 .status-title { 
@@ -873,7 +1112,7 @@ export default {
 	gap: 10rpx;
 	margin-bottom: 20rpx;
 	padding: 10rpx 20rpx;
-	background: rgba(255, 255, 255, 0.2);
+	background: var(--overlay);
 	border-radius: 20rpx;
 }
 .sparkle-icon {
@@ -901,12 +1140,12 @@ export default {
 }
 .answer-label {
 	font-size: 24rpx;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--text-sub);
 }
 .answer-value {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #00FF80;
+	color: var(--success-light);
 }
 
 .ai-analysis-brief { 
@@ -920,8 +1159,8 @@ export default {
 }
 .next-btn { 
 	width: 100%;
-	background: #FFF; 
-	color: #333; 
+	background: var(--bg-glass); 
+	color: var(--text-primary); 
 	font-weight: bold; 
 	border-radius: 20rpx; 
 	border: none;
@@ -932,23 +1171,5 @@ export default {
 
 .footer-placeholder { 
 	height: 300rpx; 
-}
-
-/* 深色模式适配 */
-.container.dark-mode .glass-card {
-	background: rgba(30, 30, 30, 0.8) !important;
-	border-color: rgba(255, 255, 255, 0.1) !important;
-	color: #EEE !important;
-}
-.container.dark-mode .q-content,
-.container.dark-mode .opt-text {
-	color: #FFF !important;
-}
-.container.dark-mode .progress-text,
-.container.dark-mode .timer-box {
-	color: #FFF !important;
-}
-.container.dark-mode .back-icon {
-	color: #FFF !important;
 }
 </style>

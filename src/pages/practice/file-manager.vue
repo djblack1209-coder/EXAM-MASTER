@@ -57,6 +57,9 @@
 </template>
 
 <script>
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
+
 export default {
   data() {
     return {
@@ -87,18 +90,18 @@ export default {
   methods: {
     loadFiles() {
       // 从本地存储加载文件列表
-      console.log('[文件管理] 🔍 开始加载文件列表');
+      logger.log('[文件管理] 🔍 开始加载文件列表');
       let savedFiles = uni.getStorageSync('imported_files') || [];
       
       // 如果主数据为空，尝试从备份恢复
       if (savedFiles.length === 0) {
-        console.warn('[文件管理] ⚠️ 文件列表为空，尝试从备份恢复...');
+        logger.warn('[文件管理] ⚠️ 文件列表为空，尝试从备份恢复...');
         try {
           const backup = uni.getStorageSync('imported_files_backup');
           if (backup) {
             const restored = JSON.parse(backup);
             if (Array.isArray(restored) && restored.length > 0) {
-              console.log('[文件管理] 🔄 从备份恢复文件列表:', restored.length, '个文件');
+              logger.log('[文件管理] 🔄 从备份恢复文件列表:', restored.length, '个文件');
               uni.setStorageSync('imported_files', restored);
               savedFiles = restored;
               uni.showToast({
@@ -109,22 +112,22 @@ export default {
             }
           }
         } catch (restoreErr) {
-          console.error('[文件管理] ❌ 恢复备份失败:', restoreErr);
+          logger.error('[文件管理] ❌ 恢复备份失败:', restoreErr);
         }
       }
       
-      console.log('[文件管理] 📋 从存储读取到的文件:', {
+      logger.log('[文件管理] 📋 从存储读取到的文件:', {
         count: savedFiles.length,
         files: savedFiles
       });
       this.files = savedFiles;
-      console.log('[文件管理] ✅ 文件列表已加载到页面，当前显示:', this.files.length, '个文件');
+      logger.log('[文件管理] ✅ 文件列表已加载到页面，当前显示:', this.files.length, '个文件');
     },
     goBack() {
       uni.navigateBack();
     },
     viewFile(file) {
-      uni.showToast({ title: '查看文件功能开发中', icon: 'none' });
+      uni.showToast({ title: '文件预览即将上线', icon: 'none' });
     },
     formatSize(size) {
       if (!size) return '0 KB';
@@ -202,12 +205,12 @@ export default {
 /* 深色模式 */
 .file-manager-container.dark-mode {
   --bg-body: var(--bg-body);
-  --text-secondary: #b0b0b0;
+  --text-secondary: var(--text-secondary);
   --text-primary: var(--bg-card);
-  --card-bg: #1e3a0f;
-  --card-border: #2d4e1f;
-  --action-blue: #007aff;
-  --danger-red: #ff453a;
+  --card-bg: var(--bg-glass);
+  --card-border: var(--border-dark);
+  --action-blue: var(--info-blue);
+  --danger-red: var(--danger-red);
 }
 
 /* 顶部导航 */
@@ -245,7 +248,7 @@ export default {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgba(0, 122, 255, 0.1);
+  background-color: var(--bg-info-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -254,17 +257,17 @@ export default {
 }
 
 .icon-btn:hover {
-  background-color: rgba(0, 122, 255, 0.2);
+  background-color: var(--bg-info);
   transform: scale(1.05);
 }
 
 /* 文件列表 */
 .file-list {
   background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  border: 1px solid var(--card-border, var(--border-light));
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .file-item {
@@ -281,7 +284,7 @@ export default {
 }
 
 .file-item:hover {
-  background-color: rgba(0, 122, 255, 0.03);
+  background-color: var(--bg-hover);
 }
 
 .file-left {
@@ -326,7 +329,7 @@ export default {
 
 .file-size,
 .file-date {
-  color: #999;
+  color: var(--text-tertiary);
 }
 
 .file-tags {
@@ -338,8 +341,8 @@ export default {
 .file-source-tag {
   padding: 4px 10px;
   border-radius: 12px;
-  background-color: rgba(0, 0, 0, 0.06);
-  color: #666;
+  background-color: var(--bg-tag);
+  color: var(--text-secondary);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -353,23 +356,23 @@ export default {
 }
 
 .file-status-tag.status-generating {
-  background-color: rgba(0, 122, 255, 0.12);
-  color: #007aff;
+  background-color: var(--bg-info-light);
+  color: var(--info-blue);
 }
 
 .file-status-tag.status-completed {
-  background-color: rgba(0, 169, 109, 0.12);
-  color: #00a96d;
+  background-color: var(--bg-success-light);
+  color: var(--success-green);
 }
 
 .file-status-tag.status-paused {
-  background-color: rgba(255, 159, 10, 0.12);
-  color: #ff9f0a;
+  background-color: var(--bg-warning-light);
+  color: var(--warning);
 }
 
 .file-status-tag.status-failed {
-  background-color: rgba(255, 69, 58, 0.12);
-  color: #ff453a;
+  background-color: var(--bg-danger-light);
+  color: var(--danger-red);
 }
 
 /* 文件操作 */
@@ -393,21 +396,21 @@ export default {
 }
 
 .view-btn {
-  background-color: rgba(0, 122, 255, 0.1);
-  color: #007aff;
+  background-color: var(--bg-info-light);
+  color: var(--info-blue);
 }
 
 .view-btn:active {
-  background-color: rgba(0, 122, 255, 0.2);
+  background-color: var(--bg-info);
 }
 
 .delete-btn {
-  background-color: rgba(255, 69, 58, 0.1);
-  color: #ff453a;
+  background-color: var(--bg-danger-light);
+  color: var(--danger-red);
 }
 
 .delete-btn:active {
-  background-color: rgba(255, 69, 58, 0.2);
+  background-color: var(--bg-danger);
 }
 
 /* 空状态 */

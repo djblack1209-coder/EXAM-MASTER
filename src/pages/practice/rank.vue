@@ -94,12 +94,6 @@
 				<button class="rank-btn" @tap="toPractice">去超车</button>
 			</view>
 		</view>
-		
-		<!-- 测试按钮（开发环境） -->
-		<view class="test-buttons" v-if="false">
-			<button class="test-btn" @tap="testUpdateScore(10)">测试 +10 分</button>
-			<button class="test-btn" @tap="loadRankData">刷新排行榜</button>
-		</view>
 
 		<!-- 学霸学习足迹 AI 分析名片弹窗 -->
 		<view class="footprint-mask" v-if="showFootprintModal" @tap="closePopup">
@@ -152,6 +146,11 @@
 
 <script>
 import { lafService } from '../../services/lafService.js'
+// 检查点4.1: 排行榜WebSocket实时更新
+import { rankingSocket, useRankingSocket } from '../../services/ranking-socket.js'
+import { selfPositionTracker, useSelfPosition } from '../../services/self-position-tracker.js'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
 	data() {
@@ -176,7 +175,10 @@ export default {
 			rankList: [], // 前三名数据
 			otherRanks: [], // 其他排名数据
 			list: [], // 完整排行榜数据
-			apiData: null // 原始 API 返回数据
+			apiData: null, // 原始 API 返回数据
+			// 检查点4.1: WebSocket实时更新相关
+			rankingWebsocketConnected: false, // ranking websocket连接状态
+			selfPositionHighlighted: false // 自己位置是否高亮
 		};
 	},
 	computed: {
@@ -203,19 +205,29 @@ export default {
 		uni.$on('themeUpdate', (mode) => {
 			this.isDark = mode === 'dark';
 		});
+		
+		// 检查点4.1: 初始化WebSocket实时排行榜更新
+		this.initRankingWebsocket();
 	},
 	onShow() {
 		// TEST-10.3: 每次显示页面时刷新数据（从其他页面返回时）
-		console.log('[TEST-10.3] 📊 排行榜页面显示，准备刷新数据');
+		logger.log('[TEST-10.3] 📊 排行榜页面显示，准备刷新数据');
 		// 延迟一下，避免频繁刷新
 		setTimeout(() => {
-			console.log('[TEST-10.3] 📊 开始刷新排行榜数据');
+			logger.log('[TEST-10.3] 📊 开始刷新排行榜数据');
 			this.loadRankData();
 		}, 300);
-		},
+		
+		// 检查点4.1: 重新连接WebSocket（如果断开）
+		if (!this.rankingWebsocketConnected) {
+			this.initRankingWebsocket();
+		}
+	},
 	onUnload() {
 		// 移除事件监听
 		uni.$off('themeUpdate');
+		// 检查点4.1: 断开WebSocket连接
+		this.disconnectRankingWebsocket();
 	},
 	methods: {
 		initSystem() {
@@ -232,7 +244,7 @@ export default {
 					this.capsuleMargin = 100;
 				}
 			} catch (e) {
-				console.log('获取胶囊按钮信息失败', e);
+				logger.log('获取胶囊按钮信息失败', e);
 				this.capsuleMargin = 100;
 			}
 			// #endif
@@ -243,13 +255,13 @@ export default {
 		
 		// 加载排行榜数据
 		async loadRankData() {
-			console.log('[TEST-9.1] 🏆 开始获取排行榜数据');
+			logger.log('[TEST-9.1] 🏆 开始获取排行榜数据');
 			this.loading = true;
 			this.empty = false;
 			
 			try {
 				const userId = uni.getStorageSync('EXAM_USER_ID') || '';
-				console.log('[TEST-9.1] 📤 发送 API 请求:', {
+				logger.log('[TEST-9.1] 📤 发送 API 请求:', {
 					url: '/rank-center',
 					action: 'get_rank',
 					userId: userId || '未登录'
@@ -261,7 +273,7 @@ export default {
 					userId: userId
 				});
 				
-				console.log('[TEST-9.1] 📥 API 响应:', {
+				logger.log('[TEST-9.1] 📥 API 响应:', {
 					code: res?.code,
 					hasData: !!res?.data,
 					dataType: Array.isArray(res?.data) ? 'array' : typeof res?.data,
@@ -270,8 +282,8 @@ export default {
 				
 				// 打印完整的后端返回数据（用于调试）
 				if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-					console.log('[TEST-9.1] 📊 后端返回的原始数据:', JSON.stringify(res.data, null, 2));
-					console.log('[TEST-9.1] 📊 第一条记录的详细信息:', {
+					logger.log('[TEST-9.1] 📊 后端返回的原始数据:', JSON.stringify(res.data, null, 2));
+					logger.log('[TEST-9.1] 📊 第一条记录的详细信息:', {
 						_id: res.data[0]?._id,
 						nickName: res.data[0]?.nickName,
 						score: res.data[0]?.score,
@@ -288,12 +300,12 @@ export default {
 					
 					// 数据规范化：处理可能的对象格式 { list: [...], myRank: ... }
 					if (!Array.isArray(res.data) && res.data.list && Array.isArray(res.data.list)) {
-						console.log('[TEST-9.1] 📊 检测到对象格式，提取 list 字段');
+						logger.log('[TEST-9.1] 📊 检测到对象格式，提取 list 字段');
 						list = res.data.list;
 						// 如果后端返回了 myRank，使用它
 						if (typeof res.data.myRank === 'number') {
 							this.myRank = res.data.myRank;
-							console.log('[TEST-9.1] ✅ 使用后端返回的 myRank:', this.myRank);
+							logger.log('[TEST-9.1] ✅ 使用后端返回的 myRank:', this.myRank);
 						}
 					}
 					
@@ -301,7 +313,7 @@ export default {
 					list = list.map((item, index) => {
 						// 调试：打印原始 item 的 score 值
 						if (index === 0) {
-							console.log('[TEST-9.1] 🔍 数据规范化前，原始 item:', {
+							logger.log('[TEST-9.1] 🔍 数据规范化前，原始 item:', {
 								_id: item._id,
 								nickName: item.nickName,
 								score: item.score,
@@ -324,7 +336,7 @@ export default {
 						
 						// 调试：打印规范化后的 score 值
 						if (index === 0) {
-							console.log('[TEST-9.1] 🔍 数据规范化后，normalizedItem:', {
+							logger.log('[TEST-9.1] 🔍 数据规范化后，normalizedItem:', {
 								_id: normalizedItem._id,
 								nickName: normalizedItem.nickName,
 								score: normalizedItem.score,
@@ -345,14 +357,14 @@ export default {
 					
 					// 验证排序是否正确
 					const isSorted = this.validateSorting(list);
-					console.log('[TEST-9.1] 📊 排序验证:', {
+					logger.log('[TEST-9.1] 📊 排序验证:', {
 						isSorted,
 						top3Scores: list.slice(0, 3).map(item => item.score),
 						totalCount: list.length
 					});
 					
 					if (!isSorted) {
-						console.warn('[TEST-9.1] ⚠️ 数据未正确排序，已重新排序');
+						logger.warn('[TEST-9.1] ⚠️ 数据未正确排序，已重新排序');
 					}
 					
 					this.list = list;
@@ -384,7 +396,7 @@ export default {
 					// 处理空状态
 					this.empty = list.length === 0;
 					
-					console.log('[TEST-9.1] ✅ 排行榜数据加载成功:', {
+					logger.log('[TEST-9.1] ✅ 排行榜数据加载成功:', {
 						totalCount: list.length,
 						top3Count: this.rankList.length,
 						otherCount: this.otherRanks.length,
@@ -395,14 +407,14 @@ export default {
 				} else {
 					// 数据获取失败
 					this.empty = true;
-					console.error('[TEST-9.1] ❌ 获取排行榜数据失败:', {
+					logger.error('[TEST-9.1] ❌ 获取排行榜数据失败:', {
 						code: res?.code,
 						message: res?.message,
 						data: res?.data
 					});
 				}
 			} catch (error) {
-				console.error('[TEST-9.1] ❌ 调用排行榜 API 失败:', error);
+				logger.error('[TEST-9.1] ❌ 调用排行榜 API 失败:', error);
 				this.empty = true;
 				uni.showToast({
 					title: '获取排行榜数据失败',
@@ -410,7 +422,7 @@ export default {
 				});
 			} finally {
 				this.loading = false;
-				console.log('[TEST-9.1] ✅ 排行榜加载流程结束');
+				logger.log('[TEST-9.1] ✅ 排行榜加载流程结束');
 			}
 		},
 		
@@ -434,7 +446,7 @@ export default {
 			const myUserInfo = uni.getStorageSync('userInfo') || {};
 			const myNickName = myUserInfo.nickName || '';
 			
-			console.log('[TEST-9.1] 🔍 开始查找我的记录:', {
+			logger.log('[TEST-9.1] 🔍 开始查找我的记录:', {
 				userId,
 				myNickName,
 				listLength: this.list?.length || 0
@@ -443,7 +455,7 @@ export default {
 			// 优先从排行榜数据中查找我的记录（使用后端返回的真实分数）
 			if (this.list && this.list.length > 0) {
 				// 打印所有记录用于调试
-				console.log('[TEST-9.1] 🔍 排行榜中的所有记录:', this.list.map(item => ({
+				logger.log('[TEST-9.1] 🔍 排行榜中的所有记录:', this.list.map(item => ({
 					_id: item._id,
 					nickName: item.nickName,
 					name: item.name,
@@ -460,7 +472,7 @@ export default {
 					// 如果找到了我的记录，检查后端返回的分数是否有效
 					const backendScore = Number(myRecord.score) || 0;
 					
-					console.log('[TEST-9.1] 🔍 找到我的记录:', {
+					logger.log('[TEST-9.1] 🔍 找到我的记录:', {
 						_id: myRecord._id,
 						nickName: myRecord.nickName,
 						score: myRecord.score,
@@ -476,14 +488,14 @@ export default {
 						const oldScore = this.myScore; // 记录旧分数用于对比
 						this.myScore = backendScore;
 						this.myRank = this.list.indexOf(myRecord) + 1;
-						console.log('[TEST-9.1] ✅ 使用后端返回的分数和排名:', {
+						logger.log('[TEST-9.1] ✅ 使用后端返回的分数和排名:', {
 							myScore: this.myScore,
 							myRank: this.myRank,
 							source: 'backend',
 							rawScore: myRecord.score
 						});
 						// TEST-10.3: 验证分数更新
-						console.log('[TEST-10.3] ✅ 排行榜分数已更新:', {
+						logger.log('[TEST-10.3] ✅ 排行榜分数已更新:', {
 							oldScore: oldScore,
 							newScore: this.myScore,
 							scoreIncrement: this.myScore - oldScore,
@@ -492,16 +504,16 @@ export default {
 						});
 						return; // 使用后端数据，不再计算本地分数
 					} else {
-						console.warn('[TEST-9.1] ⚠️ 后端返回的分数无效（为 0 或不存在），使用本地计算的分数作为降级方案');
+						logger.warn('[TEST-9.1] ⚠️ 后端返回的分数无效（为 0 或不存在），使用本地计算的分数作为降级方案');
 						// 继续执行本地计算
 					}
 				} else {
-					console.log('[TEST-9.1] ⚠️ 未在排行榜中找到我的记录');
+					logger.log('[TEST-9.1] ⚠️ 未在排行榜中找到我的记录');
 				}
 			}
 			
 			// 如果没有在排行榜中找到我的记录，或后端分数无效，则计算本地分数
-			console.log('[TEST-9.1] 📊 使用本地计算的分数（降级方案）');
+			logger.log('[TEST-9.1] 📊 使用本地计算的分数（降级方案）');
 			this.calculateMyScore();
 		},
 		
@@ -534,12 +546,12 @@ export default {
 				allScores.push(this.myScore);
 				allScores.sort((a, b) => b - a);
 				this.myRank = allScores.indexOf(this.myScore) + 1;
-				console.log('[TEST-9.1] 📊 基于本地分数计算排名:', this.myRank);
+				logger.log('[TEST-9.1] 📊 基于本地分数计算排名:', this.myRank);
 			} else {
 				this.myRank = 999;
 			}
 			
-			console.log('[TEST-9.1] 📊 本地计算的分数和排名:', {
+			logger.log('[TEST-9.1] 📊 本地计算的分数和排名:', {
 				myScore: this.myScore,
 				myRank: this.myRank,
 				studyDays,
@@ -565,7 +577,7 @@ export default {
 			this.isAnalyzing = true;
 			this.aiAnalysisText = "AI 正在深度扫描足迹...";
 			
-			console.log('[rank] 🤖 调用后端代理进行学霸足迹分析...');
+			logger.log('[rank] 🤖 调用后端代理进行学霸足迹分析...');
 
 			try {
 				// ✅ 使用后端代理调用（安全）- action: 'footprint'
@@ -577,14 +589,14 @@ export default {
 					target: user.target || '未设定'
 				});
 
-				console.log('[rank] 📥 后端代理响应:', {
+				logger.log('[rank] 📥 后端代理响应:', {
 					code: response?.code,
 					hasData: !!response?.data
 				});
 
 				if (response && response.code === 0 && response.data) {
 					const content = response.data.trim();
-					console.log('[rank] ✅ AI 足迹分析成功');
+					logger.log('[rank] ✅ AI 足迹分析成功');
 					
 					// 尝试提取称号（第一句话或冒号前的内容）
 					const lines = content.split(/[。\n]/);
@@ -600,12 +612,12 @@ export default {
 						this.aiAnalysisText = content;
 					}
 				} else {
-					console.warn('[rank] ⚠️ AI 足迹分析响应异常，使用默认文案');
+					logger.warn('[rank] ⚠️ AI 足迹分析响应异常，使用默认文案');
 					this.aiPersona = "学霸先锋";
 					this.aiAnalysisText = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
 				}
 			} catch (e) {
-				console.error('[rank] ❌ AI 足迹分析失败:', e);
+				logger.error('[rank] ❌ AI 足迹分析失败:', e);
 				this.aiPersona = "学霸先锋";
 				this.aiAnalysisText = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
 			} finally {
@@ -625,7 +637,7 @@ export default {
 			uni.navigateTo({ 
 				url: `/src/pages/practice/pk-battle?opponent=${encodeURIComponent(opponentName)}`,
 				fail: (err) => {
-					console.error('[TEST-9.1] ❌ 跳转 PK 对战失败:', err);
+					logger.error('[TEST-9.1] ❌ 跳转 PK 对战失败:', err);
 					uni.showToast({
 						title: '跳转失败，请稍后重试',
 						icon: 'none'
@@ -634,88 +646,112 @@ export default {
 			});
 		},
 		
-		// 测试方法：模拟分数更新（用于 TEST-9.3）
-		async testUpdateScore(scoreIncrement = 10) {
-			console.log('[TEST-9.3] 🧪 开始测试分数更新');
-			
+		// 检查点4.1: 初始化WebSocket实时排行榜更新
+		initRankingWebsocket() {
 			const userId = uni.getStorageSync('EXAM_USER_ID') || '';
-			const userInfo = uni.getStorageSync('userInfo') || {};
-			
 			if (!userId) {
-				console.error('[TEST-9.3] ❌ 用户未登录，无法测试');
-				uni.showToast({
-					title: '请先登录',
-					icon: 'none'
-				});
+				logger.log('[Rank-WebSocket] 用户未登录，跳过WebSocket连接');
 				return;
 			}
 			
-			// 计算新分数（当前分数 + 增量）
-			const currentScore = this.myScore || 20;
-			const newScore = currentScore + scoreIncrement;
+			logger.log('[Rank-WebSocket] 初始化排行榜WebSocket连接');
 			
-			// 确保所有必要字段都有值（提供默认值）
-			const nickName = userInfo.nickName || userInfo.name || '考研人';
-			const avatarUrl = userInfo.avatarUrl || userInfo.avatar || this.defaultAvatar;
-			
-			console.log('[TEST-9.3] 📊 分数更新信息:', {
-				currentScore,
-				scoreIncrement,
-				newScore,
-				userId,
-				nickName,
-				hasAvatarUrl: !!avatarUrl
+			// 连接WebSocket
+			rankingSocket.connect({
+				userId: userId,
+				rankType: 'daily'
+			}).then(() => {
+				this.rankingWebsocketConnected = true;
+				logger.log('[Rank-WebSocket] WebSocket连接成功');
+				
+				// 设置自己的用户ID用于位置追踪
+				selfPositionTracker.setUserId(userId);
+				selfPositionTracker.setScrollViewId('rank-scroll-view');
+			}).catch(err => {
+				logger.error('[Rank-WebSocket] WebSocket连接失败:', err);
 			});
 			
-			try {
-				const updateData = {
-					action: 'update_score',
-					uid: userId, // 兼容旧版本后端
-					userId: userId, // Sealos 后端可能期望这个字段名
-					nickName: nickName, // 必须：昵称（有默认值）
-					avatarUrl: avatarUrl, // 必须：头像URL（有默认值）
-					score: newScore // 必须：分数
-				};
+			// 监听排行榜实时更新
+			rankingSocket.on('rankingUpdate', (data) => {
+				logger.log('[Rank-WebSocket] 收到排行榜更新推送:', data);
+				this.handleRankingWebsocketUpdate(data);
+			});
+			
+			// 监听自己位置变化
+			rankingSocket.on('positionChange', (data) => {
+				logger.log('[Rank-WebSocket] 收到位置变化推送:', data);
+				this.handlePositionChange(data);
+			});
+		},
+		
+		// 检查点4.1: 处理WebSocket排行榜更新
+		handleRankingWebsocketUpdate(data) {
+			if (data && data.list) {
+				// 更新排行榜数据
+				this.list = data.list;
+				this.rankList = data.list.slice(0, 3);
+				this.otherRanks = data.list.slice(3);
 				
-				console.log('[TEST-9.3] 📤 发送更新请求数据（完整）:', JSON.stringify(updateData, null, 2));
-				console.log('[TEST-9.3] 📤 字段验证:', {
-					hasUid: !!updateData.uid,
-					hasUserId: !!updateData.userId,
-					hasNickName: !!updateData.nickName,
-					hasAvatarUrl: !!updateData.avatarUrl,
-					hasScore: typeof updateData.score === 'number',
-					scoreValue: updateData.score,
-					uidValue: updateData.uid,
-					userIdValue: updateData.userId
-				});
+				// 重新计算我的排名
+				this.calculateMyScoreAndRank();
 				
-				const res = await lafService.rankCenter(updateData);
-				
-				console.log('[TEST-9.3] 📥 更新响应（完整）:', JSON.stringify(res, null, 2));
-				console.log('[TEST-9.3] ✅ 分数更新成功:', {
-					code: res?.code,
-					message: res?.msg,
-					newRecord: res?.newRecord,
-					oldScore: currentScore,
-					newScore: newScore,
-					fullResponse: res
-				});
-				
-				// 刷新排行榜数据
-				await this.loadRankData();
-				
-				uni.showToast({
-					title: `分数已更新: ${currentScore} → ${newScore}`,
-					icon: 'success',
-					duration: 2000
-				});
-			} catch (error) {
-				console.error('[TEST-9.3] ❌ 分数更新失败:', error);
-				uni.showToast({
-					title: '分数更新失败',
-					icon: 'none'
-				});
+				logger.log('[Rank-WebSocket] 排行榜数据已实时更新');
 			}
+		},
+		
+		// 检查点4.1: 处理位置变化（自己位置高亮）
+		handlePositionChange(data) {
+			const userId = uni.getStorageSync('EXAM_USER_ID') || '';
+			if (data.userId === userId) {
+				// 自己的位置发生变化，触发高亮
+				this.selfPositionHighlighted = true;
+				
+				// 滚动到自己位置
+				selfPositionTracker.scrollToSelf();
+				
+				// 3秒后取消高亮
+				setTimeout(() => {
+					this.selfPositionHighlighted = false;
+				}, 3000);
+				
+				// 显示排名变化提示
+				const change = data.previousRank - data.rank;
+				if (change > 0) {
+					uni.showToast({
+						title: `排名上升 ${change} 位！`,
+						icon: 'none',
+						duration: 2000
+					});
+				} else if (change < 0) {
+					uni.showToast({
+						title: `排名下降 ${Math.abs(change)} 位`,
+						icon: 'none',
+						duration: 2000
+					});
+				}
+			}
+		},
+		
+		// 检查点4.1: 获取排行项的高亮样式类
+		getRankItemClass(item) {
+			const userId = uni.getStorageSync('EXAM_USER_ID') || '';
+			const userInfo = uni.getStorageSync('userInfo') || {};
+			const isSelf = item._id === userId || item.nickName === userInfo.nickName;
+			
+			if (isSelf && this.selfPositionHighlighted) {
+				return selfPositionTracker.getHighlightClass(userId);
+			}
+			return isSelf ? 'self-position' : '';
+		},
+		
+		// 检查点4.1: 断开WebSocket连接
+		disconnectRankingWebsocket() {
+			if (this.rankingWebsocketConnected) {
+				rankingSocket.disconnect();
+				this.rankingWebsocketConnected = false;
+				logger.log('[Rank-WebSocket] WebSocket已断开');
+			}
+			selfPositionTracker.destroy();
 		}
 	}
 };
@@ -724,16 +760,16 @@ export default {
 <style>
 /* --- 全局变量适配 --- */
 .container {
-	--neon-gold: #FFD700;
-	--neon-silver: #C0C0C0;
-	--neon-green: #2ECC71;
-	--neon-glow-gold: rgba(255, 215, 0, 0.4);
-	--neon-glow-green: rgba(46, 204, 113, 0.4);
+	--neon-gold: var(--warning);
+	--neon-silver: var(--text-tertiary);
+	--neon-green: var(--success);
+	--neon-glow-gold: var(--warning-light);
+	--neon-glow-green: var(--success-light);
 	--bg-body: var(--bg-body);
-	--card-bg: rgba(255, 255, 255, 0.8);
-	--card-border: rgba(0, 0, 0, 0.05);
-	--text-primary: #1A1A1A;
-	--text-tertiary: #A0AEC0;
+	--card-bg: var(--bg-glass);
+	--card-border: var(--border);
+	--text-primary: var(--text-primary);
+	--text-tertiary: var(--text-tertiary);
 	
 	height: 100vh; 
 	background: var(--bg-body); 
@@ -743,16 +779,16 @@ export default {
 }
 
 .container.dark-mode {
-	--neon-gold: #FFD700;
-	--neon-silver: #E2E8F0;
-	--neon-green: #00FF88;
-	--neon-glow-gold: rgba(255, 215, 0, 0.6);
-	--neon-glow-green: rgba(0, 255, 136, 0.6);
+	--neon-gold: var(--warning);
+	--neon-silver: var(--text-sub);
+	--neon-green: var(--success);
+	--neon-glow-gold: var(--warning-light);
+	--neon-glow-green: var(--success-light);
 	--bg-body: var(--bg-body);
-	--card-bg: rgba(30, 58, 15, 0.7);
-	--card-border: rgba(255, 255, 255, 0.1);
-	--text-primary: var(--bg-body);
-	--text-tertiary: #64748B;
+	--card-bg: var(--bg-glass);
+	--card-border: var(--border);
+	--text-primary: var(--text-primary);
+	--text-tertiary: var(--text-tertiary);
 }
 
 /* 极光背景 */
@@ -762,13 +798,13 @@ export default {
 	left: 0; 
 	width: 100%; 
 	height: 500rpx;
-	background: radial-gradient(circle at 50% 0%, rgba(46, 204, 113, 0.1), transparent);
+	background: var(--gradient-aurora);
 	filter: blur(60px);
 	z-index: 0;
 }
 
 .dark-mode .aurora-bg {
-	background: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.15), transparent);
+	background: var(--gradient-aurora-dark);
 }
 
 /* 导航栏 */
@@ -831,12 +867,12 @@ export default {
 	position: relative;
 	border-radius: 50%;
 	padding: 6rpx;
-	background: #FFF;
+	background: var(--bg-card);
 	transition: transform 0.3s;
 	margin-bottom: 20rpx;
 }
 .dark-mode .avatar-wrap {
-	background: #1E3A0F;
+	background: var(--bg-glass);
 }
 
 .avatar {
@@ -853,7 +889,7 @@ export default {
 	transform: translateX(-50%);
 	padding: 2rpx 16rpx;
 	border-radius: 20rpx;
-	color: #FFF;
+	color: var(--text-inverse);
 	font-size: 20rpx;
 	font-weight: bold;
 	display: flex;
@@ -898,17 +934,17 @@ export default {
 }
 .rank-2 .badge {
 	background: var(--neon-silver);
-	color: #333;
+	color: var(--text-primary);
 }
 
 /* 第三名样式 - 铜色 */
 .rank-3 .avatar-wrap {
 	width: 120rpx;
 	height: 120rpx;
-	border: 4rpx solid #CD7F32;
+	border: 4rpx solid var(--warning);
 }
 .rank-3 .badge {
-	background: #CD7F32;
+	background: var(--warning);
 }
 
 .podium-item .name {
@@ -933,7 +969,7 @@ export default {
 	-webkit-backdrop-filter: blur(20px);
 	border: 1px solid var(--card-border);
 	border-radius: 40rpx;
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+	box-shadow: var(--shadow-md);
 }
 
 /* 霓虹列表项 */
@@ -952,7 +988,7 @@ export default {
 /* 深色模式下的霓虹边框 */
 .dark-mode .rank-item {
 	border-left: 6rpx solid var(--neon-green);
-	box-shadow: 0 0 15rpx rgba(0, 255, 136, 0.1);
+	box-shadow: var(--shadow-success);
 }
 
 .rank-num-box {
@@ -968,7 +1004,7 @@ export default {
 /* 深色模式下的排名数字荧光效果 */
 .dark-mode .rank-num {
 	color: var(--neon-green);
-	text-shadow: 0 0 10rpx var(--neon-glow-green);
+	text-shadow: var(--shadow-text);
 }
 
 .item-avatar {
@@ -1016,24 +1052,24 @@ export default {
 	border-radius: 40rpx;
 	display: flex;
 	align-items: center;
-	box-shadow: 0 10rpx 40rpx rgba(0, 255, 136, 0.3);
+	box-shadow: var(--shadow-success);
 }
 .my-rank-card .rank-num,
 .my-rank-card .item-name {
-	color: #0F172A;
+	color: var(--text-primary-foreground);
 }
 .my-rank-card .item-desc {
-	color: rgba(15, 23, 42, 0.7);
+	color: var(--text-sub);
 }
 .my-rank-card .item-avatar {
-	border: 2rpx solid rgba(15, 23, 42, 0.2);
+	border: 2rpx solid var(--border);
 }
 .rank-btn {
 	width: 140rpx;
 	height: 60rpx;
 	border-radius: 30rpx;
-	background: #0F172A;
-	color: #FFF;
+	background: var(--bg-card);
+	color: var(--text-primary-foreground);
 	font-size: 24rpx;
 	font-weight: bold;
 	display: flex;
@@ -1076,11 +1112,11 @@ export default {
 		width: 200rpx;
 		height: 80rpx;
 		background: var(--neon-green);
-		color: #FFF;
+		color: var(--text-primary-foreground);
 		font-weight: bold;
 		border: none;
 		border-radius: 40rpx;
-		box-shadow: 0 10rpx 20rpx rgba(46, 204, 113, 0.2);
+		box-shadow: var(--shadow-success);
 	}
 	
 	.go-practice-btn::after {
@@ -1110,7 +1146,7 @@ export default {
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
+		background: var(--overlay-dark);
 		backdrop-filter: blur(10px);
 		-webkit-backdrop-filter: blur(10px);
 		z-index: 1000;
@@ -1132,7 +1168,7 @@ export default {
 		backdrop-filter: blur(40px);
 		-webkit-backdrop-filter: blur(40px);
 		border: 1px solid var(--card-border);
-		box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.3);
+		box-shadow: var(--shadow-xl);
 		animation: slideUp 0.3s;
 		max-height: 80vh;
 		overflow-y: auto;
@@ -1161,8 +1197,8 @@ export default {
 		width: 120rpx;
 		height: 120rpx;
 		border-radius: 60rpx;
-		border: 4rpx solid #2ECC71;
-		box-shadow: 0 4rpx 12rpx rgba(46, 204, 113, 0.3);
+		border: 4rpx solid var(--success);
+		box-shadow: var(--shadow-success);
 	}
 	.header-info {
 		margin-left: 20rpx;
@@ -1178,7 +1214,7 @@ export default {
 	.ai-label {
 		display: inline-flex;
 		align-items: center;
-		background: rgba(46, 204, 113, 0.1);
+		background: var(--success-light);
 		color: var(--neon-green);
 		padding: 4rpx 12rpx;
 		border-radius: 10rpx;
@@ -1196,8 +1232,8 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		padding: 30rpx 0;
-		border-top: 1rpx solid #EEE;
-		border-bottom: 1rpx solid #EEE;
+		border-top: 1rpx solid var(--border);
+		border-bottom: 1rpx solid var(--border);
 		margin-bottom: 30rpx;
 	}
 	.data-item {
@@ -1221,7 +1257,7 @@ export default {
 	
 	.target-school-box {
 		padding: 20rpx 0;
-		border-bottom: 1rpx solid #EEE;
+		border-bottom: 1rpx solid var(--border);
 		margin-bottom: 30rpx;
 	}
 	.target-label {
@@ -1264,14 +1300,14 @@ export default {
 		width: 100%;
 		height: 90rpx;
 		line-height: 90rpx;
-		background: linear-gradient(135deg, var(--neon-green), #27AE60);
-		color: #FFF;
+		background: var(--gradient-primary);
+		color: var(--text-primary-foreground);
 		font-weight: bold;
 		font-size: 28rpx;
 		border-radius: 20rpx;
 		border: none;
 		margin-top: 20rpx;
-		box-shadow: 0 10rpx 20rpx rgba(46, 204, 113, 0.2);
+		box-shadow: var(--shadow-success);
 	}
 	.challenge-btn::after {
 		border: none;

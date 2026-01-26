@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "practice_records",
+  "description": "练习记录集合 - 存储用户的答题记录",
+  "type": "object",
+  "required": ["user_id", "question_id", "user_answer", "is_correct"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID"
+    },
+    "question_id": {
+      "type": "string",
+      "description": "题目ID"
+    },
+    "session_id": {
+      "type": ["string", "null"],
+      "description": "练习会话ID（用于关联同一次练习的多道题）"
+    },
+    "user_answer": {
+      "type": "string",
+      "description": "用户答案"
+    },
+    "correct_answer": {
+      "type": "string",
+      "description": "正确答案"
+    },
+    "is_correct": {
+      "type": "boolean",
+      "description": "是否正确"
+    },
+    "duration": {
+      "type": "integer",
+      "description": "答题耗时（秒）",
+      "default": 0,
+      "minimum": 0
+    },
+    "category": {
+      "type": "string",
+      "description": "科目分类"
+    },
+    "difficulty": {
+      "type": "string",
+      "description": "难度等级",
+      "enum": ["easy", "medium", "hard"]
+    },
+    "practice_mode": {
+      "type": "string",
+      "description": "练习模式",
+      "enum": ["normal", "review", "exam", "ai_adaptive", "pk"],
+      "default": "normal"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "user_id": 1, "question_id": 1 }, "name": "idx_user_question" },
+    { "key": { "user_id": 1, "is_correct": 1 }, "name": "idx_user_correct" },
+    { "key": { "user_id": 1, "category": 1, "created_at": -1 }, "name": "idx_user_category_time" },
+    { "key": { "session_id": 1 }, "sparse": true, "name": "idx_session" },
+    { "key": { "created_at": 1 }, "expireAfterSeconds": 7776000, "name": "idx_ttl_90days" }
+  ],
+  "examples": [
+    {
+      "_id": "pr_001",
+      "user_id": "user_001",
+      "question_id": "q_001",
+      "session_id": "session_20260125_001",
+      "user_answer": "A",
+      "correct_answer": "A",
+      "is_correct": true,
+      "duration": 45,
+      "category": "政治",
+      "difficulty": "medium",
+      "practice_mode": "normal",
+      "created_at": 1737878400000
+    }
+  ]
+}

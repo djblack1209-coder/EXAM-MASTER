@@ -1,607 +1,871 @@
 <template>
-  <view class="settings-container">
-    <!-- 导航栏 - 添加设计系统工具类 -->
-    <view class="nav-bar ds-flex ds-flex-center">
-      <text class="nav-title ds-text-lg ds-font-semibold">设置</text>
-    </view>
+	<!-- 全屏强制接管：fixed 定位铺满整个屏幕 -->
+	<view
+		class="fixed inset-0 w-full h-full z-0"
+		:style="{
+			backgroundColor: 'var(--bg-page)',
+			transition: 'background-color 0.3s ease'
+		}"
+	>
+		<scroll-view
+			scroll-y
+			class="w-full h-full"
+			:scroll-top="0"
+			@scroll="onScroll"
+		>
+			<!-- 内容区：顶部留出状态栏+导航栏空间，底部留出 TabBar 空间 -->
+			<view
+				class="content-wrapper"
+				:style="{
+					paddingTop: (layoutInfo.statusBarHeight + 56) + 'px',
+					paddingBottom: (layoutInfo.tabBarHeight + 40) + 'px'
+				}"
+			>
+				<!-- ========== 用户信息卡片 ========== -->
+				<view
+					class="card user-card"
+					hover-class="card-hover"
+				>
+					<view class="user-section">
+						<!-- 头像 -->
+						<view class="avatar-box">
+							<text class="avatar-emoji">👤</text>
+						</view>
+						<!-- 用户信息 -->
+						<view class="user-info">
+							<text class="user-name">{{ userName }}</text>
+							<text class="user-id">ID: {{ userId }}</text>
+						</view>
+						<!-- 编辑按钮 -->
+						<view
+							class="edit-btn"
+							hover-class="btn-hover"
+							@tap="handleEditProfile"
+						>
+							<text class="edit-icon">✏️</text>
+						</view>
+					</view>
+				</view>
 
-    <!-- 用户卡片 - 优化布局 -->
-    <view class="card user-card">
-      <view class="user-row ds-flex">
-        <image src="https://img.icons8.com/color/96/user-male-circle--v1.png" class="user-avatar ds-rounded-full"
-          mode="aspectFit"></image>
-        <view class="user-info">
-          <text class="user-name ds-text-lg ds-font-bold">{{ userInfo.name }}</text>
-          <view class="info-tag-row ds-flex ds-touchable" @tap="handleEditSchool">
-            <text class="info-label ds-text-xs">报考院校: {{ userInfo.school || '未设置' }}</text>
-            <image src="https://img.icons8.com/ios-glyphs/30/07C160/edit--v1.png" class="edit-icon"></image>
-          </view>
-          <view class="info-tag-row ds-flex ds-touchable" @tap="handleEditMajor">
-            <text class="info-label ds-text-xs">报考专业: {{ userInfo.major || '未设置' }}</text>
-            <image src="https://img.icons8.com/ios-glyphs/30/07C160/edit--v1.png" class="edit-icon"></image>
-          </view>
-        </view>
-        <view class="plan-btn ds-flex-col ds-flex-center ds-touchable" @tap="handleViewPlan">
-          <image src="https://img.icons8.com/fluency/48/calendar.png" class="plan-icon"></image>
-          <text class="plan-text ds-text-xs">查看计划</text>
-        </view>
-      </view>
-    </view>
+				<!-- ========== 数据统计卡片 ========== -->
+				<view class="card stats-card">
+					<view class="stats-grid">
+						<!-- 学习天数 -->
+						<view
+							class="stat-item"
+							hover-class="stat-hover"
+							@tap="handleStatTap('days')"
+						>
+							<view class="stat-icon-box">
+								<text class="stat-emoji">📅</text>
+							</view>
+							<text class="stat-value">{{ studyDays }}</text>
+							<text class="stat-label">学习天数</text>
+						</view>
 
-    <!-- 进度卡片 - 优化样式 -->
-    <view class="card progress-card ds-flex-col ds-flex-center ds-touchable" @tap="handleViewProgress">
-      <view class="progress-circle ds-flex-center">
-        <view class="inner-circle ds-flex-col ds-flex-center">
-          <text class="progress-num ds-font-bold">{{ progressValue }}<text class="percent">%</text></text>
-          <text class="progress-desc ds-text-xs">总计划完成度</text>
-        </view>
-      </view>
-      <text class="click-hint ds-text-xs ds-text-secondary">点击查看详细进度</text>
-    </view>
+						<!-- 分隔线 -->
+						<view class="stat-divider"></view>
 
-    <!-- 工具功能 -->
-    <view class="section-header ds-text-sm ds-font-semibold">工具功能</view>
-    <view class="tools-row ds-flex ds-gap-xs">
-      <view class="tool-item ds-flex ds-touchable" @tap="handleTool('essay')">
-        <image src="https://img.icons8.com/fluency/96/book.png" class="tool-icon"></image>
-        <text class="tool-name ds-text-sm ds-font-medium">作文功能句</text>
-      </view>
-      <view class="tool-item ds-flex ds-touchable" @tap="handleTool('calculator')">
-        <image src="https://img.icons8.com/fluency/96/calculator.png" class="tool-icon"></image>
-        <text class="tool-name ds-text-sm ds-font-medium">高等数学计算器</text>
-      </view>
-    </view>
+						<!-- 获得勋章 -->
+						<view
+							class="stat-item"
+							hover-class="stat-hover"
+							@tap="handleStatTap('badges')"
+						>
+							<view class="stat-icon-box">
+								<text class="stat-emoji">🏆</text>
+							</view>
+							<text class="stat-value">{{ badgeCount }}</text>
+							<text class="stat-label">获得勋章</text>
+						</view>
 
-    <view class="tools-row ds-flex ds-gap-xs">
-      <view class="tool-item ds-flex ds-touchable" @tap="navigateToFriends">
-        <image src="https://img.icons8.com/fluency/96/conference-call.png" class="tool-icon"></image>
-        <text class="tool-name ds-text-sm ds-font-medium">我的好友</text>
-      </view>
-      <view class="tool-item ds-flex ds-touchable" @tap="handleTool('settings')">
-        <image src="https://img.icons8.com/fluency/96/settings.png" class="tool-icon"></image>
-        <text class="tool-name ds-text-sm ds-font-medium">设置</text>
-      </view>
-    </view>
+						<!-- 分隔线 -->
+						<view class="stat-divider"></view>
 
-    <!-- 好友列表头部 -->
-    <view class="friend-header-row ds-flex ds-flex-between">
-      <text class="section-header ds-text-sm ds-font-semibold">我的好友们</text>
-      <view class="invite-btn ds-touchable" @tap="showInviteModal = true">
-        <text class="ds-text-xs ds-font-medium">邀请好友</text>
-      </view>
-    </view>
+						<!-- 正确率 -->
+						<view
+							class="stat-item"
+							hover-class="stat-hover"
+							@tap="handleStatTap('accuracy')"
+						>
+							<view class="stat-icon-box">
+								<text class="stat-emoji">🎯</text>
+							</view>
+							<text class="stat-value">{{ accuracyRate }}%</text>
+							<text class="stat-label">正确率</text>
+						</view>
+					</view>
+				</view>
 
-    <!-- 好友列表 -->
-    <view class="friend-list">
-      <view v-for="(friend, index) in friendList" :key="index" class="card friend-item ds-flex ds-touchable"
-        @tap="navigateToChat(friend.name)">
-        <image :src="friend.avatar" class="friend-avatar ds-rounded-full" mode="aspectFill"></image>
-        <view class="friend-info">
-          <view class="name-row ds-flex">
-            <text class="friend-name ds-text-sm ds-font-semibold">{{ friend.name }}</text>
-            <view class="status-dot ds-rounded-full"></view>
-          </view>
-          <text class="friend-detail ds-text-xs">院校: {{ friend.school }}</text>
-          <text class="friend-detail ds-text-xs">专业: {{ friend.major }}</text>
-        </view>
-        <view class="friend-actions ds-flex ds-gap-xs">
-          <image src="https://img.icons8.com/fluency/48/chat.png" class="action-icon ds-touchable"
-            @tap.stop="navigateToChat(friend.name)"></image>
-          <image src="https://img.icons8.com/fluency/48/rocket.png" class="action-icon ds-touchable"
-            @tap.stop="handleEncourage(friend)"></image>
-        </view>
-      </view>
-    </view>
+				<!-- ========== 功能菜单卡片（分组） ========== -->
+				<view class="card menu-card">
+					<!-- 我的错题 -->
+					<view
+						class="menu-item"
+						hover-class="menu-hover"
+						@tap="navToMistake"
+					>
+						<view class="menu-icon-box">
+							<text class="menu-emoji">📚</text>
+						</view>
+						<text class="menu-text">我的错题</text>
+						<text class="menu-arrow">›</text>
+					</view>
 
-    <view style="height: 100px;"></view>
+					<!-- 分隔线 -->
+					<view class="menu-divider"></view>
 
-    <InviteModal v-model:visible="showInviteModal" @close="showInviteModal = false" @openPoster="handleOpenPoster" />
+					<!-- 学习统计 -->
+					<view
+						class="menu-item"
+						hover-class="menu-hover"
+						@tap="navToStudyDetail"
+					>
+						<view class="menu-icon-box">
+							<text class="menu-emoji">📊</text>
+						</view>
+						<text class="menu-text">学习统计</text>
+						<text class="menu-arrow">›</text>
+					</view>
 
-    <PosterModal v-model:visible="showPosterModal" @close="showPosterModal = false" />
-  </view>
+					<!-- 分隔线 -->
+					<view class="menu-divider"></view>
+
+					<!-- 系统设置 -->
+					<view
+						class="menu-item"
+						hover-class="menu-hover"
+						@tap="navToSettings"
+					>
+						<view class="menu-icon-box">
+							<text class="menu-emoji">⚙️</text>
+						</view>
+						<text class="menu-text">系统设置</text>
+						<text class="menu-arrow">›</text>
+					</view>
+
+					<!-- 分隔线 -->
+					<view class="menu-divider"></view>
+
+					<!-- 意见反馈 -->
+					<view
+						class="menu-item"
+						hover-class="menu-hover"
+						@tap="handleFeedback"
+					>
+						<view class="menu-icon-box">
+							<text class="menu-emoji">💬</text>
+						</view>
+						<text class="menu-text">意见反馈</text>
+						<text class="menu-arrow">›</text>
+					</view>
+				</view>
+
+				<!-- ========== 关于卡片 ========== -->
+				<view class="card about-card">
+					<view class="about-row">
+						<text class="about-label">版本</text>
+						<text class="about-value">v1.0.0</text>
+					</view>
+					<view class="about-divider"></view>
+					<view class="about-row">
+						<text class="about-label">开发者</text>
+						<text class="about-value">Exam-Master Team</text>
+					</view>
+				</view>
+
+				<!-- ========== 主题切换按钮 ========== -->
+				<view
+					class="theme-btn"
+					hover-class="btn-hover"
+					@tap="toggleTheme"
+				>
+					<text class="theme-emoji">{{ isDark ? '🌙' : '☀️' }}</text>
+					<text class="theme-text">{{ isDark ? '深色模式' : '浅色模式' }}</text>
+				</view>
+
+				<!-- ========== 退出登录按钮 ========== -->
+				<view
+					class="logout-btn"
+					hover-class="logout-hover"
+					@tap="handleLogout"
+				>
+					<text class="logout-text">退出登录</text>
+				</view>
+			</view>
+		</scroll-view>
+
+		<!-- 固定顶部导航栏 -->
+		<view
+			class="fixed-nav"
+			:class="{ 'nav-scrolled': scrollY > 20 }"
+			:style="{
+				paddingTop: layoutInfo.statusBarHeight + 'px'
+			}"
+		>
+			<view class="nav-content">
+				<text class="nav-title">个人中心</text>
+			</view>
+		</view>
+
+		<!-- 底部 TabBar -->
+		<custom-tabbar :activeIndex="4" :isDark="isDark"></custom-tabbar>
+	</view>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import InviteModal from '../../components/common/InviteModal.vue'
-import PosterModal from '../../components/common/PosterModal.vue'
+import { ref, computed, onMounted } from 'vue';
+import { onShow, onHide } from '@dcloudio/uni-app';
+import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue';
+import { useStudyStore } from '../../stores/modules/study';
+import { useUserStore } from '../../stores/modules/user';
+// 检查点4.4: 每日打卡 - 连续天数统计和补签卡
+import { checkinStreak, useCheckinStreak } from '../../services/checkin-streak.js';
+import { streakRecovery, useStreakRecovery } from '../../services/streak-recovery.js';
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js';
 
-// 用户信息
-const userInfo = ref({
-  name: '考研战士',
-  school: '清华大学',
-  major: '计算机科学与技术'
-})
+// ========== 响应式状态 ==========
+const isDark = ref(false);
+const scrollY = ref(0);
+const badgeCount = ref(0);
+// 检查点4.4: 打卡相关状态
+const checkInStreak = ref(0); // 连续打卡天数
+const todayChecked = ref(false); // 今日是否已打卡
+const recoveryCards = ref(0); // 补签卡数量
+const showCheckinModal = ref(false); // 是否显示打卡弹窗
 
-// 进度值
-const progressValue = ref(75)
+const layoutInfo = ref({
+	statusBarHeight: 44,
+	navBarHeight: 88,
+	tabBarHeight: 90,
+	safeAreaBottom: 0
+});
 
-// 模态框状态
-const showInviteModal = ref(false)
-const showPosterModal = ref(false)
+// ========== Store ==========
+const studyStore = useStudyStore();
+const userStore = useUserStore();
 
-// 好友列表
-const friendList = ref([
-  {
-    name: '张巍',
-    avatar: 'https://img.icons8.com/color/96/avatar.png',
-    school: '清华大学',
-    major: '计算机科学与技术'
-  },
-  {
-    name: '王天弹',
-    avatar: 'https://img.icons8.com/color/96/user-female-circle.png',
-    school: '清华大学',
-    major: '清华大学'
-  },
-  {
-    name: '魏客',
-    avatar: 'https://img.icons8.com/color/96/guest-male.png',
-    school: '清华大学',
-    major: '软件工程'
-  }
-])
+// ========== 计算属性 ==========
+const userName = computed(() => userStore.userInfo?.nickName || '学习者');
+const userId = computed(() => userStore.userInfo?.userId || '100001');
+const studyDays = computed(() => studyStore.studyProgress?.studyDays || 0);
+const accuracyRate = computed(() => {
+	const progress = studyStore.studyProgress;
+	if (!progress || !progress.totalQuestions || progress.totalQuestions === 0) {
+		return 0;
+	}
+	return Math.round((progress.correctCount / progress.totalQuestions) * 100);
+});
 
-// 编辑院校
-const handleEditSchool = () => {
-  uni.showModal({
-    title: '编辑报考院校',
-    editable: true,
-    placeholderText: '请输入报考院校',
-    success: (res) => {
-      if (res.confirm && res.content) {
-        userInfo.value.school = res.content
-        uni.showToast({
-          title: '更新成功',
-          icon: 'success'
-        })
-      }
-    }
-  })
+// ========== 初始化方法 ==========
+function initLayoutInfo() {
+	try {
+		const windowInfo = uni.getWindowInfo();
+		const statusBarHeight = windowInfo.statusBarHeight || 44;
+		const safeAreaBottom = windowInfo.safeAreaInsets?.bottom || 0;
+
+		layoutInfo.value = {
+			statusBarHeight,
+			navBarHeight: statusBarHeight + 44,
+			tabBarHeight: 60 + 12 + safeAreaBottom,
+			safeAreaBottom
+		};
+	} catch (e) {
+		layoutInfo.value = {
+			statusBarHeight: 44,
+			navBarHeight: 88,
+			tabBarHeight: 90,
+			safeAreaBottom: 34
+		};
+	}
 }
 
-// 编辑专业
-const handleEditMajor = () => {
-  uni.showModal({
-    title: '编辑报考专业',
-    editable: true,
-    placeholderText: '请输入报考专业',
-    success: (res) => {
-      if (res.confirm && res.content) {
-        userInfo.value.major = res.content
-        uni.showToast({
-          title: '更新成功',
-          icon: 'success'
-        })
-      }
-    }
-  })
+function initTheme() {
+	// 优先读取用户保存的主题设置
+	const savedTheme = uni.getStorageSync('theme_mode');
+	if (savedTheme) {
+		isDark.value = savedTheme === 'dark';
+	} else {
+		// 跟随系统
+		try {
+			const systemInfo = uni.getSystemInfoSync();
+			isDark.value = systemInfo.theme === 'dark';
+		} catch (e) {
+			isDark.value = false;
+		}
+	}
 }
 
-// 查看计划
-const handleViewPlan = () => {
-  uni.switchTab({
-    url: '/src/pages/school/index'
-  })
+function loadData() {
+	try {
+		userStore.restoreUserInfo?.();
+		studyStore.restoreProgress?.();
+		loadBadges();
+		// 检查点4.4: 加载打卡数据
+		loadCheckinData();
+	} catch (error) {
+		logger.error('[Profile] loadData error:', error);
+	}
 }
 
-// 查看进度
-const handleViewProgress = () => {
-  uni.showModal({
-    title: '学习进度',
-    content: `当前完成度：${progressValue.value}%\n继续加油！`,
-    showCancel: false
-  })
+function loadBadges() {
+	const achievements = uni.getStorageSync('user_achievements') || [];
+	badgeCount.value = Array.isArray(achievements) ? achievements.length : 0;
 }
 
-// 工具功能
-const handleTool = (type) => {
-  const tools = {
-    essay: '作文功能句',
-    calculator: '高等数学计算器',
-    settings: '设置'
-  }
-  uni.showToast({
-    title: `${tools[type]}功能开发中`,
-    icon: 'none'
-  })
+// 检查点4.4: 加载打卡数据
+async function loadCheckinData() {
+	try {
+		const userId = uni.getStorageSync('EXAM_USER_ID') || 'default';
+		await checkinStreak.init(userId);
+		await streakRecovery.init(userId);
+		
+		const checkinInfo = checkinStreak.getCheckinInfo();
+		checkInStreak.value = checkinInfo.currentStreak;
+		todayChecked.value = checkinInfo.todayChecked;
+		recoveryCards.value = streakRecovery.getRecoveryCards();
+		
+		logger.log('[Profile] 打卡数据加载完成:', {
+			streak: checkInStreak.value,
+			todayChecked: todayChecked.value,
+			recoveryCards: recoveryCards.value
+		});
+	} catch (error) {
+		logger.error('[Profile] loadCheckinData error:', error);
+	}
 }
 
-// 跳转到好友列表
-const navigateToFriends = () => {
-  uni.navigateTo({
-    url: '/src/pages/social/friend-list'
-  })
+// 检查点4.4: 执行打卡
+async function handleCheckIn() {
+	if (todayChecked.value) {
+		uni.showToast({ title: '今日已打卡', icon: 'none' });
+		return;
+	}
+	
+	try {
+		const result = await checkinStreak.checkIn();
+		
+		if (result.success) {
+			todayChecked.value = true;
+			checkInStreak.value = result.data.streak;
+			
+			// 显示打卡成功提示
+			uni.showToast({
+				title: `打卡成功！连续${result.data.streak}天`,
+				icon: 'success',
+				duration: 2000
+			});
+			
+			// 如果有里程碑奖励
+			if (result.data.milestone) {
+				setTimeout(() => {
+					uni.showModal({
+						title: '🎉 里程碑达成！',
+						content: `恭喜连续打卡${result.data.streak}天！\n获得 ${result.data.milestone.exp} 经验 + ${result.data.milestone.coins} 金币`,
+						showCancel: false,
+						confirmText: '太棒了'
+					});
+				}, 1500);
+			}
+		} else {
+			uni.showToast({ title: result.message, icon: 'none' });
+		}
+	} catch (error) {
+		logger.error('[Profile] handleCheckIn error:', error);
+		uni.showToast({ title: '打卡失败，请稍后重试', icon: 'none' });
+	}
 }
 
-// 跳转到聊天页面
-const navigateToChat = (name) => {
-  uni.navigateTo({
-    url: `/pages/chat/index?name=${encodeURIComponent(name)}`
-  })
+// 检查点4.4: 使用补签卡
+async function handleRecovery(date) {
+	const checkResult = streakRecovery.canRecover(date);
+	
+	if (!checkResult.canRecover) {
+		uni.showToast({ title: checkResult.reason, icon: 'none' });
+		return;
+	}
+	
+	// 显示补签选项
+	const options = checkResult.options.filter(o => o.available);
+	if (options.length === 0) {
+		uni.showToast({ title: '没有可用的补签方式', icon: 'none' });
+		return;
+	}
+	
+	// 优先使用免费补签
+	const freeOption = options.find(o => o.type === 'free');
+	const cardOption = options.find(o => o.type === 'card');
+	
+	let method = null;
+	if (freeOption) {
+		method = { type: 'free' };
+	} else if (cardOption) {
+		method = { type: 'card', cardType: cardOption.cardType };
+	}
+	
+	if (!method) {
+		uni.showToast({ title: '请先获取补签卡', icon: 'none' });
+		return;
+	}
+	
+	try {
+		const result = await streakRecovery.recover(date, method);
+		
+		if (result.success) {
+			// 刷新打卡数据
+			await loadCheckinData();
+			
+			uni.showToast({
+				title: `补签成功！连续${result.data.streak}天`,
+				icon: 'success'
+			});
+		} else {
+			uni.showToast({ title: result.message, icon: 'none' });
+		}
+	} catch (error) {
+		logger.error('[Profile] handleRecovery error:', error);
+		uni.showToast({ title: '补签失败，请稍后重试', icon: 'none' });
+	}
 }
 
-// 鼓励好友
-const handleEncourage = (friend) => {
-  uni.showToast({
-    title: `为${friend.name}加油！`,
-    icon: 'success'
-  })
+// ========== 事件处理 ==========
+function onScroll(e) {
+	scrollY.value = e.detail.scrollTop;
 }
 
-// 打开海报弹窗
-const handleOpenPoster = () => {
-  showPosterModal.value = true
+function toggleTheme() {
+	isDark.value = !isDark.value;
+	uni.setStorageSync('theme_mode', isDark.value ? 'dark' : 'light');
+	uni.$emit('themeUpdate', isDark.value ? 'dark' : 'light');
+
+	try {
+		uni.vibrateShort?.();
+	} catch (e) {}
 }
+
+function handleEditProfile() {
+	uni.showModal({
+		title: '编辑昵称',
+		editable: true,
+		placeholderText: '请输入新昵称',
+		success: (res) => {
+			if (res.confirm && res.content) {
+				userStore.updateUserInfo?.({ nickName: res.content });
+				uni.showToast({ title: '更新成功', icon: 'success' });
+			}
+		}
+	});
+}
+
+function handleStatTap(type) {
+	const messages = {
+		days: `累计学习 ${studyDays.value} 天`,
+		badges: `已获得 ${badgeCount.value} 个勋章`,
+		accuracy: `答题正确率 ${accuracyRate.value}%`
+	};
+	uni.showToast({ title: messages[type] || '', icon: 'none', duration: 2000 });
+}
+
+function navToMistake() {
+	uni.switchTab({ url: '/src/pages/mistake/index' });
+}
+
+function navToStudyDetail() {
+	uni.navigateTo({ url: '/src/pages/study-detail/index' });
+}
+
+function navToSettings() {
+	uni.navigateTo({ url: '/src/pages/settings/index' });
+}
+
+function handleFeedback() {
+	uni.showModal({
+		title: '意见反馈',
+		content: '如有问题或建议，请联系：\nfeedback@exam-master.com',
+		showCancel: false,
+		confirmText: '知道了'
+	});
+}
+
+function handleLogout() {
+	uni.showModal({
+		title: '确认退出',
+		content: '确定要退出登录吗？',
+		success: (res) => {
+			if (res.confirm) {
+				userStore.clearUserInfo?.();
+				uni.showToast({ title: '已退出登录', icon: 'success' });
+				setTimeout(() => {
+					uni.switchTab({ url: '/src/pages/index/index' });
+				}, 1000);
+			}
+		}
+	});
+}
+
+// ========== 生命周期 ==========
+onMounted(() => {
+	initLayoutInfo();
+	initTheme();
+	loadData();
+
+	// 监听主题更新事件
+	uni.$on('themeUpdate', (mode) => {
+		isDark.value = mode === 'dark';
+	});
+
+	// 监听系统主题变化
+	try {
+		uni.onThemeChange?.((res) => {
+			const savedTheme = uni.getStorageSync('theme_mode');
+			if (!savedTheme) {
+				isDark.value = res.theme === 'dark';
+			}
+		});
+	} catch (e) {}
+});
+
+onShow(() => {
+	uni.hideTabBar({ animation: false });
+	// 每次进入页面强制刷新主题状态
+	initTheme();
+	// 刷新数据
+	loadData();
+});
+
+onHide(() => {
+	// 清理
+});
 </script>
 
 <style lang="scss" scoped>
-/* 全局容器 */
-.settings-container {
-  min-height: 100vh;
-  background-color: #F8F9FB;
-  padding: 0 16px;
-  padding-bottom: 80px;
-  /* 为底部导航栏留出空间 */
-  box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+// ========== 基础布局 ==========
+.fixed {
+	position: fixed;
 }
 
-/* 1. 导航栏 */
-.nav-bar {
-  height: 44px;
-  margin-top: 44px;
-  /* 避开刘海屏 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
+.inset-0 {
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
 }
 
-.nav-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  -webkit-font-smoothing: antialiased;
+.w-full {
+	width: 100%;
 }
 
-/* 通用卡片 */
+.h-full {
+	height: 100%;
+}
+
+.z-0 {
+	z-index: 0;
+}
+
+// ========== 内容区 ==========
+.content-wrapper {
+	padding-left: 32rpx;
+	padding-right: 32rpx;
+}
+
+// ========== 通用卡片 ==========
 .card {
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-  margin-bottom: 16px;
-  padding: 20px;
-  -webkit-tap-highlight-color: transparent;
-
-  &:active {
-    opacity: 0.9;
-    transform: scale(0.98);
-  }
+	background-color: var(--bg-card);
+	border: 1px solid var(--border-color);
+	border-radius: 24rpx;
+	margin-bottom: 24rpx;
+	transition: all 0.2s ease;
 }
 
-/* 2. 用户卡片 */
-.user-row {
-  display: flex;
-  align-items: flex-start;
+.card-hover {
+	opacity: 0.9;
+	transform: scale(0.99);
 }
 
-.user-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-right: 12px;
-  flex-shrink: 0;
+// ========== 用户卡片 ==========
+.user-card {
+	padding: 32rpx;
+}
+
+.user-section {
+	display: flex;
+	align-items: center;
+}
+
+.avatar-box {
+	width: 120rpx;
+	height: 120rpx;
+	border-radius: 50%;
+	background-color: var(--muted);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 28rpx;
+	flex-shrink: 0;
+}
+
+.avatar-emoji {
+	font-size: 56rpx;
 }
 
 .user-info {
-  flex: 1;
-  min-width: 0;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8rpx;
 }
 
 .user-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #333;
-  margin-bottom: 8px;
-  display: block;
-  -webkit-font-smoothing: antialiased;
+	font-size: 40rpx;
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--text-main);
 }
 
-.info-tag-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 4px;
-  -webkit-tap-highlight-color: transparent;
-
-  &:active {
-    opacity: 0.7;
-  }
+.user-id {
+	font-size: 26rpx;
+	line-height: 1.2;
+	color: var(--text-sub);
 }
 
-.info-label {
-  font-size: 12px;
-  color: #666;
-  margin-right: 4px;
-  -webkit-font-smoothing: antialiased;
+.edit-btn {
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 50%;
+	background-color: var(--muted);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
 }
 
 .edit-icon {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
+	font-size: 32rpx;
 }
 
-.plan-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: 8px;
-  -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;
-
-  &:active {
-    opacity: 0.7;
-    transform: scale(0.95);
-  }
+// ========== 统计卡片 ==========
+.stats-card {
+	padding: 32rpx 16rpx;
 }
 
-.plan-icon {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 2px;
+.stats-grid {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
-.plan-text {
-  font-size: 10px;
-  color: #333;
-  -webkit-font-smoothing: antialiased;
+.stat-item {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 12rpx 0;
 }
 
-/* 3. 进度卡片 */
-.progress-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 30px 20px;
-  -webkit-tap-highlight-color: transparent;
+.stat-hover {
+	opacity: 0.7;
+	transform: scale(0.95);
 }
 
-.progress-circle {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  /* 核心：使用圆锥渐变画出 75% 的绿色进度 */
-  background: conic-gradient(#07C160 0% 75%, #E0E0E0 75% 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-  position: relative;
+.stat-icon-box {
+	width: 80rpx;
+	height: 80rpx;
+	border-radius: 50%;
+	background-color: var(--muted);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 16rpx;
 }
 
-.inner-circle {
-  width: 124px;
-  height: 124px;
-  background-color: white;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.stat-emoji {
+	font-size: 40rpx;
 }
 
-.progress-num {
-  font-size: 36px;
-  font-weight: 700;
-  color: #333;
-  -webkit-font-smoothing: antialiased;
+.stat-value {
+	font-size: 48rpx;
+	font-weight: 800;
+	line-height: 1.1;
+	margin-bottom: 8rpx;
+	color: var(--text-main);
 }
 
-.percent {
-  font-size: 16px;
+.stat-label {
+	font-size: 24rpx;
+	line-height: 1.2;
+	color: var(--text-sub);
 }
 
-.progress-desc {
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
-  -webkit-font-smoothing: antialiased;
+.stat-divider {
+	width: 2rpx;
+	height: 80rpx;
+	background-color: var(--border-color);
+	flex-shrink: 0;
 }
 
-.click-hint {
-  font-size: 12px;
-  color: #999;
-  -webkit-font-smoothing: antialiased;
+// ========== 菜单卡片 ==========
+.menu-card {
+	padding: 0;
+	overflow: hidden;
 }
 
-/* 4. 工具功能 */
-.section-header {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 12px;
-  margin-left: 4px;
-  -webkit-font-smoothing: antialiased;
+.menu-item {
+	display: flex;
+	align-items: center;
+	padding: 28rpx 32rpx;
 }
 
-.tools-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  gap: 12px;
+.menu-hover {
+	background-color: var(--muted);
 }
 
-.tool-item {
-  flex: 1;
-  background-color: white;
-  border-radius: 16px;
-  padding: 16px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
-  -webkit-tap-highlight-color: transparent;
-
-  &:active {
-    opacity: 0.8;
-    transform: scale(0.95);
-  }
+.menu-icon-box {
+	width: 76rpx;
+	height: 76rpx;
+	border-radius: 50%;
+	background-color: var(--muted);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 24rpx;
+	flex-shrink: 0;
 }
 
-.tool-icon {
-  width: 32px;
-  height: 32px;
-  margin-right: 8px;
-  flex-shrink: 0;
+.menu-emoji {
+	font-size: 36rpx;
 }
 
-.tool-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  -webkit-font-smoothing: antialiased;
+.menu-text {
+	flex: 1;
+	font-size: 32rpx;
+	font-weight: 500;
+	color: var(--text-main);
 }
 
-/* 5. 好友列表 */
-.friend-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
+.menu-arrow {
+	font-size: 48rpx;
+	font-weight: 300;
+	flex-shrink: 0;
+	color: var(--text-sub);
 }
 
-.invite-btn {
-  background-color: #07C160;
-  color: white;
-  font-size: 12px;
-  padding: 6px 12px;
-  border-radius: 14px;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-smoothing: antialiased;
-
-  &:active {
-    opacity: 0.85;
-    transform: scale(0.95);
-  }
+.menu-divider {
+	height: 2rpx;
+	background-color: var(--border-color);
+	margin-left: 132rpx;
 }
 
-.friend-item {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  -webkit-tap-highlight-color: transparent;
+// ========== 关于卡片 ==========
+.about-card {
+	padding: 0;
+	overflow: hidden;
 }
 
-.friend-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  margin-right: 12px;
-  flex-shrink: 0;
+.about-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 28rpx 32rpx;
 }
 
-.friend-info {
-  flex: 1;
-  min-width: 0;
+.about-label {
+	font-size: 28rpx;
+	color: var(--text-sub);
 }
 
-.name-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 4px;
+.about-value {
+	font-size: 28rpx;
+	color: var(--text-main);
 }
 
-.friend-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin-right: 6px;
-  -webkit-font-smoothing: antialiased;
+.about-divider {
+	height: 2rpx;
+	background-color: var(--border-color);
+	margin-left: 32rpx;
+	margin-right: 32rpx;
 }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  background-color: #07C160;
-  border-radius: 50%;
-  flex-shrink: 0;
+// ========== 主题切换按钮 ==========
+.theme-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 16rpx;
+	padding: 28rpx;
+	border-radius: 24rpx;
+	margin-bottom: 24rpx;
+	background-color: var(--bg-card);
+	border: 1px solid var(--border-color);
 }
 
-.friend-detail {
-  font-size: 11px;
-  color: #999;
-  display: block;
-  line-height: 1.4;
-  -webkit-font-smoothing: antialiased;
+.theme-emoji {
+	font-size: 36rpx;
 }
 
-.friend-actions {
-  display: flex;
-  gap: 12px;
-  flex-shrink: 0;
+.theme-text {
+	font-size: 30rpx;
+	font-weight: 500;
+	color: var(--text-main);
 }
 
-.action-icon {
-  width: 28px;
-  height: 28px;
-  -webkit-tap-highlight-color: transparent;
-
-  &:active {
-    opacity: 0.7;
-    transform: scale(0.9);
-  }
+// ========== 退出按钮 ==========
+.logout-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 28rpx;
+	border-radius: 24rpx;
+	margin-bottom: 24rpx;
+	background-color: transparent;
+	border: 1px solid var(--border-color);
 }
 
-/* 深色模式适配 */
-.settings-container.dark-mode {
-  background-color: var(--bg-body);
+.logout-text {
+	font-size: 30rpx;
+	font-weight: 500;
+	color: var(--danger);
+}
 
-  .nav-title {
-    color: var(--bg-card);
-  }
+.logout-hover {
+	background-color: var(--muted);
+}
 
-  .card {
-    background-color: #1e3a0f;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  }
+// ========== 按钮通用 hover ==========
+.btn-hover {
+	opacity: 0.7;
+	transform: scale(0.95);
+}
 
-  .user-name {
-    color: var(--bg-card);
-  }
+// ========== 固定导航栏 ==========
+.fixed-nav {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 100;
+	background-color: transparent;
+	transition: all 0.3s ease;
+}
 
-  .info-label {
-    color: #b0b0b0;
-  }
+.fixed-nav.nav-scrolled {
+	background-color: var(--glass-bg);
+	border-bottom: 1px solid var(--border-color);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
 
-  .plan-text {
-    color: var(--bg-card);
-  }
+.nav-content {
+	height: 88rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
 
-  .section-header {
-    color: var(--bg-card);
-  }
-
-  .tool-item {
-    background-color: #1e3a0f;
-  }
-
-  .tool-name {
-    color: var(--bg-card);
-  }
-
-  .friend-name {
-    color: var(--bg-card);
-  }
-
-  .progress-num {
-    color: #333;
-    /* 保持进度条内部文字颜色 */
-  }
-
-  .inner-circle {
-    background-color: var(--bg-card);
-    /* 保持进度条内部背景 */
-  }
+.nav-title {
+	font-size: 36rpx;
+	font-weight: 600;
+	color: var(--text-main);
 }
 </style>

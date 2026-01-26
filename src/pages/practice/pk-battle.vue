@@ -25,9 +25,9 @@
 			<view class="match-status">
 				<text class="status-title">{{ opponentFound ? '匹配成功！' : matchingStatusText }}</text>
 				<text class="status-tip" v-if="opponentFound">{{ opponent.name }} 已加入对战</text>
-				<text class="status-tip" v-if="!opponentFound" style="margin-top: 10rpx; font-size: 22rpx; color: rgba(255, 255, 255, 0.5);">
-					超时将自动匹配机器人对手
-				</text>
+			<text class="status-tip" v-if="!opponentFound" style="margin-top: 10rpx; font-size: 22rpx; color: var(--text-inverse-secondary);">
+				超时将自动匹配机器人对手
+			</text>
 			</view>
 			<view class="exit-btn" @tap="handleExit" v-if="!opponentFound">
 				<text>取消匹配</text>
@@ -114,33 +114,8 @@
 				</button>
 			</view>
 			
-			<!-- 临时测试：显示当前状态 -->
-			<view v-if="false" >
-				<text>gameState: {{ gameState }}</text>
-				<text>showAns: {{ showAns }}</text>
-				<text>options: {{ currentQuestion?.options?.length || 0 }}</text>
-			</view>
-			
-			<!-- 调试信息（开发环境） -->
-			<view class="debug-info" v-if="false" >
-				<text>gameState: {{ gameState }}</text>
-				<text>showAns: {{ showAns }}</text>
-				<text>currentIndex: {{ currentIndex }}</text>
-				<text>optionsCount: {{ currentQuestion?.options?.length || 0 }}</text>
-			</view>
-			
 			<view class="opponent-status" v-if="opponentAnswered && !showAns" :style="{ marginBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)' }">
 				<text class="opponent-tip">{{ opponent.name }} 已答题 ✓</text>
-			</view>
-			
-			<!-- 临时测试按钮（用于验证点击事件） -->
-			<view v-if="false" style="position: fixed; bottom: 100px; left: 20px; z-index: 9999;">
-				<button @tap="handleSelect(0)" style="background: red; color: white; padding: 20rpx;">
-					测试点击选项 0
-				</button>
-				<text style="color: white; display: block; margin-top: 20rpx;">
-					gameState: {{ gameState }}, showAns: {{ showAns }}
-				</text>
 			</view>
 		</view>
 
@@ -181,13 +156,33 @@
 			canvas-id="shareCanvas" 
 			:style="{ width: '375px', height: '600px', position: 'fixed', left: '9000px', top: '0' }"
 		></canvas>
+		
+		<!-- ✅ 自定义弹窗：题库为空提示 -->
+		<custom-modal
+			:visible="showEmptyModal"
+			type="upload"
+			title="📚 题库空空如也"
+			content="PK 对战需要先导入题库，上传学习资料后即可开始对战！"
+			confirm-text="去上传"
+			:show-cancel="false"
+			:is-dark="isDark"
+			@confirm="handleEmptyConfirm"
+		/>
 	</view>
 </template>
 
 <script>
 import { lafService } from '../../services/lafService.js'
+import CustomModal from '../../components/common/CustomModal.vue'
+// 检查点4.2: 好友PK邀请 - 分享卡片和深度链接
+import { createInviteDeepLink, generateInviteCode, generateShareConfig } from '../../services/invite-deep-link.js'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
+	components: {
+		CustomModal
+	},
 	data() {
 		return {
 			gameState: 'matching', // matching, battle, result
@@ -208,6 +203,8 @@ export default {
 			aiSummary: 'AI 正在分析本场对局...',
 			opProgress: 0,
 			myProgress: 0,
+			// ✅ 自定义弹窗状态
+			showEmptyModal: false,
 			opponentRushing: false,
 			opponentTimers: [],
 			questionTimer: null, // 题目倒计时定时器
@@ -236,14 +233,19 @@ export default {
 				{ name: '夜猫子', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Night', level: 'Lv.70' },
 				{ name: '题海战士', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Warrior', level: 'Lv.85' },
 				{ name: '知识库', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Library', level: 'Lv.90' }
-			]
+			],
+			// 检查点4.2: 好友PK邀请相关
+			sharePkRoomId: '', // PK房间ID
+			sharePkInviteCode: '', // PK邀请码
+			sharePkDeepLink: '', // PK深度链接
+			showSharePkCard: false // 是否显示分享卡片
 		};
 	},
 	computed: {
 		currentQuestion() {
 			const q = this.questions[this.currentIndex];
 			if (!q) {
-				console.warn('[TEST-10.1] ⚠️ 当前题目不存在:', {
+				logger.warn('[TEST-10.1] ⚠️ 当前题目不存在:', {
 					currentIndex: this.currentIndex,
 					questionsLength: this.questions.length
 				});
@@ -255,13 +257,13 @@ export default {
 			
 			// 修复AI回传格式问题：确保options是数组且格式正确
 			if (!Array.isArray(options)) {
-				console.warn('[PK-BATTLE] ⚠️ options不是数组，尝试转换:', options);
+				logger.warn('[PK-BATTLE] ⚠️ options不是数组，尝试转换:', options);
 				// 尝试从字符串解析
 				if (typeof options === 'string') {
 					try {
 						options = JSON.parse(options);
 					} catch (e) {
-						console.error('[PK-BATTLE] ❌ 无法解析options字符串:', e);
+						logger.error('[PK-BATTLE] ❌ 无法解析options字符串:', e);
 						options = [];
 					}
 				} else if (typeof options === 'object' && options !== null) {
@@ -301,7 +303,7 @@ export default {
 			
 			// 调试日志
 			if (this.currentIndex === 0) {
-				console.log('[PK-BATTLE] 📝 currentQuestion 计算属性:', {
+				logger.log('[PK-BATTLE] 📝 currentQuestion 计算属性:', {
 					hasQuestion: !!normalized.question,
 					hasOptions: Array.isArray(normalized.options),
 					optionsCount: normalized.options.length,
@@ -326,12 +328,12 @@ export default {
 		}
 	},
 	onLoad(options) {
-		console.log('[TEST-10.1] 🎮 PK 对战页面加载');
-		console.log('[TEST-10.1] 📋 页面参数:', options);
+		logger.log('[TEST-10.1] 🎮 PK 对战页面加载');
+		logger.log('[TEST-10.1] 📋 页面参数:', options);
 		
 		// 检查路由参数（从排行榜跳转时可能传递 opponent 参数）
 		if (options && options.opponent) {
-			console.log('[TEST-10.1] 📋 检测到 opponent 参数:', decodeURIComponent(options.opponent));
+			logger.log('[TEST-10.1] 📋 检测到 opponent 参数:', decodeURIComponent(options.opponent));
 		}
 		
 		this.initData();
@@ -342,14 +344,14 @@ export default {
 	},
 	methods: {
 		initData() {
-			console.log('[TEST-10.1] 🔧 初始化 PK 对战数据');
+			logger.log('[TEST-10.1] 🔧 初始化 PK 对战数据');
 			
 			const sys = uni.getSystemInfoSync();
 			this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
 			this.userInfo = uni.getStorageSync('userInfo') || { nickName: '考研人', avatarUrl: '' };
 			this.isDark = uni.getStorageSync('theme_mode') === 'dark';
 			
-			console.log('[TEST-10.1] 👤 用户信息:', {
+			logger.log('[TEST-10.1] 👤 用户信息:', {
 				nickName: this.userInfo.nickName,
 				hasAvatar: !!this.userInfo.avatarUrl
 			});
@@ -357,19 +359,15 @@ export default {
 			// 加载题库（随机抽取5道题）
 			const allQuestions = uni.getStorageSync('v30_bank') || [];
 			
-			console.log('[TEST-10.1] 📚 题库状态:', {
+			logger.log('[TEST-10.1] 📚 题库状态:', {
 				totalQuestions: allQuestions.length,
 				hasQuestions: allQuestions.length > 0
 			});
 			
 			if (allQuestions.length === 0) {
-				console.warn('[TEST-10.1] ⚠️ 题库为空，无法开始对战');
-				uni.showModal({
-					title: '提示',
-					content: '题库为空，请先导入资料后再来对战',
-					showCancel: false,
-					success: () => uni.navigateBack()
-				});
+				logger.warn('[TEST-10.1] ⚠️ 题库为空，无法开始对战');
+				// ✅ 使用自定义弹窗替换原生弹窗
+				this.showEmptyModal = true;
 				return;
 			}
 			
@@ -377,7 +375,7 @@ export default {
 			const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
 			this.questions = shuffled.slice(0, Math.min(5, shuffled.length));
 			
-			console.log('[TEST-10.1] ✅ 题目加载完成:', {
+			logger.log('[TEST-10.1] ✅ 题目加载完成:', {
 				selectedCount: this.questions.length,
 				firstQuestion: this.questions[0] ? {
 					hasQuestion: !!this.questions[0].question,
@@ -387,8 +385,8 @@ export default {
 			});
 		},
 		startMatching() {
-			console.log('[TEST-10.1] 🔍 开始匹配对手');
-			console.log('[TEST-10.1] 📊 当前状态:', {
+			logger.log('[TEST-10.1] 🔍 开始匹配对手');
+			logger.log('[TEST-10.1] 📊 当前状态:', {
 				gameState: this.gameState,
 				opponentFound: this.opponentFound,
 				mockBotsCount: this.mockBots.length
@@ -405,7 +403,7 @@ export default {
 			// 模拟匹配过程（1.5-3秒随机延迟）
 			const matchDelay = Math.random() * 1500 + 1500; // 1.5-3秒
 			
-			console.log('[TEST-10.1] ⏱️ 匹配延迟:', `${(matchDelay / 1000).toFixed(1)}秒`);
+			logger.log('[TEST-10.1] ⏱️ 匹配延迟:', `${(matchDelay / 1000).toFixed(1)}秒`);
 			
 			this.matchingTimer = setTimeout(() => {
 				// 随机选择一个虚拟对手
@@ -421,8 +419,8 @@ export default {
 				// 停止状态更新
 				this.stopMatchingStatusUpdate();
 				
-				console.log('[TEST-10.1] ✅ 匹配成功！');
-				console.log('[TEST-10.1] 👥 对手信息:', {
+				logger.log('[TEST-10.1] ✅ 匹配成功！');
+				logger.log('[TEST-10.1] 👥 对手信息:', {
 					name: this.opponent.name,
 					avatar: this.opponent.avatar,
 					level: this.opponent.level,
@@ -438,8 +436,8 @@ export default {
 				
 				// 1秒后进入对战
 				setTimeout(() => {
-					console.log('[TEST-10.1] ⚔️ 进入对战阶段');
-					console.log('[TEST-10.1] 📊 状态切换: matching -> battle');
+					logger.log('[TEST-10.1] ⚔️ 进入对战阶段');
+					logger.log('[TEST-10.1] 📊 状态切换: matching -> battle');
 					this.gameState = 'battle';
 					this.startBattle();
 				}, 1000);
@@ -448,7 +446,7 @@ export default {
 			// 30秒超时处理
 			this.matchingTimeoutTimer = setTimeout(() => {
 				if (!this.opponentFound) {
-					console.log('[PK-BATTLE] ⏰ 匹配超时，转为机器人对战');
+					logger.log('[PK-BATTLE] ⏰ 匹配超时，转为机器人对战');
 					this.stopMatchingStatusUpdate();
 					this.handleMatchingTimeout();
 				}
@@ -508,8 +506,8 @@ export default {
 			}, 1500);
 		},
 		startBattle() {
-			console.log('[TEST-10.1] 🎯 开始对战');
-			console.log('[TEST-10.1] 📊 对战状态:', {
+			logger.log('[TEST-10.1] 🎯 开始对战');
+			logger.log('[TEST-10.1] 📊 对战状态:', {
 				gameState: this.gameState,
 				currentIndex: this.currentIndex,
 				questionsCount: this.questions.length,
@@ -525,7 +523,7 @@ export default {
 			this.currentIndex = 0;
 			
 			if (this.questions.length === 0) {
-				console.error('[TEST-10.1] ❌ 题目为空，无法开始对战');
+				logger.error('[TEST-10.1] ❌ 题目为空，无法开始对战');
 				uni.showToast({
 					title: '题目加载失败',
 					icon: 'none'
@@ -533,7 +531,7 @@ export default {
 				return;
 			}
 			
-			console.log('[TEST-10.1] 📝 第一题信息:', {
+			logger.log('[TEST-10.1] 📝 第一题信息:', {
 				hasQuestion: !!this.currentQuestion.question,
 				hasOptions: Array.isArray(this.currentQuestion.options),
 				optionsCount: this.currentQuestion.options?.length || 0
@@ -572,7 +570,7 @@ export default {
 			}, 1000);
 		},
 		handleTimeOut() {
-			console.log('[PK-BATTLE] ⏰ 答题超时，自动判定错误');
+			logger.log('[PK-BATTLE] ⏰ 答题超时，自动判定错误');
 			
 			// 清除倒计时
 			if (this.questionTimer) {
@@ -609,7 +607,7 @@ export default {
 			}, 1500);
 		},
 		goToNextQuestion() {
-			console.log('[TEST-10.2] ⏭️ 准备进入下一题');
+			logger.log('[TEST-10.2] ⏭️ 准备进入下一题');
 			this.showAns = false;
 			this.userChoice = null;
 			this.opponentChoice = null;
@@ -617,7 +615,7 @@ export default {
 			
 			if (this.currentIndex < this.questions.length - 1) {
 				this.currentIndex++;
-				console.log('[TEST-10.2] 📝 进入下一题:', {
+				logger.log('[TEST-10.2] 📝 进入下一题:', {
 					currentIndex: this.currentIndex,
 					totalQuestions: this.questions.length
 				});
@@ -626,14 +624,14 @@ export default {
 				// 启动新题目的倒计时
 				this.startQuestionTimer();
 			} else {
-				console.log('[TEST-10.2] 🏁 所有题目完成，进入结算');
+				logger.log('[TEST-10.2] 🏁 所有题目完成，进入结算');
 				this.finishGame();
 			}
 		},
 		simulateOpponentAnswer(questionIndex) {
 			// 检查游戏状态，如果已经结束则不再答题
 			if (questionIndex >= this.questions.length || this.gameState !== 'battle') {
-				console.warn('[TEST-10.2] ⚠️ 对手答题被跳过:', {
+				logger.warn('[TEST-10.2] ⚠️ 对手答题被跳过:', {
 					questionIndex: questionIndex,
 					questionsLength: this.questions.length,
 					gameState: this.gameState
@@ -643,7 +641,7 @@ export default {
 			
 			const question = this.questions[questionIndex];
 			if (!question) {
-				console.error('[TEST-10.2] ❌ 题目不存在，无法模拟对手答题:', questionIndex);
+				logger.error('[TEST-10.2] ❌ 题目不存在，无法模拟对手答题:', questionIndex);
 				return;
 			}
 			
@@ -652,7 +650,7 @@ export default {
 			const correctAnswer = correctAnswerRaw.toString().toUpperCase().charAt(0);
 			const correctIndex = ['A', 'B', 'C', 'D'].indexOf(correctAnswer);
 			
-			console.log('[TEST-10.2] 🤖 开始模拟对手答题:', {
+			logger.log('[TEST-10.2] 🤖 开始模拟对手答题:', {
 				questionIndex: questionIndex,
 				correctAnswer: correctAnswer,
 				correctIndex: correctIndex,
@@ -663,7 +661,7 @@ export default {
 			// 机器人答题时间：3-8秒随机（模拟思考时间）
 			const answerTime = Math.random() * 5000 + 3000; // 3-8秒
 			
-			console.log('[TEST-10.2] ⏱️ 对手将在', (answerTime / 1000).toFixed(1), '秒后答题');
+			logger.log('[TEST-10.2] ⏱️ 对手将在', (answerTime / 1000).toFixed(1), '秒后答题');
 			
 			// 机器人正确率：70%
 			const willAnswerCorrectly = Math.random() < 0.7;
@@ -671,7 +669,7 @@ export default {
 			const timer = setTimeout(() => {
 				// 再次检查游戏状态，防止在答题过程中游戏已结束
 				if (this.gameState !== 'battle') {
-					console.warn('[TEST-10.2] ⚠️ 游戏已结束，取消对手答题:', {
+					logger.warn('[TEST-10.2] ⚠️ 游戏已结束，取消对手答题:', {
 						questionIndex: questionIndex,
 						gameState: this.gameState
 					});
@@ -703,7 +701,7 @@ export default {
 				// 因为 isCorrectOption 需要 showAns 为 true，所以这里直接判断
 				const isOpponentCorrect = correctIndex >= 0 && this.opponentChoice === correctIndex;
 				
-				console.log('[TEST-10.2] 🤖 对手答题完成:', {
+				logger.log('[TEST-10.2] 🤖 对手答题完成:', {
 					questionIndex: questionIndex,
 					opponentChoice: this.opponentChoice,
 					selectedLabel: ['A', 'B', 'C', 'D'][this.opponentChoice],
@@ -718,17 +716,17 @@ export default {
 					// 对手答对，增加得分并显示冲刺动画
 					this.opponentScore += 20;
 					this.opponentRushing = true;
-					console.log('[TEST-10.2] ✅ 对手答对了！分数 +20，当前分数:', this.opponentScore);
+					logger.log('[TEST-10.2] ✅ 对手答对了！分数 +20，当前分数:', this.opponentScore);
 					setTimeout(() => {
 						this.opponentRushing = false;
 					}, 500);
 				} else {
-					console.log('[TEST-10.2] ❌ 对手答错了，分数不变，当前分数:', this.opponentScore);
+					logger.log('[TEST-10.2] ❌ 对手答错了，分数不变，当前分数:', this.opponentScore);
 				}
 				
 				// 更新对手进度条
 				this.opProgress = ((questionIndex + 1) / this.questions.length) * 100;
-				console.log('[TEST-10.2] 📊 对手进度更新:', {
+				logger.log('[TEST-10.2] 📊 对手进度更新:', {
 					opProgress: this.opProgress,
 					questionIndex: questionIndex + 1,
 					totalQuestions: this.questions.length
@@ -737,13 +735,13 @@ export default {
 			}, answerTime);
 			
 			this.opponentTimers.push(timer);
-			console.log('[TEST-10.2] 📝 对手答题定时器已创建，当前定时器数量:', this.opponentTimers.length);
+			logger.log('[TEST-10.2] 📝 对手答题定时器已创建，当前定时器数量:', this.opponentTimers.length);
 		},
 		handleSelect(idx) {
 			// 立即打印，确保事件触发
-			console.log('[TEST-10.2] 🎯 选项被点击 - 立即响应:', idx);
+			logger.log('[TEST-10.2] 🎯 选项被点击 - 立即响应:', idx);
 			
-			console.log('[TEST-10.2] 🎯 选项被点击:', {
+			logger.log('[TEST-10.2] 🎯 选项被点击:', {
 				index: idx,
 				optionLabel: ['A', 'B', 'C', 'D'][idx],
 				showAns: this.showAns,
@@ -756,19 +754,19 @@ export default {
 			
 			// 检查状态
 			if (this.gameState !== 'battle') {
-				console.warn('[TEST-10.2] ⚠️ 当前不在对战状态，无法答题:', {
+				logger.warn('[TEST-10.2] ⚠️ 当前不在对战状态，无法答题:', {
 					gameState: this.gameState
 				});
 				return;
 			}
 			
 			if (this.showAns) {
-				console.log('[TEST-10.2] ⚠️ 已显示答案，禁止重复点击');
+				logger.log('[TEST-10.2] ⚠️ 已显示答案，禁止重复点击');
 				return; // 只有在显示答案时才禁止点击，对手答题后仍可继续
 			}
 			
 			if (!this.currentQuestion || !this.currentQuestion.options || this.currentQuestion.options.length === 0) {
-				console.error('[TEST-10.2] ❌ 题目数据不完整，无法答题:', {
+				logger.error('[TEST-10.2] ❌ 题目数据不完整，无法答题:', {
 					currentQuestion: this.currentQuestion
 				});
 				uni.showToast({
@@ -778,7 +776,7 @@ export default {
 				return;
 			}
 			
-			console.log('[TEST-10.2] ✅ 开始处理答题');
+			logger.log('[TEST-10.2] ✅ 开始处理答题');
 			
 			this.userChoice = idx;
 			this.showAns = true;
@@ -792,7 +790,7 @@ export default {
 
 			// 判断是否正确
 			const isCorrect = this.isCorrectOption(idx);
-			console.log('[TEST-10.2] 📊 答题结果:', {
+			logger.log('[TEST-10.2] 📊 答题结果:', {
 				selectedIndex: idx,
 				selectedLabel: ['A', 'B', 'C', 'D'][idx],
 				correctAnswer: this.currentQuestion.answer,
@@ -802,9 +800,9 @@ export default {
 			
 			if (isCorrect) {
 				this.myScore += 20;
-				console.log('[TEST-10.2] ✅ 答对了！分数 +20，当前分数:', this.myScore);
+				logger.log('[TEST-10.2] ✅ 答对了！分数 +20，当前分数:', this.myScore);
 			} else {
-				console.log('[TEST-10.2] ❌ 答错了，分数不变');
+				logger.log('[TEST-10.2] ❌ 答错了，分数不变');
 			}
 			
 			// 更新我的进度条
@@ -822,8 +820,8 @@ export default {
 			}, 1500);
 		},
 		async finishGame() {
-			console.log('[TEST-10.2] 🏁 开始结算游戏');
-			console.log('[TEST-10.2] 📊 最终分数:', {
+			logger.log('[TEST-10.2] 🏁 开始结算游戏');
+			logger.log('[TEST-10.2] 📊 最终分数:', {
 				myScore: this.myScore,
 				opponentScore: this.opponentScore,
 				result: this.myScore > this.opponentScore ? '胜利' : (this.myScore < this.opponentScore ? '惜败' : '平局'),
@@ -833,7 +831,7 @@ export default {
 			
 			// 立即清理所有定时器（防止对手继续答题）
 			this.clearAllTimers();
-			console.log('[TEST-10.2] ✅ 已清理所有定时器');
+			logger.log('[TEST-10.2] ✅ 已清理所有定时器');
 			
 			// 计算战绩数据（用于分享海报）
 			const correctCount = Math.floor(this.myScore / 20);
@@ -845,26 +843,26 @@ export default {
 			
 			// 切换到结算状态（必须在清理定时器之后）
 			this.gameState = 'result';
-			console.log('[TEST-10.2] ✅ 状态已切换到 result');
-			console.log('[TEST-10.2] 🎯 结算页应该显示，gameState =', this.gameState);
+			logger.log('[TEST-10.2] ✅ 状态已切换到 result');
+			logger.log('[TEST-10.2] 🎯 结算页应该显示，gameState =', this.gameState);
 			
 			// 调用智谱 AI 生成针对性战后分析
-			console.log('[TEST-10.2] 🤖 开始生成 AI 分析...');
+			logger.log('[TEST-10.2] 🤖 开始生成 AI 分析...');
 			await this.fetchAISummary();
-			console.log('[TEST-10.2] ✅ AI 分析完成');
+			logger.log('[TEST-10.2] ✅ AI 分析完成');
 			
 			// TEST-10.3: 自动上传分数到排行榜（结算页显示时触发）
-			console.log('[TEST-10.3] 🏆 结算页已显示，开始自动上传分数到排行榜');
-			console.log('[TEST-10.3] 📊 PK 本局得分:', this.myScore);
+			logger.log('[TEST-10.3] 🏆 结算页已显示，开始自动上传分数到排行榜');
+			logger.log('[TEST-10.3] 📊 PK 本局得分:', this.myScore);
 			// 注意：uploadScoreToRank 现在是 async 方法，但不等待结果（静默上传）
 			// uploadScoreToRank 内部已有锁机制，防止重复上传
 			this.uploadScoreToRank().catch(err => {
-				console.error('[TEST-10.3] ❌ 上传分数失败（静默）:', err);
+				logger.error('[TEST-10.3] ❌ 上传分数失败（静默）:', err);
 			});
 			
 			// 验证结算页状态
 			this.$nextTick(() => {
-				console.log('[TEST-10.2] 🔍 结算页状态验证:', {
+				logger.log('[TEST-10.2] 🔍 结算页状态验证:', {
 					gameState: this.gameState,
 					shouldShowResult: this.gameState === 'result',
 					myScore: this.myScore,
@@ -884,7 +882,7 @@ export default {
 			
 			const result = this.myScore > this.opponentScore ? '胜利' : (this.myScore < this.opponentScore ? '惜败' : '平局');
 			
-			console.log('[pk-battle] 🤖 调用后端代理生成 AI 战报...');
+			logger.log('[pk-battle] 🤖 调用后端代理生成 AI 战报...');
 
 			try {
 				// ✅ 使用后端代理调用（安全）- action: 'pk_summary'
@@ -897,7 +895,7 @@ export default {
 					opponentName: this.opponent.name
 				});
 
-				console.log('[pk-battle] 📥 后端代理响应:', {
+				logger.log('[pk-battle] 📥 后端代理响应:', {
 					code: response?.code,
 					hasData: !!response?.data
 				});
@@ -909,17 +907,17 @@ export default {
 					comment = comment.replace(/```json\s*/gi, '');
 					comment = comment.replace(/```\s*/g, '');
 					this.aiSummary = comment;
-					console.log('[pk-battle] ✅ AI 战报生成成功');
+					logger.log('[pk-battle] ✅ AI 战报生成成功');
 				} else {
 					throw new Error("AI 响应异常");
 				}
 				
 			} catch (e) {
-				console.error('[TEST-10.2] ❌ AI 战报生成失败:', e);
+				logger.error('[TEST-10.2] ❌ AI 战报生成失败:', e);
 				
 				// 检查是否是401未登录错误
 				if (e.message && e.message.includes('未登录')) {
-					console.warn('[TEST-10.2] ⚠️ AI 服务需要登录，使用降级方案');
+					logger.warn('[TEST-10.2] ⚠️ AI 服务需要登录，使用降级方案');
 				}
 				
 				// 降级方案：如果 AI 挂了，随机显示一条本地库
@@ -937,7 +935,7 @@ export default {
 					"平分秋色！看来双方都很强，不如再战一局？"
 				];
 				this.aiSummary = fallback[Math.floor(Math.random() * fallback.length)];
-				console.log('[TEST-10.2] ✅ 已使用降级方案，评语:', this.aiSummary);
+				logger.log('[TEST-10.2] ✅ 已使用降级方案，评语:', this.aiSummary);
 			}
 		},
 		goHome() {
@@ -951,14 +949,14 @@ export default {
 		},
 		goToRank() {
 			// TEST-10.3: 跳转到排行榜页面
-			console.log('[TEST-10.3] 📊 用户点击"查看排行榜"，准备跳转');
+			logger.log('[TEST-10.3] 📊 用户点击"查看排行榜"，准备跳转');
 			uni.navigateTo({
 				url: '/src/pages/practice/rank',
 				success: () => {
-					console.log('[TEST-10.3] ✅ 已跳转到排行榜页面');
+					logger.log('[TEST-10.3] ✅ 已跳转到排行榜页面');
 				},
 				fail: (err) => {
-					console.error('[TEST-10.3] ❌ 跳转排行榜失败:', err);
+					logger.error('[TEST-10.3] ❌ 跳转排行榜失败:', err);
 					uni.showToast({ title: '跳转失败', icon: 'none' });
 				}
 			});
@@ -972,13 +970,13 @@ export default {
 				}
 			});
 			this.opponentTimers = [];
-			console.log('[TEST-10.2] 🧹 已清除', timerCount, '个对手答题定时器');
+			logger.log('[TEST-10.2] 🧹 已清除', timerCount, '个对手答题定时器');
 			
 			// 清除题目倒计时
 			if (this.questionTimer) {
 				clearInterval(this.questionTimer);
 				this.questionTimer = null;
-				console.log('[TEST-10.2] 🧹 已清除题目倒计时定时器');
+				logger.log('[TEST-10.2] 🧹 已清除题目倒计时定时器');
 			}
 			
 			// 清除匹配相关定时器
@@ -1024,7 +1022,7 @@ export default {
 		handleResultStageClick(e) {
 			// 点击结算页空白区域，不做任何操作（已通过 @tap.stop 阻止冒泡）
 			// 如果需要点击空白处返回，可以在这里实现
-			console.log('[PK-BATTLE] 点击结算页空白区域');
+			logger.log('[PK-BATTLE] 点击结算页空白区域');
 		},
 		handleExitFromResult() {
 			// 从结算页退出
@@ -1039,6 +1037,103 @@ export default {
 				}
 			});
 		},
+		
+		// ✅ 处理题库为空弹窗确认
+		handleEmptyConfirm() {
+			this.showEmptyModal = false;
+			uni.navigateTo({ 
+				url: '/src/pages/practice/import-data',
+				fail: () => {
+					uni.navigateBack();
+				}
+			});
+		},
+		
+		// 检查点4.2: 好友PK邀请 - 生成分享PK链接
+		async generateSharePkLink() {
+			const userId = uni.getStorageSync('EXAM_USER_ID') || '';
+			
+			// 生成房间ID
+			this.sharePkRoomId = `pk_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+			
+			// 生成邀请码
+			this.sharePkInviteCode = generateInviteCode({
+				roomId: this.sharePkRoomId,
+				userId: userId
+			});
+			
+			// 生成深度链接
+			this.sharePkDeepLink = await createInviteDeepLink({
+				type: 'pk',
+				roomId: this.sharePkRoomId,
+				inviteCode: this.sharePkInviteCode,
+				inviterId: userId,
+				subject: '综合题库',
+				questionCount: this.questions.length || 5
+			});
+			
+			logger.log('[PK-Share] 生成PK分享链接:', {
+				roomId: this.sharePkRoomId,
+				inviteCode: this.sharePkInviteCode,
+				deepLink: this.sharePkDeepLink
+			});
+			
+			return {
+				roomId: this.sharePkRoomId,
+				inviteCode: this.sharePkInviteCode,
+				deepLink: this.sharePkDeepLink
+			};
+		},
+		
+		// 检查点4.2: 好友PK邀请 - 分享PK对战
+		async sharePkBattle() {
+			try {
+				// 生成分享链接
+				const shareInfo = await this.generateSharePkLink();
+				
+				// 获取分享配置
+				const shareConfig = generateShareConfig({
+					type: 'pk',
+					roomId: shareInfo.roomId,
+					inviteCode: shareInfo.inviteCode,
+					inviterName: this.userInfo.nickName || '考研人',
+					subject: '综合题库',
+					questionCount: this.questions.length || 5
+				});
+				
+				logger.log('[PK-Share] 分享配置:', shareConfig);
+				
+				// #ifdef MP-WEIXIN
+				// 小程序环境使用分享API
+				uni.showShareMenu({
+					withShareTicket: true,
+					menus: ['shareAppMessage', 'shareTimeline']
+				});
+				// #endif
+				
+				// #ifdef H5 || APP-PLUS
+				// H5/APP环境复制链接
+				uni.setClipboardData({
+					data: shareInfo.deepLink,
+					success: () => {
+						uni.showToast({
+							title: 'PK链接已复制，快去分享给好友吧！',
+							icon: 'none',
+							duration: 2000
+						});
+					}
+				});
+				// #endif
+				
+			} catch (error) {
+				logger.error('[PK-Share] 分享失败:', error);
+				uni.showToast({
+					title: '分享失败，请稍后重试',
+					icon: 'none'
+				});
+			}
+		},
+		
 		// 生成海报并上传分数 - 全新设计理念：知识的碰撞与荣耀时刻
 		async handleShare() {
 			// 防止重复点击
@@ -1056,7 +1151,7 @@ export default {
 			// 设置超时处理，避免无限等待
 			const timeoutTimer = setTimeout(() => {
 				if (this.isGeneratingShare) {
-					console.error('[PK-BATTLE] 生成战报超时');
+					logger.error('[PK-BATTLE] 生成战报超时');
 					uni.hideLoading();
 					this.isGeneratingShare = false;
 					uni.showToast({ 
@@ -1070,9 +1165,9 @@ export default {
 			try {
 			// A. 自动静默上传分数到排行榜（数据闭环）
 			// uploadScoreToRank 内部已有锁机制，防止重复上传
-			console.log('[TEST-10.3] 📤 分享时尝试上传分数（如果尚未上传）');
+			logger.log('[TEST-10.3] 📤 分享时尝试上传分数（如果尚未上传）');
 			this.uploadScoreToRank().catch(err => {
-				console.error('[TEST-10.3] ❌ 分享时上传分数失败:', err);
+				logger.error('[TEST-10.3] ❌ 分享时上传分数失败:', err);
 			});
 
 				// B. 开始 Canvas 绘图 - 全新设计理念
@@ -1281,7 +1376,7 @@ export default {
 								});
 							},
 							fail: (err) => {
-								console.error('[PK-BATTLE] 绘图失败', err);
+								logger.error('[PK-BATTLE] 绘图失败', err);
 								uni.hideLoading();
 								this.isGeneratingShare = false;
 								uni.showToast({ title: '绘图失败，请稍后重试', icon: 'none' });
@@ -1291,7 +1386,7 @@ export default {
 				});
 			} catch (error) {
 				// 捕获所有错误，确保关闭 Loading
-				console.error('[PK-BATTLE] 生成战报异常:', error);
+				logger.error('[PK-BATTLE] 生成战报异常:', error);
 				clearTimeout(timeoutTimer);
 				uni.hideLoading();
 				this.isGeneratingShare = false;
@@ -1307,14 +1402,14 @@ export default {
 		async uploadScoreToRank() {
 			// 🔒 锁机制：防止重复上传
 			if (this.isScoreUploaded) {
-				console.log('[TEST-10.3] ⏭️ 分数已上传，跳过重复上传');
+				logger.log('[TEST-10.3] ⏭️ 分数已上传，跳过重复上传');
 				return;
 			}
 			// 立即设置标志位，防止并发调用
 			this.isScoreUploaded = true;
 			
-			console.log('[TEST-9.3] 🏆 开始上传分数到排行榜');
-			console.log('[TEST-10.3] 🏆 开始上传分数到排行榜');
+			logger.log('[TEST-9.3] 🏆 开始上传分数到排行榜');
+			logger.log('[TEST-10.3] 🏆 开始上传分数到排行榜');
 			
 			// 优先使用 EXAM_USER_ID（与登录系统一致）
 			const userId = uni.getStorageSync('EXAM_USER_ID') || '';
@@ -1322,8 +1417,8 @@ export default {
 			
 			// 如果没登录，就不传了
 			if (!userId && !userInfo.nickName) {
-				console.warn('[TEST-9.3] ⚠️ 用户未登录，跳过上传分数');
-				console.warn('[TEST-10.3] ⚠️ 用户未登录，跳过上传分数');
+				logger.warn('[TEST-9.3] ⚠️ 用户未登录，跳过上传分数');
+				logger.warn('[TEST-10.3] ⚠️ 用户未登录，跳过上传分数');
 				return;
 			}
 			
@@ -1335,17 +1430,17 @@ export default {
 			// TEST-10.3: 获取当前总分数，然后累加 PK 本局得分
 			let currentTotalScore = 0;
 			try {
-				console.log('[TEST-10.3] 🔍 开始获取当前总分数...');
+				logger.log('[TEST-10.3] 🔍 开始获取当前总分数...');
 				// 先获取排行榜数据，查找当前用户的总分数
 				const rankRes = await lafService.rankCenter({ action: 'get_rank' });
-				console.log('[TEST-10.3] 📥 排行榜 API 响应:', {
+				logger.log('[TEST-10.3] 📥 排行榜 API 响应:', {
 					code: rankRes?.code,
 					hasData: !!rankRes?.data,
 					dataLength: rankRes?.data?.length || 0
 				});
 				
 				if (rankRes && rankRes.code === 0 && rankRes.data) {
-					console.log('[TEST-10.3] 🔍 查找用户记录:', {
+					logger.log('[TEST-10.3] 🔍 查找用户记录:', {
 						userId: finalUserId,
 						nickName: nickName,
 						totalRecords: rankRes.data.length
@@ -1358,7 +1453,7 @@ export default {
 					);
 					
 					if (myRecord) {
-						console.log('[TEST-10.3] ✅ 找到用户记录:', {
+						logger.log('[TEST-10.3] ✅ 找到用户记录:', {
 							_id: myRecord._id,
 							nickName: myRecord.nickName,
 							score: myRecord.score,
@@ -1367,25 +1462,25 @@ export default {
 						
 						if (myRecord.score !== undefined && myRecord.score !== null) {
 							currentTotalScore = Number(myRecord.score) || 0;
-							console.log('[TEST-10.3] 📊 获取到当前总分数:', currentTotalScore);
+							logger.log('[TEST-10.3] 📊 获取到当前总分数:', currentTotalScore);
 						} else {
-							console.warn('[TEST-10.3] ⚠️ 用户记录中没有 score 字段，使用 0 作为初始分数');
+							logger.warn('[TEST-10.3] ⚠️ 用户记录中没有 score 字段，使用 0 作为初始分数');
 						}
 					} else {
-						console.log('[TEST-10.3] ⚠️ 未找到用户记录，使用 0 作为初始分数（可能是新用户）');
+						logger.log('[TEST-10.3] ⚠️ 未找到用户记录，使用 0 作为初始分数（可能是新用户）');
 					}
 				} else {
-					console.warn('[TEST-10.3] ⚠️ 排行榜 API 返回无效数据，使用 0 作为初始分数');
+					logger.warn('[TEST-10.3] ⚠️ 排行榜 API 返回无效数据，使用 0 作为初始分数');
 				}
 			} catch (err) {
-				console.error('[TEST-10.3] ❌ 获取当前总分数失败，使用 0 作为初始分数:', err);
+				logger.error('[TEST-10.3] ❌ 获取当前总分数失败，使用 0 作为初始分数:', err);
 			}
 			
 			// 计算新总分数 = 当前总分数 + PK 本局得分
 			const pkScore = this.myScore; // PK 本局得分（0-100分）
 			const newTotalScore = currentTotalScore + pkScore;
 			
-			console.log('[TEST-10.3] 📊 分数计算:', {
+			logger.log('[TEST-10.3] 📊 分数计算:', {
 				currentTotalScore: currentTotalScore,
 				pkScore: pkScore,
 				newTotalScore: newTotalScore,
@@ -1401,7 +1496,7 @@ export default {
 				score: newTotalScore // 必须：总分数（当前总分数 + PK 本局得分）
 			};
 			
-			console.log('[TEST-9.3] 📤 发送分数更新请求:', {
+			logger.log('[TEST-9.3] 📤 发送分数更新请求:', {
 				url: '/rank-center',
 				action: 'update_score',
 				userId: finalUserId,
@@ -1410,7 +1505,7 @@ export default {
 				hasAvatarUrl: !!avatarUrl
 			});
 			
-			console.log('[TEST-10.3] 📤 发送分数更新请求:', {
+			logger.log('[TEST-10.3] 📤 发送分数更新请求:', {
 				url: '/rank-center',
 				action: 'update_score',
 				userId: finalUserId,
@@ -1421,9 +1516,9 @@ export default {
 				hasAvatarUrl: !!avatarUrl
 			});
 			
-			console.log('[TEST-9.3] 📤 发送数据（完整）:', JSON.stringify(uploadData, null, 2));
-			console.log('[TEST-10.3] 📤 发送数据（完整）:', JSON.stringify(uploadData, null, 2));
-			console.log('[TEST-9.3] 📤 字段验证:', {
+			logger.log('[TEST-9.3] 📤 发送数据（完整）:', JSON.stringify(uploadData, null, 2));
+			logger.log('[TEST-10.3] 📤 发送数据（完整）:', JSON.stringify(uploadData, null, 2));
+			logger.log('[TEST-9.3] 📤 字段验证:', {
 				hasUid: !!uploadData.uid,
 				hasUserId: !!uploadData.userId,
 				hasNickName: !!uploadData.nickName,
@@ -1439,14 +1534,14 @@ export default {
 			lafService.rankCenter(uploadData)
 				.then(res => {
 					// 标志位已在方法开头设置，这里只记录成功日志
-					console.log('[TEST-9.3] ✅ 分数上传成功:', {
+					logger.log('[TEST-9.3] ✅ 分数上传成功:', {
 						code: res?.code,
 						message: res?.msg,
 						newRecord: res?.newRecord,
 						oldScore: res?.oldScore,
 						newScore: res?.newScore || newTotalScore
 					});
-					console.log('[TEST-10.3] ✅ 分数上传成功:', {
+					logger.log('[TEST-10.3] ✅ 分数上传成功:', {
 						code: res?.code,
 						message: res?.msg,
 						newRecord: res?.newRecord,
@@ -1463,9 +1558,9 @@ export default {
 					// 🔒 修复 Module 10 Bug: 采用 "Fire and Forget" 策略
 					// 上传失败时，不重置标志位，防止重复上传
 					// 原因：网络超时可能导致数据已写入但响应失败，重试会造成重复上传
-					console.error('[TEST-9.3] ❌ 上传分数失败（已锁定，不再重试）:', err);
-					console.error('[TEST-10.3] ❌ 上传分数失败（已锁定，不再重试）:', err);
-					console.log('[TEST-10.3] 🔒 isScoreUploaded 保持为 true，防止重复上传');
+					logger.error('[TEST-9.3] ❌ 上传分数失败（已锁定，不再重试）:', err);
+					logger.error('[TEST-10.3] ❌ 上传分数失败（已锁定，不再重试）:', err);
+					logger.log('[TEST-10.3] 🔒 isScoreUploaded 保持为 true，防止重复上传');
 					// 静默失败，不影响用户分享体验
 				});
 		},
@@ -1485,7 +1580,7 @@ export default {
 			uni.showModal({
 				title: '退出对战',
 				content: '中途退出将视为放弃本局，确定吗？',
-				confirmColor: '#FF3B30', // iOS 红
+				confirmColor: 'var(--danger-red)', // iOS 红
 				success: (res) => {
 					if (res.confirm) {
 						this.clearAllTimers();
@@ -1509,8 +1604,8 @@ export default {
 .container { 
 	min-height: 100vh; 
 	background-color: var(--text-primary); 
-	background-image: linear-gradient(180deg, #1C1C1E 0%, var(--text-primary) 100%);
-	color: var(--bg-card);
+	background-image: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--text-primary) 100%);
+	color: var(--text-inverse);
 	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
 	position: relative;
 }
@@ -1525,8 +1620,8 @@ export default {
 	left: 0; 
 	width: 100%; 
 	height: 100%;
-	background: radial-gradient(circle at 10% 10%, rgba(0, 229, 255, 0.15), transparent 40%),
-	            radial-gradient(circle at 90% 90%, rgba(255, 60, 60, 0.15), transparent 40%);
+	background: radial-gradient(circle at 10% 10%, var(--brand-light-alpha), transparent 40%),
+	            radial-gradient(circle at 90% 90%, var(--danger-red-alpha), transparent 40%);
 	z-index: 0;
 	animation: auroraShift 8s ease-in-out infinite;
 	pointer-events: none; /* 确保背景不拦截点击事件 */
@@ -1553,7 +1648,7 @@ export default {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	border: 2rpx solid rgba(0, 229, 255, 0.3);
+	border: 2rpx solid var(--brand-light-alpha);
 	border-radius: 50%;
 }
 
@@ -1581,7 +1676,7 @@ export default {
 	left: 50%;
 	width: 200rpx;
 	height: 2rpx;
-	background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.8), transparent);
+	background: linear-gradient(90deg, transparent, var(--brand-light), transparent);
 	transform-origin: left center;
 	animation: radarRotate 2s linear infinite;
 }
@@ -1621,9 +1716,9 @@ export default {
 	width: 180rpx; 
 	height: 180rpx; 
 	border-radius: 90rpx; 
-	border: 4rpx solid #00E5FF; 
+	border: 4rpx solid var(--brand-light); 
 	padding: 10rpx; 
-	background: rgba(30, 30, 30, 0.8); 
+	background: var(--bg-overlay); 
 	position: relative;
 	backdrop-filter: blur(10px);
 }
@@ -1636,14 +1731,14 @@ export default {
 	font-size: 60rpx; 
 	font-weight: 900; 
 	font-style: italic; 
-	color: #FFF; 
-	text-shadow: 0 0 20rpx rgba(0, 229, 255, 0.5);
+	color: var(--text-inverse); 
+	text-shadow: 0 0 20rpx var(--brand-light-alpha);
 }
 .opponent-ring { 
-	border-color: #666; 
+	border-color: var(--text-tertiary); 
 }
 .opponent-ring.found { 
-	border-color: #FF3C3C; 
+	border-color: var(--danger-red); 
 	animation: foundPulse 0.5s ease-out;
 }
 .search-overlay { 
@@ -1652,7 +1747,7 @@ export default {
 	left: 0; 
 	width: 100%; 
 	height: 100%; 
-	background: rgba(0, 0, 0, 0.5); 
+	background: var(--bg-overlay); 
 	border-radius: 50%; 
 	display: flex;
 	align-items: center;
@@ -1674,20 +1769,20 @@ export default {
 .status-title {
 	font-size: 36rpx;
 	font-weight: bold;
-	color: #FFF;
+	color: var(--text-inverse);
 }
 .status-tip {
 	font-size: 24rpx;
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--text-inverse-secondary);
 }
 .exit-btn {
 	margin-top: 60rpx;
 	padding: 20rpx 60rpx;
-	background: rgba(255, 255, 255, 0.1);
+	background: var(--bg-card-alpha);
 	border-radius: 50rpx;
 	font-size: 28rpx;
-	color: #FFF;
-	border: 1rpx solid rgba(255, 255, 255, 0.2);
+	color: var(--text-inverse);
+	border: 1rpx solid var(--border-light-alpha);
 	position: relative;
 	z-index: 2;
 }
@@ -1695,11 +1790,11 @@ export default {
 /* 全局：深空黑 */
 .pk-container {
 	min-height: 100vh;
-	background: radial-gradient(circle at center top, #2C2C2E 0%, var(--text-primary) 100%);
+	background: radial-gradient(circle at center top, var(--bg-tertiary) 0%, var(--text-primary) 100%);
 	padding: 0 24px;
 	padding-top: calc(env(safe-area-inset-top, 0px) + 30px); /* 增加顶部间距，整体下移，避免与胶囊按钮重叠 */
 	padding-bottom: env(safe-area-inset-bottom, 0px); /* 底部安全区域 */
-	color: #fff;
+	color: var(--text-inverse);
 	position: relative;
 	z-index: 1; /* 确保在对战阶段时，pk-container 在 aurora-bg 之上 */
 	box-sizing: border-box;
@@ -1717,7 +1812,7 @@ export default {
 .icon-btn {
 	width: 36px;
 	height: 36px;
-	background: rgba(255, 255, 255, 0.15);
+	background: var(--bg-card-alpha);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
@@ -1727,7 +1822,7 @@ export default {
 }
 
 .icon-btn:active {
-	background: rgba(255, 255, 255, 0.25);
+	background: var(--bg-hover-alpha);
 	transform: scale(0.95);
 }
 
@@ -1736,12 +1831,12 @@ export default {
 }
 
 .round-badge {
-	background: rgba(0, 0, 0, 0.5);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: var(--bg-overlay);
+	border: 1px solid var(--border-light-alpha);
 	padding: 4px 14px;
 	border-radius: 100px;
 	font-size: 13px;
-	color: #8E8E93;
+	color: var(--text-tertiary);
 	font-weight: 600;
 }
 
@@ -1765,9 +1860,9 @@ export default {
 	width: 64px;
 	height: 64px;
 	border-radius: 50%;
-	border: 2px solid rgba(255, 255, 255, 0.1);
+	border: 2px solid var(--border-light-alpha);
 	margin-bottom: 8px;
-	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 8px 16px var(--shadow-lg);
 }
 
 .score {
@@ -1778,19 +1873,19 @@ export default {
 }
 
 .score.me {
-	color: #00E5FF;
-	text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+	color: var(--brand-light);
+	text-shadow: 0 0 10px var(--brand-light-alpha);
 }
 
 .score.opp {
-	color: #FF3B30;
-	text-shadow: 0 0 10px rgba(255, 59, 48, 0.3);
+	color: var(--danger-red);
+	text-shadow: 0 0 10px var(--danger-red-alpha);
 }
 
 .progress-track {
 	width: 100%;
 	height: 4px;
-	background: #333;
+	background: var(--bg-tertiary);
 	border-radius: 2px;
 	overflow: hidden;
 }
@@ -1802,11 +1897,11 @@ export default {
 }
 
 .progress-fill.me {
-	background: #00E5FF;
+	background: var(--brand-light);
 }
 
 .progress-fill.opp {
-	background: #FF3B30;
+	background: var(--danger-red);
 }
 
 .progress-fill.opp.rush {
@@ -1823,19 +1918,19 @@ export default {
 	font-style: italic;
 	font-weight: 900;
 	font-size: 24px;
-	color: #3A3A3C;
+	color: var(--text-tertiary);
 }
 
 /* 题目卡片 */
 .question-card {
-	background: rgba(44, 44, 46, 0.6);
+	background: var(--bg-card-alpha);
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
 	border-radius: 20px;
 	padding: 24px;
 	min-height: 100px;
 	margin-bottom: 24px;
-	border: 1px solid rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--border-light-alpha);
 }
 
 .question-header {
@@ -1847,20 +1942,20 @@ export default {
 
 .tag {
 	display: inline-block;
-	background: #0A84FF;
+	background: var(--info-blue);
 	font-size: 10px;
 	padding: 2px 6px;
 	border-radius: 4px;
 	font-weight: bold;
-	color: var(--bg-card);
+	color: var(--text-inverse);
 }
 
 .timer-badge {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	background: rgba(52, 199, 89, 0.2);
-	border: 1px solid rgba(52, 199, 89, 0.5);
+	background: var(--success-green-alpha);
+	border: 1px solid var(--success-green);
 	border-radius: 12px;
 	padding: 4px 12px;
 	min-width: 50px;
@@ -1868,29 +1963,29 @@ export default {
 }
 
 .timer-badge.warning {
-	background: rgba(255, 193, 7, 0.2);
-	border-color: rgba(255, 193, 7, 0.5);
+	background: var(--warning-yellow-alpha);
+	border-color: var(--warning-yellow);
 	animation: pulse-warning 1s infinite;
 }
 
 .timer-badge.danger {
-	background: rgba(255, 59, 48, 0.2);
-	border-color: rgba(255, 59, 48, 0.5);
+	background: var(--danger-red-alpha);
+	border-color: var(--danger-red);
 	animation: pulse-danger 0.5s infinite;
 }
 
 .timer-text {
 	font-size: 14px;
 	font-weight: bold;
-	color: #34C759;
+	color: var(--success-green);
 }
 
 .timer-badge.warning .timer-text {
-	color: #FFC107;
+	color: var(--warning-yellow);
 }
 
 .timer-badge.danger .timer-text {
-	color: #FF3B30;
+	color: var(--danger-red);
 }
 
 @keyframes pulse-warning {
@@ -1907,7 +2002,7 @@ export default {
 	font-size: 17px;
 	line-height: 1.5;
 	font-weight: 500;
-	color: var(--bg-card);
+	color: var(--text-inverse);
 }
 
 /* 选项列表 */
@@ -1936,7 +2031,7 @@ export default {
 }
 
 .opt-btn-inner {
-	background: rgba(28, 28, 30, 1);
+	background: var(--bg-card-dark);
 	padding: 16px 20px;
 	border-radius: 16px;
 	display: flex;
@@ -1949,7 +2044,7 @@ export default {
 
 .opt-btn:active .opt-btn-inner {
 	transform: scale(0.98);
-	background: #3A3A3C;
+	background: var(--bg-hover);
 }
 
 .opt-btn.disabled {
@@ -1960,20 +2055,20 @@ export default {
 .letter {
 	width: 28px;
 	height: 28px;
-	background: #3A3A3C;
+	background: var(--bg-hover);
 	border-radius: 50%;
 	text-align: center;
 	line-height: 28px;
 	font-size: 14px;
 	font-weight: bold;
-	color: #AEAEB2;
+	color: var(--text-tertiary);
 	margin-right: 14px;
 	flex-shrink: 0;
 }
 
 .content {
 	font-size: 16px;
-	color: #fff;
+	color: var(--text-inverse);
 	flex: 1;
 }
 
@@ -1986,51 +2081,51 @@ export default {
 
 /* 状态色 */
 .opt-btn.selected .opt-btn-inner {
-	border-color: #0A84FF;
-	background: rgba(10, 132, 255, 0.1);
+	border-color: var(--info-blue);
+	background: var(--bg-info-light);
 }
 
 .opt-btn.selected .letter {
-	background: #0A84FF;
-	color: #fff;
+	background: var(--info-blue);
+	color: var(--text-inverse);
 }
 
 .opt-btn.correct .opt-btn-inner {
-	border-color: #34C759;
-	background: rgba(52, 199, 89, 0.1);
+	border-color: var(--success-green);
+	background: var(--bg-success-light);
 }
 
 .opt-btn.wrong .opt-btn-inner {
-	border-color: #FF3B30;
-	background: rgba(255, 59, 48, 0.1);
+	border-color: var(--danger-red);
+	background: var(--bg-danger-light);
 }
 
 .opt-btn.correct {
-	border-color: #30D158;
-	background: rgba(48, 209, 88, 0.15);
+	border-color: var(--success-green);
+	background: var(--bg-success-light);
 }
 
 .opt-btn.correct .letter {
-	background: #30D158;
-	color: #fff;
+	background: var(--success-green);
+	color: var(--text-inverse);
 }
 
 .opt-btn.correct .opt-icon {
-	color: #30D158;
+	color: var(--success-green);
 }
 
 .opt-btn.wrong {
-	border-color: #FF453A;
-	background: rgba(255, 69, 58, 0.15);
+	border-color: var(--danger-red);
+	background: var(--bg-danger-light);
 }
 
 .opt-btn.wrong .letter {
-	background: #FF453A;
-	color: #fff;
+	background: var(--danger-red);
+	color: var(--text-inverse);
 }
 
 .opt-btn.wrong .opt-icon {
-	color: #FF453A;
+	color: var(--danger-red);
 }
 
 .opponent-status {

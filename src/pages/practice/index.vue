@@ -13,7 +13,7 @@
       <!-- 有题库状态 -->
       <div v-if="hasBank" class="status-content">
         <div class="status-icon">
-          <image class="icon-image" src="/static/icons/practice/icon-library.png" mode="aspectFit"></image>
+          <image class="icon-image" src="/static/icons/practice/icon-library.png" mode="aspectFit" :style="isDark ? 'filter: brightness(0) invert(1) opacity(0.9);' : ''"></image>
         </div>
         <div class="status-info">
           <h3 class="status-title">题库就绪</h3>
@@ -112,7 +112,7 @@
       <!-- AI导师 -->
       <div class="menu-item" @tap="goAITutor">
         <div class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-robot.png" mode="aspectFit"></image>
+          <image class="menu-icon-img" src="/static/icons/practice/icon-robot.png" mode="aspectFit" :style="isDark ? 'filter: brightness(0) invert(1) opacity(0.9);' : ''"></image>
         </div>
         <div class="menu-info">
           <h3 class="menu-title">AI导师</h3>
@@ -229,6 +229,15 @@
         </view>
       </view>
     </view>
+    
+    <!-- ✅ 检查点2.2：断点恢复弹窗 -->
+    <resume-practice-modal
+      :visible="showResumeModal"
+      :draftInfo="draftInfo"
+      type="quiz"
+      @resume="handleResumePractice"
+      @restart="handleRestartPractice"
+    />
 
     <!-- 底部导航栏 -->
     <custom-tabbar :activeIndex="1" :isDark="isDark"></custom-tabbar>
@@ -237,14 +246,22 @@
 
 <script>
 import CustomTabbar from '../../components/layout/custom-tabbar/custom-tabbar.vue'
+import ResumePracticeModal from '../../components/common/ResumePracticeModal.vue'
 import { storageService } from '../../services/storageService.js'
 import { lafService } from '../../services/lafService.js'
 import { getApiKey } from '../../../common/config.js'
 import { requireLogin } from '../../utils/auth/loginGuard.js'
+// ✅ 检查点2.2：导入草稿检测器
+import { detectUnfinishedPractice, clearDraft } from '../../utils/practice/draft-detector.js'
+// ✅ 检查点 5.1: 导入分析服务
+import { analytics } from '../../utils/analytics/event-bus-analytics.js'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
   components: {
-    CustomTabbar
+    CustomTabbar,
+    ResumePracticeModal
   },
   data() {
     return {
@@ -276,6 +293,10 @@ export default {
       generationProgress: 0,
       progressTimer: null,
       showQuizManageModal: false,
+      
+      // ✅ 检查点2.2：断点恢复弹窗状态
+      showResumeModal: false,
+      draftInfo: null,
 
       // 励志语录
       currentSoup: '',
@@ -294,8 +315,16 @@ export default {
       animation: false
     });
 
+    // 每次显示页面时重新读取主题状态
+    const savedTheme = storageService.get('theme_mode', 'light');
+    this.isDark = savedTheme === 'dark';
+    logger.log('[practice] 🎨 onShow 刷新主题:', savedTheme, 'isDark:', this.isDark);
+
     this.refreshBankStatus();
     this.checkGenerationStatus();
+    
+    // ✅ 检查点2.2：检测未完成的练习
+    this.checkUnfinishedPractice();
 
     // 恢复后台生成
     if (this.isLooping && this.generatedCount < this.totalQuestionsLimit && !this.isRequestInFlight) {
@@ -308,10 +337,12 @@ export default {
     // 初始化主题
     const savedTheme = storageService.get('theme_mode', 'light');
     this.isDark = savedTheme === 'dark';
+    logger.log('[practice] 🎨 初始化主题:', savedTheme, 'isDark:', this.isDark);
 
     // 监听全局主题更新事件
     uni.$on('themeUpdate', (mode) => {
       this.isDark = mode === 'dark';
+      logger.log('[practice] 🎨 主题更新:', mode, 'isDark:', this.isDark);
     });
   },
   onUnload() {
@@ -324,7 +355,7 @@ export default {
   },
   methods: {
     refreshBankStatus() {
-      console.log('[刷题中心] 🔍 开始刷新题库状态');
+      logger.log('[刷题中心] 🔍 开始刷新题库状态');
 
       // 同时使用两种方式读取，确保兼容性
       let bankFromStorage = uni.getStorageSync('v30_bank') || [];
@@ -332,7 +363,7 @@ export default {
 
       // 如果主数据为空，尝试从备份恢复
       if (bankFromStorage.length === 0 && bankFromService.length === 0) {
-        console.warn('[刷题中心] ⚠️ 题库数据为空，尝试从备份恢复...');
+        logger.warn('[刷题中心] ⚠️ 题库数据为空，尝试从备份恢复...');
         let restored = false;
 
         // 尝试从多个备份源恢复（包括 uniStorage 和 storageService）
@@ -342,13 +373,13 @@ export default {
         ];
 
         // 诊断：检查所有备份源的状态
-        console.log('[刷题中心] 🔍 诊断备份源状态:');
+        logger.log('[刷题中心] 🔍 诊断备份源状态:');
         for (const backupKey of backupKeys) {
           try {
             const backupFromUni = uni.getStorageSync(backupKey);
             const backupFromService = storageService.get(backupKey, null);
 
-            console.log(`  - ${backupKey}:`, {
+            logger.log(`  - ${backupKey}:`, {
               uniStorage: backupFromUni ? (typeof backupFromUni === 'string' ? '字符串' : Array.isArray(backupFromUni) ? `数组(${backupFromUni.length})` : typeof backupFromUni) : '不存在',
               storageService: backupFromService ? (Array.isArray(backupFromService) ? `数组(${backupFromService.length})` : typeof backupFromService) : '不存在'
             });
@@ -368,7 +399,7 @@ export default {
                 }
 
                 if (Array.isArray(restoredData) && restoredData.length > 0) {
-                  console.log(`[刷题中心] 🔄 从备份恢复题库数据 (${backupKey} - uniStorage):`, restoredData.length, '道题');
+                  logger.log(`[刷题中心] 🔄 从备份恢复题库数据 (${backupKey} - uniStorage):`, restoredData.length, '道题');
                   uni.setStorageSync('v30_bank', restoredData);
                   storageService.save('v30_bank', restoredData);
                   bankFromStorage = restoredData;
@@ -382,7 +413,7 @@ export default {
                   break; // 找到一个有效的备份就停止
                 }
               } catch (parseErr) {
-                console.warn(`[刷题中心] ⚠️ 解析备份失败 (${backupKey} - uniStorage):`, parseErr);
+                logger.warn(`[刷题中心] ⚠️ 解析备份失败 (${backupKey} - uniStorage):`, parseErr);
               }
             }
 
@@ -398,7 +429,7 @@ export default {
                 }
 
                 if (Array.isArray(restoredData) && restoredData.length > 0) {
-                  console.log(`[刷题中心] 🔄 从备份恢复题库数据 (${backupKey} - storageService):`, restoredData.length, '道题');
+                  logger.log(`[刷题中心] 🔄 从备份恢复题库数据 (${backupKey} - storageService):`, restoredData.length, '道题');
                   uni.setStorageSync('v30_bank', restoredData);
                   storageService.save('v30_bank', restoredData);
                   bankFromStorage = restoredData;
@@ -412,21 +443,21 @@ export default {
                   break;
                 }
               } catch (parseErr) {
-                console.warn(`[刷题中心] ⚠️ 解析备份失败 (${backupKey} - storageService):`, parseErr);
+                logger.warn(`[刷题中心] ⚠️ 解析备份失败 (${backupKey} - storageService):`, parseErr);
               }
             }
           } catch (restoreErr) {
-            console.warn(`[刷题中心] ⚠️ 恢复备份失败 (${backupKey}):`, restoreErr);
+            logger.warn(`[刷题中心] ⚠️ 恢复备份失败 (${backupKey}):`, restoreErr);
           }
         }
 
         if (!restored) {
-          console.warn('[刷题中心] ❌ 所有备份都不可用，数据已丢失');
-          console.log('[刷题中心] 💡 建议：请重新导入题库数据');
+          logger.warn('[刷题中心] ❌ 所有备份都不可用，数据已丢失');
+          logger.log('[刷题中心] 💡 建议：请重新导入题库数据');
         }
       }
 
-      console.log('[刷题中心] 📚 题库读取结果:', {
+      logger.log('[刷题中心] 📚 题库读取结果:', {
         storageService: bankFromService.length,
         uniStorage: bankFromStorage.length,
         match: bankFromService.length === bankFromStorage.length
@@ -438,7 +469,7 @@ export default {
       this.hasBank = bank.length > 0;
       this.totalQuestions = bank.length;
 
-      console.log('[刷题中心] ✅ 题库状态更新:', {
+      logger.log('[刷题中心] ✅ 题库状态更新:', {
         hasBank: this.hasBank,
         totalQuestions: this.totalQuestions
       });
@@ -454,11 +485,43 @@ export default {
         if (!this.hasBank) {
           return uni.showToast({ title: '请先导入题库', icon: 'none' });
         }
+        // ✅ 检查点 5.1: 追踪"开始刷题"按钮点击
+        analytics.track('button_click', {
+          buttonName: '开始刷题',
+          page: 'practice/index',
+          questionCount: this.totalQuestions
+        });
         uni.navigateTo({ url: '/src/pages/practice/do-quiz' });
       }, {
         message: '请先登录后开始刷题',
         loginUrl: '/src/pages/settings/index'
       });
+    },
+    
+    // ✅ 检查点2.2：检测未完成的练习
+    checkUnfinishedPractice() {
+      const draft = detectUnfinishedPractice();
+      if (draft && draft.currentIndex > 0) {
+        this.draftInfo = draft;
+        this.showResumeModal = true;
+        logger.log('[practice] 📝 检测到未完成的练习:', draft);
+      }
+    },
+    
+    // ✅ 检查点2.2：处理恢复练习
+    handleResumePractice(draftInfo) {
+      this.showResumeModal = false;
+      logger.log('[practice] ▶️ 恢复练习:', draftInfo);
+      // 跳转到答题页面，答题页面会自动恢复进度
+      uni.navigateTo({ url: '/src/pages/practice/do-quiz' });
+    },
+    
+    // ✅ 检查点2.2：处理重新开始
+    handleRestartPractice() {
+      this.showResumeModal = false;
+      clearDraft('quiz');
+      logger.log('[practice] 🔄 重新开始练习');
+      uni.navigateTo({ url: '/src/pages/practice/do-quiz' });
     },
 
     goBattle() {
@@ -517,7 +580,7 @@ export default {
             this.handleUpload(res.tempFiles[0]);
           },
           fail: (e) => {
-            console.log('文件选择取消', e);
+            logger.log('文件选择取消', e);
           }
         });
       } else {
@@ -542,12 +605,12 @@ export default {
           },
           fail: (err) => {
             // 静默失败，不显示错误提示
-            console.log('文件选择取消或失败', err);
+            logger.log('文件选择取消或失败', err);
           }
         });
       } else {
         // 移除弹窗提示，静默处理
-        console.log('当前环境不支持文件选择');
+        logger.log('当前环境不支持文件选择');
       }
       // #endif
     },
@@ -729,7 +792,7 @@ export default {
 
       try {
         // ✅ 安全修复：使用后端代理调用 AI（action: 'generate_questions'）
-        console.log('[practice] 🤖 调用后端代理生成题目...');
+        logger.log('[practice] 🤖 调用后端代理生成题目...');
 
         const res = await lafService.proxyAI('generate_questions', {
           content: chunk || this.fileName,
@@ -795,9 +858,9 @@ export default {
                 try {
                   const backup = JSON.stringify(merged);
                   uni.setStorageSync('v30_bank_backup', backup);
-                  console.log('[practice] 💾 已创建题库备份:', merged.length, '道题');
+                  logger.log('[practice] 💾 已创建题库备份:', merged.length, '道题');
                 } catch (backupErr) {
-                  console.warn('[practice] ⚠️ 备份失败（不影响主流程）:', backupErr);
+                  logger.warn('[practice] ⚠️ 备份失败（不影响主流程）:', backupErr);
                 }
 
                 // 保存主数据
@@ -806,29 +869,29 @@ export default {
                 // 验证保存是否成功
                 const saved = storageService.get('v30_bank', []);
                 const isSuccess = saved.length === merged.length;
-                console.log('[practice] ✅ 保存验证:', {
+                logger.log('[practice] ✅ 保存验证:', {
                   savedCount: saved.length,
                   expectedCount: merged.length,
                   match: isSuccess
                 });
 
                 if (!isSuccess) {
-                  console.error('[practice] ❌ 保存验证失败！尝试从备份恢复...');
+                  logger.error('[practice] ❌ 保存验证失败！尝试从备份恢复...');
                   try {
                     const backup = uni.getStorageSync('v30_bank_backup');
                     if (backup) {
                       const restored = JSON.parse(backup);
                       storageService.save('v30_bank', restored);
-                      console.log('[practice] 🔄 已从备份恢复数据');
+                      logger.log('[practice] 🔄 已从备份恢复数据');
                     }
                   } catch (restoreErr) {
-                    console.error('[practice] ❌ 恢复备份失败:', restoreErr);
+                    logger.error('[practice] ❌ 恢复备份失败:', restoreErr);
                   }
                 }
 
                 this.refreshBankStatus();
                 this.updateGenerationProgress();
-                console.log(`[practice] 成功生成 ${validQs.length} 道题目（共 ${merged.length} 题）`);
+                logger.log(`[practice] 成功生成 ${validQs.length} 道题目（共 ${merged.length} 题）`);
 
                 // 成功生成题目后更新计数
                 this.generatedCount++;
@@ -840,19 +903,19 @@ export default {
                   this.showSpeedModal = true;
                 }
               } else {
-                console.warn('[practice] 生成的题目格式无效，原始数据:', newQs);
+                logger.warn('[practice] 生成的题目格式无效，原始数据:', newQs);
                 // 即使格式无效，也更新计数避免卡死
                 this.generatedCount++;
                 this.readOffset += this.chunkSize;
               }
             } else {
-              console.warn('[practice] AI 返回的不是数组格式');
+              logger.warn('[practice] AI 返回的不是数组格式');
               // 格式错误时也更新计数
               this.generatedCount++;
               this.readOffset += this.chunkSize;
             }
           } catch (parseError) {
-            console.error('[practice] JSON 解析失败:', parseError, '原始内容:', content);
+            logger.error('[practice] JSON 解析失败:', parseError, '原始内容:', content);
             // 尝试修复常见的 JSON 格式问题
             try {
               // 如果内容被包裹在字符串中，尝试提取
@@ -899,9 +962,9 @@ export default {
                     try {
                       const backup = JSON.stringify(merged);
                       uni.setStorageSync('v30_bank_backup', backup);
-                      console.log('[practice] 💾 已创建题库备份（二次解析）:', merged.length, '道题');
+                      logger.log('[practice] 💾 已创建题库备份（二次解析）:', merged.length, '道题');
                     } catch (backupErr) {
-                      console.warn('[practice] ⚠️ 备份失败（不影响主流程）:', backupErr);
+                      logger.warn('[practice] ⚠️ 备份失败（不影响主流程）:', backupErr);
                     }
 
                     // 保存主数据
@@ -911,22 +974,22 @@ export default {
                     const saved = storageService.get('v30_bank', []);
                     const isSuccess = saved.length === merged.length;
                     if (!isSuccess) {
-                      console.error('[practice] ❌ 保存验证失败！尝试从备份恢复...');
+                      logger.error('[practice] ❌ 保存验证失败！尝试从备份恢复...');
                       try {
                         const backup = uni.getStorageSync('v30_bank_backup');
                         if (backup) {
                           const restored = JSON.parse(backup);
                           storageService.save('v30_bank', restored);
-                          console.log('[practice] 🔄 已从备份恢复数据');
+                          logger.log('[practice] 🔄 已从备份恢复数据');
                         }
                       } catch (restoreErr) {
-                        console.error('[practice] ❌ 恢复备份失败:', restoreErr);
+                        logger.error('[practice] ❌ 恢复备份失败:', restoreErr);
                       }
                     }
 
                     this.refreshBankStatus();
                     this.updateGenerationProgress();
-                    console.log(`[practice] 二次解析成功，生成 ${validQs.length} 道题目（共 ${merged.length} 题）`);
+                    logger.log(`[practice] 二次解析成功，生成 ${validQs.length} 道题目（共 ${merged.length} 题）`);
 
                     // 成功解析后更新计数
                     this.generatedCount++;
@@ -938,7 +1001,7 @@ export default {
                       this.showSpeedModal = true;
                     }
                   } else {
-                    console.warn('[practice] 二次解析后题目格式仍无效');
+                    logger.warn('[practice] 二次解析后题目格式仍无效');
                     this.generatedCount++;
                     this.readOffset += this.chunkSize;
                   }
@@ -953,7 +1016,7 @@ export default {
                 this.readOffset += this.chunkSize;
               }
             } catch (e) {
-              console.error('[practice] 二次解析也失败:', e);
+              logger.error('[practice] 二次解析也失败:', e);
               // 解析完全失败，更新计数避免卡死
               this.generatedCount++;
               this.readOffset += this.chunkSize;
@@ -961,20 +1024,20 @@ export default {
           }
         } else if (res.code === 0 || res.success === true) {
           // ✅ 兼容新格式：{ success: true, data: [...], code: 0 }
-          console.log('[practice] ✅ 检测到新格式响应，直接使用 data');
+          logger.log('[practice] ✅ 检测到新格式响应，直接使用 data');
 
           try {
             let newQs = res.data;
 
             // ✅ 修复：如果 data 是字符串，先解析为数组
             if (typeof newQs === 'string') {
-              console.log('[practice] 🔧 检测到字符串格式，尝试解析 JSON');
+              logger.log('[practice] 🔧 检测到字符串格式，尝试解析 JSON');
               try {
                 newQs = JSON.parse(newQs);
-                console.log('[practice] ✅ JSON 解析成功，题目数量:', Array.isArray(newQs) ? newQs.length : 0);
+                logger.log('[practice] ✅ JSON 解析成功，题目数量:', Array.isArray(newQs) ? newQs.length : 0);
               } catch (parseErr) {
-                console.error('[practice] ❌ JSON 解析失败:', parseErr);
-                console.warn('[practice] 新格式 data 不是有效的 JSON 字符串');
+                logger.error('[practice] ❌ JSON 解析失败:', parseErr);
+                logger.warn('[practice] 新格式 data 不是有效的 JSON 字符串');
                 this.generatedCount++;
                 this.readOffset += this.chunkSize;
                 return;
@@ -1002,7 +1065,7 @@ export default {
                   answer = answer.toString().toUpperCase().charAt(0);
                 } else {
                   // ✅ 容错：如果答案仍为空，使用默认值 'A'
-                  console.warn('[practice] ⚠️ 题目答案为空，使用默认值 A:', q.question);
+                  logger.warn('[practice] ⚠️ 题目答案为空，使用默认值 A:', q.question);
                   answer = 'A';
                 }
 
@@ -1025,8 +1088,8 @@ export default {
               });
 
               // ✅ 添加详细调试日志
-              console.log('[practice] 🔍 标准化后的题目数量:', normalizedQs.length);
-              console.log('[practice] 🔍 第一道题目详情:', normalizedQs[0]);
+              logger.log('[practice] 🔍 标准化后的题目数量:', normalizedQs.length);
+              logger.log('[practice] 🔍 第一道题目详情:', normalizedQs[0]);
 
               // 过滤有效题目
               const validQs = normalizedQs.filter((q, index) => {
@@ -1040,7 +1103,7 @@ export default {
 
                 // 如果验证失败，打印详细信息
                 if (!isValid) {
-                  console.warn(`[practice] ⚠️ 题目 ${index + 1} 验证失败:`, {
+                  logger.warn(`[practice] ⚠️ 题目 ${index + 1} 验证失败:`, {
                     hasQuestion: !!q.question,
                     questionLength: q.question ? q.question.trim().length : 0,
                     hasOptions: !!q.options,
@@ -1057,7 +1120,7 @@ export default {
                 return isValid;
               });
 
-              console.log('[practice] ✅ 有效题目数量:', validQs.length, '/', normalizedQs.length);
+              logger.log('[practice] ✅ 有效题目数量:', validQs.length, '/', normalizedQs.length);
 
               if (validQs.length > 0) {
                 const old = storageService.get('v30_bank', []);
@@ -1067,9 +1130,9 @@ export default {
                 try {
                   const backup = JSON.stringify(merged);
                   uni.setStorageSync('v30_bank_backup', backup);
-                  console.log('[practice] 💾 已创建题库备份:', merged.length, '道题');
+                  logger.log('[practice] 💾 已创建题库备份:', merged.length, '道题');
                 } catch (backupErr) {
-                  console.warn('[practice] ⚠️ 备份失败（不影响主流程）:', backupErr);
+                  logger.warn('[practice] ⚠️ 备份失败（不影响主流程）:', backupErr);
                 }
 
                 // 保存主数据
@@ -1078,29 +1141,29 @@ export default {
                 // 验证保存是否成功
                 const saved = storageService.get('v30_bank', []);
                 const isSuccess = saved.length === merged.length;
-                console.log('[practice] ✅ 保存验证:', {
+                logger.log('[practice] ✅ 保存验证:', {
                   savedCount: saved.length,
                   expectedCount: merged.length,
                   match: isSuccess
                 });
 
                 if (!isSuccess) {
-                  console.error('[practice] ❌ 保存验证失败！尝试从备份恢复...');
+                  logger.error('[practice] ❌ 保存验证失败！尝试从备份恢复...');
                   try {
                     const backup = uni.getStorageSync('v30_bank_backup');
                     if (backup) {
                       const restored = JSON.parse(backup);
                       storageService.save('v30_bank', restored);
-                      console.log('[practice] 🔄 已从备份恢复数据');
+                      logger.log('[practice] 🔄 已从备份恢复数据');
                     }
                   } catch (restoreErr) {
-                    console.error('[practice] ❌ 恢复备份失败:', restoreErr);
+                    logger.error('[practice] ❌ 恢复备份失败:', restoreErr);
                   }
                 }
 
                 this.refreshBankStatus();
                 this.updateGenerationProgress();
-                console.log(`[practice] ✅ 新格式处理成功，生成 ${validQs.length} 道题目（共 ${merged.length} 题）`);
+                logger.log(`[practice] ✅ 新格式处理成功，生成 ${validQs.length} 道题目（共 ${merged.length} 题）`);
 
                 // 成功生成题目后更新计数
                 this.generatedCount++;
@@ -1112,34 +1175,34 @@ export default {
                   this.showSpeedModal = true;
                 }
               } else {
-                console.warn('[practice] 新格式题目验证失败');
+                logger.warn('[practice] 新格式题目验证失败');
                 this.generatedCount++;
                 this.readOffset += this.chunkSize;
               }
             } else {
-              console.warn('[practice] 新格式 data 不是有效数组');
+              logger.warn('[practice] 新格式 data 不是有效数组');
               this.generatedCount++;
               this.readOffset += this.chunkSize;
             }
           } catch (e) {
-            console.error('[practice] 新格式处理异常:', e);
+            logger.error('[practice] 新格式处理异常:', e);
             this.generatedCount++;
             this.readOffset += this.chunkSize;
           }
         } else {
-          console.error('[practice] AI 请求失败:', res);
+          logger.error('[practice] AI 请求失败:', res);
           // 请求失败时，仍然继续生成流程（避免卡死）
           this.generatedCount++;
           this.readOffset += this.chunkSize;
         }
 
       } catch (e) {
-        console.error('[practice] 生成题目异常:', e);
+        logger.error('[practice] 生成题目异常:', e);
 
         // 根据错误类型处理
         if (e.errMsg && e.errMsg.includes('timeout')) {
           // 超时：静默重试，不操作UI
-          console.log('[practice] 请求超时，将自动重试');
+          logger.log('[practice] 请求超时，将自动重试');
         } else if (e.errMsg && e.errMsg.includes('fail')) {
           // 网络错误：停止生成并提示
           this.isLooping = false;
@@ -1208,10 +1271,10 @@ export default {
               if (currentBank.length > 0) {
                 const backup = JSON.stringify(currentBank);
                 uni.setStorageSync('v30_bank_backup_before_clear', backup);
-                console.log('[刷题中心] 💾 清空前已创建备份:', currentBank.length, '道题');
+                logger.log('[刷题中心] 💾 清空前已创建备份:', currentBank.length, '道题');
               }
             } catch (backupErr) {
-              console.warn('[刷题中心] ⚠️ 创建备份失败:', backupErr);
+              logger.warn('[刷题中心] ⚠️ 创建备份失败:', backupErr);
             }
 
             storageService.remove('v30_bank');
@@ -1336,57 +1399,16 @@ export default {
    Wise-Style 刷题页面样式 - Phase 3 页面级重构
    ============================================ */
 
-/* 基础容器 - 基于设计系统 */
+/* 基础容器 - 使用设计系统变量 */
 .practice-container {
-  /* Wise.com 配色方案 */
-  --bg-body: var(--bg-card);
-  --bg-secondary: #f8f9fa;
-  --text-primary: var(--text-primary);
-  --text-secondary: #495057;
-  --text-tertiary: #6c757d;
-  --brand-color: #00a96d;
-  --brand-color-light: #e8f5e9;
-  --brand-color-dark: #008055;
-  --action-blue: #007aff;
-  --action-blue-light: #e3f2fd;
-  --danger-red: #ff453a;
-  --danger-red-light: #ffebee;
-  --card-bg: var(--bg-card);
-  --card-border: #e9ecef;
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
-  --card-radius: 12px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
   min-height: 100vh;
-  background-color: var(--bg-body);
+  background-color: var(--bg-page);
   padding: 20px;
-  padding-bottom: 100px;
+  padding-bottom: 140px;
   box-sizing: border-box;
-  color: var(--text-secondary);
-  font-family: var(--font-main);
+  color: var(--text-sub);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s ease;
-}
-
-/* 深色模式适配 - 增强对比度 */
-.practice-container.dark-mode {
-  --bg-body: var(--bg-body);
-  --bg-secondary: #1a2e05;
-  --text-primary: var(--bg-card);
-  --text-secondary: #b0b0b0;
-  --text-tertiary: #8E8E93;
-  --brand-color: var(--brand-color);
-  --brand-color-light: rgba(159, 232, 112, 0.15);
-  --brand-color-dark: #7BC950;
-  --action-blue: #0A84FF;
-  --action-blue-light: rgba(10, 132, 255, 0.15);
-  --danger-red: #FF453A;
-  --danger-red-light: rgba(255, 69, 58, 0.15);
-  --card-bg: #1e3a0f;
-  --card-border: #2d4e1f;
-  --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  --card-shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.4);
 }
 
 /* ============================================
@@ -1405,11 +1427,9 @@ export default {
 .nav-title {
   font-size: 32px;
   font-weight: 700;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   letter-spacing: -0.5px;
-  /* 优化字间距 */
   line-height: 1.2;
-  font-family: var(--font-main);
 }
 
 .nav-actions {
@@ -1421,7 +1441,7 @@ export default {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgba(0, 169, 109, 0.1);
+  background-color: var(--primary-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1430,31 +1450,31 @@ export default {
 }
 
 .icon-btn:hover {
-  background-color: rgba(0, 169, 109, 0.2);
+  background-color: var(--primary);
   transform: scale(1.05);
 }
 
 .icon-btn.danger {
-  background-color: rgba(255, 69, 58, 0.1);
+  background-color: var(--danger-light);
 }
 
 .icon-btn.danger:hover {
-  background-color: rgba(255, 69, 58, 0.2);
+  background-color: var(--danger);
 }
 
 /* 状态卡片 */
 .status-card {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
 }
 
 .status-card:hover {
-  box-shadow: var(--shadow-glow-brand);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -1465,12 +1485,12 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: linear-gradient(135deg, rgba(0, 169, 109, 0.03), rgba(0, 122, 255, 0.03));
+  background: var(--bg-secondary);
 }
 
 .status-card.empty-state:hover {
-  background: linear-gradient(135deg, rgba(0, 169, 109, 0.06), rgba(0, 122, 255, 0.06));
-  border-color: var(--brand-color, #00a96d);
+  background: var(--bg-card);
+  border-color: var(--primary);
 }
 
 .empty-state-content {
@@ -1509,14 +1529,14 @@ export default {
 .empty-title {
   font-size: 22px;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   margin: 0 0 12px 0;
   letter-spacing: -0.3px;
 }
 
 .empty-desc {
   font-size: 15px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
   margin: 0 0 24px 0;
   line-height: 1.6;
   max-width: 280px;
@@ -1527,15 +1547,15 @@ export default {
   align-items: center;
   gap: 10px;
   padding: 14px 28px;
-  background-color: var(--brand-color, #00a96d);
+  background-color: var(--primary);
   border-radius: 24px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 169, 109, 0.25);
+  box-shadow: var(--shadow-md);
 }
 
 .empty-action:active {
   transform: scale(0.95);
-  box-shadow: 0 2px 8px rgba(0, 169, 109, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .action-icon {
@@ -1548,7 +1568,7 @@ export default {
 .action-text {
   font-size: 16px;
   font-weight: 600;
-  color: var(--bg-card);
+  color: var(--primary-foreground);
   letter-spacing: 0.3px;
 }
 
@@ -1568,14 +1588,14 @@ export default {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background-color: rgba(0, 122, 255, 0.1);
+  background-color: var(--primary-light);
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .manage-btn:active {
-  background-color: rgba(0, 122, 255, 0.2);
+  background-color: var(--primary);
   transform: scale(0.95);
 }
 
@@ -1585,7 +1605,7 @@ export default {
 
 .manage-text {
   font-size: 14px;
-  color: #007aff;
+  color: var(--primary);
   font-weight: 500;
 }
 
@@ -1620,13 +1640,13 @@ export default {
 .status-title {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .status-desc {
   font-size: 14px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
   margin: 0;
 }
 
@@ -1644,8 +1664,8 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background-color: var(--brand-color, #00a96d);
-  color: white;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   border: none;
   border-radius: 20px;
   padding: 20px 40px;
@@ -1653,21 +1673,21 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 169, 109, 0.3);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 320px;
   margin: 0 auto;
 }
 
 .primary-btn:hover {
-  background-color: #008055;
-  box-shadow: 0 8px 24px rgba(0, 169, 109, 0.4);
+  background-color: var(--primary);
+  box-shadow: var(--shadow-xl);
   transform: translateY(-2px);
 }
 
 .primary-btn:active {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(0, 169, 109, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-icon {
@@ -1693,8 +1713,8 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background-color: var(--action-blue, #007aff);
-  color: white;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   border: none;
   border-radius: 20px;
   padding: 20px 40px;
@@ -1702,21 +1722,21 @@ export default {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 320px;
   margin: 0 auto;
 }
 
 .secondary-btn:hover {
-  background-color: #0056b3;
-  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.4);
+  background-color: var(--primary);
+  box-shadow: var(--shadow-xl);
   transform: translateY(-2px);
 }
 
 .secondary-btn:active {
   transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-icon {
@@ -1727,17 +1747,17 @@ export default {
 .import-card {
   display: flex;
   align-items: center;
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .import-card:hover {
-  box-shadow: var(--shadow-glow-brand);
+  box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
@@ -1756,18 +1776,18 @@ export default {
 .import-title {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .import-desc {
   font-size: 14px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
   margin: 0;
 }
 
 .import-arrow {
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
 }
 
 .arrow {
@@ -1777,18 +1797,18 @@ export default {
 
 /* 功能菜单 */
 .feature-menu {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid var(--card-border, #e9ecef);
+  border-bottom: 1px solid var(--border);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -1798,7 +1818,7 @@ export default {
 }
 
 .menu-item:hover {
-  background-color: rgba(0, 169, 109, 0.05);
+  background-color: var(--bg-secondary);
 }
 
 .menu-icon {
@@ -1816,12 +1836,12 @@ export default {
 .menu-title {
   font-size: 16px;
   font-weight: 500;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   margin: 0;
 }
 
 .menu-arrow {
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
 }
 
 /* 进度条 */
@@ -1834,14 +1854,14 @@ export default {
 .progress-bar {
   width: 120px;
   height: 8px;
-  background-color: rgba(0, 169, 109, 0.1);
+  background-color: var(--primary-light);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: var(--brand-color, #00a96d);
+  background-color: var(--primary);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -1849,7 +1869,7 @@ export default {
 .progress-text {
   font-size: 14px;
   font-weight: 600;
-  color: var(--brand-color, #00a96d);
+  color: var(--primary);
 }
 
 /* AI 加载遮罩 */
@@ -1859,7 +1879,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: var(--overlay);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -1868,12 +1888,12 @@ export default {
 }
 
 .loading-card {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 40px;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-xl);
   max-width: 400px;
   width: 90%;
   animation: fadeInUp 0.3s ease-out;
@@ -1970,7 +1990,7 @@ export default {
 .loading-title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
@@ -2009,20 +2029,20 @@ export default {
 
 .loading-step {
   font-size: 14px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
   margin: 0;
 }
 
 .inspiration-text {
   font-size: 16px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
   font-style: italic;
   margin: 0;
   max-width: 300px;
-  background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(0, 122, 255, 0.1));
+  background: var(--bg-secondary);
   padding: 12px 20px;
   border-radius: 12px;
-  border: 1px solid rgba(0, 229, 255, 0.2);
+  border: 1px solid var(--border);
   animation: fadeIn 0.5s ease;
 }
 
@@ -2043,7 +2063,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
+  background-color: var(--overlay);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -2052,12 +2072,12 @@ export default {
 }
 
 .speed-card {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 40px;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-xl);
   max-width: 400px;
   width: 90%;
   animation: fadeInUp 0.3s ease-out;
@@ -2078,20 +2098,20 @@ export default {
 .speed-title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
 .speed-desc {
   font-size: 14px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
   margin: 0 0 24px 0;
   line-height: 1.6;
 }
 
 .pause-banner {
-  background: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
   margin-top: 16px;
@@ -2110,17 +2130,17 @@ export default {
 .pause-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
 }
 
 .pause-desc {
   font-size: 12px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
 }
 
 .pause-resume-btn {
-  background: var(--brand-color, #00a96d);
-  color: var(--bg-card);
+  background: var(--primary);
+  color: var(--primary-foreground);
   border: none;
   border-radius: 16px;
   padding: 8px 14px;
@@ -2135,8 +2155,8 @@ export default {
 
 .pause-btn {
   background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  color: var(--text-secondary, #495057);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
   border-radius: 16px;
   padding: 8px 14px;
   font-size: 12px;
@@ -2144,12 +2164,12 @@ export default {
 
 /* 题库生成进度条 */
 .generation-progress-bar {
-  background: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -2165,13 +2185,13 @@ export default {
 
 .progress-label {
   font-size: 16px;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .progress-text {
   font-size: 14px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
 }
 
 .progress-bar-wrapper {
@@ -2182,14 +2202,14 @@ export default {
 .progress-bar-bg {
   width: 100%;
   height: 8px;
-  background: rgba(0, 169, 109, 0.1);
+  background: var(--primary-light);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #00a96d, #00d47e);
+  background: var(--gradient-primary);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -2200,8 +2220,8 @@ export default {
 
 .pause-btn-small {
   padding: 8px 16px;
-  background: rgba(255, 159, 10, 0.1);
-  color: #ff9f0a;
+  background: var(--warning-light);
+  color: var(--warning);
   border-radius: 16px;
   font-size: 14px;
   border: none;
@@ -2231,7 +2251,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay);
   backdrop-filter: blur(5px);
   z-index: 1;
 }
@@ -2240,11 +2260,11 @@ export default {
   position: relative;
   width: 85%;
   max-width: 500px;
-  background: var(--card-bg, var(--bg-card));
+  background: var(--bg-card);
   border-radius: 20px;
   overflow: hidden;
   z-index: 2;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-xl);
 }
 
 .modal-header {
@@ -2252,13 +2272,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 24px 20px;
-  border-bottom: 1px solid var(--card-border, #e9ecef);
+  border-bottom: 1px solid var(--border);
 }
 
 .modal-title {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
 }
 
 .modal-close {
@@ -2268,12 +2288,12 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #F5F5F5;
+  background: var(--bg-secondary);
 }
 
 .modal-close-icon {
   font-size: 24px;
-  color: #666;
+  color: var(--text-sub);
   line-height: var(--line-height-normal);
 }
 
@@ -2289,20 +2309,20 @@ export default {
 
 .info-text {
   font-size: 16px;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .info-sub {
   font-size: 14px;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
 }
 
 .modal-footer {
   display: flex;
   gap: 12px;
   padding: 20px;
-  border-top: 1px solid var(--card-border, #e9ecef);
+  border-top: 1px solid var(--border);
 }
 
 .modal-btn {
@@ -2315,16 +2335,41 @@ export default {
 }
 
 .modal-btn.secondary {
-  background: #F5F5F5;
-  color: #333;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .modal-btn.danger {
-  background: #ff453a;
-  color: var(--bg-card);
+  background: var(--danger);
+  color: var(--primary-foreground);
 }
 
 .modal-btn::after {
   border: none;
+}
+
+/* ============================================
+   深色模式图标适配 - 根据用户需求调整
+   ============================================ */
+/* 白色图标：AI导师（题库图标使用 inline style） */
+.practice-container.dark-mode .menu-item:nth-child(2) .menu-icon-img {
+  filter: brightness(0) invert(1) opacity(0.9) !important;
+}
+
+/* 深色模式下需要反色的图标：空状态云图标、上传图标、书本、对战 */
+.practice-container.dark-mode .empty-icon-img,
+.practice-container.dark-mode .action-icon,
+.practice-container.dark-mode .btn-icon-img,
+.practice-container.dark-mode .import-card .menu-icon-img {
+  filter: brightness(0) invert(1) opacity(0.9) !important;
+}
+
+/* 深色模式下保持彩色的图标：文件管理、错题本、排行榜、学习进度、设置 */
+.practice-container.dark-mode .manage-icon-img,
+.practice-container.dark-mode .menu-item:nth-child(1) .menu-icon-img,
+.practice-container.dark-mode .menu-item:nth-child(3) .menu-icon-img,
+.practice-container.dark-mode .menu-item:nth-child(4) .menu-icon-img,
+.practice-container.dark-mode .menu-item:nth-child(5) .menu-icon-img {
+  filter: none !important;
 }
 </style>

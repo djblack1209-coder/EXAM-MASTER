@@ -2,6 +2,11 @@
 import { useUserStore } from './src/stores'
 import { qa, injectInterceptor, hookSetData } from './src/utils/debug/qa.js'
 import { applyTheme, getCurrentTheme, watchTheme } from './src/design/theme-engine.js'
+// ✅ 检查点 5.1: 导入分析服务
+import { analytics } from './src/utils/analytics/event-bus-analytics.js'
+// ✅ 检查点 5.2: 导入增强错误处理器
+import { globalErrorHandler } from './src/utils/error/global-error-handler.js'
+import { sentryPatch as sentry } from './src/utils/error/sentry-mini-program-patch.js'
 
 // 必须在 App() 之前执行
 injectInterceptor()
@@ -9,7 +14,7 @@ hookSetData()
 
 export default {
 	onLaunch() {
-		console.log('App Launch - GEMINI-ARCHITECT v9')
+		// 生产环境静默启动
 
 		// 挂载 QA 工具到全局
 		if (typeof getApp === 'function') {
@@ -18,6 +23,21 @@ export default {
 				app.qa = qa
 			}
 		}
+
+		// ✅ 检查点 5.1: 初始化分析服务
+		analytics.init({
+			enableDebug: process.env.NODE_ENV !== 'production'
+		})
+
+		// ✅ 检查点 5.2: 初始化增强错误处理器
+		globalErrorHandler.init()
+		
+		// ✅ 检查点 5.2: 初始化 Sentry（需要配置 DSN）
+		sentry.init({
+			dsn: '', // TODO: 配置实际的 Sentry DSN
+			environment: process.env.NODE_ENV || 'development',
+			release: '1.0.0'
+		})
 
 		// 初始化全局错误捕捉
 		this.initGlobalErrorHandler()
@@ -37,14 +57,13 @@ export default {
 		this.handleGlobalError('Unhandled Promise Rejection', event.reason)
 	},
 	onShow() {
-		console.log('App Show')
 		// 每次显示时同步主题
 		const currentTheme = getCurrentTheme()
 		this.globalData.currentTheme = currentTheme
 		applyTheme(currentTheme)
 	},
 	onHide() {
-		console.log('App Hide')
+		// 应用进入后台
 	},
 	methods: {
 		/**
@@ -75,7 +94,7 @@ export default {
 				this.switchTheme(mode)
 			})
 
-			console.log('[ThemeEngine] 初始化完成，当前主题:', currentTheme)
+			// 主题初始化完成
 		},
 
 		/**
@@ -97,7 +116,7 @@ export default {
 			// 更新状态栏颜色
 			this.updateNavigationBarColor(theme)
 
-			console.log('[ThemeEngine] 主题已切换:', theme)
+			// 主题切换完成
 		},
 
 		/**
@@ -107,13 +126,13 @@ export default {
 			const isDark = theme === 'dark'
 			uni.setNavigationBarColor({
 				frontColor: isDark ? '#ffffff' : '#000000',
-				backgroundColor: isDark ? '#0D1117' : '#F9FAFB',
+				backgroundColor: isDark ? '#080808' : '#9FE870',
 				animation: {
 					duration: 300,
 					timingFunc: 'easeInOut'
 				}
-			}).catch(err => {
-				console.log('设置导航栏颜色失败', err)
+			}).catch(() => {
+				// 设置导航栏颜色失败，静默处理
 			})
 		},
 
@@ -135,7 +154,7 @@ export default {
 				this.handleGlobalError('Unhandled Promise Rejection', event.reason)
 			})
 
-			console.log('[ErrorHandler] 全局错误捕捉已初始化')
+			// 全局错误捕捉已初始化
 		},
 
 		/**
@@ -199,7 +218,7 @@ export default {
 				const result = await userStore.silentLogin()
 
 				if (result.success) {
-					console.log('[App] 静默登录成功，用户ID:', result.userInfo?._id || result.userInfo?.id)
+					// 静默登录成功
 				} else {
 					console.warn('[App] 静默登录失败:', result.error?.message || '未知错误')
 				}
@@ -219,45 +238,57 @@ export default {
 
 <style lang="scss">
 /* ============================================
-   GEMINI-ARCHITECT v9 全局样式系统
-   双模设计令牌 (Wise/Bitget)
+   EXAM-MASTER 全局配色系统 v3.0
+   严格基于 index.vue 的颜色实现 1:1 提取
    ============================================ */
 
 /* 导入通用样式 - 使用 Sass 3.0 兼容语法 */
 @use '@/common/styles/common.scss' as common;
 
 /* ============================================
-   根元素配置
+   核心颜色变量定义 (从 index.vue 提取)
    ============================================ */
-page {
-	height: 100%;
 
-	/* 默认主题 (Wise - 白昼模式) */
-	--bg-body: #F9FAFB;
-	--bg-card: #FFFFFF;
-	--bg-hover: #F3F4F6;
-	--bg-active: #E5E7EB;
+/* 浅色模式（默认） - Wise 风格 */
+:root, page {
+	/* ====== 核心变量 (严格来自 index.vue) ====== */
+	--background: #9FE870;                      /* 页面背景：Wise绿 */
+	--foreground: #1A1D1F;                      /* 主文字：深灰黑 */
+	--card: #FFFFFF;                            /* 卡片背景：纯白 */
+	--card-foreground: #1A1D1F;                 /* 卡片文字：深灰黑 */
+	--primary: #FFFFFF;                         /* 品牌主色：白色 */
+	--primary-foreground: #1A1D1F;              /* 品牌主色文字：深灰黑 */
+	--muted: rgba(255, 255, 255, 0.3);          /* 弱化背景：半透明白 */
+	--muted-foreground: #2D3748;                /* 弱化文字：中灰 */
+	--border: rgba(255, 255, 255, 0.3);         /* 边框：半透明白 */
+	--brand: #FFFFFF;                           /* 品牌色：白色 */
+	--brand-glow: rgba(255, 255, 255, 0.3);     /* 品牌光晕：半透明白 */
+	--glass-bg: rgba(255, 255, 255, 0.2);       /* 毛玻璃背景：半透明白 */
+	--glass-border: rgba(255, 255, 255, 0.4);   /* 毛玻璃边框：半透明白 */
 
-	--text-primary: #2F3542;
-	--text-secondary: #747D8C;
-	--text-tertiary: #A4B0BE;
-	--text-disabled: #CED6E0;
+	/* ====== 语义化别名（方便使用） ====== */
+	--bg-page: var(--background);
+	--bg-card: var(--card);
+	--bg-secondary: #F5F5F7;
+	--bg-glass: var(--glass-bg);
+	--text-main: var(--foreground);
+	--text-primary: var(--foreground);
+	--text-sub: var(--muted-foreground);
+	--text-secondary: var(--muted-foreground);
+	--border-color: var(--border);
+	--primary-light: rgba(159, 232, 112, 0.2);
+	--success-light: rgba(16, 185, 129, 0.2);
+	--warning-light: rgba(245, 158, 11, 0.2);
+	--gradient-primary: linear-gradient(135deg, #9FE870 0%, #7BC653 100%);
 
-	--brand-color: #9FE870;
-	--brand-hover: #8DD65A;
-	--brand-active: #7BC444;
+	/* ====== 扩展功能色 ====== */
+	--success: #10B981;
+	--warning: #F59E0B;
+	--danger: #EF4444;
+	--info: #3B82F6;
 
-	--action-green: #00B894;
-	--action-blue: #0984E3;
-	--danger: #FF4757;
-	--warning: #FFA502;
-	--success: #26DE81;
-	--info: #4B7BEC;
-
-	--border-light: #E1E8ED;
-	--border-medium: #CED6E0;
-	--border-dark: #A4B0BE;
-
+	/* ====== 设计系统令牌 ====== */
+	/* 圆角系统 */
 	--radius-xs: 4px;
 	--radius-sm: 8px;
 	--radius-md: 16px;
@@ -265,6 +296,7 @@ page {
 	--radius-xl: 32px;
 	--radius-full: 9999px;
 
+	/* 间距系统 */
 	--spacing-xs: 4px;
 	--spacing-sm: 8px;
 	--spacing-md: 16px;
@@ -273,33 +305,134 @@ page {
 	--spacing-2xl: 32px;
 	--spacing-3xl: 40px;
 
+	/* 字重系统 */
 	--font-weight-regular: 400;
 	--font-weight-medium: 500;
 	--font-weight-semibold: 600;
 	--font-weight-bold: 700;
 	--font-weight-extrabold: 800;
 
-	--shadow-1: 0 2px 8px rgba(0, 0, 0, 0.04);
-	--shadow-2: 0 4px 16px rgba(0, 0, 0, 0.08);
-	--shadow-3: 0 8px 24px rgba(0, 0, 0, 0.12);
-
+	/* 过渡系统 */
 	--transition-fast: 0.15s;
-	--transition: 0.3s;
+	--transition-normal: 0.3s;
 	--transition-slow: 0.5s;
+	--ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+	--ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-	--ease: cubic-bezier(0.4, 0, 0.2, 1);
+	/* 阴影系统 */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.02);
+	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.04);
+	--shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+	--shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
 
-	/* 应用背景和文字色 */
-	background-color: var(--bg-body);
-	color: var(--text-primary);
-	transition: background-color var(--transition) var(--ease),
-		color var(--transition) var(--ease);
+/* 深色模式 - Bitget 风格 */
+@media (prefers-color-scheme: dark) {
+	:root, page {
+		/* ====== 核心变量 (严格来自 index.vue 的 .dark 类) ====== */
+		--background: #080808;                      /* 页面背景：纯黑 */
+		--foreground: #FFFFFF;                      /* 主文字：白色 */
+		--card: #0D1117;                            /* 卡片背景：次级黑 */
+		--card-foreground: #FFFFFF;                 /* 卡片文字：白色 */
+		--primary: #00F2FF;                         /* 品牌主色：青色 */
+		--primary-foreground: #080808;              /* 品牌主色文字：纯黑 */
+		--muted: #1A1C1E;                           /* 弱化背景：深灰 */
+		--muted-foreground: #9CA3AF;                /* 弱化文字：中灰 */
+		--border: #2D2D2D;                          /* 边框：深灰 */
+		--brand: #00F2FF;                           /* 品牌色：青色 */
+		--brand-glow: rgba(0, 242, 255, 0.3);       /* 品牌光晕：青色半透明 */
+		--glass-bg: rgba(255, 255, 255, 0.05);      /* 毛玻璃背景：极淡白 */
+		--glass-border: rgba(255, 255, 255, 0.1);   /* 毛玻璃边框：淡白 */
+
+		/* ====== 语义化别名（方便使用） ====== */
+		--bg-page: var(--background);
+		--bg-card: var(--card);
+		--bg-secondary: #1C1C1E;
+		--bg-glass: var(--glass-bg);
+		--text-main: var(--foreground);
+		--text-primary: var(--foreground);
+		--text-sub: var(--muted-foreground);
+		--text-secondary: var(--muted-foreground);
+		--border-color: var(--border);
+		--primary-light: rgba(0, 242, 255, 0.2);
+		--success-light: rgba(16, 185, 129, 0.2);
+		--warning-light: rgba(245, 158, 11, 0.2);
+		--gradient-primary: linear-gradient(135deg, #00F2FF 0%, #0A84FF 100%);
+
+		/* 阴影系统（深色模式下更强） */
+		--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+		--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
+		--shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4);
+		--shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.5);
+	}
+}
+
+/* 手动深色模式类（支持用户切换） */
+.dark, .dark-mode {
+	/* ====== 核心变量 (严格来自 index.vue 的 .dark 类) ====== */
+	--background: #080808;                      /* 页面背景：纯黑 */
+	--foreground: #FFFFFF;                      /* 主文字：白色 */
+	--card: #0D1117;                            /* 卡片背景：次级黑 */
+	--card-foreground: #FFFFFF;                 /* 卡片文字：白色 */
+	--primary: #00F2FF;                         /* 品牌主色：青色 */
+	--primary-foreground: #080808;              /* 品牌主色文字：纯黑 */
+	--muted: #1A1C1E;                           /* 弱化背景：深灰 */
+	--muted-foreground: #9CA3AF;                /* 弱化文字：中灰 */
+	--border: #2D2D2D;                          /* 边框：深灰 */
+	--brand: #00F2FF;                           /* 品牌色：青色 */
+	--brand-glow: rgba(0, 242, 255, 0.3);       /* 品牌光晕：青色半透明 */
+	--glass-bg: rgba(255, 255, 255, 0.05);      /* 毛玻璃背景：极淡白 */
+	--glass-border: rgba(255, 255, 255, 0.1);   /* 毛玻璃边框：淡白 */
+
+	/* ====== 语义化别名（方便使用） ====== */
+	--bg-page: var(--background);
+	--bg-card: var(--card);
+	--bg-secondary: #1C1C1E;
+	--bg-glass: var(--glass-bg);
+	--text-main: var(--foreground);
+	--text-primary: var(--foreground);
+	--text-sub: var(--muted-foreground);
+	--text-secondary: var(--muted-foreground);
+	--border-color: var(--border);
+	--primary-light: rgba(0, 242, 255, 0.2);
+	--success-light: rgba(16, 185, 129, 0.2);
+	--warning-light: rgba(245, 158, 11, 0.2);
+	--gradient-primary: linear-gradient(135deg, #00F2FF 0%, #0A84FF 100%);
+
+	/* 阴影系统（深色模式下更强） */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
+	--shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4);
+	--shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 /* ============================================
-   全局字体系统
+   全局默认样式重置
    ============================================ */
-page,
+page {
+	height: 100%;
+	background-color: var(--bg-page);
+	color: var(--text-main);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+	transition: background-color var(--transition-normal) var(--ease-default),
+		color var(--transition-normal) var(--ease-default);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* 深色模式下图片亮度调整 */
+@media (prefers-color-scheme: dark) {
+	image {
+		opacity: 0.9;
+		filter: brightness(0.9);
+	}
+}
+
+/* ============================================
+   全局元素样式
+   ============================================ */
 view,
 text,
 image,
@@ -308,69 +441,82 @@ input,
 textarea,
 scroll-view {
 	box-sizing: border-box;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-		'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-		'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB',
-		'Microsoft YaHei', sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+	font-family: inherit;
 }
 
 /* ============================================
-   全局组件样式（使用设计令牌）
+   全局工具类 (使用语义化变量)
    ============================================ */
-.glass-card {
+
+/* 卡片组件 */
+.card {
 	background: var(--bg-card);
-	border: 1px solid var(--border-light);
+	border: 1px solid var(--border-color);
 	border-radius: var(--radius-md);
 	padding: var(--spacing-md);
-	color: var(--text-primary);
-	transition: all var(--transition) var(--ease);
+	color: var(--text-main);
+	box-shadow: var(--shadow-md);
+	transition: all var(--transition-normal) var(--ease-default);
 }
 
-.glass-card:hover {
-	background: var(--bg-hover);
-	border-color: var(--border-medium);
+/* 毛玻璃卡片 */
+.glass-card {
+	background: var(--glass-bg);
+	backdrop-filter: blur(24px);
+	-webkit-backdrop-filter: blur(24px);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-md);
+	padding: var(--spacing-md);
+	color: var(--text-main);
+	transition: all var(--transition-normal) var(--ease-default);
 }
 
-.glass-btn {
-	background: var(--bg-card);
-	border: 1px solid var(--border-light);
-	border-radius: var(--radius-sm);
+/* 按钮基础样式 */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 	padding: var(--spacing-sm) var(--spacing-md);
-	color: var(--text-primary);
+	border-radius: var(--radius-sm);
 	font-weight: var(--font-weight-medium);
-	transition: all var(--transition-fast) var(--ease);
+	font-size: 14px;
+	transition: all var(--transition-fast) var(--ease-default);
+	cursor: pointer;
 }
 
-.glass-btn:active {
-	background: var(--bg-active);
+.btn:active {
 	transform: scale(0.98);
 }
 
-/* ============================================
-   兼容旧版样式（逐步废弃）
-   ============================================ */
-.dark-mode {
-	/* 旧版深色模式类名，保留以兼容现有代码 */
-	--bg-main: var(--bg-body);
-	--bg-card: var(--bg-card);
-	--border-card: var(--border-light);
-	--text-main: var(--text-primary);
-	--text-title: var(--text-primary);
-	--text-body: var(--text-secondary);
-	--text-light: var(--text-tertiary);
-	--accent-green: var(--brand-color);
-	--accent-blue: var(--action-blue);
-	--input-bg: var(--bg-hover);
-	--input-border: var(--border-light);
-	--tab-bg: var(--bg-card);
+/* 主色按钮 */
+.btn-primary {
+	background: var(--primary);
+	color: var(--primary-foreground);
+	border: none;
 }
+
+/* 次要按钮 */
+.btn-secondary {
+	background: var(--bg-card);
+	color: var(--text-main);
+	border: 1px solid var(--border-color);
+}
+
+/* 文字颜色工具类 */
+.text-main { color: var(--text-main); }
+.text-sub { color: var(--text-sub); }
+.text-primary { color: var(--primary); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+
+/* 背景颜色工具类 */
+.bg-page { background-color: var(--bg-page); }
+.bg-card { background-color: var(--bg-card); }
 
 /* ============================================
    性能优化
    ============================================ */
-/* 减少重绘 */
 .will-change-transform {
 	will-change: transform;
 }
@@ -379,10 +525,92 @@ scroll-view {
 	will-change: opacity;
 }
 
-/* GPU 加速 */
 .gpu-accelerated {
 	transform: translateZ(0);
 	backface-visibility: hidden;
 	perspective: 1000px;
+}
+
+/* ============================================
+   ✅ PM要求：全局点击态反馈
+   消除"塑料感"，提升交互质感
+   ============================================ */
+
+/* 通用点击态 - 适用于所有可点击元素 */
+.clickable,
+.touchable,
+[hover-class] {
+	transition: all 0.15s ease-out;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.clickable:active,
+.touchable:active {
+	transform: scale(0.96);
+	opacity: 0.8;
+}
+
+/* 卡片点击态 - 带阴影收缩效果 */
+.card-hover:active,
+.glass-card:active,
+.stat-card:active {
+	transform: scale(0.98) translateY(2rpx);
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+}
+
+/* 按钮点击态 - 带亮度变化 */
+.btn:active,
+.action-btn:active,
+button:active {
+	transform: scale(0.95);
+	filter: brightness(0.9);
+}
+
+/* 列表项点击态 - 背景高亮 */
+.list-item:active,
+.activity-item:active,
+.option-item:active {
+	background: rgba(0, 0, 0, 0.05);
+}
+
+/* 深色模式下的列表项点击态 */
+.dark-mode .list-item:active,
+.dark-mode .activity-item:active,
+.dark-mode .option-item:active,
+page[data-theme="dark"] .list-item:active,
+page[data-theme="dark"] .activity-item:active,
+page[data-theme="dark"] .option-item:active {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+/* 图标点击态 - 旋转缩放 */
+.icon-btn:active,
+.theme-toggle:active,
+.nav-back:active,
+.nav-add:active {
+	transform: scale(0.85) rotate(-5deg);
+	opacity: 0.7;
+}
+
+/* 气泡点击态 - 弹性效果 */
+.bubble-card:active,
+.knowledge-bubble:active {
+	transform: scale(0.92);
+	transition: transform 0.1s ease-out;
+}
+
+/* 头像点击态 */
+.user-avatar:active,
+.avatar-ring:active {
+	transform: scale(0.9);
+	box-shadow: 0 0 20rpx rgba(0, 229, 255, 0.5);
+}
+
+/* 禁用点击态的元素 */
+.no-feedback:active,
+[disabled]:active {
+	transform: none !important;
+	opacity: 1 !important;
+	filter: none !important;
 }
 </style>

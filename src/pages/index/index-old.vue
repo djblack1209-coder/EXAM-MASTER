@@ -189,6 +189,8 @@ import BaseSkeleton from '../../components/base/base-skeleton/base-skeleton.vue'
 import { getGreetingTime } from '../../utils/core/date';
 import { useTodoStore } from '../../stores';
 import { lafService } from '../../services/lafService.js';
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js';
 
 export default {
 	components: {
@@ -410,11 +412,11 @@ export default {
 		},
 
 		handleStatClick(type) {
-			console.log('Stat clicked:', type);
+			logger.log('Stat clicked:', type);
 		},
 
 		handleKnowledgeClick(point) {
-			console.log('Knowledge point clicked:', point.title);
+			logger.log('Knowledge point clicked:', point.title);
 			uni.showToast({ title: `${point.title} - ${point.mastery}% mastered`, icon: 'none' });
 		},
 

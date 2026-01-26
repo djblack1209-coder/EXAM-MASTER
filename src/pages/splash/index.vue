@@ -52,13 +52,13 @@ onMounted(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #07C160;
+  background-color: var(--primary);
   overflow: hidden;
   transition: background-color 0.3s;
 }
 
 .splash-container.dark-mode {
-  background-color: var(--bg-body);
+  background-color: var(--bg-page);
 }
 
 /* 1. 内容区域 */
@@ -78,15 +78,15 @@ onMounted(() => {
   height: 100px;
   margin-bottom: 16px;
   /* 增加微弱的深色投影，让白色图标从绿色背景浮出来 */
-  filter: drop-shadow(0 4px 0px #048742);
+  filter: drop-shadow(0 4px 0px rgba(0, 0, 0, 0.15));
 }
 
 .app-name {
   font-size: 28px;
   font-weight: 700;
-  color: white;
+  color: var(--primary-foreground);
   letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -99,11 +99,11 @@ onMounted(() => {
   .dot {
     width: 8px;
     height: 8px;
-    background-color: white;
+    background-color: var(--primary-foreground);
     border-radius: 50%;
     opacity: 0.6;
     animation: blink 1.5s infinite ease-in-out both;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 12px var(--brand-glow);
   }
   
   .dot:nth-child(1) { 
@@ -196,7 +196,7 @@ onMounted(() => {
   /* 透视变形，制造"飞出"的感觉 */
   transform: rotate(-10deg) skewX(-15deg);
   opacity: 0.95;
-  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
 }
 
 .arrow-body {
@@ -205,7 +205,7 @@ onMounted(() => {
   left: -20px;
   width: 80%; /* 长长的尾巴 */
   height: 18px; /* 箭身粗细 */
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 40%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 40%);
   border-radius: 0 4px 4px 0;
 }
 
@@ -217,6 +217,6 @@ onMounted(() => {
   height: 0; 
   border-top: 20px solid transparent;
   border-bottom: 20px solid transparent;
-  border-left: 40px solid white; /* 箭头形状 */
+  border-left: 40px solid var(--primary-foreground); /* 箭头形状 */
 }
 </style>

@@ -45,7 +45,7 @@ defineProps({
 const subjectInput = ref('')
 
 const handleUnlock = () => {
-  console.log('点击解锁，输入内容:', subjectInput.value)
+  // 点击解锁处理
 
   // 暂时移除解锁逻辑，直接跳转到聊天页面（方便测试）
   // 后续可以根据需要恢复解锁验证

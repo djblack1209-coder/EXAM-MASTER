@@ -178,6 +178,8 @@
 
 <script>
 import { socialService } from '../../services/socialService.js'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
 	data() {
@@ -216,19 +218,19 @@ export default {
 		}
 	},
 	onLoad() {
-		console.log('[FriendList] 页面加载')
+		logger.log('[FriendList] 页面加载')
 		this.isDark = uni.getStorageSync('theme_mode') === 'dark'
 		this.loadFriendList()
 		this.loadFriendRequests()
 	},
 	onShow() {
-		console.log('[FriendList] 页面显示')
+		logger.log('[FriendList] 页面显示')
 		// 每次显示时刷新列表（可能从其他页面添加了好友）
 		this.loadFriendList(false) // 使用缓存
 		this.loadFriendRequests()
 	},
 	onPullDownRefresh() {
-		console.log('[FriendList] 下拉刷新')
+		logger.log('[FriendList] 下拉刷新')
 		this.onRefresh()
 	},
 	methods: {
@@ -256,24 +258,24 @@ export default {
 			}
 
 			try {
-				console.log('[FriendList] 开始加载好友列表')
+				logger.log('[FriendList] 开始加载好友列表')
 
 				const res = await socialService.getFriendList('score', !showLoading)
 
-				console.log('[FriendList] 加载结果:', res)
+				logger.log('[FriendList] 加载结果:', res)
 
 				if (res.code === 0) {
 					this.friendList = res.data || []
-					console.log('[FriendList] 好友数量:', this.friendList.length)
+					logger.log('[FriendList] 好友数量:', this.friendList.length)
 				} else {
-					console.error('[FriendList] 加载失败:', res.msg)
+					logger.error('[FriendList] 加载失败:', res.msg)
 					uni.showToast({
 						title: res.msg || '加载失败',
 						icon: 'none'
 					})
 				}
 			} catch (err) {
-				console.error('[FriendList] 加载异常:', err)
+				logger.error('[FriendList] 加载异常:', err)
 				uni.showToast({
 					title: '加载失败',
 					icon: 'none'
@@ -289,7 +291,7 @@ export default {
 		 * 下拉刷新
 		 */
 		async onRefresh() {
-			console.log('[FriendList] 刷新好友列表')
+			logger.log('[FriendList] 刷新好友列表')
 			this.isRefreshing = true
 			// 清除缓存，强制从云端获取
 			socialService.clearCache()
@@ -300,7 +302,7 @@ export default {
 		 * 切换 Tab
 		 */
 		switchTab(tab) {
-			console.log('[FriendList] 切换 Tab:', tab)
+			logger.log('[FriendList] 切换 Tab:', tab)
 			this.currentTab = tab
 			this.isSearchMode = false
 			this.searchKeyword = ''
@@ -319,7 +321,7 @@ export default {
 				return
 			}
 
-			console.log('[FriendList] 搜索用户:', this.searchKeyword)
+			logger.log('[FriendList] 搜索用户:', this.searchKeyword)
 			this.isSearching = true
 			this.isSearchMode = true
 
@@ -328,16 +330,16 @@ export default {
 
 				if (res.code === 0) {
 					this.searchResults = res.data || []
-					console.log('[FriendList] 搜索结果:', this.searchResults.length, '个用户')
+					logger.log('[FriendList] 搜索结果:', this.searchResults.length, '个用户')
 				} else {
-					console.error('[FriendList] 搜索失败:', res.msg)
+					logger.error('[FriendList] 搜索失败:', res.msg)
 					uni.showToast({
 						title: res.msg || '搜索失败',
 						icon: 'none'
 					})
 				}
 			} catch (err) {
-				console.error('[FriendList] 搜索异常:', err)
+				logger.error('[FriendList] 搜索异常:', err)
 				uni.showToast({
 					title: '搜索失败',
 					icon: 'none'
@@ -363,20 +365,20 @@ export default {
 			this.isLoadingRequests = true
 
 			try {
-				console.log('[FriendList] 开始加载好友请求列表')
+				logger.log('[FriendList] 开始加载好友请求列表')
 
 				const res = await socialService.getFriendRequests()
 
-				console.log('[FriendList] 好友请求结果:', res)
+				logger.log('[FriendList] 好友请求结果:', res)
 
 				if (res.code === 0) {
 					this.requestList = res.data || []
-					console.log('[FriendList] 好友请求数量:', this.requestList.length)
+					logger.log('[FriendList] 好友请求数量:', this.requestList.length)
 				} else {
-					console.error('[FriendList] 加载好友请求失败:', res.msg)
+					logger.error('[FriendList] 加载好友请求失败:', res.msg)
 				}
 			} catch (err) {
-				console.error('[FriendList] 加载好友请求异常:', err)
+				logger.error('[FriendList] 加载好友请求异常:', err)
 			} finally {
 				this.isLoadingRequests = false
 			}
@@ -386,7 +388,7 @@ export default {
 		 * 添加好友
 		 */
 		async handleAddFriend(user) {
-			console.log('[FriendList] 添加好友:', user.nickname)
+			logger.log('[FriendList] 添加好友:', user.nickname)
 
 			uni.showModal({
 				title: '添加好友',
@@ -415,7 +417,7 @@ export default {
 							}
 						} catch (err) {
 							uni.hideLoading()
-							console.error('[FriendList] 发送好友请求失败:', err)
+							logger.error('[FriendList] 发送好友请求失败:', err)
 							uni.showToast({
 								title: '发送失败',
 								icon: 'none'
@@ -430,7 +432,7 @@ export default {
 		 * 接受好友请求
 		 */
 		async handleAccept(request) {
-			console.log('[FriendList] 接受好友请求:', request.from_nickname)
+			logger.log('[FriendList] 接受好友请求:', request.from_nickname)
 
 			uni.showLoading({ title: '处理中...' })
 
@@ -455,7 +457,7 @@ export default {
 				}
 			} catch (err) {
 				uni.hideLoading()
-				console.error('[FriendList] 接受好友请求失败:', err)
+				logger.error('[FriendList] 接受好友请求失败:', err)
 				uni.showToast({
 					title: '操作失败',
 					icon: 'none'
@@ -467,7 +469,7 @@ export default {
 		 * 拒绝好友请求
 		 */
 		async handleReject(request) {
-			console.log('[FriendList] 拒绝好友请求:', request.from_nickname)
+			logger.log('[FriendList] 拒绝好友请求:', request.from_nickname)
 
 			uni.showModal({
 				title: '确认拒绝',
@@ -496,7 +498,7 @@ export default {
 							}
 						} catch (err) {
 							uni.hideLoading()
-							console.error('[FriendList] 拒绝好友请求失败:', err)
+							logger.error('[FriendList] 拒绝好友请求失败:', err)
 							uni.showToast({
 								title: '操作失败',
 								icon: 'none'
@@ -511,7 +513,7 @@ export default {
 		 * 跳转到好友资料页
 		 */
 		goToFriendProfile(friend) {
-			console.log('[FriendList] 查看好友资料:', friend.nickname)
+			logger.log('[FriendList] 查看好友资料:', friend.nickname)
 			// TODO: 创建好友资料页面后取消注释
 			uni.showToast({
 				title: `查看 ${friend.nickname} 的资料`,
@@ -526,23 +528,23 @@ export default {
 		 * 发起 PK 挑战
 		 */
 		handlePKChallenge(friend) {
-			console.log('[FriendList] 发起 PK 挑战:', friend.nickname)
+			logger.log('[FriendList] 发起 PK 挑战:', friend.nickname)
 
 			uni.showModal({
 				title: '发起挑战',
 				content: `确定要向 ${friend.nickname} 发起 PK 挑战吗？`,
 				confirmText: '挑战',
-				confirmColor: '#FF6B35',
+				confirmColor: 'var(--danger)',
 				success: (res) => {
 					if (res.confirm) {
 						// 跳转到 PK 对战页面
 						uni.navigateTo({
 							url: `/src/pages/practice/pk-battle?mode=friend&opponentId=${friend.uid}&opponentName=${encodeURIComponent(friend.nickname)}&opponentAvatar=${encodeURIComponent(friend.avatar || this.defaultAvatar)}&opponentScore=${friend.score || 0}`,
 							success: () => {
-								console.log('[FriendList] ✅ 成功跳转到 PK 对战页面')
+								logger.log('[FriendList] ✅ 成功跳转到 PK 对战页面')
 							},
 							fail: (err) => {
-								console.error('[FriendList] ❌ 跳转 PK 对战页面失败:', err)
+								logger.error('[FriendList] ❌ 跳转 PK 对战页面失败:', err)
 								uni.showToast({
 									title: '跳转失败',
 									icon: 'none'
@@ -649,12 +651,12 @@ export default {
 	right: 0;
 	background-color: var(--bg-card);
 	z-index: 999;
-	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+	box-shadow: var(--shadow-sm);
 }
 
 .dark-mode .custom-navbar {
-	background-color: rgba(255, 255, 255, 0.05);
-	border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+	background-color: var(--bg-glass);
+	border-bottom: 1rpx solid var(--border);
 }
 
 .status-bar {
@@ -716,27 +718,27 @@ export default {
 	gap: 12rpx;
 	padding: 24rpx 32rpx;
 	background-color: var(--bg-card);
-	border-bottom: 1rpx solid #EFEFEF;
+	border-bottom: 1rpx solid var(--border);
 	margin-top: calc(var(--status-bar-height) + 88rpx);
 }
 
 .dark-mode .search-bar {
-	background-color: rgba(255, 255, 255, 0.05);
-	border-bottom-color: rgba(255, 255, 255, 0.1);
+	background-color: var(--bg-glass);
+	border-bottom-color: var(--border);
 }
 
 .search-input-wrapper {
 	flex: 1;
 	display: flex;
 	align-items: center;
-	background-color: #F2F2F2;
+	background-color: var(--bg-secondary);
 	border-radius: 24rpx;
 	padding: 16rpx 24rpx;
 	position: relative;
 }
 
 .dark-mode .search-input-wrapper {
-	background-color: rgba(255, 255, 255, 0.1);
+	background-color: var(--overlay);
 }
 
 .search-icon {
@@ -757,24 +759,24 @@ export default {
 }
 
 .search-input::placeholder {
-	color: #999999;
+	color: var(--text-sub);
 }
 
 .clear-icon {
 	font-size: 32rpx;
-	color: #999999;
+	color: var(--text-sub);
 	padding: 0 12rpx;
 }
 
 .search-btn {
-	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	background: var(--gradient-primary);
 	color: var(--bg-body);
 	border-radius: 48rpx;
 	padding: 16rpx 32rpx;
 	font-size: 26rpx;
 	font-weight: 600;
 	border: none;
-	box-shadow: 0 4rpx 12rpx rgba(159, 232, 112, 0.3);
+	box-shadow: var(--shadow-success);
 	min-width: 120rpx;
 	text-align: center;
 }
@@ -792,12 +794,12 @@ export default {
 .tabs-bar {
 	display: flex;
 	background-color: var(--bg-card);
-	border-bottom: 1rpx solid #EFEFEF;
+	border-bottom: 1rpx solid var(--border);
 }
 
 .dark-mode .tabs-bar {
-	background-color: rgba(255, 255, 255, 0.05);
-	border-bottom-color: rgba(255, 255, 255, 0.1);
+	background-color: var(--bg-glass);
+	border-bottom-color: var(--border);
 }
 
 .tab-item {
@@ -811,7 +813,7 @@ export default {
 
 .tab-text {
 	font-size: 30rpx;
-	color: #999999;
+	color: var(--text-sub);
 	font-weight: 500;
 	transition: all 0.3s;
 }
@@ -832,7 +834,7 @@ export default {
 	transform: translateX(-50%);
 	width: 60rpx;
 	height: 6rpx;
-	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	background: var(--gradient-primary);
 	border-radius: 3rpx;
 }
 
@@ -840,7 +842,7 @@ export default {
 	position: absolute;
 	top: 20rpx;
 	right: 30%;
-	background-color: #FF3B30;
+	background-color: var(--danger);
 	color: var(--bg-card);
 	font-size: 20rpx;
 	padding: 2rpx 8rpx;
@@ -868,7 +870,7 @@ export default {
 .loading-spinner {
 	width: 80rpx;
 	height: 80rpx;
-	border: 6rpx solid rgba(159, 232, 112, 0.2);
+	border: 6rpx solid var(--success-light);
 	border-top-color: var(--brand-color);
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
@@ -887,7 +889,7 @@ export default {
 .loading-text {
 	margin-top: 24rpx;
 	font-size: 28rpx;
-	color: #999999;
+	color: var(--text-sub);
 }
 
 /* 空状态 */
@@ -918,19 +920,19 @@ export default {
 
 .empty-desc {
 	font-size: 28rpx;
-	color: #999999;
+	color: var(--text-sub);
 	margin-bottom: 48rpx;
 }
 
 .empty-btn {
-	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	background: var(--gradient-primary);
 	color: var(--bg-body);
 	border-radius: 48rpx;
 	padding: 24rpx 64rpx;
 	font-size: 28rpx;
 	font-weight: 600;
 	border: none;
-	box-shadow: 0 8rpx 24rpx rgba(159, 232, 112, 0.3);
+	box-shadow: var(--shadow-success);
 }
 
 .empty-btn::after {
@@ -951,18 +953,18 @@ export default {
 	display: flex;
 	align-items: center;
 	gap: 24rpx;
-	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+	box-shadow: var(--shadow-md);
 	transition: all 0.3s;
 }
 
 .dark-mode .friend-card {
-	background-color: rgba(255, 255, 255, 0.05);
-	border: 1rpx solid rgba(255, 255, 255, 0.1);
+	background-color: var(--bg-glass);
+	border: 1rpx solid var(--border);
 }
 
 .friend-card:active {
 	transform: scale(0.98);
-	box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+	box-shadow: var(--shadow-sm);
 }
 
 /* 头像 */
@@ -975,7 +977,7 @@ export default {
 	width: 96rpx;
 	height: 96rpx;
 	border-radius: 50%;
-	border: 2rpx solid rgba(159, 232, 112, 0.3);
+	border: 2rpx solid var(--success-light);
 }
 
 .online-indicator {
@@ -984,13 +986,13 @@ export default {
 	right: 4rpx;
 	width: 20rpx;
 	height: 20rpx;
-	background-color: #34C759;
+	background-color: var(--success);
 	border-radius: 50%;
 	border: 3rpx solid var(--bg-card);
 }
 
 .dark-mode .online-indicator {
-	border-color: rgba(255, 255, 255, 0.05);
+	border-color: var(--bg-glass);
 }
 
 /* 信息区 */
@@ -1018,7 +1020,7 @@ export default {
 }
 
 .level-badge {
-	background-color: rgba(159, 232, 112, 0.2);
+	background-color: var(--success-light);
 	color: var(--brand-color);
 	font-size: 20rpx;
 	padding: 4rpx 12rpx;
@@ -1028,7 +1030,7 @@ export default {
 
 .status-text {
 	font-size: 24rpx;
-	color: #999999;
+	color: var(--text-sub);
 }
 
 /* 分数区 */
@@ -1038,11 +1040,11 @@ export default {
 	align-items: center;
 	gap: 4rpx;
 	padding: 0 24rpx;
-	border-left: 1rpx solid #EFEFEF;
+	border-left: 1rpx solid var(--border);
 }
 
 .dark-mode .score-section {
-	border-left-color: rgba(255, 255, 255, 0.1);
+	border-left-color: var(--border);
 }
 
 .score-value {
@@ -1053,19 +1055,19 @@ export default {
 
 .score-label {
 	font-size: 20rpx;
-	color: #999999;
+	color: var(--text-sub);
 }
 
 /* PK 挑战按钮 */
 .pk-btn {
-	background: linear-gradient(135deg, #FF6B35, #FF8C42);
+	background: var(--gradient-danger);
 	color: var(--bg-card);
 	border-radius: 48rpx;
 	padding: 16rpx 24rpx;
 	font-size: 24rpx;
 	font-weight: 600;
 	border: none;
-	box-shadow: 0 4rpx 12rpx rgba(255, 107, 53, 0.3);
+	box-shadow: var(--shadow-danger);
 	display: flex;
 	align-items: center;
 	gap: 8rpx;
@@ -1099,17 +1101,17 @@ export default {
 	padding: 24rpx 32rpx;
 	text-align: center;
 	background-color: var(--bg-card);
-	border-top: 1rpx solid #EFEFEF;
+	border-top: 1rpx solid var(--border);
 }
 
 .dark-mode .bottom-stats {
-	background-color: rgba(255, 255, 255, 0.05);
-	border-top-color: rgba(255, 255, 255, 0.1);
+	background-color: var(--bg-glass);
+	border-top-color: var(--border);
 }
 
 .stats-text {
 	font-size: 24rpx;
-	color: #999999;
+	color: var(--text-sub);
 }
 
 /* 搜索结果 */
@@ -1126,19 +1128,19 @@ export default {
 	display: flex;
 	align-items: center;
 	gap: 24rpx;
-	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+	box-shadow: var(--shadow-md);
 }
 
 .dark-mode .user-card {
-	background-color: rgba(255, 255, 255, 0.05);
-	border: 1rpx solid rgba(255, 255, 255, 0.1);
+	background-color: var(--bg-glass);
+	border: 1rpx solid var(--border);
 }
 
 .user-card .avatar {
 	width: 96rpx;
 	height: 96rpx;
 	border-radius: 50%;
-	border: 2rpx solid rgba(159, 232, 112, 0.3);
+	border: 2rpx solid var(--success-light);
 }
 
 .user-card .info-section {
@@ -1160,18 +1162,18 @@ export default {
 
 .user-card .score-text {
 	font-size: 24rpx;
-	color: #999999;
+	color: var(--text-sub);
 }
 
 .add-friend-btn {
-	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	background: var(--gradient-primary);
 	color: var(--bg-body);
 	border-radius: 48rpx;
 	padding: 16rpx 32rpx;
 	font-size: 24rpx;
 	font-weight: 600;
 	border: none;
-	box-shadow: 0 2rpx 8rpx rgba(159, 232, 112, 0.3);
+	box-shadow: var(--shadow-success);
 	min-width: 120rpx;
 	text-align: center;
 }
@@ -1199,19 +1201,19 @@ export default {
 	display: flex;
 	align-items: center;
 	gap: 24rpx;
-	box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.05);
+	box-shadow: var(--shadow-md);
 }
 
 .dark-mode .request-card {
-	background-color: rgba(255, 255, 255, 0.05);
-	border: 1rpx solid rgba(255, 255, 255, 0.1);
+	background-color: var(--bg-glass);
+	border: 1rpx solid var(--border);
 }
 
 .request-card .avatar {
 	width: 96rpx;
 	height: 96rpx;
 	border-radius: 50%;
-	border: 2rpx solid rgba(159, 232, 112, 0.3);
+	border: 2rpx solid var(--success-light);
 	flex-shrink: 0;
 }
 
@@ -1234,13 +1236,13 @@ export default {
 
 .request-card .message {
 	font-size: 24rpx;
-	color: #666666;
+	color: var(--text-sub);
 	line-height: 1.5;
 }
 
 .request-card .time {
 	font-size: 20rpx;
-	color: #999999;
+	color: var(--text-tertiary);
 }
 
 .action-btns {
@@ -1251,14 +1253,14 @@ export default {
 }
 
 .accept-btn {
-	background: linear-gradient(135deg, var(--brand-color), #7ED321);
+	background: var(--gradient-primary);
 	color: var(--bg-body);
 	border-radius: 48rpx;
 	padding: 12rpx 28rpx;
 	font-size: 24rpx;
 	font-weight: 600;
 	border: none;
-	box-shadow: 0 2rpx 8rpx rgba(159, 232, 112, 0.3);
+	box-shadow: var(--shadow-success);
 	min-width: 100rpx;
 	text-align: center;
 }
@@ -1273,13 +1275,13 @@ export default {
 }
 
 .reject-btn {
-	background: rgba(255, 59, 48, 0.1);
-	color: #FF3B30;
+	background: var(--danger-light);
+	color: var(--danger);
 	border-radius: 48rpx;
 	padding: 12rpx 28rpx;
 	font-size: 24rpx;
 	font-weight: 600;
-	border: 1rpx solid rgba(255, 59, 48, 0.3);
+	border: 1rpx solid var(--danger);
 	min-width: 100rpx;
 	text-align: center;
 }

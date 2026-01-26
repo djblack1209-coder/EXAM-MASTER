@@ -30,6 +30,8 @@
 
 <script>
 import { lafService } from '../../services/lafService.js'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
   data() {
@@ -49,12 +51,12 @@ export default {
   },
   methods: {
     async fetchRank() {
-      console.log('[rank-list] 🏆 开始获取排行榜数据');
+      logger.log('[rank-list] 🏆 开始获取排行榜数据');
       this.loading = true;
       
       try {
         const userId = uni.getStorageSync('EXAM_USER_ID') || '';
-        console.log('[rank-list] 📤 发送 API 请求:', {
+        logger.log('[rank-list] 📤 发送 API 请求:', {
           url: '/rank-center',
           action: 'get_rank',
           userId: userId || '未登录'
@@ -65,7 +67,7 @@ export default {
           userId: userId
         });
         
-        console.log('[rank-list] 📥 API 响应:', {
+        logger.log('[rank-list] 📥 API 响应:', {
           code: res?.code,
           hasData: !!res?.data,
           dataType: Array.isArray(res?.data) ? 'array' : typeof res?.data,
@@ -85,7 +87,7 @@ export default {
           // 限制显示前 50 名
           this.rankList = rankData.slice(0, 50);
           
-          console.log('[rank-list] ✅ 排行榜数据加载成功:', {
+          logger.log('[rank-list] ✅ 排行榜数据加载成功:', {
             totalCount: rankData.length,
             displayCount: this.rankList.length,
             top3Scores: this.rankList.slice(0, 3).map(item => ({
@@ -96,8 +98,8 @@ export default {
           });
         } else {
           // 如果接口不存在或返回错误，使用本地模拟数据
-          console.warn('[rank-list] ⚠️ 排行榜接口未返回有效数据，使用模拟数据');
-          console.log('[rank-list] 📊 响应详情:', {
+          logger.warn('[rank-list] ⚠️ 排行榜接口未返回有效数据，使用模拟数据');
+          logger.log('[rank-list] 📊 响应详情:', {
             code: res?.code,
             message: res?.message,
             data: res?.data
@@ -105,8 +107,8 @@ export default {
           this.rankList = this.getMockRankData();
         }
       } catch (e) {
-        console.error('[rank-list] ❌ 获取榜单失败:', e);
-        console.log('[rank-list] 📊 错误详情:', {
+        logger.error('[rank-list] ❌ 获取榜单失败:', e);
+        logger.log('[rank-list] 📊 错误详情:', {
           message: e.message || e,
           error: e
         });
@@ -119,7 +121,7 @@ export default {
         });
       } finally {
         this.loading = false;
-        console.log('[rank-list] ✅ 排行榜加载流程结束，当前列表数量:', this.rankList.length);
+        logger.log('[rank-list] ✅ 排行榜加载流程结束，当前列表数量:', this.rankList.length);
       }
     },
     validateSorting(list) {
@@ -129,7 +131,7 @@ export default {
         const current = Number(list[i].score) || 0;
         const next = Number(list[i + 1].score) || 0;
         if (current < next) {
-          console.warn('[rank-list] ⚠️ 排序验证失败: 第', i + 1, '名分数', current, '小于第', i + 2, '名分数', next);
+          logger.warn('[rank-list] ⚠️ 排序验证失败: 第', i + 1, '名分数', current, '小于第', i + 2, '名分数', next);
           return false;
         }
       }
@@ -137,7 +139,7 @@ export default {
     },
     getMockRankData() {
       // 返回模拟数据，确保页面可以正常显示（已按分数降序排列）
-      console.log('[rank-list] 📦 使用模拟数据（降级方案）');
+      logger.log('[rank-list] 📦 使用模拟数据（降级方案）');
       return [
         { nickName: '考研一哥', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=King', score: 2840 },
         { nickName: '上岸锦鲤', avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky', score: 2620 },
@@ -170,23 +172,23 @@ export default {
   left: 0;
   width: 100%;
   z-index: 100;
-  background: rgba(26, 26, 26, 0.95);
+  background: var(--bg-glass);
   backdrop-filter: blur(20px);
-  border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1rpx solid var(--border);
   padding: 20rpx;
   text-align: center;
 }
 
 .title { 
-  color: #00E5FF; 
+  color: var(--primary); 
   font-size: 48rpx; 
   font-weight: bold; 
   display: block;
-  text-shadow: 0 0 20rpx rgba(0, 229, 255, 0.5);
+  text-shadow: var(--shadow-text);
 }
 
 .subtitle { 
-  color: #8F939C; 
+  color: var(--text-tertiary); 
   font-size: 24rpx; 
   margin-top: 10rpx; 
   display: block; 
@@ -199,8 +201,8 @@ export default {
 }
 
 .glass-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1rpx solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-glass);
+  border: 1rpx solid var(--border);
   border-radius: 24rpx;
   padding: 30rpx;
   margin-bottom: 24rpx;
@@ -213,7 +215,7 @@ export default {
 
 .glass-item:active {
   transform: scale(0.98);
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-secondary);
 }
 
 .left-section { 
@@ -228,7 +230,7 @@ export default {
   border-radius: 50%; 
   text-align: center; 
   line-height: 48rpx; 
-  color: #fff; 
+  color: var(--text-inverse); 
   font-weight: bold; 
   font-size: 24rpx; 
   margin-right: 24rpx;
@@ -236,30 +238,30 @@ export default {
 }
 
 .rank-badge.top1 { 
-  background: linear-gradient(135deg, #FFC107, #FF8F00);
-  box-shadow: 0 0 20rpx rgba(255, 193, 7, 0.5);
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-success);
   animation: goldGlow 2s infinite;
 }
 
 .rank-badge.top2 { 
-  background: linear-gradient(135deg, #C0C0C0, #9E9E9E);
-  box-shadow: 0 0 15rpx rgba(192, 192, 192, 0.3);
+  background: linear-gradient(135deg, var(--text-tertiary), var(--text-sub));
+  box-shadow: var(--shadow-sm);
 }
 
 .rank-badge.top3 { 
-  background: linear-gradient(135deg, #CD7F32, #A0522D);
-  box-shadow: 0 0 15rpx rgba(205, 127, 50, 0.3);
+  background: linear-gradient(135deg, var(--warning-yellow), var(--warning-yellow-dark));
+  box-shadow: var(--shadow-sm);
 }
 
 @keyframes goldGlow {
-  0%, 100% { box-shadow: 0 0 20rpx rgba(255, 193, 7, 0.5); }
-  50% { box-shadow: 0 0 30rpx rgba(255, 193, 7, 0.8); }
+  0%, 100% { box-shadow: var(--shadow-success); }
+  50% { box-shadow: var(--shadow-lg); }
 }
 
 .rank-num { 
   width: 48rpx; 
   text-align: center; 
-  color: #8F939C; 
+  color: var(--text-tertiary); 
   font-weight: bold; 
   font-size: 28rpx;
   margin-right: 24rpx;
@@ -271,12 +273,12 @@ export default {
   height: 80rpx; 
   border-radius: 50%; 
   margin-right: 24rpx; 
-  border: 2rpx solid rgba(0, 229, 255, 0.3);
+  border: 2rpx solid var(--primary-light);
   flex-shrink: 0;
 }
 
 .nickname { 
-  color: #fff; 
+  color: var(--text-primary); 
   font-size: 28rpx;
   max-width: 300rpx;
   overflow: hidden;
@@ -291,22 +293,22 @@ export default {
 }
 
 .score { 
-  color: #00E5FF; 
+  color: var(--primary); 
   font-size: 40rpx; 
   font-weight: bold; 
   font-family: 'DIN Alternate', sans-serif;
-  text-shadow: 0 0 10rpx rgba(0, 229, 255, 0.5);
+  text-shadow: var(--shadow-text);
 }
 
 .unit { 
-  color: #666; 
+  color: var(--text-tertiary); 
   font-size: 24rpx; 
   margin-left: 8rpx;
 }
 
 .empty-tip, .loading-tip { 
   text-align: center; 
-  color: #666; 
+  color: var(--text-tertiary); 
   margin-top: 100rpx; 
   font-size: 28rpx;
   padding: 40rpx;

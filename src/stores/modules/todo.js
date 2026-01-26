@@ -60,13 +60,26 @@ export const useTodoStore = defineStore('todo', {
         // 从本地存储读取任务数据
         const savedTasks = storageService.get('my_tasks', [])
         if (savedTasks && Array.isArray(savedTasks) && savedTasks.length > 0) {
-          this.tasks = savedTasks
+          // 检查并更新旧的标签格式
+          this.tasks = savedTasks.map(task => {
+            // 更新旧的标签名称
+            if (task.tag === '高优') {
+              task.tag = '优先'
+              task.tagColor = 'red'
+            } else if (task.tag === '待办') {
+              task.tag = '重要'
+              task.tagColor = 'yellow'
+            }
+            return task
+          })
+          // 保存更新后的数据
+          this.saveTasks()
         } else {
           // 初始化默认任务
           this.tasks = [
-            { id: Date.now() + 1, title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '高优', tagColor: 'red' },
-            { id: Date.now() + 2, title: '英语阅读真题分析', done: false, priority: 'medium', tag: '待办', tagColor: 'orange' },
-            { id: Date.now() + 3, title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'blue' }
+            { id: Date.now() + 1, title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '优先', tagColor: 'red' },
+            { id: Date.now() + 2, title: '英语阅读真题分析', done: false, priority: 'medium', tag: '重要', tagColor: 'yellow' },
+            { id: Date.now() + 3, title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'gray' }
           ]
           this.saveTasks()
         }
@@ -74,9 +87,9 @@ export const useTodoStore = defineStore('todo', {
         console.error('初始化任务列表失败:', error)
         // 初始化失败时使用默认任务
         this.tasks = [
-          { id: Date.now() + 1, title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '高优', tagColor: 'red' },
-          { id: Date.now() + 2, title: '英语阅读真题分析', done: false, priority: 'medium', tag: '待办', tagColor: 'orange' },
-          { id: Date.now() + 3, title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'blue' }
+          { id: Date.now() + 1, title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '优先', tagColor: 'red' },
+          { id: Date.now() + 2, title: '英语阅读真题分析', done: false, priority: 'medium', tag: '重要', tagColor: 'yellow' },
+          { id: Date.now() + 3, title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'gray' }
         ]
       } finally {
         this.loading = false
@@ -97,7 +110,7 @@ export const useTodoStore = defineStore('todo', {
      * @param {string} tag - 任务标签
      * @param {string} tagColor - 标签颜色
      */
-    addTask(title, priority = 'medium', tag = '待办', tagColor = 'orange') {
+    addTask(title, priority = 'medium', tag = '重要', tagColor = 'yellow') {
       if (!title || title.trim() === '') {
         console.error('任务标题不能为空')
         return

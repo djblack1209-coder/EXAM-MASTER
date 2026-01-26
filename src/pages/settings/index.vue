@@ -118,7 +118,7 @@
             <text class="setting-title ds-text-sm ds-font-medium">AI 语音伴学</text>
             <text class="setting-desc ds-text-xs">导师回答后自动朗读</text>
           </div>
-          <switch color="#00a96d" :checked="isVoiceEnabled" @change="toggleVoice" />
+          <switch :color="isDark ? 'var(--primary)' : 'var(--primary)'" :checked="isVoiceEnabled" @change="toggleVoice" />
         </div>
 
         <!-- 深色模式（自动切换 Wise/Bitget 主题） -->
@@ -127,7 +127,7 @@
             <text class="setting-title ds-text-sm ds-font-medium">深色模式</text>
             <text class="setting-desc ds-text-xs">{{ isDark ? 'Bitget Wallet 风格' : 'Wise 风格' }}</text>
           </div>
-          <switch color="#00a96d" :checked="isDark" @change="toggleDark" />
+          <switch :color="isDark ? 'var(--primary)' : 'var(--primary)'" :checked="isDark" @change="toggleDark" />
         </div>
 
         <!-- 清除缓存 -->
@@ -169,7 +169,7 @@
         <view class="modal-body">
           <view class="theme-option" @tap="selectTheme('wise')">
             <view class="theme-preview wise-preview">
-              <view class="preview-color" style="background: linear-gradient(135deg, #00a96d 0%, #008055 100%);"></view>
+              <view class="preview-color" style="background: var(--gradient-primary);"></view>
             </view>
             <view class="theme-info">
               <text class="theme-name">Wise 绿色主题</text>
@@ -179,7 +179,7 @@
           </view>
           <view class="theme-option" @tap="selectTheme('bitget')">
             <view class="theme-preview bitget-preview">
-              <view class="preview-color" style="background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);"></view>
+              <view class="preview-color" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);"></view>
             </view>
             <view class="theme-info">
               <text class="theme-name">Bitget Wallet 蓝色主题</text>
@@ -255,6 +255,8 @@ import { getApiKey } from '../../../common/config.js';
 import { storageService } from '../../services/storageService.js';
 import { lafService } from '../../services/lafService.js';
 import { useThemeStore } from '../../stores';
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js';
 
 // 基础状态
 const userInfo = ref({});
@@ -379,10 +381,10 @@ onShow(() => {
   const isDark = uni.getStorageSync('theme_mode') === 'dark';
   uni.setNavigationBarColor({
     frontColor: isDark ? '#ffffff' : '#000000',
-    backgroundColor: isDark ? '#0D1117' : '#F9FAFB',
+    backgroundColor: isDark ? 'var(--bg-body)' : 'var(--bg-page)',
     animation: { duration: 0 }
   }).catch(err => {
-    console.log('设置导航栏颜色失败', err);
+    logger.log('设置导航栏颜色失败', err);
   });
 });
 
@@ -408,7 +410,7 @@ const initAudio = () => {
     isSpeaking.value = false;
   });
   audioCtx.onError((err) => {
-    console.error('音频播放错误', err);
+    logger.error('音频播放错误', err);
     isSpeaking.value = false;
   });
   audioCtx.onStop(() => {
@@ -440,7 +442,7 @@ const initRecorder = () => {
   });
 
   recorderManager.onError((err) => {
-    console.error('录音错误', err);
+    logger.error('录音错误', err);
     isRecording.value = false;
     uni.showToast({
       title: '录音出错，请重试',
@@ -495,7 +497,7 @@ const processVoice = (filePath) => {
     // 注意：这里只是模拟，实际应该调用真实的语音识别API
     // 暂时禁用自动发送，改为提示用户手动发送
     uni.showToast({
-      title: '语音识别功能开发中，请使用文字输入',
+      title: '语音识别即将上线，请使用文字输入',
       icon: 'none',
       duration: 2000
     });
@@ -517,7 +519,7 @@ const toggleInputMode = () => {
 // 处理表情按钮
 const handleEmoji = () => {
   uni.showToast({
-    title: '表情功能开发中',
+    title: '表情功能即将上线',
     icon: 'none'
   });
 };
@@ -603,7 +605,7 @@ const playTTS = (text) => {
 
   // 修复：禁用TTS功能，避免音频解码错误
   // 百度TTS API在某些环境下可能无法正常工作
-  console.log('[Settings-Chat] 🔊 TTS功能已禁用（避免音频解码错误）');
+  logger.log('[Settings-Chat] 🔊 TTS功能已禁用（避免音频解码错误）');
   return;
 
   // 原代码保留但不执行
@@ -612,7 +614,7 @@ const playTTS = (text) => {
   try {
     audioCtx.stop();
   } catch (e) {
-    console.log('停止音频', e);
+    logger.log('停止音频', e);
   }
   
   // 调用 TTS 接口
@@ -650,7 +652,7 @@ const closeChat = () => {
     try {
       audioCtx.stop();
     } catch (e) {
-      console.log('关闭音频', e);
+      logger.log('关闭音频', e);
     }
   }
   showChat.value = false;
@@ -679,7 +681,7 @@ const sendToAI = async () => {
   // 移除Toast，改为在消息气泡中显示发送状态（可选）
 
   // ✅ 安全修复：使用后端代理调用 AI
-  console.log('[Settings-Chat] 🤖 调用后端代理...');
+  logger.log('[Settings-Chat] 🤖 调用后端代理...');
 
   lafService.proxyAI('chat', {
     messages: [
@@ -690,7 +692,7 @@ const sendToAI = async () => {
   }).then((res) => {
     isThinking.value = false;
     isRequesting.value = false;
-    console.log('[Settings-Chat] ✅ AI 响应:', {
+    logger.log('[Settings-Chat] ✅ AI 响应:', {
       statusCode: res.statusCode,
       hasData: !!res.data,
       hasChoices: !!(res.data && res.data.choices),
@@ -699,7 +701,7 @@ const sendToAI = async () => {
 
     if (res.data && res.data.choices && res.data.choices.length > 0) {
       const answer = res.data.choices[0].message.content;
-      console.log('[Settings-Chat] 📝 AI 回复内容:', answer.substring(0, 100) + '...');
+      logger.log('[Settings-Chat] 📝 AI 回复内容:', answer.substring(0, 100) + '...');
       chatHistory.value.push({
         role: 'assistant',
         content: answer,
@@ -712,7 +714,7 @@ const sendToAI = async () => {
         }, 300);
       }
     } else {
-      console.warn('[Settings-Chat] ⚠️ AI 响应格式异常:', res.data);
+      logger.warn('[Settings-Chat] ⚠️ AI 响应格式异常:', res.data);
       chatHistory.value.push({
         role: 'assistant',
         content: '抱歉，我刚刚走神了，请再说一遍。',
@@ -721,7 +723,7 @@ const sendToAI = async () => {
     }
     scrollChatToBottom();
   }).catch((err) => {
-    console.error('[Settings-Chat] ❌ AI 请求失败:', err);
+    logger.error('[Settings-Chat] ❌ AI 请求失败:', err);
     isThinking.value = false;
     isRequesting.value = false;
     chatHistory.value.push({
@@ -755,7 +757,7 @@ const toggleVoice = (e) => {
     try {
       audioCtx.stop();
     } catch (e) {
-      console.log('停止音频', e);
+      logger.log('停止音频', e);
     }
   }
   uni.showToast({
@@ -793,7 +795,7 @@ const handleLogout = () => {
   uni.showModal({
     title: '提示',
     content: '确定要退出当前账号吗？',
-    confirmColor: '#E74C3C',
+    confirmColor: 'var(--danger)',
     success: (res) => {
       if (res.confirm) {
         // 只清除用户信息，保留其他数据
@@ -814,7 +816,7 @@ const removeTargetSchool = (index) => {
   uni.showModal({
     title: '确认删除',
     content: `确定要删除目标院校 "${targetSchools.value[index].name}" 吗？`,
-    confirmColor: '#E74C3C',
+    confirmColor: 'var(--danger)',
     success: (res) => {
       if (res.confirm) {
         // 从数组中删除
@@ -828,16 +830,16 @@ const removeTargetSchool = (index) => {
 };
 
 const navTo = (url) => {
-  console.log('[Settings] 🚀 准备跳转到:', url);
+  logger.log('[Settings] 🚀 准备跳转到:', url);
   // 修复：使用正确的路径格式
   const correctUrl = url.startsWith('/') ? url : '/' + url;
   uni.navigateTo({
     url: correctUrl,
     success: () => {
-      console.log('[Settings] ✅ 跳转成功:', correctUrl);
+      logger.log('[Settings] ✅ 跳转成功:', correctUrl);
     },
     fail: (err) => {
-      console.error('[Settings] ❌ 跳转失败:', err);
+      logger.error('[Settings] ❌ 跳转失败:', err);
       // 尝试使用 switchTab（如果是 TabBar 页面）
       if (url.includes('school/index')) {
         uni.switchTab({
@@ -862,10 +864,10 @@ const handleTargetSchoolClick = () => {
     uni.switchTab({
       url: '/src/pages/school/index',
       success: () => {
-        console.log('[Settings] ✅ 已跳转到择校页面');
+        logger.log('[Settings] ✅ 已跳转到择校页面');
       },
       fail: (err) => {
-        console.error('[Settings] ❌ 跳转择校页面失败:', err);
+        logger.error('[Settings] ❌ 跳转择校页面失败:', err);
         uni.showToast({ title: '跳转失败', icon: 'none' });
       }
     });
@@ -879,10 +881,10 @@ const handleAddTargetSchool = () => {
   uni.switchTab({
     url: '/src/pages/school/index',
     success: () => {
-      console.log('[Settings] ✅ 已跳转到择校页面');
+      logger.log('[Settings] ✅ 已跳转到择校页面');
     },
     fail: (err) => {
-      console.error('[Settings] ❌ 跳转择校页面失败:', err);
+      logger.error('[Settings] ❌ 跳转择校页面失败:', err);
       uni.showToast({ title: '跳转失败', icon: 'none' });
     }
   });
@@ -895,7 +897,7 @@ const isChoosingAvatar = ref(false);
 const onChooseAvatar = (e) => {
   // 防抖：如果正在选择，直接返回
   if (isChoosingAvatar.value) {
-    console.log('[Settings] ⚠️ 头像选择进行中，忽略重复点击');
+    logger.log('[Settings] ⚠️ 头像选择进行中，忽略重复点击');
     return;
   }
 
@@ -906,7 +908,7 @@ const onChooseAvatar = (e) => {
     // #ifdef MP-WECHAT
     const { avatarUrl } = e.detail;
     if (avatarUrl) {
-      console.log('[Settings] 📸 头像已选择:', avatarUrl);
+      logger.log('[Settings] 📸 头像已选择:', avatarUrl);
       // 更新用户头像（立即更新，确保UI响应）
       userInfo.value.avatarUrl = avatarUrl;
       // 如果已有用户信息，保留其他字段
@@ -915,7 +917,7 @@ const onChooseAvatar = (e) => {
       }
       // 保存用户信息到本地
       storageService.save('userInfo', userInfo.value);
-      console.log('[Settings] ✅ 头像已保存到本地存储');
+      logger.log('[Settings] ✅ 头像已保存到本地存储');
       // 强制触发响应式更新（确保头像立即显示）
       const updatedUserInfo = { ...userInfo.value };
       userInfo.value = {};
@@ -953,7 +955,7 @@ const onChooseAvatar = (e) => {
     }
     // #endif
   } catch (error) {
-    console.error('[Settings] ❌ 头像选择失败', error);
+    logger.error('[Settings] ❌ 头像选择失败', error);
     uni.showToast({ title: '头像更新失败', icon: 'none' });
   } finally {
     // 1秒后解锁
@@ -1000,13 +1002,13 @@ const doRealLogin = () => {
   uni.login({
     provider: 'weixin',
     success: (loginRes) => {
-      console.log('[Settings] 🔐 WeChat Code:', loginRes.code);
+      logger.log('[Settings] 🔐 WeChat Code:', loginRes.code);
       // 商业化标准：这里应该调用后端 API
 
       // 临时模拟：生成 UID（如果还没有）
       if (!userInfo.value.uid) {
         userInfo.value.uid = 'USER_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-        console.log('[Settings] 🆔 生成用户ID:', userInfo.value.uid);
+        logger.log('[Settings] 🆔 生成用户ID:', userInfo.value.uid);
       }
 
       // 确保头像和昵称都存在
@@ -1020,14 +1022,14 @@ const doRealLogin = () => {
       saveUserInfo();
       uni.hideLoading();
       uni.showToast({ title: '登录成功', icon: 'success' });
-      console.log('[Settings] ✅ 登录完成，用户信息:', {
+      logger.log('[Settings] ✅ 登录完成，用户信息:', {
         uid: userInfo.value.uid,
         nickName: userInfo.value.nickName,
         hasAvatar: !!userInfo.value.avatarUrl
       });
     },
     fail: (err) => {
-      console.error('[Settings] ❌ 登录失败', err);
+      logger.error('[Settings] ❌ 登录失败', err);
       uni.hideLoading();
       uni.showToast({ title: '登录失败，请重试', icon: 'none' });
     }
@@ -1053,7 +1055,7 @@ const doRealLogin = () => {
 
 // 保存用户信息到本地缓存
 const saveUserInfo = () => {
-  console.log('[Settings] 💾 保存用户信息:', {
+  logger.log('[Settings] 💾 保存用户信息:', {
     uid: userInfo.value.uid,
     nickName: userInfo.value.nickName,
     avatarUrl: userInfo.value.avatarUrl ? '已设置' : '未设置'
@@ -1069,7 +1071,7 @@ const saveUserInfo = () => {
 
 // 头像点击事件处理（优化：确保登录功能正常）
 const handleAvatarClick = () => {
-  console.log('[Settings] 👤 头像被点击，当前登录状态:', !!userInfo.value.uid);
+  logger.log('[Settings] 👤 头像被点击，当前登录状态:', !!userInfo.value.uid);
 
   if (!userInfo.value.uid) {
     // 未登录状态，提示用户点击头像按钮进行登录
@@ -1091,12 +1093,12 @@ const handleAvatarClick = () => {
 
 // 头像加载错误处理
 const onAvatarError = (e) => {
-  console.log('[Settings] ⚠️ 头像加载失败，使用默认头像', e);
+  logger.log('[Settings] ⚠️ 头像加载失败，使用默认头像', e);
   // 注意：不要在这里修改 userInfo.avatarUrl，否则会覆盖用户选择的头像
   // 只在真正加载失败时使用默认头像显示，但不保存到 userInfo
   // 如果头像URL无效，让用户重新选择
   if (userInfo.value.avatarUrl && userInfo.value.avatarUrl !== defaultAvatar) {
-    console.log('[Settings] ⚠️ 头像URL无效，但保留用户选择:', userInfo.value.avatarUrl);
+    logger.log('[Settings] ⚠️ 头像URL无效，但保留用户选择:', userInfo.value.avatarUrl);
     // 不修改 userInfo，让用户重新选择
   }
 };
@@ -1121,14 +1123,14 @@ const handleClosePosterModal = () => {
 
 // 跳转到好友列表
 const navigateToFriends = () => {
-  console.log('[Settings] 🚀 跳转到好友列表');
+  logger.log('[Settings] 🚀 跳转到好友列表');
   uni.navigateTo({
     url: '/src/pages/social/friend-list',
     success: () => {
-      console.log('[Settings] ✅ 跳转成功');
+      logger.log('[Settings] ✅ 跳转成功');
     },
     fail: (err) => {
-      console.error('[Settings] ❌ 跳转失败:', err);
+      logger.error('[Settings] ❌ 跳转失败:', err);
       uni.showToast({
         title: '跳转失败',
         icon: 'none'
@@ -1162,7 +1164,7 @@ const selectTheme = (type) => {
   /* 8px网格 */
   padding-bottom: 100px;
   box-sizing: border-box;
-  color: var(--text-secondary, #495057);
+  color: var(--text-sub);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s ease;
 }
@@ -1183,15 +1185,15 @@ const selectTheme = (type) => {
 /* 深色模式 */
 .settings-container.dark-mode {
   --bg-body: var(--bg-body);
-  --text-secondary: #E2E8F0;
-  --text-primary: var(--bg-card);
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --brand-color: var(--brand-color);
-  --action-blue: #00B9FF;
-  --danger-red: #ff453a;
-  --bg-hover: rgba(255, 255, 255, 0.1);
-  --input-placeholder: #666666;
+  --text-secondary: var(--text-sub);
+  --text-primary: var(--text-primary);
+  --card-bg: var(--bg-glass);
+  --card-border: var(--border);
+  --brand-color: var(--primary);
+  --action-blue: var(--primary-light);
+  --danger-red: var(--danger);
+  --bg-hover: var(--bg-glass);
+  --input-placeholder: var(--text-sub);
 }
 
 /* 顶部导航 - 像素完美版 */
@@ -1216,12 +1218,12 @@ const selectTheme = (type) => {
 
 /* 用户信息卡片 - 全新顶级设计（紧凑、现代、高粘性） */
 .user-card.wise-card {
-  background: linear-gradient(135deg, var(--brand-color, #37B24D) 0%, var(--brand-color-dark, #2F9E44) 100%);
+  background: var(--gradient-primary);
   border: none;
   border-radius: 24px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 24px rgba(55, 178, 77, 0.25);
+  box-shadow: var(--shadow-lg);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -1235,7 +1237,7 @@ const selectTheme = (type) => {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+  background: var(--gradient-radial-light);
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -1246,7 +1248,7 @@ const selectTheme = (type) => {
 }
 
 .user-card.wise-card:hover {
-  box-shadow: 0 12px 32px rgba(55, 178, 77, 0.35);
+  box-shadow: var(--shadow-xl);
   transform: translateY(-4px);
 }
 
@@ -1283,19 +1285,19 @@ const selectTheme = (type) => {
   height: 64px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 3px solid var(--overlay);
+  box-shadow: var(--shadow-md);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .avatar-section:hover .avatar {
   transform: scale(1.08);
-  border-color: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  border-color: var(--border);
+  box-shadow: var(--shadow-lg);
 }
 
 .login-badge {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--overlay);
   color: white;
   font-size: 11px;
   font-weight: 700;
@@ -1305,11 +1307,11 @@ const selectTheme = (type) => {
   -webkit-backdrop-filter: blur(10px);
   text-align: center;
   width: 100%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .login-badge.logged-in {
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--bg-glass);
 }
 
 .user-info-section {
@@ -1328,14 +1330,14 @@ const selectTheme = (type) => {
   padding: 0;
   width: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  text-shadow: var(--shadow-sm);
   letter-spacing: -0.5px;
   line-height: 1.3;
   /* 添加呼吸感 */
 }
 
 .nickname-placeholder {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--overlay);
 }
 
 .info-grid {
@@ -1345,25 +1347,25 @@ const selectTheme = (type) => {
 }
 
 .info-item {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--bg-glass);
   border-radius: 10px;
   padding: 10px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
 }
 
 .info-item:active {
-  background: rgba(255, 255, 255, 0.28);
+  background: var(--overlay);
   transform: scale(0.97);
 }
 
 .info-label {
   display: block;
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-primary-foreground);
   margin-bottom: 3px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1377,7 +1379,7 @@ const selectTheme = (type) => {
   font-size: 13px;
   color: white;
   font-weight: 700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-shadow: var(--shadow-sm);
   line-height: 1.5;
   /* 添加呼吸感 */
 }
@@ -1387,11 +1389,11 @@ const selectTheme = (type) => {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  border-top: 1px solid var(--border);
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--bg-glass);
   border-radius: 12px;
   padding: 14px;
   text-align: center;
@@ -1399,11 +1401,11 @@ const selectTheme = (type) => {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
 }
 
 .stat-card:active {
-  background: rgba(255, 255, 255, 0.28);
+  background: var(--overlay);
   transform: scale(0.97);
 }
 
@@ -1416,14 +1418,14 @@ const selectTheme = (type) => {
   line-height: 1.2;
   /* 数值轻微呼吸感 */
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  text-shadow: var(--shadow-sm);
   letter-spacing: -0.5px;
   /* 数字紧凑 */
 }
 
 .stat-label {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text-primary-foreground);
   font-weight: 600;
   letter-spacing: 0.3px;
   line-height: 1.5;
@@ -1432,16 +1434,16 @@ const selectTheme = (type) => {
 
 /* 深色模式下的用户卡片（Bitget风格） */
 .dark-mode .user-card.wise-card {
-  background: linear-gradient(135deg, #1a2840 0%, #2d4560 100%);
-  box-shadow: 0 8px 24px rgba(10, 132, 255, 0.25);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+  box-shadow: var(--shadow-lg);
 }
 
 .dark-mode .user-card.wise-card::before {
-  background: radial-gradient(circle, rgba(10, 132, 255, 0.2) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
 }
 
 .dark-mode .user-card.wise-card:hover {
-  box-shadow: 0 12px 32px rgba(10, 132, 255, 0.35);
+  box-shadow: var(--shadow-xl);
 }
 
 /* 通用区块样式 - 像素完美版 */
@@ -1499,8 +1501,8 @@ const selectTheme = (type) => {
 
 .online-badge {
   font-size: 12px;
-  color: var(--brand-color, #00a96d);
-  background-color: rgba(0, 169, 109, 0.1);
+  color: var(--brand-color);
+  background-color: var(--success-light);
   padding: 4px 12px;
   border-radius: 12px;
 }
@@ -1509,7 +1511,7 @@ const selectTheme = (type) => {
   display: flex;
   align-items: center;
   gap: 4px;
-  background-color: var(--brand-color, #00a96d);
+  background-color: var(--brand-color);
   color: white;
   padding: 6px 12px;
   border-radius: 16px;
@@ -1537,17 +1539,17 @@ const selectTheme = (type) => {
 /* AI导师列表 */
 .tutor-list {
   background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .tutor-item {
   display: flex;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid var(--card-border, #e9ecef);
+  border-bottom: 1px solid var(--border);
   transition: background-color 0.2s ease;
 }
 
@@ -1556,7 +1558,7 @@ const selectTheme = (type) => {
 }
 
 .tutor-item:hover {
-  background-color: rgba(0, 169, 109, 0.05);
+  background-color: var(--success-light);
 }
 
 .tutor-avatar {
@@ -1565,7 +1567,7 @@ const selectTheme = (type) => {
   border-radius: 50%;
   object-fit: cover;
   margin-right: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .tutor-info {
@@ -1595,7 +1597,7 @@ const selectTheme = (type) => {
 
 .chat-btn {
   background-color: transparent;
-  border: 2px solid var(--brand-color, #00a96d);
+  border: 2px solid var(--brand-color);
   color: var(--brand-color, #00a96d);
   border-radius: 20px;
   padding: 8px 16px;
@@ -1617,7 +1619,7 @@ const selectTheme = (type) => {
   border: 1px solid var(--card-border, #e9ecef);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
 .setting-item {
@@ -1635,7 +1637,7 @@ const selectTheme = (type) => {
 }
 
 .setting-item:hover {
-  background-color: rgba(0, 169, 109, 0.05);
+  background-color: var(--success-light);
 }
 
 .setting-info {
@@ -1672,8 +1674,8 @@ const selectTheme = (type) => {
 .logout-btn {
   width: 100%;
   background-color: transparent;
-  border: 2px solid var(--danger-red, #ff453a);
-  color: var(--danger-red, #ff453a);
+  border: 2px solid var(--danger);
+  color: var(--danger);
   border-radius: 16px;
   padding: 16px;
   font-size: 16px;
@@ -1684,10 +1686,10 @@ const selectTheme = (type) => {
 }
 
 .logout-btn:hover {
-  background-color: var(--danger-red, #ff453a);
+  background-color: var(--danger);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(255, 69, 58, 0.3);
+  box-shadow: var(--shadow-danger);
 }
 
 /* 底部安全区域 */
@@ -1702,7 +1704,7 @@ const selectTheme = (type) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--overlay-dark);
   backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
@@ -1718,7 +1720,7 @@ const selectTheme = (type) => {
   max-width: 400px;
   max-height: 80vh;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-xl);
 }
 
 .modal-header {
@@ -1737,7 +1739,7 @@ const selectTheme = (type) => {
 
 .close-btn {
   font-size: 24px;
-  color: var(--text-tertiary, #9e9e9e);
+  color: var(--text-tertiary);
   cursor: pointer;
   transition: color 0.2s ease;
 }
@@ -1772,7 +1774,7 @@ const selectTheme = (type) => {
 }
 
 .add-btn:hover {
-  background-color: var(--brand-color-dark, #008055);
+  background-color: var(--success-dark);
   transform: translateY(-2px);
 }
 
@@ -1793,9 +1795,9 @@ const selectTheme = (type) => {
 }
 
 .target-item:hover {
-  background-color: rgba(0, 169, 109, 0.05);
+  background-color: var(--success-light);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .target-avatar {
@@ -1838,12 +1840,13 @@ const selectTheme = (type) => {
 }
 
 .delete-btn {
-  color: #FF453A;
-  background-color: rgba(255, 69, 58, 0.1);
+  color: var(--danger);
+  background-color: var(--danger-light);
 }
 
 .delete-btn:hover {
-  background-color: rgba(255, 69, 58, 0.2);
+  background-color: var(--danger-light);
+  opacity: 0.8;
 }
 
 /* AI 对话窗样式 */
@@ -1854,7 +1857,7 @@ const selectTheme = (type) => {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--overlay-dark);
   backdrop-filter: blur(5px);
 }
 
@@ -1867,7 +1870,7 @@ const selectTheme = (type) => {
   padding: 24px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 .chat-header {
@@ -1904,7 +1907,7 @@ const selectTheme = (type) => {
 }
 
 .speaking-indicator .bar.rec {
-  background-color: var(--danger-red, #ff453a);
+  background-color: var(--danger-red);
   animation-duration: 0.3s;
 }
 
@@ -1957,24 +1960,25 @@ const selectTheme = (type) => {
 
 .msg-time {
   font-size: 11px;
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--text-tertiary);
   margin-top: 6px;
   text-align: right;
 }
 
 .msg-bubble.assistant .msg-time {
   text-align: left;
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--text-tertiary);
 }
 
 .msg-bubble.user .msg-time {
   text-align: right;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-primary-foreground);
+  opacity: 0.7;
 }
 
 .msg-bubble.assistant {
-  background-color: rgba(0, 169, 109, 0.1);
-  color: var(--text-secondary, #495057);
+  background-color: var(--success-light);
+  color: var(--text-sub);
   align-self: flex-start;
   margin-right: auto;
   border-bottom-left-radius: 4px;
@@ -2009,13 +2013,13 @@ const selectTheme = (type) => {
   align-items: center;
   gap: 16px;
   padding-top: 16px;
-  border-top: 1px solid var(--card-border, #e9ecef);
+  border-top: 1px solid var(--border);
 }
 
 .mode-switch {
   width: 40px;
   height: 40px;
-  background-color: rgba(0, 169, 109, 0.1);
+  background-color: var(--success-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -2026,15 +2030,16 @@ const selectTheme = (type) => {
 }
 
 .mode-switch:hover {
-  background-color: rgba(0, 169, 109, 0.2);
+  background-color: var(--success-light);
+  opacity: 0.8;
   transform: scale(1.05);
 }
 
 .chat-input-area input,
 .chat-input-area .chat-input {
   flex: 1;
-  background-color: var(--bg-hover, #f5f5f5);
-  border: 1px solid var(--card-border, #e9ecef);
+  background-color: var(--bg-hover);
+  border: 1px solid var(--border);
   border-radius: 24px;
   padding: 12px 20px;
   font-size: 14px;
@@ -2085,8 +2090,8 @@ const selectTheme = (type) => {
 .voice-press-btn {
   flex: 1;
   height: 48px;
-  background-color: rgba(0, 169, 109, 0.1);
-  border: 1px solid var(--brand-color, #00a96d);
+  background-color: var(--success-light);
+  border: 1px solid var(--brand-color);
   border-radius: 24px;
   display: flex;
   align-items: center;
@@ -2118,7 +2123,7 @@ const selectTheme = (type) => {
 }
 
 .chat-input-area button:hover {
-  background-color: #008055;
+  background-color: var(--success-dark);
   transform: translateY(-1px);
 }
 
@@ -2150,7 +2155,7 @@ const selectTheme = (type) => {
 }
 
 .friend-entry-card:hover {
-  background-color: rgba(0, 169, 109, 0.05);
+  background-color: var(--success-light);
   transform: translateY(-2px);
   box-shadow: var(--shadow-glow-brand);
 }
@@ -2169,13 +2174,13 @@ const selectTheme = (type) => {
 .entry-icon {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, var(--brand-color), #7ED321);
+  background: linear-gradient(135deg, var(--brand-color), var(--success-green));
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28px;
-  box-shadow: 0 4px 12px rgba(159, 232, 112, 0.3);
+  box-shadow: var(--shadow-success);
 }
 
 .entry-info {
@@ -2205,12 +2210,12 @@ const selectTheme = (type) => {
 
 /* 深色模式下的好友入口卡片 */
 .dark-mode .friend-entry-card {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--bg-glass);
+  border-color: var(--border);
 }
 
 .dark-mode .friend-entry-card:hover {
-  background-color: rgba(159, 232, 112, 0.1);
+  background-color: var(--success-light);
 }
 
 .dark-mode .entry-title {
@@ -2218,11 +2223,11 @@ const selectTheme = (type) => {
 }
 
 .dark-mode .entry-desc {
-  color: #E2E8F0;
+  color: var(--text-sub);
 }
 
 .dark-mode .entry-arrow {
-  color: #E2E8F0;
+  color: var(--text-sub);
 }
 
 /* 问题9修复：邀请按钮重新设计 */
@@ -2230,7 +2235,7 @@ const selectTheme = (type) => {
   display: flex;
   align-items: center;
   gap: 4px;
-  background: linear-gradient(135deg, #00a96d 0%, #008055 100%);
+  background: linear-gradient(135deg, var(--brand-color) 0%, var(--success-dark) 100%);
   color: white;
   padding: 8px 16px;
   border-radius: 20px;
@@ -2238,12 +2243,13 @@ const selectTheme = (type) => {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 169, 109, 0.3);
+  box-shadow: var(--shadow-success);
   -webkit-tap-highlight-color: transparent;
 }
 
 .invite-btn-header:hover {
-  box-shadow: 0 4px 12px rgba(0, 169, 109, 0.4);
+  box-shadow: var(--shadow-success);
+  opacity: 0.9;
   transform: translateY(-1px);
 }
 
@@ -2272,7 +2278,7 @@ const selectTheme = (type) => {
   padding: 20px;
   margin-bottom: 16px;
   background-color: var(--card-bg, var(--bg-card));
-  border: 2px solid var(--card-border, #e9ecef);
+  border: 2px solid var(--border);
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -2280,7 +2286,7 @@ const selectTheme = (type) => {
 }
 
 .theme-option:hover {
-  border-color: var(--brand-color, #00a96d);
+  border-color: var(--brand-color);
   transform: translateY(-2px);
   box-shadow: var(--shadow-glow-brand);
 }
@@ -2295,7 +2301,7 @@ const selectTheme = (type) => {
   border-radius: 12px;
   overflow: hidden;
   margin-right: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-sm);
 }
 
 .preview-color {
@@ -2331,13 +2337,13 @@ const selectTheme = (type) => {
 
 /* 深色模式下的主题选择器 */
 .dark-mode .theme-option {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--bg-glass);
+  border-color: var(--border);
 }
 
 .dark-mode .theme-option:hover {
-  border-color: var(--brand-color, var(--brand-color));
-  background-color: rgba(159, 232, 112, 0.1);
+  border-color: var(--brand-color);
+  background-color: var(--success-light);
 }
 
 .dark-mode .theme-name {
@@ -2345,7 +2351,7 @@ const selectTheme = (type) => {
 }
 
 .dark-mode .theme-desc {
-  color: #E2E8F0;
+  color: var(--text-sub);
 }
 
 .setting-arrow {

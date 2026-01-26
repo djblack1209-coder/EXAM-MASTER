@@ -125,6 +125,8 @@
 <script>
 import AiConsult from '../../components/business/ai-consult/ai-consult.vue';
 import { lafService } from '../../services/lafService.js';
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js';
 
 export default {
 	components: {
@@ -160,13 +162,13 @@ export default {
 			return '仍需努力';
 		},
 		statusColor() {
-			if (this.probability >= 80) return '#2ECC71';
-			if (this.probability >= 50) return '#4A90E2';
-			return '#E74C3C';
+			if (this.probability >= 80) return 'var(--success-green)';
+			if (this.probability >= 50) return 'var(--info-blue)';
+			return 'var(--danger-red)';
 		}
 	},
 	onLoad(options) {
-		console.log('[detail] 📄 详情页加载，接收参数:', options);
+		logger.log('[detail] 📄 详情页加载，接收参数:', options);
 		
 		const sys = uni.getSystemInfoSync();
 		this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
@@ -182,7 +184,7 @@ export default {
 			try {
 				this.schoolInfo = JSON.parse(decodeURIComponent(options.data));
 				this.schoolId = this.schoolInfo.id;
-				console.log('[detail] ✅ 从 data 参数解析院校信息:', { 
+				logger.log('[detail] ✅ 从 data 参数解析院校信息:', { 
 					id: this.schoolId, 
 					name: this.schoolInfo.name,
 					location: this.schoolInfo.location,
@@ -193,7 +195,7 @@ export default {
 				// 如果从列表页传递了完整数据，直接使用，不需要重新加载
 				this.probability = this.schoolInfo.matchRate || 0;
 			} catch (e) {
-				console.error('[detail] ❌ 解析学校数据失败:', e);
+				logger.error('[detail] ❌ 解析学校数据失败:', e);
 				// 解析失败时降级到 id 加载
 				if (options.id) {
 					this.schoolId = options.id;
@@ -202,11 +204,11 @@ export default {
 			}
 		} else if (options.id) {
 			this.schoolId = options.id;
-			console.log(`[detail] 🔍 开始加载院校详情: id=${options.id}`);
+			logger.log(`[detail] 🔍 开始加载院校详情: id=${options.id}`);
 			this.loadSchoolDetail(options.id);
 		} else {
 			// Mock 初始数据用于开发预览
-			console.warn('[detail] ⚠️ 未提供 id 参数，使用默认 Mock 数据');
+			logger.warn('[detail] ⚠️ 未提供 id 参数，使用默认 Mock 数据');
 			this.schoolInfo = {
 				id: '10001',
 				name: '北京大学',
@@ -225,23 +227,38 @@ export default {
 		
 		// 检查是否需要自动打开 AI 咨询
 		if (options.openConsult === 'true') {
-			console.log('[detail] 💬 自动打开 AI 咨询面板');
+			logger.log('[detail] 💬 自动打开 AI 咨询面板');
 			this.showAIConsultPanel = true;
 			this.openConsultQuery = '请介绍一下该校的招生简章和核心优势';
 		}
 		
 		// 初始检查是否已在收藏夹
 		this.checkTargetStatus();
-		console.log('[detail] ✅ 详情页初始化完成，院校信息:', { id: this.schoolId, name: this.schoolInfo.name });
+		logger.log('[detail] ✅ 详情页初始化完成，院校信息:', { id: this.schoolId, name: this.schoolInfo.name });
 	},
 	onUnload() {
 		uni.$off('updateTheme');
 	},
 	methods: {
 		loadSchoolDetail(id) {
-			console.log(`[detail] 🔍 开始加载院校详情: id=${id} (类型: ${typeof id})`);
+			logger.log(`[detail] 🔍 开始加载院校详情: id=${id} (类型: ${typeof id})`);
 			
-			// Mock 数据映射
+			/**
+			 * TODO [P0-CRITICAL]: 替换为真实后端数据
+			 * 
+			 * 当前问题：mockData 是硬编码的假数据，学校详情、分数线、报录比都不真实
+			 * 
+			 * 修复方案：
+			 * 1. 调用后端 API 获取学校详情
+			 *    const schoolInfo = await lafService.getSchoolDetail(id);
+			 *    this.schoolInfo = schoolInfo;
+			 * 
+			 * 2. 后端需要实现 school-query.js 云函数的 getDetail action
+			 * 
+			 * 3. 数据库需要导入真实的学校详情数据
+			 * 
+			 * 临时方案：当前使用示例数据供 UI 展示和流程测试
+			 */
 			const mockData = {
 				10003: {
 					id: 10003,
@@ -324,7 +341,7 @@ export default {
 			// 设置初始概率为匹配度
 			this.probability = this.schoolInfo.matchRate || 0;
 			
-			console.log(`[detail] ✅ 院校信息加载成功:`, { 
+			logger.log(`[detail] ✅ 院校信息加载成功:`, { 
 				id: this.schoolInfo.id, 
 				name: this.schoolInfo.name, 
 				location: this.schoolInfo.location,
@@ -356,10 +373,10 @@ export default {
 			this.isTarget = list.some(item => item.id == this.schoolId || item.id === this.schoolId);
 		},
 		toggleTarget() {
-			console.log('[detail] 🎯 开始切换目标院校状态');
+			logger.log('[detail] 🎯 开始切换目标院校状态');
 			
 			if (!this.schoolId && !this.schoolInfo.id) {
-				console.warn('[detail] ⚠️ 院校数据未加载，无法操作');
+				logger.warn('[detail] ⚠️ 院校数据未加载，无法操作');
 				uni.showToast({ title: '数据加载中，请稍候', icon: 'none' });
 				return;
 			}
@@ -373,7 +390,7 @@ export default {
 			let list = uni.getStorageSync('target_schools') || [];
 			const schoolId = this.schoolId || this.schoolInfo.id;
 			
-			console.log('[detail] 📊 当前状态:', {
+			logger.log('[detail] 📊 当前状态:', {
 				schoolId,
 				schoolName: this.schoolInfo.name,
 				isTarget: this.isTarget,
@@ -386,7 +403,7 @@ export default {
 				list = list.filter(item => item.id != schoolId && item.id !== schoolId);
 				const afterCount = list.length;
 				
-				console.log('[detail] ➖ 从目标中移除:', {
+				logger.log('[detail] ➖ 从目标中移除:', {
 					schoolId,
 					schoolName: this.schoolInfo.name,
 					beforeCount,
@@ -398,7 +415,7 @@ export default {
 				this.isTarget = false;
 				
 				uni.showToast({ title: '已取消关注', icon: 'none' });
-				console.log('[detail] ✅ 移除成功，已保存到本地存储');
+				logger.log('[detail] ✅ 移除成功，已保存到本地存储');
 			} else {
 				// 添加：确保数据完整
 				const schoolData = {
@@ -413,7 +430,7 @@ export default {
 				if (!exists) {
 					list.push(schoolData);
 					
-					console.log('[detail] ➕ 添加到目标:', {
+					logger.log('[detail] ➕ 添加到目标:', {
 						schoolData,
 						newListCount: list.length
 					});
@@ -422,17 +439,17 @@ export default {
 					this.isTarget = true;
 					
 					uni.showToast({ title: '成功加入目标', icon: 'success' });
-					console.log('[detail] ✅ 添加成功，已保存到本地存储');
+					logger.log('[detail] ✅ 添加成功，已保存到本地存储');
 					
 					// 验证保存结果
 					const savedList = uni.getStorageSync('target_schools') || [];
 					const saved = savedList.some(item => item.id == schoolId || item.id === schoolId);
-					console.log('[detail] 🔍 保存验证:', {
+					logger.log('[detail] 🔍 保存验证:', {
 						saved,
 						savedListCount: savedList.length
 					});
 				} else {
-					console.warn('[detail] ⚠️ 院校已在目标列表中，无需重复添加');
+					logger.warn('[detail] ⚠️ 院校已在目标列表中，无需重复添加');
 					this.isTarget = true; // 同步状态
 					uni.showToast({ title: '已在目标列表中', icon: 'none' });
 				}
@@ -442,7 +459,7 @@ export default {
 			uni.navigateBack(); 
 		},
 		handleShare() {
-			uni.showToast({ title: '分享功能开发中', icon: 'none' });
+			uni.showToast({ title: '分享功能即将上线', icon: 'none' });
 		},
 		showAIConsult() {
 			this.showAIConsultPanel = true;
@@ -455,12 +472,12 @@ export default {
 		},
 		async fetchAIPrediction() {
 			if (this.isAnalyzing) {
-				console.log('[detail] ⚠️ AI 预测正在进行中，跳过重复请求');
+				logger.log('[detail] ⚠️ AI 预测正在进行中，跳过重复请求');
 				return;
 			}
 			
-			console.log('[detail] 🎯 开始 AI 录取概率预测');
-			console.log('[detail] 📊 目标院校:', { 
+			logger.log('[detail] 🎯 开始 AI 录取概率预测');
+			logger.log('[detail] 📊 目标院校:', { 
 				id: this.schoolId, 
 				name: this.schoolInfo.name,
 				currentProbability: this.probability
@@ -480,7 +497,7 @@ export default {
 			const mistakeCount = (uni.getStorageSync('mistake_book') || []).length;
 			const studyDays = Object.keys(statsData).length;
 			
-			console.log('[detail] 📈 用户学习数据:', {
+			logger.log('[detail] 📈 用户学习数据:', {
 				studyDays,
 				doneCount,
 				mistakeCount
@@ -497,7 +514,7 @@ export default {
 3. 格式：概率|点评`;
 
 			try {
-				console.log('[detail] 🤖 调用后端代理进行录取概率预测...');
+				logger.log('[detail] 🤖 调用后端代理进行录取概率预测...');
 				
 				// ✅ 使用后端代理调用（安全）- action: 'predict'
 				const response = await lafService.proxyAI('predict', {
@@ -507,21 +524,21 @@ export default {
 					mistakeCount: mistakeCount
 				});
 
-				console.log('[detail] 📥 后端代理响应:', {
+				logger.log('[detail] 📥 后端代理响应:', {
 					code: response?.code,
 					hasData: !!response?.data
 				});
 
 				if (response && response.code === 0 && response.data) {
 					const result = response.data.trim();
-					console.log('[detail] 📄 AI 返回内容:', result.substring(0, 100));
+					logger.log('[detail] 📄 AI 返回内容:', result.substring(0, 100));
 					
 					const parts = result.split('|');
 					const p = parseInt(parts[0]) || 60;
 					this.probability = Math.max(40, Math.min(95, p));
 					this.aiReason = parts[1] || parts[0] || '数据样本不足，建议增加模拟卷练习。';
 					
-					console.log('[detail] ✅ AI 预测成功:', {
+					logger.log('[detail] ✅ AI 预测成功:', {
 						probability: this.probability,
 						reason: this.aiReason.substring(0, 50)
 					});
@@ -533,12 +550,12 @@ export default {
 					});
 				} else {
 					// 降级方案：基于数据简单计算
-					console.warn('[detail] ⚠️ AI API 响应异常，使用降级算法计算概率');
+					logger.warn('[detail] ⚠️ AI API 响应异常，使用降级算法计算概率');
 					const baseScore = Math.min(95, 40 + studyDays * 2 + Math.min(doneCount / 10, 30) - Math.min(mistakeCount / 5, 20));
 					this.probability = Math.max(40, Math.min(95, Math.round(baseScore)));
 					this.aiReason = `基于您已坚持 ${studyDays} 天、刷题 ${doneCount} 道的数据，${this.schoolInfo.name} 上岸概率为 ${this.probability}%。建议继续巩固错题，提升正确率。`;
 					
-					console.log('[detail] ✅ 降级算法计算完成:', {
+					logger.log('[detail] ✅ 降级算法计算完成:', {
 						probability: this.probability,
 						reason: this.aiReason.substring(0, 50)
 					});
@@ -550,13 +567,13 @@ export default {
 					});
 				}
 			} catch (e) {
-				console.error('[detail] ❌ AI 预测失败:', e);
+				logger.error('[detail] ❌ AI 预测失败:', e);
 				// 降级方案
 				const baseScore = Math.min(95, 40 + studyDays * 2 + Math.min(doneCount / 10, 30));
 				this.probability = Math.max(40, Math.min(95, Math.round(baseScore)));
 				this.aiReason = `基于您已坚持 ${studyDays} 天、刷题 ${doneCount} 道的数据，${this.schoolInfo.name} 上岸概率为 ${this.probability}%。建议继续巩固错题，提升正确率。`;
 				
-				console.log('[detail] ✅ 降级算法计算完成（异常情况）:', {
+				logger.log('[detail] ✅ 降级算法计算完成（异常情况）:', {
 					probability: this.probability,
 					reason: this.aiReason.substring(0, 50)
 				});
@@ -568,7 +585,7 @@ export default {
 				});
 			} finally {
 				this.isAnalyzing = false;
-				console.log('[detail] ✅ AI 预测流程结束');
+				logger.log('[detail] ✅ AI 预测流程结束');
 			}
 		}
 	}
@@ -578,15 +595,15 @@ export default {
 <style>
 /* --- 平铺式 CSS 样式适配 --- */
 .container {
-	--ball-bg: #E8F5E9;
-	--wave-color: #2ECC71;
-	--ball-glow: rgba(46, 204, 113, 0.2);
+	--ball-bg: var(--success-light);
+	--wave-color: var(--success);
+	--ball-glow: var(--success-glow);
 	--bg-body: var(--bg-body);
-	--text-primary: #1A1A1A;
-	--text-tertiary: #A0AEC0;
-	--card-bg: rgba(255, 255, 255, 0.8);
-	--card-border: rgba(0, 0, 0, 0.05);
-	--brand-color: #2ECC71;
+	--text-primary: var(--text-primary);
+	--text-tertiary: var(--text-sub);
+	--card-bg: var(--bg-card);
+	--card-border: var(--border);
+	--brand-color: var(--success);
 	
 	min-height: 100vh;
 	background: var(--bg-body);
@@ -597,15 +614,15 @@ export default {
 
 /* 深色模式荧光效果 */
 .container.dark-mode {
-  --ball-bg: #1E293B;
-  --wave-color: #00FF88;
-  --ball-glow: rgba(0, 255, 136, 0.4);
+  --ball-bg: var(--bg-secondary);
+  --wave-color: var(--primary);
+  --ball-glow: var(--primary-glow);
   --bg-body: var(--bg-body);
-  --text-primary: var(--bg-body);
-  --text-tertiary: #64748B;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --brand-color: #00FF88;
+  --text-primary: var(--text-primary);
+  --text-tertiary: var(--text-sub);
+  --card-bg: var(--bg-card);
+  --card-border: var(--border);
+  --brand-color: var(--primary);
 }
 
 .aurora-bg {
@@ -613,13 +630,13 @@ export default {
 	top: 0;
 	width: 100%;
 	height: 500rpx;
-	background: radial-gradient(circle at 50% 0%, rgba(46, 204, 113, 0.1), transparent);
+	background: var(--gradient-aurora);
 	filter: blur(60px);
 	z-index: 0;
 }
 
 .dark-mode .aurora-bg {
-	background: radial-gradient(circle at 50% 0%, rgba(0, 255, 136, 0.15), transparent);
+	background: var(--gradient-aurora-dark);
 }
 
 .nav-bar {
@@ -672,7 +689,7 @@ export default {
 	backdrop-filter: blur(20px);
 	border: 1px solid var(--card-border);
 	border-radius: 40rpx;
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+	box-shadow: var(--shadow-lg);
 	margin-bottom: 30rpx;
 }
 
@@ -680,8 +697,8 @@ export default {
 	display: flex; padding: 40rpx; align-items: center; margin-top: 20rpx; 
 }
 .school-logo { 
-	width: 140rpx; height: 140rpx; border-radius: 30rpx; background: #FFF; 
-	box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+	width: 140rpx; height: 140rpx; border-radius: 30rpx; background: var(--bg-page); 
+	box-shadow: var(--shadow-sm);
 }
 .header-main { 
 	flex: 1; margin-left: 30rpx; 
@@ -700,13 +717,13 @@ export default {
 	font-size: 20rpx; padding: 4rpx 16rpx; border-radius: 10rpx; 
 }
 .type-tag { 
-	background: #EBFDF5; color: #2ECC71; font-weight: 600;
+	background: var(--success-light); color: var(--success); font-weight: 600;
 }
 .location-tag { 
-	background: #F0F4F8; color: #718096; 
+	background: var(--bg-secondary); color: var(--text-sub); 
 }
 .rank-tag { 
-	background: #FFF5F5; color: #E74C3C; font-weight: 600;
+	background: var(--danger-light); color: var(--danger); font-weight: 600;
 }
 
 .stats-grid { 
@@ -749,7 +766,7 @@ export default {
 }
 .major-card:active {
 	transform: scale(0.98);
-	background: rgba(255, 255, 255, 0.85);
+	background: var(--bg-glass);
 }
 .major-info { 
 	flex: 1; 
@@ -768,11 +785,11 @@ export default {
 	margin-bottom: 4rpx;
 }
 .major-type { 
-	font-size: 20rpx; color: #2ECC71; background: rgba(46, 204, 113, 0.1); 
+	font-size: 20rpx; color: var(--success); background: var(--success-light); 
 	padding: 2rpx 12rpx; border-radius: 8rpx; display: inline-block;
 }
 .arrow-icon { 
-	font-size: 32rpx; color: #CBD5E0; 
+	font-size: 32rpx; color: var(--text-tertiary); 
 }
 
 .bottom-action { 
@@ -784,8 +801,8 @@ export default {
 	display: flex; gap: 20rpx; margin-bottom: 0; padding: 20rpx; 
 }
 .ai-consult-btn { 
-	flex: 1; height: 100rpx; border-radius: 24rpx; background: #F0F4F8; 
-	color: #4A5568; font-size: 28rpx; font-weight: bold; display: flex; 
+	flex: 1; height: 100rpx; border-radius: 24rpx; background: var(--bg-secondary); 
+	color: var(--text-primary); font-size: 28rpx; font-weight: bold; display: flex; 
 	align-items: center; justify-content: center; gap: 10rpx; border: none;
 }
 .ai-consult-btn::after {
@@ -796,18 +813,18 @@ export default {
 	height: 100rpx;
 	border-radius: 24rpx;
 	background: var(--brand-color);
-	color: #FFF;
+	color: var(--text-primary-foreground);
 	font-size: 30rpx;
 	font-weight: bold;
 	border: none;
-	box-shadow: 0 8rpx 24rpx rgba(46, 204, 113, 0.3);
+	box-shadow: var(--shadow-success);
 	transition: all 0.3s;
 }
 .target-btn::after {
 	border: none;
 }
 .target-btn.is-added { 
-	background: #EDF2F7; color: #A0AEC0; box-shadow: none; 
+	background: var(--bg-secondary); color: var(--text-sub); box-shadow: none; 
 }
 
 .safe-area {
@@ -899,7 +916,7 @@ export default {
 	font-size: 56rpx;
 	font-weight: 900;
 	color: var(--text-primary);
-	text-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+	text-shadow: var(--shadow-text);
 }
 .percent-content .unit {
 	font-size: 24rpx;
@@ -943,7 +960,7 @@ export default {
 	height: 80rpx;
 	border-radius: 40rpx;
 	background: var(--brand-color);
-	color: #FFF;
+	color: var(--text-inverse);
 	font-size: 26rpx;
 	font-weight: bold;
 	border: none;

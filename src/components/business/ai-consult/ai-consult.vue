@@ -85,6 +85,8 @@
 
 <script>
 import { lafService } from '../../../services/lafService.js'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../../utils/logger.js'
 
 export default {
   name: 'AiConsult',
@@ -185,7 +187,7 @@ export default {
           time: this.getCurrentTime()
         })
       } catch (error) {
-        console.error('AI回复失败:', error)
+        logger.error('AI回复失败:', error)
 
         // 添加错误消息
         this.messages.push({
@@ -201,7 +203,7 @@ export default {
 
     // 调用智谱AI API
     async callAIApi(content) {
-      console.log('[ai-consult] 🤖 调用后端代理进行 AI 咨询...')
+      logger.log('[ai-consult] 🤖 调用后端代理进行 AI 咨询...')
 
       // ✅ 使用后端代理调用（安全）- action: 'consult'
       const response = await lafService.proxyAI('consult', {
@@ -209,17 +211,17 @@ export default {
         question: content
       })
 
-      console.log('[ai-consult] 📥 后端代理响应:', {
+      logger.log('[ai-consult] 📥 后端代理响应:', {
         code: response?.code,
         hasData: !!response?.data
       })
 
       // 处理API响应
       if (response && response.code === 0 && response.data) {
-        console.log('[ai-consult] ✅ AI 咨询成功')
+        logger.log('[ai-consult] ✅ AI 咨询成功')
         return response.data.trim()
       } else {
-        console.warn('[ai-consult] ⚠️ AI 咨询响应异常')
+        logger.warn('[ai-consult] ⚠️ AI 咨询响应异常')
         throw new Error('AI响应失败')
       }
     },

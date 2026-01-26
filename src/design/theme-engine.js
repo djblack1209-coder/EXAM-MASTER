@@ -361,8 +361,14 @@ export function applyTheme(theme = 'light') {
  */
 export function getCurrentTheme() {
     // #ifdef MP-WEIXIN
-    const systemInfo = uni.getSystemInfoSync()
-    return systemInfo.theme === 'dark' ? 'dark' : 'light'
+    // 使用新的 API 替代废弃的 getSystemInfoSync
+    try {
+        const appBaseInfo = uni.getAppBaseInfo();
+        return appBaseInfo.theme === 'dark' ? 'dark' : 'light';
+    } catch (e) {
+        console.warn('[theme-engine] 获取主题失败:', e);
+        return 'light';
+    }
     // #endif
 
     // #ifndef MP-WEIXIN

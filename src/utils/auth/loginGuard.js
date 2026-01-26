@@ -49,19 +49,21 @@ export function getCurrentUserInfo() {
 }
 
 /**
- * 登录保护中间件 - 检查登录状态，未登录则跳转登录页
+ * 登录保护中间件 - 检查登录状态，未登录则显示友好引导
  * @param {Function} callback - 登录后执行的回调函数
  * @param {Object} options - 配置选项
  * @param {string} options.loginUrl - 登录页面路径，默认 '/src/pages/settings/index'
  * @param {string} options.message - 未登录提示消息
  * @param {boolean} options.showToast - 是否显示提示，默认 true
+ * @param {boolean} options.useModal - 是否使用Modal弹窗，默认 true
  * @returns {boolean} 是否已登录
  */
 export function requireLogin(callback, options = {}) {
     const {
         loginUrl = '/src/pages/settings/index',
-        message = '请先登录',
-        showToast = true
+        message = '请先登录后使用此功能',
+        showToast = true,
+        useModal = true
     } = options
 
     if (isUserLoggedIn()) {
@@ -71,31 +73,53 @@ export function requireLogin(callback, options = {}) {
         }
         return true
     } else {
-        // 未登录，显示提示并跳转
-        if (showToast) {
+        // 未登录，显示友好引导
+        if (useModal) {
+            uni.showModal({
+                title: '🎓 登录提示',
+                content: message + '\n\n登录后可同步学习进度、错题本等数据！',
+                confirmText: '去登录',
+                cancelText: '暂不登录',
+                success: (res) => {
+                    if (res.confirm) {
+                        uni.navigateTo({
+                            url: loginUrl,
+                            fail: (err) => {
+                                console.error('[LoginGuard] 跳转登录页失败:', err)
+                                uni.switchTab({
+                                    url: loginUrl,
+                                    fail: () => {
+                                        console.error('[LoginGuard] switchTab 也失败了')
+                                    }
+                                })
+                            }
+                        })
+                    }
+                }
+            })
+        } else if (showToast) {
             uni.showToast({
                 title: message,
                 icon: 'none',
                 duration: 2000
             })
-        }
 
-        // 延迟跳转，让用户看到提示
-        setTimeout(() => {
-            uni.navigateTo({
-                url: loginUrl,
-                fail: (err) => {
-                    console.error('[LoginGuard] 跳转登录页失败:', err)
-                    // 如果 navigateTo 失败，尝试 switchTab（可能是 tabBar 页面）
-                    uni.switchTab({
-                        url: loginUrl,
-                        fail: () => {
-                            console.error('[LoginGuard] switchTab 也失败了')
-                        }
-                    })
-                }
-            })
-        }, showToast ? 1500 : 0)
+            // 延迟跳转，让用户看到提示
+            setTimeout(() => {
+                uni.navigateTo({
+                    url: loginUrl,
+                    fail: (err) => {
+                        console.error('[LoginGuard] 跳转登录页失败:', err)
+                        uni.switchTab({
+                            url: loginUrl,
+                            fail: () => {
+                                console.error('[LoginGuard] switchTab 也失败了')
+                            }
+                        })
+                    }
+                })
+            }, 1500)
+        }
 
         return false
     }

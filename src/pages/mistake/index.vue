@@ -39,10 +39,14 @@
 			</view>
 
 			<!-- 空状态 - 优化样式 -->
-			<view v-if="mistakes.length === 0" class="empty-box ds-flex-col ds-flex-center">
-				<text class="empty-icon">🍃</text>
-				<text class="empty-text ds-text-sm">暂无错题，继续保持！</text>
-				<view class="go-practice-btn ds-touchable" @tap="goBack">去刷题</view>
+			<view v-if="mistakes.length === 0 && !isInitLoading" class="empty-box ds-flex-col ds-flex-center">
+				<text class="empty-icon">🎉</text>
+				<text class="empty-title ds-text-lg ds-font-bold">太厉害了！</text>
+				<text class="empty-text ds-text-sm">暂时没有错题，继续保持这个状态！</text>
+				<text class="empty-hint ds-text-xs">刷题过程中答错的题目会自动收录到这里</text>
+				<view class="go-practice-btn ds-touchable" @tap="goBack">
+					<text>📝 去刷题</text>
+				</view>
 			</view>
 
 			<!-- 错题列表 -->
@@ -192,6 +196,12 @@ import { lafService } from '../../services/lafService.js'
 import { storageService } from '../../services/storageService.js'
 import MistakeSkeleton from '../../components/base/mistake-skeleton/mistake-skeleton.vue'
 import StatsCard from '../../components/v0/StatsCard.vue'
+// ✅ 检查点 5.1: 导入分析服务
+import { analytics } from '../../utils/analytics/event-bus-analytics.js'
+// ✅ 检查点 5.3: 导入自适应学习引擎
+import { recordReview } from '../../utils/learning/adaptive-learning-engine.js'
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js'
 
 export default {
 	components: {
@@ -254,13 +264,13 @@ export default {
 	methods: {
 		loadMore() {
 			const nextPage = this.currentPage + 1;
-			console.log(`[mistake-book] 📄 触底加载: page=${nextPage}, isLoading=${this.isLoading}, hasMore=${this.hasMore}`);
+			logger.log(`[mistake-book] 📄 触底加载: page=${nextPage}, isLoading=${this.isLoading}, hasMore=${this.hasMore}`);
 			if (this.isLoading || !this.hasMore) {
-				console.log(`[mistake-book] ⏸️ 分页加载被阻止 - isLoading: ${this.isLoading}, hasMore: ${this.hasMore}`);
+				logger.log(`[mistake-book] ⏸️ 分页加载被阻止 - isLoading: ${this.isLoading}, hasMore: ${this.hasMore}`);
 				return;
 			}
 			this.currentPage = nextPage;
-			console.log(`[mistake-book] ➡️ 开始加载第 ${this.currentPage} 页（追加模式）`);
+			logger.log(`[mistake-book] ➡️ 开始加载第 ${this.currentPage} 页（追加模式）`);
 			this.loadData(false);
 		},
 		loadUserInfo() {
@@ -268,10 +278,10 @@ export default {
 		},
 		async syncPendingMistakes() {
 			try {
-				console.log('[mistake-book] 开始自动同步待同步错题...');
+				logger.log('[mistake-book] 开始自动同步待同步错题...');
 				const result = await storageService.syncPendingMistakes();
 				if (result.synced > 0) {
-					console.log(`[mistake-book] ✅ 同步完成: ${result.synced} 条错题已同步到云端`);
+					logger.log(`[mistake-book] ✅ 同步完成: ${result.synced} 条错题已同步到云端`);
 					// 如果同步成功，重新加载列表以显示更新后的 ID
 					if (result.synced > 0) {
 						// 延迟一下，确保本地存储已更新
@@ -280,32 +290,32 @@ export default {
 						}, 300);
 					}
 				} else if (result.failed > 0) {
-					console.warn(`[mistake-book] ⚠️ 同步部分失败: ${result.failed} 条错题未能同步`);
+					logger.warn(`[mistake-book] ⚠️ 同步部分失败: ${result.failed} 条错题未能同步`);
 				}
 			} catch (error) {
-				console.error('[mistake-book] 同步待同步错题异常:', error);
+				logger.error('[mistake-book] 同步待同步错题异常:', error);
 			}
 		},
 		async loadData(reset = false) {
 			if (this.isLoading) {
-				console.log('[mistake-book] ⏸️ 加载中，跳过重复请求');
+				logger.log('[mistake-book] ⏸️ 加载中，跳过重复请求');
 				return;
 			}
 
 			this.isLoading = true;
-			console.log(`[mistake-book] 🔄 开始加载数据 - reset: ${reset}, currentPage: ${this.currentPage}, pageSize: ${this.pageSize}`);
+			logger.log(`[mistake-book] 🔄 开始加载数据 - reset: ${reset}, currentPage: ${this.currentPage}, pageSize: ${this.pageSize}`);
 
 			try {
 				if (reset) {
 					this.currentPage = 1;
 					this.mistakes = [];
-					console.log('[mistake-book] 🔄 重置状态，从第1页开始加载');
+					logger.log('[mistake-book] 🔄 重置状态，从第1页开始加载');
 				}
 
-				console.log(`[mistake-book] 📡 调用 storageService.getMistakes(${this.currentPage}, ${this.pageSize})`);
+				logger.log(`[mistake-book] 📡 调用 storageService.getMistakes(${this.currentPage}, ${this.pageSize})`);
 				// 使用云端方法获取错题列表
 				const result = await storageService.getMistakes(this.currentPage, this.pageSize);
-				console.log('[mistake-book] ✅ 数据加载完成:', {
+				logger.log('[mistake-book] ✅ 数据加载完成:', {
 					count: result?.list?.length || 0,
 					total: result?.total || 0,
 					page: result?.page || this.currentPage,
@@ -317,19 +327,19 @@ export default {
 					const beforeCount = this.mistakes.length;
 					if (reset) {
 						this.mistakes = result.list;
-						console.log(`[mistake-book] ✅ 重置模式：加载了 ${result.list.length} 条错题`);
+						logger.log(`[mistake-book] ✅ 重置模式：加载了 ${result.list.length} 条错题`);
 					} else {
 						// 追加数据（用于分页加载）
 						this.mistakes = [...this.mistakes, ...result.list];
-						console.log(`[mistake-book] ✅ 追加模式：从 ${beforeCount} 条增加到 ${this.mistakes.length} 条（新增 ${result.list.length} 条）`);
+						logger.log(`[mistake-book] ✅ 追加模式：从 ${beforeCount} 条增加到 ${this.mistakes.length} 条（新增 ${result.list.length} 条）`);
 					}
 
 					this.hasMore = result.hasMore || false;
-					console.log(`[mistake-book] 📊 当前状态 - 总错题数: ${this.mistakes.length}, hasMore: ${this.hasMore}, currentPage: ${this.currentPage}`);
+					logger.log(`[mistake-book] 📊 当前状态 - 总错题数: ${this.mistakes.length}, hasMore: ${this.hasMore}, currentPage: ${this.currentPage}`);
 
 					// 空状态检查
 					if (this.mistakes.length === 0) {
-						console.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
+						logger.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
 					}
 
 					// 初始化 showAnalysis 属性
@@ -341,7 +351,7 @@ export default {
 
 					// 如果从云端获取，本地缓存已在 storageService.getMistakes 中更新（包含合并逻辑）
 					if (result.source === 'cloud' && this.currentPage === 1) {
-						console.log('[mistake-book] ✅ 云端数据已加载并合并本地待同步数据');
+						logger.log('[mistake-book] ✅ 云端数据已加载并合并本地待同步数据');
 					}
 				} else {
 					// 降级到本地读取
@@ -353,7 +363,7 @@ export default {
 					});
 				}
 			} catch (error) {
-				console.error('加载错题列表失败:', error);
+				logger.error('加载错题列表失败:', error);
 				// 降级到本地读取
 				this.mistakes = storageService.get('mistake_book', []);
 				this.mistakes.forEach(item => {
@@ -387,7 +397,7 @@ export default {
 						uni.showLoading({ title: '清空中...' });
 
 						try {
-							console.log('[mistake-book] 🧹 开始清空所有错题...');
+							logger.log('[mistake-book] 🧹 开始清空所有错题...');
 
 							// 获取所有错题的 ID
 							const mistakeIds = this.mistakes
@@ -403,7 +413,7 @@ export default {
 										deletedCount++;
 									}
 								} catch (error) {
-									console.warn(`[mistake-book] ⚠️ 删除错题失败: ${id}`, error);
+									logger.warn(`[mistake-book] ⚠️ 删除错题失败: ${id}`, error);
 								}
 							}
 
@@ -415,8 +425,8 @@ export default {
 							this.currentPage = 1;
 							this.hasMore = false;
 
-							console.log(`[mistake-book] ✅ 清空完成: 已删除 ${deletedCount}/${mistakeIds.length} 条云端错题，本地缓存已清空`);
-							console.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
+							logger.log(`[mistake-book] ✅ 清空完成: 已删除 ${deletedCount}/${mistakeIds.length} 条云端错题，本地缓存已清空`);
+							logger.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
 
 							uni.hideLoading();
 							const totalCount = mistakeIds.length;
@@ -431,7 +441,7 @@ export default {
 								this.$forceUpdate();
 							});
 						} catch (error) {
-							console.error('[mistake-book] ❌ 清空错题失败:', error);
+							logger.error('[mistake-book] ❌ 清空错题失败:', error);
 							uni.hideLoading();
 							uni.showToast({
 								title: '清空失败，请重试',
@@ -497,23 +507,23 @@ export default {
 						try {
 							// 使用云端方法删除
 							const mistakeId = mistake.id || mistake._id;
-							console.log(`[mistake-book] 开始删除错题: ${mistakeId} (index: ${index})`);
+							logger.log(`[mistake-book] 开始删除错题: ${mistakeId} (index: ${index})`);
 							const result = await storageService.removeMistake(mistakeId);
 
 							if (result.success) {
 								// 从列表中移除
 								this.mistakes.splice(index, 1);
-								console.log(`[mistake-book] ✅ 删除成功，列表剩余 ${this.mistakes.length} 条错题`);
+								logger.log(`[mistake-book] ✅ 删除成功，列表剩余 ${this.mistakes.length} 条错题`);
 								uni.showToast({ title: '已移除', icon: 'success' });
 							} else {
 								// 如果云端删除失败，尝试本地删除
-								console.warn(`[mistake-book] ⚠️ 删除失败，降级到本地删除: ${result.error}`);
+								logger.warn(`[mistake-book] ⚠️ 删除失败，降级到本地删除: ${result.error}`);
 								this.mistakes.splice(index, 1);
 								storageService.save('mistake_book', this.mistakes, true);
 								uni.showToast({ title: '已移除（本地）', icon: 'none' });
 							}
 						} catch (error) {
-							console.error('[mistake-book] 删除错题异常:', error);
+							logger.error('[mistake-book] 删除错题异常:', error);
 							// 降级到本地删除
 							this.mistakes.splice(index, 1);
 							storageService.save('mistake_book', this.mistakes, true);
@@ -533,7 +543,7 @@ export default {
 			setTimeout(() => {
 				uni.hideLoading();
 				uni.showToast({
-					title: '功能开发中，敬请期待',
+					title: '导出功能即将上线',
 					icon: 'none'
 				});
 			}, 1000);
@@ -577,21 +587,21 @@ export default {
 					// 调用绘制报告
 					try {
 						await this.drawReport(finalReportText);
-						console.log('[mistake] 报告生成完成，等待弹窗显示');
+						logger.log('[mistake] 报告生成完成，等待弹窗显示');
 					} catch (drawError) {
-						console.error('[mistake] 绘制报告失败:', drawError);
+						logger.error('[mistake] 绘制报告失败:', drawError);
 						this.showCustomLoading = false;
 						this.isGenerating = false;
 					}
 				} else {
 					// API 返回错误
-					console.error('[mistake] AI报告生成失败:', response.message);
+					logger.error('[mistake] AI报告生成失败:', response.message);
 					this.showCustomLoading = false;
 					this.isGenerating = false;
 					uni.showToast({ title: '报告生成失败，请重试', icon: 'none', duration: 3000 });
 				}
 			} catch (e) {
-				console.error('[mistake] AI 报告生成失败', e);
+				logger.error('[mistake] AI 报告生成失败', e);
 				this.showCustomLoading = false;
 				this.isGenerating = false;
 
@@ -614,7 +624,7 @@ export default {
 			}
 		},
 		closeReport() {
-			console.log('[mistake] 关闭报告弹窗');
+			logger.log('[mistake] 关闭报告弹窗');
 			this.$set(this, 'showReportModal', false);
 			// 延迟清空图片路径
 			setTimeout(() => {
@@ -622,7 +632,7 @@ export default {
 			}, 300);
 		},
 		handleImageError(e) {
-			console.error('[mistake] 图片加载失败:', e);
+			logger.error('[mistake] 图片加载失败:', e);
 			uni.showToast({
 				title: '图片加载失败',
 				icon: 'none',
@@ -632,7 +642,7 @@ export default {
 			this.showReportModal = false;
 		},
 		handleImageLoad() {
-			console.log('[mistake] 图片加载成功');
+			logger.log('[mistake] 图片加载成功');
 		},
 		saveReport() {
 			if (!this.reportImagePath) return;
@@ -645,7 +655,7 @@ export default {
 					this.showReportModal = false;
 				},
 				fail: (err) => {
-					console.error(err);
+					logger.error(err);
 					if (err.errMsg && err.errMsg.includes('auth')) {
 						uni.showModal({
 							title: '提示',
@@ -678,11 +688,11 @@ export default {
 			return new Promise((resolve, reject) => {
 				// 确保aiSummary是字符串格式
 				if (!aiSummary || typeof aiSummary !== 'string') {
-					console.error('[mistake] drawReport: aiSummary必须是字符串', typeof aiSummary);
+					logger.error('[mistake] drawReport: aiSummary必须是字符串', typeof aiSummary);
 					aiSummary = String(aiSummary || '报告生成失败，请重试');
 				}
 
-				console.log('[mistake] 开始绘制报告，内容长度:', aiSummary.length);
+				logger.log('[mistake] 开始绘制报告，内容长度:', aiSummary.length);
 
 				try {
 					// 获取canvas上下文
@@ -779,21 +789,21 @@ export default {
 
 					// 执行绘制
 					ctx.draw(false, () => {
-						console.log('[mistake] Canvas绘制完成');
+						logger.log('[mistake] Canvas绘制完成');
 
 						// 延迟后导出，确保canvas已完全渲染
 						setTimeout(() => {
-							console.log('[mistake] 开始导出Canvas为图片');
+							logger.log('[mistake] 开始导出Canvas为图片');
 
 							uni.canvasToTempFilePath({
 								canvasId: 'reportCanvas',
 								success: (res) => {
-									console.log('[mistake] Canvas导出成功:', res);
+									logger.log('[mistake] Canvas导出成功:', res);
 
 									const imagePath = res.tempFilePath || res.tempFilePaths?.[0] || '';
 
 									if (!imagePath) {
-										console.error('[mistake] 图片路径为空');
+										logger.error('[mistake] 图片路径为空');
 										this.showCustomLoading = false;
 										this.isGenerating = false;
 										uni.showToast({
@@ -805,7 +815,7 @@ export default {
 										return;
 									}
 
-									console.log('[mistake] 图片路径:', imagePath);
+									logger.log('[mistake] 图片路径:', imagePath);
 
 									// 使用$set确保响应式更新
 									this.$set(this, 'reportImagePath', imagePath);
@@ -816,7 +826,7 @@ export default {
 									this.$nextTick(() => {
 										this.$set(this, 'showReportModal', true);
 
-										console.log('[mistake] 弹窗状态已设置:', {
+										logger.log('[mistake] 弹窗状态已设置:', {
 											showReportModal: this.showReportModal,
 											reportImagePath: this.reportImagePath
 										});
@@ -827,17 +837,17 @@ export default {
 
 											// 再次延迟确保弹窗显示
 											setTimeout(() => {
-												console.log('[mistake] 最终状态:', {
+												logger.log('[mistake] 最终状态:', {
 													showReportModal: this.showReportModal,
 													hasImage: !!this.reportImagePath
 												});
 
 												// 验证弹窗是否显示
 												if (this.showReportModal && this.reportImagePath) {
-													console.log('[mistake] ✓ 报告弹窗应已显示');
+													logger.log('[mistake] ✓ 报告弹窗应已显示');
 													resolve(imagePath);
 												} else {
-													console.warn('[mistake] ⚠ 弹窗可能未正确显示');
+													logger.warn('[mistake] ⚠ 弹窗可能未正确显示');
 													// 即使验证失败也resolve，因为状态已设置
 													resolve(imagePath);
 												}
@@ -846,7 +856,7 @@ export default {
 									});
 								},
 								fail: (err) => {
-									console.error('[mistake] Canvas导出失败:', err);
+									logger.error('[mistake] Canvas导出失败:', err);
 									this.showCustomLoading = false;
 									this.isGenerating = false;
 									uni.showToast({
@@ -860,7 +870,7 @@ export default {
 						}, 1500); // 延迟1.5秒确保canvas完全渲染
 					});
 				} catch (error) {
-					console.error('[mistake] drawReport执行失败:', error);
+					logger.error('[mistake] drawReport执行失败:', error);
 					this.showCustomLoading = false;
 					this.isGenerating = false;
 					uni.showToast({
@@ -1104,7 +1114,7 @@ export default {
 		submitPractice(index) {
 			// 提交答案
 			if (this.practiceChoices[index] === undefined) {
-				console.log('[mistake-book] ⚠️ 未选择答案，无法提交');
+				logger.log('[mistake-book] ⚠️ 未选择答案，无法提交');
 				return;
 			}
 
@@ -1116,7 +1126,7 @@ export default {
 			const correctOptionIndex = ['A', 'B', 'C', 'D'].indexOf(correctAnswer);
 			const isCorrect = selectedOption === correctOptionIndex;
 
-			console.log(`[mistake-book] 📝 提交重做答案 - 错题ID: ${mistakeId}, 选择: ${selectedAnswer}, 正确答案: ${correctAnswer}, 是否正确: ${isCorrect}`);
+			logger.log(`[mistake-book] 📝 提交重做答案 - 错题ID: ${mistakeId}, 选择: ${selectedAnswer}, 正确答案: ${correctAnswer}, 是否正确: ${isCorrect}`);
 
 			this.isAnalyzing = true;
 
@@ -1134,9 +1144,20 @@ export default {
 					feedback
 				});
 
+				// ✅ 检查点 5.1: 追踪复习错题事件
+				analytics.trackReviewMistake(mistakeId, isCorrect, {
+					category: mistake.category,
+					wrongCount: mistake.wrong_count || mistake.wrongCount || 1
+				});
+				
+				// ✅ 检查点 5.3: 记录复习结果到自适应学习引擎
+				if (mistakeId) {
+					recordReview(mistakeId, isCorrect);
+				}
+
 				// 如果答对了，更新错题状态
 				if (isCorrect) {
-					console.log(`[mistake-book] ✅ 答案正确，开始更新掌握状态 - 错题ID: ${mistakeId}`);
+					logger.log(`[mistake-book] ✅ 答案正确，开始更新掌握状态 - 错题ID: ${mistakeId}`);
 
 					// 更新本地状态
 					this.$set(mistake, 'is_mastered', true);
@@ -1144,34 +1165,34 @@ export default {
 					this.$set(mistake, 'isPracticing', false);
 					this.$set(mistake, 'last_practice_time', Date.now());
 
-					console.log(`[mistake-book] ✅ 本地状态已更新 - is_mastered: true, last_practice_time: ${Date.now()}`);
+					logger.log(`[mistake-book] ✅ 本地状态已更新 - is_mastered: true, last_practice_time: ${Date.now()}`);
 
 					// 使用云端方法更新状态
 					if (mistakeId) {
-						console.log(`[mistake-book] 📡 调用 storageService.updateMistakeStatus(${mistakeId}, true)`);
+						logger.log(`[mistake-book] 📡 调用 storageService.updateMistakeStatus(${mistakeId}, true)`);
 						storageService.updateMistakeStatus(mistakeId, true)
 							.then(result => {
 								if (result.success) {
-									console.log(`[mistake-book] ✅ 云端状态更新成功 - source: ${result.source}`);
+									logger.log(`[mistake-book] ✅ 云端状态更新成功 - source: ${result.source}`);
 									// 同步更新本地缓存
 									storageService.save('mistake_book', this.mistakes, true);
-									console.log(`[mistake-book] ✅ 本地缓存已同步更新`);
+									logger.log(`[mistake-book] ✅ 本地缓存已同步更新`);
 								} else {
-									console.warn(`[mistake-book] ⚠️ 云端状态更新失败: ${result.error}`);
+									logger.warn(`[mistake-book] ⚠️ 云端状态更新失败: ${result.error}`);
 									// 降级到本地更新
 									storageService.save('mistake_book', this.mistakes, true);
-									console.log(`[mistake-book] ✅ 已降级到本地更新`);
+									logger.log(`[mistake-book] ✅ 已降级到本地更新`);
 								}
 							})
 							.catch(err => {
-								console.error('[mistake-book] ❌ 更新错题状态异常:', err);
+								logger.error('[mistake-book] ❌ 更新错题状态异常:', err);
 								// 降级到本地更新
 								storageService.save('mistake_book', this.mistakes, true);
-								console.log(`[mistake-book] ✅ 已降级到本地更新（异常处理）`);
+								logger.log(`[mistake-book] ✅ 已降级到本地更新（异常处理）`);
 							});
 					} else {
 						// 如果没有ID，仅更新本地
-						console.warn('[mistake-book] ⚠️ 错题ID为空，仅更新本地状态');
+						logger.warn('[mistake-book] ⚠️ 错题ID为空，仅更新本地状态');
 						storageService.save('mistake_book', this.mistakes, true);
 					}
 
@@ -1182,7 +1203,7 @@ export default {
 						}
 					} catch (e) { }
 				} else {
-					console.log(`[mistake-book] ❌ 答案错误，不更新掌握状态`);
+					logger.log(`[mistake-book] ❌ 答案错误，不更新掌握状态`);
 				}
 			}, 500);
 		},
@@ -1208,7 +1229,7 @@ export default {
 
 .container {
 	min-height: 100vh;
-	background: #F0F4F8;
+	background: var(--bg-page);
 	position: relative;
 	overflow: hidden;
 }
@@ -1218,7 +1239,7 @@ export default {
 	top: 0;
 	width: 100%;
 	height: 500rpx;
-	background: linear-gradient(135deg, #A8E6CF 0%, #DCEDC1 100%);
+	background: var(--gradient-primary);
 	filter: blur(80px);
 	opacity: 0.6;
 	z-index: 0;
@@ -1230,7 +1251,7 @@ export default {
 	left: 0;
 	width: 100%;
 	z-index: 100;
-	background: rgba(255, 255, 255, 0.1);
+	background: var(--bg-glass);
 	backdrop-filter: blur(20px);
 
 	.nav-content {
@@ -1242,14 +1263,14 @@ export default {
 
 		.nav-back {
 			font-size: 36rpx;
-			color: #333;
+			color: var(--text-primary);
 			font-weight: bold;
 		}
 
 		.nav-title {
 			font-size: 34rpx;
 			font-weight: 600;
-			color: #1A1A1A;
+			color: var(--text-primary);
 		}
 
 		.nav-placeholder {
@@ -1267,11 +1288,11 @@ export default {
 			gap: 8rpx;
 			padding: 8rpx 16rpx;
 			border-radius: 20rpx;
-			background: rgba(255, 59, 48, 0.1);
+			background: var(--danger-light);
 			transition: all 0.2s;
 
 			&:active {
-				background: rgba(255, 59, 48, 0.2);
+				background: var(--danger-light);
 				transform: scale(0.95);
 			}
 
@@ -1281,7 +1302,7 @@ export default {
 
 			.clear-text {
 				font-size: 24rpx;
-				color: #FF3B30;
+				color: var(--danger);
 				font-weight: 500;
 			}
 		}
@@ -1296,18 +1317,16 @@ export default {
 	z-index: 1;
 }
 
-/* 通用玻璃卡片 */
 .glass-card {
-	background: rgba(255, 255, 255, 0.75);
+	background: var(--bg-card);
 	backdrop-filter: blur(20px);
-	border: 1px solid rgba(255, 255, 255, 0.5);
+	border: 1px solid var(--border);
 	border-radius: 40rpx;
 	padding: 30rpx;
 	margin-bottom: 30rpx;
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+	box-shadow: var(--shadow-md);
 }
 
-/* 模式切换 */
 .mode-switch {
 	display: flex;
 	padding: 10rpx;
@@ -1321,44 +1340,75 @@ export default {
 		font-size: 26rpx;
 		text-align: center;
 		transition: 0.3s;
-		color: #718096;
+		color: var(--text-sub);
 
 		&.active {
-			background: #2ECC71;
-			color: #FFF;
+			background: var(--primary);
+			color: var(--primary-foreground);
 			font-weight: bold;
-			box-shadow: 0 5rpx 15rpx rgba(46, 204, 113, 0.4);
+			box-shadow: var(--shadow-md);
 		}
 	}
 }
 
-/* 空状态 */
 .empty-box {
 	text-align: center;
-	padding-top: 200rpx;
+	padding-top: 150rpx;
+	padding-bottom: 100rpx;
 
 	.empty-icon {
-		font-size: 120rpx;
+		font-size: 160rpx;
 		display: block;
 		margin-bottom: 30rpx;
+		animation: bounce 2s ease-in-out infinite;
+	}
+	
+	@keyframes bounce {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-20rpx); }
+	}
+	
+	.empty-title {
+		color: var(--text-primary);
+		font-size: 40rpx;
+		font-weight: 700;
+		margin-bottom: 16rpx;
+		display: block;
 	}
 
 	.empty-text {
-		color: #999;
+		color: var(--text-sub);
 		font-size: 28rpx;
+		margin-bottom: 16rpx;
+		display: block;
+	}
+	
+	.empty-hint {
+		color: var(--text-sub);
+		font-size: 24rpx;
+		opacity: 0.7;
 		margin-bottom: 60rpx;
 		display: block;
 	}
 
 	.go-practice-btn {
-		display: inline-block;
-		padding: 20rpx 60rpx;
-		background: #2ECC71;
-		color: #FFF;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 12rpx;
+		padding: 24rpx 64rpx;
+		background: var(--gradient-primary);
+		color: var(--primary-foreground);
 		border-radius: 50rpx;
 		font-weight: 600;
-		font-size: 28rpx;
-		box-shadow: 0 8rpx 24rpx rgba(46, 204, 113, 0.3);
+		font-size: 30rpx;
+		box-shadow: var(--shadow-lg);
+		transition: all 0.3s ease;
+	}
+	
+	.go-practice-btn:active {
+		transform: scale(0.95);
+		opacity: 0.9;
 	}
 }
 
@@ -1371,8 +1421,8 @@ export default {
 		position: absolute;
 		top: 0;
 		right: 40rpx;
-		background: rgba(46, 204, 113, 0.1);
-		color: var(--accent-warm);
+		background: var(--primary-light);
+		color: var(--primary);
 		font-size: 20rpx;
 		padding: 10rpx 20rpx;
 		border-radius: 0 0 20rpx 20rpx;
@@ -1381,7 +1431,7 @@ export default {
 	.question-text {
 		font-size: 30rpx;
 		line-height: 1.6;
-		color: #2D3748;
+		color: var(--text-primary);
 		margin-bottom: 30rpx;
 		margin-top: 10rpx;
 		display: block;
@@ -1401,38 +1451,38 @@ export default {
 	.opt-idx {
 		width: 48rpx;
 		font-weight: 700;
-		color: #999;
+		color: var(--text-sub);
 		flex-shrink: 0;
 		font-size: 28rpx;
 
 		&.correct {
-			color: var(--accent-warm);
+			color: var(--success);
 		}
 
 		&.wrong {
-			color: #E74C3C;
+			color: var(--danger);
 		}
 	}
 
 	.opt-text {
 		font-size: 28rpx;
-		color: #4A5568;
+		color: var(--text-primary);
 		line-height: 1.5;
 		flex: 1;
 	}
 }
 
 .analysis-box {
-	background: #F7FAFC;
+	background: var(--bg-secondary);
 	border-radius: 20rpx;
 	padding: 30rpx;
 	margin-bottom: 30rpx;
-	border-left: 8rpx solid #2ECC71;
+	border-left: 8rpx solid var(--primary);
 	animation: fadeIn 0.3s;
 
 	.correct-ans {
 		font-weight: bold;
-		color: var(--accent-warm);
+		color: var(--success);
 		margin-bottom: 20rpx;
 		font-size: 28rpx;
 		display: block;
@@ -1440,12 +1490,12 @@ export default {
 
 	.analysis-content {
 		font-size: 26rpx;
-		color: #4A5568;
+		color: var(--text-primary);
 		line-height: 1.6;
 
 		.label {
 			font-weight: bold;
-			color: #2D3748;
+			color: var(--text-primary);
 		}
 	}
 }
@@ -1459,7 +1509,7 @@ export default {
 
 	.time-text {
 		font-size: 22rpx;
-		color: #999;
+		color: var(--text-sub);
 	}
 
 	.actions {
@@ -1474,18 +1524,18 @@ export default {
 		border: none;
 
 		&.sm {
-			background: #F0F0F0;
-			color: #666;
+			background: var(--bg-secondary);
+			color: var(--text-sub);
 		}
 
 		&.del {
-			background: rgba(231, 76, 60, 0.1);
-			color: #E74C3C;
+			background: var(--danger-light);
+			color: var(--danger);
 		}
 
 		&.primary {
-			background: #2ECC71;
-			color: white;
+			background: var(--primary);
+			color: var(--primary-foreground);
 			font-weight: bold;
 		}
 
@@ -1506,13 +1556,13 @@ export default {
 	.practice-options .option-row {
 		padding: 20rpx;
 		border-radius: 16rpx;
-		background: rgba(255, 255, 255, 0.5);
+		background: var(--bg-secondary);
 		transition: all 0.2s;
 		cursor: pointer;
 
 		&.selected {
-			background: rgba(46, 204, 113, 0.15);
-			border: 1px solid rgba(46, 204, 113, 0.5);
+			background: var(--primary-light);
+			border: 1px solid var(--primary);
 		}
 
 		&.disabled {
@@ -1521,12 +1571,11 @@ export default {
 		}
 	}
 
-	/* 练习结果样式 */
 	.practice-result {
 		margin-top: 30rpx;
 		padding: 20rpx;
 		border-radius: 16rpx;
-		background: rgba(247, 250, 252, 0.8);
+		background: var(--bg-secondary);
 	}
 
 	.result-icon {
@@ -1535,11 +1584,11 @@ export default {
 		margin-right: 10rpx;
 
 		&.correct {
-			color: var(--accent-warm);
+			color: var(--success);
 		}
 
 		&.wrong {
-			color: #E74C3C;
+			color: var(--danger);
 		}
 	}
 
@@ -1685,17 +1734,16 @@ export default {
 
 	.result-desc {
 		font-size: 26rpx;
-		color: #666;
+		color: var(--text-sub);
 		line-height: 1.5;
 	}
 
-	/* 错误次数显示 */
 	.wrong-count {
 		display: flex;
 		align-items: center;
 		gap: 8rpx;
 		font-size: 22rpx;
-		color: #F59E0B;
+		color: var(--warning);
 	}
 
 	.count-icon {
@@ -1710,15 +1758,15 @@ export default {
 	transform: translateX(-50%);
 	width: 300rpx;
 	height: 90rpx;
-	background: #2D3748;
-	color: white;
+	background: var(--bg-card);
+	color: var(--text-primary);
 	border-radius: 45rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 10rpx;
 	font-size: 28rpx;
-	box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.2);
+	box-shadow: var(--shadow-lg);
 	z-index: 99;
 }
 
@@ -1738,21 +1786,21 @@ export default {
 	max-width: 600rpx;
 	height: 88rpx;
 	padding: 0 32rpx;
-	background: rgba(255, 59, 48, 0.1);
-	border: 2rpx solid rgba(255, 59, 48, 0.3);
+	background: var(--danger-light);
+	border: 2rpx solid var(--danger);
 	border-radius: 44rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 12rpx;
 	transition: all 0.2s;
-	box-shadow: 0 4rpx 12rpx rgba(255, 59, 48, 0.15);
+	box-shadow: var(--shadow-sm);
 }
 
 .clear-all-btn:active {
-	background: rgba(255, 59, 48, 0.2);
+	background: var(--danger-light);
 	transform: scale(0.98);
-	box-shadow: 0 2rpx 8rpx rgba(255, 59, 48, 0.2);
+	box-shadow: var(--shadow-xs);
 }
 
 .clear-all-btn::after {
@@ -1766,7 +1814,7 @@ export default {
 
 .clear-all-text {
 	font-size: 30rpx;
-	color: #FF3B30;
+	color: var(--danger);
 	font-weight: 600;
 	white-space: nowrap;
 }
@@ -1789,15 +1837,15 @@ export default {
 	max-width: 650rpx;
 	min-width: 500rpx;
 	height: 100rpx;
-	background: linear-gradient(135deg, #2ECC71, #27AE60);
-	color: var(--bg-card);
+	background: var(--gradient-primary);
+	color: var(--primary-foreground);
 	border-radius: 50rpx;
 	font-weight: bold;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 12rpx;
-	box-shadow: 0 10rpx 30rpx rgba(46, 204, 113, 0.3);
+	box-shadow: var(--shadow-lg);
 	border: none;
 	padding: 0 30rpx;
 	box-sizing: border-box;
@@ -1845,7 +1893,7 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.75);
+	background: var(--overlay);
 	backdrop-filter: blur(10px);
 	display: flex;
 	align-items: center;
@@ -1862,7 +1910,7 @@ export default {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.3);
+	box-shadow: var(--shadow-xl);
 	min-width: 400rpx;
 }
 
@@ -1876,8 +1924,8 @@ export default {
 .spinner-ring {
 	width: 120rpx;
 	height: 120rpx;
-	border: 6rpx solid #F0F0F0;
-	border-top-color: var(--accent-warm);
+	border: 6rpx solid var(--border);
+	border-top-color: var(--primary);
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
 }
@@ -1895,7 +1943,7 @@ export default {
 .loading-text {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: #333;
+	color: var(--text-primary);
 	margin-bottom: 16rpx;
 	white-space: nowrap;
 	overflow: visible;
@@ -1903,7 +1951,7 @@ export default {
 
 .loading-desc {
 	font-size: 24rpx;
-	color: #999;
+	color: var(--text-sub);
 	text-align: center;
 	line-height: 1.5;
 }
@@ -1911,7 +1959,7 @@ export default {
 .loading-placeholder {
 	padding: 100rpx;
 	text-align: center;
-	color: #999;
+	color: var(--text-sub);
 }
 
 /* Canvas 画布（隐藏） */

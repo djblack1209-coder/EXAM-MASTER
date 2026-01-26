@@ -216,6 +216,8 @@ import { useTodoStore } from '../../stores/modules/todo';
 import { useUserStore } from '../../stores/modules/user';
 import { lafService } from '../../services/lafService.js';
 import { storageService } from '../../services/storageService.js';
+// ✅ 统一日志工具（生产环境自动禁用）
+import { logger } from '../../utils/logger.js';
 
 export default {
 	components: {
@@ -423,7 +425,7 @@ export default {
 				this.loadRecentActivities();
 				
 			} catch (error) {
-				console.error('[Index] 数据加载失败:', error);
+				logger.error('[Index] 数据加载失败:', error);
 				uni.showToast({
 					title: '数据加载失败',
 					icon: 'none'
@@ -513,7 +515,7 @@ export default {
 					}
 				];
 			} catch (error) {
-				console.error('[Index] 加载知识点失败:', error);
+				logger.error('[Index] 加载知识点失败:', error);
 			}
 		},
 		
@@ -555,7 +557,7 @@ export default {
 			if (cachedDate === dateStr && cachedQuote) {
 				// 使用缓存的金句
 				this.dailyQuote = cachedQuote;
-				console.log('[Index] 使用缓存的每日金句');
+				logger.log('[Index] 使用缓存的每日金句');
 			} else {
 				// 生成新的每日金句
 				this.generateDailyQuote();
@@ -579,7 +581,7 @@ export default {
 			uni.setStorageSync('daily_quote_cache', this.dailyQuote);
 			uni.setStorageSync('daily_quote_date', dateStr);
 			
-			console.log('[Index] 生成新的每日金句:', this.dailyQuote);
+			logger.log('[Index] 生成新的每日金句:', this.dailyQuote);
 		},
 		
 		/**
@@ -613,7 +615,7 @@ export default {
 				// 更新缓存
 				uni.setStorageSync('daily_quote_cache', this.dailyQuote);
 				
-				console.log('[Index] 刷新每日金句:', this.dailyQuote);
+				logger.log('[Index] 刷新每日金句:', this.dailyQuote);
 			}, 500);
 		},
 		

@@ -20,9 +20,9 @@ defineProps({
 })
 
 const handleUpload = () => {
-  console.log('点击上传题库')
+  // 上传功能处理
   uni.showToast({
-    title: '上传功能开发中',
+    title: '上传功能即将上线',
     icon: 'none'
   })
 }

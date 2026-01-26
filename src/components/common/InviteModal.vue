@@ -95,11 +95,10 @@ export default {
           summary: "输入我的邀请码 " + this.inviteCode + " 领取会员！",
           imageUrl: "/static/tabbar/practice-active.png", // 使用本地图标
           success: function (res) {
-            console.log("success:" + JSON.stringify(res));
+            // 分享成功
           },
           fail: (err) => {
-            console.log("share fail:", err);
-            uni.showToast({ title: '分享功能开发中', icon: 'none' });
+            uni.showToast({ title: '分享功能即将上线', icon: 'none' });
           }
         });
       } else {

@@ -1,11 +1,8 @@
 /**
- * 全局配置文件
- * 统一管理项目中的常量、API配置等
+ * 全局配置文件（根目录版本 - 兼容旧代码）
  * 
- * ⚠️ 安全提示：
- * 1. 生产环境请将 API Key 配置到 Sealos 后端环境变量中
- * 2. 不要将包含真实 API Key 的代码提交到公开仓库
- * 3. 建议使用环境变量或后端服务来管理敏感信息
+ * ⚠️ 注意：这是根目录下的配置文件，用于兼容旧的导入路径
+ * 新代码请使用 src/common/config.js 或 src/config/index.js
  * 
  * 📝 迁移说明：
  * - 已从阿里云 uniCloud 迁移到 Sealos 后端服务
@@ -16,11 +13,9 @@
 // ⚠️ 安全升级：前端不再持有任何API Key
 // 所有AI请求必须通过 Sealos 后端 /proxy-ai 接口转发
 export const AI_CONFIG = {
-  // ❌ 已移除：apiKey 和 getApiKey() 方法
-  // ✅ 新方案：所有AI请求通过 lafService.proxyAI() 调用后端代理
-  baseURL: 'https://open.bigmodel.cn/api/paas/v4', // 仅供参考，实际请求走后端
-  model: 'glm-4-plus', // 默认使用的模型
-  timeout: 60000 // 请求超时时间
+  baseURL: 'https://open.bigmodel.cn/api/paas/v4',
+  model: 'glm-4-plus',
+  timeout: 60000
 }
 
 /**
@@ -30,12 +25,11 @@ export const AI_CONFIG = {
  */
 export const getApiKey = () => {
   console.error('❌ getApiKey() 已废弃！请使用 lafService.proxyAI() 调用后端代理')
-  return '' // 返回空字符串，强制开发者切换到后端代理
+  return ''
 }
 
 // API基础配置
 export const API_CONFIG = {
-  // ✅ 修复：移除 import.meta.env 依赖，直接使用默认值
   baseURL: 'https://nf98ia8qnt.sealosbja.site',
   timeout: 100000
 }
@@ -44,9 +38,7 @@ export const API_CONFIG = {
 export const APP_CONFIG = {
   appName: 'Exam-Master',
   version: '1.0.0',
-  // 分页配置
   pageSize: 20,
-  // 缓存键名
   cacheKeys: {
     token: 'EXAM_TOKEN',
     userInfo: 'EXAM_USER_INFO',
@@ -56,19 +48,14 @@ export const APP_CONFIG = {
 
 // 路由配置
 export const ROUTE_CONFIG = {
-  // 不需要登录的页面
   whiteList: [
     '/src/pages/index/index'
   ]
 }
 
 // 微信小程序配置
-// ⚠️ 注意：这是前端配置文件，只能配置 AppID
-// WX_SECRET_PLACEHOLDER
 export const WX_CONFIG = {
-  // ✅ 修复：移除 import.meta.env 依赖，直接使用默认值
   appId: 'wx5bee888cf32215df'
-  // ⚠️ 前端不包含 Secret，Secret 仅在 Sealos 后端通过环境变量读取
 }
 
 export default {

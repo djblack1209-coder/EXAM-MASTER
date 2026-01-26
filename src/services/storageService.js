@@ -693,10 +693,46 @@ class StorageService {
       return {
         success: false,
         synced: 0,
-        failed: pendingMistakes.length,
+        failed: 0,
         error: error.message
       }
     }
+  }
+  
+  /**
+   * 获取Mock题库数据（用于演示）
+   * @returns {Array} Mock题目数组
+   */
+  getMockQuestions() {
+    return [
+      {
+        id: 'mock_1',
+        question: '马克思主义哲学的直接理论来源是？',
+        options: ['A. 德国古典哲学', 'B. 英国古典政治经济学', 'C. 法国空想社会主义', 'D. 古希腊哲学'],
+        answer: 'A',
+        category: '马原',
+        desc: '马克思主义哲学的直接理论来源是德国古典哲学，特别是黑格尔的辩证法和费尔巴哈的唯物主义。',
+        type: '单选'
+      },
+      {
+        id: 'mock_2',
+        question: '实践是检验真理的唯一标准，这是因为？',
+        options: ['A. 实践具有直接现实性', 'B. 实践是认识的来源', 'C. 实践是认识发展的动力', 'D. 实践是认识的目的'],
+        answer: 'A',
+        category: '马原',
+        desc: '实践之所以是检验真理的唯一标准，是因为实践具有直接现实性的特点，能够把主观认识与客观实际联系起来。',
+        type: '单选'
+      },
+      {
+        id: 'mock_3',
+        question: '中国特色社会主义最本质的特征是？',
+        options: ['A. 人民当家作主', 'B. 中国共产党领导', 'C. 社会主义市场经济', 'D. 依法治国'],
+        answer: 'B',
+        category: '毛中特',
+        desc: '中国特色社会主义最本质的特征是中国共产党领导，中国特色社会主义制度的最大优势是中国共产党领导。',
+        type: '单选'
+      }
+    ]
   }
 }
 

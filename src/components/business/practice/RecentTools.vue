@@ -49,7 +49,7 @@ const tools = ref([
 ])
 
 const handleToolClick = (tool) => {
-  console.log('点击工具:', tool.name)
+  // 工具点击处理
   uni.showToast({
     title: tool.name,
     icon: 'none'
