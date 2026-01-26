@@ -39,21 +39,6 @@ const tools = ref([
 ])
 
 const handleToolClick = (tool) => {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/f5c451ee-9a20-46e5-a996-fe0cc48cf454', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      location: 'ToolsGrid.vue:handleToolClick',
-      message: 'tool_click',
-      data: { toolId: tool.id, toolName: tool.name },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'pre-fix',
-      hypothesisId: 'H7'
-    })
-  }).catch(() => { })
-  // #endregion
   uni.showToast({
     title: `打开${tool.name}`,
     icon: 'none'

@@ -57,21 +57,7 @@ const handleToolClick = (tool) => {
 }
 
 onMounted(() => {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/f5c451ee-9a20-46e5-a996-fe0cc48cf454', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      location: 'RecentTools.vue:mounted',
-      message: 'recent_tools_icons',
-      data: { tools: tools.value.map((item) => ({ name: item.name, icon: item.icon })) },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'pre-fix',
-      hypothesisId: 'H4'
-    })
-  }).catch(() => { })
-  // #endregion
+  // 组件挂载完成
 })
 </script>
 

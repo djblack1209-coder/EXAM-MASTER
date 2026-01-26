@@ -468,7 +468,7 @@ export default {
 			this.showAIConsultPanel = false;
 		},
 		viewMajorDetail(major) {
-			uni.showToast({ title: `${major.name} 详情开发中`, icon: 'none' });
+			uni.showToast({ title: `${major.name} 详情即将上线`, icon: 'none' });
 		},
 		async fetchAIPrediction() {
 			if (this.isAnalyzing) {
