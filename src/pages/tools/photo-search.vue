@@ -45,10 +45,10 @@
           <view class="result-section">
             <view class="section-header">
               <text class="section-title">识别结果</text>
-              <text class="confidence">置信度: {{ (result.confidence * 100).toFixed(0) }}%</text>
+              <text class="confidence">置信度: {{ result.confidence ? (result.confidence * 100).toFixed(0) : 0 }}%</text>
             </view>
             <view class="recognized-text">
-              <text>{{ result.recognizedText }}</text>
+              <text>{{ result.recognizedText || '未能识别到文字内容，请重新拍照' }}</text>
             </view>
           </view>
           
@@ -298,11 +298,26 @@ export default {
         })
         
         if (response.code === 0 && response.data) {
-          this.result = response.data
+          // 数据完整性校验 (CP-20260127-QA: 防止空数据导致白屏)
+          const rawData = response.data
+          const recognizedText = rawData.recognizedText || rawData.recognition?.questionText || ''
+          
+          if (!recognizedText && (!rawData.matchedQuestions || rawData.matchedQuestions.length === 0)) {
+            throw new Error('未能识别到有效内容，请确保图片清晰完整')
+          }
+          
+          // 标准化数据结构，添加空值防护
+          this.result = {
+            confidence: rawData.confidence ?? rawData.recognition?.confidence ?? 0,
+            recognizedText: recognizedText,
+            questions: rawData.matchedQuestions || rawData.questions || [],
+            aiGenerated: rawData.aiSolution || rawData.aiGenerated || null,
+            recognitionSources: rawData.recognitionSources || null
+          }
           this.mode = 'result'
           
           // 显示识别来源
-          const sources = response.data.recognitionSources
+          const sources = this.result.recognitionSources
           if (sources) {
             logger.log('识别来源 - 视觉AI:', sources.vision, ', OCR:', sources.ocr)
           }

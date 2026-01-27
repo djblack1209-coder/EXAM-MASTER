@@ -1064,14 +1064,19 @@ const onChooseAvatar = (e) => {
   }
 };
 
-// 输入验证：过滤危险字符
-const sanitizeInput = (input, maxLength = 50) => {
+// 输入验证：过滤危险字符和 Emoji
+const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
   if (!input) return '';
-  // 过滤危险字符：< > " ' & 和控制字符
-  return String(input)
-    .replace(/[<>"'&\x00-\x1F\x7F]/g, '')
-    .trim()
-    .slice(0, maxLength);
+  let result = String(input)
+    // 过滤危险字符：< > " ' & 和控制字符
+    .replace(/[<>"'&\x00-\x1F\x7F]/g, '');
+  
+  // 可选：过滤 Emoji 和特殊字符，只保留中文、英文、数字和常用标点
+  if (!allowEmoji) {
+    result = result.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s\-_.,!?，。！？、]/g, '');
+  }
+  
+  return result.trim().slice(0, maxLength);
 };
 
 // 微信最新登录规范：获取昵称

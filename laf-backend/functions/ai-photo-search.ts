@@ -60,6 +60,23 @@ export default async function (ctx) {
   try {
     const { action, ...params } = ctx.body || {}
 
+    // ==================== 安全检查：审核模式拦截 (CP-20260127-QA) ====================
+    // 支持多种审计模式请求头，与 proxy-ai.js 保持一致
+    const auditMode = ctx.headers?.['x-audit-mode'] === 'true' ||
+                      ctx.headers?.['x-exam-audit'] === 'true' ||
+                      ctx.headers?.['x-review-mode'] === 'true'
+    
+    if (auditMode) {
+      console.warn(`[${requestId}] [SECURITY] 审计模式拦截 - 拍照搜题功能在审核期间不可用`)
+      return {
+        code: 403,
+        success: false,
+        message: 'Function not available in audit mode',
+        auditMode: true,
+        requestId
+      }
+    }
+
     // 检查配置
     if (!CONFIG.zhipu.apiKey) {
       return {

@@ -90,13 +90,19 @@ const AI_FRIENDS = {
 }
 
 // ==================== 安全配置 ====================
-// 审计模式下受限的操作
+// 审计模式下受限的操作（CP-20260127-011 安全加固）
+// 包含两类：核心AI功能 + 敏感功能
 const AUDIT_RESTRICTED_ACTIONS = [
+  // 核心 AI 功能（原有）
   'generate_questions',
   'analyze', 
   'material_understand',
   'trend_predict',
-  'adaptive_pick'
+  'adaptive_pick',
+  // 敏感功能（CP-20260127-011 新增 - 审核模式穿透风险修复）
+  'photoSearch',    // 图片搜索
+  'universe',       // 宇宙/高级功能
+  'voice-input'     // 语音输入
 ]
 
 // 速率限制配置
@@ -108,6 +114,104 @@ const RATE_LIMIT_CONFIG = {
 
 // 简单的内存速率限制器（生产环境建议使用 Redis）
 const rateLimitStore = new Map()
+
+/**
+ * 安全响应包装器 - 确保输出始终是合法 JSON 结构
+ * CP-20260127-011 [P1] AI 响应格式兜底
+ * @param {any} data - 原始响应数据
+ * @returns {object} - 安全的 JSON 对象
+ */
+function safeJsonResponse(data) {
+  // 如果已经是有效对象，直接返回
+  if (data !== null && typeof data === 'object' && !Array.isArray(data)) {
+    return data
+  }
+  
+  // 如果是数组，包装成对象
+  if (Array.isArray(data)) {
+    return { items: data, _type: 'array' }
+  }
+  
+  // 如果是字符串，尝试解析或包装
+  if (typeof data === 'string') {
+    // 尝试解析为 JSON
+    try {
+      const parsed = JSON.parse(data)
+      return typeof parsed === 'object' ? parsed : { content: parsed, _type: 'parsed' }
+    } catch {
+      // 清理可能的 Markdown 乱码和特殊字符
+      const cleanedContent = data
+        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '') // 移除控制字符
+        .replace(/```[\s\S]*?```/g, (match) => {
+          // 保留代码块内容但移除标记
+          return match.replace(/```\w*\n?/g, '').replace(/```/g, '')
+        })
+        .trim()
+      
+      return { content: cleanedContent || '(empty response)', _type: 'text' }
+    }
+  }
+  
+  // 处理 null、undefined 或其他类型
+  if (data === null || data === undefined) {
+    return { content: null, _type: 'empty' }
+  }
+  
+  // 其他基本类型（number, boolean）
+  return { value: data, _type: typeof data }
+}
+
+/**
+ * 安全化 AI 响应数据 - 深度清理确保 JSON 安全
+ * @param {any} responseData - AI 返回的原始数据
+ * @param {string} action - 操作类型
+ * @returns {any} - 安全的响应数据
+ */
+function sanitizeAiResponse(responseData, action) {
+  try {
+    // 对于需要 JSON 的 action，确保返回有效结构
+    const jsonActions = ['generate_questions', 'adaptive_pick', 'material_understand', 'trend_predict', 'analyze']
+    
+    if (jsonActions.includes(action)) {
+      if (typeof responseData === 'string') {
+        // 尝试提取和解析 JSON
+        let jsonStr = responseData
+        
+        // 处理 markdown 代码块
+        const jsonMatch = responseData.match(/```json\s*([\s\S]*?)\s*```/)
+        if (jsonMatch) {
+          jsonStr = jsonMatch[1]
+        } else {
+          const arrayMatch = responseData.match(/\[[\s\S]*\]/)
+          const objectMatch = responseData.match(/\{[\s\S]*\}/)
+          if (arrayMatch) jsonStr = arrayMatch[0]
+          else if (objectMatch) jsonStr = objectMatch[0]
+        }
+        
+        try {
+          return JSON.parse(jsonStr)
+        } catch {
+          // JSON 解析失败，返回兜底结构
+          return {
+            _parseError: true,
+            _rawContent: responseData.substring(0, 1000),
+            _message: 'AI 响应格式异常，已返回原始内容'
+          }
+        }
+      }
+    }
+    
+    // 非 JSON action 或已经是对象，直接返回
+    return responseData
+  } catch (error) {
+    // 任何异常都返回安全结构
+    return {
+      _error: true,
+      _message: '响应处理异常',
+      _detail: error.message
+    }
+  }
+}
 
 function checkRateLimit(identifier) {
   if (!RATE_LIMIT_CONFIG.enabled) return { allowed: true }
@@ -166,17 +270,20 @@ export default async function (ctx) {
       }
     }
     
-    // 3. Audit-Mode 检查（后端最后一道防线）
+    // 3. Audit-Mode 检查（后端最后一道防线 - CP-20260127-011 安全加固）
+    // 支持多种审计模式请求头，确保兼容性
     const auditMode = ctx.headers?.['x-audit-mode'] === 'true' ||
-                      ctx.headers?.['x-exam-audit'] === 'true'
+                      ctx.headers?.['x-exam-audit'] === 'true' ||
+                      ctx.headers?.['x-review-mode'] === 'true'
     const action = ctx.body?.action
     
+    // 强制拦截审计模式下的受限操作
     if (auditMode && AUDIT_RESTRICTED_ACTIONS.includes(action)) {
-      console.warn(`[${requestId}] 审计模式下禁止操作: ${action}`)
+      console.warn(`[${requestId}] [SECURITY] 审计模式拦截 - Action: ${action}, IP: ${clientIP}, User: ${userId}`)
       return {
         code: 403,
         success: false,
-        message: '审计模式下禁止此操作',
+        message: 'Function not available in audit mode',  // 标准化错误消息
         auditMode: true,
         restrictedAction: action,
         requestId
@@ -300,7 +407,7 @@ export default async function (ctx) {
     
     console.log(`[${requestId}] AI 响应成功，内容长度: ${aiContent.length}`)
     
-    // 7. 解析响应内容
+    // 7. 解析响应内容（使用安全化处理）
     let responseData = aiContent
     
     // 需要解析JSON的action类型
@@ -311,25 +418,28 @@ export default async function (ctx) {
         responseData = parseJsonResponse(aiContent, action)
         console.log(`[${requestId}] JSON 解析成功`)
       } catch (parseError) {
-        console.warn(`[${requestId}] JSON 解析失败，返回原始文本:`, parseError.message)
-        // 解析失败，返回原始文本
-        responseData = aiContent
+        console.warn(`[${requestId}] JSON 解析失败，使用安全兜底:`, parseError.message)
+        // [P1] 使用安全化响应处理，确保返回合法 JSON
+        responseData = sanitizeAiResponse(aiContent, action)
       }
     }
+    
+    // [P1] 最终响应安全包装 - 确保 data 字段始终是合法 JSON
+    const safeData = safeJsonResponse(responseData)
     
     // 8. 保存AI好友对话记忆（如果是friend_chat）
     if (action === 'friend_chat' && userId && friendType) {
       await saveConversationMemory(userId, friendType, content, aiContent)
     }
     
-    // 9. 计算耗时并返回
+    // 9. 计算耗时并返回（使用安全包装的数据）
     const duration = Date.now() - startTime
     console.log(`[${requestId}] AI 代理完成，耗时: ${duration}ms`)
     
     return {
       code: 0,
       success: true,
-      data: responseData,
+      data: safeData,  // [P1] 使用安全包装后的数据
       message: '请求成功',
       requestId,
       duration,
@@ -341,11 +451,13 @@ export default async function (ctx) {
     const duration = Date.now() - startTime
     console.error(`[${requestId}] AI 代理异常:`, error)
     
+    // [P1] 确保错误响应也是合法 JSON 结构
     return {
       code: -1,
       success: false,
-      message: error.message || 'AI 服务异常',
-      error: error.message,
+      message: typeof error.message === 'string' ? error.message : 'AI 服务异常',
+      error: String(error.message || error),
+      data: null,  // 确保 data 字段存在且为合法值
       requestId,
       duration
     }

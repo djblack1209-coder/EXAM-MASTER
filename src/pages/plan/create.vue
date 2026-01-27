@@ -135,6 +135,21 @@
 import { storageService } from '../../services/storageService.js'
 import { debounce } from '../../utils/throttle.js'
 
+// 输入验证：过滤危险字符和 Emoji
+const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
+	if (!input) return '';
+	let result = String(input)
+		// 过滤危险字符：< > " ' & 和控制字符
+		.replace(/[<>"'&\x00-\x1F\x7F]/g, '');
+	
+	// 可选：过滤 Emoji 和特殊字符，只保留中文、英文、数字和常用标点
+	if (!allowEmoji) {
+		result = result.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s\-_.,!?，。！？、]/g, '');
+	}
+	
+	return result.trim().slice(0, maxLength);
+};
+
 export default {
 		data() {
 			return {
@@ -236,6 +251,20 @@ export default {
 				
 				// 防重复点击
 				this.isSaving = true;
+				
+				// 输入过滤：过滤 Emoji 和特殊字符
+				this.plan.name = sanitizeInput(this.plan.name, 50);
+				this.plan.goal = sanitizeInput(this.plan.goal, 500);
+				
+				// 再次验证过滤后的内容
+				if (!this.plan.name || !this.plan.goal) {
+					this.isSaving = false;
+					uni.showToast({
+						title: '计划名称或目标不能为空',
+						icon: 'none'
+					});
+					return;
+				}
 				
 				// 保存到本地存储
 				const plans = storageService.get('study_plans', []);
