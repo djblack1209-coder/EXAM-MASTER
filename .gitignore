@@ -43,3 +43,13 @@ yarn-error.log*
 .cache/
 .temp/
 .tmp/.vscode/settings.json
+
+# Laf backend sensitive files
+laf-backend/.app.yaml
+laf-backend/.env*
+
+# Logs directory
+logs/
+
+# Kubernetes secrets (use sealed-secrets in production)
+# deploy/k8s/secrets.yaml - keep template but remove real values
