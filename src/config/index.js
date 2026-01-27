@@ -96,7 +96,7 @@ const config = {
          * 微信小程序 AppID
          * 配置方式：VITE_WX_APP_ID=your_app_id
          */
-        appId: getEnv('VITE_WX_APP_ID', 'wx5bee888cf32215df')
+        appId: getEnv('VITE_WX_APP_ID', 'wxd634d50ad63e14ed')
     },
 
     // ==================== API 配置 ====================

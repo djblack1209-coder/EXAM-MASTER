@@ -1,0 +1,6 @@
+name: photo-bg
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

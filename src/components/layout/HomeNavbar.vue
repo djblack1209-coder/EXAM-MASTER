@@ -8,7 +8,7 @@
     <view class="navbar-content ds-flex ds-flex-between" :style="contentStyle">
       <!-- 左侧：头像 + 欢迎语 -->
       <view class="navbar-left ds-flex ds-gap-sm">
-        <image class="user-avatar ds-avatar" :src="userAvatar" mode="aspectFill"></image>
+        <image class="user-avatar ds-avatar" :src="userAvatar" mode="aspectFill" @error="onAvatarError"></image>
         <text class="welcome-text ds-text-lg ds-font-semibold ds-text-primary">{{ welcomeText }}</text>
       </view>
 
@@ -31,12 +31,14 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useNavbar } from '../utils/helpers/useNavbar.js'
+// 统一默认头像
+import { DEFAULT_AVATAR } from '@/constants'
 
 // 定义props
 const props = defineProps({
   userAvatar: {
     type: String,
-    default: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+    default: DEFAULT_AVATAR
   },
   userName: {
     type: String,
@@ -115,6 +117,14 @@ const onHelp = () => {
     content: '点击倒计时卡片可以设置考试日期\n点击刷题卡片进入刷题页面\n勾选待办事项可以标记完成',
     showCancel: false
   })
+}
+
+// 默认头像
+const defaultAvatar = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+
+// 头像加载失败处理
+const onAvatarError = (e) => {
+  e.target.src = defaultAvatar
 }
 
 // 相机按钮点击事件

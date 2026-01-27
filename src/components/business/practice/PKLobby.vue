@@ -3,7 +3,7 @@
     <!-- 顶部用户信息 -->
     <view class="user-section">
       <view class="user-card">
-        <image class="user-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill"></image>
+        <image class="user-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, userInfo, 'avatarUrl')"></image>
         <view class="user-info">
           <text class="user-name">{{ userInfo.nickName || '考研人' }}</text>
           <view class="rank-badge" :style="{ background: rankInfo.color }">
@@ -67,7 +67,7 @@
     
     <!-- 匹配按钮 -->
     <view class="match-section">
-      <button class="match-btn" :class="{ 'matching': isMatching }" @tap="startMatch" :disabled="isMatching">
+      <button class="match-btn" :class="{ 'matching': isMatching }" hover-class="btn-hover" @tap="startMatch" :disabled="isMatching">
         <view class="btn-content" v-if="!isMatching">
           <text class="btn-icon">⚔️</text>
           <text class="btn-text">开始匹配</text>
@@ -91,7 +91,7 @@
           <view class="radar-circle r3"></view>
           <view class="radar-line"></view>
           <view class="radar-center">
-            <image class="center-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill"></image>
+            <image class="center-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, userInfo, 'avatarUrl')"></image>
           </view>
         </view>
         
@@ -102,7 +102,7 @@
         </view>
         
         <!-- 取消按钮 -->
-        <button class="cancel-btn" @tap="cancelMatch">取消匹配</button>
+        <button class="cancel-btn" hover-class="btn-hover" @tap="cancelMatch">取消匹配</button>
       </view>
     </view>
     
@@ -111,7 +111,7 @@
       <view class="match-found-content">
         <view class="vs-animation">
           <view class="player-side left">
-            <image class="player-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill"></image>
+            <image class="player-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, userInfo, 'avatarUrl')"></image>
             <text class="player-name">{{ userInfo.nickName || '我' }}</text>
             <text class="player-rating">{{ userRating }}</text>
           </view>
@@ -121,7 +121,7 @@
           </view>
           
           <view class="player-side right">
-            <image class="player-avatar" :src="opponent.avatar || defaultAvatar" mode="aspectFill"></image>
+            <image class="player-avatar" :src="opponent.avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, opponent, 'avatar')"></image>
             <text class="player-name">{{ opponent.name }}</text>
             <text class="player-rating">{{ opponent.rating }}</text>
           </view>
@@ -146,7 +146,7 @@
           :key="idx"
           :class="{ 'win': record.ratingChange > 0, 'lose': record.ratingChange < 0 }"
         >
-          <image class="opponent-avatar" :src="record.opponent.avatar || defaultAvatar" mode="aspectFill"></image>
+          <image class="opponent-avatar" :src="record.opponent.avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, record.opponent, 'avatar')"></image>
           <view class="match-info">
             <text class="opponent-name">{{ record.opponent.name }}</text>
             <text class="match-score">{{ record.userScore }} : {{ record.opponentScore }}</text>
@@ -188,6 +188,13 @@ export default {
     this.refreshData();
   },
   methods: {
+    // 头像加载失败处理
+    onAvatarError(e, obj, key = 'avatar') {
+      if (obj) {
+        this.$set(obj, key, this.defaultAvatar);
+      }
+    },
+    
     initData() {
       // 获取用户信息
       this.userInfo = uni.getStorageSync('userInfo') || { nickName: '考研人', avatarUrl: '' };
@@ -261,13 +268,13 @@ export default {
       // 将对手信息传递给对战页面
       const opponentStr = encodeURIComponent(JSON.stringify(this.opponent));
       uni.navigateTo({
-        url: `/src/pages/practice/pk-battle?opponent=${opponentStr}`
+        url: `/pages/practice/pk-battle?opponent=${opponentStr}`
       });
     },
     
     viewAllHistory() {
       uni.navigateTo({
-        url: '/src/pages/practice/rank-list'
+        url: '/pages/practice/rank-list'
       });
     }
   }

@@ -19,6 +19,24 @@
         <!-- 滚动容器 -->
         <scroll-view class="scroll-container" scroll-y @scroll="handleScroll"
             :style="{ paddingTop: navbarHeight + 'px' }">
+            
+            <!-- 骨架屏加载状态 -->
+            <view v-if="isLoading" class="skeleton-container">
+                <view class="skeleton-header">
+                    <view class="skeleton-title skeleton-animate"></view>
+                    <view class="skeleton-subtitle skeleton-animate"></view>
+                </view>
+                <view class="skeleton-cards">
+                    <view class="skeleton-card skeleton-animate" v-for="i in 3" :key="i"></view>
+                </view>
+                <view class="skeleton-section">
+                    <view class="skeleton-section-title skeleton-animate"></view>
+                    <view class="skeleton-chart skeleton-animate"></view>
+                </view>
+            </view>
+            
+            <!-- 实际内容 -->
+            <template v-else>
             <!-- 页面标题 -->
             <view class="page-header">
                 <text class="page-title">学习详情</text>
@@ -63,11 +81,11 @@
                 </view>
 
                 <view class="heatmap-container">
-                    <!-- 这里可以集成热力图组件 -->
-                    <view class="heatmap-placeholder">
-                        <text class="placeholder-text">热力图组件</text>
-                        <text class="placeholder-hint">显示每日学习活跃度</text>
-                    </view>
+                    <StudyHeatmap 
+                        :studyData="studyRecordData" 
+                        :weeks="26"
+                        @day-tap="handleDayTap"
+                    />
                 </view>
             </view>
 
@@ -75,20 +93,20 @@
             <view class="chart-section">
                 <view class="section-header">
                     <text class="section-title">学习趋势</text>
-                    <text class="section-subtitle">最近7天的学习时长变化</text>
+                    <text class="section-subtitle">最近学习时长变化</text>
                 </view>
 
                 <view class="chart-container">
-                    <!-- 这里可以集成图表组件 -->
-                    <view class="chart-placeholder">
-                        <text class="placeholder-text">趋势图表</text>
-                        <text class="placeholder-hint">显示学习时长变化</text>
-                    </view>
+                    <StudyTrendChart 
+                        :studyData="studyRecordData"
+                        @range-change="handleRangeChange"
+                    />
                 </view>
             </view>
 
             <!-- 底部间距 -->
             <view class="bottom-spacer"></view>
+            </template>
         </scroll-view>
     </view>
 </template>
@@ -97,20 +115,33 @@
 import { useThemeStore } from '../../stores'
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
+// 图表组件
+import StudyHeatmap from '../../components/common/StudyHeatmap.vue'
+import StudyTrendChart from '../../components/common/StudyTrendChart.vue'
 
 export default {
     name: 'StudyDetail',
-    data() {
+    components: {
+        StudyHeatmap,
+        StudyTrendChart
+    },
+        data() {
         return {
             themeStore: null,
             isDark: false,
             scrolled: false,
             navbarHeight: 44,
 
+            // 页面加载状态
+            isLoading: true,
+
             // 学习数据
             studyTime: 0,
             completionRate: 0,
-            abilityRank: '-'
+            abilityRank: '-',
+            
+            // 热力图和趋势图数据
+            studyRecordData: {} // { 'YYYY-MM-DD': minutes }
         }
     },
     computed: {
@@ -163,7 +194,7 @@ export default {
             uni.navigateBack({
                 fail: () => {
                     uni.switchTab({
-                        url: '/src/pages/index/index'
+                        url: '/pages/index/index'
                     })
                 }
             })
@@ -180,6 +211,7 @@ export default {
          * 加载学习数据
          */
         loadStudyData() {
+            this.isLoading = true;
             // 从本地存储加载真实数据
             try {
                 // 获取今日学习时长
@@ -223,6 +255,9 @@ export default {
                     this.abilityRank = '-';
                 }
                 
+                // 加载每日学习记录数据（用于热力图和趋势图）
+                this.loadDailyStudyRecords();
+                
                 logger.log('[StudyDetail] 加载学习数据:', {
                     studyTime: this.studyTime,
                     completionRate: this.completionRate,
@@ -234,7 +269,90 @@ export default {
                 this.studyTime = 0;
                 this.completionRate = 0;
                 this.abilityRank = '-';
+                this.studyRecordData = {};
+            } finally {
+                this.isLoading = false;
             }
+        },
+        
+        /**
+         * 加载每日学习记录
+         */
+        loadDailyStudyRecords() {
+            try {
+                // 尝试从本地存储获取每日学习记录
+                const dailyRecords = uni.getStorageSync('daily_study_records') || {};
+                
+                // 如果没有历史记录，生成一些示例数据用于展示
+                if (Object.keys(dailyRecords).length === 0) {
+                    // 添加今日数据
+                    const today = new Date().toISOString().split('T')[0];
+                    if (this.studyTime > 0) {
+                        dailyRecords[today] = this.studyTime;
+                    }
+                    
+                    // 生成过去一段时间的模拟数据（仅用于演示）
+                    const demoData = this.generateDemoData();
+                    Object.assign(dailyRecords, demoData);
+                }
+                
+                // 确保今日数据是最新的
+                const today = new Date().toISOString().split('T')[0];
+                if (this.studyTime > 0) {
+                    dailyRecords[today] = this.studyTime;
+                }
+                
+                this.studyRecordData = dailyRecords;
+                
+                logger.log('[StudyDetail] 加载每日学习记录:', Object.keys(dailyRecords).length + '天');
+            } catch (error) {
+                logger.error('[StudyDetail] 加载每日学习记录失败:', error);
+                this.studyRecordData = {};
+            }
+        },
+        
+        /**
+         * 生成演示数据
+         */
+        generateDemoData() {
+            const data = {};
+            const today = new Date();
+            
+            // 生成过去90天的随机数据
+            for (let i = 1; i <= 90; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                // 随机决定是否有学习记录（约60%的天数有记录）
+                if (Math.random() > 0.4) {
+                    // 随机学习时长 5-120 分钟
+                    data[dateStr] = Math.floor(Math.random() * 115) + 5;
+                }
+            }
+            
+            return data;
+        },
+        
+        /**
+         * 处理热力图日期点击
+         */
+        handleDayTap(day) {
+            logger.log('[StudyDetail] 点击日期:', day);
+            if (day.minutes > 0) {
+                uni.showToast({
+                    title: `${day.dateStr} 学习 ${day.minutes} 分钟`,
+                    icon: 'none',
+                    duration: 2000
+                });
+            }
+        },
+        
+        /**
+         * 处理趋势图时间范围变化
+         */
+        handleRangeChange(range) {
+            logger.log('[StudyDetail] 切换时间范围:', range + '天');
         }
     }
 }
@@ -419,33 +537,76 @@ export default {
     border: 1px solid var(--border-color);
     border-radius: 24rpx;
     padding: 32rpx;
-    min-height: 400rpx;
     box-shadow: var(--shadow-sm);
-}
-
-.heatmap-placeholder,
-.chart-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 300rpx;
-}
-
-.placeholder-text {
-    font-size: 32rpx;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 16rpx;
-}
-
-.placeholder-hint {
-    font-size: 24rpx;
-    color: var(--text-sub);
 }
 
 /* 底部间距 */
 .bottom-spacer {
     height: 48rpx;
+}
+
+/* 骨架屏样式 */
+.skeleton-container {
+    padding: 48rpx 32rpx;
+}
+
+.skeleton-header {
+    margin-bottom: 32rpx;
+}
+
+.skeleton-title {
+    width: 200rpx;
+    height: 48rpx;
+    border-radius: 8rpx;
+    margin-bottom: 16rpx;
+}
+
+.skeleton-subtitle {
+    width: 280rpx;
+    height: 28rpx;
+    border-radius: 6rpx;
+}
+
+.skeleton-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 24rpx;
+    margin-bottom: 32rpx;
+}
+
+.skeleton-card {
+    height: 128rpx;
+    border-radius: 24rpx;
+}
+
+.skeleton-section {
+    margin-bottom: 32rpx;
+}
+
+.skeleton-section-title {
+    width: 160rpx;
+    height: 32rpx;
+    border-radius: 6rpx;
+    margin-bottom: 24rpx;
+}
+
+.skeleton-chart {
+    height: 300rpx;
+    border-radius: 24rpx;
+}
+
+.skeleton-animate {
+    background: linear-gradient(90deg, var(--muted) 25%, var(--bg-card) 50%, var(--muted) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 </style>

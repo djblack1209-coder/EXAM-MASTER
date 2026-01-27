@@ -207,7 +207,7 @@ export default {
   margin-bottom: 32rpx;
   
   .empty-guide-light & {
-    color: #666666;
+    color: var(--ds-color-text-secondary);
   }
   
   .empty-guide-dark & {
@@ -259,7 +259,7 @@ export default {
   margin-top: 24rpx;
   
   .empty-guide-light & {
-    color: #999999;
+    color: var(--ds-color-text-tertiary);
   }
   
   .empty-guide-dark & {

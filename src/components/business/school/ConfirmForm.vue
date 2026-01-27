@@ -68,12 +68,14 @@
     <!-- 按钮组 -->
     <view class="confirm-form__footer ds-flex ds-gap-md">
       <button class="prev-button ds-text-lg ds-font-medium ds-touchable" @click="handlePrev">上一步</button>
-      <button class="submit-button ds-text-lg ds-font-medium ds-touchable" @click="handleSubmit">提交生成择校报告</button>
+      <button class="submit-button ds-text-lg ds-font-medium ds-touchable" :disabled="isSubmitting" @click="handleSubmit">{{ isSubmitting ? '提交中...' : '提交生成择校报告' }}</button>
     </view>
   </view>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
 // defineProps 和 defineEmits 是编译器宏，无需手动导入
 const props = defineProps({
   educationData: {
@@ -96,6 +98,9 @@ const props = defineProps({
 
 const emit = defineEmits(['prev', 'submit'])
 
+// 防重复点击
+const isSubmitting = ref(false)
+
 // 上一步
 const handlePrev = () => {
   emit('prev')
@@ -103,7 +108,13 @@ const handlePrev = () => {
 
 // 提交
 const handleSubmit = () => {
+  if (isSubmitting.value) return
+  isSubmitting.value = true
   emit('submit')
+  // 3秒后解锁（防止提交失败后无法重试）
+  setTimeout(() => {
+    isSubmitting.value = false
+  }, 3000)
 }
 </script>
 

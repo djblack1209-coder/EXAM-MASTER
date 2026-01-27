@@ -8,7 +8,7 @@
         @tap="goBack"
       ></image>
       <view class="nav-center" @tap="showFriendSelector = true">
-        <image :src="currentFriend.avatar" class="friend-avatar-small"></image>
+        <image :src="currentFriend.avatar" class="friend-avatar-small" @error="onAvatarError"></image>
         <text class="nav-title">{{ currentFriend.name }}</text>
         <text class="nav-arrow">▼</text>
       </view>
@@ -45,6 +45,16 @@
       </view>
     </view>
 
+    <!-- 骨架屏加载状态 -->
+    <view class="skeleton-chat" v-if="isPageLoading">
+      <view class="skeleton-welcome">
+        <view class="skeleton-avatar-lg skeleton-animate"></view>
+        <view class="skeleton-name skeleton-animate"></view>
+        <view class="skeleton-role skeleton-animate"></view>
+        <view class="skeleton-intro skeleton-animate"></view>
+      </view>
+    </view>
+
     <!-- 聊天消息列表 -->
     <scroll-view 
       class="chat-list" 
@@ -52,6 +62,7 @@
       :scroll-top="scrollTop" 
       scroll-with-animation
       :scroll-into-view="scrollIntoView"
+      v-if="!isPageLoading"
     >
       <!-- 欢迎消息 -->
       <view class="welcome-card" v-if="messages.length === 0">
@@ -103,7 +114,7 @@
     </scroll-view>
 
     <!-- 情绪快捷标签 -->
-    <view class="emotion-tags" v-if="showEmotionTags">
+    <view class="emotion-tags" v-if="showEmotionTags && !isPageLoading">
       <view 
         v-for="emotion in emotionOptions" 
         :key="emotion.value"
@@ -116,7 +127,7 @@
     </view>
 
     <!-- 输入区域 -->
-    <view class="input-area">
+    <view class="input-area" v-if="!isPageLoading">
       <view class="input-tools">
         <image 
           src="https://img.icons8.com/ios/50/666666/happy--v1.png" 
@@ -132,6 +143,7 @@
         v-model="messageText"
         @confirm="handleSend"
         @focus="onInputFocus"
+        maxlength="500"
       />
       <view 
         class="send-btn"
@@ -150,6 +162,8 @@ import { lafService } from '../../services/lafService.js'
 import { storageService } from '../../services/storageService.js'
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
+// 统一默认头像
+import { DEFAULT_AVATAR } from '@/constants'
 
 // AI好友配置
 const aiFriends = ref([
@@ -213,6 +227,13 @@ const showFriendSelector = ref(false)
 const showEmotionTags = ref(false)
 const currentEmotion = ref('neutral')
 const conversationCount = ref(0)
+const defaultAvatar = DEFAULT_AVATAR
+const isPageLoading = ref(true) // 页面初始加载状态
+
+// ✅ 图片加载失败处理
+const onAvatarError = (e) => {
+  e.target.src = defaultAvatar
+}
 
 // 用户学习状态（从本地获取）
 const userContext = reactive({
@@ -254,6 +275,9 @@ onMounted(async () => {
   
   // 加载历史对话
   await loadChatHistory()
+  
+  // 关闭骨架屏
+  isPageLoading.value = false
 })
 
 // 加载用户上下文
@@ -460,7 +484,7 @@ const goBack = () => {
   uni.navigateBack({
     fail: () => {
       uni.reLaunch({
-        url: '/src/pages/index/index'
+        url: '/pages/index/index'
       })
     }
   })
@@ -870,6 +894,66 @@ const showMenu = () => {
   
   .send-btn.active & {
     color: white;
+  }
+}
+
+/* 骨架屏样式 */
+.skeleton-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.skeleton-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 280px;
+}
+
+.skeleton-avatar-lg {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+
+.skeleton-name {
+  width: 120px;
+  height: 24px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.skeleton-role {
+  width: 80px;
+  height: 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.skeleton-intro {
+  width: 100%;
+  height: 60px;
+  border-radius: 8px;
+}
+
+.skeleton-animate {
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 </style>

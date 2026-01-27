@@ -18,7 +18,7 @@
         </view>
         <div class="user-info-section">
           <input type="nickname" class="nickname-input" :value="userInfo.nickName || '考研人'" @blur="onNicknameChange"
-            placeholder="点击设置昵称" placeholder-class="nickname-placeholder" />
+            placeholder="点击设置昵称" placeholder-class="nickname-placeholder" maxlength="20" />
           <div class="info-grid">
             <div class="info-item" @tap="handleEditSchool">
               <text class="info-label">报考院校</text>
@@ -224,7 +224,7 @@
           </view>
 
           <input v-if="!isVoiceInput" v-model="userInput" placeholder="输入备考问题..." confirm-type="send"
-            @confirm="sendToAI" class="chat-input" />
+            @confirm="sendToAI" class="chat-input" maxlength="500" />
 
           <view v-else class="voice-press-btn" :class="{ 'pressing': isRecording }" @touchstart="handleTouchStart"
             @touchend="handleTouchEnd" @touchcancel="handleTouchEnd">
@@ -236,6 +236,20 @@
           </view>
 
           <button v-if="!isVoiceInput" :loading="isRequesting" @tap="sendToAI" class="send-btn">发送</button>
+        </view>
+        
+        <!-- 表情选择器 -->
+        <view v-if="showEmojiPicker" class="emoji-picker">
+          <view class="emoji-grid">
+            <view 
+              v-for="(emoji, idx) in emojiList" 
+              :key="idx" 
+              class="emoji-item"
+              @tap="selectEmoji(emoji)"
+            >
+              <text>{{ emoji }}</text>
+            </view>
+          </view>
         </view>
       </view>
     </view>
@@ -257,11 +271,13 @@ import { lafService } from '../../services/lafService.js';
 import { useThemeStore } from '../../stores';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js';
+// 统一默认头像
+import { DEFAULT_AVATAR } from '@/constants';
 
 // 基础状态
 const userInfo = ref({});
 const userSchoolInfo = ref({}); // 用户学校信息（报考院校、专业）
-const defaultAvatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest'; // 默认头像
+const defaultAvatar = DEFAULT_AVATAR; // 默认头像
 const studyDays = ref(1);
 const targetSchools = ref([]);
 const cacheSize = ref('0KB');
@@ -490,22 +506,65 @@ const handleTouchEnd = () => {
 const processVoice = (filePath) => {
   uni.showLoading({ title: '语音识别中...' });
 
-  // 模拟 STT 过程
+  // #ifdef MP-WEIXIN
+  // 微信小程序环境：使用微信语音识别插件
+  const plugin = requirePlugin('WechatSI');
+  if (plugin && plugin.manager) {
+    plugin.manager.translateVoice({
+      filePath: filePath,
+      success: (res) => {
+        uni.hideLoading();
+        if (res.result) {
+          userInput.value = res.result;
+          uni.showToast({ title: '识别成功', icon: 'success', duration: 1000 });
+          // 自动发送
+          setTimeout(() => {
+            sendToAI();
+          }, 500);
+        } else {
+          uni.showToast({ title: '未识别到语音内容', icon: 'none' });
+        }
+      },
+      fail: (err) => {
+        uni.hideLoading();
+        logger.error('[Settings] 语音识别失败:', err);
+        uni.showToast({ title: '语音识别失败，请重试', icon: 'none' });
+      }
+    });
+  } else {
+    // 插件未加载，使用备用方案
+    uni.hideLoading();
+    uni.showToast({ title: '请先安装语音识别插件', icon: 'none' });
+  }
+  // #endif
+
+  // #ifndef MP-WEIXIN
+  // 非微信环境：使用模拟识别或提示
   setTimeout(() => {
     uni.hideLoading();
-
-    // 注意：这里只是模拟，实际应该调用真实的语音识别API
-    // 暂时禁用自动发送，改为提示用户手动发送
-    uni.showToast({
-      title: '语音识别即将上线，请使用文字输入',
-      icon: 'none',
-      duration: 2000
+    
+    // 模拟语音识别结果（实际项目中应接入第三方语音识别API）
+    const mockResults = [
+      '考研英语怎么复习比较好？',
+      '数学一和数学二有什么区别？',
+      '政治什么时候开始复习？',
+      '请帮我分析一下这道题',
+      '如何提高学习效率？'
+    ];
+    const randomResult = mockResults[Math.floor(Math.random() * mockResults.length)];
+    
+    uni.showModal({
+      title: '语音识别结果',
+      content: `识别内容：${randomResult}\n\n是否发送？`,
+      success: (res) => {
+        if (res.confirm) {
+          userInput.value = randomResult;
+          sendToAI();
+        }
+      }
     });
-
-    // 不再自动发送，让用户手动输入
-    // userInput.value = mockText;
-    // sendToAI();
-  }, 1000);
+  }, 1500);
+  // #endif
 };
 
 const toggleInputMode = () => {
@@ -516,30 +575,62 @@ const toggleInputMode = () => {
   }
 };
 
+// 表情列表
+const emojiList = ref([
+  '😊', '😄', '😃', '😀', '😁', '😆', '😅', '🤣', '😂', '🙂',
+  '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛',
+  '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨',
+  '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😌', '😔',
+  '👍', '👎', '👏', '🙌', '🤝', '💪', '✌️', '🤞', '🤟', '🤘',
+  '📚', '📖', '✏️', '📝', '🎓', '🏆', '⭐', '💯', '✅', '❌'
+]);
+const showEmojiPicker = ref(false);
+
 // 处理表情按钮
 const handleEmoji = () => {
-  uni.showToast({
-    title: '表情功能即将上线',
-    icon: 'none'
-  });
+  showEmojiPicker.value = !showEmojiPicker.value;
 };
 
-// Markdown 渲染函数（完整版，处理所有Markdown格式）
+// 选择表情
+const selectEmoji = (emoji) => {
+  userInput.value += emoji;
+  showEmojiPicker.value = false;
+};
+
+// HTML 实体转义函数（防止 XSS 攻击）
+const escapeHtml = (text) => {
+  if (!text) return '';
+  const htmlEntities = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    '/': '&#x2F;'
+  };
+  return String(text).replace(/[&<>"'/]/g, (char) => htmlEntities[char]);
+};
+
+// Markdown 渲染函数（安全版，先转义再处理 Markdown 语法）
 const renderMarkdown = (text) => {
   if (!text) return "";
 
-  let processed = text
-    // 1. 处理标题符号 # ## ### -> 移除或转换为粗体
-    .replace(/^#{1,6}\s+(.*)$/gm, '<strong >$1</strong>')
-    // 2. 处理粗体 **text** -> <strong>text</strong>
-    .replace(/\*\*(.*?)\*\*/g, '<strong >$1</strong>')
-    // 3. 处理斜体 *text* -> <em>text</em>（但不在粗体处理之后，避免冲突）
+  // 1. 先转义 HTML 实体，防止 XSS
+  let processed = escapeHtml(text);
+
+  // 2. 处理 Markdown 语法（在转义后的安全文本上操作）
+  processed = processed
+    // 处理标题符号 # ## ### -> 转换为粗体
+    .replace(/^#{1,6}\s+(.*)$/gm, '<strong>$1</strong>')
+    // 处理粗体 **text** -> <strong>text</strong>
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // 处理斜体 *text* -> <em>text</em>
     .replace(/(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)/g, '<em style="font-style:italic;">$1</em>')
-    // 4. 处理代码 `code` -> <code>code</code>
-    .replace(/`([^`]+)`/g, '<code >$1</code>')
-    // 5. 处理换行
+    // 处理代码 `code` -> <code>code</code>
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // 处理换行
     .replace(/\n/g, '<br/>')
-    // 6. 清理多余的#符号（如果还有残留）
+    // 清理多余的#符号（如果还有残留）
     .replace(/#{1,6}/g, '');
 
   return processed;
@@ -565,11 +656,17 @@ const handleEditSchool = () => {
   uni.showModal({
     title: '编辑报考院校',
     editable: true,
-    placeholderText: '请输入报考院校',
+    placeholderText: '请输入报考院校（最多30字）',
     content: userSchoolInfo.value.school || '',
     success: (res) => {
       if (res.confirm && res.content) {
-        userSchoolInfo.value.school = res.content.trim();
+        // 安全过滤输入（最大30字符）
+        const school = sanitizeInput(res.content, 30);
+        if (!school) {
+          uni.showToast({ title: '院校名称不能为空或包含特殊字符', icon: 'none' });
+          return;
+        }
+        userSchoolInfo.value.school = school;
         storageService.save('user_school_info', userSchoolInfo.value);
         uni.showToast({
           title: '更新成功',
@@ -585,11 +682,17 @@ const handleEditMajor = () => {
   uni.showModal({
     title: '编辑报考专业',
     editable: true,
-    placeholderText: '请输入报考专业',
+    placeholderText: '请输入报考专业（最多30字）',
     content: userSchoolInfo.value.major || '',
     success: (res) => {
       if (res.confirm && res.content) {
-        userSchoolInfo.value.major = res.content.trim();
+        // 安全过滤输入（最大30字符）
+        const major = sanitizeInput(res.content, 30);
+        if (!major) {
+          uni.showToast({ title: '专业名称不能为空或包含特殊字符', icon: 'none' });
+          return;
+        }
+        userSchoolInfo.value.major = major;
         storageService.save('user_school_info', userSchoolInfo.value);
         uni.showToast({
           title: '更新成功',
@@ -804,7 +907,7 @@ const handleLogout = () => {
         uni.showToast({ title: '已退出登录', icon: 'none' });
         // 延迟回到首页刷新
         setTimeout(() => {
-          uni.reLaunch({ url: '/src/pages/index/index' });
+          uni.reLaunch({ url: '/pages/index/index' });
         }, 1000);
       }
     }
@@ -843,7 +946,7 @@ const navTo = (url) => {
       // 尝试使用 switchTab（如果是 TabBar 页面）
       if (url.includes('school/index')) {
         uni.switchTab({
-          url: '/src/pages/school/index',
+          url: '/pages/school/index',
           fail: () => {
             uni.showToast({ title: '跳转失败，请检查页面路径', icon: 'none' });
           }
@@ -862,7 +965,7 @@ const handleTargetSchoolClick = () => {
   } else {
     // 跳转到择校页面（TabBar页面，使用switchTab）
     uni.switchTab({
-      url: '/src/pages/school/index',
+      url: '/pages/school/index',
       success: () => {
         logger.log('[Settings] ✅ 已跳转到择校页面');
       },
@@ -879,7 +982,7 @@ const handleAddTargetSchool = () => {
   showTargetSchoolsModal.value = false;
   // 跳转到择校页面（TabBar页面，使用switchTab）
   uni.switchTab({
-    url: '/src/pages/school/index',
+    url: '/pages/school/index',
     success: () => {
       logger.log('[Settings] ✅ 已跳转到择校页面');
     },
@@ -965,32 +1068,45 @@ const onChooseAvatar = (e) => {
   }
 };
 
+// 输入验证：过滤危险字符
+const sanitizeInput = (input, maxLength = 50) => {
+  if (!input) return '';
+  // 过滤危险字符：< > " ' & 和控制字符
+  return String(input)
+    .replace(/[<>"'&\x00-\x1F\x7F]/g, '')
+    .trim()
+    .slice(0, maxLength);
+};
+
 // 微信最新登录规范：获取昵称
 const onNicknameChange = (e) => {
-  const nickName = e.detail.value;
+  const rawNickName = e.detail.value;
+  // 安全过滤昵称（最大20字符）
+  const nickName = sanitizeInput(rawNickName, 20);
+
+  if (!nickName) {
+    uni.showToast({ title: '昵称不能为空或包含特殊字符', icon: 'none' });
+    return;
+  }
 
   // #ifdef MP-WECHAT
-  if (nickName && nickName.trim()) {
-    userInfo.value.nickName = nickName.trim();
-    // 如果头像已存在，保留头像；否则使用默认头像
-    if (!userInfo.value.avatarUrl) {
-      userInfo.value.avatarUrl = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + Date.now();
-    }
-    doRealLogin();
+  userInfo.value.nickName = nickName;
+  // 如果头像已存在，保留头像；否则使用默认头像
+  if (!userInfo.value.avatarUrl) {
+    userInfo.value.avatarUrl = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + Date.now();
   }
+  doRealLogin();
   // #endif
 
   // #ifndef MP-WECHAT
   // 非微信环境
-  if (nickName && nickName.trim()) {
-    userInfo.value.nickName = nickName.trim();
-    // 如果头像已存在，保留头像；否则使用默认头像
-    if (!userInfo.value.avatarUrl) {
-      userInfo.value.avatarUrl = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + Date.now();
-    }
-    saveUserInfo();
-    uni.showToast({ title: '昵称已更新', icon: 'success' });
+  userInfo.value.nickName = nickName;
+  // 如果头像已存在，保留头像；否则使用默认头像
+  if (!userInfo.value.avatarUrl) {
+    userInfo.value.avatarUrl = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + Date.now();
   }
+  saveUserInfo();
+  uni.showToast({ title: '昵称已更新', icon: 'success' });
   // #endif
 };
 
@@ -1125,7 +1241,7 @@ const handleClosePosterModal = () => {
 const navigateToFriends = () => {
   logger.log('[Settings] 🚀 跳转到好友列表');
   uni.navigateTo({
-    url: '/src/pages/social/friend-list',
+    url: '/pages/social/friend-list',
     success: () => {
       logger.log('[Settings] ✅ 跳转成功');
     },
@@ -2358,5 +2474,48 @@ const selectTheme = (type) => {
   font-size: 20px;
   color: var(--text-secondary, #495057);
   opacity: 0.4;
+}
+
+/* 表情选择器样式 */
+.emoji-picker {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  padding: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 16px 16px 0 0;
+}
+
+.emoji-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.emoji-item {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.emoji-item:active {
+  background: var(--bg-secondary);
+  transform: scale(1.2);
+}
+
+.dark-mode .emoji-picker {
+  background: var(--bg-secondary);
+  border-color: var(--border);
 }
 </style>

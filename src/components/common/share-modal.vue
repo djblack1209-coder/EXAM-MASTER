@@ -180,7 +180,7 @@ export default {
       // 震动反馈
       try {
         uni.vibrateShort({ type: 'medium' });
-      } catch (e) {}
+      } catch (e) { logger.warn('[ShareModal] vibrateShort failed in handleFavorite', e); }
       
       const result = await quoteHandler.toggleFavorite(this.quote, this.author);
       this.isFavorite = result;
@@ -198,7 +198,7 @@ export default {
       // 震动反馈
       try {
         uni.vibrateShort({ type: 'light' });
-      } catch (e) {}
+      } catch (e) { logger.warn('[ShareModal] vibrateShort failed in handleShare', e); }
       
       switch (platform) {
         case 'wechat':
@@ -502,10 +502,10 @@ export default {
 }
 
 .close-icon {
-  font-size: 40rpx;
-  color: #999999;
-  
-  .modal-dark & { color: #666666; }
+	font-size: 40rpx;
+	color: var(--ds-color-text-tertiary);
+	
+	.modal-dark & { color: var(--ds-color-text-secondary); }
 }
 
 /* 预览区域 */
@@ -628,10 +628,10 @@ export default {
 .icon-copy { background: #F59E0B; }
 
 .option-label {
-  font-size: 24rpx;
-  
-  .share-modal-content:not(.modal-dark) & { color: #666666; }
-  .modal-dark & { color: rgba(255, 255, 255, 0.7); }
+	font-size: 24rpx;
+	
+	.share-modal-content:not(.modal-dark) & { color: var(--ds-color-text-secondary); }
+	.modal-dark & { color: rgba(255, 255, 255, 0.7); }
 }
 
 /* 底部提示 */
@@ -641,8 +641,8 @@ export default {
 }
 
 .footer-hint {
-  font-size: 24rpx;
-  color: #999999;
+	font-size: 24rpx;
+	color: var(--ds-color-text-tertiary);
 }
 
 /* 海报预览 */

@@ -1,0 +1,11 @@
+# ============================================
+# Exam-Master Kubernetes 命名空间
+# ============================================
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: exam-master
+  labels:
+    app.kubernetes.io/name: exam-master
+    app.kubernetes.io/managed-by: kubectl
+    environment: production

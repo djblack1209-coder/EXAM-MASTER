@@ -21,11 +21,29 @@
 					paddingBottom: (layoutInfo.tabBarHeight + 40) + 'px'
 				}"
 			>
-				<!-- ========== 用户信息卡片 ========== -->
-				<view
-					class="card user-card"
-					hover-class="card-hover"
-				>
+				<!-- ========== 骨架屏加载状态 ========== -->
+			<template v-if="isPageLoading">
+				<view class="card skeleton-user-card">
+					<view class="skeleton-avatar skeleton-animate"></view>
+					<view class="skeleton-user-info">
+						<view class="skeleton-name skeleton-animate"></view>
+						<view class="skeleton-id skeleton-animate"></view>
+					</view>
+				</view>
+				<view class="card skeleton-stats-card">
+					<view class="skeleton-stat skeleton-animate" v-for="i in 3" :key="i"></view>
+				</view>
+				<view class="card skeleton-menu-card">
+					<view class="skeleton-menu-item skeleton-animate" v-for="i in 4" :key="i"></view>
+				</view>
+			</template>
+
+			<!-- ========== 用户信息卡片 ========== -->
+			<view
+				v-if="!isPageLoading"
+				class="card user-card"
+				hover-class="card-hover"
+			>
 					<view class="user-section">
 						<!-- 头像 -->
 						<view class="avatar-box">
@@ -44,11 +62,11 @@
 						>
 							<text class="edit-icon">✏️</text>
 						</view>
-					</view>
 				</view>
+			</view>
 
-				<!-- ========== 数据统计卡片 ========== -->
-				<view class="card stats-card">
+			<!-- ========== 数据统计卡片 ========== -->
+			<view class="card stats-card" v-if="!isPageLoading">
 					<view class="stats-grid">
 						<!-- 学习天数 -->
 						<view
@@ -95,10 +113,10 @@
 							<text class="stat-label">正确率</text>
 						</view>
 					</view>
-				</view>
+			</view>
 
-				<!-- ========== 功能菜单卡片（分组） ========== -->
-				<view class="card menu-card">
+			<!-- ========== 功能菜单卡片（分组） ========== -->
+			<view class="card menu-card" v-if="!isPageLoading">
 					<!-- 我的错题 -->
 					<view
 						class="menu-item"
@@ -159,10 +177,10 @@
 						<text class="menu-text">意见反馈</text>
 						<text class="menu-arrow">›</text>
 					</view>
-				</view>
+			</view>
 
-				<!-- ========== 关于卡片 ========== -->
-				<view class="card about-card">
+			<!-- ========== 关于卡片 ========== -->
+			<view class="card about-card" v-if="!isPageLoading">
 					<view class="about-row">
 						<text class="about-label">版本</text>
 						<text class="about-value">v1.0.0</text>
@@ -172,24 +190,26 @@
 						<text class="about-label">开发者</text>
 						<text class="about-value">Exam-Master Team</text>
 					</view>
-				</view>
+			</view>
 
-				<!-- ========== 主题切换按钮 ========== -->
-				<view
-					class="theme-btn"
-					hover-class="btn-hover"
-					@tap="toggleTheme"
-				>
+			<!-- ========== 主题切换按钮 ========== -->
+			<view
+				v-if="!isPageLoading"
+				class="theme-btn"
+				hover-class="btn-hover"
+				@tap="toggleTheme"
+			>
 					<text class="theme-emoji">{{ isDark ? '🌙' : '☀️' }}</text>
 					<text class="theme-text">{{ isDark ? '深色模式' : '浅色模式' }}</text>
-				</view>
+			</view>
 
-				<!-- ========== 退出登录按钮 ========== -->
-				<view
-					class="logout-btn"
-					hover-class="logout-hover"
-					@tap="handleLogout"
-				>
+			<!-- ========== 退出登录按钮 ========== -->
+			<view
+				v-if="!isPageLoading"
+				class="logout-btn"
+				hover-class="logout-hover"
+				@tap="handleLogout"
+			>
 					<text class="logout-text">退出登录</text>
 				</view>
 			</view>
@@ -229,6 +249,7 @@ import { logger } from '../../utils/logger.js';
 const isDark = ref(false);
 const scrollY = ref(0);
 const badgeCount = ref(0);
+const isPageLoading = ref(true); // 页面初始加载状态
 // 检查点4.4: 打卡相关状态
 const checkInStreak = ref(0); // 连续打卡天数
 const todayChecked = ref(false); // 今日是否已打卡
@@ -298,6 +319,7 @@ function initTheme() {
 }
 
 function loadData() {
+	isPageLoading.value = true;
 	try {
 		userStore.restoreUserInfo?.();
 		studyStore.restoreProgress?.();
@@ -306,6 +328,11 @@ function loadData() {
 		loadCheckinData();
 	} catch (error) {
 		logger.error('[Profile] loadData error:', error);
+	} finally {
+		// 短暂延迟后关闭骨架屏，确保数据已渲染
+		setTimeout(() => {
+			isPageLoading.value = false;
+		}, 300);
 	}
 }
 
@@ -441,7 +468,7 @@ function toggleTheme() {
 
 	try {
 		uni.vibrateShort?.();
-	} catch (e) {}
+	} catch (e) { logger.warn('[Profile] vibrateShort failed in toggleTheme', e); }
 }
 
 function handleEditProfile() {
@@ -468,15 +495,15 @@ function handleStatTap(type) {
 }
 
 function navToMistake() {
-	uni.switchTab({ url: '/src/pages/mistake/index' });
+	uni.switchTab({ url: '/pages/mistake/index' });
 }
 
 function navToStudyDetail() {
-	uni.navigateTo({ url: '/src/pages/study-detail/index' });
+	uni.navigateTo({ url: '/pages/study-detail/index' });
 }
 
 function navToSettings() {
-	uni.navigateTo({ url: '/src/pages/settings/index' });
+	uni.navigateTo({ url: '/pages/settings/index' });
 }
 
 function handleFeedback() {
@@ -497,7 +524,7 @@ function handleLogout() {
 				userStore.clearUserInfo?.();
 				uni.showToast({ title: '已退出登录', icon: 'success' });
 				setTimeout(() => {
-					uni.switchTab({ url: '/src/pages/index/index' });
+					uni.switchTab({ url: '/pages/index/index' });
 				}, 1000);
 			}
 		}
@@ -523,7 +550,7 @@ onMounted(() => {
 				isDark.value = res.theme === 'dark';
 			}
 		});
-	} catch (e) {}
+	} catch (e) { logger.warn('[Profile] onThemeChange listener setup failed', e); }
 });
 
 onShow(() => {
@@ -604,6 +631,7 @@ onHide(() => {
 	justify-content: center;
 	margin-right: 28rpx;
 	flex-shrink: 0;
+	overflow: hidden;
 }
 
 .avatar-emoji {
@@ -614,7 +642,7 @@ onHide(() => {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	gap: 8rpx;
+	gap: 12rpx;
 }
 
 .user-name {
@@ -631,8 +659,8 @@ onHide(() => {
 }
 
 .edit-btn {
-	width: 72rpx;
-	height: 72rpx;
+	width: 88rpx;
+	height: 88rpx;
 	border-radius: 50%;
 	background-color: var(--muted);
 	display: flex;
@@ -642,7 +670,7 @@ onHide(() => {
 }
 
 .edit-icon {
-	font-size: 32rpx;
+	font-size: 36rpx;
 }
 
 // ========== 统计卡片 ==========
@@ -836,6 +864,74 @@ onHide(() => {
 .btn-hover {
 	opacity: 0.7;
 	transform: scale(0.95);
+}
+
+// ========== 骨架屏样式 ==========
+.skeleton-user-card {
+	padding: 32rpx;
+	display: flex;
+	align-items: center;
+}
+
+.skeleton-avatar {
+	width: 120rpx;
+	height: 120rpx;
+	border-radius: 50%;
+	margin-right: 28rpx;
+}
+
+.skeleton-user-info {
+	flex: 1;
+}
+
+.skeleton-name {
+	width: 160rpx;
+	height: 40rpx;
+	border-radius: 8rpx;
+	margin-bottom: 16rpx;
+}
+
+.skeleton-id {
+	width: 120rpx;
+	height: 26rpx;
+	border-radius: 6rpx;
+}
+
+.skeleton-stats-card {
+	padding: 32rpx 16rpx;
+	display: flex;
+	justify-content: space-around;
+}
+
+.skeleton-stat {
+	width: 120rpx;
+	height: 100rpx;
+	border-radius: 16rpx;
+}
+
+.skeleton-menu-card {
+	padding: 16rpx 0;
+}
+
+.skeleton-menu-item {
+	height: 88rpx;
+	margin: 8rpx 32rpx;
+	border-radius: 16rpx;
+}
+
+.skeleton-animate {
+	background: linear-gradient(90deg, var(--muted) 25%, var(--bg-card) 50%, var(--muted) 75%);
+	background-size: 200% 100%;
+	animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
 }
 
 // ========== 固定导航栏 ==========

@@ -70,7 +70,7 @@ onMounted(() => {
 
 const handleReview = () => {
   uni.navigateTo({
-    url: '/src/pages/mistake/index'
+    url: '/pages/mistake/index'
   })
 }
 </script>

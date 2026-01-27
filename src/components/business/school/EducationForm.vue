@@ -10,7 +10,7 @@
         <view class="form-item__label ds-text-sm ds-font-medium">毕业院校</view>
         <view class="form-item__input">
           <input v-model="formData.school" class="input-field ds-text-sm" type="text" placeholder="输入学校名称 (支持模糊搜索)"
-            placeholder-class="input-placeholder" />
+            placeholder-class="input-placeholder" maxlength="50" />
         </view>
       </view>
 

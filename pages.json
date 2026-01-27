@@ -1,7 +1,7 @@
 {
     "pages": [
         {
-            "path": "src/pages/index/index",
+            "path": "pages/index/index",
             "style": {
                 "navigationBarTitleText": "Exam Master",
                 "navigationStyle": "default",
@@ -9,7 +9,7 @@
             }
         },
         {
-            "path": "src/pages/splash/index",
+            "path": "pages/splash/index",
             "style": {
                 "navigationBarTitleText": "Exam Master",
                 "navigationStyle": "custom",
@@ -17,7 +17,7 @@
             }
         },
         {
-            "path": "src/pages/practice/index",
+            "path": "pages/practice/index",
             "style": {
                 "navigationBarTitleText": "智能刷题",
                 "navigationStyle": "custom",
@@ -25,7 +25,7 @@
             }
         },
         {
-            "path": "src/pages/practice/do-quiz",
+            "path": "pages/practice/do-quiz",
             "style": {
                 "navigationBarTitleText": "刷题进行中",
                 "navigationStyle": "custom",
@@ -33,7 +33,7 @@
             }
         },
         {
-            "path": "src/pages/practice/pk-battle",
+            "path": "pages/practice/pk-battle",
             "style": {
                 "navigationBarTitleText": "PK 对战",
                 "navigationStyle": "custom",
@@ -41,7 +41,7 @@
             }
         },
         {
-            "path": "src/pages/practice/rank",
+            "path": "pages/practice/rank",
             "style": {
                 "navigationBarTitleText": "学霸排行榜",
                 "navigationStyle": "custom",
@@ -49,7 +49,7 @@
             }
         },
         {
-            "path": "src/pages/practice/rank-list",
+            "path": "pages/practice/rank-list",
             "style": {
                 "navigationBarTitleText": "学霸风云榜",
                 "navigationStyle": "custom",
@@ -57,7 +57,7 @@
             }
         },
         {
-            "path": "src/pages/practice/import-data",
+            "path": "pages/practice/import-data",
             "style": {
                 "navigationBarTitleText": "资料导入",
                 "navigationStyle": "custom",
@@ -65,7 +65,7 @@
             }
         },
         {
-            "path": "src/pages/practice/file-manager",
+            "path": "pages/practice/file-manager",
             "style": {
                 "navigationBarTitleText": "文件管理",
                 "navigationStyle": "custom",
@@ -73,7 +73,15 @@
             }
         },
         {
-            "path": "src/pages/school/index",
+            "path": "pages/practice/mock-exam",
+            "style": {
+                "navigationBarTitleText": "模拟考试",
+                "navigationStyle": "custom",
+                "navigationBarBackgroundColor": "#1A1A1A"
+            }
+        },
+        {
+            "path": "pages/school/index",
             "style": {
                 "navigationBarTitleText": "择校分析",
                 "navigationBarBackgroundColor": "#1A1A1A",
@@ -81,7 +89,7 @@
             }
         },
         {
-            "path": "src/pages/school/detail",
+            "path": "pages/school/detail",
             "style": {
                 "navigationBarTitleText": "院校详情",
                 "navigationStyle": "custom",
@@ -89,7 +97,7 @@
             }
         },
         {
-            "path": "src/pages/settings/index",
+            "path": "pages/settings/index",
             "style": {
                 "navigationBarTitleText": "系统设置",
                 "navigationBarBackgroundColor": "#1A1A1A",
@@ -97,7 +105,7 @@
             }
         },
         {
-            "path": "src/pages/social/friend-list",
+            "path": "pages/social/friend-list",
             "style": {
                 "navigationBarTitleText": "我的好友",
                 "navigationStyle": "custom",
@@ -105,7 +113,15 @@
             }
         },
         {
-            "path": "src/pages/profile/index",
+            "path": "pages/social/friend-profile",
+            "style": {
+                "navigationBarTitleText": "好友资料",
+                "navigationStyle": "custom",
+                "navigationBarBackgroundColor": "#1A1A1A"
+            }
+        },
+        {
+            "path": "pages/profile/index",
             "style": {
                 "navigationBarTitleText": "个人中心",
                 "navigationStyle": "custom",
@@ -113,7 +129,7 @@
             }
         },
         {
-            "path": "src/pages/chat/chat",
+            "path": "pages/chat/chat",
             "style": {
                 "navigationBarTitleText": "智能对话",
                 "navigationStyle": "custom",
@@ -121,7 +137,7 @@
             }
         },
         {
-            "path": "src/pages/mistake/index",
+            "path": "pages/mistake/index",
             "style": {
                 "navigationBarTitleText": "错题本",
                 "navigationStyle": "custom",
@@ -129,7 +145,7 @@
             }
         },
         {
-            "path": "src/pages/plan/index",
+            "path": "pages/plan/index",
             "style": {
                 "navigationBarTitleText": "我的学习计划",
                 "navigationStyle": "custom",
@@ -137,7 +153,7 @@
             }
         },
         {
-            "path": "src/pages/plan/create",
+            "path": "pages/plan/create",
             "style": {
                 "navigationBarTitleText": "创建学习计划",
                 "navigationStyle": "custom",
@@ -145,7 +161,7 @@
             }
         },
         {
-            "path": "src/pages/universe/index",
+            "path": "pages/universe/index",
             "style": {
                 "navigationBarTitleText": "探索宇宙",
                 "navigationStyle": "custom",
@@ -153,7 +169,7 @@
             }
         },
         {
-            "path": "src/pages/study-detail/index",
+            "path": "pages/study-detail/index",
             "style": {
                 "navigationBarTitleText": "学习详情",
                 "navigationStyle": "custom",
@@ -161,7 +177,7 @@
             }
         },
         {
-            "path": "src/pages/tools/photo-search",
+            "path": "pages/tools/photo-search",
             "style": {
                 "navigationBarTitleText": "拍照搜题",
                 "navigationStyle": "custom",
@@ -185,25 +201,25 @@
         "borderStyle": "black",
         "list": [
             {
-                "pagePath": "src/pages/index/index",
+                "pagePath": "pages/index/index",
                 "text": "首页",
                 "iconPath": "/static/tabbar/home.png",
                 "selectedIconPath": "/static/tabbar/home-active.png"
             },
             {
-                "pagePath": "src/pages/practice/index",
+                "pagePath": "pages/practice/index",
                 "text": "刷题",
                 "iconPath": "/static/tabbar/practice.png",
                 "selectedIconPath": "/static/tabbar/practice-active.png"
             },
             {
-                "pagePath": "src/pages/school/index",
+                "pagePath": "pages/school/index",
                 "text": "择校",
                 "iconPath": "/static/tabbar/school.png",
                 "selectedIconPath": "/static/tabbar/school-active.png"
             },
             {
-                "pagePath": "src/pages/profile/index",
+                "pagePath": "pages/profile/index",
                 "text": "我的",
                 "iconPath": "/static/tabbar/profile.png",
                 "selectedIconPath": "/static/tabbar/profile-active.png"

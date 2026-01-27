@@ -88,6 +88,55 @@ const AI_FRIENDS = {
   }
 }
 
+// ==================== 安全配置 ====================
+// 审计模式下受限的操作
+const AUDIT_RESTRICTED_ACTIONS = [
+  'generate_questions',
+  'analyze', 
+  'material_understand',
+  'trend_predict',
+  'adaptive_pick'
+]
+
+// 速率限制配置
+const RATE_LIMIT_CONFIG = {
+  windowMs: 60000,  // 1分钟窗口
+  maxRequests: 100, // 每分钟最大请求数
+  enabled: true
+}
+
+// 简单的内存速率限制器（生产环境建议使用 Redis）
+const rateLimitStore = new Map()
+
+function checkRateLimit(identifier) {
+  if (!RATE_LIMIT_CONFIG.enabled) return { allowed: true }
+  
+  const now = Date.now()
+  const windowStart = now - RATE_LIMIT_CONFIG.windowMs
+  
+  // 获取或初始化记录
+  let record = rateLimitStore.get(identifier)
+  if (!record) {
+    record = { requests: [], blocked: false }
+    rateLimitStore.set(identifier, record)
+  }
+  
+  // 清理过期记录
+  record.requests = record.requests.filter(t => t > windowStart)
+  
+  // 检查是否超限
+  if (record.requests.length >= RATE_LIMIT_CONFIG.maxRequests) {
+    return { 
+      allowed: false, 
+      retryAfter: Math.ceil((record.requests[0] + RATE_LIMIT_CONFIG.windowMs - now) / 1000)
+    }
+  }
+  
+  // 记录本次请求
+  record.requests.push(now)
+  return { allowed: true, remaining: RATE_LIMIT_CONFIG.maxRequests - record.requests.length }
+}
+
 export default async function (ctx) {
   const startTime = Date.now()
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
@@ -95,12 +144,53 @@ export default async function (ctx) {
   console.log(`[${requestId}] AI 代理请求开始`)
   
   try {
+    // ==================== 安全检查 ====================
+    
+    // 1. 获取请求标识（用于速率限制）
+    const clientIP = ctx.headers?.['x-forwarded-for']?.split(',')[0]?.trim() || 
+                     ctx.headers?.['x-real-ip'] || 
+                     'unknown'
+    const userId = ctx.body?.userId || ctx.headers?.['x-user-id'] || clientIP
+    
+    // 2. 速率限制检查
+    const rateLimitResult = checkRateLimit(userId)
+    if (!rateLimitResult.allowed) {
+      console.warn(`[${requestId}] 速率限制触发: ${userId}`)
+      return {
+        code: 429,
+        success: false,
+        message: '请求过于频繁，请稍后再试',
+        retryAfter: rateLimitResult.retryAfter,
+        requestId
+      }
+    }
+    
+    // 3. Audit-Mode 检查（后端最后一道防线）
+    const auditMode = ctx.headers?.['x-audit-mode'] === 'true' ||
+                      ctx.headers?.['x-exam-audit'] === 'true'
+    const action = ctx.body?.action
+    
+    if (auditMode && AUDIT_RESTRICTED_ACTIONS.includes(action)) {
+      console.warn(`[${requestId}] 审计模式下禁止操作: ${action}`)
+      return {
+        code: 403,
+        success: false,
+        message: '审计模式下禁止此操作',
+        auditMode: true,
+        restrictedAction: action,
+        requestId
+      }
+    }
+    
+    // 4. 记录审计日志
+    console.log(`[${requestId}] 安全检查通过 - IP: ${clientIP}, User: ${userId}, AuditMode: ${auditMode}, Action: ${action}`)
+    
+    // ==================== 业务逻辑 ====================
+    
     // 1. 参数解析
     const { 
-      action, 
       content, 
       questionCount, 
-      userId,
       question, 
       userAnswer, 
       correctAnswer,

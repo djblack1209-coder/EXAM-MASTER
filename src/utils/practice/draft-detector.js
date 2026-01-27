@@ -43,7 +43,14 @@ export function detectUnfinishedPractice() {
       return null;
     }
     
-    const progress = JSON.parse(progressStr);
+    let progress;
+    try {
+      progress = JSON.parse(progressStr);
+    } catch (parseError) {
+      console.error('[DraftDetector] JSON解析失败，清除无效草稿:', parseError);
+      clearDraft('quiz');
+      return null;
+    }
     
     // 验证数据完整性
     if (!progress || typeof progress.currentIndex !== 'number') {
@@ -110,7 +117,15 @@ export function detectUnfinishedPK() {
     const draftStr = uni.getStorageSync(DRAFT_KEYS.PK_DRAFT);
     if (!draftStr) return null;
     
-    const draft = JSON.parse(draftStr);
+    let draft;
+    try {
+      draft = JSON.parse(draftStr);
+    } catch (parseError) {
+      console.error('[DraftDetector] PK草稿JSON解析失败，清除无效数据:', parseError);
+      clearDraft('pk');
+      return null;
+    }
+    
     const now = Date.now();
     
     // PK草稿过期时间较短（1小时）
@@ -138,7 +153,15 @@ export function detectUnfinishedImport() {
     const draftStr = uni.getStorageSync(DRAFT_KEYS.IMPORT_DRAFT);
     if (!draftStr) return null;
     
-    const draft = JSON.parse(draftStr);
+    let draft;
+    try {
+      draft = JSON.parse(draftStr);
+    } catch (parseError) {
+      console.error('[DraftDetector] 导入草稿JSON解析失败，清除无效数据:', parseError);
+      clearDraft('import');
+      return null;
+    }
+    
     const now = Date.now();
     
     // 导入草稿过期时间（12小时）

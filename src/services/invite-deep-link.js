@@ -351,10 +351,12 @@ export async function validateInviteCode(code, roomId) {
       return false
     }
     
-    // TODO: 调用后端验证API
+    // NOTE: 后端验证API暂未实现，当前使用本地基础验证
+    // 后续接入后端时取消下方注释：
     // const result = await api.validateInviteCode({ code, roomId })
     // return result.valid
     
+    // 当前降级方案：本地基础验证通过即返回 true
     return true
     
   } catch (error) {
@@ -372,10 +374,11 @@ export async function joinPKRoom(inviteInfo) {
   const { roomId, inviteCode, inviterId } = inviteInfo
   
   try {
-    // TODO: 调用后端API加入房间
+    // NOTE: 后端加入房间API暂未实现，当前使用模拟返回
+    // 后续接入后端时取消下方注释：
     // const result = await api.joinPKRoom({ roomId, inviteCode, inviterId })
     
-    // 模拟返回
+    // 当前降级方案：模拟返回成功
     return {
       success: true,
       roomId,

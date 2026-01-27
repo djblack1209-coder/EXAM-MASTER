@@ -381,14 +381,15 @@ class StreakRecoveryService {
     
     const totalPrice = config.price.coins * quantity
     
-    // TODO: 检查用户金币余额并扣除
+    // NOTE: 金币系统暂未实现，当前跳过余额检查直接发放补签卡
+    // 后续接入金币系统时取消下方注释：
     // const userCoins = await getUserCoins()
     // if (userCoins < totalPrice) {
     //   return { success: false, message: '金币不足' }
     // }
     // await deductCoins(totalPrice)
     
-    // 添加补签卡
+    // 当前降级方案：直接添加补签卡（测试阶段免费）
     this.addCard(cardType, quantity, CARD_SOURCES.PURCHASE)
     
     return {

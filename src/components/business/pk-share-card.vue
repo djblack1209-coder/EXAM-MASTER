@@ -16,6 +16,7 @@
             class="player-avatar" 
             :src="inviterInfo.avatar || defaultAvatar" 
             mode="aspectFill"
+            @error="onAvatarError"
           />
           <text class="player-name">{{ inviterInfo.nickname || '我' }}</text>
           <view class="player-stats">
@@ -85,22 +86,22 @@
     
     <!-- 操作按钮 -->
     <view class="share-actions">
-      <button class="share-btn wechat" open-type="share" @click="handleShareWechat">
+      <button class="share-btn wechat" hover-class="btn-hover" open-type="share" @click="handleShareWechat">
         <text class="btn-icon">💬</text>
         <text class="btn-text">微信好友</text>
       </button>
       
-      <button class="share-btn moments" @click="handleShareMoments">
+      <button class="share-btn moments" hover-class="btn-hover" @click="handleShareMoments">
         <text class="btn-icon">🌐</text>
         <text class="btn-text">朋友圈</text>
       </button>
       
-      <button class="share-btn copy" @click="handleCopyLink">
+      <button class="share-btn copy" hover-class="btn-hover" @click="handleCopyLink">
         <text class="btn-icon">🔗</text>
         <text class="btn-text">复制链接</text>
       </button>
       
-      <button class="share-btn save" @click="handleSaveImage">
+      <button class="share-btn save" hover-class="btn-hover" @click="handleSaveImage">
         <text class="btn-icon">💾</text>
         <text class="btn-text">保存图片</text>
       </button>
@@ -372,6 +373,11 @@ export default {
       // #endif
     })
     
+    // 头像加载失败处理
+    const onAvatarError = (e) => {
+      e.target.src = defaultAvatar
+    }
+    
     return {
       cardRef,
       inviteCode,
@@ -382,7 +388,8 @@ export default {
       handleShareMoments,
       handleCopyLink,
       handleSaveImage,
-      handleClose
+      handleClose,
+      onAvatarError
     }
   }
 }
@@ -469,7 +476,7 @@ export default {
       
       .placeholder-text {
         font-size: 24px;
-        color: #999;
+        color: var(--ds-color-text-tertiary, #999);
       }
     }
   }
@@ -494,7 +501,7 @@ export default {
     .stat-label {
       display: block;
       font-size: 10px;
-      color: #999;
+      color: var(--ds-color-text-tertiary, #999);
     }
   }
 }
@@ -539,7 +546,7 @@ export default {
     
     .detail-text {
       font-size: 12px;
-      color: #666;
+      color: var(--ds-color-text-secondary, #666);
     }
   }
 }
@@ -552,7 +559,7 @@ export default {
   
   .code-label {
     font-size: 12px;
-    color: #999;
+    color: var(--ds-color-text-tertiary, #999);
     margin-right: 10px;
   }
   
@@ -577,7 +584,7 @@ export default {
     display: block;
     margin-top: 10px;
     font-size: 12px;
-    color: #999;
+    color: var(--ds-color-text-tertiary, #999);
   }
 }
 

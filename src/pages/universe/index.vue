@@ -16,17 +16,17 @@
 			:class="{ 'nav-hidden': !navVisible }"
 			:style="{ top: (statusBarHeight + 10) + 'px' }"
 		>
-			<view class="nav-btn" @click.stop="handleBack">
+			<view class="nav-btn" @click.stop="handleBack" hover-class="nav-btn-hover">
 				<text class="nav-icon">←</text>
 				<text class="nav-label">返回</text>
 			</view>
 			<view class="nav-divider"></view>
-			<view class="nav-btn" @click.stop="handleHome">
+			<view class="nav-btn" @click.stop="handleHome" hover-class="nav-btn-hover">
 				<text class="nav-icon">⌂</text>
 				<text class="nav-label">主页</text>
 			</view>
 			<view class="nav-divider"></view>
-			<view class="nav-btn" @click.stop="handleRefresh">
+			<view class="nav-btn" @click.stop="handleRefresh" hover-class="nav-btn-hover">
 				<text class="nav-icon">↻</text>
 				<text class="nav-label">重置</text>
 			</view>
@@ -675,7 +675,7 @@ export default {
 			this.isNavigating = true;
 			
 			uni.reLaunch({
-				url: '/src/pages/index/index',
+				url: '/pages/index/index',
 				success: () => {
 					logger.log('✅ reLaunch to home success');
 					// 不需要重置isNavigating，因为页面会卸载
@@ -684,7 +684,7 @@ export default {
 					logger.error('❌ reLaunch failed:', err);
 					// 最后的备选方案：尝试 redirectTo
 					uni.redirectTo({
-						url: '/src/pages/index/index',
+						url: '/pages/index/index',
 						success: () => {
 							// 不需要重置isNavigating，因为页面会卸载
 						},
@@ -788,6 +788,12 @@ export default {
 		background: rgba(255, 152, 0, 0.4);
 		margin: 0 12rpx;
 	}
+}
+
+// 导航按钮 hover 效果
+.nav-btn-hover {
+	opacity: 0.7;
+	transform: scale(0.95);
 }
 
 // 玻璃态效果

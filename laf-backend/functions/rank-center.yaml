@@ -1,0 +1,6 @@
+name: rank-center
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

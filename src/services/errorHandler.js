@@ -128,10 +128,11 @@ class ErrorHandler {
 
 	/**
 	 * 上报错误到服务器（可选）
+	 * NOTE: 错误上报服务暂未接入，当前仅记录到控制台
+	 * 后续可接入 Sentry、Bugsnag 或自建错误收集服务
 	 */
 	reportError(errorInfo) {
-		// TODO: 实现错误上报逻辑
-		// 可以上报到自己的服务器或第三方监控平台
+		// 当前降级方案：仅记录到控制台，后续可接入第三方监控平台
 		console.log('[ErrorHandler] 错误已记录，待上报:', errorInfo.message);
 	}
 

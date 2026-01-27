@@ -38,7 +38,7 @@ onMounted(() => {
   // 3秒后自动跳转到首页
   setTimeout(() => {
     uni.reLaunch({
-      url: '/src/pages/index/index'
+      url: '/pages/index/index'
     })
   }, 3000)
 })

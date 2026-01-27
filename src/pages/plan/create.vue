@@ -11,13 +11,24 @@
 		</view>
 
 		<scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
-			<view class="glass-card form-card">
+			<!-- 骨架屏加载状态 -->
+			<view v-if="isPageLoading" class="glass-card form-card">
+				<view class="skeleton-form-item" v-for="i in 7" :key="i">
+					<view class="skeleton-label skeleton-animate"></view>
+					<view class="skeleton-input skeleton-animate"></view>
+				</view>
+				<view class="skeleton-btn skeleton-animate"></view>
+			</view>
+			
+			<!-- 实际表单 -->
+			<view v-else class="glass-card form-card">
 				<view class="form-item">
 					<text class="form-label">计划名称</text>
 					<input class="form-input" 
 						   placeholder="例如：考研数学基础阶段复习" 
 						   v-model="plan.name" 
-						   @input="onInputChange"/>
+						   @input="onInputChange"
+						   maxlength="50"/>
 				</view>
 				
 				<view class="form-item">
@@ -26,7 +37,8 @@
 						    placeholder="例如：掌握高等数学第一章知识点，完成100道习题" 
 						    v-model="plan.goal" 
 						    @input="onInputChange" 
-						    :auto-height="true"/>
+						    :auto-height="true"
+						    maxlength="500"/>
 				</view>
 				
 				<view class="form-item">
@@ -108,11 +120,11 @@
 				</view>
 			</view>
 			
-			<view class="action-buttons">
+			<view class="action-buttons" v-if="!isPageLoading">
 				<button class="action-btn primary" 
-					        :disabled="!isFormValid" 
+					        :disabled="!isFormValid || isSaving" 
 					        @tap="savePlan">
-					保存计划
+					{{ isSaving ? '保存中...' : '保存计划' }}
 				</button>
 			</view>
 		</scroll-view>
@@ -128,6 +140,8 @@ export default {
 				statusBarHeight: 44,
 				isDark: false,
 				isFormValid: false,
+				isSaving: false, // 防重复点击
+				isPageLoading: true, // 页面初始加载状态
 				plan: {
 					name: '',
 					goal: '',
@@ -156,6 +170,11 @@ export default {
 			uni.$on('themeUpdate', (mode) => {
 				this.isDark = mode === 'dark';
 			});
+			
+			// 模拟加载完成
+			setTimeout(() => {
+				this.isPageLoading = false;
+			}, 300);
 		},
 		onUnload() {
 			// 移除事件监听
@@ -201,7 +220,10 @@ export default {
 				this.isFormValid = this.plan.name.trim() !== '' && this.plan.goal.trim() !== '';
 			},
 			savePlan() {
-				if (!this.isFormValid) return;
+				if (!this.isFormValid || this.isSaving) return;
+				
+				// 防重复点击
+				this.isSaving = true;
 				
 				// 保存到本地存储
 				const plans = storageService.get('study_plans', []);
@@ -215,6 +237,12 @@ export default {
 					duration: 1500,
 					success: () => {
 						uni.navigateBack();
+					},
+					complete: () => {
+						// 延迟解锁，防止快速返回后再次点击
+						setTimeout(() => {
+							this.isSaving = false;
+						}, 2000);
 					}
 				});
 			},
@@ -504,5 +532,45 @@ export default {
 
 .container.dark-mode .aurora-bg {
 	background: linear-gradient(135deg, var(--bg-body) 0%, var(--bg-dark-gradient-1) 50%, var(--bg-glass) 100%) !important;
+}
+
+/* 骨架屏样式 */
+.skeleton-form-item {
+	margin-bottom: 40rpx;
+}
+
+.skeleton-label {
+	width: 120rpx;
+	height: 28rpx;
+	border-radius: 6rpx;
+	margin-bottom: 16rpx;
+}
+
+.skeleton-input {
+	width: 100%;
+	height: 80rpx;
+	border-radius: 16rpx;
+}
+
+.skeleton-btn {
+	width: 100%;
+	height: 88rpx;
+	border-radius: 50rpx;
+	margin-top: 60rpx;
+}
+
+.skeleton-animate {
+	background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+	background-size: 200% 100%;
+	animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
 }
 </style>

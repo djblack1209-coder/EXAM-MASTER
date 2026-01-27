@@ -641,5 +641,97 @@ export const lafService = {
       console.warn('[LafService] 获取AI好友记忆失败:', error);
       return { code: 0, success: true, data: [] };
     }
+  },
+
+  // ==================== 学校数据查询 ====================
+
+  /**
+   * 获取学校列表
+   * @param {Object} params - 查询参数
+   * @returns {Promise} 返回学校列表
+   */
+  async getSchoolList(params = {}) {
+    try {
+      const response = await this.request('/school-query', {
+        action: 'list',
+        data: params
+      });
+      return response;
+    } catch (error) {
+      console.warn('[LafService] 获取学校列表失败:', error);
+      return { code: -1, success: false, data: { list: [], total: 0 } };
+    }
+  },
+
+  /**
+   * 获取学校详情
+   * @param {string} schoolId - 学校ID或代码
+   * @returns {Promise} 返回学校详情
+   */
+  async getSchoolDetail(schoolId) {
+    try {
+      const response = await this.request('/school-query', {
+        action: 'detail',
+        data: { code: String(schoolId) }
+      });
+      return response;
+    } catch (error) {
+      console.warn('[LafService] 获取学校详情失败:', error);
+      return { code: -1, success: false, data: null };
+    }
+  },
+
+  /**
+   * 搜索学校
+   * @param {string} keyword - 搜索关键词
+   * @param {number} limit - 返回数量限制
+   * @returns {Promise} 返回搜索结果
+   */
+  async searchSchools(keyword, limit = 10) {
+    try {
+      const response = await this.request('/school-query', {
+        action: 'search',
+        data: { keyword, limit }
+      });
+      return response;
+    } catch (error) {
+      console.warn('[LafService] 搜索学校失败:', error);
+      return { code: -1, success: false, data: [] };
+    }
+  },
+
+  /**
+   * 获取热门学校
+   * @param {Object} params - 查询参数
+   * @returns {Promise} 返回热门学校列表
+   */
+  async getHotSchools(params = {}) {
+    try {
+      const response = await this.request('/school-query', {
+        action: 'hot',
+        data: params
+      });
+      return response;
+    } catch (error) {
+      console.warn('[LafService] 获取热门学校失败:', error);
+      return { code: -1, success: false, data: [] };
+    }
+  },
+
+  /**
+   * 获取省份列表
+   * @returns {Promise} 返回省份列表
+   */
+  async getProvinces() {
+    try {
+      const response = await this.request('/school-query', {
+        action: 'provinces',
+        data: {}
+      });
+      return response;
+    } catch (error) {
+      console.warn('[LafService] 获取省份列表失败:', error);
+      return { code: -1, success: false, data: [] };
+    }
   }
 };

@@ -18,7 +18,7 @@ import cloud from '@lafjs/cloud'
 import crypto from 'crypto'
 
 // 环境变量配置
-const WX_APPID = process.env.WX_APPID || 'wx5bee888cf32215df'
+const WX_APPID = process.env.WX_APPID || 'wxd634d50ad63e14ed'
 const WX_SECRET_PLACEHOLDER
 const JWT_SECRET_PLACEHOLDER
 const JWT_EXPIRES_IN = 7 * 24 * 60 * 60 * 1000 // 7天

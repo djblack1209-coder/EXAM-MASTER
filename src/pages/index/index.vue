@@ -325,17 +325,6 @@
 			@cancel="showLoginModal = false"
 		/>
 		
-		<!-- ✅ 自定义弹窗：模拟考试预告 -->
-		<custom-modal
-			:visible="showMockExamModal"
-			type="info"
-			title="🚀 模拟考试"
-			:content="mockExamModalContent"
-			confirm-text="知道了"
-			:show-cancel="false"
-			:is-dark="isDark"
-			@confirm="showMockExamModal = false"
-		/>
 		
 		<!-- ✅ 检查点1.2: 每日金句分享弹窗 -->
 		<share-modal
@@ -358,6 +347,9 @@
 			@delete="handleTodoDelete"
 			@toggle="handleToggleTodo"
 		/>
+		
+		<!-- ✅ P3: 离线状态指示器 -->
+		<offline-indicator :auto-show="true" position="top" :auto-hide-delay="5000" />
 	</view>
 </template>
 
@@ -370,6 +362,8 @@ import EmptyStateHome from '../../components/common/empty-state-home.vue';
 import ShareModal from '../../components/common/share-modal.vue';
 import TodoEditor from '../../components/common/todo-editor.vue';
 import CustomModal from '../../components/common/CustomModal.vue';
+// ✅ P3: 离线状态指示器
+import OfflineIndicator from '../../components/common/offline-indicator.vue';
 import { getGreetingTime } from '../../utils/core/date';
 import { useStudyStore } from '../../stores/modules/study';
 import { useTodoStore } from '../../stores/modules/todo';
@@ -398,7 +392,8 @@ export default {
 		EmptyStateHome,
 		ShareModal,
 		TodoEditor,
-		CustomModal
+		CustomModal,
+		OfflineIndicator
 	},
 
 	data() {
@@ -430,7 +425,6 @@ export default {
 			// ✅ 自定义弹窗状态
 			showEmptyBankModal: false,
 			showLoginModal: false,
-			showMockExamModal: false,
 			showShareModal: false,
 			showTodoEditor: false,
 			editingTodo: null,
@@ -665,11 +659,6 @@ export default {
 		isNewUser() {
 			// 新用户判断：题库为空 且 学习天数为0
 			return this.isQuestionBankEmpty && this.totalStudyDays === 0;
-		},
-		
-		// ✅ 模拟考试弹窗内容
-		mockExamModalContent() {
-			return '模拟考试功能即将上线！\n\n即将提供：\n✓ 真实考试环境模拟\n✓ 智能组卷系统\n✓ 详细成绩分析\n\n敬请期待！';
 		}
 	},
 
@@ -757,6 +746,7 @@ export default {
 		},
 		
 		async loadKnowledgePoints() {
+			uni.showLoading({ title: '加载中...', mask: false });
 			try {
 				// 从错题本获取数据
 				const mistakes = await storageService.getMistakes(1, 999);
@@ -819,6 +809,8 @@ export default {
 				];
 			} catch (error) {
 				logger.error('[Index] 加载知识点失败:', error);
+			} finally {
+				uni.hideLoading();
 			}
 		},
 		
@@ -933,7 +925,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] toggleTheme vibrate failed', e); }
 		},
 
 		handleUserClick() {
@@ -942,7 +934,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] handleUserClick vibrate failed', e); }
 
 			// 检查登录状态
 			const isLoggedIn = this.userStore?.isLogin || false;
@@ -953,7 +945,7 @@ export default {
 				this.openLoginModal();
 			} else {
 				// 已登录：直接跳转到设置页
-				uni.navigateTo({ url: '/src/pages/settings/index' });
+				uni.navigateTo({ url: '/pages/settings/index' });
 			}
 		},
 		
@@ -973,7 +965,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] navToPractice vibrate failed', e); }
 
 			// 检查题库是否存在
 			const questionBank = uni.getStorageSync('v30_bank') || [];
@@ -985,7 +977,7 @@ export default {
 			} else {
 				// 跳转到刷题页面
 				uni.switchTab({
-					url: '/src/pages/practice/index',
+					url: '/pages/practice/index',
 					success: () => {
 						logger.log('[Index] 成功跳转到刷题页面');
 					},
@@ -993,7 +985,7 @@ export default {
 						logger.error('[Index] switchTab 失败:', err);
 						// 尝试使用 reLaunch 作为备选
 						uni.reLaunch({
-							url: '/src/pages/practice/index',
+							url: '/pages/practice/index',
 							fail: (relaunchErr) => {
 								logger.error('[Index] reLaunch 也失败:', relaunchErr);
 								uni.showToast({
@@ -1022,7 +1014,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] navToMockExam vibrate failed', e); }
 
 			// 检查题库是否存在
 			const questionBank = uni.getStorageSync('v30_bank') || [];
@@ -1034,7 +1026,7 @@ export default {
 			} else if (questionBank.length < 10) {
 				this.isNavigating = false;
 				
-				// 题目太少 - 暂时保留原生弹窗（后续可替换）
+				// 题目太少 - 提示用户
 				uni.showModal({
 					title: '⚠️ 题目数量不足',
 					content: `当前题库仅有 ${questionBank.length} 道题，建议至少 10 道题目后再进行模拟考试。`,
@@ -1042,34 +1034,45 @@ export default {
 					cancelText: '先刷题',
 					success: (res) => {
 						if (res.confirm) {
-							uni.navigateTo({ url: '/src/pages/practice/import-data' });
+							uni.navigateTo({ url: '/pages/practice/import-data' });
 						} else {
 							uni.switchTab({ 
-								url: '/src/pages/practice/index',
-								fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+								url: '/pages/practice/index',
+								fail: () => uni.reLaunch({ url: '/pages/practice/index' })
 							});
 						}
 					}
 				});
 			} else {
-				this.isNavigating = false;
-				// ✅ 使用自定义弹窗替换原生弹窗
-				this.showMockExamModal = true;
+				// ✅ 跳转到模拟考试页面
+				uni.navigateTo({
+					url: '/pages/practice/mock-exam',
+					success: () => {
+						logger.log('[Index] 成功跳转到模拟考试页面');
+					},
+					fail: (err) => {
+						logger.error('[Index] 跳转模拟考试失败:', err);
+						uni.showToast({ title: '页面跳转失败', icon: 'none' });
+					},
+					complete: () => {
+						this.isNavigating = false;
+					}
+				});
 			}
 		},
 
 		navToStudyDetail() {
-			uni.navigateTo({ url: '/src/pages/study-detail/index' });
+			uni.navigateTo({ url: '/pages/study-detail/index' });
 		},
 
 		handleStatClick(type) {
 			logger.log('[Index] Stat clicked:', type);
 			
 			const routes = {
-				'questions': '/src/pages/practice/index',
-				'accuracy': '/src/pages/mistake/index',
-				'streak': '/src/pages/study-detail/index',
-				'achievements': '/src/pages/profile/index'
+				'questions': '/pages/practice/index',
+				'accuracy': '/pages/mistake/index',
+				'streak': '/pages/study-detail/index',
+				'achievements': '/pages/profile/index'
 			};
 			
 			if (routes[type]) {
@@ -1106,7 +1109,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] handleKnowledgeClick vibrate failed', e); }
 			
 			// ✅ 检查点1.4: 记录轨迹
 			await bubbleInteraction.handleClick(point, {
@@ -1119,10 +1122,10 @@ export default {
 			
 			// 根据气泡类型跳转到对应页面
 			const routeMap = {
-				'错题集': () => uni.navigateTo({ url: '/src/pages/mistake/index' }),
+				'错题集': () => uni.navigateTo({ url: '/pages/mistake/index' }),
 				'练习题': () => uni.switchTab({ 
-					url: '/src/pages/practice/index',
-					fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+					url: '/pages/practice/index',
+					fail: () => uni.reLaunch({ url: '/pages/practice/index' })
 				}),
 				'热门考点': () => this.navToHotTopics(point),
 				'核心概念': () => this.navToConcepts(point),
@@ -1150,7 +1153,7 @@ export default {
 		// 热门考点 - 跳转到练习页并筛选
 		navToHotTopics(point) {
 			uni.switchTab({ 
-				url: '/src/pages/practice/index',
+				url: '/pages/practice/index',
 				success: () => {
 					uni.showToast({
 						title: `${point.icon} 热门考点\n\n共 ${point.count} 个考点\n正确率目标：${point.mastery}%`,
@@ -1158,14 +1161,14 @@ export default {
 						duration: 2000
 					});
 				},
-				fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+				fail: () => uni.reLaunch({ url: '/pages/practice/index' })
 			});
 		},
 		
 		// 核心概念 - 显示概念列表
 		navToConcepts(point) {
 			uni.switchTab({ 
-				url: '/src/pages/practice/index',
+				url: '/pages/practice/index',
 				success: () => {
 					uni.showToast({
 						title: `${point.icon} 核心概念\n\n共 ${point.count} 个概念\n掌握度：${point.mastery}%`,
@@ -1173,7 +1176,7 @@ export default {
 						duration: 2000
 					});
 				},
-				fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+				fail: () => uni.reLaunch({ url: '/pages/practice/index' })
 			});
 		},
 		
@@ -1185,7 +1188,7 @@ export default {
 		// 阅读理解 - 跳转到练习页
 		navToReading(point) {
 			uni.switchTab({ 
-				url: '/src/pages/practice/index',
+				url: '/pages/practice/index',
 				success: () => {
 					uni.showToast({
 						title: `${point.icon} 阅读理解\n\n共 ${point.count} 篇\n正确率：${point.mastery}%`,
@@ -1193,7 +1196,7 @@ export default {
 						duration: 2000
 					});
 				},
-				fail: () => uni.reLaunch({ url: '/src/pages/practice/index' })
+				fail: () => uni.reLaunch({ url: '/pages/practice/index' })
 			});
 		},
 
@@ -1203,7 +1206,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] handleEditPlan vibrate failed', e); }
 
 			// ✅ 检查点1.3: 打开待办编辑器（新建模式）
 			this.editingTodo = null;
@@ -1223,7 +1226,7 @@ export default {
 						if (typeof uni.vibrateShort === 'function') {
 							uni.vibrateShort();
 						}
-					} catch (e) {}
+					} catch (e) { logger.warn('[Index] handleToggleTodo vibrate failed', e); }
 				} else {
 					logger.error('[Index] Todo not found:', todoId);
 				}
@@ -1245,33 +1248,33 @@ export default {
 			switch (event.type) {
 				case 'new_user_onboarding':
 					// 新用户引导 - 跳转到资料导入页
-					uni.navigateTo({ url: '/src/pages/practice/import-data' });
+					uni.navigateTo({ url: '/pages/practice/import-data' });
 					break;
 				case 'empty_question_bank':
 					// 题库为空 - 跳转到资料导入页
-					uni.navigateTo({ url: '/src/pages/practice/import-data' });
+					uni.navigateTo({ url: '/pages/practice/import-data' });
 					break;
 				case 'empty_todo':
 					// 待办为空 - 跳转到创建计划页
-					uni.navigateTo({ url: '/src/pages/plan/create' });
+					uni.navigateTo({ url: '/pages/plan/create' });
 					break;
 				default:
 					// 默认跳转到资料导入页
-					uni.navigateTo({ url: '/src/pages/practice/import-data' });
+					uni.navigateTo({ url: '/pages/practice/import-data' });
 			}
 		},
 		
 		// ✅ 处理题库为空弹窗确认
 		handleEmptyBankConfirm() {
 			this.showEmptyBankModal = false;
-			uni.navigateTo({ url: '/src/pages/practice/import-data' });
+			uni.navigateTo({ url: '/pages/practice/import-data' });
 		},
 		
 		// ✅ 处理登录弹窗确认
 		handleLoginConfirm() {
 			this.showLoginModal = false;
 			uni.navigateTo({ 
-				url: '/src/pages/settings/index',
+				url: '/pages/settings/index',
 				success: () => {
 					uni.showToast({
 						title: '请点击头像完成登录',
@@ -1341,7 +1344,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] refreshDailyQuote vibrate failed', e); }
 			
 			// 随机选择一条不同的金句
 			let newIndex;
@@ -1371,7 +1374,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] openQuotePoster vibrate failed', e); }
 			
 			// ✅ 检查点1.2: 打开分享弹窗
 			this.showShareModal = true;
@@ -1399,7 +1402,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch (e) {}
+			} catch (e) { logger.warn('[Index] saveQuotePoster vibrate failed', e); }
 			
 			// ✅ 检查点1.2: 调用 quoteHandler 保存海报
 			quoteHandler.generatePoster(this.dailyQuote, this.quoteAuthor)
@@ -1499,11 +1502,11 @@ export default {
 				setTimeout(() => {
 					// 使用正确的 tabBar 页面路径格式
 					uni.switchTab({ 
-						url: '/src/pages/practice/index',
+						url: '/pages/practice/index',
 						fail: (err) => {
 							logger.error('[Index] switchTab 失败:', err);
 							// 备选方案：使用 reLaunch
-							uni.reLaunch({ url: '/src/pages/practice/index' });
+							uni.reLaunch({ url: '/pages/practice/index' });
 						}
 					});
 				}, 1500);
@@ -1519,7 +1522,7 @@ export default {
 				cancelText: '稍后再说',
 				success: (res) => {
 					if (res.confirm) {
-						uni.navigateTo({ url: '/src/pages/practice/import-data' });
+						uni.navigateTo({ url: '/pages/practice/import-data' });
 					}
 				}
 			});
@@ -1930,7 +1933,7 @@ export default {
 
 /* 内容包装器 */
 .content-wrapper {
-	padding: 48rpx 32rpx;
+	padding: var(--ds-spacing-xl, 48rpx) var(--ds-spacing-lg, 32rpx);
 }
 
 /* ==================== 欢迎横幅 ==================== */
@@ -2020,7 +2023,7 @@ export default {
 
 .banner-actions {
 	display: flex;
-	gap: 24rpx;
+	gap: var(--ds-spacing-md, 24rpx);
 	flex-wrap: wrap;
 }
 
@@ -2028,12 +2031,14 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 16rpx;
-	padding: 24rpx 48rpx;
-	border-radius: 24rpx;
-	font-size: 28rpx;
+	gap: var(--ds-spacing-sm, 16rpx);
+	padding: var(--ds-spacing-md, 24rpx) var(--ds-spacing-xl, 48rpx);
+	border-radius: var(--ds-radius-lg, 24rpx);
+	font-size: var(--ds-font-size-base, 28rpx);
 	font-weight: 600;
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	/* 确保按钮点击区域足够大 */
+	min-height: 88rpx;
 }
 
 .btn-primary {
@@ -2071,8 +2076,8 @@ export default {
 .stats-grid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 24rpx;
-	margin-bottom: 32rpx;
+	gap: var(--ds-spacing-md, 24rpx);
+	margin-bottom: var(--ds-spacing-lg, 32rpx);
 }
 
 /* ==================== 检查点1.5: 今日学习时长卡片 ==================== */
@@ -2390,6 +2395,8 @@ export default {
 	font-size: 24rpx;
 	font-weight: 600;
 	line-height: 1.2;
+	word-break: break-all;
+	max-width: 100%;
 }
 
 .bubble-count {

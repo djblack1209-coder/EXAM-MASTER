@@ -1,0 +1,287 @@
+# ============================================
+# Exam-Master CI/CD 主流水线
+# 触发条件：push 到 main/develop，PR 到 main
+# ============================================
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  NODE_VERSION: '20'
+
+jobs:
+  # ==================== 代码质量检查 ====================
+  lint-and-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint --if-present
+        continue-on-error: true
+
+      - name: Run tests
+        run: npm test --if-present
+        continue-on-error: true
+
+      - name: Build check
+        run: npm run build:h5
+
+  # ==================== 安全扫描 ====================
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run Trivy vulnerability scanner (filesystem)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # ==================== 构建 Docker 镜像 ====================
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [lint-and-test, security-scan]
+    if: github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tags: ${{ steps.meta.outputs.tags }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      # 构建后端镜像
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/docker/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ steps.meta.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # 构建前端镜像
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/docker/Dockerfile.frontend
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ steps.meta.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # 扫描镜像漏洞
+      - name: Run Trivy vulnerability scanner (image)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ steps.meta.outputs.version }}
+          format: 'table'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+
+  # ==================== 部署到 Staging ====================
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://staging.exam-master.example.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > ~/.kube/config
+
+      - name: Deploy to staging
+        run: |
+          kubectl set image deployment/exam-master-backend \
+            backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ needs.build.outputs.version }} \
+            -n exam-master-staging
+          kubectl set image deployment/exam-master-frontend \
+            frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ needs.build.outputs.version }} \
+            -n exam-master-staging
+          kubectl rollout status deployment/exam-master-backend -n exam-master-staging --timeout=300s
+          kubectl rollout status deployment/exam-master-frontend -n exam-master-staging --timeout=300s
+
+      - name: Run smoke tests
+        run: |
+          sleep 30
+          curl -f https://staging.exam-master.example.com/health || exit 1
+
+  # ==================== 金丝雀发布到生产 ====================
+  deploy-canary:
+    name: Canary Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production-canary
+      url: https://exam-master.example.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > ~/.kube/config
+
+      - name: Deploy canary (5% traffic)
+        run: |
+          # 更新金丝雀 Deployment
+          kubectl set image deployment/exam-master-backend-canary \
+            backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ needs.build.outputs.version }} \
+            -n exam-master
+          kubectl rollout status deployment/exam-master-backend-canary -n exam-master --timeout=300s
+
+      - name: Wait and monitor (10 minutes)
+        run: |
+          echo "Monitoring canary deployment for 10 minutes..."
+          sleep 600
+          
+          # 检查错误率
+          ERROR_RATE=$(kubectl exec -n exam-master deploy/prometheus -- \
+            promtool query instant 'rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100' \
+            2>/dev/null | grep -oP '\d+\.\d+' || echo "0")
+          
+          if (( $(echo "$ERROR_RATE > 1" | bc -l) )); then
+            echo "Error rate too high: $ERROR_RATE%"
+            exit 1
+          fi
+          echo "Canary deployment healthy. Error rate: $ERROR_RATE%"
+
+  # ==================== 全量发布到生产 ====================
+  deploy-production:
+    name: Full Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build, deploy-canary]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://exam-master.example.com
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > ~/.kube/config
+
+      - name: Full deployment
+        run: |
+          kubectl set image deployment/exam-master-backend \
+            backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:${{ needs.build.outputs.version }} \
+            -n exam-master
+          kubectl set image deployment/exam-master-frontend \
+            frontend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:${{ needs.build.outputs.version }} \
+            -n exam-master
+          kubectl rollout status deployment/exam-master-backend -n exam-master --timeout=300s
+          kubectl rollout status deployment/exam-master-frontend -n exam-master --timeout=300s
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n exam-master -l app.kubernetes.io/name=exam-master
+          curl -f https://exam-master.example.com/health || exit 1
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "Deployment successful!"
+          # 可以添加企业微信/钉钉通知
+
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "Deployment failed, rolling back..."
+          kubectl rollout undo deployment/exam-master-backend -n exam-master
+          kubectl rollout undo deployment/exam-master-frontend -n exam-master

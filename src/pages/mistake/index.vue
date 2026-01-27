@@ -65,11 +65,11 @@
 						</view>
 					</view>
 					<view class="practice-actions">
-						<button class="action-btn primary" @tap="submitPractice(index)"
+						<button class="action-btn primary" hover-class="ds-hover-btn" @tap="submitPractice(index)"
 							:disabled="practiceChoices[index] === undefined || isAnalyzing">
 							提交答案
 						</button>
-						<button class="action-btn" @tap="cancelPractice(index)">取消</button>
+						<button class="action-btn" hover-class="ds-hover-btn" @tap="cancelPractice(index)">取消</button>
 					</view>
 					<view class="practice-result" v-if="practiceResults[index]">
 						<text class="result-icon" :class="practiceResults[index].isCorrect ? 'correct' : 'wrong'">
@@ -129,9 +129,9 @@
 
 			<!-- 一键清空按钮（显示在列表最底部） - 优化样式 -->
 			<view v-if="mistakes.length > 0 && !isLoading" class="clear-all-section">
-				<button class="clear-all-btn ds-flex ds-flex-center ds-gap-xs ds-touchable" @tap="clearAllMistakes">
+				<button class="clear-all-btn ds-flex ds-flex-center ds-gap-xs ds-touchable" :disabled="isClearing" @tap="clearAllMistakes">
 					<text class="clear-all-icon">🗑️</text>
-					<text class="clear-all-text ds-text-sm ds-font-semibold">清空所有错题</text>
+					<text class="clear-all-text ds-text-sm ds-font-semibold">{{ isClearing ? '清空中...' : '清空所有错题' }}</text>
 				</button>
 			</view>
 
@@ -228,7 +228,8 @@ export default {
 			pageSize: 20,
 			hasMore: true,
 			isLoading: false,
-			isInitLoading: true // 初始骨架屏加载状态
+			isInitLoading: true, // 初始骨架屏加载状态
+			isClearing: false // 防重复点击：清空错题
 		};
 	},
 	onLoad(options) {
@@ -277,6 +278,7 @@ export default {
 			this.userInfo = storageService.get('userInfo', { nickName: '考研人' });
 		},
 		async syncPendingMistakes() {
+			uni.showLoading({ title: '同步中...', mask: false });
 			try {
 				logger.log('[mistake-book] 开始自动同步待同步错题...');
 				const result = await storageService.syncPendingMistakes();
@@ -294,6 +296,8 @@ export default {
 				}
 			} catch (error) {
 				logger.error('[mistake-book] 同步待同步错题异常:', error);
+			} finally {
+				uni.hideLoading();
 			}
 		},
 		async loadData(reset = false) {
@@ -379,10 +383,13 @@ export default {
 		goBack() {
 			// 从空状态跳转到刷题页面
 			uni.switchTab({
-				url: '/src/pages/practice/index'
+				url: '/pages/practice/index'
 			});
 		},
 		clearAllMistakes() {
+			// 防重复点击
+			if (this.isClearing) return;
+			
 			// 一键清空所有错题
 			if (this.mistakes.length === 0) {
 				return uni.showToast({ title: '已经没有错题了', icon: 'none' });
@@ -394,6 +401,7 @@ export default {
 				confirmColor: '#FF3B30',
 				success: async (res) => {
 					if (res.confirm) {
+						this.isClearing = true;
 						uni.showLoading({ title: '清空中...' });
 
 						try {
@@ -448,6 +456,8 @@ export default {
 								icon: 'none',
 								duration: 2000
 							});
+						} finally {
+							this.isClearing = false;
 						}
 					}
 				}
@@ -536,17 +546,150 @@ export default {
 			});
 		},
 		exportToCanvas() {
-			if (this.mistakes.length === 0) return;
+			if (this.mistakes.length === 0) {
+				return uni.showToast({ title: '暂无错题可导出', icon: 'none' });
+			}
+			
 			uni.showLoading({ title: '正在生成试卷...' });
 
-			// 这里简化处理，实际可以使用 canvas 生成图片
-			setTimeout(() => {
-				uni.hideLoading();
-				uni.showToast({
-					title: '导出功能即将上线',
-					icon: 'none'
+			try {
+				// 获取canvas上下文
+				const ctx = uni.createCanvasContext('reportCanvas', this);
+				if (!ctx) {
+					throw new Error('Canvas上下文创建失败');
+				}
+
+				const isDark = this.isDark;
+				const theme = {
+					bgColor: isDark ? '#1a1a1a' : '#ffffff',
+					titleColor: isDark ? '#2ECC71' : '#27AE60',
+					mainText: isDark ? '#F1F5F9' : '#1A1A1A',
+					subText: isDark ? '#94A3B8' : '#666666',
+					borderColor: isDark ? '#333333' : '#E0E0E0'
+				};
+
+				// 绘制背景
+				ctx.setFillStyle(theme.bgColor);
+				ctx.fillRect(0, 0, 750, 1334);
+
+				// 绘制标题
+				ctx.setFillStyle(theme.titleColor);
+				ctx.setFontSize(48);
+				ctx.fillText('错题试卷', 50, 100);
+				
+				ctx.setFontSize(24);
+				ctx.setFillStyle(theme.subText);
+				const now = new Date();
+				ctx.fillText(`生成时间：${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`, 50, 140);
+				ctx.fillText(`共 ${this.mistakes.length} 道题`, 50, 170);
+
+				// 绘制分隔线
+				ctx.setStrokeStyle(theme.borderColor);
+				ctx.setLineWidth(2);
+				ctx.beginPath();
+				ctx.moveTo(50, 200);
+				ctx.lineTo(700, 200);
+				ctx.stroke();
+
+				// 绘制题目列表
+				let yPos = 250;
+				const maxQuestions = Math.min(this.mistakes.length, 8); // 最多显示8道题
+				
+				for (let i = 0; i < maxQuestions; i++) {
+					const mistake = this.mistakes[i];
+					const questionText = (mistake.question || mistake.question_content || '题目内容').substring(0, 40);
+					
+					// 题号
+					ctx.setFillStyle(theme.titleColor);
+					ctx.setFontSize(28);
+					ctx.fillText(`${i + 1}.`, 50, yPos);
+					
+					// 题目内容
+					ctx.setFillStyle(theme.mainText);
+					ctx.setFontSize(26);
+					ctx.fillText(questionText + (questionText.length >= 40 ? '...' : ''), 90, yPos);
+					
+					// 选项
+					if (mistake.options && mistake.options.length > 0) {
+						yPos += 40;
+						const optionLabels = ['A', 'B', 'C', 'D'];
+						mistake.options.slice(0, 4).forEach((opt, idx) => {
+							const optText = (opt || '').substring(0, 25);
+							ctx.setFillStyle(theme.subText);
+							ctx.setFontSize(22);
+							ctx.fillText(`${optionLabels[idx]}. ${optText}`, 90, yPos);
+							yPos += 30;
+						});
+					}
+					
+					yPos += 30;
+					
+					// 防止超出画布
+					if (yPos > 1200) break;
+				}
+
+				// 底部提示
+				if (this.mistakes.length > maxQuestions) {
+					ctx.setFillStyle(theme.subText);
+					ctx.setFontSize(22);
+					ctx.fillText(`... 还有 ${this.mistakes.length - maxQuestions} 道题未显示`, 50, 1280);
+				}
+
+				// 底部品牌
+				ctx.setFillStyle(theme.titleColor);
+				ctx.setFontSize(20);
+				ctx.textAlign = 'center';
+				ctx.fillText('Exam-Master · 考研神器', 375, 1320);
+
+				// 执行绘制并导出
+				ctx.draw(false, () => {
+					setTimeout(() => {
+						uni.canvasToTempFilePath({
+							canvasId: 'reportCanvas',
+							success: (res) => {
+								uni.hideLoading();
+								const imagePath = res.tempFilePath;
+								
+								// 保存到相册
+								uni.saveImageToPhotosAlbum({
+									filePath: imagePath,
+									success: () => {
+										uni.showToast({ title: '试卷已保存到相册', icon: 'success' });
+									},
+									fail: (err) => {
+										logger.error('[mistake] 保存失败:', err);
+										if (err.errMsg && err.errMsg.includes('auth')) {
+											uni.showModal({
+												title: '提示',
+												content: '需要保存到相册权限',
+												success: (res) => {
+													if (res.confirm) uni.openSetting();
+												}
+											});
+										} else {
+											// 提供预览选项
+											uni.previewImage({
+												urls: [imagePath],
+												current: imagePath
+											});
+											uni.showToast({ title: '长按图片可保存', icon: 'none' });
+										}
+									}
+								});
+							},
+							fail: (err) => {
+								uni.hideLoading();
+								logger.error('[mistake] 导出失败:', err);
+								uni.showToast({ title: '导出失败，请重试', icon: 'none' });
+							}
+						}, this);
+					}, 500);
 				});
-			}, 1000);
+			} catch (error) {
+				uni.hideLoading();
+				logger.error('[mistake] 导出异常:', error);
+				uni.showToast({ title: '导出失败：' + error.message, icon: 'none' });
+			}
 		},
 		async prepareReport() {
 			if (this.mistakes.length === 0) {
@@ -1112,6 +1255,11 @@ export default {
 			this.$set(this.practiceChoices, index, optionIndex);
 		},
 		submitPractice(index) {
+			// ✅ 防重复点击保护
+			if (this.isAnalyzing) {
+				return;
+			}
+			
 			// 提交答案
 			if (this.practiceChoices[index] === undefined) {
 				logger.log('[mistake-book] ⚠️ 未选择答案，无法提交');
@@ -1668,12 +1816,12 @@ export default {
 				}
 			}
 
-			.modal-close-icon {
-				font-size: 40rpx;
-				color: #666;
-				line-height: var(--line-height-normal);
-				font-weight: 300;
-			}
+		.modal-close-icon {
+			font-size: 40rpx;
+			color: var(--ds-color-text-secondary);
+			line-height: var(--line-height-normal);
+			font-weight: 300;
+		}
 		}
 
 		.modal-scroll {

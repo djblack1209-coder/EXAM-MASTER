@@ -115,7 +115,7 @@ export default {
 		createPlan() {
 			// 跳转到创建计划页面
 			uni.navigateTo({
-				url: '/src/pages/plan/create'
+				url: '/pages/plan/create'
 			});
 		},
 		goBack() {

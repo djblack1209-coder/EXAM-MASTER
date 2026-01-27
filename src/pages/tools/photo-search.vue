@@ -123,36 +123,36 @@
     <view class="action-bar">
       <!-- 相机模式按钮 -->
       <template v-if="mode === 'camera'">
-        <button class="btn-secondary" @click="chooseFromAlbum">
+        <button class="btn-secondary" hover-class="btn-hover" @click="chooseFromAlbum">
           <text class="btn-icon">相册</text>
         </button>
-        <button class="btn-primary btn-capture" @click="takePhoto">
+        <button class="btn-primary btn-capture" hover-class="btn-hover" @click="takePhoto">
           <view class="capture-ring"></view>
         </button>
-        <button class="btn-secondary" @click="selectSubject">
+        <button class="btn-secondary" hover-class="btn-hover" @click="selectSubject">
           <text class="btn-icon">{{ selectedSubjectLabel || '学科' }}</text>
         </button>
       </template>
       
       <!-- 预览模式按钮 -->
       <template v-else-if="mode === 'preview'">
-        <button class="btn-secondary" @click="retake" :disabled="isRecognizing">
+        <button class="btn-secondary" hover-class="btn-hover" @click="retake" :disabled="isRecognizing">
           <text>重新拍摄</text>
         </button>
-        <button class="btn-primary" @click="startRecognize" :disabled="isRecognizing">
+        <button class="btn-primary" hover-class="btn-hover" @click="startRecognize" :disabled="isRecognizing">
           <text>{{ isRecognizing ? '识别中...' : '开始识别' }}</text>
         </button>
       </template>
       
       <!-- 结果模式按钮 -->
       <template v-else-if="mode === 'result'">
-        <button class="btn-secondary" @click="retake">
+        <button class="btn-secondary" hover-class="btn-hover" @click="retake">
           <text>重新搜题</text>
         </button>
-        <button class="btn-primary" @click="addToMistake" v-if="result.questions && result.questions.length > 0">
+        <button class="btn-primary" hover-class="btn-hover" @click="addToMistake" v-if="result.questions && result.questions.length > 0">
           <text>加入错题本</text>
         </button>
-        <button class="btn-ghost" @click="searchSimilar">
+        <button class="btn-ghost" hover-class="btn-hover" @click="searchSimilar">
           <text>找相似题</text>
         </button>
       </template>
@@ -430,6 +430,7 @@ export default {
     async addToMistake() {
       if (this.result && this.result.questions && this.result.questions.length > 0) {
         const question = this.result.questions[0]
+        uni.showLoading({ title: '添加中...', mask: false })
         try {
           // 调用错题本服务
           await lafService.addMistake({
@@ -437,8 +438,10 @@ export default {
             question: question.question,
             source: 'photo_search'
           })
+          uni.hideLoading()
           uni.showToast({ title: '已加入错题本', icon: 'success' })
         } catch (e) {
+          uni.hideLoading()
           logger.error('加入错题本失败:', e)
           uni.showToast({ title: '加入失败', icon: 'none' })
         }

@@ -12,7 +12,7 @@
     <view class="friends-list ds-flex ds-flex-col ds-gap-md">
       <view v-for="friend in friends" :key="friend.id" class="friend-item ds-card ds-flex">
         <!-- 左侧：头像 -->
-        <image class="friend-avatar" :src="friend.avatar" mode="aspectFill" />
+        <image class="friend-avatar" :src="friend.avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, friend)" />
 
         <!-- 中间：好友信息 -->
         <view class="friend-info">
@@ -61,6 +61,14 @@ const userStore = useUserStore()
 
 const isLogin = computed(() => userStore.isLogin)
 const friends = computed(() => userStore.friendsList)
+const defaultAvatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest'
+
+// ✅ 图片加载失败处理
+const onAvatarError = (e, friend) => {
+  if (friend) {
+    friend.avatar = defaultAvatar
+  }
+}
 
 const handleInvite = () => {
   emit('invite')

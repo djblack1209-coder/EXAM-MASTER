@@ -283,7 +283,7 @@ export default {
   display: block;
   text-align: center;
   font-size: 28rpx;
-  color: #666666;
+  color: var(--ds-color-text-secondary);
   line-height: 1.6;
   margin-bottom: 40rpx;
   white-space: pre-wrap;
@@ -321,7 +321,7 @@ export default {
 
 .cancel-btn {
   background: #f5f5f5;
-  color: #666666;
+  color: var(--ds-color-text-secondary);
   
   .dark & {
     background: rgba(255, 255, 255, 0.1);

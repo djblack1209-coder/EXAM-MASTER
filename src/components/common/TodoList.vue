@@ -29,7 +29,6 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
 

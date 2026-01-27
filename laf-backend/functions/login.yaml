@@ -1,0 +1,6 @@
+name: login
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

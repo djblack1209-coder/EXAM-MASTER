@@ -84,7 +84,28 @@ export default {
     },
     // 功能 3: 分享
     shareToWechat() {
-      // 尝试使用 uni.share (如果平台支持)
+      // #ifdef MP-WEIXIN
+      // 微信小程序环境：使用 wx.showShareMenu 或复制链接
+      uni.showActionSheet({
+        itemList: ['分享给好友', '复制邀请链接'],
+        success: (res) => {
+          if (res.tapIndex === 0) {
+            // 触发页面分享
+            // 注意：小程序需要在页面配置 onShareAppMessage
+            uni.showToast({ 
+              title: '请点击右上角"..."分享给好友', 
+              icon: 'none',
+              duration: 2500
+            });
+          } else if (res.tapIndex === 1) {
+            this.copyLink();
+          }
+        }
+      });
+      // #endif
+
+      // #ifdef APP-PLUS
+      // App 环境：使用 uni.share
       if (typeof uni.share !== 'undefined') {
         uni.share({
           provider: "weixin",
@@ -93,18 +114,37 @@ export default {
           href: this.inviteLink,
           title: "Exam-Master 考研神器",
           summary: "输入我的邀请码 " + this.inviteCode + " 领取会员！",
-          imageUrl: "/static/tabbar/practice-active.png", // 使用本地图标
-          success: function (res) {
-            // 分享成功
+          imageUrl: "/static/tabbar/practice-active.png",
+          success: () => {
+            uni.showToast({ title: '分享成功', icon: 'success' });
           },
           fail: (err) => {
-            uni.showToast({ title: '分享功能即将上线', icon: 'none' });
+            console.log('分享失败:', err);
+            // 降级到复制链接
+            this.copyLink();
           }
         });
       } else {
-        // 模拟反馈
-        uni.showToast({ title: '正在调起微信分享...', icon: 'none' });
+        this.copyLink();
       }
+      // #endif
+
+      // #ifdef H5
+      // H5 环境：使用 Web Share API 或复制链接
+      if (navigator.share) {
+        navigator.share({
+          title: 'Exam-Master 考研神器',
+          text: `输入我的邀请码【${this.inviteCode}】领取会员！`,
+          url: this.inviteLink
+        }).then(() => {
+          uni.showToast({ title: '分享成功', icon: 'success' });
+        }).catch(() => {
+          this.copyLink();
+        });
+      } else {
+        this.copyLink();
+      }
+      // #endif
     },
     // 功能 4: 打开海报生成
     openPoster() {
@@ -184,7 +224,7 @@ export default {
 
 .subtitle {
   font-size: 13px;
-  color: #666;
+  color: var(--ds-color-text-secondary, #666);
   text-align: center;
   margin-bottom: 20px;
   line-height: 1.5;
@@ -261,7 +301,7 @@ export default {
 
 .close-icon-text {
   font-size: 20px;
-  color: #999;
+  color: var(--ds-color-text-tertiary, #999);
   font-weight: bold;
 }
 
@@ -273,7 +313,7 @@ export default {
 
 .link-text {
   font-size: 12px;
-  color: #666;
+  color: var(--ds-color-text-secondary, #666);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -377,7 +417,7 @@ export default {
 
 .qr-tip {
   font-size: 10px;
-  color: #999;
+  color: var(--ds-color-text-tertiary, #999);
   margin-top: 4px;
   -webkit-font-smoothing: antialiased;
 }

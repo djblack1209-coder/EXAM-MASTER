@@ -16,7 +16,7 @@
 		<!-- 空状态 -->
 		<view class="empty-container" v-if="!loading && empty">
 			<base-empty icon="🏆" title="暂无排行榜数据" desc="快去刷题，成为第一个上榜的学霸吧！" :isDark="isDark" />
-			<button class="go-practice-btn" @tap="toPractice">去刷题</button>
+			<button class="go-practice-btn" hover-class="btn-hover" @tap="toPractice">去刷题</button>
 		</view>
 		
 		<!-- 排行榜内容 -->
@@ -31,7 +31,7 @@
 			<view class="podium-section" v-if="rankList.length > 0">
 				<view class="podium-item rank-2" @tap="showFootprint(rankList[1])" v-if="rankList[1]">
 					<view class="avatar-wrap">
-						<image class="avatar" :src="rankList[1].avatar" mode="aspectFill"></image>
+						<image class="avatar" :src="rankList[1].avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, rankList[1])"></image>
 						<view class="badge">2</view>
 					</view>
 					<text class="name">{{ rankList[1].name }}</text>
@@ -41,7 +41,7 @@
 				<view class="podium-item rank-1" @tap="showFootprint(rankList[0])" v-if="rankList[0]">
 					<view class="avatar-wrap">
 						<view class="crown-glow"></view>
-						<image class="avatar" :src="rankList[0].avatar" mode="aspectFill"></image>
+						<image class="avatar" :src="rankList[0].avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, rankList[0])"></image>
 						<view class="badge">1</view>
 					</view>
 					<text class="name">{{ rankList[0].name }}</text>
@@ -50,7 +50,7 @@
 				
 				<view class="podium-item rank-3" @tap="showFootprint(rankList[2])" v-if="rankList[2]">
 					<view class="avatar-wrap">
-						<image class="avatar" :src="rankList[2].avatar" mode="aspectFill"></image>
+						<image class="avatar" :src="rankList[2].avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, rankList[2])"></image>
 						<view class="badge">3</view>
 					</view>
 					<text class="name">{{ rankList[2].name }}</text>
@@ -64,7 +64,7 @@
 					<view class="rank-num-box">
 						<text class="rank-num">{{ index + 4 }}</text>
 					</view>
-					<image class="item-avatar" :src="item.avatar" mode="aspectFill"></image>
+					<image class="item-avatar" :src="item.avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, item)"></image>
 					<view class="item-info">
 						<text class="item-name">{{ item.name }}</text>
 						<text class="item-desc">坚持 {{ item.days }} 天 · 已刷 {{ item.done }} 题</text>
@@ -85,13 +85,13 @@
 		<view class="my-rank-fixed">
 			<view class="my-rank-card">
 				<text class="rank-num">{{ myRank > 100 ? '99+' : myRank }}</text>
-				<image class="item-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill"></image>
+				<image class="item-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, userInfo, 'avatarUrl')"></image>
 				<view class="item-info">
 					<text class="item-name">{{ userInfo.nickName || '考研人' }} (我)</text>
 					<text class="item-desc">{{ rankGapText }}</text>
 					<text class="item-score-text">分数: {{ myScore }}</text>
 				</view>
-				<button class="rank-btn" @tap="toPractice">去超车</button>
+				<button class="rank-btn" hover-class="btn-hover" @tap="toPractice">去超车</button>
 			</view>
 		</view>
 
@@ -101,7 +101,7 @@
 				<view class="close-btn" @tap="closePopup">✕</view>
 				
 				<view class="card-header">
-					<image class="card-avatar" :src="activeUser.avatar || defaultAvatar" mode="aspectFill"></image>
+					<image class="card-avatar" :src="activeUser.avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, activeUser)"></image>
 					<view class="header-info">
 						<text class="card-name">{{ activeUser.name }}</text>
 						<view class="ai-label">
@@ -138,7 +138,7 @@
 					</scroll-view>
 				</view>
 
-				<button class="challenge-btn" @tap="startPK">向 TA 发起挑战</button>
+				<button class="challenge-btn" hover-class="btn-hover" @tap="startPK">向 TA 发起挑战</button>
 			</view>
 		</view>
 	</view>
@@ -151,6 +151,8 @@ import { rankingSocket, useRankingSocket } from '../../services/ranking-socket.j
 import { selfPositionTracker, useSelfPosition } from '../../services/self-position-tracker.js'
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
+// 统一默认头像
+import { DEFAULT_AVATAR } from '@/constants'
 
 export default {
 	data() {
@@ -158,7 +160,7 @@ export default {
 			statusBarHeight: 44,
 			capsuleMargin: 100,
 			userInfo: {},
-			defaultAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest',
+			defaultAvatar: DEFAULT_AVATAR,
 			myScore: 0,
 			myRank: 999,
 			// rankGapText 已移至 computed 中，不再在 data 中定义
@@ -178,7 +180,8 @@ export default {
 			apiData: null, // 原始 API 返回数据
 			// 检查点4.1: WebSocket实时更新相关
 			rankingWebsocketConnected: false, // ranking websocket连接状态
-			selfPositionHighlighted: false // 自己位置是否高亮
+			selfPositionHighlighted: false, // 自己位置是否高亮
+			isNavigating: false // 防止重复跳转
 		};
 	},
 	computed: {
@@ -230,6 +233,13 @@ export default {
 		this.disconnectRankingWebsocket();
 	},
 	methods: {
+		// ✅ 图片加载失败处理
+		onAvatarError(e, user, key = 'avatar') {
+			if (user) {
+				this.$set(user, key, this.defaultAvatar);
+			}
+		},
+		
 		initSystem() {
 			const sys = uni.getSystemInfoSync();
 			this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
@@ -563,8 +573,39 @@ export default {
 		navBack() { 
 			uni.navigateBack(); 
 		},
-		toPractice() { 
-			uni.switchTab({ url: '/src/pages/practice/index' }); 
+		toPractice() {
+			// 防止重复点击
+			if (this.isNavigating) return;
+			this.isNavigating = true;
+			
+			uni.switchTab({ 
+				url: '/pages/practice/index',
+				complete: () => {
+					setTimeout(() => { this.isNavigating = false; }, 500);
+				}
+			}); 
+		},
+		startPK() {
+			// 防止重复点击
+			if (this.isNavigating) return;
+			this.isNavigating = true;
+			
+			this.closePopup();
+			// 确保 opponent 参数有效
+			const opponentName = this.activeUser?.name || this.activeUser?.nickName || '匿名用户';
+			uni.navigateTo({ 
+				url: `/pages/practice/pk-battle?opponent=${encodeURIComponent(opponentName)}`,
+				fail: (err) => {
+					logger.error('[TEST-9.1] ❌ 跳转 PK 对战失败:', err);
+					uni.showToast({
+						title: '跳转失败，请稍后重试',
+						icon: 'none'
+					});
+				},
+				complete: () => {
+					setTimeout(() => { this.isNavigating = false; }, 500);
+				}
+			});
 		},
 		async showFootprint(user) {
 			this.activeUser = user;
@@ -576,6 +617,7 @@ export default {
 		async fetchFootprintAnalysis(user) {
 			this.isAnalyzing = true;
 			this.aiAnalysisText = "AI 正在深度扫描足迹...";
+			uni.showLoading({ title: '分析中...', mask: false });
 			
 			logger.log('[rank] 🤖 调用后端代理进行学霸足迹分析...');
 
@@ -621,6 +663,7 @@ export default {
 				this.aiPersona = "学霸先锋";
 				this.aiAnalysisText = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
 			} finally {
+				uni.hideLoading();
 				this.isAnalyzing = false;
 			}
 		},
@@ -629,21 +672,6 @@ export default {
 			this.activeUser = {};
 			this.aiAnalysisText = 'AI 正在调阅该学霸的学习档案...';
 			this.aiPersona = '正在分析';
-		},
-		startPK() {
-			this.closePopup();
-			// 确保 opponent 参数有效
-			const opponentName = this.activeUser?.name || this.activeUser?.nickName || '匿名用户';
-			uni.navigateTo({ 
-				url: `/src/pages/practice/pk-battle?opponent=${encodeURIComponent(opponentName)}`,
-				fail: (err) => {
-					logger.error('[TEST-9.1] ❌ 跳转 PK 对战失败:', err);
-					uni.showToast({
-						title: '跳转失败，请稍后重试',
-						icon: 'none'
-					});
-				}
-			});
 		},
 		
 		// 检查点4.1: 初始化WebSocket实时排行榜更新

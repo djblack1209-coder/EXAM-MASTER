@@ -35,8 +35,8 @@
       </view>
       
       <view class="preview-footer">
-        <button class="preview-btn cancel" @tap="handleClose">取消</button>
-        <button class="preview-btn confirm" @tap="handleConfirm">确认上传</button>
+        <button class="preview-btn cancel" hover-class="btn-hover" @tap="handleClose">取消</button>
+        <button class="preview-btn confirm" hover-class="btn-hover" @tap="handleConfirm">确认上传</button>
       </view>
     </view>
   </view>
@@ -195,7 +195,7 @@ export default {
 
 .info-label {
   font-size: 14px;
-  color: #8E8E93;
+  color: var(--ds-color-text-tertiary, #8E8E93);
   min-width: 60px;
 }
 

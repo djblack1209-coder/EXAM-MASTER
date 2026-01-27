@@ -1,4 +1,15 @@
-<!-- REFACTOR: Modern poster modal with design system utilities -->
+<!-- 
+  海报弹窗组件 - 使用 Canvas 2D 新接口
+  
+  功能：
+  1. 使用微信 Canvas 2D 接口生成高清海报
+  2. 完善的权限检查与引导
+  3. Loading 状态管理
+  4. 支持保存到相册和分享
+  
+  @version 2.0.0
+  @author Frontend Team
+-->
 <template>
   <view v-if="visible" class="poster-mask" :class="{ 'dark-mode': isDark }" @tap="handleClose">
     <view class="poster-card ds-card" @tap.stop>
@@ -20,14 +31,14 @@
 
         <view class="white-ticket">
           <view class="ticket-dashed-box">
-            <text class="ticket-code">EXAM2026</text>
+            <text class="ticket-code">{{ inviteCode }}</text>
             <text class="ticket-label">我的邀请码</text>
           </view>
         </view>
 
         <view class="qr-section">
           <view class="qr-circle">
-            <image src="https://img.icons8.com/ios/100/000000/qr-code--v1.png" class="qr-img"></image>
+            <image :src="qrCodeUrl || 'https://img.icons8.com/ios/100/000000/qr-code--v1.png'" class="qr-img"></image>
             <view class="qr-badge">
               <image src="https://img.icons8.com/ios-filled/50/07C160/open-book.png" style="width:16px;height:16px;">
               </image>
@@ -38,9 +49,17 @@
       </view>
     </view>
 
+    <!-- Canvas 2D 用于生成海报图片（隐藏） -->
+    <canvas 
+      type="2d" 
+      id="posterCanvas" 
+      class="poster-canvas-hidden"
+      :style="{ width: '750px', height: '1000px' }"
+    ></canvas>
+
     <view class="bottom-actions">
-      <view class="action-btn save-btn" @tap="handleSave">
-        <text>保存到相册</text>
+      <view class="action-btn save-btn" :class="{ disabled: isGenerating }" @tap="handleSave">
+        <text>{{ isGenerating ? '生成中...' : '保存到相册' }}</text>
       </view>
       <view class="action-btn share-btn" @tap="handleShare">
         <text>分享给好友</text>
@@ -50,6 +69,10 @@
 </template>
 
 <script setup>
+import { ref, computed, getCurrentInstance } from 'vue'
+import { posterGenerator } from '../../utils/poster-generator.js'
+import { permissionHandler, PERMISSION_TYPES } from '../../utils/permission-handler.js'
+
 // defineProps 和 defineEmits 是编译器宏，无需手动导入
 const props = defineProps({
   visible: {
@@ -59,27 +82,169 @@ const props = defineProps({
   isDark: {
     type: Boolean,
     default: false
+  },
+  inviteCode: {
+    type: String,
+    default: 'EXAM2026'
+  },
+  qrCodeUrl: {
+    type: String,
+    default: ''
+  },
+  avatarUrl: {
+    type: String,
+    default: ''
+  },
+  nickname: {
+    type: String,
+    default: '考研人'
   }
 })
 
-const emit = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'close', 'saved', 'shared'])
 
+// 获取组件实例
+const instance = getCurrentInstance()
+
+// 状态
+const isGenerating = ref(false)
+const generatedPosterPath = ref('')
+
+// 关闭弹窗
 const handleClose = () => {
   emit('update:visible', false)
   emit('close')
 }
 
-const handleSave = () => {
-  uni.showToast({
-    title: '保存功能即将上线',
-    icon: 'none'
-  })
+// 保存到相册
+const handleSave = async () => {
+  if (isGenerating.value) return
+  
+  isGenerating.value = true
+  
+  try {
+    // 1. 生成海报图片
+    uni.showLoading({ title: '海报生成中...', mask: true })
+    
+    const posterPath = await posterGenerator.generateInvitePoster({
+      inviteCode: props.inviteCode,
+      qrCodeUrl: props.qrCodeUrl,
+      avatarUrl: props.avatarUrl,
+      nickname: props.nickname,
+    }, 'posterCanvas', instance?.proxy)
+    
+    uni.hideLoading()
+    
+    if (!posterPath) {
+      uni.showToast({ title: '海报生成失败', icon: 'none' })
+      return
+    }
+    
+    generatedPosterPath.value = posterPath
+    
+    // 2. 保存到相册（带权限检查）
+    const result = await permissionHandler.saveImageToAlbum(posterPath, {
+      showLoading: true,
+      loadingText: '保存中...',
+      successText: '已保存到相册',
+    })
+    
+    if (result.success) {
+      emit('saved', posterPath)
+    }
+    
+  } catch (error) {
+    uni.hideLoading()
+    console.error('[PosterModal] 保存失败:', error)
+    
+    // 提供预览选项作为备选
+    if (generatedPosterPath.value) {
+      uni.showModal({
+        title: '保存失败',
+        content: '无法直接保存，是否预览图片后长按保存？',
+        confirmText: '预览图片',
+        success: (res) => {
+          if (res.confirm) {
+            uni.previewImage({
+              urls: [generatedPosterPath.value],
+              current: generatedPosterPath.value
+            })
+          }
+        }
+      })
+    } else {
+      uni.showToast({ title: '生成失败，请重试', icon: 'none' })
+    }
+  } finally {
+    isGenerating.value = false
+  }
 }
 
+// 分享
 const handleShare = () => {
-  uni.showToast({
-    title: '分享功能即将上线',
-    icon: 'none'
+  // #ifdef MP-WEIXIN
+  uni.showActionSheet({
+    itemList: ['分享给好友', '复制邀请信息'],
+    success: (res) => {
+      if (res.tapIndex === 0) {
+        uni.showToast({ 
+          title: '请点击右上角"..."分享', 
+          icon: 'none',
+          duration: 2500
+        })
+      } else if (res.tapIndex === 1) {
+        copyInviteInfo()
+      }
+    }
+  })
+  // #endif
+
+  // #ifdef APP-PLUS
+  if (typeof uni.share !== 'undefined') {
+    uni.share({
+      provider: "weixin",
+      scene: "WXSceneSession",
+      type: 5, // 小程序类型
+      title: "Exam-Master 考研神器",
+      summary: `输入邀请码 ${props.inviteCode} 领取会员！`,
+      imageUrl: "/static/tabbar/practice-active.png",
+      success: () => {
+        uni.showToast({ title: '分享成功', icon: 'success' })
+        emit('shared')
+      },
+      fail: () => {
+        copyInviteInfo()
+      }
+    })
+  } else {
+    copyInviteInfo()
+  }
+  // #endif
+
+  // #ifdef H5
+  if (navigator.share) {
+    navigator.share({
+      title: 'Exam-Master 考研神器',
+      text: `输入邀请码 ${props.inviteCode} 领取会员！AI助力，一战成硕！`,
+      url: `https://exam-master.com/join?c=${props.inviteCode}`
+    }).then(() => {
+      emit('shared')
+    }).catch(() => {
+      copyInviteInfo()
+    })
+  } else {
+    copyInviteInfo()
+  }
+  // #endif
+}
+
+// 复制邀请信息
+const copyInviteInfo = () => {
+  uni.setClipboardData({
+    data: `【Exam-Master 考研神器】\n邀请码：${props.inviteCode}\nAI助力，一战成硕！\n下载链接：https://exam-master.com/join?c=${props.inviteCode}`,
+    success: () => {
+      uni.showToast({ title: '邀请信息已复制', icon: 'success' })
+    }
   })
 }
 </script>
@@ -99,6 +264,15 @@ const handleShare = () => {
   z-index: 10000;
   padding: 20px;
   box-sizing: border-box;
+}
+
+/* 隐藏的 Canvas */
+.poster-canvas-hidden {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* The Poster Card Size */
@@ -294,10 +468,16 @@ const handleShare = () => {
   font-weight: 600;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
+  transition: all 0.2s ease;
 
   &:active {
     opacity: 0.85;
     transform: scale(0.98);
+  }
+  
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
   }
 }
 

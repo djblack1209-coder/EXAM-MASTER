@@ -161,6 +161,8 @@ import { lafService } from '../../services/lafService.js'
 import EnhancedProgress from '../../components/common/EnhancedProgress.vue'
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
+// ✅ 文件处理工具（格式验证、大小限制）
+import { fileHandler, FILE_CONFIG } from '../../utils/file-handler.js'
 
 export default {
   components: {
@@ -375,72 +377,88 @@ export default {
   },
 
   methods: {
-    // 1. 选择文件 (入口) - 修复：确保所有回调使用箭头函数
-    chooseFile() {
-      // 保存 this 引用，确保在所有回调中都能正确访问
-      const that = this;
+    // 1. 选择文件 (入口) - 使用 fileHandler 统一处理
+    async chooseFile() {
+      // 支持的文件类型
+      const allowedTypes = ['pdf', 'doc', 'docx', 'txt', 'md', 'json'];
+      // 文件大小限制：10MB
+      const maxSize = 10 * 1024 * 1024;
       
-      // #ifdef MP-WEIXIN
-      wx.chooseMessageFile({
-        count: 1,
-        type: 'file',
-        extension: ['pdf', 'doc', 'docx', 'txt', 'md', 'json'],
-        success: (res) => {
-          const file = res.tempFiles[0];
-          that.handleUpload(file);
-        },
-        fail: (err) => {
-          logger.error('文件选择失败:', err);
-          uni.showToast({ title: '文件选择失败', icon: 'none' });
+      try {
+        const result = await fileHandler.chooseFile({
+          count: 1,
+          allowedTypes: allowedTypes,
+          maxSize: maxSize,
+        });
+        
+        if (result.success && result.file) {
+          this.handleUpload(result.file);
+        } else if (result.cancelled) {
+          // 用户取消，不做处理
+          logger.log('[导入资料] 用户取消选择文件');
+        } else if (result.errors && result.errors.length > 0) {
+          // 验证失败，错误已在 fileHandler 中显示
+          logger.warn('[导入资料] 文件验证失败:', result.errors);
         }
-      });
-      // #endif
-
-      // #ifndef MP-WEIXIN
-      uni.chooseFile({
-        count: 1,
-        extension: ['.pdf', '.doc', '.docx', '.txt', '.md', '.json'],
-        success: (res) => {
-          const file = res.tempFiles[0];
-          that.handleUpload(file);
-        },
-        fail: (err) => {
-          logger.error('文件选择失败:', err);
-          uni.showToast({ title: '文件选择失败', icon: 'none' });
-        }
-      });
-      // #endif
+      } catch (err) {
+        logger.error('[导入资料] 文件选择异常:', err);
+        uni.showToast({ title: '文件选择失败', icon: 'none' });
+      }
     },
 
-    // 2. 处理上传 (分流逻辑) - 修复：确保所有回调使用箭头函数
-    handleUpload(file) {
+    // 2. 处理上传 (分流逻辑) - 增强：文件大小和格式验证
+    async handleUpload(file) {
       const that = this; // 保存 this 引用
       
-      this.fileName = file.name;
-      const ext = file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase();
+      // 文件信息
+      const fileName = file.name;
+      const filePath = file.path || file.tempFilePath;
+      const fileSize = file.size || 0;
+      const ext = file.ext || fileHandler.getFileExtension(fileName);
+      
+      logger.log('[导入资料] 📁 处理文件:', {
+        name: fileName,
+        size: fileHandler.formatFileSize(fileSize),
+        ext: ext
+      });
+      
+      // ⭐ 再次验证文件（双重保险）
+      const validation = fileHandler.validateFile(
+        { name: fileName, size: fileSize },
+        { 
+          allowedTypes: ['pdf', 'doc', 'docx', 'txt', 'md', 'json'],
+          maxSize: 10 * 1024 * 1024 // 10MB
+        }
+      );
+      
+      if (!validation.valid) {
+        uni.showToast({ 
+          title: validation.errors[0], 
+          icon: 'none',
+          duration: 2500
+        });
+        return;
+      }
+      
+      this.fileName = fileName;
       
       // 重置数据
       this.fullFileContent = '';
       this.readOffset = 0;
       this.generatedCount = 0;
-      
-      if (!['pdf', 'doc', 'docx', 'txt', 'md', 'json'].includes(ext)) {
-        uni.showToast({ title: '暂不支持该格式', icon: 'none' });
-        return;
-      }
 
       // ⭐⭐ v5.2 新增：缓存文件数据（支持重试）
       this.cachedFileData = {
-        name: file.name,
-        path: file.path || file.tempFilePath,
-        size: file.size || 0,
+        name: fileName,
+        path: filePath,
+        size: fileSize,
         ext: ext,
         timestamp: Date.now()
       };
 
       this.currentUploadId = this.saveUploadRecord({
         name: this.fileName,
-        size: Math.round((file.size || 0) / 1024),
+        size: Math.round(fileSize / 1024),
         source: '本地文件'
       });
       
@@ -453,21 +471,22 @@ export default {
           that.startAI();
         }, 500);
       } else {
-        // TXT/MD: 读取内容
-        const fs = uni.getFileSystemManager();
-        fs.readFile({
-          filePath: file.path || file.tempFilePath,
-          encoding: 'utf8',
-          success: (res) => {
-            that.fullFileContent = res.data;
+        // TXT/MD/JSON: 读取内容
+        uni.showLoading({ title: '解析文件中...', mask: true });
+        
+        try {
+          const readResult = await fileHandler.readTextFile(filePath);
+          uni.hideLoading();
+          
+          if (readResult.success) {
+            that.fullFileContent = readResult.content;
             uni.showToast({ title: '解析成功', icon: 'success' });
             // 自动启动 AI 分析
             setTimeout(() => {
               that.startAI();
             }, 500);
-          },
-          fail: (err) => {
-            logger.error('文件读取失败:', err);
+          } else {
+            logger.error('[导入资料] 文件读取失败:', readResult.error);
             that.fullFileContent = ""; 
             uni.showToast({ title: '读取失败，仅使用文件名', icon: 'none' });
             // 即使失败也启动 AI 分析（使用文件名）
@@ -475,7 +494,15 @@ export default {
               that.startAI();
             }, 500);
           }
-        });
+        } catch (err) {
+          uni.hideLoading();
+          logger.error('[导入资料] 文件读取异常:', err);
+          that.fullFileContent = ""; 
+          uni.showToast({ title: '读取失败，仅使用文件名', icon: 'none' });
+          setTimeout(() => {
+            that.startAI();
+          }, 500);
+        }
       }
     },
 
@@ -968,7 +995,7 @@ export default {
         cancelText: '留在本页',
         success: (res) => {
           if (res.confirm) {
-            uni.switchTab({ url: '/src/pages/practice/index' });
+            uni.switchTab({ url: '/pages/practice/index' });
           }
         },
         fail: (err) => {
@@ -1015,7 +1042,7 @@ export default {
     
     goQuiz() {
       this.showSpeedModal = false;
-      uni.switchTab({ url: '/src/pages/practice/index' });
+      uni.switchTab({ url: '/pages/practice/index' });
     },
 
     // ⭐⭐ v5.8 优化：返回上一页（增加生成中拦截）- TASK-004
@@ -1041,7 +1068,7 @@ export default {
               
               uni.navigateBack({
                 fail: () => {
-                  uni.switchTab({ url: '/src/pages/practice/index' });
+                  uni.switchTab({ url: '/pages/practice/index' });
                 }
               });
             }
@@ -1053,7 +1080,7 @@ export default {
       uni.navigateBack({
         fail: () => {
           // 如果无法返回，跳转到刷题首页
-          uni.switchTab({ url: '/src/pages/practice/index' });
+          uni.switchTab({ url: '/pages/practice/index' });
         }
       });
     },

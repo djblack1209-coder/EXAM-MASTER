@@ -55,7 +55,7 @@ export const ROUTE_CONFIG = {
 
 // 微信小程序配置
 export const WX_CONFIG = {
-  appId: 'wx5bee888cf32215df'
+  appId: 'wxd634d50ad63e14ed'
 }
 
 export default {

@@ -180,7 +180,7 @@ export default {
       this.$emit('upload');
       
       // 默认跳转到导入页
-      uni.navigateTo({ url: '/src/pages/practice/import-data' });
+      uni.navigateTo({ url: '/pages/practice/import-data' });
     },
     
     // 快速开始
@@ -255,10 +255,10 @@ export default {
         // 刷新页面
         setTimeout(() => {
           uni.switchTab({ 
-            url: '/src/pages/practice/index',
+            url: '/pages/practice/index',
             fail: (err) => {
               logger.error('[EmptyStateHome] switchTab 失败:', err);
-              uni.reLaunch({ url: '/src/pages/practice/index' });
+              uni.reLaunch({ url: '/pages/practice/index' });
             }
           });
         }, 1500);
@@ -395,12 +395,12 @@ export default {
 }
 
 .sub-title {
-  display: block;
-  font-size: 28rpx;
-  line-height: 1.6;
-  
-  .state-light & { color: #666666; }
-  .state-dark & { color: rgba(255, 255, 255, 0.7); }
+	display: block;
+	font-size: 28rpx;
+	line-height: 1.6;
+	
+	.state-light & { color: var(--ds-color-text-secondary); }
+	.state-dark & { color: rgba(255, 255, 255, 0.7); }
 }
 
 /* 引导按钮 */
@@ -498,22 +498,22 @@ export default {
 }
 
 .btn-desc {
-  display: block;
-  font-size: 22rpx;
-  
-  .btn-secondary &, .btn-tertiary & {
-    .state-light & { color: #666666; }
-    .state-dark & { color: rgba(255, 255, 255, 0.6); }
-  }
+	display: block;
+	font-size: 22rpx;
+	
+	.btn-secondary &, .btn-tertiary & {
+		.state-light & { color: var(--ds-color-text-secondary); }
+		.state-dark & { color: rgba(255, 255, 255, 0.6); }
+	}
 }
 
 .btn-arrow {
-  font-size: 28rpx;
-  
-  .btn-secondary &, .btn-tertiary & {
-    .state-light & { color: #999999; }
-    .state-dark & { color: rgba(255, 255, 255, 0.4); }
-  }
+	font-size: 28rpx;
+	
+	.btn-secondary &, .btn-tertiary & {
+		.state-light & { color: var(--ds-color-text-tertiary); }
+		.state-dark & { color: rgba(255, 255, 255, 0.4); }
+	}
 }
 
 /* 底部提示 */
@@ -522,9 +522,9 @@ export default {
 }
 
 .hint-text {
-  font-size: 24rpx;
-  
-  .state-light & { color: #999999; }
-  .state-dark & { color: rgba(255, 255, 255, 0.5); }
+	font-size: 24rpx;
+	
+	.state-light & { color: var(--ds-color-text-tertiary); }
+	.state-dark & { color: rgba(255, 255, 255, 0.5); }
 }
 </style>

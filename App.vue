@@ -1,12 +1,12 @@
 <script>
-import { useUserStore } from './src/stores'
-import { qa, injectInterceptor, hookSetData } from './src/utils/debug/qa.js'
-import { applyTheme, getCurrentTheme, watchTheme } from './src/design/theme-engine.js'
+import { useUserStore } from '@/stores'
+import { qa, injectInterceptor, hookSetData } from '@/utils/debug/qa.js'
+import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-engine.js'
 // ✅ 检查点 5.1: 导入分析服务
-import { analytics } from './src/utils/analytics/event-bus-analytics.js'
+import { analytics } from '@/utils/analytics/event-bus-analytics.js'
 // ✅ 检查点 5.2: 导入增强错误处理器
-import { globalErrorHandler } from './src/utils/error/global-error-handler.js'
-import { sentryPatch as sentry } from './src/utils/error/sentry-mini-program-patch.js'
+import { globalErrorHandler } from '@/utils/error/global-error-handler.js'
+import { sentryPatch as sentry } from '@/utils/error/sentry-mini-program-patch.js'
 
 // 必须在 App() 之前执行
 injectInterceptor()
@@ -32,12 +32,17 @@ export default {
 		// ✅ 检查点 5.2: 初始化增强错误处理器
 		globalErrorHandler.init()
 		
-		// ✅ 检查点 5.2: 初始化 Sentry（需要配置 DSN）
-		sentry.init({
-			dsn: '', // TODO: 配置实际的 Sentry DSN
-			environment: process.env.NODE_ENV || 'development',
-			release: '1.0.0'
-		})
+		// ✅ 检查点 5.2: 初始化 Sentry（生产环境启用）
+		// 注：需要在 Sentry 官网创建项目后获取 DSN
+		// 文档：https://docs.sentry.io/platforms/javascript/guides/vue/
+		const sentryDsn = process.env.SENTRY_DSN || ''
+		if (sentryDsn) {
+			sentry.init({
+				dsn: sentryDsn,
+				environment: process.env.NODE_ENV || 'development',
+				release: '1.0.0'
+			})
+		}
 
 		// 初始化全局错误捕捉
 		this.initGlobalErrorHandler()

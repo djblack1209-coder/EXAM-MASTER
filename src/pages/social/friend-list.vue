@@ -22,7 +22,7 @@
 			<view class="search-input-wrapper">
 				<text class="search-icon">🔍</text>
 				<input class="search-input" type="text" placeholder="搜索用户昵称" v-model="searchKeyword"
-					@confirm="handleSearch" confirm-type="search" />
+					@confirm="handleSearch" confirm-type="search" maxlength="30" />
 				<text class="clear-icon" v-if="searchKeyword" @tap="clearSearch">✕</text>
 			</view>
 			<button class="search-btn" @tap="handleSearch" v-if="searchKeyword">
@@ -57,13 +57,13 @@
 				<!-- 搜索结果 -->
 				<view class="search-results" v-else-if="searchResults.length > 0">
 					<view class="user-card" v-for="user in searchResults" :key="user._id" @tap="handleAddFriend(user)">
-						<image class="avatar" :src="user.avatar || defaultAvatar" mode="aspectFill"></image>
+						<image class="avatar" :src="user.avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, user)"></image>
 						<view class="info-section">
 							<text class="nickname">{{ user.nickname || '未命名' }}</text>
 							<text class="score-text">总分: {{ user.score || 0 }}</text>
 						</view>
-						<button class="add-friend-btn" @tap.stop="handleAddFriend(user)">
-							<text>➕ 添加</text>
+						<button class="add-friend-btn" :disabled="isAddingFriend[user._id]" @tap.stop="handleAddFriend(user)">
+							<text>{{ isAddingFriend[user._id] ? '发送中...' : '➕ 添加' }}</text>
 						</button>
 					</view>
 				</view>
@@ -97,7 +97,7 @@
 						@tap="goToFriendProfile(friend)">
 						<!-- 头像 -->
 						<view class="avatar-wrapper">
-							<image class="avatar" :src="friend.avatar || defaultAvatar" mode="aspectFill"></image>
+							<image class="avatar" :src="friend.avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, friend)"></image>
 							<!-- 在线状态指示器（模拟） -->
 							<view class="online-indicator" v-if="isOnline(friend)"></view>
 						</view>
@@ -146,7 +146,7 @@
 				<view class="request-cards" v-else>
 					<view class="request-card" v-for="request in requestList" :key="request.from_uid">
 						<!-- 头像 -->
-						<image class="avatar" :src="request.from_avatar || defaultAvatar" mode="aspectFill"></image>
+						<image class="avatar" :src="request.from_avatar || defaultAvatar" mode="aspectFill" @error="onAvatarError($event, request, 'from_avatar')"></image>
 
 						<!-- 信息区 -->
 						<view class="info-section">
@@ -157,11 +157,11 @@
 
 						<!-- 操作按钮 -->
 						<view class="action-btns">
-							<button class="accept-btn" @tap.stop="handleAccept(request)">
-								<text>接受</text>
+							<button class="accept-btn" :disabled="isAccepting[request.from_uid]" @tap.stop="handleAccept(request)">
+								<text>{{ isAccepting[request.from_uid] ? '处理中' : '接受' }}</text>
 							</button>
-							<button class="reject-btn" @tap.stop="handleReject(request)">
-								<text>拒绝</text>
+							<button class="reject-btn" :disabled="isRejecting[request.from_uid]" @tap.stop="handleReject(request)">
+								<text>{{ isRejecting[request.from_uid] ? '处理中' : '拒绝' }}</text>
 							</button>
 						</view>
 					</view>
@@ -180,6 +180,8 @@
 import { socialService } from '../../services/socialService.js'
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
+// 统一默认头像
+import { DEFAULT_AVATAR } from '@/constants'
 
 export default {
 	data() {
@@ -195,7 +197,11 @@ export default {
 			isRefreshing: false,
 			isSearching: false,
 			isSearchMode: false,
-			defaultAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest'
+			defaultAvatar: DEFAULT_AVATAR,
+			// 防重复点击
+			isAddingFriend: {},  // { [userId]: boolean }
+			isAccepting: {},     // { [requestId]: boolean }
+			isRejecting: {}      // { [requestId]: boolean }
 		}
 	},
 	computed: {
@@ -235,6 +241,15 @@ export default {
 	},
 	methods: {
 		/**
+		 * 头像加载失败处理
+		 */
+		onAvatarError(e, obj, key = 'avatar') {
+			if (obj) {
+				this.$set(obj, key, this.defaultAvatar)
+			}
+		},
+
+		/**
 		 * 返回上一页
 		 */
 		goBack() {
@@ -243,7 +258,7 @@ export default {
 				fail: () => {
 					// 如果无法返回（例如直接访问），跳转到设置页面
 					uni.switchTab({
-						url: '/src/pages/profile/index'
+						url: '/pages/profile/index'
 					})
 				}
 			})
@@ -388,6 +403,9 @@ export default {
 		 * 添加好友
 		 */
 		async handleAddFriend(user) {
+			// 防重复点击
+			if (this.isAddingFriend[user._id]) return;
+			
 			logger.log('[FriendList] 添加好友:', user.nickname)
 
 			uni.showModal({
@@ -395,6 +413,7 @@ export default {
 				content: `确定要添加 ${user.nickname} 为好友吗？`,
 				success: async (res) => {
 					if (res.confirm) {
+						this.$set(this.isAddingFriend, user._id, true);
 						uni.showLoading({ title: '发送中...' })
 
 						try {
@@ -422,6 +441,8 @@ export default {
 								title: '发送失败',
 								icon: 'none'
 							})
+						} finally {
+							this.$set(this.isAddingFriend, user._id, false);
 						}
 					}
 				}
@@ -432,8 +453,12 @@ export default {
 		 * 接受好友请求
 		 */
 		async handleAccept(request) {
+			// 防重复点击
+			if (this.isAccepting[request.from_uid]) return;
+			
 			logger.log('[FriendList] 接受好友请求:', request.from_nickname)
 
+			this.$set(this.isAccepting, request.from_uid, true);
 			uni.showLoading({ title: '处理中...' })
 
 			try {
@@ -462,6 +487,8 @@ export default {
 					title: '操作失败',
 					icon: 'none'
 				})
+			} finally {
+				this.$set(this.isAccepting, request.from_uid, false);
 			}
 		},
 
@@ -469,6 +496,9 @@ export default {
 		 * 拒绝好友请求
 		 */
 		async handleReject(request) {
+			// 防重复点击
+			if (this.isRejecting[request.from_uid]) return;
+			
 			logger.log('[FriendList] 拒绝好友请求:', request.from_nickname)
 
 			uni.showModal({
@@ -476,6 +506,7 @@ export default {
 				content: `确定要拒绝 ${request.from_nickname} 的好友请求吗？`,
 				success: async (res) => {
 					if (res.confirm) {
+						this.$set(this.isRejecting, request.from_uid, true);
 						uni.showLoading({ title: '处理中...' })
 
 						try {
@@ -503,6 +534,8 @@ export default {
 								title: '操作失败',
 								icon: 'none'
 							})
+						} finally {
+							this.$set(this.isRejecting, request.from_uid, false);
 						}
 					}
 				}
@@ -514,14 +547,25 @@ export default {
 		 */
 		goToFriendProfile(friend) {
 			logger.log('[FriendList] 查看好友资料:', friend.nickname)
-			// TODO: 创建好友资料页面后取消注释
-			uni.showToast({
-				title: `查看 ${friend.nickname} 的资料`,
-				icon: 'none'
+			
+			// 构建路由参数
+			const params = new URLSearchParams({
+				uid: friend.uid || '',
+				nickname: encodeURIComponent(friend.nickname || '未命名'),
+				avatar: encodeURIComponent(friend.avatar || this.defaultAvatar),
+				score: friend.score || 0,
+				studyDays: friend.studyDays || 0,
+				accuracy: friend.accuracy || 0,
+				lastActive: friend.last_active || 0
 			})
-			// uni.navigateTo({
-			// 	url: `/src/pages/social/friend-profile?uid=${friend.uid}`
-			// })
+			
+			uni.navigateTo({
+				url: `/pages/social/friend-profile?${params.toString()}`,
+				fail: (err) => {
+					logger.error('[FriendList] 跳转好友资料页失败:', err)
+					uni.showToast({ title: '跳转失败', icon: 'none' })
+				}
+			})
 		},
 
 		/**
@@ -539,7 +583,7 @@ export default {
 					if (res.confirm) {
 						// 跳转到 PK 对战页面
 						uni.navigateTo({
-							url: `/src/pages/practice/pk-battle?mode=friend&opponentId=${friend.uid}&opponentName=${encodeURIComponent(friend.nickname)}&opponentAvatar=${encodeURIComponent(friend.avatar || this.defaultAvatar)}&opponentScore=${friend.score || 0}`,
+							url: `/pages/practice/pk-battle?mode=friend&opponentId=${friend.uid}&opponentName=${encodeURIComponent(friend.nickname)}&opponentAvatar=${encodeURIComponent(friend.avatar || this.defaultAvatar)}&opponentScore=${friend.score || 0}`,
 							success: () => {
 								logger.log('[FriendList] ✅ 成功跳转到 PK 对战页面')
 							},

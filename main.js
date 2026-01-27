@@ -1,8 +1,8 @@
 import { createSSRApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
-import { globalErrorHandler } from './src/utils/error/global-error-handler.js'
-import { logger } from './src/utils/logger.js'
+import { globalErrorHandler } from '@/utils/error/global-error-handler.js'
+import { logger } from '@/utils/logger.js'
 
 export function createApp() {
   const app = createSSRApp(App)

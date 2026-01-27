@@ -6,22 +6,38 @@
     </view>
     
     <scroll-view scroll-y class="rank-list" :style="{ paddingTop: (statusBarHeight + 80) + 'px' }">
-      <view class="glass-item" v-for="(item, index) in rankList" :key="index">
-        <view class="left-section">
-          <view v-if="index < 3" class="rank-badge" :class="'top'+(index+1)">{{ index + 1 }}</view>
-          <text v-else class="rank-num">{{ index + 1 }}</text>
-          
-          <image :src="item.avatarUrl || item.avatar || '/static/tabbar/profile.png'" class="avatar" mode="aspectFill"></image>
-          <text class="nickname">{{ item.nickName || item.name || '神秘学霸' }}</text>
-        </view>
-        <view class="right-section">
-          <text class="score">{{ item.score || 0 }}</text>
-          <text class="unit">分</text>
+      <!-- 骨架屏 -->
+      <view v-if="loading" class="skeleton-list">
+        <view class="skeleton-item" v-for="i in 6" :key="i">
+          <view class="skeleton-left">
+            <view class="skeleton-rank"></view>
+            <view class="skeleton-avatar"></view>
+            <view class="skeleton-name"></view>
+          </view>
+          <view class="skeleton-score"></view>
         </view>
       </view>
       
-      <view v-if="loading" class="loading-tip">加载中...</view>
-      <view v-else-if="rankList.length === 0" class="empty-tip">
+      <!-- 真实数据 -->
+      <view v-else-if="rankList.length > 0">
+        <view class="glass-item" v-for="(item, index) in rankList" :key="index" hover-class="item-hover">
+          <view class="left-section">
+            <view v-if="index < 3" class="rank-badge" :class="'top'+(index+1)">{{ index + 1 }}</view>
+            <text v-else class="rank-num">{{ index + 1 }}</text>
+            
+            <image :src="item.avatarUrl || item.avatar || '/static/tabbar/profile.png'" class="avatar" mode="aspectFill" @error="onAvatarError($event, item)"></image>
+            <text class="nickname">{{ item.nickName || item.name || '神秘学霸' }}</text>
+          </view>
+          <view class="right-section">
+            <text class="score">{{ item.score || 0 }}</text>
+            <text class="unit">分</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 空状态 -->
+      <view v-else class="empty-tip">
+        <text class="empty-icon">🏆</text>
         <text>暂无数据，快去 PK 抢占榜首！</text>
       </view>
     </scroll-view>
@@ -32,13 +48,16 @@
 import { lafService } from '../../services/lafService.js'
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
+// 统一默认头像
+import { DEFAULT_AVATAR } from '@/constants'
 
 export default {
   data() {
     return {
       statusBarHeight: 44,
       rankList: [],
-      loading: true
+      loading: true,
+      defaultAvatar: DEFAULT_AVATAR
     }
   },
   onLoad() {
@@ -50,6 +69,11 @@ export default {
     this.fetchRank();
   },
   methods: {
+    onAvatarError(e, item) {
+      // 头像加载失败时使用默认头像
+      item.avatarUrl = this.defaultAvatar;
+      item.avatar = this.defaultAvatar;
+    },
     async fetchRank() {
       logger.log('[rank-list] 🏆 开始获取排行榜数据');
       this.loading = true;
@@ -312,5 +336,87 @@ export default {
   margin-top: 100rpx; 
   font-size: 28rpx;
   padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  opacity: 0.5;
+}
+
+/* 骨架屏样式 */
+.skeleton-list {
+  padding: 20rpx;
+}
+
+.skeleton-item {
+  background: var(--bg-glass);
+  border: 1rpx solid var(--border);
+  border-radius: 24rpx;
+  padding: 30rpx;
+  margin-bottom: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeleton-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.skeleton-rank {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-glass) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-glass) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-name {
+  width: 180rpx;
+  height: 32rpx;
+  border-radius: 8rpx;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-glass) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.skeleton-score {
+  width: 100rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-glass) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 列表项 hover 效果 */
+.item-hover {
+  transform: scale(0.98);
+  background: var(--bg-secondary);
 }
 </style>

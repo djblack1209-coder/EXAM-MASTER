@@ -2,7 +2,7 @@
   <view class="user-profile-card ds-card ds-touchable" :class="{ 'dark-mode': isDark }" @click="handleCardClick">
     <view class="profile-content ds-flex ds-flex-between">
       <!-- 左侧：用户头像 -->
-      <image v-if="isLogin && userInfo?.avatarUrl" class="avatar" :src="userInfo.avatarUrl" mode="aspectFill" />
+      <image v-if="isLogin && userInfo?.avatarUrl" class="avatar" :src="userInfo.avatarUrl" mode="aspectFill" @error="onAvatarError" />
       <view v-else class="avatar avatar-placeholder"></view>
 
       <!-- 中间：用户信息 -->
@@ -43,6 +43,12 @@ const userStore = useUserStore()
 
 const isLogin = computed(() => userStore.isLogin)
 const userInfo = computed(() => userStore.userInfo)
+const defaultAvatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest'
+
+// ✅ 图片加载失败处理
+const onAvatarError = (e) => {
+  e.target.src = defaultAvatar
+}
 
 const handleCardClick = async () => {
   if (!isLogin.value) {

@@ -32,7 +32,9 @@
   },
   "devDependencies": {
     "@dcloudio/types": "^3.3.2",
+    "@dcloudio/uni-app": "^3.0.0-alpha-5000020260104004",
     "@dcloudio/uni-cli-shared": "^3.0.0-alpha-5000020260104004",
+    "@dcloudio/uni-mp-weixin": "^3.0.0-alpha-5000020260104004",
     "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-5000020260104004",
     "@playwright/test": "^1.57.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
@@ -40,7 +42,7 @@
     "miniprogram-automator": "^0.12.1",
     "pixelmatch": "^7.1.0",
     "pngjs": "^7.0.0",
-    "sass": "^1.50.0",
+    "sass-embedded": "^1.97.3",
     "vite": "^5.2.8"
   },
   "keywords": [

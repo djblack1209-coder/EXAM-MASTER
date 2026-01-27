@@ -1,34 +1,6 @@
 {
-  "name": "exam-master-laf-backend",
-  "version": "1.0.0",
-  "description": "Exam-Master 考研刷题小程序 Laf 后端服务",
-  "main": "index.js",
-  "scripts": {
-    "deploy": "laf deploy --all",
-    "deploy:login": "laf deploy login",
-    "deploy:ai": "laf deploy proxy-ai",
-    "deploy:mistake": "laf deploy mistake-manager",
-    "deploy:social": "laf deploy social-service rank-center",
-    "logs": "laf logs --tail=100",
-    "logs:login": "laf logs login --tail=50",
-    "logs:ai": "laf logs proxy-ai --tail=50"
-  },
-  "keywords": [
-    "exam",
-    "laf",
-    "serverless",
-    "miniprogram"
-  ],
-  "author": "Exam-Master Team",
-  "license": "MIT",
-  "dependencies": {
-    "@lafjs/cloud": "^1.0.0"
-  },
-  "engines": {
-    "node": ">=16.0.0"
-  },
-  "laf": {
-    "appid": "nf98ia8qnt",
-    "region": "sealosbja"
-  }
+  "name": "laf-app",
+  "description": "the app engine service of lat",
+  "dependencies": {},
+  "devDependencies": {}
 }

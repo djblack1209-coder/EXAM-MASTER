@@ -43,6 +43,7 @@
             @focus="isFocused = true"
             @blur="isFocused = false"
             @confirm="handleSave"
+            maxlength="100"
           />
           <view v-if="todoText" class="clear-btn" @tap="todoText = ''">
             <text class="clear-icon">×</text>
@@ -113,6 +114,8 @@
 </template>
 
 <script>
+import { logger } from '../../utils/logger.js';
+
 export default {
   name: 'TodoEditor',
   
@@ -240,10 +243,10 @@ export default {
         confirmColor: '#EF4444',
         success: (res) => {
           if (res.confirm) {
-            // 震动反馈
-            try {
-              uni.vibrateShort({ type: 'medium' });
-            } catch (e) {}
+      // 震动反馈
+      try {
+        uni.vibrateShort({ type: 'medium' });
+      } catch (e) { logger.warn('[TodoEditor] vibrateShort failed in handleDelete', e); }
             
             this.$emit('delete', this.todoData.id);
             this.handleClose();
@@ -262,7 +265,7 @@ export default {
       // 震动反馈
       try {
         uni.vibrateShort({ type: 'light' });
-      } catch (e) {}
+      } catch (e) { logger.warn('[TodoEditor] vibrateShort failed in handleToggleComplete', e); }
       
       this.$emit('toggle', this.todoData.id);
       
@@ -395,8 +398,8 @@ export default {
 }
 
 .close-icon {
-  font-size: 40rpx;
-  color: #999999;
+	font-size: 40rpx;
+	color: var(--ds-color-text-tertiary);
 }
 
 /* 输入区域 */
@@ -442,8 +445,8 @@ export default {
 }
 
 .clear-icon {
-  font-size: 28rpx;
-  color: #999999;
+	font-size: 28rpx;
+	color: var(--ds-color-text-tertiary);
 }
 
 /* 优先级选择 */
@@ -522,8 +525,8 @@ export default {
 }
 
 .reminder-arrow {
-  font-size: 32rpx;
-  color: #999999;
+	font-size: 32rpx;
+	color: var(--ds-color-text-tertiary);
 }
 
 /* 快捷操作 */

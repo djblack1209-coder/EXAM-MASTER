@@ -8,8 +8,21 @@
       </view>
     </view>
 
+    <!-- 骨架屏加载状态 -->
+    <view v-if="isPageLoading" class="skeleton-container">
+      <view class="skeleton-status-card skeleton-animate"></view>
+      <view class="skeleton-actions">
+        <view class="skeleton-btn skeleton-animate"></view>
+        <view class="skeleton-btn skeleton-animate"></view>
+      </view>
+      <view class="skeleton-import-card skeleton-animate"></view>
+      <view class="skeleton-menu">
+        <view class="skeleton-menu-item skeleton-animate" v-for="i in 5" :key="i"></view>
+      </view>
+    </view>
+
     <!-- 状态卡片 -->
-    <view class="status-card" :class="{ 'empty-state': !hasBank }">
+    <view class="status-card" :class="{ 'empty-state': !hasBank }" v-if="!isPageLoading">>
       <!-- 有题库状态 -->
       <div v-if="hasBank" class="status-content">
         <div class="status-icon">
@@ -42,7 +55,7 @@
     </view>
 
     <!-- 题库生成进度条 -->
-    <view class="generation-progress-bar" v-if="isGeneratingQuestions">
+    <view class="generation-progress-bar" v-if="isGeneratingQuestions && !isPageLoading">>
       <view class="progress-info">
         <text class="progress-label">正在生成题库</text>
         <text class="progress-text">{{ generationProgress }}%</text>
@@ -58,7 +71,7 @@
     </view>
 
     <!-- 主要操作区 -->
-    <div class="main-actions">
+    <div class="main-actions" v-if="!isPageLoading">>
       <!-- 开始刷题按钮 -->
       <button v-if="hasBank" class="primary-btn" @tap="goPractice">
         <image class="btn-icon-img" src="/static/icons/practice/icon-book.png" mode="aspectFit"></image>
@@ -95,7 +108,7 @@
     </view>
 
     <!-- 功能菜单 -->
-    <div class="feature-menu">
+    <div class="feature-menu" v-if="!isPageLoading">>
       <!-- 文件管理 -->
       <div class="menu-item" @tap="goFileManager">
         <div class="menu-icon">
@@ -270,6 +283,7 @@ export default {
       totalQuestions: 0,
       progressPercent: 0,
       isDark: false,
+      isPageLoading: true, // 页面初始加载状态
 
       // AI 引擎状态
       fileName: '',
@@ -297,6 +311,9 @@ export default {
       // ✅ 检查点2.2：断点恢复弹窗状态
       showResumeModal: false,
       draftInfo: null,
+      
+      // 防重复点击
+      isNavigating: false,
 
       // 励志语录
       currentSoup: '',
@@ -355,6 +372,7 @@ export default {
   },
   methods: {
     refreshBankStatus() {
+      this.isPageLoading = true;
       logger.log('[刷题中心] 🔍 开始刷新题库状态');
 
       // 同时使用两种方式读取，确保兼容性
@@ -478,11 +496,18 @@ export default {
       const userAnswers = storageService.get('v30_user_answers', {});
       const doneCount = Object.keys(userAnswers).length;
       this.progressPercent = bank.length > 0 ? Math.round((doneCount / bank.length) * 100) : 0;
+      
+      this.isPageLoading = false;
     },
 
     goPractice() {
+      // 防重复点击
+      if (this.isNavigating) return;
+      this.isNavigating = true;
+      
       requireLogin(() => {
         if (!this.hasBank) {
+          this.isNavigating = false;
           return uni.showToast({ title: '请先导入题库', icon: 'none' });
         }
         // ✅ 检查点 5.1: 追踪"开始刷题"按钮点击
@@ -491,10 +516,17 @@ export default {
           page: 'practice/index',
           questionCount: this.totalQuestions
         });
-        uni.navigateTo({ url: '/src/pages/practice/do-quiz' });
+        uni.navigateTo({ 
+          url: '/pages/practice/do-quiz',
+          complete: () => {
+            // 延迟解锁，防止快速返回后再次点击
+            setTimeout(() => { this.isNavigating = false; }, 500);
+          }
+        });
       }, {
         message: '请先登录后开始刷题',
-        loginUrl: '/src/pages/settings/index'
+        loginUrl: '/pages/settings/index',
+        onCancel: () => { this.isNavigating = false; }
       });
     },
     
@@ -513,7 +545,7 @@ export default {
       this.showResumeModal = false;
       logger.log('[practice] ▶️ 恢复练习:', draftInfo);
       // 跳转到答题页面，答题页面会自动恢复进度
-      uni.navigateTo({ url: '/src/pages/practice/do-quiz' });
+      uni.navigateTo({ url: '/pages/practice/do-quiz' });
     },
     
     // ✅ 检查点2.2：处理重新开始
@@ -521,35 +553,46 @@ export default {
       this.showResumeModal = false;
       clearDraft('quiz');
       logger.log('[practice] 🔄 重新开始练习');
-      uni.navigateTo({ url: '/src/pages/practice/do-quiz' });
+      uni.navigateTo({ url: '/pages/practice/do-quiz' });
     },
 
     goBattle() {
+      // 防重复点击
+      if (this.isNavigating) return;
+      this.isNavigating = true;
+      
       requireLogin(() => {
         if (!this.hasBank) {
+          this.isNavigating = false;
           return uni.showToast({ title: '请先导入题库', icon: 'none' });
         }
-        uni.navigateTo({ url: '/src/pages/practice/pk-battle' });
+        uni.navigateTo({ 
+          url: '/pages/practice/pk-battle',
+          complete: () => {
+            setTimeout(() => { this.isNavigating = false; }, 500);
+          }
+        });
       }, {
         message: '请先登录后参与PK对战',
-        loginUrl: '/src/pages/settings/index'
+        loginUrl: '/pages/settings/index',
+        onCancel: () => { this.isNavigating = false; }
       });
     },
 
     goFileManager() {
-      uni.navigateTo({ url: '/src/pages/practice/file-manager' });
+      uni.navigateTo({ url: '/pages/practice/file-manager' });
     },
 
     goAITutor() {
-      uni.navigateTo({ url: '/src/pages/chat/index' });
+      uni.navigateTo({ url: '/pages/chat/index' });
     },
 
     goMistake() {
-      uni.navigateTo({ url: '/src/pages/mistake/index' });
+      uni.navigateTo({ url: '/pages/mistake/index' });
     },
 
     goRank() {
-      uni.navigateTo({ url: '/src/pages/practice/rank' });
+      uni.navigateTo({ url: '/pages/practice/rank' });
     },
 
     chooseImportSource() {
@@ -564,7 +607,7 @@ export default {
         });
       }, {
         message: '请先登录后上传资料',
-        loginUrl: '/src/pages/settings/index'
+        loginUrl: '/pages/settings/index'
       });
     },
 
@@ -730,7 +773,7 @@ export default {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (e) { }
+      } catch (e) { logger.warn('Vibration feedback failed', e); }
 
       if (['pdf', 'doc', 'docx'].includes(ext)) {
         // PDF 模式：仅使用文件名，立即启动，无需延迟
@@ -1469,12 +1512,12 @@ export default {
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.06));
   transition: all 0.3s ease;
 }
 
 .status-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.08));
   transform: translateY(-2px);
 }
 
@@ -1801,7 +1844,7 @@ export default {
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.06));
 }
 
 .menu-item {
@@ -2371,5 +2414,60 @@ export default {
 .practice-container.dark-mode .menu-item:nth-child(4) .menu-icon-img,
 .practice-container.dark-mode .menu-item:nth-child(5) .menu-icon-img {
   filter: none !important;
+}
+
+/* 骨架屏样式 */
+.skeleton-container {
+  padding: 20px;
+}
+
+.skeleton-status-card {
+  height: 120px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.skeleton-btn {
+  flex: 1;
+  height: 56px;
+  border-radius: 28px;
+}
+
+.skeleton-import-card {
+  height: 80px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.skeleton-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skeleton-menu-item {
+  height: 64px;
+  border-radius: 16px;
+}
+
+.skeleton-animate {
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 </style>

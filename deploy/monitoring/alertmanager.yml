@@ -1,0 +1,115 @@
+# ============================================
+# Alertmanager 配置
+# ============================================
+global:
+  # 解析超时
+  resolve_timeout: 5m
+  
+  # SMTP 配置（邮件告警）
+  smtp_smarthost: 'smtp.example.com:587'
+  smtp_from: 'alertmanager@exam-master.com'
+  smtp_auth_username: 'alertmanager@exam-master.com'
+  smtp_auth_password: 'your-smtp-password'
+  smtp_require_tls: true
+
+# 告警模板
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# 路由配置
+route:
+  # 默认接收者
+  receiver: 'default-receiver'
+  
+  # 分组配置
+  group_by: ['alertname', 'namespace', 'severity']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  
+  # 子路由
+  routes:
+    # P0 级别告警 - 电话 + 短信 + 企业微信
+    - match:
+        priority: P0
+      receiver: 'critical-receiver'
+      group_wait: 10s
+      repeat_interval: 30m
+      continue: true
+    
+    # P1 级别告警 - 短信 + 企业微信
+    - match:
+        priority: P1
+      receiver: 'warning-receiver'
+      group_wait: 30s
+      repeat_interval: 2h
+      continue: true
+    
+    # P2 级别告警 - 邮件 + 企业微信
+    - match:
+        priority: P2
+      receiver: 'info-receiver'
+      group_wait: 1m
+      repeat_interval: 6h
+
+# 接收者配置
+receivers:
+  # 默认接收者
+  - name: 'default-receiver'
+    webhook_configs:
+      - url: 'http://alertmanager-webhook:5001/webhook'
+        send_resolved: true
+
+  # P0 紧急告警接收者
+  - name: 'critical-receiver'
+    # 企业微信 + 钉钉机器人
+    webhook_configs:
+      - url: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_WECHAT_KEY'
+        send_resolved: true
+      - url: 'https://oapi.dingtalk.com/robot/send?access_token=YOUR_DINGTALK_TOKEN'
+        send_resolved: true
+    # 邮件
+    email_configs:
+      - to: 'oncall@exam-master.com,devops@exam-master.com'
+        send_resolved: true
+        headers:
+          Subject: '[P0-紧急] {{ .GroupLabels.alertname }} - Exam-Master'
+    # PagerDuty（可选）
+    # pagerduty_configs:
+    #   - service_key: 'YOUR_PAGERDUTY_KEY'
+    #     send_resolved: true
+
+  # P1 警告告警接收者
+  - name: 'warning-receiver'
+    webhook_configs:
+      - url: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_WECHAT_KEY'
+        send_resolved: true
+    email_configs:
+      - to: 'devops@exam-master.com'
+        send_resolved: true
+        headers:
+          Subject: '[P1-警告] {{ .GroupLabels.alertname }} - Exam-Master'
+
+  # P2 信息告警接收者
+  - name: 'info-receiver'
+    email_configs:
+      - to: 'devops@exam-master.com'
+        send_resolved: true
+        headers:
+          Subject: '[P2-信息] {{ .GroupLabels.alertname }} - Exam-Master'
+
+# 抑制规则
+inhibit_rules:
+  # 当 critical 告警触发时，抑制同一 alertname 的 warning 告警
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'namespace']
+  
+  # 当服务完全不可用时，抑制其他相关告警
+  - source_match:
+      alertname: 'ServiceDown'
+    target_match_re:
+      alertname: 'High.*'
+    equal: ['namespace']

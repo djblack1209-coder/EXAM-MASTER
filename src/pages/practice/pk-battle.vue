@@ -12,11 +12,11 @@
 			</view>
 			<view class="match-core">
 				<view class="avatar-ring pulse">
-					<image class="user-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill"></image>
+					<image class="user-avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onUserAvatarError"></image>
 				</view>
 				<view class="vs-text">VS</view>
 				<view class="avatar-ring opponent-ring" :class="{ 'found': opponentFound }">
-					<image class="user-avatar" :src="opponent.avatar || defaultAvatar" mode="aspectFill"></image>
+					<image class="user-avatar" :src="opponent.avatar || defaultAvatar" mode="aspectFill" @error="onOpponentAvatarError"></image>
 					<view class="search-overlay" v-if="!opponentFound">
 						<view class="search-icon">🔍</view>
 					</view>
@@ -51,7 +51,7 @@
 
 			<view class="battle-stage" :style="{ marginTop: '30px' }">
 				<view class="player-card left">
-					<image :src="userInfo.avatarUrl || defaultAvatar" class="avatar" mode="aspectFill"></image>
+					<image :src="userInfo.avatarUrl || defaultAvatar" class="avatar" mode="aspectFill" @error="onUserAvatarError"></image>
 					<text class="score me">{{ myScore }}</text>
 					<view class="progress-track">
 						<view class="progress-fill me" :style="{ width: (myScore / 500) * 100 + '%' }"></view>
@@ -61,7 +61,7 @@
 				<text class="vs-text">VS</text>
 
 				<view class="player-card right">
-					<image :src="opponent.avatar || defaultAvatar" class="avatar" mode="aspectFill"></image>
+					<image :src="opponent.avatar || defaultAvatar" class="avatar" mode="aspectFill" @error="onOpponentAvatarError"></image>
 					<text class="score opp">{{ opponentScore }}</text>
 					<view class="progress-track">
 						<view class="progress-fill opp" :style="{ width: (opponentScore / 500) * 100 + '%' }" :class="{ 'rush': opponentRushing }"></view>
@@ -178,6 +178,8 @@ import CustomModal from '../../components/common/CustomModal.vue'
 import { createInviteDeepLink, generateInviteCode, generateShareConfig } from '../../services/invite-deep-link.js'
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
+// 统一默认头像
+import { DEFAULT_AVATAR } from '@/constants'
 
 export default {
 	components: {
@@ -189,7 +191,7 @@ export default {
 			isDark: false,
 			statusBarHeight: 44,
 			userInfo: {},
-			defaultAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Guest',
+			defaultAvatar: DEFAULT_AVATAR,
 			opponent: { name: '寻找中...', avatar: '', level: '' },
 			opponentFound: false,
 			currentIndex: 0,
@@ -211,6 +213,7 @@ export default {
 			timeLeft: 30, // 每道题剩余时间（秒）
 			isGeneratingShare: false, // 是否正在生成分享海报
 			isScoreUploaded: false, // 是否已上传分数（防止重复上传）
+			isNavigating: false, // 防止重复跳转
 			showRedWarning: false, // 是否显示红光警告
 			// 匹配状态相关
 			matchingTimer: null, // 匹配定时器
@@ -343,6 +346,16 @@ export default {
 		this.clearAllTimers();
 	},
 	methods: {
+		// 用户头像加载失败处理
+		onUserAvatarError() {
+			this.userInfo.avatarUrl = this.defaultAvatar;
+		},
+		
+		// 对手头像加载失败处理
+		onOpponentAvatarError() {
+			this.opponent.avatar = this.defaultAvatar;
+		},
+		
 		initData() {
 			logger.log('[TEST-10.1] 🔧 初始化 PK 对战数据');
 			
@@ -432,7 +445,7 @@ export default {
 					if (typeof uni.vibrateShort === 'function') {
 						uni.vibrateShort();
 					}
-				} catch(e) {}
+				} catch(e) { logger.warn('Vibrate feedback failed during match success', e); }
 				
 				// 1秒后进入对战
 				setTimeout(() => {
@@ -592,7 +605,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch(e) {}
+			} catch(e) { logger.warn('Vibrate feedback failed during answer timeout', e); }
 			
 			// 显示超时提示
 			uni.showToast({
@@ -786,7 +799,7 @@ export default {
 				if (typeof uni.vibrateShort === 'function') {
 					uni.vibrateShort();
 				}
-			} catch(e) {}
+			} catch(e) { logger.warn('Vibrate feedback failed during option selection', e); }
 
 			// 判断是否正确
 			const isCorrect = this.isCorrectOption(idx);
@@ -874,6 +887,7 @@ export default {
 		async fetchAISummary() {
 			// 设置 Loading 状态
 			this.aiSummary = "AI 正在分析战局...";
+			uni.showLoading({ title: 'AI分析中...', mask: false });
 			
 			const correctCount = Math.floor(this.myScore / 20);
 			const accuracy = this.questions.length > 0 
@@ -936,28 +950,44 @@ export default {
 				];
 				this.aiSummary = fallback[Math.floor(Math.random() * fallback.length)];
 				logger.log('[TEST-10.2] ✅ 已使用降级方案，评语:', this.aiSummary);
+			} finally {
+				uni.hideLoading();
 			}
 		},
 		goHome() {
+			// 防止重复点击
+			if (this.isNavigating) return;
+			this.isNavigating = true;
+			
 			// 使用 switchTab 跳转到首页（TabBar 页面）
 			uni.switchTab({ 
-				url: '/src/pages/index/index',
+				url: '/pages/index/index',
 				fail: () => {
 					uni.showToast({ title: '跳转失败', icon: 'none' });
+				},
+				complete: () => {
+					setTimeout(() => { this.isNavigating = false; }, 500);
 				}
 			});
 		},
 		goToRank() {
+			// 防止重复点击
+			if (this.isNavigating) return;
+			this.isNavigating = true;
+			
 			// TEST-10.3: 跳转到排行榜页面
 			logger.log('[TEST-10.3] 📊 用户点击"查看排行榜"，准备跳转');
 			uni.navigateTo({
-				url: '/src/pages/practice/rank',
+				url: '/pages/practice/rank',
 				success: () => {
 					logger.log('[TEST-10.3] ✅ 已跳转到排行榜页面');
 				},
 				fail: (err) => {
 					logger.error('[TEST-10.3] ❌ 跳转排行榜失败:', err);
 					uni.showToast({ title: '跳转失败', icon: 'none' });
+				},
+				complete: () => {
+					setTimeout(() => { this.isNavigating = false; }, 500);
 				}
 			});
 		},
@@ -991,6 +1021,10 @@ export default {
 			this.stopMatchingStatusUpdate();
 		},
 		resetGame() {
+			// 防止重复点击
+			if (this.isNavigating) return;
+			this.isNavigating = true;
+			
 			this.clearAllTimers();
 			this.gameState = 'matching';
 			this.currentIndex = 0;
@@ -1017,6 +1051,9 @@ export default {
 			const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
 			this.questions = shuffled.slice(0, Math.min(5, shuffled.length));
 			
+			// 重置防重复点击状态
+			setTimeout(() => { this.isNavigating = false; }, 500);
+			
 			this.startMatching();
 		},
 		handleResultStageClick(e) {
@@ -1042,7 +1079,7 @@ export default {
 		handleEmptyConfirm() {
 			this.showEmptyModal = false;
 			uni.navigateTo({ 
-				url: '/src/pages/practice/import-data',
+				url: '/pages/practice/import-data',
 				fail: () => {
 					uni.navigateBack();
 				}
@@ -1586,7 +1623,7 @@ export default {
 						this.clearAllTimers();
 						// 返回首页（TabBar 页面）
 						uni.switchTab({ 
-							url: '/src/pages/index/index',
+							url: '/pages/index/index',
 							fail: () => {
 								uni.navigateBack();
 							}

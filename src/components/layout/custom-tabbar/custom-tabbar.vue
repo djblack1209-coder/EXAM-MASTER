@@ -62,35 +62,35 @@ export default {
 			const allTabs = [
 				{
 					text: '首页',
-					path: '/src/pages/index/index',
+					path: '/pages/index/index',
 					icon: '/static/tabbar/home.png',
 					selectedIcon: '/static/tabbar/home-active.png',
 					showDot: false
 				},
 				{
 					text: '刷题',
-					path: '/src/pages/practice/index',
+					path: '/pages/practice/index',
 					icon: '/static/tabbar/practice.png',
 					selectedIcon: '/static/tabbar/practice-active.png',
 					showDot: this.mistakeDot
 				},
 				{
 					text: '择校',
-					path: '/src/pages/school/index',
+					path: '/pages/school/index',
 					icon: '/static/tabbar/school.png',
 					selectedIcon: '/static/tabbar/school-active.png',
 					showDot: false
 				},
 				{
 					text: '设置',
-					path: '/src/pages/settings/index',
+					path: '/pages/settings/index',
 					icon: '/static/tabbar/profile.png',
 					selectedIcon: '/static/tabbar/profile-active.png',
 					showDot: false
 				},
 				{
 					text: '宇宙',
-					path: '/src/pages/universe/index',
+					path: '/pages/universe/index',
 					icon: '/static/tabbar/universe.png',
 					selectedIcon: '/static/tabbar/universe-active.png',
 					showDot: false,
@@ -176,19 +176,19 @@ export default {
 
 /* 深色模式：灰色玻璃质感悬浮导航栏 */
 .tabbar-capsule.dark-mode {
-	/* 深灰色半透明背景 - 更深的颜色 */
+	/* 深灰色半透明背景 - 更深更不透明以确保可见 */
 	background: linear-gradient(180deg, 
-		rgba(30, 30, 30, 0.95) 0%, 
-		rgba(20, 20, 20, 0.98) 100%);
+		rgba(35, 35, 35, 0.98) 0%, 
+		rgba(25, 25, 25, 0.99) 100%);
 	/* 增强毛玻璃效果 */
 	backdrop-filter: blur(80rpx) saturate(180%);
 	-webkit-backdrop-filter: blur(80rpx) saturate(180%);
 	/* 深色模式下的强烈阴影 + 内光晕 */
-	box-shadow: 0 12rpx 48rpx rgba(0, 0, 0, 0.6), 
-	            0 0 0 1rpx rgba(255, 255, 255, 0.12) inset,
-	            0 2rpx 8rpx rgba(255, 255, 255, 0.05) inset;
+	box-shadow: 0 12rpx 48rpx rgba(0, 0, 0, 0.7), 
+	            0 0 0 1rpx rgba(255, 255, 255, 0.15) inset,
+	            0 2rpx 8rpx rgba(255, 255, 255, 0.08) inset;
 	/* 添加明显的边框光晕 */
-	border: 1rpx solid rgba(255, 255, 255, 0.15);
+	border: 1rpx solid rgba(255, 255, 255, 0.2);
 }
 
 .tab-item {
@@ -208,56 +208,71 @@ export default {
 
 .icon-wrapper {
 	position: relative;
-	width: 48rpx;
-	height: 48rpx;
-	margin-bottom: 6rpx;
+	width: 56rpx;
+	height: 56rpx;
+	margin-bottom: 8rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	/* 确保点击区域足够大 (min 44px = 88rpx) */
+	min-width: 88rpx;
+	min-height: 88rpx;
 }
 
 .tab-icon {
-	width: 100%;
-	height: 100%;
+	width: 56rpx;
+	height: 56rpx;
 	transition: transform 0.2s ease, filter 0.3s ease;
 }
 
-/* 深色模式下图标亮度调整 - 反转颜色使其变白 */
+/* 深色模式下图标亮度调整 - 使用白色滤镜使其可见 */
 .dark-mode .tab-icon {
 	filter: brightness(0) invert(1) opacity(0.7);
 }
 
 .tab-item.active .tab-icon {
-	transform: scale(1.1);
+	transform: scale(1.15);
 }
 
-/* 深色模式下激活图标 - 完全白色 */
+/* 深色模式下激活图标 - 完全白色且更亮 */
 .dark-mode .tab-item.active .tab-icon {
 	filter: brightness(0) invert(1) opacity(1);
 }
 
+/* 选中状态下的图标光晕效果 */
+.tab-item.active .icon-wrapper::after {
+	content: '';
+	position: absolute;
+	width: 64rpx;
+	height: 64rpx;
+	border-radius: 50%;
+	background: var(--ds-color-primary, #007AFF);
+	opacity: 0.15;
+	z-index: -1;
+}
+
 .tab-label {
-	font-size: 22rpx;
-	color: #888888;
+	font-size: 24rpx;
+	color: #8E8E93;
 	font-weight: 500;
 	line-height: 1.2;
 	white-space: nowrap;
 	transition: color 0.3s ease;
 }
 
-/* 深色模式下的文字颜色 - 提高亮度 */
+/* 深色模式下的文字颜色 - 使用浅灰色确保可见 */
 .dark-mode .tab-label {
-	color: rgba(255, 255, 255, 0.7);
+	color: rgba(255, 255, 255, 0.6);
 }
 
 .tab-item.active .tab-label {
-	color: #1A1A1A;
+	color: #111111;
 	font-weight: 600;
 }
 
-/* 深色模式下激活文字颜色 - 纯白 */
+/* 深色模式下激活文字颜色 - 使用白色确保可见 */
 .dark-mode .tab-item.active .tab-label {
-	color: rgba(255, 255, 255, 1);
+	color: #FFFFFF;
 }
 
 .red-dot {

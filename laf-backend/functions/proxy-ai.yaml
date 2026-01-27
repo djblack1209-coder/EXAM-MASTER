@@ -1,0 +1,6 @@
+name: proxy-ai
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

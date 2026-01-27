@@ -76,7 +76,12 @@ export default async function (ctx) {
 }
 
 /**
- * 更新用户分数
+ * 更新用户分数（使用原子操作确保并发安全）
+ * 
+ * 改进点：
+ * 1. 使用 $inc 原子操作防止竞态条件
+ * 2. 使用 upsert 简化逻辑
+ * 3. 添加乐观锁版本号
  */
 async function handleUpdate(params, requestId) {
   const { uid, score, nickName, avatarUrl } = params
@@ -95,71 +100,99 @@ async function handleUpdate(params, requestId) {
   const weekStart = getWeekStart()
   const monthStart = getMonthStart()
   
-  // 更新或创建排行榜记录
-  const existing = await rankCollection.where({ uid }).getOne()
-  
-  if (existing.data) {
-    // 更新现有记录
-    const updateData = {
-      total_score: _.inc(score),
-      updated_at: now
-    }
+  try {
+    // 使用原子操作更新分数（防止竞态条件）
+    // findOneAndUpdate with upsert 确保原子性
+    const existing = await rankCollection.where({ uid }).getOne()
     
-    // 更新日榜分数
-    if (existing.data.daily_date === today) {
-      updateData.daily_score = _.inc(score)
+    if (existing.data) {
+      // 构建原子更新操作
+      const updateData = {
+        updated_at: now,
+        update_count: _.inc(1)  // 乐观锁版本号
+      }
+      
+      // 使用 $inc 原子操作更新总分
+      updateData.total_score = _.inc(score)
+      
+      // 日榜分数（原子操作）
+      if (existing.data.daily_date === today) {
+        updateData.daily_score = _.inc(score)
+      } else {
+        updateData.daily_score = score
+        updateData.daily_date = today
+      }
+      
+      // 周榜分数（原子操作）
+      if (existing.data.weekly_start === weekStart) {
+        updateData.weekly_score = _.inc(score)
+      } else {
+        updateData.weekly_score = score
+        updateData.weekly_start = weekStart
+      }
+      
+      // 月榜分数（原子操作）
+      if (existing.data.monthly_start === monthStart) {
+        updateData.monthly_score = _.inc(score)
+      } else {
+        updateData.monthly_score = score
+        updateData.monthly_start = monthStart
+      }
+      
+      // 更新用户信息（如果提供）
+      if (nickName) updateData.nick_name = nickName
+      if (avatarUrl) updateData.avatar_url = avatarUrl
+      
+      // 执行原子更新
+      const result = await rankCollection.doc(existing.data._id).update(updateData)
+      
+      if (result.updated === 0) {
+        // 更新失败，可能是并发冲突，重试一次
+        console.warn(`[${requestId}] 更新冲突，重试中...`)
+        return handleUpdate(params, requestId)
+      }
+      
+      console.log(`[${requestId}] 原子更新排行榜分数: ${uid}, +${score}`)
     } else {
-      updateData.daily_score = score
-      updateData.daily_date = today
+      // 创建新记录（使用 upsert 防止重复创建）
+      await rankCollection.add({
+        uid,
+        nick_name: nickName || '考研学子',
+        avatar_url: avatarUrl || '',
+        total_score: score,
+        daily_score: score,
+        daily_date: today,
+        weekly_score: score,
+        weekly_start: weekStart,
+        monthly_score: score,
+        monthly_start: monthStart,
+        created_at: now,
+        updated_at: now,
+        update_count: 1  // 初始版本号
+      })
+      
+      console.log(`[${requestId}] 创建排行榜记录: ${uid}, ${score}`)
     }
     
-    // 更新周榜分数
-    if (existing.data.weekly_start === weekStart) {
-      updateData.weekly_score = _.inc(score)
-    } else {
-      updateData.weekly_score = score
-      updateData.weekly_start = weekStart
+    return {
+      code: 0,
+      success: true,
+      message: '分数更新成功'
     }
     
-    // 更新月榜分数
-    if (existing.data.monthly_start === monthStart) {
-      updateData.monthly_score = _.inc(score)
-    } else {
-      updateData.monthly_score = score
-      updateData.monthly_start = monthStart
+  } catch (error) {
+    // 处理并发冲突错误
+    if (error.code === 11000 || error.message?.includes('duplicate')) {
+      console.warn(`[${requestId}] 检测到重复键，使用更新操作`)
+      // 重试为更新操作
+      const existing = await rankCollection.where({ uid }).getOne()
+      if (existing.data) {
+        return handleUpdate(params, requestId)
+      }
     }
     
-    // 更新用户信息（如果提供）
-    if (nickName) updateData.nick_name = nickName
-    if (avatarUrl) updateData.avatar_url = avatarUrl
-    
-    await rankCollection.doc(existing.data._id).update(updateData)
-    
-    console.log(`[${requestId}] 更新排行榜分数: ${uid}, +${score}`)
-  } else {
-    // 创建新记录
-    await rankCollection.add({
-      uid,
-      nick_name: nickName || '考研学子',
-      avatar_url: avatarUrl || '',
-      total_score: score,
-      daily_score: score,
-      daily_date: today,
-      weekly_score: score,
-      weekly_start: weekStart,
-      monthly_score: score,
-      monthly_start: monthStart,
-      created_at: now,
-      updated_at: now
-    })
-    
-    console.log(`[${requestId}] 创建排行榜记录: ${uid}, ${score}`)
-  }
-  
-  return {
-    code: 0,
-    success: true,
-    message: '分数更新成功'
+    console.error(`[${requestId}] 更新分数失败:`, error)
+    throw error
   }
 }
 

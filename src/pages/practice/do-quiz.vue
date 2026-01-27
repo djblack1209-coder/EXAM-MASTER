@@ -87,7 +87,7 @@
 					<text>{{ aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析') }}</text>
 				</view>
 				
-				<button class="next-btn" @tap="toNext">{{ resultStatus === 'correct' ? '进入下一题' : '继续挑战' }}</button>
+				<button class="next-btn" hover-class="ds-hover-btn" @tap="toNext">{{ resultStatus === 'correct' ? '进入下一题' : '继续挑战' }}</button>
 			</view>
 			
 			<view class="footer-placeholder"></view>
@@ -201,6 +201,8 @@ export default {
 			showCompleteModal: false,
 			resumeModalContent: '',
 			isDark: false,
+			// ✅ 防重复点击状态
+			isNavigating: false,  // 防止快速连续点击"下一题"
 			// ✅ 检查点 5.3: 自适应学习状态
 			isAdaptiveMode: true,  // 是否启用自适应模式
 			currentReviewQuestion: null,  // 当前复习题
@@ -452,62 +454,24 @@ export default {
 			if (this.isAnalyzing || this.showResult || this.hasAnswered) return;
 			
 			this.userChoice = idx;
-			
-			// 震动反馈
-			try {
-				if (typeof uni.vibrateShort === 'function') {
-					uni.vibrateShort();
-				}
-			} catch(e) {}
-			
-			const isCorrect = this.isCorrectOption(idx);
-			this.resultStatus = isCorrect ? 'correct' : 'wrong';
 			this.hasAnswered = true;
 			
-			// ✅ P0-3: 记录已答题目
-			this.answeredQuestions.push({
-				index: this.currentIndex,
-				questionId: this.currentQuestion?.id,
-				userChoice: idx,
-				isCorrect: isCorrect,
-				timestamp: Date.now()
-			});
-			
-			// ✅ 检查点 5.3: 记录答题结果到自适应学习引擎
-			const timeSpent = Date.now() - this.answerStartTime;
-			recordAnswer(this.currentQuestion, isCorrect, timeSpent);
-			
-			// ✅ 检查点 5.1: 追踪完成题目事件
-			analytics.trackCompleteQuestion(this.currentQuestion?.id, isCorrect, {
-				timeSpent: timeSpent,
-				category: this.currentQuestion?.category,
-				isReview: this.currentQuestion?._isReview || false
-			});
-			
-			// ✅ P0-3: 每答一题自动保存进度
-			this.saveCurrentProgress();
-			
-			// 添加调试日志
-			logger.log('[do-quiz] 答案判断:', {
-				selectedIndex: idx,
-				selectedLabel: this.getOptionLabel(idx),
-				correctAnswer: this.currentQuestion.answer,
-				isCorrect: isCorrect
-			});
-			
-			if (isCorrect) {
-				// 正确时：显示预设鼓励语并直接展示结果
-				// ⚠️ 重要：答对题目不保存到错题本
-				this.aiComment = "精彩！你的知识储备非常扎实，思路清晰，精准命中了考点关键。继续保持这种分析能力！";
-				this.showResult = true;
-				this.updateStudyStats();
-				
-				// 震动反馈
+			// 判断答案是否正确
+			if (this.isCorrectOption(idx)) {
+				// 正确时：震动反馈
 				try {
 					if (typeof uni.vibrateShort === 'function') {
 						uni.vibrateShort();
 					}
-				} catch(e) {}
+				} catch(e) { logger.warn('Vibrate feedback failed on correct answer', e); }
+				
+				// ✅ 延迟解锁防重复点击（300ms后允许再次点击）
+				setTimeout(() => {
+					this.isNavigating = false;
+				}, 300);
+				
+				this.updateStudyStats();
+				this.showResult = true;
 			} else {
 				// 错误时：先保存到错题本（不含 AI 解析）
 				this.saveToMistakes();
@@ -573,12 +537,14 @@ export default {
 					if (typeof uni.vibrateShort === 'function') {
 						uni.vibrateShort();
 					}
-				} catch(e) {}
+				} catch(e) { logger.warn('Vibrate feedback failed after AI analysis', e); }
 			}
 		},
 		async saveToMistakes() {
 			// 将错题存入云端错题本（自动云端+本地同步）
 			if (!this.currentQuestion) return;
+			
+			uni.showLoading({ title: '保存错题中...', mask: false });
 			
 			const questionText = this.currentQuestion.question || this.currentQuestion.title;
 			const userAnswer = this.currentQuestion.options && this.currentQuestion.options[this.userChoice] 
@@ -610,6 +576,8 @@ export default {
 				// 使用云端方法保存（自动云端+本地同步）
 				const result = await storageService.saveMistake(mistakeData);
 				
+				uni.hideLoading();
+				
 				if (result.success) {
 					logger.log('[do-quiz] 错题已保存到云端:', result.id);
 					// 如果需要更新已有记录的错误次数，可以在这里处理
@@ -628,6 +596,7 @@ export default {
 					logger.warn('[do-quiz] 错题保存失败，已降级到本地:', result.error);
 				}
 			} catch (error) {
+				uni.hideLoading();
 				logger.warn('[do-quiz] 保存错题异常，降级到本地存储:', error);
 				// 异常时降级到本地保存
 				const mistakes = storageService.get('mistake_book', []);
@@ -704,6 +673,12 @@ export default {
 			storageService.save('study_stats', stats);
 		},
 		toNext() {
+			// ✅ 防重复点击保护
+			if (this.isNavigating) {
+				return;
+			}
+			this.isNavigating = true;
+			
 			// 重置状态
 			this.showResult = false;
 			this.isAnalyzing = false;
@@ -743,7 +718,12 @@ export default {
 					if (typeof uni.vibrateShort === 'function') {
 						uni.vibrateShort();
 					}
-				} catch(e) {}
+				} catch(e) { logger.warn('Vibrate feedback failed on next question', e); }
+				
+				// ✅ 延迟解锁防重复点击（300ms后允许再次点击）
+				setTimeout(() => {
+					this.isNavigating = false;
+				}, 300);
 			} else {
 				// ✅ P0-3: 练习完成，清除进度
 				clearQuizProgress();
@@ -780,7 +760,7 @@ export default {
 		handleEmptyBankConfirm() {
 			this.showEmptyBankModal = false;
 			uni.navigateTo({ 
-				url: '/src/pages/practice/import-data',
+				url: '/pages/practice/import-data',
 				fail: () => {
 					uni.navigateBack();
 				}
@@ -803,6 +783,7 @@ export default {
 		// ✅ 处理练习完成确认
 		handleCompleteConfirm() {
 			this.showCompleteModal = false;
+			this.isNavigating = false;  // 重置防重复点击状态
 			uni.navigateBack();
 		},
 		
@@ -964,6 +945,7 @@ export default {
 	font-size: 30rpx; 
 	color: var(--text-sub); 
 	line-height: 1.5;
+	word-break: break-all;
 }
 .select-indicator { 
 	width: 40rpx; 
@@ -1034,7 +1016,9 @@ export default {
 /* 结果弹窗 */
 .result-pop {
 	position: fixed; 
-	bottom: 80rpx; 
+	/* 适配 iPhone 14/15 Pro 底部安全区域：使用 env() 动态计算 bottom 值 */
+	bottom: calc(40rpx + constant(safe-area-inset-bottom));
+	bottom: calc(40rpx + env(safe-area-inset-bottom));
 	left: 30rpx; 
 	right: 30rpx; 
 	z-index: 300;
@@ -1042,7 +1026,7 @@ export default {
 	border-radius: 40rpx; 
 	backdrop-filter: blur(30px);
 	-webkit-backdrop-filter: blur(30px);
-	box-shadow: var(--shadow-xl);
+	box-shadow: var(--shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.12));
 	animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 @keyframes slideUp { 
@@ -1170,6 +1154,9 @@ export default {
 }
 
 .footer-placeholder { 
-	height: 300rpx; 
+	height: 300rpx;
+	/* 适配 iPhone 底部安全区域 */
+	padding-bottom: constant(safe-area-inset-bottom);
+	padding-bottom: env(safe-area-inset-bottom);
 }
 </style>

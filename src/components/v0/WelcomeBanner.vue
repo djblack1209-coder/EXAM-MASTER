@@ -60,13 +60,13 @@ export default {
     handleQuickPractice() {
       this.$emit('quick-practice')
       uni.switchTab({
-        url: '/src/pages/practice/index'
+        url: '/pages/practice/index'
       })
     },
     handleMockExam() {
       this.$emit('mock-exam')
       uni.navigateTo({
-        url: '/src/pages/practice/do-quiz?mode=mock'
+        url: '/pages/practice/do-quiz?mode=mock'
       })
     }
   }

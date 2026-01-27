@@ -22,7 +22,7 @@
 
       <!-- 底部输入行 -->
       <view class="input-row ds-flex ds-gap-md">
-        <input class="subject-input" v-model="subjectInput" placeholder="输入问题..." placeholder- />
+        <input class="subject-input" v-model="subjectInput" placeholder="输入问题..." maxlength="200" />
         <view class="unlock-btn ds-touchable ds-touch-target" @tap="handleUnlock">
           <text class="btn-text ds-text-sm ds-font-semibold">开始对话</text>
         </view>
@@ -60,7 +60,7 @@ const handleUnlock = () => {
 
   // 跳转到聊天页面
   uni.navigateTo({
-    url: '/src/pages/chat/chat'
+    url: '/pages/chat/chat'
   })
 }
 </script>

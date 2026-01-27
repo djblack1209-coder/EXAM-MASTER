@@ -267,9 +267,24 @@ page {
     /* #endif */
 
     /* #ifdef MP */
-    /* Mini Program: :active not supported, use JS touch events instead */
-    /* Implement via touchstart/touchend adding .active class manually */
+    /* Mini Program: :active not supported, use hover-class instead */
     /* #endif */
+}
+
+/* ✅ 小程序专用：hover-class 样式 */
+.ds-hover-active {
+    transform: scale(0.98);
+    opacity: 0.7;
+}
+
+.ds-hover-btn {
+    transform: scale(0.95);
+    filter: brightness(0.9);
+}
+
+.ds-hover-card {
+    transform: scale(0.98) translateY(2rpx);
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 /* Focus Ring (Accessibility) */

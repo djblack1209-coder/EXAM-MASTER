@@ -22,7 +22,7 @@
       >
         <view class="file-left">
           <view class="file-icon">
-            <text class="emoji">📄</text>
+            <text class="emoji">{{ getFileIcon(file.name) }}</text>
           </view>
           <view class="file-details">
             <text class="file-name">{{ file.name }}</text>
@@ -59,6 +59,8 @@
 <script>
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '../../utils/logger.js'
+// ✅ 文件处理工具
+import { fileHandler, FILE_CONFIG } from '../../utils/file-handler.js'
 
 export default {
   data() {
@@ -123,23 +125,92 @@ export default {
       this.files = savedFiles;
       logger.log('[文件管理] ✅ 文件列表已加载到页面，当前显示:', this.files.length, '个文件');
     },
+    
     goBack() {
       uni.navigateBack();
     },
-    viewFile(file) {
-      uni.showToast({ title: '文件预览即将上线', icon: 'none' });
+    
+    /**
+     * 获取文件图标
+     */
+    getFileIcon(fileName) {
+      return fileHandler.getFileIcon(fileName);
     },
+    
+    /**
+     * 查看文件 - 使用 fileHandler 统一处理
+     */
+    async viewFile(file) {
+      logger.log('[文件管理] 📄 查看文件:', file.name);
+      
+      const fileName = file.name || '';
+      const ext = fileHandler.getFileExtension(fileName);
+      const filePath = file.path || file.tempFilePath || file.url;
+      
+      // 如果有本地路径或 URL，尝试预览
+      if (filePath) {
+        // 显示 Loading
+        uni.showLoading({ title: '加载中...', mask: true });
+        
+        try {
+          const result = await fileHandler.previewFile({
+            name: fileName,
+            path: filePath,
+          });
+          
+          uni.hideLoading();
+          
+          if (!result.success && !result.error?.includes('unsupported')) {
+            // 预览失败，显示文件信息
+            this.showFileInfo(file);
+          }
+        } catch (err) {
+          uni.hideLoading();
+          logger.error('[文件管理] ❌ 文件预览失败:', err);
+          this.showFileInfo(file);
+        }
+      } else {
+        // 没有本地路径，显示文件信息
+        this.showFileInfo(file);
+      }
+    },
+    
+    showFileInfo(file) {
+      const ext = fileHandler.getFileExtension(file.name);
+      const icon = fileHandler.getFileIcon(file.name);
+      
+      const info = `文件名：${file.name}\n类型：${ext.toUpperCase()}\n大小：${this.formatSize(file.size)}\n来源：${file.source || '本地文件'}\n状态：${this.getStatusLabel(file.status)}\n导入时间：${file.date || '未知'}`;
+      
+      uni.showModal({
+        title: `${icon} 文件信息`,
+        content: info,
+        confirmText: '知道了',
+        showCancel: false
+      });
+    },
+    
     formatSize(size) {
       if (!size) return '0 KB';
-      return `${size} KB`;
+      // 如果 size 已经是 KB 单位
+      if (typeof size === 'number' && size < 10000) {
+        return `${size} KB`;
+      }
+      // 如果 size 是字节单位
+      return fileHandler.formatFileSize(size);
     },
+    
     getStatusLabel(status) {
-      if (status === 'generating') return '生成中';
-      if (status === 'completed') return '已完成';
-      if (status === 'paused') return '已暂停';
-      if (status === 'failed') return '失败';
-      return '待处理';
+      const statusMap = {
+        'generating': '生成中',
+        'completed': '已完成',
+        'paused': '已暂停',
+        'failed': '失败',
+        'ready': '待处理',
+        'cancelled': '已取消',
+      };
+      return statusMap[status] || '待处理';
     },
+    
     deleteFile(index) {
       uni.showModal({
         title: '确认删除',
@@ -168,6 +239,7 @@ export default {
         }
       });
     },
+    
     clearAll() {
       if (this.files.length === 0) {
         uni.showToast({ title: '暂无文件可删除', icon: 'none' });

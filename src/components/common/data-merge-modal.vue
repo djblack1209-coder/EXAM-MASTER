@@ -112,11 +112,12 @@
       
       <!-- 底部按钮 -->
       <view class="modal-footer">
-        <button class="btn btn--cancel" @click="handleCancel">
+        <button class="btn btn--cancel" hover-class="btn-hover" @click="handleCancel">
           稍后处理
         </button>
         <button 
           class="btn btn--confirm" 
+          hover-class="btn-hover"
           @click="handleConfirm"
           :disabled="!canConfirm"
         >
@@ -437,7 +438,7 @@ export default {
     
     .type-label {
       font-size: 26rpx;
-      color: #666;
+      color: var(--ds-color-text-secondary);
     }
     
     .type-value {
@@ -456,12 +457,12 @@ export default {
       flex: 1;
       text-align: center;
       
-      .time-label {
-        display: block;
-        font-size: 22rpx;
-        color: #999;
-        margin-bottom: 4rpx;
-      }
+        .time-label {
+          display: block;
+          font-size: 22rpx;
+          color: var(--ds-color-text-tertiary);
+          margin-bottom: 4rpx;
+        }
       
       .time-value {
         display: block;
@@ -474,7 +475,7 @@ export default {
     .time-divider {
       padding: 0 16rpx;
       font-size: 24rpx;
-      color: #999;
+      color: var(--ds-color-text-tertiary);
       font-weight: bold;
     }
   }
@@ -552,7 +553,7 @@ export default {
     
     .value-label {
       font-size: 22rpx;
-      color: #666;
+      color: var(--ds-color-text-secondary);
     }
     
     .value-check {
@@ -609,7 +610,7 @@ export default {
     
     .action-text {
       font-size: 22rpx;
-      color: #666;
+      color: var(--ds-color-text-secondary);
     }
   }
 }
@@ -630,7 +631,7 @@ export default {
     
     &--cancel {
       background: #f5f5f5;
-      color: #666;
+      color: var(--ds-color-text-secondary);
     }
     
     &--confirm {

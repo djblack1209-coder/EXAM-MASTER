@@ -28,7 +28,7 @@ const emit = defineEmits(['bannerTap'])
 const onBannerTap = () => {
   emit('bannerTap')
   uni.switchTab({
-    url: '/src/pages/practice/index'
+    url: '/pages/practice/index'
   })
 }
 </script>

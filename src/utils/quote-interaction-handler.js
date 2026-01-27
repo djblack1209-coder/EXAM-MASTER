@@ -7,7 +7,11 @@
  * 2. 收藏动画效果
  * 3. 海报生成
  * 4. 社交分享
+ * 
+ * @version 2.0.0 - 使用新的权限处理工具
  */
+
+import { permissionHandler, PERMISSION_TYPES } from './permission-handler.js';
 
 // 收藏状态存储键
 const STORAGE_KEYS = {
@@ -309,55 +313,15 @@ class QuoteInteractionHandler {
   }
   
   /**
-   * 保存海报到相册
+   * 保存海报到相册 - 使用新的权限处理工具
    */
   async savePosterToAlbum(tempFilePath) {
-    return new Promise((resolve, reject) => {
-      // 先请求权限
-      uni.authorize({
-        scope: 'scope.writePhotosAlbum',
-        success: () => {
-          uni.saveImageToPhotosAlbum({
-            filePath: tempFilePath,
-            success: () => {
-              uni.showToast({
-                title: '已保存到相册',
-                icon: 'success'
-              });
-              resolve({ success: true });
-            },
-            fail: (err) => {
-              console.warn('[QuoteHandler] 保存图片失败:', err);
-              // 用户取消保存不算错误
-              if (err.errMsg && err.errMsg.includes('cancel')) {
-                resolve({ success: false, cancelled: true });
-                return;
-              }
-              uni.showToast({
-                title: '保存失败',
-                icon: 'none'
-              });
-              resolve({ success: false, error: err });
-            }
-          });
-        },
-        fail: (err) => {
-          console.warn('[QuoteHandler] 相册权限被拒绝:', err);
-          // 引导用户开启权限
-          uni.showModal({
-            title: '需要相册权限',
-            content: '请在设置中开启相册权限，以保存海报',
-            confirmText: '去设置',
-            success: (res) => {
-              if (res.confirm) {
-                uni.openSetting();
-              }
-            }
-          });
-          // 不再 reject，而是 resolve 一个失败状态，避免 unhandled rejection
-          resolve({ success: false, permissionDenied: true });
-        }
-      });
+    // 使用统一的权限处理工具
+    return await permissionHandler.saveImageToAlbum(tempFilePath, {
+      showLoading: true,
+      loadingText: '保存中...',
+      successText: '已保存到相册',
+      failText: '保存失败',
     });
   }
   

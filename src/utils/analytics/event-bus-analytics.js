@@ -408,14 +408,16 @@ class AnalyticsService {
     if (events.length === 0) return;
 
     try {
-      // TODO: 替换为实际的上报接口
+      // NOTE: 事件上报接口暂未接入，当前使用本地存储作为降级方案
+      // 后续可接入自建分析服务或第三方平台（如友盟、神策等）
+      // 接入时取消下方注释并配置正确的上报地址：
       // await uni.request({
       //   url: 'https://your-analytics-server.com/events',
       //   method: 'POST',
       //   data: { events }
       // });
 
-      // 目前先保存到本地存储（用于调试和后续分析）
+      // 当前降级方案：保存到本地存储（用于调试和后续分析）
       const uploadedEvents = uni.getStorageSync('analytics_uploaded') || [];
       uploadedEvents.push(...events);
       
