@@ -19,6 +19,35 @@ import cloud from '@lafjs/cloud'
 const db = cloud.database()
 const _ = db.command
 
+// ==================== 环境配置 ====================
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
+
+// ==================== 日志工具 ====================
+const logger = {
+  info: (...args: any[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
+  warn: (...args: any[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
+  error: (...args: any[]) => console.error(...args)
+}
+
+// ==================== 参数校验 ====================
+function sanitizeString(input: string, maxLength: number = 100): string {
+  if (typeof input !== 'string') return ''
+  return input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .substring(0, maxLength)
+    .trim()
+}
+
+function validateUserId(uid: any): boolean {
+  return typeof uid === 'string' && uid.length > 0 && uid.length <= 64
+}
+
+function validateScore(score: any): boolean {
+  return typeof score === 'number' && !isNaN(score) && score >= 0 && score <= 1000000
+}
+
 // 排行榜类型
 const RANK_TYPES = {
   DAILY: 'daily',      // 日榜
@@ -31,16 +60,16 @@ export default async function (ctx) {
   const startTime = Date.now()
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-  console.log(`[${requestId}] 排行榜请求开始`)
+  logger.info(`[${requestId}] 排行榜请求开始`)
 
   try {
     const { action, uid, score, nickName, avatarUrl, rankType, limit } = ctx.body || {}
 
-    if (!action) {
-      return { code: 400, success: false, message: '参数错误: action 不能为空', requestId }
+    if (!action || typeof action !== 'string' || action.length > 50) {
+      return { code: 400, success: false, message: '参数错误: action 不合法', requestId }
     }
 
-    console.log(`[${requestId}] action: ${action}, uid: ${uid}`)
+    logger.info(`[${requestId}] action: ${action}, uid: ${uid}`)
 
     const handlers = {
       update: handleUpdate,
@@ -56,13 +85,13 @@ export default async function (ctx) {
     const result = await handler({ uid, score, nickName, avatarUrl, rankType, limit }, requestId)
 
     const duration = Date.now() - startTime
-    console.log(`[${requestId}] 操作完成，耗时: ${duration}ms`)
+    logger.info(`[${requestId}] 操作完成，耗时: ${duration}ms`)
 
     return { ...result, requestId, duration }
 
   } catch (error) {
     const duration = Date.now() - startTime
-    console.error(`[${requestId}] 排行榜异常:`, error)
+    logger.error(`[${requestId}] 排行榜异常:`, error)
 
     return {
       code: 500,
@@ -81,12 +110,12 @@ export default async function (ctx) {
 async function handleUpdate(params, requestId) {
   const { uid, score, nickName, avatarUrl } = params
 
-  if (!uid) {
-    return { code: 400, success: false, message: '用户ID不能为空' }
+  if (!validateUserId(uid)) {
+    return { code: 400, success: false, message: '用户ID不合法' }
   }
 
-  if (typeof score !== 'number' || score < 0) {
-    return { code: 400, success: false, message: '分数必须是非负数' }
+  if (!validateScore(score)) {
+    return { code: 400, success: false, message: '分数必须是0-1000000之间的数字' }
   }
 
   const rankCollection = db.collection('rankings')
@@ -129,19 +158,19 @@ async function handleUpdate(params, requestId) {
       updateData.monthly_start = monthStart
     }
 
-    // 更新用户信息（如果提供）
-    if (nickName) updateData.nick_name = nickName
-    if (avatarUrl) updateData.avatar_url = avatarUrl
+    // 更新用户信息（如果提供）- 清理输入
+    if (nickName) updateData.nick_name = sanitizeString(nickName, 32)
+    if (avatarUrl) updateData.avatar_url = sanitizeString(avatarUrl, 500)
 
     await rankCollection.doc(existing.data._id).update(updateData)
 
-    console.log(`[${requestId}] 更新排行榜分数: ${uid}, +${score}`)
+    logger.info(`[${requestId}] 更新排行榜分数: ${uid}, +${score}`)
   } else {
     // 创建新记录
     await rankCollection.add({
       uid,
-      nick_name: nickName || '考研学子',
-      avatar_url: avatarUrl || '',
+      nick_name: sanitizeString(nickName || '考研学子', 32),
+      avatar_url: sanitizeString(avatarUrl || '', 500),
       total_score: score,
       daily_score: score,
       daily_date: today,
@@ -153,7 +182,7 @@ async function handleUpdate(params, requestId) {
       updated_at: now
     })
 
-    console.log(`[${requestId}] 创建排行榜记录: ${uid}, ${score}`)
+    logger.info(`[${requestId}] 创建排行榜记录: ${uid}, ${score}`)
   }
 
   return {
@@ -220,7 +249,7 @@ async function handleGet(params, requestId) {
     score: item[scoreField]
   }))
 
-  console.log(`[${requestId}] 获取排行榜: ${rankType}, ${rankList.length} 条`)
+  logger.info(`[${requestId}] 获取排行榜: ${rankType}, ${rankList.length} 条`)
 
   return {
     code: 0,
@@ -237,8 +266,8 @@ async function handleGet(params, requestId) {
 async function handleGetUserRank(params, requestId) {
   const { uid, rankType = RANK_TYPES.DAILY } = params
 
-  if (!uid) {
-    return { code: 400, success: false, message: '用户ID不能为空' }
+  if (!validateUserId(uid)) {
+    return { code: 400, success: false, message: '用户ID不合法' }
   }
 
   const rankCollection = db.collection('rankings')

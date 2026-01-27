@@ -27,36 +27,75 @@ import crypto from 'crypto'
 
 // ==================== 环境变量配置 ====================
 // 重要：请确保在后端控制台配置了正确的环境变量
-const WX_APPID = process.env.WX_APPID || 'wxd634d50ad63e14ed'
+// 安全提示：敏感信息必须通过环境变量配置，禁止硬编码
+const WX_APPID = process.env.WX_APPID || ''
 const WX_SECRET_PLACEHOLDER
 const JWT_SECRET_PLACEHOLDER
 const JWT_EXPIRES_IN = 7 * 24 * 60 * 60 * 1000 // 7天
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
 
 // 获取数据库实例
 const db = cloud.database()
+
+// ==================== 日志工具 ====================
+const logger = {
+  info: (...args: any[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
+  warn: (...args: any[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
+  error: (...args: any[]) => console.error(...args)
+}
+
+// ==================== 参数校验 ====================
+function validateLoginParams(data: any): { valid: boolean; error?: string; sanitized?: any } {
+  const { code } = data || {}
+  
+  // 1. 必填检查
+  if (!code) {
+    return { valid: false, error: 'code 不能为空' }
+  }
+  
+  // 2. 类型检查
+  if (typeof code !== 'string') {
+    return { valid: false, error: 'code 必须是字符串' }
+  }
+  
+  // 3. 长度检查（微信 code 通常在 32-100 字符之间）
+  if (code.length < 10 || code.length > 200) {
+    return { valid: false, error: 'code 长度不合法' }
+  }
+  
+  // 4. 格式检查（只允许字母数字和部分特殊字符）
+  if (!/^[a-zA-Z0-9_-]+$/.test(code)) {
+    return { valid: false, error: 'code 格式不合法' }
+  }
+  
+  return { valid: true, sanitized: { code: code.trim() } }
+}
 
 export default async function (ctx) {
   const startTime = Date.now()
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-  console.log(`[${requestId}] 登录请求开始`)
-  console.log(`[${requestId}] 使用 AppID: ${WX_APPID.substring(0, 6)}...`)
+  logger.info(`[${requestId}] 登录请求开始`)
+  logger.info(`[${requestId}] 使用 AppID: ${WX_APPID.substring(0, 6)}...`)
 
   try {
-    // 1. 参数校验
-    const { code } = ctx.body || {}
-
-    if (!code || typeof code !== 'string') {
-      console.warn(`[${requestId}] 参数错误: code 无效`)
+    // 1. 参数校验（后端必须再校验一遍，不信任前端）
+    const validation = validateLoginParams(ctx.body)
+    
+    if (!validation.valid) {
+      logger.warn(`[${requestId}] 参数错误: ${validation.error}`)
       return {
         code: 400,
-        message: '参数错误: code 不能为空',
+        message: `参数错误: ${validation.error}`,
         requestId
       }
     }
+    
+    const { code } = validation.sanitized
 
     // 2. 调用微信接口获取 openid
-    console.log(`[${requestId}] 开始获取微信 openid...`)
+    logger.info(`[${requestId}] 开始获取微信 openid...`)
 
     const wxLoginUrl = `https://api.weixin.qq.com/sns/jscode2session?appid=${WX_APPID}&secret=${WX_SECRET_PLACEHOLDER
 
@@ -69,7 +108,7 @@ export default async function (ctx) {
     const wxData = wxRes.data
 
     if (wxData.errcode) {
-      console.error(`[${requestId}] 微信登录失败:`, wxData)
+      logger.error(`[${requestId}] 微信登录失败:`, wxData)
 
       // 提供更详细的错误信息
       let errorMsg = wxData.errmsg
@@ -94,7 +133,7 @@ export default async function (ctx) {
     const { openid, session_key, unionid } = wxData
 
     if (!openid) {
-      console.error(`[${requestId}] 获取 openid 失败`)
+      logger.error(`[${requestId}] 获取 openid 失败`)
       return {
         code: 401,
         message: '获取用户标识失败',
@@ -102,7 +141,7 @@ export default async function (ctx) {
       }
     }
 
-    console.log(`[${requestId}] 获取 openid 成功: ${openid.substring(0, 10)}...`)
+    logger.info(`[${requestId}] 获取 openid 成功: ${openid.substring(0, 10)}...`)
 
     // 3. 查询或创建用户
     const usersCollection = db.collection('users')
@@ -139,7 +178,7 @@ export default async function (ctx) {
       const insertRes = await usersCollection.add(newUser)
       user = { data: { _id: insertRes.id, ...newUser } }
 
-      console.log(`[${requestId}] 新用户创建成功: ${insertRes.id}`)
+      logger.info(`[${requestId}] 新用户创建成功: ${insertRes.id}`)
     } else {
       // 老用户，更新登录时间
       await usersCollection.doc(user.data._id).update({
@@ -148,7 +187,7 @@ export default async function (ctx) {
         ...(unionid && !user.data.unionid ? { unionid } : {})
       })
 
-      console.log(`[${requestId}] 老用户登录: ${user.data._id}`)
+      logger.info(`[${requestId}] 老用户登录: ${user.data._id}`)
     }
 
     // 4. 生成 JWT token
@@ -161,7 +200,7 @@ export default async function (ctx) {
 
     // 5. 计算执行耗时
     const duration = Date.now() - startTime
-    console.log(`[${requestId}] 登录成功，耗时: ${duration}ms`)
+    logger.info(`[${requestId}] 登录成功，耗时: ${duration}ms`)
 
     // 6. 返回结果
     return {
@@ -190,7 +229,7 @@ export default async function (ctx) {
 
   } catch (error) {
     const duration = Date.now() - startTime
-    console.error(`[${requestId}] 登录异常:`, error)
+    logger.error(`[${requestId}] 登录异常:`, error)
 
     return {
       code: 500,
@@ -252,7 +291,7 @@ export function verifyJWT(token) {
       .digest('base64url')
 
     if (signature !== expectedSignature) {
-      console.warn('JWT 签名验证失败')
+      logger.warn('JWT 签名验证失败')
       return null
     }
 
@@ -261,13 +300,13 @@ export function verifyJWT(token) {
 
     // 检查过期
     if (payload.exp && payload.exp < Date.now()) {
-      console.warn('JWT 已过期')
+      logger.warn('JWT 已过期')
       return null
     }
 
     return payload
   } catch (error) {
-    console.error('JWT 验证异常:', error)
+    logger.error('JWT 验证异常:', error)
     return null
   }
 }

@@ -6,9 +6,10 @@
 db = db.getSiblingDB('exam-master');
 
 // 创建应用用户
+// 注意：生产环境请通过环境变量 MONGO_APP_USER 和 MONGO_APP_PASSWORD 配置
 db.createUser({
-  user: 'exam-master-app',
-  pwd: 'exam-master-app-2024',
+  user: process.env.MONGO_APP_USER || 'exam-master-app',
+  pwd: process.env.MONGO_APP_PASSWORD || 'CHANGE_ME_IN_PRODUCTION',
   roles: [
     { role: 'readWrite', db: 'exam-master' }
   ]

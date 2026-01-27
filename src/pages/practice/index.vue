@@ -43,12 +43,12 @@
       <!-- 空状态 - 居中显示 -->
       <div v-else class="empty-state-content" @tap="chooseImportSource">
         <div class="empty-icon">
-          <image class="empty-icon-img" src="/static/icons/practice/icon-cloud.png" mode="aspectFit"></image>
+          <text class="empty-icon-emoji">📚</text>
         </div>
         <h3 class="empty-title">题库空空如也</h3>
         <p class="empty-desc">导入学习资料，AI 为您智能生成专属题库</p>
         <view class="empty-action">
-          <image class="action-icon" src="/static/icons/practice/icon-upload.png" mode="aspectFit"></image>
+          <text class="action-icon-emoji">📤</text>
           <text class="action-text">点击导入资料</text>
         </view>
       </div>
@@ -87,7 +87,7 @@
       <!-- 导入资料卡片 -->
       <div class="import-card" @tap="chooseImportSource">
         <div class="import-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-upload.png" mode="aspectFit"></image>
+          <text class="import-icon-emoji">📤</text>
         </div>
         <div class="import-info">
           <h3 class="import-title">导入学习资料</h3>
@@ -1567,6 +1567,25 @@ export default {
   height: 80px;
   object-fit: contain;
   opacity: 0.8;
+}
+
+/* Emoji图标样式 - 深色模式自动适配 */
+.empty-icon-emoji {
+  font-size: 64px;
+  display: block;
+  line-height: 1;
+}
+
+.action-icon-emoji {
+  font-size: 18px;
+  display: inline-block;
+  line-height: 1;
+}
+
+.import-icon-emoji {
+  font-size: 32px;
+  display: block;
+  line-height: 1;
 }
 
 .empty-title {

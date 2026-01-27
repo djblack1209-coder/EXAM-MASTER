@@ -19,68 +19,91 @@
 
 		<!-- 压缩顶部间距：去掉重复叠加的状态栏偏移，仅保留适度 paddingTop -->
 		<scroll-view scroll-y class="main-scroll" :style="{ paddingTop: '24px' }" v-show="!isLoading">
-			<!-- 步骤进度条 - 添加设计系统工具类 -->
+			<!-- 步骤进度条 - 三步流程 -->
 			<view class="step-bar glass-card ds-flex ds-flex-center">
 				<view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 1 }]">
 					<view class="step-dot ds-flex-center ds-rounded-full">
 						<text v-if="currentStep > 1">✓</text>
 						<text v-else>1</text>
 					</view>
-					<text class="ds-text-xs ds-font-medium">背景录入</text>
+					<text class="ds-text-xs ds-font-medium">背景信息</text>
 				</view>
 				<view class="step-line" :class="{ active: currentStep >= 2 }"></view>
 				<view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 2 }]">
-					<view class="step-dot ds-flex-center ds-rounded-full">2</view>
+					<view class="step-dot ds-flex-center ds-rounded-full">
+						<text v-if="currentStep > 2">✓</text>
+						<text v-else>2</text>
+					</view>
+					<text class="ds-text-xs ds-font-medium">报考信息</text>
+				</view>
+				<view class="step-line" :class="{ active: currentStep >= 3 }"></view>
+				<view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 3 }]">
+					<view class="step-dot ds-flex-center ds-rounded-full">3</view>
 					<text class="ds-text-xs ds-font-medium">智能推荐</text>
 				</view>
 			</view>
 
-			<!-- 表单区域 - 优化样式 -->
+			<!-- 第一页：背景信息 -->
 			<view class="glass-card form-card" v-if="currentStep === 1">
 				<view class="card-header ds-gap-sm">
-					<text class="title ds-text-xl ds-font-bold">完善教育背景</text>
-					<text class="subtitle ds-text-sm ds-text-secondary">AI 将基于您的背景分析上岸概率</text>
+					<text class="title ds-text-xl ds-font-bold">填写教育背景</text>
+					<text class="subtitle ds-text-sm ds-text-secondary">请如实填写，AI 将基于您的背景分析上岸概率</text>
 				</view>
 
 				<view class="input-group ds-gap-xs">
-					<text class="label ds-text-sm ds-font-semibold">本科/专科毕业院校</text>
-					<input class="glass-input ds-touchable" v-model="formData.school" placeholder="请输入学校名称"
-						placeholder-class="ph-style" maxlength="50" />
-				</view>
-
-				<view class="input-group ds-gap-xs">
-					<text class="label ds-text-sm ds-font-semibold">报考专业</text>
-					<picker mode="selector" :range="majorOptions" @change="bindMajorChange">
-						<view class="glass-input picker-val ds-flex ds-flex-between ds-touchable">
-							<text :class="{ 'placeholder-text': !formData.targetMajor }">{{ formData.targetMajor ||
-								'点击选择报考专业' }}</text>
-							<text class="picker-arrow">▼</text>
-						</view>
-					</picker>
-				</view>
-
-				<view class="input-group ds-gap-xs">
-					<text class="label ds-text-sm ds-font-semibold">报考类型</text>
-					<view class="tab-group ds-flex ds-gap-xs">
-						<view
-							:class="['tab-item', 'ds-flex-center', 'ds-touchable', { active: formData.masterType === 'academic' }]"
-							@tap="formData.masterType = 'academic'">学硕</view>
-						<view
-							:class="['tab-item', 'ds-flex-center', 'ds-touchable', { active: formData.masterType === 'professional' }]"
-							@tap="formData.masterType = 'professional'">专硕</view>
-					</view>
-				</view>
-
-				<view class="input-group ds-gap-xs">
-					<text class="label ds-text-sm ds-font-semibold">目前学历</text>
+					<text class="label ds-text-sm ds-font-semibold">目前学历 <text class="required">*</text></text>
 					<view class="tab-group ds-flex ds-gap-xs">
 						<view
 							:class="['tab-item', 'ds-flex-center', 'ds-touchable', { active: formData.degree === 'bk' }]"
-							@tap="formData.degree = 'bk'">本科全日制</view>
+							@tap="formData.degree = 'bk'">本科</view>
 						<view
 							:class="['tab-item', 'ds-flex-center', 'ds-touchable', { active: formData.degree === 'zk' }]"
-							@tap="formData.degree = 'zk'">专科/同等学力</view>
+							@tap="formData.degree = 'zk'">专科</view>
 					</view>
+				</view>
+
+				<view class="input-group ds-gap-xs">
+					<text class="label ds-text-sm ds-font-semibold">{{ formData.degree === 'bk' ? '本科' : '专科' }}毕业院校 <text class="required">*</text></text>
+					<input class="glass-input ds-touchable" v-model="formData.school" 
+						:placeholder="'请输入' + (formData.degree === 'bk' ? '本科' : '专科') + '毕业院校名称'"
+						placeholder-class="ph-style" maxlength="30" />
+					<text class="input-hint ds-text-xs">{{ formData.school.length }}/30</text>
+				</view>
+
+				<view class="input-group ds-gap-xs">
+					<text class="label ds-text-sm ds-font-semibold">{{ formData.degree === 'bk' ? '本科' : '专科' }}专业 <text class="required">*</text></text>
+					<input class="glass-input ds-touchable" v-model="formData.currentMajor" 
+						:placeholder="'请输入' + (formData.degree === 'bk' ? '本科' : '专科') + '所学专业'"
+						placeholder-class="ph-style" maxlength="30" />
+					<text class="input-hint ds-text-xs">{{ formData.currentMajor.length }}/30</text>
+				</view>
+
+				<button class="primary-btn ds-flex-center ds-gap-sm" hover-class="ds-hover-btn" @tap="goToStep2" :disabled="!canGoToStep2">
+					下一步
+				</button>
+			</view>
+
+			<!-- 第二页：报考信息 -->
+			<view class="glass-card form-card" v-if="currentStep === 2">
+				<view class="card-header ds-gap-sm">
+					<text class="title ds-text-xl ds-font-bold">填写报考信息</text>
+					<text class="subtitle ds-text-sm ds-text-secondary">请填写您的目标院校和专业</text>
+				</view>
+
+				<view class="input-group ds-gap-xs">
+					<text class="label ds-text-sm ds-font-semibold">报考院校 <text class="required">*</text></text>
+					<input class="glass-input ds-touchable" v-model="formData.targetSchool" 
+						placeholder="请输入目标报考院校名称"
+						placeholder-class="ph-style" maxlength="30" />
+					<text class="input-hint ds-text-xs">{{ formData.targetSchool.length }}/30</text>
+				</view>
+
+				<view class="input-group ds-gap-xs">
+					<text class="label ds-text-sm ds-font-semibold">报考专业 <text class="required">*</text></text>
+					<input class="glass-input ds-touchable" v-model="formData.targetMajor" 
+						placeholder="请输入目标报考专业"
+						placeholder-class="ph-style" maxlength="30" />
+					<text class="input-hint ds-text-xs">{{ formData.targetMajor.length }}/30</text>
 				</view>
 
 				<view class="input-group ds-gap-xs">
@@ -88,27 +111,41 @@
 					<picker mode="selector" :range="englishCertificates" @change="bindEnglishCertChange">
 						<view class="glass-input picker-val ds-flex ds-flex-between ds-touchable">
 							<text :class="{ 'placeholder-text': !formData.englishCert }">{{ formData.englishCert ||
-								'点击选择英语证明' }}</text>
+								'点击选择英语证明（可选）' }}</text>
 							<text class="picker-arrow">▼</text>
 						</view>
 					</picker>
 				</view>
 
-				<button class="primary-btn pulse-btn ds-flex-center ds-gap-sm" hover-class="ds-hover-btn" @tap="submitForm" :disabled="isSubmitting" :loading="isSubmitting">
-					<text>✨</text>
-					{{ isSubmitting ? 'AI 分析中...' : '开始 AI 择校匹配' }}
-				</button>
+				<view class="btn-group ds-flex ds-gap-sm">
+					<button class="secondary-btn ds-flex-center" hover-class="ds-hover-btn" @tap="goToStep1">
+						上一步
+					</button>
+					<button class="primary-btn pulse-btn ds-flex-center ds-gap-sm" hover-class="ds-hover-btn" @tap="submitForm" :disabled="!canSubmit || isSubmitting" :loading="isSubmitting">
+						<text v-if="!isSubmitting">✨</text>
+						{{ isSubmitting ? 'AI 分析中...' : '开始 AI 择校匹配' }}
+					</button>
+				</view>
 			</view>
 
-			<!-- 结果区域 - 优化样式 -->
-			<view class="result-container" v-if="currentStep === 2">
+			<!-- 第三页：结果区域 - 推荐院校 -->
+			<view class="result-container" v-if="currentStep === 3">
 				<view class="result-header ds-flex ds-flex-between">
-					<text class="rh-title ds-text-lg ds-font-bold">推荐 {{ filteredSchools.length }} 所院校</text>
-					<view class="rh-filter ds-flex ds-flex-center ds-gap-xs ds-touchable" @click="showFilter = true">
+					<view class="rh-left">
+						<text class="rh-title ds-text-lg ds-font-bold">推荐院校</text>
+						<text class="rh-subtitle ds-text-xs ds-text-secondary" v-if="filteredSchools.length > 0">共 {{ filteredSchools.length }} 所</text>
+					</view>
+					<view class="rh-filter ds-flex ds-flex-center ds-gap-xs ds-touchable" @click="showFilter = true" v-if="filteredSchools.length > 0">
 						<text class="ds-text-xs ds-font-medium">{{ activeFilterCount > 0 ? `已选(${activeFilterCount})` :
 							'筛选' }}</text>
 						<text class="filter-arrow">▼</text>
 					</view>
+				</view>
+
+				<!-- 院校统计信息提示 -->
+				<view class="info-banner glass-card" v-if="filteredSchools.length > 0">
+					<text class="info-icon">📊</text>
+					<text class="info-text ds-text-xs">全国约有923所大学具有研究生招生资格，另有培养研究生的机构233所</text>
 				</view>
 
 				<view class="glass-card school-card ds-touchable" v-for="(school, index) in filteredSchools"
@@ -164,11 +201,20 @@
 
 				<view class="empty-tip ds-flex-col ds-flex-center ds-gap-sm" v-if="filteredSchools.length === 0">
 					<text class="empty-icon">🏫</text>
-					<text class="empty-title ds-text-base ds-font-semibold">没有符合条件的学校</text>
-					<text class="ds-text-sm ds-text-secondary">试试调整筛选条件</text>
-					<view class="reset-btn ds-touchable" @click="resetFilter">
+					<text class="empty-title ds-text-base ds-font-semibold">暂无推荐院校数据</text>
+					<text class="ds-text-sm ds-text-secondary" v-if="hasActiveFilter">试试调整筛选条件</text>
+					<text class="ds-text-sm ds-text-secondary" v-else>暂时没有找到匹配的院校，请稍后再试</text>
+					<view class="reset-btn ds-touchable" @click="hasActiveFilter ? resetFilter() : goToStep1()" v-if="hasActiveFilter">
 						<text class="reset-btn-text ds-text-sm ds-font-medium">重置筛选</text>
 					</view>
+					<view class="reset-btn ds-touchable" @click="goToStep1" v-else>
+						<text class="reset-btn-text ds-text-sm ds-font-medium">重新填写</text>
+					</view>
+				</view>
+
+				<!-- 返回修改按钮 -->
+				<view class="back-edit-btn ds-flex ds-flex-center ds-touchable" @tap="goToStep1" v-if="filteredSchools.length > 0">
+					<text class="ds-text-sm">← 返回修改信息</text>
 				</view>
 
 				<view class="safe-area-bottom"></view>
@@ -251,8 +297,8 @@ export default {
 			isLoading: true, // 骨架屏加载状态
 			isSubmitting: false, // ✅ 防重复提交状态
 
-			formData: { school: '', targetMajor: '', masterType: 'academic', degree: 'bk', englishCert: '' },
-			englishCertificates: ['无', 'B级', 'A级', '四级', '六级', '雅思', '托福', 'GRE', 'GMAT'],
+			formData: { school: '', currentMajor: '', targetSchool: '', targetMajor: '', degree: 'bk', englishCert: '' },
+			englishCertificates: ['无', 'B级', 'A级', '四级', '六级', '专四', '专八', '雅思', '托福', 'GRE', 'GMAT'],
 
 			// 学硕专业列表
 			academicMajors: [
@@ -324,7 +370,7 @@ export default {
 				'其他'
 			],
 
-			// 当前显示的专业选项（根据学硕/专硕动态切换）
+			// 当前显示的专业选项（根据学硕/专硕动态切换）- 保留但不再使用
 			majorOptions: [],
 
 			filter: { location: '', tag: '' },
@@ -333,13 +379,16 @@ export default {
 			/**
 			 * 推荐院校列表
 			 * 
-			 * 数据来源优先级：
+			 * 数据来源：仅使用真实数据
 			 * 1. AI 择校匹配结果（submitForm 调用后端 AI 推荐）
 			 * 2. 后端热门学校 API（lafService.getHotSchools）
 			 * 3. 本地缓存数据
-			 * 4. 默认示例数据（仅作为最终降级方案）
+			 * 注意：不再使用模拟数据，无数据时显示空状态
 			 */
-			mockSchools: []
+			mockSchools: [],
+			
+			// 标记是否有真实数据
+			hasRealData: false
 		};
 	},
 	async onLoad() {
@@ -376,6 +425,22 @@ export default {
 		uni.$off('themeUpdate');
 	},
 	computed: {
+		// 第一步表单验证：学历已选、毕业院校和专业都已填写
+		canGoToStep2() {
+			const schoolValid = this.formData.school && this.formData.school.trim().length > 0;
+			const majorValid = this.formData.currentMajor && this.formData.currentMajor.trim().length > 0;
+			return schoolValid && majorValid;
+		},
+		// 第二步表单验证：报考院校和专业都已填写
+		canSubmit() {
+			const targetSchoolValid = this.formData.targetSchool && this.formData.targetSchool.trim().length > 0;
+			const targetMajorValid = this.formData.targetMajor && this.formData.targetMajor.trim().length > 0;
+			return targetSchoolValid && targetMajorValid;
+		},
+		// 是否有激活的筛选条件
+		hasActiveFilter() {
+			return this.filter.location || this.filter.tag;
+		},
 		filteredSchools() {
 			return this.mockSchools.filter(school => {
 				const matchLoc = this.filter.location ? school.location === this.filter.location : true;
@@ -391,14 +456,20 @@ export default {
 		}
 	},
 	watch: {
-		'formData.masterType': {
-			handler(newVal) {
-				this.updateMajorOptions(newVal);
-			},
-			immediate: true
-		}
+		// 保留 watch 但移除 masterType 监听，因为不再使用
 	},
 	methods: {
+		// 步骤导航方法
+		goToStep1() {
+			this.currentStep = 1;
+		},
+		goToStep2() {
+			if (!this.canGoToStep2) {
+				uni.showToast({ title: '请完整填写背景信息', icon: 'none' });
+				return;
+			}
+			this.currentStep = 2;
+		},
 		updateMajorOptions(type) {
 			if (type === 'academic') {
 				this.majorOptions = this.academicMajors;
@@ -411,7 +482,9 @@ export default {
 			}
 		},
 		handleBack() {
-			if (this.currentStep === 2) {
+			if (this.currentStep === 3) {
+				this.currentStep = 2;
+			} else if (this.currentStep === 2) {
 				this.currentStep = 1;
 			} else {
 				uni.navigateBack();
@@ -419,7 +492,7 @@ export default {
 		},
 		/**
 		 * 加载推荐院校数据
-		 * 优先从后端获取，失败时使用本地缓存或默认数据
+		 * 仅从后端获取真实数据，无数据时保持空状态
 		 */
 		async loadRecommendedSchools() {
 			logger.log('[school] 📚 开始加载推荐院校数据...');
@@ -440,6 +513,7 @@ export default {
 						tags: school.tags || [],
 						majors: []
 					}));
+					this.hasRealData = true;
 					logger.log(`[school] ✅ 从后端加载 ${this.mockSchools.length} 所院校`);
 					
 					// 缓存到本地
@@ -454,58 +528,27 @@ export default {
 			const cachedSchools = uni.getStorageSync('cached_schools');
 			if (cachedSchools && cachedSchools.length > 0) {
 				this.mockSchools = cachedSchools;
+				this.hasRealData = true;
 				logger.log(`[school] ✅ 从本地缓存加载 ${this.mockSchools.length} 所院校`);
 				return;
 			}
 			
-			// 3. 使用默认示例数据（最终降级方案）
-			this.mockSchools = this.getDefaultSchools();
-			logger.log('[school] ⚠️ 使用默认示例数据（后端和缓存均不可用）');
+			// 3. 无数据时保持空状态，不使用模拟数据
+			this.mockSchools = [];
+			this.hasRealData = false;
+			logger.log('[school] ⚠️ 暂无真实院校数据，显示空状态');
 		},
 		
 		/**
-		 * 获取默认示例数据（降级方案）
+		 * 获取默认示例数据（已废弃，保留方法但不再使用）
+		 * @deprecated 不再使用模拟数据，避免误导用户
 		 */
 		getDefaultSchools() {
-			return [
-				{
-					id: 10003, name: "清华大学", location: "北京", matchRate: 98, isTarget: false,
-					logo: "https://api.dicebear.com/7.x/initials/svg?seed=THU&backgroundColor=663399",
-					tags: ["985", "211", "双一流", "自划线"],
-					majors: [{ name: "计算机科学与技术", code: "081200", type: "学硕", scores: [{ total: 365, eng: 50 }, { total: 360 }, { total: 355 }] }]
-				},
-				{
-					id: 10001, name: "北京大学", location: "北京", matchRate: 95, isTarget: false,
-					logo: "https://api.dicebear.com/7.x/initials/svg?seed=PKU&backgroundColor=990000",
-					tags: ["985", "211", "双一流", "自划线"],
-					majors: [{ name: "软件工程", code: "083500", type: "学硕", scores: [{ total: 350, eng: 55 }, { total: 345 }, { total: 340 }] }]
-				},
-				{
-					id: 10335, name: "浙江大学", location: "浙江", matchRate: 92, isTarget: false,
-					logo: "https://api.dicebear.com/7.x/initials/svg?seed=ZJU&backgroundColor=000099",
-					tags: ["985", "211", "双一流"],
-					majors: [{ name: "计算机科学与技术", code: "081200", type: "学硕", scores: [{ total: 368, eng: 55 }, { total: 365 }, { total: 360 }] }]
-				},
-				{
-					id: 10248, name: "上海交通大学", location: "上海", matchRate: 88, isTarget: false,
-					logo: "https://api.dicebear.com/7.x/initials/svg?seed=SJTU&backgroundColor=CC0000",
-					tags: ["985", "211", "C9"],
-					majors: [{ name: "电子信息", code: "085400", type: "专硕", scores: [{ total: 340, eng: 50 }, { total: 335 }, { total: 330 }] }]
-				},
-				{
-					id: 10486, name: "武汉大学", location: "湖北", matchRate: 85, isTarget: false,
-					logo: "https://api.dicebear.com/7.x/initials/svg?seed=WHU&backgroundColor=006400",
-					tags: ["985", "211", "双一流"],
-					majors: [{ name: "网络空间安全", code: "083900", type: "学硕", scores: [{ total: 330, eng: 50 }, { total: 325 }, { total: 320 }] }]
-				}
-			];
+			// 返回空数组，不再提供模拟数据
+			return [];
 		},
 		bindEnglishCertChange(e) {
 			this.formData.englishCert = this.englishCertificates[e.detail.value];
-		},
-		bindMajorChange(e) {
-			this.formData.targetMajor = this.majorOptions[e.detail.value];
-			logger.log('[school] 📚 选择专业:', this.formData.targetMajor);
 		},
 		// 调用智谱AI API获取真实院校推荐数据
 		async submitForm() {
@@ -513,19 +556,35 @@ export default {
 			if (this.isSubmitting) {
 				return;
 			}
+			
+			// 验证第二步表单
+			if (!this.canSubmit) {
+				uni.showToast({ title: '请完整填写报考信息', icon: 'none' });
+				return;
+			}
+			
 			this.isSubmitting = true;
 			
 			logger.log('[school] 📝 开始提交择校表单');
 			logger.log('[school] 📊 表单数据:', JSON.stringify(this.formData, null, 2));
 
-			if (!this.formData.school || !/^[\u4e00-\u9fa5a-zA-Z0-9\s\-·]+$/.test(this.formData.school)) {
-				logger.warn('[school] ⚠️ 表单验证失败: 院校名称无效');
-				this.isSubmitting = false;  // 验证失败时解锁
-				return uni.showToast({ title: '请输入有效的院校名称', icon: 'none' });
+			// 验证毕业院校名称
+			if (!this.formData.school || !/^[\u4e00-\u9fa5a-zA-Z0-9\s\-·]+$/.test(this.formData.school.trim())) {
+				logger.warn('[school] ⚠️ 表单验证失败: 毕业院校名称无效');
+				this.isSubmitting = false;
+				return uni.showToast({ title: '请输入有效的毕业院校名称', icon: 'none' });
 			}
-			if (!this.formData.targetMajor) {
+			
+			// 验证报考院校名称
+			if (!this.formData.targetSchool || !/^[\u4e00-\u9fa5a-zA-Z0-9\s\-·]+$/.test(this.formData.targetSchool.trim())) {
+				logger.warn('[school] ⚠️ 表单验证失败: 报考院校名称无效');
+				this.isSubmitting = false;
+				return uni.showToast({ title: '请输入有效的报考院校名称', icon: 'none' });
+			}
+			
+			if (!this.formData.targetMajor || !this.formData.targetMajor.trim()) {
 				logger.warn('[school] ⚠️ 表单验证失败: 报考专业为空');
-				this.isSubmitting = false;  // 验证失败时解锁
+				this.isSubmitting = false;
 				return uni.showToast({ title: '请输入报考专业', icon: 'none' });
 			}
 
@@ -544,37 +603,39 @@ export default {
 			// 设置超时保护标志，避免重复处理
 			let isTimeoutHandled = false;
 
-			// 设置超时保护（20秒后自动取消Loading并使用默认数据，优化用户体验）
+			// 设置超时保护（20秒后自动取消Loading，优化用户体验）
 			let loadingTimeout = setTimeout(() => {
 				if (isTimeoutHandled) {
 					logger.log('[school] ⏱️ 超时处理已执行，跳过重复处理');
 					return;
 				}
 				isTimeoutHandled = true;
-				logger.warn('[school] ⏱️ AI 分析超时（10秒），自动降级到默认数据');
+				logger.warn('[school] ⏱️ AI 分析超时（20秒），显示空状态');
 				uni.hideLoading();
 				uni.showToast({
-					title: 'AI 分析超时，使用默认数据',
+					title: 'AI 分析超时，请稍后重试',
 					icon: 'none',
 					duration: 2000
 				});
-				// 切换到结果页面，使用默认模拟数据
-				this.currentStep = 2;
-				logger.log('[school] ✅ 超时降级：切换到结果页面 (Step 2)');
-				logger.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
-				loadingTimeout = null; // 标记已处理
-			}, 10000); // 10秒超时（优化：缩短超时时间，提升用户体验）
+				// 切换到结果页面，显示空状态（不使用模拟数据）
+				this.mockSchools = [];
+				this.hasRealData = false;
+				this.currentStep = 3;
+				logger.log('[school] ✅ 超时：切换到结果页面 (Step 3)，显示空状态');
+				loadingTimeout = null;
+			}, 20000); // 20秒超时
 
 			try {
 				logger.log('[school] 🤖 调用后端代理进行择校匹配...');
 
 				// ✅ 使用后端代理调用（安全）- action: 'recommend'
 				const response = await lafService.proxyAI('recommend', {
-					school: this.formData.school,
-					targetMajor: this.formData.targetMajor,
-					masterType: this.formData.masterType === 'academic' ? '学术型硕士(学硕)' : '专业型硕士(专硕)',
-					degree: this.formData.degree === 'bk' ? '本科全日制' : '专科/同等学力',
-					englishCert: this.formData.englishCert
+					school: this.formData.school.trim(),
+					currentMajor: this.formData.currentMajor.trim(),
+					targetSchool: this.formData.targetSchool.trim(),
+					targetMajor: this.formData.targetMajor.trim(),
+					degree: this.formData.degree === 'bk' ? '本科' : '专科',
+					englishCert: this.formData.englishCert || '无'
 				});
 
 				logger.log('[school] 📥 后端代理请求完成，开始处理响应...');
@@ -595,11 +656,14 @@ export default {
 							schoolsList = parsedData;
 						} else if (parsedData.schools && Array.isArray(parsedData.schools)) {
 							schoolsList = parsedData.schools;
-						} else {
-							// 如果API返回格式不符合预期，使用默认模拟数据
-							logger.warn('[school] ⚠️ API返回格式不符合预期，使用默认模拟数据');
+						}
+						
+						// 如果API返回格式不符合预期，显示空状态
+						if (schoolsList.length === 0) {
+							logger.warn('[school] ⚠️ API返回格式不符合预期，显示空状态');
 							logger.log('[school] 📊 返回数据结构:', Object.keys(parsedData));
 							logger.log('[school] 📄 返回数据预览:', JSON.stringify(parsedData).substring(0, 200));
+							this.hasRealData = false;
 						}
 
 						// 规范化数据格式，确保每个专业都有完整的 scores 数组
@@ -638,33 +702,29 @@ export default {
 							});
 
 							this.mockSchools = schoolsList;
+							this.hasRealData = true;
 							logger.log(`[school] ✅ 更新院校列表: ${schoolsList.length} 所院校（已规范化数据格式）`);
+						} else {
+							// 无数据时显示空状态
+							this.mockSchools = [];
+							this.hasRealData = false;
+							logger.log('[school] ⚠️ AI 返回空数据，显示空状态');
 						}
 					} catch (parseError) {
 						logger.error('[school] ❌ JSON 解析失败:', parseError);
 						logger.log('[school] 📄 原始内容预览:', content.substring(0, 200));
 					}
 				} else {
-					// 修复验证：明确记录 statusCode 解析情况
-					const statusCode = res?.statusCode;
-					if (statusCode === undefined) {
-						logger.error('[school] ❌ API 响应异常: statusCode 为 undefined（修复前的问题）');
-						logger.log('[school] 📊 响应对象结构:', {
-							resType: typeof res,
-							resIsArray: Array.isArray(res),
-							resKeys: res ? Object.keys(res) : [],
-							resValue: res
-						});
-					} else if (statusCode !== 200) {
-						logger.warn(`[school] ⚠️ AI API 响应异常: statusCode = ${statusCode} (非 200)`);
-					} else {
-						logger.warn('[school] ⚠️ AI API 响应格式异常: statusCode = 200 但缺少内容');
-					}
+					// 修复验证：明确记录响应异常情况
+					logger.warn('[school] ⚠️ AI API 响应异常或无数据');
 					logger.log('[school] 📊 响应详情:', {
-						statusCode: statusCode,
-						hasData: !!res?.data,
-						dataKeys: res?.data ? Object.keys(res.data) : []
+						hasResponse: !!response,
+						code: response?.code,
+						hasData: !!response?.data
 					});
+					// 显示空状态
+					this.mockSchools = [];
+					this.hasRealData = false;
 				}
 
 				// 清除超时定时器（如果请求成功，取消30秒超时保护）
@@ -682,10 +742,14 @@ export default {
 
 				// 隐藏加载动画，切换到结果页面
 				uni.hideLoading();
-				this.currentStep = 2;
-				logger.log('[school] ✅ 切换到结果页面 (Step 2)');
+				this.currentStep = 3;
+				logger.log('[school] ✅ 切换到结果页面 (Step 3)');
 				logger.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
-				uni.showToast({ title: '匹配成功', icon: 'success' });
+				if (this.filteredSchools.length > 0) {
+					uni.showToast({ title: '匹配成功', icon: 'success' });
+				} else {
+					uni.showToast({ title: '暂无匹配结果', icon: 'none' });
+				}
 			} catch (error) {
 				// 清除超时定时器
 				if (loadingTimeout) {
@@ -740,12 +804,13 @@ export default {
 						duration: 3000
 					});
 
-					// 切换到结果页面，使用默认模拟数据
-					this.currentStep = 2;
-					logger.log('[school] ✅ 降级到默认数据，切换到结果页面 (Step 2)');
-					logger.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
+					// 切换到结果页面，显示空状态（不使用模拟数据）
+					this.mockSchools = [];
+					this.hasRealData = false;
+					this.currentStep = 3;
+					logger.log('[school] ✅ 错误处理：切换到结果页面 (Step 3)，显示空状态');
 				} else {
-					logger.log('[school] ℹ️ 30秒超时保护已处理，跳过重复的错误处理');
+					logger.log('[school] ℹ️ 超时保护已处理，跳过重复的错误处理');
 				}
 			} finally {
 				// ✅ 无论成功失败，都解锁提交按钮
@@ -999,6 +1064,19 @@ export default {
 	}
 }
 
+/* 必填标记 */
+.required {
+	color: var(--error);
+	margin-left: 4rpx;
+}
+
+/* 输入框字数提示 */
+.input-hint {
+	text-align: right;
+	color: var(--text-sub);
+	margin-top: 8rpx;
+}
+
 .input-group {
 	margin-bottom: 40rpx;
 
@@ -1050,6 +1128,32 @@ export default {
 	}
 }
 
+/* 按钮组 */
+.btn-group {
+	margin-top: 60rpx;
+	display: flex;
+	gap: 20rpx;
+}
+
+.secondary-btn {
+	flex: 1;
+	height: 110rpx;
+	background: var(--muted);
+	color: var(--text-main);
+	border-radius: 30rpx;
+	font-size: 32rpx;
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1rpx solid var(--border-color);
+	transition: all 0.3s ease;
+
+	&::after {
+		border: none;
+	}
+}
+
 .tab-group {
 	display: flex;
 	gap: 20rpx;
@@ -1078,6 +1182,7 @@ export default {
 
 .primary-btn {
 	margin-top: 60rpx;
+	flex: 2;
 	height: 110rpx;
 	background: var(--primary);
 	color: var(--primary-foreground);
@@ -1095,13 +1200,23 @@ export default {
 	position: relative;
 	z-index: 5;
 
-	&.pulse-btn {
+	&[disabled] {
+		opacity: 0.5;
+		box-shadow: none;
+	}
+
+	&.pulse-btn:not([disabled]) {
 		animation: pulse 2s infinite;
 	}
 
 	&::after {
 		border: none;
 	}
+}
+
+/* 按钮组内的 primary-btn 不需要额外 margin-top */
+.btn-group .primary-btn {
+	margin-top: 0;
 }
 
 .dark-mode .primary-btn {
@@ -1159,10 +1274,50 @@ export default {
 	padding: 0 10rpx;
 }
 
+.rh-left {
+	display: flex;
+	align-items: baseline;
+	gap: 16rpx;
+}
+
 .rh-title {
 	font-size: 32rpx;
 	font-weight: 700;
 	color: var(--text-main);
+}
+
+.rh-subtitle {
+	font-size: 24rpx;
+	color: var(--text-sub);
+}
+
+/* 信息提示横幅 */
+.info-banner {
+	display: flex;
+	align-items: center;
+	gap: 16rpx;
+	padding: 20rpx 24rpx;
+	margin-bottom: 24rpx;
+	background: rgba(46, 204, 113, 0.08);
+	border: 1rpx solid rgba(46, 204, 113, 0.2);
+}
+
+.info-banner .info-icon {
+	font-size: 28rpx;
+}
+
+.info-banner .info-text {
+	flex: 1;
+	color: var(--text-sub);
+	line-height: 1.5;
+}
+
+/* 返回修改按钮 */
+.back-edit-btn {
+	margin-top: 30rpx;
+	padding: 20rpx;
+	color: var(--text-sub);
+	text-align: center;
 }
 
 .rh-filter {

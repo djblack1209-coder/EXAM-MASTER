@@ -19,11 +19,36 @@ import cloud from '@lafjs/cloud'
 const db = cloud.database()
 const _ = db.command
 
+// ==================== 环境配置 ====================
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
+
+// ==================== 日志工具 ====================
+const logger = {
+  info: (...args: any[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
+  warn: (...args: any[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
+  error: (...args: any[]) => console.error(...args)
+}
+
+// ==================== 参数校验 ====================
+function sanitizeString(input: string, maxLength: number = 100): string {
+  if (typeof input !== 'string') return ''
+  return input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .substring(0, maxLength)
+    .trim()
+}
+
+function validateUserId(userId: any): boolean {
+  return typeof userId === 'string' && userId.length > 0 && userId.length <= 64
+}
+
 export default async function (ctx) {
   const startTime = Date.now()
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-  console.log(`[${requestId}] 社交服务请求开始`)
+  logger.info(`[${requestId}] 社交服务请求开始`)
 
   try {
     const { action, ...params } = ctx.body || {}
@@ -31,11 +56,11 @@ export default async function (ctx) {
     // 获取用户ID（从请求头或请求体）
     const userId = ctx.headers?.['x-user-id'] || params.userId
 
-    if (!action) {
-      return { code: 400, success: false, message: '参数错误: action 不能为空', requestId }
+    if (!action || typeof action !== 'string' || action.length > 50) {
+      return { code: 400, success: false, message: '参数错误: action 不合法', requestId }
     }
 
-    console.log(`[${requestId}] action: ${action}, userId: ${userId}`)
+    logger.info(`[${requestId}] action: ${action}, userId: ${userId}`)
 
     // 路由到对应处理函数
     const handlers = {
@@ -55,13 +80,13 @@ export default async function (ctx) {
     const result = await handler(userId, params, requestId)
 
     const duration = Date.now() - startTime
-    console.log(`[${requestId}] 操作完成，耗时: ${duration}ms`)
+    logger.info(`[${requestId}] 操作完成，耗时: ${duration}ms`)
 
     return { ...result, requestId, duration }
 
   } catch (error) {
     const duration = Date.now() - startTime
-    console.error(`[${requestId}] 社交服务异常:`, error)
+    logger.error(`[${requestId}] 社交服务异常:`, error)
 
     return {
       code: 500,
@@ -80,12 +105,17 @@ export default async function (ctx) {
 async function handleSearchUser(userId, params, requestId) {
   const { keyword } = params
 
-  if (!keyword || keyword.trim().length < 2) {
+  if (!keyword || typeof keyword !== 'string' || keyword.trim().length < 2) {
     return { code: 400, success: false, message: '搜索关键词至少2个字符' }
+  }
+  
+  // 清理搜索关键词
+  const searchKeyword = sanitizeString(keyword, 50).toLowerCase()
+  if (searchKeyword.length < 2) {
+    return { code: 400, success: false, message: '搜索关键词包含非法字符' }
   }
 
   const usersCollection = db.collection('users')
-  const searchKeyword = keyword.trim().toLowerCase()
 
   // 获取所有用户（限制数量），然后在内存中过滤
   // 这是为了兼容 Sealos，因为 _.regex 是 Laf 特有语法
@@ -109,7 +139,7 @@ async function handleSearchUser(userId, params, requestId) {
     return nickname.includes(searchKeyword)
   }).slice(0, 20)
 
-  console.log(`[${requestId}] 搜索用户: ${keyword}, 找到 ${matchedUsers.length} 个`)
+  logger.info(`[${requestId}] 搜索用户: ${keyword}, 找到 ${matchedUsers.length} 个`)
 
   return {
     code: 0,
@@ -125,12 +155,12 @@ async function handleSearchUser(userId, params, requestId) {
 async function handleSendRequest(userId, params, requestId) {
   const { targetUid, message } = params
 
-  if (!userId) {
+  if (!validateUserId(userId)) {
     return { code: 401, success: false, message: '用户未登录' }
   }
 
-  if (!targetUid) {
-    return { code: 400, success: false, message: '目标用户ID不能为空' }
+  if (!validateUserId(targetUid)) {
+    return { code: 400, success: false, message: '目标用户ID不合法' }
   }
 
   if (userId === targetUid) {
@@ -160,7 +190,7 @@ async function handleSendRequest(userId, params, requestId) {
     user_id: userId,
     friend_id: targetUid,
     status: 'pending',
-    request_message: message || '',
+    request_message: sanitizeString(message || '', 200),
     requester_id: userId,
     created_at: now,
     accepted_at: null
@@ -168,7 +198,7 @@ async function handleSendRequest(userId, params, requestId) {
 
   await friendsCollection.add(friendRequest)
 
-  console.log(`[${requestId}] 发送好友请求: ${userId} -> ${targetUid}`)
+  logger.info(`[${requestId}] 发送好友请求: ${userId} -> ${targetUid}`)
 
   return {
     code: 0,
@@ -183,11 +213,11 @@ async function handleSendRequest(userId, params, requestId) {
 async function handleHandleRequest(userId, params, requestId) {
   const { fromUid, requestAction } = params
 
-  if (!userId) {
+  if (!validateUserId(userId)) {
     return { code: 401, success: false, message: '用户未登录' }
   }
 
-  if (!fromUid || !requestAction) {
+  if (!validateUserId(fromUid) || !requestAction) {
     return { code: 400, success: false, message: '参数不完整' }
   }
 
@@ -227,7 +257,7 @@ async function handleHandleRequest(userId, params, requestId) {
       accepted_at: now
     })
 
-    console.log(`[${requestId}] 接受好友请求: ${fromUid} <-> ${userId}`)
+    logger.info(`[${requestId}] 接受好友请求: ${fromUid} <-> ${userId}`)
 
     return { code: 0, success: true, message: '已添加好友' }
   } else {
@@ -236,7 +266,7 @@ async function handleHandleRequest(userId, params, requestId) {
       status: 'rejected'
     })
 
-    console.log(`[${requestId}] 拒绝好友请求: ${fromUid} -> ${userId}`)
+    logger.info(`[${requestId}] 拒绝好友请求: ${fromUid} -> ${userId}`)
 
     return { code: 0, success: true, message: '已拒绝请求' }
   }
@@ -246,7 +276,7 @@ async function handleHandleRequest(userId, params, requestId) {
  * 获取好友列表
  */
 async function handleGetFriendList(userId, params, requestId) {
-  if (!userId) {
+  if (!validateUserId(userId)) {
     return { code: 401, success: false, message: '用户未登录', data: [] }
   }
 
@@ -299,7 +329,7 @@ async function handleGetFriendList(userId, params, requestId) {
     friendList.sort((a, b) => (b.added_at || 0) - (a.added_at || 0))
   }
 
-  console.log(`[${requestId}] 获取好友列表: ${friendList.length} 个`)
+  logger.info(`[${requestId}] 获取好友列表: ${friendList.length} 个`)
 
   return {
     code: 0,
@@ -313,7 +343,7 @@ async function handleGetFriendList(userId, params, requestId) {
  * 获取好友请求列表
  */
 async function handleGetFriendRequests(userId, params, requestId) {
-  if (!userId) {
+  if (!validateUserId(userId)) {
     return { code: 401, success: false, message: '用户未登录', data: [] }
   }
 
@@ -350,7 +380,7 @@ async function handleGetFriendRequests(userId, params, requestId) {
     }
   })
 
-  console.log(`[${requestId}] 获取好友请求: ${requestList.length} 个`)
+  logger.info(`[${requestId}] 获取好友请求: ${requestList.length} 个`)
 
   return {
     code: 0,
@@ -366,12 +396,12 @@ async function handleGetFriendRequests(userId, params, requestId) {
 async function handleRemoveFriend(userId, params, requestId) {
   const { friendUid } = params
 
-  if (!userId) {
+  if (!validateUserId(userId)) {
     return { code: 401, success: false, message: '用户未登录' }
   }
 
-  if (!friendUid) {
-    return { code: 400, success: false, message: '好友ID不能为空' }
+  if (!validateUserId(friendUid)) {
+    return { code: 400, success: false, message: '好友ID不合法' }
   }
 
   const friendsCollection = db.collection('friends')
@@ -382,7 +412,7 @@ async function handleRemoveFriend(userId, params, requestId) {
     { user_id: friendUid, friend_id: userId }
   ])).remove()
 
-  console.log(`[${requestId}] 删除好友: ${userId} <-> ${friendUid}`)
+  logger.info(`[${requestId}] 删除好友: ${userId} <-> ${friendUid}`)
 
   return {
     code: 0,

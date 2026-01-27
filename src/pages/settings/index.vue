@@ -91,10 +91,6 @@
         <h3 class="section-title ds-text-lg ds-font-semibold">AI 导师（在线）</h3>
         <div class="header-actions ds-flex ds-gap-xs">
           <span class="online-badge ds-text-xs ds-font-medium">支持语音对讲</span>
-          <view class="invite-btn-header ds-flex ds-gap-xs ds-touchable" @tap="showInviteModal = true">
-            <text class="invite-icon-header">👥</text>
-            <text class="invite-text-header ds-text-xs ds-font-medium">邀请</text>
-          </view>
         </div>
       </div>
       <div class="tutor-list">
@@ -125,7 +121,7 @@
         <div class="setting-item ds-flex ds-flex-between">
           <div class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium">深色模式</text>
-            <text class="setting-desc ds-text-xs">{{ isDark ? 'Bitget Wallet 风格' : 'Wise 风格' }}</text>
+            <text class="setting-desc ds-text-xs">护眼模式，夜间更舒适</text>
           </div>
           <switch :color="isDark ? 'var(--primary)' : 'var(--primary)'" :checked="isDark" @change="toggleDark" />
         </div>
