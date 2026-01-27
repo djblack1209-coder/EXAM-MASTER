@@ -1994,7 +1994,7 @@ export default {
 .loading-title {
   font-size: 22px;
   font-weight: 700;
-  color: var(--bg-card);
+  color: var(--text-main, var(--ds-color-text-primary));
   margin-bottom: 12px;
   letter-spacing: 0.5px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -2061,7 +2061,7 @@ export default {
 .pause-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--bg-card);
+  color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .pause-desc {

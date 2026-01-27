@@ -371,7 +371,7 @@ const copyInviteInfo = () => {
 /* White Ticket */
 .white-ticket {
   width: 260px;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 12px;
   padding: 10px 16px;
   margin-bottom: 30px;
@@ -398,7 +398,7 @@ const copyInviteInfo = () => {
 
 .ticket-label {
   font-size: 12px;
-  color: #666;
+  color: var(--text-sub);
   margin-top: 4px;
   -webkit-font-smoothing: antialiased;
 }
@@ -413,7 +413,7 @@ const copyInviteInfo = () => {
 .qr-circle {
   width: 100px;
   height: 100px;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -434,7 +434,7 @@ const copyInviteInfo = () => {
   right: 0;
   width: 24px;
   height: 24px;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -506,7 +506,7 @@ const copyInviteInfo = () => {
 
   /* 票券在深色模式下使用浅色 */
   .white-ticket {
-    background-color: #f5f5f5;
+    background-color: var(--bg-secondary);
   }
 
   .ticket-dashed-box {
@@ -519,7 +519,7 @@ const copyInviteInfo = () => {
 
   /* 二维码圆圈保持白色 */
   .qr-circle {
-    background-color: #f5f5f5;
+    background-color: var(--bg-secondary);
   }
 
   /* 底部按钮 */

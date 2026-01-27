@@ -697,6 +697,7 @@ export default {
 				selfPositionTracker.setScrollViewId('rank-scroll-view');
 			}).catch(err => {
 				logger.error('[Rank-WebSocket] WebSocket连接失败:', err);
+				uni.showToast({ title: '实时排行连接失败，数据可能有延迟', icon: 'none', duration: 2000 });
 			});
 			
 			// 监听排行榜实时更新
@@ -1305,7 +1306,7 @@ export default {
 	.analysis-tag {
 		display: inline-block;
 		background: var(--text-primary);
-		color: var(--bg-body);
+		color: #FFFFFF;
 		font-size: 18rpx;
 		padding: 4rpx 12rpx;
 		border-radius: 6rpx;

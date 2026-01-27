@@ -465,7 +465,7 @@ export default {
 <style lang="scss" scoped>
 .photo-search-container {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
 }
@@ -611,7 +611,7 @@ export default {
 .result-area {
   width: 100%;
   height: 100%;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .result-scroll {
@@ -631,34 +631,34 @@ export default {
     .section-title {
       font-size: 30rpx;
       font-weight: bold;
-      color: #333;
+      color: var(--text-main);
     }
     
     .confidence, .match-count {
       font-size: 24rpx;
-      color: #999;
+      color: var(--text-sub);
     }
   }
 }
 
 .recognized-text {
-  background: #f8f8f8;
+  background: var(--bg-secondary);
   padding: 20rpx;
   border-radius: 10rpx;
   font-size: 28rpx;
   line-height: 1.6;
-  color: #333;
+  color: var(--text-main);
 }
 
 .question-card {
-  background: #f8f8f8;
+  background: var(--bg-secondary);
   padding: 20rpx;
   border-radius: 10rpx;
   margin-bottom: 15rpx;
   
   .question-text {
     font-size: 28rpx;
-    color: #333;
+    color: var(--text-main);
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -672,8 +672,8 @@ export default {
     
     .category, .difficulty {
       font-size: 22rpx;
-      color: #999;
-      background: #eee;
+      color: var(--text-sub);
+      background: var(--bg-secondary);
       padding: 5rpx 15rpx;
       border-radius: 5rpx;
     }
@@ -681,7 +681,7 @@ export default {
 }
 
 .ai-analysis {
-  background: #f8f8f8;
+  background: var(--bg-secondary);
   padding: 20rpx;
   border-radius: 10rpx;
 }
@@ -723,7 +723,7 @@ export default {
   
   .step-text {
     font-size: 26rpx;
-    color: #333;
+    color: var(--text-main);
     line-height: 1.6;
     flex: 1;
   }
@@ -771,7 +771,7 @@ export default {
   
   text:last-child {
     font-size: 26rpx;
-    color: #666;
+    color: var(--text-sub);
     line-height: 1.6;
   }
 }
@@ -782,7 +782,7 @@ export default {
   align-items: center;
   gap: 30rpx;
   padding: 30rpx;
-  background: #fff;
+  background: var(--bg-card);
   box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
   
   button {
@@ -806,8 +806,8 @@ export default {
   }
   
   .btn-secondary {
-    background: #f5f5f5;
-    color: #333;
+    background: var(--bg-secondary);
+    color: var(--text-main);
     padding: 20rpx 40rpx;
     border-radius: 50rpx;
     

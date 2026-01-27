@@ -134,7 +134,7 @@ watch(isLogin, (value) => {
 }
 
 .invite-text {
-  color: var(--bg-card);
+  color: #FFFFFF;
 }
 
 .friends-list {

@@ -438,7 +438,7 @@ export default {
 
 .btn-secondary {
   .state-light & {
-    background: #ffffff;
+    background: var(--bg-card);
     border: 1px solid rgba(0, 0, 0, 0.1);
   }
   .state-dark & {
@@ -449,7 +449,7 @@ export default {
 
 .btn-tertiary {
   .state-light & {
-    background: #f8fafc;
+    background: var(--bg-secondary);
     border: 1px solid rgba(0, 0, 0, 0.05);
   }
   .state-dark & {

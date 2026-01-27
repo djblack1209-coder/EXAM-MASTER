@@ -62,7 +62,7 @@ const onBannerTap = () => {
   .banner-text {
     font-size: 20px;
     font-weight: 700;
-    color: var(--bg-card);
+    color: #FFFFFF;
     -webkit-font-smoothing: antialiased;
     position: relative;
     z-index: 1;
@@ -96,7 +96,7 @@ const onBannerTap = () => {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
 
   .banner-text {
-    color: var(--bg-card);
+    color: #FFFFFF;
   }
 
   .banner-arrow {

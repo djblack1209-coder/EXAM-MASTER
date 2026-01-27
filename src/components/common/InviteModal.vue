@@ -216,7 +216,7 @@ export default {
 .title {
   font-size: 20px;
   font-weight: 700;
-  color: #333;
+  color: var(--text-main);
   text-align: center;
   margin-bottom: 8px;
   -webkit-font-smoothing: antialiased;
@@ -275,7 +275,7 @@ export default {
 
 .link-box {
   flex: 1;
-  background-color: #F5F7FA;
+  background-color: var(--bg-secondary);
   border-radius: 20px 0 0 20px;
   display: flex;
   align-items: center;
@@ -384,7 +384,7 @@ export default {
 }
 
 .poster-btn .btn-text {
-  color: #333;
+  color: var(--text-main);
   font-weight: 600;
 }
 

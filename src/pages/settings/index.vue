@@ -2335,7 +2335,7 @@ const selectTheme = (type) => {
 }
 
 .dark-mode .entry-title {
-  color: var(--bg-card);
+  color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .dark-mode .entry-desc {
@@ -2463,7 +2463,7 @@ const selectTheme = (type) => {
 }
 
 .dark-mode .theme-name {
-  color: var(--bg-card);
+  color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .dark-mode .theme-desc {

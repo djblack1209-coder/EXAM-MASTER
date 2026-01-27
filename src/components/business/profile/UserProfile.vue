@@ -90,7 +90,7 @@ const handleCardClick = async () => {
 }
 
 .avatar-placeholder {
-  background: #E6E6E6;
+  background: var(--bg-secondary);
 }
 
 .info-section {

@@ -16,13 +16,9 @@
 					style="pointer-events: auto;"
 				>
 					<view class="header-left">
-						<!-- Wise/Bitget风格Logo -->
-						<view :class="['app-logo-new', isDark ? 'logo-bitget' : 'logo-wise']">
-							<view class="logo-icon">
-								<view class="logo-shape logo-shape-1"></view>
-								<view class="logo-shape logo-shape-2"></view>
-								<view class="logo-shape logo-shape-3"></view>
-							</view>
+						<!-- 品牌Logo -->
+						<view class="app-logo-wrapper">
+							<image class="app-logo-img" src="/static/images/logo.png" mode="aspectFit"></image>
 						</view>
 						<text class="app-title">Exam-Master</text>
 					</view>
@@ -1812,6 +1808,28 @@ export default {
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 品牌Logo样式 */
+.app-logo-wrapper {
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 16rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-logo-wrapper:active {
+	transform: scale(0.95);
+}
+
+.app-logo-img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
 .app-logo-new:active {
 	transform: scale(0.95);
 }
@@ -2008,7 +2026,7 @@ export default {
 
 /* 浅色模式下增强待复习文字对比度 */
 .banner-light .welcome-subtitle {
-	color: #4B5563;
+	color: var(--text-sub);
 }
 
 .highlight-text {
@@ -2558,7 +2576,7 @@ export default {
 
 /* 浅色模式下每日金句文字颜色 */
 .desc-light .mode-text {
-	color: #4B5563;
+	color: var(--text-sub);
 }
 
 .desc-light .mode-highlight {
@@ -2781,7 +2799,7 @@ export default {
 .poster-circle-1 {
 	width: 300rpx;
 	height: 300rpx;
-	background: white;
+	background: var(--bg-card);
 	top: -100rpx;
 	right: -100rpx;
 }
@@ -2789,7 +2807,7 @@ export default {
 .poster-circle-2 {
 	width: 200rpx;
 	height: 200rpx;
-	background: white;
+	background: var(--bg-card);
 	bottom: -50rpx;
 	left: -50rpx;
 }
@@ -2877,7 +2895,7 @@ export default {
 }
 
 .poster-btn-primary {
-	background: white;
+	background: var(--bg-card);
 	color: #667eea;
 }
 </style>

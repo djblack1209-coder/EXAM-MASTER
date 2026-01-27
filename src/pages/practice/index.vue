@@ -22,7 +22,7 @@
     </view>
 
     <!-- 状态卡片 -->
-    <view class="status-card" :class="{ 'empty-state': !hasBank }" v-if="!isPageLoading">>
+    <view class="status-card" :class="{ 'empty-state': !hasBank }" v-if="!isPageLoading">
       <!-- 有题库状态 -->
       <div v-if="hasBank" class="status-content">
         <div class="status-icon">
@@ -55,7 +55,7 @@
     </view>
 
     <!-- 题库生成进度条 -->
-    <view class="generation-progress-bar" v-if="isGeneratingQuestions && !isPageLoading">>
+    <view class="generation-progress-bar" v-if="isGeneratingQuestions && !isPageLoading">
       <view class="progress-info">
         <text class="progress-label">正在生成题库</text>
         <text class="progress-text">{{ generationProgress }}%</text>
@@ -71,7 +71,7 @@
     </view>
 
     <!-- 主要操作区 -->
-    <div class="main-actions" v-if="!isPageLoading">>
+    <div class="main-actions" v-if="!isPageLoading">
       <!-- 开始刷题按钮 -->
       <button v-if="hasBank" class="primary-btn" @tap="goPractice">
         <image class="btn-icon-img" src="/static/icons/practice/icon-book.png" mode="aspectFit"></image>
@@ -108,7 +108,7 @@
     </view>
 
     <!-- 功能菜单 -->
-    <div class="feature-menu" v-if="!isPageLoading">>
+    <div class="feature-menu" v-if="!isPageLoading">
       <!-- 文件管理 -->
       <div class="menu-item" @tap="goFileManager">
         <div class="menu-icon">
@@ -1605,7 +1605,8 @@ export default {
   width: 20px;
   height: 20px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
+  /* 按钮背景是主色（绿色），图标需要深色以保持对比度 */
+  filter: brightness(0) opacity(0.8);
 }
 
 .action-text {
@@ -2399,12 +2400,20 @@ export default {
   filter: brightness(0) invert(1) opacity(0.9) !important;
 }
 
-/* 深色模式下需要反色的图标：空状态云图标、上传图标、书本、对战 */
+/* 深色模式下需要反色的图标：空状态云图标、书本、对战 */
 .practice-container.dark-mode .empty-icon-img,
-.practice-container.dark-mode .action-icon,
-.practice-container.dark-mode .btn-icon-img,
-.practice-container.dark-mode .import-card .menu-icon-img {
+.practice-container.dark-mode .btn-icon-img {
   filter: brightness(0) invert(1) opacity(0.9) !important;
+}
+
+/* 深色模式下导入卡片图标 - 只反色不改变亮度 */
+.practice-container.dark-mode .import-card .menu-icon-img {
+  filter: invert(1) !important;
+}
+
+/* 深色模式下按钮上的图标保持深色（因为按钮背景是亮色） */
+.practice-container.dark-mode .action-icon {
+  filter: brightness(0) opacity(0.8) !important;
 }
 
 /* 深色模式下保持彩色的图标：文件管理、错题本、排行榜、学习进度、设置 */

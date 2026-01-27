@@ -121,7 +121,7 @@ const handleLongPress = (item) => {
 
 /* 浅色模式 */
 .item-light {
-  background: #FFFFFF;
+  background: var(--bg-card);
   border-color: rgba(255, 255, 255, 0.3);
 }
 

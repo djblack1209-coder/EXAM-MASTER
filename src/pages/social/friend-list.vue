@@ -22,7 +22,7 @@
 			<view class="search-input-wrapper">
 				<text class="search-icon">🔍</text>
 				<input class="search-input" type="text" placeholder="搜索用户昵称" v-model="searchKeyword"
-					@confirm="handleSearch" confirm-type="search" maxlength="30" />
+					@confirm="handleSearch" @input="debouncedSearch" confirm-type="search" maxlength="30" />
 				<text class="clear-icon" v-if="searchKeyword" @tap="clearSearch">✕</text>
 			</view>
 			<button class="search-btn" @tap="handleSearch" v-if="searchKeyword">
@@ -182,6 +182,8 @@ import { socialService } from '../../services/socialService.js'
 import { logger } from '../../utils/logger.js'
 // 统一默认头像
 import { DEFAULT_AVATAR } from '@/constants'
+// 防抖工具
+import { debounce } from '../../utils/throttle.js'
 
 export default {
 	data() {
@@ -201,7 +203,9 @@ export default {
 			// 防重复点击
 			isAddingFriend: {},  // { [userId]: boolean }
 			isAccepting: {},     // { [requestId]: boolean }
-			isRejecting: {}      // { [requestId]: boolean }
+			isRejecting: {},     // { [requestId]: boolean }
+			// 防抖搜索函数
+			debouncedSearch: null
 		}
 	},
 	computed: {
@@ -222,6 +226,10 @@ export default {
 				friend.nickname?.toLowerCase().includes(keyword)
 			)
 		}
+	},
+	created() {
+		// 初始化防抖搜索函数（300ms 延迟）
+		this.debouncedSearch = debounce(this.handleSearch, 300)
 	},
 	onLoad() {
 		logger.log('[FriendList] 页面加载')
@@ -725,7 +733,7 @@ export default {
 
 .back-icon {
 	font-size: 48rpx;
-	color: var(--bg-body);
+	color: var(--text-main, var(--ds-color-text-primary));
 	font-weight: 300;
 	line-height: 1;
 }
@@ -744,11 +752,11 @@ export default {
 .navbar-title {
 	font-size: 36rpx;
 	font-weight: 600;
-	color: var(--bg-body);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .dark-mode .navbar-title {
-	color: var(--bg-card);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .navbar-right {
@@ -794,12 +802,12 @@ export default {
 .search-input {
 	flex: 1;
 	font-size: 28rpx;
-	color: var(--bg-body);
+	color: var(--text-main, var(--ds-color-text-primary));
 	background-color: transparent;
 }
 
 .dark-mode .search-input {
-	color: var(--bg-card);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .search-input::placeholder {
@@ -814,7 +822,7 @@ export default {
 
 .search-btn {
 	background: var(--gradient-primary);
-	color: var(--bg-body);
+	color: #FFFFFF;
 	border-radius: 48rpx;
 	padding: 16rpx 32rpx;
 	font-size: 26rpx;
@@ -863,7 +871,7 @@ export default {
 }
 
 .tab-item.active .tab-text {
-	color: var(--bg-body);
+	color: var(--text-main, var(--ds-color-text-primary));
 	font-weight: 600;
 }
 
@@ -887,7 +895,7 @@ export default {
 	top: 20rpx;
 	right: 30%;
 	background-color: var(--danger);
-	color: var(--bg-card);
+	color: #FFFFFF;
 	font-size: 20rpx;
 	padding: 2rpx 8rpx;
 	border-radius: 20rpx;
@@ -954,12 +962,12 @@ export default {
 .empty-title {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: var(--bg-body);
+	color: var(--text-main, var(--ds-color-text-primary));
 	margin-bottom: 12rpx;
 }
 
 .dark-mode .empty-title {
-	color: var(--bg-card);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .empty-desc {
@@ -970,7 +978,7 @@ export default {
 
 .empty-btn {
 	background: var(--gradient-primary);
-	color: var(--bg-body);
+	color: #FFFFFF;
 	border-radius: 48rpx;
 	padding: 24rpx 64rpx;
 	font-size: 28rpx;
@@ -1056,11 +1064,11 @@ export default {
 .nickname {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: var(--bg-body);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .dark-mode .nickname {
-	color: var(--bg-card);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .level-badge {
@@ -1105,7 +1113,7 @@ export default {
 /* PK 挑战按钮 */
 .pk-btn {
 	background: var(--gradient-danger);
-	color: var(--bg-card);
+	color: #FFFFFF;
 	border-radius: 48rpx;
 	padding: 16rpx 24rpx;
 	font-size: 24rpx;
@@ -1137,7 +1145,7 @@ export default {
 .pk-text {
 	font-size: 24rpx;
 	font-weight: 600;
-	color: var(--bg-card);
+	color: #FFFFFF;
 }
 
 /* 底部统计 */
@@ -1197,11 +1205,11 @@ export default {
 .user-card .nickname {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: var(--bg-body);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .dark-mode .user-card .nickname {
-	color: var(--bg-card);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .user-card .score-text {
@@ -1211,7 +1219,7 @@ export default {
 
 .add-friend-btn {
 	background: var(--gradient-primary);
-	color: var(--bg-body);
+	color: #FFFFFF;
 	border-radius: 48rpx;
 	padding: 16rpx 32rpx;
 	font-size: 24rpx;
@@ -1271,11 +1279,11 @@ export default {
 .request-card .nickname {
 	font-size: 32rpx;
 	font-weight: 600;
-	color: var(--bg-body);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .dark-mode .request-card .nickname {
-	color: var(--bg-card);
+	color: var(--text-main, var(--ds-color-text-primary));
 }
 
 .request-card .message {
@@ -1298,7 +1306,7 @@ export default {
 
 .accept-btn {
 	background: var(--gradient-primary);
-	color: var(--bg-body);
+	color: #FFFFFF;
 	border-radius: 48rpx;
 	padding: 12rpx 28rpx;
 	font-size: 24rpx;

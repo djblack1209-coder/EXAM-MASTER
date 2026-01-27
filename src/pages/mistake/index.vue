@@ -1797,7 +1797,7 @@ export default {
 			.modal-title {
 				font-size: 36rpx;
 				font-weight: bold;
-				color: #333;
+				color: var(--text-main);
 			}
 
 			.modal-close {
@@ -1807,11 +1807,11 @@ export default {
 				align-items: center;
 				justify-content: center;
 				border-radius: 50%;
-				background: #F5F5F5;
+				background: var(--bg-secondary);
 				transition: all 0.2s;
 
 				&:active {
-					background: #E0E0E0;
+					background: var(--bg-secondary);
 					transform: scale(0.95);
 				}
 			}
@@ -1828,7 +1828,7 @@ export default {
 			flex: 1;
 			overflow-y: auto;
 			padding: 20rpx;
-			background: #FAFAFA;
+			background: var(--bg-secondary);
 		}
 
 		.report-image {
@@ -1854,8 +1854,8 @@ export default {
 				border: none;
 
 				&.secondary {
-					background: #F5F5F5;
-					color: #333;
+					background: var(--bg-secondary);
+					color: var(--text-main);
 				}
 
 				&.primary {

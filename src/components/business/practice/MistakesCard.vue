@@ -176,12 +176,12 @@ const handleReview = () => {
 }
 
 .btn-text {
-  color: var(--bg-card);
+  color: #FFFFFF;
 }
 
 .btn-arrow {
   font-size: 36rpx;
-  color: var(--bg-card);
+  color: #FFFFFF;
   font-weight: bold;
 }
 

@@ -233,7 +233,7 @@ const processFiles = (files, type) => {
 
 .arrow-icon {
   font-size: 50rpx;
-  color: var(--bg-card);
+  color: #FFFFFF;
   font-weight: bold;
   margin-top: 10rpx;
 }

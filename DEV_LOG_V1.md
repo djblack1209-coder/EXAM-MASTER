@@ -67,6 +67,9 @@
 | ~~P0~~ | ~~PK 对战事务一致性~~ | **已完成** | 2026-01-27 |
 | ~~P0~~ | ~~前端 Safe Area 排查~~ | **已完成** | 2026-01-27 |
 | ~~P0~~ | ~~JSON.parse 异常兜底~~ | **已完成** | 2026-01-27 |
+| ~~P0~~ | ~~前端代码审查 (异常状态/空状态/防抖/深色模式)~~ | **已完成** | 2026-01-27 |
+| ~~P0~~ | ~~刷题页面 UI 修复 (&gt; 字符/图标颜色)~~ | **已完成** | 2026-01-27 |
+| ~~P0~~ | ~~静态资源修复与品牌 Logo 配置~~ | **已完成** | 2026-01-27 |
 | P0 | 审核模式穿透测试 | 待执行 | 2026-01-27 |
 | P0 | AI 幻觉测试 (错误 JSON 处理) | 待执行 | 2026-01-27 |
 | P1 | 上传微信小程序后台 | 待执行 | - |
@@ -2053,6 +2056,427 @@ kubectl delete pod <pod-name> -n exam-master --force --grace-period=0
 
 # 连接 MongoDB
 kubectl exec -it mongodb-0 -n exam-master -- mongosh
+```
+
+---
+
+### 2026-01-27 - 前端代码审查与优化 (Frontend Team)
+
+**断点编号**: CP-20260127-020
+**工作者**: Frontend Team
+**任务描述**: 执行前端代码审查 - 异常状态美化、空状态检查、防抖节流、深色模式排查
+**完成状态**: 已完成
+
+---
+
+#### 1. 异常状态美化 (Graceful Degradation)
+
+**修复内容**: 为 API 调用的 catch 块添加用户友好的 Toast 提示
+
+| 文件 | 行号 | 修复内容 |
+|------|------|----------|
+| `src/pages/practice/pk-battle.vue` | 872 | 上传分数失败增加 Toast: "排行榜同步失败，请稍后重试" |
+| `src/pages/practice/rank.vue` | 698 | WebSocket 连接失败增加 Toast: "实时排行连接失败，数据可能有延迟" |
+
+**已有良好实现**:
+- `src/services/http.js` - HTTP 层有统一的错误处理和 Toast 提示
+- `src/services/errorHandler.js` - 全局错误处理服务，显示用户友好的错误消息
+- `src/pages/settings/index.vue:832-836` - AI 请求失败有友好提示
+
+---
+
+#### 2. 空状态检查 (Empty State)
+
+**检查结果**: ✅ 良好
+
+| 页面 | 空状态实现 |
+|------|-----------|
+| 首页 | `empty-state-home.vue` 组件，有 Lottie 动画和引导按钮 |
+| 错题本 | 有 emoji 图标 🎉 + 引导文案 + "去刷题"按钮 |
+| 好友列表 | 有 emoji 图标 👥 + 引导文案 |
+| 好友请求 | 有 emoji 图标 📬 + 引导文案 |
+| 排行榜 | 有空状态处理 |
+| 文件管理 | 有空状态处理 |
+| 学习计划 | 有空状态处理 |
+
+---
+
+#### 3. 防抖与节流 (Debounce & Throttle)
+
+**修复内容**: 为搜索输入框添加防抖处理
+
+| 文件 | 修复内容 |
+|------|----------|
+| `src/pages/social/friend-list.vue` | 搜索输入框增加 300ms 防抖处理 |
+
+**修复代码**:
+```javascript
+// 导入防抖工具
+import { debounce } from '../../utils/throttle.js'
+
+// 初始化防抖搜索函数
+created() {
+  this.debouncedSearch = debounce(this.handleSearch, 300)
+}
+
+// 模板中使用
+<input @input="debouncedSearch" />
+```
+
+**已有良好实现**:
+- `src/utils/throttle.js` - 完整的防抖/节流工具函数
+- `src/composables/useQuizAutoSave.js` - 答题自动保存有 500ms 防抖
+
+---
+
+#### 4. 深色模式修复 (Dark Mode)
+
+**问题描述**: 多处使用 `color: var(--bg-body)` 或 `color: var(--bg-card)` 作为文字颜色，导致深色模式下文字不可见
+
+**修复原则**:
+```scss
+// 错误 ❌ - 使用背景色变量作为文字颜色
+color: var(--bg-body);
+color: var(--bg-card);
+
+// 正确 ✅ - 使用文字颜色变量
+color: var(--text-main, var(--ds-color-text-primary));  // 普通文字
+color: #FFFFFF;  // 按钮上的白色文字
+color: #1A1A1A;  // 亮色背景上的深色文字
+```
+
+**修复清单** (共 30+ 处):
+
+| 文件 | 修复数量 |
+|------|----------|
+| `src/pages/social/friend-list.vue` | 15+ 处 |
+| `src/pages/practice/pk-battle.vue` | 3 处 |
+| `src/pages/practice/rank.vue` | 1 处 |
+| `src/pages/practice/import-data.vue` | 2 处 |
+| `src/pages/settings/index.vue` | 2 处 |
+| `src/components/business/school/ConfirmForm.vue` | 1 处 |
+| `src/components/business/school/StepProgress.vue` | 1 处 |
+| `src/components/business/school/RegionForm.vue` | 1 处 |
+| `src/components/business/school/AbilityForm.vue` | 1 处 |
+| `src/components/business/school/EducationForm.vue` | 1 处 |
+| `src/components/business/practice/UploadCard.vue` | 1 处 |
+| `src/components/business/practice/MistakesCard.vue` | 2 处 |
+| `src/components/business/practice/AiEntry.vue` | 1 处 |
+| `src/components/business/profile/FriendsList.vue` | 1 处 |
+| `src/components/common/PracticeBanner.vue` | 2 处 |
+| `src/components/common/CountdownCard.vue` | 3 处 |
+| `src/components/base/base-empty/base-empty.vue` | 1 处 |
+
+---
+
+#### 5. 新增错误边界组件
+
+**文件**: `src/components/base/ErrorBoundary.vue`
+
+**功能**:
+- Vue 3 错误捕获钩子 `errorCaptured`
+- 友好的错误展示 UI
+- 支持深色模式
+- 重试功能
+- 可自定义图标、标题、消息
+
+**使用方式**:
+```vue
+<template>
+  <ErrorBoundary @error="handleError" @retry="handleRetry">
+    <YourComponent />
+  </ErrorBoundary>
+</template>
+```
+
+---
+
+#### 6. 文件变更清单
+
+| 文件 | 操作 | 说明 |
+|------|------|------|
+| `src/pages/practice/pk-battle.vue` | **修改** | 添加 Toast 提示 + 深色模式修复 |
+| `src/pages/practice/rank.vue` | **修改** | 添加 Toast 提示 + 深色模式修复 |
+| `src/pages/practice/import-data.vue` | **修改** | 深色模式修复 |
+| `src/pages/settings/index.vue` | **修改** | 深色模式修复 |
+| `src/pages/social/friend-list.vue` | **修改** | 防抖处理 + 深色模式修复 (15+ 处) |
+| `src/components/business/school/*.vue` | **修改** | 深色模式修复 (4 个文件) |
+| `src/components/business/practice/*.vue` | **修改** | 深色模式修复 (3 个文件) |
+| `src/components/business/profile/FriendsList.vue` | **修改** | 深色模式修复 |
+| `src/components/common/PracticeBanner.vue` | **修改** | 深色模式修复 |
+| `src/components/common/CountdownCard.vue` | **修改** | 深色模式修复 |
+| `src/components/base/base-empty/base-empty.vue` | **修改** | 深色模式修复 |
+| `src/components/base/ErrorBoundary.vue` | **新增** | Vue 3 错误边界组件 |
+
+---
+
+### 2026-01-27 - 刷题页面 UI 修复
+
+**断点编号**: CP-20260127-021
+**工作者**: Frontend Team
+**任务描述**: 修复刷题页面的 `&gt;` 字符显示问题和图标颜色异常
+**完成状态**: 已完成
+
+---
+
+#### 1. 问题描述
+
+从截图中发现两个问题：
+1. 页面显示 `&gt;` 字符（HTML 实体未正确渲染）
+2. "点击导入资料"按钮和"导入学习资料"卡片的图标显示为白色方块
+
+---
+
+#### 2. 问题分析
+
+**问题 1: `&gt;` 字符**
+
+根本原因：HTML 标签后有多余的 `>` 字符
+
+```html
+<!-- 错误 -->
+<view v-if="!isPageLoading">>
+
+<!-- 正确 -->
+<view v-if="!isPageLoading">
+```
+
+**问题 2: 图标颜色异常**
+
+根本原因：`.action-icon` 默认使用了 `filter: brightness(0) invert(1)`，导致图标在亮色按钮背景上变成白色
+
+---
+
+#### 3. 修复内容
+
+**3.1 移除多余的 `>` 字符**
+
+| 行号 | 修复前 | 修复后 |
+|------|--------|--------|
+| 25 | `v-if="!isPageLoading">>` | `v-if="!isPageLoading">` |
+| 58 | `v-if="isGeneratingQuestions && !isPageLoading">>` | `v-if="isGeneratingQuestions && !isPageLoading">` |
+| 74 | `v-if="!isPageLoading">>` | `v-if="!isPageLoading">` |
+| 111 | `v-if="!isPageLoading">>` | `v-if="!isPageLoading">` |
+
+**3.2 修复图标颜色**
+
+```scss
+// 修复前
+.action-icon {
+  filter: brightness(0) invert(1);  // 错误：让图标变白
+}
+
+// 修复后
+.action-icon {
+  filter: brightness(0) opacity(0.8);  // 正确：让图标变深色
+}
+
+// 深色模式下按钮上的图标保持深色（因为按钮背景是亮色）
+.practice-container.dark-mode .action-icon {
+  filter: brightness(0) opacity(0.8) !important;
+}
+```
+
+---
+
+#### 4. 文件变更清单
+
+| 文件 | 操作 | 说明 |
+|------|------|------|
+| `src/pages/practice/index.vue` | **修改** | 移除 4 处多余的 `>` 字符，修复图标颜色 |
+
+---
+
+### 2026-01-27 - 静态资源修复与品牌 Logo 配置
+
+**断点编号**: CP-20260127-022
+**工作者**: Frontend Team
+**任务描述**: 修复静态资源加载问题，配置品牌 Logo
+**完成状态**: 已完成
+
+---
+
+#### 1. 静态资源加载问题修复
+
+**问题描述**: 刷题页面图标显示为白色方块
+
+**根本原因**: 图标文件位于根目录 `static/icons/practice/`，但 uni-app 只会复制 `src/static/` 目录下的文件到构建输出。
+
+**修复方案**: 将图标文件复制到 `src/static/icons/practice/` 目录
+
+```bash
+mkdir -p src/static/icons/practice
+cp static/icons/practice/*.png src/static/icons/practice/
+```
+
+**复制的文件**:
+- `icon-battle.png` (32KB)
+- `icon-book.png` (25KB)
+- `icon-check.png` (20KB)
+- `icon-cloud.png` (13KB)
+- `icon-error.png` (25KB)
+- `icon-folder.png` (8KB)
+- `icon-library.png` (25KB)
+- `icon-lightning.png` (10KB)
+- `icon-ranking.png` (12KB)
+- `icon-robot.png` (7KB)
+- `icon-settings.png` (10KB)
+- `icon-trophy.png` (23KB)
+- `icon-upload.png` (13KB)
+
+---
+
+#### 2. 深色模式图标滤镜优化
+
+**修复内容**: 优化深色模式下导入卡片图标的滤镜效果
+
+```scss
+/* 修复前 - 会导致白色方块 */
+.practice-container.dark-mode .import-card .menu-icon-img {
+  filter: brightness(0) invert(1) opacity(0.9) !important;
+}
+
+/* 修复后 - 只反色不改变亮度 */
+.practice-container.dark-mode .import-card .menu-icon-img {
+  filter: invert(1) !important;
+}
+```
+
+---
+
+#### 3. 品牌 Logo 配置
+
+**Logo 文件**: 用户提供的 `logo.png` (132x132, RGBA, 13KB)
+
+**配置步骤**:
+
+1. 创建图片目录并复制 Logo
+```bash
+mkdir -p src/static/images
+cp logo.png src/static/images/logo.png
+cp logo.png src/static/images/default-avatar.png
+```
+
+2. 更新首页 Logo 显示
+
+**修改文件**: `src/pages/index/index.vue`
+
+```html
+<!-- 修改前：CSS 形状 Logo -->
+<view :class="['app-logo-new', isDark ? 'logo-bitget' : 'logo-wise']">
+  <view class="logo-icon">
+    <view class="logo-shape logo-shape-1"></view>
+    <view class="logo-shape logo-shape-2"></view>
+    <view class="logo-shape logo-shape-3"></view>
+  </view>
+</view>
+
+<!-- 修改后：图片 Logo -->
+<view class="app-logo-wrapper">
+  <image class="app-logo-img" src="/static/images/logo.png" mode="aspectFit"></image>
+</view>
+```
+
+3. 更新启动页 Logo
+
+**修改文件**: `src/pages/splash/index.vue`
+
+```html
+<!-- 修改前：Base64 SVG -->
+<image class="logo-icon" src="data:image/svg+xml;base64,..." mode="aspectFit"></image>
+
+<!-- 修改后：图片文件 -->
+<image class="logo-icon" src="/static/images/logo.png" mode="aspectFit"></image>
+```
+
+---
+
+#### 4. Logo 样式配置
+
+**新增样式** (`src/pages/index/index.vue`):
+
+```scss
+/* 品牌Logo样式 */
+.app-logo-wrapper {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-logo-wrapper:active {
+  transform: scale(0.95);
+}
+
+.app-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+```
+
+---
+
+#### 5. 文件变更清单
+
+| 文件 | 操作 | 说明 |
+|------|------|------|
+| `src/static/icons/practice/*.png` | **新增** | 复制 13 个图标文件 |
+| `src/static/images/logo.png` | **新增** | 品牌 Logo |
+| `src/static/images/default-avatar.png` | **新增** | 默认头像 |
+| `src/pages/index/index.vue` | **修改** | Logo 从 CSS 形状改为图片 |
+| `src/pages/splash/index.vue` | **修改** | Logo 从 Base64 SVG 改为图片 |
+| `src/pages/practice/index.vue` | **修改** | 优化深色模式图标滤镜 |
+
+---
+
+#### 6. Logo 引用位置汇总
+
+| 位置 | 文件 | 路径 |
+|------|------|------|
+| 首页 | `src/pages/index/index.vue:21` | `/static/images/logo.png` |
+| 启动页 | `src/pages/splash/index.vue:7` | `/static/images/logo.png` |
+| PK 分享卡片 | `src/components/business/pk-share-card.vue:181` | `/static/images/logo.png` |
+| 默认头像 | `src/constants/index.js:2` | `/static/images/default-avatar.png` |
+
+---
+
+#### 7. 静态资源目录结构
+
+```
+src/static/
+├── .gitkeep
+├── icons/
+│   └── practice/
+│       ├── icon-battle.png
+│       ├── icon-book.png
+│       ├── icon-check.png
+│       ├── icon-cloud.png
+│       ├── icon-error.png
+│       ├── icon-folder.png
+│       ├── icon-library.png
+│       ├── icon-lightning.png
+│       ├── icon-ranking.png
+│       ├── icon-robot.png
+│       ├── icon-settings.png
+│       ├── icon-trophy.png
+│       └── icon-upload.png
+├── images/
+│   ├── logo.png
+│   └── default-avatar.png
+└── tabbar/
+    ├── home.png
+    ├── home-active.png
+    ├── practice.png
+    ├── practice-active.png
+    ├── school.png
+    ├── school-active.png
+    ├── profile.png
+    └── profile-active.png
 ```
 
 ---

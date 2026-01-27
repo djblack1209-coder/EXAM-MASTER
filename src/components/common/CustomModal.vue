@@ -320,7 +320,7 @@ export default {
 }
 
 .cancel-btn {
-  background: #f5f5f5;
+  background: var(--bg-secondary);
   color: var(--ds-color-text-secondary);
   
   .dark & {

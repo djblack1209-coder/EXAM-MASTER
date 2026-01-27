@@ -282,7 +282,7 @@ const handleNext = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--bg-card);
+  color: #FFFFFF;
   border: none;
   transition: all 150ms ease-out;
 

@@ -96,7 +96,7 @@ defineProps({
   }
 
   &__dot-check {
-    color: var(--bg-card);
+    color: #FFFFFF;
     font-size: 24rpx;
   }
 

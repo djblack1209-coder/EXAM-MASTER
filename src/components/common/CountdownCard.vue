@@ -108,7 +108,7 @@ const onCardTap = () => {
     .number {
       font-size: 64px;
       font-weight: 700;
-      color: var(--bg-card);
+      color: #FFFFFF;
       line-height: 1;
       -webkit-font-smoothing: antialiased;
       letter-spacing: -2px;
@@ -121,7 +121,7 @@ const onCardTap = () => {
     .unit {
       font-size: 24px;
       font-weight: 600;
-      color: var(--bg-card);
+      color: #FFFFFF;
       margin-left: 4px;
       -webkit-font-smoothing: antialiased;
       flex-shrink: 0;
@@ -153,7 +153,7 @@ const onCardTap = () => {
 
   .countdown-number {
     .number {
-      color: var(--bg-card);
+      color: #FFFFFF;
     }
 
     .unit {

@@ -243,7 +243,7 @@ const handleSubmit = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--bg-card);
+  color: #FFFFFF;
   border: none;
   box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
   transition: all 150ms ease-out;

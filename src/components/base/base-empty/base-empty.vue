@@ -108,7 +108,7 @@ export default {
   /* Legacy: padding: 20rpx 60rpx; */
   background: var(--ds-color-accent-green) !important;
   /* Legacy: background: var(--brand-color, var(--brand-color)); */
-  color: var(--bg-body) !important;
+  color: #1A1A1A !important;
   border-radius: var(--ds-radius-full) !important;
   /* Legacy: border-radius: 50rpx; */
   font-size: var(--ds-font-size-base) !important;

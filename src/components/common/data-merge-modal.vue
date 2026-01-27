@@ -394,7 +394,7 @@ export default {
   width: 90%;
   max-width: 680rpx;
   max-height: 85vh;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 24rpx;
   overflow: hidden;
   display: flex;
@@ -428,7 +428,7 @@ export default {
 
 .conflict-info {
   padding: 24rpx 32rpx;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   border-bottom: 1px solid #eee;
   
   .conflict-type {
@@ -467,7 +467,7 @@ export default {
       .time-value {
         display: block;
         font-size: 24rpx;
-        color: #333;
+        color: var(--text-main);
         font-weight: 500;
       }
     }
@@ -491,7 +491,7 @@ export default {
     padding: 20rpx 32rpx 12rpx;
     font-size: 28rpx;
     font-weight: 500;
-    color: #333;
+    color: var(--text-main);
   }
   
   .fields-list {
@@ -506,7 +506,7 @@ export default {
   
   .field-name {
     font-size: 26rpx;
-    color: #333;
+    color: var(--text-main);
     font-weight: 500;
     margin-bottom: 12rpx;
   }
@@ -522,17 +522,17 @@ export default {
   padding: 16rpx;
   border-radius: 12rpx;
   border: 2px solid #e0e0e0;
-  background: #fafafa;
+  background: var(--bg-secondary);
   transition: all 0.2s;
   
   &--local {
     border-color: #e3f2fd;
-    background: #f5f9ff;
+    background: var(--bg-secondary);
   }
   
   &--cloud {
     border-color: #e8f5e9;
-    background: #f5fff7;
+    background: var(--bg-secondary);
   }
   
   &--active {
@@ -571,7 +571,7 @@ export default {
   
   .value-content {
     font-size: 24rpx;
-    color: #333;
+    color: var(--text-main);
     word-break: break-all;
     max-height: 120rpx;
     overflow: hidden;
@@ -592,7 +592,7 @@ export default {
     align-items: center;
     padding: 16rpx 8rpx;
     border-radius: 12rpx;
-    background: #f5f5f5;
+    background: var(--bg-secondary);
     transition: all 0.2s;
     
     &--active {
@@ -630,7 +630,7 @@ export default {
     border: none;
     
     &--cancel {
-      background: #f5f5f5;
+      background: var(--bg-secondary);
       color: var(--ds-color-text-secondary);
     }
     

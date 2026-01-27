@@ -871,6 +871,7 @@ export default {
 			// uploadScoreToRank 内部已有锁机制，防止重复上传
 			this.uploadScoreToRank().catch(err => {
 				logger.error('[TEST-10.3] ❌ 上传分数失败（静默）:', err);
+				uni.showToast({ title: '排行榜同步失败，请稍后重试', icon: 'none' });
 			});
 			
 			// 验证结算页状态
@@ -1205,6 +1206,7 @@ export default {
 			logger.log('[TEST-10.3] 📤 分享时尝试上传分数（如果尚未上传）');
 			this.uploadScoreToRank().catch(err => {
 				logger.error('[TEST-10.3] ❌ 分享时上传分数失败:', err);
+				// 静默失败，不打断分享流程
 			});
 
 				// B. 开始 Canvas 绘图 - 全新设计理念
@@ -2298,7 +2300,7 @@ export default {
 }
 
 .ai-text {
-	color: var(--bg-card);
+	color: #FFFFFF;
 	font-size: 28rpx;
 	line-height: 1.8;
 	text-align: left;
@@ -2367,7 +2369,7 @@ export default {
 	flex: 1; 
 	min-width: calc(50% - 10rpx);
 	background: linear-gradient(135deg, var(--brand-color), #7ED321); 
-	color: var(--bg-body); 
+	color: #1A1A1A; 
 	border-radius: 16rpx; 
 	font-size: 28rpx;
 	border: none;
@@ -2387,7 +2389,7 @@ export default {
 	flex: 1;
 	min-width: calc(50% - 10rpx);
 	background: linear-gradient(135deg, #FFD700, #FFA500);
-	color: var(--bg-body);
+	color: #1A1A1A;
 	border-radius: 16rpx;
 	font-size: 28rpx;
 	border: none;

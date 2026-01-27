@@ -453,7 +453,7 @@ export default {
   align-items: center;
   justify-content: space-around;
   padding: 20px;
-  background: #fff;
+  background: var(--bg-card);
 }
 
 .player-card {
@@ -468,7 +468,7 @@ export default {
     border: 3px solid #667eea;
     
     &.placeholder {
-      background: #f0f0f0;
+      background: var(--bg-secondary);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -484,7 +484,7 @@ export default {
   .player-name {
     margin-top: 8px;
     font-size: 14px;
-    color: #333;
+    color: var(--text-main);
     font-weight: 500;
   }
   
@@ -532,7 +532,7 @@ export default {
   display: flex;
   justify-content: space-around;
   padding: 15px 20px;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   
   .detail-item {
     display: flex;
@@ -553,7 +553,7 @@ export default {
 
 .invite-code-section {
   padding: 15px 20px;
-  background: #fff;
+  background: var(--bg-card);
   text-align: center;
   border-top: 1px dashed #eee;
   
@@ -573,7 +573,7 @@ export default {
 
 .qrcode-section {
   padding: 20px;
-  background: #fff;
+  background: var(--bg-card);
   text-align: center;
   
   .qrcode-canvas {
@@ -636,7 +636,7 @@ export default {
     
     .btn-text {
       font-size: 12px;
-      color: #333;
+      color: var(--text-main);
     }
     
     &:active {

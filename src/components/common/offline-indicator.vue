@@ -382,7 +382,7 @@ export default {
     background: rgba(255, 193, 7, 0.9);
     
     .offline-indicator__text {
-      color: #333;
+      color: var(--text-main);
     }
   }
   
@@ -417,8 +417,8 @@ export default {
   }
   
   &__badge {
-    background: #fff;
-    color: #333;
+    background: var(--bg-card);
+    color: var(--text-main);
     font-size: 20rpx;
     padding: 4rpx 12rpx;
     border-radius: 20rpx;
@@ -463,8 +463,8 @@ export default {
       border: none;
       
       &--sync {
-        background: #fff;
-        color: #333;
+        background: var(--bg-card);
+        color: var(--text-main);
         
         &:disabled {
           opacity: 0.6;

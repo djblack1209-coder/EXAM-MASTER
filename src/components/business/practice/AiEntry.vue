@@ -172,7 +172,7 @@ const handleUnlock = () => {
     transform: scale(0.98);
 
     .btn-text {
-      color: var(--bg-card);
+      color: #FFFFFF;
     }
   }
 }
