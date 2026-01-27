@@ -25,9 +25,9 @@
     "@dcloudio/uni-ui": "^1.5.11",
     "@qiun/ucharts": "^2.5.0-20230101",
     "lottie-miniprogram": "^1.0.12",
-    "pinia": "^2.1.7",
+    "pinia": "2.1.7",
     "semver": "^7.7.3",
-    "vue": "^3.4.21",
+    "vue": "3.4.21",
     "webpack": "^5.74.0"
   },
   "devDependencies": {
