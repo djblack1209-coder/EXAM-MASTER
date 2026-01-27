@@ -27,6 +27,7 @@
 import cloud from '@lafjs/cloud'
 
 // 环境变量配置
+// 安全提示：敏感信息必须通过环境变量配置，禁止硬编码
 const AI_PROVIDER_KEY_PLACEHOLDER
 const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
 

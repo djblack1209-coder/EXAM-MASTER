@@ -15,6 +15,7 @@
 import cloud from '@lafjs/cloud'
 
 // 配置
+// 安全提示：敏感信息必须通过环境变量配置，禁止硬编码
 const CONFIG = {
   zhipu: {
     apiKey: process.env.AI_PROVIDER_KEY_PLACEHOLDER
