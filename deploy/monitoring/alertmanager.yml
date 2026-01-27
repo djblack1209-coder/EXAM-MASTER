@@ -1,15 +1,20 @@
 # ============================================
-# Alertmanager 配置
+# Alertmanager 配置模板
+# 
+# 使用说明：
+# 1. 复制此文件并重命名（去掉 .template 后缀）
+# 2. 替换所有 ${VARIABLE} 占位符为实际值
+# 3. 或在部署时使用 envsubst 自动替换
 # ============================================
 global:
   # 解析超时
   resolve_timeout: 5m
   
-  # SMTP 配置（邮件告警）
-  smtp_smarthost: 'smtp.example.com:587'
-  smtp_from: 'alertmanager@exam-master.com'
-  smtp_auth_username: 'alertmanager@exam-master.com'
-  smtp_auth_password: 'your-smtp-password'
+  # SMTP 配置（邮件告警）- 从环境变量注入
+  smtp_smarthost: '${SMTP_HOST}:${SMTP_PORT}'
+  smtp_from: '${SMTP_FROM}'
+  smtp_auth_username: '${SMTP_USER}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
   smtp_require_tls: true
 
 # 告警模板
@@ -62,11 +67,11 @@ receivers:
 
   # P0 紧急告警接收者
   - name: 'critical-receiver'
-    # 企业微信 + 钉钉机器人
+    # 企业微信 + 钉钉机器人 - 从环境变量注入
     webhook_configs:
-      - url: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_WECHAT_KEY'
+      - url: '${WECHAT_WEBHOOK_URL}'
         send_resolved: true
-      - url: 'https://oapi.dingtalk.com/robot/send?access_token=YOUR_DINGTALK_TOKEN'
+      - url: '${DINGTALK_WEBHOOK_URL}'
         send_resolved: true
     # 邮件
     email_configs:
@@ -82,7 +87,7 @@ receivers:
   # P1 警告告警接收者
   - name: 'warning-receiver'
     webhook_configs:
-      - url: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_WECHAT_KEY'
+      - url: '${WECHAT_WEBHOOK_URL}'
         send_resolved: true
     email_configs:
       - to: 'devops@exam-master.com'

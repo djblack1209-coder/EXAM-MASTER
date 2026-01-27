@@ -191,7 +191,8 @@ function encodeParams(params) {
  * 生成签名
  */
 function generateSignature(params) {
-  const secret = 'exam_master_pk_2024'
+  // 签名密钥从环境变量获取，默认使用动态生成的密钥
+  const secret = import.meta.env.VITE_INVITE_SECRET || `exam_pk_${Date.now().toString(36).slice(-4)}`
   const sortedKeys = Object.keys(params).sort()
   const str = sortedKeys.map(k => `${k}=${params[k]}`).join('&')
   return hashString(str + secret).toString(16).substring(0, 8)
