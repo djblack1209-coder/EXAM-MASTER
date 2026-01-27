@@ -1,0 +1,7 @@
+# Trivy 安全扫描忽略配置
+# 
+# 此文件用于排除已知的误报或已接受的风险
+
+# 忽略模板文件中的占位符（非真实密钥）
+# secrets.yaml.template 使用 ${VARIABLE} 占位符，在 CI/CD 中动态替换
+deploy/k8s/secrets.yaml.template

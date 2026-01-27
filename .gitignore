@@ -52,4 +52,5 @@ laf-backend/.env*
 logs/
 
 # Kubernetes secrets (use sealed-secrets in production)
-# deploy/k8s/secrets.yaml - keep template but remove real values
+# 只保留模板文件，排除实际的 secrets.yaml
+deploy/k8s/secrets.yaml
