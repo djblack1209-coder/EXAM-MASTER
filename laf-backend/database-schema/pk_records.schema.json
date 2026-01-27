@@ -1,0 +1,58 @@
+{
+  "name": "pk_records",
+  "description": "PK 对战记录集合",
+  "fields": {
+    "battle_id": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "description": "对战唯一ID"
+    },
+    "player1": {
+      "type": "object",
+      "required": true,
+      "description": "玩家1信息",
+      "properties": {
+        "uid": { "type": "string", "required": true },
+        "score": { "type": "number", "required": true },
+        "correct_count": { "type": "number", "default": 0 },
+        "total_time": { "type": "number", "default": 0 },
+        "elo_change": { "type": "number", "default": 0 }
+      }
+    },
+    "player2": {
+      "type": "object",
+      "required": true,
+      "description": "玩家2信息",
+      "properties": {
+        "uid": { "type": "string", "required": true },
+        "score": { "type": "number", "required": true },
+        "correct_count": { "type": "number", "default": 0 },
+        "total_time": { "type": "number", "default": 0 },
+        "elo_change": { "type": "number", "default": 0 }
+      }
+    },
+    "winner": {
+      "type": "string",
+      "enum": ["player1", "player2", "draw"],
+      "required": true,
+      "description": "获胜方"
+    },
+    "question_count": {
+      "type": "number",
+      "default": 5,
+      "description": "题目数量"
+    },
+    "created_at": {
+      "type": "number",
+      "required": true,
+      "description": "创建时间戳"
+    }
+  },
+  "indexes": [
+    { "fields": ["battle_id"], "unique": true },
+    { "fields": ["player1.uid"] },
+    { "fields": ["player2.uid"] },
+    { "fields": ["created_at"] }
+  ]
+}

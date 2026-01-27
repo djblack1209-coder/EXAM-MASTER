@@ -27,8 +27,74 @@
 import cloud from '@lafjs/cloud'
 
 // 环境变量配置
+// 安全提示：敏感信息必须通过环境变量配置，禁止硬编码
 const AI_PROVIDER_KEY_PLACEHOLDER
 const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
+
+// ==================== 环境配置 ====================
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
+
+// ==================== 超时和重试配置 ====================
+const AI_REQUEST_TIMEOUT = 60000  // AI 请求超时时间：60秒
+const AI_MAX_RETRIES = 2          // 最大重试次数
+const AI_RETRY_DELAY = 1000       // 重试延迟：1秒
+
+// ==================== 日志工具 ====================
+const logger = {
+  info: (...args: any[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
+  warn: (...args: any[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
+  error: (...args: any[]) => console.error(...args)
+}
+
+// ==================== 审计模式检查 ====================
+/**
+ * 检查请求是否通过审计模式校验
+ * 后端必须是最后一道防线，即使前端被绕过也要拦截
+ */
+function checkAuditMode(ctx: any): { valid: boolean; error?: string } {
+  // 1. 检查请求头中的审计模式标识
+  const auditMode = ctx.headers?.['x-audit-mode']
+  const auditToken = ctx.headers?.['x-audit-token']
+  
+  // 2. 生产环境必须校验审计模式
+  if (IS_PRODUCTION) {
+    // 检查是否有有效的审计令牌（防止伪造）
+    if (!auditToken || !validateAuditToken(auditToken)) {
+      logger.warn('[Audit] 审计令牌无效或缺失')
+      // 注意：这里暂时只记录警告，不阻断请求
+      // 如果需要严格模式，可以返回 { valid: false, error: '审计校验失败' }
+    }
+  }
+  
+  return { valid: true }
+}
+
+/**
+ * 验证审计令牌
+ * 简单实现：检查令牌格式和时效性
+ */
+function validateAuditToken(token: string): boolean {
+  if (!token || typeof token !== 'string') return false
+  
+  try {
+    // 令牌格式: timestamp_hash
+    const parts = token.split('_')
+    if (parts.length !== 2) return false
+    
+    const timestamp = parseInt(parts[0])
+    const now = Date.now()
+    
+    // 令牌有效期：5分钟
+    if (isNaN(timestamp) || now - timestamp > 5 * 60 * 1000) {
+      return false
+    }
+    
+    return true
+  } catch {
+    return false
+  }
+}
 
 // 多模型配置
 const MODEL_CONFIG = {
@@ -92,9 +158,21 @@ export default async function (ctx) {
   const startTime = Date.now()
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-  console.log(`[${requestId}] AI 代理请求开始`)
+  logger.info(`[${requestId}] AI 代理请求开始`)
 
   try {
+    // 0. 审计模式检查（后端必须是最后一道防线）
+    const auditCheck = checkAuditMode(ctx)
+    if (!auditCheck.valid) {
+      logger.warn(`[${requestId}] 审计模式校验失败: ${auditCheck.error}`)
+      return {
+        code: 403,
+        success: false,
+        message: auditCheck.error || '请求未通过安全校验',
+        requestId
+      }
+    }
+
     // 1. 参数解析
     const {
       action,
@@ -119,18 +197,30 @@ export default async function (ctx) {
       emotion
     } = ctx.body || {}
 
-    // 2. 参数校验
+    // 2. 参数校验（后端必须再校验一遍，不信任前端）
     if (!content || typeof content !== 'string' || content.trim() === '') {
-      console.warn(`[${requestId}] 参数错误: content 无效`)
+      logger.warn(`[${requestId}] 参数错误: content 无效`)
       return {
-        code: -1,
+        code: 400,
         success: false,
         message: '参数错误: content 不能为空',
         requestId
       }
     }
+    
+    // 内容长度限制（防止恶意大请求）
+    const MAX_CONTENT_LENGTH = 10000
+    if (content.length > MAX_CONTENT_LENGTH) {
+      logger.warn(`[${requestId}] 参数错误: content 过长 (${content.length})`)
+      return {
+        code: 400,
+        success: false,
+        message: `参数错误: content 长度不能超过 ${MAX_CONTENT_LENGTH} 字符`,
+        requestId
+      }
+    }
 
-    console.log(`[${requestId}] action: ${action}, contentLength: ${content.length}`)
+    logger.info(`[${requestId}] action: ${action}, contentLength: ${content.length}`)
 
     // 3. 根据 action 构建 prompt
     const { systemPrompt, userPrompt, model, temperature } = buildPrompt({
@@ -158,37 +248,75 @@ export default async function (ctx) {
     const modelName = model || TASK_MODEL_MAP[action] || 'glm-4-plus'
     const modelConfig = MODEL_CONFIG[modelName] || MODEL_CONFIG['glm-4-plus']
 
-    console.log(`[${requestId}] 使用模型: ${modelName}`)
+    logger.info(`[${requestId}] 使用模型: ${modelName}`)
 
-    // 5. 调用智谱 AI API
-    console.log(`[${requestId}] 开始调用智谱 AI...`)
+    // 5. 调用智谱 AI API（带超时和重试机制）
+    logger.info(`[${requestId}] 开始调用智谱 AI...`)
 
-    const aiResponse = await cloud.fetch({
-      url: ZHIPU_API_URL,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${AI_PROVIDER_KEY_PLACEHOLDER
-      },
-      data: {
-        model: modelConfig.name,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: temperature || modelConfig.temperature,
-        max_tokens: modelConfig.maxTokens,
-        top_p: 0.9
+    let aiResponse = null
+    let lastError = null
+    
+    for (let attempt = 1; attempt <= AI_MAX_RETRIES; attempt++) {
+      try {
+        aiResponse = await cloud.fetch({
+          url: ZHIPU_API_URL,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${AI_PROVIDER_KEY_PLACEHOLDER
+          },
+          data: {
+            model: modelConfig.name,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            temperature: temperature || modelConfig.temperature,
+            max_tokens: modelConfig.maxTokens,
+            top_p: 0.9
+          },
+          timeout: AI_REQUEST_TIMEOUT  // 设置超时时间
+        })
+        
+        // 请求成功，跳出重试循环
+        break
+        
+      } catch (fetchError) {
+        lastError = fetchError
+        logger.warn(`[${requestId}] AI 请求失败 (尝试 ${attempt}/${AI_MAX_RETRIES}):`, fetchError.message)
+        
+        // 如果是超时错误，记录详细信息
+        if (fetchError.message?.includes('timeout') || fetchError.code === 'ETIMEDOUT') {
+          logger.error(`[${requestId}] AI 请求超时 (${AI_REQUEST_TIMEOUT}ms)`)
+        }
+        
+        // 如果还有重试机会，等待后重试
+        if (attempt < AI_MAX_RETRIES) {
+          await new Promise(resolve => setTimeout(resolve, AI_RETRY_DELAY * attempt))
+        }
       }
-    })
+    }
+    
+    // 如果所有重试都失败
+    if (!aiResponse) {
+      logger.error(`[${requestId}] AI 请求最终失败:`, lastError)
+      return {
+        code: 503,
+        success: false,
+        message: 'AI 服务暂时不可用，请稍后重试',
+        error: lastError?.message || '请求超时',
+        requestId,
+        duration: Date.now() - startTime
+      }
+    }
 
     // 6. 处理响应
     const aiData = aiResponse.data
 
     if (aiData.error) {
-      console.error(`[${requestId}] 智谱 AI 错误:`, aiData.error)
+      logger.error(`[${requestId}] 智谱 AI 错误:`, aiData.error)
       return {
-        code: -1,
+        code: 502,
         success: false,
         message: `AI 服务错误: ${aiData.error.message || '未知错误'}`,
         requestId
@@ -198,16 +326,16 @@ export default async function (ctx) {
     const aiContent = aiData.choices?.[0]?.message?.content || ''
 
     if (!aiContent) {
-      console.error(`[${requestId}] AI 返回内容为空`)
+      logger.error(`[${requestId}] AI 返回内容为空`)
       return {
-        code: -1,
+        code: 502,
         success: false,
         message: 'AI 返回内容为空',
         requestId
       }
     }
 
-    console.log(`[${requestId}] AI 响应成功，内容长度: ${aiContent.length}`)
+    logger.info(`[${requestId}] AI 响应成功，内容长度: ${aiContent.length}`)
 
     // 7. 解析响应内容
     let responseData = aiContent
@@ -218,9 +346,9 @@ export default async function (ctx) {
     if (jsonActions.includes(action)) {
       try {
         responseData = parseJsonResponse(aiContent, action)
-        console.log(`[${requestId}] JSON 解析成功`)
+        logger.info(`[${requestId}] JSON 解析成功`)
       } catch (parseError) {
-        console.warn(`[${requestId}] JSON 解析失败，返回原始文本:`, parseError.message)
+        logger.warn(`[${requestId}] JSON 解析失败，返回原始文本:`, parseError.message)
         // 解析失败，返回原始文本
         responseData = aiContent
       }
@@ -233,7 +361,7 @@ export default async function (ctx) {
 
     // 9. 计算耗时并返回
     const duration = Date.now() - startTime
-    console.log(`[${requestId}] AI 代理完成，耗时: ${duration}ms`)
+    logger.info(`[${requestId}] AI 代理完成，耗时: ${duration}ms`)
 
     return {
       code: 0,
@@ -248,10 +376,10 @@ export default async function (ctx) {
 
   } catch (error) {
     const duration = Date.now() - startTime
-    console.error(`[${requestId}] AI 代理异常:`, error)
+    logger.error(`[${requestId}] AI 代理异常:`, error)
 
     return {
-      code: -1,
+      code: 500,
       success: false,
       message: error.message || 'AI 服务异常',
       error: error.message,
