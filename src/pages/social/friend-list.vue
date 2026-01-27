@@ -400,9 +400,10 @@ export default {
 				} else {
 					logger.error('[FriendList] 加载好友请求失败:', res.msg)
 				}
-			} catch (err) {
-				logger.error('[FriendList] 加载好友请求异常:', err)
-			} finally {
+		} catch (err) {
+			logger.error('[FriendList] 加载好友请求异常:', err)
+			// 静默失败，不打扰用户（好友请求非核心功能）
+		} finally {
 				this.isLoadingRequests = false
 			}
 		},

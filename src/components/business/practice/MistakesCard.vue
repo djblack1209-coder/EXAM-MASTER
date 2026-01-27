@@ -61,6 +61,7 @@ const loadMistakeCount = async () => {
     // 降级到本地读取
     const localMistakes = storageService.get('mistake_book', [])
     mistakeCount.value = localMistakes.length
+    // 静默降级，不打扰用户（已有本地数据兜底）
   }
 }
 

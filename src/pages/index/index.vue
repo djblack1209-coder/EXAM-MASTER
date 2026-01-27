@@ -1228,6 +1228,10 @@ export default {
 				}
 			} catch (error) {
 				logger.error('[Index] Toggle todo failed:', error);
+				uni.showToast({
+					title: '操作失败，请重试',
+					icon: 'none'
+				});
 			}
 		},
 

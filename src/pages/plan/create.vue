@@ -133,6 +133,7 @@
 
 <script>
 import { storageService } from '../../services/storageService.js'
+import { debounce } from '../../utils/throttle.js'
 
 export default {
 		data() {
@@ -142,6 +143,7 @@ export default {
 				isFormValid: false,
 				isSaving: false, // 防重复点击
 				isPageLoading: true, // 页面初始加载状态
+				debouncedValidate: null, // 防抖验证函数
 				plan: {
 					name: '',
 					goal: '',
@@ -161,6 +163,11 @@ export default {
 		onLoad() {
 			const sys = uni.getSystemInfoSync();
 			this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+			
+			// 初始化防抖验证函数（300ms 延迟）
+			this.debouncedValidate = debounce(() => {
+				this.isFormValid = this.plan.name.trim() !== '' && this.plan.goal.trim() !== '';
+			}, 300);
 			
 			// 初始化主题
 			const savedTheme = storageService.get('theme_mode', 'light');
@@ -216,8 +223,13 @@ export default {
 				});
 			},
 			onInputChange() {
-				// 简单的表单验证
-				this.isFormValid = this.plan.name.trim() !== '' && this.plan.goal.trim() !== '';
+				// 使用防抖进行表单验证
+				if (this.debouncedValidate) {
+					this.debouncedValidate();
+				} else {
+					// 降级：直接验证
+					this.isFormValid = this.plan.name.trim() !== '' && this.plan.goal.trim() !== '';
+				}
 			},
 			savePlan() {
 				if (!this.isFormValid || this.isSaving) return;

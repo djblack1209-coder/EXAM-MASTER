@@ -237,7 +237,7 @@ export default {
     
     &.btn-glow {
       background: linear-gradient(135deg, #00E5FF 0%, #00B8D4 100%);
-      color: #000000;
+      color: var(--text-inverse, #000000);
       box-shadow: 0 0 20rpx rgba(0, 229, 255, 0.4);
     }
     

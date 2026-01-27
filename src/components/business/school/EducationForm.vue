@@ -45,9 +45,9 @@
     <!-- 下一步按钮 -->
     <view class="education-form__footer">
       <button class="next-button ds-text-lg ds-font-semibold ds-touchable" :class="{
-        'next-button--disabled': !isFormValid
-      }" :disabled="!isFormValid" @click="handleNext">
-        下一步
+        'next-button--disabled': !isFormValid || isSubmitting
+      }" :disabled="!isFormValid || isSubmitting" @click="handleNext">
+        {{ isSubmitting ? '处理中...' : '下一步' }}
       </button>
     </view>
 
@@ -60,7 +60,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { debounce } from '../../../utils/throttle.js'
 
 // Props
 defineProps({
@@ -77,6 +78,19 @@ const formData = ref({
   school: '',
   major: '',
   degree: '本科'
+})
+
+// 防重复点击
+const isSubmitting = ref(false)
+
+// 防抖搜索（用于学校名称输入）
+const debouncedSchoolInput = ref(null)
+
+onMounted(() => {
+  // 初始化防抖函数（300ms 延迟）
+  debouncedSchoolInput.value = debounce((value) => {
+    formData.value.school = value
+  }, 300)
 })
 
 // 学历选项
@@ -142,15 +156,25 @@ const onMajorChange = (e) => {
 
 // 下一步
 const handleNext = () => {
-  if (!isFormValid.value) {
-    uni.showToast({
-      title: '请完整填写表单',
-      icon: 'none'
-    })
+  if (!isFormValid.value || isSubmitting.value) {
+    if (!isFormValid.value) {
+      uni.showToast({
+        title: '请完整填写表单',
+        icon: 'none'
+      })
+    }
     return
   }
 
+  // 防重复点击
+  isSubmitting.value = true
+  
   emit('next', formData.value)
+  
+  // 延迟解锁
+  setTimeout(() => {
+    isSubmitting.value = false
+  }, 1000)
 }
 </script>
 

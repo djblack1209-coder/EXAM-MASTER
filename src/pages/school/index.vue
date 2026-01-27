@@ -162,9 +162,13 @@
 					</view>
 				</view>
 
-				<view class="empty-tip ds-flex-col ds-flex-center ds-gap-xs" v-if="filteredSchools.length === 0">
-					<text class="ds-text-sm ds-text-secondary">没有符合筛选条件的学校...</text>
-					<text class="reset-link ds-text-sm ds-font-medium" @click="resetFilter">重置筛选</text>
+				<view class="empty-tip ds-flex-col ds-flex-center ds-gap-sm" v-if="filteredSchools.length === 0">
+					<text class="empty-icon">🏫</text>
+					<text class="empty-title ds-text-base ds-font-semibold">没有符合条件的学校</text>
+					<text class="ds-text-sm ds-text-secondary">试试调整筛选条件</text>
+					<view class="reset-btn ds-touchable" @click="resetFilter">
+						<text class="reset-btn-text ds-text-sm ds-font-medium">重置筛选</text>
+					</view>
 				</view>
 
 				<view class="safe-area-bottom"></view>
@@ -1390,10 +1394,39 @@ export default {
 	color: var(--text-sub);
 	font-size: 26rpx;
 	margin-top: 80rpx;
+	padding: 40rpx;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 16rpx;
+}
+
+.empty-icon {
+	font-size: 100rpx;
+	opacity: 0.6;
+	margin-bottom: 8rpx;
+}
+
+.empty-title {
+	color: var(--text-main, var(--ds-color-text-primary));
+	margin-bottom: 4rpx;
+}
+
+.reset-btn {
+	margin-top: 16rpx;
+	padding: 16rpx 40rpx;
+	background: var(--gradient-primary, linear-gradient(135deg, #9FE870 0%, #7BC653 100%));
+	border-radius: 40rpx;
+	box-shadow: 0 4rpx 16rpx rgba(159, 232, 112, 0.3);
+	transition: all 150ms ease-out;
+}
+
+.reset-btn:active {
+	transform: scale(0.98);
+}
+
+.reset-btn-text {
+	color: var(--text-inverse, #1A1A1A);
 }
 
 .reset-link {

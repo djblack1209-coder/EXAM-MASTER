@@ -188,7 +188,7 @@ export default {
 
 .retry-btn {
   background: var(--gradient-primary, linear-gradient(135deg, #9FE870 0%, #7BC653 100%));
-  color: #1A1A1A;
+  color: var(--text-inverse, #1A1A1A);
   border-radius: 48rpx;
   padding: 20rpx 48rpx;
   font-size: 28rpx;
@@ -208,6 +208,6 @@ export default {
 }
 
 .retry-text {
-  color: #1A1A1A;
+  color: var(--text-inverse, #1A1A1A);
 }
 </style>
