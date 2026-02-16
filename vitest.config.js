@@ -59,13 +59,8 @@ export default defineConfig({
     // 超时设置
     testTimeout: 10000,
     
-    // 并发
-    pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: false
-      }
-    }
+    // 并发（Vitest 4+ 顶层配置）
+    maxConcurrency: 5
   },
   
   resolve: {

@@ -23,6 +23,14 @@ global.uni = {
   clearStorageSync: vi.fn(() => {
     global.__mockStorage = {};
   }),
+  getStorageInfoSync: vi.fn(() => {
+    const keys = Object.keys(global.__mockStorage || {});
+    return {
+      keys,
+      currentSize: keys.length,
+      limitSize: 10240
+    };
+  }),
   
   // 异步存储
   getStorage: vi.fn(({ key, success, fail }) => {
