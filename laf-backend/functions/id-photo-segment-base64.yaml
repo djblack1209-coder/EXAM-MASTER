@@ -1,0 +1,6 @@
+name: id-photo-segment-base64
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

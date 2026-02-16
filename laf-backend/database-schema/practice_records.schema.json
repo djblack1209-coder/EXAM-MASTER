@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "practice_records",
+  "description": "练习记录集合 - 存储用户的答题记录 (v2.0增强版)",
+  "type": "object",
+  "required": ["user_id", "question_id", "user_answer", "is_correct"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "question_id": {
+      "type": "string",
+      "description": "题目ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "session_id": {
+      "type": ["string", "null"],
+      "description": "练习会话ID（用于关联同一次练习的多道题）",
+      "maxLength": 100
+    },
+    "user_answer": {
+      "type": "string",
+      "description": "用户答案",
+      "maxLength": 500
+    },
+    "correct_answer": {
+      "type": "string",
+      "description": "正确答案",
+      "maxLength": 500
+    },
+    "is_correct": {
+      "type": "boolean",
+      "description": "是否正确"
+    },
+    "duration": {
+      "type": "integer",
+      "description": "答题耗时（秒）",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 7200
+    },
+    "category": {
+      "type": "string",
+      "description": "科目分类",
+      "enum": ["政治", "英语", "数学", "专业课", "综合"]
+    },
+    "sub_category": {
+      "type": ["string", "null"],
+      "description": "子分类",
+      "maxLength": 50
+    },
+    "difficulty": {
+      "type": "string",
+      "description": "难度等级",
+      "enum": ["easy", "medium", "hard"]
+    },
+    "practice_mode": {
+      "type": "string",
+      "description": "练习模式",
+      "enum": ["normal", "review", "exam", "ai_adaptive", "pk", "mistake_redo", "daily_challenge"],
+      "default": "normal"
+    },
+    "score": {
+      "type": ["integer", "null"],
+      "description": "得分（用于考试模式）",
+      "minimum": 0
+    },
+    "confidence": {
+      "type": ["string", "null"],
+      "description": "用户自评信心程度",
+      "enum": ["very_sure", "sure", "unsure", "guessing", null]
+    },
+    "hint_used": {
+      "type": "boolean",
+      "description": "是否使用了提示",
+      "default": false
+    },
+    "device_info": {
+      "type": ["object", "null"],
+      "description": "设备信息",
+      "properties": {
+        "platform": { "type": "string" },
+        "model": { "type": "string" },
+        "system": { "type": "string" }
+      }
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "user_id": 1, "question_id": 1 }, "name": "idx_user_question" },
+    { "key": { "user_id": 1, "is_correct": 1 }, "name": "idx_user_correct" },
+    { "key": { "user_id": 1, "category": 1, "created_at": -1 }, "name": "idx_user_category_time" },
+    { "key": { "user_id": 1, "sub_category": 1 }, "sparse": true, "name": "idx_user_subcategory" },
+    { "key": { "user_id": 1, "difficulty": 1 }, "name": "idx_user_difficulty" },
+    { "key": { "user_id": 1, "practice_mode": 1 }, "name": "idx_user_mode" },
+    { "key": { "session_id": 1 }, "sparse": true, "name": "idx_session" },
+    { "key": { "question_id": 1, "is_correct": 1 }, "name": "idx_question_stats" },
+    { "key": { "created_at": 1 }, "expireAfterSeconds": 7776000, "name": "idx_ttl_90days" }
+  ],
+  "examples": [
+    {
+      "_id": "pr_001",
+      "user_id": "user_001",
+      "question_id": "q_001",
+      "session_id": "session_20260125_001",
+      "user_answer": "A",
+      "correct_answer": "A",
+      "is_correct": true,
+      "duration": 45,
+      "category": "政治",
+      "sub_category": "马原",
+      "difficulty": "medium",
+      "practice_mode": "normal",
+      "score": null,
+      "confidence": "sure",
+      "hint_used": false,
+      "device_info": {
+        "platform": "ios",
+        "model": "iPhone 14",
+        "system": "iOS 17.0"
+      },
+      "created_at": 1737878400000
+    }
+  ]
+}

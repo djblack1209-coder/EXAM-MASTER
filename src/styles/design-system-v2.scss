@@ -1,0 +1,538 @@
+/**
+ * EXAM-MASTER Design System V2
+ * Dual Theme: Wise Light + Bitget Wallet Dark
+ * 
+ * Philosophy:
+ * - Light Mode: Wise.com style (Green #9FE870 + White/Green split layout)
+ * - Dark Mode: Bitget Wallet style (Cyan #00F0FF + Pure black + Blue gradients)
+ * - Advanced effects: Scroll animations, Light sweep, Gyroscope reflection
+ * - Platform-safe: Conditional compilation for MP/H5/App
+ */
+
+/* ============================================
+   ROOT CSS VARIABLES - Wise Light Mode (Default)
+   ============================================ */
+:root,
+page {
+    /* ===== Wise Light Mode Colors ===== */
+    --ds-primary-light: #9FE870;
+    /* Wise Lime Green */
+    --ds-primary-dark: #163300;
+    /* Wise Dark Green */
+    --ds-accent-green: #9FE870;
+    --ds-accent-green-light: #F2F9EE;
+    --ds-accent-green-dark: #7BC653;
+
+    /* Layout Colors - Wise Split Layout */
+    --ds-layout-top: #FFFFFF;
+    /* Top: White */
+    --ds-layout-middle: #9FE870;
+    /* Middle: Green */
+    --ds-layout-bottom: #FFFFFF;
+    /* Bottom: White */
+
+    /* Surface Colors */
+    --ds-surface: #FFFFFF;
+    --ds-surface-secondary: #F8F9FA;
+    --ds-surface-elevated: #FFFFFF;
+
+    /* Text Colors */
+    --ds-text-primary: #000000;
+    --ds-text-secondary: #495057;
+    --ds-text-tertiary: #6c757d;
+    --ds-text-inverse: #FFFFFF;
+
+    /* Border Colors */
+    --ds-border: #e9ecef;
+    --ds-border-light: #f0f0f0;
+
+    /* Button Colors - Wise Style */
+    --ds-button-bg: #9FE870;
+    /* Green background */
+    --ds-button-text: #000000;
+    /* Black text */
+    --ds-button-hover: #7BC653;
+
+    /* Card Colors - Wise Style */
+    --ds-card-bg: #FFFFFF;
+    --ds-card-text: #000000;
+    --ds-card-border: #e9ecef;
+
+    /* Glassmorphism - Light Mode */
+    --ds-glass-bg: rgba(255, 255, 255, 0.8);
+    --ds-glass-border: rgba(255, 255, 255, 0.2);
+    --ds-glass-blur: 20px;
+
+    /* Tabbar Glassmorphism - Light Mode */
+    --ds-tabbar-bg: rgba(255, 255, 255, 0.8);
+    --ds-tabbar-border: rgba(229, 229, 229, 0.5);
+    --ds-tabbar-blur: 20px;
+
+    /* Shadows */
+    --ds-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --ds-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+    --ds-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+    /* Border Radius - Capsule Style */
+    --ds-radius-sm: 12rpx;
+    --ds-radius-md: 24rpx;
+    /* Wise capsule radius */
+    --ds-radius-lg: 32rpx;
+    --ds-radius-xl: 48rpx;
+    --ds-radius-full: 9999rpx;
+
+    /* Spacing (8px grid) */
+    --ds-spacing-xs: 8rpx;
+    --ds-spacing-sm: 16rpx;
+    --ds-spacing-md: 24rpx;
+    --ds-spacing-lg: 32rpx;
+    --ds-spacing-xl: 48rpx;
+    --ds-spacing-2xl: 64rpx;
+
+    /* Typography */
+    --ds-font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', 'Roboto', sans-serif;
+    --ds-font-size-xs: 20rpx;
+    --ds-font-size-sm: 24rpx;
+    --ds-font-size-base: 28rpx;
+    --ds-font-size-lg: 32rpx;
+    --ds-font-size-xl: 36rpx;
+    --ds-font-size-2xl: 40rpx;
+    --ds-font-size-3xl: 48rpx;
+
+    --ds-font-weight-normal: 400;
+    --ds-font-weight-medium: 500;
+    --ds-font-weight-semibold: 600;
+    --ds-font-weight-bold: 700;
+
+    --ds-line-height-tight: 1.25;
+    --ds-line-height-normal: 1.5;
+    --ds-line-height-relaxed: 1.75;
+
+    /* Transitions */
+    --ds-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --ds-transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    --ds-transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Z-index Scale */
+    --ds-z-dropdown: 1000;
+    --ds-z-sticky: 1020;
+    --ds-z-fixed: 1030;
+    --ds-z-modal-backdrop: 1040;
+    --ds-z-modal: 1050;
+    --ds-z-popover: 1060;
+    --ds-z-tooltip: 1070;
+}
+
+/* ============================================
+   DARK MODE - Bitget Wallet Style
+   ============================================ */
+.dark-mode,
+.theme-bitget {
+    /* ===== Bitget Dark Mode Colors ===== */
+    --ds-primary-light: #00F0FF;
+    /* Bitget Cyan */
+    --ds-primary-dark: #0A84FF;
+    /* Bitget Blue */
+    --ds-accent-blue: #00F0FF;
+    --ds-accent-blue-light: rgba(0, 240, 255, 0.2);
+    --ds-accent-blue-dark: #0A84FF;
+
+    /* Layout Colors - Bitget Pure Black */
+    --ds-layout-top: #000000;
+    /* Pure black */
+    --ds-layout-middle: #000000;
+    /* Pure black */
+    --ds-layout-bottom: #000000;
+    /* Pure black */
+
+    /* Surface Colors - Bitget Gradients */
+    --ds-surface: #000000;
+    --ds-surface-secondary: #1C1C1E;
+    --ds-surface-elevated: #2C2C2E;
+
+    /* Text Colors */
+    --ds-text-primary: #FFFFFF;
+    --ds-text-secondary: #E2E8F0;
+    --ds-text-tertiary: #A0AEC0;
+    --ds-text-inverse: #000000;
+
+    /* Border Colors */
+    --ds-border: #2C2C2E;
+    --ds-border-light: #3A3A3C;
+
+    /* Button Colors - Bitget Style */
+    --ds-button-bg: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+    /* Deep blue gradient */
+    --ds-button-text: #FFFFFF;
+    /* White text */
+    --ds-button-hover: linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%);
+
+    /* Card Colors - Bitget Style */
+    --ds-card-bg: linear-gradient(135deg, #1a2840 0%, #2d4560 100%);
+    /* Blue-black gradient */
+    --ds-card-text: #FFFFFF;
+    --ds-card-border: rgba(255, 255, 255, 0.1);
+
+    /* Glassmorphism - Dark Mode */
+    --ds-glass-bg: rgba(44, 44, 46, 0.7);
+    --ds-glass-border: rgba(255, 255, 255, 0.1);
+    --ds-glass-blur: 20px;
+
+    /* Tabbar Glassmorphism - Dark Mode */
+    --ds-tabbar-bg: rgba(44, 44, 46, 0.7);
+    --ds-tabbar-border: rgba(58, 58, 60, 0.5);
+    --ds-tabbar-blur: 20px;
+
+    /* Shadows - Darker */
+    --ds-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --ds-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --ds-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   GLOBAL STYLES
+   ============================================ */
+page {
+    background-color: var(--ds-layout-top);
+    color: var(--ds-text-primary);
+    font-family: var(--ds-font-family);
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    /* Smooth scrolling */
+    /* #ifndef MP */
+    scroll-behavior: smooth;
+    /* #endif */
+}
+
+/* ============================================
+   ADVANCED EFFECTS
+   ============================================ */
+
+/* 1. Scroll Fade-in-up Animation */
+@keyframes ds-fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30rpx);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ds-fade-in-up {
+    animation: ds-fade-in-up var(--ds-transition-base);
+    animation-fill-mode: both;
+}
+
+/* Stagger animation delays */
+.ds-fade-in-up:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.ds-fade-in-up:nth-child(2) {
+    animation-delay: 150ms;
+}
+
+.ds-fade-in-up:nth-child(3) {
+    animation-delay: 300ms;
+}
+
+.ds-fade-in-up:nth-child(4) {
+    animation-delay: 450ms;
+}
+
+.ds-fade-in-up:nth-child(5) {
+    animation-delay: 600ms;
+}
+
+/* 2. Light Sweep Effect (Card hover/scroll) */
+@keyframes ds-light-sweep {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(200%) rotate(45deg);
+    }
+}
+
+.ds-light-sweep {
+    position: relative;
+    overflow: hidden;
+
+    /* #ifndef MP */
+    &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent);
+        animation: ds-light-sweep 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    /* #endif */
+}
+
+/* Dark mode light sweep (cyan glow) */
+.dark-mode .ds-light-sweep::before {
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(0, 240, 255, 0.15),
+            transparent);
+}
+
+/* 3. Touch Feedback */
+.ds-touch-feedback {
+    transition: all var(--ds-transition-fast);
+
+    /* #ifndef MP */
+    &:active {
+        transform: scale(0.98);
+        opacity: 0.7;
+    }
+
+    /* #endif */
+}
+
+/* 4. Gyroscope Light Reflection (H5/App only) */
+/* This will be implemented in JavaScript in App.vue */
+.ds-gyro-light {
+    position: relative;
+
+    /* #ifndef MP */
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at var(--gyro-x, 50%) var(--gyro-y, 50%),
+                rgba(255, 255, 255, 0.15) 0%,
+                transparent 50%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &:hover::after {
+        opacity: 1;
+    }
+
+    /* #endif */
+}
+
+/* Dark mode gyroscope (cyan glow) */
+.dark-mode .ds-gyro-light::after {
+    background: radial-gradient(circle at var(--gyro-x, 50%) var(--gyro-y, 50%),
+            rgba(0, 240, 255, 0.2) 0%,
+            transparent 50%);
+}
+
+/* ============================================
+   COMPONENT PATTERNS
+   ============================================ */
+
+/* Capsule Card - Wise Style */
+.ds-card-capsule {
+    border-radius: var(--ds-radius-md);
+    /* 24rpx capsule */
+    background: var(--ds-card-bg);
+    color: var(--ds-card-text);
+    padding: var(--ds-spacing-md);
+    box-shadow: var(--ds-shadow-card);
+    border: 1px solid var(--ds-card-border);
+    transition: all var(--ds-transition-base);
+
+    /* #ifndef APP-NVUE */
+    &:hover {
+        transform: translateY(-4rpx);
+        box-shadow: var(--ds-shadow-lg);
+    }
+
+    /* #endif */
+}
+
+/* Glassmorphism Card */
+.ds-glass-card {
+    /* #ifndef APP-NVUE */
+    background: var(--ds-glass-bg);
+    backdrop-filter: blur(var(--ds-glass-blur));
+    -webkit-backdrop-filter: blur(var(--ds-glass-blur));
+    /* #endif */
+
+    /* #ifdef APP-NVUE */
+    background: var(--ds-surface);
+    /* #endif */
+
+    border: 1px solid var(--ds-glass-border);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-md);
+}
+
+/* Button - Wise/Bitget Style */
+.ds-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-spacing-sm) var(--ds-spacing-lg);
+    border-radius: var(--ds-radius-md);
+    /* 24rpx */
+    background: var(--ds-button-bg);
+    color: var(--ds-button-text);
+    font-size: var(--ds-font-size-base);
+    font-weight: var(--ds-font-weight-semibold);
+    border: none;
+    cursor: pointer;
+    transition: all var(--ds-transition-fast);
+    min-height: 88rpx;
+    /* 44px touch target */
+
+    /* #ifndef MP */
+    &:hover {
+        background: var(--ds-button-hover);
+        transform: translateY(-2rpx);
+    }
+
+    &:active {
+        transform: scale(0.98);
+        opacity: 0.7;
+    }
+
+    /* #endif */
+}
+
+/* Tabbar Glassmorphism */
+.ds-tabbar-glass {
+    /* #ifndef APP-NVUE */
+    background: var(--ds-tabbar-bg);
+    backdrop-filter: blur(var(--ds-tabbar-blur));
+    -webkit-backdrop-filter: blur(var(--ds-tabbar-blur));
+    /* #endif */
+
+    /* #ifdef APP-NVUE */
+    background: var(--ds-surface);
+    /* #endif */
+
+    border-top: 1px solid var(--ds-tabbar-border);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Layout */
+.ds-container {
+    width: 100%;
+    padding-left: var(--ds-spacing-md);
+    padding-right: var(--ds-spacing-md);
+}
+
+.ds-flex {
+    display: flex;
+}
+
+.ds-flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.ds-flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ds-flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Spacing */
+.ds-gap-xs {
+    gap: var(--ds-spacing-xs);
+}
+
+.ds-gap-sm {
+    gap: var(--ds-spacing-sm);
+}
+
+.ds-gap-md {
+    gap: var(--ds-spacing-md);
+}
+
+.ds-gap-lg {
+    gap: var(--ds-spacing-lg);
+}
+
+/* Typography */
+.ds-text-primary {
+    color: var(--ds-text-primary);
+}
+
+.ds-text-secondary {
+    color: var(--ds-text-secondary);
+}
+
+.ds-text-tertiary {
+    color: var(--ds-text-tertiary);
+}
+
+/* Backgrounds */
+.ds-bg-surface {
+    background: var(--ds-surface);
+}
+
+.ds-bg-surface-secondary {
+    background: var(--ds-surface-secondary);
+}
+
+/* Border Radius */
+.ds-rounded-sm {
+    border-radius: var(--ds-radius-sm);
+}
+
+.ds-rounded-md {
+    border-radius: var(--ds-radius-md);
+}
+
+.ds-rounded-lg {
+    border-radius: var(--ds-radius-lg);
+}
+
+.ds-rounded-full {
+    border-radius: var(--ds-radius-full);
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus Ring */
+.ds-focus-ring:focus-visible {
+    outline: 2px solid var(--ds-primary-light);
+    outline-offset: 2px;
+}

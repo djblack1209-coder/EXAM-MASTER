@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+# Pre-push hook - 基础检查
+echo "Running pre-push checks..."
+
+# 检查是否有未提交的更改
+if ! git diff --quiet; then
+  echo "Warning: You have unstaged changes"
+fi
+
+echo "Pre-push checks passed"

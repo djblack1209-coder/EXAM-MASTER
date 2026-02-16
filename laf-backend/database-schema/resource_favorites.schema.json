@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "resource_favorites",
+  "description": "资源收藏集合 - 存储用户收藏的学习资源",
+  "type": "object",
+  "required": ["user_id", "resource_id"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "resource_id": {
+      "type": "string",
+      "description": "资源ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "resource_id": 1 }, "unique": true, "name": "idx_user_resource" },
+    { "key": { "user_id": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "resource_id": 1 }, "name": "idx_resource" }
+  ],
+  "examples": [
+    {
+      "_id": "rf_001",
+      "user_id": "user_001",
+      "resource_id": "lr_001",
+      "created_at": 1737792000000
+    }
+  ]
+}

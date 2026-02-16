@@ -1,0 +1,42 @@
+node_modules/
+dist/
+
+# Laf CLI auto-generated
+.app.yaml
+laf.yaml
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+.env.backend
+.env.development
+.env.production
+.env.staging
+
+# Lock file (regenerated on install)
+package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.sw?
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test output
+coverage/
+.nyc_output/
+
+# Sensitive files
+*.pem
+*.key
+*.p12
+*.cert
+*.crt

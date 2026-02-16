@@ -1,0 +1,89 @@
+# uni-app
+unpackage/
+node_modules/
+dist/
+
+# IDE
+.idea/
+# .vscode/ - 保留VSC自动化配置
+.vscode/*.log
+.vscode/build.log
+.vscode/console-audit.log
+.vscode/hardcoded-*.log
+.vscode/auto-update-*.log
+.vscode/quality-report-*.md
+.vscode/backend-required.yml
+.vscode/manual-tasks.md
+.vscode/update-status.md
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env.local
+.env.*.local
+# ✅ P0-2 改造：排除开发/生产环境配置文件（包含敏感信息）
+.env.development
+.env.production
+
+# Cache
+.cache/
+.temp/
+.tmp/.vscode/settings.json
+
+# Laf backend sensitive files (保留至分仓完成后删除)
+# 分仓后删除整个 laf-backend/ 目录即可
+laf-backend/.app.yaml
+laf-backend/.env*
+
+# Logs directory
+logs/
+
+# Kubernetes secrets (use sealed-secrets in production)
+# 只保留模板文件，排除实际的 secrets.yaml
+deploy/k8s/secrets.yaml
+
+# IDE - Trae
+.trae/
+
+# Sensitive files / certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.cert
+*.crt
+
+# Additional env patterns
+.env.staging
+.env.test
+
+# Test output
+coverage/
+.nyc_output/
+test-results/
+
+# Backup files
+*.bak
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Unrelated scripts / tools (contain sensitive data)
+test_api_keys.py
+cdn_mass_test.sh
+vps-optimizer/

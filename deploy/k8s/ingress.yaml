@@ -1,0 +1,98 @@
+# ============================================
+# Exam-Master Ingress 配置
+# 支持 HTTPS 和路由规则
+# ============================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: exam-master-ingress
+  namespace: exam-master
+  labels:
+    app.kubernetes.io/name: exam-master
+    app.kubernetes.io/component: ingress
+  annotations:
+    # Nginx Ingress Controller 配置
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    
+    # 限流配置
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "50"
+    
+    # CORS 配置
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    
+    # SSL 证书（使用 cert-manager 自动管理）
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    
+    # 安全头
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Frame-Options "SAMEORIGIN" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - exam-master.example.com
+        - api.exam-master.example.com
+      secretName: exam-master-tls
+  rules:
+    # 前端路由
+    - host: exam-master.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: exam-master-frontend-svc
+                port:
+                  number: 80
+    # API 路由
+    - host: api.exam-master.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: exam-master-backend-svc
+                port:
+                  number: 80
+---
+# ============================================
+# Sealos 专用 Ingress（使用 Sealos 域名）
+# ============================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: exam-master-sealos-ingress
+  namespace: exam-master
+  labels:
+    app.kubernetes.io/name: exam-master
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: nf98ia8qnt.sealosbja.site
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: exam-master-backend-svc
+                port:
+                  number: 80

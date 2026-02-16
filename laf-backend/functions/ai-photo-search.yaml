@@ -1,0 +1,6 @@
+name: ai-photo-search
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

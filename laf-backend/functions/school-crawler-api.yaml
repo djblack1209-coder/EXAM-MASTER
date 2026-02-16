@@ -1,0 +1,5 @@
+name: school-crawler-api
+desc: "研招网院校数据爬取云函数"
+methods:
+  - POST
+tags: []

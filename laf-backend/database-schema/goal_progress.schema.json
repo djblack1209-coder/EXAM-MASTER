@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "goal_progress",
+  "description": "目标进度记录集合 - 按日记录每个目标类型的完成进度",
+  "type": "object",
+  "required": ["user_id", "goal_type", "date", "current_value"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "goal_type": {
+      "type": "string",
+      "description": "目标类型",
+      "enum": ["DAILY_QUESTIONS", "DAILY_STUDY_TIME", "WEEKLY_ACCURACY", "STREAK_DAYS", "MONTHLY_QUESTIONS"]
+    },
+    "date": {
+      "type": "integer",
+      "description": "日期时间戳（当天0点的毫秒时间戳）"
+    },
+    "current_value": {
+      "type": "integer",
+      "description": "当日累计进度值",
+      "default": 0,
+      "minimum": 0
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "goal_type": 1, "date": 1 }, "unique": true, "name": "idx_user_type_date" },
+    { "key": { "user_id": 1, "date": -1 }, "name": "idx_user_date" }
+  ],
+  "examples": [
+    {
+      "_id": "gp_001",
+      "user_id": "user_001",
+      "goal_type": "DAILY_QUESTIONS",
+      "date": 1737763200000,
+      "current_value": 15,
+      "created_at": 1737792000000,
+      "updated_at": 1737820800000
+    }
+  ]
+}

@@ -1,0 +1,843 @@
+/**
+ * EXAM-MASTER Design System
+ * Modern International Minimalist Style (Wise.com + Apple HIG)
+ * 
+ * Philosophy:
+ * - 8px grid system (strict multiples: 8, 16, 24, 32, 48)
+ * - System fonts (PingFang SC / San Francisco)
+ * - Robust dark mode support
+ * - Glassmorphism & depth
+ * - Accessibility-first (≥4.5:1 contrast, 44px touch targets)
+ */
+
+/* ============================================
+   ROOT CSS VARIABLES - Light Mode (Default)
+   ============================================ */
+:root,
+page {
+    /* Brand Colors - Wise Style */
+    --ds-color-primary: #007AFF;
+    --ds-color-accent-green: #9FE870;
+    /* Wise Lime */
+    --ds-color-accent-green-light: #F2F9EE;
+    --ds-color-accent-blue: #00B9FF;
+
+    /* Surface Colors */
+    --ds-color-surface: #FFFFFF;
+    --ds-color-surface-secondary: #F5F5F7;
+    --ds-color-surface-elevated: #FFFFFF;
+
+    /* Text Colors */
+    --ds-color-text-primary: #111111;
+    --ds-color-text-secondary: #666666;
+    --ds-color-text-tertiary: #8E8E93;
+    --ds-color-text-inverse: #FFFFFF;
+
+    /* Border Colors */
+    --ds-color-border: #E5E5E5;
+    --ds-color-border-light: #F0F0F0;
+
+    /* Status Colors */
+    --ds-color-success: #34C759;
+    --ds-color-warning: #FF9500;
+    --ds-color-error: #FF3B30;
+    --ds-color-info: #007AFF;
+
+    /* Shadows */
+    --ds-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --ds-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --ds-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --ds-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+    /* Border Radius */
+    --ds-radius-sm: 8rpx;
+    --ds-radius-md: 16rpx;
+    --ds-radius-lg: 24rpx;
+    --ds-radius-xl: 32rpx;
+    --ds-radius-full: 9999rpx;
+
+    /* Spacing (8px grid) */
+    --ds-spacing-xs: 8rpx;
+    --ds-spacing-sm: 16rpx;
+    --ds-spacing-md: 24rpx;
+    --ds-spacing-lg: 32rpx;
+    --ds-spacing-xl: 48rpx;
+    --ds-spacing-2xl: 64rpx;
+
+    /* Typography */
+    --ds-font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', 'Roboto', sans-serif;
+    --ds-font-size-xs: 20rpx;
+    --ds-font-size-sm: 24rpx;
+    --ds-font-size-base: 28rpx;
+    --ds-font-size-lg: 32rpx;
+    --ds-font-size-xl: 36rpx;
+    --ds-font-size-2xl: 40rpx;
+    --ds-font-size-3xl: 48rpx;
+
+    --ds-font-weight-normal: 400;
+    --ds-font-weight-medium: 500;
+    --ds-font-weight-semibold: 600;
+    --ds-font-weight-bold: 700;
+
+    --ds-line-height-tight: 1.25;
+    --ds-line-height-normal: 1.5;
+    --ds-line-height-relaxed: 1.75;
+
+    /* Transitions */
+    --ds-transition-fast: 150ms ease-out;
+    --ds-transition-base: 250ms ease-out;
+    --ds-transition-slow: 350ms ease-out;
+
+    /* Z-index Scale */
+    --ds-z-dropdown: 1000;
+    --ds-z-sticky: 1020;
+    --ds-z-fixed: 1030;
+    --ds-z-modal-backdrop: 1040;
+    --ds-z-modal: 1050;
+    --ds-z-popover: 1060;
+    --ds-z-tooltip: 1070;
+}
+
+/* ============================================
+   DARK MODE - CSS Variables Override (H5 Only)
+   ============================================ */
+/* #ifdef H5 */
+@media (prefers-color-scheme: dark) {
+
+    :root,
+    page {
+        /* Surface Colors */
+        --ds-color-surface: #1C1C1E;
+        --ds-color-surface-secondary: #2C2C2E;
+        --ds-color-surface-elevated: #3A3A3C;
+
+        /* Text Colors */
+        --ds-color-text-primary: #FFFFFF;
+        --ds-color-text-secondary: #E2E8F0;
+        --ds-color-text-tertiary: #A0AEC0;
+        --ds-color-text-inverse: #111111;
+
+        /* Border Colors */
+        --ds-color-border: #2C2C2E;
+        --ds-color-border-light: #3A3A3C;
+
+        /* Shadows (darker) */
+        --ds-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.16);
+        --ds-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.22);
+        --ds-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.28);
+        --ds-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.22);
+    }
+}
+
+/* #endif */
+
+/* Manual Dark Mode Class (for toggle) */
+.dark,
+.dark-mode {
+    /* Surface Colors */
+    --ds-color-surface: #1C1C1E;
+    --ds-color-surface-secondary: #2C2C2E;
+    --ds-color-surface-elevated: #3A3A3C;
+
+    /* Text Colors */
+    --ds-color-text-primary: #FFFFFF;
+    --ds-color-text-secondary: #E2E8F0;
+    --ds-color-text-tertiary: #A0AEC0;
+    --ds-color-text-inverse: #111111;
+
+    /* Border Colors */
+    --ds-color-border: #2C2C2E;
+    --ds-color-border-light: #3A3A3C;
+
+    /* Shadows (darker) */
+    --ds-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.16);
+    --ds-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.22);
+    --ds-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.28);
+    --ds-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.22);
+}
+
+/* ============================================
+   MIXINS
+   ============================================ */
+
+/* Card Style - Wise/Apple Inspired - NUCLEAR OVERRIDE */
+@mixin ds-card {
+    border-radius: var(--ds-radius-lg) !important;
+    background: var(--ds-color-surface) !important;
+
+    /* #ifndef APP-NVUE */
+    box-shadow: var(--ds-shadow-card) !important;
+    border: none !important;
+    /* #endif */
+
+    /* #ifdef APP-NVUE */
+    border-width: 1rpx !important;
+    border-style: solid !important;
+    border-color: #E5E5E5 !important;
+    /* #endif */
+}
+
+/* Elevated Card (more depth) */
+@mixin ds-card-elevated {
+    border-radius: var(--ds-radius-lg);
+    background: var(--ds-color-surface-elevated);
+
+    /* #ifndef APP-NVUE */
+    box-shadow: var(--ds-shadow-lg);
+    /* #endif */
+
+    /* #ifdef APP-NVUE */
+    border-width: 1rpx;
+    border-style: solid;
+    border-color: var(--ds-color-border);
+    /* #endif */
+}
+
+/* Glassmorphism Effect */
+@mixin ds-glass {
+    /* #ifndef APP-NVUE */
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: var(--ds-shadow-md);
+    /* #endif */
+
+    /* #ifdef APP-NVUE */
+    background: var(--ds-color-surface);
+    border-width: 1rpx;
+    border-style: solid;
+    border-color: var(--ds-color-border);
+    /* #endif */
+
+    border-radius: var(--ds-radius-lg);
+}
+
+/* Dark Mode Glassmorphism */
+@mixin ds-glass-dark {
+    /* #ifndef APP-NVUE */
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    box-shadow: var(--ds-shadow-md);
+    /* #endif */
+
+    /* #ifdef APP-NVUE */
+    background: var(--ds-color-surface);
+    border-width: 1rpx;
+    border-style: solid;
+    border-color: var(--ds-color-border);
+    /* #endif */
+
+    border-radius: var(--ds-radius-lg);
+}
+
+/* Safe Area Handling */
+@mixin ds-safe-area-top {
+    padding-top: constant(safe-area-inset-top);
+    padding-top: env(safe-area-inset-top);
+}
+
+@mixin ds-safe-area-bottom {
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+@mixin ds-safe-area-all {
+    padding-top: constant(safe-area-inset-top);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: constant(safe-area-inset-left);
+    padding-left: env(safe-area-inset-left);
+    padding-right: constant(safe-area-inset-right);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* Tap Feedback (Apple-style) - MP-WEIXIN Compatible */
+@mixin ds-tap-feedback {
+    transition: all var(--ds-transition-fast);
+
+    /* #ifndef MP */
+    /* H5 and App support :active pseudo-class */
+    &:active {
+        transform: scale(0.98);
+        opacity: 0.7;
+    }
+
+    /* #endif */
+
+    /* #ifdef MP */
+    /* Mini Program: :active not supported, use hover-class instead */
+    /* #endif */
+}
+
+/* ✅ 小程序专用：hover-class 样式 */
+.ds-hover-active {
+    transform: scale(0.98);
+    opacity: 0.7;
+}
+
+.ds-hover-btn {
+    transform: scale(0.95);
+    filter: brightness(0.9);
+}
+
+.ds-hover-card {
+    transform: scale(0.98) translateY(2rpx);
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* Focus Ring (Accessibility) */
+@mixin ds-focus-ring {
+    outline: 2px solid var(--ds-color-primary);
+    outline-offset: 2px;
+}
+
+/* Truncate Text */
+@mixin ds-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Line Clamp */
+@mixin ds-line-clamp($lines: 2) {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Layout */
+.ds-container {
+    width: 100%;
+    padding-left: var(--ds-spacing-md);
+    padding-right: var(--ds-spacing-md);
+}
+
+.ds-flex {
+    display: flex;
+}
+
+.ds-flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.ds-flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ds-flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Spacing */
+.ds-gap-xs {
+    gap: var(--ds-spacing-xs);
+}
+
+.ds-gap-sm {
+    gap: var(--ds-spacing-sm);
+}
+
+.ds-gap-md {
+    gap: var(--ds-spacing-md);
+}
+
+.ds-gap-lg {
+    gap: var(--ds-spacing-lg);
+}
+
+.ds-gap-xl {
+    gap: var(--ds-spacing-xl);
+}
+
+.ds-p-xs {
+    padding: var(--ds-spacing-xs);
+}
+
+.ds-p-sm {
+    padding: var(--ds-spacing-sm);
+}
+
+.ds-p-md {
+    padding: var(--ds-spacing-md);
+}
+
+.ds-p-lg {
+    padding: var(--ds-spacing-lg);
+}
+
+.ds-p-xl {
+    padding: var(--ds-spacing-xl);
+}
+
+.ds-m-xs {
+    margin: var(--ds-spacing-xs);
+}
+
+.ds-m-sm {
+    margin: var(--ds-spacing-sm);
+}
+
+.ds-m-md {
+    margin: var(--ds-spacing-md);
+}
+
+.ds-m-lg {
+    margin: var(--ds-spacing-lg);
+}
+
+.ds-m-xl {
+    margin: var(--ds-spacing-xl);
+}
+
+/* Typography - NUCLEAR OVERRIDE */
+.ds-text-xs {
+    font-size: var(--ds-font-size-xs) !important;
+}
+
+.ds-text-sm {
+    font-size: var(--ds-font-size-sm) !important;
+}
+
+.ds-text-base {
+    font-size: var(--ds-font-size-base) !important;
+}
+
+.ds-text-lg {
+    font-size: var(--ds-font-size-lg) !important;
+}
+
+.ds-text-xl {
+    font-size: var(--ds-font-size-xl) !important;
+}
+
+.ds-text-2xl {
+    font-size: var(--ds-font-size-2xl) !important;
+}
+
+.ds-text-3xl {
+    font-size: var(--ds-font-size-3xl) !important;
+}
+
+.ds-font-normal {
+    font-weight: var(--ds-font-weight-normal) !important;
+}
+
+.ds-font-medium {
+    font-weight: var(--ds-font-weight-medium) !important;
+}
+
+.ds-font-semibold {
+    font-weight: var(--ds-font-weight-semibold) !important;
+}
+
+.ds-font-bold {
+    font-weight: var(--ds-font-weight-bold) !important;
+}
+
+.ds-text-primary {
+    color: var(--ds-color-text-primary) !important;
+}
+
+.ds-text-secondary {
+    color: var(--ds-color-text-secondary) !important;
+}
+
+.ds-text-tertiary {
+    color: var(--ds-color-text-tertiary) !important;
+}
+
+.ds-truncate {
+    @include ds-truncate;
+}
+
+.ds-line-clamp-2 {
+    @include ds-line-clamp(2);
+}
+
+.ds-line-clamp-3 {
+    @include ds-line-clamp(3);
+}
+
+/* Cards */
+.ds-card {
+    @include ds-card;
+}
+
+.ds-card-elevated {
+    @include ds-card-elevated;
+}
+
+.ds-glass {
+    @include ds-glass;
+}
+
+/* Interactive */
+.ds-tap-feedback {
+    @include ds-tap-feedback;
+}
+
+.ds-touchable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    @include ds-tap-feedback;
+}
+
+/* ✅ PM要求：增强点击态反馈，消除"塑料感" */
+.ds-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s ease-out;
+    
+    &:active {
+        transform: scale(0.96);
+        opacity: 0.8;
+    }
+}
+
+/* 卡片点击态 - 带阴影变化 */
+.ds-card-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease-out;
+    
+    &:active {
+        transform: scale(0.98) translateY(2rpx);
+        box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* 按钮点击态 - 带发光效果 */
+.ds-btn-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s ease-out;
+    
+    &:active {
+        transform: scale(0.95);
+        filter: brightness(0.9);
+    }
+}
+
+/* 图标点击态 - 旋转效果 */
+.ds-icon-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease-out;
+    
+    &:active {
+        transform: scale(0.85) rotate(-5deg);
+        opacity: 0.7;
+    }
+}
+
+/* 列表项点击态 - 背景变化 */
+.ds-list-clickable {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.15s ease-out;
+    position: relative;
+    
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: currentColor;
+        opacity: 0;
+        transition: opacity 0.15s ease-out;
+        pointer-events: none;
+        border-radius: inherit;
+    }
+    
+    &:active::after {
+        opacity: 0.08;
+    }
+}
+
+/* Minimum Touch Target (44x44px) */
+.ds-touch-target {
+    min-width: 88rpx;
+    /* 44px */
+    min-height: 88rpx;
+    /* 44px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Borders */
+.ds-border {
+    border: 1rpx solid var(--ds-color-border);
+}
+
+.ds-border-t {
+    border-top: 1rpx solid var(--ds-color-border);
+}
+
+.ds-border-b {
+    border-bottom: 1rpx solid var(--ds-color-border);
+}
+
+/* Border Radius */
+.ds-rounded-sm {
+    border-radius: var(--ds-radius-sm);
+}
+
+.ds-rounded-md {
+    border-radius: var(--ds-radius-md);
+}
+
+.ds-rounded-lg {
+    border-radius: var(--ds-radius-lg);
+}
+
+.ds-rounded-xl {
+    border-radius: var(--ds-radius-xl);
+}
+
+.ds-rounded-full {
+    border-radius: var(--ds-radius-full);
+}
+
+/* Backgrounds */
+.ds-bg-surface {
+    background: var(--ds-color-surface);
+}
+
+.ds-bg-surface-secondary {
+    background: var(--ds-color-surface-secondary);
+}
+
+.ds-bg-surface-elevated {
+    background: var(--ds-color-surface-elevated);
+}
+
+/* Status Colors */
+.ds-text-success {
+    color: var(--ds-color-success);
+}
+
+.ds-text-warning {
+    color: var(--ds-color-warning);
+}
+
+.ds-text-error {
+    color: var(--ds-color-error);
+}
+
+.ds-text-info {
+    color: var(--ds-color-info);
+}
+
+.ds-bg-success {
+    background: var(--ds-color-success);
+}
+
+.ds-bg-warning {
+    background: var(--ds-color-warning);
+}
+
+.ds-bg-error {
+    background: var(--ds-color-error);
+}
+
+.ds-bg-info {
+    background: var(--ds-color-info);
+}
+
+/* ============================================
+   COMPONENT PATTERNS
+   ============================================ */
+
+/* Button Base - MP-WEIXIN Compatible */
+.ds-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ds-spacing-sm) var(--ds-spacing-lg);
+    border-radius: var(--ds-radius-full);
+    font-size: var(--ds-font-size-base);
+    font-weight: var(--ds-font-weight-semibold);
+    line-height: var(--ds-line-height-tight);
+    transition: all var(--ds-transition-fast);
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    min-height: 88rpx;
+    /* 44px touch target */
+
+    /* #ifndef MP */
+    &:active {
+        transform: scale(0.98);
+        opacity: 0.8;
+    }
+
+    /* #endif */
+}
+
+.ds-btn-primary {
+    background: var(--ds-color-primary);
+    color: var(--ds-color-text-inverse);
+}
+
+.ds-btn-secondary {
+    background: var(--ds-color-surface-secondary);
+    color: var(--ds-color-text-primary);
+}
+
+.ds-btn-ghost {
+    background: transparent;
+    color: var(--ds-color-text-primary);
+    border: 1rpx solid var(--ds-color-border);
+}
+
+/* Input Base */
+.ds-input {
+    width: 100%;
+    padding: var(--ds-spacing-sm) var(--ds-spacing-md);
+    border-radius: var(--ds-radius-md);
+    background: var(--ds-color-surface-secondary);
+    border: 1rpx solid var(--ds-color-border);
+    font-size: var(--ds-font-size-base);
+    color: var(--ds-color-text-primary);
+    transition: all var(--ds-transition-fast);
+    min-height: 88rpx;
+    /* 44px touch target */
+
+    &:focus {
+        outline: none;
+        border-color: var(--ds-color-primary);
+        /* #ifndef APP-NVUE */
+        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        /* #endif */
+    }
+
+    &::placeholder {
+        color: var(--ds-color-text-tertiary);
+    }
+}
+
+/* Badge */
+.ds-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rpx 12rpx;
+    border-radius: var(--ds-radius-full);
+    font-size: var(--ds-font-size-xs);
+    font-weight: var(--ds-font-weight-semibold);
+    background: var(--ds-color-primary);
+    color: var(--ds-color-text-inverse);
+}
+
+/* Divider */
+.ds-divider {
+    height: 1rpx;
+    background: var(--ds-color-border);
+    margin: var(--ds-spacing-md) 0;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes ds-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes ds-slide-up {
+    from {
+        transform: translateY(20rpx);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes ds-scale-in {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.ds-fade-in {
+    animation: ds-fade-in var(--ds-transition-base);
+}
+
+.ds-slide-up {
+    animation: ds-slide-up var(--ds-transition-base);
+}
+
+.ds-scale-in {
+    animation: ds-scale-in var(--ds-transition-fast);
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Screen Reader Only */
+.ds-sr-only {
+    position: absolute;
+    width: 1rpx;
+    height: 1rpx;
+    padding: 0;
+    margin: -1rpx;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Focus Visible (keyboard navigation) */
+.ds-focus-visible:focus-visible {
+    @include ds-focus-ring;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

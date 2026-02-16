@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "group_resources",
+  "description": "小组资源集合 - 存储小组内分享的学习资源",
+  "type": "object",
+  "required": ["group_id", "user_id", "title", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId 或自定义ID"
+    },
+    "group_id": {
+      "type": "string",
+      "description": "小组ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "资源分享者ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "资源标题",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "content": {
+      "type": "string",
+      "description": "资源内容"
+    },
+    "resource_type": {
+      "type": "string",
+      "description": "资源类型",
+      "enum": ["note", "material", "experience", "other"],
+      "default": "note"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "文件URL（如果有）"
+    },
+    "tags": {
+      "type": "array",
+      "description": "资源标签",
+      "items": {
+        "type": "string"
+      }
+    },
+    "likes_count": {
+      "type": "integer",
+      "description": "点赞数",
+      "minimum": 0,
+      "default": 0
+    },
+    "comments_count": {
+      "type": "integer",
+      "description": "评论数",
+      "minimum": 0,
+      "default": 0
+    },
+    "views_count": {
+      "type": "integer",
+      "description": "浏览数",
+      "minimum": 0,
+      "default": 0
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "group_id": 1, "created_at": -1 }, "name": "idx_group_created" },
+    { "key": { "group_id": 1, "resource_type": 1 }, "name": "idx_group_type" },
+    { "key": { "user_id": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "tags": 1 }, "name": "idx_tags" },
+    { "key": { "likes_count": -1 }, "name": "idx_likes" }
+  ],
+  "examples": [
+    {
+      "_id": "resource_001",
+      "group_id": "group_001",
+      "user_id": "user_001",
+      "title": "高等数学公式汇总",
+      "content": "包含微积分、线性代数、概率论等核心公式...",
+      "resource_type": "note",
+      "file_url": "",
+      "tags": ["数学", "公式", "考研"],
+      "likes_count": 15,
+      "comments_count": 3,
+      "views_count": 120,
+      "created_at": 1737792000000,
+      "updated_at": 1737792000000
+    },
+    {
+      "_id": "resource_002",
+      "group_id": "group_001",
+      "user_id": "user_002",
+      "title": "2024年考研英语真题",
+      "content": "2024年考研英语一真题及答案解析",
+      "resource_type": "material",
+      "file_url": "https://example.com/files/2024-english-1.pdf",
+      "tags": ["英语", "真题", "2024"],
+      "likes_count": 20,
+      "comments_count": 5,
+      "views_count": 150,
+      "created_at": 1737878400000,
+      "updated_at": 1737878400000
+    }
+  ]
+}
