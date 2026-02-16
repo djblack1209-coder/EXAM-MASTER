@@ -118,7 +118,9 @@
         {
             "root": "pages/tools",
             "pages": [
-                {"path": "photo-search", "style": {"navigationBarTitleText": "拍照搜题", "navigationStyle": "custom", "navigationBarBackgroundColor": "#1A1A1A", "enablePullDownRefresh": false}}
+                {"path": "photo-search", "style": {"navigationBarTitleText": "拍照搜题", "navigationStyle": "custom", "navigationBarBackgroundColor": "#1A1A1A", "enablePullDownRefresh": false}},
+                {"path": "doc-convert", "style": {"navigationBarTitleText": "文档转换", "navigationStyle": "custom", "navigationBarBackgroundColor": "#1A1A1A", "enablePullDownRefresh": false}},
+                {"path": "id-photo", "style": {"navigationBarTitleText": "证件照制作", "navigationStyle": "custom", "navigationBarBackgroundColor": "#1A1A1A", "enablePullDownRefresh": false}}
             ]
         },
         {

@@ -59,6 +59,9 @@ deploy/k8s/secrets.yaml
 # IDE - Trae
 .trae/
 
+# OpenCode
+.opencode/
+
 # Sensitive files / certificates
 *.pem
 *.key
