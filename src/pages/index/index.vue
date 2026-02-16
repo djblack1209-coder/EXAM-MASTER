@@ -102,6 +102,36 @@
             @recommendation-click="handleRecommendationClick"
           />
 
+          <!-- 实用工具入口 -->
+          <view class="section-header">
+            <text class="section-title">
+              实用工具
+            </text>
+          </view>
+          <view class="tools-grid">
+            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('doc-convert')">
+              <view class="tool-icon tool-icon-doc">
+                <text class="tool-icon-text">D</text>
+              </view>
+              <text class="tool-name">文档转换</text>
+              <text class="tool-desc">PDF/Word/Excel 互转</text>
+            </view>
+            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('id-photo')">
+              <view class="tool-icon tool-icon-photo">
+                <text class="tool-icon-text">P</text>
+              </view>
+              <text class="tool-name">证件照制作</text>
+              <text class="tool-desc">智能抠图换背景</text>
+            </view>
+            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('photo-search')">
+              <view class="tool-icon tool-icon-search">
+                <text class="tool-icon-text">S</text>
+              </view>
+              <text class="tool-name">拍照搜题</text>
+              <text class="tool-desc">AI 智能识别解答</text>
+            </view>
+     </view>
+
           <!-- 待办事项清单 -->
           <view class="section-header">
             <text class="section-title">
@@ -669,6 +699,11 @@ export default {
 
     // ✅ F002: handleEditPlan, handleToggleTodo 由 todoMixin 提供
 
+    // 实用工具导航
+    navToTool(name) {
+      safeNavigateTo(`/pages/tools/${name}`);
+    },
+
     // ✅ F023: 节流滚动监听，减少重渲染
     handleScroll(e) {
       if (!this._throttledScroll) {
@@ -914,6 +949,63 @@ export default {
 .edit-text {
 	font-size: 24rpx;
 	font-weight: 600;
+}
+
+/* ==================== 实用工具入口 ==================== */
+.tools-grid {
+	display: flex;
+	gap: 20rpx;
+	margin-bottom: 48rpx;
+}
+
+.tool-entry {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 28rpx 12rpx;
+	border-radius: 24rpx;
+	border: 1rpx solid var(--border);
+}
+
+.tool-icon {
+	width: 72rpx;
+	height: 72rpx;
+	border-radius: 20rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 12rpx;
+}
+
+.tool-icon-doc {
+	background: linear-gradient(135deg, #36d1dc, #5b86e5);
+}
+
+.tool-icon-photo {
+	background: linear-gradient(135deg, #e84393, #fd79a8);
+}
+
+.tool-icon-search {
+	background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.tool-icon-text {
+	color: #fff;
+	font-size: 30rpx;
+	font-weight: bold;
+}
+
+.tool-name {
+	font-size: 24rpx;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: 4rpx;
+}
+
+.tool-desc {
+	font-size: 20rpx;
+	color: var(--text-secondary);
 }
 
 </style>
