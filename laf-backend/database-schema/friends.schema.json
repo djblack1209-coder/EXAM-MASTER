@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "friends",
+  "description": "好友关系集合 - 存储用户好友关系 (v2.0增强版)",
+  "type": "object",
+  "required": ["user_id", "friend_id", "status"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "friend_id": {
+      "type": "string",
+      "description": "好友用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "status": {
+      "type": "string",
+      "description": "关系状态",
+      "enum": ["pending", "accepted", "rejected", "blocked", "deleted"],
+      "default": "pending"
+    },
+    "request_message": {
+      "type": "string",
+      "description": "好友请求附言",
+      "default": "",
+      "maxLength": 200
+    },
+    "requester_id": {
+      "type": "string",
+      "description": "发起请求的用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "nickname": {
+      "type": ["string", "null"],
+      "description": "好友备注名",
+      "maxLength": 50
+    },
+    "group": {
+      "type": ["string", "null"],
+      "description": "好友分组",
+      "maxLength": 50
+    },
+    "intimacy": {
+      "type": "integer",
+      "description": "亲密度（通过互动增加）",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "pk_stats": {
+      "type": "object",
+      "description": "PK对战统计",
+      "properties": {
+        "total_battles": { "type": "integer", "default": 0 },
+        "wins": { "type": "integer", "default": 0 },
+        "losses": { "type": "integer", "default": 0 },
+        "draws": { "type": "integer", "default": 0 }
+      },
+      "default": { "total_battles": 0, "wins": 0, "losses": 0, "draws": 0 }
+    },
+    "last_interaction_at": {
+      "type": ["integer", "null"],
+      "description": "最后互动时间戳"
+    },
+    "blocked_at": {
+      "type": ["integer", "null"],
+      "description": "拉黑时间戳"
+    },
+    "block_reason": {
+      "type": ["string", "null"],
+      "description": "拉黑原因",
+      "maxLength": 200
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "accepted_at": {
+      "type": ["integer", "null"],
+      "description": "接受时间戳"
+    },
+    "updated_at": {
+      "type": ["integer", "null"],
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "friend_id": 1 }, "unique": true, "name": "idx_user_friend" },
+    { "key": { "user_id": 1, "status": 1 }, "name": "idx_user_status" },
+    { "key": { "user_id": 1, "status": 1, "intimacy": -1 }, "name": "idx_user_status_intimacy" },
+    { "key": { "friend_id": 1, "status": 1 }, "name": "idx_friend_status" },
+    { "key": { "requester_id": 1, "status": 1 }, "name": "idx_requester_status" },
+    { "key": { "user_id": 1, "group": 1 }, "sparse": true, "name": "idx_user_group" },
+    { "key": { "user_id": 1, "last_interaction_at": -1 }, "name": "idx_user_interaction" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" }
+  ],
+  "examples": [
+    {
+      "_id": "fr_001",
+      "user_id": "user_001",
+      "friend_id": "user_002",
+      "status": "accepted",
+      "request_message": "一起学习吧！",
+      "requester_id": "user_001",
+      "nickname": "学霸小王",
+      "group": "研友",
+      "intimacy": 150,
+      "pk_stats": {
+        "total_battles": 10,
+        "wins": 6,
+        "losses": 3,
+        "draws": 1
+      },
+      "last_interaction_at": 1737878400000,
+      "blocked_at": null,
+      "block_reason": null,
+      "created_at": 1737792000000,
+      "accepted_at": 1737878400000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

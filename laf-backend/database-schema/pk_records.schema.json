@@ -1,0 +1,253 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "pk_records",
+  "description": "PK 对战记录集合 - 存储用户间的知识PK对战记录",
+  "type": "object",
+  "required": [
+    "battle_id",
+    "player1",
+    "player2",
+    "winner",
+    "created_at"
+  ],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "battle_id": {
+      "type": "string",
+      "description": "对战唯一ID",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "player1": {
+      "type": "object",
+      "description": "玩家1信息",
+      "required": [
+        "uid",
+        "score"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "用户ID",
+          "maxLength": 64
+        },
+        "score": {
+          "type": "integer",
+          "description": "得分",
+          "minimum": 0
+        },
+        "correct_count": {
+          "type": "integer",
+          "description": "答对题数",
+          "default": 0,
+          "minimum": 0
+        },
+        "total_time": {
+          "type": "integer",
+          "description": "总用时（秒）",
+          "default": 0,
+          "minimum": 0
+        },
+        "elo_change": {
+          "type": "integer",
+          "description": "ELO积分变化",
+          "default": 0
+        }
+      }
+    },
+    "player2": {
+      "type": "object",
+      "description": "玩家2信息",
+      "required": [
+        "uid",
+        "score"
+      ],
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "用户ID",
+          "maxLength": 64
+        },
+        "score": {
+          "type": "integer",
+          "description": "得分",
+          "minimum": 0
+        },
+        "correct_count": {
+          "type": "integer",
+          "description": "答对题数",
+          "default": 0,
+          "minimum": 0
+        },
+        "total_time": {
+          "type": "integer",
+          "description": "总用时（秒）",
+          "default": 0,
+          "minimum": 0
+        },
+        "elo_change": {
+          "type": "integer",
+          "description": "ELO积分变化",
+          "default": 0
+        }
+      }
+    },
+    "winner": {
+      "type": "string",
+      "description": "获胜方",
+      "enum": [
+        "player1",
+        "player2",
+        "draw"
+      ]
+    },
+    "question_count": {
+      "type": "integer",
+      "description": "题目数量",
+      "default": 5,
+      "minimum": 1,
+      "maximum": 50
+    },
+    "question_ids": {
+      "type": "array",
+      "description": "对战使用的题目ID列表",
+      "items": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "default": []
+    },
+    "category": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "对战科目分类",
+      "maxLength": 50
+    },
+    "difficulty": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "对战难度",
+      "enum": [
+        "easy",
+        "medium",
+        "hard",
+        "mixed",
+        null
+      ]
+    },
+    "duration": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "对战总时长（秒）",
+      "minimum": 0
+    },
+    "status": {
+      "type": "string",
+      "description": "对战状态",
+      "enum": [
+        "waiting",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "completed"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "completed_at": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "完成时间戳"
+    }
+  },
+  "indexes": [
+    {
+      "key": {
+        "battle_id": 1
+      },
+      "unique": true,
+      "name": "idx_battle_id"
+    },
+    {
+      "key": {
+        "player1.uid": 1,
+        "created_at": -1
+      },
+      "name": "idx_player1_created"
+    },
+    {
+      "key": {
+        "player2.uid": 1,
+        "created_at": -1
+      },
+      "name": "idx_player2_created"
+    },
+    {
+      "key": {
+        "status": 1
+      },
+      "name": "idx_status"
+    },
+    {
+      "key": {
+        "created_at": -1
+      },
+      "name": "idx_created_at"
+    },
+    {
+      "key": {
+        "category": 1
+      },
+      "sparse": true,
+      "name": "idx_category"
+    }
+  ],
+  "examples": [
+    {
+      "_id": "pk_001",
+      "battle_id": "battle_20260125_001",
+      "player1": {
+        "uid": "user_001",
+        "score": 80,
+        "correct_count": 4,
+        "total_time": 120,
+        "elo_change": 15
+      },
+      "player2": {
+        "uid": "user_002",
+        "score": 60,
+        "correct_count": 3,
+        "total_time": 150,
+        "elo_change": -15
+      },
+      "winner": "player1",
+      "question_count": 5,
+      "question_ids": [
+        "q_001",
+        "q_002",
+        "q_003",
+        "q_004",
+        "q_005"
+      ],
+      "category": "政治",
+      "difficulty": "medium",
+      "duration": 180,
+      "status": "completed",
+      "created_at": 1737878400000,
+      "completed_at": 1737878580000
+    }
+  ]
+}

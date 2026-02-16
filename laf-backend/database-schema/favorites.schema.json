@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "favorites",
+  "description": "收藏集合 - 存储用户收藏的题目",
+  "type": "object",
+  "required": ["user_id", "question_content"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "question_id": {
+      "type": ["string", "null"],
+      "description": "关联题目ID（如果来自题库）",
+      "maxLength": 64
+    },
+    "question_content": {
+      "type": "string",
+      "description": "题目内容",
+      "minLength": 1,
+      "maxLength": 5000
+    },
+    "options": {
+      "type": "array",
+      "description": "选项列表",
+      "items": { "type": "string", "maxLength": 1000 },
+      "default": [],
+      "maxItems": 10
+    },
+    "correct_answer": {
+      "type": "string",
+      "description": "正确答案",
+      "maxLength": 100
+    },
+    "analysis": {
+      "type": "string",
+      "description": "答案解析",
+      "default": "",
+      "maxLength": 10000
+    },
+    "category": {
+      "type": "string",
+      "description": "科目分类",
+      "enum": ["政治", "英语", "数学", "专业课", "综合"],
+      "default": "综合"
+    },
+    "tags": {
+      "type": "array",
+      "description": "标签列表",
+      "items": { "type": "string", "maxLength": 50 },
+      "default": [],
+      "maxItems": 20
+    },
+    "source": {
+      "type": "string",
+      "description": "收藏来源",
+      "enum": ["manual", "practice", "mistake", "photo_search", "batch"],
+      "default": "manual"
+    },
+    "review_count": {
+      "type": "integer",
+      "description": "复习次数",
+      "default": 0,
+      "minimum": 0
+    },
+    "last_review_time": {
+      "type": ["integer", "null"],
+      "description": "最后复习时间戳"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "user_id": 1, "question_id": 1 }, "unique": true, "sparse": true, "name": "idx_user_question" },
+    { "key": { "user_id": 1, "category": 1 }, "name": "idx_user_category" },
+    { "key": { "user_id": 1, "source": 1 }, "name": "idx_user_source" },
+    { "key": { "user_id": 1, "tags": 1 }, "name": "idx_user_tags" }
+  ],
+  "examples": [
+    {
+      "_id": "fav_001",
+      "user_id": "user_001",
+      "question_id": "q_001",
+      "question_content": "马克思主义哲学的直接理论来源是？",
+      "options": ["A. 德国古典哲学", "B. 英国古典政治经济学", "C. 法国空想社会主义", "D. 古希腊哲学"],
+      "correct_answer": "A",
+      "analysis": "马克思主义哲学的直接理论来源是德国古典哲学。",
+      "category": "政治",
+      "tags": ["马克思主义", "哲学来源"],
+      "source": "practice",
+      "review_count": 2,
+      "last_review_time": 1737878400000,
+      "created_at": 1737792000000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

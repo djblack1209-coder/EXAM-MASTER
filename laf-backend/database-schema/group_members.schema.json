@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "group_members",
+  "description": "小组成员集合 - 存储用户与小组的关系",
+  "type": "object",
+  "required": ["group_id", "user_id", "role", "joined_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId 或自定义ID"
+    },
+    "group_id": {
+      "type": "string",
+      "description": "小组ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID"
+    },
+    "role": {
+      "type": "string",
+      "description": "成员角色",
+      "enum": ["owner", "admin", "member"],
+      "default": "member"
+    },
+    "status": {
+      "type": "string",
+      "description": "成员状态",
+      "enum": ["active", "left", "banned", "pending"],
+      "default": "active"
+    },
+    "joined_at": {
+      "type": "integer",
+      "description": "加入时间戳"
+    },
+    "left_at": {
+      "type": ["integer", "null"],
+      "description": "离开时间戳"
+    },
+    "last_active_at": {
+      "type": ["integer", "null"],
+      "description": "最后活跃时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "group_id": 1, "user_id": 1 }, "unique": true, "name": "idx_group_user" },
+    { "key": { "user_id": 1, "status": 1 }, "name": "idx_user_status" },
+    { "key": { "group_id": 1, "role": 1 }, "name": "idx_group_role" },
+    { "key": { "group_id": 1, "status": 1 }, "name": "idx_group_status" }
+  ],
+  "examples": [
+    {
+      "_id": "member_001",
+      "group_id": "group_001",
+      "user_id": "user_001",
+      "role": "owner",
+      "status": "active",
+      "joined_at": 1737792000000,
+      "last_active_at": 1737878400000
+    },
+    {
+      "_id": "member_002",
+      "group_id": "group_001",
+      "user_id": "user_002",
+      "role": "member",
+      "status": "active",
+      "joined_at": 1737878400000,
+      "last_active_at": 1737964800000
+    }
+  ]
+}

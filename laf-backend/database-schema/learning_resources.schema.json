@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "learning_resources",
+  "description": "学习资源集合 - 存储推荐的学习资源",
+  "type": "object",
+  "required": ["title", "category", "subject"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "title": {
+      "type": "string",
+      "description": "资源标题",
+      "minLength": 2,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "description": "资源描述",
+      "maxLength": 1000
+    },
+    "category": {
+      "type": "string",
+      "description": "资源分类",
+      "enum": ["video", "article", "book", "practice", "tool", "community"]
+    },
+    "subject": {
+      "type": "string",
+      "description": "学科分类",
+      "enum": ["politics", "english", "math", "professional"]
+    },
+    "thumbnail": {
+      "type": "string",
+      "description": "缩略图URL",
+      "maxLength": 500
+    },
+    "url": {
+      "type": "string",
+      "description": "资源链接",
+      "maxLength": 500
+    },
+    "author": {
+      "type": "string",
+      "description": "作者/来源",
+      "maxLength": 100
+    },
+    "duration": {
+      "type": "integer",
+      "description": "时长（分钟，视频类资源）",
+      "minimum": 0
+    },
+    "view_count": {
+      "type": "integer",
+      "description": "浏览次数",
+      "default": 0,
+      "minimum": 0
+    },
+    "like_count": {
+      "type": "integer",
+      "description": "点赞次数",
+      "default": 0,
+      "minimum": 0
+    },
+    "rating": {
+      "type": "number",
+      "description": "评分（1-5）",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "tags": {
+      "type": "array",
+      "description": "标签列表",
+      "items": { "type": "string", "maxLength": 50 },
+      "default": [],
+      "maxItems": 10
+    },
+    "is_free": {
+      "type": "boolean",
+      "description": "是否免费",
+      "default": true
+    },
+    "price": {
+      "type": "number",
+      "description": "价格（元）",
+      "default": 0,
+      "minimum": 0
+    },
+    "status": {
+      "type": "string",
+      "description": "资源状态（云函数按 status='published' 筛选）",
+      "enum": ["draft", "published", "archived", "deleted"],
+      "default": "published"
+    },
+    "recommend_weight": {
+      "type": "integer",
+      "description": "推荐权重（越大越优先推荐，云函数按此字段排序）",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "是否启用（兼容旧逻辑，新代码优先使用 status 字段）",
+      "default": true
+    },
+    "sort_order": {
+      "type": "integer",
+      "description": "排序权重（兼容旧逻辑，新代码优先使用 recommend_weight）",
+      "default": 0
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "category": 1, "subject": 1 }, "name": "idx_category_subject" },
+    { "key": { "status": 1, "recommend_weight": -1, "view_count": -1 }, "name": "idx_status_recommend", "comment": "handleGetRecommendations 查询" },
+    { "key": { "status": 1, "view_count": -1 }, "name": "idx_status_popular", "comment": "handleGetHotResources 查询" },
+    { "key": { "status": 1, "category": 1, "created_at": -1 }, "name": "idx_status_category_created", "comment": "handleGetByCategory 查询" },
+    { "key": { "status": 1, "subject": 1 }, "name": "idx_status_subject" },
+    { "key": { "status": 1, "updated_at": -1 }, "name": "idx_status_updated", "comment": "热门资源按时间段筛选" },
+    { "key": { "is_active": 1, "category": 1 }, "name": "idx_active_category" },
+    { "key": { "is_active": 1, "view_count": -1 }, "name": "idx_active_popular" },
+    { "key": { "is_active": 1, "rating": -1 }, "name": "idx_active_rating" },
+    { "key": { "tags": 1 }, "name": "idx_tags" },
+    { "key": { "sort_order": -1, "created_at": -1 }, "name": "idx_sort" },
+    { "key": { "title": "text", "description": "text", "tags": "text" }, "name": "idx_text_search", "comment": "handleSearch 全文搜索" }
+  ],
+  "examples": [
+    {
+      "_id": "lr_001",
+      "title": "考研政治马原精讲",
+      "description": "系统讲解马克思主义基本原理，帮助考生建立完整的知识体系",
+      "category": "video",
+      "subject": "politics",
+      "thumbnail": "https://example.com/thumb/politics-mayuan.jpg",
+      "url": "https://example.com/course/politics-mayuan",
+      "author": "考研名师",
+      "duration": 120,
+      "view_count": 15000,
+      "like_count": 1200,
+      "rating": 4.8,
+      "tags": ["马原", "政治", "基础课程"],
+      "is_free": false,
+      "price": 99,
+      "is_active": true,
+      "sort_order": 100,
+      "created_at": 1737792000000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

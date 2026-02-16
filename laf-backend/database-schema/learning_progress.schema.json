@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "learning_progress",
+  "description": "学习进度集合 - 存储用户的学习资源进度",
+  "type": "object",
+  "required": ["user_id", "resource_id"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "resource_id": {
+      "type": "string",
+      "description": "资源ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "progress": {
+      "type": "integer",
+      "description": "学习进度（0-100）",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 100
+    },
+    "total_duration": {
+      "type": "integer",
+      "description": "累计学习时长（秒）",
+      "default": 0,
+      "minimum": 0
+    },
+    "last_position": {
+      "type": "integer",
+      "description": "上次学习位置（秒，视频类资源）",
+      "default": 0,
+      "minimum": 0
+    },
+    "notes": {
+      "type": "string",
+      "description": "学习笔记",
+      "maxLength": 5000
+    },
+    "last_study_at": {
+      "type": "integer",
+      "description": "最后学习时间戳"
+    },
+    "completed_at": {
+      "type": ["integer", "null"],
+      "description": "完成时间戳"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "resource_id": 1 }, "unique": true, "name": "idx_user_resource" },
+    { "key": { "user_id": 1, "last_study_at": -1 }, "name": "idx_user_recent" },
+    { "key": { "user_id": 1, "progress": 1 }, "name": "idx_user_progress" },
+    { "key": { "resource_id": 1 }, "name": "idx_resource" }
+  ],
+  "examples": [
+    {
+      "_id": "lp_001",
+      "user_id": "user_001",
+      "resource_id": "lr_001",
+      "progress": 65,
+      "total_duration": 4500,
+      "last_position": 3600,
+      "notes": "重点关注辩证法部分",
+      "last_study_at": 1737878400000,
+      "completed_at": null,
+      "created_at": 1737792000000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

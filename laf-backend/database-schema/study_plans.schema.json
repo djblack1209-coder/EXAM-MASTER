@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "study_plans",
+  "description": "学习计划集合 - 存储用户的学习计划和目标",
+  "type": "object",
+  "required": ["user_id", "target_date"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID"
+    },
+    "title": {
+      "type": "string",
+      "description": "计划标题",
+      "default": "考研备考计划"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "目标日期（考试日期）"
+    },
+    "daily_goal": {
+      "type": "integer",
+      "description": "每日目标题数",
+      "default": 30,
+      "minimum": 1,
+      "maximum": 500
+    },
+    "daily_study_minutes": {
+      "type": "integer",
+      "description": "每日目标学习分钟数",
+      "default": 120,
+      "minimum": 10,
+      "maximum": 720
+    },
+    "subjects": {
+      "type": "array",
+      "description": "学习科目配置",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+          "daily_questions": { "type": "integer" }
+        }
+      },
+      "default": []
+    },
+    "progress": {
+      "type": "object",
+      "description": "进度统计",
+      "properties": {
+        "total_days": { "type": "integer", "default": 0 },
+        "completed_days": { "type": "integer", "default": 0 },
+        "total_questions": { "type": "integer", "default": 0 },
+        "completed_questions": { "type": "integer", "default": 0 }
+      },
+      "default": {}
+    },
+    "daily_records": {
+      "type": "array",
+      "description": "每日完成记录",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "questions_done": { "type": "integer" },
+          "study_minutes": { "type": "integer" },
+          "is_completed": { "type": "boolean" }
+        }
+      },
+      "default": []
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "是否为当前激活计划",
+      "default": true
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "is_active": 1 }, "name": "idx_user_active" },
+    { "key": { "user_id": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "target_date": 1 }, "name": "idx_target_date" }
+  ],
+  "examples": [
+    {
+      "_id": "plan_001",
+      "user_id": "user_001",
+      "title": "2026考研冲刺计划",
+      "target_date": "2026-12-25",
+      "daily_goal": 50,
+      "daily_study_minutes": 180,
+      "subjects": [
+        { "name": "政治", "weight": 0.25, "daily_questions": 12 },
+        { "name": "英语", "weight": 0.25, "daily_questions": 12 },
+        { "name": "数学", "weight": 0.3, "daily_questions": 15 },
+        { "name": "专业课", "weight": 0.2, "daily_questions": 11 }
+      ],
+      "progress": {
+        "total_days": 335,
+        "completed_days": 30,
+        "total_questions": 16750,
+        "completed_questions": 1500
+      },
+      "is_active": true,
+      "created_at": 1737792000000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

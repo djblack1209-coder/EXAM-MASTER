@@ -1,0 +1,6 @@
+name: mistake-manager
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []
