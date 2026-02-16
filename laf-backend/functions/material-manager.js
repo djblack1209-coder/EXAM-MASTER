@@ -16,7 +16,7 @@ const db = cloud.database()
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `material_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `material_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   
   try {
     const { action, userId, data, token } = ctx.body || {}

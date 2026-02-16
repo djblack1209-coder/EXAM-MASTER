@@ -431,7 +431,7 @@ class QuestionNoteManager {
   // ==================== 私有方法 ====================
 
   _generateId() {
-    return 'note_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    return 'note_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
   }
 
   _loadNotes() {

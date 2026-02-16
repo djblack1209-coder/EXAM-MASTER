@@ -59,7 +59,7 @@ const CACHE_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000
 
 export default async function (ctx: FunctionContext) {
   const startTime = Date.now()
-  const requestId = `crawler_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `crawler_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   
   try {
     const { action, data } = ctx.body || {}
@@ -85,8 +85,14 @@ export default async function (ctx: FunctionContext) {
         return await getProvinceStats(requestId)
       case 'status':
         return await getCrawlerStatus(requestId)
-      case 'crawl_all':
+      case 'crawl_all': {
+        // 管理员权限校验：crawl_all 是高危操作
+        const adminSecret = data?.adminSecret
+        if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+          return { code: 403, message: '无权执行此操作', requestId }
+        }
         return await crawlAllSchools(requestId)
+      }
       default:
         return { code: 400, message: `未知的 action: ${action}`, requestId }
     }

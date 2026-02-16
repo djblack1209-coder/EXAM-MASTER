@@ -172,7 +172,7 @@ class RetryInterceptor {
    * @returns {Promise} 请求结果
    */
   async executeWithRetry(requestFn, options = {}) {
-    const requestId = options.requestId || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const requestId = options.requestId || `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
     const config = { ...this.config, ...options };
 
     let lastError = null;

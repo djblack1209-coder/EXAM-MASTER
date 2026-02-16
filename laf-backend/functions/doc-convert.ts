@@ -45,7 +45,7 @@ const CONFIG = {
 // ==================== 主入口 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `doc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   // 调试日志：打印所有可能的参数来源
   console.log(`[${requestId}] 文档转换请求开始`)

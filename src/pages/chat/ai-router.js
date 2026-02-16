@@ -473,7 +473,7 @@ class AIRouter {
    * 生成请求ID
    */
   generateRequestId() {
-    return `req_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+    return `req_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
   }
 
   /**

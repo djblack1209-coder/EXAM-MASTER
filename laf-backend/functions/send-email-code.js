@@ -21,7 +21,7 @@ const SMTP_FROM = process.env.SMTP_FROM || 'Exam-Master <noreply@exam-master.com
 const db = cloud.database()
 
 export default async function (ctx) {
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   
   try {
     const { email } = ctx.body || {}

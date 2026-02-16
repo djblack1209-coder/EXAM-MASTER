@@ -33,7 +33,7 @@ const INVITE_REWARDS = [
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `inv_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`
+  const requestId = `inv_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
 
   try {
     const { action, ...params } = ctx.body || {}

@@ -81,12 +81,13 @@ export const studyTimerMixin = {
       }
 
       // 监听刷题页面的计时事件
-      uni.$on('studyTimeUpdate', (data) => {
+      this._studyTimeHandler = (data) => {
         if (data && typeof data.minutes === 'number') {
           this.todayStudyTime = Math.floor(data.minutes);
           logger.log('[StudyTimerMixin] 收到学习时长更新:', this.todayStudyTime, '分钟');
         }
-      });
+      };
+      uni.$on('studyTimeUpdate', this._studyTimeHandler);
 
       logger.log('[StudyTimerMixin] 计时器状态检查，今日:', this.todayStudyTime, '分钟');
     },
@@ -102,7 +103,7 @@ export const studyTimerMixin = {
       this.saveStudyTime();
       storageService.remove('session_start_time');
       storageService.remove('last_active_time');
-      uni.$off('studyTimeUpdate');
+      uni.$off('studyTimeUpdate', this._studyTimeHandler);
     },
 
     /**

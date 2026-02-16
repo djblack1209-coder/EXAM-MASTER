@@ -64,7 +64,7 @@ function validateUserId(userId: unknown): boolean {
 // ==================== 主入口 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `fav_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `fav_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   logger.info(`[${requestId}] 收藏管理请求开始`)
 

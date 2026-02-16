@@ -52,7 +52,7 @@ const VOICE_OPTIONS = {
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `voice_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `voice_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   console.log(`[${requestId}] 语音服务请求开始`)
 
@@ -61,7 +61,7 @@ export default async function (ctx) {
 
     // S003: 入口参数校验
     const entryValidation = validate({ action }, {
-      action: { required: true, type: 'string', maxLength: 50, enum: ['speech_to_text', 'stt', 'text_to_speech', 'tts'] }
+      action: { required: true, type: 'string', maxLength: 50, enum: ['speech_to_text', 'stt', 'text_to_speech', 'tts', 'get_voices'] }
     })
     if (!entryValidation.valid) {
       return {

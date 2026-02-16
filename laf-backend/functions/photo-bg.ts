@@ -66,7 +66,7 @@ const BG_COLORS = {
 // ==================== 主入口 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `photo_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   console.log(`[${requestId}] 证件照处理请求开始`)
 

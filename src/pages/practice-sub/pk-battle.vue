@@ -1277,7 +1277,7 @@ export default {
       const userId = storageService.get('EXAM_USER_ID', '');
 
       // 生成房间ID
-      this.sharePkRoomId = `pk_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+      this.sharePkRoomId = `pk_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
       // 生成邀请码
       this.sharePkInviteCode = generateInviteCode({

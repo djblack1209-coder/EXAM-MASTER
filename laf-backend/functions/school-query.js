@@ -134,7 +134,7 @@ function buildCacheKey(namespace, params = {}) {
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `school_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `school_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   
   try {
     const { action, data, token } = ctx.body || {}
