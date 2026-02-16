@@ -1,0 +1,158 @@
+/**
+ * EXAM-MASTER 共享 SCSS 变量
+ * F003: 统一 SCSS 变量，消除各组件中的重复定义
+ *
+ * 此文件通过 vite.config.js additionalData 自动注入到所有 SCSS 文件中，
+ * 无需手动 @import。
+ *
+ * 注意：此文件只能包含 SCSS 变量、mixins、functions，
+ * 不能包含任何实际的 CSS 输出（选择器、规则等），
+ * 否则会在每个组件中重复输出。
+ */
+
+// ==================== 品牌色 ====================
+$color-primary: #007AFF;
+$color-primary-dark: #0062CC;  // primary 加深 10%
+$color-primary-darker: #004999; // primary 加深 20%
+$color-primary-light: #E3F2FD;
+$color-accent-green: #9FE870;
+$color-accent-green-light: #F2F9EE;
+$color-accent-blue: #00B9FF;
+$color-accent-cyan: #00F2FF;
+
+// ==================== 语义色 ====================
+$color-success: #34C759;
+$color-warning: #FF9500;
+$color-error: #FF3B30;
+$color-info: #007AFF;
+
+// ==================== 文本色 ====================
+$color-text-primary: #111111;
+$color-text-secondary: #666666;
+$color-text-tertiary: #8E8E93;
+$color-text-inverse: #FFFFFF;
+
+// 深色模式文本色
+$color-text-primary-dark: #F5F5F7;
+$color-text-secondary-dark: #A1A1A6;
+$color-text-tertiary-dark: #636366;
+
+// ==================== 背景色 ====================
+$color-bg-page: #F5F5F7;
+$color-bg-card: #FFFFFF;
+$color-bg-elevated: #FFFFFF;
+
+// 深色模式背景色
+$color-bg-page-dark: #000000;
+$color-bg-card-dark: #1C1C1E;
+$color-bg-elevated-dark: #2C2C2E;
+
+// ==================== 边框色 ====================
+$color-border: #E5E5E5;
+$color-border-light: #F0F0F0;
+$color-border-dark: #38383A;
+
+// ==================== 间距 (8px grid) ====================
+$spacing-xs: 8rpx;
+$spacing-sm: 16rpx;
+$spacing-md: 24rpx;
+$spacing-lg: 32rpx;
+$spacing-xl: 48rpx;
+$spacing-2xl: 64rpx;
+
+// ==================== 圆角 ====================
+$radius-sm: 8rpx;
+$radius-md: 16rpx;
+$radius-lg: 24rpx;
+$radius-xl: 32rpx;
+$radius-full: 9999rpx;
+
+// ==================== 字体 ====================
+$font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', 'Roboto', sans-serif;
+
+$font-size-xs: 20rpx;
+$font-size-sm: 24rpx;
+$font-size-base: 28rpx;
+$font-size-lg: 32rpx;
+$font-size-xl: 36rpx;
+$font-size-2xl: 40rpx;
+$font-size-3xl: 48rpx;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// ==================== 阴影 ====================
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+$shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+// ==================== 动画 ====================
+$transition-fast: 0.15s ease;
+$transition-normal: 0.3s ease;
+$transition-slow: 0.5s ease;
+$transition-spring: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ==================== 布局 ====================
+$tabbar-height: 120rpx;
+$navbar-height: 88rpx;
+$safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+// ==================== 断点 ====================
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+
+// ==================== Mixins ====================
+
+/// 文本截断（单行）
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/// 文本截断（多行）
+/// @param {Number} $lines - 行数
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/// 毛玻璃效果
+/// @param {String} $bg - 背景色
+/// @param {String} $blur - 模糊度
+@mixin glass($bg: rgba(255, 255, 255, 0.8), $blur: 20px) {
+  background: $bg;
+  backdrop-filter: blur($blur) saturate(180%);
+  -webkit-backdrop-filter: blur($blur) saturate(180%);
+}
+
+/// Flex 居中
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/// 安全区域底部内边距
+@mixin safe-area-bottom($extra: 0px) {
+  padding-bottom: calc(#{$extra} + #{$safe-area-bottom});
+}
+
+/// 卡片基础样式
+@mixin card-base {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+// ==================== F028: 字体规范 ====================
+// 规范：所有字体大小应使用 rpx 单位，确保跨设备一致性
+// 迁移指南：1px ≈ 2rpx（750rpx 设计稿基准）
+// 新代码请使用以下预设变量，避免直接写 px 字体大小

@@ -1,0 +1,192 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "questions",
+  "description": "题库集合 - 存储所有考研题目 (v2.0增强版)",
+  "type": "object",
+  "required": ["question", "options", "answer", "category"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "question": {
+      "type": "string",
+      "description": "题目内容",
+      "minLength": 5,
+      "maxLength": 5000
+    },
+    "options": {
+      "type": "array",
+      "description": "选项列表",
+      "items": { "type": "string", "maxLength": 1000 },
+      "minItems": 2,
+      "maxItems": 10
+    },
+    "answer": {
+      "type": "string",
+      "description": "正确答案（单选: A/B/C/D, 多选: AB/ABC等）",
+      "pattern": "^[A-J]+$",
+      "maxLength": 10
+    },
+    "analysis": {
+      "type": "string",
+      "description": "答案解析",
+      "default": "",
+      "maxLength": 10000
+    },
+    "category": {
+      "type": "string",
+      "description": "科目分类",
+      "enum": ["政治", "英语", "数学", "专业课", "综合"]
+    },
+    "sub_category": {
+      "type": ["string", "null"],
+      "description": "子分类（如：马原、毛中特、阅读理解、高数、线代等）",
+      "maxLength": 50
+    },
+    "type": {
+      "type": "string",
+      "description": "题型",
+      "enum": ["单选", "多选", "判断", "填空", "简答", "论述", "计算"],
+      "default": "单选"
+    },
+    "difficulty": {
+      "type": "string",
+      "description": "难度等级",
+      "enum": ["easy", "medium", "hard"],
+      "default": "medium"
+    },
+    "tags": {
+      "type": "array",
+      "description": "标签列表（用于灵活分类和搜索）",
+      "items": {
+        "type": "string",
+        "maxLength": 50
+      },
+      "default": [],
+      "maxItems": 20
+    },
+    "knowledge_points": {
+      "type": "array",
+      "description": "关联知识点",
+      "items": { "type": "string", "maxLength": 100 },
+      "default": [],
+      "maxItems": 10
+    },
+    "source": {
+      "type": ["string", "null"],
+      "description": "题目来源（如：2024真题、模拟题、教材习题等）",
+      "maxLength": 100
+    },
+    "year": {
+      "type": ["integer", "null"],
+      "description": "年份（真题年份）",
+      "minimum": 2000,
+      "maximum": 2030
+    },
+    "chapter": {
+      "type": ["string", "null"],
+      "description": "章节（教材章节）",
+      "maxLength": 100
+    },
+    "total_attempts": {
+      "type": "integer",
+      "description": "总答题次数",
+      "default": 0,
+      "minimum": 0
+    },
+    "correct_attempts": {
+      "type": "integer",
+      "description": "正确答题次数",
+      "default": 0,
+      "minimum": 0
+    },
+    "avg_duration": {
+      "type": ["number", "null"],
+      "description": "平均答题时长（秒）"
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "是否启用",
+      "default": true
+    },
+    "is_premium": {
+      "type": "boolean",
+      "description": "是否为付费题目",
+      "default": false
+    },
+    "related_questions": {
+      "type": "array",
+      "description": "相关题目ID列表",
+      "items": { "type": "string" },
+      "default": [],
+      "maxItems": 10
+    },
+    "created_by": {
+      "type": ["string", "null"],
+      "description": "创建者ID（管理员或AI）"
+    },
+    "reviewed_by": {
+      "type": ["string", "null"],
+      "description": "审核者ID"
+    },
+    "review_status": {
+      "type": "string",
+      "description": "审核状态",
+      "enum": ["pending", "approved", "rejected"],
+      "default": "approved"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "category": 1, "sub_category": 1 }, "name": "idx_category" },
+    { "key": { "category": 1, "difficulty": 1 }, "name": "idx_category_difficulty" },
+    { "key": { "difficulty": 1 }, "name": "idx_difficulty" },
+    { "key": { "type": 1 }, "name": "idx_type" },
+    { "key": { "tags": 1 }, "name": "idx_tags" },
+    { "key": { "knowledge_points": 1 }, "name": "idx_knowledge_points" },
+    { "key": { "is_active": 1, "category": 1 }, "name": "idx_active_category" },
+    { "key": { "is_active": 1, "review_status": 1 }, "name": "idx_active_review" },
+    { "key": { "year": 1, "category": 1 }, "sparse": true, "name": "idx_year_category" },
+    { "key": { "source": 1 }, "sparse": true, "name": "idx_source" },
+    { "key": { "total_attempts": -1 }, "name": "idx_popularity" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" },
+    { "key": { "question": "text", "analysis": "text" }, "name": "idx_text_search" }
+  ],
+  "examples": [
+    {
+      "_id": "q_001",
+      "question": "马克思主义哲学的直接理论来源是？",
+      "options": ["A. 德国古典哲学", "B. 英国古典政治经济学", "C. 法国空想社会主义", "D. 古希腊哲学"],
+      "answer": "A",
+      "analysis": "马克思主义哲学的直接理论来源是德国古典哲学，特别是黑格尔的辩证法和费尔巴哈的唯物主义。",
+      "category": "政治",
+      "sub_category": "马原",
+      "type": "单选",
+      "difficulty": "medium",
+      "tags": ["哲学", "理论来源", "基础概念"],
+      "knowledge_points": ["马克思主义", "德国古典哲学"],
+      "source": "2023真题",
+      "year": 2023,
+      "chapter": "第一章 马克思主义哲学",
+      "total_attempts": 1500,
+      "correct_attempts": 1200,
+      "avg_duration": 35.5,
+      "is_active": true,
+      "is_premium": false,
+      "related_questions": ["q_002", "q_003"],
+      "created_by": "admin_001",
+      "reviewed_by": "admin_002",
+      "review_status": "approved",
+      "created_at": 1737792000000,
+      "updated_at": 1737792000000
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "idempotency_records",
+  "description": "幂等性记录集合 - 防止重复请求",
+  "type": "object",
+  "required": ["key", "user_id", "action", "status", "created_at", "expires_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "key": {
+      "type": "string",
+      "description": "幂等键 (格式: userId:action:clientKey)",
+      "maxLength": 256
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID"
+    },
+    "action": {
+      "type": "string",
+      "description": "操作类型",
+      "enum": ["submit_answer", "add_mistake", "update_score", "batch_sync", "payment", "recharge"]
+    },
+    "status": {
+      "type": "string",
+      "description": "处理状态",
+      "enum": ["processing", "completed", "failed"]
+    },
+    "result": {
+      "type": "object",
+      "description": "处理结果（JSON）"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "completed_at": {
+      "type": ["integer", "null"],
+      "description": "完成时间戳"
+    },
+    "expires_at": {
+      "type": "integer",
+      "description": "过期时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "key": 1 }, "unique": true, "name": "idx_key" },
+    { "key": { "user_id": 1, "action": 1 }, "name": "idx_user_action" },
+    { "key": { "expires_at": 1 }, "expireAfterSeconds": 0, "name": "idx_ttl" },
+    { "key": { "status": 1, "created_at": 1 }, "name": "idx_status_time" }
+  ],
+  "examples": [
+    {
+      "_id": "idem_001",
+      "key": "user_001:submit_answer:req_abc123",
+      "user_id": "user_001",
+      "action": "submit_answer",
+      "status": "completed",
+      "result": { "code": 0, "message": "提交成功", "is_correct": true },
+      "created_at": 1737878400000,
+      "completed_at": 1737878401000,
+      "expires_at": 1737964800000
+    }
+  ]
+}

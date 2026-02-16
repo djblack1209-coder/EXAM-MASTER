@@ -1,0 +1,222 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "panels": [],
+      "title": "服务概览",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "id": 2,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "pluginVersion": "10.2.2",
+      "targets": [{ "expr": "up{job=\"exam-master-backend\"}", "refId": "A" }],
+      "title": "后端服务状态",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "id": 3,
+      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "sum(rate(http_requests_total{namespace=\"exam-master\"}[5m]))", "refId": "A" }],
+      "title": "QPS",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "percentunit",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.01 }, { "color": "red", "value": 0.05 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "sum(rate(http_requests_total{namespace=\"exam-master\", status=~\"5..\"}[5m])) / sum(rate(http_requests_total{namespace=\"exam-master\"}[5m]))", "refId": "A" }],
+      "title": "错误率",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "s",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 2 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "id": 5,
+      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=\"exam-master\"}[5m])) by (le))", "refId": "A" }],
+      "title": "P95 延迟",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
+      "id": 6,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "count(kube_pod_status_ready{namespace=\"exam-master\", condition=\"true\"})", "refId": "A" }],
+      "title": "健康 Pod 数",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
+      "id": 7,
+      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"exam-master\"}[24h]))", "refId": "A" }],
+      "title": "24h 重启次数",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 10,
+      "panels": [],
+      "title": "资源使用",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "line" } },
+          "unit": "percentunit",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.8 }] }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 11,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [{ "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"exam-master\"}[5m])) by (pod) / sum(container_spec_cpu_quota{namespace=\"exam-master\"}/container_spec_cpu_period{namespace=\"exam-master\"}) by (pod)", "legendFormat": "{{pod}}", "refId": "A" }],
+      "title": "CPU 使用率",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "line" } },
+          "unit": "percentunit",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 0.85 }] }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 12,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [{ "expr": "container_memory_working_set_bytes{namespace=\"exam-master\"} / container_spec_memory_limit_bytes{namespace=\"exam-master\"}", "legendFormat": "{{pod}}", "refId": "A" }],
+      "title": "内存使用率",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 20,
+      "panels": [],
+      "title": "API 性能",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
+      "id": 21,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{namespace=\"exam-master\"}[5m]))", "legendFormat": "Total", "refId": "A" },
+        { "expr": "sum(rate(http_requests_total{namespace=\"exam-master\", status=~\"2..\"}[5m]))", "legendFormat": "2xx", "refId": "B" },
+        { "expr": "sum(rate(http_requests_total{namespace=\"exam-master\", status=~\"4..\"}[5m]))", "legendFormat": "4xx", "refId": "C" },
+        { "expr": "sum(rate(http_requests_total{namespace=\"exam-master\", status=~\"5..\"}[5m]))", "legendFormat": "5xx", "refId": "D" }
+      ],
+      "title": "请求速率 (QPS)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "line" } },
+          "unit": "s",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 2 }] }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
+      "id": 22,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{namespace=\"exam-master\"}[5m])) by (le))", "legendFormat": "P50", "refId": "A" },
+        { "expr": "histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket{namespace=\"exam-master\"}[5m])) by (le))", "legendFormat": "P90", "refId": "B" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=\"exam-master\"}[5m])) by (le))", "legendFormat": "P95", "refId": "C" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{namespace=\"exam-master\"}[5m])) by (le))", "legendFormat": "P99", "refId": "D" }
+      ],
+      "title": "响应延迟分布",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["exam-master", "production"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Exam-Master 监控大盘",
+  "uid": "exam-master-overview",
+  "version": 1,
+  "weekStart": ""
+}

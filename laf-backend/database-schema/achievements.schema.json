@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "achievements",
+  "description": "成就系统说明文档 - 成就数据存储在 users 集合的 achievements 数组字段中，无独立集合",
+  "type": "object",
+  "note": "成就定义在 achievement-manager.ts 云函数中硬编码，用户已解锁的成就存储在 users.achievements[] 数组中。此 schema 文件仅作为文档参考。",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "成就唯一标识（如 first_login, study_7_days, questions_200）",
+      "maxLength": 50
+    },
+    "name": {
+      "type": "string",
+      "description": "成就名称",
+      "maxLength": 50
+    },
+    "description": {
+      "type": "string",
+      "description": "成就描述",
+      "maxLength": 200
+    },
+    "icon": {
+      "type": "string",
+      "description": "成就图标（emoji）",
+      "maxLength": 10
+    },
+    "category": {
+      "type": "string",
+      "description": "成就分类",
+      "enum": ["milestone", "practice", "accuracy", "streak", "mistake", "social"]
+    },
+    "condition": {
+      "type": "object",
+      "description": "解锁条件",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "条件类型",
+          "enum": ["login_count", "total_study_days", "total_questions", "accuracy", "streak_days", "mastered_mistakes", "pk_count", "pk_wins"]
+        },
+        "value": {
+          "type": "integer",
+          "description": "条件阈值",
+          "minimum": 1
+        }
+      }
+    },
+    "unlocked_at": {
+      "type": ["integer", "null"],
+      "description": "解锁时间戳（存储在 users.achievements[] 中）"
+    }
+  },
+  "storage_location": {
+    "collection": "users",
+    "field": "achievements",
+    "format": "Array<{ id: string, name: string, icon: string, unlocked_at: number }>",
+    "description": "成就数据嵌入在 users 集合的 achievements 数组字段中，通过 achievement-manager.ts 云函数的 check/unlock action 管理"
+  },
+  "defined_achievements": [
+    { "id": "first_login", "name": "初来乍到", "category": "milestone", "condition": "login_count >= 1" },
+    { "id": "study_3_days", "name": "三天打鱼", "category": "milestone", "condition": "total_study_days >= 3" },
+    { "id": "study_7_days", "name": "一周坚持", "category": "milestone", "condition": "total_study_days >= 7" },
+    { "id": "study_30_days", "name": "月度学霸", "category": "milestone", "condition": "total_study_days >= 30" },
+    { "id": "study_100_days", "name": "百日冲刺", "category": "milestone", "condition": "total_study_days >= 100" },
+    { "id": "first_question", "name": "初试牛刀", "category": "practice", "condition": "total_questions >= 1" },
+    { "id": "questions_50", "name": "小试身手", "category": "practice", "condition": "total_questions >= 50" },
+    { "id": "questions_200", "name": "刷题达人", "category": "practice", "condition": "total_questions >= 200" },
+    { "id": "questions_500", "name": "题海战术", "category": "practice", "condition": "total_questions >= 500" },
+    { "id": "questions_1000", "name": "千题斩", "category": "practice", "condition": "total_questions >= 1000" },
+    { "id": "accuracy_60", "name": "及格万岁", "category": "accuracy", "condition": "accuracy >= 60" },
+    { "id": "accuracy_80", "name": "优秀学员", "category": "accuracy", "condition": "accuracy >= 80" },
+    { "id": "accuracy_95", "name": "学神降临", "category": "accuracy", "condition": "accuracy >= 95" },
+    { "id": "streak_3", "name": "三连击", "category": "streak", "condition": "streak_days >= 3" },
+    { "id": "streak_7", "name": "周周不断", "category": "streak", "condition": "streak_days >= 7" },
+    { "id": "streak_30", "name": "铁杵磨针", "category": "streak", "condition": "streak_days >= 30" },
+    { "id": "first_mistake_mastered", "name": "知错能改", "category": "mistake", "condition": "mastered_mistakes >= 1" },
+    { "id": "mistakes_mastered_10", "name": "错题克星", "category": "mistake", "condition": "mastered_mistakes >= 10" },
+    { "id": "mistakes_mastered_50", "name": "错题终结者", "category": "mistake", "condition": "mastered_mistakes >= 50" },
+    { "id": "first_pk", "name": "初次交锋", "category": "social", "condition": "pk_count >= 1" },
+    { "id": "pk_win_5", "name": "五连胜", "category": "social", "condition": "pk_wins >= 5" }
+  ]
+}

@@ -1,0 +1,7981 @@
+{
+  "北京": [
+    {
+      "code": "10001",
+      "name": "北京大学",
+      "shortName": "北京",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.491Z",
+      "createdAt": "2026-01-27T14:19:12.492Z",
+      "updatedAt": "2026-01-27T14:19:12.492Z"
+    },
+    {
+      "code": "10003",
+      "name": "清华大学",
+      "shortName": "清华",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "清华大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.492Z",
+      "createdAt": "2026-01-27T14:19:12.492Z",
+      "updatedAt": "2026-01-27T14:19:12.492Z"
+    },
+    {
+      "code": "10002",
+      "name": "中国人民大学",
+      "shortName": "中国人民",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国人民大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10006",
+      "name": "北京航空航天大学",
+      "shortName": "北京航空航天",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京航空航天大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10007",
+      "name": "北京理工大学",
+      "shortName": "北京理工",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京理工大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10019",
+      "name": "中国农业大学",
+      "shortName": "中国农业",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国农业大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10027",
+      "name": "北京师范大学",
+      "shortName": "北京师范",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京师范大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10034",
+      "name": "中央民族大学",
+      "shortName": "中央民族",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中央民族大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10004",
+      "name": "北京交通大学",
+      "shortName": "北京交通",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京交通大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10005",
+      "name": "北京工业大学",
+      "shortName": "北京工业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京工业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10008",
+      "name": "北京科技大学",
+      "shortName": "北京科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10010",
+      "name": "北京化工大学",
+      "shortName": "北京化工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京化工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10011",
+      "name": "北京邮电大学",
+      "shortName": "北京邮电",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京邮电大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10013",
+      "name": "北京林业大学",
+      "shortName": "北京林业",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京林业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10026",
+      "name": "北京中医药大学",
+      "shortName": "北京中医药",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京中医药大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10030",
+      "name": "北京外国语大学",
+      "shortName": "北京外国语",
+      "englishName": "",
+      "type": "语言",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京外国语大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10033",
+      "name": "中国传媒大学",
+      "shortName": "中国传媒",
+      "englishName": "",
+      "type": "艺术",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国传媒大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10036",
+      "name": "对外经济贸易大学",
+      "shortName": "对外经济贸易",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "对外经济贸易大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10038",
+      "name": "首都师范大学",
+      "shortName": "首都师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "首都师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10043",
+      "name": "北京体育大学",
+      "shortName": "北京体育",
+      "englishName": "",
+      "type": "体育",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京体育大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10053",
+      "name": "中国政法大学",
+      "shortName": "中国政法",
+      "englishName": "",
+      "type": "政法",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国政法大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10054",
+      "name": "华北电力大学",
+      "shortName": "华北电力",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华北电力大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10028",
+      "name": "首都经济贸易大学",
+      "shortName": "首都经济贸易",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "首都经济贸易大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10025",
+      "name": "首都医科大学",
+      "shortName": "首都医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "首都医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10022",
+      "name": "北京协和医学院",
+      "shortName": "北京协和医",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京协和医学院是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10032",
+      "name": "北京语言大学",
+      "shortName": "北京语言",
+      "englishName": "",
+      "type": "语言",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京语言大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10052",
+      "name": "中央音乐学院",
+      "shortName": "中央音乐",
+      "englishName": "",
+      "type": "艺术",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中央音乐学院是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10051",
+      "name": "中央财经大学",
+      "shortName": "中央财经",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中央财经大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10012",
+      "name": "北京服装学院",
+      "shortName": "北京服装",
+      "englishName": "",
+      "type": "艺术",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "北京",
+      "city": "北京",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "北京服装学院是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "上海": [
+    {
+      "code": "10246",
+      "name": "复旦大学",
+      "shortName": "复旦",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "复旦大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.492Z",
+      "createdAt": "2026-01-27T14:19:12.492Z",
+      "updatedAt": "2026-01-27T14:19:12.492Z"
+    },
+    {
+      "code": "10248",
+      "name": "上海交通大学",
+      "shortName": "上海交通",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海交通大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.492Z",
+      "createdAt": "2026-01-27T14:19:12.492Z",
+      "updatedAt": "2026-01-27T14:19:12.492Z"
+    },
+    {
+      "code": "10247",
+      "name": "同济大学",
+      "shortName": "同济",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "同济大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10269",
+      "name": "华东师范大学",
+      "shortName": "华东师范",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华东师范大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10251",
+      "name": "华东理工大学",
+      "shortName": "华东理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华东理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10252",
+      "name": "上海理工大学",
+      "shortName": "上海理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10254",
+      "name": "上海海事大学",
+      "shortName": "上海海事",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海海事大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10255",
+      "name": "东华大学",
+      "shortName": "东华",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "东华大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10264",
+      "name": "上海海洋大学",
+      "shortName": "上海海洋",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海海洋大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10268",
+      "name": "上海中医药大学",
+      "shortName": "上海中医药",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海中医药大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10271",
+      "name": "上海外国语大学",
+      "shortName": "上海外国语",
+      "englishName": "",
+      "type": "语言",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海外国语大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10272",
+      "name": "上海财经大学",
+      "shortName": "上海财经",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海财经大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10273",
+      "name": "上海对外经贸大学",
+      "shortName": "上海对外经贸",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海对外经贸大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10280",
+      "name": "上海大学",
+      "shortName": "上海",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "上海",
+      "city": "上海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "上海大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "江苏": [
+    {
+      "code": "10284",
+      "name": "南京大学",
+      "shortName": "南京",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南京大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.492Z",
+      "createdAt": "2026-01-27T14:19:12.492Z",
+      "updatedAt": "2026-01-27T14:19:12.492Z"
+    },
+    {
+      "code": "10286",
+      "name": "东南大学",
+      "shortName": "东南",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "东南大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10285",
+      "name": "苏州大学",
+      "shortName": "苏州",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "苏州大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10287",
+      "name": "南京航空航天大学",
+      "shortName": "南京航空航天",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南京航空航天大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10288",
+      "name": "南京理工大学",
+      "shortName": "南京理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南京理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10290",
+      "name": "中国矿业大学",
+      "shortName": "中国矿业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国矿业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10291",
+      "name": "南京工业大学",
+      "shortName": "南京工业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南京工业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10294",
+      "name": "河海大学",
+      "shortName": "河海",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "河海大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10295",
+      "name": "江南大学",
+      "shortName": "江南",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "江南大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10299",
+      "name": "江苏大学",
+      "shortName": "江苏",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "江苏大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10300",
+      "name": "南京信息工程大学",
+      "shortName": "南京信息工程",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南京信息工程大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10307",
+      "name": "南京农业大学",
+      "shortName": "南京农业",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南京农业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10312",
+      "name": "南京医科大学",
+      "shortName": "南京医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南京医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10319",
+      "name": "南京师范大学",
+      "shortName": "南京师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江苏",
+      "city": "江苏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南京师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "浙江": [
+    {
+      "code": "10335",
+      "name": "浙江大学",
+      "shortName": "浙江",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "浙江",
+      "city": "浙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "浙江大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.492Z",
+      "createdAt": "2026-01-27T14:19:12.492Z",
+      "updatedAt": "2026-01-27T14:19:12.492Z"
+    },
+    {
+      "code": "10337",
+      "name": "浙江工业大学",
+      "shortName": "浙江工业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "浙江",
+      "city": "浙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "浙江工业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10338",
+      "name": "浙江理工大学",
+      "shortName": "浙江理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "浙江",
+      "city": "浙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "浙江理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10343",
+      "name": "温州医科大学",
+      "shortName": "温州医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "浙江",
+      "city": "浙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "温州医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10346",
+      "name": "杭州电子科技大学",
+      "shortName": "杭州电子科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "浙江",
+      "city": "浙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "杭州电子科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10356",
+      "name": "中国计量大学",
+      "shortName": "中国计量",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "浙江",
+      "city": "浙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国计量大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "广东": [
+    {
+      "code": "10558",
+      "name": "中山大学",
+      "shortName": "中山",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中山大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10561",
+      "name": "华南理工大学",
+      "shortName": "华南理工",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华南理工大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10559",
+      "name": "暨南大学",
+      "shortName": "暨南",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "暨南大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10560",
+      "name": "汕头大学",
+      "shortName": "汕头",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "汕头大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10564",
+      "name": "华南农业大学",
+      "shortName": "华南农业",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华南农业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10566",
+      "name": "广东海洋大学",
+      "shortName": "广东海洋",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "广东海洋大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10570",
+      "name": "广州医科大学",
+      "shortName": "广州医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "广州医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10572",
+      "name": "广州中医药大学",
+      "shortName": "广州中医药",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "广州中医药大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10574",
+      "name": "华南师范大学",
+      "shortName": "华南师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华南师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10590",
+      "name": "深圳大学",
+      "shortName": "深圳",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "深圳大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "11845",
+      "name": "广东工业大学",
+      "shortName": "广东工业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "广东工业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "11846",
+      "name": "广东外语外贸大学",
+      "shortName": "广东外语外贸",
+      "englishName": "",
+      "type": "语言",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广东",
+      "city": "广东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "广东外语外贸大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "湖北": [
+    {
+      "code": "10486",
+      "name": "武汉大学",
+      "shortName": "武汉",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "武汉大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10487",
+      "name": "华中科技大学",
+      "shortName": "华中科技",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华中科技大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10488",
+      "name": "武汉科技大学",
+      "shortName": "武汉科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "武汉科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10489",
+      "name": "长江大学",
+      "shortName": "长江",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "长江大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10490",
+      "name": "武汉工程大学",
+      "shortName": "武汉工程",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "武汉工程大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10491",
+      "name": "中国地质大学(武汉)",
+      "shortName": "中国地质(武汉)",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国地质大学(武汉)是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10497",
+      "name": "武汉理工大学",
+      "shortName": "武汉理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "武汉理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10500",
+      "name": "湖北工业大学",
+      "shortName": "湖北工业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "湖北工业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10504",
+      "name": "华中农业大学",
+      "shortName": "华中农业",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华中农业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10511",
+      "name": "华中师范大学",
+      "shortName": "华中师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华中师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10520",
+      "name": "中南财经政法大学",
+      "shortName": "中南财经政法",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖北",
+      "city": "湖北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中南财经政法大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "四川": [
+    {
+      "code": "10610",
+      "name": "四川大学",
+      "shortName": "四川",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "四川大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10614",
+      "name": "电子科技大学",
+      "shortName": "电子科技",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "电子科技大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10615",
+      "name": "西南石油大学",
+      "shortName": "西南石油",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西南石油大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10616",
+      "name": "成都理工大学",
+      "shortName": "成都理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "成都理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10619",
+      "name": "西南科技大学",
+      "shortName": "西南科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西南科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10626",
+      "name": "四川农业大学",
+      "shortName": "四川农业",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "四川农业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10632",
+      "name": "西南医科大学",
+      "shortName": "西南医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西南医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10633",
+      "name": "成都中医药大学",
+      "shortName": "成都中医药",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "成都中医药大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10636",
+      "name": "四川师范大学",
+      "shortName": "四川师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "四川师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10651",
+      "name": "西南财经大学",
+      "shortName": "西南财经",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "四川",
+      "city": "四川",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西南财经大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "陕西": [
+    {
+      "code": "10698",
+      "name": "西安交通大学",
+      "shortName": "西安交通",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西安交通大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10699",
+      "name": "西北工业大学",
+      "shortName": "西北工业",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西北工业大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10712",
+      "name": "西北农林科技大学",
+      "shortName": "西北农林科技",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西北农林科技大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10697",
+      "name": "西北大学",
+      "shortName": "西北",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西北大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10700",
+      "name": "西安理工大学",
+      "shortName": "西安理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西安理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10701",
+      "name": "西安电子科技大学",
+      "shortName": "西安电子科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西安电子科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10702",
+      "name": "西安工业大学",
+      "shortName": "西安工业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西安工业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10703",
+      "name": "西安建筑科技大学",
+      "shortName": "西安建筑科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西安建筑科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10704",
+      "name": "西安科技大学",
+      "shortName": "西安科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西安科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10705",
+      "name": "西安石油大学",
+      "shortName": "西安石油",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西安石油大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10708",
+      "name": "陕西科技大学",
+      "shortName": "陕西科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "陕西科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10710",
+      "name": "长安大学",
+      "shortName": "长安",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "长安大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10718",
+      "name": "陕西师范大学",
+      "shortName": "陕西师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "陕西",
+      "city": "陕西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "陕西师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "黑龙江": [
+    {
+      "code": "10213",
+      "name": "哈尔滨工业大学",
+      "shortName": "哈尔滨工业",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "黑龙江",
+      "city": "黑龙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "哈尔滨工业大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10217",
+      "name": "哈尔滨工程大学",
+      "shortName": "哈尔滨工程",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "黑龙江",
+      "city": "黑龙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "哈尔滨工程大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10225",
+      "name": "东北林业大学",
+      "shortName": "东北林业",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "黑龙江",
+      "city": "黑龙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "东北林业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10226",
+      "name": "东北农业大学",
+      "shortName": "东北农业",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "黑龙江",
+      "city": "黑龙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "东北农业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10228",
+      "name": "黑龙江大学",
+      "shortName": "黑龙江",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "黑龙江",
+      "city": "黑龙江",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "黑龙江大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "辽宁": [
+    {
+      "code": "10141",
+      "name": "大连理工大学",
+      "shortName": "大连理工",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "辽宁",
+      "city": "辽宁",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "大连理工大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10145",
+      "name": "东北大学",
+      "shortName": "东北",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "辽宁",
+      "city": "辽宁",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "东北大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10140",
+      "name": "辽宁大学",
+      "shortName": "辽宁",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "辽宁",
+      "city": "辽宁",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "辽宁大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10151",
+      "name": "大连海事大学",
+      "shortName": "大连海事",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "辽宁",
+      "city": "辽宁",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "大连海事大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10147",
+      "name": "辽宁工程技术大学",
+      "shortName": "辽宁工程技术",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "辽宁",
+      "city": "辽宁",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "辽宁工程技术大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10159",
+      "name": "中国医科大学",
+      "shortName": "中国医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "辽宁",
+      "city": "辽宁",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10161",
+      "name": "大连医科大学",
+      "shortName": "大连医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "辽宁",
+      "city": "辽宁",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "大连医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10173",
+      "name": "东北财经大学",
+      "shortName": "东北财经",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "辽宁",
+      "city": "辽宁",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "东北财经大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "吉林": [
+    {
+      "code": "10183",
+      "name": "吉林大学",
+      "shortName": "吉林",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "吉林",
+      "city": "吉林",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "吉林大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10186",
+      "name": "长春理工大学",
+      "shortName": "长春理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "吉林",
+      "city": "吉林",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "长春理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10184",
+      "name": "延边大学",
+      "shortName": "延边",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "吉林",
+      "city": "吉林",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "延边大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10200",
+      "name": "东北师范大学",
+      "shortName": "东北师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "吉林",
+      "city": "吉林",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "东北师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "福建": [
+    {
+      "code": "10384",
+      "name": "厦门大学",
+      "shortName": "厦门",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "福建",
+      "city": "福建",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "厦门大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10385",
+      "name": "华侨大学",
+      "shortName": "华侨",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "福建",
+      "city": "福建",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华侨大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10386",
+      "name": "福州大学",
+      "shortName": "福州",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "福建",
+      "city": "福建",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "福州大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10389",
+      "name": "福建农林大学",
+      "shortName": "福建农林",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "福建",
+      "city": "福建",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "福建农林大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10390",
+      "name": "集美大学",
+      "shortName": "集美",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "福建",
+      "city": "福建",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "集美大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10394",
+      "name": "福建师范大学",
+      "shortName": "福建师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "福建",
+      "city": "福建",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "福建师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "山东": [
+    {
+      "code": "10422",
+      "name": "山东大学",
+      "shortName": "山东",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "山东大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10423",
+      "name": "中国海洋大学",
+      "shortName": "中国海洋",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国海洋大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10424",
+      "name": "山东科技大学",
+      "shortName": "山东科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "山东科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10425",
+      "name": "中国石油大学(华东)",
+      "shortName": "中国石油(华东)",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国石油大学(华东)是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10426",
+      "name": "青岛科技大学",
+      "shortName": "青岛科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "青岛科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10429",
+      "name": "青岛理工大学",
+      "shortName": "青岛理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "青岛理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10430",
+      "name": "山东建筑大学",
+      "shortName": "山东建筑",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "山东建筑大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10445",
+      "name": "山东师范大学",
+      "shortName": "山东师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "山东师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10456",
+      "name": "山东财经大学",
+      "shortName": "山东财经",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山东",
+      "city": "山东",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "山东财经大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "湖南": [
+    {
+      "code": "10532",
+      "name": "湖南大学",
+      "shortName": "湖南",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "湖南",
+      "city": "湖南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "湖南大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10533",
+      "name": "中南大学",
+      "shortName": "中南",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "湖南",
+      "city": "湖南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中南大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "91002",
+      "name": "国防科技大学",
+      "shortName": "国防科技",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "湖南",
+      "city": "湖南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "国防科技大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10530",
+      "name": "湘潭大学",
+      "shortName": "湘潭",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖南",
+      "city": "湖南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "湘潭大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10534",
+      "name": "湖南科技大学",
+      "shortName": "湖南科技",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖南",
+      "city": "湖南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "湖南科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10536",
+      "name": "长沙理工大学",
+      "shortName": "长沙理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖南",
+      "city": "湖南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "长沙理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10542",
+      "name": "湖南师范大学",
+      "shortName": "湖南师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "湖南",
+      "city": "湖南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "湖南师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "重庆": [
+    {
+      "code": "10611",
+      "name": "重庆大学",
+      "shortName": "重庆",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "重庆",
+      "city": "重庆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "重庆大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10613",
+      "name": "西南大学",
+      "shortName": "西南",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "重庆",
+      "city": "重庆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西南大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10617",
+      "name": "重庆邮电大学",
+      "shortName": "重庆邮电",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "重庆",
+      "city": "重庆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "重庆邮电大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10618",
+      "name": "重庆交通大学",
+      "shortName": "重庆交通",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "重庆",
+      "city": "重庆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "重庆交通大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10631",
+      "name": "重庆医科大学",
+      "shortName": "重庆医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "重庆",
+      "city": "重庆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "重庆医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10635",
+      "name": "西南政法大学",
+      "shortName": "西南政法",
+      "englishName": "",
+      "type": "政法",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "重庆",
+      "city": "重庆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西南政法大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "甘肃": [
+    {
+      "code": "10730",
+      "name": "兰州大学",
+      "shortName": "兰州",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "甘肃",
+      "city": "甘肃",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "兰州大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10731",
+      "name": "兰州理工大学",
+      "shortName": "兰州理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "甘肃",
+      "city": "甘肃",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "兰州理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10732",
+      "name": "兰州交通大学",
+      "shortName": "兰州交通",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "甘肃",
+      "city": "甘肃",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "兰州交通大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10736",
+      "name": "西北师范大学",
+      "shortName": "西北师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "甘肃",
+      "city": "甘肃",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西北师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "天津": [
+    {
+      "code": "10055",
+      "name": "南开大学",
+      "shortName": "南开",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "天津",
+      "city": "天津",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南开大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10056",
+      "name": "天津大学",
+      "shortName": "天津",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "天津",
+      "city": "天津",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "天津大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10058",
+      "name": "天津医科大学",
+      "shortName": "天津医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "天津",
+      "city": "天津",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "天津医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10059",
+      "name": "中国民航大学",
+      "shortName": "中国民航",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "天津",
+      "city": "天津",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国民航大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10060",
+      "name": "天津财经大学",
+      "shortName": "天津财经",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "天津",
+      "city": "天津",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "天津财经大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "安徽": [
+    {
+      "code": "10358",
+      "name": "中国科学技术大学",
+      "shortName": "中国科学技术",
+      "englishName": "",
+      "type": "综合",
+      "level": "985",
+      "tags": [
+        "985",
+        "211",
+        "双一流"
+      ],
+      "province": "安徽",
+      "city": "安徽",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "中国科学技术大学是中国著名的高等学府，是国家\"985工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10357",
+      "name": "安徽大学",
+      "shortName": "安徽",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "安徽",
+      "city": "安徽",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "安徽大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10359",
+      "name": "合肥工业大学",
+      "shortName": "合肥工业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "安徽",
+      "city": "安徽",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "合肥工业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10366",
+      "name": "安徽医科大学",
+      "shortName": "安徽医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "安徽",
+      "city": "安徽",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "安徽医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "江西": [
+    {
+      "code": "10403",
+      "name": "南昌大学",
+      "shortName": "南昌",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江西",
+      "city": "江西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "南昌大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10405",
+      "name": "东华理工大学",
+      "shortName": "东华理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江西",
+      "city": "江西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "东华理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10414",
+      "name": "江西师范大学",
+      "shortName": "江西师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江西",
+      "city": "江西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "江西师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10421",
+      "name": "江西财经大学",
+      "shortName": "江西财经",
+      "englishName": "",
+      "type": "财经",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "江西",
+      "city": "江西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "江西财经大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "河南": [
+    {
+      "code": "10459",
+      "name": "郑州大学",
+      "shortName": "郑州",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河南",
+      "city": "河南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "郑州大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10460",
+      "name": "河南理工大学",
+      "shortName": "河南理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河南",
+      "city": "河南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "河南理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10464",
+      "name": "河南科技大学",
+      "shortName": "河南科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河南",
+      "city": "河南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "河南科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    },
+    {
+      "code": "10475",
+      "name": "河南大学",
+      "shortName": "河南",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河南",
+      "city": "河南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "河南大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.493Z",
+      "createdAt": "2026-01-27T14:19:12.493Z",
+      "updatedAt": "2026-01-27T14:19:12.493Z"
+    }
+  ],
+  "广西": [
+    {
+      "code": "10593",
+      "name": "广西大学",
+      "shortName": "广西",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广西",
+      "city": "广西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "广西大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10598",
+      "name": "广西医科大学",
+      "shortName": "广西医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广西",
+      "city": "广西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "广西医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10602",
+      "name": "广西师范大学",
+      "shortName": "广西师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "广西",
+      "city": "广西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "广西师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "海南": [
+    {
+      "code": "10589",
+      "name": "海南大学",
+      "shortName": "海南",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "海南",
+      "city": "海南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "海南大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "贵州": [
+    {
+      "code": "10657",
+      "name": "贵州大学",
+      "shortName": "贵州",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "贵州",
+      "city": "贵州",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "贵州大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10660",
+      "name": "贵州医科大学",
+      "shortName": "贵州医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "贵州",
+      "city": "贵州",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "贵州医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "云南": [
+    {
+      "code": "10673",
+      "name": "云南大学",
+      "shortName": "云南",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "云南",
+      "city": "云南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "云南大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10674",
+      "name": "昆明理工大学",
+      "shortName": "昆明理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "云南",
+      "city": "云南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "昆明理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10678",
+      "name": "昆明医科大学",
+      "shortName": "昆明医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "云南",
+      "city": "云南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "昆明医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10681",
+      "name": "云南师范大学",
+      "shortName": "云南师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "云南",
+      "city": "云南",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "云南师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "青海": [
+    {
+      "code": "10743",
+      "name": "青海大学",
+      "shortName": "青海",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "青海",
+      "city": "青海",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "青海大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "宁夏": [
+    {
+      "code": "10749",
+      "name": "宁夏大学",
+      "shortName": "宁夏",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "宁夏",
+      "city": "宁夏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "宁夏大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "新疆": [
+    {
+      "code": "10755",
+      "name": "新疆大学",
+      "shortName": "新疆",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "新疆",
+      "city": "新疆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "新疆大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10758",
+      "name": "新疆农业大学",
+      "shortName": "新疆农业",
+      "englishName": "",
+      "type": "农林",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "新疆",
+      "city": "新疆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "新疆农业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10759",
+      "name": "石河子大学",
+      "shortName": "石河子",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "新疆",
+      "city": "新疆",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "石河子大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "内蒙古": [
+    {
+      "code": "10126",
+      "name": "内蒙古大学",
+      "shortName": "内蒙古",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "内蒙古",
+      "city": "内蒙古",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "内蒙古大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10127",
+      "name": "内蒙古科技大学",
+      "shortName": "内蒙古科技",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "内蒙古",
+      "city": "内蒙古",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "内蒙古科技大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "西藏": [
+    {
+      "code": "10694",
+      "name": "西藏大学",
+      "shortName": "西藏",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "西藏",
+      "city": "西藏",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "西藏大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "河北": [
+    {
+      "code": "10075",
+      "name": "河北大学",
+      "shortName": "河北",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河北",
+      "city": "河北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "河北大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10076",
+      "name": "河北工程大学",
+      "shortName": "河北工程",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河北",
+      "city": "河北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "河北工程大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10080",
+      "name": "河北工业大学",
+      "shortName": "河北工业",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河北",
+      "city": "河北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "河北工业大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10081",
+      "name": "华北理工大学",
+      "shortName": "华北理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河北",
+      "city": "河北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "华北理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10094",
+      "name": "河北师范大学",
+      "shortName": "河北师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "河北",
+      "city": "河北",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "河北师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ],
+  "山西": [
+    {
+      "code": "10108",
+      "name": "山西大学",
+      "shortName": "山西",
+      "englishName": "",
+      "type": "综合",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山西",
+      "city": "山西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "山西大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10112",
+      "name": "太原理工大学",
+      "shortName": "太原理工",
+      "englishName": "",
+      "type": "理工",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山西",
+      "city": "山西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "太原理工大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10114",
+      "name": "山西医科大学",
+      "shortName": "山西医科",
+      "englishName": "",
+      "type": "医药",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山西",
+      "city": "山西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "山西医科大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    },
+    {
+      "code": "10117",
+      "name": "山西师范大学",
+      "shortName": "山西师范",
+      "englishName": "",
+      "type": "师范",
+      "level": "211",
+      "tags": [
+        "211",
+        "双一流"
+      ],
+      "province": "山西",
+      "city": "山西",
+      "address": "",
+      "website": "",
+      "phone": "",
+      "email": "",
+      "description": "山西师范大学是中国著名的高等学府，是国家\"211工程\"重点建设大学。",
+      "features": [],
+      "ranking": {
+        "overall": 0,
+        "year": 2026
+      },
+      "graduateInfo": {
+        "totalEnrollment": 0,
+        "masterEnrollment": 0,
+        "doctorEnrollment": 0,
+        "exemptionRate": 0,
+        "year": 2026
+      },
+      "logo": "",
+      "banner": "",
+      "photos": [],
+      "status": "active",
+      "dataSource": "crawler",
+      "lastUpdated": "2026-01-27T14:19:12.494Z",
+      "createdAt": "2026-01-27T14:19:12.494Z",
+      "updatedAt": "2026-01-27T14:19:12.494Z"
+    }
+  ]
+}

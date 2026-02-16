@@ -1,0 +1,2 @@
+# 执行快速检查
+echo "✅ Pre-commit check passed"

@@ -1,0 +1,18 @@
+{
+  "name": "exam-master-backend",
+  "version": "1.0.0",
+  "description": "Exam-Master 后端云函数服务 (Laf Cloud)",
+  "private": true,
+  "scripts": {
+    "deploy": "laf deploy",
+    "dev": "laf dev",
+    "lint": "echo 'Backend lint not configured (Laf platform manages runtime)'",
+    "db:indexes": "echo 'Run db-create-indexes cloud function in Laf console'",
+    "db:migrate": "echo 'Run db-migrate-timestamps cloud function in Laf console'"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

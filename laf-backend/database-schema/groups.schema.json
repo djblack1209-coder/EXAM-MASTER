@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "groups",
+  "description": "学习小组集合 - 存储小组基本信息",
+  "type": "object",
+  "required": ["name", "created_by", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId 或自定义ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "小组名称",
+      "minLength": 2,
+      "maxLength": 50
+    },
+    "description": {
+      "type": "string",
+      "description": "小组描述",
+      "maxLength": 200
+    },
+    "avatar": {
+      "type": "string",
+      "description": "小组头像URL"
+    },
+    "tags": {
+      "type": "array",
+      "description": "小组标签",
+      "items": {
+        "type": "string"
+      }
+    },
+    "max_members": {
+      "type": "integer",
+      "description": "最大成员数",
+      "minimum": 2,
+      "maximum": 100,
+      "default": 50
+    },
+    "member_count": {
+      "type": "integer",
+      "description": "当前成员数",
+      "minimum": 0,
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "description": "小组状态",
+      "enum": ["active", "inactive", "pending"],
+      "default": "active"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "创建者用户ID"
+    },
+    "admins": {
+      "type": "array",
+      "description": "管理员用户ID列表（包含创建者）",
+      "items": { "type": "string", "maxLength": 64 },
+      "default": []
+    },
+    "join_type": {
+      "type": "string",
+      "description": "加入方式",
+      "enum": ["open", "approval", "invite_only"],
+      "default": "open"
+    },
+    "announcement": {
+      "type": ["string", "null"],
+      "description": "小组公告",
+      "maxLength": 500
+    },
+    "category": {
+      "type": ["string", "null"],
+      "description": "小组分类（如：政治、英语、数学、专业课）",
+      "maxLength": 50
+    },
+    "target_school": {
+      "type": ["string", "null"],
+      "description": "目标院校（可选）",
+      "maxLength": 100
+    },
+    "target_major": {
+      "type": ["string", "null"],
+      "description": "目标专业（可选）",
+      "maxLength": 100
+    },
+    "weekly_goal": {
+      "type": ["integer", "null"],
+      "description": "每周学习目标（分钟）",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "is_public": {
+      "type": "boolean",
+      "description": "是否公开可搜索",
+      "default": true
+    },
+    "invite_code": {
+      "type": ["string", "null"],
+      "description": "邀请码（invite_only模式使用）",
+      "maxLength": 20
+    },
+    "members": {
+      "type": "array",
+      "description": "成员列表（包含角色和加入时间）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "string", "maxLength": 64 },
+          "role": { "type": "string", "enum": ["owner", "admin", "member"], "default": "member" },
+          "nickname": { "type": "string", "maxLength": 32 },
+          "joined_at": { "type": "integer", "description": "加入时间戳" },
+          "muted_until": { "type": ["integer", "null"], "description": "禁言截止时间戳" }
+        },
+        "required": ["user_id", "role", "joined_at"]
+      },
+      "default": [],
+      "maxItems": 100
+    },
+    "pending_members": {
+      "type": "array",
+      "description": "待审核成员列表（approval模式使用）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "string", "maxLength": 64 },
+          "nickname": { "type": "string", "maxLength": 32 },
+          "apply_message": { "type": "string", "maxLength": 200 },
+          "applied_at": { "type": "integer" }
+        },
+        "required": ["user_id", "applied_at"]
+      },
+      "default": [],
+      "maxItems": 50
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳（毫秒级 Unix timestamp）"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳（毫秒级 Unix timestamp）"
+    }
+  },
+  "indexes": [
+    { "key": { "created_by": 1 }, "name": "idx_created_by" },
+    { "key": { "status": 1 }, "name": "idx_status" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" },
+    { "key": { "tags": 1 }, "name": "idx_tags" },
+    { "key": { "name": "text", "description": "text" }, "name": "idx_text_search" },
+    { "key": { "is_public": 1, "status": 1 }, "name": "idx_public_status" },
+    { "key": { "category": 1 }, "sparse": true, "name": "idx_category" },
+    { "key": { "join_type": 1 }, "name": "idx_join_type" },
+    { "key": { "member_count": -1 }, "name": "idx_member_count" },
+    { "key": { "invite_code": 1 }, "sparse": true, "unique": true, "name": "idx_invite_code" },
+    { "key": { "target_school": 1 }, "sparse": true, "name": "idx_target_school" },
+    { "key": { "members.user_id": 1 }, "name": "idx_member_user_id" }
+  ],
+  "examples": [
+    {
+      "_id": "group_001",
+      "name": "清华大学计算机考研群",
+      "description": "为备考清华大学计算机专业的同学提供交流平台",
+      "avatar": "/static/group-avatars/tsinghua-cs.png",
+      "tags": ["清华大学", "计算机", "考研"],
+      "max_members": 50,
+      "member_count": 25,
+      "status": "active",
+      "created_by": "user_001",
+      "admins": ["user_001", "user_002"],
+      "join_type": "approval",
+      "announcement": "欢迎加入！请遵守群规，互相帮助。每周日晚8点线上自习。",
+      "category": "专业课",
+      "target_school": "清华大学",
+      "target_major": "计算机科学与技术",
+      "weekly_goal": 600,
+      "is_public": true,
+      "invite_code": null,
+      "created_at": 1737792000000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

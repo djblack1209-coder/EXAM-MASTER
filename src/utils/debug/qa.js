@@ -1,0 +1,173 @@
+// utils/qa.js - UniApp 增强版
+import { logger } from '@/utils/logger.js';
+let logQueue = [];
+const isDev = true;
+
+// 安全获取全局对象
+const safeGetApp = () => {
+  try {
+    return typeof getApp === 'function' ? getApp() : null;
+  } catch (_e) {
+    return null;
+  }
+};
+
+const safeGetCurrentPages = () => {
+  try {
+    return typeof getCurrentPages === 'function' ? getCurrentPages() : [];
+  } catch (_e) {
+    return [];
+  }
+};
+
+export const qa = {
+  log(type, msg, expect = null) {
+    if (!isDev) return;
+    if (logQueue.length > 200) logQueue.shift();
+    let data = msg;
+    if (type === 'RESPONSE' && msg.body && typeof msg.body === 'string') {
+      data = { ...msg, body: msg.body.slice(0, 512) + '...(truncated)' };
+    }
+    const pages = safeGetCurrentPages();
+    const entry = { time: Date.now(), type, data, expect, page: pages.pop()?.route };
+    logQueue.push(entry);
+    const app = safeGetApp();
+    if (app) app.globalData = { ...app.globalData, qaLogs: logQueue };
+    logger.log(`[QA] ${type}:`, data);
+  },
+  clear() {
+    logQueue = [];
+    const app = safeGetApp();
+    if (app) app.globalData.qaLogs = [];
+    logger.log('[QA] Logs cleared');
+  },
+  getLogs() {
+    const app = safeGetApp();
+    return (app && app.globalData.qaLogs) || logQueue;
+  }
+};
+
+// 网络请求拦截器 - uni-app 版本
+export const injectInterceptor = () => {
+  // 检查 uni 对象是否存在
+  if (typeof uni === 'undefined' || !uni.request) {
+    console.warn('[QA] uni 对象未初始化，跳过拦截器注入');
+    return;
+  }
+
+  // 拦截 uni.request
+  const originRequest = uni.request;
+  uni.request = function (options) {
+    const { url, method = 'GET' } = options;
+    qa.log('REQUEST_SEND', { url, method });
+    const _fail = options.fail;
+    options.fail = function (err) {
+      qa.log('REQUEST_FAIL', { url, err });
+      return _fail?.call(this, err);
+    };
+    const _success = options.success;
+    options.success = function (res) {
+      qa.log('RESPONSE', {
+        url,
+        statusCode: res.statusCode,
+        body: JSON.stringify(res.data).slice(0, 512)
+      });
+      return _success?.call(this, res);
+    };
+    return originRequest.call(this, options);
+  };
+
+  // 拦截 uniCloud.callFunction（仅在支持的环境）
+  if (typeof uniCloud !== 'undefined' && uniCloud.callFunction) {
+    const originCallFunction = uniCloud.callFunction;
+    uniCloud.callFunction = function (options) {
+      const { name } = options;
+      qa.log('CLOUDFUNCTION_CALL', { name });
+      const _fail = options.fail;
+      options.fail = function (err) {
+        qa.log('CLOUDFUNCTION_FAIL', { name, err });
+        return _fail?.call(this, err);
+      };
+      const _success = options.success;
+      options.success = function (res) {
+        qa.log('CLOUDFUNCTION_RESPONSE', {
+          name,
+          success: res.success,
+          result: JSON.stringify(res.result).slice(0, 512)
+        });
+        return _success?.call(this, res);
+      };
+      return originCallFunction.call(this, options);
+    };
+  }
+
+  // 同时拦截微信原生 wx.request（兼容性）
+  if (typeof wx !== 'undefined' && wx.request) {
+    const originWxRequest = wx.request;
+    Object.defineProperty(wx, 'request', {
+      configurable: true,
+      writable: true,
+      value: function (options) {
+        const { url, method = 'GET' } = options;
+        qa.log('REQUEST_SEND', { url, method });
+        const _success = options.success;
+        options.success = function (res) {
+          qa.log('RESPONSE', {
+            url,
+            statusCode: res.statusCode,
+            body: JSON.stringify(res.data).slice(0, 512)
+          });
+          return _success?.call(this, res);
+        };
+        return originWxRequest.call(this, options);
+      }
+    });
+  }
+};
+
+// 【核心修复】同时 Hook Page 和 Component
+export const hookSetData = () => {
+  const hookMethod = (config) => {
+    if (config.__qaHooked) return;
+    config.__qaHooked = true;
+    const _setData = config.setData;
+    if (typeof _setData === 'function') {
+      // 拦截 setData
+      config.setData = function (data, cb) {
+        qa.log('SETDATA', data);
+        return _setData.call(this, data, cb);
+      };
+    }
+  };
+
+  // Hook Page 构造器
+  if (typeof Page !== 'undefined') {
+    const originalPage = Page;
+    Page = function (config) {
+      hookMethod(config);
+      return originalPage(config);
+    };
+  }
+
+  // Hook Component 构造器（UniApp 核心）
+  if (typeof Component !== 'undefined') {
+    const originalComponent = Component;
+    Component = function (config) {
+      // UniApp 页面通常作为组件运行，且 methods 也就是组件的方法
+      if (config.methods) {
+        hookMethod(config.methods);
+      }
+      // 有些写法直接挂在 config 上
+      hookMethod(config);
+      // 如果 config 有 lifetimes，也需要 hook
+      if (config.lifetimes && config.lifetimes.attached) {
+        const originalAttached = config.lifetimes.attached;
+        config.lifetimes.attached = function () {
+          hookMethod(this);
+          return originalAttached.call(this);
+        };
+      }
+      return originalComponent(config);
+    };
+  }
+};

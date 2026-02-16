@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "learning_goals",
+  "description": "学习目标集合 - 存储用户设定的学习目标（每日/每周/自定义）",
+  "type": "object",
+  "required": ["user_id", "type", "target_value", "status"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "type": {
+      "type": "string",
+      "description": "目标类型",
+      "enum": ["DAILY_QUESTIONS", "DAILY_STUDY_TIME", "WEEKLY_ACCURACY", "STREAK_DAYS", "MONTHLY_QUESTIONS"]
+    },
+    "label": {
+      "type": "string",
+      "description": "目标显示名称",
+      "maxLength": 50
+    },
+    "unit": {
+      "type": "string",
+      "description": "目标单位（道/分钟/%/天）",
+      "maxLength": 10
+    },
+    "target_value": {
+      "type": "integer",
+      "description": "目标值",
+      "minimum": 1,
+      "maximum": 10000
+    },
+    "current_value": {
+      "type": "integer",
+      "description": "当前进度值",
+      "default": 0,
+      "minimum": 0
+    },
+    "period": {
+      "type": "string",
+      "description": "目标周期",
+      "enum": ["daily", "weekly", "monthly", "custom"],
+      "default": "daily"
+    },
+    "status": {
+      "type": "string",
+      "description": "目标状态",
+      "enum": ["active", "completed", "paused", "expired"],
+      "default": "active"
+    },
+    "start_date": {
+      "type": ["integer", "null"],
+      "description": "开始时间戳"
+    },
+    "end_date": {
+      "type": ["integer", "null"],
+      "description": "结束时间戳"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "status": 1 }, "name": "idx_user_status" },
+    { "key": { "user_id": 1, "type": 1, "status": 1 }, "name": "idx_user_type_status" },
+    { "key": { "user_id": 1, "created_at": -1 }, "name": "idx_user_created" }
+  ],
+  "examples": [
+    {
+      "_id": "goal_001",
+      "user_id": "user_001",
+      "type": "DAILY_QUESTIONS",
+      "label": "每日刷题",
+      "unit": "道",
+      "target_value": 20,
+      "current_value": 0,
+      "period": "daily",
+      "status": "active",
+      "start_date": 1737792000000,
+      "end_date": null,
+      "created_at": 1737792000000,
+      "updated_at": 1737792000000
+    }
+  ]
+}

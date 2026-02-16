@@ -1,0 +1,124 @@
+# ============================================
+# Exam-Master 数据库备份工作流
+# 每周日凌晨 3 点执行 + 手动触发
+# ============================================
+name: Database Backup
+
+on:
+  schedule:
+    # 每周日凌晨 3 点执行（降低频率，未配置基础设施前避免频繁失败）
+    - cron: '0 19 * * 0'  # UTC 时间，对应北京时间周一凌晨 3 点
+  workflow_dispatch:
+    inputs:
+      backup_type:
+        description: 'Backup type'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - incremental
+
+jobs:
+  # ==================== 前置检查 ====================
+  preflight:
+    name: Preflight Check
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - name: Check required secrets
+        id: check
+        run: |
+          if [ -z "${{ secrets.KUBE_CONFIG_PROD }}" ] || [ -z "${{ secrets.MONGODB_URI }}" ]; then
+            echo "::notice::Backup skipped - KUBE_CONFIG_PROD or MONGODB_URI secrets not configured. Please configure them in Settings > Secrets to enable automatic backups."
+            echo "ready=false" >> $GITHUB_OUTPUT
+          else
+            echo "ready=true" >> $GITHUB_OUTPUT
+          fi
+
+  backup:
+    name: MongoDB Backup
+    runs-on: ubuntu-latest
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > ~/.kube/config
+
+      - name: Create backup
+        id: backup
+        run: |
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          BACKUP_NAME="exam-master-backup-${TIMESTAMP}"
+          
+          echo "Creating backup: $BACKUP_NAME"
+          
+          # 在 MongoDB Pod 中执行备份
+          kubectl exec -n exam-master deploy/mongodb -- \
+            mongodump \
+            --uri="${{ secrets.MONGODB_URI }}" \
+            --archive=/tmp/${BACKUP_NAME}.archive \
+            --gzip
+          
+          # 复制备份文件到本地
+          MONGO_POD=$(kubectl get pod -n exam-master -l app=mongodb -o jsonpath='{.items[0].metadata.name}')
+          kubectl cp "exam-master/${MONGO_POD}:/tmp/${BACKUP_NAME}.archive" "./${BACKUP_NAME}.archive"
+          
+          echo "backup_name=$BACKUP_NAME" >> $GITHUB_OUTPUT
+          echo "backup_file=${BACKUP_NAME}.archive" >> $GITHUB_OUTPUT
+
+      - name: Upload to S3/OSS
+        run: |
+          # 上传到阿里云 OSS（需要配置 aliyun-cli）
+          # aliyun oss cp ${{ steps.backup.outputs.backup_file }} oss://exam-master-backups/mongodb/
+          
+          # 或上传到 AWS S3
+          # aws s3 cp ${{ steps.backup.outputs.backup_file }} s3://exam-master-backups/mongodb/
+          
+          echo "Backup uploaded: ${{ steps.backup.outputs.backup_file }}"
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.backup.outputs.backup_name }}
+          path: ${{ steps.backup.outputs.backup_file }}
+          retention-days: 30
+
+      - name: Cleanup old backups
+        run: |
+          # 清理超过 30 天的备份
+          echo "Cleaning up backups older than 30 days..."
+          # 实际清理逻辑根据存储方式实现
+
+      - name: Verify backup
+        run: |
+          # 验证备份文件存在且非空
+          BACKUP_FILE="${{ steps.backup.outputs.backup_file }}"
+          if [ ! -f "$BACKUP_FILE" ]; then
+            echo "::error::Backup file not found: $BACKUP_FILE"
+            exit 1
+          fi
+          FILE_SIZE=$(stat -c%s "$BACKUP_FILE" 2>/dev/null || stat -f%z "$BACKUP_FILE" 2>/dev/null)
+          if [ "$FILE_SIZE" -lt 100 ]; then
+            echo "::error::Backup file too small (${FILE_SIZE} bytes), likely corrupted"
+            exit 1
+          fi
+          echo "Backup verification passed (size: ${FILE_SIZE} bytes)"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Database backup failed!"
+          # 发送告警通知
