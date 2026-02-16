@@ -1507,5 +1507,130 @@ export const lafService = {
       console.warn('[LafService] 获取用户统计失败:', error);
       return { code: -1, success: false, message: '获取失败', data: null };
     }
+  },
+
+  // ==================== 文档转换 ====================
+
+  /**
+   * 获取支持的转换类型列表
+   */
+  async getDocConvertTypes() {
+    try {
+      return await this.request('/doc-convert', { action: 'get_types' });
+    } catch (error) {
+      console.warn('[LafService] 获取转换类型失败:', error);
+      return { code: -1, success: false, message: '获取失败', data: null };
+    }
+  },
+
+  /**
+   * 提交文档转换任务
+   * @param {string} fileBase64 - 文件 base64
+   * @param {string} fileName - 文件名
+   * @param {string} convertType - 转换类型 (pdf2img/img2pdf/word2pdf/pdf2word/excel2pdf/ppt2pdf)
+   * @param {object} options - 可选参数
+   */
+  async submitDocConvert(fileBase64, fileName, convertType, options = {}) {
+    try {
+      return await this.request('/doc-convert', {
+        action: 'convert',
+        fileBase64,
+        fileName,
+        convertType,
+        ...options
+      });
+    } catch (error) {
+      console.warn('[LafService] 提交转换任务失败:', error);
+      return { code: -1, success: false, message: '提交失败', data: null };
+    }
+  },
+
+  /**
+   * 查询转换任务状态
+   * @param {string} taskId - 任务ID
+   */
+  async getDocConvertStatus(taskId) {
+    try {
+      return await this.request('/doc-convert', { action: 'get_status', taskId });
+    } catch (error) {
+      console.warn('[LafService] 查询转换状态失败:', error);
+      return { code: -1, success: false, message: '查询失败', data: null };
+    }
+  },
+
+  /**
+   * 获取转换结果（下载链接）
+   * @param {string} taskId - 任务ID
+   */
+  async getDocConvertResult(taskId) {
+    try {
+      return await this.request('/doc-convert', { action: 'get_result', taskId });
+    } catch (error) {
+      console.warn('[LafService] 获取转换结果失败:', error);
+      return { code: -1, success: false, message: '获取失败', data: null };
+    }
+  },
+
+  // ==================== 证件照处理 ====================
+
+  /**
+   * 获取证件照尺寸和颜色配置
+   */
+  async getPhotoConfig() {
+    try {
+      const [sizes, colors] = await Promise.all([
+        this.request('/photo-bg', { action: 'get_sizes' }),
+        this.request('/photo-bg', { action: 'get_colors' })
+      ]);
+      return {
+        code: 0,
+        success: true,
+        data: {
+          sizes: sizes.code === 0 ? sizes.data : null,
+          colors: colors.code === 0 ? colors.data : null
+        }
+      };
+    } catch (error) {
+      console.warn('[LafService] 获取证件照配置失败:', error);
+      return { code: -1, success: false, message: '获取失败', data: null };
+    }
+  },
+
+  /**
+   * 证件照一键处理（抠图 + 换背景 + 裁剪）
+   * @param {string} imageBase64 - 图片 base64
+   * @param {string} bgColor - 背景颜色 key (white/blue/red/gray/light_blue/dark_blue)
+   * @param {string} size - 尺寸 key (1inch/2inch/small2inch/passport/visa)
+   * @param {object} options - 可选参数 { beauty: boolean }
+   */
+  async processIdPhoto(imageBase64, bgColor, size, options = {}) {
+    try {
+      return await this.request('/photo-bg', {
+        action: 'process',
+        imageBase64,
+        bgColor,
+        size,
+        ...options
+      });
+    } catch (error) {
+      console.warn('[LafService] 证件照处理失败:', error);
+      return { code: -1, success: false, message: '处理失败', data: null };
+    }
+  },
+
+  /**
+   * 仅去除背景（返回透明PNG）
+   * @param {string} imageBase64 - 图片 base64
+   */
+  async removePhotoBg(imageBase64) {
+    try {
+      return await this.request('/photo-bg', {
+        action: 'remove_bg',
+        imageBase64
+      });
+    } catch (error) {
+      console.warn('[LafService] 去除背景失败:', error);
+      return { code: -1, success: false, message: '处理失败', data: null };
+    }
   }
 };
