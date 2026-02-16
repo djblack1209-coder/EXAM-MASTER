@@ -5,7 +5,7 @@
 
 import { useUserStore } from '@/stores';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-import { getUserId } from '@/services/storageService.js';
+import storageService, { getUserId } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
 /**
