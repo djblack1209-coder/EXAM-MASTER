@@ -302,7 +302,7 @@ class AnalyticsService {
 
     // 创建新会话
     const newSession = {
-      id: `session_${now}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `session_${now}_${Math.random().toString(36).substring(2, 11)}`,
       startTime: now,
       lastActive: now
     };
@@ -314,7 +314,7 @@ class AnalyticsService {
    * 生成事件ID
    */
   _generateEventId() {
-    return `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `evt_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   /**

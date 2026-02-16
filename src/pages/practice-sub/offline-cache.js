@@ -660,7 +660,7 @@ class OfflineCacheManager {
    * 生成唯一ID
    */
   _generateId() {
-    return 'offline_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    return 'offline_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 7);
   }
 
   // ==================== 存储操作封装 ====================

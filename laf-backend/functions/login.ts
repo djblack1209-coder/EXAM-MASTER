@@ -341,7 +341,7 @@ function checkLoginRateLimit(clientIp: string): { allowed: boolean; remaining: n
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   const loginType = ctx.body?.type || 'wechat'
   const endPerf = perfMonitor.start('login', loginType)
 
@@ -497,7 +497,7 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
     const salt = crypto.randomBytes(16).toString('hex')
     const newUser: Record<string, unknown> = {
       email,
-      nickname: `考研学子${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
+      nickname: `考研学子${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
       avatar_url: '',
       role: 'user',
       streak_days: 0,
@@ -706,7 +706,7 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
       const newUser = {
         openid,
         unionid: unionid || null,
-        nickname: `考研学子${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
+        nickname: `考研学子${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
         avatar_url: '',
         role: 'user',
         streak_days: 0,
@@ -872,7 +872,7 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
     const newUser: Record<string, unknown> = {
       h5_openid: openid,
       unionid: unionid,
-      nickname: wxUserInfo.nickname || `考研学子${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
+      nickname: wxUserInfo.nickname || `考研学子${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
       avatar_url: wxUserInfo.headimgurl || '',
       role: 'user',
       streak_days: 0,

@@ -194,30 +194,6 @@ export default async function (ctx) {
     )
   }
 }
-    if (!userId || typeof userId !== 'string' || userId.length > 64) {
-      return { code: 401, success: false, message: '用户未登录', requestId }
-    }
-
-    // 2. 路由处理
-    if (action === 'submit') {
-      return await handleSubmit(userId, idempotencyKey, data, requestId)
-    } else if (action === 'getRecords') {
-      return await handleGetRecords(userId, data, requestId)
-    } else {
-      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId }
-    }
-
-  } catch (error) {
-    logger.error(`[${requestId}] 答案提交异常:`, error)
-    return {
-      code: 500,
-      success: false,
-      message: '服务器内部错误',
-      requestId,
-      duration: Date.now() - startTime
-    }
-  }
-}
 
 /**
  * 提交答案（带幂等性保护）

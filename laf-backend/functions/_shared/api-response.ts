@@ -154,7 +154,7 @@ export function paginated<T>(
  * 生成请求ID
  */
 export function generateRequestId(prefix: string = 'req'): string {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 }
 
 // ==================== 响应包装器 ====================

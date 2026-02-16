@@ -139,7 +139,7 @@ interface PracticeConfig {
 
 export default async function (ctx: FunctionContext) {
   const startTime = Date.now()
-  const requestId = `UP-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`
+  const requestId = `UP-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`
 
   logger.info(`[${requestId}] 用户资料请求开始`)
 

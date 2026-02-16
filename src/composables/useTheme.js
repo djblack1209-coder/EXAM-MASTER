@@ -16,6 +16,9 @@ import { storageService } from '@/services/storageService.js';
 const THEME_KEY = 'theme_mode';
 const THEME_EVENT = 'themeUpdate';
 
+// 存储当前注册的回调引用，确保 $off 只移除自己的监听器
+let _currentCallback = null;
+
 /**
  * 从本地存储读取当前主题
  * @returns {boolean} 是否为深色模式
@@ -43,12 +46,16 @@ export function toggleTheme(currentIsDark) {
  * @param {Function} callback - 回调 (mode: 'dark'|'light') => void
  */
 export function onThemeUpdate(callback) {
-  uni.$on(THEME_EVENT, callback);
+  _currentCallback = callback;
+  uni.$on(THEME_EVENT, _currentCallback);
 }
 
 /**
- * 取消主题变化事件监听
+ * 取消主题变化事件监听（只移除自己注册的回调）
  */
 export function offThemeUpdate() {
-  uni.$off(THEME_EVENT);
+  if (_currentCallback) {
+    uni.$off(THEME_EVENT, _currentCallback);
+    _currentCallback = null;
+  }
 }

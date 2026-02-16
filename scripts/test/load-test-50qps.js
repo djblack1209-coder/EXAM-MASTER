@@ -126,7 +126,7 @@ const stats = {
  */
 async function sendRequest(endpoint, testCase) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
   
   try {
     const controller = new AbortController()

@@ -396,10 +396,11 @@ export default {
     });
 
     // 监听登录状态变化
-    uni.$on('loginStatusChanged', (isLoggedIn) => {
+    this._loginHandler = (isLoggedIn) => {
       logger.log('[Index] 登录状态变化:', isLoggedIn);
       this.refreshData();
-    });
+    };
+    uni.$on('loginStatusChanged', this._loginHandler);
 
     // 初始化Store
     this.studyStore = useStudyStore();
@@ -435,7 +436,7 @@ export default {
 
   onUnload() {
     offThemeUpdate();
-    uni.$off('loginStatusChanged');
+    uni.$off('loginStatusChanged', this._loginHandler);
 
     // ✅ 检查点1.5: 停止计时
     this.stopStudyTimer();
