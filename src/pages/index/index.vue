@@ -111,26 +111,44 @@
           <view class="tools-grid">
             <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('doc-convert')">
               <view class="tool-icon tool-icon-doc">
-                <text class="tool-icon-text">D</text>
+                <text class="tool-icon-text">
+                  D
+                </text>
               </view>
-              <text class="tool-name">文档转换</text>
-              <text class="tool-desc">PDF/Word/Excel 互转</text>
+              <text class="tool-name">
+                文档转换
+              </text>
+              <text class="tool-desc">
+                PDF/Word/Excel 互转
+              </text>
             </view>
             <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('id-photo')">
               <view class="tool-icon tool-icon-photo">
-                <text class="tool-icon-text">P</text>
+                <text class="tool-icon-text">
+                  P
+                </text>
               </view>
-              <text class="tool-name">证件照制作</text>
-              <text class="tool-desc">智能抠图换背景</text>
+              <text class="tool-name">
+                证件照制作
+              </text>
+              <text class="tool-desc">
+                智能抠图换背景
+              </text>
             </view>
             <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('photo-search')">
               <view class="tool-icon tool-icon-search">
-                <text class="tool-icon-text">S</text>
+                <text class="tool-icon-text">
+                  S
+                </text>
               </view>
-              <text class="tool-name">拍照搜题</text>
-              <text class="tool-desc">AI 智能识别解答</text>
+              <text class="tool-name">
+                拍照搜题
+              </text>
+              <text class="tool-desc">
+                AI 智能识别解答
+              </text>
             </view>
-     </view>
+          </view>
 
           <!-- 待办事项清单 -->
           <view class="section-header">

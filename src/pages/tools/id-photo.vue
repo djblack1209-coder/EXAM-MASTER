@@ -2,24 +2,38 @@
   <view class="id-photo-container">
     <!-- 顶部标题栏 -->
     <view class="header">
-      <text class="title">证件照制作</text>
-      <text class="subtitle">智能抠图换背景，支持多种证件照尺寸</text>
+      <text class="title">
+        证件照制作
+      </text>
+      <text class="subtitle">
+        智能抠图换背景，支持多种证件照尺寸
+      </text>
     </view>
 
     <!-- 步骤指示器 -->
     <view class="steps">
       <view v-for="(s, i) in steps" :key="i" :class="['step', { active: step >= i, done: step > i }]">
-        <text class="step-num">{{ step > i ? '✓' : i + 1 }}</text>
-        <text class="step-label">{{ s }}</text>
+        <text class="step-num">
+          {{ step > i ? '✓' : i + 1 }}
+        </text>
+        <text class="step-label">
+          {{ s }}
+        </text>
       </view>
     </view>
 
     <!-- Step 0: 上传照片 -->
     <view v-if="step === 0" class="step-content">
       <view class="upload-area" @click="choosePhoto">
-        <text class="upload-icon">+</text>
-        <text class="upload-text">选择或拍摄照片</text>
-        <text class="upload-hint">建议正面免冠、光线均匀</text>
+        <text class="upload-icon">
+          +
+        </text>
+        <text class="upload-text">
+          选择或拍摄照片
+        </text>
+        <text class="upload-hint">
+          建议正面免冠、光线均匀
+        </text>
       </view>
     </view>
 
@@ -32,7 +46,9 @@
 
       <!-- 尺寸选择 -->
       <view class="config-section">
-        <text class="config-title">证件照尺寸</text>
+        <text class="config-title">
+          证件照尺寸
+        </text>
         <view class="option-grid">
           <view
             v-for="s in sizeOptions"
@@ -40,15 +56,21 @@
             :class="['option-item', { active: selectedSize === s.key }]"
             @click="selectedSize = s.key"
           >
-            <text class="option-name">{{ s.name }}</text>
-            <text class="option-desc">{{ s.desc }}</text>
+            <text class="option-name">
+              {{ s.name }}
+            </text>
+            <text class="option-desc">
+              {{ s.desc }}
+            </text>
           </view>
         </view>
       </view>
 
       <!-- 背景颜色选择 -->
       <view class="config-section">
-        <text class="config-title">背景颜色</text>
+        <text class="config-title">
+          背景颜色
+        </text>
         <view class="color-grid">
           <view
             v-for="c in colorOptions"
@@ -57,14 +79,18 @@
             @click="selectedColor = c.key"
           >
             <view class="color-circle" :style="{ background: c.hex }" />
-            <text class="color-name">{{ c.name }}</text>
+            <text class="color-name">
+              {{ c.name }}
+            </text>
           </view>
         </view>
       </view>
 
       <!-- 美颜开关 -->
       <view class="config-section beauty-row">
-        <text class="config-title">智能美颜</text>
+        <text class="config-title">
+          智能美颜
+        </text>
         <switch :checked="enableBeauty" color="#e84393" @change="enableBeauty = $event.detail.value" />
       </view>
 
@@ -77,8 +103,12 @@
     <view v-else-if="step === 2" class="step-content center">
       <view class="processing">
         <view class="processing-spinner" />
-        <text class="processing-text">{{ processingText }}</text>
-        <text class="processing-hint">AI 正在处理您的照片...</text>
+        <text class="processing-text">
+          {{ processingText }}
+        </text>
+        <text class="processing-hint">
+          AI 正在处理您的照片...
+        </text>
       </view>
     </view>
 

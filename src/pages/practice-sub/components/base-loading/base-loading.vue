@@ -1,7 +1,9 @@
 <template>
   <view v-if="visible" class="base-loading" :class="{ 'dark-mode': isDark }">
     <view class="loading-spinner" />
-    <text v-if="text" class="loading-text">{{ text }}</text>
+    <text v-if="text" class="loading-text">
+      {{ text }}
+    </text>
   </view>
 </template>
 

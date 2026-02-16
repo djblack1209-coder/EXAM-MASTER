@@ -15,11 +15,11 @@
     </view>
 
     <!-- 加载动画 -->
-    <base-loading :visible="loading" text="加载排行榜数据..." :is-dark="isDark" />
+    <BaseLoading :visible="loading" text="加载排行榜数据..." :is-dark="isDark" />
 
     <!-- 空状态 -->
     <view v-if="!loading && empty" class="empty-container">
-      <base-empty
+      <BaseEmpty
         icon="🏆"
         title="暂无排行榜数据"
         desc="快去刷题，成为第一个上榜的学霸吧！"
@@ -139,7 +139,7 @@
 
       <!-- 只有我自己的情况 -->
       <view v-else-if="list.length === 1" class="only-me-container">
-        <base-empty
+        <BaseEmpty
           icon="🏆"
           title="只有你一个人上榜"
           desc="继续加油，保持领先！"

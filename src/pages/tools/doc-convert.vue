@@ -2,8 +2,12 @@
   <view class="doc-convert-container">
     <!-- 顶部标题栏 -->
     <view class="header">
-      <text class="title">文档转换</text>
-      <text class="subtitle">支持 PDF、Word、Excel、PPT 等格式互转</text>
+      <text class="title">
+        文档转换
+      </text>
+      <text class="subtitle">
+        支持 PDF、Word、Excel、PPT 等格式互转
+      </text>
     </view>
 
     <!-- 转换类型选择 -->
@@ -14,25 +18,43 @@
         :class="['type-card', { active: selectedType === item.key }]"
         @click="selectType(item.key)"
       >
-        <text class="type-icon">{{ item.icon }}</text>
-        <text class="type-name">{{ item.name }}</text>
-        <text class="type-desc">{{ item.desc }}</text>
+        <text class="type-icon">
+          {{ item.icon }}
+        </text>
+        <text class="type-name">
+          {{ item.name }}
+        </text>
+        <text class="type-desc">
+          {{ item.desc }}
+        </text>
       </view>
     </view>
 
     <!-- 文件选择区域 -->
     <view class="file-area">
       <view v-if="!selectedFile" class="file-placeholder" @click="chooseFile">
-        <text class="upload-icon">+</text>
-        <text class="upload-text">点击选择文件</text>
-        <text class="upload-hint">{{ acceptHint }}</text>
+        <text class="upload-icon">
+          +
+        </text>
+        <text class="upload-text">
+          点击选择文件
+        </text>
+        <text class="upload-hint">
+          {{ acceptHint }}
+        </text>
       </view>
       <view v-else class="file-info">
         <view class="file-detail">
-          <text class="file-name">{{ selectedFile.name }}</text>
-          <text class="file-size">{{ formatSize(selectedFile.size) }}</text>
+          <text class="file-name">
+            {{ selectedFile.name }}
+          </text>
+          <text class="file-size">
+            {{ formatSize(selectedFile.size) }}
+          </text>
         </view>
-        <text class="file-remove" @click="removeFile">✕</text>
+        <text class="file-remove" @click="removeFile">
+          ✕
+        </text>
       </view>
     </view>
 
@@ -40,19 +62,31 @@
     <view v-if="status !== 'idle'" class="progress-area">
       <view v-if="status === 'uploading'" class="progress-item">
         <view class="progress-spinner" />
-        <text class="progress-text">正在上传文件...</text>
+        <text class="progress-text">
+          正在上传文件...
+        </text>
       </view>
       <view v-else-if="status === 'converting'" class="progress-item">
         <view class="progress-spinner" />
-        <text class="progress-text">正在转换中，请稍候...</text>
+        <text class="progress-text">
+          正在转换中，请稍候...
+        </text>
       </view>
       <view v-else-if="status === 'done'" class="progress-item done">
-        <text class="done-icon">✓</text>
-        <text class="progress-text">转换完成</text>
+        <text class="done-icon">
+          ✓
+        </text>
+        <text class="progress-text">
+          转换完成
+        </text>
       </view>
       <view v-else-if="status === 'error'" class="progress-item error">
-        <text class="error-icon">!</text>
-        <text class="progress-text">{{ errorMsg }}</text>
+        <text class="error-icon">
+          !
+        </text>
+        <text class="progress-text">
+          {{ errorMsg }}
+        </text>
       </view>
     </view>
 
