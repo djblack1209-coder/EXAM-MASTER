@@ -405,9 +405,11 @@ export function watchTheme(callback) {
   // #ifndef MP-WEIXIN
   if (typeof window !== 'undefined') {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', (e) => {
+    const handler = (e) => {
       callback(e.matches ? 'dark' : 'light');
-    });
+    };
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
   }
   // #endif
 }

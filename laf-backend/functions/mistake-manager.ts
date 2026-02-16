@@ -219,7 +219,7 @@ function validateMistakeData(data: unknown): { valid: boolean; error?: string; s
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   logger.info(`[${requestId}] 错题管理请求开始`)
 

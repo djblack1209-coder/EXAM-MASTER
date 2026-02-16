@@ -156,7 +156,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
      */
     recordEvent(type, data = {}) {
       const event = {
-        id: `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
         type,
         data,
         timestamp: Date.now(),

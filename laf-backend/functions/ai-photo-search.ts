@@ -59,7 +59,7 @@ const SUBJECTS = {
 // ==================== 主入口 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `search_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   console.log(`[${requestId}] 拍照搜题请求开始`)
 

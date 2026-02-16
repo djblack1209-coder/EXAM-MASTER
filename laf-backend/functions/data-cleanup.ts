@@ -71,7 +71,7 @@ const DIRTY_DATA_PATTERNS = {
 // ==================== 主函数 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `cleanup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `cleanup_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   logger.info(`[${requestId}] 数据清洗任务开始`)
 
@@ -669,7 +669,7 @@ async function cleanupFriends(collection, dryRun: boolean, requestId: string) {
 async function createBackupBeforeCleanup(targets: string[], requestId: string) {
   const backupCollection = db.collection(BACKUP_COLLECTION)
   const now = Date.now()
-  const backupId = `backup_${now}_${Math.random().toString(36).substr(2, 9)}`
+  const backupId = `backup_${now}_${Math.random().toString(36).substring(2, 11)}`
 
   const backupData = {
     backup_id: backupId,
@@ -840,7 +840,7 @@ function shouldBackupQuestion(question: Record<string, unknown>): boolean {
  * - targets: string[] - 要恢复的集合（可选，默认全部）
  */
 export async function restoreFromBackup(ctx) {
-  const requestId = `restore_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `restore_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   
   try {
     const { adminSecret, backupId, targets } = ctx.body || {}

@@ -102,7 +102,7 @@ const RANK_TYPES = {
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   logger.info(`[${requestId}] 排行榜请求开始`)
 

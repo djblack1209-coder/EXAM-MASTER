@@ -298,7 +298,7 @@ const AI_FRIENDS = {
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   const action = ctx.body?.action || 'unknown'
   const endPerf = perfMonitor.start('proxy-ai', action)
 

@@ -533,12 +533,12 @@ class StreakRecoveryService {
   async _saveData() {
     try {
       const key = `recovery_${this.userId}`;
-      storageService.save(key, JSON.stringify({
+      storageService.save(key, {
         inventory: { ...this.inventory },
         history: this.recoveryHistory.slice(-100),
         monthlyFree: this.monthlyFreeRecovery.value,
         todayCount: this.todayRecoveryCount.value
-      }));
+      });
     } catch (error) {
       console.error('[StreakRecovery] Save error:', error);
     }

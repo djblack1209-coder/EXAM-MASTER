@@ -82,9 +82,10 @@ class AIAnalyticsService {
 
     // 注册页面卸载时保存
     if (typeof window !== 'undefined') {
-      window.addEventListener('beforeunload', () => {
+      this._beforeUnloadHandler = () => {
         this.saveMetrics();
-      });
+      };
+      window.addEventListener('beforeunload', this._beforeUnloadHandler);
     }
 
     this.isInitialized = true;

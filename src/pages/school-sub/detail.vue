@@ -256,9 +256,10 @@ export default {
 
     // 初始化深色模式
     this.isDark = storageService.get('theme_mode') === 'dark';
-    uni.$on('updateTheme', (mode) => {
+    this._themeHandler = (mode) => {
       this.isDark = mode === 'dark';
-    });
+    };
+    uni.$on('updateTheme', this._themeHandler);
 
     // 兼容两种传递方式：缓存数据（优先）或 id 参数
     const cachedData = options.id ? storageService.get(`school_detail_${options.id}`) : null;
@@ -337,7 +338,7 @@ export default {
     logger.log('[detail] ✅ 详情页初始化完成，院校信息:', { id: this.schoolId, name: this.schoolInfo.name });
   },
   onUnload() {
-    uni.$off('updateTheme');
+    uni.$off('updateTheme', this._themeHandler);
   },
   methods: {
     async loadSchoolDetail(id) {

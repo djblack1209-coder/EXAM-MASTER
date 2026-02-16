@@ -401,14 +401,14 @@ class CheckinStreakService {
   async _saveData() {
     try {
       const key = `checkin_${this.userId}`;
-      storageService.save(key, JSON.stringify({
+      storageService.save(key, {
         currentStreak: this.data.currentStreak,
         longestStreak: this.data.longestStreak,
         totalCheckins: this.data.totalCheckins,
         lastCheckinDate: this.data.lastCheckinDate,
         checkinHistory: this.data.checkinHistory.slice(-365), // 只保留一年
         recoveryCards: this.data.recoveryCards
-      }));
+      });
     } catch (error) {
       console.error('[CheckinStreak] Save error:', error);
     }

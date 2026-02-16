@@ -21,7 +21,7 @@ const MAX_MEMORY_PER_FRIEND = 50
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `mem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `mem_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   try {
     const { action, userId, friendType, data, token } = ctx.body || {}

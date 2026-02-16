@@ -18,7 +18,7 @@ const _ = db.command
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `stats_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `stats_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   try {
     const { action, userId, token } = ctx.body || {}

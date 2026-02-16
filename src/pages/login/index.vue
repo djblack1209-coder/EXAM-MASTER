@@ -522,7 +522,7 @@ const handleWechatH5Login = () => {
       crypto.getRandomValues(array);
       state = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
     } catch {
-      state = Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 16);
+      state = Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 18);
     }
 
     storageService.save('wx_oauth_state', state);
@@ -647,7 +647,7 @@ const handleQQLogin = async () => {
       state = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
     } catch {
       // 降级方案（极少数不支持 crypto 的环境）
-      state = Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 16);
+      state = Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 18);
     }
 
     // 保存state和回调信息用于验证

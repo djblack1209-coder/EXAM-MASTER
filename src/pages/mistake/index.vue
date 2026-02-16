@@ -235,7 +235,7 @@ export default {
   },
   onUnload() {
     // 移除事件监听
-    uni.$off('themeUpdate');
+    uni.$off('themeUpdate', this._themeHandler);
   },
   computed: {
     // 待复习错题数量（错误次数>=2的题目）

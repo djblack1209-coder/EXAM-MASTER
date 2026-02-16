@@ -78,7 +78,7 @@ function validateBattleId(battleId: unknown): boolean {
 // ==================== 主函数 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
   logger.info(`[${requestId}] PK 对战请求开始`)
 

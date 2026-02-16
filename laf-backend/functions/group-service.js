@@ -66,7 +66,7 @@ function validateUserId(userId) {
  * 生成唯一ID
  */
 function generateId(prefix = '') {
-  return `${prefix}${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  return `${prefix}${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 }
 
 /**
@@ -569,7 +569,7 @@ async function handleGetResources(userId, params, requestId) {
 // ==================== 主函数 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   
   logger.info(`[${requestId}] 学习小组服务请求开始`)
   
