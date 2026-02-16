@@ -19,7 +19,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
   NODE_VERSION: '20'
 
 jobs:
@@ -85,15 +84,20 @@ jobs:
     name: Build Docker Image
     runs-on: ubuntu-latest
     needs: [lint-and-test, security-scan]
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && always() && needs.lint-and-test.result == 'success'
     permissions:
       contents: read
       packages: write
     outputs:
       version: ${{ steps.meta.outputs.version }}
+      image_name: ${{ steps.repo.outputs.image_name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Lowercase image name
+        id: repo
+        run: echo "image_name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -109,7 +113,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ steps.repo.outputs.image_name }}
           tags: |
             type=ref,event=branch
             type=sha,prefix=
@@ -121,7 +125,7 @@ jobs:
           context: .
           file: deploy/docker/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.image_name }}:${{ steps.meta.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           labels: ${{ steps.meta.outputs.labels }}
@@ -129,7 +133,7 @@ jobs:
       - name: Run Trivy image scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          image-ref: ${{ env.REGISTRY }}/${{ steps.repo.outputs.image_name }}:${{ steps.meta.outputs.version }}
           format: 'table'
           exit-code: '0'
           severity: 'CRITICAL,HIGH'
@@ -185,7 +189,7 @@ jobs:
       - name: Deploy to staging
         run: |
           kubectl set image deployment/exam-master-backend \
-            backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }} \
+            backend=${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}:${{ needs.build.outputs.version }} \
             -n exam-master-staging
           kubectl rollout status deployment/exam-master-backend -n exam-master-staging --timeout=300s
 
@@ -214,7 +218,7 @@ jobs:
       - name: Deploy backend
         run: |
           kubectl set image deployment/exam-master-backend \
-            backend=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }} \
+            backend=${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}:${{ needs.build.outputs.version }} \
             -n exam-master
           kubectl rollout status deployment/exam-master-backend -n exam-master --timeout=300s
 
