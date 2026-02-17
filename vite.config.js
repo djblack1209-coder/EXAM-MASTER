@@ -1,7 +1,10 @@
 import { defineConfig, loadEnv } from 'vite'
-import uni from '@dcloudio/vite-plugin-uni'
+import uniModule from '@dcloudio/vite-plugin-uni'
 import path from 'path'
 import fs from 'fs'
+
+// 兼容 @dcloudio/vite-plugin-uni CJS/ESM 双层 default 问题
+const uni = typeof uniModule === 'function' ? uniModule : uniModule.default
 
 /**
  * 微信小程序自定义 tabBar 占位组件复制插件
