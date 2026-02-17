@@ -273,9 +273,7 @@ import EmptyState from '@/components/common/EmptyState.vue';
 import ShareModal from '@/components/common/share-modal.vue';
 import TodoEditor from '@/components/common/todo-editor.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
-// ✅ P3: 离线状态指示器
 import OfflineIndicator from '@/components/common/offline-indicator.vue';
-// ✅ F002: 提取的业务组件
 import FormulaModal from '@/components/business/index/FormulaModal.vue';
 import QuotePosterModal from '@/components/business/index/QuotePosterModal.vue';
 import DailyQuoteCard from '@/components/business/index/DailyQuoteCard.vue';

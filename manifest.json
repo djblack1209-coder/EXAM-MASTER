@@ -54,14 +54,14 @@
     "appid": "wxd634d50ad63e14ed",
     "setting": {
       "urlCheck": true,
-      "es6": true,
-      "enhance": true,
-      "postcss": true,
+      "es6": false,
+      "enhance": false,
+      "postcss": false,
       "minified": true,
       "autoAudits": true,
       "checkInvalidKey": true,
       "checkSiteMap": true,
-      "uploadWithSourceMap": true,
+      "uploadWithSourceMap": false,
       "compileHotReLoad": false,
       "babelSetting": {
         "ignore": [],
@@ -80,18 +80,6 @@
     "permission": {
       "scope.userLocation": {
         "desc": "您的位置信息将用于院校推荐和学习数据统计"
-      },
-      "scope.userInfo": {
-        "desc": "用于获取您的昵称和头像，展示个人中心信息"
-      },
-      "scope.writePhotosAlbum": {
-        "desc": "用于保存学习报告海报和错题截图到相册"
-      },
-      "scope.camera": {
-        "desc": "用于拍照搜题和上传头像"
-      },
-      "scope.record": {
-        "desc": "用于AI语音输入功能"
       }
     },
     "requiredPrivateInfos": [
