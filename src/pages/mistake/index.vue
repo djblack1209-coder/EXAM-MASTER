@@ -161,8 +161,9 @@
       <view class="safe-area" />
     </scroll-view>
 
-    <!-- AI 诊断报告组件 -->
+    <!-- AI 诊断报告组件 - ✅ 2.3: 仅在有错题时渲染，避免空数据时的无效组件挂载 -->
     <MistakeReport
+      v-if="mistakes.length > 0"
       :mistakes="mistakes"
       :user-info="userInfo"
       :is-dark="isDark"

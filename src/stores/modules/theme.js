@@ -90,7 +90,6 @@ export const useThemeStore = defineStore('theme', () => {
     // 如果用户没有手动设置，使用系统设置
     if (!savedMode) {
       isDark.value = systemTheme === 'dark';
-      // 根据深色模式自动选择主题
       themeType.value = isDark.value ? 'bitget' : 'wise';
     } else {
       // 使用用户手动设置
@@ -98,9 +97,11 @@ export const useThemeStore = defineStore('theme', () => {
       themeType.value = isDark.value ? 'bitget' : 'wise';
     }
 
-    // 保存当前设置
-    storageService.save('theme_type', themeType.value);
-    storageService.save('theme_mode', isDark.value ? 'dark' : 'light');
+    // ✅ 2.2: 仅在用户未手动设置时才写入（避免每次启动都写 storage）
+    if (!savedMode) {
+      storageService.save('theme_type', themeType.value);
+      storageService.save('theme_mode', isDark.value ? 'dark' : 'light');
+    }
 
     logger.log('[ThemeStore] 主题已恢复:', {
       type: themeType.value,
@@ -113,23 +114,10 @@ export const useThemeStore = defineStore('theme', () => {
      * 切换主题（深色模式和主题类型联动）
      * 深色模式 = Bitget Wallet
      * 浅色模式 = Wise
+     * ✅ 2.2: 消除与 setDarkMode 的重复逻辑，直接委托
      */
   const toggleTheme = () => {
-    isDark.value = !isDark.value;
-    themeType.value = isDark.value ? 'bitget' : 'wise';
-
-    // 保存设置
-    storageService.save('theme_mode', isDark.value ? 'dark' : 'light');
-    storageService.save('theme_type', themeType.value);
-
-    // 触发全局事件
-    uni.$emit('themeUpdate', isDark.value ? 'dark' : 'light');
-    uni.$emit('themeTypeUpdate', themeType.value);
-
-    logger.log('[ThemeStore] 主题已切换:', {
-      type: themeType.value,
-      dark: isDark.value
-    });
+    setDarkMode(!isDark.value);
   };
 
   /**

@@ -22,7 +22,8 @@
 
 import cloud from '@lafjs/cloud'
 // ✅ B003: 使用共享 API 响应模块，统一错误处理格式
-import { success, badRequest, unauthorized, notFound, serverError, generateRequestId, wrapResponse, logger } from './_shared/api-response'
+import { badRequest, unauthorized, serverError, generateRequestId, wrapResponse, logger } from './_shared/api-response'
+import { verifyJWT } from './login'
 
 const db = cloud.database()
 const _ = db.command
@@ -164,12 +165,33 @@ export default async function (ctx) {
   logger.info(`[${requestId}] 答案提交请求开始`)
 
   try {
-    const { action, userId, idempotencyKey, data } = ctx.body || {}
+    const { action, userId: bodyUserId, idempotencyKey, data } = ctx.body || {}
 
     // 1. 基础参数校验 - ✅ B003: 使用共享响应格式
     if (!action || typeof action !== 'string') {
       return wrapResponse(badRequest('action 不能为空'), requestId, startTime)
     }
+
+    // JWT 认证：答案提交必须验证身份
+    const token = ctx.headers?.['authorization']?.replace(/^Bearer\s+/i, '') || ctx.body?.token
+    let userId = bodyUserId
+
+    if (action === 'submit') {
+      if (!token) {
+        return wrapResponse(unauthorized('请先登录'), requestId, startTime)
+      }
+      const payload = verifyJWT(token)
+      if (!payload || !payload.userId) {
+        return wrapResponse(unauthorized('登录已过期，请重新登录'), requestId, startTime)
+      }
+      userId = payload.userId
+    } else if (token) {
+      const payload = verifyJWT(token)
+      if (payload?.userId) {
+        userId = payload.userId
+      }
+    }
+
     if (!userId || typeof userId !== 'string' || userId.length > 64) {
       return wrapResponse(unauthorized('用户未登录'), requestId, startTime)
     }
@@ -188,7 +210,7 @@ export default async function (ctx) {
   } catch (error) {
     logger.error(`[${requestId}] 答案提交异常:`, error)
     return wrapResponse(
-      serverError('服务器内部错误', error?.message),
+      serverError('服务器内部错误', (error as Error)?.message),
       requestId,
       startTime
     )
@@ -308,7 +330,7 @@ async function handleSubmit(userId: string, idempotencyKey: string, data: Record
     if (idempotencyResult.recordId) {
       await db.collection(IDEMPOTENCY_COLLECTION).doc(idempotencyResult.recordId).update({
         status: 'failed',
-        result: { error: error.message },
+        result: { error: (error as Error).message },
         completed_at: Date.now()
       })
     }

@@ -434,6 +434,45 @@ const config = {
     retryableStatusCodes: [408, 429, 500, 502, 503, 504]
   },
 
+  // ==================== 外部 CDN 配置 ====================
+
+  /**
+     * 外部 CDN 服务地址（集中管理，便于替换或自建）
+     */
+  externalCdn: {
+    /**
+         * DiceBear 头像生成服务
+         */
+    dicebearBaseUrl: getEnv('VITE_DICEBEAR_BASE_URL', 'https://api.dicebear.com/7.x'),
+
+    /**
+         * Icons8 图标服务
+         */
+    icons8BaseUrl: getEnv('VITE_ICONS8_BASE_URL', 'https://img.icons8.com'),
+
+    /**
+         * QR 码生成服务
+         */
+    qrServerBaseUrl: getEnv('VITE_QR_SERVER_BASE_URL', 'https://api.qrserver.com/v1')
+  },
+
+  // ==================== UI 常量 ====================
+
+  /**
+     * UI 交互常量
+     */
+  ui: {
+    /**
+         * 导航防抖延迟（毫秒）
+         */
+    navigationDebounceMs: 500,
+
+    /**
+         * Toast 默认显示时长（毫秒）
+         */
+    toastDuration: 2000
+  },
+
   // ==================== 配置来源信息 ====================
 
   /**

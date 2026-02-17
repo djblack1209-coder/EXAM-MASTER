@@ -22,12 +22,16 @@
  */
 
 import cloud from '@lafjs/cloud'
+import { verifyJWT } from './login'
+import {
+  logger,
+  success, badRequest, unauthorized, serverError,
+  generateRequestId
+} from './_shared/api-response'
 
 const db = cloud.database()
 
 // ==================== 环境配置 ====================
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
 
 // 允许的图片格式
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
@@ -36,38 +40,10 @@ const MAX_FILE_SIZE = 2 * 1024 * 1024
 // 头像存储目录
 const AVATAR_DIR = 'avatars'
 
-// ==================== 日志工具 ====================
-const logger = {
-  info: (...args: unknown[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log('[upload-avatar]', ...args) },
-  warn: (...args: unknown[]) => { if (LOG_LEVEL !== 'error') console.warn('[upload-avatar]', ...args) },
-  error: (...args: unknown[]) => console.error('[upload-avatar]', ...args)
-}
-
-// ==================== 响应工具 ====================
-function success(data: unknown, message: string = 'success') {
-  return {
-    code: 0,
-    success: true,
-    data,
-    message,
-    timestamp: Date.now()
-  }
-}
-
-function error(code: number, message: string, details?: unknown) {
-  return {
-    code,
-    success: false,
-    data: null,
-    message,
-    details,
-    timestamp: Date.now()
-  }
-}
-
 // ==================== 主函数 ====================
 export default async function (ctx: FunctionContext) {
   const startTime = Date.now()
+  const requestId = generateRequestId()
   
   try {
     // 获取请求方法
@@ -75,36 +51,51 @@ export default async function (ctx: FunctionContext) {
     
     // 只允许 POST 请求
     if (method !== 'POST') {
-      return error(405, '只支持 POST 请求')
+      return { ...badRequest('只支持 POST 请求'), requestId }
     }
     
     // 获取上传的文件
     const file = ctx.files?.file
     if (!file) {
-      return error(400, '请选择要上传的图片')
+      return { ...badRequest('请选择要上传的图片'), requestId }
     }
     
     // 获取用户ID
-    const userId = ctx.body?.userId || ctx.query?.userId
+    const bodyUserId = ctx.body?.userId || ctx.query?.userId
+    
+    // JWT 认证：头像上传必须验证身份
+    const token = ctx.headers?.['authorization']?.replace(/^Bearer\s+/i, '') || ctx.body?.token
+    let userId = bodyUserId
+    
+    if (!token) {
+      return { ...unauthorized('请先登录'), requestId }
+    }
+    const payload = verifyJWT(token)
+    if (!payload || !payload.userId) {
+      return { ...unauthorized('登录已过期，请重新登录'), requestId }
+    }
+    // 使用 token 中的 userId，防止伪造
+    userId = payload.userId
+    
     if (!userId) {
-      return error(400, '缺少用户ID')
+      return { ...badRequest('缺少用户ID'), requestId }
     }
     
     // 验证用户ID格式
     if (typeof userId !== 'string' || userId.length < 1 || userId.length > 100) {
-      return error(400, '用户ID格式无效')
+      return { ...badRequest('用户ID格式无效'), requestId }
     }
     
     // 验证文件类型
     const mimeType = file.mimetype || file.type
     if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
-      return error(400, '不支持的图片格式，请上传 JPG、PNG、GIF 或 WebP 格式')
+      return { ...badRequest('不支持的图片格式，请上传 JPG、PNG、GIF 或 WebP 格式'), requestId }
     }
     
     // 验证文件大小
     const fileSize = file.size
     if (fileSize > MAX_FILE_SIZE) {
-      return error(400, `图片大小不能超过 ${MAX_FILE_SIZE / 1024 / 1024}MB`)
+      return { ...badRequest(`图片大小不能超过 ${MAX_FILE_SIZE / 1024 / 1024}MB`), requestId }
     }
     
     logger.info(`开始处理头像上传: userId=${userId}, size=${fileSize}, type=${mimeType}`)
@@ -146,7 +137,7 @@ export default async function (ctx: FunctionContext) {
         logger.info('使用 Base64 存储头像')
       } catch (base64Error) {
         logger.error('Base64 转换失败:', base64Error)
-        return error(500, '头像上传失败，请稍后重试')
+        return { ...serverError('头像上传失败，请稍后重试'), requestId }
       }
     }
     
@@ -190,7 +181,7 @@ export default async function (ctx: FunctionContext) {
       }
     } catch (dbError: unknown) {
       // 数据库更新失败不影响返回结果
-      logger.warn('更新用户头像记录失败:', dbError.message)
+      logger.warn('更新用户头像记录失败:', (dbError as Error).message)
     }
     
     const duration = Date.now() - startTime
@@ -206,7 +197,8 @@ export default async function (ctx: FunctionContext) {
     
   } catch (err: unknown) {
     logger.error('头像上传异常:', err)
-    return error(500, '服务器内部错误', IS_PRODUCTION ? undefined : err.message)
+    const duration = Date.now() - startTime
+    return { ...serverError('服务器内部错误', (err as Error).message), requestId, duration }
   }
 }
 

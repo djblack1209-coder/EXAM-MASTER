@@ -1,0 +1,10 @@
+node_modules
+dist
+uni_modules
+.hbuilderx
+laf-backend/node_modules
+logs
+deploy
+vps-optimizer
+coverage
+*.min.js

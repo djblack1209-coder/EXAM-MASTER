@@ -22,62 +22,54 @@
  */
 
 import cloud from '@lafjs/cloud'
+import { verifyJWT } from './login'
+import {
+  logger, sanitizeString, validateUserId, validateAction,
+  badRequest, unauthorized, serverError,
+  generateRequestId
+} from './_shared/api-response'
 
 const db = cloud.database()
 const _ = db.command
 
-// ==================== 环境配置 ====================
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
-
-// ==================== 日志工具 ====================
-const logger = {
-  info: (...args: unknown[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
-  warn: (...args: unknown[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
-  error: (...args: unknown[]) => console.error(...args)
-}
-
-// ==================== 参数校验 ====================
-function sanitizeString(input: string, maxLength: number = 2000): string {
-  if (typeof input !== 'string') return ''
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '')
-    .substring(0, maxLength)
-    .trim()
-}
-
-function validateAction(action: unknown): boolean {
-  return typeof action === 'string' && 
-         action.length > 0 && 
-         action.length <= 50 && 
-         /^[a-zA-Z_]+$/.test(action)
-}
-
-function validateUserId(userId: unknown): boolean {
-  return typeof userId === 'string' && 
-         userId.length > 0 && 
-         userId.length <= 64
-}
-
 // ==================== 主入口 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `fav_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  const requestId = generateRequestId('fav')
 
   logger.info(`[${requestId}] 收藏管理请求开始`)
 
   try {
-    const { action, userId, data } = ctx.body || {}
+    const { action, userId: bodyUserId, data } = ctx.body || {}
 
     // 参数校验
     if (!validateAction(action)) {
-      return { code: 400, success: false, message: '参数错误: action 不合法', requestId }
+      return { ...badRequest('参数错误: action 不合法'), requestId }
+    }
+
+    // JWT 认证：写操作强制验证，读操作可选
+    const token = ctx.headers?.['authorization']?.replace(/^Bearer\s+/i, '') || ctx.body?.token
+    let userId = bodyUserId
+
+    const writeActions = ['add', 'remove', 'batchAdd', 'batchRemove']
+    if (writeActions.includes(action)) {
+      if (!token) {
+        return { ...unauthorized('请先登录'), requestId }
+      }
+      const payload = verifyJWT(token)
+      if (!payload || !payload.userId) {
+        return { ...unauthorized('登录已过期，请重新登录'), requestId }
+      }
+      userId = payload.userId
+    } else if (token) {
+      const payload = verifyJWT(token)
+      if (payload?.userId) {
+        userId = payload.userId
+      }
     }
 
     if (!validateUserId(userId)) {
-      return { code: 401, success: false, message: '用户未登录或 userId 不合法', requestId }
+      return { ...unauthorized('用户未登录或 userId 不合法'), requestId }
     }
 
     logger.info(`[${requestId}] action: ${action}, userId: ${userId}`)
@@ -96,7 +88,7 @@ export default async function (ctx) {
 
     const handler = handlers[action]
     if (!handler) {
-      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId }
+      return { ...badRequest(`不支持的操作: ${action}`), requestId }
     }
 
     // 执行操作
@@ -116,14 +108,7 @@ export default async function (ctx) {
     const duration = Date.now() - startTime
     logger.error(`[${requestId}] 收藏管理异常:`, error)
 
-    return {
-      code: 500,
-      success: false,
-      message: '服务器内部错误',
-    error: error.message,
-      requestId,
-      duration
-    }
+    return { ...serverError('服务器内部错误', (error as Error).message), requestId, duration }
   }
 }
 
@@ -383,7 +368,7 @@ async function handleBatchAdd(userId: string, data: Record<string, unknown>, req
       added++
       results.push({ id: q.questionId || q.id, newId: result.id, success: true })
     } catch (error) {
-      results.push({ id: q.questionId || q.id, success: false, error: error.message })
+      results.push({ id: q.questionId || q.id, success: false, error: (error as Error).message })
     }
   }
 

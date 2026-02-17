@@ -8,8 +8,11 @@
  * 3. 索引创建是幂等操作，重复执行不会报错
  *
  * B002 更新：补充 13 个缺失集合的索引，修正 mistakes → mistake_book 集合名
+ * B003 更新：修正 rankings/favorites/learning_goals 索引字段名与实际查询不匹配问题，
+ *   补充 crawler_schools/crawler_meta/user_profiles/data_backups 集合索引，
+ *   补充 goal_progress 复合索引，补充 users.nickname 索引
  *
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 import cloud from '@lafjs/cloud';
@@ -17,6 +20,7 @@ import cloud from '@lafjs/cloud';
 const db = cloud.database();
 
 export default async function (ctx) {
+  try {
   const results = [];
 
   // ==================== 用户表索引 (B012) ====================
@@ -27,7 +31,9 @@ export default async function (ctx) {
     await usersCol.createIndex({ h5_openid: 1 }, { sparse: true, name: 'idx_h5_openid' });
     await usersCol.createIndex({ unionid: 1 }, { sparse: true, name: 'idx_unionid' });
     await usersCol.createIndex({ created_at: -1 }, { name: 'idx_created_at' });
-    results.push({ collection: 'users', status: 'ok', indexes: 5 });
+    // 补充: social-service.ts 按 nickname 正则搜索
+    await usersCol.createIndex({ nickname: 1 }, { sparse: true, name: 'idx_nickname' });
+    results.push({ collection: 'users', status: 'ok', indexes: 6 });
   } catch (e) {
     results.push({ collection: 'users', status: 'error', message: e.message });
   }
@@ -60,9 +66,11 @@ export default async function (ctx) {
   // ==================== 学习目标表索引 ====================
   try {
     const goalsCol = db.collection('learning_goals');
-    await goalsCol.createIndex({ userId: 1, status: 1 }, { name: 'idx_user_status' });
-    await goalsCol.createIndex({ userId: 1, type: 1 }, { name: 'idx_user_type' });
-    results.push({ collection: 'learning_goals', status: 'ok', indexes: 2 });
+    // 修正: 实际查询使用 user_id 而非 userId (learning-goal.ts)
+    await goalsCol.createIndex({ user_id: 1, status: 1 }, { name: 'idx_user_status' });
+    await goalsCol.createIndex({ user_id: 1, type: 1, status: 1 }, { name: 'idx_user_type_status' });
+    await goalsCol.createIndex({ user_id: 1, created_at: -1 }, { name: 'idx_user_created' });
+    results.push({ collection: 'learning_goals', status: 'ok', indexes: 3 });
   } catch (e) {
     results.push({ collection: 'learning_goals', status: 'error', message: e.message });
   }
@@ -97,7 +105,8 @@ export default async function (ctx) {
   try {
     const rankCol = db.collection('rankings');
     await rankCol.createIndex({ type: 1, score: -1 }, { name: 'idx_type_score' });
-    await rankCol.createIndex({ userId: 1, type: 1 }, { name: 'idx_user_type' });
+    // 修正: 实际查询使用 uid 而非 userId (rank-center.ts, pk-battle.ts)
+    await rankCol.createIndex({ uid: 1 }, { name: 'idx_uid' });
     results.push({ collection: 'rankings', status: 'ok', indexes: 2 });
   } catch (e) {
     results.push({ collection: 'rankings', status: 'error', message: e.message });
@@ -151,12 +160,14 @@ export default async function (ctx) {
   // ==================== 收藏表索引 ====================
   try {
     const favoritesCol = db.collection('favorites');
-    await favoritesCol.createIndex({ userId: 1, type: 1 }, { name: 'idx_user_type' });
+    // 修正: 实际查询使用 user_id/question_id 而非 userId/targetId (favorite-manager.ts)
+    await favoritesCol.createIndex({ user_id: 1, created_at: -1 }, { name: 'idx_user_created' });
     await favoritesCol.createIndex(
-      { userId: 1, targetId: 1 },
-      { unique: true, name: 'idx_user_target' }
+      { user_id: 1, question_id: 1 },
+      { unique: true, name: 'idx_user_question' }
     );
-    results.push({ collection: 'favorites', status: 'ok', indexes: 2 });
+    await favoritesCol.createIndex({ user_id: 1, category: 1, created_at: -1 }, { name: 'idx_user_category_created' });
+    results.push({ collection: 'favorites', status: 'ok', indexes: 3 });
   } catch (e) {
     results.push({ collection: 'favorites', status: 'error', message: e.message });
   }
@@ -266,7 +277,10 @@ export default async function (ctx) {
   try {
     const goalProgressCol = db.collection('goal_progress');
     await goalProgressCol.createIndex({ user_id: 1, goal_type: 1, date: 1 }, { name: 'idx_user_type_date' });
-    results.push({ collection: 'goal_progress', status: 'ok', indexes: 1 });
+    // 补充: learning-goal.ts 按 goal_id + date_key 查询
+    await goalProgressCol.createIndex({ goal_id: 1, date_key: 1 }, { name: 'idx_goal_datekey' });
+    await goalProgressCol.createIndex({ goal_id: 1 }, { name: 'idx_goal' });
+    results.push({ collection: 'goal_progress', status: 'ok', indexes: 3 });
   } catch (e) {
     results.push({ collection: 'goal_progress', status: 'error', message: e.message });
   }
@@ -350,6 +364,46 @@ export default async function (ctx) {
     results.push({ collection: 'security_audit_logs', status: 'error', message: e.message });
   }
 
+  // ==================== 补充: 爬虫院校表索引 (school-crawler-api.ts) ====================
+  try {
+    const crawlerSchoolsCol = db.collection('crawler_schools');
+    await crawlerSchoolsCol.createIndex({ code: 1 }, { unique: true, name: 'idx_code' });
+    await crawlerSchoolsCol.createIndex({ province: 1, code: 1 }, { name: 'idx_province_code' });
+    await crawlerSchoolsCol.createIndex({ type: 1 }, { name: 'idx_type' });
+    await crawlerSchoolsCol.createIndex({ name: 'text' }, { name: 'idx_name_text' });
+    results.push({ collection: 'crawler_schools', status: 'ok', indexes: 4 });
+  } catch (e) {
+    results.push({ collection: 'crawler_schools', status: 'error', message: e.message });
+  }
+
+  // ==================== 补充: 爬虫元数据表索引 ====================
+  try {
+    const crawlerMetaCol = db.collection('crawler_meta');
+    await crawlerMetaCol.createIndex({ type: 1 }, { unique: true, name: 'idx_type' });
+    results.push({ collection: 'crawler_meta', status: 'ok', indexes: 1 });
+  } catch (e) {
+    results.push({ collection: 'crawler_meta', status: 'error', message: e.message });
+  }
+
+  // ==================== 补充: 用户画像表索引 (learning-resource.ts) ====================
+  try {
+    const userProfilesCol = db.collection('user_profiles');
+    await userProfilesCol.createIndex({ user_id: 1 }, { unique: true, name: 'idx_user' });
+    results.push({ collection: 'user_profiles', status: 'ok', indexes: 1 });
+  } catch (e) {
+    results.push({ collection: 'user_profiles', status: 'error', message: e.message });
+  }
+
+  // ==================== 补充: 数据备份表索引 (data-cleanup.ts) ====================
+  try {
+    const backupsCol = db.collection('data_backups');
+    await backupsCol.createIndex({ backup_id: 1 }, { unique: true, name: 'idx_backup_id' });
+    await backupsCol.createIndex({ created_at: -1 }, { name: 'idx_created' });
+    results.push({ collection: 'data_backups', status: 'ok', indexes: 2 });
+  } catch (e) {
+    results.push({ collection: 'data_backups', status: 'error', message: e.message });
+  }
+
   const totalIndexes = results.reduce((sum, r) => sum + (r.indexes || 0), 0);
   const failedCollections = results.filter(r => r.status === 'error');
 
@@ -358,4 +412,12 @@ export default async function (ctx) {
     message: `索引创建完成: ${totalIndexes} 个索引, ${results.length} 个集合, ${failedCollections.length} 个失败`,
     data: results
   };
+  } catch (error) {
+    console.error('[db-create-indexes] 索引创建脚本异常:', error);
+    return {
+      code: 500,
+      message: '索引创建脚本执行异常',
+      error: (error as Error).message
+    };
+  }
 }

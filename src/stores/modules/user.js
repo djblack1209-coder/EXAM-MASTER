@@ -1,5 +1,10 @@
 /**
- * 用户信息状态管理
+ * 用户信息状态管理（God Store）
+ * 管理认证、用户资料、VIP 会员、邀请机制、社交好友等状态
+ *
+ * 职责较重，后续可考虑拆分为 auth / profile / vip / invite / social 子模块
+ *
+ * @module stores/user
  */
 
 import { defineStore } from 'pinia';
