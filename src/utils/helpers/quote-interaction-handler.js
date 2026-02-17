@@ -205,10 +205,13 @@ class QuoteInteractionHandler {
   /**
    * 生成金句海报
    */
-  async generatePoster(quote, author) {
+  async generatePoster(quote, author, componentInstance) {
     return new Promise((resolve, reject) => {
-      // 获取 canvas 上下文
-      const query = uni.createSelectorQuery();
+      // 获取 canvas 上下文（小程序端需要 .in(componentInstance) 才能查找组件内节点）
+      let query = uni.createSelectorQuery();
+      if (componentInstance) {
+        query = query.in(componentInstance);
+      }
       query.select('#quote-poster-canvas')
         .fields({ node: true, size: true })
         .exec(async (res) => {

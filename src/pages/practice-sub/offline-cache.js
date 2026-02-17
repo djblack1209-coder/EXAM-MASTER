@@ -10,6 +10,8 @@
 
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+// ✅ 5.2: 导入 lafService 用于离线数据同步
+import { lafService } from '@/services/lafService.js';
 const STORAGE_KEYS = {
   OFFLINE_QUESTIONS: 'offline_questions',
   OFFLINE_ANSWERS: 'offline_answers',
@@ -521,21 +523,26 @@ class OfflineCacheManager {
 
   /**
    * 同步单个项目
+   * ✅ 5.2: 实现实际的同步逻辑，替代原有空桩
    */
   async _syncItem(item) {
-    // 这里实现具体的同步逻辑
-    // 根据item.type调用不同的API
     switch (item.type) {
       case 'answer':
-        // 同步答题记录
-        // await api.syncAnswer(item.data);
+        // 同步答题记录到云端
+        await lafService.request('answer-submit', {
+          action: 'syncOffline',
+          userId: item.data.userId,
+          answers: Array.isArray(item.data.answers) ? item.data.answers : [item.data]
+        });
+        logger.log('[OfflineCache] 答题记录同步成功:', item.data?.questionId || 'batch');
         break;
       case 'mistake':
-        // 同步错题
-        // await api.syncMistake(item.data);
+        // 同步错题到云端（复用 storageService 的云同步能力）
+        await storageService.syncPendingMistakes();
+        logger.log('[OfflineCache] 错题同步成功');
         break;
       default:
-        console.warn('[OfflineCache] 未知的同步类型:', item.type);
+        logger.warn('[OfflineCache] 未知的同步类型:', item.type);
     }
   }
 

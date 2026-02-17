@@ -439,12 +439,10 @@ import { QUOTE_LIBRARY } from '@/config/home-data.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 // ✅ 检查点2.2：导入草稿检测器
 import { detectUnfinishedPractice, clearDraft } from '@/utils/practice/draft-detector.js';
-// ✅ 检查点 5.1: 导入分析服务
-import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
-// ✅ requireLogin 保留在主包（轻量函数，goPractice/goBattle 直接依赖）
-import { requireLogin } from '@/utils/auth/loginGuard.js';
+// ✅ 2.1: 导航逻辑提取到 mixin，减少主组件方法数量
+import { practiceNavigationMixin } from '@/composables/usePracticeNavigation.js';
 // ✅ AI 生成逻辑已抽离到分包 composable，通过 onLoad 动态加载
 // 详见 pages/practice-sub/composables/ai-generation-mixin.js
 
@@ -462,6 +460,8 @@ export default {
     SpeedReadyModal,
     PauseBanner
   },
+  // ✅ 2.1: 导航逻辑提取到 mixin
+  mixins: [practiceNavigationMixin],
   data() {
     return {
       // 页面状态
@@ -500,8 +500,7 @@ export default {
       showResumeModal: false,
       draftInfo: null,
 
-      // 防重复点击
-      isNavigating: false,
+      // 防重复点击: isNavigating 由 practiceNavigationMixin 提供
 
       // ✅ P0-2: 学习数据统计
       todayQuestions: 0, // 今日刷题数
@@ -692,35 +691,9 @@ export default {
       }
     },
 
-    // ==================== 页面导航 ====================
-    goPractice() {
-      // 防重复点击
-      if (this.isNavigating) return;
-      this.isNavigating = true;
-
-      requireLogin(() => {
-        if (!this.hasBank) {
-          this.isNavigating = false;
-          return uni.showToast({ title: '请先导入题库', icon: 'none' });
-        }
-        // ✅ 检查点 5.1: 追踪"开始刷题"按钮点击
-        analytics.track('button_click', {
-          buttonName: '开始刷题',
-          page: 'practice/index',
-          questionCount: this.totalQuestions
-        });
-        safeNavigateTo('/pages/practice-sub/do-quiz', {
-          complete: () => {
-            // 延迟解锁，防止快速返回后再次点击
-            setTimeout(() => { this.isNavigating = false; }, 500);
-          }
-        });
-      }, {
-        message: '请先登录后开始刷题',
-        loginUrl: '/pages/settings/index',
-        onCancel: () => { this.isNavigating = false; }
-      });
-    },
+    // ==================== 页面导航（由 practiceNavigationMixin 提供）====================
+    // goPractice, goBattle, goMistakeReview, goFileManager, goAITutor,
+    // goMistake, goRank, goToStudyDetail, goFavorites, isNavigating
 
     // ✅ 检查点2.2：检测未完成的练习
     checkUnfinishedPractice() {
@@ -748,47 +721,9 @@ export default {
       safeNavigateTo('/pages/practice-sub/do-quiz');
     },
 
-    goBattle() {
-      // 防重复点击
-      if (this.isNavigating) return;
-      this.isNavigating = true;
+    // goBattle 由 practiceNavigationMixin 提供
 
-      requireLogin(() => {
-        if (!this.hasBank) {
-          this.isNavigating = false;
-          return uni.showToast({ title: '请先导入题库', icon: 'none' });
-        }
-        safeNavigateTo('/pages/practice-sub/pk-battle', {
-          complete: () => {
-            setTimeout(() => { this.isNavigating = false; }, 500);
-          }
-        });
-      }, {
-        message: '请先登录后参与PK对战',
-        loginUrl: '/pages/settings/index',
-        onCancel: () => { this.isNavigating = false; }
-      });
-    },
-
-    goFileManager() {
-      safeNavigateTo('/pages/practice-sub/file-manager');
-    },
-
-    goAITutor() {
-      safeNavigateTo('/pages/chat/chat');
-    },
-
-    goMistake() {
-      safeNavigateTo('/pages/mistake/index');
-    },
-
-    goRank() {
-      safeNavigateTo('/pages/practice-sub/rank');
-    },
-
-    goToStudyDetail() {
-      safeNavigateTo('/pages/study-detail/index');
-    },
+    // goFileManager, goAITutor, goMistake, goRank, goToStudyDetail 由 practiceNavigationMixin 提供
 
     // ==================== 学习数据与统计（由分包 mixin 动态注入）====================
     // loadLearningStats, loadTodayGoal, loadAchievements, openGoalSetting,
@@ -797,22 +732,9 @@ export default {
     async loadLearningStats() { /* 由分包 mixin 注入 */ },
     async loadFavoriteCount() { /* 由分包 mixin 注入 */ },
 
-    // ✅ P1: 跳转到错题重练页面（保留在主包，不依赖重模块）
-    goMistakeReview() {
-      if (this.mistakeCount === 0) {
-        uni.showToast({
-          title: '暂无错题',
-          icon: 'none'
-        });
-        return;
-      }
-      safeNavigateTo('/pages/mistake/index?mode=review');
-    },
+    // ✅ P1: goMistakeReview 由 practiceNavigationMixin 提供
 
-    // ✅ P2: 跳转到收藏夹页面
-    goFavorites() {
-      safeNavigateTo('/pages/favorite/index');
-    },
+    // ✅ P2: goFavorites 由 practiceNavigationMixin 提供
 
     // ==================== 动态加载分包 Mixin ====================
     async _loadAIGenerationMixin() {

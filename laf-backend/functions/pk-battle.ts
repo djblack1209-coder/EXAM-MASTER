@@ -23,20 +23,15 @@
  */
 
 import cloud from '@lafjs/cloud'
+import { verifyJWT } from './login'
+import {
+  logger, validateUserId,
+  success, badRequest, unauthorized, serverError,
+  generateRequestId
+} from './_shared/api-response'
 
 const db = cloud.database()
 const _ = db.command
-
-// ==================== 环境配置 ====================
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
-
-// ==================== 日志工具 ====================
-const logger = {
-  info: (...args: unknown[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
-  warn: (...args: unknown[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
-  error: (...args: unknown[]) => console.error(...args)
-}
 
 // ==================== ELO 配置 ====================
 const ELO_K_FACTOR = 32  // ELO K 因子
@@ -63,10 +58,6 @@ const ANTI_CHEAT_CONFIG = {
 }
 
 // ==================== 参数校验 ====================
-function validateUserId(uid: unknown): boolean {
-  return typeof uid === 'string' && uid.length > 0 && uid.length <= 64
-}
-
 function validateScore(score: unknown): boolean {
   return typeof score === 'number' && !isNaN(score) && score >= 0 && score <= 10000
 }
@@ -78,7 +69,7 @@ function validateBattleId(battleId: unknown): boolean {
 // ==================== 主函数 ====================
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  const requestId = generateRequestId('pk')
 
   logger.info(`[${requestId}] PK 对战请求开始`)
 
@@ -86,7 +77,22 @@ export default async function (ctx) {
     const { action, ...params } = ctx.body || {}
 
     if (!action || typeof action !== 'string' || action.length > 50) {
-      return { code: 400, success: false, message: '参数错误: action 不合法', requestId }
+      return { ...badRequest('参数错误: action 不合法'), requestId }
+    }
+
+    // JWT 认证：写操作强制验证
+    const token = ctx.headers?.['authorization']?.replace(/^Bearer\s+/i, '') || params.token
+    const writeActions = ['submit_result']
+    if (writeActions.includes(action)) {
+      if (!token) {
+        return { ...unauthorized('请先登录'), requestId }
+      }
+      const payload = verifyJWT(token)
+      if (!payload || !payload.userId) {
+        return { ...unauthorized('登录已过期，请重新登录'), requestId }
+      }
+      // 将验证后的 userId 注入 params，防止伪造
+      params._authUserId = payload.userId
     }
 
     logger.info(`[${requestId}] action: ${action}`)
@@ -99,7 +105,7 @@ export default async function (ctx) {
 
     const handler = handlers[action]
     if (!handler) {
-      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId }
+      return { ...badRequest(`不支持的操作: ${action}`), requestId }
     }
 
     const result = await handler(params, requestId)
@@ -113,14 +119,7 @@ export default async function (ctx) {
     const duration = Date.now() - startTime
     logger.error(`[${requestId}] PK 对战异常:`, error)
 
-    return {
-      code: 500,
-      success: false,
-      message: '服务器内部错误',
-      error: error.message,
-      requestId,
-      duration
-    }
+    return { ...serverError('服务器内部错误', (error as Error).message), requestId, duration }
   }
 }
 
@@ -140,19 +139,19 @@ async function handleSubmitResult(params, requestId) {
 
   // 1. 参数校验
   if (!validateBattleId(battleId)) {
-    return { code: 400, success: false, message: 'battleId 不合法' }
+    return badRequest('battleId 不合法', requestId)
   }
 
   if (!idempotencyKey || typeof idempotencyKey !== 'string') {
-    return { code: 400, success: false, message: 'idempotencyKey 不能为空（防止重复提交）' }
+    return badRequest('idempotencyKey 不能为空（防止重复提交）', requestId)
   }
 
   if (!player1 || !validateUserId(player1.uid) || !validateScore(player1.score)) {
-    return { code: 400, success: false, message: 'player1 参数不合法' }
+    return badRequest('player1 参数不合法', requestId)
   }
 
   if (!player2 || !validateUserId(player2.uid) || !validateScore(player2.score)) {
-    return { code: 400, success: false, message: 'player2 参数不合法' }
+    return badRequest('player2 参数不合法', requestId)
   }
 
   // 2. 防作弊检测（仅对真实玩家，跳过机器人）— 并行执行
@@ -263,7 +262,7 @@ async function handleSubmitResult(params, requestId) {
     if (idempotencyResult.recordId) {
       await db.collection(IDEMPOTENCY_COLLECTION).doc(idempotencyResult.recordId).update({
         status: 'failed',
-        result: { error: error.message },
+        result: { error: (error as Error).message },
         completed_at: Date.now()
       })
     }
@@ -351,7 +350,7 @@ async function updateRankingWithLock(collection, uid: string, pkScore: number, e
       if (attempt === MAX_RETRIES) {
         throw error
       }
-      logger.warn(`[${requestId}] 更新排行榜失败，重试 (${attempt}/${MAX_RETRIES}):`, error.message)
+      logger.warn(`[${requestId}] 更新排行榜失败，重试 (${attempt}/${MAX_RETRIES}):`, (error as Error).message)
       await new Promise(resolve => setTimeout(resolve, 100 * attempt))
     }
   }
@@ -402,7 +401,7 @@ async function handleGetRecords(params, requestId) {
   const { uid, page = 1, limit = 20 } = params
 
   if (!validateUserId(uid)) {
-    return { code: 400, success: false, message: '用户ID不合法' }
+    return badRequest('用户ID不合法', requestId)
   }
 
   const collection = db.collection('pk_records')
@@ -444,16 +443,12 @@ async function handleCalculateElo(params, requestId) {
   const { player1Score, player2Score } = params
 
   if (!validateScore(player1Score) || !validateScore(player2Score)) {
-    return { code: 400, success: false, message: '分数参数不合法' }
+    return badRequest('分数参数不合法', requestId)
   }
 
   const result = calculateEloChange(player1Score, player2Score)
 
-  return {
-    code: 0,
-    success: true,
-    data: result
-  }
+  return success(result, 'ELO 计算完成')
 }
 
 // ==================== 幂等性工具函数 ====================

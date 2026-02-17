@@ -33,17 +33,26 @@ const TIMESTAMP_FIELDS = ['created_at', 'updated_at'];
 const BATCH_SIZE = 100;
 
 export default async function (ctx) {
-  const { action = 'check' } = ctx.body || {};
+  try {
+    const { action = 'check' } = ctx.body || {};
 
-  switch (action) {
-  case 'check':
-    return await checkTimestampTypes();
-  case 'migrate':
-    return await migrateToDate();
-  case 'rollback':
-    return await rollbackToNumber();
-  default:
-    return { code: 400, message: '无效的 action，可选: check, migrate, rollback' };
+    switch (action) {
+    case 'check':
+      return await checkTimestampTypes();
+    case 'migrate':
+      return await migrateToDate();
+    case 'rollback':
+      return await rollbackToNumber();
+    default:
+      return { code: 400, message: '无效的 action，可选: check, migrate, rollback' };
+    }
+  } catch (error) {
+    console.error('[db-migrate-timestamps] 迁移脚本异常:', error);
+    return {
+      code: 500,
+      message: '迁移脚本执行异常',
+      error: (error as Error).message
+    };
   }
 }
 

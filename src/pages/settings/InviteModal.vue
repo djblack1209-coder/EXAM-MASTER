@@ -78,6 +78,7 @@
 
 <script>
 import { logger } from '@/utils/logger.js';
+import config from '@/config';
 
 export default {
   props: {
@@ -94,12 +95,11 @@ export default {
   computed: {
     // 构造真实的 App 启动链接 (Schemes) 或 Web 链接
     inviteLink() {
-      return `https://exam-master.com/join?c=${this.inviteCode}`;
+      return `${config.deepLink.h5BaseUrl}/join?c=${this.inviteCode}`;
     },
     // 使用公开 API 动态生成二维码
     qrCodeUrl() {
-      // 这里的 data 填入你的真实链接
-      return `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(this.inviteLink)}`;
+      return `${config.externalCdn.qrServerBaseUrl}/create-qr-code/?size=150x150&data=${encodeURIComponent(this.inviteLink)}`;
     }
   },
   methods: {

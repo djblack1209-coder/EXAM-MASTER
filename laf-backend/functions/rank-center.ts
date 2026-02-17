@@ -15,24 +15,19 @@
  */
 
 import cloud from '@lafjs/cloud'
+import { verifyJWT } from './login'
+import {
+  logger, sanitizeString, validateUserId,
+  success, badRequest, unauthorized, serverError,
+  generateRequestId
+} from './_shared/api-response'
 
 const db = cloud.database()
 const _ = db.command
 
-// ==================== 环境配置 ====================
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
-
 // ==================== 缓存配置 ====================
 const RANK_CACHE_TTL = 60 * 1000  // 排行榜缓存60秒
 const rankCache = new Map<string, { data: unknown; expireAt: number }>()
-
-// ==================== 日志工具 ====================
-const logger = {
-  info: (...args: unknown[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
-  warn: (...args: unknown[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
-  error: (...args: unknown[]) => console.error(...args)
-}
 
 /**
  * 获取缓存的排行榜数据
@@ -74,19 +69,6 @@ function setCachedRank(cacheKey: string, data: unknown, ttl: number = RANK_CACHE
   })
 }
 
-// ==================== 参数校验 ====================
-function sanitizeString(input: string, maxLength: number = 100): string {
-  if (typeof input !== 'string') return ''
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .substring(0, maxLength)
-    .trim()
-}
-
-function validateUserId(uid: unknown): boolean {
-  return typeof uid === 'string' && uid.length > 0 && uid.length <= 64
-}
 
 function validateScore(score: unknown): boolean {
   return typeof score === 'number' && !isNaN(score) && score >= 0 && score <= 1000000
@@ -102,15 +84,35 @@ const RANK_TYPES = {
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  const requestId = generateRequestId('rank')
 
   logger.info(`[${requestId}] 排行榜请求开始`)
 
   try {
-    const { action, uid, score, nickName, avatarUrl, rankType, limit } = ctx.body || {}
+    const { action, uid: bodyUid, score, nickName, avatarUrl, rankType, limit } = ctx.body || {}
 
     if (!action || typeof action !== 'string' || action.length > 50) {
-      return { code: 400, success: false, message: '参数错误: action 不合法', requestId }
+      return { ...badRequest('参数错误: action 不合法'), requestId }
+    }
+
+    // JWT 认证：update 操作强制验证
+    const token = ctx.headers?.['authorization']?.replace(/^Bearer\s+/i, '') || ctx.body?.token
+    let uid = bodyUid
+
+    if (action === 'update') {
+      if (!token) {
+        return { ...unauthorized('请先登录'), requestId }
+      }
+      const payload = verifyJWT(token)
+      if (!payload || !payload.userId) {
+        return { ...unauthorized('登录已过期，请重新登录'), requestId }
+      }
+      uid = payload.userId
+    } else if (token) {
+      const payload = verifyJWT(token)
+      if (payload?.userId) {
+        uid = payload.userId
+      }
     }
 
     logger.info(`[${requestId}] action: ${action}, uid: ${uid}`)
@@ -123,7 +125,7 @@ export default async function (ctx) {
 
     const handler = handlers[action]
     if (!handler) {
-      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId }
+      return { ...badRequest(`不支持的操作: ${action}`), requestId }
     }
 
     const result = await handler({ uid, score, nickName, avatarUrl, rankType, limit }, requestId)
@@ -137,14 +139,7 @@ export default async function (ctx) {
     const duration = Date.now() - startTime
     logger.error(`[${requestId}] 排行榜异常:`, error)
 
-    return {
-      code: 500,
-      success: false,
-      message: '服务器内部错误',
-      error: error.message,
-      requestId,
-      duration
-    }
+    return { ...serverError('服务器内部错误', (error as Error).message), requestId, duration }
   }
 }
 
@@ -155,11 +150,11 @@ async function handleUpdate(params, requestId) {
   const { uid, score, nickName, avatarUrl } = params
 
   if (!validateUserId(uid)) {
-    return { code: 400, success: false, message: '用户ID不合法' }
+    return badRequest('用户ID不合法')
   }
 
   if (!validateScore(score)) {
-    return { code: 400, success: false, message: '分数必须是0-1000000之间的数字' }
+    return badRequest('分数必须是0-1000000之间的数字')
   }
 
   const rankCollection = db.collection('rankings')
@@ -229,11 +224,7 @@ async function handleUpdate(params, requestId) {
     logger.info(`[${requestId}] 创建排行榜记录: ${uid}, ${score}`)
   }
 
-  return {
-    code: 0,
-    success: true,
-    message: '分数更新成功'
-  }
+  return success(undefined, '分数更新成功')
 }
 
 /**
@@ -251,12 +242,9 @@ async function handleGet(params, requestId) {
   if (cachedData) {
     logger.info(`[${requestId}] 排行榜缓存命中: ${rankType}`)
     return {
-      code: 0,
-      success: true,
-      data: cachedData,
+      ...success(cachedData, '获取成功'),
       rankType,
-      cached: true,
-      message: '获取成功'
+      cached: true
     }
   }
   
@@ -320,12 +308,9 @@ async function handleGet(params, requestId) {
   logger.info(`[${requestId}] 获取排行榜: ${rankType}, ${rankList.length} 条`)
 
   return {
-    code: 0,
-    success: true,
-    data: rankList,
+    ...success(rankList, '获取成功'),
     rankType,
-    cached: false,
-    message: '获取成功'
+    cached: false
   }
 }
 
@@ -336,7 +321,7 @@ async function handleGetUserRank(params, requestId) {
   const { uid, rankType = RANK_TYPES.DAILY } = params
 
   if (!validateUserId(uid)) {
-    return { code: 400, success: false, message: '用户ID不合法' }
+    return badRequest('用户ID不合法')
   }
 
   const rankCollection = db.collection('rankings')
@@ -345,12 +330,7 @@ async function handleGetUserRank(params, requestId) {
   const userRecord = await rankCollection.where({ uid }).getOne()
 
   if (!userRecord.data) {
-    return {
-      code: 0,
-      success: true,
-      data: { rank: -1, score: 0 },
-      message: '用户暂无排名'
-    }
+    return success({ rank: -1, score: 0 }, '用户暂无排名')
   }
 
   // 确定分数字段和日期字段
@@ -380,11 +360,8 @@ async function handleGetUserRank(params, requestId) {
   // 检查用户数据是否在当前周期内
   if (dateField && userRecord.data[dateField] !== dateValue) {
     return {
-      code: 0,
-      success: true,
-      data: { rank: -1, score: 0 },
-      rankType,
-      message: '用户在当前周期暂无排名'
+      ...success({ rank: -1, score: 0 }, '用户在当前周期暂无排名'),
+      rankType
     }
   }
 
@@ -394,12 +371,9 @@ async function handleGetUserRank(params, requestId) {
   if (cachedRank) {
     logger.info(`[${requestId}] 用户排名缓存命中: ${uid}`)
     return {
-      code: 0,
-      success: true,
-      data: cachedRank,
+      ...success(cachedRank, '获取成功'),
       rankType,
-      cached: true,
-      message: '获取成功'
+      cached: true
     }
   }
 
@@ -429,12 +403,9 @@ async function handleGetUserRank(params, requestId) {
   logger.info(`[${requestId}] 获取用户排名: ${uid}, 第 ${rank} 名, ${userScore} 分`)
 
   return {
-    code: 0,
-    success: true,
-    data: rankData,
+    ...success(rankData, '获取成功'),
     rankType,
-    cached: false,
-    message: '获取成功'
+    cached: false
   }
 }
 

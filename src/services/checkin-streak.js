@@ -472,6 +472,11 @@ export const checkinStreak = new CheckinStreakService();
 export { CheckinStreakService, CHECKIN_STATUS, REWARD_CONFIG };
 
 // Vue组合式API Hook
+/**
+ * 签到打卡组合式 API Hook
+ * 提供响应式的签到信息、统计数据，以及签到/日历/补签卡等操作方法
+ * @returns {{ checkinInfo: import('vue').ComputedRef, statistics: import('vue').ComputedRef, init: Function, checkIn: Function, getMonthCalendar: Function, getRecoveryCards: Function, addRecoveryCards: Function, onCheckin: Function, onMissed: Function, onMilestone: Function }}
+ */
 export function useCheckinStreak() {
   const checkinInfo = computed(() => checkinStreak.getCheckinInfo());
   const statistics = computed(() => checkinStreak.getStatistics());

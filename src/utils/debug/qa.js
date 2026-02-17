@@ -102,6 +102,7 @@ export const injectInterceptor = () => {
   }
 
   // 同时拦截微信原生 wx.request（兼容性）
+  // #ifdef MP-WEIXIN
   if (typeof wx !== 'undefined' && wx.request) {
     const originWxRequest = wx.request;
     Object.defineProperty(wx, 'request', {
@@ -123,6 +124,7 @@ export const injectInterceptor = () => {
       }
     });
   }
+  // #endif
 };
 
 // 【核心修复】同时 Hook Page 和 Component

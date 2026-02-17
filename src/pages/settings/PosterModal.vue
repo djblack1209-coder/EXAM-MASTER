@@ -87,6 +87,7 @@
 import { ref, getCurrentInstance } from 'vue';
 import { posterGenerator } from './poster-generator.js';
 import { permissionHandler } from './utils/permission-handler.js';
+import config from '@/config';
 
 // defineProps 和 defineEmits 是编译器宏，无需手动导入
 const props = defineProps({
@@ -241,7 +242,7 @@ const handleShare = () => {
     navigator.share({
       title: 'Exam-Master 考研神器',
       text: `输入邀请码 ${props.inviteCode} 领取会员！AI助力，一战成硕！`,
-      url: `https://exam-master.com/join?c=${props.inviteCode}`
+      url: `${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`
     }).then(() => {
       emit('shared');
     }).catch(() => {
@@ -256,7 +257,7 @@ const handleShare = () => {
 // 复制邀请信息
 const copyInviteInfo = () => {
   uni.setClipboardData({
-    data: `【Exam-Master 考研神器】\n邀请码：${props.inviteCode}\nAI助力，一战成硕！\n下载链接：https://exam-master.com/join?c=${props.inviteCode}`,
+    data: `【Exam-Master 考研神器】\n邀请码：${props.inviteCode}\nAI助力，一战成硕！\n下载链接：${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`,
     success: () => {
       uni.showToast({ title: '邀请信息已复制', icon: 'success' });
     }

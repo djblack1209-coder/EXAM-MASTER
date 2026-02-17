@@ -593,6 +593,11 @@ export {
 };
 
 // Vue组合式API Hook
+/**
+ * 连续签到恢复组合式 API Hook
+ * 提供响应式的补签卡库存、商店列表、可恢复日期，以及恢复/购买等操作方法
+ * @returns {{ inventory: import('vue').ComputedRef, shopList: import('vue').ComputedRef, recoverableDates: import('vue').ComputedRef, init: Function, canRecover: Function, recover: Function, purchaseCard: Function, addCard: Function }}
+ */
 export function useStreakRecovery() {
   const inventory = computed(() => streakRecovery.getInventory());
   const shopList = computed(() => streakRecovery.getShopList());

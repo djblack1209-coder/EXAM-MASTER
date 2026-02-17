@@ -365,6 +365,11 @@ export default {
       // 成就徽章数量（从本地存储获取）
       achievementCount: 0,
 
+      // ✅ 2.3: 统计数据从 computed 移到 data，避免每次渲染重复读取 storageService
+      realTotalQuestions: 0,
+      realAccuracy: 0,
+      realStudyDays: 0,
+
       // 按钮防重复点击状态
       isNavigating: false,
 
@@ -375,9 +380,8 @@ export default {
       // 注意: isRefreshingQuote, quoteDate, dailyQuote, quoteAuthor, showQuotePoster 由 dailyQuoteMixin 提供
       // 注意: todayStudyTime, studyTimerInterval, sessionStartTime 由 studyTimerMixin 提供
 
-      // ✅ P0-3: 励志金句库（从配置文件导入）
-      quoteLibrary: QUOTE_LIBRARY.map((q) => q.text),
-      quoteAuthors: QUOTE_LIBRARY.reduce((map, q) => { map[q.text] = q.author; return map; }, {}),
+      // ✅ 2.3: 静态数据移到 created/beforeCreate 避免 Vue 深度响应式开销
+      // quoteLibrary, quoteAuthors, formulaList 在 created() 中赋值为非响应式属性
 
       // 知识点数据 - ✅ P0-3: 初始值从配置导入，后续由 loadKnowledgePoints() 动态计算
       knowledgePoints: DEFAULT_KNOWLEDGE_POINTS.map((p) => ({ ...p, count: 0, mastery: 0 })),
@@ -393,13 +397,18 @@ export default {
 
       // 公式定理弹窗
       showFormulaModal: false,
-      // ✅ P0-3: 公式列表从配置文件导入
-      formulaList: FORMULA_LIST,
 
       // ✅ 检查点1.4: 气泡动画状态
       animatingBubbleId: null
       // F002-I1b: searchKeyword moved to IndexHeaderBar
     };
+  },
+
+  created() {
+    // ✅ 2.3: 静态配置数据作为非响应式实例属性，避免 Vue 递归观察大数组
+    this.quoteLibrary = Object.freeze(QUOTE_LIBRARY.map((q) => q.text));
+    this.quoteAuthors = Object.freeze(QUOTE_LIBRARY.reduce((map, q) => { map[q.text] = q.author; return map; }, {}));
+    this.formulaList = Object.freeze(FORMULA_LIST);
   },
 
   onLoad() {
@@ -480,40 +489,8 @@ export default {
       return this.studyStore?.studyProgress?.studyDays || 0;
     },
 
-    // 真实统计数据（从题库和学习记录获取）
-    realTotalQuestions() {
-      try {
-        const questionBank = storageService.get('v30_bank', []);
-        return Array.isArray(questionBank) ? questionBank.length : 0;
-      } catch (_e) { return 0; }
-    },
-
-    realAccuracy() {
-      try {
-        // 优先使用 store 中的正确率
-        const storeAccuracy = parseFloat(this.studyStore?.accuracy || 0);
-        if (storeAccuracy > 0) return storeAccuracy;
-
-        // 从学习记录计算
-        const studyRecord = storageService.get('study_record', {});
-        const correct = studyRecord.correctCount || 0;
-        const total = studyRecord.totalAnswered || 0;
-        if (total === 0) return 0;
-        return Math.round((correct / total) * 100);
-      } catch (_e) { return 0; }
-    },
-
-    realStudyDays() {
-      try {
-        // 优先使用 store 中的学习天数
-        const storeDays = this.studyStore?.studyProgress?.studyDays || 0;
-        if (storeDays > 0) return storeDays;
-
-        // 从学习记录计算
-        const studyDates = storageService.get('study_dates', []);
-        return Array.isArray(studyDates) ? studyDates.length : 0;
-      } catch (_e) { return 0; }
-    },
+    // 真实统计数据：✅ 2.3 已移到 data()，由 loadData/refreshData 更新
+    // realTotalQuestions, realAccuracy, realStudyDays 不再从 storageService 读取
 
     // 待办事项数据
     todos() {
@@ -526,10 +503,9 @@ export default {
       }));
     },
 
-    // ✅ P0-1: 空状态判断
+    // ✅ P0-1: 空状态判断 — 2.3: 基于 data 属性而非重复读 storage
     isQuestionBankEmpty() {
-      const questionBank = storageService.get('v30_bank', []);
-      return questionBank.length === 0;
+      return this.realTotalQuestions === 0;
     },
 
     // 用户头像URL
@@ -588,6 +564,9 @@ export default {
         // 3. 加载待办事项（同步操作）
         this.todoStore.initTasks();
 
+        // ✅ 2.3: 同步更新统计数据（避免 computed 重复读 storage）
+        this._refreshStats();
+
         // 4-8: 并行加载所有异步/独立数据，提升首屏速度
         // ✅ F011: 使用 allSettled 替代 all，单个模块失败不影响其他模块加载
         const results = await Promise.allSettled([
@@ -623,12 +602,44 @@ export default {
         this.studyStore.restoreProgress();
         this.todoStore.initTasks();
         this.userStore.restoreUserInfo();
+        // ✅ 2.3: 统一更新统计数据（从 computed 移到此处，避免重复读 storage）
+        this._refreshStats();
         this.loadAchievements();
         this.loadKnowledgePoints();
         this.loadRecentActivities();
       } catch (e) {
         logger.error('[Index] refreshData 异常:', e);
       }
+    },
+
+    // ✅ 2.3: 集中更新统计数据，避免 computed 中重复读取 storageService
+    _refreshStats() {
+      try {
+        const questionBank = storageService.get('v30_bank', []);
+        this.realTotalQuestions = Array.isArray(questionBank) ? questionBank.length : 0;
+      } catch (_e) { this.realTotalQuestions = 0; }
+
+      try {
+        const storeAccuracy = parseFloat(this.studyStore?.accuracy || 0);
+        if (storeAccuracy > 0) {
+          this.realAccuracy = storeAccuracy;
+        } else {
+          const studyRecord = storageService.get('study_record', {});
+          const correct = studyRecord.correctCount || 0;
+          const total = studyRecord.totalAnswered || 0;
+          this.realAccuracy = total === 0 ? 0 : Math.round((correct / total) * 100);
+        }
+      } catch (_e) { this.realAccuracy = 0; }
+
+      try {
+        const storeDays = this.studyStore?.studyProgress?.studyDays || 0;
+        if (storeDays > 0) {
+          this.realStudyDays = storeDays;
+        } else {
+          const studyDates = storageService.get('study_dates', []);
+          this.realStudyDays = Array.isArray(studyDates) ? studyDates.length : 0;
+        }
+      } catch (_e) { this.realStudyDays = 0; }
     },
 
     // 下拉刷新处理

@@ -1,10 +1,23 @@
 /**
  * 任务列表 Store
  * 管理今日计划的任务数据
+ * ✅ 2.2: 消除重复默认任务、统一存储 key
  */
 
 import { defineStore } from 'pinia';
 import { storageService } from '../../services/storageService.js';
+
+/** 存储 key 常量（消除硬编码魔法字符串） */
+const STORAGE_KEY = 'my_tasks';
+
+/** 默认任务模板（消除重复定义） */
+function createDefaultTasks() {
+  return [
+    { id: Date.now() + 1, title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '优先', tagColor: 'red' },
+    { id: Date.now() + 2, title: '英语阅读真题分析', done: false, priority: 'medium', tag: '重要', tagColor: 'yellow' },
+    { id: Date.now() + 3, title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'gray' }
+  ];
+}
 
 export const useTodoStore = defineStore('todo', {
   state: () => ({
@@ -57,12 +70,10 @@ export const useTodoStore = defineStore('todo', {
     initTasks() {
       this.loading = true;
       try {
-        // 从本地存储读取任务数据
-        const savedTasks = storageService.get('my_tasks', []);
+        const savedTasks = storageService.get(STORAGE_KEY, []);
         if (savedTasks && Array.isArray(savedTasks) && savedTasks.length > 0) {
           // 检查并更新旧的标签格式
           this.tasks = savedTasks.map((task) => {
-            // 更新旧的标签名称
             if (task.tag === '高优') {
               task.tag = '优先';
               task.tagColor = 'red';
@@ -72,25 +83,14 @@ export const useTodoStore = defineStore('todo', {
             }
             return task;
           });
-          // 保存更新后的数据
           this.saveTasks();
         } else {
-          // 初始化默认任务
-          this.tasks = [
-            { id: Date.now() + 1, title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '优先', tagColor: 'red' },
-            { id: Date.now() + 2, title: '英语阅读真题分析', done: false, priority: 'medium', tag: '重要', tagColor: 'yellow' },
-            { id: Date.now() + 3, title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'gray' }
-          ];
+          this.tasks = createDefaultTasks();
           this.saveTasks();
         }
       } catch (error) {
         console.error('初始化任务列表失败:', error);
-        // 初始化失败时使用默认任务
-        this.tasks = [
-          { id: Date.now() + 1, title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '优先', tagColor: 'red' },
-          { id: Date.now() + 2, title: '英语阅读真题分析', done: false, priority: 'medium', tag: '重要', tagColor: 'yellow' },
-          { id: Date.now() + 3, title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'gray' }
-        ];
+        this.tasks = createDefaultTasks();
       } finally {
         this.loading = false;
       }
@@ -100,7 +100,7 @@ export const useTodoStore = defineStore('todo', {
      * 保存任务列表到本地存储
      */
     saveTasks() {
-      storageService.save('my_tasks', this.tasks, true); // 静默失败
+      storageService.save(STORAGE_KEY, this.tasks, true); // 静默失败
     },
 
     /**
@@ -193,9 +193,9 @@ export const useTodoStore = defineStore('todo', {
      */
     bulkAddTasks(newTasks) {
       if (Array.isArray(newTasks) && newTasks.length > 0) {
-        // 为每个任务添加 id 和创建时间
-        const tasksToAdd = newTasks.map((task) => ({
-          id: Date.now() + Math.random(),
+        // ✅ 2.2: 使用整数 ID，与 addTask 保持一致（避免浮点数 ID）
+        const tasksToAdd = newTasks.map((task, index) => ({
+          id: Date.now() + index,
           done: false,
           createdAt: new Date().toISOString(),
           ...task

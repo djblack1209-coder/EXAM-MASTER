@@ -203,6 +203,7 @@
 <script>
 import AiConsult from './ai-consult.vue';
 import { lafService } from '@/services/lafService.js';
+import config from '@/config/index.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 // ✅ F019: 统一使用 storageService
@@ -312,7 +313,7 @@ export default {
       this.schoolInfo = {
         id: '10001',
         name: '北京大学',
-        logo: 'https://api.dicebear.com/7.x/initials/svg?seed=PKU&backgroundColor=990000',
+        logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=PKU&backgroundColor=990000`,
         location: '北京',
         tags: ['985', '211', '双一流', '自划线'],
         type: '双一流 / 985',
@@ -354,7 +355,7 @@ export default {
           this.schoolInfo = {
             id: school.code || school._id,
             name: school.name,
-            logo: school.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${school.shortName || school.name}&backgroundColor=663399`,
+            logo: school.logo || `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=${school.shortName || school.name}&backgroundColor=663399`,
             location: school.province || school.city,
             tags: school.tags || [],
             scoreLine: school.latestScoreLines?.[0]?.total || '-',
@@ -536,7 +537,7 @@ export default {
           provider: 'weixin',
           scene: 'WXSceneSession',
           type: 0,
-          href: `https://exam-master.com/school/${this.schoolId}`,
+          href: `${config.deepLink.h5BaseUrl}/school/${this.schoolId}`,
           title: `${this.schoolInfo.name} - 考研院校推荐`,
           summary: `${this.schoolInfo.name}，${this.schoolInfo.location}，匹配度${this.schoolInfo.matchRate}%`,
           imageUrl: this.schoolInfo.logo,

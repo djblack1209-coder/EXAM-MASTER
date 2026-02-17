@@ -70,9 +70,16 @@
               <view class="message-avatar ds-flex">
                 🤖
               </view>
-              <view class="message-bubble assistant-bubble">
+              <view
+                class="message-bubble assistant-bubble"
+                :class="{ 'failed-bubble': message.failed }"
+                @tap="message.failed ? retryMessage(index) : null"
+              >
                 <text class="message-text ds-text-sm">
                   {{ message.content }}
+                </text>
+                <text v-if="message.failed" class="retry-hint ds-text-xs ds-text-secondary">
+                  点击重试
                 </text>
                 <text class="message-time ds-text-xs ds-text-secondary">
                   {{ message.time }}
@@ -237,14 +244,51 @@ export default {
       } catch (error) {
         logger.error('AI回复失败:', error);
 
-        // 添加错误消息
+        // 添加可重试的错误消息
         this.messages.push({
           role: 'assistant',
-          content: '抱歉，AI回复失败，请稍后重试。',
-          time: this.getCurrentTime()
+          content: '抱歉，AI回复失败，请点击重试。',
+          time: this.getCurrentTime(),
+          failed: true,
+          _retryContent: content
         });
       } finally {
         // 隐藏正在输入状态
+        this.isTyping = false;
+      }
+    },
+
+    // 重试失败的消息
+    async retryMessage(index) {
+      const failedMsg = this.messages[index];
+      if (!failedMsg || !failedMsg.failed || this.isTyping) return;
+
+      const content = failedMsg._retryContent;
+      if (!content) return;
+
+      // 移除失败消息
+      this.messages.splice(index, 1);
+
+      // 显示正在输入状态
+      this.isTyping = true;
+
+      try {
+        const response = await this.callAIApi(content);
+        this.messages.push({
+          role: 'assistant',
+          content: response,
+          time: this.getCurrentTime()
+        });
+      } catch (error) {
+        logger.error('AI重试失败:', error);
+        this.messages.push({
+          role: 'assistant',
+          content: '抱歉，AI回复仍然失败，请稍后再试。',
+          time: this.getCurrentTime(),
+          failed: true,
+          _retryContent: content
+        });
+      } finally {
         this.isTyping = false;
       }
     },

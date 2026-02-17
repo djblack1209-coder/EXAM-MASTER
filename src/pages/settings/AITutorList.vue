@@ -29,7 +29,8 @@
 </template>
 
 <script>
-import { storageService } from '@/services/storageService.js';
+import storageService from '@/services/storageService.js';
+import config from '@/config/index.js';
 
 export default {
   name: 'AITutorList',
@@ -40,9 +41,9 @@ export default {
   data() {
     return {
       baseTutors: [
-        { name: 'Dr. Logic', role: '逻辑/数学', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
-        { name: 'Miss English', role: '英语名师', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka' },
-        { name: '知心姐姐', role: '心理疏导', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liliana' }
+        { name: 'Dr. Logic', role: '逻辑/数学', avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Felix` },
+        { name: 'Miss English', role: '英语名师', avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Aneka` },
+        { name: '知心姐姐', role: '心理疏导', avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Liliana` }
       ]
     };
   },
@@ -55,7 +56,7 @@ export default {
         list.push({
           name: `${major}专业导师`,
           role: '专业导师',
-          avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Professional',
+          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Professional`,
           prompt: `你是${major}的考研指导老师，专业知识丰富，擅长解答考研相关问题，特别是${major}专业的考研规划、复习方法和院校选择等方面的问题。`
         });
       }

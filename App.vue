@@ -35,6 +35,9 @@ export default {
     // 初始化全局错误捕捉
     this.initGlobalErrorHandler();
 
+    // ✅ 2.4: 初始化全局 API 错误拦截（认证失败自动跳转登录）
+    this.initApiErrorInterceptor();
+
     // 初始化双模主题系统
     this.initThemeSystem();
 
@@ -126,6 +129,52 @@ export default {
         }
       }).catch(() => {
         // 设置导航栏颜色失败，静默处理
+      });
+    },
+
+    /**
+		 * ✅ 2.4: 全局 API 错误拦截器
+		 * 监听 lafService 发出的 authFailure 事件，统一处理认证失败
+		 */
+    initApiErrorInterceptor() {
+      let isRedirecting = false;
+
+      uni.$on('authFailure', ({ statusCode, path }) => {
+        logger.log(`[App] 认证失败拦截: statusCode=${statusCode}, path=${path}`);
+
+        // 防止重复跳转
+        if (isRedirecting) return;
+        isRedirecting = true;
+
+        // 清除本地登录态
+        try {
+          const userStore = useUserStore();
+          userStore.logout && userStore.logout();
+        } catch (e) {
+          // 静默处理
+        }
+
+        uni.showToast({
+          title: '登录已过期，请重新登录',
+          icon: 'none',
+          duration: 2000
+        });
+
+        // 延迟跳转，让 toast 显示
+        setTimeout(() => {
+          const pages = getCurrentPages();
+          const currentRoute = pages.length > 0 ? pages[pages.length - 1].route : '';
+          // 避免在登录页重复跳转
+          if (!currentRoute.includes('login')) {
+            uni.navigateTo({
+              url: '/pages/login/index',
+              fail: () => {
+                uni.switchTab({ url: '/pages/index/index' });
+              }
+            });
+          }
+          isRedirecting = false;
+        }, 1500);
       });
     },
 

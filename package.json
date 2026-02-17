@@ -21,6 +21,13 @@
     "test:visual:ui": "playwright test --config=playwright.visual.config.js --ui",
     "lint": "eslint --cache --cache-location node_modules/.cache/eslint/ src/",
     "lint:fix": "eslint --cache --cache-location node_modules/.cache/eslint/ src/ --fix",
+    "format": "prettier --write \"src/**/*.{js,vue,css,json}\"",
+    "format:check": "prettier --check \"src/**/*.{js,vue,css,json}\"",
+    "deps:check": "npm outdated",
+    "deps:audit": "npm audit --registry=https://registry.npmjs.org || true",
+    "release:patch": "npm version patch --no-git-tag-version && git add package.json && git commit -m \"chore: bump version patch\"",
+    "release:minor": "npm version minor --no-git-tag-version && git add package.json && git commit -m \"chore: bump version minor\"",
+    "release:major": "npm version major --no-git-tag-version && git add package.json && git commit -m \"chore: bump version major\"",
     "prepare": "husky"
   },
   "dependencies": {
