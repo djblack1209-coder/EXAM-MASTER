@@ -122,17 +122,7 @@ export default defineConfig(({ command, mode }) => {
       // 代码分割配置
       rollupOptions: {
         output: {
-          // 分割代码块
-          manualChunks: (id) => {
-            // 仅对第三方库进行分组，src/ 下的代码交由 uni-app 自动分包
-            // 避免将仅被分包引用的 utils/services 强制打入主包
-            if (id.includes('node_modules')) {
-              if (id.includes('vue') || id.includes('pinia')) {
-                return 'vendor-vue'
-              }
-              return 'vendor'
-            }
-          },
+          // uni-app 小程序构建有自己的分包机制，不使用自定义 manualChunks
           // 文件命名 - 生产环境使用 hash，开发环境使用可读名称
           chunkFileNames: isProduction 
             ? 'static/js/[name]-[hash].js'
