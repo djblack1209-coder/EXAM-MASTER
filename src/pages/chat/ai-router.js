@@ -229,10 +229,18 @@ class AIRouter {
           this.callAI(action, payload, routeConfig.model, options),
           routeConfig.timeout
         );
+
+        // 检查服务端错误，尝试降级
+        if (!response.success && routeConfig.fallback && this.isRetryableError(response)) {
+          console.warn(`[AIRouter] ${requestId} 主模型返回可重试错误(${response.code})，降级到: ${routeConfig.fallback}`);
+          this.metrics.fallbacks++;
+          usedModel = routeConfig.fallback;
+          response = await this.callAI(action, payload, routeConfig.fallback, options);
+        }
       } catch (timeoutError) {
-        // 超时降级
+        // 超时或网络错误降级
         if (routeConfig.fallback) {
-          console.warn(`[AIRouter] ${requestId} 主模型超时，降级到: ${routeConfig.fallback}`);
+          console.warn(`[AIRouter] ${requestId} 主模型异常，降级到: ${routeConfig.fallback}`);
           this.metrics.fallbacks++;
           usedModel = routeConfig.fallback;
 
@@ -346,6 +354,14 @@ class AIRouter {
       taskType,
       temperature: options.temperature || 0.7
     });
+  }
+
+  /**
+   * 判断是否为可重试的服务端错误
+   */
+  isRetryableError(response) {
+    const retryableCodes = [500, 502, 503, 504];
+    return retryableCodes.includes(response.code);
   }
 
   /**

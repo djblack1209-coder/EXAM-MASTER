@@ -89,6 +89,10 @@ export const useAppStore = defineStore('app', () => {
     uni.getNetworkType({
       success: (res) => {
         setNetworkType(res.networkType);
+      },
+      fail: (err) => {
+        console.warn('获取网络状态失败：', err);
+        setNetworkType('unknown');
       }
     });
 

@@ -15,49 +15,51 @@
  */
 
 import cloud from '@lafjs/cloud'
+import { verifyJWT } from './login'
+import {
+  badRequest, unauthorized, serverError,
+  validateUserId, sanitizeString, logger,
+  generateRequestId
+} from './_shared/api-response'
 
 const db = cloud.database()
 const _ = db.command
 
-// ==================== 环境配置 ====================
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
-
-// ==================== 日志工具 ====================
-const logger = {
-  info: (...args: unknown[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
-  warn: (...args: unknown[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
-  error: (...args: unknown[]) => console.error(...args)
-}
-
-// ==================== 参数校验 ====================
-function sanitizeString(input: string, maxLength: number = 100): string {
-  if (typeof input !== 'string') return ''
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .substring(0, maxLength)
-    .trim()
-}
-
-function validateUserId(userId: unknown): boolean {
-  return typeof userId === 'string' && userId.length > 0 && userId.length <= 64
-}
-
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  const requestId = generateRequestId()
 
   logger.info(`[${requestId}] 社交服务请求开始`)
 
   try {
     const { action, ...params } = ctx.body || {}
 
-    // 获取用户ID（从请求头或请求体）
-    const userId = ctx.headers?.['x-user-id'] || params.userId
-
     if (!action || typeof action !== 'string' || action.length > 50) {
-      return { code: 400, success: false, message: '参数错误: action 不合法', requestId }
+      return { ...badRequest('参数错误: action 不合法'), requestId }
+    }
+
+    // JWT 认证：从请求头获取 token 并验证
+    const token = ctx.headers?.['authorization']?.replace(/^Bearer\s+/i, '') || params.token
+    let userId = ctx.headers?.['x-user-id'] || params.userId
+
+    // 写操作强制要求 JWT 验证
+    const writeActions = ['send_request', 'handle_request', 'remove_friend']
+    if (writeActions.includes(action)) {
+      if (!token) {
+        return { ...unauthorized('请先登录'), requestId }
+      }
+      const payload = verifyJWT(token)
+      if (!payload || !payload.userId) {
+        return { ...unauthorized('登录已过期，请重新登录'), requestId }
+      }
+      // 使用 token 中的 userId，防止伪造
+      userId = payload.userId
+    } else if (token) {
+      // 读操作如果携带了 token，也验证一下
+      const payload = verifyJWT(token)
+      if (payload?.userId) {
+        userId = payload.userId
+      }
     }
 
     logger.info(`[${requestId}] action: ${action}, userId: ${userId}`)
@@ -74,7 +76,7 @@ export default async function (ctx) {
 
     const handler = handlers[action]
     if (!handler) {
-      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId }
+      return { ...badRequest(`不支持的操作: ${action}`), requestId }
     }
 
     const result = await handler(userId, params, requestId)
@@ -88,22 +90,15 @@ export default async function (ctx) {
     const duration = Date.now() - startTime
     logger.error(`[${requestId}] 社交服务异常:`, error)
 
-    return {
-      code: 500,
-      success: false,
-      message: '服务器内部错误',
-      error: error.message,
-      requestId,
-      duration
-    }
+    return { ...serverError('服务器内部错误', (error as Error).message), requestId, duration }
   }
 }
 
 /**
- * 搜索用户 (Sealos 兼容版 - 使用内存过滤代替正则)
+ * 搜索用户 (优化版 - 数据库分页查询，避免内存过滤)
  */
 async function handleSearchUser(userId, params, requestId) {
-  const { keyword } = params
+  const { keyword, page = 1, pageSize = 20 } = params
 
   if (!keyword || typeof keyword !== 'string' || keyword.trim().length < 2) {
     return { code: 400, success: false, message: '搜索关键词至少2个字符' }
@@ -115,13 +110,21 @@ async function handleSearchUser(userId, params, requestId) {
     return { code: 400, success: false, message: '搜索关键词包含非法字符' }
   }
 
+  // 分页参数校验
+  const safePage = Math.max(1, Math.min(Number(page) || 1, 100))
+  const safePageSize = Math.max(1, Math.min(Number(pageSize) || 20, 50))
+
   const usersCollection = db.collection('users')
 
-  // 获取所有用户（限制数量），然后在内存中过滤
-  // 这是为了兼容 Sealos，因为 _.regex 是 Laf 特有语法
-  const allUsers = await usersCollection
+  // 优化：使用数据库正则查询代替内存过滤
+  // MongoDB 原生 $regex 在 Sealos 环境下可用
+  const query = usersCollection
     .where({
-      _id: _.neq(userId)
+      _id: _.neq(userId),
+      nickname: db.RegExp({
+        regexp: searchKeyword,
+        options: 'i'  // 不区分大小写
+      })
     })
     .field({
       _id: true,
@@ -130,22 +133,34 @@ async function handleSearchUser(userId, params, requestId) {
       streak_days: true,
       total_questions: true
     })
-    .limit(500)
-    .get()
 
-  // 在内存中进行模糊搜索
-  const matchedUsers = allUsers.data.filter(user => {
-    const nickname = (user.nickname || '').toLowerCase()
-    return nickname.includes(searchKeyword)
-  }).slice(0, 20)
+  // 分页查询，避免一次性加载大量数据到内存
+  const [countRes, matchedUsers] = await Promise.all([
+    usersCollection.where({
+      _id: _.neq(userId),
+      nickname: db.RegExp({ regexp: searchKeyword, options: 'i' })
+    }).count(),
+    query
+      .skip((safePage - 1) * safePageSize)
+      .limit(safePageSize)
+      .get()
+  ])
 
-  logger.info(`[${requestId}] 搜索用户: ${keyword}, 找到 ${matchedUsers.length} 个`)
+  const total = countRes.total || 0
+
+  logger.info(`[${requestId}] 搜索用户: ${keyword}, 找到 ${total} 个, 返回第 ${safePage} 页`)
 
   return {
     code: 0,
     success: true,
-    data: matchedUsers,
-    message: `找到 ${matchedUsers.length} 个用户`
+    data: {
+      list: matchedUsers.data,
+      total,
+      page: safePage,
+      pageSize: safePageSize,
+      hasMore: safePage * safePageSize < total
+    },
+    message: `找到 ${total} 个用户`
   }
 }
 

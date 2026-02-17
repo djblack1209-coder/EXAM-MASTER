@@ -264,6 +264,7 @@ import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F024: 统一使用 storageService
 import storageService from '@/services/storageService.js';
+import config from '@/config/index.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 
@@ -527,28 +528,28 @@ export default {
       return [
         {
           name: 'AI学霸',
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=AI_Scholar_${Date.now()}`,
+          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Scholar_${Date.now()}`,
           level: `Lv.${baseLevel + 10}`,
           accuracy: 0.85, // AI答题正确率
           speed: 'fast' // AI答题速度
         },
         {
           name: 'AI研友',
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=AI_Friend_${Date.now()}`,
+          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Friend_${Date.now()}`,
           level: `Lv.${baseLevel}`,
           accuracy: 0.70,
           speed: 'normal'
         },
         {
           name: 'AI新手',
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=AI_Newbie_${Date.now()}`,
+          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Newbie_${Date.now()}`,
           level: `Lv.${baseLevel - 10}`,
           accuracy: 0.55,
           speed: 'slow'
         },
         {
           name: 'AI挑战者',
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=AI_Challenger_${Date.now()}`,
+          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Challenger_${Date.now()}`,
           level: `Lv.${baseLevel + 5}`,
           accuracy: 0.75,
           speed: 'normal'

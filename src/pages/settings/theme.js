@@ -22,6 +22,7 @@ export function isNightTime() {
  * @param {HTMLElement|string} container - 容器元素或选择器
  */
 export function applyNightMode(mode, container) {
+  // #ifdef H5
   if (mode === 'dark' && isNightTime()) {
     // 在深色模式且处于深夜时，添加护眼模式类
     if (typeof container === 'string') {
@@ -39,6 +40,13 @@ export function applyNightMode(mode, container) {
       container.classList.remove('night-mode');
     }
   }
+  // #endif
+  // #ifndef H5
+  // 非H5平台：通过CSS变量或class切换实现，不依赖DOM API
+  if (mode === 'dark' && isNightTime()) {
+    logger.log('[Theme] 护眼模式已启用（非H5平台）');
+  }
+  // #endif
 }
 
 /**

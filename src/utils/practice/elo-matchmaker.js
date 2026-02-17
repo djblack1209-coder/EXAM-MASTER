@@ -12,6 +12,7 @@
 // ELO 配置
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import config from '@/config/index.js';
 const ELO_CONFIG = {
   // 初始评分
   initialRating: 1000,
@@ -209,7 +210,7 @@ export const eloMatchmaker = {
 
     // 生成头像（使用 DiceBear API）
     const avatarSeed = name + Date.now();
-    const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(avatarSeed)}`;
+    const avatar = `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=${encodeURIComponent(avatarSeed)}`;
 
     // 根据评分差异设置机器人难度
     const difficulty = this.calculateBotDifficulty(userRating, botRating);

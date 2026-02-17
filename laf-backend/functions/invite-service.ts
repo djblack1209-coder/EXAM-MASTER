@@ -10,18 +10,13 @@
  */
 
 import cloud from '@lafjs/cloud'
+import { verifyJWT } from './login'
+import {
+  logger, success, badRequest, unauthorized, serverError,
+  error as apiError, generateRequestId, ResponseCode
+} from './_shared/api-response'
 
 const db = cloud.database()
-
-// ==================== 环境配置 ====================
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
-
-const logger = {
-  info: (...args: unknown[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
-  warn: (...args: unknown[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
-  error: (...args: unknown[]) => console.error(...args)
-}
 
 // 邀请奖励配置
 const INVITE_REWARDS = [
@@ -33,17 +28,37 @@ const INVITE_REWARDS = [
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `inv_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
+  const requestId = generateRequestId('inv')
 
   try {
     const { action, ...params } = ctx.body || {}
-    const userId = ctx.headers?.['x-user-id'] || params.userId
+    let userId = ctx.headers?.['x-user-id'] || params.userId
 
     if (!action || typeof action !== 'string') {
-      return { code: 400, success: false, message: '参数错误: action 不合法', requestId }
+      return { ...badRequest('参数错误: action 不合法'), requestId }
     }
+
+    // JWT 认证：写操作强制验证身份
+    const token = ctx.headers?.['authorization']?.replace(/^Bearer\s+/i, '') || params.token
+    const writeActions = ['handle', 'claim_reward']
+    if (writeActions.includes(action)) {
+      if (!token) {
+        return { ...unauthorized('请先登录'), requestId }
+      }
+      const payload = verifyJWT(token)
+      if (!payload || !payload.userId) {
+        return { ...unauthorized('登录已过期，请重新登录'), requestId }
+      }
+      userId = payload.userId
+    } else if (token) {
+      const payload = verifyJWT(token)
+      if (payload?.userId) {
+        userId = payload.userId
+      }
+    }
+
     if (!userId || typeof userId !== 'string' || userId.length > 64) {
-      return { code: 401, success: false, message: '请先登录', requestId }
+      return { ...unauthorized('请先登录'), requestId }
     }
 
     logger.info(`[${requestId}] invite action: ${action}, userId: ${userId}`)
@@ -56,7 +71,7 @@ export default async function (ctx) {
 
     const handler = handlers[action]
     if (!handler) {
-      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId }
+      return { ...badRequest(`不支持的操作: ${action}`), requestId }
     }
 
     const result = await handler(userId, params, requestId)
@@ -66,7 +81,7 @@ export default async function (ctx) {
     return { ...result, requestId, duration }
   } catch (error) {
     logger.error(`[${requestId}] 邀请服务异常:`, error)
-    return { code: 500, success: false, message: '服务器内部错误', requestId, duration: Date.now() - startTime }
+    return { ...serverError('服务器内部错误', (error as Error).message), requestId, duration: Date.now() - startTime }
   }
 }
 
@@ -76,10 +91,10 @@ export default async function (ctx) {
 async function handleInvite(userId: string, params: Record<string, unknown>, requestId: string) {
   const { inviterId } = params
   if (!inviterId || typeof inviterId !== 'string') {
-    return { code: 400, success: false, message: '缺少邀请人ID' }
+    return badRequest('缺少邀请人ID')
   }
   if (inviterId === userId) {
-    return { code: 400, success: false, message: '不能邀请自己' }
+    return badRequest('不能邀请自己')
   }
 
   const col = db.collection('invites')
@@ -87,7 +102,7 @@ async function handleInvite(userId: string, params: Record<string, unknown>, req
   // 防重复：同一对邀请关系只记录一次
   const existing = await col.where({ inviterId, inviteeId: userId }).getOne()
   if (existing.data) {
-    return { code: 409, success: false, message: '已接受过该邀请' }
+    return apiError(ResponseCode.CONFLICT, '已接受过该邀请')
   }
 
   // 记录邀请关系
@@ -108,7 +123,7 @@ async function handleInvite(userId: string, params: Record<string, unknown>, req
   }
 
   logger.info(`[${requestId}] 邀请记录成功: ${inviterId} -> ${userId}`)
-  return { code: 0, success: true, message: '邀请成功' }
+  return success(undefined, '邀请成功')
 }
 
 /**
@@ -117,12 +132,12 @@ async function handleInvite(userId: string, params: Record<string, unknown>, req
 async function claimReward(userId: string, params: Record<string, unknown>, requestId: string) {
   const { threshold } = params
   if (!threshold || typeof threshold !== 'number') {
-    return { code: 400, success: false, message: '缺少奖励阈值' }
+    return badRequest('缺少奖励阈值')
   }
 
   const reward = INVITE_REWARDS.find(r => r.threshold === threshold)
   if (!reward) {
-    return { code: 400, success: false, message: '无效的奖励等级' }
+    return badRequest('无效的奖励等级')
   }
 
   const col = db.collection('invite_stats')
@@ -130,15 +145,15 @@ async function claimReward(userId: string, params: Record<string, unknown>, requ
   const data = stats.data as any
 
   if (!data) {
-    return { code: 400, success: false, message: '暂无邀请记录' }
+    return badRequest('暂无邀请记录')
   }
   if (data.count < threshold) {
-    return { code: 400, success: false, message: `邀请人数不足，需要${threshold}人` }
+    return badRequest(`邀请人数不足，需要${threshold}人`)
   }
 
   const claimed = data.claimedRewards || []
   if (claimed.includes(threshold)) {
-    return { code: 409, success: false, message: '该奖励已领取' }
+    return apiError(ResponseCode.CONFLICT, '该奖励已领取')
   }
 
   // 标记已领取
@@ -146,7 +161,7 @@ async function claimReward(userId: string, params: Record<string, unknown>, requ
   await col.where({ userId }).update({ claimedRewards: claimed, updatedAt: new Date() })
 
   logger.info(`[${requestId}] 奖励领取成功: userId=${userId}, threshold=${threshold}, value=${reward.value}天`)
-  return { code: 0, success: true, message: '领取成功', data: { reward } }
+  return success({ reward }, '领取成功')
 }
 
 /**
@@ -173,13 +188,9 @@ async function getInviteInfo(userId: string, _params: Record<string, unknown>, r
   }))
 
   logger.info(`[${requestId}] 获取邀请信息: count=${data.count}`)
-  return {
-    code: 0,
-    success: true,
-    data: {
-      inviteCode,
-      count: data.count,
-      rewards
-    }
-  }
+  return success({
+    inviteCode,
+    count: data.count,
+    rewards
+  })
 }

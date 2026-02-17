@@ -88,8 +88,8 @@
                 </button>
               </view>
               <view v-else class="target-list">
-                <view v-for="(school, index) in targetSchools" :key="index" class="target-item">
-                  <image class="target-avatar" :src="school.logo" />
+                <view v-for="(school, index) in targetSchools" :key="school.id || school.name || index" class="target-item">
+                  <image class="target-avatar" :src="school.logo" lazy-load />
                   <view class="target-info">
                     <text class="target-name">
                       {{ school.name }}

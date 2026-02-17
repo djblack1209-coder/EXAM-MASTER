@@ -13,6 +13,8 @@ import { logger } from '@/utils/logger.js';
 import config from '../config/index.js';
 // ✅ B021: 使用独立的 auth-storage 模块读取敏感数据（避免循环依赖）
 import { getUserId, getToken } from './auth-storage.js';
+// ✅ 6.3: 性能监控集成
+import { perfMonitor } from '@/utils/core/performance.js';
 
 // ✅ 从统一配置读取，支持环境变量
 const BASE_URL = config.api.baseUrl;
@@ -138,7 +140,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 // 只读 action 白名单（仅这些 action 会被缓存）
 const CACHEABLE_ACTIONS = new Set(['get', 'list', 'search', 'getAll', 'check', 'detail', 'hot', 'provinces', 'getOverview', 'getRecommendations', 'getHotResources', 'getCategories']);
-const CACHE_TTL = 30000; // 30秒缓存
+const CACHE_TTL = 30000; // 30秒缓存（默认）
+// 9.2: 分级 TTL — 静态/半静态数据使用更长缓存
+const LONG_CACHE_ACTIONS = new Set(['provinces', 'getCategories', 'getHotResources']);
+const LONG_CACHE_TTL = 300000; // 5分钟
 const _cache = new Map(); // key → { data, expiry }
 const _inflight = new Map(); // key → Promise
 
@@ -153,8 +158,9 @@ function _getCache(key) {
   return undefined;
 }
 
-function _setCache(key, data) {
-  _cache.set(key, { data, expiry: Date.now() + CACHE_TTL });
+function _setCache(key, data, action) {
+  const ttl = (action && LONG_CACHE_ACTIONS.has(action)) ? LONG_CACHE_TTL : CACHE_TTL;
+  _cache.set(key, { data, expiry: Date.now() + ttl });
   // 防止缓存无限增长，超过100条清理最旧的
   if (_cache.size > 100) {
     const first = _cache.keys().next().value;
@@ -256,6 +262,7 @@ export const lafService = {
       // 构建请求头
       const headers = {
         'Content-Type': 'application/json',
+        'Accept-Encoding': 'gzip, deflate',
         ...options.headers
       };
 
@@ -346,10 +353,17 @@ export const lafService = {
             });
           });
 
+          // ✅ 6.3: 记录 API 响应耗时
+          const _apiDuration = Date.now() - timestamp;
+          perfMonitor.trackApi(path, _apiDuration, 200);
+
           // ✅ I001: 统一规范化所有成功响应
           return normalizeResponse(result, path);
         } catch (err) {
           lastError = err;
+          // ✅ 6.3: 记录失败请求耗时
+          const _apiDuration = Date.now() - timestamp;
+          perfMonitor.trackApi(path, _apiDuration, err.statusCode || 0);
           // 如果不可重试或已达最大重试次数，直接抛出
           if (!err.retryable || attempt >= maxRetries) {
             console.error(`[LafService] ❌ 请求最终失败 (${attempt + 1}次尝试): ${path}`, err);
@@ -365,7 +379,7 @@ export const lafService = {
     // ✅ 2.4: 执行请求，支持 inflight 去重 + 缓存写入
     if (isCacheable) {
       const promise = doRequest().then((result) => {
-        _setCache(cKey, result);
+        _setCache(cKey, result, action);
         _inflight.delete(cKey);
         return result;
       }).catch((err) => {

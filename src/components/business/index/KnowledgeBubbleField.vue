@@ -7,24 +7,21 @@
     </view>
     <view class="bubble-field">
       <view
-        v-for="(point, index) in sortedPoints"
+        v-for="point in sortedPoints"
         :key="point.id"
         :class="[
           'bubble-card',
           isDark ? 'bubble-card-dark' : 'bubble-card-light',
-          'bubble-size-' + getBubbleSize(point.mastery),
+          'bubble-size-' + point._sizeClass,
           'bubble-float',
           animatingBubbleId === point.id && 'bubble-animating'
         ]"
-        :style="getBubbleCardStyle(point, index)"
+        :style="point._style"
         @tap="$emit('knowledge-click', point)"
       >
         <view
           class="bubble-glow animate-breathe"
-          :style="{
-            background: 'radial-gradient(circle at center, '
-              + point.color + '33 0%, transparent 70%)'
-          }"
+          :style="{ background: point._glowBg }"
         />
         <view class="bubble-content">
           <text class="bubble-icon" :style="{ color: point.color }">
@@ -58,18 +55,8 @@ export default {
   },
   emits: ['knowledge-click'],
   computed: {
+    // ✅ 2.3: 预计算排序+样式+尺寸，避免 v-for 中重复方法调用
     sortedPoints() {
-      return [...this.knowledgePoints].sort((a, b) => a.mastery - b.mastery);
-    }
-  },
-  methods: {
-    getBubbleSize(mastery) {
-      if (mastery >= 65) return 'lg';
-      if (mastery >= 35) return 'md';
-      return 'sm';
-    },
-    getBubbleCardStyle(point, index) {
-      // 6个错位位置，紧凑排列、气泡间有轻微重叠
       const positions = [
         { top: '0', left: '2%' },
         { top: '16rpx', right: '4%' },
@@ -78,23 +65,18 @@ export default {
         { top: '400rpx', left: '4%' },
         { top: '415rpx', right: '10%' }
       ];
-      const pos = positions[index % positions.length];
-      const base = {
-        ...pos,
-        zIndex: 10 + index,
-        animationDelay: `${index * 300}ms`
-      };
-
-      if (this.isDark) {
-        return {
-          ...base,
-          boxShadow: `0 0 24rpx ${point.color}4D, 0 0 48rpx ${point.color}1A`
-        };
-      }
-      return {
-        ...base,
-        boxShadow: '0 4rpx 16rpx rgba(0, 0, 0, 0.06)'
-      };
+      return [...this.knowledgePoints]
+        .sort((a, b) => a.mastery - b.mastery)
+        .map((point, index) => {
+          const sizeClass = point.mastery >= 65 ? 'lg' : point.mastery >= 35 ? 'md' : 'sm';
+          const pos = positions[index % positions.length];
+          const base = { ...pos, zIndex: 10 + index, animationDelay: `${index * 300}ms` };
+          const style = this.isDark
+            ? { ...base, boxShadow: `0 0 24rpx ${point.color}4D, 0 0 48rpx ${point.color}1A` }
+            : { ...base, boxShadow: '0 4rpx 16rpx rgba(0, 0, 0, 0.06)' };
+          const glowBg = `radial-gradient(circle at center, ${point.color}33 0%, transparent 70%)`;
+          return { ...point, _sizeClass: sizeClass, _style: style, _glowBg: glowBg };
+        });
     }
   }
 };

@@ -515,6 +515,7 @@ import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
+import config from '@/config/index.js';
 
 export default {
   components: {
@@ -834,7 +835,7 @@ export default {
             location: school.province,
             matchRate: Math.floor(Math.random() * 20) + 80, // 临时：随机匹配度
             isTarget: false,
-            logo: school.logo || `https://api.dicebear.com/7.x/initials/svg?seed=${school.shortName || school.name}&backgroundColor=663399`,
+            logo: school.logo || `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=${school.shortName || school.name}&backgroundColor=663399`,
             tags: school.tags || [],
             majors: []
           }));
@@ -880,7 +881,7 @@ export default {
           location: '北京',
           matchRate: 85,
           isTarget: false,
-          logo: 'https://api.dicebear.com/7.x/initials/svg?seed=PKU&backgroundColor=663399',
+          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=PKU&backgroundColor=663399`,
           tags: ['985', '211', '双一流'],
           majors: []
         },
@@ -890,7 +891,7 @@ export default {
           location: '北京',
           matchRate: 82,
           isTarget: false,
-          logo: 'https://api.dicebear.com/7.x/initials/svg?seed=THU&backgroundColor=663399',
+          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=THU&backgroundColor=663399`,
           tags: ['985', '211', '双一流'],
           majors: []
         },
@@ -900,7 +901,7 @@ export default {
           location: '上海',
           matchRate: 88,
           isTarget: false,
-          logo: 'https://api.dicebear.com/7.x/initials/svg?seed=FDU&backgroundColor=663399',
+          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=FDU&backgroundColor=663399`,
           tags: ['985', '211', '双一流'],
           majors: []
         },
@@ -910,7 +911,7 @@ export default {
           location: '浙江',
           matchRate: 90,
           isTarget: false,
-          logo: 'https://api.dicebear.com/7.x/initials/svg?seed=ZJU&backgroundColor=663399',
+          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=ZJU&backgroundColor=663399`,
           tags: ['985', '211', '双一流'],
           majors: []
         },
@@ -920,7 +921,7 @@ export default {
           location: '上海',
           matchRate: 86,
           isTarget: false,
-          logo: 'https://api.dicebear.com/7.x/initials/svg?seed=SJTU&backgroundColor=663399',
+          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=SJTU&backgroundColor=663399`,
           tags: ['985', '211', '双一流'],
           majors: []
         }
