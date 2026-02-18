@@ -145,7 +145,7 @@
 <script>
 import { storageService } from '@/services/storageService.js';
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
-import { recordReview } from './utils/adaptive-learning-engine.js';
+import { recordReview } from '@/utils/learning/adaptive-learning-engine.js';
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 

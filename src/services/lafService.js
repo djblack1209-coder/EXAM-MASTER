@@ -5,6 +5,88 @@
  * ✅ P1-2: 统一错误处理 + 自动重试机制
  * ✅ P1-3: JSDoc 类型注释
  *
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │                    方法索引（按领域分区）                      │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ 🔧 基础设施层（L23-415）                                     │
+ * │   _requestSign()        FNV-1a 请求签名（防篡改）             │
+ * │   normalizeResponse()   统一响应规范化                        │
+ * │   normalizeError()      标准化错误对象                        │
+ * │   delay()               指数退避延迟                          │
+ * │   _checkNetwork()       网络连通性预检                        │
+ * │   _checkRateLimit()     前端 API 限流器                       │
+ * │   request()             通用请求方法（重试+缓存+去重+签名）     │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ 🤖 AI 服务（L440-871）                                       │
+ * │   proxyAI()             AI 代理请求（核心，含兼容桥接）         │
+ * │   aiFriendChat()        AI 好友角色化对话                     │
+ * │   adaptiveQuestionPick() 智能组题                             │
+ * │   materialUnderstand()  资料理解出题                          │
+ * │   trendPredict()        考点趋势预测                          │
+ * │   deepMistakeAnalysis() 错题深度分析                          │
+ * │   photoSearch()         拍照搜题（视觉识别）                   │
+ * │   getAiFriendMemory()   获取 AI 好友对话记忆                  │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ 🏫 学校数据（L936-1026）                                     │
+ * │   getSchoolList()       获取学校列表                          │
+ * │   getSchoolDetail()     获取学校详情                          │
+ * │   searchSchools()                               │
+ * │   getHotSchools()       获取热门学校                          │
+ * │   getProvinces()        获取省份列表                          │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ 🔐 认证与用户（L1028-1129）                                   │
+ * │   login()               统一登录接口                          │
+ * │   sendEmailCode()       发送邮箱验证码                        │
+ * │   updateUserProfile()   更新用户资料                          │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ ⭐ 收藏管理（L1131-1236）                                    │
+ * │   addFavorite()         添加收藏                              │
+ * │   getFavorites()        获取收藏列表                          │
+ * │   removeFavorite()      删除收藏                              │
+ * │   checkFavorite()       检查是否已收藏                        │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ 📚 学习资源（L1238-1320）                                    │
+ * │   getLearningResources() 获取推荐学习资源                     │
+ * │   getHotResources()     获取热门资源                          │
+ * │   searchResources()     搜索学习资源                          │
+ * │   getResourceCategories() 获取资源分类                        │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ 🎯 学习目标（L1322-1412）                                    │
+ * │   syncLearningGoals()   同步学习目标到后端                    │
+ * │   getLearningGoals()    获取后端学习目标                      │
+ * │   recordGoalProgress()  记录学习目标进度                      │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ 🏆 成就系统（L1414-1503）                                    │
+ * │   checkAchievements()   检查并同步成就                        │
+ * │   getAllAchievements()  获取所有成就                           │
+ * │   unlockAchievement()   解锁指定成就                          │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │ 🎮 其他服务                                                   │
+ * │   rankCenter()          排行榜服务（L577）                    │
+ * │   socialService()       社交服务/好友系统（L599）              │
+ * │   getQuestionBank()     获取题库数据（L616）                   │
+ * │   getRandomQuestions()  随机获取题目（L638）                   │
+ * │   getStudyStats()       获取学习统计（L661）                   │
+ * │   getUserStatsOverview() 用户统计概览（L1577）                 │
+ * │   handleInvite()        处理邀请（L1512）                     │
+ * │   claimInviteReward()   领取邀请奖励（L1534）                 │
+ * │   getInviteInfo()       获取邀请信息（L1555）                 │
+ * │   getDocConvertTypes()  文档转换类型（L1599）                  │
+ * │   submitDocConvert()    提交文档转换（L1615）                  │
+ * │   getDocConvertStatus() 查询转换状态（L1634）                  │
+ * │   getDocConvertResult() 获取转换结果（L1647）                  │
+ * │   getPhotoConfig()      证件照配置（L1661）                    │
+ * │   processIdPhoto()      证件照处理（L1688）                    │
+ * │   removePhotoBg()       去除背景（L1707）                     │
+ * └─────────────────────────────────────────────────────────────┘
+ *
+ * ⚠️ 隐藏约束（Chesterton's Fence）：
+ * - _requestSign 使用 FNV-1a 而非 crypto：小程序环境无原生 crypto API
+ * - proxyAI 中 response.code = 0 强制注入：兼容新旧 API 格式的桥接补丁
+ * - getStudyStats 中动态 import storageService：避免循环依赖
+ * - unlockAchievement 中直接用 uni.setStorageSync：同上，避免循环依赖
+ * - 所有业务方法都是 this.request() 的薄封装，不宜拆分到独立文件
+ *
  * @module services/lafService
  */
 
@@ -136,7 +218,7 @@ if (process.env.NODE_ENV !== 'production') {
   logger.log('[LafService] 配置信息:', { BASE_URL, ENV: 'development' });
 }
 
-// ==================== 2.4: 请求去重 + 短TTL缓存 ====================
+// ==================== 2.4: 请求去重 + LRU缓存 ====================
 
 // 只读 action 白名单（仅这些 action 会被缓存）
 const CACHEABLE_ACTIONS = new Set(['get', 'list', 'search', 'getAll', 'check', 'detail', 'hot', 'provinces', 'getOverview', 'getRecommendations', 'getHotResources', 'getCategories']);
@@ -144,8 +226,22 @@ const CACHE_TTL = 30000; // 30秒缓存（默认）
 // 9.2: 分级 TTL — 静态/半静态数据使用更长缓存
 const LONG_CACHE_ACTIONS = new Set(['provinces', 'getCategories', 'getHotResources']);
 const LONG_CACHE_TTL = 300000; // 5分钟
-const _cache = new Map(); // key → { data, expiry }
+const CACHE_MAX_SIZE = 100;
+const _cache = new Map(); // key → { data, expiry } — Map 保持插入顺序，用于 LRU
 const _inflight = new Map(); // key → Promise
+
+// 定期清理过期缓存（每60秒），避免内存泄漏
+let _cacheCleanupTimer = null;
+function _startCacheCleanup() {
+  if (_cacheCleanupTimer) return;
+  _cacheCleanupTimer = setInterval(() => {
+    const now = Date.now();
+    for (const [key, entry] of _cache) {
+      if (now >= entry.expiry) _cache.delete(key);
+    }
+  }, 60000);
+}
+_startCacheCleanup();
 
 function _cacheKey(path, data) {
   return path + ':' + JSON.stringify(data);
@@ -153,18 +249,26 @@ function _cacheKey(path, data) {
 
 function _getCache(key) {
   const entry = _cache.get(key);
-  if (entry && Date.now() < entry.expiry) return entry.data;
+  if (!entry) return undefined;
+  if (Date.now() >= entry.expiry) {
+    _cache.delete(key);
+    return undefined;
+  }
+  // LRU: 命中时移到末尾（最近使用）
   _cache.delete(key);
-  return undefined;
+  _cache.set(key, entry);
+  return entry.data;
 }
 
 function _setCache(key, data, action) {
   const ttl = (action && LONG_CACHE_ACTIONS.has(action)) ? LONG_CACHE_TTL : CACHE_TTL;
+  // LRU: 如果已存在先删除再插入（保证在末尾）
+  _cache.delete(key);
   _cache.set(key, { data, expiry: Date.now() + ttl });
-  // 防止缓存无限增长，超过100条清理最旧的
-  if (_cache.size > 100) {
-    const first = _cache.keys().next().value;
-    _cache.delete(first);
+  // LRU 淘汰：超过上限时删除最久未使用的（Map 头部）
+  while (_cache.size > CACHE_MAX_SIZE) {
+    const oldest = _cache.keys().next().value;
+    _cache.delete(oldest);
   }
 }
 

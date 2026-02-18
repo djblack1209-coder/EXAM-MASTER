@@ -439,8 +439,8 @@ class AIRouter {
       createdAt: Date.now()
     });
 
-    // 限制缓存大小
-    if (this.cache.size > 1000) {
+    // 限制缓存大小（小程序内存有限，100 条足够）
+    if (this.cache.size > 100) {
       this.cleanupCache();
     }
   }
@@ -483,6 +483,17 @@ class AIRouter {
       clearInterval(this._cacheCleanupTimer);
       this._cacheCleanupTimer = null;
     }
+  }
+
+  /**
+   * 销毁路由器实例（清理定时器 + 缓存，防止内存泄漏）
+   * 应在页面 onUnload 或组件 unmounted 时调用
+   */
+  destroy() {
+    this.stopCacheCleanup();
+    this.cache.clear();
+    this.isInitialized = false;
+    logger.log('[AIRouter] 已销毁，定时器和缓存已清理');
   }
 
   /**
