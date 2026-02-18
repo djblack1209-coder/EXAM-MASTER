@@ -14,7 +14,7 @@
  * 10. 预测分数 - 基于学习数据预测考试分数
  */
 
-import { getWeakKnowledgePoints, getLearningStats } from './adaptive-learning-engine.js';
+import { getWeakKnowledgePoints, getLearningStats } from '@/utils/learning/adaptive-learning-engine.js';
 import { logger } from '@/utils/logger.js';
 
 const STORAGE_KEYS = {

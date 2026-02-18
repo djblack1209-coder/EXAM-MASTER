@@ -300,7 +300,6 @@
 </template>
 
 <script>
-import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import BaseLoading from './components/base-loading/base-loading.vue';
 import CustomModal from '@/components/common/CustomModal.vue';
@@ -338,18 +337,12 @@ import {
 // ✅ 导入单题计时器模块
 import {
   startTimer as startQuestionTimer,
-  stopTimer as stopQuestionTimer,
-  recordTime as recordQuestionTime
+  stopTimer as stopQuestionTimer
 } from './question-timer.js';
 // ✅ 智能组题模块（懒加载：仅在 smartPickerEnabled 时动态导入）
-// ✅ 导入学习数据分析模块
-import {
-  recordAnswer as recordAnalyticsAnswer
-} from './utils/learning-analytics.js';
 // ✅ 导入离线缓存模块
 import {
-  checkOfflineAvailability,
-  saveOfflineAnswer
+  checkOfflineAvailability
 } from './offline-cache.js';
 // ✅ 导入题目笔记模块
 import {
@@ -357,6 +350,10 @@ import {
   getNotesByQuestion,
   getNoteTags
 } from './question-note.js';
+// ✅ P1: 提取的模块
+import { saveToMistakes as saveMistake, updateMistakeWithAI as updateMistakeAI } from './quiz-mistake-handler.js';
+import { fetchAIDeepAnalysis as fetchAIAnalysis } from './quiz-ai-analysis.js';
+import { recordAnswerToAnalytics as recordAnalytics } from './quiz-analytics-recorder.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
@@ -655,7 +652,7 @@ export default {
         logger.log('[do-quiz] ✅ 智能组题模式已启用');
       } else if (this.isAdaptiveMode && questions.length > 0) {
         // 降级到自适应学习引擎（懒加载）
-        const { generateAdaptiveSequence } = await import('./utils/adaptive-learning-engine.js');
+        const { generateAdaptiveSequence } = await import('@/utils/learning/adaptive-learning-engine.js');
         questions = generateAdaptiveSequence(questions, {
           insertReviewQuestions: true,
           prioritizeWeak: true,
@@ -750,54 +747,22 @@ export default {
         this.showResult = true;
       }
     },
+    // ✅ P1: 委托给 quiz-ai-analysis.js（UI 状态管理保留在组件内）
     async fetchAIDeepAnalysis(question, userChoice) {
       // 开启扫描线动画
       this.isAnalyzing = true;
       this.aiComment = 'AI 导师正在审阅您的逻辑...';
 
-      // 准备数据：提供完整的题目背景、选项、正确答案及用户的错误选择
-      const questionText = question.question || question.title || '';
-      const options = question.options || [];
-      const correctAnswer = question.answer || '';
-      const userAnswer = userChoice || '';
-
       try {
-        // ✅ 使用后端代理调用（安全）- action: 'analyze'
-        // 后端会自动添加 "你是一位专业的考研辅导专家..." 的 Prompt
-        const response = await lafService.proxyAI('analyze', {
-          question: questionText,
-          options: options,
-          userAnswer: userAnswer,
-          correctAnswer: correctAnswer
-        });
+        const result = await fetchAIAnalysis({ question, userChoice });
+        this.aiComment = result.comment;
 
-        // 处理响应
-        if (response.code === 0 && response.data) {
-          this.aiComment = response.data.trim();
+        if (result.success) {
           // 将 AI 解析同步保存到错题本
           this.updateMistakeWithAI(this.aiComment);
         } else {
-          // API 返回错误
-          logger.warn('[do-quiz] AI 解析返回异常:', response.message);
-          this.aiComment = 'AI 解析暂时不可用，请结合参考答案进行复习。建议重新审视题干与选项的对应关系，查找知识点薄弱环节。';
           this.saveToMistakes();
         }
-      } catch (e) {
-        logger.warn('[do-quiz] AI 解析请求失败，降级到本地解析:', e);
-
-        // 根据错误类型提供更详细的提示
-        let fallbackComment = '网络连接中断，AI 导师未能成功接入。建议重新审视题干与选项的对应关系，查看解析加深理解。';
-        if (e.message && e.message.includes('timeout')) {
-          fallbackComment = 'AI 解析请求超时，请稍后重试。建议先查看题目解析，理解知识点。';
-        } else if (e.message && e.message.includes('401')) {
-          fallbackComment = 'AI 服务配置异常，请联系管理员。建议先查看题目解析，理解知识点。';
-        } else if (e.message && (e.message.includes('网络') || e.message.includes('fail'))) {
-          fallbackComment = '网络连接中断，AI 导师未能成功接入。建议重新审视题干与选项的对应关系，查看解析加深理解。';
-        }
-
-        this.aiComment = fallbackComment;
-        logger.log('[do-quiz] ✅ 已使用降级文案，错题将保存到本地');
-        this.saveToMistakes();
       } finally {
         this.isAnalyzing = false; // 关闭扫描动画
 
@@ -809,130 +774,20 @@ export default {
         } catch (e) { logger.warn('Vibrate feedback failed after AI analysis', e); }
       }
     },
+    // ✅ P1: 委托给 quiz-mistake-handler.js
     async saveToMistakes() {
-      // 将错题存入云端错题本（自动云端+本地同步）
-      if (!this.currentQuestion) return;
-
-      uni.showLoading({ title: '保存错题中...', mask: false });
-
-      const questionText = this.currentQuestion.question || this.currentQuestion.title;
-      const userAnswer = this.currentQuestion.options && this.currentQuestion.options[this.userChoice]
-        ? String.fromCharCode(65 + this.userChoice) // A, B, C, D
-        : '';
-      const correctAnswer = this.currentQuestion.answer || '';
-
-      // 检查是否已存在（先查本地缓存）
-      const localMistakes = storageService.get('mistake_book', []);
-      const existingMistake = localMistakes.find((m) =>
-        (m.question === questionText || m.question_content === questionText) ||
-				(m.id && m.id === this.currentQuestion.id) ||
-				(m._id && m._id === this.currentQuestion.id)
-      );
-
-      // 构建符合 Schema 的数据格式
-      const mistakeData = {
-        question_content: questionText,
-        options: this.currentQuestion.options || [],
-        user_answer: userAnswer,
-        correct_answer: correctAnswer,
-        analysis: this.aiComment || this.currentQuestion.desc || '',
-        tags: this.currentQuestion.tags || [],
-        wrong_count: existingMistake ? (existingMistake.wrong_count || existingMistake.wrongCount || 1) + 1 : 1,
-        is_mastered: false
-      };
-
-      try {
-        // 使用云端方法保存（自动云端+本地同步）
-        const result = await storageService.saveMistake(mistakeData);
-
-        uni.hideLoading();
-
-        if (result.success) {
-          logger.log('[do-quiz] 错题已保存到云端:', result.id);
-          // 如果需要更新已有记录的错误次数，可以在这里处理
-          if (existingMistake && result.source === 'cloud') {
-            // 云端保存成功，更新本地缓存中的错误次数
-            const updatedMistakes = storageService.get('mistake_book', []);
-            const index = updatedMistakes.findIndex((m) =>
-              m.id === result.id || m._id === result.id
-            );
-            if (index >= 0) {
-              updatedMistakes[index].wrong_count = mistakeData.wrong_count;
-              storageService.save('mistake_book', updatedMistakes, true);
-            }
-          }
-        } else {
-          logger.warn('[do-quiz] 错题保存失败，已降级到本地:', result.error);
-        }
-      } catch (error) {
-        uni.hideLoading();
-        logger.warn('[do-quiz] 保存错题异常，降级到本地存储:', error);
-        // 异常时降级到本地保存
-        const mistakes = storageService.get('mistake_book', []);
-        const mistakeRecord = {
-          ...this.currentQuestion,
-          question: questionText,
-          question_content: questionText,
-          userChoice: userAnswer,
-          user_answer: userAnswer,
-          answer: correctAnswer,
-          correct_answer: correctAnswer,
-          desc: this.aiComment || this.currentQuestion.desc || '',
-          analysis: this.aiComment || this.currentQuestion.desc || '',
-          addTime: new Date().toLocaleString(),
-          timestamp: Date.now(),
-          wrongCount: existingMistake ? (existingMistake.wrongCount || 1) + 1 : 1,
-          wrong_count: existingMistake ? (existingMistake.wrong_count || existingMistake.wrongCount || 1) + 1 : 1,
-          isMastered: false,
-          is_mastered: false,
-          sync_status: 'pending'
-        };
-
-        if (existingMistake) {
-          const index = mistakes.findIndex((m) =>
-            (m.question === questionText || m.question_content === questionText) ||
-						(m.id && m.id === this.currentQuestion.id)
-          );
-          if (index >= 0) {
-            mistakes[index] = { ...mistakes[index], ...mistakeRecord };
-          } else {
-            mistakes.unshift(mistakeRecord);
-          }
-        } else {
-          mistakes.unshift(mistakeRecord);
-        }
-
-        storageService.save('mistake_book', mistakes, true);
-        logger.log('[do-quiz] ✅ 已降级到本地保存，sync_status: pending');
-      }
+      await saveMistake({
+        currentQuestion: this.currentQuestion,
+        userChoice: this.userChoice,
+        aiComment: this.aiComment
+      });
     },
-    async updateMistakeWithAI(aiAnalysis) {
-      // 将 AI 解析更新到错题本中的对应记录
-      const mistakes = storageService.get('mistake_book', []);
-      const questionText = this.currentQuestion.question || this.currentQuestion.title;
-
-      const mistakeIndex = mistakes.findIndex((m) =>
-        (m.question === questionText || m.question_content === questionText) ||
-				(m.id && m.id === this.currentQuestion.id) ||
-				(m._id && m._id === this.currentQuestion.id)
-      );
-
-      if (mistakeIndex >= 0) {
-        const mistake = mistakes[mistakeIndex];
-        mistake.aiAnalysis = aiAnalysis;
-        mistake.analysis = aiAnalysis; // 同时更新新字段
-        mistake.hasAIAnalysis = true;
-
-        // 如果有云端ID，尝试更新到云端
-        const mistakeId = mistake.id || mistake._id;
-        if (mistakeId && mistakeId.toString().startsWith('local_') === false) {
-          // 云端记录，可以尝试更新（但云端没有单独的更新analysis方法，先更新本地）
-          // 注意：如果需要更新云端，可以扩展云对象方法
-        }
-
-        // 更新本地缓存
-        storageService.save('mistake_book', mistakes, true);
-      }
+    // ✅ P1: 委托给 quiz-mistake-handler.js
+    updateMistakeWithAI(aiAnalysis) {
+      updateMistakeAI({
+        currentQuestion: this.currentQuestion,
+        aiAnalysis
+      });
     },
     updateStudyStats() {
       // 更新学习热力图数据
@@ -955,7 +810,7 @@ export default {
       if (this.currentIndex < this.questions.length - 1) {
         // ✅ 检查点 5.3: 检查是否需要插入复习题
         if (this.isAdaptiveMode) {
-          const { getNextRecommendedQuestion } = await import('./utils/adaptive-learning-engine.js');
+          const { getNextRecommendedQuestion } = await import('@/utils/learning/adaptive-learning-engine.js');
           const recommendation = getNextRecommendedQuestion(this.currentIndex, this.questions);
           if (recommendation && recommendation.isReview) {
             // 插入复习题
@@ -1282,67 +1137,26 @@ export default {
 
     // ==================== 数据分析记录方法 ====================
 
-    // ✅ 记录答题数据到各个分析模块
+    // ✅ P1: 委托给 quiz-analytics-recorder.js（组件状态更新保留在组件内）
     async recordAnswerToAnalytics(isCorrect, timeSpent) {
-      if (!this.currentQuestion) return;
-
-      const questionData = {
-        questionId: this.currentQuestion.id,
-        category: this.currentQuestion.category,
-        difficulty: this.currentQuestion.difficulty || 2,
-        isCorrect,
-        timeSpent
-      };
-
-      // 记录到智能组题模块（懒加载）
-      try {
-        const { recordSmartAnswer } = await import('@/utils/learning/smart-question-picker.js');
-        recordSmartAnswer(this.currentQuestion, isCorrect, timeSpent);
-      } catch (e) {
-        logger.warn('[do-quiz] 记录到智能组题模块失败:', e);
-      }
-
-      // 记录到学习数据分析模块
-      try {
-        recordAnalyticsAnswer(questionData);
-      } catch (e) {
-        logger.warn('[do-quiz] 记录到学习分析模块失败:', e);
-      }
-
-      // 记录到单题计时器模块
-      try {
-        recordQuestionTime({
-          ...questionData,
-          timeLimit: this.questionTimeLimit
-        });
-      } catch (e) {
-        logger.warn('[do-quiz] 记录到计时器模块失败:', e);
-      }
-
-      // 添加到已答题目列表
-      this.answeredQuestions.push({
-        questionId: this.currentQuestion.id,
+      const questionData = await recordAnalytics({
+        currentQuestion: this.currentQuestion,
         isCorrect,
         timeSpent,
-        timestamp: Date.now()
+        userChoice: this.userChoice,
+        questionTimeLimit: this.questionTimeLimit,
+        getOptionLabel: (idx) => this.getOptionLabel(idx)
       });
 
-      // ✅ 保存离线答题记录
-      try {
-        saveOfflineAnswer({
+      // 添加到已答题目列表（组件状态，不可外移）
+      if (questionData) {
+        this.answeredQuestions.push({
           questionId: this.currentQuestion.id,
-          questionContent: this.currentQuestion.question,
-          userAnswer: this.getOptionLabel(this.userChoice),
-          correctAnswer: this.currentQuestion.answer,
           isCorrect,
           timeSpent,
-          category: this.currentQuestion.category
+          timestamp: Date.now()
         });
-      } catch (e) {
-        logger.warn('[do-quiz] 保存离线答题记录失败:', e);
       }
-
-      logger.log('[do-quiz] ✅ 答题数据已记录:', questionData);
     },
 
     // ==================== 离线缓存相关方法 ====================
