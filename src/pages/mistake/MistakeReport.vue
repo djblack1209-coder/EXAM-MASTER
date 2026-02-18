@@ -281,7 +281,7 @@ export default {
     saveReport() {
       if (!this.reportImagePath) return;
 
-      // #ifdef MP-WECHAT
+      // #ifdef MP-WEIXIN
       uni.saveImageToPhotosAlbum({
         filePath: this.reportImagePath,
         success: () => {
@@ -305,7 +305,7 @@ export default {
       });
       // #endif
 
-      // #ifndef MP-WECHAT
+      // #ifndef MP-WEIXIN
       uni.saveImageToPhotosAlbum({
         filePath: this.reportImagePath,
         success: () => {

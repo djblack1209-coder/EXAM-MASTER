@@ -387,7 +387,7 @@ export default {
       const sys = uni.getSystemInfoSync();
       this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
 
-      // #ifdef MP-WECHAT
+      // #ifdef MP-WEIXIN
       try {
         const capsule = uni.getMenuButtonBoundingClientRect();
         if (capsule && capsule.width > 0) {
@@ -401,7 +401,7 @@ export default {
         this.capsuleMargin = 100;
       }
       // #endif
-      // #ifndef MP-WECHAT
+      // #ifndef MP-WEIXIN
       this.capsuleMargin = 20;
       // #endif
     },
@@ -1440,7 +1440,7 @@ export default {
 		display: inline-block;
 		background: var(--text-primary);
 		color: #FFFFFF;
-		font-size: 18rpx;
+		font-size: 20rpx;
 		padding: 4rpx 12rpx;
 		border-radius: 6rpx;
 		margin-bottom: 15rpx;

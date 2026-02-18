@@ -29,11 +29,8 @@ export default {
       enableDebug: process.env.NODE_ENV !== 'production'
     });
 
-    // ✅ 检查点 5.2: 初始化增强错误处理器
-    globalErrorHandler.init();
-
-    // 初始化全局错误捕捉
-    this.initGlobalErrorHandler();
+    // ✅ 检查点 5.2: 全局错误处理已在 main.js 中通过 globalErrorHandler.init() 统一注册
+    // 包括 uni.onError、uni.onUnhandledRejection、错误持久化、去重等
 
     // ✅ 2.4: 初始化全局 API 错误拦截（认证失败自动跳转登录）
     this.initApiErrorInterceptor();
@@ -45,12 +42,12 @@ export default {
     this.performSilentLogin();
   },
   onError(error) {
-    // Vue 错误捕捉
-    this.handleGlobalError('Vue Error', error);
+    // 委托给统一错误处理器（避免重复注册 uni.onError）
+    globalErrorHandler.report('Vue Error', error);
   },
   onUnhandledRejection(event) {
-    // Promise 未捕获的 rejection
-    this.handleGlobalError('Unhandled Promise Rejection', event.reason);
+    // 委托给统一错误处理器
+    globalErrorHandler.report('Unhandled Promise Rejection', event.reason);
   },
   onShow() {
     // 每次显示时同步主题
@@ -179,97 +176,6 @@ export default {
     },
 
     /**
-		 * 初始化全局错误处理器
-		 */
-    initGlobalErrorHandler() {
-      // 创建错误日志目录
-      const errorLogs = [];
-      this.globalData.errorLogs = errorLogs;
-
-      // 监听全局错误事件
-      uni.onError((error) => {
-        this.handleGlobalError('Runtime Error', error);
-      });
-
-      // 监听未处理的 Promise rejection
-      uni.onUnhandledRejection((event) => {
-        this.handleGlobalError('Unhandled Promise Rejection', event.reason);
-      });
-
-      // 全局错误捕捉已初始化
-    },
-
-    /**
-		 * 处理全局错误
-		 */
-    handleGlobalError(type, error) {
-      // 安全提取错误信息，处理 [object Object] 情况
-      let message = '';
-      let stack = '';
-      if (error === null || error === undefined) {
-        message = 'Unknown error';
-      } else if (typeof error === 'string') {
-        message = error;
-      } else if (error instanceof Error) {
-        message = error.message || String(error);
-        stack = error.stack || '';
-      } else if (typeof error === 'object') {
-        // 处理 {errMsg: "..."} 格式的微信小程序错误
-        message = error.errMsg || error.message || error.msg || JSON.stringify(error).substring(0, 200);
-        stack = error.stack || '';
-      } else {
-        message = String(error);
-      }
-
-      const errorInfo = {
-        type,
-        message,
-        stack,
-        timestamp: new Date().toISOString(),
-        page: getCurrentPages().length > 0 ? getCurrentPages()[getCurrentPages().length - 1].route : 'unknown'
-      };
-
-      // 保存到内存
-      if (this.globalData.errorLogs) {
-        this.globalData.errorLogs.push(errorInfo);
-        // 只保留最近50条错误
-        if (this.globalData.errorLogs.length > 50) {
-          this.globalData.errorLogs.shift();
-        }
-      }
-
-      // 保存到本地存储（用于调试）
-      try {
-        const storedErrors = uni.getStorageSync('runtime_errors') || [];
-        storedErrors.push(errorInfo);
-        // 只保留最近100条
-        if (storedErrors.length > 100) {
-          storedErrors.splice(0, storedErrors.length - 100);
-        }
-        uni.setStorageSync('runtime_errors', storedErrors);
-      } catch (e) {
-        console.error('[ErrorHandler] 保存错误日志失败:', e);
-      }
-
-      // 控制台输出
-      console.error(`[${type}]`, errorInfo.message);
-      if (errorInfo.stack) {
-        console.error('Stack:', errorInfo.stack);
-      }
-
-      // 在开发环境显示错误提示
-      // #ifdef MP-WEIXIN
-      if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion === 'develop') {
-        uni.showToast({
-          title: `错误: ${errorInfo.message.substring(0, 20)}...`,
-          icon: 'none',
-          duration: 3000
-        });
-      }
-      // #endif
-    },
-
-    /**
 		 * 执行静默登录
 		 */
     async performSilentLogin() {
@@ -292,13 +198,15 @@ export default {
   globalData: {
     currentTheme: 'light',
     isDarkMode: false,
-    qaLogs: [],
-    errorLogs: []
+    qaLogs: []
   }
 };
 </script>
 
 <style lang="scss">
+/* 全局按钮动画反馈样式 (P010) */
+@import './src/styles/button-animations.scss';
+
 /* ============================================
    EXAM-MASTER 全局配色系统 v3.0
    严格基于 index.vue 的颜色实现 1:1 提取

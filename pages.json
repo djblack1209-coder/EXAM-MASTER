@@ -68,7 +68,9 @@
         {
             "root": "pages/settings",
             "pages": [
-                {"path": "index", "style": {"navigationBarTitleText": "系统设置", "navigationStyle": "custom", "navigationBarBackgroundColor": "#1A1A1A"}}
+                {"path": "index", "style": {"navigationBarTitleText": "系统设置", "navigationStyle": "custom", "navigationBarBackgroundColor": "#1A1A1A"}},
+                {"path": "privacy", "style": {"navigationBarTitleText": "隐私政策", "navigationStyle": "custom", "navigationBarBackgroundColor": "#1A1A1A"}},
+                {"path": "terms", "style": {"navigationBarTitleText": "用户协议", "navigationStyle": "custom", "navigationBarBackgroundColor": "#1A1A1A"}}
             ]
         },
         {

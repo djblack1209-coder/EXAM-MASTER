@@ -7,7 +7,7 @@
         class="back-icon"
         @tap="goBack"
       />
-      <view class="nav-center" @tap="showFriendSelector = true">
+      <view class="nav-center" hover-class="item-hover" @tap="showFriendSelector = true">
         <image :src="currentFriend.avatar" class="friend-avatar-small" @error="onAvatarError" />
         <text class="nav-title">
           {{ currentFriend.name }}
@@ -30,7 +30,7 @@
           <text class="selector-title">
             选择AI好友
           </text>
-          <text class="selector-close" @tap="showFriendSelector = false">
+          <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false">
             ×
           </text>
         </view>
@@ -40,6 +40,7 @@
             :key="friend.type"
             class="friend-item"
             :class="{ active: currentFriend.type === friend.type }"
+            hover-class="item-hover"
             @tap="selectFriend(friend)"
           >
             <image :src="friend.avatar" class="friend-avatar" lazy-load />
@@ -163,6 +164,7 @@
         :key="emotion.value"
         class="emotion-tag"
         :class="{ active: currentEmotion === emotion.value }"
+        hover-class="item-hover"
         @tap="selectEmotion(emotion.value)"
       >
         <text>{{ emotion.emoji }} {{ emotion.label }}</text>
@@ -218,6 +220,7 @@
       <view
         class="send-btn"
         :class="{ active: messageText.trim() }"
+        hover-class="item-hover"
         @tap="handleSend"
       >
         <text class="send-icon">
@@ -370,14 +373,23 @@ onMounted(async () => {
     }
   }
 
-  // 加载用户学习数据
-  await loadUserContext();
+  // 加载用户学习数据 + 历史对话，带安全超时 (P011)
+  const loadingTimeout = setTimeout(() => {
+    if (isPageLoading.value) {
+      isPageLoading.value = false;
+      console.warn('[Chat] 加载超时，强制关闭骨架屏');
+    }
+  }, 8000);
 
-  // 加载历史对话
-  await loadChatHistory();
-
-  // 关闭骨架屏
-  isPageLoading.value = false;
+  try {
+    await loadUserContext();
+    await loadChatHistory();
+  } catch (e) {
+    console.error('[Chat] 初始化加载失败:', e);
+  } finally {
+    clearTimeout(loadingTimeout);
+    setTimeout(() => { isPageLoading.value = false; }, 300);
+  }
 });
 
 // 加载用户上下文
@@ -398,6 +410,8 @@ const loadUserContext = async () => {
     }
   } catch (e) {
     logger.warn('[Chat] 加载用户上下文失败:', e);
+    // P007: 提供用户反馈，避免静默失败
+    uni.showToast({ title: '学习数据加载失败，AI回复可能不够精准', icon: 'none', duration: 2000 });
   }
 };
 
@@ -420,6 +434,8 @@ const loadChatHistory = async () => {
     }
   } catch (e) {
     logger.warn('[Chat] 加载聊天历史失败:', e);
+    // P007: 提供用户反馈
+    uni.showToast({ title: '聊天记录加载失败', icon: 'none', duration: 1500 });
   }
 };
 
@@ -839,9 +855,13 @@ const retryMessage = async (index) => {
   }
 };
 
-// ✅ F024: 清理主题监听
+// ✅ F024: 清理主题监听 + 录音定时器
 onUnmounted(() => {
   uni.$off('themeUpdate', onThemeUpdate);
+  if (recordingIntervalId) {
+    clearInterval(recordingIntervalId);
+    recordingIntervalId = null;
+  }
 });
 </script>
 
@@ -1465,5 +1485,10 @@ onUnmounted(() => {
   to {
     transform: translateY(0);
   }
+}
+
+/* hover-class 反馈 */
+.item-hover {
+  opacity: 0.7;
 }
 </style>

@@ -221,7 +221,7 @@ export default {
 }
 
 .bubble-count {
-	font-size: 18rpx;
+	font-size: 20rpx;
 	color: var(--text-sub);
 }
 

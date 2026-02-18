@@ -133,34 +133,40 @@ export default {
     loadFiles() {
       // 从本地存储加载文件列表
       logger.log('[文件管理] 🔍 开始加载文件列表');
-      let savedFiles = storageService.get('imported_files', []);
+      try {
+        let savedFiles = storageService.get('imported_files', []);
 
-      // E005: 仅首次尝试备份恢复，避免每次 onShow 都执行
-      if (savedFiles.length === 0 && !this._recoveryAttempted) {
-        this._recoveryAttempted = true;
-        logger.warn('[文件管理] ⚠️ 文件列表为空，尝试从备份恢复...');
-        try {
-          const backup = storageService.get('imported_files_backup');
-          if (backup) {
-            const restored = JSON.parse(backup);
-            if (Array.isArray(restored) && restored.length > 0) {
-              logger.log('[文件管理] 🔄 从备份恢复文件列表:', restored.length, '个文件');
-              storageService.save('imported_files', restored);
-              savedFiles = restored;
-              uni.showToast({
-                title: '已从备份恢复文件列表',
-                icon: 'success',
-                duration: 2000
-              });
+        // E005: 仅首次尝试备份恢复，避免每次 onShow 都执行
+        if (savedFiles.length === 0 && !this._recoveryAttempted) {
+          this._recoveryAttempted = true;
+          logger.warn('[文件管理] ⚠️ 文件列表为空，尝试从备份恢复...');
+          try {
+            const backup = storageService.get('imported_files_backup');
+            if (backup) {
+              const restored = JSON.parse(backup);
+              if (Array.isArray(restored) && restored.length > 0) {
+                logger.log('[文件管理] 🔄 从备份恢复文件列表:', restored.length, '个文件');
+                storageService.save('imported_files', restored);
+                savedFiles = restored;
+                uni.showToast({
+                  title: '已从备份恢复文件列表',
+                  icon: 'success',
+                  duration: 2000
+                });
+              }
             }
+          } catch (restoreErr) {
+            logger.error('[文件管理] ❌ 恢复备份失败:', restoreErr);
           }
-        } catch (restoreErr) {
-          logger.error('[文件管理] ❌ 恢复备份失败:', restoreErr);
         }
-      }
 
-      this.files = savedFiles;
-      this.isPageLoading = false;
+        this.files = savedFiles;
+      } catch (err) {
+        logger.error('[文件管理] ❌ 加载文件列表异常:', err);
+        this.files = [];
+      } finally {
+        this.isPageLoading = false;
+      }
     },
 
     goBack() {

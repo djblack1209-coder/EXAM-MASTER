@@ -80,6 +80,7 @@
       <view class="action-row main-row">
         <button
           class="apple-btn primary glow-effect"
+          hover-class="btn-scale-sm"
           :disabled="isLooping || !fileName"
           :class="{ disabled: isLooping || !fileName }"
           @tap="startAI"
@@ -95,6 +96,7 @@
         <button
           v-if="!isLooping && (fullFileContent || fileName) && generatedCount > 0"
           class="apple-btn secondary"
+          hover-class="btn-scale-sm"
           @tap="continueGenerating"
         >
           <text style="font-size: 28rpx; margin-right: 4px;">
@@ -104,7 +106,7 @@
             再出一组
           </text>
         </button>
-        <button class="apple-btn danger-ghost" @tap="clearAll">
+        <button class="apple-btn danger-ghost" hover-class="btn-scale-sm" @tap="clearAll">
           清空题库
         </button>
       </view>
@@ -143,10 +145,10 @@
             "{{ currentSoup }}"
           </text>
           <view class="loading-actions">
-            <button class="glass-btn ghost" @tap="pauseGeneration">
+            <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="pauseGeneration">
               暂停生成
             </button>
-            <button class="glass-btn danger" @tap="cancelGeneration">
+            <button class="glass-btn danger" hover-class="btn-scale-sm" @tap="cancelGeneration">
               取消
             </button>
           </view>
@@ -170,10 +172,10 @@
         </text>
 
         <view class="speed-actions">
-          <button class="glass-btn ghost" @tap="stayHere">
+          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="stayHere">
             留在本页
           </button>
-          <button class="glass-btn shine" @tap="goQuiz">
+          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="goQuiz">
             立即刷题
           </button>
         </view>
@@ -189,7 +191,7 @@
           可随时继续生成题库
         </text>
       </view>
-      <button class="glass-btn shine" @tap="resumeGeneration">
+      <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="resumeGeneration">
         继续生成
       </button>
     </view>
@@ -210,10 +212,10 @@
         </text>
 
         <view class="error-actions">
-          <button class="glass-btn ghost" @tap="dismissError">
+          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="dismissError">
             关闭
           </button>
-          <button class="glass-btn shine" @tap="retryGeneration">
+          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="retryGeneration">
             重试
           </button>
         </view>
@@ -231,6 +233,7 @@ import { logger } from '@/utils/logger.js';
 import { fileHandler } from './file-handler.js';
 // F019: storageService
 import storageService from '@/services/storageService.js';
+import { QUOTE_LIBRARY } from '@/config/home-data.js';
 
 export default {
   components: {
@@ -253,13 +256,7 @@ export default {
 
       // UI 状态
       currentSoup: '',
-      soupList: [
-        '星光不问赶路人，时光不负有心人。',
-        '看似不起眼的日复一日，会在将来的某一天，突然坚持出意义。',
-        '苦尽甘来时，山河星月都做贺礼。',
-        '乾坤未定，你我皆是黑马。',
-        '种一棵树最好的时间是十年前，其次是现在。'
-      ],
+      soupList: QUOTE_LIBRARY.map((q) => q.text),
       soupTimer: null,
 
       // 核心业务数据
@@ -594,7 +591,7 @@ export default {
     // 已迁移到 Sealos：使用 lafService.proxyAI 替代 uniCloud.callFunction('proxy-ai')
     async startAI() {
       if (!this.fullFileContent && !this.fileName) {
-        uni.showToast({ title: '请先导入', icon: 'none' });
+        uni.showToast({ title: '请先导入文件', icon: 'none' });
         return;
       }
 
@@ -1285,7 +1282,7 @@ export default {
 
     resumeGeneration() {
       if (!this.fullFileContent && !this.fileName) {
-        return uni.showToast({ title: '请先导入', icon: 'none' });
+        return uni.showToast({ title: '请先导入文件', icon: 'none' });
       }
       this.isPaused = false;
       this.isLooping = true;

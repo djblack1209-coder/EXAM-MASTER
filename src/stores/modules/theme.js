@@ -73,15 +73,20 @@ export const useThemeStore = defineStore('theme', () => {
       const appBaseInfo = uni.getAppBaseInfo();
       systemTheme = appBaseInfo.theme || 'light';
     } catch (_e) {
-      // 降级方案
-      const systemInfo = uni.getSystemInfoSync();
-      systemTheme = systemInfo.theme || 'light';
+      // 降级方案：使用 getAppBaseInfo 失败时尝试 getSystemSetting
+      try {
+        const systemSetting = uni.getSystemSetting();
+        systemTheme = systemSetting.theme || 'light';
+      } catch (_e2) {
+        systemTheme = 'light';
+      }
     }
     // #endif
 
     // #ifndef MP-WEIXIN
-    const systemInfo = uni.getSystemInfoSync();
-    systemTheme = systemInfo.theme || 'light';
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
     // #endif
 
     // 检查是否有用户手动设置

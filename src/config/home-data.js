@@ -2,12 +2,16 @@
  * 首页静态数据配置
  * 将硬编码的模拟数据抽取到配置文件，便于维护和后续迁移到后端
  *
+ * 动态加载策略：
+ * - 静态常量作为本地 fallback，保证离线可用
+ * - fetchHomeData() 异步从后端拉取最新数据，成功后缓存到本地
+ * - 调用方可选择使用静态常量（同步）或 fetchHomeData()（异步）
+ *
  * @module config/home-data
  */
 
 /**
- * 励志金句库（30条精选）
- * 后续可从后端动态加载
+ * 励志金句库（30条精选）— 本地 fallback
  */
 export const QUOTE_LIBRARY = [
   { text: '成功不是终点，失败也不是终结，唯有勇气才是永恒。', author: '丘吉尔' },
@@ -111,3 +115,51 @@ export const DEMO_QUESTIONS = [
     explanation: 'ubiquitous 意为"无处不在的"，与 everywhere 含义最接近。'
   }
 ];
+
+// ==================== 动态加载支持 ====================
+
+const CACHE_KEY = 'home_data_remote';
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24小时缓存
+
+/**
+ * 从后端异步拉取首页动态数据（金句、公式等），成功后缓存到本地。
+ * 失败时静默降级为本地静态数据，不影响页面渲染。
+ *
+ * @returns {Promise<{ quotes: Array, formulas: Array }>}
+ */
+export async function fetchHomeData() {
+  try {
+    // 1. 检查本地缓存是否有效
+    const { storageService } = await import('@/services/storageService.js');
+    const cached = storageService.get(CACHE_KEY, null);
+    if (cached && cached._ts && (Date.now() - cached._ts < CACHE_TTL)) {
+      return {
+        quotes: cached.quotes || QUOTE_LIBRARY,
+        formulas: cached.formulas || FORMULA_LIST
+      };
+    }
+
+    // 2. 尝试从后端拉取
+    const { lafService } = await import('@/services/lafService.js');
+    if (!lafService || typeof lafService.getHomeData !== 'function') {
+      // 后端接口尚未实现，静默降级
+      return { quotes: QUOTE_LIBRARY, formulas: FORMULA_LIST };
+    }
+
+    const res = await lafService.getHomeData();
+    const data = res?.data || {};
+
+    const result = {
+      quotes: Array.isArray(data.quotes) && data.quotes.length > 0 ? data.quotes : QUOTE_LIBRARY,
+      formulas: Array.isArray(data.formulas) && data.formulas.length > 0 ? data.formulas : FORMULA_LIST
+    };
+
+    // 3. 写入缓存
+    storageService.save(CACHE_KEY, { ...result, _ts: Date.now() });
+
+    return result;
+  } catch (_e) {
+    // 网络失败、接口不存在等情况，静默降级
+    return { quotes: QUOTE_LIBRARY, formulas: FORMULA_LIST };
+  }
+}

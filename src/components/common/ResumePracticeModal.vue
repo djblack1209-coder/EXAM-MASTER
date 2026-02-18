@@ -51,7 +51,7 @@
 
       <!-- 提示文字 -->
       <view class="modal-tip">
-        <text>{{ tipText }}</text>
+        <text class="modal-tip-text">{{ tipText }}</text>
       </view>
 
       <!-- 操作按钮 -->
@@ -229,10 +229,10 @@ export default {
   margin-bottom: 32rpx;
 }
 
-.modal-tip text {
-  font-size: 26rpx;
-  color: var(--text-secondary, #666);
-  line-height: 1.6;
+.modal-tip-text {
+	font-size: 26rpx;
+	color: var(--text-secondary, #666);
+	line-height: 1.6;
 }
 
 .modal-actions {
@@ -302,8 +302,8 @@ export default {
   color: var(--text-primary-dark, #ffffff);
 }
 
-.dark-mode .modal-tip text {
-  color: var(--text-secondary-dark, #8e8e93);
+.dark-mode .modal-tip-text {
+	color: var(--text-secondary-dark, #8e8e93);
 }
 
 .dark-mode .btn-secondary {

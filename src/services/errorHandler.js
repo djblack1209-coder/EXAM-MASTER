@@ -149,6 +149,18 @@ class ErrorHandler {
 	 */
   getUserAgent() {
     try {
+      // #ifdef MP-WEIXIN
+      const deviceInfo = uni.getDeviceInfo();
+      const appBaseInfo = uni.getAppBaseInfo();
+      return {
+        platform: deviceInfo.platform,
+        system: deviceInfo.system,
+        version: appBaseInfo.version,
+        model: deviceInfo.model
+      };
+      // #endif
+
+      // #ifndef MP-WEIXIN
       const systemInfo = uni.getSystemInfoSync();
       return {
         platform: systemInfo.platform,
@@ -156,6 +168,7 @@ class ErrorHandler {
         version: systemInfo.version,
         model: systemInfo.model
       };
+      // #endif
     } catch {
       return { platform: 'unknown' };
     }
@@ -206,20 +219,8 @@ class ErrorHandler {
 // 创建单例
 const errorHandler = new ErrorHandler();
 
-// 全局错误处理
-if (typeof uni !== 'undefined') {
-  // 监听未捕获的Promise拒绝
-  uni.onUnhandledRejection((res) => {
-    errorHandler.handlePromiseRejection(res.reason, res.promise);
-  });
-
-  // 监听页面错误（如果支持）
-  if (typeof uni.onError === 'function') {
-    uni.onError((error) => {
-      errorHandler.handleUncaughtError(new Error(error));
-    });
-  }
-}
+// 全局错误处理已由 global-error-handler.js 统一注册
+// 此处不再重复注册 uni.onError / uni.onUnhandledRejection
 
 /**
  * 错误处理装饰器（用于包装异步函数）

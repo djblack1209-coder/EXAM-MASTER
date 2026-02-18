@@ -131,10 +131,15 @@ async function handleCreateGroup(userId, params, requestId) {
     }
   } catch (error) {
     logger.error(`[${requestId}] 创建小组失败:`, error)
+    // P015: 错误分类
+    const errMsg = error.message || ''
+    const code = errMsg.includes('duplicate') || errMsg.includes('已存在') ? 409
+      : errMsg.includes('参数') || errMsg.includes('validation') ? 400
+      : errMsg.includes('timeout') ? 504 : 500
     return {
-      code: 500,
+      code,
       success: false,
-      message: '创建小组失败',
+      message: code === 500 ? '创建小组失败，请稍后重试' : errMsg,
       error: error.message
     }
   }

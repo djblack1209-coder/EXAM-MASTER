@@ -129,7 +129,7 @@ export default {
 }
 
 .banner-light .highlight-text {
-	color: #059669;
+	color: #047857;
 }
 
 .banner-actions {

@@ -21,7 +21,7 @@ const BASE_URL = config.api.baseUrl;
 
 // ✅ 3.5: 请求签名函数（FNV-1a 哈希，轻量级防篡改）
 function _requestSign(path, timestamp) {
-  const raw = `${path}:${timestamp}:ExM@st3r`;
+  const raw = `${path}:${timestamp}:${config.security.requestSignSalt}`;
   let hash = 0x811c9dc5;
   for (let i = 0; i < raw.length; i++) {
     hash ^= raw.charCodeAt(i);
@@ -605,9 +605,36 @@ export const lafService = {
   },
 
   /**
-   * 获取用户学习统计（带Mock降级）
-   * @param {string} userId - 用户ID
-   * @returns {Promise} 返回学习统计数据
+   * Fetch random questions from backend (P002)
+   * 从后端随机获取题目
+   * @param {Object} [params] - Query parameters
+   * @param {number} [params.count=20] - Number of questions to fetch
+   * @param {string} [params.category] - Category filter
+   * @param {string} [params.difficulty] - Difficulty filter ('easy'|'medium'|'hard')
+   * @returns {Promise<ApiResponse>} Response with random questions array
+   */
+  async getRandomQuestions(params = {}) {
+    try {
+      const response = await this.request('/question-bank', {
+        action: 'random',
+        data: {
+          count: params.count || 20,
+          category: params.category,
+          difficulty: params.difficulty
+        }
+      });
+      return response;
+    } catch (error) {
+      console.warn('[LafService] 随机获取题目失败:', error);
+      return normalizeError(error, '随机获取题目');
+    }
+  },
+
+  /**
+   * Get user study statistics with local fallback (P004)
+   * 获取用户学习统计，网络失败时降级使用本地数据
+   * @param {string} userId - User ID
+   * @returns {Promise<ApiResponse>} Stats data; check `data._source` for 'local_fallback' flag
    */
   async getStudyStats(userId) {
     try {
@@ -617,8 +644,27 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取学习统计失败:', error);
-      return normalizeError(error, '获取学习统计');
+      console.warn('[LafService] 获取学习统计失败，降级使用本地数据:', error);
+      // P004: 降级到本地存储数据，而非返回错误
+      try {
+        const storageService = (await import('@/services/storageService.js')).default;
+        const localStats = storageService.get('study_stats', {});
+        const bankCount = (storageService.get('v30_bank', [])).length;
+        const mistakeCount = (storageService.get('mistake_book', [])).length;
+        return {
+          code: 0,
+          data: {
+            totalQuestions: bankCount,
+            totalMistakes: mistakeCount,
+            studyDays: Object.keys(localStats).length,
+            dailyStats: localStats,
+            _source: 'local_fallback'
+          },
+          message: '使用本地缓存数据'
+        };
+      } catch (_e) {
+        return normalizeError(error, '获取学习统计');
+      }
     }
   },
 

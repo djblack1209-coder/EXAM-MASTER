@@ -147,6 +147,7 @@
           }"
           :disabled="showAns"
           :data-index="idx"
+          hover-class="btn-scale-sm"
           style="position: relative; z-index: 10; background: transparent; border: none; padding: 0; margin: 0;"
           @tap.stop="handleSelect(idx)"
           @click.stop="handleSelect(idx)"
@@ -215,19 +216,19 @@
         </view>
 
         <view class="action-btns">
-          <button class="btn-share" @tap.stop="handleShare">
+          <button class="btn-share" hover-class="btn-scale-sm" @tap.stop="handleShare">
             分享战报
           </button>
-          <button class="btn-rank" @tap.stop="goToRank">
+          <button class="btn-rank" hover-class="btn-scale-sm" @tap.stop="goToRank">
             查看排行榜
           </button>
-          <button class="btn-again" @tap.stop="resetGame">
+          <button class="btn-again" hover-class="btn-scale-sm" @tap.stop="resetGame">
             再来一局
           </button>
-          <button class="btn-home" @tap.stop="goHome">
+          <button class="btn-home" hover-class="btn-scale-sm" @tap.stop="goHome">
             返回首页
           </button>
-          <button class="btn-exit" @tap.stop="handleExitFromResult">
+          <button class="btn-exit" hover-class="btn-scale-sm" @tap.stop="handleExitFromResult">
             退出
           </button>
         </view>
@@ -257,8 +258,7 @@
 <script>
 import { lafService } from '@/services/lafService.js';
 import CustomModal from '@/components/common/CustomModal.vue';
-// 检查点4.2: 好友PK邀请 - 分享卡片和深度链接
-import { createInviteDeepLink, generateInviteCode, generateShareConfig } from './invite-deep-link.js';
+// ✅ 懒加载：invite-deep-link 478行，仅在用户分享时才需要（改为方法内动态导入）
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
@@ -1276,6 +1276,8 @@ export default {
     // 检查点4.2: 好友PK邀请 - 生成分享PK链接
     async generateSharePkLink() {
       const userId = storageService.get('EXAM_USER_ID', '');
+      // ✅ 懒加载：仅在用户触发分享时才加载 invite-deep-link 模块
+      const { createInviteDeepLink, generateInviteCode } = await import('./invite-deep-link.js');
 
       // 生成房间ID
       this.sharePkRoomId = `pk_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1316,6 +1318,7 @@ export default {
         const shareInfo = await this.generateSharePkLink();
 
         // 获取分享配置
+        const { generateShareConfig } = await import('./invite-deep-link.js');
         const shareConfig = generateShareConfig({
           type: 'pk',
           roomId: shareInfo.roomId,

@@ -1,17 +1,20 @@
 <template>
-  <view class="photo-search-container">
-    <!-- 顶部标题栏 -->
-    <view class="header">
-      <text class="title">
-        拍照搜题
-      </text>
-      <text class="subtitle">
-        拍照或上传题目图片，AI智能识别解答
-      </text>
+  <view :class="['page-container', { 'dark-mode': isDark }]">
+    <!-- 自定义导航栏 -->
+    <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
+      <view class="nav-content">
+        <view class="nav-back" @tap="goBack">
+          <text class="back-icon">&#x2190;</text>
+        </view>
+        <text class="nav-title">拍照搜题</text>
+        <view class="nav-action" @tap="selectSubject">
+          <text class="nav-action-text">{{ selectedSubjectLabel || '学科' }}</text>
+        </view>
+      </view>
     </view>
 
     <!-- 相机/预览区域 -->
-    <view class="camera-area">
+    <view class="camera-area" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
       <!-- 相机模式 -->
       <camera
         v-if="mode === 'camera'"
@@ -20,31 +23,22 @@
         class="camera-preview"
         @error="onCameraError"
       >
-        <!-- 取景框 -->
         <view class="viewfinder">
           <view class="corner top-left" />
           <view class="corner top-right" />
           <view class="corner bottom-left" />
           <view class="corner bottom-right" />
         </view>
-        <text class="camera-tip">
-          将题目放入框内，保持清晰
-        </text>
+        <text class="camera-tip">将题目放入框内，保持清晰</text>
       </camera>
 
       <!-- 预览模式 -->
       <view v-else-if="mode === 'preview'" class="preview-area">
         <image :src="previewImage" mode="aspectFit" class="preview-image" />
-
-        <!-- 识别中遮罩 -->
         <view v-if="isRecognizing" class="loading-overlay">
           <view class="loading-spinner" />
-          <text class="loading-text">
-            {{ loadingText }}
-          </text>
-          <text class="loading-tips">
-            {{ currentTip }}
-          </text>
+          <text class="loading-text">{{ loadingText }}</text>
+          <text class="loading-tips">{{ currentTip }}</text>
         </view>
       </view>
 
@@ -53,28 +47,22 @@
         <scroll-view scroll-y class="result-scroll">
           <!-- 识别文本 -->
           <view class="result-section">
-            <view class="section-header">
-              <text class="section-title">
-                识别结果
-              </text>
-              <text class="confidence">
-                置信度: {{ result.confidence ? (result.confidence * 100).toFixed(0) : 0 }}%
-              </text>
+            <view class="rs-header">
+              <text class="rs-title">识别结果</text>
+              <view class="confidence-badge">
+                <text class="confidence-text">{{ result.confidence ? (result.confidence * 100).toFixed(0) : 0 }}%</text>
+              </view>
             </view>
-            <view class="recognized-text">
-              <text>{{ result.recognizedText || '未能识别到文字内容，请重新拍照' }}</text>
+            <view class="recognized-text-card">
+              <text class="recognized-text">{{ result.recognizedText || '未能识别到文字内容，请重新拍照' }}</text>
             </view>
           </view>
 
           <!-- 匹配题目 -->
           <view v-if="result.questions && result.questions.length > 0" class="result-section">
-            <view class="section-header">
-              <text class="section-title">
-                题库匹配
-              </text>
-              <text class="match-count">
-                找到 {{ result.questions.length }} 道相似题
-              </text>
+            <view class="rs-header">
+              <text class="rs-title">题库匹配</text>
+              <text class="match-count">找到 {{ result.questions.length }} 道相似题</text>
             </view>
             <view
               v-for="(q, idx) in result.questions"
@@ -82,150 +70,114 @@
               class="question-card"
               @click="viewQuestion(q)"
             >
-              <text class="question-text">
-                {{ q.question }}
-              </text>
+              <text class="question-text">{{ q.question }}</text>
               <view class="question-meta">
-                <text class="category">
-                  {{ q.category || '综合' }}
-                </text>
-                <text class="difficulty">
-                  难度: {{ q.difficulty || 3 }}
-                </text>
+                <view class="meta-tag">
+                  <text class="meta-tag-text">{{ q.category || '综合' }}</text>
+                </view>
+                <view class="meta-tag meta-tag-diff">
+                  <text class="meta-tag-text">难度 {{ q.difficulty || 3 }}</text>
+                </view>
               </view>
             </view>
           </view>
 
           <!-- AI解析 -->
           <view v-if="result.aiGenerated" class="result-section">
-            <view class="section-header">
-              <text class="section-title">
-                AI智能解析
-              </text>
+            <view class="rs-header">
+              <text class="rs-title">AI 智能解析</text>
             </view>
-            <view class="ai-analysis">
+            <view class="ai-card">
               <!-- 解题步骤 -->
-              <view v-if="result.aiGenerated.analysis && result.aiGenerated.analysis.steps" class="analysis-block">
-                <text class="block-title">
-                  解题步骤
-                </text>
+              <view v-if="result.aiGenerated.analysis && result.aiGenerated.analysis.steps" class="ai-block">
+                <text class="ai-block-title">解题步骤</text>
                 <view v-for="(step, idx) in result.aiGenerated.analysis.steps" :key="idx" class="step-item">
-                  <text class="step-num">
-                    {{ idx + 1 }}
-                  </text>
-                  <text class="step-text">
-                    {{ step }}
-                  </text>
+                  <view class="step-num-circle">
+                    <text class="step-num-text">{{ idx + 1 }}</text>
+                  </view>
+                  <text class="step-text">{{ step }}</text>
                 </view>
               </view>
 
               <!-- 参考答案 -->
-              <view v-if="result.aiGenerated.answer" class="analysis-block">
-                <text class="block-title">
-                  参考答案
-                </text>
-                <text class="answer-text">
-                  {{ result.aiGenerated.answer }}
-                </text>
+              <view v-if="result.aiGenerated.answer" class="ai-block">
+                <text class="ai-block-title">参考答案</text>
+                <view class="answer-card">
+                  <text class="answer-text">{{ result.aiGenerated.answer }}</text>
+                </view>
               </view>
 
               <!-- 考点 -->
               <view
-                v-if="result.aiGenerated.analysis
-                  && result.aiGenerated.analysis.keyPoints
-                  && result.aiGenerated.analysis.keyPoints.length > 0"
-                class="analysis-block"
+                v-if="result.aiGenerated.analysis && result.aiGenerated.analysis.keyPoints && result.aiGenerated.analysis.keyPoints.length > 0"
+                class="ai-block"
               >
-                <text class="block-title">
-                  考查知识点
-                </text>
-                <view class="tags">
-                  <text
-                    v-for="(point, idx) in result.aiGenerated.analysis.keyPoints"
-                    :key="idx"
-                    class="tag"
-                  >
-                    {{ point }}
-                  </text>
+                <text class="ai-block-title">考查知识点</text>
+                <view class="tags-row">
+                  <view v-for="(point, idx) in result.aiGenerated.analysis.keyPoints" :key="idx" class="kp-tag">
+                    <text class="kp-tag-text">{{ point }}</text>
+                  </view>
                 </view>
               </view>
 
               <!-- 易错点 -->
               <view
                 v-if="result.aiGenerated.commonMistakes && result.aiGenerated.commonMistakes.length > 0"
-                class="analysis-block"
+                class="ai-block"
               >
-                <text class="block-title">
-                  易错提醒
-                </text>
+                <text class="ai-block-title">易错提醒</text>
                 <view v-for="(mistake, idx) in result.aiGenerated.commonMistakes" :key="idx" class="mistake-item">
-                  <text class="warning-icon">
-                    !
-                  </text>
-                  <text>{{ mistake }}</text>
+                  <view class="warning-dot" />
+                  <text class="mistake-text">{{ mistake }}</text>
                 </view>
               </view>
             </view>
           </view>
+
+          <view class="bottom-safe" />
         </scroll-view>
       </view>
     </view>
 
     <!-- 底部操作栏 -->
     <view class="action-bar">
-      <!-- 相机模式按钮 -->
       <template v-if="mode === 'camera'">
-        <button class="btn-secondary" hover-class="btn-hover" @click="chooseFromAlbum">
-          <text class="btn-icon">
-            相册
-          </text>
-        </button>
-        <button class="btn-primary btn-capture" hover-class="btn-hover" @click="takePhoto">
-          <view class="capture-ring" />
-        </button>
-        <button class="btn-secondary" hover-class="btn-hover" @click="selectSubject">
-          <text class="btn-icon">
-            {{ selectedSubjectLabel || '学科' }}
-          </text>
-        </button>
+        <view class="action-btn-side" @click="chooseFromAlbum">
+          <text class="action-side-text">相册</text>
+        </view>
+        <view class="capture-btn" @click="takePhoto">
+          <view class="capture-outer">
+            <view class="capture-inner" />
+          </view>
+        </view>
+        <view class="action-btn-side" @click="selectSubject">
+          <text class="action-side-text">{{ selectedSubjectLabel || '学科' }}</text>
+        </view>
       </template>
 
-      <!-- 预览模式按钮 -->
       <template v-else-if="mode === 'preview'">
-        <button
-          class="btn-secondary"
-          hover-class="btn-hover"
-          :disabled="isRecognizing"
-          @click="retake"
-        >
+        <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" :disabled="isRecognizing" @click="retake">
           <text>重新拍摄</text>
         </button>
-        <button
-          class="btn-primary"
-          hover-class="btn-hover"
-          :disabled="isRecognizing"
-          @click="startRecognize"
-        >
+        <button class="bar-btn bar-btn-primary" hover-class="btn-hover" :disabled="isRecognizing" @click="startRecognize">
           <text>{{ isRecognizing ? '识别中...' : '开始识别' }}</text>
         </button>
       </template>
 
-      <!-- 结果模式按钮 -->
       <template v-else-if="mode === 'result'">
-        <button class="btn-secondary" hover-class="btn-hover" @click="retake">
+        <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" @click="retake">
           <text>重新搜题</text>
         </button>
         <button
           v-if="result.questions && result.questions.length > 0"
-          class="btn-primary"
+          class="bar-btn bar-btn-primary"
           hover-class="btn-hover"
           :disabled="isAddingMistake"
-          :class="{ 'btn-disabled': isAddingMistake }"
           @click="addToMistake"
         >
           <text>{{ isAddingMistake ? '添加中...' : '加入错题本' }}</text>
         </button>
-        <button class="btn-ghost" hover-class="btn-hover" @click="searchSimilar">
+        <button class="bar-btn bar-btn-ghost" hover-class="btn-hover" @click="searchSimilar">
           <text>找相似题</text>
         </button>
       </template>
@@ -238,10 +190,12 @@ import { lafService } from '@/services/lafService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 
 export default {
   data() {
     return {
+      statusBarHeight: 44,
       mode: 'camera', // camera | preview | result
       previewImage: null,
       isRecognizing: false,
@@ -263,6 +217,7 @@ export default {
         '正在匹配题库...',
         '正在生成解析...'
       ],
+      isDark: false,
       tipIndex: 0,
       tipTimer: null
     };
@@ -276,15 +231,24 @@ export default {
   },
 
   onLoad() {
-    // 检查相机权限
+    const sys = uni.getSystemInfoSync();
+    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.isDark = initTheme();
+    this._themeHandler = (mode) => { this.isDark = mode === 'dark'; };
+    onThemeUpdate(this._themeHandler);
     this.checkCameraPermission();
   },
 
   onUnload() {
     this.clearTipTimer();
+    offThemeUpdate(this._themeHandler);
   },
 
   methods: {
+    goBack() {
+      uni.navigateBack({ delta: 1 });
+    },
+
     // 检查相机权限
     async checkCameraPermission() {
       // #ifdef MP-WEIXIN
@@ -506,11 +470,11 @@ export default {
       });
     },
 
-    // 查看题目详情
+    // 查看题目详情（跳转到刷题页单题模式）
     viewQuestion(question) {
       const id = question._id || question.id;
       if (id) {
-        safeNavigateTo(`/pages/practice/question-detail?id=${id}`);
+        safeNavigateTo(`/pages/practice-sub/do-quiz?mode=single&questionId=${id}`);
       }
     },
 
@@ -545,7 +509,13 @@ export default {
       if (this.result && this.result.recognizedText) {
         // 取前50个字符作为搜索关键词
         const keyword = this.result.recognizedText.substring(0, 50);
-        safeNavigateTo(`/pages/practice/index?search=${encodeURIComponent(keyword)}`);
+        // practice/index 是 tabBar 页面，switchTab 不支持 query 参数
+        // 通过临时存储传递搜索关键词，供刷题中心后续读取
+        try {
+          uni.setStorageSync('_pendingSearch', { keyword, timestamp: Date.now() });
+        } catch (_e) { /* ignore */ }
+        uni.showToast({ title: '已跳转到刷题中心', icon: 'none' });
+        safeNavigateTo('/pages/practice/index');
       }
     }
   }
@@ -553,44 +523,77 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.photo-search-container {
+.page-container {
   min-height: 100vh;
-  background: var(--bg-secondary);
+  background: #000;
   display: flex;
   flex-direction: column;
 }
 
-.header {
-  padding: 30rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+// 导航栏
+.nav-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
-  .title {
-    font-size: 36rpx;
-    font-weight: bold;
-    display: block;
+  .nav-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24rpx;
+    height: 88rpx;
   }
 
-  .subtitle {
-    font-size: 24rpx;
-    opacity: 0.8;
-    margin-top: 10rpx;
-    display: block;
+  .nav-back {
+    width: 72rpx;
+    height: 72rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+
+    .back-icon {
+      font-size: 36rpx;
+      color: #fff;
+    }
+  }
+
+  .nav-title {
+    font-size: 34rpx;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .nav-action {
+    padding: 10rpx 24rpx;
+    border-radius: 32rpx;
+    background: rgba(255, 255, 255, 0.12);
+
+    .nav-action-text {
+      font-size: 24rpx;
+      color: #fff;
+      font-weight: 500;
+    }
   }
 }
 
+// 相机区域
 .camera-area {
   flex: 1;
   position: relative;
-  margin: 20rpx;
-  border-radius: 20rpx;
-  overflow: hidden;
-  background: #000;
+  display: flex;
+  flex-direction: column;
 }
 
 .camera-preview {
   width: 100%;
-  height: 100%;
+  flex: 1;
   min-height: 600rpx;
 }
 
@@ -601,7 +604,8 @@ export default {
   transform: translate(-50%, -50%);
   width: 80%;
   height: 300rpx;
-  border: 2rpx dashed rgba(255, 255, 255, 0.5);
+  border: 2rpx dashed rgba(255, 255, 255, 0.4);
+  border-radius: 16rpx;
 
   .corner {
     position: absolute;
@@ -614,24 +618,28 @@ export default {
       top: -2rpx;
       left: -2rpx;
       border-width: 4rpx 0 0 4rpx;
+      border-radius: 8rpx 0 0 0;
     }
 
     &.top-right {
       top: -2rpx;
       right: -2rpx;
       border-width: 4rpx 4rpx 0 0;
+      border-radius: 0 8rpx 0 0;
     }
 
     &.bottom-left {
       bottom: -2rpx;
       left: -2rpx;
       border-width: 0 0 4rpx 4rpx;
+      border-radius: 0 0 0 8rpx;
     }
 
     &.bottom-right {
       bottom: -2rpx;
       right: -2rpx;
       border-width: 0 4rpx 4rpx 0;
+      border-radius: 0 0 8rpx 0;
     }
   }
 }
@@ -644,13 +652,14 @@ export default {
   color: #fff;
   font-size: 24rpx;
   background: rgba(0, 0, 0, 0.5);
-  padding: 10rpx 30rpx;
-  border-radius: 30rpx;
+  padding: 12rpx 32rpx;
+  border-radius: 32rpx;
+  white-space: nowrap;
 }
 
 .preview-area {
   width: 100%;
-  height: 100%;
+  flex: 1;
   min-height: 600rpx;
   position: relative;
 
@@ -666,17 +675,18 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
   .loading-spinner {
-    width: 60rpx;
-    height: 60rpx;
-    border: 4rpx solid rgba(255, 255, 255, 0.3);
-    border-top-color: #fff;
+    width: 64rpx;
+    height: 64rpx;
+    border: 4rpx solid rgba(102, 126, 234, 0.25);
+    border-top-color: #667eea;
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -684,11 +694,12 @@ export default {
   .loading-text {
     color: #fff;
     font-size: 28rpx;
-    margin-top: 20rpx;
+    font-weight: 500;
+    margin-top: 24rpx;
   }
 
   .loading-tips {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 24rpx;
     margin-top: 10rpx;
   }
@@ -698,96 +709,131 @@ export default {
   to { transform: rotate(360deg); }
 }
 
+// 结果区域
 .result-area {
   width: 100%;
-  height: 100%;
-  background: var(--bg-card);
+  flex: 1;
+  background: var(--bg-secondary, #F5F5F7);
+  border-radius: 32rpx 32rpx 0 0;
 }
 
 .result-scroll {
   height: 100%;
-  padding: 20rpx;
+  padding: 28rpx 32rpx;
 }
 
 .result-section {
-  margin-bottom: 30rpx;
+  margin-bottom: 28rpx;
+}
 
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15rpx;
+.rs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
 
-    .section-title {
-      font-size: 30rpx;
-      font-weight: bold;
-      color: var(--text-main);
-    }
+  .rs-title {
+    font-size: 30rpx;
+    font-weight: 700;
+    color: var(--text-primary, #111);
+  }
 
-    .confidence, .match-count {
-      font-size: 24rpx;
-      color: var(--text-sub);
-    }
+  .match-count {
+    font-size: 22rpx;
+    color: var(--text-secondary, #666);
   }
 }
 
-.recognized-text {
-  background: var(--bg-secondary);
-  padding: 20rpx;
-  border-radius: 10rpx;
-  font-size: 28rpx;
-  line-height: 1.6;
-  color: var(--text-main);
+.confidence-badge {
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+
+  .confidence-text {
+    font-size: 22rpx;
+    font-weight: 600;
+    color: #667eea;
+  }
+}
+
+.recognized-text-card {
+  background: var(--bg-card, #fff);
+  padding: 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+
+  .recognized-text {
+    font-size: 28rpx;
+    line-height: 1.7;
+    color: var(--text-primary, #111);
+  }
 }
 
 .question-card {
-  background: var(--bg-secondary);
-  padding: 20rpx;
-  border-radius: 10rpx;
-  margin-bottom: 15rpx;
+  background: var(--bg-card, #fff);
+  padding: 24rpx;
+  border-radius: 20rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border-left: 6rpx solid #667eea;
 
   .question-text {
     font-size: 28rpx;
-    color: var(--text-main);
+    color: var(--text-primary, #111);
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    line-height: 1.6;
   }
 
   .question-meta {
     display: flex;
-    gap: 20rpx;
-    margin-top: 15rpx;
-
-    .category, .difficulty {
-      font-size: 22rpx;
-      color: var(--text-sub);
-      background: var(--bg-secondary);
-      padding: 5rpx 15rpx;
-      border-radius: 5rpx;
-    }
+    gap: 12rpx;
+    margin-top: 16rpx;
   }
 }
 
-.ai-analysis {
-  background: var(--bg-secondary);
-  padding: 20rpx;
-  border-radius: 10rpx;
+.meta-tag {
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  background: rgba(102, 126, 234, 0.08);
+
+  &.meta-tag-diff {
+    background: rgba(255, 149, 0, 0.08);
+
+    .meta-tag-text {
+      color: #FF9500;
+    }
+  }
+
+  .meta-tag-text {
+    font-size: 20rpx;
+    color: #667eea;
+    font-weight: 500;
+  }
 }
 
-.analysis-block {
-  margin-bottom: 25rpx;
+// AI 解析卡片
+.ai-card {
+  background: var(--bg-card, #fff);
+  padding: 24rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.ai-block {
+  margin-bottom: 28rpx;
 
   &:last-child {
     margin-bottom: 0;
   }
 
-  .block-title {
+  .ai-block-title {
     font-size: 26rpx;
-    font-weight: bold;
+    font-weight: 700;
     color: #667eea;
-    margin-bottom: 10rpx;
+    margin-bottom: 12rpx;
     display: block;
   }
 }
@@ -795,85 +841,105 @@ export default {
 .step-item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
 
-  .step-num {
+  .step-num-circle {
     width: 40rpx;
     height: 40rpx;
-    background: #667eea;
-    color: #fff;
+    background: linear-gradient(135deg, #667eea, #764ba2);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22rpx;
     flex-shrink: 0;
-    margin-right: 15rpx;
+    margin-right: 16rpx;
+    margin-top: 4rpx;
+  }
+
+  .step-num-text {
+    font-size: 20rpx;
+    color: #fff;
+    font-weight: 700;
   }
 
   .step-text {
     font-size: 26rpx;
-    color: var(--text-main);
+    color: var(--text-primary, #111);
     line-height: 1.6;
     flex: 1;
   }
 }
 
-.answer-text {
-  font-size: 28rpx;
-  color: #4CAF50;
-  font-weight: bold;
+.answer-card {
+  background: linear-gradient(135deg, rgba(52, 199, 89, 0.06), rgba(48, 209, 88, 0.06));
+  padding: 20rpx;
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(52, 199, 89, 0.15);
+
+  .answer-text {
+    font-size: 28rpx;
+    color: #34C759;
+    font-weight: 600;
+    line-height: 1.6;
+  }
 }
 
-.tags {
+.tags-row {
   display: flex;
   flex-wrap: wrap;
   gap: 10rpx;
+}
 
-  .tag {
+.kp-tag {
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+
+  .kp-tag-text {
     font-size: 22rpx;
     color: #667eea;
-    background: rgba(102, 126, 234, 0.1);
-    padding: 8rpx 20rpx;
-    border-radius: 20rpx;
+    font-weight: 500;
   }
 }
 
 .mistake-item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 10rpx;
+  margin-bottom: 12rpx;
 
-  .warning-icon {
-    width: 36rpx;
-    height: 36rpx;
-    background: #ff9800;
-    color: #fff;
+  .warning-dot {
+    width: 12rpx;
+    height: 12rpx;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24rpx;
-    font-weight: bold;
+    background: #FF9500;
     flex-shrink: 0;
-    margin-right: 15rpx;
+    margin-right: 14rpx;
+    margin-top: 14rpx;
   }
 
-  text:last-child {
+  .mistake-text {
     font-size: 26rpx;
-    color: var(--text-sub);
+    color: var(--text-secondary, #666);
     line-height: 1.6;
+    flex: 1;
   }
 }
 
+.bottom-safe {
+  height: 200rpx;
+}
+
+// 底部操作栏
 .action-bar {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30rpx;
-  padding: 30rpx;
-  background: var(--bg-card);
-  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  gap: 24rpx;
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
   button {
     border: none;
@@ -883,50 +949,136 @@ export default {
       border: none;
     }
   }
+}
 
-  .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+// 拍照按钮
+.capture-btn {
+  width: 120rpx;
+  height: 120rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.capture-outer {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.4);
+}
+
+.capture-inner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+}
+
+.action-btn-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 0;
+
+  .action-side-text {
+    font-size: 26rpx;
     color: #fff;
-    padding: 20rpx 50rpx;
-    border-radius: 50rpx;
+    font-weight: 500;
+  }
+}
+
+// 操作栏按钮
+.bar-btn {
+  flex: 1;
+  padding: 22rpx 0;
+  border-radius: 50rpx;
+  text-align: center;
+  font-weight: 600;
+
+  &.bar-btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
 
     &:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
+      box-shadow: none;
     }
   }
 
-  .btn-secondary {
-    background: var(--bg-secondary);
-    color: var(--text-main);
-    padding: 20rpx 40rpx;
-    border-radius: 50rpx;
+  &.bar-btn-secondary {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
 
     &:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
     }
   }
 
-  .btn-ghost {
+  &.bar-btn-ghost {
     background: transparent;
     color: #667eea;
-    padding: 20rpx 30rpx;
+  }
+}
+
+.btn-hover {
+  opacity: 0.8;
+  transform: scale(0.97);
+}
+
+// Dark mode overrides
+.dark-mode {
+  .result-area {
+    background: var(--bg-secondary, #1C1C1E);
   }
 
-  .btn-capture {
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: 50%;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .recognized-text-card {
+    background: var(--bg-card, #0D1117);
+    box-shadow: none;
+  }
 
-    .capture-ring {
-      width: 80rpx;
-      height: 80rpx;
-      border: 6rpx solid #fff;
-      border-radius: 50%;
+  .question-card {
+    background: var(--bg-card, #0D1117);
+    box-shadow: none;
+  }
+
+  .ai-card {
+    background: var(--bg-card, #0D1117);
+    box-shadow: none;
+  }
+
+  .confidence-badge {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+  }
+
+  .meta-tag {
+    background: rgba(102, 126, 234, 0.15);
+
+    &.meta-tag-diff {
+      background: rgba(255, 149, 0, 0.15);
     }
+  }
+
+  .answer-card {
+    background: linear-gradient(135deg, rgba(52, 199, 89, 0.12), rgba(48, 209, 88, 0.12));
+    border-color: rgba(52, 199, 89, 0.25);
+  }
+
+  .kp-tag {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+  }
+
+  .action-bar {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .bar-btn.bar-btn-ghost {
+    color: #a0b0ff;
   }
 }
 </style>

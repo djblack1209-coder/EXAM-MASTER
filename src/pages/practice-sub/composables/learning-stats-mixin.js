@@ -109,8 +109,8 @@ export const learningStatsMixin = {
 
     // ✅ P1: 选择练习模式
     async selectPracticeMode(mode) {
-      const { requireLogin } = await import('../utils/loginGuard.js');
-      const { safeNavigateTo } = await import('../utils/safe-navigate.js');
+      const { requireLogin } = await import('@/utils/auth/loginGuard.js');
+      const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
 
       requireLogin(async () => {
         if (!this.hasBank) {

@@ -89,7 +89,7 @@
           </text>
         </view>
 
-        <button class="start-btn" :disabled="totalQuestions < questionCount" @tap="startExam">
+        <button class="start-btn" hover-class="btn-scale-sm" :disabled="totalQuestions < questionCount" @tap="startExam">
           <text class="btn-icon">
             🚀
           </text>
@@ -157,12 +157,13 @@
 
       <!-- 导航按钮 -->
       <view class="nav-buttons">
-        <button class="nav-btn prev" :disabled="currentIndex === 0 || isNavigating" @tap="prevQuestion">
+        <button class="nav-btn prev" hover-class="btn-scale-sm" :disabled="currentIndex === 0 || isNavigating" @tap="prevQuestion">
           上一题
         </button>
         <button
           v-if="currentIndex < examQuestions.length - 1"
           class="nav-btn next"
+          hover-class="btn-scale-sm"
           :disabled="isNavigating"
           @tap="nextQuestion"
         >
@@ -171,6 +172,7 @@
         <button
           v-else
           class="nav-btn submit"
+          hover-class="btn-scale-sm"
           :disabled="isSubmitting"
           @tap="submitExam"
         >
@@ -254,10 +256,10 @@
         </view>
 
         <view class="result-actions">
-          <button class="action-btn review" @tap="reviewExam">
+          <button class="action-btn review" hover-class="btn-scale-sm" @tap="reviewExam">
             <text>📖 查看解析</text>
           </button>
-          <button class="action-btn retry" @tap="retryExam">
+          <button class="action-btn retry" hover-class="btn-scale-sm" @tap="retryExam">
             <text>🔄 再考一次</text>
           </button>
         </view>
@@ -297,6 +299,8 @@ import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F024: 统一使用 storageService
 import storageService from '@/services/storageService.js';
+// ✅ P002: 引入后端服务，支持从后端获取真实题库数据
+import { lafService } from '@/services/lafService.js';
 
 export default {
   data() {
@@ -364,10 +368,17 @@ export default {
     uni.$on('themeUpdate', this._themeHandler);
 
     // E005: 缓存题库数据，避免 totalQuestions computed 每次反序列化
-    const bank = storageService.get('v30_bank', []);
-    this.totalQuestions = bank.length;
-    this._cachedBank = bank;
-    this.isPageLoading = false;
+    try {
+      const bank = storageService.get('v30_bank', []);
+      this.totalQuestions = bank.length;
+      this._cachedBank = bank;
+    } catch (err) {
+      console.error('[模拟考试] 加载题库异常:', err);
+      this.totalQuestions = 0;
+      this._cachedBank = [];
+    } finally {
+      this.isPageLoading = false;
+    }
   },
 
   onUnload() {
@@ -393,24 +404,49 @@ export default {
       }
     },
 
-    startExam() {
-      // E005: 使用缓存的题库数据，避免重复反序列化
-      const bank = this._cachedBank || storageService.get('v30_bank', []);
+    async startExam() {
+      // ✅ P002: 优先从后端获取真实题库数据，本地数据作为降级方案
+      let sourceQuestions = [];
+      let dataSource = 'local';
 
-      if (bank.length < this.questionCount) {
-        uni.showToast({
-          title: `题库不足${this.questionCount}道题`,
-          icon: 'none'
+      try {
+        // 尝试从后端获取随机题目
+        const response = await lafService.getRandomQuestions({
+          count: this.questionCount
         });
-        return;
+
+        if (response && response.code === 0 && response.data) {
+          const backendQuestions = Array.isArray(response.data) ? response.data : (response.data.list || []);
+          if (backendQuestions.length >= this.questionCount) {
+            sourceQuestions = backendQuestions;
+            dataSource = 'backend';
+            logger.log('[MockExam] ✅ 从后端获取题目成功:', backendQuestions.length);
+          }
+        }
+      } catch (err) {
+        logger.warn('[MockExam] ⚠️ 后端获取题目失败，降级使用本地数据:', err.message || err);
       }
 
-      // 随机抽取题目
-      let sourceQuestions = [...bank];
-      if (this.questionType === 'mistakes') {
-        const mistakes = storageService.get('mistake_book', []);
-        if (mistakes.length >= this.questionCount) {
-          sourceQuestions = [...mistakes];
+      // 降级：使用本地缓存题库
+      if (sourceQuestions.length < this.questionCount) {
+        const bank = this._cachedBank || storageService.get('v30_bank', []);
+
+        if (bank.length < this.questionCount) {
+          uni.showToast({
+            title: `题库不足${this.questionCount}道题`,
+            icon: 'none'
+          });
+          return;
+        }
+
+        sourceQuestions = [...bank];
+        dataSource = 'local';
+
+        if (this.questionType === 'mistakes') {
+          const mistakes = storageService.get('mistake_book', []);
+          if (mistakes.length >= this.questionCount) {
+            sourceQuestions = [...mistakes];
+          }
         }
       }
 
@@ -427,7 +463,8 @@ export default {
 
       logger.log('[MockExam] 考试开始:', {
         questionCount: this.examQuestions.length,
-        duration: this.examDuration
+        duration: this.examDuration,
+        dataSource
       });
     },
 
@@ -604,7 +641,7 @@ export default {
 <style lang="scss" scoped>
 .container {
 	min-height: 100vh;
-	background: var(--bg-page);
+	background: var(--bg-secondary, #F5F5F7);
 }
 
 .nav-bar {

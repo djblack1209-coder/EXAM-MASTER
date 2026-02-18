@@ -60,7 +60,7 @@ export default {
 }
 
 .desc-light .mode-highlight {
-	color: #059669;
+	color: #047857;
 }
 
 .mode-text {

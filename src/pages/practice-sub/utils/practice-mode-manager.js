@@ -10,7 +10,7 @@
  */
 
 import { storageService } from '@/services/storageService.js';
-import { pickQuestions } from './smart-question-picker.js';
+import { pickQuestions } from '@/utils/learning/smart-question-picker.js';
 import { questionQualityOptimizer } from './question-quality-optimizer.js';
 
 // 练习模式配置

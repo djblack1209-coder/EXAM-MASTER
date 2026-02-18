@@ -238,6 +238,11 @@ export default async function (ctx) {
         result = await getAllUnits(data, requestId)
         break
       
+      // P013: 数据完整性健康检查
+      case 'data_health':
+        result = await checkDataHealth(requestId)
+        break
+      
       default:
         return { code: 400, message: `未知的 action: ${action}`, requestId }
     }
@@ -378,14 +383,94 @@ async function getSchoolList(data, requestId) {
 }
 
 /**
- * 获取学校详情（带缓存）
+ * P013: 数据完整性健康检查
+ * 检查院校数据的完整性、质量和一致性
  */
-async function getSchoolDetail(data, requestId) {
-  const { schoolId, code } = data || {}
+async function checkDataHealth(requestId) {
+  const dataStatus = await checkDataCompleteness()
   
-  if (!schoolId && !code) {
-    return { code: 400, message: '缺少学校ID或代码', requestId }
+  // 并行执行多项质量检查
+  const [
+    missingFieldsResult,
+    provinceDistribution,
+    duplicateCheck
+  ] = await Promise.all([
+    // 检查缺少关键字段的记录
+    db.collection('schools').where({
+      status: 'active',
+      $or: [
+        { name: { $exists: false } },
+        { name: '' },
+        { code: { $exists: false } },
+        { code: '' },
+        { province: { $exists: false } },
+        { province: '' }
+      ]
+    }).count(),
+    // 按省份统计分布
+    db.collection('schools').where({ status: 'active' }).field({ province: true }).limit(2000).get(),
+    // 检查重复 code
+    db.collection('schools').where({ status: 'active' }).field({ code: true }).limit(2000).get()
+  ])
+  
+  // 统计省份分布
+  const provinceCounts = {}
+  for (const s of (provinceDistribution.data || [])) {
+    const p = s.province || '未知'
+    provinceCounts[p] = (provinceCounts[p] || 0) + 1
   }
+  
+  // 检查重复 code
+  const codeCounts = {}
+  let duplicateCount = 0
+  for (const s of (duplicateCheck.data || [])) {
+    if (s.code) {
+      codeCounts[s.code] = (codeCounts[s.code] || 0) + 1
+      if (codeCounts[s.code] === 2) duplicateCount++
+    }
+  }
+  
+  const missingFields = missingFieldsResult.total || 0
+  const completenessPercent = Math.round((dataStatus.currentCount / TOTAL_GRADUATE_UNITS) * 100)
+  
+  // 综合健康评分 (0-100)
+  let healthScore = 100
+  if (!dataStatus.isComplete) healthScore -= Math.min(40, Math.round((1 - dataStatus.currentCount / TOTAL_GRADUATE_UNITS) * 40))
+  if (missingFields > 0) healthScore -= Math.min(30, missingFields * 2)
+  if (duplicateCount > 0) healthScore -= Math.min(20, duplicateCount * 5)
+  healthScore = Math.max(0, healthScore)
+  
+  const status = healthScore >= 80 ? 'healthy' : healthScore >= 50 ? 'warning' : 'critical'
+  
+  return {
+    code: 0,
+    data: {
+      status,
+      healthScore,
+      completeness: {
+        currentCount: dataStatus.currentCount,
+        expectedCount: TOTAL_GRADUATE_UNITS,
+        percent: completenessPercent,
+        isComplete: dataStatus.isComplete
+      },
+      quality: {
+        missingRequiredFields: missingFields,
+        duplicateCodes: duplicateCount
+      },
+      distribution: {
+        byProvince: provinceCounts,
+        provinceCount: Object.keys(provinceCounts).length
+      },
+      recommendations: [
+        ...(!dataStatus.isComplete ? [`数据不完整(${completenessPercent}%)，建议执行 sync_from_chsi 同步研招网数据`] : []),
+        ...(missingFields > 0 ? [`${missingFields} 条记录缺少必填字段(name/code/province)，需修复`] : []),
+        ...(duplicateCount > 0 ? [`发现 ${duplicateCount} 个重复院校代码，需去重`] : [])
+      ]
+    },
+    requestId
+  }
+}
+
   
   // 缓存命中检查
   const cacheKey = buildCacheKey('detail', { schoolId, code })

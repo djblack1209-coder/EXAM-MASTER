@@ -201,7 +201,6 @@
 </template>
 
 <script>
-import AiConsult from './ai-consult.vue';
 import { lafService } from '@/services/lafService.js';
 import config from '@/config/index.js';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -211,7 +210,8 @@ import storageService from '@/services/storageService.js';
 
 export default {
   components: {
-    AiConsult
+    // ✅ 懒加载：AiConsult 620行组件，仅在用户点击"AI咨询"时才需要
+    AiConsult: () => import('./ai-consult.vue')
   },
   data() {
     return {
@@ -308,23 +308,28 @@ export default {
       logger.log(`[detail] 🔍 开始加载院校详情: id=${options.id}`);
       this.loadSchoolDetail(options.id);
     } else {
-      // Mock 初始数据用于开发预览
-      logger.warn('[detail] ⚠️ 未提供 id 参数，使用默认 Mock 数据');
-      this.schoolInfo = {
-        id: '10001',
-        name: '北京大学',
-        logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=PKU&backgroundColor=990000`,
-        location: '北京',
-        tags: ['985', '211', '双一流', '自划线'],
-        type: '双一流 / 985',
-        rank: '1',
-        scoreLine: '385',
-        ratio: '12:1',
-        passRate: '15',
-        matchRate: 95
-      };
-      this.schoolId = this.schoolInfo.id;
-      this.isPageLoading = false;
+      // ✅ P001: Mock 数据仅在开发环境可用，生产环境显示错误提示
+      if (config.isDev) {
+        logger.warn('[detail] ⚠️ [DEV] 未提供 id 参数，使用默认 Mock 数据');
+        this.schoolInfo = {
+          id: '10001',
+          name: '北京大学（开发预览）',
+          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=PKU&backgroundColor=990000`,
+          location: '北京',
+          tags: ['985', '211', '双一流', '自划线'],
+          type: '双一流 / 985',
+          rank: '1',
+          scoreLine: '385',
+          ratio: '12:1',
+          passRate: '15',
+          matchRate: 95
+        };
+        this.schoolId = this.schoolInfo.id;
+        this.isPageLoading = false;
+      } else {
+        logger.error('[detail] ❌ 未提供院校 id 参数');
+        this.showLoadError('unknown');
+      }
     }
 
     // 检查是否需要自动打开 AI 咨询
@@ -361,7 +366,7 @@ export default {
             scoreLine: school.latestScoreLines?.[0]?.total || '-',
             ratio: school.graduateInfo?.admissionRatio || '-',
             passRate: school.graduateInfo?.passRate || '-',
-            matchRate: Math.floor(Math.random() * 20) + 80, // 临时：随机匹配度
+            matchRate: this.calculateMatchRate(school), // ✅ P003: 基于用户画像的真实匹配算法
             majors: school.colleges?.flatMap((c) => c.majors || []) || [],
             desc: school.description
           };
@@ -407,6 +412,70 @@ export default {
         icon: 'none',
         duration: 2000
       });
+    },
+
+    /**
+     * P003: 基于用户画像和院校数据的真实匹配度算法
+     * 综合考虑：用户学习数据、院校层次、分数线等维度
+     * Calculate match rate based on user study profile
+     * 基于用户画像的真实匹配算法
+     * @param {Object} school - School data object
+     * @param {string[]} [school.tags] - School tags (e.g. '985', '211')
+     * @param {string} [school.code] - School code
+     * @param {string} [school._id] - School ID
+     * @returns {number} Match rate 30-98
+     */
+    calculateMatchRate(school) {
+      try {
+        const statsData = storageService.get('study_stats', {});
+        const doneCount = (storageService.get('v30_bank', [])).length;
+        const mistakeCount = (storageService.get('mistake_book', [])).length;
+        const studyDays = Object.keys(statsData).length;
+        const targetSchools = storageService.get('target_schools', []);
+
+        // 基础分 60 分
+        let score = 60;
+
+        // 维度1: 学习投入度 (最高 +15)
+        if (studyDays >= 90) score += 15;
+        else if (studyDays >= 30) score += 10;
+        else if (studyDays >= 7) score += 5;
+
+        // 维度2: 刷题量 (最高 +10)
+        if (doneCount >= 500) score += 10;
+        else if (doneCount >= 200) score += 7;
+        else if (doneCount >= 50) score += 4;
+
+        // 维度3: 错题率控制 (最高 +5)
+        if (doneCount > 0) {
+          const errorRate = mistakeCount / doneCount;
+          if (errorRate < 0.2) score += 5;
+          else if (errorRate < 0.4) score += 3;
+        }
+
+        // 维度4: 院校层次匹配 (调整 -10 ~ +10)
+        const tags = school.tags || [];
+        const is985 = tags.includes('985');
+        const is211 = tags.includes('211');
+        if (is985) {
+          // 985 院校竞争激烈，适当降低匹配度
+          score -= (studyDays < 30 || doneCount < 100) ? 10 : 3;
+        } else if (is211) {
+          score -= (studyDays < 14 || doneCount < 50) ? 5 : 0;
+        } else {
+          score += 5; // 普通院校匹配度更高
+        }
+
+        // 维度5: 是否已设为目标院校 (+5 表示用户有明确意向)
+        const isTarget = targetSchools.some(t => t.id === (school.code || school._id));
+        if (isTarget) score += 5;
+
+        // 限制范围 30-98
+        return Math.max(30, Math.min(98, Math.round(score)));
+      } catch (e) {
+        logger.warn('[detail] ⚠️ 匹配度计算异常，使用默认值:', e);
+        return 65;
+      }
     },
     getTypeTag(tags) {
       if (!tags || tags.length === 0) return '综合类';
