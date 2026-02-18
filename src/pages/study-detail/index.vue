@@ -398,7 +398,7 @@ export default {
 /* 页面容器 */
 .study-detail-page {
     min-height: 100vh;
-    background: var(--bg-page);
+    background: var(--bg-secondary, #F5F5F7);
     transition: background-color 0.3s ease;
 }
 

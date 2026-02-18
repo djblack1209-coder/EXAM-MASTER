@@ -204,10 +204,26 @@ export default async function (ctx: FunctionContext) {
   } catch (error) {
     logger.error(`[${requestId}] 用户资料操作异常:`, error)
     
+    // P015: 错误分类，区分客户端错误和服务端错误
+    const errMsg = error.message || ''
+    let code = 500
+    let message = '服务器内部错误'
+
+    if (errMsg.includes('not found') || errMsg.includes('不存在')) {
+      code = 404
+      message = '用户不存在'
+    } else if (errMsg.includes('validation') || errMsg.includes('参数') || errMsg.includes('invalid')) {
+      code = 400
+      message = errMsg
+    } else if (errMsg.includes('timeout') || errMsg.includes('ETIMEDOUT')) {
+      code = 504
+      message = '请求超时，请稍后重试'
+    }
+
     return {
-      code: 500,
+      code,
       success: false,
-      message: '服务器内部错误',
+      message,
       error: error.message,
       requestId,
       duration: Date.now() - startTime

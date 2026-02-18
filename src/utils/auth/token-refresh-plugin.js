@@ -148,6 +148,20 @@ class TokenRefreshPlugin {
   }
 
   /**
+   * 检查 Token 是否已过期
+   * @returns {boolean}
+   */
+  isTokenExpired() {
+    try {
+      const expireTime = storageService.get(TOKEN_EXPIRE_KEY);
+      if (!expireTime) return true;
+      return Date.now() >= expireTime;
+    } catch (_error) {
+      return true;
+    }
+  }
+
+  /**
    * 启动预检测定时器
    * @private
    */
@@ -300,7 +314,7 @@ class TokenRefreshPlugin {
 
       setTimeout(() => {
         uni.reLaunch({
-          url: '/src/pages/index/index'
+          url: '/pages/index/index'
         });
       }, 1500);
     }

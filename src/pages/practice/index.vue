@@ -559,6 +559,21 @@ export default {
     this._refreshBankWithData(bankData, userAnswers);
     this._checkGenerationWithData(importedFiles);
 
+    // 检查是否有来自其他页面的待处理搜索（tabBar 页面无法通过 query 传参）
+    try {
+      const pendingSearch = uni.getStorageSync('_pendingSearch');
+      if (pendingSearch && pendingSearch.keyword && (Date.now() - pendingSearch.timestamp < 30000)) {
+        uni.removeStorageSync('_pendingSearch');
+        // 延迟执行搜索，等 UI 渲染完成
+        setTimeout(() => {
+          uni.showToast({ title: `搜索: ${pendingSearch.keyword.substring(0, 15)}...`, icon: 'none' });
+          // TODO: 接入题库搜索逻辑，当前先提示用户
+        }, 300);
+      } else if (pendingSearch) {
+        uni.removeStorageSync('_pendingSearch'); // 过期清理
+      }
+    } catch (_e) { /* ignore */ }
+
     // E005: 延迟非关键读取，让 UI 先渲染
     setTimeout(() => {
       const mistakeBook = storageService.get('mistake_book', []);
@@ -615,33 +630,37 @@ export default {
       }
       logger.log('[刷题中心] 开始刷新题库状态');
 
-      let bank = bankFromService;
+      try {
+        let bank = bankFromService;
 
-      // 仅在数据为空时才尝试备份恢复（避免每次 onShow 都执行恢复逻辑）
-      if (!bank || bank.length === 0) {
-        // 同时检查 storageService 作为兜底
-        const bankFromUni = storageService.get('v30_bank', []);
-        if (bankFromUni.length > 0) {
-          bank = bankFromUni;
-        } else {
-          logger.warn('[刷题中心] 题库数据为空，尝试从备份恢复...');
-          bank = this._tryRestoreFromBackup() || [];
+        // 仅在数据为空时才尝试备份恢复（避免每次 onShow 都执行恢复逻辑）
+        if (!bank || bank.length === 0) {
+          // 同时检查 storageService 作为兜底
+          const bankFromUni = storageService.get('v30_bank', []);
+          if (bankFromUni.length > 0) {
+            bank = bankFromUni;
+          } else {
+            logger.warn('[刷题中心] 题库数据为空，尝试从备份恢复...');
+            bank = this._tryRestoreFromBackup() || [];
+          }
         }
+
+        this.hasBank = bank.length > 0;
+        this.totalQuestions = bank.length;
+
+        logger.log('[刷题中心] 题库状态更新:', {
+          hasBank: this.hasBank,
+          totalQuestions: this.totalQuestions
+        });
+
+        // 计算学习进度
+        const doneCount = Object.keys(userAnswers || {}).length;
+        this.progressPercent = bank.length > 0 ? Math.round((doneCount / bank.length) * 100) : 0;
+      } catch (err) {
+        console.error('[刷题中心] 刷新题库状态异常:', err);
+      } finally {
+        this.isPageLoading = false;
       }
-
-      this.hasBank = bank.length > 0;
-      this.totalQuestions = bank.length;
-
-      logger.log('[刷题中心] 题库状态更新:', {
-        hasBank: this.hasBank,
-        totalQuestions: this.totalQuestions
-      });
-
-      // 计算学习进度
-      const doneCount = Object.keys(userAnswers || {}).length;
-      this.progressPercent = bank.length > 0 ? Math.round((doneCount / bank.length) * 100) : 0;
-
-      this.isPageLoading = false;
       this._hasLoadedOnce = true;
     },
     _tryRestoreFromBackup() {
@@ -737,7 +756,8 @@ export default {
     // ✅ P2: goFavorites 由 practiceNavigationMixin 提供
 
     // ==================== 动态加载分包 Mixin ====================
-    async _loadAIGenerationMixin() {
+    async _loadAIGenerationMixin(retryCount = 0) {
+      const MAX_RETRIES = 2;
       try {
         // 并行加载两个分包 mixin
         const [aiModule, statsModule] = await Promise.all([
@@ -751,9 +771,23 @@ export default {
             this[key] = mixin.methods[key].bind(this);
           }
         }
-        logger.log('[practice] ✅ 分包模块加载完成');
+        this._mixinLoaded = true;
+        logger.log('[practice] 分包模块加载完成');
       } catch (e) {
-        logger.error('[practice] ❌ 分包模块加载失败:', e);
+        logger.error('[practice] 分包模块加载失败 (尝试 ' + (retryCount + 1) + '):', e);
+        if (retryCount < MAX_RETRIES) {
+          // 指数退避重试：500ms, 1500ms
+          const delay = 500 * Math.pow(2, retryCount);
+          setTimeout(() => this._loadAIGenerationMixin(retryCount + 1), delay);
+        } else {
+          // 重试耗尽，提示用户
+          this._mixinLoaded = false;
+          uni.showToast({
+            title: '部分功能加载失败，请检查网络后重新进入',
+            icon: 'none',
+            duration: 3000
+          });
+        }
       }
     },
 
@@ -820,7 +854,7 @@ export default {
   font-size: 64rpx;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -1rpx;
+  letter-spacing: 0;
   line-height: 1.2;
 }
 
@@ -943,7 +977,7 @@ export default {
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 24rpx 0;
-  letter-spacing: -0.6rpx;
+  letter-spacing: 0;
 }
 
 .empty-desc {
@@ -1093,7 +1127,7 @@ export default {
 }
 
 .primary-btn:hover {
-  background-color: var(--primary);
+  opacity: 0.85;
   box-shadow: var(--shadow-xl);
   transform: translateY(-2px);
 }
@@ -1162,7 +1196,7 @@ export default {
 }
 
 .secondary-btn:hover {
-  background-color: var(--primary);
+  opacity: 0.85;
   box-shadow: var(--shadow-xl);
   transform: translateY(-2px);
 }

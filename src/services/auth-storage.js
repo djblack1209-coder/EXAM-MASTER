@@ -33,7 +33,9 @@ function base64Decode(input) {
   return output;
 }
 
-const OBFUSCATION_KEY = 'ExM@st3r_2026';
+// ✅ P1-FIX: 混淆密钥从统一配置读取，支持环境变量覆盖
+import config from '../config/index.js';
+const OBFUSCATION_KEY = config.security.obfuscationKey;
 const CIPHER_VERSION = 2;
 const FEISTEL_ROUNDS = 8;
 

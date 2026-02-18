@@ -9,13 +9,13 @@
  */
 export function getStatusBarHeight() {
   try {
-    // #ifdef MP-WECHAT
+    // #ifdef MP-WEIXIN
     // 微信小程序使用新的 API
     const windowInfo = uni.getWindowInfo();
     return windowInfo.statusBarHeight || 44;
     // #endif
 
-    // #ifndef MP-WECHAT
+    // #ifndef MP-WEIXIN
     // 其他平台使用兼容方案
     const sysInfo = uni.getSystemInfoSync();
     return sysInfo.statusBarHeight || sysInfo.safeAreaInsets?.top || 44;
@@ -49,12 +49,12 @@ export function getNavBarHeight() {
  */
 export function getWindowHeight() {
   try {
-    // #ifdef MP-WECHAT
+    // #ifdef MP-WEIXIN
     const windowInfo = uni.getWindowInfo();
     return windowInfo.windowHeight || 800;
     // #endif
 
-    // #ifndef MP-WECHAT
+    // #ifndef MP-WEIXIN
     const sysInfo = uni.getSystemInfoSync();
     return sysInfo.windowHeight || sysInfo.screenHeight || 800;
     // #endif
@@ -69,7 +69,7 @@ export function getWindowHeight() {
  * @returns {Object|null} 胶囊按钮信息
  */
 export function getMenuButtonBoundingClientRect() {
-  // #ifdef MP-WECHAT
+  // #ifdef MP-WEIXIN
   try {
     return uni.getMenuButtonBoundingClientRect();
   } catch (e) {
@@ -78,7 +78,7 @@ export function getMenuButtonBoundingClientRect() {
   }
   // #endif
 
-  // #ifndef MP-WECHAT
+  // #ifndef MP-WEIXIN
   return null;
   // #endif
 }

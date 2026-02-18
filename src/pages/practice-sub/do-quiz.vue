@@ -4,7 +4,7 @@
 
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px', height: '44px' }">
-        <view class="back-area" @tap="handleExit">
+        <view class="back-area" hover-class="item-hover" @tap="handleExit">
           <text class="back-icon">
             ←
           </text>
@@ -55,6 +55,7 @@
               <view
                 class="note-btn"
                 :class="{ 'has-notes': currentQuestionNotes.length > 0 }"
+                hover-class="item-hover"
                 @tap.stop="handleOpenNote"
               >
                 <text class="note-icon">
@@ -68,6 +69,7 @@
               <view
                 class="favorite-btn"
                 :class="{ 'is-favorited': isCurrentFavorited }"
+                hover-class="item-hover"
                 @tap.stop="handleToggleFavorite"
               >
                 <text class="favorite-icon">
@@ -91,6 +93,7 @@
               'wrong': hasAnswered && userChoice === idx && !isCorrectOption(idx),
               'disabled': isAnalyzing || (hasAnswered && userChoice !== idx)
             }]"
+            hover-class="option-hover"
             @tap="selectOption(idx)"
           >
             <view class="opt-index">
@@ -260,7 +263,7 @@
           <text class="note-modal-title">
             添加笔记
           </text>
-          <view class="note-modal-close" @tap="showNoteModal = false">
+          <view class="note-modal-close" hover-class="item-hover" @tap="showNoteModal = false">
             ✕
           </view>
         </view>
@@ -277,16 +280,17 @@
             class="note-tag"
             :class="{ 'selected': selectedNoteTags.includes(tag.id) }"
             :style="{ borderColor: tag.color }"
+            hover-class="item-hover"
             @tap="toggleNoteTag(tag.id)"
           >
             <text>{{ tag.icon }} {{ tag.name }}</text>
           </view>
         </view>
         <view class="note-modal-footer">
-          <button class="note-cancel-btn" @tap="showNoteModal = false">
+          <button class="note-cancel-btn" hover-class="item-hover" @tap="showNoteModal = false">
             取消
           </button>
-          <button class="note-save-btn" @tap="handleSaveNote">
+          <button class="note-save-btn" hover-class="item-hover" @tap="handleSaveNote">
             保存
           </button>
         </view>
@@ -310,11 +314,7 @@ import {
 } from './useQuizAutoSave.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
-// ✅ 检查点 5.3: 导入自适应学习引擎
-import {
-  generateAdaptiveSequence,
-  getNextRecommendedQuestion
-} from './utils/adaptive-learning-engine.js';
+// ✅ 检查点 5.3: 自适应学习引擎（懒加载：仅在 isAdaptiveMode 时动态导入）
 // ✅ 导入题目收藏模块
 import {
   toggleFavorite,
@@ -341,11 +341,7 @@ import {
   stopTimer as stopQuestionTimer,
   recordTime as recordQuestionTime
 } from './question-timer.js';
-// ✅ 导入智能组题模块
-import {
-  pickQuestions,
-  recordSmartAnswer
-} from './utils/smart-question-picker.js';
+// ✅ 智能组题模块（懒加载：仅在 smartPickerEnabled 时动态导入）
 // ✅ 导入学习数据分析模块
 import {
   recordAnswer as recordAnalyticsAnswer
@@ -602,7 +598,7 @@ export default {
       // 标准导航栏高度 = 状态栏高度 + 44px
       this.navBarHeight = this.statusBarHeight + 44;
 
-      // #ifdef MP-WECHAT
+      // #ifdef MP-WEIXIN
       try {
         const capsule = uni.getMenuButtonBoundingClientRect();
         if (capsule && capsule.width > 0) {
@@ -616,11 +612,11 @@ export default {
         this.capsuleMargin = 100;
       }
       // #endif
-      // #ifndef MP-WECHAT
+      // #ifndef MP-WEIXIN
       this.capsuleMargin = 20;
       // #endif
     },
-    loadQuestions() {
+    async loadQuestions() {
       // 从本地存储读取题库
       const bank = storageService.get('v30_bank', []);
 
@@ -647,8 +643,9 @@ export default {
         difficulty: q.difficulty || 2
       })).filter((q) => q.question && q.question !== `题目 ${bank.indexOf(q) + 1}`); // 过滤无效题目
 
-      // ✅ 使用智能组题算法优化题目序列
+      // ✅ 使用智能组题算法优化题目序列（懒加载）
       if (this.smartPickerEnabled && questions.length > 0) {
+        const { pickQuestions } = await import('@/utils/learning/smart-question-picker.js');
         questions = pickQuestions(questions, {
           count: Math.min(questions.length, 20),
           mode: 'adaptive',
@@ -657,7 +654,8 @@ export default {
         });
         logger.log('[do-quiz] ✅ 智能组题模式已启用');
       } else if (this.isAdaptiveMode && questions.length > 0) {
-        // 降级到自适应学习引擎
+        // 降级到自适应学习引擎（懒加载）
+        const { generateAdaptiveSequence } = await import('./utils/adaptive-learning-engine.js');
         questions = generateAdaptiveSequence(questions, {
           insertReviewQuestions: true,
           prioritizeWeak: true,
@@ -943,7 +941,7 @@ export default {
       stats[today] = (stats[today] || 0) + 1;
       storageService.save('study_stats', stats);
     },
-    toNext() {
+    async toNext() {
       // ✅ 防重复点击保护
       if (this.isNavigating) {
         return;
@@ -957,6 +955,7 @@ export default {
       if (this.currentIndex < this.questions.length - 1) {
         // ✅ 检查点 5.3: 检查是否需要插入复习题
         if (this.isAdaptiveMode) {
+          const { getNextRecommendedQuestion } = await import('./utils/adaptive-learning-engine.js');
           const recommendation = getNextRecommendedQuestion(this.currentIndex, this.questions);
           if (recommendation && recommendation.isReview) {
             // 插入复习题
@@ -1284,7 +1283,7 @@ export default {
     // ==================== 数据分析记录方法 ====================
 
     // ✅ 记录答题数据到各个分析模块
-    recordAnswerToAnalytics(isCorrect, timeSpent) {
+    async recordAnswerToAnalytics(isCorrect, timeSpent) {
       if (!this.currentQuestion) return;
 
       const questionData = {
@@ -1295,8 +1294,9 @@ export default {
         timeSpent
       };
 
-      // 记录到智能组题模块
+      // 记录到智能组题模块（懒加载）
       try {
+        const { recordSmartAnswer } = await import('@/utils/learning/smart-question-picker.js');
         recordSmartAnswer(this.currentQuestion, isCorrect, timeSpent);
       } catch (e) {
         logger.warn('[do-quiz] 记录到智能组题模块失败:', e);
@@ -1447,7 +1447,7 @@ export default {
 /* 容器样式 */
 .container {
 	min-height: 100vh;
-	background: var(--bg-page);
+	background: var(--bg-secondary, #F5F5F7);
 	position: relative;
 	overflow: hidden;
 }
@@ -2029,7 +2029,7 @@ export default {
 	height: 28rpx;
 	background: var(--danger);
 	color: #fff;
-	font-size: 18rpx;
+	font-size: 20rpx;
 	font-weight: bold;
 	border-radius: 14rpx;
 	display: flex;
@@ -2146,5 +2146,15 @@ export default {
 	font-weight: bold;
 	border-radius: 16rpx;
 	border: none;
+}
+
+/* hover-class 反馈 */
+.item-hover {
+	opacity: 0.7;
+}
+
+.option-hover {
+	opacity: 0.85;
+	transform: scale(0.98);
 }
 </style>

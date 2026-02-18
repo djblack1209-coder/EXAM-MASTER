@@ -11,18 +11,23 @@ export const ResponseCode = {
   // 成功
   SUCCESS: 0,
   
+  // 异步/部分成功 (2xx)
+  ACCEPTED: 202,          // 异步任务已接受（doc-convert 等）
+  
   // 客户端错误 (4xx)
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   METHOD_NOT_ALLOWED: 405,
+  REQUEST_TIMEOUT: 408,   // 请求超时（doc-convert 轮询超时等）
   CONFLICT: 409,
   VALIDATION_ERROR: 422,
   TOO_MANY_REQUESTS: 429,
   
   // 服务端错误 (5xx)
   INTERNAL_ERROR: 500,
+  BAD_GATEWAY: 502,       // 上游服务错误（proxy-ai 模型调用失败等）
   SERVICE_UNAVAILABLE: 503,
   TIMEOUT: 504
 }
@@ -30,15 +35,18 @@ export const ResponseCode = {
 // ==================== 响应消息定义 ====================
 export const ResponseMessage = {
   [ResponseCode.SUCCESS]: '操作成功',
+  [ResponseCode.ACCEPTED]: '任务已接受，正在处理中',
   [ResponseCode.BAD_REQUEST]: '请求参数错误',
   [ResponseCode.UNAUTHORIZED]: '未授权，请先登录',
   [ResponseCode.FORBIDDEN]: '无权限访问',
   [ResponseCode.NOT_FOUND]: '资源不存在',
   [ResponseCode.METHOD_NOT_ALLOWED]: '不支持的操作',
+  [ResponseCode.REQUEST_TIMEOUT]: '请求超时',
   [ResponseCode.CONFLICT]: '资源冲突',
   [ResponseCode.VALIDATION_ERROR]: '数据验证失败',
   [ResponseCode.TOO_MANY_REQUESTS]: '请求过于频繁，请稍后再试',
   [ResponseCode.INTERNAL_ERROR]: '服务器内部错误',
+  [ResponseCode.BAD_GATEWAY]: '上游服务异常',
   [ResponseCode.SERVICE_UNAVAILABLE]: '服务暂时不可用',
   [ResponseCode.TIMEOUT]: '请求超时'
 }
@@ -127,6 +135,40 @@ export function tooManyRequests(message?: string): ApiResponse {
  */
 export function serverError(message?: string, errorDetail?: string): ApiResponse {
   return error(ResponseCode.INTERNAL_ERROR, message || '服务器内部错误', errorDetail)
+}
+
+/**
+ * 异步任务已接受响应（202）
+ */
+export function accepted<T>(data?: T, message?: string): ApiResponse<T> {
+  return {
+    code: ResponseCode.ACCEPTED,
+    success: true,
+    message: message || ResponseMessage[ResponseCode.ACCEPTED],
+    data,
+    timestamp: Date.now()
+  }
+}
+
+/**
+ * 上游服务错误响应（502）
+ */
+export function badGateway(message?: string, errorDetail?: string): ApiResponse {
+  return error(ResponseCode.BAD_GATEWAY, message || '上游服务异常', errorDetail)
+}
+
+/**
+ * 请求超时响应（408）
+ */
+export function requestTimeout(message?: string): ApiResponse {
+  return error(ResponseCode.REQUEST_TIMEOUT, message || '请求超时')
+}
+
+/**
+ * 资源冲突响应（409）
+ */
+export function conflict(message?: string): ApiResponse {
+  return error(ResponseCode.CONFLICT, message || '资源冲突')
 }
 
 /**
@@ -330,6 +372,10 @@ export default {
   notFound,
   tooManyRequests,
   serverError,
+  accepted,
+  badGateway,
+  requestTimeout,
+  conflict,
   paginated,
   generateRequestId,
   wrapResponse,

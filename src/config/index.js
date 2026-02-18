@@ -28,16 +28,15 @@ import { logger } from '@/utils/logger.js';
  * @returns {any} 环境变量值或默认值
  */
 function getEnv(key, defaultValue) {
-  try {
-    // Vite 环境变量
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      const value = import.meta.env[key];
-      if (value !== undefined && value !== '') {
-        return value;
-      }
+  // Vite 在构建时会将 import.meta.env 替换为具体对象
+  // 不要用 typeof import.meta !== 'undefined' 守卫，
+  // 因为 CJS 编译后会生成 require("url") 调用，在微信小程序环境中不存在该模块
+  const env = import.meta.env;
+  if (env) {
+    const value = env[key];
+    if (value !== undefined && value !== '') {
+      return value;
     }
-  } catch (_e) {
-    // 忽略错误，使用默认值
   }
   return defaultValue;
 }
@@ -97,8 +96,9 @@ const config = {
     /**
          * 微信小程序 AppID
          * 配置方式：VITE_WX_APP_ID=your_app_id
+         * ⚠️ 必须通过环境变量配置，不再提供硬编码默认值
          */
-    appId: getEnv('VITE_WX_APP_ID', 'wxd634d50ad63e14ed'),
+    appId: getEnv('VITE_WX_APP_ID', ''),
 
     /**
          * 微信公众号 AppID（H5 微信登录用）
@@ -116,8 +116,9 @@ const config = {
     /**
          * QQ互联 AppID
          * 配置方式：VITE_QQ_APP_ID=your_qq_app_id
+         * ⚠️ 必须通过环境变量配置，不再提供硬编码默认值
          */
-    appId: getEnv('VITE_QQ_APP_ID', '1112414551'),
+    appId: getEnv('VITE_QQ_APP_ID', ''),
 
     /**
          * QQ OAuth 回调地址
@@ -135,8 +136,9 @@ const config = {
     /**
          * API 基础地址（Sealos 后端服务）
          * 配置方式：VITE_API_BASE_URL=https://your-api.com
+         * ⚠️ 必须通过环境变量配置，不再提供硬编码默认值
          */
-    baseUrl: getEnv('VITE_API_BASE_URL', 'https://nf98ia8qnt.sealosbja.site'),
+    baseUrl: getEnv('VITE_API_BASE_URL', ''),
 
     /**
          * API 请求超时时间（毫秒）
@@ -178,12 +180,35 @@ const config = {
     /**
          * 应用版本
          */
-    version: getEnv('VITE_APP_VERSION', '1.0.0'),
+    // [v1.2.0] 版本号同步更新
+    version: getEnv('VITE_APP_VERSION', '1.2.0'),
 
     /**
          * 分页大小
          */
     pageSize: getEnvNumber('VITE_PAGE_SIZE', 20)
+  },
+
+  // ==================== 安全配置 ====================
+
+  /**
+     * 安全相关配置
+     */
+  security: {
+    /**
+         * 本地存储混淆密钥（非密码学安全，防止直接读取 localStorage 明文）
+         * ⚠️ 生产环境务必通过 VITE_OBFUSCATION_KEY 环境变量覆盖此默认值
+         * 配置方式：VITE_OBFUSCATION_KEY=your_custom_key
+         */
+    // [v1.2.0 审核修复] 移除硬编码敏感 fallback，改为空字符串，生产环境必须通过环境变量配置
+    obfuscationKey: getEnv('VITE_OBFUSCATION_KEY', ''),
+
+    /**
+         * 请求签名盐值（FNV-1a 防篡改）
+         * 配置方式：VITE_REQUEST_SIGN_SALT=your_salt
+         */
+    // [v1.2.0 审核修复] 移除硬编码敏感 fallback，改为空字符串，生产环境必须通过环境变量配置
+    requestSignSalt: getEnv('VITE_REQUEST_SIGN_SALT', '')
   },
 
   // ==================== 存储配置 ====================
@@ -298,7 +323,8 @@ const config = {
          * 送审时设为 true，过审后改为 false
          * 配置方式：VITE_AUDIT_MODE=true
          */
-    isAuditMode: getEnvBoolean('VITE_AUDIT_MODE', false),
+    // [v1.2.0 审核修复] 送审期间必须为 true，过审后通过环境变量改回 false
+    isAuditMode: getEnvBoolean('VITE_AUDIT_MODE', true),
 
     /**
          * 审核期间隐藏的功能列表
@@ -500,23 +526,29 @@ if (config.debug.enabled) {
 }
 
 /**
- * 生产环境配置安全检查：关键配置仍使用默认值时发出警告
+ * 配置安全检查：关键配置缺失时发出警告
+ * 由于敏感默认值已移除，缺少环境变量时配置为空字符串
  */
-if (config.isProd) {
-  const sensitiveKeys = [
-    'VITE_API_BASE_URL',
-    'VITE_WX_APP_ID',
-    'VITE_QQ_APP_ID'
+{
+  const requiredKeys = [
+    { key: 'VITE_API_BASE_URL', label: 'API基础地址', value: config.api.baseUrl },
+    { key: 'VITE_WX_APP_ID', label: '微信AppID', value: config.wx.appId }
   ];
-  const missing = sensitiveKeys.filter((key) => {
-    try {
-      return !import.meta.env[key];
-    } catch (_e) {
-      return true;
-    }
+  // [v1.2.0 审核修复] 将安全密钥从 optional 提升为 required，防止空值运行
+  const optionalKeys = [
+    { key: 'VITE_QQ_APP_ID', label: 'QQ AppID', value: config.qq.appId },
+    { key: 'VITE_OBFUSCATION_KEY', label: '存储混淆密钥', value: config.security.obfuscationKey },
+    { key: 'VITE_REQUEST_SIGN_SALT', label: '请求签名盐值', value: config.security.requestSignSalt }
+  ];
+  const missing = requiredKeys.filter((k) => !k.value);
+  const warnings = optionalKeys.filter((k) => {
+    try { return !import.meta.env[k.key]; } catch (_e) { return true; }
   });
   if (missing.length > 0) {
-    console.warn(`[Config] ⚠️ 生产环境使用了硬编码默认值: ${missing.join(', ')}。请通过环境变量配置以确保安全。`);
+    console.error(`[Config] ❌ 缺少必需的环境变量: ${missing.map((k) => `${k.key}(${k.label})`).join(', ')}。应用可能无法正常运行！`);
+  }
+  if (config.isProd && warnings.length > 0) {
+    console.warn(`[Config] ⚠️ 生产环境建议配置: ${warnings.map((k) => `${k.key}(${k.label})`).join(', ')}。`);
   }
 }
 

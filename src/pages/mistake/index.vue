@@ -180,6 +180,7 @@ import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
+import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
 
 export default {
   components: {
@@ -279,14 +280,8 @@ export default {
   methods: {
     // 统一错题字段名，消除 wrongCount/wrong_count 等不一致
     normalizeMistakes(list) {
-      if (!Array.isArray(list)) return [];
-      return list.map((item) => ({
+      return normalizeFields(list).map((item) => ({
         ...item,
-        wrong_count: item.wrong_count || item.wrongCount || 1,
-        last_wrong_time: item.last_wrong_time || item.lastWrongTime || item.created_at || 0,
-        question_content: item.question_content || item.question || '',
-        correct_answer: item.correct_answer || item.answer || '',
-        user_answer: item.user_answer || item.userChoice || '',
         showAnalysis: item.showAnalysis ?? false
       }));
     },
@@ -630,7 +625,7 @@ export default {
 
 .container {
 	min-height: 100vh;
-	background: var(--bg-page);
+	background: var(--bg-secondary, #F5F5F7);
 	position: relative;
 	overflow: hidden;
 }

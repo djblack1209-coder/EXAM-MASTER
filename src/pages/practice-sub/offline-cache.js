@@ -529,7 +529,7 @@ class OfflineCacheManager {
     switch (item.type) {
       case 'answer':
         // 同步答题记录到云端
-        await lafService.request('answer-submit', {
+        await lafService.request('/answer-submit', {
           action: 'syncOffline',
           userId: item.data.userId,
           answers: Array.isArray(item.data.answers) ? item.data.answers : [item.data]

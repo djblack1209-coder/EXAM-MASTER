@@ -7,7 +7,7 @@ import { storageService } from '@/services/storageService.js';
 import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 // ✅ 以下模块从分包本地引用，避免打入主包
-import { requireLogin } from '../utils/loginGuard.js';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { deduplicateQuestions } from '../utils/question-dedup-worker.js';
 import { normalizeQuestion, isValidQuestion, normalizeAndValidateQuestions, sanitizeAIInput } from '../utils/question-normalizer.js';
 
@@ -500,7 +500,8 @@ export const aiGenerationMixin = {
     updateGenerationProgress() {
       const bank = storageService.get('v30_bank', []);
       const newlyGenerated = Math.max(0, bank.length - this.bankSizeAtGenStart);
-      const targetCount = this.totalQuestionsLimit * this.batchQuestionCount;
+      // ✅ 修复：目标数量就是 totalQuestionsLimit，不应乘以 batchQuestionCount
+      const targetCount = this.totalQuestionsLimit || 10;
       this.generationProgress = Math.min(100, Math.round((newlyGenerated / targetCount) * 100));
 
       const importedFiles = storageService.get('imported_files', []);

@@ -40,12 +40,36 @@ const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
 const AI_PROVIDER_KEY_PLACEHOLDER
 const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
 
-// ✅ 智谱 API 密钥存在性检查
-if (!process.env.AI_PROVIDER_KEY_PLACEHOLDER
-  console.error('[ProxyAI] ❌ AI_PROVIDER_KEY_PLACEHOLDER
-  if (IS_PRODUCTION) {
-    console.error('[ProxyAI] ❌ 生产环境必须配置 AI_PROVIDER_KEY_PLACEHOLDER
+// ==================== P014: 环境变量完整性校验 ====================
+// 所有必需的环境变量及其描述
+const REQUIRED_ENV_VARS = {
+  AI_PROVIDER_KEY_PLACEHOLDER
+  JWT_SECRET_PLACEHOLDER
+}
+
+const OPTIONAL_ENV_VARS = {
+  LOG_LEVEL: { desc: '日志级别', default: 'info' },
+  NODE_ENV: { desc: '运行环境', default: 'development' },
+}
+
+// 启动时校验所有必需环境变量
+const envCheckResults: { key: string; status: 'ok' | 'missing' | 'invalid'; desc: string }[] = []
+for (const [key, config] of Object.entries(REQUIRED_ENV_VARS)) {
+  const value = process.env[key] || ''
+  if (!value) {
+    envCheckResults.push({ key, status: 'missing', desc: config.desc })
+    console.error(`[ProxyAI] ❌ 环境变量 ${key} (${config.desc}) 未配置！`)
+  } else if (!config.validate(value)) {
+    envCheckResults.push({ key, status: 'invalid', desc: config.desc })
+    console.error(`[ProxyAI] ❌ 环境变量 ${key} (${config.desc}) 格式无效！`)
+  } else {
+    envCheckResults.push({ key, status: 'ok', desc: config.desc })
   }
+}
+
+const missingEnvCount = envCheckResults.filter(r => r.status !== 'ok').length
+if (missingEnvCount > 0 && IS_PRODUCTION) {
+  console.error(`[ProxyAI] ❌ 生产环境有 ${missingEnvCount} 个必需环境变量未正确配置，AI 功能将受限。`)
 }
 
 // ==================== 超时和重试配置 ====================
@@ -296,7 +320,7 @@ const AI_FRIENDS = {
   }
 }
 
-export default async function (ctx) {
+export default async function (ctx: FunctionContext) {
   const startTime = Date.now()
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
   const action = ctx.body?.action || 'unknown'
@@ -305,6 +329,25 @@ export default async function (ctx) {
   logger.info(`[${requestId}] AI 代理请求开始`)
 
   try {
+    // P014: 健康检查接口（部署验证用，无需认证）
+    if (action === 'health_check') {
+      endPerf()
+      return {
+        code: 0,
+        success: true,
+        data: {
+          service: 'proxy-ai',
+          status: AI_PROVIDER_KEY_PLACEHOLDER
+          envCheck: envCheckResults.map(r => ({ key: r.key, status: r.status, desc: r.desc })),
+          missingCount: missingEnvCount,
+          models: Object.keys(MODEL_CONFIG),
+          uptime: process.uptime?.() || 0
+        },
+        message: AI_PROVIDER_KEY_PLACEHOLDER
+        requestId
+      }
+    }
+
     // 0. 审计模式检查（后端必须是最后一道防线）
     const auditCheck = checkAuditMode(ctx)
     if (!auditCheck.valid) {

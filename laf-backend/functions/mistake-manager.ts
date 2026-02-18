@@ -76,10 +76,8 @@ async function verifyUserAuth(userId: string, token?: string, headers?: Record<s
       return { valid: false, error: '用户身份验证失败' }
     }
   } else {
-    // 没有 token 时，必须拒绝请求（生产环境）
-    if (IS_PRODUCTION) {
-      return { valid: false, error: '缺少认证 token，请重新登录' }
-    }
+    // 没有 token 时，必须拒绝请求（所有环境）
+    return { valid: false, error: '缺少认证 token，请重新登录' }
   }
   
   // 检查请求头中的用户标识（如果有）
@@ -217,7 +215,7 @@ function validateMistakeData(data: unknown): { valid: boolean; error?: string; s
   return { valid: true, sanitized }
 }
 
-export default async function (ctx) {
+export default async function (ctx: FunctionContext) {
   const startTime = Date.now()
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
 
@@ -285,10 +283,29 @@ export default async function (ctx) {
     const duration = Date.now() - startTime
     logger.error(`[${requestId}] 错题管理异常:`, error)
 
+    // P015: 错误分类，提供更精确的错误码和信息
+    const errMsg = error.message || ''
+    let code = 500
+    let message = '服务器内部错误'
+
+    if (errMsg.includes('not found') || errMsg.includes('不存在')) {
+      code = 404
+      message = '请求的资源不存在'
+    } else if (errMsg.includes('duplicate') || errMsg.includes('已存在')) {
+      code = 409
+      message = '数据已存在，请勿重复操作'
+    } else if (errMsg.includes('validation') || errMsg.includes('参数')) {
+      code = 400
+      message = errMsg
+    } else if (errMsg.includes('timeout') || errMsg.includes('ETIMEDOUT')) {
+      code = 504
+      message = '数据库请求超时，请稍后重试'
+    }
+
     return {
-      code: 500,
+      code,
       ok: false,
-      message: '服务器内部错误',
+      message,
       error: error.message,
       requestId,
       duration
@@ -521,7 +538,7 @@ async function handleUpdateStatus(userId, data, requestId) {
   logger.info(`[${requestId}] 更新错题状态: ${data.id}, is_mastered: ${isMastered}`)
 
   return {
-    code: 200,
+    code: 0,
     ok: true,
     updated: result.updated || 1,
     id: data.id,
@@ -551,10 +568,34 @@ async function handleBatchSync(userId, data, requestId) {
     const batch = data.mistakes.slice(i, i + BATCH_SIZE)
     const batchResults = await Promise.allSettled(
       batch.map(async (mistake) => {
+        const questionContent = mistake.question_content || mistake.question || ''
+        const qHash = contentHash(questionContent)
+
+        // 去重检查：与 handleAdd 保持一致
+        const existing = await collection.where({
+          user_id: userId,
+          _content_hash: qHash
+        }).getOne()
+
+        if (existing.data) {
+          const existingKey = (existing.data.question_content || '').substring(0, 100)
+          const newKey = questionContent.substring(0, 100)
+          if (existingKey === newKey) {
+            // 已存在，更新错误次数
+            await collection.doc(existing.data._id).update({
+              wrong_count: _.inc(mistake.wrong_count || 1),
+              updated_at: now,
+              is_mastered: false
+            })
+            return { oldId: mistake.id, newId: existing.data._id, isUpdate: true }
+          }
+        }
+
+        // 新增
         const mistakeData = {
           user_id: userId,
-          _content_hash: contentHash(mistake.question_content || mistake.question || ''),
-          question_content: mistake.question_content || mistake.question,
+          _content_hash: qHash,
+          question_content: questionContent,
           options: mistake.options || [],
           user_answer: mistake.user_answer || mistake.userChoice,
           correct_answer: mistake.correct_answer || mistake.answer,
@@ -571,7 +612,7 @@ async function handleBatchSync(userId, data, requestId) {
           updated_at: now
         }
         const result = await collection.add(mistakeData)
-        return { oldId: mistake.id, newId: result.id }
+        return { oldId: mistake.id, newId: result.id, isUpdate: false }
       })
     )
 
@@ -600,79 +641,147 @@ async function handleBatchSync(userId, data, requestId) {
 
 /**
  * 获取错题分类统计 (v2.0新增)
- * ✅ E004: 使用 .field() 只拉取统计所需字段，减少网络传输
+ * ✅ P3-FIX: 使用 aggregate 管道在数据库层面完成统计，避免拉取 2000 条到内存
  */
 async function handleGetCategories(userId, data, requestId) {
   const collection = db.collection('mistake_book')
+  const now = Date.now()
 
-  // 只拉取统计所需的字段
-  const allMistakes = await collection.where({
-    user_id: userId
-  }).field({
-    category: true,
-    error_type: true,
-    is_mastered: true,
-    next_review_time: true
-  }).limit(2000).get()
-
-  // 按分类统计
-  const categoryStats = {}
-  const errorTypeStats = {}
-
-  for (const mistake of allMistakes.data) {
-    const category = mistake.category || '综合'
-    const errorType = mistake.error_type || 'unknown'
-
-    // 分类统计
-    if (!categoryStats[category]) {
-      categoryStats[category] = {
-        category,
-        total: 0,
-        mastered: 0,
-        unmastered: 0,
-        review_needed: 0
-      }
-    }
-    categoryStats[category].total++
-    if (mistake.is_mastered) {
-      categoryStats[category].mastered++
-    } else {
-      categoryStats[category].unmastered++
-    }
-    if (mistake.next_review_time && mistake.next_review_time <= Date.now()) {
-      categoryStats[category].review_needed++
-    }
+  try {
+    // 使用聚合管道在数据库层面完成分类统计
+    const categoryResult = await collection.aggregate()
+      .match({ user_id: userId })
+      .group({
+        _id: { $ifNull: ['$category', '综合'] },
+        total: { $sum: 1 },
+        mastered: { $sum: { $cond: [{ $eq: ['$is_mastered', true] }, 1, 0] } },
+        unmastered: { $sum: { $cond: [{ $ne: ['$is_mastered', true] }, 1, 0] } },
+        review_needed: {
+          $sum: {
+            $cond: [
+              { $and: [
+                { $ne: ['$next_review_time', null] },
+                { $lte: ['$next_review_time', now] }
+              ] },
+              1, 0
+            ]
+          }
+        }
+      })
+      .end()
 
     // 错误类型统计
-    if (!errorTypeStats[errorType]) {
-      errorTypeStats[errorType] = { type: errorType, count: 0 }
+    const errorTypeResult = await collection.aggregate()
+      .match({ user_id: userId })
+      .group({
+        _id: { $ifNull: ['$error_type', 'unknown'] },
+        count: { $sum: 1 }
+      })
+      .end()
+
+    // 总体统计
+    const summaryResult = await collection.aggregate()
+      .match({ user_id: userId })
+      .group({
+        _id: null,
+        total: { $sum: 1 },
+        mastered: { $sum: { $cond: [{ $eq: ['$is_mastered', true] }, 1, 0] } },
+        review_needed: {
+          $sum: {
+            $cond: [
+              { $and: [
+                { $ne: ['$next_review_time', null] },
+                { $lte: ['$next_review_time', now] }
+              ] },
+              1, 0
+                   }
+        }
+      })
+      .end()
+
+    const categories = (categoryResult.data || []).map((stat: Record<string, unknown>) => ({
+      category: stat._id,
+      total: stat.total,
+      mastered: stat.mastered,
+      unmastered: stat.unmastered,
+      review_needed: stat.review_needed,
+      mastery_rate: stat.total > 0 ? Math.round(((stat.mastered as number) / (stat.total as number)) * 100) : 0
+    }))
+
+    const errorTypes = (errorTypeResult.data || []).map((et: Record<string, unknown>) => ({
+      type: et._id,
+      count: et.count
+    }))
+
+    const summary = summaryResult.data?.[0] || { total: 0, mastered: 0, review_needed: 0 }
+
+    logger.info(`[${requestId}] 获取分类统计: ${categories.length} 个分类`)
+
+    return {
+      code: 0,
+      ok: true,
+      data: {
+        categories,
+        errorTypes,
+        summary: {
+          total: summary.total || 0,
+          mastered: summary.mastered || 0,
+          review_needed: summary.review_needed || 0
+        }
+      },
+      message: '获取成功'
     }
-    errorTypeStats[errorType].count++
-  }
+  } catch (aggError) {
+    // 聚合管道不可用时降级为原始查询方式
+    logger.warn(`[${requestId}] 聚合查询失败，降级为内存统计:`, aggError.message)
 
-  // 转换为数组并计算掌握率
-  const categories = Object.values(categoryStats).map((stat: Record<string, unknown>) => ({
-    ...stat,
-    mastery_rate: stat.total > 0 ? Math.round((stat.mastered / stat.total) * 100) : 0
-  }))
+    const allMistakes = await collection.where({
+      user_id: userId
+    }).field({
+      category: true,
+      error_type: true,
+      is_mastered: true,
+      next_review_time: true
+    }).limit(2000).get()
 
-  const errorTypes = Object.values(errorTypeStats)
+    const categoryStats = {}
+    const errorTypeStats = {}
 
-  logger.info(`[${requestId}] 获取分类统计: ${categories.length} 个分类`)
+    for (const mistake of allMistakes.data) {
+      const category = mistake.category || '综合'
+      const errorType = mistake.error_type || 'unknown'
 
-  return {
-    code: 0,
-    ok: true,
-    data: {
-      categories,
-      errorTypes,
-      summary: {
-        total: allMistakes.data.length,
-        mastered: allMistakes.data.filter(m => m.is_mastered).length,
-        review_needed: allMistakes.data.filter(m => m.next_review_time && m.next_review_time <= Date.now()).length
+      if (!categoryStats[category]) {
+        categoryStats[category] = { category, total: 0, mastered: 0, unmastered: 0, review_needed: 0 }
       }
-    },
-    message: '获取成功'
+      categoryStats[category].total++
+      if (mistake.is_mastered) categoryStats[category].mastered++
+      else categoryStats[category].unmastered++
+      if (mistake.next_review_time && mistake.next_review_time <= now) categoryStats[category].review_needed++
+
+      if (!errorTypeStats[errorType]) errorTypeStats[errorType] = { type: errorType, count: 0 }
+      errorTypeStats[errorType].count++
+    }
+
+    const categories = Object.values(categoryStats).map((stat: Record<string, unknown>) => ({
+      ...stat,
+      mastery_rate: stat.total > 0 ? Math.round((stat.mastered / stat.total) * 100) : 0
+    }))
+
+    return {
+      code: 0,
+      ok: true,
+      data: {
+        categories,
+        errorTypes: Object.values(errorTypeStats),
+        summary: {
+          total: allMistakes.data.length,
+          mastered: allMistakes.data.filter(m => m.is_mastered).length,
+          review_needed: allMistakes.data.filter(m => m.next_review_time && m.next_review_time <= now).length
+        }
+      },
+      message: '获取成功'
+    }
   }
 }
 
@@ -833,7 +942,7 @@ async function handleManageTags(userId, data, requestId) {
 
 /**
  * 按标签筛选错题 (v2.0新增)
- * ✅ E004: 先用 DB 查询缩小范围，减少内存筛选量
+ * ✅ P3-FIX: 使用 DB 级 $in/$all 操作符替代内存筛选，避免拉取 2000 条到内存
  */
 async function handleGetByTags(userId, data, requestId) {
   const { tags, matchAll = false, page = 1, limit = 50 } = data || {}
@@ -846,41 +955,35 @@ async function handleGetByTags(userId, data, requestId) {
   const safeLimit = Math.min(limit, 100)
   const skip = (Math.max(1, page) - 1) * safeLimit
 
-  // 先用第一个标签做 DB 级过滤缩小范围，再在内存中精确匹配
-  const allMistakes = await collection.where({
-    user_id: userId
-  }).orderBy('created_at', 'desc').limit(2000).get()
+  // 在数据库层面过滤标签，避免全量拉取到内存
+  const tagFilter = matchAll
+    ? { tags: _.all(tags) }   // 必须包含所有指定标签
+    : { tags: _.in(tags) }    // 包含任意一个指定标签
 
-  // 在内存中筛选
-  let filtered = allMistakes.data.filter(mistake => {
-    if (!mistake.tags || !Array.isArray(mistake.tags)) return false
-    
-    if (matchAll) {
-      // 必须包含所有指定标签
-      return tags.every(tag => mistake.tags.includes(tag))
-    } else {
-      // 包含任意一个指定标签
-      return tags.some(tag => mistake.tags.includes(tag))
-    }
-  })
+  const whereCondition = { user_id: userId, ...tagFilter }
 
-  const total = filtered.length
+  // 并行查询数据和总数
+  const [result, countResult] = await Promise.all([
+    collection.where(whereCondition)
+      .orderBy('created_at', 'desc')
+      .skip(skip)
+      .limit(safeLimit)
+      .get(),
+    collection.where(whereCondition).count()
+  ])
 
-  // 分页
-  filtered = filtered
-    .sort((a, b) => (b.created_at || 0) - (a.created_at || 0))
-    .slice(skip, skip + Math.min(limit, 100))
+  const total = countResult.total || 0
 
-  logger.info(`[${requestId}] 按标签筛选: ${filtered.length}/${total}`)
+  logger.info(`[${requestId}] 按标签筛选: ${result.data.length}/${total}`)
 
   return {
     code: 0,
     ok: true,
-    data: filtered,
+    data: result.data,
     total,
     page,
     limit,
-    hasMore: skip + filtered.length < total,
+    hasMore: skip + result.data.length < total,
     message: '获取成功'
   }
 }

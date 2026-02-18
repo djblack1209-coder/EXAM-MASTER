@@ -594,7 +594,7 @@ export default {
     // 创建收藏夹
     createFolder() {
       if (!this.newFolderName.trim()) {
-        uni.showToast({ title: '请输入名称', icon: 'none' });
+        uni.showToast({ title: '请输入收藏夹名称', icon: 'none' });
         return;
       }
 
@@ -702,7 +702,7 @@ export default {
 <style lang="scss" scoped>
 .container {
   min-height: 100vh;
-  background: var(--bg-page);
+  background: var(--bg-secondary, #F5F5F7);
 }
 
 .aurora-bg {
@@ -870,7 +870,7 @@ export default {
 }
 
 .folder-count {
-  font-size: 18rpx;
+    font-size: 20rpx;
   color: var(--text-sub);
 }
 

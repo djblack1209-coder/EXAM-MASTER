@@ -2,7 +2,7 @@
 // 实现动态计划调整、多维度计划管理、智能提醒等功能
 
 import { storageService } from '@/services/storageService.js';
-import { getLearningReport } from './utils/smart-question-picker.js';
+import { getLearningReport } from '@/utils/learning/smart-question-picker.js';
 import { getStreakData, getComprehensiveReport } from './utils/learning-analytics.js';
 import { logger } from '@/utils/logger.js';
 

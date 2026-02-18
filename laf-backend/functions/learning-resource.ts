@@ -108,6 +108,15 @@ export default async function (ctx) {
       return { code: 429, success: false, message: '请求过于频繁，请稍后再试', requestId }
     }
 
+    // 搜索操作使用更严格的频率限制（正则查询开销大）
+    if (action === 'search') {
+      const searchRateLimitKey = userId ? `lr_search_${userId}` : `lr_search_ip_${requestId}`
+      const searchRateLimit = checkRateLimit(searchRateLimitKey, 15, 60000) // 15次/分钟
+      if (!searchRateLimit.allowed) {
+        return { code: 429, success: false, message: '搜索过于频繁，请稍后再试', requestId }
+      }
+    }
+
     // 路由到对应处理函数
     const handlers = {
       getRecommendations: handleGetRecommendations,
@@ -284,6 +293,11 @@ async function handleGetByCategory(userId: string, data: Record<string, unknown>
 /**
  * 搜索资源
  * 支持关键词搜索（标题、描述、标签），分页，按分类和学科筛选
+ * 
+ * ✅ P3-FIX: 优化搜索性能
+ * - 限制关键词长度防止过长正则
+ * - 优先用 category/subject 索引字段缩小范围
+ * - 建议在 MongoDB 中创建文本索引: db.learning_resources.createIndex({ title: "text", description: "text", tags: "text" })
  */
 async function handleSearch(userId: string, data: Record<string, unknown>, requestId: string) {
   const { keyword, category, subject, page = 1, limit = 20 } = data
@@ -292,12 +306,15 @@ async function handleSearch(userId: string, data: Record<string, unknown>, reque
     return { code: 400, success: false, message: '搜索关键词至少2个字符' }
   }
 
+  // 限制关键词长度，防止过长正则影响性能
+  const rawKeyword = keyword.trim().substring(0, 50)
+
   const safeLimit = Math.min(limit, CONFIG.maxPageSize)
   const skip = (page - 1) * safeLimit
   // 转义正则特殊字符，防止 ReDoS 攻击
-  const trimmedKeyword = keyword.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const trimmedKeyword = rawKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-  // 构建搜索查询：在标题、描述、标签中模糊匹配
+  // 构建搜索查询：优先用索引字段缩小范围，再做正则匹配
   const query: Record<string, unknown> = {
     status: 'published',
     $or: [
@@ -307,6 +324,7 @@ async function handleSearch(userId: string, data: Record<string, unknown>, reque
     ]
   }
 
+  // 索引字段筛选放在 $or 之前，帮助 MongoDB 优化查询计划
   if (category) query.category = category
   if (subject) query.subject = subject
 

@@ -9,7 +9,7 @@
 
     <!-- 顶部返回按钮 -->
     <view class="top-bar">
-      <view class="back-btn" @tap="handleBack">
+      <view class="back-btn" hover-class="btn-hover" @tap="handleBack">
         <text class="back-icon">
           ←
         </text>
@@ -31,7 +31,7 @@
     <view class="login-methods">
       <!-- 微信登录 -->
       <!-- #ifdef MP-WEIXIN -->
-      <view class="login-btn wechat-btn" :class="{ 'btn-disabled': isLoading }" @tap="handleWechatLogin">
+      <view class="login-btn wechat-btn" hover-class="btn-hover" :class="{ 'btn-disabled': isLoading }" @tap="handleWechatLogin">
         <view class="btn-icon wechat-icon">
           <text>微信</text>
         </view>
@@ -51,6 +51,7 @@
       <view
         v-if="hasWechatProvider"
         class="login-btn wechat-btn"
+        hover-class="btn-hover"
         :class="{ 'btn-disabled': isLoading }"
         @tap="handleWechatLogin"
       >
@@ -70,6 +71,7 @@
       <view
         v-if="isWeChatBrowser"
         class="login-btn wechat-btn"
+        hover-class="btn-hover"
         :class="{ 'btn-disabled': isLoading }"
         @tap="handleWechatH5Login"
       >
@@ -88,7 +90,7 @@
 
       <!-- QQ登录 - 仅在非微信小程序环境显示 -->
       <!-- #ifndef MP-WEIXIN -->
-      <view class="login-btn qq-btn" :class="{ 'btn-disabled': isLoading }" @tap="handleQQLogin">
+      <view class="login-btn qq-btn" hover-class="btn-hover" :class="{ 'btn-disabled': isLoading }" @tap="handleQQLogin">
         <view class="btn-icon qq-icon">
           <text>QQ</text>
         </view>
@@ -157,6 +159,7 @@
             />
             <view
               class="send-code-btn"
+              hover-class="btn-hover"
               :class="{ 'disabled': codeCooldown > 0 || !isEmailValid }"
               @tap="sendVerifyCode"
             >
@@ -178,7 +181,7 @@
           />
         </view>
 
-        <view class="login-btn email-submit-btn" :class="{ 'btn-disabled': isLoading }" @tap="handleEmailLogin">
+        <view class="login-btn email-submit-btn" hover-class="btn-hover" :class="{ 'btn-disabled': isLoading }" @tap="handleEmailLogin">
           <text class="btn-text">
             {{ isLoading ? '登录中...' : (isRegister ? '注册并登录' : '登录') }}
           </text>
@@ -192,7 +195,7 @@
       </view>
 
       <!-- 邮箱登录入口 -->
-      <view v-else class="login-btn email-btn" @tap="showEmailForm = true">
+      <view v-else class="login-btn email-btn" hover-class="btn-hover" @tap="showEmailForm = true">
         <view class="btn-icon email-icon">
           <text>📧</text>
         </view>
@@ -263,6 +266,9 @@ const emailForm = ref({
 const emailError = ref('');
 const codeCooldown = ref(0);
 let cooldownTimer = null;
+
+// 主题事件处理器（模块级声明，确保 onMounted/onUnmounted 都能访问）
+let _themeHandler = null;
 
 // 邮箱验证
 const isEmailValid = computed(() => {
@@ -623,8 +629,14 @@ const handleQQLogin = async () => {
     // H5环境：使用QQ OAuth网页授权
     uni.hideLoading();
 
-    // QQ互联配置
-    const qqAppId = '1112414551';
+    // QQ互联配置 — 从统一配置读取，支持环境变量覆盖
+    const qqAppId = config.qq.appId;
+    if (!qqAppId) {
+      uni.hideLoading();
+      uni.showToast({ title: 'QQ登录未配置', icon: 'none' });
+      isLoading.value = false;
+      return;
+    }
     // 动态获取回调地址
     const currentOrigin = window.location.origin;
     const hashMode = window.location.href.includes('#');
@@ -894,12 +906,12 @@ const navigateAfterLogin = () => {
 
 // 打开隐私政策
 const openPrivacy = () => {
-  safeNavigateTo('/pages/settings/privacy');
+  uni.navigateTo({ url: '/pages/settings/privacy' });
 };
 
 // 打开用户协议
 const openTerms = () => {
-  safeNavigateTo('/pages/settings/terms');
+  uni.navigateTo({ url: '/pages/settings/terms' });
 };
 
 // 初始化
@@ -908,8 +920,8 @@ onMounted(() => {
   const savedTheme = storageService.get('theme_mode', 'light');
   isDark.value = savedTheme === 'dark';
 
-  // 监听主题变化
-  const _themeHandler = (mode) => {
+  // 监听主题变化（使用模块级变量，确保 onUnmounted 能正确移除）
+  _themeHandler = (mode) => {
     isDark.value = mode === 'dark';
   };
   uni.$on('themeUpdate', _themeHandler);
@@ -937,9 +949,16 @@ onMounted(() => {
   // #endif
 });
 
-// 清理事件监听
+// 清理事件监听和定时器
 onUnmounted(() => {
-  uni.$off('themeUpdate', _themeHandler);
+  if (_themeHandler) {
+    uni.$off('themeUpdate', _themeHandler);
+    _themeHandler = null;
+  }
+  if (cooldownTimer) {
+    clearInterval(cooldownTimer);
+    cooldownTimer = null;
+  }
 });
 </script>
 
@@ -1133,7 +1152,7 @@ onUnmounted(() => {
 
 .btn-arrow {
   font-size: 32rpx;
-  color: #999;
+  color: #777;
 }
 
 .dark-mode .btn-arrow {
@@ -1160,7 +1179,7 @@ onUnmounted(() => {
 .divider-text {
   padding: 0 24rpx;
   font-size: 26rpx;
-  color: #999;
+  color: #777;
 }
 
 /* 邮箱表单 */
@@ -1207,7 +1226,7 @@ onUnmounted(() => {
 }
 
 .input-placeholder {
-  color: #999;
+  color: #888;
 }
 
 .form-error {
@@ -1306,7 +1325,7 @@ onUnmounted(() => {
 .agreement-text {
   flex: 1;
   font-size: 24rpx;
-  color: #999;
+  color: #777;
   line-height: 1.6;
 }
 
@@ -1322,6 +1341,53 @@ onUnmounted(() => {
 
 .footer-tip text {
   font-size: 24rpx;
-  color: #999;
+  color: #777;
+}
+
+/* Dark mode: missing overrides */
+.dark-mode .divider-text {
+  color: #aaa;
+}
+
+.dark-mode .input-placeholder {
+  color: #666;
+}
+
+.dark-mode .checkbox {
+  border-color: #555;
+}
+
+.dark-mode .agreement-text {
+  color: #aaa;
+}
+
+.dark-mode .agreement-text .link {
+  color: #81C784;
+}
+
+.dark-mode .footer-tip text {
+  color: #777;
+}
+
+.dark-mode .form-error {
+  color: #FF6B6B;
+}
+
+/* Hover feedback for mini program */
+.btn-hover {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* Disabled state */
+.btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Checkbox touch target */
+.checkbox-wrapper {
+  padding: 12rpx;
+  margin: -8rpx;
 }
 </style>
