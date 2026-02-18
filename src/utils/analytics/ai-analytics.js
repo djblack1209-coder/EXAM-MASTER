@@ -80,8 +80,8 @@ class AIAnalyticsService {
     // 恢复历史数据
     this.restoreMetrics();
 
-    // 注册页面卸载时保存
-    if (typeof window !== 'undefined') {
+    // 注册页面卸载时保存（防止重复注册）
+    if (typeof window !== 'undefined' && !this._beforeUnloadHandler) {
       this._beforeUnloadHandler = () => {
         this.saveMetrics();
       };

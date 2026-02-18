@@ -109,44 +109,38 @@
             </text>
           </view>
           <view class="tools-grid">
-            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('doc-convert')">
-              <view class="tool-icon tool-icon-doc">
-                <text class="tool-icon-text">
-                  D
-                </text>
+            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" hover-class="tool-entry-hover" @tap="navToTool('doc-convert')">
+              <view class="tool-icon-wrapper tool-icon-doc">
+                <view class="tool-icon-glow tool-glow-doc" />
+                <text class="tool-icon-emoji">📄</text>
               </view>
-              <text class="tool-name">
-                文档转换
-              </text>
-              <text class="tool-desc">
-                PDF/Word/Excel 互转
-              </text>
+              <view class="tool-info">
+                <text class="tool-name">文档转换</text>
+                <text class="tool-desc">PDF/Word/Excel 互转</text>
+              </view>
+              <text class="tool-arrow">›</text>
             </view>
-            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('id-photo')">
-              <view class="tool-icon tool-icon-photo">
-                <text class="tool-icon-text">
-                  P
-                </text>
+            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" hover-class="tool-entry-hover" @tap="navToTool('id-photo')">
+              <view class="tool-icon-wrapper tool-icon-photo">
+                <view class="tool-icon-glow tool-glow-photo" />
+                <text class="tool-icon-emoji">📷</text>
               </view>
-              <text class="tool-name">
-                证件照制作
-              </text>
-              <text class="tool-desc">
-                智能抠图换背景
-              </text>
+              <view class="tool-info">
+                <text class="tool-name">证件照制作</text>
+                <text class="tool-desc">智能抠图换背景</text>
+              </view>
+              <text class="tool-arrow">›</text>
             </view>
-            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" @tap="navToTool('photo-search')">
-              <view class="tool-icon tool-icon-search">
-                <text class="tool-icon-text">
-                  S
-                </text>
+            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" hover-class="tool-entry-hover" @tap="navToTool('photo-search')">
+              <view class="tool-icon-wrapper tool-icon-search">
+                <view class="tool-icon-glow tool-glow-search" />
+                <text class="tool-icon-emoji">🔍</text>
               </view>
-              <text class="tool-name">
-                拍照搜题
-              </text>
-              <text class="tool-desc">
-                AI 智能识别解答
-              </text>
+              <view class="tool-info">
+                <text class="tool-name">拍照搜题</text>
+                <text class="tool-desc">AI 智能识别解答</text>
+              </view>
+              <text class="tool-arrow">›</text>
             </view>
           </view>
 
@@ -191,73 +185,76 @@
     <!-- 底部导航栏：放在 dashboard-container 外部，避免继承绿色背景 -->
     <CustomTabbar :is-dark="isDark" />
 
-    <!-- 公式定理弹窗 -->
-    <FormulaModal
-      :visible="showFormulaModal"
-      :formula-list="formulaList"
-      @close="showFormulaModal = false"
-    />
+    <!-- 弹窗容器：需要继承 dark 类以获取暗色 CSS 变量 -->
+    <view :class="{ 'dark': isDark }">
+      <!-- 公式定理弹窗 -->
+      <FormulaModal
+        :visible="showFormulaModal"
+        :formula-list="formulaList"
+        @close="showFormulaModal = false"
+      />
 
-    <!-- 每日金句海报弹窗 -->
-    <QuotePosterModal
-      :visible="showQuotePoster"
-      :quote="dailyQuote"
-      :author="quoteAuthor"
-      :is-dark="isDark"
-      @close="showQuotePoster = false"
-      @save="saveQuotePoster"
-    />
+      <!-- 每日金句海报弹窗 -->
+      <QuotePosterModal
+        :visible="showQuotePoster"
+        :quote="dailyQuote"
+        :author="quoteAuthor"
+        :is-dark="isDark"
+        @close="showQuotePoster = false"
+        @save="saveQuotePoster"
+      />
 
-    <!-- ✅ 自定义弹窗：题库为空 -->
-    <CustomModal
-      :visible="showEmptyBankModal"
-      type="upload"
-      title="📚 题库空空如也"
-      content="上传学习资料，AI 将为您智能生成专属题库，开启高效刷题之旅！"
-      confirm-text="去上传"
-      cancel-text="稍后再说"
-      :show-cancel="true"
-      :is-dark="isDark"
-      @confirm="handleEmptyBankConfirm"
-      @cancel="showEmptyBankModal = false"
-    />
+      <!-- ✅ 自定义弹窗：题库为空 -->
+      <CustomModal
+        :visible="showEmptyBankModal"
+        type="upload"
+        title="📚 题库空空如也"
+        content="上传学习资料，AI 将为您智能生成专属题库，开启高效刷题之旅！"
+        confirm-text="去上传"
+        cancel-text="稍后再说"
+        :show-cancel="true"
+        :is-dark="isDark"
+        @confirm="handleEmptyBankConfirm"
+        @cancel="showEmptyBankModal = false"
+      />
 
-    <!-- ✅ 自定义弹窗：登录引导 -->
-    <CustomModal
-      :visible="showLoginModal"
-      type="study"
-      title="🎓 开启学霸之旅"
-      content="登录后可同步学习进度、错题本等数据，享受完整功能体验！"
-      confirm-text="立即登录"
-      cancel-text="暂不登录"
-      :show-cancel="true"
-      :is-dark="isDark"
-      @confirm="handleLoginConfirm"
-      @cancel="showLoginModal = false"
-    />
+      <!-- ✅ 自定义弹窗：登录引导 -->
+      <CustomModal
+        :visible="showLoginModal"
+        type="study"
+        title="🎓 开启学霸之旅"
+        content="登录后可同步学习进度、错题本等数据，享受完整功能体验！"
+        confirm-text="立即登录"
+        cancel-text="暂不登录"
+        :show-cancel="true"
+        :is-dark="isDark"
+        @confirm="handleLoginConfirm"
+        @cancel="showLoginModal = false"
+      />
 
 
-    <!-- ✅ 检查点1.2: 每日金句分享弹窗 -->
-    <ShareModal
-      :visible="showShareModal"
-      :quote="dailyQuote"
-      :author="quoteAuthor"
-      :is-dark="isDark"
-      @close="showShareModal = false"
-      @favorite="handleQuoteFavorite"
-      @share="handleQuoteShare"
-    />
+      <!-- ✅ 检查点1.2: 每日金句分享弹窗 -->
+      <ShareModal
+        :visible="showShareModal"
+        :quote="dailyQuote"
+        :author="quoteAuthor"
+        :is-dark="isDark"
+        @close="showShareModal = false"
+        @favorite="handleQuoteFavorite"
+        @share="handleQuoteShare"
+      />
 
-    <!-- ✅ 检查点1.3: 待办事项编辑器 -->
-    <TodoEditor
-      :visible="showTodoEditor"
-      :todo-data="editingTodo"
-      :is-dark="isDark"
-      @close="showTodoEditor = false"
-      @save="handleTodoSave"
-      @delete="handleTodoDelete"
-      @toggle="handleToggleTodo"
-    />
+      <!-- ✅ 检查点1.3: 待办事项编辑器 -->
+      <TodoEditor
+        :visible="showTodoEditor"
+        :todo-data="editingTodo"
+        :is-dark="isDark"
+        @close="showTodoEditor = false"
+        @save="handleTodoSave"
+        @delete="handleTodoDelete"
+        @toggle="handleToggleTodo"
+      />
+    </view>
 
     <!-- ✅ P3: 离线状态指示器 -->
     <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
@@ -607,6 +604,8 @@ export default {
         this.loadRecentActivities();
       } catch (e) {
         logger.error('[Index] refreshData 异常:', e);
+        // P007: 刷新失败时提供用户反馈
+        uni.showToast({ title: '数据刷新失败，请稍后重试', icon: 'none', duration: 1500 });
       }
     },
 
@@ -982,58 +981,102 @@ export default {
 /* ==================== 实用工具入口 ==================== */
 .tools-grid {
 	display: flex;
+	flex-direction: column;
 	gap: 20rpx;
 	margin-bottom: 48rpx;
 }
 
 .tool-entry {
-	flex: 1;
 	display: flex;
-	flex-direction: column;
 	align-items: center;
-	padding: 28rpx 12rpx;
+	padding: 28rpx 24rpx;
 	border-radius: 24rpx;
 	border: 1rpx solid var(--border);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.tool-icon {
-	width: 72rpx;
-	height: 72rpx;
-	border-radius: 20rpx;
+.tool-entry-hover {
+	transform: scale(0.97);
+	opacity: 0.85;
+}
+
+.tool-icon-wrapper {
+	position: relative;
+	width: 88rpx;
+	height: 88rpx;
+	border-radius: 24rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-bottom: 12rpx;
+	flex-shrink: 0;
+	overflow: hidden;
+}
+
+.tool-icon-glow {
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	height: 200%;
+	border-radius: 50%;
+	opacity: 0.25;
+	filter: blur(16rpx);
 }
 
 .tool-icon-doc {
 	background: linear-gradient(135deg, #36d1dc, #5b86e5);
 }
 
+.tool-glow-doc {
+	background: radial-gradient(circle, #36d1dc, transparent 70%);
+}
+
 .tool-icon-photo {
 	background: linear-gradient(135deg, #e84393, #fd79a8);
+}
+
+.tool-glow-photo {
+	background: radial-gradient(circle, #e84393, transparent 70%);
 }
 
 .tool-icon-search {
 	background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-.tool-icon-text {
-	color: #fff;
-	font-size: 30rpx;
-	font-weight: bold;
+.tool-glow-search {
+	background: radial-gradient(circle, #667eea, transparent 70%);
+}
+
+.tool-icon-emoji {
+	font-size: 40rpx;
+	position: relative;
+	z-index: 1;
+}
+
+.tool-info {
+	flex: 1;
+	margin-left: 24rpx;
+	display: flex;
+	flex-direction: column;
+	gap: 4rpx;
 }
 
 .tool-name {
-	font-size: 24rpx;
+	font-size: 28rpx;
 	font-weight: 600;
 	color: var(--text-primary);
-	margin-bottom: 4rpx;
 }
 
 .tool-desc {
-	font-size: 20rpx;
+	font-size: 22rpx;
 	color: var(--text-secondary);
+}
+
+.tool-arrow {
+	font-size: 36rpx;
+	color: var(--text-secondary);
+	opacity: 0.5;
+	margin-left: 12rpx;
 }
 
 </style>

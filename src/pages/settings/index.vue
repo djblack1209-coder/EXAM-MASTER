@@ -430,7 +430,8 @@ const handleEditMajor = () => {
         // 安全过滤输入（最大30字符）
         const major = sanitizeInput(res.content, 30);
         if (!major) {
-          uni.showToast({ title: '专业名称不能为空或包含特殊字符', icon: 'none' });
+          const isEmpty = !res.content || !res.content.trim();
+          uni.showToast({ title: isEmpty ? '专业名称不能为空' : '专业名称包含不支持的特殊字符', icon: 'none' });
           return;
         }
         userSchoolInfo.value.major = major;
@@ -597,7 +598,7 @@ const onChooseAvatar = (e) => {
   isChoosingAvatar.value = true;
 
   try {
-    // #ifdef MP-WECHAT
+    // #ifdef MP-WEIXIN
     const { avatarUrl } = e.detail;
     if (avatarUrl) {
       logger.log('[Settings] 📸 头像已选择:', avatarUrl);
@@ -627,7 +628,7 @@ const onChooseAvatar = (e) => {
     }
     // #endif
 
-    // #ifndef MP-WECHAT
+    // #ifndef MP-WEIXIN
     // 非微信环境，使用 uni.chooseImage 让用户选择真实图片
     uni.chooseImage({
       count: 1,
@@ -694,11 +695,12 @@ const onNicknameChange = (e) => {
   const nickName = sanitizeInput(rawNickName, 20);
 
   if (!nickName) {
-    uni.showToast({ title: '昵称不能为空或包含特殊字符', icon: 'none' });
+    const isEmpty = !rawNickName || !rawNickName.trim();
+    uni.showToast({ title: isEmpty ? '昵称不能为空' : '昵称包含不支持的特殊字符', icon: 'none' });
     return;
   }
 
-  // #ifdef MP-WECHAT
+  // #ifdef MP-WEIXIN
   userInfo.value.nickName = nickName;
   // 如果头像已存在，保留头像；否则使用本地默认头像
   if (!userInfo.value.avatarUrl) {
@@ -707,7 +709,7 @@ const onNicknameChange = (e) => {
   doRealLogin();
   // #endif
 
-  // #ifndef MP-WECHAT
+  // #ifndef MP-WEIXIN
   // 非微信环境
   userInfo.value.nickName = nickName;
   // 如果头像已存在，保留头像；否则使用本地默认头像

@@ -38,15 +38,15 @@ const REQUIRED_CONFIGS = [
  * @returns {string|null} 环境变量值或null
  */
 function getEnvValue(key) {
-  try {
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      const value = import.meta.env[key];
-      if (value !== undefined && value !== '') {
-        return value;
-      }
+  // Vite 在构建时会将 import.meta.env 替换为具体对象
+  // 不要用 typeof import.meta !== 'undefined' 守卫，
+  // 因为 CJS 编译后会生成 require("url") 调用，在微信小程序环境中不存在该模块
+  const env = import.meta.env;
+  if (env) {
+    const value = env[key];
+    if (value !== undefined && value !== '') {
+      return value;
     }
-  } catch (_e) {
-    // 忽略错误
   }
   return null;
 }

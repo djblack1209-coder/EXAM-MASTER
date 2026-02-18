@@ -358,7 +358,7 @@ export default {
 .week-label {
     height: 24rpx;
     line-height: 24rpx;
-    font-size: 18rpx;
+    font-size: 20rpx;
     color: var(--text-sub, #666);
     text-align: right;
     padding-right: 8rpx;

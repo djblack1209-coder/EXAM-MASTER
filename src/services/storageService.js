@@ -25,14 +25,16 @@
 
 import { logger } from '@/utils/logger.js';
 import { lafService } from './lafService.js';
+import { offlineMistakeToBackend } from '@/utils/field-normalizer.js';
 
 // ✅ B021: 敏感数据加密存储
 // 需要加密存储的键名列表
 const SENSITIVE_KEYS = ['EXAM_TOKEN', 'userInfo', 'EXAM_USER_ID', 'EXAM_USER_INFO'];
 
-// 简单的混淆密钥（非密码学安全，但足以防止直接读取 localStorage 明文）
+// ✅ P1-FIX: 混淆密钥从统一配置读取，支持环境变量覆盖
 // 在小程序环境中存储已经是沙箱隔离的，此加密主要保护 H5/Web 构建
-const OBFUSCATION_KEY = 'ExM@st3r_2026';
+import config from '../config/index.js';
+const OBFUSCATION_KEY = config.security.obfuscationKey;
 
 // ==================== 跨平台 Base64 ====================
 // 微信小程序环境没有 btoa/atob，需要自行实现
@@ -1167,7 +1169,6 @@ class StorageService {
       if (mistake) {
         const oldStatus = mistake.is_mastered;
         mistake.is_mastered = Boolean(is_mastered);
-        mistake.isMastered = Boolean(is_mastered); // 兼容字段
         mistake.last_practice_time = Date.now();
         this.save('mistake_book', localMistakes, true);
         logger.log(`[StorageService] ✅ 本地状态更新成功 - ID: ${id}, 状态: ${oldStatus} -> ${is_mastered}, last_practice_time: ${Date.now()}`);
@@ -1212,14 +1213,7 @@ class StorageService {
 
       // I003: 尝试批量同步（后端 batchSync action）
       const batchData = pendingMistakes.map((m) => ({
-        question_content: m.question_content || m.question,
-        options: m.options || [],
-        user_answer: m.user_answer || m.userChoice,
-        correct_answer: m.correct_answer || m.answer,
-        analysis: m.analysis || m.desc || '',
-        tags: m.tags || [],
-        is_mastered: m.is_mastered || false,
-        wrong_count: m.wrong_count || m.wrongCount || 1,
+        ...offlineMistakeToBackend(m),
         _local_id: m.id || m._id // 用于回写映射
       }));
 

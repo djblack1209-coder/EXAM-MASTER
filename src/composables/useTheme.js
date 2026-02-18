@@ -7,7 +7,7 @@
  *
  *   onLoad/onShow 中调用 initTheme() 获取 isDark
  *   onLoad 中调用 onThemeUpdate(cb) 监听主题变化
- *   onUnload 中调用 offThemeUpdate() 清理监听
+ *   onUnload 中调用 offThemeUpdate(cb) 清理监听（传入同一个回调引用）
  *   toggleTheme(isDark) 切换主题
  */
 
@@ -16,8 +16,8 @@ import { storageService } from '@/services/storageService.js';
 const THEME_KEY = 'theme_mode';
 const THEME_EVENT = 'themeUpdate';
 
-// 存储当前注册的回调引用，确保 $off 只移除自己的监听器
-let _currentCallback = null;
+// 跟踪所有已注册的回调，支持多组件并发使用
+const _registeredCallbacks = new Set();
 
 /**
  * 从本地存储读取当前主题
@@ -46,16 +46,23 @@ export function toggleTheme(currentIsDark) {
  * @param {Function} callback - 回调 (mode: 'dark'|'light') => void
  */
 export function onThemeUpdate(callback) {
-  _currentCallback = callback;
-  uni.$on(THEME_EVENT, _currentCallback);
+  _registeredCallbacks.add(callback);
+  uni.$on(THEME_EVENT, callback);
 }
 
 /**
- * 取消主题变化事件监听（只移除自己注册的回调）
+ * 取消主题变化事件监听
+ * @param {Function} [callback] - 要移除的回调。如不传，移除所有已注册的回调
  */
-export function offThemeUpdate() {
-  if (_currentCallback) {
-    uni.$off(THEME_EVENT, _currentCallback);
-    _currentCallback = null;
+export function offThemeUpdate(callback) {
+  if (callback) {
+    uni.$off(THEME_EVENT, callback);
+    _registeredCallbacks.delete(callback);
+  } else {
+    // 兼容旧调用方式：无参数时移除所有已注册的回调
+    for (const cb of _registeredCallbacks) {
+      uni.$off(THEME_EVENT, cb);
+    }
+    _registeredCallbacks.clear();
   }
 }

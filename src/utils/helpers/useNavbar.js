@@ -52,7 +52,7 @@ export const getMenuButtonBoundingClientRect = () => {
  */
 export const getSystemInfo = () => {
   try {
-    // #ifdef MP-WECHAT
+    // #ifdef MP-WEIXIN
     // 微信小程序使用新的 API
     const windowInfo = uni.getWindowInfo();
     const deviceInfo = uni.getDeviceInfo();
@@ -65,7 +65,7 @@ export const getSystemInfo = () => {
     };
     // #endif
 
-    // #ifndef MP-WECHAT
+    // #ifndef MP-WEIXIN
     return uni.getSystemInfoSync();
     // #endif
   } catch (error) {

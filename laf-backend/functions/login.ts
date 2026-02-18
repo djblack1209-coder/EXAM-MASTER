@@ -339,6 +339,48 @@ function checkLoginRateLimit(clientIp: string): { allowed: boolean; remaining: n
   }
 }
 
+// ==================== P3-FIX: 公共用户创建函数（消除3处重复代码） ====================
+const usersCollection = db.collection('users')
+
+/**
+ * 创建新用户的默认数据结构
+ * @param overrides - 覆盖默认值的字段（如 openid, email, h5_openid 等）
+ */
+function buildNewUserData(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  const now = Date.now()
+  return {
+    nickname: `考研学子${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+    avatar_url: '',
+    role: 'user',
+    streak_days: 0,
+    total_study_days: 0,
+    total_study_minutes: 0,
+    total_questions: 0,
+    correct_questions: 0,
+    last_study_date: null,
+    achievements: [],
+    settings: {
+      theme: 'auto',
+      notification: true,
+      daily_goal: 30
+    },
+    created_at: now,
+    updated_at: now,
+    ...overrides
+  }
+}
+
+/**
+ * 创建新用户并插入数据库
+ * @returns 插入后的用户对象 { data: { _id, ...fields } }
+ */
+async function createNewUser(overrides: Record<string, unknown>, requestId: string, label: string): Promise<{ data: Record<string, unknown> }> {
+  const newUser = buildNewUserData(overrides)
+  const insertRes = await usersCollection.add(newUser)
+  logger.info(`[${requestId}] ${label}新用户创建成功: ${insertRes.id}`)
+  return { data: { _id: insertRes.id, ...newUser } }
+}
+
 export default async function (ctx) {
   const startTime = Date.now()
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
@@ -485,7 +527,6 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
   }
 
   // 2. 查询或创建用户
-  const usersCollection = db.collection('users')
   let user = await usersCollection.where({ email }).getOne()
 
   const now = Date.now()
@@ -494,38 +535,16 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
   if (!user.data) {
     // 新用户注册
     isNewUser = true
-    const salt = crypto.randomBytes(16).toString('hex')
-    const newUser: Record<string, unknown> = {
-      email,
-      nickname: `考研学子${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
-      avatar_url: '',
-      role: 'user',
-      streak_days: 0,
-      total_study_days: 0,
-      total_study_minutes: 0,
-      total_questions: 0,
-      correct_questions: 0,
-      last_study_date: null,
-      achievements: [],
-      settings: {
-        theme: 'auto',
-        notification: true,
-        daily_goal: 30
-      },
-      created_at: now,
-      updated_at: now
-    }
+    const overrides: Record<string, unknown> = { email }
 
     // 如果提供了密码，使用 scrypt 保存密码哈希
     if (password) {
-      newUser.password_salt = salt
-      newUser.password_hash = await hashPasswordScrypt(password, salt)
+      const salt = crypto.randomBytes(16).toString('hex')
+      overrides.password_salt = salt
+      overrides.password_hash = await hashPasswordScrypt(password, salt)
     }
 
-    const insertRes = await usersCollection.add(newUser)
-    user = { data: { _id: insertRes.id, ...newUser } }
-
-    logger.info(`[${requestId}] 邮箱新用户创建成功: ${insertRes.id}`)
+    user = await createNewUser(overrides, requestId, '邮箱')
   } else {
     // 老用户更新登录时间
     await usersCollection.doc(user.data._id).update({
@@ -695,7 +714,6 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
     logger.info(`[${requestId}] 获取 openid 成功: ${openid.substring(0, 10)}...`)
 
     // 3. 查询或创建用户
-    const usersCollection = db.collection('users')
     let user = await usersCollection.where({ openid }).getOne()
 
     const now = Date.now()
@@ -703,32 +721,7 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
 
     if (!user.data) {
       isNewUser = true
-      const newUser = {
-        openid,
-        unionid: unionid || null,
-        nickname: `考研学子${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
-        avatar_url: '',
-        role: 'user',
-        streak_days: 0,
-        total_study_days: 0,
-        total_study_minutes: 0,
-        total_questions: 0,
-        correct_questions: 0,
-        last_study_date: null,
-        achievements: [],
-        settings: {
-          theme: 'auto',
-          notification: true,
-          daily_goal: 30
-        },
-        created_at: now,
-        updated_at: now
-      }
-
-      const insertRes = await usersCollection.add(newUser)
-      user = { data: { _id: insertRes.id, ...newUser } }
-
-      logger.info(`[${requestId}] 新用户创建成功: ${insertRes.id}`)
+      user = await createNewUser({ openid, unionid: unionid || null }, requestId, '微信')
     } else {
       await usersCollection.doc(user.data._id).update({
         updated_at: now,
@@ -850,7 +843,6 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
   logger.info(`[${requestId}] H5微信 openid: ${openid.substring(0, 10)}...`)
 
   // 5. 查询或创建用户（优先用 unionid 匹配，其次 h5_openid）
-  const usersCollection = db.collection('users')
   const unionid = tokenUnionid || wxUserInfo.unionid || null
   let user: Record<string, unknown> | null = null
 
@@ -869,33 +861,22 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
   if (!user?.data) {
     // 新用户
     isNewUser = true
-    const newUser: Record<string, unknown> = {
+    const overrides: Record<string, unknown> = {
       h5_openid: openid,
-      unionid: unionid,
-      nickname: wxUserInfo.nickname || `考研学子${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
-      avatar_url: wxUserInfo.headimgurl || '',
-      role: 'user',
-      streak_days: 0,
-      total_study_days: 0,
-      total_study_minutes: 0,
-      total_questions: 0,
-      correct_questions: 0,
-      last_study_date: null,
-      achievements: [],
-      settings: { theme: 'auto', notification: true, daily_goal: 30 },
-      created_at: now,
-      updated_at: now
+      unionid: unionid
     }
+    if (wxUserInfo.nickname) overrides.nickname = wxUserInfo.nickname
+    if (wxUserInfo.headimgurl) overrides.avatar_url = wxUserInfo.headimgurl
 
-    const insertRes = await usersCollection.add(newUser)
-    user = { data: { _id: insertRes.id, ...newUser } }
-    logger.info(`[${requestId}] H5微信新用户创建: ${insertRes.id}`)
+    user = await createNewUser(overrides, requestId, 'H5微信')
   } else {
     // 老用户，更新信息
     const updateData: Record<string, unknown> = { updated_at: now, h5_openid: openid }
     if (unionid && !user.data.unionid) updateData.unionid = unionid
-    if (wxUserInfo.nickname && !user.data.nickname?.startsWith('考研学子') === false) {
-      // 仅在用户还是默认昵称时更新
+    // [v1.2.0 修复] 运算符优先级 bug：!x === false 永远不会触发更新
+    // 修复：当用户仍是默认昵称（考研学子xxx）时，用微信昵称覆盖
+    if (wxUserInfo.nickname && user.data.nickname?.startsWith('考研学子')) {
+      updateData.nickname = wxUserInfo.nickname
     }
     if (wxUserInfo.headimgurl && !user.data.avatar_url) {
       updateData.avatar_url = wxUserInfo.headimgurl

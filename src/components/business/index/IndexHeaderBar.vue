@@ -17,7 +17,7 @@
       <view class="header-avatar" @tap="handleAvatarTap">
         <image
           class="avatar-img"
-          :src="avatarUrl"
+          :src="displayAvatarUrl"
           mode="aspectFill"
           @error="onAvatarError"
         />
@@ -71,13 +71,32 @@ export default {
 
   data() {
     return {
-      searchKeyword: ''
+      searchKeyword: '',
+      avatarLoadFailed: false
     };
+  },
+
+  computed: {
+    /** 实际显示的头像URL：加载失败时降级为默认头像 */
+    displayAvatarUrl() {
+      if (this.avatarLoadFailed) {
+        return '/static/images/default-avatar.png';
+      }
+      return this.avatarUrl || '/static/images/default-avatar.png';
+    }
+  },
+
+  watch: {
+    // 当外部传入新的 avatarUrl 时，重置失败状态以重新尝试加载
+    avatarUrl() {
+      this.avatarLoadFailed = false;
+    }
   },
 
   methods: {
     onAvatarError() {
-      logger.warn('[IndexHeaderBar] 头像加载失败，使用默认头像');
+      logger.warn('[IndexHeaderBar] 头像加载失败，降级为默认头像');
+      this.avatarLoadFailed = true;
     },
 
     handleSearchTap() {

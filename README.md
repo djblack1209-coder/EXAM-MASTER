@@ -1,0 +1,139 @@
+# Exam-Master
+
+> 考研备考小程序 — AI 助力，一战成硕
+
+基于 uni-app + Vue 3 + Laf Cloud 的全栈考研备考应用，支持微信小程序、QQ 小程序和 H5。
+
+## 功能概览
+
+- **智能刷题** — 题库练习、模拟考试、错题本、收藏夹，支持自适应学习引擎
+- **AI 助手** — AI 对话答疑、拍照搜题、AI 自动生成题目
+- **学习管理** — 学习目标设定、成就系统、学习统计、签到打卡
+- **社交功能** — PK 对战、排行榜、好友系统、学习小组
+- **院校工具** — 院校查询、AI 择校咨询、学习资源库
+- **实用工具** — 证件照处理、文档转换
+
+## 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 前端框架 | uni-app + Vue 3 + Pinia |
+| 后端服务 | Laf Cloud (Sealos) + TypeScript |
+| 数据库 | MongoDB (Laf 内置) |
+| AI 能力 | 智谱 GLM-4-Plus / SiliconFlow |
+| 构建工具 | Vite |
+| 测试 | Vitest + Playwright |
+| 代码规范 | ESLint + Prettier + Husky + Commitlint |
+
+## 项目结构
+
+```
+exam-master/
+├── src/                    # 前端源码
+│   ├── pages/              #   页面（主包）
+│   ├── pages/practice-sub/ #   练习子包
+│   ├── pages/school-sub/   #   院校子包
+│   ├── components/         #   组件（base / business）
+│   ├── composables/        #   组合式函数
+│   ├── mixins/             #   混入（Vue 2 Options API 页面）
+│   ├── services/           #   服务层（HTTP / 存储 / 错误处理）
+│   ├── stores/             #   Pinia 状态管理
+│   ├── utils/              #   工具函数
+│   ├── config/             #   应用配置
+│   └── styles/             #   全局样式 / 设计令牌
+├── laf-backend/            # 后端云函数（独立子项目）
+│   ├── functions/          #   云函数入口（32 个）
+│   ├── functions/_shared/  #   共享模块（响应码 / 日志 / 限流）
+│   ├── database-schema/    #   数据库 Schema
+│   └── README.md           #   后端文档
+├── docs/                   # 项目文档
+│   ├── API.md              #   后端 API 参考
+│   ├── API_DOCUMENTATION.md#   API 使用文档（含示例）
+│   ├── COMPONENTS.md       #   组件文档
+│   ├── UTILS.md            #   工具函数文档
+│   └── SCRIPTS.md          #   脚本与 CI/CD
+├── deploy/                 # 部署配置与运维文档
+├── tests/                  # 测试用例
+├── .env.example            # 环境变量模板（前端）
+└── laf-backend/.env.example# 环境变量模板（后端）
+```
+
+## 快速开始
+
+### 环境要求
+
+- Node.js >= 18
+- npm >= 9
+- 微信开发者工具（小程序开发）
+- [Laf CLI](https://docs.laf.run/guide/cli/)（后端部署）
+
+### 前端
+
+```bash
+# 安装依赖
+npm install
+
+# 复制环境变量并填入配置
+cp .env.example .env.local
+
+# 启动开发服务器（H5）
+npm run dev:h5
+
+# 构建微信小程序
+npm run build:mp-weixin
+```
+
+### 后端
+
+```bash
+cd laf-backend
+
+# 安装依赖
+npm install
+
+# 复制环境变量并填入配置
+cp .env.example .env
+
+# 部署到 Laf
+laf login && laf init <appid> && laf deploy
+```
+
+详见 [laf-backend/README.md](./laf-backend/README.md)。
+
+## 常用命令
+
+| 命令 | 说明 |
+|------|------|
+| `npm run dev:h5` | H5 开发服务器 |
+| `npm run dev:mp-weixin` | 微信小程序开发 |
+| `npm run build:mp-weixin` | 构建微信小程序 |
+| `npm run test` | 运行单元测试 |
+| `npm run test:coverage` | 测试覆盖率报告 |
+| `npm run lint:fix` | ESLint 自动修复 |
+| `npm run format` | Prettier 格式化 |
+
+## 文档
+
+- [API 参考](./docs/API.md)
+- [API 使用文档](./docs/API_DOCUMENTATION.md)
+- [组件文档](./docs/COMPONENTS.md)
+- [工具函数](./docs/UTILS.md)
+- [脚本与 CI/CD](./docs/SCRIPTS.md)
+- [部署指南](./deploy/docs/DEPLOYMENT-GUIDE.md)
+- [应急响应](./deploy/docs/EMERGENCY-RESPONSE.md)
+- [后端文档](./laf-backend/README.md)
+
+## 环境变量
+
+前端环境变量详见 [.env.example](./.env.example)，后端环境变量详见 [laf-backend/.env.example](./laf-backend/.env.example)。
+
+关键配置项：
+
+- `VITE_API_BASE_URL` — 后端 API 地址
+- `VITE_WECHAT_APPID` — 微信小程序 AppID
+- `VITE_QQ_APPID` — QQ 小程序 AppID
+- `VITE_AI_*` — AI 服务配置
+
+## License
+
+Private — 仅供内部使用。

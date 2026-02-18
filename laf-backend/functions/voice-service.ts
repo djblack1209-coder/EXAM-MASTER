@@ -33,6 +33,7 @@
 
 import cloud from '@lafjs/cloud'
 import { validate } from '../utils/validator'
+import { success, badRequest, serverError, generateRequestId, wrapResponse } from './_shared/api-response'
 
 // 环境变量配置
 const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY || ''
@@ -52,7 +53,7 @@ const VOICE_OPTIONS = {
 
 export default async function (ctx) {
   const startTime = Date.now()
-  const requestId = `voice_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  const requestId = generateRequestId('voice')
 
   console.log(`[${requestId}] 语音服务请求开始`)
 
@@ -64,12 +65,7 @@ export default async function (ctx) {
       action: { required: true, type: 'string', maxLength: 50, enum: ['speech_to_text', 'stt', 'text_to_speech', 'tts', 'get_voices'] }
     })
     if (!entryValidation.valid) {
-      return {
-        code: -1,
-        success: false,
-        message: entryValidation.errors[0],
-        requestId
-      }
+      return wrapResponse(badRequest(entryValidation.errors[0]), requestId, startTime)
     }
 
     console.log(`[${requestId}] action: ${action}`)
@@ -88,44 +84,22 @@ export default async function (ctx) {
         break
 
       case 'get_voices':
-        result = {
-          code: 0,
-          success: true,
-          data: VOICE_OPTIONS,
-          message: '获取音色列表成功'
-        }
+        result = success(VOICE_OPTIONS, '获取音色列表成功')
         break
 
       default:
-        result = {
-          code: -1,
-          success: false,
-          message: `不支持的操作类型: ${action}`,
-          requestId
-        }
+        result = badRequest(`不支持的操作类型: ${action}`)
     }
 
     const duration = Date.now() - startTime
     console.log(`[${requestId}] 语音服务完成，耗时: ${duration}ms`)
 
-    return {
-      ...result,
-      requestId,
-      duration
-    }
+    return wrapResponse(result, requestId, startTime)
 
   } catch (error) {
-    const duration = Date.now() - startTime
     console.error(`[${requestId}] 语音服务异常:`, error)
 
-    return {
-      code: -1,
-      success: false,
-      message: error.message || '语音服务异常',
-      error: error.message,
-      requestId,
-      duration
-    }
+    return wrapResponse(serverError(error.message || '语音服务异常', error.message), requestId, startTime)
   }
 }
 
@@ -142,11 +116,7 @@ async function handleSTT(params, requestId) {
   } = params
 
   if (!audioBase64) {
-    return {
-      code: -1,
-      success: false,
-      message: '参数错误: audioBase64 不能为空'
-    }
+    return badRequest('参数错误: audioBase64 不能为空')
   }
 
   console.log(`[${requestId}] STT 请求: audioSize=${audioBase64.length}, format=${audioFormat}`)
@@ -186,33 +156,20 @@ async function handleSTT(params, requestId) {
 
     if (data.error) {
       console.error(`[${requestId}] STT 错误:`, data.error)
-      return {
-        code: -1,
-        success: false,
-        message: `语音识别失败: ${data.error.message || '未知错误'}`
-      }
+      return serverError(`语音识别失败: ${data.error.message || '未知错误'}`)
     }
 
     const text = data.text || ''
     console.log(`[${requestId}] STT 成功: textLength=${text.length}`)
 
-    return {
-      code: 0,
-      success: true,
-      data: {
-        text: text,
-        model: data.model || 'glm-asr-2512'
-      },
-      message: '语音识别成功'
-    }
+    return success({
+      text: text,
+      model: data.model || 'glm-asr-2512'
+    }, '语音识别成功')
 
   } catch (error) {
     console.error(`[${requestId}] STT 异常:`, error)
-    return {
-      code: -1,
-      success: false,
-      message: `语音识别异常: ${error.message}`
-    }
+    return serverError(`语音识别异常: ${error.message}`)
   }
 }
 
@@ -230,11 +187,7 @@ async function handleTTS(params, requestId) {
   } = params
 
   if (!text || text.trim() === '') {
-    return {
-      code: -1,
-      success: false,
-      message: '参数错误: text 不能为空'
-    }
+    return badRequest('参数错误: text 不能为空')
   }
 
   // 文本长度限制
@@ -272,11 +225,7 @@ async function handleTTS(params, requestId) {
       // 如果返回 JSON，说明是错误响应
       const errorData = JSON.parse(Buffer.from(response.data).toString())
       console.error(`[${requestId}] TTS 错误:`, errorData)
-      return {
-        code: -1,
-        success: false,
-        message: `语音合成失败: ${errorData.error?.message || '未知错误'}`
-      }
+      return serverError(`语音合成失败: ${errorData.error?.message || '未知错误'}`)
     }
 
     // 将音频数据转为 Base64
@@ -284,24 +233,15 @@ async function handleTTS(params, requestId) {
 
     console.log(`[${requestId}] TTS 成功: audioSize=${audioBase64.length}`)
 
-    return {
-      code: 0,
-      success: true,
-      data: {
-        audioBase64: audioBase64,
-        format: format,
-        voice: voice,
-        mimeType: format === 'wav' ? 'audio/wav' : 'audio/pcm'
-      },
-      message: '语音合成成功'
-    }
+    return success({
+      audioBase64: audioBase64,
+      format: format,
+      voice: voice,
+      mimeType: format === 'wav' ? 'audio/wav' : 'audio/pcm'
+    }, '语音合成成功')
 
   } catch (error) {
     console.error(`[${requestId}] TTS 异常:`, error)
-    return {
-      code: -1,
-      success: false,
-      message: `语音合成异常: ${error.message}`
-    }
+    return serverError(`语音合成异常: ${error.message}`)
   }
 }

@@ -14,7 +14,7 @@
             —— {{ author }}
           </text>
           <view class="poster-date">
-            <text>{{ currentDate }}</text>
+            <text class="poster-date-text">{{ currentDate }}</text>
           </view>
           <view class="poster-brand">
             <text class="brand-name">
@@ -161,7 +161,7 @@ export default {
 	margin-bottom: 48rpx;
 }
 
-.poster-date text {
+.poster-date-text {
 	font-size: 24rpx;
 	color: rgba(255, 255, 255, 0.7);
 	background: rgba(255, 255, 255, 0.15);

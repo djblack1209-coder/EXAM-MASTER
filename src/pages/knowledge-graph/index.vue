@@ -3,7 +3,7 @@
     <!-- 顶部导航栏 -->
     <view class="nav-header glassmorphism" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <view class="nav-back" @tap="handleBack">
+        <view class="nav-back" hover-class="item-hover" @tap="handleBack">
           <text class="back-icon">
             ←
           </text>
@@ -12,27 +12,27 @@
           知识图谱
         </text>
         <view class="nav-actions">
-          <view class="action-btn" @tap="showMasteryStats">
+          <view class="action-btn" hover-class="item-hover" @tap="showMasteryStats">
             <text class="action-icon">
               📊
             </text>
           </view>
-          <view class="action-btn" @tap="showLearningPath">
+          <view class="action-btn" hover-class="item-hover" @tap="showLearningPath">
             <text class="action-icon">
               🛤️
             </text>
           </view>
-          <view class="action-btn" @tap="showConnectionAnalysis">
+          <view class="action-btn" hover-class="item-hover" @tap="showConnectionAnalysis">
             <text class="action-icon">
               🔗
             </text>
           </view>
-          <view class="action-btn" @tap="showPersonalizedPlan">
+          <view class="action-btn" hover-class="item-hover" @tap="showPersonalizedPlan">
             <text class="action-icon">
               📋
             </text>
           </view>
-          <view class="action-btn" @tap="handleRefresh">
+          <view class="action-btn" hover-class="item-hover" @tap="handleRefresh">
             <text class="action-icon">
               ↻
             </text>
@@ -59,7 +59,7 @@
       <!-- 图谱容器 -->
       <view class="graph-container">
         <!-- 中心节点 -->
-        <view class="center-node" @tap="handleCenterClick">
+        <view class="center-node" hover-class="item-hover" @tap="handleCenterClick">
           <view class="center-glow" />
           <view class="center-content">
             <text class="center-icon">
@@ -80,6 +80,7 @@
           :key="node.id"
           :class="['knowledge-node', 'node-level-' + node.level, activeNodeId === node.id && 'node-active']"
           :style="getNodeStyle(node, index)"
+          hover-class="item-hover"
           @tap="handleNodeClick(node)"
         >
           <!-- 连接线 -->
@@ -117,6 +118,7 @@
           :key="child.id"
           class="child-node"
           :style="getChildNodeStyle(child, idx)"
+          hover-class="item-hover"
           @tap="handleChildClick(child)"
         >
           <view class="child-body">
@@ -148,7 +150,7 @@
             掌握度 {{ selectedNode.mastery }}%
           </text>
         </view>
-        <view class="panel-close" @tap="selectedNode = null">
+        <view class="panel-close" hover-class="item-hover" @tap="selectedNode = null">
           <text>×</text>
         </view>
       </view>
@@ -179,10 +181,10 @@
         </view>
       </view>
       <view class="panel-actions">
-        <view class="panel-btn btn-primary" @tap="startPractice(selectedNode)">
+        <view class="panel-btn btn-primary" hover-class="item-hover" @tap="startPractice(selectedNode)">
           <text>开始练习</text>
         </view>
-        <view class="panel-btn btn-outline" @tap="viewDetails(selectedNode)">
+        <view class="panel-btn btn-outline" hover-class="item-hover" @tap="viewDetails(selectedNode)">
           <text>查看详情</text>
         </view>
       </view>
@@ -214,7 +216,7 @@
     </view>
 
     <!-- 薄弱知识点提示 -->
-    <view v-if="weakNodes.length > 0" class="weak-hint glassmorphism" @tap="showWeakNodes">
+    <view v-if="weakNodes.length > 0" class="weak-hint glassmorphism" hover-class="item-hover" @tap="showWeakNodes">
       <text class="weak-icon">
         ⚠️
       </text>
@@ -1102,14 +1104,14 @@ export default {
 			}
 
 			.progress-text {
-				font-size: 18rpx;
+				font-size: 20rpx;
 				color: rgba(255, 255, 255, 0.7);
 			}
 		}
 
 		.node-count {
-			font-size: 18rpx;
-			color: rgba(255, 255, 255, 0.5);
+			font-size: 20rpx;
+			color: rgba(255, 255, 255, 0.6);
 			margin-top: 4rpx;
 			z-index: 1;
 		}
@@ -1147,14 +1149,14 @@ export default {
 		}
 
 		.child-title {
-			font-size: 18rpx;
+			font-size: 20rpx;
 			color: #fff;
 			margin-top: 4rpx;
 		}
 
 		.child-mastery {
-			font-size: 16rpx;
-			color: rgba(255, 255, 255, 0.6);
+			font-size: 20rpx;
+			color: rgba(255, 255, 255, 0.7);
 		}
 	}
 }
@@ -1361,5 +1363,10 @@ export default {
 	background: rgba(26, 26, 46, 0.8);
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
+}
+
+/* hover-class 反馈 */
+.item-hover {
+	opacity: 0.7;
 }
 </style>

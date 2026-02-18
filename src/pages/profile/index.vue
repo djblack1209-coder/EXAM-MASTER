@@ -506,6 +506,8 @@ function loadData() {
     loadCheckinData();
   } catch (error) {
     logger.error('[Profile] loadData error:', error);
+    // P007: 提供用户反馈
+    uni.showToast({ title: '个人数据加载失败，请下拉刷新重试', icon: 'none', duration: 2000 });
   } finally {
     // 短暂延迟后关闭骨架屏，确保数据已渲染
     setTimeout(() => {
@@ -540,6 +542,8 @@ async function loadCheckinData() {
     });
   } catch (error) {
     logger.error('[Profile] loadCheckinData error:', error);
+    // P007: 提供用户反馈，避免打卡数据静默丢失
+    uni.showToast({ title: '打卡数据加载失败', icon: 'none', duration: 1500 });
   }
 }
 
@@ -727,6 +731,8 @@ function handleEditProfile() {
       if (res.confirm && res.content) {
         userStore.updateUserInfo?.({ nickName: res.content });
         uni.showToast({ title: '更新成功', icon: 'success' });
+      } else if (res.confirm && !res.content) {
+        uni.showToast({ title: '昵称不能为空', icon: 'none' });
       }
     }
   });
@@ -1446,7 +1452,7 @@ onHide(() => {
 
 .checkin-streak {
 	font-size: 26rpx;
-	color: #FF6B35;
+	color: #E05A2B;
 	font-weight: 600;
 }
 
@@ -1528,7 +1534,7 @@ onHide(() => {
 
 .use-recovery-text {
 	font-size: 24rpx;
-	color: #FF6B35;
+	color: #E05A2B;
 	font-weight: 500;
 }
 
@@ -1549,7 +1555,7 @@ onHide(() => {
 
 .missed-text {
 	font-size: 24rpx;
-	color: #FF6B35;
+	color: #E05A2B;
 	flex: 1;
 }
 </style>

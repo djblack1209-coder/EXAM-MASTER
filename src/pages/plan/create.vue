@@ -207,6 +207,7 @@
       <view v-if="!isPageLoading" class="action-buttons">
         <button
           class="action-btn primary"
+          hover-class="btn-scale-sm"
           :disabled="!isFormValid || isSaving"
           @tap="savePlan"
         >
@@ -334,7 +335,21 @@ export default {
       }
     },
     savePlan() {
-      if (!this.isFormValid || this.isSaving) return;
+      if (!this.isFormValid || this.isSaving) {
+        // P012: 具体提示哪个字段未填写
+        if (!this.isSaving) {
+          const name = (this.plan.name || '').trim();
+          const goal = (this.plan.goal || '').trim();
+          if (!name && !goal) {
+            uni.showToast({ title: '请填写计划名称和学习目标', icon: 'none' });
+          } else if (!name) {
+            uni.showToast({ title: '请填写计划名称', icon: 'none' });
+          } else if (!goal) {
+            uni.showToast({ title: '请填写学习目标', icon: 'none' });
+          }
+        }
+        return;
+      }
 
       // 防重复点击
       this.isSaving = true;
@@ -346,8 +361,9 @@ export default {
       // 再次验证过滤后的内容
       if (!this.plan.name || !this.plan.goal) {
         this.isSaving = false;
+        const msg = !this.plan.name ? '计划名称含有不支持的字符，请重新输入' : '学习目标含有不支持的字符，请重新输入';
         uni.showToast({
-          title: '计划名称或目标不能为空',
+          title: msg,
           icon: 'none'
         });
         return;

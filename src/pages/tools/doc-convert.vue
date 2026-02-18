@@ -1,109 +1,126 @@
 <template>
-  <view class="doc-convert-container">
-    <!-- 顶部标题栏 -->
-    <view class="header">
-      <text class="title">
-        文档转换
-      </text>
-      <text class="subtitle">
-        支持 PDF、Word、Excel、PPT 等格式互转
-      </text>
-    </view>
-
-    <!-- 转换类型选择 -->
-    <view class="type-grid">
-      <view
-        v-for="item in convertTypes"
-        :key="item.key"
-        :class="['type-card', { active: selectedType === item.key }]"
-        @click="selectType(item.key)"
-      >
-        <text class="type-icon">
-          {{ item.icon }}
-        </text>
-        <text class="type-name">
-          {{ item.name }}
-        </text>
-        <text class="type-desc">
-          {{ item.desc }}
-        </text>
-      </view>
-    </view>
-
-    <!-- 文件选择区域 -->
-    <view class="file-area">
-      <view v-if="!selectedFile" class="file-placeholder" @click="chooseFile">
-        <text class="upload-icon">
-          +
-        </text>
-        <text class="upload-text">
-          点击选择文件
-        </text>
-        <text class="upload-hint">
-          {{ acceptHint }}
-        </text>
-      </view>
-      <view v-else class="file-info">
-        <view class="file-detail">
-          <text class="file-name">
-            {{ selectedFile.name }}
-          </text>
-          <text class="file-size">
-            {{ formatSize(selectedFile.size) }}
-          </text>
+  <view :class="['page-container', { 'dark-mode': isDark }]">
+    <!-- 自定义导航栏 -->
+    <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
+      <view class="nav-content">
+        <view class="nav-back" @tap="goBack">
+          <text class="back-icon">←</text>
         </view>
-        <text class="file-remove" @click="removeFile">
-          ✕
-        </text>
+        <text class="nav-title">文档转换</text>
+        <view class="nav-placeholder" />
       </view>
     </view>
 
-    <!-- 转换进度 -->
-    <view v-if="status !== 'idle'" class="progress-area">
-      <view v-if="status === 'uploading'" class="progress-item">
-        <view class="progress-spinner" />
-        <text class="progress-text">
-          正在上传文件...
-        </text>
+    <!-- 主内容 -->
+    <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
+      <!-- 顶部描述卡片 -->
+      <view class="hero-card">
+        <view class="hero-icon-wrapper">
+          <text class="hero-icon">📄</text>
+        </view>
+        <text class="hero-title">智能文档转换</text>
+        <text class="hero-desc">支持 PDF、Word、Excel、PPT 等格式互转</text>
       </view>
-      <view v-else-if="status === 'converting'" class="progress-item">
-        <view class="progress-spinner" />
-        <text class="progress-text">
-          正在转换中，请稍候...
-        </text>
-      </view>
-      <view v-else-if="status === 'done'" class="progress-item done">
-        <text class="done-icon">
-          ✓
-        </text>
-        <text class="progress-text">
-          转换完成
-        </text>
-      </view>
-      <view v-else-if="status === 'error'" class="progress-item error">
-        <text class="error-icon">
-          !
-        </text>
-        <text class="progress-text">
-          {{ errorMsg }}
-        </text>
-      </view>
-    </view>
 
-    <!-- 结果区域 -->
-    <view v-if="resultUrl" class="result-area">
-      <button class="btn-primary" hover-class="btn-hover" @click="downloadResult">
-        <text>下载转换结果</text>
-      </button>
-      <button class="btn-secondary" hover-class="btn-hover" @click="resetAll">
-        <text>继续转换</text>
-      </button>
-    </view>
+      <!-- 转换类型选择 -->
+      <view class="section">
+        <text class="section-title">选择转换类型</text>
+        <view class="type-grid">
+          <view
+            v-for="item in convertTypes"
+            :key="item.key"
+            :class="['type-card', { active: selectedType === item.key }]"
+            @click="selectType(item.key)"
+          >
+            <view class="type-icon-box">
+              <text class="type-icon">{{ item.icon }}</text>
+            </view>
+            <view class="type-text">
+              <text class="type-name">{{ item.name }}</text>
+              <text class="type-desc">{{ item.desc }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 文件选择区域 -->
+      <view class="section">
+        <text class="section-title">选择文件</text>
+        <view v-if="!selectedFile" class="file-placeholder" @click="chooseFile">
+          <view class="upload-icon-box">
+            <text class="upload-icon-text">+</text>
+          </view>
+          <text class="upload-text">点击选择文件</text>
+          <text class="upload-hint">{{ acceptHint }}</text>
+        </view>
+        <view v-else class="file-info-card">
+          <view class="file-icon-box">
+            <text class="file-icon-text">📎</text>
+          </view>
+          <view class="file-detail">
+            <text class="file-name">{{ selectedFile.name }}</text>
+            <text class="file-size">{{ formatSize(selectedFile.size) }}</text>
+          </view>
+          <view class="file-remove" @click="removeFile">
+            <text class="remove-icon">✕</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 转换进度 -->
+      <view v-if="status !== 'idle'" class="section">
+        <view v-if="status === 'uploading'" class="status-card status-loading">
+          <view class="status-spinner" />
+          <view class="status-text-group">
+            <text class="status-title">正在上传文件</text>
+            <text class="status-hint">请稍候...</text>
+          </view>
+        </view>
+        <view v-else-if="status === 'converting'" class="status-card status-loading">
+          <view class="status-spinner" />
+          <view class="status-text-group">
+            <text class="status-title">正在转换中</text>
+            <text class="status-hint">AI 正在处理您的文件...</text>
+          </view>
+        </view>
+        <view v-else-if="status === 'done'" class="status-card status-done">
+          <view class="status-done-icon">
+            <text class="done-check">✓</text>
+          </view>
+          <view class="status-text-group">
+            <text class="status-title">转换完成</text>
+            <text class="status-hint">文件已准备就绪</text>
+          </view>
+        </view>
+        <view v-else-if="status === 'error'" class="status-card status-error">
+          <view class="status-error-icon">
+            <text class="error-mark">!</text>
+          </view>
+          <view class="status-text-group">
+            <text class="status-title">转换失败</text>
+            <text class="status-hint">{{ errorMsg }}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 结果区域 -->
+      <view v-if="resultUrl" class="section result-section">
+        <button class="btn-primary" hover-class="btn-hover" @click="downloadResult">
+          <text>下载转换结果</text>
+        </button>
+        <button class="btn-secondary" hover-class="btn-hover" @click="resetAll">
+          <text>继续转换</text>
+        </button>
+      </view>
+
+      <!-- 底部安全区 -->
+      <view class="bottom-safe" />
+    </scroll-view>
 
     <!-- 底部操作栏 -->
     <view v-if="status === 'idle' && selectedFile" class="action-bar">
       <button
-        class="btn-primary"
+        class="btn-primary btn-full"
         hover-class="btn-hover"
         :disabled="!canConvert"
         @click="startConvert"
@@ -117,6 +134,7 @@
 <script>
 import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
+import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 
 const CONVERT_TYPES = [
   { key: 'word2pdf', icon: 'W', name: 'Word→PDF', desc: 'doc/docx 转 PDF', accept: '.doc,.docx,.odt,.rtf' },
@@ -130,6 +148,8 @@ const CONVERT_TYPES = [
 export default {
   data() {
     return {
+      statusBarHeight: 44,
+      isDark: false,
       convertTypes: CONVERT_TYPES,
       selectedType: 'word2pdf',
       selectedFile: null,
@@ -155,15 +175,27 @@ export default {
     }
   },
 
+  onLoad() {
+    const sys = uni.getSystemInfoSync();
+    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.isDark = initTheme();
+    this._themeHandler = (mode) => { this.isDark = mode === 'dark'; };
+    onThemeUpdate(this._themeHandler);
+  },
+
   onUnload() {
     this.clearPollTimer();
+    offThemeUpdate(this._themeHandler);
   },
 
   methods: {
+    goBack() {
+      uni.navigateBack({ delta: 1 });
+    },
+
     selectType(key) {
       if (this.status !== 'idle') return;
       this.selectedType = key;
-      // 切换类型时清除已选文件（格式可能不兼容）
       if (this.selectedFile) {
         this.removeFile();
       }
@@ -264,7 +296,7 @@ export default {
 
     startPolling() {
       let attempts = 0;
-      const maxAttempts = 60; // 最多轮询60次（约2分钟）
+      const maxAttempts = 60;
 
       this.pollTimer = setInterval(async () => {
         attempts++;
@@ -370,130 +402,252 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.doc-convert-container {
+.page-container {
   min-height: 100vh;
-  background: var(--bg-secondary);
+  background: var(--bg-secondary, #F5F5F7);
+}
+
+// 导航栏
+.nav-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+
+  .nav-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24rpx;
+    height: 88rpx;
+  }
+
+  .nav-back {
+    width: 72rpx;
+    height: 72rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.04);
+
+    .back-icon {
+      font-size: 36rpx;
+      color: var(--text-primary, #111);
+    }
+  }
+
+  .nav-title {
+    font-size: 34rpx;
+    font-weight: 600;
+    color: var(--text-primary, #111);
+  }
+
+  .nav-placeholder {
+    width: 72rpx;
+  }
+}
+
+.main-scroll {
+  min-height: 100vh;
+  padding: 24rpx 32rpx;
+  box-sizing: border-box;
+}
+
+// 顶部描述卡片
+.hero-card {
   display: flex;
   flex-direction: column;
-  padding-bottom: 180rpx;
-}
+  align-items: center;
+  padding: 48rpx 32rpx 40rpx;
+  margin-bottom: 32rpx;
+  background: linear-gradient(135deg, rgba(54, 209, 220, 0.08) 0%, rgba(91, 134, 229, 0.08) 100%);
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(91, 134, 229, 0.12);
 
-.header {
-  padding: 30rpx;
-  background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
-  color: #fff;
+  .hero-icon-wrapper {
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 28rpx;
+    background: linear-gradient(135deg, #36d1dc, #5b86e5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20rpx;
+    box-shadow: 0 8rpx 24rpx rgba(91, 134, 229, 0.3);
+  }
 
-  .title {
+  .hero-icon {
+    font-size: 48rpx;
+  }
+
+  .hero-title {
     font-size: 36rpx;
-    font-weight: bold;
-    display: block;
+    font-weight: 700;
+    color: var(--text-primary, #111);
+    margin-bottom: 8rpx;
   }
 
-  .subtitle {
+  .hero-desc {
     font-size: 24rpx;
-    opacity: 0.8;
-    margin-top: 10rpx;
+    color: var(--text-secondary, #666);
+  }
+}
+
+// 区块
+.section {
+  margin-bottom: 32rpx;
+
+  .section-title {
+    font-size: 30rpx;
+    font-weight: 600;
+    color: var(--text-primary, #111);
+    margin-bottom: 20rpx;
     display: block;
   }
 }
 
+// 转换类型网格
 .type-grid {
   display: flex;
   flex-wrap: wrap;
-  padding: 20rpx;
   gap: 16rpx;
 }
 
 .type-card {
-  width: calc(33.33% - 12rpx);
-  background: var(--bg-card);
-  border-radius: 16rpx;
-  padding: 24rpx 16rpx;
+  width: calc(50% - 8rpx);
   display: flex;
-  flex-direction: column;
   align-items: center;
+  padding: 20rpx;
+  background: var(--bg-card, #fff);
+  border-radius: 20rpx;
   border: 2rpx solid transparent;
-  transition: all 0.2s;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
 
   &.active {
     border-color: #5b86e5;
-    background: rgba(91, 134, 229, 0.08);
+    background: rgba(91, 134, 229, 0.06);
+    box-shadow: 0 4rpx 16rpx rgba(91, 134, 229, 0.15);
   }
 
-  .type-icon {
+  .type-icon-box {
     width: 64rpx;
     height: 64rpx;
     border-radius: 16rpx;
-    background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
-    color: #fff;
-    font-size: 28rpx;
-    font-weight: bold;
+    background: linear-gradient(135deg, #36d1dc, #5b86e5);
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    margin-right: 16rpx;
+  }
+
+  .type-icon {
+    font-size: 26rpx;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .type-text {
+    flex: 1;
+    overflow: hidden;
   }
 
   .type-name {
-    font-size: 24rpx;
+    font-size: 26rpx;
     font-weight: 600;
-    color: var(--text-main);
-    margin-top: 12rpx;
+    color: var(--text-primary, #111);
+    display: block;
   }
 
   .type-desc {
     font-size: 20rpx;
-    color: var(--text-sub);
-    margin-top: 4rpx;
+    color: var(--text-secondary, #666);
+    margin-top: 2rpx;
+    display: block;
   }
 }
 
-.file-area {
-  margin: 20rpx;
-}
-
+// 文件选择
 .file-placeholder {
-  background: var(--bg-card);
-  border: 2rpx dashed var(--text-sub);
-  border-radius: 16rpx;
+  background: var(--bg-card, #fff);
+  border: 2rpx dashed rgba(91, 134, 229, 0.35);
+  border-radius: 20rpx;
   padding: 60rpx 30rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: all 0.25s ease;
 
-  .upload-icon {
-    font-size: 64rpx;
+  .upload-icon-box {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(54, 209, 220, 0.12), rgba(91, 134, 229, 0.12));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16rpx;
+  }
+
+  .upload-icon-text {
+    font-size: 48rpx;
     color: #5b86e5;
+    font-weight: 300;
     line-height: 1;
   }
 
   .upload-text {
     font-size: 28rpx;
-    color: var(--text-main);
-    margin-top: 16rpx;
+    color: var(--text-primary, #111);
+    font-weight: 500;
   }
 
   .upload-hint {
     font-size: 22rpx;
-    color: var(--text-sub);
+    color: var(--text-secondary, #666);
     margin-top: 8rpx;
   }
 }
 
-.file-info {
-  background: var(--bg-card);
-  border-radius: 16rpx;
+.file-info-card {
+  background: var(--bg-card, #fff);
+  border-radius: 20rpx;
   padding: 24rpx;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+
+  .file-icon-box {
+    width: 64rpx;
+    height: 64rpx;
+    border-radius: 16rpx;
+    background: linear-gradient(135deg, rgba(54, 209, 220, 0.12), rgba(91, 134, 229, 0.12));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 16rpx;
+  }
+
+  .file-icon-text {
+    font-size: 28rpx;
+  }
 
   .file-detail {
     flex: 1;
     overflow: hidden;
 
     .file-name {
-      font-size: 28rpx;
-      color: var(--text-main);
+      font-size: 26rpx;
+      font-weight: 500;
+      color: var(--text-primary, #111);
       display: block;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -502,96 +656,146 @@ export default {
 
     .file-size {
       font-size: 22rpx;
-      color: var(--text-sub);
-      margin-top: 6rpx;
+      color: var(--text-secondary, #666);
+      margin-top: 4rpx;
       display: block;
     }
   }
 
   .file-remove {
-    font-size: 32rpx;
-    color: var(--text-sub);
-    padding: 10rpx 20rpx;
+    width: 56rpx;
+    height: 56rpx;
+    border-radius: 50%;
+    background: rgba(255, 59, 48, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    .remove-icon {
+      font-size: 24rpx;
+      color: #FF3B30;
+    }
   }
 }
 
-.progress-area {
-  margin: 20rpx;
-}
-
-.progress-item {
-  background: var(--bg-card);
-  border-radius: 16rpx;
-  padding: 30rpx;
+// 状态卡片
+.status-card {
   display: flex;
   align-items: center;
+  padding: 28rpx 24rpx;
+  border-radius: 20rpx;
   gap: 20rpx;
 
-  &.done {
-    .done-icon {
-      width: 48rpx;
-      height: 48rpx;
-      background: #4CAF50;
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28rpx;
-    }
+  &.status-loading {
+    background: rgba(91, 134, 229, 0.06);
+    border: 1rpx solid rgba(91, 134, 229, 0.12);
   }
 
-  &.error {
-    .error-icon {
-      width: 48rpx;
-      height: 48rpx;
-      background: #f44336;
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28rpx;
-      font-weight: bold;
-    }
+  &.status-done {
+    background: rgba(52, 199, 89, 0.06);
+    border: 1rpx solid rgba(52, 199, 89, 0.12);
   }
 
-  .progress-text {
-    font-size: 28rpx;
-    color: var(--text-main);
+  &.status-error {
+    background: rgba(255, 59, 48, 0.06);
+    border: 1rpx solid rgba(255, 59, 48, 0.12);
   }
 }
 
-.progress-spinner {
+.status-spinner {
   width: 48rpx;
   height: 48rpx;
-  border: 4rpx solid rgba(91, 134, 229, 0.3);
+  border: 4rpx solid rgba(91, 134, 229, 0.2);
   border-top-color: #5b86e5;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  flex-shrink: 0;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.result-area {
-  margin: 20rpx;
+.status-done-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #34C759, #30D158);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .done-check {
+    color: #fff;
+    font-size: 26rpx;
+    font-weight: 700;
+  }
+}
+
+.status-error-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF3B30, #FF6961);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .error-mark {
+    color: #fff;
+    font-size: 28rpx;
+    font-weight: 700;
+  }
+}
+
+.status-text-group {
+  flex: 1;
+
+  .status-title {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: var(--text-primary, #111);
+    display: block;
+  }
+
+  .status-hint {
+    font-size: 22rpx;
+    color: var(--text-secondary, #666);
+    margin-top: 4rpx;
+    display: block;
+  }
+}
+
+// 结果区域
+.result-section {
   display: flex;
   flex-direction: column;
   gap: 16rpx;
 }
 
+// 底部安全区
+.bottom-safe {
+  height: 200rpx;
+}
+
+// 底部操作栏
 .action-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 30rpx;
-  background: var(--bg-card);
-  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
 }
 
+// 按钮
 .btn-primary {
   background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
   color: #fff;
@@ -599,21 +803,103 @@ export default {
   padding: 24rpx;
   border-radius: 50rpx;
   font-size: 30rpx;
+  font-weight: 600;
   text-align: center;
+  box-shadow: 0 8rpx 24rpx rgba(91, 134, 229, 0.25);
 
   &::after { border: none; }
-  &:disabled, &[disabled] { opacity: 0.5; }
+  &:disabled, &[disabled] { opacity: 0.5; box-shadow: none; }
+}
+
+.btn-full {
+  width: 100%;
 }
 
 .btn-secondary {
-  background: var(--bg-secondary);
-  color: var(--text-main);
-  border: none;
+  background: var(--bg-card, #fff);
+  color: var(--text-primary, #111);
+  border: 1rpx solid var(--border, #E5E5E5);
   padding: 24rpx;
   border-radius: 50rpx;
   font-size: 28rpx;
   text-align: center;
 
   &::after { border: none; }
+}
+
+.btn-hover {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+// Dark mode overrides
+.dark-mode {
+  &.page-container {
+    background: var(--bg-secondary, #1C1C1E);
+  }
+
+  .nav-header {
+    background: rgba(13, 17, 23, 0.85);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .nav-back {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .hero-card {
+    background: linear-gradient(135deg, rgba(54, 209, 220, 0.15) 0%, rgba(91, 134, 229, 0.15) 100%);
+    border-color: rgba(91, 134, 229, 0.25);
+  }
+
+  .type-card {
+    background: var(--bg-card, #0D1117);
+    box-shadow: none;
+
+    &.active {
+      background: rgba(91, 134, 229, 0.12);
+    }
+  }
+
+  .file-placeholder {
+    background: var(--bg-card, #0D1117);
+    border-color: rgba(91, 134, 229, 0.25);
+  }
+
+  .file-info-card {
+    background: var(--bg-card, #0D1117);
+    box-shadow: none;
+  }
+
+  .file-remove {
+    background: rgba(255, 59, 48, 0.15);
+  }
+
+  .status-card {
+    &.status-loading {
+      background: rgba(91, 134, 229, 0.12);
+      border-color: rgba(91, 134, 229, 0.2);
+    }
+
+    &.status-done {
+      background: rgba(52, 199, 89, 0.12);
+      border-color: rgba(52, 199, 89, 0.2);
+    }
+
+    &.status-error {
+      background: rgba(255, 59, 48, 0.12);
+      border-color: rgba(255, 59, 48, 0.2);
+    }
+  }
+
+  .action-bar {
+    background: rgba(13, 17, 23, 0.9);
+    border-top-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-secondary {
+    background: var(--bg-card, #0D1117);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 }
 </style>

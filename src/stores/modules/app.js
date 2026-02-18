@@ -63,7 +63,7 @@ export const useAppStore = defineStore('app', () => {
     try {
       let systemInfoData;
 
-      // #ifdef MP-WECHAT
+      // #ifdef MP-WEIXIN
       // 微信小程序使用新的 API
       const windowInfo = uni.getWindowInfo();
       const deviceInfo = uni.getDeviceInfo();
@@ -76,7 +76,7 @@ export const useAppStore = defineStore('app', () => {
       };
       // #endif
 
-      // #ifndef MP-WECHAT
+      // #ifndef MP-WEIXIN
       systemInfoData = uni.getSystemInfoSync();
       // #endif
 

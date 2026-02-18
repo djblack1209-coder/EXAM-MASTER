@@ -11,8 +11,11 @@
  * B003 更新：修正 rankings/favorites/learning_goals 索引字段名与实际查询不匹配问题，
  *   补充 crawler_schools/crawler_meta/user_profiles/data_backups 集合索引，
  *   补充 goal_progress 复合索引，补充 users.nickname 索引
+ * B004 更新：补充 9 个缺失索引（rankings 按周期查询、mistake_book 按 error_type/tags、
+ *   practice_records 按 is_correct、favorites 按 source、learning_resources 文本索引+subject、
+ *   users 按 total_questions），修正 rankings 过时索引
  *
- * @version 1.2.0
+ * @version 1.3.0
  */
 
 import cloud from '@lafjs/cloud';
@@ -33,7 +36,9 @@ export default async function (ctx) {
     await usersCol.createIndex({ created_at: -1 }, { name: 'idx_created_at' });
     // 补充: social-service.ts 按 nickname 正则搜索
     await usersCol.createIndex({ nickname: 1 }, { sparse: true, name: 'idx_nickname' });
-    results.push({ collection: 'users', status: 'ok', indexes: 6 });
+    // B004: user-stats.ts 按 total_questions 排名查询
+    await usersCol.createIndex({ total_questions: -1 }, { sparse: true, name: 'idx_total_questions' });
+    results.push({ collection: 'users', status: 'ok', indexes: 7 });
   } catch (e) {
     results.push({ collection: 'users', status: 'error', message: e.message });
   }
@@ -48,7 +53,11 @@ export default async function (ctx) {
       { user_id: 1, _content_hash: 1 },
       { name: 'idx_user_content_hash' }
     );
-    results.push({ collection: 'mistake_book', status: 'ok', indexes: 4 });
+    // B004: mistake-manager.ts 按 error_type 过滤
+    await mistakeBookCol.createIndex({ user_id: 1, error_type: 1, created_at: -1 }, { name: 'idx_user_errortype_created' });
+    // B004: mistake-manager.ts 按 tags 数组过滤
+    await mistakeBookCol.createIndex({ user_id: 1, tags: 1, created_at: -1 }, { name: 'idx_user_tags_created' });
+    results.push({ collection: 'mistake_book', status: 'ok', indexes: 6 });
   } catch (e) {
     results.push({ collection: 'mistake_book', status: 'error', message: e.message });
   }
@@ -104,10 +113,17 @@ export default async function (ctx) {
   // ==================== 排行榜表索引 ==================
   try {
     const rankCol = db.collection('rankings');
+    // B004: 旧索引 { type: 1, score: -1 } 已过时，rank-center.ts 使用按周期的字段
+    // 保留旧索引以兼容可能的其他查询，新增实际查询所需的索引
     await rankCol.createIndex({ type: 1, score: -1 }, { name: 'idx_type_score' });
     // 修正: 实际查询使用 uid 而非 userId (rank-center.ts, pk-battle.ts)
     await rankCol.createIndex({ uid: 1 }, { name: 'idx_uid' });
-    results.push({ collection: 'rankings', status: 'ok', indexes: 2 });
+    // B004: rank-center.ts 按日/周/月/总分排行查询
+    await rankCol.createIndex({ daily_date: 1, daily_score: -1 }, { name: 'idx_daily_date_score' });
+    await rankCol.createIndex({ weekly_start: 1, weekly_score: -1 }, { name: 'idx_weekly_start_score' });
+    await rankCol.createIndex({ monthly_start: 1, monthly_score: -1 }, { name: 'idx_monthly_start_score' });
+    await rankCol.createIndex({ total_score: -1 }, { name: 'idx_total_score' });
+    results.push({ collection: 'rankings', status: 'ok', indexes: 6 });
   } catch (e) {
     results.push({ collection: 'rankings', status: 'error', message: e.message });
   }
@@ -167,7 +183,9 @@ export default async function (ctx) {
       { unique: true, name: 'idx_user_question' }
     );
     await favoritesCol.createIndex({ user_id: 1, category: 1, created_at: -1 }, { name: 'idx_user_category_created' });
-    results.push({ collection: 'favorites', status: 'ok', indexes: 3 });
+    // B004: favorite-manager.ts 按 source 过滤
+    await favoritesCol.createIndex({ user_id: 1, source: 1, created_at: -1 }, { name: 'idx_user_source_created' });
+    results.push({ collection: 'favorites', status: 'ok', indexes: 4 });
   } catch (e) {
     results.push({ collection: 'favorites', status: 'error', message: e.message });
   }
@@ -217,7 +235,9 @@ export default async function (ctx) {
     const practiceCol = db.collection('practice_records');
     await practiceCol.createIndex({ user_id: 1, created_at: -1 }, { name: 'idx_user_created' });
     await practiceCol.createIndex({ user_id: 1, category: 1, created_at: -1 }, { name: 'idx_user_category_created' });
-    results.push({ collection: 'practice_records', status: 'ok', indexes: 2 });
+    // B004: answer-submit.ts 按 is_correct 过滤
+    await practiceCol.createIndex({ user_id: 1, is_correct: 1, created_at: -1 }, { name: 'idx_user_correct_created' });
+    results.push({ collection: 'practice_records', status: 'ok', indexes: 3 });
   } catch (e) {
     results.push({ collection: 'practice_records', status: 'error', message: e.message });
   }
@@ -303,7 +323,12 @@ export default async function (ctx) {
     await resourcesCol.createIndex({ status: 1, recommend_weight: -1, view_count: -1 }, { name: 'idx_status_recommend' });
     await resourcesCol.createIndex({ status: 1, category: 1, view_count: -1 }, { name: 'idx_status_category_views' });
     await resourcesCol.createIndex({ status: 1, category: 1, created_at: -1 }, { name: 'idx_status_category_created' });
-    results.push({ collection: 'learning_resources', status: 'ok', indexes: 3 });
+    // B004: learning-resource.ts 按 subject 过滤 + 关键词搜索
+    await resourcesCol.createIndex({ status: 1, subject: 1, view_count: -1 }, { name: 'idx_status_subject_views' });
+    await resourcesCol.createIndex({ status: 1, subject: 1, created_at: -1 }, { name: 'idx_status_subject_created' });
+    // B004: 文本索引用于关键词搜索（替代 $regex 全表扫描）
+    await resourcesCol.createIndex({ title: 'text', description: 'text', tags: 'text' }, { name: 'idx_search_text' });
+    results.push({ collection: 'learning_resources', status: 'ok', indexes: 6 });
   } catch (e) {
     results.push({ collection: 'learning_resources', status: 'error', message: e.message });
   }

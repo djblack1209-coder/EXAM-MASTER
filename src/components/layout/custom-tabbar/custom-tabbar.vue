@@ -50,6 +50,8 @@ import { logger } from '@/utils/logger.js';
 // ✅ 导入配置（用于审核模式判断）
 import config from '@/config/index.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+// ✅ 使用新 API 替代废弃的 getSystemInfoSync
+import { getWindowInfo } from '@/utils/core/system.js';
 
 export default {
   name: 'CustomTabbar',
@@ -151,9 +153,10 @@ export default {
     // E008: JS 安全区域检测（兼容老设备）
     detectSafeArea() {
       try {
-        const sysInfo = uni.getSystemInfoSync();
-        const bottom = sysInfo.safeAreaInsets?.bottom
-          || (sysInfo.safeArea ? sysInfo.screenHeight - sysInfo.safeArea.bottom : 0);
+        const winInfo = getWindowInfo();
+        const bottom = winInfo.safeArea
+          ? winInfo.screenHeight - winInfo.safeArea.bottom
+          : 0;
         if (bottom > 0) {
           this.safeAreaBottom = bottom;
           logger.log('[CustomTabbar] 安全区域底部:', bottom, 'px');

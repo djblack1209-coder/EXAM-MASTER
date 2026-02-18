@@ -939,7 +939,14 @@ export default {
 
       // 验证第二步表单
       if (!this.canSubmit) {
-        uni.showToast({ title: '请完整填写报考信息', icon: 'none' });
+        // P012: 具体提示缺少哪项报考信息
+        if (!this.formData.targetSchool || !this.formData.targetSchool.trim()) {
+          uni.showToast({ title: '请输入报考院校名称', icon: 'none' });
+        } else if (!this.formData.targetMajor || !this.formData.targetMajor.trim()) {
+          uni.showToast({ title: '请输入报考专业', icon: 'none' });
+        } else {
+          uni.showToast({ title: '请完整填写报考信息', icon: 'none' });
+        }
         return;
       }
 
@@ -1811,7 +1818,7 @@ export default {
 	}
 
 	.mr-lbl {
-		font-size: 18rpx;
+		font-size: 20rpx;
 		color: var(--accent-warm);
 		opacity: 0.8;
 		margin-top: 4rpx;
@@ -2113,6 +2120,48 @@ export default {
 		transform: translateY(0);
 		opacity: 1;
 	}
+}
+
+/* ===== 综合暗色模式覆盖 ===== */
+.dark-mode .glass-input:focus-within {
+	box-shadow: 0 0 15rpx rgba(0, 242, 255, 0.3);
+}
+
+.dark-mode .tab-group .tab-item.active {
+	background: rgba(0, 242, 255, 0.1);
+}
+
+.dark-mode .primary-btn {
+	box-shadow: 0 10rpx 30rpx rgba(0, 242, 255, 0.3);
+}
+
+.dark-mode .info-banner {
+	background: rgba(0, 242, 255, 0.08);
+	border-color: rgba(0, 242, 255, 0.2);
+}
+
+.dark-mode .tag-item {
+	background: rgba(0, 242, 255, 0.1);
+}
+
+.dark-mode .match-rate {
+	background: rgba(0, 242, 255, 0.1);
+}
+
+.dark-mode .ft-item.active {
+	background: rgba(0, 242, 255, 0.1);
+}
+
+.dark-mode .cf-btn.primary {
+	box-shadow: 0 8rpx 20rpx rgba(0, 242, 255, 0.2);
+}
+
+.dark-mode .reset-btn {
+	box-shadow: 0 4rpx 16rpx rgba(0, 242, 255, 0.3);
+}
+
+.dark-mode .filter-panel {
+	background: var(--bg-card);
 }
 
 </style>
