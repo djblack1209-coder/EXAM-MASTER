@@ -4,12 +4,8 @@
 
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px' }">
-        <text class="nav-back" @tap="navBack">
-          ←
-        </text>
-        <text class="nav-title">
-          考研学霸榜
-        </text>
+        <text class="nav-back" @tap="navBack"> ← </text>
+        <text class="nav-title"> 考研学霸榜 </text>
         <view class="placeholder" />
       </view>
     </view>
@@ -19,15 +15,8 @@
 
     <!-- 空状态 -->
     <view v-if="!loading && empty" class="empty-container">
-      <BaseEmpty
-        icon="🏆"
-        title="暂无排行榜数据"
-        desc="快去刷题，成为第一个上榜的学霸吧！"
-        :is-dark="isDark"
-      />
-      <button class="go-practice-btn" hover-class="btn-hover" @tap="toPractice">
-        去刷题
-      </button>
+      <BaseEmpty icon="🏆" title="暂无排行榜数据" desc="快去刷题，成为第一个上榜的学霸吧！" :is-dark="isDark" />
+      <button class="go-practice-btn" hover-class="btn-hover" @tap="toPractice">去刷题</button>
     </view>
 
     <!-- 排行榜内容 -->
@@ -35,7 +24,7 @@
       v-else
       scroll-y="true"
       class="rank-scroll"
-      :style="{ paddingTop: (statusBarHeight + 50) + 'px' }"
+      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       enable-back-to-top="true"
       @scrolltolower="loadMoreRanks"
     >
@@ -49,16 +38,12 @@
               mode="aspectFill"
               @error="onAvatarError($event, rankList[1])"
             />
-            <view class="badge">
-              2
-            </view>
+            <view class="badge"> 2 </view>
           </view>
           <text class="name">
             {{ rankList[1].name }}
           </text>
-          <text class="score">
-            {{ rankList[1].score }}分
-          </text>
+          <text class="score"> {{ rankList[1].score }}分 </text>
         </view>
 
         <view v-if="rankList[0]" class="podium-item rank-1" @tap="showFootprint(rankList[0])">
@@ -70,16 +55,12 @@
               mode="aspectFill"
               @error="onAvatarError($event, rankList[0])"
             />
-            <view class="badge">
-              1
-            </view>
+            <view class="badge"> 1 </view>
           </view>
           <text class="name">
             {{ rankList[0].name }}
           </text>
-          <text class="score">
-            {{ rankList[0].score }}分
-          </text>
+          <text class="score"> {{ rankList[0].score }}分 </text>
         </view>
 
         <view v-if="rankList[2]" class="podium-item rank-3" @tap="showFootprint(rankList[2])">
@@ -90,16 +71,12 @@
               mode="aspectFill"
               @error="onAvatarError($event, rankList[2])"
             />
-            <view class="badge">
-              3
-            </view>
+            <view class="badge"> 3 </view>
           </view>
           <text class="name">
             {{ rankList[2].name }}
           </text>
-          <text class="score">
-            {{ rankList[2].score }}分
-          </text>
+          <text class="score"> {{ rankList[2].score }}分 </text>
         </view>
       </view>
 
@@ -127,9 +104,7 @@
             <text class="item-name">
               {{ item.name }}
             </text>
-            <text class="item-desc">
-              坚持 {{ item.days }} 天 · 已刷 {{ item.done }} 题
-            </text>
+            <text class="item-desc"> 坚持 {{ item.days }} 天 · 已刷 {{ item.done }} 题 </text>
           </view>
           <text class="item-score">
             {{ item.score }}
@@ -139,12 +114,7 @@
 
       <!-- 只有我自己的情况 -->
       <view v-else-if="list.length === 1" class="only-me-container">
-        <BaseEmpty
-          icon="🏆"
-          title="只有你一个人上榜"
-          desc="继续加油，保持领先！"
-          :is-dark="isDark"
-        />
+        <BaseEmpty icon="🏆" title="只有你一个人上榜" desc="继续加油，保持领先！" :is-dark="isDark" />
       </view>
 
       <view class="footer-safe" />
@@ -163,28 +133,20 @@
           @error="onAvatarError($event, userInfo, 'avatarUrl')"
         />
         <view class="item-info">
-          <text class="item-name">
-            {{ userInfo.nickName || '考研人' }} (我)
-          </text>
+          <text class="item-name"> {{ userInfo.nickName || '考研人' }} (我) </text>
           <text class="item-desc">
             {{ rankGapText }}
           </text>
-          <text class="item-score-text">
-            分数: {{ myScore }}
-          </text>
+          <text class="item-score-text"> 分数: {{ myScore }} </text>
         </view>
-        <button class="rank-btn" hover-class="btn-hover" @tap="toPractice">
-          去超车
-        </button>
+        <button class="rank-btn" hover-class="btn-hover" @tap="toPractice">去超车</button>
       </view>
     </view>
 
     <!-- 学霸学习足迹 AI 分析名片弹窗 -->
     <view v-if="showFootprintModal" class="footprint-mask" @tap="closePopup">
       <view class="footprint-card glass-card" @tap.stop>
-        <view class="close-btn" @tap="closePopup">
-          ✕
-        </view>
+        <view class="close-btn" @tap="closePopup"> ✕ </view>
 
         <view class="card-header">
           <image
@@ -198,9 +160,7 @@
               {{ activeUser.name }}
             </text>
             <view class="ai-label">
-              <text class="sparkle-icon">
-                ✨
-              </text>
+              <text class="sparkle-icon"> ✨ </text>
               <text>{{ aiPersona }}</text>
             </view>
           </view>
@@ -211,41 +171,31 @@
             <text class="val">
               {{ activeUser.days || 0 }}
             </text>
-            <text class="lbl">
-              坚持天数
-            </text>
+            <text class="lbl"> 坚持天数 </text>
           </view>
           <view class="data-item">
             <text class="val">
               {{ activeUser.score || 0 }}
             </text>
-            <text class="lbl">
-              学霸分
-            </text>
+            <text class="lbl"> 学霸分 </text>
           </view>
           <view class="data-item">
             <text class="val">
               {{ activeUser.done || 0 }}
             </text>
-            <text class="lbl">
-              总刷题
-            </text>
+            <text class="lbl"> 总刷题 </text>
           </view>
         </view>
 
         <view v-if="activeUser.target" class="target-school-box">
-          <text class="target-label">
-            目标院校：
-          </text>
+          <text class="target-label"> 目标院校： </text>
           <text class="target-val">
             {{ activeUser.target }}
           </text>
         </view>
 
         <view class="ai-analysis-content">
-          <view class="analysis-tag">
-            ✨ AI 足迹鉴定
-          </view>
+          <view class="analysis-tag"> ✨ AI 足迹鉴定 </view>
           <scroll-view scroll-y="true" class="analysis-scroll">
             <text class="analysis-text">
               {{ aiAnalysisText }}
@@ -253,9 +203,7 @@
           </scroll-view>
         </view>
 
-        <button class="challenge-btn" hover-class="btn-hover" @tap="startPK">
-          向 TA 发起挑战
-        </button>
+        <button class="challenge-btn" hover-class="btn-hover" @tap="startPK">向 TA 发起挑战</button>
       </view>
     </view>
   </view>
@@ -416,13 +364,13 @@ export default {
         const userId = storageService.get('EXAM_USER_ID', '');
         logger.log('[TEST-9.1] 📤 发送 API 请求:', {
           url: '/rank-center',
-          action: 'get_rank',
+          action: 'get',
           userId: userId || '未登录'
         });
 
         // 调用 rank-center 云函数获取排行榜数据
         const res = await lafService.rankCenter({
-          action: 'get_rank',
+          action: 'get',
           userId: userId
         });
 
@@ -607,17 +555,18 @@ export default {
       // 优先从排行榜数据中查找我的记录（使用后端返回的真实分数）
       if (this.list && this.list.length > 0) {
         // 打印所有记录用于调试
-        logger.log('[TEST-9.1] 🔍 排行榜中的所有记录:', this.list.map((item) => ({
-          _id: item._id,
-          nickName: item.nickName,
-          name: item.name,
-          score: item.score
-        })));
+        logger.log(
+          '[TEST-9.1] 🔍 排行榜中的所有记录:',
+          this.list.map((item) => ({
+            _id: item._id,
+            nickName: item.nickName,
+            name: item.name,
+            score: item.score
+          }))
+        );
 
-        const myRecord = this.list.find((item) =>
-          item._id === userId ||
-					item.nickName === myNickName ||
-					item.name === myNickName
+        const myRecord = this.list.find(
+          (item) => item._id === userId || item.nickName === myNickName || item.name === myNickName
         );
 
         if (myRecord) {
@@ -682,14 +631,10 @@ export default {
 
       // 计算正确率（假设错题本中的题目都是错的）
       const correctCount = Math.max(0, totalDone - mistakes.length);
-      const accuracy = totalDone > 0 ? (correctCount / totalDone) : 0;
+      const accuracy = totalDone > 0 ? correctCount / totalDone : 0;
 
       // 得分计算：刷题数 * 10 + 坚持天数 * 20 + 正确率 * 100
-      this.myScore = Math.round(
-        totalDone * 10 +
-				studyDays * 20 +
-				accuracy * 100
-      );
+      this.myScore = Math.round(totalDone * 10 + studyDays * 20 + accuracy * 100);
 
       // 计算排名：基于分数计算排名
       if (this.list && this.list.length > 0) {
@@ -722,7 +667,9 @@ export default {
       uni.switchTab({
         url: '/pages/practice/index',
         complete: () => {
-          setTimeout(() => { this.isNavigating = false; }, 500);
+          setTimeout(() => {
+            this.isNavigating = false;
+          }, 500);
         }
       });
     },
@@ -736,7 +683,9 @@ export default {
       const opponentName = this.activeUser?.name || this.activeUser?.nickName || '匿名用户';
       safeNavigateTo(`/pages/practice-sub/pk-battle?opponent=${encodeURIComponent(opponentName)}`, {
         complete: () => {
-          setTimeout(() => { this.isNavigating = false; }, 500);
+          setTimeout(() => {
+            this.isNavigating = false;
+          }, 500);
         }
       });
     },
@@ -818,20 +767,23 @@ export default {
       logger.log('[Rank-WebSocket] 初始化排行榜WebSocket连接');
 
       // 连接WebSocket
-      rankingSocket.connect({
-        userId: userId,
-        rankType: 'daily'
-      }).then(() => {
-        this.rankingWebsocketConnected = true;
-        logger.log('[Rank-WebSocket] WebSocket连接成功');
+      rankingSocket
+        .connect({
+          userId: userId,
+          rankType: 'daily'
+        })
+        .then(() => {
+          this.rankingWebsocketConnected = true;
+          logger.log('[Rank-WebSocket] WebSocket连接成功');
 
-        // 设置自己的用户ID用于位置追踪
-        selfPositionTracker.setUserId(userId);
-        selfPositionTracker.setScrollViewId('rank-scroll-view');
-      }).catch((err) => {
-        logger.warn('[Rank-WebSocket] WebSocket连接失败，使用普通模式:', err);
-        // 不显示toast，静默处理
-      });
+          // 设置自己的用户ID用于位置追踪
+          selfPositionTracker.setUserId(userId);
+          selfPositionTracker.setScrollViewId('rank-scroll-view');
+        })
+        .catch((err) => {
+          logger.warn('[Rank-WebSocket] WebSocket连接失败，使用普通模式:', err);
+          // 不显示toast，静默处理
+        });
 
       // 监听排行榜实时更新
       rankingSocket.on('rankingUpdate', (data) => {
@@ -922,576 +874,576 @@ export default {
 <style lang="scss" scoped>
 /* --- 全局变量适配 --- */
 .container {
-	--neon-gold: var(--warning);
-	--neon-silver: var(--text-tertiary);
-	--neon-green: var(--success);
-	--neon-glow-gold: var(--warning-light);
-	--neon-glow-green: var(--success-light);
-	--bg-body: var(--bg-body);
-	--card-bg: var(--bg-glass);
-	--card-border: var(--border);
-	--text-primary: var(--text-primary);
-	--text-tertiary: var(--text-tertiary);
+  --neon-gold: var(--warning);
+  --neon-silver: var(--text-tertiary);
+  --neon-green: var(--success);
+  --neon-glow-gold: var(--warning-light);
+  --neon-glow-green: var(--success-light);
+  --bg-body: var(--bg-body);
+  --card-bg: var(--bg-glass);
+  --card-border: var(--border);
+  --text-primary: var(--text-primary);
+  --text-tertiary: var(--text-tertiary);
 
-	height: 100vh;
-	background: var(--bg-body);
-	position: relative;
-	overflow: hidden;
-	transition: background 0.3s;
+  height: 100vh;
+  background: var(--bg-body);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
 }
 
 .container.dark-mode {
-	--neon-gold: var(--warning);
-	--neon-silver: var(--text-sub);
-	--neon-green: var(--success);
-	--neon-glow-gold: var(--warning-light);
-	--neon-glow-green: var(--success-light);
-	--bg-body: var(--bg-body);
-	--card-bg: var(--bg-glass);
-	--card-border: var(--border);
-	--text-primary: var(--text-primary);
-	--text-tertiary: var(--text-tertiary);
+  --neon-gold: var(--warning);
+  --neon-silver: var(--text-sub);
+  --neon-green: var(--success);
+  --neon-glow-gold: var(--warning-light);
+  --neon-glow-green: var(--success-light);
+  --bg-body: var(--bg-body);
+  --card-bg: var(--bg-glass);
+  --card-border: var(--border);
+  --text-primary: var(--text-primary);
+  --text-tertiary: var(--text-tertiary);
 }
 
 /* 极光背景 */
 .aurora-bg {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 500rpx;
-	background: var(--gradient-aurora);
-	filter: blur(60px);
-	z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 500rpx;
+  background: var(--gradient-aurora);
+  filter: blur(60px);
+  z-index: 0;
 }
 
 .dark-mode .aurora-bg {
-	background: var(--gradient-aurora-dark);
+  background: var(--gradient-aurora-dark);
 }
 
 /* 导航栏 */
 .nav-bar {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	z-index: 100;
-	background: var(--card-bg);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	border-bottom: 1px solid var(--card-border);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--card-border);
 }
 .nav-content {
-	height: 44px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 30rpx;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
 }
 .nav-back {
-	font-size: 36rpx;
-	color: var(--text-primary);
-	font-weight: bold;
+  font-size: 36rpx;
+  color: var(--text-primary);
+  font-weight: bold;
 }
 .nav-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--text-primary);
 }
 .placeholder {
-	width: 36rpx;
+  width: 36rpx;
 }
 
 /* 滚动区域 */
 .rank-scroll {
-	height: 100vh;
-	padding: 0 30rpx;
-	box-sizing: border-box;
-	position: relative;
-	z-index: 1;
+  height: 100vh;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 /* 领奖台荧光效果 */
 .podium-section {
-	display: flex;
-	align-items: flex-end;
-	justify-content: center;
-	padding: 60rpx 0;
-	margin-bottom: 40rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 60rpx 0;
+  margin-bottom: 40rpx;
 }
 .podium-item {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	flex: 1;
-	cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  cursor: pointer;
 }
 .avatar-wrap {
-	position: relative;
-	border-radius: 50%;
-	padding: 6rpx;
-	background: var(--bg-card);
-	transition: transform 0.3s;
-	margin-bottom: 20rpx;
+  position: relative;
+  border-radius: 50%;
+  padding: 6rpx;
+  background: var(--bg-card);
+  transition: transform 0.3s;
+  margin-bottom: 20rpx;
 }
 .dark-mode .avatar-wrap {
-	background: var(--bg-glass);
+  background: var(--bg-glass);
 }
 
 .avatar {
-	width: 100%;
-	height: 100%;
-	border-radius: 50%;
-	display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
 }
 
 .badge {
-	position: absolute;
-	bottom: -10rpx;
-	left: 50%;
-	transform: translateX(-50%);
-	padding: 2rpx 16rpx;
-	border-radius: 20rpx;
-	color: var(--text-inverse);
-	font-size: 20rpx;
-	font-weight: bold;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  position: absolute;
+  bottom: -10rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2rpx 16rpx;
+  border-radius: 20rpx;
+  color: var(--text-inverse);
+  font-size: 20rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 第一名样式 - 金色荧光 */
 .rank-1 .avatar-wrap {
-	width: 160rpx;
-	height: 160rpx;
-	box-shadow: 0 0 30rpx var(--neon-glow-gold);
-	border: 4rpx solid var(--neon-gold);
+  width: 160rpx;
+  height: 160rpx;
+  box-shadow: 0 0 30rpx var(--neon-glow-gold);
+  border: 4rpx solid var(--neon-gold);
 }
 .dark-mode .rank-1 .avatar-wrap {
-	box-shadow: 0 0 50rpx var(--neon-glow-gold);
+  box-shadow: 0 0 50rpx var(--neon-glow-gold);
 }
 .rank-1 .badge {
-	background: var(--neon-gold);
+  background: var(--neon-gold);
 }
 
 /* 第一名皇冠光晕动画 */
 .crown-glow {
-	position: absolute;
-	top: -30rpx;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 40rpx;
-	height: 40rpx;
-	background: var(--neon-gold);
-	filter: blur(20rpx);
-	border-radius: 50%;
-	animation: pulse 2s infinite;
-	z-index: 5;
+  position: absolute;
+  top: -30rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 40rpx;
+  background: var(--neon-gold);
+  filter: blur(20rpx);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  z-index: 5;
 }
 
 /* 第二名样式 - 银色 */
 .rank-2 .avatar-wrap {
-	width: 130rpx;
-	height: 130rpx;
-	border: 4rpx solid var(--neon-silver);
+  width: 130rpx;
+  height: 130rpx;
+  border: 4rpx solid var(--neon-silver);
 }
 .rank-2 .badge {
-	background: var(--neon-silver);
-	color: var(--text-primary);
+  background: var(--neon-silver);
+  color: var(--text-primary);
 }
 
 /* 第三名样式 - 铜色 */
 .rank-3 .avatar-wrap {
-	width: 120rpx;
-	height: 120rpx;
-	border: 4rpx solid var(--warning);
+  width: 120rpx;
+  height: 120rpx;
+  border: 4rpx solid var(--warning);
 }
 .rank-3 .badge {
-	background: var(--warning);
+  background: var(--warning);
 }
 
 .podium-item .name {
-	color: var(--text-primary);
-	font-weight: bold;
-	margin-top: 20rpx;
-	font-size: 26rpx;
-	display: block;
+  color: var(--text-primary);
+  font-weight: bold;
+  margin-top: 20rpx;
+  font-size: 26rpx;
+  display: block;
 }
 .podium-item .score {
-	color: var(--neon-green);
-	font-weight: 900;
-	font-size: 22rpx;
-	display: block;
-	margin-top: 8rpx;
+  color: var(--neon-green);
+  font-weight: 900;
+  font-size: 22rpx;
+  display: block;
+  margin-top: 8rpx;
 }
 
 /* 排行榜列表 */
 .glass-card {
-	background: var(--card-bg);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	border: 1px solid var(--card-border);
-	border-radius: 40rpx;
-	box-shadow: var(--shadow-md);
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 40rpx;
+  box-shadow: var(--shadow-md);
 }
 
 /* 霓虹列表项 */
 .rank-item {
-	display: flex;
-	align-items: center;
-	padding: 30rpx;
-	margin-bottom: 25rpx;
-	border: 1px solid var(--card-border);
-	transition: transform 0.2s;
-	cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  margin-bottom: 25rpx;
+  border: 1px solid var(--card-border);
+  transition: transform 0.2s;
+  cursor: pointer;
 }
 .rank-item:active {
-	transform: scale(0.98);
+  transform: scale(0.98);
 }
 /* 深色模式下的霓虹边框 */
 .dark-mode .rank-item {
-	border-left: 6rpx solid var(--neon-green);
-	box-shadow: var(--shadow-success);
+  border-left: 6rpx solid var(--neon-green);
+  box-shadow: var(--shadow-success);
 }
 
 .rank-num-box {
-	width: 60rpx;
-	flex-shrink: 0;
+  width: 60rpx;
+  flex-shrink: 0;
 }
 .rank-num {
-	font-size: 36rpx;
-	font-weight: 900;
-	font-style: italic;
-	color: var(--text-tertiary);
+  font-size: 36rpx;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--text-tertiary);
 }
 /* 深色模式下的排名数字荧光效果 */
 .dark-mode .rank-num {
-	color: var(--neon-green);
-	text-shadow: var(--shadow-text);
+  color: var(--neon-green);
+  text-shadow: var(--shadow-text);
 }
 
 .item-avatar {
-	width: 80rpx;
-	height: 80rpx;
-	border-radius: 40rpx;
-	margin: 0 25rpx;
-	flex-shrink: 0;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  margin: 0 25rpx;
+  flex-shrink: 0;
 }
 .item-info {
-	flex: 1;
-	overflow: hidden;
+  flex: 1;
+  overflow: hidden;
 }
 .item-name {
-	color: var(--text-primary);
-	font-weight: bold;
-	font-size: 28rpx;
-	display: block;
-	margin-bottom: 4rpx;
+  color: var(--text-primary);
+  font-weight: bold;
+  font-size: 28rpx;
+  display: block;
+  margin-bottom: 4rpx;
 }
 .item-desc {
-	color: var(--text-tertiary);
-	font-size: 20rpx;
-	display: block;
+  color: var(--text-tertiary);
+  font-size: 20rpx;
+  display: block;
 }
 .item-score {
-	color: var(--text-primary);
-	font-weight: 900;
-	font-size: 32rpx;
-	flex-shrink: 0;
-	margin-left: 20rpx;
+  color: var(--text-primary);
+  font-weight: 900;
+  font-size: 32rpx;
+  flex-shrink: 0;
+  margin-left: 20rpx;
 }
 
 /* 底部我的排名卡片 - 荧光绿背景 */
 .my-rank-fixed {
-	position: fixed;
-	bottom: 40rpx;
-	left: 30rpx;
-	right: 30rpx;
-	z-index: 100;
+  position: fixed;
+  bottom: 40rpx;
+  left: 30rpx;
+  right: 30rpx;
+  z-index: 100;
 }
 .my-rank-card {
-	background: var(--neon-green);
-	padding: 30rpx;
-	border-radius: 40rpx;
-	display: flex;
-	align-items: center;
-	box-shadow: var(--shadow-success);
+  background: var(--neon-green);
+  padding: 30rpx;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-success);
 }
 .my-rank-card .rank-num,
 .my-rank-card .item-name {
-	color: var(--text-primary-foreground);
+  color: var(--text-primary-foreground);
 }
 .my-rank-card .item-desc {
-	color: var(--text-sub);
+  color: var(--text-sub);
 }
 .my-rank-card .item-avatar {
-	border: 2rpx solid var(--border);
+  border: 2rpx solid var(--border);
 }
 .rank-btn {
-	width: 140rpx;
-	height: 60rpx;
-	border-radius: 30rpx;
-	background: var(--bg-card);
-	color: var(--text-primary-foreground);
-	font-size: 24rpx;
-	font-weight: bold;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin: 0;
-	margin-left: 20rpx;
-	flex-shrink: 0;
-	border: none;
+  width: 140rpx;
+  height: 60rpx;
+  border-radius: 30rpx;
+  background: var(--bg-card);
+  color: var(--text-primary-foreground);
+  font-size: 24rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  margin-left: 20rpx;
+  flex-shrink: 0;
+  border: none;
 }
 .rank-btn::after {
-	border: none;
+  border: none;
 }
 
 .footer-safe {
-	height: 250rpx;
+  height: 250rpx;
 }
 
 /* 加载状态样式 */
-	.loading-container {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 60vh;
-	}
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+}
 
-	/* 空状态样式 */
-	.empty-container,
-	.only-me-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 60vh;
-		padding: 0 40rpx;
-	}
+/* 空状态样式 */
+.empty-container,
+.only-me-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  padding: 0 40rpx;
+}
 
-	.go-practice-btn {
-		margin-top: 40rpx;
-		width: 200rpx;
-		height: 80rpx;
-		background: var(--neon-green);
-		color: var(--text-primary-foreground);
-		font-weight: bold;
-		border: none;
-		border-radius: 40rpx;
-		box-shadow: var(--shadow-success);
-	}
+.go-practice-btn {
+  margin-top: 40rpx;
+  width: 200rpx;
+  height: 80rpx;
+  background: var(--neon-green);
+  color: var(--text-primary-foreground);
+  font-weight: bold;
+  border: none;
+  border-radius: 40rpx;
+  box-shadow: var(--shadow-success);
+}
 
-	.go-practice-btn::after {
-		border: none;
-	}
+.go-practice-btn::after {
+  border: none;
+}
 
-	/* 脉冲动画 - 皇冠光晕 */
-	@keyframes pulse {
-		0% {
-			transform: translateX(-50%) scale(0.8);
-			opacity: 0.5;
-		}
-		50% {
-			transform: translateX(-50%) scale(1.5);
-			opacity: 0.2;
-		}
-		100% {
-			transform: translateX(-50%) scale(0.8);
-			opacity: 0.5;
-		}
-	}
+/* 脉冲动画 - 皇冠光晕 */
+@keyframes pulse {
+  0% {
+    transform: translateX(-50%) scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.5);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateX(-50%) scale(0.8);
+    opacity: 0.5;
+  }
+}
 
-	/* 学霸学习足迹弹窗 */
-	.footprint-mask {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: var(--overlay-dark);
-		backdrop-filter: blur(10px);
-		-webkit-backdrop-filter: blur(10px);
-		z-index: 1000;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 40rpx;
-		box-sizing: border-box;
-		animation: fadeIn 0.3s;
-	}
+/* 学霸学习足迹弹窗 */
+.footprint-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--overlay-dark);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  box-sizing: border-box;
+  animation: fadeIn 0.3s;
+}
 
-	.footprint-card {
-		width: 100%;
-		max-width: 620rpx;
-		padding: 50rpx;
-		border-radius: 40rpx;
-		position: relative;
-		background: var(--card-bg);
-		backdrop-filter: blur(40px);
-		-webkit-backdrop-filter: blur(40px);
-		border: 1px solid var(--card-border);
-		box-shadow: var(--shadow-xl);
-		animation: slideUp 0.3s;
-		max-height: 80vh;
-		overflow-y: auto;
-	}
+.footprint-card {
+  width: 100%;
+  max-width: 620rpx;
+  padding: 50rpx;
+  border-radius: 40rpx;
+  position: relative;
+  background: var(--card-bg);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-xl);
+  animation: slideUp 0.3s;
+  max-height: 80vh;
+  overflow-y: auto;
+}
 
-	.close-btn {
-		position: absolute;
-		top: 30rpx;
-		right: 30rpx;
-		color: var(--text-tertiary);
-		font-size: 32rpx;
-		width: 40rpx;
-		height: 40rpx;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 10;
-	}
+.close-btn {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+  color: var(--text-tertiary);
+  font-size: 32rpx;
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
 
-	.card-header {
-		display: flex;
-		align-items: center;
-		margin-bottom: 40rpx;
-	}
-	.card-avatar {
-		width: 120rpx;
-		height: 120rpx;
-		border-radius: 60rpx;
-		border: 4rpx solid var(--success);
-		box-shadow: var(--shadow-success);
-	}
-	.header-info {
-		margin-left: 20rpx;
-		flex: 1;
-	}
-	.card-name {
-		font-size: 36rpx;
-		font-weight: 800;
-		color: var(--text-primary);
-		display: block;
-		margin-bottom: 10rpx;
-	}
-	.ai-label {
-		display: inline-flex;
-		align-items: center;
-		background: var(--success-light);
-		color: var(--neon-green);
-		padding: 4rpx 12rpx;
-		border-radius: 10rpx;
-		gap: 6rpx;
-	}
-	.sparkle-icon {
-		font-size: 20rpx;
-	}
-	.ai-label text {
-		font-size: 20rpx;
-		font-weight: bold;
-	}
+.card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+.card-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  border: 4rpx solid var(--success);
+  box-shadow: var(--shadow-success);
+}
+.header-info {
+  margin-left: 20rpx;
+  flex: 1;
+}
+.card-name {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 10rpx;
+}
+.ai-label {
+  display: inline-flex;
+  align-items: center;
+  background: var(--success-light);
+  color: var(--neon-green);
+  padding: 4rpx 12rpx;
+  border-radius: 10rpx;
+  gap: 6rpx;
+}
+.sparkle-icon {
+  font-size: 20rpx;
+}
+.ai-label text {
+  font-size: 20rpx;
+  font-weight: bold;
+}
 
-	.footprint-data-row {
-		display: flex;
-		justify-content: space-between;
-		padding: 30rpx 0;
-		border-top: 1rpx solid var(--border);
-		border-bottom: 1rpx solid var(--border);
-		margin-bottom: 30rpx;
-	}
-	.data-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		flex: 1;
-	}
-	.data-item .val {
-		font-size: 32rpx;
-		font-weight: 900;
-		color: var(--text-primary);
-		display: block;
-	}
-	.data-item .lbl {
-		font-size: 20rpx;
-		color: var(--text-tertiary);
-		margin-top: 6rpx;
-		display: block;
-	}
+.footprint-data-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 30rpx 0;
+  border-top: 1rpx solid var(--border);
+  border-bottom: 1rpx solid var(--border);
+  margin-bottom: 30rpx;
+}
+.data-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.data-item .val {
+  font-size: 32rpx;
+  font-weight: 900;
+  color: var(--text-primary);
+  display: block;
+}
+.data-item .lbl {
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+  margin-top: 6rpx;
+  display: block;
+}
 
-	.target-school-box {
-		padding: 20rpx 0;
-		border-bottom: 1rpx solid var(--border);
-		margin-bottom: 30rpx;
-	}
-	.target-label {
-		font-size: 24rpx;
-		color: var(--text-tertiary);
-	}
-	.target-val {
-		font-size: 26rpx;
-		font-weight: bold;
-		color: var(--neon-green);
-		margin-left: 10rpx;
-	}
+.target-school-box {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--border);
+  margin-bottom: 30rpx;
+}
+.target-label {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+.target-val {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: var(--neon-green);
+  margin-left: 10rpx;
+}
 
-	.ai-analysis-content {
-		margin: 30rpx 0;
-	}
-	.analysis-tag {
-		display: inline-block;
-		background: var(--text-primary);
-		color: #FFFFFF;
-		font-size: 20rpx;
-		padding: 4rpx 12rpx;
-		border-radius: 6rpx;
-		margin-bottom: 15rpx;
-	}
-	.analysis-scroll {
-		height: 150rpx;
-		max-height: 200rpx;
-	}
-	.analysis-text {
-		font-size: 26rpx;
-		color: var(--text-tertiary);
-		line-height: 1.6;
-		white-space: pre-wrap;
-		word-wrap: break-word;
-		display: block;
-	}
+.ai-analysis-content {
+  margin: 30rpx 0;
+}
+.analysis-tag {
+  display: inline-block;
+  background: var(--text-primary);
+  color: #ffffff;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  margin-bottom: 15rpx;
+}
+.analysis-scroll {
+  height: 150rpx;
+  max-height: 200rpx;
+}
+.analysis-text {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  display: block;
+}
 
-	.challenge-btn {
-		width: 100%;
-		height: 90rpx;
-		line-height: 90rpx;
-		background: var(--gradient-primary);
-		color: var(--text-primary-foreground);
-		font-weight: bold;
-		font-size: 28rpx;
-		border-radius: 20rpx;
-		border: none;
-		margin-top: 20rpx;
-		box-shadow: var(--shadow-success);
-	}
-	.challenge-btn::after {
-		border: none;
-	}
+.challenge-btn {
+  width: 100%;
+  height: 90rpx;
+  line-height: 90rpx;
+  background: var(--gradient-primary);
+  color: var(--text-primary-foreground);
+  font-weight: bold;
+  font-size: 28rpx;
+  border-radius: 20rpx;
+  border: none;
+  margin-top: 20rpx;
+  box-shadow: var(--shadow-success);
+}
+.challenge-btn::after {
+  border: none;
+}
 
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-	@keyframes slideUp {
-		from {
-			opacity: 0;
-			transform: translateY(50rpx) scale(0.9);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50rpx) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 </style>

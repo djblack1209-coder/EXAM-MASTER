@@ -2,37 +2,23 @@
   <view class="chat-container" :class="{ 'dark-mode': isDark }">
     <!-- 导航栏 -->
     <view class="nav-bar">
-      <image
-        src="https://img.icons8.com/ios-glyphs/30/333333/chevron-left.png"
-        class="back-icon"
-        @tap="goBack"
-      />
+      <image src="https://img.icons8.com/ios-glyphs/30/333333/chevron-left.png" class="back-icon" @tap="goBack" />
       <view class="nav-center" hover-class="item-hover" @tap="showFriendSelector = true">
         <image :src="currentFriend.avatar" class="friend-avatar-small" @error="onAvatarError" />
         <text class="nav-title">
           {{ currentFriend.name }}
         </text>
-        <text class="nav-arrow">
-          ▼
-        </text>
+        <text class="nav-arrow"> ▼ </text>
       </view>
-      <image
-        src="https://img.icons8.com/ios/50/333333/menu--v1.png"
-        class="menu-icon"
-        @tap="showMenu"
-      />
+      <image src="https://img.icons8.com/ios/50/333333/menu--v1.png" class="menu-icon" @tap="showMenu" />
     </view>
 
     <!-- AI好友选择器弹窗 -->
     <view v-if="showFriendSelector" class="friend-selector-modal" @tap="showFriendSelector = false">
       <view class="friend-selector-content" @tap.stop>
         <view class="selector-header">
-          <text class="selector-title">
-            选择AI好友
-          </text>
-          <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false">
-            ×
-          </text>
+          <text class="selector-title"> 选择AI好友 </text>
+          <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false"> × </text>
         </view>
         <view class="friend-list">
           <view
@@ -52,9 +38,7 @@
                 {{ friend.role }}
               </text>
             </view>
-            <view v-if="currentFriend.type === friend.type" class="friend-check">
-              ✓
-            </view>
+            <view v-if="currentFriend.type === friend.type" class="friend-check"> ✓ </view>
           </view>
         </view>
       </view>
@@ -97,7 +81,7 @@
       <view
         v-for="(msg, index) in messages"
         :id="'msg-' + index"
-        :key="msg.id || ('msg-' + index)"
+        :key="msg.id || 'msg-' + index"
         class="msg-row"
         :class="msg.role"
       >
@@ -116,8 +100,8 @@
           <view
             class="bubble right-bubble"
             :class="{
-              'sending': msg.status === 'sending',
-              'failed': msg.status === 'failed'
+              sending: msg.status === 'sending',
+              failed: msg.status === 'failed'
             }"
           >
             <text>{{ msg.content }}</text>
@@ -126,12 +110,8 @@
                 {{ msg.time }}
               </text>
               <view v-if="msg.status" class="msg-status">
-                <text v-if="msg.status === 'sending'" class="status-icon">
-                  ⏳
-                </text>
-                <text v-else-if="msg.status === 'sent'" class="status-icon sent">
-                  ✓
-                </text>
+                <text v-if="msg.status === 'sending'" class="status-icon"> ⏳ </text>
+                <text v-else-if="msg.status === 'sent'" class="status-icon sent"> ✓ </text>
                 <text v-else-if="msg.status === 'failed'" class="status-icon failed" @tap="retryMessage(index)">
                   ⚠️ 点击重试
                 </text>
@@ -154,7 +134,7 @@
         </view>
       </view>
 
-      <view id="msg-bottom" style="height: 20px;" />
+      <view id="msg-bottom" style="height: 20px" />
     </scroll-view>
 
     <!-- 情绪快捷标签 -->
@@ -181,28 +161,30 @@
           :style="{ height: `${20 + voiceLevel * 30}px`, animationDelay: `${i * 0.1}s` }"
         />
       </view>
-      <text class="voice-hint">
-        正在录音...
-      </text>
+      <text class="voice-hint"> 正在录音... </text>
     </view>
 
     <!-- 输入区域 -->
     <view v-if="!isPageLoading" class="input-area">
       <view class="input-tools">
+        <image src="https://img.icons8.com/ios/50/666666/happy--v1.png" class="tool-icon" @tap="toggleEmotionTags" />
         <image
-          src="https://img.icons8.com/ios/50/666666/happy--v1.png"
-          class="tool-icon"
-          @tap="toggleEmotionTags"
-        />
-        <image
-          :src="isRecording ? 'https://img.icons8.com/ios/50/FF3B30/microphone.png' : 'https://img.icons8.com/ios/50/666666/microphone.png'"
+          :src="
+            isRecording
+              ? 'https://img.icons8.com/ios/50/FF3B30/microphone.png'
+              : 'https://img.icons8.com/ios/50/666666/microphone.png'
+          "
           class="tool-icon"
           @touchstart="startRecording"
           @touchend="stopRecording"
           @touchcancel="stopRecording"
         />
         <image
-          :src="isRealtimeMode ? 'https://img.icons8.com/ios/50/007AFF/lightning-bolt.png' : 'https://img.icons8.com/ios/50/666666/lightning-bolt.png'"
+          :src="
+            isRealtimeMode
+              ? 'https://img.icons8.com/ios/50/007AFF/lightning-bolt.png'
+              : 'https://img.icons8.com/ios/50/666666/lightning-bolt.png'
+          "
           class="tool-icon"
           @tap="toggleRealtimeMode"
         />
@@ -217,15 +199,8 @@
         @confirm="handleSend"
         @focus="onInputFocus"
       />
-      <view
-        class="send-btn"
-        :class="{ active: messageText.trim() }"
-        hover-class="item-hover"
-        @tap="handleSend"
-      >
-        <text class="send-icon">
-          ↑
-        </text>
+      <view class="send-btn" :class="{ active: messageText.trim() }" hover-class="item-hover" @tap="handleSend">
+        <text class="send-icon"> ↑ </text>
       </view>
     </view>
   </view>
@@ -388,7 +363,9 @@ onMounted(async () => {
     console.error('[Chat] 初始化加载失败:', e);
   } finally {
     clearTimeout(loadingTimeout);
-    setTimeout(() => { isPageLoading.value = false; }, 300);
+    setTimeout(() => {
+      isPageLoading.value = false;
+    }, 300);
   }
 });
 
@@ -424,9 +401,10 @@ const loadChatHistory = async () => {
       messages.value = history.slice(-20); // 只加载最近20条
       conversationCount.value = history.length;
       // 构建最近对话摘要
-      userContext.recentConversations = history.slice(-3).map((m) =>
-        `${m.role === 'user' ? '用户' : currentFriend.value.name}: ${m.content.substring(0, 50)}`
-      ).join('\n');
+      userContext.recentConversations = history
+        .slice(-3)
+        .map((m) => `${m.role === 'user' ? '用户' : currentFriend.value.name}: ${m.content.substring(0, 50)}`)
+        .join('\n');
 
       nextTick(() => {
         scrollToBottom();
@@ -489,7 +467,6 @@ const selectEmotion = (emotion) => {
 const toggleEmotionTags = () => {
   showEmotionTags.value = !showEmotionTags.value;
 };
-
 
 // 滚动到底部
 const scrollToBottom = () => {
@@ -586,18 +563,41 @@ const startRecording = async () => {
     showVoiceWave.value = true;
     audioChunks.value = [];
 
-    // 模拟录音开始
     logger.log('[Chat] 开始录音');
 
-    // 这里应该调用实际的录音API
-    // 由于是模拟环境，我们使用setInterval模拟录音过程
+    // 使用 uni-app RecorderManager 进行真实录音
+    const recorderManager = uni.getRecorderManager();
+    recorderManager.onFrameRecorded?.((res) => {
+      if (res.frameBuffer) {
+        audioChunks.value.push(res.frameBuffer);
+      }
+    });
+    recorderManager.onStop((res) => {
+      logger.log('[Chat] 录音完成:', res.tempFilePath);
+      // 语音识别需要后端 voice-service 支持，当前提示用户功能开发中
+      uni.showToast({
+        title: '语音输入功能开发中，请使用文字输入',
+        icon: 'none',
+        duration: 2000
+      });
+    });
+    recorderManager.onError((err) => {
+      logger.error('[Chat] 录音错误:', err);
+      isRecording.value = false;
+      showVoiceWave.value = false;
+    });
+    recorderManager.start({
+      format: 'mp3',
+      sampleRate: 16000,
+      numberOfChannels: 1,
+      frameSize: 50
+    });
+
+    // 音量动画（基于真实录音帧回调，此处用定时器作为视觉反馈）
     const interval = setInterval(() => {
       voiceLevel.value = Math.random() * 0.8 + 0.2;
     }, 100);
-
-    // 保存定时器ID以便停止（使用组件级变量）
     recordingIntervalId = interval;
-
   } catch (error) {
     console.error('[Chat] 录音权限获取失败:', error);
     uni.showToast({
@@ -621,17 +621,9 @@ const stopRecording = async () => {
 
     logger.log('[Chat] 停止录音');
 
-    // 模拟录音处理
-    setTimeout(() => {
-      const simulatedText = '这是一段模拟的语音识别结果，你可以在这里提问任何问题。';
-      messageText.value = simulatedText;
-      uni.showToast({
-        title: '语音识别完成',
-        icon: 'success',
-        duration: 1000
-      });
-    }, 500);
-
+    // 停止真实录音（触发 onStop 回调）
+    const recorderManager = uni.getRecorderManager();
+    recorderManager.stop();
   } catch (error) {
     console.error('[Chat] 停止录音失败:', error);
   }
@@ -694,7 +686,6 @@ const handleRealtimeAnswer = async (question) => {
 
     // 滚动到底部
     scrollToBottom();
-
   } catch (error) {
     isTyping.value = false;
     // ✅ F027: 标记用户消息发送失败
@@ -744,17 +735,13 @@ const handleNormalChat = async (content) => {
 
   try {
     // 调用AI好友对话API
-    const response = await lafService.aiFriendChat(
-      currentFriend.value.type,
-      content,
-      {
-        emotion: currentEmotion.value,
-        conversationCount: conversationCount.value,
-        studyState: userContext.studyState,
-        recentAccuracy: userContext.recentAccuracy,
-        recentConversations: userContext.recentConversations
-      }
-    );
+    const response = await lafService.aiFriendChat(currentFriend.value.type, content, {
+      emotion: currentEmotion.value,
+      conversationCount: conversationCount.value,
+      studyState: userContext.studyState,
+      recentAccuracy: userContext.recentAccuracy,
+      recentConversations: userContext.recentConversations
+    });
 
     // 更新消息状态为已发送
     messages.value[msgIndex].status = 'sent';
@@ -778,9 +765,10 @@ const handleNormalChat = async (content) => {
     messages.value.push(aiMsg);
 
     // 更新最近对话摘要
-    userContext.recentConversations = messages.value.slice(-3).map((m) =>
-      `${m.role === 'user' ? '用户' : currentFriend.value.name}: ${m.content.substring(0, 50)}`
-    ).join('\n');
+    userContext.recentConversations = messages.value
+      .slice(-3)
+      .map((m) => `${m.role === 'user' ? '用户' : currentFriend.value.name}: ${m.content.substring(0, 50)}`)
+      .join('\n');
 
     // 保存聊天历史
     saveChatHistory();
@@ -790,7 +778,6 @@ const handleNormalChat = async (content) => {
 
     // 滚动到底部
     scrollToBottom();
-
   } catch (error) {
     // 更新消息状态为失败
     messages.value[msgIndex].status = 'failed';
@@ -814,17 +801,13 @@ const retryMessage = async (index) => {
     try {
       isTyping.value = true;
 
-      const response = await lafService.aiFriendChat(
-        currentFriend.value.type,
-        msg.content,
-        {
-          emotion: currentEmotion.value,
-          conversationCount: conversationCount.value,
-          studyState: userContext.studyState,
-          recentAccuracy: userContext.recentAccuracy,
-          recentConversations: userContext.recentConversations
-        }
-      );
+      const response = await lafService.aiFriendChat(currentFriend.value.type, msg.content, {
+        emotion: currentEmotion.value,
+        conversationCount: conversationCount.value,
+        studyState: userContext.studyState,
+        recentAccuracy: userContext.recentAccuracy,
+        recentConversations: userContext.recentConversations
+      });
 
       messages.value[index].status = 'sent';
       isTyping.value = false;
@@ -843,7 +826,6 @@ const retryMessage = async (index) => {
       messages.value.push(aiMsg);
       saveChatHistory();
       scrollToBottom();
-
     } catch {
       messages.value[index].status = 'failed';
       isTyping.value = false;
@@ -890,7 +872,8 @@ onUnmounted(() => {
     color: var(--text-tertiary, var(--ds-color-text-tertiary));
   }
 
-  .back-icon, .menu-icon {
+  .back-icon,
+  .menu-icon {
     filter: invert(1) brightness(0.9);
   }
 
@@ -901,9 +884,15 @@ onUnmounted(() => {
   }
 
   .welcome-card {
-    .welcome-name { color: var(--text-main, var(--ds-color-text-primary)); }
-    .welcome-role { color: var(--text-tertiary, var(--ds-color-text-tertiary)); }
-    .welcome-intro { color: var(--text-tertiary, var(--ds-color-text-tertiary)); }
+    .welcome-name {
+      color: var(--text-main, var(--ds-color-text-primary));
+    }
+    .welcome-role {
+      color: var(--text-tertiary, var(--ds-color-text-tertiary));
+    }
+    .welcome-intro {
+      color: var(--text-tertiary, var(--ds-color-text-tertiary));
+    }
   }
 
   .input-area {
@@ -934,7 +923,7 @@ onUnmounted(() => {
     color: var(--text-secondary, var(--ds-color-text-secondary));
 
     &.active {
-      background: var(--primary, #007AFF);
+      background: var(--primary, #007aff);
       color: white;
     }
   }
@@ -952,12 +941,20 @@ onUnmounted(() => {
   }
 
   .friend-item {
-    &:active { background: var(--bg-tertiary, #2a2a2a); }
-    &.active { background: rgba(0, 122, 255, 0.15); }
+    &:active {
+      background: var(--bg-tertiary, #2a2a2a);
+    }
+    &.active {
+      background: rgba(0, 122, 255, 0.15);
+    }
   }
 
-  .friend-name { color: var(--text-main, var(--ds-color-text-primary)); }
-  .friend-role { color: var(--text-tertiary, var(--ds-color-text-tertiary)); }
+  .friend-name {
+    color: var(--text-main, var(--ds-color-text-primary));
+  }
+  .friend-role {
+    color: var(--text-tertiary, var(--ds-color-text-tertiary));
+  }
 
   .tool-icon {
     filter: invert(0.7);
@@ -965,7 +962,8 @@ onUnmounted(() => {
 
   .skeleton-animate {
     background: linear-gradient(
-      90deg, var(--bg-card, #1e1e1e) 25%,
+      90deg,
+      var(--bg-card, #1e1e1e) 25%,
       var(--bg-tertiary, #2a2a2a) 50%,
       var(--bg-card, #1e1e1e) 75%
     );
@@ -1009,7 +1007,8 @@ onUnmounted(() => {
   color: var(--text-secondary);
 }
 
-.back-icon, .menu-icon {
+.back-icon,
+.menu-icon {
   width: 48rpx;
   height: 48rpx;
 
@@ -1113,7 +1112,7 @@ onUnmounted(() => {
 .friend-check {
   width: 48rpx;
   height: 48rpx;
-  background: var(--primary, #007AFF);
+  background: var(--primary, #007aff);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -1201,7 +1200,7 @@ onUnmounted(() => {
 }
 
 .right-bubble {
-  background: linear-gradient(135deg, var(--primary, #007AFF), var(--primary-dark, #5856D6));
+  background: linear-gradient(135deg, var(--primary, #007aff), var(--primary-dark, #5856d6));
   color: white;
   margin-right: 16rpx;
   border-bottom-right-radius: 8rpx;
@@ -1212,7 +1211,7 @@ onUnmounted(() => {
   }
 
   &.failed {
-    background: linear-gradient(135deg, var(--ds-color-error, #FF3B30), #FF6B6B);
+    background: linear-gradient(135deg, var(--ds-color-error, #ff3b30), #ff6b6b);
     box-shadow: 0 4rpx 16rpx rgba(255, 59, 48, 0.3);
   }
 }
@@ -1238,7 +1237,7 @@ onUnmounted(() => {
   }
 
   &.failed {
-    color: #FFD60A;
+    color: #ffd60a;
     font-size: 22rpx;
   }
 }
@@ -1276,7 +1275,9 @@ onUnmounted(() => {
 }
 
 @keyframes typing {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
     opacity: 0.4;
   }
@@ -1308,7 +1309,7 @@ onUnmounted(() => {
   }
 
   &.active {
-    background: var(--primary, #007AFF);
+    background: var(--primary, #007aff);
     color: white;
   }
 }
@@ -1359,7 +1360,7 @@ onUnmounted(() => {
   transition: all 0.2s;
 
   &.active {
-    background: linear-gradient(135deg, #007AFF, #5856D6);
+    background: linear-gradient(135deg, #007aff, #5856d6);
     transform: scale(1.05);
   }
 }
@@ -1458,13 +1459,14 @@ onUnmounted(() => {
 
 .wave-bar {
   width: 12rpx;
-  background: linear-gradient(180deg, #007AFF, #5856D6);
+  background: linear-gradient(180deg, #007aff, #5856d6);
   border-radius: 6rpx;
   animation: wave 1s ease-in-out infinite;
 }
 
 @keyframes wave {
-  0%, 100% {
+  0%,
+  100% {
     transform: scaleY(0.5);
   }
   50% {

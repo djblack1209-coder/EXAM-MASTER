@@ -4,13 +4,9 @@
     <view class="transparent-navbar" :class="{ 'navbar-solid': scrolled }">
       <view class="navbar-content">
         <view class="navbar-left" @tap="goBack">
-          <text class="back-icon">
-            ←
-          </text>
+          <text class="back-icon"> ← </text>
         </view>
-        <text class="navbar-title" :class="{ 'title-visible': scrolled }">
-          学习详情
-        </text>
+        <text class="navbar-title" :class="{ 'title-visible': scrolled }"> 学习详情 </text>
         <view class="navbar-right">
           <!-- 主题切换按钮 -->
           <view class="theme-toggle" @tap="toggleTheme">
@@ -23,12 +19,7 @@
     </view>
 
     <!-- 滚动容器 -->
-    <scroll-view
-      class="scroll-container"
-      scroll-y
-      :style="{ paddingTop: navbarHeight + 'px' }"
-      @scroll="handleScroll"
-    >
+    <scroll-view class="scroll-container" scroll-y :style="{ paddingTop: navbarHeight + 'px' }" @scroll="handleScroll">
       <!-- 骨架屏加载状态 -->
       <view v-if="isLoading" class="skeleton-container">
         <view class="skeleton-header">
@@ -48,12 +39,8 @@
       <template v-else>
         <!-- 页面标题 -->
         <view class="page-header">
-          <text class="page-title">
-            学习详情
-          </text>
-          <text class="page-subtitle">
-            查看您的学习数据和进度
-          </text>
+          <text class="page-title"> 学习详情 </text>
+          <text class="page-subtitle"> 查看您的学习数据和进度 </text>
         </view>
 
         <!-- 学习概况卡片 -->
@@ -65,9 +52,7 @@
               <text class="stat-value">
                 {{ studyTime }}
               </text>
-              <text class="stat-label">
-                学习时长（分钟）
-              </text>
+              <text class="stat-label"> 学习时长（分钟） </text>
             </view>
           </view>
 
@@ -75,12 +60,8 @@
           <view class="stat-card">
             <image class="stat-icon" src="./static/stack-of-books.png" mode="aspectFit" />
             <view class="stat-content">
-              <text class="stat-value">
-                {{ completionRate }}%
-              </text>
-              <text class="stat-label">
-                完成率
-              </text>
+              <text class="stat-value"> {{ completionRate }}% </text>
+              <text class="stat-label"> 完成率 </text>
             </view>
           </view>
 
@@ -91,9 +72,7 @@
               <text class="stat-value">
                 {{ abilityRank }}
               </text>
-              <text class="stat-label">
-                能力评级
-              </text>
+              <text class="stat-label"> 能力评级 </text>
             </view>
           </view>
         </view>
@@ -101,39 +80,24 @@
         <!-- 学习热力图 -->
         <view class="heatmap-section">
           <view class="section-header">
-            <text class="section-title">
-              学习热力图
-            </text>
-            <text class="section-subtitle">
-              过去一年的学习活跃度
-            </text>
+            <text class="section-title"> 学习热力图 </text>
+            <text class="section-subtitle"> 过去一年的学习活跃度 </text>
           </view>
 
           <view class="heatmap-container">
-            <StudyHeatmap
-              :study-data="studyRecordData"
-              :weeks="26"
-              @day-tap="handleDayTap"
-            />
+            <StudyHeatmap :study-data="studyRecordData" :weeks="26" @day-tap="handleDayTap" />
           </view>
         </view>
 
         <!-- 学习趋势图表 -->
         <view class="chart-section">
           <view class="section-header">
-            <text class="section-title">
-              学习趋势
-            </text>
-            <text class="section-subtitle">
-              最近学习时长变化
-            </text>
+            <text class="section-title"> 学习趋势 </text>
+            <text class="section-subtitle"> 最近学习时长变化 </text>
           </view>
 
           <view class="chart-container">
-            <StudyTrendChart
-              :study-data="studyRecordData"
-              @range-change="handleRangeChange"
-            />
+            <StudyTrendChart :study-data="studyRecordData" @range-change="handleRangeChange" />
           </view>
         </view>
 
@@ -207,8 +171,8 @@ export default {
   },
   methods: {
     /**
-         * 获取导航栏高度
-         */
+     * 获取导航栏高度
+     */
     getNavbarHeight() {
       const systemInfo = uni.getSystemInfoSync();
       const statusBarHeight = systemInfo.statusBarHeight || 0;
@@ -216,16 +180,16 @@ export default {
     },
 
     /**
-         * 处理滚动事件
-         */
+     * 处理滚动事件
+     */
     handleScroll(e) {
       const scrollTop = e.detail.scrollTop;
       this.scrolled = scrollTop > 50;
     },
 
     /**
-         * 返回上一页
-         */
+     * 返回上一页
+     */
     goBack() {
       uni.navigateBack({
         fail: () => {
@@ -237,15 +201,15 @@ export default {
     },
 
     /**
-         * 切换主题
-         */
+     * 切换主题
+     */
     toggleTheme() {
       this.themeStore.toggleTheme();
     },
 
     /**
-         * 加载学习数据
-         */
+     * 加载学习数据
+     */
     loadStudyData() {
       this.isLoading = true;
       // 从本地存储加载真实数据
@@ -312,24 +276,20 @@ export default {
     },
 
     /**
-         * 加载每日学习记录
-         */
+     * 加载每日学习记录
+     */
     loadDailyStudyRecords() {
       try {
         // 尝试从本地存储获取每日学习记录
         const dailyRecords = storageService.get('daily_study_records', {});
 
-        // 如果没有历史记录，生成一些示例数据用于展示
+        // 如果没有历史记录，仅显示今日数据（不注入虚假历史）
         if (Object.keys(dailyRecords).length === 0) {
           // 添加今日数据
           const today = new Date().toISOString().split('T')[0];
           if (this.studyTime > 0) {
             dailyRecords[today] = this.studyTime;
           }
-
-          // 生成过去一段时间的模拟数据（仅用于演示）
-          const demoData = this.generateDemoData();
-          Object.assign(dailyRecords, demoData);
         }
 
         // 确保今日数据是最新的
@@ -348,8 +308,8 @@ export default {
     },
 
     /**
-         * 生成演示数据
-         */
+     * 生成演示数据
+     */
     generateDemoData() {
       const data = {};
       const today = new Date();
@@ -371,8 +331,8 @@ export default {
     },
 
     /**
-         * 处理热力图日期点击
-         */
+     * 处理热力图日期点击
+     */
     handleDayTap(day) {
       logger.log('[StudyDetail] 点击日期:', day);
       if (day.minutes > 0) {
@@ -385,8 +345,8 @@ export default {
     },
 
     /**
-         * 处理趋势图时间范围变化
-         */
+     * 处理趋势图时间范围变化
+     */
     handleRangeChange(range) {
       logger.log('[StudyDetail] 切换时间范围:', range + '天');
     }
@@ -397,252 +357,252 @@ export default {
 <style lang="scss" scoped>
 /* 页面容器 */
 .study-detail-page {
-    min-height: 100vh;
-    background: var(--bg-secondary, #F5F5F7);
-    transition: background-color 0.3s ease;
+  min-height: 100vh;
+  background: var(--bg-secondary, #f5f5f7);
+  transition: background-color 0.3s ease;
 }
 
 /* 透明导航栏 */
 .transparent-navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background: transparent;
-    transition: all 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: transparent;
+  transition: all 0.3s ease;
 }
 
 .navbar-solid {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: var(--shadow-sm);
-    border-bottom: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-sm);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 44px;
-    padding: 0 32rpx;
-    margin-top: var(--status-bar-height, 0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 32rpx;
+  margin-top: var(--status-bar-height, 0);
 }
 
 .navbar-left,
 .navbar-right {
-    width: 80rpx;
+  width: 80rpx;
 }
 
 .back-icon {
-    font-size: 40rpx;
-    color: var(--text-main);
+  font-size: 40rpx;
+  color: var(--text-main);
 }
 
 .navbar-title {
-    font-size: 32rpx;
-    font-weight: 600;
-    color: var(--text-main);
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-main);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .title-visible {
-    opacity: 1;
+  opacity: 1;
 }
 
 .theme-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 64rpx;
-    height: 64rpx;
-    border-radius: 50%;
-    background: var(--muted);
-    transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: all 0.3s ease;
 }
 
 .theme-toggle:active {
-    transform: scale(0.9);
-    opacity: 0.8;
+  transform: scale(0.9);
+  opacity: 0.8;
 }
 
 .theme-icon {
-    font-size: 32rpx;
+  font-size: 32rpx;
 }
 
 /* 滚动容器 */
 .scroll-container {
-    height: 100vh;
+  height: 100vh;
 }
 
 /* 页面标题 */
 .page-header {
-    padding: 48rpx 32rpx 32rpx;
+  padding: 48rpx 32rpx 32rpx;
 }
 
 .page-title {
-    display: block;
-    font-size: 48rpx;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 16rpx;
+  display: block;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 16rpx;
 }
 
 .page-subtitle {
-    display: block;
-    font-size: 28rpx;
-    color: var(--text-sub);
+  display: block;
+  font-size: 28rpx;
+  color: var(--text-sub);
 }
 
 /* 概况卡片 */
 .overview-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 24rpx;
-    padding: 0 32rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  padding: 0 32rpx 32rpx;
 }
 
 .stat-card {
-    display: flex;
-    align-items: center;
-    padding: 32rpx;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 24rpx;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 32rpx;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24rpx;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
 }
 
 .stat-card:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
 
 .stat-icon {
-    width: 64rpx;
-    height: 64rpx;
-    margin-right: 24rpx;
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: 24rpx;
 }
 
 .stat-content {
-    flex: 1;
+  flex: 1;
 }
 
 .stat-value {
-    display: block;
-    font-size: 40rpx;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 8rpx;
+  display: block;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8rpx;
 }
 
 .stat-label {
-    display: block;
-    font-size: 24rpx;
-    color: var(--text-sub);
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 
 /* 热力图区域 */
 .heatmap-section,
 .chart-section {
-    padding: 32rpx;
+  padding: 32rpx;
 }
 
 .section-header {
-    margin-bottom: 24rpx;
+  margin-bottom: 24rpx;
 }
 
 .section-title {
-    display: block;
-    font-size: 32rpx;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 8rpx;
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8rpx;
 }
 
 .section-subtitle {
-    display: block;
-    font-size: 24rpx;
-    color: var(--text-sub);
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 
 .heatmap-container,
 .chart-container {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 24rpx;
-    padding: 32rpx;
-    box-shadow: var(--shadow-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: var(--shadow-sm);
 }
 
 /* 底部间距 */
 .bottom-spacer {
-    height: 48rpx;
+  height: 48rpx;
 }
 
 /* 骨架屏样式 */
 .skeleton-container {
-    padding: 48rpx 32rpx;
+  padding: 48rpx 32rpx;
 }
 
 .skeleton-header {
-    margin-bottom: 32rpx;
+  margin-bottom: 32rpx;
 }
 
 .skeleton-title {
-    width: 200rpx;
-    height: 48rpx;
-    border-radius: 8rpx;
-    margin-bottom: 16rpx;
+  width: 200rpx;
+  height: 48rpx;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
 }
 
 .skeleton-subtitle {
-    width: 280rpx;
-    height: 28rpx;
-    border-radius: 6rpx;
+  width: 280rpx;
+  height: 28rpx;
+  border-radius: 6rpx;
 }
 
 .skeleton-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 24rpx;
-    margin-bottom: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  margin-bottom: 32rpx;
 }
 
 .skeleton-card {
-    height: 128rpx;
-    border-radius: 24rpx;
+  height: 128rpx;
+  border-radius: 24rpx;
 }
 
 .skeleton-section {
-    margin-bottom: 32rpx;
+  margin-bottom: 32rpx;
 }
 
 .skeleton-section-title {
-    width: 160rpx;
-    height: 32rpx;
-    border-radius: 6rpx;
-    margin-bottom: 24rpx;
+  width: 160rpx;
+  height: 32rpx;
+  border-radius: 6rpx;
+  margin-bottom: 24rpx;
 }
 
 .skeleton-chart {
-    height: 300rpx;
-    border-radius: 24rpx;
+  height: 300rpx;
+  border-radius: 24rpx;
 }
 
 .skeleton-animate {
-    background: linear-gradient(90deg, var(--muted) 25%, var(--bg-card) 50%, var(--muted) 75%);
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
+  background: linear-gradient(90deg, var(--muted) 25%, var(--bg-card) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
 }
 
 @keyframes skeleton-loading {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 </style>

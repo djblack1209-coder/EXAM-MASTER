@@ -12,7 +12,7 @@
     </view>
 
     <!-- 主内容 -->
-    <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
+    <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
@@ -119,12 +119,7 @@
 
     <!-- 底部操作栏 -->
     <view v-if="status === 'idle' && selectedFile" class="action-bar">
-      <button
-        class="btn-primary btn-full"
-        hover-class="btn-hover"
-        :disabled="!canConvert"
-        @click="startConvert"
-      >
+      <button class="btn-primary btn-full" hover-class="btn-hover" :disabled="!canConvert" @click="startConvert">
         <text>开始转换</text>
       </button>
     </view>
@@ -157,7 +152,7 @@ export default {
       status: 'idle', // idle | uploading | converting | done | error
       errorMsg: '',
       resultUrl: null,
-      taskId: null,
+      jobId: null,
       pollTimer: null
     };
   },
@@ -179,7 +174,9 @@ export default {
     const sys = uni.getSystemInfoSync();
     this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
     this.isDark = initTheme();
-    this._themeHandler = (mode) => { this.isDark = mode === 'dark'; };
+    this._themeHandler = (mode) => {
+      this.isDark = mode === 'dark';
+    };
     onThemeUpdate(this._themeHandler);
   },
 
@@ -245,7 +242,9 @@ export default {
       uni.getFileSystemManager().readFile({
         filePath,
         encoding: 'base64',
-        success: (res) => { this.fileBase64 = res.data; },
+        success: (res) => {
+          this.fileBase64 = res.data;
+        },
         fail: (err) => {
           logger.error('读取文件失败:', err);
           uni.showToast({ title: '读取文件失败', icon: 'none' });
@@ -274,14 +273,10 @@ export default {
       this.resultUrl = null;
 
       try {
-        const res = await lafService.submitDocConvert(
-          this.fileBase64,
-          this.selectedFile.name,
-          this.selectedType
-        );
+        const res = await lafService.submitDocConvert(this.fileBase64, this.selectedFile.name, this.selectedType);
 
         if (res.code === 0 && res.data) {
-          this.taskId = res.data.taskId;
+          this.jobId = res.data.jobId;
           this.status = 'converting';
           this.startPolling();
         } else {
@@ -308,7 +303,7 @@ export default {
         }
 
         try {
-          const res = await lafService.getDocConvertStatus(this.taskId);
+          const res = await lafService.getDocConvertStatus(this.jobId);
           if (res.code === 0 && res.data) {
             const { status } = res.data;
             if (status === 'completed' || status === 'finished') {
@@ -328,7 +323,7 @@ export default {
 
     async fetchResult() {
       try {
-        const res = await lafService.getDocConvertResult(this.taskId);
+        const res = await lafService.getDocConvertResult(this.jobId);
         if (res.code === 0 && res.data && res.data.url) {
           this.resultUrl = res.data.url;
           this.status = 'done';
@@ -381,7 +376,7 @@ export default {
       this.status = 'idle';
       this.errorMsg = '';
       this.resultUrl = null;
-      this.taskId = null;
+      this.jobId = null;
     },
 
     clearPollTimer() {
@@ -404,7 +399,7 @@ export default {
 <style lang="scss" scoped>
 .page-container {
   min-height: 100vh;
-  background: var(--bg-secondary, #F5F5F7);
+  background: var(--bg-secondary, #f5f5f7);
 }
 
 // 导航栏
@@ -674,7 +669,7 @@ export default {
 
     .remove-icon {
       font-size: 24rpx;
-      color: #FF3B30;
+      color: #ff3b30;
     }
   }
 }
@@ -714,14 +709,16 @@ export default {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .status-done-icon {
   width: 48rpx;
   height: 48rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #34C759, #30D158);
+  background: linear-gradient(135deg, #34c759, #30d158);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -738,7 +735,7 @@ export default {
   width: 48rpx;
   height: 48rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF3B30, #FF6961);
+  background: linear-gradient(135deg, #ff3b30, #ff6961);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -807,8 +804,14 @@ export default {
   text-align: center;
   box-shadow: 0 8rpx 24rpx rgba(91, 134, 229, 0.25);
 
-  &::after { border: none; }
-  &:disabled, &[disabled] { opacity: 0.5; box-shadow: none; }
+  &::after {
+    border: none;
+  }
+  &:disabled,
+  &[disabled] {
+    opacity: 0.5;
+    box-shadow: none;
+  }
 }
 
 .btn-full {
@@ -818,13 +821,15 @@ export default {
 .btn-secondary {
   background: var(--bg-card, #fff);
   color: var(--text-primary, #111);
-  border: 1rpx solid var(--border, #E5E5E5);
+  border: 1rpx solid var(--border, #e5e5e5);
   padding: 24rpx;
   border-radius: 50rpx;
   font-size: 28rpx;
   text-align: center;
 
-  &::after { border: none; }
+  &::after {
+    border: none;
+  }
 }
 
 .btn-hover {
@@ -835,7 +840,7 @@ export default {
 // Dark mode overrides
 .dark-mode {
   &.page-container {
-    background: var(--bg-secondary, #1C1C1E);
+    background: var(--bg-secondary, #1c1c1e);
   }
 
   .nav-header {
@@ -853,7 +858,7 @@ export default {
   }
 
   .type-card {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
 
     &.active {
@@ -862,12 +867,12 @@ export default {
   }
 
   .file-placeholder {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     border-color: rgba(91, 134, 229, 0.25);
   }
 
   .file-info-card {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
   }
 
@@ -898,7 +903,7 @@ export default {
   }
 
   .btn-secondary {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     border-color: rgba(255, 255, 255, 0.1);
   }
 }
