@@ -652,7 +652,8 @@ export default {
         }
       });
 
-      this.score = Math.round((this.correctCount / this.examQuestions.length) * 100);
+      this.score =
+        this.examQuestions.length > 0 ? Math.round((this.correctCount / this.examQuestions.length) * 100) : 0;
       this.isExamFinished = true;
 
       // 保存考试记录

@@ -1294,6 +1294,36 @@ export const lafService = {
     }
   },
 
+  // ==================== C5: 账号注销 ====================
+
+  /**
+   * 申请注销账号（7天冷静期）
+   * @returns {Promise<ApiResponse>}
+   */
+  async requestAccountDeletion() {
+    try {
+      const response = await this.request('/account-delete', { action: 'request' });
+      return response;
+    } catch (error) {
+      logger.error('[LafService] 申请注销失败:', error);
+      return normalizeError(error, '申请注销');
+    }
+  },
+
+  /**
+   * 撤销注销申请
+   * @returns {Promise<ApiResponse>}
+   */
+  async cancelAccountDeletion() {
+    try {
+      const response = await this.request('/account-delete', { action: 'cancel' });
+      return response;
+    } catch (error) {
+      logger.error('[LafService] 撤销注销失败:', error);
+      return normalizeError(error, '撤销注销');
+    }
+  },
+
   // ==================== 收藏管理 ====================
 
   /**

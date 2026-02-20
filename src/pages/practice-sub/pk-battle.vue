@@ -337,8 +337,9 @@ export default {
         })
         .filter((opt) => opt.length > 0); // 过滤空选项
 
-      // 如果选项数量不足4个，补充空选项
-      while (options.length < 4) {
+      // 如果选项数量不足4个，补充空选项（安全上限防止无限循环）
+      let _safetyCounter = 0;
+      while (options.length < 4 && _safetyCounter++ < 10) {
         options.push(`选项${options.length + 1}`);
       }
 
@@ -1456,7 +1457,7 @@ export default {
 
       // 如果没登录，就不传了
       if (!userId && !userInfo.nickName) {
- logger.warn('[PK] 用户未登录，跳过上传分数');
+        logger.warn('[PK] 用户未登录，跳过上传分数');
         logger.warn('[PK] 用户未登录，跳过上传分数');
         return;
       }
@@ -1493,7 +1494,7 @@ export default {
           // 🔒 修复 Module 10 Bug: 采用 "Fire and Forget" 策略
           // 上传失败时，不重置标志位，防止重复上传
           // 原因：网络超时可能导致数据已写入但响应失败，重试会造成重复上传
- logger.error('[PK] 上传分数失败（已锁定，不再重试）:', err);
+          logger.error('[PK] 上传分数失败（已锁定，不再重试）:', err);
           logger.error('[PK] 上传分数失败（已锁定，不再重试）:', err);
           // 静默失败，不影响用户分享体验
         });

@@ -57,7 +57,7 @@
       <template v-if="!isPageLoading">
         <!-- 院校头部卡片 -->
         <view class="glass-card school-header-card">
-          <image class="school-logo" :src="schoolInfo.logo || '/static/school-default.png'" mode="aspectFit" />
+          <image class="school-logo" :src="schoolInfo.logo || '/static/images/default-avatar.png'" mode="aspectFit" />
           <view class="header-main">
             <text class="school-name">
               {{ schoolInfo.name || '加载中...' }}
@@ -385,7 +385,7 @@ export default {
       this.schoolInfo = {
         id: id,
         name: '数据加载失败',
-        logo: '/static/school-default.png',
+        logo: '/static/images/default-avatar.png',
         location: '-',
         tags: [],
         scoreLine: '-',

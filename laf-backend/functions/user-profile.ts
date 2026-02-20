@@ -54,7 +54,7 @@ function verifyTokenAndGetUserId(token: string): string | null {
       .update(`${headerBase64}.${payloadBase64}`)
       .digest('base64url');
 
-    if (signature !== expectedSignature) {
+    if (!crypto.timingSafeEqual(Buffer.from(signature, 'utf8'), Buffer.from(expectedSignature, 'utf8'))) {
       logger.warn('JWT 签名验证失败');
       return null;
     }

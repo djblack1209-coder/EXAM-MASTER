@@ -44,11 +44,9 @@ const WX_GZH_SECRET = process.env.WX_GZH_SECRET || '';
 // ✅ B017: JWT_SECRET 必须通过环境变量配置，不再提供任何硬编码默认值
 const JWT_SECRET = process.env.JWT_SECRET || '';
 if (!process.env.JWT_SECRET) {
-  logger.error('❌ 严重安全警告：JWT_SECRET 未配置！JWT 签名将使用空密钥，所有 token 均不安全。');
-  // ✅ 生产环境强制要求配置 JWT_SECRET，缺少时直接终止启动
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('[Login] 生产环境必须配置 JWT_SECRET 环境变量，拒绝启动。');
-  }
+  logger.error('❌ 严重安全警告：JWT_SECRET 未配置！拒绝启动。');
+  // ✅ C4: 任何环境都必须配置 JWT_SECRET，缺少时直接终止启动
+  throw new Error('[Login] JWT_SECRET 环境变量未配置，拒绝启动。所有环境均需配置此密钥。');
 }
 const JWT_EXPIRES_IN = 7 * 24 * 60 * 60 * 1000; // 7天
 
@@ -452,8 +450,7 @@ export default async function (ctx) {
 
     return {
       code: 500,
-      message: '服务器内部错误',
-      error: error.message,
+      message: '服务异常，请稍后重试',
       requestId,
       duration
     };
@@ -1001,7 +998,7 @@ export function verifyJWT(token) {
       .update(`${headerBase64}.${payloadBase64}`)
       .digest('base64url');
 
-    if (signature !== expectedSignature) {
+    if (!crypto.timingSafeEqual(Buffer.from(signature, 'utf8'), Buffer.from(expectedSignature, 'utf8'))) {
       logger.warn('JWT 签名验证失败');
       return null;
     }

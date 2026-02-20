@@ -1,111 +1,112 @@
 /**
  * 发送邮箱验证码云函数
- * 
+ *
  * 请求参数：
  * - email: string (必填) - 邮箱地址
- * 
+ *
  * 返回格式：
  * { code: 0, message: '验证码已发送' }
  */
 
-import cloud from '@lafjs/cloud'
+import cloud from '@lafjs/cloud';
+import crypto from 'crypto';
 
 // 邮件服务配置（使用环境变量）
-const SMTP_HOST = process.env.SMTP_HOST || 'smtp.qq.com'
-const SMTP_PORT = process.env.SMTP_PORT || 465
-const SMTP_USER = process.env.SMTP_USER || ''
-const SMTP_PASS = process.env.SMTP_PASS || ''
-const SMTP_FROM = process.env.SMTP_FROM || 'Exam-Master <noreply@exam-master.com>'
+const SMTP_HOST = process.env.SMTP_HOST || 'smtp.qq.com';
+const SMTP_PORT = process.env.SMTP_PORT || 465;
+const SMTP_USER = process.env.SMTP_USER || '';
+const SMTP_PASS = process.env.SMTP_PASS || '';
+const SMTP_FROM = process.env.SMTP_FROM || 'Exam-Master <noreply@exam-master.com>';
 
 // 获取数据库实例
-const db = cloud.database()
+const db = cloud.database();
 
 export default async function (ctx) {
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
-  
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
   try {
-    const { email } = ctx.body || {}
-    
+    const { email } = ctx.body || {};
+
     // 参数校验
     if (!email) {
       return {
         code: 400,
         message: '邮箱地址不能为空',
         requestId
-      }
+      };
     }
-    
+
     // 邮箱格式验证
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return {
         code: 400,
         message: '邮箱格式不正确',
         requestId
-      }
+      };
     }
-    
+
     // 检查发送频率（1分钟内只能发送一次）
-    const codesCollection = db.collection('email_codes')
-    const recentCode = await codesCollection.where({
-      email,
-      created_at: db.command.gt(Date.now() - 60 * 1000)
-    }).getOne()
-    
+    const codesCollection = db.collection('email_codes');
+    const recentCode = await codesCollection
+      .where({
+        email,
+        created_at: db.command.gt(Date.now() - 60 * 1000)
+      })
+      .getOne();
+
     if (recentCode.data) {
       return {
         code: 429,
         message: '发送太频繁，请1分钟后再试',
         requestId
-      }
+      };
     }
-    
+
     // 生成6位验证码
-    const code = Math.random().toString().slice(2, 8)
-    
+    const code = crypto.randomInt(100000, 999999).toString();
+
     // 保存验证码到数据库
     await codesCollection.add({
       email,
       code,
       used: false,
       created_at: Date.now()
-    })
-    
+    });
+
     // 发送邮件
-    const emailSent = await sendEmail(email, code)
-    
+    const emailSent = await sendEmail(email, code);
+
     if (!emailSent) {
       // 邮件发送失败
-      console.warn(`[${requestId}] 邮件发送失败，验证码已保存到数据库`)
-      
+      console.warn(`[${requestId}] 邮件发送失败，验证码已保存到数据库`);
+
       // ✅ B023-sec: 不再在任何环境返回验证码，防止泄露
       if (process.env.NODE_ENV !== 'production') {
-        console.warn(`[${requestId}] [DEV] 验证码: ${code} (仅控制台可见)`)
+        console.warn(`[${requestId}] [DEV] 验证码: ${code} (仅控制台可见)`);
         return {
           code: 0,
           message: '验证码已发送（开发模式，邮件发送失败，请查看服务端日志）',
           requestId
-        }
+        };
       }
     }
-    
-    console.log(`[${requestId}] 验证码已发送到: ${email}`)
-    
+
+    console.log(`[${requestId}] 验证码已发送到: ${email}`);
+
     return {
       code: 0,
       message: '验证码已发送，请查收邮件',
       requestId
-    }
-    
+    };
   } catch (error) {
-    console.error(`[${requestId}] 发送验证码异常:`, error)
-    
+    console.error(`[${requestId}] 发送验证码异常:`, error);
+
     return {
       code: 500,
-      message: '发送失败，请稍后重试',
-      error: error.message,
+      message: '服务异常，请稍后重试',
       requestId
-    }
+    };
   }
 }
 
@@ -116,13 +117,13 @@ async function sendEmail(to, code) {
   try {
     // 如果没有配置SMTP，跳过发送
     if (!SMTP_USER || !SMTP_PASS) {
-      console.warn('SMTP未配置，跳过邮件发送')
-      return false
+      console.warn('SMTP未配置，跳过邮件发送');
+      return false;
     }
-    
+
     // 使用 nodemailer 发送邮件
-    const nodemailer = require('nodemailer')
-    
+    const nodemailer = require('nodemailer');
+
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
       port: SMTP_PORT,
@@ -131,8 +132,8 @@ async function sendEmail(to, code) {
         user: SMTP_USER,
         pass: SMTP_PASS
       }
-    })
-    
+    });
+
     const mailOptions = {
       from: SMTP_FROM,
       to: to,
@@ -158,13 +159,12 @@ async function sendEmail(to, code) {
           </div>
         </div>
       `
-    }
-    
-    await transporter.sendMail(mailOptions)
-    return true
-    
+    };
+
+    await transporter.sendMail(mailOptions);
+    return true;
   } catch (error) {
-    console.error('发送邮件失败:', error)
-    return false
+    console.error('发送邮件失败:', error);
+    return false;
   }
 }

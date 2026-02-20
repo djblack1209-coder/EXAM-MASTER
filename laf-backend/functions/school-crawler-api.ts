@@ -141,7 +141,7 @@ export default async function (ctx: FunctionContext) {
     logger.error(`[${requestId}] 爬虫API异常:`, error);
     return {
       code: 500,
-      message: error instanceof Error ? error.message : '服务器错误',
+      message: '服务异常，请稍后重试',
       requestId,
       duration: Date.now() - startTime
     };
@@ -588,7 +588,7 @@ async function refreshSchoolData(data: Record<string, unknown>, requestId: strin
     logger.error(`[${requestId}] 刷新失败:`, error);
     return {
       code: 500,
-      message: `刷新失败: ${error instanceof Error ? error.message : String(error)}`,
+      message: '服务异常，请稍后重试',
       requestId
     };
   }
@@ -652,7 +652,7 @@ async function getSchoolsByProvince(data: Record<string, unknown>, requestId: st
   } catch (error: unknown) {
     return {
       code: 500,
-      message: `获取${province}院校失败: ${error instanceof Error ? error.message : String(error)}`,
+      message: '服务异常，请稍后重试',
       requestId
     };
   }
@@ -743,7 +743,7 @@ async function getCrawlerStatus(requestId: string) {
   } catch (error: unknown) {
     return {
       code: 500,
-      message: `获取状态失败: ${error instanceof Error ? error.message : String(error)}`,
+      message: '服务异常，请稍后重试',
       requestId
     };
   }
@@ -877,7 +877,7 @@ async function crawlAllSchools(requestId: string) {
     logger.error(`[${requestId}] 全量爬取异常:`, error);
     return {
       code: 500,
-      message: `全量爬取失败: ${error instanceof Error ? error.message : String(error)}`,
+      message: '服务异常，请稍后重试',
       data: {
         crawledCount,
         errorCount

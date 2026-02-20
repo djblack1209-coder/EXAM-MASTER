@@ -3,28 +3,20 @@
     <!-- 苹果质感自定义导航栏 -->
     <view class="custom-navbar" :style="{ height: navBarHeight + 'px' }">
       <view class="navbar-status-bar" :style="{ height: statusBarHeight + 'px' }" />
-      <view class="navbar-content" style="height: 44px;">
+      <view class="navbar-content" style="height: 44px">
         <view class="navbar-back-btn" @tap="handleBack">
-          <text class="back-icon">
-            ‹
-          </text>
+          <text class="back-icon"> ‹ </text>
         </view>
         <view class="navbar-title-wrapper">
-          <text class="navbar-title">
-            资料导入
-          </text>
+          <text class="navbar-title"> 资料导入 </text>
         </view>
         <view class="navbar-placeholder" />
       </view>
     </view>
 
     <view class="page-header">
-      <text class="header-title">
-        资料导入
-      </text>
-      <text class="header-subtitle">
-        AI 智能分析 · 即刻出题
-      </text>
+      <text class="header-title"> 资料导入 </text>
+      <text class="header-subtitle"> AI 智能分析 · 即刻出题 </text>
     </view>
 
     <view class="main-glass-card bounce-in-up">
@@ -38,23 +30,15 @@
       <view class="operation-zone">
         <view v-if="!fileName" class="upload-trigger glow-effect" @tap="chooseFile">
           <view class="icon-circle">
-            <text class="icon-text">
-              📁
-            </text>
+            <text class="icon-text"> 📁 </text>
           </view>
-          <text class="upload-main-text">
-            选择复习资料
-          </text>
-          <text class="upload-sub-text">
-            从微信聊天记录中选择文件
-          </text>
+          <text class="upload-main-text"> 选择复习资料 </text>
+          <text class="upload-sub-text"> 从微信聊天记录中选择文件 </text>
         </view>
 
         <view v-else class="file-capsule glass-morphism">
           <view class="file-icon-box">
-            <text style="font-size: 56rpx;">
-              📄
-            </text>
+            <text style="font-size: 56rpx"> 📄 </text>
           </view>
           <view class="file-info-col">
             <text class="fname-text text-ellipsis">
@@ -85,9 +69,7 @@
           :class="{ disabled: isLooping || !fileName }"
           @tap="startAI"
         >
-          <text style="margin-right: 8px;">
-            ✨
-          </text>
+          <text style="margin-right: 8px"> ✨ </text>
           {{ isLooping ? 'AI 正在后台生成中...' : '开始 AI 出题' }}
         </button>
       </view>
@@ -99,16 +81,10 @@
           hover-class="btn-scale-sm"
           @tap="continueGenerating"
         >
-          <text style="font-size: 28rpx; margin-right: 4px;">
-            🔄
-          </text>
-          <text style="font-size: 30rpx;">
-            再出一组
-          </text>
+          <text style="font-size: 28rpx; margin-right: 4px"> 🔄 </text>
+          <text style="font-size: 30rpx"> 再出一组 </text>
         </button>
-        <button class="apple-btn danger-ghost" hover-class="btn-scale-sm" @tap="clearAll">
-          清空题库
-        </button>
+        <button class="apple-btn danger-ghost" hover-class="btn-scale-sm" @tap="clearAll">清空题库</button>
       </view>
     </view>
 
@@ -141,16 +117,10 @@
             {{ importDetailText }}
           </text>
 
-          <text class="soup-text">
-            "{{ currentSoup }}"
-          </text>
+          <text class="soup-text"> "{{ currentSoup }}" </text>
           <view class="loading-actions">
-            <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="pauseGeneration">
-              暂停生成
-            </button>
-            <button class="glass-btn danger" hover-class="btn-scale-sm" @tap="cancelGeneration">
-              取消
-            </button>
+            <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="pauseGeneration">暂停生成</button>
+            <button class="glass-btn danger" hover-class="btn-scale-sm" @tap="cancelGeneration">取消</button>
           </view>
         </view>
       </view>
@@ -160,49 +130,31 @@
     <view v-if="showSpeedModal" class="speed-modal-mask">
       <view class="speed-card bounce-in">
         <view class="speed-icon-box">
-          <text class="speed-icon">
-            ⚡️
-          </text>
+          <text class="speed-icon"> ⚡️ </text>
         </view>
-        <text class="speed-title">
-          极速体验就绪
-        </text>
-        <text class="speed-desc">
-          前 5 道题已生成完毕！您可以立即开始刷题，AI 将在后台静默为您补充剩余题目。
-        </text>
+        <text class="speed-title"> 极速体验就绪 </text>
+        <text class="speed-desc"> 前 5 道题已生成完毕！您可以立即开始刷题，AI 将在后台静默为您补充剩余题目。 </text>
 
         <view class="speed-actions">
-          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="stayHere">
-            留在本页
-          </button>
-          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="goQuiz">
-            立即刷题
-          </button>
+          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="stayHere">留在本页</button>
+          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="goQuiz">立即刷题</button>
         </view>
       </view>
     </view>
 
     <view v-if="isPaused" class="pause-banner">
       <view class="pause-info">
-        <text class="pause-title">
-          任务已暂停
-        </text>
-        <text class="pause-desc">
-          可随时继续生成题库
-        </text>
+        <text class="pause-title"> 任务已暂停 </text>
+        <text class="pause-desc"> 可随时继续生成题库 </text>
       </view>
-      <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="resumeGeneration">
-        继续生成
-      </button>
+      <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="resumeGeneration">继续生成</button>
     </view>
 
     <!-- ⭐⭐ v5.2 新增：错误卡片（带重试按钮） -->
     <view v-if="errorInfo && errorInfo.canRetry" class="error-card-mask">
       <view class="error-card bounce-in">
         <view class="error-icon-box">
-          <text class="error-icon">
-            ⚠️
-          </text>
+          <text class="error-icon"> ⚠️ </text>
         </view>
         <text class="error-title">
           {{ errorInfo.message }}
@@ -212,12 +164,8 @@
         </text>
 
         <view class="error-actions">
-          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="dismissError">
-            关闭
-          </button>
-          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="retryGeneration">
-            重试
-          </button>
+          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="dismissError">关闭</button>
+          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="retryGeneration">重试</button>
         </view>
       </view>
     </view>
@@ -278,7 +226,8 @@ export default {
       totalQuestionsGenerated: 0, // 已生成的题目总数
       errorInfo: null, // 错误信息对象 { message, detail, canRetry }
       showErrorCard: false, // 显示错误卡片
-      uploadStats: { // 上传统计
+      uploadStats: {
+        // 上传统计
         totalSize: 0,
         uploadedSize: 0,
         speed: 0
@@ -343,7 +292,7 @@ export default {
       if (this.importStatus === 'importing') {
         // v5.8: 显示批次内的实时进度
         if (this.currentBatchProgress > 0 && this.currentBatchProgress < 100) {
-          const estimatedCurrent = current + Math.floor(this.batchQuestionCount * this.currentBatchProgress / 100);
+          const estimatedCurrent = current + Math.floor((this.batchQuestionCount * this.currentBatchProgress) / 100);
           return `正在生成第 ${estimatedCurrent} 题（共 ${total} 题）`;
         }
         return `正在生成第 ${current + 1} 题（共 ${total} 题）`;
@@ -362,7 +311,7 @@ export default {
 
       // v5.8: 显示更精确的进度（包含批次内进度）
       if (this.importStatus === 'importing' && this.currentBatchProgress > 0) {
-        const preciseProgress = Math.round(this.realProgress + (this.currentBatchProgress / this.totalQuestionsLimit));
+        const preciseProgress = Math.round(this.realProgress + this.currentBatchProgress / this.totalQuestionsLimit);
         parts.push(`📊 进度 ${Math.min(preciseProgress, 99)}%`);
       } else if (this.realProgress > 0) {
         parts.push(`📊 进度 ${this.realProgress}%`);
@@ -440,6 +389,8 @@ export default {
     }
     // 停止进度动画
     this.stopProgressAnimation();
+    // M16: 清理批量进度模拟定时器
+    this.stopBatchProgressSimulation();
   },
 
   methods: {
@@ -701,7 +652,10 @@ export default {
 
         // 清洗 JSON（去除可能的 Markdown 代码块标记）
         let aiText = response.data;
-        aiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();
+        aiText = aiText
+          .replace(/```json/g, '')
+          .replace(/```/g, '')
+          .trim();
 
         // 解析 JSON
         let newQuestions = [];
@@ -776,7 +730,6 @@ export default {
             this.generateNextBatch();
           }
         }, 1500);
-
       } catch (e) {
         logger.error('生成报错:', e);
 
@@ -790,7 +743,10 @@ export default {
         let autoRetry = false;
 
         // 错误分类逻辑
-        if (e.message && (e.message.includes('timeout') || e.message.includes('超时') || e.message.includes('ETIMEDOUT'))) {
+        if (
+          e.message &&
+          (e.message.includes('timeout') || e.message.includes('超时') || e.message.includes('ETIMEDOUT'))
+        ) {
           // 网络超时：自动重试
           errorMessage = '⏱️ 网络超时';
           errorDetail = '请求超时，正在自动重试...';
@@ -807,7 +763,10 @@ export default {
           this.canGoBack = true;
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
-        } else if (e.message && (e.message.includes('network') || e.message.includes('网络') || e.message.includes('ECONNREFUSED'))) {
+        } else if (
+          e.message &&
+          (e.message.includes('network') || e.message.includes('网络') || e.message.includes('ECONNREFUSED'))
+        ) {
           // 网络错误：可重试
           errorMessage = '📶 网络不稳定';
           errorDetail = '请检查网络连接后重试';
@@ -817,7 +776,10 @@ export default {
           this.canGoBack = true;
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
-        } else if (e.message && (e.message.includes('JSON') || e.message.includes('parse') || e.message.includes('Unexpected'))) {
+        } else if (
+          e.message &&
+          (e.message.includes('JSON') || e.message.includes('parse') || e.message.includes('Unexpected'))
+        ) {
           // AI解析失败：可重试
           errorMessage = '🤖 AI 解析失败';
           errorDetail = 'AI 返回的数据格式异常，请重试';
@@ -826,7 +788,10 @@ export default {
           if (autoRetry) {
             this.importStatus = 'retrying';
           }
-        } else if (e.message && (e.message.includes('rate') || e.message.includes('limit') || e.message.includes('429'))) {
+        } else if (
+          e.message &&
+          (e.message.includes('rate') || e.message.includes('limit') || e.message.includes('429'))
+        ) {
           // 频率限制：延迟重试
           errorMessage = '⚡ 请求过于频繁';
           errorDetail = '请稍等片刻后重试';
@@ -1005,7 +970,9 @@ export default {
         }
 
         if (!isLoggedIn) {
-          logger.log(`[题库保存] ✅ 未登录状态：成功存入 ${newQuestions.length} 道题，本地缓存总数: ${finalBank.length}（保留最新${finalBank.length}道）`);
+          logger.log(
+            `[题库保存] ✅ 未登录状态：成功存入 ${newQuestions.length} 道题，本地缓存总数: ${finalBank.length}（保留最新${finalBank.length}道）`
+          );
           uni.showToast({
             title: `已保存${newQuestions.length}道题（本地缓存）`,
             icon: 'none',
@@ -1513,7 +1480,7 @@ export default {
 /* --- 全局容器与背景 --- */
 .apple-container {
   min-height: 100vh;
-  background-color: var(--bg-page, #9FE870);
+  background-color: var(--bg-page, #9fe870);
   padding: 20px;
   padding-bottom: 120px; /* 为底部悬浮栏留空 */
   padding-top: calc(env(safe-area-inset-top) + 20px);
@@ -1709,7 +1676,7 @@ export default {
 
 /* 深色模式下的图标圆圈 */
 .apple-container.dark-mode .icon-circle {
-  background: var(--brand, #00F2FF);
+  background: var(--brand, #00f2ff);
   box-shadow: 0 4px 12px rgba(0, 242, 255, 0.3);
 }
 
@@ -1726,7 +1693,7 @@ export default {
 
 /* 深色模式下的上传文字 */
 .apple-container.dark-mode .upload-main-text {
-  color: var(--foreground, #FFFFFF);
+  color: var(--foreground, #ffffff);
 }
 
 .upload-sub-text {
@@ -1757,7 +1724,7 @@ export default {
 
 /* 深色模式下的文件图标盒子 */
 .apple-container.dark-mode .file-icon-box {
-  background: var(--muted, #1A1C1E);
+  background: var(--muted, #1a1c1e);
 }
 
 .file-info-col {
@@ -1775,7 +1742,7 @@ export default {
 
 /* 深色模式下的文件名文字 */
 .apple-container.dark-mode .fname-text {
-  color: var(--foreground, #FFFFFF);
+  color: var(--foreground, #ffffff);
 }
 
 .fmeta-row {
@@ -1941,62 +1908,93 @@ export default {
 
 /*  Apple AI Loading 样式 */
 .ai-loading-mask {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: var(--mask-dark);
   z-index: 9999;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
 }
 
 .ai-card {
-  width: 320px; height: 400px;
+  width: 320px;
+  height: 400px;
   border-radius: 32px;
   position: relative;
   overflow: hidden;
   background: var(--bg-card-dark);
   border: 1px solid var(--border-glass);
   box-shadow: var(--shadow-2xl);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   transform: translateZ(0);
 }
 
 /* Apple AI 渐变背景 */
 .apple-ai-gradient {
-  position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-  background: linear-gradient(225deg,
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    225deg,
     var(--info-blue-alpha) 0%,
     var(--primary-light-alpha) 25%,
     var(--primary-alpha) 50%,
     var(--danger-light-alpha) 75%,
-    var(--warning-alpha) 100%);
+    var(--warning-alpha) 100%
+  );
   filter: blur(50px);
   animation: rotateGradient 8s linear infinite;
 }
 
 /* Apple AI 发光效果 */
 .apple-ai-glow {
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(circle at center,
-    var(--info-blue-alpha) 0%,
-    transparent 70%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, var(--info-blue-alpha) 0%, transparent 70%);
   animation: pulseGlow 4s ease-in-out infinite;
 }
 
 @keyframes rotateGradient {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulseGlow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .content-box {
-  position: relative; z-index: 2;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 40px 30px; text-align: center;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 30px;
+  text-align: center;
   width: 100%;
   box-sizing: border-box;
 }
@@ -2017,10 +2015,7 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(
-    transparent 0deg,
-    var(--info-blue-alpha) 0deg 360deg
-  );
+  background: conic-gradient(transparent 0deg, var(--info-blue-alpha) 0deg 360deg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2033,19 +2028,20 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(
-    var(--info-blue) 0deg,
-    var(--info-light) 50deg,
-    transparent 180deg 360deg
-  );
+  background: conic-gradient(var(--info-blue) 0deg, var(--info-light) 50deg, transparent 180deg 360deg);
   transform: translate(-50%, -50%) rotate(-90deg);
   clip-path: circle(50% at 50% 50%);
   animation: progressPulse 2s ease-in-out infinite;
 }
 
 @keyframes progressPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 .ai-star {
@@ -2057,9 +2053,18 @@ export default {
 }
 
 @keyframes starPulse {
-  0% { opacity: 0.7; transform: scale(0.95); }
-  50% { opacity: 1; transform: scale(1.05); }
-  100% { opacity: 0.7; transform: scale(0.95); }
+  0% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
 }
 
 .loading-title {
@@ -2176,8 +2181,14 @@ export default {
 }
 
 @keyframes bounceIn {
-  0% { opacity: 0; transform: scale(0.8); }
-  100% { opacity: 1; transform: scale(1); }
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .speed-icon-box {

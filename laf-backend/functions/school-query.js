@@ -22,6 +22,11 @@ const db = cloud.database();
 const _ = db.command;
 const logger = createLogger('school-query');
 
+/** Escape user input for safe use in $regex (prevents ReDoS) */
+function escapeRegex(str) {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 // 研招网923个研究生招生单位总数
 const TOTAL_GRADUATE_UNITS = 923;
 // 数据完整性阈值（低于此数量认为数据不完整）
@@ -232,9 +237,15 @@ export default async function (ctx) {
         break;
 
       // ==================== 数据同步 ====================
-      case 'sync_from_chsi':
+      case 'sync_from_chsi': {
+        // [C2-FIX] sync_from_chsi 是写操作，需要管理员权限
+        const adminSecret = ctx.headers?.['x-admin-secret'] || body.adminSecret;
+        if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+          return { code: 403, success: false, message: '需要管理员权限' };
+        }
         result = await syncFromChsi(data, requestId);
         break;
+      }
 
       case 'get_all_units':
         result = await getAllUnits(data, requestId);
@@ -258,7 +269,7 @@ export default async function (ctx) {
     logger.error(`[${requestId}] 学校查询异常:`, error);
     return {
       code: 500,
-      message: error.message || '服务器错误',
+      message: '服务异常，请稍后重试',
       requestId,
       duration: Date.now() - startTime
     };
@@ -294,6 +305,8 @@ async function checkDataCompleteness() {
 async function getSchoolList(data, requestId) {
   const { page = 1, pageSize = 20, province, level, type, tags, sortBy = 'ranking', sortOrder = 'asc' } = data || {};
 
+  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
+
   // 检查数据完整性
   const dataStatus = await checkDataCompleteness();
 
@@ -317,7 +330,7 @@ async function getSchoolList(data, requestId) {
   }
 
   // 分页
-  const skip = (page - 1) * pageSize;
+  const skip = (page - 1) * safePageSize;
 
   // 排序
   const orderField = sortBy === 'ranking' ? 'ranking.overall' : sortBy;
@@ -329,7 +342,7 @@ async function getSchoolList(data, requestId) {
       .where(query)
       .orderBy(orderField, orderDirection)
       .skip(skip)
-      .limit(pageSize)
+      .limit(safePageSize)
       .field({
         _id: true,
         code: true,
@@ -354,7 +367,7 @@ async function getSchoolList(data, requestId) {
       list: schools.data || [],
       total: countResult.total || 0,
       page,
-      pageSize,
+      pageSize: safePageSize,
       totalUnits: TOTAL_GRADUATE_UNITS
     },
     requestId
@@ -537,9 +550,9 @@ async function searchSchools(data, requestId) {
       .where({
         status: 'active',
         $or: [
-          { name: { $regex: searchTerm, $options: 'i' } },
-          { shortName: { $regex: searchTerm, $options: 'i' } },
-          { code: { $regex: searchTerm, $options: 'i' } }
+          { name: { $regex: escapeRegex(searchTerm), $options: 'i' } },
+          { shortName: { $regex: escapeRegex(searchTerm), $options: 'i' } },
+          { code: { $regex: escapeRegex(searchTerm), $options: 'i' } }
         ]
       })
       .limit(limit)
@@ -647,9 +660,20 @@ async function getMajors(data, requestId) {
     return { code: 400, message: '缺少学校ID', requestId };
   }
 
+  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
+
   // 缓存检查（无关键词搜索时缓存）
   const cacheKey = !keyword
-    ? buildCacheKey('majors', { schoolId, collegeId, category, degree, sortBy, sortOrder, page, pageSize })
+    ? buildCacheKey('majors', {
+        schoolId,
+        collegeId,
+        category,
+        degree,
+        sortBy,
+        sortOrder,
+        page,
+        pageSize: safePageSize
+      })
     : null;
   if (cacheKey) {
     const cached = getCache(cacheKey);
@@ -671,17 +695,20 @@ async function getMajors(data, requestId) {
   }
 
   if (keyword) {
-    query.$or = [{ name: { $regex: keyword, $options: 'i' } }, { code: { $regex: keyword, $options: 'i' } }];
+    query.$or = [
+      { name: { $regex: escapeRegex(keyword), $options: 'i' } },
+      { code: { $regex: escapeRegex(keyword), $options: 'i' } }
+    ];
   }
 
-  const skip = (page - 1) * pageSize;
+  const skip = (page - 1) * safePageSize;
   // 排序字段白名单
   const allowedSortFields = ['name', 'code', 'category', 'created_at'];
   const finalSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'name';
   const finalSortOrder = sortOrder === 'desc' ? 'desc' : 'asc';
 
   const [majors, countResult] = await Promise.all([
-    db.collection('majors').where(query).orderBy(finalSortBy, finalSortOrder).skip(skip).limit(pageSize).get(),
+    db.collection('majors').where(query).orderBy(finalSortBy, finalSortOrder).skip(skip).limit(safePageSize).get(),
     db.collection('majors').where(query).count()
   ]);
 
@@ -691,7 +718,7 @@ async function getMajors(data, requestId) {
       list: majors.data || [],
       total: countResult.total || 0,
       page,
-      pageSize
+      pageSize: safePageSize
     },
     requestId
   };
@@ -1192,6 +1219,8 @@ async function syncFromChsi(data, requestId) {
 async function getAllUnits(data, requestId) {
   const { page = 1, pageSize = 50, province, type, keyword } = data || {};
 
+  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 50), 100);
+
   // 检查数据完整性
   const dataStatus = await checkDataCompleteness();
 
@@ -1208,13 +1237,13 @@ async function getAllUnits(data, requestId) {
 
   if (keyword) {
     query.$or = [
-      { name: { $regex: keyword, $options: 'i' } },
-      { shortName: { $regex: keyword, $options: 'i' } },
-      { code: { $regex: keyword, $options: 'i' } }
+      { name: { $regex: escapeRegex(keyword), $options: 'i' } },
+      { shortName: { $regex: escapeRegex(keyword), $options: 'i' } },
+      { code: { $regex: escapeRegex(keyword), $options: 'i' } }
     ];
   }
 
-  const skip = (page - 1) * pageSize;
+  const skip = (page - 1) * safePageSize;
 
   const [units, countResult] = await Promise.all([
     db
@@ -1222,7 +1251,7 @@ async function getAllUnits(data, requestId) {
       .where(query)
       .orderBy('code', 'asc')
       .skip(skip)
-      .limit(pageSize)
+      .limit(safePageSize)
       .field({
         _id: true,
         code: true,
@@ -1245,8 +1274,8 @@ async function getAllUnits(data, requestId) {
       list: units.data || [],
       total: countResult.total || 0,
       page,
-      pageSize,
-      totalPages: Math.ceil((countResult.total || 0) / pageSize),
+      pageSize: safePageSize,
+      totalPages: Math.ceil((countResult.total || 0) / safePageSize),
       totalUnits: TOTAL_GRADUATE_UNITS,
       currentCount: dataStatus.currentCount,
       isComplete: dataStatus.isComplete
