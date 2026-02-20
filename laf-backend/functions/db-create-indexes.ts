@@ -26,6 +26,12 @@ const db = cloud.database();
 
 export default async function (ctx) {
   try {
+    // [C3-FIX] 管理工具函数需要管理员权限
+    const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
+    if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+      return { code: 403, success: false, message: '需要管理员权限，请提供 ADMIN_SECRET' };
+    }
+
     const results = [];
 
     // ==================== 用户表索引 (B012) ====================

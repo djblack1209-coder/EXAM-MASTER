@@ -70,6 +70,13 @@ function getEnvBoolean(key, defaultValue) {
  * 统一配置对象
  */
 const config = {
+  // ==================== 应用版本 ====================
+
+  /**
+   * L6: 统一版本号（单一来源，profile/health-check 等引用此值）
+   */
+  appVersion: '1.0.0',
+
   // ==================== 环境信息 ====================
 
   /**
@@ -446,7 +453,7 @@ const config = {
     /**
      * 网络连通性检测 URL
      */
-    pingUrl: getEnv('VITE_PING_URL', 'https://www.baidu.com/favicon.ico')
+    pingUrl: getEnv('VITE_PING_URL', '/static/images/logo.png')
   },
 
   // ==================== P006: HTTP 重试配置 ====================

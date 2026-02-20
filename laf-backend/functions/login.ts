@@ -45,10 +45,8 @@ const SECRET_PLACEHOLDER
 const JWT_SECRET_PLACEHOLDER
 if (!process.env.JWT_SECRET_PLACEHOLDER
   logger.error('❌ 严重安全警告：JWT_SECRET_PLACEHOLDER
-  // ✅ 生产环境强制要求配置 JWT_SECRET_PLACEHOLDER
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('[Login] 生产环境必须配置 JWT_SECRET_PLACEHOLDER
-  }
+  // ✅ C4: 任何环境都必须配置 JWT_SECRET_PLACEHOLDER
+  throw new Error('[Login] JWT_SECRET_PLACEHOLDER
 }
 const JWT_EXPIRES_IN = 7 * 24 * 60 * 60 * 1000; // 7天
 
@@ -452,8 +450,7 @@ export default async function (ctx) {
 
     return {
       code: 500,
-      message: '服务器内部错误',
-      error: error.message,
+      message: '服务异常，请稍后重试',
       requestId,
       duration
     };
@@ -1001,7 +998,7 @@ export function verifyJWT(token) {
       .update(`${headerBase64}.${payloadBase64}`)
       .digest('base64url');
 
-    if (signature !== expectedSignature) {
+    if (!crypto.timingSafeEqual(Buffer.from(signature, 'utf8'), Buffer.from(expectedSignature, 'utf8'))) {
       logger.warn('JWT 签名验证失败');
       return null;
     }
