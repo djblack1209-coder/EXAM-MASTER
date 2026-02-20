@@ -14,14 +14,18 @@
   <view v-if="visible" class="poster-mask" :class="{ 'dark-mode': isDark }" @tap="handleClose">
     <view class="poster-card ds-card" @tap.stop>
       <view class="close-icon-container ds-touchable ds-touch-target ds-flex-center" @tap="handleClose">
-        <image :src="icons8('ios-glyphs', 30, 'ffffff', 'multiply')" style="width: 16px; height: 16px" />
+        <image
+          :src="icons8('ios-glyphs', 30, 'ffffff', 'multiply')"
+          style="width: 16px; height: 16px"
+          @error="onCdnIconError"
+        />
       </view>
 
       <view class="poster-bg" />
 
       <view class="poster-content ds-flex-col ds-flex-center">
         <view class="poster-header ds-flex ds-gap-xs">
-          <image :src="icons8('ios-filled', 50, 'ffffff', 'open-book')" class="poster-logo" />
+          <image :src="icons8('ios-filled', 50, 'ffffff', 'open-book')" class="poster-logo" @error="onCdnIconError" />
           <text class="poster-app-name ds-font-semibold"> Exam-Master </text>
         </view>
 
@@ -39,9 +43,17 @@
 
         <view class="qr-section">
           <view class="qr-circle">
-            <image :src="qrCodeUrl || icons8('ios', 100, '000000', 'qr-code--v1')" class="qr-img" />
+            <image
+              :src="qrCodeUrl || icons8('ios', 100, '000000', 'qr-code--v1')"
+              class="qr-img"
+              @error="onCdnIconError"
+            />
             <view class="qr-badge">
-              <image :src="icons8('ios-filled', 50, '07C160', 'open-book')" style="width: 16px; height: 16px" />
+              <image
+                :src="icons8('ios-filled', 50, '07C160', 'open-book')"
+                style="width: 16px; height: 16px"
+                @error="onCdnIconError"
+              />
             </view>
           </view>
           <text class="scan-text"> 扫码一起上岸 </text>
@@ -78,6 +90,11 @@ import { logger } from '@/utils/logger.js';
 // icons8 图标 URL 生成器
 const icons8 = (style, size, color, name) =>
   `${config.externalCdn.icons8BaseUrl}/${style}/${size}/${color}/${name}.png`;
+
+// CDN图标加载失败 — 隐藏broken图标
+const onCdnIconError = (e) => {
+  e.target.style = 'display:none';
+};
 
 // defineProps 和 defineEmits 是编译器宏，无需手动导入
 const props = defineProps({

@@ -2,7 +2,12 @@
   <view class="chat-container" :class="{ 'dark-mode': isDark }">
     <!-- 导航栏 -->
     <view class="nav-bar">
-      <image :src="icons8('ios-glyphs', 30, '333333', 'chevron-left')" class="back-icon" @tap="goBack" />
+      <image
+        :src="icons8('ios-glyphs', 30, '333333', 'chevron-left')"
+        class="back-icon"
+        @tap="goBack"
+        @error="onCdnIconError"
+      />
       <view class="nav-center" hover-class="item-hover" @tap="showFriendSelector = true">
         <image :src="currentFriend.avatar" class="friend-avatar-small" @error="onAvatarError" />
         <text class="nav-title">
@@ -10,7 +15,7 @@
         </text>
         <text class="nav-arrow"> ▼ </text>
       </view>
-      <image :src="icons8('ios', 50, '333333', 'menu--v1')" class="menu-icon" @tap="showMenu" />
+      <image :src="icons8('ios', 50, '333333', 'menu--v1')" class="menu-icon" @tap="showMenu" @error="onCdnIconError" />
     </view>
 
     <!-- AI好友选择器弹窗 -->
@@ -29,7 +34,7 @@
             hover-class="item-hover"
             @tap="selectFriend(friend)"
           >
-            <image :src="friend.avatar" class="friend-avatar" lazy-load />
+            <image :src="friend.avatar" class="friend-avatar" lazy-load @error="onAvatarError" />
             <view class="friend-info">
               <text class="friend-name">
                 {{ friend.name }}
@@ -118,7 +123,7 @@
               </view>
             </view>
           </view>
-          <image :src="icons8('color', 96, '', 'user-male-circle--v1')" class="avatar" />
+          <image :src="icons8('color', 96, '', 'user-male-circle--v1')" class="avatar" @error="onAvatarError" />
         </template>
       </view>
 
@@ -167,13 +172,19 @@
     <!-- 输入区域 -->
     <view v-if="!isPageLoading" class="input-area">
       <view class="input-tools">
-        <image :src="icons8('ios', 50, '666666', 'happy--v1')" class="tool-icon" @tap="toggleEmotionTags" />
+        <image
+          :src="icons8('ios', 50, '666666', 'happy--v1')"
+          class="tool-icon"
+          @tap="toggleEmotionTags"
+          @error="onCdnIconError"
+        />
         <image
           :src="isRecording ? icons8('ios', 50, 'FF3B30', 'microphone') : icons8('ios', 50, '666666', 'microphone')"
           class="tool-icon"
           @touchstart="startRecording"
           @touchend="stopRecording"
           @touchcancel="stopRecording"
+          @error="onCdnIconError"
         />
         <image
           :src="
@@ -183,6 +194,7 @@
           "
           class="tool-icon"
           @tap="toggleRealtimeMode"
+          @error="onCdnIconError"
         />
       </view>
       <input
@@ -310,6 +322,10 @@ let recordingIntervalId = null;
 // ✅ 图片加载失败处理
 const onAvatarError = (e) => {
   e.target.src = defaultAvatar;
+};
+// CDN图标加载失败 — 隐藏broken图标
+const onCdnIconError = (e) => {
+  e.target.style = 'display:none';
 };
 
 // 用户学习状态（从本地获取）
