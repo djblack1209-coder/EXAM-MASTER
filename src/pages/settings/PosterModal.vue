@@ -11,55 +11,40 @@
   @author Frontend Team
 -->
 <template>
-  <view
-    v-if="visible"
-    class="poster-mask"
-    :class="{ 'dark-mode': isDark }"
-    @tap="handleClose"
-  >
+  <view v-if="visible" class="poster-mask" :class="{ 'dark-mode': isDark }" @tap="handleClose">
     <view class="poster-card ds-card" @tap.stop>
       <view class="close-icon-container ds-touchable ds-touch-target ds-flex-center" @tap="handleClose">
-        <image src="https://img.icons8.com/ios-glyphs/30/ffffff/multiply.png" style="width: 16px; height: 16px;" />
+        <image :src="icons8('ios-glyphs', 30, 'ffffff', 'multiply')" style="width: 16px; height: 16px" />
       </view>
 
       <view class="poster-bg" />
 
       <view class="poster-content ds-flex-col ds-flex-center">
         <view class="poster-header ds-flex ds-gap-xs">
-          <image src="https://img.icons8.com/ios-filled/50/ffffff/open-book.png" class="poster-logo" />
-          <text class="poster-app-name ds-font-semibold">
-            Exam-Master
-          </text>
+          <image :src="icons8('ios-filled', 50, 'ffffff', 'open-book')" class="poster-logo" />
+          <text class="poster-app-name ds-font-semibold"> Exam-Master </text>
         </view>
 
-        <text class="poster-title ds-text-display ds-font-bold">
-          考研备考神器
-        </text>
-        <text class="poster-subtitle ds-text-sm">
-          AI助力，一战成硕！
-        </text>
+        <text class="poster-title ds-text-display ds-font-bold"> 考研备考神器 </text>
+        <text class="poster-subtitle ds-text-sm"> AI助力，一战成硕！ </text>
 
         <view class="white-ticket">
           <view class="ticket-dashed-box">
             <text class="ticket-code">
               {{ inviteCode }}
             </text>
-            <text class="ticket-label">
-              我的邀请码
-            </text>
+            <text class="ticket-label"> 我的邀请码 </text>
           </view>
         </view>
 
         <view class="qr-section">
           <view class="qr-circle">
-            <image :src="qrCodeUrl || 'https://img.icons8.com/ios/100/000000/qr-code--v1.png'" class="qr-img" />
+            <image :src="qrCodeUrl || icons8('ios', 100, '000000', 'qr-code--v1')" class="qr-img" />
             <view class="qr-badge">
-              <image src="https://img.icons8.com/ios-filled/50/07C160/open-book.png" style="width:16px;height:16px;" />
+              <image :src="icons8('ios-filled', 50, '07C160', 'open-book')" style="width: 16px; height: 16px" />
             </view>
           </view>
-          <text class="scan-text">
-            扫码一起上岸
-          </text>
+          <text class="scan-text"> 扫码一起上岸 </text>
         </view>
       </view>
     </view>
@@ -88,6 +73,10 @@ import { ref, getCurrentInstance } from 'vue';
 import { posterGenerator } from './poster-generator.js';
 import { permissionHandler } from './utils/permission-handler.js';
 import config from '@/config';
+
+// icons8 图标 URL 生成器
+const icons8 = (style, size, color, name) =>
+  `${config.externalCdn.icons8BaseUrl}/${style}/${size}/${color}/${name}.png`;
 
 // defineProps 和 defineEmits 是编译器宏，无需手动导入
 const props = defineProps({
@@ -142,12 +131,16 @@ const handleSave = async () => {
     // 1. 生成海报图片
     uni.showLoading({ title: '海报生成中...', mask: true });
 
-    const posterPath = await posterGenerator.generateInvitePoster({
-      inviteCode: props.inviteCode,
-      qrCodeUrl: props.qrCodeUrl,
-      avatarUrl: props.avatarUrl,
-      nickname: props.nickname
-    }, 'posterCanvas', instance?.proxy);
+    const posterPath = await posterGenerator.generateInvitePoster(
+      {
+        inviteCode: props.inviteCode,
+        qrCodeUrl: props.qrCodeUrl,
+        avatarUrl: props.avatarUrl,
+        nickname: props.nickname
+      },
+      'posterCanvas',
+      instance?.proxy
+    );
 
     uni.hideLoading();
 
@@ -168,7 +161,6 @@ const handleSave = async () => {
     if (result.success) {
       emit('saved', posterPath);
     }
-
   } catch (error) {
     uni.hideLoading();
     console.error('[PosterModal] 保存失败:', error);
@@ -239,15 +231,18 @@ const handleShare = () => {
 
   // #ifdef H5
   if (navigator.share) {
-    navigator.share({
-      title: 'Exam-Master 考研神器',
-      text: `输入邀请码 ${props.inviteCode} 领取会员！AI助力，一战成硕！`,
-      url: `${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`
-    }).then(() => {
-      emit('shared');
-    }).catch(() => {
-      copyInviteInfo();
-    });
+    navigator
+      .share({
+        title: 'Exam-Master 考研神器',
+        text: `输入邀请码 ${props.inviteCode} 领取会员！AI助力，一战成硕！`,
+        url: `${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`
+      })
+      .then(() => {
+        emit('shared');
+      })
+      .catch(() => {
+        copyInviteInfo();
+      });
   } else {
     copyInviteInfo();
   }
@@ -333,7 +328,7 @@ const copyInviteInfo = () => {
   width: 100%;
   height: 100%;
   /* Reusing the "Fluid Wave" colors from splash screen */
-  background: linear-gradient(135deg, #07C160 0%, #0052D4 50%, #FFC107 100%);
+  background: linear-gradient(135deg, #07c160 0%, #0052d4 50%, #ffc107 100%);
   z-index: 1;
 }
 
@@ -396,7 +391,7 @@ const copyInviteInfo = () => {
 }
 
 .ticket-dashed-box {
-  border: 2px dashed #07C160;
+  border: 2px dashed #07c160;
   border-radius: 8px;
   padding: 16px 0;
   display: flex;
@@ -407,7 +402,7 @@ const copyInviteInfo = () => {
 .ticket-code {
   font-size: 56rpx;
   font-weight: 800;
-  color: #07C160;
+  color: #07c160;
   letter-spacing: 1px;
   -webkit-font-smoothing: antialiased;
 }
@@ -498,13 +493,13 @@ const copyInviteInfo = () => {
 }
 
 .save-btn {
-  background-color: #07C160;
+  background-color: #07c160;
   color: white;
 }
 
 .share-btn {
   background-color: rgba(255, 255, 255, 0.9);
-  color: #07C160;
+  color: #07c160;
 }
 
 /* VISUAL: Dark mode styles */
@@ -544,7 +539,7 @@ const copyInviteInfo = () => {
     color: #1c1c1e;
 
     &:active {
-      background-color: #8DD760;
+      background-color: #8dd760;
     }
   }
 
