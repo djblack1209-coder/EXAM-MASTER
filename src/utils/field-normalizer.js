@@ -1,7 +1,7 @@
 /**
  * 字段命名规范化工具
  * 解决前后端字段命名不一致问题（snake_case vs camelCase）
- * 
+ *
  * 后端数据库统一使用 snake_case，前端内部统一使用 snake_case（与后端保持一致）
  * 本工具提供转换函数，用于：
  * 1. 接收后端数据时规范化字段名
@@ -18,7 +18,10 @@
  */
 export function toSnakeCase(str) {
   if (!str || typeof str !== 'string') return str;
-  return str.replace(/([A-Z])/g, '_$1').toLowerCase().replace(/^_/, '');
+  return str
+    .replace(/([A-Z])/g, '_$1')
+    .toLowerCase()
+    .replace(/^_/, '');
 }
 
 /**
@@ -67,27 +70,27 @@ export function keysToCamelCase(obj) {
  */
 const MISTAKE_FIELD_ALIASES = {
   question_content: ['question', 'title', 'questionContent'],
-  correct_answer:   ['answer', 'correctAnswer'],
-  user_answer:      ['userChoice', 'userAnswer', 'my_answer'],
-  wrong_count:      ['wrongCount', 'error_count'],
-  is_mastered:      ['isMastered', 'mastered'],
-  created_at:       ['addTime', 'timestamp', 'createdAt', 'create_time'],
-  updated_at:       ['updatedAt', 'update_time'],
-  last_wrong_time:  ['lastWrongTime'],
-  review_count:     ['reviewCount'],
+  correct_answer: ['answer', 'correctAnswer'],
+  user_answer: ['userChoice', 'userAnswer', 'my_answer'],
+  wrong_count: ['wrongCount', 'error_count'],
+  is_mastered: ['isMastered', 'mastered'],
+  created_at: ['addTime', 'timestamp', 'createdAt', 'create_time'],
+  updated_at: ['updatedAt', 'update_time'],
+  last_wrong_time: ['lastWrongTime'],
+  review_count: ['reviewCount'],
   last_review_time: ['lastReviewTime'],
   next_review_time: ['nextReviewTime'],
-  ease_factor:      ['easeFactor'],
-  interval_days:    ['intervalDays'],
-  error_type:       ['errorType'],
-  question_id:      ['questionId'],
-  user_id:          ['userId'],
+  ease_factor: ['easeFactor'],
+  interval_days: ['intervalDays'],
+  error_type: ['errorType'],
+  question_id: ['questionId'],
+  user_id: ['userId']
 };
 
 /**
  * 规范化单条错题数据
  * 将各种别名字段统一为 snake_case 标准字段名
- * 
+ *
  * @param {Object} item - 原始错题对象（可能混合 camelCase 和 snake_case）
  * @returns {Object} 规范化后的错题对象（统一 snake_case）
  */
@@ -111,9 +114,10 @@ export function normalizeMistake(item) {
   }
 
   // 确保关键字段有默认值
-  result.wrong_count = result.wrong_count || result.wrongCount || 1;
+  // [AUDIT FIX] 使用 ?? 避免 wrong_count=0 和 review_count=0 被错误覆盖
+  result.wrong_count = result.wrong_count ?? result.wrongCount ?? 1;
   result.is_mastered = Boolean(result.is_mastered || result.isMastered || false);
-  result.review_count = result.review_count || result.reviewCount || 0;
+  result.review_count = result.review_count ?? result.reviewCount ?? 0;
 
   return result;
 }
@@ -133,7 +137,7 @@ export function normalizeMistakes(items) {
 /**
  * 将离线缓存的 camelCase 错题数据转为后端 snake_case 格式
  * 专门解决 offline-cache.js 存储的 camelCase 数据同步到后端的问题
- * 
+ *
  * @param {Object} cached - 离线缓存的错题对象
  * @returns {Object} 后端格式的错题对象
  */
@@ -156,6 +160,6 @@ export function offlineMistakeToBackend(cached) {
     ...(cached.chapter ? { chapter: cached.chapter } : {}),
     ...(cached.tags ? { tags: cached.tags } : {}),
     ...(cached.options ? { options: cached.options } : {}),
-    ...(cached.analysis ? { analysis: cached.analysis } : {}),
+    ...(cached.analysis ? { analysis: cached.analysis } : {})
   };
 }

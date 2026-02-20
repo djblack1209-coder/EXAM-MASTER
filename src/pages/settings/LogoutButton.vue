@@ -13,7 +13,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import { storageService } from '@/services/storageService.js';
+// [AUDIT FIX] storageService 使用 default export，需用默认导入
+import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
 const emit = defineEmits(['logged-out']);

@@ -9,25 +9,33 @@ import { logger } from '@/utils/logger.js';
 // ✅ 以下模块从分包本地引用，避免打入主包
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { deduplicateQuestions } from '../utils/question-dedup-worker.js';
-import { normalizeQuestion, isValidQuestion, normalizeAndValidateQuestions, sanitizeAIInput } from '../utils/question-normalizer.js';
+import {
+  normalizeQuestion,
+  isValidQuestion,
+  normalizeAndValidateQuestions,
+  sanitizeAIInput
+} from '../utils/question-normalizer.js';
 
 export const aiGenerationMixin = {
   methods: {
     // ==================== 文件导入 ====================
     chooseImportSource() {
-      requireLogin(() => {
-        uni.showActionSheet({
-          itemList: ['本地文件', '聊天记录', '百度网盘'],
-          success: (res) => {
-            if (res.tapIndex === 0) this.chooseLocalFile();
-            if (res.tapIndex === 1) this.importFromChat();
-            if (res.tapIndex === 2) this.importFromBaidu();
-          }
-        });
-      }, {
-        message: '请先登录后上传资料',
-        loginUrl: '/pages/settings/index'
-      });
+      requireLogin(
+        () => {
+          uni.showActionSheet({
+            itemList: ['本地文件', '聊天记录', '百度网盘'],
+            success: (res) => {
+              if (res.tapIndex === 0) this.chooseLocalFile();
+              if (res.tapIndex === 1) this.importFromChat();
+              if (res.tapIndex === 2) this.importFromBaidu();
+            }
+          });
+        },
+        {
+          message: '请先登录后上传资料',
+          loginUrl: '/pages/settings/index'
+        }
+      );
     },
 
     chooseLocalFile() {
@@ -77,55 +85,59 @@ export const aiGenerationMixin = {
 
     importFromChat() {
       this.currentUploadSource = 'chat';
-      this.getClipboardText().then((text) => {
-        if (!text) {
-          uni.showToast({ title: '请先复制聊天记录', icon: 'none' });
-          return;
-        }
-        this.fileName = `聊天记录_${this.formatDate()}.txt`;
-        this.fullFileContent = text;
-        this.readOffset = 0;
-        this.generatedCount = 0;
-        this.currentUploadId = this.saveUploadRecord({
-          name: this.fileName,
-          size: Math.round(text.length / 1024),
-          source: '聊天记录'
+      this.getClipboardText()
+        .then((text) => {
+          if (!text) {
+            uni.showToast({ title: '请先复制聊天记录', icon: 'none' });
+            return;
+          }
+          this.fileName = `聊天记录_${this.formatDate()}.txt`;
+          this.fullFileContent = text;
+          this.readOffset = 0;
+          this.generatedCount = 0;
+          this.currentUploadId = this.saveUploadRecord({
+            name: this.fileName,
+            size: Math.round(text.length / 1024),
+            source: '聊天记录'
+          });
+          this.startAI();
+        })
+        .catch((e) => {
+          logger.error('[practice] 导入聊天记录失败:', e);
+          uni.showToast({ title: '导入失败，请重试', icon: 'none' });
         });
-        this.startAI();
-      }).catch((e) => {
-        logger.error('[practice] 导入聊天记录失败:', e);
-        uni.showToast({ title: '导入失败，请重试', icon: 'none' });
-      });
     },
 
     importFromBaidu() {
       this.currentUploadSource = 'baidu';
-      this.getClipboardText().then((text) => {
-        if (!text) {
-          uni.showToast({ title: '请先复制网盘链接或文本', icon: 'none' });
-          return;
-        }
-        this.fileName = `百度网盘_${this.formatDate()}`;
-        if (text.length > 400) {
-          this.fullFileContent = text;
-        } else {
-          this.fullFileContent = '';
-        }
-        this.readOffset = 0;
-        this.generatedCount = 0;
-        this.currentUploadId = this.saveUploadRecord({
-          name: this.fileName,
-          size: this.fullFileContent ? Math.round(this.fullFileContent.length / 1024) : 0,
-          source: '百度网盘'
+      this.getClipboardText()
+        .then((text) => {
+          if (!text) {
+            uni.showToast({ title: '请先复制网盘链接或文本', icon: 'none' });
+            return;
+          }
+          this.fileName = `百度网盘_${this.formatDate()}`;
+          if (text.length > 400) {
+            this.fullFileContent = text;
+          } else {
+            this.fullFileContent = '';
+          }
+          this.readOffset = 0;
+          this.generatedCount = 0;
+          this.currentUploadId = this.saveUploadRecord({
+            name: this.fileName,
+            size: this.fullFileContent ? Math.round(this.fullFileContent.length / 1024) : 0,
+            source: '百度网盘'
+          });
+          if (!this.fullFileContent) {
+            uni.showToast({ title: '已记录链接，基于主题生成', icon: 'none' });
+          }
+          this.startAI();
+        })
+        .catch((e) => {
+          logger.error('[practice] 导入百度网盘失败:', e);
+          uni.showToast({ title: '导入失败，请重试', icon: 'none' });
         });
-        if (!this.fullFileContent) {
-          uni.showToast({ title: '已记录链接，基于主题生成', icon: 'none' });
-        }
-        this.startAI();
-      }).catch((e) => {
-        logger.error('[practice] 导入百度网盘失败:', e);
-        uni.showToast({ title: '导入失败，请重试', icon: 'none' });
-      });
     },
 
     getClipboardText() {
@@ -203,7 +215,9 @@ export const aiGenerationMixin = {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (e) { logger.warn('Vibration feedback failed', e); }
+      } catch (e) {
+        logger.warn('Vibration feedback failed', e);
+      }
 
       if (['pdf', 'doc', 'docx'].includes(ext)) {
         this.isUploadingFile = false;
@@ -238,6 +252,7 @@ export const aiGenerationMixin = {
       this.showMask = true;
       this.readOffset = 0;
       this.generatedCount = 0;
+      this._consecutiveFailures = 0; // 连续失败计数器，防止无限循环
       const bank = storageService.get('v30_bank', []);
       this.bankSizeAtGenStart = bank.length;
       this.startSoupRotation();
@@ -249,6 +264,20 @@ export const aiGenerationMixin = {
       if (!this.isLooping || this.isPaused || this.isRequestInFlight) return;
       if (this.generatedCount >= this.totalQuestionsLimit) {
         this.finishGeneration();
+        return;
+      }
+
+      // 防止无限循环：连续失败超过阈值时自动暂停
+      const MAX_CONSECUTIVE_FAILURES = 5;
+      if (this._consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+        logger.warn(`[practice] 连续 ${this._consecutiveFailures} 次生成失败，自动暂停`);
+        this.pauseGeneration();
+        uni.showModal({
+          title: 'AI 生成暂停',
+          content: `连续 ${this._consecutiveFailures} 次未能解析出有效题目，已自动暂停。\n\n可能原因：资料格式不适合出题，或 AI 服务暂时异常。\n\n你可以更换资料后重试。`,
+          showCancel: false,
+          confirmText: '我知道了'
+        });
         return;
       }
 
@@ -272,6 +301,7 @@ export const aiGenerationMixin = {
         });
         this._processAIResponse(res);
       } catch (e) {
+        this._consecutiveFailures++;
         this._handleGenerationError(e);
       } finally {
         this.isRequestInFlight = false;
@@ -295,11 +325,15 @@ export const aiGenerationMixin = {
         const message = res.data.choices[0]?.message;
         if (!message || !message.content) {
           logger.warn('[practice] AI 响应缺少 message.content');
+          this._consecutiveFailures++;
           this._advanceBatch();
           return;
         }
         let content = message.content;
-        content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+        content = content
+          .replace(/```json/g, '')
+          .replace(/```/g, '')
+          .trim();
 
         try {
           const newQs = JSON.parse(content);
@@ -307,16 +341,19 @@ export const aiGenerationMixin = {
             this._mergeValidQuestions(newQs);
           } else {
             logger.warn('[practice] AI 返回的不是数组格式');
+            this._consecutiveFailures++;
             this._advanceBatch();
           }
         } catch (parseError) {
           logger.error('[practice] JSON 解析失败:', parseError, '原始内容:', content);
+          this._consecutiveFailures++;
           this._handleJsonParseError(content);
         }
         return;
       }
 
       logger.error('[practice] AI 请求失败:', res);
+      this._consecutiveFailures++;
       this._advanceBatch();
     },
 
@@ -336,13 +373,16 @@ export const aiGenerationMixin = {
         const old = storageService.get('v30_bank', []);
         const uniqueQs = deduplicateQuestions(validQs, old);
         if (uniqueQs.length > 0) {
+          this._consecutiveFailures = 0; // 成功生成，重置连续失败计数
           this._saveQuestionBank([...old, ...uniqueQs], uniqueQs.length);
         } else {
           logger.log('[practice] 所有题目均为重复，跳过保存');
+          this._consecutiveFailures++;
           this._advanceBatch();
         }
       } else {
         logger.warn('[practice] 生成的题目格式无效，原始数据:', newQs);
+        this._consecutiveFailures++;
         this._advanceBatch();
       }
     },
@@ -576,6 +616,7 @@ export const aiGenerationMixin = {
               const old = storageService.get('v30_bank', []);
               const uniqueQs = deduplicateQuestions(validQs, old);
               if (uniqueQs.length > 0) {
+                this._consecutiveFailures = 0; // 二次解析成功，重置
                 const merged = [...old, ...uniqueQs];
                 this._saveQuestionBank(merged, uniqueQs.length);
                 logger.log(`[practice] 二次解析成功，生成 ${uniqueQs.length} 道题目`);
@@ -587,6 +628,7 @@ export const aiGenerationMixin = {
       } catch (e) {
         logger.error('[practice] 二次解析也失败:', e);
       }
+      // 二次解析也失败，_consecutiveFailures 已在调用方递增
       this.generatedCount++;
       this.readOffset += this.chunkSize;
     },
@@ -605,6 +647,7 @@ export const aiGenerationMixin = {
             const old = storageService.get('v30_bank', []);
             const uniqueQs = deduplicateQuestions(validQs, old);
             if (uniqueQs.length > 0) {
+              this._consecutiveFailures = 0; // 成功，重置
               const merged = [...old, ...uniqueQs];
               this._saveQuestionBank(merged, uniqueQs.length);
               return;
@@ -614,6 +657,7 @@ export const aiGenerationMixin = {
       } catch (e) {
         logger.error('[practice] 新格式处理异常:', e);
       }
+      this._consecutiveFailures++;
       this.generatedCount++;
       this.readOffset += this.chunkSize;
     },

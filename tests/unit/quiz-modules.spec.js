@@ -14,7 +14,9 @@ vi.mock('@/services/storageService.js', () => {
   return {
     storageService: {
       get: vi.fn((key, defaultVal) => store[key] ?? defaultVal),
-      save: vi.fn((key, val) => { store[key] = val; }),
+      save: vi.fn((key, val) => {
+        store[key] = val;
+      }),
       saveMistake: vi.fn(async (data) => ({
         success: true,
         id: 'mock_id_1',
@@ -59,7 +61,7 @@ vi.mock('../../src/pages/practice-sub/offline-cache.js', () => ({
 }));
 
 // Mock learning-analytics（被 quiz-analytics-recorder 导入）
-vi.mock('../../src/pages/practice-sub/utils/learning-analytics.js', () => ({
+vi.mock('@/utils/analytics/learning-analytics.js', () => ({
   recordAnswer: vi.fn()
 }));
 
@@ -79,7 +81,7 @@ import { storageService } from '@/services/storageService.js';
 import { lafService } from '@/services/lafService.js';
 import { recordTime } from '../../src/pages/practice-sub/question-timer.js';
 import { saveOfflineAnswer } from '../../src/pages/practice-sub/offline-cache.js';
-import { recordAnswer } from '../../src/pages/practice-sub/utils/learning-analytics.js';
+import { recordAnswer } from '@/utils/analytics/learning-analytics.js';
 
 // ============================================================
 // 测试用的 fixture
@@ -142,11 +144,13 @@ describe('quiz-mistake-handler — 特征测试', () => {
 
     it('已存在错题时 wrong_count 应递增', async () => {
       // 预设本地已有一条错题
-      storageService.get.mockReturnValueOnce([{
-        question: '以下哪个是正确的？',
-        wrong_count: 2,
-        id: 'q_1'
-      }]);
+      storageService.get.mockReturnValueOnce([
+        {
+          question: '以下哪个是正确的？',
+          wrong_count: 2,
+          id: 'q_1'
+        }
+      ]);
 
       await saveToMistakes({
         currentQuestion: mockQuestion,
@@ -170,11 +174,7 @@ describe('quiz-mistake-handler — 特征测试', () => {
       // 应调用 uni.hideLoading
       expect(uni.hideLoading).toHaveBeenCalled();
       // 应调用 storageService.save 降级保存
-      expect(storageService.save).toHaveBeenCalledWith(
-        'mistake_book',
-        expect.any(Array),
-        true
-      );
+      expect(storageService.save).toHaveBeenCalledWith('mistake_book', expect.any(Array), true);
     });
 
     it('降级保存的记录应包含双字段兼容格式', async () => {
@@ -207,11 +207,13 @@ describe('quiz-mistake-handler — 特征测试', () => {
 
   describe('updateMistakeWithAI()', () => {
     it('应更新错题本中对应记录的 AI 解析', () => {
-      const existingMistakes = [{
-        question: '以下哪个是正确的？',
-        id: 'q_1',
-        analysis: '旧解析'
-      }];
+      const existingMistakes = [
+        {
+          question: '以下哪个是正确的？',
+          id: 'q_1',
+          analysis: '旧解析'
+        }
+      ];
       storageService.get.mockReturnValueOnce(existingMistakes);
 
       updateMistakeWithAI({
@@ -435,7 +437,9 @@ describe('quiz-analytics-recorder — 特征测试', () => {
 
     it('子模块失败时不应影响其他模块记录', async () => {
       // 让 recordAnswer 抛异常
-      recordAnswer.mockImplementationOnce(() => { throw new Error('boom'); });
+      recordAnswer.mockImplementationOnce(() => {
+        throw new Error('boom');
+      });
 
       const result = await recordAnswerToAnalytics({
         currentQuestion: mockQuestion,

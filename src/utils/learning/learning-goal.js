@@ -198,9 +198,7 @@ class LearningGoalManager {
   autoUpdateByType(type, value) {
     this.init();
 
-    const activeGoals = this.goals.filter(
-      (g) => g.type === type && g.status === 'active'
-    );
+    const activeGoals = this.goals.filter((g) => g.type === type && g.status === 'active');
 
     for (const goal of activeGoals) {
       this.updateProgress(goal.id, value);
@@ -215,14 +213,13 @@ class LearningGoalManager {
     this.init();
     this._checkAndResetDailyGoals();
 
-    return this.goals.filter((g) =>
-      g.status === 'active' &&
-      (g.period === 'daily' || g.period === 'weekly')
-    ).map((g) => ({
-      ...g,
-      progress: Math.min(100, Math.round((g.currentValue / g.targetValue) * 100)),
-      remaining: Math.max(0, g.targetValue - g.currentValue)
-    }));
+    return this.goals
+      .filter((g) => g.status === 'active' && (g.period === 'daily' || g.period === 'weekly'))
+      .map((g) => ({
+        ...g,
+        progress: Math.min(100, Math.round((g.currentValue / g.targetValue) * 100)),
+        remaining: Math.max(0, g.targetValue - g.currentValue)
+      }));
   }
 
   /**
@@ -261,9 +258,7 @@ class LearningGoalManager {
     // 计算完成率
     const completedGoals = this.goals.filter((g) => g.isCompleted).length;
     const totalGoals = this.goals.length;
-    const completionRate = totalGoals > 0
-      ? Math.round((completedGoals / totalGoals) * 100)
-      : 0;
+    const completionRate = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
 
     // 计算连续完成天数
     const streakDays = this._calculateStreakDays();
@@ -273,9 +268,7 @@ class LearningGoalManager {
       completedGoals,
       completionRate,
       streakDays,
-      dailyStats: Object.values(dailyStats).sort((a, b) =>
-        new Date(a.date) - new Date(b.date)
-      ),
+      dailyStats: Object.values(dailyStats).sort((a, b) => new Date(a.date) - new Date(b.date)),
       averageCompletion: this._calculateAverageCompletion(days)
     };
   }
@@ -299,9 +292,7 @@ class LearningGoalManager {
     };
 
     // 检查是否已存在同类型提醒
-    const existingIndex = this.reminderSettings.reminders.findIndex(
-      (r) => r.type === reminder.type
-    );
+    const existingIndex = this.reminderSettings.reminders.findIndex((r) => r.type === reminder.type);
 
     if (existingIndex >= 0) {
       this.reminderSettings.reminders[existingIndex] = reminder;
@@ -352,12 +343,7 @@ class LearningGoalManager {
     this.init();
 
     const suggestions = [];
-    const {
-      averageDailyQuestions = 0,
-      averageAccuracy = 0,
-      currentStreak = 0,
-      weakPointsCount = 0
-    } = learningData;
+    const { averageDailyQuestions = 0, averageAccuracy = 0, currentStreak = 0, weakPointsCount = 0 } = learningData;
 
     // 基于历史数据建议每日刷题目标
     if (averageDailyQuestions > 0) {
@@ -446,31 +432,11 @@ class LearningGoalManager {
    */
   getMotivationalMessage(goal) {
     const messages = {
-      DAILY_QUESTIONS: [
-        '太棒了！今日刷题目标已达成！',
-        '坚持就是胜利，继续保持！',
-        '学习小能手就是你！'
-      ],
-      DAILY_ACCURACY: [
-        '正确率达标！你的努力有了回报！',
-        '准确度提升中，继续加油！',
-        '稳扎稳打，成绩会越来越好！'
-      ],
-      DAILY_TIME: [
-        '今日学习时长达标！',
-        '时间投入是成功的基础！',
-        '专注学习，收获满满！'
-      ],
-      STREAK_DAYS: [
-        '连续学习记录刷新！',
-        '坚持的力量是无穷的！',
-        '习惯养成中，继续保持！'
-      ],
-      WEAK_POINT_IMPROVE: [
-        '薄弱知识点攻克成功！',
-        '查漏补缺，进步明显！',
-        '知识盲区越来越少了！'
-      ]
+      DAILY_QUESTIONS: ['太棒了！今日刷题目标已达成！', '坚持就是胜利，继续保持！', '学习小能手就是你！'],
+      DAILY_ACCURACY: ['正确率达标！你的努力有了回报！', '准确度提升中，继续加油！', '稳扎稳打，成绩会越来越好！'],
+      DAILY_TIME: ['今日学习时长达标！', '时间投入是成功的基础！', '专注学习，收获满满！'],
+      STREAK_DAYS: ['连续学习记录刷新！', '坚持的力量是无穷的！', '习惯养成中，继续保持！'],
+      WEAK_POINT_IMPROVE: ['薄弱知识点攻克成功！', '查漏补缺，进步明显！', '知识盲区越来越少了！']
     };
 
     const typeMessages = messages[goal.type] || ['目标完成！继续加油！'];
@@ -613,9 +579,7 @@ class LearningGoalManager {
     const now = Date.now();
     const startTime = now - days * 24 * 60 * 60 * 1000;
 
-    const recentRecords = this.records.filter(
-      (r) => r.timestamp >= startTime && r.isDayEnd
-    );
+    const recentRecords = this.records.filter((r) => r.timestamp >= startTime && r.isDayEnd);
 
     if (recentRecords.length === 0) return 0;
 
@@ -654,7 +618,9 @@ class LearningGoalManager {
    * 获取日期字符串
    */
   _getDateString(date) {
-    return date.toISOString().split('T')[0];
+    // [AUDIT FIX] 使用本地日期而非 UTC，避免跨时区用户每日目标在错误时间重置
+    const pad = (n) => String(n).padStart(2, '0');
+    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
   }
 
   /**

@@ -26,7 +26,7 @@ const ABILITY_LEVELS = {
   BEGINNER: { min: 0, max: 40, targetDifficulty: 1.5 },
   INTERMEDIATE: { min: 40, max: 60, targetDifficulty: 2.0 },
   ADVANCED: { min: 60, max: 80, targetDifficulty: 2.5 },
-  EXPERT: { min: 80, max: 100, targetDifficulty: 3.0 }
+  EXPERT: { min: 80, max: 101, targetDifficulty: 3.0 }
 };
 
 // 存储键名
@@ -536,9 +536,8 @@ class SmartQuestionPicker {
     const previous = this.questionHistory.slice(-20, -10);
 
     const recentAccuracy = recent.filter((r) => r.isCorrect).length / recent.length;
-    const previousAccuracy = previous.length > 0
-      ? previous.filter((r) => r.isCorrect).length / previous.length
-      : recentAccuracy;
+    const previousAccuracy =
+      previous.length > 0 ? previous.filter((r) => r.isCorrect).length / previous.length : recentAccuracy;
 
     const change = recentAccuracy - previousAccuracy;
 
@@ -649,8 +648,7 @@ class SmartQuestionPicker {
     }
 
     // 更新平均用时
-    this.userProfile.averageTimePerQuestion =
-      this.userProfile.averageTimePerQuestion * 0.9 + timeSpent * 0.1;
+    this.userProfile.averageTimePerQuestion = this.userProfile.averageTimePerQuestion * 0.9 + timeSpent * 0.1;
 
     this._saveUserProfile();
   }
@@ -708,15 +706,13 @@ class SmartQuestionPicker {
   }
 
   _getLastAnsweredTime(question) {
-    const record = this.questionHistory.find((r) =>
-      r.questionId === question.id || r.questionId === question.question
-    );
+    const record = this.questionHistory.find((r) => r.questionId === question.id || r.questionId === question.question);
     return record ? record.timestamp : null;
   }
 
   _getQuestionCorrectRate(question) {
-    const records = this.questionHistory.filter((r) =>
-      r.questionId === question.id || r.questionId === question.question
+    const records = this.questionHistory.filter(
+      (r) => r.questionId === question.id || r.questionId === question.question
     );
 
     if (records.length === 0) return null;

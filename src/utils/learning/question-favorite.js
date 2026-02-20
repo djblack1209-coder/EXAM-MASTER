@@ -61,9 +61,8 @@ class QuestionFavoriteManager {
     this.init();
 
     // 检查是否已收藏
-    const existingIndex = this.favorites.findIndex((f) =>
-      f.questionId === question.id ||
-      f.questionContent === question.question
+    const existingIndex = this.favorites.findIndex(
+      (f) => f.questionId === question.id || f.questionContent === question.question
     );
 
     if (existingIndex >= 0) {
@@ -117,10 +116,8 @@ class QuestionFavoriteManager {
   removeFavorite(questionId) {
     this.init();
 
-    const index = this.favorites.findIndex((f) =>
-      f.id === questionId ||
-      f.questionId === questionId ||
-      f.questionContent === questionId
+    const index = this.favorites.findIndex(
+      (f) => f.id === questionId || f.questionId === questionId || f.questionContent === questionId
     );
 
     if (index === -1) {
@@ -157,10 +154,8 @@ class QuestionFavoriteManager {
   isFavorited(questionId) {
     this.init();
 
-    return this.favorites.some((f) =>
-      f.id === questionId ||
-      f.questionId === questionId ||
-      f.questionContent === questionId
+    return this.favorites.some(
+      (f) => f.id === questionId || f.questionId === questionId || f.questionContent === questionId
     );
   }
 
@@ -172,11 +167,11 @@ class QuestionFavoriteManager {
   getFavoriteDetail(questionId) {
     this.init();
 
-    return this.favorites.find((f) =>
-      f.id === questionId ||
-      f.questionId === questionId ||
-      f.questionContent === questionId
-    ) || null;
+    return (
+      this.favorites.find(
+        (f) => f.id === questionId || f.questionId === questionId || f.questionContent === questionId
+      ) || null
+    );
   }
 
   /**
@@ -202,10 +197,11 @@ class QuestionFavoriteManager {
     // 按关键词搜索
     if (options.keyword) {
       const keyword = options.keyword.toLowerCase();
-      result = result.filter((f) =>
-        f.questionContent.toLowerCase().includes(keyword) ||
-        f.note.toLowerCase().includes(keyword) ||
-        f.tags.some((t) => t.toLowerCase().includes(keyword))
+      result = result.filter(
+        (f) =>
+          (f.questionContent || '').toLowerCase().includes(keyword) ||
+          (f.note || '').toLowerCase().includes(keyword) ||
+          (f.tags || []).some((t) => (typeof t === 'string' ? t : '').toLowerCase().includes(keyword))
       );
     }
 
@@ -388,9 +384,7 @@ class QuestionFavoriteManager {
     }
 
     // 最近收藏
-    const recentFavorites = this.favorites
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, 5);
+    const recentFavorites = [...this.favorites].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
 
     // 待复习（超过7天未复习）
     const needReview = this.favorites.filter((f) => {

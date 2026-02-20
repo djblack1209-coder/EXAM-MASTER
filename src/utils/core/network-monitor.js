@@ -160,7 +160,8 @@ class NetworkMonitor {
    * @private
    */
   _setupNetworkListener() {
-    uni.onNetworkStatusChange((res) => {
+    // [AUDIT FIX] 保存回调引用，以便 destroy() 时注销
+    this._networkChangeHandler = (res) => {
       const wasConnected = this.status.isConnected;
       const oldQuality = this.status.quality;
 
@@ -171,7 +172,8 @@ class NetworkMonitor {
       logger.log(`[NetworkMonitor] 网络变化: ${res.networkType} (连接: ${res.isConnected})`);
 
       this._handleStatusChange(wasConnected, oldQuality);
-    });
+    };
+    uni.onNetworkStatusChange(this._networkChangeHandler);
   }
 
   /**
@@ -188,9 +190,7 @@ class NetworkMonitor {
     if (wasConnected !== this.status.isConnected) {
       if (this.status.isConnected) {
         // 从离线恢复到在线
-        this.status.offlineDuration = this.status.lastOfflineTime
-          ? now - this.status.lastOfflineTime
-          : 0;
+        this.status.offlineDuration = this.status.lastOfflineTime ? now - this.status.lastOfflineTime : 0;
         this.status.lastOnlineTime = now;
 
         logger.log(`[NetworkMonitor] 🌐 网络已恢复 (离线时长: ${Math.round(this.status.offlineDuration / 1000)}s)`);
@@ -213,7 +213,6 @@ class NetworkMonitor {
         if (this.config.autoSyncOnRecover) {
           this._triggerSync();
         }
-
       } else {
         // 从在线变为离线
         this.status.lastOfflineTime = now;
@@ -365,7 +364,6 @@ class NetworkMonitor {
           this._emit('weakNetwork', this.getStatus());
         }
       }
-
     } catch (error) {
       console.warn('[NetworkMonitor] Ping 失败:', error);
       this.status.signalStrength = 0;
@@ -401,7 +399,9 @@ class NetworkMonitor {
       return () => this.listeners[event].delete(callback);
     }
     console.warn(`[NetworkMonitor] 未知事件: ${event}`);
-    return () => { /* noop */ };
+    return () => {
+      /* noop */
+    };
   }
 
   /**
@@ -486,6 +486,16 @@ class NetworkMonitor {
    */
   destroy() {
     this._stopPingTimer();
+
+    // [AUDIT FIX] 注销平台网络监听器，防止内存泄漏
+    if (this._networkChangeHandler) {
+      try {
+        uni.offNetworkStatusChange(this._networkChangeHandler);
+      } catch (e) {
+        // 部分平台可能不支持 offNetworkStatusChange
+      }
+      this._networkChangeHandler = null;
+    }
 
     // 清空所有监听器
     Object.keys(this.listeners).forEach((event) => {

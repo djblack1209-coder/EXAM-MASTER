@@ -85,7 +85,6 @@ class CheckinStreakService {
         currentStreak: this.data.currentStreak,
         todayChecked: this.data.todayChecked
       });
-
     } catch (error) {
       console.error('[CheckinStreak] Init error:', error);
     }
@@ -275,7 +274,9 @@ class CheckinStreakService {
    */
   _getNextMilestone() {
     const { milestones } = REWARD_CONFIG;
-    const milestoneDays = Object.keys(milestones).map(Number).sort((a, b) => a - b);
+    const milestoneDays = Object.keys(milestones)
+      .map(Number)
+      .sort((a, b) => a - b);
 
     for (const days of milestoneDays) {
       if (days > this.data.currentStreak) {
@@ -361,7 +362,9 @@ class CheckinStreakService {
    * 获取日期字符串
    */
   _getDateString(date) {
-    return date.toISOString().split('T')[0];
+    // [AUDIT FIX] 使用本地日期而非 UTC，避免跨时区用户打卡/连续签到在错误时间重置
+    const pad = (n) => String(n).padStart(2, '0');
+    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
   }
 
   /**
@@ -391,7 +394,9 @@ class CheckinStreakService {
       try {
         const key = `checkin_${this.userId}`;
         storageService.remove(key);
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
   }
 

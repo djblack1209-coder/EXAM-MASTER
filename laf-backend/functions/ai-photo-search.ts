@@ -1,26 +1,29 @@
 /**
  * 拍照搜题云函数 - 智谱视觉AI + OCR 双路并行
- * 
+ *
  * 功能：
  * 1. 接收图片（base64/URL）
  * 2. 并行调用智谱视觉AI识别题目
  * 3. 题库语义搜索匹配
  * 4. AI即时生成解析
  * 5. 结果缓存优化
- * 
+ *
  * 环境变量要求：
  * - AI_PROVIDER_KEY_PLACEHOLDER
- * 
+ *
  * @version 2.0.0
  * @author EXAM-MASTER Team
  */
 
-import cloud from '@lafjs/cloud'
-import { validate } from '../utils/validator'
+import cloud from '@lafjs/cloud';
+import { validate } from '../utils/validator';
+import { createLogger } from './_shared/api-response';
+
+const logger = createLogger('[AIPhotoSearch]');
 
 // ==================== 环境变量检查 ====================
 if (!process.env.AI_PROVIDER_KEY_PLACEHOLDER
-  console.warn('[ai-photo-search] ⚠️ 缺少环境变量 AI_PROVIDER_KEY_PLACEHOLDER
+  logger.warn('[ai-photo-search] ⚠️ 缺少环境变量 AI_PROVIDER_KEY_PLACEHOLDER
 }
 
 // ==================== 配置 ====================
@@ -28,71 +31,96 @@ const CONFIG = {
   zhipu: {
     apiKey: process.env.AI_PROVIDER_KEY_PLACEHOLDER
     baseUrl: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
-    visionModel: 'glm-4v-plus',    // 视觉模型
-    textModel: 'glm-4-flash'       // 文本模型（用于生成解析）
+    visionModel: 'glm-4v-plus', // 视觉模型
+    textModel: 'glm-4-flash' // 文本模型（用于生成解析）
   },
   timeout: {
-    vision: 30000,   // 视觉识别超时 30s
-    search: 5000,    // 搜索超时 5s
-    generate: 20000  // 生成解析超时 20s
+    vision: 30000, // 视觉识别超时 30s
+    search: 5000, // 搜索超时 5s
+    generate: 20000 // 生成解析超时 20s
   },
   cache: {
     enabled: true,
     ttl: 3600 // 缓存1小时
   },
   maxImageSize: 10 * 1024 * 1024 // 最大 10MB
-}
+};
 
 // 学科配置
 const SUBJECTS = {
-  'math': { name: '数学', keywords: ['计算', '方程', '函数', '几何', '概率'] },
-  'chinese': { name: '语文', keywords: ['阅读', '作文', '古诗', '文言文'] },
-  'english': { name: '英语', keywords: ['grammar', 'vocabulary', 'reading'] },
-  'physics': { name: '物理', keywords: ['力学', '电学', '光学', '热学'] },
-  'chemistry': { name: '化学', keywords: ['元素', '反应', '有机', '无机'] },
-  'biology': { name: '生物', keywords: ['细胞', '遗传', '生态', '进化'] },
-  'politics': { name: '政治', keywords: ['哲学', '经济', '政治', '文化'] },
-  'history': { name: '历史', keywords: ['古代', '近代', '现代', '世界'] },
-  'geography': { name: '地理', keywords: ['自然', '人文', '区域', '环境'] }
-}
+  math: { name: '数学', keywords: ['计算', '方程', '函数', '几何', '概率'] },
+  chinese: { name: '语文', keywords: ['阅读', '作文', '古诗', '文言文'] },
+  english: { name: '英语', keywords: ['grammar', 'vocabulary', 'reading'] },
+  physics: { name: '物理', keywords: ['力学', '电学', '光学', '热学'] },
+  chemistry: { name: '化学', keywords: ['元素', '反应', '有机', '无机'] },
+  biology: { name: '生物', keywords: ['细胞', '遗传', '生态', '进化'] },
+  politics: { name: '政治', keywords: ['哲学', '经济', '政治', '文化'] },
+  history: { name: '历史', keywords: ['古代', '近代', '现代', '世界'] },
+  geography: { name: '地理', keywords: ['自然', '人文', '区域', '环境'] }
+};
 
 // ==================== 主入口 ====================
 export default async function (ctx) {
-  const startTime = Date.now()
-  const requestId = `search_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  const startTime = Date.now();
+  const requestId = `search_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
-  console.log(`[${requestId}] 拍照搜题请求开始`)
+  logger.info(`[${requestId}] 拍照搜题请求开始`);
 
   try {
-    const { action, ...params } = ctx.body || {}
+    // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费 AI API 额度
+    const authToken = ctx.headers?.['authorization']?.replace('Bearer ', '');
+    if (!authToken) {
+      return { code: 401, success: false, message: '请先登录', requestId };
+    }
+    let authUserId: string | undefined;
+    try {
+      const payload = cloud.parseToken(authToken);
+      if (!payload?.userId) {
+        return { code: 401, success: false, message: 'token 无效或已过期', requestId };
+      }
+      authUserId = payload.userId;
+    } catch {
+      return { code: 401, success: false, message: 'token 无效或已过期', requestId };
+    }
+
+    const { action, ...params } = ctx.body || {};
+    // [AUDIT FIX] 使用 JWT 验证的 userId，忽略客户端传入的 userId
+    params.userId = authUserId;
 
     // S003: 入口参数校验 — action 可选（默认走搜题），但如果提供了必须合法
     if (action) {
-      const entryValidation = validate({ action }, {
-        action: { required: true, type: 'string', maxLength: 50, enum: [
-          'search', 'recognize', 'generate_solution', 'get_subjects'
-        ]}
-      })
+      const entryValidation = validate(
+        { action },
+        {
+          action: {
+            required: true,
+            type: 'string',
+            maxLength: 50,
+            enum: ['search', 'recognize', 'generate_solution', 'get_subjects']
+          }
+        }
+      );
       if (!entryValidation.valid) {
-        return { code: 400, success: false, message: entryValidation.errors[0], requestId }
+        return { code: 400, success: false, message: entryValidation.errors[0], requestId };
       }
     }
 
     // ==================== 安全检查：审核模式拦截 (CP-20260127-QA) ====================
     // 支持多种审计模式请求头，与 proxy-ai.js 保持一致
-    const auditMode = ctx.headers?.['x-audit-mode'] === 'true' ||
-                      ctx.headers?.['x-exam-audit'] === 'true' ||
-                      ctx.headers?.['x-review-mode'] === 'true'
-    
+    const auditMode =
+      ctx.headers?.['x-audit-mode'] === 'true' ||
+      ctx.headers?.['x-exam-audit'] === 'true' ||
+      ctx.headers?.['x-review-mode'] === 'true';
+
     if (auditMode) {
-      console.warn(`[${requestId}] [SECURITY] 审计模式拦截 - 拍照搜题功能在审核期间不可用`)
+      logger.warn(`[${requestId}] [SECURITY] 审计模式拦截 - 拍照搜题功能在审核期间不可用`);
       return {
         code: 403,
         success: false,
         message: 'Function not available in audit mode',
         auditMode: true,
         requestId
-      }
+      };
     }
 
     // 检查配置
@@ -102,38 +130,38 @@ export default async function (ctx) {
         success: false,
         message: '服务配置错误：缺少智谱AI API Key',
         requestId
-      }
+      };
     }
 
     switch (action) {
       case 'search':
       case 'recognize':
-        return await handlePhotoSearch(params, requestId)
+        return await handlePhotoSearch(params, requestId);
       case 'generate_solution':
-        return await generateSolution(params, requestId)
+        return await generateSolution(params, requestId);
       case 'get_subjects':
-        return getSubjects()
+        return getSubjects();
       default:
         // 默认执行搜题
         if (params.imageBase64 || params.imageUrl) {
-          return await handlePhotoSearch(params, requestId)
+          return await handlePhotoSearch(params, requestId);
         }
         return {
           code: 400,
           success: false,
           message: '未知操作，支持: search, recognize, generate_solution, get_subjects',
           requestId
-        }
+        };
     }
   } catch (error) {
-    console.error(`[${requestId}] 拍照搜题异常:`, error)
+    logger.error(`[${requestId}] 拍照搜题异常:`, error);
     return {
       code: 500,
       success: false,
       message: error.message || '识别失败',
       requestId,
       duration: Date.now() - startTime
-    }
+    };
   }
 }
 
@@ -143,7 +171,7 @@ function getSubjects() {
     code: 0,
     success: true,
     data: SUBJECTS
-  }
+  };
 }
 
 // ==================== 拍照搜题主流程 ====================
@@ -151,62 +179,62 @@ async function handlePhotoSearch(params, requestId) {
   const {
     imageBase64,
     imageUrl,
-    subject,      // 学科（可选）
-    context,      // 上下文提示（可选）
-    userId,       // 用户ID（用于日志）
-    searchOnly = false  // 仅搜索，不生成解析
-  } = params
+    subject, // 学科（可选）
+    context, // 上下文提示（可选）
+    userId, // 用户ID（用于日志）
+    searchOnly = false // 仅搜索，不生成解析
+  } = params;
 
   // 参数校验
   if (!imageBase64 && !imageUrl) {
-    return { code: 400, success: false, message: '缺少图片参数 imageBase64 或 imageUrl', requestId }
+    return { code: 400, success: false, message: '缺少图片参数 imageBase64 或 imageUrl', requestId };
   }
 
   // 获取图片数据
-  let imageData = imageBase64
+  let imageData = imageBase64;
   if (!imageData && imageUrl) {
-    console.log(`[${requestId}] 从URL获取图片: ${imageUrl}`)
-    imageData = await fetchImageAsBase64(imageUrl)
+    logger.info(`[${requestId}] 从URL获取图片: ${imageUrl}`);
+    imageData = await fetchImageAsBase64(imageUrl);
   }
 
   // 检查图片大小
-  const imageSize = Buffer.from(imageData, 'base64').length
+  const imageSize = Buffer.from(imageData, 'base64').length;
   if (imageSize > CONFIG.maxImageSize) {
     return {
       code: 400,
       success: false,
       message: `图片过大，最大支持 ${CONFIG.maxImageSize / 1024 / 1024}MB`,
       requestId
-    }
+    };
   }
 
-  console.log(`[${requestId}] 图片大小: ${(imageSize / 1024).toFixed(2)}KB, 学科: ${subject || '自动识别'}`)
+  logger.info(`[${requestId}] 图片大小: ${(imageSize / 1024).toFixed(2)}KB, 学科: ${subject || '自动识别'}`);
 
   // 检查缓存
   if (CONFIG.cache.enabled) {
-    const cacheKey = `photo_search:${hashString(imageData.substring(0, 1000))}`
-    const cached = await getCache(cacheKey)
+    const cacheKey = `photo_search:${hashString(imageData.substring(0, 1000))}`;
+    const cached = await getCache(cacheKey);
     if (cached) {
-      console.log(`[${requestId}] 命中缓存`)
+      logger.info(`[${requestId}] 命中缓存`);
       return {
         code: 0,
         success: true,
         data: cached,
         cached: true,
         requestId
-      }
+      };
     }
   }
 
   // 步骤1: 调用智谱视觉AI识别题目
-  console.log(`[${requestId}] 步骤1: 视觉AI识别题目...`)
-  const recognitionResult = await recognizeQuestion(imageData, subject, context, requestId)
+  logger.info(`[${requestId}] 步骤1: 视觉AI识别题目...`);
+  const recognitionResult = await recognizeQuestion(imageData, subject, context, requestId);
 
   if (!recognitionResult.success) {
-    return recognitionResult
+    return recognitionResult;
   }
 
-  const { questionText, questionType, options, detectedSubject, formulas, confidence } = recognitionResult.data
+  const { questionText, questionType, options, detectedSubject, formulas, confidence } = recognitionResult.data;
 
   if (!questionText || questionText.trim() === '') {
     return {
@@ -214,21 +242,21 @@ async function handlePhotoSearch(params, requestId) {
       success: false,
       message: '未能识别到题目内容，请确保图片清晰且包含完整题目',
       requestId
-    }
+    };
   }
 
-  console.log(`[${requestId}] 识别结果: 题型=${questionType}, 学科=${detectedSubject}, 置信度=${confidence}`)
+  logger.info(`[${requestId}] 识别结果: 题型=${questionType}, 学科=${detectedSubject}, 置信度=${confidence}`);
 
   // 步骤2: 题库搜索
-  console.log(`[${requestId}] 步骤2: 题库搜索...`)
-  const matchedQuestions = await searchQuestionBank(questionText, detectedSubject || subject, requestId)
-  console.log(`[${requestId}] 匹配到 ${matchedQuestions.length} 道相似题目`)
+  logger.info(`[${requestId}] 步骤2: 题库搜索...`);
+  const matchedQuestions = await searchQuestionBank(questionText, detectedSubject || subject, requestId);
+  logger.info(`[${requestId}] 匹配到 ${matchedQuestions.length} 道相似题目`);
 
   // 步骤3: 如果没有匹配且不是仅搜索模式，AI生成解析
-  let aiSolution = null
+  let aiSolution = null;
   if (matchedQuestions.length === 0 && !searchOnly) {
-    console.log(`[${requestId}] 步骤3: AI生成解析...`)
-    aiSolution = await generateAISolution(questionText, options, detectedSubject || subject, requestId)
+    logger.info(`[${requestId}] 步骤3: AI生成解析...`);
+    aiSolution = await generateAISolution(questionText, options, detectedSubject || subject, requestId);
   }
 
   // 构建结果
@@ -244,12 +272,12 @@ async function handlePhotoSearch(params, requestId) {
     matchedQuestions,
     aiSolution,
     hasMatch: matchedQuestions.length > 0
-  }
+  };
 
   // 写入缓存
   if (CONFIG.cache.enabled) {
-    const cacheKey = `photo_search:${hashString(imageData.substring(0, 1000))}`
-    await setCache(cacheKey, result, CONFIG.cache.ttl)
+    const cacheKey = `photo_search:${hashString(imageData.substring(0, 1000))}`;
+    await setCache(cacheKey, result, CONFIG.cache.ttl);
   }
 
   // 记录使用日志
@@ -258,7 +286,7 @@ async function handlePhotoSearch(params, requestId) {
     questionType,
     matchCount: matchedQuestions.length,
     hasAiSolution: !!aiSolution
-  })
+  });
 
   return {
     code: 0,
@@ -266,13 +294,13 @@ async function handlePhotoSearch(params, requestId) {
     data: result,
     cached: false,
     requestId
-  }
+  };
 }
 
 // ==================== 智谱视觉AI识别题目 ====================
 async function recognizeQuestion(imageBase64, subject, context, requestId) {
-  const subjectHint = subject ? `学科领域：${SUBJECTS[subject]?.name || subject}` : '请自动识别学科'
-  const contextHint = context ? `上下文提示：${context}` : ''
+  const subjectHint = subject ? `学科领域：${SUBJECTS[subject]?.name || subject}` : '请自动识别学科';
+  const contextHint = context ? `上下文提示：${context}` : '';
 
   const prompt = `你是一个专业的题目识别助手。请仔细分析这张图片中的题目内容。
 
@@ -298,7 +326,7 @@ ${contextHint}
 注意：
 - options 字段仅在选择题时填写，其他题型为空数组
 - formulas 字段存放识别到的数学公式
-- confidence 为识别置信度，0-1之间`
+- confidence 为识别置信度，0-1之间`;
 
   try {
     const response = await cloud.fetch({
@@ -306,7 +334,7 @@ ${contextHint}
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${CONFIG.zhipu.apiKey}`
+        Authorization: `Bearer ${CONFIG.zhipu.apiKey}`
       },
       data: {
         model: CONFIG.zhipu.visionModel,
@@ -328,15 +356,15 @@ ${contextHint}
         max_tokens: 2000
       },
       timeout: CONFIG.timeout.vision
-    })
+    });
 
-    const content = response.data?.choices?.[0]?.message?.content || ''
+    const content = response.data?.choices?.[0]?.message?.content || '';
 
     // 解析JSON响应
     try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/)
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0])
+        const parsed = JSON.parse(jsonMatch[0]);
         return {
           success: true,
           data: {
@@ -347,10 +375,10 @@ ${contextHint}
             formulas: parsed.formulas || [],
             confidence: parsed.confidence || 0.7
           }
-        }
+        };
       }
     } catch (parseError) {
-      console.warn(`[${requestId}] JSON解析失败，使用原始文本`)
+      logger.warn(`[${requestId}] JSON解析失败，使用原始文本`);
     }
 
     // 解析失败，返回原始文本
@@ -364,72 +392,67 @@ ${contextHint}
         formulas: [],
         confidence: 0.5
       }
-    }
-
+    };
   } catch (error) {
-    console.error(`[${requestId}] 视觉AI识别失败:`, error)
+    logger.error(`[${requestId}] 视觉AI识别失败:`, error);
     return {
       success: false,
       code: 500,
       message: `题目识别失败: ${error.message}`,
       requestId
-    }
+    };
   }
 }
 
 // ==================== 题库搜索 ====================
 async function searchQuestionBank(questionText, subject, requestId) {
-  const db = cloud.database()
+  const db = cloud.database();
 
   // 提取关键词
-  const keywords = extractKeywords(questionText)
+  const keywords = extractKeywords(questionText);
 
   if (keywords.length === 0) {
-    console.log(`[${requestId}] 未提取到有效关键词`)
-    return []
+    logger.info(`[${requestId}] 未提取到有效关键词`);
+    return [];
   }
 
-  console.log(`[${requestId}] 搜索关键词: ${keywords.slice(0, 5).join(', ')}`)
+  logger.info(`[${requestId}] 搜索关键词: ${keywords.slice(0, 5).join(', ')}`);
 
   try {
     // 构建查询条件
     const query = {
-      $or: keywords.slice(0, 8).map(kw => ({
+      $or: keywords.slice(0, 8).map((kw) => ({
         question: { $regex: escapeRegex(kw), $options: 'i' }
       }))
-    }
+    };
 
     // 如果指定了学科，添加学科过滤
     if (subject && SUBJECTS[subject]) {
-      query.category = { $regex: SUBJECTS[subject].name, $options: 'i' }
+      query.category = { $regex: SUBJECTS[subject].name, $options: 'i' };
     }
 
-    const result = await db.collection('questions')
-      .where(query)
-      .limit(5)
-      .get()
+    const result = await db.collection('questions').where(query).limit(5).get();
 
     // 计算相似度并排序
-    const questions = (result.data || []).map(q => ({
-      ...q,
-      similarity: calculateSimilarity(questionText, q.question)
-    })).sort((a, b) => b.similarity - a.similarity)
+    const questions = (result.data || [])
+      .map((q) => ({
+        ...q,
+        similarity: calculateSimilarity(questionText, q.question)
+      }))
+      .sort((a, b) => b.similarity - a.similarity);
 
-    return questions
-
+    return questions;
   } catch (error) {
-    console.error(`[${requestId}] 题库搜索失败:`, error)
-    return []
+    logger.error(`[${requestId}] 题库搜索失败:`, error);
+    return [];
   }
 }
 
 // ==================== AI生成解析 ====================
 async function generateAISolution(questionText, options, subject, requestId) {
-  const subjectName = SUBJECTS[subject]?.name || subject || '综合'
+  const subjectName = SUBJECTS[subject]?.name || subject || '综合';
 
-  const optionsText = options?.length > 0
-    ? `\n选项：\n${options.join('\n')}`
-    : ''
+  const optionsText = options?.length > 0 ? `\n选项：\n${options.join('\n')}` : '';
 
   const prompt = `你是一位专业的${subjectName}老师，请为以下题目提供详细的解答。
 
@@ -453,7 +476,7 @@ ${questionText}${optionsText}
 注意：
 - difficulty 为难度等级，1-5分
 - 解答要详细、准确、易懂
-- 如果是选择题，要说明为什么选这个答案，其他选项为什么不对`
+- 如果是选择题，要说明为什么选这个答案，其他选项为什么不对`;
 
   try {
     const response = await cloud.fetch({
@@ -461,7 +484,7 @@ ${questionText}${optionsText}
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${CONFIG.zhipu.apiKey}`
+        Authorization: `Bearer ${CONFIG.zhipu.apiKey}`
       },
       data: {
         model: CONFIG.zhipu.textModel,
@@ -470,18 +493,18 @@ ${questionText}${optionsText}
         max_tokens: 2000
       },
       timeout: CONFIG.timeout.generate
-    })
+    });
 
-    const content = response.data?.choices?.[0]?.message?.content || ''
+    const content = response.data?.choices?.[0]?.message?.content || '';
 
     // 解析JSON
     try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/)
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0])
+        return JSON.parse(jsonMatch[0]);
       }
     } catch (parseError) {
-      console.warn(`[${requestId}] 解析JSON失败`)
+      logger.warn(`[${requestId}] 解析JSON失败`);
     }
 
     // 返回简化结构
@@ -496,25 +519,24 @@ ${questionText}${optionsText}
       tips: '',
       relatedKnowledge: [],
       commonMistakes: []
-    }
-
+    };
   } catch (error) {
-    console.error(`[${requestId}] AI生成解析失败:`, error)
-    return null
+    logger.error(`[${requestId}] AI生成解析失败:`, error);
+    return null;
   }
 }
 
 // ==================== 单独生成解析接口 ====================
 async function generateSolution(params, requestId) {
-  const { questionText, options, subject } = params
+  const { questionText, options, subject } = params;
 
   if (!questionText) {
-    return { code: 400, success: false, message: '缺少题目内容 questionText', requestId }
+    return { code: 400, success: false, message: '缺少题目内容 questionText', requestId };
   }
 
-  console.log(`[${requestId}] 生成解析: ${questionText.substring(0, 50)}...`)
+  logger.info(`[${requestId}] 生成解析: ${questionText.substring(0, 50)}...`);
 
-  const solution = await generateAISolution(questionText, options, subject, requestId)
+  const solution = await generateAISolution(questionText, options, subject, requestId);
 
   if (!solution) {
     return {
@@ -522,7 +544,7 @@ async function generateSolution(params, requestId) {
       success: false,
       message: '生成解析失败',
       requestId
-    }
+    };
   }
 
   return {
@@ -530,7 +552,7 @@ async function generateSolution(params, requestId) {
     success: true,
     data: solution,
     requestId
-  }
+  };
 }
 
 // ==================== 辅助函数 ====================
@@ -540,46 +562,46 @@ async function generateSolution(params, requestId) {
  */
 function extractKeywords(text) {
   return text
-    .replace(/[A-D]\.\s*/g, '')  // 移除选项标记
-    .replace(/[，。？！、：；""''（）\[\]【】\n\r]/g, ' ')  // 移除标点
-    .replace(/\$[^$]+\$/g, ' ')  // 移除LaTeX公式
+    .replace(/[A-D]\.\s*/g, '') // 移除选项标记
+    .replace(/[，。？！、：；""''（）\[\]【】\n\r]/g, ' ') // 移除标点
+    .replace(/\$[^$]+\$/g, ' ') // 移除LaTeX公式
     .split(/\s+/)
-    .filter(w => w.length >= 2 && w.length <= 20)  // 过滤过短或过长的词
-    .filter(w => !/^\d+$/.test(w))  // 过滤纯数字
-    .slice(0, 15)
+    .filter((w) => w.length >= 2 && w.length <= 20) // 过滤过短或过长的词
+    .filter((w) => !/^\d+$/.test(w)) // 过滤纯数字
+    .slice(0, 15);
 }
 
 /**
  * 转义正则特殊字符
  */
 function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
  * 计算文本相似度（简化版）
  */
 function calculateSimilarity(text1, text2) {
-  const words1 = new Set(extractKeywords(text1))
-  const words2 = new Set(extractKeywords(text2))
+  const words1 = new Set(extractKeywords(text1));
+  const words2 = new Set(extractKeywords(text2));
 
-  const intersection = [...words1].filter(w => words2.has(w)).length
-  const union = new Set([...words1, ...words2]).size
+  const intersection = [...words1].filter((w) => words2.has(w)).length;
+  const union = new Set([...words1, ...words2]).size;
 
-  return union > 0 ? intersection / union : 0
+  return union > 0 ? intersection / union : 0;
 }
 
 /**
  * 字符串哈希
  */
 function hashString(str) {
-  let hash = 0
+  let hash = 0;
   for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
   }
-  return Math.abs(hash).toString(36)
+  return Math.abs(hash).toString(36);
 }
 
 /**
@@ -587,15 +609,40 @@ function hashString(str) {
  */
 async function fetchImageAsBase64(url) {
   try {
+    // [AUDIT FIX] SSRF 防护 — 禁止访问内网/元数据地址
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.toLowerCase();
+    if (
+      hostname === 'localhost' ||
+      hostname.startsWith('127.') ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('172.16.') ||
+      hostname.startsWith('172.17.') ||
+      hostname.startsWith('172.18.') ||
+      hostname.startsWith('172.19.') ||
+      hostname.startsWith('172.2') ||
+      hostname.startsWith('172.3') ||
+      hostname.startsWith('192.168.') ||
+      hostname === '169.254.169.254' ||
+      hostname.endsWith('.internal') ||
+      hostname === '[::1]' ||
+      hostname === '0.0.0.0'
+    ) {
+      throw new Error('不允许访问内部网络地址');
+    }
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+      throw new Error('仅支持 HTTP/HTTPS 协议');
+    }
+
     const response = await cloud.fetch({
       url,
       method: 'GET',
       responseType: 'arraybuffer',
       timeout: 15000
-    })
-    return Buffer.from(response.data).toString('base64')
+    });
+    return Buffer.from(response.data).toString('base64');
   } catch (error) {
-    throw new Error(`获取图片失败: ${error.message}`)
+    throw new Error(`获取图片失败: ${error.message}`);
   }
 }
 
@@ -604,16 +651,17 @@ async function fetchImageAsBase64(url) {
  */
 async function getCache(key) {
   try {
-    const db = cloud.database()
-    const result = await db.collection('ai_cache')
+    const db = cloud.database();
+    const result = await db
+      .collection('ai_cache')
       .where({
         key,
         expireAt: { $gt: Date.now() }
       })
-      .getOne()
-    return result.data?.value || null
+      .getOne();
+    return result.data?.value || null;
   } catch (e) {
-    return null
+    return null;
   }
 }
 
@@ -622,12 +670,10 @@ async function getCache(key) {
  */
 async function setCache(key, value, ttl) {
   try {
-    const db = cloud.database()
+    const db = cloud.database();
 
     // 删除旧缓存
-    await db.collection('ai_cache')
-      .where({ key })
-      .remove()
+    await db.collection('ai_cache').where({ key }).remove();
 
     // 写入新缓存
     await db.collection('ai_cache').add({
@@ -635,9 +681,9 @@ async function setCache(key, value, ttl) {
       value,
       expireAt: Date.now() + ttl * 1000,
       createdAt: Date.now()
-    })
+    });
   } catch (e) {
-    console.error('缓存写入失败:', e)
+    logger.error('缓存写入失败:', e);
   }
 }
 
@@ -646,14 +692,14 @@ async function setCache(key, value, ttl) {
  */
 async function logUsage(userId, requestId, data) {
   try {
-    const db = cloud.database()
+    const db = cloud.database();
     await db.collection('ai_usage_logs').add({
       userId: userId || 'anonymous',
       requestId,
       action: 'photo_search',
       ...data,
       createdAt: Date.now()
-    })
+    });
   } catch (e) {
     // 忽略日志错误
   }

@@ -13,6 +13,14 @@
 import { logger } from '@/utils/logger.js';
 import { todoStorePatch } from '@/utils/helpers/todo-store-patch.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
+import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+
+/** @private 未登录时统一提示 */
+function _requireAuth(action) {
+  if (isUserLoggedIn()) return true;
+  uni.showToast({ title: '请先登录后' + action, icon: 'none' });
+  return false;
+}
 
 export const todoMixin = {
   data() {
@@ -27,6 +35,7 @@ export const todoMixin = {
      * 打开待办编辑器（新建模式）
      */
     handleEditPlan() {
+      if (!_requireAuth('编辑计划')) return;
       vibrateLight();
       this.editingTodo = null;
       this.showTodoEditor = true;
@@ -37,6 +46,7 @@ export const todoMixin = {
      * @param {string|number} todoId - 待办事项ID
      */
     handleToggleTodo(todoId) {
+      if (!_requireAuth('操作待办')) return;
       logger.log('[TodoMixin] Toggle todo ID:', todoId);
 
       try {
@@ -47,7 +57,9 @@ export const todoMixin = {
             if (typeof uni.vibrateShort === 'function') {
               uni.vibrateShort();
             }
-          } catch (_) { /* 非关键操作 */ }
+          } catch (_) {
+            /* 非关键操作 */
+          }
         } else {
           logger.error('[TodoMixin] Todo not found:', todoId);
         }
@@ -65,6 +77,7 @@ export const todoMixin = {
      * @param {Object} todo - 待办数据
      */
     handleTodoSave(todo) {
+      if (!_requireAuth('保存待办')) return;
       logger.log('[TodoMixin] Todo save:', todo);
 
       if (this.editingTodo) {
@@ -82,6 +95,7 @@ export const todoMixin = {
      * @param {string|number} todoId - 待办事项ID
      */
     handleTodoDelete(todoId) {
+      if (!_requireAuth('删除待办')) return;
       logger.log('[TodoMixin] Todo delete:', todoId);
       todoStorePatch.deleteTodo(this.todoStore, todoId);
       this.showTodoEditor = false;

@@ -4,17 +4,13 @@
 
     <view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-back" @tap="goBack">
-          ←
-        </text>
-        <text class="nav-title">
-          创建学习计划
-        </text>
+        <text class="nav-back" @tap="goBack"> ← </text>
+        <text class="nav-title"> 创建学习计划 </text>
         <view class="nav-placeholder" />
       </view>
     </view>
 
-    <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
+    <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 骨架屏加载状态 -->
       <view v-if="isPageLoading" class="glass-card form-card">
         <view v-for="i in 7" :key="i" class="skeleton-form-item">
@@ -27,9 +23,7 @@
       <!-- 实际表单 -->
       <view v-else class="glass-card form-card">
         <view class="form-item">
-          <text class="form-label">
-            计划名称
-          </text>
+          <text class="form-label"> 计划名称 </text>
           <input
             v-model="plan.name"
             class="form-input"
@@ -40,9 +34,7 @@
         </view>
 
         <view class="form-item">
-          <text class="form-label">
-            学习目标
-          </text>
+          <text class="form-label"> 学习目标 </text>
           <textarea
             v-model="plan.goal"
             class="form-textarea"
@@ -54,37 +46,27 @@
         </view>
 
         <view class="form-item">
-          <text class="form-label">
-            开始日期
-          </text>
+          <text class="form-label"> 开始日期 </text>
           <view class="date-picker" @tap="showStartDatePicker">
             <text class="date-text">
               {{ plan.startDate }}
             </text>
-            <text class="date-icon">
-              📅
-            </text>
+            <text class="date-icon"> 📅 </text>
           </view>
         </view>
 
         <view class="form-item">
-          <text class="form-label">
-            结束日期
-          </text>
+          <text class="form-label"> 结束日期 </text>
           <view class="date-picker" @tap="showEndDatePicker">
             <text class="date-text">
               {{ plan.endDate }}
             </text>
-            <text class="date-icon">
-              📅
-            </text>
+            <text class="date-icon"> 📅 </text>
           </view>
         </view>
 
         <view class="form-item">
-          <text class="form-label">
-            每日学习时长
-          </text>
+          <text class="form-label"> 每日学习时长 </text>
           <view class="duration-selector">
             <text
               class="duration-btn"
@@ -118,72 +100,40 @@
         </view>
 
         <view class="form-item">
-          <text class="form-label">
-            提醒时间
-          </text>
+          <text class="form-label"> 提醒时间 </text>
           <view class="time-picker" @tap="showReminderTimePicker">
             <text class="time-text">
               {{ plan.reminderTime }}
             </text>
-            <text class="time-icon">
-              ⏰
-            </text>
+            <text class="time-icon"> ⏰ </text>
           </view>
         </view>
 
         <view class="form-item">
-          <text class="form-label">
-            计划分类
-          </text>
+          <text class="form-label"> 计划分类 </text>
           <view class="category-selector">
-            <text
-              class="category-btn"
-              :class="{ active: plan.category === '数学' }"
-              @tap="plan.category = '数学'"
-            >
+            <text class="category-btn" :class="{ active: plan.category === '数学' }" @tap="plan.category = '数学'">
               数学
             </text>
-            <text
-              class="category-btn"
-              :class="{ active: plan.category === '英语' }"
-              @tap="plan.category = '英语'"
-            >
+            <text class="category-btn" :class="{ active: plan.category === '英语' }" @tap="plan.category = '英语'">
               英语
             </text>
-            <text
-              class="category-btn"
-              :class="{ active: plan.category === '政治' }"
-              @tap="plan.category = '政治'"
-            >
+            <text class="category-btn" :class="{ active: plan.category === '政治' }" @tap="plan.category = '政治'">
               政治
             </text>
-            <text
-              class="category-btn"
-              :class="{ active: plan.category === '专业课' }"
-              @tap="plan.category = '专业课'"
-            >
+            <text class="category-btn" :class="{ active: plan.category === '专业课' }" @tap="plan.category = '专业课'">
               专业课
             </text>
-            <text
-              class="category-btn"
-              :class="{ active: plan.category === '综合' }"
-              @tap="plan.category = '综合'"
-            >
+            <text class="category-btn" :class="{ active: plan.category === '综合' }" @tap="plan.category = '综合'">
               综合
             </text>
           </view>
         </view>
 
         <view class="form-item">
-          <text class="form-label">
-            优先级
-          </text>
+          <text class="form-label"> 优先级 </text>
           <view class="priority-selector">
-            <text
-              class="priority-btn low"
-              :class="{ active: plan.priority === 'low' }"
-              @tap="plan.priority = 'low'"
-            >
+            <text class="priority-btn low" :class="{ active: plan.priority === 'low' }" @tap="plan.priority = 'low'">
               低
             </text>
             <text
@@ -193,11 +143,7 @@
             >
               中
             </text>
-            <text
-              class="priority-btn high"
-              :class="{ active: plan.priority === 'high' }"
-              @tap="plan.priority = 'high'"
-            >
+            <text class="priority-btn high" :class="{ active: plan.priority === 'high' }" @tap="plan.priority = 'high'">
               高
             </text>
           </view>
@@ -226,7 +172,7 @@ import { debounce } from '@/utils/throttle.js';
 const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
   if (!input) return '';
   let result = String(input)
-  // 过滤危险字符：< > " ' & 和控制字符
+    // 过滤危险字符：< > " ' & 和控制字符
     .replace(/[<>"'&\x00-\x1F\x7F]/g, '');
 
   // 可选：过滤 Emoji 和特殊字符，只保留中文、英文、数字和常用标点
@@ -239,6 +185,13 @@ const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
 
 export default {
   data() {
+    // formatDate 内联：data() 执行时 methods 尚未绑定到 this
+    const formatDateInline = (date) => {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
     return {
       statusBarHeight: 44,
       isDark: false,
@@ -249,8 +202,8 @@ export default {
       plan: {
         name: '',
         goal: '',
-        startDate: this.formatDate(new Date()),
-        endDate: this.formatDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
+        startDate: formatDateInline(new Date()),
+        endDate: formatDateInline(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
         dailyDuration: '2小时',
         reminderTime: '08:00',
         category: '综合',
@@ -399,326 +352,327 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-	min-height: 100vh;
-	background: var(--bg-secondary);
-	position: relative;
-	overflow: hidden;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  position: relative;
+  overflow: hidden;
 }
 
 .aurora-bg {
-	position: absolute;
-	top: 0;
-	width: 100%;
-	height: 500rpx;
-	background: linear-gradient(135deg, var(--success-light) 0%, var(--bg-success-light) 100%);
-	filter: blur(80px);
-	opacity: 0.6;
-	z-index: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 500rpx;
+  background: linear-gradient(135deg, var(--success-light) 0%, var(--bg-success-light) 100%);
+  filter: blur(80px);
+  opacity: 0.6;
+  z-index: 0;
 }
 
 .header-nav {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	z-index: 100;
-	background: var(--bg-glass);
-	backdrop-filter: blur(20px);
-	.nav-content {
-		height: 50px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0 30rpx;
-		.nav-back {
-			font-size: 36rpx;
-			color: var(--text-primary);
-			font-weight: bold;
-		}
-		.nav-title {
-			font-size: 34rpx;
-			font-weight: 600;
-			color: var(--text-primary);
-		}
-		.nav-placeholder {
-			width: 36rpx;
-		}
-	}
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  .nav-content {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30rpx;
+    .nav-back {
+      font-size: 36rpx;
+      color: var(--text-primary);
+      font-weight: bold;
+    }
+    .nav-title {
+      font-size: 34rpx;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .nav-placeholder {
+      width: 36rpx;
+    }
+  }
 }
 
 .main-scroll {
-	height: 100vh;
-	padding: 30rpx;
-	box-sizing: border-box;
-	position: relative;
-	z-index: 1;
+  height: 100vh;
+  padding: 30rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 /* 通用玻璃卡片 */
 .glass-card {
-	background: var(--bg-card-glass);
-	backdrop-filter: blur(20px);
-	border: 1px solid var(--border-glass);
-	border-radius: 40rpx;
-	padding: 30rpx;
-	margin-bottom: 30rpx;
-	box-shadow: var(--shadow-lg);
+  background: var(--bg-card-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-glass);
+  border-radius: 40rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: var(--shadow-lg);
 }
 
 .form-card {
-	padding: 40rpx;
+  padding: 40rpx;
 }
 
 .form-item {
-	margin-bottom: 40rpx;
+  margin-bottom: 40rpx;
 }
 
 .form-label {
-	display: block;
-	font-size: 28rpx;
-	font-weight: 600;
-	color: var(--text-primary);
-	margin-bottom: 16rpx;
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
 }
 
 .form-input,
 .form-textarea {
-	width: 100%;
-	padding: 24rpx;
-	border-radius: 16rpx;
-	background: var(--bg-card);
-	border: 2rpx solid var(--border-light);
-	font-size: 28rpx;
-	color: var(--text-primary);
-	box-sizing: border-box;
-	box-shadow: var(--shadow-sm);
-	transition: all 0.3s;
+  width: 100%;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: var(--bg-card);
+  border: 2rpx solid var(--border-light);
+  font-size: 28rpx;
+  color: var(--text-primary);
+  box-sizing: border-box;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s;
 }
 
 .form-input:focus,
 .form-textarea:focus {
-	border-color: var(--success-green);
-	box-shadow: var(--shadow-success);
+  border-color: var(--success-green);
+  box-shadow: var(--shadow-success);
 }
 
 .date-picker,
 .time-picker {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 24rpx;
-	border-radius: 16rpx;
-	background: var(--bg-card);
-	border: 2rpx solid var(--border-light);
-	cursor: pointer;
-	transition: all 0.2s;
-	box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: var(--bg-card);
+  border: 2rpx solid var(--border-light);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
 }
 
 .date-text,
 .time-text {
-	font-size: 28rpx;
-	color: var(--text-primary);
-	font-weight: 500;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .date-icon,
 .time-icon {
-	font-size: 28rpx;
+  font-size: 28rpx;
 }
 
 .duration-selector,
 .category-selector {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
 }
 
 .duration-btn,
 .category-btn {
-	padding: 16rpx 28rpx;
-	border-radius: 24rpx;
-	background: var(--bg-tag);
-	border: 1px solid var(--border-light);
-	font-size: 26rpx;
-	color: var(--text-secondary);
-	transition: all 0.2s;
-	cursor: pointer;
-	&.active {
-		background: var(--success-green);
-		color: var(--text-inverse);
-		font-weight: bold;
-		border-color: var(--success-green);
-	}
-	&:active {
-		transform: scale(0.95);
-	}
+  padding: 16rpx 28rpx;
+  border-radius: 24rpx;
+  background: var(--bg-tag);
+  border: 1px solid var(--border-light);
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  cursor: pointer;
+  &.active {
+    background: var(--success-green);
+    color: var(--text-inverse);
+    font-weight: bold;
+    border-color: var(--success-green);
+  }
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 .priority-selector {
-	display: flex;
-	gap: 16rpx;
+  display: flex;
+  gap: 16rpx;
 }
 
 .priority-btn {
-	flex: 1;
-	padding: 20rpx;
-	border-radius: 16rpx;
-	text-align: center;
-	font-size: 28rpx;
-	font-weight: bold;
-	transition: all 0.2s;
-	cursor: pointer;
-	&.low {
-		background: var(--bg-success-light);
-		color: var(--success-green);
-	}
-	&.medium {
-		background: var(--bg-warning-light);
-		color: var(--warning);
-	}
-	&.high {
-		background: var(--bg-danger-light);
-		color: var(--danger-red);
-	}
-	&.active {
-		color: var(--text-inverse);
-		&.low {
-			background: var(--success-green);
-		}
-		&.medium {
-			background: var(--warning);
-		}
-		&.high {
-			background: var(--danger-red);
-		}
-	}
-	&:active {
-		transform: scale(0.95);
-	}
+  flex: 1;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  transition: all 0.2s;
+  cursor: pointer;
+  &.low {
+    background: var(--bg-success-light);
+    color: var(--success-green);
+  }
+  &.medium {
+    background: var(--bg-warning-light);
+    color: var(--warning);
+  }
+  &.high {
+    background: var(--bg-danger-light);
+    color: var(--danger-red);
+  }
+  &.active {
+    color: var(--text-inverse);
+    &.low {
+      background: var(--success-green);
+    }
+    &.medium {
+      background: var(--warning);
+    }
+    &.high {
+      background: var(--danger-red);
+    }
+  }
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 .action-buttons {
-	margin-top: 60rpx;
-	margin-bottom: 100rpx;
+  margin-top: 60rpx;
+  margin-bottom: 100rpx;
 }
 
 .action-btn {
-	width: 100%;
-	padding: 24rpx;
-	border-radius: 50rpx;
-	font-size: 32rpx;
-	font-weight: bold;
-	border: none;
-	transition: all 0.2s;
-	&.primary {
-		background: var(--success-green);
-		color: var(--text-inverse);
-		box-shadow: var(--shadow-success);
-	}
-	&[disabled] {
-		opacity: 0.5;
-	}
-	&::after {
-		border: none;
-	}
-	&:active {
-		transform: scale(0.98);
-	}
+  width: 100%;
+  padding: 24rpx;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  transition: all 0.2s;
+  &.primary {
+    background: var(--success-green);
+    color: var(--text-inverse);
+    box-shadow: var(--shadow-success);
+  }
+  &[disabled] {
+    opacity: 0.5;
+  }
+  &::after {
+    border: none;
+  }
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 /* 深色模式适配 */
 .container.dark-mode {
-	background-color: var(--bg-color);
+  background-color: var(--bg-color);
 }
 
 .container.dark-mode .nav-title {
-	color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .container.dark-mode .nav-back {
-	color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .container.dark-mode .glass-card {
-	background: var(--card-bg);
-	border-color: var(--card-border);
+  background: var(--card-bg);
+  border-color: var(--card-border);
 }
 
 .container.dark-mode .form-label {
-	color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .container.dark-mode .form-input,
 .container.dark-mode .form-textarea {
-	background: var(--bg-input-dark);
-	border-color: var(--border-dark);
-	color: var(--text-primary);
+  background: var(--bg-input-dark);
+  border-color: var(--border-dark);
+  color: var(--text-primary);
 }
 
 .container.dark-mode .date-picker,
 .container.dark-mode .time-picker {
-	background: var(--bg-input-dark);
-	border-color: var(--border-dark);
+  background: var(--bg-input-dark);
+  border-color: var(--border-dark);
 }
 
 .container.dark-mode .date-text,
 .container.dark-mode .time-text {
-	color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .container.dark-mode .duration-btn,
 .container.dark-mode .category-btn {
-	background: var(--bg-input-dark);
-	border-color: var(--border-dark);
-	color: var(--text-primary);
+  background: var(--bg-input-dark);
+  border-color: var(--border-dark);
+  color: var(--text-primary);
 }
 
 .container.dark-mode .aurora-bg {
-	background: linear-gradient(
-		135deg, var(--bg-body) 0%,
-		var(--bg-dark-gradient-1) 50%,
-		var(--bg-glass) 100%
-	) !important;
+  background: linear-gradient(
+    135deg,
+    var(--bg-body) 0%,
+    var(--bg-dark-gradient-1) 50%,
+    var(--bg-glass) 100%
+  ) !important;
 }
 
 /* 骨架屏样式 */
 .skeleton-form-item {
-	margin-bottom: 40rpx;
+  margin-bottom: 40rpx;
 }
 
 .skeleton-label {
-	width: 120rpx;
-	height: 28rpx;
-	border-radius: 6rpx;
-	margin-bottom: 16rpx;
+  width: 120rpx;
+  height: 28rpx;
+  border-radius: 6rpx;
+  margin-bottom: 16rpx;
 }
 
 .skeleton-input {
-	width: 100%;
-	height: 80rpx;
-	border-radius: 16rpx;
+  width: 100%;
+  height: 80rpx;
+  border-radius: 16rpx;
 }
 
 .skeleton-btn {
-	width: 100%;
-	height: 88rpx;
-	border-radius: 50rpx;
-	margin-top: 60rpx;
+  width: 100%;
+  height: 88rpx;
+  border-radius: 50rpx;
+  margin-top: 60rpx;
 }
 
 .skeleton-animate {
-	background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
-	background-size: 200% 100%;
-	animation: skeleton-loading 1.5s infinite;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
 }
 
 @keyframes skeleton-loading {
-	0% {
-		background-position: 200% 0;
-	}
-	100% {
-		background-position: -200% 0;
-	}
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 </style>

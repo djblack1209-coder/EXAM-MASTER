@@ -5,31 +5,23 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px', height: '44px' }">
         <view class="back-area" hover-class="item-hover" @tap="handleExit">
-          <text class="back-icon">
-            ←
-          </text>
-          <text class="progress-text">
-            {{ currentIndex + 1 }} / {{ questions.length }}
-          </text>
+          <text class="back-icon"> ← </text>
+          <text class="progress-text"> {{ currentIndex + 1 }} / {{ questions.length }} </text>
         </view>
         <!-- 单题计时器显示 -->
         <view class="timer-group">
           <view
             v-if="questionTimerEnabled && !hasAnswered"
             class="question-timer-box"
-            :class="{ 'warning': showTimeWarning, 'danger': questionTimeRemaining <= 10 }"
+            :class="{ warning: showTimeWarning, danger: questionTimeRemaining <= 10 }"
           >
-            <text class="timer-icon">
-              ⏱
-            </text>
+            <text class="timer-icon"> ⏱ </text>
             <text class="question-time">
               {{ formatTime(questionTimeRemaining) }}
             </text>
           </view>
           <view class="timer-box">
-            <text class="total-label">
-              总
-            </text>
+            <text class="total-label"> 总 </text>
             <text>{{ formatTime(seconds) }}</text>
           </view>
         </view>
@@ -58,9 +50,7 @@
                 hover-class="item-hover"
                 @tap.stop="handleOpenNote"
               >
-                <text class="note-icon">
-                  📝
-                </text>
+                <text class="note-icon"> 📝 </text>
                 <text v-if="currentQuestionNotes.length > 0" class="note-count">
                   {{ currentQuestionNotes.length }}
                 </text>
@@ -87,12 +77,16 @@
           <view
             v-for="(opt, idx) in currentQuestion.options"
             :key="idx"
-            :class="['glass-card', 'option-item', {
-              'selected': userChoice === idx,
-              'correct': hasAnswered && isCorrectOption(idx),
-              'wrong': hasAnswered && userChoice === idx && !isCorrectOption(idx),
-              'disabled': isAnalyzing || (hasAnswered && userChoice !== idx)
-            }]"
+            :class="[
+              'glass-card',
+              'option-item',
+              {
+                selected: userChoice === idx,
+                correct: hasAnswered && isCorrectOption(idx),
+                wrong: hasAnswered && userChoice === idx && !isCorrectOption(idx),
+                disabled: isAnalyzing || (hasAnswered && userChoice !== idx)
+              }
+            ]"
             hover-class="option-hover"
             @tap="selectOption(idx)"
           >
@@ -103,34 +97,23 @@
               {{ opt }}
             </text>
             <view v-if="hasAnswered" class="select-indicator">
-              <text v-if="isCorrectOption(idx)">
-                ✓
-              </text>
-              <text v-else-if="userChoice === idx && !isCorrectOption(idx)">
-                ✗
-              </text>
-              <text v-else-if="userChoice === idx">
-                ○
-              </text>
+              <text v-if="isCorrectOption(idx)"> ✓ </text>
+              <text v-else-if="userChoice === idx && !isCorrectOption(idx)"> ✗ </text>
+              <text v-else-if="userChoice === idx"> ○ </text>
             </view>
           </view>
         </view>
       </view>
 
       <!-- AI Loading 状态 -->
-      <BaseLoading
-        v-if="isAnalyzing"
-        :text="'AI 正在深度解析逻辑...'"
-      />
+      <BaseLoading v-if="isAnalyzing" :text="'AI 正在深度解析逻辑...'" />
 
       <!-- AI 反馈图层动画 -->
       <view v-if="isAnalyzing" class="ai-feedback-layer">
         <view class="scan-line" />
         <view class="thinking-box">
           <view class="pulse-ring" />
-          <text class="ai-text">
-            AI 正在深度解析逻辑...
-          </text>
+          <text class="ai-text"> AI 正在深度解析逻辑... </text>
         </view>
       </view>
 
@@ -150,15 +133,11 @@
 
         <scroll-view v-if="resultStatus === 'wrong'" scroll-y class="ai-analysis-scroll">
           <view class="analysis-tag">
-            <text class="sparkle-icon">
-              ✨
-            </text>
+            <text class="sparkle-icon"> ✨ </text>
             <text>AI 深度诊断</text>
           </view>
           <view class="answer-display">
-            <text class="answer-label">
-              正确答案：
-            </text>
+            <text class="answer-label"> 正确答案： </text>
             <text class="answer-value">
               {{ currentQuestion ? currentQuestion.answer : 'A' }}
             </text>
@@ -169,9 +148,7 @@
         </scroll-view>
 
         <view v-else class="ai-analysis-brief">
-          <text class="label">
-            AI 简评：
-          </text>
+          <text class="label"> AI 简评： </text>
           <text>{{ aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析') }}</text>
         </view>
 
@@ -182,7 +159,7 @@
           :class="{ 'btn-disabled': isNavigating }"
           @tap="toNext"
         >
-          {{ isNavigating ? '加载中...' : (resultStatus === 'correct' ? '进入下一题' : '继续挑战') }}
+          {{ isNavigating ? '加载中...' : resultStatus === 'correct' ? '进入下一题' : '继续挑战' }}
         </button>
       </view>
 
@@ -194,9 +171,7 @@
           <text class="combo-count">
             {{ comboDisplay.count }}
           </text>
-          <text class="combo-label">
-            连击!
-          </text>
+          <text class="combo-label"> 连击! </text>
           <text v-if="comboDisplay.message" class="combo-message">
             {{ comboDisplay.message }}
           </text>
@@ -235,7 +210,11 @@
       :visible="showExitModal"
       type="warning"
       title="确认退出？"
-      :content="answeredQuestions.length > 0 ? `已完成 ${answeredQuestions.length} 道题，进度将自动保存，下次可继续答题。` : '确定要退出吗？'"
+      :content="
+        answeredQuestions.length > 0
+          ? `已完成 ${answeredQuestions.length} 道题，进度将自动保存，下次可继续答题。`
+          : '确定要退出吗？'
+      "
       confirm-text="确认退出"
       cancel-text="继续答题"
       :show-cancel="true"
@@ -260,12 +239,8 @@
     <view v-if="showNoteModal" class="note-modal-overlay" @tap="showNoteModal = false">
       <view class="note-modal" @tap.stop>
         <view class="note-modal-header">
-          <text class="note-modal-title">
-            添加笔记
-          </text>
-          <view class="note-modal-close" hover-class="item-hover" @tap="showNoteModal = false">
-            ✕
-          </view>
+          <text class="note-modal-title"> 添加笔记 </text>
+          <view class="note-modal-close" hover-class="item-hover" @tap="showNoteModal = false"> ✕ </view>
         </view>
         <textarea
           v-model="noteContent"
@@ -278,7 +253,7 @@
             v-for="tag in availableNoteTags"
             :key="tag.id"
             class="note-tag"
-            :class="{ 'selected': selectedNoteTags.includes(tag.id) }"
+            :class="{ selected: selectedNoteTags.includes(tag.id) }"
             :style="{ borderColor: tag.color }"
             hover-class="item-hover"
             @tap="toggleNoteTag(tag.id)"
@@ -287,12 +262,8 @@
           </view>
         </view>
         <view class="note-modal-footer">
-          <button class="note-cancel-btn" hover-class="item-hover" @tap="showNoteModal = false">
-            取消
-          </button>
-          <button class="note-save-btn" hover-class="item-hover" @tap="handleSaveNote">
-            保存
-          </button>
+          <button class="note-cancel-btn" hover-class="item-hover" @tap="showNoteModal = false">取消</button>
+          <button class="note-save-btn" hover-class="item-hover" @tap="handleSaveNote">保存</button>
         </view>
       </view>
     </view>
@@ -315,10 +286,7 @@ import {
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 // ✅ 检查点 5.3: 自适应学习引擎（懒加载：仅在 isAdaptiveMode 时动态导入）
 // ✅ 导入题目收藏模块
-import {
-  toggleFavorite,
-  isFavorited
-} from './utils/question-favorite.js';
+import { toggleFavorite, isFavorited } from './utils/question-favorite.js';
 // ✅ 导入滑动手势模块
 import {
   initSwipeGesture,
@@ -328,28 +296,14 @@ import {
   handleTouchEnd
 } from './swipe-gesture.js';
 // ✅ 导入答题动画模块
-import {
-  playCorrectAnimation,
-  playWrongAnimation,
-  getComboDisplay,
-  resetAnimation
-} from './quiz-animation.js';
+import { playCorrectAnimation, playWrongAnimation, getComboDisplay, resetAnimation } from './quiz-animation.js';
 // ✅ 导入单题计时器模块
-import {
-  startTimer as startQuestionTimer,
-  stopTimer as stopQuestionTimer
-} from './question-timer.js';
+import { startTimer as startQuestionTimer, stopTimer as stopQuestionTimer } from './question-timer.js';
 // ✅ 智能组题模块（懒加载：仅在 smartPickerEnabled 时动态导入）
 // ✅ 导入离线缓存模块
-import {
-  checkOfflineAvailability
-} from './offline-cache.js';
+import { checkOfflineAvailability } from './offline-cache.js';
 // ✅ 导入题目笔记模块
-import {
-  addQuestionNote,
-  getNotesByQuestion,
-  getNoteTags
-} from './question-note.js';
+import { addQuestionNote, getNotesByQuestion, getNoteTags } from './question-note.js';
 // ✅ P1: 提取的模块
 import { saveToMistakes as saveMistake, updateMistakeWithAI as updateMistakeAI } from './quiz-mistake-handler.js';
 import { fetchAIDeepAnalysis as fetchAIAnalysis } from './quiz-ai-analysis.js';
@@ -563,7 +517,7 @@ export default {
     // ✅ P0-3: 保存当前进度
     saveCurrentProgress() {
       // 只有在有题目且已开始答题时才保存
-      if (this.questions.length === 0 || this.currentIndex === 0 && !this.hasAnswered) {
+      if (this.questions.length === 0 || (this.currentIndex === 0 && !this.hasAnswered)) {
         return;
       }
 
@@ -624,21 +578,21 @@ export default {
       }
 
       // 验证并标准化题目数据
-      let questions = bank.map((q, index) => ({
-        id: q.id || `q_${index}`,
-        question: q.question || q.title || `题目 ${index + 1}`,
-        options: Array.isArray(q.options) && q.options.length >= 4 ? q.options : [
-          'A. 选项A',
-          'B. 选项B',
-          'C. 选项C',
-          'D. 选项D'
-        ],
-        answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-        desc: q.desc || q.description || q.analysis || '暂无解析',
-        category: q.category || '未分类',
-        type: q.type || '单选',
-        difficulty: q.difficulty || 2
-      })).filter((q) => q.question && q.question !== `题目 ${bank.indexOf(q) + 1}`); // 过滤无效题目
+      let questions = bank
+        .map((q, index) => ({
+          id: q.id || `q_${index}`,
+          question: q.question || q.title || `题目 ${index + 1}`,
+          options:
+            Array.isArray(q.options) && q.options.length >= 4
+              ? q.options
+              : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
+          answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
+          desc: q.desc || q.description || q.analysis || '暂无解析',
+          category: q.category || '未分类',
+          type: q.type || '单选',
+          difficulty: q.difficulty || 2
+        }))
+        .filter((q) => q.question && q.question !== `题目 ${bank.indexOf(q) + 1}`); // 过滤无效题目
 
       // ✅ 使用智能组题算法优化题目序列（懒加载）
       if (this.smartPickerEnabled && questions.length > 0) {
@@ -724,7 +678,9 @@ export default {
           if (typeof uni.vibrateShort === 'function') {
             uni.vibrateShort();
           }
-        } catch (e) { logger.warn('Vibrate feedback failed on correct answer', e); }
+        } catch (e) {
+          logger.warn('Vibrate feedback failed on correct answer', e);
+        }
 
         // ✅ 延迟解锁防重复点击（300ms后允许再次点击）
         setTimeout(() => {
@@ -771,7 +727,9 @@ export default {
           if (typeof uni.vibrateShort === 'function') {
             uni.vibrateShort();
           }
-        } catch (e) { logger.warn('Vibrate feedback failed after AI analysis', e); }
+        } catch (e) {
+          logger.warn('Vibrate feedback failed after AI analysis', e);
+        }
       }
     },
     // ✅ P1: 委托给 quiz-mistake-handler.js
@@ -843,7 +801,9 @@ export default {
           if (typeof uni.vibrateShort === 'function') {
             uni.vibrateShort();
           }
-        } catch (e) { logger.warn('Vibrate feedback failed on next question', e); }
+        } catch (e) {
+          logger.warn('Vibrate feedback failed on next question', e);
+        }
 
         // ✅ 延迟解锁防重复点击（300ms后允许再次点击）
         setTimeout(() => {
@@ -909,10 +869,9 @@ export default {
 
     closeResult() {
       // 关闭结果弹窗，但不进入下一题
+      // ⚠️ 不重置 hasAnswered 和 userChoice，防止用户重复作答同一题
+      // 重复作答会导致 answeredQuestions 重复记录、analytics 双重计数、错题重复保存
       this.showResult = false;
-      this.hasAnswered = false;
-      this.userChoice = null;
-      this.aiComment = '';
       this.isAnalyzing = false;
     },
 
@@ -1034,7 +993,9 @@ export default {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort({ type: 'light' });
         }
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
 
       logger.log('[do-quiz] ✅ 收藏状态切换:', result);
     },
@@ -1042,9 +1003,7 @@ export default {
     // ✅ 更新当前题目的收藏状态
     updateFavoriteStatus() {
       if (this.currentQuestion) {
-        this.isCurrentFavorited = isFavorited(
-          this.currentQuestion.id || this.currentQuestion.question
-        );
+        this.isCurrentFavorited = isFavorited(this.currentQuestion.id || this.currentQuestion.question);
       }
     },
 
@@ -1185,9 +1144,7 @@ export default {
       if (!this.currentQuestion) return;
 
       // 加载当前题目的笔记
-      this.currentQuestionNotes = getNotesByQuestion(
-        this.currentQuestion.id || this.currentQuestion.question
-      );
+      this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
 
       // 重置输入状态
       this.noteContent = '';
@@ -1230,9 +1187,7 @@ export default {
         });
 
         // 更新当前题目的笔记列表
-        this.currentQuestionNotes = getNotesByQuestion(
-          this.currentQuestion.id || this.currentQuestion.question
-        );
+        this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
 
         this.showNoteModal = false;
         this.noteContent = '';
@@ -1248,9 +1203,7 @@ export default {
     // ✅ 更新当前题目的笔记
     updateQuestionNotes() {
       if (this.currentQuestion) {
-        this.currentQuestionNotes = getNotesByQuestion(
-          this.currentQuestion.id || this.currentQuestion.question
-        );
+        this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
       }
     }
   }
@@ -1260,715 +1213,781 @@ export default {
 <style lang="scss" scoped>
 /* 容器样式 */
 .container {
-	min-height: 100vh;
-	background: var(--bg-secondary, #F5F5F7);
-	position: relative;
-	overflow: hidden;
+  min-height: 100vh;
+  background: var(--bg-secondary, #f5f5f7);
+  position: relative;
+  overflow: hidden;
 }
 
 /* 极光背景 */
 .aurora-bg {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 600rpx;
-	background: var(--gradient-aurora);
-	filter: blur(60px);
-	z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 600rpx;
+  background: var(--gradient-aurora);
+  filter: blur(60px);
+  z-index: 0;
 }
 
 /* 导航栏 */
 .nav-header {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	z-index: 100;
-	background: var(--bg-glass);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 .nav-content {
-	height: 50px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 30rpx;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
 }
 .back-area {
-	display: flex;
-	align-items: center;
-	gap: 10rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
 }
 .back-icon {
-	font-size: 36rpx;
-	color: var(--text-primary);
-	font-weight: bold;
+  font-size: 36rpx;
+  color: var(--text-primary);
+  font-weight: bold;
 }
 .progress-text {
-	font-size: 28rpx;
-	font-weight: bold;
-	color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--text-primary);
 }
 .timer-box {
-	font-size: 24rpx;
-	color: var(--text-sub);
-	background: var(--bg-secondary);
-	padding: 4rpx 20rpx;
-	border-radius: 20rpx;
-	display: flex;
-	align-items: center;
-	gap: 8rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  background: var(--bg-secondary);
+  padding: 4rpx 20rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
 }
 .timer-icon {
-	font-size: 24rpx;
+  font-size: 24rpx;
 }
 
 /* 计时器组 */
 .timer-group {
-	display: flex;
-	align-items: center;
-	gap: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
 }
 
 .total-label {
-	font-size: 20rpx;
-	color: var(--text-sub);
-	opacity: 0.7;
+  font-size: 20rpx;
+  color: var(--text-sub);
+  opacity: 0.7;
 }
 
 /* 单题计时器 */
 .question-timer-box {
-	font-size: 26rpx;
-	font-weight: bold;
-	color: var(--text-primary);
-	background: var(--primary);
-	padding: 6rpx 24rpx;
-	border-radius: 24rpx;
-	display: flex;
-	align-items: center;
-	gap: 8rpx;
-	transition: all 0.3s ease;
+  font-size: 26rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  background: var(--primary);
+  padding: 6rpx 24rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  transition: all 0.3s ease;
 }
 
 .question-timer-box .timer-icon {
-	font-size: 26rpx;
+  font-size: 26rpx;
 }
 
 .question-timer-box .question-time {
-	min-width: 80rpx;
-	text-align: center;
+  min-width: 80rpx;
+  text-align: center;
 }
 
 /* 时间警告状态 */
 .question-timer-box.warning {
-	background: linear-gradient(135deg, var(--ds-color-warning, #FF9800), #F57C00);
-	animation: timerPulse 1s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--ds-color-warning, #ff9800), #f57c00);
+  animation: timerPulse 1s ease-in-out infinite;
 }
 
 /* 时间危险状态 */
 .question-timer-box.danger {
-	background: linear-gradient(135deg, var(--ds-color-error, #F44336), #D32F2F);
-	animation: timerShake 0.5s ease-in-out infinite;
+  background: linear-gradient(135deg, var(--ds-color-error, #f44336), #d32f2f);
+  animation: timerShake 0.5s ease-in-out infinite;
 }
 
 @keyframes timerPulse {
-	0%, 100% { transform: scale(1); }
-	50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 @keyframes timerShake {
-	0%, 100% { transform: translateX(0); }
-	25% { transform: translateX(-4rpx); }
-	75% { transform: translateX(4rpx); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4rpx);
+  }
+  75% {
+    transform: translateX(4rpx);
+  }
 }
 
 /* 滚动区域 */
 .quiz-scroll {
-	height: 100vh;
-	padding: 0 30rpx;
-	box-sizing: border-box;
-	position: relative;
-	z-index: 1;
+  height: 100vh;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 /* 玻璃卡片通用样式 */
 .glass-card {
-	background: var(--bg-glass);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	border: 1px solid var(--border);
-	border-radius: 40rpx;
-	padding: 40rpx;
-	margin-bottom: 30rpx;
-	box-shadow: var(--shadow-md);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 40rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  box-shadow: var(--shadow-md);
 }
 
 /* 题目卡片 */
 .question-card .q-tag {
-	display: inline-block;
-	background: var(--primary);
-	color: var(--text-primary-foreground);
-	font-size: 20rpx;
-	padding: 4rpx 16rpx;
-	border-radius: 10rpx;
-	margin-bottom: 20rpx;
+  display: inline-block;
+  background: var(--primary);
+  color: var(--text-primary-foreground);
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
 }
 .question-card .q-content {
-	font-size: 34rpx;
-	font-weight: bold;
-	line-height: 1.6;
-	color: var(--text-primary);
-	display: block;
+  font-size: 34rpx;
+  font-weight: bold;
+  line-height: 1.6;
+  color: var(--text-primary);
+  display: block;
 }
 
 /* 选项列表 */
 .options-list {
-	margin-top: 20rpx;
+  margin-top: 20rpx;
 }
 .option-item {
-	display: flex;
-	align-items: center;
-	padding: 30rpx 40rpx;
-	transition: all 0.2s;
-	position: relative;
-	cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 30rpx 40rpx;
+  transition: all 0.2s;
+  position: relative;
+  cursor: pointer;
 }
 .option-item.selected {
-	border-color: var(--primary);
-	background: var(--success-light);
+  border-color: var(--primary);
+  background: var(--success-light);
 }
 .option-item.correct {
-	border-color: var(--primary);
-	background: var(--success-light);
+  border-color: var(--primary);
+  background: var(--success-light);
 }
 .option-item.wrong {
-	border-color: var(--danger);
-	background: var(--danger-light);
+  border-color: var(--danger);
+  background: var(--danger-light);
 }
 .option-item.disabled {
-	opacity: 0.5;
-	pointer-events: none;
+  opacity: 0.5;
+  pointer-events: none;
 }
 .opt-index {
-	width: 50rpx;
-	font-weight: 900;
-	color: var(--primary);
-	font-size: 32rpx;
-	flex-shrink: 0;
+  width: 50rpx;
+  font-weight: 900;
+  color: var(--primary);
+  font-size: 32rpx;
+  flex-shrink: 0;
 }
 .opt-text {
-	flex: 1;
-	font-size: 30rpx;
-	color: var(--text-sub);
-	line-height: 1.5;
-	word-break: break-all;
+  flex: 1;
+  font-size: 30rpx;
+  color: var(--text-sub);
+  line-height: 1.5;
+  word-break: break-all;
 }
 .select-indicator {
-	width: 40rpx;
-	height: 40rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 32rpx;
-	color: var(--primary);
-	flex-shrink: 0;
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
 /* AI 反馈图层动画 */
 .ai-feedback-layer {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 200;
-	background: var(--overlay);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  background: var(--overlay);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 .scan-line {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 6rpx;
-	background: linear-gradient(90deg, transparent, var(--primary), transparent);
-	animation: scanMove 2s infinite;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6rpx;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  animation: scanMove 2s infinite;
 }
 @keyframes scanMove {
-	0% { top: 0; opacity: 0; }
-	50% { opacity: 1; }
-	100% { top: 100%; opacity: 0; }
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
 .thinking-box {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30rpx;
 }
 .pulse-ring {
-	width: 140rpx;
-	height: 140rpx;
-	border: 4rpx solid var(--primary);
-	border-radius: 50%;
-	animation: ringPulse 1.5s infinite;
+  width: 140rpx;
+  height: 140rpx;
+  border: 4rpx solid var(--primary);
+  border-radius: 50%;
+  animation: ringPulse 1.5s infinite;
 }
 @keyframes ringPulse {
-	0% { transform: scale(0.8); opacity: 0.8; }
-	100% { transform: scale(1.6); opacity: 0; }
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
 }
 .ai-text {
-	margin-top: 20rpx;
-	font-weight: bold;
-	color: var(--primary);
-	font-size: 28rpx;
+  margin-top: 20rpx;
+  font-weight: bold;
+  color: var(--primary);
+  font-size: 28rpx;
 }
 
 /* 结果弹窗 */
 .result-pop {
-	position: fixed;
-	/* 适配 iPhone 14/15 Pro 底部安全区域：使用 env() 动态计算 bottom 值 */
-	bottom: calc(40rpx + constant(safe-area-inset-bottom));
-	bottom: calc(40rpx + env(safe-area-inset-bottom));
-	left: 30rpx;
-	right: 30rpx;
-	z-index: 300;
-	padding: 40rpx;
-	border-radius: 40rpx;
-	backdrop-filter: blur(30px);
-	-webkit-backdrop-filter: blur(30px);
-	box-shadow: var(--shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.12));
-	animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  position: fixed;
+  /* 适配 iPhone 14/15 Pro 底部安全区域：使用 env() 动态计算 bottom 值 */
+  bottom: calc(40rpx + constant(safe-area-inset-bottom));
+  bottom: calc(40rpx + env(safe-area-inset-bottom));
+  left: 30rpx;
+  right: 30rpx;
+  z-index: 300;
+  padding: 40rpx;
+  border-radius: 40rpx;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow: var(--shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.12));
+  animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 @keyframes slideUp {
-	from { transform: translateY(100%); opacity: 0; }
-	to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .result-pop.correct {
-	background: var(--success);
-	color: var(--text-primary-foreground);
+  background: var(--success);
+  color: var(--text-primary-foreground);
 }
 .result-pop.wrong {
-	background: var(--danger);
-	color: var(--text-primary-foreground);
+  background: var(--danger);
+  color: var(--text-primary-foreground);
 }
 
 .result-header {
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	gap: 20rpx;
-	margin-bottom: 20rpx;
-	position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+  position: relative;
 }
 
 .result-icon-btn {
-	width: 80rpx;
-	height: 80rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 50%;
-	background: var(--overlay);
-	backdrop-filter: blur(10px);
-	cursor: pointer;
-	transition: all 0.3s;
-	flex-shrink: 0;
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--overlay);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-shrink: 0;
 }
 
 .result-icon-btn:active {
-	background: var(--bg-secondary);
-	transform: scale(0.95);
+  background: var(--bg-secondary);
+  transform: scale(0.95);
 }
 
 .result-icon {
-	font-size: 60rpx;
-	font-weight: bold;
-	color: var(--text-primary-foreground);
+  font-size: 60rpx;
+  font-weight: bold;
+  color: var(--text-primary-foreground);
 }
 
 .status-title {
-	font-size: 36rpx;
-	font-weight: 800;
-	flex: 1;
-	text-align: center;
+  font-size: 36rpx;
+  font-weight: 800;
+  flex: 1;
+  text-align: center;
 }
 
 /* AI 深度诊断区域 */
 .ai-analysis-scroll {
-	max-height: 400rpx;
-	margin-bottom: 30rpx;
-	padding: 20rpx 0;
+  max-height: 400rpx;
+  margin-bottom: 30rpx;
+  padding: 20rpx 0;
 }
 .analysis-tag {
-	display: flex;
-	align-items: center;
-	gap: 10rpx;
-	margin-bottom: 20rpx;
-	padding: 10rpx 20rpx;
-	background: var(--overlay);
-	border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+  padding: 10rpx 20rpx;
+  background: var(--overlay);
+  border-radius: 20rpx;
 }
 .sparkle-icon {
-	font-size: 28rpx;
+  font-size: 28rpx;
 }
 .analysis-tag text {
-	font-size: 24rpx;
-	font-weight: 600;
-	opacity: 0.9;
+  font-size: 24rpx;
+  font-weight: 600;
+  opacity: 0.9;
 }
 .analysis-body {
-	font-size: 28rpx;
-	line-height: 1.8;
-	white-space: pre-wrap;
-	word-wrap: break-word;
-	display: block;
-	padding: 0 20rpx;
+  font-size: 28rpx;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  display: block;
+  padding: 0 20rpx;
 }
 .answer-display {
-	display: flex;
-	align-items: center;
-	gap: 10rpx;
-	margin-bottom: 20rpx;
-	padding: 0 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+  padding: 0 20rpx;
 }
 .answer-label {
-	font-size: 24rpx;
-	color: var(--text-sub);
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 .answer-value {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: var(--success-light);
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--success-light);
 }
 
 .ai-analysis-brief {
-	font-size: 26rpx;
-	margin-bottom: 30rpx;
-	line-height: 1.5;
+  font-size: 26rpx;
+  margin-bottom: 30rpx;
+  line-height: 1.5;
 }
 .ai-analysis-brief .label {
-	font-weight: bold;
-	margin-right: 10rpx;
+  font-weight: bold;
+  margin-right: 10rpx;
 }
 .next-btn {
-	width: 100%;
-	background: var(--bg-glass);
-	color: var(--text-primary);
-	font-weight: bold;
-	border-radius: 20rpx;
-	border: none;
-	padding: 20rpx 0;
-	font-size: 28rpx;
-	margin-top: 20rpx;
+  width: 100%;
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-weight: bold;
+  border-radius: 20rpx;
+  border: none;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  margin-top: 20rpx;
 }
 
 .footer-placeholder {
-	height: 300rpx;
-	/* 适配 iPhone 底部安全区域 */
-	padding-bottom: constant(safe-area-inset-bottom);
-	padding-bottom: env(safe-area-inset-bottom);
+  height: 300rpx;
+  /* 适配 iPhone 底部安全区域 */
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* ==================== 新增样式：收藏按钮 ==================== */
 .q-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
 }
 
 .q-actions {
-	display: flex;
-	align-items: center;
-	gap: 16rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
 }
 
 .favorite-btn {
-	width: 60rpx;
-	height: 60rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 50%;
-	background: var(--bg-secondary);
-	transition: all 0.3s ease;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  transition: all 0.3s ease;
 }
 
 .favorite-btn:active {
-	transform: scale(0.9);
+  transform: scale(0.9);
 }
 
 .favorite-btn.is-favorited {
-	background: linear-gradient(135deg, #FFD700, #FFA500);
+  background: linear-gradient(135deg, #ffd700, #ffa500);
 }
 
 .favorite-btn.is-favorited .favorite-icon {
-	color: #fff;
+  color: #fff;
 }
 
 .favorite-icon {
-	font-size: 32rpx;
-	color: var(--text-sub);
-	transition: all 0.3s ease;
+  font-size: 32rpx;
+  color: var(--text-sub);
+  transition: all 0.3s ease;
 }
 
 /* ==================== 新增样式：连击特效 ==================== */
 .combo-effect {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	z-index: 500;
-	pointer-events: none;
-	animation: comboPopIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 500;
+  pointer-events: none;
+  animation: comboPopIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .combo-content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	text-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
 }
 
 .combo-count {
-	font-size: 120rpx;
-	font-weight: 900;
-	line-height: 1;
+  font-size: 120rpx;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .combo-label {
-	font-size: 36rpx;
-	font-weight: bold;
-	margin-top: -10rpx;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-top: -10rpx;
 }
 
 .combo-message {
-	font-size: 28rpx;
-	font-weight: 600;
-	margin-top: 10rpx;
-	padding: 8rpx 24rpx;
-	background: rgba(255, 255, 255, 0.2);
-	border-radius: 20rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-top: 10rpx;
+  padding: 8rpx 24rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
 }
 
 /* ==================== 新增样式：答题动画 ==================== */
 @keyframes correctPulse {
-	0% { transform: scale(1); opacity: 1; }
-	30% { transform: scale(1.05); }
-	60% { transform: scale(0.98); }
-	100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.05);
+  }
+  60% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes wrongShake {
-	0%, 100% { transform: translateX(0); }
-	10%, 30%, 50%, 70%, 90% { transform: translateX(-8rpx); }
-	20%, 40%, 60%, 80% { transform: translateX(8rpx); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-8rpx);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(8rpx);
+  }
 }
 
 @keyframes comboPopIn {
-	0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); opacity: 0; }
-	50% { transform: translate(-50%, -50%) scale(1.3) rotate(10deg); }
-	70% { transform: translate(-50%, -50%) scale(0.9) rotate(-5deg); }
-	100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.3) rotate(10deg);
+  }
+  70% {
+    transform: translate(-50%, -50%) scale(0.9) rotate(-5deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
 
 .quiz-correct-animation {
-	animation: correctPulse 0.6s ease-out;
+  animation: correctPulse 0.6s ease-out;
 }
 
 .quiz-wrong-animation {
-	animation: wrongShake 0.5s ease-out;
+  animation: wrongShake 0.5s ease-out;
 }
 
 /* ==================== 新增样式：滑动提示 ==================== */
 .swipe-hint {
-	position: absolute;
-	bottom: 200rpx;
-	left: 50%;
-	transform: translateX(-50%);
-	font-size: 24rpx;
-	color: var(--text-sub);
-	opacity: 0.6;
-	display: flex;
-	align-items: center;
-	gap: 10rpx;
+  position: absolute;
+  bottom: 200rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24rpx;
+  color: var(--text-sub);
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
 }
 
 .swipe-hint-icon {
-	font-size: 28rpx;
+  font-size: 28rpx;
 }
 
 /* ==================== 新增样式：笔记按钮 ==================== */
 .note-btn {
-	width: 60rpx;
-	height: 60rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 50%;
-	background: var(--bg-secondary);
-	transition: all 0.3s ease;
-	position: relative;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .note-btn:active {
-	transform: scale(0.9);
+  transform: scale(0.9);
 }
 
 .note-btn.has-notes {
-	background: linear-gradient(135deg, #2196F3, #03A9F4);
+  background: linear-gradient(135deg, #2196f3, #03a9f4);
 }
 
 .note-btn.has-notes .note-icon {
-	filter: brightness(1.2);
+  filter: brightness(1.2);
 }
 
 .note-icon {
-	font-size: 28rpx;
+  font-size: 28rpx;
 }
 
 .note-count {
-	position: absolute;
-	top: -4rpx;
-	right: -4rpx;
-	min-width: 28rpx;
-	height: 28rpx;
-	background: var(--danger);
-	color: #fff;
-	font-size: 20rpx;
-	font-weight: bold;
-	border-radius: 14rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 0 6rpx;
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  min-width: 28rpx;
+  height: 28rpx;
+  background: var(--danger);
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: bold;
+  border-radius: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6rpx;
 }
 
 /* ==================== 新增样式：笔记弹窗 ==================== */
 .note-modal-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0, 0, 0, 0.5);
-	z-index: 1000;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 40rpx;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
 }
 
 .note-modal {
-	width: 100%;
-	max-width: 600rpx;
-	background: var(--bg-card);
-	border-radius: 32rpx;
-	padding: 40rpx;
-	box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 600rpx;
+  background: var(--bg-card);
+  border-radius: 32rpx;
+  padding: 40rpx;
+  box-shadow: var(--shadow-xl);
 }
 
 .note-modal-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30rpx;
 }
 
 .note-modal-title {
-	font-size: 36rpx;
-	font-weight: bold;
-	color: var(--text-primary);
+  font-size: 36rpx;
+  font-weight: bold;
+  color: var(--text-primary);
 }
 
 .note-modal-close {
-	width: 48rpx;
-	height: 48rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 32rpx;
-	color: var(--text-sub);
-	cursor: pointer;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: var(--text-sub);
+  cursor: pointer;
 }
 
 .note-textarea {
-	width: 100%;
-	height: 200rpx;
-	background: var(--bg-secondary);
-	border: 1px solid var(--border);
-	border-radius: 16rpx;
-	padding: 20rpx;
-	font-size: 28rpx;
-	color: var(--text-primary);
-	margin-bottom: 24rpx;
-	box-sizing: border-box;
+  width: 100%;
+  height: 200rpx;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  margin-bottom: 24rpx;
+  box-sizing: border-box;
 }
 
 .note-tags {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 16rpx;
-	margin-bottom: 30rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 30rpx;
 }
 
 .note-tag {
-	padding: 10rpx 20rpx;
-	border: 2rpx solid var(--border);
-	border-radius: 20rpx;
-	font-size: 24rpx;
-	color: var(--text-sub);
-	background: var(--bg-secondary);
-	transition: all 0.2s ease;
+  padding: 10rpx 20rpx;
+  border: 2rpx solid var(--border);
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  background: var(--bg-secondary);
+  transition: all 0.2s ease;
 }
 
 .note-tag.selected {
-	background: var(--primary);
-	color: var(--text-primary-foreground);
-	border-color: var(--primary);
+  background: var(--primary);
+  color: var(--text-primary-foreground);
+  border-color: var(--primary);
 }
 
 .note-modal-footer {
-	display: flex;
-	gap: 20rpx;
+  display: flex;
+  gap: 20rpx;
 }
 
 .note-cancel-btn {
-	flex: 1;
-	height: 80rpx;
-	background: var(--bg-secondary);
-	color: var(--text-sub);
-	font-size: 28rpx;
-	border-radius: 16rpx;
-	border: none;
+  flex: 1;
+  height: 80rpx;
+  background: var(--bg-secondary);
+  color: var(--text-sub);
+  font-size: 28rpx;
+  border-radius: 16rpx;
+  border: none;
 }
 
 .note-save-btn {
-	flex: 1;
-	height: 80rpx;
-	background: var(--primary);
-	color: var(--text-primary-foreground);
-	font-size: 28rpx;
-	font-weight: bold;
-	border-radius: 16rpx;
-	border: none;
+  flex: 1;
+  height: 80rpx;
+  background: var(--primary);
+  color: var(--text-primary-foreground);
+  font-size: 28rpx;
+  font-weight: bold;
+  border-radius: 16rpx;
+  border: none;
 }
 
 /* hover-class 反馈 */
 .item-hover {
-	opacity: 0.7;
+  opacity: 0.7;
 }
 
 .option-hover {
-	opacity: 0.85;
-	transform: scale(0.98);
+  opacity: 0.85;
+  transform: scale(0.98);
 }
 </style>

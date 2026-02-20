@@ -10,7 +10,6 @@
  */
 
 import { storageService } from '@/services/storageService.js';
-import { pickQuestions } from '@/utils/learning/smart-question-picker.js';
 import { questionQualityOptimizer } from './question-quality-optimizer.js';
 
 // 练习模式配置
@@ -126,7 +125,7 @@ class PracticeModeManager {
    * @param {Object} options - 生成选项
    * @returns {Array} 题目列表
    */
-  generatePracticeQuestions(_options = {}) {
+  async generatePracticeQuestions(_options = {}) {
     if (!this.currentMode) {
       throw new Error('请先初始化练习模式');
     }
@@ -156,14 +155,16 @@ class PracticeModeManager {
         questions = this._filterChapterQuestions(questions, this.currentSettings);
         break;
 
-      default:
-        // 综合练习 - 使用智能组题
+      default: {
+        // 综合练习 - 使用智能组题（动态加载，避免拉入主包）
+        const { pickQuestions } = await import('@/utils/learning/smart-question-picker.js');
         return pickQuestions(questions, {
           count: this.currentSettings.questionCount,
           mode: 'adaptive',
           includeReview: true,
           reviewRatio: 0.2
         });
+      }
     }
 
     // 优化题目质量
@@ -184,8 +185,8 @@ class PracticeModeManager {
    * @param {Object} options - 会话选项
    * @returns {Object} 会话信息
    */
-  startPracticeSession(options = {}) {
-    const questions = this.generatePracticeQuestions(options);
+  async startPracticeSession(options = {}) {
+    const questions = await this.generatePracticeQuestions(options);
 
     const session = {
       id: `session_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
@@ -456,9 +457,9 @@ class PracticeModeManager {
 export const practiceModeManager = new PracticeModeManager();
 
 // 便捷函数
-export function startPracticeMode(modeId, settings = {}) {
+export async function startPracticeMode(modeId, settings = {}) {
   practiceModeManager.initMode(modeId, settings);
-  return practiceModeManager.startPracticeSession();
+  return await practiceModeManager.startPracticeSession();
 }
 
 export function getAvailablePracticeModes() {

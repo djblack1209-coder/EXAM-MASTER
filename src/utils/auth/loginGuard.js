@@ -5,7 +5,7 @@
 
 import { useUserStore } from '../../stores';
 import { safeNavigateTo } from '../safe-navigate';
-import { getUserId } from '../../services/storageService.js';
+import { storageService, getUserId } from '../../services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
 /**
@@ -25,7 +25,9 @@ export function isUserLoggedIn() {
   if (cachedUserId) {
     // 如果本地有缓存但 store 没有，触发恢复
     if (!userStore.isLogin) {
-      try { userStore.restoreUserInfo(); } catch (_e) {
+      try {
+        userStore.restoreUserInfo();
+      } catch (_e) {
         logger.warn('[LoginGuard] 恢复用户信息失败:', _e?.message);
       }
     }
@@ -42,10 +44,7 @@ export function isUserLoggedIn() {
 export function getCurrentUserId() {
   const userStore = useUserStore();
 
-  return userStore.userInfo?._id ||
-        userStore.userInfo?.userId ||
-        getUserId() ||
-        null;
+  return userStore.userInfo?._id || userStore.userInfo?.userId || getUserId() || null;
 }
 
 /**
@@ -154,12 +153,15 @@ function saveCurrentPageForRedirect() {
  */
 export function requireLoginAsync(options = {}) {
   return new Promise((resolve, reject) => {
-    const isLoggedIn = requireLogin(() => {
-      resolve(true);
-    }, {
-      ...options,
-      showToast: options.showToast !== false
-    });
+    const isLoggedIn = requireLogin(
+      () => {
+        resolve(true);
+      },
+      {
+        ...options,
+        showToast: options.showToast !== false
+      }
+    );
 
     if (!isLoggedIn) {
       reject(new Error('用户未登录'));
@@ -214,9 +216,12 @@ export function pageRequireLogin(pageInstance, options = {}) {
     }
 
     // 跳转到登录页
-    setTimeout(() => {
-      safeNavigateTo(loginUrl);
-    }, showToast ? 1500 : 0);
+    setTimeout(
+      () => {
+        safeNavigateTo(loginUrl);
+      },
+      showToast ? 1500 : 0
+    );
   }
 
   return isLoggedIn;
@@ -296,8 +301,30 @@ export function checkFeaturePermissions(features = []) {
   // 基于角色的功能权限映射
   const rolePermissions = {
     guest: ['view_questions', 'view_school'],
-    user: ['view_questions', 'view_school', 'practice', 'ai_chat', 'friend_list', 'study_stats', 'mistake_book', 'upload_avatar'],
-    vip: ['view_questions', 'view_school', 'practice', 'ai_chat', 'friend_list', 'study_stats', 'mistake_book', 'upload_avatar', 'ai_photo_search', 'trend_predict', 'adaptive_pick', 'material_understand'],
+    user: [
+      'view_questions',
+      'view_school',
+      'practice',
+      'ai_chat',
+      'friend_list',
+      'study_stats',
+      'mistake_book',
+      'upload_avatar'
+    ],
+    vip: [
+      'view_questions',
+      'view_school',
+      'practice',
+      'ai_chat',
+      'friend_list',
+      'study_stats',
+      'mistake_book',
+      'upload_avatar',
+      'ai_photo_search',
+      'trend_predict',
+      'adaptive_pick',
+      'material_understand'
+    ],
     admin: ['*'] // 管理员拥有所有权限
   };
 

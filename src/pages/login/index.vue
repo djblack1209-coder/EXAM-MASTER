@@ -10,37 +10,34 @@
     <!-- 顶部返回按钮 -->
     <view class="top-bar">
       <view class="back-btn" hover-class="btn-hover" @tap="handleBack">
-        <text class="back-icon">
-          ←
-        </text>
+        <text class="back-icon"> ← </text>
       </view>
     </view>
 
     <!-- Logo区域 -->
     <view class="logo-section">
       <image class="app-logo" src="./static/logo.png" mode="aspectFit" />
-      <text class="app-name">
-        Exam-Master
-      </text>
-      <text class="app-slogan">
-        AI助力，一战成硕
-      </text>
+      <text class="app-name"> Exam-Master </text>
+      <text class="app-slogan"> AI助力，一战成硕 </text>
     </view>
 
     <!-- 登录方式选择 -->
     <view class="login-methods">
       <!-- 微信登录 -->
       <!-- #ifdef MP-WEIXIN -->
-      <view class="login-btn wechat-btn" hover-class="btn-hover" :class="{ 'btn-disabled': isLoading }" @tap="handleWechatLogin">
+      <view
+        class="login-btn wechat-btn"
+        hover-class="btn-hover"
+        :class="{ 'btn-disabled': isLoading }"
+        @tap="handleWechatLogin"
+      >
         <view class="btn-icon wechat-icon">
           <text>微信</text>
         </view>
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信一键登录' }}
         </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
 
@@ -58,12 +55,8 @@
         <view class="btn-icon wechat-icon">
           <text>微信</text>
         </view>
-        <text class="btn-text">
-          微信一键登录
-        </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-text"> 微信一键登录 </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
       <!-- #ifdef H5 -->
@@ -81,43 +74,38 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信授权登录' }}
         </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
       <!-- #endif -->
 
       <!-- QQ登录 - 仅在非微信小程序环境显示 -->
       <!-- #ifndef MP-WEIXIN -->
-      <view class="login-btn qq-btn" hover-class="btn-hover" :class="{ 'btn-disabled': isLoading }" @tap="handleQQLogin">
+      <view
+        class="login-btn qq-btn"
+        hover-class="btn-hover"
+        :class="{ 'btn-disabled': isLoading }"
+        @tap="handleQQLogin"
+      >
         <view class="btn-icon qq-icon">
           <text>QQ</text>
         </view>
-        <text class="btn-text">
-          QQ账号登录
-        </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-text"> QQ账号登录 </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
 
       <!-- 分割线 -->
       <view class="divider">
         <view class="divider-line" />
-        <text class="divider-text">
-          或
-        </text>
+        <text class="divider-text"> 或 </text>
         <view class="divider-line" />
       </view>
 
       <!-- 邮箱登录表单 -->
       <view v-if="showEmailForm" class="email-form">
         <view class="form-item">
-          <text class="form-label">
-            邮箱地址
-          </text>
+          <text class="form-label"> 邮箱地址 </text>
           <input
             v-model="emailForm.email"
             class="form-input"
@@ -132,9 +120,7 @@
         </view>
 
         <view v-if="!isRegister" class="form-item">
-          <text class="form-label">
-            密码
-          </text>
+          <text class="form-label"> 密码 </text>
           <input
             v-model="emailForm.password"
             class="form-input"
@@ -145,9 +131,7 @@
         </view>
 
         <view v-if="isRegister" class="form-item">
-          <text class="form-label">
-            验证码
-          </text>
+          <text class="form-label"> 验证码 </text>
           <view class="code-input-wrapper">
             <input
               v-model="emailForm.code"
@@ -160,7 +144,7 @@
             <view
               class="send-code-btn"
               hover-class="btn-hover"
-              :class="{ 'disabled': codeCooldown > 0 || !isEmailValid }"
+              :class="{ disabled: codeCooldown > 0 || !isEmailValid }"
               @tap="sendVerifyCode"
             >
               <text>{{ codeCooldown > 0 ? `${codeCooldown}s` : '发送验证码' }}</text>
@@ -169,21 +153,24 @@
         </view>
 
         <view v-if="isRegister" class="form-item">
-          <text class="form-label">
-            设置密码
-          </text>
+          <text class="form-label"> 设置密码 </text>
           <input
             v-model="emailForm.password"
             class="form-input"
             type="password"
-            placeholder="请设置6-20位密码"
+            placeholder="请设置8-32位密码（含大小写字母和数字）"
             placeholder-class="input-placeholder"
           />
         </view>
 
-        <view class="login-btn email-submit-btn" hover-class="btn-hover" :class="{ 'btn-disabled': isLoading }" @tap="handleEmailLogin">
+        <view
+          class="login-btn email-submit-btn"
+          hover-class="btn-hover"
+          :class="{ 'btn-disabled': isLoading }"
+          @tap="handleEmailLogin"
+        >
           <text class="btn-text">
-            {{ isLoading ? '登录中...' : (isRegister ? '注册并登录' : '登录') }}
+            {{ isLoading ? '登录中...' : isRegister ? '注册并登录' : '登录' }}
           </text>
         </view>
 
@@ -199,33 +186,23 @@
         <view class="btn-icon email-icon">
           <text>📧</text>
         </view>
-        <text class="btn-text">
-          邮箱登录/注册
-        </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-text"> 邮箱登录/注册 </text>
+        <text class="btn-arrow"> → </text>
       </view>
     </view>
 
     <!-- 用户协议 -->
     <view class="agreement">
       <view class="checkbox-wrapper" @tap="toggleAgreement">
-        <view class="checkbox" :class="{ 'checked': agreedToTerms }">
-          <text v-if="agreedToTerms">
-            ✓
-          </text>
+        <view class="checkbox" :class="{ checked: agreedToTerms }">
+          <text v-if="agreedToTerms"> ✓ </text>
         </view>
       </view>
       <text class="agreement-text">
         登录即表示同意
-        <text class="link" @tap="openPrivacy">
-          《隐私政策》
-        </text>
+        <text class="link" @tap="openPrivacy"> 《隐私政策》 </text>
         和
-        <text class="link" @tap="openTerms">
-          《用户协议》
-        </text>
+        <text class="link" @tap="openTerms"> 《用户协议》 </text>
       </text>
     </view>
 
@@ -379,13 +356,15 @@ const handleWechatLogin = async () => {
     logger.log('[Login] 微信登录code:', loginRes.code);
 
     // 调用后端登录接口
-    const res = await lafService.login({
-      type: 'wechat',
-      code: loginRes.code
-    }).catch((err) => {
-      logger.error('[Login] lafService.login failed:', err);
-      return { code: -1, message: '登录请求失败' };
-    });
+    const res = await lafService
+      .login({
+        type: 'wechat',
+        code: loginRes.code
+      })
+      .catch((err) => {
+        logger.error('[Login] lafService.login failed:', err);
+        return { code: -1, message: '登录请求失败' };
+      });
 
     uni.hideLoading();
 
@@ -443,24 +422,28 @@ const handleWechatLogin = async () => {
         });
       });
 
-      const res = await lafService.login({
-        type: 'wechat',
-        code: loginRes.code,
-        accessToken: loginRes.authResult?.access_token,
-        openid: loginRes.authResult?.openid,
-        userInfo: userInfoRes.userInfo,
-        platform: 'app'
-      }).catch((err) => {
-        logger.error('[Login] lafService.login (app-wechat) failed:', err);
-        return { code: -1, message: '登录请求失败' };
-      });
+      const res = await lafService
+        .login({
+          type: 'wechat',
+          code: loginRes.code,
+          accessToken: loginRes.authResult?.access_token,
+          openid: loginRes.authResult?.openid,
+          userInfo: userInfoRes.userInfo,
+          platform: 'app'
+        })
+        .catch((err) => {
+          logger.error('[Login] lafService.login (app-wechat) failed:', err);
+          return { code: -1, message: '登录请求失败' };
+        });
 
       uni.hideLoading();
 
       if (res && res.code === 0 && res.data) {
         saveLoginInfo(res.data);
         uni.showToast({ title: '登录成功', icon: 'success' });
-        setTimeout(() => { navigateAfterLogin(); }, 1500);
+        setTimeout(() => {
+          navigateAfterLogin();
+        }, 1500);
       } else {
         let errorMsg = '微信登录失败，请重试';
         if (res?.message) errorMsg = res.message;
@@ -482,7 +465,6 @@ const handleWechatLogin = async () => {
     uni.showToast({ title: '请在微信中打开或使用其他方式登录', icon: 'none' });
     // #endif
     // #endif
-
   } catch (error) {
     uni.hideLoading();
     logger.error('[Login] 微信登录失败:', error);
@@ -540,13 +522,14 @@ const handleWechatH5Login = () => {
     });
 
     // 微信网页授权 URL（snsapi_userinfo 获取用户信息）
-    const authUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize'
-      + `?appid=${wxAppId}`
-      + `&redirect_uri=${redirectUri}`
-      + '&response_type=code'
-      + '&scope=snsapi_userinfo'
-      + `&state=${state}`
-      + '#wechat_redirect';
+    const authUrl =
+      'https://open.weixin.qq.com/connect/oauth2/authorize' +
+      `?appid=${wxAppId}` +
+      `&redirect_uri=${redirectUri}` +
+      '&response_type=code' +
+      '&scope=snsapi_userinfo' +
+      `&state=${state}` +
+      '#wechat_redirect';
 
     window.location.href = authUrl;
   } catch (err) {
@@ -760,7 +743,6 @@ const handleQQLogin = async () => {
       uni.showToast({ title: errorMsg, icon: 'none' });
     }
     // #endif
-
   } catch (error) {
     uni.hideLoading();
     logger.error('[Login] QQ登录失败:', error);
@@ -783,12 +765,18 @@ const handleEmailLogin = async () => {
     return;
   }
 
-  if (!emailForm.value.password || emailForm.value.password.length < 6) {
-    uni.showToast({ title: '密码至少6位', icon: 'none' });
+  // ✅ 问题清单修复：密码校验与后端统一（8-32 位）
+  const password = (emailForm.value.password || '').trim();
+  if (!password || password.length < 8) {
+    uni.showToast({ title: '密码至少8位', icon: 'none' });
+    return;
+  }
+  if (password.length > 32) {
+    uni.showToast({ title: '密码不能超过32位', icon: 'none' });
     return;
   }
 
-  // 密码强度检查（注册时）
+  // 注册时额外校验
   if (isRegister.value) {
     if (!emailForm.value.code) {
       uni.showToast({ title: '请输入验证码', icon: 'none' });
@@ -800,10 +788,17 @@ const handleEmailLogin = async () => {
       return;
     }
 
-    // 密码强度检查
-    const password = emailForm.value.password;
-    if (password.length > 20) {
-      uni.showToast({ title: '密码不能超过20位', icon: 'none' });
+    // ✅ 密码强度检查：与后端一致，需包含大写字母、小写字母和数字
+    if (!/[A-Z]/.test(password)) {
+      uni.showToast({ title: '密码需包含大写字母', icon: 'none' });
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      uni.showToast({ title: '密码需包含小写字母', icon: 'none' });
+      return;
+    }
+    if (!/\d/.test(password)) {
+      uni.showToast({ title: '密码需包含数字', icon: 'none' });
       return;
     }
   }
@@ -814,16 +809,18 @@ const handleEmailLogin = async () => {
   try {
     uni.showLoading({ title: isRegister.value ? '注册中...' : '登录中...' });
 
-    const res = await lafService.login({
-      type: 'email',
-      email: emailForm.value.email.trim().toLowerCase(),
-      password: emailForm.value.password,
-      code: isRegister.value ? emailForm.value.code : undefined,
-      isRegister: isRegister.value
-    }).catch((err) => {
-      logger.error('[Login] lafService.login (email) failed:', err);
-      return { code: -1, message: '网络请求失败' };
-    });
+    const res = await lafService
+      .login({
+        type: 'email',
+        email: emailForm.value.email.trim().toLowerCase(),
+        password: emailForm.value.password,
+        code: isRegister.value ? emailForm.value.code : undefined,
+        isRegister: isRegister.value
+      })
+      .catch((err) => {
+        logger.error('[Login] lafService.login (email) failed:', err);
+        return { code: -1, message: '网络请求失败' };
+      });
 
     uni.hideLoading();
 
@@ -906,12 +903,12 @@ const navigateAfterLogin = () => {
 
 // 打开隐私政策
 const openPrivacy = () => {
-  uni.navigateTo({ url: '/pages/settings/privacy' });
+  safeNavigateTo('/pages/settings/privacy');
 };
 
 // 打开用户协议
 const openTerms = () => {
-  uni.navigateTo({ url: '/pages/settings/terms' });
+  safeNavigateTo('/pages/settings/terms');
 };
 
 // 初始化
@@ -995,7 +992,7 @@ onUnmounted(() => {
 .bg-circle-1 {
   width: 400rpx;
   height: 400rpx;
-  background: #4CAF50;
+  background: #4caf50;
   top: -100rpx;
   right: -100rpx;
 }
@@ -1003,7 +1000,7 @@ onUnmounted(() => {
 .bg-circle-2 {
   width: 300rpx;
   height: 300rpx;
-  background: #81C784;
+  background: #81c784;
   bottom: 200rpx;
   left: -150rpx;
 }
@@ -1011,7 +1008,7 @@ onUnmounted(() => {
 .bg-circle-3 {
   width: 200rpx;
   height: 200rpx;
-  background: #A5D6A7;
+  background: #a5d6a7;
   bottom: -50rpx;
   right: 100rpx;
 }
@@ -1019,7 +1016,7 @@ onUnmounted(() => {
 .dark-mode .bg-circle-1,
 .dark-mode .bg-circle-2,
 .dark-mode .bg-circle-3 {
-  background: #4CAF50;
+  background: #4caf50;
   opacity: 0.05;
 }
 
@@ -1070,12 +1067,12 @@ onUnmounted(() => {
 .app-name {
   font-size: 48rpx;
   font-weight: 700;
-  color: #2E7D32;
+  color: #2e7d32;
   margin-bottom: 12rpx;
 }
 
 .dark-mode .app-name {
-  color: #81C784;
+  color: #81c784;
 }
 
 .app-slogan {
@@ -1127,15 +1124,15 @@ onUnmounted(() => {
 }
 
 .wechat-icon {
-  background: linear-gradient(135deg, #07C160 0%, #06AD56 100%);
+  background: linear-gradient(135deg, #07c160 0%, #06ad56 100%);
 }
 
 .qq-icon {
-  background: linear-gradient(135deg, #12B7F5 0%, #0099FF 100%);
+  background: linear-gradient(135deg, #12b7f5 0%, #0099ff 100%);
 }
 
 .email-icon {
-  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
   font-size: 36rpx;
 }
 
@@ -1247,7 +1244,7 @@ onUnmounted(() => {
 .send-code-btn {
   min-width: 180rpx;
   height: 88rpx;
-  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   border-radius: 16rpx;
   display: flex;
   align-items: center;
@@ -1270,7 +1267,7 @@ onUnmounted(() => {
 }
 
 .email-submit-btn {
-  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   justify-content: center;
   margin-top: 16rpx;
 }
@@ -1287,7 +1284,7 @@ onUnmounted(() => {
 
 .form-switch text {
   font-size: 26rpx;
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 /* 用户协议 */
@@ -1313,8 +1310,8 @@ onUnmounted(() => {
 }
 
 .checkbox.checked {
-  background: #4CAF50;
-  border-color: #4CAF50;
+  background: #4caf50;
+  border-color: #4caf50;
 }
 
 .checkbox text {
@@ -1330,7 +1327,7 @@ onUnmounted(() => {
 }
 
 .agreement-text .link {
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 /* 底部提示 */
@@ -1362,7 +1359,7 @@ onUnmounted(() => {
 }
 
 .dark-mode .agreement-text .link {
-  color: #81C784;
+  color: #81c784;
 }
 
 .dark-mode .footer-tip text {
@@ -1370,7 +1367,7 @@ onUnmounted(() => {
 }
 
 .dark-mode .form-error {
-  color: #FF6B6B;
+  color: #ff6b6b;
 }
 
 /* Hover feedback for mini program */

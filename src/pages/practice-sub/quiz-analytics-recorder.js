@@ -8,13 +8,9 @@
  * - recordAnalyticsAnswer 和 recordQuestionTime 是静态导入，因为总是需要
  */
 
-import { recordAnswer as recordAnalyticsAnswer } from './utils/learning-analytics.js';
-import {
-  recordTime as recordQuestionTime
-} from './question-timer.js';
-import {
-  saveOfflineAnswer
-} from './offline-cache.js';
+import { recordAnswer as recordAnalyticsAnswer } from '@/utils/analytics/learning-analytics.js';
+import { recordTime as recordQuestionTime } from './question-timer.js';
+import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
 
 /**

@@ -290,22 +290,29 @@ export function validateAction(action: unknown): boolean {
 
 // ==================== 日志工具 ====================
 
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
+export const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+export const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
 
-export const logger = {
-  info: (...args: unknown[]) => { 
-    if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') {
-      console.log('[API]', ...args) 
-    }
-  },
-  warn: (...args: unknown[]) => { 
-    if (LOG_LEVEL !== 'error') {
-      console.warn('[API]', ...args) 
-    }
-  },
-  error: (...args: unknown[]) => console.error('[API]', ...args)
+/**
+ * 创建带前缀的日志工具（各云函数共享统一日志格式）
+ */
+export function createLogger(prefix: string = '[API]') {
+  return {
+    info: (...args: unknown[]) => { 
+      if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') {
+        console.log(prefix, ...args) 
+      }
+    },
+    warn: (...args: unknown[]) => { 
+      if (LOG_LEVEL !== 'error') {
+        console.warn(prefix, ...args) 
+      }
+    },
+    error: (...args: unknown[]) => console.error(prefix, ...args)
+  }
 }
+
+export const logger = createLogger('[API]')
 
 // ==================== 速率限制工具 ====================
 
@@ -387,5 +394,8 @@ export default {
   validateUserId,
   validateAction,
   logger,
-  checkRateLimit
+  createLogger,
+  checkRateLimit,
+  IS_PRODUCTION,
+  LOG_LEVEL
 }

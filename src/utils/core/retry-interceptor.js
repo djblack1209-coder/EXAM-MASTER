@@ -119,21 +119,31 @@ class RetryInterceptor {
    */
   isNetworkError(error) {
     // uni-app 网络错误特征
-    if (error.errMsg && (
-      error.errMsg.includes('request:fail') ||
-      error.errMsg.includes('网络') ||
-      error.errMsg.includes('network')
-    )) {
+    if (
+      error.errMsg &&
+      (error.errMsg.includes('request:fail') || error.errMsg.includes('网络') || error.errMsg.includes('network'))
+    ) {
       return true;
     }
 
     // 通用网络错误
-    if (error.message && (
-      error.message.includes('Network Error') ||
-      error.message.includes('Failed to fetch') ||
-      error.message.includes('net::ERR')
-    )) {
+    if (
+      error.message &&
+      (error.message.includes('Network Error') ||
+        error.message.includes('Failed to fetch') ||
+        error.message.includes('net::ERR'))
+    ) {
       return true;
+    }
+
+    // [AUDIT FIX] 排除 JS 编程错误，避免将 TypeError/ReferenceError 等误判为网络错误并重试
+    if (
+      error instanceof TypeError ||
+      error instanceof ReferenceError ||
+      error instanceof SyntaxError ||
+      error instanceof RangeError
+    ) {
+      return false;
     }
 
     return !error.statusCode && !error.status;
@@ -225,7 +235,6 @@ class RetryInterceptor {
           }
 
           return result;
-
         } catch (error) {
           lastError = error;
 
@@ -264,14 +273,19 @@ class RetryInterceptor {
         logger.log('[RetryInterceptor] 📥 请求已加入离线队列');
         offlineQueue.enqueue({
           requestFn,
-          options,
-          error: lastError,
-          timestamp: Date.now()
+          // ✅ 问题清单修复：传入可序列化的 requestData，以便 app 重启后重建请求
+          requestData: options.requestData || null,
+          priority: options.offlinePriority || 'normal',
+          dedupeKey: options.dedupeKey,
+          metadata: {
+            error: lastError.message,
+            retryCount,
+            timestamp: Date.now()
+          }
         });
       }
 
       throw lastError;
-
     } catch (error) {
       this.retryingRequests.delete(requestId);
       this.cancelTokens.delete(requestId);
@@ -341,7 +355,9 @@ class RetryInterceptor {
           retryConfig.retryCount++;
           const delay = self.calculateDelay(retryConfig.retryCount - 1);
 
-          logger.log(`[RetryInterceptor] 🔄 第 ${retryConfig.retryCount}/${self.config.maxRetries} 次重试，延迟 ${delay}ms`);
+          logger.log(
+            `[RetryInterceptor] 🔄 第 ${retryConfig.retryCount}/${self.config.maxRetries} 次重试，延迟 ${delay}ms`
+          );
 
           setTimeout(() => {
             uni.request(args);
@@ -380,10 +396,7 @@ export const withRetry = (requestFn, options = {}) => {
  */
 export const createRetryableRequest = (requestFn, defaultOptions = {}) => {
   return (...args) => {
-    return retryInterceptor.executeWithRetry(
-      () => requestFn(...args),
-      defaultOptions
-    );
+    return retryInterceptor.executeWithRetry(() => requestFn(...args), defaultOptions);
   };
 };
 

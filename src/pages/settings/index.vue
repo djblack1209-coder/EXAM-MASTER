@@ -2,12 +2,28 @@
   <view class="settings-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 - 添加设计系统工具类 -->
     <view class="top-nav">
-      <text class="nav-title ds-text-display ds-font-bold">
-        设置
-      </text>
+      <text class="nav-back" @tap="handleGoBack"> ← </text>
+      <text class="nav-title ds-text-display ds-font-bold"> 设置 </text>
+      <view class="nav-placeholder" />
     </view>
 
     <!-- F018: 页面加载骨架屏 -->
+    <!-- #ifndef APP-NVUE -->
+    <transition name="skeleton-fade">
+      <view v-if="isPageLoading" class="skeleton-settings">
+        <view class="skeleton-user-card skeleton-pulse" />
+        <view class="skeleton-section">
+          <view class="skeleton-entry skeleton-pulse" />
+        </view>
+        <view class="skeleton-section">
+          <view class="skeleton-item skeleton-pulse" />
+          <view class="skeleton-item skeleton-pulse" />
+          <view class="skeleton-item skeleton-pulse" />
+        </view>
+      </view>
+    </transition>
+    <!-- #endif -->
+    <!-- #ifdef APP-NVUE -->
     <view v-if="isPageLoading" class="skeleton-settings">
       <view class="skeleton-user-card skeleton-pulse" />
       <view class="skeleton-section">
@@ -19,25 +35,17 @@
         <view class="skeleton-item skeleton-pulse" />
       </view>
     </view>
+    <!-- #endif -->
 
     <!-- 用户信息卡片 - Wise风格重新设计 -->
     <view v-show="!isPageLoading" class="user-card wise-card">
       <div class="user-header">
         <view class="avatar-section" @tap="handleAvatarClick">
           <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-            <image
-              class="avatar"
-              :src="userInfo.avatarUrl || defaultAvatar"
-              mode="aspectFill"
-              @error="onAvatarError"
-            />
+            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError" />
           </button>
-          <view v-if="!userInfo.uid" class="login-badge">
-            点击登录
-          </view>
-          <view v-else class="login-badge logged-in">
-            已登录
-          </view>
+          <view v-if="!userInfo.uid" class="login-badge"> 点击登录 </view>
+          <view v-else class="login-badge logged-in"> 已登录 </view>
         </view>
         <div class="user-info-section">
           <input
@@ -51,17 +59,13 @@
           />
           <div class="info-grid">
             <div class="info-item" @tap="handleEditSchool">
-              <text class="info-label">
-                报考院校
-              </text>
+              <text class="info-label"> 报考院校 </text>
               <text class="info-value">
                 {{ userSchoolInfo.school || '未设置' }}
               </text>
             </div>
             <div class="info-item" @tap="handleEditMajor">
-              <text class="info-label">
-                报考专业
-              </text>
+              <text class="info-label"> 报考专业 </text>
               <text class="info-value">
                 {{ userSchoolInfo.major || '未设置' }}
               </text>
@@ -73,22 +77,20 @@
         <view v-if="showTargetSchoolsModal" class="modal-mask" @tap="showTargetSchoolsModal = false">
           <view class="modal-content" @tap.stop>
             <view class="modal-header">
-              <text class="modal-title">
-                目标院校管理
-              </text>
-              <text class="close-btn" @tap="showTargetSchoolsModal = false">
-                ✕
-              </text>
+              <text class="modal-title"> 目标院校管理 </text>
+              <text class="close-btn" @tap="showTargetSchoolsModal = false"> ✕ </text>
             </view>
             <view class="modal-body">
               <view v-if="targetSchools.length === 0" class="empty-targets">
                 <text>暂无目标院校</text>
-                <button class="add-btn" @tap="handleAddTargetSchool">
-                  去添加目标院校
-                </button>
+                <button class="add-btn" @tap="handleAddTargetSchool">去添加目标院校</button>
               </view>
               <view v-else class="target-list">
-                <view v-for="(school, index) in targetSchools" :key="school.id || school.name || index" class="target-item">
+                <view
+                  v-for="(school, index) in targetSchools"
+                  :key="school.id || school.name || index"
+                  class="target-item"
+                >
                   <image class="target-avatar" :src="school.logo" lazy-load />
                   <view class="target-info">
                     <text class="target-name">
@@ -99,9 +101,7 @@
                     </text>
                   </view>
                   <view class="target-actions">
-                    <text class="action-btn delete-btn" @tap="removeTargetSchool(index)">
-                      删除
-                    </text>
+                    <text class="action-btn delete-btn" @tap="removeTargetSchool(index)"> 删除 </text>
                   </view>
                 </view>
               </view>
@@ -114,17 +114,13 @@
           <text class="stat-value">
             {{ studyDays }}
           </text>
-          <text class="stat-label">
-            坚持天数
-          </text>
+          <text class="stat-label"> 坚持天数 </text>
         </div>
         <div class="stat-card" @tap="handleTargetSchoolClick">
           <text class="stat-value">
             {{ targetSchools.length }}
           </text>
-          <text class="stat-label">
-            目标院校
-          </text>
+          <text class="stat-label"> 目标院校 </text>
         </div>
       </div>
     </view>
@@ -133,10 +129,7 @@
     <FriendsEntryCard />
 
     <!-- F002: AI 导师列表（已提取为独立组件） -->
-    <AITutorList
-      :target-schools="targetSchools"
-      @start-chat="startAIChat"
-    />
+    <AITutorList :target-schools="targetSchools" @start-chat="startAIChat" />
 
     <!-- 设置选项 - 优化样式 -->
     <div class="section">
@@ -144,12 +137,8 @@
         <!-- 语音伴学 -->
         <div class="setting-item ds-flex ds-flex-between">
           <div class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium">
-              AI 语音伴学
-            </text>
-            <text class="setting-desc ds-text-xs">
-              导师回答后自动朗读
-            </text>
+            <text class="setting-title ds-text-sm ds-font-medium"> AI 语音伴学 </text>
+            <text class="setting-desc ds-text-xs"> 导师回答后自动朗读 </text>
           </div>
           <switch
             :color="isDark ? 'var(--primary)' : 'var(--primary)'"
@@ -161,12 +150,8 @@
         <!-- 深色模式（自动切换 Wise/Bitget 主题） -->
         <div class="setting-item ds-flex ds-flex-between">
           <div class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium">
-              深色模式
-            </text>
-            <text class="setting-desc ds-text-xs">
-              护眼模式，夜间更舒适
-            </text>
+            <text class="setting-title ds-text-sm ds-font-medium"> 深色模式 </text>
+            <text class="setting-desc ds-text-xs"> 护眼模式，夜间更舒适 </text>
           </div>
           <switch :color="isDark ? 'var(--primary)' : 'var(--primary)'" :checked="isDark" @change="toggleDark" />
         </div>
@@ -174,12 +159,8 @@
         <!-- 清除缓存 -->
         <div class="setting-item ds-flex ds-flex-between ds-touchable" @tap="handleClearCache">
           <div class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium">
-              清除缓存数据
-            </text>
-            <text class="setting-desc ds-text-xs">
-              释放存储空间
-            </text>
+            <text class="setting-title ds-text-sm ds-font-medium"> 清除缓存数据 </text>
+            <text class="setting-desc ds-text-xs"> 释放存储空间 </text>
           </div>
           <text class="cache-size ds-text-xs">
             {{ cacheSize }}
@@ -208,18 +189,10 @@
     <PosterModal v-if="showPosterModal" :visible="showPosterModal" @close="handleClosePosterModal" />
 
     <!-- F002: 主题选择器弹窗（已提取为独立组件） -->
-    <ThemeSelectorModal
-      :visible="showThemeSelector"
-      @close="showThemeSelector = false"
-    />
+    <ThemeSelectorModal :visible="showThemeSelector" @close="showThemeSelector = false" />
 
     <!-- F002: AI 对话弹窗（已提取为独立组件） -->
-    <AIChatModal
-      :visible="showChat"
-      :tutor="currentTutor"
-      :voice-enabled="isVoiceEnabled"
-      @close="showChat = false"
-    />
+    <AIChatModal :visible="showChat" :tutor="currentTutor" :voice-enabled="isVoiceEnabled" @close="showChat = false" />
   </view>
 </template>
 
@@ -246,6 +219,7 @@ import { logger } from '@/utils/logger.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 
 // 基础状态
 const userInfo = ref({});
@@ -290,26 +264,31 @@ onMounted(() => {
     isDark.value = mode === 'dark';
   };
   uni.$on('themeUpdate', _themeHandler);
+  // ✅ FIX: Register updateTheme listener here (was previously at module scope with null handler)
+  uni.$on('updateTheme', _updateThemeHandler);
 });
 
 // 监听全局主题更新事件，确保主题状态正确同步
 let _themeHandler = null;
 let _updateThemeHandler = null;
-uni.$on('updateTheme', _updateThemeHandler);
+// ✅ FIX: uni.$on moved into onMounted — registering null handler at module scope was a no-op
 
 onShow(() => {
   // 每次显示时重新加载数据，确保登录状态和头像同步
   loadData();
 
-  // 强制同步导航栏颜色
-  const isDark = storageService.get('theme_mode') === 'dark';
-  uni.setNavigationBarColor({
-    frontColor: isDark ? '#ffffff' : '#000000',
-    backgroundColor: isDark ? 'var(--bg-body)' : 'var(--bg-page)',
-    animation: { duration: 0 }
-  }).catch((err) => {
-    logger.log('设置导航栏颜色失败', err);
-  });
+  // ✅ FIX: Use isDark.value instead of shadowing the outer ref with a local const
+  const currentIsDark = storageService.get('theme_mode') === 'dark';
+  isDark.value = currentIsDark;
+  uni
+    .setNavigationBarColor({
+      frontColor: currentIsDark ? '#ffffff' : '#000000',
+      backgroundColor: currentIsDark ? 'var(--bg-body)' : 'var(--bg-page)',
+      animation: { duration: 0 }
+    })
+    .catch((err) => {
+      logger.log('设置导航栏颜色失败', err);
+    });
 });
 
 onUnmounted(() => {
@@ -328,46 +307,42 @@ const startAIChat = (tutor) => {
   showChat.value = true;
 };
 
-const loadData = () => {
-  userInfo.value = storageService.get('userInfo', {});
-  userSchoolInfo.value = storageService.get('user_school_info', {});
-  targetSchools.value = storageService.get('target_schools', []);
-  const stats = storageService.get('study_stats', {});
-  studyDays.value = Object.keys(stats).length || 1;
-  isVoiceEnabled.value = storageService.get('voice_enabled', true) !== false;
-
-  uni.getStorageInfo({
-    success: (res) => {
-      cacheSize.value = (res.currentSize || 0) + 'KB';
+const handleGoBack = () => {
+  uni.navigateBack({
+    fail: () => {
+      uni.switchTab({ url: '/pages/profile/index' });
     }
   });
-
-  isPageLoading.value = false; // F018: 数据加载完成
 };
 
-// 编辑报考院校 - 改为搜索选择模式
-const handleEditSchool = () => {
-  // 跳转到院校选择页面
-  safeNavigateTo('/pages/school/index?mode=select&returnField=school', {
-    events: {
-      // 监听院校选择结果
-      onSchoolSelected: (data) => {
-        if (data && data.school) {
-          userSchoolInfo.value.school = data.school;
-          userSchoolInfo.value.schoolCode = data.schoolCode || '';
-          storageService.save('user_school_info', userSchoolInfo.value);
-          uni.showToast({
-            title: '院校已更新',
-            icon: 'success'
-          });
-        }
+const loadData = () => {
+  try {
+    userInfo.value = storageService.get('userInfo', {});
+    userSchoolInfo.value = storageService.get('user_school_info', {});
+    targetSchools.value = storageService.get('target_schools', []);
+    const stats = storageService.get('study_stats', {});
+    studyDays.value = Object.keys(stats).length || 1;
+    isVoiceEnabled.value = storageService.get('voice_enabled', true) !== false;
+
+    uni.getStorageInfo({
+      success: (res) => {
+        cacheSize.value = (res.currentSize || 0) + 'KB';
       }
-    },
-    fail: () => {
-      // 如果跳转失败，使用备用的搜索弹窗
-      showSchoolSearchModal();
-    }
-  });
+    });
+  } catch (e) {
+    logger.error('[settings] 加载数据失败:', e);
+  } finally {
+    isPageLoading.value = false; // F018: 数据加载完成
+  }
+};
+
+// 编辑报考院校 - 直接使用搜索弹窗（school 是 tabBar 页面，switchTab 不支持 query params 和 events）
+const handleEditSchool = () => {
+  if (!isUserLoggedIn()) {
+    uni.showToast({ title: '请先登录后编辑院校', icon: 'none' });
+    return;
+  }
+  showSchoolSearchModal();
 };
 
 // 备用：院校搜索弹窗
@@ -420,6 +395,10 @@ const showSchoolSearchModal = () => {
 
 // 编辑报考专业
 const handleEditMajor = () => {
+  if (!isUserLoggedIn()) {
+    uni.showToast({ title: '请先登录后编辑专业', icon: 'none' });
+    return;
+  }
   uni.showModal({
     title: '编辑报考专业',
     editable: true,
@@ -461,7 +440,9 @@ const toggleDark = (e) => {
   setTheme(mode);
 
   const toastMsg = isDark.value
-    ? (isNightTime() ? '已开启深色模式（护眼模式已激活）' : '已开启深色模式')
+    ? isNightTime()
+      ? '已开启深色模式（护眼模式已激活）'
+      : '已开启深色模式'
     : '已关闭深色模式';
   uni.showToast({ title: toastMsg, icon: 'none' });
 };
@@ -469,11 +450,37 @@ const toggleDark = (e) => {
 const handleClearCache = () => {
   uni.showModal({
     title: '提示',
-    content: '确定清理缓存吗？',
+    content: '确定清理缓存吗？（登录信息和主题设置将保留）',
     success: (res) => {
       if (res.confirm) {
+        // ✅ FIX: Selective cache clear — preserve auth tokens, user info, and theme settings
+        // uni.clearStorageSync() would destroy JWT tokens and log the user out
+        const preserveKeys = [
+          'EXAM_USER_ID',
+          'EXAM_TOKEN',
+          'userInfo',
+          'user_school_info',
+          'theme_mode',
+          'voice_enabled',
+          'target_schools'
+        ];
+        const preserved = {};
+        for (const key of preserveKeys) {
+          try {
+            const val = storageService.get(key);
+            if (val !== undefined && val !== null) {
+              preserved[key] = val;
+            }
+          } catch (e) {
+            /* ignore */
+          }
+        }
         uni.clearStorageSync();
+        for (const [key, val] of Object.entries(preserved)) {
+          storageService.save(key, val);
+        }
         loadData();
+        uni.showToast({ title: '缓存已清理', icon: 'success' });
       }
     }
   });
@@ -540,8 +547,7 @@ const isChoosingAvatar = ref(false);
 // ✅ F020: 上传头像到服务器（异步，不阻塞本地保存）
 async function _uploadAvatarToServer(filePath) {
   try {
-    const userId = storageService.get('EXAM_USER_ID')
-      || userInfo.value?.uid || userInfo.value?._id;
+    const userId = storageService.get('EXAM_USER_ID') || userInfo.value?.uid || userInfo.value?._id;
     if (!userId) return;
 
     // I005: 使用统一配置获取 API 基础地址（替代硬编码的旧 Laf 域名）
@@ -554,7 +560,7 @@ async function _uploadAvatarToServer(filePath) {
         filePath,
         name: 'file',
         formData: { userId, type: 'avatar' },
-        header: { 'Authorization': `Bearer ${token}` },
+        header: { Authorization: `Bearer ${token}` },
         success: (r) => {
           try {
             const data = JSON.parse(r.data);
@@ -588,6 +594,10 @@ async function _uploadAvatarToServer(filePath) {
 
 // 微信最新登录规范：获取头像
 const onChooseAvatar = (e) => {
+  if (!isUserLoggedIn()) {
+    uni.showToast({ title: '请先登录后设置头像', icon: 'none' });
+    return;
+  }
   // 防抖：如果正在选择，直接返回
   if (isChoosingAvatar.value) {
     logger.log('[Settings] ⚠️ 头像选择进行中，忽略重复点击');
@@ -690,6 +700,10 @@ const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
 
 // 微信最新登录规范：获取昵称
 const onNicknameChange = (e) => {
+  if (!isUserLoggedIn()) {
+    uni.showToast({ title: '请先登录后修改昵称', icon: 'none' });
+    return;
+  }
   const rawNickName = e.detail.value;
   // 安全过滤昵称（最大20字符）
   const nickName = sanitizeInput(rawNickName, 20);
@@ -1541,7 +1555,8 @@ const handleClosePosterModal = () => {
 
 .skeleton-pulse {
   background: linear-gradient(
-    90deg, var(--bg-secondary, #f0f0f0) 25%,
+    90deg,
+    var(--bg-secondary, #f0f0f0) 25%,
     var(--bg-hover, #e0e0e0) 50%,
     var(--bg-secondary, #f0f0f0) 75%
   );
@@ -1551,7 +1566,8 @@ const handleClosePosterModal = () => {
 
 .dark-mode .skeleton-pulse {
   background: linear-gradient(
-    90deg, var(--bg-glass, #2a2a2a) 25%,
+    90deg,
+    var(--bg-glass, #2a2a2a) 25%,
     var(--overlay, #3a3a3a) 50%,
     var(--bg-glass, #2a2a2a) 75%
   );
@@ -1560,7 +1576,19 @@ const handleClosePosterModal = () => {
 }
 
 @keyframes skeletonPulse {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 骨架屏淡出过渡 */
+.skeleton-fade-leave-active {
+  transition: opacity 0.35s ease-out;
+}
+.skeleton-fade-leave-to {
+  opacity: 0;
 }
 </style>

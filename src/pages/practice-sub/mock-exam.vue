@@ -10,9 +10,7 @@
           {{ isExamStarted ? '模拟考试' : '考试设置' }}
         </text>
         <view v-if="isExamStarted && !isExamFinished" class="timer-display">
-          <text class="timer-icon">
-            ⏱️
-          </text>
+          <text class="timer-icon"> ⏱️ </text>
           <text class="timer-text">
             {{ formatTime(remainingTime) }}
           </text>
@@ -24,17 +22,13 @@
     <view
       v-if="!isExamStarted && !isPageLoading"
       class="setup-container"
-      :style="{ paddingTop: (statusBarHeight + 50) + 'px' }"
+      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
     >
       <view class="glass-card setup-card">
-        <text class="setup-title">
-          📝 模拟考试设置
-        </text>
+        <text class="setup-title"> 📝 模拟考试设置 </text>
 
         <view class="setting-item">
-          <text class="setting-label">
-            题目数量
-          </text>
+          <text class="setting-label"> 题目数量 </text>
           <view class="setting-options">
             <view
               v-for="num in [10, 20, 30, 50]"
@@ -48,9 +42,7 @@
         </view>
 
         <view class="setting-item">
-          <text class="setting-label">
-            考试时长
-          </text>
+          <text class="setting-label"> 考试时长 </text>
           <view class="setting-options">
             <view
               v-for="time in [15, 30, 45, 60]"
@@ -64,44 +56,52 @@
         </view>
 
         <view class="setting-item">
-          <text class="setting-label">
-            题目类型
-          </text>
+          <text class="setting-label"> 题目类型 </text>
           <view class="setting-options">
-            <view
-              :class="['option-btn', { active: questionType === 'all' }]"
-              @tap="questionType = 'all'"
-            >
+            <view :class="['option-btn', { active: questionType === 'all' }]" @tap="questionType = 'all'">
               <text>全部</text>
             </view>
-            <view
-              :class="['option-btn', { active: questionType === 'mistakes' }]"
-              @tap="questionType = 'mistakes'"
-            >
+            <view :class="['option-btn', { active: questionType === 'mistakes' }]" @tap="questionType = 'mistakes'">
               <text>错题</text>
             </view>
           </view>
         </view>
 
         <view class="exam-info">
-          <text class="info-text">
-            📊 当前题库共 {{ totalQuestions }} 道题
-          </text>
+          <text class="info-text"> 📊 当前题库共 {{ totalQuestions }} 道题 </text>
         </view>
 
-        <button class="start-btn" hover-class="btn-scale-sm" :disabled="totalQuestions < questionCount" @tap="startExam">
-          <text class="btn-icon">
-            🚀
-          </text>
-          <text class="btn-text">
-            开始考试
-          </text>
+        <button
+          class="start-btn"
+          hover-class="btn-scale-sm"
+          :disabled="totalQuestions < questionCount"
+          @tap="startExam"
+        >
+          <text class="btn-icon"> 🚀 </text>
+          <text class="btn-text"> 开始考试 </text>
         </button>
       </view>
     </view>
 
     <!-- 骨架屏加载状态 -->
-    <view v-if="isPageLoading" class="setup-container" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
+    <!-- #ifndef APP-NVUE -->
+    <transition name="skeleton-fade">
+      <view v-if="isPageLoading" class="setup-container" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
+        <view class="glass-card setup-card">
+          <view class="skeleton-title skeleton-animate" />
+          <view v-for="i in 4" :key="i" class="skeleton-setting">
+            <view class="skeleton-label skeleton-animate" />
+            <view class="skeleton-options">
+              <view v-for="j in 4" :key="j" class="skeleton-option skeleton-animate" />
+            </view>
+          </view>
+          <view class="skeleton-btn skeleton-animate" />
+        </view>
+      </view>
+    </transition>
+    <!-- #endif -->
+    <!-- #ifdef APP-NVUE -->
+    <view v-if="isPageLoading" class="setup-container" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <view class="glass-card setup-card">
         <view class="skeleton-title skeleton-animate" />
         <view v-for="i in 4" :key="i" class="skeleton-setting">
@@ -113,27 +113,24 @@
         <view class="skeleton-btn skeleton-animate" />
       </view>
     </view>
+    <!-- #endif -->
 
     <!-- 考试进行中 -->
     <scroll-view
       v-if="isExamStarted && !isExamFinished"
       scroll-y
       class="exam-container"
-      :style="{ paddingTop: (statusBarHeight + 50) + 'px' }"
+      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
     >
       <!-- 进度条 -->
       <view class="progress-bar">
         <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
       </view>
-      <text class="progress-text">
-        {{ currentIndex + 1 }} / {{ examQuestions.length }}
-      </text>
+      <text class="progress-text"> {{ currentIndex + 1 }} / {{ examQuestions.length }} </text>
 
       <!-- 当前题目 -->
       <view v-if="currentQuestion" class="glass-card question-card">
-        <text class="question-number">
-          第 {{ currentIndex + 1 }} 题
-        </text>
+        <text class="question-number"> 第 {{ currentIndex + 1 }} 题 </text>
         <text class="question-text">
           {{ currentQuestion.question || currentQuestion.question_content }}
         </text>
@@ -157,7 +154,12 @@
 
       <!-- 导航按钮 -->
       <view class="nav-buttons">
-        <button class="nav-btn prev" hover-class="btn-scale-sm" :disabled="currentIndex === 0 || isNavigating" @tap="prevQuestion">
+        <button
+          class="nav-btn prev"
+          hover-class="btn-scale-sm"
+          :disabled="currentIndex === 0 || isNavigating"
+          @tap="prevQuestion"
+        >
           上一题
         </button>
         <button
@@ -169,30 +171,25 @@
         >
           下一题
         </button>
-        <button
-          v-else
-          class="nav-btn submit"
-          hover-class="btn-scale-sm"
-          :disabled="isSubmitting"
-          @tap="submitExam"
-        >
+        <button v-else class="nav-btn submit" hover-class="btn-scale-sm" :disabled="isSubmitting" @tap="submitExam">
           {{ isSubmitting ? '提交中...' : '提交试卷' }}
         </button>
       </view>
 
       <!-- 答题卡 -->
       <view class="answer-sheet">
-        <text class="sheet-title">
-          答题卡
-        </text>
+        <text class="sheet-title"> 答题卡 </text>
         <view class="sheet-grid">
           <view
             v-for="(q, idx) in examQuestions"
             :key="idx"
-            :class="['sheet-item', {
-              answered: userAnswers[idx] !== undefined,
-              current: idx === currentIndex
-            }]"
+            :class="[
+              'sheet-item',
+              {
+                answered: userAnswers[idx] !== undefined,
+                current: idx === currentIndex
+              }
+            ]"
             @tap="jumpToQuestion(idx)"
           >
             <text>{{ idx + 1 }}</text>
@@ -208,20 +205,16 @@
       v-if="isExamFinished"
       scroll-y
       class="result-container"
-      :style="{ paddingTop: (statusBarHeight + 50) + 'px' }"
+      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
     >
       <view class="glass-card result-card">
-        <text class="result-title">
-          🎉 考试完成
-        </text>
+        <text class="result-title"> 🎉 考试完成 </text>
 
         <view class="score-display">
           <text class="score-number">
             {{ score }}
           </text>
-          <text class="score-unit">
-            分
-          </text>
+          <text class="score-unit"> 分 </text>
         </view>
 
         <view class="result-stats">
@@ -229,25 +222,17 @@
             <text class="stat-value correct">
               {{ correctCount }}
             </text>
-            <text class="stat-label">
-              正确
-            </text>
+            <text class="stat-label"> 正确 </text>
           </view>
           <view class="stat-item">
             <text class="stat-value wrong">
               {{ wrongCount }}
             </text>
-            <text class="stat-label">
-              错误
-            </text>
+            <text class="stat-label"> 错误 </text>
           </view>
           <view class="stat-item">
-            <text class="stat-value">
-              {{ accuracy }}%
-            </text>
-            <text class="stat-label">
-              正确率
-            </text>
+            <text class="stat-value"> {{ accuracy }}% </text>
+            <text class="stat-label"> 正确率 </text>
           </view>
         </view>
 
@@ -267,24 +252,14 @@
 
       <!-- 错题列表 -->
       <view v-if="wrongQuestions.length > 0" class="glass-card wrong-list">
-        <text class="list-title">
-          ❌ 错题回顾
-        </text>
-        <view
-          v-for="(item, idx) in wrongQuestions"
-          :key="idx"
-          class="wrong-item"
-        >
+        <text class="list-title"> ❌ 错题回顾 </text>
+        <view v-for="(item, idx) in wrongQuestions" :key="idx" class="wrong-item">
           <text class="wrong-question">
             {{ idx + 1 }}. {{ (item.question || item.question_content).substring(0, 50) }}...
           </text>
           <view class="wrong-answer">
-            <text class="user-ans">
-              你的答案: {{ ['A', 'B', 'C', 'D'][item.userAnswer] }}
-            </text>
-            <text class="correct-ans">
-              正确答案: {{ item.answer || item.correct_answer }}
-            </text>
+            <text class="user-ans"> 你的答案: {{ ['A', 'B', 'C', 'D'][item.userAnswer] }} </text>
+            <text class="correct-ans"> 正确答案: {{ item.answer || item.correct_answer }} </text>
           </view>
         </view>
       </view>
@@ -416,7 +391,7 @@ export default {
         });
 
         if (response && response.code === 0 && response.data) {
-          const backendQuestions = Array.isArray(response.data) ? response.data : (response.data.list || []);
+          const backendQuestions = Array.isArray(response.data) ? response.data : response.data.list || [];
           if (backendQuestions.length >= this.questionCount) {
             sourceQuestions = backendQuestions;
             dataSource = 'backend';
@@ -514,7 +489,9 @@ export default {
     },
 
     selectAnswer(idx) {
-      this.userAnswers[this.currentIndex] = idx;
+      // ⚠️ 必须使用 $set，直接赋值新属性不会触发 Vue 2 响应式更新
+      // 导致选项高亮、答题卡已答状态等 UI 不刷新
+      this.$set(this.userAnswers, this.currentIndex, idx);
     },
 
     prevQuestion() {
@@ -640,535 +617,543 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-	min-height: 100vh;
-	background: var(--bg-secondary, #F5F5F7);
+  min-height: 100vh;
+  background: var(--bg-secondary, #f5f5f7);
 }
 
 .nav-bar {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	z-index: 100;
-	background: var(--bg-glass);
-	backdrop-filter: blur(20px);
-	border-bottom: 1px solid var(--border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
 }
 
 .nav-content {
-	height: 50px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 30rpx;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
 }
 
 .back-btn {
-	width: 60rpx;
-	height: 60rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 36rpx;
-	color: var(--text-primary);
-	font-weight: bold;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  color: var(--text-primary);
+  font-weight: bold;
 }
 
 .nav-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--text-primary);
 }
 
 .timer-display {
-	display: flex;
-	align-items: center;
-	gap: 8rpx;
-	background: var(--danger-light);
-	padding: 8rpx 16rpx;
-	border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: var(--danger-light);
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
 }
 
 .timer-icon {
-	font-size: 24rpx;
+  font-size: 24rpx;
 }
 
 .timer-text {
-	font-size: 26rpx;
-	font-weight: bold;
-	color: var(--danger);
+  font-size: 26rpx;
+  font-weight: bold;
+  color: var(--danger);
 }
 
 .glass-card {
-	background: var(--bg-card);
-	backdrop-filter: blur(20px);
-	border: 1px solid var(--border);
-	border-radius: 40rpx;
-	padding: 40rpx;
-	margin: 30rpx;
-	box-shadow: var(--shadow-md);
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: 40rpx;
+  padding: 40rpx;
+  margin: 30rpx;
+  box-shadow: var(--shadow-md);
 }
 
 /* 设置页面 */
 .setup-container {
-	padding-bottom: 100rpx;
+  padding-bottom: 100rpx;
 }
 
 .setup-title {
-	font-size: 40rpx;
-	font-weight: bold;
-	color: var(--text-primary);
-	display: block;
-	margin-bottom: 40rpx;
-	text-align: center;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 40rpx;
+  text-align: center;
 }
 
 .setting-item {
-	margin-bottom: 40rpx;
+  margin-bottom: 40rpx;
 }
 
 .setting-label {
-	font-size: 28rpx;
-	color: var(--text-sub);
-	display: block;
-	margin-bottom: 20rpx;
+  font-size: 28rpx;
+  color: var(--text-sub);
+  display: block;
+  margin-bottom: 20rpx;
 }
 
 .setting-options {
-	display: flex;
-	gap: 16rpx;
-	flex-wrap: wrap;
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
 }
 
 .option-btn {
-	padding: 16rpx 32rpx;
-	border-radius: 20rpx;
-	background: var(--bg-secondary);
-	color: var(--text-sub);
-	font-size: 26rpx;
-	transition: all 0.2s;
+  padding: 16rpx 32rpx;
+  border-radius: 20rpx;
+  background: var(--bg-secondary);
+  color: var(--text-sub);
+  font-size: 26rpx;
+  transition: all 0.2s;
 }
 
 .option-btn.active {
-	background: var(--primary);
-	color: var(--primary-foreground);
-	font-weight: bold;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: bold;
 }
 
 .exam-info {
-	text-align: center;
-	margin: 40rpx 0;
+  text-align: center;
+  margin: 40rpx 0;
 }
 
 .info-text {
-	font-size: 26rpx;
-	color: var(--text-sub);
+  font-size: 26rpx;
+  color: var(--text-sub);
 }
 
 .start-btn {
-	width: 100%;
-	height: 100rpx;
-	background: var(--gradient-primary);
-	border-radius: 50rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 16rpx;
-	border: none;
-	box-shadow: var(--shadow-lg);
+  width: 100%;
+  height: 100rpx;
+  background: var(--gradient-primary);
+  border-radius: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  border: none;
+  box-shadow: var(--shadow-lg);
 }
 
 .start-btn[disabled] {
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 .btn-icon {
-	font-size: 36rpx;
+  font-size: 36rpx;
 }
 
 .btn-text {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: var(--primary-foreground);
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--primary-foreground);
 }
 
 /* 考试页面 */
 .exam-container {
-	height: 100vh;
-	padding: 0 30rpx;
-	box-sizing: border-box;
+  height: 100vh;
+  padding: 0 30rpx;
+  box-sizing: border-box;
 }
 
 .progress-bar {
-	height: 8rpx;
-	background: var(--bg-secondary);
-	border-radius: 4rpx;
-	margin: 20rpx 0;
-	overflow: hidden;
+  height: 8rpx;
+  background: var(--bg-secondary);
+  border-radius: 4rpx;
+  margin: 20rpx 0;
+  overflow: hidden;
 }
 
 .progress-fill {
-	height: 100%;
-	background: var(--primary);
-	border-radius: 4rpx;
-	transition: width 0.3s;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4rpx;
+  transition: width 0.3s;
 }
 
 .progress-text {
-	font-size: 24rpx;
-	color: var(--text-sub);
-	text-align: center;
-	display: block;
-	margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  text-align: center;
+  display: block;
+  margin-bottom: 20rpx;
 }
 
 .question-card {
-	margin: 0 0 30rpx 0;
+  margin: 0 0 30rpx 0;
 }
 
 .question-number {
-	font-size: 24rpx;
-	color: var(--primary);
-	font-weight: bold;
-	display: block;
-	margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: var(--primary);
+  font-weight: bold;
+  display: block;
+  margin-bottom: 20rpx;
 }
 
 .question-text {
-	font-size: 32rpx;
-	color: var(--text-primary);
-	line-height: 1.6;
-	display: block;
-	margin-bottom: 40rpx;
+  font-size: 32rpx;
+  color: var(--text-primary);
+  line-height: 1.6;
+  display: block;
+  margin-bottom: 40rpx;
 }
 
 .options-list {
-	display: flex;
-	flex-direction: column;
-	gap: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
 }
 
 .option-item {
-	display: flex;
-	align-items: flex-start;
-	padding: 24rpx;
-	background: var(--bg-secondary);
-	border-radius: 20rpx;
-	border: 2rpx solid transparent;
-	transition: all 0.2s;
+  display: flex;
+  align-items: flex-start;
+  padding: 24rpx;
+  background: var(--bg-secondary);
+  border-radius: 20rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
 }
 
 .option-item.selected {
-	background: var(--primary-light);
-	border-color: var(--primary);
+  background: var(--primary-light);
+  border-color: var(--primary);
 }
 
 .option-label {
-	width: 48rpx;
-	height: 48rpx;
-	background: var(--bg-card);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 26rpx;
-	font-weight: bold;
-	color: var(--text-sub);
-	margin-right: 20rpx;
-	flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  background: var(--bg-card);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: bold;
+  color: var(--text-sub);
+  margin-right: 20rpx;
+  flex-shrink: 0;
 }
 
 .option-item.selected .option-label {
-	background: var(--primary);
-	color: var(--primary-foreground);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .option-text {
-	font-size: 28rpx;
-	color: var(--text-primary);
-	line-height: 1.5;
-	flex: 1;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  line-height: 1.5;
+  flex: 1;
 }
 
 .nav-buttons {
-	display: flex;
-	gap: 20rpx;
-	margin: 30rpx 0;
+  display: flex;
+  gap: 20rpx;
+  margin: 30rpx 0;
 }
 
 .nav-btn {
-	flex: 1;
-	height: 88rpx;
-	border-radius: 44rpx;
-	font-size: 28rpx;
-	font-weight: bold;
-	border: none;
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  border: none;
 }
 
 .nav-btn.prev {
-	background: var(--bg-secondary);
-	color: var(--text-sub);
+  background: var(--bg-secondary);
+  color: var(--text-sub);
 }
 
 .nav-btn.next {
-	background: var(--primary);
-	color: var(--primary-foreground);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .nav-btn.submit {
-	background: var(--success);
-	color: white;
+  background: var(--success);
+  color: white;
 }
 
 .nav-btn[disabled] {
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 /* 答题卡 */
 .answer-sheet {
-	background: var(--bg-card);
-	border-radius: 30rpx;
-	padding: 30rpx;
-	margin-bottom: 30rpx;
+  background: var(--bg-card);
+  border-radius: 30rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
 }
 
 .sheet-title {
-	font-size: 28rpx;
-	font-weight: bold;
-	color: var(--text-primary);
-	display: block;
-	margin-bottom: 20rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 20rpx;
 }
 
 .sheet-grid {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
 }
 
 .sheet-item {
-	width: 60rpx;
-	height: 60rpx;
-	border-radius: 12rpx;
-	background: var(--bg-secondary);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 24rpx;
-	color: var(--text-sub);
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 12rpx;
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 
 .sheet-item.answered {
-	background: var(--primary);
-	color: var(--primary-foreground);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 .sheet-item.current {
-	border: 2rpx solid var(--primary);
+  border: 2rpx solid var(--primary);
 }
 
 /* 结果页面 */
 .result-container {
-	height: 100vh;
-	padding: 0 30rpx;
-	box-sizing: border-box;
+  height: 100vh;
+  padding: 0 30rpx;
+  box-sizing: border-box;
 }
 
 .result-card {
-	text-align: center;
-	margin-top: 20rpx;
+  text-align: center;
+  margin-top: 20rpx;
 }
 
 .result-title {
-	font-size: 40rpx;
-	font-weight: bold;
-	color: var(--text-primary);
-	display: block;
-	margin-bottom: 40rpx;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 40rpx;
 }
 
 .score-display {
-	display: flex;
-	align-items: baseline;
-	justify-content: center;
-	margin-bottom: 40rpx;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 40rpx;
 }
 
 .score-number {
-	font-size: 120rpx;
-	font-weight: 900;
-	color: var(--primary);
+  font-size: 120rpx;
+  font-weight: 900;
+  color: var(--primary);
 }
 
 .score-unit {
-	font-size: 36rpx;
-	color: var(--text-sub);
-	margin-left: 8rpx;
+  font-size: 36rpx;
+  color: var(--text-sub);
+  margin-left: 8rpx;
 }
 
 .result-stats {
-	display: flex;
-	justify-content: space-around;
-	margin-bottom: 40rpx;
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 40rpx;
 }
 
 .stat-item {
-	text-align: center;
+  text-align: center;
 }
 
 .stat-value {
-	font-size: 48rpx;
-	font-weight: bold;
-	display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  display: block;
 }
 
 .stat-value.correct {
-	color: var(--success);
+  color: var(--success);
 }
 
 .stat-value.wrong {
-	color: var(--danger);
+  color: var(--danger);
 }
 
 .stat-label {
-	font-size: 24rpx;
-	color: var(--text-sub);
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 
 .result-message {
-	padding: 30rpx;
-	background: var(--bg-secondary);
-	border-radius: 20rpx;
-	margin-bottom: 40rpx;
+  padding: 30rpx;
+  background: var(--bg-secondary);
+  border-radius: 20rpx;
+  margin-bottom: 40rpx;
 }
 
 .result-message text {
-	font-size: 28rpx;
-	color: var(--text-primary);
+  font-size: 28rpx;
+  color: var(--text-primary);
 }
 
 .result-actions {
-	display: flex;
-	gap: 20rpx;
+  display: flex;
+  gap: 20rpx;
 }
 
 .action-btn {
-	flex: 1;
-	height: 88rpx;
-	border-radius: 44rpx;
-	font-size: 28rpx;
-	font-weight: bold;
-	border: none;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .action-btn.review {
-	background: var(--bg-secondary);
-	color: var(--text-primary);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .action-btn.retry {
-	background: var(--primary);
-	color: var(--primary-foreground);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
 /* 错题列表 */
 .wrong-list {
-	margin-top: 30rpx;
+  margin-top: 30rpx;
 }
 
 .list-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: var(--text-primary);
-	display: block;
-	margin-bottom: 30rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 30rpx;
 }
 
 .wrong-item {
-	padding: 24rpx;
-	background: var(--bg-secondary);
-	border-radius: 20rpx;
-	margin-bottom: 20rpx;
+  padding: 24rpx;
+  background: var(--bg-secondary);
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
 }
 
 .wrong-question {
-	font-size: 26rpx;
-	color: var(--text-primary);
-	display: block;
-	margin-bottom: 16rpx;
+  font-size: 26rpx;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 16rpx;
 }
 
 .wrong-answer {
-	display: flex;
-	gap: 20rpx;
-	font-size: 24rpx;
+  display: flex;
+  gap: 20rpx;
+  font-size: 24rpx;
 }
 
 .user-ans {
-	color: var(--danger);
+  color: var(--danger);
 }
 
 .correct-ans {
-	color: var(--success);
+  color: var(--success);
 }
 
 .safe-area {
-	height: 100rpx;
+  height: 100rpx;
 }
 
 /* 骨架屏样式 */
 .skeleton-title {
-	width: 200rpx;
-	height: 40rpx;
-	border-radius: 8rpx;
-	margin: 0 auto 40rpx;
+  width: 200rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  margin: 0 auto 40rpx;
 }
 
 .skeleton-setting {
-	margin-bottom: 40rpx;
+  margin-bottom: 40rpx;
 }
 
 .skeleton-label {
-	width: 120rpx;
-	height: 28rpx;
-	border-radius: 6rpx;
-	margin-bottom: 20rpx;
+  width: 120rpx;
+  height: 28rpx;
+  border-radius: 6rpx;
+  margin-bottom: 20rpx;
 }
 
 .skeleton-options {
-	display: flex;
-	gap: 16rpx;
-	flex-wrap: wrap;
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
 }
 
 .skeleton-option {
-	width: 120rpx;
-	height: 56rpx;
-	border-radius: 20rpx;
+  width: 120rpx;
+  height: 56rpx;
+  border-radius: 20rpx;
 }
 
 .skeleton-btn {
-	width: 100%;
-	height: 100rpx;
-	border-radius: 50rpx;
-	margin-top: 40rpx;
+  width: 100%;
+  height: 100rpx;
+  border-radius: 50rpx;
+  margin-top: 40rpx;
 }
 
 .skeleton-animate {
-	background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
-	background-size: 200% 100%;
-	animation: skeleton-loading 1.5s infinite;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
 }
 
 @keyframes skeleton-loading {
-	0% {
-		background-position: 200% 0;
-	}
-	100% {
-		background-position: -200% 0;
-	}
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 骨架屏淡出过渡 */
+.skeleton-fade-leave-active {
+  transition: opacity 0.35s ease-out;
+}
+.skeleton-fade-leave-to {
+  opacity: 0;
 }
 </style>

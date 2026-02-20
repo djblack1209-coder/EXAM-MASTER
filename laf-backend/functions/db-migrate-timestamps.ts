@@ -18,15 +18,26 @@
  */
 
 import cloud from '@lafjs/cloud';
+import { createLogger } from './_shared/api-response';
 
+const logger = createLogger('[DbMigrate]');
 const db = cloud.database();
 const _ = db.command;
 
 const COLLECTIONS = [
-  'users', 'mistakes', 'questions', 'learning_goals',
-  'achievements', 'pk_battles', 'rankings', 'groups',
-  'favorites', 'email_codes', 'conversations',
-  'study_stats', 'user_stats'
+  'users',
+  'mistakes',
+  'questions',
+  'learning_goals',
+  'achievements',
+  'pk_battles',
+  'rankings',
+  'groups',
+  'favorites',
+  'email_codes',
+  'conversations',
+  'study_stats',
+  'user_stats'
 ];
 
 const TIMESTAMP_FIELDS = ['created_at', 'updated_at'];
@@ -37,17 +48,17 @@ export default async function (ctx) {
     const { action = 'check' } = ctx.body || {};
 
     switch (action) {
-    case 'check':
-      return await checkTimestampTypes();
-    case 'migrate':
-      return await migrateToDate();
-    case 'rollback':
-      return await rollbackToNumber();
-    default:
-      return { code: 400, message: '无效的 action，可选: check, migrate, rollback' };
+      case 'check':
+        return await checkTimestampTypes();
+      case 'migrate':
+        return await migrateToDate();
+      case 'rollback':
+        return await rollbackToNumber();
+      default:
+        return { code: 400, message: '无效的 action，可选: check, migrate, rollback' };
     }
   } catch (error) {
-    console.error('[db-migrate-timestamps] 迁移脚本异常:', error);
+    logger.error('[db-migrate-timestamps] 迁移脚本异常:', error);
     return {
       code: 500,
       message: '迁移脚本执行异常',
@@ -75,20 +86,26 @@ async function checkTimestampTypes() {
 
       for (const field of TIMESTAMP_FIELDS) {
         // 查询 number 类型的记录数
-        const numberCount = (await col.where({
-          [field]: _.exists(true)
-        }).count()).total;
+        const numberCount = (
+          await col
+            .where({
+              [field]: _.exists(true)
+            })
+            .count()
+        ).total;
 
         // 抽样检查类型
-        const sample = await col.where({
-          [field]: _.exists(true)
-        }).limit(1).get();
+        const sample = await col
+          .where({
+            [field]: _.exists(true)
+          })
+          .limit(1)
+          .get();
 
         let sampleType = 'unknown';
         if (sample.data?.[0]?.[field] !== undefined) {
           const val = sample.data[0][field];
-          sampleType = typeof val === 'number' ? 'number' :
-            val instanceof Date ? 'Date' : typeof val;
+          sampleType = typeof val === 'number' ? 'number' : val instanceof Date ? 'Date' : typeof val;
         }
 
         colReport.fields[field] = {
@@ -119,12 +136,17 @@ async function migrateToDate() {
       let totalMigrated = 0;
 
       for (const field of TIMESTAMP_FIELDS) {
+        let skip = 0;
         let hasMore = true;
         while (hasMore) {
-          // 查找 field 为 number 类型的记录
-          const batch = await col.where({
-            [field]: _.exists(true)
-          }).limit(BATCH_SIZE).get();
+          // 查找 field 存在的记录，使用 skip 分页避免重复扫描
+          const batch = await col
+            .where({
+              [field]: _.exists(true)
+            })
+            .skip(skip)
+            .limit(BATCH_SIZE)
+            .get();
 
           if (!batch.data || batch.data.length === 0) {
             hasMore = false;
@@ -132,14 +154,7 @@ async function migrateToDate() {
           }
 
           // 过滤出 number 类型的记录
-          const numberRecords = batch.data.filter(
-            doc => typeof doc[field] === 'number'
-          );
-
-          if (numberRecords.length === 0) {
-            hasMore = false;
-            break;
-          }
+          const numberRecords = batch.data.filter((doc) => typeof doc[field] === 'number');
 
           // 逐条更新（Laf 不支持批量条件更新）
           for (const doc of numberRecords) {
@@ -149,8 +164,11 @@ async function migrateToDate() {
             totalMigrated++;
           }
 
-          // 如果本批次全部是 number，可能还有更多
-          if (numberRecords.length < BATCH_SIZE) {
+          // 跳过已经是 Date 类型的记录（含刚转换的，下轮会以 Date 出现）
+          const alreadyDateCount = batch.data.length - numberRecords.length;
+          skip += alreadyDateCount;
+
+          if (batch.data.length < BATCH_SIZE) {
             hasMore = false;
           }
         }
@@ -182,11 +200,16 @@ async function rollbackToNumber() {
       let totalRolledBack = 0;
 
       for (const field of TIMESTAMP_FIELDS) {
+        let skip = 0;
         let hasMore = true;
         while (hasMore) {
-          const batch = await col.where({
-            [field]: _.exists(true)
-          }).limit(BATCH_SIZE).get();
+          const batch = await col
+            .where({
+              [field]: _.exists(true)
+            })
+            .skip(skip)
+            .limit(BATCH_SIZE)
+            .get();
 
           if (!batch.data || batch.data.length === 0) {
             hasMore = false;
@@ -194,24 +217,20 @@ async function rollbackToNumber() {
           }
 
           const dateRecords = batch.data.filter(
-            doc => doc[field] instanceof Date ||
-              (typeof doc[field] === 'string' && !isNaN(Date.parse(doc[field])))
+            (doc) => doc[field] instanceof Date || (typeof doc[field] === 'string' && !isNaN(Date.parse(doc[field])))
           );
 
-          if (dateRecords.length === 0) {
-            hasMore = false;
-            break;
-          }
-
           for (const doc of dateRecords) {
-            const ts = doc[field] instanceof Date
-              ? doc[field].getTime()
-              : new Date(doc[field]).getTime();
+            const ts = doc[field] instanceof Date ? doc[field].getTime() : new Date(doc[field]).getTime();
             await col.doc(doc._id).update({ [field]: ts });
             totalRolledBack++;
           }
 
-          if (dateRecords.length < BATCH_SIZE) {
+          // Skip records that are already number type
+          const alreadyNumberCount = batch.data.length - dateRecords.length;
+          skip += alreadyNumberCount;
+
+          if (batch.data.length < BATCH_SIZE) {
             hasMore = false;
           }
         }
