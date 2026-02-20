@@ -239,7 +239,7 @@
         <view v-if="!isPageLoading" class="card about-card">
           <view class="about-row">
             <text class="about-label"> 版本 </text>
-            <text class="about-value"> v1.0.0 </text>
+            <text class="about-value"> v{{ appVersion }} </text>
           </view>
           <view class="about-divider" />
           <view class="about-row">
@@ -300,6 +300,9 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
+
+// L6: 版本号从统一配置读取
+const appVersion = config.appVersion || '1.0.0';
 
 // ========== 响应式状态 ==========
 const isDark = ref(false);

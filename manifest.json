@@ -40,13 +40,7 @@
           "NSPhotoLibraryAddUsageDescription": "用于保存学习海报到相册"
         }
       },
-      "sdkConfigs": {
-        "oauth": {
-          "qq": {
-            "appid": "1112414551"
-          }
-        }
-      }
+      "sdkConfigs": {}
     }
   },
   "quickapp": {},
@@ -77,33 +71,13 @@
       "uploadFile": 60000,
       "downloadFile": 60000
     },
-    "permission": {
-      "scope.userLocation": {
-        "desc": "您的位置信息将用于院校推荐和学习数据统计"
-      }
-    },
-    "requiredPrivateInfos": [
-      "getLocation"
-    ],
+    "permission": {},
+    "requiredPrivateInfos": [],
     "requiredBackgroundModes": [],
     "optimization": {
       "subPackages": true
     },
     "plugins": {}
-  },
-  "mp-qq": {
-    "aid": "1112414551",
-    "setting": {
-      "urlCheck": false,
-      "es6": true,
-      "enhance": true,
-      "postcss": true,
-      "minified": true
-    },
-    "usingComponents": true,
-    "optimization": {
-      "subPackages": true
-    }
   },
   "mp-alipay": {
     "usingComponents": true,

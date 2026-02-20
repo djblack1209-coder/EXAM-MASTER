@@ -172,6 +172,13 @@
     <!-- 退出登录（已提取为独立组件） -->
     <LogoutButton @logged-out="userInfo = {}" />
 
+    <!-- C5: 注销账号（微信审核硬性要求） -->
+    <view v-if="userInfo.uid" class="delete-account-section">
+      <div class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
+        <text class="delete-account-text"> 注销账号 </text>
+      </div>
+    </view>
+
     <!-- 底部安全区域 -->
     <div class="footer-safe"></div>
 
@@ -240,6 +247,8 @@ const showThemeSelector = ref(false); // 主题选择器弹窗
 
 // 主题系统
 let _themeStore = null;
+// [H11-FIX] 定时器追踪
+const _timers = [];
 // F002: 对话逻辑已提取到 AIChatModal 组件，仅保留控制状态
 const showChat = ref(false);
 const currentTutor = ref({});
@@ -295,6 +304,9 @@ onUnmounted(() => {
   // F003: 传入回调引用，只移除自己注册的监听器
   if (_themeHandler) uni.$off('themeUpdate', _themeHandler);
   if (_updateThemeHandler) uni.$off('updateTheme', _updateThemeHandler);
+  // H11: 清理所有 setTimeout，防止内存泄漏
+  _timers.forEach((t) => clearTimeout(t));
+  _timers.length = 0;
 });
 
 // F002: initAudio, initRecorder, handleTouchStart, handleTouchEnd, processVoice,
@@ -488,6 +500,37 @@ const handleClearCache = () => {
 
 // F002-S5: handleLogout moved to LogoutButton component
 
+// C5: 注销账号处理
+const handleDeleteAccount = () => {
+  uni.showModal({
+    title: '注销账号',
+    content: '注销后将有7天冷静期，期间可撤销。冷静期结束后账号数据将被永久删除，且无法恢复。确定要注销吗？',
+    confirmText: '确定注销',
+    confirmColor: '#FF3B30',
+    success: async (res) => {
+      if (res.confirm) {
+        uni.showLoading({ title: '提交中...' });
+        try {
+          const result = await lafService.requestAccountDeletion();
+          uni.hideLoading();
+          if (result.success) {
+            uni.showModal({
+              title: '注销申请已提交',
+              content: result.message || '7天冷静期内可在此页面撤销注销',
+              showCancel: false
+            });
+          } else {
+            uni.showToast({ title: result.message || '操作失败', icon: 'none' });
+          }
+        } catch (e) {
+          uni.hideLoading();
+          uni.showToast({ title: '网络异常，请重试', icon: 'none' });
+        }
+      }
+    }
+  });
+};
+
 // 移除目标院校
 const removeTargetSchool = (index) => {
   uni.showModal({
@@ -624,9 +667,11 @@ const onChooseAvatar = (e) => {
       // 强制触发响应式更新（确保头像立即显示）
       const updatedUserInfo = { ...userInfo.value };
       userInfo.value = {};
-      setTimeout(() => {
-        userInfo.value = updatedUserInfo;
-      }, 50);
+      _timers.push(
+        setTimeout(() => {
+          userInfo.value = updatedUserInfo;
+        }, 50)
+      );
       // 显示成功提示
       uni.showToast({ title: '头像已更新', icon: 'success' });
       // ✅ F020: 异步上传到服务器（不阻塞本地保存）
@@ -656,9 +701,11 @@ const onChooseAvatar = (e) => {
           // 强制触发响应式更新
           const updatedInfo = { ...userInfo.value };
           userInfo.value = {};
-          setTimeout(() => {
-            userInfo.value = updatedInfo;
-          }, 50);
+          _timers.push(
+            setTimeout(() => {
+              userInfo.value = updatedInfo;
+            }, 50)
+          );
           uni.showToast({ title: '头像已更新', icon: 'success' });
           // ✅ F020: 异步上传到服务器
           _uploadAvatarToServer(tempFilePath);
@@ -677,9 +724,11 @@ const onChooseAvatar = (e) => {
     uni.showToast({ title: '头像更新失败', icon: 'none' });
   } finally {
     // 1秒后解锁
-    setTimeout(() => {
-      isChoosingAvatar.value = false;
-    }, 1000);
+    _timers.push(
+      setTimeout(() => {
+        isChoosingAvatar.value = false;
+      }, 1000)
+    );
   }
 };
 
@@ -818,9 +867,11 @@ const saveUserInfo = () => {
   // 强制触发响应式更新
   const updatedInfo = { ...userInfo.value };
   userInfo.value = {};
-  setTimeout(() => {
-    userInfo.value = updatedInfo;
-  }, 50);
+  _timers.push(
+    setTimeout(() => {
+      userInfo.value = updatedInfo;
+    }, 50)
+  );
 
   // 通知其他页面用户信息已更新
   uni.$emit('userInfoUpdated', updatedInfo);
@@ -868,9 +919,11 @@ const handleCloseInviteModal = () => {
 // 打开海报生成弹窗
 const handleOpenPoster = () => {
   showInviteModal.value = false; // 先关闭邀请弹窗
-  setTimeout(() => {
-    showPosterModal.value = true; // 然后打开海报弹窗
-  }, 300); // 延迟300ms，让关闭动画完成
+  _timers.push(
+    setTimeout(() => {
+      showPosterModal.value = true; // 然后打开海报弹窗
+    }, 300)
+  ); // 延迟300ms，让关闭动画完成
 };
 
 // 关闭海报弹窗
@@ -1315,6 +1368,19 @@ const handleClosePosterModal = () => {
 .cache-size {
   font-size: 28rpx;
   color: var(--text-secondary, #495057);
+}
+
+/* C5: 注销账号 */
+.delete-account-section {
+  margin: 30rpx 32rpx 0;
+}
+.delete-account-btn {
+  text-align: center;
+  padding: 20rpx 0;
+}
+.delete-account-text {
+  font-size: 26rpx;
+  color: var(--text-tertiary, #999);
 }
 
 /* 底部安全区域 */

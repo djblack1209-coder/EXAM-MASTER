@@ -45,7 +45,7 @@ export default async function (ctx) {
       if (payload.userId && payload.userId !== userId) {
         return { code: 401, message: '身份验证失败', requestId };
       }
-    } else if (process.env.NODE_ENV === 'production') {
+    } else {
       return { code: 401, message: '缺少认证 token，请重新登录', requestId };
     }
 
@@ -86,7 +86,7 @@ export default async function (ctx) {
     console.error(`[${requestId}] 用户资料管理异常:`, error);
     return {
       code: 500,
-      message: error.message || '服务器错误',
+      message: '服务异常，请稍后重试',
       requestId,
       duration: Date.now() - startTime
     };
@@ -134,10 +134,11 @@ async function saveUploadRecord(userId, data, requestId) {
 async function getUploadRecords(userId, data, requestId) {
   const { page = 1, pageSize = 20 } = data || {};
 
-  const skip = (page - 1) * pageSize;
+  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
+  const skip = (page - 1) * safePageSize;
 
   const [records, countResult] = await Promise.all([
-    db.collection('user_materials').where({ userId }).orderBy('createdAt', 'desc').skip(skip).limit(pageSize).get(),
+    db.collection('user_materials').where({ userId }).orderBy('createdAt', 'desc').skip(skip).limit(safePageSize).get(),
     db.collection('user_materials').where({ userId }).count()
   ]);
 
@@ -147,7 +148,7 @@ async function getUploadRecords(userId, data, requestId) {
       list: records.data || [],
       total: countResult.total || 0,
       page,
-      pageSize
+      pageSize: safePageSize
     },
     requestId
   };
@@ -246,6 +247,8 @@ async function saveQuestions(userId, data, requestId) {
 async function getQuestions(userId, data, requestId) {
   const { page = 1, pageSize = 20, materialId, tags, difficulty, onlyWrong, random } = data || {};
 
+  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
+
   // 构建查询条件
   const query = { userId };
 
@@ -284,10 +287,10 @@ async function getQuestions(userId, data, requestId) {
   }
 
   // 分页查询
-  const skip = (page - 1) * pageSize;
+  const skip = (page - 1) * safePageSize;
 
   const [questions, countResult] = await Promise.all([
-    db.collection('user_questions').where(query).orderBy('createdAt', 'desc').skip(skip).limit(pageSize).get(),
+    db.collection('user_questions').where(query).orderBy('createdAt', 'desc').skip(skip).limit(safePageSize).get(),
     db.collection('user_questions').where(query).count()
   ]);
 
@@ -297,7 +300,7 @@ async function getQuestions(userId, data, requestId) {
       list: questions.data || [],
       total: countResult.total || 0,
       page,
-      pageSize
+      pageSize: safePageSize
     },
     requestId
   };

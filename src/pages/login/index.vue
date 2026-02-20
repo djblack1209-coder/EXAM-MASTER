@@ -767,6 +767,20 @@ const handleEmailLogin = async () => {
     return;
   }
 
+  // ✅ M17: 密码强度检查（登录+注册统一校验）：需包含大写字母、小写字母和数字
+  if (!/[A-Z]/.test(password)) {
+    uni.showToast({ title: '密码需包含大写字母', icon: 'none' });
+    return;
+  }
+  if (!/[a-z]/.test(password)) {
+    uni.showToast({ title: '密码需包含小写字母', icon: 'none' });
+    return;
+  }
+  if (!/\d/.test(password)) {
+    uni.showToast({ title: '密码需包含数字', icon: 'none' });
+    return;
+  }
+
   // 注册时额外校验
   if (isRegister.value) {
     if (!emailForm.value.code) {
@@ -776,20 +790,6 @@ const handleEmailLogin = async () => {
 
     if (emailForm.value.code.length !== 6) {
       uni.showToast({ title: '验证码为6位数字', icon: 'none' });
-      return;
-    }
-
-    // ✅ 密码强度检查：与后端一致，需包含大写字母、小写字母和数字
-    if (!/[A-Z]/.test(password)) {
-      uni.showToast({ title: '密码需包含大写字母', icon: 'none' });
-      return;
-    }
-    if (!/[a-z]/.test(password)) {
-      uni.showToast({ title: '密码需包含小写字母', icon: 'none' });
-      return;
-    }
-    if (!/\d/.test(password)) {
-      uni.showToast({ title: '密码需包含数字', icon: 'none' });
       return;
     }
   }

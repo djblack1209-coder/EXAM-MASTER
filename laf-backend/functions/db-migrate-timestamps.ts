@@ -45,6 +45,12 @@ const BATCH_SIZE = 100;
 
 export default async function (ctx) {
   try {
+    // [C3-FIX] 管理工具函数需要管理员权限
+    const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
+    if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+      return { code: 403, success: false, message: '需要管理员权限，请提供 ADMIN_SECRET' };
+    }
+
     const { action = 'check' } = ctx.body || {};
 
     switch (action) {

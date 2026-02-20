@@ -31,7 +31,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@dcloudio/uni-components": "^3.0.0-alpha-3000020210521001",
+    "@dcloudio/uni-components": "^3.0.0-alpha-5000020260104004",
     "ai-agent-team": "^2.0.1",
     "pinia": "2.1.7",
     "vue": "3.4.21"

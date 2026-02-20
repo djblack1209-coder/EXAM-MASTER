@@ -19,6 +19,7 @@
 import cloud from '@lafjs/cloud';
 import { validate, sanitizeString } from '../utils/validator';
 import { createLogger } from './_shared/api-response';
+import { verifyJWT } from './login';
 
 const logger = createLogger('[DocConvert]');
 
@@ -58,6 +59,17 @@ export default async function (ctx) {
   logger.info(`[${requestId}] ctx.params:`, JSON.stringify(ctx.params || {}).substring(0, 200));
 
   try {
+    // [C1-FIX] 鉴权：文档转换消耗付费API配额，必须验证用户身份
+    const token = ctx.headers?.authorization || ctx.headers?.token || ctx.body?.token;
+    if (!token) {
+      return { code: 401, success: false, message: '未登录，请先登录', requestId };
+    }
+    const payload = verifyJWT(token.replace('Bearer ', ''));
+    if (!payload || !payload.userId) {
+      return { code: 401, success: false, message: '登录已过期，请重新登录', requestId };
+    }
+    logger.info(`[${requestId}] 用户已验证: ${payload.userId}`);
+
     // 兼容多种参数传递方式（Laf / Sealos / 不同版本）
     let body = ctx.body || ctx.request?.body || ctx.query || ctx.params || {};
 
