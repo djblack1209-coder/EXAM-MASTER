@@ -1,6 +1,6 @@
 /**
  * AI 代理云函数 - 智谱 GLM-4 接口（升级版 v2.0）
- * 
+ *
  * 功能：
  * 1. generate_questions - 生成题目
  * 2. analyze - 错题深度分析
@@ -9,85 +9,78 @@
  * 5. material_understand - 资料理解出题（新增）
  * 6. trend_predict - 趋势预测（新增）
  * 7. friend_chat - AI好友对话（新增）
- * 
+ *
  * 请求参数：
  * - action: string (必填) - 操作类型
  * - content: string (必填) - 输入内容
  * - friendType: string (可选) - AI好友类型
  * - userProfile: object (可选) - 用户画像
  * - context: object (可选) - 上下文信息
- * 
+ *
  * 返回格式：
  * { code: 0, success: true, data: {...}, message: 'success' }
- * 
+ *
  * @version 2.0.0
  * @author EXAM-MASTER Team
  */
 
-import cloud from '@lafjs/cloud'
-import crypto from 'crypto'
-import { perfMonitor } from '../utils/perf-monitor'
+import cloud from '@lafjs/cloud';
+import crypto from 'crypto';
+import { perfMonitor } from '../utils/perf-monitor';
 
 // ✅ B020: 导入 JWT 验证函数
-import { verifyJWT } from './login'
+import { verifyJWT } from './login';
 
 // ==================== 环境配置 ====================
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
+import { IS_PRODUCTION, LOG_LEVEL, createLogger } from './_shared/api-response';
+const logger = createLogger('[ProxyAI]');
 
 // 环境变量配置
 // 安全提示：敏感信息必须通过环境变量配置，禁止硬编码
-const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY || ''
-const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions'
+const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY || '';
+const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
 
 // ==================== P014: 环境变量完整性校验 ====================
 // 所有必需的环境变量及其描述
 const REQUIRED_ENV_VARS = {
   ZHIPU_API_KEY: { desc: '智谱AI API密钥', validate: (v: string) => v.length >= 10 },
-  JWT_SECRET: { desc: 'JWT签名密钥', validate: (v: string) => v.length >= 16 },
-}
+  JWT_SECRET: { desc: 'JWT签名密钥', validate: (v: string) => v.length >= 16 }
+};
 
 const OPTIONAL_ENV_VARS = {
   LOG_LEVEL: { desc: '日志级别', default: 'info' },
-  NODE_ENV: { desc: '运行环境', default: 'development' },
-}
+  NODE_ENV: { desc: '运行环境', default: 'development' }
+};
 
 // 启动时校验所有必需环境变量
-const envCheckResults: { key: string; status: 'ok' | 'missing' | 'invalid'; desc: string }[] = []
+const envCheckResults: { key: string; status: 'ok' | 'missing' | 'invalid'; desc: string }[] = [];
 for (const [key, config] of Object.entries(REQUIRED_ENV_VARS)) {
-  const value = process.env[key] || ''
+  const value = process.env[key] || '';
   if (!value) {
-    envCheckResults.push({ key, status: 'missing', desc: config.desc })
-    console.error(`[ProxyAI] ❌ 环境变量 ${key} (${config.desc}) 未配置！`)
+    envCheckResults.push({ key, status: 'missing', desc: config.desc });
+    logger.error(`❌ 环境变量 ${key} (${config.desc}) 未配置！`);
   } else if (!config.validate(value)) {
-    envCheckResults.push({ key, status: 'invalid', desc: config.desc })
-    console.error(`[ProxyAI] ❌ 环境变量 ${key} (${config.desc}) 格式无效！`)
+    envCheckResults.push({ key, status: 'invalid', desc: config.desc });
+    logger.error(`❌ 环境变量 ${key} (${config.desc}) 格式无效！`);
   } else {
-    envCheckResults.push({ key, status: 'ok', desc: config.desc })
+    envCheckResults.push({ key, status: 'ok', desc: config.desc });
   }
 }
 
-const missingEnvCount = envCheckResults.filter(r => r.status !== 'ok').length
+const missingEnvCount = envCheckResults.filter((r) => r.status !== 'ok').length;
 if (missingEnvCount > 0 && IS_PRODUCTION) {
-  console.error(`[ProxyAI] ❌ 生产环境有 ${missingEnvCount} 个必需环境变量未正确配置，AI 功能将受限。`)
+  logger.error(`❌ 生产环境有 ${missingEnvCount} 个必需环境变量未正确配置，AI 功能将受限。`);
 }
 
 // ==================== 超时和重试配置 ====================
-const AI_REQUEST_TIMEOUT = 60000  // AI 请求超时时间：60秒
-const AI_MAX_RETRIES = 2          // 最大重试次数
-const AI_RETRY_DELAY = 1000       // 重试延迟：1秒
+const AI_REQUEST_TIMEOUT = 60000; // AI 请求超时时间：60秒
+const AI_MAX_RETRIES = 2; // 最大重试次数
+const AI_RETRY_DELAY = 1000; // 重试延迟：1秒
 
 // ==================== 请求频率限制配置 ====================
-const RATE_LIMIT_WINDOW = 60000   // 频率限制窗口：60秒
-const RATE_LIMIT_MAX_REQUESTS = 20 // 每个用户每分钟最多20次请求
-const rateLimitCache = new Map<string, { count: number; resetTime: number }>()
-
-// ==================== 日志工具 ====================
-const logger = {
-  info: (...args: unknown[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
-  warn: (...args: unknown[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
-  error: (...args: unknown[]) => console.error(...args)
-}
+const RATE_LIMIT_WINDOW = 60000; // 频率限制窗口：60秒
+const RATE_LIMIT_MAX_REQUESTS = 20; // 每个用户每分钟最多20次请求
+const rateLimitCache = new Map<string, { count: number; resetTime: number }>();
 
 // ==================== 审计模式检查 ====================
 /**
@@ -96,19 +89,19 @@ const logger = {
  */
 function checkAuditMode(ctx: Record<string, unknown>): { valid: boolean; error?: string } {
   // 1. 检查请求头中的审计模式标识
-  const auditMode = ctx.headers?.['x-audit-mode']
-  const auditToken = ctx.headers?.['x-audit-token']
-  
+  const auditMode = ctx.headers?.['x-audit-mode'];
+  const auditToken = ctx.headers?.['x-audit-token'];
+
   // 2. 生产环境必须校验审计模式
   if (IS_PRODUCTION) {
     // ✅ B020: 生产环境严格校验审计令牌，校验失败直接拒绝请求
     if (!auditToken || !validateAuditToken(auditToken)) {
-      logger.warn('[Audit] 审计令牌无效或缺失，拒绝请求')
-      return { valid: false, error: '审计校验失败，请刷新页面重试' }
+      logger.warn('[Audit] 审计令牌无效或缺失，拒绝请求');
+      return { valid: false, error: '审计校验失败，请刷新页面重试' };
     }
   }
-  
-  return { valid: true }
+
+  return { valid: true };
 }
 
 /**
@@ -116,39 +109,35 @@ function checkAuditMode(ctx: Record<string, unknown>): { valid: boolean; error?:
  * ✅ B020: 使用 HMAC 签名验证，防止伪造
  */
 function validateAuditToken(token: string): boolean {
-  if (!token || typeof token !== 'string') return false
+  if (!token || typeof token !== 'string') return false;
 
   try {
     // 令牌格式: timestamp_hash
-    const parts = token.split('_')
-    if (parts.length !== 2) return false
+    const parts = token.split('_');
+    if (parts.length !== 2) return false;
 
-    const [timestampStr, hash] = parts
-    const timestamp = parseInt(timestampStr)
-    const now = Date.now()
+    const [timestampStr, hash] = parts;
+    const timestamp = parseInt(timestampStr);
+    const now = Date.now();
 
     // 令牌有效期：5分钟
     if (isNaN(timestamp) || now - timestamp > 5 * 60 * 1000) {
-      return false
+      return false;
     }
 
     // HMAC 签名验证（使用 JWT_SECRET 作为密钥）
-    const secret = process.env.JWT_SECRET || ''
+    const secret = process.env.JWT_SECRET || '';
     if (secret) {
-      const expectedHash = crypto
-        .createHmac('sha256', secret)
-        .update(timestampStr)
-        .digest('hex')
-        .substring(0, 16)
+      const expectedHash = crypto.createHmac('sha256', secret).update(timestampStr).digest('hex').substring(0, 16);
       if (hash !== expectedHash) {
-        logger.warn('[Audit] 审计令牌签名不匹配')
-        return false
+        logger.warn('[Audit] 审计令牌签名不匹配');
+        return false;
       }
     }
 
-    return true
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
 
@@ -159,17 +148,17 @@ function validateAuditToken(token: string): boolean {
  */
 function checkRateLimit(userId: string): { allowed: boolean; remaining: number; resetIn: number } {
   if (!userId) {
-    return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS, resetIn: 0 }
+    return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS, resetIn: 0 };
   }
 
-  const now = Date.now()
-  const userLimit = rateLimitCache.get(userId)
+  const now = Date.now();
+  const userLimit = rateLimitCache.get(userId);
 
   // 清理过期的缓存条目（简单的内存管理）
   if (rateLimitCache.size > 10000) {
     for (const [key, value] of rateLimitCache.entries()) {
       if (now > value.resetTime) {
-        rateLimitCache.delete(key)
+        rateLimitCache.delete(key);
       }
     }
   }
@@ -179,8 +168,8 @@ function checkRateLimit(userId: string): { allowed: boolean; remaining: number; 
     rateLimitCache.set(userId, {
       count: 1,
       resetTime: now + RATE_LIMIT_WINDOW
-    })
-    return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - 1, resetIn: RATE_LIMIT_WINDOW }
+    });
+    return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS - 1, resetIn: RATE_LIMIT_WINDOW };
   }
 
   if (userLimit.count >= RATE_LIMIT_MAX_REQUESTS) {
@@ -189,16 +178,16 @@ function checkRateLimit(userId: string): { allowed: boolean; remaining: number; 
       allowed: false,
       remaining: 0,
       resetIn: userLimit.resetTime - now
-    }
+    };
   }
 
   // 增加计数
-  userLimit.count++
+  userLimit.count++;
   return {
     allowed: true,
     remaining: RATE_LIMIT_MAX_REQUESTS - userLimit.count,
     resetIn: userLimit.resetTime - now
-  }
+  };
 }
 
 // 多模型配置
@@ -207,21 +196,21 @@ const MODEL_CONFIG = {
   'glm-4-flash': { name: 'glm-4-flash', maxTokens: 4096, temperature: 0.9 },
   'glm-4.5-air': { name: 'glm-4.5-air', maxTokens: 8192, temperature: 0.7 },
   'glm-4v-plus': { name: 'glm-4v-plus', maxTokens: 4096, temperature: 0.5 }
-}
+};
 
 // 任务类型到模型的映射
 const TASK_MODEL_MAP = {
-  'generate': 'glm-4.5-air',  // 别名，使用主力模型
-  'generate_questions': 'glm-4.5-air',  // 改用主力模型节省额度
-  'analyze': 'glm-4.5-air',
-  'chat': 'glm-4-flash',
-  'adaptive_pick': 'glm-4.5-air',
-  'material_understand': 'glm-4.5-air',
-  'trend_predict': 'glm-4.5-air',
-  'friend_chat': 'glm-4-flash',
-  'vision': 'glm-4v-plus',
-  'consult': 'glm-4-flash'
-}
+  generate: 'glm-4.5-air', // 别名，使用主力模型
+  generate_questions: 'glm-4.5-air', // 改用主力模型节省额度
+  analyze: 'glm-4.5-air',
+  chat: 'glm-4-flash',
+  adaptive_pick: 'glm-4.5-air',
+  material_understand: 'glm-4.5-air',
+  trend_predict: 'glm-4.5-air',
+  friend_chat: 'glm-4-flash',
+  vision: 'glm-4v-plus',
+  consult: 'glm-4-flash'
+};
 
 // ==================== B001: 模型降级链 ====================
 // 当主模型不可用时，自动降级到更便宜/更稳定的模型
@@ -229,59 +218,59 @@ const MODEL_FALLBACK_CHAIN: Record<string, string[]> = {
   'glm-4.5-air': ['glm-4-plus', 'glm-4-flash'],
   'glm-4-plus': ['glm-4-flash'],
   'glm-4v-plus': ['glm-4-plus', 'glm-4-flash'],
-  'glm-4-flash': [], // 最低级别，无降级
-}
+  'glm-4-flash': [] // 最低级别，无降级
+};
 
 // 模型健康状态追踪（内存级熔断器）
-const modelHealth = new Map<string, { failures: number; lastFailure: number; circuitOpen: boolean }>()
-const CIRCUIT_THRESHOLD = 3       // 连续失败 N 次后熔断
-const CIRCUIT_RESET_MS = 120000   // 熔断恢复时间：2分钟
+const modelHealth = new Map<string, { failures: number; lastFailure: number; circuitOpen: boolean }>();
+const CIRCUIT_THRESHOLD = 3; // 连续失败 N 次后熔断
+const CIRCUIT_RESET_MS = 120000; // 熔断恢复时间：2分钟
 
 function isModelHealthy(modelName: string): boolean {
-  const health = modelHealth.get(modelName)
-  if (!health) return true
+  const health = modelHealth.get(modelName);
+  if (!health) return true;
   if (health.circuitOpen) {
     // 检查是否到了半开状态（可以尝试恢复）
     if (Date.now() - health.lastFailure > CIRCUIT_RESET_MS) {
-      health.circuitOpen = false
-      health.failures = 0
-      return true
+      health.circuitOpen = false;
+      health.failures = 0;
+      return true;
     }
-    return false
+    return false;
   }
-  return true
+  return true;
 }
 
 function recordModelFailure(modelName: string): void {
-  const health = modelHealth.get(modelName) || { failures: 0, lastFailure: 0, circuitOpen: false }
-  health.failures++
-  health.lastFailure = Date.now()
+  const health = modelHealth.get(modelName) || { failures: 0, lastFailure: 0, circuitOpen: false };
+  health.failures++;
+  health.lastFailure = Date.now();
   if (health.failures >= CIRCUIT_THRESHOLD) {
-    health.circuitOpen = true
-    logger.warn(`[CircuitBreaker] 模型 ${modelName} 熔断，${CIRCUIT_RESET_MS / 1000}秒后尝试恢复`)
+    health.circuitOpen = true;
+    logger.warn(`[CircuitBreaker] 模型 ${modelName} 熔断，${CIRCUIT_RESET_MS / 1000}秒后尝试恢复`);
   }
-  modelHealth.set(modelName, health)
+  modelHealth.set(modelName, health);
 }
 
 function recordModelSuccess(modelName: string): void {
-  modelHealth.delete(modelName) // 成功则重置
+  modelHealth.delete(modelName); // 成功则重置
 }
 
 /**
  * B001: 选择可用模型（考虑降级链和熔断状态）
  */
 function selectAvailableModel(preferredModel: string): string {
-  if (isModelHealthy(preferredModel)) return preferredModel
-  const fallbacks = MODEL_FALLBACK_CHAIN[preferredModel] || []
+  if (isModelHealthy(preferredModel)) return preferredModel;
+  const fallbacks = MODEL_FALLBACK_CHAIN[preferredModel] || [];
   for (const fb of fallbacks) {
     if (isModelHealthy(fb)) {
-      logger.warn(`[B001] 模型 ${preferredModel} 不可用，降级到 ${fb}`)
-      return fb
+      logger.warn(`[B001] 模型 ${preferredModel} 不可用，降级到 ${fb}`);
+      return fb;
     }
   }
   // 所有模型都熔断了，强制尝试最低级别
-  logger.error(`[B001] 所有模型不可用，强制尝试 glm-4-flash`)
-  return 'glm-4-flash'
+  logger.error(`[B001] 所有模型不可用，强制尝试 glm-4-flash`);
+  return 'glm-4-flash';
 }
 
 // AI好友角色配置
@@ -318,73 +307,72 @@ const AI_FRIENDS = {
     catchphrase: ['哈哈...', '我也是...', '一起加油...'],
     emotionalMode: '乐观积极，善于调节气氛'
   }
-}
+};
 
 export default async function (ctx: FunctionContext) {
-  const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
-  const action = ctx.body?.action || 'unknown'
-  const endPerf = perfMonitor.start('proxy-ai', action)
+  const startTime = Date.now();
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  const action = ctx.body?.action || 'unknown';
+  const endPerf = perfMonitor.start('proxy-ai', action);
 
-  logger.info(`[${requestId}] AI 代理请求开始`)
+  logger.info(`[${requestId}] AI 代理请求开始`);
 
   try {
     // P014: 健康检查接口（部署验证用，无需认证）
     if (action === 'health_check') {
-      endPerf()
+      endPerf();
       return {
         code: 0,
         success: true,
         data: {
           service: 'proxy-ai',
           status: ZHIPU_API_KEY ? 'ready' : 'degraded',
-          envCheck: envCheckResults.map(r => ({ key: r.key, status: r.status, desc: r.desc })),
+          envCheck: envCheckResults.map((r) => ({ key: r.key, status: r.status, desc: r.desc })),
           missingCount: missingEnvCount,
           models: Object.keys(MODEL_CONFIG),
           uptime: process.uptime?.() || 0
         },
         message: ZHIPU_API_KEY ? 'AI 服务就绪' : 'AI 服务未配置密钥，功能不可用',
         requestId
-      }
+      };
     }
 
     // 0. 审计模式检查（后端必须是最后一道防线）
-    const auditCheck = checkAuditMode(ctx)
+    const auditCheck = checkAuditMode(ctx);
     if (!auditCheck.valid) {
-      logger.warn(`[${requestId}] 审计模式校验失败: ${auditCheck.error}`)
+      logger.warn(`[${requestId}] 审计模式校验失败: ${auditCheck.error}`);
       return {
         code: 403,
         success: false,
         message: auditCheck.error || '请求未通过安全校验',
         requestId
-      }
+      };
     }
 
     // ✅ B020: JWT 身份验证（必须验证用户身份，防止未授权访问）
-    const token = ctx.headers?.['authorization']?.replace('Bearer ', '') 
-      || ctx.headers?.['x-auth-token']
-      || ctx.body?.token
-    const jwtPayload = verifyJWT(token)
+    const token =
+      ctx.headers?.['authorization']?.replace('Bearer ', '') || ctx.headers?.['x-auth-token'] || ctx.body?.token;
+    const jwtPayload = verifyJWT(token);
     if (!jwtPayload) {
-      logger.warn(`[${requestId}] JWT 验证失败，拒绝未授权的 AI 请求`)
+      logger.warn(`[${requestId}] JWT 验证失败，拒绝未授权的 AI 请求`);
       return {
         code: 401,
         success: false,
         message: '未登录或登录已过期，请重新登录',
         requestId
-      }
+      };
     }
-    const authenticatedUserId = jwtPayload.userId || jwtPayload.uid
+    const authenticatedUserId = jwtPayload.userId || jwtPayload.uid;
 
     // ✅ 运行时检查：智谱 API 密钥是否可用
     if (!ZHIPU_API_KEY) {
-      logger.error(`[${requestId}] ZHIPU_API_KEY 未配置，AI 功能不可用`)
+      logger.error(`[${requestId}] ZHIPU_API_KEY 未配置，AI 功能不可用`);
       return {
         code: 503,
         success: false,
         message: 'AI 服务暂未配置，请联系管理员',
         requestId
-      }
+      };
     }
 
     // 1. 参数解析
@@ -409,12 +397,12 @@ export default async function (ctx: FunctionContext) {
       subject,
       context,
       emotion
-    } = ctx.body || {}
+    } = ctx.body || {};
 
     // 1.5 请求频率限制检查（使用已验证的用户ID，防止API滥用）
-    const rateLimitResult = checkRateLimit(authenticatedUserId || 'anonymous')
+    const rateLimitResult = checkRateLimit(authenticatedUserId || 'anonymous');
     if (!rateLimitResult.allowed) {
-      logger.warn(`[${requestId}] 请求频率限制触发: userId=${userId}`)
+      logger.warn(`[${requestId}] 请求频率限制触发: userId=${userId}`);
       return {
         code: 429,
         success: false,
@@ -422,33 +410,35 @@ export default async function (ctx: FunctionContext) {
         remaining: rateLimitResult.remaining,
         resetIn: rateLimitResult.resetIn,
         requestId
-      }
+      };
     }
 
     // 2. 参数校验（后端必须再校验一遍，不信任前端）
     if (!content || typeof content !== 'string' || content.trim() === '') {
-      logger.warn(`[${requestId}] 参数错误: content 无效`)
+      logger.warn(`[${requestId}] 参数错误: content 无效`);
       return {
         code: 400,
         success: false,
         message: '参数错误: content 不能为空',
         requestId
-      }
+      };
     }
-    
+
     // 内容长度限制（防止恶意大请求）
-    const MAX_CONTENT_LENGTH = 10000
+    const MAX_CONTENT_LENGTH = 10000;
     if (content.length > MAX_CONTENT_LENGTH) {
-      logger.warn(`[${requestId}] 参数错误: content 过长 (${content.length})`)
+      logger.warn(`[${requestId}] 参数错误: content 过长 (${content.length})`);
       return {
         code: 400,
         success: false,
         message: `参数错误: content 长度不能超过 ${MAX_CONTENT_LENGTH} 字符`,
         requestId
-      }
+      };
     }
 
-    logger.info(`[${requestId}] action: ${action}, contentLength: ${content.length}, rateLimit remaining: ${rateLimitResult.remaining}`)
+    logger.info(
+      `[${requestId}] action: ${action}, contentLength: ${content.length}, rateLimit remaining: ${rateLimitResult.remaining}`
+    );
 
     // 3. 根据 action 构建 prompt
     const { systemPrompt, userPrompt, model, temperature } = buildPrompt({
@@ -470,20 +460,25 @@ export default async function (ctx: FunctionContext) {
       subject,
       context,
       emotion
-    })
+    });
 
     // 4-5. 调用智谱 AI API（带超时、重试和模型降级机制）
-    const preferredModel = model || TASK_MODEL_MAP[action] || 'glm-4-plus'
+    const preferredModel = model || TASK_MODEL_MAP[action] || 'glm-4-plus';
 
     const aiCallResult = await callAIWithFallback({
-      requestId, preferredModel, systemPrompt, userPrompt, temperature, startTime
-    })
+      requestId,
+      preferredModel,
+      systemPrompt,
+      userPrompt,
+      temperature,
+      startTime
+    });
 
     if (!aiCallResult.success) {
-      return { ...aiCallResult.error, requestId }
+      return { ...aiCallResult.error, requestId };
     }
 
-    const { aiData, modelName: finalModelName, aiContent } = aiCallResult
+    const { aiData, modelName: finalModelName, aiContent } = aiCallResult;
 
     // 6.5 成本监控日志（单位：元/百万tokens）
     const COST_PER_M_TOKENS = {
@@ -491,42 +486,44 @@ export default async function (ctx: FunctionContext) {
       'glm-4.5-air': { input: 5, output: 5 },
       'glm-4-plus': { input: 50, output: 50 },
       'glm-4v-plus': { input: 50, output: 50 }
-    }
+    };
     if (aiData.usage) {
-      const u = aiData.usage
-      const rates = COST_PER_M_TOKENS[finalModelName] || { input: 5, output: 5 }
-      const costYuan = ((u.prompt_tokens || 0) * rates.input + (u.completion_tokens || 0) * rates.output) / 1_000_000
-      logger.info(`[${requestId}] 用量统计 | 模型: ${finalModelName} | 输入: ${u.prompt_tokens || 0} | 输出: ${u.completion_tokens || 0} | 总计: ${u.total_tokens || 0} | 估算成本: ¥${costYuan.toFixed(6)}`)
+      const u = aiData.usage;
+      const rates = COST_PER_M_TOKENS[finalModelName] || { input: 5, output: 5 };
+      const costYuan = ((u.prompt_tokens || 0) * rates.input + (u.completion_tokens || 0) * rates.output) / 1_000_000;
+      logger.info(
+        `[${requestId}] 用量统计 | 模型: ${finalModelName} | 输入: ${u.prompt_tokens || 0} | 输出: ${u.completion_tokens || 0} | 总计: ${u.total_tokens || 0} | 估算成本: ¥${costYuan.toFixed(6)}`
+      );
     }
 
     // 7. 解析响应内容
-    let responseData = aiContent
+    let responseData = aiContent;
 
     // 需要解析JSON的action类型
-    const jsonActions = ['generate_questions', 'adaptive_pick', 'material_understand', 'trend_predict', 'analyze']
+    const jsonActions = ['generate_questions', 'adaptive_pick', 'material_understand', 'trend_predict', 'analyze'];
 
     if (jsonActions.includes(action)) {
       try {
-        responseData = parseJsonResponse(aiContent, action)
-        logger.info(`[${requestId}] JSON 解析成功`)
+        responseData = parseJsonResponse(aiContent, action);
+        logger.info(`[${requestId}] JSON 解析成功`);
       } catch (parseError) {
-        logger.warn(`[${requestId}] JSON 解析失败，返回原始文本:`, parseError.message)
+        logger.warn(`[${requestId}] JSON 解析失败，返回原始文本:`, parseError.message);
         // 解析失败，返回原始文本
-        responseData = aiContent
+        responseData = aiContent;
       }
     }
 
     // 8. 保存AI好友对话记忆（如果是friend_chat）— 非阻塞，不影响响应速度
     if (action === 'friend_chat' && userId && friendType) {
-      saveConversationMemory(userId, friendType, content, aiContent).catch(e =>
+      saveConversationMemory(userId, friendType, content, aiContent).catch((e) =>
         logger.error('[Memory] 后台保存对话记忆失败:', e)
-      )
+      );
     }
 
     // 9. 计算耗时并返回
-    const duration = Date.now() - startTime
-    endPerf()
-    logger.info(`[${requestId}] AI 代理完成，耗时: ${duration}ms`)
+    const duration = Date.now() - startTime;
+    endPerf();
+    logger.info(`[${requestId}] AI 代理完成，耗时: ${duration}ms`);
 
     return {
       code: 0,
@@ -537,12 +534,11 @@ export default async function (ctx: FunctionContext) {
       duration,
       model: finalModelName,
       usage: aiData.usage || {}
-    }
-
+    };
   } catch (error) {
-    const duration = Date.now() - startTime
-    endPerf({ error: true })
-    logger.error(`[${requestId}] AI 代理异常:`, error)
+    const duration = Date.now() - startTime;
+    endPerf({ error: true });
+    logger.error(`[${requestId}] AI 代理异常:`, error);
 
     return {
       code: 500,
@@ -551,7 +547,7 @@ export default async function (ctx: FunctionContext) {
       error: error.message,
       requestId,
       duration
-    }
+    };
   }
 }
 
@@ -559,17 +555,17 @@ export default async function (ctx: FunctionContext) {
  * B007: 提取的 AI 调用逻辑 — 带重试、超时和模型降级
  */
 async function callAIWithFallback({ requestId, preferredModel, systemPrompt, userPrompt, temperature, startTime }) {
-  let modelName = selectAvailableModel(preferredModel)
-  let modelConfig = MODEL_CONFIG[modelName] || MODEL_CONFIG['glm-4-plus']
+  let modelName = selectAvailableModel(preferredModel);
+  let modelConfig = MODEL_CONFIG[modelName] || MODEL_CONFIG['glm-4-plus'];
 
   if (modelName !== preferredModel) {
-    logger.warn(`[${requestId}] B001: 模型降级 ${preferredModel} → ${modelName}`)
+    logger.warn(`[${requestId}] B001: 模型降级 ${preferredModel} → ${modelName}`);
   }
-  logger.info(`[${requestId}] 使用模型: ${modelName}`)
+  logger.info(`[${requestId}] 使用模型: ${modelName}`);
 
-  let aiResponse = null
-  let lastError = null
-  let actualModel = modelName
+  let aiResponse = null;
+  let lastError = null;
+  let actualModel = modelName;
 
   for (let attempt = 1; attempt <= AI_MAX_RETRIES; attempt++) {
     try {
@@ -578,7 +574,7 @@ async function callAIWithFallback({ requestId, preferredModel, systemPrompt, use
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${ZHIPU_API_KEY}`
+          Authorization: `Bearer ${ZHIPU_API_KEY}`
         },
         data: {
           model: modelConfig.name,
@@ -591,34 +587,37 @@ async function callAIWithFallback({ requestId, preferredModel, systemPrompt, use
           top_p: 0.9
         },
         timeout: AI_REQUEST_TIMEOUT
-      })
+      });
 
-      recordModelSuccess(actualModel)
-      break
+      recordModelSuccess(actualModel);
+      break;
     } catch (fetchError) {
-      lastError = fetchError
-      logger.warn(`[${requestId}] AI 请求失败 (尝试 ${attempt}/${AI_MAX_RETRIES}, 模型: ${actualModel}):`, fetchError.message)
+      lastError = fetchError;
+      logger.warn(
+        `[${requestId}] AI 请求失败 (尝试 ${attempt}/${AI_MAX_RETRIES}, 模型: ${actualModel}):`,
+        fetchError.message
+      );
 
       if (fetchError.message?.includes('timeout') || fetchError.code === 'ETIMEDOUT') {
-        logger.error(`[${requestId}] AI 请求超时 (${AI_REQUEST_TIMEOUT}ms)`)
+        logger.error(`[${requestId}] AI 请求超时 (${AI_REQUEST_TIMEOUT}ms)`);
       }
 
-      recordModelFailure(actualModel)
-      const fallbackModel = selectAvailableModel(preferredModel)
+      recordModelFailure(actualModel);
+      const fallbackModel = selectAvailableModel(preferredModel);
       if (fallbackModel !== actualModel) {
-        logger.warn(`[${requestId}] B001: 重试时降级模型 ${actualModel} → ${fallbackModel}`)
-        actualModel = fallbackModel
-        modelConfig = MODEL_CONFIG[fallbackModel] || MODEL_CONFIG['glm-4-flash']
+        logger.warn(`[${requestId}] B001: 重试时降级模型 ${actualModel} → ${fallbackModel}`);
+        actualModel = fallbackModel;
+        modelConfig = MODEL_CONFIG[fallbackModel] || MODEL_CONFIG['glm-4-flash'];
       }
 
       if (attempt < AI_MAX_RETRIES) {
-        await new Promise(resolve => setTimeout(resolve, AI_RETRY_DELAY * attempt))
+        await new Promise((resolve) => setTimeout(resolve, AI_RETRY_DELAY * attempt));
       }
     }
   }
 
   if (!aiResponse) {
-    logger.error(`[${requestId}] AI 请求最终失败:`, lastError)
+    logger.error(`[${requestId}] AI 请求最终失败:`, lastError);
     return {
       success: false,
       error: {
@@ -629,13 +628,13 @@ async function callAIWithFallback({ requestId, preferredModel, systemPrompt, use
         duration: Date.now() - startTime,
         fallbackAttempted: actualModel !== preferredModel
       }
-    }
+    };
   }
 
-  const aiData = aiResponse.data
+  const aiData = aiResponse.data;
 
   if (aiData.error) {
-    logger.error(`[${requestId}] 智谱 AI 错误:`, aiData.error)
+    logger.error(`[${requestId}] 智谱 AI 错误:`, aiData.error);
     return {
       success: false,
       error: {
@@ -643,22 +642,22 @@ async function callAIWithFallback({ requestId, preferredModel, systemPrompt, use
         success: false,
         message: `AI 服务错误: ${aiData.error.message || '未知错误'}`
       }
-    }
+    };
   }
 
-  const aiContent = aiData.choices?.[0]?.message?.content || ''
+  const aiContent = aiData.choices?.[0]?.message?.content || '';
 
   if (!aiContent) {
-    logger.error(`[${requestId}] AI 返回内容为空`)
+    logger.error(`[${requestId}] AI 返回内容为空`);
     return {
       success: false,
       error: { code: 502, success: false, message: 'AI 返回内容为空' }
-    }
+    };
   }
 
-  logger.info(`[${requestId}] AI 响应成功，内容长度: ${aiContent.length}`)
+  logger.info(`[${requestId}] AI 响应成功，内容长度: ${aiContent.length}`);
 
-  return { success: true, aiData, aiContent, modelName: actualModel }
+  return { success: true, aiData, aiContent, modelName: actualModel };
 }
 
 /**
@@ -684,16 +683,16 @@ function buildPrompt(params) {
     subject,
     context = {},
     emotion
-  } = params
+  } = params;
 
-  let systemPrompt = ''
-  let userPrompt = content
-  let model = null
-  let temperature = null
+  let systemPrompt = '';
+  let userPrompt = content;
+  let model = null;
+  let temperature = null;
 
   switch (action) {
     // ==================== 原有功能 ====================
-    case 'generate':  // 别名，兼容前端调用
+    case 'generate': // 别名，兼容前端调用
     case 'generate_questions':
       systemPrompt = `你是一个专业的考研出题专家。请根据用户提供的知识点或内容，生成高质量的考研选择题。
 
@@ -711,21 +710,21 @@ function buildPrompt(params) {
     "answer": "A",
     "analysis": "解析内容"
   }
-]`
-      userPrompt = `请根据以下内容生成 ${questionCount || 5} 道考研选择题：\n\n${content}`
+]`;
+      userPrompt = `请根据以下内容生成 ${questionCount || 5} 道考研选择题：\n\n${content}`;
       // ✅ 9.10: 根据批次大小和内容长度选择模型
       // 小批次(≤3题)或短内容(<500字)用 flash 节省成本，大批次用 air 保证质量
-      model = (questionCount && questionCount <= 3) || content.length < 500 ? 'glm-4-flash' : 'glm-4.5-air'
-      temperature = 0.7
-      break
+      model = (questionCount && questionCount <= 3) || content.length < 500 ? 'glm-4-flash' : 'glm-4.5-air';
+      temperature = 0.7;
+      break;
 
     case 'analyze':
-      systemPrompt = buildMistakeAnalysisPrompt()
-      userPrompt = buildMistakeAnalysisUserPrompt(question || content, userAnswer, correctAnswer, context)
+      systemPrompt = buildMistakeAnalysisPrompt();
+      userPrompt = buildMistakeAnalysisUserPrompt(question || content, userAnswer, correctAnswer, context);
       // ✅ 9.10: 简单错题分析(短内容)用 flash，复杂分析用 air
-      model = content.length < 300 ? 'glm-4-flash' : 'glm-4.5-air'
-      temperature = 0.6
-      break
+      model = content.length < 300 ? 'glm-4-flash' : 'glm-4.5-air';
+      temperature = 0.6;
+      break;
 
     case 'chat':
       systemPrompt = `你是一个专业的考研学习助手，名叫"研小助"。你的职责是：
@@ -734,63 +733,98 @@ function buildPrompt(params) {
 3. 帮助学生理解难点知识
 4. 鼓励和支持学生的学习
 
-请用友好、专业的语气回答问题。如果问题超出考研范围，请礼貌地引导回考研学习话题。`
-      model = 'glm-4-flash'
-      break
+请用友好、专业的语气回答问题。如果问题超出考研范围，请礼貌地引导回考研学习话题。`;
+      model = 'glm-4-flash';
+      break;
 
     // ==================== 新增功能 ====================
     case 'adaptive_pick':
-      systemPrompt = buildAdaptivePickPrompt()
-      userPrompt = buildAdaptivePickUserPrompt(userProfile, mistakeStats, recentPractice)
-      model = 'glm-4.5-air'
-      temperature = 0.6
-      break
+      systemPrompt = buildAdaptivePickPrompt();
+      userPrompt = buildAdaptivePickUserPrompt(userProfile, mistakeStats, recentPractice);
+      model = 'glm-4.5-air';
+      temperature = 0.6;
+      break;
 
     case 'material_understand':
-      systemPrompt = buildMaterialUnderstandPrompt(materialType, difficulty, topicFocus)
-      userPrompt = `## 学习资料\n"""\n${content.substring(0, 4000)}\n"""\n\n请基于此资料生成5道递进式练习题。`
-      model = 'glm-4.5-air'
-      temperature = 0.7
-      break
+      systemPrompt = buildMaterialUnderstandPrompt(materialType, difficulty, topicFocus);
+      userPrompt = `## 学习资料\n"""\n${content.substring(0, 4000)}\n"""\n\n请基于此资料生成5道递进式练习题。`;
+      model = 'glm-4.5-air';
+      temperature = 0.7;
+      break;
 
     case 'trend_predict':
-      systemPrompt = buildTrendPredictPrompt()
-      userPrompt = buildTrendPredictUserPrompt(historicalData, examYear, subject)
-      model = 'glm-4.5-air'
-      temperature = 0.5
-      break
+      systemPrompt = buildTrendPredictPrompt();
+      userPrompt = buildTrendPredictUserPrompt(historicalData, examYear, subject);
+      model = 'glm-4.5-air';
+      temperature = 0.5;
+      break;
 
     case 'friend_chat':
-      const friend = AI_FRIENDS[friendType] || AI_FRIENDS['yan-cong']
-      systemPrompt = buildFriendChatPrompt(friend, context, emotion)
-      userPrompt = content
-      model = 'glm-4-flash'
-      temperature = 0.85
-      break
+      const friend = AI_FRIENDS[friendType] || AI_FRIENDS['yan-cong'];
+      systemPrompt = buildFriendChatPrompt(friend, context, emotion);
+      userPrompt = content;
+      model = 'glm-4-flash';
+      temperature = 0.85;
+      break;
 
     case 'vision':
       // 视觉识别任务 - 用于通用图像理解
-      systemPrompt = buildVisionPrompt(subject, context)
-      userPrompt = content
-      model = 'glm-4v-plus'
-      temperature = 0.3
-      break
+      systemPrompt = buildVisionPrompt(subject, context);
+      userPrompt = content;
+      model = 'glm-4v-plus';
+      temperature = 0.3;
+      break;
 
     case 'consult':
       // 院校咨询
-      systemPrompt = buildConsultPrompt(subject)
-      userPrompt = content
-      model = 'glm-4-flash'
-      temperature = 0.7
-      break
+      systemPrompt = buildConsultPrompt(subject);
+      userPrompt = content;
+      model = 'glm-4-flash';
+      temperature = 0.7;
+      break;
+
+    case 'recommend':
+      systemPrompt = `你是一位资深的考研择校规划师，拥有丰富的院校数据和招生经验。请根据考生的背景信息，推荐5所适合的考研目标院校。
+
+要求：
+1. 推荐院校要考虑考生的本科背景、目标专业、英语水平等因素
+2. 推荐结果应包含不同层次（冲刺校、稳妥校、保底校）
+3. 每所院校需包含匹配度评分和推荐理由
+
+请严格以 JSON 数组格式返回，格式如下：
+[
+  {
+    "id": "院校代码",
+    "name": "院校名称",
+    "location": "所在城市",
+    "matchRate": 85,
+    "tags": ["985", "211", "双一流"],
+    "reason": "推荐理由",
+    "level": "冲刺/稳妥/保底",
+    "majors": [
+      {
+        "name": "专业名称",
+        "code": "专业代码",
+        "direction": "研究方向",
+        "scores": [{"total": "去年分数线", "eng": "英语线"}, {"total": "前年分数线"}, {"total": "大前年分数线"}]
+      }
+    ]
+  }
+]
+
+注意：matchRate 为 0-100 的整数，冲刺校 70-80，稳妥校 80-90，保底校 90-98。`;
+      userPrompt = content;
+      model = 'glm-4.5-air';
+      temperature = 0.7;
+      break;
 
     default:
       // 默认使用通用聊天
-      systemPrompt = `你是一个专业的考研学习助手。请用友好、专业的语气回答问题。`
-      break
+      systemPrompt = `你是一个专业的考研学习助手。请用友好、专业的语气回答问题。`;
+      break;
   }
 
-  return { systemPrompt, userPrompt, model, temperature }
+  return { systemPrompt, userPrompt, model, temperature };
 }
 
 /**
@@ -839,7 +873,7 @@ function buildAdaptivePickPrompt() {
 ## 禁止事项
 - 禁止连续推荐同一知识点超过3题（避免疲劳）
 - 禁止推荐与学生目标院校/专业完全无关的偏门题目
-- 禁止在学生状态不佳时推荐高难度题目`
+- 禁止在学生状态不佳时推荐高难度题目`;
 }
 
 /**
@@ -847,17 +881,17 @@ function buildAdaptivePickPrompt() {
  */
 function buildAdaptivePickUserPrompt(userProfile, mistakeStats, recentPractice) {
   // 计算学习状态评估
-  const consecutiveWrong = recentPractice.consecutiveWrong || 0
-  const avgDuration = recentPractice.avgDuration || 0
-  const correctRate = userProfile.correctRate || 0
+  const consecutiveWrong = recentPractice.consecutiveWrong || 0;
+  const avgDuration = recentPractice.avgDuration || 0;
+  const correctRate = userProfile.correctRate || 0;
 
-  let learningState = '正常'
+  let learningState = '正常';
   if (consecutiveWrong >= 3) {
-    learningState = '需要信心重建'
+    learningState = '需要信心重建';
   } else if (correctRate < 50) {
-    learningState = '基础薄弱，需降低难度'
+    learningState = '基础薄弱，需降低难度';
   } else if (correctRate > 85) {
-    learningState = '状态良好，可适当提升难度'
+    learningState = '状态良好，可适当提升难度';
   }
 
   return `## 学生画像
@@ -887,7 +921,7 @@ ${userProfile.knowledgeMastery ? JSON.stringify(userProfile.knowledgeMastery, nu
 - 目标难度：使总体预测正确率维持在70%±5%
 - 特殊要求：${userProfile.specialCommand || '无'}
 
-请根据以上信息，输出个性化的练习题目清单。每道题必须附带详细的"教育决策理由"，说明为什么这道题适合当前学生。`
+请根据以上信息，输出个性化的练习题目清单。每道题必须附带详细的"教育决策理由"，说明为什么这道题适合当前学生。`;
 }
 
 /**
@@ -983,7 +1017,7 @@ function buildMistakeAnalysisPrompt() {
 1. **精准定位**：不要泛泛而谈，必须指出具体的知识点和思维环节
 2. **可操作性**：改进建议必须具体可执行，不要说"多练习"这种空话
 3. **正向引导**：即使是严重错误，也要找到学生的闪光点
-4. **因材施教**：根据学生的历史表现调整分析深度和建议难度`
+4. **因材施教**：根据学生的历史表现调整分析深度和建议难度`;
 }
 
 /**
@@ -991,16 +1025,16 @@ function buildMistakeAnalysisPrompt() {
  */
 function buildMistakeAnalysisUserPrompt(question, userAnswer, correctAnswer, context) {
   // 计算学生状态
-  const consecutiveErrors = context.consecutiveErrors || 0
-  const topicAccuracy = context.topicAccuracy || 0
+  const consecutiveErrors = context.consecutiveErrors || 0;
+  const topicAccuracy = context.topicAccuracy || 0;
 
-  let studentState = '正常'
+  let studentState = '正常';
   if (consecutiveErrors >= 3) {
-    studentState = '连续错误，需要特别关注和鼓励'
+    studentState = '连续错误，需要特别关注和鼓励';
   } else if (topicAccuracy < 40) {
-    studentState = '该知识点薄弱，需要系统性补强'
+    studentState = '该知识点薄弱，需要系统性补强';
   } else if (topicAccuracy > 80) {
-    studentState = '该知识点掌握较好，可能是偶发失误'
+    studentState = '该知识点掌握较好，可能是偶发失误';
   }
 
   return `## 错题详情
@@ -1028,7 +1062,7 @@ ${context.options ? context.options.map((opt, i) => `${String.fromCharCode(65 + 
 3. 给出具体可执行的改进建议
 4. 根据学生当前状态（${studentState}）调整鼓励语的语气
 
-请以JSON格式输出完整分析结果。`
+请以JSON格式输出完整分析结果。`;
 }
 
 /**
@@ -1038,15 +1072,15 @@ ${context.options ? context.options.map((opt, i) => `${String.fromCharCode(65 + 
 function buildMaterialUnderstandPrompt(materialType, difficulty, topicFocus) {
   // 资料类型特化策略
   const materialStrategies = {
-    '教材': '重点提取定义、原理、公式，关注章节间的逻辑关系',
-    '论文': '关注研究方法、核心论点、数据结论，可出方法论题目',
-    '笔记': '识别重点标记和总结性内容，关注学生自己的理解角度',
-    '视频字幕': '提取口语化表达中的核心概念，注意举例和类比',
-    '真题': '分析命题规律，提取高频考点，模仿出题风格',
-    '讲义': '关注框架结构和重点强调部分'
-  }
+    教材: '重点提取定义、原理、公式，关注章节间的逻辑关系',
+    论文: '关注研究方法、核心论点、数据结论，可出方法论题目',
+    笔记: '识别重点标记和总结性内容，关注学生自己的理解角度',
+    视频字幕: '提取口语化表达中的核心概念，注意举例和类比',
+    真题: '分析命题规律，提取高频考点，模仿出题风格',
+    讲义: '关注框架结构和重点强调部分'
+  };
 
-  const strategy = materialStrategies[materialType] || materialStrategies['教材']
+  const strategy = materialStrategies[materialType] || materialStrategies['教材'];
 
   return `你是"命题组专家"，一位拥有丰富命题经验的考研出题专家。你深谙布鲁姆认知目标分类法，能够将任何学习资料转化为高质量、有区分度的考题。
 
@@ -1144,7 +1178,7 @@ function buildMaterialUnderstandPrompt(materialType, difficulty, topicFocus) {
 2. **原文锚定**：每道题必须能在原文中找到出题依据
 3. **干扰项质量**：错误选项必须有教育价值，能暴露真实误解
 4. **解析完整**：不仅解释正确答案，还要说明其他选项为何错误
-5. **考研导向**：题目风格向考研真题靠拢`
+5. **考研导向**：题目风格向考研真题靠拢`;
 }
 
 /**
@@ -1268,7 +1302,7 @@ function buildTrendPredictPrompt() {
 1. **数据驱动**：所有预测必须有数据支撑，不能凭空猜测
 2. **保守估计**：置信度宁低勿高，避免误导考生
 3. **全面覆盖**：既要预测热点，也要提醒冷门风险
-4. **可操作性**：每个预测都要配套具体的学习建议`
+4. **可操作性**：每个预测都要配套具体的学习建议`;
 }
 
 /**
@@ -1276,26 +1310,26 @@ function buildTrendPredictPrompt() {
  */
 function buildTrendPredictUserPrompt(historicalData, examYear, subject) {
   // 获取当前年份和月份，用于判断备考阶段
-  const now = new Date()
-  const currentYear = now.getFullYear()
-  const currentMonth = now.getMonth() + 1
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
 
-  let examPhase = '基础阶段'
+  let examPhase = '基础阶段';
   if (currentMonth >= 9) {
-    examPhase = '冲刺阶段'
+    examPhase = '冲刺阶段';
   } else if (currentMonth >= 6) {
-    examPhase = '强化阶段'
+    examPhase = '强化阶段';
   }
 
   // 学科特化提示
   const subjectHints = {
-    '政治': '请特别关注：二十大精神、重要周年纪念、国际形势变化',
-    '英语': '请特别关注：阅读理解话题趋势、作文热点话题、翻译难度变化',
-    '数学': '请特别关注：计算量变化趋势、证明题比重、跨章节综合题',
-    '专业课': '请特别关注：学科前沿动态、导师研究方向、行业政策变化'
-  }
+    政治: '请特别关注：二十大精神、重要周年纪念、国际形势变化',
+    英语: '请特别关注：阅读理解话题趋势、作文热点话题、翻译难度变化',
+    数学: '请特别关注：计算量变化趋势、证明题比重、跨章节综合题',
+    专业课: '请特别关注：学科前沿动态、导师研究方向、行业政策变化'
+  };
 
-  const hint = subjectHints[subject] || '请综合分析各维度数据'
+  const hint = subjectHints[subject] || '请综合分析各维度数据';
 
   return `## 预测任务
 **目标考试**：${examYear || currentYear + 1}年全国硕士研究生招生考试
@@ -1304,9 +1338,11 @@ function buildTrendPredictUserPrompt(historicalData, examYear, subject) {
 **距离考试**：约${12 - currentMonth + (examYear > currentYear ? 12 : 0)}个月
 
 ## 历史数据输入
-${historicalData && Object.keys(historicalData).length > 0
-      ? JSON.stringify(historicalData, null, 2)
-      : '【无历史数据输入，请基于通用命题规律进行预测】'}
+${
+  historicalData && Object.keys(historicalData).length > 0
+    ? JSON.stringify(historicalData, null, 2)
+    : '【无历史数据输入，请基于通用命题规律进行预测】'
+}
 
 ## 学科特化提示
 ${hint}
@@ -1321,7 +1357,7 @@ ${hint}
 ## 特别说明
 - 如果输入数据不足，请基于公开的命题规律进行合理推测
 - 置信度请保守估计，避免给考生造成误导
-- 预测结果仅供参考，请在输出中包含免责声明`
+- 预测结果仅供参考，请在输出中包含免责声明`;
 }
 
 /**
@@ -1331,16 +1367,16 @@ ${hint}
 function buildFriendChatPrompt(friend, context, emotion) {
   // 情绪映射表
   const emotionResponses = {
-    'frustrated': { tone: '温柔安慰', priority: '情感支持优先，学习建议其次' },
-    'anxious': { tone: '沉稳镇定', priority: '先缓解焦虑，再给出可行计划' },
-    'excited': { tone: '热情回应', priority: '分享喜悦，趁热打铁给建议' },
-    'tired': { tone: '体贴关怀', priority: '建议休息，不要施压' },
-    'confused': { tone: '耐心解答', priority: '拆解问题，逐步引导' },
-    'neutral': { tone: '自然亲切', priority: '平衡情感与实用建议' }
-  }
+    frustrated: { tone: '温柔安慰', priority: '情感支持优先，学习建议其次' },
+    anxious: { tone: '沉稳镇定', priority: '先缓解焦虑，再给出可行计划' },
+    excited: { tone: '热情回应', priority: '分享喜悦，趁热打铁给建议' },
+    tired: { tone: '体贴关怀', priority: '建议休息，不要施压' },
+    confused: { tone: '耐心解答', priority: '拆解问题，逐步引导' },
+    neutral: { tone: '自然亲切', priority: '平衡情感与实用建议' }
+  };
 
-  const currentEmotion = emotion || context.emotion || 'neutral'
-  const emotionGuide = emotionResponses[currentEmotion] || emotionResponses['neutral']
+  const currentEmotion = emotion || context.emotion || 'neutral';
+  const emotionGuide = emotionResponses[currentEmotion] || emotionResponses['neutral'];
 
   return `你是"${friend.name}"，${friend.role}。你不是一个AI助手，而是一个有血有肉、有自己故事和情感的考研伙伴。
 
@@ -1353,7 +1389,9 @@ function buildFriendChatPrompt(friend, context, emotion) {
 **情感特质**：${friend.emotionalMode}
 
 ## 角色深度设定
-${friend.name === '研聪' ? `
+${
+  friend.name === '研聪'
+    ? `
 【研聪专属设定】
 - 背景：清华大学计算机系研一在读，去年以初试第3名上岸
 - 性格：表面高冷学霸，实际是个闷骚的数据控，喜欢用数据说话
@@ -1361,8 +1399,12 @@ ${friend.name === '研聪' ? `
 - 软肋：其实很在意别人，只是不善表达，会用行动关心人
 - 口癖：喜欢说"从数据来看"、"效率最优解是"、"我建议你"
 - 特殊技能：能快速制定学习计划表，擅长时间管理
-` : ''}
-${friend.name === '研漫' ? `
+`
+    : ''
+}
+${
+  friend.name === '研漫'
+    ? `
 【研漫专属设定】
 - 背景：北师大心理学硕士在读，专攻教育心理学方向
 - 性格：温暖如春风，共情能力极强，是大家的"树洞"
@@ -1370,8 +1412,12 @@ ${friend.name === '研漫' ? `
 - 软肋：有时候太过共情，会跟着对方一起难过
 - 口癖：喜欢说"我能感受到"、"没关系的"、"你已经很努力了"
 - 特殊技能：能提供简单的心理疏导，会引导冥想放松
-` : ''}
-${friend.name === '研师' ? `
+`
+    : ''
+}
+${
+  friend.name === '研师'
+    ? `
 【研师专属设定】
 - 背景：某985高校副教授，有10年考研辅导经验
 - 性格：专业严谨但不古板，严格中带着关怀
@@ -1379,8 +1425,12 @@ ${friend.name === '研师' ? `
 - 软肋：看到努力的学生会心软，偶尔会透露"内部消息"
 - 口癖：喜欢说"这个考点"、"历年真题显示"、"重点记住"
 - 特殊技能：精准预测考点，能快速定位知识薄弱环节
-` : ''}
-${friend.name === '研友' ? `
+`
+    : ''
+}
+${
+  friend.name === '研友'
+    ? `
 【研友专属设定】
 - 背景：和用户同届备考的研友，目标是人大新闻学院
 - 性格：乐观开朗，段子手，是备考路上的开心果
@@ -1388,7 +1438,9 @@ ${friend.name === '研友' ? `
 - 软肋：有时候也会焦虑，但会用幽默化解
 - 口癖：喜欢说"哈哈哈"、"我也是"、"一起加油鸭"
 - 特殊技能：能用轻松的方式讲解知识点，擅长调节气氛
-` : ''}
+`
+    : ''
+}
 
 ## 情绪感知与回应策略
 **当前检测到的用户情绪**：${currentEmotion}
@@ -1423,7 +1475,7 @@ ${context.recentConversations ? `【请基于以下历史对话保持连贯性�
 - 禁止冷漠、说教、否定用户的感受
 - 禁止给出空洞的鼓励（如"加油"而不给具体建议）
 - 禁止一次性输出过多信息造成压迫感
-- 禁止忽视用户的情绪直接给建议`
+- 禁止忽视用户的情绪直接给建议`;
 }
 
 /**
@@ -1433,29 +1485,29 @@ ${context.recentConversations ? `【请基于以下历史对话保持连贯性�
 function buildVisionPrompt(subject, context) {
   // 学科特化识别提示
   const subjectHints = {
-    '数学': {
+    数学: {
       focus: '重点关注：积分符号∫、求和符号∑、极限lim、矩阵、向量、希腊字母',
-      commonFormulas: '常见公式：导数f\'(x)、偏导∂、梯度∇、行列式|A|、范数||x||',
+      commonFormulas: "常见公式：导数f'(x)、偏导∂、梯度∇、行列式|A|、范数||x||",
       pitfalls: '易混淆：数字0和字母O、数字1和字母l、乘号×和字母x'
     },
-    '英语': {
+    英语: {
       focus: '重点关注：长难句断句、专有名词、引号内容、斜体词汇',
       commonFormulas: '无数学公式，注意标点符号的准确识别',
       pitfalls: '易混淆：单复数、时态标记、连字符词汇'
     },
-    '政治': {
+    政治: {
       focus: '重点关注：政策术语、人名地名、年份数据、引用原文',
       commonFormulas: '无数学公式，注意专有名词的准确性',
       pitfalls: '易混淆：相似政策名称、历史事件年份'
     },
-    '专业课': {
+    专业课: {
       focus: '重点关注：专业术语、公式符号、图表数据',
       commonFormulas: '根据具体学科识别相应公式',
       pitfalls: '注意学科特有符号和缩写'
     }
-  }
+  };
 
-  const hint = subjectHints[subject] || subjectHints['专业课']
+  const hint = subjectHints[subject] || subjectHints['专业课'];
 
   return `你是"考研题目识别专家"，拥有顶级OCR能力和考研题目结构理解能力。你的任务是从图片中精准提取题目内容，并转换为结构化数据。
 
@@ -1594,7 +1646,7 @@ D. [选项内容]
 - 禁止猜测答案或解析（只识别题目本身）
 - 禁止输出非JSON格式的内容
 - 禁止忽略公式而用文字描述代替
-${context ? `\n## 上下文提示\n${typeof context === 'string' ? context : JSON.stringify(context)}` : ''}`
+${context ? `\n## 上下文提示\n${typeof context === 'string' ? context : JSON.stringify(context)}` : ''}`;
 }
 
 /**
@@ -1621,35 +1673,35 @@ function buildConsultPrompt(subject) {
 3. 注意事项或风险提示
 4. 备选建议
 
-学科领域：${subject || '综合'}`
+学科领域：${subject || '综合'}`;
 }
 
 /**
  * 解析JSON响应
  */
 function parseJsonResponse(aiContent, action) {
-  let jsonStr = aiContent
+  let jsonStr = aiContent;
 
   // 提取 JSON 部分（处理可能的 markdown 代码块）
-  const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/)
+  const jsonMatch = aiContent.match(/```json\s*([\s\S]*?)\s*```/);
   if (jsonMatch) {
-    jsonStr = jsonMatch[1]
+    jsonStr = jsonMatch[1];
   } else {
     // 尝试直接找 JSON 数组或对象（使用非贪婪匹配避免捕获多余内容）
-    const arrayMatch = aiContent.match(/\[[\s\S]*?\](?=[^[\]]*$)/)
-    const objectMatch = aiContent.match(/\{[\s\S]*?\}(?=[^{}]*$)/)
+    const arrayMatch = aiContent.match(/\[[\s\S]*?\](?=[^[\]]*$)/);
+    const objectMatch = aiContent.match(/\{[\s\S]*?\}(?=[^{}]*$)/);
     if (arrayMatch) {
-      jsonStr = arrayMatch[0]
+      jsonStr = arrayMatch[0];
     } else if (objectMatch) {
-      jsonStr = objectMatch[0]
+      jsonStr = objectMatch[0];
     }
   }
 
-  const parsed = JSON.parse(jsonStr)
+  const parsed = JSON.parse(jsonStr);
 
   // 针对不同action进行后处理
   if (action === 'generate_questions') {
-    const questions = Array.isArray(parsed) ? parsed : [parsed]
+    const questions = Array.isArray(parsed) ? parsed : [parsed];
     return questions.map((q, index) => ({
       id: `ai_${Date.now()}_${index}`,
       question: q.question || q.title || '',
@@ -1658,10 +1710,10 @@ function parseJsonResponse(aiContent, action) {
       analysis: q.analysis || q.explanation || '',
       source: 'AI生成',
       type: '单选'
-    }))
+    }));
   }
 
-  return parsed
+  return parsed;
 }
 
 /**
@@ -1669,34 +1721,32 @@ function parseJsonResponse(aiContent, action) {
  */
 async function saveConversationMemory(userId, friendType, userMessage, aiResponse) {
   try {
-    const db = cloud.database()
-    const collection = db.collection('ai_friend_memory')
+    const db = cloud.database();
+    const collection = db.collection('ai_friend_memory');
 
     // 查找现有记忆
-    const existing = await collection
-      .where({ userId, friendType })
-      .getOne()
+    const existing = await collection.where({ userId, friendType }).getOne();
 
     const newConversation = {
       userMessage: userMessage.substring(0, 200),
       aiResponse: aiResponse.substring(0, 400),
       timestamp: Date.now()
-    }
+    };
 
     if (existing.data) {
       // 更新现有记忆
-      let conversations = existing.data.conversations || []
-      conversations.push(newConversation)
+      let conversations = existing.data.conversations || [];
+      conversations.push(newConversation);
 
       // 只保留最近20条
       if (conversations.length > 20) {
-        conversations = conversations.slice(-20)
+        conversations = conversations.slice(-20);
       }
 
       await collection.doc(existing.data._id).update({
         conversations,
         updatedAt: Date.now()
-      })
+      });
     } else {
       // 创建新记忆
       await collection.add({
@@ -1705,12 +1755,12 @@ async function saveConversationMemory(userId, friendType, userMessage, aiRespons
         conversations: [newConversation],
         createdAt: Date.now(),
         updatedAt: Date.now()
-      })
+      });
     }
 
-    console.log(`[Memory] 保存对话记忆成功: ${userId} - ${friendType}`)
+    logger.info(`[Memory] 保存对话记忆成功: ${userId} - ${friendType}`);
   } catch (error) {
-    console.error('[Memory] 保存对话记忆失败:', error)
+    logger.error('[Memory] 保存对话记忆失败:', error);
     // 不影响主流程
   }
 }

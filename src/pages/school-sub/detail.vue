@@ -16,8 +16,27 @@
       </view>
     </view>
 
-    <scroll-view scroll-y="true" class="detail-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
+    <scroll-view scroll-y="true" class="detail-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 骨架屏加载状态 -->
+      <!-- #ifndef APP-NVUE -->
+      <transition name="skeleton-fade">
+        <view v-if="isPageLoading" class="skeleton-loading">
+          <view class="skeleton-header-card">
+            <view class="skeleton-logo skeleton-animate" />
+            <view class="skeleton-info">
+              <view class="skeleton-name skeleton-animate" />
+              <view class="skeleton-tags skeleton-animate" />
+            </view>
+          </view>
+          <view class="skeleton-predict-card skeleton-animate" />
+          <view class="skeleton-stats">
+            <view v-for="i in 3" :key="i" class="skeleton-stat skeleton-animate" />
+          </view>
+          <view class="skeleton-intro skeleton-animate" />
+        </view>
+      </transition>
+      <!-- #endif -->
+      <!-- #ifdef APP-NVUE -->
       <view v-if="isPageLoading" class="skeleton-loading">
         <view class="skeleton-header-card">
           <view class="skeleton-logo skeleton-animate" />
@@ -32,9 +51,10 @@
         </view>
         <view class="skeleton-intro skeleton-animate" />
       </view>
+      <!-- #endif -->
 
       <!-- 实际内容 -->
-      <template v-else>
+      <template v-if="!isPageLoading">
         <!-- 院校头部卡片 -->
         <view class="glass-card school-header-card">
           <image class="school-logo" :src="schoolInfo.logo || '/static/school-default.png'" mode="aspectFit" />
@@ -46,12 +66,8 @@
               <text class="type-tag">
                 {{ getTypeTag(schoolInfo.tags) }}
               </text>
-              <text class="location-tag">
-                📍 {{ schoolInfo.location || '未知地区' }}
-              </text>
-              <text v-if="schoolInfo.matchRate" class="rank-tag">
-                匹配度 {{ schoolInfo.matchRate }}%
-              </text>
+              <text class="location-tag"> 📍 {{ schoolInfo.location || '未知地区' }} </text>
+              <text v-if="schoolInfo.matchRate" class="rank-tag"> 匹配度 {{ schoolInfo.matchRate }}% </text>
             </view>
           </view>
         </view>
@@ -59,24 +75,20 @@
         <!-- AI 预测录取概率卡片 -->
         <view class="glass-card ai-predict-card">
           <view class="card-title">
-            <text class="sparkle-icon">
-              ✨
-            </text>
+            <text class="sparkle-icon"> ✨ </text>
             <text>AI 录取概率预测</text>
           </view>
 
           <view class="predict-main">
             <view class="water-ball-container">
               <view class="water-ball">
-                <view class="wave-bg" :style="{ top: (100 - probability) + '%' }" />
-                <view class="wave-front" :style="{ top: (100 - probability) + '%' }" />
+                <view class="wave-bg" :style="{ top: 100 - probability + '%' }" />
+                <view class="wave-front" :style="{ top: 100 - probability + '%' }" />
                 <view class="percent-content">
                   <text class="num">
                     {{ probability }}
                   </text>
-                  <text class="unit">
-                    %
-                  </text>
+                  <text class="unit"> % </text>
                 </view>
               </view>
               <view class="ball-glow" />
@@ -92,51 +104,34 @@
             </view>
           </view>
 
-          <button
-            class="predict-btn"
-            hover-class="btn-hover"
-            :loading="isAnalyzing"
-            @tap="fetchAIPrediction"
-          >
+          <button class="predict-btn" hover-class="btn-hover" :loading="isAnalyzing" @tap="fetchAIPrediction">
             {{ isAnalyzing ? 'AI 分析中...' : '更新 AI 深度评估' }}
           </button>
         </view>
 
         <!-- 核心数据统计 -->
-        <view class="section-title">
-          历年录取指标
-        </view>
+        <view class="section-title"> 历年录取指标 </view>
         <view class="stats-grid">
           <view class="glass-card stat-item">
             <text class="stat-val">
               {{ schoolInfo.scoreLine || '---' }}
             </text>
-            <text class="stat-label">
-              复试分数线
-            </text>
+            <text class="stat-label"> 复试分数线 </text>
           </view>
           <view class="glass-card stat-item">
             <text class="stat-val">
               {{ schoolInfo.ratio || '---' }}
             </text>
-            <text class="stat-label">
-              报录比
-            </text>
+            <text class="stat-label"> 报录比 </text>
           </view>
           <view class="glass-card stat-item">
-            <text class="stat-val">
-              {{ schoolInfo.passRate || '---' }}%
-            </text>
-            <text class="stat-label">
-              招生人数
-            </text>
+            <text class="stat-val"> {{ schoolInfo.passRate || '---' }}% </text>
+            <text class="stat-label"> 招生人数 </text>
           </view>
         </view>
 
         <!-- 院校简介 -->
-        <view class="section-title">
-          院校简介
-        </view>
+        <view class="section-title"> 院校简介 </view>
         <view class="glass-card intro-card">
           <text class="intro-text">
             {{ getSchoolDesc() }}
@@ -144,9 +139,7 @@
         </view>
 
         <!-- 热门招生专业 -->
-        <view class="section-title">
-          热门招生专业
-        </view>
+        <view class="section-title"> 热门招生专业 </view>
         <view
           v-for="(major, index) in majorList"
           :key="index"
@@ -157,16 +150,12 @@
             <text class="major-name">
               {{ major.name }}
             </text>
-            <text class="major-code">
-              专业代码: {{ major.code }}
-            </text>
+            <text class="major-code"> 专业代码: {{ major.code }} </text>
             <text v-if="major.type" class="major-type">
               {{ major.type }}
             </text>
           </view>
-          <text class="arrow-icon">
-            →
-          </text>
+          <text class="arrow-icon"> → </text>
         </view>
 
         <view class="safe-area" />
@@ -180,11 +169,7 @@
           <text>💬</text>
           <text>AI 咨询</text>
         </button>
-        <button
-          :class="['target-btn', { 'is-added': isTarget }]"
-          hover-class="btn-hover"
-          @tap="toggleTarget"
-        >
+        <button :class="['target-btn', { 'is-added': isTarget }]" hover-class="btn-hover" @tap="toggleTarget">
           {{ isTarget ? '从目标中移除' : '加入目标院校' }}
         </button>
       </view>
@@ -280,7 +265,11 @@ export default {
         this.probability = this.schoolInfo.matchRate || 0;
         this.isPageLoading = false;
         // 清理临时缓存
-        try { storageService.remove(`school_detail_${options.id}`); } catch (_e) { /* cache cleanup non-critical */ }
+        try {
+          storageService.remove(`school_detail_${options.id}`);
+        } catch (_e) {
+          /* cache cleanup non-critical */
+        }
       } catch (_e) {
         logger.error('[detail] ❌ 解析学校缓存数据失败:', _e);
         // 解析失败时降级到 id 加载
@@ -360,7 +349,9 @@ export default {
           this.schoolInfo = {
             id: school.code || school._id,
             name: school.name,
-            logo: school.logo || `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=${school.shortName || school.name}&backgroundColor=663399`,
+            logo:
+              school.logo ||
+              `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=${school.shortName || school.name}&backgroundColor=663399`,
             location: school.province || school.city,
             tags: school.tags || [],
             scoreLine: school.latestScoreLines?.[0]?.total || '-',
@@ -388,8 +379,8 @@ export default {
     },
 
     /**
-		 * 显示加载失败状态
-		 */
+     * 显示加载失败状态
+     */
     showLoadError(id) {
       this.schoolInfo = {
         id: id,
@@ -428,8 +419,8 @@ export default {
     calculateMatchRate(school) {
       try {
         const statsData = storageService.get('study_stats', {});
-        const doneCount = (storageService.get('v30_bank', [])).length;
-        const mistakeCount = (storageService.get('mistake_book', [])).length;
+        const doneCount = storageService.get('v30_bank', []).length;
+        const mistakeCount = storageService.get('mistake_book', []).length;
         const studyDays = Object.keys(statsData).length;
         const targetSchools = storageService.get('target_schools', []);
 
@@ -459,15 +450,15 @@ export default {
         const is211 = tags.includes('211');
         if (is985) {
           // 985 院校竞争激烈，适当降低匹配度
-          score -= (studyDays < 30 || doneCount < 100) ? 10 : 3;
+          score -= studyDays < 30 || doneCount < 100 ? 10 : 3;
         } else if (is211) {
-          score -= (studyDays < 14 || doneCount < 50) ? 5 : 0;
+          score -= studyDays < 14 || doneCount < 50 ? 5 : 0;
         } else {
           score += 5; // 普通院校匹配度更高
         }
 
         // 维度5: 是否已设为目标院校 (+5 表示用户有明确意向)
-        const isTarget = targetSchools.some(t => t.id === (school.code || school._id));
+        const isTarget = targetSchools.some((t) => t.id === (school.code || school._id));
         if (isTarget) score += 5;
 
         // 限制范围 30-98
@@ -507,7 +498,9 @@ export default {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (_e) { logger.warn('Failed to trigger vibration on toggle target', _e); }
+      } catch (_e) {
+        logger.warn('Failed to trigger vibration on toggle target', _e);
+      }
 
       let list = storageService.get('target_schools', []);
       const schoolId = this.schoolId || this.schoolInfo.id;
@@ -625,13 +618,15 @@ export default {
       // #ifdef H5
       // H5 环境
       if (navigator.share) {
-        navigator.share({
-          title: `${this.schoolInfo.name} - 考研院校推荐`,
-          text: `${this.schoolInfo.name}，${this.schoolInfo.location}，匹配度${this.schoolInfo.matchRate}%`,
-          url: window.location.href
-        }).catch(() => {
-          this.copySchoolInfo();
-        });
+        navigator
+          .share({
+            title: `${this.schoolInfo.name} - 考研院校推荐`,
+            text: `${this.schoolInfo.name}，${this.schoolInfo.location}，匹配度${this.schoolInfo.matchRate}%`,
+            url: window.location.href
+          })
+          .catch(() => {
+            this.copySchoolInfo();
+          });
       } else {
         this.copySchoolInfo();
       }
@@ -690,12 +685,14 @@ export default {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (_e) { logger.warn('Failed to trigger vibration on analyze probability', _e); }
+      } catch (_e) {
+        logger.warn('Failed to trigger vibration on analyze probability', _e);
+      }
 
       // 获取用户当前学习数据
       const statsData = storageService.get('study_stats', {});
-      const doneCount = (storageService.get('v30_bank', [])).length;
-      const mistakeCount = (storageService.get('mistake_book', [])).length;
+      const doneCount = storageService.get('v30_bank', []).length;
+      const mistakeCount = storageService.get('mistake_book', []).length;
       const studyDays = Object.keys(statsData).length;
 
       logger.log('[detail] 📈 用户学习数据:', {
@@ -753,7 +750,8 @@ export default {
           // 降级方案：基于数据简单计算
           logger.warn('[detail] ⚠️ AI API 响应异常，使用降级算法计算概率');
           const baseScore = Math.min(
-            95, 40 + studyDays * 2 + Math.min(doneCount / 10, 30) - Math.min(mistakeCount / 5, 20)
+            95,
+            40 + studyDays * 2 + Math.min(doneCount / 10, 30) - Math.min(mistakeCount / 5, 20)
           );
           this.probability = Math.max(40, Math.min(95, Math.round(baseScore)));
           this.aiReason = `基于您已坚持 ${studyDays} 天、刷题 ${doneCount} 道的数据，${this.schoolInfo.name} 上岸概率为 ${this.probability}%。建议继续巩固错题，提升正确率。`;
@@ -798,21 +796,21 @@ export default {
 <style lang="scss" scoped>
 /* --- 平铺式 CSS 样式适配 --- */
 .container {
-	--ball-bg: var(--success-light);
-	--wave-color: var(--success);
-	--ball-glow: var(--success-glow);
-	--bg-body: var(--bg-body);
-	--text-primary: var(--text-primary);
-	--text-tertiary: var(--text-sub);
-	--card-bg: var(--bg-card);
-	--card-border: var(--border);
-	--brand-color: var(--success);
+  --ball-bg: var(--success-light);
+  --wave-color: var(--success);
+  --ball-glow: var(--success-glow);
+  --bg-body: var(--bg-body);
+  --text-primary: var(--text-primary);
+  --text-tertiary: var(--text-sub);
+  --card-bg: var(--bg-card);
+  --card-border: var(--border);
+  --brand-color: var(--success);
 
-	min-height: 100vh;
-	background: var(--bg-body);
-	position: relative;
-	overflow: hidden;
-	transition: background 0.3s;
+  min-height: 100vh;
+  background: var(--bg-body);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
 }
 
 /* 深色模式荧光效果 */
@@ -829,429 +827,491 @@ export default {
 }
 
 .aurora-bg {
-	position: absolute;
-	top: 0;
-	width: 100%;
-	height: 500rpx;
-	background: var(--gradient-aurora);
-	filter: blur(60px);
-	z-index: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 500rpx;
+  background: var(--gradient-aurora);
+  filter: blur(60px);
+  z-index: 0;
 }
 
 .dark-mode .aurora-bg {
-	background: var(--gradient-aurora-dark);
+  background: var(--gradient-aurora-dark);
 }
 
 .nav-bar {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	z-index: 100;
-	background: var(--card-bg);
-	backdrop-filter: blur(20px);
-	border-bottom: 1px solid var(--card-border);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--card-border);
 }
 .nav-content {
-	height: 44px;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 30rpx;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
 }
 .back-btn {
-	width: 60rpx;
-	height: 60rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 36rpx;
-	color: var(--text-primary);
-	font-weight: bold;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  color: var(--text-primary);
+  font-weight: bold;
 }
 .nav-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: var(--text-primary);
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--text-primary);
 }
 .share-btn {
-	width: 60rpx;
-	height: 60rpx;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	font-size: 36rpx;
-	color: var(--text-primary);
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 36rpx;
+  color: var(--text-primary);
 }
 
 .detail-scroll {
-	height: 100vh; padding: 0 30rpx; box-sizing: border-box; position: relative; z-index: 1;
+  height: 100vh;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 .glass-card {
-	background: var(--card-bg);
-	backdrop-filter: blur(20px);
-	border: 1px solid var(--card-border);
-	border-radius: 40rpx;
-	box-shadow: var(--shadow-lg);
-	margin-bottom: 30rpx;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 40rpx;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 30rpx;
 }
 
 .school-header-card {
-	display: flex; padding: 40rpx; align-items: center; margin-top: 20rpx;
+  display: flex;
+  padding: 40rpx;
+  align-items: center;
+  margin-top: 20rpx;
 }
 .school-logo {
-	width: 140rpx; height: 140rpx; border-radius: 30rpx; background: var(--bg-page);
-	box-shadow: var(--shadow-sm);
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 30rpx;
+  background: var(--bg-page);
+  box-shadow: var(--shadow-sm);
 }
 .header-main {
-	flex: 1; margin-left: 30rpx;
+  flex: 1;
+  margin-left: 30rpx;
 }
 .school-name {
-	font-size: 40rpx;
-	font-weight: 800;
-	color: var(--text-primary);
-	display: block;
-	margin-bottom: 15rpx;
+  font-size: 40rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 15rpx;
 }
 .tag-row {
-	display: flex; flex-wrap: wrap; gap: 10rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
 }
 .tag-row text {
-	font-size: 20rpx; padding: 4rpx 16rpx; border-radius: 10rpx;
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 10rpx;
 }
 .type-tag {
-	background: var(--success-light); color: var(--success); font-weight: 600;
+  background: var(--success-light);
+  color: var(--success);
+  font-weight: 600;
 }
 .location-tag {
-	background: var(--bg-secondary); color: var(--text-sub);
+  background: var(--bg-secondary);
+  color: var(--text-sub);
 }
 .rank-tag {
-	background: var(--danger-light); color: var(--danger); font-weight: 600;
+  background: var(--danger-light);
+  color: var(--danger);
+  font-weight: 600;
 }
 
 .stats-grid {
-	display: flex; gap: 20rpx; margin-bottom: 30rpx;
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
 }
 .stat-item {
-	flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-	padding: 30rpx 0; margin-bottom: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx 0;
+  margin-bottom: 0;
 }
 .stat-val {
-	font-size: 36rpx;
-	font-weight: 900;
-	color: var(--text-primary);
+  font-size: 36rpx;
+  font-weight: 900;
+  color: var(--text-primary);
 }
 .stat-label {
-	font-size: 20rpx;
-	color: var(--text-tertiary);
-	margin-top: 8rpx;
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+  margin-top: 8rpx;
 }
 
 .section-title {
-	font-size: 32rpx;
-	font-weight: 800;
-	color: var(--text-primary);
-	margin: 40rpx 0 20rpx 10rpx;
+  font-size: 32rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 40rpx 0 20rpx 10rpx;
 }
 
 .intro-card {
-	padding: 40rpx;
+  padding: 40rpx;
 }
 .intro-text {
-	font-size: 28rpx;
-	color: var(--text-tertiary);
-	line-height: 1.8;
+  font-size: 28rpx;
+  color: var(--text-tertiary);
+  line-height: 1.8;
 }
 
 .major-card {
-	display: flex; align-items: center; justify-content: space-between; padding: 30rpx 40rpx;
-	transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 40rpx;
+  transition: all 0.2s;
 }
 .major-card:active {
-	transform: scale(0.98);
-	background: var(--bg-glass);
+  transform: scale(0.98);
+  background: var(--bg-glass);
 }
 .major-info {
-	flex: 1;
+  flex: 1;
 }
 .major-name {
-	font-size: 30rpx;
-	font-weight: bold;
-	color: var(--text-primary);
-	display: block;
-	margin-bottom: 8rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 8rpx;
 }
 .major-code {
-	font-size: 22rpx;
-	color: var(--text-tertiary);
-	display: block;
-	margin-bottom: 4rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  display: block;
+  margin-bottom: 4rpx;
 }
 .major-type {
-	font-size: 20rpx; color: var(--success); background: var(--success-light);
-	padding: 2rpx 12rpx; border-radius: 8rpx; display: inline-block;
+  font-size: 20rpx;
+  color: var(--success);
+  background: var(--success-light);
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+  display: inline-block;
 }
 .arrow-icon {
-	font-size: 32rpx; color: var(--text-tertiary);
+  font-size: 32rpx;
+  color: var(--text-tertiary);
 }
 
 .bottom-action {
-	position: fixed; bottom: 0; left: 0; width: 100%; padding: 30rpx;
-	box-sizing: border-box; padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
-	z-index: 99;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 30rpx;
+  box-sizing: border-box;
+  padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
+  z-index: 99;
 }
 .action-container {
-	display: flex; gap: 20rpx; margin-bottom: 0; padding: 20rpx;
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 0;
+  padding: 20rpx;
 }
 .ai-consult-btn {
-	flex: 1; height: 100rpx; border-radius: 24rpx; background: var(--bg-secondary);
-	color: var(--text-primary); font-size: 28rpx; font-weight: bold; display: flex;
-	align-items: center; justify-content: center; gap: 10rpx; border: none;
+  flex: 1;
+  height: 100rpx;
+  border-radius: 24rpx;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  border: none;
 }
 .ai-consult-btn::after {
-	border: none;
+  border: none;
 }
 .target-btn {
-	flex: 2;
-	height: 100rpx;
-	border-radius: 24rpx;
-	background: var(--brand-color);
-	color: var(--text-primary-foreground);
-	font-size: 30rpx;
-	font-weight: bold;
-	border: none;
-	box-shadow: var(--shadow-success);
-	transition: all 0.3s;
+  flex: 2;
+  height: 100rpx;
+  border-radius: 24rpx;
+  background: var(--brand-color);
+  color: var(--text-primary-foreground);
+  font-size: 30rpx;
+  font-weight: bold;
+  border: none;
+  box-shadow: var(--shadow-success);
+  transition: all 0.3s;
 }
 .target-btn::after {
-	border: none;
+  border: none;
 }
 .target-btn.is-added {
-	background: var(--bg-secondary); color: var(--text-sub); box-shadow: none;
+  background: var(--bg-secondary);
+  color: var(--text-sub);
+  box-shadow: none;
 }
 
 .safe-area {
-	height: 200rpx;
+  height: 200rpx;
 }
 
 /* AI 预测卡片样式 */
 .ai-predict-card {
-	padding: 40rpx;
+  padding: 40rpx;
 }
 .card-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: var(--text-primary);
-	margin-bottom: 40rpx;
-	display: flex;
-	align-items: center;
-	gap: 10rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 40rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
 }
 .sparkle-icon {
-	font-size: 28rpx;
+  font-size: 28rpx;
 }
 
 .predict-main {
-	display: flex;
-	align-items: center;
-	justify-content: space-around;
-	margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 30rpx;
 }
 
 /* 水位球核心样式 */
 .water-ball-container {
-	position: relative;
-	width: 220rpx;
-	height: 220rpx;
+  position: relative;
+  width: 220rpx;
+  height: 220rpx;
 }
 .water-ball {
-	width: 100%;
-	height: 100%;
-	border-radius: 50%;
-	background: var(--ball-bg);
-	position: relative;
-	overflow: hidden;
-	border: 6rpx solid var(--card-border);
-	z-index: 2;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--ball-bg);
+  position: relative;
+  overflow: hidden;
+  border: 6rpx solid var(--card-border);
+  z-index: 2;
 }
 
 /* 动态波浪实现 */
 .wave-bg,
 .wave-front {
-	position: absolute;
-	left: -50%;
-	width: 200%;
-	height: 200%;
-	background: var(--wave-color);
-	border-radius: 40%;
-	transition: top 2s cubic-bezier(0.23, 1, 0.32, 1);
-	animation: rotate 6s linear infinite;
+  position: absolute;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: var(--wave-color);
+  border-radius: 40%;
+  transition: top 2s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: rotate 6s linear infinite;
 }
 .wave-bg {
-	opacity: 0.3;
-	animation-duration: 8s;
+  opacity: 0.3;
+  animation-duration: 8s;
 }
 .wave-front {
-	opacity: 0.6;
+  opacity: 0.6;
 }
 
 @keyframes rotate {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .percent-content {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 3;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
 }
 .percent-content .num {
-	font-size: 56rpx;
-	font-weight: 900;
-	color: var(--text-primary);
-	text-shadow: var(--shadow-text);
+  font-size: 56rpx;
+  font-weight: 900;
+  color: var(--text-primary);
+  text-shadow: var(--shadow-text);
 }
 .percent-content .unit {
-	font-size: 24rpx;
-	margin-left: 4rpx;
-	color: var(--text-primary);
+  font-size: 24rpx;
+  margin-left: 4rpx;
+  color: var(--text-primary);
 }
 
 .ball-glow {
-	position: absolute;
-	bottom: -10rpx;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 80%;
-	height: 20rpx;
-	background: var(--ball-glow);
-	filter: blur(15rpx);
-	border-radius: 50%;
-	z-index: 1;
+  position: absolute;
+  bottom: -10rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 20rpx;
+  background: var(--ball-glow);
+  filter: blur(15rpx);
+  border-radius: 50%;
+  z-index: 1;
 }
 
 .predict-info {
-	flex: 1;
-	margin-left: 40rpx;
+  flex: 1;
+  margin-left: 40rpx;
 }
 .status-tag {
-	font-size: 36rpx;
-	font-weight: 900;
-	margin-bottom: 10rpx;
-	font-style: italic;
-	display: block;
+  font-size: 36rpx;
+  font-weight: 900;
+  margin-bottom: 10rpx;
+  font-style: italic;
+  display: block;
 }
 .ai-summary {
-	font-size: 24rpx;
-	color: var(--text-tertiary);
-	line-height: 1.5;
-	display: block;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  display: block;
 }
 
 .predict-btn {
-	margin-top: 40rpx;
-	height: 80rpx;
-	border-radius: 40rpx;
-	background: var(--brand-color);
-	color: var(--text-inverse);
-	font-size: 26rpx;
-	font-weight: bold;
-	border: none;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
+  margin-top: 40rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: var(--brand-color);
+  color: var(--text-inverse);
+  font-size: 26rpx;
+  font-weight: bold;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 .predict-btn::after {
-	border: none;
+  border: none;
 }
 
 /* 骨架屏样式 */
 .skeleton-loading {
-	padding: 20rpx 0;
+  padding: 20rpx 0;
 }
 
 .skeleton-header-card {
-	display: flex;
-	padding: 40rpx;
-	background: var(--card-bg);
-	border-radius: 40rpx;
-	margin-bottom: 30rpx;
+  display: flex;
+  padding: 40rpx;
+  background: var(--card-bg);
+  border-radius: 40rpx;
+  margin-bottom: 30rpx;
 }
 
 .skeleton-logo {
-	width: 140rpx;
-	height: 140rpx;
-	border-radius: 30rpx;
-	flex-shrink: 0;
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 30rpx;
+  flex-shrink: 0;
 }
 
 .skeleton-info {
-	flex: 1;
-	margin-left: 30rpx;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
+  flex: 1;
+  margin-left: 30rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .skeleton-name {
-	width: 200rpx;
-	height: 40rpx;
-	border-radius: 8rpx;
-	margin-bottom: 20rpx;
+  width: 200rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
 }
 
 .skeleton-tags {
-	width: 280rpx;
-	height: 28rpx;
-	border-radius: 6rpx;
+  width: 280rpx;
+  height: 28rpx;
+  border-radius: 6rpx;
 }
 
 .skeleton-predict-card {
-	height: 320rpx;
-	border-radius: 40rpx;
-	margin-bottom: 30rpx;
+  height: 320rpx;
+  border-radius: 40rpx;
+  margin-bottom: 30rpx;
 }
 
 .skeleton-stats {
-	display: flex;
-	gap: 20rpx;
-	margin-bottom: 30rpx;
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
 }
 
 .skeleton-stat {
-	flex: 1;
-	height: 120rpx;
-	border-radius: 40rpx;
+  flex: 1;
+  height: 120rpx;
+  border-radius: 40rpx;
 }
 
 .skeleton-intro {
-	height: 200rpx;
-	border-radius: 40rpx;
+  height: 200rpx;
+  border-radius: 40rpx;
 }
 
 .skeleton-animate {
-	background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--card-bg) 50%, var(--bg-secondary) 75%);
-	background-size: 200% 100%;
-	animation: skeleton-loading 1.5s infinite;
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--card-bg) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
 }
 
 @keyframes skeleton-loading {
-	0% {
-		background-position: 200% 0;
-	}
-	100% {
-		background-position: -200% 0;
-	}
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 骨架屏淡出过渡 */
+.skeleton-fade-leave-active {
+  transition: opacity 0.35s ease-out;
+}
+.skeleton-fade-leave-to {
+  opacity: 0;
 }
 </style>

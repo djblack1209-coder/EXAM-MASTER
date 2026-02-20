@@ -3,6 +3,7 @@
  * 使用方法：在需要的地方调用 clearAllChatData()
  */
 import { logger } from '@/utils/logger.js';
+import storageService from '@/services/storageService.js';
 
 /**
  * 清空所有本地存储的对话相关数据

@@ -8,21 +8,36 @@
       transition: 'background-color 0.3s ease'
     }"
   >
-    <scroll-view
-      scroll-y
-      class="w-full h-full"
-      :scroll-top="0"
-      @scroll="onScroll"
-    >
+    <scroll-view scroll-y class="w-full h-full" :scroll-top="0" @scroll="onScroll">
       <!-- 内容区：顶部留出状态栏+导航栏空间，底部留出 TabBar 空间 -->
       <view
         class="content-wrapper"
         :style="{
-          paddingTop: (layoutInfo.statusBarHeight + 56) + 'px',
-          paddingBottom: (layoutInfo.tabBarHeight + 40) + 'px'
+          paddingTop: layoutInfo.statusBarHeight + 56 + 'px',
+          paddingBottom: layoutInfo.tabBarHeight + 40 + 'px'
         }"
       >
         <!-- ========== 骨架屏加载状态 ========== -->
+        <!-- #ifndef APP-NVUE -->
+        <transition name="skeleton-fade">
+          <view v-if="isPageLoading" class="skeleton-wrapper">
+            <view class="card skeleton-user-card">
+              <view class="skeleton-avatar skeleton-animate" />
+              <view class="skeleton-user-info">
+                <view class="skeleton-name skeleton-animate" />
+                <view class="skeleton-id skeleton-animate" />
+              </view>
+            </view>
+            <view class="card skeleton-stats-card">
+              <view v-for="i in 3" :key="i" class="skeleton-stat skeleton-animate" />
+            </view>
+            <view class="card skeleton-menu-card">
+              <view v-for="i in 4" :key="i" class="skeleton-menu-item skeleton-animate" />
+            </view>
+          </view>
+        </transition>
+        <!-- #endif -->
+        <!-- #ifdef APP-NVUE -->
         <template v-if="isPageLoading">
           <view class="card skeleton-user-card">
             <view class="skeleton-avatar skeleton-animate" />
@@ -38,14 +53,10 @@
             <view v-for="i in 4" :key="i" class="skeleton-menu-item skeleton-animate" />
           </view>
         </template>
+        <!-- #endif -->
 
         <!-- ========== 用户信息卡片 ========== -->
-        <view
-          v-if="!isPageLoading"
-          class="card user-card"
-          hover-class="card-hover"
-          @tap="handleUserCardClick"
-        >
+        <view v-if="!isPageLoading" class="card user-card" hover-class="card-hover" @tap="handleUserCardClick">
           <view class="user-section">
             <!-- 头像 -->
             <view class="avatar-box" @tap.stop="handleAvatarTap">
@@ -63,9 +74,7 @@
                 mode="aspectFill"
               />
               <view v-if="isLoggedIn" class="avatar-edit-badge">
-                <text class="avatar-edit-icon">
-                  📷
-                </text>
+                <text class="avatar-edit-icon"> 📷 </text>
               </view>
             </view>
             <!-- 用户信息 -->
@@ -78,11 +87,7 @@
               </text>
             </view>
             <!-- 编辑/登录按钮 -->
-            <view
-              class="edit-btn"
-              hover-class="btn-hover"
-              @tap.stop="isLoggedIn ? handleEditProfile() : handleLogin()"
-            >
+            <view class="edit-btn" hover-class="btn-hover" @tap.stop="isLoggedIn ? handleEditProfile() : handleLogin()">
               <text class="edit-icon">
                 {{ isLoggedIn ? '✏️' : '→' }}
               </text>
@@ -94,66 +99,40 @@
         <view v-if="!isPageLoading" class="card stats-card">
           <view class="stats-grid">
             <!-- 学习天数 -->
-            <view
-              class="stat-item"
-              hover-class="stat-hover"
-              @tap="handleStatTap('days')"
-            >
+            <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('days')">
               <view class="stat-icon-box">
-                <text class="stat-emoji">
-                  📅
-                </text>
+                <text class="stat-emoji"> 📅 </text>
               </view>
               <text class="stat-value">
                 {{ studyDays }}
               </text>
-              <text class="stat-label">
-                学习天数
-              </text>
+              <text class="stat-label"> 学习天数 </text>
             </view>
 
             <!-- 分隔线 -->
             <view class="stat-divider" />
 
             <!-- 获得勋章 -->
-            <view
-              class="stat-item"
-              hover-class="stat-hover"
-              @tap="handleStatTap('badges')"
-            >
+            <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('badges')">
               <view class="stat-icon-box">
-                <text class="stat-emoji">
-                  🏆
-                </text>
+                <text class="stat-emoji"> 🏆 </text>
               </view>
               <text class="stat-value">
                 {{ badgeCount }}
               </text>
-              <text class="stat-label">
-                获得勋章
-              </text>
+              <text class="stat-label"> 获得勋章 </text>
             </view>
 
             <!-- 分隔线 -->
             <view class="stat-divider" />
 
             <!-- 正确率 -->
-            <view
-              class="stat-item"
-              hover-class="stat-hover"
-              @tap="handleStatTap('accuracy')"
-            >
+            <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('accuracy')">
               <view class="stat-icon-box">
-                <text class="stat-emoji">
-                  🎯
-                </text>
+                <text class="stat-emoji"> 🎯 </text>
               </view>
-              <text class="stat-value">
-                {{ accuracyRate }}%
-              </text>
-              <text class="stat-label">
-                正确率
-              </text>
+              <text class="stat-value"> {{ accuracyRate }}% </text>
+              <text class="stat-label"> 正确率 </text>
             </view>
           </view>
         </view>
@@ -162,23 +141,17 @@
         <view v-if="!isPageLoading" class="card checkin-card">
           <view class="checkin-header">
             <view class="checkin-title-row">
-              <text class="checkin-title">
-                每日打卡
-              </text>
-              <text v-if="checkInStreak > 0" class="checkin-streak">
-                🔥 连续 {{ checkInStreak }} 天
-              </text>
+              <text class="checkin-title"> 每日打卡 </text>
+              <text v-if="checkInStreak > 0" class="checkin-streak"> 🔥 连续 {{ checkInStreak }} 天 </text>
             </view>
-            <text class="checkin-subtitle">
-              坚持打卡，养成学习好习惯
-            </text>
+            <text class="checkin-subtitle"> 坚持打卡，养成学习好习惯 </text>
           </view>
 
           <view class="checkin-content">
             <!-- 打卡按钮 -->
             <view
               class="checkin-btn"
-              :class="{ 'checked': todayChecked, 'not-checked': !todayChecked }"
+              :class="{ checked: todayChecked, 'not-checked': !todayChecked }"
               hover-class="btn-hover"
               @tap="handleCheckIn"
             >
@@ -193,12 +166,8 @@
             <!-- 补签卡信息 -->
             <view v-if="recoveryCards > 0 || missedDaysCount > 0" class="recovery-info">
               <view v-if="recoveryCards > 0" class="recovery-cards">
-                <text class="recovery-icon">
-                  🎫
-                </text>
-                <text class="recovery-text">
-                  补签卡 x{{ recoveryCards }}
-                </text>
+                <text class="recovery-icon"> 🎫 </text>
+                <text class="recovery-text"> 补签卡 x{{ recoveryCards }} </text>
               </view>
               <view
                 v-if="missedDaysCount > 0 && recoveryCards > 0"
@@ -206,140 +175,81 @@
                 hover-class="btn-hover"
                 @tap="showRecoveryOptions"
               >
-                <text class="use-recovery-text">
-                  使用补签卡
-                </text>
+                <text class="use-recovery-text"> 使用补签卡 </text>
               </view>
             </view>
           </view>
 
           <!-- 断签提示 -->
           <view v-if="missedDaysCount > 0 && !todayChecked" class="missed-tip">
-            <text class="missed-icon">
-              ⚠️
-            </text>
-            <text class="missed-text">
-              您已断签 {{ missedDaysCount }} 天，快来打卡恢复连续记录吧！
-            </text>
+            <text class="missed-icon"> ⚠️ </text>
+            <text class="missed-text"> 您已断签 {{ missedDaysCount }} 天，快来打卡恢复连续记录吧！ </text>
           </view>
         </view>
 
         <!-- ========== 功能菜单卡片（分组） ========== -->
         <view v-if="!isPageLoading" class="card menu-card">
           <!-- 我的错题 -->
-          <view
-            class="menu-item"
-            hover-class="menu-hover"
-            @tap="navToMistake"
-          >
+          <view class="menu-item" hover-class="menu-hover" @tap="navToMistake">
             <view class="menu-icon-box">
-              <text class="menu-emoji">
-                📚
-              </text>
+              <text class="menu-emoji"> 📚 </text>
             </view>
-            <text class="menu-text">
-              我的错题
-            </text>
-            <text class="menu-arrow">
-              ›
-            </text>
+            <text class="menu-text"> 我的错题 </text>
+            <text class="menu-arrow"> › </text>
           </view>
 
           <!-- 分隔线 -->
           <view class="menu-divider" />
 
           <!-- 学习统计 -->
-          <view
-            class="menu-item"
-            hover-class="menu-hover"
-            @tap="navToStudyDetail"
-          >
+          <view class="menu-item" hover-class="menu-hover" @tap="navToStudyDetail">
             <view class="menu-icon-box">
-              <text class="menu-emoji">
-                📊
-              </text>
+              <text class="menu-emoji"> 📊 </text>
             </view>
-            <text class="menu-text">
-              学习统计
-            </text>
-            <text class="menu-arrow">
-              ›
-            </text>
+            <text class="menu-text"> 学习统计 </text>
+            <text class="menu-arrow"> › </text>
           </view>
 
           <!-- 分隔线 -->
           <view class="menu-divider" />
 
           <!-- 系统设置 -->
-          <view
-            class="menu-item"
-            hover-class="menu-hover"
-            @tap="navToSettings"
-          >
+          <view class="menu-item" hover-class="menu-hover" @tap="navToSettings">
             <view class="menu-icon-box">
-              <text class="menu-emoji">
-                ⚙️
-              </text>
+              <text class="menu-emoji"> ⚙️ </text>
             </view>
-            <text class="menu-text">
-              系统设置
-            </text>
-            <text class="menu-arrow">
-              ›
-            </text>
+            <text class="menu-text"> 系统设置 </text>
+            <text class="menu-arrow"> › </text>
           </view>
 
           <!-- 分隔线 -->
           <view class="menu-divider" />
 
           <!-- 意见反馈 -->
-          <view
-            class="menu-item"
-            hover-class="menu-hover"
-            @tap="handleFeedback"
-          >
+          <view class="menu-item" hover-class="menu-hover" @tap="handleFeedback">
             <view class="menu-icon-box">
-              <text class="menu-emoji">
-                💬
-              </text>
+              <text class="menu-emoji"> 💬 </text>
             </view>
-            <text class="menu-text">
-              意见反馈
-            </text>
-            <text class="menu-arrow">
-              ›
-            </text>
+            <text class="menu-text"> 意见反馈 </text>
+            <text class="menu-arrow"> › </text>
           </view>
         </view>
 
         <!-- ========== 关于卡片 ========== -->
         <view v-if="!isPageLoading" class="card about-card">
           <view class="about-row">
-            <text class="about-label">
-              版本
-            </text>
-            <text class="about-value">
-              v1.0.0
-            </text>
+            <text class="about-label"> 版本 </text>
+            <text class="about-value"> v1.0.0 </text>
           </view>
           <view class="about-divider" />
           <view class="about-row">
-            <text class="about-label">
-              开发者
-            </text>
-            <text class="about-value">
-              Exam-Master Team
-            </text>
+            <text class="about-label"> 开发者 </text>
+            <text class="about-value"> Exam-Master Team </text>
           </view>
         </view>
 
         <!-- ========== 主题切换按钮 ========== -->
-        <view
-          v-if="!isPageLoading"
-          class="theme-btn"
-          hover-class="btn-hover"
-          @tap="toggleTheme"
-        >
+        <view v-if="!isPageLoading" class="theme-btn" hover-class="btn-hover" @tap="toggleTheme">
           <text class="theme-emoji">
             {{ isDark ? '🌙' : '☀️' }}
           </text>
@@ -349,15 +259,8 @@
         </view>
 
         <!-- ========== 退出登录按钮 ========== -->
-        <view
-          v-if="!isPageLoading && isLoggedIn"
-          class="logout-btn"
-          hover-class="logout-hover"
-          @tap="handleLogout"
-        >
-          <text class="logout-text">
-            退出登录
-          </text>
+        <view v-if="!isPageLoading && isLoggedIn" class="logout-btn" hover-class="logout-hover" @tap="handleLogout">
+          <text class="logout-text"> 退出登录 </text>
         </view>
       </view>
     </scroll-view>
@@ -371,9 +274,7 @@
       }"
     >
       <view class="nav-content">
-        <text class="nav-title">
-          个人中心
-        </text>
+        <text class="nav-title"> 个人中心 </text>
       </view>
     </view>
 
@@ -398,6 +299,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 
 // ========== 响应式状态 ==========
 const isDark = ref(false);
@@ -549,6 +451,10 @@ async function loadCheckinData() {
 
 // 检查点4.4: 执行打卡
 async function handleCheckIn() {
+  if (!isLoggedIn.value) {
+    requireLogin(() => handleCheckIn(), { message: '请先登录后再打卡' });
+    return;
+  }
   if (todayChecked.value) {
     uni.showToast({ title: '今日已打卡', icon: 'none' });
     return;
@@ -590,6 +496,10 @@ async function handleCheckIn() {
 
 // 检查点4.4: 使用补签卡
 async function handleRecovery(date) {
+  if (!isLoggedIn.value) {
+    requireLogin(() => handleRecovery(date), { message: '请先登录后再补签' });
+    return;
+  }
   const checkResult = streakRecovery.canRecover(date);
 
   if (!checkResult.canRecover) {
@@ -651,9 +561,7 @@ function showRecoveryOptions() {
   }
 
   // 筛选出可以补签的日期（最近7天内）
-  const availableDates = recoverableDates
-    .filter((d) => d.canRecover && d.daysAgo <= 7)
-    .slice(0, 5);
+  const availableDates = recoverableDates.filter((d) => d.canRecover && d.daysAgo <= 7).slice(0, 5);
 
   if (availableDates.length === 0) {
     uni.showToast({ title: '没有可补签的日期', icon: 'none' });
@@ -815,7 +723,8 @@ async function chooseAndUploadAvatar(sourceType) {
 
       uni.showToast({ title: '头像更新成功', icon: 'success' });
     } else {
-      uni.showToast({ title: uploadRes.message || '上传失败', icon: 'none' });}
+      uni.showToast({ title: uploadRes.message || '上传失败', icon: 'none' });
+    }
   } catch (error) {
     uni.hideLoading();
     logger.error('[Profile] chooseAndUploadAvatar error:', error);
@@ -844,7 +753,7 @@ async function uploadAvatarToServer(filePath, userId) {
         type: 'avatar'
       },
       header: {
-        'Authorization': `Bearer ${storageService.get('EXAM_TOKEN', '')}`
+        Authorization: `Bearer ${storageService.get('EXAM_TOKEN', '')}`
       },
       success: (res) => {
         try {
@@ -980,7 +889,9 @@ onMounted(() => {
         isDark.value = res.theme === 'dark';
       }
     });
-  } catch { /* 主题监听非关键功能 */ }
+  } catch {
+    /* 主题监听非关键功能 */
+  }
 });
 
 onShow(() => {
@@ -1005,557 +916,565 @@ onHide(() => {
 <style lang="scss" scoped>
 // ========== 基础布局 ==========
 .fixed {
-	position: fixed;
+  position: fixed;
 }
 
 .inset-0 {
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 .w-full {
-	width: 100%;
+  width: 100%;
 }
 
 .h-full {
-	height: 100%;
+  height: 100%;
 }
 
 .z-0 {
-	z-index: 0;
+  z-index: 0;
 }
 
 // ========== 内容区 ==========
 .content-wrapper {
-	padding-left: 32rpx;
-	padding-right: 32rpx;
+  padding-left: 32rpx;
+  padding-right: 32rpx;
 }
 
 // ========== 通用卡片 ==========
 .card {
-	background-color: var(--bg-card);
-	border: 1px solid var(--border-color);
-	border-radius: 24rpx;
-	margin-bottom: 24rpx;
-	transition: all 0.2s ease;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  transition: all 0.2s ease;
 }
 
 .card-hover {
-	opacity: 0.9;
-	transform: scale(0.99);
+  opacity: 0.9;
+  transform: scale(0.99);
 }
 
 // ========== 用户卡片 ==========
 .user-card {
-	padding: 32rpx;
+  padding: 32rpx;
 }
 
 .user-section {
-	display: flex;
-	align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .avatar-box {
-	position: relative;
-	width: 120rpx;
-	height: 120rpx;
-	border-radius: 50%;
-	background-color: var(--muted);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 28rpx;
-	flex-shrink: 0;
-	overflow: visible;
+  position: relative;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background-color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 28rpx;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
 .avatar-emoji {
-	font-size: 56rpx;
+  font-size: 56rpx;
 }
 
 .avatar-image {
-	width: 100%;
-	height: 100%;
-	border-radius: 50%;
-	object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .avatar-edit-badge {
-	position: absolute;
-	right: -4rpx;
-	bottom: -4rpx;
-	width: 40rpx;
-	height: 40rpx;
-	border-radius: 50%;
-	background: linear-gradient(135deg, #9FE870 0%, #7BC653 100%);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 3rpx solid var(--bg-card);
-	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  position: absolute;
+  right: -4rpx;
+  bottom: -4rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9fe870 0%, #7bc653 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid var(--bg-card);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
 }
 
 .avatar-edit-icon {
-	font-size: 20rpx;
+  font-size: 20rpx;
 }
 
 .user-info {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 12rpx;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
 .user-name {
-	font-size: 40rpx;
-	font-weight: 700;
-	line-height: 1.2;
-	color: var(--text-main);
+  font-size: 40rpx;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-main);
 }
 
 .user-id {
-	font-size: 26rpx;
-	line-height: 1.2;
-	color: var(--text-sub);
+  font-size: 26rpx;
+  line-height: 1.2;
+  color: var(--text-sub);
 }
 
 .edit-btn {
-	width: 88rpx;
-	height: 88rpx;
-	border-radius: 50%;
-	background-color: var(--muted);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background-color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .edit-icon {
-	font-size: 36rpx;
+  font-size: 36rpx;
 }
 
 // ========== 统计卡片 ==========
 .stats-card {
-	padding: 32rpx 16rpx;
+  padding: 32rpx 16rpx;
 }
 
 .stats-grid {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .stat-item {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 12rpx 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12rpx 0;
 }
 
 .stat-hover {
-	opacity: 0.7;
-	transform: scale(0.95);
+  opacity: 0.7;
+  transform: scale(0.95);
 }
 
 .stat-icon-box {
-	width: 80rpx;
-	height: 80rpx;
-	border-radius: 50%;
-	background-color: var(--muted);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-bottom: 16rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16rpx;
 }
 
 .stat-emoji {
-	font-size: 40rpx;
+  font-size: 40rpx;
 }
 
 .stat-value {
-	font-size: 48rpx;
-	font-weight: 800;
-	line-height: 1.1;
-	margin-bottom: 8rpx;
-	color: var(--text-main);
+  font-size: 48rpx;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 8rpx;
+  color: var(--text-main);
 }
 
 .stat-label {
-	font-size: 24rpx;
-	line-height: 1.2;
-	color: var(--text-sub);
+  font-size: 24rpx;
+  line-height: 1.2;
+  color: var(--text-sub);
 }
 
 .stat-divider {
-	width: 2rpx;
-	height: 80rpx;
-	background-color: var(--border-color);
-	flex-shrink: 0;
+  width: 2rpx;
+  height: 80rpx;
+  background-color: var(--border-color);
+  flex-shrink: 0;
 }
 
 // ========== 菜单卡片 ==========
 .menu-card {
-	padding: 0;
-	overflow: hidden;
+  padding: 0;
+  overflow: hidden;
 }
 
 .menu-item {
-	display: flex;
-	align-items: center;
-	padding: 28rpx 32rpx;
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx;
 }
 
 .menu-hover {
-	background-color: var(--muted);
+  background-color: var(--muted);
 }
 
 .menu-icon-box {
-	width: 76rpx;
-	height: 76rpx;
-	border-radius: 50%;
-	background-color: var(--muted);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-right: 24rpx;
-	flex-shrink: 0;
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  background-color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
 }
 
 .menu-emoji {
-	font-size: 36rpx;
+  font-size: 36rpx;
 }
 
 .menu-text {
-	flex: 1;
-	font-size: 32rpx;
-	font-weight: 500;
-	color: var(--text-main);
+  flex: 1;
+  font-size: 32rpx;
+  font-weight: 500;
+  color: var(--text-main);
 }
 
 .menu-arrow {
-	font-size: 48rpx;
-	font-weight: 300;
-	flex-shrink: 0;
-	color: var(--text-sub);
+  font-size: 48rpx;
+  font-weight: 300;
+  flex-shrink: 0;
+  color: var(--text-sub);
 }
 
 .menu-divider {
-	height: 2rpx;
-	background-color: var(--border-color);
-	margin-left: 132rpx;
+  height: 2rpx;
+  background-color: var(--border-color);
+  margin-left: 132rpx;
 }
 
 // ========== 关于卡片 ==========
 .about-card {
-	padding: 0;
-	overflow: hidden;
+  padding: 0;
+  overflow: hidden;
 }
 
 .about-row {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 28rpx 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28rpx 32rpx;
 }
 
 .about-label {
-	font-size: 28rpx;
-	color: var(--text-sub);
+  font-size: 28rpx;
+  color: var(--text-sub);
 }
 
 .about-value {
-	font-size: 28rpx;
-	color: var(--text-main);
+  font-size: 28rpx;
+  color: var(--text-main);
 }
 
 .about-divider {
-	height: 2rpx;
-	background-color: var(--border-color);
-	margin-left: 32rpx;
-	margin-right: 32rpx;
+  height: 2rpx;
+  background-color: var(--border-color);
+  margin-left: 32rpx;
+  margin-right: 32rpx;
 }
 
 // ========== 主题切换按钮 ==========
 .theme-btn {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 16rpx;
-	padding: 28rpx;
-	border-radius: 24rpx;
-	margin-bottom: 24rpx;
-	background-color: var(--bg-card);
-	border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  padding: 28rpx;
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
 .theme-emoji {
-	font-size: 36rpx;
+  font-size: 36rpx;
 }
 
 .theme-text {
-	font-size: 30rpx;
-	font-weight: 500;
-	color: var(--text-main);
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-main);
 }
 
 // ========== 退出按钮 ==========
 .logout-btn {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 28rpx;
-	border-radius: 24rpx;
-	margin-bottom: 24rpx;
-	background-color: transparent;
-	border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28rpx;
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
+  background-color: transparent;
+  border: 1px solid var(--border-color);
 }
 
 .logout-text {
-	font-size: 30rpx;
-	font-weight: 500;
-	color: var(--danger);
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--danger);
 }
 
 .logout-hover {
-	background-color: var(--muted);
+  background-color: var(--muted);
 }
 
 // ========== 按钮通用 hover ==========
 .btn-hover {
-	opacity: 0.7;
-	transform: scale(0.95);
+  opacity: 0.7;
+  transform: scale(0.95);
 }
 
 // ========== 骨架屏样式 ==========
 .skeleton-user-card {
-	padding: 32rpx;
-	display: flex;
-	align-items: center;
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
 }
 
 .skeleton-avatar {
-	width: 120rpx;
-	height: 120rpx;
-	border-radius: 50%;
-	margin-right: 28rpx;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  margin-right: 28rpx;
 }
 
 .skeleton-user-info {
-	flex: 1;
+  flex: 1;
 }
 
 .skeleton-name {
-	width: 160rpx;
-	height: 40rpx;
-	border-radius: 8rpx;
-	margin-bottom: 16rpx;
+  width: 160rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
 }
 
 .skeleton-id {
-	width: 120rpx;
-	height: 26rpx;
-	border-radius: 6rpx;
+  width: 120rpx;
+  height: 26rpx;
+  border-radius: 6rpx;
 }
 
 .skeleton-stats-card {
-	padding: 32rpx 16rpx;
-	display: flex;
-	justify-content: space-around;
+  padding: 32rpx 16rpx;
+  display: flex;
+  justify-content: space-around;
 }
 
 .skeleton-stat {
-	width: 120rpx;
-	height: 100rpx;
-	border-radius: 16rpx;
+  width: 120rpx;
+  height: 100rpx;
+  border-radius: 16rpx;
 }
 
 .skeleton-menu-card {
-	padding: 16rpx 0;
+  padding: 16rpx 0;
 }
 
 .skeleton-menu-item {
-	height: 88rpx;
-	margin: 8rpx 32rpx;
-	border-radius: 16rpx;
+  height: 88rpx;
+  margin: 8rpx 32rpx;
+  border-radius: 16rpx;
 }
 
 .skeleton-animate {
-	background: linear-gradient(90deg, var(--muted) 25%, var(--bg-card) 50%, var(--muted) 75%);
-	background-size: 200% 100%;
-	animation: skeleton-loading 1.5s infinite;
+  background: linear-gradient(90deg, var(--muted) 25%, var(--bg-card) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
 }
 
 @keyframes skeleton-loading {
-	0% {
-		background-position: 200% 0;
-	}
-	100% {
-		background-position: -200% 0;
-	}
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 // ========== 固定导航栏 ==========
 .fixed-nav {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	z-index: 100;
-	background-color: transparent;
-	transition: all 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: transparent;
+  transition: all 0.3s ease;
 }
 
 .fixed-nav.nav-scrolled {
-	background-color: var(--glass-bg);
-	border-bottom: 1px solid var(--border-color);
-	backdrop-filter: blur(12px);
-	-webkit-backdrop-filter: blur(12px);
+  background-color: var(--glass-bg);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .nav-content {
-	height: 88rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-title {
-	font-size: 36rpx;
-	font-weight: 600;
-	color: var(--text-main);
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-main);
 }
 
 // ========== 问题54：打卡卡片样式 ==========
 .checkin-card {
-	padding: 32rpx;
+  padding: 32rpx;
 }
 
 .checkin-header {
-	margin-bottom: 24rpx;
+  margin-bottom: 24rpx;
 }
 
 .checkin-title-row {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
 }
 
 .checkin-title {
-	font-size: 34rpx;
-	font-weight: 700;
-	color: var(--text-main);
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .checkin-streak {
-	font-size: 26rpx;
-	color: #E05A2B;
-	font-weight: 600;
+  font-size: 26rpx;
+  color: #e05a2b;
+  font-weight: 600;
 }
 
 .checkin-subtitle {
-	font-size: 24rpx;
-	color: var(--text-sub);
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 
 .checkin-content {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
 }
 
 .checkin-btn {
-	flex: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 12rpx;
-	padding: 28rpx 40rpx;
-	border-radius: 50rpx;
-	transition: all 0.3s ease;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 28rpx 40rpx;
+  border-radius: 50rpx;
+  transition: all 0.3s ease;
 }
 
 .checkin-btn.not-checked {
-	background: linear-gradient(135deg, #9FE870 0%, #7BC653 100%);
-	box-shadow: 0 8rpx 24rpx rgba(159, 232, 112, 0.4);
+  background: linear-gradient(135deg, #9fe870 0%, #7bc653 100%);
+  box-shadow: 0 8rpx 24rpx rgba(159, 232, 112, 0.4);
 }
 
 .checkin-btn.checked {
-	background: var(--muted);
-	border: 2rpx solid var(--border-color);
+  background: var(--muted);
+  border: 2rpx solid var(--border-color);
 }
 
 .checkin-btn-icon {
-	font-size: 36rpx;
+  font-size: 36rpx;
 }
 
 .checkin-btn-text {
-	font-size: 30rpx;
-	font-weight: 600;
-	color: var(--text-main);
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-main);
 }
 
 .checkin-btn.not-checked .checkin-btn-text {
-	color: #1A1A1A;
+  color: #1a1a1a;
 }
 
 .recovery-info {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	gap: 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12rpx;
 }
 
 .recovery-cards {
-	display: flex;
-	align-items: center;
-	gap: 8rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
 }
 
 .recovery-icon {
-	font-size: 28rpx;
+  font-size: 28rpx;
 }
 
 .recovery-text {
-	font-size: 24rpx;
-	color: var(--text-sub);
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 
 .use-recovery-btn {
-	padding: 12rpx 24rpx;
-	background: rgba(255, 107, 53, 0.1);
-	border-radius: 20rpx;
-	border: 1rpx solid rgba(255, 107, 53, 0.3);
+  padding: 12rpx 24rpx;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(255, 107, 53, 0.3);
 }
 
 .use-recovery-text {
-	font-size: 24rpx;
-	color: #E05A2B;
-	font-weight: 500;
+  font-size: 24rpx;
+  color: #e05a2b;
+  font-weight: 500;
 }
 
 .missed-tip {
-	display: flex;
-	align-items: center;
-	gap: 12rpx;
-	margin-top: 20rpx;
-	padding: 16rpx 20rpx;
-	background: rgba(255, 107, 53, 0.08);
-	border-radius: 16rpx;
-	border: 1rpx solid rgba(255, 107, 53, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 20rpx;
+  padding: 16rpx 20rpx;
+  background: rgba(255, 107, 53, 0.08);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(255, 107, 53, 0.2);
 }
 
 .missed-icon {
-	font-size: 28rpx;
+  font-size: 28rpx;
 }
 
 .missed-text {
-	font-size: 24rpx;
-	color: #E05A2B;
-	flex: 1;
+  font-size: 24rpx;
+  color: #e05a2b;
+  flex: 1;
+}
+
+/* 骨架屏淡出过渡 */
+.skeleton-fade-leave-active {
+  transition: opacity 0.35s ease-out;
+}
+.skeleton-fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -2,15 +2,29 @@
   <view class="practice-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav">
-      <text class="nav-title">
-        刷题中心
-      </text>
+      <text class="nav-title"> 刷题中心 </text>
       <view class="nav-actions">
         <!-- 移除垃圾桶图标，避免与微信原生胶囊按钮重叠 -->
       </view>
     </view>
 
     <!-- 骨架屏加载状态 -->
+    <!-- #ifndef APP-NVUE -->
+    <transition name="skeleton-fade">
+      <view v-if="isPageLoading" class="skeleton-container">
+        <view class="skeleton-status-card skeleton-animate" />
+        <view class="skeleton-actions">
+          <view class="skeleton-btn skeleton-animate" />
+          <view class="skeleton-btn skeleton-animate" />
+        </view>
+        <view class="skeleton-import-card skeleton-animate" />
+        <view class="skeleton-menu">
+          <view v-for="i in 5" :key="i" class="skeleton-menu-item skeleton-animate" />
+        </view>
+      </view>
+    </transition>
+    <!-- #endif -->
+    <!-- #ifdef APP-NVUE -->
     <view v-if="isPageLoading" class="skeleton-container">
       <view class="skeleton-status-card skeleton-animate" />
       <view class="skeleton-actions">
@@ -22,6 +36,7 @@
         <view v-for="i in 5" :key="i" class="skeleton-menu-item skeleton-animate" />
       </view>
     </view>
+    <!-- #endif -->
 
     <!-- 状态卡片 -->
     <view v-if="!isPageLoading" class="status-card" :class="{ 'empty-state': !hasBank }">
@@ -36,24 +51,13 @@
           />
         </div>
         <div class="status-info">
-          <h3 class="status-title">
-            题库就绪
-          </h3>
-          <p class="status-desc">
-            当前已收录 {{ totalQuestions }} 道真题
-          </p>
+          <h3 class="status-title">题库就绪</h3>
+          <p class="status-desc">当前已收录 {{ totalQuestions }} 道真题</p>
         </div>
         <view class="status-actions">
           <view class="manage-btn" @tap="showQuizManage">
-            <image
-              class="manage-icon-img"
-              src="/static/icons/practice/icon-settings.png"
-              mode="aspectFit"
-              lazy-load
-            />
-            <text class="manage-text">
-              题库管理
-            </text>
+            <image class="manage-icon-img" src="/static/icons/practice/icon-settings.png" mode="aspectFit" lazy-load />
+            <text class="manage-text"> 题库管理 </text>
           </view>
         </view>
       </div>
@@ -61,23 +65,13 @@
       <!-- 空状态 - 居中显示 -->
       <div v-else class="empty-state-content" @tap="chooseImportSource">
         <div class="empty-icon">
-          <text class="empty-icon-emoji">
-            📚
-          </text>
+          <text class="empty-icon-emoji"> 📚 </text>
         </div>
-        <h3 class="empty-title">
-          题库空空如也
-        </h3>
-        <p class="empty-desc">
-          导入学习资料，AI 为您智能生成专属题库
-        </p>
+        <h3 class="empty-title">题库空空如也</h3>
+        <p class="empty-desc">导入学习资料，AI 为您智能生成专属题库</p>
         <view class="empty-action">
-          <text class="action-icon-emoji">
-            📤
-          </text>
-          <text class="action-text">
-            点击导入资料
-          </text>
+          <text class="action-icon-emoji"> 📤 </text>
+          <text class="action-text"> 点击导入资料 </text>
         </view>
       </div>
     </view>
@@ -116,12 +110,7 @@
         @tap="goPractice"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image
-          v-else
-          class="btn-icon-img"
-          src="/static/icons/practice/icon-book.png"
-          mode="aspectFit"
-        />
+        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-book.png" mode="aspectFit" />
         <text class="btn-text">
           {{ isNavigating ? '加载中...' : '开始刷题' }}
         </text>
@@ -136,23 +125,14 @@
         @tap="goBattle"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image
-          v-else
-          class="btn-icon-img"
-          src="/static/icons/practice/icon-battle.png"
-          mode="aspectFit"
-        />
-        <text class="btn-text">
-          PK 对战
-        </text>
+        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-battle.png" mode="aspectFit" />
+        <text class="btn-text"> PK 对战 </text>
       </button>
 
       <!-- 导入资料卡片 -->
       <div class="import-card" :class="{ 'import-loading': isUploadingFile }" @tap="chooseImportSource">
         <div class="import-icon">
-          <text v-if="!isUploadingFile" class="import-icon-emoji">
-            📤
-          </text>
+          <text v-if="!isUploadingFile" class="import-icon-emoji"> 📤 </text>
           <view v-else class="import-spinner" />
         </div>
         <div class="import-info">
@@ -164,39 +144,25 @@
           </p>
         </div>
         <div class="import-arrow">
-          <text v-if="!isUploadingFile" class="arrow">
-            ›
-          </text>
+          <text v-if="!isUploadingFile" class="arrow"> › </text>
         </div>
       </div>
     </div>
 
-    <PauseBanner
-      :visible="isPaused"
-      @resume="resumeGeneration"
-    />
+    <PauseBanner :visible="isPaused" @resume="resumeGeneration" />
 
     <!-- 功能菜单 -->
     <div v-if="!isPageLoading" class="feature-menu">
       <!-- 文件管理 -->
       <div class="menu-item" @tap="goFileManager">
         <div class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-folder.png"
-            mode="aspectFit"
-            lazy-load
-          />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-folder.png" mode="aspectFit" lazy-load />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">
-            文件管理
-          </h3>
+          <h3 class="menu-title">文件管理</h3>
         </div>
         <div class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </div>
       </div>
 
@@ -211,149 +177,94 @@
           />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">
-            AI导师
-          </h3>
+          <h3 class="menu-title">AI导师</h3>
         </div>
         <div class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </div>
       </div>
 
       <!-- 错题本 -->
       <div class="menu-item" @tap="goMistake">
         <div class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-error.png"
-            mode="aspectFit"
-            lazy-load
-          />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-error.png" mode="aspectFit" lazy-load />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">
-            错题本
-          </h3>
+          <h3 class="menu-title">错题本</h3>
         </div>
         <div class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </div>
       </div>
 
       <!-- ✅ P1: 错题重练入口 -->
       <div v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
         <div class="menu-icon">
-          <text class="menu-icon-emoji">
-            🔄
-          </text>
+          <text class="menu-icon-emoji"> 🔄 </text>
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">
-            错题重练
-          </h3>
-          <p class="menu-subtitle">
-            {{ mistakeCount }} 道错题待巩固
-          </p>
+          <h3 class="menu-title">错题重练</h3>
+          <p class="menu-subtitle">{{ mistakeCount }} 道错题待巩固</p>
         </div>
         <div class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </div>
       </div>
 
       <!-- 排行榜 -->
       <div class="menu-item" @tap="goRank">
         <div class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-ranking.png"
-            mode="aspectFit"
-            lazy-load
-          />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-ranking.png" mode="aspectFit" lazy-load />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">
-            学霸排行榜
-          </h3>
+          <h3 class="menu-title">学霸排行榜</h3>
         </div>
         <div class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </div>
       </div>
 
       <!-- 学习进度 -->
       <div class="menu-item" @tap="goToStudyDetail">
         <div class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-check.png"
-            mode="aspectFit"
-            lazy-load
-          />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-check.png" mode="aspectFit" lazy-load />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">
-            总学习进度
-          </h3>
+          <h3 class="menu-title">总学习进度</h3>
         </div>
         <div class="progress-info">
           <div class="progress-bar">
             <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
           </div>
-          <text class="progress-text">
-            {{ progressPercent }}%
-          </text>
+          <text class="progress-text"> {{ progressPercent }}% </text>
         </div>
       </div>
 
       <!-- ✅ P2: 收藏夹管理入口 -->
       <div v-if="favoriteCount > 0" class="menu-item" @tap="goFavorites">
         <div class="menu-icon">
-          <text class="menu-icon-emoji">
-            ⭐
-          </text>
+          <text class="menu-icon-emoji"> ⭐ </text>
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">
-            我的收藏
-          </h3>
-          <p class="menu-subtitle-normal">
-            {{ favoriteCount }} 道题目
-          </p>
+          <h3 class="menu-title">我的收藏</h3>
+          <p class="menu-subtitle-normal">{{ favoriteCount }} 道题目</p>
         </div>
         <div class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </div>
       </div>
 
       <!-- ✅ P1: 练习模式入口 -->
       <div class="menu-item" @tap="showPracticeModes">
         <div class="menu-icon">
-          <text class="menu-icon-emoji">
-            🎮
-          </text>
+          <text class="menu-icon-emoji"> 🎮 </text>
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">
-            练习模式
-          </h3>
-          <p class="menu-subtitle-normal">
-            专项突破 · 限时训练
-          </p>
+          <h3 class="menu-title">练习模式</h3>
+          <p class="menu-subtitle-normal">专项突破 · 限时训练</p>
         </div>
         <div class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </div>
       </div>
     </div>
@@ -370,10 +281,7 @@
     />
 
     <!-- 极速体验弹窗 -->
-    <SpeedReadyModal
-      :visible="showSpeedModal"
-      @start="closeSpeedModalAndPlay"
-    />
+    <SpeedReadyModal :visible="showSpeedModal" @start="closeSpeedModalAndPlay" />
 
     <!-- 题库管理弹窗 -->
     <QuizManageModal
@@ -442,7 +350,7 @@ import { detectUnfinishedPractice, clearDraft } from '@/utils/practice/draft-det
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 // ✅ 2.1: 导航逻辑提取到 mixin，减少主组件方法数量
-import { practiceNavigationMixin } from '@/composables/usePracticeNavigation.js';
+import { practiceNavigationMixin } from '@/mixins/practiceNavigationMixin.js';
 // ✅ AI 生成逻辑已抽离到分包 composable，通过 onLoad 动态加载
 // 详见 pages/practice-sub/composables/ai-generation-mixin.js
 
@@ -562,17 +470,18 @@ export default {
     // 检查是否有来自其他页面的待处理搜索（tabBar 页面无法通过 query 传参）
     try {
       const pendingSearch = uni.getStorageSync('_pendingSearch');
-      if (pendingSearch && pendingSearch.keyword && (Date.now() - pendingSearch.timestamp < 30000)) {
+      if (pendingSearch && pendingSearch.keyword && Date.now() - pendingSearch.timestamp < 30000) {
         uni.removeStorageSync('_pendingSearch');
         // 延迟执行搜索，等 UI 渲染完成
         setTimeout(() => {
-          uni.showToast({ title: `搜索: ${pendingSearch.keyword.substring(0, 15)}...`, icon: 'none' });
-          // TODO: 接入题库搜索逻辑，当前先提示用户
+          this._searchBankByKeyword(pendingSearch.keyword);
         }, 300);
       } else if (pendingSearch) {
         uni.removeStorageSync('_pendingSearch'); // 过期清理
       }
-    } catch (_e) { /* ignore */ }
+    } catch (_e) {
+      /* ignore */
+    }
 
     // E005: 延迟非关键读取，让 UI 先渲染
     setTimeout(() => {
@@ -710,6 +619,48 @@ export default {
       }
     },
 
+    /**
+     * 在本地题库中搜索匹配关键词的题目
+     * 匹配题目的 question/answer/options 字段，找到后跳转到答题页
+     */
+    _searchBankByKeyword(keyword) {
+      if (!keyword || !this.hasBank) {
+        uni.showToast({ title: this.hasBank ? '搜索关键词为空' : '请先导入题库', icon: 'none' });
+        return;
+      }
+
+      const bank = storageService.get('v30_bank', []);
+      const kw = keyword.toLowerCase().substring(0, 50);
+
+      // 在题目、选项、解析中搜索关键词
+      const matched = bank.filter((q) => {
+        const text = [
+          q.question || q.title || '',
+          q.answer || '',
+          q.analysis || q.explanation || '',
+          ...(Array.isArray(q.options)
+            ? q.options.map((o) => (typeof o === 'string' ? o : o.text || o.label || ''))
+            : [])
+        ]
+          .join(' ')
+          .toLowerCase();
+        return text.includes(kw);
+      });
+
+      if (matched.length === 0) {
+        uni.showToast({ title: `未找到与"${keyword.substring(0, 10)}"相关的题目`, icon: 'none', duration: 2000 });
+        return;
+      }
+
+      // 将搜索结果存入临时存储，答题页读取
+      storageService.save('v30_search_result', matched);
+      uni.showToast({ title: `找到 ${matched.length} 道相关题目`, icon: 'success', duration: 1500 });
+
+      setTimeout(() => {
+        safeNavigateTo('/pages/practice-sub/do-quiz?mode=search');
+      }, 800);
+    },
+
     // ==================== 页面导航（由 practiceNavigationMixin 提供）====================
     // goPractice, goBattle, goMistakeReview, goFileManager, goAITutor,
     // goMistake, goRank, goToStudyDetail, goFavorites, isNavigating
@@ -748,8 +699,12 @@ export default {
     // loadLearningStats, loadTodayGoal, loadAchievements, openGoalSetting,
     // onGoalSaved, loadFavoriteCount, showPracticeModes, selectPracticeMode
     // 在 _loadLearningStatsMixin 加载前提供占位
-    async loadLearningStats() { /* 由分包 mixin 注入 */ },
-    async loadFavoriteCount() { /* 由分包 mixin 注入 */ },
+    async loadLearningStats() {
+      /* 由分包 mixin 注入 */
+    },
+    async loadFavoriteCount() {
+      /* 由分包 mixin 注入 */
+    },
 
     // ✅ P1: goMistakeReview 由 practiceNavigationMixin 提供
 
@@ -764,11 +719,18 @@ export default {
           import('@/pages/practice-sub/composables/ai-generation-mixin.js'),
           import('@/pages/practice-sub/composables/learning-stats-mixin.js')
         ]);
+        // 兼容 ESM / CJS / default 包装：取 named export 或 default 中的值
+        const resolveExport = (mod, name) => mod[name] || (mod.default && mod.default[name]) || mod.default || mod;
+        const aiMixin = resolveExport(aiModule, 'aiGenerationMixin');
+        const statsMixin = resolveExport(statsModule, 'learningStatsMixin');
         // 将 mixin 的方法混入当前实例
-        const mixins = [aiModule.aiGenerationMixin, statsModule.learningStatsMixin];
+        const mixins = [aiMixin, statsMixin];
         for (const mixin of mixins) {
-          for (const key of Object.keys(mixin.methods)) {
-            this[key] = mixin.methods[key].bind(this);
+          const methods = mixin.methods || mixin;
+          for (const key of Object.keys(methods)) {
+            if (typeof methods[key] === 'function') {
+              this[key] = methods[key].bind(this);
+            }
           }
         }
         this._mixinLoaded = true;
@@ -799,22 +761,55 @@ export default {
     // updateGenerationProgress, startSoupRotation, 等
 
     // 占位方法：在 mixin 加载前提供默认行为
-    chooseImportSource() { uni.showToast({ title: '功能加载中，请稍候', icon: 'none' }); },
-    showQuizManage() { uni.showToast({ title: '功能加载中，请稍候', icon: 'none' }); },
-    closeQuizManage() { this.showQuizManageModal = false; },
-    clearQuizBank() { uni.showToast({ title: '功能加载中，请稍候', icon: 'none' }); },
-    clearAll() { uni.showToast({ title: '功能加载中，请稍候', icon: 'none' }); },
-    pauseGeneration() { /* mixin 占位 */ },
-    resumeGeneration() { /* mixin 占位 */ },
-    closeSpeedModalAndPlay() { this.showSpeedModal = false; },
-    startProgressTimer() { /* mixin 占位 */ },
-    updateGenerationProgress() { /* mixin 占位 */ },
-    startSoupRotation() { /* mixin 占位 */ },
-    generateNextBatch() { /* mixin 占位 */ },
-    openGoalSetting() { uni.showToast({ title: '功能加载中，请稍候', icon: 'none' }); },
-    onGoalSaved(value) { this.todayGoal = value; this.showGoalSettingModal = false; },
-    showPracticeModes() { uni.showToast({ title: '功能加载中，请稍候', icon: 'none' }); },
-    selectPracticeMode() { uni.showToast({ title: '功能加载中，请稍候', icon: 'none' }); }
+    chooseImportSource() {
+      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+    },
+    showQuizManage() {
+      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+    },
+    closeQuizManage() {
+      this.showQuizManageModal = false;
+    },
+    clearQuizBank() {
+      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+    },
+    clearAll() {
+      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+    },
+    pauseGeneration() {
+      /* mixin 占位 */
+    },
+    resumeGeneration() {
+      /* mixin 占位 */
+    },
+    closeSpeedModalAndPlay() {
+      this.showSpeedModal = false;
+    },
+    startProgressTimer() {
+      /* mixin 占位 */
+    },
+    updateGenerationProgress() {
+      /* mixin 占位 */
+    },
+    startSoupRotation() {
+      /* mixin 占位 */
+    },
+    generateNextBatch() {
+      /* mixin 占位 */
+    },
+    openGoalSetting() {
+      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+    },
+    onGoalSaved(value) {
+      this.todayGoal = value;
+      this.showGoalSettingModal = false;
+    },
+    showPracticeModes() {
+      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+    },
+    selectPracticeMode() {
+      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+    }
   }
 };
 </script>
@@ -934,7 +929,6 @@ export default {
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0px);
@@ -1154,7 +1148,9 @@ export default {
 }
 
 @keyframes btn-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .btn-icon {
@@ -1227,20 +1223,22 @@ export default {
 .import-card.import-loading {
   opacity: 0.8;
   pointer-events: none;
-  border-color: var(--brand-primary, #007AFF);
+  border-color: var(--brand-primary, #007aff);
 }
 
 .import-spinner {
   width: 48rpx;
   height: 48rpx;
   border: 4rpx solid var(--border, #e5e5e5);
-  border-top-color: var(--brand-primary, #007AFF);
+  border-top-color: var(--brand-primary, #007aff);
   border-radius: 50%;
   animation: importSpin 0.8s linear infinite;
 }
 
 @keyframes importSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .import-card:hover {
@@ -1391,4 +1389,11 @@ export default {
   }
 }
 
+/* 骨架屏淡出过渡 */
+.skeleton-fade-leave-active {
+  transition: opacity 0.35s ease-out;
+}
+.skeleton-fade-leave-to {
+  opacity: 0;
+}
 </style>

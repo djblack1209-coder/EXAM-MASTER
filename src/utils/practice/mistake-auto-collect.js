@@ -35,10 +35,8 @@ export async function autoCollectMistake(question, userAnswer, aiAnalysis = '') 
 
     // 2. 检查是否已存在
     const questionText = question.question || question.title || '';
-    const existingIndex = mistakeBook.findIndex((m) =>
-      m.question === questionText ||
-      m.question_content === questionText ||
-      (m.id && m.id === question.id)
+    const existingIndex = mistakeBook.findIndex(
+      (m) => m.question === questionText || m.question_content === questionText || (m.id && m.id === question.id)
     );
 
     // 3. 智能分类
@@ -86,9 +84,16 @@ export async function autoCollectMistake(question, userAnswer, aiAnalysis = '') 
       mistakeRecord.review_count = existing.review_count || 0;
       mistakeRecord.mastery_level = Math.max(0, (existing.mastery_level || 0) - 10); // 再次错误降低掌握度
 
-      // 合并标签（去重）
+      // 合并标签（按 type+value 去重，避免对象引用导致 Set 无法去重）
       const existingTags = existing.tags || [];
-      mistakeRecord.tags = [...new Set([...existingTags, ...mistakeRecord.tags])];
+      const allTags = [...existingTags, ...mistakeRecord.tags];
+      const tagSeen = new Set();
+      mistakeRecord.tags = allTags.filter((t) => {
+        const key = (t?.type || '') + '::' + (t?.value || t);
+        if (tagSeen.has(key)) return false;
+        tagSeen.add(key);
+        return true;
+      });
 
       mistakeBook[existingIndex] = { ...existing, ...mistakeRecord };
       logger.log('[MistakeAutoCollect] 更新已有错题，错误次数:', mistakeRecord.wrong_count);
@@ -118,7 +123,6 @@ export async function autoCollectMistake(question, userAnswer, aiAnalysis = '') 
       wrongCount: mistakeRecord.wrong_count,
       classification
     };
-
   } catch (error) {
     console.error('[MistakeAutoCollect] 收录错题失败:', error);
     return { success: false, error: error.message };
@@ -177,7 +181,6 @@ function updateMistakeStats(classification) {
 
     stats.lastUpdated = Date.now();
     storageService.save(MISTAKE_STATS_KEY, stats);
-
   } catch (error) {
     console.error('[MistakeAutoCollect] 更新统计失败:', error);
   }
@@ -209,11 +212,7 @@ export async function batchCollectMistakes(mistakes) {
 
   const results = [];
   for (const mistake of mistakes) {
-    const result = await autoCollectMistake(
-      mistake.question,
-      mistake.userAnswer,
-      mistake.aiAnalysis
-    );
+    const result = await autoCollectMistake(mistake.question, mistake.userAnswer, mistake.aiAnalysis);
     results.push(result);
   }
 

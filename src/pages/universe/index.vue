@@ -14,42 +14,26 @@
     <view
       class="floating-nav glassmorphism"
       :class="{ 'nav-hidden': !navVisible }"
-      :style="{ top: (statusBarHeight + 10) + 'px' }"
+      :style="{ top: statusBarHeight + 10 + 'px' }"
     >
       <view class="nav-btn" hover-class="nav-btn-hover" @click.stop="handleBack">
-        <text class="nav-icon">
-          ←
-        </text>
-        <text class="nav-label">
-          返回
-        </text>
+        <text class="nav-icon"> ← </text>
+        <text class="nav-label"> 返回 </text>
       </view>
       <view class="nav-divider" />
       <view class="nav-btn" hover-class="nav-btn-hover" @click.stop="handleHome">
-        <text class="nav-icon">
-          ⌂
-        </text>
-        <text class="nav-label">
-          主页
-        </text>
+        <text class="nav-icon"> ⌂ </text>
+        <text class="nav-label"> 主页 </text>
       </view>
       <view class="nav-divider" />
       <view class="nav-btn" hover-class="nav-btn-hover" @click.stop="toggleResourcePanel">
-        <text class="nav-icon">
-          📚
-        </text>
-        <text class="nav-label">
-          资源
-        </text>
+        <text class="nav-icon"> 📚 </text>
+        <text class="nav-label"> 资源 </text>
       </view>
       <view class="nav-divider" />
       <view class="nav-btn" hover-class="nav-btn-hover" @click.stop="handleRefresh">
-        <text class="nav-icon">
-          ↻
-        </text>
-        <text class="nav-label">
-          重置
-        </text>
+        <text class="nav-icon"> ↻ </text>
+        <text class="nav-label"> 重置 </text>
       </view>
     </view>
 
@@ -57,15 +41,11 @@
     <view
       class="resource-panel glassmorphism"
       :class="{ 'panel-visible': showResourcePanel }"
-      :style="{ paddingTop: (statusBarHeight + 70) + 'px' }"
+      :style="{ paddingTop: statusBarHeight + 70 + 'px' }"
     >
       <view class="panel-header">
-        <text class="panel-title">
-          📚 学习资源推荐
-        </text>
-        <text class="panel-close" @click="showResourcePanel = false">
-          ×
-        </text>
+        <text class="panel-title"> 📚 学习资源推荐 </text>
+        <text class="panel-close" @click="showResourcePanel = false"> × </text>
       </view>
 
       <!-- 分类标签 -->
@@ -92,32 +72,16 @@
       <scroll-view scroll-y class="resource-list" @scrolltolower="loadMoreResources">
         <view v-if="resourceLoading" class="loading-box">
           <view class="loading-spinner small" />
-          <text class="loading-text">
-            加载中...
-          </text>
+          <text class="loading-text"> 加载中... </text>
         </view>
 
         <view v-else-if="resources.length === 0" class="empty-box">
-          <text class="empty-icon">
-            📭
-          </text>
-          <text class="empty-text">
-            暂无推荐资源
-          </text>
+          <text class="empty-icon"> 📭 </text>
+          <text class="empty-text"> 暂无推荐资源 </text>
         </view>
 
-        <view
-          v-for="item in resources"
-          :key="item.id"
-          class="resource-card"
-          @click="openResource(item)"
-        >
-          <image
-            class="resource-thumb"
-            :src="item.thumbnail"
-            mode="aspectFill"
-            lazy-load
-          />
+        <view v-for="item in resources" :key="item.id" class="resource-card" @click="openResource(item)">
+          <image class="resource-thumb" :src="item.thumbnail" mode="aspectFill" lazy-load />
           <view class="resource-info">
             <text class="resource-title">
               {{ item.title }}
@@ -126,15 +90,9 @@
               {{ item.description }}
             </text>
             <view class="resource-meta">
-              <text class="meta-tag">
-                {{ item.subjectIcon }} {{ item.subjectName }}
-              </text>
-              <text class="meta-stat">
-                👁 {{ formatNumber(item.viewCount) }}
-              </text>
-              <text class="meta-stat">
-                ⭐ {{ item.rating }}
-              </text>
+              <text class="meta-tag"> {{ item.subjectIcon }} {{ item.subjectName }} </text>
+              <text class="meta-stat"> 👁 {{ formatNumber(item.viewCount) }} </text>
+              <text class="meta-stat"> ⭐ {{ item.rating }} </text>
             </view>
             <view class="resource-footer">
               <text class="resource-author">
@@ -174,22 +132,13 @@
 
       <!-- 粒子发散效果 -->
       <view class="particles">
-        <view
-          v-for="i in 20"
-          :key="i"
-          class="particle"
-          :style="getParticleStyle(i)"
-        />
+        <view v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)" />
       </view>
 
       <!-- 流光文字 -->
       <view class="loading-content">
-        <text class="loading-title">
-          UNIVERSE
-        </text>
-        <text class="loading-subtitle">
-          正在校准极限穿梭感...
-        </text>
+        <text class="loading-title"> UNIVERSE </text>
+        <text class="loading-subtitle"> 正在校准极限穿梭感... </text>
         <view class="progress-bar">
           <view class="progress-fill" />
         </view>
@@ -267,11 +216,11 @@ export default {
       resourceLoading: false,
       resources: [],
       resourceCategories: {
-        'video': { name: '视频课程', icon: '🎬' },
-        'article': { name: '文章教程', icon: '📄' },
-        'book': { name: '电子书籍', icon: '📚' },
-        'practice': { name: '练习题库', icon: '📝' },
-        'tool': { name: '学习工具', icon: '🛠️' }
+        video: { name: '视频课程', icon: '🎬' },
+        article: { name: '文章教程', icon: '📄' },
+        book: { name: '电子书籍', icon: '📚' },
+        practice: { name: '练习题库', icon: '📝' },
+        tool: { name: '学习工具', icon: '🛠️' }
       },
       selectedCategory: 'video',
       resourcePage: 1,
@@ -380,7 +329,10 @@ export default {
       // 可以跳转到资源详情页或外部链接
       if (item.url && item.url !== '#') {
         // #ifdef H5
-        window.open(item.url, '_blank');
+        // [AUDIT FIX] 验证 URL 协议，防止 javascript:/data: 等恶意链接
+        if (/^https?:\/\//i.test(item.url)) {
+          window.open(item.url, '_blank');
+        }
         // #endif
         // #ifndef H5
         uni.showModal({
@@ -434,7 +386,8 @@ export default {
     initCanvas2D() {
       const query = uni.createSelectorQuery().in(this);
 
-      query.select('#universeCanvas')
+      query
+        .select('#universeCanvas')
         .fields({ node: true, size: true })
         .exec((res) => {
           if (!res[0] || !res[0].node) {
@@ -609,7 +562,7 @@ export default {
       this.animationFrame = requestAnimationFrame(() => this.animate());
       // #endif
       // #ifndef H5
-      setTimeout(() => this.animate(), 16);
+      this.animationFrame = setTimeout(() => this.animate(), 16);
       // #endif
     },
 
@@ -663,8 +616,13 @@ export default {
         const rotated = this.rotateY(star.x, star.y, star.z, this.bgStarsRotation);
         const projected = this.project3D(rotated.x, rotated.y, rotated.z, this.camera.z + 500);
 
-        if (projected && projected.x > 0 && projected.x < this.canvasWidth &&
-					projected.y > 0 && projected.y < this.canvasHeight) {
+        if (
+          projected &&
+          projected.x > 0 &&
+          projected.x < this.canvasWidth &&
+          projected.y > 0 &&
+          projected.y < this.canvasHeight
+        ) {
           const size = Math.max(0.5, star.size * projected.scale * 0.01);
           ctx.beginPath();
           ctx.arc(projected.x, projected.y, size, 0, Math.PI * 2);
@@ -729,9 +687,13 @@ export default {
       allParticles.forEach((p) => {
         const projected = this.project3D(p.x, p.y, p.z, cameraZ);
 
-        if (projected && projected.x > -50 && projected.x < this.canvasWidth + 50 &&
-					projected.y > -50 && projected.y < this.canvasHeight + 50) {
-
+        if (
+          projected &&
+          projected.x > -50 &&
+          projected.x < this.canvasWidth + 50 &&
+          projected.y > -50 &&
+          projected.y < this.canvasHeight + 50
+        ) {
           let size;
           if (p.type === 'ring') {
             size = Math.max(0.5, 0.03 * projected.scale);
@@ -745,10 +707,7 @@ export default {
 
           if (this.useCanvas2D) {
             // Canvas 2D: 使用渐变实现发光效果
-            const gradient = ctx.createRadialGradient(
-              projected.x, projected.y, 0,
-              projected.x, projected.y, size * 2
-            );
+            const gradient = ctx.createRadialGradient(projected.x, projected.y, 0, projected.x, projected.y, size * 2);
 
             const baseColor = p.color;
             gradient.addColorStop(0, this.colorWithOpacity(baseColor, opacity));
@@ -801,6 +760,9 @@ export default {
       if (this.animationFrame) {
         // #ifdef H5
         cancelAnimationFrame(this.animationFrame);
+        // #endif
+        // #ifndef H5
+        clearTimeout(this.animationFrame);
         // #endif
         this.animationFrame = null;
       }
@@ -964,596 +926,605 @@ export default {
 
 <style lang="scss" scoped>
 .universe-container {
-	width: 100vw;
-	height: 100vh;
-	position: relative;
-	overflow: hidden;
-	background: #000000;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: #000000;
 }
 
 .universe-canvas {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 1;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 // 学习资源面板
 .resource-panel {
-	position: fixed;
-	top: 0;
-	right: -100%;
-	width: 85%;
-	max-width: 600rpx;
-	height: 100vh;
-	background: rgba(10, 10, 26, 0.95);
-	backdrop-filter: blur(20px);
-	z-index: 9998;
-	transition: right 0.3s ease;
-	display: flex;
-	flex-direction: column;
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 85%;
+  max-width: 600rpx;
+  height: 100vh;
+  background: rgba(10, 10, 26, 0.95);
+  backdrop-filter: blur(20px);
+  z-index: 9998;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
 
-	&.panel-visible {
-		right: 0;
-	}
+  &.panel-visible {
+    right: 0;
+  }
 
-	.panel-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 20rpx 24rpx;
-		border-bottom: 1px solid rgba(255, 152, 0, 0.3);
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20rpx 24rpx;
+    border-bottom: 1px solid rgba(255, 152, 0, 0.3);
 
-		.panel-title {
-			font-size: 32rpx;
-			font-weight: 600;
-			color: #fff;
-		}
+    .panel-title {
+      font-size: 32rpx;
+      font-weight: 600;
+      color: #fff;
+    }
 
-		.panel-close {
-			font-size: 48rpx;
-			color: rgba(255, 255, 255, 0.6);
-			padding: 10rpx;
-		}
-	}
+    .panel-close {
+      font-size: 48rpx;
+      color: rgba(255, 255, 255, 0.6);
+      padding: 10rpx;
+    }
+  }
 
-	.category-scroll {
-		white-space: nowrap;
-		padding: 16rpx 0;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	}
+  .category-scroll {
+    white-space: nowrap;
+    padding: 16rpx 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
-	.category-tabs {
-		display: inline-flex;
-		padding: 0 16rpx;
-		gap: 16rpx;
-	}
+  .category-tabs {
+    display: inline-flex;
+    padding: 0 16rpx;
+    gap: 16rpx;
+  }
 
-	.category-tab {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 16rpx 24rpx;
-		background: rgba(255, 255, 255, 0.05);
-		border-radius: 16rpx;
-		border: 1px solid transparent;
-		transition: all 0.2s ease;
+  .category-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16rpx 24rpx;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16rpx;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
 
-		&.active {
-			background: rgba(255, 152, 0, 0.2);
-			border-color: rgba(255, 152, 0, 0.5);
-		}
+    &.active {
+      background: rgba(255, 152, 0, 0.2);
+      border-color: rgba(255, 152, 0, 0.5);
+    }
 
-		.tab-icon {
-			font-size: 32rpx;
-			margin-bottom: 8rpx;
-		}
+    .tab-icon {
+      font-size: 32rpx;
+      margin-bottom: 8rpx;
+    }
 
-		.tab-name {
-			font-size: 22rpx;
-			color: rgba(255, 255, 255, 0.8);
-			white-space: nowrap;
-		}
-	}
+    .tab-name {
+      font-size: 22rpx;
+      color: rgba(255, 255, 255, 0.8);
+      white-space: nowrap;
+    }
+  }
 
-	.resource-list {
-		flex: 1;
-		padding: 16rpx;
-	}
+  .resource-list {
+    flex: 1;
+    padding: 16rpx;
+  }
 
-	.loading-box, .empty-box {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60rpx 0;
+  .loading-box,
+  .empty-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60rpx 0;
 
-		.loading-spinner.small {
-			width: 48rpx;
-			height: 48rpx;
-			border: 3rpx solid rgba(255, 152, 0, 0.2);
-			border-top-color: #ff9800;
-			border-radius: 50%;
-			animation: spin 1s linear infinite;
-		}
+    .loading-spinner.small {
+      width: 48rpx;
+      height: 48rpx;
+      border: 3rpx solid rgba(255, 152, 0, 0.2);
+      border-top-color: #ff9800;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
 
-		.loading-text, .empty-text {
-			font-size: 26rpx;
-			color: rgba(255, 255, 255, 0.6);
-			margin-top: 16rpx;
-		}
+    .loading-text,
+    .empty-text {
+      font-size: 26rpx;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 16rpx;
+    }
 
-		.empty-icon {
-			font-size: 64rpx;
-			margin-bottom: 16rpx;
-		}
-	}
+    .empty-icon {
+      font-size: 64rpx;
+      margin-bottom: 16rpx;
+    }
+  }
 
-	.resource-card {
-		display: flex;
-		background: rgba(255, 255, 255, 0.05);
-		border-radius: 16rpx;
-		margin-bottom: 16rpx;
-		overflow: hidden;
-		border: 1px solid rgba(255, 255, 255, 0.1);
+  .resource-card {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16rpx;
+    margin-bottom: 16rpx;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 
-		.resource-thumb {
-			width: 180rpx;
-			height: 140rpx;
-			flex-shrink: 0;
-		}
+    .resource-thumb {
+      width: 180rpx;
+      height: 140rpx;
+      flex-shrink: 0;
+    }
 
-		.resource-info {
-			flex: 1;
-			padding: 16rpx;
-			display: flex;
-			flex-direction: column;
+    .resource-info {
+      flex: 1;
+      padding: 16rpx;
+      display: flex;
+      flex-direction: column;
 
-			.resource-title {
-				font-size: 26rpx;
-				font-weight: 500;
-				color: #fff;
-				display: -webkit-box;
-				-webkit-line-clamp: 1;
-				-webkit-box-orient: vertical;
-				overflow: hidden;
-			}
+      .resource-title {
+        font-size: 26rpx;
+        font-weight: 500;
+        color: #fff;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
 
-			.resource-desc {
-				font-size: 22rpx;
-				color: rgba(255, 255, 255, 0.5);
-				margin-top: 8rpx;
-				display: -webkit-box;
-				-webkit-line-clamp: 1;
-				-webkit-box-orient: vertical;
-				overflow: hidden;
-			}
+      .resource-desc {
+        font-size: 22rpx;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 8rpx;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
 
-			.resource-meta {
-				display: flex;
-				align-items: center;
-				gap: 12rpx;
-				margin-top: 8rpx;
+      .resource-meta {
+        display: flex;
+        align-items: center;
+        gap: 12rpx;
+        margin-top: 8rpx;
 
-				.meta-tag {
-					font-size: 20rpx;
-					color: #ff9800;
-					background: rgba(255, 152, 0, 0.15);
-					padding: 4rpx 10rpx;
-					border-radius: 8rpx;
-				}
+        .meta-tag {
+          font-size: 20rpx;
+          color: #ff9800;
+          background: rgba(255, 152, 0, 0.15);
+          padding: 4rpx 10rpx;
+          border-radius: 8rpx;
+        }
 
-				.meta-stat {
-					font-size: 20rpx;
-					color: rgba(255, 255, 255, 0.5);
-				}
-			}
+        .meta-stat {
+          font-size: 20rpx;
+          color: rgba(255, 255, 255, 0.5);
+        }
+      }
 
-			.resource-footer {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				margin-top: auto;
+      .resource-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: auto;
 
-				.resource-author {
-					font-size: 20rpx;
-					color: rgba(255, 255, 255, 0.4);
-				}
+        .resource-author {
+          font-size: 20rpx;
+          color: rgba(255, 255, 255, 0.4);
+        }
 
-				.resource-price {
-					font-size: 24rpx;
-					font-weight: 600;
-					color: #ff5722;
+        .resource-price {
+          font-size: 24rpx;
+          font-weight: 600;
+          color: #ff5722;
 
-					&.free {
-						color: #4CAF50;
-					}
-				}
-			}
-		}
-	}
+          &.free {
+            color: #4caf50;
+          }
+        }
+      }
+    }
+  }
 
-	.load-more {
-		text-align: center;
-		padding: 24rpx;
+  .load-more {
+    text-align: center;
+    padding: 24rpx;
 
-		text {
-			font-size: 24rpx;
-			color: rgba(255, 152, 0, 0.8);
-		}
-	}
+    text {
+      font-size: 24rpx;
+      color: rgba(255, 152, 0, 0.8);
+    }
+  }
 }
 
 @keyframes spin {
-	to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // 悬浮导航栏 - 提升层级和点击区域
 .floating-nav {
-	position: fixed;
-	left: 50%;
-	transform: translateX(-50%);
-	z-index: 9999; // 提升到最高层级
-	display: flex;
-	align-items: center;
-	padding: 16rpx 32rpx;
-	border-radius: 50rpx;
-	transition: opacity 0.5s ease, transform 0.5s ease;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999; // 提升到最高层级
+  display: flex;
+  align-items: center;
+  padding: 16rpx 32rpx;
+  border-radius: 50rpx;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
 
-	&.nav-hidden {
-		opacity: 0;
-		transform: translateX(-50%) translateY(-20rpx);
-		pointer-events: none;
-	}
+  &.nav-hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20rpx);
+    pointer-events: none;
+  }
 
-	.nav-btn {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 16rpx 32rpx; // 增大点击区域
-		min-width: 80rpx;
-		min-height: 80rpx;
-		cursor: pointer;
+  .nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16rpx 32rpx; // 增大点击区域
+    min-width: 80rpx;
+    min-height: 80rpx;
+    cursor: pointer;
 
-		.nav-icon {
-			font-size: 40rpx; // 增大图标
-			color: #ff9800;
-			line-height: 1;
-		}
+    .nav-icon {
+      font-size: 40rpx; // 增大图标
+      color: #ff9800;
+      line-height: 1;
+    }
 
-		.nav-label {
-			font-size: 22rpx; // 稍微增大文字
-			color: var(--text-primary);
-			margin-top: 6rpx;
-		}
+    .nav-label {
+      font-size: 22rpx; // 稍微增大文字
+      color: var(--text-primary);
+      margin-top: 6rpx;
+    }
 
-		&:active {
-			opacity: 0.6;
-			transform: scale(0.95);
-		}
-	}
+    &:active {
+      opacity: 0.6;
+      transform: scale(0.95);
+    }
+  }
 
-	.nav-divider {
-		width: 1px;
-		height: 50rpx;
-		background: rgba(255, 152, 0, 0.4);
-		margin: 0 12rpx;
-	}
+  .nav-divider {
+    width: 1px;
+    height: 50rpx;
+    background: rgba(255, 152, 0, 0.4);
+    margin: 0 12rpx;
+  }
 }
 
 // 导航按钮 hover 效果
 .nav-btn-hover {
-	opacity: 0.7;
-	transform: scale(0.95);
+  opacity: 0.7;
+  transform: scale(0.95);
 }
 
 // 玻璃态效果
 .glassmorphism {
-	background: var(--bg-glass) !important;
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	border: 1px solid rgba(255, 152, 0, 0.4);
-	box-shadow: var(--shadow-lg);
+  background: var(--bg-glass) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 152, 0, 0.4);
+  box-shadow: var(--shadow-lg);
 }
 
 // ========== 高科技感载入动画 ==========
 .loading-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 10000;
-	background: radial-gradient(ellipse at center, #0a0a1a 0%, #000000 100%);
-	overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  background: radial-gradient(ellipse at center, #0a0a1a 0%, #000000 100%);
+  overflow: hidden;
 }
 
 // 星际穿梭背景
 .starfield {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	perspective: 500px;
-	overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  perspective: 500px;
+  overflow: hidden;
 }
 
 .star-layer {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 2px;
-	height: 2px;
-	background: transparent;
-	transform: translate(-50%, -50%);
-	animation: starfield-zoom 3s linear infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 2px;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  animation: starfield-zoom 3s linear infinite;
 
-	&::before,
-	&::after {
-		content: '';
-		position: absolute;
-		background: #fff;
-		border-radius: 50%;
-	}
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+  }
 }
 
 .layer-1 {
-	box-shadow:
-		-200px 0 1px rgba(255,255,255,0.8),
-		200px 0 1px rgba(255,255,255,0.8),
-		0 -200px 1px rgba(255,255,255,0.8),
-		0 200px 1px rgba(255,255,255,0.8),
-		140px 140px 1px rgba(255,255,255,0.8),
-		-140px -140px 1px rgba(255,255,255,0.8),
-		-140px 140px 1px rgba(255,255,255,0.8),
-		140px -140px 1px rgba(255,255,255,0.8);
-	animation-delay: 0s;
+  box-shadow:
+    -200px 0 1px rgba(255, 255, 255, 0.8),
+    200px 0 1px rgba(255, 255, 255, 0.8),
+    0 -200px 1px rgba(255, 255, 255, 0.8),
+    0 200px 1px rgba(255, 255, 255, 0.8),
+    140px 140px 1px rgba(255, 255, 255, 0.8),
+    -140px -140px 1px rgba(255, 255, 255, 0.8),
+    -140px 140px 1px rgba(255, 255, 255, 0.8),
+    140px -140px 1px rgba(255, 255, 255, 0.8);
+  animation-delay: 0s;
 }
 
 .layer-2 {
-	box-shadow:
-		-300px 0 1px rgba(255,255,255,0.6),
-		300px 0 1px rgba(255,255,255,0.6),
-		0 -300px 1px rgba(255,255,255,0.6),
-		0 300px 1px rgba(255,255,255,0.6),
-		210px 210px 1px rgba(255,255,255,0.6),
-		-210px -210px 1px rgba(255,255,255,0.6),
-		-210px 210px 1px rgba(255,255,255,0.6),
-		210px -210px 1px rgba(255,255,255,0.6),
-		150px 0 1px rgba(255,255,255,0.6),
-		-150px 0 1px rgba(255,255,255,0.6),
-		0 150px 1px rgba(255,255,255,0.6),
-		0 -150px 1px rgba(255,255,255,0.6);
-	animation-delay: -1s;
-	transform: scale(1.5);
+  box-shadow:
+    -300px 0 1px rgba(255, 255, 255, 0.6),
+    300px 0 1px rgba(255, 255, 255, 0.6),
+    0 -300px 1px rgba(255, 255, 255, 0.6),
+    0 300px 1px rgba(255, 255, 255, 0.6),
+    210px 210px 1px rgba(255, 255, 255, 0.6),
+    -210px -210px 1px rgba(255, 255, 255, 0.6),
+    -210px 210px 1px rgba(255, 255, 255, 0.6),
+    210px -210px 1px rgba(255, 255, 255, 0.6),
+    150px 0 1px rgba(255, 255, 255, 0.6),
+    -150px 0 1px rgba(255, 255, 255, 0.6),
+    0 150px 1px rgba(255, 255, 255, 0.6),
+    0 -150px 1px rgba(255, 255, 255, 0.6);
+  animation-delay: -1s;
+  transform: scale(1.5);
 }
 
 .layer-3 {
-	box-shadow:
-		-400px 0 1px rgba(255,255,255,0.4),
-		400px 0 1px rgba(255,255,255,0.4),
-		0 -400px 1px rgba(255,255,255,0.4),
-		0 400px 1px rgba(255,255,255,0.4),
-		280px 280px 1px rgba(255,255,255,0.4),
-		-280px -280px 1px rgba(255,255,255,0.4),
-		-280px 280px 1px rgba(255,255,255,0.4),
-		280px -280px 1px rgba(255,255,255,0.4),
-		200px 0 1px rgba(255,255,255,0.4),
-		-200px 0 1px rgba(255,255,255,0.4),
-		0 200px 1px rgba(255,255,255,0.4),
-		0 -200px 1px rgba(255,255,255,0.4),
-		120px 120px 1px rgba(255,255,255,0.4),
-		-120px -120px 1px rgba(255,255,255,0.4),
-		-120px 120px 1px rgba(255,255,255,0.4),
-		120px -120px 1px rgba(255,255,255,0.4);
-	animation-delay: -2s;
-	transform: scale(2);
+  box-shadow:
+    -400px 0 1px rgba(255, 255, 255, 0.4),
+    400px 0 1px rgba(255, 255, 255, 0.4),
+    0 -400px 1px rgba(255, 255, 255, 0.4),
+    0 400px 1px rgba(255, 255, 255, 0.4),
+    280px 280px 1px rgba(255, 255, 255, 0.4),
+    -280px -280px 1px rgba(255, 255, 255, 0.4),
+    -280px 280px 1px rgba(255, 255, 255, 0.4),
+    280px -280px 1px rgba(255, 255, 255, 0.4),
+    200px 0 1px rgba(255, 255, 255, 0.4),
+    -200px 0 1px rgba(255, 255, 255, 0.4),
+    0 200px 1px rgba(255, 255, 255, 0.4),
+    0 -200px 1px rgba(255, 255, 255, 0.4),
+    120px 120px 1px rgba(255, 255, 255, 0.4),
+    -120px -120px 1px rgba(255, 255, 255, 0.4),
+    -120px 120px 1px rgba(255, 255, 255, 0.4),
+    120px -120px 1px rgba(255, 255, 255, 0.4);
+  animation-delay: -2s;
+  transform: scale(2);
 }
 
 @keyframes starfield-zoom {
-	0% {
-		transform: translate(-50%, -50%) scale(0.5);
-		opacity: 0;
-	}
-	50% {
-		opacity: 1;
-	}
-	100% {
-		transform: translate(-50%, -50%) scale(3);
-		opacity: 0;
-	}
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
 }
 
 // 中心光晕效果
 .center-glow {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 300rpx;
-	height: 300rpx;
-	transform: translate(-50%, -50%);
-	background: radial-gradient(circle, rgba(0,229,255,0.3) 0%, transparent 70%);
-	animation: glow-pulse 2s ease-in-out infinite;
-	z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300rpx;
+  height: 300rpx;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(0, 229, 255, 0.3) 0%, transparent 70%);
+  animation: glow-pulse 2s ease-in-out infinite;
+  z-index: 1;
 }
 
 @keyframes glow-pulse {
-	0%, 100% {
-		transform: translate(-50%, -50%) scale(1);
-		opacity: 0.6;
-	}
-	50% {
-		transform: translate(-50%, -50%) scale(1.2);
-		opacity: 1;
-	}
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
 }
 
 // 环形进度指示器
 .ring-container {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 2;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
 
 .ring {
-	position: absolute;
-	border-radius: 50%;
-	border: 2px solid transparent;
-	border-top-color: #00E5FF;
-	border-right-color: #00E5FF;
-	animation: ring-rotate 3s linear infinite;
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #00e5ff;
+  border-right-color: #00e5ff;
+  animation: ring-rotate 3s linear infinite;
 }
 
 .ring-outer {
-	width: 400rpx;
-	height: 400rpx;
-	animation-duration: 4s;
+  width: 400rpx;
+  height: 400rpx;
+  animation-duration: 4s;
 }
 
 .ring-middle {
-	width: 300rpx;
-	height: 300rpx;
-	animation-duration: 3s;
-	animation-direction: reverse;
-	border-color: transparent;
-	border-bottom-color: #FF5722;
-	border-left-color: #FF5722;
+  width: 300rpx;
+  height: 300rpx;
+  animation-duration: 3s;
+  animation-direction: reverse;
+  border-color: transparent;
+  border-bottom-color: #ff5722;
+  border-left-color: #ff5722;
 }
 
 .ring-inner {
-	width: 200rpx;
-	height: 200rpx;
-	animation-duration: 2s;
+  width: 200rpx;
+  height: 200rpx;
+  animation-duration: 2s;
 }
 
 @keyframes ring-rotate {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // 粒子发散效果
 .particles {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 500rpx;
-	height: 500rpx;
-	z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500rpx;
+  height: 500rpx;
+  z-index: 1;
 }
 
 .particle {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 4rpx;
-	height: 4rpx;
-	background: linear-gradient(90deg, #00E5FF, #FF5722);
-	border-radius: 50%;
-	transform-origin: center;
-	animation: particle-burst calc(var(--delay) + 3s) ease-out infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4rpx;
+  height: 4rpx;
+  background: linear-gradient(90deg, #00e5ff, #ff5722);
+  border-radius: 50%;
+  transform-origin: center;
+  animation: particle-burst calc(var(--delay) + 3s) ease-out infinite;
 }
 
 @keyframes particle-burst {
-	0% {
-		transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) scale(1);
-		opacity: 1;
-	}
-	100% {
-		transform: translate(-50%, -50%) rotate(var(--angle)) translateX(250rpx) scale(0);
-		opacity: 0;
-	}
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateX(250rpx) scale(0);
+    opacity: 0;
+  }
 }
 
 // 流光文字效果
 .loading-content {
-	position: absolute;
-	top: 65%;
-	left: 50%;
-	transform: translateX(-50%);
-	text-align: center;
-	z-index: 3;
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 3;
 }
 
 .loading-title {
-	display: block;
-	font-size: 60rpx;
-	font-weight: bold;
-	background: linear-gradient(45deg, #00E5FF, #FF5722, #00E5FF);
-	background-size: 200% 200%;
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
-	animation: text-shine 3s ease-in-out infinite;
-	letter-spacing: 8rpx;
-	margin-bottom: 20rpx;
+  display: block;
+  font-size: 60rpx;
+  font-weight: bold;
+  background: linear-gradient(45deg, #00e5ff, #ff5722, #00e5ff);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: text-shine 3s ease-in-out infinite;
+  letter-spacing: 8rpx;
+  margin-bottom: 20rpx;
 }
 
 @keyframes text-shine {
-	0%, 100% {
-		background-position: 0% 50%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .loading-subtitle {
-	display: block;
-	font-size: 28rpx;
-	color: rgba(255,255,255,0.8);
-	margin-bottom: 40rpx;
-	animation: text-pulse 2s ease-in-out infinite;
+  display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 40rpx;
+  animation: text-pulse 2s ease-in-out infinite;
 }
 
 @keyframes text-pulse {
-	0%, 100% {
-		opacity: 0.6;
-	}
-	50% {
-		opacity: 1;
-	}
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 // 进度条
 .progress-bar {
-	width: 400rpx;
-	height: 6rpx;
-	background: rgba(255,255,255,0.2);
-	border-radius: 3rpx;
-	overflow: hidden;
-	margin: 0 auto;
+  width: 400rpx;
+  height: 6rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3rpx;
+  overflow: hidden;
+  margin: 0 auto;
 }
 
 .progress-fill {
-	height: 100%;
-	background: linear-gradient(90deg, #00E5FF, #FF5722);
-	border-radius: 3rpx;
-	animation: progress-fill 3s ease-in-out infinite;
-	width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #00e5ff, #ff5722);
+  border-radius: 3rpx;
+  animation: progress-fill 3s ease-in-out infinite;
+  width: 0;
 }
 
 @keyframes progress-fill {
-	0% {
-		width: 0;
-	}
-	100% {
-		width: 100%;
-	}
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }
 </style>

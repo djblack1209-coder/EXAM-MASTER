@@ -11,35 +11,21 @@
       <view class="loading-icon">
         <view class="spinner" />
       </view>
-      <text class="loading-text">
-        正在登录中...
-      </text>
-      <text class="loading-hint">
-        请稍候，正在验证QQ授权
-      </text>
+      <text class="loading-text"> 正在登录中... </text>
+      <text class="loading-hint"> 请稍候，正在验证QQ授权 </text>
     </view>
 
     <!-- 成功状态 -->
     <view v-else-if="loginSuccess" class="success-section">
-      <view class="success-icon">
-        ✓
-      </view>
-      <text class="success-text">
-        登录成功
-      </text>
-      <text class="success-hint">
-        即将跳转...
-      </text>
+      <view class="success-icon"> ✓ </view>
+      <text class="success-text"> 登录成功 </text>
+      <text class="success-hint"> 即将跳转... </text>
     </view>
 
     <!-- 错误状态 -->
     <view v-else-if="loginError" class="error-section">
-      <view class="error-icon">
-        ✕
-      </view>
-      <text class="error-text">
-        登录失败
-      </text>
+      <view class="error-icon"> ✕ </view>
+      <text class="error-text"> 登录失败 </text>
       <text class="error-hint">
         {{ errorMessage }}
       </text>
@@ -124,13 +110,13 @@ const handleQQCallback = async () => {
 
     // 验证state（防止CSRF攻击）
     const savedState = storageService.get('qq_oauth_state');
-    if (state && savedState && state !== savedState) {
-      logger.warn('[QQ-Callback] State验证失败:', { received: state, saved: savedState });
-      // 不强制报错，因为有些情况下state可能不匹配但仍然有效
-    }
-
-    // 清除保存的state
+    // 清除保存的state（无论验证是否通过，都应清除，防止重放）
     storageService.remove('qq_oauth_state');
+
+    if (savedState && state !== savedState) {
+      logger.warn('[QQ-Callback] State验证失败:', { received: state, saved: savedState });
+      throw new Error('安全验证失败，请重新登录');
+    }
 
     if (!code) {
       throw new Error('未获取到授权码');
@@ -162,7 +148,6 @@ const handleQQCallback = async () => {
     // 非H5环境，直接返回登录页
     uni.redirectTo({ url: '/pages/login/index' });
     // #endif
-
   } catch (error) {
     logger.error('[QQ-Callback] 登录失败:', error);
     isLoading.value = false;
@@ -224,7 +209,7 @@ onMounted(() => {
 .bg-circle-1 {
   width: 400rpx;
   height: 400rpx;
-  background: #12B7F5;
+  background: #12b7f5;
   top: -100rpx;
   right: -100rpx;
 }
@@ -232,14 +217,14 @@ onMounted(() => {
 .bg-circle-2 {
   width: 300rpx;
   height: 300rpx;
-  background: #0099FF;
+  background: #0099ff;
   bottom: 200rpx;
   left: -150rpx;
 }
 
 .dark-mode .bg-circle-1,
 .dark-mode .bg-circle-2 {
-  background: #12B7F5;
+  background: #12b7f5;
   opacity: 0.05;
 }
 
@@ -265,7 +250,7 @@ onMounted(() => {
   width: 80rpx;
   height: 80rpx;
   border: 6rpx solid rgba(18, 183, 245, 0.2);
-  border-top-color: #12B7F5;
+  border-top-color: #12b7f5;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -299,7 +284,7 @@ onMounted(() => {
 .success-icon {
   width: 120rpx;
   height: 120rpx;
-  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -311,7 +296,7 @@ onMounted(() => {
 .success-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .success-hint {
@@ -327,7 +312,7 @@ onMounted(() => {
 .error-icon {
   width: 120rpx;
   height: 120rpx;
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -339,7 +324,7 @@ onMounted(() => {
 .error-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .error-hint {
@@ -356,7 +341,7 @@ onMounted(() => {
 .retry-btn {
   margin-top: 40rpx;
   padding: 24rpx 80rpx;
-  background: linear-gradient(135deg, #12B7F5 0%, #0099FF 100%);
+  background: linear-gradient(135deg, #12b7f5 0%, #0099ff 100%);
   border-radius: 48rpx;
   box-shadow: 0 8rpx 24rpx rgba(18, 183, 245, 0.3);
 }

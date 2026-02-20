@@ -114,11 +114,13 @@ export const useNavbar = () => {
   });
 
   // 计算导航栏高度
-  const gap = menuButton.top - systemInfo.statusBarHeight; // 胶囊与状态栏的间距
-  navbarInfo.navbarHeight = menuButton.height + gap * 2 + systemInfo.statusBarHeight;
+  // [AUDIT FIX] 非微信平台 menuButton 全为 0，需要 fallback 避免负值
+  const gap = menuButton.top > 0 ? menuButton.top - systemInfo.statusBarHeight : 0;
+  navbarInfo.navbarHeight =
+    menuButton.height > 0 ? menuButton.height + gap * 2 + systemInfo.statusBarHeight : systemInfo.statusBarHeight + 44; // 标准导航栏高度 fallback
 
   // 计算安全高度（确保内容不被胶囊遮挡）
-  navbarInfo.safeTop = menuButton.bottom + gap;
+  navbarInfo.safeTop = menuButton.bottom > 0 ? menuButton.bottom + gap : navbarInfo.navbarHeight;
 
   // 计算右侧可用宽度（屏幕宽度 - 胶囊右边距）
   navbarInfo.rightButtonWidth = systemInfo.screenWidth - menuButton.right;

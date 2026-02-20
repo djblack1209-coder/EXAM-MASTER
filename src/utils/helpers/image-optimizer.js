@@ -76,16 +76,20 @@ export function compressImage(src, options = {}) {
     // #endif
 
     // #ifdef APP-PLUS
-    plus.io.resolveLocalFileSystemURL(src, (entry) => {
-      entry.file((file) => {
-        const reader = new plus.io.FileReader();
-        reader.onloadend = (e) => {
-          resolve(e.target.result);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }, reject);
+    plus.io.resolveLocalFileSystemURL(
+      src,
+      (entry) => {
+        entry.file((file) => {
+          const reader = new plus.io.FileReader();
+          reader.onloadend = (e) => {
+            resolve(e.target.result);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      },
+      reject
+    );
     // #endif
   });
 }
@@ -109,8 +113,9 @@ function calculateSize(width, height, maxWidth, maxHeight) {
   }
 
   if (newHeight > maxHeight) {
-    newHeight = maxHeight;
+    // [AUDIT FIX] 先计算比例再覆盖 newHeight，否则 maxHeight/newHeight=1 导致宽度不缩放
     newWidth = Math.round(newWidth * (maxHeight / newHeight));
+    newHeight = maxHeight;
   }
 
   return { width: newWidth, height: newHeight };
@@ -158,24 +163,27 @@ export const lazyLoadDirective = {
 
     // 使用 IntersectionObserver 实现懒加载
     if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const img = entry.target;
-            img.src = img.dataset.src;
-            img.onload = () => {
-              img.classList.add('loaded');
-            };
-            img.onerror = () => {
-              img.src = defaultSrc;
-            };
-            observer.unobserve(img);
-          }
-        });
-      }, {
-        rootMargin: '50px 0px',
-        threshold: 0.01
-      });
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              img.src = img.dataset.src;
+              img.onload = () => {
+                img.classList.add('loaded');
+              };
+              img.onerror = () => {
+                img.src = defaultSrc;
+              };
+              observer.unobserve(img);
+            }
+          });
+        },
+        {
+          rootMargin: '50px 0px',
+          threshold: 0.01
+        }
+      );
 
       observer.observe(el);
       el._lazyObserver = observer;

@@ -151,7 +151,7 @@ function normalizeResponse(raw, context = '') {
 
   // 判断是否成功：兼容 success/code/ok 三种标识
   const isSuccess = raw.success === true || raw.code === 0 || raw.ok === true;
-  const code = isSuccess ? 0 : (raw.code || raw.statusCode || -1);
+  const code = isSuccess ? 0 : raw.code || raw.statusCode || -1;
 
   // 提取数据：兼容 data/list/items 等字段
   let data = raw.data !== undefined ? raw.data : null;
@@ -180,14 +180,45 @@ function normalizeResponse(raw, context = '') {
  * @param {string} context - 错误上下文描述
  * @returns {ApiResponse}
  */
+// ✅ 问题清单修复：技术错误 → 用户友好提示映射
+const FRIENDLY_ERROR_MAP = [
+  { pattern: /网络|network|net::|Failed to fetch/i, message: '网络连接异常，请检查网络后重试' },
+  { pattern: /timeout|超时|ECONNABORTED/i, message: '请求超时，请稍后重试' },
+  { pattern: /401|登录.*过期|token.*expired/i, message: '登录已过期，请重新登录' },
+  { pattern: /403|没有.*权限|forbidden/i, message: '暂无访问权限' },
+  { pattern: /404|not found/i, message: '请求的服务暂不可用' },
+  { pattern: /429|频繁|rate.?limit/i, message: '操作过于频繁，请稍后再试' },
+  { pattern: /5\d{2}|服务器|server error/i, message: '服务器繁忙，请稍后重试' },
+  { pattern: /abort|cancel/i, message: '请求已取消' },
+  { pattern: /parse|JSON|格式/i, message: '数据解析异常，请重试' }
+];
+
+function _toFriendlyMessage(rawMsg) {
+  if (!rawMsg) return '操作失败，请重试';
+  for (const rule of FRIENDLY_ERROR_MAP) {
+    if (rule.pattern.test(rawMsg)) return rule.message;
+  }
+  // 如果原始消息已经是中文且不含技术术语，直接返回
+  if (/^[\u4e00-\u9fa5]/.test(rawMsg) && rawMsg.length < 30) return rawMsg;
+  return '操作失败，请重试';
+}
+
 function normalizeError(error, context = '') {
-  const prefix = context ? `[${context}] ` : '';
+  const rawMessage =
+    error && typeof error === 'object'
+      ? error.message || error.errMsg || '请求失败'
+      : typeof error === 'string'
+        ? error
+        : '未知错误';
+
+  const friendlyMessage = _toFriendlyMessage(rawMessage);
 
   if (error && typeof error === 'object') {
     return {
       code: error.code || error.statusCode || -1,
       success: false,
-      message: prefix + (error.message || error.errMsg || '请求失败'),
+      message: friendlyMessage,
+      _rawMessage: context ? `[${context}] ${rawMessage}` : rawMessage, // 调试用
       error: error,
       data: null
     };
@@ -196,7 +227,8 @@ function normalizeError(error, context = '') {
   return {
     code: -1,
     success: false,
-    message: prefix + (typeof error === 'string' ? error : '未知错误'),
+    message: friendlyMessage,
+    _rawMessage: context ? `[${context}] ${rawMessage}` : rawMessage,
     error: error,
     data: null
   };
@@ -221,7 +253,20 @@ if (process.env.NODE_ENV !== 'production') {
 // ==================== 2.4: 请求去重 + LRU缓存 ====================
 
 // 只读 action 白名单（仅这些 action 会被缓存）
-const CACHEABLE_ACTIONS = new Set(['get', 'list', 'search', 'getAll', 'check', 'detail', 'hot', 'provinces', 'getOverview', 'getRecommendations', 'getHotResources', 'getCategories']);
+const CACHEABLE_ACTIONS = new Set([
+  'get',
+  'list',
+  'search',
+  'getAll',
+  'check',
+  'detail',
+  'hot',
+  'provinces',
+  'getOverview',
+  'getRecommendations',
+  'getHotResources',
+  'getCategories'
+]);
 const CACHE_TTL = 30000; // 30秒缓存（默认）
 // 9.2: 分级 TTL — 静态/半静态数据使用更长缓存
 const LONG_CACHE_ACTIONS = new Set(['provinces', 'getCategories', 'getHotResources']);
@@ -261,7 +306,7 @@ function _getCache(key) {
 }
 
 function _setCache(key, data, action) {
-  const ttl = (action && LONG_CACHE_ACTIONS.has(action)) ? LONG_CACHE_TTL : CACHE_TTL;
+  const ttl = action && LONG_CACHE_ACTIONS.has(action) ? LONG_CACHE_TTL : CACHE_TTL;
   // LRU: 如果已存在先删除再插入（保证在末尾）
   _cache.delete(key);
   _cache.set(key, { data, expiry: Date.now() + ttl });
@@ -292,7 +337,7 @@ const _rateLimits = {
   '/proxy-ai': { maxRequests: 10, windowMs: 60000 }, // AI: 10次/分钟
   '/ai-photo-search': { maxRequests: 5, windowMs: 60000 }, // 拍照搜题: 5次/分钟
   '/voice-service': { maxRequests: 8, windowMs: 60000 }, // 语音: 8次/分钟
-  '_default': { maxRequests: 30, windowMs: 60000 } // 默认: 30次/分钟
+  _default: { maxRequests: 30, windowMs: 60000 } // 默认: 30次/分钟
 };
 const _requestTimestamps = new Map(); // path → number[]
 
@@ -314,19 +359,22 @@ function _checkRateLimit(path) {
 
 export const lafService = {
   /**
-    * 通用请求方法（带自动重试）
-    * @param {string} path - API 路径（如 '/rank-center'）
-    * @param {Object} data - 请求体数据
-    * @param {RequestOptions} options - 可选配置
-    * @returns {Promise<ApiResponse>} 返回标准化响应
-    * @throws {ApiResponse} 请求失败时抛出标准化错误对象
-    */
+   * 通用请求方法（带自动重试）
+   * @param {string} path - API 路径（如 '/rank-center'）
+   * @param {Object} data - 请求体数据
+   * @param {RequestOptions} options - 可选配置
+   * @returns {Promise<ApiResponse>} 返回标准化响应
+   * @throws {ApiResponse} 请求失败时抛出标准化错误对象
+   */
   async request(path, data = {}, options = {}) {
     // ✅ I002: 网络连通性预检 — 离线时快速失败，避免等待超时
     if (!options.skipNetworkCheck) {
       const isOnline = await _checkNetwork();
       if (!isOnline) {
-        throw normalizeError({ message: '当前无网络连接，请检查网络设置后重试', code: -2, errorType: 'offline' }, `请求 ${path}`);
+        throw normalizeError(
+          { message: '当前无网络连接，请检查网络设置后重试', code: -2, errorType: 'offline' },
+          `请求 ${path}`
+        );
       }
     }
 
@@ -334,7 +382,10 @@ export const lafService = {
     if (!options.skipRateLimit) {
       const rateCheck = _checkRateLimit(path);
       if (!rateCheck.allowed) {
-        throw normalizeError({ message: `操作过于频繁，请${rateCheck.retryAfter}秒后重试`, code: 429, errorType: 'rate_limit' }, `请求 ${path}`);
+        throw normalizeError(
+          { message: `操作过于频繁，请${rateCheck.retryAfter}秒后重试`, code: 429, errorType: 'rate_limit' },
+          `请求 ${path}`
+        );
       }
     }
 
@@ -358,7 +409,7 @@ export const lafService = {
 
     // 包装实际请求逻辑，支持 inflight 去重
     const doRequest = async () => {
-    // P1-2: 重试配置
+      // P1-2: 重试配置
       const maxRetries = options.maxRetries ?? 2; // 默认最多重试2次（共3次请求）
       const retryableStatuses = [408, 429, 500, 502, 503, 504]; // 可重试的HTTP状态码
       const nonRetryableStatuses = [400, 401, 403, 404, 405, 409, 422]; // 不可重试的客户端错误
@@ -391,7 +442,7 @@ export const lafService = {
             }
           }
         } catch (e) {
-          console.warn('[LafService] 获取认证信息失败:', e);
+          logger.warn('[LafService] 获取认证信息失败:', e);
         }
       }
 
@@ -400,7 +451,7 @@ export const lafService = {
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
           if (attempt > 0) {
-            console.warn(`[LafService] 🔄 第 ${attempt} 次重试: ${path}`);
+            logger.warn(`[LafService] 🔄 第 ${attempt} 次重试: ${path}`);
             await delay(attempt - 1);
           }
 
@@ -413,36 +464,46 @@ export const lafService = {
               timeout: options.timeout || 30000,
               success: (res) => {
                 if (res.statusCode === 200) {
-                // 安全解析响应数据
+                  // 安全解析响应数据
                   let responseData = res.data;
                   if (typeof responseData === 'string') {
                     try {
                       responseData = JSON.parse(responseData);
                     } catch (parseErr) {
-                      console.error(`[LafService] 响应数据解析失败: ${path}`, parseErr);
+                      logger.error(`[LafService] 响应数据解析失败: ${path}`, parseErr);
                       reject({ message: '服务器返回数据格式异常', statusCode: 200, parseError: true });
                       return;
                     }
                   }
                   resolve(responseData);
                 } else if (res.statusCode === 401 || res.statusCode === 403) {
-                // 认证失败，不重试
-                  console.warn(`[LafService] 认证失败 (${res.statusCode}): ${path}`);
+                  // 认证失败，不重试
+                  logger.warn(`[LafService] 认证失败 (${res.statusCode}): ${path}`);
                   // ✅ I002: 全局广播认证失败，让 App 层统一处理（跳转登录等）
                   uni.$emit('authFailure', { statusCode: res.statusCode, path });
-                  reject({ statusCode: res.statusCode, message: res.statusCode === 401 ? '登录已过期，请重新登录' : '没有访问权限', retryable: false, errorType: 'auth' });
+                  reject({
+                    statusCode: res.statusCode,
+                    message: res.statusCode === 401 ? '登录已过期，请重新登录' : '没有访问权限',
+                    retryable: false,
+                    errorType: 'auth'
+                  });
                 } else if (nonRetryableStatuses.includes(res.statusCode)) {
-                // 客户端错误，不重试（400/404/422等）
-                  reject({ statusCode: res.statusCode, message: `请求错误: ${res.statusCode}`, retryable: false, data: res.data });
+                  // 客户端错误，不重试（400/404/422等）
+                  reject({
+                    statusCode: res.statusCode,
+                    message: `请求错误: ${res.statusCode}`,
+                    retryable: false,
+                    data: res.data
+                  });
                 } else if (retryableStatuses.includes(res.statusCode) && attempt < maxRetries) {
-                // 可重试的服务端错误（408/429/5xx）
+                  // 可重试的服务端错误（408/429/5xx）
                   reject({ statusCode: res.statusCode, message: `服务端错误: ${res.statusCode}`, retryable: true });
                 } else {
                   reject(res.data || { message: `请求失败: ${res.statusCode}`, statusCode: res.statusCode });
                 }
               },
               fail: (err) => {
-              // 区分网络错误类型，提供更友好的提示
+                // 区分网络错误类型，提供更友好的提示
                 let errorMsg = '网络请求失败';
                 const errMsg = err.errMsg || '';
                 if (errMsg.includes('timeout')) {
@@ -470,7 +531,7 @@ export const lafService = {
           perfMonitor.trackApi(path, _apiDuration, err.statusCode || 0);
           // 如果不可重试或已达最大重试次数，直接抛出
           if (!err.retryable || attempt >= maxRetries) {
-            console.error(`[LafService] ❌ 请求最终失败 (${attempt + 1}次尝试): ${path}`, err);
+            logger.error(`[LafService] ❌ 请求最终失败 (${attempt + 1}次尝试): ${path}`, err);
             throw normalizeError(err, `请求 ${path}`);
           }
         }
@@ -482,14 +543,16 @@ export const lafService = {
 
     // ✅ 2.4: 执行请求，支持 inflight 去重 + 缓存写入
     if (isCacheable) {
-      const promise = doRequest().then((result) => {
-        _setCache(cKey, result, action);
-        _inflight.delete(cKey);
-        return result;
-      }).catch((err) => {
-        _inflight.delete(cKey);
-        throw err;
-      });
+      const promise = doRequest()
+        .then((result) => {
+          _setCache(cKey, result, action);
+          _inflight.delete(cKey);
+          return result;
+        })
+        .catch((err) => {
+          _inflight.delete(cKey);
+          throw err;
+        });
       _inflight.set(cKey, promise);
       return promise;
     }
@@ -522,7 +585,7 @@ export const lafService = {
   async proxyAI(action, payload, _options = {}) {
     // ✅ 前置参数校验 - 防止传空值给后端
     if (!payload || typeof payload !== 'object') {
-      console.error('❌ [LafService] 参数错误: payload 必须是对象');
+      logger.error('❌ [LafService] 参数错误: payload 必须是对象');
       return {
         code: -1,
         success: false,
@@ -534,7 +597,7 @@ export const lafService = {
     // ✅ 检查 content 字段（对于 chat 类型的 action，content 是必需的）
     if (action === 'chat' || action === 'analyze' || action === 'generate_questions') {
       if (!payload.content || typeof payload.content !== 'string' || payload.content.trim() === '') {
-        console.error('❌ [LafService] 拦截: 尝试发送空内容给 AI');
+        logger.error('❌ [LafService] 拦截: 尝试发送空内容给 AI');
         return {
           code: -1,
           success: false,
@@ -576,7 +639,16 @@ export const lafService = {
         userId: userId
       });
 
-      const response = await this.request('/proxy-ai', requestData);
+      // ✅ 问题清单修复：AI 请求超时保护（独立超时，比普通请求更长）
+      const aiTimeout = _options.timeout || config.ai.timeout || 60000;
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('AI_TIMEOUT')), aiTimeout);
+      });
+
+      const response = await Promise.race([
+        this.request('/proxy-ai', requestData, { timeout: aiTimeout, maxRetries: 1 }),
+        timeoutPromise
+      ]);
 
       logger.log('[LafService] 📡 原始响应:', {
         hasSuccess: 'success' in response,
@@ -613,12 +685,12 @@ export const lafService = {
       // 处理错误响应
       if (response.error || response.success === false) {
         const errorMsg = response.error || response.message || 'AI 服务异常';
-        console.error('[LafService] ❌ AI 响应错误:', errorMsg);
+        logger.error('[LafService] ❌ AI 响应错误:', errorMsg);
         throw new Error(errorMsg);
       }
 
       // 未知格式，记录警告并返回错误而非静默注入成功状态
-      console.warn('[LafService] ⚠️ 未知响应格式，视为异常:', response);
+      logger.warn('[LafService] ⚠️ 未知响应格式，视为异常:', response);
       return {
         code: -1,
         success: false,
@@ -626,9 +698,8 @@ export const lafService = {
         data: response,
         _fallback: true
       };
-
     } catch (error) {
-      console.error('[LafService] ❌ AI 代理请求失败:', {
+      logger.error('[LafService] ❌ AI 代理请求失败:', {
         error: error,
         message: error.message,
         stack: error.stack
@@ -636,13 +707,26 @@ export const lafService = {
 
       // ✅ 修复：返回标准错误对象，同时提供离线降级提示
       // 这样调用方可以正常处理错误，而不会导致未捕获的异常
+      const isTimeout = error.message === 'AI_TIMEOUT';
       const isOffline = error.message?.includes('网络') || error.errMsg?.includes('fail');
+
+      if (isTimeout) {
+        logger.warn('[LafService] ⏱️ AI 请求超时');
+        return {
+          code: -1,
+          success: false,
+          message: 'AI 思考时间过长，请稍后重试或简化您的问题',
+          error: error,
+          data: null,
+          _timeout: true,
+          _fallback: true
+        };
+      }
+
       return {
         code: -1,
         success: false,
-        message: isOffline
-          ? '当前网络不可用，AI功能暂时无法使用'
-          : (error.message || 'AI 服务响应异常'),
+        message: isOffline ? '当前网络不可用，AI功能暂时无法使用' : error.message || 'AI 服务响应异常',
         error: error,
         data: null,
         _offline: isOffline,
@@ -652,23 +736,23 @@ export const lafService = {
   },
 
   /**
-    * 排行榜服务（替代 uniCloud.callFunction('rank-center')）
-    * @param {{ action: string, userId?: string, nickName?: string, avatarUrl?: string, score?: number }} data - 排行榜请求数据
-    * @returns {Promise<ApiResponse>} 返回操作结果
-    */
+   * 排行榜服务（替代 uniCloud.callFunction('rank-center')）
+   * @param {{ action: string, userId?: string, nickName?: string, avatarUrl?: string, score?: number }} data - 排行榜请求数据
+   * @returns {Promise<ApiResponse>} 返回操作结果
+   */
   async rankCenter(data) {
     try {
       return await this.request('/rank-center', data);
     } catch (error) {
-      console.error('[LafService] 排行榜请求失败:', error);
+      logger.error('[LafService] 排行榜请求失败:', error);
       return normalizeError(error, '排行榜请求');
     }
   },
 
   /**
-    * 社交服务（Module 7 - 好友系统）
-    * @param {{ action: string, userId?: string, targetUserId?: string, keyword?: string }} data - 社交数据
-    * @returns {Promise<ApiResponse>} 返回操作结果
+   * 社交服务（Module 7 - 好友系统）
+   * @param {{ action: string, userId?: string, targetUserId?: string, keyword?: string }} data - 社交数据
+   * @returns {Promise<ApiResponse>} 返回操作结果
    *
    * 支持的 action:
    * - search_user: 搜索用户
@@ -685,16 +769,16 @@ export const lafService = {
       logger.log('[LafService] 社交服务响应:', response);
       return response;
     } catch (error) {
-      console.error('[LafService] 社交服务请求失败:', error);
+      logger.error('[LafService] 社交服务请求失败:', error);
       return normalizeError(error, '社交服务请求');
     }
   },
 
   /**
-    * 获取题库数据（带本地降级）
-    * @param {string} userId - 用户ID
-    * @returns {Promise<ApiResponse>} 返回题库数据
-    */
+   * 获取题库数据（带本地降级）
+   * @param {string} userId - 用户ID
+   * @returns {Promise<ApiResponse>} 返回题库数据
+   */
   async getQuestionBank(userId) {
     try {
       const response = await this.request('/question-bank', {
@@ -703,7 +787,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取题库失败:', error);
+      logger.warn('[LafService] 获取题库失败:', error);
       return normalizeError(error, '获取题库');
     }
   },
@@ -729,7 +813,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 随机获取题目失败:', error);
+      logger.warn('[LafService] 随机获取题目失败:', error);
       return normalizeError(error, '随机获取题目');
     }
   },
@@ -748,13 +832,13 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取学习统计失败，降级使用本地数据:', error);
+      logger.warn('[LafService] 获取学习统计失败，降级使用本地数据:', error);
       // P004: 降级到本地存储数据，而非返回错误
       try {
         const storageService = (await import('@/services/storageService.js')).default;
         const localStats = storageService.get('study_stats', {});
-        const bankCount = (storageService.get('v30_bank', [])).length;
-        const mistakeCount = (storageService.get('mistake_book', [])).length;
+        const bankCount = storageService.get('v30_bank', []).length;
+        const mistakeCount = storageService.get('mistake_book', []).length;
         return {
           code: 0,
           data: {
@@ -985,7 +1069,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 拍照搜题失败:', error);
+      logger.error('[LafService] 拍照搜题失败:', error);
       return normalizeError(error, '拍照搜题');
     }
   },
@@ -1010,7 +1094,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取AI好友记忆失败:', error);
+      logger.warn('[LafService] 获取AI好友记忆失败:', error);
       return normalizeError(error, '获取AI好友记忆');
     }
   },
@@ -1030,7 +1114,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取学校列表失败:', error);
+      logger.warn('[LafService] 获取学校列表失败:', error);
       return normalizeError(error, '获取学校列表');
     }
   },
@@ -1048,7 +1132,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取学校详情失败:', error);
+      logger.warn('[LafService] 获取学校详情失败:', error);
       return normalizeError(error, '获取学校详情');
     }
   },
@@ -1067,7 +1151,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 搜索学校失败:', error);
+      logger.warn('[LafService] 搜索学校失败:', error);
       return normalizeError(error, '搜索学校');
     }
   },
@@ -1085,7 +1169,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取热门学校失败:', error);
+      logger.warn('[LafService] 获取热门学校失败:', error);
       return { code: -1, success: false, data: [] };
     }
   },
@@ -1102,7 +1186,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取省份列表失败:', error);
+      logger.warn('[LafService] 获取省份列表失败:', error);
       return { code: -1, success: false, data: [] };
     }
   },
@@ -1135,7 +1219,7 @@ export const lafService = {
 
       return response;
     } catch (error) {
-      console.error('[LafService] ❌ 登录失败:', error);
+      logger.error('[LafService] ❌ 登录失败:', error);
       return {
         code: -1,
         success: false,
@@ -1156,7 +1240,7 @@ export const lafService = {
       const response = await this.request('/send-email-code', { email }, { skipAuth: true });
       return response;
     } catch (error) {
-      console.error('[LafService] ❌ 发送验证码失败:', error);
+      logger.error('[LafService] ❌ 发送验证码失败:', error);
       return {
         code: -1,
         success: false,
@@ -1201,7 +1285,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 更新用户资料失败:', error);
+      logger.error('[LafService] 更新用户资料失败:', error);
       return {
         code: -1,
         success: false,
@@ -1232,7 +1316,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 添加收藏失败:', error);
+      logger.error('[LafService] 添加收藏失败:', error);
       return { code: -1, success: false, message: '添加失败' };
     }
   },
@@ -1257,7 +1341,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 获取收藏失败:', error);
+      logger.error('[LafService] 获取收藏失败:', error);
       return { code: -1, success: false, message: '获取失败', data: [] };
     }
   },
@@ -1282,7 +1366,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 删除收藏失败:', error);
+      logger.error('[LafService] 删除收藏失败:', error);
       return { code: -1, success: false, message: '删除失败' };
     }
   },
@@ -1300,9 +1384,7 @@ export const lafService = {
         return { code: 0, success: true, data: { isFavorite: false } };
       }
 
-      const data = Array.isArray(questionId)
-        ? { questionIds: questionId }
-        : { questionId };
+      const data = Array.isArray(questionId) ? { questionIds: questionId } : { questionId };
 
       const response = await this.request('/favorite-manager', {
         action: 'check',
@@ -1311,9 +1393,15 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 检查收藏失败:', error);
+      logger.error('[LafService] 检查收藏失败:', error);
       // ✅ B023: 返回真实错误，不伪装成功
-      return { code: -1, success: false, data: { isFavorite: false }, message: '检查收藏状态失败', _errorSource: 'network' };
+      return {
+        code: -1,
+        success: false,
+        data: { isFavorite: false },
+        message: '检查收藏状态失败',
+        _errorSource: 'network'
+      };
     }
   },
 
@@ -1335,7 +1423,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 获取学习资源失败:', error);
+      logger.error('[LafService] 获取学习资源失败:', error);
       return { code: -1, success: false, message: '获取失败', data: { resources: [] } };
     }
   },
@@ -1356,7 +1444,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 获取热门资源失败:', error);
+      logger.error('[LafService] 获取热门资源失败:', error);
       return { code: -1, success: false, message: '获取失败', data: [] };
     }
   },
@@ -1378,7 +1466,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 搜索资源失败:', error);
+      logger.error('[LafService] 搜索资源失败:', error);
       return { code: -1, success: false, message: '搜索失败', data: { resources: [] } };
     }
   },
@@ -1396,7 +1484,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.error('[LafService] 获取资源分类失败:', error);
+      logger.error('[LafService] 获取资源分类失败:', error);
       return { code: -1, success: false, message: '获取失败', data: {} };
     }
   },
@@ -1432,7 +1520,7 @@ export const lafService = {
           results.push(response);
         } catch (goalErr) {
           failCount++;
-          console.warn('[LafService] 单个目标同步失败:', goal.type, goalErr);
+          logger.warn('[LafService] 单个目标同步失败:', goal.type, goalErr);
           results.push({ code: -1, success: false, type: goal.type });
         }
       }
@@ -1443,7 +1531,7 @@ export const lafService = {
       }
       return { code: 0, success: true, message: `已同步 ${successCount}/${activeGoals.length} 个目标`, data: results };
     } catch (error) {
-      console.warn('[LafService] 同步学习目标失败:', error);
+      logger.warn('[LafService] 同步学习目标失败:', error);
       return { code: -1, success: false, message: '同步失败', _errorSource: 'network' };
     }
   },
@@ -1465,7 +1553,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取学习目标失败:', error);
+      logger.warn('[LafService] 获取学习目标失败:', error);
       return { code: -1, success: false, message: '获取失败', data: [] };
     }
   },
@@ -1488,7 +1576,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 记录目标进度失败:', error);
+      logger.warn('[LafService] 记录目标进度失败:', error);
       return { code: -1, success: false, message: '记录失败' };
     }
   },
@@ -1518,7 +1606,9 @@ export const lafService = {
           }
           uni.setStorageSync('_pendingAchievements', remaining);
         }
-      } catch (_e) { /* 重试失败不影响主流程 */ }
+      } catch (_e) {
+        /* 重试失败不影响主流程 */
+      }
 
       const response = await this.request('/achievement-manager', {
         action: 'check',
@@ -1527,7 +1617,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 检查成就失败:', error);
+      logger.warn('[LafService] 检查成就失败:', error);
       return { code: -1, success: false, message: '检查失败', data: { newlyUnlocked: [] } };
     }
   },
@@ -1548,7 +1638,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取成就失败:', error);
+      logger.warn('[LafService] 获取成就失败:', error);
       return { code: -1, success: false, message: '获取失败', data: { achievements: [] } };
     }
   },
@@ -1570,7 +1660,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 解锁成就失败，已缓存待重试:', achievementId, error);
+      logger.warn('[LafService] 解锁成就失败，已缓存待重试:', achievementId, error);
       // 1.8: 失败时缓存到本地，下次 checkAchievements 时自动重试
       // 注意：此处直接用 uni.getStorageSync 而非 storageService，因为 storageService → lafService 存在循环依赖
       try {
@@ -1579,7 +1669,9 @@ export const lafService = {
           pending.push(achievementId);
           uni.setStorageSync('_pendingAchievements', pending);
         }
-      } catch (_e) { /* 存储失败忽略 */ }
+      } catch (_e) {
+        /* 存储失败忽略 */
+      }
       return { code: -1, success: false, message: '解锁失败，将自动重试' };
     }
   },
@@ -1603,7 +1695,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 处理邀请失败:', error);
+      logger.warn('[LafService] 处理邀请失败:', error);
       return { code: -1, success: false, message: '邀请处理失败' };
     }
   },
@@ -1625,7 +1717,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 领取邀请奖励失败:', error);
+      logger.warn('[LafService] 领取邀请奖励失败:', error);
       return { code: -1, success: false, message: '领取失败' };
     }
   },
@@ -1645,7 +1737,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取邀请信息失败:', error);
+      logger.warn('[LafService] 获取邀请信息失败:', error);
       return { code: -1, success: false, message: '获取失败', data: null };
     }
   },
@@ -1668,7 +1760,7 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      console.warn('[LafService] 获取用户统计失败:', error);
+      logger.warn('[LafService] 获取用户统计失败:', error);
       return { code: -1, success: false, message: '获取失败', data: null };
     }
   },
@@ -1682,7 +1774,7 @@ export const lafService = {
     try {
       return await this.request('/doc-convert', { action: 'get_types' });
     } catch (error) {
-      console.warn('[LafService] 获取转换类型失败:', error);
+      logger.warn('[LafService] 获取转换类型失败:', error);
       return { code: -1, success: false, message: '获取失败', data: null };
     }
   },
@@ -1704,7 +1796,7 @@ export const lafService = {
         ...options
       });
     } catch (error) {
-      console.warn('[LafService] 提交转换任务失败:', error);
+      logger.warn('[LafService] 提交转换任务失败:', error);
       return { code: -1, success: false, message: '提交失败', data: null };
     }
   },
@@ -1717,7 +1809,7 @@ export const lafService = {
     try {
       return await this.request('/doc-convert', { action: 'get_status', taskId });
     } catch (error) {
-      console.warn('[LafService] 查询转换状态失败:', error);
+      logger.warn('[LafService] 查询转换状态失败:', error);
       return { code: -1, success: false, message: '查询失败', data: null };
     }
   },
@@ -1730,7 +1822,7 @@ export const lafService = {
     try {
       return await this.request('/doc-convert', { action: 'get_result', taskId });
     } catch (error) {
-      console.warn('[LafService] 获取转换结果失败:', error);
+      logger.warn('[LafService] 获取转换结果失败:', error);
       return { code: -1, success: false, message: '获取失败', data: null };
     }
   },
@@ -1755,7 +1847,7 @@ export const lafService = {
         }
       };
     } catch (error) {
-      console.warn('[LafService] 获取证件照配置失败:', error);
+      logger.warn('[LafService] 获取证件照配置失败:', error);
       return { code: -1, success: false, message: '获取失败', data: null };
     }
   },
@@ -1777,8 +1869,32 @@ export const lafService = {
         ...options
       });
     } catch (error) {
-      console.warn('[LafService] 证件照处理失败:', error);
+      logger.warn('[LafService] 证件照处理失败:', error);
       return { code: -1, success: false, message: '处理失败', data: null };
+    }
+  },
+
+  // ==================== 首页动态数据 ====================
+
+  /**
+   * 获取首页动态数据（金句、公式、公告等）
+   * 对应后端 /getHomeData 接口
+   * @returns {Promise<ApiResponse>} 返回首页数据
+   */
+  async getHomeData() {
+    try {
+      const response = await this.request(
+        '/getHomeData',
+        {},
+        {
+          skipAuth: true,
+          timeout: 10000
+        }
+      );
+      return response;
+    } catch (error) {
+      logger.warn('[LafService] 获取首页数据失败:', error);
+      return { code: -1, success: false, message: '获取失败', data: null };
     }
   },
 
@@ -1793,8 +1909,30 @@ export const lafService = {
         imageBase64
       });
     } catch (error) {
-      console.warn('[LafService] 去除背景失败:', error);
+      logger.warn('[LafService] 去除背景失败:', error);
       return { code: -1, success: false, message: '处理失败', data: null };
     }
   }
 };
+
+// ✅ 问题清单修复：注册离线队列请求重建函数
+// app 重启后 requestFnMap 丢失，通过 requestData 重建请求
+try {
+  import('@/utils/core/offline-queue.js')
+    .then(({ offlineQueue }) => {
+      if (offlineQueue && typeof offlineQueue.registerRebuilder === 'function') {
+        offlineQueue.registerRebuilder((requestData) => {
+          const { path, data, options } = requestData || {};
+          if (!path) {
+            return Promise.reject(new Error('无法重建请求：缺少 path'));
+          }
+          return lafService.request(path, data || {}, options || {});
+        });
+      }
+    })
+    .catch(() => {
+      // 静默失败，offline-queue 可能未加载
+    });
+} catch (_e) {
+  // 静默
+}

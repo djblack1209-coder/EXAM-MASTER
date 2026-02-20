@@ -103,7 +103,6 @@ class StreakRecoveryService {
         inventory: { ...this.inventory },
         monthlyFree: this.monthlyFreeRecovery.value
       });
-
     } catch (error) {
       console.error('[StreakRecovery] Init error:', error);
     }
@@ -258,7 +257,6 @@ class StreakRecoveryService {
           streak: checkinStreak.data.currentStreak
         }
       };
-
     } catch (error) {
       console.error('[StreakRecovery] Recover error:', error);
       return {
@@ -499,7 +497,9 @@ class StreakRecoveryService {
    * 获取日期字符串
    */
   _getDateString(date) {
-    return date.toISOString().split('T')[0];
+    // [AUDIT FIX] 使用本地日期而非 UTC，避免跨时区用户补签逻辑在错误时间重置
+    const pad = (n) => String(n).padStart(2, '0');
+    return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate());
   }
 
   /**
@@ -523,7 +523,9 @@ class StreakRecoveryService {
       try {
         const key = `recovery_${this.userId}`;
         storageService.remove(key);
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
   }
 
@@ -584,13 +586,7 @@ class StreakRecoveryService {
 export const streakRecovery = new StreakRecoveryService();
 
 // 导出类和常量
-export {
-  StreakRecoveryService,
-  RECOVERY_CARD_TYPE,
-  RECOVERY_CARD_CONFIG,
-  RECOVERY_RULES,
-  CARD_SOURCES
-};
+export { StreakRecoveryService, RECOVERY_CARD_TYPE, RECOVERY_CARD_CONFIG, RECOVERY_RULES, CARD_SOURCES };
 
 // Vue组合式API Hook
 /**

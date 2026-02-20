@@ -65,8 +65,13 @@ export function drawStyledCard(ctx, x, y, w, h, r, fill, isDark = false) {
 export function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxY = 1200) {
   const paragraphs = text.split('\n');
   let currentY = y;
+  let truncated = false;
 
-  paragraphs.forEach((para, pIdx) => {
+  // [AUDIT FIX] 使用 for 循环替代 forEach，确保截断时能正确跳出所有段落
+  for (let pIdx = 0; pIdx < paragraphs.length; pIdx++) {
+    if (truncated) break;
+    const para = paragraphs[pIdx];
+
     if (pIdx > 0) {
       currentY += lineHeight * 0.5;
     }
@@ -85,18 +90,19 @@ export function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight, maxY = 12
 
         if (currentY > maxY) {
           ctx.fillText('...', x, currentY);
-          return;
+          truncated = true;
+          break;
         }
       } else {
         line = testLine;
       }
     }
 
-    if (line && currentY <= maxY) {
+    if (!truncated && line && currentY <= maxY) {
       ctx.fillText(line, x, currentY);
       currentY += lineHeight;
     }
-  });
+  }
 }
 
 /**
@@ -233,19 +239,22 @@ export function drawDivider(ctx, x1, x2, y, color) {
 export function canvasToImage(canvasId, component) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      uni.canvasToTempFilePath({
-        canvasId,
-        quality: 0.92,
-        success: (res) => {
-          const path = res.tempFilePath || '';
-          if (!path) {
-            reject(new Error('图片路径为空'));
-          } else {
-            resolve(path);
-          }
+      uni.canvasToTempFilePath(
+        {
+          canvasId,
+          quality: 0.92,
+          success: (res) => {
+            const path = res.tempFilePath || '';
+            if (!path) {
+              reject(new Error('图片路径为空'));
+            } else {
+              resolve(path);
+            }
+          },
+          fail: reject
         },
-        fail: reject
-      }, component);
+        component
+      );
     }, 300);
   });
 }

@@ -71,8 +71,11 @@ export function detectUnfinishedPractice() {
     }
 
     // 只有真正开始答题才算有草稿
-    if (progress.currentIndex === 0 && !progress.hasAnswered &&
-        (!progress.answeredQuestions || progress.answeredQuestions.length === 0)) {
+    if (
+      progress.currentIndex === 0 &&
+      !progress.hasAnswered &&
+      (!progress.answeredQuestions || progress.answeredQuestions.length === 0)
+    ) {
       logger.log('[DraftDetector] 练习未真正开始，不算草稿');
       return null;
     }
@@ -112,7 +115,6 @@ export function detectUnfinishedPractice() {
 
     logger.log('[DraftDetector] 检测到未完成的练习:', draftInfo);
     return draftInfo;
-
   } catch (error) {
     console.error('[DraftDetector] 检测草稿失败:', error);
     return null;
@@ -130,7 +132,8 @@ export function detectUnfinishedPK() {
 
     let draft;
     try {
-      draft = JSON.parse(draftStr);
+      // [AUDIT FIX] storageService.get 可能返回已解析的对象，兼容两种情况
+      draft = typeof draftStr === 'string' ? JSON.parse(draftStr) : draftStr;
     } catch (parseError) {
       console.error('[DraftDetector] PK草稿JSON解析失败，清除无效数据:', parseError);
       clearDraft('pk');
@@ -166,7 +169,8 @@ export function detectUnfinishedImport() {
 
     let draft;
     try {
-      draft = JSON.parse(draftStr);
+      // [AUDIT FIX] storageService.get 可能返回已解析的对象，兼容两种情况
+      draft = typeof draftStr === 'string' ? JSON.parse(draftStr) : draftStr;
     } catch (parseError) {
       console.error('[DraftDetector] 导入草稿JSON解析失败，清除无效数据:', parseError);
       clearDraft('import');
