@@ -3,6 +3,8 @@
  * 适配最新的 uni-app API，避免废弃警告
  */
 
+import { logger } from '../logger.js';
+
 /**
  * 获取状态栏高度
  * @returns {number} 状态栏高度（px）
@@ -22,7 +24,7 @@ export function getStatusBarHeight() {
     // #endif
   } catch (e) {
     // 降级方案
-    console.warn('获取状态栏高度失败，使用默认值', e);
+    logger.warn('获取状态栏高度失败，使用默认值', e);
     return 44;
   }
 }
@@ -37,7 +39,7 @@ export function getNavBarHeight() {
     // 标准计算公式：状态栏高度 + 44px（iOS/Android 标准导航栏高度）
     return statusBarHeight + 44;
   } catch (e) {
-    console.warn('获取导航栏高度失败，使用默认值', e);
+    logger.warn('获取导航栏高度失败，使用默认值', e);
     // 默认值：44（状态栏） + 44（导航栏） = 88px
     return 88;
   }
@@ -59,7 +61,7 @@ export function getWindowHeight() {
     return sysInfo.windowHeight || sysInfo.screenHeight || 800;
     // #endif
   } catch (e) {
-    console.warn('获取窗口高度失败，使用默认值', e);
+    logger.warn('获取窗口高度失败，使用默认值', e);
     return 800;
   }
 }
@@ -73,7 +75,7 @@ export function getMenuButtonBoundingClientRect() {
   try {
     return uni.getMenuButtonBoundingClientRect();
   } catch (e) {
-    console.warn('获取胶囊按钮信息失败', e);
+    logger.warn('获取胶囊按钮信息失败', e);
     return null;
   }
   // #endif
@@ -99,7 +101,7 @@ export function getPixelRatio() {
     return sysInfo.pixelRatio || 1;
     // #endif
   } catch (e) {
-    console.warn('获取设备像素比失败，使用默认值', e);
+    logger.warn('获取设备像素比失败，使用默认值', e);
     return 1;
   }
 }
@@ -132,7 +134,7 @@ export function getDeviceInfo() {
     };
     // #endif
   } catch (e) {
-    console.warn('获取设备信息失败', e);
+    logger.warn('获取设备信息失败', e);
     return {
       brand: 'unknown',
       model: 'unknown',
@@ -173,7 +175,7 @@ export function getWindowInfo() {
     };
     // #endif
   } catch (e) {
-    console.warn('获取窗口信息失败', e);
+    logger.warn('获取窗口信息失败', e);
     return {
       windowWidth: 375,
       windowHeight: 667,
@@ -211,7 +213,7 @@ export function getAppBaseInfo() {
     };
     // #endif
   } catch (e) {
-    console.warn('获取应用基础信息失败', e);
+    logger.warn('获取应用基础信息失败', e);
     return {
       SDKVersion: 'unknown',
       version: 'unknown',
@@ -240,7 +242,7 @@ export function getSystemTheme() {
     return 'light';
     // #endif
   } catch (e) {
-    console.warn('获取系统主题失败', e);
+    logger.warn('获取系统主题失败', e);
     return 'light';
   }
 }
@@ -283,7 +285,7 @@ export function getPlatformInfo() {
     };
     // #endif
   } catch (e) {
-    console.warn('获取平台信息失败', e);
+    logger.warn('获取平台信息失败', e);
     return {
       platform: 'unknown',
       system: 'unknown',

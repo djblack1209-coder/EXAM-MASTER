@@ -16,6 +16,8 @@
  * @module utils/event-emitter
  */
 
+import { logger } from './logger.js';
+
 export class SimpleEventEmitter {
   constructor() {
     this._listeners = new Map();
@@ -57,7 +59,7 @@ export class SimpleEventEmitter {
         try {
           cb(data);
         } catch (e) {
-          console.error(`[EventEmitter] Handler error for "${event}":`, e);
+          logger.error(`[EventEmitter] Handler error for "${event}":`, e);
         }
       });
     }

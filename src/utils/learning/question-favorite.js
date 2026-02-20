@@ -417,7 +417,7 @@ class QuestionFavoriteManager {
         uni.showToast({ title: message, icon: 'none', duration: 1500 });
       }
     } catch (e) {
-      console.warn('[QuestionFavorite] 显示提示失败:', e);
+      logger.warn('[QuestionFavorite] 显示提示失败:', e);
     }
   }
 
@@ -437,7 +437,7 @@ class QuestionFavoriteManager {
         storageService.save(STORAGE_KEYS.FAVORITES, this.favorites);
       }
     } catch (_e) {
-      console.warn('[QuestionFavorite] 保存收藏失败:', _e);
+      logger.warn('[QuestionFavorite] 保存收藏失败:', _e);
     }
   }
 
@@ -460,7 +460,7 @@ class QuestionFavoriteManager {
         storageService.save(STORAGE_KEYS.FAVORITE_FOLDERS, this.folders);
       }
     } catch (_e) {
-      console.warn('[QuestionFavorite] 保存收藏夹失败:', _e);
+      logger.warn('[QuestionFavorite] 保存收藏夹失败:', _e);
     }
   }
 
@@ -473,7 +473,7 @@ class QuestionFavoriteManager {
         }
       }
     } catch (_e) {
-      console.warn('[QuestionFavorite] 加载设置失败:', _e);
+      logger.warn('[QuestionFavorite] 加载设置失败:', _e);
     }
   }
 }

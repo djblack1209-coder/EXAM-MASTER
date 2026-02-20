@@ -14,6 +14,7 @@
  */
 
 import config from '../../config/index.js';
+import { logger } from '../logger.js';
 
 const OBFUSCATION_KEY = config.security.obfuscationKey;
 const CIPHER_VERSION = 2;
@@ -21,7 +22,7 @@ const FEISTEL_ROUNDS = 8;
 
 // 运行时安全检查：空密钥意味着加密形同虚设
 if (!OBFUSCATION_KEY) {
-  console.warn('[Cipher] ⚠️ VITE_OBFUSCATION_KEY 未配置，本地存储加密已禁用。请在 .env 文件中设置该变量。');
+  logger.warn('[Cipher] ⚠️ VITE_OBFUSCATION_KEY 未配置，本地存储加密已禁用。请在 .env 文件中设置该变量。');
 }
 
 // ==================== 跨平台 Base64 ====================
@@ -257,7 +258,7 @@ export function obfuscate(data) {
     const hmac = sipHash(str + OBFUSCATION_KEY, 0x5a3c);
     return `v2.${hmac}.${b64}`;
   } catch (e) {
-    console.warn('[Cipher] 加密失败，使用明文存储:', e.message);
+    logger.warn('[Cipher] 加密失败，使用明文存储:', e.message);
     return null;
   }
 }
@@ -286,7 +287,7 @@ export function deobfuscate(encoded) {
       const str = decodeURIComponent(String.fromCharCode(...plainBytes));
       const actualHmac = sipHash(str + OBFUSCATION_KEY, 0x5a3c);
       if (actualHmac !== expectedHmac) {
-        console.warn('[Cipher] V2 数据完整性校验失败');
+        logger.warn('[Cipher] V2 数据完整性校验失败');
         return null;
       }
       try {
@@ -297,7 +298,7 @@ export function deobfuscate(encoded) {
     }
     return legacyDeobfuscate(encoded);
   } catch {
-    console.warn('[Cipher] 解密失败');
+    logger.warn('[Cipher] 解密失败');
     return null;
   }
 }

@@ -120,9 +120,8 @@ class LearningAnalytics {
       date.setDate(date.getDate() - i);
       const dateStr = this._getDateString(date);
       const stats = this.dailyStats[dateStr];
-      const accuracy = stats && stats.totalQuestions > 0
-        ? (stats.correctQuestions / stats.totalQuestions * 100).toFixed(1)
-        : null;
+      const accuracy =
+        stats && stats.totalQuestions > 0 ? ((stats.correctQuestions / stats.totalQuestions) * 100).toFixed(1) : null;
       result.push({
         date: dateStr,
         accuracy: accuracy ? parseFloat(accuracy) : null,
@@ -148,7 +147,7 @@ class LearningAnalytics {
     }
 
     const analysis = Object.entries(categoryStats).map(([category, data]) => {
-      const accuracy = data.total > 0 ? (data.correct / data.total * 100) : 0;
+      const accuracy = data.total > 0 ? (data.correct / data.total) * 100 : 0;
       return {
         category,
         totalQuestions: data.total,
@@ -279,7 +278,7 @@ class LearningAnalytics {
     }
 
     if (todayStats.totalQuestions >= 5) {
-      const todayAccuracy = todayStats.correctQuestions / todayStats.totalQuestions * 100;
+      const todayAccuracy = (todayStats.correctQuestions / todayStats.totalQuestions) * 100;
       if (todayAccuracy >= 80 && !this.achievements.includes('accuracy_80')) {
         newAchievements.push('accuracy_80');
       }
@@ -323,10 +322,20 @@ class LearningAnalytics {
     const accuracy = parseFloat(stats.overallAccuracy) || 0;
 
     if (accuracy < 60) {
-      recommendations.push({ type: 'accuracy', priority: 'high', title: '提升正确率', content: '建议从基础题目开始练习' });
+      recommendations.push({
+        type: 'accuracy',
+        priority: 'high',
+        title: '提升正确率',
+        content: '建议从基础题目开始练习'
+      });
     }
     if (weakPoints.length > 0) {
-      recommendations.push({ type: 'weak_point', priority: 'high', title: '强化薄弱知识点', content: '「' + weakPoints[0].category + '」需要重点练习' });
+      recommendations.push({
+        type: 'weak_point',
+        priority: 'high',
+        title: '强化薄弱知识点',
+        content: '「' + weakPoints[0].category + '」需要重点练习'
+      });
     }
     if (!streakData.isStudiedToday) {
       recommendations.push({ type: 'streak', priority: 'medium', title: '保持学习连续性', content: '今天还没学习哦' });
@@ -335,7 +344,11 @@ class LearningAnalytics {
   }
 
   _loadDailyStats() {
-    try { this.dailyStats = storageService.get(STORAGE_KEYS.DAILY_STATS, {}); } catch (_e) { this.dailyStats = {}; }
+    try {
+      this.dailyStats = storageService.get(STORAGE_KEYS.DAILY_STATS, {});
+    } catch (_e) {
+      this.dailyStats = {};
+    }
   }
 
   _saveDailyStats() {
@@ -345,22 +358,29 @@ class LearningAnalytics {
         for (const date of dates.slice(0, dates.length - 365)) delete this.dailyStats[date];
       }
       storageService.save(STORAGE_KEYS.DAILY_STATS, this.dailyStats);
-    } catch (e) { console.error('[LearningAnalytics] 保存失败:', e); }
+    } catch (e) {
+      logger.error('[LearningAnalytics] 保存失败:', e);
+    }
   }
 
   _loadStreakData() {
     try {
-      this.streakData = storageService.get(
-        STORAGE_KEYS.STREAK_DATA,
-        { currentStreak: 0, longestStreak: 0, lastStudyDate: null }
-      );
+      this.streakData = storageService.get(STORAGE_KEYS.STREAK_DATA, {
+        currentStreak: 0,
+        longestStreak: 0,
+        lastStudyDate: null
+      });
     } catch (_e) {
       this.streakData = { currentStreak: 0, longestStreak: 0, lastStudyDate: null };
     }
   }
 
   _saveStreakData() {
-    try { storageService.save(STORAGE_KEYS.STREAK_DATA, this.streakData); } catch (e) { console.error('[LearningAnalytics] 保存连续学习数据失败:', e); }
+    try {
+      storageService.save(STORAGE_KEYS.STREAK_DATA, this.streakData);
+    } catch (e) {
+      logger.error('[LearningAnalytics] 保存连续学习数据失败:', e);
+    }
   }
 
   _loadAchievements() {
@@ -372,7 +392,11 @@ class LearningAnalytics {
   }
 
   _saveAchievements() {
-    try { storageService.save(STORAGE_KEYS.ACHIEVEMENT_DATA, this.achievements); } catch (e) { console.error('[LearningAnalytics] 保存成就数据失败:', e); }
+    try {
+      storageService.save(STORAGE_KEYS.ACHIEVEMENT_DATA, this.achievements);
+    } catch (e) {
+      logger.error('[LearningAnalytics] 保存成就数据失败:', e);
+    }
   }
 
   /**
@@ -405,21 +429,17 @@ class LearningAnalytics {
             icon: 'none',
             duration: 3000
           });
-          logger.log(
-            `[LearningAnalytics] 后端自动检测解锁了 ${newlyUnlocked.length} 个成就`
-          );
+          logger.log(`[LearningAnalytics] 后端自动检测解锁了 ${newlyUnlocked.length} 个成就`);
         }
       } catch (e) {
-        console.warn('[LearningAnalytics] 后端成就检测失败:', e.message);
+        logger.warn('[LearningAnalytics] 后端成就检测失败:', e.message);
       }
 
       // 2. 拉取后端已解锁成就列表，合并到本地
       try {
         const res = await lafService.getAllAchievements();
         const allAch = res?.data?.achievements || [];
-        const serverUnlocked = allAch
-          .filter((a) => a.unlocked)
-          .map((a) => a.id);
+        const serverUnlocked = allAch.filter((a) => a.unlocked).map((a) => a.id);
 
         let changed = false;
         for (const id of serverUnlocked) {
@@ -430,15 +450,13 @@ class LearningAnalytics {
         }
         if (changed) {
           this._saveAchievements();
-          logger.log(
-            `[LearningAnalytics] 从后端合并成就，当前共 ${this.achievements.length} 个`
-          );
+          logger.log(`[LearningAnalytics] 从后端合并成就，当前共 ${this.achievements.length} 个`);
         }
       } catch (e) {
-        console.warn('[LearningAnalytics] 拉取后端成就列表失败:', e.message);
+        logger.warn('[LearningAnalytics] 拉取后端成就列表失败:', e.message);
       }
     } catch (e) {
-      console.warn('[LearningAnalytics] 成就后端拉取失败:', e.message);
+      logger.warn('[LearningAnalytics] 成就后端拉取失败:', e.message);
     }
   }
 
@@ -461,14 +479,14 @@ class LearningAnalytics {
         try {
           await lafService.unlockAchievement(achievementId);
         } catch (e) {
-          console.warn(`[LearningAnalytics] 同步成就 ${achievementId} 失败:`, e.message);
+          logger.warn(`[LearningAnalytics] 同步成就 ${achievementId} 失败:`, e.message);
         }
       }
 
       logger.log(`[LearningAnalytics] 已同步 ${newAchievementIds.length} 个成就到后端`);
     } catch (e) {
       // 同步失败不影响本地使用
-      console.warn('[LearningAnalytics] 成就后端同步失败:', e.message);
+      logger.warn('[LearningAnalytics] 成就后端同步失败:', e.message);
     }
   }
 
@@ -601,7 +619,7 @@ class LearningAnalytics {
       const stats = this.dailyStats[dateStr];
 
       if (stats && stats.totalQuestions > 0) {
-        const accuracy = (stats.correctQuestions / stats.totalQuestions * 100).toFixed(1);
+        const accuracy = ((stats.correctQuestions / stats.totalQuestions) * 100).toFixed(1);
         trendData.push({
           date: dateStr,
           accuracy: parseFloat(accuracy),
@@ -650,16 +668,20 @@ class LearningAnalytics {
       peers: peerData,
       comparison: {
         scorePercentile: this._calculatePercentile(
-          userReport.overview.learningScore, peerData.map((p) => p.score)
+          userReport.overview.learningScore,
+          peerData.map((p) => p.score)
         ),
         accuracyPercentile: this._calculatePercentile(
-          parseFloat(userReport.overview.overallAccuracy), peerData.map((p) => p.accuracy)
+          parseFloat(userReport.overview.overallAccuracy),
+          peerData.map((p) => p.accuracy)
         ),
         streakPercentile: this._calculatePercentile(
-          userReport.streak.currentStreak, peerData.map((p) => p.streak)
+          userReport.streak.currentStreak,
+          peerData.map((p) => p.streak)
         ),
         questionsPercentile: this._calculatePercentile(
-          userReport.overview.totalQuestions, peerData.map((p) => p.questions)
+          userReport.overview.totalQuestions,
+          peerData.map((p) => p.questions)
         )
       },
       insights: this._generatePeerInsights(userReport.overview, peerData)
@@ -681,7 +703,7 @@ class LearningAnalytics {
     // ⚠️ 仅为参考性估算，非专业预测模型
     // TODO: 后续应接入后端机器学习模型进行更准确的预测
     const baseScore = parseFloat(report.overview.overallAccuracy) || 0;
-    const trendFactor = trend.improvementRate > 0 ? 1 + (trend.improvementRate / 100) : 0.95;
+    const trendFactor = trend.improvementRate > 0 ? 1 + trend.improvementRate / 100 : 0.95;
     const efficiencyFactor = parseFloat(efficiency.overall.averageEfficiency) > 2 ? 1.05 : 0.98;
     const streakFactor = report.streak.currentStreak > 7 ? 1.03 : 0.99;
 
@@ -691,7 +713,7 @@ class LearningAnalytics {
     return {
       _isEstimated: true, // 标记：仅为参考性估算
       predictedScore: predictedScore.toFixed(1),
-      confidence: Math.min(95, Math.max(50, 70 + (report.overview.totalQuestions / 100))),
+      confidence: Math.min(95, Math.max(50, 70 + report.overview.totalQuestions / 100)),
       factors: {
         baseScore: baseScore.toFixed(1),
         trendFactor: trendFactor.toFixed(2),
@@ -744,8 +766,8 @@ class LearningAnalytics {
       data.push({
         date: dateStr,
         questions: stats ? stats.totalQuestions : 0,
-        accuracy: stats && stats.totalQuestions > 0
-          ? (stats.correctQuestions / stats.totalQuestions * 100).toFixed(1) : 0,
+        accuracy:
+          stats && stats.totalQuestions > 0 ? ((stats.correctQuestions / stats.totalQuestions) * 100).toFixed(1) : 0,
         time: stats ? stats.totalTime / 60 : 0 // 转换为分钟
       });
       current.setDate(current.getDate() + 1);
@@ -755,8 +777,8 @@ class LearningAnalytics {
       data,
       summary: {
         totalQuestions: data.reduce((sum, d) => sum + d.questions, 0),
-        averageAccuracy: data.length > 0
-          ? (data.reduce((sum, d) => sum + parseFloat(d.accuracy), 0) / data.length).toFixed(1) : 0,
+        averageAccuracy:
+          data.length > 0 ? (data.reduce((sum, d) => sum + parseFloat(d.accuracy), 0) / data.length).toFixed(1) : 0,
         totalTime: data.reduce((sum, d) => sum + d.time, 0)
       }
     };
@@ -813,7 +835,7 @@ class LearningAnalytics {
       const secondHalf = accuracies.slice(Math.floor(accuracies.length / 2));
       const firstAvg = firstHalf.reduce((sum, acc) => sum + acc, 0) / firstHalf.length;
       const secondAvg = secondHalf.reduce((sum, acc) => sum + acc, 0) / secondHalf.length;
-      improvementRate = firstAvg > 0 ? ((secondAvg - firstAvg) / firstAvg * 100) : 0;
+      improvementRate = firstAvg > 0 ? ((secondAvg - firstAvg) / firstAvg) * 100 : 0;
     }
 
     // 找出最佳和最差的一天
@@ -909,21 +931,44 @@ class LearningAnalytics {
   }
 }
 
-
 export const learningAnalytics = new LearningAnalytics();
 
-export function recordAnswer(data) { return learningAnalytics.recordAnswer(data); }
-export function getHeatmapData(days) { return learningAnalytics.getHeatmapData(days); }
-export function getAccuracyTrend(days) { return learningAnalytics.getAccuracyTrend(days); }
-export function getKnowledgePointAnalysis() { return learningAnalytics.getKnowledgePointAnalysis(); }
-export function getStreakData() { return learningAnalytics.getStreakData(); }
-export function getAchievements() { return learningAnalytics.getAchievements(); }
-export function getComprehensiveReport() { return learningAnalytics.getComprehensiveReport(); }
-export function getMultiDimensionReport(options) { return learningAnalytics.getMultiDimensionReport(options); }
-export function getLearningEfficiency() { return learningAnalytics.getLearningEfficiency(); }
-export function getProgressTrend(days) { return learningAnalytics.getProgressTrend(days); }
-export function getPeerComparison() { return learningAnalytics.getPeerComparison(); }
-export function predictScore() { return learningAnalytics.predictScore(); }
+export function recordAnswer(data) {
+  return learningAnalytics.recordAnswer(data);
+}
+export function getHeatmapData(days) {
+  return learningAnalytics.getHeatmapData(days);
+}
+export function getAccuracyTrend(days) {
+  return learningAnalytics.getAccuracyTrend(days);
+}
+export function getKnowledgePointAnalysis() {
+  return learningAnalytics.getKnowledgePointAnalysis();
+}
+export function getStreakData() {
+  return learningAnalytics.getStreakData();
+}
+export function getAchievements() {
+  return learningAnalytics.getAchievements();
+}
+export function getComprehensiveReport() {
+  return learningAnalytics.getComprehensiveReport();
+}
+export function getMultiDimensionReport(options) {
+  return learningAnalytics.getMultiDimensionReport(options);
+}
+export function getLearningEfficiency() {
+  return learningAnalytics.getLearningEfficiency();
+}
+export function getProgressTrend(days) {
+  return learningAnalytics.getProgressTrend(days);
+}
+export function getPeerComparison() {
+  return learningAnalytics.getPeerComparison();
+}
+export function predictScore() {
+  return learningAnalytics.predictScore();
+}
 
 export { ACHIEVEMENTS };
 export default learningAnalytics;

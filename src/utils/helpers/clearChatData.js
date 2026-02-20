@@ -32,7 +32,7 @@ export function clearAllChatData() {
     logger.log('✅ 所有对话数据已清理完成');
     return true;
   } catch (error) {
-    console.error('❌ 清理对话数据时出错:', error);
+    logger.error('❌ 清理对话数据时出错:', error);
     return false;
   }
 }

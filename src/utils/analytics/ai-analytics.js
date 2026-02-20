@@ -121,15 +121,7 @@ class AIAnalyticsService {
    * @param {Object} params - 调用结果
    */
   trackCallSuccess(params) {
-    const {
-      action,
-      model,
-      requestId,
-      duration,
-      cached,
-      responseSize,
-      tokenUsage
-    } = params;
+    const { action, model, requestId, duration, cached, responseSize, tokenUsage } = params;
 
     this.sessionMetrics.successes++;
     this.sessionMetrics.totalLatency += duration;
@@ -237,14 +229,7 @@ class AIAnalyticsService {
    * @param {Object} params - 搜题参数
    */
   trackPhotoSearch(params) {
-    const {
-      duration,
-      success,
-      matchCount,
-      hasAiGenerated,
-      confidence,
-      subject
-    } = params;
+    const { duration, success, matchCount, hasAiGenerated, confidence, subject } = params;
 
     analytics.track(AI_EVENTS.AI_PHOTO_SEARCH, {
       duration,
@@ -261,12 +246,7 @@ class AIAnalyticsService {
    * @param {Object} params - 组题参数
    */
   trackAdaptivePick(params) {
-    const {
-      questionCount,
-      targetDifficulty,
-      userCorrectRate,
-      duration
-    } = params;
+    const { questionCount, targetDifficulty, userCorrectRate, duration } = params;
 
     analytics.track(AI_EVENTS.AI_ADAPTIVE_PICK, {
       questionCount,
@@ -281,13 +261,7 @@ class AIAnalyticsService {
    * @param {Object} params - 聊天参数
    */
   trackFriendChat(params) {
-    const {
-      friendType,
-      emotion,
-      messageLength,
-      responseLength,
-      duration
-    } = params;
+    const { friendType, emotion, messageLength, responseLength, duration } = params;
 
     analytics.track(AI_EVENTS.AI_FRIEND_CHAT, {
       friendType,
@@ -303,13 +277,7 @@ class AIAnalyticsService {
    * @param {Object} params - 反馈信息
    */
   trackUserFeedback(params) {
-    const {
-      action,
-      requestId,
-      rating,
-      helpful,
-      comment
-    } = params;
+    const { action, requestId, rating, helpful, comment } = params;
 
     analytics.track(AI_EVENTS.AI_USER_FEEDBACK, {
       action,
@@ -350,31 +318,34 @@ class AIAnalyticsService {
     return {
       // 调用统计
       totalCalls: this.sessionMetrics.calls,
-      successRate: this.sessionMetrics.calls > 0
-        ? ((this.sessionMetrics.successes / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
-        : '0%',
-      errorRate: this.sessionMetrics.calls > 0
-        ? ((this.sessionMetrics.errors / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
-        : '0%',
-      timeoutRate: this.sessionMetrics.calls > 0
-        ? ((this.sessionMetrics.timeouts / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
-        : '0%',
+      successRate:
+        this.sessionMetrics.calls > 0
+          ? ((this.sessionMetrics.successes / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
+          : '0%',
+      errorRate:
+        this.sessionMetrics.calls > 0
+          ? ((this.sessionMetrics.errors / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
+          : '0%',
+      timeoutRate:
+        this.sessionMetrics.calls > 0
+          ? ((this.sessionMetrics.timeouts / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
+          : '0%',
 
       // 缓存统计
-      cacheHitRate: this.sessionMetrics.calls > 0
-        ? ((this.sessionMetrics.cacheHits / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
-        : '0%',
+      cacheHitRate:
+        this.sessionMetrics.calls > 0
+          ? ((this.sessionMetrics.cacheHits / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
+          : '0%',
 
       // 降级统计
-      fallbackRate: this.sessionMetrics.calls > 0
-        ? ((this.sessionMetrics.fallbacks / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
-        : '0%',
+      fallbackRate:
+        this.sessionMetrics.calls > 0
+          ? ((this.sessionMetrics.fallbacks / this.sessionMetrics.calls) * 100).toFixed(2) + '%'
+          : '0%',
 
       // 延迟统计
       latency: {
-        avg: latencies.length > 0
-          ? Math.round(this.sessionMetrics.totalLatency / latencies.length)
-          : 0,
+        avg: latencies.length > 0 ? Math.round(this.sessionMetrics.totalLatency / latencies.length) : 0,
         p50: sorted[Math.floor(sorted.length * 0.5)] || 0,
         p95: sorted[Math.floor(sorted.length * 0.95)] || 0,
         p99: sorted[Math.floor(sorted.length * 0.99)] || 0,
@@ -436,9 +407,8 @@ class AIAnalyticsService {
       }
 
       storageService.save(STORAGE_KEYS.AI_DAILY_STATS, dailyStats);
-
     } catch (e) {
-      console.error('[AIAnalytics] 保存指标失败:', e);
+      logger.error('[AIAnalytics] 保存指标失败:', e);
     }
   }
 
@@ -464,7 +434,7 @@ class AIAnalyticsService {
         }
       }
     } catch (e) {
-      console.error('[AIAnalytics] 恢复指标失败:', e);
+      logger.error('[AIAnalytics] 恢复指标失败:', e);
     }
   }
 
@@ -534,7 +504,7 @@ class AIAnalyticsService {
       logger.log('[AIAnalytics] 指标上报成功');
       return true;
     } catch (e) {
-      console.error('[AIAnalytics] 指标上报失败:', e);
+      logger.error('[AIAnalytics] 指标上报失败:', e);
       return false;
     }
   }

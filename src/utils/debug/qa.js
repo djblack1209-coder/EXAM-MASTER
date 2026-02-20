@@ -51,7 +51,7 @@ export const qa = {
 export const injectInterceptor = () => {
   // 检查 uni 对象是否存在
   if (typeof uni === 'undefined' || !uni.request) {
-    console.warn('[QA] uni 对象未初始化，跳过拦截器注入');
+    logger.warn('[QA] uni 对象未初始化，跳过拦截器注入');
     return;
   }
 

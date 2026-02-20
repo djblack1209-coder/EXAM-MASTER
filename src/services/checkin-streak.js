@@ -86,7 +86,7 @@ class CheckinStreakService {
         todayChecked: this.data.todayChecked
       });
     } catch (error) {
-      console.error('[CheckinStreak] Init error:', error);
+      logger.error('[CheckinStreak] Init error:', error);
     }
   }
 
@@ -389,7 +389,7 @@ class CheckinStreakService {
         Object.assign(this.data, data);
       }
     } catch (error) {
-      console.error('[CheckinStreak] Load error:', error);
+      logger.error('[CheckinStreak] Load error:', error);
       // 损坏数据清理，防止每次启动重复失败
       try {
         const key = `checkin_${this.userId}`;
@@ -415,7 +415,7 @@ class CheckinStreakService {
         recoveryCards: this.data.recoveryCards
       });
     } catch (error) {
-      console.error('[CheckinStreak] Save error:', error);
+      logger.error('[CheckinStreak] Save error:', error);
     }
   }
 
@@ -463,7 +463,7 @@ class CheckinStreakService {
         try {
           cb(data);
         } catch (e) {
-          console.error(`[CheckinStreak] Event handler error:`, e);
+          logger.error(`[CheckinStreak] Event handler error:`, e);
         }
       });
     }

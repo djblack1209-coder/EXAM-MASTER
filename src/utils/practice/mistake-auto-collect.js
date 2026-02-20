@@ -25,7 +25,7 @@ const MISTAKE_STATS_KEY = 'mistake_stats';
  */
 export async function autoCollectMistake(question, userAnswer, aiAnalysis = '') {
   if (!question) {
-    console.warn('[MistakeAutoCollect] 题目信息为空');
+    logger.warn('[MistakeAutoCollect] 题目信息为空');
     return { success: false, error: 'invalid_question' };
   }
 
@@ -124,7 +124,7 @@ export async function autoCollectMistake(question, userAnswer, aiAnalysis = '') 
       classification
     };
   } catch (error) {
-    console.error('[MistakeAutoCollect] 收录错题失败:', error);
+    logger.error('[MistakeAutoCollect] 收录错题失败:', error);
     return { success: false, error: error.message };
   }
 }
@@ -182,7 +182,7 @@ function updateMistakeStats(classification) {
     stats.lastUpdated = Date.now();
     storageService.save(MISTAKE_STATS_KEY, stats);
   } catch (error) {
-    console.error('[MistakeAutoCollect] 更新统计失败:', error);
+    logger.error('[MistakeAutoCollect] 更新统计失败:', error);
   }
 }
 
@@ -250,7 +250,7 @@ export function markAsMastered(mistakeId) {
     }
     return false;
   } catch (error) {
-    console.error('[MistakeAutoCollect] 标记掌握失败:', error);
+    logger.error('[MistakeAutoCollect] 标记掌握失败:', error);
     return false;
   }
 }
@@ -288,7 +288,7 @@ export function recordReview(mistakeId, isCorrect = false) {
     }
     return false;
   } catch (error) {
-    console.error('[MistakeAutoCollect] 记录复习失败:', error);
+    logger.error('[MistakeAutoCollect] 记录复习失败:', error);
     return false;
   }
 }

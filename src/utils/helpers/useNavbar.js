@@ -4,6 +4,7 @@
  */
 
 import { reactive, toRefs } from 'vue';
+import { logger } from '../logger.js';
 
 // 缓存胶囊信息，避免重复调用
 let menuButtonInfo = null;
@@ -22,7 +23,7 @@ export const getMenuButtonBoundingClientRect = () => {
     menuButtonInfo = uni.getMenuButtonBoundingClientRect();
     return menuButtonInfo;
   } catch (error) {
-    console.error('获取胶囊按钮信息失败：', error);
+    logger.error('获取胶囊按钮信息失败：', error);
     // 返回默认值（iPhone X为例）
     return {
       top: 32,
@@ -69,7 +70,7 @@ export const getSystemInfo = () => {
     return uni.getSystemInfoSync();
     // #endif
   } catch (error) {
-    console.error('获取系统信息失败：', error);
+    logger.error('获取系统信息失败：', error);
     return {
       statusBarHeight: 20,
       screenHeight: 667,

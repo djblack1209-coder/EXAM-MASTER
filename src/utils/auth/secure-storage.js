@@ -8,6 +8,7 @@
 
 // 简单的加密密钥（生产环境应使用更安全的密钥管理）
 import storageService from '@/services/storageService.js';
+import { logger } from '../logger.js';
 const ENCRYPTION_KEY = 'EXAM_MASTER_2026_SECURE_KEY';
 
 /**
@@ -57,9 +58,7 @@ class SecureStorage {
       // XOR 加密：每个字符与派生密钥的对应字节异或
       let encrypted = '';
       for (let i = 0; i < jsonStr.length; i++) {
-        encrypted += String.fromCharCode(
-          jsonStr.charCodeAt(i) ^ dk[i % dk.length]
-        );
+        encrypted += String.fromCharCode(jsonStr.charCodeAt(i) ^ dk[i % dk.length]);
       }
 
       // Base64 编码
@@ -70,7 +69,7 @@ class SecureStorage {
 
       return `${hmac}:${base64}`;
     } catch (e) {
-      console.error('[SecureStorage] 加密失败:', e);
+      logger.error('[SecureStorage] 加密失败:', e);
       return '';
     }
   }
@@ -94,14 +93,12 @@ class SecureStorage {
       const dk = this._derivedKey;
       let jsonStr = '';
       for (let i = 0; i < encrypted.length; i++) {
-        jsonStr += String.fromCharCode(
-          encrypted.charCodeAt(i) ^ dk[i % dk.length]
-        );
+        jsonStr += String.fromCharCode(encrypted.charCodeAt(i) ^ dk[i % dk.length]);
       }
 
       // 验证 HMAC 完整性
       if (this._hmac(jsonStr) !== hmac) {
-        console.warn('[SecureStorage] 数据校验失败，可能被篡改');
+        logger.warn('[SecureStorage] 数据校验失败，可能被篡改');
         return null;
       }
 
@@ -111,7 +108,7 @@ class SecureStorage {
         return jsonStr;
       }
     } catch (e) {
-      console.error('[SecureStorage] 解密失败:', e);
+      logger.error('[SecureStorage] 解密失败:', e);
       return null;
     }
   }
@@ -214,7 +211,7 @@ class SecureStorage {
       const data = encrypt ? this.encrypt(value) : JSON.stringify(value);
       storageService.save(storageKey, data);
     } catch (e) {
-      console.error('[SecureStorage] 存储失败:', e);
+      logger.error('[SecureStorage] 存储失败:', e);
     }
   }
 
@@ -241,7 +238,7 @@ class SecureStorage {
         }
       }
     } catch (e) {
-      console.error('[SecureStorage] 读取失败:', e);
+      logger.error('[SecureStorage] 读取失败:', e);
       return null;
     }
   }
@@ -255,7 +252,7 @@ class SecureStorage {
       const storageKey = this.prefix + key;
       storageService.remove(storageKey);
     } catch (e) {
-      console.error('[SecureStorage] 删除失败:', e);
+      logger.error('[SecureStorage] 删除失败:', e);
     }
   }
 
@@ -273,7 +270,7 @@ class SecureStorage {
         }
       });
     } catch (e) {
-      console.error('[SecureStorage] 清除失败:', e);
+      logger.error('[SecureStorage] 清除失败:', e);
     }
   }
 }

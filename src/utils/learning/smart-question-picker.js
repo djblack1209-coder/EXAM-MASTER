@@ -81,7 +81,7 @@ class SmartQuestionPicker {
     } = options;
 
     if (!questionBank || questionBank.length === 0) {
-      console.warn('[SmartPicker] 题库为空');
+      logger.warn('[SmartPicker] 题库为空');
       return [];
     }
 
@@ -775,7 +775,7 @@ class SmartQuestionPicker {
     try {
       storageService.save(STORAGE_KEYS.USER_PROFILE, this.userProfile);
     } catch (_e) {
-      console.error('[SmartPicker] 保存用户画像失败:', _e);
+      logger.error('[SmartPicker] 保存用户画像失败:', _e);
     }
   }
 
@@ -795,7 +795,7 @@ class SmartQuestionPicker {
       }
       storageService.save(STORAGE_KEYS.QUESTION_HISTORY, this.questionHistory);
     } catch (_e) {
-      console.error('[SmartPicker] 保存答题历史失败:', _e);
+      logger.error('[SmartPicker] 保存答题历史失败:', _e);
     }
   }
 
@@ -811,7 +811,7 @@ class SmartQuestionPicker {
     try {
       storageService.save(STORAGE_KEYS.PERFORMANCE_METRICS, this.performanceMetrics);
     } catch (_e) {
-      console.error('[SmartPicker] 保存性能指标失败:', _e);
+      logger.error('[SmartPicker] 保存性能指标失败:', _e);
     }
   }
 }

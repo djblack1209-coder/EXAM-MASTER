@@ -299,8 +299,7 @@ export default {
       this._loadedOnce = false;
       return;
     }
-    // TEST-10.3: 从其他页面返回时刷新数据
-    logger.log('[TEST-10.3] 📊 排行榜页面显示，准备刷新数据');
+    // 从其他页面返回时刷新数据
     setTimeout(() => {
       this.loadRankData();
     }, 300);
@@ -356,41 +355,19 @@ export default {
 
     // 加载排行榜数据
     async loadRankData() {
-      logger.log('[TEST-9.1] 🏆 开始获取排行榜数据');
       this.loading = true;
       this.empty = false;
 
       try {
         const userId = storageService.get('EXAM_USER_ID', '');
-        logger.log('[TEST-9.1] 📤 发送 API 请求:', {
-          url: '/rank-center',
-          action: 'get',
-          userId: userId || '未登录'
-        });
-
         // 调用 rank-center 云函数获取排行榜数据
         const res = await lafService.rankCenter({
           action: 'get',
           userId: userId
         });
 
-        logger.log('[TEST-9.1] 📥 API 响应:', {
-          code: res?.code,
-          hasData: !!res?.data,
-          dataType: Array.isArray(res?.data) ? 'array' : typeof res?.data,
-          dataLength: Array.isArray(res?.data) ? res.data.length : 0
-        });
-
         // 打印完整的后端返回数据（用于调试）
         if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-          logger.log('[TEST-9.1] 📊 后端返回的原始数据:', JSON.stringify(res.data, null, 2));
-          logger.log('[TEST-9.1] 📊 第一条记录的详细信息:', {
-            _id: res.data[0]?._id,
-            nickName: res.data[0]?.nickName,
-            score: res.data[0]?.score,
-            scoreType: typeof res.data[0]?.score,
-            allFields: Object.keys(res.data[0] || {})
-          });
         }
 
         this.apiData = res;
@@ -401,12 +378,10 @@ export default {
 
           // 数据规范化：处理可能的对象格式 { list: [...], myRank: ... }
           if (!Array.isArray(res.data) && res.data.list && Array.isArray(res.data.list)) {
-            logger.log('[TEST-9.1] 📊 检测到对象格式，提取 list 字段');
             list = res.data.list;
             // 如果后端返回了 myRank，使用它
             if (typeof res.data.myRank === 'number') {
               this.myRank = res.data.myRank;
-              logger.log('[TEST-9.1] ✅ 使用后端返回的 myRank:', this.myRank);
             }
           }
 
@@ -414,13 +389,6 @@ export default {
           list = list.map((item, index) => {
             // 调试：打印原始 item 的 score 值
             if (index === 0) {
-              logger.log('[TEST-9.1] 🔍 数据规范化前，原始 item:', {
-                _id: item._id,
-                nickName: item.nickName,
-                score: item.score,
-                scoreType: typeof item.score,
-                allFields: Object.keys(item)
-              });
             }
 
             const normalizedItem = {
@@ -437,12 +405,6 @@ export default {
 
             // 调试：打印规范化后的 score 值
             if (index === 0) {
-              logger.log('[TEST-9.1] 🔍 数据规范化后，normalizedItem:', {
-                _id: normalizedItem._id,
-                nickName: normalizedItem.nickName,
-                score: normalizedItem.score,
-                scoreType: typeof normalizedItem.score
-              });
             }
 
             return normalizedItem;
@@ -457,14 +419,8 @@ export default {
 
           // 验证排序是否正确
           const isSorted = this.validateSorting(list);
-          logger.log('[TEST-9.1] 📊 排序验证:', {
-            isSorted,
-            top3Scores: list.slice(0, 3).map((item) => item.score),
-            totalCount: list.length
-          });
-
           if (!isSorted) {
-            logger.warn('[TEST-9.1] ⚠️ 数据未正确排序，已重新排序');
+            logger.warn('[PK] 数据未正确排序，已重新排序');
           }
 
           this.list = list;
@@ -495,26 +451,17 @@ export default {
 
           // 处理空状态
           this.empty = list.length === 0;
-
-          logger.log('[TEST-9.1] ✅ 排行榜数据加载成功:', {
-            totalCount: list.length,
-            top3Count: this.rankList.length,
-            otherCount: this.otherRanks.length,
-            myRank: this.myRank,
-            myScore: this.myScore,
-            isEmpty: this.empty
-          });
         } else {
           // 数据获取失败
           this.empty = true;
-          logger.error('[TEST-9.1] ❌ 获取排行榜数据失败:', {
+          logger.error('[PK] 获取排行榜数据失败:', {
             code: res?.code,
             message: res?.message,
             data: res?.data
           });
         }
       } catch (error) {
-        logger.error('[TEST-9.1] ❌ 调用排行榜 API 失败:', error);
+        logger.error('[PK] 调用排行榜 API 失败:', error);
         this.empty = true;
         uni.showToast({
           title: '获取排行榜数据失败',
@@ -522,7 +469,6 @@ export default {
         });
       } finally {
         this.loading = false;
-        logger.log('[TEST-9.1] ✅ 排行榜加载流程结束');
       }
     },
 
@@ -546,25 +492,8 @@ export default {
       const myUserInfo = storageService.get('userInfo', {});
       const myNickName = myUserInfo.nickName || '';
 
-      logger.log('[TEST-9.1] 🔍 开始查找我的记录:', {
-        userId,
-        myNickName,
-        listLength: this.list?.length || 0
-      });
-
       // 优先从排行榜数据中查找我的记录（使用后端返回的真实分数）
       if (this.list && this.list.length > 0) {
-        // 打印所有记录用于调试
-        logger.log(
-          '[TEST-9.1] 🔍 排行榜中的所有记录:',
-          this.list.map((item) => ({
-            _id: item._id,
-            nickName: item.nickName,
-            name: item.name,
-            score: item.score
-          }))
-        );
-
         const myRecord = this.list.find(
           (item) =>
             item._id === userId || item.uid === userId || item.nickName === myNickName || item.name === myNickName
@@ -574,48 +503,23 @@ export default {
           // 如果找到了我的记录，检查后端返回的分数是否有效
           const backendScore = Number(myRecord.score) || 0;
 
-          logger.log('[TEST-9.1] 🔍 找到我的记录:', {
-            _id: myRecord._id,
-            nickName: myRecord.nickName,
-            score: myRecord.score,
-            scoreType: typeof myRecord.score,
-            backendScore,
-            backendScoreType: typeof backendScore,
-            isValidScore: backendScore > 0
-          });
-
           // 如果后端返回的分数有效（> 0），使用后端分数
           // 否则使用本地计算的分数（降级方案）
           if (backendScore > 0) {
             const oldScore = this.myScore; // 记录旧分数用于对比
             this.myScore = backendScore;
             this.myRank = this.list.indexOf(myRecord) + 1;
-            logger.log('[TEST-9.1] ✅ 使用后端返回的分数和排名:', {
-              myScore: this.myScore,
-              myRank: this.myRank,
-              source: 'backend',
-              rawScore: myRecord.score
-            });
-            // TEST-10.3: 验证分数更新
-            logger.log('[TEST-10.3] ✅ 排行榜分数已更新:', {
-              oldScore: oldScore,
-              newScore: this.myScore,
-              scoreIncrement: this.myScore - oldScore,
-              myRank: this.myRank,
-              source: 'backend'
-            });
+            // 验证分数更新
             return; // 使用后端数据，不再计算本地分数
           } else {
-            logger.warn('[TEST-9.1] ⚠️ 后端返回的分数无效（为 0 或不存在），使用本地计算的分数作为降级方案');
+            logger.warn('[PK] 后端返回的分数无效（为 0 或不存在），使用本地计算的分数作为降级方案');
             // 继续执行本地计算
           }
         } else {
-          logger.log('[TEST-9.1] ⚠️ 未在排行榜中找到我的记录');
         }
       }
 
       // 如果没有在排行榜中找到我的记录，或后端分数无效，则计算本地分数
-      logger.log('[TEST-9.1] 📊 使用本地计算的分数（降级方案）');
       this.calculateMyScore();
     },
 
@@ -643,19 +547,9 @@ export default {
         allScores.push(this.myScore);
         allScores.sort((a, b) => b - a);
         this.myRank = allScores.indexOf(this.myScore) + 1;
-        logger.log('[TEST-9.1] 📊 基于本地分数计算排名:', this.myRank);
       } else {
         this.myRank = 999;
       }
-
-      logger.log('[TEST-9.1] 📊 本地计算的分数和排名:', {
-        myScore: this.myScore,
-        myRank: this.myRank,
-        studyDays,
-        totalDone,
-        accuracy: (accuracy * 100).toFixed(1) + '%',
-        source: 'local'
-      });
     },
     navBack() {
       uni.navigateBack();

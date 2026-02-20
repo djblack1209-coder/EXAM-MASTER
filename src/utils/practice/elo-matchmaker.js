@@ -45,7 +45,7 @@ export const eloMatchmaker = {
       const key = userId || 'current_user';
       return eloData[key] || ELO_CONFIG.initialRating;
     } catch (error) {
-      console.error('[ELOMatchmaker] 获取评分失败:', error);
+      logger.error('[ELOMatchmaker] 获取评分失败:', error);
       return ELO_CONFIG.initialRating;
     }
   },
@@ -63,7 +63,7 @@ export const eloMatchmaker = {
       storageService.save(ELO_STORAGE_KEY, eloData);
       logger.log('[ELOMatchmaker] 评分已更新:', eloData[key]);
     } catch (error) {
-      console.error('[ELOMatchmaker] 更新评分失败:', error);
+      logger.error('[ELOMatchmaker] 更新评分失败:', error);
     }
   },
 
@@ -96,11 +96,7 @@ export const eloMatchmaker = {
    * @returns {Promise<Object>} 匹配结果
    */
   async startMatching(options = {}) {
-    const {
-      onProgress,
-      onFound,
-      timeout = ELO_CONFIG.matchTimeout
-    } = options;
+    const { onProgress, onFound, timeout = ELO_CONFIG.matchTimeout } = options;
 
     const userRating = this.getUserRating();
     const startTime = Date.now();
@@ -188,9 +184,21 @@ export const eloMatchmaker = {
   generateBot(userRating) {
     // 机器人名字库
     const botNames = [
-      '考研一哥', '上岸锦鲤', '学霸张', '考研小白', '满分狂魔',
-      '夜猫子', '题海战士', '知识库', '逻辑王', '记忆大师',
-      '刷题达人', '考研先锋', '学习机器', '知识猎手', '考研战神'
+      '考研一哥',
+      '上岸锦鲤',
+      '学霸张',
+      '考研小白',
+      '满分狂魔',
+      '夜猫子',
+      '题海战士',
+      '知识库',
+      '逻辑王',
+      '记忆大师',
+      '刷题达人',
+      '考研先锋',
+      '学习机器',
+      '知识猎手',
+      '考研战神'
     ];
 
     // 根据用户评分生成相近评分的机器人
@@ -326,7 +334,7 @@ export const eloMatchmaker = {
       }
       storageService.save(MATCH_HISTORY_KEY, history);
     } catch (error) {
-      console.error('[ELOMatchmaker] 记录历史失败:', error);
+      logger.error('[ELOMatchmaker] 记录历史失败:', error);
     }
   },
 
@@ -340,7 +348,7 @@ export const eloMatchmaker = {
       const history = storageService.get(MATCH_HISTORY_KEY, []);
       return history.slice(0, limit);
     } catch (error) {
-      console.error('[ELOMatchmaker] 获取历史失败:', error);
+      logger.error('[ELOMatchmaker] 获取历史失败:', error);
       return [];
     }
   },
@@ -364,7 +372,10 @@ export const eloMatchmaker = {
       losses,
       draws,
       winRate: history.length > 0 ? ((wins / history.length) * 100).toFixed(1) + '%' : '0%',
-      recentForm: history.slice(0, 5).map((h) => h.ratingChange > 0 ? 'W' : h.ratingChange < 0 ? 'L' : 'D').join('')
+      recentForm: history
+        .slice(0, 5)
+        .map((h) => (h.ratingChange > 0 ? 'W' : h.ratingChange < 0 ? 'L' : 'D'))
+        .join('')
     };
   },
 
@@ -393,7 +404,7 @@ export const eloMatchmaker = {
     return {
       ...rank,
       rating: r,
-      progress: nextRank ? ((r - rank.min) / (nextRank.min - rank.min) * 100).toFixed(1) : 100,
+      progress: nextRank ? (((r - rank.min) / (nextRank.min - rank.min)) * 100).toFixed(1) : 100,
       pointsToNext: nextRank ? nextRank.min - r : 0
     };
   }

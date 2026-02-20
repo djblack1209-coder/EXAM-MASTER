@@ -166,15 +166,19 @@ class AnalyticsService {
   trackConversion(conversionType, data = {}) {
     const eventName = CONVERSION_EVENTS[conversionType];
     if (!eventName) {
-      console.warn('[Analytics] 未知的转化类型:', conversionType);
+      logger.warn('[Analytics] 未知的转化类型:', conversionType);
       return;
     }
 
     // 转化事件使用高优先级
-    return this.track(eventName, {
-      conversionType,
-      ...data
-    }, EVENT_PRIORITY.HIGH);
+    return this.track(
+      eventName,
+      {
+        conversionType,
+        ...data
+      },
+      EVENT_PRIORITY.HIGH
+    );
   }
 
   /**
@@ -293,7 +297,7 @@ class AnalyticsService {
     // 会话超时时间：30分钟
     const SESSION_TIMEOUT = 30 * 60 * 1000;
 
-    if (session && (now - session.lastActive) < SESSION_TIMEOUT) {
+    if (session && now - session.lastActive < SESSION_TIMEOUT) {
       // 更新最后活跃时间
       session.lastActive = now;
       storageService.save(STORAGE_KEYS.SESSION, session);
@@ -364,7 +368,7 @@ class AnalyticsService {
       const eventsToSave = this.eventQueue.slice(-100);
       storageService.save(STORAGE_KEYS.EVENTS, eventsToSave);
     } catch (e) {
-      console.error('[Analytics] 保存事件队列失败:', e);
+      logger.error('[Analytics] 保存事件队列失败:', e);
     }
   }
 
@@ -376,7 +380,7 @@ class AnalyticsService {
       const savedEvents = storageService.get(STORAGE_KEYS.EVENTS, []);
       this.eventQueue = savedEvents;
     } catch (e) {
-      console.error('[Analytics] 恢复事件队列失败:', e);
+      logger.error('[Analytics] 恢复事件队列失败:', e);
       this.eventQueue = [];
     }
   }
@@ -435,7 +439,7 @@ class AnalyticsService {
         logger.log('[Analytics] 事件上报成功:', events.length, '条');
       }
     } catch (e) {
-      console.error('[Analytics] 事件上报失败:', e);
+      logger.error('[Analytics] 事件上报失败:', e);
       // 失败的事件重新加入队列
       this.eventQueue.unshift(...events);
     }

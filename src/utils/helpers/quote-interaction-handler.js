@@ -13,6 +13,7 @@
 
 import { permissionHandler } from './permission-handler.js';
 import storageService from '@/services/storageService.js';
+import { logger } from '../logger.js';
 
 // 收藏状态存储键
 const STORAGE_KEYS = {
@@ -39,7 +40,7 @@ class QuoteInteractionHandler {
       this.favoriteQuotes = storageService.get(STORAGE_KEYS.FAVORITE_QUOTES, []);
       this.shareCount = storageService.get(STORAGE_KEYS.SHARE_COUNT, 0);
     } catch (e) {
-      console.error('[QuoteHandler] 初始化失败:', e);
+      logger.error('[QuoteHandler] 初始化失败:', e);
     }
   }
 
@@ -212,7 +213,8 @@ class QuoteInteractionHandler {
       if (componentInstance) {
         query = query.in(componentInstance);
       }
-      query.select('#quote-poster-canvas')
+      query
+        .select('#quote-poster-canvas')
         .fields({ node: true, size: true })
         .exec(async (res) => {
           if (!res[0]) {
