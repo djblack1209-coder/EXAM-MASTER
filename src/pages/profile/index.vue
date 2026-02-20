@@ -1376,6 +1376,9 @@ onHide(() => {
   color: #e05a2b;
   font-weight: 600;
 }
+.dark-mode .checkin-streak {
+  color: #ff8a65;
+}
 
 .checkin-subtitle {
   font-size: 24rpx;
@@ -1423,6 +1426,9 @@ onHide(() => {
 .checkin-btn.not-checked .checkin-btn-text {
   color: #1a1a1a;
 }
+.dark-mode .checkin-btn.not-checked .checkin-btn-text {
+  color: #ffffff;
+}
 
 .recovery-info {
   display: flex;
@@ -1458,6 +1464,9 @@ onHide(() => {
   color: #e05a2b;
   font-weight: 500;
 }
+.dark-mode .use-recovery-text {
+  color: #ff8a65;
+}
 
 .missed-tip {
   display: flex;
@@ -1478,6 +1487,9 @@ onHide(() => {
   font-size: 24rpx;
   color: #e05a2b;
   flex: 1;
+}
+.dark-mode .missed-text {
+  color: #ff8a65;
 }
 
 /* 骨架屏淡出过渡 */
