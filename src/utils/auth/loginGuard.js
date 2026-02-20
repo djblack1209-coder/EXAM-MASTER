@@ -142,7 +142,7 @@ function saveCurrentPageForRedirect() {
       logger.log('[LoginGuard] 保存重定向路径:', fullPath);
     }
   } catch (e) {
-    console.error('[LoginGuard] 保存重定向路径失败:', e);
+    logger.error('[LoginGuard] 保存重定向路径失败:', e);
   }
 }
 
@@ -241,7 +241,7 @@ export function redirectAfterLogin() {
     uni.redirectTo({
       url: redirectUrl,
       fail: (err) => {
-        console.error('[LoginGuard] 重定向失败:', err);
+        logger.error('[LoginGuard] 重定向失败:', err);
         // 如果重定向失败，跳转到首页
         uni.switchTab({
           url: '/pages/index/index'

@@ -150,7 +150,7 @@ class NetworkMonitor {
         logger.log(`[NetworkMonitor] 当前网络: ${this.status.networkType} (${this.status.quality})`);
       },
       fail: (err) => {
-        console.error('[NetworkMonitor] 获取网络状态失败:', err);
+        logger.error('[NetworkMonitor] 获取网络状态失败:', err);
       }
     });
   }
@@ -365,7 +365,7 @@ class NetworkMonitor {
         }
       }
     } catch (error) {
-      console.warn('[NetworkMonitor] Ping 失败:', error);
+      logger.warn('[NetworkMonitor] Ping 失败:', error);
       this.status.signalStrength = 0;
     }
   }
@@ -381,7 +381,7 @@ class NetworkMonitor {
         try {
           callback(data);
         } catch (error) {
-          console.error(`[NetworkMonitor] 事件处理错误 (${event}):`, error);
+          logger.error(`[NetworkMonitor] 事件处理错误 (${event}):`, error);
         }
       });
     }
@@ -398,7 +398,7 @@ class NetworkMonitor {
       this.listeners[event].add(callback);
       return () => this.listeners[event].delete(callback);
     }
-    console.warn(`[NetworkMonitor] 未知事件: ${event}`);
+    logger.warn(`[NetworkMonitor] 未知事件: ${event}`);
     return () => {
       /* noop */
     };

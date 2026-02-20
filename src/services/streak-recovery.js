@@ -104,7 +104,7 @@ class StreakRecoveryService {
         monthlyFree: this.monthlyFreeRecovery.value
       });
     } catch (error) {
-      console.error('[StreakRecovery] Init error:', error);
+      logger.error('[StreakRecovery] Init error:', error);
     }
   }
 
@@ -258,7 +258,7 @@ class StreakRecoveryService {
         }
       };
     } catch (error) {
-      console.error('[StreakRecovery] Recover error:', error);
+      logger.error('[StreakRecovery] Recover error:', error);
       return {
         success: false,
         message: error.message || '补签失败'
@@ -361,7 +361,7 @@ class StreakRecoveryService {
    */
   addCard(cardType, count = 1, source = CARD_SOURCES.PURCHASE) {
     if (!RECOVERY_CARD_CONFIG[cardType]) {
-      console.error('[StreakRecovery] Invalid card type:', cardType);
+      logger.error('[StreakRecovery] Invalid card type:', cardType);
       return false;
     }
 
@@ -518,7 +518,7 @@ class StreakRecoveryService {
         this.todayRecoveryCount.value = data.todayCount || 0;
       }
     } catch (error) {
-      console.error('[StreakRecovery] Load error:', error);
+      logger.error('[StreakRecovery] Load error:', error);
       // 损坏数据清理，防止每次启动重复失败
       try {
         const key = `recovery_${this.userId}`;
@@ -542,7 +542,7 @@ class StreakRecoveryService {
         todayCount: this.todayRecoveryCount.value
       });
     } catch (error) {
-      console.error('[StreakRecovery] Save error:', error);
+      logger.error('[StreakRecovery] Save error:', error);
     }
   }
 
@@ -575,7 +575,7 @@ class StreakRecoveryService {
         try {
           cb(data);
         } catch (e) {
-          console.error(`[StreakRecovery] Event handler error:`, e);
+          logger.error(`[StreakRecovery] Event handler error:`, e);
         }
       });
     }

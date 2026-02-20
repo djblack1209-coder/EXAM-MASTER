@@ -35,7 +35,7 @@ class BubbleInteraction {
       this.clickHistory = storageService.get(STORAGE_KEYS.CLICK_HISTORY, []);
       this.interactionStats = storageService.get(STORAGE_KEYS.INTERACTION_STATS, {});
     } catch (e) {
-      console.error('[BubbleInteraction] 初始化失败:', e);
+      logger.error('[BubbleInteraction] 初始化失败:', e);
     }
   }
 
@@ -300,7 +300,7 @@ class BubbleInteraction {
       storageService.save(STORAGE_KEYS.CLICK_HISTORY, this.clickHistory);
       storageService.save(STORAGE_KEYS.INTERACTION_STATS, this.interactionStats);
     } catch (e) {
-      console.error('[BubbleInteraction] 保存失败:', e);
+      logger.error('[BubbleInteraction] 保存失败:', e);
     }
   }
 

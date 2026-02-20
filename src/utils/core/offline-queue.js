@@ -98,7 +98,7 @@ class OfflineQueue {
         }
       }
     } catch (error) {
-      console.error('[OfflineQueue] 加载队列失败:', error);
+      logger.error('[OfflineQueue] 加载队列失败:', error);
       this.queue = [];
     }
   }
@@ -122,7 +122,7 @@ class OfflineQueue {
 
       storageService.save(STORAGE_KEY, serializable);
     } catch (error) {
-      console.error('[OfflineQueue] 保存队列失败:', error);
+      logger.error('[OfflineQueue] 保存队列失败:', error);
     }
   }
 
@@ -170,7 +170,7 @@ class OfflineQueue {
       try {
         listener(event);
       } catch (error) {
-        console.error('[OfflineQueue] 监听器执行错误:', error);
+        logger.error('[OfflineQueue] 监听器执行错误:', error);
       }
     });
   }
@@ -205,7 +205,7 @@ class OfflineQueue {
         const removed = this.queue.splice(lowPriorityIndex, 1)[0];
         logger.log(`[OfflineQueue] 队列已满，移除旧请求: ${removed.id}`);
       } else {
-        console.warn('[OfflineQueue] 队列已满，无法添加新请求');
+        logger.warn('[OfflineQueue] 队列已满，无法添加新请求');
         return null;
       }
     }
@@ -370,7 +370,7 @@ class OfflineQueue {
 
         logger.log(`[OfflineQueue] ✅ 请求成功: ${item.id}`);
       } catch (error) {
-        console.error(`[OfflineQueue] ❌ 请求失败: ${item.id}`, error);
+        logger.error(`[OfflineQueue] ❌ 请求失败: ${item.id}`, error);
 
         item.retryCount++;
         results.errors.push({

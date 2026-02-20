@@ -8,9 +8,10 @@
  * @param {Number} delay - 延迟时间（毫秒）
  */
 import storageService from '@/services/storageService.js';
+import { logger } from '../logger.js';
 export const debounce = (fn, delay = 300) => {
   let timer = null;
-  return function(...args) {
+  return function (...args) {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
       fn.apply(this, args);
@@ -25,7 +26,7 @@ export const debounce = (fn, delay = 300) => {
  */
 export const throttle = (fn, interval = 300) => {
   let last = 0;
-  return function(...args) {
+  return function (...args) {
     const now = Date.now();
     if (now - last >= interval) {
       last = now;
@@ -113,7 +114,7 @@ export const setStorage = (key, value) => {
     storageService.save(key, value);
     return true;
   } catch (error) {
-    console.error('存储失败：', error);
+    logger.error('存储失败：', error);
     return false;
   }
 };
@@ -126,7 +127,7 @@ export const getStorage = (key) => {
   try {
     return storageService.get(key);
   } catch (error) {
-    console.error('读取失败：', error);
+    logger.error('读取失败：', error);
     return null;
   }
 };
@@ -140,7 +141,7 @@ export const removeStorage = (key) => {
     storageService.remove(key);
     return true;
   } catch (error) {
-    console.error('删除失败：', error);
+    logger.error('删除失败：', error);
     return false;
   }
 };

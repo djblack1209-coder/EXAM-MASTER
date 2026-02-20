@@ -50,7 +50,7 @@ export function detectUnfinishedPractice() {
       // storageService.get 可能返回对象或字符串，兼容两种情况
       progress = typeof progressStr === 'string' ? JSON.parse(progressStr) : progressStr;
     } catch (parseError) {
-      console.error('[DraftDetector] JSON解析失败，清除无效草稿:', parseError);
+      logger.error('[DraftDetector] JSON解析失败，清除无效草稿:', parseError);
       clearDraft('quiz');
       return null;
     }
@@ -116,7 +116,7 @@ export function detectUnfinishedPractice() {
     logger.log('[DraftDetector] 检测到未完成的练习:', draftInfo);
     return draftInfo;
   } catch (error) {
-    console.error('[DraftDetector] 检测草稿失败:', error);
+    logger.error('[DraftDetector] 检测草稿失败:', error);
     return null;
   }
 }
@@ -135,7 +135,7 @@ export function detectUnfinishedPK() {
       // [AUDIT FIX] storageService.get 可能返回已解析的对象，兼容两种情况
       draft = typeof draftStr === 'string' ? JSON.parse(draftStr) : draftStr;
     } catch (parseError) {
-      console.error('[DraftDetector] PK草稿JSON解析失败，清除无效数据:', parseError);
+      logger.error('[DraftDetector] PK草稿JSON解析失败，清除无效数据:', parseError);
       clearDraft('pk');
       return null;
     }
@@ -153,7 +153,7 @@ export function detectUnfinishedPK() {
       ...draft
     };
   } catch (error) {
-    console.error('[DraftDetector] 检测PK草稿失败:', error);
+    logger.error('[DraftDetector] 检测PK草稿失败:', error);
     return null;
   }
 }
@@ -172,7 +172,7 @@ export function detectUnfinishedImport() {
       // [AUDIT FIX] storageService.get 可能返回已解析的对象，兼容两种情况
       draft = typeof draftStr === 'string' ? JSON.parse(draftStr) : draftStr;
     } catch (parseError) {
-      console.error('[DraftDetector] 导入草稿JSON解析失败，清除无效数据:', parseError);
+      logger.error('[DraftDetector] 导入草稿JSON解析失败，清除无效数据:', parseError);
       clearDraft('import');
       return null;
     }
@@ -193,7 +193,7 @@ export function detectUnfinishedImport() {
       ...draft
     };
   } catch (error) {
-    console.error('[DraftDetector] 检测导入草稿失败:', error);
+    logger.error('[DraftDetector] 检测导入草稿失败:', error);
     return null;
   }
 }
@@ -235,7 +235,7 @@ export function clearDraft(type = 'all') {
     }
     logger.log('[DraftDetector] 已清除草稿:', type);
   } catch (error) {
-    console.error('[DraftDetector] 清除草稿失败:', error);
+    logger.error('[DraftDetector] 清除草稿失败:', error);
   }
 }
 
@@ -252,7 +252,7 @@ export function savePKDraft(data) {
     storageService.save(DRAFT_KEYS.PK_DRAFT, JSON.stringify(draft));
     logger.log('[DraftDetector] PK草稿已保存');
   } catch (error) {
-    console.error('[DraftDetector] 保存PK草稿失败:', error);
+    logger.error('[DraftDetector] 保存PK草稿失败:', error);
   }
 }
 
@@ -269,7 +269,7 @@ export function saveImportDraft(data) {
     storageService.save(DRAFT_KEYS.IMPORT_DRAFT, JSON.stringify(draft));
     logger.log('[DraftDetector] 导入草稿已保存');
   } catch (error) {
-    console.error('[DraftDetector] 保存导入草稿失败:', error);
+    logger.error('[DraftDetector] 保存导入草稿失败:', error);
   }
 }
 

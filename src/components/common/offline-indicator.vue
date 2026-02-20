@@ -8,15 +8,9 @@
     <!-- 简洁模式 -->
     <view class="offline-indicator__compact">
       <view class="offline-indicator__icon">
-        <text v-if="isOffline" class="icon-offline">
-          📴
-        </text>
-        <text v-else-if="isWeakNetwork" class="icon-weak">
-          ⚠️
-        </text>
-        <text v-else class="icon-syncing">
-          🔄
-        </text>
+        <text v-if="isOffline" class="icon-offline"> 📴 </text>
+        <text v-else-if="isWeakNetwork" class="icon-weak"> ⚠️ </text>
+        <text v-else class="icon-syncing"> 🔄 </text>
       </view>
       <text class="offline-indicator__text">
         {{ statusText }}
@@ -29,44 +23,29 @@
     <!-- 展开详情 -->
     <view v-if="expanded" class="offline-indicator__details">
       <view class="offline-indicator__detail-item">
-        <text class="detail-label">
-          网络类型
-        </text>
+        <text class="detail-label"> 网络类型 </text>
         <text class="detail-value">
           {{ networkTypeText }}
         </text>
       </view>
 
       <view class="offline-indicator__detail-item">
-        <text class="detail-label">
-          网络质量
-        </text>
+        <text class="detail-label"> 网络质量 </text>
         <view class="detail-value quality-indicator">
-          <view
-            v-for="i in 4"
-            :key="i"
-            class="quality-bar"
-            :class="{ 'quality-bar--active': i <= qualityLevel }"
-          />
+          <view v-for="i in 4" :key="i" class="quality-bar" :class="{ 'quality-bar--active': i <= qualityLevel }" />
         </view>
       </view>
 
       <view v-if="isOffline" class="offline-indicator__detail-item">
-        <text class="detail-label">
-          离线时长
-        </text>
+        <text class="detail-label"> 离线时长 </text>
         <text class="detail-value">
           {{ offlineDurationText }}
         </text>
       </view>
 
       <view v-if="pendingCount > 0" class="offline-indicator__detail-item">
-        <text class="detail-label">
-          待同步
-        </text>
-        <text class="detail-value">
-          {{ pendingCount }} 条数据
-        </text>
+        <text class="detail-label"> 待同步 </text>
+        <text class="detail-value"> {{ pendingCount }} 条数据 </text>
       </view>
 
       <!-- 操作按钮 -->
@@ -80,18 +59,14 @@
           {{ isSyncing ? '同步中...' : '立即同步' }}
         </button>
 
-        <button
-          class="action-btn action-btn--dismiss"
-          @click.stop="handleDismiss"
-        >
-          暂时忽略
-        </button>
+        <button class="action-btn action-btn--dismiss" @click.stop="handleDismiss">暂时忽略</button>
       </view>
     </view>
   </view>
 </template>
 
 <script>
+import { logger } from '@/utils/logger.js';
 import { networkMonitor, NETWORK_QUALITY } from '@/utils/core/network-monitor.js';
 import { offlineQueue } from '@/utils/core/offline-queue.js';
 
@@ -345,7 +320,7 @@ export default {
           });
         }
       } catch (error) {
-        console.error('[OfflineIndicator] 同步失败:', error);
+        logger.error('[OfflineIndicator] 同步失败:', error);
         uni.showToast({
           title: '同步失败，请稍后重试',
           icon: 'none'
@@ -361,9 +336,12 @@ export default {
       this.expanded = false;
 
       // 5分钟后重新检查
-      setTimeout(() => {
-        this._updateVisibility();
-      }, 5 * 60 * 1000);
+      setTimeout(
+        () => {
+          this._updateVisibility();
+        },
+        5 * 60 * 1000
+      );
     },
 
     // 公开方法：手动显示
@@ -512,10 +490,18 @@ export default {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 4rpx;
 
-  &:nth-child(1) { height: 12rpx; }
-  &:nth-child(2) { height: 18rpx; }
-  &:nth-child(3) { height: 24rpx; }
-  &:nth-child(4) { height: 30rpx; }
+  &:nth-child(1) {
+    height: 12rpx;
+  }
+  &:nth-child(2) {
+    height: 18rpx;
+  }
+  &:nth-child(3) {
+    height: 24rpx;
+  }
+  &:nth-child(4) {
+    height: 30rpx;
+  }
 
   &--active {
     background: #fff;
@@ -524,8 +510,13 @@ export default {
 
 // 动画
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .offline-indicator--syncing .icon-syncing {

@@ -113,7 +113,7 @@ class OnboardingFlow {
       this.isInitialized = true;
       logger.log('[OnboardingFlow] 初始化完成，当前步骤:', this.currentStep);
     } catch (e) {
-      console.error('[OnboardingFlow] 初始化失败:', e);
+      logger.error('[OnboardingFlow] 初始化失败:', e);
     }
   }
 
@@ -223,9 +223,7 @@ class OnboardingFlow {
   getProgress() {
     this.init();
     const totalSteps = ONBOARDING_CONFIG.stepOrder.length - 1; // 不包括 COMPLETED
-    const completedCount = this.completedSteps.filter(
-      (s) => s !== ONBOARDING_STEPS.COMPLETED
-    ).length;
+    const completedCount = this.completedSteps.filter((s) => s !== ONBOARDING_STEPS.COMPLETED).length;
     return Math.round((completedCount / totalSteps) * 100);
   }
 

@@ -7,6 +7,8 @@
  * @module utils/response-validator
  */
 
+import { logger } from './logger.js';
+
 /**
  * 验证值是否符合预期类型
  * @param {*} value - 待验证值
@@ -80,7 +82,7 @@ export function validateResponse(data, schema, context = '') {
   }
 
   if (errors.length > 0) {
-    console.warn('[ResponseValidator]', errors.join('; '));
+    logger.warn('[ResponseValidator]', errors.join('; '));
   }
 
   return {

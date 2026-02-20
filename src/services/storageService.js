@@ -79,7 +79,7 @@ class StorageService {
       uni.setStorageSync(key, value);
       return true;
     } catch (error) {
-      console.error(`[StorageService] 保存失败: ${key}`, error);
+      logger.error(`[StorageService] 保存失败: ${key}`, error);
       if (!silent) {
         uni.showToast({
           title: '保存失败，请检查存储空间',
@@ -152,7 +152,7 @@ class StorageService {
       }
       return value;
     } catch (error) {
-      console.error(`[StorageService] 读取失败: ${key}`, error);
+      logger.error(`[StorageService] 读取失败: ${key}`, error);
       return defaultValue;
     }
   }
@@ -176,7 +176,7 @@ class StorageService {
       }
       return true;
     } catch (error) {
-      console.error(`[StorageService] 删除失败: ${key}`, error);
+      logger.error(`[StorageService] 删除失败: ${key}`, error);
       if (!silent) {
         uni.showToast({
           title: '删除失败',
@@ -198,7 +198,7 @@ class StorageService {
       uni.clearStorageSync();
       return true;
     } catch (error) {
-      console.error('[StorageService] 清空存储失败', error);
+      logger.error('[StorageService] 清空存储失败', error);
       if (!silent) {
         uni.showToast({
           title: '清空失败',
@@ -225,7 +225,7 @@ class StorageService {
       const value = uni.getStorageSync(key);
       return value !== '' && value !== null && value !== undefined;
     } catch (error) {
-      console.error(`[StorageService] 检查失败: ${key}`, error);
+      logger.error(`[StorageService] 检查失败: ${key}`, error);
       return false;
     }
   }
@@ -238,7 +238,7 @@ class StorageService {
     try {
       return uni.getStorageInfoSync().keys || [];
     } catch (error) {
-      console.error('[StorageService] 获取所有键名失败', error);
+      logger.error('[StorageService] 获取所有键名失败', error);
       return [];
     }
   }
@@ -251,7 +251,7 @@ class StorageService {
     try {
       return uni.getStorageInfoSync();
     } catch (error) {
-      console.error('[StorageService] 获取存储信息失败', error);
+      logger.error('[StorageService] 获取存储信息失败', error);
       return { keys: [], currentSize: 0, limitSize: 0 };
     }
   }
@@ -269,7 +269,7 @@ class StorageService {
       });
       return true;
     } catch (error) {
-      console.error('[StorageService] 批量保存失败', error);
+      logger.error('[StorageService] 批量保存失败', error);
       if (!silent) {
         uni.showToast({
           title: '批量保存失败',
@@ -345,7 +345,7 @@ class StorageService {
 
       return stats;
     } catch (error) {
-      console.error('[StorageService] 获取同步状态失败:', error);
+      logger.error('[StorageService] 获取同步状态失败:', error);
       return { total: 0, synced: 0, pending: 0, localOnly: 0, conflict: 0, lastSyncTime: null };
     }
   }
@@ -389,7 +389,7 @@ class StorageService {
           cloudMistake = res.data.find((m) => m._id === mistakeId || m.id === mistakeId);
         }
       } catch (e) {
-        console.warn('[StorageService] 获取云端冲突数据失败:', e);
+        logger.warn('[StorageService] 获取云端冲突数据失败:', e);
       }
 
       let resolvedData = null;
@@ -407,7 +407,7 @@ class StorageService {
               data: { id: mistakeId, is_mastered: localMistake.is_mastered }
             });
           } catch (e) {
-            console.warn('[StorageService] 上传本地冲突数据失败:', e);
+            logger.warn('[StorageService] 上传本地冲突数据失败:', e);
           }
           break;
 
@@ -459,7 +459,7 @@ class StorageService {
               data: { id: mistakeId, is_mastered: resolvedData.is_mastered }
             });
           } catch (e) {
-            console.warn('[StorageService] 合并上传失败:', e);
+            logger.warn('[StorageService] 合并上传失败:', e);
           }
           break;
       }
@@ -477,7 +477,7 @@ class StorageService {
       logger.log(`[StorageService] 冲突已解决: ${mistakeId}, 策略: ${strategy}`);
       return { success: true, strategy, data: resolvedData };
     } catch (error) {
-      console.error('[StorageService] 解决冲突失败:', error);
+      logger.error('[StorageService] 解决冲突失败:', error);
       return { success: false, error: error.message };
     }
   }
@@ -518,7 +518,7 @@ class StorageService {
   async addMistake(data) {
     const userId = getUserId();
     if (!userId) {
-      console.warn('[StorageService] 用户未登录，降级到本地存储');
+      logger.warn('[StorageService] 用户未登录，降级到本地存储');
       return this._saveMistakeLocal(data, 'local_only');
     }
 
@@ -557,11 +557,11 @@ class StorageService {
           source: 'cloud'
         };
       } else {
-        console.warn('[StorageService] ⚠️ 云端保存返回格式异常，降级到本地:', res);
+        logger.warn('[StorageService] ⚠️ 云端保存返回格式异常，降级到本地:', res);
         return this._saveMistakeLocal(data, 'pending');
       }
     } catch (error) {
-      console.warn('[StorageService] ⚠️ 云端保存异常，降级到本地存储:', error);
+      logger.warn('[StorageService] ⚠️ 云端保存异常，降级到本地存储:', error);
       const localResult = this._saveMistakeLocal(data, 'pending');
       if (localResult.success) {
         logger.log('[StorageService] ✅ 已降级到本地保存，sync_status: pending');
@@ -602,7 +602,7 @@ class StorageService {
         sync_status: syncStatus
       };
     } catch (error) {
-      console.error('[StorageService] 本地保存错题失败:', error);
+      logger.error('[StorageService] 本地保存错题失败:', error);
       return {
         success: false,
         error: error.message
@@ -620,7 +620,7 @@ class StorageService {
   async getMistakes(page = 1, limit = 20, filters = {}) {
     const userId = getUserId();
     if (!userId) {
-      console.warn('[StorageService] 用户未登录，使用本地存储');
+      logger.warn('[StorageService] 用户未登录，使用本地存储');
       return this._getMistakesLocal(page, limit, filters);
     }
 
@@ -699,7 +699,7 @@ class StorageService {
         source: 'cloud'
       };
     } catch (error) {
-      console.warn('[StorageService] Laf 获取异常，降级到本地:', error);
+      logger.warn('[StorageService] Laf 获取异常，降级到本地:', error);
       return this._getMistakesLocal(page, limit, filters);
     }
   }
@@ -738,7 +738,7 @@ class StorageService {
         source: 'local'
       };
     } catch (error) {
-      console.error('[StorageService] 本地获取错题失败:', error);
+      logger.error('[StorageService] 本地获取错题失败:', error);
       return {
         list: [],
         total: 0,
@@ -762,7 +762,7 @@ class StorageService {
 
     const userId = getUserId();
     if (!userId) {
-      console.warn('[StorageService] 用户未登录，仅删除本地');
+      logger.warn('[StorageService] 用户未登录，仅删除本地');
       return this._removeMistakeLocal(id);
     }
 
@@ -792,12 +792,12 @@ class StorageService {
         return { success: true, source: 'cloud' };
       } else {
         // 云端删除失败，尝试本地删除
-        console.warn('[StorageService] Laf 删除失败，尝试本地删除:', res.message || res);
+        logger.warn('[StorageService] Laf 删除失败，尝试本地删除:', res.message || res);
         return this._removeMistakeLocal(id);
       }
     } catch (error) {
       // 网络错误，尝试本地删除
-      console.warn('[StorageService] Laf 删除异常，尝试本地删除:', error);
+      logger.warn('[StorageService] Laf 删除异常，尝试本地删除:', error);
       return this._removeMistakeLocal(id);
     }
   }
@@ -817,11 +817,11 @@ class StorageService {
         logger.log(`[StorageService] ✅ 本地删除成功: ${id}, 剩余 ${localMistakes.length} 条`);
         return { success: true, source: 'local' };
       } else {
-        console.warn(`[StorageService] ⚠️ 本地缓存中未找到错题: ${id}`);
+        logger.warn(`[StorageService] ⚠️ 本地缓存中未找到错题: ${id}`);
         return { success: false, error: '错题不存在' };
       }
     } catch (error) {
-      console.error('[StorageService] 本地删除错题失败:', error);
+      logger.error('[StorageService] 本地删除错题失败:', error);
       return { success: false, error: error.message };
     }
   }
@@ -834,13 +834,13 @@ class StorageService {
    */
   async updateMistakeStatus(id, is_mastered) {
     if (!id) {
-      console.warn('[StorageService] ⚠️ 更新错题状态失败：错题ID不能为空');
+      logger.warn('[StorageService] ⚠️ 更新错题状态失败：错题ID不能为空');
       return { success: false, error: '错题ID不能为空' };
     }
 
     const userId = getUserId();
     if (!userId) {
-      console.warn('[StorageService] ⚠️ 用户未登录，仅更新本地状态');
+      logger.warn('[StorageService] ⚠️ 用户未登录，仅更新本地状态');
       return this._updateMistakeStatusLocal(id, is_mastered);
     }
 
@@ -874,12 +874,12 @@ class StorageService {
         return { success: true, source: 'cloud' };
       } else {
         // 云端更新失败，尝试本地更新
-        console.warn(`[StorageService] ⚠️ 云端更新失败（返回格式异常），降级到本地更新 - ID: ${id}`, res);
+        logger.warn(`[StorageService] ⚠️ 云端更新失败（返回格式异常），降级到本地更新 - ID: ${id}`, res);
         return this._updateMistakeStatusLocal(id, is_mastered);
       }
     } catch (error) {
       // 网络错误，尝试本地更新
-      console.warn(`[StorageService] ⚠️ 云端更新异常（网络错误），降级到本地更新 - ID: ${id}`, error);
+      logger.warn(`[StorageService] ⚠️ 云端更新异常（网络错误），降级到本地更新 - ID: ${id}`, error);
       return this._updateMistakeStatusLocal(id, is_mastered);
     }
   }
@@ -904,11 +904,11 @@ class StorageService {
         );
         return { success: true, source: 'local' };
       } else {
-        console.warn(`[StorageService] ⚠️ 本地缓存中未找到错题 - ID: ${id}`);
+        logger.warn(`[StorageService] ⚠️ 本地缓存中未找到错题 - ID: ${id}`);
         return { success: false, error: '错题不存在' };
       }
     } catch (error) {
-      console.error('[StorageService] ❌ 本地更新错题状态失败:', error);
+      logger.error('[StorageService] ❌ 本地更新错题状态失败:', error);
       return { success: false, error: error.message };
     }
   }
@@ -920,7 +920,7 @@ class StorageService {
   async syncPendingMistakes() {
     const userId = getUserId();
     if (!userId) {
-      console.warn('[StorageService] 用户未登录，无法同步待同步错题');
+      logger.warn('[StorageService] 用户未登录，无法同步待同步错题');
       return { success: false, error: '用户未登录' };
     }
 
@@ -1021,7 +1021,7 @@ class StorageService {
               failed++;
             }
           } catch (error) {
-            console.error(`[StorageService] ❌ 同步错题异常: ${mistake.id || mistake._id}`, error);
+            logger.error(`[StorageService] ❌ 同步错题异常: ${mistake.id || mistake._id}`, error);
             failed++;
           }
         }
@@ -1049,13 +1049,13 @@ class StorageService {
           logger.log(`[StorageService] 自动解决冲突: ${conflictResult.resolved} 条`);
           result.autoResolved = conflictResult.resolved;
         } catch (e) {
-          console.warn('[StorageService] 自动解决冲突失败:', e);
+          logger.warn('[StorageService] 自动解决冲突失败:', e);
         }
       }
 
       return result;
     } catch (error) {
-      console.error('[StorageService] ❌ 同步待同步错题失败:', error);
+      logger.error('[StorageService] ❌ 同步待同步错题失败:', error);
       return {
         success: false,
         synced: 0,

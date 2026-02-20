@@ -57,7 +57,7 @@ export const todoStorePatch = {
   updateTodo(store, todo) {
     const index = store.tasks.findIndex((t) => t.id === todo.id);
     if (index === -1) {
-      console.warn('[TodoStorePatch] 待办不存在:', todo.id);
+      logger.warn('[TodoStorePatch] 待办不存在:', todo.id);
       return null;
     }
 
@@ -92,7 +92,7 @@ export const todoStorePatch = {
   deleteTodo(store, todoId) {
     const index = store.tasks.findIndex((t) => t.id === todoId);
     if (index === -1) {
-      console.warn('[TodoStorePatch] 待办不存在:', todoId);
+      logger.warn('[TodoStorePatch] 待办不存在:', todoId);
       return false;
     }
 
@@ -114,7 +114,7 @@ export const todoStorePatch = {
   toggleTodo(store, todoId) {
     const task = store.tasks.find((t) => t.id === todoId);
     if (!task) {
-      console.warn('[TodoStorePatch] 待办不存在:', todoId);
+      logger.warn('[TodoStorePatch] 待办不存在:', todoId);
       return false;
     }
 
@@ -166,9 +166,7 @@ export const todoStorePatch = {
    * @param {Object} store - Pinia store 实例
    */
   clearCompleted(store) {
-    const completedIds = store.tasks
-      .filter((t) => t.done)
-      .map((t) => t.id);
+    const completedIds = store.tasks.filter((t) => t.done).map((t) => t.id);
 
     store.tasks = store.tasks.filter((t) => !t.done);
     this.saveTasks(store.tasks);
@@ -209,7 +207,7 @@ export const todoStorePatch = {
     try {
       storageService.save(STORAGE_KEY, tasks);
     } catch (e) {
-      console.error('[TodoStorePatch] 保存失败:', e);
+      logger.error('[TodoStorePatch] 保存失败:', e);
     }
   },
 
@@ -220,7 +218,7 @@ export const todoStorePatch = {
     try {
       return storageService.get(STORAGE_KEY, []);
     } catch (e) {
-      console.error('[TodoStorePatch] 加载失败:', e);
+      logger.error('[TodoStorePatch] 加载失败:', e);
       return [];
     }
   },
@@ -235,13 +233,7 @@ export const todoStorePatch = {
     // 解析提醒时间
     const [hours, minutes] = todo.reminderTime.split(':').map(Number);
     const now = new Date();
-    const reminderDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      hours,
-      minutes
-    );
+    const reminderDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
 
     // 如果时间已过，设置为明天
     if (reminderDate <= now) {
@@ -298,9 +290,12 @@ export const todoStorePatch = {
           uni.$emit('todo:complete', todo.id);
         } else {
           // 延后提醒（15分钟后）
-          setTimeout(() => {
-            this.showReminder(todo);
-          }, 15 * 60 * 1000);
+          setTimeout(
+            () => {
+              this.showReminder(todo);
+            },
+            15 * 60 * 1000
+          );
         }
       }
     });
@@ -344,7 +339,7 @@ export const todoStorePatch = {
       logger.log('[TodoStorePatch] 导入待办:', newTasks.length);
       return newTasks.length;
     } catch (e) {
-      console.error('[TodoStorePatch] 导入失败:', e);
+      logger.error('[TodoStorePatch] 导入失败:', e);
       return -1;
     }
   }

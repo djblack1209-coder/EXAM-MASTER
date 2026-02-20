@@ -12,6 +12,8 @@
  * 小程序环境使用 study-timer-composable.js 的内置逻辑
  */
 
+import { logger } from '../logger.js';
+
 // Worker 消息类型
 const MESSAGE_TYPES = {
   START: 'start',
@@ -200,10 +202,7 @@ function handleReconnect(savedState) {
     type: MESSAGE_TYPES.RECONNECT,
     state: getState(),
     compensation: savedState.lastTickTime
-      ? Math.min(
-        Math.floor((now - savedState.lastTickTime) / 60000),
-        CONFIG.MAX_OFFLINE_COMPENSATION
-      )
+      ? Math.min(Math.floor((now - savedState.lastTickTime) / 60000), CONFIG.MAX_OFFLINE_COMPENSATION)
       : 0
   });
 }
@@ -242,7 +241,7 @@ function setState(newState) {
 }
 
 // 监听主线程消息
-self.onmessage = function(event) {
+self.onmessage = function (event) {
   const { type, data } = event.data;
 
   switch (type) {
@@ -274,7 +273,7 @@ self.onmessage = function(event) {
       break;
 
     default:
-      // [PROD-SAFE] console.warn('[TimerWorker] 未知消息类型:', type);
+    // [PROD-SAFE] logger.warn('[TimerWorker] 未知消息类型:', type);
   }
 };
 

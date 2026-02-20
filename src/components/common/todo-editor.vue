@@ -1,11 +1,7 @@
 <!-- 待办事项编辑器组件：底部弹出编辑、新增/编辑/删除、优先级选择 -->
 <template>
   <view v-if="visible" class="todo-editor-mask" @tap="handleClose">
-    <view
-      class="todo-editor-content"
-      :class="{ 'editor-dark': isDark }"
-      @tap.stop
-    >
+    <view class="todo-editor-content" :class="{ 'editor-dark': isDark }" @tap.stop>
       <!-- 拖拽指示条 -->
       <view class="drag-indicator" />
 
@@ -16,14 +12,10 @@
         </text>
         <view class="header-actions">
           <view v-if="isEdit" class="delete-btn" @tap="handleDelete">
-            <text class="delete-icon">
-              🗑️
-            </text>
+            <text class="delete-icon"> 🗑️ </text>
           </view>
           <view class="close-btn" @tap="handleClose">
-            <text class="close-icon">
-              ×
-            </text>
+            <text class="close-icon"> × </text>
           </view>
         </view>
       </view>
@@ -43,18 +35,14 @@
             @confirm="handleSave"
           />
           <view v-if="todoText" class="clear-btn" @tap="todoText = ''">
-            <text class="clear-icon">
-              ×
-            </text>
+            <text class="clear-icon"> × </text>
           </view>
         </view>
       </view>
 
       <!-- 优先级选择 -->
       <view class="priority-section">
-        <text class="section-label">
-          优先级
-        </text>
+        <text class="section-label"> 优先级 </text>
         <view class="priority-options">
           <view
             v-for="item in priorityOptions"
@@ -73,16 +61,12 @@
 
       <!-- 提醒时间（可选） -->
       <view class="reminder-section">
-        <text class="section-label">
-          提醒时间
-        </text>
+        <text class="section-label"> 提醒时间 </text>
         <view class="reminder-picker" @tap="showTimePicker">
           <text class="reminder-text">
             {{ reminderText }}
           </text>
-          <text class="reminder-arrow">
-            ›
-          </text>
+          <text class="reminder-arrow"> › </text>
         </view>
       </view>
 
@@ -97,21 +81,15 @@
           </text>
         </view>
         <view class="action-item" @tap="handleDuplicate">
-          <text class="action-icon">
-            📋
-          </text>
-          <text class="action-text">
-            复制待办
-          </text>
+          <text class="action-icon"> 📋 </text>
+          <text class="action-text"> 复制待办 </text>
         </view>
       </view>
 
       <!-- 底部按钮 -->
       <view class="editor-footer">
         <view class="btn-cancel" @tap="handleClose">
-          <text class="btn-text">
-            取消
-          </text>
+          <text class="btn-text"> 取消 </text>
         </view>
         <view class="btn-save" :class="{ 'btn-disabled': !todoText.trim() }" @tap="handleSave">
           <text class="btn-text">
@@ -122,13 +100,7 @@
     </view>
 
     <!-- 时间选择器 -->
-    <picker
-      v-if="showPicker"
-      mode="time"
-      :value="reminderTime"
-      @change="handleTimeChange"
-      @cancel="showPicker = false"
-    >
+    <picker v-if="showPicker" mode="time" :value="reminderTime" @change="handleTimeChange" @cancel="showPicker = false">
       <view />
     </picker>
   </view>
@@ -237,7 +209,9 @@ export default {
       // 震动反馈
       try {
         uni.vibrateShort({ type: 'light' });
-      } catch (e) { console.warn('[TodoEditor] 震动反馈失败:', e.message || e); }
+      } catch (e) {
+        logger.warn('[TodoEditor] 震动反馈失败:', e.message || e);
+      }
 
       const todoItem = {
         id: this.isEdit ? this.todoData.id : `todo_${Date.now()}`,
@@ -269,7 +243,9 @@ export default {
             // 震动反馈
             try {
               uni.vibrateShort({ type: 'medium' });
-            } catch (e) { logger.warn('[TodoEditor] vibrateShort failed in handleDelete', e); }
+            } catch (e) {
+              logger.warn('[TodoEditor] vibrateShort failed in handleDelete', e);
+            }
 
             this.$emit('delete', this.todoData.id);
             this.handleClose();
@@ -288,7 +264,9 @@ export default {
       // 震动反馈
       try {
         uni.vibrateShort({ type: 'light' });
-      } catch (e) { logger.warn('[TodoEditor] vibrateShort failed in handleToggleComplete', e); }
+      } catch (e) {
+        logger.warn('[TodoEditor] vibrateShort failed in handleToggleComplete', e);
+      }
 
       this.$emit('toggle', this.todoData.id);
 
@@ -348,8 +326,12 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .todo-editor-content {
@@ -366,8 +348,12 @@ export default {
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* 拖拽指示条 */
@@ -378,7 +364,9 @@ export default {
   border-radius: 4rpx;
   margin: 0 auto 24rpx;
 
-  .editor-dark & { background: rgba(255, 255, 255, 0.2); }
+  .editor-dark & {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }
 
 /* 头部 */
@@ -393,8 +381,12 @@ export default {
   font-size: 36rpx;
   font-weight: 700;
 
-  .todo-editor-content:not(.editor-dark) & { color: #1a1a1a; }
-  .editor-dark & { color: #ffffff; }
+  .todo-editor-content:not(.editor-dark) & {
+    color: #1a1a1a;
+  }
+  .editor-dark & {
+    color: #ffffff;
+  }
 }
 
 .header-actions {
@@ -402,7 +394,8 @@ export default {
   gap: 16rpx;
 }
 
-.delete-btn, .close-btn {
+.delete-btn,
+.close-btn {
   width: 60rpx;
   height: 60rpx;
   display: flex;
@@ -411,9 +404,13 @@ export default {
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.05);
 
-  .editor-dark & { background: rgba(255, 255, 255, 0.1); }
+  .editor-dark & {
+    background: rgba(255, 255, 255, 0.1);
+  }
 
-  &:active { opacity: 0.7; }
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 .delete-icon {
@@ -421,8 +418,8 @@ export default {
 }
 
 .close-icon {
-	font-size: 40rpx;
-	color: var(--ds-color-text-tertiary);
+  font-size: 40rpx;
+  color: var(--ds-color-text-tertiary);
 }
 
 /* 输入区域 */
@@ -439,10 +436,12 @@ export default {
   border: 2rpx solid transparent;
   transition: all 0.3s ease;
 
-  .editor-dark & { background: rgba(255, 255, 255, 0.05); }
+  .editor-dark & {
+    background: rgba(255, 255, 255, 0.05);
+  }
 
   &.input-focused {
-    border-color: #10B981;
+    border-color: #10b981;
     background: rgba(16, 185, 129, 0.05);
   }
 }
@@ -451,8 +450,12 @@ export default {
   flex: 1;
   font-size: 32rpx;
 
-  .todo-editor-content:not(.editor-dark) & { color: #1a1a1a; }
-  &.input-dark { color: #ffffff; }
+  .todo-editor-content:not(.editor-dark) & {
+    color: #1a1a1a;
+  }
+  &.input-dark {
+    color: #ffffff;
+  }
 }
 
 .clear-btn {
@@ -464,16 +467,19 @@ export default {
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.1);
 
-  .editor-dark & { background: rgba(255, 255, 255, 0.2); }
+  .editor-dark & {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .clear-icon {
-	font-size: 28rpx;
-	color: var(--ds-color-text-tertiary);
+  font-size: 28rpx;
+  color: var(--ds-color-text-tertiary);
 }
 
 /* 优先级选择 */
-.priority-section, .reminder-section {
+.priority-section,
+.reminder-section {
   margin-bottom: 24rpx;
 }
 
@@ -483,8 +489,12 @@ export default {
   font-weight: 600;
   margin-bottom: 16rpx;
 
-  .todo-editor-content:not(.editor-dark) & { color: #666666; }
-  .editor-dark & { color: rgba(255, 255, 255, 0.7); }
+  .todo-editor-content:not(.editor-dark) & {
+    color: #666666;
+  }
+  .editor-dark & {
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
 
 .priority-options {
@@ -504,13 +514,17 @@ export default {
   border: 2rpx solid transparent;
   transition: all 0.3s ease;
 
-  .editor-dark & { background: rgba(255, 255, 255, 0.05); }
+  .editor-dark & {
+    background: rgba(255, 255, 255, 0.05);
+  }
 
   &.priority-selected {
     background: rgba(16, 185, 129, 0.1);
   }
 
-  &:active { opacity: 0.7; }
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 .priority-dot {
@@ -522,8 +536,12 @@ export default {
 .priority-label {
   font-size: 26rpx;
 
-  .todo-editor-content:not(.editor-dark) & { color: #1a1a1a; }
-  .editor-dark & { color: #ffffff; }
+  .todo-editor-content:not(.editor-dark) & {
+    color: #1a1a1a;
+  }
+  .editor-dark & {
+    color: #ffffff;
+  }
 }
 
 /* 提醒时间 */
@@ -535,21 +553,29 @@ export default {
   border-radius: 16rpx;
   background: rgba(0, 0, 0, 0.03);
 
-  .editor-dark & { background: rgba(255, 255, 255, 0.05); }
+  .editor-dark & {
+    background: rgba(255, 255, 255, 0.05);
+  }
 
-  &:active { opacity: 0.7; }
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 .reminder-text {
   font-size: 28rpx;
 
-  .todo-editor-content:not(.editor-dark) & { color: #1a1a1a; }
-  .editor-dark & { color: #ffffff; }
+  .todo-editor-content:not(.editor-dark) & {
+    color: #1a1a1a;
+  }
+  .editor-dark & {
+    color: #ffffff;
+  }
 }
 
 .reminder-arrow {
-	font-size: 32rpx;
-	color: var(--ds-color-text-tertiary);
+  font-size: 32rpx;
+  color: var(--ds-color-text-tertiary);
 }
 
 /* 快捷操作 */
@@ -560,7 +586,9 @@ export default {
   padding-top: 24rpx;
   border-top: 1rpx solid rgba(0, 0, 0, 0.05);
 
-  .editor-dark & { border-color: rgba(255, 255, 255, 0.1); }
+  .editor-dark & {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .action-item {
@@ -573,9 +601,13 @@ export default {
   border-radius: 16rpx;
   background: rgba(0, 0, 0, 0.03);
 
-  .editor-dark & { background: rgba(255, 255, 255, 0.05); }
+  .editor-dark & {
+    background: rgba(255, 255, 255, 0.05);
+  }
 
-  &:active { opacity: 0.7; }
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 .action-icon {
@@ -585,8 +617,12 @@ export default {
 .action-text {
   font-size: 24rpx;
 
-  .todo-editor-content:not(.editor-dark) & { color: #666666; }
-  .editor-dark & { color: rgba(255, 255, 255, 0.7); }
+  .todo-editor-content:not(.editor-dark) & {
+    color: #666666;
+  }
+  .editor-dark & {
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
 
 /* 底部按钮 */
@@ -596,7 +632,8 @@ export default {
   margin-top: 16rpx;
 }
 
-.btn-cancel, .btn-save {
+.btn-cancel,
+.btn-save {
   flex: 1;
   height: 88rpx;
   display: flex;
@@ -607,24 +644,34 @@ export default {
   font-weight: 600;
   transition: all 0.3s ease;
 
-  &:active { transform: scale(0.98); }
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .btn-cancel {
   background: rgba(0, 0, 0, 0.05);
 
-  .editor-dark & { background: rgba(255, 255, 255, 0.1); }
+  .editor-dark & {
+    background: rgba(255, 255, 255, 0.1);
+  }
 
   .btn-text {
-    .todo-editor-content:not(.editor-dark) & { color: #666666; }
-    .editor-dark & { color: rgba(255, 255, 255, 0.7); }
+    .todo-editor-content:not(.editor-dark) & {
+      color: #666666;
+    }
+    .editor-dark & {
+      color: rgba(255, 255, 255, 0.7);
+    }
   }
 }
 
 .btn-save {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 
-  .btn-text { color: #ffffff; }
+  .btn-text {
+    color: #ffffff;
+  }
 
   &.btn-disabled {
     opacity: 0.5;

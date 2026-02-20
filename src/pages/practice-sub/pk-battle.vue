@@ -1450,14 +1450,13 @@ export default {
       // 立即设置标志位，防止并发调用
       this.isScoreUploaded = true;
 
-      logger.log('[TEST-9.3] 🏆 开始上传分数到排行榜');
       // 优先使用 EXAM_USER_ID（与登录系统一致）
       const userId = storageService.get('EXAM_USER_ID', '');
       const userInfo = storageService.get('userInfo', {});
 
       // 如果没登录，就不传了
       if (!userId && !userInfo.nickName) {
-        logger.warn('[TEST-9.3] ⚠️ 用户未登录，跳过上传分数');
+ logger.warn('[PK] 用户未登录，跳过上传分数');
         logger.warn('[PK] 用户未登录，跳过上传分数');
         return;
       }
@@ -1481,38 +1480,12 @@ export default {
         score: pkScore // 本局增量分数，后端 _.inc(score) 累加
       };
 
-      logger.log('[TEST-9.3] 📤 发送分数更新请求:', {
-        url: '/rank-center',
-        action: 'update',
-        userId: finalUserId,
-        score: pkScore,
-        nickName: nickName,
-        hasAvatarUrl: !!avatarUrl
-      });
-
-      logger.log('[TEST-9.3] 📤 发送数据（完整）:', JSON.stringify(uploadData, null, 2));
-      logger.log('[TEST-9.3] 📤 字段验证:', {
-        hasUid: !!uploadData.uid,
-        hasUserId: !!uploadData.userId,
-        hasNickName: !!uploadData.nickName,
-        hasAvatarUrl: !!uploadData.avatarUrl,
-        hasScore: typeof uploadData.score === 'number',
-        scoreValue: uploadData.score,
-        uidValue: uploadData.uid,
-        userIdValue: uploadData.userId
-      });
-
       // 已迁移到 Sealos：使用 lafService.rankCenter 替代 uniCloud.callFunction('rank-center')
       // 静默上传，不显示 loading（避免打断用户体验）
       lafService
         .rankCenter(uploadData)
         .then((res) => {
           // 标志位已在方法开头设置，这里只记录成功日志
-          logger.log('[TEST-9.3] ✅ 分数上传成功:', {
-            code: res?.code,
-            message: res?.msg,
-            pkScore: pkScore
-          });
           // 可选：静默提示
           // uni.showToast({ title: '已上传排行榜', icon: 'success', duration: 1000 });
         })
@@ -1520,7 +1493,7 @@ export default {
           // 🔒 修复 Module 10 Bug: 采用 "Fire and Forget" 策略
           // 上传失败时，不重置标志位，防止重复上传
           // 原因：网络超时可能导致数据已写入但响应失败，重试会造成重复上传
-          logger.error('[TEST-9.3] ❌ 上传分数失败（已锁定，不再重试）:', err);
+ logger.error('[PK] 上传分数失败（已锁定，不再重试）:', err);
           logger.error('[PK] 上传分数失败（已锁定，不再重试）:', err);
           // 静默失败，不影响用户分享体验
         });

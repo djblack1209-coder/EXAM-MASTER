@@ -121,7 +121,7 @@ class LearningGoalManager {
 
     const goalType = GOAL_TYPES[goalData.type];
     if (!goalType) {
-      console.warn('[LearningGoal] 无效的目标类型:', goalData.type);
+      logger.warn('[LearningGoal] 无效的目标类型:', goalData.type);
       return null;
     }
 
@@ -166,7 +166,7 @@ class LearningGoalManager {
 
     const goal = this.goals.find((g) => g.id === goalId);
     if (!goal) {
-      console.warn('[LearningGoal] 目标不存在:', goalId);
+      logger.warn('[LearningGoal] 目标不存在:', goalId);
       return null;
     }
 
@@ -516,7 +516,7 @@ class LearningGoalManager {
         uni.vibrateShort({ type: 'heavy' });
       }
     } catch (e) {
-      console.warn('[LearningGoal] 震动反馈失败:', e);
+      logger.warn('[LearningGoal] 震动反馈失败:', e);
     }
   }
 
@@ -533,7 +533,7 @@ class LearningGoalManager {
         });
       }
     } catch (e) {
-      console.warn('[LearningGoal] 发送通知失败:', e);
+      logger.warn('[LearningGoal] 发送通知失败:', e);
     }
   }
 
@@ -654,7 +654,7 @@ class LearningGoalManager {
         this._syncToServer();
       }
     } catch (e) {
-      console.warn('[LearningGoal] 保存目标失败:', e);
+      logger.warn('[LearningGoal] 保存目标失败:', e);
     }
   }
 
@@ -705,7 +705,7 @@ class LearningGoalManager {
       }
     } catch (e) {
       // 拉取失败不影响本地使用
-      console.warn('[LearningGoal] 后端目标拉取失败:', e.message);
+      logger.warn('[LearningGoal] 后端目标拉取失败:', e.message);
     }
   }
 
@@ -722,7 +722,7 @@ class LearningGoalManager {
         await lafService.recordGoalProgress(type, value);
       }
     } catch (e) {
-      console.warn('[LearningGoal] 进度同步失败:', e.message);
+      logger.warn('[LearningGoal] 进度同步失败:', e.message);
     }
   }
 
@@ -753,7 +753,7 @@ class LearningGoalManager {
       }
     } catch (e) {
       // 同步失败不影响本地使用，下次保存时重试
-      console.warn('[LearningGoal] 后端同步失败（将在下次保存时重试）:', e.message);
+      logger.warn('[LearningGoal] 后端同步失败（将在下次保存时重试）:', e.message);
     }
   }
 
@@ -779,7 +779,7 @@ class LearningGoalManager {
         storageService.save(STORAGE_KEYS.GOAL_RECORDS, this.records);
       }
     } catch (e) {
-      console.warn('[LearningGoal] 保存记录失败:', e);
+      logger.warn('[LearningGoal] 保存记录失败:', e);
     }
   }
 
@@ -795,7 +795,7 @@ class LearningGoalManager {
         }
       }
     } catch (e) {
-      console.warn('[LearningGoal] 加载提醒设置失败:', e);
+      logger.warn('[LearningGoal] 加载提醒设置失败:', e);
     }
   }
 
@@ -808,7 +808,7 @@ class LearningGoalManager {
         storageService.save(STORAGE_KEYS.REMINDER_SETTINGS, this.reminderSettings);
       }
     } catch (e) {
-      console.warn('[LearningGoal] 保存提醒设置失败:', e);
+      logger.warn('[LearningGoal] 保存提醒设置失败:', e);
     }
   }
 }
