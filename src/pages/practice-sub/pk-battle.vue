@@ -1642,7 +1642,6 @@ export default {
       const pkScore = this.myScore;
 
       logger.log('[TEST-10.3] 📊 本局得分:', {
-      logger.log('[TEST-10.3] 📊 本局得分:', {
         pkScore: pkScore
       });
 
