@@ -384,7 +384,7 @@ class QuestionFavoriteManager {
     }
 
     // 最近收藏
-    const recentFavorites = this.favorites.sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
+    const recentFavorites = [...this.favorites].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
 
     // 待复习（超过7天未复习）
     const needReview = this.favorites.filter((f) => {

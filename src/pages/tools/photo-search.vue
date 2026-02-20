@@ -14,7 +14,7 @@
     </view>
 
     <!-- 相机/预览区域 -->
-    <view class="camera-area" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
+    <view class="camera-area" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 相机模式 -->
       <camera
         v-if="mode === 'camera'"
@@ -64,12 +64,7 @@
               <text class="rs-title">题库匹配</text>
               <text class="match-count">找到 {{ result.questions.length }} 道相似题</text>
             </view>
-            <view
-              v-for="(q, idx) in result.questions"
-              :key="idx"
-              class="question-card"
-              @click="viewQuestion(q)"
-            >
+            <view v-for="(q, idx) in result.questions" :key="idx" class="question-card" @click="viewQuestion(q)">
               <text class="question-text">{{ q.question }}</text>
               <view class="question-meta">
                 <view class="meta-tag">
@@ -109,7 +104,11 @@
 
               <!-- 考点 -->
               <view
-                v-if="result.aiGenerated.analysis && result.aiGenerated.analysis.keyPoints && result.aiGenerated.analysis.keyPoints.length > 0"
+                v-if="
+                  result.aiGenerated.analysis &&
+                  result.aiGenerated.analysis.keyPoints &&
+                  result.aiGenerated.analysis.keyPoints.length > 0
+                "
                 class="ai-block"
               >
                 <text class="ai-block-title">考查知识点</text>
@@ -159,7 +158,12 @@
         <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" :disabled="isRecognizing" @click="retake">
           <text>重新拍摄</text>
         </button>
-        <button class="bar-btn bar-btn-primary" hover-class="btn-hover" :disabled="isRecognizing" @click="startRecognize">
+        <button
+          class="bar-btn bar-btn-primary"
+          hover-class="btn-hover"
+          :disabled="isRecognizing"
+          @click="startRecognize"
+        >
           <text>{{ isRecognizing ? '识别中...' : '开始识别' }}</text>
         </button>
       </template>
@@ -187,6 +191,7 @@
 
 <script>
 import { lafService } from '@/services/lafService.js';
+import storageService from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
@@ -211,12 +216,7 @@ export default {
         { label: '数学', value: 'math' },
         { label: '专业课', value: 'major' }
       ],
-      loadingTips: [
-        '正在识别文字...',
-        '正在分析题目结构...',
-        '正在匹配题库...',
-        '正在生成解析...'
-      ],
+      loadingTips: ['正在识别文字...', '正在分析题目结构...', '正在匹配题库...', '正在生成解析...'],
       isDark: false,
       tipIndex: 0,
       tipTimer: null
@@ -234,7 +234,9 @@ export default {
     const sys = uni.getSystemInfoSync();
     this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
     this.isDark = initTheme();
-    this._themeHandler = (mode) => { this.isDark = mode === 'dark'; };
+    this._themeHandler = (mode) => {
+      this.isDark = mode === 'dark';
+    };
     onThemeUpdate(this._themeHandler);
     this.checkCameraPermission();
   },
@@ -346,11 +348,24 @@ export default {
           }
 
           // 标准化数据结构，添加空值防护
+          const aiSolution = rawData.aiSolution || rawData.aiGenerated || null;
+          // 兼容后端返回中文字段名（步骤→steps）
+          if (aiSolution && aiSolution.analysis) {
+            if (!aiSolution.analysis.steps && aiSolution.analysis['步骤']) {
+              aiSolution.analysis.steps = aiSolution.analysis['步骤'];
+            }
+            if (!aiSolution.answer && aiSolution['答案']) {
+              aiSolution.answer = aiSolution['答案'];
+            }
+            if (!aiSolution.analysis.keyPoints && aiSolution.analysis['考点']) {
+              aiSolution.analysis.keyPoints = aiSolution.analysis['考点'];
+            }
+          }
           this.result = {
             confidence: rawData.confidence ?? rawData.recognition?.confidence ?? 0,
             recognizedText: recognizedText,
             questions: rawData.matchedQuestions || rawData.questions || [],
-            aiGenerated: rawData.aiSolution || rawData.aiGenerated || null,
+            aiGenerated: aiSolution,
             recognitionSources: rawData.recognitionSources || null
           };
           this.mode = 'result';
@@ -363,7 +378,6 @@ export default {
         } else {
           throw new Error(response.message || '识别失败');
         }
-
       } catch (error) {
         logger.error('识别失败:', error);
         uni.showModal({
@@ -412,17 +426,21 @@ export default {
         // #endif
 
         // #ifdef APP-PLUS
-        plus.io.resolveLocalFileSystemURL(path, (entry) => {
-          entry.file((file) => {
-            const reader = new plus.io.FileReader();
-            reader.onloadend = (e) => {
-              const base64 = e.target.result.split(',')[1];
-              resolve(base64);
-            };
-            reader.onerror = () => reject(new Error('读取图片失败'));
-            reader.readAsDataURL(file);
-          });
-        }, () => reject(new Error('解析路径失败')));
+        plus.io.resolveLocalFileSystemURL(
+          path,
+          (entry) => {
+            entry.file((file) => {
+              const reader = new plus.io.FileReader();
+              reader.onloadend = (e) => {
+                const base64 = e.target.result.split(',')[1];
+                resolve(base64);
+              };
+              reader.onerror = () => reject(new Error('读取图片失败'));
+              reader.readAsDataURL(file);
+            });
+          },
+          () => reject(new Error('解析路径失败'))
+        );
         // #endif
       });
     },
@@ -486,11 +504,15 @@ export default {
         const question = this.result.questions[0];
         uni.showLoading({ title: '添加中...', mask: false });
         try {
-          // 调用错题本服务
-          await lafService.addMistake({
+          // 使用 storageService.addMistake（支持云端同步+本地降级）
+          await storageService.addMistake({
             questionId: question._id || question.id,
             question: question.question,
-            source: 'photo_search'
+            options: question.options || [],
+            correctAnswer: question.answer || question.correctAnswer || '',
+            userAnswer: '',
+            source: 'photo_search',
+            category: question.category || this.selectedSubject || '未分类'
           });
           uni.hideLoading();
           uni.showToast({ title: '已加入错题本', icon: 'success' });
@@ -513,7 +535,9 @@ export default {
         // 通过临时存储传递搜索关键词，供刷题中心后续读取
         try {
           uni.setStorageSync('_pendingSearch', { keyword, timestamp: Date.now() });
-        } catch (_e) { /* ignore */ }
+        } catch (_e) {
+          /* ignore */
+        }
         uni.showToast({ title: '已跳转到刷题中心', icon: 'none' });
         safeNavigateTo('/pages/practice/index');
       }
@@ -706,14 +730,16 @@ export default {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // 结果区域
 .result-area {
   width: 100%;
   flex: 1;
-  background: var(--bg-secondary, #F5F5F7);
+  background: var(--bg-secondary, #f5f5f7);
   border-radius: 32rpx 32rpx 0 0;
 }
 
@@ -803,7 +829,7 @@ export default {
     background: rgba(255, 149, 0, 0.08);
 
     .meta-tag-text {
-      color: #FF9500;
+      color: #ff9500;
     }
   }
 
@@ -878,7 +904,7 @@ export default {
 
   .answer-text {
     font-size: 28rpx;
-    color: #34C759;
+    color: #34c759;
     font-weight: 600;
     line-height: 1.6;
   }
@@ -911,7 +937,7 @@ export default {
     width: 12rpx;
     height: 12rpx;
     border-radius: 50%;
-    background: #FF9500;
+    background: #ff9500;
     flex-shrink: 0;
     margin-right: 14rpx;
     margin-top: 14rpx;
@@ -1034,21 +1060,21 @@ export default {
 // Dark mode overrides
 .dark-mode {
   .result-area {
-    background: var(--bg-secondary, #1C1C1E);
+    background: var(--bg-secondary, #1c1c1e);
   }
 
   .recognized-text-card {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
   }
 
   .question-card {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
   }
 
   .ai-card {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
   }
 

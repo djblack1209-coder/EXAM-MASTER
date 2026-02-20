@@ -716,6 +716,7 @@ export default {
 
         // ✅ 使用后端代理调用（安全）- action: 'predict'
         const response = await lafService.proxyAI('predict', {
+          content: `请预测以下考生的录取概率：目标院校${this.schoolInfo.name}，已备考${studyDays}天，完成${doneCount}题，错题${mistakeCount}道`,
           schoolName: this.schoolInfo.name,
           studyDays: studyDays,
           doneCount: doneCount,

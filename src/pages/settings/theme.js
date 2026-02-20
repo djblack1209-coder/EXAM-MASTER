@@ -55,16 +55,18 @@ export function applyNightMode(mode, container) {
  */
 export function updateNavigationBarColor(mode) {
   const isDark = mode === 'dark';
-  uni.setNavigationBarColor({
-    frontColor: isDark ? '#ffffff' : '#000000',
-    backgroundColor: isDark ? '#163300' : '#F8FAFC',
-    animation: {
-      duration: 300,
-      timingFunc: 'easeInOut'
-    }
-  }).catch((err) => {
-    logger.log('设置导航栏颜色失败', err);
-  });
+  uni
+    .setNavigationBarColor({
+      frontColor: isDark ? '#ffffff' : '#000000',
+      backgroundColor: isDark ? '#163300' : '#F8FAFC',
+      animation: {
+        duration: 300,
+        timingFunc: 'easeInOut'
+      }
+    })
+    .catch((err) => {
+      logger.log('设置导航栏颜色失败', err);
+    });
 }
 
 /**
@@ -81,6 +83,8 @@ export function getCurrentTheme() {
  */
 export function setTheme(mode) {
   storageService.save('theme_mode', mode);
+  // 统一使用 themeUpdate 事件名（兼容旧的 updateTheme）
+  uni.$emit('themeUpdate', mode);
   uni.$emit('updateTheme', mode);
   updateNavigationBarColor(mode);
 }

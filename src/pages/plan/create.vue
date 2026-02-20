@@ -251,30 +251,58 @@ export default {
       return `${year}-${month}-${day}`;
     },
     showStartDatePicker() {
-      uni.showDatePicker({
-        startYear: 2024,
-        endYear: 2026,
+      // uni.showDatePicker 不存在，使用 uni.datePicker 或 picker view
+      uni.showModal({
+        title: '选择开始日期',
+        editable: true,
+        placeholderText: this.plan.startDate,
         success: (res) => {
-          this.plan.startDate = `${res.year}-${res.month.toString().padStart(2, '0')}-${res.day.toString().padStart(2, '0')}`;
-          this.onInputChange();
+          if (res.confirm && res.content) {
+            // 验证日期格式 YYYY-MM-DD
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (dateRegex.test(res.content.trim())) {
+              this.plan.startDate = res.content.trim();
+              this.onInputChange();
+            } else {
+              uni.showToast({ title: '请输入正确格式：YYYY-MM-DD', icon: 'none' });
+            }
+          }
         }
       });
     },
     showEndDatePicker() {
-      uni.showDatePicker({
-        startYear: 2024,
-        endYear: 2026,
+      uni.showModal({
+        title: '选择结束日期',
+        editable: true,
+        placeholderText: this.plan.endDate,
         success: (res) => {
-          this.plan.endDate = `${res.year}-${res.month.toString().padStart(2, '0')}-${res.day.toString().padStart(2, '0')}`;
-          this.onInputChange();
+          if (res.confirm && res.content) {
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (dateRegex.test(res.content.trim())) {
+              this.plan.endDate = res.content.trim();
+              this.onInputChange();
+            } else {
+              uni.showToast({ title: '请输入正确格式：YYYY-MM-DD', icon: 'none' });
+            }
+          }
         }
       });
     },
     showReminderTimePicker() {
-      uni.showTimePicker({
+      uni.showModal({
+        title: '设置提醒时间',
+        editable: true,
+        placeholderText: this.plan.reminderTime,
         success: (res) => {
-          this.plan.reminderTime = `${res.hour.toString().padStart(2, '0')}:${res.minute.toString().padStart(2, '0')}`;
-          this.onInputChange();
+          if (res.confirm && res.content) {
+            const timeRegex = /^\d{2}:\d{2}$/;
+            if (timeRegex.test(res.content.trim())) {
+              this.plan.reminderTime = res.content.trim();
+              this.onInputChange();
+            } else {
+              uni.showToast({ title: '请输入正确格式：HH:MM', icon: 'none' });
+            }
+          }
         }
       });
     },
@@ -324,6 +352,9 @@ export default {
 
       // 保存到本地存储
       const plans = storageService.get('study_plans', []);
+      // 生成唯一ID，确保后续删除/修改能定位
+      this.plan.id = 'plan_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      this.plan.createdAt = Date.now();
       plans.unshift(this.plan);
       storageService.save('study_plans', plans);
 

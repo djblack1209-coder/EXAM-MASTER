@@ -578,9 +578,8 @@ export default {
     },
 
     selectAnswer(idx) {
-      // ⚠️ 必须使用 $set，直接赋值新属性不会触发 Vue 2 响应式更新
-      // 导致选项高亮、答题卡已答状态等 UI 不刷新
-      this.$set(this.userAnswers, this.currentIndex, idx);
+      // Vue 3 中数组索引赋值已自动响应式，无需 $set
+      this.userAnswers[this.currentIndex] = idx;
     },
 
     prevQuestion() {

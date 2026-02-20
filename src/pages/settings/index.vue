@@ -301,7 +301,7 @@ onShow(() => {
   uni
     .setNavigationBarColor({
       frontColor: currentIsDark ? '#ffffff' : '#000000',
-      backgroundColor: currentIsDark ? 'var(--bg-body)' : 'var(--bg-page)',
+      backgroundColor: currentIsDark ? '#1a1a1a' : '#F8FAFC',
       animation: { duration: 0 }
     })
     .catch((err) => {
