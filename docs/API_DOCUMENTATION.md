@@ -1,20 +1,106 @@
 # EXAM-MASTER API 文档
 
-> 版本: 2.0.0  
-> 更新日期: 2026-02-06  
-> 基础URL: `https://nf98ia8qnt.sealosbja.site`
+> 版本: 2.1.0  
+> 更新日期: 2026-02-20  
+> 基础URL: `https://nf98ia8qnt.sealosbja.site`  
+> 认证方式: JWT Token（通过 `body.token` 或 `Authorization` header 传递）  
+> 请求格式: `POST` JSON，所有接口通过 `action` 字段分发
 
 ## 目录
 
-1. [通用说明](#通用说明)
-2. [用户模块](#用户模块)
-3. [练习模块](#练习模块)
-4. [错题模块](#错题模块)
-5. [收藏模块](#收藏模块)
-6. [AI服务模块](#ai服务模块)
-7. [社交模块](#社交模块)
-8. [院校模块](#院校模块)
-9. [学习资源模块](#学习资源模块)
+1. [快速参考](#快速参考)
+2. [通用说明](#通用说明)
+3. [用户模块](#用户模块)
+4. [练习模块](#练习模块)
+5. [错题模块](#错题模块)
+6. [收藏模块](#收藏模块)
+7. [AI服务模块](#ai服务模块)
+8. [社交模块](#社交模块)
+9. [院校模块](#院校模块)
+10. [学习资源模块](#学习资源模块)
+
+---
+
+## 快速参考
+
+> 以下为所有云函数的 Action 速查表，详细参数和示例见各模块章节。
+
+### 认证服务
+
+| 云函数             | Action           | 认证 | 说明                            |
+| ------------------ | ---------------- | ---- | ------------------------------- |
+| login.ts           | `wechat`         | 否   | 微信小程序登录                  |
+| login.ts           | `wechat_h5`      | 否   | 微信 H5 OAuth 登录              |
+| login.ts           | `email_code`     | 否   | 邮箱验证码登录                  |
+| login.ts           | `email_password` | 否   | 邮箱密码登录                    |
+| login.ts           | `register`       | 否   | 邮箱注册                        |
+| send-email-code.js | —                | 否   | 发送邮箱验证码                  |
+| upload-avatar.ts   | —                | JWT  | 头像上传（multipart/form-data） |
+
+### 练习服务
+
+| 云函数              | Action                                               | 认证 | 说明           |
+| ------------------- | ---------------------------------------------------- | ---- | -------------- |
+| question-bank.js    | `get`                                                | 否   | 分页查询题目   |
+| question-bank.js    | `random`                                             | 否   | 随机抽题       |
+| question-bank.js    | `getByIds`                                           | 否   | 按 ID 批量获取 |
+| mistake-manager.ts  | `add`/`get`/`update`/`remove`                        | JWT  | 错题 CRUD      |
+| mistake-manager.ts  | `batchSync`/`getCategories`/`manageTags`/`getByTags` | JWT  | 错题高级操作   |
+| answer-submit.ts    | `submit`/`getRecords`                                | 否   | 答题提交与记录 |
+| favorite-manager.ts | `add`/`remove`/`get`/`check`                         | 否   | 收藏管理       |
+| material-manager.js | 8个action                                            | JWT  | 用户资料管理   |
+
+### 学习服务
+
+| 云函数                 | Action                                                                          | 认证    | 说明             |
+| ---------------------- | ------------------------------------------------------------------------------- | ------- | ---------------- |
+| learning-goal.ts       | `create`/`get`/`update`/`remove`/`getTodayProgress`/`recordProgress`            | JWT     | 学习目标         |
+| achievement-manager.ts | `getAll`/`unlock`/`check`/`getUnlocked`                                         | JWT     | 成就系统         |
+| user-stats.ts          | `getOverview`/`getDailyStatsend`/`recordStudyTime`/`updateStreak`/`getRankInfo` | JWT     | 用户统计         |
+| study-stats.js         | `get`/`daily`/`weekly`                                                          | JWT     | 学习统计（简版） |
+| user-profile.ts        | `get`/`update`/`upload_avatar`/`get_practice_config`/`update_practice_config`   | 部分JWT | 用户资料         |
+| learning-resource.ts   | `getList`/`getDetail`/`search`/`favorite`                                       | 否      | 学习资源         |
+
+### 社交服务
+
+| 云函数              | Action                                                                                  | 认证 | 说明        |
+| ------------------- | --------------------------------------------------------------------------------------- | ---- | ----------- |
+| social-service.ts   | `sendRequest`/`acceptRequest`/`rejectRequest`/`getFriends`/`getRequests`/`removeFriend` | 否   | 好友系统    |
+| group-service.js    | `create`/`join`/`leave`/`getList`/`getDetail`/`getResources`/`shareResource`/`dissolve` | JWT  | 学习小组    |
+| rank-center.ts      | `submit`/`getTop`/`getRank`                                                             | 否   | 排行榜      |
+| pk-battle.ts        | `create`/`join`/`submit`/`getResult`/`getHistory`                                       | 否   | PK 对战     |
+| ai-friend-memory.js | `get`/`save`/`clear`                                                                    | JWT  | AI 好友记忆 |
+
+### AI 服务
+
+| 云函数             | Action                                                                                                             | 认证 | 说明                 |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------ | ---- | -------------------- |
+| proxy-ai.ts        | `generate`/`analyze`/`chat`/`adaptive_pick`/`material_understand`/`trend_predict`/`friend_chat`/`vision`/`consult` | JWT  | AI 代理（20次/分钟） |
+| ai-photo-search.ts | `search`/`generate_solution`/`get_subjects`                                                                        | 否   | 拍照搜题             |
+
+### 择校服务
+
+| 云函数                | Action                                                                                                                       | 认证 | 说明         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---- | ------------ |
+| school-query.js       | `list`/`detail`/`search`/`hot`/`majors`/`major_detail`/`score_lines`/`national_lines`/`admission_ratios`/`provinces`/`stats` | 否   | 院校查询     |
+| school-query.js       | `add_favorite`/`remove_favorite`/`get_favorites`                                                                             | JWT  | 院校收藏     |
+| school-crawler-api.ts | `list`/`refresh`/`by_province`/`provinces`/`status`/`crawl_all`                                                              | —    | 爬虫管理接口 |
+
+### 工具服务
+
+| 云函数                     | Action                                                     | 认证 | 说明       |
+| -------------------------- | ---------------------------------------------------------- | ---- | ---------- |
+| doc-convert.ts             | `convert`/`get_status`/`get_types`/`get_result`            | —    | 文档转换   |
+| photo-bg.ts                | `remove_bg`/`change_bg`/`process`/`get_sizes`/`get_colors` | —    | 证件照处理 |
+| voice-service.ts           | `speech_to_text`/`text_to_speech`/`get_voices`             | —    | 语音服务   |
+| id-photo-segment-base64.ts | —                                                          | —    | 人像分割   |
+
+### 系统服务
+
+| 云函数          | Action | 说明                 |
+| --------------- | ------ | -------------------- |
+| health-check.ts | —      | 健康检查             |
+| data-cleanup.ts | —      | 数据清理（管理接口） |
 
 ---
 
@@ -42,28 +128,28 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 
 ```json
 {
-  "code": 0,           // 0=成功, 非0=失败
-  "success": true,     // 是否成功
+  "code": 0, // 0=成功, 非0=失败
+  "success": true, // 是否成功
   "message": "success", // 提示信息
-  "data": {},          // 返回数据
+  "data": {}, // 返回数据
   "requestId": "req_xxx", // 请求ID（用于问题追踪）
-  "duration": 123      // 处理耗时(ms)
+  "duration": 123 // 处理耗时(ms)
 }
 ```
 
 ### 错误码说明
 
-| 错误码 | 说明 |
-|--------|------|
-| 0 | 成功 |
-| 400 | 参数错误 |
-| 401 | 未授权 |
-| 403 | 禁止访问 |
-| 404 | 资源不存在 |
-| 429 | 请求过于频繁 |
-| 500 | 服务器内部错误 |
-| 502 | 上游服务错误 |
-| 503 | 服务暂时不可用 |
+| 错误码 | 说明           |
+| ------ | -------------- |
+| 0      | 成功           |
+| 400    | 参数错误       |
+| 401    | 未授权         |
+| 403    | 禁止访问       |
+| 404    | 资源不存在     |
+| 429    | 请求过于频繁   |
+| 500    | 服务器内部错误 |
+| 502    | 上游服务错误   |
+| 503    | 服务暂时不可用 |
 
 ---
 
@@ -83,6 +169,7 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 ```
 
 **响应**:
+
 ```json
 {
   "code": 0,
@@ -204,6 +291,7 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 ```
 
 **响应**:
+
 ```json
 {
   "code": 0,
@@ -405,6 +493,7 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 ```
 
 **响应**:
+
 ```json
 {
   "code": 0,
@@ -454,6 +543,7 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 ```
 
 **好友类型**:
+
 - `yan-cong`: 研聪 - 清华学霸学长
 - `yan-man`: 研漫 - 心理学硕士研友
 - `yan-shi`: 研师 - 资深考研名师
@@ -508,6 +598,7 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 ```
 
 **响应**:
+
 ```json
 {
   "code": 0,
@@ -745,6 +836,7 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 ```
 
 **排行榜类型**:
+
 - `streak`: 连续学习天数
 - `questions`: 做题数量
 - `accuracy`: 正确率
@@ -815,11 +907,11 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 
 以下API有速率限制：
 
-| API | 限制 |
-|-----|------|
-| `proxy-ai` | 20次/分钟/用户 |
+| API               | 限制           |
+| ----------------- | -------------- |
+| `proxy-ai`        | 20次/分钟/用户 |
 | `ai-photo-search` | 10次/分钟/用户 |
-| `login` | 5次/分钟/IP |
+| `login`           | 5次/分钟/IP    |
 
 超过限制返回 `429` 错误码。
 
@@ -837,6 +929,7 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 ## 更新日志
 
 ### v2.1.0 (2026-02-07)
+
 - 修复社交服务数据验证（正则注入防护、参数类型/长度校验）
 - 移除前端Mock数据降级（socialService、getStudyStats）
 - 完善错误处理（401/403区分、网络错误细分、响应解析安全）
@@ -845,20 +938,21 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 
 ### 已部署云函数清单
 
-| 云函数路径 | 对应API | 实际支持的action |
-|-----------|---------|-----------------|
-| `/login` | 用户登录 | type: `wechat` / `qq` / `email` |
-| `/send-email-code` | 发送验证码 | 无action参数，直接传email |
-| `/mistake-manager` | 错题管理 | `add` / `get` / `remove` / `updateStatus` / `batchSync` |
-| `/social-service` | 社交服务 | `search_user` / `send_request` / `handle_request` / `get_friend_list` / `get_friend_requests` / `remove_friend` |
-| `/rank-center` | 排行榜 | `update` / `get` / `getUserRank` |
-| `/school-query` | 院校查询 | `list` / `detail` / `search` / `hot` / `majors` / `major_detail` / `score_lines` / `national_lines` / `admission_ratios` / `add_favorite` / `remove_favorite` / `get_favorites` / `stats` / `provinces` |
-| `/proxy-ai` | AI代理 | `generate_questions` / `analyze` / `chat` / `friend_chat` / `adaptive_pick` / `material_understand` / `trend_predict` |
-| `/ai-photo-search` | 拍照搜题 | `search` / `generate_solution` |
-| `/material-manager` | 资料管理 | `save_upload_record` / `get_upload_records` / `delete_upload_record` / `save_questions` / `get_questions` / `delete_questions` / `sync_questions` / `get_stats` |
-| `/health-check` | 健康检查 | 无action参数 |
+| 云函数路径          | 对应API    | 实际支持的action                                                                                                                                                                                        |
+| ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/login`            | 用户登录   | type: `wechat` / `qq` / `email`                                                                                                                                                                         |
+| `/send-email-code`  | 发送验证码 | 无action参数，直接传email                                                                                                                                                                               |
+| `/mistake-manager`  | 错题管理   | `add` / `get` / `remove` / `updateStatus` / `batchSync`                                                                                                                                                 |
+| `/social-service`   | 社交服务   | `search_user` / `send_request` / `handle_request` / `get_friend_list` / `get_friend_requests` / `remove_friend`                                                                                         |
+| `/rank-center`      | 排行榜     | `update` / `get` / `getUserRank`                                                                                                                                                                        |
+| `/school-query`     | 院校查询   | `list` / `detail` / `search` / `hot` / `majors` / `major_detail` / `score_lines` / `national_lines` / `admission_ratios` / `add_favorite` / `remove_favorite` / `get_favorites` / `stats` / `provinces` |
+| `/proxy-ai`         | AI代理     | `generate_questions` / `analyze` / `chat` / `friend_chat` / `adaptive_pick` / `material_understand` / `trend_predict`                                                                                   |
+| `/ai-photo-search`  | 拍照搜题   | `search` / `generate_solution`                                                                                                                                                                          |
+| `/material-manager` | 资料管理   | `save_upload_record` / `get_upload_records` / `delete_upload_record` / `save_questions` / `get_questions` / `delete_questions` / `sync_questions` / `get_stats`                                         |
+| `/health-check`     | 健康检查   | 无action参数                                                                                                                                                                                            |
 
 ### v2.0.0 (2026-02-06)
+
 - 新增收藏模块 API
 - 新增学习资源推荐 API
 - 新增拍照搜题 API
@@ -868,4 +962,5 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 - 添加速率限制
 
 ### v1.0.0 (2026-01-01)
+
 - 初始版本发布
