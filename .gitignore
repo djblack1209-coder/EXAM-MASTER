@@ -90,3 +90,22 @@ __pycache__/
 test_api_keys.py
 cdn_mass_test.sh
 vps-optimizer/
+
+# Backup directories
+backups/
+
+# Database schemas (not used by app)
+database/
+
+# Claude Code skills / agents / commands (dev tooling, not app code)
+.claude/skills/
+.claude/agents/
+.claude/commands/
+
+# One-time data fix artifacts
+data/schools/fix-report.json
+data/schools/schools-fixed.json
+
+# Unused common modules
+common/zhipu.js
+common/styles/common.scss
