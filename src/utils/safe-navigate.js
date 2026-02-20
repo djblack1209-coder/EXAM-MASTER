@@ -8,13 +8,10 @@
  * - 普通页面失败时降级为 redirectTo
  */
 
+import { logger } from '@/utils/logger.js';
+
 // tabBar 页面路径列表（与 pages.json 中 tabBar.list 保持一致）
-const TAB_BAR_PAGES = [
-  '/pages/index/index',
-  '/pages/practice/index',
-  '/pages/school/index',
-  '/pages/profile/index'
-];
+const TAB_BAR_PAGES = ['/pages/index/index', '/pages/practice/index', '/pages/school/index', '/pages/profile/index'];
 
 /**
  * 判断 URL 是否为 tabBar 页面
@@ -53,11 +50,11 @@ export function safeNavigateTo(url, options = {}) {
           fail(err);
           return;
         }
-        console.warn('[safeNavigate] switchTab failed, fallback to reLaunch:', tabUrl, err);
+        logger.warn('[safeNavigate] switchTab failed, fallback to reLaunch:', tabUrl, err);
         uni.reLaunch({
           url: tabUrl,
           fail(err2) {
-            console.warn('[safeNavigate] reLaunch also failed:', tabUrl, err2);
+            logger.warn('[safeNavigate] reLaunch also failed:', tabUrl, err2);
             if (!silent) {
               uni.showToast({ title: '页面跳转失败', icon: 'none', duration: 2000 });
             }
@@ -84,12 +81,12 @@ export function safeNavigateTo(url, options = {}) {
         return;
       }
 
-      console.warn('[safeNavigate] navigateTo failed, fallback to redirectTo:', url, err);
+      logger.warn('[safeNavigate] navigateTo failed, fallback to redirectTo:', url, err);
 
       uni.redirectTo({
         url,
         fail(err2) {
-          console.warn('[safeNavigate] redirectTo also failed:', url, err2);
+          logger.warn('[safeNavigate] redirectTo also failed:', url, err2);
           if (!silent) {
             uni.showToast({ title: '页面跳转失败', icon: 'none', duration: 2000 });
           }

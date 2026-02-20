@@ -9,6 +9,7 @@
 
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
+import { logger } from '@/utils/logger.js';
 
 export const useAppStore = defineStore('app', () => {
   /** @type {import('vue').Ref<Object|null>} 设备系统信息（屏幕尺寸、平台、版本等） */
@@ -82,7 +83,7 @@ export const useAppStore = defineStore('app', () => {
 
       setSystemInfo(systemInfoData);
     } catch (error) {
-      console.error('获取系统信息失败：', error);
+      logger.error('获取系统信息失败：', error);
     }
 
     // 监听网络状态
@@ -91,7 +92,7 @@ export const useAppStore = defineStore('app', () => {
         setNetworkType(res.networkType);
       },
       fail: (err) => {
-        console.warn('获取网络状态失败：', err);
+        logger.warn('获取网络状态失败：', err);
         setNetworkType('unknown');
       }
     });

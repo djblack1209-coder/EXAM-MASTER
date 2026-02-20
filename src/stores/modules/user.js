@@ -146,7 +146,7 @@ export const useUserStore = defineStore('user', () => {
           throw new Error(res.message || '登录失败');
         }
       } catch (lafError) {
-        console.error('❌ 迁移后的登录失败:', lafError);
+        logger.error('❌ 迁移后的登录失败:', lafError);
         const error = new Error(lafError.message || '登录服务不可用');
 
         if (!silent) {
@@ -160,7 +160,7 @@ export const useUserStore = defineStore('user', () => {
         return { success: false, error };
       }
     } catch (error) {
-      console.error('[UserStore] 登录异常：', error);
+      logger.error('[UserStore] 登录异常：', error);
 
       if (!silent) {
         uni.showToast({
@@ -228,12 +228,12 @@ export const useUserStore = defineStore('user', () => {
         friendsList.value = res.data;
         return res.data;
       } else {
-        console.warn('[UserStore] 获取好友列表失败:', res.message || '未知错误');
+        logger.warn('[UserStore] 获取好友列表失败:', res.message || '未知错误');
         friendsList.value = [];
         return [];
       }
     } catch (error) {
-      console.error('[UserStore] 获取好友列表异常:', error);
+      logger.error('[UserStore] 获取好友列表异常:', error);
       friendsList.value = [];
       return [];
     }
@@ -274,15 +274,19 @@ export const useUserStore = defineStore('user', () => {
       if (res.success) {
         inviteCount.value++;
         // 同步更新本地缓存
-        storageService.save('invite_info', {
-          code: inviteCode.value,
-          count: inviteCount.value,
-          rewards: inviteRewards.value
-        }, true);
+        storageService.save(
+          'invite_info',
+          {
+            code: inviteCode.value,
+            count: inviteCount.value,
+            rewards: inviteRewards.value
+          },
+          true
+        );
       }
       return res;
     } catch (error) {
-      console.error('[invite] handleNewInvite 失败:', error);
+      logger.error('[invite] handleNewInvite 失败:', error);
       return { success: false, error: error.message };
     }
   };
@@ -302,16 +306,20 @@ export const useUserStore = defineStore('user', () => {
           inviteRewards.value[rewardIndex].claimed = true;
           inviteRewards.value[rewardIndex].claimedAt = new Date().toISOString();
         }
-        storageService.save('invite_info', {
-          code: inviteCode.value,
-          count: inviteCount.value,
-          rewards: inviteRewards.value
-        }, true);
+        storageService.save(
+          'invite_info',
+          {
+            code: inviteCode.value,
+            count: inviteCount.value,
+            rewards: inviteRewards.value
+          },
+          true
+        );
         return { success: true, reward: res.data?.reward };
       }
       return { success: false, error: res.message };
     } catch (error) {
-      console.error('领取奖励失败:', error);
+      logger.error('领取奖励失败:', error);
       return { success: false, error: error.message };
     }
   };
