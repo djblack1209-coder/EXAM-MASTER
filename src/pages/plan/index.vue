@@ -13,7 +13,7 @@
     <!-- #endif -->
 
     <!-- 导航栏 - 添加设计系统工具类 -->
-    <view v-show="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
+    <view v-if="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content ds-flex ds-flex-between">
         <text class="nav-back ds-touchable" @tap="goBack"> ← </text>
         <text class="nav-title ds-text-lg ds-font-semibold"> 我的学习计划 </text>
@@ -21,7 +21,7 @@
       </view>
     </view>
 
-    <scroll-view v-show="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
+    <scroll-view v-if="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 智能提醒卡片 -->
       <view v-if="intelligentReminders.length > 0" class="glass-card reminder-card">
         <view class="reminder-header">

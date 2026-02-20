@@ -529,6 +529,11 @@ export default {
     border-color: #5b86e5;
     background: rgba(91, 134, 229, 0.06);
     box-shadow: 0 4rpx 16rpx rgba(91, 134, 229, 0.15);
+
+    .dark-mode & {
+      border-color: #8eaaef;
+      background: rgba(91, 134, 229, 0.12);
+    }
   }
 
   .type-icon-box {
@@ -596,6 +601,10 @@ export default {
     color: #5b86e5;
     font-weight: 300;
     line-height: 1;
+
+    .dark-mode & {
+      color: #8eaaef;
+    }
   }
 
   .upload-text {
@@ -670,6 +679,10 @@ export default {
     .remove-icon {
       font-size: 24rpx;
       color: #ff3b30;
+
+      .dark-mode & {
+        color: #ff6b6b;
+      }
     }
   }
 }

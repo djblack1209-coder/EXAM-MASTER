@@ -91,7 +91,16 @@
                   :key="school.id || school.name || index"
                   class="target-item"
                 >
-                  <image class="target-avatar" :src="school.logo" lazy-load />
+                  <image
+                    class="target-avatar"
+                    :src="school.logo || '/static/images/default-avatar.png'"
+                    lazy-load
+                    @error="
+                      (e) => {
+                        e.target && (e.target.src = '/static/images/default-avatar.png');
+                      }
+                    "
+                  />
                   <view class="target-info">
                     <text class="target-name">
                       {{ school.name }}

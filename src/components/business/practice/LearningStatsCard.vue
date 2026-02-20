@@ -5,50 +5,34 @@
         <view class="stat-value">
           {{ todayQuestions }}
         </view>
-        <view class="stat-label">
-          今日刷题
-        </view>
+        <view class="stat-label"> 今日刷题 </view>
         <view v-if="todayQuestions < todayGoal" class="stat-goal editable">
-          目标 {{ todayGoal }} <text class="edit-icon">
-            ✎
-          </text>
+          目标 {{ todayGoal }} <text class="edit-icon"> ✎ </text>
         </view>
-        <view v-else class="stat-goal achieved">
-          已达标
-        </view>
+        <view v-else class="stat-goal achieved"> 已达标 </view>
       </view>
       <view class="stat-divider" />
       <view class="stat-item">
         <view class="stat-value streak">
           {{ currentStreak }}
         </view>
-        <view class="stat-label">
-          连续学习
-        </view>
-        <view class="stat-unit">
-          天
-        </view>
+        <view class="stat-label"> 连续学习 </view>
+        <view class="stat-unit"> 天 </view>
       </view>
       <view class="stat-divider" />
       <view class="stat-item">
         <view class="stat-value" :class="{ good: weeklyAccuracy >= 60, excellent: weeklyAccuracy >= 80 }">
           {{ weeklyAccuracy }}%
         </view>
-        <view class="stat-label">
-          正确率
-        </view>
+        <view class="stat-label"> 正确率 </view>
       </view>
       <view v-if="weakPointsCount > 0" class="stat-divider" />
       <view v-if="weakPointsCount > 0" class="stat-item weak" @tap="$emit('go-mistake')">
         <view class="stat-value warning">
           {{ weakPointsCount }}
         </view>
-        <view class="stat-label">
-          薄弱点
-        </view>
-        <view class="stat-action">
-          去强化 ›
-        </view>
+        <view class="stat-label"> 薄弱点 </view>
+        <view class="stat-action"> 去强化 › </view>
       </view>
     </view>
     <!-- 成就展示入口 -->
@@ -58,12 +42,8 @@
           {{ ach.icon }}
         </text>
       </view>
-      <text class="achievement-text">
-        已解锁 {{ unlockedAchievements.length }} 个成就
-      </text>
-      <text class="achievement-arrow">
-        ›
-      </text>
+      <text class="achievement-text"> 已解锁 {{ unlockedAchievements.length }} 个成就 </text>
+      <text class="achievement-arrow"> › </text>
     </view>
   </view>
 </template>
@@ -105,8 +85,12 @@ export default {
   padding: 8px 12px;
   min-width: 60px;
 }
-.stat-item.weak { cursor: pointer; }
-.stat-item.weak:active { opacity: 0.7; }
+.stat-item.weak {
+  cursor: pointer;
+}
+.stat-item.weak:active {
+  opacity: 0.7;
+}
 .stat-divider {
   width: 1px;
   height: 40px;
@@ -118,10 +102,24 @@ export default {
   color: var(--text-primary);
   line-height: 1.2;
 }
-.stat-value.streak { color: var(--primary); }
-.stat-value.good { color: #4CAF50; }
-.stat-value.excellent { color: #2196F3; }
-.stat-value.warning { color: var(--danger); }
+.stat-value.streak {
+  color: var(--primary);
+}
+.stat-value.good {
+  color: #4caf50;
+}
+.stat-value.excellent {
+  color: #2196f3;
+}
+.dark-mode .stat-value.good {
+  color: #81c784;
+}
+.dark-mode .stat-value.excellent {
+  color: #64b5f6;
+}
+.stat-value.warning {
+  color: var(--danger);
+}
 .stat-label {
   font-size: 24rpx;
   color: var(--text-sub);
@@ -154,7 +152,9 @@ export default {
   align-items: center;
   gap: 4px;
 }
-.stat-goal.editable:active { opacity: 0.7; }
+.stat-goal.editable:active {
+  opacity: 0.7;
+}
 .edit-icon {
   font-size: 20rpx;
   opacity: 0.6;
@@ -177,7 +177,9 @@ export default {
   display: flex;
   gap: 4px;
 }
-.achievement-icon { font-size: 40rpx; }
+.achievement-icon {
+  font-size: 40rpx;
+}
 .achievement-text {
   flex: 1;
   font-size: 26rpx;
