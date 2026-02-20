@@ -2,7 +2,7 @@
   <view class="chat-container" :class="{ 'dark-mode': isDark }">
     <!-- 导航栏 -->
     <view class="nav-bar">
-      <image src="https://img.icons8.com/ios-glyphs/30/333333/chevron-left.png" class="back-icon" @tap="goBack" />
+      <image :src="icons8('ios-glyphs', 30, '333333', 'chevron-left')" class="back-icon" @tap="goBack" />
       <view class="nav-center" hover-class="item-hover" @tap="showFriendSelector = true">
         <image :src="currentFriend.avatar" class="friend-avatar-small" @error="onAvatarError" />
         <text class="nav-title">
@@ -10,7 +10,7 @@
         </text>
         <text class="nav-arrow"> ▼ </text>
       </view>
-      <image src="https://img.icons8.com/ios/50/333333/menu--v1.png" class="menu-icon" @tap="showMenu" />
+      <image :src="icons8('ios', 50, '333333', 'menu--v1')" class="menu-icon" @tap="showMenu" />
     </view>
 
     <!-- AI好友选择器弹窗 -->
@@ -118,7 +118,7 @@
               </view>
             </view>
           </view>
-          <image src="https://img.icons8.com/color/96/user-male-circle--v1.png" class="avatar" />
+          <image :src="icons8('color', 96, '', 'user-male-circle--v1')" class="avatar" />
         </template>
       </view>
 
@@ -167,13 +167,9 @@
     <!-- 输入区域 -->
     <view v-if="!isPageLoading" class="input-area">
       <view class="input-tools">
-        <image src="https://img.icons8.com/ios/50/666666/happy--v1.png" class="tool-icon" @tap="toggleEmotionTags" />
+        <image :src="icons8('ios', 50, '666666', 'happy--v1')" class="tool-icon" @tap="toggleEmotionTags" />
         <image
-          :src="
-            isRecording
-              ? 'https://img.icons8.com/ios/50/FF3B30/microphone.png'
-              : 'https://img.icons8.com/ios/50/666666/microphone.png'
-          "
+          :src="isRecording ? icons8('ios', 50, 'FF3B30', 'microphone') : icons8('ios', 50, '666666', 'microphone')"
           class="tool-icon"
           @touchstart="startRecording"
           @touchend="stopRecording"
@@ -182,8 +178,8 @@
         <image
           :src="
             isRealtimeMode
-              ? 'https://img.icons8.com/ios/50/007AFF/lightning-bolt.png'
-              : 'https://img.icons8.com/ios/50/666666/lightning-bolt.png'
+              ? icons8('ios', 50, '007AFF', 'lightning-bolt')
+              : icons8('ios', 50, '666666', 'lightning-bolt')
           "
           class="tool-icon"
           @tap="toggleRealtimeMode"
@@ -214,6 +210,13 @@ import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 // AI路由器
 import { realtimeAnswer } from './ai-router.js';
+// 外部 CDN 配置
+import config from '@/config';
+
+// icons8 图标 URL 生成器（集中管理，便于替换或自建）
+const icons8 = (style, size, color, name) =>
+  `${config.externalCdn.icons8BaseUrl}/${style}/${size}/${color}/${name}.png`;
+
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 
@@ -233,7 +236,7 @@ const aiFriends = ref([
     type: 'yan-cong',
     name: '研聪',
     role: '清华学霸',
-    avatar: 'https://img.icons8.com/color/96/student-male--v1.png',
+    avatar: icons8('color', 96, '', 'student-male--v1'),
     intro: '清华计算机系研一在读，去年初试第3名上岸。表面高冷学霸，实际是个闷骚的数据控，喜欢用数据说话。',
     personality: '理性、高效、数据驱动',
     speakingStyle: '简洁有力，常引用数据'
@@ -242,7 +245,7 @@ const aiFriends = ref([
     type: 'yan-man',
     name: '研漫',
     role: '心理导师',
-    avatar: 'https://img.icons8.com/color/96/female-profile.png',
+    avatar: icons8('color', 96, '', 'female-profile'),
     intro: '北师大心理学硕士在读，专攻教育心理学。温暖如春风，共情能力极强，是大家的"树洞"。',
     personality: '温暖、共情、善于倾听',
     speakingStyle: '温柔体贴，善于引导'
@@ -251,7 +254,7 @@ const aiFriends = ref([
     type: 'yan-shi',
     name: '研师',
     role: '985名师',
-    avatar: 'https://img.icons8.com/color/96/teacher.png',
+    avatar: icons8('color', 96, '', 'teacher'),
     intro: '某985高校副教授，有10年考研辅导经验。专业严谨但不古板，严格中带着关怀。',
     personality: '专业、严谨、经验丰富',
     speakingStyle: '直击要点，不说废话'
@@ -260,7 +263,7 @@ const aiFriends = ref([
     type: 'yan-you',
     name: '研友',
     role: '同届伙伴',
-    avatar: 'https://img.icons8.com/color/96/conference-call--v1.png',
+    avatar: icons8('color', 96, '', 'conference-call--v1'),
     intro: '和你同届备考的研友，目标是人大新闻学院。乐观开朗，段子手，是备考路上的开心果。',
     personality: '乐观、幽默、接地气',
     speakingStyle: '轻松活泼，爱用表情'

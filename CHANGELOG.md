@@ -11,6 +11,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ### Fixed
 
 - Sass `@import` deprecation warnings in App.vue — migrated to `@use`
+- 前后端字段名不一致修复（4 类）：
+  - rank.vue / pk-battle.vue: action `get_rank` → `get`（排行榜页面完全无法加载）
+  - doc-convert.vue / lafService.js: `taskId` → `jobId`（文档转换状态轮询失败）
+  - storageService.js: addMistake 添加 `offlineMistakeToBackend` 归一化（`question` → `question_content`）
+  - mistake-manager.ts: 所有响应添加 `success: true`（兼容标准 ApiResponse 格式）
+- PK 对战分数上传完全失效：action `update_score` → `update`（后端无此 handler）
+- PK 对战分数双重计数：前端发送累计总分但后端 `_.inc()` 再次累加，改为发送增量分数
+- PK 对战分数无上限：服务端添加单次 200 分上限 + 30 秒频率限制
+- 院校查询 matchRate 使用随机数 → 改为后端真实值
+- 学习详情页注入 90 天虚假学习记录 → 仅显示真实数据
+- 聊天语音识别为硬编码模拟文本 → 改用 RecorderManager 真实录音 + 功能开发中提示
+- 学习计划智能调整使用随机进度 → 从 study_stats 读取真实数据
+- 好友主页硬编码 3 个成就徽章 → 改为空数组 + "暂无成就" 提示
+
+### Changed
+
+- icons8 CDN URL 配置化：chat.vue（12 处）+ PosterModal.vue（4 处）统一使用 `config.externalCdn.icons8BaseUrl`
+- 孤立后端函数标记：voice-service、material-manager 添加 `⚠️ [未启用]` 注释
+- laf-backend/README.md：移除不存在的 group-service，标注 voice-service / material-manager 未接入前端
 
 ---
 
