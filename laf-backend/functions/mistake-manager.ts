@@ -24,13 +24,10 @@
 
 import cloud from '@lafjs/cloud'
 import { verifyJWT } from './login'
+import { sanitizeString, validateAction, validateUserId, createLogger, generateRequestId } from './_shared/api-response'
 
 const db = cloud.database()
 const _ = db.command
-
-// ==================== 环境配置 ====================
-const IS_PRODUCTION = process.env.NODE_ENV === 'production'
-const LOG_LEVEL = process.env.LOG_LEVEL || (IS_PRODUCTION ? 'warn' : 'info')
 
 // ✅ E004: 简单的内容哈希函数（用于去重，非密码学用途）
 function contentHash(str: string): string {
@@ -45,11 +42,7 @@ function contentHash(str: string): string {
 }
 
 // ==================== 日志工具 ====================
-const logger = {
-  info: (...args: unknown[]) => { if (LOG_LEVEL !== 'warn' && LOG_LEVEL !== 'error') console.log(...args) },
-  warn: (...args: unknown[]) => { if (LOG_LEVEL !== 'error') console.warn(...args) },
-  error: (...args: unknown[]) => console.error(...args)
-}
+const logger = createLogger('[MistakeManager]')
 
 // ==================== 用户身份验证 ====================
 /**
@@ -91,28 +84,7 @@ async function verifyUserAuth(userId: string, token?: string, headers?: Record<s
 }
 
 // ==================== 参数校验 ====================
-function sanitizeString(input: string, maxLength: number = 2000): string {
-  if (typeof input !== 'string') return ''
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '')
-    .substring(0, maxLength)
-    .trim()
-}
-
-function validateAction(action: unknown): boolean {
-  return typeof action === 'string' && 
-         action.length > 0 && 
-         action.length <= 50 && 
-         /^[a-zA-Z_]+$/.test(action)
-}
-
-function validateUserId(userId: unknown): boolean {
-  return typeof userId === 'string' && 
-         userId.length > 0 && 
-         userId.length <= 64
-}
+// sanitizeString, validateAction, validateUserId 已从 _shared/api-response 导入
 
 function validateMistakeData(data: unknown): { valid: boolean; error?: string; sanitized?: Record<string, unknown> } {
   if (!data || typeof data !== 'object') {
@@ -217,7 +189,7 @@ function validateMistakeData(data: unknown): { valid: boolean; error?: string; s
 
 export default async function (ctx: FunctionContext) {
   const startTime = Date.now()
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  const requestId = generateRequestId('mm')
 
   logger.info(`[${requestId}] 错题管理请求开始`)
 
@@ -866,20 +838,19 @@ async function handleManageTags(userId, data, requestId) {
 
     case 'rename': {
       // 批量重命名标签（用户所有错题中的该标签）
-      // ✅ E004: 只拉取含标签的字段，并行更新
+      // ✅ E004: 只拉取含目标标签的记录，减少内存占用
       if (!oldTag || !newTag) {
         return { code: 400, ok: false, message: '参数错误: 需要 oldTag 和 newTag' }
       }
 
-      // 只拉取 _id 和 tags 字段
+      // 只查询包含 oldTag 的错题，避免全量拉取
       const mistakes = await collection.where({
-        user_id: userId
+        user_id: userId,
+        tags: oldTag
       }).field({ tags: true }).limit(2000).get()
 
-      // 筛选出包含 oldTag 的错题
-      const toUpdate = mistakes.data.filter(
-        (m) => m.tags && m.tags.includes(oldTag)
-      )
+      // 查询已精确匹配 oldTag，直接使用结果
+      const toUpdate = mistakes.data
 
       // 并行批量更新（每批10条）
       let updated = 0
@@ -910,28 +881,53 @@ async function handleManageTags(userId, data, requestId) {
 
     case 'list': {
       // 获取用户所有标签及使用次数
-      const mistakes = await collection.where({
-        user_id: userId
-      }).field({ tags: true }).limit(2000).get()
+      // 优先使用聚合管道在 DB 层统计，避免拉取大量记录到内存
+      try {
+        const aggResult = await db.collection('mistake_book').aggregate()
+          .match({ user_id: userId, tags: { $exists: true, $ne: [] } })
+          .unwind('$tags')
+          .group({ _id: '$tags', count: { $sum: 1 } })
+          .sort({ count: -1 })
+          .end()
 
-      const tagCounts = {}
-      for (const mistake of mistakes.data) {
-        if (mistake.tags && Array.isArray(mistake.tags)) {
-          for (const tag of mistake.tags) {
-            tagCounts[tag] = (tagCounts[tag] || 0) + 1
+        const tagList = (aggResult.data || []).map((item) => ({
+          tag: item._id,
+          count: item.count
+        }))
+
+        return {
+          code: 0,
+          ok: true,
+          data: tagList,
+          message: '获取成功'
+        }
+      } catch (aggErr) {
+        // 聚合不可用时降级为内存统计
+        logger.warn(`[${requestId}] 标签聚合失败，降级为内存统计:`, aggErr.message)
+
+        const mistakes = await collection.where({
+          user_id: userId
+        }).field({ tags: true }).limit(2000).get()
+
+        const tagCounts = {}
+        for (const mistake of mistakes.data) {
+          if (mistake.tags && Array.isArray(mistake.tags)) {
+            for (const tag of mistake.tags) {
+              tagCounts[tag] = (tagCounts[tag] || 0) + 1
+            }
           }
         }
-      }
 
-      const tagList = Object.entries(tagCounts)
-        .map(([tag, count]) => ({ tag, count }))
-        .sort((a, b) => (b.count as number) - (a.count as number))
+        const tagList = Object.entries(tagCounts)
+          .map(([tag, count]) => ({ tag, count }))
+          .sort((a, b) => (b.count as number) - (a.count as number))
 
-      return {
-        code: 0,
-        ok: true,
-        data: tagList,
-        message: '获取成功'
+        return {
+          code: 0,
+          ok: true,
+          data: tagList,
+          message: '获取成功'
+        }
       }
     }
 

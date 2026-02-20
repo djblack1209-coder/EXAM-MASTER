@@ -48,9 +48,20 @@ class OfflineQueue {
     this.isOnline = true;
     this.listeners = new Set();
     this.requestFnMap = new Map(); // 存储请求函数引用
+    this._rebuilder = null; // ✅ 请求重建函数（由 lafService 注册）
 
     // 初始化
     this._init();
+  }
+
+  /**
+   * ✅ 问题清单修复：注册请求重建函数
+   * 允许 lafService 注册一个函数，用于从持久化的 requestData 重建请求
+   * @param {Function} rebuilderFn - (requestData) => Promise<any>
+   */
+  registerRebuilder(rebuilderFn) {
+    this._rebuilder = rebuilderFn;
+    logger.log('[OfflineQueue] ✅ 请求重建函数已注册');
   }
 
   /**
@@ -78,7 +89,7 @@ class OfflineQueue {
         // 过滤过期的请求
         const now = Date.now();
         this.queue = stored.filter((item) => {
-          return (now - item.timestamp) < MAX_AGE;
+          return now - item.timestamp < MAX_AGE;
         });
 
         if (this.queue.length !== stored.length) {
@@ -183,20 +194,12 @@ class OfflineQueue {
    * @returns {string} 请求ID
    */
   enqueue(request) {
-    const {
-      requestFn,
-      requestData,
-      priority = 'normal',
-      dedupeKey,
-      metadata = {}
-    } = request;
+    const { requestFn, requestData, priority = 'normal', dedupeKey, metadata = {} } = request;
 
     // 检查队列大小
     if (this.queue.length >= MAX_QUEUE_SIZE) {
       // 移除最旧的低优先级请求
-      const lowPriorityIndex = this.queue.findIndex((item) =>
-        item.priority === 'low' || item.priority === 'normal'
-      );
+      const lowPriorityIndex = this.queue.findIndex((item) => item.priority === 'low' || item.priority === 'normal');
 
       if (lowPriorityIndex !== -1) {
         const removed = this.queue.splice(lowPriorityIndex, 1)[0];
@@ -300,9 +303,9 @@ class OfflineQueue {
    * @returns {Promise<Object>} 处理结果
    */
   async processQueue(_options = {}) {
-    if (this.processing) {
-      logger.log('[OfflineQueue] 队列正在处理中...');
-      return { success: false, reason: 'already_processing' };
+    if (this.processing || this.paused) {
+      logger.log(`[OfflineQueue] 队列${this.paused ? '已暂停' : '正在处理中'}...`);
+      return { success: false, reason: this.paused ? 'paused' : 'already_processing' };
     }
 
     if (!this.isOnline) {
@@ -336,13 +339,21 @@ class OfflineQueue {
 
       try {
         // 获取请求函数
-        const requestFn = this.requestFnMap.get(item.id);
+        let requestFn = this.requestFnMap.get(item.id);
+
+        // ✅ 问题清单修复：函数引用丢失时，尝试从 requestData 重建
+        if (!requestFn && item.requestData && this._rebuilder) {
+          try {
+            logger.log(`[OfflineQueue] 🔧 尝试从 requestData 重建请求: ${item.id}`);
+            requestFn = () => this._rebuilder(item.requestData);
+          } catch (rebuildErr) {
+            logger.log(`[OfflineQueue] ⚠️ 请求重建失败: ${item.id}`, rebuildErr);
+          }
+        }
 
         if (!requestFn) {
-          // 没有请求函数，尝试从 requestData 重建
-          if (item.requestData) {
-            logger.log(`[OfflineQueue] ⚠️ 请求 ${item.id} 无法执行（函数引用丢失），跳过`);
-          }
+          // 无法执行也无法重建，跳过
+          logger.log(`[OfflineQueue] ⚠️ 请求 ${item.id} 无法执行（函数引用丢失且无法重建），跳过`);
           this.dequeue(item.id);
           results.failed++;
           continue;
@@ -358,7 +369,6 @@ class OfflineQueue {
         results.processed++;
 
         logger.log(`[OfflineQueue] ✅ 请求成功: ${item.id}`);
-
       } catch (error) {
         console.error(`[OfflineQueue] ❌ 请求失败: ${item.id}`, error);
 
@@ -446,7 +456,8 @@ class OfflineQueue {
    * 暂停队列处理
    */
   pause() {
-    this.processing = true; // 阻止新的处理
+    // [AUDIT FIX] 使用独立 paused 标志，避免与 processQueue 的 processing 标志冲突
+    this.paused = true;
     logger.log('[OfflineQueue] 队列处理已暂停');
   }
 
@@ -454,7 +465,7 @@ class OfflineQueue {
    * 恢复队列处理
    */
   resume() {
-    this.processing = false;
+    this.paused = false;
     logger.log('[OfflineQueue] 队列处理已恢复');
 
     // 如果在线且有待处理请求，自动开始处理

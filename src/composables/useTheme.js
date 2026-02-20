@@ -2,6 +2,11 @@
  * 主题管理组合式函数
  * ✅ 5.4: 提取 index 和 practice 页面重复的主题逻辑
  *
+ * 注意：stores/modules/theme.js (useThemeStore) 也管理主题状态，
+ * 两者共享同一个 storage key ('theme_mode') 和事件 ('themeUpdate')，
+ * 因此数据是兼容的。本模块是轻量级读写工具，store 提供完整主题配置。
+ * 后续可考虑让本模块内部委托给 useThemeStore 以消除双源。
+ *
  * 使用方式（Options API）：
  *   import { initTheme, toggleTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme'
  *

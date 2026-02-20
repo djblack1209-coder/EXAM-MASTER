@@ -10,7 +10,7 @@ export const learningStatsMixin = {
     // ✅ P0-2: 加载学习数据统计
     async loadLearningStats() {
       try {
-        const { getStreakData, getComprehensiveReport } = await import('../utils/learning-analytics.js');
+        const { getStreakData, getComprehensiveReport } = await import('@/utils/analytics/learning-analytics.js');
         const streakData = getStreakData();
         this.currentStreak = streakData.currentStreak || 0;
 
@@ -61,7 +61,7 @@ export const learningStatsMixin = {
     // ✅ P2: 加载成就数据
     async loadAchievements() {
       try {
-        const { getAchievements } = await import('../utils/learning-analytics.js');
+        const { getAchievements } = await import('@/utils/analytics/learning-analytics.js');
         const achievementData = getAchievements();
         this.unlockedAchievements = achievementData.unlocked || [];
         this.allAchievements = [...achievementData.unlocked, ...achievementData.locked];
@@ -112,34 +112,41 @@ export const learningStatsMixin = {
       const { requireLogin } = await import('@/utils/auth/loginGuard.js');
       const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
 
-      requireLogin(async () => {
-        if (!this.hasBank) {
-          this.showPracticeModesModal = false;
-          return uni.showToast({ title: '请先导入题库', icon: 'none' });
-        }
+      requireLogin(
+        async () => {
+          if (!this.hasBank) {
+            this.showPracticeModesModal = false;
+            return uni.showToast({ title: '请先导入题库', icon: 'none' });
+          }
 
-        try {
-          const { startPracticeMode } = await import('../utils/practice-mode-manager.js');
-          startPracticeMode(mode.id);
-          this.showPracticeModesModal = false;
+          try {
+            const { startPracticeMode } = await import('../utils/practice-mode-manager.js');
+            startPracticeMode(mode.id);
+            this.showPracticeModesModal = false;
 
-          safeNavigateTo('/pages/practice-sub/do-quiz', {
-            complete: () => {
-              setTimeout(() => { this.isNavigating = false; }, 500);
-            }
-          });
-        } catch (error) {
-          logger.warn('[practice] 启动练习模式失败:', error);
-          uni.showToast({
-            title: error.message || '启动失败，请重试',
-            icon: 'none'
-          });
+            safeNavigateTo('/pages/practice-sub/do-quiz', {
+              complete: () => {
+                setTimeout(() => {
+                  this.isNavigating = false;
+                }, 500);
+              }
+            });
+          } catch (error) {
+            logger.warn('[practice] 启动练习模式失败:', error);
+            uni.showToast({
+              title: error.message || '启动失败，请重试',
+              icon: 'none'
+            });
+          }
+        },
+        {
+          message: '请先登录后选择练习模式',
+          loginUrl: '/pages/settings/index',
+          onCancel: () => {
+            this.isNavigating = false;
+          }
         }
-      }, {
-        message: '请先登录后选择练习模式',
-        loginUrl: '/pages/settings/index',
-        onCancel: () => { this.isNavigating = false; }
-      });
+      );
     }
   }
 };

@@ -1,15 +1,9 @@
 <template>
   <view class="splash-container">
     <view class="content-wrapper">
-      <image
-        class="logo-icon"
-        src="./static/logo.png"
-        mode="aspectFit"
-      />
+      <image class="logo-icon" src="./static/logo.png" mode="aspectFit" />
 
-      <text class="app-name">
-        Exam-Master
-      </text>
+      <text class="app-name"> Exam-Master </text>
 
       <view class="loading-dots">
         <view class="dot" />
@@ -32,15 +26,25 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue';
+
+const splashTimer = ref(null);
 
 onMounted(() => {
   // 3秒后自动跳转到首页
-  setTimeout(() => {
+  splashTimer.value = setTimeout(() => {
     uni.reLaunch({
       url: '/pages/index/index'
     });
   }, 3000);
+});
+
+// [AUDIT FIX] 页面销毁时清除定时器，防止已卸载页面触发导航
+onBeforeUnmount(() => {
+  if (splashTimer.value) {
+    clearTimeout(splashTimer.value);
+    splashTimer.value = null;
+  }
 });
 </script>
 
@@ -120,7 +124,8 @@ onMounted(() => {
 }
 
 @keyframes blink {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(0.8);
   }
@@ -154,7 +159,7 @@ onMounted(() => {
 
 /* 蓝色层 (背景) */
 .layer-1 {
-  background: linear-gradient(120deg, #0052D4 0%, #4364F7 100%);
+  background: linear-gradient(120deg, #0052d4 0%, #4364f7 100%);
   bottom: -40%;
   left: -30%;
   transform: rotate(-10deg);
@@ -164,7 +169,7 @@ onMounted(() => {
 
 /* 青/黄层 (中间过渡) */
 .layer-2 {
-  background: linear-gradient(120deg, #20BDFF 0%, #A5FECB 100%);
+  background: linear-gradient(120deg, #20bdff 0%, #a5fecb 100%);
   bottom: -55%;
   left: -10%;
   transform: rotate(5deg);
@@ -175,7 +180,7 @@ onMounted(() => {
 
 /* 橙红层 (前景高光) */
 .layer-3 {
-  background: linear-gradient(90deg, #FFC107 0%, #FF5722 50%, #f7797d 100%);
+  background: linear-gradient(90deg, #ffc107 0%, #ff5722 50%, #f7797d 100%);
   bottom: -60%;
   right: -20%;
   left: auto;

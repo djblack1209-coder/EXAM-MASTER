@@ -56,7 +56,7 @@ const SPACED_REPETITION_CONFIG = {
   // 答错时的EF调整
   wrongEFAdjustment: -0.2,
   // 遗忘曲线衰减系数
-  decactor: 0.9,
+  decayFactor: 0.9,
   // 复习成功后的间隔倍数
   intervalMultiplier: 2.0,
   // 最大复习间隔（天）
@@ -242,7 +242,8 @@ class AdaptiveLearningEngine {
     for (const [category, data] of Object.entries(this.knowledgeMap)) {
       const accuracy = data.correct / (data.total || 1);
 
-      if (accuracy < 0.6) { // 正确率低于60%
+      if (accuracy < 0.6) {
+        // 正确率低于60%
         weakPoints.push({
           category: category,
           accuracy: accuracy,
@@ -268,8 +269,8 @@ class AdaptiveLearningEngine {
     this.init();
 
     const today = new Date().toISOString().split('T')[0];
-    const todayRecords = this.learningHistory.filter((r) =>
-      new Date(r.timestamp).toISOString().split('T')[0] === today
+    const todayRecords = this.learningHistory.filter(
+      (r) => new Date(r.timestamp).toISOString().split('T')[0] === today
     );
 
     const totalCorrect = this.learningHistory.filter((r) => r.isCorrect).length;
@@ -278,12 +279,13 @@ class AdaptiveLearningEngine {
     return {
       totalQuestions: totalQuestions,
       totalCorrect: totalCorrect,
-      overallAccuracy: totalQuestions > 0 ? (totalCorrect / totalQuestions * 100).toFixed(1) : 0,
+      overallAccuracy: totalQuestions > 0 ? ((totalCorrect / totalQuestions) * 100).toFixed(1) : 0,
       todayQuestions: todayRecords.length,
       todayCorrect: todayRecords.filter((r) => r.isCorrect).length,
-      todayAccuracy: todayRecords.length > 0
-        ? (todayRecords.filter((r) => r.isCorrect).length / todayRecords.length * 100).toFixed(1)
-        : 0,
+      todayAccuracy:
+        todayRecords.length > 0
+          ? ((todayRecords.filter((r) => r.isCorrect).length / todayRecords.length) * 100).toFixed(1)
+          : 0,
       mistakeCount: this.mistakeBook.filter((m) => !m.is_mastered).length,
       masteredCount: this.mistakeBook.filter((m) => m.is_mastered).length,
       weakPointsCount: this.getWeakKnowledgePoints().length
@@ -300,7 +302,10 @@ class AdaptiveLearningEngine {
   _calculateRetention(mistake) {
     const now = Date.now();
     const lastReview = mistake.last_review_time || mistake.last_wrong_time || mistake.created_at;
-    const timeSinceReview = (now - new Date(lastReview).getTime()) / (1000 * 60 * 60); // 小时
+    // [AUDIT FIX] 防止无效日期导致 NaN 传播，强制触发复习
+    const lastReviewMs = new Date(lastReview).getTime();
+    if (isNaN(lastReviewMs)) return 0;
+    const timeSinceReview = (now - lastReviewMs) / (1000 * 60 * 60); // 小时
 
     // 获取题目的难度系数（EF）
     const easinessFactor = mistake.easiness_factor || SPACED_REPETITION_CONFIG.initialEasinessFactor;
@@ -312,9 +317,7 @@ class AdaptiveLearningEngine {
     // 记忆稳定性计算：考虑复习次数、连续正确次数、难度系数
     // 稳定性 = 基础稳定性 * EF * (1 + 复习次数 * 0.3) * (1 + 连续正确 * 0.2)
     const baseStability = 24; // 基础稳定性（小时）
-    const stabilityFactor = baseStability * easinessFactor *
-      (1 + reviewCount * 0.3) *
-      (1 + consecutiveCorrect * 0.2);
+    const stabilityFactor = baseStability * easinessFactor * (1 + reviewCount * 0.3) * (1 + consecutiveCorrect * 0.2);
 
     // 优化的遗忘曲线公式：R = e^(-t/S) * decay
     // 加入衰减系数，使曲线更符合实际记忆规律
@@ -349,10 +352,7 @@ class AdaptiveLearningEngine {
 
       // 根据答题质量调整EF
       const efAdjustment = SPACED_REPETITION_CONFIG.correctEFAdjustment[quality] || 0.1;
-      easinessFactor = Math.min(
-        SPACED_REPETITION_CONFIG.maxEasinessFactor,
-        easinessFactor + efAdjustment
-      );
+      easinessFactor = Math.min(SPACED_REPETITION_CONFIG.maxEasinessFactor, easinessFactor + efAdjustment);
 
       // 计算新间隔
       if (consecutiveCorrect === 1) {
@@ -551,8 +551,8 @@ class AdaptiveLearningEngine {
     const questionId = question.id || question.question;
 
     // 更新错题本中的掌握度
-    const mistakeIndex = this.mistakeBook.findIndex((m) =>
-      m.id === questionId || m.question === questionId || m.question_content === questionId
+    const mistakeIndex = this.mistakeBook.findIndex(
+      (m) => m.id === questionId || m.question === questionId || m.question_content === questionId
     );
 
     if (mistakeIndex >= 0) {
@@ -698,9 +698,7 @@ export function recordReview(mistakeId, isCorrect) {
   adaptiveLearningEngine.init();
 
   // 在错题本中查找对应题目
-  const mistake = adaptiveLearningEngine.mistakeBook.find((m) =>
-    m.id === mistakeId || m._id === mistakeId
-  );
+  const mistake = adaptiveLearningEngine.mistakeBook.find((m) => m.id === mistakeId || m._id === mistakeId);
 
   if (mistake) {
     // 更新复习次数和时间

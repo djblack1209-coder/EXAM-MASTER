@@ -2,8 +2,7 @@
 // 实现动态计划调整、多维度计划管理、智能提醒等功能
 
 import { storageService } from '@/services/storageService.js';
-import { getLearningReport } from '@/utils/learning/smart-question-picker.js';
-import { getStreakData, getComprehensiveReport } from './utils/learning-analytics.js';
+import { getStreakData, getComprehensiveReport } from '@/utils/analytics/learning-analytics.js';
 import { logger } from '@/utils/logger.js';
 
 class IntelligentPlanManager {
@@ -95,7 +94,7 @@ class IntelligentPlanManager {
     return {
       current: baseRate,
       trend: Math.round(trend),
-      projected: Math.min(100, Math.max(0, Math.round(baseRate + (trend * daysRemaining / Math.max(1, elapsed)))))
+      projected: Math.min(100, Math.max(0, Math.round(baseRate + (trend * daysRemaining) / Math.max(1, elapsed))))
     };
   }
 
@@ -200,12 +199,7 @@ class IntelligentPlanManager {
 
   // 生成里程碑
   generateMilestones(options) {
-    const {
-      startDate,
-      endDate,
-      goal,
-      category
-    } = options;
+    const { startDate, endDate, goal, category } = options;
 
     const milestones = [];
     const start = new Date(startDate);
@@ -246,26 +240,10 @@ class IntelligentPlanManager {
         '完成强化训练，掌握解题技巧和方法',
         '完成冲刺复习，熟练掌握考点和难点'
       ],
-      英语: [
-        '完成词汇和语法基础学习',
-        '完成阅读和写作强化训练',
-        '完成真题模拟和冲刺复习'
-      ],
-      政治: [
-        '完成基础知识学习，构建知识体系',
-        '完成强化训练，掌握重点难点',
-        '完成冲刺复习，熟练掌握时政和考点'
-      ],
-      专业课: [
-        '完成基础知识点学习，构建知识框架',
-        '完成强化训练，掌握核心内容',
-        '完成冲刺复习，熟练掌握考点和热点'
-      ],
-      综合: [
-        '完成基础阶段学习，掌握基本概念',
-        '完成强化阶段学习，提升解题能力',
-        '完成冲刺阶段学习，全面备考'
-      ]
+      英语: ['完成词汇和语法基础学习', '完成阅读和写作强化训练', '完成真题模拟和冲刺复习'],
+      政治: ['完成基础知识学习，构建知识体系', '完成强化训练，掌握重点难点', '完成冲刺复习，熟练掌握时政和考点'],
+      专业课: ['完成基础知识点学习，构建知识框架', '完成强化训练，掌握核心内容', '完成冲刺复习，熟练掌握考点和热点'],
+      综合: ['完成基础阶段学习，掌握基本概念', '完成强化阶段学习，提升解题能力', '完成冲刺阶段学习，全面备考']
     };
 
     const templates = goalTemplates[category] || goalTemplates.综合;
@@ -471,8 +449,9 @@ class IntelligentPlanManager {
   }
 
   // 获取智能提醒
-  getIntelligentReminders() {
+  async getIntelligentReminders() {
     const intelligentReminders = [];
+    const { getLearningReport } = await import('@/utils/learning/smart-question-picker.js');
     const learningReport = getLearningReport();
     const streakData = getStreakData();
 

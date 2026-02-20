@@ -140,13 +140,17 @@ export default defineConfig(({ command, mode }) => {
       chunkSizeWarningLimit: isProduction ? 500 : 1000,
       
       // 资源内联限制（小于此大小的资源会被内联为base64）
-      assetsInlineLimit: 4096,
+      // 提升到 8KB — 减少小图标的 HTTP 请求数
+      assetsInlineLimit: 8192,
       
       // 构建目标（es2018 支持 async/await、rest/spread 等，减少 polyfill 体积）
       target: 'es2018',
       
       // CSS 代码分割
       cssCodeSplit: true,
+      
+      // 生产环境 CSS 压缩（lightningcss 比默认 esbuild 压缩率更高）
+      cssMinify: isProduction ? 'esbuild' : false,
       
       // 生产环境报告压缩后的大小
       reportCompressedSize: isProduction

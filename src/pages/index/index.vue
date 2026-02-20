@@ -2,7 +2,7 @@
   <!-- 最外层：页面容器 -->
   <view :class="['page-wrapper', { 'page-dark': isDark }]">
     <!-- 主容器：带背景色 -->
-    <view :class="['dashboard-container', { 'dark': isDark }]">
+    <view :class="['dashboard-container', { dark: isDark }]">
       <!-- F002-I1b: 顶部导航栏（已提取为独立组件） -->
       <IndexHeaderBar
         :scroll-y="scrollY"
@@ -30,13 +30,11 @@
         <view v-if="isRefreshing" class="custom-refresher">
           <view class="refresher-content">
             <view class="refresher-spinner" />
-            <text class="refresher-text">
-              正在刷新...
-            </text>
+            <text class="refresher-text"> 正在刷新... </text>
           </view>
         </view>
         <!-- 顶部占位：为导航栏留空 -->
-        <view :style="{ height: (layoutInfo.navBarHeight + 50) + 'px' }" />
+        <view :style="{ height: layoutInfo.navBarHeight + 50 + 'px' }" />
 
         <!-- 内容包装器 -->
         <view class="content-wrapper">
@@ -89,11 +87,7 @@
           />
 
           <!-- 学习轨迹 -->
-          <ActivityList
-            :is-dark="isDark"
-            :activities="recentActivities"
-            @view-all="navToStudyDetail"
-          />
+          <ActivityList :is-dark="isDark" :activities="recentActivities" @view-all="navToStudyDetail" />
 
           <!-- 个性化推荐 -->
           <RecommendationsList
@@ -104,12 +98,14 @@
 
           <!-- 实用工具入口 -->
           <view class="section-header">
-            <text class="section-title">
-              实用工具
-            </text>
+            <text class="section-title"> 实用工具 </text>
           </view>
           <view class="tools-grid">
-            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" hover-class="tool-entry-hover" @tap="navToTool('doc-convert')">
+            <view
+              :class="['tool-entry', isDark ? 'glass' : 'card-light']"
+              hover-class="tool-entry-hover"
+              @tap="navToTool('doc-convert')"
+            >
               <view class="tool-icon-wrapper tool-icon-doc">
                 <view class="tool-icon-glow tool-glow-doc" />
                 <text class="tool-icon-emoji">📄</text>
@@ -120,7 +116,11 @@
               </view>
               <text class="tool-arrow">›</text>
             </view>
-            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" hover-class="tool-entry-hover" @tap="navToTool('id-photo')">
+            <view
+              :class="['tool-entry', isDark ? 'glass' : 'card-light']"
+              hover-class="tool-entry-hover"
+              @tap="navToTool('id-photo')"
+            >
               <view class="tool-icon-wrapper tool-icon-photo">
                 <view class="tool-icon-glow tool-glow-photo" />
                 <text class="tool-icon-emoji">📷</text>
@@ -131,7 +131,11 @@
               </view>
               <text class="tool-arrow">›</text>
             </view>
-            <view :class="['tool-entry', isDark ? 'glass' : 'card-light']" hover-class="tool-entry-hover" @tap="navToTool('photo-search')">
+            <view
+              :class="['tool-entry', isDark ? 'glass' : 'card-light']"
+              hover-class="tool-entry-hover"
+              @tap="navToTool('photo-search')"
+            >
               <view class="tool-icon-wrapper tool-icon-search">
                 <view class="tool-icon-glow tool-glow-search" />
                 <text class="tool-icon-emoji">🔍</text>
@@ -146,53 +150,41 @@
 
           <!-- 待办事项清单 -->
           <view class="section-header">
-            <text class="section-title">
-              待办事项
-            </text>
+            <text class="section-title"> 待办事项 </text>
             <view class="edit-plan-btn" @tap="handleEditPlan">
-              <text class="edit-icon">
-                ✏️
-              </text>
-              <text class="edit-text">
-                编辑计划
-              </text>
+              <text class="edit-icon"> ✏️ </text>
+              <text class="edit-text"> 编辑计划 </text>
             </view>
           </view>
-          <TodoList
-            :todos="todos"
-            :is-dark="isDark"
-            @toggle-todo="handleToggleTodo"
-            @edit-todo="openTodoEditor"
-          />
+          <TodoList :todos="todos" :is-dark="isDark" @toggle-todo="handleToggleTodo" @edit-todo="openTodoEditor" />
 
           <!-- 每日金句 -->
-          <DailyQuoteCard
-            :is-dark="isDark"
-            :quote="dailyQuote"
-            @open-poster="openQuotePoster"
-          />
+          <DailyQuoteCard :is-dark="isDark" :quote="dailyQuote" @open-poster="openQuotePoster" />
         </view>
         <!-- 内容包装器结束 -->
 
         <!-- 底部占位：为 TabBar 留空 -->
-        <view :style="{ height: (layoutInfo.tabBarHeight + 20) + 'px', background: 'transparent' }" />
+        <view :style="{ height: layoutInfo.tabBarHeight + 20 + 'px', background: 'transparent' }" />
       </scroll-view>
 
-      <!-- 骨架屏 -->
+      <!-- 骨架屏：✅ 问题清单修复 - 添加淡出过渡动画 -->
+      <!-- #ifndef APP-NVUE -->
+      <transition name="skeleton-fade">
+        <BaseSkeleton v-if="isLoading" :is-dark="isDark" />
+      </transition>
+      <!-- #endif -->
+      <!-- #ifdef APP-NVUE -->
       <BaseSkeleton v-if="isLoading" :is-dark="isDark" />
+      <!-- #endif -->
     </view>
 
     <!-- 底部导航栏：放在 dashboard-container 外部，避免继承绿色背景 -->
     <CustomTabbar :is-dark="isDark" />
 
     <!-- 弹窗容器：需要继承 dark 类以获取暗色 CSS 变量 -->
-    <view :class="{ 'dark': isDark }">
+    <view :class="{ dark: isDark }">
       <!-- 公式定理弹窗 -->
-      <FormulaModal
-        :visible="showFormulaModal"
-        :formula-list="formulaList"
-        @close="showFormulaModal = false"
-      />
+      <FormulaModal :visible="showFormulaModal" :formula-list="formulaList" @close="showFormulaModal = false" />
 
       <!-- 每日金句海报弹窗 -->
       <QuotePosterModal
@@ -231,7 +223,6 @@
         @confirm="handleLoginConfirm"
         @cancel="showLoginModal = false"
       />
-
 
       <!-- ✅ 检查点1.2: 每日金句分享弹窗 -->
       <ShareModal
@@ -309,7 +300,6 @@ import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS, DEFAULT_USER_PRE
 import { formatRelativeTime, getInitials as _getInitials } from '@/utils/formatters.js';
 
 export default {
-
   components: {
     CustomTabbar,
     BaseSkeleton,
@@ -332,8 +322,13 @@ export default {
   },
   // ✅ 检查点 5.1: 使用页面追踪 Mixin + F002 提取的 Mixins
   mixins: [
-    trackingMixin, studyTimerMixin, dailyQuoteMixin, todoMixin,
-    knowledgePointMixin, recommendationMixin, navigationMixin
+    trackingMixin,
+    studyTimerMixin,
+    dailyQuoteMixin,
+    todoMixin,
+    knowledgePointMixin,
+    recommendationMixin,
+    navigationMixin
   ],
 
   data() {
@@ -402,7 +397,12 @@ export default {
   created() {
     // ✅ 2.3: 静态配置数据作为非响应式实例属性，避免 Vue 递归观察大数组
     this.quoteLibrary = Object.freeze(QUOTE_LIBRARY.map((q) => q.text));
-    this.quoteAuthors = Object.freeze(QUOTE_LIBRARY.reduce((map, q) => { map[q.text] = q.author; return map; }, {}));
+    this.quoteAuthors = Object.freeze(
+      QUOTE_LIBRARY.reduce((map, q) => {
+        map[q.text] = q.author;
+        return map;
+      }, {})
+    );
     this.formulaList = Object.freeze(FORMULA_LIST);
   },
 
@@ -575,9 +575,11 @@ export default {
         // 记录失败的模块（不阻断页面展示）
         const failed = results.filter((r) => r.status === 'rejected');
         if (failed.length > 0) {
-          logger.warn(`[Index] ${failed.length} 个模块加载失败:`, failed.map((r) => r.reason?.message || r.reason));
+          logger.warn(
+            `[Index] ${failed.length} 个模块加载失败:`,
+            failed.map((r) => r.reason?.message || r.reason)
+          );
         }
-
       } catch (error) {
         logger.error('[Index] 数据加载失败:', error);
         uni.showToast({
@@ -614,7 +616,9 @@ export default {
       try {
         const questionBank = storageService.get('v30_bank', []);
         this.realTotalQuestions = Array.isArray(questionBank) ? questionBank.length : 0;
-      } catch (_e) { this.realTotalQuestions = 0; }
+      } catch (_e) {
+        this.realTotalQuestions = 0;
+      }
 
       try {
         const storeAccuracy = parseFloat(this.studyStore?.accuracy || 0);
@@ -626,7 +630,9 @@ export default {
           const total = studyRecord.totalAnswered || 0;
           this.realAccuracy = total === 0 ? 0 : Math.round((correct / total) * 100);
         }
-      } catch (_e) { this.realAccuracy = 0; }
+      } catch (_e) {
+        this.realAccuracy = 0;
+      }
 
       try {
         const storeDays = this.studyStore?.studyProgress?.studyDays || 0;
@@ -636,7 +642,9 @@ export default {
           const studyDates = storageService.get('study_dates', []);
           this.realStudyDays = Array.isArray(studyDates) ? studyDates.length : 0;
         }
-      } catch (_e) { this.realStudyDays = 0; }
+      } catch (_e) {
+        this.realStudyDays = 0;
+      }
     },
 
     // 下拉刷新处理
@@ -853,230 +861,243 @@ export default {
 <style lang="scss" scoped>
 /* ==================== 页面最外层容器 ==================== */
 .page-wrapper {
-	min-height: 100vh;
-	position: relative;
-	/* 关键：最外层背景白色，这样 TabBar 下方不会显示绿色 */
-	background-color: #FFFFFF;
+  min-height: 100vh;
+  position: relative;
+  /* 关键：最外层背景白色，这样 TabBar 下方不会显示绿色 */
+  background-color: #ffffff;
 }
 
 /* 深色模式下的页面背景 */
 .page-wrapper.page-dark {
-	background-color: #080808;
+  background-color: #080808;
 }
 
 .dashboard-container {
-	min-height: 100vh;
-	background-color: var(--bg-page);
-	position: relative;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  background-color: var(--bg-page);
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .glass {
-	background: var(--bg-glass);
-	backdrop-filter: blur(24rpx);
-	-webkit-backdrop-filter: blur(24rpx);
-	border: 1rpx solid var(--border);
+  background: var(--bg-glass);
+  backdrop-filter: blur(24rpx);
+  -webkit-backdrop-filter: blur(24rpx);
+  border: 1rpx solid var(--border);
 }
 
 /* F002-I1b: 顶部导航栏样式已移至 IndexHeaderBar.vue */
 
 /* ==================== 主内容区域：沉浸式全屏布局 ==================== */
 .main-content-fullscreen {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	height: 100vh;
-	width: 100%;
-	z-index: 1;
-	box-sizing: border-box;
-	-webkit-overflow-scrolling: touch;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 100%;
+  z-index: 1;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* 自定义下拉刷新指示器 */
 .custom-refresher {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 32rpx 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32rpx 0;
 }
 
 .refresher-content {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
 }
 
 .refresher-spinner {
-	width: 48rpx;
-	height: 48rpx;
-	border: 4rpx solid var(--border);
-	border-top-color: var(--primary);
-	border-radius: 50%;
-	animation: spin 0.8s linear infinite;
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-	to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .refresher-text {
-	font-size: 24rpx;
-	color: var(--text-sub);
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 
 /* 内容包装器 */
 .content-wrapper {
-	padding: var(--ds-spacing-xl, 48rpx) var(--ds-spacing-lg, 32rpx);
+  padding: var(--ds-spacing-xl, 48rpx) var(--ds-spacing-lg, 32rpx);
 }
 
 /* ==================== 章节标题（保留：待办事项区域仍在父组件） ==================== */
 .section-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32rpx;
 }
 
 .section-title {
-	font-size: 40rpx;
-	font-weight: 700;
-	color: var(--text-primary);
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .section-action {
-	font-size: 28rpx;
-	color: var(--primary);
-	font-weight: 500;
+  font-size: 28rpx;
+  color: var(--primary);
+  font-weight: 500;
 }
 
 /* ==================== 编辑计划按钮 ==================== */
 .edit-plan-btn {
-	display: flex;
-	align-items: center;
-	gap: 8rpx;
-	padding: 12rpx 24rpx;
-	border-radius: 20rpx;
-	background: var(--primary);
-	color: var(--primary-foreground);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .edit-plan-btn:active {
-	transform: scale(0.95);
-	opacity: 0.8;
+  transform: scale(0.95);
+  opacity: 0.8;
 }
 
 .edit-icon {
-	font-size: 24rpx;
+  font-size: 24rpx;
 }
 
 .edit-text {
-	font-size: 24rpx;
-	font-weight: 600;
+  font-size: 24rpx;
+  font-weight: 600;
 }
 
 /* ==================== 实用工具入口 ==================== */
 .tools-grid {
-	display: flex;
-	flex-direction: column;
-	gap: 20rpx;
-	margin-bottom: 48rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 48rpx;
 }
 
 .tool-entry {
-	display: flex;
-	align-items: center;
-	padding: 28rpx 24rpx;
-	border-radius: 24rpx;
-	border: 1rpx solid var(--border);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  padding: 28rpx 24rpx;
+  border-radius: 24rpx;
+  border: 1rpx solid var(--border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tool-entry-hover {
-	transform: scale(0.97);
-	opacity: 0.85;
+  transform: scale(0.97);
+  opacity: 0.85;
 }
 
 .tool-icon-wrapper {
-	position: relative;
-	width: 88rpx;
-	height: 88rpx;
-	border-radius: 24rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	overflow: hidden;
+  position: relative;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .tool-icon-glow {
-	position: absolute;
-	top: -50%;
-	left: -50%;
-	width: 200%;
-	height: 200%;
-	border-radius: 50%;
-	opacity: 0.25;
-	filter: blur(16rpx);
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  border-radius: 50%;
+  opacity: 0.25;
+  filter: blur(16rpx);
 }
 
 .tool-icon-doc {
-	background: linear-gradient(135deg, #36d1dc, #5b86e5);
+  background: linear-gradient(135deg, #36d1dc, #5b86e5);
 }
 
 .tool-glow-doc {
-	background: radial-gradient(circle, #36d1dc, transparent 70%);
+  background: radial-gradient(circle, #36d1dc, transparent 70%);
 }
 
 .tool-icon-photo {
-	background: linear-gradient(135deg, #e84393, #fd79a8);
+  background: linear-gradient(135deg, #e84393, #fd79a8);
 }
 
 .tool-glow-photo {
-	background: radial-gradient(circle, #e84393, transparent 70%);
+  background: radial-gradient(circle, #e84393, transparent 70%);
 }
 
 .tool-icon-search {
-	background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
 .tool-glow-search {
-	background: radial-gradient(circle, #667eea, transparent 70%);
+  background: radial-gradient(circle, #667eea, transparent 70%);
 }
 
 .tool-icon-emoji {
-	font-size: 40rpx;
-	position: relative;
-	z-index: 1;
+  font-size: 40rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .tool-info {
-	flex: 1;
-	margin-left: 24rpx;
-	display: flex;
-	flex-direction: column;
-	gap: 4rpx;
+  flex: 1;
+  margin-left: 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
 }
 
 .tool-name {
-	font-size: 28rpx;
-	font-weight: 600;
-	color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .tool-desc {
-	font-size: 22rpx;
-	color: var(--text-secondary);
+  font-size: 22rpx;
+  color: var(--text-secondary);
 }
 
 .tool-arrow {
-	font-size: 36rpx;
-	color: var(--text-secondary);
-	opacity: 0.5;
-	margin-left: 12rpx;
+  font-size: 36rpx;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  margin-left: 12rpx;
 }
 
+/* ✅ 问题清单修复：骨架屏淡出过渡动画 */
+.skeleton-fade-enter-active {
+  transition: opacity 0.2s ease-in;
+}
+.skeleton-fade-leave-active {
+  transition: opacity 0.35s ease-out;
+}
+.skeleton-fade-enter-from,
+.skeleton-fade-leave-to {
+  opacity: 0;
+}
 </style>
