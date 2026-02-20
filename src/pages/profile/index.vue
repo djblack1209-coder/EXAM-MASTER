@@ -285,7 +285,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { onShow, onHide } from '@dcloudio/uni-app';
+import { onShow, onHide, onShareAppMessage } from '@dcloudio/uni-app';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
@@ -867,6 +867,13 @@ const _userInfoHandler = (info) => {
 };
 
 // ========== 生命周期 ==========
+
+// [F2-FIX] 微信分享配置
+onShareAppMessage(() => ({
+  title: '个人中心 - Exam-Master 考研备考',
+  path: '/pages/profile/index'
+}));
+
 onMounted(() => {
   initLayoutInfo();
   initTheme();

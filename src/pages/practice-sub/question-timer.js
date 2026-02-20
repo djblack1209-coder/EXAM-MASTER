@@ -93,13 +93,7 @@ class QuestionTimer {
     this.init();
     this.stop(); // 停止之前的计时器
 
-    const {
-      difficulty = 2,
-      customTimeLimit = null,
-      onTick = null,
-      onWarning = null,
-      onTimeout = null
-    } = options;
+    const { difficulty = 2, customTimeLimit = null, onTick = null, onWarning = null, onTimeout = null } = options;
 
     // 计算时限
     const baseLimit = customTimeLimit || this.settings.defaultTimeLimit;
@@ -258,9 +252,7 @@ class QuestionTimer {
 
     // 计算每个分类的平均时间
     for (const cat of Object.keys(categoryStats)) {
-      categoryStats[cat].averageTime = Math.round(
-        categoryStats[cat].totalTime / categoryStats[cat].total
-      );
+      categoryStats[cat].averageTime = Math.round(categoryStats[cat].totalTime / categoryStats[cat].total);
     }
 
     // 计算效率分数
@@ -297,9 +289,7 @@ class QuestionTimer {
     const difficulty = question.difficulty || 2;
 
     // 基于历史数据计算推荐时限
-    const categoryRecords = this.timeRecords.filter(
-      (r) => r.category === category && r.isCorrect
-    );
+    const categoryRecords = this.timeRecords.filter((r) => r.category === category && r.isCorrect);
 
     let baseTime = this.settings.defaultTimeLimit;
 
@@ -352,7 +342,7 @@ class QuestionTimer {
       if (stats.total >= 3) {
         const accuracy = stats.correct / stats.total;
         const avgTime = stats.totalTime / stats.total;
-        const efficiency = 1 - (avgTime / this.settings.defaultTimeLimit);
+        const efficiency = 1 - avgTime / this.settings.defaultTimeLimit;
         const score = accuracy * 0.7 + Math.max(0, efficiency) * 0.3;
 
         if (score > bestScore) {
@@ -438,7 +428,7 @@ class QuestionTimer {
           uni.vibrateShort();
         }
       } catch (e) {
-        console.warn('[QuestionTimer] 震动提醒失败:', e);
+        logger.warn('[QuestionTimer] 震动提醒失败:', e);
       }
     }
 
@@ -553,7 +543,7 @@ class QuestionTimer {
         }
       }
     } catch (e) {
-      console.warn('[QuestionTimer] 加载设置失败:', e);
+      logger.warn('[QuestionTimer] 加载设置失败:', e);
     }
   }
 
@@ -566,7 +556,7 @@ class QuestionTimer {
         storageService.save(STORAGE_KEYS.TIMER_SETTINGS, this.settings);
       }
     } catch (e) {
-      console.warn('[QuestionTimer] 保存设置失败:', e);
+      logger.warn('[QuestionTimer] 保存设置失败:', e);
     }
   }
 
@@ -596,7 +586,7 @@ class QuestionTimer {
         storageService.save(STORAGE_KEYS.TIME_RECORDS, this.timeRecords);
       }
     } catch (e) {
-      console.warn('[QuestionTimer] 保存时间记录失败:', e);
+      logger.warn('[QuestionTimer] 保存时间记录失败:', e);
     }
   }
 }

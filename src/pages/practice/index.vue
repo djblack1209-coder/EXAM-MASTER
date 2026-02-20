@@ -499,6 +499,15 @@ export default {
       }, 500);
     }
   },
+
+  // [F2-FIX] 微信分享配置
+  onShareAppMessage() {
+    return {
+      title: '智能刷题 - Exam-Master 考研备考',
+      path: '/pages/practice/index'
+    };
+  },
+
   onLoad() {
     // 初始化主题
     this.isDark = initTheme();
@@ -566,7 +575,7 @@ export default {
         const doneCount = Object.keys(userAnswers || {}).length;
         this.progressPercent = bank.length > 0 ? Math.round((doneCount / bank.length) * 100) : 0;
       } catch (err) {
-        console.error('[刷题中心] 刷新题库状态异常:', err);
+        logger.error('[刷题中心] 刷新题库状态异常:', err);
       } finally {
         this.isPageLoading = false;
       }

@@ -417,6 +417,15 @@ export default {
       return getNoteTags();
     }
   },
+
+  // [F2-FIX] 微信分享配置
+  onShareAppMessage() {
+    return {
+      title: '智能刷题 - Exam-Master 考研备考',
+      path: '/pages/practice/index'
+    };
+  },
+
   onLoad() {
     this.initSystemUI();
 
