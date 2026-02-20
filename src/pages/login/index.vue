@@ -865,7 +865,17 @@ const saveLoginInfo = (data) => {
   storageService.save('userInfo', userInfo);
   storageService.save('EXAM_TOKEN', data.token, true);
   storageService.save('EXAM_USER_ID', userInfo.uid, true);
-  // ✅ B021-3: 移除明文 user_id 冗余存储，统一使用加密的 EXAM_USER_ID
+
+  // ✅ FIX: 同步写入 Pinia store，避免 store 与 storage 不一致
+  try {
+    const userStore = useUserStore();
+    userStore.setUserInfo?.(userInfo);
+    if (data.token) {
+      userStore.setToken?.(data.token);
+    }
+  } catch (e) {
+    // store 可能未初始化，忽略
+  }
 
   // 通知其他页面登录状态变化
   uni.$emit('loginStatusChanged', true);

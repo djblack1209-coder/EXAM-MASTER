@@ -318,7 +318,8 @@ export default {
             );
           }
 
-          this.hasMore = result.hasMore || false;
+          // 如果本页返回空列表，强制终止分页，防止无限加载
+          this.hasMore = normalizedList.length > 0 && (result.hasMore || false);
           logger.log(
             `[mistake-book] 📊 当前状态 - 总错题数: ${this.mistakes.length}, hasMore: ${this.hasMore}, currentPage: ${this.currentPage}`
           );
