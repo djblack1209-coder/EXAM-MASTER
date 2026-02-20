@@ -469,6 +469,9 @@ export default {
     // ✅ P0-3: 页面卸载时保存进度
     this.saveCurrentProgress();
 
+    // ✅ FIX: 错题复习模式结束后恢复原题库
+    this._restoreQuestionBankIfReview();
+
     // ✅ 重置答题动画状态
     resetAnimation();
   },
@@ -478,6 +481,23 @@ export default {
     this.saveCurrentProgress();
   },
   methods: {
+    // ✅ FIX: 恢复错题复习模式前的题库
+    _restoreQuestionBankIfReview() {
+      try {
+        const isReview = storageService.get('is_review_mode', false);
+        if (isReview) {
+          const backup = storageService.get('v30_bank_backup', []);
+          if (backup.length > 0) {
+            storageService.save('v30_bank', backup);
+          }
+          storageService.remove('is_review_mode');
+          storageService.remove('v30_bank_backup');
+          storageService.remove('temp_review_questions');
+        }
+      } catch (e) {
+        // 静默处理，不影响页面退出
+      }
+    },
     // ✅ P0-3: 检查未完成的进度
     checkUnfinishedProgress() {
       if (hasUnfinishedProgress()) {

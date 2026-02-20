@@ -285,6 +285,7 @@ export default {
 
       // ✅ 使用后端代理调用（安全）- action: 'consult'
       const response = await lafService.proxyAI('consult', {
+        content: content,
         schoolName: this.schoolName,
         question: content,
         // [F3-FIX] 传递学校详情和对话历史

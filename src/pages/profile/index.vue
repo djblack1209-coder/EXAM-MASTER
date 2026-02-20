@@ -633,15 +633,32 @@ function toggleTheme() {
   });
 }
 
-function handleEditProfile() {
+async function handleEditProfile() {
   uni.showModal({
     title: '编辑昵称',
     editable: true,
     placeholderText: '请输入新昵称',
-    success: (res) => {
+    success: async (res) => {
       if (res.confirm && res.content) {
-        userStore.updateUserInfo?.({ nickName: res.content });
-        uni.showToast({ title: '更新成功', icon: 'success' });
+        const newName = res.content.trim();
+        if (!newName) {
+          uni.showToast({ title: '昵称不能为空', icon: 'none' });
+          return;
+        }
+        try {
+          // 1. 持久化到后端 MongoDB
+          await lafService.updateUserProfile({ nickname: newName });
+          // 2. 同步更新 Pinia store + 本地存储
+          userStore.updateUserInfo?.({ nickName: newName });
+          // 3. 同步更新 login 页写入的 'userInfo' key（兼容双存储）
+          const cached = storageService.get('userInfo', {});
+          cached.nickName = newName;
+          storageService.save('userInfo', cached);
+          uni.showToast({ title: '更新成功', icon: 'success' });
+        } catch (e) {
+          logger.error('[Profile] 昵称更新失败:', e);
+          uni.showToast({ title: '更新失败，请重试', icon: 'none' });
+        }
       } else if (res.confirm && !res.content) {
         uni.showToast({ title: '昵称不能为空', icon: 'none' });
       }

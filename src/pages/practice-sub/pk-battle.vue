@@ -435,23 +435,7 @@ export default {
      * 如果后端不可用，使用本地默认配置
      */
     async loadBotConfig() {
-      try {
-        // 尝试从后端获取AI对手配置
-        const response = await lafService.request('/pk-battle', {
-          action: 'get_bot_config'
-        });
-
-        if (response && response.code === 0 && response.data && response.data.length > 0) {
-          this.botList = response.data;
-          this.botsLoaded = true;
-          return;
-        }
-      } catch (error) {
-        logger.warn('[PK] 后端获取AI对手配置失败，使用本地默认配置:', error);
-      }
-
-      // 降级方案：使用本地默认配置
-      // 这些是基于真实用户数据统计生成的AI对手模型
+      // 直接使用本地默认配置（后端 pk-battle.ts 无 get_bot_config action）
       this.botList = this.getDefaultBotConfig();
       this.botsLoaded = true;
     },
@@ -1494,7 +1478,6 @@ export default {
           // 🔒 修复 Module 10 Bug: 采用 "Fire and Forget" 策略
           // 上传失败时，不重置标志位，防止重复上传
           // 原因：网络超时可能导致数据已写入但响应失败，重试会造成重复上传
-          logger.error('[PK] 上传分数失败（已锁定，不再重试）:', err);
           logger.error('[PK] 上传分数失败（已锁定，不再重试）:', err);
           // 静默失败，不影响用户分享体验
         });
