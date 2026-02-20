@@ -73,7 +73,7 @@ class TokenRefreshPlugin {
     try {
       return storageService.get(TOKEN_KEY) || null;
     } catch (error) {
-      console.error('[TokenRefreshPlugin] 获取 Token 失败:', error);
+      logger.error('[TokenRefreshPlugin] 获取 Token 失败:', error);
       return null;
     }
   }
@@ -86,7 +86,7 @@ class TokenRefreshPlugin {
     try {
       return storageService.get(REFRESH_TOKEN_KEY) || null;
     } catch (error) {
-      console.error('[TokenRefreshPlugin] 获取 RefreshToken 失败:', error);
+      logger.error('[TokenRefreshPlugin] 获取 RefreshToken 失败:', error);
       return null;
     }
   }
@@ -112,7 +112,7 @@ class TokenRefreshPlugin {
 
       logger.log('[TokenRefreshPlugin] Token 已保存');
     } catch (error) {
-      console.error('[TokenRefreshPlugin] 保存 Token 失败:', error);
+      logger.error('[TokenRefreshPlugin] 保存 Token 失败:', error);
     }
   }
 
@@ -126,7 +126,7 @@ class TokenRefreshPlugin {
       storageService.remove(TOKEN_EXPIRE_KEY);
       logger.log('[TokenRefreshPlugin] Token 已清除');
     } catch (error) {
-      console.error('[TokenRefreshPlugin] 清除 Token 失败:', error);
+      logger.error('[TokenRefreshPlugin] 清除 Token 失败:', error);
     }
   }
 
@@ -175,7 +175,7 @@ class TokenRefreshPlugin {
       if (this.isTokenExpiringSoon() && !this.isRefreshing) {
         logger.log('[TokenRefreshPlugin] 🔔 Token 即将过期，预刷新...');
         this.refreshToken().catch((err) => {
-          console.warn('[TokenRefreshPlugin] 预刷新失败:', err);
+          logger.warn('[TokenRefreshPlugin] 预刷新失败:', err);
         });
       }
     }, 60 * 1000);
@@ -204,14 +204,14 @@ class TokenRefreshPlugin {
 
     // 检查是否有刷新函数
     if (typeof this.config.refreshTokenFn !== 'function') {
-      console.error('[TokenRefreshPlugin] 未配置 refreshTokenFn');
+      logger.error('[TokenRefreshPlugin] 未配置 refreshTokenFn');
       throw new Error('refreshTokenFn not configured');
     }
 
     // 检查是否有 refreshToken
     const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
-      console.warn('[TokenRefreshPlugin] 无 RefreshToken，无法刷新');
+      logger.warn('[TokenRefreshPlugin] 无 RefreshToken，无法刷新');
       this._handleRefreshFailed(new Error('No refresh token'));
       throw new Error('No refresh token');
     }
@@ -256,15 +256,16 @@ class TokenRefreshPlugin {
         this._processPendingRequests(newAccessToken);
 
         return newAccessToken;
-
       } catch (error) {
-        console.error('[TokenRefreshPlugin] ❌ Token 刷新失败:', error);
+        logger.error('[TokenRefreshPlugin] ❌ Token 刷新失败:', error);
 
         this.refreshRetryCount++;
 
         // 重试
         if (this.refreshRetryCount < this.config.maxRefreshRetries) {
-          logger.log(`[TokenRefreshPlugin] 🔄 重试刷新 (${this.refreshRetryCount}/${this.config.maxRefreshRetries})...`);
+          logger.log(
+            `[TokenRefreshPlugin] 🔄 重试刷新 (${this.refreshRetryCount}/${this.config.maxRefreshRetries})...`
+          );
           this.isRefreshing = false;
           this.refreshPromise = null;
           return this.refreshToken();
@@ -273,7 +274,6 @@ class TokenRefreshPlugin {
         // 刷新失败处理
         this._handleRefreshFailed(error);
         throw error;
-
       } finally {
         this.isRefreshing = false;
         this.refreshPromise = null;
@@ -368,7 +368,6 @@ class TokenRefreshPlugin {
 
       // 执行请求
       return await requestFn();
-
     } catch (error) {
       // 检查是否是 401 错误
       const is401 = this._is401Error(error);
@@ -394,9 +393,8 @@ class TokenRefreshPlugin {
           // 重发原请求
           logger.log('[TokenRefreshPlugin] 🔄 重发原请求...');
           return await requestFn();
-
         } catch (refreshError) {
-          console.error('[TokenRefreshPlugin] 刷新后重发失败:', refreshError);
+          logger.error('[TokenRefreshPlugin] 刷新后重发失败:', refreshError);
           throw refreshError;
         }
       }
@@ -427,11 +425,10 @@ class TokenRefreshPlugin {
     }
 
     // 错误消息
-    if (error.message && (
-      error.message.includes('401') ||
-      error.message.includes('Unauthorized') ||
-      error.message.includes('未授权')
-    )) {
+    if (
+      error.message &&
+      (error.message.includes('401') || error.message.includes('Unauthorized') || error.message.includes('未授权'))
+    ) {
       return true;
     }
 
@@ -463,14 +460,15 @@ class TokenRefreshPlugin {
             shouldRetry: true,
             newToken
           };
-
         } catch (_error) {
           // 刷新失败，清除token并提示用户重新登录
           logger.warn('[TokenRefresh] Token刷新失败，需要重新登录:', _error?.message);
           try {
             storageService.remove('EXAM_TOKEN');
             storageService.remove('token_expire_time');
-          } catch (_e) { /* cleanup best-effort */ }
+          } catch (_e) {
+            /* cleanup best-effort */
+          }
           return response;
         }
       }

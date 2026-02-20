@@ -569,7 +569,7 @@ class AdaptiveLearningEngine {
       try {
         storageService.save(STORAGE_KEYS.MISTAKE_BOOK, this.mistakeBook);
       } catch (e) {
-        console.error('[AdaptiveLearning] 保存错题本失败:', e);
+        logger.error('[AdaptiveLearning] 保存错题本失败:', e);
       }
     }
 
@@ -624,7 +624,7 @@ class AdaptiveLearningEngine {
       }
       storageService.save(STORAGE_KEYS.LEARNING_HISTORY, this.learningHistory);
     } catch (e) {
-      console.error('[AdaptiveLearning] 保存学习历史失败:', e);
+      logger.error('[AdaptiveLearning] 保存学习历史失败:', e);
     }
   }
 
@@ -640,7 +640,7 @@ class AdaptiveLearningEngine {
     try {
       storageService.save(STORAGE_KEYS.KNOWLEDGE_MAP, this.knowledgeMap);
     } catch (_e) {
-      console.error('[AdaptiveLearning] 保存知识图谱失败:', _e);
+      logger.error('[AdaptiveLearning] 保存知识图谱失败:', _e);
     }
   }
 
@@ -656,7 +656,7 @@ class AdaptiveLearningEngine {
     try {
       storageService.save(STORAGE_KEYS.REVIEW_SCHEDULE, this.reviewSchedule);
     } catch (e) {
-      console.error('[AdaptiveLearning] 保存复习计划失败:', e);
+      logger.error('[AdaptiveLearning] 保存复习计划失败:', e);
     }
   }
 }
@@ -722,10 +722,10 @@ export function recordReview(mistakeId, isCorrect) {
       storageService.save(STORAGE_KEYS.MISTAKE_BOOK, adaptiveLearningEngine.mistakeBook);
       logger.log('[AdaptiveLearning] 复习记录已保存:', mistakeId, isCorrect ? '正确' : '错误');
     } catch (e) {
-      console.error('[AdaptiveLearning] 保存复习记录失败:', e);
+      logger.error('[AdaptiveLearning] 保存复习记录失败:', e);
     }
   } else {
-    console.warn('[AdaptiveLearning] 未找到错题:', mistakeId);
+    logger.warn('[AdaptiveLearning] 未找到错题:', mistakeId);
   }
 }
 

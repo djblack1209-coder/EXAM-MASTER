@@ -230,12 +230,7 @@ export async function batchProcess(array, processor, batchSize = 100, delay = 0)
  * @returns {Object} 虚拟列表状态
  */
 export function useVirtualList(options = {}) {
-  const {
-    itemHeight = 50,
-    containerHeight = 500,
-    overscan = 5,
-    totalItems = 0
-  } = options;
+  const { itemHeight = 50, containerHeight = 500, overscan = 5, totalItems = 0 } = options;
 
   const visibleCount = Math.ceil(containerHeight / itemHeight);
   const totalHeight = totalItems * itemHeight;
@@ -306,7 +301,7 @@ export class PerformanceMonitor {
     const endTime = endMark ? this.marks.get(endMark) : performance.now();
 
     if (startTime === undefined) {
-      console.warn(`Mark "${startMark}" not found`);
+      logger.warn(`Mark "${startMark}" not found`);
       return 0;
     }
 
@@ -407,7 +402,9 @@ export const performanceMixin = {
   mounted() {
     const duration = performance.now() - this._perfStartTime;
     if (duration > 100) {
-      console.warn(`[Performance] Component ${this.$options.name || 'Anonymous'} took ${duration.toFixed(2)}ms to mount`);
+      logger.warn(
+        `[Performance] Component ${this.$options.name || 'Anonymous'} took ${duration.toFixed(2)}ms to mount`
+      );
     }
   }
 };
@@ -419,12 +416,7 @@ export const performanceMixin = {
  * @returns {Object} 异步组件定义
  */
 export function lazyComponent(loader, options = {}) {
-  const {
-    delay = 200,
-    timeout = 10000,
-    loadingComponent = null,
-    errorComponent = null
-  } = options;
+  const { delay = 200, timeout = 10000, loadingComponent = null, errorComponent = null } = options;
 
   return {
     loader,
