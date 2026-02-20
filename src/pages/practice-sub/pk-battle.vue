@@ -19,10 +19,8 @@
             @error="onUserAvatarError"
           />
         </view>
-        <view class="vs-text">
-          VS
-        </view>
-        <view class="avatar-ring opponent-ring" :class="{ 'found': opponentFound }">
+        <view class="vs-text"> VS </view>
+        <view class="avatar-ring opponent-ring" :class="{ found: opponentFound }">
           <image
             class="user-avatar"
             :src="opponent.avatar || defaultAvatar"
@@ -30,9 +28,7 @@
             @error="onOpponentAvatarError"
           />
           <view v-if="!opponentFound" class="search-overlay">
-            <view class="search-icon">
-              🔍
-            </view>
+            <view class="search-icon"> 🔍 </view>
           </view>
         </view>
       </view>
@@ -40,13 +36,11 @@
         <text class="status-title">
           {{ opponentFound ? '匹配成功！' : matchingStatusText }}
         </text>
-        <text v-if="opponentFound" class="status-tip">
-          {{ opponent.name }} 已加入对战
-        </text>
+        <text v-if="opponentFound" class="status-tip"> {{ opponent.name }} 已加入对战 </text>
         <text
           v-if="!opponentFound"
           class="status-tip"
-          style="margin-top: 10rpx; font-size: 22rpx; color: var(--text-inverse-secondary);"
+          style="margin-top: 10rpx; font-size: 22rpx; color: var(--text-inverse-secondary)"
         >
           超时将自动匹配机器人对手
         </text>
@@ -87,9 +81,7 @@
           </view>
         </view>
 
-        <text class="vs-text">
-          VS
-        </text>
+        <text class="vs-text"> VS </text>
 
         <view class="player-card right">
           <image
@@ -105,7 +97,7 @@
             <view
               class="progress-fill opp"
               :style="{ width: (opponentScore / 500) * 100 + '%' }"
-              :class="{ 'rush': opponentRushing }"
+              :class="{ rush: opponentRushing }"
             />
           </view>
         </view>
@@ -113,13 +105,9 @@
 
       <view class="question-card">
         <view class="question-header">
-          <view class="tag">
-            单选
-          </view>
-          <view class="timer-badge" :class="{ 'warning': timeLeft <= 10, 'danger': timeLeft <= 5 }">
-            <text class="timer-text">
-              {{ timeLeft }}s
-            </text>
+          <view class="tag"> 单选 </view>
+          <view class="timer-badge" :class="{ warning: timeLeft <= 10, danger: timeLeft <= 5 }">
+            <text class="timer-text"> {{ timeLeft }}s </text>
           </view>
         </view>
         <text class="q-text">
@@ -140,32 +128,28 @@
           :key="idx"
           class="opt-btn"
           :class="{
-            'selected': userChoice === idx,
-            'correct': showAns && isCorrectOption(idx),
-            'wrong': showAns && userChoice === idx && !isCorrectOption(idx),
-            'disabled': showAns
+            selected: userChoice === idx,
+            correct: showAns && isCorrectOption(idx),
+            wrong: showAns && userChoice === idx && !isCorrectOption(idx),
+            disabled: showAns
           }"
           :disabled="showAns"
           :data-index="idx"
           hover-class="btn-scale-sm"
-          style="position: relative; z-index: 10; background: transparent; border: none; padding: 0; margin: 0;"
+          style="position: relative; z-index: 10; background: transparent; border: none; padding: 0; margin: 0"
           @tap.stop="handleSelect(idx)"
           @click.stop="handleSelect(idx)"
         >
           <view class="opt-btn-inner">
             <view class="letter">
-              {{ ['A','B','C','D'][idx] }}
+              {{ ['A', 'B', 'C', 'D'][idx] }}
             </view>
             <text class="content">
               {{ opt }}
             </text>
             <view v-if="showAns" class="opt-icon">
-              <text v-if="isCorrectOption(idx)">
-                ✓
-              </text>
-              <text v-else-if="userChoice === idx && !isCorrectOption(idx)">
-                ✗
-              </text>
+              <text v-if="isCorrectOption(idx)"> ✓ </text>
+              <text v-else-if="userChoice === idx && !isCorrectOption(idx)"> ✗ </text>
             </view>
           </view>
         </button>
@@ -176,9 +160,7 @@
         class="opponent-status"
         :style="{ marginBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)' }"
       >
-        <text class="opponent-tip">
-          {{ opponent.name }} 已答题 ✓
-        </text>
+        <text class="opponent-tip"> {{ opponent.name }} 已答题 ✓ </text>
       </view>
     </view>
 
@@ -186,29 +168,20 @@
     <view v-if="gameState === 'result'" class="result-stage" @tap.stop="handleResultStageClick">
       <view class="result-glass glass-card" @tap.stop>
         <view class="result-header">
-          <view class="result-icon" :class="{ 'victory': myScore >= opponentScore, 'defeat': myScore < opponentScore }">
+          <view class="result-icon" :class="{ victory: myScore >= opponentScore, defeat: myScore < opponentScore }">
             <text>{{ myScore >= opponentScore ? '🏆' : '😔' }}</text>
           </view>
-          <text
-            class="result-title"
-            :class="{ 'victory': myScore >= opponentScore, 'defeat': myScore < opponentScore }"
-          >
+          <text class="result-title" :class="{ victory: myScore >= opponentScore, defeat: myScore < opponentScore }">
             {{ myScore >= opponentScore ? 'VICTORY' : 'DEFEAT' }}
           </text>
-          <text class="result-subtitle">
-            战绩对比：{{ myScore }} VS {{ opponentScore }}
-          </text>
+          <text class="result-subtitle"> 战绩对比：{{ myScore }} VS {{ opponentScore }} </text>
         </view>
 
         <!-- AI 战报分析卡片 -->
         <view class="ai-report-box">
           <view class="ai-header">
-            <text class="ai-icon">
-              🤖
-            </text>
-            <text class="ai-title">
-              AI 犀利点评
-            </text>
+            <text class="ai-icon"> 🤖 </text>
+            <text class="ai-title"> AI 犀利点评 </text>
           </view>
           <text class="ai-text">
             {{ aiSummary || 'AI 正在分析本场对局...' }}
@@ -216,21 +189,11 @@
         </view>
 
         <view class="action-btns">
-          <button class="btn-share" hover-class="btn-scale-sm" @tap.stop="handleShare">
-            分享战报
-          </button>
-          <button class="btn-rank" hover-class="btn-scale-sm" @tap.stop="goToRank">
-            查看排行榜
-          </button>
-          <button class="btn-again" hover-class="btn-scale-sm" @tap.stop="resetGame">
-            再来一局
-          </button>
-          <button class="btn-home" hover-class="btn-scale-sm" @tap.stop="goHome">
-            返回首页
-          </button>
-          <button class="btn-exit" hover-class="btn-scale-sm" @tap.stop="handleExitFromResult">
-            退出
-          </button>
+          <button class="btn-share" hover-class="btn-scale-sm" @tap.stop="handleShare">分享战报</button>
+          <button class="btn-rank" hover-class="btn-scale-sm" @tap.stop="goToRank">查看排行榜</button>
+          <button class="btn-again" hover-class="btn-scale-sm" @tap.stop="resetGame">再来一局</button>
+          <button class="btn-home" hover-class="btn-scale-sm" @tap.stop="goHome">返回首页</button>
+          <button class="btn-exit" hover-class="btn-scale-sm" @tap.stop="handleExitFromResult">退出</button>
         </view>
       </view>
     </view>
@@ -362,15 +325,17 @@ export default {
       }
 
       // 确保每个选项都是字符串，且去除前后空格
-      options = options.map((opt) => {
-        if (typeof opt === 'string') {
-          return opt.trim();
-        } else if (typeof opt === 'object' && opt !== null) {
-          // 如果选项是对象，尝试提取文本
-          return (opt.text || opt.content || opt.label || String(opt)).trim();
-        }
-        return String(opt).trim();
-      }).filter((opt) => opt.length > 0); // 过滤空选项
+      options = options
+        .map((opt) => {
+          if (typeof opt === 'string') {
+            return opt.trim();
+          } else if (typeof opt === 'object' && opt !== null) {
+            // 如果选项是对象，尝试提取文本
+            return (opt.text || opt.content || opt.label || String(opt)).trim();
+          }
+          return String(opt).trim();
+        })
+        .filter((opt) => opt.length > 0); // 过滤空选项
 
       // 如果选项数量不足4个，补充空选项
       while (options.length < 4) {
@@ -409,8 +374,10 @@ export default {
         if (['A', 'B', 'C', 'D'].includes(correctAnswer)) {
           return ['A', 'B', 'C', 'D'][idx] === correctAnswer;
         }
-        return this.currentQuestion.options[idx] === correctAnswer ||
-				       this.currentQuestion.options[idx].startsWith(correctAnswer);
+        return (
+          this.currentQuestion.options[idx] === correctAnswer ||
+          this.currentQuestion.options[idx].startsWith(correctAnswer)
+        );
       };
     }
   },
@@ -478,18 +445,20 @@ export default {
 
       logger.log('[TEST-10.1] ✅ 题目加载完成:', {
         selectedCount: this.questions.length,
-        firstQuestion: this.questions[0] ? {
-          hasQuestion: !!this.questions[0].question,
-          hasOptions: Array.isArray(this.questions[0].options),
-          optionsCount: this.questions[0].options?.length || 0
-        } : null
+        firstQuestion: this.questions[0]
+          ? {
+              hasQuestion: !!this.questions[0].question,
+              hasOptions: Array.isArray(this.questions[0].options),
+              optionsCount: this.questions[0].options?.length || 0
+            }
+          : null
       });
     },
 
     /**
-		 * 从后端加载AI对手配置
-		 * 如果后端不可用，使用本地默认配置
-		 */
+     * 从后端加载AI对手配置
+     * 如果后端不可用，使用本地默认配置
+     */
     async loadBotConfig() {
       logger.log('[PK-BATTLE] 🤖 开始加载AI对手配置...');
 
@@ -517,9 +486,9 @@ export default {
     },
 
     /**
-		 * 获取默认AI对手配置
-		 * 基于真实用户数据统计生成的AI对手模型
-		 */
+     * 获取默认AI对手配置
+     * 基于真实用户数据统计生成的AI对手模型
+     */
     getDefaultBotConfig() {
       // 根据用户当前分数动态生成对手
       const userScore = storageService.get('user_pk_score', 0);
@@ -537,7 +506,7 @@ export default {
           name: 'AI研友',
           avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Friend_${Date.now()}`,
           level: `Lv.${baseLevel}`,
-          accuracy: 0.70,
+          accuracy: 0.7,
           speed: 'normal'
         },
         {
@@ -593,7 +562,7 @@ export default {
           avatar: randomBot.avatar,
           level: randomBot.level,
           isBot: true, // 标记为AI对手
-          accuracy: randomBot.accuracy || 0.70,
+          accuracy: randomBot.accuracy || 0.7,
           speed: randomBot.speed || 'normal'
         };
         this.opponentFound = true;
@@ -616,7 +585,9 @@ export default {
           if (typeof uni.vibrateShort === 'function') {
             uni.vibrateShort();
           }
-        } catch (e) { logger.warn('Vibrate feedback failed during match success', e); }
+        } catch (e) {
+          logger.warn('Vibrate feedback failed during match success', e);
+        }
 
         // 1秒后进入对战
         setTimeout(() => {
@@ -638,12 +609,7 @@ export default {
     },
 
     startMatchingStatusUpdate() {
-      const statusTexts = [
-        '正在寻找实力相当的研友...',
-        '正在匹配中...',
-        '寻找对手中...',
-        '正在连接服务器...'
-      ];
+      const statusTexts = ['正在寻找实力相当的研友...', '正在匹配中...', '寻找对手中...', '正在连接服务器...'];
       let index = 0;
 
       this.matchingStatusTimer = setInterval(() => {
@@ -674,7 +640,7 @@ export default {
         avatar: randomBot.avatar,
         level: randomBot.level,
         isBot: true,
-        accuracy: randomBot.accuracy || 0.70,
+        accuracy: randomBot.accuracy || 0.7,
         speed: randomBot.speed || 'normal'
       };
       this.opponentFound = true;
@@ -781,7 +747,9 @@ export default {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (e) { logger.warn('Vibrate feedback failed during answer timeout', e); }
+      } catch (e) {
+        logger.warn('Vibrate feedback failed during answer timeout', e);
+      }
 
       // 显示超时提示
       uni.showToast({
@@ -847,7 +815,7 @@ export default {
         correctIndex: correctIndex,
         currentIndex: this.currentIndex,
         gameState: this.gameState,
-        opponentAccuracy: this.opponent.accuracy || 0.70
+        opponentAccuracy: this.opponent.accuracy || 0.7
       });
 
       // 根据AI对手配置计算答题时间
@@ -862,7 +830,7 @@ export default {
       logger.log('[TEST-10.2] ⏱️ 对手将在', (answerTime / 1000).toFixed(1), '秒后答题');
 
       // 使用AI对手配置的正确率
-      const accuracy = this.opponent.accuracy || 0.70;
+      const accuracy = this.opponent.accuracy || 0.7;
       const willAnswerCorrectly = Math.random() < accuracy;
 
       const timer = setTimeout(() => {
@@ -930,7 +898,6 @@ export default {
           questionIndex: questionIndex + 1,
           totalQuestions: this.questions.length
         });
-
       }, answerTime);
 
       this.opponentTimers.push(timer);
@@ -990,7 +957,9 @@ export default {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (e) { logger.warn('Vibrate feedback failed during option selection', e); }
+      } catch (e) {
+        logger.warn('Vibrate feedback failed during option selection', e);
+      }
 
       // 判断是否正确
       const isCorrect = this.isCorrectOption(idx);
@@ -1028,7 +997,7 @@ export default {
       logger.log('[TEST-10.2] 📊 最终分数:', {
         myScore: this.myScore,
         opponentScore: this.opponentScore,
-        result: this.myScore > this.opponentScore ? '胜利' : (this.myScore < this.opponentScore ? '惜败' : '平局'),
+        result: this.myScore > this.opponentScore ? '胜利' : this.myScore < this.opponentScore ? '惜败' : '平局',
         totalQuestions: this.questions.length,
         currentIndex: this.currentIndex
       });
@@ -1048,7 +1017,10 @@ export default {
         this.averageTime = 0;
       }
       // 从实际答对的题目中提取知识点
-      this.knowledgePoints = this.questions.slice(0, correctCount).map((q) => q.category || '未分类').filter((v, i, a) => a.indexOf(v) === i);
+      this.knowledgePoints = this.questions
+        .slice(0, correctCount)
+        .map((q) => q.category || '未分类')
+        .filter((v, i, a) => a.indexOf(v) === i);
 
       // 切换到结算状态（必须在清理定时器之后）
       this.gameState = 'result';
@@ -1087,11 +1059,9 @@ export default {
       uni.showLoading({ title: 'AI分析中...', mask: false });
 
       const correctCount = Math.floor(this.myScore / 20);
-      const accuracy = this.questions.length > 0
-        ? Math.round((correctCount / this.questions.length) * 100)
-        : 0;
+      const accuracy = this.questions.length > 0 ? Math.round((correctCount / this.questions.length) * 100) : 0;
 
-      const result = this.myScore > this.opponentScore ? '胜利' : (this.myScore < this.opponentScore ? '惜败' : '平局');
+      const result = this.myScore > this.opponentScore ? '胜利' : this.myScore < this.opponentScore ? '惜败' : '平局';
 
       logger.log('[pk-battle] 🤖 调用后端代理生成 AI 战报...');
 
@@ -1122,7 +1092,6 @@ export default {
         } else {
           throw new Error('AI 响应异常');
         }
-
       } catch (e) {
         logger.error('[TEST-10.2] ❌ AI 战报生成失败:', e);
 
@@ -1132,19 +1101,24 @@ export default {
         }
 
         // 降级方案：如果 AI 挂了，随机显示一条本地库
-        const fallback = result === '胜利' ? [
-          '胜败乃兵家常事，但这局你赢了！手速和准确率都不错，继续保持！',
-          '这手速，阅卷老师都追不上！精准度碾压对手，看来知识点掌握得很扎实。',
-          '大获全胜！这波操作我给满分，继续保持这种学习状态！'
-        ] : result === '惜败' ? [
-          '差点就赢了，建议少吃一口饭，多背一个词，下次一定能反超！',
-          '对手很厉害，但你的潜力更大，再多刷几题就能反超。',
-          '虽然惜败，但表现可圈可点。胜败乃兵家常事，大侠请重新来过！'
-        ] : [
-          '势均力敌！这局平局，下局见分晓。',
-          '实力与运气并存，这波操作我给满分！再来一局决胜负！',
-          '平分秋色！看来双方都很强，不如再战一局？'
-        ];
+        const fallback =
+          result === '胜利'
+            ? [
+                '胜败乃兵家常事，但这局你赢了！手速和准确率都不错，继续保持！',
+                '这手速，阅卷老师都追不上！精准度碾压对手，看来知识点掌握得很扎实。',
+                '大获全胜！这波操作我给满分，继续保持这种学习状态！'
+              ]
+            : result === '惜败'
+              ? [
+                  '差点就赢了，建议少吃一口饭，多背一个词，下次一定能反超！',
+                  '对手很厉害，但你的潜力更大，再多刷几题就能反超。',
+                  '虽然惜败，但表现可圈可点。胜败乃兵家常事，大侠请重新来过！'
+                ]
+              : [
+                  '势均力敌！这局平局，下局见分晓。',
+                  '实力与运气并存，这波操作我给满分！再来一局决胜负！',
+                  '平分秋色！看来双方都很强，不如再战一局？'
+                ];
         this.aiSummary = fallback[Math.floor(Math.random() * fallback.length)];
         logger.log('[TEST-10.2] ✅ 已使用降级方案，评语:', this.aiSummary);
       } finally {
@@ -1163,7 +1137,9 @@ export default {
           uni.showToast({ title: '跳转失败', icon: 'none' });
         },
         complete: () => {
-          setTimeout(() => { this.isNavigating = false; }, 500);
+          setTimeout(() => {
+            this.isNavigating = false;
+          }, 500);
         }
       });
     },
@@ -1179,7 +1155,9 @@ export default {
           logger.log('[TEST-10.3] ✅ 已跳转到排行榜页面');
         },
         complete: () => {
-          setTimeout(() => { this.isNavigating = false; }, 500);
+          setTimeout(() => {
+            this.isNavigating = false;
+          }, 500);
         }
       });
     },
@@ -1244,7 +1222,9 @@ export default {
       this.questions = shuffled.slice(0, Math.min(5, shuffled.length));
 
       // 重置防重复点击状态
-      setTimeout(() => { this.isNavigating = false; }, 500);
+      setTimeout(() => {
+        this.isNavigating = false;
+      }, 500);
 
       this.startMatching();
     },
@@ -1351,7 +1331,6 @@ export default {
           }
         });
         // #endif
-
       } catch (error) {
         logger.error('[PK-Share] 分享失败:', error);
         uni.showToast({
@@ -1583,33 +1562,37 @@ export default {
 
         // C. 渲染并导出图片
         ctx.draw(false, () => {
-          setTimeout(() => { // 延时确保绘制完成
+          setTimeout(() => {
+            // 延时确保绘制完成
             clearTimeout(timeoutTimer); // 清除超时定时器
 
-            uni.canvasToTempFilePath({
-              canvasId: 'shareCanvas',
-              width: W,
-              height: H,
-              destWidth: W * 3, // 3倍超清
-              destHeight: H * 3,
-              success: (res) => {
-                uni.hideLoading();
-                this.isGeneratingShare = false;
-                // 全屏预览海报
-                uni.previewImage({
-                  urls: [res.tempFilePath],
-                  fail: () => {
-                    uni.showToast({ title: '预览失败', icon: 'none' });
-                  }
-                });
+            uni.canvasToTempFilePath(
+              {
+                canvasId: 'shareCanvas',
+                width: W,
+                height: H,
+                destWidth: W * 3, // 3倍超清
+                destHeight: H * 3,
+                success: (res) => {
+                  uni.hideLoading();
+                  this.isGeneratingShare = false;
+                  // 全屏预览海报
+                  uni.previewImage({
+                    urls: [res.tempFilePath],
+                    fail: () => {
+                      uni.showToast({ title: '预览失败', icon: 'none' });
+                    }
+                  });
+                },
+                fail: (err) => {
+                  logger.error('[PK-BATTLE] 绘图失败', err);
+                  uni.hideLoading();
+                  this.isGeneratingShare = false;
+                  uni.showToast({ title: '绘图失败，请稍后重试', icon: 'none' });
+                }
               },
-              fail: (err) => {
-                logger.error('[PK-BATTLE] 绘图失败', err);
-                uni.hideLoading();
-                this.isGeneratingShare = false;
-                uni.showToast({ title: '绘图失败，请稍后重试', icon: 'none' });
-              }
-            }, this);
+              this
+            );
           }, 1000); // 增加延时，确保绘制完成
         });
       } catch (error) {
@@ -1655,91 +1638,30 @@ export default {
       const avatarUrl = userInfo.avatarUrl || userInfo.avatar || this.defaultAvatar;
       const finalUserId = userId || userInfo.uid || `temp_${Date.now()}`;
 
-      // TEST-10.3: 获取当前总分数，然后累加 PK 本局得分
-      let currentTotalScore = 0;
-      try {
-        logger.log('[TEST-10.3] 🔍 开始获取当前总分数...');
-        // 先获取排行榜数据，查找当前用户的总分数
-        const rankRes = await lafService.rankCenter({ action: 'get_rank' });
-        logger.log('[TEST-10.3] 📥 排行榜 API 响应:', {
-          code: rankRes?.code,
-          hasData: !!rankRes?.data,
-          dataLength: rankRes?.data?.length || 0
-        });
+      // 发送本局增量分数，后端 _.inc(score) 自动累加
+      const pkScore = this.myScore;
 
-        if (rankRes && rankRes.code === 0 && rankRes.data) {
-          logger.log('[TEST-10.3] 🔍 查找用户记录:', {
-            userId: finalUserId,
-            nickName: nickName,
-            totalRecords: rankRes.data.length
-          });
-
-          const myRecord = rankRes.data.find((item) =>
-            item._id === finalUserId ||
-						item.nickName === nickName ||
-						item.name === nickName
-          );
-
-          if (myRecord) {
-            logger.log('[TEST-10.3] ✅ 找到用户记录:', {
-              _id: myRecord._id,
-              nickName: myRecord.nickName,
-              score: myRecord.score,
-              scoreType: typeof myRecord.score
-            });
-
-            if (myRecord.score !== undefined && myRecord.score !== null) {
-              currentTotalScore = Number(myRecord.score) || 0;
-              logger.log('[TEST-10.3] 📊 获取到当前总分数:', currentTotalScore);
-            } else {
-              logger.warn('[TEST-10.3] ⚠️ 用户记录中没有 score 字段，使用 0 作为初始分数');
-            }
-          } else {
-            logger.log('[TEST-10.3] ⚠️ 未找到用户记录，使用 0 作为初始分数（可能是新用户）');
-          }
-        } else {
-          logger.warn('[TEST-10.3] ⚠️ 排行榜 API 返回无效数据，使用 0 作为初始分数');
-        }
-      } catch (err) {
-        logger.error('[TEST-10.3] ❌ 获取当前总分数失败，使用 0 作为初始分数:', err);
-      }
-
-      // 计算新总分数 = 当前总分数 + PK 本局得分
-      const pkScore = this.myScore; // PK 本局得分（0-100分）
-      const newTotalScore = currentTotalScore + pkScore;
-
-      logger.log('[TEST-10.3] 📊 分数计算:', {
-        currentTotalScore: currentTotalScore,
-        pkScore: pkScore,
-        newTotalScore: newTotalScore,
-        calculation: `${currentTotalScore} + ${pkScore} = ${newTotalScore}`
+      logger.log('[TEST-10.3] 📊 本局得分:', {
+      logger.log('[TEST-10.3] 📊 本局得分:', {
+        pkScore: pkScore
       });
 
+      // 修复：action 应为 'update'（后端 handler map 只有 update/get/getUserRank）
+      // 修复：发送本局增量分数（pkScore），后端用 _.inc() 累加，不再发累计总分
       const uploadData = {
-        action: 'update_score',
-        uid: finalUserId, // 兼容旧版本后端
-        userId: finalUserId, // Sealos 后端可能期望这个字段名
-        nickName: nickName, // 必须：昵称（有默认值）
-        avatarUrl: avatarUrl, // 必须：头像URL（有默认值）
-        score: newTotalScore // 必须：总分数（当前总分数 + PK 本局得分）
+        action: 'update',
+        uid: finalUserId,
+        userId: finalUserId,
+        nickName: nickName,
+        avatarUrl: avatarUrl,
+        score: pkScore // 本局增量分数，后端 _.inc(score) 累加
       };
 
       logger.log('[TEST-9.3] 📤 发送分数更新请求:', {
         url: '/rank-center',
-        action: 'update_score',
+        action: 'update',
         userId: finalUserId,
-        score: newTotalScore,
-        nickName: nickName,
-        hasAvatarUrl: !!avatarUrl
-      });
-
-      logger.log('[TEST-10.3] 📤 发送分数更新请求:', {
-        url: '/rank-center',
-        action: 'update_score',
-        userId: finalUserId,
-        currentTotalScore: currentTotalScore,
-        pkScore: pkScore,
-        newTotalScore: newTotalScore,
+        score: pkScore,
         nickName: nickName,
         hasAvatarUrl: !!avatarUrl
       });
@@ -1759,25 +1681,14 @@ export default {
 
       // 已迁移到 Sealos：使用 lafService.rankCenter 替代 uniCloud.callFunction('rank-center')
       // 静默上传，不显示 loading（避免打断用户体验）
-      lafService.rankCenter(uploadData)
+      lafService
+        .rankCenter(uploadData)
         .then((res) => {
           // 标志位已在方法开头设置，这里只记录成功日志
           logger.log('[TEST-9.3] ✅ 分数上传成功:', {
             code: res?.code,
             message: res?.msg,
-            newRecord: res?.newRecord,
-            oldScore: res?.oldScore,
-            newScore: res?.newScore || newTotalScore
-          });
-          logger.log('[TEST-10.3] ✅ 分数上传成功:', {
-            code: res?.code,
-            message: res?.msg,
-            newRecord: res?.newRecord,
-            oldScore: res?.oldScore || currentTotalScore,
-            newScore: res?.newScore || newTotalScore,
-            pkScore: pkScore,
-            scoreIncrement: pkScore,
-            isScoreUploaded: this.isScoreUploaded
+            pkScore: pkScore
           });
           // 可选：静默提示
           // uni.showToast({ title: '已上传排行榜', icon: 'success', duration: 1000 });
@@ -1830,857 +1741,929 @@ export default {
 <style lang="scss" scoped>
 /* iOS 风格全局容器 */
 .container {
-	min-height: 100vh;
-	background-color: var(--text-primary);
-	background-image: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--text-primary) 100%);
-	color: var(--text-inverse);
-	font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
-	position: relative;
+  min-height: 100vh;
+  background-color: var(--text-primary);
+  background-image: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--text-primary) 100%);
+  color: var(--text-inverse);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  position: relative;
 }
 .container.dark-mode {
-	background: var(--bg-body);
+  background: var(--bg-body);
 }
 
 /* 极光背景 */
 .aurora-bg {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: radial-gradient(circle at 10% 10%, var(--brand-light-alpha), transparent 40%),
-	            radial-gradient(circle at 90% 90%, var(--danger-red-alpha), transparent 40%);
-	z-index: 0;
-	animation: auroraShift 8s ease-in-out infinite;
-	pointer-events: none; /* 确保背景不拦截点击事件 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 10% 10%, var(--brand-light-alpha), transparent 40%),
+    radial-gradient(circle at 90% 90%, var(--danger-red-alpha), transparent 40%);
+  z-index: 0;
+  animation: auroraShift 8s ease-in-out infinite;
+  pointer-events: none; /* 确保背景不拦截点击事件 */
 }
 
 @keyframes auroraShift {
-	0%, 100% { opacity: 0.6; }
-	50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* 雷达扫描动画 */
 .radar-scanner {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 400rpx;
-	height: 400rpx;
-	z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400rpx;
+  height: 400rpx;
+  z-index: 1;
 }
 
 .radar-circle {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	border: 2rpx solid var(--brand-light-alpha);
-	border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2rpx solid var(--brand-light-alpha);
+  border-radius: 50%;
 }
 
 .radar-circle.radar-1 {
-	width: 300rpx;
-	height: 300rpx;
-	animation: radarPulse 2s infinite;
+  width: 300rpx;
+  height: 300rpx;
+  animation: radarPulse 2s infinite;
 }
 
 .radar-circle.radar-2 {
-	width: 350rpx;
-	height: 350rpx;
-	animation: radarPulse 2s infinite 0.3s;
+  width: 350rpx;
+  height: 350rpx;
+  animation: radarPulse 2s infinite 0.3s;
 }
 
 .radar-circle.radar-3 {
-	width: 400rpx;
-	height: 400rpx;
-	animation: radarPulse 2s infinite 0.6s;
+  width: 400rpx;
+  height: 400rpx;
+  animation: radarPulse 2s infinite 0.6s;
 }
 
 .radar-line {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 200rpx;
-	height: 2rpx;
-	background: linear-gradient(90deg, transparent, var(--brand-light), transparent);
-	transform-origin: left center;
-	animation: radarRotate 2s linear infinite;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200rpx;
+  height: 2rpx;
+  background: linear-gradient(90deg, transparent, var(--brand-light), transparent);
+  transform-origin: left center;
+  animation: radarRotate 2s linear infinite;
 }
 
 @keyframes radarPulse {
-	0% { opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
-	100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
 }
 
 @keyframes radarRotate {
-	0% { transform: translate(-50%, -50%) rotate(0deg); }
-	100% { transform: translate(-50%, -50%) rotate(360deg); }
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 /* 匹配阶段 */
 .matching-stage {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	z-index: 10;
-	position: relative;
-	padding-top: calc(env(safe-area-inset-top, 0px) + 60px); /* 增加顶部间距，避免头像与刘海屏重叠 */
-	padding-bottom: env(safe-area-inset-bottom, 0px);
-	box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  position: relative;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 60px); /* 增加顶部间距，避免头像与刘海屏重叠 */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
 }
 .match-core {
-	display: flex;
-	align-items: center;
-	gap: 40rpx;
-	margin-bottom: 60rpx;
-	position: relative;
-	z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 40rpx;
+  margin-bottom: 60rpx;
+  position: relative;
+  z-index: 2;
 }
 .avatar-ring {
-	width: 180rpx;
-	height: 180rpx;
-	border-radius: 90rpx;
-	border: 4rpx solid var(--brand-light);
-	padding: 10rpx;
-	background: var(--bg-overlay);
-	position: relative;
-	backdrop-filter: blur(10px);
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 90rpx;
+  border: 4rpx solid var(--brand-light);
+  padding: 10rpx;
+  background: var(--bg-overlay);
+  position: relative;
+  backdrop-filter: blur(10px);
 }
 .user-avatar {
-	width: 100%;
-	height: 100%;
-	border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 .vs-text {
-	font-size: 60rpx;
-	font-weight: 900;
-	font-style: italic;
-	color: var(--text-inverse);
-	text-shadow: 0 0 20rpx var(--brand-light-alpha);
+  font-size: 60rpx;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--text-inverse);
+  text-shadow: 0 0 20rpx var(--brand-light-alpha);
 }
 .opponent-ring {
-	border-color: var(--text-tertiary);
+  border-color: var(--text-tertiary);
 }
 .opponent-ring.found {
-	border-color: var(--danger-red);
-	animation: foundPulse 0.5s ease-out;
+  border-color: var(--danger-red);
+  animation: foundPulse 0.5s ease-out;
 }
 .search-overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: var(--bg-overlay);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-overlay);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .search-icon {
-	font-size: 60rpx;
-	opacity: 0.6;
-	animation: pulse 1.5s infinite;
+  font-size: 60rpx;
+  opacity: 0.6;
+  animation: pulse 1.5s infinite;
 }
 .match-status {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 20rpx;
-	position: relative;
-	z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+  position: relative;
+  z-index: 2;
 }
 .status-title {
-	font-size: 36rpx;
-	font-weight: bold;
-	color: var(--text-inverse);
+  font-size: 36rpx;
+  font-weight: bold;
+  color: var(--text-inverse);
 }
 .status-tip {
-	font-size: 24rpx;
-	color: var(--text-inverse-secondary);
+  font-size: 24rpx;
+  color: var(--text-inverse-secondary);
 }
 .exit-btn {
-	margin-top: 60rpx;
-	padding: 20rpx 60rpx;
-	background: var(--bg-card-alpha);
-	border-radius: 50rpx;
-	font-size: 28rpx;
-	color: var(--text-inverse);
-	border: 1rpx solid var(--border-light-alpha);
-	position: relative;
-	z-index: 2;
+  margin-top: 60rpx;
+  padding: 20rpx 60rpx;
+  background: var(--bg-card-alpha);
+  border-radius: 50rpx;
+  font-size: 28rpx;
+  color: var(--text-inverse);
+  border: 1rpx solid var(--border-light-alpha);
+  position: relative;
+  z-index: 2;
 }
 
 /* 全局：深空黑 */
 .pk-container {
-	min-height: 100vh;
-	background: radial-gradient(circle at center top, var(--bg-tertiary) 0%, var(--text-primary) 100%);
-	padding: 0 24px;
-	padding-top: calc(env(safe-area-inset-top, 0px) + 30px); /* 增加顶部间距，整体下移，避免与胶囊按钮重叠 */
-	padding-bottom: env(safe-area-inset-bottom, 0px); /* 底部安全区域 */
-	color: var(--text-inverse);
-	position: relative;
-	z-index: 1; /* 确保在对战阶段时，pk-container 在 aurora-bg 之上 */
-	box-sizing: border-box;
+  min-height: 100vh;
+  background: radial-gradient(circle at center top, var(--bg-tertiary) 0%, var(--text-primary) 100%);
+  padding: 0 24px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 30px); /* 增加顶部间距，整体下移，避免与胶囊按钮重叠 */
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* 底部安全区域 */
+  color: var(--text-inverse);
+  position: relative;
+  z-index: 1; /* 确保在对战阶段时，pk-container 在 aurora-bg 之上 */
+  box-sizing: border-box;
 }
 
 /* 顶部栏 */
 .top-bar {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20px; /* 减少底部间距，整体下移 */
-	margin-top: 10px; /* 增加顶部间距 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; /* 减少底部间距，整体下移 */
+  margin-top: 10px; /* 增加顶部间距 */
 }
 
 .icon-btn {
-	width: 36px;
-	height: 36px;
-	background: var(--bg-card-alpha);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	backdrop-filter: blur(10px);
-	transition: all 0.2s;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-card-alpha);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
 }
 
 .icon-btn:active {
-	background: var(--bg-hover-alpha);
-	transform: scale(0.95);
+  background: var(--bg-hover-alpha);
+  transform: scale(0.95);
 }
 
 .icon-btn.ghost {
-	opacity: 0;
+  opacity: 0;
 }
 
 .round-badge {
-	background: var(--bg-overlay);
-	border: 1px solid var(--border-light-alpha);
-	padding: 4px 14px;
-	border-radius: 100px;
-	font-size: 26rpx;
-	color: var(--text-tertiary);
-	font-weight: 600;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-light-alpha);
+  padding: 4px 14px;
+  border-radius: 100px;
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  font-weight: 600;
 }
 
 /* 战场区 */
 .battle-stage {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 40px;
-	margin-top: 20px; /* 与顶部栏保持间距，避免与胶囊按钮重叠 */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  margin-top: 20px; /* 与顶部栏保持间距，避免与胶囊按钮重叠 */
 }
 
 .player-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
 }
 
 .avatar {
-	width: 64px;
-	height: 64px;
-	border-radius: 50%;
-	border: 2px solid var(--border-light-alpha);
-	margin-bottom: 8px;
-	box-shadow: 0 8px 16px var(--shadow-lg);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--border-light-alpha);
+  margin-bottom: 8px;
+  box-shadow: 0 8px 16px var(--shadow-lg);
 }
 
 .score {
-	font-size: 56rpx;
-	font-weight: 800;
-	line-height: 1;
-	margin-bottom: 6px;
+  font-size: 56rpx;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 6px;
 }
 
 .score.me {
-	color: var(--brand-light);
-	text-shadow: 0 0 10px var(--brand-light-alpha);
+  color: var(--brand-light);
+  text-shadow: 0 0 10px var(--brand-light-alpha);
 }
 
 .score.opp {
-	color: var(--danger-red);
-	text-shadow: 0 0 10px var(--danger-red-alpha);
+  color: var(--danger-red);
+  text-shadow: 0 0 10px var(--danger-red-alpha);
 }
 
 .progress-track {
-	width: 100%;
-	height: 4px;
-	background: var(--bg-tertiary);
-	border-radius: 2px;
-	overflow: hidden;
+  width: 100%;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
 .progress-fill {
-	height: 100%;
-	transition: width 0.3s;
-	border-radius: 2px;
+  height: 100%;
+  transition: width 0.3s;
+  border-radius: 2px;
 }
 
 .progress-fill.me {
-	background: var(--brand-light);
+  background: var(--brand-light);
 }
 
 .progress-fill.opp {
-	background: var(--danger-red);
+  background: var(--danger-red);
 }
 
 .progress-fill.opp.rush {
-	animation: barRush 0.5s ease-out;
+  animation: barRush 0.5s ease-out;
 }
 
 @keyframes barRush {
-	0% { transform: scaleX(1); }
-	50% { transform: scaleX(1.05); }
-	100% { transform: scaleX(1); }
+  0% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(1.05);
+  }
+  100% {
+    transform: scaleX(1);
+  }
 }
 
 .vs-text {
-	font-style: italic;
-	font-weight: 900;
-	font-size: 48rpx;
-	color: var(--text-tertiary);
+  font-style: italic;
+  font-weight: 900;
+  font-size: 48rpx;
+  color: var(--text-tertiary);
 }
 
 /* 题目卡片 */
 .question-card {
-	background: var(--bg-card-alpha);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	border-radius: 20px;
-	padding: 24px;
-	min-height: 100px;
-	margin-bottom: 24px;
-	border: 1px solid var(--border-light-alpha);
+  background: var(--bg-card-alpha);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 24px;
+  min-height: 100px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-light-alpha);
 }
 
 .question-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .tag {
-	display: inline-block;
-	background: var(--info-blue);
-	font-size: 20rpx;
-	padding: 2px 6px;
-	border-radius: 4px;
-	font-weight: bold;
-	color: var(--text-inverse);
+  display: inline-block;
+  background: var(--info-blue);
+  font-size: 20rpx;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  color: var(--text-inverse);
 }
 
 .timer-badge {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	background: var(--success-green-alpha);
-	border: 1px solid var(--success-green);
-	border-radius: 12px;
-	padding: 4px 12px;
-	min-width: 50px;
-	transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--success-green-alpha);
+  border: 1px solid var(--success-green);
+  border-radius: 12px;
+  padding: 4px 12px;
+  min-width: 50px;
+  transition: all 0.3s;
 }
 
 .timer-badge.warning {
-	background: var(--warning-yellow-alpha);
-	border-color: var(--warning-yellow);
-	animation: pulse-warning 1s infinite;
+  background: var(--warning-yellow-alpha);
+  border-color: var(--warning-yellow);
+  animation: pulse-warning 1s infinite;
 }
 
 .timer-badge.danger {
-	background: var(--danger-red-alpha);
-	border-color: var(--danger-red);
-	animation: pulse-danger 0.5s infinite;
+  background: var(--danger-red-alpha);
+  border-color: var(--danger-red);
+  animation: pulse-danger 0.5s infinite;
 }
 
 .timer-text {
-	font-size: 28rpx;
-	font-weight: bold;
-	color: var(--success-green);
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--success-green);
 }
 
 .timer-badge.warning .timer-text {
-	color: var(--warning-yellow);
+  color: var(--warning-yellow);
 }
 
 .timer-badge.danger .timer-text {
-	color: var(--danger-red);
+  color: var(--danger-red);
 }
 
 @keyframes pulse-warning {
-	0%, 100% { opacity: 1; }
-	50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @keyframes pulse-danger {
-	0%, 100% { opacity: 1; transform: scale(1); }
-	50% { opacity: 0.8; transform: scale(1.05); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 }
 
 .q-text {
-	font-size: 34rpx;
-	line-height: 1.5;
-	font-weight: 500;
-	color: var(--text-inverse);
+  font-size: 34rpx;
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--text-inverse);
 }
 
 /* 选项列表 */
 .options-group {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	padding-bottom: calc(env(safe-area-inset-bottom) + 20px); /* 底部安全区域 + 额外间距 */
-	margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 20px); /* 底部安全区域 + 额外间距 */
+  margin-bottom: 20px;
 }
 
 .opt-btn {
-	background: transparent;
-	border: none;
-	padding: 0;
-	margin: 0;
-	width: 100%;
-	position: relative;
-	z-index: 10;
-	cursor: pointer;
-	-webkit-tap-highlight-color: transparent;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .opt-btn::after {
-	border: none;
+  border: none;
 }
 
 .opt-btn-inner {
-	background: var(--bg-card-dark);
-	padding: 16px 20px;
-	border-radius: 16px;
-	display: flex;
-	align-items: center;
-	border: 1px solid transparent;
-	transition: all 0.2s;
-	width: 100%;
-	box-sizing: border-box;
+  background: var(--bg-card-dark);
+  padding: 16px 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .opt-btn:active .opt-btn-inner {
-	transform: scale(0.98);
-	background: var(--bg-hover);
+  transform: scale(0.98);
+  background: var(--bg-hover);
 }
 
 .opt-btn.disabled {
-	pointer-events: none;
-	opacity: 0.6;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 .letter {
-	width: 28px;
-	height: 28px;
-	background: var(--bg-hover);
-	border-radius: 50%;
-	text-align: center;
-	line-height: 28px;
-	font-size: 28rpx;
-	font-weight: bold;
-	color: var(--text-tertiary);
-	margin-right: 14px;
-	flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-hover);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 28px;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--text-tertiary);
+  margin-right: 14px;
+  flex-shrink: 0;
 }
 
 .content {
-	font-size: 32rpx;
-	color: var(--text-inverse);
-	flex: 1;
+  font-size: 32rpx;
+  color: var(--text-inverse);
+  flex: 1;
 }
 
 .opt-icon {
-	font-size: 36rpx;
-	font-weight: bold;
-	margin-left: 8px;
-	flex-shrink: 0;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-left: 8px;
+  flex-shrink: 0;
 }
 
 /* 状态色 */
 .opt-btn.selected .opt-btn-inner {
-	border-color: var(--info-blue);
-	background: var(--bg-info-light);
+  border-color: var(--info-blue);
+  background: var(--bg-info-light);
 }
 
 .opt-btn.selected .letter {
-	background: var(--info-blue);
-	color: var(--text-inverse);
+  background: var(--info-blue);
+  color: var(--text-inverse);
 }
 
 .opt-btn.correct .opt-btn-inner {
-	border-color: var(--success-green);
-	background: var(--bg-success-light);
+  border-color: var(--success-green);
+  background: var(--bg-success-light);
 }
 
 .opt-btn.wrong .opt-btn-inner {
-	border-color: var(--danger-red);
-	background: var(--bg-danger-light);
+  border-color: var(--danger-red);
+  background: var(--bg-danger-light);
 }
 
 .opt-btn.correct {
-	border-color: var(--success-green);
-	background: var(--bg-success-light);
+  border-color: var(--success-green);
+  background: var(--bg-success-light);
 }
 
 .opt-btn.correct .letter {
-	background: var(--success-green);
-	color: var(--text-inverse);
+  background: var(--success-green);
+  color: var(--text-inverse);
 }
 
 .opt-btn.correct .opt-icon {
-	color: var(--success-green);
+  color: var(--success-green);
 }
 
 .opt-btn.wrong {
-	border-color: var(--danger-red);
-	background: var(--bg-danger-light);
+  border-color: var(--danger-red);
+  background: var(--bg-danger-light);
 }
 
 .opt-btn.wrong .letter {
-	background: var(--danger-red);
-	color: var(--text-inverse);
+  background: var(--danger-red);
+  color: var(--text-inverse);
 }
 
 .opt-btn.wrong .opt-icon {
-	color: var(--danger-red);
+  color: var(--danger-red);
 }
 
 .opponent-status {
-	text-align: center;
-	padding: 20px;
-	margin: 20px 0;
-	margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); /* 再次上移，增加与底部按钮的间距 */
+  text-align: center;
+  padding: 20px;
+  margin: 20px 0;
+  margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); /* 再次上移，增加与底部按钮的间距 */
 }
 
 .opponent-tip {
-	color: rgba(255, 255, 255, 0.6);
-	font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 28rpx;
 }
 
 .footer-placeholder {
-	height: 100rpx;
+  height: 100rpx;
 }
 
 /* 结算 - 绿色主题，高级质感 */
 .result-stage {
-	height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 40rpx;
-	box-sizing: border-box;
-	position: relative;
-	z-index: 10;
-	background: linear-gradient(135deg, var(--bg-body) 0%, #0F2400 50%, var(--bg-body) 100%);
-	background-size: 200% 200%;
-	animation: gradientShift 8s ease infinite;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(135deg, var(--bg-body) 0%, #0f2400 50%, var(--bg-body) 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
 }
 @keyframes gradientShift {
-	0%, 100% { background-position: 0% 50%; }
-	50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 .result-glass {
-	width: 100%;
-	padding: 60rpx 40rpx;
-	text-align: center;
-	background: rgba(22, 51, 0, 0.85);
-	backdrop-filter: blur(30px);
-	-webkit-backdrop-filter: blur(30px);
-	border-radius: 32rpx;
-	border: 1px solid rgba(159, 232, 112, 0.2);
-	box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.3),
-	            0 0 40rpx rgba(159, 232, 112, 0.1);
+  width: 100%;
+  padding: 60rpx 40rpx;
+  text-align: center;
+  background: rgba(22, 51, 0, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-radius: 32rpx;
+  border: 1px solid rgba(159, 232, 112, 0.2);
+  box-shadow:
+    0 20rpx 60rpx rgba(0, 0, 0, 0.3),
+    0 0 40rpx rgba(159, 232, 112, 0.1);
 }
 .result-header {
-	margin-bottom: 40rpx;
+  margin-bottom: 40rpx;
 }
 .result-icon {
-	font-size: 120rpx;
-	margin-bottom: 20rpx;
-	animation: resultBounce 0.5s ease-out;
+  font-size: 120rpx;
+  margin-bottom: 20rpx;
+  animation: resultBounce 0.5s ease-out;
 }
 @keyframes resultBounce {
-	0% { transform: scale(0); }
-	50% { transform: scale(1.2); }
-	100% { transform: scale(1); }
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 .result-title {
-	font-size: 80rpx;
-	font-weight: 900;
-	display: block;
-	margin-bottom: 10rpx;
-	letter-spacing: 4rpx;
+  font-size: 80rpx;
+  font-weight: 900;
+  display: block;
+  margin-bottom: 10rpx;
+  letter-spacing: 4rpx;
 }
 .result-title.victory {
-	color: var(--brand-color); /* Wise 绿色 */
-	text-shadow: 0 0 30rpx rgba(159, 232, 112, 0.6),
-	             0 0 60rpx rgba(159, 232, 112, 0.3);
+  color: var(--brand-color); /* Wise 绿色 */
+  text-shadow:
+    0 0 30rpx rgba(159, 232, 112, 0.6),
+    0 0 60rpx rgba(159, 232, 112, 0.3);
 }
 .result-title.defeat {
-	color: #FF6B6B; /* 柔和的红色 */
-	text-shadow: 0 0 30rpx rgba(255, 107, 107, 0.5);
+  color: #ff6b6b; /* 柔和的红色 */
+  text-shadow: 0 0 30rpx rgba(255, 107, 107, 0.5);
 }
 .result-subtitle {
-	font-size: 28rpx;
-	color: rgba(255, 255, 255, 0.7);
-	display: block;
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
 }
 /* AI 战报分析卡片样式 - 绿色主题，高级质感 */
 .ai-report-box {
-	margin: 40rpx 0;
-	padding: 30rpx;
-	background: rgba(159, 232, 112, 0.08); /* Wise 绿色微透明 */
-	border-radius: 24rpx;
-	border: 1px solid rgba(159, 232, 112, 0.25);
-	width: 100%;
-	box-sizing: border-box;
-	animation: fadeIn 0.5s ease;
-	position: relative;
-	overflow: hidden;
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
+  margin: 40rpx 0;
+  padding: 30rpx;
+  background: rgba(159, 232, 112, 0.08); /* Wise 绿色微透明 */
+  border-radius: 24rpx;
+  border: 1px solid rgba(159, 232, 112, 0.25);
+  width: 100%;
+  box-sizing: border-box;
+  animation: fadeIn 0.5s ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .ai-report-box::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(90deg, transparent, rgba(159, 232, 112, 0.15), transparent);
-	animation: shine 3s infinite;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(159, 232, 112, 0.15), transparent);
+  animation: shine 3s infinite;
 }
 
 @keyframes shine {
-	0% { left: -100%; }
-	100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 .ai-header {
-	display: flex;
-	align-items: center;
-	margin-bottom: 16rpx;
-	position: relative;
-	z-index: 1;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .ai-icon {
-	font-size: 32rpx;
-	margin-right: 12rpx;
+  font-size: 32rpx;
+  margin-right: 12rpx;
 }
 
 .ai-title {
-	color: var(--brand-color); /* Wise 绿色 */
-	font-size: 28rpx;
-	font-weight: bold;
-	text-shadow: 0 0 10rpx rgba(159, 232, 112, 0.5);
+  color: var(--brand-color); /* Wise 绿色 */
+  font-size: 28rpx;
+  font-weight: bold;
+  text-shadow: 0 0 10rpx rgba(159, 232, 112, 0.5);
 }
 
 .ai-text {
-	color: #FFFFFF;
-	font-size: 28rpx;
-	line-height: 1.8;
-	text-align: left;
-	display: block;
-	white-space: pre-wrap;
-	position: relative;
-	z-index: 1;
-	font-weight: 500;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-	min-height: 60rpx;
+  color: #ffffff;
+  font-size: 28rpx;
+  line-height: 1.8;
+  text-align: left;
+  display: block;
+  white-space: pre-wrap;
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  min-height: 60rpx;
 }
 
 /* 兼容原有的 ai-summary 样式 */
 .ai-summary {
-	background: rgba(255, 255, 255, 0.05);
-	padding: 30rpx;
-	border-radius: 20rpx;
-	margin: 40rpx 0;
-	text-align: left;
-	border: 1rpx solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 30rpx;
+  border-radius: 20rpx;
+  margin: 40rpx 0;
+  text-align: left;
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 .ai-summary .tag {
-	display: inline-block;
-	background: #00E5FF;
-	color: #000;
-	font-size: 20rpx;
-	padding: 4rpx 12rpx;
-	border-radius: 6rpx;
-	margin-bottom: 10rpx;
-	font-weight: bold;
+  display: inline-block;
+  background: #00e5ff;
+  color: #000;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 6rpx;
+  margin-bottom: 10rpx;
+  font-weight: bold;
 }
 .summary-text {
-	font-size: 26rpx;
-	color: rgba(255, 255, 255, 0.8);
-	line-height: 1.6;
-	display: block;
-	white-space: pre-wrap;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  display: block;
+  white-space: pre-wrap;
 }
 
 .action-btns {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 20rpx;
-	margin-top: 40rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+  margin-top: 40rpx;
 }
 .btn-share {
-	flex: 1;
-	min-width: calc(50% - 10rpx);
-	background: rgba(159, 232, 112, 0.15);
-	border-radius: 16rpx;
-	font-size: 28rpx;
-	border: 1px solid rgba(159, 232, 112, 0.3);
-	color: var(--brand-color);
-	padding: 20rpx 0;
-	font-weight: 600;
-	transition: all 0.3s ease;
+  flex: 1;
+  min-width: calc(50% - 10rpx);
+  background: rgba(159, 232, 112, 0.15);
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  border: 1px solid rgba(159, 232, 112, 0.3);
+  color: var(--brand-color);
+  padding: 20rpx 0;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 .btn-share:active {
-	background: rgba(159, 232, 112, 0.25);
-	transform: scale(0.98);
+  background: rgba(159, 232, 112, 0.25);
+  transform: scale(0.98);
 }
 .btn-share::after {
-	border: none;
+  border: none;
 }
 .btn-again {
-	flex: 1;
-	min-width: calc(50% - 10rpx);
-	background: linear-gradient(135deg, var(--brand-color), #7ED321);
-	color: #1A1A1A;
-	border-radius: 16rpx;
-	font-size: 28rpx;
-	border: none;
-	padding: 20rpx 0;
-	font-weight: bold;
-	box-shadow: 0 4rpx 12rpx rgba(159, 232, 112, 0.3);
-	transition: all 0.3s ease;
+  flex: 1;
+  min-width: calc(50% - 10rpx);
+  background: linear-gradient(135deg, var(--brand-color), #7ed321);
+  color: #1a1a1a;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  border: none;
+  padding: 20rpx 0;
+  font-weight: bold;
+  box-shadow: 0 4rpx 12rpx rgba(159, 232, 112, 0.3);
+  transition: all 0.3s ease;
 }
 .btn-again:active {
-	transform: scale(0.98);
-	box-shadow: 0 2rpx 8rpx rgba(159, 232, 112, 0.2);
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(159, 232, 112, 0.2);
 }
 .btn-again::after {
-	border: none;
+  border: none;
 }
 .btn-rank {
-	flex: 1;
-	min-width: calc(50% - 10rpx);
-	background: linear-gradient(135deg, #FFD700, #FFA500);
-	color: #1A1A1A;
-	border-radius: 16rpx;
-	font-size: 28rpx;
-	border: none;
-	padding: 20rpx 0;
-	font-weight: bold;
-	box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.3);
-	transition: all 0.3s ease;
+  flex: 1;
+  min-width: calc(50% - 10rpx);
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  color: #1a1a1a;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  border: none;
+  padding: 20rpx 0;
+  font-weight: bold;
+  box-shadow: 0 4rpx 12rpx rgba(255, 215, 0, 0.3);
+  transition: all 0.3s ease;
 }
 .btn-rank:active {
-	transform: scale(0.98);
-	box-shadow: 0 2rpx 8rpx rgba(255, 215, 0, 0.2);
+  transform: scale(0.98);
+  box-shadow: 0 2rpx 8rpx rgba(255, 215, 0, 0.2);
 }
 .btn-rank::after {
-	border: none;
+  border: none;
 }
 .btn-home {
-	flex: 1;
-	min-width: 100%;
-	background: rgba(255, 255, 255, 0.08);
-	border-radius: 16rpx;
-	font-size: 28rpx;
-	border: 1px solid rgba(255, 255, 255, 0.15);
-	color: rgba(255, 255, 255, 0.9);
-	padding: 20rpx 0;
-	font-weight: 500;
-	transition: all 0.3s ease;
+  flex: 1;
+  min-width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 20rpx 0;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 .btn-home:active {
-	background: rgba(255, 255, 255, 0.12);
-	transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(0.98);
 }
 .btn-home::after {
-	border: none;
+  border: none;
 }
 .btn-exit {
-	flex: 1;
-	min-width: 100%;
-	background: rgba(255, 107, 107, 0.15);
-	border-radius: 16rpx;
-	font-size: 28rpx;
-	border: 1px solid rgba(255, 107, 107, 0.3);
-	color: #FF6B6B;
-	padding: 20rpx 0;
-	margin-top: 20rpx;
-	font-weight: 500;
-	transition: all 0.3s ease;
+  flex: 1;
+  min-width: 100%;
+  background: rgba(255, 107, 107, 0.15);
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  color: #ff6b6b;
+  padding: 20rpx 0;
+  margin-top: 20rpx;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 .btn-exit:active {
-	background: rgba(255, 107, 107, 0.25);
-	transform: scale(0.98);
+  background: rgba(255, 107, 107, 0.25);
+  transform: scale(0.98);
 }
 .btn-exit::after {
-	border: none;
+  border: none;
 }
 
 /* 动画 */
 @keyframes pulse {
-	0% { opacity: 0.3; }
-	50% { opacity: 1; }
-	100% { opacity: 0.3; }
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
 }
 .pulse {
-	animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
 }
 @keyframes foundPulse {
-	0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 60, 60, 0.7); }
-	50% { transform: scale(1.05); box-shadow: 0 0 0 20rpx rgba(255, 60, 60, 0); }
-	100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 60, 60, 0); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 60, 60, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 20rpx rgba(255, 60, 60, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 60, 60, 0);
+  }
 }
 @keyframes fadeIn {
-	from { opacity: 0; transform: translateY(20rpx); }
-	to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 红光警告遮罩（最后5秒）- 参考苹果AI呼吸感 */
 .red-warning-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(255, 0, 0, 0.4);
-	z-index: 9998;
-	pointer-events: none;
-	animation: redWarningBreath 1.5s ease-in-out infinite;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 0, 0, 0.4);
+  z-index: 9998;
+  pointer-events: none;
+  animation: redWarningBreath 1.5s ease-in-out infinite;
 }
 
 @keyframes redWarningBreath {
-	0% {
-		opacity: 0.15;
-		background: rgba(255, 0, 0, 0.15);
-		filter: blur(0px);
-	}
-	50% {
-		opacity: 0.6;
-		background: rgba(255, 0, 0, 0.6);
-		filter: blur(2px);
-	}
-	100% {
-		opacity: 0.15;
-		background: rgba(255, 0, 0, 0.15);
-		filter: blur(0px);
-	}
+  0% {
+    opacity: 0.15;
+    background: rgba(255, 0, 0, 0.15);
+    filter: blur(0px);
+  }
+  50% {
+    opacity: 0.6;
+    background: rgba(255, 0, 0, 0.6);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0.15;
+    background: rgba(255, 0, 0, 0.15);
+    filter: blur(0px);
+  }
 }
 </style>

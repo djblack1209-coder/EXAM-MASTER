@@ -1803,11 +1803,11 @@ export const lafService = {
 
   /**
    * 查询转换任务状态
-   * @param {string} taskId - 任务ID
+   * @param {string} jobId - 任务ID
    */
-  async getDocConvertStatus(taskId) {
+  async getDocConvertStatus(jobId) {
     try {
-      return await this.request('/doc-convert', { action: 'get_status', taskId });
+      return await this.request('/doc-convert', { action: 'get_status', jobId });
     } catch (error) {
       logger.warn('[LafService] 查询转换状态失败:', error);
       return { code: -1, success: false, message: '查询失败', data: null };
@@ -1816,11 +1816,11 @@ export const lafService = {
 
   /**
    * 获取转换结果（下载链接）
-   * @param {string} taskId - 任务ID
+   * @param {string} jobId - 任务ID
    */
-  async getDocConvertResult(taskId) {
+  async getDocConvertResult(jobId) {
     try {
-      return await this.request('/doc-convert', { action: 'get_result', taskId });
+      return await this.request('/doc-convert', { action: 'get_result', jobId });
     } catch (error) {
       logger.warn('[LafService] 获取转换结果失败:', error);
       return { code: -1, success: false, message: '获取失败', data: null };

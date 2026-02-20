@@ -715,7 +715,7 @@ export default {
             id: school.code || school._id,
             name: school.name,
             location: school.province,
-            matchRate: Math.floor(Math.random() * 20) + 80, // 临时：随机匹配度
+            matchRate: school.matchRate || 0, // 匹配度由后端计算，无数据时显示0
             isTarget: false,
             logo:
               school.logo ||
