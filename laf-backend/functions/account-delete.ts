@@ -28,11 +28,11 @@ export default async function (ctx: any) {
     // 1. 身份验证
     const token = ctx.headers?.authorization?.replace('Bearer ', '') || ctx.body?.token;
     const payload = verifyJWT(token);
-    if (!payload || !payload.uid) {
+    if (!payload || !payload.userId) {
       return { code: 401, success: false, message: '请先登录' };
     }
 
-    const userId = payload.uid;
+    const userId = payload.userId;
     const { action = 'request' } = ctx.body || {};
 
     // 2. 请求注销
