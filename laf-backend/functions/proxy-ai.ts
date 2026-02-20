@@ -396,7 +396,10 @@ export default async function (ctx: FunctionContext) {
       examYear,
       subject,
       context,
-      emotion
+      emotion,
+      // [F3-FIX] 择校咨询多轮上下文参数
+      schoolInfo,
+      history
     } = ctx.body || {};
 
     // 1.5 请求频率限制检查（使用已验证的用户ID，防止API滥用）
@@ -440,8 +443,25 @@ export default async function (ctx: FunctionContext) {
       `[${requestId}] action: ${action}, contentLength: ${content.length}, rateLimit remaining: ${rateLimitResult.remaining}`
     );
 
+    // [F4-FIX] 加载AI好友对话记忆（从DB补充前端localStorage可能丢失的上下文）
+    if (action === 'friend_chat' && userId && friendType) {
+      try {
+        const dbMemory = await loadConversationMemory(userId, friendType);
+        if (dbMemory) {
+          // 合并DB记忆到context，DB记忆优先（更完整）
+          if (!context.recentConversations) {
+            context.recentConversations = dbMemory;
+          } else {
+            context.recentConversations = dbMemory + '\n---\n' + context.recentConversations;
+          }
+        }
+      } catch (e) {
+        logger.warn(`[${requestId}] F4: 加载对话记忆失败，继续使用前端上下文`, e);
+      }
+    }
+
     // 3. 根据 action 构建 prompt
-    const { systemPrompt, userPrompt, model, temperature } = buildPrompt({
+    const { systemPrompt, userPrompt, model, temperature, customMessages } = buildPrompt({
       action,
       content: content.trim(),
       questionCount,
@@ -459,7 +479,9 @@ export default async function (ctx: FunctionContext) {
       examYear,
       subject,
       context,
-      emotion
+      emotion,
+      schoolInfo,
+      history
     });
 
     // 4-5. 调用智谱 AI API（带超时、重试和模型降级机制）
@@ -471,7 +493,8 @@ export default async function (ctx: FunctionContext) {
       systemPrompt,
       userPrompt,
       temperature,
-      startTime
+      startTime,
+      messages: customMessages
     });
 
     if (!aiCallResult.success) {
@@ -554,7 +577,15 @@ export default async function (ctx: FunctionContext) {
 /**
  * B007: 提取的 AI 调用逻辑 — 带重试、超时和模型降级
  */
-async function callAIWithFallback({ requestId, preferredModel, systemPrompt, userPrompt, temperature, startTime }) {
+async function callAIWithFallback({
+  requestId,
+  preferredModel,
+  systemPrompt,
+  userPrompt,
+  temperature,
+  startTime,
+  messages = null
+}) {
   let modelName = selectAvailableModel(preferredModel);
   let modelConfig = MODEL_CONFIG[modelName] || MODEL_CONFIG['glm-4-plus'];
 
@@ -578,7 +609,7 @@ async function callAIWithFallback({ requestId, preferredModel, systemPrompt, use
         },
         data: {
           model: modelConfig.name,
-          messages: [
+          messages: messages || [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt }
           ],
@@ -682,13 +713,17 @@ function buildPrompt(params) {
     examYear,
     subject,
     context = {},
-    emotion
+    emotion,
+    // [F3-FIX] 择校咨询扩展参数
+    schoolInfo = {},
+    history = []
   } = params;
 
   let systemPrompt = '';
   let userPrompt = content;
   let model = null;
   let temperature = null;
+  let customMessages = null; // [F3-FIX] 多轮对话消息数组（consult 等场景使用）
 
   switch (action) {
     // ==================== 原有功能 ====================
@@ -776,11 +811,23 @@ function buildPrompt(params) {
       break;
 
     case 'consult':
-      // 院校咨询
-      systemPrompt = buildConsultPrompt(subject);
+      // [F3-FIX] 院校咨询 — 支持多轮上下文 + 院校信息注入
+      systemPrompt = buildConsultPrompt(subject, schoolInfo);
       userPrompt = content;
       model = 'glm-4-flash';
       temperature = 0.7;
+      // 构建多轮对话消息数组
+      if (history && history.length > 0) {
+        const consultMessages: Array<{ role: string; content: string }> = [{ role: 'system', content: systemPrompt }];
+        for (const msg of history) {
+          if (msg.role === 'user' || msg.role === 'assistant') {
+            consultMessages.push({ role: msg.role, content: msg.content });
+          }
+        }
+        consultMessages.push({ role: 'user', content: userPrompt });
+        // 传递自定义 messages 给 callAIWithFallback
+        customMessages = consultMessages;
+      }
       break;
 
     case 'recommend':
@@ -824,7 +871,7 @@ function buildPrompt(params) {
       break;
   }
 
-  return { systemPrompt, userPrompt, model, temperature };
+  return { systemPrompt, userPrompt, model, temperature, customMessages };
 }
 
 /**
@@ -1651,8 +1698,22 @@ ${context ? `\n## 上下文提示\n${typeof context === 'string' ? context : JSO
 
 /**
  * 构建院校咨询提示词
+ * [F3-FIX] 支持注入院校详情，提升咨询精准度
  */
-function buildConsultPrompt(subject) {
+function buildConsultPrompt(subject, schoolInfo: any = {}) {
+  let schoolContext = '';
+  if (schoolInfo && Object.keys(schoolInfo).length > 0) {
+    const parts = [];
+    if (schoolInfo.name) parts.push(`院校名称：${schoolInfo.name}`);
+    if (schoolInfo.location) parts.push(`所在地区：${schoolInfo.location}`);
+    if (schoolInfo.level) parts.push(`院校层次：${schoolInfo.level}`);
+    if (schoolInfo.tags && schoolInfo.tags.length) parts.push(`院校标签：${schoolInfo.tags.join('、')}`);
+    if (schoolInfo.majors && schoolInfo.majors.length) parts.push(`热门专业：${schoolInfo.majors.join('、')}`);
+    if (parts.length > 0) {
+      schoolContext = `\n\n## 当前咨询院校信息\n${parts.join('\n')}`;
+    }
+  }
+
   return `你是一位资深的考研择校顾问，拥有丰富的院校信息和招生经验。
 
 ## 咨询能力
@@ -1673,7 +1734,7 @@ function buildConsultPrompt(subject) {
 3. 注意事项或风险提示
 4. 备选建议
 
-学科领域：${subject || '综合'}`;
+学科领域：${subject || '综合'}${schoolContext}`;
 }
 
 /**
@@ -1714,6 +1775,26 @@ function parseJsonResponse(aiContent, action) {
   }
 
   return parsed;
+}
+
+/**
+ * [F4-FIX] 从数据库加载对话记忆
+ */
+async function loadConversationMemory(userId, friendType) {
+  try {
+    const db = cloud.database();
+    const collection = db.collection('ai_friend_memory');
+    const result = await collection.where({ userId, friendType }).getOne();
+    if (result.data && result.data.conversations && result.data.conversations.length > 0) {
+      // 取最近10条，格式化为可读文本
+      const recent = result.data.conversations.slice(-10);
+      return recent.map((c) => `用户: ${c.userMessage}\n${friendType}: ${c.aiResponse}`).join('\n---\n');
+    }
+    return '';
+  } catch (error) {
+    logger.error('[Memory] 加载对话记忆失败:', error);
+    return '';
+  }
 }
 
 /**

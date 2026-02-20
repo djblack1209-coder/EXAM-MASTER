@@ -503,6 +503,15 @@ export default {
       hasRealData: false
     };
   },
+
+  // [F2-FIX] 微信分享配置
+  onShareAppMessage() {
+    return {
+      title: '择校分析 - Exam-Master 考研备考',
+      path: '/pages/school/index'
+    };
+  },
+
   async onLoad() {
     const sys = uni.getSystemInfoSync();
     // 统一计算：状态栏高度
@@ -528,7 +537,7 @@ export default {
     try {
       await this.loadRecommendedSchools();
     } catch (e) {
-      console.error('[school] 加载推荐院校失败:', e);
+      logger.error('[school] 加载推荐院校失败:', e);
     } finally {
       // 隐藏骨架屏（无论成功失败都要隐藏）
       this.isLoading = false;

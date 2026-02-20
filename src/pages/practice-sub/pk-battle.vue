@@ -381,6 +381,15 @@ export default {
       };
     }
   },
+
+  // [F2-FIX] 微信分享配置
+  onShareAppMessage() {
+    return {
+      title: 'PK 对战 - Exam-Master 考研备考',
+      path: '/pages/practice-sub/pk-battle'
+    };
+  },
+
   onLoad(options) {
     logger.log('[TEST-10.1] 🎮 PK 对战页面加载');
     logger.log('[TEST-10.1] 📋 页面参数:', options);

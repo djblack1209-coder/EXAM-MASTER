@@ -12,6 +12,7 @@
 import { ref } from 'vue';
 // P006: 从中央配置读取深度链接配置
 import appConfig from '@/config/index.js';
+import { logger } from '@/utils/logger.js';
 
 // 链接类型
 const LINK_TYPE = {
@@ -57,9 +58,7 @@ export function generateInviteCode(options = {}) {
   const roomHash = hashString(roomId).toString(36).substring(0, 2);
 
   // 组合并截取
-  const code = `${timestamp}${random}${userHash}${roomHash}`
-    .toUpperCase()
-    .substring(0, CONFIG.codeLength);
+  const code = `${timestamp}${random}${userHash}${roomHash}`.toUpperCase().substring(0, CONFIG.codeLength);
 
   return code;
 }
@@ -71,7 +70,7 @@ function hashString(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   return Math.abs(hash);
@@ -194,7 +193,9 @@ function generateSignature(params) {
   const secret = appConfig.deepLink.inviteSecret || `exam_pk_${Date.now().toString(36).slice(-4)}`;
   const sortedKeys = Object.keys(params).sort();
   const str = sortedKeys.map((k) => `${k}=${params[k]}`).join('&');
-  return hashString(str + secret).toString(16).substring(0, 8);
+  return hashString(str + secret)
+    .toString(16)
+    .substring(0, 8);
 }
 
 /**
@@ -214,7 +215,7 @@ export function parseInviteLink(url) {
 
     // 验证必要参数
     if (!params.r || !params.c) {
-      console.warn('[InviteDeepLink] Missing required params');
+      logger.warn('[InviteDeepLink] Missing required params');
       return null;
     }
 
@@ -224,13 +225,13 @@ export function parseInviteLink(url) {
     const expectedSign = generateSignature(params);
 
     if (sign !== expectedSign) {
-      console.warn('[InviteDeepLink] Invalid signature');
+      logger.warn('[InviteDeepLink] Invalid signature');
       return null;
     }
 
     // 验证过期时间
     if (params.e && Date.now() > parseInt(params.e)) {
-      console.warn('[InviteDeepLink] Link expired');
+      logger.warn('[InviteDeepLink] Link expired');
       return { expired: true };
     }
 
@@ -245,9 +246,8 @@ export function parseInviteLink(url) {
       expiry: parseInt(params.e),
       valid: true
     };
-
   } catch (error) {
-    console.error('[InviteDeepLink] Parse error:', error);
+    logger.error('[InviteDeepLink] Parse error:', error);
     return null;
   }
 }
@@ -358,9 +358,8 @@ export async function validateInviteCode(code, _roomId) {
 
     // 当前降级方案：本地基础验证通过即返回 true
     return true;
-
   } catch (error) {
-    console.error('[InviteDeepLink] Validate error:', error);
+    logger.error('[InviteDeepLink] Validate error:', error);
     return false;
   }
 }
@@ -384,9 +383,8 @@ export async function joinPKRoom(inviteInfo) {
       roomId,
       message: '成功加入房间'
     };
-
   } catch (error) {
-    console.error('[InviteDeepLink] Join room error:', error);
+    logger.error('[InviteDeepLink] Join room error:', error);
     return {
       success: false,
       message: error.message || '加入房间失败'
@@ -417,7 +415,6 @@ export function useInviteDeepLink() {
         error.value = '邀请链接已过期';
         inviteInfo.value = null;
       }
-
     } catch (_e2) {
       error.value = _e2.message;
       inviteInfo.value = null;
@@ -442,7 +439,6 @@ export function useInviteDeepLink() {
       });
 
       return { code, link };
-
     } finally {
       isProcessing.value = false;
     }

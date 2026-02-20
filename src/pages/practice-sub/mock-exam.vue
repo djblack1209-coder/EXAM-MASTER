@@ -348,17 +348,37 @@ export default {
       this.totalQuestions = bank.length;
       this._cachedBank = bank;
     } catch (err) {
-      console.error('[模拟考试] 加载题库异常:', err);
+      logger.error('[模拟考试] 加载题库异常:', err);
       this.totalQuestions = 0;
       this._cachedBank = [];
     } finally {
       this.isPageLoading = false;
     }
+
+    // [F5-FIX] 检查是否有未完成的考试
+    this._checkUnfinishedExam();
   },
 
   onUnload() {
     uni.$off('themeUpdate', this._themeHandler);
     this.clearTimer();
+    // [F5-FIX] 退出时保存进度（如果考试进行中）
+    this._saveExamProgress();
+  },
+
+  // [F5-FIX] 切后台 / 接电话时自动保存进度
+  onHide() {
+    if (this.isExamStarted && !this.isExamFinished) {
+      this._saveExamProgress();
+    }
+  },
+
+  // [F2-FIX] 微信分享配置
+  onShareAppMessage() {
+    return {
+      title: '模拟考试 - Exam-Master 考研备考',
+      path: '/pages/practice-sub/mock-exam'
+    };
   },
 
   methods: {
@@ -366,9 +386,10 @@ export default {
       if (this.isExamStarted && !this.isExamFinished) {
         uni.showModal({
           title: '确认退出',
-          content: '考试进行中，退出将不保存答题记录，确定退出吗？',
+          content: '退出后可从上次进度继续考试，确定退出吗？',
           success: (res) => {
             if (res.confirm) {
+              this._saveExamProgress();
               this.clearTimer();
               uni.navigateBack();
             }
@@ -377,6 +398,74 @@ export default {
       } else {
         uni.navigateBack();
       }
+    },
+
+    // [F5-FIX] 保存考试进度到本地
+    _saveExamProgress() {
+      if (!this.isExamStarted || this.isExamFinished) return;
+      try {
+        storageService.save('MOCK_EXAM_PROGRESS', {
+          examQuestions: this.examQuestions,
+          userAnswers: this.userAnswers,
+          currentIndex: this.currentIndex,
+          remainingTime: this.remainingTime,
+          correctCount: this.correctCount,
+          wrongCount: this.wrongCount,
+          wrongQuestions: this.wrongQuestions,
+          questionCount: this.questionCount,
+          examDuration: this.examDuration,
+          savedAt: Date.now()
+        });
+        logger.log('[MockExam] 考试进度已保存, index:', this.currentIndex);
+      } catch (e) {
+        logger.warn('[MockExam] 保存进度失败:', e);
+      }
+    },
+
+    // [F5-FIX] 检查并恢复未完成的考试
+    _checkUnfinishedExam() {
+      try {
+        const progress = storageService.get('MOCK_EXAM_PROGRESS');
+        if (!progress || !progress.examQuestions?.length) return;
+        // 24小时过期
+        if (Date.now() - progress.savedAt > 24 * 60 * 60 * 1000) {
+          storageService.remove('MOCK_EXAM_PROGRESS');
+          return;
+        }
+        uni.showModal({
+          title: '发现未完成的考试',
+          content: `上次答到第 ${progress.currentIndex + 1}/${progress.questionCount} 题，剩余 ${Math.floor(progress.remainingTime / 60)} 分钟，是否继续？`,
+          confirmText: '继续考试',
+          cancelText: '重新开始',
+          success: (res) => {
+            if (res.confirm) {
+              this._restoreExamProgress(progress);
+            } else {
+              storageService.remove('MOCK_EXAM_PROGRESS');
+            }
+          }
+        });
+      } catch (e) {
+        logger.warn('[MockExam] 检查未完成考试失败:', e);
+      }
+    },
+
+    // [F5-FIX] 恢复考试进度
+    _restoreExamProgress(progress) {
+      this.examQuestions = progress.examQuestions;
+      this.userAnswers = progress.userAnswers || {};
+      this.currentIndex = progress.currentIndex || 0;
+      this.remainingTime = progress.remainingTime || 0;
+      this.correctCount = progress.correctCount || 0;
+      this.wrongCount = progress.wrongCount || 0;
+      this.wrongQuestions = progress.wrongQuestions || [];
+      this.questionCount = progress.questionCount || 20;
+      this.examDuration = progress.examDuration || 30;
+      this.isExamStarted = true;
+      this.isExamFinished = false;
+      storageService.remove('MOCK_EXAM_PROGRESS');
+      this.startTimer();
+      logger.log('[MockExam] 考试进度已恢复, index:', this.currentIndex);
     },
 
     async startExam() {

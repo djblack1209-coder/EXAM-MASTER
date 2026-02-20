@@ -124,16 +124,14 @@ class KnowledgeGraphManager {
 
     const node = this.nodes.get(nodeId);
     if (!node) {
-      console.warn('[KnowledgeGraph] 节点不存在:', nodeId);
+      logger.warn('[KnowledgeGraph] 节点不存在:', nodeId);
       return null;
     }
 
     // 更新学习数据
     node.totalQuestions += learningData.questionsAnswered || 0;
     node.correctQuestions += learningData.correctAnswers || 0;
-    node.accuracy = node.totalQuestions > 0
-      ? Math.round((node.correctQuestions / node.totalQuestions) * 100)
-      : 0;
+    node.accuracy = node.totalQuestions > 0 ? Math.round((node.correctQuestions / node.totalQuestions) * 100) : 0;
     node.masteryLevel = this._calculateMasteryLevel(node.accuracy);
     node.color = this._getNodeColor(node);
     node.updatedAt = Date.now();
@@ -176,14 +174,13 @@ class KnowledgeGraphManager {
 
     // 检查节点是否存在
     if (!this.nodes.has(sourceId) || !this.nodes.has(targetId)) {
-      console.warn('[KnowledgeGraph] 节点不存在');
+      logger.warn('[KnowledgeGraph] 节点不存在');
       return null;
     }
 
     // 检查边是否已存在
     const existingEdge = this.edges.find(
-      (e) => (e.source === sourceId && e.target === targetId) ||
-           (e.source === targetId && e.target === sourceId)
+      (e) => (e.source === sourceId && e.target === targetId) || (e.source === targetId && e.target === sourceId)
     );
 
     if (existingEdge) {
@@ -250,13 +247,9 @@ class KnowledgeGraphManager {
       const node = this.findOrCreateNode(category);
       node.totalQuestions = stats.total;
       // 假设没有错题记录的都是正确的（简化处理）
-      const mistakeCount = mistakeRecords.filter(
-        (m) => (m.category || m.tags?.[0] || '未分类') === category
-      ).length;
+      const mistakeCount = mistakeRecords.filter((m) => (m.category || m.tags?.[0] || '未分类') === category).length;
       node.correctQuestions = stats.total - mistakeCount;
-      node.accuracy = node.totalQuestions > 0
-        ? Math.round((node.correctQuestions / node.totalQuestions) * 100)
-        : 0;
+      node.accuracy = node.totalQuestions > 0 ? Math.round((node.correctQuestions / node.totalQuestions) * 100) : 0;
       node.masteryLevel = this._calculateMasteryLevel(node.accuracy);
       node.color = this._getNodeColor(node);
 
@@ -325,14 +318,14 @@ class KnowledgeGraphManager {
     if (!node) return null;
 
     // 获取关联节点
-    const relatedEdges = this.edges.filter(
-      (e) => e.source === nodeId || e.target === nodeId
-    );
+    const relatedEdges = this.edges.filter((e) => e.source === nodeId || e.target === nodeId);
 
-    const relatedNodes = relatedEdges.map((edge) => {
-      const relatedId = edge.source === nodeId ? edge.target : edge.source;
-      return this.nodes.get(relatedId);
-    }).filter(Boolean);
+    const relatedNodes = relatedEdges
+      .map((edge) => {
+        const relatedId = edge.source === nodeId ? edge.target : edge.source;
+        return this.nodes.get(relatedId);
+      })
+      .filter(Boolean);
 
     return {
       ...node,
@@ -404,8 +397,7 @@ class KnowledgeGraphManager {
   getLearningPath() {
     this.init();
 
-    const nodes = Array.from(this.nodes.values())
-      .filter((n) => n.totalQuestions >= 1);
+    const nodes = Array.from(this.nodes.values()).filter((n) => n.totalQuestions >= 1);
 
     if (nodes.length === 0) {
       return [];
@@ -414,8 +406,8 @@ class KnowledgeGraphManager {
     // 按掌握度和关联度排序
     const sortedNodes = nodes.sort((a, b) => {
       // 优先学习薄弱且有前置知识的
-      const aScore = (100 - a.accuracy) + this._getPrerequisiteScore(a.id) + this._getConnectionScore(a.id);
-      const bScore = (100 - b.accuracy) + this._getPrerequisiteScore(b.id) + this._getConnectionScore(b.id);
+      const aScore = 100 - a.accuracy + this._getPrerequisiteScore(a.id) + this._getConnectionScore(a.id);
+      const bScore = 100 - b.accuracy + this._getPrerequisiteScore(b.id) + this._getConnectionScore(b.id);
       return bScore - aScore;
     });
 
@@ -467,11 +459,8 @@ class KnowledgeGraphManager {
       }));
 
     // 找出孤立节点
-    const connectedNodeIds = new Set(
-      this.edges.flatMap((e) => [e.source, e.target])
-    );
-    connections.isolatedNodes = Array.from(this.nodes.values())
-      .filter((n) => !connectedNodeIds.has(n.id));
+    const connectedNodeIds = new Set(this.edges.flatMap((e) => [e.source, e.target]));
+    connections.isolatedNodes = Array.from(this.nodes.values()).filter((n) => !connectedNodeIds.has(n.id));
 
     return connections;
   }
@@ -619,9 +608,7 @@ class KnowledgeGraphManager {
    * 获取前置知识分数
    */
   _getPrerequisiteScore(nodeId) {
-    const edges = this.edges.filter(
-      (e) => e.target === nodeId && e.type === 'prerequisite'
-    );
+    const edges = this.edges.filter((e) => e.target === nodeId && e.type === 'prerequisite');
     return edges.length * 10;
   }
 
@@ -691,7 +678,7 @@ class KnowledgeGraphManager {
         }
       }
     } catch (e) {
-      console.warn('[KnowledgeGraph] 加载节点失败:', e);
+      logger.warn('[KnowledgeGraph] 加载节点失败:', e);
     }
   }
 
@@ -705,7 +692,7 @@ class KnowledgeGraphManager {
         storageService.save(STORAGE_KEYS.KNOWLEDGE_NODES, nodesArray);
       }
     } catch (e) {
-      console.warn('[KnowledgeGraph] 保存节点失败:', e);
+      logger.warn('[KnowledgeGraph] 保存节点失败:', e);
     }
   }
 
@@ -731,7 +718,7 @@ class KnowledgeGraphManager {
         storageService.save(STORAGE_KEYS.KNOWLEDGE_EDGES, this.edges);
       }
     } catch (e) {
-      console.warn('[KnowledgeGraph] 保存边失败:', e);
+      logger.warn('[KnowledgeGraph] 保存边失败:', e);
     }
   }
 
@@ -747,7 +734,7 @@ class KnowledgeGraphManager {
         }
       }
     } catch (e) {
-      console.warn('[KnowledgeGraph] 加载设置失败:', e);
+      logger.warn('[KnowledgeGraph] 加载设置失败:', e);
     }
   }
 
@@ -755,9 +742,7 @@ class KnowledgeGraphManager {
    * 获取连接分数
    */
   _getConnectionScore(nodeId) {
-    const edges = this.edges.filter(
-      (e) => e.source === nodeId || e.target === nodeId
-    );
+    const edges = this.edges.filter((e) => e.source === nodeId || e.target === nodeId);
     return edges.length * 5;
   }
 
@@ -765,9 +750,7 @@ class KnowledgeGraphManager {
    * 获取强关联节点
    */
   _getStrongConnections(nodeId, limit) {
-    const relatedEdges = this.edges.filter(
-      (e) => e.source === nodeId || e.target === nodeId
-    );
+    const relatedEdges = this.edges.filter((e) => e.source === nodeId || e.target === nodeId);
 
     const connections = relatedEdges
       .map((edge) => {
@@ -789,13 +772,13 @@ class KnowledgeGraphManager {
    * 获取前置依赖
    */
   _getPrerequisites(nodeId) {
-    const prerequisiteEdges = this.edges.filter(
-      (e) => e.target === nodeId && e.type === 'prerequisite'
-    );
+    const prerequisiteEdges = this.edges.filter((e) => e.target === nodeId && e.type === 'prerequisite');
 
-    return prerequisiteEdges.map((edge) => {
-      return this.nodes.get(edge.source);
-    }).filter(Boolean);
+    return prerequisiteEdges
+      .map((edge) => {
+        return this.nodes.get(edge.source);
+      })
+      .filter(Boolean);
   }
 
   /**
@@ -908,29 +891,13 @@ class KnowledgeGraphManager {
 
     // 基于节点类型推荐资源
     if (node.category === 'math') {
-      resources.push(
-        '《高等数学辅导讲义》',
-        '历年真题分类解析',
-        '数学公式手册'
-      );
+      resources.push('《高等数学辅导讲义》', '历年真题分类解析', '数学公式手册');
     } else if (node.category === 'english') {
-      resources.push(
-        '《考研英语词汇闪过》',
-        '阅读理解专项训练',
-        '写作模板集锦'
-      );
+      resources.push('《考研英语词汇闪过》', '阅读理解专项训练', '写作模板集锦');
     } else if (node.category === 'politics') {
-      resources.push(
-        '《考研政治知识点精讲精练》',
-        '时政热点汇总',
-        '主观题答题技巧'
-      );
+      resources.push('《考研政治知识点精讲精练》', '时政热点汇总', '主观题答题技巧');
     } else {
-      resources.push(
-        '专业课核心知识点总结',
-        '历年真题解析',
-        '模拟练习题集'
-      );
+      resources.push('专业课核心知识点总结', '历年真题解析', '模拟练习题集');
     }
 
     return resources;

@@ -286,9 +286,7 @@ class SwipeGestureManager {
     }
 
     const transform = `translateX(${deltaX}px)`;
-    const transition = isAnimating
-      ? `transform ${this.settings.animationDuration}ms ease-out`
-      : 'none';
+    const transition = isAnimating ? `transform ${this.settings.animationDuration}ms ease-out` : 'none';
 
     return {
       transform,
@@ -362,7 +360,7 @@ class SwipeGestureManager {
         uni.vibrateShort({ type: 'light' });
       }
     } catch (e) {
-      console.warn('[SwipeGesture] 震动反馈失败:', e);
+      logger.warn('[SwipeGesture] 震动反馈失败:', e);
     }
   }
 
@@ -377,7 +375,7 @@ class SwipeGestureManager {
         uni.vibrateShort({ type: 'heavy' });
       }
     } catch (e) {
-      console.warn('[SwipeGesture] 边界震动反馈失败:', e);
+      logger.warn('[SwipeGesture] 边界震动反馈失败:', e);
     }
 
     // 显示提示
@@ -391,7 +389,7 @@ class SwipeGestureManager {
         });
       }
     } catch (e) {
-      console.warn('[SwipeGesture] 显示提示失败:', e);
+      logger.warn('[SwipeGesture] 显示提示失败:', e);
     }
   }
 
@@ -407,7 +405,7 @@ class SwipeGestureManager {
         }
       }
     } catch (e) {
-      console.warn('[SwipeGesture] 加载设置失败:', e);
+      logger.warn('[SwipeGesture] 加载设置失败:', e);
     }
   }
 
@@ -420,7 +418,7 @@ class SwipeGestureManager {
         storageService.save(STORAGE_KEY, this.settings);
       }
     } catch (e) {
-      console.warn('[SwipeGesture] 保存设置失败:', e);
+      logger.warn('[SwipeGesture] 保存设置失败:', e);
     }
   }
 }

@@ -432,7 +432,7 @@ export default {
               target: item.target || '',
               avatarUrl: item.avatarUrl || item.avatar || this.defaultAvatar,
               avatar: item.avatarUrl || item.avatar || this.defaultAvatar,
-              _id: item._id || item.id || `user_${index}`
+              _id: item.uid || item._id || item.id || `user_${index}`
             };
 
             // 调试：打印规范化后的 score 值
@@ -566,7 +566,8 @@ export default {
         );
 
         const myRecord = this.list.find(
-          (item) => item._id === userId || item.nickName === myNickName || item.name === myNickName
+          (item) =>
+            item._id === userId || item.uid === userId || item.nickName === myNickName || item.name === myNickName
         );
 
         if (myRecord) {
@@ -850,7 +851,7 @@ export default {
     getRankItemClass(item) {
       const userId = storageService.get('EXAM_USER_ID', '');
       const userInfo = storageService.get('userInfo', {});
-      const isSelf = item._id === userId || item.nickName === userInfo.nickName;
+      const isSelf = item._id === userId || item.uid === userId || item.nickName === userInfo.nickName;
 
       if (isSelf && this.selfPositionHighlighted) {
         return selfPositionTracker.getHighlightClass(userId);

@@ -79,20 +79,11 @@
       <!-- #endif -->
       <!-- #endif -->
 
-      <!-- QQ登录 - 仅在非微信小程序环境显示 -->
+      <!-- QQ登录 - 暂不支持（后端未实现 QQ OAuth handler，v1.1.0 计划支持） -->
       <!-- #ifndef MP-WEIXIN -->
-      <view
-        class="login-btn qq-btn"
-        hover-class="btn-hover"
-        :class="{ 'btn-disabled': isLoading }"
-        @tap="handleQQLogin"
-      >
-        <view class="btn-icon qq-icon">
-          <text>QQ</text>
-        </view>
-        <text class="btn-text"> QQ账号登录 </text>
-        <text class="btn-arrow"> → </text>
-      </view>
+      <!-- [F1-FIX] QQ 登录入口已禁用：后端 login.ts 无 handleQQLogin，
+           QQ code 会被错误发送到微信 jscode2session API 导致登录失败。
+           恢复时需同步实现后端 QQ OAuth 处理逻辑。 -->
       <!-- #endif -->
 
       <!-- 分割线 -->
