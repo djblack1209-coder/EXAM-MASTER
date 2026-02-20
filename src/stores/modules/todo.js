@@ -6,6 +6,7 @@
 
 import { defineStore } from 'pinia';
 import { storageService } from '../../services/storageService.js';
+import { logger } from '@/utils/logger.js';
 
 /** 存储 key 常量（消除硬编码魔法字符串） */
 const STORAGE_KEY = 'my_tasks';
@@ -89,7 +90,7 @@ export const useTodoStore = defineStore('todo', {
           this.saveTasks();
         }
       } catch (error) {
-        console.error('初始化任务列表失败:', error);
+        logger.error('初始化任务列表失败:', error);
         this.tasks = createDefaultTasks();
       } finally {
         this.loading = false;
@@ -112,7 +113,7 @@ export const useTodoStore = defineStore('todo', {
      */
     addTask(title, priority = 'medium', tag = '重要', tagColor = 'yellow') {
       if (!title || title.trim() === '') {
-        console.error('任务标题不能为空');
+        logger.error('任务标题不能为空');
         return;
       }
 

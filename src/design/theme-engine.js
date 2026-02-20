@@ -373,7 +373,7 @@ export function getCurrentTheme() {
     const appBaseInfo = uni.getAppBaseInfo();
     return appBaseInfo.theme === 'dark' ? 'dark' : 'light';
   } catch (e) {
-    console.warn('[theme-engine] 获取主题失败:', e);
+    logger.warn('[theme-engine] 获取主题失败:', e);
     return 'light';
   }
   // #endif

@@ -75,11 +75,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
       weekStart.setDate(now.getDate() - now.getDay());
       weekStart.setHours(0, 0, 0, 0);
 
-      const studyDates = new Set(
-        state.sessions
-          .filter((s) => new Date(s.startTime) >= weekStart)
-          .map((s) => s.date)
-      );
+      const studyDates = new Set(state.sessions.filter((s) => new Date(s.startTime) >= weekStart).map((s) => s.date));
 
       return studyDates.size;
     },
@@ -145,7 +141,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
 
         logger.log('[LearningTrajectory] 初始化完成');
       } catch (e) {
-        console.error('[LearningTrajectory] 初始化失败:', e);
+        logger.error('[LearningTrajectory] 初始化失败:', e);
         // 初始化失败时设置默认状态，避免后续操作异常
         this.trajectory = [];
         this.knowledgeMastery = {};
@@ -308,13 +304,9 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
           startDate = new Date(0);
       }
 
-      const filteredTrajectory = this.trajectory.filter(
-        (t) => new Date(t.timestamp) >= startDate
-      );
+      const filteredTrajectory = this.trajectory.filter((t) => new Date(t.timestamp) >= startDate);
 
-      const filteredSessions = this.sessions.filter(
-        (s) => new Date(s.startTime) >= startDate
-      );
+      const filteredSessions = this.sessions.filter((s) => new Date(s.startTime) >= startDate);
 
       // 统计各类事件
       const eventCounts = {};
@@ -335,9 +327,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
         eventCounts,
         trajectoryCount: filteredTrajectory.length,
         sessionCount: filteredSessions.length,
-        averageSessionMinutes: filteredSessions.length > 0
-          ? Math.round(totalMinutes / filteredSessions.length)
-          : 0
+        averageSessionMinutes: filteredSessions.length > 0 ? Math.round(totalMinutes / filteredSessions.length) : 0
       };
     },
 
@@ -347,11 +337,13 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
      */
     getLearningPath(limit = 20) {
       return this.trajectory
-        .filter((t) => [
-          TRAJECTORY_EVENTS.BUBBLE_CLICK,
-          TRAJECTORY_EVENTS.QUESTION_ANSWER,
-          TRAJECTORY_EVENTS.KNOWLEDGE_VIEW
-        ].includes(t.type))
+        .filter((t) =>
+          [
+            TRAJECTORY_EVENTS.BUBBLE_CLICK,
+            TRAJECTORY_EVENTS.QUESTION_ANSWER,
+            TRAJECTORY_EVENTS.KNOWLEDGE_VIEW
+          ].includes(t.type)
+        )
         .slice(0, limit)
         .map((t) => ({
           type: t.type,
@@ -368,7 +360,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
       try {
         storageService.save(STORAGE_KEYS.TRAJECTORY, this.trajectory);
       } catch (e) {
-        console.error('[LearningTrajectory] 保存轨迹失败:', e);
+        logger.error('[LearningTrajectory] 保存轨迹失败:', e);
       }
     },
 
@@ -379,7 +371,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
       try {
         storageService.save(STORAGE_KEYS.KNOWLEDGE_MASTERY, this.knowledgeMastery);
       } catch (e) {
-        console.error('[LearningTrajectory] 保存掌握度失败:', e);
+        logger.error('[LearningTrajectory] 保存掌握度失败:', e);
       }
     },
 
@@ -392,7 +384,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
         const sessionsToSave = this.sessions.slice(0, 100);
         storageService.save(STORAGE_KEYS.LEARNING_SESSIONS, sessionsToSave);
       } catch (e) {
-        console.error('[LearningTrajectory] 保存会话失败:', e);
+        logger.error('[LearningTrajectory] 保存会话失败:', e);
       }
     },
 

@@ -295,7 +295,7 @@ export default {
     currentQuestion() {
       const q = this.questions[this.currentIndex];
       if (!q) {
-        logger.warn('[TEST-10.1] ⚠️ 当前题目不存在:', {
+        logger.warn('[PK] 当前题目不存在:', {
           currentIndex: this.currentIndex,
           questionsLength: this.questions.length
         });
@@ -307,13 +307,13 @@ export default {
 
       // 修复AI回传格式问题：确保options是数组且格式正确
       if (!Array.isArray(options)) {
-        logger.warn('[PK-BATTLE] ⚠️ options不是数组，尝试转换:', options);
+        logger.warn('[PK] options不是数组，尝试转换:', options);
         // 尝试从字符串解析
         if (typeof options === 'string') {
           try {
             options = JSON.parse(options);
           } catch (e) {
-            logger.error('[PK-BATTLE] ❌ 无法解析options字符串:', e);
+            logger.error('[PK] 无法解析options字符串:', e);
             options = [];
           }
         } else if (typeof options === 'object' && options !== null) {
@@ -355,14 +355,6 @@ export default {
 
       // 调试日志
       if (this.currentIndex === 0) {
-        logger.log('[PK-BATTLE] 📝 currentQuestion 计算属性:', {
-          hasQuestion: !!normalized.question,
-          hasOptions: Array.isArray(normalized.options),
-          optionsCount: normalized.options.length,
-          options: normalized.options,
-          answer: normalized.answer,
-          rawQuestion: q
-        });
       }
 
       return normalized;
@@ -391,12 +383,8 @@ export default {
   },
 
   onLoad(options) {
-    logger.log('[TEST-10.1] 🎮 PK 对战页面加载');
-    logger.log('[TEST-10.1] 📋 页面参数:', options);
-
     // 检查路由参数（从排行榜跳转时可能传递 opponent 参数）
     if (options && options.opponent) {
-      logger.log('[TEST-10.1] 📋 检测到 opponent 参数:', decodeURIComponent(options.opponent));
     }
 
     this.initData();
@@ -420,29 +408,17 @@ export default {
     },
 
     initData() {
-      logger.log('[TEST-10.1] 🔧 初始化 PK 对战数据');
-
       const sys = uni.getSystemInfoSync();
       this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
       this.userInfo = storageService.get('userInfo', { nickName: '考研人', avatarUrl: '' });
       // ✅ F024: 统一使用 storageService 读取主题
       this.isDark = storageService.get('theme_mode', 'light') === 'dark';
 
-      logger.log('[TEST-10.1] 👤 用户信息:', {
-        nickName: this.userInfo.nickName,
-        hasAvatar: !!this.userInfo.avatarUrl
-      });
-
       // 加载题库（随机抽取5道题）
       const allQuestions = storageService.get('v30_bank', []);
 
-      logger.log('[TEST-10.1] 📚 题库状态:', {
-        totalQuestions: allQuestions.length,
-        hasQuestions: allQuestions.length > 0
-      });
-
       if (allQuestions.length === 0) {
-        logger.warn('[TEST-10.1] ⚠️ 题库为空，无法开始对战');
+        logger.warn('[PK] 题库为空，无法开始对战');
         // ✅ 使用自定义弹窗替换原生弹窗
         this.showEmptyModal = true;
         return;
@@ -451,17 +427,6 @@ export default {
       // 随机抽取5道题
       const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
       this.questions = shuffled.slice(0, Math.min(5, shuffled.length));
-
-      logger.log('[TEST-10.1] ✅ 题目加载完成:', {
-        selectedCount: this.questions.length,
-        firstQuestion: this.questions[0]
-          ? {
-              hasQuestion: !!this.questions[0].question,
-              hasOptions: Array.isArray(this.questions[0].options),
-              optionsCount: this.questions[0].options?.length || 0
-            }
-          : null
-      });
     },
 
     /**
@@ -469,8 +434,6 @@ export default {
      * 如果后端不可用，使用本地默认配置
      */
     async loadBotConfig() {
-      logger.log('[PK-BATTLE] 🤖 开始加载AI对手配置...');
-
       try {
         // 尝试从后端获取AI对手配置
         const response = await lafService.request('/pk-battle', {
@@ -480,18 +443,16 @@ export default {
         if (response && response.code === 0 && response.data && response.data.length > 0) {
           this.botList = response.data;
           this.botsLoaded = true;
-          logger.log('[PK-BATTLE] ✅ 从后端加载AI对手配置成功:', this.botList.length, '个');
           return;
         }
       } catch (error) {
-        logger.warn('[PK-BATTLE] ⚠️ 后端获取AI对手配置失败，使用本地默认配置:', error);
+        logger.warn('[PK] 后端获取AI对手配置失败，使用本地默认配置:', error);
       }
 
       // 降级方案：使用本地默认配置
       // 这些是基于真实用户数据统计生成的AI对手模型
       this.botList = this.getDefaultBotConfig();
       this.botsLoaded = true;
-      logger.log('[PK-BATTLE] ✅ 使用本地默认AI对手配置:', this.botList.length, '个');
     },
 
     /**
@@ -535,20 +496,12 @@ export default {
       ];
     },
     startMatching() {
-      logger.log('[TEST-10.1] 🔍 开始匹配对手');
-
       // 确保AI对手配置已加载
       if (!this.botsLoaded || this.botList.length === 0) {
-        logger.warn('[TEST-10.1] ⚠️ AI对手配置未加载，使用默认配置');
+        logger.warn('[PK] AI对手配置未加载，使用默认配置');
         this.botList = this.getDefaultBotConfig();
         this.botsLoaded = true;
       }
-
-      logger.log('[TEST-10.1] 📊 当前状态:', {
-        gameState: this.gameState,
-        opponentFound: this.opponentFound,
-        botListCount: this.botList.length
-      });
 
       // 重置匹配状态
       this.matchingStartTime = Date.now();
@@ -560,8 +513,6 @@ export default {
 
       // 模拟匹配过程（1.5-3秒随机延迟）
       const matchDelay = Math.random() * 1500 + 1500; // 1.5-3秒
-
-      logger.log('[TEST-10.1] ⏱️ 匹配延迟:', `${(matchDelay / 1000).toFixed(1)}秒`);
 
       this.matchingTimer = setTimeout(() => {
         // 随机选择一个AI对手
@@ -580,15 +531,6 @@ export default {
         // 停止状态更新
         this.stopMatchingStatusUpdate();
 
-        logger.log('[TEST-10.1] ✅ 匹配成功！');
-        logger.log('[TEST-10.1] 👥 对手信息:', {
-          name: this.opponent.name,
-          avatar: this.opponent.avatar,
-          level: this.opponent.level,
-          isBot: this.opponent.isBot,
-          opponentFound: this.opponentFound
-        });
-
         // 震动反馈
         try {
           if (typeof uni.vibrateShort === 'function') {
@@ -600,8 +542,6 @@ export default {
 
         // 1秒后进入对战
         setTimeout(() => {
-          logger.log('[TEST-10.1] ⚔️ 进入对战阶段');
-          logger.log('[TEST-10.1] 📊 状态切换: matching -> battle');
           this.gameState = 'battle';
           this.startBattle();
         }, 1000);
@@ -610,7 +550,6 @@ export default {
       // 30秒超时处理
       this.matchingTimeoutTimer = setTimeout(() => {
         if (!this.opponentFound) {
-          logger.log('[PK-BATTLE] ⏰ 匹配超时，转为AI对战');
           this.stopMatchingStatusUpdate();
           this.handleMatchingTimeout();
         }
@@ -668,16 +607,6 @@ export default {
       }, 1500);
     },
     startBattle() {
-      logger.log('[TEST-10.1] 🎯 开始对战');
-      logger.log('[TEST-10.1] 📊 对战状态:', {
-        gameState: this.gameState,
-        currentIndex: this.currentIndex,
-        questionsCount: this.questions.length,
-        opponentName: this.opponent.name,
-        myScore: this.myScore,
-        opponentScore: this.opponentScore
-      });
-
       // 重置分数上传标志位（新一局开始）
       this.isScoreUploaded = false;
 
@@ -685,19 +614,13 @@ export default {
       this.currentIndex = 0;
 
       if (this.questions.length === 0) {
-        logger.error('[TEST-10.1] ❌ 题目为空，无法开始对战');
+        logger.error('[PK] 题目为空，无法开始对战');
         uni.showToast({
           title: '题目加载失败',
           icon: 'none'
         });
         return;
       }
-
-      logger.log('[TEST-10.1] 📝 第一题信息:', {
-        hasQuestion: !!this.currentQuestion.question,
-        hasOptions: Array.isArray(this.currentQuestion.options),
-        optionsCount: this.currentQuestion.options?.length || 0
-      });
 
       this.simulateOpponentAnswer(0);
       this.questionStartTime = Date.now(); // 记录第一题开始时间
@@ -734,8 +657,6 @@ export default {
       }, 1000);
     },
     handleTimeOut() {
-      logger.log('[PK-BATTLE] ⏰ 答题超时，自动判定错误');
-
       // 清除倒计时
       if (this.questionTimer) {
         clearInterval(this.questionTimer);
@@ -773,7 +694,6 @@ export default {
       }, 1500);
     },
     goToNextQuestion() {
-      logger.log('[TEST-10.2] ⏭️ 准备进入下一题');
       this.showAns = false;
       this.userChoice = null;
       this.opponentChoice = null;
@@ -781,10 +701,6 @@ export default {
 
       if (this.currentIndex < this.questions.length - 1) {
         this.currentIndex++;
-        logger.log('[TEST-10.2] 📝 进入下一题:', {
-          currentIndex: this.currentIndex,
-          totalQuestions: this.questions.length
-        });
         // 开始下一题的机器人答题
         this.simulateOpponentAnswer(this.currentIndex);
         // 记录下一题开始时间
@@ -792,14 +708,13 @@ export default {
         // 启动新题目的倒计时
         this.startQuestionTimer();
       } else {
-        logger.log('[TEST-10.2] 🏁 所有题目完成，进入结算');
         this.finishGame();
       }
     },
     simulateOpponentAnswer(questionIndex) {
       // 检查游戏状态，如果已经结束则不再答题
       if (questionIndex >= this.questions.length || this.gameState !== 'battle') {
-        logger.warn('[TEST-10.2] ⚠️ 对手答题被跳过:', {
+        logger.warn('[PK] 对手答题被跳过:', {
           questionIndex: questionIndex,
           questionsLength: this.questions.length,
           gameState: this.gameState
@@ -809,7 +724,7 @@ export default {
 
       const question = this.questions[questionIndex];
       if (!question) {
-        logger.error('[TEST-10.2] ❌ 题目不存在，无法模拟对手答题:', questionIndex);
+        logger.error('[PK] 题目不存在，无法模拟对手答题:', questionIndex);
         return;
       }
 
@@ -817,15 +732,6 @@ export default {
       const correctAnswerRaw = question.answer;
       const correctAnswer = correctAnswerRaw.toString().toUpperCase().charAt(0);
       const correctIndex = ['A', 'B', 'C', 'D'].indexOf(correctAnswer);
-
-      logger.log('[TEST-10.2] 🤖 开始模拟对手答题:', {
-        questionIndex: questionIndex,
-        correctAnswer: correctAnswer,
-        correctIndex: correctIndex,
-        currentIndex: this.currentIndex,
-        gameState: this.gameState,
-        opponentAccuracy: this.opponent.accuracy || 0.7
-      });
 
       // 根据AI对手配置计算答题时间
       let answerTimeBase = 5000; // 默认5秒
@@ -836,8 +742,6 @@ export default {
       }
       const answerTime = Math.random() * 2000 + answerTimeBase; // 在基础时间上浮动2秒
 
-      logger.log('[TEST-10.2] ⏱️ 对手将在', (answerTime / 1000).toFixed(1), '秒后答题');
-
       // 使用AI对手配置的正确率
       const accuracy = this.opponent.accuracy || 0.7;
       const willAnswerCorrectly = Math.random() < accuracy;
@@ -845,7 +749,7 @@ export default {
       const timer = setTimeout(() => {
         // 再次检查游戏状态，防止在答题过程中游戏已结束
         if (this.gameState !== 'battle') {
-          logger.warn('[TEST-10.2] ⚠️ 游戏已结束，取消对手答题:', {
+          logger.warn('[PK] 游戏已结束，取消对手答题:', {
             questionIndex: questionIndex,
             gameState: this.gameState
           });
@@ -877,71 +781,38 @@ export default {
         // 因为 isCorrectOption 需要 showAns 为 true，所以这里直接判断
         const isOpponentCorrect = correctIndex >= 0 && this.opponentChoice === correctIndex;
 
-        logger.log('[TEST-10.2] 🤖 对手答题完成:', {
-          questionIndex: questionIndex,
-          opponentChoice: this.opponentChoice,
-          selectedLabel: ['A', 'B', 'C', 'D'][this.opponentChoice],
-          correctAnswer: correctAnswer,
-          correctIndex: correctIndex,
-          isOpponentCorrect: isOpponentCorrect,
-          opponentScoreBefore: this.opponentScore,
-          gameState: this.gameState
-        });
-
         if (isOpponentCorrect) {
           // 对手答对，增加得分并显示冲刺动画
           this.opponentScore += 20;
           this.opponentRushing = true;
-          logger.log('[TEST-10.2] ✅ 对手答对了！分数 +20，当前分数:', this.opponentScore);
           setTimeout(() => {
             this.opponentRushing = false;
           }, 500);
         } else {
-          logger.log('[TEST-10.2] ❌ 对手答错了，分数不变，当前分数:', this.opponentScore);
         }
 
         // 更新对手进度条
         this.opProgress = ((questionIndex + 1) / this.questions.length) * 100;
-        logger.log('[TEST-10.2] 📊 对手进度更新:', {
-          opProgress: this.opProgress,
-          questionIndex: questionIndex + 1,
-          totalQuestions: this.questions.length
-        });
       }, answerTime);
 
       this.opponentTimers.push(timer);
-      logger.log('[TEST-10.2] 📝 对手答题定时器已创建，当前定时器数量:', this.opponentTimers.length);
     },
     handleSelect(idx) {
       // 立即打印，确保事件触发
-      logger.log('[TEST-10.2] 🎯 选项被点击 - 立即响应:', idx);
-
-      logger.log('[TEST-10.2] 🎯 选项被点击:', {
-        index: idx,
-        optionLabel: ['A', 'B', 'C', 'D'][idx],
-        showAns: this.showAns,
-        gameState: this.gameState,
-        currentIndex: this.currentIndex,
-        hasCurrentQuestion: !!this.currentQuestion,
-        hasOptions: Array.isArray(this.currentQuestion?.options),
-        optionsCount: this.currentQuestion?.options?.length || 0
-      });
-
       // 检查状态
       if (this.gameState !== 'battle') {
-        logger.warn('[TEST-10.2] ⚠️ 当前不在对战状态，无法答题:', {
+        logger.warn('[PK] 当前不在对战状态，无法答题:', {
           gameState: this.gameState
         });
         return;
       }
 
       if (this.showAns) {
-        logger.log('[TEST-10.2] ⚠️ 已显示答案，禁止重复点击');
         return; // 只有在显示答案时才禁止点击，对手答题后仍可继续
       }
 
       if (!this.currentQuestion || !this.currentQuestion.options || this.currentQuestion.options.length === 0) {
-        logger.error('[TEST-10.2] ❌ 题目数据不完整，无法答题:', {
+        logger.error('[PK] 题目数据不完整，无法答题:', {
           currentQuestion: this.currentQuestion
         });
         uni.showToast({
@@ -950,8 +821,6 @@ export default {
         });
         return;
       }
-
-      logger.log('[TEST-10.2] ✅ 开始处理答题');
 
       // 记录真实答题时间
       if (this.questionStartTime > 0) {
@@ -972,19 +841,9 @@ export default {
 
       // 判断是否正确
       const isCorrect = this.isCorrectOption(idx);
-      logger.log('[TEST-10.2] 📊 答题结果:', {
-        selectedIndex: idx,
-        selectedLabel: ['A', 'B', 'C', 'D'][idx],
-        correctAnswer: this.currentQuestion.answer,
-        isCorrect: isCorrect,
-        myScoreBefore: this.myScore
-      });
-
       if (isCorrect) {
         this.myScore += 20;
-        logger.log('[TEST-10.2] ✅ 答对了！分数 +20，当前分数:', this.myScore);
       } else {
-        logger.log('[TEST-10.2] ❌ 答错了，分数不变');
       }
 
       // 更新我的进度条
@@ -1002,19 +861,8 @@ export default {
       }, 1500);
     },
     async finishGame() {
-      logger.log('[TEST-10.2] 🏁 开始结算游戏');
-      logger.log('[TEST-10.2] 📊 最终分数:', {
-        myScore: this.myScore,
-        opponentScore: this.opponentScore,
-        result: this.myScore > this.opponentScore ? '胜利' : this.myScore < this.opponentScore ? '惜败' : '平局',
-        totalQuestions: this.questions.length,
-        currentIndex: this.currentIndex
-      });
-
       // 立即清理所有定时器（防止对手继续答题）
       this.clearAllTimers();
-      logger.log('[TEST-10.2] ✅ 已清理所有定时器');
-
       // 计算战绩数据（用于分享海报）
       const correctCount = Math.floor(this.myScore / 20);
       this.accuracy = this.questions.length > 0 ? Math.round((correctCount / this.questions.length) * 100) : 0;
@@ -1033,34 +881,18 @@ export default {
 
       // 切换到结算状态（必须在清理定时器之后）
       this.gameState = 'result';
-      logger.log('[TEST-10.2] ✅ 状态已切换到 result');
-      logger.log('[TEST-10.2] 🎯 结算页应该显示，gameState =', this.gameState);
-
       // 调用智谱 AI 生成针对性战后分析
-      logger.log('[TEST-10.2] 🤖 开始生成 AI 分析...');
       await this.fetchAISummary();
-      logger.log('[TEST-10.2] ✅ AI 分析完成');
-
-      // TEST-10.3: 自动上传分数到排行榜（结算页显示时触发）
-      logger.log('[TEST-10.3] 🏆 结算页已显示，开始自动上传分数到排行榜');
-      logger.log('[TEST-10.3] 📊 PK 本局得分:', this.myScore);
+      // 自动上传分数到排行榜（结算页显示时触发）
       // 注意：uploadScoreToRank 现在是 async 方法，但不等待结果（静默上传）
       // uploadScoreToRank 内部已有锁机制，防止重复上传
       this.uploadScoreToRank().catch((err) => {
-        logger.error('[TEST-10.3] ❌ 上传分数失败（静默）:', err);
+        logger.error('[PK] 上传分数失败（静默）:', err);
         uni.showToast({ title: '排行榜同步失败，请稍后重试', icon: 'none' });
       });
 
       // 验证结算页状态
-      this.$nextTick(() => {
-        logger.log('[TEST-10.2] 🔍 结算页状态验证:', {
-          gameState: this.gameState,
-          shouldShowResult: this.gameState === 'result',
-          myScore: this.myScore,
-          opponentScore: this.opponentScore,
-          aiSummary: this.aiSummary
-        });
-      });
+      this.$nextTick(() => {});
     },
     async fetchAISummary() {
       // 设置 Loading 状态
@@ -1102,11 +934,11 @@ export default {
           throw new Error('AI 响应异常');
         }
       } catch (e) {
-        logger.error('[TEST-10.2] ❌ AI 战报生成失败:', e);
+        logger.error('[PK] AI 战报生成失败:', e);
 
         // 检查是否是401未登录错误
         if (e.message && e.message.includes('未登录')) {
-          logger.warn('[TEST-10.2] ⚠️ AI 服务需要登录，使用降级方案');
+          logger.warn('[PK] AI 服务需要登录，使用降级方案');
         }
 
         // 降级方案：如果 AI 挂了，随机显示一条本地库
@@ -1129,7 +961,6 @@ export default {
                   '平分秋色！看来双方都很强，不如再战一局？'
                 ];
         this.aiSummary = fallback[Math.floor(Math.random() * fallback.length)];
-        logger.log('[TEST-10.2] ✅ 已使用降级方案，评语:', this.aiSummary);
       } finally {
         uni.hideLoading();
       }
@@ -1157,12 +988,9 @@ export default {
       if (this.isNavigating) return;
       this.isNavigating = true;
 
-      // TEST-10.3: 跳转到排行榜页面
-      logger.log('[TEST-10.3] 📊 用户点击"查看排行榜"，准备跳转');
+      // 跳转到排行榜页面
       safeNavigateTo('/pages/practice-sub/rank', {
-        success: () => {
-          logger.log('[TEST-10.3] ✅ 已跳转到排行榜页面');
-        },
+        success: () => {},
         complete: () => {
           setTimeout(() => {
             this.isNavigating = false;
@@ -1179,13 +1007,10 @@ export default {
         }
       });
       this.opponentTimers = [];
-      logger.log('[TEST-10.2] 🧹 已清除', timerCount, '个对手答题定时器');
-
       // 清除题目倒计时
       if (this.questionTimer) {
         clearInterval(this.questionTimer);
         this.questionTimer = null;
-        logger.log('[TEST-10.2] 🧹 已清除题目倒计时定时器');
       }
 
       // 清除匹配相关定时器
@@ -1240,7 +1065,6 @@ export default {
     handleResultStageClick(_e) {
       // 点击结算页空白区域，不做任何操作（已通过 @tap.stop 阻止冒泡）
       // 如果需要点击空白处返回，可以在这里实现
-      logger.log('[PK-BATTLE] 点击结算页空白区域');
     },
     handleExitFromResult() {
       // 从结算页退出
@@ -1366,7 +1190,7 @@ export default {
       // 设置超时处理，避免无限等待
       const timeoutTimer = setTimeout(() => {
         if (this.isGeneratingShare) {
-          logger.error('[PK-BATTLE] 生成战报超时');
+          logger.error('[PK] 生成战报超时');
           uni.hideLoading();
           this.isGeneratingShare = false;
           uni.showToast({
@@ -1380,9 +1204,8 @@ export default {
       try {
         // A. 自动静默上传分数到排行榜（数据闭环）
         // uploadScoreToRank 内部已有锁机制，防止重复上传
-        logger.log('[TEST-10.3] 📤 分享时尝试上传分数（如果尚未上传）');
         this.uploadScoreToRank().catch((err) => {
-          logger.error('[TEST-10.3] ❌ 分享时上传分数失败:', err);
+          logger.error('[PK] 分享时上传分数失败:', err);
           // 静默失败，不打断分享流程
         });
 
@@ -1594,7 +1417,7 @@ export default {
                   });
                 },
                 fail: (err) => {
-                  logger.error('[PK-BATTLE] 绘图失败', err);
+                  logger.error('[PK] 绘图失败', err);
                   uni.hideLoading();
                   this.isGeneratingShare = false;
                   uni.showToast({ title: '绘图失败，请稍后重试', icon: 'none' });
@@ -1606,7 +1429,7 @@ export default {
         });
       } catch (error) {
         // 捕获所有错误，确保关闭 Loading
-        logger.error('[PK-BATTLE] 生成战报异常:', error);
+        logger.error('[PK] 生成战报异常:', error);
         clearTimeout(timeoutTimer);
         uni.hideLoading();
         this.isGeneratingShare = false;
@@ -1622,15 +1445,12 @@ export default {
     async uploadScoreToRank() {
       // 🔒 锁机制：防止重复上传
       if (this.isScoreUploaded) {
-        logger.log('[TEST-10.3] ⏭️ 分数已上传，跳过重复上传');
         return;
       }
       // 立即设置标志位，防止并发调用
       this.isScoreUploaded = true;
 
       logger.log('[TEST-9.3] 🏆 开始上传分数到排行榜');
-      logger.log('[TEST-10.3] 🏆 开始上传分数到排行榜');
-
       // 优先使用 EXAM_USER_ID（与登录系统一致）
       const userId = storageService.get('EXAM_USER_ID', '');
       const userInfo = storageService.get('userInfo', {});
@@ -1638,7 +1458,7 @@ export default {
       // 如果没登录，就不传了
       if (!userId && !userInfo.nickName) {
         logger.warn('[TEST-9.3] ⚠️ 用户未登录，跳过上传分数');
-        logger.warn('[TEST-10.3] ⚠️ 用户未登录，跳过上传分数');
+        logger.warn('[PK] 用户未登录，跳过上传分数');
         return;
       }
 
@@ -1649,10 +1469,6 @@ export default {
 
       // 发送本局增量分数，后端 _.inc(score) 自动累加
       const pkScore = this.myScore;
-
-      logger.log('[TEST-10.3] 📊 本局得分:', {
-        pkScore: pkScore
-      });
 
       // 修复：action 应为 'update'（后端 handler map 只有 update/get/getUserRank）
       // 修复：发送本局增量分数（pkScore），后端用 _.inc() 累加，不再发累计总分
@@ -1675,7 +1491,6 @@ export default {
       });
 
       logger.log('[TEST-9.3] 📤 发送数据（完整）:', JSON.stringify(uploadData, null, 2));
-      logger.log('[TEST-10.3] 📤 发送数据（完整）:', JSON.stringify(uploadData, null, 2));
       logger.log('[TEST-9.3] 📤 字段验证:', {
         hasUid: !!uploadData.uid,
         hasUserId: !!uploadData.userId,
@@ -1706,8 +1521,7 @@ export default {
           // 上传失败时，不重置标志位，防止重复上传
           // 原因：网络超时可能导致数据已写入但响应失败，重试会造成重复上传
           logger.error('[TEST-9.3] ❌ 上传分数失败（已锁定，不再重试）:', err);
-          logger.error('[TEST-10.3] ❌ 上传分数失败（已锁定，不再重试）:', err);
-          logger.log('[TEST-10.3] 🔒 isScoreUploaded 保持为 true，防止重复上传');
+          logger.error('[PK] 上传分数失败（已锁定，不再重试）:', err);
           // 静默失败，不影响用户分享体验
         });
     },

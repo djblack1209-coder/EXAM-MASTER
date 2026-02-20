@@ -16,12 +16,12 @@ export const useThemeStore = defineStore('theme', () => {
   const isDark = ref(false);
 
   /**
-     * 切换主题类型
-     * @param {string} type - 'wise' 或 'bitget'
-     */
+   * 切换主题类型
+   * @param {string} type - 'wise' 或 'bitget'
+   */
   const setThemeType = (type) => {
     if (type !== 'wise' && type !== 'bitget') {
-      console.warn('[ThemeStore] 无效的主题类型:', type);
+      logger.warn('[ThemeStore] 无效的主题类型:', type);
       return;
     }
 
@@ -35,9 +35,9 @@ export const useThemeStore = defineStore('theme', () => {
   };
 
   /**
-     * 切换深色模式
-     * @param {boolean} dark - true 为深色模式，false 为浅色模式
-     */
+   * 切换深色模式
+   * @param {boolean} dark - true 为深色模式，false 为浅色模式
+   */
   const setDarkMode = (dark) => {
     isDark.value = dark;
     // 深色模式自动切换到 Bitget，浅色模式自动切换到 Wise
@@ -54,16 +54,16 @@ export const useThemeStore = defineStore('theme', () => {
   };
 
   /**
-     * 切换深色模式（toggle）
-     */
+   * 切换深色模式（toggle）
+   */
   const toggleDarkMode = () => {
     setDarkMode(!isDark.value);
   };
 
   /**
-     * 从缓存恢复主题设置
-     * 优先使用系统深色模式设置
-     */
+   * 从缓存恢复主题设置
+   * 优先使用系统深色模式设置
+   */
   const restoreTheme = () => {
     // 获取系统深色模式状态（使用新API避免废弃警告）
     let systemTheme = 'light';
@@ -116,18 +116,18 @@ export const useThemeStore = defineStore('theme', () => {
   };
 
   /**
-     * 切换主题（深色模式和主题类型联动）
-     * 深色模式 = Bitget Wallet
-     * 浅色模式 = Wise
-     * ✅ 2.2: 消除与 setDarkMode 的重复逻辑，直接委托
-     */
+   * 切换主题（深色模式和主题类型联动）
+   * 深色模式 = Bitget Wallet
+   * 浅色模式 = Wise
+   * ✅ 2.2: 消除与 setDarkMode 的重复逻辑，直接委托
+   */
   const toggleTheme = () => {
     setDarkMode(!isDark.value);
   };
 
   /**
-     * 监听系统深色模式变化
-     */
+   * 监听系统深色模式变化
+   */
   const watchSystemTheme = () => {
     // 微信小程序支持监听系统主题变化
     // #ifdef MP-WEIXIN
@@ -150,8 +150,8 @@ export const useThemeStore = defineStore('theme', () => {
   };
 
   /**
-     * 获取当前主题的完整配置
-     */
+   * 获取当前主题的完整配置
+   */
   const currentThemeConfig = computed(() => {
     const isWise = themeType.value === 'wise';
     const dark = isDark.value;
@@ -209,7 +209,9 @@ export const useThemeStore = defineStore('theme', () => {
           border: dark ? '#2C2C2E' : '#2C2C2E',
           buttonBg: dark ? '#0A84FF' : '#0A84FF',
           buttonText: dark ? '#111111' : '#111111',
-          cardBg: dark ? 'linear-gradient(135deg, #1a2332 0%, #2d3e50 100%)' : 'linear-gradient(135deg, #1a2332 0%, #2d3e50 100%)',
+          cardBg: dark
+            ? 'linear-gradient(135deg, #1a2332 0%, #2d3e50 100%)'
+            : 'linear-gradient(135deg, #1a2332 0%, #2d3e50 100%)',
           cardText: dark ? '#FFFFFF' : '#FFFFFF'
         },
         tabbar: {
@@ -228,8 +230,8 @@ export const useThemeStore = defineStore('theme', () => {
   });
 
   /**
-     * 获取当前主题的 CSS 类名
-     */
+   * 获取当前主题的 CSS 类名
+   */
   const themeClass = computed(() => {
     const classes = [];
     classes.push(`theme-${themeType.value}`);
