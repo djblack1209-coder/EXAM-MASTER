@@ -298,8 +298,9 @@ export default {
       // 智能调整计划
       logger.log('[Plan] 智能调整计划:', planId);
 
-      // 获取学习进度
-      const learningProgress = Math.floor(Math.random() * 100); // 模拟学习进度
+      // 获取真实学习进度（从本地存储的学习统计中计算）
+      const studyStats = storageService.get('study_stats', {});
+      const learningProgress = studyStats.completionRate || studyStats.progress || 0;
       const adjustedPlan = intelligentPlanManager.adjustPlan(planId, learningProgress);
 
       if (adjustedPlan) {

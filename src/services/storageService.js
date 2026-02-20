@@ -68,7 +68,11 @@ class StorageService {
         if (encrypted !== null) {
           uni.setStorageSync(`_enc_${key}`, encrypted);
           // 清理旧的明文存储（迁移期间）
-          try { uni.removeStorageSync(key); } catch { /* ignore */ }
+          try {
+            uni.removeStorageSync(key);
+          } catch {
+            /* ignore */
+          }
           return true;
         }
       }
@@ -164,7 +168,11 @@ class StorageService {
       uni.removeStorageSync(key);
       // ✅ B021: 同时清理加密存储
       if (isSensitiveKey(key)) {
-        try { uni.removeStorageSync(`_enc_${key}`); } catch { /* ignore */ }
+        try {
+          uni.removeStorageSync(`_enc_${key}`);
+        } catch {
+          /* ignore */
+        }
       }
       return true;
     } catch (error) {
@@ -318,11 +326,20 @@ class StorageService {
 
       localMistakes.forEach((m) => {
         switch (m.sync_status) {
-          case 'synced': stats.synced++; break;
-          case 'pending': stats.pending++; break;
-          case 'local_only': stats.localOnly++; break;
-          case 'conflict': stats.conflict++; break;
-          default: stats.synced++; // 无状态视为已同步
+          case 'synced':
+            stats.synced++;
+            break;
+          case 'pending':
+            stats.pending++;
+            break;
+          case 'local_only':
+            stats.localOnly++;
+            break;
+          case 'conflict':
+            stats.conflict++;
+            break;
+          default:
+            stats.synced++; // 无状态视为已同步
         }
       });
 
@@ -352,7 +369,7 @@ class StorageService {
 
     try {
       const localMistakes = this.get('mistake_book', []);
-      const localMistake = localMistakes.find((m) => (m.id === mistakeId || m._id === mistakeId));
+      const localMistake = localMistakes.find((m) => m.id === mistakeId || m._id === mistakeId);
 
       if (!localMistake || localMistake.sync_status !== 'conflict') {
         return { success: false, error: '未找到冲突记录' };
@@ -421,15 +438,10 @@ class StorageService {
             resolvedData = { ...base };
 
             // 合并特定字段：取两边的最大值或最新值
-            resolvedData.wrong_count = Math.max(
-              base.wrong_count || 0, other.wrong_count || 0
-            );
+            resolvedData.wrong_count = Math.max(base.wrong_count || 0, other.wrong_count || 0);
             // 标签合并去重
             if (other.tags?.length || base.tags?.length) {
-              resolvedData.tags = [...new Set([
-                ...(base.tags || []),
-                ...(other.tags || [])
-              ])];
+              resolvedData.tags = [...new Set([...(base.tags || []), ...(other.tags || [])])];
             }
             // is_mastered 取最新修改方的值（已由 base 决定）
             // 笔记合并：保留较长的版本
@@ -455,7 +467,7 @@ class StorageService {
       // 更新本地记录
       if (resolvedData) {
         resolvedData.sync_status = 'synced';
-        const idx = localMistakes.findIndex((m) => (m.id === mistakeId || m._id === mistakeId));
+        const idx = localMistakes.findIndex((m) => m.id === mistakeId || m._id === mistakeId);
         if (idx !== -1) {
           localMistakes[idx] = resolvedData;
           this.save('mistake_book', localMistakes, true);
@@ -512,9 +524,11 @@ class StorageService {
 
     try {
       logger.log('[StorageService] 📡 开始保存错题到云端...');
+      // 统一字段名：前端 question → 后端 question_content
+      const normalizedData = offlineMistakeToBackend(data);
       const res = await lafService.request('/mistake-manager', {
         action: 'add',
-        data,
+        data: normalizedData,
         userId
       });
 
@@ -616,21 +630,22 @@ class StorageService {
         action: 'get',
         userId
       });
-      logger.log(`[StorageService] ✅ 云端获取成功，返回 ${Array.isArray(res.data) ? res.data.length : (res.data?.data?.length || res.data?.list?.length || 0)} 条记录`);
+      logger.log(
+        `[StorageService] ✅ 云端获取成功，返回 ${Array.isArray(res.data) ? res.data.length : res.data?.data?.length || res.data?.list?.length || 0} 条记录`
+      );
 
       // 返回数据数组，兼容旧代码期望的格式
       const mistakeList = res.data || [];
 
       // 如果返回的是对象格式，尝试提取数组
-      let list = Array.isArray(mistakeList) ? mistakeList : (mistakeList.data || mistakeList.list || []);
+      let list = Array.isArray(mistakeList) ? mistakeList : mistakeList.data || mistakeList.list || [];
 
       // 更新本地缓存（第一页时），合并本地待同步数据
       if (page === 1 && Array.isArray(list)) {
         // 获取本地待同步的错题（sync_status 为 'pending' 或 'local_only'）
         const localMistakes = this.get('mistake_book', []);
-        const pendingMistakes = localMistakes.filter((m) =>
-          (m.sync_status === 'pending' || m.sync_status === 'local_only') &&
-          m.id && m.id.startsWith('local_')
+        const pendingMistakes = localMistakes.filter(
+          (m) => (m.sync_status === 'pending' || m.sync_status === 'local_only') && m.id && m.id.startsWith('local_')
         );
 
         if (pendingMistakes.length > 0) {
@@ -833,7 +848,9 @@ class StorageService {
 
     // 优先尝试云端更新（使用 Laf 后端）
     try {
-      logger.log(`[StorageService] 🌐 发送云端更新请求: /mistake-manager { action: 'updateStatus', id: ${id}, is_mastered: ${is_mastered} }`);
+      logger.log(
+        `[StorageService] 🌐 发送云端更新请求: /mistake-manager { action: 'updateStatus', id: ${id}, is_mastered: ${is_mastered} }`
+      );
       const res = await lafService.request('/mistake-manager', {
         action: 'updateStatus',
         data: { id, is_mastered },
@@ -844,8 +861,8 @@ class StorageService {
 
       // 检查返回格式：可能是 {code: 200, ok: true, updated: 1} 或 {ok: true} 或 {code: 0, data: {...}}
       const cloudId = res.id || res._id || res.data?.id;
-      const isSuccess = (res.ok === true || res.code === 200 || res.code === 0)
-        && (res.updated > 0 || res.ok === true || cloudId);
+      const isSuccess =
+        (res.ok === true || res.code === 200 || res.code === 0) && (res.updated > 0 || res.ok === true || cloudId);
 
       if (isSuccess) {
         logger.log(`[StorageService] ✅ 云端状态更新成功 - ID: ${id}, is_mastered: ${is_mastered}, 响应:`, res);
@@ -882,7 +899,9 @@ class StorageService {
         mistake.is_mastered = Boolean(is_mastered);
         mistake.last_practice_time = Date.now();
         this.save('mistake_book', localMistakes, true);
-        logger.log(`[StorageService] ✅ 本地状态更新成功 - ID: ${id}, 状态: ${oldStatus} -> ${is_mastered}, last_practice_time: ${Date.now()}`);
+        logger.log(
+          `[StorageService] ✅ 本地状态更新成功 - ID: ${id}, 状态: ${oldStatus} -> ${is_mastered}, last_practice_time: ${Date.now()}`
+        );
         return { success: true, source: 'local' };
       } else {
         console.warn(`[StorageService] ⚠️ 本地缓存中未找到错题 - ID: ${id}`);
@@ -907,8 +926,8 @@ class StorageService {
 
     try {
       const localMistakes = this.get('mistake_book', []);
-      const pendingMistakes = localMistakes.filter((m) =>
-        m.sync_status === 'pending' || m.sync_status === 'local_only'
+      const pendingMistakes = localMistakes.filter(
+        (m) => m.sync_status === 'pending' || m.sync_status === 'local_only'
       );
 
       if (pendingMistakes.length === 0) {
@@ -1045,7 +1064,6 @@ class StorageService {
       };
     }
   }
-
 }
 
 // 导出单例

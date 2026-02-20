@@ -17,7 +17,7 @@
  * - data: object (可选) - 操作数据
  * 
  * 返回格式：
- * { code: 0, ok: true, data: {...}, message: 'success' }
+ * { code: 0, ok: true, success: true, data: {...}, message: 'success' }
  * 
  * @version 2.0.0
  */
@@ -320,7 +320,7 @@ async function handleAdd(userId, data, requestId) {
 
       return {
         code: 0,
-        ok: true,
+        ok: true, success: true,
         id: existing.data._id,
         _id: existing.data._id,
         message: '错题已更新',
@@ -360,7 +360,7 @@ async function handleAdd(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
+    ok: true, success: true,
     id: result.id,
     _id: result.id,
     message: '添加成功'
@@ -407,7 +407,7 @@ async function handleGet(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
+    ok: true, success: true,
     data: listRes.data,
     total: countRes.total,
     page,
@@ -435,7 +435,7 @@ async function handleRemove(userId, data, requestId) {
 
   if (!mistake.data) {
     logger.warn(`[${requestId}] 错题不存在或无权限: ${data.id}`)
-    return { code: 0, ok: true, deleted: 0, message: '错题不存在' }
+    return { code: 0, ok: true, success: true, deleted: 0, message: '错题不存在' }
   }
 
   // 执行删除
@@ -445,7 +445,7 @@ async function handleRemove(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
+    ok: true, success: true,
     deleted: result.deleted || 1,
     message: '删除成功'
   }
@@ -511,7 +511,7 @@ async function handleUpdateStatus(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
+    ok: true, success: true,
     updated: result.updated || 1,
     id: data.id,
     message: isMastered ? '已标记为掌握' : '已标记为未掌握'
@@ -603,7 +603,7 @@ async function handleBatchSync(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
+    ok: true, success: true,
     synced,
     failed,
     results,
@@ -691,7 +691,7 @@ async function handleGetCategories(userId, data, requestId) {
 
     return {
       code: 0,
-      ok: true,
+      ok: true, success: true,
       data: {
         categories,
         errorTypes,
@@ -742,7 +742,7 @@ async function handleGetCategories(userId, data, requestId) {
 
     return {
       code: 0,
-      ok: true,
+      ok: true, success: true,
       data: {
         categories,
         errorTypes: Object.values(errorTypeStats),
@@ -796,7 +796,7 @@ async function handleManageTags(userId, data, requestId) {
 
       return {
         code: 0,
-        ok: true,
+        ok: true, success: true,
         data: { tags: newTags },
         message: '标签添加成功'
       }
@@ -830,7 +830,7 @@ async function handleManageTags(userId, data, requestId) {
 
       return {
         code: 0,
-        ok: true,
+        ok: true, success: true,
         data: { tags: newTags },
         message: '标签移除成功'
       }
@@ -873,7 +873,7 @@ async function handleManageTags(userId, data, requestId) {
 
       return {
         code: 0,
-        ok: true,
+        ok: true, success: true,
         data: { updated },
         message: `标签重命名成功，更新了 ${updated} 条错题`
       }
@@ -897,7 +897,7 @@ async function handleManageTags(userId, data, requestId) {
 
         return {
           code: 0,
-          ok: true,
+          ok: true, success: true,
           data: tagList,
           message: '获取成功'
         }
@@ -924,7 +924,7 @@ async function handleManageTags(userId, data, requestId) {
 
         return {
           code: 0,
-          ok: true,
+          ok: true, success: true,
           data: tagList,
           message: '获取成功'
         }
@@ -974,7 +974,7 @@ async function handleGetByTags(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
+    ok: true, success: true,
     data: result.data,
     total,
     page,
