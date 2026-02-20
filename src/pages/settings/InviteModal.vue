@@ -3,42 +3,28 @@
   <view class="modal-mask" :class="{ 'dark-mode': isDark }" @click.self="$emit('close')">
     <view class="modal-container ds-card" @tap.stop>
       <view class="close-btn ds-touchable ds-touch-target ds-flex-center" @click="$emit('close')">
-        <text class="close-icon-text">
-          ✕
-        </text>
+        <text class="close-icon-text"> ✕ </text>
       </view>
 
       <view class="header-brand ds-flex-col ds-flex-center ds-gap-xs">
-        <text class="brand-logo-text">
-          📚
-        </text>
-        <text class="brand-name ds-text-lg ds-font-bold">
-          Exam-Master
-        </text>
+        <text class="brand-logo-text"> 📚 </text>
+        <text class="brand-name ds-text-lg ds-font-bold"> Exam-Master </text>
       </view>
-      <text class="title ds-text-xl ds-font-bold ds-text-primary">
-        邀请好友，研途有你
-      </text>
-      <text class="subtitle ds-text-sm ds-text-secondary">
-        送TA一份备考神器，并肩作战，一战成硕！
-      </text>
+      <text class="title ds-text-xl ds-font-bold ds-text-primary"> 邀请好友，研途有你 </text>
+      <text class="subtitle ds-text-sm ds-text-secondary"> 送TA一份备考神器，并肩作战，一战成硕！ </text>
 
       <view class="ticket-container">
         <view class="ticket-inner">
           <text class="code-label">
             {{ inviteCode }}
           </text>
-          <text class="code-desc">
-            我的邀请码 (真实可用)
-          </text>
+          <text class="code-desc"> 我的邀请码 (真实可用) </text>
         </view>
       </view>
 
       <view class="link-row">
         <view class="link-box">
-          <text class="link-icon-text">
-            🔗
-          </text>
+          <text class="link-icon-text"> 🔗 </text>
           <text class="link-text">
             {{ inviteLink }}
           </text>
@@ -49,28 +35,27 @@
       </view>
 
       <view class="qr-preview">
-        <image :src="qrCodeUrl" mode="aspectFit" style="width: 100px; height: 100px;" />
-        <text class="qr-tip">
-          微信扫一扫，立刻加入
-        </text>
+        <image
+          :src="qrCodeUrl || '/static/images/logo.png'"
+          mode="aspectFit"
+          style="width: 100px; height: 100px"
+          @error="
+            (e) => {
+              if (e.target) e.target.src = '/static/images/logo.png';
+            }
+          "
+        />
+        <text class="qr-tip"> 微信扫一扫，立刻加入 </text>
       </view>
 
       <view class="wechat-btn" @click="shareToWechat">
-        <text class="wechat-icon-text">
-          💬
-        </text>
-        <text class="btn-text">
-          分享给微信好友
-        </text>
+        <text class="wechat-icon-text"> 💬 </text>
+        <text class="btn-text"> 分享给微信好友 </text>
       </view>
 
       <view class="poster-btn" @click="openPoster">
-        <text class="poster-icon-text">
-          🎨
-        </text>
-        <text class="btn-text">
-          生成分享海报
-        </text>
+        <text class="poster-icon-text"> 🎨 </text>
+        <text class="btn-text"> 生成分享海报 </text>
       </view>
     </view>
   </view>
@@ -162,15 +147,18 @@ export default {
       // #ifdef H5
       // H5 环境：使用 Web Share API 或复制链接
       if (navigator.share) {
-        navigator.share({
-          title: 'Exam-Master 考研神器',
-          text: `输入我的邀请码【${this.inviteCode}】领取会员！`,
-          url: this.inviteLink
-        }).then(() => {
-          uni.showToast({ title: '分享成功', icon: 'success' });
-        }).catch(() => {
-          this.copyLink();
-        });
+        navigator
+          .share({
+            title: 'Exam-Master 考研神器',
+            text: `输入我的邀请码【${this.inviteCode}】领取会员！`,
+            url: this.inviteLink
+          })
+          .then(() => {
+            uni.showToast({ title: '分享成功', icon: 'success' });
+          })
+          .catch(() => {
+            this.copyLink();
+          });
       } else {
         this.copyLink();
       }
@@ -239,7 +227,7 @@ export default {
 .brand-name {
   font-size: 36rpx;
   font-weight: 700;
-  color: #07C160;
+  color: #07c160;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -264,7 +252,7 @@ export default {
 /* Ticket Style */
 .ticket-container {
   width: 100%;
-  background-color: #07C160;
+  background-color: #07c160;
   border-radius: 12px;
   padding: 8px;
   /* Outer spacing for dashed border */
@@ -352,7 +340,7 @@ export default {
 
 .copy-btn {
   width: 70px;
-  background-color: #07C160;
+  background-color: #07c160;
   color: white;
   border-radius: 0 20px 20px 0;
   display: flex;
@@ -372,7 +360,7 @@ export default {
 .wechat-btn {
   width: 100%;
   height: 44px;
-  background-color: #07C160;
+  background-color: #07c160;
   border-radius: 22px;
   display: flex;
   align-items: center;
@@ -390,8 +378,8 @@ export default {
 .poster-btn {
   width: 100%;
   height: 44px;
-  background-color: #FFD700;
-  border: 1px solid #FFA500;
+  background-color: #ffd700;
+  border: 1px solid #ffa500;
   border-radius: 22px;
   display: flex;
   align-items: center;
@@ -403,7 +391,7 @@ export default {
   &:active {
     opacity: 0.9;
     transform: scale(0.98);
-    background-color: #FFC107;
+    background-color: #ffc107;
   }
 }
 
@@ -462,7 +450,7 @@ export default {
   }
 
   .close-icon-text {
-    color: #8E8E93;
+    color: #8e8e93;
   }
 
   .brand-name {
@@ -475,7 +463,7 @@ export default {
   }
 
   .subtitle {
-    color: var(--ds-color-text-secondary, #8E8E93);
+    color: var(--ds-color-text-secondary, #8e8e93);
   }
 
   .ticket-container {
@@ -499,7 +487,7 @@ export default {
   }
 
   .link-text {
-    color: #8E8E93;
+    color: #8e8e93;
   }
 
   .copy-btn {
@@ -507,12 +495,12 @@ export default {
     color: #1c1c1e;
 
     &:active {
-      background-color: #8DD760;
+      background-color: #8dd760;
     }
   }
 
   .qr-tip {
-    color: #8E8E93;
+    color: #8e8e93;
   }
 
   .wechat-btn {
@@ -524,17 +512,17 @@ export default {
     }
 
     &:active {
-      background-color: #8DD760;
+      background-color: #8dd760;
     }
   }
 
   .poster-btn {
-    background-color: #FFA500;
-    border-color: #FF8C00;
+    background-color: #ffa500;
+    border-color: #ff8c00;
     box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
 
     &:active {
-      background-color: #FF8C00;
+      background-color: #ff8c00;
     }
   }
 }

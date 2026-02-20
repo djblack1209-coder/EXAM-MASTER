@@ -81,7 +81,17 @@
         </view>
 
         <view v-for="item in resources" :key="item.id" class="resource-card" @click="openResource(item)">
-          <image class="resource-thumb" :src="item.thumbnail" mode="aspectFill" lazy-load />
+          <image
+            class="resource-thumb"
+            :src="item.thumbnail || '/static/images/default-avatar.png'"
+            mode="aspectFill"
+            lazy-load
+            @error="
+              (e) => {
+                if (e.target) e.target.src = '/static/images/default-avatar.png';
+              }
+            "
+          />
           <view class="resource-info">
             <text class="resource-title">
               {{ item.title }}

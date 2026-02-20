@@ -239,7 +239,7 @@ export default async function (ctx) {
       // ==================== 数据同步 ====================
       case 'sync_from_chsi': {
         // [C2-FIX] sync_from_chsi 是写操作，需要管理员权限
-        const adminSecret = ctx.headers?.['x-admin-secret'] || body.adminSecret;
+        const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
         if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
           return { code: 403, success: false, message: '需要管理员权限' };
         }
