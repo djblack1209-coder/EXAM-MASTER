@@ -73,6 +73,7 @@ import { ref, getCurrentInstance } from 'vue';
 import { posterGenerator } from './poster-generator.js';
 import { permissionHandler } from './utils/permission-handler.js';
 import config from '@/config';
+import { logger } from '@/utils/logger.js';
 
 // icons8 图标 URL 生成器
 const icons8 = (style, size, color, name) =>
@@ -163,7 +164,7 @@ const handleSave = async () => {
     }
   } catch (error) {
     uni.hideLoading();
-    console.error('[PosterModal] 保存失败:', error);
+    logger.error('[PosterModal] 保存失败:', error);
 
     // 提供预览选项作为备选
     if (generatedPosterPath.value) {

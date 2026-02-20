@@ -56,7 +56,7 @@ const MODEL_BASELINES = {
 // 任务类型路由配置
 const ROUTING_CONFIG = {
   // 快速问答 - 使用最快模型
-  'quick': {
+  quick: {
     model: 'glm-4-flash',
     timeout: 15000,
     fallback: null,
@@ -65,7 +65,7 @@ const ROUTING_CONFIG = {
   },
 
   // 标准任务 - 平衡速度和质量
-  'standard': {
+  standard: {
     model: 'glm-4.5-air',
     timeout: 30000,
     fallback: 'glm-4-flash',
@@ -74,7 +74,7 @@ const ROUTING_CONFIG = {
   },
 
   // 复杂任务 - 优先质量
-  'complex': {
+  complex: {
     model: 'glm-4.5-air',
     timeout: 60000,
     fallback: 'glm-4-plus',
@@ -83,7 +83,7 @@ const ROUTING_CONFIG = {
   },
 
   // 视觉任务 - 图像处理
-  'vision': {
+  vision: {
     model: 'glm-4v-plus',
     timeout: 45000,
     fallback: null,
@@ -92,7 +92,7 @@ const ROUTING_CONFIG = {
   },
 
   // 语音任务 - 语音处理
-  'speech': {
+  speech: {
     model: 'glm-4-speech',
     timeout: 30000,
     fallback: null,
@@ -101,7 +101,7 @@ const ROUTING_CONFIG = {
   },
 
   // 聊天任务 - 对话场景
-  'chat': {
+  chat: {
     model: 'glm-4-flash',
     timeout: 20000,
     fallback: null,
@@ -110,7 +110,7 @@ const ROUTING_CONFIG = {
   },
 
   // 实时答疑 - 快速响应
-  'realtime': {
+  realtime: {
     model: 'glm-4-flash',
     timeout: 15000,
     fallback: null,
@@ -119,7 +119,7 @@ const ROUTING_CONFIG = {
   },
 
   // 生成任务 - 内容生成
-  'generation': {
+  generation: {
     model: 'glm-4-plus',
     timeout: 45000,
     fallback: 'glm-4.5-air',
@@ -130,21 +130,21 @@ const ROUTING_CONFIG = {
 
 // Action 到任务类型的映射
 const ACTION_TASK_MAP = {
-  'chat': 'chat',
-  'friend_chat': 'chat',
-  'generate_questions': 'generation',
-  'analyze': 'standard',
-  'adaptive_pick': 'complex',
-  'material_understand': 'complex',
-  'trend_predict': 'complex',
-  'vision': 'vision',
-  'photo_search': 'vision',
-  'consult': 'standard',
-  'speech_to_text': 'speech',
-  'text_to_speech': 'speech',
-  'voice_chat': 'speech',
-  'realtime_answer': 'realtime',
-  'urgent_question': 'realtime'
+  chat: 'chat',
+  friend_chat: 'chat',
+  generate_questions: 'generation',
+  analyze: 'standard',
+  adaptive_pick: 'complex',
+  material_understand: 'complex',
+  trend_predict: 'complex',
+  vision: 'vision',
+  photo_search: 'vision',
+  consult: 'standard',
+  speech_to_text: 'speech',
+  text_to_speech: 'speech',
+  voice_chat: 'speech',
+  realtime_answer: 'realtime',
+  urgent_question: 'realtime'
 };
 
 /**
@@ -232,7 +232,9 @@ class AIRouter {
 
         // 检查服务端错误，尝试降级
         if (!response.success && routeConfig.fallback && this.isRetryableError(response)) {
-          console.warn(`[AIRouter] ${requestId} 主模型返回可重试错误(${response.code})，降级到: ${routeConfig.fallback}`);
+          logger.warn(
+            `[AIRouter] ${requestId} 主模型返回可重试错误(${response.code})，降级到: ${routeConfig.fallback}`
+          );
           this.metrics.fallbacks++;
           usedModel = routeConfig.fallback;
           response = await this.callAI(action, payload, routeConfig.fallback, options);
@@ -240,7 +242,7 @@ class AIRouter {
       } catch (timeoutError) {
         // 超时或网络错误降级
         if (routeConfig.fallback) {
-          console.warn(`[AIRouter] ${requestId} 主模型异常，降级到: ${routeConfig.fallback}`);
+          logger.warn(`[AIRouter] ${requestId} 主模型异常，降级到: ${routeConfig.fallback}`);
           this.metrics.fallbacks++;
           usedModel = routeConfig.fallback;
 
@@ -269,10 +271,9 @@ class AIRouter {
         requestId,
         duration
       };
-
     } catch (error) {
       this.metrics.errors++;
-      console.error(`[AIRouter] ${requestId} 错误:`, error.message);
+      logger.error(`[AIRouter] ${requestId} 错误:`, error.message);
 
       return {
         code: -1,
@@ -291,13 +292,17 @@ class AIRouter {
    * @returns {Promise<Object>} 实时答疑响应
    */
   async realtimeAnswer(question, context = {}) {
-    return this.call('realtime_answer', {
-      content: question,
-      context
-    }, {
-      taskType: 'realtime',
-      temperature: 0.7
-    });
+    return this.call(
+      'realtime_answer',
+      {
+        content: question,
+        context
+      },
+      {
+        taskType: 'realtime',
+        temperature: 0.7
+      }
+    );
   }
 
   /**
@@ -307,13 +312,17 @@ class AIRouter {
    * @returns {Promise<Object>} 识别结果
    */
   async speechToText(audioData, options = {}) {
-    return this.call('speech_to_text', {
-      audio: audioData,
-      format: options.format || 'base64',
-      language: options.language || 'zh-CN'
-    }, {
-      taskType: 'speech'
-    });
+    return this.call(
+      'speech_to_text',
+      {
+        audio: audioData,
+        format: options.format || 'base64',
+        language: options.language || 'zh-CN'
+      },
+      {
+        taskType: 'speech'
+      }
+    );
   }
 
   /**
@@ -323,13 +332,17 @@ class AIRouter {
    * @returns {Promise<Object>} 语音数据
    */
   async textToSpeech(text, options = {}) {
-    return this.call('text_to_speech', {
-      text,
-      voice: options.voice || 'default',
-      speed: options.speed || 1.0
-    }, {
-      taskType: 'speech'
-    });
+    return this.call(
+      'text_to_speech',
+      {
+        text,
+        voice: options.voice || 'default',
+        speed: options.speed || 1.0
+      },
+      {
+        taskType: 'speech'
+      }
+    );
   }
 
   /**
@@ -345,15 +358,19 @@ class AIRouter {
     if (image) taskType = 'vision';
     if (audio) taskType = 'speech';
 
-    return this.call('multimodal', {
-      text,
-      image,
-      audio,
-      multimodal: true
-    }, {
-      taskType,
-      temperature: options.temperature || 0.7
-    });
+    return this.call(
+      'multimodal',
+      {
+        text,
+        image,
+        audio,
+        multimodal: true
+      },
+      {
+        taskType,
+        temperature: options.temperature || 0.7
+      }
+    );
   }
 
   /**
@@ -388,9 +405,7 @@ class AIRouter {
   executeWithTimeout(promise, timeout) {
     return Promise.race([
       promise,
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('AI_TIMEOUT')), timeout)
-      )
+      new Promise((_, reject) => setTimeout(() => reject(new Error('AI_TIMEOUT')), timeout))
     ]);
   }
 
@@ -405,7 +420,7 @@ class AIRouter {
     let hash = 0;
     for (let i = 0; i < sample.length; i++) {
       const char = sample.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
 
@@ -470,9 +485,12 @@ class AIRouter {
     if (this._cacheCleanupTimer) {
       clearInterval(this._cacheCleanupTimer);
     }
-    this._cacheCleanupTimer = setInterval(() => {
-      this.cleanupCache();
-    }, 5 * 60 * 1000);
+    this._cacheCleanupTimer = setInterval(
+      () => {
+        this.cleanupCache();
+      },
+      5 * 60 * 1000
+    );
   }
 
   /**
@@ -526,24 +544,23 @@ class AIRouter {
     const p50 = sorted[Math.floor(sorted.length * 0.5)] || 0;
     const p95 = sorted[Math.floor(sorted.length * 0.95)] || 0;
     const p99 = sorted[Math.floor(sorted.length * 0.99)] || 0;
-    const avg = latencies.length > 0
-      ? latencies.reduce((a, b) => a + b, 0) / latencies.length
-      : 0;
+    const avg = latencies.length > 0 ? latencies.reduce((a, b) => a + b, 0) / latencies.length : 0;
 
     return {
       totalCalls: this.metrics.totalCalls,
       cacheHits: this.metrics.cacheHits,
-      cacheHitRate: this.metrics.totalCalls > 0
-        ? (this.metrics.cacheHits / this.metrics.totalCalls * 100).toFixed(2) + '%'
-        : '0%',
+      cacheHitRate:
+        this.metrics.totalCalls > 0
+          ? ((this.metrics.cacheHits / this.metrics.totalCalls) * 100).toFixed(2) + '%'
+          : '0%',
       fallbacks: this.metrics.fallbacks,
-      fallbackRate: this.metrics.totalCalls > 0
-        ? (this.metrics.fallbacks / this.metrics.totalCalls * 100).toFixed(2) + '%'
-        : '0%',
+      fallbackRate:
+        this.metrics.totalCalls > 0
+          ? ((this.metrics.fallbacks / this.metrics.totalCalls) * 100).toFixed(2) + '%'
+          : '0%',
       errors: this.metrics.errors,
-      errorRate: this.metrics.totalCalls > 0
-        ? (this.metrics.errors / this.metrics.totalCalls * 100).toFixed(2) + '%'
-        : '0%',
+      errorRate:
+        this.metrics.totalCalls > 0 ? ((this.metrics.errors / this.metrics.totalCalls) * 100).toFixed(2) + '%' : '0%',
       latency: {
         avg: Math.round(avg),
         p50: Math.round(p50),

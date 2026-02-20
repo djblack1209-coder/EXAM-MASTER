@@ -88,7 +88,7 @@ function doSaveProgress(progress) {
 
     return true;
   } catch (error) {
-    console.error('[QuizAutoSave] 保存进度失败:', error);
+    logger.error('[QuizAutoSave] 保存进度失败:', error);
     return false;
   }
 }
@@ -127,12 +127,14 @@ export function loadQuizProgress() {
 
     return data;
   } catch (error) {
-    console.error('[QuizAutoSave] 加载进度失败:', error);
+    logger.error('[QuizAutoSave] 加载进度失败:', error);
     // 损坏数据清理，防止每次启动重复失败
     try {
       storageService.remove(QUIZ_PROGRESS_KEY);
       storageService.remove(QUIZ_PROGRESS_TIMESTAMP_KEY);
-    } catch (_) { /* ignore */ }
+    } catch (_) {
+      /* ignore */
+    }
     return null;
   }
 }
@@ -148,7 +150,7 @@ export function clearQuizProgress() {
     logger.log('[QuizAutoSave] 进度已清除');
     return true;
   } catch (error) {
-    console.error('[QuizAutoSave] 清除进度失败:', error);
+    logger.error('[QuizAutoSave] 清除进度失败:', error);
     return false;
   }
 }

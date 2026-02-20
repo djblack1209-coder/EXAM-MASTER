@@ -8,37 +8,27 @@
       <!-- 弹窗头部 -->
       <view class="panel-header ds-flex ds-flex-between">
         <view class="header-left ds-flex ds-flex-col">
-          <text class="header-title ds-text-lg ds-font-bold">
-            AI 咨询
-          </text>
+          <text class="header-title ds-text-lg ds-font-bold"> AI 咨询 </text>
           <text class="header-subtitle ds-text-xs ds-text-secondary">
             {{ schoolName }}
           </text>
         </view>
         <view class="header-right ds-flex">
-          <view class="close-btn ds-touchable ds-touch-target" @tap="closeConsult">
-            ✕
-          </view>
+          <view class="close-btn ds-touchable ds-touch-target" @tap="closeConsult"> ✕ </view>
         </view>
       </view>
 
       <!-- 对话内容区域 -->
-      <scroll-view
-        scroll-y
-        class="chat-content"
-        :scroll-into-view="scrollToView"
-        scroll-with-animation
-      >
+      <scroll-view scroll-y class="chat-content" :scroll-into-view="scrollToView" scroll-with-animation>
         <!-- 消息列表 -->
         <view class="message-list ds-flex ds-flex-col ds-gap-md">
           <!-- 欢迎消息 -->
           <view v-if="messages.length === 0" class="message-item assistant-message ds-flex ds-gap-sm">
-            <view class="message-avatar ds-flex">
-              🤖
-            </view>
+            <view class="message-avatar ds-flex"> 🤖 </view>
             <view class="message-bubble">
               <text class="message-text ds-text-sm">
-                您好！我是AI咨询助手，很高兴为您解答关于{{ schoolName
+                您好！我是AI咨询助手，很高兴为您解答关于{{
+                  schoolName
                 }}的考研问题。您可以咨询招生简章、历年分数线、专业设置等信息。
               </text>
             </view>
@@ -49,7 +39,9 @@
             v-for="(message, index) in messages"
             :key="index"
             :class="[
-              'message-item', 'ds-flex', 'ds-gap-sm',
+              'message-item',
+              'ds-flex',
+              'ds-gap-sm',
               message.role === 'user' ? 'user-message' : 'assistant-message'
             ]"
           >
@@ -60,16 +52,12 @@
                   {{ message.content }}
                 </text>
               </view>
-              <view class="message-avatar ds-flex">
-                👤
-              </view>
+              <view class="message-avatar ds-flex"> 👤 </view>
             </template>
 
             <!-- 助手消息 -->
             <template v-else>
-              <view class="message-avatar ds-flex">
-                🤖
-              </view>
+              <view class="message-avatar ds-flex"> 🤖 </view>
               <view
                 class="message-bubble assistant-bubble"
                 :class="{ 'failed-bubble': message.failed }"
@@ -78,9 +66,7 @@
                 <text class="message-text ds-text-sm">
                   {{ message.content }}
                 </text>
-                <text v-if="message.failed" class="retry-hint ds-text-xs ds-text-secondary">
-                  点击重试
-                </text>
+                <text v-if="message.failed" class="retry-hint ds-text-xs ds-text-secondary"> 点击重试 </text>
                 <text class="message-time ds-text-xs ds-text-secondary">
                   {{ message.time }}
                 </text>
@@ -90,9 +76,7 @@
 
           <!-- 正在输入状态 -->
           <view v-if="isTyping" class="message-item assistant-message ds-flex ds-gap-sm">
-            <view class="message-avatar ds-flex">
-              🤖
-            </view>
+            <view class="message-avatar ds-flex"> 🤖 </view>
             <view class="message-bubble assistant-bubble">
               <view class="typing-indicator ds-flex ds-gap-xs">
                 <view class="typing-dot" />
@@ -117,18 +101,14 @@
             @confirm="sendMessage"
           ></textarea>
           <view class="input-actions ds-flex ds-gap-xs">
-            <text class="char-count ds-text-xs ds-text-secondary">
-              {{ inputContent.length }}/200
-            </text>
+            <text class="char-count ds-text-xs ds-text-secondary"> {{ inputContent.length }}/200 </text>
             <view
               class="send-btn ds-touchable ds-flex"
               :class="{ 'can-send': canSend }"
               :disabled="!canSend || isTyping"
               @tap="sendMessage"
             >
-              <text class="send-icon">
-                →
-              </text>
+              <text class="send-icon"> → </text>
             </view>
           </view>
         </view>
@@ -297,10 +277,19 @@ export default {
     async callAIApi(content) {
       logger.log('[ai-consult] 🤖 调用后端代理进行 AI 咨询...');
 
+      // [F3-FIX] 构建多轮对话历史（最近 5 轮）
+      const recentHistory = this.messages
+        .filter((m) => !m.failed)
+        .slice(-10) // 最近 10 条消息（5 轮对话）
+        .map((m) => ({ role: m.role, content: m.content }));
+
       // ✅ 使用后端代理调用（安全）- action: 'consult'
       const response = await lafService.proxyAI('consult', {
         schoolName: this.schoolName,
-        question: content
+        question: content,
+        // [F3-FIX] 传递学校详情和对话历史
+        schoolInfo: this.schoolInfo || {},
+        history: recentHistory
       });
 
       logger.log('[ai-consult] 📥 后端代理响应:', {
@@ -513,7 +502,6 @@ export default {
 }
 
 @keyframes typing {
-
   0%,
   60%,
   100% {

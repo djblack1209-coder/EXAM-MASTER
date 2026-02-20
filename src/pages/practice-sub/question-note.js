@@ -161,9 +161,8 @@ class QuestionNoteManager {
     // 关键词搜索
     if (options.keyword) {
       const keyword = options.keyword.toLowerCase();
-      result = result.filter((n) =>
-        n.content.toLowerCase().includes(keyword) ||
-        n.questionContent.toLowerCase().includes(keyword)
+      result = result.filter(
+        (n) => n.content.toLowerCase().includes(keyword) || n.questionContent.toLowerCase().includes(keyword)
       );
     }
 
@@ -199,24 +198,29 @@ class QuestionNoteManager {
 
     const lowerKeyword = keyword.toLowerCase();
 
-    return this.notes.filter((note) => {
-      // 搜索笔记内容
-      if (note.content.toLowerCase().includes(lowerKeyword)) return true;
-      // 搜索题目内容
-      if (note.questionContent.toLowerCase().includes(lowerKeyword)) return true;
-      // 搜索标签
-      const tagNames = note.tags.map((tagId) => {
-        const tag = this.tags.find((t) => t.id === tagId);
-        return tag ? tag.name.toLowerCase() : '';
-      });
-      if (tagNames.some((name) => name.includes(lowerKeyword))) return true;
+    return this.notes
+      .filter((note) => {
+        // 搜索笔记内容
+        if (note.content.toLowerCase().includes(lowerKeyword)) return true;
+        // 搜索题目内容
+        if (note.questionContent.toLowerCase().includes(lowerKeyword)) return true;
+        // 搜索标签
+        const tagNames = note.tags.map((tagId) => {
+          const tag = this.tags.find((t) => t.id === tagId);
+          return tag ? tag.name.toLowerCase() : '';
+        });
+        if (tagNames.some((name) => name.includes(lowerKeyword))) return true;
 
-      return false;
-    }).map((note) => ({
-      ...note,
-      matchType: note.content.toLowerCase().includes(lowerKeyword) ? 'content' :
-        note.questionContent.toLowerCase().includes(lowerKeyword) ? 'question' : 'tag'
-    }));
+        return false;
+      })
+      .map((note) => ({
+        ...note,
+        matchType: note.content.toLowerCase().includes(lowerKeyword)
+          ? 'content'
+          : note.questionContent.toLowerCase().includes(lowerKeyword)
+            ? 'question'
+            : 'tag'
+      }));
   }
 
   /**
@@ -356,9 +360,7 @@ class QuestionNoteManager {
     }
 
     // 最近笔记
-    const recentNotes = this.notes
-      .sort((a, b) => b.updatedAt - a.updatedAt)
-      .slice(0, 5);
+    const recentNotes = this.notes.sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 5);
 
     // 待复习笔记（超过7天未复习的重要笔记）
     const needReview = this.notes.filter((n) => {
@@ -454,7 +456,7 @@ class QuestionNoteManager {
         storageService.save(STORAGE_KEYS.NOTES, this.notes);
       }
     } catch (_e) {
-      console.warn('[QuestionNote] 保存笔记失败:', _e);
+      logger.warn('[QuestionNote] 保存笔记失败:', _e);
     }
   }
 
@@ -479,7 +481,7 @@ class QuestionNoteManager {
         storageService.save(STORAGE_KEYS.NOTE_TAGS, this.tags);
       }
     } catch (_e) {
-      console.warn('[QuestionNote] 保存标签失败:', _e);
+      logger.warn('[QuestionNote] 保存标签失败:', _e);
     }
   }
 }

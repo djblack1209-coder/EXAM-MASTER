@@ -588,7 +588,7 @@ async function _uploadAvatarToServer(filePath) {
       logger.log('[Settings] ✅ 头像已上传到服务器:', res.avatarUrl);
     }
   } catch (e) {
-    console.warn('[Settings] 头像上传到服务器失败:', e.message);
+    logger.warn('[Settings] 头像上传到服务器失败:', e.message);
   }
 }
 

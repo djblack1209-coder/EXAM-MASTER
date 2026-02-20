@@ -24,7 +24,7 @@ export const socialService = {
       logger.log('[Social] 搜索结果:', res);
       return res;
     } catch (err) {
-      console.error('[Social] 搜索用户失败:', err);
+      logger.error('[Social] 搜索用户失败:', err);
       return { code: -1, msg: '搜索失败', data: [] };
     }
   },
@@ -48,7 +48,7 @@ export const socialService = {
       logger.log('[Social] 发送结果:', res);
       return res;
     } catch (err) {
-      console.error('[Social] 发送好友请求失败:', err);
+      logger.error('[Social] 发送好友请求失败:', err);
       return { code: -1, msg: '发送失败' };
     }
   },
@@ -72,7 +72,7 @@ export const socialService = {
       logger.log('[Social] 处理结果:', res);
       return res;
     } catch (err) {
-      console.error('[Social] 处理好友请求失败:', err);
+      logger.error('[Social] 处理好友请求失败:', err);
       return { code: -1, msg: '操作失败' };
     }
   },
@@ -93,7 +93,7 @@ export const socialService = {
       const now = Date.now();
 
       // 缓存有效期：5分钟
-      if (cached && cacheTime && (now - cacheTime < 5 * 60 * 1000)) {
+      if (cached && cacheTime && now - cacheTime < 5 * 60 * 1000) {
         logger.log('[Social] 使用缓存的好友列表');
         return { code: 0, msg: '获取成功（缓存）', data: cached };
       }
@@ -117,12 +117,12 @@ export const socialService = {
 
       return res;
     } catch (err) {
-      console.error('[Social] 获取好友列表失败:', err);
+      logger.error('[Social] 获取好友列表失败:', err);
 
       // 4. 降级：返回缓存数据（即使过期）
       const cached = storageService.get('friend_list_cache');
       if (cached) {
-        console.warn('[Social] 云端失败，使用过期缓存');
+        logger.warn('[Social] 云端失败，使用过期缓存');
         return { code: 0, msg: '获取成功（降级缓存）', data: cached };
       }
 
@@ -145,7 +145,7 @@ export const socialService = {
       logger.log('[Social] 好友请求列表:', res);
       return res;
     } catch (err) {
-      console.error('[Social] 获取好友请求失败:', err);
+      logger.error('[Social] 获取好友请求失败:', err);
       return { code: -1, msg: '获取失败', data: [] };
     }
   },
@@ -174,7 +174,7 @@ export const socialService = {
       logger.log('[Social] 删除结果:', res);
       return res;
     } catch (err) {
-      console.error('[Social] 删除好友失败:', err);
+      logger.error('[Social] 删除好友失败:', err);
       return { code: -1, msg: '删除失败' };
     }
   },

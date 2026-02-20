@@ -406,6 +406,14 @@ export default {
     this.formulaList = Object.freeze(FORMULA_LIST);
   },
 
+  // [F2-FIX] 微信分享配置
+  onShareAppMessage() {
+    return {
+      title: 'Exam-Master — AI助力，一战成硕',
+      path: '/pages/index/index'
+    };
+  },
+
   onLoad() {
     // 初始化沉浸式布局信息
     this.initLayoutInfo();

@@ -78,11 +78,7 @@ class OfflineCacheManager {
       return { success: false, error: '离线缓存已禁用' };
     }
 
-    const {
-      category = 'default',
-      replace = false,
-      priority = 'normal'
-    } = options;
+    const { category = 'default', replace = false, priority = 'normal' } = options;
 
     try {
       // 获取现有缓存
@@ -135,7 +131,7 @@ class OfflineCacheManager {
         totalCount: Object.values(cached).reduce((sum, arr) => sum + arr.length, 0)
       };
     } catch (e) {
-      console.error('[OfflineCache] 缓存题目失败:', e);
+      logger.error('[OfflineCache] 缓存题目失败:', e);
       return { success: false, error: e.message };
     }
   }
@@ -148,11 +144,7 @@ class OfflineCacheManager {
   getOfflineQuestions(options = {}) {
     this.init();
 
-    const {
-      category = null,
-      count = null,
-      random = false
-    } = options;
+    const { category = null, count = null, random = false } = options;
 
     try {
       const cached = this._getStorageSync(STORAGE_KEYS.OFFLINE_QUESTIONS) || {};
@@ -178,7 +170,7 @@ class OfflineCacheManager {
 
       return questions;
     } catch (e) {
-      console.error('[OfflineCache] 获取离线题目失败:', e);
+      logger.error('[OfflineCache] 获取离线题目失败:', e);
       return [];
     }
   }
@@ -224,7 +216,7 @@ class OfflineCacheManager {
 
       return { success: true, id: record.id };
     } catch (e) {
-      console.error('[OfflineCache] 保存离线答题记录失败:', e);
+      logger.error('[OfflineCache] 保存离线答题记录失败:', e);
       return { success: false, error: e.message };
     }
   }
@@ -296,7 +288,7 @@ class OfflineCacheManager {
           await this._syncItem(item);
           syncedCount++;
         } catch (e) {
-          console.warn('[OfflineCache] 同步项目失败:', item.id, e);
+          logger.warn('[OfflineCache] 同步项目失败:', item.id, e);
           failedItems.push(item);
         }
       }
@@ -318,7 +310,7 @@ class OfflineCacheManager {
       };
     } catch (e) {
       this.syncInProgress = false;
-      console.error('[OfflineCache] 同步失败:', e);
+      logger.error('[OfflineCache] 同步失败:', e);
       return { success: false, error: e.message };
     }
   }
@@ -331,12 +323,7 @@ class OfflineCacheManager {
   clearCache(options = {}) {
     this.init();
 
-    const {
-      category = null,
-      clearAnswers = false,
-      clearMistakes = false,
-      clearAll = false
-    } = options;
+    const { category = null, clearAnswers = false, clearMistakes = false, clearAll = false } = options;
 
     try {
       if (clearAll) {
@@ -365,7 +352,7 @@ class OfflineCacheManager {
 
       return { success: true };
     } catch (e) {
-      console.error('[OfflineCache] 清除缓存失败:', e);
+      logger.error('[OfflineCache] 清除缓存失败:', e);
       return { success: false, error: e.message };
     }
   }
@@ -386,9 +373,7 @@ class OfflineCacheManager {
       const questionCount = Object.values(questions).reduce((sum, arr) => sum + arr.length, 0);
 
       // 估算缓存大小
-      const estimatedSize = this._estimateSize(questions) +
-                           this._estimateSize(answers) +
-                           this._estimateSize(mistakes);
+      const estimatedSize = this._estimateSize(questions) + this._estimateSize(answers) + this._estimateSize(mistakes);
 
       return {
         questionCount,
@@ -407,7 +392,7 @@ class OfflineCacheManager {
         }))
       };
     } catch (e) {
-      console.error('[OfflineCache] 获取缓存统计失败:', e);
+      logger.error('[OfflineCache] 获取缓存统计失败:', e);
       return { error: e.message };
     }
   }
@@ -424,11 +409,7 @@ class OfflineCacheManager {
       return { success: false, error: '需要网络连接进行预加载' };
     }
 
-    const {
-      count = 100,
-      categories = [],
-      includeReview = true
-    } = options;
+    const { count = 100, categories = [], includeReview = true } = options;
 
     try {
       // 从本地题库获取题目
@@ -442,9 +423,7 @@ class OfflineCacheManager {
       let questionsToCache = [...bank];
 
       if (categories.length > 0) {
-        questionsToCache = questionsToCache.filter((q) =>
-          categories.includes(q.category)
-        );
+        questionsToCache = questionsToCache.filter((q) => categories.includes(q.category));
       }
 
       // 随机选择
@@ -473,7 +452,7 @@ class OfflineCacheManager {
         totalCached: result.totalCount
       };
     } catch (e) {
-      console.error('[OfflineCache] 预加载失败:', e);
+      logger.error('[OfflineCache] 预加载失败:', e);
       return { success: false, error: e.message };
     }
   }
@@ -501,7 +480,7 @@ class OfflineCacheManager {
       // 只保留最近200条
       this._setStorageSync(STORAGE_KEYS.OFFLINE_MISTAKES, mistakes.slice(-200));
     } catch (_e) {
-      console.warn('[OfflineCache] 保存离线错题失败:', _e);
+      logger.warn('[OfflineCache] 保存离线错题失败:', _e);
     }
   }
 
@@ -619,7 +598,7 @@ class OfflineCacheManager {
         });
       }
     } catch (_e) {
-      console.warn('[OfflineCache] 设置网络监听失败:', _e);
+      logger.warn('[OfflineCache] 设置网络监听失败:', _e);
     }
   }
 
@@ -636,7 +615,7 @@ class OfflineCacheManager {
 
       this._saveCacheMeta();
     } catch (_e) {
-      console.warn('[OfflineCache] 更新缓存元数据失败:', _e);
+      logger.warn('[OfflineCache] 更新缓存元数据失败:', _e);
     }
   }
 
@@ -689,7 +668,7 @@ class OfflineCacheManager {
         storageService.save(key, data);
       }
     } catch (e) {
-      console.warn('[OfflineCache] 存储失败:', key, e);
+      logger.warn('[OfflineCache] 存储失败:', key, e);
     }
   }
 
@@ -699,7 +678,7 @@ class OfflineCacheManager {
         storageService.remove(key);
       }
     } catch (e) {
-      console.warn('[OfflineCache] 删除存储失败:', key, e);
+      logger.warn('[OfflineCache] 删除存储失败:', key, e);
     }
   }
 

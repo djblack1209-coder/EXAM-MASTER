@@ -104,16 +104,17 @@ class RankingSocketService {
         // #ifdef MP-WEIXIN || APP-PLUS
         this.socket = uni.connectSocket({
           url,
-          complete: () => { /* noop */ }
+          complete: () => {
+            /* noop */
+          }
         });
         // #endif
 
         this.state.value = WS_STATE.CONNECTING;
 
         this._setupEventHandlers(resolve, reject);
-
       } catch (error) {
-        console.error('[RankingSocket] Connection error:', error);
+        logger.error('[RankingSocket] Connection error:', error);
         reject(error);
       }
     });
@@ -210,9 +211,8 @@ class RankingSocketService {
 
       // 触发原始消息事件
       this._emit('message', message);
-
     } catch (error) {
-      console.error('[RankingSocket] Message parse error:', error);
+      logger.error('[RankingSocket] Message parse error:', error);
     }
   }
 
@@ -307,7 +307,7 @@ class RankingSocketService {
    * 错误处理
    */
   _onError(error) {
-    console.error('[RankingSocket] Error:', error);
+    logger.error('[RankingSocket] Error:', error);
     this._emit('error', error);
   }
 
@@ -351,7 +351,7 @@ class RankingSocketService {
     }
     // 如果在 heartbeatTimeout 时间内没有收到 pong，视为连接断开
     this._heartbeatTimeoutTimer = setTimeout(() => {
-      console.warn('[RankingSocket] Heartbeat timeout, connection may be dead');
+      logger.warn('[RankingSocket] Heartbeat timeout, connection may be dead');
       this._onClose({ code: 4000, reason: 'heartbeat_timeout' });
     }, this.heartbeatTimeout);
   }
@@ -377,7 +377,7 @@ class RankingSocketService {
    */
   send(data) {
     if (this.state.value !== WS_STATE.OPEN) {
-      console.warn('[RankingSocket] Cannot send, not connected');
+      logger.warn('[RankingSocket] Cannot send, not connected');
       return false;
     }
 
@@ -468,7 +468,7 @@ class RankingSocketService {
         try {
           callback(data);
         } catch (error) {
-          console.error(`[RankingSocket] Event handler error (${event}):`, error);
+          logger.error(`[RankingSocket] Event handler error (${event}):`, error);
         }
       });
     }

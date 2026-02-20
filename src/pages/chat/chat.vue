@@ -355,7 +355,7 @@ onMounted(async () => {
   const loadingTimeout = setTimeout(() => {
     if (isPageLoading.value) {
       isPageLoading.value = false;
-      console.warn('[Chat] 加载超时，强制关闭骨架屏');
+      logger.warn('[Chat] 加载超时，强制关闭骨架屏');
     }
   }, 8000);
 
@@ -363,7 +363,7 @@ onMounted(async () => {
     await loadUserContext();
     await loadChatHistory();
   } catch (e) {
-    console.error('[Chat] 初始化加载失败:', e);
+    logger.error('[Chat] 初始化加载失败:', e);
   } finally {
     clearTimeout(loadingTimeout);
     setTimeout(() => {
@@ -602,7 +602,7 @@ const startRecording = async () => {
     }, 100);
     recordingIntervalId = interval;
   } catch (error) {
-    console.error('[Chat] 录音权限获取失败:', error);
+    logger.error('[Chat] 录音权限获取失败:', error);
     uni.showToast({
       title: '录音权限被拒绝',
       icon: 'none'
@@ -628,7 +628,7 @@ const stopRecording = async () => {
     const recorderManager = uni.getRecorderManager();
     recorderManager.stop();
   } catch (error) {
-    console.error('[Chat] 停止录音失败:', error);
+    logger.error('[Chat] 停止录音失败:', error);
   }
 };
 
