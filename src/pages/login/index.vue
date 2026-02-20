@@ -1277,6 +1277,9 @@ onUnmounted(() => {
   font-size: 26rpx;
   color: #4caf50;
 }
+.dark-mode .form-switch text {
+  color: #81c784;
+}
 
 /* 用户协议 */
 .agreement {

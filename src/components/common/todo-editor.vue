@@ -443,6 +443,11 @@ export default {
   &.input-focused {
     border-color: #10b981;
     background: rgba(16, 185, 129, 0.05);
+
+    .editor-dark & {
+      border-color: #34d399;
+      background: rgba(16, 185, 129, 0.1);
+    }
   }
 }
 

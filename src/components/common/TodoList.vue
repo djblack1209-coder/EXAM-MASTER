@@ -11,9 +11,7 @@
       >
         <!-- 左侧：状态图标 -->
         <view :class="['item-checkbox', item.completed && 'checkbox-completed']">
-          <text v-if="item.completed" class="checkbox-icon">
-            ✓
-          </text>
+          <text v-if="item.completed" class="checkbox-icon"> ✓ </text>
         </view>
 
         <!-- 中间：任务文字 -->
@@ -152,9 +150,12 @@ const handleLongPress = (item) => {
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2rpx solid #9CA3AF;
+  border: 2rpx solid #9ca3af;
   background: transparent;
   cursor: pointer;
+}
+.dark-mode .item-checkbox {
+  border-color: #6b7280;
 }
 
 .item-checkbox:active {
@@ -162,8 +163,8 @@ const handleLongPress = (item) => {
 }
 
 .checkbox-completed {
-  background: #10B981;
-  border-color: #10B981;
+  background: #10b981;
+  border-color: #10b981;
   animation: checkboxPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -181,7 +182,7 @@ const handleLongPress = (item) => {
 
 .checkbox-icon {
   font-size: 28rpx;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 700;
   line-height: 1;
 }
@@ -198,12 +199,12 @@ const handleLongPress = (item) => {
 
 /* 浅色模式文字 */
 .todo-light .item-text {
-  color: #1A1D1F;
+  color: #1a1d1f;
 }
 
 /* 深色模式文字 - 白色 */
 .todo-dark .item-text {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* 已完成状态 */
@@ -231,7 +232,7 @@ const handleLongPress = (item) => {
 }
 
 .badge-priority .badge-text {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 /* 重要 - 黄色 */
@@ -240,7 +241,7 @@ const handleLongPress = (item) => {
 }
 
 .badge-important .badge-text {
-  color: #F59E0B;
+  color: #f59e0b;
 }
 
 /* 日常 - 灰色 */
@@ -249,7 +250,7 @@ const handleLongPress = (item) => {
 }
 
 .badge-normal .badge-text {
-  color: #9CA3AF;
+  color: #9ca3af;
 }
 
 /* 深色模式下的标签增强对比度 */
@@ -258,7 +259,7 @@ const handleLongPress = (item) => {
 }
 
 .todo-dark .badge-priority .badge-text {
-  color: #F87171;
+  color: #f87171;
 }
 
 .todo-dark .badge-important {
@@ -266,7 +267,7 @@ const handleLongPress = (item) => {
 }
 
 .todo-dark .badge-important .badge-text {
-  color: #FCD34D;
+  color: #fcd34d;
 }
 
 .todo-dark .badge-normal {

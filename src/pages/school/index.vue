@@ -5,7 +5,7 @@
     <!-- 骨架屏 -->
     <SchoolSkeleton v-if="isLoading" :is-dark="isDark" :step="currentStep" />
 
-    <view v-show="!isLoading" class="header-nav">
+    <view v-if="!isLoading" class="header-nav">
       <view :style="{ height: statusBarHeight + 'px' }" />
       <view class="nav-content">
         <text class="nav-back" @tap="handleBack"> ← </text>
@@ -15,10 +15,10 @@
     </view>
 
     <!-- 占位符，避免内容被导航栏遮挡（使用标准导航栏高度） -->
-    <view v-show="!isLoading" :style="{ height: navBarHeight + 'px' }" />
+    <view v-if="!isLoading" :style="{ height: navBarHeight + 'px' }" />
 
     <!-- 压缩顶部间距：去掉重复叠加的状态栏偏移，仅保留适度 paddingTop -->
-    <scroll-view v-show="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: '24px' }">
+    <scroll-view v-if="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: '24px' }">
       <!-- 步骤进度条 - 三步流程 -->
       <view class="step-bar glass-card ds-flex ds-flex-center">
         <view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 1 }]">

@@ -8,21 +8,15 @@
           {{ title }}
         </text>
         <view class="close-btn" @tap="handleClose">
-          <text class="close-icon">
-            ×
-          </text>
+          <text class="close-icon"> × </text>
         </view>
       </view>
 
       <!-- 预览区域 -->
       <view v-if="showPreview" class="preview-section">
         <view class="quote-preview" :class="{ 'preview-dark': isDark }">
-          <text class="preview-quote">
-            "{{ quote }}"
-          </text>
-          <text class="preview-author">
-            —— {{ author }}
-          </text>
+          <text class="preview-quote"> "{{ quote }}" </text>
+          <text class="preview-author"> —— {{ author }} </text>
         </view>
       </view>
 
@@ -48,44 +42,34 @@
           <view class="option-icon icon-wechat">
             <text>💬</text>
           </view>
-          <text class="option-label">
-            微信好友
-          </text>
+          <text class="option-label"> 微信好友 </text>
         </view>
 
         <view class="option-item" @tap="handleShare('timeline')">
           <view class="option-icon icon-timeline">
             <text>🌐</text>
           </view>
-          <text class="option-label">
-            朋友圈
-          </text>
+          <text class="option-label"> 朋友圈 </text>
         </view>
 
         <view class="option-item" @tap="handleShare('poster')">
           <view class="option-icon icon-poster">
             <text>🖼️</text>
           </view>
-          <text class="option-label">
-            生成海报
-          </text>
+          <text class="option-label"> 生成海报 </text>
         </view>
 
         <view class="option-item" @tap="handleShare('copy')">
           <view class="option-icon icon-copy">
             <text>📋</text>
           </view>
-          <text class="option-label">
-            复制文案
-          </text>
+          <text class="option-label"> 复制文案 </text>
         </view>
       </view>
 
       <!-- 底部提示 -->
       <view class="modal-footer">
-        <text class="footer-hint">
-          分享给朋友，一起进步
-        </text>
+        <text class="footer-hint"> 分享给朋友，一起进步 </text>
       </view>
     </view>
 
@@ -195,7 +179,9 @@ export default {
       // 震动反馈
       try {
         uni.vibrateShort({ type: 'medium' });
-      } catch (e) { logger.warn('[ShareModal] vibrateShort failed in handleFavorite', e); }
+      } catch (e) {
+        logger.warn('[ShareModal] vibrateShort failed in handleFavorite', e);
+      }
 
       const result = await quoteHandler.toggleFavorite(this.quote, this.author);
       this.isFavorite = result;
@@ -213,7 +199,9 @@ export default {
       // 震动反馈
       try {
         uni.vibrateShort({ type: 'light' });
-      } catch (e) { logger.warn('[ShareModal] vibrateShort failed in handleShare', e); }
+      } catch (e) {
+        logger.warn('[ShareModal] vibrateShort failed in handleShare', e);
+      }
 
       switch (platform) {
         case 'wechat':
@@ -300,7 +288,8 @@ export default {
     // 绘制海报
     drawPoster(config) {
       const query = uni.createSelectorQuery().in(this);
-      query.select('#quote-poster-canvas')
+      query
+        .select('#quote-poster-canvas')
         .fields({ node: true, size: true })
         .exec((res) => {
           if (!res[0]) return;
@@ -309,8 +298,8 @@ export default {
           const ctx = canvas.getContext('2d');
           const dpr = uni.getSystemInfoSync().pixelRatio;
 
-          canvas.width = config.width * dpr / 2;
-          canvas.height = config.height * dpr / 2;
+          canvas.width = (config.width * dpr) / 2;
+          canvas.height = (config.height * dpr) / 2;
           ctx.scale(dpr / 2, dpr / 2);
 
           // 绘制渐变背景
@@ -384,7 +373,8 @@ export default {
     async handleSavePoster() {
       try {
         const query = uni.createSelectorQuery().in(this);
-        query.select('#quote-poster-canvas')
+        query
+          .select('#quote-poster-canvas')
           .fields({ node: true })
           .exec(async (res) => {
             if (!res[0]) return;
@@ -476,8 +466,12 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .share-modal-content {
@@ -494,8 +488,12 @@ export default {
 }
 
 @keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .modal-header {
@@ -509,8 +507,12 @@ export default {
   font-size: 36rpx;
   font-weight: 700;
 
-  .share-modal-content:not(.modal-dark) & { color: #1a1a1a; }
-  .modal-dark & { color: #ffffff; }
+  .share-modal-content:not(.modal-dark) & {
+    color: #1a1a1a;
+  }
+  .modal-dark & {
+    color: #ffffff;
+  }
 }
 
 .close-btn {
@@ -522,14 +524,18 @@ export default {
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.05);
 
-  .modal-dark & { background: rgba(255, 255, 255, 0.1); }
+  .modal-dark & {
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 .close-icon {
-	font-size: 40rpx;
-	color: var(--ds-color-text-tertiary);
+  font-size: 40rpx;
+  color: var(--ds-color-text-tertiary);
 
-	.modal-dark & { color: var(--ds-color-text-secondary); }
+  .modal-dark & {
+    color: var(--ds-color-text-secondary);
+  }
 }
 
 /* 预览区域 */
@@ -578,7 +584,9 @@ export default {
   background: rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 
-  .modal-dark & { background: rgba(255, 255, 255, 0.1); }
+  .modal-dark & {
+    background: rgba(255, 255, 255, 0.1);
+  }
 
   &.is-favorite {
     background: rgba(255, 107, 107, 0.1);
@@ -594,10 +602,18 @@ export default {
 }
 
 @keyframes pop {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.2); }
-  60% { transform: scale(0.9); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.2);
+  }
+  60% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .favorite-icon {
@@ -608,8 +624,12 @@ export default {
   font-size: 28rpx;
   font-weight: 500;
 
-  .share-modal-content:not(.modal-dark) & { color: #1a1a1a; }
-  .modal-dark & { color: #ffffff; }
+  .share-modal-content:not(.modal-dark) & {
+    color: #1a1a1a;
+  }
+  .modal-dark & {
+    color: #ffffff;
+  }
 }
 
 /* 分享选项 */
@@ -646,16 +666,40 @@ export default {
   font-size: 40rpx;
 }
 
-.icon-wechat { background: #07C160; }
-.icon-timeline { background: #576B95; }
-.icon-poster { background: #FF6B6B; }
-.icon-copy { background: #F59E0B; }
+.icon-wechat {
+  background: #07c160;
+}
+.icon-timeline {
+  background: #576b95;
+}
+.icon-poster {
+  background: #ff6b6b;
+}
+.icon-copy {
+  background: #f59e0b;
+}
+.modal-dark .icon-wechat {
+  background: #06a850;
+}
+.modal-dark .icon-timeline {
+  background: #4a5d82;
+}
+.modal-dark .icon-poster {
+  background: #e05555;
+}
+.modal-dark .icon-copy {
+  background: #d98e0a;
+}
 
 .option-label {
-	font-size: 24rpx;
+  font-size: 24rpx;
 
-	.share-modal-content:not(.modal-dark) & { color: var(--ds-color-text-secondary); }
-	.modal-dark & { color: rgba(255, 255, 255, 0.7); }
+  .share-modal-content:not(.modal-dark) & {
+    color: var(--ds-color-text-secondary);
+  }
+  .modal-dark & {
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
 
 /* 底部提示 */
@@ -665,8 +709,8 @@ export default {
 }
 
 .footer-hint {
-	font-size: 24rpx;
-	color: var(--ds-color-text-tertiary);
+  font-size: 24rpx;
+  color: var(--ds-color-text-tertiary);
 }
 
 /* 海报预览 */
@@ -715,6 +759,11 @@ export default {
   &.btn-save {
     background: #ffffff;
     color: #667eea;
+
+    .modal-dark & {
+      background: rgba(255, 255, 255, 0.15);
+      color: #a0b4ff;
+    }
   }
 
   &:active {
