@@ -15,14 +15,14 @@
 
 ## 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 前端框架 | uni-app + Vue 3 + Pinia |
-| 后端服务 | Laf Cloud (Sealos) + TypeScript |
-| 数据库 | MongoDB (Laf 内置) |
-| AI 能力 | 智谱 GLM-4-Plus / SiliconFlow |
-| 构建工具 | Vite |
-| 测试 | Vitest + Playwright |
+| 层级     | 技术                                   |
+| -------- | -------------------------------------- |
+| 前端框架 | uni-app + Vue 3 + Pinia                |
+| 后端服务 | Laf Cloud (Sealos) + TypeScript        |
+| 数据库   | MongoDB (Laf 内置)                     |
+| AI 能力  | 智谱 GLM-4-Plus / SiliconFlow          |
+| 构建工具 | Vite                                   |
+| 测试     | Vitest + Playwright                    |
 | 代码规范 | ESLint + Prettier + Husky + Commitlint |
 
 ## 项目结构
@@ -102,26 +102,28 @@ laf login && laf init <appid> && laf deploy
 
 ## 常用命令
 
-| 命令 | 说明 |
-|------|------|
-| `npm run dev:h5` | H5 开发服务器 |
-| `npm run dev:mp-weixin` | 微信小程序开发 |
-| `npm run build:mp-weixin` | 构建微信小程序 |
-| `npm run test` | 运行单元测试 |
-| `npm run test:coverage` | 测试覆盖率报告 |
-| `npm run lint:fix` | ESLint 自动修复 |
-| `npm run format` | Prettier 格式化 |
+| 命令                      | 说明            |
+| ------------------------- | --------------- |
+| `npm run dev:h5`          | H5 开发服务器   |
+| `npm run dev:mp-weixin`   | 微信小程序开发  |
+| `npm run build:mp-weixin` | 构建微信小程序  |
+| `npm run test`            | 运行单元测试    |
+| `npm run test:coverage`   | 测试覆盖率报告  |
+| `npm run lint:fix`        | ESLint 自动修复 |
+| `npm run format`          | Prettier 格式化 |
 
 ## 文档
 
-- [API 参考](./docs/API.md)
-- [API 使用文档](./docs/API_DOCUMENTATION.md)
-- [组件文档](./docs/COMPONENTS.md)
-- [工具函数](./docs/UTILS.md)
-- [脚本与 CI/CD](./docs/SCRIPTS.md)
-- [部署指南](./deploy/docs/DEPLOYMENT-GUIDE.md)
-- [应急响应](./deploy/docs/EMERGENCY-RESPONSE.md)
-- [后端文档](./laf-backend/README.md)
+- [API 文档](./docs/API_DOCUMENTATION.md) — 完整 API 参考（含快速速查表 + 详细示例）
+- [项目综合报告](./docs/PROJECT-REPORT.md) — 项目概述、架构、测试结果、问题与修复记录
+- [检测与审计报告](./docs/AUDIT-REPORT.md) — 全量代码检测、安全审计、40项修复记录
+- [技术分析与优化](./docs/TECH-ANALYSIS.md) — 前端性能、后端API、安全性、数据同步分析
+- [组件文档](./docs/COMPONENTS.md) — 前端组件说明
+- [工具函数](./docs/UTILS.md) — 工具函数说明
+- [脚本与 CI/CD](./docs/SCRIPTS.md) — 构建脚本与流水线
+- [部署指南](./deploy/docs/DEPLOYMENT-GUIDE.md) — 部署配置与流程
+- [应急响应](./deploy/docs/EMERGENCY-RESPONSE.md) — 故障处理预案
+- [后端文档](./laf-backend/README.md) — 云函数开发指南
 
 ## 环境变量
 
