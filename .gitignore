@@ -109,3 +109,21 @@ data/schools/schools-fixed.json
 # Unused common modules
 common/zhipu.js
 common/styles/common.scss
+
+# One-time scripts (fix/refactor/crawlers/data-sync/test)
+scripts/fix/
+scripts/refactor/
+scripts/crawlers/
+scripts/data-sync/
+scripts/test/
+
+# laf-backend one-time scripts & fix artifacts
+laf-backend/scripts/
+laf-backend/test-connection.js
+laf-backend/data/schools/fix-report.json
+laf-backend/data/schools/schools-fixed.json
+
+# Visual / Playwright tests (not used in CI)
+playwright.visual.config.js
+tests/visual/
+tests/debug-selectors.js

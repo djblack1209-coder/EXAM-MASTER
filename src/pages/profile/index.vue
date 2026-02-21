@@ -298,6 +298,7 @@ import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
+import { lafService } from '@/services/lafService.js';
 import config from '@/config/index.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 
