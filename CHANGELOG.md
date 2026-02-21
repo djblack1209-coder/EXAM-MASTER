@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
-## [1.0.0] - 2026-02-20
+## [1.0.0] - 2026-02-21
 
-首个正式发布版本。涵盖考研备考小程序全部核心功能、安全加固、代码审计及文档整合。
+首个正式发布版本。涵盖考研备考小程序全部核心功能、安全加固、全链路集成测试、代码审计及文档整合。
 
 ### Added
 
@@ -31,7 +31,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - 后端 34 个 Laf 云函数、19 个 MongoDB 数据库 Schema
 - CI/CD：GitHub Actions 3 条流水线（构建部署、安全扫描、数据库备份）
 - 部署：Docker + Kubernetes + Nginx + Prometheus + Grafana 监控
-- 17 个单元测试 + Playwright 视觉回归测试
+- 全链路集成测试 825 个（32 个测试文件），含：
+  - 15 个 e2e 全链路测试（启动→登录→刷题→错题→择校→AI→社交→存储→导航→上传→按钮交互）
+  - 4 个总监级深度审计测试（AI 真实性、文件上传边界、登录鉴权门控、主题引擎与空状态）
+  - 17 个基础单元测试（存储、配置、工具函数、组件、性能等）
 - `docs/PROJECT-REPORT.md` — 整合 5 份历史项目/测试报告
 - `docs/AUDIT-REPORT.md` — 整合检测汇总报告 + 模块详细报告 + 审计记录
 - `docs/TECH-ANALYSIS.md` — 技术分析与优化方案
@@ -84,7 +87,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
-- icons8 CDN URL 配置化：chavue（12 处）+ PosterModal.vue（4 处）统一使用 `config.externalCdn.icons8BaseUrl`
+- icons8 CDN URL 配置化：chat.vue（12 处）+ PosterModal.vue（4 处）统一使用 `config.externalCdn.icons8BaseUrl`
 - 孤立后端函数标记：voice-service、material-manager 添加 `⚠️ [未启用]` 注释
 - laf-backend/README.md：移除不存在的 group-service，标注 voice-service / material-manager 未接入前端
 - 文档整合：9 份冗余文档合并为 3 份，净减少约 1,550 行重复内容
@@ -95,13 +98,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - 分包加载（主包从 2.1M 降至 1.47M）
 - 防御性重构 P0-P3：去重、组件瘦身、注释索引、缓存修复
 - 完成问题清单 P001-P015 全部 15 项修复及发布前审计
-- Git 仓库清理：移除 137 个冗余文件（backups/、.claude/skills/、.claude/agents/ 等），减少约 24MB
+- Git 仓库清理：累计移除 173 个冗余文件，.gitignore 覆盖一次性脚本/测试/修复工具
 
 ### Removed
 
 - 根目录 5 份冗余中文文档（项目综合报告、全量测试报告、测试报告、问题清单与修复记录、技术分析与优化方案）
 - docs/ 下 4 份冗余文档（API.md、检测汇总报告、检测详细报告-M5、项目报告）
-- 冗余 git 跟踪文件：backups/、database/、.claude/skills|agents|commands/、common/zhipu.js、common/styles/common.scss 等
+- 冗余 git 跟踪文件：backups/、database/、.claude/skills|agents|commands/、common/zhipu.js、common/styles/common.scss
+- 一次性脚本：scripts/fix/、scripts/refactor/、scripts/crawlers/、scripts/data-sync/、scripts/test/
+- laf-backend 一次性脚本：laf-backend/scripts/、test-connection.js、data fix artifacts
+- 开发调试文件：tests/debug-selectors.js、playwright.visual.config.js、tests/visual/、.opencode/
 
 ### Security
 
