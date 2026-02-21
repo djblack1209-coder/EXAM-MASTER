@@ -334,8 +334,6 @@ class AnalyticsService {
    */
   _getPlatform() {
     try {
-      // #ifdef MP-WEIXIN
-      // 使用新的 API 替代废弃的 getSystemInfoSync
       const deviceInfo = uni.getDeviceInfo();
       return {
         platform: deviceInfo.platform || 'unknown',
@@ -343,17 +341,6 @@ class AnalyticsService {
         version: deviceInfo.platform || 'unknown',
         model: deviceInfo.model || 'unknown'
       };
-      // #endif
-
-      // #ifndef MP-WEIXIN
-      const systemInfo = uni.getSystemInfoSync();
-      return {
-        platform: systemInfo.platform,
-        system: systemInfo.system,
-        version: systemInfo.version,
-        model: systemInfo.model
-      };
-      // #endif
     } catch (_e) {
       return { platform: 'unknown' };
     }

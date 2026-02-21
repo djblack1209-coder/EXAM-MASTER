@@ -12,7 +12,7 @@
     </view>
 
     <!-- 主内容 -->
-    <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: (statusBarHeight + 50) + 'px' }">
+    <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
@@ -134,6 +134,7 @@
 import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 
 const DEFAULT_SIZES = [
   { key: '1inch', name: '一寸', desc: '25×35mm' },
@@ -173,10 +174,11 @@ export default {
   },
 
   onLoad() {
-    const sys = uni.getSystemInfoSync();
-    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.statusBarHeight = getStatusBarHeight();
     this.isDark = initTheme();
-    this._themeHandler = (mode) => { this.isDark = mode === 'dark'; };
+    this._themeHandler = (mode) => {
+      this.isDark = mode === 'dark';
+    };
     onThemeUpdate(this._themeHandler);
     this.loadConfig();
   },
@@ -196,12 +198,16 @@ export default {
         if (res.code === 0 && res.data) {
           if (res.data.sizes) {
             this.sizeOptions = Object.entries(res.data.sizes).map(([key, v]) => ({
-              key, name: v.name, desc: v.desc
+              key,
+              name: v.name,
+              desc: v.desc
             }));
           }
           if (res.data.colors) {
             this.colorOptions = Object.entries(res.data.colors).map(([key, v]) => ({
-              key, name: v.name, hex: v.hex
+              key,
+              name: v.name,
+              hex: v.hex
             }));
           }
         }
@@ -265,12 +271,9 @@ export default {
       this.processingText = '正在智能抠图...';
 
       try {
-        const res = await lafService.processIdPhoto(
-          this.imageBase64,
-          this.selectedColor,
-          this.selectedSize,
-          { beauty: this.enableBeauty }
-        );
+        const res = await lafService.processIdPhoto(this.imageBase64, this.selectedColor, this.selectedSize, {
+          beauty: this.enableBeauty
+        });
 
         if (res.code === 0 && res.data) {
           const resultBase64 = res.data.resultImage || res.data.image;
@@ -323,7 +326,9 @@ export default {
                 uni.showModal({
                   title: '提示',
                   content: '需要相册权限才能保存，是否前往设置？',
-                  success: (r) => { if (r.confirm) uni.openSetting(); }
+                  success: (r) => {
+                    if (r.confirm) uni.openSetting();
+                  }
                 });
               } else {
                 uni.showToast({ title: '保存失败', icon: 'none' });
@@ -360,7 +365,7 @@ export default {
 <style lang="scss" scoped>
 .page-container {
   min-height: 100vh;
-  background: var(--bg-secondary, #F5F5F7);
+  background: var(--bg-secondary, #f5f5f7);
 }
 
 // 导航栏
@@ -477,7 +482,7 @@ export default {
     width: 48rpx;
     height: 48rpx;
     border-radius: 50%;
-    background: var(--bg-secondary, #F5F5F7);
+    background: var(--bg-secondary, #f5f5f7);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -508,7 +513,7 @@ export default {
     left: calc(50% + 28rpx);
     right: calc(-50% + 28rpx);
     height: 3rpx;
-    background: var(--bg-secondary, #F5F5F7);
+    background: var(--bg-secondary, #f5f5f7);
     transition: background 0.3s ease;
 
     &.filled {
@@ -533,7 +538,7 @@ export default {
   }
 
   &.done .step-dot {
-    background: linear-gradient(135deg, #34C759, #30D158);
+    background: linear-gradient(135deg, #34c759, #30d158);
     box-shadow: 0 4rpx 12rpx rgba(52, 199, 89, 0.3);
   }
 }
@@ -748,7 +753,9 @@ export default {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // 结果
@@ -785,19 +792,23 @@ export default {
   text-align: center;
   box-shadow: 0 8rpx 24rpx rgba(232, 67, 147, 0.25);
 
-  &::after { border: none; }
+  &::after {
+    border: none;
+  }
 }
 
 .btn-secondary {
   background: var(--bg-card, #fff);
   color: var(--text-primary, #111);
-  border: 1rpx solid var(--border, #E5E5E5);
+  border: 1rpx solid var(--border, #e5e5e5);
   padding: 24rpx;
   border-radius: 50rpx;
   font-size: 28rpx;
   text-align: center;
 
-  &::after { border: none; }
+  &::after {
+    border: none;
+  }
 }
 
 .btn-ghost {
@@ -808,7 +819,9 @@ export default {
   font-size: 26rpx;
   text-align: center;
 
-  &::after { border: none; }
+  &::after {
+    border: none;
+  }
 }
 
 .btn-hover {
@@ -819,7 +832,7 @@ export default {
 // Dark mode overrides
 .dark-mode {
   &.page-container {
-    background: var(--bg-secondary, #1C1C1E);
+    background: var(--bg-secondary, #1c1c1e);
   }
 
   .nav-header {
@@ -837,21 +850,21 @@ export default {
   }
 
   .steps-bar {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
   }
 
   .step-item .step-dot {
-    background: var(--bg-secondary, #1C1C1E);
+    background: var(--bg-secondary, #1c1c1e);
   }
 
   .upload-area {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     border-color: rgba(232, 67, 147, 0.25);
   }
 
   .option-chip {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
 
     &.active {
@@ -864,17 +877,17 @@ export default {
   }
 
   .beauty-card {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
   }
 
   .processing-card {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
   }
 
   .result-card {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     box-shadow: none;
   }
 
@@ -883,7 +896,7 @@ export default {
   }
 
   .btn-secondary {
-    background: var(--bg-card, #0D1117);
+    background: var(--bg-card, #0d1117);
     border-color: rgba(255, 255, 255, 0.1);
   }
 }

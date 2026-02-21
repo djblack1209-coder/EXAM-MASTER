@@ -183,7 +183,21 @@
 
     <!-- C5: 注销账号（微信审核硬性要求） -->
     <view v-if="userInfo.uid" class="delete-account-section">
-      <div class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
+      <!-- 注销冷静期状态提示 -->
+      <view v-if="deletionStatus.status === 'pending_deletion'" class="deletion-pending-card">
+        <view class="deletion-pending-header">
+          <text class="deletion-pending-icon">⚠️</text>
+          <text class="deletion-pending-title">账号注销中</text>
+        </view>
+        <text class="deletion-pending-desc">
+          剩余 {{ deletionStatus.remainingDays }} 天后将永久删除所有数据，冷静期内可撤销
+        </text>
+        <div class="deletion-cancel-btn ds-touchable" @tap="handleCancelDeletion">
+          <text class="deletion-cancel-text">撤销注销</text>
+        </div>
+      </view>
+      <!-- 正常状态：显示注销按钮 -->
+      <div v-else class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
         <text class="delete-account-text"> 注销账号 </text>
       </div>
     </view>
@@ -253,6 +267,8 @@ const showInviteModal = ref(false); // 邀请好友弹窗
 const showPosterModal = ref(false); // 海报生成弹窗
 const inviteCode = ref('EXAM8888'); // 邀请码（可以从后端获取）
 const showThemeSelector = ref(false); // 主题选择器弹窗
+// C5: 注销状态
+const deletionStatus = ref({ status: 'active', remainingDays: null });
 
 // 主题系统
 let _themeStore = null;
@@ -350,6 +366,11 @@ const loadData = () => {
         cacheSize.value = (res.currentSize || 0) + 'KB';
       }
     });
+
+    // C5: 查询注销状态（已登录时）
+    if (userInfo.value.uid) {
+      checkDeletionStatus();
+    }
   } catch (e) {
     logger.error('[settings] 加载数据失败:', e);
   } finally {
@@ -523,11 +544,52 @@ const handleDeleteAccount = () => {
           const result = await lafService.requestAccountDeletion();
           uni.hideLoading();
           if (result.success) {
+            // 刷新注销状态显示
+            await checkDeletionStatus();
             uni.showModal({
               title: '注销申请已提交',
               content: result.message || '7天冷静期内可在此页面撤销注销',
               showCancel: false
             });
+          } else {
+            uni.showToast({ title: result.message || '操作失败', icon: 'none' });
+          }
+        } catch (e) {
+          uni.hideLoading();
+          uni.showToast({ title: '网络异常，请重试', icon: 'none' });
+        }
+      }
+    }
+  });
+};
+
+// C5: 查询注销状态
+const checkDeletionStatus = async () => {
+  try {
+    const result = await lafService.getAccountDeletionStatus();
+    if (result.success && result.data) {
+      deletionStatus.value = result.data;
+    }
+  } catch (e) {
+    logger.warn('[settings] 查询注销状态失败:', e);
+  }
+};
+
+// C5: 撤销注销
+const handleCancelDeletion = () => {
+  uni.showModal({
+    title: '撤销注销',
+    content: '确定要撤销注销申请吗？撤销后账号将恢复正常使用。',
+    confirmText: '确定撤销',
+    success: async (res) => {
+      if (res.confirm) {
+        uni.showLoading({ title: '处理中...' });
+        try {
+          const result = await lafService.cancelAccountDeletion();
+          uni.hideLoading();
+          if (result.success) {
+            deletionStatus.value = { status: 'active', remainingDays: null };
+            uni.showToast({ title: '注销已撤销', icon: 'success' });
           } else {
             uni.showToast({ title: result.message || '操作失败', icon: 'none' });
           }
@@ -1390,6 +1452,43 @@ const handleClosePosterModal = () => {
 .delete-account-text {
   font-size: 26rpx;
   color: var(--text-tertiary, #999);
+}
+.deletion-pending-card {
+  background: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(255, 59, 48, 0.2);
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+.deletion-pending-header {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+.deletion-pending-icon {
+  font-size: 32rpx;
+}
+.deletion-pending-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #ff3b30;
+}
+.deletion-pending-desc {
+  font-size: 24rpx;
+  color: var(--text-secondary, #666);
+  line-height: 1.5;
+  margin-bottom: 20rpx;
+}
+.deletion-cancel-btn {
+  background: #ff3b30;
+  border-radius: 12rpx;
+  padding: 16rpx 0;
+  text-align: center;
+}
+.deletion-cancel-text {
+  font-size: 28rpx;
+  color: #fff;
+  font-weight: 500;
 }
 
 /* 底部安全区域 */

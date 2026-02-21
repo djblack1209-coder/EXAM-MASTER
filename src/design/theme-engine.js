@@ -368,7 +368,7 @@ export function applyTheme(theme = 'light') {
  */
 export function getCurrentTheme() {
   // #ifdef MP-WEIXIN
-  // 使用新的 API 替代废弃的 getSystemInfoSync
+  // 使用 getAppBaseInfo 获取主题
   try {
     const appBaseInfo = uni.getAppBaseInfo();
     return appBaseInfo.theme === 'dark' ? 'dark' : 'light';

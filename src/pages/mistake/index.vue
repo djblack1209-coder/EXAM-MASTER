@@ -158,7 +158,7 @@ export default {
     };
   },
   onLoad(options) {
-    // 使用新API替代废弃的 getSystemInfoSync
+    // 获取窗口信息
     try {
       const windowInfo = uni.getWindowInfo();
       this.statusBarHeight = windowInfo.statusBarHeight || 44;

@@ -160,6 +160,7 @@
 <script>
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight, getWindowInfo as _getWindowInfo, getPixelRatio } from '@/utils/core/system.js';
 import { lafService } from '@/services/lafService.js';
 
 export default {
@@ -276,10 +277,10 @@ export default {
     },
 
     initData() {
-      const sys = uni.getSystemInfoSync();
-      this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
-      this.canvasWidth = sys.windowWidth;
-      this.canvasHeight = sys.windowHeight;
+      this.statusBarHeight = getStatusBarHeight();
+      const winInfo = _getWindowInfo();
+      this.canvasWidth = winInfo.windowWidth;
+      this.canvasHeight = winInfo.windowHeight;
     },
 
     // ==================== 学习资源相关方法 ====================
@@ -411,7 +412,7 @@ export default {
           this.ctx = this.canvasNode.getContext('2d');
 
           // 高DPI缩放
-          const dpr = uni.getSystemInfoSync().pixelRatio || 1;
+          const dpr = getPixelRatio();
           this.canvasNode.width = res[0].width * dpr;
           this.canvasNode.height = res[0].height * dpr;
           this.ctx.scale(dpr, dpr);
@@ -445,9 +446,9 @@ export default {
         return;
       }
 
-      const sys = uni.getSystemInfoSync();
-      this.canvasWidth = sys.windowWidth;
-      this.canvasHeight = sys.windowHeight;
+      const winInfo = _getWindowInfo();
+      this.canvasWidth = winInfo.windowWidth;
+      this.canvasHeight = winInfo.windowHeight;
 
       logger.log('✅ Canvas Legacy initialized', {
         width: this.canvasWidth,

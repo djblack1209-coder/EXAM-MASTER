@@ -117,6 +117,7 @@ import StudyHeatmap from './StudyHeatmap.vue';
 import StudyTrendChart from './StudyTrendChart.vue';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
+import { getNavBarHeight } from '@/utils/core/system.js';
 
 export default {
   name: 'StudyDetail',
@@ -174,9 +175,7 @@ export default {
      * 获取导航栏高度
      */
     getNavbarHeight() {
-      const systemInfo = uni.getSystemInfoSync();
-      const statusBarHeight = systemInfo.statusBarHeight || 0;
-      this.navbarHeight = statusBarHeight + 44;
+      this.navbarHeight = getNavBarHeight();
     },
 
     /**

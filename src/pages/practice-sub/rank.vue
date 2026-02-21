@@ -219,6 +219,7 @@ import { logger } from '@/utils/logger.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { getStatusBarHeight, getWindowInfo as _getWindowInfo } from '@/utils/core/system.js';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import BaseLoading from './components/base-loading/base-loading.vue';
@@ -331,14 +332,13 @@ export default {
     },
 
     initSystem() {
-      const sys = uni.getSystemInfoSync();
-      this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+      this.statusBarHeight = getStatusBarHeight();
 
       // #ifdef MP-WEIXIN
       try {
         const capsule = uni.getMenuButtonBoundingClientRect();
         if (capsule && capsule.width > 0) {
-          const windowWidth = sys.windowWidth || sys.screenWidth;
+          const windowWidth = _getWindowInfo().windowWidth;
           this.capsuleMargin = windowWidth - capsule.left + 10;
         } else {
           this.capsuleMargin = 100;

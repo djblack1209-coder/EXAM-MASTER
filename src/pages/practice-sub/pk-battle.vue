@@ -224,6 +224,7 @@ import CustomModal from '@/components/common/CustomModal.vue';
 // ✅ 懒加载：invite-deep-link 478行，仅在用户分享时才需要（改为方法内动态导入）
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F024: 统一使用 storageService
 import storageService from '@/services/storageService.js';
@@ -409,8 +410,7 @@ export default {
     },
 
     initData() {
-      const sys = uni.getSystemInfoSync();
-      this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+      this.statusBarHeight = getStatusBarHeight();
       this.userInfo = storageService.get('userInfo', { nickName: '考研人', avatarUrl: '' });
       // ✅ F024: 统一使用 storageService 读取主题
       this.isDark = storageService.get('theme_mode', 'light') === 'dark';

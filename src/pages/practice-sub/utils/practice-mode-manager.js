@@ -157,7 +157,7 @@ class PracticeModeManager {
 
       default: {
         // 综合练习 - 使用智能组题（动态加载，避免拉入主包）
-        const { pickQuestions } = await import('@/utils/learning/smart-question-picker.js');
+        const { pickQuestions } = await import('./smart-question-picker.js');
         return pickQuestions(questions, {
           count: this.currentSettings.questionCount,
           mode: 'adaptive',
@@ -282,11 +282,13 @@ class PracticeModeManager {
     }
 
     if (history.length > 0) {
-      const avgTimePerQuestion = history.reduce((sum, h) => {
-        return sum + (h.duration / h.questionCount);
-      }, 0) / history.length;
+      const avgTimePerQuestion =
+        history.reduce((sum, h) => {
+          return sum + h.duration / h.questionCount;
+        }, 0) / history.length;
 
-      if (avgTimePerQuestion > 30) { // 平均每题超过30秒
+      if (avgTimePerQuestion > 30) {
+        // 平均每题超过30秒
         recommendations.push(PRACTICE_MODES.TIME_LIMITED);
       }
     }
@@ -308,10 +310,10 @@ class PracticeModeManager {
       // 按知识点过滤
       if (settings.topic) {
         const topic = settings.topic.toLowerCase();
-        match = match && (
-          (q.category && q.category.toLowerCase().includes(topic)) ||
-          (q.knowledge_points && q.knowledge_points.some((kp) => kp.toLowerCase().includes(topic)))
-        );
+        match =
+          match &&
+          ((q.category && q.category.toLowerCase().includes(topic)) ||
+            (q.knowledge_points && q.knowledge_points.some((kp) => kp.toLowerCase().includes(topic))));
       }
 
       // 按题型过滤
@@ -322,9 +324,7 @@ class PracticeModeManager {
       // 按难度过滤
       if (settings.difficultyRange) {
         const difficulty = q.difficulty || 2;
-        match = match &&
-          difficulty >= settings.difficultyRange[0] &&
-          difficulty <= settings.difficultyRange[1];
+        match = match && difficulty >= settings.difficultyRange[0] && difficulty <= settings.difficultyRange[1];
       }
 
       return match;
@@ -346,9 +346,7 @@ class PracticeModeManager {
       // 按难度过滤
       if (settings.difficultyRange) {
         const difficulty = q.difficulty || 2;
-        match = match &&
-          difficulty >= settings.difficultyRange[0] &&
-          difficulty <= settings.difficultyRange[1];
+        match = match && difficulty >= settings.difficultyRange[0] && difficulty <= settings.difficultyRange[1];
       }
 
       return match;

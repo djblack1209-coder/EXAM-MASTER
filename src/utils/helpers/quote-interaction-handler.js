@@ -14,6 +14,7 @@
 import { permissionHandler } from './permission-handler.js';
 import storageService from '@/services/storageService.js';
 import { logger } from '../logger.js';
+import { getPixelRatio } from '../core/system.js';
 
 // 收藏状态存储键
 const STORAGE_KEYS = {
@@ -235,7 +236,7 @@ class QuoteInteractionHandler {
 
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
-          const dpr = uni.getSystemInfoSync().pixelRatio;
+          const dpr = getPixelRatio();
 
           canvas.width = 750 * dpr;
           canvas.height = 1000 * dpr;

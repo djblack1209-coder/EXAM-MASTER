@@ -13,6 +13,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { getPixelRatio } from '@/utils/core/system.js';
 
 // 海报配置常量
 const POSTER_CONFIG = {
@@ -56,11 +57,10 @@ class PosterGenerator {
    */
   async initCanvas(canvasId, componentInstance = null) {
     return new Promise((resolve, reject) => {
-      const query = componentInstance
-        ? uni.createSelectorQuery().in(componentInstance)
-        : uni.createSelectorQuery();
+      const query = componentInstance ? uni.createSelectorQuery().in(componentInstance) : uni.createSelectorQuery();
 
-      query.select(`#${canvasId}`)
+      query
+        .select(`#${canvasId}`)
         .fields({ node: true, size: true })
         .exec((res) => {
           if (!res || !res[0] || !res[0].node) {
@@ -73,8 +73,7 @@ class PosterGenerator {
           const ctx = canvas.getContext('2d');
 
           // 获取设备像素比，确保高清显示
-          const systemInfo = uni.getSystemInfoSync();
-          this.dpr = systemInfo.pixelRatio || 2;
+          this.dpr = getPixelRatio();
 
           // 设置 canvas 实际尺寸（物理像素）
           canvas.width = POSTER_CONFIG.WIDTH * this.dpr;
@@ -250,13 +249,7 @@ class PosterGenerator {
    */
   drawCircleImage(img, options = {}) {
     const ctx = this.ctx;
-    const {
-      x = POSTER_CONFIG.WIDTH / 2,
-      y = 150,
-      radius = 60,
-      borderWidth = 4,
-      borderColor = '#ffffff'
-    } = options;
+    const { x = POSTER_CONFIG.WIDTH / 2, y = 150, radius = 60, borderWidth = 4, borderColor = '#ffffff' } = options;
 
     ctx.save();
 
@@ -339,10 +332,7 @@ class PosterGenerator {
    * @returns {Promise<string>} - 临时文件路径
    */
   async exportImage(options = {}) {
-    const {
-      type = 'png',
-      quality = POSTER_CONFIG.QUALITY
-    } = options;
+    const { type = 'png', quality = POSTER_CONFIG.QUALITY } = options;
 
     return new Promise((resolve, reject) => {
       if (!this.canvas) {
@@ -375,12 +365,7 @@ class PosterGenerator {
    * @returns {Promise<string>} - 临时文件路径
    */
   async generateQuotePoster(data, canvasId, componentInstance = null) {
-    const {
-      quote = '',
-      author = '古人云',
-      date = this.formatDate(new Date()),
-      theme = 'gradient'
-    } = data;
+    const { quote = '', author = '古人云', date = this.formatDate(new Date()), theme = 'gradient' } = data;
 
     if (this.isGenerating) {
       throw new Error('正在生成中，请稍候');
@@ -458,7 +443,6 @@ class PosterGenerator {
       this.isGenerating = false;
 
       return tempFilePath;
-
     } catch (error) {
       uni.hideLoading();
       this.isGenerating = false;
@@ -475,12 +459,7 @@ class PosterGenerator {
    * @returns {Promise<string>} - 临时文件路径
    */
   async generateInvitePoster(data, canvasId, componentInstance = null) {
-    const {
-      inviteCode = 'EXAM2026',
-      qrCodeUrl = '',
-      avatarUrl = '',
-      nickname: _nickname = '考研人'
-    } = data;
+    const { inviteCode = 'EXAM2026', qrCodeUrl = '', avatarUrl = '', nickname: _nickname = '考研人' } = data;
 
     if (this.isGenerating) {
       throw new Error('正在生成中，请稍候');
@@ -593,7 +572,6 @@ class PosterGenerator {
       this.isGenerating = false;
 
       return tempFilePath;
-
     } catch (error) {
       uni.hideLoading();
       this.isGenerating = false;

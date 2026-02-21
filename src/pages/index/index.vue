@@ -415,6 +415,9 @@ export default {
   },
 
   onLoad() {
+    // 标记首次加载，避免 onShow 重复调用 refreshData
+    this._skipFirstShow = true;
+
     // 初始化沉浸式布局信息
     this.initLayoutInfo();
 
@@ -458,7 +461,13 @@ export default {
     // uni.hideTabBar({ animation: false });
     // F005: 通知 CustomTabbar 重新检测路由
     uni.$emit('tabbarRouteUpdate');
-    this.refreshData();
+
+    // 首次 onShow 跳过 refreshData，因为 onLoad 已调用 loadData()
+    if (this._skipFirstShow) {
+      this._skipFirstShow = false;
+    } else {
+      this.refreshData();
+    }
 
     // ✅ 检查点1.5: 恢复计时
     this.startStudyTimer();

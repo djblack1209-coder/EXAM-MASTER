@@ -14,7 +14,8 @@
  * 10. 预测分数 - 基于学习数据预测考试分数
  */
 
-import { getWeakKnowledgePoints, getLearningStats } from '../learning/adaptive-learning-engine.js';
+import { getWeakKnowledgePoints, getLearningStats } from './adaptive-learning-engine.js';
+import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
 const STORAGE_KEYS = {
@@ -928,6 +929,53 @@ class LearningAnalytics {
     }
 
     return insights;
+  }
+
+  /**
+   * 生成分数提升建议
+   * @param {number} predictedScore - 预测分数
+   * @param {Object} report - 综合报告
+   * @returns {Array} 建议列表
+   */
+  _generateScoreRecommendations(predictedScore, report) {
+    const recommendations = [];
+
+    if (predictedScore < 60) {
+      recommendations.push({
+        type: 'score',
+        priority: 'high',
+        title: '夯实基础',
+        content: '建议从基础知识点开始系统复习，每日保持稳定练习量'
+      });
+    } else if (predictedScore < 80) {
+      recommendations.push({
+        type: 'score',
+        priority: 'medium',
+        title: '突破瓶颈',
+        content: '建议针对薄弱知识点进行专项训练，提升正确率'
+      });
+    }
+
+    if (report.streak && !report.streak.isStudiedToday) {
+      recommendations.push({
+        type: 'consistency',
+        priority: 'medium',
+        title: '保持连续性',
+        content: '今天还没学习，坚持每日练习有助于提升预测分数'
+      });
+    }
+
+    if (report.knowledge && report.knowledge.weakPoints && report.knowledge.weakPoints.length > 0) {
+      const weakName = report.knowledge.weakPoints[0].category;
+      recommendations.push({
+        type: 'weak_point',
+        priority: 'high',
+        title: '攻克薄弱项',
+        content: `「${weakName}」是当前最薄弱的知识点，重点突破可有效提分`
+      });
+    }
+
+    return recommendations;
   }
 }
 

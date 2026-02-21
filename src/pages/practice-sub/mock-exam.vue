@@ -272,6 +272,7 @@
 <script>
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 // ✅ F024: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 // ✅ P002: 引入后端服务，支持从后端获取真实题库数据
@@ -332,8 +333,7 @@ export default {
   },
 
   onLoad() {
-    const sys = uni.getSystemInfoSync();
-    this.statusBarHeight = sys.statusBarHeight || 44;
+    this.statusBarHeight = getStatusBarHeight();
 
     // ✅ F024: 统一使用 storageService 读取主题
     this.isDark = storageService.get('theme_mode', 'light') === 'dark';

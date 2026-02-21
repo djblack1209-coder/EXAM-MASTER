@@ -14,7 +14,13 @@
           {{ item.practiceStatus === 'checking' ? '⏳' : item.practiceStatus === 'correct' ? '✓' : '✗' }}
         </text>
         <text class="status-text">
-          {{ item.practiceStatus === 'checking' ? '正在检查答案...' : item.practiceStatus === 'correct' ? '回答正确！' : '回答错误' }}
+          {{
+            item.practiceStatus === 'checking'
+              ? '正在检查答案...'
+              : item.practiceStatus === 'correct'
+                ? '回答正确！'
+                : '回答错误'
+          }}
         </text>
       </view>
       <view class="options-list practice-options">
@@ -23,8 +29,8 @@
           :key="i"
           class="option-row"
           :class="{
-            'selected': practiceChoice === i,
-            'disabled': isAnalyzing,
+            selected: practiceChoice === i,
+            disabled: isAnalyzing,
             'correct-option': practiceResult && ['A', 'B', 'C', 'D'][i] === (item.answer || item.correct_answer),
             'wrong-option': practiceResult && !practiceResult.isCorrect && practiceChoice === i
           }"
@@ -47,9 +53,7 @@
         >
           {{ isAnalyzing ? '检查中...' : '提交答案' }}
         </button>
-        <button class="action-btn" hover-class="ds-hover-btn" @tap="cancelPractice">
-          取消
-        </button>
+        <button class="action-btn" hover-class="ds-hover-btn" @tap="cancelPractice">取消</button>
       </view>
       <view v-if="practiceResult" class="practice-result">
         <view class="result-header">
@@ -57,16 +61,18 @@
             {{ practiceResult.isCorrect ? '✓' : '✗' }}
           </text>
           <text class="result-text">
-            {{ practiceResult.isCorrect ? '回答正确！太棒了！' : '回答错误，正确答案是 ' + (item.answer || item.correct_answer) }}
+            {{
+              practiceResult.isCorrect
+                ? '回答正确！太棒了！'
+                : '回答错误，正确答案是 ' + (item.answer || item.correct_answer)
+            }}
           </text>
         </view>
         <text v-if="practiceResult.feedback" class="result-desc">
           {{ practiceResult.feedback }}
         </text>
         <view v-if="!practiceResult.isCorrect" class="result-actions">
-          <button class="retry-btn" @tap="retryPractice">
-            再试一次
-          </button>
+          <button class="retry-btn" @tap="retryPractice">再试一次</button>
         </view>
       </view>
     </view>
@@ -78,12 +84,14 @@
           <text
             class="opt-idx"
             :class="{
-              'correct': (mode === 'recite' || localShowAnalysis)
-                && ['A', 'B', 'C', 'D'][i] === (item.answer || item.correct_answer),
-              'wrong': (mode === 'recite' || localShowAnalysis)
-                && item.userChoice
-                && item.userChoice.charAt(0) === ['A', 'B', 'C', 'D'][i]
-                && item.userChoice.charAt(0) !== (item.answer || item.correct_answer)
+              correct:
+                (mode === 'recite' || localShowAnalysis) &&
+                ['A', 'B', 'C', 'D'][i] === (item.answer || item.correct_answer),
+              wrong:
+                (mode === 'recite' || localShowAnalysis) &&
+                item.userChoice &&
+                item.userChoice.charAt(0) === ['A', 'B', 'C', 'D'][i] &&
+                item.userChoice.charAt(0) !== (item.answer || item.correct_answer)
             }"
           >
             {{ ['A', 'B', 'C', 'D'][i] }}
@@ -95,13 +103,9 @@
       </view>
 
       <view v-if="mode === 'recite' || localShowAnalysis" class="analysis-box">
-        <view class="correct-ans">
-          正确答案：{{ item.answer || item.correct_answer || '未知' }}
-        </view>
+        <view class="correct-ans"> 正确答案：{{ item.answer || item.correct_answer || '未知' }} </view>
         <view class="analysis-content">
-          <text class="label">
-            AI 解析：
-          </text>
+          <text class="label"> AI 解析： </text>
           {{ item.desc || item.analysis || '暂无解析' }}
         </view>
       </view>
@@ -112,31 +116,15 @@
         {{ formatDate(item.addTime || item.created_at || item.timestamp) }}
       </text>
       <view v-if="(item.wrongCount || item.wrong_count || 0) > 1" class="wrong-count">
-        <text class="count-icon">
-          ⚠️
-        </text>
-        <text class="count-text">
-          错误 {{ item.wrongCount || item.wrong_count || 1 }} 次
-        </text>
+        <text class="count-icon"> ⚠️ </text>
+        <text class="count-text"> 错误 {{ item.wrongCount || item.wrong_count || 1 }} 次 </text>
       </view>
       <view class="actions">
-        <button
-          v-if="mode === 'quiz' && !localIsPracticing"
-          class="action-btn sm"
-          @tap="toggleAnalysis"
-        >
+        <button v-if="mode === 'quiz' && !localIsPracticing" class="action-btn sm" @tap="toggleAnalysis">
           {{ localShowAnalysis ? '隐藏解析' : '查看解析' }}
         </button>
-        <button v-if="!localIsPracticing" class="action-btn sm primary" @tap="startPractice">
-          重做此题
-        </button>
-        <button
-          v-if="!localIsPracticing"
-          class="action-btn sm del"
-          @tap="$emit('remove', index)"
-        >
-          移除
-        </button>
+        <button v-if="!localIsPracticing" class="action-btn sm primary" @tap="startPractice">重做此题</button>
+        <button v-if="!localIsPracticing" class="action-btn sm del" @tap="$emit('remove', index)">移除</button>
       </view>
     </view>
   </view>
@@ -145,7 +133,7 @@
 <script>
 import { storageService } from '@/services/storageService.js';
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
-import { recordReview } from '@/utils/learning/adaptive-learning-engine.js';
+import { recordReview } from './utils/adaptive-learning-engine.js';
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 
@@ -230,16 +218,23 @@ export default {
       const correctOptionIndex = ['A', 'B', 'C', 'D'].indexOf(correctAnswer);
       const isCorrect = selectedOption === correctOptionIndex;
 
-      logger.log('[MistakeCard] 提交重做答案 - ID: ' + mistakeId + ', 选择: ' + selectedAnswer + ', 正确: ' + correctAnswer + ', 结果: ' + isCorrect);
+      logger.log(
+        '[MistakeCard] 提交重做答案 - ID: ' +
+          mistakeId +
+          ', 选择: ' +
+          selectedAnswer +
+          ', 正确: ' +
+          correctAnswer +
+          ', 结果: ' +
+          isCorrect
+      );
 
       this.isAnalyzing = true;
 
       setTimeout(() => {
         this.isAnalyzing = false;
 
-        const feedback = isCorrect
-          ? '太棒了！你已经掌握了这道题。'
-          : '再想想！正确答案是 ' + correctAnswer + '。';
+        const feedback = isCorrect ? '太棒了！你已经掌握了这道题。' : '再想想！正确答案是 ' + correctAnswer + '。';
 
         this.practiceResult = { isCorrect, feedback };
 
@@ -269,7 +264,8 @@ export default {
           this.$emit('update:item', updatedItem);
 
           if (mistakeId) {
-            storageService.updateMistakeStatus(mistakeId, true)
+            storageService
+              .updateMistakeStatus(mistakeId, true)
               .then((result) => {
                 if (result.success) {
                   logger.log('[MistakeCard] 云端状态更新成功 - source: ' + result.source);
@@ -410,7 +406,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding-top: 20rpx;
-  border-top: 1rpx solid var(--border, #F0F0F0);
+  border-top: 1rpx solid var(--border, #f0f0f0);
 
   .time-text {
     font-size: 22rpx;
@@ -575,9 +571,15 @@ export default {
     font-size: 28rpx;
     font-weight: bold;
 
-    &.correct { color: var(--success); }
-    &.wrong { color: var(--danger); }
-    &.checking { color: var(--warning); }
+    &.correct {
+      color: var(--success);
+    }
+    &.wrong {
+      color: var(--danger);
+    }
+    &.checking {
+      color: var(--warning);
+    }
   }
 
   .status-text {
@@ -587,7 +589,11 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

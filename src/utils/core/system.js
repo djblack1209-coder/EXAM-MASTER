@@ -1,6 +1,6 @@
 /**
  * 系统信息工具函数
- * 适配最新的 uni-app API，避免废弃警告
+ * 使用 uni.getWindowInfo / uni.getDeviceInfo / uni.getAppBaseInfo
  */
 
 import { logger } from '../logger.js';
@@ -11,19 +11,9 @@ import { logger } from '../logger.js';
  */
 export function getStatusBarHeight() {
   try {
-    // #ifdef MP-WEIXIN
-    // 微信小程序使用新的 API
     const windowInfo = uni.getWindowInfo();
     return windowInfo.statusBarHeight || 44;
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    // 其他平台使用兼容方案
-    const sysInfo = uni.getSystemInfoSync();
-    return sysInfo.statusBarHeight || sysInfo.safeAreaInsets?.top || 44;
-    // #endif
   } catch (e) {
-    // 降级方案
     logger.warn('获取状态栏高度失败，使用默认值', e);
     return 44;
   }
@@ -35,12 +25,9 @@ export function getStatusBarHeight() {
  */
 export function getNavBarHeight() {
   try {
-    const statusBarHeight = getStatusBarHeight();
-    // 标准计算公式：状态栏高度 + 44px（iOS/Android 标准导航栏高度）
-    return statusBarHeight + 44;
+    return getStatusBarHeight() + 44;
   } catch (e) {
     logger.warn('获取导航栏高度失败，使用默认值', e);
-    // 默认值：44（状态栏） + 44（导航栏） = 88px
     return 88;
   }
 }
@@ -51,15 +38,8 @@ export function getNavBarHeight() {
  */
 export function getWindowHeight() {
   try {
-    // #ifdef MP-WEIXIN
     const windowInfo = uni.getWindowInfo();
     return windowInfo.windowHeight || 800;
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    const sysInfo = uni.getSystemInfoSync();
-    return sysInfo.windowHeight || sysInfo.screenHeight || 800;
-    // #endif
   } catch (e) {
     logger.warn('获取窗口高度失败，使用默认值', e);
     return 800;
@@ -91,15 +71,8 @@ export function getMenuButtonBoundingClientRect() {
  */
 export function getPixelRatio() {
   try {
-    // #ifdef MP-WEIXIN
-    const deviceInfo = uni.getDeviceInfo();
-    return deviceInfo.pixelRatio || 1;
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    const sysInfo = uni.getSystemInfoSync();
-    return sysInfo.pixelRatio || 1;
-    // #endif
+    const windowInfo = uni.getWindowInfo();
+    return windowInfo.pixelRatio || 1;
   } catch (e) {
     logger.warn('获取设备像素比失败，使用默认值', e);
     return 1;
@@ -107,32 +80,20 @@ export function getPixelRatio() {
 }
 
 /**
- * 获取设备信息（替代废弃的 getSystemInfoSync）
+ * 获取设备信息
  * @returns {Object} 设备信息
  */
 export function getDeviceInfo() {
   try {
-    // #ifdef MP-WEIXIN
     const deviceInfo = uni.getDeviceInfo();
+    const windowInfo = uni.getWindowInfo();
     return {
       brand: deviceInfo.brand || 'unknown',
       model: deviceInfo.model || 'unknown',
       system: deviceInfo.system || 'unknown',
       platform: deviceInfo.platform || 'unknown',
-      pixelRatio: deviceInfo.pixelRatio || 1
+      pixelRatio: windowInfo.pixelRatio || 1
     };
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    const sysInfo = uni.getSystemInfoSync();
-    return {
-      brand: sysInfo.brand || 'unknown',
-      model: sysInfo.model || 'unknown',
-      system: sysInfo.system || 'unknown',
-      platform: sysInfo.platform || 'unknown',
-      pixelRatio: sysInfo.pixelRatio || 1
-    };
-    // #endif
   } catch (e) {
     logger.warn('获取设备信息失败', e);
     return {
@@ -146,12 +107,11 @@ export function getDeviceInfo() {
 }
 
 /**
- * 获取窗口信息（替代废弃的 getSystemInfoSync）
+ * 获取窗口信息
  * @returns {Object} 窗口信息
  */
 export function getWindowInfo() {
   try {
-    // #ifdef MP-WEIXIN
     const windowInfo = uni.getWindowInfo();
     return {
       windowWidth: windowInfo.windowWidth || 375,
@@ -161,19 +121,6 @@ export function getWindowInfo() {
       statusBarHeight: windowInfo.statusBarHeight || 44,
       safeArea: windowInfo.safeArea || {}
     };
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    const sysInfo = uni.getSystemInfoSync();
-    return {
-      windowWidth: sysInfo.windowWidth || 375,
-      windowHeight: sysInfo.windowHeight || 667,
-      screenWidth: sysInfo.screenWidth || 375,
-      screenHeight: sysInfo.screenHeight || 667,
-      statusBarHeight: sysInfo.statusBarHeight || 44,
-      safeArea: sysInfo.safeArea || {}
-    };
-    // #endif
   } catch (e) {
     logger.warn('获取窗口信息失败', e);
     return {
@@ -188,12 +135,11 @@ export function getWindowInfo() {
 }
 
 /**
- * 获取应用基础信息（替代废弃的 getSystemInfoSync）
+ * 获取应用基础信息
  * @returns {Object} 应用基础信息
  */
 export function getAppBaseInfo() {
   try {
-    // #ifdef MP-WEIXIN
     const appBaseInfo = uni.getAppBaseInfo();
     return {
       SDKVersion: appBaseInfo.SDKVersion || 'unknown',
@@ -201,17 +147,6 @@ export function getAppBaseInfo() {
       language: appBaseInfo.language || 'zh_CN',
       theme: appBaseInfo.theme || 'light'
     };
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    const sysInfo = uni.getSystemInfoSync();
-    return {
-      SDKVersion: sysInfo.SDKVersion || 'unknown',
-      version: sysInfo.version || 'unknown',
-      language: sysInfo.language || 'zh_CN',
-      theme: sysInfo.theme || 'light'
-    };
-    // #endif
   } catch (e) {
     logger.warn('获取应用基础信息失败', e);
     return {
@@ -224,23 +159,13 @@ export function getAppBaseInfo() {
 }
 
 /**
- * 获取系统主题（替代废弃的 getSystemInfoSync）
+ * 获取系统主题
  * @returns {string} 'light' | 'dark'
  */
 export function getSystemTheme() {
   try {
-    // #ifdef MP-WEIXIN
     const appBaseInfo = uni.getAppBaseInfo();
     return appBaseInfo.theme === 'dark' ? 'dark' : 'light';
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    if (typeof window !== 'undefined') {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      return prefersDark ? 'dark' : 'light';
-    }
-    return 'light';
-    // #endif
   } catch (e) {
     logger.warn('获取系统主题失败', e);
     return 'light';
@@ -253,7 +178,6 @@ export function getSystemTheme() {
  */
 export function getPlatformInfo() {
   try {
-    // #ifdef MP-WEIXIN
     const deviceInfo = uni.getDeviceInfo();
     const windowInfo = uni.getWindowInfo();
     const appBaseInfo = uni.getAppBaseInfo();
@@ -266,24 +190,8 @@ export function getPlatformInfo() {
       screenWidth: windowInfo.screenWidth || 375,
       screenHeight: windowInfo.screenHeight || 667,
       language: appBaseInfo.language || 'zh_CN',
-      pixelRatio: deviceInfo.pixelRatio || 1
+      pixelRatio: windowInfo.pixelRatio || 1
     };
-    // #endif
-
-    // #ifndef MP-WEIXIN
-    const sysInfo = uni.getSystemInfoSync();
-    return {
-      platform: sysInfo.platform || 'unknown',
-      system: sysInfo.system || 'unknown',
-      version: sysInfo.version || 'unknown',
-      model: sysInfo.model || 'unknown',
-      brand: sysInfo.brand || 'unknown',
-      screenWidth: sysInfo.screenWidth || 375,
-      screenHeight: sysInfo.screenHeight || 667,
-      language: sysInfo.language || 'zh_CN',
-      pixelRatio: sysInfo.pixelRatio || 1
-    };
-    // #endif
   } catch (e) {
     logger.warn('获取平台信息失败', e);
     return {

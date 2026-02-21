@@ -167,6 +167,7 @@
 <script>
 import { storageService } from '@/services/storageService.js';
 import { debounce } from '@/utils/throttle.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 
 // 输入验证：过滤危险字符和 Emoji
 const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
@@ -216,8 +217,7 @@ export default {
     };
   },
   onLoad() {
-    const sys = uni.getSystemInfoSync();
-    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.statusBarHeight = getStatusBarHeight();
 
     // 初始化防抖验证函数（300ms 延迟）
     this.debouncedValidate = debounce(() => {

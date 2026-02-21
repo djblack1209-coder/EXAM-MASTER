@@ -10,6 +10,7 @@
 
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { getWindowInfo as _getWindowInfo } from '@/utils/core/system.js';
 const STORAGE_KEY = 'swipe_gesture_settings';
 
 // 默认配置
@@ -59,8 +60,7 @@ class SwipeGestureManager {
     // 获取屏幕宽度
     try {
       if (typeof uni !== 'undefined') {
-        const sysInfo = uni.getSystemInfoSync();
-        this.screenWidth = sysInfo.windowWidth || 375;
+        this.screenWidth = _getWindowInfo().windowWidth;
       }
     } catch (_e) {
       this.screenWidth = 375;
