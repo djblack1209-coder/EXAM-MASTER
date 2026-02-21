@@ -4,38 +4,24 @@
     <view class="nav-header glassmorphism" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" hover-class="item-hover" @tap="handleBack">
-          <text class="back-icon">
-            ←
-          </text>
+          <text class="back-icon"> ← </text>
         </view>
-        <text class="nav-title">
-          知识图谱
-        </text>
+        <text class="nav-title"> 知识图谱 </text>
         <view class="nav-actions">
           <view class="action-btn" hover-class="item-hover" @tap="showMasteryStats">
-            <text class="action-icon">
-              📊
-            </text>
+            <text class="action-icon"> 📊 </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showLearningPath">
-            <text class="action-icon">
-              🛤️
-            </text>
+            <text class="action-icon"> 🛤️ </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showConnectionAnalysis">
-            <text class="action-icon">
-              🔗
-            </text>
+            <text class="action-icon"> 🔗 </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showPersonalizedPlan">
-            <text class="action-icon">
-              📋
-            </text>
+            <text class="action-icon"> 📋 </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="handleRefresh">
-            <text class="action-icon">
-              ↻
-            </text>
+            <text class="action-icon"> ↻ </text>
           </view>
         </view>
       </view>
@@ -44,33 +30,20 @@
     <!-- 加载状态 -->
     <view v-if="isLoading" class="loading-overlay">
       <view class="loading-spinner" />
-      <text class="loading-text">
-        正在构建知识图谱...
-      </text>
+      <text class="loading-text"> 正在构建知识图谱... </text>
     </view>
 
     <!-- 知识图谱主体 -->
-    <scroll-view
-      scroll-y
-      scroll-x
-      class="graph-scroll-view"
-      :style="{ paddingTop: (statusBarHeight + 50) + 'px' }"
-    >
+    <scroll-view scroll-y scroll-x class="graph-scroll-view" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 图谱容器 -->
       <view class="graph-container">
         <!-- 中心节点 -->
         <view class="center-node" hover-class="item-hover" @tap="handleCenterClick">
           <view class="center-glow" />
           <view class="center-content">
-            <text class="center-icon">
-              🎯
-            </text>
-            <text class="center-title">
-              知识体系
-            </text>
-            <text class="center-subtitle">
-              {{ totalNodes }} 个知识点 · {{ totalQuestions }} 题
-            </text>
+            <text class="center-icon"> 🎯 </text>
+            <text class="center-title"> 知识体系 </text>
+            <text class="center-subtitle"> {{ totalNodes }} 个知识点 · {{ totalQuestions }} 题 </text>
           </view>
         </view>
 
@@ -102,13 +75,9 @@
               <view class="progress-bar">
                 <view class="progress-fill" :style="{ width: node.mastery + '%', backgroundColor: node.color }" />
               </view>
-              <text class="progress-text">
-                {{ node.mastery }}%
-              </text>
+              <text class="progress-text"> {{ node.mastery }}% </text>
             </view>
-            <text class="node-count">
-              {{ node.count }} 题
-            </text>
+            <text class="node-count"> {{ node.count }} 题 </text>
           </view>
         </view>
 
@@ -128,9 +97,7 @@
             <text class="child-title">
               {{ child.title }}
             </text>
-            <text class="child-mastery">
-              {{ child.mastery }}%
-            </text>
+            <text class="child-mastery"> {{ child.mastery }}% </text>
           </view>
         </view>
       </view>
@@ -146,9 +113,7 @@
           <text class="panel-title">
             {{ selectedNode.title }}
           </text>
-          <text class="panel-subtitle">
-            掌握度 {{ selectedNode.mastery }}%
-          </text>
+          <text class="panel-subtitle"> 掌握度 {{ selectedNode.mastery }}% </text>
         </view>
         <view class="panel-close" hover-class="item-hover" @tap="selectedNode = null">
           <text>×</text>
@@ -159,25 +124,17 @@
           <text class="stat-value">
             {{ selectedNode.count }}
           </text>
-          <text class="stat-label">
-            题目数
-          </text>
+          <text class="stat-label"> 题目数 </text>
         </view>
         <view class="stat-item">
-          <text class="stat-value">
-            {{ selectedNode.correctRate || 0 }}%
-          </text>
-          <text class="stat-label">
-            正确率
-          </text>
+          <text class="stat-value"> {{ selectedNode.correctRate || 0 }}% </text>
+          <text class="stat-label"> 正确率 </text>
         </view>
         <view class="stat-item">
           <text class="stat-value">
             {{ selectedNode.reviewCount || 0 }}
           </text>
-          <text class="stat-label">
-            复习次数
-          </text>
+          <text class="stat-label"> 复习次数 </text>
         </view>
       </view>
       <view class="panel-actions">
@@ -192,24 +149,22 @@
 
     <!-- 图例说明 -->
     <view class="legend-panel glassmorphism">
-      <text class="legend-title">
-        掌握度
-      </text>
+      <text class="legend-title"> 掌握度 </text>
       <view class="legend-items">
         <view class="legend-item">
-          <view class="legend-dot" style="background: #EF4444;" />
+          <view class="legend-dot" style="background: #ef4444" />
           <text>薄弱 (&lt;40%)</text>
         </view>
         <view class="legend-item">
-          <view class="legend-dot" style="background: #F59E0B;" />
+          <view class="legend-dot" style="background: #f59e0b" />
           <text>学习中 (40-59%)</text>
         </view>
         <view class="legend-item">
-          <view class="legend-dot" style="background: #3B82F6;" />
+          <view class="legend-dot" style="background: #3b82f6" />
           <text>熟练 (60-79%)</text>
         </view>
         <view class="legend-item">
-          <view class="legend-dot" style="background: #10B981;" />
+          <view class="legend-dot" style="background: #10b981" />
           <text>已掌握 (≥80%)</text>
         </view>
       </view>
@@ -217,15 +172,9 @@
 
     <!-- 薄弱知识点提示 -->
     <view v-if="weakNodes.length > 0" class="weak-hint glassmorphism" hover-class="item-hover" @tap="showWeakNodes">
-      <text class="weak-icon">
-        ⚠️
-      </text>
-      <text class="weak-text">
-        {{ weakNodes.length }} 个薄弱知识点需要加强
-      </text>
-      <text class="weak-arrow">
-        ›
-      </text>
+      <text class="weak-icon"> ⚠️ </text>
+      <text class="weak-text"> {{ weakNodes.length }} 个薄弱知识点需要加强 </text>
+      <text class="weak-arrow"> › </text>
     </view>
   </view>
 </template>
@@ -246,6 +195,7 @@ import {
 } from './knowledge-graph.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 
 export default {
   data() {
@@ -308,8 +258,7 @@ export default {
 
   methods: {
     initData() {
-      const sys = uni.getSystemInfoSync();
-      this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+      this.statusBarHeight = getStatusBarHeight();
     },
 
     async loadKnowledgeData() {
@@ -366,10 +315,12 @@ export default {
         this.personalizedPlan = generatePersonalizedPlan({
           duration: 30,
           dailyTime: 2,
-          focusAreas: Object.keys(this.knowledgeNodes.reduce((acc, node) => {
-            acc[node.category] = true;
-            return acc;
-          }, {}))
+          focusAreas: Object.keys(
+            this.knowledgeNodes.reduce((acc, node) => {
+              acc[node.category] = true;
+              return acc;
+            }, {})
+          )
         });
 
         // 如果没有数据，显示默认节点
@@ -384,7 +335,6 @@ export default {
           distribution: this.masteryDistribution,
           connections: this.connectionAnalysis
         });
-
       } catch (error) {
         logger.error('[KnowledgeGraph] 加载数据失败:', error);
         // 降级到默认数据
@@ -398,16 +348,16 @@ export default {
     // 获取分类图标
     getCategoryIcon(category) {
       const iconMap = {
-        'politics': '📕',
-        'english': '📘',
-        'math': '📗',
-        'professional': '📙',
-        '错题集': '🎯',
-        '热门考点': '🔥',
-        '练习题': '📝',
-        '核心概念': '🧠',
-        '公式定理': '🧮',
-        '阅读理解': '📖'
+        politics: '📕',
+        english: '📘',
+        math: '📗',
+        professional: '📙',
+        错题集: '🎯',
+        热门考点: '🔥',
+        练习题: '📝',
+        核心概念: '🧠',
+        公式定理: '🧮',
+        阅读理解: '📖'
       };
       return iconMap[category] || '📚';
     },
@@ -423,9 +373,8 @@ export default {
     // 获取默认节点数据
     getDefaultNodes(totalQuestions, mistakeCount) {
       const studyRecord = storageService.get('study_record', {});
-      const overallAccuracy = studyRecord.totalAnswered > 0
-        ? Math.round((studyRecord.correctCount / studyRecord.totalAnswered) * 100)
-        : 0;
+      const overallAccuracy =
+        studyRecord.totalAnswered > 0 ? Math.round((studyRecord.correctCount / studyRecord.totalAnswered) * 100) : 0;
 
       return [
         {
@@ -554,21 +503,26 @@ export default {
 
     handleRefresh() {
       uni.showLoading({ title: '刷新中...' });
-      this.loadKnowledgeData().then(() => {
-        uni.showToast({ title: '刷新成功', icon: 'success' });
-      }).catch((error) => {
-        logger.error('[KnowledgeGraph] 刷新失败:', error);
-        uni.showToast({ title: '刷新失败', icon: 'none' });
-      }).finally(() => {
-        uni.hideLoading();
-      });
+      this.loadKnowledgeData()
+        .then(() => {
+          uni.showToast({ title: '刷新成功', icon: 'success' });
+        })
+        .catch((error) => {
+          logger.error('[KnowledgeGraph] 刷新失败:', error);
+          uni.showToast({ title: '刷新失败', icon: 'none' });
+        })
+        .finally(() => {
+          uni.hideLoading();
+        });
     },
 
     handleCenterClick() {
       // 震动反馈
       try {
         uni.vibrateShort();
-      } catch (_e) { /* vibrateShort not supported on this device */ }
+      } catch (_e) {
+        /* vibrateShort not supported on this device */
+      }
 
       uni.showToast({
         title: `共 ${this.totalNodes} 个知识点`,
@@ -580,7 +534,9 @@ export default {
       // 震动反馈
       try {
         uni.vibrateShort();
-      } catch (_e) { /* vibrateShort not supported on this device */ }
+      } catch (_e) {
+        /* vibrateShort not supported on this device */
+      }
 
       // 如果点击的是已激活节点，收起子节点
       if (this.activeNodeId === node.id) {
@@ -608,15 +564,20 @@ export default {
       logger.log('[KnowledgeGraph] 开始练习:', node.title);
 
       // 定义路由映射：tabBar 页面和普通页面分开处理
-      const tabBarPages = ['/pages/practice/index', '/pages/profile/index', '/pages/index/index', '/pages/school/index'];
+      const tabBarPages = [
+        '/pages/practice/index',
+        '/pages/profile/index',
+        '/pages/index/index',
+        '/pages/school/index'
+      ];
 
       const routeMap = {
-        '错题集': '/pages/mistake/index',
-        '练习题': '/pages/practice/index',
-        '热门考点': '/pages/practice-sub/import-data?source=hotTopics',
-        '核心概念': '/pages/practice-sub/import-data?source=concepts',
-        '公式定理': '/pages/practice/index',
-        '阅读理解': '/pages/practice/index'
+        错题集: '/pages/mistake/index',
+        练习题: '/pages/practice/index',
+        热门考点: '/pages/practice-sub/import-data?source=hotTopics',
+        核心概念: '/pages/practice-sub/import-data?source=concepts',
+        公式定理: '/pages/practice/index',
+        阅读理解: '/pages/practice/index'
       };
 
       const url = routeMap[node.title] || '/pages/practice/index';
@@ -657,7 +618,9 @@ export default {
       this.viewMode = mode;
       try {
         uni.vibrateShort();
-      } catch (_e) { /* vibrateShort not supported on this device */ }
+      } catch (_e) {
+        /* vibrateShort not supported on this device */
+      }
     },
 
     // 显示学习路径
@@ -667,9 +630,9 @@ export default {
         return;
       }
 
-      const pathText = this.learningPath.map((item, index) =>
-        `${index + 1}. ${item.node.name} (${item.estimatedTime})`
-      ).join('\n');
+      const pathText = this.learningPath
+        .map((item, index) => `${index + 1}. ${item.node.name} (${item.estimatedTime})`)
+        .join('\n');
 
       uni.showModal({
         title: '推荐学习路径',
@@ -704,9 +667,12 @@ export default {
         return;
       }
 
-      const weakText = this.weakNodes.map((node, index) =>
-        `${index + 1}. ${node.name} (${node.accuracy}%)\n   ${node.improvementSuggestion || '建议多做练习'}`
-      ).join('\n\n');
+      const weakText = this.weakNodes
+        .map(
+          (node, index) =>
+            `${index + 1}. ${node.name} (${node.accuracy}%)\n   ${node.improvementSuggestion || '建议多做练习'}`
+        )
+        .join('\n\n');
 
       uni.showModal({
         title: '薄弱知识点',
@@ -759,8 +725,8 @@ export default {
 
       const { title, duration, dailyTime, milestones } = this.personalizedPlan;
       const milestonesText = milestones
-        .map((milestone, index) =>
-          `${index + 1}. ${milestone.title} (${milestone.days}天)\n   ${milestone.description}`
+        .map(
+          (milestone, index) => `${index + 1}. ${milestone.title} (${milestone.days}天)\n   ${milestone.description}`
         )
         .join('\n\n');
 
@@ -788,9 +754,7 @@ export default {
       }
 
       const connectionsText = connections
-        .map((conn, index) =>
-          `${index + 1}. ${conn.node.name} (强度: ${conn.strength})\n   关系: ${conn.relationship}`
-        )
+        .map((conn, index) => `${index + 1}. ${conn.node.name} (强度: ${conn.strength})\n   关系: ${conn.relationship}`)
         .join('\n\n');
 
       uni.showModal({
@@ -814,9 +778,7 @@ export default {
         }));
       } else {
         // 没有关联数据时，根据同类别节点生成子节点
-        const sameCategory = this.knowledgeNodes.filter(
-          (n) => n.category === node.category && n.id !== node.id
-        );
+        const sameCategory = this.knowledgeNodes.filter((n) => n.category === node.category && n.id !== node.id);
         this.expandedChildren = sameCategory.slice(0, 4).map((n, idx) => ({
           id: `child_${node.id}_${idx}`,
           title: n.title,
@@ -857,516 +819,539 @@ export default {
 
 <style lang="scss" scoped>
 .knowledge-graph-container {
-	width: 100vw;
-	height: 100vh;
-	background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
-	position: relative;
-	overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
+  position: relative;
+  overflow: hidden;
 }
 
 // 导航栏
 .nav-header {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	z-index: 100;
-	background: rgba(26, 26, 46, 0.8);
-	backdrop-filter: blur(20px);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(26, 26, 46, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
-	.nav-content {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 20rpx 32rpx;
-		height: 88rpx;
-	}
+  .nav-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20rpx 32rpx;
+    height: 88rpx;
+  }
 
-	.nav-back {
-		width: 72rpx;
-		height: 72rpx;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.1);
+  .nav-back {
+    width: 72rpx;
+    height: 72rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
 
-		.back-icon {
-			font-size: 40rpx;
-			color: #fff;
-		}
-	}
+    .back-icon {
+      font-size: 40rpx;
+      color: #fff;
+    }
+  }
 
-	.nav-title {
-		font-size: 36rpx;
-		font-weight: 600;
-		color: #fff;
-	}
+  .nav-title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: #fff;
+  }
 
-	.nav-actions {
-		display: flex;
-		gap: 16rpx;
+  .nav-actions {
+    display: flex;
+    gap: 16rpx;
 
-		.action-btn {
-			width: 72rpx;
-			height: 72rpx;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			border-radius: 50%;
-			background: rgba(255, 255, 255, 0.1);
+    .action-btn {
+      width: 72rpx;
+      height: 72rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
 
-			.action-icon {
-				font-size: 36rpx;
-				color: #fff;
-			}
-		}
-	}
+      .action-icon {
+        font-size: 36rpx;
+        color: #fff;
+      }
+    }
+  }
 }
 
 // 加载状态
 .loading-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(10, 10, 26, 0.95);
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	z-index: 200;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 26, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
 
-	.loading-spinner {
-		width: 80rpx;
-		height: 80rpx;
-		border: 4rpx solid rgba(0, 242, 255, 0.2);
-		border-top-color: #00F2FF;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-	}
+  .loading-spinner {
+    width: 80rpx;
+    height: 80rpx;
+    border: 4rpx solid rgba(0, 242, 255, 0.2);
+    border-top-color: #00f2ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
 
-	.loading-text {
-		margin-top: 32rpx;
-		font-size: 28rpx;
-		color: rgba(255, 255, 255, 0.7);
-	}
+  .loading-text {
+    margin-top: 32rpx;
+    font-size: 28rpx;
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
 
 @keyframes spin {
-	to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // 图谱滚动区域
 .graph-scroll-view {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 // 图谱容器
 .graph-container {
-	position: relative;
-	width: 750rpx;
-	height: 1200rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  position: relative;
+  width: 750rpx;
+  height: 1200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 // 中心节点
 .center-node {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 200rpx;
-	height: 200rpx;
-	border-radius: 50%;
-	background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
-	border: 3rpx solid rgba(0, 242, 255, 0.5);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 10;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+  border: 3rpx solid rgba(0, 242, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 
-	.center-glow {
-		position: absolute;
-		width: 300rpx;
-		height: 300rpx;
-		border-radius: 50%;
-		background: radial-gradient(circle, rgba(0, 242, 255, 0.3) 0%, transparent 70%);
-		animation: pulse 2s ease-in-out infinite;
-	}
+  .center-glow {
+    position: absolute;
+    width: 300rpx;
+    height: 300rpx;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 242, 255, 0.3) 0%, transparent 70%);
+    animation: pulse 2s ease-in-out infinite;
+  }
 
-	.center-content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		z-index: 1;
+  .center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
 
-		.center-icon {
-			font-size: 48rpx;
-		}
+    .center-icon {
+      font-size: 48rpx;
+    }
 
-		.center-title {
-			font-size: 28rpx;
-			font-weight: 600;
-			color: #fff;
-			margin-top: 8rpx;
-		}
+    .center-title {
+      font-size: 28rpx;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 8rpx;
+    }
 
-		.center-subtitle {
-			font-size: 22rpx;
-			color: rgba(255, 255, 255, 0.6);
-			margin-top: 4rpx;
-		}
-	}
+    .center-subtitle {
+      font-size: 22rpx;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4rpx;
+    }
+  }
 }
 
 @keyframes pulse {
-	0%, 100% { transform: scale(1); opacity: 0.5; }
-	50% { transform: scale(1.1); opacity: 0.8; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
 }
 
 // 知识节点
 .knowledge-node {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	margin-left: -80rpx;
-	margin-top: -80rpx;
-	animation: fadeIn 0.5s ease-out forwards;
-	opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -80rpx;
+  margin-top: -80rpx;
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
 
-	.node-connector {
-		position: absolute;
-		top: 50%;
-		right: 100%;
-		height: 2rpx;
-		background: linear-gradient(90deg, rgba(0, 242, 255, 0.1) 0%, rgba(0, 242, 255, 0.5) 100%);
-		transform-origin: right center;
-	}
+  .node-connector {
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    height: 2rpx;
+    background: linear-gradient(90deg, rgba(0, 242, 255, 0.1) 0%, rgba(0, 242, 255, 0.5) 100%);
+    transform-origin: right center;
+  }
 
-	.node-body {
-		width: 160rpx;
-		height: 160rpx;
-		border-radius: 50%;
-		background: rgba(26, 26, 46, 0.9);
-		border: 2rpx solid;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		position: relative;
-		transition: all 0.3s ease;
+  .node-body {
+    width: 160rpx;
+    height: 160rpx;
+    border-radius: 50%;
+    background: rgba(26, 26, 46, 0.9);
+    border: 2rpx solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
 
-		.node-glow {
-			position: absolute;
-			width: 200rpx;
-			height: 200rpx;
-			border-radius: 50%;
-			opacity: 0.5;
-		}
+    .node-glow {
+      position: absolute;
+      width: 200rpx;
+      height: 200rpx;
+      border-radius: 50%;
+      opacity: 0.5;
+    }
 
-		.node-icon {
-			font-size: 36rpx;
-			z-index: 1;
-		}
+    .node-icon {
+      font-size: 36rpx;
+      z-index: 1;
+    }
 
-		.node-title {
-			font-size: 22rpx;
-			color: #fff;
-			margin-top: 8rpx;
-			z-index: 1;
-		}
+    .node-title {
+      font-size: 22rpx;
+      color: #fff;
+      margin-top: 8rpx;
+      z-index: 1;
+    }
 
-		.node-progress {
-			display: flex;
-			align-items: center;
-			gap: 8rpx;
-			margin-top: 8rpx;
-			z-index: 1;
+    .node-progress {
+      display: flex;
+      align-items: center;
+      gap: 8rpx;
+      margin-top: 8rpx;
+      z-index: 1;
 
-			.progress-bar {
-				width: 60rpx;
-				height: 6rpx;
-				background: rgba(255, 255, 255, 0.2);
-				border-radius: 3rpx;
-				overflow: hidden;
+      .progress-bar {
+        width: 60rpx;
+        height: 6rpx;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 3rpx;
+        overflow: hidden;
 
-				.progress-fill {
-					height: 100%;
-					border-radius: 3rpx;
-					transition: width 0.5s ease;
-				}
-			}
+        .progress-fill {
+          height: 100%;
+          border-radius: 3rpx;
+          transition: width 0.5s ease;
+        }
+      }
 
-			.progress-text {
-				font-size: 20rpx;
-				color: rgba(255, 255, 255, 0.7);
-			}
-		}
+      .progress-text {
+        font-size: 20rpx;
+        color: rgba(255, 255, 255, 0.7);
+      }
+    }
 
-		.node-count {
-			font-size: 20rpx;
-			color: rgba(255, 255, 255, 0.6);
-			margin-top: 4rpx;
-			z-index: 1;
-		}
-	}
+    .node-count {
+      font-size: 20rpx;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4rpx;
+      z-index: 1;
+    }
+  }
 
-	&.node-active .node-body {
-		transform: scale(1.1);
-		box-shadow: 0 0 30rpx rgba(0, 242, 255, 0.5);
-	}
+  &.node-active .node-body {
+    transform: scale(1.1);
+    box-shadow: 0 0 30rpx rgba(0, 242, 255, 0.5);
+  }
 }
 
 @keyframes fadeIn {
-	from { opacity: 0; transform: translate(0, 0) scale(0.5); }
-	to { opacity: 1; }
+  from {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.5);
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 // 子节点
 .child-node {
-	position: absolute;
-	animation: childFadeIn 0.3s ease-out forwards;
+  position: absolute;
+  animation: childFadeIn 0.3s ease-out forwards;
 
-	.child-body {
-		width: 100rpx;
-		height: 100rpx;
-		border-radius: 50%;
-		background: rgba(26, 26, 46, 0.8);
-		border: 1rpx solid rgba(255, 255, 255, 0.2);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
+  .child-body {
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 50%;
+    background: rgba(26, 26, 46, 0.8);
+    border: 1rpx solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-		.child-icon {
-			font-size: 28rpx;
-		}
+    .child-icon {
+      font-size: 28rpx;
+    }
 
-		.child-title {
-			font-size: 20rpx;
-			color: #fff;
-			margin-top: 4rpx;
-		}
+    .child-title {
+      font-size: 20rpx;
+      color: #fff;
+      margin-top: 4rpx;
+    }
 
-		.child-mastery {
-			font-size: 20rpx;
-			color: rgba(255, 255, 255, 0.7);
-		}
-	}
+    .child-mastery {
+      font-size: 20rpx;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
 }
 
 @keyframes childFadeIn {
-	from { opacity: 0; transform: scale(0); }
-	to { opacity: 1; }
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 // 信息面板
 .info-panel {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background: rgba(26, 26, 46, 0.95);
-	backdrop-filter: blur(20px);
-	border-top: 1rpx solid rgba(255, 255, 255, 0.1);
-	border-radius: 32rpx 32rpx 0 0;
-	padding: 32rpx;
-	padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
-	z-index: 100;
-	animation: slideUp 0.3s ease-out;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1rpx solid rgba(255, 255, 255, 0.1);
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+  z-index: 100;
+  animation: slideUp 0.3s ease-out;
 
-	.panel-header {
-		display: flex;
-		align-items: center;
-		gap: 20rpx;
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 20rpx;
 
-		.panel-icon {
-			width: 80rpx;
-			height: 80rpx;
-			border-radius: 20rpx;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 40rpx;
-		}
+    .panel-icon {
+      width: 80rpx;
+      height: 80rpx;
+      border-radius: 20rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40rpx;
+    }
 
-		.panel-title-area {
-			flex: 1;
+    .panel-title-area {
+      flex: 1;
 
-			.panel-title {
-				display: block;
-				font-size: 32rpx;
-				font-weight: 600;
-				color: #fff;
-			}
+      .panel-title {
+        display: block;
+        font-size: 32rpx;
+        font-weight: 600;
+        color: #fff;
+      }
 
-			.panel-subtitle {
-				display: block;
-				font-size: 24rpx;
-				color: rgba(255, 255, 255, 0.6);
-				margin-top: 4rpx;
-			}
-		}
+      .panel-subtitle {
+        display: block;
+        font-size: 24rpx;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 4rpx;
+      }
+    }
 
-		.panel-close {
-			width: 60rpx;
-			height: 60rpx;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 40rpx;
-			color: rgba(255, 255, 255, 0.5);
-		}
-	}
+    .panel-close {
+      width: 60rpx;
+      height: 60rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40rpx;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
 
-	.panel-stats {
-		display: flex;
-		justify-content: space-around;
-		margin-top: 32rpx;
-		padding: 24rpx 0;
-		border-top: 1rpx solid rgba(255, 255, 255, 0.1);
-		border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+  .panel-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 32rpx;
+    padding: 24rpx 0;
+    border-top: 1rpx solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
 
-		.stat-item {
-			text-align: center;
+    .stat-item {
+      text-align: center;
 
-			.stat-value {
-				display: block;
-				font-size: 36rpx;
-				font-weight: 600;
-				color: #00F2FF;
-			}
+      .stat-value {
+        display: block;
+        font-size: 36rpx;
+        font-weight: 600;
+        color: #00f2ff;
+      }
 
-			.stat-label {
-				display: block;
-				font-size: 22rpx;
-				color: rgba(255, 255, 255, 0.5);
-				margin-top: 8rpx;
-			}
-		}
-	}
+      .stat-label {
+        display: block;
+        font-size: 22rpx;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 8rpx;
+      }
+    }
+  }
 
-	.panel-actions {
-		display: flex;
-		gap: 24rpx;
-		margin-top: 32rpx;
+  .panel-actions {
+    display: flex;
+    gap: 24rpx;
+    margin-top: 32rpx;
 
-		.panel-btn {
-			flex: 1;
-			height: 88rpx;
-			border-radius: 44rpx;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 28rpx;
-			font-weight: 500;
+    .panel-btn {
+      flex: 1;
+      height: 88rpx;
+      border-radius: 44rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28rpx;
+      font-weight: 500;
 
-			&.btn-primary {
-				background: linear-gradient(135deg, #00F2FF 0%, #00B4D8 100%);
-				color: #000;
-			}
+      &.btn-primary {
+        background: linear-gradient(135deg, #00f2ff 0%, #00b4d8 100%);
+        color: #000;
+      }
 
-			&.btn-outline {
-				background: transparent;
-				border: 2rpx solid rgba(0, 242, 255, 0.5);
-				color: #00F2FF;
-			}
-		}
-	}
+      &.btn-outline {
+        background: transparent;
+        border: 2rpx solid rgba(0, 242, 255, 0.5);
+        color: #00f2ff;
+      }
+    }
+  }
 }
 
 @keyframes slideUp {
-	from { transform: translateY(100%); }
-	to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 // 图例面板
 .legend-panel {
-	position: fixed;
-	top: 200rpx;
-	right: 24rpx;
-	background: rgba(26, 26, 46, 0.9);
-	backdrop-filter: blur(10px);
-	border-radius: 16rpx;
-	padding: 20rpx;
-	z-index: 50;
+  position: fixed;
+  top: 200rpx;
+  right: 24rpx;
+  background: rgba(26, 26, 46, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  z-index: 50;
 
-	.legend-title {
-		font-size: 22rpx;
-		color: rgba(255, 255, 255, 0.7);
-		margin-bottom: 12rpx;
-	}
+  .legend-title {
+    font-size: 22rpx;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 12rpx;
+  }
 
-	.legend-items {
-		display: flex;
-		flex-direction: column;
-		gap: 12rpx;
+  .legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12rpx;
 
-		.legend-item {
-			display: flex;
-			align-items: center;
-			gap: 12rpx;
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 12rpx;
 
-			.legend-dot {
-				width: 16rpx;
-				height: 16rpx;
-				border-radius: 50%;
-			}
+      .legend-dot {
+        width: 16rpx;
+        height: 16rpx;
+        border-radius: 50%;
+      }
 
-			text {
-				font-size: 20rpx;
-				color: rgba(255, 255, 255, 0.6);
-			}
-		}
-	}
+      text {
+        font-size: 20rpx;
+        color: rgba(255, 255, 255, 0.6);
+      }
+    }
+  }
 }
 
 // 薄弱知识点提示
 .weak-hint {
-	position: fixed;
-	bottom: calc(32rpx + env(safe-area-inset-bottom));
-	left: 24rpx;
-	right: 24rpx;
-	background: rgba(239, 68, 68, 0.9);
-	backdrop-filter: blur(10px);
-	border-radius: 16rpx;
-	padding: 24rpx 32rpx;
-	display: flex;
-	align-items: center;
-	gap: 16rpx;
-	z-index: 50;
+  position: fixed;
+  bottom: calc(32rpx + env(safe-area-inset-bottom));
+  left: 24rpx;
+  right: 24rpx;
+  background: rgba(239, 68, 68, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16rpx;
+  padding: 24rpx 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  z-index: 50;
 
-	.weak-icon {
-		font-size: 32rpx;
-	}
+  .weak-icon {
+    font-size: 32rpx;
+  }
 
-	.weak-text {
-		flex: 1;
-		font-size: 26rpx;
-		color: #fff;
-	}
+  .weak-text {
+    flex: 1;
+    font-size: 26rpx;
+    color: #fff;
+  }
 
-	.weak-arrow {
-		font-size: 32rpx;
-		color: rgba(255, 255, 255, 0.7);
-	}
+  .weak-arrow {
+    font-size: 32rpx;
+    color: rgba(255, 255, 255, 0.7);
+  }
 }
 
 // 玻璃态效果
 .glassmorphism {
-	background: rgba(26, 26, 46, 0.8);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
+  background: rgba(26, 26, 46, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 /* hover-class 反馈 */
 .item-hover {
-	opacity: 0.7;
+  opacity: 0.7;
 }
 </style>

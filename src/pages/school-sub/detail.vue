@@ -190,6 +190,7 @@ import { lafService } from '@/services/lafService.js';
 import config from '@/config/index.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 
@@ -237,8 +238,7 @@ export default {
   onLoad(options) {
     logger.log('[detail] 📄 详情页加载，接收参数:', options);
 
-    const sys = uni.getSystemInfoSync();
-    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.statusBarHeight = getStatusBarHeight();
 
     // 初始化深色模式
     this.isDark = storageService.get('theme_mode') === 'dark';

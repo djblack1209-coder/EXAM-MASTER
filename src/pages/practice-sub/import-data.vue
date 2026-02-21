@@ -177,6 +177,7 @@ import { lafService } from '@/services/lafService.js';
 import EnhancedProgress from './EnhancedProgress.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 // ✅ 文件处理工具（格式验证、大小限制）
 import { fileHandler } from './file-handler.js';
 // F019: storageService
@@ -344,8 +345,7 @@ export default {
   onLoad() {
     // 获取系统信息，设置状态栏和导航栏高度
     try {
-      const systemInfo = uni.getSystemInfoSync();
-      this.statusBarHeight = systemInfo.statusBarHeight || 44;
+      this.statusBarHeight = getStatusBarHeight();
       // 标准导航栏高度 = 状态栏高度 + 44px
       this.navBarHeight = this.statusBarHeight + 44;
 

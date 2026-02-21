@@ -26,7 +26,7 @@ export const useAppStore = defineStore('app', () => {
 
   /**
    * 设置系统信息
-   * @param {Object} info - uni.getSystemInfoSync() 返回的系统信息对象
+   * @param {Object} info - 系统信息对象
    */
   const setSystemInfo = (info) => {
     systemInfo.value = info;
@@ -62,24 +62,14 @@ export const useAppStore = defineStore('app', () => {
   const initAppInfo = () => {
     // 获取系统信息
     try {
-      let systemInfoData;
-
-      // #ifdef MP-WEIXIN
-      // 微信小程序使用新的 API
       const windowInfo = uni.getWindowInfo();
       const deviceInfo = uni.getDeviceInfo();
       const appBaseInfo = uni.getAppBaseInfo();
-      // 合并信息以兼容旧代码
-      systemInfoData = {
+      const systemInfoData = {
         ...windowInfo,
         ...deviceInfo,
         ...appBaseInfo
       };
-      // #endif
-
-      // #ifndef MP-WEIXIN
-      systemInfoData = uni.getSystemInfoSync();
-      // #endif
 
       setSystemInfo(systemInfoData);
     } catch (error) {

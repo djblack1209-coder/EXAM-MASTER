@@ -220,6 +220,7 @@ import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 // AI路由器
 import { realtimeAnswer } from './ai-router.js';
 // 外部 CDN 配置
@@ -342,8 +343,7 @@ onMounted(async () => {
   uni.$on('themeUpdate', onThemeUpdate);
 
   // 获取状态栏高度
-  const sys = uni.getSystemInfoSync();
-  statusBarHeight.value = sys.statusBarHeight || 20;
+  statusBarHeight.value = getStatusBarHeight();
 
   // 获取路由参数
   const pages = getCurrentPages();

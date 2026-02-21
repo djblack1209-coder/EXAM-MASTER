@@ -390,6 +390,7 @@ import { lafService } from '@/services/lafService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
@@ -513,9 +514,8 @@ export default {
   },
 
   async onLoad() {
-    const sys = uni.getSystemInfoSync();
     // 统一计算：状态栏高度
-    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.statusBarHeight = getStatusBarHeight();
     // 标准导航栏高度 = 状态栏高度 + 44px
     this.navBarHeight = this.statusBarHeight + 44;
     this.syncTargetStatus();

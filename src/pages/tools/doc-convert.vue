@@ -130,6 +130,7 @@
 import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 
 const CONVERT_TYPES = [
   { key: 'word2pdf', icon: 'W', name: 'Word→PDF', desc: 'doc/docx 转 PDF', accept: '.doc,.docx,.odt,.rtf' },
@@ -171,8 +172,7 @@ export default {
   },
 
   onLoad() {
-    const sys = uni.getSystemInfoSync();
-    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.statusBarHeight = getStatusBarHeight();
     this.isDark = initTheme();
     this._themeHandler = (mode) => {
       this.isDark = mode === 'dark';

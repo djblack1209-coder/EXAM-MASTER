@@ -99,6 +99,7 @@
 import { quoteHandler } from '@/utils/helpers/quote-interaction-handler.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import { getPixelRatio } from '@/utils/core/system.js';
 
 export default {
   name: 'ShareModal',
@@ -296,7 +297,7 @@ export default {
 
           const canvas = res[0].node;
           const ctx = canvas.getContext('2d');
-          const dpr = uni.getSystemInfoSync().pixelRatio;
+          const dpr = getPixelRatio();
 
           canvas.width = (config.width * dpr) / 2;
           canvas.height = (config.height * dpr) / 2;

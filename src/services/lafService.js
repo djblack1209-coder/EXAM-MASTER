@@ -1324,6 +1324,20 @@ export const lafService = {
     }
   },
 
+  /**
+   * 查询账号注销状态
+   * @returns {Promise<ApiResponse>} data: { status, deletionScheduledAt, remainingDays }
+   */
+  async getAccountDeletionStatus() {
+    try {
+      const response = await this.request('/account-delete', { action: 'status' });
+      return response;
+    } catch (error) {
+      logger.error('[LafService] 查询注销状态失败:', error);
+      return normalizeError(error, '查询注销状态');
+    }
+  },
+
   // ==================== 收藏管理 ====================
 
   /**

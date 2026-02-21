@@ -196,6 +196,7 @@ import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 
 export default {
   data() {
@@ -231,8 +232,7 @@ export default {
   },
 
   onLoad() {
-    const sys = uni.getSystemInfoSync();
-    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.statusBarHeight = getStatusBarHeight();
     this.isDark = initTheme();
     this._themeHandler = (mode) => {
       this.isDark = mode === 'dark';
