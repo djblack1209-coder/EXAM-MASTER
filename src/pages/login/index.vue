@@ -210,6 +210,7 @@ import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { useUserStore } from '@/stores/modules/user';
 import config from '@/config/index.js';
 
 // 主题状态
