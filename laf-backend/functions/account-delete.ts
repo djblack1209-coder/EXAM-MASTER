@@ -6,9 +6,12 @@
  * 功能：
  * 1. 验证用户身份（JWT）
  * 2. 标记账号为待删除状态（7天冷静期）
- * 3. 冷静期后由定时任务彻底清除数据
+ * 3. 冷静期后由 account-purge 定时任务彻底清除数据
+ * 4. 支持撤销注销、查询注销状态
  *
- * @version 1.0.0
+ * actions: request | cancel | status
+ *
+ * @version 2.0.0
  */
 
 import cloud from '@lafjs/cloud';
@@ -37,6 +40,20 @@ export default async function (ctx: any) {
 
     // 2. 请求注销
     if (action === 'request') {
+      // 检查是否已在注销流程中
+      const { data: existingUser } = await db.collection('users').doc(userId).get();
+      if (existingUser?.account_status === 'pending_deletion') {
+        return {
+          code: 0,
+          success: true,
+          message: '注销申请已存在，无需重复提交',
+          data: {
+            deletionScheduledAt: existingUser.deletion_scheduled_at,
+            coolingDays: COOLING_DAYS
+          }
+        };
+      }
+
       const deleteAt = Date.now() + COOLING_DAYS * 24 * 60 * 60 * 1000;
 
       await db.collection('users').doc(userId).update({
@@ -71,18 +88,25 @@ export default async function (ctx: any) {
       });
 
       logger.info(`[${requestId}] 用户 ${userId} 撤销注销`);
-      return { code: 0, success: true, message: '注销申请已撤销' };
+      return { code: 0, success: true, message: '注销申请已撤销，账号已恢复正常' };
     }
 
     // 4. 查询注销状态
     if (action === 'status') {
       const { data: user } = await db.collection('users').doc(userId).get();
+      const status = user?.account_status || 'active';
+      const scheduledAt = user?.deletion_scheduled_at || null;
+      const remainingDays = scheduledAt
+        ? Math.max(0, Math.ceil((scheduledAt - Date.now()) / (24 * 60 * 60 * 1000)))
+        : null;
+
       return {
         code: 0,
         success: true,
         data: {
-          status: user?.account_status || 'active',
-          deletionScheduledAt: user?.deletion_scheduled_at || null
+          status,
+          deletionScheduledAt: scheduledAt,
+          remainingDays
         }
       };
     }

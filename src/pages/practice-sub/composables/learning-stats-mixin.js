@@ -10,7 +10,7 @@ export const learningStatsMixin = {
     // ✅ P0-2: 加载学习数据统计
     async loadLearningStats() {
       try {
-        const { getStreakData, getComprehensiveReport } = await import('@/utils/analytics/learning-analytics.js');
+        const { getStreakData, getComprehensiveReport } = await import('../utils/learning-analytics.js');
         const streakData = getStreakData();
         this.currentStreak = streakData.currentStreak || 0;
 
@@ -61,7 +61,7 @@ export const learningStatsMixin = {
     // ✅ P2: 加载成就数据
     async loadAchievements() {
       try {
-        const { getAchievements } = await import('@/utils/analytics/learning-analytics.js');
+        const { getAchievements } = await import('../utils/learning-analytics.js');
         const achievementData = getAchievements();
         this.unlockedAchievements = achievementData.unlocked || [];
         this.allAchievements = [...achievementData.unlocked, ...achievementData.locked];

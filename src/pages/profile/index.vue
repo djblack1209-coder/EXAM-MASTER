@@ -301,6 +301,7 @@ import storageService from '@/services/storageService.js';
 import { lafService } from '@/services/lafService.js';
 import config from '@/config/index.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
+import { getSystemTheme } from '@/utils/core/system.js';
 
 // L6: 版本号从统一配置读取
 const appVersion = config.appVersion || '1.0.0';
@@ -393,12 +394,7 @@ function initTheme() {
     isDark.value = savedTheme === 'dark';
   } else {
     // 跟随系统
-    try {
-      const systemInfo = uni.getSystemInfoSync();
-      isDark.value = systemInfo.theme === 'dark';
-    } catch {
-      isDark.value = false;
-    }
+    isDark.value = getSystemTheme() === 'dark';
   }
 }
 

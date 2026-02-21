@@ -5,10 +5,9 @@
  * ⚠️ 隐藏约束（Chesterton's Fence）：
  * - 每个子模块的 try/catch 是独立的，一个失败不影响其他模块记录
  * - smart-question-picker 使用懒加载（动态 import），因为不一定启用
- * - recordAnalyticsAnswer 和 recordQuestionTime 是静态导入，因为总是需要
+ * - learning-analytics 使用动态导入，避免主包引入分包依赖
  */
 
-import { recordAnswer as recordAnalyticsAnswer } from '@/utils/analytics/learning-analytics.js';
 import { recordTime as recordQuestionTime } from './question-timer.js';
 import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
@@ -44,14 +43,15 @@ export async function recordAnswerToAnalytics({
 
   // 记录到智能组题模块（懒加载）
   try {
-    const { recordSmartAnswer } = await import('@/utils/learning/smart-question-picker.js');
+    const { recordSmartAnswer } = await import('./utils/smart-question-picker.js');
     recordSmartAnswer(currentQuestion, isCorrect, timeSpent);
   } catch (e) {
     logger.warn('[quiz-analytics] 记录到智能组题模块失败:', e);
   }
 
-  // 记录到学习数据分析模块
+  // 记录到学习数据分析模块（动态导入，避免主包引入分包依赖）
   try {
+    const { recordAnswer: recordAnalyticsAnswer } = await import('./utils/learning-analytics.js');
     recordAnalyticsAnswer(questionData);
   } catch (e) {
     logger.warn('[quiz-analytics] 记录到学习分析模块失败:', e);

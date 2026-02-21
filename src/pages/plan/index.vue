@@ -183,6 +183,7 @@ import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import PlanSkeleton from './components/plan-skeleton/plan-skeleton.vue';
 import { intelligentPlanManager } from './intelligent-plan-manager.js';
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 
@@ -201,8 +202,7 @@ export default {
     };
   },
   onLoad() {
-    const sys = uni.getSystemInfoSync();
-    this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+    this.statusBarHeight = getStatusBarHeight();
 
     // 初始化主题
     const savedTheme = storageService.get('theme_mode', 'light');

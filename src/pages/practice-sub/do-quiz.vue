@@ -284,6 +284,7 @@ import {
 } from './useQuizAutoSave.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 // ✅ 检查点 5.3: 自适应学习引擎（懒加载：仅在 isAdaptiveMode 时动态导入）
 // ✅ 导入题目收藏模块
 import { toggleFavorite, isFavorited } from './utils/question-favorite.js';
@@ -572,9 +573,8 @@ export default {
     },
 
     initSystemUI() {
-      const sys = uni.getSystemInfoSync();
       // 统一计算：状态栏高度
-      this.statusBarHeight = sys.statusBarHeight || sys.safeAreaInsets?.top || 44;
+      this.statusBarHeight = getStatusBarHeight();
       // 标准导航栏高度 = 状态栏高度 + 44px
       this.navBarHeight = this.statusBarHeight + 44;
 
@@ -625,7 +625,7 @@ export default {
 
       // ✅ 使用智能组题算法优化题目序列（懒加载）
       if (this.smartPickerEnabled && questions.length > 0) {
-        const { pickQuestions } = await import('@/utils/learning/smart-question-picker.js');
+        const { pickQuestions } = await import('./utils/smart-question-picker.js');
         questions = pickQuestions(questions, {
           count: Math.min(questions.length, 20),
           mode: 'adaptive',
@@ -635,7 +635,7 @@ export default {
         logger.log('[do-quiz] ✅ 智能组题模式已启用');
       } else if (this.isAdaptiveMode && questions.length > 0) {
         // 降级到自适应学习引擎（懒加载）
-        const { generateAdaptiveSequence } = await import('@/utils/learning/adaptive-learning-engine.js');
+        const { generateAdaptiveSequence } = await import('./utils/adaptive-learning-engine.js');
         questions = generateAdaptiveSequence(questions, {
           insertReviewQuestions: true,
           prioritizeWeak: true,
@@ -797,7 +797,7 @@ export default {
       if (this.currentIndex < this.questions.length - 1) {
         // ✅ 检查点 5.3: 检查是否需要插入复习题
         if (this.isAdaptiveMode) {
-          const { getNextRecommendedQuestion } = await import('@/utils/learning/adaptive-learning-engine.js');
+          const { getNextRecommendedQuestion } = await import('./utils/adaptive-learning-engine.js');
           const recommendation = getNextRecommendedQuestion(this.currentIndex, this.questions);
           if (recommendation && recommendation.isReview) {
             // 插入复习题
