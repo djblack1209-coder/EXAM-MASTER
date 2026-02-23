@@ -248,7 +248,6 @@ import { useThemeStore } from '@/stores';
 import { logger } from '@/utils/logger.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
-import { safeNavigateTo } from '@/utils/safe-navigate';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 
 // 基础状态
@@ -513,7 +512,7 @@ const handleClearCache = () => {
             if (val !== undefined && val !== null) {
               preserved[key] = val;
             }
-          } catch (e) {
+          } catch (_e) {
             /* ignore */
           }
         }
@@ -554,7 +553,7 @@ const handleDeleteAccount = () => {
           } else {
             uni.showToast({ title: result.message || '操作失败', icon: 'none' });
           }
-        } catch (e) {
+        } catch (_e) {
           uni.hideLoading();
           uni.showToast({ title: '网络异常，请重试', icon: 'none' });
         }
@@ -593,7 +592,7 @@ const handleCancelDeletion = () => {
           } else {
             uni.showToast({ title: result.message || '操作失败', icon: 'none' });
           }
-        } catch (e) {
+        } catch (_e) {
           uni.hideLoading();
           uni.showToast({ title: '网络异常，请重试', icon: 'none' });
         }

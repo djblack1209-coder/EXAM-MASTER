@@ -149,7 +149,7 @@ export default {
         try {
           const userStore = useUserStore();
           userStore.logout && userStore.logout();
-        } catch (e) {
+        } catch (_e) {
           // 静默处理
         }
 

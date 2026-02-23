@@ -495,7 +495,7 @@ export default {
           storageService.remove('v30_bank_backup');
           storageService.remove('temp_review_questions');
         }
-      } catch (e) {
+      } catch (_e) {
         // 静默处理，不影响页面退出
       }
     },
