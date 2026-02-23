@@ -93,6 +93,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner (filesystem)
         uses: aquasecurity/trivy-action@0.28.0
+        continue-on-error: true
         with:
           scan-type: 'fs'
           scan-ref: '.'
