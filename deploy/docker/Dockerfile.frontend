@@ -12,9 +12,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # 安装所有依赖（包括 devDependencies，构建需要）
-# HUSKY=0 跳过 prepare 脚本中的 husky install（Docker 内无 .git）
-ENV HUSKY=0
-RUN npm ci && npm cache clean --force
+# --ignore-scripts 跳过 prepare(husky) 等生命周期脚本（Docker 内无 .git）
+RUN npm ci --ignore-scripts && npm cache clean --force
 
 # 复制源代码
 COPY . .
