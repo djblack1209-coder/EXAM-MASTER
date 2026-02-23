@@ -491,7 +491,7 @@ class NetworkMonitor {
     if (this._networkChangeHandler) {
       try {
         uni.offNetworkStatusChange(this._networkChangeHandler);
-      } catch (e) {
+      } catch (_e) {
         // 部分平台可能不支持 offNetworkStatusChange
       }
       this._networkChangeHandler = null;

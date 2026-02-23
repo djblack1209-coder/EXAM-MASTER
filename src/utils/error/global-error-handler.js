@@ -37,7 +37,9 @@ function _extractErrorInfo(type, error) {
     if (pages.length > 0) {
       page = pages[pages.length - 1].route;
     }
-  } catch (_) { /* getCurrentPages 可能未就绪 */ }
+  } catch (_) {
+    /* getCurrentPages 可能未就绪 */
+  }
 
   return { type, message, stack, page, timestamp: new Date().toISOString() };
 }
@@ -80,7 +82,9 @@ function _handleError(type, error) {
       stored.splice(0, stored.length - MAX_STORAGE_LOGS);
     }
     uni.setStorageSync('runtime_errors', stored);
-  } catch (_) { /* 存储失败静默处理 */ }
+  } catch (_) {
+    /* 存储失败静默处理 */
+  }
 
   // 控制台输出
   logger.error(`[${type}]`, errorInfo.message);
@@ -100,7 +104,9 @@ function _handleError(type, error) {
         });
       }
       // #endif
-    } catch (_) { /* toast 失败静默处理 */ }
+    } catch (_) {
+      /* toast 失败静默处理 */
+    }
   }
 
   // 回调
@@ -129,7 +135,7 @@ export const globalErrorHandler = {
    * 创建 Vue app.config.errorHandler
    */
   createVueErrorHandler() {
-    return (err, vm, info) => {
+    return (err, _vm, _info) => {
       _handleError('Vue Error', err);
     };
   },
@@ -149,7 +155,11 @@ export const globalErrorHandler = {
   /** 清除所有错误日志 */
   clearErrorLogs() {
     _errorLogs.length = 0;
-    try { uni.removeStorageSync('runtime_errors'); } catch (_) { /* ignore */ }
+    try {
+      uni.removeStorageSync('runtime_errors');
+    } catch (_) {
+      /* ignore */
+    }
   }
 };
 
@@ -162,7 +172,7 @@ export const globalErrorHandler = {
  * @returns {Function} 包装后的函数，错误时返回 null
  */
 export function wrapAsync(fn, context = {}) {
-  return async function(...args) {
+  return async function (...args) {
     try {
       return await fn.apply(this, args);
     } catch (error) {
