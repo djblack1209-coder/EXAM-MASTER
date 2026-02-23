@@ -985,7 +985,6 @@ export default {
     },
     clearAllTimers() {
       // 清除对手答题定时器
-      const timerCount = this.opponentTimers.length;
       this.opponentTimers.forEach((timer) => {
         if (timer) {
           clearTimeout(timer);
@@ -1469,7 +1468,7 @@ export default {
       // 静默上传，不显示 loading（避免打断用户体验）
       lafService
         .rankCenter(uploadData)
-        .then((res) => {
+        .then((_res) => {
           // 标志位已在方法开头设置，这里只记录成功日志
           // 可选：静默提示
           // uni.showToast({ title: '已上传排行榜', icon: 'success', duration: 1000 });

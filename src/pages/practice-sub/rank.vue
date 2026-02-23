@@ -506,7 +506,6 @@ export default {
           // 如果后端返回的分数有效（> 0），使用后端分数
           // 否则使用本地计算的分数（降级方案）
           if (backendScore > 0) {
-            const oldScore = this.myScore; // 记录旧分数用于对比
             this.myScore = backendScore;
             this.myRank = this.list.indexOf(myRecord) + 1;
             // 验证分数更新

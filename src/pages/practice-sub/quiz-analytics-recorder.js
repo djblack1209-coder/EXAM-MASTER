@@ -51,7 +51,7 @@ export async function recordAnswerToAnalytics({
 
   // 记录到学习数据分析模块（动态导入，避免主包引入分包依赖）
   try {
-    const { recordAnswer: recordAnalyticsAnswer } = await import('./utils/learning-analytics.js');
+    const { recordAnswer: recordAnalyticsAnswer } = await import('@/utils/analytics/learning-analytics.js');
     recordAnalyticsAnswer(questionData);
   } catch (e) {
     logger.warn('[quiz-analytics] 记录到学习分析模块失败:', e);

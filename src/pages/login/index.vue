@@ -218,7 +218,7 @@ const isDark = ref(false);
 
 // 登录状态
 const isLoading = ref(false);
-const agreedToTerms = ref(true);
+const agreedToTerms = ref(false);
 // E007: 检测微信 OAuth provider 是否可用（APP-PLUS）
 const hasWechatProvider = ref(false);
 // E007: 检测是否在微信内置浏览器中（H5）
@@ -537,7 +537,7 @@ const handleWechatH5Login = () => {
 };
 
 // QQ登录
-const handleQQLogin = async () => {
+const _handleQQLogin = async () => {
   if (!agreedToTerms.value) {
     uni.showToast({ title: '请先同意用户协议', icon: 'none' });
     return;
@@ -874,7 +874,7 @@ const saveLoginInfo = (data) => {
     if (data.token) {
       userStore.setToken?.(data.token);
     }
-  } catch (e) {
+  } catch (_e) {
     // store 可能未初始化，忽略
   }
 
