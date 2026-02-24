@@ -3,12 +3,16 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import { globalErrorHandler } from '@/utils/error/global-error-handler.js';
 import { logger } from '@/utils/logger.js';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
 
 export function createApp() {
   const app = createSSRApp(App);
   const pinia = createPinia();
 
   app.use(pinia);
+
+  // 全局注册微信隐私保护弹窗组件
+  app.component('PrivacyPopup', PrivacyPopup);
 
   // 初始化全局错误处理器
   globalErrorHandler.init({

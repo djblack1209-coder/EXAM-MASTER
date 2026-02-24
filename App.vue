@@ -186,14 +186,13 @@ export default {
         const result = await userStore.silentLogin();
 
         if (result.success) {
-          // 静默登录成功，通知其他页面
+          // 缓存恢复成功，通知其他页面
           uni.$emit('loginStatusChanged', true);
-          logger.log('[App] 静默登录成功');
-        } else {
-          console.warn('[App] 静默登录失败:', result.error?.message || '未知错误');
+          logger.log('[App] 缓存恢复登录成功');
         }
+        // 无缓存是新用户的正常状态，不输出警告
       } catch (error) {
-        console.error('[App] 静默登录异常:', error);
+        console.error('[App] 登录恢复异常:', error);
       }
     }
   },

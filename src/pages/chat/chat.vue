@@ -13,17 +13,28 @@
         <text class="nav-title">
           {{ currentFriend.name }}
         </text>
-        <text class="nav-arrow"> ▼ </text>
+        <text class="nav-arrow">
+          ▼
+        </text>
       </view>
-      <image :src="icons8('ios', 50, '333333', 'menu--v1')" class="menu-icon" @tap="showMenu" @error="onCdnIconError" />
+      <image
+        :src="icons8('ios', 50, '333333', 'menu--v1')"
+        class="menu-icon"
+        @tap="showMenu"
+        @error="onCdnIconError"
+      />
     </view>
 
     <!-- AI好友选择器弹窗 -->
     <view v-if="showFriendSelector" class="friend-selector-modal" @tap="showFriendSelector = false">
       <view class="friend-selector-content" @tap.stop>
         <view class="selector-header">
-          <text class="selector-title"> 选择AI好友 </text>
-          <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false"> × </text>
+          <text class="selector-title">
+            选择AI好友
+          </text>
+          <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false">
+            ×
+          </text>
         </view>
         <view class="friend-list">
           <view
@@ -34,7 +45,12 @@
             hover-class="item-hover"
             @tap="selectFriend(friend)"
           >
-            <image :src="friend.avatar" class="friend-avatar" lazy-load @error="onAvatarError" />
+            <image
+              :src="friend.avatar"
+              class="friend-avatar"
+              lazy-load
+              @error="onAvatarError"
+            />
             <view class="friend-info">
               <text class="friend-name">
                 {{ friend.name }}
@@ -43,7 +59,9 @@
                 {{ friend.role }}
               </text>
             </view>
-            <view v-if="currentFriend.type === friend.type" class="friend-check"> ✓ </view>
+            <view v-if="currentFriend.type === friend.type" class="friend-check">
+              ✓
+            </view>
           </view>
         </view>
       </view>
@@ -115,8 +133,12 @@
                 {{ msg.time }}
               </text>
               <view v-if="msg.status" class="msg-status">
-                <text v-if="msg.status === 'sending'" class="status-icon"> ⏳ </text>
-                <text v-else-if="msg.status === 'sent'" class="status-icon sent"> ✓ </text>
+                <text v-if="msg.status === 'sending'" class="status-icon">
+                  ⏳
+                </text>
+                <text v-else-if="msg.status === 'sent'" class="status-icon sent">
+                  ✓
+                </text>
                 <text v-else-if="msg.status === 'failed'" class="status-icon failed" @tap="retryMessage(index)">
                   ⚠️ 点击重试
                 </text>
@@ -166,7 +188,9 @@
           :style="{ height: `${20 + voiceLevel * 30}px`, animationDelay: `${i * 0.1}s` }"
         />
       </view>
-      <text class="voice-hint"> 正在录音... </text>
+      <text class="voice-hint">
+        正在录音...
+      </text>
     </view>
 
     <!-- 输入区域 -->
@@ -207,8 +231,15 @@
         @confirm="handleSend"
         @focus="onInputFocus"
       />
-      <view class="send-btn" :class="{ active: messageText.trim() }" hover-class="item-hover" @tap="handleSend">
-        <text class="send-icon"> ↑ </text>
+      <view
+        class="send-btn"
+        :class="{ active: messageText.trim() }"
+        hover-class="item-hover"
+        @tap="handleSend"
+      >
+        <text class="send-icon">
+          ↑
+        </text>
       </view>
     </view>
   </view>

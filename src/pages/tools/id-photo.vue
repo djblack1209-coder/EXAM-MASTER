@@ -4,9 +4,13 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon">←</text>
+          <text class="back-icon">
+            ←
+          </text>
         </view>
-        <text class="nav-title">证件照制作</text>
+        <text class="nav-title">
+          证件照制作
+        </text>
         <view class="nav-placeholder" />
       </view>
     </view>
@@ -16,20 +20,32 @@
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
-          <text class="hero-icon">📷</text>
+          <text class="hero-icon">
+            📷
+          </text>
         </view>
-        <text class="hero-title">智能证件照</text>
-        <text class="hero-desc">智能抠图换背景，支持多种证件照尺寸</text>
+        <text class="hero-title">
+          智能证件照
+        </text>
+        <text class="hero-desc">
+          智能抠图换背景，支持多种证件照尺寸
+        </text>
       </view>
 
       <!-- 步骤指示器 -->
       <view class="steps-bar">
         <view v-for="(s, i) in steps" :key="i" :class="['step-item', { active: step >= i, done: step > i }]">
           <view class="step-dot">
-            <text v-if="step > i" class="step-check">✓</text>
-            <text v-else class="step-num">{{ i + 1 }}</text>
+            <text v-if="step > i" class="step-check">
+              ✓
+            </text>
+            <text v-else class="step-num">
+              {{ i + 1 }}
+            </text>
           </view>
-          <text class="step-label">{{ s }}</text>
+          <text class="step-label">
+            {{ s }}
+          </text>
           <view v-if="i < steps.length - 1" :class="['step-line', { filled: step > i }]" />
         </view>
       </view>
@@ -38,10 +54,16 @@
       <view v-if="step === 0" class="section">
         <view class="upload-area" @click="choosePhoto">
           <view class="upload-icon-box">
-            <text class="upload-icon-text">+</text>
+            <text class="upload-icon-text">
+              +
+            </text>
           </view>
-          <text class="upload-text">选择或拍摄照片</text>
-          <text class="upload-hint">建议正面免冠、光线均匀</text>
+          <text class="upload-text">
+            选择或拍摄照片
+          </text>
+          <text class="upload-hint">
+            建议正面免冠、光线均匀
+          </text>
         </view>
       </view>
 
@@ -54,7 +76,9 @@
 
         <!-- 尺寸选择 -->
         <view class="config-block">
-          <text class="config-label">证件照尺寸</text>
+          <text class="config-label">
+            证件照尺寸
+          </text>
           <view class="option-grid">
             <view
               v-for="s in sizeOptions"
@@ -62,15 +86,21 @@
               :class="['option-chip', { active: selectedSize === s.key }]"
               @click="selectedSize = s.key"
             >
-              <text class="option-name">{{ s.name }}</text>
-              <text class="option-desc">{{ s.desc }}</text>
+              <text class="option-name">
+                {{ s.name }}
+              </text>
+              <text class="option-desc">
+                {{ s.desc }}
+              </text>
             </view>
           </view>
         </view>
 
         <!-- 背景颜色选择 -->
         <view class="config-block">
-          <text class="config-label">背景颜色</text>
+          <text class="config-label">
+            背景颜色
+          </text>
           <view class="color-row">
             <view
               v-for="c in colorOptions"
@@ -79,7 +109,9 @@
               @click="selectedColor = c.key"
             >
               <view class="color-circle" :style="{ background: c.hex }" />
-              <text class="color-name">{{ c.name }}</text>
+              <text class="color-name">
+                {{ c.name }}
+              </text>
             </view>
           </view>
         </view>
@@ -87,8 +119,12 @@
         <!-- 美颜开关 -->
         <view class="beauty-card">
           <view class="beauty-info">
-            <text class="beauty-label">智能美颜</text>
-            <text class="beauty-hint">自动优化肤色与光线</text>
+            <text class="beauty-label">
+              智能美颜
+            </text>
+            <text class="beauty-hint">
+              自动优化肤色与光线
+            </text>
           </view>
           <switch :checked="enableBeauty" color="#e84393" @change="enableBeauty = $event.detail.value" />
         </view>
@@ -102,8 +138,12 @@
       <view v-else-if="step === 2" class="section center-section">
         <view class="processing-card">
           <view class="processing-spinner" />
-          <text class="processing-title">{{ processingText }}</text>
-          <text class="processing-hint">AI 正在处理您的照片...</text>
+          <text class="processing-title">
+            {{ processingText }}
+          </text>
+          <text class="processing-hint">
+            AI 正在处理您的照片...
+          </text>
         </view>
       </view>
 

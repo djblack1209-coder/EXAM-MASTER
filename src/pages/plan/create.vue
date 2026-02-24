@@ -4,8 +4,12 @@
 
     <view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-back" @tap="goBack"> ← </text>
-        <text class="nav-title"> 创建学习计划 </text>
+        <text class="nav-back" @tap="goBack">
+          ←
+        </text>
+        <text class="nav-title">
+          创建学习计划
+        </text>
         <view class="nav-placeholder" />
       </view>
     </view>
@@ -23,7 +27,9 @@
       <!-- 实际表单 -->
       <view v-else class="glass-card form-card">
         <view class="form-item">
-          <text class="form-label"> 计划名称 </text>
+          <text class="form-label">
+            计划名称
+          </text>
           <input
             v-model="plan.name"
             class="form-input"
@@ -34,7 +40,9 @@
         </view>
 
         <view class="form-item">
-          <text class="form-label"> 学习目标 </text>
+          <text class="form-label">
+            学习目标
+          </text>
           <textarea
             v-model="plan.goal"
             class="form-textarea"
@@ -46,27 +54,37 @@
         </view>
 
         <view class="form-item">
-          <text class="form-label"> 开始日期 </text>
+          <text class="form-label">
+            开始日期
+          </text>
           <view class="date-picker" @tap="showStartDatePicker">
             <text class="date-text">
               {{ plan.startDate }}
             </text>
-            <text class="date-icon"> 📅 </text>
+            <text class="date-icon">
+              📅
+            </text>
           </view>
         </view>
 
         <view class="form-item">
-          <text class="form-label"> 结束日期 </text>
+          <text class="form-label">
+            结束日期
+          </text>
           <view class="date-picker" @tap="showEndDatePicker">
             <text class="date-text">
               {{ plan.endDate }}
             </text>
-            <text class="date-icon"> 📅 </text>
+            <text class="date-icon">
+              📅
+            </text>
           </view>
         </view>
 
         <view class="form-item">
-          <text class="form-label"> 每日学习时长 </text>
+          <text class="form-label">
+            每日学习时长
+          </text>
           <view class="duration-selector">
             <text
               class="duration-btn"
@@ -100,17 +118,23 @@
         </view>
 
         <view class="form-item">
-          <text class="form-label"> 提醒时间 </text>
+          <text class="form-label">
+            提醒时间
+          </text>
           <view class="time-picker" @tap="showReminderTimePicker">
             <text class="time-text">
               {{ plan.reminderTime }}
             </text>
-            <text class="time-icon"> ⏰ </text>
+            <text class="time-icon">
+              ⏰
+            </text>
           </view>
         </view>
 
         <view class="form-item">
-          <text class="form-label"> 计划分类 </text>
+          <text class="form-label">
+            计划分类
+          </text>
           <view class="category-selector">
             <text class="category-btn" :class="{ active: plan.category === '数学' }" @tap="plan.category = '数学'">
               数学
@@ -131,7 +155,9 @@
         </view>
 
         <view class="form-item">
-          <text class="form-label"> 优先级 </text>
+          <text class="form-label">
+            优先级
+          </text>
           <view class="priority-selector">
             <text class="priority-btn low" :class="{ active: plan.priority === 'low' }" @tap="plan.priority = 'low'">
               低

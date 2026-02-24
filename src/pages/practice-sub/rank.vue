@@ -4,8 +4,12 @@
 
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px' }">
-        <text class="nav-back" @tap="navBack"> ← </text>
-        <text class="nav-title"> 考研学霸榜 </text>
+        <text class="nav-back" @tap="navBack">
+          ←
+        </text>
+        <text class="nav-title">
+          考研学霸榜
+        </text>
         <view class="placeholder" />
       </view>
     </view>
@@ -15,8 +19,15 @@
 
     <!-- 空状态 -->
     <view v-if="!loading && empty" class="empty-container">
-      <BaseEmpty icon="🏆" title="暂无排行榜数据" desc="快去刷题，成为第一个上榜的学霸吧！" :is-dark="isDark" />
-      <button class="go-practice-btn" hover-class="btn-hover" @tap="toPractice">去刷题</button>
+      <BaseEmpty
+        icon="🏆"
+        title="暂无排行榜数据"
+        desc="快去刷题，成为第一个上榜的学霸吧！"
+        :is-dark="isDark"
+      />
+      <button class="go-practice-btn" hover-class="btn-hover" @tap="toPractice">
+        去刷题
+      </button>
     </view>
 
     <!-- 排行榜内容 -->
@@ -38,12 +49,16 @@
               mode="aspectFill"
               @error="onAvatarError($event, rankList[1])"
             />
-            <view class="badge"> 2 </view>
+            <view class="badge">
+              2
+            </view>
           </view>
           <text class="name">
             {{ rankList[1].name }}
           </text>
-          <text class="score"> {{ rankList[1].score }}分 </text>
+          <text class="score">
+            {{ rankList[1].score }}分
+          </text>
         </view>
 
         <view v-if="rankList[0]" class="podium-item rank-1" @tap="showFootprint(rankList[0])">
@@ -55,12 +70,16 @@
               mode="aspectFill"
               @error="onAvatarError($event, rankList[0])"
             />
-            <view class="badge"> 1 </view>
+            <view class="badge">
+              1
+            </view>
           </view>
           <text class="name">
             {{ rankList[0].name }}
           </text>
-          <text class="score"> {{ rankList[0].score }}分 </text>
+          <text class="score">
+            {{ rankList[0].score }}分
+          </text>
         </view>
 
         <view v-if="rankList[2]" class="podium-item rank-3" @tap="showFootprint(rankList[2])">
@@ -71,12 +90,16 @@
               mode="aspectFill"
               @error="onAvatarError($event, rankList[2])"
             />
-            <view class="badge"> 3 </view>
+            <view class="badge">
+              3
+            </view>
           </view>
           <text class="name">
             {{ rankList[2].name }}
           </text>
-          <text class="score"> {{ rankList[2].score }}分 </text>
+          <text class="score">
+            {{ rankList[2].score }}分
+          </text>
         </view>
       </view>
 
@@ -104,7 +127,9 @@
             <text class="item-name">
               {{ item.name }}
             </text>
-            <text class="item-desc"> 坚持 {{ item.days }} 天 · 已刷 {{ item.done }} 题 </text>
+            <text class="item-desc">
+              坚持 {{ item.days }} 天 · 已刷 {{ item.done }} 题
+            </text>
           </view>
           <text class="item-score">
             {{ item.score }}
@@ -114,7 +139,12 @@
 
       <!-- 只有我自己的情况 -->
       <view v-else-if="list.length === 1" class="only-me-container">
-        <BaseEmpty icon="🏆" title="只有你一个人上榜" desc="继续加油，保持领先！" :is-dark="isDark" />
+        <BaseEmpty
+          icon="🏆"
+          title="只有你一个人上榜"
+          desc="继续加油，保持领先！"
+          :is-dark="isDark"
+        />
       </view>
 
       <view class="footer-safe" />
@@ -133,20 +163,28 @@
           @error="onAvatarError($event, userInfo, 'avatarUrl')"
         />
         <view class="item-info">
-          <text class="item-name"> {{ userInfo.nickName || '考研人' }} (我) </text>
+          <text class="item-name">
+            {{ userInfo.nickName || '考研人' }} (我)
+          </text>
           <text class="item-desc">
             {{ rankGapText }}
           </text>
-          <text class="item-score-text"> 分数: {{ myScore }} </text>
+          <text class="item-score-text">
+            分数: {{ myScore }}
+          </text>
         </view>
-        <button class="rank-btn" hover-class="btn-hover" @tap="toPractice">去超车</button>
+        <button class="rank-btn" hover-class="btn-hover" @tap="toPractice">
+          去超车
+        </button>
       </view>
     </view>
 
     <!-- 学霸学习足迹 AI 分析名片弹窗 -->
     <view v-if="showFootprintModal" class="footprint-mask" @tap="closePopup">
       <view class="footprint-card glass-card" @tap.stop>
-        <view class="close-btn" @tap="closePopup"> ✕ </view>
+        <view class="close-btn" @tap="closePopup">
+          ✕
+        </view>
 
         <view class="card-header">
           <image
@@ -160,7 +198,9 @@
               {{ activeUser.name }}
             </text>
             <view class="ai-label">
-              <text class="sparkle-icon"> ✨ </text>
+              <text class="sparkle-icon">
+                ✨
+              </text>
               <text>{{ aiPersona }}</text>
             </view>
           </view>
@@ -171,31 +211,41 @@
             <text class="val">
               {{ activeUser.days || 0 }}
             </text>
-            <text class="lbl"> 坚持天数 </text>
+            <text class="lbl">
+              坚持天数
+            </text>
           </view>
           <view class="data-item">
             <text class="val">
               {{ activeUser.score || 0 }}
             </text>
-            <text class="lbl"> 学霸分 </text>
+            <text class="lbl">
+              学霸分
+            </text>
           </view>
           <view class="data-item">
             <text class="val">
               {{ activeUser.done || 0 }}
             </text>
-            <text class="lbl"> 总刷题 </text>
+            <text class="lbl">
+              总刷题
+            </text>
           </view>
         </view>
 
         <view v-if="activeUser.target" class="target-school-box">
-          <text class="target-label"> 目标院校： </text>
+          <text class="target-label">
+            目标院校：
+          </text>
           <text class="target-val">
             {{ activeUser.target }}
           </text>
         </view>
 
         <view class="ai-analysis-content">
-          <view class="analysis-tag"> ✨ AI 足迹鉴定 </view>
+          <view class="analysis-tag">
+            ✨ AI 足迹鉴定
+          </view>
           <scroll-view scroll-y="true" class="analysis-scroll">
             <text class="analysis-text">
               {{ aiAnalysisText }}
@@ -203,7 +253,9 @@
           </scroll-view>
         </view>
 
-        <button class="challenge-btn" hover-class="btn-hover" @tap="startPK">向 TA 发起挑战</button>
+        <button class="challenge-btn" hover-class="btn-hover" @tap="startPK">
+          向 TA 发起挑战
+        </button>
       </view>
     </view>
   </view>

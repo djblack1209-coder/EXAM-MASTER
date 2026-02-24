@@ -12,10 +12,14 @@
         </text>
         <view class="header-actions">
           <view v-if="isEdit" class="delete-btn" @tap="handleDelete">
-            <text class="delete-icon"> 🗑️ </text>
+            <text class="delete-icon">
+              🗑️
+            </text>
           </view>
           <view class="close-btn" @tap="handleClose">
-            <text class="close-icon"> × </text>
+            <text class="close-icon">
+              ×
+            </text>
           </view>
         </view>
       </view>
@@ -35,14 +39,18 @@
             @confirm="handleSave"
           />
           <view v-if="todoText" class="clear-btn" @tap="todoText = ''">
-            <text class="clear-icon"> × </text>
+            <text class="clear-icon">
+              ×
+            </text>
           </view>
         </view>
       </view>
 
       <!-- 优先级选择 -->
       <view class="priority-section">
-        <text class="section-label"> 优先级 </text>
+        <text class="section-label">
+          优先级
+        </text>
         <view class="priority-options">
           <view
             v-for="item in priorityOptions"
@@ -61,12 +69,16 @@
 
       <!-- 提醒时间（可选） -->
       <view class="reminder-section">
-        <text class="section-label"> 提醒时间 </text>
+        <text class="section-label">
+          提醒时间
+        </text>
         <view class="reminder-picker" @tap="showTimePicker">
           <text class="reminder-text">
             {{ reminderText }}
           </text>
-          <text class="reminder-arrow"> › </text>
+          <text class="reminder-arrow">
+            ›
+          </text>
         </view>
       </view>
 
@@ -81,15 +93,21 @@
           </text>
         </view>
         <view class="action-item" @tap="handleDuplicate">
-          <text class="action-icon"> 📋 </text>
-          <text class="action-text"> 复制待办 </text>
+          <text class="action-icon">
+            📋
+          </text>
+          <text class="action-text">
+            复制待办
+          </text>
         </view>
       </view>
 
       <!-- 底部按钮 -->
       <view class="editor-footer">
         <view class="btn-cancel" @tap="handleClose">
-          <text class="btn-text"> 取消 </text>
+          <text class="btn-text">
+            取消
+          </text>
         </view>
         <view class="btn-save" :class="{ 'btn-disabled': !todoText.trim() }" @tap="handleSave">
           <text class="btn-text">
@@ -100,7 +118,13 @@
     </view>
 
     <!-- 时间选择器 -->
-    <picker v-if="showPicker" mode="time" :value="reminderTime" @change="handleTimeChange" @cancel="showPicker = false">
+    <picker
+      v-if="showPicker"
+      mode="time"
+      :value="reminderTime"
+      @change="handleTimeChange"
+      @cancel="showPicker = false"
+    >
       <view />
     </picker>
   </view>

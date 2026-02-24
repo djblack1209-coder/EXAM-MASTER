@@ -5,8 +5,12 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px', height: '44px' }">
         <view class="back-area" hover-class="item-hover" @tap="handleExit">
-          <text class="back-icon"> ← </text>
-          <text class="progress-text"> {{ currentIndex + 1 }} / {{ questions.length }} </text>
+          <text class="back-icon">
+            ←
+          </text>
+          <text class="progress-text">
+            {{ currentIndex + 1 }} / {{ questions.length }}
+          </text>
         </view>
         <!-- 单题计时器显示 -->
         <view class="timer-group">
@@ -15,13 +19,17 @@
             class="question-timer-box"
             :class="{ warning: showTimeWarning, danger: questionTimeRemaining <= 10 }"
           >
-            <text class="timer-icon"> ⏱ </text>
+            <text class="timer-icon">
+              ⏱
+            </text>
             <text class="question-time">
               {{ formatTime(questionTimeRemaining) }}
             </text>
           </view>
           <view class="timer-box">
-            <text class="total-label"> 总 </text>
+            <text class="total-label">
+              总
+            </text>
             <text>{{ formatTime(seconds) }}</text>
           </view>
         </view>
@@ -50,7 +58,9 @@
                 hover-class="item-hover"
                 @tap.stop="handleOpenNote"
               >
-                <text class="note-icon"> 📝 </text>
+                <text class="note-icon">
+                  📝
+                </text>
                 <text v-if="currentQuestionNotes.length > 0" class="note-count">
                   {{ currentQuestionNotes.length }}
                 </text>
@@ -97,9 +107,15 @@
               {{ opt }}
             </text>
             <view v-if="hasAnswered" class="select-indicator">
-              <text v-if="isCorrectOption(idx)"> ✓ </text>
-              <text v-else-if="userChoice === idx && !isCorrectOption(idx)"> ✗ </text>
-              <text v-else-if="userChoice === idx"> ○ </text>
+              <text v-if="isCorrectOption(idx)">
+                ✓
+              </text>
+              <text v-else-if="userChoice === idx && !isCorrectOption(idx)">
+                ✗
+              </text>
+              <text v-else-if="userChoice === idx">
+                ○
+              </text>
             </view>
           </view>
         </view>
@@ -113,7 +129,9 @@
         <view class="scan-line" />
         <view class="thinking-box">
           <view class="pulse-ring" />
-          <text class="ai-text"> AI 正在深度解析逻辑... </text>
+          <text class="ai-text">
+            AI 正在深度解析逻辑...
+          </text>
         </view>
       </view>
 
@@ -133,11 +151,15 @@
 
         <scroll-view v-if="resultStatus === 'wrong'" scroll-y class="ai-analysis-scroll">
           <view class="analysis-tag">
-            <text class="sparkle-icon"> ✨ </text>
+            <text class="sparkle-icon">
+              ✨
+            </text>
             <text>AI 深度诊断</text>
           </view>
           <view class="answer-display">
-            <text class="answer-label"> 正确答案： </text>
+            <text class="answer-label">
+              正确答案：
+            </text>
             <text class="answer-value">
               {{ currentQuestion ? currentQuestion.answer : 'A' }}
             </text>
@@ -148,7 +170,9 @@
         </scroll-view>
 
         <view v-else class="ai-analysis-brief">
-          <text class="label"> AI 简评： </text>
+          <text class="label">
+            AI 简评：
+          </text>
           <text>{{ aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析') }}</text>
         </view>
 
@@ -171,7 +195,9 @@
           <text class="combo-count">
             {{ comboDisplay.count }}
           </text>
-          <text class="combo-label"> 连击! </text>
+          <text class="combo-label">
+            连击!
+          </text>
           <text v-if="comboDisplay.message" class="combo-message">
             {{ comboDisplay.message }}
           </text>
@@ -239,8 +265,12 @@
     <view v-if="showNoteModal" class="note-modal-overlay" @tap="showNoteModal = false">
       <view class="note-modal" @tap.stop>
         <view class="note-modal-header">
-          <text class="note-modal-title"> 添加笔记 </text>
-          <view class="note-modal-close" hover-class="item-hover" @tap="showNoteModal = false"> ✕ </view>
+          <text class="note-modal-title">
+            添加笔记
+          </text>
+          <view class="note-modal-close" hover-class="item-hover" @tap="showNoteModal = false">
+            ✕
+          </view>
         </view>
         <textarea
           v-model="noteContent"
@@ -262,8 +292,12 @@
           </view>
         </view>
         <view class="note-modal-footer">
-          <button class="note-cancel-btn" hover-class="item-hover" @tap="showNoteModal = false">取消</button>
-          <button class="note-save-btn" hover-class="item-hover" @tap="handleSaveNote">保存</button>
+          <button class="note-cancel-btn" hover-class="item-hover" @tap="showNoteModal = false">
+            取消
+          </button>
+          <button class="note-save-btn" hover-class="item-hover" @tap="handleSaveNote">
+            保存
+          </button>
         </view>
       </view>
     </view>

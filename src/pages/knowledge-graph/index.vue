@@ -4,24 +4,38 @@
     <view class="nav-header glassmorphism" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" hover-class="item-hover" @tap="handleBack">
-          <text class="back-icon"> ← </text>
+          <text class="back-icon">
+            ←
+          </text>
         </view>
-        <text class="nav-title"> 知识图谱 </text>
+        <text class="nav-title">
+          知识图谱
+        </text>
         <view class="nav-actions">
           <view class="action-btn" hover-class="item-hover" @tap="showMasteryStats">
-            <text class="action-icon"> 📊 </text>
+            <text class="action-icon">
+              📊
+            </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showLearningPath">
-            <text class="action-icon"> 🛤️ </text>
+            <text class="action-icon">
+              🛤️
+            </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showConnectionAnalysis">
-            <text class="action-icon"> 🔗 </text>
+            <text class="action-icon">
+              🔗
+            </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showPersonalizedPlan">
-            <text class="action-icon"> 📋 </text>
+            <text class="action-icon">
+              📋
+            </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="handleRefresh">
-            <text class="action-icon"> ↻ </text>
+            <text class="action-icon">
+              ↻
+            </text>
           </view>
         </view>
       </view>
@@ -30,20 +44,33 @@
     <!-- 加载状态 -->
     <view v-if="isLoading" class="loading-overlay">
       <view class="loading-spinner" />
-      <text class="loading-text"> 正在构建知识图谱... </text>
+      <text class="loading-text">
+        正在构建知识图谱...
+      </text>
     </view>
 
     <!-- 知识图谱主体 -->
-    <scroll-view scroll-y scroll-x class="graph-scroll-view" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
+    <scroll-view
+      scroll-y
+      scroll-x
+      class="graph-scroll-view"
+      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
+    >
       <!-- 图谱容器 -->
       <view class="graph-container">
         <!-- 中心节点 -->
         <view class="center-node" hover-class="item-hover" @tap="handleCenterClick">
           <view class="center-glow" />
           <view class="center-content">
-            <text class="center-icon"> 🎯 </text>
-            <text class="center-title"> 知识体系 </text>
-            <text class="center-subtitle"> {{ totalNodes }} 个知识点 · {{ totalQuestions }} 题 </text>
+            <text class="center-icon">
+              🎯
+            </text>
+            <text class="center-title">
+              知识体系
+            </text>
+            <text class="center-subtitle">
+              {{ totalNodes }} 个知识点 · {{ totalQuestions }} 题
+            </text>
           </view>
         </view>
 
@@ -75,9 +102,13 @@
               <view class="progress-bar">
                 <view class="progress-fill" :style="{ width: node.mastery + '%', backgroundColor: node.color }" />
               </view>
-              <text class="progress-text"> {{ node.mastery }}% </text>
+              <text class="progress-text">
+                {{ node.mastery }}%
+              </text>
             </view>
-            <text class="node-count"> {{ node.count }} 题 </text>
+            <text class="node-count">
+              {{ node.count }} 题
+            </text>
           </view>
         </view>
 
@@ -97,7 +128,9 @@
             <text class="child-title">
               {{ child.title }}
             </text>
-            <text class="child-mastery"> {{ child.mastery }}% </text>
+            <text class="child-mastery">
+              {{ child.mastery }}%
+            </text>
           </view>
         </view>
       </view>
@@ -113,7 +146,9 @@
           <text class="panel-title">
             {{ selectedNode.title }}
           </text>
-          <text class="panel-subtitle"> 掌握度 {{ selectedNode.mastery }}% </text>
+          <text class="panel-subtitle">
+            掌握度 {{ selectedNode.mastery }}%
+          </text>
         </view>
         <view class="panel-close" hover-class="item-hover" @tap="selectedNode = null">
           <text>×</text>
@@ -124,17 +159,25 @@
           <text class="stat-value">
             {{ selectedNode.count }}
           </text>
-          <text class="stat-label"> 题目数 </text>
+          <text class="stat-label">
+            题目数
+          </text>
         </view>
         <view class="stat-item">
-          <text class="stat-value"> {{ selectedNode.correctRate || 0 }}% </text>
-          <text class="stat-label"> 正确率 </text>
+          <text class="stat-value">
+            {{ selectedNode.correctRate || 0 }}%
+          </text>
+          <text class="stat-label">
+            正确率
+          </text>
         </view>
         <view class="stat-item">
           <text class="stat-value">
             {{ selectedNode.reviewCount || 0 }}
           </text>
-          <text class="stat-label"> 复习次数 </text>
+          <text class="stat-label">
+            复习次数
+          </text>
         </view>
       </view>
       <view class="panel-actions">
@@ -149,7 +192,9 @@
 
     <!-- 图例说明 -->
     <view class="legend-panel glassmorphism">
-      <text class="legend-title"> 掌握度 </text>
+      <text class="legend-title">
+        掌握度
+      </text>
       <view class="legend-items">
         <view class="legend-item">
           <view class="legend-dot" style="background: #ef4444" />
@@ -171,10 +216,21 @@
     </view>
 
     <!-- 薄弱知识点提示 -->
-    <view v-if="weakNodes.length > 0" class="weak-hint glassmorphism" hover-class="item-hover" @tap="showWeakNodes">
-      <text class="weak-icon"> ⚠️ </text>
-      <text class="weak-text"> {{ weakNodes.length }} 个薄弱知识点需要加强 </text>
-      <text class="weak-arrow"> › </text>
+    <view
+      v-if="weakNodes.length > 0"
+      class="weak-hint glassmorphism"
+      hover-class="item-hover"
+      @tap="showWeakNodes"
+    >
+      <text class="weak-icon">
+        ⚠️
+      </text>
+      <text class="weak-text">
+        {{ weakNodes.length }} 个薄弱知识点需要加强
+      </text>
+      <text class="weak-arrow">
+        ›
+      </text>
     </view>
   </view>
 </template>

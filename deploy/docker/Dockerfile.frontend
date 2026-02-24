@@ -9,7 +9,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # 复制依赖文件（先复制 lock 文件利用 Docker 缓存）
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json .npmrc ./
 
 # 安装所有依赖（包括 devDependencies，构建需要）
 # --ignore-scripts 跳过 prepare(husky) 等生命周期脚本（Docker 内无 .git）
