@@ -911,7 +911,9 @@ export default {
       });
 
       // 验证结算页状态
-      this.$nextTick(() => {});
+      this.$nextTick(() => {
+        /* force DOM update after settlement */
+      });
     },
     async fetchAISummary() {
       // 设置 Loading 状态
@@ -1009,7 +1011,9 @@ export default {
 
       // 跳转到排行榜页面
       safeNavigateTo('/pages/practice-sub/rank', {
-        success: () => {},
+        success: () => {
+          /* navigation succeeded */
+        },
         complete: () => {
           setTimeout(() => {
             this.isNavigating = false;

@@ -191,7 +191,9 @@ class TokenRefreshPlugin {
     this.stopPreCheckTimer();
     this._preCheckTimer = setInterval(() => {
       if (this.isTokenExpiringSoon()) {
-        this.refreshToken().catch(() => {});
+        this.refreshToken().catch((_err) => {
+          /* silent refresh failure */
+        });
       }
     }, 60 * 1000);
   }

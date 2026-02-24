@@ -730,7 +730,9 @@ export default {
       const isCorrect = this.isCorrectOption(idx);
 
       // ✅ 记录答题数据到各个分析模块
-      this.recordAnswerToAnalytics(isCorrect, timeSpent).catch(() => {});
+      this.recordAnswerToAnalytics(isCorrect, timeSpent).catch((_err) => {
+        /* silent analytics failure */
+      });
 
       if (isCorrect) {
         // ✅ 播放正确答案动画
@@ -759,7 +761,9 @@ export default {
 
         this.resultStatus = 'wrong';
         // 错误时：先保存到错题本（不含 AI 解析）
-        this.saveToMistakes().catch(() => {});
+        this.saveToMistakes().catch((_err) => {
+          /* silent save failure */
+        });
         // 然后触发 AI 深度解析（会自动更新错题本中的 AI 解析字段）
         await this.fetchAIDeepAnalysis(this.currentQuestion, this.currentQuestion.options[idx]);
         this.updateStudyStats();
