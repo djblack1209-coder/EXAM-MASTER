@@ -1,8 +1,12 @@
 <template>
   <view class="practice-container" :class="{ 'dark-mode': isDark }">
+    <!-- 微信隐私保护弹窗 -->
+    <PrivacyPopup />
     <!-- 顶部导航 -->
     <view class="top-nav">
-      <text class="nav-title"> 刷题中心 </text>
+      <text class="nav-title">
+        刷题中心
+      </text>
       <view class="nav-actions">
         <!-- 移除垃圾桶图标，避免与微信原生胶囊按钮重叠 -->
       </view>
@@ -51,13 +55,24 @@
           />
         </div>
         <div class="status-info">
-          <h3 class="status-title">题库就绪</h3>
-          <p class="status-desc">当前已收录 {{ totalQuestions }} 道真题</p>
+          <h3 class="status-title">
+            题库就绪
+          </h3>
+          <p class="status-desc">
+            当前已收录 {{ totalQuestions }} 道真题
+          </p>
         </div>
         <view class="status-actions">
           <view class="manage-btn" @tap="showQuizManage">
-            <image class="manage-icon-img" src="/static/icons/practice/icon-settings.png" mode="aspectFit" lazy-load />
-            <text class="manage-text"> 题库管理 </text>
+            <image
+              class="manage-icon-img"
+              src="/static/icons/practice/icon-settings.png"
+              mode="aspectFit"
+              lazy-load
+            />
+            <text class="manage-text">
+              题库管理
+            </text>
           </view>
         </view>
       </div>
@@ -65,13 +80,23 @@
       <!-- 空状态 - 居中显示 -->
       <div v-else class="empty-state-content" @tap="chooseImportSource">
         <div class="empty-icon">
-          <text class="empty-icon-emoji"> 📚 </text>
+          <text class="empty-icon-emoji">
+            📚
+          </text>
         </div>
-        <h3 class="empty-title">题库空空如也</h3>
-        <p class="empty-desc">导入学习资料，AI 为您智能生成专属题库</p>
+        <h3 class="empty-title">
+          题库空空如也
+        </h3>
+        <p class="empty-desc">
+          导入学习资料，AI 为您智能生成专属题库
+        </p>
         <view class="empty-action">
-          <text class="action-icon-emoji"> 📤 </text>
-          <text class="action-text"> 点击导入资料 </text>
+          <text class="action-icon-emoji">
+            📤
+          </text>
+          <text class="action-text">
+            点击导入资料
+          </text>
         </view>
       </div>
     </view>
@@ -110,7 +135,12 @@
         @tap="goPractice"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-book.png" mode="aspectFit" />
+        <image
+          v-else
+          class="btn-icon-img"
+          src="/static/icons/practice/icon-book.png"
+          mode="aspectFit"
+        />
         <text class="btn-text">
           {{ isNavigating ? '加载中...' : '开始刷题' }}
         </text>
@@ -125,14 +155,23 @@
         @tap="goBattle"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-battle.png" mode="aspectFit" />
-        <text class="btn-text"> PK 对战 </text>
+        <image
+          v-else
+          class="btn-icon-img"
+          src="/static/icons/practice/icon-battle.png"
+          mode="aspectFit"
+        />
+        <text class="btn-text">
+          PK 对战
+        </text>
       </button>
 
       <!-- 导入资料卡片 -->
       <div class="import-card" :class="{ 'import-loading': isUploadingFile }" @tap="chooseImportSource">
         <div class="import-icon">
-          <text v-if="!isUploadingFile" class="import-icon-emoji"> 📤 </text>
+          <text v-if="!isUploadingFile" class="import-icon-emoji">
+            📤
+          </text>
           <view v-else class="import-spinner" />
         </div>
         <div class="import-info">
@@ -144,7 +183,9 @@
           </p>
         </div>
         <div class="import-arrow">
-          <text v-if="!isUploadingFile" class="arrow"> › </text>
+          <text v-if="!isUploadingFile" class="arrow">
+            ›
+          </text>
         </div>
       </div>
     </div>
@@ -156,13 +197,22 @@
       <!-- 文件管理 -->
       <div class="menu-item" @tap="goFileManager">
         <div class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-folder.png" mode="aspectFit" lazy-load />
+          <image
+            class="menu-icon-img"
+            src="/static/icons/practice/icon-folder.png"
+            mode="aspectFit"
+            lazy-load
+          />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">文件管理</h3>
+          <h3 class="menu-title">
+            文件管理
+          </h3>
         </div>
         <div class="menu-arrow">
-          <text class="arrow"> › </text>
+          <text class="arrow">
+            ›
+          </text>
         </div>
       </div>
 
@@ -177,94 +227,149 @@
           />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">AI导师</h3>
+          <h3 class="menu-title">
+            AI导师
+          </h3>
         </div>
         <div class="menu-arrow">
-          <text class="arrow"> › </text>
+          <text class="arrow">
+            ›
+          </text>
         </div>
       </div>
 
       <!-- 错题本 -->
       <div class="menu-item" @tap="goMistake">
         <div class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-error.png" mode="aspectFit" lazy-load />
+          <image
+            class="menu-icon-img"
+            src="/static/icons/practice/icon-error.png"
+            mode="aspectFit"
+            lazy-load
+          />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">错题本</h3>
+          <h3 class="menu-title">
+            错题本
+          </h3>
         </div>
         <div class="menu-arrow">
-          <text class="arrow"> › </text>
+          <text class="arrow">
+            ›
+          </text>
         </div>
       </div>
 
       <!-- ✅ P1: 错题重练入口 -->
       <div v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
         <div class="menu-icon">
-          <text class="menu-icon-emoji"> 🔄 </text>
+          <text class="menu-icon-emoji">
+            🔄
+          </text>
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">错题重练</h3>
-          <p class="menu-subtitle">{{ mistakeCount }} 道错题待巩固</p>
+          <h3 class="menu-title">
+            错题重练
+          </h3>
+          <p class="menu-subtitle">
+            {{ mistakeCount }} 道错题待巩固
+          </p>
         </div>
         <div class="menu-arrow">
-          <text class="arrow"> › </text>
+          <text class="arrow">
+            ›
+          </text>
         </div>
       </div>
 
       <!-- 排行榜 -->
       <div class="menu-item" @tap="goRank">
         <div class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-ranking.png" mode="aspectFit" lazy-load />
+          <image
+            class="menu-icon-img"
+            src="/static/icons/practice/icon-ranking.png"
+            mode="aspectFit"
+            lazy-load
+          />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">学霸排行榜</h3>
+          <h3 class="menu-title">
+            学霸排行榜
+          </h3>
         </div>
         <div class="menu-arrow">
-          <text class="arrow"> › </text>
+          <text class="arrow">
+            ›
+          </text>
         </div>
       </div>
 
       <!-- 学习进度 -->
       <div class="menu-item" @tap="goToStudyDetail">
         <div class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-check.png" mode="aspectFit" lazy-load />
+          <image
+            class="menu-icon-img"
+            src="/static/icons/practice/icon-check.png"
+            mode="aspectFit"
+            lazy-load
+          />
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">总学习进度</h3>
+          <h3 class="menu-title">
+            总学习进度
+          </h3>
         </div>
         <div class="progress-info">
           <div class="progress-bar">
             <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
           </div>
-          <text class="progress-text"> {{ progressPercent }}% </text>
+          <text class="progress-text">
+            {{ progressPercent }}%
+          </text>
         </div>
       </div>
 
       <!-- ✅ P2: 收藏夹管理入口 -->
       <div v-if="favoriteCount > 0" class="menu-item" @tap="goFavorites">
         <div class="menu-icon">
-          <text class="menu-icon-emoji"> ⭐ </text>
+          <text class="menu-icon-emoji">
+            ⭐
+          </text>
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">我的收藏</h3>
-          <p class="menu-subtitle-normal">{{ favoriteCount }} 道题目</p>
+          <h3 class="menu-title">
+            我的收藏
+          </h3>
+          <p class="menu-subtitle-normal">
+            {{ favoriteCount }} 道题目
+          </p>
         </div>
         <div class="menu-arrow">
-          <text class="arrow"> › </text>
+          <text class="arrow">
+            ›
+          </text>
         </div>
       </div>
 
       <!-- ✅ P1: 练习模式入口 -->
       <div class="menu-item" @tap="showPracticeModes">
         <div class="menu-icon">
-          <text class="menu-icon-emoji"> 🎮 </text>
+          <text class="menu-icon-emoji">
+            🎮
+          </text>
         </div>
         <div class="menu-info">
-          <h3 class="menu-title">练习模式</h3>
-          <p class="menu-subtitle-normal">专项突破 · 限时训练</p>
+          <h3 class="menu-title">
+            练习模式
+          </h3>
+          <p class="menu-subtitle-normal">
+            专项突破 · 限时训练
+          </p>
         </div>
         <div class="menu-arrow">
-          <text class="arrow"> › </text>
+          <text class="arrow">
+            ›
+          </text>
         </div>
       </div>
     </div>

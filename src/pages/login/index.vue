@@ -1,5 +1,7 @@
 <template>
   <view class="login-container" :class="{ 'dark-mode': isDark }">
+    <!-- 微信隐私保护弹窗 -->
+    <PrivacyPopup />
     <!-- 背景装饰 -->
     <view class="bg-decoration">
       <view class="bg-circle bg-circle-1" />
@@ -10,15 +12,21 @@
     <!-- 顶部返回按钮 -->
     <view class="top-bar">
       <view class="back-btn" hover-class="btn-hover" @tap="handleBack">
-        <text class="back-icon"> ← </text>
+        <text class="back-icon">
+          ←
+        </text>
       </view>
     </view>
 
     <!-- Logo区域 -->
     <view class="logo-section">
       <image class="app-logo" src="./static/logo.png" mode="aspectFit" />
-      <text class="app-name"> Exam-Master </text>
-      <text class="app-slogan"> AI助力，一战成硕 </text>
+      <text class="app-name">
+        Exam-Master
+      </text>
+      <text class="app-slogan">
+        AI助力，一战成硕
+      </text>
     </view>
 
     <!-- 登录方式选择 -->
@@ -37,7 +45,9 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信一键登录' }}
         </text>
-        <text class="btn-arrow"> → </text>
+        <text class="btn-arrow">
+          →
+        </text>
       </view>
       <!-- #endif -->
 
@@ -55,8 +65,12 @@
         <view class="btn-icon wechat-icon">
           <text>微信</text>
         </view>
-        <text class="btn-text"> 微信一键登录 </text>
-        <text class="btn-arrow"> → </text>
+        <text class="btn-text">
+          微信一键登录
+        </text>
+        <text class="btn-arrow">
+          →
+        </text>
       </view>
       <!-- #endif -->
       <!-- #ifdef H5 -->
@@ -74,7 +88,9 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信授权登录' }}
         </text>
-        <text class="btn-arrow"> → </text>
+        <text class="btn-arrow">
+          →
+        </text>
       </view>
       <!-- #endif -->
       <!-- #endif -->
@@ -89,14 +105,18 @@
       <!-- 分割线 -->
       <view class="divider">
         <view class="divider-line" />
-        <text class="divider-text"> 或 </text>
+        <text class="divider-text">
+          或
+        </text>
         <view class="divider-line" />
       </view>
 
       <!-- 邮箱登录表单 -->
       <view v-if="showEmailForm" class="email-form">
         <view class="form-item">
-          <text class="form-label"> 邮箱地址 </text>
+          <text class="form-label">
+            邮箱地址
+          </text>
           <input
             v-model="emailForm.email"
             class="form-input"
@@ -111,7 +131,9 @@
         </view>
 
         <view v-if="!isRegister" class="form-item">
-          <text class="form-label"> 密码 </text>
+          <text class="form-label">
+            密码
+          </text>
           <input
             v-model="emailForm.password"
             class="form-input"
@@ -122,7 +144,9 @@
         </view>
 
         <view v-if="isRegister" class="form-item">
-          <text class="form-label"> 验证码 </text>
+          <text class="form-label">
+            验证码
+          </text>
           <view class="code-input-wrapper">
             <input
               v-model="emailForm.code"
@@ -144,7 +168,9 @@
         </view>
 
         <view v-if="isRegister" class="form-item">
-          <text class="form-label"> 设置密码 </text>
+          <text class="form-label">
+            设置密码
+          </text>
           <input
             v-model="emailForm.password"
             class="form-input"
@@ -173,12 +199,21 @@
       </view>
 
       <!-- 邮箱登录入口 -->
-      <view v-else class="login-btn email-btn" hover-class="btn-hover" @tap="showEmailForm = true">
+      <view
+        v-else
+        class="login-btn email-btn"
+        hover-class="btn-hover"
+        @tap="showEmailForm = true"
+      >
         <view class="btn-icon email-icon">
           <text>📧</text>
         </view>
-        <text class="btn-text"> 邮箱登录/注册 </text>
-        <text class="btn-arrow"> → </text>
+        <text class="btn-text">
+          邮箱登录/注册
+        </text>
+        <text class="btn-arrow">
+          →
+        </text>
       </view>
     </view>
 
@@ -186,14 +221,20 @@
     <view class="agreement">
       <view class="checkbox-wrapper" @tap="toggleAgreement">
         <view class="checkbox" :class="{ checked: agreedToTerms }">
-          <text v-if="agreedToTerms"> ✓ </text>
+          <text v-if="agreedToTerms">
+            ✓
+          </text>
         </view>
       </view>
       <text class="agreement-text">
         登录即表示同意
-        <text class="link" @tap="openPrivacy"> 《隐私政策》 </text>
+        <text class="link" @tap="openPrivacy">
+          《隐私政策》
+        </text>
         和
-        <text class="link" @tap="openTerms"> 《用户协议》 </text>
+        <text class="link" @tap="openTerms">
+          《用户协议》
+        </text>
       </text>
     </view>
 

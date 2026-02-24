@@ -1,6 +1,8 @@
 <template>
   <!-- 最外层：页面容器 -->
   <view :class="['page-wrapper', { 'page-dark': isDark }]">
+    <!-- 微信隐私保护弹窗 -->
+    <PrivacyPopup />
     <!-- 主容器：带背景色 -->
     <view :class="['dashboard-container', { dark: isDark }]">
       <!-- F002-I1b: 顶部导航栏（已提取为独立组件） -->
@@ -30,7 +32,9 @@
         <view v-if="isRefreshing" class="custom-refresher">
           <view class="refresher-content">
             <view class="refresher-spinner" />
-            <text class="refresher-text"> 正在刷新... </text>
+            <text class="refresher-text">
+              正在刷新...
+            </text>
           </view>
         </view>
         <!-- 顶部占位：为导航栏留空 -->
@@ -98,7 +102,9 @@
 
           <!-- 实用工具入口 -->
           <view class="section-header">
-            <text class="section-title"> 实用工具 </text>
+            <text class="section-title">
+              实用工具
+            </text>
           </view>
           <view class="tools-grid">
             <view
@@ -108,13 +114,21 @@
             >
               <view class="tool-icon-wrapper tool-icon-doc">
                 <view class="tool-icon-glow tool-glow-doc" />
-                <text class="tool-icon-emoji">📄</text>
+                <text class="tool-icon-emoji">
+                  📄
+                </text>
               </view>
               <view class="tool-info">
-                <text class="tool-name">文档转换</text>
-                <text class="tool-desc">PDF/Word/Excel 互转</text>
+                <text class="tool-name">
+                  文档转换
+                </text>
+                <text class="tool-desc">
+                  PDF/Word/Excel 互转
+                </text>
               </view>
-              <text class="tool-arrow">›</text>
+              <text class="tool-arrow">
+                ›
+              </text>
             </view>
             <view
               :class="['tool-entry', isDark ? 'glass' : 'card-light']"
@@ -123,13 +137,21 @@
             >
               <view class="tool-icon-wrapper tool-icon-photo">
                 <view class="tool-icon-glow tool-glow-photo" />
-                <text class="tool-icon-emoji">📷</text>
+                <text class="tool-icon-emoji">
+                  📷
+                </text>
               </view>
               <view class="tool-info">
-                <text class="tool-name">证件照制作</text>
-                <text class="tool-desc">智能抠图换背景</text>
+                <text class="tool-name">
+                  证件照制作
+                </text>
+                <text class="tool-desc">
+                  智能抠图换背景
+                </text>
               </view>
-              <text class="tool-arrow">›</text>
+              <text class="tool-arrow">
+                ›
+              </text>
             </view>
             <view
               :class="['tool-entry', isDark ? 'glass' : 'card-light']"
@@ -138,25 +160,44 @@
             >
               <view class="tool-icon-wrapper tool-icon-search">
                 <view class="tool-icon-glow tool-glow-search" />
-                <text class="tool-icon-emoji">🔍</text>
+                <text class="tool-icon-emoji">
+                  🔍
+                </text>
               </view>
               <view class="tool-info">
-                <text class="tool-name">拍照搜题</text>
-                <text class="tool-desc">AI 智能识别解答</text>
+                <text class="tool-name">
+                  拍照搜题
+                </text>
+                <text class="tool-desc">
+                  AI 智能识别解答
+                </text>
               </view>
-              <text class="tool-arrow">›</text>
+              <text class="tool-arrow">
+                ›
+              </text>
             </view>
           </view>
 
           <!-- 待办事项清单 -->
           <view class="section-header">
-            <text class="section-title"> 待办事项 </text>
+            <text class="section-title">
+              待办事项
+            </text>
             <view class="edit-plan-btn" @tap="handleEditPlan">
-              <text class="edit-icon"> ✏️ </text>
-              <text class="edit-text"> 编辑计划 </text>
+              <text class="edit-icon">
+                ✏️
+              </text>
+              <text class="edit-text">
+                编辑计划
+              </text>
             </view>
           </view>
-          <TodoList :todos="todos" :is-dark="isDark" @toggle-todo="handleToggleTodo" @edit-todo="openTodoEditor" />
+          <TodoList
+            :todos="todos"
+            :is-dark="isDark"
+            @toggle-todo="handleToggleTodo"
+            @edit-todo="openTodoEditor"
+          />
 
           <!-- 每日金句 -->
           <DailyQuoteCard :is-dark="isDark" :quote="dailyQuote" @open-poster="openQuotePoster" />
@@ -394,6 +435,56 @@ export default {
     };
   },
 
+  computed: {
+    // 用户信息
+    userName() {
+      return this.userStore?.userInfo?.nickName || '小伙伴';
+    },
+
+    // 判断是否已登录
+    isLoggedIn() {
+      return !!(this.userStore?.isLogin || storageService.get('EXAM_USER_ID'));
+    },
+
+    // 学习统计数据
+    finishedCount() {
+      return this.studyStore?.studyProgress?.completedQuestions || 0;
+    },
+
+    totalStudyDays() {
+      return this.studyStore?.studyProgress?.studyDays || 0;
+    },
+
+    // 真实统计数据：✅ 2.3 已移到 data()，由 loadData/refreshData 更新
+    // realTotalQuestions, realAccuracy, realStudyDays 不再从 storageService 读取
+
+    // 待办事项数据
+    todos() {
+      if (!this.todoStore?.tasks) return [];
+      return this.todoStore.tasks.map((task) => ({
+        id: task.id,
+        text: task.title,
+        completed: task.done,
+        priority: task.tag || task.priority
+      }));
+    },
+
+    // ✅ P0-1: 空状态判断 — 2.3: 基于 data 属性而非重复读 storage
+    isQuestionBankEmpty() {
+      return this.realTotalQuestions === 0;
+    },
+
+    // 用户头像URL
+    userAvatarUrl() {
+      return this.userStore?.userInfo?.avatarUrl || '/static/images/default-avatar.png';
+    },
+
+    isNewUser() {
+      // 新用户判断：题库为空 且 学习天数为0
+      return this.isQuestionBankEmpty && this.totalStudyDays === 0;
+    }
+  },
+
   created() {
     // ✅ 2.3: 静态配置数据作为非响应式实例属性，避免 Vue 递归观察大数组
     this.quoteLibrary = Object.freeze(QUOTE_LIBRARY.map((q) => q.text));
@@ -479,56 +570,6 @@ export default {
 
     // ✅ 检查点1.5: 停止计时
     this.stopStudyTimer();
-  },
-
-  computed: {
-    // 用户信息
-    userName() {
-      return this.userStore?.userInfo?.nickName || '小伙伴';
-    },
-
-    // 判断是否已登录
-    isLoggedIn() {
-      return !!(this.userStore?.isLogin || storageService.get('EXAM_USER_ID'));
-    },
-
-    // 学习统计数据
-    finishedCount() {
-      return this.studyStore?.studyProgress?.completedQuestions || 0;
-    },
-
-    totalStudyDays() {
-      return this.studyStore?.studyProgress?.studyDays || 0;
-    },
-
-    // 真实统计数据：✅ 2.3 已移到 data()，由 loadData/refreshData 更新
-    // realTotalQuestions, realAccuracy, realStudyDays 不再从 storageService 读取
-
-    // 待办事项数据
-    todos() {
-      if (!this.todoStore?.tasks) return [];
-      return this.todoStore.tasks.map((task) => ({
-        id: task.id,
-        text: task.title,
-        completed: task.done,
-        priority: task.tag || task.priority
-      }));
-    },
-
-    // ✅ P0-1: 空状态判断 — 2.3: 基于 data 属性而非重复读 storage
-    isQuestionBankEmpty() {
-      return this.realTotalQuestions === 0;
-    },
-
-    // 用户头像URL
-    userAvatarUrl() {
-      return this.userStore?.userInfo?.avatarUrl || '/static/images/default-avatar.png';
-    },
-
-    isNewUser() {
-      // 新用户判断：题库为空 且 学习天数为0
-      return this.isQuestionBankEmpty && this.totalStudyDays === 0;
-    }
   },
 
   methods: {
@@ -800,13 +841,7 @@ export default {
     handleLoginConfirm() {
       this.showLoginModal = false;
 
-      // 优先尝试静默登录（微信小程序环境）
-      // #ifdef MP-WEIXIN
-      this.doSilentLogin();
-      // #endif
-
-      // #ifndef MP-WEIXIN
-      // 非微信环境跳转到登录页
+      // 所有平台统一跳转登录页，确保用户必须同意隐私协议后才能登录
       safeNavigateTo('/pages/login/index', {
         fail: (err) => {
           logger.error('[Index] 跳转登录页失败:', err);
@@ -822,7 +857,6 @@ export default {
           });
         }
       });
-      // #endif
     },
 
     // ✅ 微信小程序静默登录

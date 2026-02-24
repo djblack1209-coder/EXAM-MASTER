@@ -7,32 +7,32 @@
  * ✅ 加密/解密逻辑已提取到 utils/crypto/cipher.js 共享模块
  */
 
-import { deobfuscate } from '../utils/crypto/cipher.js'
+import { deobfuscate } from '../utils/crypto/cipher.js';
 
 /**
  * 获取当前用户ID（统一入口）
  */
 export const getUserId = () => {
   try {
-    const encrypted = uni.getStorageSync('_enc_EXAM_USER_ID')
+    const encrypted = uni.getStorageSync('_enc_EXAM_USER_ID');
     if (encrypted && encrypted !== '') {
-      const decrypted = deobfuscate(encrypted)
-      if (decrypted !== null) return decrypted
+      const decrypted = deobfuscate(encrypted);
+      if (decrypted !== null) return decrypted;
     }
   } catch { /* ignore */ }
-  return uni.getStorageSync('EXAM_USER_ID') || null
-}
+  return uni.getStorageSync('EXAM_USER_ID') || null;
+};
 
 /**
  * 获取当前用户Token（统一入口）
  */
 export const getToken = () => {
   try {
-    const encrypted = uni.getStorageSync('_enc_EXAM_TOKEN')
+    const encrypted = uni.getStorageSync('_enc_EXAM_TOKEN');
     if (encrypted && encrypted !== '') {
-      const decrypted = deobfuscate(encrypted)
-      if (decrypted !== null) return decrypted
+      const decrypted = deobfuscate(encrypted);
+      if (decrypted !== null) return decrypted;
     }
   } catch { /* ignore */ }
-  return uni.getStorageSync('EXAM_TOKEN') || null
-}
+  return uni.getStorageSync('EXAM_TOKEN') || null;
+};
