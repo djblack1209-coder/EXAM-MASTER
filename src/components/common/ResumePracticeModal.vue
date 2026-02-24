@@ -51,7 +51,9 @@
 
       <!-- 提示文字 -->
       <view class="modal-tip">
-        <text class="modal-tip-text">{{ tipText }}</text>
+        <text class="modal-tip-text">
+          {{ tipText }}
+        </text>
       </view>
 
       <!-- 操作按钮 -->

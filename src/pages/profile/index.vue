@@ -8,7 +8,14 @@
       transition: 'background-color 0.3s ease'
     }"
   >
-    <scroll-view scroll-y class="w-full h-full" :scroll-top="0" @scroll="onScroll">
+    <!-- 微信隐私保护弹窗 -->
+    <PrivacyPopup />
+    <scroll-view
+      scroll-y
+      class="w-full h-full"
+      :scroll-top="0"
+      @scroll="onScroll"
+    >
       <!-- 内容区：顶部留出状态栏+导航栏空间，底部留出 TabBar 空间 -->
       <view
         class="content-wrapper"
@@ -56,7 +63,12 @@
         <!-- #endif -->
 
         <!-- ========== 用户信息卡片 ========== -->
-        <view v-if="!isPageLoading" class="card user-card" hover-class="card-hover" @tap="handleUserCardClick">
+        <view
+          v-if="!isPageLoading"
+          class="card user-card"
+          hover-class="card-hover"
+          @tap="handleUserCardClick"
+        >
           <view class="user-section">
             <!-- 头像 -->
             <view class="avatar-box" @tap.stop="handleAvatarTap">
@@ -74,7 +86,9 @@
                 mode="aspectFill"
               />
               <view v-if="isLoggedIn" class="avatar-edit-badge">
-                <text class="avatar-edit-icon"> 📷 </text>
+                <text class="avatar-edit-icon">
+                  📷
+                </text>
               </view>
             </view>
             <!-- 用户信息 -->
@@ -101,12 +115,16 @@
             <!-- 学习天数 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('days')">
               <view class="stat-icon-box">
-                <text class="stat-emoji"> 📅 </text>
+                <text class="stat-emoji">
+                  📅
+                </text>
               </view>
               <text class="stat-value">
                 {{ studyDays }}
               </text>
-              <text class="stat-label"> 学习天数 </text>
+              <text class="stat-label">
+                学习天数
+              </text>
             </view>
 
             <!-- 分隔线 -->
@@ -115,12 +133,16 @@
             <!-- 获得勋章 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('badges')">
               <view class="stat-icon-box">
-                <text class="stat-emoji"> 🏆 </text>
+                <text class="stat-emoji">
+                  🏆
+                </text>
               </view>
               <text class="stat-value">
                 {{ badgeCount }}
               </text>
-              <text class="stat-label"> 获得勋章 </text>
+              <text class="stat-label">
+                获得勋章
+              </text>
             </view>
 
             <!-- 分隔线 -->
@@ -129,10 +151,16 @@
             <!-- 正确率 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('accuracy')">
               <view class="stat-icon-box">
-                <text class="stat-emoji"> 🎯 </text>
+                <text class="stat-emoji">
+                  🎯
+                </text>
               </view>
-              <text class="stat-value"> {{ accuracyRate }}% </text>
-              <text class="stat-label"> 正确率 </text>
+              <text class="stat-value">
+                {{ accuracyRate }}%
+              </text>
+              <text class="stat-label">
+                正确率
+              </text>
             </view>
           </view>
         </view>
@@ -141,10 +169,16 @@
         <view v-if="!isPageLoading" class="card checkin-card">
           <view class="checkin-header">
             <view class="checkin-title-row">
-              <text class="checkin-title"> 每日打卡 </text>
-              <text v-if="checkInStreak > 0" class="checkin-streak"> 🔥 连续 {{ checkInStreak }} 天 </text>
+              <text class="checkin-title">
+                每日打卡
+              </text>
+              <text v-if="checkInStreak > 0" class="checkin-streak">
+                🔥 连续 {{ checkInStreak }} 天
+              </text>
             </view>
-            <text class="checkin-subtitle"> 坚持打卡，养成学习好习惯 </text>
+            <text class="checkin-subtitle">
+              坚持打卡，养成学习好习惯
+            </text>
           </view>
 
           <view class="checkin-content">
@@ -166,8 +200,12 @@
             <!-- 补签卡信息 -->
             <view v-if="recoveryCards > 0 || missedDaysCount > 0" class="recovery-info">
               <view v-if="recoveryCards > 0" class="recovery-cards">
-                <text class="recovery-icon"> 🎫 </text>
-                <text class="recovery-text"> 补签卡 x{{ recoveryCards }} </text>
+                <text class="recovery-icon">
+                  🎫
+                </text>
+                <text class="recovery-text">
+                  补签卡 x{{ recoveryCards }}
+                </text>
               </view>
               <view
                 v-if="missedDaysCount > 0 && recoveryCards > 0"
@@ -175,15 +213,21 @@
                 hover-class="btn-hover"
                 @tap="showRecoveryOptions"
               >
-                <text class="use-recovery-text"> 使用补签卡 </text>
+                <text class="use-recovery-text">
+                  使用补签卡
+                </text>
               </view>
             </view>
           </view>
 
           <!-- 断签提示 -->
           <view v-if="missedDaysCount > 0 && !todayChecked" class="missed-tip">
-            <text class="missed-icon"> ⚠️ </text>
-            <text class="missed-text"> 您已断签 {{ missedDaysCount }} 天，快来打卡恢复连续记录吧！ </text>
+            <text class="missed-icon">
+              ⚠️
+            </text>
+            <text class="missed-text">
+              您已断签 {{ missedDaysCount }} 天，快来打卡恢复连续记录吧！
+            </text>
           </view>
         </view>
 
@@ -192,10 +236,16 @@
           <!-- 我的错题 -->
           <view class="menu-item" hover-class="menu-hover" @tap="navToMistake">
             <view class="menu-icon-box">
-              <text class="menu-emoji"> 📚 </text>
+              <text class="menu-emoji">
+                📚
+              </text>
             </view>
-            <text class="menu-text"> 我的错题 </text>
-            <text class="menu-arrow"> › </text>
+            <text class="menu-text">
+              我的错题
+            </text>
+            <text class="menu-arrow">
+              ›
+            </text>
           </view>
 
           <!-- 分隔线 -->
@@ -204,10 +254,16 @@
           <!-- 学习统计 -->
           <view class="menu-item" hover-class="menu-hover" @tap="navToStudyDetail">
             <view class="menu-icon-box">
-              <text class="menu-emoji"> 📊 </text>
+              <text class="menu-emoji">
+                📊
+              </text>
             </view>
-            <text class="menu-text"> 学习统计 </text>
-            <text class="menu-arrow"> › </text>
+            <text class="menu-text">
+              学习统计
+            </text>
+            <text class="menu-arrow">
+              ›
+            </text>
           </view>
 
           <!-- 分隔线 -->
@@ -216,10 +272,16 @@
           <!-- 系统设置 -->
           <view class="menu-item" hover-class="menu-hover" @tap="navToSettings">
             <view class="menu-icon-box">
-              <text class="menu-emoji"> ⚙️ </text>
+              <text class="menu-emoji">
+                ⚙️
+              </text>
             </view>
-            <text class="menu-text"> 系统设置 </text>
-            <text class="menu-arrow"> › </text>
+            <text class="menu-text">
+              系统设置
+            </text>
+            <text class="menu-arrow">
+              ›
+            </text>
           </view>
 
           <!-- 分隔线 -->
@@ -228,28 +290,47 @@
           <!-- 意见反馈 -->
           <view class="menu-item" hover-class="menu-hover" @tap="handleFeedback">
             <view class="menu-icon-box">
-              <text class="menu-emoji"> 💬 </text>
+              <text class="menu-emoji">
+                💬
+              </text>
             </view>
-            <text class="menu-text"> 意见反馈 </text>
-            <text class="menu-arrow"> › </text>
+            <text class="menu-text">
+              意见反馈
+            </text>
+            <text class="menu-arrow">
+              ›
+            </text>
           </view>
         </view>
 
         <!-- ========== 关于卡片 ========== -->
         <view v-if="!isPageLoading" class="card about-card">
           <view class="about-row">
-            <text class="about-label"> 版本 </text>
-            <text class="about-value"> v{{ appVersion }} </text>
+            <text class="about-label">
+              版本
+            </text>
+            <text class="about-value">
+              v{{ appVersion }}
+            </text>
           </view>
           <view class="about-divider" />
           <view class="about-row">
-            <text class="about-label"> 开发者 </text>
-            <text class="about-value"> Exam-Master Team </text>
+            <text class="about-label">
+              开发者
+            </text>
+            <text class="about-value">
+              Exam-Master Team
+            </text>
           </view>
         </view>
 
         <!-- ========== 主题切换按钮 ========== -->
-        <view v-if="!isPageLoading" class="theme-btn" hover-class="btn-hover" @tap="toggleTheme">
+        <view
+          v-if="!isPageLoading"
+          class="theme-btn"
+          hover-class="btn-hover"
+          @tap="toggleTheme"
+        >
           <text class="theme-emoji">
             {{ isDark ? '🌙' : '☀️' }}
           </text>
@@ -259,8 +340,15 @@
         </view>
 
         <!-- ========== 退出登录按钮 ========== -->
-        <view v-if="!isPageLoading && isLoggedIn" class="logout-btn" hover-class="logout-hover" @tap="handleLogout">
-          <text class="logout-text"> 退出登录 </text>
+        <view
+          v-if="!isPageLoading && isLoggedIn"
+          class="logout-btn"
+          hover-class="logout-hover"
+          @tap="handleLogout"
+        >
+          <text class="logout-text">
+            退出登录
+          </text>
         </view>
       </view>
     </scroll-view>
@@ -274,7 +362,9 @@
       }"
     >
       <view class="nav-content">
-        <text class="nav-title"> 个人中心 </text>
+        <text class="nav-title">
+          个人中心
+        </text>
       </view>
     </view>
 

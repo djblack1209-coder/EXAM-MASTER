@@ -11,21 +11,35 @@
       <view class="loading-icon">
         <view class="spinner" />
       </view>
-      <text class="loading-text"> 正在登录中... </text>
-      <text class="loading-hint"> 请稍候，正在验证QQ授权 </text>
+      <text class="loading-text">
+        正在登录中...
+      </text>
+      <text class="loading-hint">
+        请稍候，正在验证QQ授权
+      </text>
     </view>
 
     <!-- 成功状态 -->
     <view v-else-if="loginSuccess" class="success-section">
-      <view class="success-icon"> ✓ </view>
-      <text class="success-text"> 登录成功 </text>
-      <text class="success-hint"> 即将跳转... </text>
+      <view class="success-icon">
+        ✓
+      </view>
+      <text class="success-text">
+        登录成功
+      </text>
+      <text class="success-hint">
+        即将跳转...
+      </text>
     </view>
 
     <!-- 错误状态 -->
     <view v-else-if="loginError" class="error-section">
-      <view class="error-icon"> ✕ </view>
-      <text class="error-text"> 登录失败 </text>
+      <view class="error-icon">
+        ✕
+      </view>
+      <text class="error-text">
+        登录失败
+      </text>
       <text class="error-hint">
         {{ errorMessage }}
       </text>

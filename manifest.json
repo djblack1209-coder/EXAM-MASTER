@@ -65,6 +65,7 @@
     },
     "usingComponents": true,
     "lazyCodeLoading": "requiredComponents",
+    "__usePrivacyCheck__": true,
     "networkTimeout": {
       "request": 30000,
       "connectSocket": 10000,

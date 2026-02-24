@@ -2,8 +2,12 @@
   <view class="settings-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 - 添加设计系统工具类 -->
     <view class="top-nav">
-      <text class="nav-back" @tap="handleGoBack"> ← </text>
-      <text class="nav-title ds-text-display ds-font-bold"> 设置 </text>
+      <text class="nav-back" @tap="handleGoBack">
+        ←
+      </text>
+      <text class="nav-title ds-text-display ds-font-bold">
+        设置
+      </text>
       <view class="nav-placeholder" />
     </view>
 
@@ -42,10 +46,19 @@
       <div class="user-header">
         <view class="avatar-section" @tap="handleAvatarClick">
           <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError" />
+            <image
+              class="avatar"
+              :src="userInfo.avatarUrl || defaultAvatar"
+              mode="aspectFill"
+              @error="onAvatarError"
+            />
           </button>
-          <view v-if="!userInfo.uid" class="login-badge"> 点击登录 </view>
-          <view v-else class="login-badge logged-in"> 已登录 </view>
+          <view v-if="!userInfo.uid" class="login-badge">
+            点击登录
+          </view>
+          <view v-else class="login-badge logged-in">
+            已登录
+          </view>
         </view>
         <div class="user-info-section">
           <input
@@ -59,13 +72,17 @@
           />
           <div class="info-grid">
             <div class="info-item" @tap="handleEditSchool">
-              <text class="info-label"> 报考院校 </text>
+              <text class="info-label">
+                报考院校
+              </text>
               <text class="info-value">
                 {{ userSchoolInfo.school || '未设置' }}
               </text>
             </div>
             <div class="info-item" @tap="handleEditMajor">
-              <text class="info-label"> 报考专业 </text>
+              <text class="info-label">
+                报考专业
+              </text>
               <text class="info-value">
                 {{ userSchoolInfo.major || '未设置' }}
               </text>
@@ -77,13 +94,19 @@
         <view v-if="showTargetSchoolsModal" class="modal-mask" @tap="showTargetSchoolsModal = false">
           <view class="modal-content" @tap.stop>
             <view class="modal-header">
-              <text class="modal-title"> 目标院校管理 </text>
-              <text class="close-btn" @tap="showTargetSchoolsModal = false"> ✕ </text>
+              <text class="modal-title">
+                目标院校管理
+              </text>
+              <text class="close-btn" @tap="showTargetSchoolsModal = false">
+                ✕
+              </text>
             </view>
             <view class="modal-body">
               <view v-if="targetSchools.length === 0" class="empty-targets">
                 <text>暂无目标院校</text>
-                <button class="add-btn" @tap="handleAddTargetSchool">去添加目标院校</button>
+                <button class="add-btn" @tap="handleAddTargetSchool">
+                  去添加目标院校
+                </button>
               </view>
               <view v-else class="target-list">
                 <view
@@ -110,7 +133,9 @@
                     </text>
                   </view>
                   <view class="target-actions">
-                    <text class="action-btn delete-btn" @tap="removeTargetSchool(index)"> 删除 </text>
+                    <text class="action-btn delete-btn" @tap="removeTargetSchool(index)">
+                      删除
+                    </text>
                   </view>
                 </view>
               </view>
@@ -123,13 +148,17 @@
           <text class="stat-value">
             {{ studyDays }}
           </text>
-          <text class="stat-label"> 坚持天数 </text>
+          <text class="stat-label">
+            坚持天数
+          </text>
         </div>
         <div class="stat-card" @tap="handleTargetSchoolClick">
           <text class="stat-value">
             {{ targetSchools.length }}
           </text>
-          <text class="stat-label"> 目标院校 </text>
+          <text class="stat-label">
+            目标院校
+          </text>
         </div>
       </div>
     </view>
@@ -146,8 +175,12 @@
         <!-- 语音伴学 -->
         <div class="setting-item ds-flex ds-flex-between">
           <div class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium"> AI 语音伴学 </text>
-            <text class="setting-desc ds-text-xs"> 导师回答后自动朗读 </text>
+            <text class="setting-title ds-text-sm ds-font-medium">
+              AI 语音伴学
+            </text>
+            <text class="setting-desc ds-text-xs">
+              导师回答后自动朗读
+            </text>
           </div>
           <switch
             :color="isDark ? 'var(--primary)' : 'var(--primary)'"
@@ -159,8 +192,12 @@
         <!-- 深色模式（自动切换 Wise/Bitget 主题） -->
         <div class="setting-item ds-flex ds-flex-between">
           <div class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium"> 深色模式 </text>
-            <text class="setting-desc ds-text-xs"> 护眼模式，夜间更舒适 </text>
+            <text class="setting-title ds-text-sm ds-font-medium">
+              深色模式
+            </text>
+            <text class="setting-desc ds-text-xs">
+              护眼模式，夜间更舒适
+            </text>
           </div>
           <switch :color="isDark ? 'var(--primary)' : 'var(--primary)'" :checked="isDark" @change="toggleDark" />
         </div>
@@ -168,8 +205,12 @@
         <!-- 清除缓存 -->
         <div class="setting-item ds-flex ds-flex-between ds-touchable" @tap="handleClearCache">
           <div class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium"> 清除缓存数据 </text>
-            <text class="setting-desc ds-text-xs"> 释放存储空间 </text>
+            <text class="setting-title ds-text-sm ds-font-medium">
+              清除缓存数据
+            </text>
+            <text class="setting-desc ds-text-xs">
+              释放存储空间
+            </text>
           </div>
           <text class="cache-size ds-text-xs">
             {{ cacheSize }}
@@ -186,19 +227,27 @@
       <!-- 注销冷静期状态提示 -->
       <view v-if="deletionStatus.status === 'pending_deletion'" class="deletion-pending-card">
         <view class="deletion-pending-header">
-          <text class="deletion-pending-icon">⚠️</text>
-          <text class="deletion-pending-title">账号注销中</text>
+          <text class="deletion-pending-icon">
+            ⚠️
+          </text>
+          <text class="deletion-pending-title">
+            账号注销中
+          </text>
         </view>
         <text class="deletion-pending-desc">
           剩余 {{ deletionStatus.remainingDays }} 天后将永久删除所有数据，冷静期内可撤销
         </text>
         <div class="deletion-cancel-btn ds-touchable" @tap="handleCancelDeletion">
-          <text class="deletion-cancel-text">撤销注销</text>
+          <text class="deletion-cancel-text">
+            撤销注销
+          </text>
         </div>
       </view>
       <!-- 正常状态：显示注销按钮 -->
       <div v-else class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
-        <text class="delete-account-text"> 注销账号 </text>
+        <text class="delete-account-text">
+          注销账号
+        </text>
       </div>
     </view>
 
@@ -222,7 +271,12 @@
     <ThemeSelectorModal :visible="showThemeSelector" @close="showThemeSelector = false" />
 
     <!-- F002: AI 对话弹窗（已提取为独立组件） -->
-    <AIChatModal :visible="showChat" :tutor="currentTutor" :voice-enabled="isVoiceEnabled" @close="showChat = false" />
+    <AIChatModal
+      :visible="showChat"
+      :tutor="currentTutor"
+      :voice-enabled="isVoiceEnabled"
+      @close="showChat = false"
+    />
   </view>
 </template>
 
@@ -854,51 +908,17 @@ const onNicknameChange = (e) => {
   // #endif
 };
 
-// 真实登录闭环 - 使用统一的 userStore 登录
+// 真实登录闭包 - 跳转到统一登录页，确保用户同意隐私协议
 const doRealLogin = async () => {
   // #ifdef MP-WEIXIN
-  uni.showLoading({ title: '登录中...' });
-
-  try {
-    // 使用 userStore 的统一登录方法
-    const { useUserStore } = await import('@/stores/modules/user');
-    const userStore = useUserStore();
-
-    const result = await userStore.login(false); // 非静默模式
-
-    uni.hideLoading();
-
-    if (result.success) {
-      // 更新本地 userInfo
-      userInfo.value = {
-        ...userInfo.value,
-        uid: result.userInfo?.userId || result.userInfo?._id,
-        ...result.userInfo
-      };
-
-      // 保存头像和昵称（如果用户已设置）
-      if (userInfo.value.avatarUrl || userInfo.value.nickName) {
-        saveUserInfo();
-      }
-
-      uni.showToast({ title: '登录成功', icon: 'success' });
-
-      // 通知其他页面登录状态变化
-      uni.$emit('loginStatusChanged', true);
-
-      logger.log('[Settings] ✅ 登录完成，用户信息:', {
-        uid: userInfo.value.uid,
-        nickName: userInfo.value.nickName,
-        hasAvatar: !!userInfo.value.avatarUrl
-      });
-    } else {
-      uni.showToast({ title: result.error?.message || '登录失败', icon: 'none' });
+  // 微信环境：必须跳转登录页，让用户主动同意隐私协议后登录
+  uni.navigateTo({
+    url: '/pages/login/index',
+    fail: (err) => {
+      logger.error('[Settings] 跳转登录页失败:', err);
+      uni.showToast({ title: '请前往登录页完成登录', icon: 'none' });
     }
-  } catch (error) {
-    uni.hideLoading();
-    logger.error('[Settings] ❌ 登录失败', error);
-    uni.showToast({ title: '登录失败，请重试', icon: 'none' });
-  }
+  });
   // #endif
 
   // #ifndef MP-WEIXIN

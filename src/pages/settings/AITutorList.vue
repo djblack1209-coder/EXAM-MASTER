@@ -2,7 +2,9 @@
   <!-- F002: AI 导师列表 — 从 settings/index.vue 提取 -->
   <div class="section">
     <div class="section-header ds-flex ds-flex-between">
-      <h3 class="section-title ds-text-lg ds-font-semibold">AI 导师（在线）</h3>
+      <h3 class="section-title ds-text-lg ds-font-semibold">
+        AI 导师（在线）
+      </h3>
       <div class="header-actions ds-flex ds-gap-xs">
         <span class="online-badge ds-text-xs ds-font-medium">支持语音对讲</span>
       </div>
@@ -26,7 +28,9 @@
             {{ tutor.role }}
           </text>
         </div>
-        <button class="chat-btn ds-touchable" @tap="$emit('start-chat', tutor)">交流</button>
+        <button class="chat-btn ds-touchable" @tap="$emit('start-chat', tutor)">
+          交流
+        </button>
       </div>
     </div>
   </div>

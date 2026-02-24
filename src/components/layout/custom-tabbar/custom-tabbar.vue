@@ -14,7 +14,12 @@
     "
   >
     <!-- 内层胶囊：唯一可见实体，恢复点击 -->
-    <view class="tabbar-capsule" style="pointer-events: auto" :class="{ 'dark-mode': isDark }" :style="capsuleStyle">
+    <view
+      class="tabbar-capsule"
+      style="pointer-events: auto"
+      :class="{ 'dark-mode': isDark }"
+      :style="capsuleStyle"
+    >
       <view
         v-for="(item, index) in tabList"
         :key="index"
@@ -23,8 +28,18 @@
         @tap="switchTab(item.path, index)"
       >
         <view class="icon-wrapper">
-          <image v-if="resolvedActiveIndex === index" :src="item.selectedIcon" class="tab-icon" mode="aspectFit" />
-          <image v-else :src="item.icon" class="tab-icon" mode="aspectFit" />
+          <image
+            v-if="resolvedActiveIndex === index"
+            :src="item.selectedIcon"
+            class="tab-icon"
+            mode="aspectFit"
+          />
+          <image
+            v-else
+            :src="item.icon"
+            class="tab-icon"
+            mode="aspectFit"
+          />
           <view v-if="item.showDot" class="red-dot" />
         </view>
         <text class="tab-label">

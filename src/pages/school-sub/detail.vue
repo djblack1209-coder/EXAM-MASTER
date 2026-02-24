@@ -66,8 +66,12 @@
               <text class="type-tag">
                 {{ getTypeTag(schoolInfo.tags) }}
               </text>
-              <text class="location-tag"> 📍 {{ schoolInfo.location || '未知地区' }} </text>
-              <text v-if="schoolInfo.matchRate" class="rank-tag"> 匹配度 {{ schoolInfo.matchRate }}% </text>
+              <text class="location-tag">
+                📍 {{ schoolInfo.location || '未知地区' }}
+              </text>
+              <text v-if="schoolInfo.matchRate" class="rank-tag">
+                匹配度 {{ schoolInfo.matchRate }}%
+              </text>
             </view>
           </view>
         </view>
@@ -75,7 +79,9 @@
         <!-- AI 预测录取概率卡片 -->
         <view class="glass-card ai-predict-card">
           <view class="card-title">
-            <text class="sparkle-icon"> ✨ </text>
+            <text class="sparkle-icon">
+              ✨
+            </text>
             <text>AI 录取概率预测</text>
           </view>
 
@@ -88,7 +94,9 @@
                   <text class="num">
                     {{ probability }}
                   </text>
-                  <text class="unit"> % </text>
+                  <text class="unit">
+                    %
+                  </text>
                 </view>
               </view>
               <view class="ball-glow" />
@@ -104,34 +112,51 @@
             </view>
           </view>
 
-          <button class="predict-btn" hover-class="btn-hover" :loading="isAnalyzing" @tap="fetchAIPrediction">
+          <button
+            class="predict-btn"
+            hover-class="btn-hover"
+            :loading="isAnalyzing"
+            @tap="fetchAIPrediction"
+          >
             {{ isAnalyzing ? 'AI 分析中...' : '更新 AI 深度评估' }}
           </button>
         </view>
 
         <!-- 核心数据统计 -->
-        <view class="section-title"> 历年录取指标 </view>
+        <view class="section-title">
+          历年录取指标
+        </view>
         <view class="stats-grid">
           <view class="glass-card stat-item">
             <text class="stat-val">
               {{ schoolInfo.scoreLine || '---' }}
             </text>
-            <text class="stat-label"> 复试分数线 </text>
+            <text class="stat-label">
+              复试分数线
+            </text>
           </view>
           <view class="glass-card stat-item">
             <text class="stat-val">
               {{ schoolInfo.ratio || '---' }}
             </text>
-            <text class="stat-label"> 报录比 </text>
+            <text class="stat-label">
+              报录比
+            </text>
           </view>
           <view class="glass-card stat-item">
-            <text class="stat-val"> {{ schoolInfo.passRate || '---' }}% </text>
-            <text class="stat-label"> 招生人数 </text>
+            <text class="stat-val">
+              {{ schoolInfo.passRate || '---' }}%
+            </text>
+            <text class="stat-label">
+              招生人数
+            </text>
           </view>
         </view>
 
         <!-- 院校简介 -->
-        <view class="section-title"> 院校简介 </view>
+        <view class="section-title">
+          院校简介
+        </view>
         <view class="glass-card intro-card">
           <text class="intro-text">
             {{ getSchoolDesc() }}
@@ -139,7 +164,9 @@
         </view>
 
         <!-- 热门招生专业 -->
-        <view class="section-title"> 热门招生专业 </view>
+        <view class="section-title">
+          热门招生专业
+        </view>
         <view
           v-for="(major, index) in majorList"
           :key="index"
@@ -150,12 +177,16 @@
             <text class="major-name">
               {{ major.name }}
             </text>
-            <text class="major-code"> 专业代码: {{ major.code }} </text>
+            <text class="major-code">
+              专业代码: {{ major.code }}
+            </text>
             <text v-if="major.type" class="major-type">
               {{ major.type }}
             </text>
           </view>
-          <text class="arrow-icon"> → </text>
+          <text class="arrow-icon">
+            →
+          </text>
         </view>
 
         <view class="safe-area" />

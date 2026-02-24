@@ -5,18 +5,26 @@
       <view class="navbar-status-bar" :style="{ height: statusBarHeight + 'px' }" />
       <view class="navbar-content" style="height: 44px">
         <view class="navbar-back-btn" @tap="handleBack">
-          <text class="back-icon"> ‹ </text>
+          <text class="back-icon">
+            ‹
+          </text>
         </view>
         <view class="navbar-title-wrapper">
-          <text class="navbar-title"> 资料导入 </text>
+          <text class="navbar-title">
+            资料导入
+          </text>
         </view>
         <view class="navbar-placeholder" />
       </view>
     </view>
 
     <view class="page-header">
-      <text class="header-title"> 资料导入 </text>
-      <text class="header-subtitle"> AI 智能分析 · 即刻出题 </text>
+      <text class="header-title">
+        资料导入
+      </text>
+      <text class="header-subtitle">
+        AI 智能分析 · 即刻出题
+      </text>
     </view>
 
     <view class="main-glass-card bounce-in-up">
@@ -30,15 +38,23 @@
       <view class="operation-zone">
         <view v-if="!fileName" class="upload-trigger glow-effect" @tap="chooseFile">
           <view class="icon-circle">
-            <text class="icon-text"> 📁 </text>
+            <text class="icon-text">
+              📁
+            </text>
           </view>
-          <text class="upload-main-text"> 选择复习资料 </text>
-          <text class="upload-sub-text"> 从微信聊天记录中选择文件 </text>
+          <text class="upload-main-text">
+            选择复习资料
+          </text>
+          <text class="upload-sub-text">
+            从微信聊天记录中选择文件
+          </text>
         </view>
 
         <view v-else class="file-capsule glass-morphism">
           <view class="file-icon-box">
-            <text style="font-size: 56rpx"> 📄 </text>
+            <text style="font-size: 56rpx">
+              📄
+            </text>
           </view>
           <view class="file-info-col">
             <text class="fname-text text-ellipsis">
@@ -69,7 +85,9 @@
           :class="{ disabled: isLooping || !fileName }"
           @tap="startAI"
         >
-          <text style="margin-right: 8px"> ✨ </text>
+          <text style="margin-right: 8px">
+            ✨
+          </text>
           {{ isLooping ? 'AI 正在后台生成中...' : '开始 AI 出题' }}
         </button>
       </view>
@@ -81,10 +99,16 @@
           hover-class="btn-scale-sm"
           @tap="continueGenerating"
         >
-          <text style="font-size: 28rpx; margin-right: 4px"> 🔄 </text>
-          <text style="font-size: 30rpx"> 再出一组 </text>
+          <text style="font-size: 28rpx; margin-right: 4px">
+            🔄
+          </text>
+          <text style="font-size: 30rpx">
+            再出一组
+          </text>
         </button>
-        <button class="apple-btn danger-ghost" hover-class="btn-scale-sm" @tap="clearAll">清空题库</button>
+        <button class="apple-btn danger-ghost" hover-class="btn-scale-sm" @tap="clearAll">
+          清空题库
+        </button>
       </view>
     </view>
 
@@ -117,10 +141,16 @@
             {{ importDetailText }}
           </text>
 
-          <text class="soup-text"> "{{ currentSoup }}" </text>
+          <text class="soup-text">
+            "{{ currentSoup }}"
+          </text>
           <view class="loading-actions">
-            <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="pauseGeneration">暂停生成</button>
-            <button class="glass-btn danger" hover-class="btn-scale-sm" @tap="cancelGeneration">取消</button>
+            <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="pauseGeneration">
+              暂停生成
+            </button>
+            <button class="glass-btn danger" hover-class="btn-scale-sm" @tap="cancelGeneration">
+              取消
+            </button>
           </view>
         </view>
       </view>
@@ -130,31 +160,49 @@
     <view v-if="showSpeedModal" class="speed-modal-mask">
       <view class="speed-card bounce-in">
         <view class="speed-icon-box">
-          <text class="speed-icon"> ⚡️ </text>
+          <text class="speed-icon">
+            ⚡️
+          </text>
         </view>
-        <text class="speed-title"> 极速体验就绪 </text>
-        <text class="speed-desc"> 前 5 道题已生成完毕！您可以立即开始刷题，AI 将在后台静默为您补充剩余题目。 </text>
+        <text class="speed-title">
+          极速体验就绪
+        </text>
+        <text class="speed-desc">
+          前 5 道题已生成完毕！您可以立即开始刷题，AI 将在后台静默为您补充剩余题目。
+        </text>
 
         <view class="speed-actions">
-          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="stayHere">留在本页</button>
-          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="goQuiz">立即刷题</button>
+          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="stayHere">
+            留在本页
+          </button>
+          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="goQuiz">
+            立即刷题
+          </button>
         </view>
       </view>
     </view>
 
     <view v-if="isPaused" class="pause-banner">
       <view class="pause-info">
-        <text class="pause-title"> 任务已暂停 </text>
-        <text class="pause-desc"> 可随时继续生成题库 </text>
+        <text class="pause-title">
+          任务已暂停
+        </text>
+        <text class="pause-desc">
+          可随时继续生成题库
+        </text>
       </view>
-      <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="resumeGeneration">继续生成</button>
+      <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="resumeGeneration">
+        继续生成
+      </button>
     </view>
 
     <!-- ⭐⭐ v5.2 新增：错误卡片（带重试按钮） -->
     <view v-if="errorInfo && errorInfo.canRetry" class="error-card-mask">
       <view class="error-card bounce-in">
         <view class="error-icon-box">
-          <text class="error-icon"> ⚠️ </text>
+          <text class="error-icon">
+            ⚠️
+          </text>
         </view>
         <text class="error-title">
           {{ errorInfo.message }}
@@ -164,8 +212,12 @@
         </text>
 
         <view class="error-actions">
-          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="dismissError">关闭</button>
-          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="retryGeneration">重试</button>
+          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="dismissError">
+            关闭
+          </button>
+          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="retryGeneration">
+            重试
+          </button>
         </view>
       </view>
     </view>

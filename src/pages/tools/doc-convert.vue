@@ -4,9 +4,13 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon">←</text>
+          <text class="back-icon">
+            ←
+          </text>
         </view>
-        <text class="nav-title">文档转换</text>
+        <text class="nav-title">
+          文档转换
+        </text>
         <view class="nav-placeholder" />
       </view>
     </view>
@@ -16,15 +20,23 @@
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
-          <text class="hero-icon">📄</text>
+          <text class="hero-icon">
+            📄
+          </text>
         </view>
-        <text class="hero-title">智能文档转换</text>
-        <text class="hero-desc">支持 PDF、Word、Excel、PPT 等格式互转</text>
+        <text class="hero-title">
+          智能文档转换
+        </text>
+        <text class="hero-desc">
+          支持 PDF、Word、Excel、PPT 等格式互转
+        </text>
       </view>
 
       <!-- 转换类型选择 -->
       <view class="section">
-        <text class="section-title">选择转换类型</text>
+        <text class="section-title">
+          选择转换类型
+        </text>
         <view class="type-grid">
           <view
             v-for="item in convertTypes"
@@ -33,11 +45,17 @@
             @click="selectType(item.key)"
           >
             <view class="type-icon-box">
-              <text class="type-icon">{{ item.icon }}</text>
+              <text class="type-icon">
+                {{ item.icon }}
+              </text>
             </view>
             <view class="type-text">
-              <text class="type-name">{{ item.name }}</text>
-              <text class="type-desc">{{ item.desc }}</text>
+              <text class="type-name">
+                {{ item.name }}
+              </text>
+              <text class="type-desc">
+                {{ item.desc }}
+              </text>
             </view>
           </view>
         </view>
@@ -45,24 +63,40 @@
 
       <!-- 文件选择区域 -->
       <view class="section">
-        <text class="section-title">选择文件</text>
+        <text class="section-title">
+          选择文件
+        </text>
         <view v-if="!selectedFile" class="file-placeholder" @click="chooseFile">
           <view class="upload-icon-box">
-            <text class="upload-icon-text">+</text>
+            <text class="upload-icon-text">
+              +
+            </text>
           </view>
-          <text class="upload-text">点击选择文件</text>
-          <text class="upload-hint">{{ acceptHint }}</text>
+          <text class="upload-text">
+            点击选择文件
+          </text>
+          <text class="upload-hint">
+            {{ acceptHint }}
+          </text>
         </view>
         <view v-else class="file-info-card">
           <view class="file-icon-box">
-            <text class="file-icon-text">📎</text>
+            <text class="file-icon-text">
+              📎
+            </text>
           </view>
           <view class="file-detail">
-            <text class="file-name">{{ selectedFile.name }}</text>
-            <text class="file-size">{{ formatSize(selectedFile.size) }}</text>
+            <text class="file-name">
+              {{ selectedFile.name }}
+            </text>
+            <text class="file-size">
+              {{ formatSize(selectedFile.size) }}
+            </text>
           </view>
           <view class="file-remove" @click="removeFile">
-            <text class="remove-icon">✕</text>
+            <text class="remove-icon">
+              ✕
+            </text>
           </view>
         </view>
       </view>
@@ -72,33 +106,53 @@
         <view v-if="status === 'uploading'" class="status-card status-loading">
           <view class="status-spinner" />
           <view class="status-text-group">
-            <text class="status-title">正在上传文件</text>
-            <text class="status-hint">请稍候...</text>
+            <text class="status-title">
+              正在上传文件
+            </text>
+            <text class="status-hint">
+              请稍候...
+            </text>
           </view>
         </view>
         <view v-else-if="status === 'converting'" class="status-card status-loading">
           <view class="status-spinner" />
           <view class="status-text-group">
-            <text class="status-title">正在转换中</text>
-            <text class="status-hint">AI 正在处理您的文件...</text>
+            <text class="status-title">
+              正在转换中
+            </text>
+            <text class="status-hint">
+              AI 正在处理您的文件...
+            </text>
           </view>
         </view>
         <view v-else-if="status === 'done'" class="status-card status-done">
           <view class="status-done-icon">
-            <text class="done-check">✓</text>
+            <text class="done-check">
+              ✓
+            </text>
           </view>
           <view class="status-text-group">
-            <text class="status-title">转换完成</text>
-            <text class="status-hint">文件已准备就绪</text>
+            <text class="status-title">
+              转换完成
+            </text>
+            <text class="status-hint">
+              文件已准备就绪
+            </text>
           </view>
         </view>
         <view v-else-if="status === 'error'" class="status-card status-error">
           <view class="status-error-icon">
-            <text class="error-mark">!</text>
+            <text class="error-mark">
+              !
+            </text>
           </view>
           <view class="status-text-group">
-            <text class="status-title">转换失败</text>
-            <text class="status-hint">{{ errorMsg }}</text>
+            <text class="status-title">
+              转换失败
+            </text>
+            <text class="status-hint">
+              {{ errorMsg }}
+            </text>
           </view>
         </view>
       </view>
@@ -119,7 +173,12 @@
 
     <!-- 底部操作栏 -->
     <view v-if="status === 'idle' && selectedFile" class="action-bar">
-      <button class="btn-primary btn-full" hover-class="btn-hover" :disabled="!canConvert" @click="startConvert">
+      <button
+        class="btn-primary btn-full"
+        hover-class="btn-hover"
+        :disabled="!canConvert"
+        @click="startConvert"
+      >
         <text>开始转换</text>
       </button>
     </view>

@@ -19,7 +19,9 @@
             @error="onUserAvatarError"
           />
         </view>
-        <view class="vs-text"> VS </view>
+        <view class="vs-text">
+          VS
+        </view>
         <view class="avatar-ring opponent-ring" :class="{ found: opponentFound }">
           <image
             class="user-avatar"
@@ -28,7 +30,9 @@
             @error="onOpponentAvatarError"
           />
           <view v-if="!opponentFound" class="search-overlay">
-            <view class="search-icon"> 🔍 </view>
+            <view class="search-icon">
+              🔍
+            </view>
           </view>
         </view>
       </view>
@@ -36,7 +40,9 @@
         <text class="status-title">
           {{ opponentFound ? '匹配成功！' : matchingStatusText }}
         </text>
-        <text v-if="opponentFound" class="status-tip"> {{ opponent.name }} 已加入对战 </text>
+        <text v-if="opponentFound" class="status-tip">
+          {{ opponent.name }} 已加入对战
+        </text>
         <text
           v-if="!opponentFound"
           class="status-tip"
@@ -81,7 +87,9 @@
           </view>
         </view>
 
-        <text class="vs-text"> VS </text>
+        <text class="vs-text">
+          VS
+        </text>
 
         <view class="player-card right">
           <image
@@ -105,9 +113,13 @@
 
       <view class="question-card">
         <view class="question-header">
-          <view class="tag"> 单选 </view>
+          <view class="tag">
+            单选
+          </view>
           <view class="timer-badge" :class="{ warning: timeLeft <= 10, danger: timeLeft <= 5 }">
-            <text class="timer-text"> {{ timeLeft }}s </text>
+            <text class="timer-text">
+              {{ timeLeft }}s
+            </text>
           </view>
         </view>
         <text class="q-text">
@@ -148,8 +160,12 @@
               {{ opt }}
             </text>
             <view v-if="showAns" class="opt-icon">
-              <text v-if="isCorrectOption(idx)"> ✓ </text>
-              <text v-else-if="userChoice === idx && !isCorrectOption(idx)"> ✗ </text>
+              <text v-if="isCorrectOption(idx)">
+                ✓
+              </text>
+              <text v-else-if="userChoice === idx && !isCorrectOption(idx)">
+                ✗
+              </text>
             </view>
           </view>
         </button>
@@ -160,7 +176,9 @@
         class="opponent-status"
         :style="{ marginBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)' }"
       >
-        <text class="opponent-tip"> {{ opponent.name }} 已答题 ✓ </text>
+        <text class="opponent-tip">
+          {{ opponent.name }} 已答题 ✓
+        </text>
       </view>
     </view>
 
@@ -174,14 +192,20 @@
           <text class="result-title" :class="{ victory: myScore >= opponentScore, defeat: myScore < opponentScore }">
             {{ myScore >= opponentScore ? 'VICTORY' : 'DEFEAT' }}
           </text>
-          <text class="result-subtitle"> 战绩对比：{{ myScore }} VS {{ opponentScore }} </text>
+          <text class="result-subtitle">
+            战绩对比：{{ myScore }} VS {{ opponentScore }}
+          </text>
         </view>
 
         <!-- AI 战报分析卡片 -->
         <view class="ai-report-box">
           <view class="ai-header">
-            <text class="ai-icon"> 🤖 </text>
-            <text class="ai-title"> AI 犀利点评 </text>
+            <text class="ai-icon">
+              🤖
+            </text>
+            <text class="ai-title">
+              AI 犀利点评
+            </text>
           </view>
           <text class="ai-text">
             {{ aiSummary || 'AI 正在分析本场对局...' }}
@@ -189,11 +213,21 @@
         </view>
 
         <view class="action-btns">
-          <button class="btn-share" hover-class="btn-scale-sm" @tap.stop="handleShare">分享战报</button>
-          <button class="btn-rank" hover-class="btn-scale-sm" @tap.stop="goToRank">查看排行榜</button>
-          <button class="btn-again" hover-class="btn-scale-sm" @tap.stop="resetGame">再来一局</button>
-          <button class="btn-home" hover-class="btn-scale-sm" @tap.stop="goHome">返回首页</button>
-          <button class="btn-exit" hover-class="btn-scale-sm" @tap.stop="handleExitFromResult">退出</button>
+          <button class="btn-share" hover-class="btn-scale-sm" @tap.stop="handleShare">
+            分享战报
+          </button>
+          <button class="btn-rank" hover-class="btn-scale-sm" @tap.stop="goToRank">
+            查看排行榜
+          </button>
+          <button class="btn-again" hover-class="btn-scale-sm" @tap.stop="resetGame">
+            再来一局
+          </button>
+          <button class="btn-home" hover-class="btn-scale-sm" @tap.stop="goHome">
+            返回首页
+          </button>
+          <button class="btn-exit" hover-class="btn-scale-sm" @tap.stop="handleExitFromResult">
+            退出
+          </button>
         </view>
       </view>
     </view>
@@ -930,21 +964,21 @@ export default {
         const fallback =
           result === '胜利'
             ? [
-                '胜败乃兵家常事，但这局你赢了！手速和准确率都不错，继续保持！',
-                '这手速，阅卷老师都追不上！精准度碾压对手，看来知识点掌握得很扎实。',
-                '大获全胜！这波操作我给满分，继续保持这种学习状态！'
-              ]
+              '胜败乃兵家常事，但这局你赢了！手速和准确率都不错，继续保持！',
+              '这手速，阅卷老师都追不上！精准度碾压对手，看来知识点掌握得很扎实。',
+              '大获全胜！这波操作我给满分，继续保持这种学习状态！'
+            ]
             : result === '惜败'
               ? [
-                  '差点就赢了，建议少吃一口饭，多背一个词，下次一定能反超！',
-                  '对手很厉害，但你的潜力更大，再多刷几题就能反超。',
-                  '虽然惜败，但表现可圈可点。胜败乃兵家常事，大侠请重新来过！'
-                ]
+                '差点就赢了，建议少吃一口饭，多背一个词，下次一定能反超！',
+                '对手很厉害，但你的潜力更大，再多刷几题就能反超。',
+                '虽然惜败，但表现可圈可点。胜败乃兵家常事，大侠请重新来过！'
+              ]
               : [
-                  '势均力敌！这局平局，下局见分晓。',
-                  '实力与运气并存，这波操作我给满分！再来一局决胜负！',
-                  '平分秋色！看来双方都很强，不如再战一局？'
-                ];
+                '势均力敌！这局平局，下局见分晓。',
+                '实力与运气并存，这波操作我给满分！再来一局决胜负！',
+                '平分秋色！看来双方都很强，不如再战一局？'
+              ];
         this.aiSummary = fallback[Math.floor(Math.random() * fallback.length)];
       } finally {
         uni.hideLoading();

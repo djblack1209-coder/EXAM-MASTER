@@ -4,11 +4,17 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon">&#x2190;</text>
+          <text class="back-icon">
+            &#x2190;
+          </text>
         </view>
-        <text class="nav-title">拍照搜题</text>
+        <text class="nav-title">
+          拍照搜题
+        </text>
         <view class="nav-action" @tap="selectSubject">
-          <text class="nav-action-text">{{ selectedSubjectLabel || '学科' }}</text>
+          <text class="nav-action-text">
+            {{ selectedSubjectLabel || '学科' }}
+          </text>
         </view>
       </view>
     </view>
@@ -29,7 +35,9 @@
           <view class="corner bottom-left" />
           <view class="corner bottom-right" />
         </view>
-        <text class="camera-tip">将题目放入框内，保持清晰</text>
+        <text class="camera-tip">
+          将题目放入框内，保持清晰
+        </text>
       </camera>
 
       <!-- 预览模式 -->
@@ -37,8 +45,12 @@
         <image :src="previewImage" mode="aspectFit" class="preview-image" />
         <view v-if="isRecognizing" class="loading-overlay">
           <view class="loading-spinner" />
-          <text class="loading-text">{{ loadingText }}</text>
-          <text class="loading-tips">{{ currentTip }}</text>
+          <text class="loading-text">
+            {{ loadingText }}
+          </text>
+          <text class="loading-tips">
+            {{ currentTip }}
+          </text>
         </view>
       </view>
 
@@ -48,30 +60,51 @@
           <!-- 识别文本 -->
           <view class="result-section">
             <view class="rs-header">
-              <text class="rs-title">识别结果</text>
+              <text class="rs-title">
+                识别结果
+              </text>
               <view class="confidence-badge">
-                <text class="confidence-text">{{ result.confidence ? (result.confidence * 100).toFixed(0) : 0 }}%</text>
+                <text class="confidence-text">
+                  {{ result.confidence ? (result.confidence * 100).toFixed(0) : 0 }}%
+                </text>
               </view>
             </view>
             <view class="recognized-text-card">
-              <text class="recognized-text">{{ result.recognizedText || '未能识别到文字内容，请重新拍照' }}</text>
+              <text class="recognized-text">
+                {{ result.recognizedText || '未能识别到文字内容，请重新拍照' }}
+              </text>
             </view>
           </view>
 
           <!-- 匹配题目 -->
           <view v-if="result.questions && result.questions.length > 0" class="result-section">
             <view class="rs-header">
-              <text class="rs-title">题库匹配</text>
-              <text class="match-count">找到 {{ result.questions.length }} 道相似题</text>
+              <text class="rs-title">
+                题库匹配
+              </text>
+              <text class="match-count">
+                找到 {{ result.questions.length }} 道相似题
+              </text>
             </view>
-            <view v-for="(q, idx) in result.questions" :key="idx" class="question-card" @click="viewQuestion(q)">
-              <text class="question-text">{{ q.question }}</text>
+            <view
+              v-for="(q, idx) in result.questions"
+              :key="idx"
+              class="question-card"
+              @click="viewQuestion(q)"
+            >
+              <text class="question-text">
+                {{ q.question }}
+              </text>
               <view class="question-meta">
                 <view class="meta-tag">
-                  <text class="meta-tag-text">{{ q.category || '综合' }}</text>
+                  <text class="meta-tag-text">
+                    {{ q.category || '综合' }}
+                  </text>
                 </view>
                 <view class="meta-tag meta-tag-diff">
-                  <text class="meta-tag-text">难度 {{ q.difficulty || 3 }}</text>
+                  <text class="meta-tag-text">
+                    难度 {{ q.difficulty || 3 }}
+                  </text>
                 </view>
               </view>
             </view>
@@ -80,25 +113,37 @@
           <!-- AI解析 -->
           <view v-if="result.aiGenerated" class="result-section">
             <view class="rs-header">
-              <text class="rs-title">AI 智能解析</text>
+              <text class="rs-title">
+                AI 智能解析
+              </text>
             </view>
             <view class="ai-card">
               <!-- 解题步骤 -->
               <view v-if="result.aiGenerated.analysis && result.aiGenerated.analysis.steps" class="ai-block">
-                <text class="ai-block-title">解题步骤</text>
+                <text class="ai-block-title">
+                  解题步骤
+                </text>
                 <view v-for="(step, idx) in result.aiGenerated.analysis.steps" :key="idx" class="step-item">
                   <view class="step-num-circle">
-                    <text class="step-num-text">{{ idx + 1 }}</text>
+                    <text class="step-num-text">
+                      {{ idx + 1 }}
+                    </text>
                   </view>
-                  <text class="step-text">{{ step }}</text>
+                  <text class="step-text">
+                    {{ step }}
+                  </text>
                 </view>
               </view>
 
               <!-- 参考答案 -->
               <view v-if="result.aiGenerated.answer" class="ai-block">
-                <text class="ai-block-title">参考答案</text>
+                <text class="ai-block-title">
+                  参考答案
+                </text>
                 <view class="answer-card">
-                  <text class="answer-text">{{ result.aiGenerated.answer }}</text>
+                  <text class="answer-text">
+                    {{ result.aiGenerated.answer }}
+                  </text>
                 </view>
               </view>
 
@@ -106,15 +151,19 @@
               <view
                 v-if="
                   result.aiGenerated.analysis &&
-                  result.aiGenerated.analysis.keyPoints &&
-                  result.aiGenerated.analysis.keyPoints.length > 0
+                    result.aiGenerated.analysis.keyPoints &&
+                    result.aiGenerated.analysis.keyPoints.length > 0
                 "
                 class="ai-block"
               >
-                <text class="ai-block-title">考查知识点</text>
+                <text class="ai-block-title">
+                  考查知识点
+                </text>
                 <view class="tags-row">
                   <view v-for="(point, idx) in result.aiGenerated.analysis.keyPoints" :key="idx" class="kp-tag">
-                    <text class="kp-tag-text">{{ point }}</text>
+                    <text class="kp-tag-text">
+                      {{ point }}
+                    </text>
                   </view>
                 </view>
               </view>
@@ -124,10 +173,14 @@
                 v-if="result.aiGenerated.commonMistakes && result.aiGenerated.commonMistakes.length > 0"
                 class="ai-block"
               >
-                <text class="ai-block-title">易错提醒</text>
+                <text class="ai-block-title">
+                  易错提醒
+                </text>
                 <view v-for="(mistake, idx) in result.aiGenerated.commonMistakes" :key="idx" class="mistake-item">
                   <view class="warning-dot" />
-                  <text class="mistake-text">{{ mistake }}</text>
+                  <text class="mistake-text">
+                    {{ mistake }}
+                  </text>
                 </view>
               </view>
             </view>
@@ -142,7 +195,9 @@
     <view class="action-bar">
       <template v-if="mode === 'camera'">
         <view class="action-btn-side" @click="chooseFromAlbum">
-          <text class="action-side-text">相册</text>
+          <text class="action-side-text">
+            相册
+          </text>
         </view>
         <view class="capture-btn" @click="takePhoto">
           <view class="capture-outer">
@@ -150,12 +205,19 @@
           </view>
         </view>
         <view class="action-btn-side" @click="selectSubject">
-          <text class="action-side-text">{{ selectedSubjectLabel || '学科' }}</text>
+          <text class="action-side-text">
+            {{ selectedSubjectLabel || '学科' }}
+          </text>
         </view>
       </template>
 
       <template v-else-if="mode === 'preview'">
-        <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" :disabled="isRecognizing" @click="retake">
+        <button
+          class="bar-btn bar-btn-secondary"
+          hover-class="btn-hover"
+          :disabled="isRecognizing"
+          @click="retake"
+        >
           <text>重新拍摄</text>
         </button>
         <button

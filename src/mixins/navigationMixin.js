@@ -166,7 +166,6 @@ export const navigationMixin = {
     },
 
     // 尝试自动登录（应用启动时恢复登录状态）
-    // ✅ 问题清单修复：增强登录失败的容错和重试机制
     async tryAutoLogin() {
       try {
         this.userStore.restoreUserInfo();
@@ -176,36 +175,13 @@ export const navigationMixin = {
           return;
         }
 
-        // #ifdef MP-WEIXIN
-        logger.log('[Index] 尝试微信静默登录...');
-
-        // 带重试的静默登录（最多重试2次，指数退避）
-        let lastError = null;
-        for (let attempt = 0; attempt < 3; attempt++) {
-          try {
-            if (attempt > 0) {
-              logger.log(`[Index] 静默登录第 ${attempt + 1} 次尝试...`);
-              await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
-            }
-            const result = await this.userStore.silentLogin();
-            if (result.success) {
-              logger.log('[Index] 静默登录成功');
-              uni.$emit('loginStatusChanged', true);
-              return;
-            }
-            lastError = result.error;
-            // 如果是认证类错误（非网络），不重试
-            if (result.error?.message?.includes('凭证') || result.error?.message?.includes('配置')) {
-              break;
-            }
-          } catch (retryErr) {
-            lastError = retryErr;
-          }
+        // silentLogin 只恢复本地缓存，不发起网络请求，无需重试
+        const result = await this.userStore.silentLogin();
+        if (result.success) {
+          logger.log('[Index] 缓存恢复登录成功');
+          uni.$emit('loginStatusChanged', true);
         }
-
-        // 所有重试失败，静默降级（不阻断页面加载）
-        logger.warn('[Index] 静默登录最终失败，用户可手动登录:', lastError?.message);
-        // #endif
+        // 无缓存是新用户的正常状态，不输出警告
       } catch (error) {
         logger.warn('[Index] 自动登录失败:', error);
       }

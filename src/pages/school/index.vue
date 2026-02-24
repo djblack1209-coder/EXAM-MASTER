@@ -1,5 +1,7 @@
 <template>
   <view :class="['container', { 'dark-mode': isDark }]">
+    <!-- 微信隐私保护弹窗 -->
+    <PrivacyPopup />
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
@@ -8,8 +10,12 @@
     <view v-if="!isLoading" class="header-nav">
       <view :style="{ height: statusBarHeight + 'px' }" />
       <view class="nav-content">
-        <text class="nav-back" @tap="handleBack"> ← </text>
-        <text class="nav-title"> 智能择校助手 </text>
+        <text class="nav-back" @tap="handleBack">
+          ←
+        </text>
+        <text class="nav-title">
+          智能择校助手
+        </text>
         <view class="nav-placeholder" />
       </view>
     </view>
@@ -18,40 +24,69 @@
     <view v-if="!isLoading" :style="{ height: navBarHeight + 'px' }" />
 
     <!-- 压缩顶部间距：去掉重复叠加的状态栏偏移，仅保留适度 paddingTop -->
-    <scroll-view v-if="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: '24px' }">
+    <scroll-view
+      v-if="!isLoading"
+      scroll-y
+      class="main-scroll"
+      :style="{ paddingTop: '24px' }"
+    >
       <!-- 步骤进度条 - 三步流程 -->
       <view class="step-bar glass-card ds-flex ds-flex-center">
         <view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 1 }]">
           <view class="step-dot ds-flex-center ds-rounded-full">
-            <text v-if="currentStep > 1"> ✓ </text>
-            <text v-else> 1 </text>
+            <text v-if="currentStep > 1">
+              ✓
+            </text>
+            <text v-else>
+              1
+            </text>
           </view>
-          <text class="ds-text-xs ds-font-medium"> 背景信息 </text>
+          <text class="ds-text-xs ds-font-medium">
+            背景信息
+          </text>
         </view>
         <view class="step-line" :class="{ active: currentStep >= 2 }" />
         <view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 2 }]">
           <view class="step-dot ds-flex-center ds-rounded-full">
-            <text v-if="currentStep > 2"> ✓ </text>
-            <text v-else> 2 </text>
+            <text v-if="currentStep > 2">
+              ✓
+            </text>
+            <text v-else>
+              2
+            </text>
           </view>
-          <text class="ds-text-xs ds-font-medium"> 报考信息 </text>
+          <text class="ds-text-xs ds-font-medium">
+            报考信息
+          </text>
         </view>
         <view class="step-line" :class="{ active: currentStep >= 3 }" />
         <view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 3 }]">
-          <view class="step-dot ds-flex-center ds-rounded-full"> 3 </view>
-          <text class="ds-text-xs ds-font-medium"> 智能推荐 </text>
+          <view class="step-dot ds-flex-center ds-rounded-full">
+            3
+          </view>
+          <text class="ds-text-xs ds-font-medium">
+            智能推荐
+          </text>
         </view>
       </view>
 
       <!-- 第一页：背景信息 -->
       <view v-if="currentStep === 1" class="glass-card form-card">
         <view class="card-header ds-gap-sm">
-          <text class="title ds-text-xl ds-font-bold"> 填写教育背景 </text>
-          <text class="subtitle ds-text-sm ds-text-secondary"> 请如实填写，AI 将基于您的背景分析上岸概率 </text>
+          <text class="title ds-text-xl ds-font-bold">
+            填写教育背景
+          </text>
+          <text class="subtitle ds-text-sm ds-text-secondary">
+            请如实填写，AI 将基于您的背景分析上岸概率
+          </text>
         </view>
 
         <view class="input-group ds-gap-xs">
-          <text class="label ds-text-sm ds-font-semibold"> 目前学历 <text class="required"> * </text> </text>
+          <text class="label ds-text-sm ds-font-semibold">
+            目前学历 <text class="required">
+              *
+            </text>
+          </text>
           <view class="tab-group ds-flex ds-gap-xs">
             <view
               :class="['tab-item', 'ds-flex-center', 'ds-touchable', { active: formData.degree === 'bk' }]"
@@ -70,7 +105,9 @@
 
         <view class="input-group ds-gap-xs">
           <text class="label ds-text-sm ds-font-semibold">
-            {{ formData.degree === 'bk' ? '本科' : '专科' }}毕业院校 <text class="required"> * </text>
+            {{ formData.degree === 'bk' ? '本科' : '专科' }}毕业院校 <text class="required">
+              *
+            </text>
           </text>
           <input
             v-model="formData.school"
@@ -79,12 +116,16 @@
             placeholder-class="ph-style"
             maxlength="30"
           />
-          <text class="input-hint ds-text-xs"> {{ formData.school.length }}/30 </text>
+          <text class="input-hint ds-text-xs">
+            {{ formData.school.length }}/30
+          </text>
         </view>
 
         <view class="input-group ds-gap-xs">
           <text class="label ds-text-sm ds-font-semibold">
-            {{ formData.degree === 'bk' ? '本科' : '专科' }}专业 <text class="required"> * </text>
+            {{ formData.degree === 'bk' ? '本科' : '专科' }}专业 <text class="required">
+              *
+            </text>
           </text>
           <input
             v-model="formData.currentMajor"
@@ -93,7 +134,9 @@
             placeholder-class="ph-style"
             maxlength="30"
           />
-          <text class="input-hint ds-text-xs"> {{ formData.currentMajor.length }}/30 </text>
+          <text class="input-hint ds-text-xs">
+            {{ formData.currentMajor.length }}/30
+          </text>
         </view>
 
         <button
@@ -109,12 +152,20 @@
       <!-- 第二页：报考信息 -->
       <view v-if="currentStep === 2" class="glass-card form-card">
         <view class="card-header ds-gap-sm">
-          <text class="title ds-text-xl ds-font-bold"> 填写报考信息 </text>
-          <text class="subtitle ds-text-sm ds-text-secondary"> 请填写您的目标院校和专业 </text>
+          <text class="title ds-text-xl ds-font-bold">
+            填写报考信息
+          </text>
+          <text class="subtitle ds-text-sm ds-text-secondary">
+            请填写您的目标院校和专业
+          </text>
         </view>
 
         <view class="input-group ds-gap-xs">
-          <text class="label ds-text-sm ds-font-semibold"> 报考院校 <text class="required"> * </text> </text>
+          <text class="label ds-text-sm ds-font-semibold">
+            报考院校 <text class="required">
+              *
+            </text>
+          </text>
           <input
             v-model="formData.targetSchool"
             class="glass-input ds-touchable"
@@ -122,11 +173,17 @@
             placeholder-class="ph-style"
             maxlength="30"
           />
-          <text class="input-hint ds-text-xs"> {{ formData.targetSchool.length }}/30 </text>
+          <text class="input-hint ds-text-xs">
+            {{ formData.targetSchool.length }}/30
+          </text>
         </view>
 
         <view class="input-group ds-gap-xs">
-          <text class="label ds-text-sm ds-font-semibold"> 报考专业 <text class="required"> * </text> </text>
+          <text class="label ds-text-sm ds-font-semibold">
+            报考专业 <text class="required">
+              *
+            </text>
+          </text>
           <input
             v-model="formData.targetMajor"
             class="glass-input ds-touchable"
@@ -134,23 +191,31 @@
             placeholder-class="ph-style"
             maxlength="30"
           />
-          <text class="input-hint ds-text-xs"> {{ formData.targetMajor.length }}/30 </text>
+          <text class="input-hint ds-text-xs">
+            {{ formData.targetMajor.length }}/30
+          </text>
         </view>
 
         <view class="input-group ds-gap-xs">
-          <text class="label ds-text-sm ds-font-semibold"> 英语证明 </text>
+          <text class="label ds-text-sm ds-font-semibold">
+            英语证明
+          </text>
           <picker mode="selector" :range="englishCertificates" @change="bindEnglishCertChange">
             <view class="glass-input picker-val ds-flex ds-flex-between ds-touchable">
               <text :class="{ 'placeholder-text': !formData.englishCert }">
                 {{ formData.englishCert || '点击选择英语证明（可选）' }}
               </text>
-              <text class="picker-arrow"> ▼ </text>
+              <text class="picker-arrow">
+                ▼
+              </text>
             </view>
           </picker>
         </view>
 
         <view class="btn-group ds-flex ds-gap-sm">
-          <button class="secondary-btn ds-flex-center" hover-class="ds-hover-btn" @tap="goToStep1">上一步</button>
+          <button class="secondary-btn ds-flex-center" hover-class="ds-hover-btn" @tap="goToStep1">
+            上一步
+          </button>
           <button
             class="primary-btn pulse-btn ds-flex-center ds-gap-sm"
             hover-class="ds-hover-btn"
@@ -158,7 +223,9 @@
             :loading="isSubmitting"
             @tap="submitForm"
           >
-            <text v-if="!isSubmitting"> ✨ </text>
+            <text v-if="!isSubmitting">
+              ✨
+            </text>
             {{ isSubmitting ? 'AI 分析中...' : '开始 AI 择校匹配' }}
           </button>
         </view>
@@ -168,7 +235,9 @@
       <view v-if="currentStep === 3" class="result-container">
         <view class="result-header ds-flex ds-flex-between">
           <view class="rh-left">
-            <text class="rh-title ds-text-lg ds-font-bold"> 推荐院校 </text>
+            <text class="rh-title ds-text-lg ds-font-bold">
+              推荐院校
+            </text>
             <text v-if="filteredSchools.length > 0" class="rh-subtitle ds-text-xs ds-text-secondary">
               共 {{ filteredSchools.length }} 所
             </text>
@@ -181,14 +250,20 @@
             <text class="ds-text-xs ds-font-medium">
               {{ activeFilterCount > 0 ? `已选(${activeFilterCount})` : '筛选' }}
             </text>
-            <text class="filter-arrow"> ▼ </text>
+            <text class="filter-arrow">
+              ▼
+            </text>
           </view>
         </view>
 
         <!-- 院校统计信息提示 -->
         <view v-if="filteredSchools.length > 0" class="info-banner glass-card">
-          <text class="info-icon"> 📊 </text>
-          <text class="info-text ds-text-xs"> 全国约有923所大学具有研究生招生资格，另有培养研究生的机构233所 </text>
+          <text class="info-icon">
+            📊
+          </text>
+          <text class="info-text ds-text-xs">
+            全国约有923所大学具有研究生招生资格，另有培养研究生的机构233所
+          </text>
         </view>
 
         <view
@@ -204,7 +279,9 @@
                 <text class="sc-name ds-text-lg ds-font-bold">
                   {{ school.name }}
                 </text>
-                <text class="sc-loc ds-text-xs"> 📍 {{ school.location }} </text>
+                <text class="sc-loc ds-text-xs">
+                  📍 {{ school.location }}
+                </text>
               </view>
               <view class="sc-tags ds-flex ds-gap-xs">
                 <text v-for="(tag, tIdx) in school.tags" :key="tIdx" class="tag-item ds-text-xs ds-font-semibold">
@@ -213,15 +290,21 @@
               </view>
             </view>
             <view class="match-rate ds-flex-col ds-flex-center">
-              <text class="mr-val ds-font-bold"> {{ school.matchRate }}% </text>
-              <text class="mr-lbl ds-text-xs"> 匹配度 </text>
+              <text class="mr-val ds-font-bold">
+                {{ school.matchRate }}%
+              </text>
+              <text class="mr-lbl ds-text-xs">
+                匹配度
+              </text>
             </view>
           </view>
 
           <view class="sc-majors">
             <view v-for="(major, mIdx) in school.majors" :key="mIdx" class="major-item">
               <view class="mj-title">
-                <text class="mj-code"> [{{ major.code }}] </text>
+                <text class="mj-code">
+                  [{{ major.code }}]
+                </text>
                 <text class="mj-name">
                   {{ major.name }}
                 </text>
@@ -231,26 +314,30 @@
               </view>
               <view class="mj-scores">
                 <view class="score-col">
-                  <text class="sc-year"> 2025(预) </text
-                  ><text class="sc-num high">
+                  <text class="sc-year">
+                    2025(预)
+                  </text><text class="sc-num high">
                     {{ major.scores && major.scores[0] ? major.scores[0].total : '-' }}
                   </text>
                 </view>
                 <view class="score-col">
-                  <text class="sc-year"> 2024 </text
-                  ><text class="sc-num">
+                  <text class="sc-year">
+                    2024
+                  </text><text class="sc-num">
                     {{ major.scores && major.scores[1] ? major.scores[1].total : '-' }}
                   </text>
                 </view>
                 <view class="score-col">
-                  <text class="sc-year"> 2023 </text
-                  ><text class="sc-num">
+                  <text class="sc-year">
+                    2023
+                  </text><text class="sc-num">
                     {{ major.scores && major.scores[2] ? major.scores[2].total : '-' }}
                   </text>
                 </view>
                 <view class="score-col">
-                  <text class="sc-year"> 英语 </text
-                  ><text class="sc-num sub">
+                  <text class="sc-year">
+                    英语
+                  </text><text class="sc-num sub">
                     {{ major.scores && major.scores[0] ? major.scores[0].eng || '-' : '-' }}
                   </text>
                 </view>
@@ -273,19 +360,31 @@
         </view>
 
         <view v-if="filteredSchools.length === 0" class="empty-tip ds-flex-col ds-flex-center ds-gap-sm">
-          <text class="empty-icon"> 🏫 </text>
-          <text class="empty-title ds-text-base ds-font-semibold"> 暂无推荐院校数据 </text>
-          <text v-if="hasActiveFilter" class="ds-text-sm ds-text-secondary"> 试试调整筛选条件 </text>
-          <text v-else class="ds-text-sm ds-text-secondary"> 暂时没有找到匹配的院校，请稍后再试 </text>
+          <text class="empty-icon">
+            🏫
+          </text>
+          <text class="empty-title ds-text-base ds-font-semibold">
+            暂无推荐院校数据
+          </text>
+          <text v-if="hasActiveFilter" class="ds-text-sm ds-text-secondary">
+            试试调整筛选条件
+          </text>
+          <text v-else class="ds-text-sm ds-text-secondary">
+            暂时没有找到匹配的院校，请稍后再试
+          </text>
           <view
             v-if="hasActiveFilter"
             class="reset-btn ds-touchable"
             @click="hasActiveFilter ? resetFilter() : goToStep1()"
           >
-            <text class="reset-btn-text ds-text-sm ds-font-medium"> 重置筛选 </text>
+            <text class="reset-btn-text ds-text-sm ds-font-medium">
+              重置筛选
+            </text>
           </view>
           <view v-else class="reset-btn ds-touchable" @click="goToStep1">
-            <text class="reset-btn-text ds-text-sm ds-font-medium"> 重新填写 </text>
+            <text class="reset-btn-text ds-text-sm ds-font-medium">
+              重新填写
+            </text>
           </view>
         </view>
 
@@ -295,7 +394,9 @@
           class="back-edit-btn ds-flex ds-flex-center ds-touchable"
           @tap="goToStep1"
         >
-          <text class="ds-text-sm"> ← 返回修改信息 </text>
+          <text class="ds-text-sm">
+            ← 返回修改信息
+          </text>
         </view>
 
         <view class="safe-area-bottom" />
@@ -315,12 +416,18 @@
     <view v-if="showFilter" class="filter-mask" @click="showFilter = false">
       <view class="filter-panel glass-card" @click.stop>
         <view class="fp-header ds-flex ds-flex-between">
-          <text class="fp-title ds-text-xl ds-font-bold"> 院校筛选 </text>
-          <text class="fp-reset ds-text-sm ds-touchable" @click="resetFilter"> 重置 </text>
+          <text class="fp-title ds-text-xl ds-font-bold">
+            院校筛选
+          </text>
+          <text class="fp-reset ds-text-sm ds-touchable" @click="resetFilter">
+            重置
+          </text>
         </view>
 
         <view class="fp-section">
-          <text class="fp-label ds-text-sm ds-font-semibold"> 所在地区 </text>
+          <text class="fp-label ds-text-sm ds-font-semibold">
+            所在地区
+          </text>
           <scroll-view scroll-x class="tag-scroll" :show-scrollbar="false">
             <view class="filter-tags ds-flex ds-gap-xs">
               <view
@@ -344,7 +451,9 @@
         </view>
 
         <view class="fp-section">
-          <text class="fp-label ds-text-sm ds-font-semibold"> 院校层次 </text>
+          <text class="fp-label ds-text-sm ds-font-semibold">
+            院校层次
+          </text>
           <view class="filter-tags ds-flex ds-gap-xs">
             <view
               class="ft-item ds-touchable ds-text-xs"
@@ -377,7 +486,9 @@
           </view>
         </view>
 
-        <button class="fp-confirm-btn ds-flex-center ds-font-bold" @click="showFilter = false">查看结果</button>
+        <button class="fp-confirm-btn ds-flex-center ds-font-bold" @click="showFilter = false">
+          查看结果
+        </button>
       </view>
     </view>
   </view>

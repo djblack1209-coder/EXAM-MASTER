@@ -10,7 +10,9 @@
           {{ isExamStarted ? '模拟考试' : '考试设置' }}
         </text>
         <view v-if="isExamStarted && !isExamFinished" class="timer-display">
-          <text class="timer-icon"> ⏱️ </text>
+          <text class="timer-icon">
+            ⏱️
+          </text>
           <text class="timer-text">
             {{ formatTime(remainingTime) }}
           </text>
@@ -25,10 +27,14 @@
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
     >
       <view class="glass-card setup-card">
-        <text class="setup-title"> 📝 模拟考试设置 </text>
+        <text class="setup-title">
+          📝 模拟考试设置
+        </text>
 
         <view class="setting-item">
-          <text class="setting-label"> 题目数量 </text>
+          <text class="setting-label">
+            题目数量
+          </text>
           <view class="setting-options">
             <view
               v-for="num in [10, 20, 30, 50]"
@@ -42,7 +48,9 @@
         </view>
 
         <view class="setting-item">
-          <text class="setting-label"> 考试时长 </text>
+          <text class="setting-label">
+            考试时长
+          </text>
           <view class="setting-options">
             <view
               v-for="time in [15, 30, 45, 60]"
@@ -56,7 +64,9 @@
         </view>
 
         <view class="setting-item">
-          <text class="setting-label"> 题目类型 </text>
+          <text class="setting-label">
+            题目类型
+          </text>
           <view class="setting-options">
             <view :class="['option-btn', { active: questionType === 'all' }]" @tap="questionType = 'all'">
               <text>全部</text>
@@ -68,7 +78,9 @@
         </view>
 
         <view class="exam-info">
-          <text class="info-text"> 📊 当前题库共 {{ totalQuestions }} 道题 </text>
+          <text class="info-text">
+            📊 当前题库共 {{ totalQuestions }} 道题
+          </text>
         </view>
 
         <button
@@ -77,8 +89,12 @@
           :disabled="totalQuestions < questionCount"
           @tap="startExam"
         >
-          <text class="btn-icon"> 🚀 </text>
-          <text class="btn-text"> 开始考试 </text>
+          <text class="btn-icon">
+            🚀
+          </text>
+          <text class="btn-text">
+            开始考试
+          </text>
         </button>
       </view>
     </view>
@@ -126,11 +142,15 @@
       <view class="progress-bar">
         <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
       </view>
-      <text class="progress-text"> {{ currentIndex + 1 }} / {{ examQuestions.length }} </text>
+      <text class="progress-text">
+        {{ currentIndex + 1 }} / {{ examQuestions.length }}
+      </text>
 
       <!-- 当前题目 -->
       <view v-if="currentQuestion" class="glass-card question-card">
-        <text class="question-number"> 第 {{ currentIndex + 1 }} 题 </text>
+        <text class="question-number">
+          第 {{ currentIndex + 1 }} 题
+        </text>
         <text class="question-text">
           {{ currentQuestion.question || currentQuestion.question_content }}
         </text>
@@ -171,14 +191,22 @@
         >
           下一题
         </button>
-        <button v-else class="nav-btn submit" hover-class="btn-scale-sm" :disabled="isSubmitting" @tap="submitExam">
+        <button
+          v-else
+          class="nav-btn submit"
+          hover-class="btn-scale-sm"
+          :disabled="isSubmitting"
+          @tap="submitExam"
+        >
           {{ isSubmitting ? '提交中...' : '提交试卷' }}
         </button>
       </view>
 
       <!-- 答题卡 -->
       <view class="answer-sheet">
-        <text class="sheet-title"> 答题卡 </text>
+        <text class="sheet-title">
+          答题卡
+        </text>
         <view class="sheet-grid">
           <view
             v-for="(q, idx) in examQuestions"
@@ -208,13 +236,17 @@
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
     >
       <view class="glass-card result-card">
-        <text class="result-title"> 🎉 考试完成 </text>
+        <text class="result-title">
+          🎉 考试完成
+        </text>
 
         <view class="score-display">
           <text class="score-number">
             {{ score }}
           </text>
-          <text class="score-unit"> 分 </text>
+          <text class="score-unit">
+            分
+          </text>
         </view>
 
         <view class="result-stats">
@@ -222,17 +254,25 @@
             <text class="stat-value correct">
               {{ correctCount }}
             </text>
-            <text class="stat-label"> 正确 </text>
+            <text class="stat-label">
+              正确
+            </text>
           </view>
           <view class="stat-item">
             <text class="stat-value wrong">
               {{ wrongCount }}
             </text>
-            <text class="stat-label"> 错误 </text>
+            <text class="stat-label">
+              错误
+            </text>
           </view>
           <view class="stat-item">
-            <text class="stat-value"> {{ accuracy }}% </text>
-            <text class="stat-label"> 正确率 </text>
+            <text class="stat-value">
+              {{ accuracy }}%
+            </text>
+            <text class="stat-label">
+              正确率
+            </text>
           </view>
         </view>
 
@@ -252,14 +292,20 @@
 
       <!-- 错题列表 -->
       <view v-if="wrongQuestions.length > 0" class="glass-card wrong-list">
-        <text class="list-title"> ❌ 错题回顾 </text>
+        <text class="list-title">
+          ❌ 错题回顾
+        </text>
         <view v-for="(item, idx) in wrongQuestions" :key="idx" class="wrong-item">
           <text class="wrong-question">
             {{ idx + 1 }}. {{ (item.question || item.question_content).substring(0, 50) }}...
           </text>
           <view class="wrong-answer">
-            <text class="user-ans"> 你的答案: {{ ['A', 'B', 'C', 'D'][item.userAnswer] }} </text>
-            <text class="correct-ans"> 正确答案: {{ item.answer || item.correct_answer }} </text>
+            <text class="user-ans">
+              你的答案: {{ ['A', 'B', 'C', 'D'][item.userAnswer] }}
+            </text>
+            <text class="correct-ans">
+              正确答案: {{ item.answer || item.correct_answer }}
+            </text>
           </view>
         </view>
       </view>

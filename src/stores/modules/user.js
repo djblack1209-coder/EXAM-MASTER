@@ -378,15 +378,15 @@ export const useUserStore = defineStore('user', () => {
    * 如果已有 token，先尝试恢复；如果没有，则执行登录
    */
   const silentLogin = async () => {
-    // 先尝试恢复缓存的用户信息
+    // 只从本地缓存恢复已有会话，不自动发起新登录
+    // 新用户必须通过登录页手动操作（确保同意隐私协议后才能登录）
     restoreUserInfo();
 
-    // 如果没有登录信息，执行静默登录
-    if (!isLogin.value) {
-      return await login(true); // 静默模式，不显示错误提示
+    if (isLogin.value) {
+      return { success: true, userInfo: userInfo.value };
     }
 
-    return { success: true, userInfo: userInfo.value };
+    return { success: false, error: new Error('无缓存会话') };
   };
 
   return {

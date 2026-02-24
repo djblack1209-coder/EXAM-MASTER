@@ -56,10 +56,16 @@
           <text>📤</text>
         </view>
         <view class="guide-btn__content">
-          <text class="guide-btn__title"> 上传资料 </text>
-          <text class="guide-btn__desc"> AI智能生成题库 </text>
+          <text class="guide-btn__title">
+            上传资料
+          </text>
+          <text class="guide-btn__desc">
+            AI智能生成题库
+          </text>
         </view>
-        <text class="guide-btn__arrow"> → </text>
+        <text class="guide-btn__arrow">
+          →
+        </text>
       </view>
 
       <view class="guide-btn guide-btn--secondary" @tap="handleQuickStart">
@@ -67,10 +73,16 @@
           <text>⚡</text>
         </view>
         <view class="guide-btn__content">
-          <text class="guide-btn__title"> 快速开始 </text>
-          <text class="guide-btn__desc"> 体验示例题库 </text>
+          <text class="guide-btn__title">
+            快速开始
+          </text>
+          <text class="guide-btn__desc">
+            体验示例题库
+          </text>
         </view>
-        <text class="guide-btn__arrow"> → </text>
+        <text class="guide-btn__arrow">
+          →
+        </text>
       </view>
 
       <view class="guide-btn guide-btn--tertiary" @tap="handleTutorial">
@@ -78,10 +90,16 @@
           <text>📖</text>
         </view>
         <view class="guide-btn__content">
-          <text class="guide-btn__title"> 使用教程 </text>
-          <text class="guide-btn__desc"> 3分钟快速上手 </text>
+          <text class="guide-btn__title">
+            使用教程
+          </text>
+          <text class="guide-btn__desc">
+            3分钟快速上手
+          </text>
         </view>
-        <text class="guide-btn__arrow"> → </text>
+        <text class="guide-btn__arrow">
+          →
+        </text>
       </view>
     </view>
 

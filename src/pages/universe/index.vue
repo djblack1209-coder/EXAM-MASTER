@@ -17,23 +17,39 @@
       :style="{ top: statusBarHeight + 10 + 'px' }"
     >
       <view class="nav-btn" hover-class="nav-btn-hover" @click.stop="handleBack">
-        <text class="nav-icon"> ← </text>
-        <text class="nav-label"> 返回 </text>
+        <text class="nav-icon">
+          ←
+        </text>
+        <text class="nav-label">
+          返回
+        </text>
       </view>
       <view class="nav-divider" />
       <view class="nav-btn" hover-class="nav-btn-hover" @click.stop="handleHome">
-        <text class="nav-icon"> ⌂ </text>
-        <text class="nav-label"> 主页 </text>
+        <text class="nav-icon">
+          ⌂
+        </text>
+        <text class="nav-label">
+          主页
+        </text>
       </view>
       <view class="nav-divider" />
       <view class="nav-btn" hover-class="nav-btn-hover" @click.stop="toggleResourcePanel">
-        <text class="nav-icon"> 📚 </text>
-        <text class="nav-label"> 资源 </text>
+        <text class="nav-icon">
+          📚
+        </text>
+        <text class="nav-label">
+          资源
+        </text>
       </view>
       <view class="nav-divider" />
       <view class="nav-btn" hover-class="nav-btn-hover" @click.stop="handleRefresh">
-        <text class="nav-icon"> ↻ </text>
-        <text class="nav-label"> 重置 </text>
+        <text class="nav-icon">
+          ↻
+        </text>
+        <text class="nav-label">
+          重置
+        </text>
       </view>
     </view>
 
@@ -44,8 +60,12 @@
       :style="{ paddingTop: statusBarHeight + 70 + 'px' }"
     >
       <view class="panel-header">
-        <text class="panel-title"> 📚 学习资源推荐 </text>
-        <text class="panel-close" @click="showResourcePanel = false"> × </text>
+        <text class="panel-title">
+          📚 学习资源推荐
+        </text>
+        <text class="panel-close" @click="showResourcePanel = false">
+          ×
+        </text>
       </view>
 
       <!-- 分类标签 -->
@@ -72,15 +92,26 @@
       <scroll-view scroll-y class="resource-list" @scrolltolower="loadMoreResources">
         <view v-if="resourceLoading" class="loading-box">
           <view class="loading-spinner small" />
-          <text class="loading-text"> 加载中... </text>
+          <text class="loading-text">
+            加载中...
+          </text>
         </view>
 
         <view v-else-if="resources.length === 0" class="empty-box">
-          <text class="empty-icon"> 📭 </text>
-          <text class="empty-text"> 暂无推荐资源 </text>
+          <text class="empty-icon">
+            📭
+          </text>
+          <text class="empty-text">
+            暂无推荐资源
+          </text>
         </view>
 
-        <view v-for="item in resources" :key="item.id" class="resource-card" @click="openResource(item)">
+        <view
+          v-for="item in resources"
+          :key="item.id"
+          class="resource-card"
+          @click="openResource(item)"
+        >
           <image
             class="resource-thumb"
             :src="item.thumbnail || '/static/images/default-avatar.png'"
@@ -100,9 +131,15 @@
               {{ item.description }}
             </text>
             <view class="resource-meta">
-              <text class="meta-tag"> {{ item.subjectIcon }} {{ item.subjectName }} </text>
-              <text class="meta-stat"> 👁 {{ formatNumber(item.viewCount) }} </text>
-              <text class="meta-stat"> ⭐ {{ item.rating }} </text>
+              <text class="meta-tag">
+                {{ item.subjectIcon }} {{ item.subjectName }}
+              </text>
+              <text class="meta-stat">
+                👁 {{ formatNumber(item.viewCount) }}
+              </text>
+              <text class="meta-stat">
+                ⭐ {{ item.rating }}
+              </text>
             </view>
             <view class="resource-footer">
               <text class="resource-author">
@@ -142,13 +179,22 @@
 
       <!-- 粒子发散效果 -->
       <view class="particles">
-        <view v-for="i in 20" :key="i" class="particle" :style="getParticleStyle(i)" />
+        <view
+          v-for="i in 20"
+          :key="i"
+          class="particle"
+          :style="getParticleStyle(i)"
+        />
       </view>
 
       <!-- 流光文字 -->
       <view class="loading-content">
-        <text class="loading-title"> UNIVERSE </text>
-        <text class="loading-subtitle"> 正在校准极限穿梭感... </text>
+        <text class="loading-title">
+          UNIVERSE
+        </text>
+        <text class="loading-subtitle">
+          正在校准极限穿梭感...
+        </text>
         <view class="progress-bar">
           <view class="progress-fill" />
         </view>
