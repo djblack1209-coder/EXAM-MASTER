@@ -9,14 +9,22 @@
  */
 
 import cloud from '@lafjs/cloud';
+import crypto from 'crypto';
 
 const db = cloud.database();
 const SECRET_PLACEHOLDER
 
+function secureEqual(a: unknown, b: unknown): boolean {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  const ab = Buffer.from(a, 'utf8');
+  const bb = Buffer.from(b, 'utf8');
+  return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
+}
+
 export default async function (ctx: any) {
   try {
     const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
-    const isAdmin = ADMIN_SECRET && adminSecret === ADMIN_SECRET;
+    const isAdmin = !!ADMIN_SECRET && secureEqual(adminSecret, ADMIN_SECRET);
 
     // 公开访问：仅返回最小状态
     if (!isAdmin) {

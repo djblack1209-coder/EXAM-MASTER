@@ -13,13 +13,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // ============================================================
 // 1. date.js 测试
 // ============================================================
-import {
-  getGreetingTime,
-  formatDate,
-  getRemainingTime,
-  getMonthRange,
-  isToday
-} from '@/utils/core/date.js';
+import { getGreetingTime, formatDate, getRemainingTime, getMonthRange, isToday } from '@/utils/core/date.js';
 
 describe('date.js', () => {
   beforeEach(() => {
@@ -175,13 +169,7 @@ describe('date.js', () => {
 // ============================================================
 // 2. throttle.js 测试
 // ============================================================
-import {
-  debounce,
-  throttle,
-  clickLock,
-  useDebounceFn,
-  useThrottleFn
-} from '@/utils/throttle.js';
+import { debounce, throttle, clickLock, useDebounceFn, useThrottleFn } from '@/utils/throttle.js';
 
 describe('throttle.js', () => {
   beforeEach(() => {
@@ -357,9 +345,7 @@ describe('throttle.js', () => {
       await locked();
       await locked(); // 被锁定
 
-      expect(uni.showToast).toHaveBeenCalledWith(
-        expect.objectContaining({ title: '操作太频繁，请稍后' })
-      );
+      expect(uni.showToast).toHaveBeenCalledWith(expect.objectContaining({ title: '操作太频繁，请稍后' }));
     });
 
     it('异步函数抛错后仍然解锁', async () => {
@@ -453,17 +439,13 @@ describe('safe-navigate.js', () => {
   describe('safeNavigateTo — tabBar 页面', () => {
     it('tabBar 页面使用 switchTab', () => {
       safeNavigateTo('/pages/index/index');
-      expect(uni.switchTab).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/pages/index/index' })
-      );
+      expect(uni.switchTab).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
       expect(uni.navigateTo).not.toHaveBeenCalled();
     });
 
     it('tabBar 页面带查询参数时去掉参数', () => {
       safeNavigateTo('/pages/profile/index?tab=settings');
-      expect(uni.switchTab).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/pages/profile/index' })
-      );
+      expect(uni.switchTab).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/profile/index' }));
     });
 
     it('不带前导斜杠的 tabBar 路径也能识别', () => {
@@ -484,9 +466,7 @@ describe('safe-navigate.js', () => {
       });
 
       safeNavigateTo('/pages/index/index');
-      expect(uni.reLaunch).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/pages/index/index' })
-      );
+      expect(uni.reLaunch).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
     });
 
     it('switchTab 失败且有自定义 fail 回调时不降级', () => {
@@ -505,9 +485,7 @@ describe('safe-navigate.js', () => {
   describe('safeNavigateTo — 普通页面', () => {
     it('普通页面使用 navigateTo', () => {
       safeNavigateTo('/pages/login/index');
-      expect(uni.navigateTo).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/pages/login/index' })
-      );
+      expect(uni.navigateTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/login/index' }));
       expect(uni.switchTab).not.toHaveBeenCalled();
     });
 
@@ -517,9 +495,7 @@ describe('safe-navigate.js', () => {
       });
 
       safeNavigateTo('/pages/login/index');
-      expect(uni.redirectTo).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/pages/login/index' })
-      );
+      expect(uni.redirectTo).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/login/index' }));
     });
 
     it('redirectTo 也失败时显示 toast（非 silent）', () => {
@@ -531,9 +507,7 @@ describe('safe-navigate.js', () => {
       });
 
       safeNavigateTo('/pages/login/index');
-      expect(uni.showToast).toHaveBeenCalledWith(
-        expect.objectContaining({ title: '页面跳转失败' })
-      );
+      expect(uni.showToast).toHaveBeenCalledWith(expect.objectContaining({ title: '页面跳转失败' }));
     });
 
     it('silent=true 时不显示 toast', () => {
@@ -604,6 +578,7 @@ describe('config-validator.js', () => {
     it('所有配置存在时返回 valid=true', async () => {
       import.meta.env.VITE_WX_APP_ID = 'wx123456';
       import.meta.env.VITE_API_BASE_URL = 'https://api.example.com';
+      import.meta.env.SECRET_PLACEHOLDER
 
       const { validateConfig } = await import('@/utils/core/config-validator.js');
       const result = validateConfig();
@@ -616,17 +591,20 @@ describe('config-validator.js', () => {
     it('缺少配置时返回 issues', async () => {
       delete import.meta.env.VITE_WX_APP_ID;
       delete import.meta.env.VITE_API_BASE_URL;
+      delete import.meta.env.VITE_INVITE_SECRET;
 
       const { validateConfig } = await import('@/utils/core/config-validator.js');
       const result = validateConfig();
 
       // issues 数量取决于当前 env 中缺少哪些
       expect(result.issues.length).toBeGreaterThanOrEqual(0);
-      // valid 仍为 true 因为 severity 都是 warning 不是 error
-      expect(result.valid).toBe(true);
+      // VITE_API_BASE_URL severity 为 error，缺失时 valid 应为 false
+      expect(result.valid).toBe(false);
     });
 
     it('warning 级别不影响 valid 状态', async () => {
+      import.meta.env.VITE_API_BASE_URL = 'https://api.example.com';
+      import.meta.env.SECRET_PLACEHOLDER
       delete import.meta.env.VITE_WX_APP_ID;
 
       const { validateConfig } = await import('@/utils/core/config-validator.js');

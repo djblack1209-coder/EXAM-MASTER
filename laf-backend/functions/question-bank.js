@@ -26,14 +26,14 @@ export default async function (ctx) {
   const requestId = `qb_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, userId, data, token } = ctx.body || {};
+    const { action, userId, data } = ctx.body || {};
 
     if (!action) {
       return { code: 400, message: '缺少 action 参数', requestId };
     }
 
     // JWT 身份验证（题库查询允许匿名访问公共题目，但写操作需要认证）
-    const authToken = ctx.headers?.['authorization'] || token;
+    const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
     if (authToken) {
       const rawToken = authToken.startsWith('Bearer ') ? authToken.slice(7) : authToken;
       const payload = verifyJWT(rawToken);
@@ -76,12 +76,13 @@ async function getQuestions(userId, data, requestId) {
 
   const query = { is_active: true, review_status: 'approved' };
 
-  if (category) query.category = category;
-  if (sub_category) query.sub_category = sub_category;
-  if (difficulty) query.difficulty = difficulty;
-  if (type) query.type = type;
-  if (tags && tags.length > 0) query.tags = _.in(tags);
-  if (keyword) {
+  // [R2-P1] NoSQL 注入防护：所有查询参数必须为 string，拒绝 object 类型（如 { "$ne": null }）
+  if (category && typeof category === 'string') query.category = category;
+  if (sub_category && typeof sub_category === 'string') query.sub_category = sub_category;
+  if (difficulty && typeof difficulty === 'string') query.difficulty = difficulty;
+  if (type && typeof type === 'string') query.type = type;
+  if (tags && Array.isArray(tags) && tags.every((t) => typeof t === 'string')) query.tags = _.in(tags);
+  if (keyword && typeof keyword === 'string') {
     query.$or = [
       { question: { $regex: escapeRegex(keyword), $options: 'i' } },
       { analysis: { $regex: escapeRegex(keyword), $options: 'i' } }
@@ -89,20 +90,27 @@ async function getQuestions(userId, data, requestId) {
   }
 
   const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
-  const skip = (page - 1) * safePageSize;
+  const safePage = Math.max(1, Math.min(parseInt(page) || 1, 100));
+  const skip = (safePage - 1) * safePageSize;
 
   const [questions, countResult] = await Promise.all([
     db.collection('questions').where(query).orderBy('created_at', 'desc').skip(skip).limit(safePageSize).get(),
     db.collection('questions').where(query).count()
   ]);
 
+  // 安全修复：剔除答案字段，防止客户端直接获取正确答案
+  const safeList = (questions.data || []).map((q) => {
+    const { answer, correct_answer, ...safeFields } = q;
+    return safeFields;
+  });
+
   return {
     code: 0,
     success: true,
     data: {
-      list: questions.data || [],
+      list: safeList,
       total: countResult.total || 0,
-      page,
+      page: safePage,
       pageSize: safePageSize,
       hasMore: skip + safePageSize < (countResult.total || 0)
     },
@@ -117,8 +125,8 @@ async function getRandomQuestions(data, requestId) {
   const { category, difficulty, count = 10 } = data || {};
 
   const query = { is_active: true, review_status: 'approved' };
-  if (category) query.category = category;
-  if (difficulty) query.difficulty = difficulty;
+  if (category && typeof category === 'string') query.category = category;
+  if (difficulty && typeof difficulty === 'string') query.difficulty = difficulty;
 
   // 获取总数后随机跳过
   const countResult = await db.collection('questions').where(query).count();
@@ -128,16 +136,23 @@ async function getRandomQuestions(data, requestId) {
     return { code: 0, success: true, data: [], requestId };
   }
 
-  const limit = Math.min(count, total, 50);
+  const safeCount = Math.max(1, Math.min(parseInt(count) || 10, 50));
+  const limit = Math.min(safeCount, total, 50);
   const maxSkip = Math.max(0, total - limit);
   const skip = Math.floor(Math.random() * maxSkip);
 
   const result = await db.collection('questions').where(query).skip(skip).limit(limit).get();
 
+  // 安全修复：剔除答案字段
+  const safeData = (result.data || []).map((q) => {
+    const { answer, correct_answer, ...safeFields } = q;
+    return safeFields;
+  });
+
   return {
     code: 0,
     success: true,
-    data: result.data || [],
+    data: safeData,
     requestId
   };
 }
@@ -152,15 +167,26 @@ async function getQuestionsByIds(data, requestId) {
     return { code: 400, message: '缺少题目ID列表', requestId };
   }
 
+  const safeIds = ids.slice(0, 100).filter((id) => typeof id === 'string' && id.length > 0);
+  if (safeIds.length === 0) {
+    return { code: 400, message: '题目ID列表不合法', requestId };
+  }
+
   const result = await db
     .collection('questions')
-    .where({ _id: _.in(ids.slice(0, 100)) })
+    .where({ _id: _.in(safeIds) })
     .get();
+
+  // 安全修复：剔除答案字段
+  const safeData = (result.data || []).map((q) => {
+    const { answer, correct_answer, ...safeFields } = q;
+    return safeFields;
+  });
 
   return {
     code: 0,
     success: true,
-    data: result.data || [],
+    data: safeData,
     requestId
   };
 }

@@ -238,17 +238,17 @@ describe('[审计] FileHandler — 工具函数', () => {
 
   it('getFileIcon — PDF 返回书本图标', () => {
     const icon = fileHandler.getFileIcon('test.pdf');
-    expect(icon).toBe('📕');
+    expect(icon).toBe('file-pdf');
   });
 
   it('getFileIcon — 未知类型返回默认图标', () => {
     const icon = fileHandler.getFileIcon('test.xyz');
-    expect(icon).toBe('📁');
+    expect(icon).toBe('folder');
   });
 
   it('getFileIcon — 无扩展名返回默认图标', () => {
     const icon = fileHandler.getFileIcon('README');
-    expect(icon).toBe('📁');
+    expect(icon).toBe('folder');
   });
 });
 

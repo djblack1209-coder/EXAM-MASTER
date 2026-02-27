@@ -17,7 +17,8 @@
 
 import cloud from '@lafjs/cloud';
 import { validate } from '../utils/validator';
-import { createLogger } from './_shared/api-response';
+import { createLogger, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
+import { verifyJWT } from './login';
 
 const logger = createLogger('[AIPhotoSearch]');
 
@@ -68,19 +69,23 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费 AI API 额度
-    const authToken = ctx.headers?.['authorization']?.replace('Bearer ', '');
+    const authToken = String(ctx.headers?.['authorization'] || ctx.headers?.Authorization || '')
+      .replace(/^Bearer\s+/i, '')
+      .trim();
     if (!authToken) {
       return { code: 401, success: false, message: '请先登录', requestId };
     }
-    let authUserId: string | undefined;
-    try {
-      const payload = cloud.parseToken(authToken);
-      if (!payload?.userId) {
-        return { code: 401, success: false, message: 'token 无效或已过期', requestId };
-      }
-      authUserId = payload.userId;
-    } catch {
+
+    const payload = verifyJWT(authToken);
+    if (!payload?.userId) {
       return { code: 401, success: false, message: 'token 无效或已过期', requestId };
+    }
+    const authUserId = payload.userId;
+
+    // [AUDIT FIX] 速率限制 — 每用户每分钟最多 10 次拍照搜题
+    const rateCheck = await checkRateLimitDistributed(`photo_search:${authUserId}`, 10, 60 * 1000);
+    if (!rateCheck.allowed) {
+      return { ...tooManyRequests('操作过于频繁，请稍后再试'), requestId };
     }
 
     const { action, ...params } = ctx.body || {};
@@ -158,7 +163,7 @@ export default async function (ctx) {
     return {
       code: 500,
       success: false,
-      message: error.message || '识别失败',
+      message: '识别失败',
       requestId,
       duration: Date.now() - startTime
     };
@@ -398,7 +403,7 @@ ${contextHint}
     return {
       success: false,
       code: 500,
-      message: `题目识别失败: ${error.message}`,
+      message: '题目识别失败，请稍后重试',
       requestId
     };
   }
@@ -642,7 +647,7 @@ async function fetchImageAsBase64(url) {
     });
     return Buffer.from(response.data).toString('base64');
   } catch (error) {
-    throw new Error(`获取图片失败: ${error.message}`);
+    throw new Error('获取图片失败');
   }
 }
 

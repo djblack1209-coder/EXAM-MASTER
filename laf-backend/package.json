@@ -11,7 +11,7 @@
     "db:migrate": "echo 'Run db-migrate-timestamps cloud function in Laf console'"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.20.0"
   },
   "dependencies": {},
   "devDependencies": {}

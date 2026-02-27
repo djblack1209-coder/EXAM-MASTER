@@ -480,7 +480,7 @@ describe('[Audit] EmptyState Component', () => {
     expect(props.type.default).toBe('simple');
     expect(props.theme.default).toBe('light');
     expect(props.size.default).toBe('medium');
-    expect(props.icon.default).toBe('\u{1F4DA}');
+    expect(props.icon.default).toBe('books');
     expect(props.title.default).toBe('\u6682\u65E0\u6570\u636E');
     expect(props.showButton.default).toBe(true);
     expect(props.buttonText.default).toBe('\u7ACB\u5373\u6DFB\u52A0');

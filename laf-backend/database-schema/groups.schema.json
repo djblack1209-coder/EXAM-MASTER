@@ -102,39 +102,6 @@
       "description": "邀请码（invite_only模式使用）",
       "maxLength": 20
     },
-    "members": {
-      "type": "array",
-      "description": "成员列表（包含角色和加入时间）",
-      "items": {
-        "type": "object",
-        "properties": {
-          "user_id": { "type": "string", "maxLength": 64 },
-          "role": { "type": "string", "enum": ["owner", "admin", "member"], "default": "member" },
-          "nickname": { "type": "string", "maxLength": 32 },
-          "joined_at": { "type": "integer", "description": "加入时间戳" },
-          "muted_until": { "type": ["integer", "null"], "description": "禁言截止时间戳" }
-        },
-        "required": ["user_id", "role", "joined_at"]
-      },
-      "default": [],
-      "maxItems": 100
-    },
-    "pending_members": {
-      "type": "array",
-      "description": "待审核成员列表（approval模式使用）",
-      "items": {
-        "type": "object",
-        "properties": {
-          "user_id": { "type": "string", "maxLength": 64 },
-          "nickname": { "type": "string", "maxLength": 32 },
-          "apply_message": { "type": "string", "maxLength": 200 },
-          "applied_at": { "type": "integer" }
-        },
-        "required": ["user_id", "applied_at"]
-      },
-      "default": [],
-      "maxItems": 50
-    },
     "created_at": {
       "type": "integer",
       "description": "创建时间戳（毫秒级 Unix timestamp）"
@@ -155,8 +122,7 @@
     { "key": { "join_type": 1 }, "name": "idx_join_type" },
     { "key": { "member_count": -1 }, "name": "idx_member_count" },
     { "key": { "invite_code": 1 }, "sparse": true, "unique": true, "name": "idx_invite_code" },
-    { "key": { "target_school": 1 }, "sparse": true, "name": "idx_target_school" },
-    { "key": { "members.user_id": 1 }, "name": "idx_member_user_id" }
+    { "key": { "target_school": 1 }, "sparse": true, "name": "idx_target_school" }
   ],
   "examples": [
     {

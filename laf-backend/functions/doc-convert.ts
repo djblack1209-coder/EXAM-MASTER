@@ -17,11 +17,41 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate, sanitizeString } from '../utils/validator';
-import { createLogger } from './_shared/api-response';
+import { validate } from '../utils/validator';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 import { verifyJWT } from './login';
 
 const logger = createLogger('[DocConvert]');
+const db = cloud.database();
+
+const LOG_REDACT_FIELDS = new Set(['token', 'authorization', 'filebase64', 'password', 'secret']);
+
+function sanitizeLogPayload(input: unknown): Record<string, unknown> {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return {};
+
+  const result: Record<string, unknown> = {};
+  const source = input as Record<string, unknown>;
+  const keys = Object.keys(source).slice(0, 30);
+
+  for (const key of keys) {
+    const lowerKey = key.toLowerCase();
+    const value = source[key];
+
+    if (LOG_REDACT_FIELDS.has(lowerKey)) {
+      result[key] = '[REDACTED]';
+      continue;
+    }
+
+    if (typeof value === 'string' && value.length > 120) {
+      result[key] = `[string:${value.length}]`;
+      continue;
+    }
+
+    result[key] = value;
+  }
+
+  return result;
+}
 
 // ==================== 配置 ====================
 const CONFIG = {
@@ -53,22 +83,32 @@ export default async function (ctx) {
 
   // 调试日志：打印所有可能的参数来源
   logger.info(`[${requestId}] 文档转换请求开始`);
-  logger.info(`[${requestId}] ctx.body:`, JSON.stringify(ctx.body || {}).substring(0, 200));
-  logger.info(`[${requestId}] ctx.query:`, JSON.stringify(ctx.query || {}).substring(0, 200));
-  logger.info(`[${requestId}] ctx.request?.body:`, JSON.stringify(ctx.request?.body || {}).substring(0, 200));
-  logger.info(`[${requestId}] ctx.params:`, JSON.stringify(ctx.params || {}).substring(0, 200));
+  logger.info(`[${requestId}] ctx.body(meta):`, sanitizeLogPayload(ctx.body));
+  logger.info(`[${requestId}] ctx.query(meta):`, sanitizeLogPayload(ctx.query));
+  logger.info(`[${requestId}] ctx.request.body(meta):`, sanitizeLogPayload(ctx.request?.body));
+  logger.info(`[${requestId}] ctx.params(meta):`, sanitizeLogPayload(ctx.params));
 
   try {
     // [C1-FIX] 鉴权：文档转换消耗付费API配额，必须验证用户身份
-    const token = ctx.headers?.authorization || ctx.headers?.token || ctx.body?.token;
+    const rawHeaderToken = ctx.headers?.authorization || ctx.headers?.Authorization;
+    const token = String(rawHeaderToken || '')
+      .replace(/^Bearer\s+/i, '')
+      .trim();
+
     if (!token) {
       return { code: 401, success: false, message: '未登录，请先登录', requestId };
     }
-    const payload = verifyJWT(token.replace('Bearer ', ''));
+    const payload = verifyJWT(token);
     if (!payload || !payload.userId) {
       return { code: 401, success: false, message: '登录已过期，请重新登录', requestId };
     }
     logger.info(`[${requestId}] 用户已验证: ${payload.userId}`);
+
+    // [AUDIT FIX] 速率限制 — 每用户每分钟最多 5 次文档转换
+    const rateCheck = await checkRateLimitDistributed(`doc_convert:${payload.userId}`, 5, 60 * 1000);
+    if (!rateCheck.allowed) {
+      return { code: 429, success: false, message: '操作过于频繁，请稍后再试', requestId };
+    }
 
     // 兼容多种参数传递方式（Laf / Sealos / 不同版本）
     let body = ctx.body || ctx.request?.body || ctx.query || ctx.params || {};
@@ -127,13 +167,13 @@ export default async function (ctx) {
 
     switch (action) {
       case 'convert':
-        return await handleConvert(params, requestId);
+        return await handleConvert(params, requestId, payload.userId);
       case 'get_status':
-        return await getJobStatus(params, requestId);
+        return await getJobStatus(params, requestId, payload.userId);
       case 'get_types':
         return getConvertTypes();
       case 'get_result':
-        return await getConvertResult(params, requestId);
+        return await getConvertResult(params, requestId, payload.userId);
       default:
         return {
           code: 400,
@@ -147,7 +187,7 @@ export default async function (ctx) {
     return {
       code: 500,
       success: false,
-      message: error.message || '转换失败',
+      message: '转换失败，请稍后重试',
       requestId,
       duration: Date.now() - startTime
     };
@@ -164,7 +204,7 @@ function getConvertTypes() {
 }
 
 // ==================== 处理文档转换 ====================
-async function handleConvert(params, requestId) {
+async function handleConvert(params, requestId, userId) {
   const {
     convertType, // 转换类型：pdf2img, word2pdf 等
     fileBase64, // 文件 Base64 数据
@@ -187,12 +227,37 @@ async function handleConvert(params, requestId) {
     };
   }
 
+  const formatConfig = CONFIG.supportedFormats[convertType];
+  const inputFormat = getFileExtension(fileName) || formatConfig.input[0];
+  if (!formatConfig.input.includes(inputFormat)) {
+    return {
+      code: 400,
+      success: false,
+      message: `文件格式与转换类型不匹配，${convertType} 支持: ${formatConfig.input.join(', ')}`,
+      requestId
+    };
+  }
+
   if (!fileBase64) {
     return { code: 400, success: false, message: '缺少文件数据 fileBase64', requestId };
   }
 
+  const normalizedBase64 = normalizeBase64(fileBase64);
+  if (!normalizedBase64 || !isValidBase64(normalizedBase64)) {
+    return { code: 400, success: false, message: '文件数据格式错误：非法 Base64 内容', requestId };
+  }
+
+  const fileBuffer = Buffer.from(normalizedBase64, 'base64');
+  if (!fileBuffer.length) {
+    return { code: 400, success: false, message: '文件数据为空', requestId };
+  }
+
+  if (!matchesFileSignature(fileBuffer, inputFormat)) {
+    return { code: 400, success: false, message: '文件内容与扩展名不匹配，请重新选择文件', requestId };
+  }
+
   // 检查文件大小
-  const fileSize = Buffer.from(fileBase64, 'base64').length;
+  const fileSize = fileBuffer.length;
   if (fileSize > CONFIG.maxFileSize) {
     return {
       code: 400,
@@ -206,7 +271,15 @@ async function handleConvert(params, requestId) {
 
   try {
     // 1. 创建转换任务
-    const job = await createConvertJob(convertType, fileBase64, fileName, outputFormat, options, requestId);
+    const job = await createConvertJob(
+      convertType,
+      normalizedBase64,
+      fileName,
+      outputFormat,
+      options,
+      requestId,
+      userId
+    );
 
     if (!job.success) {
       return job;
@@ -221,14 +294,14 @@ async function handleConvert(params, requestId) {
     return {
       code: 500,
       success: false,
-      message: `转换失败: ${error.message}`,
+      message: '转换失败，请稍后重试',
       requestId
     };
   }
 }
 
 // ==================== 创建 CloudConvert 转换任务 ====================
-async function createConvertJob(convertType, fileBase64, fileName, outputFormat, options, requestId) {
+async function createConvertJob(convertType, fileBase64, fileName, outputFormat, options, requestId, userId) {
   const formatConfig = CONFIG.supportedFormats[convertType];
   const inputFormat = getFileExtension(fileName) || formatConfig.input[0];
   const targetFormat = outputFormat || formatConfig.output[0];
@@ -283,6 +356,19 @@ async function createConvertJob(convertType, fileBase64, fileName, outputFormat,
 
     const jobData = response.data?.data;
     logger.info(`[${requestId}] 任务创建成功, jobId: ${jobData?.id}`);
+
+    // ✅ P0修复：存储 jobId → userId 映射，用于后续所有权校验
+    if (jobData?.id) {
+      try {
+        await db.collection('doc_convert_jobs').add({
+          jobId: jobData.id,
+          userId,
+          createdAt: Date.now()
+        });
+      } catch (e) {
+        logger.warn(`[${requestId}] 存储 job 映射失败:`, e.message);
+      }
+    }
 
     return {
       code: 0,
@@ -378,11 +464,17 @@ async function waitForJobComplete(jobId, requestId, maxWait = 120000) {
 }
 
 // ==================== 获取任务状态 ====================
-async function getJobStatus(params, requestId) {
+async function getJobStatus(params, requestId, userId) {
   const { jobId } = params;
 
   if (!jobId) {
     return { code: 400, success: false, message: '缺少任务ID jobId', requestId };
+  }
+
+  // ✅ P0修复：校验 job 所有权
+  const jobRecord = await db.collection('doc_convert_jobs').where({ jobId, userId }).getOne();
+  if (!jobRecord.data) {
+    return { code: 403, success: false, message: '无权访问此任务', requestId };
   }
 
   try {
@@ -418,18 +510,24 @@ async function getJobStatus(params, requestId) {
     return {
       code: 500,
       success: false,
-      message: `查询失败: ${error.message}`,
+      message: `查询失败，请稍后重试`,
       requestId
     };
   }
 }
 
 // ==================== 获取转换结果 ====================
-async function getConvertResult(params, requestId) {
+async function getConvertResult(params, requestId, userId) {
   const { jobId, downloadFile = false } = params;
 
   if (!jobId) {
     return { code: 400, success: false, message: '缺少任务ID jobId', requestId };
+  }
+
+  // ✅ P0修复：校验 job 所有权
+  const jobRecord = await db.collection('doc_convert_jobs').where({ jobId, userId }).getOne();
+  if (!jobRecord.data) {
+    return { code: 403, success: false, message: '无权访问此任务', requestId };
   }
 
   try {
@@ -513,7 +611,7 @@ async function getConvertResult(params, requestId) {
     return {
       code: 500,
       success: false,
-      message: `获取结果失败: ${error.message}`,
+      message: `获取结果失败，请稍后重试`,
       requestId
     };
   }
@@ -525,7 +623,7 @@ async function getConvertResult(params, requestId) {
  * 构建转换选项
  */
 function buildConvertOptions(convertType, options) {
-  const opts = {};
+  const opts: Record<string, unknown> = {};
 
   switch (convertType) {
     case 'pdf2img':
@@ -556,6 +654,55 @@ function buildConvertOptions(convertType, options) {
 
   // 移除 undefined 值
   return Object.fromEntries(Object.entries(opts).filter(([_, v]) => v !== undefined));
+}
+
+/**
+ * 标准化 Base64（兼容 data URL）
+ */
+function normalizeBase64(input) {
+  if (typeof input !== 'string') return '';
+  const trimmed = input.trim();
+  const commaIndex = trimmed.indexOf(',');
+  const raw = commaIndex >= 0 ? trimmed.slice(commaIndex + 1) : trimmed;
+  return raw.replace(/\s+/g, '');
+}
+
+/**
+ * 基础 Base64 合法性校验
+ */
+function isValidBase64(base64) {
+  if (typeof base64 !== 'string' || !base64) return false;
+  if (base64.length % 4 !== 0) return false;
+  return /^[A-Za-z0-9+/]+={0,2}$/.test(base64);
+}
+
+/**
+ * 文件头魔数校验（防双扩展名与伪造内容）
+ */
+function matchesFileSignature(buffer, inputFormat) {
+  const fmt = String(inputFormat || '').toLowerCase();
+
+  const startsWithHex = (hex) => buffer.subarray(0, hex.length / 2).toString('hex') === hex;
+  const startsWithText = (text) => buffer.subarray(0, text.length).toString() === text;
+
+  if (fmt === 'pdf') return startsWithText('%PDF');
+  if (fmt === 'jpg' || fmt === 'jpeg') return startsWithHex('ffd8ff');
+  if (fmt === 'png') return startsWithHex('89504e470d0a1a0a');
+  if (fmt === 'gif') return startsWithText('GIF8');
+  if (fmt === 'webp') {
+    return buffer.subarray(0, 4).toString() === 'RIFF' && buffer.subarray(8, 12).toString() === 'WEBP';
+  }
+
+  // Office Open XML / OpenDocument（ZIP 容器）
+  if (['docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp'].includes(fmt)) return startsWithHex('504b0304');
+
+  // 旧版 Office（二进制 OLE）
+  if (['doc', 'xls', 'ppt'].includes(fmt)) return startsWithHex('d0cf11e0a1b11ae1');
+
+  if (fmt === 'rtf') return startsWithText('{\\rtf');
+
+  // 未知格式由上层格式白名单限制，这里保守放行
+  return true;
 }
 
 /**

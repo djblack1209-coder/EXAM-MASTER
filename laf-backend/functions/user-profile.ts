@@ -18,7 +18,7 @@ import cloud from '@lafjs/cloud';
 const db = cloud.database();
 
 // ==================== 环境配置 ====================
-import { createLogger } from './_shared/api-response';
+import { createLogger, sanitizeString } from './_shared/api-response';
 const JWT_SECRET_PLACEHOLDER
 
 // 头像上传配置
@@ -62,8 +62,12 @@ function verifyTokenAndGetUserId(token: string): string | null {
     // 解析载荷
     const payload = JSON.parse(Buffer.from(payloadBase64, 'base64url').toString());
 
-    // 检查过期
-    if (payload.exp && payload.exp < Date.now()) {
+    // 检查过期 — 必须包含 exp 声明，否则拒绝（与 login.ts verifyJWT 保持一致）
+    if (!payload.exp) {
+      logger.warn('JWT 缺少 exp 声明，拒绝验证');
+      return null;
+    }
+    if (payload.exp < Date.now()) {
       logger.warn('JWT 已过期');
       return null;
     }
@@ -157,7 +161,7 @@ export default async function (ctx: FunctionContext) {
 
     // ==================== 访问控制检查 ====================
     // 对于敏感操作，验证用户只能访问自己的数据
-    const sensitiveActions = ['update', 'upload_avatar', 'update_practice_config'];
+    const sensitiveActions = ['get', 'get_practice_config', 'update', 'upload_avatar', 'update_practice_config'];
     if (sensitiveActions.includes(action)) {
       const accessCheck = verifyUserAccess(ctx, userId);
       if (!accessCheck.valid) {
@@ -211,7 +215,7 @@ export default async function (ctx: FunctionContext) {
       message = '用户不存在';
     } else if (errMsg.includes('validation') || errMsg.includes('参数') || errMsg.includes('invalid')) {
       code = 400;
-      message = errMsg;
+      message = '请求参数错误';
     } else if (errMsg.includes('timeout') || errMsg.includes('ETIMEDOUT')) {
       code = 504;
       message = '请求超时，请稍后重试';
@@ -221,7 +225,6 @@ export default async function (ctx: FunctionContext) {
       code,
       success: false,
       message,
-      error: error.message,
       requestId,
       duration: Date.now() - startTime
     };
@@ -544,18 +547,6 @@ function sanitizePracticeConfig(config: unknown): PracticeConfig {
       typeof config.reminder_enabled === 'boolean' ? config.reminder_enabled : defaults.reminder_enabled,
     reminder_time: /^\d{2}:\d{2}$/.test(config.reminder_time) ? config.reminder_time : defaults.reminder_time
   };
-}
-
-/**
- * 字符串安全过滤
- */
-function sanitizeString(input: unknown, maxLength: number): string {
-  if (!input || typeof input !== 'string') return '';
-
-  return input
-    .replace(/[<>"'&\x00-\x1F\x7F]/g, '') // 过滤危险字符
-    .trim()
-    .slice(0, maxLength);
 }
 
 /**

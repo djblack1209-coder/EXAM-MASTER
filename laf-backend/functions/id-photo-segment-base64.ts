@@ -1,20 +1,26 @@
-import cloud from '@lafjs/cloud';
-import { createLogger } from './_shared/api-response';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { verifyJWT } from './login';
 const logger = createLogger('[IdPhoto]');
 
 export default async function (ctx) {
   // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费腾讯云 API 额度
-  const authToken = ctx.headers?.['authorization']?.replace('Bearer ', '');
+  const authToken = String(ctx.headers?.['authorization'] || ctx.headers?.Authorization || '')
+    .replace(/^Bearer\s+/i, '')
+    .trim();
   if (!authToken) {
     return { code: 401, msg: '请先登录' };
   }
-  try {
-    const payload = cloud.parseToken(authToken);
-    if (!payload?.userId) {
-      return { code: 401, msg: 'token 无效或已过期' };
-    }
-  } catch {
+
+  const payload = verifyJWT(authToken);
+  if (!payload?.userId) {
     return { code: 401, msg: 'token 无效或已过期' };
+  }
+  const authUserId = payload.userId;
+
+  // [AUDIT FIX] 速率限制 — 每用户每分钟最多 10 次证件照抠图
+  const rateCheck = await checkRateLimitDistributed(`id_photo:${authUserId}`, 10, 60 * 1000);
+  if (!rateCheck.allowed) {
+    return { code: 429, msg: '操作过于频繁，请稍后再试' };
   }
 
   const { imageBase64 } = ctx.body || {};

@@ -19,6 +19,43 @@ vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
 
+// Mock storageService — token-refresh-plugin 已迁移到 storageService 加密存储
+const _mockStore = new Map();
+vi.mock('@/services/storageService.js', () => ({
+  storageService: {
+    save: vi.fn((key, value) => {
+      _mockStore.set(key, value);
+      return true;
+    }),
+    get: vi.fn((key, defaultValue = null) => (_mockStore.has(key) ? _mockStore.get(key) : defaultValue)),
+    remove: vi.fn((key) => {
+      _mockStore.delete(key);
+      return true;
+    }),
+    clearUserData: vi.fn(() => {
+      _mockStore.clear();
+    }),
+    migrateUserKeys: vi.fn()
+  },
+  getUserId: vi.fn(() => null),
+  getToken: vi.fn(() => null),
+  default: {
+    save: vi.fn((key, value) => {
+      _mockStore.set(key, value);
+      return true;
+    }),
+    get: vi.fn((key, defaultValue = null) => (_mockStore.has(key) ? _mockStore.get(key) : defaultValue)),
+    remove: vi.fn((key) => {
+      _mockStore.delete(key);
+      return true;
+    }),
+    clearUserData: vi.fn(() => {
+      _mockStore.clear();
+    }),
+    migrateUserKeys: vi.fn()
+  }
+}));
+
 // ============================================================
 // 1. isLogin 双条件验证
 // ============================================================
@@ -300,9 +337,14 @@ describe('[审计] TokenRefreshPlugin — Token 刷新机制', () => {
 
   beforeEach(async () => {
     vi.restoreAllMocks();
+    _mockStore.clear();
     setActivePinia(createPinia());
     const mod = await import('@/utils/auth/token-refresh-plugin.js');
     tokenPlugin = mod.tokenRefreshPlugin || mod.default;
+    // 重置插件内部状态
+    tokenPlugin._refreshPromise = null;
+    tokenPlugin.refreshRetryCount = 0;
+    tokenPlugin.clearTokens();
     // 停止预检测定时器避免干扰
     if (tokenPlugin.stopPreCheckTimer) {
       tokenPlugin.stopPreCheckTimer();
@@ -542,6 +584,7 @@ describe('[审计] redirectAfterLogin — 登录后重定向', () => {
 describe('[审计] 401 处理链 — Token 过期响应处理', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    _mockStore.clear();
     setActivePinia(createPinia());
   });
 

@@ -21,7 +21,7 @@ export default async function (ctx) {
   const requestId = `stats_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, userId, token } = ctx.body || {};
+    const { action, userId } = ctx.body || {};
 
     if (!userId) {
       return { code: 401, message: '用户未登录', requestId };
@@ -32,7 +32,7 @@ export default async function (ctx) {
     }
 
     // JWT 身份验证
-    const authToken = ctx.headers?.['authorization'] || token;
+    const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
     if (authToken) {
       const rawToken = authToken.startsWith('Bearer ') ? authToken.slice(7) : authToken;
       const payload = verifyJWT(rawToken);
@@ -147,6 +147,11 @@ async function getDailyStats(userId, data, requestId) {
     .limit(1000)
     .get();
 
+  // 数据截断警告：如果命中 limit 上限，统计结果可能不完整
+  if ((records.data || []).length >= 1000) {
+    console.warn(`[${requestId}] ⚠️ daily stats hit limit(1000), results may be incomplete for userId=${userId}`);
+  }
+
   // 按天分组统计
   const dailyMap = {};
   for (const record of records.data || []) {
@@ -193,6 +198,11 @@ async function getWeeklyTrend(userId, requestId) {
     .field({ is_correct: true, created_at: true, category: true })
     .limit(2000)
     .get();
+
+  // 数据截断警告
+  if ((records.data || []).length >= 2000) {
+    console.warn(`[${requestId}] ⚠️ weekly stats hit limit(2000), results may be incomplete for userId=${userId}`);
+  }
 
   // 按周分组
   const weeks = [{}, {}, {}, {}];
