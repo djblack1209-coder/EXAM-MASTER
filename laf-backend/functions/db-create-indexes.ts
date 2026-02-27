@@ -25,11 +25,12 @@ const logger = createLogger('[DbIndexes]');
 const db = cloud.database();
 
 export default async function (ctx) {
+  const requestId = `db_idx_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   try {
     // [C3-FIX] 管理工具函数需要管理员权限
     const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
     if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
-      return { code: 403, success: false, message: '需要管理员权限，请提供 ADMIN_SECRET' };
+      return { code: 403, success: false, message: '需要管理员权限，请提供 ADMIN_SECRET', requestId };
     }
 
     const results = [];
@@ -427,15 +428,19 @@ export default async function (ctx) {
 
     return {
       code: failedCollections.length > 0 ? 1 : 0,
+      success: failedCollections.length === 0,
       message: `索引创建完成: ${totalIndexes} 个索引, ${results.length} 个集合, ${failedCollections.length} 个失败`,
-      data: results
+      data: results,
+      requestId
     };
   } catch (error) {
     logger.error('[db-create-indexes] 索引创建脚本异常:', error);
     return {
       code: 500,
+      success: false,
       message: '索引创建脚本执行异常',
-      error: (error as Error).message
+      error: (error as Error).message,
+      requestId
     };
   }
 }

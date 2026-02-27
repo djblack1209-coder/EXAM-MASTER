@@ -255,6 +255,20 @@ describe('[安全审计] learning-resource 关键防护', () => {
     expect(favoriteQuery.query.user_id).toBe('owner_user');
   });
 
+  it('公开操作在无 token 时应忽略 body.userId，并按 IP 维度限流', async () => {
+    const result = await learningResourceHandler({
+      body: {
+        action: 'getHotResources',
+        userId: 'spoof_user',
+        data: { period: 'week' }
+      },
+      headers: { 'x-real-ip': '1.2.3.4' }
+    });
+
+    expect(result.code).toBe(0);
+    expect(mocked.checkRateLimitMock).toHaveBeenCalledWith('lr_ip_1.2.3.4', 60, 60000);
+  });
+
   it('非法 category 参数应被拒绝，避免查询污染', async () => {
     const result = await learningResourceHandler({
       body: {

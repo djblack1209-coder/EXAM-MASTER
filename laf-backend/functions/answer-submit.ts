@@ -24,6 +24,7 @@ import cloud from '@lafjs/cloud';
 // ✅ B003: 使用共享 API 响应模块，统一错误处理格式
 import { badRequest, unauthorized, serverError, generateRequestId, wrapResponse, logger } from './_shared/api-response';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -50,7 +51,7 @@ async function checkIdempotency(userId: string, action: string, idempotencyKey: 
         return { isDuplicate: true, previousResult: existing.data.result };
       }
       if (existing.data.status === 'processing' && now - existing.data.created_at < 30000) {
-        return { isDuplicate: true, previousResult: { code: 429, message: '请求正在处理中' } };
+        return { isDuplicate: true, previousResult: { code: 429, success: false, message: '请求正在处理中' } };
       }
       // 超时或失败，允许重试
       await collection.doc(existing.data._id).update({ status: 'processing', created_at: now });
@@ -176,7 +177,7 @@ export default async function (ctx) {
 
     // ✅ P0修复：所有操作强制 JWT 认证，防止未认证用户读取他人数据
     const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
+    const token = extractBearerToken(rawHeaderToken);
     if (!token) {
       return wrapResponse(unauthorized('请先登录'), requestId, startTime);
     }

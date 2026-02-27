@@ -9,6 +9,47 @@
 
 import { deobfuscate } from '../utils/crypto/cipher.js';
 
+const LOCAL_COMPAT_PREFIX = '__exam_storage__:';
+
+function readCompatLocalStorage(key) {
+  if (typeof localStorage === 'undefined') {
+    return '';
+  }
+
+  const directValue = localStorage.getItem(key);
+  if (directValue !== null) {
+    return directValue;
+  }
+
+  const compatValue = localStorage.getItem(`${LOCAL_COMPAT_PREFIX}${key}`);
+  if (compatValue === null) {
+    return '';
+  }
+
+  try {
+    const parsed = JSON.parse(compatValue);
+    if (parsed && typeof parsed === 'object' && Object.prototype.hasOwnProperty.call(parsed, 'value')) {
+      return parsed.value;
+    }
+  } catch {
+    // ignore parse failure, fallback to raw value
+  }
+
+  return compatValue;
+}
+
+function normalizeStringValue(value) {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value);
+  }
+
+  return '';
+}
+
 function safeGetStorageSync(key) {
   try {
     if (typeof uni !== 'undefined' && typeof uni.getStorageSync === 'function') {
@@ -19,9 +60,7 @@ function safeGetStorageSync(key) {
   }
 
   try {
-    if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem(key);
-    }
+    return readCompatLocalStorage(key);
   } catch (_e) {
     // ignore
   }
@@ -34,15 +73,17 @@ function safeGetStorageSync(key) {
  */
 export const getUserId = () => {
   try {
-    const encrypted = safeGetStorageSync('_enc_EXAM_USER_ID');
-    if (encrypted && encrypted !== '') {
+    const encrypted = normalizeStringValue(safeGetStorageSync('_enc_EXAM_USER_ID'));
+    if (encrypted) {
       const decrypted = deobfuscate(encrypted);
       if (decrypted !== null) return decrypted;
     }
   } catch {
     /* ignore */
   }
-  return safeGetStorageSync('EXAM_USER_ID') || null;
+
+  const plainUserId = normalizeStringValue(safeGetStorageSync('EXAM_USER_ID'));
+  return plainUserId || null;
 };
 
 /**
@@ -50,13 +91,15 @@ export const getUserId = () => {
  */
 export const getToken = () => {
   try {
-    const encrypted = safeGetStorageSync('_enc_EXAM_TOKEN');
-    if (encrypted && encrypted !== '') {
+    const encrypted = normalizeStringValue(safeGetStorageSync('_enc_EXAM_TOKEN'));
+    if (encrypted) {
       const decrypted = deobfuscate(encrypted);
       if (decrypted !== null) return decrypted;
     }
   } catch {
     /* ignore */
   }
-  return safeGetStorageSync('EXAM_TOKEN') || null;
+
+  const plainToken = normalizeStringValue(safeGetStorageSync('EXAM_TOKEN'));
+  return plainToken || null;
 };

@@ -12,7 +12,7 @@
  *
  * 请求参数：
  * - file: File (必填) - 头像图片文件
- * - userId: string (必填) - 用户ID
+ * - userId: string (可选) - 用户ID（实际以 JWT 为准）
  * - type: string (可选) - 上传类型，默认 'avatar'
  *
  * 返回格式：
@@ -24,6 +24,7 @@
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
 import { logger, success, badRequest, unauthorized, serverError, generateRequestId } from './_shared/api-response';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 
@@ -61,7 +62,7 @@ export default async function (ctx: FunctionContext) {
 
     // JWT 认证：头像上传必须验证身份
     const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
+    const token = extractBearerToken(rawHeaderToken);
     let userId = bodyUserId;
 
     if (!token) {
@@ -148,6 +149,7 @@ export default async function (ctx: FunctionContext) {
       if (userResult.data) {
         // 更新现有用户
         await usersCollection.where({ _id: userId }).update({
+          avatar_url: avatarUrl,
           avatarUrl: avatarUrl,
           updated_at: Date.now()
         });
@@ -159,6 +161,7 @@ export default async function (ctx: FunctionContext) {
 
         if (openidResult.data) {
           await usersCollection.where({ openid: userId }).update({
+            avatar_url: avatarUrl,
             avatarUrl: avatarUrl,
             updated_at: Date.now()
           });
@@ -180,6 +183,7 @@ export default async function (ctx: FunctionContext) {
       {
         url: avatarUrl,
         avatarUrl: avatarUrl,
+        avatar_url: avatarUrl,
         fileName: fileName,
         size: fileSize,
         type: mimeType

@@ -44,31 +44,34 @@ const TIMESTAMP_FIELDS = ['created_at', 'updated_at'];
 const BATCH_SIZE = 100;
 
 export default async function (ctx) {
+  const requestId = `db_ts_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   try {
     // [C3-FIX] 管理工具函数需要管理员权限
     const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
     if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
-      return { code: 403, success: false, message: '需要管理员权限，请提供 ADMIN_SECRET' };
+      return { code: 403, success: false, message: '需要管理员权限，请提供 ADMIN_SECRET', requestId };
     }
 
     const { action = 'check' } = ctx.body || {};
 
     switch (action) {
       case 'check':
-        return await checkTimestampTypes();
+        return await checkTimestampTypes(requestId);
       case 'migrate':
-        return await migrateToDate();
+        return await migrateToDate(requestId);
       case 'rollback':
-        return await rollbackToNumber();
+        return await rollbackToNumber(requestId);
       default:
-        return { code: 400, message: '无效的 action，可选: check, migrate, rollback' };
+        return { code: 400, success: false, message: '无效的 action，可选: check, migrate, rollback', requestId };
     }
   } catch (error) {
     logger.error('[db-migrate-timestamps] 迁移脚本异常:', error);
     return {
       code: 500,
+      success: false,
       message: '迁移脚本执行异常',
-      error: (error as Error).message
+      error: (error as Error).message,
+      requestId
     };
   }
 }
@@ -76,7 +79,7 @@ export default async function (ctx) {
 /**
  * 检查各集合时间戳字段的类型分布
  */
-async function checkTimestampTypes() {
+async function checkTimestampTypes(requestId: string) {
   const report = [];
 
   for (const colName of COLLECTIONS) {
@@ -127,13 +130,13 @@ async function checkTimestampTypes() {
     }
   }
 
-  return { code: 0, message: '时间戳类型检查完成', data: report };
+  return { code: 0, success: true, message: '时间戳类型检查完成', data: report, requestId };
 }
 
 /**
  * 将 number 类型时间戳迁移为 Date 类型
  */
-async function migrateToDate() {
+async function migrateToDate(requestId: string) {
   const results = [];
 
   for (const colName of COLLECTIONS) {
@@ -189,15 +192,17 @@ async function migrateToDate() {
   const totalMigrated = results.reduce((sum, r) => sum + (r.migrated || 0), 0);
   return {
     code: 0,
+    success: true,
     message: `迁移完成: 共转换 ${totalMigrated} 条记录`,
-    data: results
+    data: results,
+    requestId
   };
 }
 
 /**
  * 回滚：将 Date 类型转回 number 时间戳
  */
-async function rollbackToNumber() {
+async function rollbackToNumber(requestId: string) {
   const results = [];
 
   for (const colName of COLLECTIONS) {
@@ -251,7 +256,9 @@ async function rollbackToNumber() {
   const total = results.reduce((sum, r) => sum + (r.rolledBack || 0), 0);
   return {
     code: 0,
+    success: true,
     message: `回滚完成: 共转换 ${total} 条记录`,
-    data: results
+    data: results,
+    requestId
   };
 }

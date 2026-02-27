@@ -20,6 +20,7 @@ import cloud from '@lafjs/cloud';
 import { validate } from '../utils/validator';
 import { verifyJWT } from './login';
 import { checkRateLimit, createLogger } from './_shared/api-response';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -57,9 +58,8 @@ const SUBJECT_KEYS = Object.keys(SUBJECTS);
 const logger = createLogger('[LearningResource]');
 
 function extractToken(ctx: any): string {
-  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization || '';
-  if (!rawToken || typeof rawToken !== 'string') return '';
-  return rawToken.replace(/^Bearer\s+/i, '').trim();
+  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization;
+  return extractBearerToken(rawToken);
 }
 
 function extractClientIp(ctx: any): string {
@@ -106,9 +106,7 @@ export default async function (ctx) {
 
   try {
     const { action, userId: requestUserId, data } = ctx.body || {};
-    let userId = typeof requestUserId === 'string' ? requestUserId : '';
-
-    logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
+    let userId = '';
 
     // S003: 入口参数校验
     const entryValidation = validate(
@@ -158,8 +156,16 @@ export default async function (ctx) {
       userId = tokenPayload.userId;
     } else if (tokenPayload?.userId) {
       // 非敏感操作可选携带 token，用于个性化推荐
+      if (requestUserId && requestUserId !== tokenPayload.userId) {
+        logger.warn(`[${requestId}] 非敏感操作检测到 userId 不匹配，已使用 token 用户ID`);
+      }
       userId = tokenPayload.userId;
+    } else if (requestUserId) {
+      // 非敏感操作未认证时，不信任请求体 userId，避免伪造限流主体
+      logger.warn(`[${requestId}] 非敏感操作忽略未认证 userId`);
     }
+
+    logger.info(`[${requestId}] action: ${action}, userId: ${userId || 'anonymous'}`);
 
     // 频率限制：按 userId 或 IP 限流
     const clientIp = extractClientIp(ctx);

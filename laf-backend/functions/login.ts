@@ -31,6 +31,7 @@ import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import { perfMonitor } from '../utils/perf-monitor';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { verifyJWT as verifySharedJWT } from './_shared/auth';
 const logger = createLogger('[Login]');
 
 // ==================== 环境变量配置 ====================
@@ -44,9 +45,8 @@ const SECRET_PLACEHOLDER
 // ✅ B017: JWT_SECRET_PLACEHOLDER
 const JWT_SECRET_PLACEHOLDER
 if (!process.env.JWT_SECRET_PLACEHOLDER
+  // 避免模块加载阶段抛错导致所有依赖 verifyJWT 的云函数无法启动
   logger.error('❌ 严重安全警告：JWT_SECRET_PLACEHOLDER
-  // ✅ C4: 任何环境都必须配置 JWT_SECRET_PLACEHOLDER
-  throw new Error('[Login] JWT_SECRET_PLACEHOLDER
 }
 const JWT_EXPIRES_IN = 7 * 24 * 60 * 60 * 1000; // 7天
 
@@ -416,6 +416,16 @@ export default async function (ctx) {
   logger.info(`[${requestId}] 登录请求开始`);
 
   try {
+    // 缺少密钥时仅拒绝当前请求，不阻断其他云函数模块加载
+    if (!JWT_SECRET_PLACEHOLDER
+      return {
+        code: 500,
+        success: false,
+        message: '服务配置错误：缺少 JWT 签名密钥，请联系管理员',
+        requestId
+      };
+    }
+
     // 0. 登录频率限制检查（防止暴力破解）
     const clientIp =
       ctx.headers?.['x-forwarded-for']?.split(',')[0]?.trim() ||
@@ -448,6 +458,7 @@ export default async function (ctx) {
       logger.warn(`[${requestId}] 登录频率限制触发: IP=${clientIp}`);
       return {
         code: 429,
+        success: false,
         message: rateLimitResult.message || '请求过于频繁，请稍后再试',
         retryAfter: rateLimitResult.blockedUntil
           ? Math.ceil((rateLimitResult.blockedUntil - Date.now()) / 1000)
@@ -473,6 +484,7 @@ export default async function (ctx) {
 
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId,
       duration
@@ -492,25 +504,25 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
 
   // 1. 参数校验
   if (!email) {
-    return { code: 400, message: '邮箱不能为空', requestId };
+    return { code: 400, success: false, message: '邮箱不能为空', requestId };
   }
 
   // 邮箱格式校验
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(email)) {
-    return { code: 400, message: '邮箱格式不正确', requestId };
+    return { code: 400, success: false, message: '邮箱格式不正确', requestId };
   }
 
   // 必须提供验证码或密码
   if (!verifyCode && !password) {
-    return { code: 400, message: '请提供验证码或密码', requestId };
+    return { code: 400, success: false, message: '请提供验证码或密码', requestId };
   }
 
   // ✅ B005: 验证码校验逻辑
   if (verifyCode) {
     const codeValid = await validateEmailCode(email, verifyCode, requestId);
     if (!codeValid.valid) {
-      return { code: 401, message: codeValid.error || '验证码错误', requestId };
+      return { code: 401, success: false, message: codeValid.error || '验证码错误', requestId };
     }
   }
 
@@ -523,13 +535,14 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
       // ✅ 安全修复：新用户使用密码注册时必须先通过邮箱验证码校验，防止未验证邮箱直接注册
       return {
         code: 400,
+        success: false,
         message: '新用户注册需先完成邮箱验证码校验',
         requestId
       };
     } else {
       // 老用户登录，验证密码
       if (!existingUser.data.password_hash) {
-        return { code: 401, message: '该账号未设置密码，请使用验证码登录', requestId };
+        return { code: 401, success: false, message: '该账号未设置密码，请使用验证码登录', requestId };
       }
 
       const storedHash = existingUser.data.password_hash;
@@ -571,7 +584,7 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
       }
 
       if (!passwordValid) {
-        return { code: 401, message: '密码错误', requestId };
+        return { code: 401, success: false, message: '密码错误', requestId };
       }
     }
   }
@@ -593,6 +606,7 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
       if (!strengthResult.valid) {
         return {
           code: 400,
+          success: false,
           message: `密码强度不足: ${strengthResult.errors.join('; ')}`,
           passwordStrength: getPasswordStrengthLevel(strengthResult.score),
           requestId
@@ -718,6 +732,7 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
     logger.warn(`[${requestId}] 参数错误: ${validation.error}`);
     return {
       code: 400,
+      success: false,
       message: `参数错误: ${validation.error}`,
       requestId
     };
@@ -730,6 +745,7 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
     logger.error(`[${requestId}] 缺少微信配置: WX_APPID=${!!WX_APPID}, WX_SECRET_PLACEHOLDER
     return {
       code: 500,
+      success: false,
       message: '服务配置错误：缺少微信小程序配置（WX_APPID/WX_SECRET_PLACEHOLDER
       requestId
     };
@@ -740,6 +756,7 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
     logger.error(`[${requestId}] 生产环境缺少 JWT_SECRET_PLACEHOLDER
     return {
       code: 500,
+      success: false,
       message: '服务配置错误：缺少 JWT 签名密钥，请联系管理员',
       requestId
     };
@@ -774,6 +791,7 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
 
     return {
       code: 401,
+      success: false,
       message: `微信登录失败: ${errorMsg}`,
       errcode: wxData.errcode,
       requestId
@@ -786,6 +804,7 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
     logger.error(`[${requestId}] 获取 openid 失败`);
     return {
       code: 401,
+      success: false,
       message: '获取用户标识失败',
       requestId
     };
@@ -858,7 +877,7 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
 
   // 1. 参数校验
   if (!code || typeof code !== 'string') {
-    return { code: 400, message: 'code 不能为空', requestId };
+    return { code: 400, success: false, message: 'code 不能为空', requestId };
   }
 
   // 2. 环境变量检查
@@ -866,13 +885,14 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
     logger.error(`[${requestId}] 缺少微信公众号配置: WX_GZH_APPID=${!!WX_GZH_APPID}, SECRET_PLACEHOLDER
     return {
       code: 500,
+      success: false,
       message: '服务配置错误：缺少微信公众号配置，请联系管理员',
       requestId
     };
   }
 
   if (!JWT_SECRET_PLACEHOLDER
-    return { code: 500, message: '服务配置错误：缺少 JWT 签名密钥', requestId };
+    return { code: 500, success: false, message: '服务配置错误：缺少 JWT 签名密钥', requestId };
   }
 
   // 3. 用 code 换取 access_token 和 openid
@@ -893,14 +913,14 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
     let errorMsg = tokenData.errmsg || '微信授权失败';
     if (tokenData.errcode === 40029) errorMsg = '授权码无效或已过期，请重新授权';
     if (tokenData.errcode === 40163) errorMsg = '授权码已被使用，请重新授权';
-    return { code: 401, message: errorMsg, errcode: tokenData.errcode, requestId };
+    return { code: 401, success: false, message: errorMsg, errcode: tokenData.errcode, requestId };
   }
 
   const { access_token, openid, unionid: tokenUnionid } = tokenData;
 
   if (!access_token || !openid) {
     logger.error(`[${requestId}] H5微信返回数据不完整:`, tokenData);
-    return { code: 401, message: '获取微信用户标识失败', requestId };
+    return { code: 401, success: false, message: '获取微信用户标识失败', requestId };
   }
 
   // 4. 用 access_token 获取用户信息
@@ -1002,6 +1022,10 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
  * @returns {string} JWT token
  */
 function generateJWT(payload) {
+  if (!JWT_SECRET_PLACEHOLDER
+    throw new Error('JWT_SECRET_PLACEHOLDER
+  }
+
   const header = {
     alg: 'HS256',
     typ: 'JWT'
@@ -1031,41 +1055,5 @@ function generateJWT(payload) {
  * @returns {Object|null} 解析后的载荷或 null
  */
 export function verifyJWT(token) {
-  try {
-    if (!token) return null;
-
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-
-    const [headerBase64, payloadBase64, signature] = parts;
-
-    // 验证签名
-    const expectedSignature = crypto
-      .createHmac('sha256', JWT_SECRET_PLACEHOLDER
-      .update(`${headerBase64}.${payloadBase64}`)
-      .digest('base64url');
-
-    if (!crypto.timingSafeEqual(Buffer.from(signature, 'utf8'), Buffer.from(expectedSignature, 'utf8'))) {
-      logger.warn('JWT 签名验证失败');
-      return null;
-    }
-
-    // 解析载荷
-    const payload = JSON.parse(Buffer.from(payloadBase64, 'base64url').toString());
-
-    // ✅ B018: 检查过期 — 必须包含 exp 声明，否则拒绝
-    if (!payload.exp) {
-      logger.warn('JWT 缺少 exp 声明，拒绝验证');
-      return null;
-    }
-    if (payload.exp < Date.now()) {
-      logger.warn('JWT 已过期');
-      return null;
-    }
-
-    return payload;
-  } catch (error) {
-    logger.error('JWT 验证异常:', error);
-    return null;
-  }
+  return verifySharedJWT(token);
 }

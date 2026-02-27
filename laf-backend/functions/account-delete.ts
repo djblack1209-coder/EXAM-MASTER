@@ -17,6 +17,7 @@
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
 import { createLogger } from './_shared/api-response';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const logger = createLogger('[AccountDelete]');
@@ -30,21 +31,21 @@ export default async function (ctx: any) {
   try {
     // 1. 身份验证
     const rawHeaderToken = ctx.headers?.authorization || ctx.headers?.Authorization;
-    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
+    const token = extractBearerToken(rawHeaderToken);
     const payload = verifyJWT(token);
     if (!payload || !payload.userId) {
-      return { code: 401, success: false, message: '请先登录' };
+      return { code: 401, success: false, message: '请先登录', requestId };
     }
 
     const userId = payload.userId;
     const action = typeof ctx.body?.action === 'string' ? ctx.body.action.trim() : '';
 
     if (!action) {
-      return { code: 400, success: false, message: '缺少 action 参数' };
+      return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
 
     if (!['request', 'cancel', 'status'].includes(action)) {
-      return { code: 400, success: false, message: '不支持的操作' };
+      return { code: 400, success: false, message: '不支持的操作', requestId };
     }
 
     // 2. 请求注销
@@ -52,7 +53,7 @@ export default async function (ctx: any) {
       // 检查是否已在注销流程中
       const { data: existingUser } = await db.collection('users').doc(userId).get();
       if (!existingUser) {
-        return { code: 404, success: false, message: '用户不存在' };
+        return { code: 404, success: false, message: '用户不存在', requestId };
       }
 
       if (existingUser?.account_status === 'pending_deletion') {
@@ -63,7 +64,8 @@ export default async function (ctx: any) {
           data: {
             deletionScheduledAt: existingUser.deletion_scheduled_at,
             coolingDays: COOLING_DAYS
-          }
+          },
+          requestId
         };
       }
 
@@ -82,7 +84,8 @@ export default async function (ctx: any) {
         code: 0,
         success: true,
         message: `账号注销申请已提交，${COOLING_DAYS}天冷静期内可撤销`,
-        data: { deletionScheduledAt: deleteAt, coolingDays: COOLING_DAYS }
+        data: { deletionScheduledAt: deleteAt, coolingDays: COOLING_DAYS },
+        requestId
       };
     }
 
@@ -90,7 +93,7 @@ export default async function (ctx: any) {
     if (action === 'cancel') {
       const { data: user } = await db.collection('users').doc(userId).get();
       if (!user || user.account_status !== 'pending_deletion') {
-        return { code: 400, success: false, message: '当前账号无待注销申请' };
+        return { code: 400, success: false, message: '当前账号无待注销申请', requestId };
       }
 
       await db.collection('users').doc(userId).update({
@@ -101,7 +104,7 @@ export default async function (ctx: any) {
       });
 
       logger.info(`[${requestId}] 用户 ${userId} 撤销注销`);
-      return { code: 0, success: true, message: '注销申请已撤销，账号已恢复正常' };
+      return { code: 0, success: true, message: '注销申请已撤销，账号已恢复正常', requestId };
     }
 
     // 4. 查询注销状态
@@ -120,11 +123,12 @@ export default async function (ctx: any) {
           status,
           deletionScheduledAt: scheduledAt,
           remainingDays
-        }
+        },
+        requestId
       };
     }
   } catch (error: any) {
     logger.error(`[${requestId}] 账号注销异常:`, error);
-    return { code: 500, success: false, message: '操作失败，请稍后重试' };
+    return { code: 500, success: false, message: '操作失败，请稍后重试', requestId };
   }
 }

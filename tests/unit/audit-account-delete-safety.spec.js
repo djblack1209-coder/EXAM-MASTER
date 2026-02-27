@@ -94,6 +94,7 @@ describe('[安全审计] account-delete 显式 action 与失败保护', () => {
 
     expect(result.code).toBe(400);
     expect(result.message).toContain('action');
+    expect(result.requestId).toMatch(/^accdel_/);
     expect(mocked.scenario.userUpdates.length).toBe(0);
   });
 
@@ -105,6 +106,7 @@ describe('[安全审计] account-delete 显式 action 与失败保护', () => {
 
     expect(result.code).toBe(404);
     expect(result.success).toBe(false);
+    expect(result.requestId).toMatch(/^accdel_/);
   });
 
   it('request 时应正常写入 pending_deletion 与冷静期时间', async () => {
@@ -117,6 +119,7 @@ describe('[安全审计] account-delete 显式 action 与失败保护', () => {
 
     expect(result.code).toBe(0);
     expect(result.success).toBe(true);
+    expect(result.requestId).toMatch(/^accdel_/);
     expect(mocked.scenario.userUpdates.length).toBe(1);
     expect(mocked.scenario.userUpdates[0].payload).toEqual(
       expect.objectContaining({
@@ -138,6 +141,7 @@ describe('[安全审计] account-delete 显式 action 与失败保护', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
+    expect(result.requestId).toMatch(/^accdel_/);
   });
 
   it('仅 body.token 不应通过鉴权（应要求 Header Token）', async () => {
@@ -148,6 +152,7 @@ describe('[安全审计] account-delete 显式 action 与失败保护', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
+    expect(result.requestId).toMatch(/^accdel_/);
   });
 
   it('仅 headers.token 不应通过鉴权（应要求 Authorization）', async () => {
@@ -158,5 +163,6 @@ describe('[安全审计] account-delete 显式 action 与失败保护', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
+    expect(result.requestId).toMatch(/^accdel_/);
   });
 });

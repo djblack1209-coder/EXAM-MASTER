@@ -89,6 +89,34 @@ describe('[安全审计] send-email-code 敏感信息与错误返回', () => {
     });
 
     expect(result.code).toBe(502);
+    expect(result.success).toBe(false);
+  });
+
+  it('缺少邮箱参数时应返回 400 且 success=false', async () => {
+    process.env.NODE_ENV = 'production';
+
+    const result = await sendEmailCodeHandler({
+      body: {},
+      headers: {}
+    });
+
+    expect(result.code).toBe(400);
+    expect(result.success).toBe(false);
+    expect(result.message).toContain('不能为空');
+  });
+
+  it('1分钟内重复发送时应返回 429 且 success=false', async () => {
+    process.env.NODE_ENV = 'production';
+    mocked.scenario.getOneResult = { data: { _id: 'existing_code' } };
+
+    const result = await sendEmailCodeHandler({
+      body: { email: 'user@example.com' },
+      headers: {}
+    });
+
+    expect(result.code).toBe(429);
+    expect(result.success).toBe(false);
+    expect(result.message).toContain('发送太频繁');
   });
 
   it('非生产环境失败提示不应泄露验证码内容', async () => {
