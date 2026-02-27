@@ -12,6 +12,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -26,41 +27,47 @@ export default async function (ctx) {
   const requestId = `qb_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, userId, data } = ctx.body || {};
+    const { action, userId: claimedUserId, data } = ctx.body || {};
 
     if (!action) {
-      return { code: 400, message: '缺少 action 参数', requestId };
+      return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
 
-    // JWT 身份验证（题库查询允许匿名访问公共题目，但写操作需要认证）
-    const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    if (authToken) {
-      const rawToken = authToken.startsWith('Bearer ') ? authToken.slice(7) : authToken;
+    const publicActions = new Set(['get', 'random', 'getByIds']);
+    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
+    let authUserId = null;
+
+    if (rawHeaderToken) {
+      const rawToken = extractBearerToken(rawHeaderToken);
       const payload = verifyJWT(rawToken);
-      if (!payload) {
-        return { code: 401, message: 'token 无效或已过期，请重新登录', requestId };
+      if (!payload || !payload.userId) {
+        return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
       }
-      if (userId && payload.userId && payload.userId !== userId) {
-        return { code: 401, message: '身份验证失败', requestId };
+      if (claimedUserId && payload.userId !== claimedUserId) {
+        return { code: 403, success: false, message: '身份验证失败', requestId };
       }
+      authUserId = payload.userId;
+    } else if (!publicActions.has(action)) {
+      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
     }
 
     console.log(`[${requestId}] 题库查询: action=${action}`);
 
     switch (action) {
       case 'get':
-        return await getQuestions(userId, data, requestId);
+        return await getQuestions(data, requestId, authUserId);
       case 'random':
         return await getRandomQuestions(data, requestId);
       case 'getByIds':
         return await getQuestionsByIds(data, requestId);
       default:
-        return { code: 400, message: `未知的 action: ${action}`, requestId };
+        return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
     }
   } catch (error) {
     console.error(`[${requestId}] 题库查询异常:`, error);
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId,
       duration: Date.now() - startTime
@@ -71,7 +78,7 @@ export default async function (ctx) {
 /**
  * 获取题目列表
  */
-async function getQuestions(userId, data, requestId) {
+async function getQuestions(data, requestId, _authUserId) {
   const { category, sub_category, difficulty, type, tags, page = 1, pageSize = 20, keyword } = data || {};
 
   const query = { is_active: true, review_status: 'approved' };
@@ -164,12 +171,12 @@ async function getQuestionsByIds(data, requestId) {
   const { ids } = data || {};
 
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return { code: 400, message: '缺少题目ID列表', requestId };
+    return { code: 400, success: false, message: '缺少题目ID列表', requestId };
   }
 
   const safeIds = ids.slice(0, 100).filter((id) => typeof id === 'string' && id.length > 0);
   if (safeIds.length === 0) {
-    return { code: 400, message: '题目ID列表不合法', requestId };
+    return { code: 400, success: false, message: '题目ID列表不合法', requestId };
   }
 
   const result = await db

@@ -24,6 +24,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 import {
   logger,
   validateUserId,
@@ -149,13 +150,13 @@ async function verifySubmitParticipants(
   player1Uid: string,
   player2Uid: string,
   requestId: string
-): Promise<{ valid: boolean; mode?: 'bot' | 'human'; reason?: string }> {
+): Promise<{ valid: boolean; mode?: 'bot' | 'human'; reason?: string; code?: number }> {
   if (player1Uid === player2Uid) {
-    return { valid: false, reason: '对战双方不能是同一用户' };
+    return { valid: false, reason: '对战双方不能是同一用户', code: 400 };
   }
 
   if (authUserId !== player1Uid && authUserId !== player2Uid) {
-    return { valid: false, reason: '无权提交此对战结果' };
+    return { valid: false, reason: '无权提交此对战结果', code: 403 };
   }
 
   const nonBotParticipants = Array.from(
@@ -163,36 +164,36 @@ async function verifySubmitParticipants(
   );
 
   if (nonBotParticipants.length === 0) {
-    return { valid: false, reason: '对战参与者无效' };
+    return { valid: false, reason: '对战参与者无效', code: 400 };
   }
 
   // 单真人 + 单机器人：允许直接提交
   if (nonBotParticipants.length === 1) {
     if (nonBotParticipants[0] !== authUserId) {
-      return { valid: false, reason: '无权提交此对战结果' };
+      return { valid: false, reason: '无权提交此对战结果', code: 403 };
     }
     return { valid: true, mode: 'bot' };
   }
 
   // 双真人对战：必须有服务端会话记录，防止伪造对手身份
   if (!nonBotParticipants.includes(authUserId)) {
-    return { valid: false, reason: '无权提交此对战结果' };
+    return { valid: false, reason: '无权提交此对战结果', code: 403 };
   }
 
   const battleSession = await findBattleSessionById(battleId);
   if (!battleSession) {
     logger.warn(`[${requestId}] 双真人对战缺少服务端会话: battleId=${battleId}`);
-    return { valid: false, reason: '未找到有效对战会话，请重新发起对战' };
+    return { valid: false, reason: '未找到有效对战会话，请重新发起对战', code: 400 };
   }
 
   if (battleSession.status === 'cancelled') {
-    return { valid: false, reason: '该对战已取消' };
+    return { valid: false, reason: '该对战已取消', code: 400 };
   }
 
   const allowedUids = extractSessionParticipantUids(battleSession);
   if (allowedUids.length === 0) {
     logger.warn(`[${requestId}] 对战会话缺少参与者信息: battleId=${battleId}`);
-    return { valid: false, reason: '对战会话数据异常，请重新发起对战' };
+    return { valid: false, reason: '对战会话数据异常，请重新发起对战', code: 400 };
   }
 
   const isAuthorizedPair = nonBotParticipants.every((uid) => allowedUids.includes(uid));
@@ -200,7 +201,7 @@ async function verifySubmitParticipants(
     logger.warn(
       `[${requestId}] 对战参与者校验失败: submit=[${nonBotParticipants.join(',')}], session=[${allowedUids.join(',')}]`
     );
-    return { valid: false, reason: '对战参与者与会话不匹配' };
+    return { valid: false, reason: '对战参与者与会话不匹配', code: 403 };
   }
 
   return { valid: true, mode: 'human' };
@@ -222,7 +223,7 @@ export default async function (ctx) {
 
     // JWT 认证：所有操作强制验证（防止未认证用户查询他人记录或计算ELO）
     const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
+    const token = extractBearerToken(rawHeaderToken);
     if (!token) {
       return { ...unauthorized('请先登录'), requestId };
     }
@@ -324,7 +325,7 @@ async function handleSubmitResult(params, requestId) {
   const authUserId = params._authUserId;
   if (authUserId !== player1.uid && authUserId !== player2.uid) {
     logger.warn(`[${requestId}] 用户 ${authUserId} 试图提交非本人对战结果 (p1: ${player1.uid}, p2: ${player2.uid})`);
-    return badRequest('无权提交此对战结果', requestId);
+    return { code: 403, success: false, message: '无权提交此对战结果', requestId };
   }
 
   const participantCheck = await verifySubmitParticipants(authUserId, battleId, player1.uid, player2.uid, requestId);
@@ -332,7 +333,12 @@ async function handleSubmitResult(params, requestId) {
     logger.warn(
       `[${requestId}] 提交参与者校验失败: auth=${authUserId}, p1=${player1.uid}, p2=${player2.uid}, reason=${participantCheck.reason}`
     );
-    return badRequest(participantCheck.reason || '对战参与者校验失败', requestId);
+    return {
+      code: participantCheck.code || 400,
+      success: false,
+      message: participantCheck.reason || '对战参与者校验失败',
+      requestId
+    };
   }
 
   // 2. 防作弊检测（仅对真实玩家，跳过机器人）— 并行执行
@@ -351,7 +357,8 @@ async function handleSubmitResult(params, requestId) {
       code: 403,
       success: false,
       message: '账号因异常行为被暂时封禁，请联系客服',
-      banExpires: p1Check.banExpires
+      banExpires: p1Check.banExpires,
+      requestId
     };
   }
 
@@ -359,7 +366,8 @@ async function handleSubmitResult(params, requestId) {
     return {
       code: 403,
       success: false,
-      message: '对手账号异常，对战结果无效'
+      message: '对手账号异常，对战结果无效',
+      requestId
     };
   }
 
@@ -644,7 +652,7 @@ async function checkIdempotency(userId: string, action: string, idempotencyKey: 
         return { isDuplicate: true, previousResult: existing.data.result };
       }
       if (existing.data.status === 'processing' && now - existing.data.created_at < 30000) {
-        return { isDuplicate: true, previousResult: { code: 429, message: '请求正在处理中' } };
+        return { isDuplicate: true, previousResult: { code: 429, success: false, message: '请求正在处理中' } };
       }
       await collection.doc(existing.data._id).update({ status: 'processing', created_at: now });
       return { isDuplicate: false, recordId: existing.data._id };

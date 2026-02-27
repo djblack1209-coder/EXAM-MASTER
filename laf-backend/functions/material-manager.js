@@ -15,6 +15,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const ALLOWED_ACTIONS = new Set([
@@ -30,9 +31,7 @@ const ALLOWED_ACTIONS = new Set([
 
 function extractToken(ctx) {
   const authHeader = ctx?.headers?.authorization || ctx?.headers?.Authorization;
-  const rawToken = typeof authHeader === 'string' ? authHeader : '';
-  if (!rawToken || typeof rawToken !== 'string') return '';
-  return rawToken.replace(/^Bearer\s+/i, '').trim();
+  return extractBearerToken(authHeader);
 }
 
 function toSafeString(value, maxLength = 200) {
@@ -55,20 +54,20 @@ export default async function (ctx) {
 
     // 参数校验
     if (!action || typeof action !== 'string') {
-      return { code: 400, message: '缺少 action 参数', requestId };
+      return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
     if (!ALLOWED_ACTIONS.has(action)) {
-      return { code: 400, message: `未知的 action: ${action}`, requestId };
+      return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
     }
 
     // JWT 身份验证
     const rawToken = extractToken(ctx);
     if (!rawToken) {
-      return { code: 401, message: '缺少认证 token，请重新登录', requestId };
+      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
     }
     const payload = verifyJWT(rawToken);
     if (!payload || !payload.userId) {
-      return { code: 401, message: 'token 无效或已过期，请重新登录', requestId };
+      return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
     }
     const userId = payload.userId;
 
@@ -110,6 +109,7 @@ export default async function (ctx) {
     console.error(`[${requestId}] 用户资料管理异常:`, error);
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId,
       duration: Date.now() - startTime
@@ -125,7 +125,7 @@ async function saveUploadRecord(userId, data, requestId) {
   const safeName = toSafeString(name, 200);
 
   if (!safeName) {
-    return { code: 400, message: '缺少文件名', requestId };
+    return { code: 400, success: false, message: '缺少文件名', requestId };
   }
 
   const record = {
@@ -186,14 +186,14 @@ async function deleteUploadRecord(userId, data, requestId) {
   const { recordId } = data || {};
 
   if (!recordId) {
-    return { code: 400, message: '缺少记录ID', requestId };
+    return { code: 400, success: false, message: '缺少记录ID', requestId };
   }
 
   // 验证记录归属
   const record = await db.collection('user_materials').where({ _id: recordId, userId }).getOne();
 
   if (!record.data) {
-    return { code: 404, message: '记录不存在', requestId };
+    return { code: 404, success: false, message: '记录不存在', requestId };
   }
 
   // 删除记录
@@ -212,7 +212,7 @@ async function saveQuestions(userId, data, requestId) {
   const { questions, materialId, materialName } = data || {};
 
   if (!Array.isArray(questions) || questions.length === 0) {
-    return { code: 400, message: '题目数据无效', requestId };
+    return { code: 400, success: false, message: '题目数据无效', requestId };
   }
 
   // 为每道题添加元数据
@@ -395,7 +395,7 @@ async function deleteQuestions(userId, data, requestId) {
     };
   }
 
-  return { code: 400, message: '缺少删除条件', requestId };
+  return { code: 400, success: false, message: '缺少删除条件', requestId };
 }
 
 /**
@@ -405,7 +405,7 @@ async function syncQuestions(userId, data, requestId) {
   const { localQuestions } = data || {};
 
   if (!Array.isArray(localQuestions)) {
-    return { code: 400, message: '题目数据无效', requestId };
+    return { code: 400, success: false, message: '题目数据无效', requestId };
   }
 
   const safeLocalQuestions = localQuestions.slice(0, 1000);

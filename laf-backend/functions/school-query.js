@@ -18,6 +18,7 @@ import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import { verifyJWT } from './login';
 import { createLogger } from './_shared/api-response';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -148,22 +149,22 @@ export default async function (ctx) {
     const { action, data } = ctx.body || {};
 
     if (!action) {
-      return { code: 400, message: '缺少 action 参数', requestId };
+      return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
 
     // JWT 身份验证（收藏操作需要认证，公开查询允许匿名）
     const userActions = ['add_favorite', 'remove_favorite', 'get_favorites'];
     const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
     if (authToken) {
-      const rawToken = authToken.startsWith('Bearer ') ? authToken.slice(7) : authToken;
+      const rawToken = extractBearerToken(authToken);
       const payload = verifyJWT(rawToken);
       if (!payload) {
-        return { code: 401, message: 'token 无效或已过期，请重新登录', requestId };
+        return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
       }
       // 将验证后的 userId 挂到 ctx 上供后续使用
       ctx._verifiedUserId = payload.userId;
     } else if (userActions.includes(action)) {
-      return { code: 401, message: '该操作需要登录', requestId };
+      return { code: 401, success: false, message: '该操作需要登录', requestId };
     }
 
     logger.info(`[${requestId}] 学校查询: action=${action}`);
@@ -243,12 +244,12 @@ export default async function (ctx) {
         const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
         const expectedSecret = process.env.ADMIN_SECRET;
         if (!adminSecret || !expectedSecret || typeof adminSecret !== 'string' || typeof expectedSecret !== 'string') {
-          return { code: 403, success: false, message: '需要管理员权限' };
+          return { code: 403, success: false, message: '需要管理员权限', requestId };
         }
         const a = Buffer.from(adminSecret, 'utf8');
         const b = Buffer.from(expectedSecret, 'utf8');
         if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
-          return { code: 403, success: false, message: '需要管理员权限' };
+          return { code: 403, success: false, message: '需要管理员权限', requestId };
         }
         result = await syncFromChsi(data, requestId);
         break;
@@ -264,7 +265,7 @@ export default async function (ctx) {
         break;
 
       default:
-        return { code: 400, message: `未知的 action: ${action}`, requestId };
+        return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
     }
 
     // 添加响应耗时
@@ -276,6 +277,7 @@ export default async function (ctx) {
     logger.error(`[${requestId}] 学校查询异常:`, error);
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId,
       duration: Date.now() - startTime
@@ -491,7 +493,7 @@ async function getSchoolDetail(data, requestId) {
   const { schoolId, code } = data || {};
 
   if (!schoolId && !code) {
-    return { code: 400, message: '缺少学校ID或代码', requestId };
+    return { code: 400, success: false, message: '缺少学校ID或代码', requestId };
   }
 
   // 缓存命中检查
@@ -507,7 +509,7 @@ async function getSchoolDetail(data, requestId) {
   const result = await db.collection('schools').where(query).getOne();
 
   if (!result.data) {
-    return { code: 404, message: '学校不存在', requestId };
+    return { code: 404, success: false, message: '学校不存在', requestId };
   }
 
   // 并行获取学院列表和最新分数线
@@ -537,7 +539,7 @@ async function searchSchools(data, requestId) {
   const { keyword, limit = 10 } = data || {};
 
   if (!keyword || keyword.trim() === '') {
-    return { code: 400, message: '搜索关键词不能为空', requestId };
+    return { code: 400, success: false, message: '搜索关键词不能为空', requestId };
   }
 
   const searchTerm = keyword.trim();
@@ -664,7 +666,7 @@ async function getMajors(data, requestId) {
   } = data || {};
 
   if (!schoolId) {
-    return { code: 400, message: '缺少学校ID', requestId };
+    return { code: 400, success: false, message: '缺少学校ID', requestId };
   }
 
   const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
@@ -743,7 +745,7 @@ async function getColleges(data, requestId) {
   const { schoolId } = data || {};
 
   if (!schoolId) {
-    return { code: 400, message: '缺少学校ID', requestId };
+    return { code: 400, success: false, message: '缺少学校ID', requestId };
   }
 
   const cacheKey = buildCacheKey('colleges', { schoolId });
@@ -801,13 +803,13 @@ async function getMajorDetail(data, requestId) {
   const { majorId } = data || {};
 
   if (!majorId) {
-    return { code: 400, message: '缺少专业ID', requestId };
+    return { code: 400, success: false, message: '缺少专业ID', requestId };
   }
 
   const result = await db.collection('majors').where({ _id: majorId }).getOne();
 
   if (!result.data) {
-    return { code: 404, message: '专业不存在', requestId };
+    return { code: 404, success: false, message: '专业不存在', requestId };
   }
 
   // 获取历年分数线和报录比 — 并行执行
@@ -910,13 +912,13 @@ async function addFavorite(ctx, data, requestId) {
   const userId = ctx._verifiedUserId;
 
   if (!userId) {
-    return { code: 401, message: '未登录', requestId };
+    return { code: 401, success: false, message: '未登录', requestId };
   }
 
   const { schoolId, majorId, notes, priority, status } = data || {};
 
   if (!schoolId) {
-    return { code: 400, message: '缺少学校ID', requestId };
+    return { code: 400, success: false, message: '缺少学校ID', requestId };
   }
 
   // 检查是否已收藏
@@ -958,13 +960,13 @@ async function removeFavorite(ctx, data, requestId) {
   const userId = ctx._verifiedUserId;
 
   if (!userId) {
-    return { code: 401, message: '未登录', requestId };
+    return { code: 401, success: false, message: '未登录', requestId };
   }
 
   const { schoolId } = data || {};
 
   if (!schoolId) {
-    return { code: 400, message: '缺少学校ID', requestId };
+    return { code: 400, success: false, message: '缺少学校ID', requestId };
   }
 
   await db.collection('user_school_favorites').where({ userId, schoolId }).remove();
@@ -980,7 +982,7 @@ async function getFavorites(ctx, data, requestId) {
   const userId = ctx._verifiedUserId;
 
   if (!userId) {
-    return { code: 401, message: '未登录', requestId };
+    return { code: 401, success: false, message: '未登录', requestId };
   }
 
   const { status } = data || {};

@@ -14,12 +14,13 @@
  */
 
 import cloud from '@lafjs/cloud';
+import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 
 // ==================== 环境配置 ====================
 import { createLogger, sanitizeString } from './_shared/api-response';
-const JWT_SECRET = process.env.JWT_SECRET || '';
 
 // 头像上传配置
 const AVATAR_MAX_SIZE = 2 * 1024 * 1024; // 2MB
@@ -29,54 +30,13 @@ const AVATAR_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/web
 const logger = createLogger('[UserProfile]');
 
 // ==================== 访问控制工具 ====================
-import crypto from 'crypto';
-
-/**
- * 验证JWT Token并提取用户ID
- * @param token JWT token
- * @returns 用户ID或null
- */
 function verifyTokenAndGetUserId(token: string): string | null {
-  try {
-    if (!token || !JWT_SECRET) return null;
-
-    // 移除 Bearer 前缀
-    const cleanToken = token.replace(/^Bearer\s+/i, '');
-
-    const parts = cleanToken.split('.');
-    if (parts.length !== 3) return null;
-
-    const [headerBase64, payloadBase64, signature] = parts;
-
-    // 验证签名
-    const expectedSignature = crypto
-      .createHmac('sha256', JWT_SECRET)
-      .update(`${headerBase64}.${payloadBase64}`)
-      .digest('base64url');
-
-    if (!crypto.timingSafeEqual(Buffer.from(signature, 'utf8'), Buffer.from(expectedSignature, 'utf8'))) {
-      logger.warn('JWT 签名验证失败');
-      return null;
-    }
-
-    // 解析载荷
-    const payload = JSON.parse(Buffer.from(payloadBase64, 'base64url').toString());
-
-    // 检查过期 — 必须包含 exp 声明，否则拒绝（与 login.ts verifyJWT 保持一致）
-    if (!payload.exp) {
-      logger.warn('JWT 缺少 exp 声明，拒绝验证');
-      return null;
-    }
-    if (payload.exp < Date.now()) {
-      logger.warn('JWT 已过期');
-      return null;
-    }
-
-    return payload.userId || null;
-  } catch (error) {
-    logger.error('JWT 验证异常:', error);
+  const cleanToken = extractBearerToken(token);
+  const payload = verifyJWT(cleanToken);
+  if (!payload || typeof payload.userId !== 'string') {
     return null;
   }
+  return payload.userId;
 }
 
 /**
@@ -89,24 +49,24 @@ function verifyTokenAndGetUserId(token: string): string | null {
 function verifyUserAccess(
   ctx: Record<string, unknown>,
   targetUserId: string
-): { valid: boolean; error?: string; tokenUserId?: string } {
+): { valid: boolean; error?: string; tokenUserId?: string; code?: number } {
   // 从请求头获取token
   const authHeader = ctx.headers?.authorization || ctx.headers?.Authorization || '';
 
   if (!authHeader) {
-    return { valid: false, error: '缺少认证信息' };
+    return { valid: false, error: '缺少认证信息', code: 401 };
   }
 
   const tokenUserId = verifyTokenAndGetUserId(authHeader);
 
   if (!tokenUserId) {
-    return { valid: false, error: '认证信息无效或已过期' };
+    return { valid: false, error: '认证信息无效或已过期', code: 401 };
   }
 
   // 验证用户只能访问自己的数据
   if (tokenUserId !== targetUserId) {
     logger.warn(`访问控制拦截: token用户=${tokenUserId}, 目标用户=${targetUserId}`);
-    return { valid: false, error: '无权访问该用户数据' };
+    return { valid: false, error: '无权访问该用户数据', code: 403 };
   }
 
   return { valid: true, tokenUserId };
@@ -167,7 +127,7 @@ export default async function (ctx: FunctionContext) {
       if (!accessCheck.valid) {
         logger.warn(`[${requestId}] 访问控制拦截: ${accessCheck.error}`);
         return {
-          code: 403,
+          code: accessCheck.code || 403,
           success: false,
           message: accessCheck.error || '无权执行此操作',
           requestId
@@ -523,30 +483,70 @@ function getDefaultPracticeConfig(): PracticeConfig {
  */
 function sanitizePracticeConfig(config: unknown): PracticeConfig {
   const defaults = getDefaultPracticeConfig();
-  const validModes = ['normal', 'exam', 'review', 'challenge'];
-  const validDifficulties = ['easy', 'medium', 'hard', 'adaptive'];
+  const validModes = ['normal', 'exam', 'review', 'challenge'] as const;
+  const validDifficulties = ['easy', 'medium', 'hard', 'adaptive'] as const;
+  const raw = toPlainObject(config);
+
+  const normalizedMode =
+    typeof raw.default_mode === 'string' && validModes.includes(raw.default_mode as (typeof validModes)[number])
+      ? (raw.default_mode as PracticeConfig['default_mode'])
+      : defaults.default_mode;
+
+  const normalizedDifficulty =
+    typeof raw.difficulty_preference === 'string' &&
+    validDifficulties.includes(raw.difficulty_preference as (typeof validDifficulties)[number])
+      ? (raw.difficulty_preference as PracticeConfig['difficulty_preference'])
+      : defaults.difficulty_preference;
+
+  const normalizedCategories = Array.isArray(raw.categories)
+    ? raw.categories
+        .slice(0, 10)
+        .map((item) => sanitizeString(String(item), 20))
+        .filter((item) => typeof item === 'string' && item.length > 0)
+    : defaults.categories;
+
+  const normalizedReminderTime =
+    typeof raw.reminder_time === 'string' && /^\d{2}:\d{2}$/.test(raw.reminder_time)
+      ? raw.reminder_time
+      : defaults.reminder_time;
 
   return {
-    default_mode: validModes.includes(config.default_mode) ? config.default_mode : defaults.default_mode,
-    question_count: Math.min(Math.max(parseInt(config.question_count) || defaults.question_count, 5), 100),
-    time_limit: Math.min(Math.max(parseInt(config.time_limit) || defaults.time_limit, 5), 180),
+    default_mode: normalizedMode,
+    question_count: toBoundedInteger(raw.question_count, defaults.question_count || 20, 5, 100),
+    time_limit: toBoundedInteger(raw.time_limit, defaults.time_limit || 30, 5, 180),
     show_answer_immediately:
-      typeof config.show_answer_immediately === 'boolean'
-        ? config.show_answer_immediately
-        : defaults.show_answer_immediately,
-    auto_next: typeof config.auto_next === 'boolean' ? config.auto_next : defaults.auto_next,
-    shuffle_options: typeof config.shuffle_options === 'boolean' ? config.shuffle_options : defaults.shuffle_options,
-    difficulty_preference: validDifficulties.includes(config.difficulty_preference)
-      ? config.difficulty_preference
-      : defaults.difficulty_preference,
-    categories: Array.isArray(config.categories)
-      ? config.categories.slice(0, 10).map((c) => sanitizeString(c, 20))
-      : defaults.categories,
-    daily_goal: Math.min(Math.max(parseInt(config.daily_goal) || defaults.daily_goal, 10), 500),
-    reminder_enabled:
-      typeof config.reminder_enabled === 'boolean' ? config.reminder_enabled : defaults.reminder_enabled,
-    reminder_time: /^\d{2}:\d{2}$/.test(config.reminder_time) ? config.reminder_time : defaults.reminder_time
+      typeof raw.show_answer_immediately === 'boolean' ? raw.show_answer_immediately : defaults.show_answer_immediately,
+    auto_next: typeof raw.auto_next === 'boolean' ? raw.auto_next : defaults.auto_next,
+    shuffle_options: typeof raw.shuffle_options === 'boolean' ? raw.shuffle_options : defaults.shuffle_options,
+    difficulty_preference: normalizedDifficulty,
+    categories: normalizedCategories,
+    daily_goal: toBoundedInteger(raw.daily_goal, defaults.daily_goal || 50, 10, 500),
+    reminder_enabled: typeof raw.reminder_enabled === 'boolean' ? raw.reminder_enabled : defaults.reminder_enabled,
+    reminder_time: normalizedReminderTime
   };
+}
+
+function toPlainObject(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+  return value as Record<string, unknown>;
+}
+
+function toBoundedInteger(value: unknown, fallback: number, min: number, max: number): number {
+  let parsed: number | null = null;
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    parsed = Math.trunc(value);
+  } else if (typeof value === 'string' && value.trim()) {
+    const fromString = Number.parseInt(value, 10);
+    if (Number.isFinite(fromString)) {
+      parsed = fromString;
+    }
+  }
+
+  const base = parsed ?? fallback;
+  return Math.min(Math.max(base, min), max);
 }
 
 /**

@@ -38,9 +38,11 @@
 import cloud from '@lafjs/cloud';
 import { validate } from '../utils/validator';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 import {
   success,
   badRequest,
+  unauthorized,
   serverError,
   generateRequestId,
   wrapResponse,
@@ -75,16 +77,14 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费智谱 AI API 额度
-    const authToken = String(ctx.headers?.['authorization'] || ctx.headers?.Authorization || '')
-      .replace(/^Bearer\s+/i, '')
-      .trim();
+    const authToken = extractBearerToken(ctx.headers?.['authorization'] || ctx.headers?.Authorization);
     if (!authToken) {
-      return wrapResponse(badRequest('请先登录'), requestId, startTime);
+      return wrapResponse(unauthorized('请先登录'), requestId, startTime);
     }
 
     const payload = verifyJWT(authToken);
     if (!payload?.userId) {
-      return wrapResponse(badRequest('token 无效或已过期'), requestId, startTime);
+      return wrapResponse(unauthorized('token 无效或已过期'), requestId, startTime);
     }
     const authUserId = payload.userId;
 

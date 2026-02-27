@@ -16,12 +16,14 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 import {
   logger,
   sanitizeString,
   validateUserId,
   success,
   badRequest,
+  tooManyRequests,
   unauthorized,
   serverError,
   generateRequestId,
@@ -124,7 +126,7 @@ export default async function (ctx) {
 
     // JWT 认证：update 操作强制验证
     const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
+    const token = extractBearerToken(rawHeaderToken);
     let uid = bodyUid;
 
     if (action === 'update') {
@@ -190,7 +192,7 @@ async function handleUpdate(params, requestId) {
     checkLocalUpdateRateLimit(rateLimitKey, 30000)
   );
   if (!rateResult.allowed) {
-    return badRequest('操作过于频繁，请稍后再试');
+    return tooManyRequests('操作过于频繁，请稍后再试');
   }
 
   const rankCollection = db.collection('rankings');

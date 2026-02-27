@@ -8,6 +8,25 @@ import { safeNavigateTo } from '../safe-navigate';
 import { storageService, getUserId } from '../../services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
+function buildCurrentPageFullPath(page) {
+  if (!page || !page.route) {
+    return null;
+  }
+
+  let fullPath = `/${page.route}`;
+  const options = page.options || {};
+  const optionKeys = Object.keys(options);
+
+  if (optionKeys.length > 0) {
+    const query = optionKeys
+      .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(String(options[key] ?? ''))}`)
+      .join('&');
+    fullPath += `?${query}`;
+  }
+
+  return fullPath;
+}
+
 /**
  * 检查用户是否已登录
  * @returns {boolean} 是否已登录
@@ -61,10 +80,10 @@ export function getCurrentUserInfo() {
  * 登录保护中间件 - 检查登录状态，未登录则显示友好引导
  * @param {Function} callback - 登录后执行的回调函数
  * @param {Object} options - 配置选项
- * @param {string} options.loginUrl - 登录页面路径，默认 '/pages/login/index'
- * @param {string} options.message - 未登录提示消息
- * @param {boolean} options.showToast - 是否显示提示，默认 true
- * @param {boolean} options.useModal - 是否使用Modal弹窗，默认 true
+ * @param {string} [options.loginUrl] - 登录页面路径，默认 '/pages/login/index'
+ * @param {string} [options.message] - 未登录提示消息
+ * @param {boolean} [options.showToast] - 是否显示提示，默认 true
+ * @param {boolean} [options.useModal] - 是否使用Modal弹窗，默认 true
  * @returns {boolean} 是否已登录
  */
 export function requireLogin(callback, options = {}) {
@@ -136,16 +155,10 @@ function saveCurrentPageForRedirect() {
     const pages = getCurrentPages();
     if (pages.length > 0) {
       const currentPage = pages[pages.length - 1];
-      const currentRoute = currentPage.route;
-      const currentOptions = currentPage.options || {};
+      const fullPath = buildCurrentPageFullPath(currentPage);
 
-      // 构建完整路径
-      let fullPath = '/' + currentRoute;
-      if (Object.keys(currentOptions).length > 0) {
-        const query = Object.keys(currentOptions)
-          .map((key) => `${key}=${currentOptions[key]}`)
-          .join('&');
-        fullPath += '?' + query;
+      if (!fullPath) {
+        return;
       }
 
       storageService.save('redirect_after_login', fullPath);
@@ -209,19 +222,10 @@ export function pageRequireLogin(pageInstance, options = {}) {
       const pages = getCurrentPages();
       const currentPage = pages[pages.length - 1];
       if (currentPage) {
-        const currentRoute = currentPage.route;
-        const currentOptions = currentPage.options;
-
-        // 构建完整路径
-        let fullPath = '/' + currentRoute;
-        if (currentOptions && Object.keys(currentOptions).length > 0) {
-          const query = Object.keys(currentOptions)
-            .map((key) => `${key}=${currentOptions[key]}`)
-            .join('&');
-          fullPath += '?' + query;
+        const fullPath = buildCurrentPageFullPath(currentPage);
+        if (fullPath) {
+          storageService.save('redirect_after_login', fullPath);
         }
-
-        storageService.save('redirect_after_login', fullPath);
       }
     }
 

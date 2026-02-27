@@ -254,7 +254,8 @@ export default async function (_ctx: any) {
       return {
         code: 403,
         success: false,
-        message: '未授权：需要管理员令牌'
+        message: '未授权：需要管理员令牌',
+        requestId
       };
     }
   }
@@ -277,7 +278,8 @@ export default async function (_ctx: any) {
         code: 0,
         success: true,
         message: '无待清除用户',
-        data: { processed: 0, duration: Date.now() - startTime }
+        data: { processed: 0, duration: Date.now() - startTime },
+        requestId
       };
     }
 
@@ -316,14 +318,16 @@ export default async function (_ctx: any) {
         totalDeleted,
         details: results,
         duration: Date.now() - startTime
-      }
+      },
+      requestId
     };
   } catch (error: any) {
     logger.error(`[${requestId}] 定时清除异常:`, error);
     return {
       code: 500,
       success: false,
-      message: '清除任务执行失败'
+      message: '清除任务执行失败',
+      requestId
     };
   }
 }

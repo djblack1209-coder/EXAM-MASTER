@@ -55,6 +55,7 @@ describe('[安全审计] doc-convert 输入校验', () => {
     });
 
     expect(result.code).toBe(401);
+    expect(/** @type {any} */ (result).message).toContain('请先登录');
   });
 
   it('仅 body.token 不应通过鉴权（应要求 Header Token）', async () => {

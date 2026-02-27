@@ -12,6 +12,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 import {
   success,
   badRequest,
@@ -28,9 +29,8 @@ const db = cloud.database();
 const _ = db.command;
 
 function extractToken(ctx: any): string {
-  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization || '';
-  if (!rawToken || typeof rawToken !== 'string') return '';
-  return rawToken.replace(/^Bearer\s+/i, '').trim();
+  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization;
+  return extractBearerToken(rawToken);
 }
 
 // ==================== 成就定义 ====================

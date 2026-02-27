@@ -4,7 +4,6 @@
 
 <script>
 import { useUserStore } from '@/stores';
-import { qa, injectInterceptor, hookSetData } from '@/utils/debug/qa.js';
 import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-engine.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
@@ -12,21 +11,9 @@ import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 import { globalErrorHandler } from '@/utils/error/global-error-handler.js';
 import { logger } from '@/utils/logger.js';
 
-// 必须在 App() 之前执行
-injectInterceptor();
-hookSetData();
-
 export default {
   onLaunch() {
     // 生产环境静默启动
-
-    // 挂载 QA 工具到全局
-    if (typeof getApp === 'function') {
-      const app = getApp();
-      if (app) {
-        app.qa = qa;
-      }
-    }
 
     // ✅ 检查点 5.1: 初始化分析服务
     analytics.init({
@@ -202,8 +189,7 @@ export default {
   },
   globalData: {
     currentTheme: 'light',
-    isDarkMode: false,
-    qaLogs: []
+    isDarkMode: false
   }
 };
 </script>

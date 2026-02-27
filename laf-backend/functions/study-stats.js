@@ -12,6 +12,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -24,26 +25,26 @@ export default async function (ctx) {
     const { action, userId } = ctx.body || {};
 
     if (!userId) {
-      return { code: 401, message: '用户未登录', requestId };
+      return { code: 401, success: false, message: '用户未登录', requestId };
     }
 
     if (!action) {
-      return { code: 400, message: '缺少 action 参数', requestId };
+      return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
 
     // JWT 身份验证
     const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
     if (authToken) {
-      const rawToken = authToken.startsWith('Bearer ') ? authToken.slice(7) : authToken;
+      const rawToken = extractBearerToken(authToken);
       const payload = verifyJWT(rawToken);
       if (!payload) {
-        return { code: 401, message: 'token 无效或已过期，请重新登录', requestId };
+        return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
       }
       if (payload.userId && payload.userId !== userId) {
-        return { code: 401, message: '身份验证失败', requestId };
+        return { code: 403, success: false, message: '身份验证失败', requestId };
       }
     } else {
-      return { code: 401, message: '缺少认证 token，请重新登录', requestId };
+      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
     }
 
     console.log(`[${requestId}] 学习统计: action=${action}, userId=${userId}`);
@@ -56,12 +57,13 @@ export default async function (ctx) {
       case 'weekly':
         return await getWeeklyTrend(userId, requestId);
       default:
-        return { code: 400, message: `未知的 action: ${action}`, requestId };
+        return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
     }
   } catch (error) {
     console.error(`[${requestId}] 学习统计异常:`, error);
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId,
       duration: Date.now() - startTime
@@ -88,7 +90,7 @@ async function getOverview(userId, requestId) {
     .getOne();
 
   if (!userResult.data) {
-    return { code: 404, message: '用户不存在', requestId };
+    return { code: 404, success: false, message: '用户不存在', requestId };
   }
 
   const user = userResult.data;

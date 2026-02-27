@@ -336,6 +336,11 @@ export function checkRateLimit(
   limit: number,
   windowMs: number
 ): { allowed: boolean; remaining: number; resetAt: number } {
+  // Serverless 环境避免常驻定时器，按需触发清理
+  if (rateLimitCache.size > 2000) {
+    cleanupRateLimitCache();
+  }
+
   const now = Date.now();
   const record = rateLimitCache.get(key);
 
@@ -479,9 +484,6 @@ export function cleanupRateLimitCache(): void {
     }
   }
 }
-
-// 定期清理（每5分钟）
-setInterval(cleanupRateLimitCache, 5 * 60 * 1000);
 
 export default {
   ResponseCode,

@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-02-27T14:19:38.051Z",
+  "generatedAt": "2026-02-27T18:17:48.021Z",
   "score": 100,
   "stats": {
-    "totalFiles": 180,
+    "totalFiles": 179,
     "vueFiles": 81,
-    "jsFiles": 99,
+    "jsFiles": 98,
     "loadingStates": 20,
-    "errorHandlers": 105,
+    "errorHandlers": 104,
     "gpuAccelerated": 53
   },
   "warningCount": 0,
@@ -14,7 +14,7 @@
   "warnings": [],
   "errors": [],
   "trend": {
-    "previousGeneratedAt": "2026-02-27T13:55:07.935Z",
+    "previousGeneratedAt": "2026-02-27T18:12:44.736Z",
     "scoreDelta": 0,
     "warningDelta": 0,
     "errorDelta": 0,

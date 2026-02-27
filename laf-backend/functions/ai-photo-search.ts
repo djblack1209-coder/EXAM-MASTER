@@ -16,9 +16,12 @@
  */
 
 import cloud from '@lafjs/cloud';
+import { lookup } from 'dns/promises';
+import { isIP } from 'net';
 import { validate } from '../utils/validator';
 import { createLogger, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const logger = createLogger('[AIPhotoSearch]');
 
@@ -60,6 +63,8 @@ const SUBJECTS = {
   geography: { name: '地理', keywords: ['自然', '人文', '区域', '环境'] }
 };
 
+const DISALLOWED_HOST_SUFFIXES = ['.internal', '.local', '.localhost'];
+
 // ==================== 主入口 ====================
 export default async function (ctx) {
   const startTime = Date.now();
@@ -69,9 +74,7 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费 AI API 额度
-    const authToken = String(ctx.headers?.['authorization'] || ctx.headers?.Authorization || '')
-      .replace(/^Bearer\s+/i, '')
-      .trim();
+    const authToken = extractBearerToken(ctx.headers?.['authorization'] || ctx.headers?.Authorization);
     if (!authToken) {
       return { code: 401, success: false, message: '请先登录', requestId };
     }
@@ -199,7 +202,16 @@ async function handlePhotoSearch(params, requestId) {
   let imageData = imageBase64;
   if (!imageData && imageUrl) {
     logger.info(`[${requestId}] 从URL获取图片: ${imageUrl}`);
-    imageData = await fetchImageAsBase64(imageUrl);
+    try {
+      imageData = await fetchImageAsBase64(imageUrl);
+    } catch (error) {
+      return {
+        code: 400,
+        success: false,
+        message: error instanceof Error ? error.message : '图片地址无效或不可访问',
+        requestId
+      };
+    }
   }
 
   // 检查图片大小
@@ -425,7 +437,7 @@ async function searchQuestionBank(questionText, subject, requestId) {
 
   try {
     // 构建查询条件
-    const query = {
+    const query: Record<string, unknown> = {
       $or: keywords.slice(0, 8).map((kw) => ({
         question: { $regex: escapeRegex(kw), $options: 'i' }
       }))
@@ -613,42 +625,228 @@ function hashString(str) {
  * 获取远程图片
  */
 async function fetchImageAsBase64(url) {
+  const parsed = await assertSafeRemoteImageUrl(url);
+
   try {
-    // [AUDIT FIX] SSRF 防护 — 禁止访问内网/元数据地址
-    const parsed = new URL(url);
-    const hostname = parsed.hostname.toLowerCase();
-    if (
-      hostname === 'localhost' ||
-      hostname.startsWith('127.') ||
-      hostname.startsWith('10.') ||
-      hostname.startsWith('172.16.') ||
-      hostname.startsWith('172.17.') ||
-      hostname.startsWith('172.18.') ||
-      hostname.startsWith('172.19.') ||
-      hostname.startsWith('172.2') ||
-      hostname.startsWith('172.3') ||
-      hostname.startsWith('192.168.') ||
-      hostname === '169.254.169.254' ||
-      hostname.endsWith('.internal') ||
-      hostname === '[::1]' ||
-      hostname === '0.0.0.0'
-    ) {
-      throw new Error('不允许访问内部网络地址');
-    }
-    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
-      throw new Error('仅支持 HTTP/HTTPS 协议');
+    try {
+      const headResponse = await cloud.fetch({
+        url: parsed.toString(),
+        method: 'HEAD',
+        timeout: 8000,
+        maxContentLength: CONFIG.maxImageSize,
+        maxBodyLength: CONFIG.maxImageSize
+      });
+      validateImageResponseHeaders(headResponse?.headers, false);
+    } catch {
+      // 部分图床不支持 HEAD，降级到 GET 再做严格校验
     }
 
     const response = await cloud.fetch({
-      url,
+      url: parsed.toString(),
       method: 'GET',
       responseType: 'arraybuffer',
-      timeout: 15000
+      timeout: 15000,
+      maxContentLength: CONFIG.maxImageSize,
+      maxBodyLength: CONFIG.maxImageSize
     });
-    return Buffer.from(response.data).toString('base64');
+
+    validateImageResponseHeaders(response?.headers, true);
+
+    const rawData = response?.data;
+    const buffer = Buffer.isBuffer(rawData) ? rawData : Buffer.from(rawData || []);
+    if (buffer.length === 0) {
+      throw new Error('图片内容为空');
+    }
+    if (buffer.length > CONFIG.maxImageSize) {
+      throw new Error(`图片过大，最大支持 ${CONFIG.maxImageSize / 1024 / 1024}MB`);
+    }
+
+    return buffer.toString('base64');
   } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
     throw new Error('获取图片失败');
   }
+}
+
+async function assertSafeRemoteImageUrl(rawUrl: string): Promise<URL> {
+  let parsed: URL;
+  try {
+    parsed = new URL(rawUrl);
+  } catch {
+    throw new Error('图片地址格式无效');
+  }
+
+  if (parsed.protocol !== 'https:') {
+    throw new Error('仅支持 HTTPS 图片地址');
+  }
+  if (parsed.username || parsed.password) {
+    throw new Error('图片地址不合法');
+  }
+
+  const normalizedHost = normalizeHostname(parsed.hostname);
+  if (isBlockedHostname(normalizedHost)) {
+    throw new Error('不允许访问内部网络地址');
+  }
+
+  if (isIP(normalizedHost)) {
+    if (isPrivateIpAddress(normalizedHost)) {
+      throw new Error('不允许访问内部网络地址');
+    }
+    return parsed;
+  }
+
+  let resolved: { address: string }[] = [];
+  try {
+    resolved = await lookup(normalizedHost, { all: true, verbatim: true });
+  } catch {
+    throw new Error('图片地址不可访问');
+  }
+
+  if (!resolved.length) {
+    throw new Error('图片地址不可访问');
+  }
+
+  const hasPrivateAddress = resolved.some((item) => isPrivateIpAddress(item.address));
+  if (hasPrivateAddress) {
+    throw new Error('不允许访问内部网络地址');
+  }
+
+  return parsed;
+}
+
+function normalizeHostname(hostname: string): string {
+  const lowered = String(hostname || '')
+    .trim()
+    .toLowerCase();
+  if (lowered.startsWith('[') && lowered.endsWith(']')) {
+    return lowered.slice(1, -1);
+  }
+  return lowered;
+}
+
+function isBlockedHostname(hostname: string): boolean {
+  if (!hostname) {
+    return true;
+  }
+
+  if (
+    hostname === 'localhost' ||
+    hostname === '0.0.0.0' ||
+    hostname === '169.254.169.254' ||
+    DISALLOWED_HOST_SUFFIXES.some((suffix) => hostname.endsWith(suffix))
+  ) {
+    return true;
+  }
+
+  if (hostname === '::1' || hostname === '::') {
+    return true;
+  }
+
+  return false;
+}
+
+function isPrivateIpAddress(address: string): boolean {
+  const ipVersion = isIP(address);
+  if (ipVersion === 4) {
+    return isPrivateIPv4(address);
+  }
+  if (ipVersion === 6) {
+    return isPrivateIPv6(address);
+  }
+  return true;
+}
+
+function isPrivateIPv4(address: string): boolean {
+  const parts = address.split('.').map((item) => Number.parseInt(item, 10));
+  if (parts.length !== 4 || parts.some((item) => Number.isNaN(item) || item < 0 || item > 255)) {
+    return true;
+  }
+
+  const [a, b] = parts;
+
+  if (a === 10 || a === 127 || a === 0) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 169 && b === 254) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true;
+
+  return false;
+}
+
+function isPrivateIPv6(address: string): boolean {
+  const lowered = address.toLowerCase();
+
+  if (lowered === '::1' || lowered === '::') return true;
+  if (lowered.startsWith('fe80:')) return true;
+  if (lowered.startsWith('fc') || lowered.startsWith('fd')) return true;
+
+  if (lowered.startsWith('::ffff:')) {
+    const mappedIpv4 = lowered.slice(7);
+    if (isIP(mappedIpv4) === 4) {
+      return isPrivateIPv4(mappedIpv4);
+    }
+  }
+
+  return false;
+}
+
+function validateImageResponseHeaders(headers: unknown, strictContentType: boolean): void {
+  const contentType = getHeaderValue(headers, 'content-type').toLowerCase();
+  if (strictContentType) {
+    if (!contentType || !contentType.startsWith('image/')) {
+      throw new Error('图片地址不是有效的图片资源');
+    }
+  } else if (contentType && !contentType.startsWith('image/')) {
+    throw new Error('图片地址不是有效的图片资源');
+  }
+
+  const contentLengthRaw = getHeaderValue(headers, 'content-length');
+  if (!contentLengthRaw) {
+    return;
+  }
+
+  const contentLength = Number.parseInt(contentLengthRaw, 10);
+  if (Number.isFinite(contentLength) && contentLength > CONFIG.maxImageSize) {
+    throw new Error(`图片过大，最大支持 ${CONFIG.maxImageSize / 1024 / 1024}MB`);
+  }
+}
+
+function getHeaderValue(headers: unknown, headerName: string): string {
+  if (!headers) {
+    return '';
+  }
+
+  const responseHeaders = headers as {
+    get?: (name: string) => unknown;
+    [key: string]: unknown;
+  };
+
+  if (typeof responseHeaders.get === 'function') {
+    return normalizeHeaderValue(responseHeaders.get(headerName));
+  }
+
+  for (const [key, value] of Object.entries(responseHeaders)) {
+    if (key.toLowerCase() === headerName.toLowerCase()) {
+      return normalizeHeaderValue(value);
+    }
+  }
+
+  return '';
+}
+
+function normalizeHeaderValue(value: unknown): string {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(value);
+  }
+  if (Array.isArray(value) && value.length > 0) {
+    return normalizeHeaderValue(value[0]);
+  }
+  return '';
 }
 
 /**
