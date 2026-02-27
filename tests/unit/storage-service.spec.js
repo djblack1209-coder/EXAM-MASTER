@@ -64,9 +64,28 @@ describe('storageService', () => {
       expect(uni.removeStorageSync).toHaveBeenCalled();
     });
 
-    it('clear 清空所有存储', () => {
+    it('clear 默认保留全局键，仅清理业务缓存', () => {
+      global.__mockStorage = {
+        EXAM_TOKEN: 'token_123',
+        theme_mode: 'dark',
+        temp_cache_key: 'to_remove'
+      };
+
       storageService.clear();
+
+      expect(global.__mockStorage.EXAM_TOKEN).toBe('token_123');
+      expect(global.__mockStorage.theme_mode).toBe('dark');
+      expect(global.__mockStorage.temp_cache_key).toBeUndefined();
+      expect(uni.clearStorageSync).not.toHaveBeenCalled();
+    });
+
+    it('clear 可显式关闭保留策略并执行全清', () => {
+      global.__mockStorage = { EXAM_TOKEN: 'token_123', temp_cache_key: 'to_remove' };
+
+      storageService.clear(false, { preserveGlobal: false });
+
       expect(uni.clearStorageSync).toHaveBeenCalled();
+      expect(global.__mockStorage).toEqual({});
     });
   });
 
@@ -101,15 +120,15 @@ describe('storageService', () => {
     it('EXAM_TOKEN 存储时使用加密键', () => {
       storageService.save('EXAM_TOKEN', 'my_secret_token');
       // 应该调用 setStorageSync，且键名包含 _enc_ 前缀
-      const calls = uni.setStorageSync.mock.calls;
-      const encCall = calls.find(c => c[0].includes('_enc_'));
+      const calls = /** @type {any} */ (uni.setStorageSync).mock.calls;
+      const encCall = calls.find((c) => c[0].includes('_enc_'));
       expect(encCall).toBeTruthy();
     });
 
     it('userInfo 存储时使用加密键', () => {
       storageService.save('userInfo', { name: 'test' });
-      const calls = uni.setStorageSync.mock.calls;
-      const encCall = calls.find(c => c[0].includes('_enc_'));
+      const calls = /** @type {any} */ (uni.setStorageSync).mock.calls;
+      const encCall = calls.find((c) => c[0].includes('_enc_'));
       expect(encCall).toBeTruthy();
     });
   });

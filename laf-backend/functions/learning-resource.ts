@@ -17,7 +17,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate, sanitizeString } from '../utils/validator';
+import { validate } from '../utils/validator';
 import { verifyJWT } from './login';
 import { checkRateLimit, createLogger } from './_shared/api-response';
 
@@ -50,8 +50,54 @@ const SUBJECTS = {
   professional: { name: '专业课', icon: '📙' }
 };
 
+const CATEGORY_KEYS = Object.keys(RESOURCE_CATEGORIES);
+const SUBJECT_KEYS = Object.keys(SUBJECTS);
+
 // ==================== 日志工具 ====================
 const logger = createLogger('[LearningResource]');
+
+function extractToken(ctx: any): string {
+  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization || '';
+  if (!rawToken || typeof rawToken !== 'string') return '';
+  return rawToken.replace(/^Bearer\s+/i, '').trim();
+}
+
+function extractClientIp(ctx: any): string {
+  const xRealIp = ctx?.headers?.['x-real-ip'];
+  const forwarded = ctx?.headers?.['x-forwarded-for'];
+  const cfIp = ctx?.headers?.['cf-connecting-ip'];
+  const candidate = xRealIp || cfIp || forwarded || 'unknown';
+
+  if (typeof candidate !== 'string') return 'unknown';
+  const firstIp = candidate.split(',')[0].trim();
+  return firstIp || 'unknown';
+}
+
+function toSafeString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function toPositiveInt(value: unknown, fallback: number, max: number): number {
+  const n = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(n) || n <= 0) return fallback;
+  return Math.min(n, max);
+}
+
+function toNonNegativeNumber(value: unknown, fallback = 0, max = Number.MAX_SAFE_INTEGER): number {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 0) return fallback;
+  return Math.min(n, max);
+}
+
+function normalizeCategory(value: unknown): string {
+  const category = toSafeString(value);
+  return CATEGORY_KEYS.includes(category) ? category : '';
+}
+
+function normalizeSubject(value: unknown): string {
+  const subject = toSafeString(value);
+  return SUBJECT_KEYS.includes(subject) ? subject : '';
+}
 
 // ==================== 主入口 ====================
 export default async function (ctx) {
@@ -59,7 +105,8 @@ export default async function (ctx) {
   const requestId = `lr_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, userId, data } = ctx.body || {};
+    const { action, userId: requestUserId, data } = ctx.body || {};
+    let userId = typeof requestUserId === 'string' ? requestUserId : '';
 
     logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
 
@@ -90,30 +137,33 @@ export default async function (ctx) {
       return { code: 400, success: false, message: entryValidation.errors[0], requestId };
     }
 
-    // 需要 userId 的操作
-    const userRequiredActions = ['favorite', 'getUserFavorites', 'recordProgress', 'getStats'];
-    if (userRequiredActions.includes(action) && !userId) {
-      return { code: 401, success: false, message: '需要用户登录', requestId };
-    }
+    // 需要用户身份的操作（读写都必须鉴权，防止越权读取）
+    const authRequiredActions = ['favorite', 'getUserFavorites', 'recordProgress', 'getStats'];
+    const token = extractToken(ctx);
+    const tokenPayload = token ? verifyJWT(token) : null;
 
-    // JWT 验证：写操作必须验证身份
-    const writeActions = ['favorite', 'recordProgress'];
-    const { token } = ctx.body || {};
-    if (writeActions.includes(action)) {
+    if (authRequiredActions.includes(action)) {
       if (!token) {
         return { code: 401, success: false, message: '请先登录：缺少认证令牌', requestId };
       }
-      const payload = verifyJWT(token);
-      if (!payload) {
+      if (!tokenPayload || !tokenPayload.userId) {
         return { code: 401, success: false, message: '认证令牌无效或已过期', requestId };
       }
-      if (payload.userId !== userId) {
-        return { code: 401, success: false, message: '身份验证失败：用户不匹配', requestId };
+
+      if (requestUserId && requestUserId !== tokenPayload.userId) {
+        logger.warn(`[${requestId}] 检测到 userId 不匹配，已使用 token 用户ID`);
       }
+
+      // 强制使用 token 解析出的 userId，防止 IDOR
+      userId = tokenPayload.userId;
+    } else if (tokenPayload?.userId) {
+      // 非敏感操作可选携带 token，用于个性化推荐
+      userId = tokenPayload.userId;
     }
 
     // 频率限制：按 userId 或 IP 限流
-    const rateLimitKey = userId ? `lr_${userId}` : `lr_ip_${requestId}`;
+    const clientIp = extractClientIp(ctx);
+    const rateLimitKey = userId ? `lr_${userId}` : `lr_ip_${clientIp}`;
     const rateLimit = checkRateLimit(rateLimitKey, 60, 60000); // 60次/分钟
     if (!rateLimit.allowed) {
       return { code: 429, success: false, message: '请求过于频繁，请稍后再试', requestId };
@@ -121,7 +171,7 @@ export default async function (ctx) {
 
     // 搜索操作使用更严格的频率限制（正则查询开销大）
     if (action === 'search') {
-      const searchRateLimitKey = userId ? `lr_search_${userId}` : `lr_search_ip_${requestId}`;
+      const searchRateLimitKey = userId ? `lr_search_${userId}` : `lr_search_ip_${clientIp}`;
       const searchRateLimit = checkRateLimit(searchRateLimitKey, 15, 60000); // 15次/分钟
       if (!searchRateLimit.allowed) {
         return { code: 429, success: false, message: '搜索过于频繁，请稍后再试', requestId };
@@ -160,7 +210,6 @@ export default async function (ctx) {
       code: 500,
       success: false,
       message: '服务器内部错误',
-      error: error.message,
       requestId,
       duration: Date.now() - startTime
     };
@@ -172,8 +221,13 @@ export default async function (ctx) {
  * 按推荐权重和浏览量排序，支持按学科筛选
  */
 async function handleGetRecommendations(userId: string, data: Record<string, unknown>, requestId: string) {
-  const { subject, limit = 10 } = data;
-  const safeLimit = Math.min(limit, CONFIG.maxRecommendations);
+  const rawSubject = data.subject;
+  const subject = normalizeSubject(rawSubject);
+  const safeLimit = toPositiveInt(data.limit, 10, CONFIG.maxRecommendations);
+
+  if (rawSubject && !subject) {
+    return { code: 400, success: false, message: '参数错误: subject 无效' };
+  }
 
   // 获取用户学习数据用于个性化推荐
   let userProfile = null;
@@ -219,9 +273,20 @@ async function handleGetRecommendations(userId: string, data: Record<string, unk
  * 获取热门资源
  * 按浏览量排序，支持按分类和学科筛选
  */
-async function handleGetHotResources(userId: string, data: Record<string, unknown>, requestId: string) {
-  const { category, subject, limit = 20, period = 'week' } = data;
-  const safeLimit = Math.min(limit, CONFIG.maxHotResources);
+async function handleGetHotResources(_userId: string, data: Record<string, unknown>, _requestId: string) {
+  const rawCategory = data.category;
+  const rawSubject = data.subject;
+  const category = normalizeCategory(rawCategory);
+  const subject = normalizeSubject(rawSubject);
+  const period = toSafeString(data.period) || 'week';
+  const safeLimit = toPositiveInt(data.limit, CONFIG.defaultPageSize, CONFIG.maxHotResources);
+
+  if (rawCategory && !category) {
+    return { code: 400, success: false, message: '参数错误: category 无效' };
+  }
+  if (rawSubject && !subject) {
+    return { code: 400, success: false, message: '参数错误: subject 无效' };
+  }
 
   const query: Record<string, unknown> = { status: 'published' };
   if (category) query.category = category;
@@ -262,14 +327,21 @@ async function handleGetHotResources(userId: string, data: Record<string, unknow
  * 按分类获取资源
  * 支持分页，按分类和学科筛选
  */
-async function handleGetByCategory(userId: string, data: Record<string, unknown>, requestId: string) {
-  const { category, subject, page = 1, limit = 20 } = data;
+async function handleGetByCategory(_userId: string, data: Record<string, unknown>, _requestId: string) {
+  const rawCategory = data.category;
+  const rawSubject = data.subject;
+  const category = normalizeCategory(rawCategory);
+  const subject = normalizeSubject(rawSubject);
+  const page = toPositiveInt(data.page, 1, 1000000);
+  const safeLimit = toPositiveInt(data.limit, CONFIG.defaultPageSize, CONFIG.maxPageSize);
 
   if (!category) {
     return { code: 400, success: false, message: '参数错误: category 不能为空' };
   }
+  if (rawSubject && !subject) {
+    return { code: 400, success: false, message: '参数错误: subject 无效' };
+  }
 
-  const safeLimit = Math.min(limit, CONFIG.maxPageSize);
   const skip = (page - 1) * safeLimit;
 
   const query: Record<string, unknown> = { status: 'published', category };
@@ -306,8 +378,21 @@ async function handleGetByCategory(userId: string, data: Record<string, unknown>
  * - 优先用 category/subject 索引字段缩小范围
  * - 优先使用 MongoDB $text 索引搜索，不可用时降级为 $regex
  */
-async function handleSearch(userId: string, data: Record<string, unknown>, requestId: string) {
-  const { keyword, category, subject, page = 1, limit = 20 } = data;
+async function handleSearch(_userId: string, data: Record<string, unknown>, requestId: string) {
+  const keyword = toSafeString(data.keyword);
+  const rawCategory = data.category;
+  const rawSubject = data.subject;
+  const category = normalizeCategory(rawCategory);
+  const subject = normalizeSubject(rawSubject);
+  const page = toPositiveInt(data.page, 1, 1000000);
+  const safeLimit = toPositiveInt(data.limit, CONFIG.defaultPageSize, CONFIG.maxPageSize);
+
+  if (rawCategory && !category) {
+    return { code: 400, success: false, message: '参数错误: category 无效' };
+  }
+  if (rawSubject && !subject) {
+    return { code: 400, success: false, message: '参数错误: subject 无效' };
+  }
 
   if (!keyword || keyword.trim().length < 2) {
     return { code: 400, success: false, message: '搜索关键词至少2个字符' };
@@ -316,7 +401,6 @@ async function handleSearch(userId: string, data: Record<string, unknown>, reque
   // 限制关键词长度，防止过长正则影响性能
   const rawKeyword = keyword.trim().substring(0, 50);
 
-  const safeLimit = Math.min(limit, CONFIG.maxPageSize);
   const skip = (page - 1) * safeLimit;
 
   // 构建搜索查询：优先使用 $text 索引（需要先运行 db-create-indexes）
@@ -381,12 +465,13 @@ async function handleSearch(userId: string, data: Record<string, unknown>, reque
 /**
  * 收藏/取消收藏资源
  */
-async function handleFavorite(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleFavorite(userId: string, data: Record<string, unknown>, _requestId: string) {
   if (!userId) {
     return { code: 401, success: false, message: '请先登录' };
   }
 
-  const { resourceId, action: favAction } = data;
+  const resourceId = toSafeString(data.resourceId);
+  const favAction = toSafeString(data.action);
 
   if (!resourceId) {
     return { code: 400, success: false, message: '参数错误: resourceId 不能为空' };
@@ -411,6 +496,11 @@ async function handleFavorite(userId: string, data: Record<string, unknown>, req
       message: '已取消收藏'
     };
   } else {
+    const resource = await getResourceById(resourceId);
+    if (!resource || resource.status !== 'published') {
+      return { code: 404, success: false, message: '资源不存在或不可用' };
+    }
+
     // 添加收藏
     const existing = await collection
       .where({
@@ -447,13 +537,13 @@ async function handleFavorite(userId: string, data: Record<string, unknown>, req
  * 获取用户收藏的资源
  * 通过收藏记录关联查询资源详情
  */
-async function handleGetUserFavorites(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetUserFavorites(userId: string, data: Record<string, unknown>, _requestId: string) {
   if (!userId) {
     return { code: 401, success: false, message: '请先登录' };
   }
 
-  const { page = 1, limit = 20 } = data;
-  const safeLimit = Math.min(limit, CONFIG.maxPageSize);
+  const page = toPositiveInt(data.page, 1, 1000000);
+  const safeLimit = toPositiveInt(data.limit, CONFIG.defaultPageSize, CONFIG.maxPageSize);
   const skip = (page - 1) * safeLimit;
 
   const collection = db.collection('resource_favorites');
@@ -465,7 +555,7 @@ async function handleGetUserFavorites(userId: string, data: Record<string, unkno
 
   // 批量获取资源详情
   const resourceIds = (listRes.data || []).map((fav) => fav.resource_id).filter(Boolean);
-  let resourceMap: Record<string, unknown> = {};
+  const resourceMap: Record<string, any> = {};
 
   if (resourceIds.length > 0) {
     const resourceRes = await db
@@ -490,7 +580,7 @@ async function handleGetUserFavorites(userId: string, data: Record<string, unkno
       total: countRes.total,
       page,
       limit: safeLimit,
-      hasMore: skip + listRes.data.length < countRes.total
+      hasMore: skip + favorites.length < countRes.total
     },
     message: '获取成功'
   };
@@ -499,15 +589,22 @@ async function handleGetUserFavorites(userId: string, data: Record<string, unkno
 /**
  * 记录学习进度
  */
-async function handleRecordProgress(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleRecordProgress(userId: string, data: Record<string, unknown>, _requestId: string) {
   if (!userId) {
     return { code: 401, success: false, message: '请先登录' };
   }
 
-  const { resourceId, progress, duration } = data;
+  const resourceId = toSafeString(data.resourceId);
+  const progress = Math.min(toNonNegativeNumber(data.progress, 0, 100), 100);
+  const duration = toNonNegativeNumber(data.duration, 0, 24 * 60 * 60);
 
   if (!resourceId) {
     return { code: 400, success: false, message: '参数错误: resourceId 不能为空' };
+  }
+
+  const resource = await getResourceById(resourceId);
+  if (!resource || resource.status !== 'published') {
+    return { code: 404, success: false, message: '资源不存在或不可用' };
   }
 
   const collection = db.collection('learning_progress');
@@ -553,7 +650,7 @@ async function handleRecordProgress(userId: string, data: Record<string, unknown
  * 获取学习统计
  * 通过 learning_progress 和 resource_favorites 聚合统计
  */
-async function handleGetStats(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetStats(userId: string, _data: Record<string, unknown>, _requestId: string) {
   if (!userId) {
     return { code: 401, success: false, message: '请先登录' };
   }
@@ -564,7 +661,7 @@ async function handleGetStats(userId: string, data: Record<string, unknown>, req
   const [progressRes, favoriteRes] = await Promise.all([
     progressCollection
       .where({ user_id: userId })
-      .field({ resource_id: true, progress: true, total_duration: true, last_study_at: true })
+      .field({ resource_id: 1, progress: 1, total_duration: 1, last_study_at: 1 })
       .limit(500)
       .get(),
     favoriteCollection.where({ user_id: userId }).count()
@@ -579,13 +676,13 @@ async function handleGetStats(userId: string, data: Record<string, unknown>, req
 
   // 批量获取资源详情用于分类统计
   const resourceIds = progressList.map((p) => p.resource_id).filter(Boolean);
-  let resourceMap: Record<string, unknown> = {};
+  const resourceMap: Record<string, any> = {};
 
   if (resourceIds.length > 0) {
     const resourceRes = await db
       .collection('learning_resources')
       .where({ _id: _.in(resourceIds) })
-      .field({ _id: true, category: true })
+      .field({ _id: 1, category: 1 })
       .get();
     for (const r of resourceRes.data || []) {
       resourceMap[r._id] = r;
@@ -595,7 +692,7 @@ async function handleGetStats(userId: string, data: Record<string, unknown>, req
   // 按分类统计
   const categoryStats: Record<string, { count: number; duration: number }> = {};
   for (const p of progressList) {
-    const resource = resourceMap[p.resource_id];
+    const resource = resourceMap[p.resource_id] as { category?: string } | undefined;
     if (resource) {
       const cat = resource.category || 'unknown';
       if (!categoryStats[cat]) {
@@ -625,7 +722,7 @@ async function handleGetStats(userId: string, data: Record<string, unknown>, req
 /**
  * 获取资源分类
  */
-async function handleGetCategories(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetCategories(_userId: string, _data: Record<string, unknown>, _requestId: string) {
   return {
     code: 0,
     success: true,
@@ -637,7 +734,7 @@ async function handleGetCategories(userId: string, data: Record<string, unknown>
 /**
  * 获取学科分类
  */
-async function handleGetSubjects(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetSubjects(_userId: string, _data: Record<string, unknown>, _requestId: string) {
   return {
     code: 0,
     success: true,
@@ -653,7 +750,7 @@ async function handleGetSubjects(userId: string, data: Record<string, unknown>, 
  * @param resources - 从数据库查询到的资源数组
  * @returns 补充了 categoryName/categoryIcon/subjectName/subjectIcon 的资源数组
  */
-function enrichResources(resources: Record<string, unknown>[]): Record<string, unknown>[] {
+function enrichResources(resources: Record<string, any>[]): Record<string, any>[] {
   return resources.map((r) => enrichResource(r)).filter(Boolean);
 }
 
@@ -662,7 +759,7 @@ function enrichResources(resources: Record<string, unknown>[]): Record<string, u
  * @param resource - 从数据库查询到的单个资源对象
  * @returns 补充了元信息的资源对象，如果输入为 null 则返回 null
  */
-function enrichResource(resource: Record<string, unknown>): Record<string, unknown> {
+function enrichResource(resource: Record<string, any> | null): Record<string, any> | null {
   if (!resource) return null;
 
   const catInfo = RESOURCE_CATEGORIES[resource.category];

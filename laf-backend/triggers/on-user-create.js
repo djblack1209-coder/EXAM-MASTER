@@ -1,31 +1,31 @@
 /**
  * 新用户创建触发器
- * 
+ *
  * 触发条件：users 集合新增文档
- * 
+ *
  * 功能：
  * 1. 初始化用户学习计划
  * 2. 发放新手成就
  * 3. 初始化排行榜记录
  */
 
-import cloud from '@lafjs/cloud'
+import cloud from '@lafjs/cloud';
 
-const db = cloud.database()
+const db = cloud.database();
 
 export default async function (ctx) {
-  const { doc } = ctx // 新创建的用户文档
-  
+  const { doc } = ctx; // 新创建的用户文档
+
   if (!doc || !doc._id) {
-    console.warn('[Trigger] 无效的用户文档')
-    return
+    console.warn('[Trigger] 无效的用户文档');
+    return;
   }
-  
-  const userId = doc._id
-  const now = Date.now()
-  
-  console.log(`[Trigger] 新用户创建: ${userId}`)
-  
+
+  const userId = doc._id;
+  const now = Date.now();
+
+  console.log(`[Trigger] 新用户创建: ${userId}`);
+
   try {
     // 1. 创建默认学习计划
     const defaultPlan = {
@@ -50,26 +50,29 @@ export default async function (ctx) {
       is_active: true,
       created_at: now,
       updated_at: now
-    }
-    
-    await db.collection('study_plans').add(defaultPlan)
-    console.log(`[Trigger] 创建默认学习计划: ${userId}`)
-    
+    };
+
+    await db.collection('study_plans').add(defaultPlan);
+    console.log(`[Trigger] 创建默认学习计划: ${userId}`);
+
     // 2. 发放新手成就
     const firstLoginAchievement = {
       id: 'first_login',
       name: '初来乍到',
       description: '首次登录应用',
       unlocked_at: now
-    }
-    
-    await db.collection('users').doc(userId).update({
-      achievements: db.command.push(firstLoginAchievement)
-    })
-    console.log(`[Trigger] 发放新手成就: ${userId}`)
-    
+    };
+
+    await db
+      .collection('users')
+      .doc(userId)
+      .update({
+        achievements: db.command.push(firstLoginAchievement)
+      });
+    console.log(`[Trigger] 发放新手成就: ${userId}`);
+
     // 3. 初始化排行榜记录
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toISOString().split('T')[0];
     const rankRecord = {
       uid: userId,
       nick_name: doc.nickname || '考研学子',
@@ -83,13 +86,12 @@ export default async function (ctx) {
       monthly_start: getMonthStart(),
       created_at: now,
       updated_at: now
-    }
-    
-    await db.collection('rankings').add(rankRecord)
-    console.log(`[Trigger] 初始化排行榜记录: ${userId}`)
-    
+    };
+
+    await db.collection('rankings').add(rankRecord);
+    console.log(`[Trigger] 初始化排行榜记录: ${userId}`);
   } catch (error) {
-    console.error(`[Trigger] 新用户初始化失败: ${userId}`, error)
+    console.error(`[Trigger] 新用户初始化失败: ${userId}`, error);
   }
 }
 
@@ -97,37 +99,40 @@ export default async function (ctx) {
  * 获取默认考试日期（当年12月最后一个周末）
  */
 function getDefaultExamDate() {
-  const now = new Date()
-  let year = now.getFullYear()
-  
+  const now = new Date();
+  let year = now.getFullYear();
+
   // 如果已经过了12月，则设为下一年
   if (now.getMonth() === 11 && now.getDate() > 25) {
-    year++
+    year++;
   }
-  
+
   // 找到12月最后一个周六
-  const dec31 = new Date(year, 11, 31)
-  const dayOfWeek = dec31.getDay()
-  const lastSaturday = 31 - (dayOfWeek === 6 ? 0 : (dayOfWeek + 1))
-  
-  return `${year}-12-${lastSaturday}`
+  const dec31 = new Date(year, 11, 31);
+  const dayOfWeek = dec31.getDay();
+  // dayOfWeek: 0=Sun,1=Mon,...,6=Sat
+  // 需要回退的天数：Sat=0, Sun=1, Mon=2, Tue=3, Wed=4, Thu=5, Fri=6
+  const daysBack = dayOfWeek === 6 ? 0 : (dayOfWeek + 1) % 7;
+  const lastSaturday = 31 - daysBack;
+
+  return `${year}-12-${lastSaturday}`;
 }
 
 /**
  * 获取本周开始日期
  */
 function getWeekStart() {
-  const now = new Date()
-  const day = now.getDay()
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1)
-  const weekStart = new Date(now.setDate(diff))
-  return weekStart.toISOString().split('T')[0]
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const weekStart = new Date(now.setDate(diff));
+  return weekStart.toISOString().split('T')[0];
 }
 
 /**
  * 获取本月开始日期
  */
 function getMonthStart() {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
 }
