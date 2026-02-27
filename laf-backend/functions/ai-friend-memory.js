@@ -12,6 +12,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -27,28 +28,28 @@ export default async function (ctx) {
     const { action, userId, friendType, data } = ctx.body || {};
 
     if (!userId) {
-      return { code: 401, message: '用户未登录', requestId };
+      return { code: 401, success: false, message: '用户未登录', requestId };
     }
 
     if (!action) {
-      return { code: 400, message: '缺少 action 参数', requestId };
+      return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
 
     // [AUDIT FIX] JWT 身份验证 — 始终要求认证（移除 NODE_ENV 条件），且强制校验 payload.userId
     const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
     if (!authToken) {
-      return { code: 401, message: '缺少认证 token，请重新登录', requestId };
+      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
     }
-    const rawToken = authToken.startsWith('Bearer ') ? authToken.slice(7) : authToken;
+    const rawToken = extractBearerToken(authToken);
     const payload = verifyJWT(rawToken);
     if (!payload) {
-      return { code: 401, message: 'token 无效或已过期，请重新登录', requestId };
+      return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
     }
     if (!payload.userId) {
-      return { code: 401, message: '无效的 token（缺少用户标识）', requestId };
+      return { code: 401, success: false, message: '无效的 token（缺少用户标识）', requestId };
     }
     if (payload.userId !== userId) {
-      return { code: 401, message: '身份验证失败', requestId };
+      return { code: 403, success: false, message: '身份验证失败', requestId };
     }
 
     console.log(`[${requestId}] AI记忆: action=${action}, friendType=${friendType}`);
@@ -61,12 +62,13 @@ export default async function (ctx) {
       case 'clear':
         return await clearMemory(userId, friendType, requestId);
       default:
-        return { code: 400, message: `未知的 action: ${action}`, requestId };
+        return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
     }
   } catch (error) {
     console.error(`[${requestId}] AI记忆异常:`, error);
     return {
       code: 500,
+      success: false,
       message: '服务器错误',
       requestId,
       duration: Date.now() - startTime
@@ -101,13 +103,13 @@ async function getMemory(userId, friendType, requestId) {
  */
 async function saveMemory(userId, friendType, data, requestId) {
   if (!friendType) {
-    return { code: 400, message: '缺少 friendType 参数', requestId };
+    return { code: 400, success: false, message: '缺少 friendType 参数', requestId };
   }
 
   const { userMessage, aiReply, emotion, summary } = data || {};
 
   if (!userMessage && !aiReply) {
-    return { code: 400, message: '缺少对话内容', requestId };
+    return { code: 400, success: false, message: '缺少对话内容', requestId };
   }
 
   const now = Date.now();

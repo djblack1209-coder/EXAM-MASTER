@@ -170,7 +170,7 @@ describe('[安全审计] pk-battle 参与者校验链路', () => {
       }
     });
 
-    expect(result.code).toBe(400);
+    expect(result.code).toBe(403);
     expect(result.message).toContain('无权提交此对战结果');
   });
 
@@ -211,11 +211,44 @@ describe('[安全审计] pk-battle 参与者校验链路', () => {
       }
     });
 
-    expect(result.code).toBe(400);
+    expect(result.code).toBe(403);
     expect(result.message).toContain('对战参与者与会话不匹配');
 
     const sessionQuery = mocked.scenario.whereCalls.find((item) => item.name === 'pk_battles');
     expect(sessionQuery).toBeTruthy();
+  });
+
+  it('幂等处理中重复提交应返回 429 且 success=false', async () => {
+    mocked.setJwtPayload({ userId: 'user_1' });
+    mocked.scenario.getOne.user_bans = { data: null };
+    mocked.scenario.getOne.idempotency_records = {
+      data: {
+        _id: 'idem_processing_1',
+        status: 'processing',
+        created_at: Date.now()
+      }
+    };
+
+    const result = await pkBattleHandler({
+      body: {
+        action: 'submit_result',
+        battleId: 'battle_processing_1',
+        idempotencyKey: 'idem_processing_1',
+        questionCount: 5,
+        player1: { uid: 'user_1', score: 40, correctCount: 2, totalTime: 15000 },
+        player2: { uid: 'bot_001', score: 0, correctCount: 0, totalTime: 0 },
+        clientInfo: { ip: '3.3.3.3', deviceId: 'dev_3' }
+      },
+      headers: {
+        authorization: 'Bearer valid_token'
+      }
+    });
+
+    expect(result.code).toBe(429);
+    expect(result.success).toBe(false);
+    expect(result.message).toContain('请求正在处理中');
+    expect(result.isDuplicate).toBe(true);
+    expect(result.requestId).toBe('pk_test_req');
   });
 
   it('真人 + bot 对战应允许提交并完成入库', async () => {

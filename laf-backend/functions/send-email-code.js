@@ -44,6 +44,7 @@ export default async function (ctx) {
     if (!email) {
       return {
         code: 400,
+        success: false,
         message: '邮箱地址不能为空',
         requestId
       };
@@ -54,6 +55,7 @@ export default async function (ctx) {
     if (!emailRegex.test(email)) {
       return {
         code: 400,
+        success: false,
         message: '邮箱格式不正确',
         requestId
       };
@@ -73,6 +75,7 @@ export default async function (ctx) {
     if (recentCode.data) {
       return {
         code: 429,
+        success: false,
         message: '发送太频繁，请1分钟后再试',
         requestId
       };
@@ -89,6 +92,7 @@ export default async function (ctx) {
     if (dailyCount.total >= 10) {
       return {
         code: 429,
+        success: false,
         message: '今日验证码发送次数已达上限，请明天再试',
         requestId
       };
@@ -108,6 +112,7 @@ export default async function (ctx) {
       if (ipHourlyCount.total >= 20) {
         return {
           code: 429,
+          success: false,
           message: '请求过于频繁，请稍后再试',
           requestId
         };
@@ -137,6 +142,7 @@ export default async function (ctx) {
       if (process.env.NODE_ENV !== 'production') {
         return {
           code: 0,
+          success: true,
           message: '开发模式：验证码已生成，但邮件发送失败',
           requestId
         };
@@ -144,6 +150,7 @@ export default async function (ctx) {
 
       return {
         code: 502,
+        success: false,
         message: '邮件服务暂时不可用，请稍后再试',
         requestId
       };
@@ -153,6 +160,7 @@ export default async function (ctx) {
 
     return {
       code: 0,
+      success: true,
       message: '验证码已发送，请查收邮件',
       requestId
     };
@@ -161,6 +169,7 @@ export default async function (ctx) {
 
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId
     };

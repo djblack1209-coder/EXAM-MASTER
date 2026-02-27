@@ -200,7 +200,7 @@ class CheckinStreakService {
     if (milestone) {
       // ✅ F015: 里程碑达成时自动发放补签卡
       if (milestone.recoveryCards && milestone.recoveryCards > 0) {
-        this.addRecoveryCards(milestone.recoveryCards);
+        this._grantRecoveryCards(milestone.recoveryCards);
         logger.log(`[CheckinStreak] 里程碑奖励: +${milestone.recoveryCards} 补签卡`);
       }
 
@@ -264,6 +264,37 @@ class CheckinStreakService {
       });
     } else {
       this.data.missedDays = 0;
+    }
+  }
+
+  _toSafeInt(value, min, max, fallback = min) {
+    const parsed = Number.parseInt(String(value), 10);
+    if (!Number.isInteger(parsed)) {
+      return fallback;
+    }
+    return Math.min(max, Math.max(min, parsed));
+  }
+
+  _normalizeLoadedData() {
+    this.data.currentStreak = this._toSafeInt(this.data.currentStreak, 0, 36500, 0);
+    this.data.longestStreak = this._toSafeInt(this.data.longestStreak, 0, 36500, this.data.currentStreak);
+    this.data.totalCheckins = this._toSafeInt(this.data.totalCheckins, 0, 365000, 0);
+    this.data.recoveryCards = this._toSafeInt(this.data.recoveryCards, 0, 99, 0);
+
+    if (this.data.longestStreak < this.data.currentStreak) {
+      this.data.longestStreak = this.data.currentStreak;
+    }
+
+    if (!Array.isArray(this.data.checkinHistory)) {
+      this.data.checkinHistory = [];
+    }
+
+    this.data.checkinHistory = this.data.checkinHistory
+      .filter((record) => record && typeof record.date === 'string')
+      .slice(-365);
+
+    if (typeof this.data.lastCheckinDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(this.data.lastCheckinDate)) {
+      this.data.lastCheckinDate = null;
     }
   }
 
@@ -406,6 +437,8 @@ class CheckinStreakService {
           const data = JSON.parse(saved);
           Object.assign(this.data, data);
         }
+
+        this._normalizeLoadedData();
       }
     } catch (error) {
       logger.error('[CheckinStreak] Load error:', error);
@@ -424,6 +457,8 @@ class CheckinStreakService {
    */
   async _saveData() {
     try {
+      this._normalizeLoadedData();
+
       const key = `checkin_${this.userId}`;
       storageService.save(key, {
         currentStreak: this.data.currentStreak,
@@ -441,9 +476,22 @@ class CheckinStreakService {
   /**
    * 添加补签卡
    */
-  addRecoveryCards(count) {
-    this.data.recoveryCards += count;
+  _grantRecoveryCards(count) {
+    const parsedCount = Number.parseInt(String(count), 10);
+    if (!Number.isInteger(parsedCount) || parsedCount <= 0) {
+      logger.warn('[CheckinStreak] 非法补签卡发放请求已忽略:', count);
+      return false;
+    }
+
+    // 限制单次发放额度，避免异常调用导致本地数据被批量注入
+    const safeGrant = Math.min(parsedCount, 5);
+    this.data.recoveryCards = Math.min(99, this.data.recoveryCards + safeGrant);
     this._saveData();
+    return true;
+  }
+
+  addRecoveryCards(count) {
+    return this._grantRecoveryCards(count);
   }
 
   /**
@@ -499,7 +547,7 @@ export { CheckinStreakService, CHECKIN_STATUS, REWARD_CONFIG };
 /**
  * 签到打卡组合式 API Hook
  * 提供响应式的签到信息、统计数据，以及签到/日历/补签卡等操作方法
- * @returns {{ checkinInfo: import('vue').ComputedRef, statistics: import('vue').ComputedRef, init: Function, checkIn: Function, getMonthCalendar: Function, getRecoveryCards: Function, addRecoveryCards: Function, onCheckin: Function, onMissed: Function, onMilestone: Function }}
+ * @returns {{ checkinInfo: import('vue').ComputedRef, statistics: import('vue').ComputedRef, init: Function, checkIn: Function, getMonthCalendar: Function, getRecoveryCards: Function, onCheckin: Function, onMissed: Function, onMilestone: Function }}
  */
 export function useCheckinStreak() {
   const checkinInfo = computed(() => checkinStreak.getCheckinInfo());
@@ -512,7 +560,6 @@ export function useCheckinStreak() {
     checkIn: () => checkinStreak.checkIn(),
     getMonthCalendar: (year, month) => checkinStreak.getMonthCalendar(year, month),
     getRecoveryCards: () => checkinStreak.getRecoveryCards(),
-    addRecoveryCards: (count) => checkinStreak.addRecoveryCards(count),
     onCheckin: (callback) => checkinStreak.on('checkin', callback),
     onMissed: (callback) => checkinStreak.on('missed', callback),
     onMilestone: (callback) => checkinStreak.on('milestone', callback)

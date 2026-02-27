@@ -20,6 +20,7 @@ import crypto from 'crypto';
 import { validate } from '../utils/validator';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const logger = createLogger('[PhotoBg]');
 
@@ -76,9 +77,7 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费腾讯云 API 额度
-    const authToken = String(ctx.headers?.['authorization'] || ctx.headers?.Authorization || '')
-      .replace(/^Bearer\s+/i, '')
-      .trim();
+    const authToken = extractBearerToken(ctx.headers?.['authorization'] || ctx.headers?.Authorization);
     if (!authToken) {
       return { code: 401, success: false, message: '请先登录', requestId };
     }

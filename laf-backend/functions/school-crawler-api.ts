@@ -111,7 +111,7 @@ export default async function (ctx: FunctionContext) {
       }
     );
     if (!entryValidation.valid) {
-      return { code: 400, message: entryValidation.errors[0], requestId };
+      return { code: 400, success: false, message: entryValidation.errors[0], requestId };
     }
 
     logger.info(`[${requestId}] 爬虫API: action=${action}`);
@@ -133,7 +133,7 @@ export default async function (ctx: FunctionContext) {
     const cfg = rateConfig[action as string] || { limit: 30, windowMs: 60 * 1000 };
     const rate = checkRateLimit(`crawler:${action}:${clientIp}`, cfg.limit, cfg.windowMs);
     if (!rate.allowed) {
-      return { code: 429, message: '请求过于频繁，请稍后重试', requestId };
+      return { code: 429, success: false, message: '请求过于频繁，请稍后重试', requestId };
     }
 
     switch (action) {
@@ -149,12 +149,12 @@ export default async function (ctx: FunctionContext) {
           typeof refreshSecret !== 'string' ||
           typeof expectedRefreshSecret !== 'string'
         ) {
-          return { code: 403, message: '无权执行此操作', requestId };
+          return { code: 403, success: false, message: '无权执行此操作', requestId };
         }
         const ra = Buffer.from(refreshSecret, 'utf8');
         const rb = Buffer.from(expectedRefreshSecret, 'utf8');
         if (ra.length !== rb.length || !crypto.timingSafeEqual(ra, rb)) {
-          return { code: 403, message: '无权执行此操作', requestId };
+          return { code: 403, success: false, message: '无权执行此操作', requestId };
         }
         return await refreshSchoolData(data, requestId);
       }
@@ -169,22 +169,23 @@ export default async function (ctx: FunctionContext) {
         const adminSecret = ctx.headers?.['x-admin-secret'] || data?.adminSecret;
         const expectedSecret = process.env.ADMIN_SECRET;
         if (!adminSecret || !expectedSecret || typeof adminSecret !== 'string' || typeof expectedSecret !== 'string') {
-          return { code: 403, message: '无权执行此操作', requestId };
+          return { code: 403, success: false, message: '无权执行此操作', requestId };
         }
         const ca = Buffer.from(adminSecret, 'utf8');
         const cb = Buffer.from(expectedSecret, 'utf8');
         if (ca.length !== cb.length || !crypto.timingSafeEqual(ca, cb)) {
-          return { code: 403, message: '无权执行此操作', requestId };
+          return { code: 403, success: false, message: '无权执行此操作', requestId };
         }
         return await crawlAllSchools(requestId);
       }
       default:
-        return { code: 400, message: `未知的 action: ${action}`, requestId };
+        return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
     }
   } catch (error: unknown) {
     logger.error(`[${requestId}] 爬虫API异常:`, error);
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId,
       duration: Date.now() - startTime
@@ -635,6 +636,7 @@ async function refreshSchoolData(data: Record<string, unknown>, requestId: strin
     logger.error(`[${requestId}] 刷新失败:`, error);
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId
     };
@@ -651,7 +653,7 @@ async function getSchoolsByProvince(data: Record<string, unknown>, requestId: st
   const pageSize = Math.max(1, Math.min(parseInt(data?.pageSize as string) || 20, 100));
 
   if (!province) {
-    return { code: 400, message: '缺少省份参数', requestId };
+    return { code: 400, success: false, message: '缺少省份参数', requestId };
   }
 
   const cacheValid = await checkCacheValid();
@@ -682,7 +684,7 @@ async function getSchoolsByProvince(data: Record<string, unknown>, requestId: st
   try {
     const provinceCode = PROVINCE_CODE_MAP[province];
     if (!provinceCode) {
-      return { code: 400, message: '无效的省份名称', requestId };
+      return { code: 400, success: false, message: '无效的省份名称', requestId };
     }
 
     const schools = await crawlSchoolPage(provinceCode, (page - 1) * pageSize);
@@ -702,6 +704,7 @@ async function getSchoolsByProvince(data: Record<string, unknown>, requestId: st
   } catch (error: unknown) {
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId
     };
@@ -793,6 +796,7 @@ async function getCrawlerStatus(requestId: string) {
   } catch (error: unknown) {
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       requestId
     };
@@ -927,6 +931,7 @@ async function crawlAllSchools(requestId: string) {
     logger.error(`[${requestId}] 全量爬取异常:`, error);
     return {
       code: 500,
+      success: false,
       message: '服务异常，请稍后重试',
       data: {
         crawledCount,

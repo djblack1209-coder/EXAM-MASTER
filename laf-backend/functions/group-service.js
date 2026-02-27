@@ -18,6 +18,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -417,12 +418,12 @@ async function handleLeaveGroup(userId, params, requestId) {
       .get();
 
     if (member.data.length === 0) {
-      return { code: 400, success: false, message: '您不是该小组成员', data: null };
+      return { code: 403, success: false, message: '您不是该小组成员', data: null };
     }
 
     // 检查是否是群主
     if (member.data[0].role === MEMBER_ROLE.OWNER) {
-      return { code: 400, success: false, message: '群主不能离开小组，请先转让群主身份', data: null };
+      return { code: 403, success: false, message: '群主不能离开小组，请先转让群主身份', data: null };
     }
 
     // 更新成员状态
@@ -481,7 +482,7 @@ async function handleShareResource(userId, params, requestId) {
       .get();
 
     if (member.data.length === 0) {
-      return { code: 400, success: false, message: '您不是该小组成员', data: null };
+      return { code: 403, success: false, message: '您不是该小组成员', data: null };
     }
 
     // 创建资源
@@ -544,7 +545,7 @@ async function handleGetResources(userId, params, requestId) {
       .get();
 
     if (member.data.length === 0) {
-      return { code: 400, success: false, message: '您不是该小组成员', data: [] };
+      return { code: 403, success: false, message: '您不是该小组成员', data: [] };
     }
 
     let query = db.collection('group_resources').where({ group_id: groupId });
@@ -619,52 +620,59 @@ export default async function (ctx) {
   try {
     const { action, ...params } = ctx.body || {};
 
-    // 获取用户ID（从请求头或请求体）
-    const userId = ctx.headers?.['x-user-id'] || params.userId;
+    // 获取用户ID（客户端声明，仅用于与 JWT 做一致性校验）
+    const claimedUserId = ctx.headers?.['x-user-id'] || params.userId;
 
     // JWT 身份验证
     const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
     if (typeof rawHeaderToken === 'string' && rawHeaderToken) {
-      const rawToken = rawHeaderToken.startsWith('Bearer ') ? rawHeaderToken.slice(7) : rawHeaderToken;
-      const payload = verifyJWT(rawToken);
-      if (payload && payload.userId !== userId) {
-        return { code: 401, success: false, message: '身份验证失败：用户不匹配', requestId };
+      const token = extractBearerToken(rawHeaderToken);
+      if (!token) {
+        return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
       }
-      if (!payload) {
+
+      const payload = verifyJWT(token);
+      if (!payload || !payload.userId) {
         return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
       }
+
+      if (claimedUserId && payload.userId !== claimedUserId) {
+        return { code: 403, success: false, message: '身份验证失败：用户不匹配', requestId };
+      }
+
+      const userId = payload.userId;
+
+      if (!action) {
+        return { code: 400, success: false, message: '参数错误: action 不能为空', requestId };
+      }
+
+      logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
+
+      // 路由到对应处理函数
+      const handlers = {
+        create_group: handleCreateGroup,
+        join_group: handleJoinGroup,
+        get_groups: handleGetGroups,
+        get_group_detail: handleGetGroupDetail,
+        leave_group: handleLeaveGroup,
+        share_resource: handleShareResource,
+        get_resources: handleGetResources
+      };
+
+      const handler = handlers[action];
+      if (!handler) {
+        return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId };
+      }
+
+      const result = await handler(userId, params, requestId);
+
+      const duration = Date.now() - startTime;
+      logger.info(`[${requestId}] 操作完成，耗时: ${duration}ms`);
+
+      return { ...result, requestId, duration };
     } else {
       return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
     }
-
-    if (!action) {
-      return { code: 400, success: false, message: '参数错误: action 不能为空', requestId };
-    }
-
-    logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
-
-    // 路由到对应处理函数
-    const handlers = {
-      create_group: handleCreateGroup,
-      join_group: handleJoinGroup,
-      get_groups: handleGetGroups,
-      get_group_detail: handleGetGroupDetail,
-      leave_group: handleLeaveGroup,
-      share_resource: handleShareResource,
-      get_resources: handleGetResources
-    };
-
-    const handler = handlers[action];
-    if (!handler) {
-      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId };
-    }
-
-    const result = await handler(userId, params, requestId);
-
-    const duration = Date.now() - startTime;
-    logger.info(`[${requestId}] 操作完成，耗时: ${duration}ms`);
-
-    return { ...result, requestId, duration };
   } catch (error) {
     const duration = Date.now() - startTime;
     logger.error(`[${requestId}] 学习小组服务异常:`, error);

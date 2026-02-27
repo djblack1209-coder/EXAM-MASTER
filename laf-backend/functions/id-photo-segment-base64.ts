@@ -1,26 +1,41 @@
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 const logger = createLogger('[IdPhoto]');
 
 export default async function (ctx) {
+  const requestId = `id_photo_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
+  const unauthorizedResponse = (message: string) => ({
+    code: 401,
+    success: false,
+    msg: message,
+    message,
+    requestId
+  });
+
   // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费腾讯云 API 额度
-  const authToken = String(ctx.headers?.['authorization'] || ctx.headers?.Authorization || '')
-    .replace(/^Bearer\s+/i, '')
-    .trim();
+  const authToken = extractBearerToken(ctx.headers?.['authorization'] || ctx.headers?.Authorization);
   if (!authToken) {
-    return { code: 401, msg: '请先登录' };
+    return unauthorizedResponse('请先登录');
   }
 
   const payload = verifyJWT(authToken);
   if (!payload?.userId) {
-    return { code: 401, msg: 'token 无效或已过期' };
+    return unauthorizedResponse('token 无效或已过期');
   }
   const authUserId = payload.userId;
 
   // [AUDIT FIX] 速率限制 — 每用户每分钟最多 10 次证件照抠图
   const rateCheck = await checkRateLimitDistributed(`id_photo:${authUserId}`, 10, 60 * 1000);
   if (!rateCheck.allowed) {
-    return { code: 429, msg: '操作过于频繁，请稍后再试' };
+    return {
+      code: 429,
+      success: false,
+      msg: '操作过于频繁，请稍后再试',
+      message: '操作过于频繁，请稍后再试',
+      requestId
+    };
   }
 
   const { imageBase64 } = ctx.body || {};
@@ -43,7 +58,14 @@ export default async function (ctx) {
 
   if (!secretId || !secretKey) {
     logger.error('[id-photo] 环境变量未配置');
-    return { code: 500, msg: '服务配置错误，请联系管理员', detail: 'ENV_NOT_SET' };
+    return {
+      code: 500,
+      success: false,
+      msg: '服务配置错误，请联系管理员',
+      message: '服务配置错误，请联系管理员',
+      detail: 'ENV_NOT_SET',
+      requestId
+    };
   }
 
   try {
@@ -111,8 +133,10 @@ export default async function (ctx) {
 
     return {
       code: 500,
-      msg: errorMsg,
       success: false,
+      msg: errorMsg,
+      message: errorMsg,
+      requestId,
       detail: errorCode
     };
   }

@@ -81,7 +81,7 @@ function scanDirectory(dir, baseDir = dir) {
   };
 
   // 忽略的目录
-  const ignoreDirs = ['node_modules', '.git', 'unpackage', 'dist'];
+  const ignoreDirs = ['node_modules', '.git', 'unpackage', 'dist', 'backups'];
 
   function scan(currentDir) {
     const items = fs.readdirSync(currentDir);

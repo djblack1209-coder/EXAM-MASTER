@@ -23,6 +23,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 import {
   logger,
   sanitizeString,
@@ -54,7 +55,7 @@ export default async function (ctx) {
 
     // [R2-P0] JWT 认证：所有操作强制验证（读操作也涉及用户私有数据）
     const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
+    const token = extractBearerToken(rawHeaderToken);
     if (!token) {
       return { ...unauthorized('请先登录'), requestId };
     }
@@ -239,7 +240,7 @@ async function handleRemove(userId: string, data: Record<string, unknown>, reque
   const favorite = await collection.where(query).getOne();
 
   if (!favorite.data) {
-    logger.warn(`[${requestId}] 收藏不存在或无权限`);
+    logger.warn(`[${requestId}] 收藏不存在`);
     return { code: 0, success: true, deleted: 0, message: '收藏不存在' };
   }
 

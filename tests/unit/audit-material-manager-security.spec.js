@@ -137,6 +137,20 @@ describe('[安全审计] material-manager 关键防护', () => {
     mocked.resetScenario();
   });
 
+  it('缺少 action 时应返回 400 且 success=false', async () => {
+    const result = await materialManagerHandler({
+      body: {
+        userId: 'spoof_user',
+        data: { name: '资料.pdf' }
+      },
+      headers: { authorization: 'Bearer valid_token' }
+    });
+
+    expect(result.code).toBe(400);
+    expect(result.success).toBe(false);
+    expect(result.message).toContain('缺少 action');
+  });
+
   it('缺少 token 时应拒绝请求', async () => {
     const result = await materialManagerHandler({
       body: {
@@ -148,6 +162,7 @@ describe('[安全审计] material-manager 关键防护', () => {
     });
 
     expect(result.code).toBe(401);
+    expect(result.success).toBe(false);
   });
 
   it('仅 body.token 时应拒绝请求（要求 Header Token）', async () => {
@@ -162,6 +177,7 @@ describe('[安全审计] material-manager 关键防护', () => {
     });
 
     expect(result.code).toBe(401);
+    expect(result.success).toBe(false);
   });
 
   it('应使用 token 用户ID，忽略请求体伪造 userId', async () => {

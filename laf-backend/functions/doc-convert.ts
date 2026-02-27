@@ -18,8 +18,9 @@
 
 import cloud from '@lafjs/cloud';
 import { validate } from '../utils/validator';
-import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { createLogger, checkRateLimitDistributed, unauthorized } from './_shared/api-response';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 const logger = createLogger('[DocConvert]');
 const db = cloud.database();
@@ -91,16 +92,14 @@ export default async function (ctx) {
   try {
     // [C1-FIX] 鉴权：文档转换消耗付费API配额，必须验证用户身份
     const rawHeaderToken = ctx.headers?.authorization || ctx.headers?.Authorization;
-    const token = String(rawHeaderToken || '')
-      .replace(/^Bearer\s+/i, '')
-      .trim();
+    const token = extractBearerToken(rawHeaderToken);
 
     if (!token) {
-      return { code: 401, success: false, message: '未登录，请先登录', requestId };
+      return { ...unauthorized('请先登录'), requestId };
     }
     const payload = verifyJWT(token);
     if (!payload || !payload.userId) {
-      return { code: 401, success: false, message: '登录已过期，请重新登录', requestId };
+      return { ...unauthorized('token 无效或已过期'), requestId };
     }
     logger.info(`[${requestId}] 用户已验证: ${payload.userId}`);
 

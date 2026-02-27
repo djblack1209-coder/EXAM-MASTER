@@ -1,16 +1,16 @@
 # 项目深度扫描报告
 
-**扫描时间**: 2026/2/27 22:19:38
+**扫描时间**: 2026/2/28 02:17:47
 
-**文件总数**: 467
+**文件总数**: 469
 
 ## 文件分类统计
 
 | 分类 | 数量 | 描述 |
 |------|------|------|
-| DOC | 55 | 文档文件 |
-| OTHER | 148 | 其他 |
-| UTIL | 34 | 工具函数 |
+| DOC | 50 | 文档文件 |
+| OTHER | 140 | 其他 |
+| UTIL | 33 | 工具函数 |
 | SCRIPT | 67 | 脚本文件 |
 | CONFIG | 8 | 项目配置文件 |
 | STYLE | 13 | 样式文件 |
@@ -18,15 +18,15 @@
 | PAGE | 48 | 页面文件 |
 | SERVICE | 5 | 服务层 |
 | STORE | 8 | Pinia 状态管理 |
-| TEST | 49 | 测试文件 |
+| TEST | 65 | 测试文件 |
 
 ## 文件类型统计
 
 | 扩展名 | 数量 |
 |--------|------|
-| .md | 55 |
-| .js | 252 |
-| .json | 65 |
+| .md | 50 |
+| .js | 263 |
+| .json | 61 |
 | .vue | 82 |
 | .scss | 11 |
 | .css | 2 |
@@ -590,8 +590,8 @@
 - **API调用**: 1 处
 
 #### src/services/checkin-streak.js
-- **大小**: 12442 字节
-- **行数**: 521
+- **大小**: 13993 字节
+- **行数**: 568
 - **导入**: 3 个
 - **函数**: 2 个
 - **API调用**: 4 处
@@ -617,7 +617,7 @@
 - **函数**: 1 个
 - **API调用**: 11 处
 
-### UTIL (34个文件)
+### UTIL (33个文件)
 
 #### .claude/skills/changelog-generator/src/utils/ConfigLoader.js
 - **大小**: 4504 字节
@@ -705,13 +705,6 @@
 - **导入**: 2 个
 - **函数**: 9 个
 - **API调用**: 1 处
-
-#### src/utils/debug/qa.js
-- **大小**: 5021 字节
-- **行数**: 176
-- **导入**: 1 个
-- **函数**: 3 个
-- **API调用**: 7 处
 
 #### src/utils/error/global-error-handler.js
 - **大小**: 5345 字节
@@ -866,7 +859,7 @@
 - **大小**: 7496 字节
 - **行数**: 334
 
-### DOC (55个文件)
+### DOC (50个文件)
 
 #### .claude/CLAUDE.md
 - **大小**: 3815 字节
@@ -996,57 +989,19 @@
 - **行数**: 202
 
 #### CHANGELOG.md
-- **大小**: 5380 字节
-- **行数**: 140
+- **大小**: 6428 字节
+- **行数**: 181
 - **API调用**: 2 处
 
 #### PROJECT_DEEP_SCAN_REPORT.md
-- **大小**: 31152 字节
-- **行数**: 1745
+- **大小**: 32197 字节
+- **行数**: 1804
 - **API调用**: 2 处
 - **TODO**: 8 个
 
 #### README.md
 - **大小**: 3694 字节
 - **行数**: 146
-
-#### backups/v1.1.1-audit-2026-02-17/Exam-Master 项目综合报告.md
-- **大小**: 21335 字节
-- **行数**: 1071
-- **API调用**: 6 处
-
-#### backups/v1.1.1-audit-2026-02-17/修复建议和优化方案.md
-- **大小**: 6249 字节
-- **行数**: 473
-
-#### backups/v1.1.1-audit-2026-02-17/前端性能优化分析报告.md
-- **大小**: 5616 字节
-- **行数**: 367
-- **API调用**: 1 处
-
-#### backups/v1.1.1-audit-2026-02-17/后端API参数验证和错误处理分析报告.md
-- **大小**: 4663 字节
-- **行数**: 309
-
-#### backups/v1.1.1-audit-2026-02-17/安全性分析报告.md
-- **大小**: 4239 字节
-- **行数**: 310
-- **API调用**: 2 处
-
-#### backups/v1.1.1-audit-2026-02-17/数据同步和离线功能实现分析报告.md
-- **大小**: 4992 字节
-- **行数**: 338
-- **API调用**: 2 处
-
-#### backups/v1.1.1-audit-2026-02-17/深入问题清单.md
-- **大小**: 9842 字节
-- **行数**: 522
-- **API调用**: 9 处
-
-#### backups/v1.1.1-audit-2026-02-17/问题清单.md
-- **大小**: 4887 字节
-- **行数**: 319
-- **API调用**: 3 处
 
 #### deploy/docs/DEPLOYMENT-GUIDE.md
 - **大小**: 11145 字节
@@ -1064,15 +1019,25 @@
 - **大小**: 14497 字节
 - **行数**: 266
 
+#### docs/COMMIT-PLAN.md
+- **大小**: 3019 字节
+- **行数**: 101
+- **API调用**: 2 处
+
 #### docs/COMPONENTS.md
 - **大小**: 10718 字节
 - **行数**: 634
 - **导入**: 2 个
 
 #### docs/PROJECT-REPORT.md
-- **大小**: 15436 字节
-- **行数**: 388
+- **大小**: 19549 字节
+- **行数**: 429
 - **API调用**: 3 处
+
+#### docs/RELEASE-HANDOFF-2026-02-27.md
+- **大小**: 3703 字节
+- **行数**: 97
+- **API调用**: 2 处
 
 #### docs/SCRIPTS.md
 - **大小**: 4347 字节
@@ -1088,6 +1053,11 @@
 #### docs/UTILS.md
 - **大小**: 3938 字节
 - **行数**: 117
+
+#### docs/WECHAT-SUBMISSION-AUDIT-2026-02-28.md
+- **大小**: 2959 字节
+- **行数**: 59
+- **API调用**: 2 处
 
 #### laf-backend/MIGRATION-GUIDE.md
 - **大小**: 3095 字节
@@ -1113,7 +1083,7 @@
 - **大小**: 96 字节
 - **行数**: 3
 
-### TEST (49个文件)
+### TEST (65个文件)
 
 #### tests/debug-selectors.js
 - **大小**: 3177 字节
@@ -1143,8 +1113,8 @@
 - **函数**: 2 个
 
 #### tests/unit/audit-account-delete-safety.spec.js
-- **大小**: 4177 字节
-- **行数**: 163
+- **大小**: 4477 字节
+- **行数**: 169
 - **导入**: 2 个
 - **函数**: 1 个
 
@@ -1160,11 +1130,22 @@
 - **导入**: 2 个
 - **函数**: 2 个
 
+#### tests/unit/audit-admin-tools-auth-response.spec.js
+- **大小**: 2234 字节
+- **行数**: 76
+- **导入**: 3 个
+
 #### tests/unit/audit-ai-reality.spec.js
 - **大小**: 21474 字节
 - **行数**: 667
 - **导入**: 1 个
 - **API调用**: 36 处
+
+#### tests/unit/audit-answer-submit-idempotency.spec.js
+- **大小**: 3373 字节
+- **行数**: 146
+- **导入**: 2 个
+- **函数**: 2 个
 
 #### tests/unit/audit-auth-gate.spec.js
 - **大小**: 20834 字节
@@ -1172,9 +1153,15 @@
 - **导入**: 2 个
 - **API调用**: 10 处
 
+#### tests/unit/audit-auth-response-shape.spec.js
+- **大小**: 5834 字节
+- **行数**: 207
+- **导入**: 4 个
+- **函数**: 2 个
+
 #### tests/unit/audit-doc-convert-validation.spec.js
-- **大小**: 3059 字节
-- **行数**: 123
+- **大小**: 3126 字节
+- **行数**: 124
 - **导入**: 1 个
 
 #### tests/unit/audit-file-upload.spec.js
@@ -1183,6 +1170,30 @@
 - **导入**: 1 个
 - **API调用**: 1 处
 
+#### tests/unit/audit-group-service-auth.spec.js
+- **大小**: 2659 字节
+- **行数**: 109
+- **导入**: 2 个
+- **函数**: 1 个
+
+#### tests/unit/audit-group-service-forbidden.spec.js
+- **大小**: 4005 字节
+- **行数**: 161
+- **导入**: 2 个
+- **函数**: 2 个
+
+#### tests/unit/audit-health-check-response.spec.js
+- **大小**: 2633 字节
+- **行数**: 95
+- **导入**: 1 个
+- **函数**: 2 个
+
+#### tests/unit/audit-id-photo-auth-response.spec.js
+- **大小**: 3843 字节
+- **行数**: 131
+- **导入**: 2 个
+- **函数**: 1 个
+
 #### tests/unit/audit-idor-jwt.spec.js
 - **大小**: 8930 字节
 - **行数**: 271
@@ -1190,37 +1201,66 @@
 - **函数**: 1 个
 
 #### tests/unit/audit-learning-resource-security.spec.js
-- **大小**: 7541 字节
-- **行数**: 284
+- **大小**: 7955 字节
+- **行数**: 298
 - **导入**: 2 个
 - **函数**: 3 个
+
+#### tests/unit/audit-login-response-shape.spec.js
+- **大小**: 4062 字节
+- **行数**: 130
+- **导入**: 1 个
+- **函数**: 2 个
 
 #### tests/unit/audit-material-manager-security.spec.js
-- **大小**: 5231 字节
-- **行数**: 215
+- **大小**: 5701 字节
+- **行数**: 231
 - **导入**: 2 个
 - **函数**: 3 个
 
+#### tests/unit/audit-mistake-manager-tag-semantics.spec.js
+- **大小**: 2783 字节
+- **行数**: 121
+- **导入**: 2 个
+- **函数**: 1 个
+
 #### tests/unit/audit-mistake-manager-update-fields.spec.js
-- **大小**: 6768 字节
-- **行数**: 253
+- **大小**: 7340 字节
+- **行数**: 275
 - **导入**: 2 个
 - **函数**: 3 个
 
 #### tests/unit/audit-pk-battle-session-verify.spec.js
-- **大小**: 7235 字节
-- **行数**: 255
+- **大小**: 8299 字节
+- **行数**: 288
 - **导入**: 2 个
 - **函数**: 3 个
+
+#### tests/unit/audit-rank-center-rate-limit.spec.js
+- **大小**: 3278 字节
+- **行数**: 116
+- **导入**: 2 个
+- **函数**: 1 个
 
 #### tests/unit/audit-rate-limit-distributed.spec.js
 - **大小**: 2593 字节
 - **行数**: 106
 - **导入**: 1 个
 
+#### tests/unit/audit-school-crawler-auth-response.spec.js
+- **大小**: 1703 字节
+- **行数**: 67
+- **导入**: 2 个
+
+#### tests/unit/audit-school-query-auth-response.spec.js
+- **大小**: 3503 字节
+- **行数**: 139
+- **导入**: 2 个
+- **函数**: 1 个
+
 #### tests/unit/audit-send-email-code-security.spec.js
-- **大小**: 2883 字节
-- **行数**: 122
+- **大小**: 3652 字节
+- **行数**: 150
 - **导入**: 2 个
 - **函数**: 1 个
 
@@ -1236,6 +1276,24 @@
 - **行数**: 222
 - **导入**: 3 个
 - **函数**: 3 个
+
+#### tests/unit/audit-user-profile-auth.spec.js
+- **大小**: 3803 字节
+- **行数**: 147
+- **导入**: 2 个
+- **函数**: 1 个
+
+#### tests/unit/audit-voice-service-auth.spec.js
+- **大小**: 3287 字节
+- **行数**: 112
+- **导入**: 2 个
+- **函数**: 1 个
+
+#### tests/unit/checkin-streak.spec.js
+- **大小**: 3040 字节
+- **行数**: 103
+- **导入**: 1 个
+- **API调用**: 1 处
 
 #### tests/unit/components.spec.js
 - **大小**: 8966 字节
@@ -1368,6 +1426,12 @@
 - **行数**: 125
 - **导入**: 1 个
 - **API调用**: 5 处
+
+#### tests/unit/shared-auth.spec.js
+- **大小**: 2676 字节
+- **行数**: 69
+- **导入**: 2 个
+- **函数**: 1 个
 
 #### tests/unit/storage-service.spec.js
 - **大小**: 4397 字节
@@ -1612,13 +1676,13 @@
 - **导入**: 2 个
 
 #### scripts/build/convert-to-webp.js
-- **大小**: 4924 字节
+- **大小**: 4925 字节
 - **行数**: 193
 - **导入**: 2 个
 - **函数**: 4 个
 
 #### scripts/build/deep-scan.js
-- **大小**: 6618 字节
+- **大小**: 6630 字节
 - **行数**: 288
 - **导入**: 2 个
 - **函数**: 6 个
@@ -1673,13 +1737,13 @@
 - **函数**: 3 个
 
 #### scripts/optimize/auto-optimize-all.js
-- **大小**: 4192 字节
+- **大小**: 4193 字节
 - **行数**: 182
 - **导入**: 3 个
 - **函数**: 2 个
 
 #### scripts/optimize/gpu-acceleration-optimizer.js
-- **大小**: 10389 字节
+- **大小**: 10390 字节
 - **行数**: 351
 - **导入**: 2 个
 - **函数**: 3 个

@@ -143,6 +143,7 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
 
     expect(result.code).toBe(404);
     expect(result.ok).toBe(false);
+    expect(result.success).toBe(false);
     expect(result.message).toContain('错题不存在');
     expect(mocked.scenario.docUpdateCalls.length).toBe(0);
   });
@@ -163,8 +164,28 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
       headers: {}
     });
 
-    expect(result.code).toBe(403);
+    expect(result.code).toBe(401);
     expect(result.ok).toBe(false);
+    expect(result.success).toBe(false);
+  });
+
+  it('userId 缺失时应返回 401 且包含 success=false', async () => {
+    const result = await mistakeManagerHandler({
+      body: {
+        action: 'updateFields',
+        data: {
+          id: 'm_1',
+          fields: {
+            notes: 'new note'
+          }
+        }
+      },
+      headers: { authorization: 'Bearer valid_token' }
+    });
+
+    expect(result.code).toBe(401);
+    expect(result.ok).toBe(false);
+    expect(result.success).toBe(false);
   });
 
   it('应按白名单更新字段并自动维护 hash/mastered_at', async () => {
@@ -222,6 +243,7 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
 
     expect(result.code).toBe(400);
     expect(result.ok).toBe(false);
+    expect(result.success).toBe(false);
     expect(result.message).toContain('没有可更新字段');
     expect(mocked.scenario.docUpdateCalls.length).toBe(0);
   });

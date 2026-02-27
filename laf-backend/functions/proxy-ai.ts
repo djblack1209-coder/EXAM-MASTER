@@ -30,6 +30,7 @@ import { perfMonitor } from '../utils/perf-monitor';
 
 // ✅ B020: 导入 JWT 验证函数
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 
 // ==================== 环境配置 ====================
 import { IS_PRODUCTION, createLogger, checkRateLimitDistributed } from './_shared/api-response';
@@ -349,7 +350,7 @@ export default async function (ctx: FunctionContext) {
     // ✅ B020: JWT 身份验证（必须验证用户身份，防止未授权访问）
     const rawHeaderToken =
       ctx.headers?.['authorization'] || ctx.headers?.Authorization || ctx.headers?.['x-auth-token'];
-    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
+    const token = extractBearerToken(rawHeaderToken);
     const jwtPayload = verifyJWT(token);
     if (!jwtPayload) {
       logger.warn(`[${requestId}] JWT 验证失败，拒绝未授权的 AI 请求`);

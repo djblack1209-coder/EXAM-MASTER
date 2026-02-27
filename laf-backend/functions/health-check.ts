@@ -22,6 +22,8 @@ function secureEqual(a: unknown, b: unknown): boolean {
 }
 
 export default async function (ctx: any) {
+  const requestId = `hc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
   try {
     const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
     const isAdmin = !!ADMIN_SECRET && secureEqual(adminSecret, ADMIN_SECRET);
@@ -71,7 +73,9 @@ export default async function (ctx: any) {
 
     return {
       code: isHealthy ? 0 : 500,
+      success: isHealthy,
       status: isHealthy ? 'healthy' : 'degraded',
+      requestId,
       checks,
       version: '1.0.0',
       environment: process.env.NODE_ENV || 'production',
@@ -79,6 +83,6 @@ export default async function (ctx: any) {
       latency: Date.now() - startTime
     };
   } catch (error: any) {
-    return { code: 500, status: 'error', message: '健康检查异常' };
+    return { code: 500, success: false, status: 'error', message: '健康检查异常', requestId };
   }
 }

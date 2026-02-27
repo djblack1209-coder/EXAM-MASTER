@@ -75,7 +75,19 @@ const FILE_CONFIG = {
   },
 
   // 不支持的危险文件类型
-  BLOCKED_TYPES: ['exe', 'bat', 'cmd', 'sh', 'dll', 'so', 'dmg', 'pkg', 'msi', 'apk', 'ipa']
+  BLOCKED_TYPES: ['exe', 'bat', 'cmd', 'sh', 'dll', 'so', 'dmg', 'pkg', 'msi', 'apk', 'ipa'],
+
+  // 文件魔数签名（用于验证文件真实类型）
+  FILE_MAGIC_NUMBERS: {
+    pdf: [0x25, 0x50, 0x44, 0x46], // %PDF
+    png: [0x89, 0x50, 0x4e, 0x47], // PNG
+    jpg: [0xff, 0xd8, 0xff], // JPEG
+    gif: [0x47, 0x49, 0x46], // GIF
+    webp: [0x52, 0x49, 0x46, 0x46], // RIFF (WebP container)
+    zip: [0x50, 0x4b, 0x03, 0x04], // ZIP (docx/xlsx/pptx are ZIP-based)
+    doc: [0xd0, 0xcf, 0x11, 0xe0], // MS Office legacy format
+    xls: [0xd0, 0xcf, 0x11, 0xe0] // MS Office legacy format
+  }
 };
 
 /**
@@ -160,6 +172,70 @@ class FileHandler {
     }
 
     return { valid: true, ext };
+  }
+
+  /**
+   * 验证文件魔数（文件头签名）
+   * ✅ P0修复：防止双扩展名攻击和文件类型伪造
+   * @param {ArrayBuffer} fileBuffer - 文件二进制数据
+   * @param {string} expectedExt - 预期的文件扩展名
+   * @returns {{valid: boolean, error?: string, detectedType?: string}}
+   */
+  validateFileMagicNumber(fileBuffer, expectedExt) {
+    if (!fileBuffer || fileBuffer.byteLength === 0) {
+      return { valid: false, error: '文件内容为空' };
+    }
+
+    const bytes = new Uint8Array(fileBuffer.slice(0, 16));
+    const magicNumbers = FILE_CONFIG.FILE_MAGIC_NUMBERS;
+
+    // 检测实际文件类型
+    let detectedType = null;
+
+    for (const [type, signature] of Object.entries(magicNumbers)) {
+      if (this._matchesMagicNumber(bytes, signature)) {
+        detectedType = type;
+        break;
+      }
+    }
+
+    // 特殊处理：docx/xlsx/pptx 都是 ZIP 格式，需要进一步检查
+    if (detectedType === 'zip' && ['docx', 'xlsx', 'pptx'].includes(expectedExt)) {
+      // Office Open XML 格式都是 ZIP，允许通过
+      return { valid: true, detectedType: expectedExt };
+    }
+
+    // 特殊处理：jpg/jpeg 互认
+    if ((detectedType === 'jpg' && expectedExt === 'jpeg') || (detectedType === 'jpeg' && expectedExt === 'jpg')) {
+      return { valid: true, detectedType };
+    }
+
+    // 验证文件类型是否匹配
+    if (!detectedType) {
+      return { valid: false, error: '无法识别文件类型，可能是损坏的文件', detectedType: 'unknown' };
+    }
+
+    if (detectedType !== expectedExt) {
+      return {
+        valid: false,
+        error: `文件类型不匹配：文件名为 .${expectedExt}，但实际是 .${detectedType} 格式`,
+        detectedType
+      };
+    }
+
+    return { valid: true, detectedType };
+  }
+
+  /**
+   * 匹配魔数签名
+   * @private
+   */
+  _matchesMagicNumber(bytes, signature) {
+    if (bytes.length < signature.length) return false;
+    for (let i = 0; i < signature.length; i++) {
+      if (bytes[i] !== signature[i]) return false;
+    }
+    return true;
   }
 
   /**

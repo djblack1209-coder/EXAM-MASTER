@@ -11,6 +11,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
+import { extractBearerToken } from './_shared/auth';
 import {
   logger,
   success,
@@ -47,7 +48,7 @@ export default async function (ctx) {
 
     // [R2-P0] JWT 认证：所有操作强制验证（get_info 也涉及用户私有数据）
     const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
+    const token = extractBearerToken(rawHeaderToken);
     if (!token) {
       return { ...unauthorized('请先登录'), requestId };
     }
