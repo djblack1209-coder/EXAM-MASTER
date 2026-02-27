@@ -17,7 +17,7 @@
         </view>
         <view class="header-right ds-flex">
           <view class="close-btn ds-touchable ds-touch-target" @tap="closeConsult">
-            ✕
+            <BaseIcon name="close" :size="32" />
           </view>
         </view>
       </view>
@@ -34,13 +34,11 @@
           <!-- 欢迎消息 -->
           <view v-if="messages.length === 0" class="message-item assistant-message ds-flex ds-gap-sm">
             <view class="message-avatar ds-flex">
-              🤖
+              <BaseIcon name="robot" :size="32" />
             </view>
-            <view class="message-bubble">
+            <view class="message-bubble assistant-bubble">
               <text class="message-text ds-text-sm">
-                您好！我是AI咨询助手，很高兴为您解答关于{{
-                  schoolName
-                }}的考研问题。您可以咨询招生简章、历年分数线、专业设置等信息。
+                你好！我是 AI 升学顾问，有关于 {{ schoolName }} 的任何问题都可以问我。
               </text>
             </view>
           </view>
@@ -64,28 +62,18 @@
                 </text>
               </view>
               <view class="message-avatar ds-flex">
-                👤
+                <BaseIcon name="heart" :size="32" />
               </view>
             </template>
 
             <!-- 助手消息 -->
             <template v-else>
               <view class="message-avatar ds-flex">
-                🤖
+                <BaseIcon name="robot" :size="32" />
               </view>
-              <view
-                class="message-bubble assistant-bubble"
-                :class="{ 'failed-bubble': message.failed }"
-                @tap="message.failed ? retryMessage(index) : null"
-              >
+              <view class="message-bubble assistant-bubble">
                 <text class="message-text ds-text-sm">
                   {{ message.content }}
-                </text>
-                <text v-if="message.failed" class="retry-hint ds-text-xs ds-text-secondary">
-                  点击重试
-                </text>
-                <text class="message-time ds-text-xs ds-text-secondary">
-                  {{ message.time }}
                 </text>
               </view>
             </template>
@@ -94,14 +82,7 @@
           <!-- 正在输入状态 -->
           <view v-if="isTyping" class="message-item assistant-message ds-flex ds-gap-sm">
             <view class="message-avatar ds-flex">
-              🤖
-            </view>
-            <view class="message-bubble assistant-bubble">
-              <view class="typing-indicator ds-flex ds-gap-xs">
-                <view class="typing-dot" />
-                <view class="typing-dot" />
-                <view class="typing-dot" />
-              </view>
+              <BaseIcon name="robot" :size="32" />
             </view>
           </view>
         </view>
@@ -144,9 +125,11 @@
 import { lafService } from '@/services/lafService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'AiConsult',
+  components: { BaseIcon },
   props: {
     visible: {
       type: Boolean,

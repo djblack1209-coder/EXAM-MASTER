@@ -231,24 +231,39 @@ class CheckinStreakService {
       return;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayStr = this._getDateString(new Date());
+    const lastCheckinStr = this.data.lastCheckinDate;
 
-    const lastCheckin = new Date(this.data.lastCheckinDate);
-    lastCheckin.setHours(0, 0, 0, 0);
+    const toDayNumber = (dateStr) => {
+      const [y, m, d] = String(dateStr)
+        .split('-')
+        .map((n) => Number(n));
+      if (!y || !m || !d) return null;
+      return Math.floor(Date.UTC(y, m - 1, d) / (24 * 60 * 60 * 1000));
+    };
 
-    const diffTime = today.getTime() - lastCheckin.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const todayNum = toDayNumber(todayStr);
+    const lastNum = toDayNumber(lastCheckinStr);
+    if (todayNum === null || lastNum === null) {
+      this.data.missedDays = 0;
+      return;
+    }
+
+    const diffDays = Math.max(0, todayNum - lastNum);
 
     // 超过1天未打卡视为断签
     if (diffDays > 1) {
+      const previousStreak = this.data.currentStreak;
       this.data.missedDays = diffDays - 1;
+      this.data.currentStreak = 0;
 
       // 触发断签事件
       this._emit('missed', {
         missedDays: this.data.missedDays,
-        lastStreak: this.data.currentStreak
+        lastStreak: previousStreak
       });
+    } else {
+      this.data.missedDays = 0;
     }
   }
 
@@ -353,7 +368,7 @@ class CheckinStreakService {
 
     const firstCheckin = new Date(this.data.checkinHistory[0].date);
     const now = new Date();
-    const weeks = Math.max(1, Math.ceil((now - firstCheckin) / (7 * 24 * 60 * 60 * 1000)));
+    const weeks = Math.max(1, Math.ceil((now.getTime() - firstCheckin.getTime()) / (7 * 24 * 60 * 60 * 1000)));
 
     return Math.round((this.data.totalCheckins / weeks) * 10) / 10;
   }
@@ -385,8 +400,12 @@ class CheckinStreakService {
       const saved = storageService.get(key);
 
       if (saved) {
-        const data = JSON.parse(saved);
-        Object.assign(this.data, data);
+        if (typeof saved === 'object') {
+          Object.assign(this.data, saved);
+        } else if (typeof saved === 'string') {
+          const data = JSON.parse(saved);
+          Object.assign(this.data, data);
+        }
       }
     } catch (error) {
       logger.error('[CheckinStreak] Load error:', error);

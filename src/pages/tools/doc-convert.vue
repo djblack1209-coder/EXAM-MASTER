@@ -127,9 +127,7 @@
         </view>
         <view v-else-if="status === 'done'" class="status-card status-done">
           <view class="status-done-icon">
-            <text class="done-check">
-              ✓
-            </text>
+            <BaseIcon name="success" :size="48" />
           </view>
           <view class="status-text-group">
             <text class="status-title">
@@ -190,6 +188,7 @@ import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 const CONVERT_TYPES = [
   { key: 'word2pdf', icon: 'W', name: 'Word→PDF', desc: 'doc/docx 转 PDF', accept: '.doc,.docx,.odt,.rtf' },
@@ -201,6 +200,7 @@ const CONVERT_TYPES = [
 ];
 
 export default {
+  components: { BaseIcon },
   data() {
     return {
       statusBarHeight: 44,
@@ -213,7 +213,8 @@ export default {
       errorMsg: '',
       resultUrl: null,
       jobId: null,
-      pollTimer: null
+      pollTimer: null,
+      isPollingRequest: false
     };
   },
 
@@ -352,12 +353,20 @@ export default {
       let attempts = 0;
       const maxAttempts = 60;
 
+      this.clearPollTimer();
+
       this.pollTimer = setInterval(async () => {
+        if (this.isPollingRequest) {
+          return;
+        }
+
+        this.isPollingRequest = true;
         attempts++;
         if (attempts > maxAttempts) {
           this.clearPollTimer();
           this.status = 'error';
           this.errorMsg = '转换超时，请重试';
+          this.isPollingRequest = false;
           return;
         }
 
@@ -376,6 +385,8 @@ export default {
           }
         } catch (error) {
           logger.error('轮询状态失败:', error);
+        } finally {
+          this.isPollingRequest = false;
         }
       }, 2000);
     },
@@ -443,6 +454,7 @@ export default {
         clearInterval(this.pollTimer);
         this.pollTimer = null;
       }
+      this.isPollingRequest = false;
     },
 
     formatSize(bytes) {
@@ -857,6 +869,7 @@ export default {
   left: 0;
   right: 0;
   padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(20px);

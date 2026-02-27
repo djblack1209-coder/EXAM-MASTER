@@ -34,7 +34,7 @@
           @tap="handleFavorite"
         >
           <text class="favorite-icon">
-            {{ isFavorite ? '💖' : '🤍' }}
+            {{ isFavorite ? '\u2764\uFE0F' : '\u2661' }}
           </text>
           <text class="favorite-text">
             {{ isFavorite ? '已收藏' : '收藏' }}
@@ -46,7 +46,7 @@
       <view class="share-options">
         <view class="option-item" @tap="handleShare('wechat')">
           <view class="option-icon icon-wechat">
-            <text>💬</text>
+            <BaseIcon name="comment" :size="40" />
           </view>
           <text class="option-label">
             微信好友
@@ -55,7 +55,7 @@
 
         <view class="option-item" @tap="handleShare('timeline')">
           <view class="option-icon icon-timeline">
-            <text>🌐</text>
+            <BaseIcon name="globe" :size="40" />
           </view>
           <text class="option-label">
             朋友圈
@@ -64,7 +64,7 @@
 
         <view class="option-item" @tap="handleShare('poster')">
           <view class="option-icon icon-poster">
-            <text>🖼️</text>
+            <BaseIcon name="image" :size="40" />
           </view>
           <text class="option-label">
             生成海报
@@ -73,7 +73,7 @@
 
         <view class="option-item" @tap="handleShare('copy')">
           <view class="option-icon icon-copy">
-            <text>📋</text>
+            <BaseIcon name="copy" :size="40" />
           </view>
           <text class="option-label">
             复制文案
@@ -116,9 +116,11 @@ import { quoteHandler } from '@/utils/helpers/quote-interaction-handler.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { getPixelRatio } from '@/utils/core/system.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'ShareModal',
+  components: { BaseIcon },
 
   props: {
     // 是否显示
@@ -474,7 +476,7 @@ export default {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10rpx);
+  backdrop-filter: blur(5px);
   z-index: 9999;
   display: flex;
   align-items: flex-end;

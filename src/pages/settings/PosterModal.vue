@@ -22,6 +22,7 @@
         <image
           :src="icons8('ios-glyphs', 30, 'ffffff', 'multiply')"
           style="width: 16px; height: 16px"
+          mode="aspectFit"
           @error="onCdnIconError"
         />
       </view>
@@ -30,7 +31,12 @@
 
       <view class="poster-content ds-flex-col ds-flex-center">
         <view class="poster-header ds-flex ds-gap-xs">
-          <image :src="icons8('ios-filled', 50, 'ffffff', 'open-book')" class="poster-logo" @error="onCdnIconError" />
+          <image
+            :src="icons8('ios-filled', 50, 'ffffff', 'open-book')"
+            class="poster-logo"
+            mode="aspectFit"
+            @error="onCdnIconError"
+          />
           <text class="poster-app-name ds-font-semibold">
             Exam-Master
           </text>
@@ -59,12 +65,14 @@
             <image
               :src="qrCodeUrl || icons8('ios', 100, '000000', 'qr-code--v1')"
               class="qr-img"
+              mode="aspectFit"
               @error="onCdnIconError"
             />
             <view class="qr-badge">
               <image
                 :src="icons8('ios-filled', 50, '07C160', 'open-book')"
                 style="width: 16px; height: 16px"
+                mode="aspectFit"
                 @error="onCdnIconError"
               />
             </view>

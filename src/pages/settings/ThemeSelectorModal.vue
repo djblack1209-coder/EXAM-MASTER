@@ -13,7 +13,7 @@
       <view class="modal-body">
         <view class="theme-option" @tap="handleSelect('wise')">
           <view class="theme-preview wise-preview">
-            <view class="preview-color" style="background: var(--gradient-primary);" />
+            <view class="preview-color" style="background: var(--gradient-primary)" />
           </view>
           <view class="theme-info">
             <text class="theme-name">
@@ -23,15 +23,15 @@
               清新自然，护眼舒适
             </text>
           </view>
-          <text v-if="currentTheme === 'wise'" class="theme-check">
-            ✓
-          </text>
+          <view v-if="currentTheme === 'wise'" class="theme-check">
+            <BaseIcon name="check" :size="28" />
+          </view>
         </view>
         <view class="theme-option" @tap="handleSelect('bitget')">
           <view class="theme-preview bitget-preview">
             <view
               class="preview-color"
-              style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);"
+              style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%)"
             />
           </view>
           <view class="theme-info">
@@ -42,9 +42,9 @@
               科技感十足，专业高效
             </text>
           </view>
-          <text v-if="currentTheme === 'bitget'" class="theme-check">
-            ✓
-          </text>
+          <view v-if="currentTheme === 'bitget'" class="theme-check">
+            <BaseIcon name="check" :size="28" />
+          </view>
         </view>
       </view>
     </view>
@@ -53,9 +53,11 @@
 
 <script>
 import { useThemeStore } from '@/stores';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'ThemeSelectorModal',
+  components: { BaseIcon },
   props: {
     visible: { type: Boolean, default: false }
   },

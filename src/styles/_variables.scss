@@ -11,46 +11,46 @@
  */
 
 // ==================== 品牌色 ====================
-$color-primary: #007AFF;
-$color-primary-dark: #0062CC;  // primary 加深 10%
+$color-primary: #007aff;
+$color-primary-dark: #0062cc; // primary 加深 10%
 $color-primary-darker: #004999; // primary 加深 20%
-$color-primary-light: #E3F2FD;
-$color-accent-green: #9FE870;
-$color-accent-green-light: #F2F9EE;
-$color-accent-blue: #00B9FF;
-$color-accent-cyan: #00F2FF;
+$color-primary-light: #e3f2fd;
+$color-accent-green: #9fe870;
+$color-accent-green-light: #f2f9ee;
+$color-accent-blue: #00b9ff;
+$color-accent-cyan: #00f2ff;
 
 // ==================== 语义色 ====================
-$color-success: #34C759;
-$color-warning: #FF9500;
-$color-error: #FF3B30;
-$color-info: #007AFF;
+$color-success: #34c759;
+$color-warning: #ff9500;
+$color-error: #ff3b30;
+$color-info: #007aff;
 
 // ==================== 文本色 ====================
 $color-text-primary: #111111;
 $color-text-secondary: #666666;
-$color-text-tertiary: #8E8E93;
-$color-text-inverse: #FFFFFF;
+$color-text-tertiary: #8e8e93;
+$color-text-inverse: #ffffff;
 
 // 深色模式文本色
-$color-text-primary-dark: #F5F5F7;
-$color-text-secondary-dark: #A1A1A6;
+$color-text-primary-dark: #f5f5f7;
+$color-text-secondary-dark: #a1a1a6;
 $color-text-tertiary-dark: #636366;
 
 // ==================== 背景色 ====================
-$color-bg-page: #F5F5F7;
-$color-bg-card: #FFFFFF;
-$color-bg-elevated: #FFFFFF;
+$color-bg-page: #f5f5f7;
+$color-bg-card: #ffffff;
+$color-bg-elevated: #ffffff;
 
 // 深色模式背景色
 $color-bg-page-dark: #000000;
-$color-bg-card-dark: #1C1C1E;
-$color-bg-elevated-dark: #2C2C2E;
+$color-bg-card-dark: #1c1c1e;
+$color-bg-elevated-dark: #2c2c2e;
 
 // ==================== 边框色 ====================
-$color-border: #E5E5E5;
-$color-border-light: #F0F0F0;
-$color-border-dark: #38383A;
+$color-border: #e5e5e5;
+$color-border-light: #f0f0f0;
+$color-border-dark: #38383a;
 
 // ==================== 间距 (8px grid) ====================
 $spacing-xs: 8rpx;
@@ -106,51 +106,10 @@ $breakpoint-md: 768px;
 $breakpoint-lg: 1024px;
 
 // ==================== Mixins ====================
-
-/// 文本截断（单行）
-@mixin text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/// 文本截断（多行）
-/// @param {Number} $lines - 行数
-@mixin text-clamp($lines: 2) {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $lines;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/// 毛玻璃效果
-/// @param {String} $bg - 背景色
-/// @param {String} $blur - 模糊度
-@mixin glass($bg: rgba(255, 255, 255, 0.8), $blur: 20px) {
-  background: $bg;
-  backdrop-filter: blur($blur) saturate(180%);
-  -webkit-backdrop-filter: blur($blur) saturate(180%);
-}
-
-/// Flex 居中
-@mixin flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/// 安全区域底部内边距
-@mixin safe-area-bottom($extra: 0px) {
-  padding-bottom: calc(#{$extra} + #{$safe-area-bottom});
-}
-
-/// 卡片基础样式
-@mixin card-base {
-  background: $color-bg-card;
-  border-radius: $radius-lg;
-  box-shadow: $shadow-card;
-}
+// NOTE: Unused mixins removed during P2 audit cleanup.
+// text-ellipsis, text-clamp, glass, flex-center, safe-area-bottom, card-base
+// were defined but never @include'd anywhere. Use design-system.scss utility
+// classes (.ds-truncate, .ds-line-clamp-*, .ds-glass, .ds-flex-center) instead.
 
 // ==================== F028: 字体规范 ====================
 // 规范：所有字体大小应使用 rpx 单位，确保跨设备一致性

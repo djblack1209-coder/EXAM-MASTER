@@ -10,9 +10,7 @@
 
     <!-- 图标/动画区域 -->
     <view class="empty-state__icon" :class="{ 'animate-float': animated }">
-      <text class="icon-emoji">
-        {{ icon }}
-      </text>
+      <BaseIcon :name="icon" :size="80" />
     </view>
 
     <!-- 标题 -->
@@ -53,7 +51,7 @@
     <view v-if="type === 'home'" class="empty-state__buttons">
       <view class="guide-btn guide-btn--primary" @tap="handleUpload">
         <view class="guide-btn__icon guide-btn__icon--green">
-          <text>📤</text>
+          <BaseIcon name="upload" :size="36" />
         </view>
         <view class="guide-btn__content">
           <text class="guide-btn__title">
@@ -70,7 +68,7 @@
 
       <view class="guide-btn guide-btn--secondary" @tap="handleQuickStart">
         <view class="guide-btn__icon guide-btn__icon--orange">
-          <text>⚡</text>
+          <BaseIcon name="lightning" :size="36" />
         </view>
         <view class="guide-btn__content">
           <text class="guide-btn__title">
@@ -87,7 +85,7 @@
 
       <view class="guide-btn guide-btn--tertiary" @tap="handleTutorial">
         <view class="guide-btn__icon guide-btn__icon--purple">
-          <text>📖</text>
+          <BaseIcon name="book" :size="36" />
         </view>
         <view class="guide-btn__content">
           <text class="guide-btn__title">
@@ -114,9 +112,11 @@
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'EmptyState',
+  components: { BaseIcon },
 
   props: {
     /**
@@ -155,10 +155,10 @@ export default {
       validator: (v) => ['small', 'medium', 'large'].includes(v)
     },
 
-    // 图标（emoji）
+    // 图标名称（对应 BaseIcon 的 name）
     icon: {
       type: String,
-      default: '📚'
+      default: 'books'
     },
 
     // 标题
@@ -320,6 +320,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@use 'sass:color';
+
 // ==================== 变量定义 ====================
 $color-primary: #00a96d;
 $color-primary-dark: #00e5ff;
@@ -543,7 +545,11 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
   }
 
   &--glow {
-    background: linear-gradient(135deg, $color-primary-dark 0%, $color-primary-darker 100%);
+    background: linear-gradient(
+      135deg,
+      $color-primary-dark 0%,
+      color.adjust($color-primary-dark, $lightness: -15%) 100%
+    );
     color: #000000;
     box-shadow: 0 0 20rpx rgba(0, 229, 255, 0.4);
   }

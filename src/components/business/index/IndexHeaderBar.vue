@@ -2,17 +2,21 @@
   <!-- 顶部导航栏：外层定位容器完全透明 -->
   <view
     class="header-position-wrapper"
-    style="position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
       background-color: transparent !important;
-      background: transparent !important; pointer-events: none;"
+      background: transparent !important;
+      pointer-events: none;
+    "
   >
     <!-- 状态栏占位：透明 -->
-    <view class="status-bar-placeholder" style="background: transparent !important;" />
+    <view class="status-bar-placeholder" style="background: transparent !important" />
     <!-- 内容区域：恢复点击，背景透明（滚动后才显示毛玻璃） -->
-    <view
-      :class="['header-content-area', scrollY > 50 && 'header-scrolled']"
-      style="pointer-events: auto;"
-    >
+    <view :class="['header-content-area', scrollY > 50 && 'header-scrolled']" style="pointer-events: auto">
       <!-- 左侧：圆形胶囊头像 -->
       <view class="header-avatar" @tap="handleAvatarTap">
         <image
@@ -182,13 +186,15 @@ export default {
   padding: 0 24rpx;
   gap: 20rpx;
   background: transparent;
-  transition: background 0.3s ease, backdrop-filter 0.3s ease;
+  transition:
+    background 0.3s ease,
+    backdrop-filter 0.3s ease;
 }
 
 .header-content-area.header-scrolled {
   background: var(--bg-glass);
-  backdrop-filter: blur(20rpx);
-  -webkit-backdrop-filter: blur(20rpx);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* 左侧圆形胶囊头像 */
@@ -228,7 +234,7 @@ export default {
 }
 
 .header-search:active {
-  border-color: var(--primary, #10B981);
+  border-color: var(--primary, #10b981);
 }
 
 .search-icon-wrapper {
@@ -246,14 +252,14 @@ export default {
 .search-input {
   flex: 1;
   font-size: 28rpx;
-  color: var(--text-primary, #1F2937);
+  color: var(--text-primary, #1f2937);
   background: transparent;
   height: 68rpx;
   line-height: 68rpx;
 }
 
 .search-placeholder {
-  color: var(--text-sub, #9CA3AF);
+  color: var(--text-sub, #9ca3af);
   font-size: 28rpx;
 }
 </style>

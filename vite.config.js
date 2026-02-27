@@ -1,10 +1,10 @@
-import { defineConfig, loadEnv } from 'vite'
-import uniModule from '@dcloudio/vite-plugin-uni'
-import path from 'path'
-import fs from 'fs'
+import { defineConfig, loadEnv } from 'vite';
+import uniModule from '@dcloudio/vite-plugin-uni';
+import path from 'path';
+import fs from 'fs';
 
 // 兼容 @dcloudio/vite-plugin-uni CJS/ESM 双层 default 问题
-const uni = typeof uniModule === 'function' ? uniModule : uniModule.default
+const uni = typeof uniModule === 'function' ? uniModule : uniModule.default;
 
 /**
  * 微信小程序自定义 tabBar 占位组件复制插件
@@ -16,59 +16,56 @@ function copyCustomTabBar() {
     name: 'copy-custom-tab-bar',
     writeBundle(options) {
       try {
-        const outDir = options.dir || ''
-        if (!outDir.includes('mp-weixin')) return
-        
-        const src = path.resolve(__dirname, 'src/custom-tab-bar')
-        const dest = path.resolve(outDir, 'custom-tab-bar')
-        
+        const outDir = options.dir || '';
+        if (!outDir.includes('mp-weixin')) return;
+
+        const src = path.resolve(__dirname, 'src/custom-tab-bar');
+        const dest = path.resolve(outDir, 'custom-tab-bar');
+
         if (!fs.existsSync(src)) {
-          console.warn('[TabBar Plugin] src/custom-tab-bar not found, skipping copy')
-          return
+          console.warn('[TabBar Plugin] src/custom-tab-bar not found, skipping copy');
+          return;
         }
-        if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true })
-        
-        let copied = 0
+        if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+
+        let copied = 0;
         for (const file of fs.readdirSync(src)) {
-          fs.copyFileSync(path.join(src, file), path.join(dest, file))
-          copied++
+          fs.copyFileSync(path.join(src, file), path.join(dest, file));
+          copied++;
         }
-        console.log(`[TabBar Plugin] Copied ${copied} files to ${dest}`)
+        console.log(`[TabBar Plugin] Copied ${copied} files to ${dest}`);
       } catch (err) {
         // TabBar copy failure should not break the entire build
-        console.error('[TabBar Plugin] Failed to copy custom-tab-bar:', err.message)
+        console.error('[TabBar Plugin] Failed to copy custom-tab-bar:', err.message);
       }
     }
-  }
+  };
 }
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // 加载环境变量
-  const env = loadEnv(mode, process.cwd(), '')
-  
+  const env = loadEnv(mode, process.cwd(), '');
+
   // 判断是否为生产环境
-  const isProduction = mode === 'production'
-  const isStaging = mode === 'staging'
-  const isDevelopment = mode === 'development'
-  
-  console.log(`[Vite] Building for mode: ${mode}, command: ${command}`)
-  
+  const isProduction = mode === 'production';
+  const isStaging = mode === 'staging';
+  const isDevelopment = mode === 'development';
+
+  console.log(`[Vite] Building for mode: ${mode}, command: ${command}`);
+
   return {
-    plugins: [
-      uni(),
-      copyCustomTabBar()
-    ],
-    
+    plugins: [uni(), copyCustomTabBar()],
+
     // 环境变量定义
     define: {
       'process.env.NODE_ENV': JSON.stringify(mode),
       'process.env.SENTRY_DSN': JSON.stringify(env.VITE_SENTRY_DSN || ''),
-      '__APP_VERSION__': JSON.stringify(env.npm_package_version || '1.0.0'),
-      '__BUILD_TIME__': JSON.stringify(new Date().toISOString()),
-      '__BUILD_MODE__': JSON.stringify(mode)
+      __APP_VERSION__: JSON.stringify(env.npm_package_version || '1.0.0'),
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+      __BUILD_MODE__: JSON.stringify(mode)
     },
-    
+
     // 路径别名
     resolve: {
       alias: {
@@ -76,7 +73,7 @@ export default defineConfig(({ command, mode }) => {
         '@': path.resolve(__dirname, 'src')
       }
     },
-    
+
     // CSS 预处理器配置
     css: {
       preprocessorOptions: {
@@ -93,15 +90,15 @@ export default defineConfig(({ command, mode }) => {
       // 生产环境启用 CSS 代码分割
       devSourcemap: !isProduction
     },
-    
+
     // 构建配置
     build: {
       // 源码映射：开发和测试环境启用，生产环境关闭
-      sourcemap: isDevelopment ? 'inline' : (isStaging ? true : false),
-      
+      sourcemap: isDevelopment ? 'inline' : isStaging ? true : false,
+
       // 代码压缩配置
       minify: isProduction || isStaging ? 'terser' : false,
-      
+
       terserOptions: {
         compress: {
           // 生产环境移除 console 和 debugger
@@ -118,51 +115,45 @@ export default defineConfig(({ command, mode }) => {
           comments: !isProduction
         }
       },
-      
+
       // 代码分割配置
       rollupOptions: {
         output: {
           // uni-app 小程序构建有自己的分包机制，不使用自定义 manualChunks
           // 文件命名 - 生产环境使用 hash，开发环境使用可读名称
-          chunkFileNames: isProduction 
-            ? 'static/js/[name]-[hash].js'
-            : 'static/js/[name].js',
-          entryFileNames: isProduction
-            ? 'static/js/[name]-[hash].js'
-            : 'static/js/[name].js',
-          assetFileNames: isProduction
-            ? 'static/[ext]/[name]-[hash].[ext]'
-            : 'static/[ext]/[name].[ext]'
+          chunkFileNames: isProduction ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
+          entryFileNames: isProduction ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
+          assetFileNames: isProduction ? 'static/[ext]/[name]-[hash].[ext]' : 'static/[ext]/[name].[ext]'
         }
       },
-      
+
       // 块大小警告限制（KB）
       chunkSizeWarningLimit: isProduction ? 500 : 1000,
-      
+
       // 资源内联限制（小于此大小的资源会被内联为base64）
       // 提升到 8KB — 减少小图标的 HTTP 请求数
       assetsInlineLimit: 8192,
-      
+
       // 构建目标（es2018 支持 async/await、rest/spread 等，减少 polyfill 体积）
       target: 'es2018',
-      
+
       // CSS 代码分割
       cssCodeSplit: true,
-      
+
       // 生产环境 CSS 压缩（lightningcss 比默认 esbuild 压缩率更高）
       cssMinify: isProduction ? 'esbuild' : false,
-      
+
       // 生产环境报告压缩后的大小
       reportCompressedSize: isProduction
     },
-    
+
     // 开发服务器配置
     server: {
       host: '0.0.0.0',
       port: parseInt(env.VITE_DEV_PORT) || 5173,
       strictPort: false,
       open: false,
-      
+
       // 代理配置
       proxy: {
         '/api': {
@@ -173,46 +164,48 @@ export default defineConfig(({ command, mode }) => {
           configure: (proxy, options) => {
             if (isDevelopment) {
               proxy.on('proxyReq', (proxyReq, req) => {
-                console.log(`[Proxy] ${req.method} ${req.url} -> ${options.target}`)
-              })
+                console.log(`[Proxy] ${req.method} ${req.url} -> ${options.target}`);
+              });
             }
           }
         }
       },
-      
+
       // 热更新配置
       hmr: {
         overlay: true
       }
     },
-    
+
     // 预览服务器配置（用于预览生产构建）
     preview: {
       host: '0.0.0.0',
       port: parseInt(env.VITE_PREVIEW_PORT) || 4173,
       strictPort: false
     },
-    
+
     // 预构建优化
     optimizeDeps: {
-      include: ['vue', 'pinia'],
-      exclude: [],
+      // uni-app 插件会将 vue/pinia 作为 external 处理，
+      // 若同时出现在 include，会触发 esbuild: "entry point ... cannot be marked as external"
+      include: [],
+      exclude: ['vue', 'pinia'],
       // 强制预构建
       force: false
     },
-    
+
     // 环境变量前缀
     envPrefix: 'VITE_',
-    
+
     // 环境目录
     envDir: process.cwd(),
-    
+
     // 日志级别
     logLevel: isDevelopment ? 'info' : 'warn',
-    
+
     // 清除屏幕
     clearScreen: false,
-    
+
     // esbuild 配置
     esbuild: {
       // 开发环境使用 esbuild 压缩时移除 debugger
@@ -220,5 +213,5 @@ export default defineConfig(({ command, mode }) => {
       // 不保留法律注释
       legalComments: 'none'
     }
-  }
-})
+  };
+});

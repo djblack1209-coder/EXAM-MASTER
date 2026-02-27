@@ -14,6 +14,7 @@
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 
 export const studyTimerMixin = {
   data() {
@@ -61,12 +62,13 @@ export const studyTimerMixin = {
       }
 
       // 监听应用进入后台事件，保存当前时间
-      uni.onAppHide && uni.onAppHide(() => {
+      this._appHideHandler = () => {
         if (this.sessionStartTime) {
           storageService.save('last_active_time', Date.now());
           this.saveStudyTime();
         }
-      });
+      };
+      uni.onAppHide && uni.onAppHide(this._appHideHandler);
 
       logger.log('[StudyTimerMixin] 初始化完成，今日:', this.todayStudyTime, '分钟');
     },
@@ -104,6 +106,11 @@ export const studyTimerMixin = {
       storageService.remove('session_start_time');
       storageService.remove('last_active_time');
       uni.$off('studyTimeUpdate', this._studyTimeHandler);
+      // 清理 onAppHide 监听
+      if (this._appHideHandler && uni.offAppHide) {
+        uni.offAppHide(this._appHideHandler);
+        this._appHideHandler = null;
+      }
     },
 
     /**
@@ -141,23 +148,29 @@ export const studyTimerMixin = {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (_) { /* 非关键操作 */ }
+      } catch (_) {
+        /* 非关键操作 */
+      }
 
-      safeNavigateTo('/pages/study-detail/index', {
-        fail: (err) => {
-          logger.error('[StudyTimerMixin] 跳转学习详情失败:', err);
-          uni.switchTab({
-            url: '/pages/profile/index',
-            fail: () => {
-              uni.showToast({
-                title: `今日学习 ${this.formatStudyTime(this.todayStudyTime)}`,
-                icon: 'none',
-                duration: 2000
+      requireLogin(
+        () =>
+          safeNavigateTo('/pages/study-detail/index', {
+            fail: (err) => {
+              logger.error('[StudyTimerMixin] 跳转学习详情失败:', err);
+              uni.switchTab({
+                url: '/pages/profile/index',
+                fail: () => {
+                  uni.showToast({
+                    title: `今日学习 ${this.formatStudyTime(this.todayStudyTime)}`,
+                    icon: 'none',
+                    duration: 2000
+                  });
+                }
               });
             }
-          });
-        }
-      });
+          }),
+        { message: '请先登录后查看学习详情' }
+      );
     }
   }
 };

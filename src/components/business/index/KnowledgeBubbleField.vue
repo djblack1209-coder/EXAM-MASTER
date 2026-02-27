@@ -19,14 +19,11 @@
         :style="point._style"
         @tap="$emit('knowledge-click', point)"
       >
-        <view
-          class="bubble-glow animate-breathe"
-          :style="{ background: point._glowBg }"
-        />
+        <view class="bubble-glow animate-breathe" :style="{ background: point._glowBg }" />
         <view class="bubble-content">
-          <text class="bubble-icon" :style="{ color: point.color }">
-            {{ point.icon }}
-          </text>
+          <view class="bubble-icon" :style="{ backgroundColor: point._iconBg }">
+            <BaseIcon :name="point.icon" :size="point._iconSize" />
+          </view>
           <text class="bubble-title" :style="{ color: point.color }">
             {{ point.title }}
           </text>
@@ -34,10 +31,7 @@
             {{ point.count }} 项
           </text>
           <view class="bubble-progress-bar">
-            <view
-              class="bubble-progress-fill"
-              :style="{ width: point.mastery + '%', backgroundColor: point.color }"
-            />
+            <view class="bubble-progress-fill" :style="{ width: point.mastery + '%', backgroundColor: point.color }" />
           </view>
         </view>
       </view>
@@ -46,8 +40,13 @@
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
 export default {
   name: 'KnowledgeBubbleField',
+  components: {
+    BaseIcon
+  },
   props: {
     isDark: { type: Boolean, default: false },
     knowledgePoints: { type: Array, default: () => [] },
@@ -75,7 +74,16 @@ export default {
             ? { ...base, boxShadow: `0 0 24rpx ${point.color}4D, 0 0 48rpx ${point.color}1A` }
             : { ...base, boxShadow: '0 4rpx 16rpx rgba(0, 0, 0, 0.06)' };
           const glowBg = `radial-gradient(circle at center, ${point.color}33 0%, transparent 70%)`;
-          return { ...point, _sizeClass: sizeClass, _style: style, _glowBg: glowBg };
+          const iconBg = this.isDark ? 'rgba(255, 255, 255, 0.9)' : `${point.color}1A`;
+          const iconSize = sizeClass === 'lg' ? 42 : sizeClass === 'md' ? 36 : 32;
+          return {
+            ...point,
+            _sizeClass: sizeClass,
+            _style: style,
+            _glowBg: glowBg,
+            _iconBg: iconBg,
+            _iconSize: iconSize
+          };
         });
     }
   }
@@ -84,163 +92,194 @@ export default {
 
 <style lang="scss" scoped>
 .section-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
 }
 
 .section-title {
-	font-size: 36rpx;
-	font-weight: 700;
-	color: var(--text-primary);
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .bubble-field {
-	position: relative;
-	min-height: 610rpx;
-	margin-bottom: 12rpx;
+  position: relative;
+  min-height: 610rpx;
+  margin-bottom: 12rpx;
 }
 
 .bubble-card {
-	position: absolute;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 50%;
-	cursor: pointer;
-	transition: transform 0.2s ease;
-	overflow: hidden;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  overflow: hidden;
 }
 
 .bubble-card:active {
-	transform: scale(1.06);
+  transform: scale(1.06);
 }
 
 /* 三档尺寸 */
 .bubble-size-sm {
-	width: 200rpx;
-	height: 200rpx;
+  width: 200rpx;
+  height: 200rpx;
 }
 
 .bubble-size-md {
-	width: 240rpx;
-	height: 240rpx;
+  width: 240rpx;
+  height: 240rpx;
 }
 
 .bubble-size-lg {
-	width: 280rpx;
-	height: 280rpx;
+  width: 280rpx;
+  height: 280rpx;
 }
 
 /* 浮动呼吸动画 */
 @keyframes float {
-	0%, 100% { transform: translateY(0); }
-	50% { transform: translateY(-12rpx); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12rpx);
+  }
 }
 
 .bubble-float {
-	animation: float 4s ease-in-out infinite;
+  animation: float 4s ease-in-out infinite;
 }
 
 /* 点击动画 */
 .bubble-animating {
-	animation: bubbleClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: bubbleClick 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes bubbleClick {
-	0% { transform: scale(1); }
-	30% { transform: scale(1.12); }
-	60% { transform: scale(0.96); }
-	100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.12);
+  }
+  60% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .bubble-card-light {
-	background: var(--bg-card);
-	backdrop-filter: blur(16rpx);
-	-webkit-backdrop-filter: blur(16rpx);
-	border: 1rpx solid var(--border);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1rpx solid var(--border);
 }
 
 .bubble-card-dark {
-	background: var(--bg-card);
-	backdrop-filter: blur(16rpx);
-	-webkit-backdrop-filter: blur(16rpx);
-	border: 1rpx solid var(--border);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1rpx solid var(--border);
 }
 
 /* 光晕呼吸 */
 .bubble-glow {
-	position: absolute;
-	inset: 0;
-	border-radius: 50%;
-	opacity: 0.5;
-	pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 @keyframes breathe {
-	0%, 100% { opacity: 0.5; }
-	50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .animate-breathe {
-	animation: breathe 2.5s ease-in-out infinite;
+  animation: breathe 2.5s ease-in-out infinite;
 }
 
 /* 内容 */
 .bubble-content {
-	position: relative;
-	z-index: 10;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 4rpx;
-	padding: 16rpx;
-	text-align: center;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+  padding: 16rpx;
+  text-align: center;
 }
 
 .bubble-icon {
-	font-size: 38rpx;
-	line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.bubble-size-sm .bubble-icon {
+  width: 62rpx;
+  height: 62rpx;
+}
+
+.bubble-size-md .bubble-icon {
+  width: 72rpx;
+  height: 72rpx;
 }
 
 .bubble-size-lg .bubble-icon {
-	font-size: 44rpx;
+  width: 84rpx;
+  height: 84rpx;
 }
 
 .bubble-title {
-	font-size: 22rpx;
-	font-weight: 600;
-	line-height: 1.2;
-	word-break: break-all;
-	max-width: 100%;
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1.2;
+  word-break: break-all;
+  max-width: 100%;
 }
 
 .bubble-size-lg .bubble-title {
-	font-size: 24rpx;
+  font-size: 24rpx;
 }
 
 .bubble-count {
-	font-size: 20rpx;
-	color: var(--text-sub);
+  font-size: 20rpx;
+  color: var(--text-sub);
 }
 
 .bubble-size-lg .bubble-count {
-	font-size: 20rpx;
+  font-size: 20rpx;
 }
 
 .bubble-progress-bar {
-	width: 65%;
-	height: 4rpx;
-	background: var(--bg-secondary);
-	border-radius: 2rpx;
-	overflow: hidden;
-	margin-top: 2rpx;
+  width: 65%;
+  height: 4rpx;
+  background: var(--bg-secondary);
+  border-radius: 2rpx;
+  overflow: hidden;
+  margin-top: 2rpx;
 }
 
 .bubble-progress-fill {
-	height: 100%;
-	border-radius: 2rpx;
-	transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  border-radius: 2rpx;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>

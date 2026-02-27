@@ -9,9 +9,7 @@
           今日刷题
         </view>
         <view v-if="todayQuestions < todayGoal" class="stat-goal editable">
-          目标 {{ todayGoal }} <text class="edit-icon">
-            ✎
-          </text>
+          目标 {{ todayGoal }} <BaseIcon name="edit" :size="14" class="edit-icon" />
         </view>
         <view v-else class="stat-goal achieved">
           已达标
@@ -69,8 +67,11 @@
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
 export default {
   name: 'LearningStatsCard',
+  components: { BaseIcon },
   props: {
     todayQuestions: { type: Number, default: 0 },
     todayGoal: { type: Number, default: 20 },

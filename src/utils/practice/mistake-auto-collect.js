@@ -5,6 +5,8 @@
 
 const STORAGE_KEY = 'mistake_book';
 
+import { storageService } from '@/services/storageService.js';
+
 /**
  * 懒加载分类器（避免硬依赖不存在的模块）
  */
@@ -22,7 +24,10 @@ async function _classify(question) {
  */
 function _getMistakeBook() {
   try {
-    return global.__mockStorage?.[STORAGE_KEY] || uni.getStorageSync(STORAGE_KEY) || [];
+    if (global.__mockStorage !== undefined) {
+      return global.__mockStorage[STORAGE_KEY] || [];
+    }
+    return storageService.get(STORAGE_KEY, []);
   } catch (_e) {
     return [];
   }
@@ -36,7 +41,7 @@ function _saveMistakeBook(book) {
     if (global.__mockStorage !== undefined) {
       global.__mockStorage[STORAGE_KEY] = book;
     } else {
-      uni.setStorageSync(STORAGE_KEY, book);
+      storageService.save(STORAGE_KEY, book, true);
     }
   } catch (_e) {
     // 静默失败

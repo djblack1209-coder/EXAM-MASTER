@@ -3,11 +3,6 @@
  * 检查运行时环境变量是否完整
  */
 
-const REQUIRED_CONFIGS = [
-  { key: 'VITE_WX_APP_ID', label: '微信AppID', severity: 'warning' },
-  { key: 'VITE_API_BASE_URL', label: 'API基础地址', severity: 'warning' }
-];
-
 /**
  * 动态读取环境变量
  */
@@ -19,16 +14,38 @@ function getEnvValue(key) {
   }
 }
 
+function isProdEnv() {
+  const prodFlag = String(getEnvValue('PROD')).trim().toLowerCase();
+  if (prodFlag === 'true' || prodFlag === '1') return true;
+  if (prodFlag === 'false' || prodFlag === '0') return false;
+
+  const mode = String(getEnvValue('MODE')).trim().toLowerCase();
+  return mode === 'production';
+}
+
+function getRequiredConfigs() {
+  return [
+    { key: 'VITE_WX_APP_ID', label: '微信AppID', severity: 'warning' },
+    { key: 'VITE_API_BASE_URL', label: 'API基础地址', severity: 'error' },
+    {
+      key: 'VITE_INVITE_SECRET',
+      label: '邀请签名密钥',
+      severity: isProdEnv() ? 'error' : 'warning'
+    }
+  ];
+}
+
 /**
  * 验证配置完整性
  * @returns {{ valid: boolean, issues: Array, summary: string }}
  */
 export function validateConfig() {
   const issues = [];
+  const requiredConfigs = getRequiredConfigs();
 
-  for (const config of REQUIRED_CONFIGS) {
+  for (const config of requiredConfigs) {
     const value = getEnvValue(config.key);
-    if (!value) {
+    if (!String(value).trim()) {
       issues.push({
         key: config.key,
         label: config.label,

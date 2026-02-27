@@ -14,27 +14,27 @@
         <view class="nav-actions">
           <view class="action-btn" hover-class="item-hover" @tap="showMasteryStats">
             <text class="action-icon">
-              📊
+              <BaseIcon name="chart-bar" :size="28" />
             </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showLearningPath">
             <text class="action-icon">
-              🛤️
+              <BaseIcon name="path" :size="28" />
             </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showConnectionAnalysis">
             <text class="action-icon">
-              🔗
+              <BaseIcon name="link" :size="28" />
             </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="showPersonalizedPlan">
             <text class="action-icon">
-              📋
+              <BaseIcon name="note" :size="28" />
             </text>
           </view>
           <view class="action-btn" hover-class="item-hover" @tap="handleRefresh">
             <text class="action-icon">
-              ↻
+              <BaseIcon name="refresh" :size="28" />
             </text>
           </view>
         </view>
@@ -63,7 +63,7 @@
           <view class="center-glow" />
           <view class="center-content">
             <text class="center-icon">
-              🎯
+              <BaseIcon name="target" :size="36" />
             </text>
             <text class="center-title">
               知识体系
@@ -93,7 +93,7 @@
               :style="{ background: `radial-gradient(circle, ${node.color}40 0%, transparent 70%)` }"
             />
             <text class="node-icon">
-              {{ node.icon }}
+              <BaseIcon :name="node.icon" :size="28" />
             </text>
             <text class="node-title">
               {{ node.title }}
@@ -123,7 +123,7 @@
         >
           <view class="child-body">
             <text class="child-icon">
-              {{ child.icon }}
+              <BaseIcon :name="child.icon" :size="22" />
             </text>
             <text class="child-title">
               {{ child.title }}
@@ -140,7 +140,7 @@
     <view v-if="selectedNode" class="info-panel glassmorphism">
       <view class="panel-header">
         <view class="panel-icon" :style="{ backgroundColor: selectedNode.color + '20' }">
-          <text>{{ selectedNode.icon }}</text>
+          <BaseIcon :name="selectedNode.icon" :size="32" />
         </view>
         <view class="panel-title-area">
           <text class="panel-title">
@@ -223,7 +223,7 @@
       @tap="showWeakNodes"
     >
       <text class="weak-icon">
-        ⚠️
+        <BaseIcon name="warning" :size="28" />
       </text>
       <text class="weak-text">
         {{ weakNodes.length }} 个薄弱知识点需要加强
@@ -237,6 +237,8 @@
 
 <script>
 import { logger } from '@/utils/logger.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 import {
   knowledgeGraphManager,
   getGraphData,
@@ -254,6 +256,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 
 export default {
+  components: { BaseIcon },
   data() {
     return {
       statusBarHeight: 44,
@@ -303,7 +306,9 @@ export default {
 
     // F016: 移除未使用的 sortedByMastery 计算属性
     weakNodesList() {
-      return [...this.knowledgeNodes].sort((a, b) => (a.accuracy || 0) - (b.accuracy || 0));
+      return [...this.knowledgeNodes].sort(
+        (a, b) => (a.correctRate || a.mastery || 0) - (b.correctRate || b.mastery || 0)
+      );
     }
   },
 
@@ -404,18 +409,18 @@ export default {
     // 获取分类图标
     getCategoryIcon(category) {
       const iconMap = {
-        politics: '📕',
-        english: '📘',
-        math: '📗',
-        professional: '📙',
-        错题集: '🎯',
-        热门考点: '🔥',
-        练习题: '📝',
-        核心概念: '🧠',
-        公式定理: '🧮',
-        阅读理解: '📖'
+        politics: 'book',
+        english: 'notebook',
+        math: 'formula',
+        professional: 'pen',
+        错题集: 'target',
+        热门考点: 'flame',
+        练习题: 'note',
+        核心概念: 'brain',
+        公式定理: 'formula',
+        阅读理解: 'books'
       };
-      return iconMap[category] || '📚';
+      return iconMap[category] || 'books';
     },
 
     // 根据掌握度获取颜色
@@ -437,7 +442,7 @@ export default {
           id: 'default_1',
           title: '错题集',
           count: mistakeCount,
-          icon: '🎯',
+          icon: 'target',
           mastery: mistakeCount > 0 ? Math.max(10, 100 - mistakeCount * 2) : 100,
           color: '#EF4444',
           level: 1,
@@ -449,7 +454,7 @@ export default {
           id: 'default_2',
           title: '热门考点',
           count: Math.floor(totalQuestions * 0.3),
-          icon: '🔥',
+          icon: 'flame',
           mastery: Math.max(0, overallAccuracy - 10),
           color: '#F59E0B',
           level: 1,
@@ -461,7 +466,7 @@ export default {
           id: 'default_3',
           title: '练习题',
           count: totalQuestions,
-          icon: '📝',
+          icon: 'note',
           mastery: overallAccuracy,
           color: '#00F2FF',
           level: 1,
@@ -473,7 +478,7 @@ export default {
           id: 'default_4',
           title: '核心概念',
           count: Math.floor(totalQuestions * 0.4),
-          icon: '🧠',
+          icon: 'brain',
           mastery: Math.min(95, overallAccuracy + 5),
           color: '#10B981',
           level: 1,
@@ -485,7 +490,7 @@ export default {
           id: 'default_5',
           title: '公式定理',
           count: Math.floor(totalQuestions * 0.2),
-          icon: '🧮',
+          icon: 'formula',
           mastery: Math.max(0, overallAccuracy - 5),
           color: '#A855F7',
           level: 1,
@@ -497,7 +502,7 @@ export default {
           id: 'default_6',
           title: '阅读理解',
           count: Math.floor(totalQuestions * 0.15),
-          icon: '📖',
+          icon: 'books',
           mastery: Math.max(0, overallAccuracy - 15),
           color: '#EC4899',
           level: 1,
@@ -639,6 +644,17 @@ export default {
       const url = routeMap[node.title] || '/pages/practice/index';
       const isTabBarPage = tabBarPages.some((page) => url === page || url.startsWith(page + '?'));
 
+      // 错题集需要登录守卫
+      if (url === '/pages/mistake/index') {
+        requireLogin(
+          () => {
+            safeNavigateTo(url);
+          },
+          { message: '请先登录后查看错题集' }
+        );
+        return;
+      }
+
       if (isTabBarPage) {
         // tabBar 页面使用 switchTab
         uni.switchTab({
@@ -662,7 +678,7 @@ export default {
         : `题目数量：${node.count}\n掌握度：${node.mastery}%\n正确率：${node.correctRate || 0}%\n复习次数：${node.reviewCount || 0}`;
 
       uni.showModal({
-        title: `${node.icon} ${node.title}`,
+        title: node.title,
         content,
         showCancel: false,
         confirmText: '知道了'
@@ -1214,6 +1230,7 @@ export default {
   border-top: 1rpx solid rgba(255, 255, 255, 0.1);
   border-radius: 32rpx 32rpx 0 0;
   padding: 32rpx;
+  padding-bottom: calc(32rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
   z-index: 100;
   animation: slideUp 0.3s ease-out;
@@ -1371,6 +1388,7 @@ export default {
 // 薄弱知识点提示
 .weak-hint {
   position: fixed;
+  bottom: calc(32rpx + constant(safe-area-inset-bottom));
   bottom: calc(32rpx + env(safe-area-inset-bottom));
   left: 24rpx;
   right: 24rpx;

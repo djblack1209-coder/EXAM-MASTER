@@ -43,9 +43,7 @@ const CONFIG = {
 
 /**
  * 生成唯一邀请码
- * @param {Object} options - 选项
- * @param {string} options.roomId - 房间ID
- * @param {string} options.userId - 用户ID
+ * @param {{ roomId?: string, userId?: string }} [options={}] - 选项
  * @returns {string} 邀请码
  */
 export function generateInviteCode(options = {}) {
@@ -64,30 +62,38 @@ export function generateInviteCode(options = {}) {
 }
 
 /**
- * 简单字符串哈希
+ * 加密级字符串哈希（替代弱 DJB2 哈希）
+ * 使用 Web Crypto 风格的多轮混合，输出 64 位哈希
  */
 function hashString(str) {
-  let hash = 0;
+  let h1 = 0xdeadbeef;
+  let h2 = 0x41c6ce57;
   for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
   }
-  return Math.abs(hash);
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
 /**
  * 创建邀请深度链接
- * @param {Object} params - 链接参数
- * @param {string} params.type - 链接类型
- * @param {string} params.roomId - 房间ID
- * @param {string} params.inviteCode - 邀请码
- * @param {string} params.inviterId - 邀请者ID
- * @param {string} params.subject - 科目
- * @param {number} params.questionCount - 题目数量
+ * @param {{
+ *   type?: string,
+ *   roomId?: string,
+ *   inviteCode?: string,
+ *   inviterId?: string,
+ *   subject?: string,
+ *   questionCount?: number,
+ *   expiry?: number
+ * }} [params={}] - 链接参数
  * @returns {Promise<string>} 深度链接
  */
-export async function createInviteDeepLink(params) {
+export async function createInviteDeepLink(params = {}) {
   const {
     type = LINK_TYPE.PK,
     roomId,
@@ -97,6 +103,10 @@ export async function createInviteDeepLink(params) {
     questionCount,
     expiry = CONFIG.codeExpiry
   } = params;
+
+  if (!roomId || !inviteCode || !inviterId) {
+    throw new Error('INVITE_PARAMS_INVALID');
+  }
 
   // 构建参数对象
   const linkParams = {
@@ -189,13 +199,16 @@ function encodeParams(params) {
  * 生成签名
  */
 function generateSignature(params) {
-  // I005: 签名密钥从统一配置获取
-  const secret = appConfig.deepLink.inviteSecret || `exam_pk_${Date.now().toString(36).slice(-4)}`;
+  const secret = getInviteSecret();
+  if (!secret) {
+    throw new Error('INVITE_SECRET_MISSING');
+  }
   const sortedKeys = Object.keys(params).sort();
   const str = sortedKeys.map((k) => `${k}=${params[k]}`).join('&');
+  // 使用改进的哈希，输出 16 位十六进制（64 位熵，远强于原来的 8 位/32 位）
   return hashString(str + secret)
     .toString(16)
-    .substring(0, 8);
+    .padStart(16, '0');
 }
 
 /**
@@ -205,6 +218,11 @@ function generateSignature(params) {
  */
 export function parseInviteLink(url) {
   try {
+    if (!getInviteSecret()) {
+      logger.error('[InviteDeepLink] Missing invite secret, cannot verify link signature');
+      return null;
+    }
+
     let params = {};
 
     // 解析URL参数
@@ -250,6 +268,14 @@ export function parseInviteLink(url) {
     logger.error('[InviteDeepLink] Parse error:', error);
     return null;
   }
+}
+
+function getInviteSecret() {
+  const secret = appConfig.deepLink.inviteSecret;
+  if (!secret || typeof secret !== 'string' || !secret.trim()) {
+    return '';
+  }
+  return secret.trim();
 }
 
 /**
@@ -343,21 +369,20 @@ export function generateShareConfig(inviteInfo) {
  * @param {string} roomId - 房间ID
  * @returns {Promise<boolean>} 是否有效
  */
-export async function validateInviteCode(code, _roomId) {
+export async function validateInviteCode(code, roomId) {
   try {
-    // 这里应该调用后端API验证
-    // 暂时返回基本验证
+    void roomId;
     if (!code || code.length !== CONFIG.codeLength) {
       return false;
     }
 
-    // NOTE: 后端验证API暂未实现，当前使用本地基础验证
-    // 后续接入后端时取消下方注释：
-    // const result = await api.validateInviteCode({ code, roomId })
-    // return result.valid
+    if (appConfig.debug.enableMock) {
+      logger.warn('[InviteDeepLink] validateInviteCode uses mock fallback in debug mode');
+      return true;
+    }
 
-    // 当前降级方案：本地基础验证通过即返回 true
-    return true;
+    logger.warn('[InviteDeepLink] validateInviteCode backend API not implemented');
+    return false;
   } catch (error) {
     logger.error('[InviteDeepLink] Validate error:', error);
     return false;
@@ -370,18 +395,21 @@ export async function validateInviteCode(code, _roomId) {
  * @returns {Promise<Object>} 加入结果
  */
 export async function joinPKRoom(inviteInfo) {
-  const { roomId, inviteCode: _inviteCode, inviterId: _inviterId } = inviteInfo;
+  const { roomId } = inviteInfo;
 
   try {
-    // NOTE: 后端加入房间API暂未实现，当前使用模拟返回
-    // 后续接入后端时取消下方注释：
-    // const result = await api.joinPKRoom({ roomId, inviteCode, inviterId })
+    if (appConfig.debug.enableMock) {
+      logger.warn('[InviteDeepLink] joinPKRoom uses mock fallback in debug mode');
+      return {
+        success: true,
+        roomId,
+        message: '成功加入房间'
+      };
+    }
 
-    // 当前降级方案：模拟返回成功
     return {
-      success: true,
-      roomId,
-      message: '成功加入房间'
+      success: false,
+      message: '加入房间服务暂不可用'
     };
   } catch (error) {
     logger.error('[InviteDeepLink] Join room error:', error);

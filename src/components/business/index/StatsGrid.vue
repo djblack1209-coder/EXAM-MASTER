@@ -2,9 +2,7 @@
   <view class="stats-grid">
     <view :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']" @tap="$emit('stat-click', 'questions')">
       <view class="stat-icon-wrapper icon-primary">
-        <text class="stat-icon">
-          ✓
-        </text>
+        <BaseIcon name="check" :size="48" />
       </view>
       <view class="stat-content">
         <text class="stat-title">
@@ -21,9 +19,7 @@
 
     <view :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']" @tap="$emit('stat-click', 'accuracy')">
       <view class="stat-icon-wrapper icon-success">
-        <text class="stat-icon">
-          📈
-        </text>
+        <BaseIcon name="chart-up" :size="48" />
       </view>
       <view class="stat-content">
         <text class="stat-title">
@@ -40,9 +36,7 @@
 
     <view :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']" @tap="$emit('stat-click', 'streak')">
       <view class="stat-icon-wrapper icon-warning">
-        <text class="stat-icon">
-          ⚡
-        </text>
+        <BaseIcon name="lightning" :size="48" />
       </view>
       <view class="stat-content">
         <text class="stat-title">
@@ -62,9 +56,7 @@
       @tap="$emit('stat-click', 'achievements')"
     >
       <view class="stat-icon-wrapper icon-neutral">
-        <text class="stat-icon">
-          🏆
-        </text>
+        <BaseIcon name="trophy" :size="48" />
       </view>
       <view class="stat-content">
         <text class="stat-title">
@@ -82,8 +74,10 @@
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 export default {
   name: 'StatsGrid',
+  components: { BaseIcon },
   props: {
     isDark: { type: Boolean, default: false },
     totalQuestions: { type: Number, default: 0 },
@@ -97,96 +91,96 @@ export default {
 
 <style lang="scss" scoped>
 .stats-grid {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: var(--ds-spacing-md, 24rpx);
-	margin-bottom: var(--ds-spacing-lg, 32rpx);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--ds-spacing-md, 24rpx);
+  margin-bottom: var(--ds-spacing-lg, 32rpx);
 }
 
 .glass {
-	background: var(--bg-glass);
-	backdrop-filter: blur(24rpx);
-	-webkit-backdrop-filter: blur(24rpx);
-	border: 1rpx solid var(--border);
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1rpx solid var(--border);
 }
 
 .card-light {
-	background: var(--card);
+  background: var(--card);
 }
 
 .card-hover:active {
-	transform: translateY(-4rpx);
-	box-shadow: var(--shadow-lg);
+  transform: translateY(-4rpx);
+  box-shadow: var(--shadow-lg);
 }
 
 .stat-card {
-	border-radius: 32rpx;
-	padding: 32rpx;
-	display: flex;
-	flex-direction: column;
-	gap: 16rpx;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	border: 1rpx solid var(--border);
+  border-radius: 32rpx;
+  padding: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1rpx solid var(--border);
 }
 
 .stat-icon-wrapper {
-	width: 96rpx;
-	height: 96rpx;
-	border-radius: 24rpx;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon-primary {
-	background: var(--primary-light);
+  background: var(--primary-light);
 }
 
 .icon-success {
-	background: var(--success-light);
+  background: var(--success-light);
 }
 
 .icon-warning {
-	background: var(--warning-light);
+  background: var(--warning-light);
 }
 
 .icon-neutral {
-	background: var(--bg-secondary);
+  background: var(--bg-secondary);
 }
 
 .stat-icon {
-	font-size: 48rpx;
+  font-size: 48rpx;
 }
 
 .stat-content {
-	display: flex;
-	flex-direction: column;
-	gap: 8rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
 .stat-title {
-	font-size: 24rpx;
-	color: var(--text-sub);
-	font-weight: 500;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  font-weight: 500;
 }
 
 .stat-value {
-	font-size: 48rpx;
-	font-weight: 700;
-	color: var(--text-primary);
-	line-height: 1.2;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .stat-change {
-	font-size: 24rpx;
-	font-weight: 500;
+  font-size: 24rpx;
+  font-weight: 500;
 }
 
 .stat-change.positive {
-	color: var(--success);
+  color: var(--success);
 }
 
 .stat-change.neutral {
-	color: var(--text-sub);
+  color: var(--text-sub);
 }
 </style>

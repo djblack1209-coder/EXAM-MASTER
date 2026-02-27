@@ -31,7 +31,7 @@
           />
           <view v-if="!opponentFound" class="search-overlay">
             <view class="search-icon">
-              🔍
+              <BaseIcon name="search" :size="36" />
             </view>
           </view>
         </view>
@@ -63,7 +63,7 @@
     <view v-if="gameState === 'battle'" class="pk-container">
       <view class="top-bar" :style="{ marginTop: '10px' }">
         <view class="icon-btn" @tap="handleQuit">
-          <text>✕</text>
+          <BaseIcon name="close" :size="32" />
         </view>
         <view class="round-badge">
           <text>Round {{ currentIndex + 1 }} / {{ questions.length }}</text>
@@ -160,12 +160,8 @@
               {{ opt }}
             </text>
             <view v-if="showAns" class="opt-icon">
-              <text v-if="isCorrectOption(idx)">
-                ✓
-              </text>
-              <text v-else-if="userChoice === idx && !isCorrectOption(idx)">
-                ✗
-              </text>
+              <BaseIcon v-if="isCorrectOption(idx)" name="check" :size="28" />
+              <BaseIcon v-else-if="userChoice === idx && !isCorrectOption(idx)" name="cross" :size="28" />
             </view>
           </view>
         </button>
@@ -187,7 +183,7 @@
       <view class="result-glass glass-card" @tap.stop>
         <view class="result-header">
           <view class="result-icon" :class="{ victory: myScore >= opponentScore, defeat: myScore < opponentScore }">
-            <text>{{ myScore >= opponentScore ? '🏆' : '😔' }}</text>
+            <BaseIcon :name="myScore >= opponentScore ? 'trophy' : 'warning'" :size="48" />
           </view>
           <text class="result-title" :class="{ victory: myScore >= opponentScore, defeat: myScore < opponentScore }">
             {{ myScore >= opponentScore ? 'VICTORY' : 'DEFEAT' }}
@@ -200,9 +196,9 @@
         <!-- AI 战报分析卡片 -->
         <view class="ai-report-box">
           <view class="ai-header">
-            <text class="ai-icon">
-              🤖
-            </text>
+            <view class="ai-icon">
+              <BaseIcon name="robot" :size="32" />
+            </view>
             <text class="ai-title">
               AI 犀利点评
             </text>
@@ -242,7 +238,7 @@
     <CustomModal
       :visible="showEmptyModal"
       type="upload"
-      title="📚 题库空空如也"
+      title="题库空空如也"
       content="PK 对战需要先导入题库，上传学习资料后即可开始对战！"
       confirm-text="去上传"
       :show-cancel="false"
@@ -263,12 +259,14 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F024: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 
 export default {
   components: {
-    CustomModal
+    CustomModal,
+    BaseIcon
   },
   data() {
     return {
@@ -402,10 +400,8 @@ export default {
         if (['A', 'B', 'C', 'D'].includes(correctAnswer)) {
           return ['A', 'B', 'C', 'D'][idx] === correctAnswer;
         }
-        return (
-          this.currentQuestion.options[idx] === correctAnswer ||
-          this.currentQuestion.options[idx].startsWith(correctAnswer)
-        );
+        const opt = this.currentQuestion.options?.[idx];
+        return opt === correctAnswer || (opt?.startsWith(correctAnswer) ?? false);
       };
     }
   },
@@ -428,6 +424,27 @@ export default {
     this.loadBotConfig().then(() => {
       this.startMatching();
     });
+  },
+  onShow() {
+    // 页面从后台恢复时，根据当前阶段恢复必要计时器
+    if (this.gameState === 'matching' && !this.opponentFound && !this.matchingTimer && !this.matchingStatusTimer) {
+      this.startMatching();
+      return;
+    }
+
+    if (this.gameState === 'matching' && this.opponentFound && !this.questionTimer) {
+      this.gameState = 'battle';
+      this.startBattle();
+      return;
+    }
+
+    if (this.gameState === 'battle' && !this.showAns && !this.questionTimer && this.timeLeft > 0) {
+      this.startQuestionTimer(false);
+    }
+  },
+  onHide() {
+    // 页面进入后台时暂停所有计时器，避免后台持续运行
+    this.clearAllTimers();
   },
   onUnload() {
     this.clearAllTimers();
@@ -646,7 +663,7 @@ export default {
       this.answerTimes = []; // 重置答题时间记录
       this.startQuestionTimer(); // 启动第一题的倒计时
     },
-    startQuestionTimer() {
+    startQuestionTimer(resetTime = true) {
       // 清除之前的倒计时
       if (this.questionTimer) {
         clearInterval(this.questionTimer);
@@ -654,7 +671,9 @@ export default {
       }
 
       // 重置倒计时和红光警告
-      this.timeLeft = 30;
+      if (resetTime || !Number.isFinite(this.timeLeft) || this.timeLeft <= 0) {
+        this.timeLeft = 30;
+      }
       this.showRedWarning = false;
 
       // 启动倒计时
@@ -1271,7 +1290,7 @@ export default {
           ctx.fill();
 
           ctx.setFontSize(18);
-          ctx.setFillStyle('var(--bg-card)');
+          ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText(this.userInfo.nickName || '考研人', 100, 220);
 
           // 核心比分 - 巨大发光数字
@@ -1313,7 +1332,7 @@ export default {
           ctx.setFillStyle('#FFD700');
           ctx.fillText('🎯', 20 + (cardWidth - 10) / 2, cardY + 30);
           ctx.setFontSize(16);
-          ctx.setFillStyle('var(--bg-card)');
+          ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText(`${this.accuracy}%`, 20 + (cardWidth - 10) / 2, cardY + 55);
           ctx.setFontSize(11);
           ctx.setFillStyle('rgba(255, 255, 255, 0.7)');
@@ -1326,7 +1345,7 @@ export default {
           ctx.setFillStyle('#FFD700');
           ctx.fillText('⚡', 20 + cardWidth + (cardWidth - 10) / 2, cardY + 30);
           ctx.setFontSize(16);
-          ctx.setFillStyle('var(--bg-card)');
+          ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText(`${this.averageTime.toFixed(1)}s`, 20 + cardWidth + (cardWidth - 10) / 2, cardY + 55);
           ctx.setFontSize(11);
           ctx.setFillStyle('rgba(255, 255, 255, 0.7)');
@@ -1339,7 +1358,7 @@ export default {
           ctx.setFillStyle('#FFD700');
           ctx.fillText('📚', 20 + cardWidth * 2 + (cardWidth - 10) / 2, cardY + 30);
           ctx.setFontSize(16);
-          ctx.setFillStyle('var(--bg-card)');
+          ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText(`${this.knowledgePoints.length}`, 20 + cardWidth * 2 + (cardWidth - 10) / 2, cardY + 55);
           ctx.setFontSize(11);
           ctx.setFillStyle('rgba(255, 255, 255, 0.7)');
@@ -1347,7 +1366,7 @@ export default {
 
           // -- 5. 底部：激励文案 --
           ctx.setFontSize(14);
-          ctx.setFillStyle('var(--bg-card)');
+          ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText('保持状态，下一个状元就是你！', W / 2, 520);
 
           ctx.setFontSize(11);
@@ -1369,13 +1388,13 @@ export default {
 
           // -- 2. 头部：鼓励标题 --
           ctx.setFontSize(28);
-          ctx.setFillStyle('var(--bg-card)');
+          ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.setTextAlign('center');
           ctx.fillText('惜败！差一点点就赢了', W / 2, 60);
 
           // -- 3. 核心对决区 --
           ctx.setFontSize(64);
-          ctx.setFillStyle('var(--bg-card)');
+          ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText(this.myScore.toString(), W / 2, 180);
 
           ctx.setFontSize(14);
@@ -1406,7 +1425,7 @@ export default {
 
           // -- 6. 底部：鼓励文案 --
           ctx.setFontSize(14);
-          ctx.setFillStyle('var(--bg-card)');
+          ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText('不服！再战一局', W / 2, 520);
 
           ctx.setFontSize(11);
@@ -1671,7 +1690,9 @@ export default {
   justify-content: center;
   z-index: 10;
   position: relative;
+  padding-top: calc(constant(safe-area-inset-top) + 60px); /* 增加顶部间距，避免头像与刘海屏重叠 */
   padding-top: calc(env(safe-area-inset-top, 0px) + 60px); /* 增加顶部间距，避免头像与刘海屏重叠 */
+  padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   box-sizing: border-box;
 }
@@ -1763,7 +1784,9 @@ export default {
   min-height: 100vh;
   background: radial-gradient(circle at center top, var(--bg-tertiary) 0%, var(--text-primary) 100%);
   padding: 0 24px;
+  padding-top: calc(constant(safe-area-inset-top) + 30px); /* 增加顶部间距，整体下移，避免与胶囊按钮重叠 */
   padding-top: calc(env(safe-area-inset-top, 0px) + 30px); /* 增加顶部间距，整体下移，避免与胶囊按钮重叠 */
+  padding-bottom: constant(safe-area-inset-bottom); /* 底部安全区域 */
   padding-bottom: env(safe-area-inset-bottom, 0px); /* 底部安全区域 */
   color: var(--text-inverse);
   position: relative;
@@ -1999,6 +2022,7 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding-bottom: calc(constant(safe-area-inset-bottom) + 20px); /* 底部安全区域 + 额外间距 */
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px); /* 底部安全区域 + 额外间距 */
   margin-bottom: 20px;
 }
@@ -2011,7 +2035,6 @@ export default {
   width: 100%;
   position: relative;
   z-index: 10;
-  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -2121,6 +2144,7 @@ export default {
   text-align: center;
   padding: 20px;
   margin: 20px 0;
+  margin-bottom: calc(constant(safe-area-inset-bottom) + 40px); /* 再次上移，增加与底部按钮的间距 */
   margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); /* 再次上移，增加与底部按钮的间距 */
 }
 
@@ -2234,15 +2258,16 @@ export default {
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(159, 232, 112, 0.15), transparent);
+  will-change: transform;
   animation: shine 3s infinite;
 }
 
 @keyframes shine {
   0% {
-    left: -100%;
+    transform: translateX(0);
   }
   100% {
-    left: 100%;
+    transform: translateX(200%);
   }
 }
 

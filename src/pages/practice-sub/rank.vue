@@ -20,7 +20,7 @@
     <!-- 空状态 -->
     <view v-if="!loading && empty" class="empty-container">
       <BaseEmpty
-        icon="🏆"
+        icon="trophy"
         title="暂无排行榜数据"
         desc="快去刷题，成为第一个上榜的学霸吧！"
         :is-dark="isDark"
@@ -109,6 +109,7 @@
           v-for="(item, index) in displayedOtherRanks"
           :key="index"
           class="glass-card rank-item"
+          :class="getRankItemClass(item)"
           @tap="showFootprint(item)"
         >
           <view class="rank-num-box">
@@ -140,7 +141,7 @@
       <!-- 只有我自己的情况 -->
       <view v-else-if="list.length === 1" class="only-me-container">
         <BaseEmpty
-          icon="🏆"
+          icon="trophy"
           title="只有你一个人上榜"
           desc="继续加油，保持领先！"
           :is-dark="isDark"
@@ -183,7 +184,7 @@
     <view v-if="showFootprintModal" class="footprint-mask" @tap="closePopup">
       <view class="footprint-card glass-card" @tap.stop>
         <view class="close-btn" @tap="closePopup">
-          ✕
+          <BaseIcon name="close" :size="32" />
         </view>
 
         <view class="card-header">
@@ -198,9 +199,9 @@
               {{ activeUser.name }}
             </text>
             <view class="ai-label">
-              <text class="sparkle-icon">
-                ✨
-              </text>
+              <view class="sparkle-icon">
+                <BaseIcon name="sparkle" :size="28" />
+              </view>
               <text>{{ aiPersona }}</text>
             </view>
           </view>
@@ -244,7 +245,7 @@
 
         <view class="ai-analysis-content">
           <view class="analysis-tag">
-            ✨ AI 足迹鉴定
+            <BaseIcon name="sparkle" :size="28" /> AI 足迹鉴定
           </view>
           <scroll-view scroll-y="true" class="analysis-scroll">
             <text class="analysis-text">
@@ -276,11 +277,13 @@ import { getStatusBarHeight, getWindowInfo as _getWindowInfo } from '@/utils/cor
 import storageService from '@/services/storageService.js';
 import BaseLoading from './components/base-loading/base-loading.vue';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   components: {
     BaseLoading,
-    BaseEmpty
+    BaseEmpty,
+    BaseIcon
   },
   data() {
     return {
@@ -921,7 +924,6 @@ export default {
   flex-direction: column;
   align-items: center;
   flex: 1;
-  cursor: pointer;
 }
 .avatar-wrap {
   position: relative;
@@ -980,7 +982,7 @@ export default {
   width: 40rpx;
   height: 40rpx;
   background: var(--neon-gold);
-  filter: blur(20rpx);
+  filter: blur(10px);
   border-radius: 50%;
   animation: pulse 2s infinite;
   z-index: 5;
@@ -1040,7 +1042,6 @@ export default {
   margin-bottom: 25rpx;
   border: 1px solid var(--card-border);
   transition: transform 0.2s;
-  cursor: pointer;
 }
 .rank-item:active {
   transform: scale(0.98);

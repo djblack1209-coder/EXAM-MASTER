@@ -54,7 +54,9 @@ export const dailyQuoteMixin = {
      */
     generateDailyQuote() {
       const today = new Date();
-      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+      const dayOfYear = Math.floor(
+        (today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24
+      );
 
       const index = dayOfYear % this.quoteLibrary.length;
       this.dailyQuote = this.quoteLibrary[index];
@@ -80,7 +82,9 @@ export const dailyQuoteMixin = {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (_) { /* 非关键操作 */ }
+      } catch (_) {
+        /* 非关键操作 */
+      }
 
       let newIndex;
       const currentQuote = this.dailyQuote;
@@ -104,7 +108,9 @@ export const dailyQuoteMixin = {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (_) { /* 非关键操作 */ }
+      } catch (_) {
+        /* 非关键操作 */
+      }
 
       this.showShareModal = true;
     },
@@ -131,9 +137,12 @@ export const dailyQuoteMixin = {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (_) { /* 非关键操作 */ }
+      } catch (_) {
+        /* 非关键操作 */
+      }
 
-      quoteHandler.generatePoster(this.dailyQuote, this.quoteAuthor)
+      quoteHandler
+        .generatePoster(this.dailyQuote, this.quoteAuthor)
         .then((result) => {
           if (result.success) {
             quoteHandler.savePosterToAlbum(result.tempFilePath);
@@ -149,19 +158,53 @@ export const dailyQuoteMixin = {
     },
 
     /**
-     * 处理金句收藏
+     * 处理金句收藏 — 保存到本地收藏列表
      * @param {Object} data - 收藏数据
      */
     handleQuoteFavorite(data) {
       logger.log('[DailyQuoteMixin] Quote favorite:', data);
+      try {
+        const favorites = storageService.get('favorite_quotes', []);
+        const quote = data?.quote || this.dailyQuote;
+        const author = data?.author || this.quoteAuthor;
+        const already = favorites.some((q) => q.text === quote);
+        if (already) {
+          uni.showToast({ title: '已在收藏中', icon: 'none' });
+          return;
+        }
+        favorites.unshift({ text: quote, author, date: new Date().toISOString() });
+        // 最多保留 100 条
+        if (favorites.length > 100) favorites.splice(100);
+        storageService.save('favorite_quotes', favorites);
+        uni.showToast({ title: '收藏成功', icon: 'success' });
+      } catch (e) {
+        logger.error('[DailyQuoteMixin] 收藏失败:', e);
+        uni.showToast({ title: '收藏失败', icon: 'none' });
+      }
     },
 
     /**
-     * 处理金句分享
+     * 处理金句分享 — 复制到剪贴板并提示
      * @param {Object} data - 分享数据
      */
     handleQuoteShare(data) {
       logger.log('[DailyQuoteMixin] Quote share:', data);
+      try {
+        const quote = data?.quote || this.dailyQuote;
+        const author = data?.author || this.quoteAuthor;
+        const text = `「${quote}」\n—— ${author}\n\n来自 Exam-Master 考研备考`;
+        uni.setClipboardData({
+          data: text,
+          success: () => {
+            uni.showToast({ title: '已复制，快去分享吧', icon: 'success' });
+          },
+          fail: () => {
+            uni.showToast({ title: '复制失败', icon: 'none' });
+          }
+        });
+      } catch (e) {
+        logger.error('[DailyQuoteMixin] 分享失败:', e);
+      }
     }
   }
 };

@@ -71,7 +71,7 @@ const handleToggle = (id) => {
       uni.vibrateShort({ type: 'light' });
     }
   } catch (_e) {
-    logger.log('[TodoList] Vibration not supported');
+    logger.warn('[TodoList] Vibration not supported');
   }
 
   // 触发父组件事件
@@ -88,7 +88,7 @@ const handleLongPress = (item) => {
       uni.vibrateShort({ type: 'medium' });
     }
   } catch (_e) {
-    logger.log('[TodoList] Vibration not supported');
+    logger.warn('[TodoList] Vibration not supported');
   }
 
   // 触发编辑事件
@@ -132,8 +132,8 @@ const handleLongPress = (item) => {
 /* 深色模式 */
 .item-dark {
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(24rpx);
-  -webkit-backdrop-filter: blur(24rpx);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -156,7 +156,7 @@ const handleLongPress = (item) => {
   background: transparent;
   cursor: pointer;
 }
-.dark-mode .item-checkbox {
+.todo-dark .item-checkbox {
   border-color: #6b7280;
 }
 

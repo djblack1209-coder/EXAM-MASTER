@@ -99,7 +99,6 @@
   "vueVersion": "3",
   "h5": {
     "title": "Exam Master - 考研备考助手",
-    "template": "index.html",
     "router": {
       "mode": "hash",
       "base": "/"

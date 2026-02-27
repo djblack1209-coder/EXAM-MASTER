@@ -10,6 +10,7 @@ import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { logger } from '@/utils/logger.js';
 import { DEFAULT_USER_PREFERENCES } from '@/config/home-data.js';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 
 export const recommendationMixin = {
   methods: {
@@ -23,7 +24,7 @@ export const recommendationMixin = {
             id: `rec_${Date.now()}_${subject}`,
             title: `${subject}专项练习`,
             subtitle: `针对${subject}的重点知识点进行练习`,
-            icon: '🎯',
+            icon: 'target',
             type: 'practice',
             subject: subject
           });
@@ -34,14 +35,14 @@ export const recommendationMixin = {
             id: `rec_${Date.now()}_1`,
             title: '错题复习',
             subtitle: '复习最近的错题，巩固知识点',
-            icon: '📝',
+            icon: 'note',
             type: 'mistake'
           },
           {
             id: `rec_${Date.now()}_2`,
             title: '模拟考试',
             subtitle: '进行一次模拟考试，检验学习成果',
-            icon: '⏰',
+            icon: 'clock',
             type: 'mock'
           }
         );
@@ -66,7 +67,9 @@ export const recommendationMixin = {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (_e) { logger.warn('[Index] handleRecommendationClick vibrate failed', _e); }
+      } catch (_e) {
+        logger.warn('[Index] handleRecommendationClick vibrate failed', _e);
+      }
 
       switch (recommendation.type) {
         case 'practice':
@@ -76,10 +79,10 @@ export const recommendationMixin = {
           });
           break;
         case 'mistake':
-          safeNavigateTo('/pages/mistake/index');
+          requireLogin(() => safeNavigateTo('/pages/mistake/index'), { message: '请先登录后查看错题' });
           break;
         case 'mock':
-          safeNavigateTo('/pages/practice-sub/mock-exam');
+          requireLogin(() => safeNavigateTo('/pages/practice-sub/mock-exam'), { message: '请先登录后进行模拟考试' });
           break;
         default:
           uni.switchTab({

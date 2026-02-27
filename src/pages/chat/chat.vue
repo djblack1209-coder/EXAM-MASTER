@@ -5,11 +5,17 @@
       <image
         :src="icons8('ios-glyphs', 30, '333333', 'chevron-left')"
         class="back-icon"
+        mode="aspectFit"
         @tap="goBack"
         @error="onCdnIconError"
       />
       <view class="nav-center" hover-class="item-hover" @tap="showFriendSelector = true">
-        <image :src="currentFriend.avatar" class="friend-avatar-small" @error="onAvatarError" />
+        <image
+          :src="currentFriend.avatar"
+          class="friend-avatar-small"
+          mode="aspectFill"
+          @error="onAvatarError"
+        />
         <text class="nav-title">
           {{ currentFriend.name }}
         </text>
@@ -20,6 +26,7 @@
       <image
         :src="icons8('ios', 50, '333333', 'menu--v1')"
         class="menu-icon"
+        mode="aspectFit"
         @tap="showMenu"
         @error="onCdnIconError"
       />
@@ -48,6 +55,7 @@
             <image
               :src="friend.avatar"
               class="friend-avatar"
+              mode="aspectFill"
               lazy-load
               @error="onAvatarError"
             />
@@ -88,7 +96,7 @@
     >
       <!-- 欢迎消息 -->
       <view v-if="messages.length === 0" class="welcome-card">
-        <image :src="currentFriend.avatar" class="welcome-avatar" />
+        <image :src="currentFriend.avatar" class="welcome-avatar" mode="aspectFill" />
         <text class="welcome-name">
           {{ currentFriend.name }}
         </text>
@@ -110,7 +118,7 @@
       >
         <!-- AI消息 -->
         <template v-if="msg.role === 'assistant'">
-          <image :src="currentFriend.avatar" class="avatar" />
+          <image :src="currentFriend.avatar" class="avatar" mode="aspectFill" />
           <view class="bubble left-bubble">
             <text>{{ msg.content }}</text>
             <text class="msg-time">
@@ -145,13 +153,18 @@
               </view>
             </view>
           </view>
-          <image :src="icons8('color', 96, '', 'user-male-circle--v1')" class="avatar" @error="onAvatarError" />
+          <image
+            :src="icons8('color', 96, '', 'user-male-circle--v1')"
+            class="avatar"
+            mode="aspectFill"
+            @error="onAvatarError"
+          />
         </template>
       </view>
 
       <!-- 正在输入指示器 -->
       <view v-if="isTyping" class="msg-row assistant">
-        <image :src="currentFriend.avatar" class="avatar" />
+        <image :src="currentFriend.avatar" class="avatar" mode="aspectFill" />
         <view class="bubble left-bubble typing-bubble">
           <view class="typing-dots">
             <view class="dot" />
@@ -199,12 +212,14 @@
         <image
           :src="icons8('ios', 50, '666666', 'happy--v1')"
           class="tool-icon"
+          mode="aspectFit"
           @tap="toggleEmotionTags"
           @error="onCdnIconError"
         />
         <image
           :src="isRecording ? icons8('ios', 50, 'FF3B30', 'microphone') : icons8('ios', 50, '666666', 'microphone')"
           class="tool-icon"
+          mode="aspectFit"
           @touchstart="startRecording"
           @touchend="stopRecording"
           @touchcancel="stopRecording"
@@ -217,6 +232,7 @@
               : icons8('ios', 50, '666666', 'lightning-bolt')
           "
           class="tool-icon"
+          mode="aspectFit"
           @tap="toggleRealtimeMode"
           @error="onCdnIconError"
         />
@@ -353,14 +369,21 @@ let recordingIntervalId = null;
 
 // ✅ 图片加载失败处理
 const onAvatarError = (e) => {
-  e.target.src = defaultAvatar;
+  const target = e?.target;
+  if (target && target.src && target.src !== defaultAvatar) {
+    target.src = defaultAvatar;
+  }
 };
 // CDN图标加载失败 — 隐藏broken图标
 const onCdnIconError = (e) => {
-  e.target.style = 'display:none';
+  const target = e?.target;
+  if (target) {
+    target.style = 'display:none';
+  }
 };
 
 // 用户学习状态（从本地获取）
+let _recorderManager = null; // 录音器单例，避免重复注册回调
 const userContext = reactive({
   studyState: '正常',
   recentAccuracy: 0,
@@ -488,6 +511,7 @@ const selectFriend = async (friend) => {
   saveChatHistory();
 
   // 切换好友
+  isTyping.value = false;
   currentFriend.value = friend;
   messages.value = [];
   conversationCount.value = 0;
@@ -615,28 +639,29 @@ const startRecording = async () => {
 
     logger.log('[Chat] 开始录音');
 
-    // 使用 uni-app RecorderManager 进行真实录音
-    const recorderManager = uni.getRecorderManager();
-    recorderManager.onFrameRecorded?.((res) => {
-      if (res.frameBuffer) {
-        audioChunks.value.push(res.frameBuffer);
-      }
-    });
-    recorderManager.onStop((res) => {
-      logger.log('[Chat] 录音完成:', res.tempFilePath);
-      // 语音识别需要后端 voice-service 支持，当前提示用户功能开发中
-      uni.showToast({
-        title: '语音输入功能开发中，请使用文字输入',
-        icon: 'none',
-        duration: 2000
+    // 使用 uni-app RecorderManager 进行真实录音（单例，避免重复注册回调）
+    if (!_recorderManager) {
+      _recorderManager = uni.getRecorderManager();
+      _recorderManager.onFrameRecorded?.((res) => {
+        if (res.frameBuffer) {
+          audioChunks.value.push(res.frameBuffer);
+        }
       });
-    });
-    recorderManager.onError((err) => {
-      logger.error('[Chat] 录音错误:', err);
-      isRecording.value = false;
-      showVoiceWave.value = false;
-    });
-    recorderManager.start({
+      _recorderManager.onStop((res) => {
+        logger.log('[Chat] 录音完成:', res.tempFilePath);
+        uni.showToast({
+          title: '语音输入功能开发中，请使用文字输入',
+          icon: 'none',
+          duration: 2000
+        });
+      });
+      _recorderManager.onError((err) => {
+        logger.error('[Chat] 录音错误:', err);
+        isRecording.value = false;
+        showVoiceWave.value = false;
+      });
+    }
+    _recorderManager.start({
       format: 'mp3',
       sampleRate: 16000,
       numberOfChannels: 1,
@@ -671,9 +696,10 @@ const stopRecording = async () => {
 
     logger.log('[Chat] 停止录音');
 
-    // 停止真实录音（触发 onStop 回调）
-    const recorderManager = uni.getRecorderManager();
-    recorderManager.stop();
+    // 停止真实录音（触发 onStop 回调）—— 使用单例，避免停止错误实例
+    if (_recorderManager) {
+      _recorderManager.stop();
+    }
   } catch (error) {
     logger.error('[Chat] 停止录音失败:', error);
   }
@@ -682,6 +708,8 @@ const stopRecording = async () => {
 // 实时答疑处理
 const handleRealtimeAnswer = async (question) => {
   if (!question.trim()) return;
+
+  const sessionFriendType = currentFriend.value.type;
 
   // 添加用户消息
   const userMsg = {
@@ -707,6 +735,11 @@ const handleRealtimeAnswer = async (question) => {
       studyState: userContext.studyState,
       recentAccuracy: userContext.recentAccuracy
     });
+
+    // 好友切换后丢弃旧请求结果，避免串会话
+    if (currentFriend.value.type !== sessionFriendType) {
+      return;
+    }
 
     isTyping.value = false;
     // ✅ F027: 标记用户消息发送成功
@@ -737,6 +770,10 @@ const handleRealtimeAnswer = async (question) => {
     // 滚动到底部
     scrollToBottom();
   } catch (error) {
+    if (currentFriend.value.type !== sessionFriendType) {
+      return;
+    }
+
     isTyping.value = false;
     // ✅ F027: 标记用户消息发送失败
     userMsg.status = 'failed';
@@ -765,6 +802,9 @@ const handleSend = async () => {
 
 // 普通聊天处理
 const handleNormalChat = async (content) => {
+  const sessionFriendType = currentFriend.value.type;
+  const sessionFriendName = currentFriend.value.name;
+
   // 添加用户消息（带发送状态）
   const userMsg = {
     role: 'user',
@@ -785,7 +825,7 @@ const handleNormalChat = async (content) => {
 
   try {
     // 调用AI好友对话API
-    const response = await lafService.aiFriendChat(currentFriend.value.type, content, {
+    const response = await lafService.aiFriendChat(sessionFriendType, content, {
       emotion: currentEmotion.value,
       conversationCount: conversationCount.value,
       studyState: userContext.studyState,
@@ -793,8 +833,14 @@ const handleNormalChat = async (content) => {
       recentConversations: userContext.recentConversations
     });
 
+    if (currentFriend.value.type !== sessionFriendType) {
+      return;
+    }
+
     // 更新消息状态为已发送
-    messages.value[msgIndex].status = 'sent';
+    if (messages.value[msgIndex]) {
+      messages.value[msgIndex].status = 'sent';
+    }
     isTyping.value = false;
 
     let reply = '抱歉，我暂时无法回复，请稍后再试~';
@@ -817,7 +863,7 @@ const handleNormalChat = async (content) => {
     // 更新最近对话摘要
     userContext.recentConversations = messages.value
       .slice(-3)
-      .map((m) => `${m.role === 'user' ? '用户' : currentFriend.value.name}: ${m.content.substring(0, 50)}`)
+      .map((m) => `${m.role === 'user' ? '用户' : sessionFriendName}: ${m.content.substring(0, 50)}`)
       .join('\n');
 
     // 保存聊天历史
@@ -829,8 +875,14 @@ const handleNormalChat = async (content) => {
     // 滚动到底部
     scrollToBottom();
   } catch (error) {
+    if (currentFriend.value.type !== sessionFriendType) {
+      return;
+    }
+
     // 更新消息状态为失败
-    messages.value[msgIndex].status = 'failed';
+    if (messages.value[msgIndex]) {
+      messages.value[msgIndex].status = 'failed';
+    }
     isTyping.value = false;
     logger.error('[Chat] 发送消息失败:', error);
 
@@ -845,19 +897,25 @@ const handleNormalChat = async (content) => {
 const retryMessage = async (index) => {
   const msg = messages.value[index];
   if (msg && msg.status === 'failed') {
+    const sessionFriendType = currentFriend.value.type;
+
     // 重置状态为发送中
     messages.value[index].status = 'sending';
 
     try {
       isTyping.value = true;
 
-      const response = await lafService.aiFriendChat(currentFriend.value.type, msg.content, {
+      const response = await lafService.aiFriendChat(sessionFriendType, msg.content, {
         emotion: currentEmotion.value,
         conversationCount: conversationCount.value,
         studyState: userContext.studyState,
         recentAccuracy: userContext.recentAccuracy,
         recentConversations: userContext.recentConversations
       });
+
+      if (currentFriend.value.type !== sessionFriendType) {
+        return;
+      }
 
       messages.value[index].status = 'sent';
       isTyping.value = false;
@@ -877,6 +935,10 @@ const retryMessage = async (index) => {
       saveChatHistory();
       scrollToBottom();
     } catch {
+      if (currentFriend.value.type !== sessionFriendType) {
+        return;
+      }
+
       messages.value[index].status = 'failed';
       isTyping.value = false;
       uni.showToast({
@@ -1369,6 +1431,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   padding: 20rpx 24rpx;
+  padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
   background-color: var(--bg-card);
   border-top: 1rpx solid var(--border-light);

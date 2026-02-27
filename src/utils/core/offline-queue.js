@@ -24,6 +24,36 @@
 
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+
+function createNetworkUniCompat() {
+  return {
+    getNetworkType(options = {}) {
+      const { success } = options;
+      const online = typeof navigator !== 'undefined' ? navigator.onLine !== false : true;
+      success?.({ networkType: online ? 'wifi' : 'none' });
+    },
+    onNetworkStatusChange(callback) {
+      if (typeof window === 'undefined' || typeof callback !== 'function') return;
+
+      const notify = (isConnected) => {
+        callback({
+          isConnected,
+          networkType: isConnected ? 'wifi' : 'none'
+        });
+      };
+
+      const onlineHandler = () => notify(true);
+      const offlineHandler = () => notify(false);
+
+      window.addEventListener('online', onlineHandler);
+      window.addEventListener('offline', offlineHandler);
+    }
+  };
+}
+
+const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
+const uni = globalRef['uni'] || createNetworkUniCompat();
+
 const STORAGE_KEY = 'EXAM_OFFLINE_QUEUE';
 const MAX_QUEUE_SIZE = 100;
 const MAX_AGE = 24 * 60 * 60 * 1000; // 24小时过期
@@ -132,33 +162,37 @@ class OfflineQueue {
    */
   _setupNetworkListener() {
     // 检查当前网络状态
-    uni.getNetworkType({
-      success: (res) => {
-        this.isOnline = res.networkType !== 'none';
-        logger.log(`[OfflineQueue] 当前网络状态: ${res.networkType}`);
-      }
-    });
+    if (typeof uni.getNetworkType === 'function') {
+      uni.getNetworkType({
+        success: (res) => {
+          this.isOnline = res.networkType !== 'none';
+          logger.log(`[OfflineQueue] 当前网络状态: ${res.networkType}`);
+        }
+      });
+    }
 
     // 监听网络变化
-    uni.onNetworkStatusChange((res) => {
-      const wasOffline = !this.isOnline;
-      this.isOnline = res.isConnected;
+    if (typeof uni.onNetworkStatusChange === 'function') {
+      uni.onNetworkStatusChange((res) => {
+        const wasOffline = !this.isOnline;
+        this.isOnline = res.isConnected;
 
-      logger.log(`[OfflineQueue] 网络状态变化: ${res.isConnected ? '在线' : '离线'} (${res.networkType})`);
+        logger.log(`[OfflineQueue] 网络状态变化: ${res.isConnected ? '在线' : '离线'} (${res.networkType})`);
 
-      // 从离线恢复到在线，自动处理队列
-      if (wasOffline && this.isOnline && this.queue.length > 0) {
-        logger.log('[OfflineQueue] 网络恢复，开始处理离线队列...');
-        this.processQueue();
-      }
+        // 从离线恢复到在线，自动处理队列
+        if (wasOffline && this.isOnline && this.queue.length > 0) {
+          logger.log('[OfflineQueue] 网络恢复，开始处理离线队列...');
+          this.processQueue();
+        }
 
-      // 通知监听器
-      this._notifyListeners({
-        type: 'networkChange',
-        isOnline: this.isOnline,
-        networkType: res.networkType
+        // 通知监听器
+        this._notifyListeners({
+          type: 'networkChange',
+          isOnline: this.isOnline,
+          networkType: res.networkType
+        });
       });
-    });
+    }
   }
 
   /**
@@ -302,7 +336,8 @@ class OfflineQueue {
    * @param {Object} options - 选项
    * @returns {Promise<Object>} 处理结果
    */
-  async processQueue(_options = {}) {
+  async processQueue(options = {}) {
+    void options;
     if (this.processing || this.paused) {
       logger.log(`[OfflineQueue] 队列${this.paused ? '已暂停' : '正在处理中'}...`);
       return { success: false, reason: this.paused ? 'paused' : 'already_processing' };

@@ -80,7 +80,7 @@ class QuoteInteractionHandler {
       await this.playFavoriteAnimation();
 
       uni.showToast({
-        title: '💖 已收藏',
+        title: '已收藏',
         icon: 'none',
         duration: 1500
       });

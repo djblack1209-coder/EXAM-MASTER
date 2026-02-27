@@ -595,13 +595,10 @@ export default {
         const keyword = this.result.recognizedText.substring(0, 50);
         // practice/index 是 tabBar 页面，switchTab 不支持 query 参数
         // 通过临时存储传递搜索关键词，供刷题中心后续读取
-        try {
-          uni.setStorageSync('_pendingSearch', { keyword, timestamp: Date.now() });
-        } catch (_e) {
-          /* ignore */
-        }
+        storageService.save('_pendingSearch', { keyword, timestamp: Date.now() });
         uni.showToast({ title: '已跳转到刷题中心', icon: 'none' });
-        safeNavigateTo('/pages/practice/index');
+        // practice/index 是 tabBar 页面，必须用 switchTab
+        uni.switchTab({ url: '/pages/practice/index' });
       }
     }
   }
@@ -1024,6 +1021,7 @@ export default {
   align-items: center;
   gap: 24rpx;
   padding: 24rpx 32rpx;
+  padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(20px);

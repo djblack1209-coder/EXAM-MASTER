@@ -12,6 +12,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { logger } from '@/utils/logger.js';
 import { DEMO_QUESTIONS } from '@/config/home-data.js';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 
 export const navigationMixin = {
   methods: {
@@ -96,7 +97,7 @@ export const navigationMixin = {
     },
 
     navToStudyDetail() {
-      safeNavigateTo('/pages/study-detail/index');
+      requireLogin(() => safeNavigateTo('/pages/study-detail/index'), { message: '请先登录后查看学习详情' });
     },
 
     handleStatClick(type) {
@@ -116,6 +117,10 @@ export const navigationMixin = {
             url: routes[type],
             fail: () => uni.reLaunch({ url: routes[type] })
           });
+        } else if (type === 'accuracy') {
+          requireLogin(() => safeNavigateTo(routes[type]), { message: '请先登录后查看错题统计' });
+        } else if (type === 'streak') {
+          requireLogin(() => safeNavigateTo(routes[type]), { message: '请先登录后查看学习记录' });
         } else {
           safeNavigateTo(routes[type]);
         }

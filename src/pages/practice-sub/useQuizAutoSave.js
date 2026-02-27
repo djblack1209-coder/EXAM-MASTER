@@ -77,7 +77,7 @@ function doSaveProgress(progress) {
       version: '1.0.0'
     };
 
-    storageService.save(QUIZ_PROGRESS_KEY, JSON.stringify(data));
+    storageService.save(QUIZ_PROGRESS_KEY, data);
     storageService.save(QUIZ_PROGRESS_TIMESTAMP_KEY, Date.now().toString());
 
     logger.log('[QuizAutoSave] 进度已保存:', {
@@ -99,15 +99,21 @@ function doSaveProgress(progress) {
  */
 export function loadQuizProgress() {
   try {
-    const dataStr = storageService.get(QUIZ_PROGRESS_KEY);
+    const dataRaw = storageService.get(QUIZ_PROGRESS_KEY);
     const timestampStr = storageService.get(QUIZ_PROGRESS_TIMESTAMP_KEY);
 
-    if (!dataStr || !timestampStr) {
+    if (!dataRaw || !timestampStr) {
       logger.log('[QuizAutoSave] 无保存的进度');
       return null;
     }
 
-    const timestamp = parseInt(timestampStr, 10);
+    const timestamp = Number(timestampStr);
+    if (!Number.isFinite(timestamp)) {
+      logger.warn('[QuizAutoSave] 进度时间戳无效，清除损坏数据');
+      clearQuizProgress();
+      return null;
+    }
+
     const now = Date.now();
 
     // 检查是否过期
@@ -117,7 +123,12 @@ export function loadQuizProgress() {
       return null;
     }
 
-    const data = JSON.parse(dataStr);
+    const data = typeof dataRaw === 'string' ? JSON.parse(dataRaw) : dataRaw;
+    if (!isValidProgressData(data)) {
+      logger.warn('[QuizAutoSave] 进度数据结构无效，清除损坏数据');
+      clearQuizProgress();
+      return null;
+    }
 
     logger.log('[QuizAutoSave] 加载进度成功:', {
       currentIndex: data.currentIndex,
@@ -174,7 +185,7 @@ export function getProgressSummary() {
 
   const savedAt = new Date(progress.savedAt);
   const now = new Date();
-  const diffMinutes = Math.floor((now - savedAt) / 1000 / 60);
+  const diffMinutes = Math.floor((now.getTime() - savedAt.getTime()) / 1000 / 60);
 
   let timeAgo;
   if (diffMinutes < 1) {
@@ -205,6 +216,15 @@ function formatSeconds(seconds) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+}
+
+function isValidProgressData(data) {
+  if (!data || typeof data !== 'object') return false;
+  if (typeof data.currentIndex !== 'number') return false;
+  if (typeof data.seconds !== 'number') return false;
+  if (!Array.isArray(data.answeredQuestions)) return false;
+  if (typeof data.hasAnswered !== 'boolean') return false;
+  return true;
 }
 
 /**

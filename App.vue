@@ -1,3 +1,7 @@
+<template>
+  <view />
+</template>
+
 <script>
 import { useUserStore } from '@/stores';
 import { qa, injectInterceptor, hookSetData } from '@/utils/debug/qa.js';
@@ -192,7 +196,7 @@ export default {
         }
         // 无缓存是新用户的正常状态，不输出警告
       } catch (error) {
-        console.error('[App] 登录恢复异常:', error);
+        logger.error('[App] 登录恢复异常:', error);
       }
     }
   },

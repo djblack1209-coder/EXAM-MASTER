@@ -1,7 +1,7 @@
 // utils/qa.js - UniApp 增强版
 import { logger } from '@/utils/logger.js';
 let logQueue = [];
-const isDev = true;
+const isDev = process.env.NODE_ENV !== 'production';
 
 // 安全获取全局对象
 const safeGetApp = () => {
@@ -29,7 +29,7 @@ export const qa = {
       data = { ...msg, body: msg.body.slice(0, 512) + '...(truncated)' };
     }
     const pages = safeGetCurrentPages();
-    const entry = { time: Date.now(), type, data, expect, page: pages.pop()?.route };
+    const entry = { time: Date.now(), type, data, expect, page: pages[pages.length - 1]?.route };
     logQueue.push(entry);
     const app = safeGetApp();
     if (app) app.globalData = { ...app.globalData, qaLogs: logQueue };

@@ -22,7 +22,8 @@
             一、引言
           </text>
           <text class="section-text">
-            欢迎使用 Exam Master（以下简称"本应用"）。我们深知个人信息对您的重要性，将严格遵守相关法律法规，采取相应的安全保护措施，保护您的个人信息安全。
+            欢迎使用 Exam
+            Master（以下简称"本应用"）。我们深知个人信息对您的重要性，将严格遵守相关法律法规，采取相应的安全保护措施，保护您的个人信息安全。
           </text>
         </view>
 
@@ -121,6 +122,7 @@
 </template>
 
 <script>
+import { storageService } from '@/services/storageService.js';
 export default {
   data() {
     return {
@@ -128,7 +130,7 @@ export default {
     };
   },
   onLoad() {
-    const savedTheme = uni.getStorageSync('theme_mode') || 'light';
+    const savedTheme = storageService.get('theme_mode', 'light');
     this.isDark = savedTheme === 'dark';
   },
   methods: {
@@ -152,7 +154,9 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 32rpx;
+  padding-top: calc(constant(safe-area-inset-top) + 20rpx);
   padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  height: calc(constant(safe-area-inset-top) + 100rpx);
   height: calc(env(safe-area-inset-top) + 100rpx);
   background-color: #1a1a1a;
 }
@@ -175,6 +179,7 @@ export default {
 }
 
 .content-scroll {
+  height: calc(100vh - constant(safe-area-inset-top) - 100rpx);
   height: calc(100vh - env(safe-area-inset-top) - 100rpx);
 }
 .content-section {

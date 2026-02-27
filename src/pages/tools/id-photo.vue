@@ -20,9 +20,7 @@
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
-          <text class="hero-icon">
-            📷
-          </text>
+          <BaseIcon name="camera" :size="64" class="hero-icon" />
         </view>
         <text class="hero-title">
           智能证件照
@@ -175,6 +173,7 @@ import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 const DEFAULT_SIZES = [
   { key: '1inch', name: '一寸', desc: '25×35mm' },
@@ -194,6 +193,7 @@ const DEFAULT_COLORS = [
 ];
 
 export default {
+  components: { BaseIcon },
   data() {
     return {
       statusBarHeight: 44,
@@ -303,6 +303,29 @@ export default {
       };
       img.onerror = () => uni.showToast({ title: '加载照片失败', icon: 'none' });
       img.src = path;
+      // #endif
+
+      // #ifdef APP-PLUS
+      plus.io.resolveLocalFileSystemURL(
+        path,
+        (entry) => {
+          entry.file((file) => {
+            const reader = new plus.io.FileReader();
+            reader.onloadend = (e) => {
+              const base64Data = e.target.result.split(',')[1];
+              this.imageBase64 = base64Data;
+              this.step = 1;
+            };
+            reader.onerror = () => {
+              uni.showToast({ title: '读取照片失败', icon: 'none' });
+            };
+            reader.readAsDataURL(file);
+          });
+        },
+        () => {
+          uni.showToast({ title: '读取照片失败', icon: 'none' });
+        }
+      );
       // #endif
     },
 

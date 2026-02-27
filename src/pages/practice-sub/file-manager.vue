@@ -12,9 +12,7 @@
       </view>
       <view class="nav-right">
         <view v-if="files.length > 0" class="icon-btn danger" @tap="clearAll">
-          <text style="font-size: 36rpx;">
-            🗑️
-          </text>
+          <BaseIcon name="delete" :size="36" />
         </view>
       </view>
     </view>
@@ -33,11 +31,7 @@
 
     <!-- 文件列表 -->
     <view v-else-if="files.length > 0" class="file-list">
-      <view
-        v-for="(file, index) in files"
-        :key="index"
-        class="file-item"
-      >
+      <view v-for="(file, index) in files" :key="index" class="file-item">
         <view class="file-left">
           <view class="file-icon">
             <text class="emoji">
@@ -84,7 +78,7 @@
     <!-- 空状态 -->
     <BaseEmpty
       v-else
-      icon="📁"
+      icon="folder"
       title="暂无文件"
       desc="导入学习资料后，文件将显示在这里"
     />
@@ -99,9 +93,10 @@ import { fileHandler } from './file-handler.js';
 // F019: storageService
 import storageService from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
-  components: { BaseEmpty },
+  components: { BaseEmpty, BaseIcon },
   data() {
     return {
       isDark: false,
@@ -244,12 +239,12 @@ export default {
 
     getStatusLabel(status) {
       const statusMap = {
-        'generating': '生成中',
-        'completed': '已完成',
-        'paused': '已暂停',
-        'failed': '失败',
-        'ready': '待处理',
-        'cancelled': '已取消'
+        generating: '生成中',
+        completed: '已完成',
+        paused: '已暂停',
+        failed: '失败',
+        ready: '待处理',
+        cancelled: '已取消'
       };
       return statusMap[status] || '待处理';
     },
@@ -367,11 +362,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.icon-btn:hover {
+.icon-btn:active {
   background-color: var(--bg-info);
   transform: scale(1.05);
 }
@@ -398,7 +392,7 @@ export default {
   border-bottom: none;
 }
 
-.file-item:hover {
+.file-item:active {
   background-color: var(--bg-hover);
 }
 
@@ -583,7 +577,8 @@ export default {
 
 .skeleton-pulse {
   background: linear-gradient(
-    90deg, var(--bg-secondary, #f0f0f0) 25%,
+    90deg,
+    var(--bg-secondary, #f0f0f0) 25%,
     var(--bg-hover, #e0e0e0) 50%,
     var(--bg-secondary, #f0f0f0) 75%
   );
@@ -593,7 +588,8 @@ export default {
 
 .dark-mode .skeleton-pulse {
   background: linear-gradient(
-    90deg, var(--bg-glass, #2a2a2a) 25%,
+    90deg,
+    var(--bg-glass, #2a2a2a) 25%,
     var(--overlay, #3a3a3a) 50%,
     var(--bg-glass, #2a2a2a) 75%
   );
@@ -602,8 +598,12 @@ export default {
 }
 
 @keyframes skeletonPulse {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* 空状态 */
