@@ -12,6 +12,7 @@ import { bubbleInteraction } from '@/utils/helpers/bubble-interaction.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { logger } from '@/utils/logger.js';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 
 export const knowledgePointMixin = {
   methods: {
@@ -63,7 +64,7 @@ export const knowledgePointMixin = {
             id: 1,
             title: '错题集',
             count: mistakeCount,
-            icon: '🎯',
+            icon: 'category-mistakes',
             mastery: mistakeCount > 0 ? Math.max(10, 100 - mistakeCount * 2) : 100,
             color: '#EF4444'
           },
@@ -71,10 +72,11 @@ export const knowledgePointMixin = {
             id: 2,
             title: '练习题',
             count: totalQuestions,
-            icon: '📝',
-            mastery: totalAnswered > 0 && totalQuestions > 0
-              ? Math.min(95, Math.round((totalAnswered / totalQuestions) * 100))
-              : 0,
+            icon: 'category-practice',
+            mastery:
+              totalAnswered > 0 && totalQuestions > 0
+                ? Math.min(95, Math.round((totalAnswered / totalQuestions) * 100))
+                : 0,
             color: '#00F2FF'
           }
         ];
@@ -84,7 +86,7 @@ export const knowledgePointMixin = {
           .sort((a, b) => b[1].total - a[1].total)
           .slice(0, 4);
 
-        const categoryIcons = ['🔥', '🧠', '🧮', '📖'];
+        const categoryIcons = ['category-hot', 'category-concept', 'category-formula', 'category-reading'];
         const categoryColors = ['#F59E0B', '#9FE870', '#A855F7', '#EC4899'];
 
         categoryEntries.forEach(([name, stats], idx) => {
@@ -92,7 +94,7 @@ export const knowledgePointMixin = {
             id: idx + 3,
             title: name,
             count: stats.total,
-            icon: categoryIcons[idx] || '📚',
+            icon: categoryIcons[idx] || 'books',
             mastery: calcMastery(stats),
             color: categoryColors[idx] || '#6B7280'
           });
@@ -104,7 +106,7 @@ export const knowledgePointMixin = {
             id: 3,
             title: '导入题库开始学习',
             count: 0,
-            icon: '📚',
+            icon: 'books',
             mastery: 0,
             color: '#6B7280'
           });
@@ -141,15 +143,16 @@ export const knowledgePointMixin = {
 
       // 根据气泡类型跳转到对应页面
       const routeMap = {
-        '错题集': () => safeNavigateTo('/pages/mistake/index'),
-        '练习题': () => uni.switchTab({
-          url: '/pages/practice/index',
-          fail: () => uni.reLaunch({ url: '/pages/practice/index' })
-        }),
-        '热门考点': () => this._navToHotTopics(point),
-        '核心概念': () => this._navToConcepts(point),
-        '公式定理': () => this._navToFormulas(),
-        '阅读理解': () => this._navToReading(point)
+        错题集: () => requireLogin(() => safeNavigateTo('/pages/mistake/index'), { message: '请先登录后查看错题集' }),
+        练习题: () =>
+          uni.switchTab({
+            url: '/pages/practice/index',
+            fail: () => uni.reLaunch({ url: '/pages/practice/index' })
+          }),
+        热门考点: () => this._navToHotTopics(point),
+        核心概念: () => this._navToConcepts(point),
+        公式定理: () => this._navToFormulas(),
+        阅读理解: () => this._navToReading(point)
       };
 
       // 延迟执行跳转，等待动画完成
@@ -160,7 +163,7 @@ export const knowledgePointMixin = {
         } else {
           // 兜底：显示功能预告
           uni.showToast({
-            title: `${point.icon} ${point.title}\n\n掌握度：${point.mastery}%\n题目数：${point.count} 项`,
+            title: `${point.title}\n\n掌握度：${point.mastery}%\n题目数：${point.count} 项`,
             icon: 'none',
             duration: 2000,
             mask: true
@@ -175,7 +178,7 @@ export const knowledgePointMixin = {
       safeNavigateTo('/pages/practice-sub/import-data?source=hotTopics', {
         success: () => {
           uni.showToast({
-            title: `${point.icon} 热门考点\n\n共 ${point.count} 个考点\n正确率目标：${point.mastery}%`,
+            title: `热门考点\n\n共 ${point.count} 个考点\n正确率目标：${point.mastery}%`,
             icon: 'none',
             duration: 2000
           });
@@ -187,7 +190,7 @@ export const knowledgePointMixin = {
       safeNavigateTo('/pages/practice-sub/import-data?source=concepts', {
         success: () => {
           uni.showToast({
-            title: `${point.icon} 核心概念\n\n共 ${point.count} 个概念\n掌握度：${point.mastery}%`,
+            title: `核心概念\n\n共 ${point.count} 个概念\n掌握度：${point.mastery}%`,
             icon: 'none',
             duration: 2000
           });
@@ -204,7 +207,7 @@ export const knowledgePointMixin = {
         url: '/pages/practice/index',
         success: () => {
           uni.showToast({
-            title: `${point.icon} 阅读理解\n\n共 ${point.count} 篇\n正确率：${point.mastery}%`,
+            title: `阅读理解\n\n共 ${point.count} 篇\n正确率：${point.mastery}%`,
             icon: 'none',
             duration: 2000
           });

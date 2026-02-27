@@ -16,9 +16,9 @@
         :class="['activity-item', isDark ? 'glass' : 'card-light', 'card-hover']"
       >
         <view :class="['activity-icon-wrapper', 'status-' + activity.status]">
-          <text class="activity-icon">
-            {{ activity.icon }}
-          </text>
+          <view class="activity-icon">
+            <BaseIcon :name="activity.icon" :size="34" />
+          </view>
         </view>
         <view class="activity-content">
           <text class="activity-title">
@@ -44,8 +44,13 @@
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
 export default {
   name: 'ActivityList',
+  components: {
+    BaseIcon
+  },
   props: {
     isDark: { type: Boolean, default: false },
     activities: { type: Array, default: () => [] }
@@ -54,9 +59,9 @@ export default {
   methods: {
     getStatusText(status) {
       const map = {
-        'completed': '已完成',
+        completed: '已完成',
         'in-progress': '进行中',
-        'pending': '待开始'
+        pending: '待开始'
       };
       return map[status] || status;
     }
@@ -66,147 +71,149 @@ export default {
 
 <style lang="scss" scoped>
 .section-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32rpx;
 }
 
 .section-title {
-	font-size: 40rpx;
-	font-weight: 700;
-	color: var(--text-primary);
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .section-action {
-	font-size: 28rpx;
-	color: var(--primary);
-	font-weight: 500;
+  font-size: 28rpx;
+  color: var(--primary);
+  font-weight: 500;
 }
 
 .glass {
-	background: var(--bg-glass);
-	backdrop-filter: blur(24rpx);
-	-webkit-backdrop-filter: blur(24rpx);
-	border: 1rpx solid var(--border);
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1rpx solid var(--border);
 }
 
 .card-light {
-	background: var(--card);
+  background: var(--card);
 }
 
 .card-hover:active {
-	transform: translateY(-4rpx);
-	box-shadow: var(--shadow-lg);
+  transform: translateY(-4rpx);
+  box-shadow: var(--shadow-lg);
 }
 
 .activity-list {
-	display: flex;
-	flex-direction: column;
-	gap: 24rpx;
-	margin-bottom: 64rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  margin-bottom: 64rpx;
 }
 
 .activity-item {
-	display: flex;
-	align-items: center;
-	gap: 32rpx;
-	padding: 32rpx;
-	border-radius: 24rpx;
-	border: 1rpx solid var(--border);
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+  padding: 32rpx;
+  border-radius: 24rpx;
+  border: 1rpx solid var(--border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .activity-icon-wrapper {
-	width: 80rpx;
-	height: 80rpx;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .status-completed {
-	background: var(--success-light);
-	color: var(--success);
+  background: var(--success-light);
+  color: var(--success);
 }
 
 .status-in-progress {
-	background: var(--primary-light);
-	color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 .status-pending {
-	background: var(--bg-secondary);
-	color: var(--text-sub);
+  background: var(--bg-secondary);
+  color: var(--text-sub);
 }
 
 .activity-icon {
-	font-size: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .activity-content {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 8rpx;
-	min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 0;
 }
 
 .activity-title {
-	font-size: 28rpx;
-	font-weight: 600;
-	color: var(--text-primary);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .activity-subtitle {
-	font-size: 24rpx;
-	color: var(--text-sub);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .activity-meta {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	gap: 8rpx;
-	flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+  flex-shrink: 0;
 }
 
 .activity-time {
-	font-size: 20rpx;
-	color: var(--text-sub);
+  font-size: 20rpx;
+  color: var(--text-sub);
 }
 
 .activity-badge {
-	padding: 4rpx 16rpx;
-	border-radius: 20rpx;
-	font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 20rpx;
 }
 
 .badge-completed {
-	background: var(--success-light);
-	color: var(--success);
+  background: var(--success-light);
+  color: var(--success);
 }
 
 .badge-in-progress {
-	background: var(--primary-light);
-	color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 .badge-pending {
-	background: var(--bg-secondary);
-	color: var(--text-sub);
+  background: var(--bg-secondary);
+  color: var(--text-sub);
 }
 
 .badge-text {
-	font-size: 20rpx;
-	font-weight: 500;
+  font-size: 20rpx;
+  font-weight: 500;
 }
 </style>

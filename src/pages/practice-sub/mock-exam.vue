@@ -10,9 +10,9 @@
           {{ isExamStarted ? '模拟考试' : '考试设置' }}
         </text>
         <view v-if="isExamStarted && !isExamFinished" class="timer-display">
-          <text class="timer-icon">
-            ⏱️
-          </text>
+          <view class="timer-icon">
+            <BaseIcon name="timer" :size="28" />
+          </view>
           <text class="timer-text">
             {{ formatTime(remainingTime) }}
           </text>
@@ -28,7 +28,7 @@
     >
       <view class="glass-card setup-card">
         <text class="setup-title">
-          📝 模拟考试设置
+          <BaseIcon name="note" :size="32" /> 模拟考试设置
         </text>
 
         <view class="setting-item">
@@ -79,7 +79,7 @@
 
         <view class="exam-info">
           <text class="info-text">
-            📊 当前题库共 {{ totalQuestions }} 道题
+            <BaseIcon name="chart-bar" :size="28" /> 当前题库共 {{ totalQuestions }} 道题
           </text>
         </view>
 
@@ -89,9 +89,9 @@
           :disabled="totalQuestions < questionCount"
           @tap="startExam"
         >
-          <text class="btn-icon">
-            🚀
-          </text>
+          <view class="btn-icon">
+            <BaseIcon name="rocket" :size="32" />
+          </view>
           <text class="btn-text">
             开始考试
           </text>
@@ -237,7 +237,7 @@
     >
       <view class="glass-card result-card">
         <text class="result-title">
-          🎉 考试完成
+          <BaseIcon name="celebrate" :size="36" /> 考试完成
         </text>
 
         <view class="score-display">
@@ -282,10 +282,10 @@
 
         <view class="result-actions">
           <button class="action-btn review" hover-class="btn-scale-sm" @tap="reviewExam">
-            <text>📖 查看解析</text>
+            <text><BaseIcon name="book" :size="28" /> 查看解析</text>
           </button>
           <button class="action-btn retry" hover-class="btn-scale-sm" @tap="retryExam">
-            <text>🔄 再考一次</text>
+            <text><BaseIcon name="refresh" :size="28" /> 再考一次</text>
           </button>
         </view>
       </view>
@@ -293,11 +293,11 @@
       <!-- 错题列表 -->
       <view v-if="wrongQuestions.length > 0" class="glass-card wrong-list">
         <text class="list-title">
-          ❌ 错题回顾
+          <BaseIcon name="cross" :size="28" /> 错题回顾
         </text>
         <view v-for="(item, idx) in wrongQuestions" :key="idx" class="wrong-item">
           <text class="wrong-question">
-            {{ idx + 1 }}. {{ (item.question || item.question_content).substring(0, 50) }}...
+            {{ idx + 1 }}. {{ (item.question || item.question_content || '题目内容缺失').substring(0, 50) }}...
           </text>
           <view class="wrong-answer">
             <text class="user-ans">
@@ -323,8 +323,11 @@ import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
 // ✅ P002: 引入后端服务，支持从后端获取真实题库数据
 import { lafService } from '@/services/lafService.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 
 export default {
+  components: { BaseIcon },
   data() {
     return {
       statusBarHeight: 44,
@@ -408,6 +411,11 @@ export default {
   onUnload() {
     uni.$off('themeUpdate', this._themeHandler);
     this.clearTimer();
+    // 清理导航防抖定时器
+    if (this._navTimer) {
+      clearTimeout(this._navTimer);
+      this._navTimer = null;
+    }
     // [F5-FIX] 退出时保存进度（如果考试进行中）
     this._saveExamProgress();
   },
@@ -642,8 +650,8 @@ export default {
         this.currentIndex++;
       }
 
-      // 短暂延迟后解锁
-      setTimeout(() => {
+      // 短暂延迟后解锁，保存引用以便 onUnload 清理
+      this._navTimer = setTimeout(() => {
         this.isNavigating = false;
       }, 300);
     },
@@ -700,6 +708,7 @@ export default {
       this.score =
         this.examQuestions.length > 0 ? Math.round((this.correctCount / this.examQuestions.length) * 100) : 0;
       this.isExamFinished = true;
+      this.isSubmitting = false;
 
       // 保存考试记录
       this.saveExamRecord();
@@ -727,15 +736,15 @@ export default {
     },
 
     getResultMessage() {
-      if (this.score >= 90) return '🏆 太棒了！你已经掌握得非常好！';
-      if (this.score >= 80) return '👍 很不错！继续保持！';
-      if (this.score >= 60) return '💪 及格了！还有提升空间！';
-      return '📚 需要加油！多复习错题吧！';
+      if (this.score >= 90) return '太棒了！你已经掌握得非常好！';
+      if (this.score >= 80) return '很不错！继续保持！';
+      if (this.score >= 60) return '及格了！还有提升空间！';
+      return '需要加油！多复习错题吧！';
     },
 
     reviewExam() {
       // 跳转到错题本查看
-      safeNavigateTo('/pages/mistake/index');
+      requireLogin(() => safeNavigateTo('/pages/mistake/index'), { message: '请先登录后查看错题集' });
     },
 
     retryExam() {

@@ -19,9 +19,9 @@
             class="question-timer-box"
             :class="{ warning: showTimeWarning, danger: questionTimeRemaining <= 10 }"
           >
-            <text class="timer-icon">
-              ⏱
-            </text>
+            <view class="timer-icon">
+              <BaseIcon name="timer" :size="28" />
+            </view>
             <text class="question-time">
               {{ formatTime(questionTimeRemaining) }}
             </text>
@@ -58,9 +58,9 @@
                 hover-class="item-hover"
                 @tap.stop="handleOpenNote"
               >
-                <text class="note-icon">
-                  📝
-                </text>
+                <view class="note-icon">
+                  <BaseIcon name="note" :size="28" />
+                </view>
                 <text v-if="currentQuestionNotes.length > 0" class="note-count">
                   {{ currentQuestionNotes.length }}
                 </text>
@@ -72,9 +72,9 @@
                 hover-class="item-hover"
                 @tap.stop="handleToggleFavorite"
               >
-                <text class="favorite-icon">
-                  {{ isCurrentFavorited ? '★' : '☆' }}
-                </text>
+                <view class="favorite-icon">
+                  <BaseIcon :name="isCurrentFavorited ? 'star' : 'star-outline'" :size="28" />
+                </view>
               </view>
             </view>
           </view>
@@ -107,15 +107,9 @@
               {{ opt }}
             </text>
             <view v-if="hasAnswered" class="select-indicator">
-              <text v-if="isCorrectOption(idx)">
-                ✓
-              </text>
-              <text v-else-if="userChoice === idx && !isCorrectOption(idx)">
-                ✗
-              </text>
-              <text v-else-if="userChoice === idx">
-                ○
-              </text>
+              <BaseIcon v-if="isCorrectOption(idx)" name="check" :size="28" />
+              <BaseIcon v-else-if="userChoice === idx && !isCorrectOption(idx)" name="cross" :size="28" />
+              <view v-else-if="userChoice === idx" class="indicator-circle" />
             </view>
           </view>
         </view>
@@ -140,9 +134,9 @@
         <view class="result-header" @tap.stop>
           <!-- 左侧图标作为关闭按钮 -->
           <view class="result-icon-btn" @tap.stop="closeResult">
-            <text class="result-icon">
-              {{ resultStatus === 'correct' ? '✓' : '✗' }}
-            </text>
+            <view class="result-icon">
+              <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'cross'" :size="36" />
+            </view>
           </view>
           <text class="status-title">
             {{ resultStatus === 'correct' ? 'PASS' : 'LOGIC ERROR' }}
@@ -151,9 +145,9 @@
 
         <scroll-view v-if="resultStatus === 'wrong'" scroll-y class="ai-analysis-scroll">
           <view class="analysis-tag">
-            <text class="sparkle-icon">
-              ✨
-            </text>
+            <view class="sparkle-icon">
+              <BaseIcon name="sparkle" :size="28" />
+            </view>
             <text>AI 深度诊断</text>
           </view>
           <view class="answer-display">
@@ -209,7 +203,7 @@
     <CustomModal
       :visible="showEmptyBankModal"
       type="upload"
-      title="📚 题库空空如也"
+      title="题库空空如也"
       content="请先去资料库导入学习资料，AI 将为您生成专属题目。"
       confirm-text="去导入"
       :show-cancel="false"
@@ -221,7 +215,7 @@
     <CustomModal
       :visible="showResumeModal"
       type="info"
-      title="📝 检测到未完成的练习"
+      title="检测到未完成的练习"
       :content="resumeModalContent"
       confirm-text="继续答题"
       cancel-text="重新开始"
@@ -253,7 +247,7 @@
     <CustomModal
       :visible="showCompleteModal"
       type="success"
-      title="🎉 练习完成"
+      title="练习完成"
       :content="`本次共完成 ${questions.length} 道题目！`"
       confirm-text="返回"
       :show-cancel="false"
@@ -269,7 +263,7 @@
             添加笔记
           </text>
           <view class="note-modal-close" hover-class="item-hover" @tap="showNoteModal = false">
-            ✕
+            <BaseIcon name="close" :size="28" />
           </view>
         </view>
         <textarea
@@ -318,7 +312,7 @@ import {
 } from './useQuizAutoSave.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
-import { getStatusBarHeight } from '@/utils/core/system.js';
+import { getStatusBarHeight, getWindowInfo } from '@/utils/core/system.js';
 // ✅ 检查点 5.3: 自适应学习引擎（懒加载：仅在 isAdaptiveMode 时动态导入）
 // ✅ 导入题目收藏模块
 import { toggleFavorite, isFavorited } from './utils/question-favorite.js';
@@ -346,11 +340,13 @@ import { recordAnswerToAnalytics as recordAnalytics } from './quiz-analytics-rec
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   components: {
     BaseLoading,
-    CustomModal
+    CustomModal,
+    BaseIcon
   },
   data() {
     return {
@@ -435,16 +431,12 @@ export default {
 
         // 支持 answer 为 'A'/'B'/'C'/'D'
         if (['A', 'B', 'C', 'D'].includes(correctAnswer)) {
-          const isMatch = optionLabel === correctAnswer;
-          logger.log('[do-quiz] 答案匹配:', { optionLabel, correctAnswer, isMatch });
-          return isMatch;
+          return optionLabel === correctAnswer;
         }
 
         // 兼容选项内容匹配（如果answer不是A/B/C/D，可能是选项内容）
         const optionText = this.currentQuestion.options[idx] || '';
-        const isMatch = optionText.startsWith(correctAnswer) || optionText.includes(correctAnswer);
-        logger.log('[do-quiz] 选项内容匹配:', { optionText, correctAnswer, isMatch });
-        return isMatch;
+        return optionText.startsWith(correctAnswer) || optionText.includes(correctAnswer);
       };
     },
     // ✅ 可用的笔记标签
@@ -476,6 +468,14 @@ export default {
     // ✅ 初始化滑动手势
     this.initSwipeGesture();
 
+    // 读取页面参数（uni-app onLoad 接收 query 对象）
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    const query = currentPage?.$page?.options || currentPage?.options || {};
+    if (query.mode === 'single') {
+      this._singleMode = true;
+    }
+
     // E005: 延迟重计算，让 UI 先渲染
     setTimeout(() => {
       this.loadQuestions();
@@ -493,6 +493,10 @@ export default {
   onShow() {
     // 主题监听已在 onLoad 注册，仅刷新当前值
     this.isDark = storageService.get('theme_mode', 'light') === 'dark';
+    // ✅ P1-1: 恢复计时器（onHide 时已暂停）
+    if (this.questions && this.questions.length > 0 && !this.timer) {
+      this.startTimer();
+    }
   },
   onUnload() {
     if (this.timer) {
@@ -502,7 +506,7 @@ export default {
     uni.$off('themeUpdate', this._themeHandler);
 
     // ✅ P0-3: 页面卸载时保存进度
-    this.saveCurrentProgress();
+    this.saveCurrentProgress(true);
 
     // ✅ FIX: 错题复习模式结束后恢复原题库
     this._restoreQuestionBankIfReview();
@@ -513,7 +517,12 @@ export default {
 
   // ✅ P0-3: 页面隐藏时也保存进度（应对小程序被杀死的情况）
   onHide() {
-    this.saveCurrentProgress();
+    // ✅ P1-1: 暂停计时器，避免后台持续计时
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+    this.saveCurrentProgress(true);
   },
   methods: {
     // ✅ FIX: 恢复错题复习模式前的题库
@@ -579,7 +588,7 @@ export default {
     },
 
     // ✅ P0-3: 保存当前进度
-    saveCurrentProgress() {
+    saveCurrentProgress(immediate = false) {
       // 只有在有题目且已开始答题时才保存
       if (this.questions.length === 0 || (this.currentIndex === 0 && !this.hasAnswered)) {
         return;
@@ -592,14 +601,17 @@ export default {
         return;
       }
 
-      const success = saveQuizProgress({
-        currentIndex: this.currentIndex,
-        userChoice: this.userChoice,
-        hasAnswered: this.hasAnswered,
-        seconds: this.seconds,
-        aiComment: this.aiComment,
-        answeredQuestions: this.answeredQuestions
-      });
+      const success = saveQuizProgress(
+        {
+          currentIndex: this.currentIndex,
+          userChoice: this.userChoice,
+          hasAnswered: this.hasAnswered,
+          seconds: this.seconds,
+          aiComment: this.aiComment,
+          answeredQuestions: this.answeredQuestions
+        },
+        immediate
+      );
 
       if (success) {
         logger.log('[do-quiz] ✅ 进度已自动保存');
@@ -616,7 +628,8 @@ export default {
       try {
         const capsule = uni.getMenuButtonBoundingClientRect();
         if (capsule && capsule.width > 0) {
-          const windowWidth = sys.windowWidth || sys.screenWidth;
+          const winInfo = getWindowInfo();
+          const windowWidth = winInfo.windowWidth || winInfo.screenWidth;
           this.capsuleMargin = windowWidth - capsule.left + 10;
         } else {
           this.capsuleMargin = 100;
@@ -631,6 +644,31 @@ export default {
       // #endif
     },
     async loadQuestions() {
+      // ✅ mode=single：从收藏页传入的单题练习
+      if (this._singleMode) {
+        const singleQ = storageService.get('temp_practice_question', null);
+        if (singleQ) {
+          this.questions = [
+            {
+              id: singleQ.id || 'single_q',
+              question: singleQ.question,
+              options:
+                Array.isArray(singleQ.options) && singleQ.options.length >= 4
+                  ? singleQ.options
+                  : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
+              answer: (singleQ.answer || 'A').toString().toUpperCase().charAt(0),
+              desc: singleQ.desc || '暂无解析',
+              category: singleQ.category || '未分类',
+              type: '单选',
+              difficulty: 2
+            }
+          ];
+          storageService.remove('temp_practice_question');
+          this.startTimer();
+          return;
+        }
+      }
+
       // 从本地存储读取题库
       const bank = storageService.get('v30_bank', []);
 
@@ -655,7 +693,7 @@ export default {
           type: q.type || '单选',
           difficulty: q.difficulty || 2
         }))
-        .filter((q) => q.question && q.question !== `题目 ${bank.indexOf(q) + 1}`); // 过滤无效题目
+        .filter((q) => q.question && !/^题目 \d+$/.test(q.question)); // 过滤无效占位题目
 
       // ✅ 使用智能组题算法优化题目序列（懒加载）
       if (this.smartPickerEnabled && questions.length > 0) {
@@ -707,6 +745,11 @@ export default {
       return ['A', 'B', 'C', 'D'][idx] || 'A';
     },
     startTimer() {
+      // 防重入：清除已有定时器，避免多次调用导致计时加速
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
       this.timer = setInterval(() => {
         this.seconds++;
       }, 1000);
@@ -783,9 +826,8 @@ export default {
         if (result.success) {
           // 将 AI 解析同步保存到错题本
           this.updateMistakeWithAI(this.aiComment);
-        } else {
-          this.saveToMistakes();
         }
+        // AI 失败时不重复调用 saveToMistakes()，错题已在答题时保存
       } finally {
         this.isAnalyzing = false; // 关闭扫描动画
 
@@ -1464,7 +1506,6 @@ export default {
   padding: 30rpx 40rpx;
   transition: all 0.2s;
   position: relative;
-  cursor: pointer;
 }
 .option-item.selected {
   border-color: var(--primary);
@@ -1530,18 +1571,19 @@ export default {
   width: 100%;
   height: 6rpx;
   background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  will-change: transform, opacity;
   animation: scanMove 2s infinite;
 }
 @keyframes scanMove {
   0% {
-    top: 0;
+    transform: translateY(0);
     opacity: 0;
   }
   50% {
     opacity: 1;
   }
   100% {
-    top: 100%;
+    transform: translateY(100vh);
     opacity: 0;
   }
 }
@@ -1630,7 +1672,6 @@ export default {
   border-radius: 50%;
   background: var(--overlay);
   backdrop-filter: blur(10px);
-  cursor: pointer;
   transition: all 0.3s;
   flex-shrink: 0;
 }
@@ -1983,7 +2024,6 @@ export default {
   justify-content: center;
   font-size: 32rpx;
   color: var(--text-sub);
-  cursor: pointer;
 }
 
 .note-textarea {

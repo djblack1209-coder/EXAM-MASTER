@@ -60,6 +60,26 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 // 系统信息工具
 import { getWindowInfo } from '@/utils/core/system.js';
 
+function getUniApi() {
+  if (typeof uni !== 'undefined') return uni;
+  if (typeof globalThis !== 'undefined' && globalThis.uni) return globalThis.uni;
+  return null;
+}
+
+function fallbackRouteJump(url) {
+  if (typeof window !== 'undefined' && url) {
+    window.location.hash = `#${url}`;
+    return true;
+  }
+  return false;
+}
+
+function getCurrentRoutePath() {
+  if (typeof window === 'undefined') return '/pages/index/index';
+  const hashPath = window.location.hash.replace(/^#/, '');
+  return hashPath || '/pages/index/index';
+}
+
 export default {
   name: 'CustomTabbar',
   props: {
@@ -148,13 +168,19 @@ export default {
     this.checkMistakeStatus();
     this.detectCurrentRoute();
     // F005: 监听页面 onShow 事件，确保 switchTab 后重新检测路由
-    uni.$on('tabbarRouteUpdate', this.detectCurrentRoute);
+    const uniApi = getUniApi();
+    if (uniApi && typeof uniApi.$on === 'function') {
+      uniApi.$on('tabbarRouteUpdate', this.detectCurrentRoute);
+    }
     // E008: JS 安全区域检测回退（兼容不支持 CSS env() 的设备）
     this.detectSafeArea();
   },
   // F005: 清理事件监听，防止内存泄漏
   beforeUnmount() {
-    uni.$off('tabbarRouteUpdate', this.detectCurrentRoute);
+    const uniApi = getUniApi();
+    if (uniApi && typeof uniApi.$off === 'function') {
+      uniApi.$off('tabbarRouteUpdate', this.detectCurrentRoute);
+    }
   },
   methods: {
     // E008: JS 安全区域检测（兼容老设备）
@@ -173,14 +199,20 @@ export default {
     // ✅ F005: 自动检测当前路由
     detectCurrentRoute() {
       try {
-        const pages = getCurrentPages();
-        if (pages.length > 0) {
-          const currentPage = pages[pages.length - 1];
-          this.currentRoute = '/' + (currentPage.route || currentPage.__route__ || '');
-          logger.log('[CustomTabbar] 自动检测路由:', this.currentRoute);
+        if (typeof getCurrentPages === 'function') {
+          const pages = getCurrentPages();
+          if (pages.length > 0) {
+            const currentPage = pages[pages.length - 1];
+            this.currentRoute = '/' + (currentPage.route || currentPage.__route__ || '');
+            logger.log('[CustomTabbar] 自动检测路由:', this.currentRoute);
+            return;
+          }
         }
+
+        this.currentRoute = getCurrentRoutePath();
       } catch (e) {
         logger.warn('[CustomTabbar] 路由检测失败:', e);
+        this.currentRoute = getCurrentRoutePath();
       }
     },
     checkMistakeStatus() {
@@ -189,28 +221,43 @@ export default {
     },
     switchTab(path, index) {
       if (this.resolvedActiveIndex === index) return;
+      const uniApi = getUniApi();
       try {
-        if (typeof uni.vibrateShort === 'function') uni.vibrateShort();
+        if (uniApi && typeof uniApi.vibrateShort === 'function') uniApi.vibrateShort();
       } catch (_) {}
 
       const item = this.tabList[index];
 
       // 根据页面类型选择跳转方式
       setTimeout(() => {
-        if (item && item.isTabBar) {
+        if (item && item.isTabBar && uniApi && typeof uniApi.switchTab === 'function') {
           // tabBar 页面优先使用 switchTab
-          uni.switchTab({
+          uniApi.switchTab({
             url: path,
             fail: (err) => {
               logger.warn('[CustomTabbar] switchTab 失败，尝试 reLaunch:', err);
-              uni.reLaunch({
-                url: path,
-                fail: (err2) => {
-                  logger.error('[CustomTabbar] reLaunch 也失败:', err2);
-                }
-              });
+              if (typeof uniApi.reLaunch === 'function') {
+                uniApi.reLaunch({
+                  url: path,
+                  fail: (err2) => {
+                    logger.error('[CustomTabbar] reLaunch 也失败:', err2);
+                    if (!fallbackRouteJump(path)) {
+                      safeNavigateTo(path);
+                    }
+                  }
+                });
+                return;
+              }
+
+              if (!fallbackRouteJump(path)) {
+                safeNavigateTo(path);
+              }
             }
           });
+        } else if (item && item.isTabBar) {
+          if (!fallbackRouteJump(path)) {
+            safeNavigateTo(path);
+          }
         } else {
           // 非 tabBar 页面使用 navigateTo 或 reLaunch
           safeNavigateTo(path);
@@ -240,9 +287,9 @@ export default {
   justify-content: space-around;
   /* 浅色模式：白色玻璃质感 */
   background-color: rgba(255, 255, 255, 0.95);
-  /* ✅ E008: 降低 blur 值，减少低端设备滚动卡顿 */
-  backdrop-filter: blur(20rpx) saturate(180%);
-  -webkit-backdrop-filter: blur(20rpx) saturate(180%);
+  /* ✅ P1-6: blur() 必须使用 px 而非 rpx，rpx 在部分小程序环境下不被识别 */
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
   border-radius: 60rpx;
   box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -252,9 +299,9 @@ export default {
 .tabbar-capsule.dark-mode {
   /* 深灰色半透明背景 - 更深更不透明以确保可见 */
   background: linear-gradient(180deg, rgba(35, 35, 35, 0.98) 0%, rgba(25, 25, 25, 0.99) 100%);
-  /* ✅ E008: 降低深色模式 blur 值，防止低端 Android 设备卡顿 */
-  backdrop-filter: blur(30rpx) saturate(180%);
-  -webkit-backdrop-filter: blur(30rpx) saturate(180%);
+  /* ✅ P1-6: blur() 使用 px 替代 rpx */
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
   /* 深色模式下的强烈阴影 + 内光晕 */
   box-shadow:
     0 12rpx 48rpx rgba(0, 0, 0, 0.7),
@@ -328,7 +375,7 @@ export default {
 
 .tab-label {
   font-size: 24rpx;
-  color: #8e8e93;
+  color: var(--ds-color-text-tertiary, #8e8e93);
   font-weight: 500;
   line-height: 1.2;
   white-space: nowrap;
@@ -341,13 +388,13 @@ export default {
 }
 
 .tab-item.active .tab-label {
-  color: #111111;
+  color: var(--ds-color-text-primary, #111111);
   font-weight: 600;
 }
 
 /* 深色模式下激活文字颜色 - 使用白色确保可见 */
 .dark-mode .tab-item.active .tab-label {
-  color: #ffffff;
+  color: var(--ds-color-text-inverse, #ffffff);
 }
 
 .red-dot {
@@ -356,9 +403,9 @@ export default {
   right: -4rpx;
   width: 16rpx;
   height: 16rpx;
-  background-color: #ff3b30;
+  background-color: var(--ds-color-error, #ff3b30);
   border-radius: 50%;
-  border: 2rpx solid #ffffff;
+  border: 2rpx solid var(--ds-color-surface, #ffffff);
   transition: border-color 0.3s ease;
 }
 

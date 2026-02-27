@@ -1,5 +1,5 @@
 <template>
-  <div class="section">
+  <view class="section">
     <button
       class="logout-btn ds-font-medium ds-touchable"
       :disabled="isLoggingOut"
@@ -8,7 +8,7 @@
     >
       {{ isLoggingOut ? '退出中...' : '退出登录' }}
     </button>
-  </div>
+  </view>
 </template>
 
 <script setup>

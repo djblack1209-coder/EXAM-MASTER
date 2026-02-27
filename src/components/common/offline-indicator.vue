@@ -3,20 +3,14 @@
     v-if="visible"
     class="offline-indicator"
     :class="[statusClass, { 'offline-indicator--expanded': expanded }]"
-    @click="toggleExpand"
+    @tap="toggleExpand"
   >
     <!-- 简洁模式 -->
     <view class="offline-indicator__compact">
       <view class="offline-indicator__icon">
-        <text v-if="isOffline" class="icon-offline">
-          📴
-        </text>
-        <text v-else-if="isWeakNetwork" class="icon-weak">
-          ⚠️
-        </text>
-        <text v-else class="icon-syncing">
-          🔄
-        </text>
+        <BaseIcon v-if="isOffline" name="offline" :size="28" />
+        <BaseIcon v-else-if="isWeakNetwork" name="warning" :size="28" />
+        <BaseIcon v-else name="refresh" :size="28" />
       </view>
       <text class="offline-indicator__text">
         {{ statusText }}
@@ -75,12 +69,12 @@
           v-if="!isOffline && pendingCount > 0"
           class="action-btn action-btn--sync"
           :disabled="isSyncing"
-          @click.stop="handleSync"
+          @tap.stop="handleSync"
         >
           {{ isSyncing ? '同步中...' : '立即同步' }}
         </button>
 
-        <button class="action-btn action-btn--dismiss" @click.stop="handleDismiss">
+        <button class="action-btn action-btn--dismiss" @tap.stop="handleDismiss">
           暂时忽略
         </button>
       </view>
@@ -92,9 +86,11 @@
 import { logger } from '@/utils/logger.js';
 import { networkMonitor, NETWORK_QUALITY } from '@/utils/core/network-monitor.js';
 import { offlineQueue } from '@/utils/core/offline-queue.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'OfflineIndicator',
+  components: { BaseIcon },
 
   props: {
     // 是否自动显示
@@ -394,8 +390,8 @@ export default {
   transition: all 0.3s ease;
   max-width: 90vw;
 
-  // 默认顶部位置
-  top: calc(var(--status-bar-height, 44px) + 20rpx);
+  // 默认顶部位置 - 统一使用 rpx 避免混用
+  top: calc(var(--status-bar-height, 88rpx) + 20rpx);
 
   &--offline {
     background: rgba(220, 53, 69, 0.9);

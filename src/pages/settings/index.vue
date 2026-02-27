@@ -43,7 +43,7 @@
 
     <!-- 用户信息卡片 - Wise风格重新设计 -->
     <view v-show="!isPageLoading" class="user-card wise-card">
-      <div class="user-header">
+      <view class="user-header">
         <view class="avatar-section" @tap="handleAvatarClick">
           <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
             <image
@@ -60,7 +60,7 @@
             已登录
           </view>
         </view>
-        <div class="user-info-section">
+        <view class="user-info-section">
           <input
             type="nickname"
             class="nickname-input"
@@ -70,25 +70,25 @@
             maxlength="20"
             @blur="onNicknameChange"
           />
-          <div class="info-grid">
-            <div class="info-item" @tap="handleEditSchool">
+          <view class="info-grid">
+            <view class="info-item" @tap="handleEditSchool">
               <text class="info-label">
                 报考院校
               </text>
               <text class="info-value">
                 {{ userSchoolInfo.school || '未设置' }}
               </text>
-            </div>
-            <div class="info-item" @tap="handleEditMajor">
+            </view>
+            <view class="info-item" @tap="handleEditMajor">
               <text class="info-label">
                 报考专业
               </text>
               <text class="info-value">
                 {{ userSchoolInfo.major || '未设置' }}
               </text>
-            </div>
-          </div>
-        </div>
+            </view>
+          </view>
+        </view>
 
         <!-- 目标院校管理弹窗 -->
         <view v-if="showTargetSchoolsModal" class="modal-mask" @tap="showTargetSchoolsModal = false">
@@ -117,6 +117,7 @@
                   <image
                     class="target-avatar"
                     :src="school.logo || '/static/images/default-avatar.png'"
+                    mode="aspectFill"
                     lazy-load
                     @error="
                       (e) => {
@@ -142,25 +143,25 @@
             </view>
           </view>
         </view>
-      </div>
-      <div class="stats-section">
-        <div class="stat-card">
+      </view>
+      <view class="stats-section">
+        <view class="stat-card">
           <text class="stat-value">
             {{ studyDays }}
           </text>
           <text class="stat-label">
             坚持天数
           </text>
-        </div>
-        <div class="stat-card" @tap="handleTargetSchoolClick">
+        </view>
+        <view class="stat-card" @tap="handleTargetSchoolClick">
           <text class="stat-value">
             {{ targetSchools.length }}
           </text>
           <text class="stat-label">
             目标院校
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
     </view>
 
     <!-- F002: 好友入口（已提取为独立组件） -->
@@ -170,54 +171,54 @@
     <AITutorList :target-schools="targetSchools" @start-chat="startAIChat" />
 
     <!-- 设置选项 - 优化样式 -->
-    <div class="section">
-      <div class="settings-list">
+    <view class="section">
+      <view class="settings-list">
         <!-- 语音伴学 -->
-        <div class="setting-item ds-flex ds-flex-between">
-          <div class="setting-info">
+        <view class="setting-item ds-flex ds-flex-between">
+          <view class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium">
               AI 语音伴学
             </text>
             <text class="setting-desc ds-text-xs">
               导师回答后自动朗读
             </text>
-          </div>
+          </view>
           <switch
             :color="isDark ? 'var(--primary)' : 'var(--primary)'"
             :checked="isVoiceEnabled"
             @change="toggleVoice"
           />
-        </div>
+        </view>
 
         <!-- 深色模式（自动切换 Wise/Bitget 主题） -->
-        <div class="setting-item ds-flex ds-flex-between">
-          <div class="setting-info">
+        <view class="setting-item ds-flex ds-flex-between">
+          <view class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium">
               深色模式
             </text>
             <text class="setting-desc ds-text-xs">
               护眼模式，夜间更舒适
             </text>
-          </div>
+          </view>
           <switch :color="isDark ? 'var(--primary)' : 'var(--primary)'" :checked="isDark" @change="toggleDark" />
-        </div>
+        </view>
 
         <!-- 清除缓存 -->
-        <div class="setting-item ds-flex ds-flex-between ds-touchable" @tap="handleClearCache">
-          <div class="setting-info">
+        <view class="setting-item ds-flex ds-flex-between ds-touchable" @tap="handleClearCache">
+          <view class="setting-info">
             <text class="setting-title ds-text-sm ds-font-medium">
               清除缓存数据
             </text>
             <text class="setting-desc ds-text-xs">
               释放存储空间
             </text>
-          </div>
+          </view>
           <text class="cache-size ds-text-xs">
             {{ cacheSize }}
           </text>
-        </div>
-      </div>
-    </div>
+        </view>
+      </view>
+    </view>
 
     <!-- 退出登录（已提取为独立组件） -->
     <LogoutButton @logged-out="userInfo = {}" />
@@ -228,7 +229,7 @@
       <view v-if="deletionStatus.status === 'pending_deletion'" class="deletion-pending-card">
         <view class="deletion-pending-header">
           <text class="deletion-pending-icon">
-            ⚠️
+            <BaseIcon name="warning" :size="32" />
           </text>
           <text class="deletion-pending-title">
             账号注销中
@@ -237,22 +238,22 @@
         <text class="deletion-pending-desc">
           剩余 {{ deletionStatus.remainingDays }} 天后将永久删除所有数据，冷静期内可撤销
         </text>
-        <div class="deletion-cancel-btn ds-touchable" @tap="handleCancelDeletion">
+        <view class="deletion-cancel-btn ds-touchable" @tap="handleCancelDeletion">
           <text class="deletion-cancel-text">
             撤销注销
           </text>
-        </div>
+        </view>
       </view>
       <!-- 正常状态：显示注销按钮 -->
-      <div v-else class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
+      <view v-else class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
         <text class="delete-account-text">
           注销账号
         </text>
-      </div>
+      </view>
     </view>
 
     <!-- 底部安全区域 -->
-    <div class="footer-safe"></div>
+    <view class="footer-safe" />
 
     <!-- F005: 移除非 tabBar 页面的自定义导航栏 -->
 
@@ -303,6 +304,7 @@ import { logger } from '@/utils/logger.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // 基础状态
 const userInfo = ref({});
@@ -344,14 +346,12 @@ onMounted(() => {
   isDark.value = savedTheme === 'dark';
 
   // F003: 存储回调引用，确保 $off 只移除自己的监听器
+  // 两个事件名（themeUpdate / updateTheme）做同一件事，共用同一个 handler
   _themeHandler = (mode) => {
     isDark.value = mode === 'dark';
   };
-  _updateThemeHandler = (mode) => {
-    isDark.value = mode === 'dark';
-  };
+  _updateThemeHandler = _themeHandler;
   uni.$on('themeUpdate', _themeHandler);
-  // ✅ FIX: Register updateTheme listener here (was previously at module scope with null handler)
   uni.$on('updateTheme', _updateThemeHandler);
 });
 
@@ -548,32 +548,10 @@ const handleClearCache = () => {
     content: '确定清理缓存吗？（登录信息和主题设置将保留）',
     success: (res) => {
       if (res.confirm) {
-        // ✅ FIX: Selective cache clear — preserve auth tokens, user info, and theme settings
-        // uni.clearStorageSync() would destroy JWT tokens and log the user out
-        const preserveKeys = [
-          'EXAM_USER_ID',
-          'EXAM_TOKEN',
-          'userInfo',
-          'user_school_info',
-          'theme_mode',
-          'voice_enabled',
-          'target_schools'
-        ];
-        const preserved = {};
-        for (const key of preserveKeys) {
-          try {
-            const val = storageService.get(key);
-            if (val !== undefined && val !== null) {
-              preserved[key] = val;
-            }
-          } catch (_e) {
-            /* ignore */
-          }
-        }
-        uni.clearStorageSync();
-        for (const [key, val] of Object.entries(preserved)) {
-          storageService.save(key, val);
-        }
+        storageService.clear(true, {
+          preserveGlobal: true,
+          preserveKeys: ['user_school_info', 'target_schools']
+        });
         loadData();
         uni.showToast({ title: '缓存已清理', icon: 'success' });
       }
@@ -788,20 +766,15 @@ const onChooseAvatar = (e) => {
       // 保存用户信息到本地
       storageService.save('userInfo', userInfo.value);
       logger.log('[Settings] ✅ 头像已保存到本地存储');
-      // 强制触发响应式更新（确保头像立即显示）
-      const updatedUserInfo = { ...userInfo.value };
-      userInfo.value = {};
-      _timers.push(
-        setTimeout(() => {
-          userInfo.value = updatedUserInfo;
-        }, 50)
-      );
+      // 触发响应式更新（Vue 3 Proxy 可直接赋值触发）
+      userInfo.value = { ...userInfo.value };
       // 显示成功提示
       uni.showToast({ title: '头像已更新', icon: 'success' });
       // ✅ F020: 异步上传到服务器（不阻塞本地保存）
       _uploadAvatarToServer(avatarUrl);
-      // 如果没有登录，完成登录流程
-      if (!userInfo.value.uid) {
+      // 如果没有登录，完成登录流程（在清空前保存 uid 判断）
+      const needLogin = !userInfo.value.uid;
+      if (needLogin) {
         doRealLogin();
       }
     }
@@ -822,18 +795,13 @@ const onChooseAvatar = (e) => {
             userInfo.value.nickName = '考研人';
           }
           storageService.save('userInfo', userInfo.value);
-          // 强制触发响应式更新
-          const updatedInfo = { ...userInfo.value };
-          userInfo.value = {};
-          _timers.push(
-            setTimeout(() => {
-              userInfo.value = updatedInfo;
-            }, 50)
-          );
+          // 触发响应式更新
+          userInfo.value = { ...userInfo.value };
           uni.showToast({ title: '头像已更新', icon: 'success' });
           // ✅ F020: 异步上传到服务器
           _uploadAvatarToServer(tempFilePath);
-          if (!userInfo.value.uid) {
+          const needLogin = !userInfo.value.uid;
+          if (needLogin) {
             doRealLogin();
           }
         }
@@ -931,7 +899,13 @@ const doRealLogin = async () => {
     userInfo.value.nickName = '考研人';
   }
   if (!userInfo.value.uid) {
-    userInfo.value.uid = 'USER_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    // 安全修复：使用加密安全的随机 ID 替代 Math.random()
+    const randomBytes = new Uint8Array(16);
+    crypto.getRandomValues(randomBytes);
+    const hex = Array.from(randomBytes)
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+    userInfo.value.uid = 'USER_' + hex;
   }
   saveUserInfo();
   uni.showToast({ title: '信息已保存', icon: 'success' });
@@ -954,17 +928,11 @@ const saveUserInfo = () => {
     storageService.save('EXAM_USER_ID', userInfo.value.uid, true);
   }
 
-  // 强制触发响应式更新
-  const updatedInfo = { ...userInfo.value };
-  userInfo.value = {};
-  _timers.push(
-    setTimeout(() => {
-      userInfo.value = updatedInfo;
-    }, 50)
-  );
+  // 触发响应式更新（Vue 3 Proxy 直接赋值即可）
+  userInfo.value = { ...userInfo.value };
 
   // 通知其他页面用户信息已更新
-  uni.$emit('userInfoUpdated', updatedInfo);
+  uni.$emit('userInfoUpdated', userInfo.value);
 };
 
 // 头像点击事件处理（优化：确保登录功能正常）

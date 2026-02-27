@@ -113,17 +113,12 @@
           </view>
           <view class="achievement-grid">
             <view v-for="(badge, index) in achievements" :key="index" class="achievement-item">
-              <text class="achievement-icon">
-                {{ badge.icon }}
-              </text>
-              <text class="achievement-name">
-                {{ badge.name }}
-              </text>
+              <BaseIcon :name="badge.icon" :size="40" class="achievement-icon" />
             </view>
             <view v-if="achievements.length === 0" class="achievement-item empty">
-              <text class="achievement-icon">
-                🏅
-              </text>
+              <view class="achievement-icon">
+                <BaseIcon name="medal" :size="40" />
+              </view>
               <text class="achievement-name">
                 暂无成就
               </text>
@@ -140,9 +135,7 @@
           </view>
           <view class="activity-list">
             <view v-for="(activity, index) in recentActivities" :key="index" class="activity-item">
-              <text class="activity-icon">
-                {{ activity.icon }}
-              </text>
+              <BaseIcon :name="activity.icon" :size="32" class="activity-icon" />
               <view class="activity-content">
                 <text class="activity-text">
                   {{ activity.text }}
@@ -153,9 +146,9 @@
               </view>
             </view>
             <view v-if="recentActivities.length === 0" class="activity-item empty">
-              <text class="activity-icon">
-                📝
-              </text>
+              <view class="activity-icon">
+                <BaseIcon name="note" :size="32" />
+              </view>
               <view class="activity-content">
                 <text class="activity-text">
                   暂无动态
@@ -173,9 +166,7 @@
             :disabled="isActionLoading"
             @tap="handlePKChallenge"
           >
-            <text class="btn-icon">
-              🔥
-            </text>
+            <BaseIcon name="flame" :size="32" class="btn-icon" />
             <text class="btn-text">
               发起 PK 挑战
             </text>
@@ -192,9 +183,7 @@
             :disabled="isActionLoading"
             @tap="handleRemoveFriend"
           >
-            <text class="btn-icon">
-              👋
-            </text>
+            <BaseIcon name="heart" :size="32" class="btn-icon" />
             <text class="btn-text">
               删除好友
             </text>
@@ -213,9 +202,11 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'FriendProfile',
+  components: { BaseIcon },
   data() {
     return {
       isDark: false,
@@ -295,7 +286,7 @@ export default {
 
       if (this.friendInfo.studyDays > 0) {
         activities.push({
-          icon: '📅',
+          icon: 'calendar',
           text: `已坚持学习 ${this.friendInfo.studyDays} 天`,
           time: '持续中'
         });
@@ -303,7 +294,7 @@ export default {
 
       if (this.friendInfo.score > 0) {
         activities.push({
-          icon: '🏆',
+          icon: 'trophy',
           text: `累计获得 ${this.friendInfo.score} 分`,
           time: '总计'
         });
@@ -311,7 +302,7 @@ export default {
 
       if (this.friendInfo.accuracy > 0) {
         activities.push({
-          icon: '🎯',
+          icon: 'target',
           text: `答题正确率达到 ${this.friendInfo.accuracy}%`,
           time: '当前'
         });

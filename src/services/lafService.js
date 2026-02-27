@@ -83,7 +83,7 @@
  * ⚠️ 隐藏约束（Chesterton's Fence）：
  * - _requestSign 使用 FNV-1a 而非 crypto：小程序环境无原生 crypto API
  * - proxyAI 中 response.code = 0 强制注入：兼容新旧 API 格式的桥接补丁
- * - getStudyStats 中动态 import storageService：避免循环依赖
+ * - getStudyStats 使用原生存储读取本地兜底：避免 storageService 循环依赖
  * - unlockAchievement 中直接用 uni.setStorageSync：同上，避免循环依赖
  * - 所有业务方法都是 this.request() 的薄封装，不宜拆分到独立文件
  *
@@ -127,6 +127,9 @@ function _requestSign(path, timestamp) {
  * @typedef {Object} RequestOptions
  * @property {Object} [headers] - 自定义请求头
  * @property {boolean} [skipAuth] - 是否跳过认证
+ * @property {boolean} [skipNetworkCheck] - 是否跳过网络连通性检查
+ * @property {boolean} [skipRateLimit] - 是否跳过前端限流
+ * @property {boolean} [skipCache] - 是否跳过只读缓存
  * @property {number} [maxRetries] - 最大重试次数（默认2）
  * @property {number} [timeout] - 请求超时毫秒数（默认30000）
  */
@@ -245,6 +248,38 @@ function delay(attempt, baseDelay = 1000) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function getStorageValue(key, defaultValue) {
+  try {
+    if (typeof uni !== 'undefined' && typeof uni.getStorageSync === 'function') {
+      const value = uni.getStorageSync(key);
+      return value === '' || value === undefined || value === null ? defaultValue : value;
+    }
+
+    if (typeof localStorage !== 'undefined') {
+      const prefixedRaw = localStorage.getItem(`__exam_storage__:${key}`);
+      if (prefixedRaw) {
+        const prefixedParsed = JSON.parse(prefixedRaw);
+        if (prefixedParsed && Object.prototype.hasOwnProperty.call(prefixedParsed, 'value')) {
+          return prefixedParsed.value;
+        }
+        return prefixedParsed ?? defaultValue;
+      }
+
+      const raw = localStorage.getItem(key);
+      if (raw !== null) {
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return raw;
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return defaultValue;
+}
+
 // 启动时配置信息（仅开发环境）
 if (process.env.NODE_ENV !== 'production') {
   logger.log('[LafService] 配置信息:', { BASE_URL, ENV: 'development' });
@@ -276,20 +311,44 @@ const _cache = new Map(); // key → { data, expiry } — Map 保持插入顺序
 const _inflight = new Map(); // key → Promise
 
 // 定期清理过期缓存（每60秒），避免内存泄漏
+// ✅ P1-2: 支持停止清理（热重载安全 + 可测试）
 let _cacheCleanupTimer = null;
 function _startCacheCleanup() {
   if (_cacheCleanupTimer) return;
   _cacheCleanupTimer = setInterval(() => {
     const now = Date.now();
-    for (const [key, entry] of _cache) {
+    _cache.forEach((entry, key) => {
       if (now >= entry.expiry) _cache.delete(key);
-    }
+    });
   }, 60000);
+}
+function _stopCacheCleanup() {
+  if (_cacheCleanupTimer) {
+    clearInterval(_cacheCleanupTimer);
+    _cacheCleanupTimer = null;
+  }
 }
 _startCacheCleanup();
 
-function _cacheKey(path, data) {
-  return path + ':' + JSON.stringify(data);
+function _cacheKey(path, data, scope = 'public') {
+  return path + ':' + scope + ':' + JSON.stringify(data);
+}
+
+function _getAuthCacheScope(options = {}) {
+  if (options.skipAuth) return 'public';
+  try {
+    const userId = getUserId();
+    if (userId) return `uid:${userId}`;
+
+    const token = getToken();
+    if (token) {
+      // 不缓存完整 token，仅使用短指纹进行隔离
+      return `token:${token.slice(-12)}`;
+    }
+  } catch (_e) {
+    // ignore
+  }
+  return 'anon';
 }
 
 function _getCache(key) {
@@ -392,7 +451,8 @@ export const lafService = {
     // ✅ 2.4: 请求去重 + 缓存（仅对只读 action 生效）
     const action = data && data.action;
     const isCacheable = !options.skipCache && action && CACHEABLE_ACTIONS.has(action);
-    const cKey = isCacheable ? _cacheKey(path, data) : null;
+    const cacheScope = isCacheable ? _getAuthCacheScope(options) : null;
+    const cKey = isCacheable ? _cacheKey(path, data, cacheScope) : null;
 
     if (isCacheable) {
       // 命中缓存直接返回
@@ -565,7 +625,7 @@ export const lafService = {
    *
    * @param {string} action - 操作类型：'generate_questions'(生成题目) | 'analyze'(错题分析) | 'chat'(通用聊天)
    * @param {Object} payload - 请求数据，根据 action 不同而不同
-   * @param {Object} options - 可选配置 { model }
+   * @param {Object} _options - 可选配置 { model }
    * @returns {Promise} 返回格式：兼容 { success: true, data: ... } 和 { code: 0, data: ... }
    *
    * @example
@@ -639,16 +699,22 @@ export const lafService = {
         userId: userId
       });
 
-      // ✅ 问题清单修复：AI 请求超时保护（独立超时，比普通请求更长）
+      // ✅ P1-2: AI 请求超时保护（修复 setTimeout 泄漏）
       const aiTimeout = _options.timeout || config.ai.timeout || 60000;
+      let timeoutId;
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('AI_TIMEOUT')), aiTimeout);
+        timeoutId = setTimeout(() => reject(new Error('AI_TIMEOUT')), aiTimeout);
       });
 
-      const response = await Promise.race([
-        this.request('/proxy-ai', requestData, { timeout: aiTimeout, maxRetries: 1 }),
-        timeoutPromise
-      ]);
+      let response;
+      try {
+        response = await Promise.race([
+          this.request('/proxy-ai', requestData, { timeout: aiTimeout, maxRetries: 1 }),
+          timeoutPromise
+        ]);
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       logger.log('[LafService] 📡 原始响应:', {
         hasSuccess: 'success' in response,
@@ -835,12 +901,12 @@ export const lafService = {
       logger.warn('[LafService] 获取学习统计失败，降级使用本地数据:', error);
       // P004: 降级到本地存储数据，而非返回错误
       try {
-        const storageService = (await import('@/services/storageService.js')).default;
-        const localStats = storageService.get('study_stats', {});
-        const bankCount = storageService.get('v30_bank', []).length;
-        const mistakeCount = storageService.get('mistake_book', []).length;
+        const localStats = getStorageValue('study_stats', {});
+        const bankCount = getStorageValue('v30_bank', []).length;
+        const mistakeCount = getStorageValue('mistake_book', []).length;
         return {
           code: 0,
+          success: true,
           data: {
             totalQuestions: bankCount,
             totalMistakes: mistakeCount,

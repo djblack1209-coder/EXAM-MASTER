@@ -22,7 +22,7 @@
     <!-- 成功状态 -->
     <view v-else-if="loginSuccess" class="success-section">
       <view class="success-icon">
-        ✓
+        <BaseIcon name="success" :size="64" />
       </view>
       <text class="success-text">
         登录成功
@@ -55,6 +55,7 @@ import { ref, onMounted } from 'vue';
 import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // 状态
 const isDark = ref(false);
@@ -79,6 +80,9 @@ const saveLoginInfo = (data) => {
   storageService.save('EXAM_TOKEN', data.token, true);
   storageService.save('EXAM_USER_ID', userInfo.uid, true);
   // ✅ B021-3: 移除明文 user_id 冗余存储，统一使用加密的 EXAM_USER_ID
+
+  // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
+  storageService.migrateUserKeys();
 
   // 通知其他页面登录状态变化
   uni.$emit('loginStatusChanged', true);
@@ -127,8 +131,9 @@ const handleQQCallback = async () => {
     // 清除保存的state（无论验证是否通过，都应清除，防止重放）
     storageService.remove('qq_oauth_state');
 
-    if (savedState && state !== savedState) {
-      logger.warn('[QQ-Callback] State验证失败:', { received: state, saved: savedState });
+    // 安全修复：savedState 为空时也应拒绝（防止绕过 CSRF 检查）
+    if (!savedState || state !== savedState) {
+      logger.warn('[QQ-Callback] State验证失败:', { received: state, hasSaved: !!savedState });
       throw new Error('安全验证失败，请重新登录');
     }
 

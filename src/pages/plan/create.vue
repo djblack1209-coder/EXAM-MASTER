@@ -61,9 +61,7 @@
             <text class="date-text">
               {{ plan.startDate }}
             </text>
-            <text class="date-icon">
-              📅
-            </text>
+            <BaseIcon name="calendar" :size="28" class="date-icon" />
           </view>
         </view>
 
@@ -75,9 +73,7 @@
             <text class="date-text">
               {{ plan.endDate }}
             </text>
-            <text class="date-icon">
-              📅
-            </text>
+            <BaseIcon name="calendar" :size="28" class="date-icon" />
           </view>
         </view>
 
@@ -125,9 +121,7 @@
             <text class="time-text">
               {{ plan.reminderTime }}
             </text>
-            <text class="time-icon">
-              ⏰
-            </text>
+            <BaseIcon name="clock" :size="28" class="time-icon" />
           </view>
         </view>
 
@@ -194,6 +188,7 @@
 import { storageService } from '@/services/storageService.js';
 import { debounce } from '@/utils/throttle.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // 输入验证：过滤危险字符和 Emoji
 const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
@@ -211,6 +206,9 @@ const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
 };
 
 export default {
+  components: {
+    BaseIcon
+  },
   data() {
     // formatDate 内联：data() 执行时 methods 尚未绑定到 this
     const formatDateInline = (date) => {
@@ -284,13 +282,14 @@ export default {
         placeholderText: this.plan.startDate,
         success: (res) => {
           if (res.confirm && res.content) {
-            // 验证日期格式 YYYY-MM-DD
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            if (dateRegex.test(res.content.trim())) {
-              this.plan.startDate = res.content.trim();
+            const trimmed = res.content.trim();
+            // 验证日期格式和语义有效性
+            const parsed = new Date(trimmed);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
+              this.plan.startDate = trimmed;
               this.onInputChange();
             } else {
-              uni.showToast({ title: '请输入正确格式：YYYY-MM-DD', icon: 'none' });
+              uni.showToast({ title: '请输入有效日期：YYYY-MM-DD', icon: 'none' });
             }
           }
         }
@@ -303,12 +302,18 @@ export default {
         placeholderText: this.plan.endDate,
         success: (res) => {
           if (res.confirm && res.content) {
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            if (dateRegex.test(res.content.trim())) {
-              this.plan.endDate = res.content.trim();
+            const trimmed = res.content.trim();
+            const parsed = new Date(trimmed);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
+              // 校验结束日期必须晚于开始日期
+              if (this.plan.startDate && trimmed <= this.plan.startDate) {
+                uni.showToast({ title: '结束日期必须晚于开始日期', icon: 'none' });
+                return;
+              }
+              this.plan.endDate = trimmed;
               this.onInputChange();
             } else {
-              uni.showToast({ title: '请输入正确格式：YYYY-MM-DD', icon: 'none' });
+              uni.showToast({ title: '请输入有效日期：YYYY-MM-DD', icon: 'none' });
             }
           }
         }
@@ -520,7 +525,6 @@ export default {
   border-radius: 16rpx;
   background: var(--bg-card);
   border: 2rpx solid var(--border-light);
-  cursor: pointer;
   transition: all 0.2s;
   box-shadow: var(--shadow-sm);
 }
@@ -553,7 +557,6 @@ export default {
   font-size: 26rpx;
   color: var(--text-secondary);
   transition: all 0.2s;
-  cursor: pointer;
   &.active {
     background: var(--success-green);
     color: var(--text-inverse);
@@ -578,7 +581,6 @@ export default {
   font-size: 28rpx;
   font-weight: bold;
   transition: all 0.2s;
-  cursor: pointer;
   &.low {
     background: var(--bg-success-light);
     color: var(--success-green);

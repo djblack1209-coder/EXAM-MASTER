@@ -67,7 +67,7 @@ export default {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(20rpx);
+  backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -225,14 +225,14 @@ export default {
 .poster-btn-secondary {
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  backdrop-filter: blur(10rpx);
+  backdrop-filter: blur(5px);
 }
 
 .poster-btn-primary {
   background: rgba(255, 255, 255, 0.9);
   color: #667eea;
 }
-.dark-mode .poster-btn-primary {
+.poster-dark .poster-btn-primary {
   background: rgba(255, 255, 255, 0.15);
   color: #a0b4ff;
 }

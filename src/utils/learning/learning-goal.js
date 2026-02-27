@@ -22,7 +22,7 @@ const GOAL_TYPES = {
     id: 'daily_questions',
     name: '每日刷题',
     unit: '道',
-    icon: '📝',
+    icon: 'note',
     defaultValue: 20,
     minValue: 5,
     maxValue: 200
@@ -31,7 +31,7 @@ const GOAL_TYPES = {
     id: 'daily_accuracy',
     name: '每日正确率',
     unit: '%',
-    icon: '🎯',
+    icon: 'target',
     defaultValue: 70,
     minValue: 50,
     maxValue: 100
@@ -40,7 +40,7 @@ const GOAL_TYPES = {
     id: 'daily_time',
     name: '每日学习时长',
     unit: '分钟',
-    icon: '⏰',
+    icon: 'clock',
     defaultValue: 60,
     minValue: 15,
     maxValue: 480
@@ -49,7 +49,7 @@ const GOAL_TYPES = {
     id: 'weekly_questions',
     name: '每周刷题',
     unit: '道',
-    icon: '📚',
+    icon: 'books',
     defaultValue: 100,
     minValue: 20,
     maxValue: 1000
@@ -58,7 +58,7 @@ const GOAL_TYPES = {
     id: 'streak_days',
     name: '连续学习天数',
     unit: '天',
-    icon: '🔥',
+    icon: 'flame',
     defaultValue: 7,
     minValue: 3,
     maxValue: 365
@@ -67,7 +67,7 @@ const GOAL_TYPES = {
     id: 'weak_point_improve',
     name: '薄弱知识点提升',
     unit: '个',
-    icon: '💪',
+    icon: 'muscle',
     defaultValue: 3,
     minValue: 1,
     maxValue: 20
@@ -505,7 +505,7 @@ class LearningGoalManager {
     const message = this.getMotivationalMessage(goal);
 
     this._sendNotification({
-      title: '🎉 目标达成！',
+      title: '目标达成！',
       content: message,
       data: { type: 'goal_completed', goal }
     });

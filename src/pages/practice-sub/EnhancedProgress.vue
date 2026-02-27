@@ -155,108 +155,108 @@ const statusClass = computed(() => {
 
 <style lang="scss" scoped>
 .enhanced-progress {
-    width: 100%;
-    padding: var(--spacing-md);
-    background: var(--bg-card);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-1);
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
 }
 
 .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
 }
 
 .progress-label {
-    font-size: 28rpx;
-    color: var(--text-secondary);
-    font-weight: var(--font-weight-medium);
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
 }
 
 .progress-value {
-    font-size: 40rpx;
-    font-weight: var(--font-weight-bold);
-    transition: color var(--transition) var(--ease);
+  font-size: 40rpx;
+  font-weight: var(--font-weight-bold);
+  transition: color var(--transition) var(--ease);
 }
 
 .progress-bar-container {
-    position: relative;
-    width: 100%;
-    height: 8px;
-    background: var(--bg-hover);
-    border-radius: var(--radius-full);
-    overflow: visible;
-    margin-bottom: var(--spacing-sm);
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: var(--bg-hover);
+  border-radius: var(--radius-full);
+  overflow: visible;
+  margin-bottom: var(--spacing-sm);
 }
 
 .optimal-range {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    background: rgba(159, 232, 112, 0.1);
-    border-radius: var(--radius-sm);
-    z-index: 1;
-    transition: all var(--transition) var(--ease);
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgba(159, 232, 112, 0.1);
+  border-radius: var(--radius-sm);
+  z-index: 1;
+  transition: all var(--transition) var(--ease);
 }
 
 .progress-bar {
-    position: relative;
-    height: 100%;
-    border-radius: var(--radius-full);
-    z-index: 2;
-    width: 0;
-    transform-origin: left;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
+  position: relative;
+  height: 100%;
+  border-radius: var(--radius-full);
+  z-index: 2;
+  width: 100%;
+  transform-origin: left;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
 
-    // 品牌色光晕
-    &.progress-bar--brand {
-        box-shadow: var(--shadow-glow-brand);
-    }
+  // 品牌色光晕
+  &.progress-bar--brand {
+    box-shadow: var(--shadow-glow-brand);
+  }
 
-    // 温暖色光晕
-    &.progress-bar--warm {
-        box-shadow: var(--shadow-glow-warm);
-    }
+  // 温暖色光晕
+  &.progress-bar--warm {
+    box-shadow: var(--shadow-glow-warm);
+  }
 
-    // 冷静色光晕
-    &.progress-bar--cool {
-        box-shadow: var(--shadow-glow-cool);
-    }
+  // 冷静色光晕
+  &.progress-bar--cool {
+    box-shadow: var(--shadow-glow-cool);
+  }
 
-    // 能量色光晕
-    &.progress-bar--energy {
-        box-shadow: var(--shadow-glow-energy);
-    }
+  // 能量色光晕
+  &.progress-bar--energy {
+    box-shadow: var(--shadow-glow-energy);
+  }
 }
 
 .progress-hint {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 24rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24rpx;
 }
 
 .hint-text {
-    color: var(--text-tertiary);
+  color: var(--text-tertiary);
 }
 
 .hint-status {
-    font-weight: var(--font-weight-semibold);
-    transition: color var(--transition) var(--ease);
+  font-weight: var(--font-weight-semibold);
+  transition: color var(--transition) var(--ease);
 
-    &.status-low {
-        color: var(--accent-energy);
-    }
+  &.status-low {
+    color: var(--accent-energy);
+  }
 
-    &.status-optimal {
-        color: var(--brand-color);
-    }
+  &.status-optimal {
+    color: var(--brand-color);
+  }
 
-    &.status-high {
-        color: var(--warning);
-    }
+  &.status-high {
+    color: var(--warning);
+  }
 }
 </style>

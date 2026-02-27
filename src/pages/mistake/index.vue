@@ -33,13 +33,13 @@
         <StatsCard
           title="错题总数"
           :value="mistakes.length"
-          icon="📝"
+          icon="note"
           :is-dark="isDark"
         />
         <StatsCard
           title="待复习"
           :value="pendingReviewCount"
-          icon="🔄"
+          icon="refresh"
           change="需要巩固"
           change-type="neutral"
           :is-dark="isDark"
@@ -48,9 +48,7 @@
 
       <!-- ✅ P1: 重练模式提示 -->
       <view v-if="isReviewMode && mistakes.length > 0" class="review-mode-banner">
-        <text class="review-icon">
-          🔄
-        </text>
+        <BaseIcon name="refresh" :size="40" class="review-icon" />
         <view class="review-info">
           <text class="review-title">
             错题重练模式
@@ -105,9 +103,7 @@
 
       <!-- 空状态 - 优化样式 -->
       <view v-if="mistakes.length === 0 && !isInitLoading" class="empty-box ds-flex-col ds-flex-center">
-        <text class="empty-icon">
-          🎉
-        </text>
+        <BaseIcon name="celebrate" :size="160" class="empty-icon" />
         <text class="empty-title ds-text-lg ds-font-bold">
           太厉害了！
         </text>
@@ -118,7 +114,7 @@
           刷题过程中答错的题目会自动收录到这里
         </text>
         <view class="go-practice-btn ds-touchable" @tap="goBack">
-          <text>📝 去刷题</text>
+          <BaseIcon name="pen" :size="28" /><text>去刷题</text>
         </view>
       </view>
 
@@ -140,9 +136,7 @@
           :disabled="isClearing"
           @tap="clearAllMistakes"
         >
-          <text class="clear-all-icon">
-            🗑️
-          </text>
+          <BaseIcon name="delete" :size="36" class="clear-all-icon" />
           <text class="clear-all-text ds-text-sm ds-font-semibold">
             {{ isClearing ? '清空中...' : '清空所有错题' }}
           </text>
@@ -172,13 +166,15 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   components: {
     MistakeSkeleton,
     StatsCard,
     MistakeCard,
-    MistakeReport
+    MistakeReport,
+    BaseIcon
   },
   data() {
     return {
@@ -468,7 +464,9 @@ export default {
 
       // 同时将错题临时写入题库，确保 do-quiz 页面能读取
       const currentBank = storageService.get('v30_bank', []);
-      storageService.save('v30_bank_backup', currentBank); // 备份原题库
+      if (currentBank.length > 0) {
+        storageService.save('v30_bank_backup', currentBank); // 备份原题库
+      }
       storageService.save('v30_bank', reviewQuestions); // 临时替换为错题
       storageService.save('is_review_mode', true); // 标记为复习模式
 
@@ -478,11 +476,8 @@ export default {
         },
         fail: (err) => {
           logger.error('[mistake-book] ❌ 跳转失败:', err);
-          // 恢复原题库
-          const backup = storageService.get('v30_bank_backup', []);
-          if (backup.length > 0) {
-            storageService.save('v30_bank', backup);
-          }
+          // 立即恢复原题库
+          this._restoreOriginalBank();
           storageService.remove('is_review_mode');
         }
       });
@@ -512,21 +507,10 @@ export default {
               // 获取所有错题的 ID
               const mistakeIds = this.mistakes.map((m) => m.id || m._id).filter(Boolean);
 
-              // 批量删除云端错题
-              let deletedCount = 0;
-              for (const id of mistakeIds) {
-                try {
-                  const result = await storageService.removeMistake(id);
-                  if (result.success) {
-                    deletedCount++;
-                  }
-                } catch (error) {
-                  logger.warn(`[mistake-book] ⚠️ 删除错题失败: ${id}`, error);
-                }
-              }
-
-              // 清空本地缓存
-              storageService.remove('mistake_book');
+              // P2-4: 批量删除云端错题（单次请求替代 N+1 逐条删除）
+              // batchRemoveMistakes 内部已同步清理本地缓存
+              const result = await storageService.batchRemoveMistakes(mistakeIds);
+              const deletedCount = result.deleted || 0;
 
               // 清空列表
               this.mistakes = [];
@@ -561,6 +545,19 @@ export default {
           }
         }
       });
+    },
+    // 恢复原始题库（从备份中还原）
+    _restoreOriginalBank() {
+      try {
+        const backup = storageService.get('v30_bank_backup', []);
+        if (backup.length > 0) {
+          storageService.save('v30_bank', backup);
+          logger.log('[mistake-book] ✅ 原题库已恢复');
+        }
+        storageService.remove('v30_bank_backup');
+      } catch (e) {
+        logger.error('[mistake-book] ❌ 恢复原题库失败:', e);
+      }
     },
     switchMode(newMode) {
       this.mode = newMode;

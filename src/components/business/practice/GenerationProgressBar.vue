@@ -2,7 +2,7 @@
   <view class="generation-progress-bar">
     <view class="progress-header">
       <view class="progress-icon">
-        📚
+        <BaseIcon name="books" :size="32" />
       </view>
       <view class="progress-info">
         <text class="progress-label">
@@ -62,8 +62,11 @@
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
 export default {
   name: 'GenerationProgressBar',
+  components: { BaseIcon },
   props: {
     progress: { type: Number, default: 0 },
     fileName: { type: String, default: '' },
@@ -93,56 +96,140 @@ export default {
   flex-direction: column;
   gap: 16px;
 }
-.progress-header { display: flex; align-items: center; gap: 12px; }
-.progress-icon { font-size: 64rpx; flex-shrink: 0; }
-.progress-info { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
-.progress-label { font-size: 32rpx; color: var(--text-primary); font-weight: 600; }
-.progress-detail {
-  font-size: 24rpx; color: var(--text-sub);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-.progress-percent { font-size: 48rpx; font-weight: 700; color: var(--primary); flex-shrink: 0; }
-.progress-bar-wrapper { width: 100%; }
+.progress-icon {
+  font-size: 64rpx;
+  flex-shrink: 0;
+}
+.progress-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.progress-label {
+  font-size: 32rpx;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.progress-detail {
+  font-size: 24rpx;
+  color: var(--text-sub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.progress-percent {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+.progress-bar-wrapper {
+  width: 100%;
+}
 .progress-bar-bg {
-  width: 100%; height: 10px;
-  background: var(--primary-light); border-radius: 5px; overflow: hidden;
+  width: 100%;
+  height: 10px;
+  background: var(--primary-light);
+  border-radius: 5px;
+  overflow: hidden;
 }
 .progress-bar-fill {
-  height: 100%; background: var(--gradient-primary);
-  border-radius: 5px; transition: width 0.3s ease; position: relative;
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+  position: relative;
 }
 .progress-bar-fill::after {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   animation: shimmer 1.5s infinite;
 }
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
-.progress-footer { display: flex; justify-content: space-between; align-items: center; }
-.progress-status { font-size: 28rpx; color: var(--text-sub); }
+.progress-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.progress-status {
+  font-size: 28rpx;
+  color: var(--text-sub);
+}
 .pause-btn-small {
-  padding: 8px 16px; background: var(--warning-light); color: var(--warning);
-  border-radius: 16px; font-size: 28rpx; border: none; font-weight: 500;
+  padding: 8px 16px;
+  background: var(--warning-light);
+  color: var(--warning);
+  border-radius: 16px;
+  font-size: 28rpx;
+  border: none;
+  font-weight: 500;
 }
-.pause-btn-small::after { border: none; }
-.progress-steps { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; }
-.step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.pause-btn-small::after {
+  border: none;
+}
+.progress-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
 .step-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: var(--border); transition: all 0.3s ease;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s ease;
 }
 .step-item.active .step-dot {
   background: var(--primary);
   box-shadow: 0 0 8px rgba(var(--primary-rgb, 16, 185, 129), 0.4);
 }
-.step-item.done .step-dot { background: var(--primary); }
-.step-label { font-size: 22rpx; color: var(--text-sub); white-space: nowrap; }
-.step-item.active .step-label { color: var(--primary); font-weight: 500; }
-.step-line {
-  flex: 1; height: 2px; background: var(--border);
-  margin: 0 4px; margin-bottom: 20px; transition: background 0.3s ease;
+.step-item.done .step-dot {
+  background: var(--primary);
 }
-.step-line.done { background: var(--primary); }
+.step-label {
+  font-size: 22rpx;
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+.step-item.active .step-label {
+  color: var(--primary);
+  font-weight: 500;
+}
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin: 0 4px;
+  margin-bottom: 20px;
+  transition: background 0.3s ease;
+}
+.step-line.done {
+  background: var(--primary);
+}
 </style>

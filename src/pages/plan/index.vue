@@ -36,9 +36,7 @@
       <!-- 智能提醒卡片 -->
       <view v-if="intelligentReminders.length > 0" class="glass-card reminder-card">
         <view class="reminder-header">
-          <text class="reminder-icon">
-            🤖
-          </text>
+          <BaseIcon name="robot" :size="32" class="reminder-icon" />
           <text class="reminder-title">
             智能提醒
           </text>
@@ -63,7 +61,7 @@
       <!-- 空状态 -->
       <BaseEmpty
         v-if="plans.length === 0"
-        icon="📅"
+        icon="calendar"
         title="还没有学习计划"
         desc="创建一个学习计划，让备考更有条理！"
         :show-button="true"
@@ -124,7 +122,7 @@
             class="adjustments-section"
           >
             <text class="adjustments-title">
-              💡 智能建议
+              <BaseIcon name="bulb" :size="24" /> 智能建议
             </text>
             <view
               v-for="(adjustment, adjIndex) in plan.analytics.recommendedAdjustments"
@@ -191,7 +189,7 @@
         </view>
 
         <view class="plan-footer ds-flex ds-flex-between">
-          <view class="category-tag" :class="plan.priority">
+          <view class="category-tag" :class="plan.category">
             <text class="ds-text-xs ds-font-bold">
               {{ plan.category }}
             </text>
@@ -223,16 +221,18 @@
 <script>
 import { storageService } from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PlanSkeleton from './components/plan-skeleton/plan-skeleton.vue';
 import { intelligentPlanManager } from './intelligent-plan-manager.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 
 export default {
   components: {
     BaseEmpty,
+    BaseIcon,
     PlanSkeleton
   },
   data() {
@@ -285,12 +285,7 @@ export default {
       this.intelligentReminders = await intelligentPlanManager.getIntelligentReminders();
     },
     createPlan() {
-      if (!isUserLoggedIn()) {
-        uni.showToast({ title: '请先登录后创建计划', icon: 'none' });
-        return;
-      }
-      // 跳转到创建计划页面
-      safeNavigateTo('/pages/plan/create');
+      requireLogin(() => safeNavigateTo('/pages/plan/create'), { message: '请先登录后创建计划' });
     },
     goBack() {
       uni.navigateBack();
@@ -325,12 +320,25 @@ export default {
       return 'neutral';
     },
     viewPlanDetail(plan) {
-      // 查看计划详情
       logger.log('[Plan] 查看计划详情:', plan.id);
-      // 这里可以跳转到计划详情页面
-      uni.showToast({
-        title: '计划详情功能开发中',
-        icon: 'none'
+      // 构建详情文本展示
+      const tasksDone = plan.tasks ? plan.tasks.filter((t) => t.completed).length : 0;
+      const tasksTotal = plan.tasks ? plan.tasks.length : 0;
+      const lines = [
+        `📌 ${plan.name}`,
+        `🎯 目标：${plan.goal || '未设置'}`,
+        `📅 ${plan.startDate} → ${plan.endDate}`,
+        `⏱ 每日 ${plan.dailyDuration || '未设置'}`,
+        tasksTotal > 0 ? `✅ 任务进度：${tasksDone}/${tasksTotal}` : null,
+        plan.analytics ? `📈 完成率：${plan.analytics.completionRate}%` : null
+      ]
+        .filter(Boolean)
+        .join('\n');
+      uni.showModal({
+        title: '计划详情',
+        content: lines,
+        showCancel: false,
+        confirmText: '关闭'
       });
     },
     adjustPlan(planId) {

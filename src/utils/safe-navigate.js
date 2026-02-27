@@ -34,6 +34,11 @@ function isTabBarPage(url) {
  * @param {boolean} [options.silent=false] - 失败时是否静默（不显示toast）
  */
 export function safeNavigateTo(url, options = {}) {
+  if (!url || typeof url !== 'string') {
+    logger.warn('[safeNavigate] invalid url:', url);
+    return;
+  }
+
   const { success, fail, complete, silent = false, ...rest } = options;
 
   // ✅ F014: tabBar 页面自动使用 switchTab

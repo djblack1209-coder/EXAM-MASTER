@@ -1,7 +1,11 @@
 /**
  * Token 刷新插件
  * 管理 Token 的存取、过期检测、自动刷新和并发去重
+ *
+ * ✅ P0修复：通过 storageService 加密存储，不再明文写入
  */
+
+import { storageService } from '@/services/storageService.js';
 
 const TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
@@ -35,17 +39,17 @@ class TokenRefreshPlugin {
   }
 
   /**
-   * 保存 Token
+   * 保存 Token（通过 storageService 加密存储）
    */
   saveTokens(accessToken, refreshToken, expiresIn) {
     try {
-      uni.setStorageSync(TOKEN_KEY, accessToken);
+      storageService.save(TOKEN_KEY, accessToken, true);
       if (refreshToken) {
-        uni.setStorageSync(REFRESH_TOKEN_KEY, refreshToken);
+        storageService.save(REFRESH_TOKEN_KEY, refreshToken, true);
       }
       if (expiresIn) {
         const expireTime = Date.now() + expiresIn * 1000;
-        uni.setStorageSync(TOKEN_EXPIRE_KEY, expireTime);
+        storageService.save(TOKEN_EXPIRE_KEY, expireTime, true);
       }
     } catch (_e) {
       // 静默
@@ -57,7 +61,7 @@ class TokenRefreshPlugin {
    */
   getAccessToken() {
     try {
-      return uni.getStorageSync(TOKEN_KEY) || null;
+      return storageService.get(TOKEN_KEY, null);
     } catch (_e) {
       return null;
     }
@@ -68,7 +72,7 @@ class TokenRefreshPlugin {
    */
   getRefreshToken() {
     try {
-      return uni.getStorageSync(REFRESH_TOKEN_KEY) || null;
+      return storageService.get(REFRESH_TOKEN_KEY, null);
     } catch (_e) {
       return null;
     }
@@ -79,9 +83,9 @@ class TokenRefreshPlugin {
    */
   clearTokens() {
     try {
-      uni.removeStorageSync(TOKEN_KEY);
-      uni.removeStorageSync(REFRESH_TOKEN_KEY);
-      uni.removeStorageSync(TOKEN_EXPIRE_KEY);
+      storageService.remove(TOKEN_KEY, true);
+      storageService.remove(REFRESH_TOKEN_KEY, true);
+      storageService.remove(TOKEN_EXPIRE_KEY, true);
     } catch (_e) {
       // 静默
     }
@@ -92,7 +96,7 @@ class TokenRefreshPlugin {
    */
   isTokenExpired() {
     try {
-      const expireTime = uni.getStorageSync(TOKEN_EXPIRE_KEY);
+      const expireTime = storageService.get(TOKEN_EXPIRE_KEY, null);
       if (!expireTime) return true;
       return Date.now() >= expireTime;
     } catch (_e) {
@@ -105,7 +109,7 @@ class TokenRefreshPlugin {
    */
   isTokenExpiringSoon() {
     try {
-      const expireTime = uni.getStorageSync(TOKEN_EXPIRE_KEY);
+      const expireTime = storageService.get(TOKEN_EXPIRE_KEY, null);
       if (!expireTime) return false;
       return Date.now() >= expireTime - PRE_CHECK_BUFFER && Date.now() < expireTime;
     } catch (_e) {

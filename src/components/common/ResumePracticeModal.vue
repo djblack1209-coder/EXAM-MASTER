@@ -4,9 +4,7 @@
       <!-- 头部 -->
       <view class="modal-header">
         <view class="header-icon">
-          <text class="icon-emoji">
-            {{ iconEmoji }}
-          </text>
+          <BaseIcon :name="iconName" :size="24" />
         </view>
         <text class="header-title">
           {{ title }}
@@ -70,8 +68,11 @@
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
 export default {
   name: 'ResumePracticeModal',
+  components: { BaseIcon },
   props: {
     visible: {
       type: Boolean,
@@ -86,7 +87,7 @@ export default {
       default: 'quiz' // quiz, pk, import
     }
   },
-  emits: ['resume', 'restart'],
+  emits: ['resume', 'restart', 'close'],
   computed: {
     title() {
       const titles = {
@@ -96,11 +97,11 @@ export default {
       };
       return titles[this.type] || titles.quiz;
     },
-    iconEmoji() {
+    iconName() {
       const icons = {
-        quiz: '📝',
-        pk: '⚔️',
-        import: '📥'
+        quiz: 'note',
+        pk: 'sword',
+        import: 'download'
       };
       return icons[this.type] || icons.quiz;
     },
@@ -115,7 +116,7 @@ export default {
   },
   methods: {
     handleMaskClick() {
-      // 点击遮罩不关闭，强制用户做出选择
+      this.$emit('close');
     },
     handleResume() {
       this.$emit('resume', this.draftInfo);
@@ -232,9 +233,9 @@ export default {
 }
 
 .modal-tip-text {
-	font-size: 26rpx;
-	color: var(--text-secondary, #666);
-	line-height: 1.6;
+  font-size: 26rpx;
+  color: var(--text-secondary, #666);
+  line-height: 1.6;
 }
 
 .modal-actions {
@@ -305,7 +306,7 @@ export default {
 }
 
 .dark-mode .modal-tip-text {
-	color: var(--text-secondary-dark, #8e8e93);
+  color: var(--text-secondary-dark, #8e8e93);
 }
 
 .dark-mode .btn-secondary {

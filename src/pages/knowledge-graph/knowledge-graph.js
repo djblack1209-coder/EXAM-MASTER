@@ -45,10 +45,10 @@ const PREDEFINED_CATEGORIES = {
 
 // 掌握度等级配置
 const MASTERY_LEVELS = {
-  master: { min: 80, color: '#4CAF50', label: '已掌握', icon: '✓' },
-  proficient: { min: 60, color: '#2196F3', label: '熟练', icon: '◐' },
-  learning: { min: 40, color: '#FF9800', label: '学习中', icon: '○' },
-  weak: { min: 0, color: '#F44336', label: '薄弱', icon: '✗' }
+  master: { min: 80, color: '#4CAF50', label: '已掌握', icon: 'check' },
+  proficient: { min: 60, color: '#2196F3', label: '熟练', icon: 'loading' },
+  learning: { min: 40, color: '#FF9800', label: '学习中', icon: 'question' },
+  weak: { min: 0, color: '#F44336', label: '薄弱', icon: 'cross' }
 };
 
 /**

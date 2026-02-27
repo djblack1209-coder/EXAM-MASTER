@@ -101,19 +101,38 @@ export function throttle(fn, interval = 300, options = {}) {
  * 带缓存的计算函数
  * @param {Function} fn - 计算函数
  * @param {Function} resolver - 缓存键生成函数
+ * @param {Object} options - 可选配置
+ * @param {number} [options.maxSize] - 最大缓存条目数，默认 500
  * @returns {Function} 带缓存的函数
  */
-export function memoize(fn, resolver) {
+export function memoize(fn, resolver, options = { maxSize: 500 }) {
+  // 兼容 memoize(fn, { maxSize }) 调用方式
+  if (typeof resolver === 'object' && resolver !== null) {
+    options = resolver;
+    resolver = undefined;
+  }
+
+  const maxSize = Math.max(1, Number(options.maxSize) || 500);
   const cache = new Map();
 
   const memoized = function (...args) {
     const key = resolver ? resolver.apply(this, args) : args[0];
 
     if (cache.has(key)) {
-      return cache.get(key);
+      // LRU：命中后刷新 key 顺序
+      const hit = cache.get(key);
+      cache.delete(key);
+      cache.set(key, hit);
+      return hit;
     }
 
     const result = fn.apply(this, args);
+
+    if (cache.size >= maxSize) {
+      const firstKey = cache.keys().next().value;
+      cache.delete(firstKey);
+    }
+
     cache.set(key, result);
     return result;
   };
@@ -286,7 +305,7 @@ export class PerformanceMonitor {
    * @param {string} name - 标记名称
    */
   mark(name) {
-    this.marks.set(name, performance.now());
+    this.marks.set(name, typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
   }
 
   /**
@@ -298,7 +317,11 @@ export class PerformanceMonitor {
    */
   measure(name, startMark, endMark) {
     const startTime = this.marks.get(startMark);
-    const endTime = endMark ? this.marks.get(endMark) : performance.now();
+    const endTime = endMark
+      ? this.marks.get(endMark)
+      : typeof performance !== 'undefined' && performance.now
+        ? performance.now()
+        : Date.now();
 
     if (startTime === undefined) {
       logger.warn(`Mark "${startMark}" not found`);
@@ -396,11 +419,12 @@ export const perfMonitor = new PerformanceMonitor();
  */
 export const performanceMixin = {
   beforeCreate() {
-    this._perfStartTime = performance.now();
+    this._perfStartTime = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
   },
 
   mounted() {
-    const duration = performance.now() - this._perfStartTime;
+    const now = typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+    const duration = now - this._perfStartTime;
     if (duration > 100) {
       logger.warn(
         `[Performance] Component ${this.$options.name || 'Anonymous'} took ${duration.toFixed(2)}ms to mount`

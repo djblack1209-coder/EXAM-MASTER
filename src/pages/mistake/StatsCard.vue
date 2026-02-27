@@ -16,26 +16,24 @@
         <text class="stats-card__value">
           {{ value }}
         </text>
-        <text
-          v-if="change"
-          :class="['stats-card__change', `stats-card__change--${changeType}`]"
-        >
+        <text v-if="change" :class="['stats-card__change', `stats-card__change--${changeType}`]">
           {{ change }}
         </text>
       </view>
 
       <view :class="['stats-card__icon', isDark ? 'stats-card__icon--dark' : 'stats-card__icon--light']">
-        <text class="stats-card__icon-text">
-          {{ icon }}
-        </text>
+        <BaseIcon :name="icon" :size="48" class="stats-card__icon-text" />
       </view>
     </view>
   </view>
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
 export default {
   name: 'StatsCard',
+  components: { BaseIcon },
   props: {
     title: {
       type: String,
@@ -148,11 +146,11 @@ export default {
     margin-top: 4px;
 
     &--positive {
-      color: #10B981;
+      color: #10b981;
     }
 
     &--negative {
-      color: #EF4444;
+      color: #ef4444;
     }
 
     &--neutral {

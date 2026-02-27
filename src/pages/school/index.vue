@@ -34,9 +34,7 @@
       <view class="step-bar glass-card ds-flex ds-flex-center">
         <view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 1 }]">
           <view class="step-dot ds-flex-center ds-rounded-full">
-            <text v-if="currentStep > 1">
-              ✓
-            </text>
+            <BaseIcon v-if="currentStep > 1" name="check" :size="24" />
             <text v-else>
               1
             </text>
@@ -48,9 +46,7 @@
         <view class="step-line" :class="{ active: currentStep >= 2 }" />
         <view :class="['step-item', 'ds-flex-col', 'ds-flex-center', { active: currentStep >= 2 }]">
           <view class="step-dot ds-flex-center ds-rounded-full">
-            <text v-if="currentStep > 2">
-              ✓
-            </text>
+            <BaseIcon v-if="currentStep > 2" name="check" :size="24" />
             <text v-else>
               2
             </text>
@@ -223,9 +219,7 @@
             :loading="isSubmitting"
             @tap="submitForm"
           >
-            <text v-if="!isSubmitting">
-              ✨
-            </text>
+            <BaseIcon v-if="!isSubmitting" name="sparkle" :size="28" />
             {{ isSubmitting ? 'AI 分析中...' : '开始 AI 择校匹配' }}
           </button>
         </view>
@@ -258,9 +252,7 @@
 
         <!-- 院校统计信息提示 -->
         <view v-if="filteredSchools.length > 0" class="info-banner glass-card">
-          <text class="info-icon">
-            📊
-          </text>
+          <BaseIcon class="info-icon" name="chart-bar" :size="28" />
           <text class="info-text ds-text-xs">
             全国约有923所大学具有研究生招生资格，另有培养研究生的机构233所
           </text>
@@ -279,9 +271,10 @@
                 <text class="sc-name ds-text-lg ds-font-bold">
                   {{ school.name }}
                 </text>
-                <text class="sc-loc ds-text-xs">
-                  📍 {{ school.location }}
-                </text>
+                <view class="sc-loc ds-text-xs" style="display: inline-flex; align-items: center; gap: 4rpx">
+                  <BaseIcon name="target" :size="22" />
+                  <text>{{ school.location }}</text>
+                </view>
               </view>
               <view class="sc-tags ds-flex ds-gap-xs">
                 <text v-for="(tag, tIdx) in school.tags" :key="tIdx" class="tag-item ds-text-xs ds-font-semibold">
@@ -360,9 +353,7 @@
         </view>
 
         <view v-if="filteredSchools.length === 0" class="empty-tip ds-flex-col ds-flex-center ds-gap-sm">
-          <text class="empty-icon">
-            🏫
-          </text>
+          <BaseIcon class="empty-icon" name="graduation" :size="80" />
           <text class="empty-title ds-text-base ds-font-semibold">
             暂无推荐院校数据
           </text>
@@ -404,7 +395,7 @@
 
       <!-- 信息提示 -->
       <view v-if="currentStep === 1" class="info-tip">
-        <text>🔒</text>
+        <BaseIcon name="lock" :size="24" />
         <text>您的数据仅用于 AI 模型本地分析，不会被公开</text>
       </view>
     </scroll-view>
@@ -507,11 +498,76 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
+
+// P2-6: 默认院校列表提取为模块级冻结常量，避免每次调用创建新数组
+let _defaultSchools = null;
+function getDefaultSchoolsFrozen() {
+  if (!_defaultSchools) {
+    const base = config.externalCdn.dicebearBaseUrl;
+    _defaultSchools = Object.freeze([
+      {
+        id: 'demo_1',
+        name: '北京大学',
+        location: '北京',
+        matchRate: 85,
+        isTarget: false,
+        logo: `${base}/initials/svg?seed=PKU&backgroundColor=663399`,
+        tags: ['985', '211', '双一流'],
+        majors: []
+      },
+      {
+        id: 'demo_2',
+        name: '清华大学',
+        location: '北京',
+        matchRate: 82,
+        isTarget: false,
+        logo: `${base}/initials/svg?seed=THU&backgroundColor=663399`,
+        tags: ['985', '211', '双一流'],
+        majors: []
+      },
+      {
+        id: 'demo_3',
+        name: '复旦大学',
+        location: '上海',
+        matchRate: 88,
+        isTarget: false,
+        logo: `${base}/initials/svg?seed=FDU&backgroundColor=663399`,
+        tags: ['985', '211', '双一流'],
+        majors: []
+      },
+      {
+        id: 'demo_4',
+        name: '浙江大学',
+        location: '浙江',
+        matchRate: 90,
+        isTarget: false,
+        logo: `${base}/initials/svg?seed=ZJU&backgroundColor=663399`,
+        tags: ['985', '211', '双一流'],
+        majors: []
+      },
+      {
+        id: 'demo_5',
+        name: '上海交通大学',
+        location: '上海',
+        matchRate: 86,
+        isTarget: false,
+        logo: `${base}/initials/svg?seed=SJTU&backgroundColor=663399`,
+        tags: ['985', '211', '双一流'],
+        majors: []
+      }
+    ]);
+  }
+  return _defaultSchools;
+}
 
 export default {
   components: {
+    PrivacyPopup,
     CustomTabbar,
-    SchoolSkeleton
+    SchoolSkeleton,
+    BaseIcon
   },
   data() {
     return {
@@ -526,76 +582,6 @@ export default {
 
       formData: { school: '', currentMajor: '', targetSchool: '', targetMajor: '', degree: 'bk', englishCert: '' },
       englishCertificates: ['无', 'B级', 'A级', '四级', '六级', '专四', '专八', '雅思', '托福', 'GRE', 'GMAT'],
-
-      // 学硕专业列表
-      academicMajors: [
-        '计算机科学与技术',
-        '软件工程',
-        '信息与通信工程',
-        '电子科学与技术',
-        '控制科学与工程',
-        '机械工程',
-        '土木工程',
-        '建筑学',
-        '管理科学与工程',
-        '工商管理',
-        '应用经济学',
-        '理论经济学',
-        '法学',
-        '马克思主义理论',
-        '中国语言文学',
-        '外国语言文学',
-        '新闻传播学',
-        '基础医学',
-        '临床医学',
-        '药学',
-        '数学',
-        '物理学',
-        '化学',
-        '其他'
-      ],
-
-      // 专硕专业列表
-      professionalMajors: [
-        '电子信息',
-        '机械',
-        '材料与化工',
-        '资源与环境',
-        '能源动力',
-        '土木水利',
-        '生物与医药',
-        '交通运输',
-        '工商管理(MBA)',
-        '公共管理(MPA)',
-        '会计(MPAcc)',
-        '金融',
-        '应用统计',
-        '税务',
-        '国际商务',
-        '保险',
-        '资产评估',
-        '审计',
-        '法律',
-        '社会工作',
-        '警务',
-        '教育',
-        '汉语国际教育',
-        '应用心理',
-        '翻译',
-        '新闻与传播',
-        '出版',
-        '文物与博物馆',
-        '建筑学',
-        '城市规划',
-        '临床医学',
-        '口腔医学',
-        '公共卫生',
-        '护理',
-        '药学',
-        '中药学',
-        '艺术',
-        '其他'
-      ],
 
       filter: { location: '', tag: '' },
       locations: ['北京', '上海', '浙江', '江苏', '湖北', '四川'],
@@ -694,7 +680,7 @@ export default {
     filteredSchools() {
       return this.schoolList.filter((school) => {
         const matchLoc = this.filter.location ? school.location === this.filter.location : true;
-        const matchTag = this.filter.tag ? school.tags.includes(this.filter.tag) : true;
+        const matchTag = this.filter.tag ? (school.tags || []).includes(this.filter.tag) : true;
         return matchLoc && matchTag;
       });
     },
@@ -705,9 +691,7 @@ export default {
       return c;
     }
   },
-  watch: {
-    // 保留 watch 但移除 masterType 监听，因为不再使用
-  },
+  watch: {},
   methods: {
     // 问题53：初始化网络状态监听
     initNetworkListener() {
@@ -757,10 +741,6 @@ export default {
       }
       this.currentStep = 2;
     },
-    updateMajorOptions(_type) {
-      // ✅ F006: 已废弃 - 专业选择器功能已移除，保留空方法避免调用报错
-      logger.warn('[School] updateMajorOptions 已废弃');
-    },
     handleBack() {
       if (this.currentStep === 3) {
         this.currentStep = 2;
@@ -797,7 +777,7 @@ export default {
           return;
         } else {
           // 无缓存时使用默认数据
-          this.schoolList = this.getDefaultSchools();
+          this.schoolList = [...getDefaultSchoolsFrozen()];
           this.hasRealData = false;
           logger.log('[school] ⚠️ 离线且无缓存，使用示例数据');
           uni.showToast({
@@ -868,7 +848,7 @@ export default {
       }
 
       // 3. 无数据时使用示例数据作为兜底
-      this.schoolList = this.getDefaultSchools();
+      this.schoolList = [...getDefaultSchoolsFrozen()];
       this.hasRealData = false;
       logger.log('[school] ⚠️ 暂无真实院校数据，使用示例数据');
     },
@@ -877,60 +857,6 @@ export default {
      * 获取默认示例数据（用于无数据时的兜底显示）
      * 提供示例数据帮助用户了解功能
      */
-    getDefaultSchools() {
-      return [
-        {
-          id: 'demo_1',
-          name: '北京大学',
-          location: '北京',
-          matchRate: 85,
-          isTarget: false,
-          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=PKU&backgroundColor=663399`,
-          tags: ['985', '211', '双一流'],
-          majors: []
-        },
-        {
-          id: 'demo_2',
-          name: '清华大学',
-          location: '北京',
-          matchRate: 82,
-          isTarget: false,
-          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=THU&backgroundColor=663399`,
-          tags: ['985', '211', '双一流'],
-          majors: []
-        },
-        {
-          id: 'demo_3',
-          name: '复旦大学',
-          location: '上海',
-          matchRate: 88,
-          isTarget: false,
-          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=FDU&backgroundColor=663399`,
-          tags: ['985', '211', '双一流'],
-          majors: []
-        },
-        {
-          id: 'demo_4',
-          name: '浙江大学',
-          location: '浙江',
-          matchRate: 90,
-          isTarget: false,
-          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=ZJU&backgroundColor=663399`,
-          tags: ['985', '211', '双一流'],
-          majors: []
-        },
-        {
-          id: 'demo_5',
-          name: '上海交通大学',
-          location: '上海',
-          matchRate: 86,
-          isTarget: false,
-          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=SJTU&backgroundColor=663399`,
-          tags: ['985', '211', '双一流'],
-          majors: []
-        }
-      ];
-    },
     bindEnglishCertChange(e) {
       this.formData.englishCert = this.englishCertificates[e.detail.value];
     },
@@ -976,7 +902,7 @@ export default {
                 this.currentStep = 3;
                 uni.showToast({ title: '显示缓存数据', icon: 'none' });
               } else {
-                this.schoolList = this.getDefaultSchools();
+                this.schoolList = [...getDefaultSchoolsFrozen()];
                 this.hasRealData = false;
                 this.currentStep = 3;
                 uni.showToast({ title: '无缓存，显示示例数据', icon: 'none' });
@@ -993,7 +919,7 @@ export default {
       logger.log('[school] 📊 表单数据:', JSON.stringify(this.formData, null, 2));
 
       // 验证毕业院校名称
-      if (!this.formData.school || !/^[\u4e00-\u9fa5a-zA-Z0-9\s\-·]+$/.test(this.formData.school.trim())) {
+      if (!this.formData.school || !/^[\u4e00-\u9fa5a-zA-Z0-9\s\-·()（）]+$/.test(this.formData.school.trim())) {
         logger.warn('[school] ⚠️ 表单验证失败: 毕业院校名称无效');
         this.isSubmitting = false;
         return uni.showToast({ title: '请输入有效的毕业院校名称', icon: 'none' });
@@ -1073,8 +999,29 @@ export default {
           logger.log('[school]  AI 返回内容长度:', content.length);
 
           try {
-            const parsedData = JSON.parse(content);
-            logger.log('[school] ✅ JSON 解析成功');
+            // AI 可能返回 JSON 或自然语言文本，需要安全解析
+            let parsedData = null;
+            try {
+              parsedData = JSON.parse(content);
+              logger.log('[school] ✅ JSON 解析成功');
+            } catch (_jsonErr) {
+              // AI 返回了自然语言文本，尝试从文本中提取 JSON 块
+              const jsonMatch = content.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
+              if (jsonMatch) {
+                try {
+                  parsedData = JSON.parse(jsonMatch[0]);
+                  logger.log('[school] ✅ 从文本中提取 JSON 成功');
+                } catch {
+                  parsedData = null;
+                }
+              }
+              if (!parsedData) {
+                logger.warn('[school] ⚠️ AI 返回非 JSON 格式，显示空状态');
+                this.schoolList = [];
+                this.hasRealData = false;
+                return;
+              }
+            }
 
             // 更新院校数据
             let schoolsList = [];
@@ -2011,7 +1958,10 @@ export default {
 /* 筛选弹窗 */
 .filter-mask {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 200;
   display: flex;

@@ -98,9 +98,9 @@
         </view>
 
         <view v-else-if="resources.length === 0" class="empty-box">
-          <text class="empty-icon">
-            📭
-          </text>
+          <view class="empty-icon">
+            <BaseIcon name="empty" :size="80" />
+          </view>
           <text class="empty-text">
             暂无推荐资源
           </text>
@@ -208,8 +208,10 @@
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getWindowInfo as _getWindowInfo, getPixelRatio } from '@/utils/core/system.js';
 import { lafService } from '@/services/lafService.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
+  components: { BaseIcon },
   data() {
     return {
       statusBarHeight: 44,
@@ -920,7 +922,8 @@ export default {
         },
         fail: (err) => {
           logger.warn('navigateBack failed:', err);
-          // 回退失败时，使用 reLaunch 跳转首页
+          // 回退失败时，重置导航锁再跳首页（goToHome 会重新加锁）
+          this.isNavigating = false;
           this.goToHome();
         }
       });
@@ -1003,19 +1006,20 @@ export default {
 .resource-panel {
   position: fixed;
   top: 0;
-  right: -100%;
+  right: 0;
   width: 85%;
   max-width: 600rpx;
   height: 100vh;
   background: rgba(10, 10, 26, 0.95);
   backdrop-filter: blur(20px);
   z-index: 9998;
-  transition: right 0.3s ease;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
   display: flex;
   flex-direction: column;
 
   &.panel-visible {
-    right: 0;
+    transform: translateX(0);
   }
 
   .panel-header {
@@ -1240,7 +1244,6 @@ export default {
     padding: 16rpx 32rpx; // 增大点击区域
     min-width: 80rpx;
     min-height: 80rpx;
-    cursor: pointer;
 
     .nav-icon {
       font-size: 40rpx; // 增大图标

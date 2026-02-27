@@ -249,7 +249,7 @@ export function savePKDraft(data) {
       ...data,
       savedAt: Date.now()
     };
-    storageService.save(DRAFT_KEYS.PK_DRAFT, JSON.stringify(draft));
+    storageService.save(DRAFT_KEYS.PK_DRAFT, draft);
     logger.log('[DraftDetector] PK草稿已保存');
   } catch (error) {
     logger.error('[DraftDetector] 保存PK草稿失败:', error);
@@ -266,7 +266,7 @@ export function saveImportDraft(data) {
       ...data,
       savedAt: Date.now()
     };
-    storageService.save(DRAFT_KEYS.IMPORT_DRAFT, JSON.stringify(draft));
+    storageService.save(DRAFT_KEYS.IMPORT_DRAFT, draft);
     logger.log('[DraftDetector] 导入草稿已保存');
   } catch (error) {
     logger.error('[DraftDetector] 保存导入草稿失败:', error);

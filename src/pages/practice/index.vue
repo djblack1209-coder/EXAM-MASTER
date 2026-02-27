@@ -45,23 +45,23 @@
     <!-- 状态卡片 -->
     <view v-if="!isPageLoading" class="status-card" :class="{ 'empty-state': !hasBank }">
       <!-- 有题库状态 -->
-      <div v-if="hasBank" class="status-content">
-        <div class="status-icon">
+      <view v-if="hasBank" class="status-content">
+        <view class="status-icon">
           <image
             class="icon-image"
             src="/static/icons/practice/icon-library.png"
             mode="aspectFit"
             :style="isDark ? 'filter: brightness(0) invert(1) opacity(0.9);' : ''"
           />
-        </div>
-        <div class="status-info">
-          <h3 class="status-title">
+        </view>
+        <view class="status-info">
+          <view class="status-title">
             题库就绪
-          </h3>
-          <p class="status-desc">
+          </view>
+          <view class="status-desc">
             当前已收录 {{ totalQuestions }} 道真题
-          </p>
-        </div>
+          </view>
+        </view>
         <view class="status-actions">
           <view class="manage-btn" @tap="showQuizManage">
             <image
@@ -75,30 +75,26 @@
             </text>
           </view>
         </view>
-      </div>
+      </view>
 
       <!-- 空状态 - 居中显示 -->
-      <div v-else class="empty-state-content" @tap="chooseImportSource">
-        <div class="empty-icon">
-          <text class="empty-icon-emoji">
-            📚
-          </text>
-        </div>
-        <h3 class="empty-title">
+      <view v-else class="empty-state-content" @tap="chooseImportSource">
+        <view class="empty-icon">
+          <BaseIcon name="books" :size="64" />
+        </view>
+        <view class="empty-title">
           题库空空如也
-        </h3>
-        <p class="empty-desc">
+        </view>
+        <view class="empty-desc">
           导入学习资料，AI 为您智能生成专属题库
-        </p>
+        </view>
         <view class="empty-action">
-          <text class="action-icon-emoji">
-            📤
-          </text>
+          <BaseIcon name="upload" :size="18" />
           <text class="action-text">
             点击导入资料
           </text>
         </view>
-      </div>
+      </view>
     </view>
 
     <!-- 学习数据统计卡片 -->
@@ -125,7 +121,7 @@
     />
 
     <!-- 主要操作区 -->
-    <div v-if="!isPageLoading" class="main-actions">
+    <view v-if="!isPageLoading" class="main-actions">
       <!-- 开始刷题按钮 - ✅ F022: 添加加载状态和点击反馈 -->
       <button
         v-if="hasBank"
@@ -167,212 +163,204 @@
       </button>
 
       <!-- 导入资料卡片 -->
-      <div class="import-card" :class="{ 'import-loading': isUploadingFile }" @tap="chooseImportSource">
-        <div class="import-icon">
-          <text v-if="!isUploadingFile" class="import-icon-emoji">
-            📤
-          </text>
+      <view class="import-card" :class="{ 'import-loading': isUploadingFile }" @tap="chooseImportSource">
+        <view class="import-icon">
+          <BaseIcon v-if="!isUploadingFile" name="upload" :size="32" />
           <view v-else class="import-spinner" />
-        </div>
-        <div class="import-info">
-          <h3 class="import-title">
+        </view>
+        <view class="import-info">
+          <view class="import-title">
             {{ isUploadingFile ? '正在读取文件...' : '导入学习资料' }}
-          </h3>
-          <p class="import-desc">
+          </view>
+          <view class="import-desc">
             {{ isUploadingFile ? fileName : 'AI 智能分析 · 即刻出题' }}
-          </p>
-        </div>
-        <div class="import-arrow">
+          </view>
+        </view>
+        <view class="import-arrow">
           <text v-if="!isUploadingFile" class="arrow">
             ›
           </text>
-        </div>
-      </div>
-    </div>
+        </view>
+      </view>
+    </view>
 
     <PauseBanner :visible="isPaused" @resume="resumeGeneration" />
 
     <!-- 功能菜单 -->
-    <div v-if="!isPageLoading" class="feature-menu">
+    <view v-if="!isPageLoading" class="feature-menu">
       <!-- 文件管理 -->
-      <div class="menu-item" @tap="goFileManager">
-        <div class="menu-icon">
+      <view class="menu-item" @tap="goFileManager">
+        <view class="menu-icon">
           <image
             class="menu-icon-img"
             src="/static/icons/practice/icon-folder.png"
             mode="aspectFit"
             lazy-load
           />
-        </div>
-        <div class="menu-info">
-          <h3 class="menu-title">
+        </view>
+        <view class="menu-info">
+          <view class="menu-title">
             文件管理
-          </h3>
-        </div>
-        <div class="menu-arrow">
+          </view>
+        </view>
+        <view class="menu-arrow">
           <text class="arrow">
             ›
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
 
       <!-- AI导师 -->
-      <div class="menu-item" @tap="goAITutor">
-        <div class="menu-icon">
+      <view class="menu-item" @tap="goAITutor">
+        <view class="menu-icon">
           <image
             class="menu-icon-img"
             src="/static/icons/practice/icon-robot.png"
             mode="aspectFit"
             :style="isDark ? 'filter: brightness(0) invert(1) opacity(0.9);' : ''"
           />
-        </div>
-        <div class="menu-info">
-          <h3 class="menu-title">
+        </view>
+        <view class="menu-info">
+          <view class="menu-title">
             AI导师
-          </h3>
-        </div>
-        <div class="menu-arrow">
+          </view>
+        </view>
+        <view class="menu-arrow">
           <text class="arrow">
             ›
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
 
       <!-- 错题本 -->
-      <div class="menu-item" @tap="goMistake">
-        <div class="menu-icon">
+      <view class="menu-item" @tap="goMistake">
+        <view class="menu-icon">
           <image
             class="menu-icon-img"
             src="/static/icons/practice/icon-error.png"
             mode="aspectFit"
             lazy-load
           />
-        </div>
-        <div class="menu-info">
-          <h3 class="menu-title">
+        </view>
+        <view class="menu-info">
+          <view class="menu-title">
             错题本
-          </h3>
-        </div>
-        <div class="menu-arrow">
+          </view>
+        </view>
+        <view class="menu-arrow">
           <text class="arrow">
             ›
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
 
       <!-- ✅ P1: 错题重练入口 -->
-      <div v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
-        <div class="menu-icon">
-          <text class="menu-icon-emoji">
-            🔄
-          </text>
-        </div>
-        <div class="menu-info">
-          <h3 class="menu-title">
+      <view v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
+        <view class="menu-icon">
+          <BaseIcon name="star" :size="36" />
+        </view>
+        <view class="menu-info">
+          <view class="menu-title">
             错题重练
-          </h3>
-          <p class="menu-subtitle">
+          </view>
+          <view class="menu-subtitle">
             {{ mistakeCount }} 道错题待巩固
-          </p>
-        </div>
-        <div class="menu-arrow">
+          </view>
+        </view>
+        <view class="menu-arrow">
           <text class="arrow">
             ›
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
 
       <!-- 排行榜 -->
-      <div class="menu-item" @tap="goRank">
-        <div class="menu-icon">
+      <view class="menu-item" @tap="goRank">
+        <view class="menu-icon">
           <image
             class="menu-icon-img"
             src="/static/icons/practice/icon-ranking.png"
             mode="aspectFit"
             lazy-load
           />
-        </div>
-        <div class="menu-info">
-          <h3 class="menu-title">
+        </view>
+        <view class="menu-info">
+          <view class="menu-title">
             学霸排行榜
-          </h3>
-        </div>
-        <div class="menu-arrow">
+          </view>
+        </view>
+        <view class="menu-arrow">
           <text class="arrow">
             ›
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
 
       <!-- 学习进度 -->
-      <div class="menu-item" @tap="goToStudyDetail">
-        <div class="menu-icon">
+      <view class="menu-item" @tap="goToStudyDetail">
+        <view class="menu-icon">
           <image
             class="menu-icon-img"
             src="/static/icons/practice/icon-check.png"
             mode="aspectFit"
             lazy-load
           />
-        </div>
-        <div class="menu-info">
-          <h3 class="menu-title">
+        </view>
+        <view class="menu-info">
+          <view class="menu-title">
             总学习进度
-          </h3>
-        </div>
-        <div class="progress-info">
-          <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
-          </div>
+          </view>
+        </view>
+        <view class="progress-info">
+          <view class="progress-bar">
+            <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
+          </view>
           <text class="progress-text">
             {{ progressPercent }}%
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
 
       <!-- ✅ P2: 收藏夹管理入口 -->
-      <div v-if="favoriteCount > 0" class="menu-item" @tap="goFavorites">
-        <div class="menu-icon">
-          <text class="menu-icon-emoji">
-            ⭐
-          </text>
-        </div>
-        <div class="menu-info">
-          <h3 class="menu-title">
+      <view v-if="favoriteCount > 0" class="menu-item" @tap="goFavorites">
+        <view class="menu-icon">
+          <BaseIcon name="star" :size="36" />
+        </view>
+        <view class="menu-info">
+          <view class="menu-title">
             我的收藏
-          </h3>
-          <p class="menu-subtitle-normal">
+          </view>
+          <view class="menu-subtitle-normal">
             {{ favoriteCount }} 道题目
-          </p>
-        </div>
-        <div class="menu-arrow">
+          </view>
+        </view>
+        <view class="menu-arrow">
           <text class="arrow">
             ›
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
 
       <!-- ✅ P1: 练习模式入口 -->
-      <div class="menu-item" @tap="showPracticeModes">
-        <div class="menu-icon">
-          <text class="menu-icon-emoji">
-            🎮
-          </text>
-        </div>
-        <div class="menu-info">
-          <h3 class="menu-title">
+      <view class="menu-item" @tap="showPracticeModes">
+        <view class="menu-icon">
+          <BaseIcon name="target" :size="36" />
+        </view>
+        <view class="menu-info">
+          <view class="menu-title">
             练习模式
-          </h3>
-          <p class="menu-subtitle-normal">
+          </view>
+          <view class="menu-subtitle-normal">
             专项突破 · 限时训练
-          </p>
-        </div>
-        <div class="menu-arrow">
+          </view>
+        </view>
+        <view class="menu-arrow">
           <text class="arrow">
             ›
           </text>
-        </div>
-      </div>
-    </div>
+        </view>
+      </view>
+    </view>
 
     <!-- AI 加载遮罩 -->
     <AiGenerationOverlay
@@ -435,6 +423,7 @@
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import ResumePracticeModal from '@/components/common/ResumePracticeModal.vue';
 import GoalSettingModal from '@/components/business/practice/GoalSettingModal.vue';
@@ -448,8 +437,11 @@ import SpeedReadyModal from '@/components/business/practice/SpeedReadyModal.vue'
 import PauseBanner from '@/components/business/practice/PauseBanner.vue';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { storageService } from '@/services/storageService.js';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { QUOTE_LIBRARY } from '@/config/home-data.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
+import { getFavorites } from '@/utils/favorite/question-favorite.js';
+import { getLearningStats, getWeakKnowledgePoints } from '@/utils/learning/adaptive-learning-engine.js';
 // ✅ 检查点2.2：导入草稿检测器
 import { detectUnfinishedPractice, clearDraft } from '@/utils/practice/draft-detector.js';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -461,6 +453,8 @@ import { practiceNavigationMixin } from '@/mixins/practiceNavigationMixin.js';
 
 export default {
   components: {
+    PrivacyPopup,
+    BaseIcon,
     CustomTabbar,
     ResumePracticeModal,
     GoalSettingModal,
@@ -546,7 +540,6 @@ export default {
       soupTimer: null
     };
   },
-  computed: {},
   onShow() {
     // 原生 tabBar 已移除，无需隐藏
     // F005: 通知 CustomTabbar 重新检测路由
@@ -574,32 +567,42 @@ export default {
 
     // 检查是否有来自其他页面的待处理搜索（tabBar 页面无法通过 query 传参）
     try {
-      const pendingSearch = uni.getStorageSync('_pendingSearch');
+      const pendingSearch = storageService.get('_pendingSearch');
       if (pendingSearch && pendingSearch.keyword && Date.now() - pendingSearch.timestamp < 30000) {
-        uni.removeStorageSync('_pendingSearch');
+        storageService.remove('_pendingSearch');
         // 延迟执行搜索，等 UI 渲染完成
         setTimeout(() => {
           this._searchBankByKeyword(pendingSearch.keyword);
         }, 300);
       } else if (pendingSearch) {
-        uni.removeStorageSync('_pendingSearch'); // 过期清理
+        storageService.remove('_pendingSearch'); // 过期清理
       }
     } catch (_e) {
       /* ignore */
     }
 
     // E005: 延迟非关键读取，让 UI 先渲染
-    setTimeout(() => {
+    this.hydrateMainPackageStats();
+
+    // ✅ P1-3: 等待 mixin 加载完成后再调用 mixin 方法，避免竞态
+    setTimeout(async () => {
       const mistakeBook = storageService.get('mistake_book', []);
       this.mistakeCount = mistakeBook.length;
       this.checkUnfinishedPractice();
+      // 等待 mixin 就绪后再调用其方法
+      if (this._mixinReady) {
+        await this._mixinReady.catch(() => undefined);
+      }
       this.loadLearningStats();
       this.loadFavoriteCount();
     }, 50);
 
     // 恢复后台生成
     if (this.isLooping && this.generatedCount < this.totalQuestionsLimit && !this.isRequestInFlight) {
-      setTimeout(() => {
+      setTimeout(async () => {
+        if (this._mixinReady) {
+          await this._mixinReady.catch(() => undefined);
+        }
         this.generateNextBatch();
       }, 500);
     }
@@ -625,7 +628,8 @@ export default {
     });
 
     // ✅ 动态加载 AI 生成 mixin（从分包按需加载，减小主包体积）
-    this._loadAIGenerationMixin();
+    // ✅ P1-3: 保存 Promise，onShow 可等待加载完成后再调用 mixin 方法
+    this._mixinReady = this._loadAIGenerationMixin();
   },
   onUnload() {
     // 刷新所有防抖待写入数据，确保不丢失
@@ -638,6 +642,28 @@ export default {
     offThemeUpdate();
   },
   methods: {
+    hydrateMainPackageStats() {
+      try {
+        const favorites = getFavorites();
+        this.favoriteCount = Array.isArray(favorites) ? favorites.length : 0;
+      } catch (e) {
+        logger.warn('[practice] 预加载收藏统计失败:', e);
+      }
+
+      try {
+        const stats = getLearningStats();
+        const weakPoints = getWeakKnowledgePoints();
+        const todayQuestions = Number(stats.todayQuestions || 0);
+        const weeklyAccuracy = Number(stats.overallAccuracy || 0);
+
+        this.todayQuestions = Number.isFinite(todayQuestions) ? todayQuestions : this.todayQuestions;
+        this.weeklyAccuracy = Number.isFinite(weeklyAccuracy) ? weeklyAccuracy : this.weeklyAccuracy;
+        this.weakPointsCount = Array.isArray(weakPoints) ? weakPoints.length : this.weakPointsCount;
+      } catch (e) {
+        logger.warn('[practice] 预加载学习统计失败:', e);
+      }
+    },
+
     // ==================== 题库状态管理 ====================
     refreshBankStatus() {
       // E005: 委托给带数据参数的版本，兼容外部直接调用
@@ -852,9 +878,10 @@ export default {
       } catch (e) {
         logger.error('[practice] 分包模块加载失败 (尝试 ' + (retryCount + 1) + '):', e);
         if (retryCount < MAX_RETRIES) {
-          // 指数退避重试：500ms, 1500ms
+          // ✅ P1-3: 用 await 延迟替代 setTimeout，保持 promise 链完整
           const delay = 500 * Math.pow(2, retryCount);
-          setTimeout(() => this._loadAIGenerationMixin(retryCount + 1), delay);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return this._loadAIGenerationMixin(retryCount + 1);
         } else {
           // 重试耗尽，提示用户
           this._mixinLoaded = false;
@@ -911,6 +938,9 @@ export default {
     generateNextBatch() {
       /* mixin 占位 */
     },
+    getGeneratedQuestionCount() {
+      return 0; /* mixin 占位 */
+    },
     openGoalSetting() {
       uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
     },
@@ -954,7 +984,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 40px;
+  margin-top: var(--status-bar-height, 44px);
   margin-bottom: 32px;
   padding: 0 4px;
 }
@@ -980,11 +1010,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.icon-btn:hover {
+/* 小程序不支持 :hover，使用 active 替代 */
+.icon-btn:active {
   background-color: var(--primary);
   transform: scale(1.05);
 }
@@ -993,7 +1023,7 @@ export default {
   background-color: var(--danger-light);
 }
 
-.icon-btn.danger:hover {
+.icon-btn.danger:active {
   background-color: var(--danger);
 }
 
@@ -1008,7 +1038,7 @@ export default {
   transition: all 0.3s ease;
 }
 
-.status-card:hover {
+.status-card:active {
   box-shadow: var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.08));
   transform: translateY(-2px);
 }
@@ -1023,7 +1053,7 @@ export default {
   background: var(--bg-secondary);
 }
 
-.status-card.empty-state:hover {
+.status-card.empty-state:active {
   background: var(--bg-card);
   border-color: var(--primary);
 }
@@ -1475,6 +1505,24 @@ export default {
   height: 80px;
   border-radius: 16px;
   margin-bottom: 20px;
+}
+
+.skeleton-status-card {
+  height: 120px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.skeleton-btn {
+  flex: 1;
+  height: 48px;
+  border-radius: 12px;
 }
 
 .skeleton-menu {

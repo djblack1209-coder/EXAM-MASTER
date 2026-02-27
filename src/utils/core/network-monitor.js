@@ -26,6 +26,63 @@ import { logger } from '@/utils/logger.js';
 // P006: 从中央配置读取网络检测 URL
 import config from '@/config/index.js';
 
+function createNetworkUniCompat() {
+  return {
+    getNetworkType(options = {}) {
+      const { success, fail } = options;
+      try {
+        const online = typeof navigator !== 'undefined' ? navigator.onLine !== false : true;
+        success?.({ networkType: online ? 'wifi' : 'none' });
+      } catch (error) {
+        fail?.(error);
+      }
+    },
+    onNetworkStatusChange(callback) {
+      if (typeof window === 'undefined' || typeof callback !== 'function') return;
+      const onlineHandler = () => callback({ isConnected: true, networkType: 'wifi' });
+      const offlineHandler = () => callback({ isConnected: false, networkType: 'none' });
+      window.addEventListener('online', onlineHandler);
+      window.addEventListener('offline', offlineHandler);
+      this._onlineHandler = onlineHandler;
+      this._offlineHandler = offlineHandler;
+    },
+    offNetworkStatusChange() {
+      if (typeof window === 'undefined') return;
+      if (this._onlineHandler) window.removeEventListener('online', this._onlineHandler);
+      if (this._offlineHandler) window.removeEventListener('offline', this._offlineHandler);
+      this._onlineHandler = null;
+      this._offlineHandler = null;
+    },
+    showToast() {
+      // H5/测试环境静默处理
+    },
+    request(options = {}) {
+      const { url, method = 'GET', timeout = 5000, success, fail } = options;
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = setTimeout(() => controller?.abort(), timeout);
+
+      fetch(url, { method, signal: controller?.signal })
+        .then((response) => {
+          clearTimeout(timer);
+          success?.({ statusCode: response.status, data: null });
+        })
+        .catch((error) => {
+          clearTimeout(timer);
+          fail?.(error);
+        });
+
+      return {
+        abort() {
+          controller?.abort();
+        }
+      };
+    }
+  };
+}
+
+const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
+const uni = globalRef['uni'] || createNetworkUniCompat();
+
 /**
  * 网络类型定义
  */

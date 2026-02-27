@@ -38,9 +38,7 @@
       <view class="operation-zone">
         <view v-if="!fileName" class="upload-trigger glow-effect" @tap="chooseFile">
           <view class="icon-circle">
-            <text class="icon-text">
-              📁
-            </text>
+            <BaseIcon name="folder" :size="48" />
           </view>
           <text class="upload-main-text">
             选择复习资料
@@ -52,9 +50,7 @@
 
         <view v-else class="file-capsule glass-morphism">
           <view class="file-icon-box">
-            <text style="font-size: 56rpx">
-              📄
-            </text>
+            <BaseIcon name="file" :size="56" />
           </view>
           <view class="file-info-col">
             <text class="fname-text text-ellipsis">
@@ -70,7 +66,7 @@
             </view>
           </view>
           <view class="close-btn-circle" @tap.stop="clearFile">
-            <text>✕</text>
+            <BaseIcon name="close" :size="28" />
           </view>
         </view>
       </view>
@@ -85,9 +81,7 @@
           :class="{ disabled: isLooping || !fileName }"
           @tap="startAI"
         >
-          <text style="margin-right: 8px">
-            ✨
-          </text>
+          <BaseIcon name="sparkle" :size="28" style="margin-right: 8px" />
           {{ isLooping ? 'AI 正在后台生成中...' : '开始 AI 出题' }}
         </button>
       </view>
@@ -99,9 +93,7 @@
           hover-class="btn-scale-sm"
           @tap="continueGenerating"
         >
-          <text style="font-size: 28rpx; margin-right: 4px">
-            🔄
-          </text>
+          <BaseIcon name="refresh" :size="28" style="margin-right: 4px" />
           <text style="font-size: 30rpx">
             再出一组
           </text>
@@ -160,9 +152,7 @@
     <view v-if="showSpeedModal" class="speed-modal-mask">
       <view class="speed-card bounce-in">
         <view class="speed-icon-box">
-          <text class="speed-icon">
-            ⚡️
-          </text>
+          <BaseIcon name="lightning" :size="48" />
         </view>
         <text class="speed-title">
           极速体验就绪
@@ -200,9 +190,7 @@
     <view v-if="errorInfo && errorInfo.canRetry" class="error-card-mask">
       <view class="error-card bounce-in">
         <view class="error-icon-box">
-          <text class="error-icon">
-            ⚠️
-          </text>
+          <BaseIcon name="warning" :size="48" />
         </view>
         <text class="error-title">
           {{ errorInfo.message }}
@@ -235,10 +223,12 @@ import { fileHandler } from './file-handler.js';
 // F019: storageService
 import storageService from '@/services/storageService.js';
 import { QUOTE_LIBRARY } from '@/config/home-data.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   components: {
-    EnhancedProgress
+    EnhancedProgress,
+    BaseIcon
   },
   data() {
     return {
@@ -315,22 +305,22 @@ export default {
     // ⭐⭐ v5.8 优化：动态状态文本（增强emoji和文案）- TASK-002
     importStatusText() {
       if (this.importStatus === 'parsing') {
-        return '📖 正在解析文件...';
+        return '正在解析文件...';
       } else if (this.importStatus === 'uploading') {
-        return '📤 正在上传文件...';
+        return '正在上传文件...';
       } else if (this.importStatus === 'importing') {
         // v5.8: 显示更详细的进度信息
         const batchNum = this.generatedCount + 1;
         const totalBatch = this.totalQuestionsLimit;
-        return `✨ AI 正在生成第 ${batchNum}/${totalBatch} 批题目...`;
+        return `AI 正在生成第 ${batchNum}/${totalBatch} 批题目...`;
       } else if (this.importStatus === 'success') {
-        return '🎉 导入成功！';
+        return '导入成功！';
       } else if (this.importStatus === 'error') {
-        return '❌ 导入失败';
+        return '导入失败';
       } else if (this.importStatus === 'retrying') {
-        return `🔄 正在重试 (${this.retryCount}/${this.maxRetryCount})...`;
+        return `正在重试 (${this.retryCount}/${this.maxRetryCount})...`;
       }
-      return '🤖 AI 正在分析...';
+      return 'AI 正在分析...';
     },
 
     // ⭐⭐ v5.8 优化：更直观的进度显示 - TASK-001
@@ -365,29 +355,29 @@ export default {
       // v5.8: 显示更精确的进度（包含批次内进度）
       if (this.importStatus === 'importing' && this.currentBatchProgress > 0) {
         const preciseProgress = Math.round(this.realProgress + this.currentBatchProgress / this.totalQuestionsLimit);
-        parts.push(`📊 进度 ${Math.min(preciseProgress, 99)}%`);
+        parts.push(`进度 ${Math.min(preciseProgress, 99)}%`);
       } else if (this.realProgress > 0) {
-        parts.push(`📊 进度 ${this.realProgress}%`);
+        parts.push(`进度 ${this.realProgress}%`);
       }
 
       // 预估剩余时间（优化显示）
       if (this.estimatedTimeLeft > 0 && this.importStatus === 'importing') {
-        parts.push(`⏱️ ${this.formatTimeLeft(this.estimatedTimeLeft)}`);
+        parts.push(`${this.formatTimeLeft(this.estimatedTimeLeft)}`);
       }
 
       // 导入速度（优先显示）
       if (this.importSpeed > 0 && this.totalQuestionsGenerated > 0) {
-        parts.push(`⚡ ${this.importSpeed.toFixed(1)} 题/秒`);
+        parts.push(`${this.importSpeed.toFixed(1)} 题/秒`);
       }
 
       // 重复题目提示（醒目显示）
       if (this.duplicateCount > 0) {
-        parts.push(`🔄 已跳过 ${this.duplicateCount} 道重复题`);
+        parts.push(`已跳过 ${this.duplicateCount} 道重复题`);
       }
 
       // v5.8: 文件大小显示（如果有）
       if (this.cachedFileData && this.cachedFileData.size > 0 && this.importStatus === 'parsing') {
-        parts.push(`📁 ${this.formatFileSize(this.cachedFileData.size)}`);
+        parts.push(`${this.formatFileSize(this.cachedFileData.size)}`);
       }
 
       return parts.join(' · ');
@@ -644,7 +634,10 @@ export default {
     // 5. 分批生成逻辑 (核心递归) - 3秒首屏策略 + 防重复请求 + 真实进度
     async generateNextBatch() {
       // 1. 检查是否强制停止
-      if (!this.isLooping || this.isPaused) return;
+      if (!this.isLooping || this.isPaused) {
+        this.stopProgressAnimation();
+        return;
+      }
 
       // 2. 检查上限
       if (this.generatedCount >= this.totalQuestionsLimit) {
@@ -696,6 +689,7 @@ export default {
           logger.error('[导入资料] AI响应异常:', response.message);
           this.isLooping = false;
           this.isPaused = true;
+          this.stopProgressAnimation();
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
           uni.showToast({ title: response.message || '生成失败', icon: 'none' });
@@ -726,6 +720,7 @@ export default {
           });
           this.isLooping = false;
           this.isPaused = true;
+          this.stopProgressAnimation();
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
           return;
@@ -736,6 +731,7 @@ export default {
         if (!saved) {
           this.isLooping = false;
           this.isPaused = true;
+          this.stopProgressAnimation();
           this.importStatus = 'error';
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
@@ -787,6 +783,7 @@ export default {
 
         // ⭐⭐ v5.8: 停止批次内进度模拟 - TASK-001
         this.stopBatchProgressSimulation();
+        this.stopProgressAnimation();
 
         // ⭐⭐ v5.8 增强错误处理：详细错误分类 - TASK-003
         let errorMessage = '生成失败';
@@ -800,14 +797,14 @@ export default {
           (e.message.includes('timeout') || e.message.includes('超时') || e.message.includes('ETIMEDOUT'))
         ) {
           // 网络超时：自动重试
-          errorMessage = '⏱️ 网络超时';
+          errorMessage = '网络超时';
           errorDetail = '请求超时，正在自动重试...';
           canRetry = true;
           autoRetry = true;
           this.importStatus = 'retrying';
         } else if (e.message && (e.message.includes('401') || e.message.includes('unauthorized'))) {
           // 未登录：不自动重试
-          errorMessage = '🔐 未登录';
+          errorMessage = '未登录';
           errorDetail = '请先登录后再试';
           canRetry = false;
           this.isLooping = false;
@@ -820,7 +817,7 @@ export default {
           (e.message.includes('network') || e.message.includes('网络') || e.message.includes('ECONNREFUSED'))
         ) {
           // 网络错误：可重试
-          errorMessage = '📶 网络不稳定';
+          errorMessage = '网络不稳定';
           errorDetail = '请检查网络连接后重试';
           canRetry = true;
           this.isLooping = false;
@@ -833,7 +830,7 @@ export default {
           (e.message.includes('JSON') || e.message.includes('parse') || e.message.includes('Unexpected'))
         ) {
           // AI解析失败：可重试
-          errorMessage = '🤖 AI 解析失败';
+          errorMessage = 'AI 解析失败';
           errorDetail = 'AI 返回的数据格式异常，请重试';
           canRetry = true;
           autoRetry = this.retryCount < 2; // 自动重试2次
@@ -845,7 +842,7 @@ export default {
           (e.message.includes('rate') || e.message.includes('limit') || e.message.includes('429'))
         ) {
           // 频率限制：延迟重试
-          errorMessage = '⚡ 请求过于频繁';
+          errorMessage = '请求过于频繁';
           errorDetail = '请稍等片刻后重试';
           canRetry = true;
           this.isLooping = false;
@@ -855,7 +852,7 @@ export default {
           this.showMask = false;
         } else {
           // 其他错误：可重试
-          errorMessage = '❌ 生成失败';
+          errorMessage = '生成失败';
           errorDetail = e.message || '未知错误，请重试';
           canRetry = true;
           this.isLooping = false;
@@ -882,6 +879,7 @@ export default {
             icon: 'none',
             duration: 2000
           });
+          this.startProgressAnimation();
           setTimeout(() => {
             if (this.isLooping) {
               this.generateNextBatch();
@@ -1049,6 +1047,7 @@ export default {
       this.importStatus = 'success';
       this.canGoBack = true; // ⭐⭐ v5.8: 恢复返回按钮 - TASK-004
       this.stopBatchProgressSimulation(); // ⭐⭐ v5.8: 停止进度模拟 - TASK-001
+      this.stopProgressAnimation();
       this.updateUploadRecordStatus('completed');
       if (this.soupTimer) {
         clearInterval(this.soupTimer);
@@ -1060,26 +1059,26 @@ export default {
       const avgSpeed = totalTime > 0 ? (this.totalQuestionsGenerated / totalTime).toFixed(1) : '0';
 
       let enhancedMsg = `${msg}\n\n`;
-      enhancedMsg += `📊 导入统计\n`;
-      enhancedMsg += `✅ 成功导入：${this.totalQuestionsGenerated} 道新题\n`;
+      enhancedMsg += `导入统计\n`;
+      enhancedMsg += `成功导入：${this.totalQuestionsGenerated} 道新题\n`;
 
       if (this.duplicateCount > 0) {
-        enhancedMsg += `🔄 跳过重复：${this.duplicateCount} 道题\n`;
+        enhancedMsg += `跳过重复：${this.duplicateCount} 道题\n`;
       }
 
       if (totalTime > 0) {
         const minutes = Math.floor(totalTime / 60);
         const seconds = totalTime % 60;
         if (minutes > 0) {
-          enhancedMsg += `⏱️ 总耗时：${minutes} 分 ${seconds} 秒\n`;
+          enhancedMsg += `总耗时：${minutes} 分 ${seconds} 秒\n`;
         } else {
-          enhancedMsg += `⏱️ 总耗时：${seconds} 秒\n`;
+          enhancedMsg += `总耗时：${seconds} 秒\n`;
         }
-        enhancedMsg += `⚡ 平均速度：${avgSpeed} 题/秒`;
+        enhancedMsg += `平均速度：${avgSpeed} 题/秒`;
       }
 
       uni.showModal({
-        title: '🎉 题库装填完毕',
+        title: '题库装填完毕',
         content: enhancedMsg,
         confirmText: '立即刷题',
         cancelText: '留在本页',
@@ -1120,6 +1119,7 @@ export default {
       this.isPaused = false;
       this.showMask = true; // 手动点击时，建议还是显示一会遮罩，给用户反馈
       this.startSoupRotation();
+      this.startProgressAnimation();
       this.updateUploadRecordStatus('generating');
       this.generateNextBatch();
     },
@@ -1140,7 +1140,7 @@ export default {
       // v5.8: 检查是否正在生成，如果是则显示确认弹窗
       if (!this.canGoBack || this.isLooping) {
         uni.showModal({
-          title: '⚠️ 任务进行中',
+          title: '任务进行中',
           content: '当前正在生成题目，返回将中断任务。已生成的题目将保留，确定要返回吗？',
           confirmText: '确定返回',
           cancelText: '继续生成',
@@ -1154,6 +1154,7 @@ export default {
               this.showSpeedModal = false;
               this.canGoBack = true;
               this.stopBatchProgressSimulation();
+              this.stopProgressAnimation();
               this.updateUploadRecordStatus('cancelled');
 
               uni.navigateBack({
@@ -1179,7 +1180,7 @@ export default {
     clearAll() {
       const that = this; // 保存 this 引用
       uni.showModal({
-        title: '⚠️ 危险操作',
+        title: '危险操作',
         content: '确定清空所有本地题库吗？此操作不可恢复！\n\n建议：清空前请确保已备份数据。',
         confirmColor: '#FF3B30',
         success: (res) => {
@@ -1204,6 +1205,8 @@ export default {
             that.showSpeedModal = false;
             that.generatedCount = 0;
             that.progressWidth = 0;
+            that.stopProgressAnimation();
+            that.stopBatchProgressSimulation();
             uni.showToast({ title: '已清空' });
           }
         },
@@ -1218,6 +1221,7 @@ export default {
       this.isPaused = true;
       this.isLooping = false;
       this.showMask = false;
+      this.stopProgressAnimation();
       this.updateUploadRecordStatus('paused');
       uni.showToast({ title: '已暂停生成', icon: 'none' });
     },
@@ -1285,6 +1289,7 @@ export default {
 
       // 重新开始生成
       this.startSoupRotation();
+      this.startProgressAnimation();
       this.updateUploadRecordStatus('generating');
       this.generateNextBatch();
 
@@ -1309,6 +1314,7 @@ export default {
         this.showMask = true;
       }
       this.startSoupRotation();
+      this.startProgressAnimation();
       this.updateUploadRecordStatus('generating');
       this.generateNextBatch();
     },
@@ -1409,6 +1415,8 @@ export default {
 
     // 12. Apple AI 进度动画控制
     startProgressAnimation() {
+      // 防止重复启动导致多个 interval 叠加
+      this.stopProgressAnimation();
       this.progressTimer = setInterval(() => {
         if (this.isLooping) {
           this.progressWidth += 2;
@@ -1535,6 +1543,7 @@ export default {
   background-color: var(--bg-page, #9fe870);
   padding: 20px;
   padding-bottom: 120px; /* 为底部悬浮栏留空 */
+  padding-top: calc(constant(safe-area-inset-top) + 20px);
   padding-top: calc(env(safe-area-inset-top) + 20px);
   box-sizing: border-box;
   color: var(--text-primary);
@@ -1636,6 +1645,7 @@ export default {
 
 /* --- 头部大标题 --- */
 .page-header {
+  margin-top: calc(constant(safe-area-inset-top) + 88px); /* 为导航栏留出空间（标准高度） */
   margin-top: calc(env(safe-area-inset-top) + 88px); /* 为导航栏留出空间（标准高度） */
   margin-bottom: 30px;
   padding-left: 10px;
@@ -1841,6 +1851,7 @@ export default {
   padding: 15px;
   box-shadow: var(--shadow-xl);
   z-index: 100;
+  padding-bottom: calc(15px + constant(safe-area-inset-bottom));
   padding-bottom: calc(15px + env(safe-area-inset-bottom));
 }
 

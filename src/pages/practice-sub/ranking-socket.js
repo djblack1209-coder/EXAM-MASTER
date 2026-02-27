@@ -39,6 +39,9 @@ class RankingSocketService {
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
     this.reconnectDelay = 3000;
+    this.reconnectTimer = null;
+    this.manualClose = false;
+    this._lastConnectOptions = null;
     this.heartbeatInterval = null;
     this.heartbeatTimeout = 30000;
 
@@ -78,11 +81,17 @@ class RankingSocketService {
   /**
    * 连接WebSocket
    * @param {Object} options - 连接选项
-   * @param {string} options.userId - 用户ID
-   * @param {string} options.rankType - 排行榜类型
+   * @param {string} [options.userId] - 用户ID
+   * @param {string} [options.rankType] - 排行榜类型
    */
   connect(options = {}) {
-    const { userId, rankType = 'daily' } = options;
+    const { userId = '', rankType = 'daily' } = options;
+
+    this.manualClose = false;
+
+    if (!userId) {
+      return Promise.reject(new Error('连接失败：缺少 userId'));
+    }
 
     // 保存连接参数，用于重连时恢复上下文
     if (userId) this._lastConnectOptions = options;
@@ -94,8 +103,8 @@ class RankingSocketService {
 
     return new Promise((resolve, reject) => {
       try {
-        // 构建连接URL
-        const url = `${this.wsUrl}?userId=${userId}&type=${rankType}`;
+        // 构建连接URL（参数编码防止注入）
+        const url = `${this.wsUrl}?userId=${encodeURIComponent(userId)}&type=${encodeURIComponent(rankType)}`;
 
         // #ifdef H5
         this.socket = new WebSocket(url);
@@ -298,7 +307,7 @@ class RankingSocketService {
     this._emit('disconnected', event);
 
     // 尝试重连
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+    if (!this.manualClose && this.reconnectAttempts < this.maxReconnectAttempts) {
       this._scheduleReconnect();
     }
   }
@@ -365,9 +374,14 @@ class RankingSocketService {
 
     logger.log(`[RankingSocket] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
 
-    setTimeout(() => {
-      if (this.state.value === WS_STATE.CLOSED) {
-        this.connect(this._lastConnectOptions || {});
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+    }
+
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      if (!this.manualClose && this.state.value === WS_STATE.CLOSED && this._lastConnectOptions?.userId) {
+        this.connect(this._lastConnectOptions);
       }
     }, delay);
   }
@@ -418,6 +432,13 @@ class RankingSocketService {
    * 断开连接
    */
   disconnect() {
+    this.manualClose = true;
+
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+
     this._stopHeartbeat();
 
     if (this.socket) {

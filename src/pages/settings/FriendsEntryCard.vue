@@ -1,41 +1,43 @@
 <template>
   <!-- F002: 好友入口卡片 — 从 settings/index.vue 提取 -->
-  <div class="section">
-    <div class="friend-entry-card ds-flex ds-flex-between ds-touchable" @tap="navigateToFriends">
-      <div class="entry-left ds-flex">
-        <div class="entry-icon ds-flex-center">
+  <view class="section">
+    <view class="friend-entry-card ds-flex ds-flex-between ds-touchable" @tap="navigateToFriends">
+      <view class="entry-left ds-flex">
+        <view class="entry-icon ds-flex-center">
           👥
-        </div>
-        <div class="entry-info">
+        </view>
+        <view class="entry-info">
           <text class="entry-title ds-text-lg ds-font-semibold">
             我的好友
           </text>
           <text class="entry-desc ds-text-xs">
             添加好友，一起刷题
           </text>
-        </div>
-      </div>
+        </view>
+      </view>
       <text class="entry-arrow">
         ›
       </text>
-    </div>
-  </div>
+    </view>
+  </view>
 </template>
 
 <script>
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
 
 export default {
   name: 'FriendsEntryCard',
   methods: {
     navigateToFriends() {
-      logger.log('[FriendsEntryCard] 跳转到好友列表');
-      safeNavigateTo('/pages/social/friend-list', {
-        success: () => {
-          logger.log('[FriendsEntryCard] 跳转成功');
-        }
-      });
+      requireLogin(
+        () => {
+          logger.log('[FriendsEntryCard] 跳转到好友列表');
+          safeNavigateTo('/pages/social/friend-list');
+        },
+        { message: '请先登录后查看好友列表' }
+      );
     }
   }
 };

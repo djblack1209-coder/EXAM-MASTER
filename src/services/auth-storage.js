@@ -9,18 +9,40 @@
 
 import { deobfuscate } from '../utils/crypto/cipher.js';
 
+function safeGetStorageSync(key) {
+  try {
+    if (typeof uni !== 'undefined' && typeof uni.getStorageSync === 'function') {
+      return uni.getStorageSync(key);
+    }
+  } catch (_e) {
+    // ignore
+  }
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem(key);
+    }
+  } catch (_e) {
+    // ignore
+  }
+
+  return '';
+}
+
 /**
  * 获取当前用户ID（统一入口）
  */
 export const getUserId = () => {
   try {
-    const encrypted = uni.getStorageSync('_enc_EXAM_USER_ID');
+    const encrypted = safeGetStorageSync('_enc_EXAM_USER_ID');
     if (encrypted && encrypted !== '') {
       const decrypted = deobfuscate(encrypted);
       if (decrypted !== null) return decrypted;
     }
-  } catch { /* ignore */ }
-  return uni.getStorageSync('EXAM_USER_ID') || null;
+  } catch {
+    /* ignore */
+  }
+  return safeGetStorageSync('EXAM_USER_ID') || null;
 };
 
 /**
@@ -28,11 +50,13 @@ export const getUserId = () => {
  */
 export const getToken = () => {
   try {
-    const encrypted = uni.getStorageSync('_enc_EXAM_TOKEN');
+    const encrypted = safeGetStorageSync('_enc_EXAM_TOKEN');
     if (encrypted && encrypted !== '') {
       const decrypted = deobfuscate(encrypted);
       if (decrypted !== null) return decrypted;
     }
-  } catch { /* ignore */ }
-  return uni.getStorageSync('EXAM_TOKEN') || null;
+  } catch {
+    /* ignore */
+  }
+  return safeGetStorageSync('EXAM_TOKEN') || null;
 };

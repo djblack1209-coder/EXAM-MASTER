@@ -11,7 +11,7 @@
           {{ schoolInfo.name || '院校详情' }}
         </text>
         <view class="share-btn" @tap="handleShare">
-          <text>↗</text>
+          <BaseIcon name="arrow-right" :size="36" />
         </view>
       </view>
     </view>
@@ -66,9 +66,10 @@
               <text class="type-tag">
                 {{ getTypeTag(schoolInfo.tags) }}
               </text>
-              <text class="location-tag">
-                📍 {{ schoolInfo.location || '未知地区' }}
-              </text>
+              <view class="location-tag" style="display: inline-flex; align-items: center; gap: 4rpx">
+                <BaseIcon name="target" :size="20" />
+                <text>{{ schoolInfo.location || '未知地区' }}</text>
+              </view>
               <text v-if="schoolInfo.matchRate" class="rank-tag">
                 匹配度 {{ schoolInfo.matchRate }}%
               </text>
@@ -79,17 +80,15 @@
         <!-- AI 预测录取概率卡片 -->
         <view class="glass-card ai-predict-card">
           <view class="card-title">
-            <text class="sparkle-icon">
-              ✨
-            </text>
+            <BaseIcon class="sparkle-icon" name="sparkle" :size="28" />
             <text>AI 录取概率预测</text>
           </view>
 
           <view class="predict-main">
             <view class="water-ball-container">
               <view class="water-ball">
-                <view class="wave-bg" :style="{ top: 100 - probability + '%' }" />
-                <view class="wave-front" :style="{ top: 100 - probability + '%' }" />
+                <view class="wave-bg" :style="{ transform: `translateY(${(100 - probability) / 2}%)` }" />
+                <view class="wave-front" :style="{ transform: `translateY(${(100 - probability) / 2}%)` }" />
                 <view class="percent-content">
                   <text class="num">
                     {{ probability }}
@@ -197,7 +196,7 @@
     <view class="bottom-action">
       <view class="glass-card action-container">
         <button class="ai-consult-btn" hover-class="btn-hover" @tap="showAIConsult">
-          <text>💬</text>
+          <BaseIcon name="comment" :size="28" />
           <text>AI 咨询</text>
         </button>
         <button :class="['target-btn', { 'is-added': isTarget }]" hover-class="btn-hover" @tap="toggleTarget">
@@ -224,9 +223,11 @@ import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   components: {
+    BaseIcon,
     // ✅ 懒加载：AiConsult 620行组件，仅在用户点击"AI咨询"时才需要
     AiConsult: () => import('./ai-consult.vue')
   },
@@ -276,7 +277,7 @@ export default {
     this._themeHandler = (mode) => {
       this.isDark = mode === 'dark';
     };
-    uni.$on('updateTheme', this._themeHandler);
+    uni.$on('themeUpdate', this._themeHandler);
 
     // 兼容两种传递方式：缓存数据（优先）或 id 参数
     const cachedData = options.id ? storageService.get(`school_detail_${options.id}`) : null;
@@ -364,7 +365,7 @@ export default {
     logger.log('[detail] ✅ 详情页初始化完成，院校信息:', { id: this.schoolId, name: this.schoolInfo.name });
   },
   onUnload() {
-    uni.$off('updateTheme', this._themeHandler);
+    uni.$off('themeUpdate', this._themeHandler);
   },
   methods: {
     async loadSchoolDetail(id) {
@@ -664,7 +665,7 @@ export default {
       // #endif
     },
     copySchoolInfo() {
-      const info = `【${this.schoolInfo.name}】\n📍 ${this.schoolInfo.location}\n🎯 匹配度：${this.schoolInfo.matchRate}%\n📊 复试线：${this.schoolInfo.scoreLine || '---'}分\n📈 报录比：${this.schoolInfo.ratio || '---'}\n\n来自 Exam-Master 考研神器`;
+      const info = `【${this.schoolInfo.name}】\n${this.schoolInfo.location}\n匹配度：${this.schoolInfo.matchRate}%\n复试线：${this.schoolInfo.scoreLine || '---'}分\n报录比：${this.schoolInfo.ratio || '---'}\n\n来自 Exam-Master 考研神器`;
       uni.setClipboardData({
         data: info,
         success: () => {
@@ -681,7 +682,7 @@ export default {
     viewMajorDetail(major) {
       // 显示专业详情弹窗
       uni.showModal({
-        title: `📚 ${major.name}`,
+        title: `${major.name}`,
         content: `专业代码：${major.code}\n类型：${major.type || '学硕'}\n\n该专业是${this.schoolInfo.name}的热门招生专业，每年吸引大量考生报考。\n\n建议：\n1. 关注该专业历年分数线\n2. 了解导师研究方向\n3. 准备专业课复习资料`,
         confirmText: '查看更多',
         cancelText: '关闭',
@@ -1067,6 +1068,7 @@ export default {
   width: 100%;
   padding: 30rpx;
   box-sizing: border-box;
+  padding-bottom: calc(30rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
   z-index: 99;
 }
@@ -1163,12 +1165,13 @@ export default {
 .wave-bg,
 .wave-front {
   position: absolute;
+  top: 0;
   left: -50%;
   width: 200%;
   height: 200%;
   background: var(--wave-color);
   border-radius: 40%;
-  transition: top 2s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 2s cubic-bezier(0.23, 1, 0.32, 1);
   animation: rotate 6s linear infinite;
 }
 .wave-bg {
@@ -1219,7 +1222,7 @@ export default {
   width: 80%;
   height: 20rpx;
   background: var(--ball-glow);
-  filter: blur(15rpx);
+  filter: blur(8px);
   border-radius: 50%;
   z-index: 1;
 }

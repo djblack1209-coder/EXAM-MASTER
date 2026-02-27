@@ -196,11 +196,11 @@ export const trackingMixin = {
      */
     trackScrollDepth(depth) {
       if (depth > this._tracking.scrollDepth) {
-        this._tracking.scrollDepth = depth;
-
-        // 每达到25%的里程碑上报一次
+        // 先检查里程碑，再更新 scrollDepth
         const milestones = [25, 50, 75, 100];
         const milestone = milestones.find((m) => depth >= m && this._tracking.scrollDepth < m);
+
+        this._tracking.scrollDepth = depth;
 
         if (milestone) {
           analytics.track('scroll_milestone', {

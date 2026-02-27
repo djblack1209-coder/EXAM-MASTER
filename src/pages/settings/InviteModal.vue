@@ -10,7 +10,7 @@
 
       <view class="header-brand ds-flex-col ds-flex-center ds-gap-xs">
         <text class="brand-logo-text">
-          📚
+          <BaseIcon name="books" :size="48" />
         </text>
         <text class="brand-name ds-text-lg ds-font-bold">
           Exam-Master
@@ -37,7 +37,7 @@
       <view class="link-row">
         <view class="link-box">
           <text class="link-icon-text">
-            🔗
+            <BaseIcon name="link" :size="28" />
           </text>
           <text class="link-text">
             {{ inviteLink }}
@@ -66,7 +66,7 @@
 
       <view class="wechat-btn" @click="shareToWechat">
         <text class="wechat-icon-text">
-          💬
+          <BaseIcon name="comment" :size="32" />
         </text>
         <text class="btn-text">
           分享给微信好友
@@ -75,7 +75,7 @@
 
       <view class="poster-btn" @click="openPoster">
         <text class="poster-icon-text">
-          🎨
+          <BaseIcon name="image" :size="32" />
         </text>
         <text class="btn-text">
           生成分享海报
@@ -88,8 +88,10 @@
 <script>
 import { logger } from '@/utils/logger.js';
 import config from '@/config';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
+  components: { BaseIcon },
   props: {
     inviteCode: {
       type: String,

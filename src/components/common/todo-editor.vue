@@ -12,9 +12,7 @@
         </text>
         <view class="header-actions">
           <view v-if="isEdit" class="delete-btn" @tap="handleDelete">
-            <text class="delete-icon">
-              🗑️
-            </text>
+            <BaseIcon name="delete" :size="32" />
           </view>
           <view class="close-btn" @tap="handleClose">
             <text class="close-icon">
@@ -85,21 +83,18 @@
       <!-- 快捷操作 -->
       <view v-if="isEdit" class="quick-actions">
         <view class="action-item" @tap="handleToggleComplete">
-          <text class="action-icon">
-            {{ todoData.completed ? '↩️' : '✅' }}
-          </text>
+          <BaseIcon :name="todoData.completed ? 'refresh' : 'success'" :size="28" />
           <text class="action-text">
             {{ todoData.completed ? '标记未完成' : '标记完成' }}
           </text>
         </view>
         <view class="action-item" @tap="handleDuplicate">
-          <text class="action-icon">
-            📋
-          </text>
+          <BaseIcon name="copy" :size="28" />
           <text class="action-text">
             复制待办
           </text>
         </view>
+        <!-- 重复的复制按钮已移除，上方已有 BaseIcon 版本 -->
       </view>
 
       <!-- 底部按钮 -->
@@ -125,16 +120,20 @@
       @change="handleTimeChange"
       @cancel="showPicker = false"
     >
-      <view />
+      <view class="picker-trigger">
+        选择时间
+      </view>
     </picker>
   </view>
 </template>
 
 <script>
 import { logger } from '@/utils/logger.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'TodoEditor',
+  components: { BaseIcon },
 
   props: {
     // 是否显示
@@ -342,7 +341,7 @@ export default {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10rpx);
+  backdrop-filter: blur(5px);
   z-index: 9999;
   display: flex;
   align-items: flex-end;

@@ -68,12 +68,12 @@ export const FORMULA_LIST = [
  * 当无法从题库计算时使用的默认结构
  */
 export const DEFAULT_KNOWLEDGE_POINTS = [
-  { id: 1, title: '错题集', icon: '🎯', color: '#EF4444' },
-  { id: 2, title: '热门考点', icon: '🔥', color: '#F59E0B' },
-  { id: 3, title: '练习题', icon: '📝', color: '#00F2FF' },
-  { id: 4, title: '核心概念', icon: '🧠', color: '#9FE870' },
-  { id: 5, title: '公式定理', icon: '🧮', color: '#A855F7' },
-  { id: 6, title: '阅读理解', icon: '📖', color: '#EC4899' }
+  { id: 1, title: '错题集', icon: 'category-mistakes', color: '#EF4444' },
+  { id: 2, title: '热门考点', icon: 'category-hot', color: '#F59E0B' },
+  { id: 3, title: '练习题', icon: 'category-practice', color: '#00F2FF' },
+  { id: 4, title: '核心概念', icon: 'category-concept', color: '#9FE870' },
+  { id: 5, title: '公式定理', icon: 'category-formula', color: '#A855F7' },
+  { id: 6, title: '阅读理解', icon: 'category-reading', color: '#EC4899' }
 ];
 
 /**
@@ -101,7 +101,12 @@ export const DEMO_QUESTIONS = [
   {
     id: 'demo_2',
     question: '下列关于函数极限的说法，正确的是？',
-    options: ['A. 函数极限存在则函数必连续', 'B. 函数连续则极限必存在', 'C. 极限存在则左右极限必相等', 'D. 左右极限存在则极限必存在'],
+    options: [
+      'A. 函数极限存在则函数必连续',
+      'B. 函数连续则极限必存在',
+      'C. 极限存在则左右极限必相等',
+      'D. 左右极限存在则极限必存在'
+    ],
     answer: 2,
     category: '数学',
     explanation: '函数极限存在的充要条件是左极限和右极限都存在且相等。'
@@ -132,7 +137,7 @@ export async function fetchHomeData() {
     // 1. 检查本地缓存是否有效
     const { storageService } = await import('@/services/storageService.js');
     const cached = storageService.get(CACHE_KEY, null);
-    if (cached && cached._ts && (Date.now() - cached._ts < CACHE_TTL)) {
+    if (cached && cached._ts && Date.now() - cached._ts < CACHE_TTL) {
       return {
         quotes: cached.quotes || QUOTE_LIBRARY,
         formulas: cached.formulas || FORMULA_LIST

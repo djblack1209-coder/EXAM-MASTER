@@ -280,7 +280,7 @@ export const todoStorePatch = {
 
     // 显示通知
     uni.showModal({
-      title: '⏰ 待办提醒',
+      title: '待办提醒',
       content: todo.title,
       confirmText: '完成',
       cancelText: '稍后',

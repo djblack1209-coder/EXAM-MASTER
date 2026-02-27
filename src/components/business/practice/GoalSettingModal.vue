@@ -6,7 +6,7 @@
           设置每日目标
         </text>
         <view class="goal-modal-close" @tap="$emit('close')">
-          ✕
+          <BaseIcon name="close" :size="24" />
         </view>
       </view>
       <view class="goal-modal-body">
@@ -65,9 +65,11 @@
 <script>
 import { getTodayGoals, GOAL_TYPES, learningGoalManager } from '@/utils/learning/learning-goal.js';
 import { logger } from '@/utils/logger.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'GoalSettingModal',
+  components: { BaseIcon },
   props: {
     visible: { type: Boolean, default: false },
     currentGoal: { type: Number, default: 20 }
@@ -124,61 +126,170 @@ export default {
 
 <style lang="scss" scoped>
 .goal-modal-overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--overlay); backdrop-filter: blur(10px);
-  z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 40px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
 }
 .goal-modal {
-  width: 100%; max-width: 400px; background: var(--bg-card);
-  border-radius: 24px; padding: 32px; box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-card);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: var(--shadow-xl);
   animation: fadeInUp 0.3s ease-out;
 }
 .goal-modal-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
 }
-.goal-modal-title { font-size: 44rpx; font-weight: 700; color: var(--text-primary); }
+.goal-modal-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
 .goal-modal-close {
-  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-  font-size: 48rpx; color: var(--text-sub); cursor: pointer; border-radius: 50%; background: var(--bg-secondary);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  color: var(--text-sub);
+  cursor: pointer;
+  border-radius: 50%;
+  background: var(--bg-secondary);
 }
-.goal-modal-body { margin-bottom: 28px; }
+.goal-modal-body {
+  margin-bottom: 28px;
+}
 .goal-input-group {
-  display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 .goal-adjust-btn {
-  width: 48px; height: 48px; border-radius: 50%; background: var(--bg-secondary);
-  border: 1px solid var(--border); font-size: 56rpx; font-weight: 600; color: var(--text-primary);
-  display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  font-size: 56rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-.goal-adjust-btn:active { background: var(--primary-light); transform: scale(0.95); }
-.goal-input-wrapper { display: flex; align-items: baseline; gap: 8px; }
+.goal-adjust-btn:active {
+  background: var(--primary-light);
+  transform: scale(0.95);
+}
+.goal-input-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
 .goal-input {
-  width: 80px; font-size: 96rpx; font-weight: 700; color: var(--primary);
-  text-align: center; background: transparent; border: none; border-bottom: 3px solid var(--primary); padding: 0;
+  width: 80px;
+  font-size: 96rpx;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid var(--primary);
+  padding: 0;
 }
-.goal-unit { font-size: 32rpx; color: var(--text-sub); }
-.goal-presets { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+.goal-unit {
+  font-size: 32rpx;
+  color: var(--text-sub);
+}
+.goal-presets {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
 .goal-preset {
-  padding: 10px 20px; border-radius: 20px; background: var(--bg-secondary);
-  border: 1px solid var(--border); font-size: 28rpx; color: var(--text-sub);
-  cursor: pointer; transition: all 0.2s ease;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  font-size: 28rpx;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-.goal-preset.active { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
-.goal-preset:active { transform: scale(0.95); }
-.goal-tips { text-align: center; padding: 12px; background: var(--bg-secondary); border-radius: 12px; }
-.goal-tip-text { font-size: 26rpx; color: var(--text-sub); }
-.goal-modal-footer { display: flex; gap: 16px; }
+.goal-preset.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+.goal-preset:active {
+  transform: scale(0.95);
+}
+.goal-tips {
+  text-align: center;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+}
+.goal-tip-text {
+  font-size: 26rpx;
+  color: var(--text-sub);
+}
+.goal-modal-footer {
+  display: flex;
+  gap: 16px;
+}
 .goal-cancel-btn {
-  flex: 1; height: 52px; background: var(--bg-secondary); color: var(--text-sub);
-  font-size: 32rpx; font-weight: 500; border-radius: 16px; border: none;
+  flex: 1;
+  height: 52px;
+  background: var(--bg-secondary);
+  color: var(--text-sub);
+  font-size: 32rpx;
+  font-weight: 500;
+  border-radius: 16px;
+  border: none;
 }
 .goal-save-btn {
-  flex: 1; height: 52px; background: var(--primary); color: var(--primary-foreground);
-  font-size: 32rpx; font-weight: 600; border-radius: 16px; border: none;
+  flex: 1;
+  height: 52px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 16px;
+  border: none;
 }
-.goal-cancel-btn::after, .goal-save-btn::after { border: none; }
+.goal-cancel-btn::after,
+.goal-save-btn::after {
+  border: none;
+}
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

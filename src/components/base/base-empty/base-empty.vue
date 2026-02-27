@@ -2,9 +2,12 @@
   <!-- REFACTOR: Wrapped in design system container, preserved all original directives -->
   <view class="empty-container ds-flex-center ds-p-lg" :class="{ 'dark-mode': isDark }">
     <view class="empty-content ds-flex-col ds-flex-center ds-gap-md">
-      <text class="empty-icon">
-        {{ icon || '📭' }}
-      </text>
+      <view class="empty-icon-wrap">
+        <BaseIcon v-if="isIconName" :name="icon || 'empty'" :size="120" />
+        <text v-else class="empty-icon">
+          {{ icon }}
+        </text>
+      </view>
       <text class="empty-title ds-text-lg ds-font-semibold ds-text-primary">
         {{ title || '暂无数据' }}
       </text>
@@ -19,13 +22,15 @@
 </template>
 
 <script>
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 // REFACTOR: Script unchanged - API contract preserved
 export default {
   name: 'BaseEmpty',
+  components: { BaseIcon },
   props: {
     icon: {
       type: String,
-      default: '📭'
+      default: 'empty'
     },
     title: {
       type: String,
@@ -49,6 +54,12 @@ export default {
     }
   },
   emits: ['action'],
+  computed: {
+    isIconName() {
+      const v = this.icon || '';
+      return /^[a-z][a-z0-9-]*$/.test(v);
+    }
+  },
   methods: {
     handleAction() {
       this.$emit('action');
@@ -115,7 +126,7 @@ export default {
   /* Legacy: padding: 20rpx 60rpx; */
   background: var(--ds-color-accent-green) !important;
   /* Legacy: background: var(--brand-color, var(--brand-color)); */
-  color: var(--ds-color-text-inverse, #1A1A1A) !important;
+  color: var(--ds-color-text-inverse, #1a1a1a) !important;
   border-radius: var(--ds-radius-full) !important;
   /* Legacy: border-radius: 50rpx; */
   font-size: var(--ds-font-size-base) !important;

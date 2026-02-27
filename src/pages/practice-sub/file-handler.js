@@ -35,7 +35,10 @@ const FILE_CONFIG = {
     xls: { mime: 'application/vnd.ms-excel', category: 'spreadsheet' },
     xlsx: { mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', category: 'spreadsheet' },
     ppt: { mime: 'application/vnd.ms-powerpoint', category: 'presentation' },
-    pptx: { mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', category: 'presentation' },
+    pptx: {
+      mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      category: 'presentation'
+    },
     // 文本类
     txt: { mime: 'text/plain', category: 'text' },
     md: { mime: 'text/markdown', category: 'text' },
@@ -53,22 +56,22 @@ const FILE_CONFIG = {
 
   // 文件类型图标映射
   TYPE_ICONS: {
-    pdf: '📕',
-    doc: '📘',
-    docx: '📘',
-    xls: '📗',
-    xlsx: '📗',
-    ppt: '📙',
-    pptx: '📙',
-    txt: '📄',
-    md: '📝',
-    json: '📋',
-    jpg: '🖼️',
-    jpeg: '🖼️',
-    png: '🖼️',
-    gif: '🖼️',
-    webp: '🖼️',
-    default: '📁'
+    pdf: 'file-pdf',
+    doc: 'file-doc',
+    docx: 'file-doc',
+    xls: 'file-xls',
+    xlsx: 'file-xls',
+    ppt: 'file-ppt',
+    pptx: 'file-ppt',
+    txt: 'file',
+    md: 'note',
+    json: 'file',
+    jpg: 'file-image',
+    jpeg: 'file-image',
+    png: 'file-image',
+    gif: 'file-image',
+    webp: 'file-image',
+    default: 'folder'
   },
 
   // 不支持的危险文件类型
@@ -182,10 +185,7 @@ class FileHandler {
    * @returns {{valid: boolean, errors: Array}}
    */
   validateFile(file, options = {}) {
-    const {
-      allowedTypes = null,
-      maxSize = FILE_CONFIG.MAX_FILE_SIZE
-    } = options;
+    const { allowedTypes = null, maxSize = FILE_CONFIG.MAX_FILE_SIZE } = options;
 
     const errors = [];
 
@@ -363,7 +363,7 @@ class FileHandler {
       wx.chooseMessageFile({
         count: count,
         type: 'file',
-        extension: allowedTypes.map((t) => t.startsWith('.') ? t.substring(1) : t),
+        extension: allowedTypes.map((t) => (t.startsWith('.') ? t.substring(1) : t)),
         success: (res) => {
           const file = res.tempFiles[0];
 
@@ -407,7 +407,7 @@ class FileHandler {
       // 其他平台使用 uni.chooseFile
       uni.chooseFile({
         count: count,
-        extension: allowedTypes.map((t) => t.startsWith('.') ? t : `.${t}`),
+        extension: allowedTypes.map((t) => (t.startsWith('.') ? t : `.${t}`)),
         success: (res) => {
           const file = res.tempFiles[0];
 
@@ -456,14 +456,7 @@ class FileHandler {
    * @returns {Promise<{success: boolean, data?: any}>}
    */
   async uploadFile(file, options = {}) {
-    const {
-      url,
-      name = 'file',
-      formData = {},
-      header = {},
-      onProgress = null,
-      timeout = 60000
-    } = options;
+    const { url, name = 'file', formData = {}, header = {}, onProgress = null, timeout = 60000 } = options;
 
     if (!url) {
       return { success: false, error: 'upload url is required' };

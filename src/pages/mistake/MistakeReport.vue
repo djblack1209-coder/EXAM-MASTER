@@ -3,9 +3,7 @@
     <!-- 生成 AI 诊断报告按钮 -->
     <view v-if="hasMistakes" class="bottom-bar">
       <button class="export-btn ds-flex ds-flex-center ds-gap-xs" :disabled="isGenerating" @tap="prepareReport">
-        <text class="export-icon">
-          📊
-        </text>
+        <BaseIcon name="chart-bar" :size="36" class="export-icon" />
         <view class="export-text-wrapper ds-flex-center">
           <text class="export-text ds-text-sm ds-font-bold">
             {{ isGenerating ? 'AI 正在深度诊断...' : '生成 AI 诊断报告' }}
@@ -93,18 +91,10 @@
           <button class="modal-btn secondary ds-font-bold" @tap="closeReport">
             关闭
           </button>
-          <button
-            v-if="reportImagePath"
-            class="modal-btn primary ds-font-bold"
-            @tap="saveReport"
-          >
+          <button v-if="reportImagePath" class="modal-btn primary ds-font-bold" @tap="saveReport">
             保存到相册
           </button>
-          <button
-            v-else-if="reportTextContent"
-            class="modal-btn primary ds-font-bold"
-            @tap="copyReportText"
-          >
+          <button v-else-if="reportTextContent" class="modal-btn primary ds-font-bold" @tap="copyReportText">
             复制报告文本
           </button>
         </view>
@@ -127,9 +117,11 @@ import {
   drawLabel,
   drawReportBackground
 } from './canvas-report.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'MistakeReport',
+  components: { BaseIcon },
   props: {
     /** 错题列表 */
     mistakes: {
@@ -178,13 +170,15 @@ export default {
       this.reportImagePath = '';
       this.reportTextContent = '';
 
-      const mistakeSummary = this.mistakes.map((m, i) => {
-        const questionText = (m.question || m.question_content || m.title || '题目内容').substring(0, 50);
-        const safeQuestionText = questionText.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
-        const category = m.category || '未分类';
-        const safeCategory = category.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
-        return (i + 1) + '. [' + safeCategory + '] ' + safeQuestionText;
-      }).join('\n');
+      const mistakeSummary = this.mistakes
+        .map((m, i) => {
+          const questionText = (m.question || m.question_content || m.title || '题目内容').substring(0, 50);
+          const safeQuestionText = questionText.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
+          const category = m.category || '未分类';
+          const safeCategory = category.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
+          return i + 1 + '. [' + safeCategory + '] ' + safeQuestionText;
+        })
+        .join('\n');
 
       let isTimeoutHandled = false;
       const timeoutId = setTimeout(() => {
@@ -359,7 +353,10 @@ export default {
 
           const now = new Date();
           const dateStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
-          drawLabel(ctx, '错题总数：' + this.mistakes.length + ' 道  |  生成日期：' + dateStr, 100, 390, { fontSize: 26, color: theme.subText });
+          drawLabel(ctx, '错题总数：' + this.mistakes.length + ' 道  |  生成日期：' + dateStr, 100, 390, {
+            fontSize: 26,
+            color: theme.subText
+          });
 
           const capabilityData = this.calculateCapabilityData();
           if (capabilityData && capabilityData.length > 0) {
@@ -375,33 +372,39 @@ export default {
           ctx.setFontSize(28);
           drawText(ctx, aiSummary, 80, 1060, 590, 50);
 
-          drawLabel(ctx, '汗水铸就辉煌 · AI 伴你上岸', 375, 1330, { fontSize: 24, color: theme.subText, align: 'center' });
+          drawLabel(ctx, '汗水铸就辉煌 · AI 伴你上岸', 375, 1330, {
+            fontSize: 24,
+            color: theme.subText,
+            align: 'center'
+          });
 
           ctx.draw(false, () => {
             logger.log('[MistakeReport] Canvas绘制完成');
 
-            canvasToImage('reportCanvas', this).then((imagePath) => {
-              logger.log('[MistakeReport] 图片路径:', imagePath);
+            canvasToImage('reportCanvas', this)
+              .then((imagePath) => {
+                logger.log('[MistakeReport] 图片路径:', imagePath);
 
-              this.reportImagePath = imagePath;
-              this.showCustomLoading = false;
-              this.isGenerating = false;
+                this.reportImagePath = imagePath;
+                this.showCustomLoading = false;
+                this.isGenerating = false;
 
-              this.showReportModal = true;
-              this.$nextTick(() => {
-                resolve(imagePath);
+                this.showReportModal = true;
+                this.$nextTick(() => {
+                  resolve(imagePath);
+                });
+              })
+              .catch((err) => {
+                logger.error('[MistakeReport] Canvas导出失败:', err);
+                this.showCustomLoading = false;
+                this.isGenerating = false;
+                uni.showToast({
+                  title: '图片生成失败：' + (err.errMsg || err.message || '未知错误'),
+                  icon: 'none',
+                  duration: 3000
+                });
+                reject(err);
               });
-            }).catch((err) => {
-              logger.error('[MistakeReport] Canvas导出失败:', err);
-              this.showCustomLoading = false;
-              this.isGenerating = false;
-              uni.showToast({
-                title: '图片生成失败：' + (err.errMsg || err.message || '未知错误'),
-                icon: 'none',
-                duration: 3000
-              });
-              reject(err);
-            });
           });
         } catch (error) {
           logger.error('[MistakeReport] drawReport执行失败:', error);
@@ -422,7 +425,7 @@ export default {
       const CACHE_TTL = 5 * 60 * 1000;
 
       let allQuestions = this.cachedBankData;
-      if (!allQuestions || (now - this.cachedBankTimestamp) > CACHE_TTL) {
+      if (!allQuestions || now - this.cachedBankTimestamp > CACHE_TTL) {
         allQuestions = storageService.get('v30_bank', []) || [];
         this.cachedBankData = allQuestions;
         this.cachedBankTimestamp = now;
@@ -499,8 +502,7 @@ export default {
           categoryStats[cat].questions.push(m.question || m.question_content || '题目');
         });
 
-        const sortedCategories = Object.entries(categoryStats)
-          .sort((a, b) => b[1].count - a[1].count);
+        const sortedCategories = Object.entries(categoryStats).sort((a, b) => b[1].count - a[1].count);
 
         const weakestCategory = sortedCategories[0] ? sortedCategories[0][0] : '未知';
         const weakestCount = sortedCategories[0] ? sortedCategories[0][1].count : 0;
@@ -518,7 +520,7 @@ export default {
 
         sortedCategories.slice(0, 5).forEach(([cat, data], idx) => {
           const percentage = Math.round((data.count / totalMistakes) * 100);
-          reportText += (idx + 1) + '. ' + cat + '：' + data.count + '道（' + percentage + '%）\n';
+          reportText += idx + 1 + '. ' + cat + '：' + data.count + '道（' + percentage + '%）\n';
         });
 
         reportText += '\n建议：\n';
@@ -537,7 +539,6 @@ export default {
             this.isGenerating = false;
             uni.showToast({ title: '报告生成失败', icon: 'none' });
           });
-
       } catch (error) {
         logger.error('[MistakeReport] 本地报告生成异常:', error);
         this.showCustomLoading = false;
@@ -681,8 +682,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
@@ -765,7 +770,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 30rpx 40rpx;
-    border-bottom: 1rpx solid var(--border, #F0F0F0);
+    border-bottom: 1rpx solid var(--border, #f0f0f0);
 
     .modal-title {
       font-size: 36rpx;
@@ -814,7 +819,7 @@ export default {
     display: flex;
     gap: 20rpx;
     padding: 30rpx 40rpx;
-    border-top: 1rpx solid var(--border, #F0F0F0);
+    border-top: 1rpx solid var(--border, #f0f0f0);
     background: var(--bg-card);
 
     .modal-btn {
@@ -832,8 +837,8 @@ export default {
       }
 
       &.primary {
-        background: #2ECC71;
-        color: #FFF;
+        background: #2ecc71;
+        color: #fff;
       }
 
       &::after {
@@ -844,8 +849,12 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* E010: Canvas 不可用时的文本降级样式 */
@@ -858,14 +867,14 @@ export default {
     text-align: center;
     margin-bottom: 40rpx;
     padding-bottom: 30rpx;
-    border-bottom: 2rpx solid var(--border, #E0E0E0);
+    border-bottom: 2rpx solid var(--border, #e0e0e0);
   }
 
   .report-text-title {
     display: block;
     font-size: 40rpx;
     font-weight: 700;
-    color: #2ECC71;
+    color: #2ecc71;
     margin-bottom: 12rpx;
   }
 
@@ -878,7 +887,7 @@ export default {
   .report-text-userinfo {
     margin-bottom: 30rpx;
     padding: 24rpx;
-    background: var(--bg-secondary, #F5F5F5);
+    background: var(--bg-secondary, #f5f5f5);
     border-radius: 16rpx;
   }
 
@@ -911,7 +920,7 @@ export default {
   .report-text-footer {
     text-align: center;
     padding-top: 30rpx;
-    border-top: 2rpx solid var(--border, #E0E0E0);
+    border-top: 2rpx solid var(--border, #e0e0e0);
 
     text {
       font-size: 24rpx;
