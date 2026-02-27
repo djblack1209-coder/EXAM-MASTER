@@ -42,34 +42,38 @@ exam-master/
 │   ├── config/             #   应用配置
 │   └── styles/             #   全局样式 / 设计令牌
 ├── laf-backend/            # 后端云函数（独立子项目）
-│   ├── functions/          #   云函数入口（32 个）
+│   ├── functions/          #   云函数入口（35 个）
 │   ├── functions/_shared/  #   共享模块（响应码 / 日志 / 限流）
 │   ├── database-schema/    #   数据库 Schema
 │   └── README.md           #   后端文档
 ├── docs/                   # 项目文档
-│   ├── API.md              #   后端 API 参考
-│   ├── API_DOCUMENTATION.md#   API 使用文档（含示例）
+│   ├── API_DOCUMENTATION.md #  API 使用文档（含示例）
+│   ├── PROJECT-REPORT.md    #  项目综合报告
+│   ├── AUDIT-REPORT.md      #  检测与审计报告
 │   ├── COMPONENTS.md       #   组件文档
 │   ├── UTILS.md            #   工具函数文档
 │   └── SCRIPTS.md          #   脚本与 CI/CD
 ├── deploy/                 # 部署配置与运维文档
 ├── tests/                  # 测试用例
 ├── .env.example            # 环境变量模板（前端）
-└── laf-backend/.env.example# 环境变量模板（后端）
+└── laf-backend/.env.example #  环境变量模板（后端）
 ```
 
 ## 快速开始
 
 ### 环境要求
 
-- Node.js >= 18
-- npm >= 9
+- Node.js >= 18.20（推荐使用 20.17 LTS，与 CI 保持一致）
+- npm >= 10
 - 微信开发者工具（小程序开发）
 - [Laf CLI](https://docs.laf.run/guide/cli/)（后端部署）
 
 ### 前端
 
 ```bash
+# 使用仓库内推荐版本
+nvm use
+
 # 安装依赖
 npm install
 

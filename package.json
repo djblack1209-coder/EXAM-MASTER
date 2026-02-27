@@ -11,6 +11,9 @@
     "dev:h5": "uni",
     "build": "uni build",
     "build:mp-weixin": "uni build -p mp-weixin",
+    "audit:mp-main-usage": "npm run build:mp-weixin && node scripts/build/check-mp-main-package-usage.mjs",
+    "audit:ui-quality": "node scripts/build/ui-quality-gate.js",
+    "audit:deep-scan": "node scripts/build/deep-scan.js",
     "build:mp-qq": "uni build -p mp-qq",
     "build:h5": "uni build -p h5",
     "test": "vitest run",
@@ -67,6 +70,7 @@
   ],
   "author": "Exam-Master Team",
   "license": "MIT",
+  "packageManager": "npm@10.8.2",
   "browserslist": [
     "Android >= 5",
     "iOS >= 10",
@@ -77,7 +81,7 @@
     "not dead"
   ],
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "node": ">=18.20.0",
+    "npm": ">=10.0.0"
   }
 }
