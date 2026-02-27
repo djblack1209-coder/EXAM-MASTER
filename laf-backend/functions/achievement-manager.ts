@@ -27,6 +27,12 @@ import {
 const db = cloud.database();
 const _ = db.command;
 
+function extractToken(ctx: any): string {
+  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization || '';
+  if (!rawToken || typeof rawToken !== 'string') return '';
+  return rawToken.replace(/^Bearer\s+/i, '').trim();
+}
+
 // ==================== 成就定义 ====================
 const ACHIEVEMENTS = [
   // 学习里程碑
@@ -215,36 +221,26 @@ export default async function (ctx) {
   const requestId = generateRequestId('ach');
 
   try {
-    const { action, userId, token, data } = ctx.body || {};
+    const { action, userId: requestUserId, data } = ctx.body || {};
 
     if (!action || typeof action !== 'string') {
       return wrapResponse(badRequest('action 不能为空'), requestId, startTime);
     }
 
-    if (!validateUserId(userId)) {
-      return wrapResponse(unauthorized('请先登录'), requestId, startTime);
+    // 成就数据属于用户私有数据，所有操作均要求认证
+    const rawToken = extractToken(ctx);
+    if (!rawToken) {
+      return wrapResponse(unauthorized('请先登录：缺少认证令牌'), requestId, startTime);
     }
 
-    // ✅ FIX: JWT verification is now mandatory for write operations (unlock, check)
-    // Previously, if no token was provided, anyone could unlock achievements for any userId
-    const writeActions = ['unlock', 'check'];
-    if (writeActions.includes(action)) {
-      if (!token) {
-        return wrapResponse(unauthorized('写操作需要登录认证'), requestId, startTime);
-      }
-      const payload = verifyJWT(token);
-      if (!payload || !payload.userId) {
-        return wrapResponse(unauthorized('登录已过期，请重新登录'), requestId, startTime);
-      }
-      if (payload.userId !== userId) {
-        return wrapResponse(unauthorized('身份验证失败'), requestId, startTime);
-      }
-    } else if (token) {
-      // Read operations: optional JWT validation (if provided, must match)
-      const payload = verifyJWT(token);
-      if (payload && payload.userId !== userId) {
-        return wrapResponse(unauthorized('身份验证失败'), requestId, startTime);
-      }
+    const payload = verifyJWT(rawToken);
+    if (!payload || !validateUserId(payload.userId)) {
+      return wrapResponse(unauthorized('登录已过期，请重新登录'), requestId, startTime);
+    }
+
+    const userId = payload.userId;
+    if (requestUserId && requestUserId !== userId) {
+      logger.warn(`[${requestId}] 检测到 userId 不匹配，已使用 token 用户ID`);
     }
 
     // 频率限制
@@ -273,12 +269,12 @@ export default async function (ctx) {
     return wrapResponse(result, requestId, startTime);
   } catch (error) {
     logger.error(`[${requestId}] 成就系统异常:`, error);
-    return wrapResponse(serverError('服务器内部错误', error.message), requestId, startTime);
+    return wrapResponse(serverError('服务器内部错误'), requestId, startTime);
   }
 }
 
 // ==================== 获取所有成就（含解锁状态） ====================
-async function handleGetAll(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetAll(userId: string, _data: Record<string, unknown>, _requestId: string) {
   // 获取用户已解锁的成就
   const user = await db.collection('users').doc(userId).get();
   const unlockedIds = new Set((user.data?.achievements || []).map((a: Record<string, unknown>) => a.id));
@@ -316,7 +312,7 @@ async function handleGetAll(userId: string, data: Record<string, unknown>, reque
 }
 
 // ==================== 获取已解锁成就 ====================
-async function handleGetUnlocked(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetUnlocked(userId: string, _data: Record<string, unknown>, _requestId: string) {
   const user = await db.collection('users').doc(userId).get();
   const userAchievements = user.data?.achievements || [];
 
@@ -351,18 +347,14 @@ async function handleUnlock(userId: string, data: Record<string, unknown>, reque
   const achDef = ACHIEVEMENTS.find((a) => a.id === achievementId);
   if (!achDef) return badRequest('成就不存在');
 
-  // 检查是否已解锁
-  const user = await db.collection('users').doc(userId).get();
-  const existing = (user.data?.achievements || []).find((a: Record<string, unknown>) => a.id === achievementId);
-  if (existing) {
-    return success({ alreadyUnlocked: true }, '成就已解锁');
-  }
-
-  // 解锁成就
+  // 检查是否已解锁 — 使用原子条件更新防止并发重复解锁
   const now = Date.now();
-  await db
+  const updateResult = await db
     .collection('users')
-    .doc(userId)
+    .where({
+      _id: userId,
+      'achievements.id': _.neq(achievementId)
+    })
     .update({
       achievements: _.push({
         id: achievementId,
@@ -372,6 +364,11 @@ async function handleUnlock(userId: string, data: Record<string, unknown>, reque
       }),
       updated_at: now
     });
+
+  // 如果 updated === 0，说明该成就已存在（条件不匹配）
+  if (updateResult.updated === 0) {
+    return success({ alreadyUnlocked: true }, '成就已解锁');
+  }
 
   logger.info(`[${requestId}] 解锁成就: ${achievementId} for user ${userId}`);
 
@@ -385,7 +382,7 @@ async function handleUnlock(userId: string, data: Record<string, unknown>, reque
 }
 
 // ==================== 检查可解锁成就 ====================
-async function handleCheck(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleCheck(userId: string, _data: Record<string, unknown>, requestId: string) {
   // 获取用户数据
   const user = await db.collection('users').doc(userId).get();
   if (!user.data) return badRequest('用户不存在');

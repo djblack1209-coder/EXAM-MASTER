@@ -55,15 +55,19 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
       expect(result).toBe(true);
     });
 
-    it('clear 清空所有存储', async () => {
+    it('clear 默认保留全局键，仅清理业务缓存', async () => {
       const { storageService } = await import('@/services/storageService.js');
 
-      storageService.save('key1', 'v1');
-      storageService.save('key2', 'v2');
+      storageService.save('EXAM_TOKEN', 'token_keep');
+      storageService.save('theme_mode', 'dark');
+      storageService.save('temp_cache_key', 'to_remove');
 
       const result = storageService.clear();
       expect(result).toBe(true);
-      expect(uni.clearStorageSync).toHaveBeenCalled();
+      expect(storageService.has('EXAM_TOKEN')).toBe(true);
+      expect(storageService.has('theme_mode')).toBe(true);
+      expect(storageService.has('temp_cache_key')).toBe(false);
+      expect(uni.clearStorageSync).not.toHaveBeenCalled();
     });
 
     it('saveBatch + getBatch 批量操作', async () => {

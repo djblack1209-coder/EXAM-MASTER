@@ -29,40 +29,37 @@ import {
 const db = cloud.database();
 const _ = db.command;
 
+function extractToken(ctx: any): string {
+  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization || '';
+  if (!rawToken || typeof rawToken !== 'string') return '';
+  return rawToken.replace(/^Bearer\s+/i, '').trim();
+}
+
 export default async function (ctx) {
   const startTime = Date.now();
   const requestId = generateRequestId('stats');
 
   try {
-    const { action, userId, token, data } = ctx.body || {};
+    const { action, userId: requestUserId, data } = ctx.body || {};
 
     if (!action || typeof action !== 'string') {
       return wrapResponse(badRequest('action 不能为空'), requestId, startTime);
     }
 
-    if (!validateUserId(userId)) {
-      return wrapResponse(unauthorized('请先登录'), requestId, startTime);
+    // JWT 验证：所有操作都必须提供有效 token
+    const rawToken = extractToken(ctx);
+    if (!rawToken) {
+      return wrapResponse(unauthorized('请先登录：缺少认证令牌'), requestId, startTime);
     }
 
-    // JWT 验证：写操作必须提供有效 token
-    const writeActions = ['recordStudyTime', 'updateStreak'];
-    if (writeActions.includes(action)) {
-      if (!token) {
-        return wrapResponse(unauthorized('请先登录：缺少认证令牌'), requestId, startTime);
-      }
-      const payload = verifyJWT(token);
-      if (!payload) {
-        return wrapResponse(unauthorized('认证令牌无效或已过期'), requestId, startTime);
-      }
-      if (payload.userId !== userId) {
-        return wrapResponse(unauthorized('身份验证失败：用户不匹配'), requestId, startTime);
-      }
-    } else if (token) {
-      // 读操作：如果提供了 token 则验证一致性
-      const payload = verifyJWT(token);
-      if (payload && payload.userId !== userId) {
-        return wrapResponse(unauthorized('身份验证失败'), requestId, startTime);
-      }
+    const payload = verifyJWT(rawToken);
+    if (!payload || !validateUserId(payload.userId)) {
+      return wrapResponse(unauthorized('认证令牌无效或已过期'), requestId, startTime);
+    }
+
+    const userId = payload.userId;
+    if (requestUserId && requestUserId !== userId) {
+      logger.warn(`[${requestId}] 检测到 userId 不匹配，已使用 token 用户ID`);
     }
 
     // 频率限制
@@ -93,12 +90,12 @@ export default async function (ctx) {
     return wrapResponse(result, requestId, startTime);
   } catch (error) {
     logger.error(`[${requestId}] 用户统计异常:`, error);
-    return wrapResponse(serverError('服务器内部错误', error.message), requestId, startTime);
+    return wrapResponse(serverError('服务器内部错误'), requestId, startTime);
   }
 }
 
 // ==================== 获取综合统计 ====================
-async function handleGetOverview(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetOverview(userId: string, _data: Record<string, unknown>, _requestId: string) {
   // 并行获取多项数据
   const [userRes, mistakeCountRes, masteredCountRes, todayStatsRes] = await Promise.all([
     db.collection('users').doc(userId).get(),
@@ -148,9 +145,9 @@ async function handleGetOverview(userId: string, data: Record<string, unknown>, 
 }
 
 // ==================== 获取每日统计 ====================
-async function handleGetDailyStats(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetDailyStats(userId: string, data: Record<string, unknown>, _requestId: string) {
   const { days = 7 } = data;
-  const limitDays = Math.min(Math.max(1, parseInt(days, 10) || 7), 90);
+  const limitDays = Math.min(Math.max(1, Number.parseInt(String(days), 10) || 7), 90);
 
   // 计算日期范围
   const endDate = new Date();
@@ -247,12 +244,13 @@ async function handleGetTrend(userId: string, data: Record<string, unknown>, req
 // ==================== 记录学习时长 ====================
 async function handleRecordStudyTime(userId: string, data: Record<string, unknown>, requestId: string) {
   const { minutes } = data;
+  const parsedMinutes = Number.parseInt(String(minutes), 10);
 
-  if (!minutes || minutes <= 0) {
+  if (!Number.isFinite(parsedMinutes) || parsedMinutes <= 0) {
     return badRequest('minutes 必须大于0');
   }
 
-  const safeMinutes = Math.min(parseInt(minutes, 10) || 0, 480); // 最大8小时
+  const safeMinutes = Math.min(parsedMinutes, 480); // 最大8小时
   const dateKey = getTodayKey();
   const now = Date.now();
 
@@ -294,7 +292,7 @@ async function handleRecordStudyTime(userId: string, data: Record<string, unknow
 }
 
 // ==================== 更新连续学习天数 ====================
-async function handleUpdateStreak(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleUpdateStreak(userId: string, _data: Record<string, unknown>, requestId: string) {
   const user = await db.collection('users').doc(userId).get();
   if (!user.data) return badRequest('用户不存在');
 
@@ -344,7 +342,7 @@ async function handleUpdateStreak(userId: string, data: Record<string, unknown>,
 }
 
 // ==================== 获取排名信息 ====================
-async function handleGetRankInfo(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetRankInfo(userId: string, _data: Record<string, unknown>, _requestId: string) {
   const user = await db.collection('users').doc(userId).get();
   if (!user.data) return badRequest('用户不存在');
 

@@ -285,5 +285,70 @@ describe('全链路: 错题本 & 收藏', () => {
       expect(mistake.is_mastered).toBe(true);
       expect(mistake.last_practice_time).toBeTruthy();
     });
+
+    it('batchRemoveMistakes 仅删除目标 ID，不会误清空错题本', async () => {
+      const { storageService } = await import('@/services/storageService.js');
+
+      global.__mockStorage['mistake_book'] = [
+        { id: 'keep_1', question: '保留1' },
+        { id: 'del_1', question: '删除1' },
+        { id: 'keep_2', question: '保留2' }
+      ];
+
+      const result = await storageService.batchRemoveMistakes(['del_1']);
+
+      expect(result.success).toBe(true);
+      expect(result.deleted).toBe(1);
+      const remaining = global.__mockStorage['mistake_book'];
+      expect(remaining.map((m) => m.id)).toEqual(['keep_1', 'keep_2']);
+    });
+
+    it('resolveConflict(merge) 会回写 updateFields 并将本地冲突标记为 synced', async () => {
+      const { storageService } = await import('@/services/storageService.js');
+      const { lafService } = await import('@/services/lafService.js');
+
+      global.__mockStorage['EXAM_USER_ID'] = 'test_user';
+
+      const requestSpy = vi.spyOn(lafService, 'request');
+      requestSpy.mockResolvedValueOnce({ success: true, code: 0, message: 'ok', data: [] });
+      requestSpy.mockResolvedValueOnce({ success: true, code: 0, message: 'ok', data: {} });
+
+      storageService.save(
+        'mistake_book',
+        [
+          {
+            id: 'cloud_1',
+            sync_status: 'conflict',
+            wrong_count: 1,
+            tags: ['local-tag'],
+            note: '本地简短备注',
+            updated_at: 120,
+            _conflict_cloud_data: {
+              _id: 'cloud_1',
+              wrong_count: 3,
+              tags: ['cloud-tag'],
+              notes: '云端更长的备注内容',
+              updated_at: 100
+            }
+          }
+        ],
+        true
+      );
+
+      const result = await storageService.resolveConflict('cloud_1', 'merge');
+      expect(result.success).toBe(true);
+      expect(result.cloudPersisted).toBe(true);
+
+      const updateCall = requestSpy.mock.calls.find(([, payload]) => payload?.action === 'updateFields');
+      expect(updateCall).toBeTruthy();
+      expect(updateCall[1].data.id).toBe('cloud_1');
+      expect(updateCall[1].data.fields.wrong_count).toBe(3);
+      expect(updateCall[1].data.fields.tags).toEqual(expect.arrayContaining(['local-tag', 'cloud-tag']));
+
+      const merged = storageService.get('mistake_book', [])[0];
+      expect(merged.sync_status).toBe('synced');
+      expect(merged.notes).toBe('云端更长的备注内容');
+      expect(merged._needs_remote_merge).toBeUndefined();
+    });
   });
 });

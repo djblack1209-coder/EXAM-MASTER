@@ -15,6 +15,7 @@
  */
 
 import cloud from '@lafjs/cloud';
+import crypto from 'crypto';
 import { verifyJWT } from './login';
 import { createLogger } from './_shared/api-response';
 
@@ -144,7 +145,7 @@ export default async function (ctx) {
   const requestId = `school_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, data, token } = ctx.body || {};
+    const { action, data } = ctx.body || {};
 
     if (!action) {
       return { code: 400, message: '缺少 action 参数', requestId };
@@ -152,7 +153,7 @@ export default async function (ctx) {
 
     // JWT 身份验证（收藏操作需要认证，公开查询允许匿名）
     const userActions = ['add_favorite', 'remove_favorite', 'get_favorites'];
-    const authToken = ctx.headers?.['authorization'] || token;
+    const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
     if (authToken) {
       const rawToken = authToken.startsWith('Bearer ') ? authToken.slice(7) : authToken;
       const payload = verifyJWT(rawToken);
@@ -240,7 +241,13 @@ export default async function (ctx) {
       case 'sync_from_chsi': {
         // [C2-FIX] sync_from_chsi 是写操作，需要管理员权限
         const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
-        if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+        const expectedSecret = process.env.ADMIN_SECRET;
+        if (!adminSecret || !expectedSecret || typeof adminSecret !== 'string' || typeof expectedSecret !== 'string') {
+          return { code: 403, success: false, message: '需要管理员权限' };
+        }
+        const a = Buffer.from(adminSecret, 'utf8');
+        const b = Buffer.from(expectedSecret, 'utf8');
+        if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
           return { code: 403, success: false, message: '需要管理员权限' };
         }
         result = await syncFromChsi(data, requestId);
@@ -899,7 +906,8 @@ async function getAdmissionRatios(data, requestId) {
  * 添加收藏
  */
 async function addFavorite(ctx, data, requestId) {
-  const userId = ctx._verifiedUserId || ctx.user?.userId || ctx.body?.userId;
+  // [P1-11] 仅使用 JWT 验证后的 userId，不回退到客户端可控值
+  const userId = ctx._verifiedUserId;
 
   if (!userId) {
     return { code: 401, message: '未登录', requestId };
@@ -946,7 +954,8 @@ async function addFavorite(ctx, data, requestId) {
  * 取消收藏
  */
 async function removeFavorite(ctx, data, requestId) {
-  const userId = ctx._verifiedUserId || ctx.user?.userId || ctx.body?.userId;
+  // [P1-11] 仅使用 JWT 验证后的 userId，不回退到客户端可控值
+  const userId = ctx._verifiedUserId;
 
   if (!userId) {
     return { code: 401, message: '未登录', requestId };
@@ -967,7 +976,8 @@ async function removeFavorite(ctx, data, requestId) {
  * 获取收藏列表
  */
 async function getFavorites(ctx, data, requestId) {
-  const userId = ctx._verifiedUserId || ctx.user?.userId || ctx.body?.userId;
+  // [P1-11] 仅使用 JWT 验证后的 userId，不回退到客户端可控值
+  const userId = ctx._verifiedUserId;
 
   if (!userId) {
     return { code: 401, message: '未登录', requestId };
@@ -1177,9 +1187,9 @@ async function syncFromChsi(data, requestId) {
         await db.collection('schools').add(schoolData);
         inserted++;
       }
-    } catch (error) {
+    } catch (_error) {
       failed++;
-      errors.push({ code: school.code, name: school.name, error: error.message });
+      errors.push({ code: school.code, name: school.name, error: 'sync_failed' });
     }
   }
 

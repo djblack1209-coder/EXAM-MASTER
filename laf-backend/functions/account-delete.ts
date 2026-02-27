@@ -29,19 +29,32 @@ export default async function (ctx: any) {
 
   try {
     // 1. 身份验证
-    const token = ctx.headers?.authorization?.replace('Bearer ', '') || ctx.body?.token;
+    const rawHeaderToken = ctx.headers?.authorization || ctx.headers?.Authorization;
+    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
     const payload = verifyJWT(token);
     if (!payload || !payload.userId) {
       return { code: 401, success: false, message: '请先登录' };
     }
 
     const userId = payload.userId;
-    const { action = 'request' } = ctx.body || {};
+    const action = typeof ctx.body?.action === 'string' ? ctx.body.action.trim() : '';
+
+    if (!action) {
+      return { code: 400, success: false, message: '缺少 action 参数' };
+    }
+
+    if (!['request', 'cancel', 'status'].includes(action)) {
+      return { code: 400, success: false, message: '不支持的操作' };
+    }
 
     // 2. 请求注销
     if (action === 'request') {
       // 检查是否已在注销流程中
       const { data: existingUser } = await db.collection('users').doc(userId).get();
+      if (!existingUser) {
+        return { code: 404, success: false, message: '用户不存在' };
+      }
+
       if (existingUser?.account_status === 'pending_deletion') {
         return {
           code: 0,
@@ -110,8 +123,6 @@ export default async function (ctx: any) {
         }
       };
     }
-
-    return { code: 400, success: false, message: '不支持的操作' };
   } catch (error: any) {
     logger.error(`[${requestId}] 账号注销异常:`, error);
     return { code: 500, success: false, message: '操作失败，请稍后重试' };

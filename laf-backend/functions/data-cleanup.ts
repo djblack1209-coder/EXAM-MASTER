@@ -127,7 +127,7 @@ export default async function (ctx) {
         results.cleaned[target] = cleanupResult;
       } catch (error) {
         logger.error(`[${requestId}] 清理 ${target} 失败:`, error);
-        results.errors.push({ collection: target, error: error.message });
+        results.errors.push({ collection: target, error: 'cleanup_failed' });
       }
     }
 
@@ -151,7 +151,6 @@ export default async function (ctx) {
       code: 500,
       success: false,
       message: '清理失败',
-      error: error.message,
       requestId,
       duration
     };
@@ -496,14 +495,17 @@ async function cleanupIdempotencyRecords(collection, dryRun: boolean, requestId:
   result.scanned = expiredRecords.data.length;
   result.matched = expiredRecords.data.length;
 
-  // 执行删除
+  // P005: 批量删除幂等性记录（替代逐条删除）
   if (!dryRun && expiredRecords.data.length > 0) {
-    for (const record of expiredRecords.data) {
+    const toDelete = expiredRecords.data.map((r) => r._id);
+    const BATCH_SIZE = 50;
+    for (let i = 0; i < toDelete.length; i += BATCH_SIZE) {
+      const batch = toDelete.slice(i, i + BATCH_SIZE);
       try {
-        await collection.doc(record._id).remove();
-        result.deleted++;
+        const batchResult = await collection.where({ _id: _.in(batch) }).remove();
+        result.deleted += batchResult.deleted || batch.length;
       } catch (e) {
-        logger.error(`[${requestId}] 删除幂等记录失败: ${record._id}`, e);
+        logger.error(`[${requestId}] 批量删除幂等记录失败:`, e);
       }
     }
   }
@@ -716,7 +718,7 @@ async function createBackupBeforeCleanup(targets: string[], requestId: string) {
     // 标记备份失败
     await backupCollection.doc(backupDocId).update({
       status: 'failed',
-      error: error.message,
+      error: 'backup_failed',
       completed_at: Date.now()
     });
     throw error;
@@ -894,7 +896,7 @@ export async function restoreFromBackup(ctx) {
         results.restored[target] = { total: dataToRestore.length, restored };
         logger.info(`[${requestId}] 恢复 ${target}: ${restored}/${dataToRestore.length}`);
       } catch (error) {
-        results.errors.push({ collection: target, error: error.message });
+        results.errors.push({ collection: target, error: 'restore_failed' });
       }
     }
 
@@ -911,7 +913,6 @@ export async function restoreFromBackup(ctx) {
       code: 500,
       success: false,
       message: '恢复失败',
-      error: error.message,
       requestId
     };
   }
@@ -965,7 +966,6 @@ export async function listBackups(ctx) {
       code: 500,
       success: false,
       message: '获取备份列表失败',
-      error: error.message,
       requestId
     };
   }

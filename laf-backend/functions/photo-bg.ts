@@ -18,7 +18,8 @@
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import { validate } from '../utils/validator';
-import { createLogger } from './_shared/api-response';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { verifyJWT } from './login';
 
 const logger = createLogger('[PhotoBg]');
 
@@ -75,17 +76,23 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费腾讯云 API 额度
-    const authToken = ctx.headers?.['authorization']?.replace('Bearer ', '');
+    const authToken = String(ctx.headers?.['authorization'] || ctx.headers?.Authorization || '')
+      .replace(/^Bearer\s+/i, '')
+      .trim();
     if (!authToken) {
       return { code: 401, success: false, message: '请先登录', requestId };
     }
-    try {
-      const payload = cloud.parseToken(authToken);
-      if (!payload?.userId) {
-        return { code: 401, success: false, message: 'token 无效或已过期', requestId };
-      }
-    } catch {
+
+    const payload = verifyJWT(authToken);
+    if (!payload?.userId) {
       return { code: 401, success: false, message: 'token 无效或已过期', requestId };
+    }
+    const authUserId = payload.userId;
+
+    // [AUDIT FIX] 速率限制 — 每用户每分钟最多 10 次证件照处理
+    const rateCheck = await checkRateLimitDistributed(`photo_bg:${authUserId}`, 10, 60 * 1000);
+    if (!rateCheck.allowed) {
+      return { code: 429, success: false, message: '操作过于频繁，请稍后再试', requestId };
     }
 
     // 兼容多种参数传递方式
@@ -152,7 +159,7 @@ export default async function (ctx) {
     return {
       code: 500,
       success: false,
-      message: error.message || '处理失败',
+      message: '处理失败',
       requestId,
       duration: Date.now() - startTime
     };
@@ -215,7 +222,7 @@ async function removeBackground(params, requestId) {
       return {
         code: 500,
         success: false,
-        message: `抠图失败: ${result.Response.Error.Message}`,
+        message: '抠图失败，请稍后重试',
         requestId
       };
     }
@@ -237,7 +244,7 @@ async function removeBackground(params, requestId) {
     return {
       code: 500,
       success: false,
-      message: `抠图失败: ${error.message}`,
+      message: '抠图失败，请稍后重试',
       requestId
     };
   }
@@ -274,7 +281,7 @@ async function changeBackground(params, requestId) {
       return {
         code: 500,
         success: false,
-        message: `人像识别失败: ${result.Response.Error.Message}`,
+        message: '人像识别失败，请稍后重试',
         requestId
       };
     }
@@ -299,7 +306,7 @@ async function changeBackground(params, requestId) {
     return {
       code: 500,
       success: false,
-      message: `换背景失败: ${error.message}`,
+      message: '换背景失败，请稍后重试',
       requestId
     };
   }
@@ -376,7 +383,7 @@ async function processPhoto(params, requestId) {
       return {
         code: 500,
         success: false,
-        message: `人像识别失败: ${segResult.Response.Error.Message}`,
+        message: '人像识别失败，请稍后重试',
         requestId
       };
     }
@@ -411,7 +418,7 @@ async function processPhoto(params, requestId) {
     return {
       code: 500,
       success: false,
-      message: `处理失败: ${error.message}`,
+      message: '处理失败，请稍后重试',
       requestId
     };
   }
@@ -445,7 +452,7 @@ async function applyBeauty(params, requestId) {
       return {
         code: 500,
         success: false,
-        message: `美颜失败: ${result.Response.Error.Message}`,
+        message: '美颜失败，请稍后重试',
         requestId
       };
     }
@@ -464,7 +471,7 @@ async function applyBeauty(params, requestId) {
     return {
       code: 500,
       success: false,
-      message: `美颜失败: ${error.message}`,
+      message: '美颜失败，请稍后重试',
       requestId
     };
   }

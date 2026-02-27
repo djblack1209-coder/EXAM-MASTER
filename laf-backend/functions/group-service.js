@@ -148,8 +148,14 @@ async function handleCreateGroup(userId, params, requestId) {
     return {
       code,
       success: false,
-      message: code === 500 ? '创建小组失败，请稍后重试' : errMsg,
-      error: error.message
+      message:
+        code === 409
+          ? '小组已存在'
+          : code === 400
+            ? '请求参数错误'
+            : code === 504
+              ? '请求超时，请稍后重试'
+              : '创建小组失败，请稍后重试'
     };
   }
 }
@@ -162,7 +168,7 @@ async function handleJoinGroup(userId, params, requestId) {
     return { code: 401, success: false, message: '用户未登录', data: null };
   }
 
-  const { groupId, joinCode } = params;
+  const { groupId } = params;
 
   if (!groupId) {
     return { code: 400, success: false, message: '小组ID不能为空', data: null };
@@ -182,29 +188,40 @@ async function handleJoinGroup(userId, params, requestId) {
       return { code: 400, success: false, message: '您已经是该小组成员', data: null };
     }
 
-    // 检查小组是否已满
-    if (group.data.member_count >= group.data.max_members) {
+    // ✅ P0修复：原子条件更新 — 先尝试递增 member_count（仅当未满时成功）
+    const incrementResult = await db
+      .collection('groups')
+      .where({
+        _id: groupId,
+        member_count: _.lt(group.data.max_members)
+      })
+      .update({
+        member_count: _.inc(1),
+        updated_at: Date.now()
+      });
+
+    if (incrementResult.updated === 0) {
       return { code: 400, success: false, message: '小组已满员', data: null };
     }
 
-    // 添加成员
-    await db.collection('group_members').add({
-      _id: generateId('member_'),
-      group_id: groupId,
-      user_id: userId,
-      role: MEMBER_ROLE.MEMBER,
-      joined_at: Date.now(),
-      status: 'active'
-    });
-
-    // 更新小组成员数
-    await db
-      .collection('groups')
-      .doc(groupId)
-      .update({
-        member_count: group.data.member_count + 1,
-        updated_at: Date.now()
+    // 原子递增成功后再添加成员记录
+    try {
+      await db.collection('group_members').add({
+        _id: generateId('member_'),
+        group_id: groupId,
+        user_id: userId,
+        role: MEMBER_ROLE.MEMBER,
+        joined_at: Date.now(),
+        status: 'active'
       });
+    } catch (addError) {
+      // 成员添加失败，回滚计数
+      await db
+        .collection('groups')
+        .doc(groupId)
+        .update({ member_count: _.inc(-1) });
+      throw addError;
+    }
 
     logger.info(`[${requestId}] 加入小组成功:`, userId, groupId);
 
@@ -219,8 +236,7 @@ async function handleJoinGroup(userId, params, requestId) {
     return {
       code: 500,
       success: false,
-      message: '加入小组失败',
-      error: error.message
+      message: '加入小组失败'
     };
   }
 }
@@ -276,7 +292,6 @@ async function handleGetGroups(userId, params, requestId) {
       code: 500,
       success: false,
       message: '获取小组列表失败',
-      error: error.message,
       data: []
     };
   }
@@ -306,7 +321,26 @@ async function handleGetGroupDetail(userId, params, requestId) {
     // 获取小组成员
     const members = await db.collection('group_members').where({ group_id: groupId, status: 'active' }).get();
 
-    // 获取成员详细信息
+    // 检查当前用户是否是成员
+    const currentMember = members.data.find((m) => m.user_id === userId);
+
+    // 非成员仅返回公开信息，避免泄露成员隐私
+    if (!currentMember) {
+      logger.info(`[${requestId}] 非成员访问小组详情，返回脱敏数据:`, groupId);
+      return {
+        code: 0,
+        success: true,
+        data: {
+          ...group.data,
+          members: [],
+          is_member: false,
+          member_role: null
+        },
+        message: '获取成功'
+      };
+    }
+
+    // 获取成员详细信息（仅成员可见）
     const memberIds = members.data.map((m) => m.user_id);
     let memberDetails = [];
     if (memberIds.length > 0) {
@@ -331,9 +365,6 @@ async function handleGetGroupDetail(userId, params, requestId) {
       });
     }
 
-    // 检查当前用户是否是成员
-    const currentMember = members.data.find((m) => m.user_id === userId);
-
     logger.info(`[${requestId}] 获取小组详情:`, groupId, '成员数:', members.data.length);
 
     return {
@@ -353,7 +384,6 @@ async function handleGetGroupDetail(userId, params, requestId) {
       code: 500,
       success: false,
       message: '获取小组详情失败',
-      error: error.message,
       data: null
     };
   }
@@ -401,12 +431,12 @@ async function handleLeaveGroup(userId, params, requestId) {
       left_at: Date.now()
     });
 
-    // 更新小组成员数
+    // 更新小组成员数（原子递减）
     await db
       .collection('groups')
       .doc(groupId)
       .update({
-        member_count: Math.max(0, group.data.member_count - 1),
+        member_count: _.inc(-1),
         updated_at: Date.now()
       });
 
@@ -424,7 +454,6 @@ async function handleLeaveGroup(userId, params, requestId) {
       code: 500,
       success: false,
       message: '离开小组失败',
-      error: error.message,
       data: null
     };
   }
@@ -488,7 +517,6 @@ async function handleShareResource(userId, params, requestId) {
       code: 500,
       success: false,
       message: '分享资源失败',
-      error: error.message,
       data: null
     };
   }
@@ -538,7 +566,7 @@ async function handleGetResources(userId, params, requestId) {
 
     // 获取用户信息
     const userIds = [...new Set(resources.data.map((r) => r.user_id))];
-    let userDetails = {};
+    const userDetails = {};
     if (userIds.length > 0) {
       const users = await db
         .collection('users')
@@ -576,7 +604,6 @@ async function handleGetResources(userId, params, requestId) {
       code: 500,
       success: false,
       message: '获取资源列表失败',
-      error: error.message,
       data: []
     };
   }
@@ -596,9 +623,9 @@ export default async function (ctx) {
     const userId = ctx.headers?.['x-user-id'] || params.userId;
 
     // JWT 身份验证
-    const token = ctx.headers?.['authorization'] || params.token;
-    if (token) {
-      const rawToken = token.startsWith('Bearer ') ? token.slice(7) : token;
+    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
+    if (typeof rawHeaderToken === 'string' && rawHeaderToken) {
+      const rawToken = rawHeaderToken.startsWith('Bearer ') ? rawHeaderToken.slice(7) : rawHeaderToken;
       const payload = verifyJWT(rawToken);
       if (payload && payload.userId !== userId) {
         return { code: 401, success: false, message: '身份验证失败：用户不匹配', requestId };

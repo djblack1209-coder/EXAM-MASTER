@@ -24,7 +24,8 @@ import {
   badRequest,
   unauthorized,
   serverError,
-  generateRequestId
+  generateRequestId,
+  checkRateLimitDistributed
 } from './_shared/api-response';
 
 const db = cloud.database();
@@ -32,13 +33,31 @@ const _ = db.command;
 
 // ==================== 缓存配置 ====================
 const RANK_CACHE_TTL = 60 * 1000; // 排行榜缓存60秒
+const ENABLE_RANK_CACHE = process.env.ENABLE_RANK_CACHE === 'true' && process.env.NODE_ENV !== 'production';
 const rankCache = new Map<string, { data: unknown; expireAt: number }>();
 const rateLimit = new Map<string, { expireAt: number }>();
+
+function checkLocalUpdateRateLimit(
+  key: string,
+  cooldownMs: number
+): { allowed: boolean; remaining: number; resetAt: number } {
+  const now = Date.now();
+  const cached = rateLimit.get(key);
+
+  if (cached && now < cached.expireAt) {
+    return { allowed: false, remaining: 0, resetAt: cached.expireAt };
+  }
+
+  rateLimit.set(key, { expireAt: now + cooldownMs });
+  return { allowed: true, remaining: 0, resetAt: now + cooldownMs };
+}
 
 /**
  * 获取缓存的排行榜数据
  */
 function getCachedRank(cacheKey: string): unknown | null {
+  if (!ENABLE_RANK_CACHE) return null;
+
   const cached = rankCache.get(cacheKey);
   if (cached && cached.expireAt > Date.now()) {
     return cached.data;
@@ -54,6 +73,8 @@ function getCachedRank(cacheKey: string): unknown | null {
  * 设置排行榜缓存
  */
 function setCachedRank(cacheKey: string, data: unknown, ttl: number = RANK_CACHE_TTL): void {
+  if (!ENABLE_RANK_CACHE) return;
+
   // 限制缓存大小，防止内存溢出
   if (rankCache.size > 100) {
     const now = Date.now();
@@ -102,7 +123,8 @@ export default async function (ctx) {
     }
 
     // JWT 认证：update 操作强制验证
-    const token = ctx.headers?.['authorization']?.replace(/^Bearer\s+/i, '') || ctx.body?.token;
+    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
+    const token = typeof rawHeaderToken === 'string' ? rawHeaderToken.replace(/^Bearer\s+/i, '').trim() : '';
     let uid = bodyUid;
 
     if (action === 'update') {
@@ -144,7 +166,7 @@ export default async function (ctx) {
     const duration = Date.now() - startTime;
     logger.error(`[${requestId}] 排行榜异常:`, error);
 
-    return { ...serverError('服务器内部错误', (error as Error).message), requestId, duration };
+    return { ...serverError('服务器内部错误'), requestId, duration };
   }
 }
 
@@ -162,13 +184,14 @@ async function handleUpdate(params, requestId) {
     return badRequest('分数必须是0-200之间的数字（单局上限200分）');
   }
 
-  // 频率限制：同一用户 30 秒内只能提交一次分数
+  // 频率限制：同一用户 30 秒内只能提交一次分数（分布式优先，失败降级本地）
   const rateLimitKey = `rank_update:${uid}`;
-  const cached = rateLimit.get(rateLimitKey);
-  if (cached && Date.now() < cached.expireAt) {
+  const rateResult = await checkRateLimitDistributed(rateLimitKey, 1, 30000, () =>
+    checkLocalUpdateRateLimit(rateLimitKey, 30000)
+  );
+  if (!rateResult.allowed) {
     return badRequest('操作过于频繁，请稍后再试');
   }
-  rateLimit.set(rateLimitKey, { expireAt: Date.now() + 30000 });
 
   const rankCollection = db.collection('rankings');
   const now = Date.now();
@@ -177,44 +200,89 @@ async function handleUpdate(params, requestId) {
   const monthStart = getMonthStart();
 
   // 更新或创建排行榜记录
+  // [R2-P1] 使用条件式原子更新，避免 read-then-write 竞态丢分
   const existing = await rankCollection.where({ uid }).getOne();
 
   if (existing.data) {
-    // 更新现有记录
-    const updateData = {
-      total_score: _.inc(score),
-      updated_at: now
-    };
+    // 先尝试：日/周/月都未翻转的常见情况（单次原子 _.inc）
+    const samePeriodResult = await rankCollection
+      .where({
+        _id: existing.data._id,
+        daily_date: today,
+        weekly_start: weekStart,
+        monthly_start: monthStart
+      })
+      .update({
+        total_score: _.inc(score),
+        daily_score: _.inc(score),
+        weekly_score: _.inc(score),
+        monthly_score: _.inc(score),
+        updated_at: now,
+        ...(nickName ? { nick_name: sanitizeString(nickName, 32) } : {}),
+        ...(avatarUrl ? { avatar_url: sanitizeString(avatarUrl, 500) } : {})
+      });
 
-    // 更新日榜分数
-    if (existing.data.daily_date === today) {
-      updateData.daily_score = _.inc(score);
-    } else {
-      updateData.daily_score = score;
-      updateData.daily_date = today;
+    if (!samePeriodResult.updated) {
+      // 有周期翻转，需要逐字段处理（低频路径，每天/周/月最多触发一次）
+      const updateData: Record<string, unknown> = {
+        total_score: _.inc(score),
+        updated_at: now
+      };
+
+      if (existing.data.daily_date === today) {
+        updateData.daily_score = _.inc(score);
+      } else {
+        updateData.daily_score = score;
+        updateData.daily_date = today;
+      }
+
+      if (existing.data.weekly_start === weekStart) {
+        updateData.weekly_score = _.inc(score);
+      } else {
+        updateData.weekly_score = score;
+        updateData.weekly_start = weekStart;
+      }
+
+      if (existing.data.monthly_start === monthStart) {
+        updateData.monthly_score = _.inc(score);
+      } else {
+        updateData.monthly_score = score;
+        updateData.monthly_start = monthStart;
+      }
+
+      if (nickName) updateData.nick_name = sanitizeString(nickName, 32);
+      if (avatarUrl) updateData.avatar_url = sanitizeString(avatarUrl, 500);
+
+      // 条件更新：仅当周期字段仍是读取时的旧值才执行翻转，避免并发覆盖
+      const flipUpdateResult = await rankCollection
+        .where({
+          _id: existing.data._id,
+          daily_date: existing.data.daily_date,
+          weekly_start: existing.data.weekly_start,
+          monthly_start: existing.data.monthly_start
+        })
+        .update(updateData);
+
+      if (!flipUpdateResult.updated) {
+        // 说明并发请求已先完成翻转，这里补做一次纯增量，避免丢分
+        await rankCollection
+          .where({
+            _id: existing.data._id,
+            daily_date: today,
+            weekly_start: weekStart,
+            monthly_start: monthStart
+          })
+          .update({
+            total_score: _.inc(score),
+            daily_score: _.inc(score),
+            weekly_score: _.inc(score),
+            monthly_score: _.inc(score),
+            updated_at: now,
+            ...(nickName ? { nick_name: sanitizeString(nickName, 32) } : {}),
+            ...(avatarUrl ? { avatar_url: sanitizeString(avatarUrl, 500) } : {})
+          });
+      }
     }
-
-    // 更新周榜分数
-    if (existing.data.weekly_start === weekStart) {
-      updateData.weekly_score = _.inc(score);
-    } else {
-      updateData.weekly_score = score;
-      updateData.weekly_start = weekStart;
-    }
-
-    // 更新月榜分数
-    if (existing.data.monthly_start === monthStart) {
-      updateData.monthly_score = _.inc(score);
-    } else {
-      updateData.monthly_score = score;
-      updateData.monthly_start = monthStart;
-    }
-
-    // 更新用户信息（如果提供）- 清理输入
-    if (nickName) updateData.nick_name = sanitizeString(nickName, 32);
-    if (avatarUrl) updateData.avatar_url = sanitizeString(avatarUrl, 500);
-
-    await rankCollection.doc(existing.data._id).update(updateData);
 
     logger.info(`[${requestId}] 更新排行榜分数: ${uid}, +${score}`);
   } else {
@@ -299,10 +367,10 @@ async function handleGet(params, requestId) {
     .orderBy(scoreField, 'desc')
     .limit(safeLimit)
     .field({
-      uid: true,
-      nick_name: true,
-      avatar_url: true,
-      [scoreField]: true
+      uid: 1,
+      nick_name: 1,
+      avatar_url: 1,
+      [scoreField]: 1
     })
     .get();
 

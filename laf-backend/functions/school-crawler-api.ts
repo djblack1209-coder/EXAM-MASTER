@@ -11,8 +11,9 @@
  */
 
 import cloud from '@lafjs/cloud';
+import crypto from 'crypto';
 import { validate, sanitizeString } from '../utils/validator';
-import { createLogger } from './_shared/api-response';
+import { createLogger, checkRateLimit } from './_shared/api-response';
 const logger = createLogger('[SchoolCrawler]');
 
 const db = cloud.database();
@@ -115,11 +116,48 @@ export default async function (ctx: FunctionContext) {
 
     logger.info(`[${requestId}] 爬虫API: action=${action}`);
 
+    // [R2-P0] 接口级速率限制（尤其限制 refresh/crawl_all 这类高成本操作）
+    const ipRaw = ctx.headers?.['x-real-ip'] || ctx.headers?.['x-forwarded-for'] || 'anonymous';
+    const clientIp = String(Array.isArray(ipRaw) ? ipRaw[0] : ipRaw)
+      .split(',')[0]
+      .trim()
+      .slice(0, 100);
+    const rateConfig: Record<string, { limit: number; windowMs: number }> = {
+      list: { limit: 60, windowMs: 60 * 1000 },
+      by_province: { limit: 60, windowMs: 60 * 1000 },
+      provinces: { limit: 60, windowMs: 60 * 1000 },
+      status: { limit: 60, windowMs: 60 * 1000 },
+      refresh: { limit: 3, windowMs: 10 * 60 * 1000 },
+      crawl_all: { limit: 2, windowMs: 30 * 60 * 1000 }
+    };
+    const cfg = rateConfig[action as string] || { limit: 30, windowMs: 60 * 1000 };
+    const rate = checkRateLimit(`crawler:${action}:${clientIp}`, cfg.limit, cfg.windowMs);
+    if (!rate.allowed) {
+      return { code: 429, message: '请求过于频繁，请稍后重试', requestId };
+    }
+
     switch (action) {
       case 'list':
         return await getSchoolList(data, requestId);
-      case 'refresh':
+      case 'refresh': {
+        // [R2-P0] refresh 是写操作，需要管理员权限
+        const refreshSecret = ctx.headers?.['x-admin-secret'] || data?.adminSecret;
+        const expectedRefreshSecret = process.env.ADMIN_SECRET;
+        if (
+          !refreshSecret ||
+          !expectedRefreshSecret ||
+          typeof refreshSecret !== 'string' ||
+          typeof expectedRefreshSecret !== 'string'
+        ) {
+          return { code: 403, message: '无权执行此操作', requestId };
+        }
+        const ra = Buffer.from(refreshSecret, 'utf8');
+        const rb = Buffer.from(expectedRefreshSecret, 'utf8');
+        if (ra.length !== rb.length || !crypto.timingSafeEqual(ra, rb)) {
+          return { code: 403, message: '无权执行此操作', requestId };
+        }
         return await refreshSchoolData(data, requestId);
+      }
       case 'by_province':
         return await getSchoolsByProvince(data, requestId);
       case 'provinces':
@@ -127,9 +165,15 @@ export default async function (ctx: FunctionContext) {
       case 'status':
         return await getCrawlerStatus(requestId);
       case 'crawl_all': {
-        // 管理员权限校验：crawl_all 是高危操作
-        const adminSecret = data?.adminSecret;
-        if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
+        // 管理员权限校验：crawl_all 是高危操作 — [R2-P1] timingSafeEqual 防时序攻击
+        const adminSecret = ctx.headers?.['x-admin-secret'] || data?.adminSecret;
+        const expectedSecret = process.env.ADMIN_SECRET;
+        if (!adminSecret || !expectedSecret || typeof adminSecret !== 'string' || typeof expectedSecret !== 'string') {
+          return { code: 403, message: '无权执行此操作', requestId };
+        }
+        const ca = Buffer.from(adminSecret, 'utf8');
+        const cb = Buffer.from(expectedSecret, 'utf8');
+        if (ca.length !== cb.length || !crypto.timingSafeEqual(ca, cb)) {
           return { code: 403, message: '无权执行此操作', requestId };
         }
         return await crawlAllSchools(requestId);
@@ -152,7 +196,10 @@ export default async function (ctx: FunctionContext) {
  * 获取院校列表
  */
 async function getSchoolList(data: Record<string, unknown>, requestId: string) {
-  const { page = 1, pageSize = 20, province } = data || {};
+  const { province } = data || {};
+  // [R2-P1] pageSize/page 钳位防资源滥用
+  const page = Math.max(1, Math.min(parseInt(data?.page as string) || 1, 100));
+  const pageSize = Math.max(1, Math.min(parseInt(data?.pageSize as string) || 20, 100));
 
   const cacheValid = await checkCacheValid();
 
@@ -598,7 +645,10 @@ async function refreshSchoolData(data: Record<string, unknown>, requestId: strin
  * 按省份获取院校
  */
 async function getSchoolsByProvince(data: Record<string, unknown>, requestId: string) {
-  const { province, page = 1, pageSize = 20 } = data || {};
+  const { province } = data || {};
+  // [R2-P1] pageSize/page 钳位防资源滥用
+  const page = Math.max(1, Math.min(parseInt(data?.page as string) || 1, 100));
+  const pageSize = Math.max(1, Math.min(parseInt(data?.pageSize as string) || 20, 100));
 
   if (!province) {
     return { code: 400, message: '缺少省份参数', requestId };

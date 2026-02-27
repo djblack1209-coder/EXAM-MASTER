@@ -37,7 +37,16 @@
 
 import cloud from '@lafjs/cloud';
 import { validate } from '../utils/validator';
-import { success, badRequest, serverError, generateRequestId, wrapResponse } from './_shared/api-response';
+import { verifyJWT } from './login';
+import {
+  success,
+  badRequest,
+  serverError,
+  generateRequestId,
+  wrapResponse,
+  checkRateLimitDistributed,
+  tooManyRequests
+} from './_shared/api-response';
 import { createLogger } from './_shared/api-response';
 
 const logger = createLogger('[VoiceService]');
@@ -66,17 +75,23 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费智谱 AI API 额度
-    const authToken = ctx.headers?.['authorization']?.replace('Bearer ', '');
+    const authToken = String(ctx.headers?.['authorization'] || ctx.headers?.Authorization || '')
+      .replace(/^Bearer\s+/i, '')
+      .trim();
     if (!authToken) {
       return wrapResponse(badRequest('请先登录'), requestId, startTime);
     }
-    try {
-      const payload = cloud.parseToken(authToken);
-      if (!payload?.userId) {
-        return wrapResponse(badRequest('token 无效或已过期'), requestId, startTime);
-      }
-    } catch {
+
+    const payload = verifyJWT(authToken);
+    if (!payload?.userId) {
       return wrapResponse(badRequest('token 无效或已过期'), requestId, startTime);
+    }
+    const authUserId = payload.userId;
+
+    // [AUDIT FIX] 速率限制 — 每用户每分钟最多 15 次语音请求
+    const rateCheck = await checkRateLimitDistributed(`voice:${authUserId}`, 15, 60 * 1000);
+    if (!rateCheck.allowed) {
+      return wrapResponse(tooManyRequests('操作过于频繁，请稍后再试'), requestId, startTime);
     }
 
     // [AUDIT FIX] 检查 API Key 配置
@@ -132,7 +147,7 @@ export default async function (ctx) {
   } catch (error) {
     logger.error(`[${requestId}] 语音服务异常:`, error);
 
-    return wrapResponse(serverError(error.message || '语音服务异常', error.message), requestId, startTime);
+    return wrapResponse(serverError('语音服务异常'), requestId, startTime);
   }
 }
 
@@ -184,7 +199,7 @@ async function handleSTT(params, requestId) {
 
     if (data.error) {
       logger.error(`[${requestId}] STT 错误:`, data.error);
-      return serverError(`语音识别失败: ${data.error.message || '未知错误'}`);
+      return serverError('语音识别失败，请稍后重试');
     }
 
     const text = data.text || '';
@@ -199,7 +214,7 @@ async function handleSTT(params, requestId) {
     );
   } catch (error) {
     logger.error(`[${requestId}] STT 异常:`, error);
-    return serverError(`语音识别异常: ${error.message}`);
+    return serverError('语音识别异常，请稍后重试');
   }
 }
 
@@ -249,7 +264,7 @@ async function handleTTS(params, requestId) {
       // 如果返回 JSON，说明是错误响应
       const errorData = JSON.parse(Buffer.from(response.data).toString());
       logger.error(`[${requestId}] TTS 错误:`, errorData);
-      return serverError(`语音合成失败: ${errorData.error?.message || '未知错误'}`);
+      return serverError('语音合成失败，请稍后重试');
     }
 
     // 将音频数据转为 Base64
@@ -268,6 +283,6 @@ async function handleTTS(params, requestId) {
     );
   } catch (error) {
     logger.error(`[${requestId}] TTS 异常:`, error);
-    return serverError(`语音合成异常: ${error.message}`);
+    return serverError('语音合成异常，请稍后重试');
   }
 }

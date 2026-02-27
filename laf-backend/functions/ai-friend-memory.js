@@ -24,7 +24,7 @@ export default async function (ctx) {
   const requestId = `mem_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, userId, friendType, data, token } = ctx.body || {};
+    const { action, userId, friendType, data } = ctx.body || {};
 
     if (!userId) {
       return { code: 401, message: '用户未登录', requestId };
@@ -35,7 +35,7 @@ export default async function (ctx) {
     }
 
     // [AUDIT FIX] JWT 身份验证 — 始终要求认证（移除 NODE_ENV 条件），且强制校验 payload.userId
-    const authToken = ctx.headers?.['authorization'] || token;
+    const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
     if (!authToken) {
       return { code: 401, message: '缺少认证 token，请重新登录', requestId };
     }
@@ -67,7 +67,7 @@ export default async function (ctx) {
     console.error(`[${requestId}] AI记忆异常:`, error);
     return {
       code: 500,
-      message: error.message || '服务器错误',
+      message: '服务器错误',
       requestId,
       duration: Date.now() - startTime
     };

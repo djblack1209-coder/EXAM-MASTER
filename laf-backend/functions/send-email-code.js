@@ -21,11 +21,24 @@ const SMTP_FROM = process.env.SMTP_FROM || 'Exam-Master <noreply@exam-master.com
 // 获取数据库实例
 const db = cloud.database();
 
+function normalizeEmail(email) {
+  return typeof email === 'string' ? email.trim().toLowerCase() : '';
+}
+
+function maskEmail(email) {
+  if (typeof email !== 'string' || !email.includes('@')) return '***';
+  const [localPart, domain] = email.split('@');
+  if (!localPart || !domain) return '***';
+  if (localPart.length <= 2) return `${localPart[0] || '*'}***@${domain}`;
+  return `${localPart[0]}***${localPart[localPart.length - 1]}@${domain}`;
+}
+
 export default async function (ctx) {
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { email } = ctx.body || {};
+    const { email: rawEmail } = ctx.body || {};
+    const email = normalizeEmail(rawEmail);
 
     // 参数校验
     if (!email) {
@@ -48,10 +61,12 @@ export default async function (ctx) {
 
     // 检查发送频率（1分钟内只能发送一次）
     const codesCollection = db.collection('email_codes');
+    const now = Date.now();
+
     const recentCode = await codesCollection
       .where({
         email,
-        created_at: db.command.gt(Date.now() - 60 * 1000)
+        created_at: db.command.gt(now - 60 * 1000)
       })
       .getOne();
 
@@ -63,6 +78,42 @@ export default async function (ctx) {
       };
     }
 
+    // 安全修复：同一邮箱每日最多发送 10 次验证码，防止邮件轰炸
+    const dailyCount = await codesCollection
+      .where({
+        email,
+        created_at: db.command.gt(now - 24 * 60 * 60 * 1000)
+      })
+      .count();
+
+    if (dailyCount.total >= 10) {
+      return {
+        code: 429,
+        message: '今日验证码发送次数已达上限，请明天再试',
+        requestId
+      };
+    }
+
+    // 安全修复：基于 IP 的全局限流（每个 IP 每小时最多 20 次）
+    const clientIP = ctx.headers?.['x-forwarded-for']?.split(',')[0]?.trim() || ctx.headers?.['x-real-ip'] || 'unknown';
+
+    if (clientIP !== 'unknown') {
+      const ipHourlyCount = await codesCollection
+        .where({
+          client_ip: clientIP,
+          created_at: db.command.gt(now - 60 * 60 * 1000)
+        })
+        .count();
+
+      if (ipHourlyCount.total >= 20) {
+        return {
+          code: 429,
+          message: '请求过于频繁，请稍后再试',
+          requestId
+        };
+      }
+    }
+
     // 生成6位验证码
     const code = crypto.randomInt(100000, 999999).toString();
 
@@ -70,6 +121,7 @@ export default async function (ctx) {
     await codesCollection.add({
       email,
       code,
+      client_ip: clientIP,
       used: false,
       created_at: Date.now()
     });
@@ -81,18 +133,23 @@ export default async function (ctx) {
       // 邮件发送失败
       console.warn(`[${requestId}] 邮件发送失败，验证码已保存到数据库`);
 
-      // ✅ B023-sec: 不再在任何环境返回验证码，防止泄露
+      // 不返回验证码，避免泄露
       if (process.env.NODE_ENV !== 'production') {
-        console.warn(`[${requestId}] [DEV] 验证码: ${code} (仅控制台可见)`);
         return {
           code: 0,
-          message: '验证码已发送（开发模式，邮件发送失败，请查看服务端日志）',
+          message: '开发模式：验证码已生成，但邮件发送失败',
           requestId
         };
       }
+
+      return {
+        code: 502,
+        message: '邮件服务暂时不可用，请稍后再试',
+        requestId
+      };
     }
 
-    console.log(`[${requestId}] 验证码已发送到: ${email}`);
+    console.log(`[${requestId}] 验证码已发送到: ${maskEmail(email)}`);
 
     return {
       code: 0,

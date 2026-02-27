@@ -17,36 +17,63 @@ import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
 
 const db = cloud.database();
+const ALLOWED_ACTIONS = new Set([
+  'save_upload_record',
+  'get_upload_records',
+  'delete_upload_record',
+  'save_questions',
+  'get_questions',
+  'delete_questions',
+  'sync_questions',
+  'get_stats'
+]);
+
+function extractToken(ctx) {
+  const authHeader = ctx?.headers?.authorization || ctx?.headers?.Authorization;
+  const rawToken = typeof authHeader === 'string' ? authHeader : '';
+  if (!rawToken || typeof rawToken !== 'string') return '';
+  return rawToken.replace(/^Bearer\s+/i, '').trim();
+}
+
+function toSafeString(value, maxLength = 200) {
+  if (typeof value !== 'string') return '';
+  return value.trim().slice(0, maxLength);
+}
+
+function toPositiveInt(value, fallback, max) {
+  const n = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(n) || n <= 0) return fallback;
+  return Math.min(n, max);
+}
 
 export default async function (ctx) {
   const startTime = Date.now();
   const requestId = `material_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, userId, data, token } = ctx.body || {};
+    const { action, userId: requestUserId, data } = ctx.body || {};
 
     // 参数校验
-    if (!action) {
+    if (!action || typeof action !== 'string') {
       return { code: 400, message: '缺少 action 参数', requestId };
     }
-
-    if (!userId) {
-      return { code: 401, message: '未登录', requestId };
+    if (!ALLOWED_ACTIONS.has(action)) {
+      return { code: 400, message: `未知的 action: ${action}`, requestId };
     }
 
     // JWT 身份验证
-    const authToken = ctx.headers?.['authorization'] || token;
-    if (authToken) {
-      const rawToken = authToken.startsWith('Bearer ') ? authToken.slice(7) : authToken;
-      const payload = verifyJWT(rawToken);
-      if (!payload) {
-        return { code: 401, message: 'token 无效或已过期，请重新登录', requestId };
-      }
-      if (payload.userId && payload.userId !== userId) {
-        return { code: 401, message: '身份验证失败', requestId };
-      }
-    } else {
+    const rawToken = extractToken(ctx);
+    if (!rawToken) {
       return { code: 401, message: '缺少认证 token，请重新登录', requestId };
+    }
+    const payload = verifyJWT(rawToken);
+    if (!payload || !payload.userId) {
+      return { code: 401, message: 'token 无效或已过期，请重新登录', requestId };
+    }
+    const userId = payload.userId;
+
+    if (requestUserId && requestUserId !== userId) {
+      console.warn(`[${requestId}] 检测到 userId 不匹配，已使用 token 用户ID`);
     }
 
     console.log(`[${requestId}] 用户资料管理: action=${action}, userId=${userId}`);
@@ -78,9 +105,6 @@ export default async function (ctx) {
       // ==================== 题库统计 ====================
       case 'get_stats':
         return await getQuestionStats(userId, requestId);
-
-      default:
-        return { code: 400, message: `未知的 action: ${action}`, requestId };
     }
   } catch (error) {
     console.error(`[${requestId}] 用户资料管理异常:`, error);
@@ -98,18 +122,19 @@ export default async function (ctx) {
  */
 async function saveUploadRecord(userId, data, requestId) {
   const { name, size, source, fileType, contentPreview } = data || {};
+  const safeName = toSafeString(name, 200);
 
-  if (!name) {
+  if (!safeName) {
     return { code: 400, message: '缺少文件名', requestId };
   }
 
   const record = {
     userId,
-    name,
-    size: size || 0,
-    source: source || 'local',
-    fileType: fileType || 'unknown',
-    contentPreview: contentPreview?.substring(0, 500) || '',
+    name: safeName,
+    size: Math.max(0, Number(size) || 0),
+    source: toSafeString(source, 50) || 'local',
+    fileType: toSafeString(fileType, 50) || 'unknown',
+    contentPreview: toSafeString(contentPreview, 500),
     status: 'ready',
     questionCount: 0,
     createdAt: Date.now(),
@@ -191,7 +216,7 @@ async function saveQuestions(userId, data, requestId) {
   }
 
   // 为每道题添加元数据
-  const questionsToSave = questions.map((q, index) => ({
+  const questionsToSave = questions.map((q) => ({
     userId,
     materialId: materialId || null,
     materialName: materialName || '未知来源',
@@ -212,9 +237,9 @@ async function saveQuestions(userId, data, requestId) {
   // 批量插入
   const result = await db.collection('user_questions').add(questionsToSave);
 
-  // 更新资料记录的题目数量
+  // 更新资料记录的题目数量（含所有权校验）
   if (materialId) {
-    const material = await db.collection('user_materials').where({ _id: materialId }).getOne();
+    const material = await db.collection('user_materials').where({ _id: materialId, userId }).getOne();
 
     if (material.data) {
       await db
@@ -247,21 +272,30 @@ async function saveQuestions(userId, data, requestId) {
 async function getQuestions(userId, data, requestId) {
   const { page = 1, pageSize = 20, materialId, tags, difficulty, onlyWrong, random } = data || {};
 
-  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
+  const safePageSize = toPositiveInt(pageSize, 20, 100);
+  const safePage = toPositiveInt(page, 1, 1000000);
+  const safeMaterialId = toSafeString(materialId, 64);
+  const safeDifficulty = typeof difficulty === 'string' || typeof difficulty === 'number' ? String(difficulty) : '';
+  const safeTags = Array.isArray(tags)
+    ? tags
+        .map((tag) => toSafeString(tag, 40))
+        .filter(Boolean)
+        .slice(0, 20)
+    : [];
 
   // 构建查询条件
   const query = { userId };
 
-  if (materialId) {
-    query.materialId = materialId;
+  if (safeMaterialId) {
+    query.materialId = safeMaterialId;
   }
 
-  if (tags && tags.length > 0) {
-    query.tags = { $in: tags };
+  if (safeTags.length > 0) {
+    query.tags = { $in: safeTags };
   }
 
-  if (difficulty) {
-    query.difficulty = difficulty;
+  if (safeDifficulty) {
+    query.difficulty = safeDifficulty;
   }
 
   if (onlyWrong) {
@@ -273,8 +307,8 @@ async function getQuestions(userId, data, requestId) {
 
   // 随机抽题
   if (random) {
-    const count = data.count || 10;
-    const result = await db.collection('user_questions').aggregate().match(query).sample({ size: count }).end();
+    const safeCount = toPositiveInt(data?.count, 10, 50);
+    const result = await db.collection('user_questions').aggregate().match(query).sample({ size: safeCount }).end();
 
     return {
       code: 0,
@@ -287,7 +321,7 @@ async function getQuestions(userId, data, requestId) {
   }
 
   // 分页查询
-  const skip = (page - 1) * safePageSize;
+  const skip = (safePage - 1) * safePageSize;
 
   const [questions, countResult] = await Promise.all([
     db.collection('user_questions').where(query).orderBy('createdAt', 'desc').skip(skip).limit(safePageSize).get(),
@@ -299,7 +333,7 @@ async function getQuestions(userId, data, requestId) {
     data: {
       list: questions.data || [],
       total: countResult.total || 0,
-      page,
+      page: safePage,
       pageSize: safePageSize
     },
     requestId
@@ -311,6 +345,13 @@ async function getQuestions(userId, data, requestId) {
  */
 async function deleteQuestions(userId, data, requestId) {
   const { questionIds, materialId, deleteAll } = data || {};
+  const safeMaterialId = toSafeString(materialId, 64);
+  const safeQuestionIds = Array.isArray(questionIds)
+    ? questionIds
+        .map((id) => toSafeString(id, 64))
+        .filter(Boolean)
+        .slice(0, 200)
+    : [];
 
   if (deleteAll) {
     // 删除用户所有题目
@@ -324,9 +365,9 @@ async function deleteQuestions(userId, data, requestId) {
     };
   }
 
-  if (materialId) {
+  if (safeMaterialId) {
     // 删除某个资料的所有题目
-    const result = await db.collection('user_questions').where({ userId, materialId }).remove();
+    const result = await db.collection('user_questions').where({ userId, materialId: safeMaterialId }).remove();
 
     return {
       code: 0,
@@ -336,13 +377,13 @@ async function deleteQuestions(userId, data, requestId) {
     };
   }
 
-  if (questionIds && questionIds.length > 0) {
+  if (safeQuestionIds.length > 0) {
     // 删除指定题目
     const result = await db
       .collection('user_questions')
       .where({
         userId,
-        _id: { $in: questionIds }
+        _id: { $in: safeQuestionIds }
       })
       .remove();
 
@@ -361,11 +402,13 @@ async function deleteQuestions(userId, data, requestId) {
  * 同步题目（本地 -> 云端）
  */
 async function syncQuestions(userId, data, requestId) {
-  const { localQuestions, lastSyncTime } = data || {};
+  const { localQuestions } = data || {};
 
   if (!Array.isArray(localQuestions)) {
     return { code: 400, message: '题目数据无效', requestId };
   }
+
+  const safeLocalQuestions = localQuestions.slice(0, 1000);
 
   // 获取云端题目（分批加载，避免超出单次查询限制）
   const cloudMap = new Map();
@@ -387,14 +430,27 @@ async function syncQuestions(userId, data, requestId) {
 
   // 找出需要上传的新题目
   const newQuestions = [];
-  localQuestions.forEach((q) => {
+  safeLocalQuestions.forEach((q) => {
+    if (!q || typeof q !== 'object') return;
     const key = generateQuestionHash(q);
     if (!cloudMap.has(key)) {
       newQuestions.push({
+        question: toSafeString(q.question, 2000),
+        options: Array.isArray(q.options) ? q.options.slice(0, 10).map((opt) => toSafeString(opt, 200)) : [],
+        answer: toSafeString(q.answer, 200),
+        analysis: toSafeString(q.analysis, 4000),
+        difficulty: toPositiveInt(q.difficulty, 3, 5),
+        tags: Array.isArray(q.tags)
+          ? q.tags
+              .map((tag) => toSafeString(tag, 40))
+              .filter(Boolean)
+              .slice(0, 20)
+          : [],
+        materialId: toSafeString(q.materialId || '', 64) || null,
+        materialName: toSafeString(q.materialName || '', 100) || '未知来源',
         userId,
-        ...q,
         source: 'sync_upload',
-        createdAt: q.createdAt || Date.now(),
+        createdAt: Number(q.createdAt) || Date.now(),
         updatedAt: Date.now()
       });
     }

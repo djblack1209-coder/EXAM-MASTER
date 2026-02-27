@@ -19,7 +19,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  NODE_VERSION: '20'
+  NODE_VERSION: '20.17.0'
 
 jobs:
   # ==================== 代码质量检查 ====================

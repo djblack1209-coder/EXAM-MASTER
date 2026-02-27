@@ -30,7 +30,7 @@
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import { perfMonitor } from '../utils/perf-monitor';
-import { createLogger } from './_shared/api-response';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 const logger = createLogger('[Login]');
 
 // ==================== 环境变量配置 ====================
@@ -150,7 +150,8 @@ const db = cloud.database();
 
 // ==================== 参数校验 ====================
 function validateLoginParams(data: unknown): { valid: boolean; error?: string; sanitized?: Record<string, unknown> } {
-  const { code } = data || {};
+  const safeData = data && typeof data === 'object' ? (data as Record<string, unknown>) : {};
+  const code = safeData.code;
 
   // 1. 必填检查
   if (!code) {
@@ -422,13 +423,35 @@ export default async function (ctx) {
       ctx.socket?.remoteAddress ||
       'unknown';
 
-    const rateLimitResult = checkLoginRateLimit(clientIp);
+    const distributedRateLimit = await checkRateLimitDistributed(
+      `login:${clientIp}`,
+      LOGIN_RATE_LIMIT_MAX,
+      LOGIN_RATE_LIMIT_WINDOW
+    );
+
+    let rateLimitResult: {
+      allowed: boolean;
+      remaining: number;
+      blockedUntil?: number;
+      message?: string;
+    } = {
+      allowed: distributedRateLimit.allowed,
+      remaining: distributedRateLimit.remaining
+    };
+
+    // DB 限流不可用时，降级到本地防暴力破解策略（含封禁窗口）
+    if (distributedRateLimit.source === 'memory') {
+      rateLimitResult = checkLoginRateLimit(clientIp);
+    }
+
     if (!rateLimitResult.allowed) {
       logger.warn(`[${requestId}] 登录频率限制触发: IP=${clientIp}`);
       return {
         code: 429,
         message: rateLimitResult.message || '请求过于频繁，请稍后再试',
-        retryAfter: rateLimitResult.blockedUntil ? Math.ceil((rateLimitResult.blockedUntil - Date.now()) / 1000) : 60,
+        retryAfter: rateLimitResult.blockedUntil
+          ? Math.ceil((rateLimitResult.blockedUntil - Date.now()) / 1000)
+          : Math.max(1, Math.ceil((distributedRateLimit.resetAt - Date.now()) / 1000)),
         requestId
       };
     }
@@ -497,16 +520,12 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
     const existingUser = await db.collection('users').where({ email }).getOne();
 
     if (!existingUser.data) {
-      // 新用户注册，检查密码强度
-      const strengthResult = validatePasswordStrength(password);
-      if (!strengthResult.valid) {
-        return {
-          code: 400,
-          message: `密码强度不足: ${strengthResult.errors.join('; ')}`,
-          passwordStrength: getPasswordStrengthLevel(strengthResult.score),
-          requestId
-        };
-      }
+      // ✅ 安全修复：新用户使用密码注册时必须先通过邮箱验证码校验，防止未验证邮箱直接注册
+      return {
+        code: 400,
+        message: '新用户注册需先完成邮箱验证码校验',
+        requestId
+      };
     } else {
       // 老用户登录，验证密码
       if (!existingUser.data.password_hash) {
@@ -518,11 +537,16 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
 
       if (isLegacySHA256(storedHash)) {
         // 兼容旧版 SHA256 密码验证
+        // ✅ P0修复：使用 timingSafeEqual 防止时序攻击
         const legacyHash = crypto
           .createHash('sha256')
           .update(password + (existingUser.data.password_salt || ''))
           .digest('hex');
-        passwordValid = legacyHash === storedHash;
+        try {
+          passwordValid = crypto.timingSafeEqual(Buffer.from(legacyHash, 'utf8'), Buffer.from(storedHash, 'utf8'));
+        } catch {
+          passwordValid = false;
+        }
 
         // 验证通过后自动迁移到 scrypt
         if (passwordValid) {
@@ -565,6 +589,16 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
 
     // 如果提供了密码，使用 scrypt 保存密码哈希
     if (password) {
+      const strengthResult = validatePasswordStrength(password);
+      if (!strengthResult.valid) {
+        return {
+          code: 400,
+          message: `密码强度不足: ${strengthResult.errors.join('; ')}`,
+          passwordStrength: getPasswordStrengthLevel(strengthResult.score),
+          requestId
+        };
+      }
+
       const salt = crypto.randomBytes(16).toString('hex');
       overrides.password_salt = salt;
       overrides.password_hash = await hashPasswordScrypt(password, salt);
@@ -588,14 +622,7 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
     role: user.data.role
   });
 
-  // 4. 清除已使用的验证码
-  if (verifyCode) {
-    try {
-      await db.collection('email_codes').where({ email, code: verifyCode }).remove();
-    } catch (e) {
-      logger.warn(`[${requestId}] 清除验证码失败:`, e.message);
-    }
-  }
+  // 4. 验证码已在校验阶段原子标记为 used，这里无需删除
 
   const duration = Date.now() - startTime;
   logger.info(`[${requestId}] 邮箱登录成功，耗时: ${duration}ms`);
@@ -633,13 +660,18 @@ async function validateEmailCode(
   requestId: string
 ): Promise<{ valid: boolean; error?: string }> {
   try {
+    const now = Date.now();
+    const CODE_EXPIRE_MS = 10 * 60 * 1000;
+
     // 查询验证码记录
     const codeRecord = await db
       .collection('email_codes')
       .where({
         email,
-        code
+        code,
+        used: false
       })
+      .orderBy('created_at', 'desc')
       .getOne();
 
     if (!codeRecord.data) {
@@ -647,11 +679,26 @@ async function validateEmailCode(
     }
 
     // 检查是否过期（10分钟有效期）
-    const CODE_EXPIRE_MS = 10 * 60 * 1000;
-    if (Date.now() - codeRecord.data.created_at > CODE_EXPIRE_MS) {
+    if (now - codeRecord.data.created_at > CODE_EXPIRE_MS) {
       // 删除过期验证码
       await db.collection('email_codes').doc(codeRecord.data._id).remove();
       return { valid: false, error: '验证码已过期，请重新获取' };
+    }
+
+    // 原子消耗验证码：防止并发重复使用
+    const consumeResult = await db
+      .collection('email_codes')
+      .where({
+        _id: codeRecord.data._id,
+        used: false
+      })
+      .update({
+        used: true,
+        used_at: now
+      });
+
+    if (consumeResult.updated !== 1) {
+      return { valid: false, error: '验证码已失效，请重新获取' };
     }
 
     logger.info(`[${requestId}] 验证码校验通过: ${email}`);
