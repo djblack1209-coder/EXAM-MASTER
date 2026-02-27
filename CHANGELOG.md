@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.0.3] - 2026-02-27
+
+项目收尾，更新交付待办状态并确认当前范围达到商业交付标准。
+
+### Changed
+
+- 更新 `docs/PROJECT-REPORT.md`：将阻塞项与后续 backlog 拆分，补充“待办清单收尾（最终）”
+- 明确当前交付结论：P0 阻塞清零，范围外功能转入非阻塞迭代
+
+### Verified
+
+- `npm run lint`：通过
+- `npx vitest run tests/unit`：46 files / 910 tests passed
+- `npm run build:mp-weixin`、`npm run build:h5`：通过
+
+---
+
 ## [1.0.2] - 2026-02-27
 
 完成审计收口与前端规范治理，确保当前工作区在高变更量下仍可稳定通过全量校验。

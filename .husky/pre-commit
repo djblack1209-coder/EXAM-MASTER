@@ -1,5 +1,5 @@
 # 执行 ESLint 检查暂存的文件
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|vue|ts)$')
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|vue|ts)$' || true)
 
 if [ -n "$STAGED_FILES" ]; then
   echo "Running ESLint on staged files..."
