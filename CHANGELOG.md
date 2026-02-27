@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.0.2] - 2026-02-27
+
+完成审计收口与前端规范治理，确保当前工作区在高变更量下仍可稳定通过全量校验。
+
+### Changed
+
+- 对 `src/` 执行分批 ESLint 自动修复与人工兜底修复，清理 `vue/singleline-html-element-content-newline`、`vue/max-attributes-per-line`、`no-empty-function` 等告警
+- `src/pages/practice/index.vue` 中 mixin ready 等待逻辑改为 `.catch(() => undefined)`，避免空函数告警并保持运行语义不变
+- 更新项目综合报告，新增 v2.1.2 审计收口结果与执行清单完成状态
+
+### Verified
+
+- `npm run lint`：0 error / 0 warning
+- `npx vitest run tests/unit`：46 files / 910 tests passed
+- `npm run build:mp-weixin`、`npm run build:h5`：均通过
+- `npm run audit:deep-scan`：完成，分析 467 个文件
+- `npm run audit:ui-quality`：100/100
+
+### Security
+
+- `npm audit --omit=dev` 仍存在 11 个已知漏洞（1 moderate / 10 high），主要来自 uni 生态传递依赖；`npm audit fix --force` 需要 breaking 版本，本轮未直接升级
+
+---
+
 ## [1.0.1] - 2026-02-24
 
 CI/CD 流水线全面修复，消除全部 3 个失败 job，ESLint 从 1455 warnings 降至 0。
@@ -128,7 +152,7 @@ CI/CD 流水线全面修复，消除全部 3 个失败 job，ESLint 从 1455 war
 - 冗余 git 跟踪文件：backups/、database/、.claude/skills|agents|commands/、common/zhipu.js、common/styles/common.scss
 - 一次性脚本：scripts/fix/、scripts/refactor/、scripts/crawlers/、scripts/data-sync/、scripts/test/
 - laf-backend 一次性脚本：laf-backend/scripts/、test-connection.js、data fix artifacts
-- 开发调试文件：tests/debug-selectors.js、playwright.visual.config.js、tests/visual/、.opencode/
+- 开发调试文件：已清理部分历史调试产物，保留 `playwright.visual.config.js` 与 `tests/visual/` 用于视觉回归
 
 ### Security
 

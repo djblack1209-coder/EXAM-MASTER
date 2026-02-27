@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-02-27T14:19:38.051Z",
+  "score": 100,
+  "stats": {
+    "totalFiles": 180,
+    "vueFiles": 81,
+    "jsFiles": 99,
+    "loadingStates": 20,
+    "errorHandlers": 105,
+    "gpuAccelerated": 53
+  },
+  "warningCount": 0,
+  "errorCount": 0,
+  "warnings": [],
+  "errors": [],
+  "trend": {
+    "previousGeneratedAt": "2026-02-27T13:55:07.935Z",
+    "scoreDelta": 0,
+    "warningDelta": 0,
+    "errorDelta": 0,
+    "newWarnings": [],
+    "resolvedWarnings": [],
+    "newErrors": [],
+    "resolvedErrors": []
+  }
+}
