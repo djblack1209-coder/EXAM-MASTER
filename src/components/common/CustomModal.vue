@@ -7,9 +7,7 @@
 
       <!-- 图标区域 -->
       <view class="modal-icon-wrapper" :class="type">
-        <text class="modal-icon">
-          {{ iconMap[type] || icon }}
-        </text>
+        <BaseIcon :name="iconMap[type] || icon || 'info'" :size="48" />
       </view>
 
       <!-- 标题 -->
@@ -37,6 +35,7 @@
 
 <script>
 import { logger } from '@/utils/logger.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 /**
  * 自定义弹窗组件
  * ✅ PM要求：替换原生弹窗，消除"塑料感"
@@ -53,6 +52,7 @@ import { logger } from '@/utils/logger.js';
  */
 export default {
   name: 'CustomModal',
+  components: { BaseIcon },
 
   props: {
     // 是否显示
@@ -112,14 +112,14 @@ export default {
   data() {
     return {
       iconMap: {
-        info: '💡',
-        success: '✅',
-        warning: '⚠️',
-        error: '❌',
-        question: '❓',
-        empty: '📭',
-        upload: '📤',
-        study: '📚'
+        info: 'bulb',
+        success: 'success',
+        warning: 'warning',
+        error: 'error',
+        question: 'question',
+        empty: 'empty',
+        upload: 'upload',
+        study: 'books'
       }
     };
   },

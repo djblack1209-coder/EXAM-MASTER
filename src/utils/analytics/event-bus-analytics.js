@@ -232,13 +232,14 @@ class AnalyticsService {
    * 设置用户ID
    */
   setUserId(userId) {
+    const previousUserId = this.userId; // ✅ P0修复：先捕获旧值再覆盖
     this.userId = userId;
     // ✅ B021-3: 使用加密的 EXAM_USER_ID 替代明文 user_id
     storageService.save('EXAM_USER_ID', userId, true);
 
     this.track('user_identify', {
       userId,
-      previousUserId: this.userId
+      previousUserId
     });
   }
 

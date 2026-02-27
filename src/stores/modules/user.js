@@ -12,14 +12,18 @@ import { ref, computed } from 'vue';
 import { APP_CONFIG } from '../../../common/config';
 import { storageService, getUserId } from '../../services/storageService.js';
 import { lafService } from '../../services/lafService.js';
+import tokenRefreshPlugin from '@/utils/auth/token-refresh-plugin.js';
 import { logger } from '@/utils/logger.js';
+import { useStudyStore } from './study';
+import { useTodoStore } from './todo';
+import { useLearningTrajectoryStore } from './learning-trajectory-store';
 
 export const useUserStore = defineStore('user', () => {
   // 状态定义
   const token = ref('');
   const userInfo = ref(null);
   const isLogin = ref(false);
-  const planProgress = ref(75);
+  const planProgress = ref(0); // 计划进度百分比，由实际数据计算
   const friendsList = ref([]);
 
   // VIP会员相关状态
@@ -110,9 +114,9 @@ export const useUserStore = defineStore('user', () => {
         throw new Error('获取登录凭证失败');
       }
 
-      // 2. 调用 Laf 登录接口
+      // 2. 调用 Laf 登录接口（skipAuth: true 避免登录请求携带过期 token）
       try {
-        const res = await lafService.request('/login', { code });
+        const res = await lafService.request('/login', { type: 'weixin', code }, { skipAuth: true });
 
         if (res.code === 0 && res.data && res.data.userId) {
           const userId = res.data.userId;
@@ -137,6 +141,9 @@ export const useUserStore = defineStore('user', () => {
           }
 
           logger.log('✅ Laf 登录成功:', userId);
+
+          // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
+          storageService.migrateUserKeys();
 
           return {
             success: true,
@@ -178,9 +185,20 @@ export const useUserStore = defineStore('user', () => {
    * 登出
    */
   const logout = () => {
+    // ✅ 用户隔离：清理当前用户的隔离数据（必须在清除 userId 之前调用）
+    storageService.clearUserData();
     token.value = '';
     userInfo.value = null;
     isLogin.value = false;
+    planProgress.value = 0;
+    friendsList.value = [];
+    vipStatus.value = false;
+    vipLevel.value = 0;
+    vipExpiry.value = null;
+    vipBenefits.value = [];
+    inviteCode.value = '';
+    inviteCount.value = 0;
+    inviteRewards.value = [];
     // 清除缓存
     storageService.remove(APP_CONFIG.cacheKeys.token, true);
     storageService.remove(APP_CONFIG.cacheKeys.userInfo, true);
@@ -189,6 +207,22 @@ export const useUserStore = defineStore('user', () => {
     // ✅ B021-3: 不再存储明文 user_id，无需清理
     storageService.remove('EXAM_TOKEN');
     storageService.remove('userInfo');
+    tokenRefreshPlugin.stopPreCheckTimer();
+
+    // [R2-P1] 重置其他包含用户数据的 store，防止切换账号后数据残留
+    try {
+      const studyStore = useStudyStore();
+      studyStore.resetProgress();
+
+      const todoStore = useTodoStore();
+      todoStore.$reset();
+
+      const trajectoryStore = useLearningTrajectoryStore();
+      trajectoryStore.destroy();
+      trajectoryStore.clearAll();
+    } catch (e) {
+      logger.warn('[UserStore] 重置关联 store 失败（可能未初始化）:', e);
+    }
   };
 
   /**

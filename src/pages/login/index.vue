@@ -206,7 +206,7 @@
         @tap="showEmailForm = true"
       >
         <view class="btn-icon email-icon">
-          <text>📧</text>
+          <BaseIcon name="email" :size="36" />
         </view>
         <text class="btn-text">
           邮箱登录/注册
@@ -221,9 +221,7 @@
     <view class="agreement">
       <view class="checkbox-wrapper" @tap="toggleAgreement">
         <view class="checkbox" :class="{ checked: agreedToTerms }">
-          <text v-if="agreedToTerms">
-            ✓
-          </text>
+          <BaseIcon v-if="agreedToTerms" name="check" :size="24" />
         </view>
       </view>
       <text class="agreement-text">
@@ -253,6 +251,8 @@ import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { useUserStore } from '@/stores/modules/user';
 import config from '@/config/index.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
 
 // 主题状态
 const isDark = ref(false);
@@ -809,22 +809,22 @@ const handleEmailLogin = async () => {
     return;
   }
 
-  // ✅ M17: 密码强度检查（登录+注册统一校验）：需包含大写字母、小写字母和数字
-  if (!/[A-Z]/.test(password)) {
-    uni.showToast({ title: '密码需包含大写字母', icon: 'none' });
-    return;
-  }
-  if (!/[a-z]/.test(password)) {
-    uni.showToast({ title: '密码需包含小写字母', icon: 'none' });
-    return;
-  }
-  if (!/\d/.test(password)) {
-    uni.showToast({ title: '密码需包含数字', icon: 'none' });
-    return;
-  }
-
-  // 注册时额外校验
+  // 注册时额外校验（密码强度仅注册时强制，避免锁死使用旧密码的已有用户）
   if (isRegister.value) {
+    // ✅ M17: 密码强度检查（仅注册时）：需包含大写字母、小写字母和数字
+    if (!/[A-Z]/.test(password)) {
+      uni.showToast({ title: '密码需包含大写字母', icon: 'none' });
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      uni.showToast({ title: '密码需包含小写字母', icon: 'none' });
+      return;
+    }
+    if (!/\d/.test(password)) {
+      uni.showToast({ title: '密码需包含数字', icon: 'none' });
+      return;
+    }
+
     if (!emailForm.value.code) {
       uni.showToast({ title: '请输入验证码', icon: 'none' });
       return;
@@ -908,6 +908,9 @@ const saveLoginInfo = (data) => {
   storageService.save('EXAM_TOKEN', data.token, true);
   storageService.save('EXAM_USER_ID', userInfo.uid, true);
 
+  // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
+  storageService.migrateUserKeys();
+
   // ✅ FIX: 同步写入 Pinia store，避免 store 与 storage 不一致
   try {
     const userStore = useUserStore();
@@ -933,12 +936,17 @@ const navigateAfterLogin = () => {
 
   if (redirectUrl) {
     storageService.remove('redirect_after_login');
-    uni.redirectTo({
-      url: redirectUrl,
-      fail: () => {
-        uni.switchTab({ url: '/pages/index/index' });
-      }
-    });
+    // 安全修复：校验重定向 URL 必须是站内路径，防止开放重定向攻击
+    if (typeof redirectUrl === 'string' && redirectUrl.startsWith('/pages/')) {
+      uni.redirectTo({
+        url: redirectUrl,
+        fail: () => {
+          uni.switchTab({ url: '/pages/index/index' });
+        }
+      });
+    } else {
+      uni.switchTab({ url: '/pages/index/index' });
+    }
   } else {
     uni.switchTab({ url: '/pages/index/index' });
   }

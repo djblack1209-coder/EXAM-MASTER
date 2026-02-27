@@ -6,24 +6,74 @@
  */
 
 /**
+ * 检测题目类型（支持判断题自动识别）
+ */
+function _detectType(raw, options) {
+  if (raw.type) {
+    const t = String(raw.type).trim();
+    if (['判断', '判断题', 'truefalse', 'true_false', 'tf'].includes(t.toLowerCase())) return '判断';
+    return t;
+  }
+  if (Array.isArray(options) && options.length === 2) {
+    const pair = options.map((o) => String(o).trim());
+    const tfPairs = [
+      ['对', '错'],
+      ['正确', '错误'],
+      ['True', 'False'],
+      ['T', 'F'],
+      ['√', '×'],
+      ['是', '否']
+    ];
+    if (tfPairs.some(([a, b]) => (pair[0] === a && pair[1] === b) || (pair[0] === b && pair[1] === a))) {
+      return '判断';
+    }
+  }
+  return '单选';
+}
+
+/**
+ * 标准化判断题/选择题答案
+ */
+function _normalizeAnswer(answer, type) {
+  if (answer === null || answer === undefined) return type === '判断' ? '对' : 'A';
+  if (typeof answer === 'number') {
+    if (type === '判断') return answer ? '对' : '错';
+    const letters = ['A', 'B', 'C', 'D'];
+    return letters[answer] || 'A';
+  }
+  const str = String(answer).trim();
+  if (type === '判断') {
+    const trueValues = ['对', '正确', 'true', 't', 'a', '√', '1', 'yes', 'y'];
+    const falseValues = ['错', '错误', 'false', 'f', 'b', '×', '✗', '0', 'no', 'n'];
+    if (trueValues.includes(str.toLowerCase())) return '对';
+    if (falseValues.includes(str.toLowerCase())) return '错';
+    return '对';
+  }
+  return str.toUpperCase().charAt(0) || 'A';
+}
+
+/**
  * 标准化单个题目字段名
  * @param {Object} q - 原始题目对象
  * @returns {Object} 标准化后的题目
  */
 export function normalizeQuestion(q) {
-  const answer = q.answer || q.correct_answer || q.correctAnswer || '';
   const question = q.question || q.title || q.content || '';
   let options = q.options || [];
   if (!Array.isArray(options)) options = [];
+  const type = _detectType(q, options);
+  const answer = _normalizeAnswer(q.answer || q.correct_answer || q.correctAnswer || '', type);
   const category = q.category || q.subject || '未分类';
   const desc = q.desc || q.analysis || q.explanation || '';
 
   return {
     ...q,
-    question, options,
-    answer: answer.toUpperCase().charAt(0),
-    category, desc,
-    type: q.type || '单选'
+    question,
+    options,
+    answer,
+    category,
+    desc,
+    type
   };
 }
 
@@ -33,9 +83,16 @@ export function normalizeQuestion(q) {
  * @returns {boolean}
  */
 export function isValidQuestion(q) {
-  return !!(q.question && q.question.trim().length > 0 &&
-    Array.isArray(q.options) && q.options.length >= 4 &&
-    q.answer && ['A', 'B', 'C', 'D'].includes(q.answer));
+  if (!q || !q.question || !q.question.trim()) return false;
+  const answer = q.answer;
+  if (!answer) return false;
+
+  // 判断题：2+选项，答案为 对/错
+  if (q.type === '判断') {
+    return Array.isArray(q.options) && q.options.length >= 2 && ['对', '错'].includes(answer);
+  }
+  // 选择题：4+选项，答案 A-D
+  return Array.isArray(q.options) && q.options.length >= 4 && ['A', 'B', 'C', 'D'].includes(answer);
 }
 
 /**
@@ -44,40 +101,16 @@ export function isValidQuestion(q) {
  * @returns {Array} 有效题目数组
  */
 export function normalizeAndValidateQuestions(questions) {
-  const normalizedQs = questions.map((q) => {
-    let answer = q.answer || q.correct_answer || q.correctAnswer || '';
-    if (!answer && q.correct !== undefined) answer = q.correct;
-
-    if (typeof answer === 'number') {
-      const letters = ['A', 'B', 'C', 'D'];
-      answer = letters[answer] || 'A';
-    } else if (answer) {
-      answer = answer.toString().toUpperCase().charAt(0);
-    } else {
-      answer = 'A';
-    }
-
-    const question = q.question || q.title || q.content || '';
-    let options = q.options || [];
-    if (!Array.isArray(options)) options = [];
-    const category = q.category || q.subject || '未分类';
-    const desc = q.desc || q.analysis || q.explanation || '';
-
-    return {
-      ...q,
-      question, options, answer, category, desc,
-      type: q.type || '单选'
-    };
-  });
-
-  return normalizedQs.filter((q) =>
-    q.question &&
-    q.question.trim().length > 0 &&
-    Array.isArray(q.options) &&
-    q.options.length >= 4 &&
-    q.answer &&
-    ['A', 'B', 'C', 'D'].includes(q.answer)
-  );
+  if (!Array.isArray(questions)) return [];
+  return questions
+    .map((q) => {
+      // 额外兼容: correct 字段 (数字索引)
+      if (q.correct !== undefined && q.answer === undefined && q.correct_answer === undefined) {
+        q.answer = q.correct;
+      }
+      return normalizeQuestion(q);
+    })
+    .filter(isValidQuestion);
 }
 
 /**

@@ -83,9 +83,7 @@
         <view class="folder-grid">
           <!-- 全部收藏 -->
           <view class="folder-card" :class="{ active: currentFolderId === null }" @tap="selectFolder(null)">
-            <text class="folder-icon">
-              📚
-            </text>
+            <BaseIcon name="books" :size="36" class="folder-icon" />
             <text class="folder-name">
               全部收藏
             </text>
@@ -101,9 +99,7 @@
             @tap="selectFolder(folder.id)"
             @longpress="showFolderActions(folder)"
           >
-            <text class="folder-icon">
-              {{ folder.icon }}
-            </text>
+            <BaseIcon :name="folder.icon" :size="36" class="folder-icon" />
             <text class="folder-name">
               {{ folder.name }}
             </text>
@@ -135,9 +131,7 @@
 
         <!-- 空状态 -->
         <view v-if="filteredFavorites.length === 0" class="empty-box">
-          <text class="empty-icon">
-            ⭐
-          </text>
+          <BaseIcon name="star-outline" :size="80" class="empty-icon" />
           <text class="empty-title">
             暂无收藏
           </text>
@@ -153,12 +147,8 @@
               {{ item.category }}
             </view>
             <view class="card-actions">
-              <text class="action-icon" @tap.stop="moveToFolder(item)">
-                📁
-              </text>
-              <text class="action-icon" @tap.stop="removeFavorite(item)">
-                🗑️
-              </text>
+              <BaseIcon name="folder" :size="28" @tap.stop="moveToFolder(item)" />
+              <BaseIcon name="delete" :size="28" @tap.stop="removeFavorite(item)" />
             </view>
           </view>
 
@@ -208,7 +198,7 @@
           <!-- 笔记区域 -->
           <view v-if="item.note" class="note-section">
             <text class="note-label">
-              📝 我的笔记
+              <BaseIcon name="note" :size="22" /> 我的笔记
             </text>
             <text class="note-content">
               {{ item.note }}
@@ -248,15 +238,15 @@
               选择图标
             </text>
             <view class="icon-grid">
-              <text
+              <view
                 v-for="icon in folderIcons"
                 :key="icon"
                 class="icon-option"
                 :class="{ selected: newFolderIcon === icon }"
                 @tap="newFolderIcon = icon"
               >
-                {{ icon }}
-              </text>
+                <BaseIcon :name="icon" :size="32" />
+              </view>
             </view>
           </view>
         </view>
@@ -290,9 +280,7 @@
             :class="{ disabled: folder.id === movingItem?.folderId }"
             @tap="confirmMove(folder.id)"
           >
-            <text class="folder-option-icon">
-              {{ folder.icon }}
-            </text>
+            <BaseIcon :name="folder.icon" :size="36" class="folder-option-icon" />
             <text class="folder-option-name">
               {{ folder.name }}
             </text>
@@ -351,8 +339,10 @@ import {
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import questionFavoriteManager from './utils/question-favorite.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
+  components: { BaseIcon },
   data() {
     return {
       statusBarHeight: 44,
@@ -378,8 +368,8 @@ export default {
 
       // 新建收藏夹
       newFolderName: '',
-      newFolderIcon: '📁',
-      folderIcons: ['📁', '⭐', '🔥', '💡', '📚', '🎯', '💪', '🏆', '📝', '🔖'],
+      newFolderIcon: 'folder',
+      folderIcons: ['folder', 'star', 'flame', 'bulb', 'books', 'target', 'muscle', 'trophy', 'note', 'bookmark'],
 
       // 移动操作
       movingItem: null,
@@ -599,7 +589,7 @@ export default {
         uni.showToast({ title: '创建成功', icon: 'success' });
         this.showFolderModal = false;
         this.newFolderName = '';
-        this.newFolderIcon = '📁';
+        this.newFolderIcon = 'folder';
         this.loadData();
       } else {
         uni.showToast({ title: result.error || '创建失败', icon: 'none' });
@@ -1255,7 +1245,46 @@ export default {
   box-sizing: border-box;
 }
 
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid var(--border, #e0e0e0);
+  border-top-color: var(--primary, #4f46e5);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 26rpx;
+  color: var(--text-sub, #999);
+}
+
 .safe-area {
   height: 100rpx;
+}
+
+/* 暗黑模式覆盖 */
+.dark-mode .aurora-bg {
+  opacity: 0.3;
+}
+
+.dark-mode .note-section {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.05), rgba(255, 152, 0, 0.05));
 }
 </style>

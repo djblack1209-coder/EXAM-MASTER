@@ -5,6 +5,19 @@
  */
 import { logger } from '@/utils/logger.js';
 
+// 延迟导入 storageService，避免初始化时序问题
+let _storageService = null;
+function _getStorage() {
+  if (!_storageService) {
+    try {
+      _storageService = require('@/services/storageService.js').storageService;
+    } catch (_) {
+      /* 降级到直接调用 */
+    }
+  }
+  return _storageService;
+}
+
 let _config = {};
 const _errorLogs = [];
 const MAX_MEMORY_LOGS = 50;
@@ -76,12 +89,17 @@ function _handleError(type, error) {
 
   // 持久化到本地存储
   try {
-    const stored = uni.getStorageSync('runtime_errors') || [];
+    const storage = _getStorage();
+    const stored = storage ? storage.get('runtime_errors', []) : uni.getStorageSync('runtime_errors') || [];
     stored.push(errorInfo);
     if (stored.length > MAX_STORAGE_LOGS) {
       stored.splice(0, stored.length - MAX_STORAGE_LOGS);
     }
-    uni.setStorageSync('runtime_errors', stored);
+    if (storage) {
+      storage.save('runtime_errors', stored);
+    } else {
+      uni.setStorageSync('runtime_errors', stored);
+    }
   } catch (_) {
     /* 存储失败静默处理 */
   }

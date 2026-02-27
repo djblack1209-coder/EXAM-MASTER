@@ -18,7 +18,7 @@ const PRACTICE_MODES = {
     id: 'normal',
     name: '综合练习',
     description: '混合多种题型和知识点的全面练习',
-    icon: '📚',
+    icon: 'mode-sequential',
     defaultSettings: {
       questionCount: 20,
       timeLimit: 0, // 无时间限制
@@ -30,7 +30,7 @@ const PRACTICE_MODES = {
     id: 'special_topic',
     name: '专项突破',
     description: '针对特定知识点或题型的集中练习',
-    icon: '🎯',
+    icon: 'mode-targeted',
     defaultSettings: {
       questionCount: 15,
       timeLimit: 0,
@@ -43,7 +43,7 @@ const PRACTICE_MODES = {
     id: 'time_limited',
     name: '限时训练',
     description: '模拟考试时间压力，提升答题速度',
-    icon: '⏱',
+    icon: 'mode-timed',
     defaultSettings: {
       questionCount: 10,
       timeLimit: 600, // 10分钟
@@ -55,7 +55,7 @@ const PRACTICE_MODES = {
     id: 'mistake_variant',
     name: '错题变式',
     description: '基于错题生成相似题型，强化知识点掌握',
-    icon: '🔄',
+    icon: 'mode-review',
     defaultSettings: {
       questionCount: 10,
       timeLimit: 0,
@@ -67,7 +67,7 @@ const PRACTICE_MODES = {
     id: 'chapter_test',
     name: '章节测试',
     description: '按教材章节组织的测试，确保章节内容掌握',
-    icon: '📖',
+    icon: 'mode-reading',
     defaultSettings: {
       questionCount: 25,
       timeLimit: 900, // 15分钟

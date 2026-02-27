@@ -114,9 +114,9 @@
             >
               <view class="tool-icon-wrapper tool-icon-doc">
                 <view class="tool-icon-glow tool-glow-doc" />
-                <text class="tool-icon-emoji">
-                  📄
-                </text>
+                <view class="tool-icon-glyph">
+                  <BaseIcon name="file" :size="40" />
+                </view>
               </view>
               <view class="tool-info">
                 <text class="tool-name">
@@ -137,9 +137,9 @@
             >
               <view class="tool-icon-wrapper tool-icon-photo">
                 <view class="tool-icon-glow tool-glow-photo" />
-                <text class="tool-icon-emoji">
-                  📷
-                </text>
+                <view class="tool-icon-glyph">
+                  <BaseIcon name="camera" :size="40" />
+                </view>
               </view>
               <view class="tool-info">
                 <text class="tool-name">
@@ -160,9 +160,9 @@
             >
               <view class="tool-icon-wrapper tool-icon-search">
                 <view class="tool-icon-glow tool-glow-search" />
-                <text class="tool-icon-emoji">
-                  🔍
-                </text>
+                <view class="tool-icon-glyph">
+                  <BaseIcon name="search" :size="40" />
+                </view>
               </view>
               <view class="tool-info">
                 <text class="tool-name">
@@ -184,9 +184,9 @@
               待办事项
             </text>
             <view class="edit-plan-btn" @tap="handleEditPlan">
-              <text class="edit-icon">
-                ✏️
-              </text>
+              <view class="edit-icon">
+                <BaseIcon name="edit" :size="24" />
+              </view>
               <text class="edit-text">
                 编辑计划
               </text>
@@ -241,7 +241,7 @@
       <CustomModal
         :visible="showEmptyBankModal"
         type="upload"
-        title="📚 题库空空如也"
+        title="题库空空如也"
         content="上传学习资料，AI 将为您智能生成专属题库，开启高效刷题之旅！"
         confirm-text="去上传"
         cancel-text="稍后再说"
@@ -255,7 +255,7 @@
       <CustomModal
         :visible="showLoginModal"
         type="study"
-        title="🎓 开启学霸之旅"
+        title="开启学霸之旅"
         content="登录后可同步学习进度、错题本等数据，享受完整功能体验！"
         confirm-text="立即登录"
         cancel-text="暂不登录"
@@ -313,6 +313,7 @@ import KnowledgeBubbleField from '@/components/business/index/KnowledgeBubbleFie
 import ActivityList from '@/components/business/index/ActivityList.vue';
 import RecommendationsList from '@/components/business/index/RecommendationsList.vue';
 import IndexHeaderBar from '@/components/business/index/IndexHeaderBar.vue';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useTodoStore } from '@/stores/modules/todo';
 import { useUserStore } from '@/stores/modules/user';
@@ -339,9 +340,11 @@ import { navigationMixin } from '@/mixins/navigationMixin.js';
 import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS, DEFAULT_USER_PREFERENCES } from '@/config/home-data.js';
 // F002-I1a: 共享格式化工具
 import { formatRelativeTime, getInitials as _getInitials } from '@/utils/formatters.js';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
 
 export default {
   components: {
+    PrivacyPopup,
     CustomTabbar,
     BaseSkeleton,
     TodoList,
@@ -359,7 +362,8 @@ export default {
     KnowledgeBubbleField,
     ActivityList,
     RecommendationsList,
-    IndexHeaderBar
+    IndexHeaderBar,
+    BaseIcon
   },
   // ✅ 检查点 5.1: 使用页面追踪 Mixin + F002 提取的 Mixins
   mixins: [
@@ -753,13 +757,13 @@ export default {
           title: `练习：${record.questionType || '综合题'}`,
           subtitle: record.isCorrect ? '答对，继续保持' : '答错，已加入错题本',
           time: this.formatTime(record.timestamp),
-          icon: record.isCorrect ? '✓' : '✗',
+          icon: record.isCorrect ? 'check' : 'cross',
           status: record.isCorrect ? 'completed' : 'in-progress'
         }));
       } else {
         // 默认活动
         this.recentActivities = [
-          { title: '开始学习', subtitle: '欢迎使用Exam-Master', time: '刚刚', icon: '🎉', status: 'completed' }
+          { title: '开始学习', subtitle: '欢迎使用Exam-Master', time: '刚刚', icon: 'celebrate', status: 'completed' }
         ];
       }
     },
@@ -881,7 +885,7 @@ export default {
         logger.error('[Index] 静默登录失败:', error);
         uni.showToast({ title: '登录失败，请重试', icon: 'none' });
       }
-    },
+    }
 
     // ✅ F002: 每日金句功能由 dailyQuoteMixin 提供
     // (initDailyQuote, generateDailyQuote, refreshDailyQuote, openQuotePoster,
@@ -891,17 +895,6 @@ export default {
     // (handleTodoSave, handleTodoDelete, openTodoEditor)
 
     // F002-I3: handleRecommendationClick moved to recommendationMixin
-
-    // ✅ 检查点1.3: 打开待办编辑（编辑模式）
-    openTodoEditor(todo) {
-      this.editingTodo = {
-        id: todo.id,
-        text: todo.text,
-        priority: todo.priority,
-        completed: todo.completed
-      };
-      this.showTodoEditor = true;
-    }
 
     // ✅ F002: 学习计时器功能由 studyTimerMixin 提供
     // (initStudyTimer, startStudyTimer, stopStudyTimer, saveStudyTime, formatStudyTime, handleStudyTimeClick)
@@ -932,9 +925,13 @@ export default {
 
 .glass {
   background: var(--bg-glass);
-  backdrop-filter: blur(24rpx);
-  -webkit-backdrop-filter: blur(24rpx);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1rpx solid var(--border);
+}
+
+.card-light {
+  background: var(--card);
 }
 
 /* F002-I1b: 顶部导航栏样式已移至 IndexHeaderBar.vue */
@@ -1031,7 +1028,9 @@ export default {
 }
 
 .edit-icon {
-  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .edit-text {
@@ -1081,7 +1080,7 @@ export default {
   height: 200%;
   border-radius: 50%;
   opacity: 0.25;
-  filter: blur(16rpx);
+  filter: blur(8px);
 }
 
 .tool-icon-doc {
@@ -1108,8 +1107,10 @@ export default {
   background: radial-gradient(circle, #667eea, transparent 70%);
 }
 
-.tool-icon-emoji {
-  font-size: 40rpx;
+.tool-icon-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   z-index: 1;
 }

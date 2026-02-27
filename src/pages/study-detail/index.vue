@@ -14,9 +14,7 @@
         <view class="navbar-right">
           <!-- 主题切换按钮 -->
           <view class="theme-toggle" @tap="toggleTheme">
-            <text class="theme-icon">
-              {{ isDark ? '☀️' : '🌙' }}
-            </text>
+            <BaseIcon :name="isDark ? 'sun' : 'moon'" :size="36" />
           </view>
         </view>
       </view>
@@ -147,12 +145,14 @@ import StudyTrendChart from './StudyTrendChart.vue';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import { getNavBarHeight } from '@/utils/core/system.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'StudyDetail',
   components: {
     StudyHeatmap,
-    StudyTrendChart
+    StudyTrendChart,
+    BaseIcon
   },
   data() {
     return {

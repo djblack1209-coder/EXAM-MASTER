@@ -47,7 +47,7 @@ export default {
   // #ifdef MP-WEIXIN
   mounted() {
     if (wx.onNeedPrivacyAuthorization) {
-      wx.onNeedPrivacyAuthorization((resolve) => {
+      this._privacyHandler = (resolve) => {
         this.resolvePrivacyAuthorization = resolve;
         // 获取隐私协议名称
         if (wx.getPrivacySetting) {
@@ -60,7 +60,14 @@ export default {
           });
         }
         this.showPopup = true;
-      });
+      };
+      wx.onNeedPrivacyAuthorization(this._privacyHandler);
+    }
+  },
+  beforeUnmount() {
+    if (wx.offNeedPrivacyAuthorization && this._privacyHandler) {
+      wx.offNeedPrivacyAuthorization(this._privacyHandler);
+      this._privacyHandler = null;
     }
   },
   // #endif
@@ -111,7 +118,7 @@ export default {
 
 .privacy-dialog {
   width: 560rpx;
-  background: #fff;
+  background: var(--bg-card, #fff);
   border-radius: 24rpx;
   padding: 48rpx 40rpx 36rpx;
   box-sizing: border-box;
@@ -121,13 +128,13 @@ export default {
   text-align: center;
   font-size: 34rpx;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary, #333);
   margin-bottom: 24rpx;
 }
 
 .privacy-content {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary, #666);
   line-height: 1.7;
   margin-bottom: 36rpx;
   text-align: justify;
@@ -161,12 +168,30 @@ export default {
 }
 
 .privacy-btn-reject {
-  background: #f5f5f5;
-  color: #999;
+  background: var(--bg-secondary, #f5f5f5);
+  color: var(--text-tertiary, #999);
 }
 
 .privacy-btn-agree {
   background: #07c160;
   color: #fff;
+}
+
+/* 暗色模式适配 */
+.dark-mode .privacy-dialog {
+  background: var(--bg-card, #1c1c1e);
+}
+
+.dark-mode .privacy-title {
+  color: var(--text-primary, #e5e5e5);
+}
+
+.dark-mode .privacy-content {
+  color: var(--text-secondary, #a0a0a0);
+}
+
+.dark-mode .privacy-btn-reject {
+  background: var(--bg-secondary, #2c2c2e);
+  color: var(--text-tertiary, #8e8e93);
 }
 </style>

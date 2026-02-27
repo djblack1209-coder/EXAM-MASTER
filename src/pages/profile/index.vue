@@ -86,9 +86,7 @@
                 mode="aspectFill"
               />
               <view v-if="isLoggedIn" class="avatar-edit-badge">
-                <text class="avatar-edit-icon">
-                  📷
-                </text>
+                <BaseIcon name="camera" :size="20" />
               </view>
             </view>
             <!-- 用户信息 -->
@@ -102,8 +100,9 @@
             </view>
             <!-- 编辑/登录按钮 -->
             <view class="edit-btn" hover-class="btn-hover" @tap.stop="isLoggedIn ? handleEditProfile() : handleLogin()">
-              <text class="edit-icon">
-                {{ isLoggedIn ? '✏️' : '→' }}
+              <BaseIcon v-if="isLoggedIn" name="edit" :size="36" />
+              <text v-else class="edit-icon">
+                →
               </text>
             </view>
           </view>
@@ -115,9 +114,7 @@
             <!-- 学习天数 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('days')">
               <view class="stat-icon-box">
-                <text class="stat-emoji">
-                  📅
-                </text>
+                <BaseIcon name="calendar" :size="40" />
               </view>
               <text class="stat-value">
                 {{ studyDays }}
@@ -133,9 +130,7 @@
             <!-- 获得勋章 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('badges')">
               <view class="stat-icon-box">
-                <text class="stat-emoji">
-                  🏆
-                </text>
+                <BaseIcon name="trophy" :size="40" />
               </view>
               <text class="stat-value">
                 {{ badgeCount }}
@@ -151,9 +146,7 @@
             <!-- 正确率 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('accuracy')">
               <view class="stat-icon-box">
-                <text class="stat-emoji">
-                  🎯
-                </text>
+                <BaseIcon name="target" :size="40" />
               </view>
               <text class="stat-value">
                 {{ accuracyRate }}%
@@ -172,9 +165,10 @@
               <text class="checkin-title">
                 每日打卡
               </text>
-              <text v-if="checkInStreak > 0" class="checkin-streak">
-                🔥 连续 {{ checkInStreak }} 天
-              </text>
+              <view v-if="checkInStreak > 0" class="checkin-streak">
+                <BaseIcon name="flame" :size="26" />
+                <text>连续 {{ checkInStreak }} 天</text>
+              </view>
             </view>
             <text class="checkin-subtitle">
               坚持打卡，养成学习好习惯
@@ -189,9 +183,10 @@
               hover-class="btn-hover"
               @tap="handleCheckIn"
             >
-              <text class="checkin-btn-icon">
-                {{ todayChecked ? '✓' : '📝' }}
-              </text>
+              <view class="checkin-btn-icon">
+                <BaseIcon v-if="todayChecked" name="check" :size="36" />
+                <BaseIcon v-else name="note" :size="36" />
+              </view>
               <text class="checkin-btn-text">
                 {{ todayChecked ? '今日已打卡' : '立即打卡' }}
               </text>
@@ -200,9 +195,7 @@
             <!-- 补签卡信息 -->
             <view v-if="recoveryCards > 0 || missedDaysCount > 0" class="recovery-info">
               <view v-if="recoveryCards > 0" class="recovery-cards">
-                <text class="recovery-icon">
-                  🎫
-                </text>
+                <BaseIcon name="ticket" :size="28" />
                 <text class="recovery-text">
                   补签卡 x{{ recoveryCards }}
                 </text>
@@ -222,9 +215,9 @@
 
           <!-- 断签提示 -->
           <view v-if="missedDaysCount > 0 && !todayChecked" class="missed-tip">
-            <text class="missed-icon">
-              ⚠️
-            </text>
+            <view class="missed-icon">
+              <BaseIcon name="warning" :size="28" />
+            </view>
             <text class="missed-text">
               您已断签 {{ missedDaysCount }} 天，快来打卡恢复连续记录吧！
             </text>
@@ -236,9 +229,7 @@
           <!-- 我的错题 -->
           <view class="menu-item" hover-class="menu-hover" @tap="navToMistake">
             <view class="menu-icon-box">
-              <text class="menu-emoji">
-                📚
-              </text>
+              <BaseIcon name="books" :size="36" />
             </view>
             <text class="menu-text">
               我的错题
@@ -254,9 +245,7 @@
           <!-- 学习统计 -->
           <view class="menu-item" hover-class="menu-hover" @tap="navToStudyDetail">
             <view class="menu-icon-box">
-              <text class="menu-emoji">
-                📊
-              </text>
+              <BaseIcon name="chart-bar" :size="36" />
             </view>
             <text class="menu-text">
               学习统计
@@ -272,9 +261,7 @@
           <!-- 系统设置 -->
           <view class="menu-item" hover-class="menu-hover" @tap="navToSettings">
             <view class="menu-icon-box">
-              <text class="menu-emoji">
-                ⚙️
-              </text>
+              <BaseIcon name="settings" :size="36" />
             </view>
             <text class="menu-text">
               系统设置
@@ -290,9 +277,7 @@
           <!-- 意见反馈 -->
           <view class="menu-item" hover-class="menu-hover" @tap="handleFeedback">
             <view class="menu-icon-box">
-              <text class="menu-emoji">
-                💬
-              </text>
+              <BaseIcon name="comment" :size="36" />
             </view>
             <text class="menu-text">
               意见反馈
@@ -331,9 +316,10 @@
           hover-class="btn-hover"
           @tap="toggleTheme"
         >
-          <text class="theme-emoji">
-            {{ isDark ? '🌙' : '☀️' }}
-          </text>
+          <view class="theme-emoji">
+            <BaseIcon v-if="isDark" name="moon" :size="36" />
+            <BaseIcon v-else name="sun" :size="36" />
+          </view>
           <text class="theme-text">
             {{ isDark ? '深色模式' : '浅色模式' }}
           </text>
@@ -377,6 +363,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { onShow, onHide, onShareAppMessage } from '@dcloudio/uni-app';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
 // 检查点4.4: 每日打卡 - 连续天数统计和补签卡
@@ -436,7 +424,7 @@ const accuracyRate = computed(() => {
   if (!progress || !progress.totalQuestions || progress.totalQuestions === 0) {
     return 0;
   }
-  return Math.round((progress.correctCount / progress.totalQuestions) * 100);
+  return Math.round((progress.correctQuestions / progress.totalQuestions) * 100);
 });
 
 // 用户头像计算属性
@@ -568,7 +556,7 @@ async function handleCheckIn() {
       if (result.data.milestone) {
         setTimeout(() => {
           uni.showModal({
-            title: '🎉 里程碑达成！',
+            title: '里程碑达成！',
             content: `恭喜连续打卡${result.data.streak}天！\n获得 ${result.data.milestone.exp} 经验 + ${result.data.milestone.coins} 金币`,
             showCancel: false,
             confirmText: '太棒了'
@@ -907,11 +895,11 @@ function handleStatTap(type) {
 }
 
 function navToMistake() {
-  safeNavigateTo('/pages/mistake/index');
+  requireLogin(() => safeNavigateTo('/pages/mistake/index'), { message: '请先登录后查看错题集' });
 }
 
 function navToStudyDetail() {
-  safeNavigateTo('/pages/study-detail/index');
+  requireLogin(() => safeNavigateTo('/pages/study-detail/index'), { message: '请先登录后查看学习详情' });
 }
 
 function navToSettings() {
@@ -961,6 +949,7 @@ function handleLogout() {
 }
 
 // ========== 事件处理器（提升到模块作用域，确保 onHide 可访问） ==========
+let _skipFirstShow = false; // 防止 onMounted + onShow 双重加载
 const _themeHandler = (mode) => {
   isDark.value = mode === 'dark';
 };
@@ -986,16 +975,10 @@ onMounted(() => {
   initTheme();
   loadData();
 
-  // 监听主题更新事件
-  uni.$on('themeUpdate', _themeHandler);
+  // 标记首次 onShow 跳过（onMounted 已加载数据）
+  _skipFirstShow = true;
 
-  // 监听登录状态变化
-  uni.$on('loginStatusChanged', _loginHandler);
-
-  // 监听用户信息更新
-  uni.$on('userInfoUpdated', _userInfoHandler);
-
-  // 监听系统主题变化
+  // 监听系统主题变化（仅注册一次，不随 onHide 清理）
   try {
     uni.onThemeChange?.((res) => {
       const savedTheme = storageService.get('theme_mode');
@@ -1010,13 +993,22 @@ onMounted(() => {
 
 onShow(() => {
   // 原生 tabBar 已移除，无需隐藏
-  // uni.hideTabBar({ animation: false });
   // F005: 通知 CustomTabbar 重新检测路由
   uni.$emit('tabbarRouteUpdate');
   // 每次进入页面强制刷新主题状态
   initTheme();
-  // 刷新数据
-  loadData();
+
+  // 防止 onMounted + onShow 首次双重加载
+  if (_skipFirstShow) {
+    _skipFirstShow = false;
+  } else {
+    loadData();
+  }
+
+  // 安全修复：事件监听在 onShow 注册，与 onHide 的 $off 配对
+  uni.$on('themeUpdate', _themeHandler);
+  uni.$on('loginStatusChanged', _loginHandler);
+  uni.$on('userInfoUpdated', _userInfoHandler);
 });
 
 onHide(() => {

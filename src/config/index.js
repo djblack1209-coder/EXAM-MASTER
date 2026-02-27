@@ -62,8 +62,25 @@ function getEnvNumber(key, defaultValue) {
  */
 function getEnvBoolean(key, defaultValue) {
   const value = getEnv(key, null);
-  if (value === null) return defaultValue;
-  return value === 'true' || value === '1';
+  if (value === null || value === undefined || value === '') {
+    return defaultValue;
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'number') {
+    return value === 1;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (['true', '1', 'yes', 'on'].includes(normalized)) {
+      return true;
+    }
+    if (['false', '0', 'no', 'off'].includes(normalized)) {
+      return false;
+    }
+  }
+  return defaultValue;
 }
 
 /**
@@ -187,8 +204,8 @@ const config = {
     /**
      * 应用版本
      */
-    // [v1.2.0] 版本号同步更新
-    version: getEnv('VITE_APP_VERSION', '1.2.0'),
+    // 默认与 appVersion 保持一致，避免多处版本号漂移
+    version: getEnv('VITE_APP_VERSION', '1.0.0'),
 
     /**
      * 分页大小
@@ -330,8 +347,8 @@ const config = {
      * 送审时设为 true，过审后改为 false
      * 配置方式：VITE_AUDIT_MODE=true
      */
-    // [v1.2.0 审核修复] 送审期间必须为 true，过审后通过环境变量改回 false
-    isAuditMode: getEnvBoolean('VITE_AUDIT_MODE', true),
+    // [v1.2.0 审核修复] 默认关闭审核模式，送审时通过环境变量 VITE_AUDIT_MODE=true 开启
+    isAuditMode: getEnvBoolean('VITE_AUDIT_MODE', false),
 
     /**
      * 审核期间隐藏的功能列表
@@ -541,6 +558,7 @@ if (config.debug.enabled) {
     { key: 'VITE_API_BASE_URL', label: 'API基础地址', value: config.api.baseUrl },
     { key: 'VITE_WX_APP_ID', label: '微信AppID', value: config.wx.appId }
   ];
+  const inviteSecretKey = { key: 'VITE_INVITE_SECRET', label: '邀请签名密钥', value: config.deepLink.inviteSecret };
   // [v1.2.0 审核修复] 将安全密钥从 optional 提升为 required，防止空值运行
   const optionalKeys = [
     { key: 'VITE_QQ_APP_ID', label: 'QQ AppID', value: config.qq.appId },
@@ -556,9 +574,19 @@ if (config.debug.enabled) {
     }
   });
   if (missing.length > 0) {
-    logger.error(
-      `[Config] ❌ 缺少必需的环境变量: ${missing.map((k) => `${k.key}(${k.label})`).join(', ')}。应用可能无法正常运行！`
-    );
+    logger.error(`[Config] ❌ 缺少必需的环境变量: ${missing.map((k) => `${k.key}(${k.label})`).join(', ')}`);
+  }
+
+  if (!inviteSecretKey.value) {
+    if (config.isProd) {
+      logger.error(
+        `[Config] ❌ 缺少必需的环境变量: ${inviteSecretKey.key}(${inviteSecretKey.label})。邀请链接签名与验签功能将不可用`
+      );
+    } else {
+      logger.warn(
+        `[Config] ⚠️ 未配置 ${inviteSecretKey.key}(${inviteSecretKey.label})。邀请链接签名与验签功能将不可用（开发环境可临时忽略）`
+      );
+    }
   }
   if (config.isProd && warnings.length > 0) {
     logger.warn(`[Config] ⚠️ 生产环境建议配置: ${warnings.map((k) => `${k.key}(${k.label})`).join(', ')}。`);

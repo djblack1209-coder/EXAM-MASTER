@@ -10,9 +10,11 @@
     <!-- 错题重做区域 -->
     <view v-if="localIsPracticing" class="practice-area">
       <view v-if="item.practiceStatus" class="practice-status-bar">
-        <text class="status-icon" :class="item.practiceStatus">
-          {{ item.practiceStatus === 'checking' ? '⏳' : item.practiceStatus === 'correct' ? '✓' : '✗' }}
-        </text>
+        <view class="status-icon" :class="item.practiceStatus">
+          <BaseIcon v-if="item.practiceStatus === 'checking'" name="timer" :size="28" />
+          <BaseIcon v-else-if="item.practiceStatus === 'correct'" name="check" :size="28" />
+          <BaseIcon v-else name="cross" :size="28" />
+        </view>
         <text class="status-text">
           {{
             item.practiceStatus === 'checking'
@@ -59,9 +61,9 @@
       </view>
       <view v-if="practiceResult" class="practice-result">
         <view class="result-header">
-          <text class="result-icon" :class="practiceResult.isCorrect ? 'correct' : 'wrong'">
-            {{ practiceResult.isCorrect ? '✓' : '✗' }}
-          </text>
+          <view class="result-icon" :class="practiceResult.isCorrect ? 'correct' : 'wrong'">
+            <BaseIcon :name="practiceResult.isCorrect ? 'check' : 'cross'" :size="28" />
+          </view>
           <text class="result-text">
             {{
               practiceResult.isCorrect
@@ -124,9 +126,7 @@
         {{ formatDate(item.addTime || item.created_at || item.timestamp) }}
       </text>
       <view v-if="(item.wrongCount || item.wrong_count || 0) > 1" class="wrong-count">
-        <text class="count-icon">
-          ⚠️
-        </text>
+        <BaseIcon name="warning" :size="20" class="count-icon" />
         <text class="count-text">
           错误 {{ item.wrongCount || item.wrong_count || 1 }} 次
         </text>
@@ -152,9 +152,11 @@ import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 import { recordReview } from './utils/adaptive-learning-engine.js';
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'MistakeCard',
+  components: { BaseIcon },
   props: {
     /** 错题数据对象 */
     item: {
@@ -488,7 +490,6 @@ export default {
   border-radius: 16rpx;
   background: var(--bg-secondary);
   transition: all 0.2s;
-  cursor: pointer;
 
   &.selected {
     background: var(--primary-light);

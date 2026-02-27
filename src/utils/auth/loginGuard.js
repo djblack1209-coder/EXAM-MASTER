@@ -76,16 +76,26 @@ export function requireLogin(callback, options = {}) {
   } = options;
 
   if (isUserLoggedIn()) {
-    // 已登录，执行回调
+    // 已登录，执行回调（安全处理同步/异步异常）
     if (typeof callback === 'function') {
-      callback();
+      try {
+        const result = callback();
+        // 如果回调返回 Promise，捕获异步异常
+        if (result && typeof result.catch === 'function') {
+          result.catch((err) => {
+            logger.error('[loginGuard] 回调异步异常:', err);
+          });
+        }
+      } catch (err) {
+        logger.error('[loginGuard] 回调同步异常:', err);
+      }
     }
     return true;
   } else {
     // 未登录，显示友好引导
     if (useModal) {
       uni.showModal({
-        title: '🎓 登录提示',
+        title: '登录提示',
         content: message + '\n\n登录后可同步学习进度、错题本等数据！',
         confirmText: '去登录',
         cancelText: '暂不登录',

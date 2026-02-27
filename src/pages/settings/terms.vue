@@ -22,7 +22,8 @@
             一、服务说明
           </text>
           <text class="section-text">
-            Exam Master（以下简称"本应用"）是一款面向考研学生的智能学习辅助工具，提供刷题练习、错题管理、择校分析、AI辅导等功能。使用本应用即表示您同意本协议的全部条款。
+            Exam
+            Master（以下简称"本应用"）是一款面向考研学生的智能学习辅助工具，提供刷题练习、错题管理、择校分析、AI辅导等功能。使用本应用即表示您同意本协议的全部条款。
           </text>
         </view>
 
@@ -127,6 +128,7 @@
 </template>
 
 <script>
+import { storageService } from '@/services/storageService.js';
 export default {
   data() {
     return {
@@ -134,7 +136,7 @@ export default {
     };
   },
   onLoad() {
-    const savedTheme = uni.getStorageSync('theme_mode') || 'light';
+    const savedTheme = storageService.get('theme_mode', 'light');
     this.isDark = savedTheme === 'dark';
   },
   methods: {
@@ -158,7 +160,9 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 32rpx;
+  padding-top: calc(constant(safe-area-inset-top) + 20rpx);
   padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  height: calc(constant(safe-area-inset-top) + 100rpx);
   height: calc(env(safe-area-inset-top) + 100rpx);
   background-color: #1a1a1a;
 }
@@ -181,6 +185,7 @@ export default {
 }
 
 .content-scroll {
+  height: calc(100vh - constant(safe-area-inset-top) - 100rpx);
   height: calc(100vh - env(safe-area-inset-top) - 100rpx);
 }
 .content-section {

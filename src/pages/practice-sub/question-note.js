@@ -17,12 +17,12 @@ const STORAGE_KEYS = {
 
 // 预定义标签
 const DEFAULT_TAGS = [
-  { id: 'key_point', name: '重点', color: '#F44336', icon: '🔑' },
-  { id: 'formula', name: '公式', color: '#2196F3', icon: '📐' },
-  { id: 'trick', name: '技巧', color: '#4CAF50', icon: '💡' },
-  { id: 'trap', name: '易错点', color: '#FF9800', icon: '⚠️' },
-  { id: 'summary', name: '总结', color: '#9C27B0', icon: '📝' },
-  { id: 'link', name: '关联', color: '#00BCD4', icon: '🔗' }
+  { id: 'key_point', name: '重点', color: '#F44336', icon: 'tag-keypoint' },
+  { id: 'formula', name: '公式', color: '#2196F3', icon: 'tag-formula' },
+  { id: 'trick', name: '技巧', color: '#4CAF50', icon: 'tag-trick' },
+  { id: 'trap', name: '易错点', color: '#FF9800', icon: 'tag-trap' },
+  { id: 'summary', name: '总结', color: '#9C27B0', icon: 'tag-summary' },
+  { id: 'link', name: '关联', color: '#00BCD4', icon: 'tag-link' }
 ];
 
 /**
