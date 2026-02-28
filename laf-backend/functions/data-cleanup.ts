@@ -26,8 +26,7 @@ const _ = db.command;
 
 // ==================== 环境配置 ====================
 import { IS_PRODUCTION, createLogger } from './_shared/api-response';
-// 安全提示：敏感信息必须通过环境变量配置，禁止硬编码
-const SECRET_PLACEHOLDER
+import { requireAdminAccess } from './_shared/admin-auth';
 
 // ==================== 备份配置 (v2.0新增) ====================
 const BACKUP_COLLECTION = 'data_backups';
@@ -35,6 +34,25 @@ const BACKUP_RETENTION_DAYS = 30; // 备份保留30天
 
 // ==================== 日志工具 ====================
 const logger = createLogger('[DataCleanup]');
+
+function buildAdminDenyResponse(ctx: unknown, requestId: string, message = '权限不足，需要管理员密钥') {
+  const safeCtx = ctx && typeof ctx === 'object' ? ctx : {};
+  const auth = requireAdminAccess(safeCtx as { headers?: Record<string, unknown>; body?: Record<string, unknown> }, {
+    allowBodyFallback: true,
+    allowJwtAdmin: false
+  });
+
+  if (auth.ok) {
+    return null;
+  }
+
+  return {
+    code: auth.code,
+    success: false,
+    message: auth.code === 503 ? auth.message : message,
+    requestId
+  };
+}
 
 // ==================== 脏数据匹配规则 ====================
 const DIRTY_DATA_PATTERNS = {
@@ -59,17 +77,13 @@ export default async function (ctx) {
   logger.info(`[${requestId}] 数据清洗任务开始`);
 
   try {
-    const { adminSecret, dryRun = true, targets } = ctx.body || {};
+    const { dryRun = true, targets } = ctx?.body || {};
 
-    // 1. 权限验证（ADMIN_SECRET 未配置时拒绝所有请求）
-    if (!ADMIN_SECRET || adminSecret !== ADMIN_SECRET) {
+    // 1. 权限验证
+    const adminDeny = buildAdminDenyResponse(ctx, requestId);
+    if (adminDeny) {
       logger.warn(`[${requestId}] 权限验证失败`);
-      return {
-        code: 403,
-        success: false,
-        message: '权限不足，需要管理员密钥',
-        requestId
-      };
+      return adminDeny;
     }
 
     // 2. 生产环境额外确认
@@ -842,11 +856,11 @@ export async function restoreFromBackup(ctx) {
   const requestId = `restore_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { adminSecret, backupId, targets } = ctx.body || {};
+    const { backupId, targets } = ctx?.body || {};
 
-    // 权限验证（ADMIN_SECRET 未配置时拒绝所有请求）
-    if (!ADMIN_SECRET || adminSecret !== ADMIN_SECRET) {
-      return { code: 403, success: false, message: '权限不足', requestId };
+    const adminDeny = buildAdminDenyResponse(ctx, requestId, '权限不足');
+    if (adminDeny) {
+      return adminDeny;
     }
 
     if (!backupId) {
@@ -925,10 +939,11 @@ export async function listBackups(ctx) {
   const requestId = `list_${Date.now()}`;
 
   try {
-    const { adminSecret, page = 1, limit = 20 } = ctx.body || {};
+    const { page = 1, limit = 20 } = ctx?.body || {};
 
-    if (!ADMIN_SECRET || adminSecret !== ADMIN_SECRET) {
-      return { code: 403, success: false, message: '权限不足', requestId };
+    const adminDeny = buildAdminDenyResponse(ctx, requestId, '权限不足');
+    if (adminDeny) {
+      return adminDeny;
     }
 
     const backupCollection = db.collection(BACKUP_COLLECTION);

@@ -19,6 +19,7 @@
 
 import cloud from '@lafjs/cloud';
 import { createLogger } from './_shared/api-response';
+import { requireAdminAccess } from './_shared/admin-auth';
 
 const logger = createLogger('[DbMigrate]');
 const db = cloud.database();
@@ -47,9 +48,17 @@ export default async function (ctx) {
   const requestId = `db_ts_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
   try {
     // [C3-FIX] 管理工具函数需要管理员权限
-    const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
-    if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET) {
-      return { code: 403, success: false, message: '需要管理员权限，请提供 ADMIN_SECRET', requestId };
+    const adminAuth = requireAdminAccess(ctx, {
+      allowBodyFallback: true,
+      allowJwtAdmin: false
+    });
+    if (!adminAuth.ok) {
+      return {
+        code: adminAuth.code,
+        success: false,
+        message: adminAuth.code === 503 ? adminAuth.message : '需要管理员权限，请提供 ADMIN_SECRET',
+        requestId
+      };
     }
 
     const { action = 'check' } = ctx.body || {};
