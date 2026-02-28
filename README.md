@@ -46,13 +46,14 @@ exam-master/
 │   ├── functions/_shared/  #   共享模块（响应码 / 日志 / 限流）
 │   ├── database-schema/    #   数据库 Schema
 │   └── README.md           #   后端文档
-├── docs/                   # 项目文档
+├── docs/                   # 项目文档（当前 + 归档）
+│   ├── README.md            #  文档导航（当前文档入口）
+│   ├── BASELINE-START-2026-02-28.md # 新基线说明
 │   ├── API_DOCUMENTATION.md #  API 使用文档（含示例）
-│   ├── PROJECT-REPORT.md    #  项目综合报告
-│   ├── AUDIT-REPORT.md      #  检测与审计报告
-│   ├── COMPONENTS.md       #   组件文档
-│   ├── UTILS.md            #   工具函数文档
-│   └── SCRIPTS.md          #   脚本与 CI/CD
+│   ├── archive/             #  历史审计/交付文档归档
+│   ├── COMPONENTS.md        #  组件文档
+│   ├── UTILS.md             #  工具函数文档
+│   └── SCRIPTS.md           #  脚本与 CI/CD
 ├── deploy/                 # 部署配置与运维文档
 ├── tests/                  # 测试用例
 ├── .env.example            # 环境变量模板（前端）
@@ -118,14 +119,14 @@ laf login && laf init <appid> && laf deploy
 
 ## 文档
 
+- [文档导航](./docs/README.md) — 当前文档总入口（含归档说明）
+- [新起点基线](./docs/BASELINE-START-2026-02-28.md) — 以当前状态重新开始的执行基线
 - [API 文档](./docs/API_DOCUMENTATION.md) — 完整 API 参考（含快速速查表 + 详细示例）
-- [项目综合报告](./docs/PROJECT-REPORT.md) — 项目概述、架构、测试结果、问题与修复记录
-- [检测与审计报告](./docs/AUDIT-REPORT.md) — 全量代码检测、安全审计、40项修复记录
-- [技术分析与优化](./docs/TECH-ANALYSIS.md) — 前端性能、后端API、安全性、数据同步分析
+- [备份状态](./docs/BACKUP-STATUS-2026-02-28.md) — 备份保障现状与证据清单
+- [部署指南](./laf-backend/DEPLOYMENT_GUIDE.md) — Laf 发布与线上验证
 - [组件文档](./docs/COMPONENTS.md) — 前端组件说明
 - [工具函数](./docs/UTILS.md) — 工具函数说明
 - [脚本与 CI/CD](./docs/SCRIPTS.md) — 构建脚本与流水线
-- [部署指南](./deploy/docs/DEPLOYMENT-GUIDE.md) — 部署配置与流程
 - [应急响应](./deploy/docs/EMERGENCY-RESPONSE.md) — 故障处理预案
 - [后端文档](./laf-backend/README.md) — 云函数开发指南
 
