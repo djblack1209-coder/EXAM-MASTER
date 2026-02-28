@@ -545,8 +545,8 @@ export default {
     // ✅ 检查点1.5: 初始化学习计时器
     this.initStudyTimer();
 
-    // ✅ 尝试静默登录（恢复登录状态）
-    this.tryAutoLogin();
+    // ✅ [Phase5] 静默登录已由 App.vue onLaunch 统一执行，此处不再重复调用
+    // this.tryAutoLogin();
 
     this.loadData();
   },

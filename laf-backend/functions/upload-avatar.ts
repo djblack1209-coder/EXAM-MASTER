@@ -22,6 +22,7 @@
  */
 
 import cloud from '@lafjs/cloud';
+import fs from 'fs';
 import { verifyJWT } from './login';
 import { logger, success, badRequest, unauthorized, serverError, generateRequestId } from './_shared/api-response';
 import { extractBearerToken } from './_shared/auth';
@@ -221,8 +222,7 @@ async function readFileBuffer(file: Record<string, unknown>): Promise<Buffer> {
   }
 
   if (file.path) {
-    const fs = require('fs');
-    return fs.readFileSync(file.path);
+    return fs.readFileSync(file.path as string);
   }
 
   if (file.stream) {

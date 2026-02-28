@@ -49,6 +49,7 @@ yarn-error.log*
 # 分仓后删除整个 laf-backend/ 目录即可
 laf-backend/.app.yaml
 laf-backend/.env*
+!laf-backend/.env.example
 
 # Logs directory
 logs/
