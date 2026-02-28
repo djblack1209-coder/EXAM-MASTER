@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.1.0] - 2026-02-28
+
+文档与仓库基线重整：以当前稳定状态作为新的交付起点。
+
+### Changed
+
+- 新增文档入口与基线说明：`docs/README.md`、`docs/BASELINE-START-2026-02-28.md`
+- 历史审计/交接文档整体归档到 `docs/archive/2026-02-reset/`
+- 备份与部署文档引用改为当前基线文档（不再使用历史修复报告作为主入口）
+- 生成型报告输出路径统一到 `docs/reports/`（deep scan、UI quality、visual reports）
+- `.vscode/ui-quality-report.json` 停止跟踪，并纳入忽略规则
+
+### Verified
+
+- `npm run audit:laf:function-sources -- --strict`：通过
+- `npm run test:cloud:smoke`：`5 passed / 0 failed / 2 skipped`
+
+---
+
 ## [1.0.3] - 2026-02-27
 
 项目收尾，更新交付待办状态并确认当前范围达到商业交付标准。

@@ -5,7 +5,7 @@
 ## 技术栈
 
 - **运行时:** Node.js >= 18.20（推荐 20.17 LTS）
-- **语言:** TypeScript / JavaScript
+- **语言:** TypeScript（函数入口采用 TS-only）
 - **平台:** Laf Cloud (Sealos)
 - **数据库:** MongoDB (Laf 内置)
 - **AI:** 智谱 GLM-4-Plus / SiliconFlow

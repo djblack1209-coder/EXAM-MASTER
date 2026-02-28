@@ -130,3 +130,10 @@ tests/visual/
 tests/debug-selectors.js
 .vscode/visual-report/
 .vscode/visual-results.json
+.vscode/ui-quality-report.json
+
+# Generated quality reports
+docs/reports/PROJECT_DEEP_SCAN_REPORT.md
+docs/reports/ui-quality-report.json
+docs/reports/visual-results.json
+docs/reports/visual-report/
