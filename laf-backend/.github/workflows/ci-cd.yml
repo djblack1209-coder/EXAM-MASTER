@@ -225,7 +225,7 @@ jobs:
       - name: Verify deployment
         run: |
           kubectl get pods -n exam-master -l app.kubernetes.io/component=backend
-          curl -f https://api.exam-master.example.com/health || exit 1
+          curl -f https://api.exam-master.example.com/health-check || exit 1
 
       - name: Rollback on failure
         if: failure()

@@ -113,7 +113,7 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-          - https://nf98ia8qnt.sealosbja.site/health
+          - https://nf98ia8qnt.sealosbja.site/health-check
           - https://exam-master.example.com/health
     relabel_configs:
       - source_labels: [__address__]
