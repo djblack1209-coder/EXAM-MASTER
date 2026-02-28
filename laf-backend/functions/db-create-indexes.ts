@@ -61,6 +61,20 @@ export default async function (ctx) {
       results.push({ collection: 'users', status: 'error', message: e.message });
     }
 
+    // ==================== 用户身份唯一索引（并发登录防重） ====================
+    try {
+      const usersCol = db.collection('users');
+      await usersCol.createIndex({ openid: 1 }, { unique: true, sparse: true, name: 'idx_openid_unique' });
+      await usersCol.createIndex({ h5_openid: 1 }, { unique: true, sparse: true, name: 'idx_h5_openid_unique' });
+      await usersCol.createIndex({ unionid: 1 }, { unique: true, sparse: true, name: 'idx_unionid_unique' });
+      await usersCol.createIndex({ qq_openid: 1 }, { unique: true, sparse: true, name: 'idx_qq_openid_unique' });
+      await usersCol.createIndex({ qq_unionid: 1 }, { unique: true, sparse: true, name: 'idx_qq_unionid_unique' });
+      results.push({ collection: 'users(unique identities)', status: 'ok', indexes: 5 });
+    } catch (e) {
+      // 历史脏数据可能导致唯一索引创建失败，记录告警并允许后续索引继续执行
+      results.push({ collection: 'users(unique identities)', status: 'warn', message: e.message });
+    }
+
     // ==================== 错题本索引 (B010 - 修正: mistakes → mistake_book, userId → user_id) ====================
     try {
       const mistakeBookCol = db.collection('mistake_book');

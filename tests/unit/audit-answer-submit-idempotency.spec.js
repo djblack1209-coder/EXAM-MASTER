@@ -98,7 +98,13 @@ vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn()
-  }
+  },
+  checkRateLimitDistributed: vi.fn(async () => ({
+    allowed: true,
+    remaining: 119,
+    resetAt: Date.now() + 60000,
+    source: 'memory'
+  }))
 }));
 
 import answerSubmitHandler from '../../laf-backend/functions/answer-submit';
