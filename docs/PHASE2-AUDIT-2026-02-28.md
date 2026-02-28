@@ -147,8 +147,135 @@
 - `tests/unit/audit-school-query-auth-response.spec.js`
 - `tests/unit/audit-school-crawler-auth-response.spec.js`
 
-## Remaining Known Issues
+## Remaining Known Issues (Phase 3-4)
 
 1. `fnm default` 仍为 Node 18.20.8 — 建议执行 `fnm default 20.17.0` 持久化
 2. GitHub CLI 未登录 — 无法做 Actions Secrets 只读校验
 3. 无 SSH/Cloudflare 凭据 — 对应交叉验证标记为 Limit Reached
+
+---
+
+# Phase 5a Audit Report (2026-03-01)
+
+## Scope
+
+- 高优先级安全加固：登录 TOCTOU 竞态、分布式速率限制、NoSQL 注入防护、内存竞态修复。
+
+## Fixes
+
+### Critical — 登录 TOCTOU 竞态
+
+1. `login.ts`：用户首次登录的"先查后写"逻辑存在竞态窗口，并发请求可创建重复用户。
+   - 改为 `findOneAndUpdate` + `upsert: true` 原子操作。
+   - 状态：Fixed
+
+### High — 分布式速率限制
+
+2. `_shared/api-response.ts`：新增 `checkRateLimitDistributed` 基于 DB 计数器的分布式限流。
+   - 替代原有内存计数器（多实例部署下无效）。
+   - 状态：Fixed
+
+### High — NoSQL 注入防护
+
+3. 多个后端函数：对用户传入的对象型参数（如 `{ $gt: "" }`）进行拦截，防止 MongoDB 操作符注入。
+   - 状态：Fixed
+
+### Medium — 内存竞态
+
+4. `storageService.js`：内存缓存写入前校验 key 一致性，防止并发写入覆盖。
+   - 状态：Fixed
+
+## Validation Results
+
+- `npm run lint`：0 error
+- `npm test`：70 files / 1179 tests passed
+- `npm run test:cloud:smoke`：6 passed / 0 failed / 3 skipped
+
+---
+
+# Phase 5b Audit Report (2026-03-01)
+
+## Scope
+
+- 中优先级加固：后端参数上限与输入收敛、日志统一（去 raw console）、empty catch 治理、前端 onShow/异步链路健壮性。
+
+## Fixes
+
+### High — 后端参数收敛与日志统一
+
+1. `school-query.ts`（核心改动）
+   - 引入 `createLogger('[SchoolQuery]')`，替换全部 raw `console.*`。
+   - 新增参数治理工具：`clampInt`、`sanitizeFilterValue`、`sanitizeKeyword`、`sanitizeYear`。
+   - 新增上限常量 `QUERY_LIMITS`（page/pageSize/searchLimit/hotLimit/unitsPageSize/keywordLength/tagsMaxCount）。
+   - 对 `getSchoolList`、`searchSchools`、`getHotSchools`、`getMajors`、`getColleges`、`getMajorDetail`、`getScoreLines`、`getNationalLines`、`getAdmissionRatios`、`getFavorites`、`getAllUnits` 全部入参做收敛与 clamp。
+   - 排序字段做白名单收敛（`ranking.overall`/`code`/`name`/`province`/`updatedAt`）。
+   - 状态：Fixed
+
+2. `study-stats.ts`
+   - 引入 `createLogger('[StudyStats]')`，替换 raw `console.*`。
+   - 新增 `DAILY_DAYS_LIMIT`（1~60，默认 7）+ `clampInt`。
+   - 状态：Fixed
+
+### Medium — empty catch 治理
+
+3. `photo-bg.ts`：JSON parse catch 增加 `logger.warn`。
+4. `custom-tabbar.vue`：振动异常 catch 改为 `logger.log`。
+5. `todo-store-patch.js`：振动异常 catch 改为 `logger.log`。
+6. `quote-interaction-handler.js`：2 处振动异常 catch 改为 `logger.log`。
+7. `bubble-interaction.js`：振动异常 catch 改为 `logger.log`。
+   - 状态：全部 Fixed
+
+### Medium — 前端健壮性增强
+
+8. `studyTimerMixin.js`
+   - `startStudyTimer` 前先 `off` 旧监听，避免重复绑定。
+   - `initStudyTimer` 先移除旧 `onAppHide` 再注册。
+   - `stopStudyTimer` 清理并置空 handler。
+   - vibrate catch 记录日志。
+   - 状态：Fixed
+
+9. `practice/index.vue`
+   - `_pendingSearch` 读取失败改 `logger.warn`。
+   - onShow 中 `loadLearningStats/loadFavoriteCount` 使用 `Promise.allSettled` 包装。
+   - 恢复后台生成 `generateNextBatch` 增加 try/catch。
+   - 状态：Fixed
+
+10. `index/index.vue`
+    - `refreshData` 改为 `async`，内部并发刷新使用 `Promise.allSettled`。
+    - `onShow`、登录状态监听、登录成功后刷新均补 `.catch(...)`。
+    - 状态：Fixed
+
+## Changed Files
+
+- `laf-backend/functions/school-query.ts`
+- `laf-backend/functions/study-stats.ts`
+- `laf-backend/functions/photo-bg.ts`
+- `src/components/layout/custom-tabbar/custom-tabbar.vue`
+- `src/mixins/studyTimerMixin.js`
+- `src/pages/index/index.vue`
+- `src/pages/practice/index.vue`
+- `src/utils/helpers/bubble-interaction.js`
+- `src/utils/helpers/quote-interaction-handler.js`
+- `src/utils/helpers/todo-store-patch.js`
+
+## Validation Results
+
+- `npm run lint`：0 error（93 warning 均为既有 Vue 样式规则，非本轮引入）
+- `npm test`：70 files / 1179 tests passed
+- `npm run test:cloud:smoke`：6 passed / 0 failed / 3 skipped
+
+## Audit Phase Summary
+
+| Phase     | 状态    | 核心内容                                       |
+| --------- | ------- | ---------------------------------------------- |
+| Phase 1   | ✅ 完成 | 初始审计基线                                   |
+| Phase 2   | ✅ 完成 | 管理员鉴权统一、CORS、健康端点                 |
+| Phase 3-4 | ✅ 完成 | 鉴权路径统一、CI 修正、源码漂移消除、Node 对齐 |
+| Phase 5a  | ✅ 完成 | 登录 TOCTOU、分布式限流、NoSQL 注入、内存竞态  |
+| Phase 5b  | ✅ 完成 | 参数收敛、日志统一、empty catch、异步健壮性    |
+
+## 交付状态
+
+- 所有 Phase 1~5b 修复已提交并推送到远程。
+- 未改变任何业务语义，仅增强安全边界与健壮性。
+- 可提审交付。
