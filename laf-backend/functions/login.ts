@@ -417,6 +417,58 @@ async function createNewUser(
   return { data: { _id: insertRes.id, ...newUser } };
 }
 
+function isDuplicateKeyError(error: unknown): boolean {
+  const message = String((error as Error)?.message || error || '').toLowerCase();
+  return (
+    message.includes('duplicate') ||
+    message.includes('e11000') ||
+    message.includes('already exists') ||
+    message.includes('conflict') ||
+    message.includes('唯一')
+  );
+}
+
+async function findFirstUserByQueries(
+  queries: Array<Record<string, unknown>>
+): Promise<{ data: Record<string, unknown> } | null> {
+  for (const query of queries) {
+    const found = await usersCollection.where(query).getOne();
+    if (found?.data) {
+      return found as { data: Record<string, unknown> };
+    }
+  }
+  return null;
+}
+
+async function findOrCreateUserByIdentity(
+  queries: Array<Record<string, unknown>>,
+  createOverrides: Record<string, unknown>,
+  requestId: string,
+  label: string
+): Promise<{ user: { data: Record<string, unknown> }; isNewUser: boolean }> {
+  const existing = await findFirstUserByQueries(queries);
+  if (existing?.data) {
+    return { user: existing, isNewUser: false };
+  }
+
+  try {
+    const created = await createNewUser(createOverrides, requestId, label);
+    return { user: created, isNewUser: true };
+  } catch (error) {
+    if (!isDuplicateKeyError(error)) {
+      throw error;
+    }
+
+    logger.warn(`[${requestId}] ${label}用户并发创建冲突，回查已存在用户`);
+    const raced = await findFirstUserByQueries(queries);
+    if (raced?.data) {
+      return { user: raced, isNewUser: false };
+    }
+
+    throw error;
+  }
+}
+
 export default async function (ctx) {
   const startTime = Date.now();
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
@@ -601,51 +653,45 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
     }
   }
 
-  // 2. 查询或创建用户
-  let user = await usersCollection.where({ email }).getOne();
-
+  // 2. 查询或创建用户（并发安全：创建冲突后回查）
   const now = Date.now();
-  let isNewUser = false;
+  const overrides: Record<string, unknown> = { email };
 
-  if (!user.data) {
-    // 新用户注册
-    isNewUser = true;
-    const overrides: Record<string, unknown> = { email };
-
-    // 如果提供了密码，使用 scrypt 保存密码哈希
-    if (password) {
-      const strengthResult = validatePasswordStrength(password);
-      if (!strengthResult.valid) {
-        return {
-          code: 400,
-          success: false,
-          message: `密码强度不足: ${strengthResult.errors.join('; ')}`,
-          passwordStrength: getPasswordStrengthLevel(strengthResult.score),
-          requestId
-        };
-      }
-
-      const salt = crypto.randomBytes(16).toString('hex');
-      overrides.password_salt = salt;
-      overrides.password_hash = await hashPasswordScrypt(password, salt);
+  // 如果提供了密码，使用 scrypt 保存密码哈希
+  if (password) {
+    const strengthResult = validatePasswordStrength(password);
+    if (!strengthResult.valid) {
+      return {
+        code: 400,
+        success: false,
+        message: `密码强度不足: ${strengthResult.errors.join('; ')}`,
+        passwordStrength: getPasswordStrengthLevel(strengthResult.score),
+        requestId
+      };
     }
 
-    user = await createNewUser(overrides, requestId, '邮箱');
-  } else {
+    const salt = crypto.randomBytes(16).toString('hex');
+    overrides.password_salt = salt;
+    overrides.password_hash = await hashPasswordScrypt(password, salt);
+  }
+
+  const { user, isNewUser } = await findOrCreateUserByIdentity([{ email }], overrides, requestId, '邮箱');
+  const userData = user.data as Record<string, any>;
+  if (!isNewUser) {
     // 老用户更新登录时间
-    await usersCollection.doc(user.data._id).update({
+    await usersCollection.doc(String(userData._id)).update({
       updated_at: now
     });
 
-    logger.info(`[${requestId}] 邮箱用户登录: ${user.data._id}`);
+    logger.info(`[${requestId}] 邮箱用户登录: ${String(userData._id)}`);
   }
 
   // 3. 生成 JWT token
-  const userId = user.data._id;
+  const userId = String(userData._id);
   const token = generateJWT({
     userId,
     email,
-    role: user.data.role
+    role: userData.role
   });
 
   // 4. 验证码已在校验阶段原子标记为 used，这里无需删除
@@ -662,15 +708,15 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
       userInfo: {
         _id: userId,
         id: userId,
-        nickname: user.data.nickname,
-        avatar_url: user.data.avatar_url,
-        email: user.data.email,
-        role: user.data.role,
-        streak_days: user.data.streak_days,
-        total_study_days: user.data.total_study_days,
-        total_questions: user.data.total_questions,
-        correct_questions: user.data.correct_questions,
-        settings: user.data.settings
+        nickname: userData.nickname,
+        avatar_url: userData.avatar_url,
+        email: userData.email,
+        role: userData.role,
+        streak_days: userData.streak_days,
+        total_study_days: userData.total_study_days,
+        total_questions: userData.total_questions,
+        correct_questions: userData.correct_questions,
+        settings: userData.settings
       }
     },
     message: isNewUser ? '注册成功' : '登录成功',
@@ -980,49 +1026,44 @@ async function handleQQLogin(ctx, requestId: string, startTime: number) {
 
   logger.info(`[${requestId}] QQ openid: ${qqOpenid.substring(0, 10)}...`);
 
-  // 查询或创建用户（优先 unionid）
-  let user: any = null;
-  if (qqUnionid) {
-    user = await usersCollection.where({ qq_unionid: qqUnionid }).getOne();
-  }
-  if (!user?.data) {
-    user = await usersCollection.where({ qq_openid: qqOpenid }).getOne();
-  }
-
+  // 查询或创建用户（并发安全：创建冲突后回查）
   const now = Date.now();
-  let isNewUser = false;
+  const overrides: Record<string, unknown> = {
+    qq_openid: qqOpenid,
+    qq_unionid: qqUnionid || null
+  };
 
-  if (!user?.data) {
-    isNewUser = true;
-    const overrides: Record<string, unknown> = {
-      qq_openid: qqOpenid,
-      qq_unionid: qqUnionid || null
-    };
+  if (qqUserInfo.nickname) {
+    overrides.nickname = qqUserInfo.nickname;
+  }
 
-    if (qqUserInfo.nickname) {
-      overrides.nickname = qqUserInfo.nickname;
-    }
+  const avatar =
+    (typeof qqUserInfo.figureurl_qq_2 === 'string' && qqUserInfo.figureurl_qq_2) ||
+    (typeof qqUserInfo.figureurl_2 === 'string' && qqUserInfo.figureurl_2) ||
+    '';
+  if (avatar) {
+    overrides.avatar_url = avatar;
+  }
 
-    const avatar =
-      (typeof qqUserInfo.figureurl_qq_2 === 'string' && qqUserInfo.figureurl_qq_2) ||
-      (typeof qqUserInfo.figureurl_2 === 'string' && qqUserInfo.figureurl_2) ||
-      '';
-    if (avatar) {
-      overrides.avatar_url = avatar;
-    }
+  const qqQueries: Array<Record<string, unknown>> = [];
+  if (qqUnionid) {
+    qqQueries.push({ qq_unionid: qqUnionid });
+  }
+  qqQueries.push({ qq_openid: qqOpenid });
+  const { user, isNewUser } = await findOrCreateUserByIdentity(qqQueries, overrides, requestId, 'QQ');
+  const userData = user.data as Record<string, any>;
 
-    user = await createNewUser(overrides, requestId, 'QQ');
-  } else {
+  if (!isNewUser) {
     const updateData: Record<string, unknown> = {
       updated_at: now,
       qq_openid: qqOpenid
     };
 
-    if (qqUnionid && !user.data.qq_unionid) {
+    if (qqUnionid && !userData.qq_unionid) {
       updateData.qq_unionid = qqUnionid;
     }
 
-    if (qqUserInfo.nickname && user.data.nickname?.startsWith('考研学子')) {
+    if (qqUserInfo.nickname && String(userData.nickname || '').startsWith('考研学子')) {
       updateData.nickname = qqUserInfo.nickname;
     }
 
@@ -1030,16 +1071,16 @@ async function handleQQLogin(ctx, requestId: string, startTime: number) {
       (typeof qqUserInfo.figureurl_qq_2 === 'string' && qqUserInfo.figureurl_qq_2) ||
       (typeof qqUserInfo.figureurl_2 === 'string' && qqUserInfo.figureurl_2) ||
       '';
-    if (avatar && !user.data.avatar_url) {
+    if (avatar && !userData.avatar_url) {
       updateData.avatar_url = avatar;
     }
 
-    await usersCollection.doc(user.data._id).update(updateData);
-    logger.info(`[${requestId}] QQ老用户登录: ${user.data._id}`);
+    await usersCollection.doc(String(userData._id)).update(updateData);
+    logger.info(`[${requestId}] QQ老用户登录: ${String(userData._id)}`);
   }
 
-  const userId = user.data._id;
-  const token = generateJWT({ userId, qq_openid: qqOpenid, role: user.data.role });
+  const userId = String(userData._id);
+  const token = generateJWT({ userId, qq_openid: qqOpenid, role: userData.role });
 
   const duration = Date.now() - startTime;
   logger.info(`[${requestId}] QQ登录成功，耗时: ${duration}ms`);
@@ -1053,14 +1094,14 @@ async function handleQQLogin(ctx, requestId: string, startTime: number) {
       userInfo: {
         _id: userId,
         id: userId,
-        nickname: user.data.nickname,
-        avatar_url: user.data.avatar_url,
-        role: user.data.role,
-        streak_days: user.data.streak_days,
-        total_study_days: user.data.total_study_days,
-        total_questions: user.data.total_questions,
-        correct_questions: user.data.correct_questions,
-        settings: user.data.settings
+        nickname: userData.nickname,
+        avatar_url: userData.avatar_url,
+        role: userData.role,
+        streak_days: userData.streak_days,
+        total_study_days: userData.total_study_days,
+        total_questions: userData.total_questions,
+        correct_questions: userData.correct_questions,
+        settings: userData.settings
       }
     },
     message: isNewUser ? '注册成功' : '登录成功',
@@ -1158,30 +1199,31 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
 
   logger.info(`[${requestId}] 获取 openid 成功: ${openid.substring(0, 10)}...`);
 
-  // 3. 查询或创建用户
-  let user = await usersCollection.where({ openid }).getOne();
-
+  // 3. 查询或创建用户（并发安全：创建冲突后回查）
   const now = Date.now();
-  let isNewUser = false;
+  const { user, isNewUser } = await findOrCreateUserByIdentity(
+    [{ openid }, ...(unionid ? [{ unionid }] : [])],
+    { openid, unionid: unionid || null },
+    requestId,
+    '微信'
+  );
+  const userData = user.data as Record<string, any>;
 
-  if (!user.data) {
-    isNewUser = true;
-    user = await createNewUser({ openid, unionid: unionid || null }, requestId, '微信');
-  } else {
-    await usersCollection.doc(user.data._id).update({
+  if (!isNewUser) {
+    await usersCollection.doc(String(userData._id)).update({
       updated_at: now,
-      ...(unionid && !user.data.unionid ? { unionid } : {})
+      ...(unionid && !userData.unionid ? { unionid } : {})
     });
 
-    logger.info(`[${requestId}] 老用户登录: ${user.data._id}`);
+    logger.info(`[${requestId}] 老用户登录: ${String(userData._id)}`);
   }
 
   // 4. 生成 JWT token
-  const userId = user.data._id;
+  const userId = String(userData._id);
   const token = generateJWT({
     userId,
     openid,
-    role: user.data.role
+    role: userData.role
   });
 
   const duration = Date.now() - startTime;
@@ -1196,14 +1238,14 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
       userInfo: {
         _id: userId,
         id: userId,
-        nickname: user.data.nickname,
-        avatar_url: user.data.avatar_url,
-        role: user.data.role,
-        streak_days: user.data.streak_days,
-        total_study_days: user.data.total_study_days,
-        total_questions: user.data.total_questions,
-        correct_questions: user.data.correct_questions,
-        settings: user.data.settings
+        nickname: userData.nickname,
+        avatar_url: userData.avatar_url,
+        role: userData.role,
+        streak_days: userData.streak_days,
+        total_study_days: userData.total_study_days,
+        total_questions: userData.total_questions,
+        correct_questions: userData.correct_questions,
+        settings: userData.settings
       }
     },
     message: isNewUser ? '注册成功' : '登录成功',
@@ -1287,52 +1329,43 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
 
   logger.info(`[${requestId}] H5微信 openid: ${openid.substring(0, 10)}...`);
 
-  // 5. 查询或创建用户（优先用 unionid 匹配，其次 h5_openid）
+  // 5. 查询或创建用户（并发安全：创建冲突后回查）
   const unionid = tokenUnionid || wxUserInfo.unionid || null;
-  let user: Record<string, unknown> | null = null;
-
-  // 优先通过 unionid 查找（可关联小程序用户）
-  if (unionid) {
-    user = await usersCollection.where({ unionid }).getOne();
-  }
-  // 其次通过 h5_openid 查找
-  if (!user?.data) {
-    user = await usersCollection.where({ h5_openid: openid }).getOne();
-  }
-
   const now = Date.now();
-  let isNewUser = false;
+  const overrides: Record<string, unknown> = {
+    h5_openid: openid,
+    unionid: unionid
+  };
+  if (wxUserInfo.nickname) overrides.nickname = wxUserInfo.nickname;
+  if (wxUserInfo.headimgurl) overrides.avatar_url = wxUserInfo.headimgurl;
 
-  if (!user?.data) {
-    // 新用户
-    isNewUser = true;
-    const overrides: Record<string, unknown> = {
-      h5_openid: openid,
-      unionid: unionid
-    };
-    if (wxUserInfo.nickname) overrides.nickname = wxUserInfo.nickname;
-    if (wxUserInfo.headimgurl) overrides.avatar_url = wxUserInfo.headimgurl;
+  const h5Queries: Array<Record<string, unknown>> = [];
+  if (unionid) {
+    h5Queries.push({ unionid });
+  }
+  h5Queries.push({ h5_openid: openid });
+  const { user, isNewUser } = await findOrCreateUserByIdentity(h5Queries, overrides, requestId, 'H5微信');
+  const userData = user.data as Record<string, any>;
 
-    user = await createNewUser(overrides, requestId, 'H5微信');
-  } else {
+  if (!isNewUser) {
     // 老用户，更新信息
     const updateData: Record<string, unknown> = { updated_at: now, h5_openid: openid };
-    if (unionid && !user.data.unionid) updateData.unionid = unionid;
+    if (unionid && !userData.unionid) updateData.unionid = unionid;
     // [v1.2.0 修复] 运算符优先级 bug：!x === false 永远不会触发更新
     // 修复：当用户仍是默认昵称（考研学子xxx）时，用微信昵称覆盖
-    if (wxUserInfo.nickname && user.data.nickname?.startsWith('考研学子')) {
+    if (wxUserInfo.nickname && String(userData.nickname || '').startsWith('考研学子')) {
       updateData.nickname = wxUserInfo.nickname;
     }
-    if (wxUserInfo.headimgurl && !user.data.avatar_url) {
+    if (wxUserInfo.headimgurl && !userData.avatar_url) {
       updateData.avatar_url = wxUserInfo.headimgurl;
     }
-    await usersCollection.doc(user.data._id).update(updateData);
-    logger.info(`[${requestId}] H5微信老用户登录: ${user.data._id}`);
+    await usersCollection.doc(String(userData._id)).update(updateData);
+    logger.info(`[${requestId}] H5微信老用户登录: ${String(userData._id)}`);
   }
 
   // 6. 生成 JWT
-  const userId = user.data._id;
-  const token = generateJWT({ userId, h5_openid: openid, role: user.data.role });
+  const userId = String(userData._id);
+  const token = generateJWT({ userId, h5_openid: openid, role: userData.role });
 
   const duration = Date.now() - startTime;
   logger.info(`[${requestId}] H5微信登录成功，耗时: ${duration}ms`);
@@ -1346,14 +1379,14 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
       userInfo: {
         _id: userId,
         id: userId,
-        nickname: user.data.nickname || wxUserInfo.nickname,
-        avatar_url: user.data.avatar_url || wxUserInfo.headimgurl || '',
-        role: user.data.role,
-        streak_days: user.data.streak_days,
-        total_study_days: user.data.total_study_days,
-        total_questions: user.data.total_questions,
-        correct_questions: user.data.correct_questions,
-        settings: user.data.settings
+        nickname: userData.nickname || wxUserInfo.nickname,
+        avatar_url: userData.avatar_url || wxUserInfo.headimgurl || '',
+        role: userData.role,
+        streak_days: userData.streak_days,
+        total_study_days: userData.total_study_days,
+        total_questions: userData.total_questions,
+        correct_questions: userData.correct_questions,
+        settings: userData.settings
       }
     },
     message: isNewUser ? '注册成功' : '登录成功',

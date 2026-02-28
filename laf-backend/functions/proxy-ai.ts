@@ -1833,14 +1833,13 @@ async function loadConversationMemory(userId, friendType) {
 
 /**
  * 保存对话记忆到数据库
+ * [Phase5a FIX] 使用原子 $push + $slice 替代 read-modify-write，防止并发丢写
  */
 async function saveConversationMemory(userId, friendType, userMessage, aiResponse) {
   try {
-    const db = cloud.database();
-    const collection = db.collection('ai_friend_memory');
-
-    // 查找现有记忆
-    const existing = await collection.where({ userId, friendType }).getOne();
+    const memDb = cloud.database();
+    const memCmd = memDb.command;
+    const collection = memDb.collection('ai_friend_memory');
 
     const newConversation = {
       userMessage: userMessage.substring(0, 200),
@@ -1848,29 +1847,35 @@ async function saveConversationMemory(userId, friendType, userMessage, aiRespons
       timestamp: Date.now()
     };
 
-    if (existing.data) {
-      // 更新现有记忆
-      let conversations = existing.data.conversations || [];
-      conversations.push(newConversation);
+    // 原子更新：push 新对话 + slice 保留最近20条，避免 read-modify-write 竞态
+    const updateResult = await collection.where({ userId, friendType }).update({
+      conversations: memCmd.push({
+        each: [newConversation],
+        slice: -20
+      }),
+      updatedAt: Date.now()
+    });
 
-      // 只保留最近20条
-      if (conversations.length > 20) {
-        conversations = conversations.slice(-20);
+    if (!updateResult.updated) {
+      // 不存在则创建（极端并发下可能重复，但 conversations 不会丢数据）
+      try {
+        await collection.add({
+          userId,
+          friendType,
+          conversations: [newConversation],
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+      } catch (addErr) {
+        // 并发创建冲突，再尝试一次原子更新
+        await collection.where({ userId, friendType }).update({
+          conversations: memCmd.push({
+            each: [newConversation],
+            slice: -20
+          }),
+          updatedAt: Date.now()
+        });
       }
-
-      await collection.doc(existing.data._id).update({
-        conversations,
-        updatedAt: Date.now()
-      });
-    } else {
-      // 创建新记忆
-      await collection.add({
-        userId,
-        friendType,
-        conversations: [newConversation],
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-      });
     }
 
     logger.info(`[Memory] 保存对话记忆成功: ${userId} - ${friendType}`);

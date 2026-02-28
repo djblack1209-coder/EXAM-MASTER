@@ -24,11 +24,15 @@ import {
   validateUserId,
   sanitizeString,
   logger,
-  generateRequestId
+  generateRequestId,
+  checkRateLimitDistributed
 } from './_shared/api-response';
 
 const db = cloud.database();
 const _ = db.command;
+
+const SOCIAL_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const SOCIAL_RATE_LIMIT_MAX = 60;
 
 /** Escape user input for safe use in $regex (prevents ReDoS) */
 function escapeRegex(str: string): string {
@@ -59,6 +63,22 @@ export default async function (ctx) {
       return { ...unauthorized('登录已过期，请重新登录'), requestId };
     }
     const userId = payload.userId;
+
+    // 限流
+    const rateLimit = await checkRateLimitDistributed(
+      `social-service:${userId}:${action}`,
+      SOCIAL_RATE_LIMIT_MAX,
+      SOCIAL_RATE_LIMIT_WINDOW_MS
+    );
+    if (!rateLimit.allowed) {
+      return {
+        code: 429,
+        success: false,
+        message: '请求过于频繁，请稍后再试',
+        retryAfter: Math.max(1, Math.ceil((rateLimit.resetAt - Date.now()) / 1000)),
+        requestId
+      };
+    }
 
     logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
 

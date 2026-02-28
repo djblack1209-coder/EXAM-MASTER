@@ -74,7 +74,13 @@ vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn()
-  })
+  }),
+  checkRateLimitDistributed: vi.fn(async () => ({
+    allowed: true,
+    remaining: 9,
+    resetAt: Date.now() + 60000,
+    source: 'memory'
+  }))
 }));
 
 import accountDeleteHandler from '../../laf-backend/functions/account-delete';

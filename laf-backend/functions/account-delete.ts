@@ -16,7 +16,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT } from './login';
-import { createLogger } from './_shared/api-response';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
@@ -24,6 +24,8 @@ const logger = createLogger('[AccountDelete]');
 
 // 冷静期天数
 const COOLING_DAYS = 7;
+const ACCOUNT_DELETE_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const ACCOUNT_DELETE_RATE_LIMIT_MAX = 10;
 
 export default async function (ctx: any) {
   const requestId = `accdel_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -46,6 +48,22 @@ export default async function (ctx: any) {
 
     if (!['request', 'cancel', 'status'].includes(action)) {
       return { code: 400, success: false, message: '不支持的操作', requestId };
+    }
+
+    // 限流
+    const rateLimit = await checkRateLimitDistributed(
+      `account-delete:${userId}:${action}`,
+      ACCOUNT_DELETE_RATE_LIMIT_MAX,
+      ACCOUNT_DELETE_RATE_LIMIT_WINDOW_MS
+    );
+    if (!rateLimit.allowed) {
+      return {
+        code: 429,
+        success: false,
+        message: '请求过于频繁，请稍后再试',
+        retryAfter: Math.max(1, Math.ceil((rateLimit.resetAt - Date.now()) / 1000)),
+        requestId
+      };
     }
 
     // 2. 请求注销
