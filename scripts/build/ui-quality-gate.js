@@ -21,7 +21,7 @@ const CONFIG = {
   srcDir: path.join(process.cwd(), 'src'),
   pagesDir: path.join(process.cwd(), 'src/pages'),
   componentsDir: path.join(process.cwd(), 'src/components'),
-  reportFile: path.join(process.cwd(), '.vscode/ui-quality-report.json'),
+  reportFile: path.join(process.cwd(), 'docs/reports/ui-quality-report.json'),
   extensions: ['.vue', '.js'],
   ignorePatterns: ['node_modules', 'dist', 'unpackage', '.git']
 };

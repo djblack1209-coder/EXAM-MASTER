@@ -272,7 +272,11 @@ function main() {
 
   // 生成报告
   const report = generateReport(results);
-  const reportPath = path.join(projectRoot, 'PROJECT_DEEP_SCAN_REPORT.md');
+  const reportDir = path.join(projectRoot, 'docs', 'reports');
+  if (!fs.existsSync(reportDir)) {
+    fs.mkdirSync(reportDir, { recursive: true });
+  }
+  const reportPath = path.join(reportDir, 'PROJECT_DEEP_SCAN_REPORT.md');
   fs.writeFileSync(reportPath, report, 'utf-8');
 
   console.log(`📄 报告已生成: ${reportPath}\n`);
