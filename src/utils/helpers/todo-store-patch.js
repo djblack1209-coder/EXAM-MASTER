@@ -276,7 +276,9 @@ export const todoStorePatch = {
     // 震动提醒
     try {
       uni.vibrateLong();
-    } catch (_e) {}
+    } catch (e) {
+      logger.log('[TodoStorePatch] 振动提醒失败:', e);
+    }
 
     // 显示通知
     uni.showModal({

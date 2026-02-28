@@ -526,7 +526,9 @@ export default {
     // 监听登录状态变化
     this._loginHandler = (isLoggedIn) => {
       logger.log('[Index] 登录状态变化:', isLoggedIn);
-      this.refreshData();
+      this.refreshData().catch((e) => {
+        logger.error('[Index] 登录状态刷新失败:', e);
+      });
     };
     uni.$on('loginStatusChanged', this._loginHandler);
 
@@ -561,7 +563,9 @@ export default {
     if (this._skipFirstShow) {
       this._skipFirstShow = false;
     } else {
-      this.refreshData();
+      this.refreshData().catch((e) => {
+        logger.error('[Index] onShow 刷新失败:', e);
+      });
     }
 
     // ✅ 检查点1.5: 恢复计时
@@ -655,7 +659,7 @@ export default {
       }
     },
 
-    refreshData() {
+    async refreshData() {
       // 刷新所有数据
       try {
         this.studyStore.restoreProgress();
@@ -663,9 +667,19 @@ export default {
         this.userStore.restoreUserInfo();
         // ✅ 2.3: 统一更新统计数据（从 computed 移到此处，避免重复读 storage）
         this._refreshStats();
-        this.loadAchievements();
-        this.loadKnowledgePoints();
-        this.loadRecentActivities();
+
+        const settled = await Promise.allSettled([
+          Promise.resolve().then(() => this.loadAchievements()),
+          Promise.resolve().then(() => this.loadKnowledgePoints()),
+          Promise.resolve().then(() => this.loadRecentActivities())
+        ]);
+        const failed = settled.filter((item) => item.status === 'rejected');
+        if (failed.length > 0) {
+          logger.warn(
+            '[Index] refreshData 部分模块刷新失败:',
+            failed.map((item) => item.reason)
+          );
+        }
       } catch (e) {
         logger.error('[Index] refreshData 异常:', e);
         // P007: 刷新失败时提供用户反馈
@@ -875,7 +889,9 @@ export default {
         if (result.success) {
           uni.showToast({ title: '登录成功', icon: 'success' });
           // 刷新页面数据
-          this.refreshData();
+          this.refreshData().catch((e) => {
+            logger.error('[Index] 登录后刷新失败:', e);
+          });
         } else {
           // 静默登录失败，跳转到登录页让用户手动操作
           safeNavigateTo('/pages/login/index');

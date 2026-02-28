@@ -17,10 +17,11 @@
 import cloud from '@lafjs/cloud';
 import { verifyJWT, extractBearerToken } from './_shared/auth';
 import { requireAdminAccess } from './_shared/admin-auth';
+import { createLogger } from './_shared/api-response';
 
 const db = cloud.database();
 const _ = db.command;
-// const logger = createLogger removed
+const logger = createLogger('[SchoolQuery]');
 
 /** Escape user input for safe use in $regex (prevents ReDoS) */
 function escapeRegex(str) {
@@ -31,6 +32,39 @@ function escapeRegex(str) {
 const TOTAL_GRADUATE_UNITS = 923;
 // 数据完整性阈值（低于此数量认为数据不完整）
 const DATA_COMPLETENESS_THRESHOLD = 900;
+
+const QUERY_LIMITS = {
+  page: { min: 1, max: 500, defaultValue: 1 },
+  pageSize: { min: 1, max: 100, defaultValue: 20 },
+  searchLimit: { min: 1, max: 20, defaultValue: 10 },
+  hotLimit: { min: 1, max: 20, defaultValue: 10 },
+  unitsPageSize: { min: 1, max: 100, defaultValue: 50 },
+  keywordLength: 80,
+  tagsMaxCount: 10
+};
+
+function clampInt(value, { min, max, defaultValue }) {
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(parsed)) return defaultValue;
+  return Math.min(max, Math.max(min, parsed));
+}
+
+function sanitizeFilterValue(value, maxLength = 64) {
+  if (typeof value !== 'string') return '';
+  return value.trim().slice(0, maxLength);
+}
+
+function sanitizeKeyword(value, maxLength = QUERY_LIMITS.keywordLength) {
+  if (typeof value !== 'string') return '';
+  return value.trim().slice(0, maxLength);
+}
+
+function sanitizeYear(value) {
+  const currentYear = new Date().getFullYear() + 1;
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(parsed)) return undefined;
+  return Math.min(currentYear, Math.max(2000, parsed));
+}
 
 // ==================== 内存缓存系统 ====================
 
@@ -165,7 +199,7 @@ export default async function (ctx) {
       return { code: 401, success: false, message: '该操作需要登录', requestId };
     }
 
-    console.info(`[${requestId}] 学校查询: action=${action}`);
+    logger.info(`[${requestId}] 学校查询: action=${action}`);
 
     let result;
 
@@ -263,10 +297,10 @@ export default async function (ctx) {
     // 添加响应耗时
     const duration = Date.now() - startTime;
     result.duration = duration;
-    console.info(`[${requestId}] action=${action} 耗时 ${duration}ms`);
+    logger.info(`[${requestId}] action=${action} 耗时 ${duration}ms`);
     return result;
   } catch (error) {
-    console.error(`[${requestId}] 学校查询异常:`, error);
+    logger.error(`[${requestId}] 学校查询异常:`, error);
     return {
       code: 500,
       success: false,
@@ -306,35 +340,50 @@ async function checkDataCompleteness() {
 async function getSchoolList(data, requestId) {
   const { page = 1, pageSize = 20, province, level, type, tags, sortBy = 'ranking', sortOrder = 'asc' } = data || {};
 
-  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
+  const safePage = clampInt(page, QUERY_LIMITS.page);
+  const safePageSize = clampInt(pageSize, QUERY_LIMITS.pageSize);
+  const safeProvince = sanitizeFilterValue(province);
+  const safeLevel = sanitizeFilterValue(level);
+  const safeType = sanitizeFilterValue(type);
+  const safeSortBy = sanitizeFilterValue(sortBy, 30) || 'ranking';
+  const safeTags = Array.isArray(tags)
+    ? tags
+        .map((tag) => sanitizeFilterValue(tag, 32))
+        .filter(Boolean)
+        .slice(0, QUERY_LIMITS.tagsMaxCount)
+    : [];
 
   // 检查数据完整性
   const dataStatus = await checkDataCompleteness();
 
   // 构建查询条件
-  const query = { status: 'active' };
+  const query: Record<string, any> = { status: 'active' };
 
-  if (province) {
-    query.province = province;
+  if (safeProvince) {
+    query.province = safeProvince;
   }
 
-  if (level) {
-    query.level = level;
+  if (safeLevel) {
+    query.level = safeLevel;
   }
 
-  if (type) {
-    query.type = type;
+  if (safeType) {
+    query.type = safeType;
   }
 
-  if (tags && tags.length > 0) {
-    query.tags = _.in(tags);
+  if (safeTags.length > 0) {
+    query.tags = _.in(safeTags);
   }
 
   // 分页
-  const skip = (page - 1) * safePageSize;
+  const skip = (safePage - 1) * safePageSize;
 
   // 排序
-  const orderField = sortBy === 'ranking' ? 'ranking.overall' : sortBy;
+  let orderField = 'ranking.overall';
+  if (safeSortBy === 'code') orderField = 'code';
+  if (safeSortBy === 'name') orderField = 'name';
+  if (safeSortBy === 'province') orderField = 'province';
+  if (safeSortBy === 'updatedAt') orderField = 'updatedAt';
   const orderDirection = sortOrder === 'desc' ? 'desc' : 'asc';
 
   const [schools, countResult] = await Promise.all([
@@ -367,7 +416,7 @@ async function getSchoolList(data, requestId) {
     data: {
       list: schools.data || [],
       total: countResult.total || 0,
-      page,
+      page: safePage,
       pageSize: safePageSize,
       totalUnits: TOTAL_GRADUATE_UNITS
     },
@@ -483,20 +532,22 @@ async function checkDataHealth(requestId) {
  */
 async function getSchoolDetail(data, requestId) {
   const { schoolId, code } = data || {};
+  const safeSchoolId = sanitizeFilterValue(schoolId, 64);
+  const safeCode = sanitizeFilterValue(code, 64);
 
-  if (!schoolId && !code) {
+  if (!safeSchoolId && !safeCode) {
     return { code: 400, success: false, message: '缺少学校ID或代码', requestId };
   }
 
   // 缓存命中检查
-  const cacheKey = buildCacheKey('detail', { schoolId, code });
+  const cacheKey = buildCacheKey('detail', { schoolId: safeSchoolId, code: safeCode });
   const cached = getCache(cacheKey);
   if (cached) {
-    console.info(`[${requestId}] 学校详情缓存命中: ${schoolId || code}`);
+    logger.info(`[${requestId}] 学校详情缓存命中: ${safeSchoolId || safeCode}`);
     return { ...cached, requestId };
   }
 
-  const query = schoolId ? { _id: schoolId } : { code };
+  const query = safeSchoolId ? { _id: safeSchoolId } : { code: safeCode };
 
   const result = await db.collection('schools').where(query).getOne();
 
@@ -529,18 +580,18 @@ async function getSchoolDetail(data, requestId) {
  */
 async function searchSchools(data, requestId) {
   const { keyword, limit = 10 } = data || {};
+  const searchTerm = sanitizeKeyword(keyword);
+  const safeLimit = clampInt(limit, QUERY_LIMITS.searchLimit);
 
-  if (!keyword || keyword.trim() === '') {
+  if (!searchTerm) {
     return { code: 400, success: false, message: '搜索关键词不能为空', requestId };
   }
 
-  const searchTerm = keyword.trim();
-
   // 缓存命中检查
-  const cacheKey = buildCacheKey('search', { keyword: searchTerm, limit });
+  const cacheKey = buildCacheKey('search', { keyword: searchTerm, limit: safeLimit });
   const cached = getCache(cacheKey);
   if (cached) {
-    console.info(`[${requestId}] 搜索缓存命中: "${searchTerm}"`);
+    logger.info(`[${requestId}] 搜索缓存命中: "${searchTerm}"`);
     return { ...cached, requestId };
   }
 
@@ -556,7 +607,7 @@ async function searchSchools(data, requestId) {
           { code: { $regex: escapeRegex(searchTerm), $options: 'i' } }
         ]
       })
-      .limit(limit)
+      .limit(safeLimit)
       .field({
         _id: true,
         code: true,
@@ -597,19 +648,21 @@ async function searchSchools(data, requestId) {
  */
 async function getHotSchools(data, requestId) {
   const { limit = 10, province } = data || {};
+  const safeLimit = clampInt(limit, QUERY_LIMITS.hotLimit);
+  const safeProvince = sanitizeFilterValue(province);
 
   // 缓存命中检查
-  const cacheKey = buildCacheKey('hot', { limit, province });
+  const cacheKey = buildCacheKey('hot', { limit: safeLimit, province: safeProvince });
   const cached = getCache(cacheKey);
   if (cached) {
-    console.info(`[${requestId}] 热门学校缓存命中`);
+    logger.info(`[${requestId}] 热门学校缓存命中`);
     return { ...cached, requestId };
   }
 
-  const query = { status: 'active' };
+  const query: Record<string, any> = { status: 'active' };
 
-  if (province) {
-    query.province = province;
+  if (safeProvince) {
+    query.province = safeProvince;
   }
 
   // 按排名获取热门学校
@@ -617,7 +670,7 @@ async function getHotSchools(data, requestId) {
     .collection('schools')
     .where(query)
     .orderBy('ranking.overall', 'asc')
-    .limit(limit)
+    .limit(safeLimit)
     .field({
       _id: true,
       code: true,
@@ -657,22 +710,29 @@ async function getMajors(data, requestId) {
     pageSize = 20
   } = data || {};
 
-  if (!schoolId) {
+  const safeSchoolId = sanitizeFilterValue(schoolId, 64);
+  const safeCollegeId = sanitizeFilterValue(collegeId, 64);
+  const safeCategory = sanitizeFilterValue(category, 64);
+  const safeDegree = sanitizeFilterValue(degree, 64);
+  const safeKeyword = sanitizeKeyword(keyword);
+  const safePage = clampInt(page, QUERY_LIMITS.page);
+  const safePageSize = clampInt(pageSize, QUERY_LIMITS.pageSize);
+  const safeSortBy = sanitizeFilterValue(sortBy, 30);
+
+  if (!safeSchoolId) {
     return { code: 400, success: false, message: '缺少学校ID', requestId };
   }
 
-  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 20), 100);
-
   // 缓存检查（无关键词搜索时缓存）
-  const cacheKey = !keyword
+  const cacheKey = !safeKeyword
     ? buildCacheKey('majors', {
-        schoolId,
-        collegeId,
-        category,
-        degree,
-        sortBy,
+        schoolId: safeSchoolId,
+        collegeId: safeCollegeId,
+        category: safeCategory,
+        degree: safeDegree,
+        sortBy: safeSortBy,
         sortOrder,
-        page,
+        page: safePage,
         pageSize: safePageSize
       })
     : null;
@@ -681,31 +741,31 @@ async function getMajors(data, requestId) {
     if (cached) return { ...cached, requestId };
   }
 
-  const query = { schoolId };
+  const query: Record<string, any> = { schoolId: safeSchoolId };
 
-  if (collegeId) {
-    query.collegeId = collegeId;
+  if (safeCollegeId) {
+    query.collegeId = safeCollegeId;
   }
 
-  if (category) {
-    query.category = category;
+  if (safeCategory) {
+    query.category = safeCategory;
   }
 
-  if (degree) {
-    query.degree = degree;
+  if (safeDegree) {
+    query.degree = safeDegree;
   }
 
-  if (keyword) {
+  if (safeKeyword) {
     query.$or = [
-      { name: { $regex: escapeRegex(keyword), $options: 'i' } },
-      { code: { $regex: escapeRegex(keyword), $options: 'i' } }
+      { name: { $regex: escapeRegex(safeKeyword), $options: 'i' } },
+      { code: { $regex: escapeRegex(safeKeyword), $options: 'i' } }
     ];
   }
 
-  const skip = (page - 1) * safePageSize;
+  const skip = (safePage - 1) * safePageSize;
   // 排序字段白名单
   const allowedSortFields = ['name', 'code', 'category', 'created_at'];
-  const finalSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'name';
+  const finalSortBy = allowedSortFields.includes(safeSortBy) ? safeSortBy : 'name';
   const finalSortOrder = sortOrder === 'desc' ? 'desc' : 'asc';
 
   const [majors, countResult] = await Promise.all([
@@ -718,7 +778,7 @@ async function getMajors(data, requestId) {
     data: {
       list: majors.data || [],
       total: countResult.total || 0,
-      page,
+      page: safePage,
       pageSize: safePageSize
     },
     requestId
@@ -735,19 +795,20 @@ async function getMajors(data, requestId) {
  */
 async function getColleges(data, requestId) {
   const { schoolId } = data || {};
+  const safeSchoolId = sanitizeFilterValue(schoolId, 64);
 
-  if (!schoolId) {
+  if (!safeSchoolId) {
     return { code: 400, success: false, message: '缺少学校ID', requestId };
   }
 
-  const cacheKey = buildCacheKey('colleges', { schoolId });
+  const cacheKey = buildCacheKey('colleges', { schoolId: safeSchoolId });
   const cached = getCache(cacheKey);
   if (cached) return { ...cached, requestId };
 
   // 查询该校所有专业，按学院分组统计
   const allMajors = await db
     .collection('majors')
-    .where({ schoolId })
+    .where({ schoolId: safeSchoolId })
     .field({ collegeId: true, collegeName: true, category: true, degree: true })
     .limit(1000)
     .get();
@@ -793,12 +854,13 @@ async function getColleges(data, requestId) {
  */
 async function getMajorDetail(data, requestId) {
   const { majorId } = data || {};
+  const safeMajorId = sanitizeFilterValue(majorId, 64);
 
-  if (!majorId) {
+  if (!safeMajorId) {
     return { code: 400, success: false, message: '缺少专业ID', requestId };
   }
 
-  const result = await db.collection('majors').where({ _id: majorId }).getOne();
+  const result = await db.collection('majors').where({ _id: safeMajorId }).getOne();
 
   if (!result.data) {
     return { code: 404, success: false, message: '专业不存在', requestId };
@@ -806,8 +868,8 @@ async function getMajorDetail(data, requestId) {
 
   // 获取历年分数线和报录比 — 并行执行
   const [scoreLines, ratios] = await Promise.all([
-    db.collection('score_lines').where({ majorId }).orderBy('year', 'desc').limit(5).get(),
-    db.collection('admission_ratios').where({ majorId }).orderBy('year', 'desc').limit(5).get()
+    db.collection('score_lines').where({ majorId: safeMajorId }).orderBy('year', 'desc').limit(5).get(),
+    db.collection('admission_ratios').where({ majorId: safeMajorId }).orderBy('year', 'desc').limit(5).get()
   ]);
 
   return {
@@ -826,13 +888,17 @@ async function getMajorDetail(data, requestId) {
  */
 async function getScoreLines(data, requestId) {
   const { schoolId, majorId, year, type } = data || {};
+  const safeSchoolId = sanitizeFilterValue(schoolId, 64);
+  const safeMajorId = sanitizeFilterValue(majorId, 64);
+  const safeYear = sanitizeYear(year);
+  const safeType = sanitizeFilterValue(type, 32);
 
-  const query = {};
+  const query: Record<string, any> = {};
 
-  if (schoolId) query.schoolId = schoolId;
-  if (majorId) query.majorId = majorId;
-  if (year) query.year = year;
-  if (type) query.type = type;
+  if (safeSchoolId) query.schoolId = safeSchoolId;
+  if (safeMajorId) query.majorId = safeMajorId;
+  if (safeYear) query.year = safeYear;
+  if (safeType) query.type = safeType;
 
   const result = await db.collection('score_lines').where(query).orderBy('year', 'desc').limit(50).get();
 
@@ -848,20 +914,23 @@ async function getScoreLines(data, requestId) {
  */
 async function getNationalLines(data, requestId) {
   const { year, category, region } = data || {};
+  const safeYear = sanitizeYear(year);
+  const safeCategory = sanitizeFilterValue(category, 64);
+  const safeRegion = sanitizeFilterValue(region, 64);
 
   // 缓存命中检查
-  const cacheKey = buildCacheKey('nationalLines', { year, category, region });
+  const cacheKey = buildCacheKey('nationalLines', { year: safeYear, category: safeCategory, region: safeRegion });
   const cached = getCache(cacheKey);
   if (cached) {
-    console.info(`[${requestId}] 国家线缓存命中`);
+    logger.info(`[${requestId}] 国家线缓存命中`);
     return { ...cached, requestId };
   }
 
-  const query = { type: '国家线' };
+  const query: Record<string, any> = { type: '国家线' };
 
-  if (year) query.year = year;
-  if (category) query.category = category;
-  if (region) query.region = region;
+  if (safeYear) query.year = safeYear;
+  if (safeCategory) query.category = safeCategory;
+  if (safeRegion) query.region = safeRegion;
 
   const result = await db.collection('score_lines').where(query).orderBy('year', 'desc').limit(200).get();
 
@@ -880,12 +949,15 @@ async function getNationalLines(data, requestId) {
  */
 async function getAdmissionRatios(data, requestId) {
   const { schoolId, majorId, year } = data || {};
+  const safeSchoolId = sanitizeFilterValue(schoolId, 64);
+  const safeMajorId = sanitizeFilterValue(majorId, 64);
+  const safeYear = sanitizeYear(year);
 
-  const query = {};
+  const query: Record<string, any> = {};
 
-  if (schoolId) query.schoolId = schoolId;
-  if (majorId) query.majorId = majorId;
-  if (year) query.year = year;
+  if (safeSchoolId) query.schoolId = safeSchoolId;
+  if (safeMajorId) query.majorId = safeMajorId;
+  if (safeYear) query.year = safeYear;
 
   const result = await db.collection('admission_ratios').where(query).orderBy('year', 'desc').limit(50).get();
 
@@ -978,9 +1050,10 @@ async function getFavorites(ctx, data, requestId) {
   }
 
   const { status } = data || {};
+  const safeStatus = sanitizeFilterValue(status, 32);
 
-  const query = { userId };
-  if (status) query.status = status;
+  const query: Record<string, any> = { userId };
+  if (safeStatus) query.status = safeStatus;
 
   const favorites = await db
     .collection('user_school_favorites')
@@ -1030,7 +1103,7 @@ async function getStats(requestId) {
   const cacheKey = 'stats:all';
   const cached = getCache(cacheKey);
   if (cached) {
-    console.info(`[${requestId}] 统计数据缓存命中`);
+    logger.info(`[${requestId}] 统计数据缓存命中`);
     return { ...cached, requestId };
   }
 
@@ -1066,7 +1139,7 @@ async function getProvinces(requestId) {
   const cacheKey = 'provinces:all';
   const cached = getCache(cacheKey);
   if (cached) {
-    console.info(`[${requestId}] 省份列表缓存命中`);
+    logger.info(`[${requestId}] 省份列表缓存命中`);
     return { ...cached, requestId };
   }
 
@@ -1127,7 +1200,7 @@ async function syncFromChsi(data, requestId) {
     };
   }
 
-  console.info(`[${requestId}] 开始同步 ${schools.length} 个院校数据`);
+  logger.info(`[${requestId}] 开始同步 ${schools.length} 个院校数据`);
 
   let inserted = 0;
   let updated = 0;
@@ -1194,12 +1267,12 @@ async function syncFromChsi(data, requestId) {
   invalidateCache('hot');
   invalidateCache('search');
   invalidateCache('detail');
-  console.info(`[${requestId}] 已清理所有学校相关缓存`);
+  logger.info(`[${requestId}] 已清理所有学校相关缓存`);
 
   // 获取同步后的状态（缓存已清理，会重新查询）
   const dataStatus = await checkDataCompleteness();
 
-  console.info(`[${requestId}] 同步完成: 新增=${inserted}, 更新=${updated}, 失败=${failed}`);
+  logger.info(`[${requestId}] 同步完成: 新增=${inserted}, 更新=${updated}, 失败=${failed}`);
 
   return {
     code: 0,
@@ -1222,32 +1295,39 @@ async function syncFromChsi(data, requestId) {
  */
 async function getAllUnits(data, requestId) {
   const { page = 1, pageSize = 50, province, type, keyword } = data || {};
-
-  const safePageSize = Math.min(Math.max(1, parseInt(pageSize) || 50), 100);
+  const safePage = clampInt(page, QUERY_LIMITS.page);
+  const safePageSize = clampInt(pageSize, {
+    min: QUERY_LIMITS.unitsPageSize.min,
+    max: QUERY_LIMITS.unitsPageSize.max,
+    defaultValue: QUERY_LIMITS.unitsPageSize.defaultValue
+  });
+  const safeProvince = sanitizeFilterValue(province);
+  const safeType = sanitizeFilterValue(type);
+  const safeKeyword = sanitizeKeyword(keyword);
 
   // 检查数据完整性
   const dataStatus = await checkDataCompleteness();
 
   // 构建查询条件
-  const query = { status: 'active' };
+  const query: Record<string, any> = { status: 'active' };
 
-  if (province) {
-    query.province = province;
+  if (safeProvince) {
+    query.province = safeProvince;
   }
 
-  if (type) {
-    query.type = type;
+  if (safeType) {
+    query.type = safeType;
   }
 
-  if (keyword) {
+  if (safeKeyword) {
     query.$or = [
-      { name: { $regex: escapeRegex(keyword), $options: 'i' } },
-      { shortName: { $regex: escapeRegex(keyword), $options: 'i' } },
-      { code: { $regex: escapeRegex(keyword), $options: 'i' } }
+      { name: { $regex: escapeRegex(safeKeyword), $options: 'i' } },
+      { shortName: { $regex: escapeRegex(safeKeyword), $options: 'i' } },
+      { code: { $regex: escapeRegex(safeKeyword), $options: 'i' } }
     ];
   }
 
-  const skip = (page - 1) * safePageSize;
+  const skip = (safePage - 1) * safePageSize;
 
   const [units, countResult] = await Promise.all([
     db
@@ -1277,7 +1357,7 @@ async function getAllUnits(data, requestId) {
     data: {
       list: units.data || [],
       total: countResult.total || 0,
-      page,
+      page: safePage,
       pageSize: safePageSize,
       totalPages: Math.ceil((countResult.total || 0) / safePageSize),
       totalUnits: TOTAL_GRADUATE_UNITS,

@@ -224,7 +224,9 @@ export default {
       const uniApi = getUniApi();
       try {
         if (uniApi && typeof uniApi.vibrateShort === 'function') uniApi.vibrateShort();
-      } catch (_) {}
+      } catch (e) {
+        logger.log('[CustomTabbar] 振动反馈失败:', e);
+      }
 
       const item = this.tabList[index];
 

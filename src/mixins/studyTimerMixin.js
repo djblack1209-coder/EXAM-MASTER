@@ -22,7 +22,9 @@ export const studyTimerMixin = {
       // 学习时长相关
       todayStudyTime: 0,
       studyTimerInterval: null,
-      sessionStartTime: null
+      sessionStartTime: null,
+      _studyTimeHandler: null,
+      _appHideHandler: null
     };
   },
 
@@ -62,6 +64,9 @@ export const studyTimerMixin = {
       }
 
       // 监听应用进入后台事件，保存当前时间
+      if (this._appHideHandler && typeof uni.offAppHide === 'function') {
+        uni.offAppHide(this._appHideHandler);
+      }
       this._appHideHandler = () => {
         if (this.sessionStartTime) {
           storageService.save('last_active_time', Date.now());
@@ -80,6 +85,10 @@ export const studyTimerMixin = {
       const savedTime = storageService.get('today_study_time');
       if (typeof savedTime === 'number' && savedTime >= 0) {
         this.todayStudyTime = Math.floor(savedTime);
+      }
+
+      if (this._studyTimeHandler) {
+        uni.$off('studyTimeUpdate', this._studyTimeHandler);
       }
 
       // 监听刷题页面的计时事件
@@ -105,7 +114,10 @@ export const studyTimerMixin = {
       this.saveStudyTime();
       storageService.remove('session_start_time');
       storageService.remove('last_active_time');
-      uni.$off('studyTimeUpdate', this._studyTimeHandler);
+      if (this._studyTimeHandler) {
+        uni.$off('studyTimeUpdate', this._studyTimeHandler);
+        this._studyTimeHandler = null;
+      }
       // 清理 onAppHide 监听
       if (this._appHideHandler && uni.offAppHide) {
         uni.offAppHide(this._appHideHandler);
@@ -148,8 +160,8 @@ export const studyTimerMixin = {
         if (typeof uni.vibrateShort === 'function') {
           uni.vibrateShort();
         }
-      } catch (_) {
-        /* 非关键操作 */
+      } catch (e) {
+        logger.log('[StudyTimerMixin] 振动反馈失败:', e);
       }
 
       requireLogin(

@@ -99,7 +99,9 @@ export default async function (ctx) {
     if (typeof body === 'string') {
       try {
         body = JSON.parse(body);
-      } catch (e) {}
+      } catch (e) {
+        logger.warn(`[${requestId}] 请求体 JSON 解析失败，按原始字符串处理`, e);
+      }
     }
 
     const { action, ...params } = body;
