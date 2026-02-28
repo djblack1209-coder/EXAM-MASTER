@@ -42,6 +42,7 @@ yarn-error.log*
 # Cache
 .cache/
 .temp/
+.eslintcache
 .tmp/.vscode/settings.json
 
 # Laf backend sensitive files (保留至分仓完成后删除)
@@ -127,3 +128,5 @@ laf-backend/data/schools/schools-fixed.json
 playwright.visual.config.js
 tests/visual/
 tests/debug-selectors.js
+.vscode/visual-report/
+.vscode/visual-results.json

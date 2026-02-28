@@ -1,0 +1,6 @@
+name: user-profile
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

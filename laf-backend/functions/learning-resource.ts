@@ -17,7 +17,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate } from '../utils/validator';
+import { validate } from './_shared/validator';
 import { verifyJWT } from './login';
 import { checkRateLimit, createLogger } from './_shared/api-response';
 import { extractBearerToken } from './_shared/auth';

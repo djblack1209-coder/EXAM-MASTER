@@ -1,0 +1,6 @@
+name: data-cleanup
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

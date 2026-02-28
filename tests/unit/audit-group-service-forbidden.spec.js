@@ -75,8 +75,14 @@ const mocked = vi.hoisted(() => {
   };
 });
 
-vi.mock('../../laf-backend/functions/login', () => ({
-  verifyJWT: mocked.verifyJWT
+vi.mock('../../laf-backend/functions/_shared/auth', () => ({
+  verifyJWT: mocked.verifyJWT,
+  extractBearerToken: (rawToken) => {
+    if (typeof rawToken !== 'string') return '';
+    const trimmed = rawToken.trim();
+    const match = trimmed.match(/^Bearer(?:\s+(.+))?$/i);
+    return match ? (match[1] || '').trim() : trimmed;
+  }
 }));
 
 vi.mock('@lafjs/cloud', () => ({

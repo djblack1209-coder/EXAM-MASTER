@@ -34,21 +34,21 @@
 | login.ts           | `email_code`     | 否   | 邮箱验证码登录                  |
 | login.ts           | `email_password` | 否   | 邮箱密码登录                    |
 | login.ts           | `register`       | 否   | 邮箱注册                        |
-| send-email-code.js | —                | 否   | 发送邮箱验证码                  |
+| send-email-code.ts | —                | 否   | 发送邮箱验证码                  |
 | upload-avatar.ts   | —                | JWT  | 头像上传（multipart/form-data） |
 
 ### 练习服务
 
 | 云函数              | Action                                               | 认证 | 说明           |
 | ------------------- | ---------------------------------------------------- | ---- | -------------- |
-| question-bank.js    | `get`                                                | 否   | 分页查询题目   |
-| question-bank.js    | `random`                                             | 否   | 随机抽题       |
-| question-bank.js    | `getByIds`                                           | 否   | 按 ID 批量获取 |
+| question-bank.ts    | `get`                                                | 否   | 分页查询题目   |
+| question-bank.ts    | `random`                                             | 否   | 随机抽题       |
+| question-bank.ts    | `getByIds`                                           | 否   | 按 ID 批量获取 |
 | mistake-manager.ts  | `add`/`get`/`update`/`remove`                        | JWT  | 错题 CRUD      |
 | mistake-manager.ts  | `batchSync`/`getCategories`/`manageTags`/`getByTags` | JWT  | 错题高级操作   |
 | answer-submit.ts    | `submit`/`getRecords`                                | 否   | 答题提交与记录 |
 | favorite-manager.ts | `add`/`remove`/`get`/`check`                         | 否   | 收藏管理       |
-| material-manager.js | 8个action                                            | JWT  | 用户资料管理   |
+| material-manager.ts | 8个action                                            | JWT  | 用户资料管理   |
 
 ### 学习服务
 
@@ -57,7 +57,7 @@
 | learning-goal.ts       | `create`/`get`/`update`/`remove`/`getTodayProgress`/`recordProgress`            | JWT     | 学习目标         |
 | achievement-manager.ts | `getAll`/`unlock`/`check`/`getUnlocked`                                         | JWT     | 成就系统         |
 | user-stats.ts          | `getOverview`/`getDailyStatsend`/`recordStudyTime`/`updateStreak`/`getRankInfo` | JWT     | 用户统计         |
-| study-stats.js         | `get`/`daily`/`weekly`                                                          | JWT     | 学习统计（简版） |
+| study-stats.ts         | `get`/`daily`/`weekly`                                                          | JWT     | 学习统计（简版） |
 | user-profile.ts        | `get`/`update`/`upload_avatar`/`get_practice_config`/`update_practice_config`   | 部分JWT | 用户资料         |
 | learning-resource.ts   | `getList`/`getDetail`/`search`/`favorite`                                       | 否      | 学习资源         |
 
@@ -66,10 +66,10 @@
 | 云函数              | Action                                                                                  | 认证 | 说明        |
 | ------------------- | --------------------------------------------------------------------------------------- | ---- | ----------- |
 | social-service.ts   | `sendRequest`/`acceptRequest`/`rejectRequest`/`getFriends`/`getRequests`/`removeFriend` | 否   | 好友系统    |
-| group-service.js    | `create`/`join`/`leave`/`getList`/`getDetail`/`getResources`/`shareResource`/`dissolve` | JWT  | 学习小组    |
+| group-service.ts    | `create`/`join`/`leave`/`getList`/`getDetail`/`getResources`/`shareResource`/`dissolve` | JWT  | 学习小组    |
 | rank-center.ts      | `submit`/`getTop`/`getRank`                                                             | 否   | 排行榜      |
 | pk-battle.ts        | `create`/`join`/`submit`/`getResult`/`getHistory`                                       | 否   | PK 对战     |
-| ai-friend-memory.js | `get`/`save`/`clear`                                                                    | JWT  | AI 好友记忆 |
+| ai-friend-memory.ts | `get`/`save`/`clear`                                                                    | JWT  | AI 好友记忆 |
 
 ### AI 服务
 
@@ -82,8 +82,8 @@
 
 | 云函数                | Action                                                                                                                       | 认证 | 说明         |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---- | ------------ |
-| school-query.js       | `list`/`detail`/`search`/`hot`/`majors`/`major_detail`/`score_lines`/`national_lines`/`admission_ratios`/`provinces`/`stats` | 否   | 院校查询     |
-| school-query.js       | `add_favorite`/`remove_favorite`/`get_favorites`                                                                             | JWT  | 院校收藏     |
+| school-query.ts       | `list`/`detail`/`search`/`hot`/`majors`/`major_detail`/`score_lines`/`national_lines`/`admission_ratios`/`provinces`/`stats` | 否   | 院校查询     |
+| school-query.ts       | `add_favorite`/`remove_favorite`/`get_favorites`                                                                             | JWT  | 院校收藏     |
 | school-crawler-api.ts | `list`/`refresh`/`by_province`/`provinces`/`status`/`crawl_all`                                                              | —    | 爬虫管理接口 |
 
 ### 工具服务

@@ -24,7 +24,7 @@
 
 | 命令                          | 结果        | 关键输出                                   |
 | ----------------------------- | ----------- | ------------------------------------------ |
-| `npm run test`                | ✅ 通过     | `62 files / 974 tests passed`              |
+| `npm run test`                | ✅ 通过     | `63 files / 979 tests passed`              |
 | `npm run lint`                | ✅ 通过     | 无 error/warning 阻塞                      |
 | `npm run build:h5`            | ✅ 通过     | `DONE Build complete`                      |
 | `npm run build:mp-weixin`     | ✅ 通过     | `DONE Build complete`                      |

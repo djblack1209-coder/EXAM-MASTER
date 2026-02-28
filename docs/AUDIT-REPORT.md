@@ -77,7 +77,7 @@
 | 15  | B09  | proxy-ai.ts:131-144        | 审计令牌验证在 JWT_SECRET 为空时可被绕过                                      |
 | 16  | B10  | ai-photo-search.ts:588-599 | SSRF 漏洞：fetchImageAsBase64 无 URL 白名单校验，可访问内网                   |
 | 17  | B10  | proxy-ai.ts:883            | specialCommand 直接拼入 AI 提示词，Prompt 注入风险                            |
-| 18  | B11  | school-query.js:474-476    | getSchoolDetail 函数定义缺失，整个云函数无法加载                              |
+| 18  | B11  | school-query.ts:474-476    | getSchoolDetail 函数定义缺失，整个云函数无法加载                              |
 | 19  | B13  | favorite/index.vue:414     | 字符串编码损坏显示乱码                                                        |
 | 20  | B15  | checkin-streak.js:385      | JSON.parse 对已是对象的数据再次解析，导致签到数据丢失                         |
 | 21  | B15  | checkin-streak.js:364      | 日期使用 UTC 而非本地时间，UTC+8 用户 0-8 点签到日期偏移                      |

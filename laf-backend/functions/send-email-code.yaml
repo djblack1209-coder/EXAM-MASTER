@@ -1,0 +1,6 @@
+name: send-email-code
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

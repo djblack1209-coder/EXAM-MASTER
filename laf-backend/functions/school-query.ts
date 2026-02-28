@@ -16,13 +16,11 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { verifyJWT } from './login';
-import { createLogger } from './_shared/api-response';
-import { extractBearerToken } from './_shared/auth';
+import { verifyJWT, extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
-const logger = createLogger('school-query');
+// const logger = createLogger removed
 
 /** Escape user input for safe use in $regex (prevents ReDoS) */
 function escapeRegex(str) {
@@ -167,7 +165,7 @@ export default async function (ctx) {
       return { code: 401, success: false, message: '该操作需要登录', requestId };
     }
 
-    logger.info(`[${requestId}] 学校查询: action=${action}`);
+    console.info(`[${requestId}] 学校查询: action=${action}`);
 
     let result;
 
@@ -271,10 +269,10 @@ export default async function (ctx) {
     // 添加响应耗时
     const duration = Date.now() - startTime;
     result.duration = duration;
-    logger.info(`[${requestId}] action=${action} 耗时 ${duration}ms`);
+    console.info(`[${requestId}] action=${action} 耗时 ${duration}ms`);
     return result;
   } catch (error) {
-    logger.error(`[${requestId}] 学校查询异常:`, error);
+    console.error(`[${requestId}] 学校查询异常:`, error);
     return {
       code: 500,
       success: false,
@@ -500,7 +498,7 @@ async function getSchoolDetail(data, requestId) {
   const cacheKey = buildCacheKey('detail', { schoolId, code });
   const cached = getCache(cacheKey);
   if (cached) {
-    logger.info(`[${requestId}] 学校详情缓存命中: ${schoolId || code}`);
+    console.info(`[${requestId}] 学校详情缓存命中: ${schoolId || code}`);
     return { ...cached, requestId };
   }
 
@@ -548,7 +546,7 @@ async function searchSchools(data, requestId) {
   const cacheKey = buildCacheKey('search', { keyword: searchTerm, limit });
   const cached = getCache(cacheKey);
   if (cached) {
-    logger.info(`[${requestId}] 搜索缓存命中: "${searchTerm}"`);
+    console.info(`[${requestId}] 搜索缓存命中: "${searchTerm}"`);
     return { ...cached, requestId };
   }
 
@@ -610,7 +608,7 @@ async function getHotSchools(data, requestId) {
   const cacheKey = buildCacheKey('hot', { limit, province });
   const cached = getCache(cacheKey);
   if (cached) {
-    logger.info(`[${requestId}] 热门学校缓存命中`);
+    console.info(`[${requestId}] 热门学校缓存命中`);
     return { ...cached, requestId };
   }
 
@@ -861,7 +859,7 @@ async function getNationalLines(data, requestId) {
   const cacheKey = buildCacheKey('nationalLines', { year, category, region });
   const cached = getCache(cacheKey);
   if (cached) {
-    logger.info(`[${requestId}] 国家线缓存命中`);
+    console.info(`[${requestId}] 国家线缓存命中`);
     return { ...cached, requestId };
   }
 
@@ -1038,7 +1036,7 @@ async function getStats(requestId) {
   const cacheKey = 'stats:all';
   const cached = getCache(cacheKey);
   if (cached) {
-    logger.info(`[${requestId}] 统计数据缓存命中`);
+    console.info(`[${requestId}] 统计数据缓存命中`);
     return { ...cached, requestId };
   }
 
@@ -1074,7 +1072,7 @@ async function getProvinces(requestId) {
   const cacheKey = 'provinces:all';
   const cached = getCache(cacheKey);
   if (cached) {
-    logger.info(`[${requestId}] 省份列表缓存命中`);
+    console.info(`[${requestId}] 省份列表缓存命中`);
     return { ...cached, requestId };
   }
 
@@ -1135,7 +1133,7 @@ async function syncFromChsi(data, requestId) {
     };
   }
 
-  logger.info(`[${requestId}] 开始同步 ${schools.length} 个院校数据`);
+  console.info(`[${requestId}] 开始同步 ${schools.length} 个院校数据`);
 
   let inserted = 0;
   let updated = 0;
@@ -1202,12 +1200,12 @@ async function syncFromChsi(data, requestId) {
   invalidateCache('hot');
   invalidateCache('search');
   invalidateCache('detail');
-  logger.info(`[${requestId}] 已清理所有学校相关缓存`);
+  console.info(`[${requestId}] 已清理所有学校相关缓存`);
 
   // 获取同步后的状态（缓存已清理，会重新查询）
   const dataStatus = await checkDataCompleteness();
 
-  logger.info(`[${requestId}] 同步完成: 新增=${inserted}, 更新=${updated}, 失败=${failed}`);
+  console.info(`[${requestId}] 同步完成: 新增=${inserted}, 更新=${updated}, 失败=${failed}`);
 
   return {
     code: 0,

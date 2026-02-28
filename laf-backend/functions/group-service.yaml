@@ -1,0 +1,6 @@
+name: group-service
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

@@ -12,7 +12,7 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { validate, sanitizeString } from '../utils/validator';
+import { validate, sanitizeString } from './_shared/validator';
 import { createLogger, checkRateLimit } from './_shared/api-response';
 const logger = createLogger('[SchoolCrawler]');
 

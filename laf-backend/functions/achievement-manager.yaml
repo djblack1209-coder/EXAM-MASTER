@@ -1,0 +1,6 @@
+name: achievement-manager
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

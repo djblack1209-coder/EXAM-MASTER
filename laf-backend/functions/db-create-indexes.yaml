@@ -1,0 +1,6 @@
+name: db-create-indexes
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

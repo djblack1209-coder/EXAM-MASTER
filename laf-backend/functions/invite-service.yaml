@@ -1,0 +1,6 @@
+name: invite-service
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []
