@@ -577,8 +577,8 @@ export default {
       } else if (pendingSearch) {
         storageService.remove('_pendingSearch'); // 过期清理
       }
-    } catch (_e) {
-      /* ignore */
+    } catch (e) {
+      logger.warn('[practice] 读取待处理搜索失败:', e);
     }
 
     // E005: 延迟非关键读取，让 UI 先渲染
@@ -586,24 +586,42 @@ export default {
 
     // ✅ P1-3: 等待 mixin 加载完成后再调用 mixin 方法，避免竞态
     setTimeout(async () => {
-      const mistakeBook = storageService.get('mistake_book', []);
-      this.mistakeCount = mistakeBook.length;
-      this.checkUnfinishedPractice();
-      // 等待 mixin 就绪后再调用其方法
-      if (this._mixinReady) {
-        await this._mixinReady.catch(() => undefined);
+      try {
+        const mistakeBook = storageService.get('mistake_book', []);
+        this.mistakeCount = mistakeBook.length;
+        this.checkUnfinishedPractice();
+        // 等待 mixin 就绪后再调用其方法
+        if (this._mixinReady) {
+          await this._mixinReady.catch(() => undefined);
+        }
+
+        const settled = await Promise.allSettled([
+          Promise.resolve().then(() => this.loadLearningStats()),
+          Promise.resolve().then(() => this.loadFavoriteCount())
+        ]);
+        const failedTasks = settled.filter((item) => item.status === 'rejected');
+        if (failedTasks.length > 0) {
+          logger.warn(
+            '[practice] 页面恢复时部分统计加载失败:',
+            failedTasks.map((item) => item.reason)
+          );
+        }
+      } catch (e) {
+        logger.error('[practice] onShow 恢复统计失败:', e);
       }
-      this.loadLearningStats();
-      this.loadFavoriteCount();
     }, 50);
 
     // 恢复后台生成
     if (this.isLooping && this.generatedCount < this.totalQuestionsLimit && !this.isRequestInFlight) {
       setTimeout(async () => {
-        if (this._mixinReady) {
-          await this._mixinReady.catch(() => undefined);
+        try {
+          if (this._mixinReady) {
+            await this._mixinReady.catch(() => undefined);
+          }
+          await Promise.resolve(this.generateNextBatch());
+        } catch (e) {
+          logger.error('[practice] 恢复后台生成失败:', e);
         }
-        this.generateNextBatch();
       }, 500);
     }
   },
