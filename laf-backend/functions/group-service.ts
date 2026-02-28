@@ -18,6 +18,7 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT, extractBearerToken } from './_shared/auth';
+import { sanitizeString } from './_shared/api-response';
 
 const db = cloud.database();
 const _ = db.command;
@@ -98,12 +99,13 @@ async function handleCreateGroup(userId, params, requestId) {
 
   try {
     const groupId = generateId('group_');
+    // [H-02 FIX] XSS sanitization — 对用户输入做消毒处理
     const group = {
       _id: groupId,
-      name: name.trim(),
-      description: description?.trim() || '',
+      name: sanitizeString(name.trim(), 50),
+      description: sanitizeString(description?.trim() || '', 500),
       avatar: avatar || '',
-      tags: Array.isArray(tags) ? tags : [],
+      tags: Array.isArray(tags) ? tags.slice(0, 20).map((t: string) => sanitizeString(String(t), 50)) : [],
       max_members: Math.min(Math.max(2, maxMembers), 100),
       member_count: 1,
       status: GROUP_STATUS.ACTIVE,
@@ -250,6 +252,8 @@ async function handleGetGroups(userId, params, requestId) {
   }
 
   const { page = 1, pageSize = 20, type = 'all' } = params;
+  // [H-03 FIX] pageSize 上限校验，防止客户端请求过大导出整个集合
+  const safePageSize = Math.min(Math.max(1, pageSize), 50);
 
   try {
     let query = db.collection('groups');
@@ -273,8 +277,8 @@ async function handleGetGroups(userId, params, requestId) {
     // 分页查询
     const groups = await query
       .orderBy('created_at', 'desc')
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
+      .skip((page - 1) * safePageSize)
+      .limit(safePageSize)
       .get();
 
     logger.info(`[${requestId}] 获取小组列表:`, groups.data.length, '个');
@@ -531,6 +535,8 @@ async function handleGetResources(userId, params, requestId) {
   }
 
   const { groupId, page = 1, pageSize = 20, type = 'all' } = params;
+  // [H-03 FIX] pageSize 上限校验
+  const safePageSize = Math.min(Math.max(1, pageSize), 50);
 
   if (!groupId) {
     return { code: 400, success: false, message: '小组ID不能为空', data: [] };
@@ -560,8 +566,8 @@ async function handleGetResources(userId, params, requestId) {
     // 分页查询
     const resources = await query
       .orderBy('created_at', 'desc')
-      .skip((page - 1) * pageSize)
-      .limit(pageSize)
+      .skip((page - 1) * safePageSize)
+      .limit(safePageSize)
       .get();
 
     // 获取用户信息

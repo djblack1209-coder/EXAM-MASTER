@@ -19,12 +19,21 @@ Optional auth smoke inputs:
 
 - `SMOKE_EMAIL`
 - `SMOKE_PASSWORD`
+- `SMOKE_TOKEN` (or `SMOKE_JWT`) to run protected checks without login credentials
+- `SMOKE_AUTO_TOKEN=true` to auto-bootstrap a token from ranking data when credentials are unavailable
+- `SMOKE_JWT_SECRET` to override JWT signing secret used by auto token bootstrap
+
+Notes:
+
+- `SMOKE_EMAIL` must be a real deliverable mailbox; reserved test domains like `example.com` are rejected by `send-email-code`.
 
 ## Project audit scripts
 
 - `npm run audit:deep-scan`: deep project scan report.
 - `npm run audit:ui-quality`: UI quality gate report.
 - `npm run audit:mp-main-usage`: mini-program main-package usage audit.
+- `npm run deps:audit`: npm dependency audit (full tree, non-blocking).
+- `npm run deps:audit:prod`: npm dependency audit for production dependencies only (non-blocking).
 
 ## Visual regression scripts
 

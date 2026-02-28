@@ -131,6 +131,8 @@ describe('[安全审计] school-query 鉴权响应形态一致性', () => {
   });
 
   it('sync_from_chsi 缺少管理员密钥时应返回 403 且带 requestId', async () => {
+    process.env.ADMIN_SECRET = 'test_secret_for_sync';
+
     const result = await schoolQueryHandler({
       headers: {},
       body: { action: 'sync_from_chsi', data: {} }
@@ -138,7 +140,7 @@ describe('[安全审计] school-query 鉴权响应形态一致性', () => {
 
     expect(result.code).toBe(403);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('管理员权限');
+    expect(result.message).toContain('无权执行');
     expect(result.requestId).toMatch(/^school_/);
   });
 });

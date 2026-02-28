@@ -21,30 +21,24 @@ export default async function (ctx) {
   const requestId = `stats_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, userId } = ctx.body || {};
-
-    if (!userId) {
-      return { code: 401, success: false, message: '用户未登录', requestId };
-    }
+    const { action } = ctx.body || {};
 
     if (!action) {
       return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
 
-    // JWT 身份验证
+    // [C-02 FIX] JWT 身份验证：始终从 JWT payload 派生 userId，不信任 body
     const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    if (authToken) {
-      const rawToken = extractBearerToken(authToken);
-      const payload = verifyJWT(rawToken);
-      if (!payload) {
-        return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
-      }
-      if (payload.userId && payload.userId !== userId) {
-        return { code: 403, success: false, message: '身份验证失败', requestId };
-      }
-    } else {
+    if (!authToken) {
       return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
     }
+    const rawToken = extractBearerToken(authToken);
+    const payload = verifyJWT(rawToken);
+    if (!payload || !payload.userId) {
+      return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
+    }
+    // 始终使用 JWT 中的 userId，忽略 body 中的值
+    const userId = payload.userId;
 
     console.log(`[${requestId}] 学习统计: action=${action}, userId=${userId}`);
 

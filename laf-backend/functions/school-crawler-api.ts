@@ -11,9 +11,9 @@
  */
 
 import cloud from '@lafjs/cloud';
-import crypto from 'crypto';
 import { validate, sanitizeString } from './_shared/validator';
 import { createLogger, checkRateLimit } from './_shared/api-response';
+import { requireAdminAccess } from './_shared/admin-auth';
 const logger = createLogger('[SchoolCrawler]');
 
 const db = cloud.database();
@@ -140,21 +140,15 @@ export default async function (ctx: FunctionContext) {
       case 'list':
         return await getSchoolList(data, requestId);
       case 'refresh': {
-        // [R2-P0] refresh 是写操作，需要管理员权限
-        const refreshSecret = ctx.headers?.['x-admin-secret'] || data?.adminSecret;
-        const expectedRefreshSecret = process.env.ADMIN_SECRET;
-        if (
-          !refreshSecret ||
-          !expectedRefreshSecret ||
-          typeof refreshSecret !== 'string' ||
-          typeof expectedRefreshSecret !== 'string'
-        ) {
-          return { code: 403, success: false, message: '无权执行此操作', requestId };
-        }
-        const ra = Buffer.from(refreshSecret, 'utf8');
-        const rb = Buffer.from(expectedRefreshSecret, 'utf8');
-        if (ra.length !== rb.length || !crypto.timingSafeEqual(ra, rb)) {
-          return { code: 403, success: false, message: '无权执行此操作', requestId };
+        // [Phase3] refresh 是写操作，统一走 _shared/admin-auth
+        const refreshAuth = requireAdminAccess(ctx, { allowBodyFallback: true });
+        if (!refreshAuth.ok) {
+          return {
+            code: refreshAuth.code,
+            success: false,
+            message: refreshAuth.message || '无权执行此操作',
+            requestId
+          };
         }
         return await refreshSchoolData(data, requestId);
       }
@@ -165,16 +159,10 @@ export default async function (ctx: FunctionContext) {
       case 'status':
         return await getCrawlerStatus(requestId);
       case 'crawl_all': {
-        // 管理员权限校验：crawl_all 是高危操作 — [R2-P1] timingSafeEqual 防时序攻击
-        const adminSecret = ctx.headers?.['x-admin-secret'] || data?.adminSecret;
-        const expectedSecret = process.env.ADMIN_SECRET;
-        if (!adminSecret || !expectedSecret || typeof adminSecret !== 'string' || typeof expectedSecret !== 'string') {
-          return { code: 403, success: false, message: '无权执行此操作', requestId };
-        }
-        const ca = Buffer.from(adminSecret, 'utf8');
-        const cb = Buffer.from(expectedSecret, 'utf8');
-        if (ca.length !== cb.length || !crypto.timingSafeEqual(ca, cb)) {
-          return { code: 403, success: false, message: '无权执行此操作', requestId };
+        // [Phase3] crawl_all 是高危操作，统一走 _shared/admin-auth
+        const crawlAuth = requireAdminAccess(ctx, { allowBodyFallback: true });
+        if (!crawlAuth.ok) {
+          return { code: crawlAuth.code, success: false, message: crawlAuth.message || '无权执行此操作', requestId };
         }
         return await crawlAllSchools(requestId);
       }

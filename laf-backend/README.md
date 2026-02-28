@@ -66,6 +66,7 @@ laf deploy
 | `favorite-manager`        | 收藏管理                    |
 | `material-manager`        | 资料管理 ⚠️ 未接入前端      |
 | `send-email-code`         | 邮箱验证码                  |
+| `job-bot-handoff-notify`  | Job Bot 接管邮件通知        |
 | `upload-avatar`           | 头像上传                    |
 | `ai-friend-memory`        | AI 好友记忆                 |
 | `ai-photo-search`         | AI 拍照搜题                 |

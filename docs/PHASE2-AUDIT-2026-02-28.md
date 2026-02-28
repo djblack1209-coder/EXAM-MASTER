@@ -71,3 +71,84 @@
 
 - Critical/High 项已处理完成并通过回归。
 - Phase 3 与云端同步已完成，可直接进入 Phase 4 持续回归与发布收尾。
+
+---
+
+# Phase 3-4 Audit Report (2026-03-01)
+
+## Scope
+
+- Phase 3：修复 Phase 2 遗留的鉴权路径分散、CI endpoint 漂移、本地/云端源码漂移。
+- Phase 4：Node 版本对齐、全量回归、线上实时验证、发布收尾。
+
+## Phase 3 Fixes
+
+### High — 鉴权路径统一
+
+1. `school-query.ts` sync_from_chsi 管理员鉴权统一到 `_shared/admin-auth.ts`
+   - 移除内联 `process.env.ADMIN_SECRET` + 手动 `crypto.timingSafeEqual`
+   - 改为 `requireAdminAccess(ctx, { allowBodyFallback: true })`
+   - 移除 `import crypto`（不再直接使用）
+   - 状态：Fixed + Deployed + Live-verified (403)
+
+2. `school-crawler-api.ts` refresh/crawl_all 管理员鉴权统一到 `_shared/admin-auth.ts`
+   - 两处内联鉴权块替换为 `requireAdminAccess`
+   - 移除 `import crypto`
+   - 状态：Fixed + Deployed + Live-verified (403)
+
+### High — CI Smoke Endpoint 修正
+
+3. `.github/workflows/ci-cd.yml` staging/production smoke 从 `/health` 改为 `/health-check`
+   - `/health` 在 Laf 返回 404 Function Not Found（已实测确认）
+   - `/health-check` 返回 200 `{"code":0,"status":"ok"}`
+   - 状态：Fixed
+
+### High — 本地/云端源码漂移消除
+
+4. 8 个 Phase 2 修复文件推送到 Laf 云端
+   - `db-create-indexes.ts`、`favorite-manager.ts`、`group-service.ts`、`learning-goal.ts`
+   - `mistake-manager.ts`、`proxy-ai.ts`、`social-service.ts`、`study-stats.ts`
+   - 加上本次新改的 `school-query.ts`、`school-crawler-api.ts`（共 10 个函数）
+   - `audit:laf:function-sources --strict` content diffs: 0
+   - 状态：Fixed
+
+## Phase 4 Fixes
+
+### Node 版本对齐
+
+- 切换本机 Node 从 18.20.8 到 20.17.0（via `fnm use 20.17.0`）
+- 解决 `@vitejs/plugin-vue` 的 `crypto.hash is not a function` 导致的 11 个 EmptyState 组件测试失败
+
+### 测试适配
+
+- `audit-school-query-auth-response.spec.js`：设置 `ADMIN_SECRET` 环境变量使测试走"客户端未提供凭据→403"路径（而非"服务端未配置→503"）；断言 message 从 `管理员权限` 改为 `无权执行`
+- `audit-school-crawler-auth-response.spec.js`：同上处理
+
+## Validation Results (Phase 4 Final)
+
+- `npm test` (Node 20.17.0)：64 files / 986 tests passed / 0 failed
+- `npm run lint`：通过，无错误
+- `npm run test:cloud:smoke`：6 passed / 0 failed / 3 skipped
+- `npm run audit:laf:function-sources -- --strict`：通过（content diffs: 0）
+- 线上实时验证：
+  - `health-check` → 200 `{"code":0,"status":"ok"}`
+  - `proxy-ai health_check` → `{"code":0,"status":"ready"}`（不再暴露 models/uptime）
+  - `school-query sync_from_chsi` 无凭据 → 403
+  - `school-crawler-api refresh` 无凭据 → 403
+  - `school-crawler-api crawl_all` 无凭据 → 403
+  - `school-crawler-api crawl_all` 错误凭据 → 403
+  - `account-purge` 无凭据 → 403
+
+## Changed Files (Phase 3-4)
+
+- `laf-backend/functions/school-query.ts`
+- `laf-backend/functions/school-crawler-api.ts`
+- `.github/workflows/ci-cd.yml`
+- `tests/unit/audit-school-query-auth-response.spec.js`
+- `tests/unit/audit-school-crawler-auth-response.spec.js`
+
+## Remaining Known Issues
+
+1. `fnm default` 仍为 Node 18.20.8 — 建议执行 `fnm default 20.17.0` 持久化
+2. GitHub CLI 未登录 — 无法做 Actions Secrets 只读校验
+3. 无 SSH/Cloudflare 凭据 — 对应交叉验证标记为 Limit Reached
