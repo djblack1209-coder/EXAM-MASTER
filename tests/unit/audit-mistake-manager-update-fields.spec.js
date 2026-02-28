@@ -169,7 +169,9 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
     expect(result.success).toBe(false);
   });
 
-  it('userId 缺失时应返回 401 且包含 success=false', async () => {
+  it('body 缺少 userId 时，JWT 有效则正常执行（H-01 安全加固：userId 从 JWT 派生）', async () => {
+    mocked.scenario.getOne.mistake_book = { data: { _id: 'm_1' } };
+
     const result = await mistakeManagerHandler({
       body: {
         action: 'updateFields',
@@ -183,9 +185,9 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
       headers: { authorization: 'Bearer valid_token' }
     });
 
-    expect(result.code).toBe(401);
-    expect(result.ok).toBe(false);
-    expect(result.success).toBe(false);
+    // H-01 修复后 userId 始终从 JWT payload 派生，body 中无需提供
+    // JWT mock 返回 { userId: 'user_1' }，所以函数正常执行
+    expect(result.code).not.toBe(401);
   });
 
   it('应按白名单更新字段并自动维护 hash/mastered_at', async () => {

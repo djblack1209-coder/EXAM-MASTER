@@ -44,6 +44,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - name: Verify runtime
+        run: |
+          node -v
+          npm -v
+          node -e "const c=require('node:crypto'); if (typeof c.hash !== 'function') { console.error('crypto.hash is unavailable, require Node.js >= 20.12'); process.exit(1); }"
+
       - name: Run Laf source audit
         run: |
           if [ "${LAF_SOURCE_AUDIT_STRICT}" = "true" ]; then
@@ -204,7 +210,7 @@ jobs:
       - name: Run smoke tests
         run: |
           sleep 30
-          curl -f https://staging.exam-master.example.com/health || exit 1
+          curl -f https://staging.exam-master.example.com/health-check || exit 1
 
   # ==================== 部署到生产 ====================
   deploy-production:
@@ -239,7 +245,7 @@ jobs:
       - name: Verify deployment
         run: |
           kubectl get pods -n exam-master -l app.kubernetes.io/component=frontend
-          curl -f https://exam-master.example.com/health || exit 1
+          curl -f https://exam-master.example.com/health-check || exit 1
 
       - name: Rollback on failure
         if: failure()

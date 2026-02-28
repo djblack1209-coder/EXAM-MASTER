@@ -30,6 +30,7 @@
     "format:check": "prettier --check \"src/**/*.{js,vue,css,json}\"",
     "deps:check": "npm outdated",
     "deps:audit": "npm audit --registry=https://registry.npmjs.org || true",
+    "deps:audit:prod": "npm audit --omit=dev --registry=https://registry.npmjs.org || true",
     "release:patch": "npm version patch --no-git-tag-version && git add package.json && git commit -m \"chore: bump version patch\"",
     "release:minor": "npm version minor --no-git-tag-version && git add package.json && git commit -m \"chore: bump version minor\"",
     "release:major": "npm version major --no-git-tag-version && git add package.json && git commit -m \"chore: bump version major\"",
@@ -83,7 +84,7 @@
     "not dead"
   ],
   "engines": {
-    "node": ">=18.20.0",
-    "npm": ">=10.0.0"
+    "node": ">=20.17.0",
+    "npm": ">=10.8.2"
   }
 }

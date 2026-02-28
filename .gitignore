@@ -53,9 +53,12 @@ laf-backend/.env*
 # Logs directory
 logs/
 
-# Kubernetes secrets (use sealed-secrets in production)
+# [C-04 FIX] Kubernetes secrets (use sealed-secrets in production)
 # 只保留模板文件，排除实际的 secrets.yaml
 deploy/k8s/secrets.yaml
+
+# Laf platform config (contains JWT tokens and storage keys)
+laf-backend/.app.yaml
 
 # IDE - Trae
 .trae/

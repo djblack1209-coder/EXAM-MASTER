@@ -18,6 +18,11 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
 const SMTP_FROM = process.env.SMTP_FROM || 'Exam-Master <noreply@exam-master.com>';
+const SMTP_RETRY_TIMES = Math.max(1, Number(process.env.SMTP_RETRY_TIMES || 3));
+const SMTP_RETRY_DELAY_MS = Math.max(200, Number(process.env.SMTP_RETRY_DELAY_MS || 800));
+
+const RESERVED_EMAIL_DOMAINS = new Set(['example.com', 'example.net', 'example.org']);
+const RESERVED_EMAIL_SUFFIXES = ['.example', '.invalid', '.localhost', '.test'];
 
 // 获取数据库实例
 const db = cloud.database();
@@ -32,6 +37,21 @@ function maskEmail(email) {
   if (!localPart || !domain) return '***';
   if (localPart.length <= 2) return `${localPart[0] || '*'}***@${domain}`;
   return `${localPart[0]}***${localPart[localPart.length - 1]}@${domain}`;
+}
+
+function isReservedEmailDomain(email) {
+  if (typeof email !== 'string' || !email.includes('@')) return true;
+  const domain = email.split('@')[1].toLowerCase();
+
+  if (!domain) {
+    return true;
+  }
+
+  if (RESERVED_EMAIL_DOMAINS.has(domain)) {
+    return true;
+  }
+
+  return RESERVED_EMAIL_SUFFIXES.some((suffix) => domain.endsWith(suffix));
 }
 
 export default async function (ctx) {
@@ -58,6 +78,15 @@ export default async function (ctx) {
         code: 400,
         success: false,
         message: '邮箱格式不正确',
+        requestId
+      };
+    }
+
+    if (isReservedEmailDomain(email)) {
+      return {
+        code: 400,
+        success: false,
+        message: '请使用真实可收件邮箱，示例域名不可用',
         requestId
       };
     }
@@ -123,8 +152,8 @@ export default async function (ctx) {
     // 生成6位验证码
     const code = crypto.randomInt(100000, 999999).toString();
 
-    // 保存验证码到数据库
-    await codesCollection.add({
+    // 先保存验证码，确保后续校验可追踪
+    const codeDoc = await codesCollection.add({
       email,
       code,
       client_ip: clientIP,
@@ -137,7 +166,18 @@ export default async function (ctx) {
 
     if (!emailSent) {
       // 邮件发送失败
-      console.warn(`[${requestId}] 邮件发送失败，验证码已保存到数据库`);
+      console.warn(`[${requestId}] 邮件发送失败，准备回滚验证码记录`);
+
+      // 回滚未送达验证码，避免用户因 1 分钟限流无法立即重试
+      try {
+        if (codeDoc?.id && typeof codesCollection.doc === 'function') {
+          await codesCollection.doc(codeDoc.id).remove();
+        } else {
+          console.warn(`[${requestId}] 当前数据库适配器不支持按 doc 回滚验证码记录`);
+        }
+      } catch (rollbackError) {
+        console.error(`[${requestId}] 验证码回滚失败:`, rollbackError);
+      }
 
       // 不返回验证码，避免泄露
       if (process.env.NODE_ENV !== 'production') {
@@ -181,34 +221,33 @@ export default async function (ctx) {
  * 发送邮件
  */
 async function sendEmail(to, code) {
-  try {
-    // 如果没有配置SMTP，跳过发送
-    if (!SMTP_USER || !SMTP_PASS) {
-      console.warn('SMTP未配置，跳过邮件发送');
-      return false;
-    }
+  // 如果没有配置SMTP，跳过发送
+  if (!SMTP_USER || !SMTP_PASS) {
+    console.warn('SMTP未配置，跳过邮件发送');
+    return false;
+  }
 
-    // 使用 nodemailer 发送邮件
-    const nodemailer = require('nodemailer');
+  // 使用 nodemailer 发送邮件
+  const nodemailer = require('nodemailer');
 
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465,
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 15000
-    });
+  const transporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000
+  });
 
-    const mailOptions = {
-      from: SMTP_FROM,
-      to: to,
-      subject: '【Exam-Master】邮箱验证码',
-      html: `
+  const mailOptions = {
+    from: SMTP_FROM,
+    to,
+    subject: '【Exam-Master】邮箱验证码',
+    html: `
         <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
           <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="color: #2E7D32; margin: 0;">Exam-Master</h1>
@@ -229,12 +268,46 @@ async function sendEmail(to, code) {
           </div>
         </div>
       `
-    };
+  };
 
-    await transporter.sendMail(mailOptions);
-    return true;
-  } catch (error) {
-    console.error('发送邮件失败:', error);
+  for (let attempt = 1; attempt <= SMTP_RETRY_TIMES; attempt++) {
+    try {
+      await transporter.sendMail(mailOptions);
+      return true;
+    } catch (error) {
+      const canRetry = shouldRetryEmailError(error);
+      console.error(`发送邮件失败(第 ${attempt}/${SMTP_RETRY_TIMES} 次):`, error);
+
+      if (!canRetry || attempt >= SMTP_RETRY_TIMES) {
+        return false;
+      }
+
+      await sleep(SMTP_RETRY_DELAY_MS * attempt);
+    }
+  }
+
+  return false;
+}
+
+function shouldRetryEmailError(error) {
+  const code = String(error?.code || '').toUpperCase();
+  const responseCode = Number(error?.responseCode || 0);
+
+  if (code === 'EAUTH') {
     return false;
   }
+
+  if (responseCode >= 500 && responseCode < 600) {
+    return true;
+  }
+
+  if (responseCode >= 400 && responseCode < 500) {
+    return false;
+  }
+
+  return ['ETIMEDOUT', 'ESOCKET', 'ECONNECTION', 'ECONNRESET', 'EAI_AGAIN', 'ENOTFOUND'].includes(code);
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

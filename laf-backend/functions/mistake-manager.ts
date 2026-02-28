@@ -53,48 +53,6 @@ function contentHash(str: string): string {
 // ==================== 日志工具 ====================
 const logger = createLogger('[MistakeManager]');
 
-// ==================== 用户身份验证 ====================
-/**
- * 验证用户身份和权限
- * @param userId 请求中的用户ID
- * @param token 用户token（可选）
- * @param headers 请求头
- * @returns 验证结果
- */
-async function verifyUserAuth(
-  userId: string,
-  token?: string,
-  headers?: Record<string, string>
-): Promise<{ valid: boolean; error?: string; code?: number }> {
-  // ✅ B006: 使用完整的 JWT 签名验证，而非仅解析 payload
-  if (token) {
-    const rawToken = extractBearerToken(token);
-    const payload = verifyJWT(rawToken);
-
-    if (!payload) {
-      return { valid: false, error: 'token 无效或已过期，请重新登录', code: 401 };
-    }
-
-    // 检查 userId 是否匹配
-    if (payload.userId && payload.userId !== userId) {
-      logger.warn(`[Auth] userId 不匹配: token=${payload.userId}, request=${userId}`);
-      return { valid: false, error: '用户身份验证失败', code: 403 };
-    }
-  } else {
-    // 没有 token 时，必须拒绝请求（所有环境）
-    return { valid: false, error: '缺少认证 token，请重新登录', code: 401 };
-  }
-
-  // 检查请求头中的用户标识（如果有）
-  const headerUserId = headers?.['x-user-id'];
-  if (headerUserId && headerUserId !== userId) {
-    logger.warn(`[Auth] 请求头 userId 不匹配: header=${headerUserId}, body=${userId}`);
-    return { valid: false, error: '用户身份验证失败', code: 403 };
-  }
-
-  return { valid: true };
-}
-
 // ==================== 参数校验 ====================
 // sanitizeString, validateAction, validateUserId 已从 _shared/api-response 导入
 
@@ -255,30 +213,27 @@ export default async function (ctx: FunctionContext) {
 
   try {
     // 1. 参数校验（后端必须再校验一遍，不信任前端）
-    const { action, userId, data } = ctx.body || {};
+    const { action, data } = ctx.body || {};
 
     if (!validateAction(action)) {
       return { code: 400, ok: false, success: false, message: '参数错误: action 不合法', requestId };
     }
 
-    if (!validateUserId(userId)) {
-      return { code: 401, ok: false, success: false, message: '用户未登录或 userId 不合法', requestId };
-    }
-
-    // 2. 用户身份验证（增强权限检查）
-    // 验证 token 与 userId 是否匹配，防止越权访问
+    // [H-01 FIX] JWT 认证：始终从 JWT payload 派生 userId，不信任 body
     const rawHeaderToken = ctx.headers?.authorization || ctx.headers?.Authorization;
     const token = extractBearerToken(rawHeaderToken);
-    const authResult = await verifyUserAuth(userId, token, ctx.headers);
-    if (!authResult.valid) {
-      logger.warn(`[${requestId}] 权限校验失败: ${authResult.error}`);
-      return {
-        code: authResult.code || 403,
-        ok: false,
-        success: false,
-        message: authResult.error || '权限验证失败',
-        requestId
-      };
+    if (!token) {
+      return { code: 401, ok: false, success: false, message: '缺少认证 token，请重新登录', requestId };
+    }
+    const jwtPayload = verifyJWT(token);
+    if (!jwtPayload || !jwtPayload.userId) {
+      return { code: 401, ok: false, success: false, message: 'token 无效或已过期，请重新登录', requestId };
+    }
+    // 始终使用 JWT 中的 userId，忽略 body 中的值
+    const userId = jwtPayload.userId;
+
+    if (!validateUserId(userId)) {
+      return { code: 401, ok: false, success: false, message: '用户未登录或 userId 不合法', requestId };
     }
 
     // 校验并清理 data
