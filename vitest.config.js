@@ -7,6 +7,14 @@
 import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
+import crypto from 'crypto';
+
+// Polyfill crypto.hash for Node < 20.12 (used by @vitejs/plugin-vue@6 internally)
+if (typeof crypto.hash !== 'function') {
+  crypto.hash = (algorithm, data, outputEncoding) => {
+    return crypto.createHash(algorithm).update(data).digest(outputEncoding);
+  };
+}
 
 export default defineConfig({
   plugins: [vue()],
@@ -42,6 +50,13 @@ export default defineConfig({
       '@services': resolve(__dirname, 'src/services')
     },
 
+    // Laf 运行时包：本地不存在，测试中通过 vi.mock 提供
+    server: {
+      deps: {
+        external: ['nodemailer', 'tencentcloud-sdk-nodejs']
+      }
+    },
+
     // Mock uni-app API
     setupFiles: ['./tests/setup.js'],
 
@@ -59,7 +74,10 @@ export default defineConfig({
       '@components': resolve(__dirname, 'src/components'),
       '@pages': resolve(__dirname, 'src/pages'),
       '@utils': resolve(__dirname, 'src/utils'),
-      '@services': resolve(__dirname, 'src/services')
+      '@services': resolve(__dirname, 'src/services'),
+      // Laf 运行时包本地不存在，指向 mock stub 避免 Vite import 解析失败
+      nodemailer: resolve(__dirname, 'tests/__mocks__/nodemailer.js'),
+      'tencentcloud-sdk-nodejs': resolve(__dirname, 'tests/__mocks__/tencentcloud-sdk-nodejs.js')
     }
   }
 });

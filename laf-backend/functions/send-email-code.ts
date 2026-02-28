@@ -9,7 +9,6 @@
  */
 
 import cloud from '@lafjs/cloud';
-
 import crypto from 'crypto';
 
 // 邮件服务配置（使用环境变量）
@@ -227,10 +226,9 @@ async function sendEmail(to, code) {
     return false;
   }
 
-  // 使用 nodemailer 发送邮件
-  const nodemailer = require('nodemailer');
-
-  const transporter = nodemailer.createTransport({
+  // 使用 nodemailer 发送邮件（动态导入，Laf 运行时提供）
+  const nodemailer = await import('nodemailer');
+  const transporter = (nodemailer.default || nodemailer).createTransport({
     host: SMTP_HOST,
     port: SMTP_PORT,
     secure: SMTP_PORT === 465,

@@ -71,9 +71,9 @@ export default async function (ctx) {
   try {
     logger.info('[id-photo] 开始处理，图片大小:', imageBase64.length);
 
-    // 正确的导入方式
-    const tencentcloud = require('tencentcloud-sdk-nodejs');
-    const BdaClient = tencentcloud.bda.v20200324.Client;
+    // 动态导入 tencentcloud-sdk-nodejs（Laf 运行时提供）
+    const tencentcloud = await import('tencentcloud-sdk-nodejs');
+    const BdaClient = (tencentcloud.default || tencentcloud).bda.v20200324.Client;
 
     // 初始化腾讯云客户端
     const client = new BdaClient({

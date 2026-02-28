@@ -128,12 +128,21 @@ export default {
      */
     initApiErrorInterceptor() {
       let isRedirecting = false;
+      // [Phase5] 启动保护：前 3 秒内不触发 authFailure 导航，避免 webviewId 竞态
+      const appReadyTime = Date.now() + 3000;
 
       uni.$on('authFailure', ({ statusCode, path }) => {
         logger.log(`[App] 认证失败拦截: statusCode=${statusCode}, path=${path}`);
 
         // 防止重复跳转
         if (isRedirecting) return;
+
+        // 启动期静默忽略，页面 webview 尚未就绪
+        if (Date.now() < appReadyTime) {
+          logger.log('[App] 启动期忽略 authFailure，避免 routeDone 竞态');
+          return;
+        }
+
         isRedirecting = true;
 
         // 清除本地登录态
@@ -159,7 +168,8 @@ export default {
             uni.navigateTo({
               url: '/pages/login/index',
               fail: () => {
-                uni.switchTab({ url: '/pages/index/index' });
+                // [Phase5] 不再 switchTab 回当前页，避免 webview 混乱
+                uni.reLaunch({ url: '/pages/login/index' });
               }
             });
           }

@@ -22,9 +22,15 @@ export const knowledgePointMixin = {
      */
     async loadKnowledgePoints() {
       try {
-        // 从错题本获取数据
-        const mistakes = await storageService.getMistakes(1, 999);
-        const mistakeList = mistakes?.data || [];
+        // [Phase5] 启动时优先从本地缓存读取错题数据，避免不必要的网络请求
+        // 网络请求会在用户登录后由 refreshData 触发
+        let mistakeList = [];
+        try {
+          const localMistakes = storageService.get('mistake_book', []);
+          mistakeList = Array.isArray(localMistakes) ? localMistakes : [];
+        } catch (_e) {
+          // 本地缓存读取失败，使用空数组
+        }
         const mistakeCount = mistakeList.length;
 
         // 从题库获取数据
