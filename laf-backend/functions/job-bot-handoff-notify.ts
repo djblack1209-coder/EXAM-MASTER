@@ -283,8 +283,9 @@ async function sendHandoffEmail(
     return false;
   }
 
-  const nodemailer = require('nodemailer');
-  const transporter = nodemailer.createTransport({
+  // 动态导入 nodemailer（Laf 运行时提供）
+  const nodemailerMod = await import('nodemailer');
+  const transporter = (nodemailerMod.default || nodemailerMod).createTransport({
     host: config.smtpHost,
     port: config.smtpPort,
     secure: config.smtpPort === 465,

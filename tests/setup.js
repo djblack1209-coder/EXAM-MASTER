@@ -3,6 +3,14 @@
  * Mock uni-app 全局 API
  */
 import { vi } from 'vitest';
+import crypto from 'crypto';
+
+// Polyfill crypto.hash for Node < 20.12 (used by @vitejs/plugin-vue internally)
+if (typeof crypto.hash !== 'function') {
+  crypto.hash = (algorithm, data, outputEncoding) => {
+    return crypto.createHash(algorithm).update(data).digest(outputEncoding);
+  };
+}
 
 // Mock uni 全局对象
 global.uni = {
@@ -31,7 +39,7 @@ global.uni = {
       limitSize: 10240
     };
   }),
-  
+
   // 异步存储
   getStorage: vi.fn(({ key, success, fail }) => {
     try {
@@ -46,7 +54,7 @@ global.uni = {
     global.__mockStorage[key] = data;
     success?.();
   }),
-  
+
   // 系统信息
   getSystemInfoSync: vi.fn(() => ({
     platform: 'devtools',
@@ -60,55 +68,55 @@ global.uni = {
     safeAreaInsets: { top: 44, bottom: 34, left: 0, right: 0 },
     pixelRatio: 2
   })),
-  
+
   // 导航相关
-  navigateTo: vi.fn(({ url, success }) => {
+  navigateTo: vi.fn(({ _url, success }) => {
     success?.();
     return Promise.resolve();
   }),
-  redirectTo: vi.fn(({ url, success }) => {
+  redirectTo: vi.fn(({ _url, success }) => {
     success?.();
     return Promise.resolve();
   }),
-  switchTab: vi.fn(({ url, success }) => {
+  switchTab: vi.fn(({ _url, success }) => {
     success?.();
     return Promise.resolve();
   }),
-  navigateBack: vi.fn(({ delta, success }) => {
+  navigateBack: vi.fn(({ _delta, success }) => {
     success?.();
     return Promise.resolve();
   }),
-  reLaunch: vi.fn(({ url, success }) => {
+  reLaunch: vi.fn(({ _url, success }) => {
     success?.();
     return Promise.resolve();
   }),
-  
+
   // 提示相关
-  showToast: vi.fn(({ title, icon, duration }) => {
+  showToast: vi.fn(({ _title, _icon, _duration } = {}) => {
     return Promise.resolve();
   }),
   hideToast: vi.fn(() => Promise.resolve()),
-  showLoading: vi.fn(({ title }) => Promise.resolve()),
+  showLoading: vi.fn(({ _title } = {}) => Promise.resolve()),
   hideLoading: vi.fn(() => Promise.resolve()),
-  showModal: vi.fn(({ title, content, success }) => {
+  showModal: vi.fn(({ _title, _content, success } = {}) => {
     success?.({ confirm: true, cancel: false });
     return Promise.resolve({ confirm: true, cancel: false });
   }),
-  showActionSheet: vi.fn(({ itemList, success }) => {
+  showActionSheet: vi.fn(({ _itemList, success } = {}) => {
     success?.({ tapIndex: 0 });
     return Promise.resolve({ tapIndex: 0 });
   }),
-  
+
   // 网络请求
-  request: vi.fn(({ url, method, data, success, fail }) => {
+  request: vi.fn(({ _url, _method, _data, success, _fail } = {}) => {
     success?.({ data: {}, statusCode: 200 });
     return { abort: vi.fn() };
   }),
-  
+
   // 震动反馈
   vibrateShort: vi.fn(() => Promise.resolve()),
   vibrateLong: vi.fn(() => Promise.resolve()),
-  
+
   // Canvas
   createCanvasContext: vi.fn(() => ({
     setFillStyle: vi.fn(),
@@ -147,19 +155,19 @@ global.uni = {
       }))
     }))
   })),
-  
+
   // 文件相关
-  chooseImage: vi.fn(({ count, success }) => {
+  chooseImage: vi.fn(({ _count, success } = {}) => {
     success?.({ tempFilePaths: ['/mock/image.png'] });
     return Promise.resolve({ tempFilePaths: ['/mock/image.png'] });
   }),
-  uploadFile: vi.fn(({ url, filePath, success }) => {
+  uploadFile: vi.fn(({ _url, _filePath, success } = {}) => {
     success?.({ data: '{"url": "/uploaded/image.png"}', statusCode: 200 });
     return { abort: vi.fn() };
   }),
-  
+
   // 剪贴板
-  setClipboardData: vi.fn(({ data, success }) => {
+  setClipboardData: vi.fn(({ _data, success } = {}) => {
     success?.();
     return Promise.resolve();
   }),
@@ -167,10 +175,10 @@ global.uni = {
     success?.({ data: '' });
     return Promise.resolve({ data: '' });
   }),
-  
+
   // 页面相关
   pageScrollTo: vi.fn(() => Promise.resolve()),
-  
+
   // 事件总线
   $emit: vi.fn(),
   $on: vi.fn(),
@@ -179,9 +187,7 @@ global.uni = {
 };
 
 // Mock getCurrentPages
-global.getCurrentPages = vi.fn(() => [
-  { route: 'pages/index/index', options: {} }
-]);
+global.getCurrentPages = vi.fn(() => [{ route: 'pages/index/index', options: {} }]);
 
 // Mock getApp
 global.getApp = vi.fn(() => ({

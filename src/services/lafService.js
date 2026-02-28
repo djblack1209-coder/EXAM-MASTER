@@ -549,12 +549,24 @@ export const lafService = {
                   });
                 } else if (nonRetryableStatuses.includes(res.statusCode)) {
                   // 客户端错误，不重试（400/404/422等）
-                  reject({
-                    statusCode: res.statusCode,
-                    message: `请求错误: ${res.statusCode}`,
-                    retryable: false,
-                    data: res.data
-                  });
+                  // 例外：Laf 冷启动可能返回 404 + "Function Not Found"，此时应重试
+                  const bodyText = typeof res.data === 'string' ? res.data : JSON.stringify(res.data || '');
+                  const isLafColdStart = res.statusCode === 404 && /Function Not Found/i.test(bodyText);
+                  if (isLafColdStart && attempt < maxRetries) {
+                    reject({
+                      statusCode: res.statusCode,
+                      message: `Laf 冷启动: ${res.statusCode}`,
+                      retryable: true,
+                      data: res.data
+                    });
+                  } else {
+                    reject({
+                      statusCode: res.statusCode,
+                      message: `请求错误: ${res.statusCode}`,
+                      retryable: false,
+                      data: res.data
+                    });
+                  }
                 } else if (retryableStatuses.includes(res.statusCode) && attempt < maxRetries) {
                   // 可重试的服务端错误（408/429/5xx）
                   reject({ statusCode: res.statusCode, message: `服务端错误: ${res.statusCode}`, retryable: true });
