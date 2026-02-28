@@ -91,6 +91,7 @@ __pycache__/
 test_api_keys.py
 cdn_mass_test.sh
 vps-optimizer/
+job-bot-desktop/
 
 # Backup directories
 backups/
