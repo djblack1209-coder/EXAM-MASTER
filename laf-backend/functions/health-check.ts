@@ -9,24 +9,23 @@
  */
 
 import cloud from '@lafjs/cloud';
-import crypto from 'crypto';
+import { requireAdminAccess } from './_shared/admin-auth';
 
 const db = cloud.database();
-const SECRET_PLACEHOLDER
-
-function secureEqual(a: unknown, b: unknown): boolean {
-  if (typeof a !== 'string' || typeof b !== 'string') return false;
-  const ab = Buffer.from(a, 'utf8');
-  const bb = Buffer.from(b, 'utf8');
-  return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
-}
 
 export default async function (ctx: any) {
   const requestId = `hc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
-    const isAdmin = !!ADMIN_SECRET && secureEqual(adminSecret, ADMIN_SECRET);
+    if (!ctx || typeof ctx !== 'object') {
+      throw new Error('invalid context');
+    }
+
+    const adminAuth = requireAdminAccess(ctx, {
+      allowBodyFallback: true,
+      allowJwtAdmin: false
+    });
+    const isAdmin = adminAuth.ok;
 
     // 公开访问：仅返回最小状态
     if (!isAdmin) {
@@ -78,8 +77,6 @@ export default async function (ctx: any) {
       requestId,
       checks,
       version: '1.0.0',
-      environment: process.env.NODE_ENV || 'production',
-      uptime: process.uptime ? process.uptime() : 'N/A',
       latency: Date.now() - startTime
     };
   } catch (error: any) {
