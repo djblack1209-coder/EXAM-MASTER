@@ -32,11 +32,27 @@ import {
   badRequest,
   unauthorized,
   serverError,
-  generateRequestId
+  generateRequestId,
+  checkRateLimitDistributed
 } from './_shared/api-response';
 
 const db = cloud.database();
 const _ = db.command;
+const FAVORITE_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const FAVORITE_RATE_LIMIT_MAX = 120;
+
+function sanitizeFilterValue(value: unknown, maxLength = 50): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const sanitized = sanitizeString(value, maxLength);
+  if (!sanitized) {
+    return null;
+  }
+
+  return sanitized;
+}
 
 // ==================== 主入口 ====================
 export default async function (ctx) {
@@ -67,6 +83,21 @@ export default async function (ctx) {
 
     if (!validateUserId(userId)) {
       return { ...unauthorized('用户未登录或 userId 不合法'), requestId };
+    }
+
+    const rateLimit = await checkRateLimitDistributed(
+      `favorite-manager:${userId}:${action}`,
+      FAVORITE_RATE_LIMIT_MAX,
+      FAVORITE_RATE_LIMIT_WINDOW_MS
+    );
+    if (!rateLimit.allowed) {
+      return {
+        code: 429,
+        success: false,
+        message: '请求过于频繁，请稍后再试',
+        retryAfter: Math.max(1, Math.ceil((rateLimit.resetAt - Date.now()) / 1000)),
+        requestId
+      };
     }
 
     logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
@@ -156,13 +187,13 @@ async function handleAdd(userId: string, data: Record<string, unknown>, requestI
   const favorite = {
     user_id: userId,
     question_id: questionId || null,
-    question_content: sanitizeString(question || '', 2000),
+    question_content: sanitizeString(String(question || ''), 2000),
     options: Array.isArray(options) ? options.map((opt) => sanitizeString(String(opt), 500)) : [],
-    correct_answer: sanitizeString(answer || '', 100),
-    analysis: sanitizeString(analysis || '', 5000),
-    category: sanitizeString(category || '综合', 50),
+    correct_answer: sanitizeString(String(answer || ''), 100),
+    analysis: sanitizeString(String(analysis || ''), 5000),
+    category: sanitizeString(String(category || '综合'), 50),
     tags: Array.isArray(tags) ? tags.slice(0, 20).map((t) => sanitizeString(String(t), 50)) : [],
-    source: sanitizeString(source || 'manual', 50),
+    source: sanitizeString(String(source || 'manual'), 50),
     review_count: 0,
     last_review_time: null,
     created_at: now,
@@ -191,21 +222,24 @@ async function handleGet(userId: string, data: Record<string, unknown>, requestI
   const query: Record<string, unknown> = { user_id: userId };
 
   // 可选筛选条件
-  if (data.category) {
-    query.category = data.category;
+  const safeCategory = sanitizeFilterValue(data.category, 50);
+  if (safeCategory) {
+    query.category = safeCategory;
   }
-  if (data.source) {
-    query.source = data.source;
+  const safeSource = sanitizeFilterValue(data.source, 50);
+  if (safeSource) {
+    query.source = safeSource;
   }
 
   // 分页参数
-  const page = Math.max(1, parseInt(data.page) || 1);
-  const limit = Math.min(Math.max(1, parseInt(data.limit) || 50), 100);
+  const page = Math.max(1, Number.parseInt(String(data.page || 1), 10) || 1);
+  const limit = Math.min(Math.max(1, Number.parseInt(String(data.limit || 50), 10) || 50), 100);
   const skip = (page - 1) * limit;
 
   // 排序 — [R2-P1] sortBy 白名单防注入
   const allowedSortFields = ['created_at', 'updated_at', 'category', 'question'];
-  const sortField = allowedSortFields.includes(data.sortBy) ? data.sortBy : 'created_at';
+  const sortBy = typeof data.sortBy === 'string' ? data.sortBy : '';
+  const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
   const sortOrder = data.sortOrder === 'asc' ? 'asc' : 'desc';
 
   // 查询数据
@@ -272,7 +306,7 @@ async function handleRemove(userId: string, data: Record<string, unknown>, reque
 /**
  * 检查是否已收藏
  */
-async function handleCheck(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleCheck(userId: string, data: Record<string, unknown>, _requestId: string) {
   const { questionId, questionIds } = data;
 
   const collection = db.collection('favorites');
@@ -284,7 +318,7 @@ async function handleCheck(userId: string, data: Record<string, unknown>, reques
         user_id: userId,
         question_id: _.in(questionIds.slice(0, 100))
       })
-      .field({ question_id: true })
+      .field({ question_id: 1 })
       .get();
 
     const favoriteSet = new Set(favorites.data.map((f) => f.question_id));
@@ -349,7 +383,7 @@ async function handleBatchAdd(userId: string, data: Record<string, unknown>, req
         user_id: userId,
         question_id: _.in(questionIds)
       })
-      .field({ question_id: true })
+      .field({ question_id: 1 })
       .get();
     existingSet = new Set(existingRes.data.map((f) => f.question_id));
   }
@@ -458,7 +492,7 @@ async function handleBatchRemove(userId: string, data: Record<string, unknown>, 
 /**
  * 获取收藏分类统计
  */
-async function handleGetCategories(userId: string, data: Record<string, unknown>, requestId: string) {
+async function handleGetCategories(userId: string, _data: Record<string, unknown>, requestId: string) {
   const collection = db.collection('favorites');
 
   // 获取用户所有收藏
@@ -466,7 +500,7 @@ async function handleGetCategories(userId: string, data: Record<string, unknown>
     .where({
       user_id: userId
     })
-    .field({ category: true, source: true, created_at: true })
+    .field({ category: 1, source: 1, created_at: 1 })
     .limit(2000)
     .get();
 
@@ -492,10 +526,10 @@ async function handleGetCategories(userId: string, data: Record<string, unknown>
   }
 
   const categories = Object.values(categoryStats).sort(
-    (a: Record<string, unknown>, b: Record<string, unknown>) => b.count - a.count
+    (a: Record<string, unknown>, b: Record<string, unknown>) => Number(b.count || 0) - Number(a.count || 0)
   );
   const sources = Object.values(sourceStats).sort(
-    (a: Record<string, unknown>, b: Record<string, unknown>) => b.count - a.count
+    (a: Record<string, unknown>, b: Record<string, unknown>) => Number(b.count || 0) - Number(a.count || 0)
   );
 
   logger.info(`[${requestId}] 获取分类统计: ${categories.length} 个分类`);
@@ -517,33 +551,36 @@ async function handleGetCategories(userId: string, data: Record<string, unknown>
  */
 async function handleGetByCategory(userId: string, data: Record<string, unknown>, requestId: string) {
   const { category, page = 1, limit = 50 } = data;
+  const safeCategory = sanitizeFilterValue(category, 50);
 
-  if (!category) {
+  if (!safeCategory) {
     return { code: 400, success: false, message: '参数错误: category 不能为空' };
   }
 
   const collection = db.collection('favorites');
-  const skip = (Math.max(1, page) - 1) * Math.min(limit, 100);
+  const safePage = Math.max(1, Number.parseInt(String(page || 1), 10) || 1);
+  const safeLimit = Math.min(Math.max(1, Number.parseInt(String(limit || 50), 10) || 50), 100);
+  const skip = (safePage - 1) * safeLimit;
 
   const [listRes, countRes] = await Promise.all([
     collection
-      .where({ user_id: userId, category })
+      .where({ user_id: userId, category: safeCategory })
       .orderBy('created_at', 'desc')
       .skip(skip)
-      .limit(Math.min(limit, 100))
+      .limit(safeLimit)
       .get(),
-    collection.where({ user_id: userId, category }).count()
+    collection.where({ user_id: userId, category: safeCategory }).count()
   ]);
 
-  logger.info(`[${requestId}] 按分类筛选: ${category}, ${listRes.data.length}/${countRes.total}`);
+  logger.info(`[${requestId}] 按分类筛选: ${safeCategory}, ${listRes.data.length}/${countRes.total}`);
 
   return {
     code: 0,
     success: true,
     data: listRes.data,
     total: countRes.total,
-    page,
-    limit,
+    page: safePage,
+    limit: safeLimit,
     hasMore: skip + listRes.data.length < countRes.total,
     message: '获取成功'
   };

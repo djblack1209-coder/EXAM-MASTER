@@ -22,12 +22,23 @@
 
 import cloud from '@lafjs/cloud';
 // ✅ B003: 使用共享 API 响应模块，统一错误处理格式
-import { badRequest, unauthorized, serverError, generateRequestId, wrapResponse, logger } from './_shared/api-response';
+import {
+  badRequest,
+  unauthorized,
+  serverError,
+  generateRequestId,
+  wrapResponse,
+  logger,
+  checkRateLimitDistributed
+} from './_shared/api-response';
 import { verifyJWT } from './login';
 import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
+
+const ANSWER_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const ANSWER_RATE_LIMIT_MAX = 120;
 
 // ==================== 幂等性工具（内联版本） ====================
 const IDEMPOTENCY_COLLECTION = 'idempotency_records';
@@ -187,6 +198,20 @@ export default async function (ctx) {
     }
     // 始终使用 JWT 中的 userId，忽略客户端传入的 bodyUserId
     const userId = payload.userId;
+
+    // 1.5 限流
+    const rateLimit = await checkRateLimitDistributed(
+      `answer-submit:${userId}:${action}`,
+      ANSWER_RATE_LIMIT_MAX,
+      ANSWER_RATE_LIMIT_WINDOW_MS
+    );
+    if (!rateLimit.allowed) {
+      return wrapResponse(
+        { code: 429, success: false, message: '请求过于频繁，请稍后再试', timestamp: Date.now() },
+        requestId,
+        startTime
+      );
+    }
 
     // 2. 路由处理
     if (action === 'submit') {

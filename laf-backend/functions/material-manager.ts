@@ -15,8 +15,12 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT, extractBearerToken } from './_shared/auth';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 
 const db = cloud.database();
+const logger = createLogger('[MaterialManager]');
+const MATERIAL_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const MATERIAL_RATE_LIMIT_MAX = 60;
 const ALLOWED_ACTIONS = new Set([
   'save_upload_record',
   'get_upload_records',
@@ -71,10 +75,26 @@ export default async function (ctx) {
     const userId = payload.userId;
 
     if (requestUserId && requestUserId !== userId) {
-      console.warn(`[${requestId}] 检测到 userId 不匹配，已使用 token 用户ID`);
+      logger.warn(`[${requestId}] 检测到 userId 不匹配，已使用 token 用户ID`);
     }
 
-    console.log(`[${requestId}] 用户资料管理: action=${action}, userId=${userId}`);
+    // 限流
+    const rateLimit = await checkRateLimitDistributed(
+      `material-manager:${userId}:${action}`,
+      MATERIAL_RATE_LIMIT_MAX,
+      MATERIAL_RATE_LIMIT_WINDOW_MS
+    );
+    if (!rateLimit.allowed) {
+      return {
+        code: 429,
+        success: false,
+        message: '请求过于频繁，请稍后再试',
+        retryAfter: Math.max(1, Math.ceil((rateLimit.resetAt - Date.now()) / 1000)),
+        requestId
+      };
+    }
+
+    logger.info(`[${requestId}] 用户资料管理: action=${action}, userId=${userId}`);
 
     switch (action) {
       // ==================== 资料上传记录 ====================
@@ -105,7 +125,7 @@ export default async function (ctx) {
         return await getQuestionStats(userId, requestId);
     }
   } catch (error) {
-    console.error(`[${requestId}] 用户资料管理异常:`, error);
+    logger.error(`[${requestId}] 用户资料管理异常:`, error);
     return {
       code: 500,
       success: false,
@@ -142,7 +162,7 @@ async function saveUploadRecord(userId, data, requestId) {
 
   const result = await db.collection('user_materials').add(record);
 
-  console.log(`[${requestId}] 保存上传记录成功: ${result.id}`);
+  logger.info(`[${requestId}] 保存上传记录成功: ${result.id}`);
 
   return {
     code: 0,
@@ -252,7 +272,7 @@ async function saveQuestions(userId, data, requestId) {
     }
   }
 
-  console.log(`[${requestId}] 保存题目成功: ${questions.length} 道`);
+  logger.info(`[${requestId}] 保存题目成功: ${questions.length} 道`);
 
   return {
     code: 0,
