@@ -35,6 +35,8 @@ import schoolCrawlerHandler from '../../laf-backend/functions/school-crawler-api
 
 describe('[安全审计] school-crawler-api 管理鉴权响应形态', () => {
   it('refresh 缺少管理员凭据时返回 403 + success=false + requestId', async () => {
+    process.env.SECRET_PLACEHOLDER
+
     const result = /** @type {any} */ (
       await schoolCrawlerHandler({
         headers: {},

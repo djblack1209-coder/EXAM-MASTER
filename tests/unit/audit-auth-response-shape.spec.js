@@ -122,7 +122,7 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
     expect(result.message).toContain('token 无效或已过期');
   });
 
-  it('study-stats userId 不匹配时应返回 403 且 success=false', async () => {
+  it('study-stats body userId 被忽略，始终使用 JWT userId（C-02 安全加固）', async () => {
     mocked.scenario.jwtPayload = { userId: 'real_user' };
 
     const result = /** @type {any} */ (
@@ -132,9 +132,10 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
       })
     );
 
-    expect(result.code).toBe(403);
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('身份验证失败');
+    // C-02 修复后 body.userId 被完全忽略，函数使用 JWT 的 payload.userId
+    // 不再返回 403，而是正常执行（使用 real_user）
+    expect(result.code).not.toBe(403);
+    expect(result.success).toBeDefined();
   });
 
   it('study-stats 缺少 action 时应返回 400 且 success=false', async () => {

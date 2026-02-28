@@ -1,0 +1,5 @@
+name: job-bot-handoff-notify
+desc: ""
+methods:
+  - POST
+tags: []

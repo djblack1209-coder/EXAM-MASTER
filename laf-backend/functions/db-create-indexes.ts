@@ -432,6 +432,32 @@ export default async function (ctx) {
       results.push({ collection: 'data_backups', status: 'error', message: e.message });
     }
 
+    // ==================== [M-14 FIX] 频率限制记录表 TTL 索引 ====================
+    // rate_limit_records 由 _shared/api-response.ts:checkRateLimitDistributed 使用
+    // 缺少 TTL 索引会导致过期记录无限累积
+    try {
+      const rateLimitCol = db.collection('rate_limit_records');
+      await rateLimitCol.createIndex({ key: 1, window_start: 1 }, { name: 'idx_key_window' });
+      await rateLimitCol.createIndex({ expireAt: 1 }, { expireAfterSeconds: 0, name: 'idx_ttl_auto' });
+      results.push({ collection: 'rate_limit_records', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'rate_limit_records', status: 'error', message: e.message });
+    }
+
+    // ==================== [H-08 FIX] goal_progress unique 索引防并发重复 ====================
+    // learning-goal.ts handleRecordProgress 使用 upsert 模式，需要 unique 索引兜底
+    try {
+      const goalProgressUniqueCol = db.collection('goal_progress');
+      await goalProgressUniqueCol.createIndex(
+        { user_id: 1, goal_type: 1, date: 1 },
+        { unique: true, name: 'idx_user_type_date_unique' }
+      );
+      results.push({ collection: 'goal_progress (unique)', status: 'ok', indexes: 1 });
+    } catch (e) {
+      // 可能与已有的非 unique 索引冲突，记录但不阻断
+      results.push({ collection: 'goal_progress (unique)', status: 'warn', message: e.message });
+    }
+
     const totalIndexes = results.reduce((sum, r) => sum + (r.indexes || 0), 0);
     const failedCollections = results.filter((r) => r.status === 'error');
 

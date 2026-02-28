@@ -15,8 +15,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import crypto from 'crypto';
 import { verifyJWT, extractBearerToken } from './_shared/auth';
+import { requireAdminAccess } from './_shared/admin-auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -238,16 +238,10 @@ export default async function (ctx) {
 
       // ==================== 数据同步 ====================
       case 'sync_from_chsi': {
-        // [C2-FIX] sync_from_chsi 是写操作，需要管理员权限
-        const adminSecret = ctx.headers?.['x-admin-secret'] || ctx.body?.adminSecret;
-        const expectedSecret = process.env.ADMIN_SECRET;
-        if (!adminSecret || !expectedSecret || typeof adminSecret !== 'string' || typeof expectedSecret !== 'string') {
-          return { code: 403, success: false, message: '需要管理员权限', requestId };
-        }
-        const a = Buffer.from(adminSecret, 'utf8');
-        const b = Buffer.from(expectedSecret, 'utf8');
-        if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
-          return { code: 403, success: false, message: '需要管理员权限', requestId };
+        // [Phase3] sync_from_chsi 是写操作，统一走 _shared/admin-auth
+        const syncAuth = requireAdminAccess(ctx, { allowBodyFallback: true });
+        if (!syncAuth.ok) {
+          return { code: syncAuth.code, success: false, message: syncAuth.message || '需要管理员权限', requestId };
         }
         result = await syncFromChsi(data, requestId);
         break;

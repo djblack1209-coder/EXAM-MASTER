@@ -318,7 +318,7 @@ export default async function (ctx: FunctionContext) {
 
   try {
     // P014: 健康检查接口（部署验证用，无需认证）
-    // ✅ P0修复：不暴露环境变量配置状态，仅返回服务状态
+    // [H-04 FIX] 不暴露模型列表和运行时间给未认证用户
     if (action === 'health_check') {
       endPerf();
       return {
@@ -327,8 +327,6 @@ export default async function (ctx: FunctionContext) {
         data: {
           service: 'proxy-ai',
           status: AI_PROVIDER_KEY_PLACEHOLDER
-          models: Object.keys(MODEL_CONFIG),
-          uptime: process.uptime?.() || 0
         },
         message: AI_PROVIDER_KEY_PLACEHOLDER
         requestId
@@ -547,7 +545,9 @@ export default async function (ctx: FunctionContext) {
         responseData = parseJsonResponse(aiContent, action);
         logger.info(`[${requestId}] JSON 解析成功`);
       } catch (parseError) {
-        logger.warn(`[${requestId}] JSON 解析失败，返回原始文本:`, parseError.message);
+        // [H-06 FIX] 安全访问 parseError.message，防止非 Error 对象抛异常
+        const errMsg = parseError instanceof Error ? parseError.message : String(parseError);
+        logger.warn(`[${requestId}] JSON 解析失败，返回原始文本:`, errMsg);
         // 解析失败，返回原始文本
         responseData = aiContent;
       }
@@ -833,10 +833,12 @@ function buildPrompt(params) {
       userPrompt = content;
       model = 'glm-4-flash';
       temperature = 0.7;
+      // [H-05 FIX] 限制 history 长度，防止客户端发送大量历史消息刷 Token 费用
+      const safeHistory = Array.isArray(history) ? history.slice(-20) : [];
       // 构建多轮对话消息数组
-      if (history && history.length > 0) {
+      if (safeHistory.length > 0) {
         const consultMessages: Array<{ role: string; content: string }> = [{ role: 'system', content: systemPrompt }];
-        for (const msg of history) {
+        for (const msg of safeHistory) {
           if (msg.role === 'user' || msg.role === 'assistant') {
             consultMessages.push({ role: msg.role, content: msg.content });
           }

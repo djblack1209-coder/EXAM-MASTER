@@ -260,11 +260,22 @@ async function handleHandleRequest(userId, params, requestId) {
   }
 
   if (requestAction === 'accept') {
-    // 接受请求：更新状态并创建双向关系
-    await friendsCollection.doc(request.data._id).update({
-      status: 'accepted',
-      accepted_at: now
-    });
+    // [H-07 FIX] 原子条件更新：只有 status='pending' 时才更新为 accepted
+    // 防止并发请求导致重复接受和重复创建反向关系
+    const updateResult = await friendsCollection
+      .where({
+        _id: request.data._id,
+        status: 'pending'
+      })
+      .update({
+        status: 'accepted',
+        accepted_at: now
+      });
+
+    // 如果 updated === 0，说明已被其他并发请求处理
+    if (!updateResult.updated) {
+      return { code: 409, success: false, message: '好友请求已被处理' };
+    }
 
     // 创建反向关系
     await friendsCollection.add({

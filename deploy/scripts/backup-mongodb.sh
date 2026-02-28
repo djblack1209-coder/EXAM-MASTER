@@ -24,7 +24,8 @@ LOG_FILE="${BACKUP_DIR}/logs/backup_${DATE}.log"
 # ==================== 函数定义 ====================
 
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+    mkdir -p "$(dirname "$LOG_FILE")"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE" >&2
 }
 
 error() {
@@ -37,6 +38,34 @@ check_dependencies() {
     log "检查依赖..."
     command -v mongodump >/dev/null 2>&1 || error "mongodump 未安装"
     command -v gzip >/dev/null 2>&1 || error "gzip 未安装"
+    command -v tar >/dev/null 2>&1 || error "tar 未安装"
+    if ! command -v sha256sum >/dev/null 2>&1 && ! command -v shasum >/dev/null 2>&1; then
+        error "sha256sum/shasum 均未安装"
+    fi
+}
+
+sha256_file() {
+    local target_file="$1"
+
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$target_file" | { read -r digest _; echo "$digest"; }
+        return 0
+    fi
+
+    if command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$target_file" | { read -r digest _; echo "$digest"; }
+        return 0
+    fi
+
+    return 1
+}
+
+write_checksum_file() {
+    local target_file="$1"
+    local digest=""
+
+    digest=$(sha256_file "$target_file") || error "计算 SHA256 失败"
+    printf "%s  %s\n" "$digest" "$(basename "$target_file")" > "${target_file}.sha256"
 }
 
 # 创建备份目录
@@ -50,28 +79,22 @@ setup_directories() {
 # 全量备份
 full_backup() {
     local backup_name="exam-master-full-${TIMESTAMP}"
-    local backup_path="${BACKUP_DIR}/full/${backup_name}"
+    local backup_path="${BACKUP_DIR}/full/${backup_name}.archive"
     
     log "开始全量备份: ${backup_name}"
     
     # 执行备份
     mongodump \
         --uri="${MONGODB_URI}" \
-        --out="${backup_path}" \
+        --archive="${backup_path}" \
         --gzip \
-        2>&1 | tee -a "$LOG_FILE"
-    
-    # 创建压缩包
-    log "压缩备份文件..."
-    cd "${BACKUP_DIR}/full"
-    tar -czf "${backup_name}.tar.gz" "${backup_name}"
-    rm -rf "${backup_name}"
+        2>&1 | tee -a "$LOG_FILE" >&2
     
     # 计算校验和
-    sha256sum "${backup_name}.tar.gz" > "${backup_name}.tar.gz.sha256"
-    
-    log "全量备份完成: ${backup_name}.tar.gz"
-    echo "${backup_name}.tar.gz"
+    write_checksum_file "${backup_path}"
+
+    log "全量备份完成: ${backup_name}.archive"
+    echo "${backup_name}.archive"
 }
 
 # 增量备份（基于 oplog）
@@ -96,13 +119,13 @@ incremental_backup() {
         --archive="${backup_path}" \
         --gzip \
         --oplog \
-        2>&1 | tee -a "$LOG_FILE"
+        2>&1 | tee -a "$LOG_FILE" >&2
     
     # 更新时间戳
     date +%s > "$last_backup_ts"
     
     # 计算校验和
-    sha256sum "${backup_path}" > "${backup_path}.sha256"
+    write_checksum_file "${backup_path}"
     
     log "增量备份完成: ${backup_name}.archive"
     echo "${backup_name}.archive"
@@ -133,6 +156,7 @@ cleanup_old_backups() {
     log "清理 ${RETENTION_DAYS} 天前的备份..."
     
     # 清理本地备份
+    find "${BACKUP_DIR}/full" -name "*.archive" -mtime +${RETENTION_DAYS} -delete 2>/dev/null || true
     find "${BACKUP_DIR}/full" -name "*.tar.gz" -mtime +${RETENTION_DAYS} -delete 2>/dev/null || true
     find "${BACKUP_DIR}/full" -name "*.sha256" -mtime +${RETENTION_DAYS} -delete 2>/dev/null || true
     find "${BACKUP_DIR}/incremental" -name "*.archive" -mtime +${RETENTION_DAYS} -delete 2>/dev/null || true
@@ -150,8 +174,13 @@ verify_backup() {
     log "验证备份文件完整性..."
     
     if [[ -f "${backup_path}.sha256" ]]; then
-        cd "$(dirname "${backup_path}")"
-        if sha256sum -c "$(basename "${backup_path}").sha256" 2>/dev/null; then
+        local expected=""
+        local actual=""
+
+        read -r expected _ < "${backup_path}.sha256"
+        actual=$(sha256_file "${backup_path}") || error "计算 SHA256 失败"
+
+        if [[ "$expected" == "$actual" ]]; then
             log "备份验证通过"
             return 0
         else

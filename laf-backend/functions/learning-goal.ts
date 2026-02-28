@@ -349,27 +349,23 @@ async function handleRecordProgress(userId: string, data: Record<string, unknown
   todayStart.setHours(0, 0, 0, 0);
   const dateKey = todayStart.getTime();
 
-  // 查找今日进度记录
-  const existing = await db
+  // [H-08 FIX] 使用 upsert 模式替代 read-then-write，防止并发请求创建重复记录
+  // 先尝试原子更新已有记录
+  const updateResult = await db
     .collection('goal_progress')
     .where({
       user_id: userId,
       goal_type: goalType,
       date: dateKey
     })
-    .getOne();
+    .update({
+      current_value: _.inc(delta),
+      updated_at: Date.now()
+    });
 
-  if (existing.data) {
-    // 更新进度（累加）
-    await db
-      .collection('goal_progress')
-      .doc(existing.data._id)
-      .update({
-        current_value: _.inc(delta),
-        updated_at: Date.now()
-      });
-  } else {
-    // 创建新记录
+  if (!updateResult.updated) {
+    // 不存在则创建新记录
+    // 注意：极端并发下仍可能重复插入，建议在 DB 层添加 unique index (user_id, goal_type, date)
     await db.collection('goal_progress').add({
       user_id: userId,
       goal_type: goalType,

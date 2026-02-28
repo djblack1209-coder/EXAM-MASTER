@@ -121,11 +121,23 @@ async function handleAdd(userId: string, data: Record<string, unknown>, requestI
   const collection = db.collection('favorites');
   const now = Date.now();
 
+  // [C-01 FIX] 对用户输入做 sanitization + injection 检查，防止 NoSQL Injection
+  const safeQuestionId = typeof questionId === 'string' ? sanitizeString(questionId, 64) : null;
+  const safeQuestion = typeof question === 'string' ? question.substring(0, 100) : '';
+
   // 检查是否已收藏
+  const orConditions: Record<string, unknown>[] = [];
+  if (safeQuestionId) orConditions.push({ question_id: safeQuestionId });
+  if (safeQuestion) orConditions.push({ question_content: safeQuestion });
+
+  if (orConditions.length === 0) {
+    return { code: 400, success: false, message: '参数错误: questionId 或 question 不能为空' };
+  }
+
   const existing = await collection
     .where({
       user_id: userId,
-      $or: [{ question_id: questionId }, { question_content: question ? question.substring(0, 100) : '' }]
+      $or: orConditions
     })
     .getOne();
 
@@ -314,6 +326,7 @@ async function handleCheck(userId: string, data: Record<string, unknown>, reques
 
 /**
  * 批量添加收藏
+ * [H-09 FIX] 使用 _.in() 批量查询存在性，替代逐条 N+1 查询
  */
 async function handleBatchAdd(userId: string, data: Record<string, unknown>, requestId: string) {
   const { questions } = data;
@@ -324,38 +337,46 @@ async function handleBatchAdd(userId: string, data: Record<string, unknown>, req
 
   const collection = db.collection('favorites');
   const now = Date.now();
+  const batch = (questions as Array<Record<string, unknown>>).slice(0, 50);
+
+  // 批量查询已存在的收藏（一次 DB 操作替代 N 次）
+  const questionIds = batch.map((q) => q.questionId || q.id).filter((id) => id != null);
+
+  let existingSet = new Set<string>();
+  if (questionIds.length > 0) {
+    const existingRes = await collection
+      .where({
+        user_id: userId,
+        question_id: _.in(questionIds)
+      })
+      .field({ question_id: true })
+      .get();
+    existingSet = new Set(existingRes.data.map((f) => f.question_id));
+  }
 
   let added = 0;
   let skipped = 0;
   const results = [];
 
-  for (const q of questions.slice(0, 50)) {
-    // 最多50条
+  for (const q of batch) {
+    const qId = (q.questionId || q.id) as string;
     try {
-      // 检查是否已存在
-      const existing = await collection
-        .where({
-          user_id: userId,
-          question_id: q.questionId || q.id
-        })
-        .getOne();
-
-      if (existing.data) {
+      if (qId && existingSet.has(qId)) {
         skipped++;
-        results.push({ id: q.questionId || q.id, success: true, skipped: true });
+        results.push({ id: qId, success: true, skipped: true });
         continue;
       }
 
       // 添加收藏
       const favorite = {
         user_id: userId,
-        question_id: q.questionId || q.id || null,
-        question_content: sanitizeString(q.question || q.content || '', 2000),
+        question_id: qId || null,
+        question_content: sanitizeString(String(q.question || q.content || ''), 2000),
         options: Array.isArray(q.options) ? q.options : [],
-        correct_answer: sanitizeString(q.answer || q.correctAnswer || '', 100),
-        analysis: sanitizeString(q.analysis || q.desc || '', 5000),
-        category: sanitizeString(q.category || '综合', 50),
-        tags: Array.isArray(q.tags) ? q.tags.slice(0, 20) : [],
+        correct_answer: sanitizeString(String(q.answer || q.correctAnswer || ''), 100),
+        analysis: sanitizeString(String(q.analysis || q.desc || ''), 5000),
+        category: sanitizeString(String(q.category || '综合'), 50),
+        tags: Array.isArray(q.tags) ? (q.tags as unknown[]).slice(0, 20) : [],
         source: 'batch',
         review_count: 0,
         last_review_time: null,
@@ -365,9 +386,9 @@ async function handleBatchAdd(userId: string, data: Record<string, unknown>, req
 
       const result = await collection.add(favorite);
       added++;
-      results.push({ id: q.questionId || q.id, newId: result.id, success: true });
+      results.push({ id: qId, newId: result.id, success: true });
     } catch (error) {
-      results.push({ id: q.questionId || q.id, success: false, error: 'add_failed' });
+      results.push({ id: qId, success: false, error: 'add_failed' });
     }
   }
 

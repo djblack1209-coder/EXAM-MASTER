@@ -9,6 +9,8 @@ This folder now uses a clean-start layout. Active operational docs stay at the t
 - `docs/BASELINE-START-2026-02-28.md`: new starting baseline and execution rules.
 - `docs/API_DOCUMENTATION.md`: current API contract and action matrix.
 - `docs/BACKUP-STATUS-2026-02-28.md`: backup readiness, evidence checklist, and recovery follow-ups.
+- `docs/DEPENDENCY-AUDIT-BASELINE-2026-02-28.md`: production dependency vulnerability baseline and staged remediation path.
+- `docs/EXECUTION-REPORT-2026-02-28.md`: latest execution log, validation status, and blockers.
 - `laf-backend/DEPLOYMENT_GUIDE.md`: deployment and post-deploy verification playbook.
 - `docs/SCRIPTS.md`: script usage reference.
 - `docs/COMPONENTS.md`: component reference.
