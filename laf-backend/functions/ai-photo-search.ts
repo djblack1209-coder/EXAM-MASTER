@@ -18,7 +18,7 @@
 import cloud from '@lafjs/cloud';
 import { lookup } from 'dns/promises';
 import { isIP } from 'net';
-import { validate } from '../utils/validator';
+import { validate } from './_shared/validator';
 import { createLogger, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
 import { verifyJWT } from './login';
 import { extractBearerToken } from './_shared/auth';

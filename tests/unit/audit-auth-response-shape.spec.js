@@ -75,6 +75,16 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: mocked.verifyJWT
 }));
 
+vi.mock('../../laf-backend/functions/_shared/auth', () => ({
+  verifyJWT: mocked.verifyJWT,
+  extractBearerToken: (rawToken) => {
+    if (typeof rawToken !== 'string') return '';
+    const trimmed = rawToken.trim();
+    const match = trimmed.match(/^Bearer(?:\s+(.+))?$/i);
+    return match ? (match[1] || '').trim() : trimmed;
+  }
+}));
+
 import studyStatsHandler from '../../laf-backend/functions/study-stats';
 import aiFriendMemoryHandler from '../../laf-backend/functions/ai-friend-memory';
 import questionBankHandler from '../../laf-backend/functions/question-bank';
@@ -85,10 +95,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   });
 
   it('study-stats 缺少 token 时应返回 success=false', async () => {
-    const result = await studyStatsHandler({
-      headers: {},
-      body: { action: 'get', userId: 'user_auth_1' }
-    });
+    const result = /** @type {any} */ (
+      await studyStatsHandler({
+        headers: {},
+        body: { action: 'get', userId: 'user_auth_1' }
+      })
+    );
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
@@ -98,10 +110,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   it('study-stats token 无效时应返回 success=false', async () => {
     mocked.scenario.jwtPayload = null;
 
-    const result = await studyStatsHandler({
-      headers: { authorization: 'Bearer invalid_token' },
-      body: { action: 'get', userId: 'user_auth_1' }
-    });
+    const result = /** @type {any} */ (
+      await studyStatsHandler({
+        headers: { authorization: 'Bearer invalid_token' },
+        body: { action: 'get', userId: 'user_auth_1' }
+      })
+    );
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
@@ -111,10 +125,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   it('study-stats userId 不匹配时应返回 403 且 success=false', async () => {
     mocked.scenario.jwtPayload = { userId: 'real_user' };
 
-    const result = await studyStatsHandler({
-      headers: { authorization: 'Bearer valid_token' },
-      body: { action: 'get', userId: 'spoof_user' }
-    });
+    const result = /** @type {any} */ (
+      await studyStatsHandler({
+        headers: { authorization: 'Bearer valid_token' },
+        body: { action: 'get', userId: 'spoof_user' }
+      })
+    );
 
     expect(result.code).toBe(403);
     expect(result.success).toBe(false);
@@ -122,10 +138,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   });
 
   it('study-stats 缺少 action 时应返回 400 且 success=false', async () => {
-    const result = await studyStatsHandler({
-      headers: { authorization: 'Bearer valid_token' },
-      body: { userId: 'user_auth_1' }
-    });
+    const result = /** @type {any} */ (
+      await studyStatsHandler({
+        headers: { authorization: 'Bearer valid_token' },
+        body: { userId: 'user_auth_1' }
+      })
+    );
 
     expect(result.code).toBe(400);
     expect(result.success).toBe(false);
@@ -133,10 +151,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   });
 
   it('ai-friend-memory 缺少 token 时应返回 success=false', async () => {
-    const result = await aiFriendMemoryHandler({
-      headers: {},
-      body: { action: 'get', userId: 'user_auth_1' }
-    });
+    const result = /** @type {any} */ (
+      await aiFriendMemoryHandler({
+        headers: {},
+        body: { action: 'get', userId: 'user_auth_1' }
+      })
+    );
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
@@ -146,10 +166,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   it('ai-friend-memory userId 不匹配时应返回 403 且 success=false', async () => {
     mocked.scenario.jwtPayload = { userId: 'real_user' };
 
-    const result = await aiFriendMemoryHandler({
-      headers: { authorization: 'Bearer valid_token' },
-      body: { action: 'get', userId: 'spoof_user' }
-    });
+    const result = /** @type {any} */ (
+      await aiFriendMemoryHandler({
+        headers: { authorization: 'Bearer valid_token' },
+        body: { action: 'get', userId: 'spoof_user' }
+      })
+    );
 
     expect(result.code).toBe(403);
     expect(result.success).toBe(false);
@@ -157,10 +179,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   });
 
   it('ai-friend-memory 缺少 action 时应返回 400 且 success=false', async () => {
-    const result = await aiFriendMemoryHandler({
-      headers: { authorization: 'Bearer valid_token' },
-      body: { userId: 'user_auth_1' }
-    });
+    const result = /** @type {any} */ (
+      await aiFriendMemoryHandler({
+        headers: { authorization: 'Bearer valid_token' },
+        body: { userId: 'user_auth_1' }
+      })
+    );
 
     expect(result.code).toBe(400);
     expect(result.success).toBe(false);
@@ -170,10 +194,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   it('question-bank token 无效时应返回 success=false', async () => {
     mocked.scenario.jwtPayload = null;
 
-    const result = await questionBankHandler({
-      headers: { authorization: 'Bearer invalid_token' },
-      body: { action: 'get', userId: 'user_auth_1', data: {} }
-    });
+    const result = /** @type {any} */ (
+      await questionBankHandler({
+        headers: { authorization: 'Bearer invalid_token' },
+        body: { action: 'get', userId: 'user_auth_1', data: {} }
+      })
+    );
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
@@ -183,10 +209,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   it('question-bank userId 不匹配时应返回 403 且 success=false', async () => {
     mocked.scenario.jwtPayload = { userId: 'real_user' };
 
-    const result = await questionBankHandler({
-      headers: { authorization: 'Bearer valid_token' },
-      body: { action: 'get', userId: 'spoof_user', data: {} }
-    });
+    const result = /** @type {any} */ (
+      await questionBankHandler({
+        headers: { authorization: 'Bearer valid_token' },
+        body: { action: 'get', userId: 'spoof_user', data: {} }
+      })
+    );
 
     expect(result.code).toBe(403);
     expect(result.success).toBe(false);
@@ -194,10 +222,12 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
   });
 
   it('question-bank 缺少 action 时应返回 400 且 success=false', async () => {
-    const result = await questionBankHandler({
-      headers: {},
-      body: { data: {} }
-    });
+    const result = /** @type {any} */ (
+      await questionBankHandler({
+        headers: {},
+        body: { data: {} }
+      })
+    );
 
     expect(result.code).toBe(400);
     expect(result.success).toBe(false);

@@ -50,7 +50,7 @@ exam-master/
 │   ├── functions/              #   云函数入口
 │   │   ├── proxy-ai.ts         #   AI 代理（核心）
 │   │   ├── login.ts            #   登录认证
-│   │   ├── question-bank.js    #   题库
+│   │   ├── question-bank.ts    #   题库
 │   │   ├── social-service.ts   #   社交服务
 │   │   ├── _shared/            #   共享模块
 │   │   └── ...

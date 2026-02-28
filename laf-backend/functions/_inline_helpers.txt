@@ -1,0 +1,17 @@
+// === 内联辅助函数 ===
+function extractBearerToken(rawToken: unknown): string {
+  if (typeof rawToken !== 'string') return '';
+  const trimmed = rawToken.trim();
+  if (!trimmed) return '';
+  const bearerMatch = trimmed.match(/^Bearer(?:\s+(.+))?$/i);
+  if (!bearerMatch) return trimmed;
+  return (bearerMatch[1] || '').trim();
+}
+
+async function verifyToken(token: string) {
+  try {
+    const result = await cloud.invoke('login', { _internal_action: 'verify_jwt', token });
+    return result?.data?.payload || null;
+  } catch { return null; }
+}
+// === 内联辅助函数结束 ===

@@ -1,0 +1,6 @@
+name: account-purge
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

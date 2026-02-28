@@ -1,0 +1,6 @@
+name: getHomeData
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

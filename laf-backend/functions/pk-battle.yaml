@@ -1,0 +1,6 @@
+name: pk-battle
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

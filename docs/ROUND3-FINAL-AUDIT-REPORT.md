@@ -100,7 +100,7 @@
 - **影响**：防止恶意输入导致运行时异常
 - **测试**：`tests/unit/audit-user-profile-auth.spec.js` 5/5 passed
 
-#### 修复 2.4：question-bank 认证分支明确化（laf-backend/functions/question-bank.js）
+#### 修复 2.4：question-bank 认证分支明确化（laf-backend/functions/question-bank.ts）
 
 - **问题**：匿名/认证逻辑混杂，"有 token 才校验 userId" 语义不清晰
 - **修复**：
@@ -173,7 +173,7 @@
 | 15  | 审计令牌验证可绕过               | proxy-ai.ts:131-144        | ⚠️ Medium   | 仅开发环境           |
 | 16  | ai-photo-search SSRF             | ai-photo-search.ts:588-599 | ✅ 已修复   | Round 2              |
 | 17  | proxy-ai Prompt 注入             | proxy-ai.ts:883            | ✅ 已修复   | 历史修复             |
-| 18  | school-query 函数缺失            | school-query.js:474-476    | ✅ 已修复   | 历史修复             |
+| 18  | school-query 函数缺失            | school-query.ts:474-476    | ✅ 已修复   | 历史修复             |
 | 19  | favorite 字符串编码损坏          | favorite/index.vue:414     | ⚠️ Low      | 显示问题，不影响功能 |
 | 20  | checkin-streak JSON.parse 异常   | checkin-streak.js:385      | ✅ 已修复   | Round 1              |
 | 21  | checkin-streak UTC 时区问题      | checkin-streak.js:364      | ✅ 已修复   | Round 1              |
@@ -199,15 +199,15 @@ npm test
 **结果**：
 
 ```
-Test Files  62 passed (62)
-Tests       974 passed (974)
+Test Files  63 passed (63)
+Tests       979 passed (979)
 Duration    6.81s
 ```
 
 **覆盖范围**：
 
 - 认证与授权：57 tests
-- 审计专项：318 tests
+- 审计专项：323 tests
 - 集成测试：599 tests
 
 ### 4.2 构建验证
@@ -306,8 +306,8 @@ npm run build:mp-weixin
 | 函数                  | 状态   | 风险                     |
 | --------------------- | ------ | ------------------------ |
 | `voice-service.ts`    | 未接入 | 已有鉴权保护，无安全风险 |
-| `group-service.js`    | 未接入 | 已有鉴权保护，无安全风险 |
-| `material-manager.js` | 未接入 | 已有鉴权保护，无安全风险 |
+| `group-service.ts`    | 未接入 | 已有鉴权保护，无安全风险 |
+| `material-manager.ts` | 未接入 | 已有鉴权保护，无安全风险 |
 
 **处置**：保留（可能用于未来功能或管理后台）
 
@@ -417,7 +417,7 @@ npm run build:mp-weixin
   - `laf-backend/functions/upload-avatar.ts`
   - `laf-backend/functions/ai-photo-search.ts`
   - `laf-backend/functions/user-profile.ts`
-  - `laf-backend/functions/question-bank.js`
+  - `laf-backend/functions/question-bank.ts`
 
 - Round 3 修复：
   - `src/pages/practice-sub/file-handler.js`

@@ -1,0 +1,6 @@
+name: school-query
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

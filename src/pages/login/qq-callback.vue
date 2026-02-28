@@ -11,12 +11,8 @@
       <view class="loading-icon">
         <view class="spinner" />
       </view>
-      <text class="loading-text">
-        正在登录中...
-      </text>
-      <text class="loading-hint">
-        请稍候，正在验证QQ授权
-      </text>
+      <text class="loading-text"> 正在登录中... </text>
+      <text class="loading-hint"> 请稍候，正在验证QQ授权 </text>
     </view>
 
     <!-- 成功状态 -->
@@ -24,22 +20,14 @@
       <view class="success-icon">
         <BaseIcon name="success" :size="64" />
       </view>
-      <text class="success-text">
-        登录成功
-      </text>
-      <text class="success-hint">
-        即将跳转...
-      </text>
+      <text class="success-text"> 登录成功 </text>
+      <text class="success-hint"> 即将跳转... </text>
     </view>
 
     <!-- 错误状态 -->
     <view v-else-if="loginError" class="error-section">
-      <view class="error-icon">
-        ✕
-      </view>
-      <text class="error-text">
-        登录失败
-      </text>
+      <view class="error-icon"> ✕ </view>
+      <text class="error-text"> 登录失败 </text>
       <text class="error-hint">
         {{ errorMessage }}
       </text>
@@ -55,6 +43,7 @@ import { ref, onMounted } from 'vue';
 import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import config from '@/config/index.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // 状态
@@ -114,10 +103,20 @@ const handleQQCallback = async () => {
     // #ifdef H5
     // 从URL获取授权码
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const state = urlParams.get('state');
+    let code = urlParams.get('code');
+    let state = urlParams.get('state');
     const error = urlParams.get('error');
     const errorDescription = urlParams.get('error_description');
+
+    // Hash 模式下参数可能存在于 hash 中
+    if (!code && window.location.hash) {
+      const hashQuery = window.location.hash.split('?')[1];
+      if (hashQuery) {
+        const hashParams = new URLSearchParams(hashQuery);
+        code = hashParams.get('code');
+        state = state || hashParams.get('state');
+      }
+    }
 
     logger.log('[QQ-Callback] URL参数:', { code: !!code, state, error });
 
@@ -142,9 +141,16 @@ const handleQQCallback = async () => {
     }
 
     // 调用后端接口完成登录
+    const callbackRedirectUri =
+      config.qq.redirectUri ||
+      (window.location.href.includes('#')
+        ? `${window.location.origin}/#/pages/login/qq-callback`
+        : `${window.location.origin}/pages/login/qq-callback`);
+
     const res = await lafService.login({
       type: 'qq',
-      code: code
+      code,
+      redirectUri: callbackRedirectUri
     });
 
     if (res.code === 0 && res.data) {

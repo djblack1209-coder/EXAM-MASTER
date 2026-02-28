@@ -1,0 +1,6 @@
+name: account-delete
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

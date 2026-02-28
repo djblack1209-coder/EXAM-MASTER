@@ -1,0 +1,6 @@
+name: favorite-manager
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

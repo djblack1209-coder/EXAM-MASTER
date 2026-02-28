@@ -127,19 +127,19 @@ EXAM-MASTER/
 | PK对战     | (via pk-battle.vue)               | pk-battle.ts           | ✅ 已对接 |
 | 答题提交   | (via offline-cache.js)            | answer-submit.ts       | ✅ 已对接 |
 | 头像上传   | (via settings/profile)            | upload-avatar.ts       | ✅ 已对接 |
-| 题库查询   | getQuestionBank/Random()          | question-bank.js       | ✅ 已对接 |
-| 学习统计   | getStudyStats()                   | study-stats.js         | ✅ 已对接 |
-| AI好友记忆 | getAiFriendMemory()               | ai-friend-memory.js    | ✅ 已对接 |
-| 邮箱验证码 | sendEmailCode()                   | send-email-code.js     | ✅ 已对接 |
-| 学校查询   | 5个学校函数                       | school-query.js        | ✅ 已对接 |
+| 题库查询   | getQuestionBank/Random()          | question-bank.ts       | ✅ 已对接 |
+| 学习统计   | getStudyStats()                   | study-stats.ts         | ✅ 已对接 |
+| AI好友记忆 | getAiFriendMemory()               | ai-friend-memory.ts    | ✅ 已对接 |
+| 邮箱验证码 | sendEmailCode()                   | send-email-code.ts     | ✅ 已对接 |
+| 学校查询   | 5个学校函数                       | school-query.ts        | ✅ 已对接 |
 
 ### 3.2 集成Gap
 
 | 后端函数                 | 状态          | 说明                           |
 | ------------------------ | ------------- | ------------------------------ |
 | voice-service.ts         | ⚠️ 未接入前端 | 仅在限流配置中出现，无实际调用 |
-| group-service.js         | ⚠️ 未接入前端 | 学习小组功能，前端零引用       |
-| material-manager.js      | ⚠️ 未接入前端 | 素材管理功能，前端零引用       |
+| group-service.ts         | ⚠️ 未接入前端 | 学习小组功能，前端零引用       |
+| material-manager.ts      | ⚠️ 未接入前端 | 素材管理功能，前端零引用       |
 | school-crawler-api.ts    | ✅ 预期无前端 | 爬虫API，仅后台管理用途        |
 | data-cleanup.ts          | ✅ 预期无前端 | 管理员维护功能                 |
 | db-create-indexes.ts     | ✅ 预期无前端 | 数据库维护                     |
@@ -293,8 +293,8 @@ EXAM-MASTER/
 **范围外能力（已转后续迭代，不阻塞上线）：**
 
 1. voice-service.ts — 语音服务增强
-2. group-service.js — 学习小组深度前端集成
-3. material-manager.js — 素材管理前端入口
+2. group-service.ts — 学习小组深度前端集成
+3. material-manager.ts — 素材管理前端入口
 
 ### 8.5 v2.1.2 审计收口与规范治理（2026-02-28 复核）
 
@@ -303,7 +303,7 @@ EXAM-MASTER/
 | 项目                | 结果                           | 说明                                                                                          |
 | ------------------- | ------------------------------ | --------------------------------------------------------------------------------------------- |
 | Lint（src）         | ✅ 0 error / 0 warning         | 从历史高位 warning 批量收敛到 0，主要清理 `vue/*` 模板格式告警                                |
-| 单元与集成测试      | ✅ 62 files / 974 tests passed | 全量 Vitest 回归通过                                                                          |
+| 单元与集成测试      | ✅ 63 files / 979 tests passed | 全量 Vitest 回归通过                                                                          |
 | 构建验证            | ✅ 通过                        | `build:mp-weixin`、`build:h5` 均成功                                                          |
 | 深度扫描            | ✅ 完成                        | `audit:deep-scan` 分析 469 个文件（已排除 backups），报告更新到 `PROJECT_DEEP_SCAN_REPORT.md` |
 | UI 质量门禁         | ✅ 100/100                     | `audit:ui-quality` 评分保持满分，无回退                                                       |
@@ -349,6 +349,7 @@ EXAM-MASTER/
 | 本地/容器备份脚本 | ✅ 就绪   | `deploy/scripts/backup-mongodb.sh` 支持 full/incremental、校验和、过期清理、可选 OSS/S3 上传 |
 | 备份恢复演练记录  | ⚠️ 待补齐 | 建议提审前在目标环境执行一次“备份 -> 恢复 -> 抽样校验”并留存截图/日志作为运维凭证            |
 | 发布交接清单      | ✅ 已输出 | 见 `docs/RELEASE-HANDOFF-2026-02-27.md`，包含提审前人工清单与风险接受项                      |
+| 备份状态文档      | ✅ 已更新 | 见 `docs/BACKUP-STATUS-2026-02-28.md`，集中记录备份证据路径与待补齐项                        |
 
 ### 8.10 语义一致性与可观测性补丁（2026-02-28）
 
@@ -360,6 +361,7 @@ EXAM-MASTER/
 | 健康检查 requestId 一致性 | ✅ 完成 | `health-check.ts` 管理员/异常分支补齐 `requestId`，提高排障效率      |
 | 深度扫描基线稳定性        | ✅ 完成 | `scripts/build/deep-scan.js` 排除 `backups/`，避免备份快照干扰统计   |
 | 冗余开发痕迹清理          | ✅ 完成 | 移除 `src/utils/debug/qa.js` 与 App QA 注入路径，发布包更清爽        |
+| Laf 函数源码治理          | ✅ 完成 | `laf-backend/functions` 已收敛为 TS-only，并接入 CI strict 审计门禁  |
 
 ---
 

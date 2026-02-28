@@ -131,6 +131,14 @@
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
+        },
+        {
+          "path": "qq-callback",
+          "style": {
+            "navigationBarTitleText": "QQ登录",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
         }
       ]
     },

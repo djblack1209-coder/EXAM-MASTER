@@ -17,7 +17,7 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { validate } from '../utils/validator';
+import { validate } from './_shared/validator';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 import { verifyJWT } from './login';
 import { extractBearerToken } from './_shared/auth';

@@ -1,0 +1,5 @@
+name: _shared/validator
+desc: ''
+methods:
+  - GET
+tags: []

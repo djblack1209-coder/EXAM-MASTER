@@ -13,7 +13,7 @@
 | 门禁项                        | 结果                            | 说明                                                     |
 | ----------------------------- | ------------------------------- | -------------------------------------------------------- |
 | `npm run lint`                | ✅ 通过                         | 前端源代码 lint 无阻塞问题                               |
-| `npx vitest run tests/unit`   | ✅ 通过（62 files / 974 tests） | 单元与集成回归通过                                       |
+| `npx vitest run tests/unit`   | ✅ 通过（63 files / 979 tests） | 单元与集成回归通过                                       |
 | `npm run build:h5`            | ✅ 通过                         | H5 构建可用                                              |
 | `npm run build:mp-weixin`     | ✅ 通过                         | 微信小程序构建可用                                       |
 | `npm run audit:deep-scan`     | ✅ 通过                         | 深度扫描报告已刷新（469 文件，TEST: 65；已排除 backups） |
@@ -51,7 +51,7 @@
 
 ## 3. 本轮补充修复（2026-02-28）
 
-1. 鉴权语义进一步收口：`group-service.js`、`study-stats.js`、`question-bank.js`、`ai-friend-memory.js` 的 token 与 userId 不一致场景统一返回 `403`。
+1. 鉴权语义进一步收口：`group-service.ts`、`study-stats.ts`、`question-bank.ts`、`ai-friend-memory.ts` 的 token 与 userId 不一致场景统一返回 `403`。
 2. 对战权限语义修正：`pk-battle.ts` 提交结果的参与者校验失败统一使用 `403`（禁止访问），避免误用 `400`。
 3. 错题标签语义优化：`mistake-manager.ts` 标签管理中“目标不存在”与“无权限”语义分离，避免误导性报错。
 4. 观测一致性增强：`health-check.ts` 在管理员详细返回与异常分支补齐 `requestId`，便于排障追踪。
@@ -67,7 +67,7 @@
 - 工作流：`.github/workflows/backup.yml`
 - 机制：`preflight` 先检查 `KUBE_CONFIG_PROD` 与 `MONGODB_URI`，未配置时自动跳过并给出 notice。
 - 产物：备份归档上传为 GitHub Artifact，保留 30 天。
-- 本轮本地快照：`backups/v2.1.5-release-hardening-2026-02-28/`（含门禁日志与 SHA256 清单）。
+- 本轮备份状态文档：`docs/BACKUP-STATUS-2026-02-28.md`。
 - 本轮提审全量审计单：`docs/WECHAT-SUBMISSION-AUDIT-2026-02-28.md`。
 
 ### 4.2 运维脚本

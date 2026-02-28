@@ -14,8 +14,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { verifyJWT, extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const ALLOWED_ACTIONS = new Set([

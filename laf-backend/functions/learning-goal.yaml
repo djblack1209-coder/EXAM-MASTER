@@ -1,0 +1,6 @@
+name: learning-goal
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []
