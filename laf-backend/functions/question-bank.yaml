@@ -1,0 +1,6 @@
+name: question-bank
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

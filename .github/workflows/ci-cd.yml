@@ -26,6 +26,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   NODE_VERSION: '20.17.0'
+  LAF_SOURCE_AUDIT_STRICT: 'true'
 
 jobs:
   # ==================== 代码质量检查 ====================
@@ -42,6 +43,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+
+      - name: Run Laf source audit
+        run: |
+          if [ "${LAF_SOURCE_AUDIT_STRICT}" = "true" ]; then
+            npm run audit:laf:function-sources -- --strict
+          else
+            npm run audit:laf:function-sources
+          fi
 
       - name: Install dependencies
         run: npm ci --ignore-scripts || npm install --ignore-scripts

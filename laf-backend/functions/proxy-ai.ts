@@ -26,7 +26,7 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { perfMonitor } from '../utils/perf-monitor';
+import { perfMonitor } from './_shared/perf-monitor';
 
 // ✅ B020: 导入 JWT 验证函数
 import { verifyJWT } from './login';

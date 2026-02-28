@@ -1,0 +1,6 @@
+name: upload-avatar
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

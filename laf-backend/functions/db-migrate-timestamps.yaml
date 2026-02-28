@@ -1,0 +1,6 @@
+name: db-migrate-timestamps
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

@@ -1,0 +1,6 @@
+name: user-stats
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

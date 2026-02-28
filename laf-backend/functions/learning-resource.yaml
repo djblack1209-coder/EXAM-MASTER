@@ -1,0 +1,6 @@
+name: learning-resource
+desc: ""
+methods:
+  - GET
+  - POST
+tags: []

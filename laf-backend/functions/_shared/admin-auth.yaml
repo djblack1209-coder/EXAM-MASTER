@@ -1,0 +1,4 @@
+name: _shared/admin-auth
+desc: Shared module - not a cloud function
+methods: []
+tags: []

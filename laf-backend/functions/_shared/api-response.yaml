@@ -1,0 +1,4 @@
+name: _shared/api-response
+desc: Shared module - not a cloud function
+methods: []
+tags: []

@@ -12,21 +12,15 @@
     <!-- 顶部返回按钮 -->
     <view class="top-bar">
       <view class="back-btn" hover-class="btn-hover" @tap="handleBack">
-        <text class="back-icon">
-          ←
-        </text>
+        <text class="back-icon"> ← </text>
       </view>
     </view>
 
     <!-- Logo区域 -->
     <view class="logo-section">
       <image class="app-logo" src="./static/logo.png" mode="aspectFit" />
-      <text class="app-name">
-        Exam-Master
-      </text>
-      <text class="app-slogan">
-        AI助力，一战成硕
-      </text>
+      <text class="app-name"> Exam-Master </text>
+      <text class="app-slogan"> AI助力，一战成硕 </text>
     </view>
 
     <!-- 登录方式选择 -->
@@ -45,9 +39,7 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信一键登录' }}
         </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
 
@@ -65,12 +57,8 @@
         <view class="btn-icon wechat-icon">
           <text>微信</text>
         </view>
-        <text class="btn-text">
-          微信一键登录
-        </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-text"> 微信一键登录 </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
       <!-- #ifdef H5 -->
@@ -88,35 +76,39 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信授权登录' }}
         </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
       <!-- #endif -->
 
-      <!-- QQ登录 - 暂不支持（后端未实现 QQ OAuth handler，v1.1.0 计划支持） -->
       <!-- #ifndef MP-WEIXIN -->
-      <!-- [F1-FIX] QQ 登录入口已禁用：后端 login.ts 无 handleQQLogin，
-           QQ code 会被错误发送到微信 jscode2session API 导致登录失败。
-           恢复时需同步实现后端 QQ OAuth 处理逻辑。 -->
+      <view
+        class="login-btn qq-btn"
+        hover-class="btn-hover"
+        :class="{ 'btn-disabled': isLoading }"
+        @tap="handleQQLogin"
+      >
+        <view class="btn-icon qq-icon">
+          <text>QQ</text>
+        </view>
+        <text class="btn-text">
+          {{ isLoading ? '登录中...' : 'QQ快捷登录' }}
+        </text>
+        <text class="btn-arrow"> → </text>
+      </view>
       <!-- #endif -->
 
       <!-- 分割线 -->
       <view class="divider">
         <view class="divider-line" />
-        <text class="divider-text">
-          或
-        </text>
+        <text class="divider-text"> 或 </text>
         <view class="divider-line" />
       </view>
 
       <!-- 邮箱登录表单 -->
       <view v-if="showEmailForm" class="email-form">
         <view class="form-item">
-          <text class="form-label">
-            邮箱地址
-          </text>
+          <text class="form-label"> 邮箱地址 </text>
           <input
             v-model="emailForm.email"
             class="form-input"
@@ -131,9 +123,7 @@
         </view>
 
         <view v-if="!isRegister" class="form-item">
-          <text class="form-label">
-            密码
-          </text>
+          <text class="form-label"> 密码 </text>
           <input
             v-model="emailForm.password"
             class="form-input"
@@ -144,9 +134,7 @@
         </view>
 
         <view v-if="isRegister" class="form-item">
-          <text class="form-label">
-            验证码
-          </text>
+          <text class="form-label"> 验证码 </text>
           <view class="code-input-wrapper">
             <input
               v-model="emailForm.code"
@@ -168,9 +156,7 @@
         </view>
 
         <view v-if="isRegister" class="form-item">
-          <text class="form-label">
-            设置密码
-          </text>
+          <text class="form-label"> 设置密码 </text>
           <input
             v-model="emailForm.password"
             class="form-input"
@@ -199,21 +185,12 @@
       </view>
 
       <!-- 邮箱登录入口 -->
-      <view
-        v-else
-        class="login-btn email-btn"
-        hover-class="btn-hover"
-        @tap="showEmailForm = true"
-      >
+      <view v-else class="login-btn email-btn" hover-class="btn-hover" @tap="showEmailForm = true">
         <view class="btn-icon email-icon">
           <BaseIcon name="email" :size="36" />
         </view>
-        <text class="btn-text">
-          邮箱登录/注册
-        </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-text"> 邮箱登录/注册 </text>
+        <text class="btn-arrow"> → </text>
       </view>
     </view>
 
@@ -226,13 +203,9 @@
       </view>
       <text class="agreement-text">
         登录即表示同意
-        <text class="link" @tap="openPrivacy">
-          《隐私政策》
-        </text>
+        <text class="link" @tap="openPrivacy"> 《隐私政策》 </text>
         和
-        <text class="link" @tap="openTerms">
-          《用户协议》
-        </text>
+        <text class="link" @tap="openTerms"> 《用户协议》 </text>
       </text>
     </view>
 
@@ -578,7 +551,7 @@ const handleWechatH5Login = () => {
 };
 
 // QQ登录
-const _handleQQLogin = async () => {
+const handleQQLogin = async () => {
   if (!agreedToTerms.value) {
     uni.showToast({ title: '请先同意用户协议', icon: 'none' });
     return;
@@ -653,18 +626,11 @@ const _handleQQLogin = async () => {
       isLoading.value = false;
       return;
     }
-    // 动态获取回调地址
     const currentOrigin = window.location.origin;
     const hashMode = window.location.href.includes('#');
-    let callbackUrl;
-
-    if (hashMode) {
-      // Hash模式: origin/#/pages/login/qq-callback
-      callbackUrl = `${currentOrigin}/#/pages/login/qq-callback`;
-    } else {
-      // History模式: origin/pages/login/qq-callback
-      callbackUrl = `${currentOrigin}/pages/login/qq-callback`;
-    }
+    const callbackUrl =
+      config.qq.redirectUri ||
+      (hashMode ? `${currentOrigin}/#/pages/login/qq-callback` : `${currentOrigin}/pages/login/qq-callback`);
 
     const redirectUri = encodeURIComponent(callbackUrl);
     // E007: 使用 crypto.getRandomValues() 生成安全的 OAuth state
@@ -739,7 +705,8 @@ const _handleQQLogin = async () => {
         accessToken: loginRes.authResult?.access_token,
         openid: loginRes.authResult?.openid,
         userInfo: userInfoRes.userInfo,
-        platform: 'app'
+        platform: 'app',
+        redirectUri: config.qq.redirectUri
       });
 
       uni.hideLoading();
@@ -847,7 +814,7 @@ const handleEmailLogin = async () => {
         type: 'email',
         email: emailForm.value.email.trim().toLowerCase(),
         password: emailForm.value.password,
-        code: isRegister.value ? emailForm.value.code : undefined,
+        verifyCode: isRegister.value ? emailForm.value.code : undefined,
         isRegister: isRegister.value
       })
       .catch((err) => {

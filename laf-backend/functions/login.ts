@@ -3,18 +3,22 @@
  *
  * 功能：
  * 1. 微信登录：接收微信 code，换取 openid
- * 2. ✅ B001: 邮箱登录：邮箱 + 验证码 / 邮箱 + 密码
- * 3. 查询或创建用户
- * 4. 生成 JWT token
- * 5. 返回用户信息
+ * 2. QQ 登录：支持 H5 OAuth / App OAuth / QQ 小程序 code
+ * 3. ✅ B001: 邮箱登录：邮箱 + 验证码 / 邮箱 + 密码
+ * 4. 查询或创建用户
+ * 5. 生成 JWT token
+ * 6. 返回用户信息
  *
  * 环境变量要求：
  * - WX_APPID: 微信小程序 AppID
  * - WX_SECRET_PLACEHOLDER
+ * - QQ_APPID: QQ互联/QQ小程序 AppID
+ * - QQ_SECRET: QQ互联/QQ小程序密钥
+ * - QQ_REDIRECT_URI: QQ H5 OAuth 回调地址（可选，建议配置）
  * - JWT_SECRET_PLACEHOLDER
  *
  * 请求参数：
- * - type: string (可选) - 登录类型: 'wechat'(默认) | 'email'
+ * - type: string (可选) - 登录类型: 'wechat'(默认) | 'wechat_h5' | 'qq' | 'email'
  * - code: string (微信登录必填) - 微信登录凭证
  * - email: string (邮箱登录必填) - 邮箱地址
  * - verifyCode: string (邮箱验证码登录必填) - 验证码
@@ -29,7 +33,7 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { perfMonitor } from '../utils/perf-monitor';
+import { perfMonitor } from './_shared/perf-monitor';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 import { verifyJWT as verifySharedJWT } from './_shared/auth';
 const logger = createLogger('[Login]');
@@ -42,6 +46,10 @@ const WX_SECRET_PLACEHOLDER
 // E007: 微信公众号配置（H5网页授权）
 const WX_GZH_APPID = process.env.WX_GZH_APPID || '';
 const SECRET_PLACEHOLDER
+// QQ 登录配置（H5/App/QQ小程序）
+const QQ_APPID = process.env.QQ_APPID || '';
+const SECRET_PLACEHOLDER
+const QQ_REDIRECT_URI = process.env.QQ_REDIRECT_URI || '';
 // ✅ B017: JWT_SECRET_PLACEHOLDER
 const JWT_SECRET_PLACEHOLDER
 if (!process.env.JWT_SECRET_PLACEHOLDER
@@ -54,6 +62,8 @@ const JWT_EXPIRES_IN = 7 * 24 * 60 * 60 * 1000; // 7天
 const ENV_CHECK_RESULTS: { key: string; present: boolean }[] = [
   { key: 'WX_APPID', present: !!process.env.WX_APPID },
   { key: 'WX_SECRET_PLACEHOLDER
+  { key: 'QQ_APPID', present: !!process.env.QQ_APPID },
+  { key: 'QQ_SECRET', present: !!process.env.QQ_SECRET },
   { key: 'JWT_SECRET_PLACEHOLDER
   { key: 'WX_GZH_APPID', present: !!process.env.WX_GZH_APPID },
   { key: 'WX_GZH_SECRET', present: !!process.env.WX_GZH_SECRET }
@@ -471,6 +481,8 @@ export default async function (ctx) {
 
     if (loginType === 'email') {
       return await handleEmailLogin(ctx, requestId, startTime);
+    } else if (loginType === 'qq') {
+      return await handleQQLogin(ctx, requestId, startTime);
     } else if (loginType === 'wechat_h5') {
       // E007: H5微信浏览器 OAuth 网页授权登录
       return await handleWechatH5Login(ctx, requestId, startTime);
@@ -721,6 +733,340 @@ async function validateEmailCode(
     logger.error(`[${requestId}] 验证码校验异常:`, e);
     return { valid: false, error: '验证码校验失败' };
   }
+}
+
+function parseQueryStringPayload(raw: string): Record<string, string> {
+  if (!raw || typeof raw !== 'string') return {};
+  const normalized = raw.trim().replace(/^\?/, '');
+  return Object.fromEntries(new URLSearchParams(normalized).entries());
+}
+
+function parseQQCallbackPayload(raw: string): Record<string, unknown> | null {
+  if (!raw || typeof raw !== 'string') return null;
+
+  const match = raw.match(/callback\s*\(\s*(\{[\s\S]*\})\s*\)\s*;?/);
+  const candidate = match?.[1] || raw;
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    return null;
+  }
+}
+
+function resolveQQRedirectUri(ctx: any, bodyRedirectUri: unknown): string {
+  if (typeof bodyRedirectUri === 'string' && /^https?:\/\//.test(bodyRedirectUri)) {
+    return bodyRedirectUri;
+  }
+
+  if (QQ_REDIRECT_URI && /^https?:\/\//.test(QQ_REDIRECT_URI)) {
+    return QQ_REDIRECT_URI;
+  }
+
+  const origin = ctx.headers?.origin || ctx.headers?.Origin;
+  if (typeof origin === 'string' && /^https?:\/\//.test(origin)) {
+    return `${origin.replace(/\/$/, '')}/#/pages/login/qq-callback`;
+  }
+
+  return '';
+}
+
+async function handleQQLogin(ctx, requestId: string, startTime: number) {
+  const { code, accessToken, openid: requestOpenid, platform, redirectUri, userInfo: clientUserInfo } = ctx.body || {};
+
+  if (!QQ_APPID) {
+    logger.error(`[${requestId}] 缺少 QQ 配置: QQ_APPID=${!!QQ_APPID}`);
+    return {
+      code: 500,
+      success: false,
+      message: '服务配置错误：缺少 QQ 配置，请联系管理员',
+      requestId
+    };
+  }
+
+  if (!JWT_SECRET_PLACEHOLDER
+    return { code: 500, success: false, message: '服务配置错误：缺少 JWT 签名密钥', requestId };
+  }
+
+  const normalizedPlatform = typeof platform === 'string' ? platform : '';
+  const normalizedCode = typeof code === 'string' ? code.trim() : '';
+  const normalizedAccessToken = typeof accessToken === 'string' ? accessToken.trim() : '';
+  const normalizedRequestOpenid = typeof requestOpenid === 'string' ? requestOpenid.trim() : '';
+
+  if (!normalizedAccessToken && !normalizedCode) {
+    return { code: 400, success: false, message: 'QQ 登录参数不完整：缺少 code 或 accessToken', requestId };
+  }
+
+  let qqOpenid = '';
+  let qqUnionid = '';
+  let qqAccessToken = normalizedAccessToken;
+
+  // QQ 小程序登录（code -> openid）
+  if (normalizedPlatform === 'mp-qq') {
+    if (!QQ_SECRET) {
+      return {
+        code: 500,
+        success: false,
+        message: '服务配置错误：缺少 QQ_SECRET，请联系管理员',
+        requestId
+      };
+    }
+
+    if (!normalizedCode || normalizedCode.length < 6 || normalizedCode.length > 200) {
+      return { code: 400, success: false, message: 'QQ 登录 code 无效', requestId };
+    }
+
+    const qqMiniLoginUrl =
+      'https://api.q.qq.com/sns/jscode2session' +
+      `?appid=${QQ_APPID}` +
+      `&secret=${QQ_SECRET}` +
+      `&js_code=${normalizedCode}` +
+      '&grant_type=authorization_code';
+
+    const miniRes = await cloud.fetch({
+      url: qqMiniLoginUrl,
+      method: 'GET',
+      timeout: 10000
+    });
+
+    const miniData = miniRes.data || {};
+    if (miniData.errcode) {
+      logger.error(`[${requestId}] QQ小程序登录失败:`, miniData);
+      return {
+        code: 401,
+        success: false,
+        message: miniData.errmsg || 'QQ 登录失败，请重新获取授权码',
+        errcode: miniData.errcode,
+        requestId
+      };
+    }
+
+    qqOpenid = miniData.openid || '';
+    qqUnionid = miniData.unionid || '';
+    if (!qqOpenid) {
+      return { code: 401, success: false, message: '获取 QQ 用户标识失败', requestId };
+    }
+  } else {
+    // H5 / App 登录：有 accessToken 直接校验，无 accessToken 则通过 code 交换
+    if (!qqAccessToken) {
+      if (!QQ_SECRET) {
+        return {
+          code: 500,
+          success: false,
+          message: '服务配置错误：缺少 QQ_SECRET，请联系管理员',
+          requestId
+        };
+      }
+
+      if (!normalizedCode || normalizedCode.length < 6 || normalizedCode.length > 200) {
+        return { code: 400, success: false, message: 'QQ 授权码无效', requestId };
+      }
+
+      const finalRedirectUri = resolveQQRedirectUri(ctx, redirectUri);
+      if (!finalRedirectUri) {
+        return {
+          code: 400,
+          success: false,
+          message: '缺少 QQ 回调地址，请检查 QQ_REDIRECT_URI 配置',
+          requestId
+        };
+      }
+
+      const tokenUrl =
+        'https://graph.qq.com/oauth2.0/token' +
+        '?grant_type=authorization_code' +
+        `&client_id=${QQ_APPID}` +
+        `&client_secret=${QQ_SECRET}` +
+        `&code=${encodeURIComponent(normalizedCode)}` +
+        `&redirect_uri=${encodeURIComponent(finalRedirectUri)}`;
+
+      const tokenRes = await cloud.fetch({
+        url: tokenUrl,
+        method: 'GET',
+        timeout: 10000
+      });
+
+      const tokenRaw = typeof tokenRes.data === 'string' ? tokenRes.data : '';
+      const tokenErrorPayload = parseQQCallbackPayload(tokenRaw);
+      if (tokenErrorPayload?.error) {
+        logger.error(`[${requestId}] QQ token 交换失败:`, tokenErrorPayload);
+        return {
+          code: 401,
+          success: false,
+          message: String(tokenErrorPayload.error_description || tokenErrorPayload.error || 'QQ 授权失败，请重新登录'),
+          requestId
+        };
+      }
+
+      const tokenParams = parseQueryStringPayload(tokenRaw);
+      qqAccessToken = tokenParams.access_token || '';
+      if (!qqAccessToken) {
+        logger.error(`[${requestId}] QQ token 返回异常:`, tokenRes.data);
+        return {
+          code: 401,
+          success: false,
+          message: 'QQ 授权失败，请重新登录',
+          requestId
+        };
+      }
+    }
+
+    const meUrl = `https://graph.qq.com/oauth2.0/me?access_token=${encodeURIComponent(qqAccessToken)}&unionid=1`;
+    const meRes = await cloud.fetch({
+      url: meUrl,
+      method: 'GET',
+      timeout: 10000
+    });
+
+    let mePayload: Record<string, unknown> | null = null;
+    if (typeof meRes.data === 'string') {
+      mePayload = parseQQCallbackPayload(meRes.data);
+    } else if (meRes.data && typeof meRes.data === 'object') {
+      mePayload = meRes.data;
+    }
+
+    if (!mePayload || mePayload.error) {
+      logger.error(`[${requestId}] QQ openid 解析失败:`, meRes.data);
+      return {
+        code: 401,
+        success: false,
+        message: String(mePayload?.error_description || mePayload?.error || 'QQ 登录校验失败，请重试'),
+        requestId
+      };
+    }
+
+    qqOpenid = String(mePayload.openid || '');
+    qqUnionid = String(mePayload.unionid || '');
+
+    if (!qqOpenid) {
+      return { code: 401, success: false, message: '获取 QQ 用户标识失败', requestId };
+    }
+
+    if (normalizedRequestOpenid && normalizedRequestOpenid !== qqOpenid) {
+      logger.warn(`[${requestId}] QQ openid 不匹配，拒绝登录`);
+      return { code: 401, success: false, message: 'QQ 登录校验失败，请重试', requestId };
+    }
+  }
+
+  // 拉取 QQ 头像/昵称（若可用）
+  let qqUserInfo: Record<string, unknown> = {};
+  if (qqAccessToken && qqOpenid) {
+    try {
+      const userInfoUrl =
+        'https://graph.qq.com/user/get_user_info' +
+        `?access_token=${encodeURIComponent(qqAccessToken)}` +
+        `&oauth_consumer_key=${QQ_APPID}` +
+        `&openid=${encodeURIComponent(qqOpenid)}`;
+
+      const userInfoRes = await cloud.fetch({ url: userInfoUrl, method: 'GET', timeout: 10000 });
+      if (userInfoRes.data?.ret === 0) {
+        qqUserInfo = userInfoRes.data;
+      } else {
+        logger.warn(`[${requestId}] 获取 QQ 用户信息失败:`, userInfoRes.data);
+      }
+    } catch (e) {
+      logger.warn(`[${requestId}] 获取 QQ 用户信息异常:`, e?.message || e);
+    }
+  }
+
+  // APP/MP 端可回传有限用户信息，作为补充兜底
+  if (!qqUserInfo.nickname && clientUserInfo && typeof clientUserInfo === 'object') {
+    if (typeof clientUserInfo.nickname === 'string') {
+      qqUserInfo.nickname = clientUserInfo.nickname;
+    }
+    if (typeof clientUserInfo.avatarUrl === 'string') {
+      qqUserInfo.figureurl_qq_2 = clientUserInfo.avatarUrl;
+    }
+  }
+
+  logger.info(`[${requestId}] QQ openid: ${qqOpenid.substring(0, 10)}...`);
+
+  // 查询或创建用户（优先 unionid）
+  let user: any = null;
+  if (qqUnionid) {
+    user = await usersCollection.where({ qq_unionid: qqUnionid }).getOne();
+  }
+  if (!user?.data) {
+    user = await usersCollection.where({ qq_openid: qqOpenid }).getOne();
+  }
+
+  const now = Date.now();
+  let isNewUser = false;
+
+  if (!user?.data) {
+    isNewUser = true;
+    const overrides: Record<string, unknown> = {
+      qq_openid: qqOpenid,
+      qq_unionid: qqUnionid || null
+    };
+
+    if (qqUserInfo.nickname) {
+      overrides.nickname = qqUserInfo.nickname;
+    }
+
+    const avatar =
+      (typeof qqUserInfo.figureurl_qq_2 === 'string' && qqUserInfo.figureurl_qq_2) ||
+      (typeof qqUserInfo.figureurl_2 === 'string' && qqUserInfo.figureurl_2) ||
+      '';
+    if (avatar) {
+      overrides.avatar_url = avatar;
+    }
+
+    user = await createNewUser(overrides, requestId, 'QQ');
+  } else {
+    const updateData: Record<string, unknown> = {
+      updated_at: now,
+      qq_openid: qqOpenid
+    };
+
+    if (qqUnionid && !user.data.qq_unionid) {
+      updateData.qq_unionid = qqUnionid;
+    }
+
+    if (qqUserInfo.nickname && user.data.nickname?.startsWith('考研学子')) {
+      updateData.nickname = qqUserInfo.nickname;
+    }
+
+    const avatar =
+      (typeof qqUserInfo.figureurl_qq_2 === 'string' && qqUserInfo.figureurl_qq_2) ||
+      (typeof qqUserInfo.figureurl_2 === 'string' && qqUserInfo.figureurl_2) ||
+      '';
+    if (avatar && !user.data.avatar_url) {
+      updateData.avatar_url = avatar;
+    }
+
+    await usersCollection.doc(user.data._id).update(updateData);
+    logger.info(`[${requestId}] QQ老用户登录: ${user.data._id}`);
+  }
+
+  const userId = user.data._id;
+  const token = generateJWT({ userId, qq_openid: qqOpenid, role: user.data.role });
+
+  const duration = Date.now() - startTime;
+  logger.info(`[${requestId}] QQ登录成功，耗时: ${duration}ms`);
+
+  return {
+    code: 0,
+    data: {
+      userId,
+      token,
+      isNewUser,
+      userInfo: {
+        _id: userId,
+        id: userId,
+        nickname: user.data.nickname,
+        avatar_url: user.data.avatar_url,
+        role: user.data.role,
+        streak_days: user.data.streak_days,
+        total_study_days: user.data.total_study_days,
+        total_questions: user.data.total_questions,
+        correct_questions: user.data.correct_questions,
+        settings: user.data.settings
+      }
+    },
+    message: isNewUser ? '注册成功' : '登录成功',
+    requestId,
+    duration
+  };
 }
 
 // ==================== 微信登录处理（原有逻辑） ====================

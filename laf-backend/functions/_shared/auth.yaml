@@ -1,0 +1,4 @@
+name: _shared/auth
+desc: Shared module - not a cloud function
+methods: []
+tags: []
