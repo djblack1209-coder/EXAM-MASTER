@@ -289,7 +289,9 @@ class BubbleInteraction {
   vibrate() {
     try {
       uni.vibrateShort({ type: 'light' });
-    } catch (_e) {}
+    } catch (e) {
+      logger.log('[BubbleInteraction] 振动反馈失败:', e);
+    }
   }
 
   /**

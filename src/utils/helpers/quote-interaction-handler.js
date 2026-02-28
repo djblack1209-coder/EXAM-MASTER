@@ -102,7 +102,9 @@ class QuoteInteractionHandler {
     // 震动反馈
     try {
       uni.vibrateShort({ type: 'medium' });
-    } catch (_e) {}
+    } catch (e) {
+      logger.log('[QuoteHandler] 收藏振动反馈失败:', e);
+    }
 
     // 返回动画配置，由组件执行
     return new Promise((resolve) => {
@@ -143,7 +145,9 @@ class QuoteInteractionHandler {
     // 震动反馈
     try {
       uni.vibrateShort({ type: 'light' });
-    } catch (_e) {}
+    } catch (e) {
+      logger.log('[QuoteHandler] 分享振动反馈失败:', e);
+    }
 
     if (type === 'poster') {
       // 生成海报分享

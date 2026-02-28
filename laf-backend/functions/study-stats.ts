@@ -12,9 +12,19 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT, extractBearerToken } from './_shared/auth';
+import { createLogger } from './_shared/api-response';
 
 const db = cloud.database();
 const _ = db.command;
+const logger = createLogger('[StudyStats]');
+
+const DAILY_DAYS_LIMIT = { min: 1, max: 60, defaultValue: 7 };
+
+function clampInt(value, { min, max, defaultValue }) {
+  const parsed = Number.parseInt(String(value), 10);
+  if (!Number.isFinite(parsed)) return defaultValue;
+  return Math.min(max, Math.max(min, parsed));
+}
 
 export default async function (ctx) {
   const startTime = Date.now();
@@ -40,7 +50,7 @@ export default async function (ctx) {
     // 始终使用 JWT 中的 userId，忽略 body 中的值
     const userId = payload.userId;
 
-    console.log(`[${requestId}] 学习统计: action=${action}, userId=${userId}`);
+    logger.info(`[${requestId}] 学习统计: action=${action}, userId=${userId}`);
 
     switch (action) {
       case 'get':
@@ -53,7 +63,7 @@ export default async function (ctx) {
         return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
     }
   } catch (error) {
-    console.error(`[${requestId}] 学习统计异常:`, error);
+    logger.error(`[${requestId}] 学习统计异常:`, error);
     return {
       code: 500,
       success: false,
@@ -128,8 +138,9 @@ async function getOverview(userId, requestId) {
  */
 async function getDailyStats(userId, data, requestId) {
   const { days = 7 } = data || {};
+  const safeDays = clampInt(days, DAILY_DAYS_LIMIT);
   const startDate = new Date();
-  startDate.setDate(startDate.getDate() - days);
+  startDate.setDate(startDate.getDate() - safeDays);
   startDate.setHours(0, 0, 0, 0);
 
   const records = await db
@@ -144,7 +155,7 @@ async function getDailyStats(userId, data, requestId) {
 
   // 数据截断警告：如果命中 limit 上限，统计结果可能不完整
   if ((records.data || []).length >= 1000) {
-    console.warn(`[${requestId}] ⚠️ daily stats hit limit(1000), results may be incomplete for userId=${userId}`);
+    logger.warn(`[${requestId}] daily stats hit limit(1000), results may be incomplete for userId=${userId}`);
   }
 
   // 按天分组统计
@@ -161,7 +172,7 @@ async function getDailyStats(userId, data, requestId) {
 
   // 填充缺失的日期
   const result = [];
-  for (let i = days - 1; i >= 0; i--) {
+  for (let i = safeDays - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const dateStr = d.toISOString().split('T')[0];
@@ -196,7 +207,7 @@ async function getWeeklyTrend(userId, requestId) {
 
   // 数据截断警告
   if ((records.data || []).length >= 2000) {
-    console.warn(`[${requestId}] ⚠️ weekly stats hit limit(2000), results may be incomplete for userId=${userId}`);
+    logger.warn(`[${requestId}] weekly stats hit limit(2000), results may be incomplete for userId=${userId}`);
   }
 
   // 按周分组
