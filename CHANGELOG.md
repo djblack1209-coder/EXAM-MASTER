@@ -6,6 +6,54 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ---
 
+## [1.3.0] - 2026-03-01
+
+Phase 5b 安全加固与健壮性增强：后端参数收敛、日志统一、empty catch 治理、前端异步链路健壮性。
+
+### Security
+
+- `school-query.ts`：所有用户输入参数增加 clampInt / sanitizeFilterValue / sanitizeKeyword 收敛，排序字段白名单化，防止任意字段排序注入
+- `study-stats.ts`：`daily.days` 增加上限控制（1~60，默认 7），防止超大范围查询
+- `photo-bg.ts`：JSON parse empty catch 改为 logger.warn，异常可观测
+
+### Fixed
+
+- `index.vue`：`refreshData` 改为 async + `Promise.allSettled`，3 处调用点补 `.catch` 防未处理 rejection
+- `practice/index.vue`：onShow 统计加载和后台生成恢复均包裹 try/catch + allSettled，`_pendingSearch` catch 改为 logger.warn
+- `studyTimerMixin.js`：监听注册前先 off 旧 handler 防重复绑定，stopStudyTimer 置空 handler 防内存泄漏
+- `custom-tabbar.vue`、`todo-store-patch.js`、`quote-interaction-handler.js`、`bubble-interaction.js`：empty catch 全部改为 logger 可观测
+
+### Changed
+
+- `school-query.ts`、`study-stats.ts`：raw `console.*` 全部替换为 `createLogger` 统一日志
+
+### Verified
+
+- `npm run lint`：0 error
+- `npm test`：70 files / 1179 tests passed
+- `npm run test:cloud:smoke`：6 passed / 0 failed / 3 skipped
+
+---
+
+## [1.2.0] - 2026-03-01
+
+Phase 5a 安全加固：登录 TOCTOU 修复、分布式速率限制、NoSQL 注入防护、内存竞态修复。
+
+### Security
+
+- `login.ts`：修复 TOCTOU 竞态（先查后写 → findOneAndUpdate 原子操作）
+- `_shared/api-response.ts`：新增 `checkRateLimitDistributed` 分布式速率限制（基于 DB 计数器）
+- 多个后端函数：NoSQL 注入防护（对象型参数拦截）
+- `storageService.js`：内存缓存竞态修复（写入前校验 key 一致性）
+
+### Verified
+
+- `npm run lint`：0 error
+- `npm test`：70 files / 1179 tests passed
+- `npm run test:cloud:smoke`：6 passed / 0 failed / 3 skipped
+
+---
+
 ## [1.1.0] - 2026-02-28
 
 文档与仓库基线重整：以当前稳定状态作为新的交付起点。
