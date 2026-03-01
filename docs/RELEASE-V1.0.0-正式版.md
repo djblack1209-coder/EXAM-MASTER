@@ -3,6 +3,11 @@
 更新时间: 2026-03-02
 目标: 微信平台提审版本
 
+Git 基线:
+
+- `f73b065` fix(runtime): stabilize mp error handling and harden Laf retries
+- `c8e4f05` fix(security): finalize v1.0.0 hardening and release readiness
+
 ## 1. 发布范围
 
 - 前端运行时稳定性修复（mp-weixin 启动崩溃路径）
