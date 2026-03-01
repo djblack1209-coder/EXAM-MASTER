@@ -47,7 +47,8 @@ export default defineConfig({
       '@components': resolve(__dirname, 'src/components'),
       '@pages': resolve(__dirname, 'src/pages'),
       '@utils': resolve(__dirname, 'src/utils'),
-      '@services': resolve(__dirname, 'src/services')
+      '@services': resolve(__dirname, 'src/services'),
+      '@lafjs/cloud': resolve(__dirname, 'tests/__mocks__/lafjs-cloud.js')
     },
 
     // Laf 运行时包：本地不存在，测试中通过 vi.mock 提供
@@ -76,6 +77,7 @@ export default defineConfig({
       '@utils': resolve(__dirname, 'src/utils'),
       '@services': resolve(__dirname, 'src/services'),
       // Laf 运行时包本地不存在，指向 mock stub 避免 Vite import 解析失败
+      '@lafjs/cloud': resolve(__dirname, 'tests/__mocks__/lafjs-cloud.js'),
       nodemailer: resolve(__dirname, 'tests/__mocks__/nodemailer.js'),
       'tencentcloud-sdk-nodejs': resolve(__dirname, 'tests/__mocks__/tencentcloud-sdk-nodejs.js')
     }
