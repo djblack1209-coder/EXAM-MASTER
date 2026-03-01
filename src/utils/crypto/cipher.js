@@ -20,8 +20,14 @@ const OBFUSCATION_KEY = config.security.obfuscationKey;
 const CIPHER_VERSION = 2;
 const FEISTEL_ROUNDS = 8;
 
-// 运行时安全检查：空密钥意味着加密形同虚设
+// C-05 FIX: 生产环境空密钥必须硬失败，防止零保护上线
 if (!OBFUSCATION_KEY) {
+  const isProduction = typeof import.meta !== 'undefined' && import.meta.env?.VITE_USER_NODE_ENV === 'production';
+  if (isProduction) {
+    throw new Error(
+      '[Cipher] FATAL: VITE_OBFUSCATION_KEY 未配置，生产环境禁止以空密钥运行。请在 .env.production 中设置该变量。'
+    );
+  }
   logger.warn('[Cipher] ⚠️ VITE_OBFUSCATION_KEY 未配置，本地存储加密已禁用。请在 .env 文件中设置该变量。');
 }
 

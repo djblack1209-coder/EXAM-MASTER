@@ -210,18 +210,27 @@ export const useUserStore = defineStore('user', () => {
     tokenRefreshPlugin.stopPreCheckTimer();
 
     // [R2-P1] 重置其他包含用户数据的 store，防止切换账号后数据残留
+    // M-06 FIX: 每个 store 独立 try-catch，一个失败不影响其余
     try {
       const studyStore = useStudyStore();
       studyStore.resetProgress();
+    } catch (e) {
+      logger.warn('[UserStore] 重置 studyStore 失败:', e);
+    }
 
+    try {
       const todoStore = useTodoStore();
       todoStore.$reset();
+    } catch (e) {
+      logger.warn('[UserStore] 重置 todoStore 失败:', e);
+    }
 
+    try {
       const trajectoryStore = useLearningTrajectoryStore();
       trajectoryStore.destroy();
       trajectoryStore.clearAll();
     } catch (e) {
-      logger.warn('[UserStore] 重置关联 store 失败（可能未初始化）:', e);
+      logger.warn('[UserStore] 重置 trajectoryStore 失败:', e);
     }
   };
 
