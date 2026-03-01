@@ -8,6 +8,7 @@ import { globalErrorHandler } from '@/utils/error/global-error-handler.js';
 // Mock logger
 vi.mock('@/utils/logger.js', () => ({
   logger: {
+    log: vi.fn(),
     error: vi.fn(),
     warn: vi.fn(),
     info: vi.fn()
@@ -54,14 +55,14 @@ describe('globalErrorHandler', () => {
       globalErrorHandler.report('NullTest', null);
       const logs = globalErrorHandler.getErrorLogs();
       expect(logs.length).toBeGreaterThanOrEqual(1);
-      const nullLog = logs.find(l => l.type === 'NullTest');
+      const nullLog = logs.find((l) => l.type === 'NullTest');
       expect(nullLog.message).toBe('Unknown error');
     });
 
     it('undefined 应记录为 Unknown error', () => {
       globalErrorHandler.report('UndefTest', undefined);
       const logs = globalErrorHandler.getErrorLogs();
-      const undefLog = logs.find(l => l.type === 'UndefTest');
+      const undefLog = logs.find((l) => l.type === 'UndefTest');
       expect(undefLog.message).toBe('Unknown error');
     });
 
@@ -122,9 +123,7 @@ describe('globalErrorHandler', () => {
 
       globalErrorHandler.report('Test', 'callback test');
       expect(onError).toHaveBeenCalledTimes(1);
-      expect(onError).toHaveBeenCalledWith(
-        expect.objectContaining({ message: 'callback test' })
-      );
+      expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'callback test' }));
     });
   });
 

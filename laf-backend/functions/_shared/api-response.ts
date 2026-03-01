@@ -394,6 +394,7 @@ export async function checkRateLimitDistributed(
       if (existing) {
         await docRef.update({
           key,
+          window_start: windowStart,
           count: 1,
           resetAt,
           windowMs: safeWindow,
@@ -405,6 +406,7 @@ export async function checkRateLimitDistributed(
           await collection.add({
             _id: docId,
             key,
+            window_start: windowStart,
             count: 1,
             resetAt,
             windowMs: safeWindow,
@@ -423,6 +425,7 @@ export async function checkRateLimitDistributed(
             }
 
             await docRef.update({
+              window_start: windowStart,
               count: _.inc(1),
               updatedAt: now,
               expireAt: (Number(retry.resetAt) || resetAt) + RATE_LIMIT_EXPIRE_GRACE
@@ -452,6 +455,7 @@ export async function checkRateLimitDistributed(
     }
 
     await docRef.update({
+      window_start: windowStart,
       count: _.inc(1),
       updatedAt: now,
       expireAt: currentResetAt + RATE_LIMIT_EXPIRE_GRACE

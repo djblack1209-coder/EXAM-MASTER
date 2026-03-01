@@ -131,6 +131,7 @@ function _requestSign(path, timestamp) {
  * @property {boolean} [skipRateLimit] - 是否跳过前端限流
  * @property {boolean} [skipCache] - 是否跳过只读缓存
  * @property {number} [maxRetries] - 最大重试次数（默认2）
+ * @property {number} [coldStartRetries] - Laf 冷启动重试次数（默认6）
  * @property {number} [timeout] - 请求超时毫秒数（默认30000）
  */
 
@@ -312,6 +313,7 @@ const _inflight = new Map(); // key → Promise
 
 // 定期清理过期缓存（每60秒），避免内存泄漏
 // ✅ P1-2: 支持停止清理（热重载安全 + 可测试）
+// H-09 FIX: HMR 安全 — 使用 import.meta.hot 注册 dispose 回调
 let _cacheCleanupTimer = null;
 function _startCacheCleanup() {
   if (_cacheCleanupTimer) return;
@@ -320,6 +322,15 @@ function _startCacheCleanup() {
     _cache.forEach((entry, key) => {
       if (now >= entry.expiry) _cache.delete(key);
     });
+    // H-09 FIX: 同时清理 _requestTimestamps 中的过期条目，防止无界增长
+    for (const [key, timestamps] of _requestTimestamps.entries()) {
+      const fresh = timestamps.filter((t) => now - t < 120000);
+      if (fresh.length === 0) {
+        _requestTimestamps.delete(key);
+      } else {
+        _requestTimestamps.set(key, fresh);
+      }
+    }
   }, 60000);
 }
 function _stopCacheCleanup() {
@@ -329,6 +340,10 @@ function _stopCacheCleanup() {
   }
 }
 _startCacheCleanup();
+// H-09 FIX: HMR dispose — 防止热重载时 setInterval 累积
+if (import.meta.hot) {
+  import.meta.hot.dispose(() => _stopCacheCleanup());
+}
 
 function _cacheKey(path, data, scope = 'public') {
   return path + ':' + scope + ':' + JSON.stringify(data);
@@ -471,6 +486,8 @@ export const lafService = {
     const doRequest = async () => {
       // P1-2: 重试配置
       const maxRetries = options.maxRetries ?? 2; // 默认最多重试2次（共3次请求）
+      const coldStartRetries = Math.max(maxRetries, options.coldStartRetries ?? 6);
+      const maxRetryLoop = Math.max(maxRetries, coldStartRetries);
       const retryableStatuses = [408, 429, 500, 502, 503, 504]; // 可重试的HTTP状态码
       const nonRetryableStatuses = [400, 401, 403, 404, 405, 409, 422]; // 不可重试的客户端错误
 
@@ -508,7 +525,7 @@ export const lafService = {
 
       // ✅ P1-2: 带重试的请求执行
       let lastError = null;
-      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      for (let attempt = 0; attempt <= maxRetryLoop; attempt++) {
         try {
           if (attempt > 0) {
             logger.warn(`[LafService] 🔄 第 ${attempt} 次重试: ${path}`);
@@ -549,14 +566,16 @@ export const lafService = {
                   });
                 } else if (nonRetryableStatuses.includes(res.statusCode)) {
                   // 客户端错误，不重试（400/404/422等）
-                  // 例外：Laf 冷启动可能返回 404 + "Function Not Found"，此时应重试
+                  // 例外：Laf 冷启动/网关抖动可能返回 404（Function Not Found / Cannot POST / Not Found），此时应重试
                   const bodyText = typeof res.data === 'string' ? res.data : JSON.stringify(res.data || '');
-                  const isLafColdStart = res.statusCode === 404 && /Function Not Found/i.test(bodyText);
-                  if (isLafColdStart && attempt < maxRetries) {
+                  const isLafColdStart404 =
+                    res.statusCode === 404 && /(Function\s*Not\s*Found|Cannot\s+POST|\bNot\s+Found\b)/i.test(bodyText);
+                  if (isLafColdStart404 && attempt < coldStartRetries) {
                     reject({
                       statusCode: res.statusCode,
                       message: `Laf 冷启动: ${res.statusCode}`,
                       retryable: true,
+                      retryPolicy: 'laf_cold_start',
                       data: res.data
                     });
                   } else {
@@ -601,8 +620,9 @@ export const lafService = {
           // ✅ 6.3: 记录失败请求耗时
           const _apiDuration = Date.now() - timestamp;
           perfMonitor.trackApi(path, _apiDuration, err.statusCode || 0);
+          const retryBudget = err.retryPolicy === 'laf_cold_start' ? coldStartRetries : maxRetries;
           // 如果不可重试或已达最大重试次数，直接抛出
-          if (!err.retryable || attempt >= maxRetries) {
+          if (!err.retryable || attempt >= retryBudget) {
             logger.error(`[LafService] ❌ 请求最终失败 (${attempt + 1}次尝试): ${path}`, err);
             throw normalizeError(err, `请求 ${path}`);
           }
