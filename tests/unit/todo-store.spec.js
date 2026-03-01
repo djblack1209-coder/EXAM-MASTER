@@ -24,7 +24,10 @@ describe('useTodoStore', () => {
 
   describe('getters', () => {
     it('totalTasks 返回任务总数', () => {
-      store.tasks = [{ id: 1, done: false }, { id: 2, done: true }];
+      store.tasks = [
+        { id: 1, done: false },
+        { id: 2, done: true }
+      ];
       expect(store.totalTasks).toBe(2);
     });
 
@@ -92,14 +95,18 @@ describe('useTodoStore', () => {
       expect(store.tasks[0].id).toBe(2);
     });
 
-    it('bulkAddTasks 批量添加并生成整数 ID', () => {
+    it('bulkAddTasks 批量添加并生成唯一 ID', () => {
       const titles = ['任务A', '任务B'];
       store.bulkAddTasks(titles);
       expect(store.tasks.length).toBe(2);
-      // 验证 ID 是整数（2.2 修复：不再使用浮点数）
-      store.tasks.forEach(task => {
-        expect(Number.isInteger(task.id)).toBe(true);
+      // H-06 FIX: ID 改为字符串格式（防止 Date.now() 同毫秒碰撞）
+      const ids = store.tasks.map((task) => task.id);
+      ids.forEach((id) => {
+        expect(typeof id).toBe('string');
+        expect(id.length).toBeGreaterThan(0);
       });
+      // 验证 ID 唯一性
+      expect(new Set(ids).size).toBe(ids.length);
     });
   });
 });
