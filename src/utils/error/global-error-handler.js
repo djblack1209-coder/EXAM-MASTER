@@ -4,18 +4,10 @@
  * 支持错误持久化、去重、开发环境 toast 提示
  */
 import { logger } from '@/utils/logger.js';
+import { storageService } from '@/services/storageService.js';
 
-// 延迟导入 storageService，避免初始化时序问题
-let _storageService = null;
 function _getStorage() {
-  if (!_storageService) {
-    try {
-      _storageService = require('@/services/storageService.js').storageService;
-    } catch (_) {
-      /* 降级到直接调用 */
-    }
-  }
-  return _storageService;
+  return storageService;
 }
 
 let _config = {};
