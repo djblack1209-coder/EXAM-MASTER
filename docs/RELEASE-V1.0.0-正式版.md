@@ -7,6 +7,7 @@ Git 基线:
 
 - `f73b065` fix(runtime): stabilize mp error handling and harden Laf retries
 - `c8e4f05` fix(security): finalize v1.0.0 hardening and release readiness
+- `d7b842b` docs: record v1.0.0 release baseline commits
 
 ## 1. 发布范围
 
@@ -23,7 +24,7 @@ Git 基线:
 - `npm run build:mp-weixin`: 通过
 - `npm run audit:mp-main-usage`: 通过
 - `node scripts/build/verify-wechat-artifacts.mjs`: 通过
-- `npm run audit:deep-scan`: 通过（`487` 文件）
+- `npm run audit:deep-scan`: 通过（`488` 文件）
 - `npm run audit:ui-quality`: 通过（`100/100`）
 - `npm run audit:laf:function-sources -- --strict`: 通过
 - `npm run test:cloud:smoke`: 通过（`6 passed / 0 failed / 3 skipped`）
@@ -65,3 +66,28 @@ Git 基线:
 - `backups/V1.0.0正式版-20260302-070316/meta/SHA256SUMS.txt`
 
 说明：备份已排除 `.env*` 与 `laf-backend/.app.yaml` 等敏感配置。
+
+## 6. 提审前最终验证（2026-03-02 07:15 CST）
+
+最终一轮全量复核结论：全部通过。
+
+- 质量门禁：`lint`、`test`、`build:h5`、`build:mp-weixin`、`audit:mp-main-usage`、`verify-wechat-artifacts`
+- 云端门禁：`audit:laf:function-sources -- --strict`、`test:cloud:smoke`
+- 边界验证：
+  - `ai-friend-memory` 长度收敛 `2000/2000/1000`
+  - `ai-friend-memory` token/body userId 不一致返回 `403`
+  - `ai-friend-memory` 无 token 返回 `401`
+  - `proxy-ai health_check` 返回 `code=0`
+  - `send-email-code` 非法输入保持 `400`
+  - 冷启动重试探测 `health-check/question-bank` 均 `20/20` 成功
+
+最终门禁日志位于：
+
+- `backups/V1.0.0正式版-20260302-070316/gates/final-lint.log`
+- `backups/V1.0.0正式版-20260302-070316/gates/final-test.log`
+- `backups/V1.0.0正式版-20260302-070316/gates/final-build-mp-weixin.log`
+- `backups/V1.0.0正式版-20260302-070316/gates/final-cloud-smoke.log`
+- `backups/V1.0.0正式版-20260302-070316/gates/final-audit-laf-function-sources.log`
+- `backups/V1.0.0正式版-20260302-070316/gates/final-backend-live-sanity.log`
+- `backups/V1.0.0正式版-20260302-070316/gates/final-ai-memory-edge.log`
+- `backups/V1.0.0正式版-20260302-070316/gates/final-coldstart-retry-probe.log`
