@@ -11,12 +11,25 @@ import { logger } from '@/utils/logger.js';
 /** 存储 key 常量（消除硬编码魔法字符串） */
 const STORAGE_KEY = 'my_tasks';
 
+// H-06 FIX: 使用自增计数器生成唯一 ID，避免 Date.now() 同毫秒碰撞
+let _todoIdCounter = 0;
+function generateTodoId() {
+  return `${Date.now().toString(36)}_${(++_todoIdCounter).toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+}
+
 /** 默认任务模板（消除重复定义） */
 function createDefaultTasks() {
   return [
-    { id: Date.now() + 1, title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '优先', tagColor: 'red' },
-    { id: Date.now() + 2, title: '英语阅读真题分析', done: false, priority: 'medium', tag: '重要', tagColor: 'yellow' },
-    { id: Date.now() + 3, title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'gray' }
+    { id: generateTodoId(), title: '完成 3 组政治选择题', done: false, priority: 'high', tag: '优先', tagColor: 'red' },
+    {
+      id: generateTodoId(),
+      title: '英语阅读真题分析',
+      done: false,
+      priority: 'medium',
+      tag: '重要',
+      tagColor: 'yellow'
+    },
+    { id: generateTodoId(), title: '复习昨天错题本', done: false, priority: 'low', tag: '日常', tagColor: 'gray' }
   ];
 }
 
@@ -119,7 +132,7 @@ export const useTodoStore = defineStore('todo', {
 
       // 创建新任务对象
       const newTask = {
-        id: Date.now(),
+        id: generateTodoId(),
         title: title.trim(),
         done: false,
         priority,
@@ -194,9 +207,9 @@ export const useTodoStore = defineStore('todo', {
      */
     bulkAddTasks(newTasks) {
       if (Array.isArray(newTasks) && newTasks.length > 0) {
-        // ✅ 2.2: 使用整数 ID，与 addTask 保持一致（避免浮点数 ID）
-        const tasksToAdd = newTasks.map((task, index) => ({
-          id: Date.now() + index,
+        // H-06 FIX: 使用 generateTodoId() 替代 Date.now() + index
+        const tasksToAdd = newTasks.map((task) => ({
+          id: generateTodoId(),
           done: false,
           createdAt: new Date().toISOString(),
           ...task

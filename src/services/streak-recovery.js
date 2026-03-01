@@ -511,7 +511,8 @@ class StreakRecoveryService {
       const saved = storageService.get(key);
 
       if (saved) {
-        const data = JSON.parse(saved);
+        // C-04 FIX: storageService.get() 已返回解析后的对象，无需再 JSON.parse
+        const data = typeof saved === 'string' ? JSON.parse(saved) : saved;
         Object.assign(this.inventory, data.inventory || {});
         this.recoveryHistory.splice(0, this.recoveryHistory.length, ...(data.history || []));
         this.monthlyFreeRecovery.value = data.monthlyFree ?? RECOVERY_RULES.freeRecoveryPerMonth;

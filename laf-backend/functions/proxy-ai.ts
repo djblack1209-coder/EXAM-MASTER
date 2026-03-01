@@ -76,7 +76,9 @@ const AI_RETRY_DELAY = 1000; // 重试延迟：1秒
 // ==================== 请求频率限制配置 ====================
 const RATE_LIMIT_WINDOW = 60000; // 频率限制窗口：60秒
 const RATE_LIMIT_MAX_REQUESTS = 20; // 每个用户每分钟最多20次请求
-const rateLimitCache = new Map<string, { count: number; resetTime: number }>();
+// M-11 FIX: 移除独立的 rateLimitCache Map，统一使用 _shared/api-response 中的
+// checkRateLimitDistributed（已在主函数中调用），此处仅保留 fallback 函数的本地 Map
+const localRateLimitFallback = new Map<string, { count: number; resetTime: number }>();
 
 // ==================== 审计模式检查 ====================
 /**
@@ -127,9 +129,20 @@ function validateAuditToken(token: string): boolean {
       logger.error('[Audit] JWT_SECRET_PLACEHOLDER
       return false;
     }
-    const expectedHash = crypto.createHmac('sha256', secret).update(timestampStr).digest('hex').substring(0, 16);
-    if (hash !== expectedHash) {
-      logger.warn('[Audit] 审计令牌签名不匹配');
+    // H-10 FIX: 使用完整 HMAC hex 摘要（64 字符），不再截断以保持 256-bit 防伪造强度
+    const expectedHash = crypto.createHmac('sha256', secret).update(timestampStr).digest('hex');
+    // 使用 timingSafeEqual 防止时序攻击
+    if (hash.length !== expectedHash.length) {
+      logger.warn('[Audit] 审计令牌签名长度不匹配');
+      return false;
+    }
+    try {
+      if (!crypto.timingSafeEqual(Buffer.from(hash, 'utf8'), Buffer.from(expectedHash, 'utf8'))) {
+        logger.warn('[Audit] 审计令牌签名不匹配');
+        return false;
+      }
+    } catch {
+      logger.warn('[Audit] 审计令牌签名校验异常');
       return false;
     }
 
@@ -151,20 +164,20 @@ function checkRateLimitFallback(userId: string): { allowed: boolean; remaining: 
   }
 
   const now = Date.now();
-  const userLimit = rateLimitCache.get(userId);
+  const userLimit = localRateLimitFallback.get(userId);
 
   // 清理过期的缓存条目（简单的内存管理）
-  if (rateLimitCache.size > 10000) {
-    for (const [key, value] of rateLimitCache.entries()) {
+  if (localRateLimitFallback.size > 10000) {
+    for (const [key, value] of localRateLimitFallback.entries()) {
       if (now > value.resetTime) {
-        rateLimitCache.delete(key);
+        localRateLimitFallback.delete(key);
       }
     }
   }
 
   if (!userLimit || now > userLimit.resetTime) {
     // 新窗口或已过期，重置计数
-    rateLimitCache.set(userId, {
+    localRateLimitFallback.set(userId, {
       count: 1,
       resetTime: now + RATE_LIMIT_WINDOW
     });

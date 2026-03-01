@@ -70,8 +70,8 @@ export default async function (ctx) {
       };
     }
 
-    // 邮箱格式验证
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // M-10 FIX: 使用与 login.ts 一致的严格邮箱正则
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
       return {
         code: 400,
