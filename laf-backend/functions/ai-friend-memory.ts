@@ -12,23 +12,38 @@
 
 import cloud from '@lafjs/cloud';
 import { verifyJWT, extractBearerToken } from './_shared/auth';
+import { createLogger } from './_shared/api-response';
 
 const db = cloud.database();
-const _ = db.command;
+const logger = createLogger('[AiFriendMemory]');
 
 // 每个好友最多保存的记忆条数
 const MAX_MEMORY_PER_FRIEND = 50;
+const MAX_FRIEND_TYPE_LENGTH = 64;
+const MAX_MEMORY_MESSAGE_LENGTH = 2000;
+const MAX_MEMORY_SUMMARY_LENGTH = 1000;
+
+function normalizeFriendType(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  return value.trim().slice(0, MAX_FRIEND_TYPE_LENGTH);
+}
+
+function toSafeText(value, maxLength) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  return value.trim().slice(0, maxLength);
+}
 
 export default async function (ctx) {
   const startTime = Date.now();
   const requestId = `mem_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
   try {
-    const { action, userId, friendType, data } = ctx.body || {};
-
-    if (!userId) {
-      return { code: 401, success: false, message: '用户未登录', requestId };
-    }
+    const { action, userId: requestUserId, friendType, data } = ctx.body || {};
+    const safeFriendType = normalizeFriendType(friendType);
 
     if (!action) {
       return { code: 400, success: false, message: '缺少 action 参数', requestId };
@@ -47,24 +62,26 @@ export default async function (ctx) {
     if (!payload.userId) {
       return { code: 401, success: false, message: '无效的 token（缺少用户标识）', requestId };
     }
-    if (payload.userId !== userId) {
+    const authUserId = payload.userId;
+
+    if (requestUserId && payload.userId !== requestUserId) {
       return { code: 403, success: false, message: '身份验证失败', requestId };
     }
 
-    console.log(`[${requestId}] AI记忆: action=${action}, friendType=${friendType}`);
+    logger.info(`[${requestId}] AI记忆: action=${action}, friendType=${safeFriendType || 'all'}`);
 
     switch (action) {
       case 'get':
-        return await getMemory(userId, friendType, requestId);
+        return await getMemory(authUserId, safeFriendType, requestId);
       case 'save':
-        return await saveMemory(userId, friendType, data, requestId);
+        return await saveMemory(authUserId, safeFriendType, data, requestId);
       case 'clear':
-        return await clearMemory(userId, friendType, requestId);
+        return await clearMemory(authUserId, safeFriendType, requestId);
       default:
         return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
     }
   } catch (error) {
-    console.error(`[${requestId}] AI记忆异常:`, error);
+    logger.error(`[${requestId}] AI记忆异常:`, error);
     return {
       code: 500,
       success: false,
@@ -79,7 +96,7 @@ export default async function (ctx) {
  * 获取对话记忆
  */
 async function getMemory(userId, friendType, requestId) {
-  const query = { user_id: userId };
+  const query: Record<string, unknown> = { user_id: userId };
   if (friendType) query.friend_type = friendType;
 
   const result = await db
@@ -105,9 +122,15 @@ async function saveMemory(userId, friendType, data, requestId) {
     return { code: 400, success: false, message: '缺少 friendType 参数', requestId };
   }
 
-  const { userMessage, aiReply, emotion, summary } = data || {};
+  const payload = data && typeof data === 'object' ? data : {};
+  const { userMessage, aiReply, emotion, summary } = payload;
 
-  if (!userMessage && !aiReply) {
+  const safeUserMessage = toSafeText(userMessage, MAX_MEMORY_MESSAGE_LENGTH);
+  const safeAiReply = toSafeText(aiReply, MAX_MEMORY_MESSAGE_LENGTH);
+  const safeSummary = toSafeText(summary, MAX_MEMORY_SUMMARY_LENGTH);
+  const safeEmotion = toSafeText(emotion, 32) || 'neutral';
+
+  if (!safeUserMessage && !safeAiReply) {
     return { code: 400, success: false, message: '缺少对话内容', requestId };
   }
 
@@ -116,10 +139,10 @@ async function saveMemory(userId, friendType, data, requestId) {
   await db.collection('ai_friend_memory').add({
     user_id: userId,
     friend_type: friendType,
-    user_message: userMessage || '',
-    ai_reply: aiReply || '',
-    emotion: emotion || 'neutral',
-    summary: summary || '',
+    user_message: safeUserMessage,
+    ai_reply: safeAiReply,
+    emotion: safeEmotion,
+    summary: safeSummary,
     created_at: now
   });
 
@@ -149,7 +172,7 @@ async function saveMemory(userId, friendType, data, requestId) {
  * 清除对话记忆
  */
 async function clearMemory(userId, friendType, requestId) {
-  const query = { user_id: userId };
+  const query: Record<string, unknown> = { user_id: userId };
   if (friendType) query.friend_type = friendType;
 
   const result = await db.collection('ai_friend_memory').where(query).remove();

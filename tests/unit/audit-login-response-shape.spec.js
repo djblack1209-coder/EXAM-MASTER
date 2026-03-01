@@ -37,7 +37,7 @@ async function loadLoginHandler({ jwtSecret = 'unit_test_jwt', rateLimitAllowed 
   vi.doMock('@lafjs/cloud', () => cloudMock);
   vi.doMock('../../laf-backend/node_modules/@lafjs/cloud/dist/index.js', () => cloudMock);
 
-  vi.doMock('../../laf-backend/utils/perf-monitor', () => ({
+  vi.doMock('../../laf-backend/functions/_shared/perf-monitor', () => ({
     perfMonitor: {
       start: () => () => {}
     }
