@@ -83,6 +83,8 @@ laf-backend/.app.yaml
 coverage/
 .nyc_output/
 test-results/
+e2e-tests/error-screenshots/
+e2e-tests/ui-snapshots/
 
 # Backup files
 *.bak
@@ -122,6 +124,13 @@ scripts/refactor/
 scripts/crawlers/
 scripts/data-sync/
 scripts/test/
+!scripts/test/
+scripts/test/*
+!scripts/test/maestro-check-syntax.sh
+!scripts/test/maestro-preflight.sh
+!scripts/test/run-maestro-suite.sh
+!scripts/test/run-maestro-web-h5.sh
+!scripts/test/setup-maestro-macos.sh
 
 # laf-backend one-time scripts & fix artifacts
 laf-backend/scripts/
@@ -142,3 +151,15 @@ docs/reports/PROJECT_DEEP_SCAN_REPORT.md
 docs/reports/ui-quality-report.json
 docs/reports/visual-results.json
 docs/reports/visual-report/
+
+# Generated QA runtime artifacts
+docs/reports/e2e-regression-results.json
+docs/reports/e2e-regression-results.xml
+docs/reports/e2e-regression-html/
+docs/reports/e2e-compat-results.json
+docs/reports/e2e-compat-results.xml
+docs/reports/e2e-compat-html/
+docs/reports/maestro-preflight.md
+docs/reports/maestro-results.xml
+docs/reports/maestro-web-smoke*.xml
+docs/reports/vitest-results*.json
