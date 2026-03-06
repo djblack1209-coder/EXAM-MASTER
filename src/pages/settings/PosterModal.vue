@@ -11,12 +11,7 @@
   @author Frontend Team
 -->
 <template>
-  <view
-    v-if="visible"
-    class="poster-mask"
-    :class="{ 'dark-mode': isDark }"
-    @tap="handleClose"
-  >
+  <view v-if="visible" class="poster-mask" :class="{ 'dark-mode': isDark }" @tap="handleClose">
     <view class="poster-card ds-card" @tap.stop>
       <view class="close-icon-container ds-touchable ds-touch-target ds-flex-center" @tap="handleClose">
         <image
@@ -37,26 +32,18 @@
             mode="aspectFit"
             @error="onCdnIconError"
           />
-          <text class="poster-app-name ds-font-semibold">
-            Exam-Master
-          </text>
+          <text class="poster-app-name ds-font-semibold"> Exam-Master </text>
         </view>
 
-        <text class="poster-title ds-text-display ds-font-bold">
-          考研备考神器
-        </text>
-        <text class="poster-subtitle ds-text-sm">
-          AI助力，一战成硕！
-        </text>
+        <text class="poster-title ds-text-display ds-font-bold"> 考研备考神器 </text>
+        <text class="poster-subtitle ds-text-sm"> 智能助力，一战成硕！ </text>
 
         <view class="white-ticket">
           <view class="ticket-dashed-box">
             <text class="ticket-code">
               {{ inviteCode }}
             </text>
-            <text class="ticket-label">
-              我的邀请码
-            </text>
+            <text class="ticket-label"> 我的邀请码 </text>
           </view>
         </view>
 
@@ -77,9 +64,7 @@
               />
             </view>
           </view>
-          <text class="scan-text">
-            扫码一起上岸
-          </text>
+          <text class="scan-text"> 扫码一起上岸 </text>
         </view>
       </view>
     </view>
@@ -106,7 +91,7 @@
 <script setup>
 import { ref, getCurrentInstance } from 'vue';
 import { posterGenerator } from './poster-generator.js';
-import { permissionHandler } from './utils/permission-handler.js';
+import { permissionHandler } from '@/utils/helpers/permission-handler.js';
 import config from '@/config';
 import { logger } from '@/utils/logger.js';
 
@@ -275,7 +260,7 @@ const handleShare = () => {
     navigator
       .share({
         title: 'Exam-Master 考研神器',
-        text: `输入邀请码 ${props.inviteCode} 领取会员！AI助力，一战成硕！`,
+        text: `输入邀请码 ${props.inviteCode} 领取会员！智能助力，一战成硕！`,
         url: `${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`
       })
       .then(() => {
@@ -293,7 +278,7 @@ const handleShare = () => {
 // 复制邀请信息
 const copyInviteInfo = () => {
   uni.setClipboardData({
-    data: `【Exam-Master 考研神器】\n邀请码：${props.inviteCode}\nAI助力，一战成硕！\n下载链接：${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`,
+    data: `【Exam-Master 考研神器】\n邀请码：${props.inviteCode}\n智能助力，一战成硕！\n下载链接：${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`,
     success: () => {
       uni.showToast({ title: '邀请信息已复制', icon: 'success' });
     }

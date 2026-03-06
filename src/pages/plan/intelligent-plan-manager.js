@@ -3,15 +3,8 @@
 
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-
-// 动态导入 learning-analytics，避免主包引入分包依赖
-let _analyticsModule = null;
-async function _getAnalyticsModule() {
-  if (!_analyticsModule) {
-    _analyticsModule = await import('./utils/learning-analytics.js');
-  }
-  return _analyticsModule;
-}
+import { getComprehensiveReport, getStreakData } from '@/utils/analytics/learning-analytics.js';
+import { getLearningReport } from '@/utils/learning/smart-question-picker.js';
 
 class IntelligentPlanManager {
   constructor() {
@@ -41,7 +34,6 @@ class IntelligentPlanManager {
   // 加载学习数据
   async loadLearningData() {
     try {
-      const { getComprehensiveReport, getStreakData } = await _getAnalyticsModule();
       const report = getComprehensiveReport();
       const streakData = getStreakData();
       this.learningData = {
@@ -460,9 +452,7 @@ class IntelligentPlanManager {
   // 获取智能提醒
   async getIntelligentReminders() {
     const intelligentReminders = [];
-    const { getLearningReport } = await import('./utils/smart-question-picker.js');
     const learningReport = getLearningReport();
-    const { getStreakData } = await _getAnalyticsModule();
     const streakData = getStreakData();
 
     // 基于学习习惯的提醒

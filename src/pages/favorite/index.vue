@@ -5,16 +5,10 @@
     <!-- 导航栏 -->
     <view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-back" @tap="goBack">
-          ←
-        </text>
-        <text class="nav-title">
-          我的收藏
-        </text>
+        <text class="nav-back" @tap="goBack"> ← </text>
+        <text class="nav-title"> 我的收藏 </text>
         <view class="nav-actions">
-          <text class="nav-action" @tap="showFolderModal = true">
-            +
-          </text>
+          <text class="nav-action" @tap="showFolderModal = true"> + </text>
         </view>
       </view>
     </view>
@@ -22,9 +16,7 @@
     <!-- ✅ F018: 加载状态 -->
     <view v-if="isLoading" class="loading-state" :style="{ paddingTop: statusBarHeight + 60 + 'px' }">
       <view class="loading-spinner" />
-      <text class="loading-text">
-        加载中...
-      </text>
+      <text class="loading-text"> 加载中... </text>
     </view>
 
     <scroll-view
@@ -40,56 +32,40 @@
           <text class="stat-value">
             {{ totalFavorites }}
           </text>
-          <text class="stat-label">
-            总收藏
-          </text>
+          <text class="stat-label"> 总收藏 </text>
         </view>
         <view class="stat-item">
           <text class="stat-value">
             {{ reviewedCount }}
           </text>
-          <text class="stat-label">
-            已复习
-          </text>
+          <text class="stat-label"> 已复习 </text>
         </view>
         <view class="stat-item">
           <text class="stat-value">
             {{ needReviewCount }}
           </text>
-          <text class="stat-label">
-            待复习
-          </text>
+          <text class="stat-label"> 待复习 </text>
         </view>
         <view class="stat-item">
           <text class="stat-value">
             {{ withNoteCount }}
           </text>
-          <text class="stat-label">
-            有笔记
-          </text>
+          <text class="stat-label"> 有笔记 </text>
         </view>
       </view>
 
       <!-- 收藏夹列表 -->
       <view class="folder-section">
         <view class="section-header">
-          <text class="section-title">
-            收藏夹
-          </text>
-          <text class="section-action" @tap="showFolderModal = true">
-            + 新建
-          </text>
+          <text class="section-title"> 收藏夹 </text>
+          <text class="section-action" @tap="showFolderModal = true"> + 新建 </text>
         </view>
         <view class="folder-grid">
           <!-- 全部收藏 -->
           <view class="folder-card" :class="{ active: currentFolderId === null }" @tap="selectFolder(null)">
             <BaseIcon name="books" :size="36" class="folder-icon" />
-            <text class="folder-name">
-              全部收藏
-            </text>
-            <text class="folder-count">
-              {{ totalFavorites }} 题
-            </text>
+            <text class="folder-name"> 全部收藏 </text>
+            <text class="folder-count"> {{ totalFavorites }} 题 </text>
           </view>
           <view
             v-for="folder in folders"
@@ -103,12 +79,8 @@
             <text class="folder-name">
               {{ folder.name }}
             </text>
-            <text class="folder-count">
-              {{ folder.count }} 题
-            </text>
-            <view v-if="!folder.isDefault" class="folder-delete" @tap.stop="confirmDeleteFolder(folder)">
-              ×
-            </view>
+            <text class="folder-count"> {{ folder.count }} 题 </text>
+            <view v-if="!folder.isDefault" class="folder-delete" @tap.stop="confirmDeleteFolder(folder)"> × </view>
           </view>
         </view>
       </view>
@@ -120,9 +92,7 @@
             {{ currentFolderName }}
           </text>
           <view class="sort-btn" @tap="toggleSort">
-            <text class="sort-icon">
-              ↕
-            </text>
+            <text class="sort-icon"> ↕ </text>
             <text class="sort-text">
               {{ sortLabel }}
             </text>
@@ -132,12 +102,8 @@
         <!-- 空状态 -->
         <view v-if="filteredFavorites.length === 0" class="empty-box">
           <BaseIcon name="star-outline" :size="80" class="empty-icon" />
-          <text class="empty-title">
-            暂无收藏
-          </text>
-          <text class="empty-text">
-            刷题时点击星标即可收藏题目
-          </text>
+          <text class="empty-title"> 暂无收藏 </text>
+          <text class="empty-text"> 刷题时点击星标即可收藏题目 </text>
         </view>
 
         <!-- 题目列表 (F007: 增量渲染，避免一次性渲染全部DOM) -->
@@ -173,41 +139,31 @@
           </view>
 
           <view v-if="showOptions[item.id] && item.analysis" class="analysis-box">
-            <text class="analysis-label">
-              解析：
-            </text>
+            <text class="analysis-label"> 解析： </text>
             <text class="analysis-text">
               {{ item.analysis }}
             </text>
           </view>
 
           <view class="card-footer">
-            <text class="time-text">
-              收藏于 {{ formatDate(item.createdAt) }}
-            </text>
+            <text class="time-text"> 收藏于 {{ formatDate(item.createdAt) }} </text>
             <view class="footer-actions">
               <button class="action-btn" @tap="toggleOptions(item.id)">
                 {{ showOptions[item.id] ? '收起' : '查看答案' }}
               </button>
-              <button class="action-btn primary" @tap="practiceQuestion(item)">
-                练习此题
-              </button>
+              <button class="action-btn primary" @tap="practiceQuestion(item)">练习此题</button>
             </view>
           </view>
 
           <!-- 笔记区域 -->
           <view v-if="item.note" class="note-section">
-            <text class="note-label">
-              <BaseIcon name="note" :size="22" /> 我的笔记
-            </text>
+            <text class="note-label"> <BaseIcon name="note" :size="22" /> 我的笔记 </text>
             <text class="note-content">
               {{ item.note }}
             </text>
           </view>
           <view v-else class="add-note" @tap="openNoteModal(item)">
-            <text class="add-note-text">
-              + 添加笔记
-            </text>
+            <text class="add-note-text"> + 添加笔记 </text>
           </view>
         </view>
       </view>
@@ -219,24 +175,13 @@
     <view v-if="showFolderModal" class="modal-overlay" @tap="showFolderModal = false">
       <view class="modal-content" @tap.stop>
         <view class="modal-header">
-          <text class="modal-title">
-            新建收藏夹
-          </text>
-          <text class="modal-close" @tap="showFolderModal = false">
-            ×
-          </text>
+          <text class="modal-title"> 新建收藏夹 </text>
+          <text class="modal-close" @tap="showFolderModal = false"> × </text>
         </view>
         <view class="modal-body">
-          <input
-            v-model="newFolderName"
-            class="modal-input"
-            placeholder="输入收藏夹名称"
-            maxlength="10"
-          />
+          <input v-model="newFolderName" class="modal-input" placeholder="输入收藏夹名称" maxlength="10" />
           <view class="icon-picker">
-            <text class="picker-label">
-              选择图标
-            </text>
+            <text class="picker-label"> 选择图标 </text>
             <view class="icon-grid">
               <view
                 v-for="icon in folderIcons"
@@ -251,12 +196,8 @@
           </view>
         </view>
         <view class="modal-footer">
-          <button class="modal-btn secondary" @tap="showFolderModal = false">
-            取消
-          </button>
-          <button class="modal-btn primary" @tap="createFolder">
-            创建
-          </button>
+          <button class="modal-btn secondary" @tap="showFolderModal = false">取消</button>
+          <button class="modal-btn primary" @tap="createFolder">创建</button>
         </view>
       </view>
     </view>
@@ -265,12 +206,8 @@
     <view v-if="showMoveModal" class="modal-overlay" @tap="showMoveModal = false">
       <view class="modal-content" @tap.stop>
         <view class="modal-header">
-          <text class="modal-title">
-            移动到
-          </text>
-          <text class="modal-close" @tap="showMoveModal = false">
-            ×
-          </text>
+          <text class="modal-title"> 移动到 </text>
+          <text class="modal-close" @tap="showMoveModal = false"> × </text>
         </view>
         <view class="modal-body">
           <view
@@ -284,9 +221,7 @@
             <text class="folder-option-name">
               {{ folder.name }}
             </text>
-            <text class="folder-option-count">
-              {{ folder.count }} 题
-            </text>
+            <text class="folder-option-count"> {{ folder.count }} 题 </text>
           </view>
         </view>
       </view>
@@ -296,12 +231,8 @@
     <view v-if="showNoteModal" class="modal-overlay" @tap="showNoteModal = false">
       <view class="modal-content" @tap.stop>
         <view class="modal-header">
-          <text class="modal-title">
-            添加笔记
-          </text>
-          <text class="modal-close" @tap="showNoteModal = false">
-            ×
-          </text>
+          <text class="modal-title"> 添加笔记 </text>
+          <text class="modal-close" @tap="showNoteModal = false"> × </text>
         </view>
         <view class="modal-body">
           <textarea
@@ -312,12 +243,8 @@
           ></textarea>
         </view>
         <view class="modal-footer">
-          <button class="modal-btn secondary" @tap="showNoteModal = false">
-            取消
-          </button>
-          <button class="modal-btn primary" @tap="saveNote">
-            保存
-          </button>
+          <button class="modal-btn secondary" @tap="showNoteModal = false">取消</button>
+          <button class="modal-btn primary" @tap="saveNote">保存</button>
         </view>
       </view>
     </view>
@@ -335,10 +262,10 @@ import {
   removeFavorite as removeFromFavorites,
   updateNote,
   getFavoriteStats
-} from './utils/question-favorite.js';
+} from '@/utils/favorite/question-favorite.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
-import questionFavoriteManager from './utils/question-favorite.js';
+import questionFavoriteManager from '@/utils/favorite/question-favorite.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
