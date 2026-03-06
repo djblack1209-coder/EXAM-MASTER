@@ -64,7 +64,7 @@ exam-master/
 
 ### 环境要求
 
-- Node.js >= 18.20（推荐使用 20.17 LTS，与 CI 保持一致）
+- Node.js >= 20.17（与 CI 保持一致）
 - npm >= 10
 - 微信开发者工具（小程序开发）
 - [Laf CLI](https://docs.laf.run/guide/cli/)（后端部署）
@@ -72,8 +72,11 @@ exam-master/
 ### 前端
 
 ```bash
-# 使用仓库内推荐版本
+# 使用仓库内固定版本（nvm）
 nvm use
+
+# 或（fnm）
+fnm use 20.17.0
 
 # 安装依赖
 npm install
@@ -107,22 +110,25 @@ laf login && laf init <appid> && laf deploy
 
 ## 常用命令
 
-| 命令                      | 说明            |
-| ------------------------- | --------------- |
-| `npm run dev:h5`          | H5 开发服务器   |
-| `npm run dev:mp-weixin`   | 微信小程序开发  |
-| `npm run build:mp-weixin` | 构建微信小程序  |
-| `npm run test`            | 运行单元测试    |
-| `npm run test:coverage`   | 测试覆盖率报告  |
-| `npm run lint:fix`        | ESLint 自动修复 |
-| `npm run format`          | Prettier 格式化 |
+| 命令                                    | 说明                    |
+| --------------------------------------- | ----------------------- |
+| `npm run dev:h5`                        | H5 开发服务器           |
+| `npm run dev:mp-weixin`                 | 微信小程序开发          |
+| `npm run build:mp-weixin`               | 构建微信小程序          |
+| `npm run test`                          | 运行单元测试            |
+| `npm run test:coverage`                 | 测试覆盖率报告          |
+| `npm run lint:fix`                      | ESLint 自动修复         |
+| `npm run format`                        | Prettier 格式化         |
+| `npm run test:qa:full-regression:clean` | Node20 交付级全链路门禁 |
+
+`test:qa:full-regression:clean` 当前会执行：`lint(0 warning)`、`format:check`、`laf 源码严格审计`、`build:h5`、`vitest`、`visual`、`e2e regression/compat`、`maestro`、`tracked secrets`、`prod deps audit(非阻断)`、`mp 主包引用审计`、`mini program e2e report`。
 
 ## 文档
 
 - [文档导航](./docs/README.md) — 当前文档总入口（含归档说明）
-- [新起点基线](./docs/BASELINE-START-2026-02-28.md) — 以当前状态重新开始的执行基线
+- [新起点基线](./docs/archive/2026-02-reset/BASELINE-START-2026-02-28.md) — 以当前状态重新开始的执行基线
 - [API 文档](./docs/API_DOCUMENTATION.md) — 完整 API 参考（含快速速查表 + 详细示例）
-- [备份状态](./docs/BACKUP-STATUS-2026-02-28.md) — 备份保障现状与证据清单
+- [备份状态](./docs/archive/2026-02-reset/BACKUP-STATUS-2026-02-28.md) — 备份保障现状与证据清单
 - [部署指南](./laf-backend/DEPLOYMENT_GUIDE.md) — Laf 发布与线上验证
 - [组件文档](./docs/COMPONENTS.md) — 前端组件说明
 - [工具函数](./docs/UTILS.md) — 工具函数说明
