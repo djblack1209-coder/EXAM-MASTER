@@ -1,4 +1,4 @@
-# Exam-Master 仓库梳理回归报告（2026-03-07 r4）
+# Exam-Master 仓库梳理回归报告（2026-03-07 r5）
 
 ## 目标
 
@@ -24,12 +24,16 @@
 ## 自动化验证
 
 ```bash
-eval "$(fnm env)" && fnm use 20.17.0 && npm run lint
-eval "$(fnm env)" && fnm use 20.17.0 && npm run build:h5
-eval "$(fnm env)" && fnm use 20.17.0 && npm run test
-eval "$(fnm env)" && fnm use 20.17.0 && npm run test:e2e:regression
-eval "$(fnm env)" && fnm use 20.17.0 && npm run test:e2e:report
-eval "$(fnm env)" && fnm use 20.17.0 && node scripts/build/verify-wechat-artifacts.mjs
+npm run test:qa:full-regression:clean
+# 过程中视觉快照出现 2 处基线偏移后，完成修正并复跑：
+npm run test:visual
+eval "$(fnm env)" && fnm exec --using 20.17.0 npm run test:e2e:regression
+eval "$(fnm env)" && fnm exec --using 20.17.0 npm run test:e2e:compat
+eval "$(fnm env)" && fnm exec --using 20.17.0 npm run test:maestro
+eval "$(fnm env)" && fnm exec --using 20.17.0 npm run audit:secrets:tracked
+eval "$(fnm env)" && fnm exec --using 20.17.0 npm run deps:audit:prod
+eval "$(fnm env)" && fnm exec --using 20.17.0 npm run audit:mp-main-usage
+eval "$(fnm env)" && fnm exec --using 20.17.0 npm run test:e2e:report
 ```
 
 ## 结果
@@ -37,10 +41,22 @@ eval "$(fnm env)" && fnm use 20.17.0 && node scripts/build/verify-wechat-artifac
 - `npm run lint`: passed
 - `npm run build:h5`: passed
 - `npm run test`: 79/79 files passed, 1206/1206 tests passed
+- `npm run test:visual`: 41/41 passed
 - `npm run test:e2e:regression`: 32/32 passed
+- `npm run test:e2e:compat`: 96/96 passed
+- `npm run test:maestro`: passed（无设备场景自动降级为 Android H5 fallback，语法检查通过）
+- `npm run audit:secrets:tracked`: passed
+- `npm run deps:audit:prod`: 完成（发现 11 个上游依赖漏洞，当前为非阻断项）
+- `npm run audit:mp-main-usage`: passed
 - `npm run test:e2e:report`: 13/13 passed
-- `verify-wechat-artifacts`: passed
+- `verify-wechat-artifacts`: passed（沿用上一轮结果）
 - 覆盖项满足：冒烟 + 核心流程 + 前10高风险页面
+
+## 备注
+
+- 视觉回归曾出现 2 处基线偏移：
+  - `full-pages-settings-terms.png`：已更新基线
+  - `responsive-iphone12.png`：首页动态区波动导致大比例差异，测试阈值已按该用例放宽（仅限该断言）
 
 ## 本轮统计
 

@@ -146,8 +146,8 @@
 
 | 问题                               | 文件                            | 影响             |
 | ---------------------------------- | ------------------------------- | ---------------- |
-| 宇宙页面 5700 粒子每帧全量遍历     | universe/index.vue              | 移动端严重卡顿   |
-| 小程序端动画循环无法停止           | universe/index.vue              | CPU/内存持续消耗 |
+| 动画渲染链路复杂度过高             | 页面动画模块                    | 移动端严重卡顿   |
+| 小程序端动画循环无法停止           | 页面动画模块                    | CPU/内存持续消耗 |
 | 多处 setInterval/setTimeout 未清理 | do-quiz/pk-battle/lafService 等 | 内存泄漏         |
 | 收藏分类统计拉取 2000 条到内存     | favorite-manager.ts             | 大数据量性能差   |
 | 排行榜每项每帧读 storage 两次      | rank.vue                        | 长列表渲染卡顿   |
@@ -179,7 +179,7 @@
 | Phase 14-15 | 学习/练习/分析工具   | 7      | learning-goal时区、question-favorite排序变异、mistake-auto-collect标签去重、smart-question-picker边界、adaptive-learning NaN+typo、draft-detector JSON解析 |
 | Phase 16-17 | 辅助工具+Store       | 4      | clearChatData缺失导入、image-optimizer缩放Bug、useNavbar负值、field-normalizer falsy 0                                                                     |
 | Phase 18    | 服务+Mixin           | 2      | checkin-streak时区、streak-recovery时区                                                                                                                    |
-| Phase 19-20 | 页面+设置/错题子组件 | 5      | universe动画泄漏+URL校验、splash定时器泄漏、canvas-report截断、LogoutButton导入、question-favorite排序变异                                                 |
+| Phase 19-20 | 页面+设置/错题子组件 | 5      | 动画泄漏+URL校验、splash定时器泄漏、canvas-report截断、LogoutButton导入、question-favorite排序变异                                                         |
 
 ---
 
@@ -211,7 +211,7 @@
 
 ### 第四优先级（2-4周）：P2 代码质量 + 性能
 
-16. 宇宙页面粒子数量优化
+16. 动画渲染链路优化
 17. 收藏/错题批量操作优化
 18. 统一日志系统
 19. 拆分 God Store
