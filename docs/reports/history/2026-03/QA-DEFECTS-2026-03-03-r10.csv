@@ -1,0 +1,4 @@
+id,severity,title,status,round_found,round_fixed,owner,evidence,notes
+CORE-001,P1,mobile-390x844 登录页邮箱表单偶发未展开,FIXED,r8,r9,QA+Dev,tests/e2e-regression/specs/01-core-flow.spec.js,本轮 Node20 基线复验通过
+STATE-005,P1,desktop-1440x900 快速点击登录仍出现双请求,FIXED,r8,r9,QA+Dev,src/pages/login/index.vue,本轮 Node20 基线复验通过
+MB-BLOCK-001,P1,Maestro native 套件缺少可启动包名无法执行,MITIGATED,r9,,QA,docs/reports/maestro-preflight.md,模拟器已连接但无第三方安装包; native 未补齐由 H5 fallback 兜底

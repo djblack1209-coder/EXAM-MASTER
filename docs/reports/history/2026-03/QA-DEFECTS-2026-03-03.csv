@@ -1,0 +1,7 @@
+ID,优先级,页面,步骤,结果,根因,状态
+DEF-001,P0,H5启动壳层,"1) 启动H5 2) 打开首页 3) 检查#app/uni runtime","预期: 首页渲染可交互; 实际(修复前): 页面空白(hasUni=false)。修复后: Round-4 全量通过",index入口错误(/main.js)且缺少@dcloudio/uni-h5导致uni:h5-main-js注入链路失效,Fixed-Verified
+DEF-002,P1,pages/login/index,"执行 CORE-001","预期: 登录页可输入邮箱; 实际(修复前): 无输入框可操作",登录页默认展示第三方登录按钮且邮箱表单折叠,E2E脚本未先展开邮箱表单,Fixed
+DEF-003,P1,pages/chat/chat,"执行 EXC-004/STATE-003/RISK-chat","预期: 聊天页可达且可交互; 实际(修复前): 关键字断言失败",E2E断言关键字与真实UI文案不一致(发送/智能对话),Fixed
+DEF-004,P1,弱网模拟器,"执行 EXC-004","预期: 弱网测试稳定结束; 实际(修复前): route回调在测试结束后抛错",弱网route handler中使用page.waitForTimeout引发生命周期竞态,Fixed
+DEF-005,P1,执行环境,"运行 npm/test/playwright 命令","预期: 无engines告警; 实际: Node18 + npm11持续告警",本地Node版本低于项目要求(>=20.17.0),Open
+DEF-006,P2,核心登录实账号链路,"执行 CORE-002","预期: 真实账号登录链路可回归; 实际: 跳过",未提供E2E_EMAIL/E2E_PASSWORD测试数据,Blocked-TestData

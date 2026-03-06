@@ -1,0 +1,2 @@
+ID,优先级,页面,步骤,结果,根因,状态
+QA-R4-001,P1,/pages/chat/chat,"1) 运行 npx playwright test tests/e2e-regression/specs/02-exception-flow.spec.js --config=playwright.regression.config.js 2) 执行EXC-005并调用app.actions.input 3) 观察输入步骤","修复前: locator.fill报错导致用例中断; 修复后: EXC-005通过并验证500降级回复","human-actions输入封装未兼容uni-input宿主与内层input结构",Fixed

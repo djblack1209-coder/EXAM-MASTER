@@ -1,5 +1,13 @@
-# Generated Reports
+# Reports Hub
 
-This folder is the runtime output target for generated reports (deep scan, UI quality, visual snapshots).
+## Directory layout
 
-Generated report files are git-ignored.
+- `docs/reports/current/`: latest canonical reports (for release decisions)
+- `docs/reports/history/`: historical round outputs (immutable trace records)
+- `docs/reports/`: runtime-generated artifacts (Playwright/Jest/Maestro/json/xml/html)
+
+## Conventions
+
+- Canonical files use lowercase kebab-case naming.
+- Historical files keep original round-based naming.
+- Generated artifacts should not be used as long-term source-of-truth docs.

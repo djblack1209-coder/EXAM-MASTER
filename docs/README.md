@@ -1,22 +1,30 @@
 # Documentation Hub
 
-Last updated: 2026-02-28
-
-This folder now uses a clean-start layout. Active operational docs stay at the top level, and historical incident/audit records are moved to `docs/archive/`.
+Last updated: 2026-03-07
 
 ## Active docs
 
-- `docs/BASELINE-START-2026-02-28.md`: new starting baseline and execution rules.
-- `docs/API_DOCUMENTATION.md`: current API contract and action matrix.
-- `docs/BACKUP-STATUS-2026-02-28.md`: backup readiness, evidence checklist, and recovery follow-ups.
-- `docs/DEPENDENCY-AUDIT-BASELINE-2026-02-28.md`: production dependency vulnerability baseline and staged remediation path.
-- `docs/EXECUTION-REPORT-2026-02-28.md`: latest execution log, validation status, and blockers.
-- `laf-backend/DEPLOYMENT_GUIDE.md`: deployment and post-deploy verification playbook.
-- `docs/SCRIPTS.md`: script usage reference.
-- `docs/COMPONENTS.md`: component reference.
-- `docs/UTILS.md`: utility module reference.
+- `docs/PROJECT-SINGLE-SOURCE-V1.0.0.md`
+- `docs/API_DOCUMENTATION.md`
+- `docs/COMPONENTS.md`
+- `docs/SCRIPTS.md`
+- `docs/UTILS.md`
+- `docs/QA-MP-REAL-VERIFICATION-CHECKLIST.md`
+- `docs/releases/release-v1.0.0.md`
 
-## Historical docs
+## QA reports
 
-- Archived records are under `docs/archive/2026-02-reset/`.
-- These files are preserved for traceability and are no longer the default source of truth.
+- Latest/canonical: `docs/reports/current/`
+- Historical rounds: `docs/reports/history/`
+- Generated runtime artifacts (json/xml/html): `docs/reports/`
+
+## Archive
+
+- `docs/archive/2026-02-reset/`
+- `docs/archive/2026-03-review/`
+
+## Naming rules
+
+- Active docs: kebab-case lowercase naming for new files.
+- Round reports: keep original filename for traceability under `docs/reports/history/`.
+- Canonical latest reports: standardized lowercase naming under `docs/reports/current/`.

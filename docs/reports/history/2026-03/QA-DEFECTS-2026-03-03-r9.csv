@@ -1,0 +1,4 @@
+id,severity,title,status,round_found,round_fixed,owner,evidence,notes
+CORE-001,P1,mobile-390x844 登录页邮箱表单偶发未展开,FIXED,r8,r9,QA+Dev,test-results/e2e-compat/01-core-flow-A2-核心流程-CORE-001-登录页可输入并触发登录动作-mobile-390x844/error-context.md,通过增强 ensureEmailFormVisible 的入口重试与可见性校验修复
+STATE-005,P1,desktop-1440x900 快速点击登录仍出现双请求,FIXED,r8,r9,QA+Dev,test-results/e2e-compat/03-state-recovery-A2-状态恢复与幂等-STATE-005-登录按钮快速多次点击仅触发一次请求-desktop-1440x900/attachments/network-log-9f86f27c951d48769d7d4185bafeccd468c6f882.json,邮箱登录冷却窗口提升至 2500ms 后复测通过
+MB-BLOCK-001,P1,Maestro native 套件缺少可启动包名无法执行,MITIGATED,r9,,QA,docs/reports/maestro-results.xml,已尝试 __UNI__EXAM2026 仍无法启动应用; 当前由 H5 fallback 覆盖并通过
