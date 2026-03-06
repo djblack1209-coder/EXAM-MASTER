@@ -1,6 +1,6 @@
 /**
- * 全链路集成测试 — 上传题目、AI出题、拍照搜题
- * 模拟真实用户导入资料、AI生成题目、拍照识别的完整交互
+ * 全链路集成测试 — 上传题目、智能出题、拍照搜题
+ * 模拟真实用户导入资料、智能生成题目、拍照识别的完整交互
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -18,7 +18,7 @@ import {
   sanitizeAIInput
 } from '@/pages/practice-sub/utils/question-normalizer.js';
 
-describe('E2E 上传题目 & AI出题 & 拍照搜题', () => {
+describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     global.__mockStorage = {};
@@ -111,9 +111,9 @@ describe('E2E 上传题目 & AI出题 & 拍照搜题', () => {
     });
   });
 
-  // ==================== AI 输入清洗 ====================
+  // ==================== 智能输入清洗 ====================
 
-  describe('AI 输入清洗', () => {
+  describe('智能输入清洗', () => {
     it('sanitizeAIInput → 移除控制字符', () => {
       const dirty = 'hello\x00world\x07test\x1F';
       const clean = sanitizeAIInput(dirty);
@@ -139,9 +139,9 @@ describe('E2E 上传题目 & AI出题 & 拍照搜题', () => {
     });
   });
 
-  // ==================== AI 出题流程 ====================
+  // ==================== 智能出题流程 ====================
 
-  describe('AI 资料出题流程', () => {
+  describe('智能资料出题流程', () => {
     it('materialUnderstand → 空内容应被拦截', async () => {
       const { lafService } = await import('@/services/lafService.js');
       const result = await lafService.materialUnderstand('');
@@ -162,7 +162,7 @@ describe('E2E 上传题目 & AI出题 & 拍照搜题', () => {
         code: 0,
         success: true,
         data: {
-          questions: [{ question: 'AI生成题1', options: ['A', 'B', 'C', 'D'], answer: 'A' }]
+          questions: [{ question: '智能生成题1', options: ['A', 'B', 'C', 'D'], answer: 'A' }]
         }
       });
 
@@ -193,19 +193,19 @@ describe('E2E 上传题目 & AI出题 & 拍照搜题', () => {
       expect(callArgs.topicFocus).toBe('');
     });
 
-    it('AI 生成题目 → 经过标准化和验证后存入题库', () => {
-      // 模拟 AI 返回的原始题目（字段名不统一）
+    it('智能生成题目 → 经过标准化和验证后存入题库', () => {
+      // 模拟智能返回的原始题目（字段名不统一）
       const aiResponse = [
-        { title: 'AI题1', options: ['A.选项1', 'B.选项2', 'C.选项3', 'D.选项4'], correct_answer: 'b', subject: '政治' },
-        { content: 'AI题2', options: ['A.甲', 'B.乙', 'C.丙', 'D.丁'], answer: 2, analysis: '解析内容' },
+        { title: '智能题1', options: ['A.选项1', 'B.选项2', 'C.选项3', 'D.选项4'], correct_answer: 'b', subject: '政治' },
+        { content: '智能题2', options: ['A.甲', 'B.乙', 'C.丙', 'D.丁'], answer: 2, analysis: '解析内容' },
         { question: '', options: ['A', 'B'], answer: 'A' } // 无效题
       ];
 
       const validated = normalizeAndValidateQuestions(aiResponse);
       expect(validated.length).toBe(2);
-      expect(validated[0].question).toBe('AI题1');
+      expect(validated[0].question).toBe('智能题1');
       expect(validated[0].answer).toBe('B');
-      expect(validated[1].question).toBe('AI题2');
+      expect(validated[1].question).toBe('智能题2');
       expect(validated[1].answer).toBe('C'); // 数字2 → C
     });
 
@@ -406,8 +406,8 @@ describe('E2E 上传题目 & AI出题 & 拍照搜题', () => {
 
   // ==================== 端到端完整流程 ====================
 
-  describe('完整流程：导入资料 → AI出题 → 做题 → 拍照搜题', () => {
-    it('用户上传 TXT 文件 → AI 生成题目 → 标准化入库 → 拍照补充', async () => {
+  describe('完整流程：导入资料 → 智能出题 → 做题 → 拍照搜题', () => {
+    it('用户上传 TXT 文件 → 智能生成题目 → 标准化入库 → 拍照补充', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
       // Step 1: 用户选择文件
@@ -415,7 +415,7 @@ describe('E2E 上传题目 & AI出题 & 拍照搜题', () => {
       const cleanContent = sanitizeAIInput(fileContent);
       expect(cleanContent.length).toBeGreaterThan(0);
 
-      // Step 2: AI 生成题目
+      // Step 2: 智能生成题目
       vi.spyOn(lafService, 'request').mockResolvedValue({
         code: 0,
         success: true,

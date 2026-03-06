@@ -1,6 +1,6 @@
 /**
- * 全链路测试 5: AI 对话 & 拍照搜题 & 社交模块
- * AI 代理请求 -> 好友对话 -> 拍照搜题 -> 社交服务 -> 排行榜
+ * 全链路测试 5: 智能对话 & 拍照搜题 & 社交模块
+ * 智能代理请求 -> 好友对话 -> 拍照搜题 -> 社交服务 -> 排行榜
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -11,7 +11,7 @@ vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
 
-describe('全链路: AI 对话 & 拍照搜题 & 社交', () => {
+describe('全链路: 智能对话 & 拍照搜题 & 社交', () => {
   beforeEach(() => {
     global.__mockStorage = {};
     vi.clearAllMocks();
@@ -42,13 +42,13 @@ describe('全链路: AI 对话 & 拍照搜题 & 社交', () => {
       const { lafService } = await import('@/services/lafService.js');
       const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
         success: true,
-        data: { reply: 'AI回复内容' }
+        data: { reply: '智能回复内容' }
       });
 
       const result = await lafService.proxyAI('chat', { content: '你好' });
       expect(result.code).toBe(0);
       expect(result.success).toBe(true);
-      expect(result.data.reply).toBe('AI回复内容');
+      expect(result.data.reply).toBe('智能回复内容');
 
       mockRequest.mockRestore();
     });
@@ -107,7 +107,7 @@ describe('全链路: AI 对话 & 拍照搜题 & 社交', () => {
     });
   });
 
-  describe('Phase 2: AI 好友对话', () => {
+  describe('Phase 2: 智能好友对话', () => {
     it('aiFriendChat - 正常对话', async () => {
       const { lafService } = await import('@/services/lafService.js');
       const mockProxyAI = vi.spyOn(lafService, 'proxyAI').mockResolvedValue({

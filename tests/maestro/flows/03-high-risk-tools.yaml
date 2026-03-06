@@ -1,0 +1,13 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: '首页'
+- assertVisible: '实用工具'
+- tapOn: '文档转换'
+- assertVisible: '文档转换'
+- back
+- tapOn: '证件照制作'
+- assertVisible: '证件照'
+- back
+- tapOn: '拍照搜题'
+- assertVisible: '拍照'

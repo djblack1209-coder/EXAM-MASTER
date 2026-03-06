@@ -367,17 +367,17 @@ describe('收藏模块 API', () => {
   });
 });
 
-describe('AI 服务模块 API', () => {
+describe('智能服务模块 API', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('应该成功调用 AI 聊天', async () => {
+  it('应该成功调用智能聊天', async () => {
     const mockResponse = {
       code: 0,
       success: true,
       data: {
-        reply: 'AI 回复内容...',
+        reply: '智能回复内容...',
         tokens: 150
       }
     };

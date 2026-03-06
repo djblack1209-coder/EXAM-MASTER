@@ -1,6 +1,6 @@
 /**
  * question-normalizer 单元测试
- * 覆盖题目标准化、验证、批量处理、AI输入清洗
+ * 覆盖题目标准化、验证、批量处理、智能输入清洗
  */
 import { describe, it, expect } from 'vitest';
 import {

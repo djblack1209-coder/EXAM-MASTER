@@ -8,15 +8,8 @@
  * - clear / getStatus / addListener / pause / resume
  * - _loadFromStorage: 过期清理 / 损坏数据
  */
+// @ts-nocheck
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-vi.mock('../../src/services/storageService.js', () => ({
-  default: {
-    get: vi.fn(() => null),
-    save: vi.fn(),
-    remove: vi.fn()
-  }
-}));
 
 vi.mock('../../src/utils/logger.js', () => ({
   logger: {
@@ -26,7 +19,19 @@ vi.mock('../../src/utils/logger.js', () => ({
   }
 }));
 
-import storageService from '../../src/services/storageService.js';
+const QUEUE_STORAGE_KEY = '__exam_offline_queue__:EXAM_OFFLINE_QUEUE';
+
+function clearOfflineQueueStorage() {
+  if (typeof localStorage === 'undefined') return;
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('__exam_offline_queue__:')) {
+      keys.push(key);
+    }
+  }
+  keys.forEach((key) => localStorage.removeItem(key));
+}
 
 // 确保 uni 不存在，让 OfflineQueue 使用 compat 层
 delete globalThis.uni;
@@ -36,7 +41,8 @@ describe('OfflineQueue', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    storageService.get.mockReturnValue(null);
+    vi.resetModules();
+    clearOfflineQueueStorage();
 
     const mod = await import('../../src/utils/core/offline-queue.js');
     OfflineQueue = mod.OfflineQueue;
@@ -54,7 +60,7 @@ describe('OfflineQueue', () => {
 
       expect(id).toBeTruthy();
       expect(queue.queue.length).toBe(1);
-      expect(storageService.save).toHaveBeenCalled();
+      expect(typeof localStorage.getItem(QUEUE_STORAGE_KEY)).toBe('string');
     });
 
     it('高优先级排在低优先级前面', () => {
@@ -330,10 +336,13 @@ describe('OfflineQueue', () => {
   describe('_loadFromStorage', () => {
     it('过滤过期请求', () => {
       const now = Date.now();
-      storageService.get.mockReturnValue([
-        { id: 'fresh', timestamp: now - 1000, priority: 'normal' },
-        { id: 'expired', timestamp: now - 25 * 60 * 60 * 1000, priority: 'normal' }
-      ]);
+      localStorage.setItem(
+        QUEUE_STORAGE_KEY,
+        JSON.stringify([
+          { id: 'fresh', timestamp: now - 1000, priority: 'normal' },
+          { id: 'expired', timestamp: now - 25 * 60 * 60 * 1000, priority: 'normal' }
+        ])
+      );
 
       queue._loadFromStorage();
 
@@ -342,9 +351,7 @@ describe('OfflineQueue', () => {
     });
 
     it('存储数据损坏 → 空队列', () => {
-      storageService.get.mockImplementation(() => {
-        throw new Error('corrupt');
-      });
+      localStorage.setItem(QUEUE_STORAGE_KEY, '{invalid_json');
 
       queue._loadFromStorage();
 
@@ -352,7 +359,7 @@ describe('OfflineQueue', () => {
     });
 
     it('存储返回非数组 → 不加载', () => {
-      storageService.get.mockReturnValue('not_an_array');
+      localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify('not_an_array'));
 
       queue._loadFromStorage();
 

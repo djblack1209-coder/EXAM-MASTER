@@ -17,7 +17,7 @@ vi.mock('@/services/storageService.js', () => {
       save: vi.fn((key, val) => {
         store[key] = val;
       }),
-      saveMistake: vi.fn(async (data) => ({
+      saveMistake: vi.fn(async (_data) => ({
         success: true,
         id: 'mock_id_1',
         source: 'cloud'
@@ -30,9 +30,9 @@ vi.mock('@/services/storageService.js', () => {
 // Mock lafService（被 quiz-ai-analysis 直接导入）
 vi.mock('@/services/lafService.js', () => ({
   lafService: {
-    proxyAI: vi.fn(async (action, data) => ({
+    proxyAI: vi.fn(async (_action, _data) => ({
       code: 0,
-      data: 'Mock AI 解析：这道题考查的是...',
+      data: 'Mock 智能解析：这道题考查的是...',
       success: true
     }))
   }
@@ -113,7 +113,7 @@ describe('quiz-mistake-handler — 特征测试', () => {
       await saveToMistakes({
         currentQuestion: mockQuestion,
         userChoice: 0, // 选了 A（错误）
-        aiComment: '这是 AI 的解析'
+        aiComment: '这是智能的解析'
       });
 
       expect(uni.showLoading).toHaveBeenCalledWith({
@@ -126,7 +126,7 @@ describe('quiz-mistake-handler — 特征测试', () => {
       expect(savedData.question_content).toBe('以下哪个是正确的？');
       expect(savedData.user_answer).toBe('A');
       expect(savedData.correct_answer).toBe('B');
-      expect(savedData.analysis).toBe('这是 AI 的解析');
+      expect(savedData.analysis).toBe('这是智能的解析');
       expect(savedData.wrong_count).toBe(1);
       expect(savedData.is_mastered).toBe(false);
     });
@@ -184,7 +184,7 @@ describe('quiz-mistake-handler — 特征测试', () => {
       await saveToMistakes({
         currentQuestion: mockQuestion,
         userChoice: 0,
-        aiComment: 'AI说...'
+        aiComment: '智能说...'
       });
 
       const savedArray = storageService.save.mock.calls[0][1];
@@ -206,7 +206,7 @@ describe('quiz-mistake-handler — 特征测试', () => {
   });
 
   describe('updateMistakeWithAI()', () => {
-    it('应更新错题本中对应记录的 AI 解析', () => {
+    it('应更新错题本中对应记录的智能解析', () => {
       const existingMistakes = [
         {
           question: '以下哪个是正确的？',
@@ -218,15 +218,15 @@ describe('quiz-mistake-handler — 特征测试', () => {
 
       updateMistakeWithAI({
         currentQuestion: mockQuestion,
-        aiAnalysis: '新的 AI 深度解析'
+        aiAnalysis: '新的智能深度解析'
       });
 
       expect(storageService.save).toHaveBeenCalledWith(
         'mistake_book',
         expect.arrayContaining([
           expect.objectContaining({
-            aiAnalysis: '新的 AI 深度解析',
-            analysis: '新的 AI 深度解析',
+            aiAnalysis: '新的智能深度解析',
+            analysis: '新的智能深度解析',
             hasAIAnalysis: true
           })
         ]),
@@ -259,14 +259,14 @@ describe('quiz-ai-analysis — 特征测试', () => {
   });
 
   describe('fetchAIDeepAnalysis()', () => {
-    it('成功时应返回 AI 解析内容', async () => {
+    it('成功时应返回智能解析内容', async () => {
       const result = await fetchAIDeepAnalysis({
         question: mockQuestion,
         userChoice: 'A. 选项A'
       });
 
       expect(result.success).toBe(true);
-      expect(result.comment).toBe('Mock AI 解析：这道题考查的是...');
+      expect(result.comment).toBe('Mock 智能解析：这道题考查的是...');
     });
 
     it('应调用 lafService.proxyAI 并传入正确参数', async () => {
@@ -296,7 +296,7 @@ describe('quiz-ai-analysis — 特征测试', () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.comment).toContain('AI 解析暂时不可用');
+      expect(result.comment).toContain('智能解析暂时不可用');
     });
 
     it('网络超时时应返回超时降级文案', async () => {

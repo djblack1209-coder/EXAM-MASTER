@@ -565,12 +565,11 @@ describe('E2E 页面按钮交互 & 数据展示准确性', () => {
       const tabs = [
         { path: '/pages/index/index', label: '首页' },
         { path: '/pages/practice/index', label: '刷题' },
-        { path: '/pages/universe/index', label: '宇宙' },
         { path: '/pages/school/index', label: '择校' },
         { path: '/pages/profile/index', label: '我的' }
       ];
 
-      expect(tabs.length).toBe(5);
+      expect(tabs.length).toBe(4);
       tabs.forEach((tab) => {
         expect(tab.path).toMatch(/^\/pages\//);
         expect(tab.label.length).toBeGreaterThan(0);

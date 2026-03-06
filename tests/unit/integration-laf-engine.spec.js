@@ -244,7 +244,7 @@ describe('全链路: LafService 核心请求引擎', () => {
     });
   });
 
-  describe('Phase 5: AI 好友记忆', () => {
+  describe('Phase 5: 智能好友记忆', () => {
     it('getAiFriendMemory - 未登录返回空数组', async () => {
       const { lafService } = await import('@/services/lafService.js');
       global.__mockStorage = {};
