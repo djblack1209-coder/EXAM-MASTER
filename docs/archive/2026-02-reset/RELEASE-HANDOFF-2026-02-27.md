@@ -67,7 +67,7 @@
 - 工作流：`.github/workflows/backup.yml`
 - 机制：`preflight` 先检查 `KUBE_CONFIG_PROD` 与 `MONGODB_URI`，未配置时自动跳过并给出 notice。
 - 产物：备份归档上传为 GitHub Artifact，保留 30 天。
-- 本轮备份状态文档：`docs/BACKUP-STATUS-2026-02-28.md`。
+- 本轮备份状态文档：`docs/archive/2026-02-reset/BACKUP-STATUS-2026-02-28.md`。
 - 本轮提审全量审计单：`docs/WECHAT-SUBMISSION-AUDIT-2026-02-28.md`。
 
 ### 4.2 运维脚本

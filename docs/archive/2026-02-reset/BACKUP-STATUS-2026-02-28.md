@@ -18,7 +18,7 @@
 
 - 备份机制代码层面已就绪（工作流 + 脚本双路径）
 - 仓库内 `backups/` 目录不纳入版本控制（已在 `.gitignore` 忽略）
-- 交付文档以本文件、`docs/BASELINE-START-2026-02-28.md`、`laf-backend/DEPLOYMENT_GUIDE.md` 为准
+- 交付文档以本文件、`docs/archive/2026-02-reset/BASELINE-START-2026-02-28.md`、`laf-backend/DEPLOYMENT_GUIDE.md` 为准
 
 ---
 

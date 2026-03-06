@@ -13,7 +13,7 @@
 - 关键函数均已可调用（见“验证结果”）
 - 函数入口采用 **TS-only** 策略（`laf-backend/functions/*.ts`），不再维护同名 `.js` 入口
 
-建议把本文件与 `docs/BASELINE-START-2026-02-28.md`、`docs/BACKUP-STATUS-2026-02-28.md` 作为当前交付文档来源。
+建议把本文件与 `docs/archive/2026-02-reset/BASELINE-START-2026-02-28.md`、`docs/archive/2026-02-reset/BACKUP-STATUS-2026-02-28.md` 作为当前交付文档来源。
 
 ---
 
@@ -123,7 +123,7 @@ curl -sS "https://nf98ia8qnt.sealosbja.site/question-bank" \
 
 - QQ OAuth 仍需在 QQ 平台后台确认回调域与上线审核
 - 前端端到端（真机/浏览器）全流程回归尚未完成
-- 生产环境备份恢复演练记录需补齐（参考 `docs/BACKUP-STATUS-2026-02-28.md`）
+- 生产环境备份恢复演练记录需补齐（参考 `docs/archive/2026-02-reset/BACKUP-STATUS-2026-02-28.md`）
 
 ---
 
@@ -140,6 +140,6 @@ curl -sS "https://nf98ia8qnt.sealosbja.site/question-bank" \
 - 不要在文档中记录 PAT、API Key、Secret 明文
 - 仅在 `.env` / 平台环境变量中维护密钥
 - 每次发布后更新：
-  - `docs/BASELINE-START-2026-02-28.md`
-  - `docs/BACKUP-STATUS-2026-02-28.md`
+  - `docs/archive/2026-02-reset/BASELINE-START-2026-02-28.md`
+  - `docs/archive/2026-02-reset/BACKUP-STATUS-2026-02-28.md`
   - 本文件（若部署基线或验证结论发生变化）

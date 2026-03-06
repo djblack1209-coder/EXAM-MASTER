@@ -171,7 +171,7 @@
 
 - 备份工作流：`.github/workflows/backup.yml`（含 preflight，未配置密钥时会跳过并提示）
 - 备份脚本：`deploy/scripts/backup-mongodb.sh`（支持 full/incremental、SHA256 校验、过期清理）
-- 当前备份记录文档：`docs/BACKUP-STATUS-2026-02-28.md`
+- 当前备份记录文档：`docs/archive/2026-02-reset/BACKUP-STATUS-2026-02-28.md`
 - 说明：仓库已忽略 `backups/` 目录，交付以「工作流 Artifact + 备份状态文档」为准
 
 ---
