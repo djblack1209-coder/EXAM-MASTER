@@ -38,7 +38,7 @@
 
 4. Dependency risk baseline
    - Executed and documented production dependency audit baseline:
-     `npm audit --omit=dev --json` -> `docs/DEPENDENCY-AUDIT-BASELINE-2026-02-28.md`.
+     `npm audit --omit=dev --json` -> `docs/archive/2026-02-reset/DEPENDENCY-AUDIT-BASELINE-2026-02-28.md`.
 
 5. Laf strict source gate check
    - Re-ran `npm run audit:laf:function-sources -- --strict`.
