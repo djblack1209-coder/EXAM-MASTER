@@ -57,8 +57,13 @@ Date: 2026-03-07
 - `npm run lint`: passed
 - `npm run build:h5`: passed
 - `npm run test`: 79 passed, 0 failed
+- `npm run test:visual`: 41 passed, 0 failed
 - `npm run test:e2e:regression`: 32 passed, 0 failed
+- `npm run test:e2e:compat`: 96 passed, 0 failed
 - `npm run test:e2e:report`: 13 passed, 0 failed
+- `npm run test:maestro`: passed（无设备场景自动降级）
+- `npm run audit:secrets:tracked`: passed
+- `npm run audit:mp-main-usage`: passed
 - `node scripts/build/verify-wechat-artifacts.mjs`: passed
 
 ## Post-cleanup integrity checks

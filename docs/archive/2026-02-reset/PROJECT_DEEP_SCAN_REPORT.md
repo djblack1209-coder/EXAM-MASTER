@@ -608,7 +608,7 @@
 - **导入**: 6 个
 - **API调用**: 6 处
 
-#### src/pages/universe/index.vue
+#### src/pages/index/index.vue
 
 - **大小**: 38378 字节
 - **行数**: 1591

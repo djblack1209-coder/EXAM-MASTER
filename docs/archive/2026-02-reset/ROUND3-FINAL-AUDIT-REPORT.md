@@ -348,7 +348,7 @@ npm run build:mp-weixin
 ### 6.3 长期技术债清理（3-6 个月）
 
 1. **性能优化**：
-   - 优化 `universe/index.vue` 粒子动画（5700 粒子每帧全量遍历）
+   - 优化长列表/动画场景渲染性能
    - 优化 `rank.vue` 长列表渲染（每项每帧读 storage 两次）
    - 优化 Serverless 缓存策略（冷启动失效问题）
 

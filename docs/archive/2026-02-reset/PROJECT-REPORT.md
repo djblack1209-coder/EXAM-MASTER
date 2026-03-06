@@ -79,7 +79,6 @@ EXAM-MASTER/
 │   │   ├── favorite/             # 收藏夹
 │   │   ├── knowledge-graph/      # 知识图谱
 │   │   ├── study-detail/         # 学习详情
-│   │   ├── universe/             # 探索宇宙（游戏化）
 │   │   ├── settings/             # 设置
 │   │   └── splash/               # 启动页
 │   ├── components/               # 34个可复用组件
@@ -161,7 +160,7 @@ EXAM-MASTER/
 | 5    | src/services/lafService.js             | 1995 | 极高     |
 | 6    | laf-backend/functions/proxy-ai.ts      | 1850 | 极高     |
 | 7    | src/pages/settings/index.vue           | 1726 | 高       |
-| 8    | src/pages/universe/index.vue           | 1545 | 高       |
+| 8    | src/pages/index/index.vue              | 1545 | 高       |
 | 9    | src/pages/profile/index.vue            | 1520 | 高       |
 | 10   | src/pages/chat/chat.vue                | 1517 | 高       |
 
@@ -349,7 +348,7 @@ EXAM-MASTER/
 | 本地/容器备份脚本 | ✅ 就绪   | `deploy/scripts/backup-mongodb.sh` 支持 full/incremental、校验和、过期清理、可选 OSS/S3 上传 |
 | 备份恢复演练记录  | ⚠️ 待补齐 | 建议提审前在目标环境执行一次“备份 -> 恢复 -> 抽样校验”并留存截图/日志作为运维凭证            |
 | 发布交接清单      | ✅ 已输出 | 见 `docs/RELEASE-HANDOFF-2026-02-27.md`，包含提审前人工清单与风险接受项                      |
-| 备份状态文档      | ✅ 已更新 | 见 `docs/BACKUP-STATUS-2026-02-28.md`，集中记录备份证据路径与待补齐项                        |
+| 备份状态文档      | ✅ 已更新 | 见 `docs/archive/2026-02-reset/BACKUP-STATUS-2026-02-28.md`，集中记录备份证据路径与待补齐项  |
 
 ### 8.10 语义一致性与可观测性补丁（2026-02-28）
 

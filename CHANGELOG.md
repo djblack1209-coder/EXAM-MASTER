@@ -60,7 +60,7 @@ Phase 5a 安全加固：登录 TOCTOU 修复、分布式速率限制、NoSQL 注
 
 ### Changed
 
-- 新增文档入口与基线说明：`docs/README.md`、`docs/BASELINE-START-2026-02-28.md`
+- 新增文档入口与基线说明：`docs/README.md`、`docs/archive/2026-02-reset/BASELINE-START-2026-02-28.md`
 - 历史审计/交接文档整体归档到 `docs/archive/2026-02-reset/`
 - 备份与部署文档引用改为当前基线文档（不再使用历史修复报告作为主入口）
 - 生成型报告输出路径统一到 `docs/reports/`（deep scan、UI quality、visual reports）
@@ -189,7 +189,7 @@ CI/CD 流水线全面修复，消除全部 3 个失败 job，ESLint 从 1455 war
   - smart-question-picker 边界、adaptive-learning NaN + typo、draft-detector JSON 解析
   - clearChatData 缺失导入、image-optimizer 缩放 Bug、useNavbar 负值、field-normalizer falsy 0
   - checkin-streak 时区 ×2、streak-recovery 时区
-  - universe 动画泄漏 + URL 校验、splash 定时器泄漏、canvas-report 截断、LogoutButton 导入
+  - URL 校验、splash 定时器泄漏、canvas-report 截断、LogoutButton 导入
 - 前后端字段名不一致修复（4 类）：
   - rank.vue / pk-battle.vue: action `get_rank` → `get`（排行榜页面完全无法加载）
   - doc-convert.vue / lafService.js: `taskId` → `jobId`（文档转换状态轮询失败）
