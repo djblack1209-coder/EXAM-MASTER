@@ -10,18 +10,11 @@
         @error="onCdnIconError"
       />
       <view class="nav-center" hover-class="item-hover" @tap="showFriendSelector = true">
-        <image
-          :src="currentFriend.avatar"
-          class="friend-avatar-small"
-          mode="aspectFill"
-          @error="onAvatarError"
-        />
+        <image :src="currentFriend.avatar" class="friend-avatar-small" mode="aspectFill" @error="onAvatarError" />
         <text class="nav-title">
           {{ currentFriend.name }}
         </text>
-        <text class="nav-arrow">
-          ▼
-        </text>
+        <text class="nav-arrow"> ▼ </text>
       </view>
       <image
         :src="icons8('ios', 50, '333333', 'menu--v1')"
@@ -32,16 +25,12 @@
       />
     </view>
 
-    <!-- AI好友选择器弹窗 -->
+    <!-- 智能好友选择器弹窗 -->
     <view v-if="showFriendSelector" class="friend-selector-modal" @tap="showFriendSelector = false">
       <view class="friend-selector-content" @tap.stop>
         <view class="selector-header">
-          <text class="selector-title">
-            选择AI好友
-          </text>
-          <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false">
-            ×
-          </text>
+          <text class="selector-title"> 选择智能好友 </text>
+          <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false"> × </text>
         </view>
         <view class="friend-list">
           <view
@@ -52,13 +41,7 @@
             hover-class="item-hover"
             @tap="selectFriend(friend)"
           >
-            <image
-              :src="friend.avatar"
-              class="friend-avatar"
-              mode="aspectFill"
-              lazy-load
-              @error="onAvatarError"
-            />
+            <image :src="friend.avatar" class="friend-avatar" mode="aspectFill" lazy-load @error="onAvatarError" />
             <view class="friend-info">
               <text class="friend-name">
                 {{ friend.name }}
@@ -67,9 +50,7 @@
                 {{ friend.role }}
               </text>
             </view>
-            <view v-if="currentFriend.type === friend.type" class="friend-check">
-              ✓
-            </view>
+            <view v-if="currentFriend.type === friend.type" class="friend-check"> ✓ </view>
           </view>
         </view>
       </view>
@@ -106,6 +87,7 @@
         <text class="welcome-intro">
           {{ currentFriend.intro }}
         </text>
+        <text class="welcome-note"> 内容用于学习交流参考，请结合教材与官方资料自行判断。 </text>
       </view>
 
       <!-- 消息列表 -->
@@ -116,7 +98,7 @@
         class="msg-row"
         :class="msg.role"
       >
-        <!-- AI消息 -->
+        <!-- 智能消息 -->
         <template v-if="msg.role === 'assistant'">
           <image :src="currentFriend.avatar" class="avatar" mode="aspectFill" />
           <view class="bubble left-bubble">
@@ -141,12 +123,8 @@
                 {{ msg.time }}
               </text>
               <view v-if="msg.status" class="msg-status">
-                <text v-if="msg.status === 'sending'" class="status-icon">
-                  ⏳
-                </text>
-                <text v-else-if="msg.status === 'sent'" class="status-icon sent">
-                  ✓
-                </text>
+                <text v-if="msg.status === 'sending'" class="status-icon"> ⏳ </text>
+                <text v-else-if="msg.status === 'sent'" class="status-icon sent"> ✓ </text>
                 <text v-else-if="msg.status === 'failed'" class="status-icon failed" @tap="retryMessage(index)">
                   ⚠️ 点击重试
                 </text>
@@ -201,9 +179,7 @@
           :style="{ height: `${20 + voiceLevel * 30}px`, animationDelay: `${i * 0.1}s` }"
         />
       </view>
-      <text class="voice-hint">
-        正在录音...
-      </text>
+      <text class="voice-hint"> 正在录音... </text>
     </view>
 
     <!-- 输入区域 -->
@@ -241,21 +217,14 @@
         v-model="messageText"
         type="text"
         class="msg-input"
-        :placeholder="isRealtimeMode ? '实时答疑模式...' : '和AI好友聊聊...'"
+        :placeholder="isRealtimeMode ? '实时答疑模式...' : '和智能好友聊聊...'"
         confirm-type="send"
         maxlength="500"
         @confirm="handleSend"
         @focus="onInputFocus"
       />
-      <view
-        class="send-btn"
-        :class="{ active: messageText.trim() }"
-        hover-class="item-hover"
-        @tap="handleSend"
-      >
-        <text class="send-icon">
-          ↑
-        </text>
+      <view class="send-btn" :class="{ active: messageText.trim() }" hover-class="item-hover" @tap="handleSend">
+        <text class="send-icon"> ↑ </text>
       </view>
     </view>
   </view>
@@ -268,7 +237,7 @@ import { storageService } from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
-// AI路由器
+// 智能路由器
 import { realtimeAnswer } from './ai-router.js';
 // 外部 CDN 配置
 import config from '@/config';
@@ -290,7 +259,7 @@ const onThemeUpdate = (mode) => {
   isDark.value = mode === 'dark';
 };
 
-// AI好友配置
+// 智能好友配置
 const aiFriends = ref([
   {
     type: 'yan-cong',
@@ -461,7 +430,7 @@ const loadUserContext = async () => {
   } catch (e) {
     logger.warn('[Chat] 加载用户上下文失败:', e);
     // P007: 提供用户反馈，避免静默失败
-    uni.showToast({ title: '学习数据加载失败，AI回复可能不够精准', icon: 'none', duration: 2000 });
+    uni.showToast({ title: '学习数据加载失败，智能回复可能不够精准', icon: 'none', duration: 2000 });
   }
 };
 
@@ -500,7 +469,7 @@ const saveChatHistory = () => {
   }
 };
 
-// 选择AI好友
+// 选择智能好友
 const selectFriend = async (friend) => {
   if (friend.type === currentFriend.value.type) {
     showFriendSelector.value = false;
@@ -649,11 +618,11 @@ const startRecording = async () => {
       });
       _recorderManager.onStop((res) => {
         logger.log('[Chat] 录音完成:', res.tempFilePath);
-        uni.showToast({
-          title: '语音输入功能开发中，请使用文字输入',
-          icon: 'none',
-          duration: 2000
-        });
+        if (res.tempFilePath) {
+          processVoiceToText(res.tempFilePath);
+        } else {
+          uni.showToast({ title: '录音文件读取失败', icon: 'none' });
+        }
       });
       _recorderManager.onError((err) => {
         logger.error('[Chat] 录音错误:', err);
@@ -702,6 +671,95 @@ const stopRecording = async () => {
     }
   } catch (error) {
     logger.error('[Chat] 停止录音失败:', error);
+  }
+};
+
+const readAudioAsBase64 = (filePath) =>
+  new Promise((resolve, reject) => {
+    // #ifdef MP-WEIXIN
+    try {
+      const fs = uni.getFileSystemManager();
+      fs.readFile({
+        filePath,
+        encoding: 'base64',
+        success: (res) => resolve(res.data || ''),
+        fail: (err) => reject(err)
+      });
+    } catch (e) {
+      reject(e);
+    }
+    // #endif
+
+    // #ifdef H5
+    fetch(filePath)
+      .then((resp) => resp.blob())
+      .then(
+        (blob) =>
+          new Promise((innerResolve, innerReject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const base64 = String(reader.result || '').split(',')[1] || '';
+              innerResolve(base64);
+            };
+            reader.onerror = innerReject;
+            reader.readAsDataURL(blob);
+          })
+      )
+      .then((base64) => resolve(base64))
+      .catch((err) => reject(err));
+    // #endif
+
+    // #ifdef APP-PLUS
+    plus.io.resolveLocalFileSystemURL(
+      filePath,
+      (entry) => {
+        entry.file((file) => {
+          const reader = new plus.io.FileReader();
+          reader.onloadend = (e) => {
+            const base64 = String(e.target.result || '').split(',')[1] || '';
+            resolve(base64);
+          };
+          reader.onerror = (err) => reject(err);
+          reader.readAsDataURL(file);
+        });
+      },
+      (err) => reject(err)
+    );
+    // #endif
+  });
+
+const processVoiceToText = async (filePath) => {
+  if (!filePath) return;
+
+  uni.showLoading({ title: '语音识别中...' });
+  try {
+    const audioBase64 = await readAudioAsBase64(filePath);
+    if (!audioBase64) {
+      throw new Error('语音文件解析失败');
+    }
+
+    const response = await lafService.speechToText(audioBase64, 'mp3', {
+      prompt: '考研学习场景语音识别，请保留专业术语'
+    });
+
+    const recognizedText = response?.data?.text ? String(response.data.text).trim() : '';
+    if (!recognizedText) {
+      throw new Error(response?.message || '未识别到语音内容');
+    }
+
+    messageText.value = recognizedText;
+    uni.showToast({ title: '识别成功', icon: 'success', duration: 1000 });
+
+    await handleSend();
+  } catch (error) {
+    logger.error('[Chat] 语音识别失败:', error);
+    uni.showToast({
+      title: error?.message || '语音识别失败，请重试',
+      icon: 'none',
+      duration: 1800
+    });
+  } finally {
+    uni.hideLoading();
   }
 };
 
@@ -754,7 +812,7 @@ const handleRealtimeAnswer = async (question) => {
       logger.warn('[Chat] 实时答疑异常:', response.message);
     }
 
-    // 添加AI回复
+    // 添加智能回复
     const aiMsg = {
       role: 'assistant',
       content: reply,
@@ -824,7 +882,7 @@ const handleNormalChat = async (content) => {
   isTyping.value = true;
 
   try {
-    // 调用AI好友对话API
+    // 调用智能好友对话API
     const response = await lafService.aiFriendChat(sessionFriendType, content, {
       emotion: currentEmotion.value,
       conversationCount: conversationCount.value,
@@ -847,12 +905,12 @@ const handleNormalChat = async (content) => {
 
     if (response.code === 0 && response.data) {
       reply = response.data;
-      logger.log('[Chat] AI回复成功');
+      logger.log('[Chat] 智能回复成功');
     } else {
-      logger.warn('[Chat] AI回复异常:', response.message);
+      logger.warn('[Chat] 智能回复异常:', response.message);
     }
 
-    // 添加AI回复
+    // 添加智能回复
     const aiMsg = {
       role: 'assistant',
       content: reply,
@@ -1274,6 +1332,13 @@ onUnmounted(() => {
   color: var(--text-secondary);
   line-height: 1.6;
   max-width: 560rpx;
+}
+
+.welcome-note {
+  margin-top: 18rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  line-height: 1.5;
 }
 
 /* 消息行 */

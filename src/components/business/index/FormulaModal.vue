@@ -2,9 +2,7 @@
   <view v-if="visible" class="formula-modal" @tap="$emit('close')">
     <view class="formula-content" @tap.stop>
       <view class="formula-header">
-        <text class="formula-title">
-          <BaseIcon name="formula" :size="32" /> 公式定理速查
-        </text>
+        <text class="formula-title"> <BaseIcon name="formula" :size="32" /> 公式定理速查 </text>
         <view class="formula-close" @tap="$emit('close')">
           <text>×</text>
         </view>
@@ -23,9 +21,7 @@
         </view>
       </scroll-view>
       <view class="formula-footer">
-        <text class="formula-tip">
-          <BaseIcon name="bulb" :size="24" /> 更多公式正在整理中...
-        </text>
+        <text class="formula-tip"> <BaseIcon name="bulb" :size="24" /> 更多公式正在整理中... </text>
       </view>
     </view>
   </view>

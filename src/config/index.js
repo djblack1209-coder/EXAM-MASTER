@@ -171,20 +171,20 @@ const config = {
     timeout: getEnvNumber('VITE_API_TIMEOUT', 30000)
   },
 
-  // ==================== AI 服务配置 ====================
+  // ==================== 智能服务配置 ====================
 
   /**
-   * AI 服务配置
+   * 智能服务配置
    */
   ai: {
     /**
-     * AI 模型名称
+     * 智能模型名称
      * 配置方式：VITE_AI_MODEL=glm-4-plus
      */
     model: getEnv('VITE_AI_MODEL', 'glm-4-plus'),
 
     /**
-     * AI 请求超时时间（毫秒）
+     * 智能请求超时时间（毫秒）
      * 配置方式：VITE_AI_TIMEOUT=60000
      */
     timeout: getEnvNumber('VITE_AI_TIMEOUT', 60000)
@@ -296,7 +296,7 @@ const config = {
     enablePK: getEnvBoolean('VITE_ENABLE_PK', true),
 
     /**
-     * 是否启用AI诊断
+     * 是否启用智能诊断
      */
     enableAIDiagnosis: getEnvBoolean('VITE_ENABLE_AI_DIAGNOSIS', true),
 
@@ -353,7 +353,7 @@ const config = {
     /**
      * 审核期间隐藏的功能列表
      */
-    hiddenFeatures: ['universe', 'ai-photo-search', 'voice-input'],
+    hiddenFeatures: ['ai-photo-search', 'voice-input'],
 
     /**
      * 是否启用重型功能（Canvas动画、WebGL等）

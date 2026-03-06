@@ -5,9 +5,7 @@
       <text class="progress-label">
         {{ label }}
       </text>
-      <text class="progress-value" :style="{ color: valueColor }">
-        {{ currentValue }}{{ unit }}
-      </text>
+      <text class="progress-value" :style="{ color: valueColor }"> {{ currentValue }}{{ unit }} </text>
     </view>
 
     <!-- 进度条容器 -->

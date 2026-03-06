@@ -509,7 +509,7 @@ class PosterGenerator {
         color: '#ffffff'
       });
 
-      this.drawText('AI助力，一战成硕！', {
+      this.drawText('智能助力，一战成硕！', {
         y: 380,
         fontSize: 20,
         fontWeight: 'normal',

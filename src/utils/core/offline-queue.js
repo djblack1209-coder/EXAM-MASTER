@@ -22,7 +22,6 @@
  * await offlineQueue.processQueue()
  */
 
-import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
 function createNetworkUniCompat() {
@@ -53,6 +52,77 @@ function createNetworkUniCompat() {
 
 const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
 const uni = globalRef['uni'] || createNetworkUniCompat();
+
+function createQueueStorageCompat() {
+  const memoryStore = new Map();
+  const keyPrefix = '__exam_offline_queue__:';
+
+  const readLocal = (key) => {
+    try {
+      if (typeof localStorage === 'undefined') return undefined;
+      const raw = localStorage.getItem(`${keyPrefix}${key}`);
+      if (raw === null) return undefined;
+      return JSON.parse(raw);
+    } catch {
+      return undefined;
+    }
+  };
+
+  const writeLocal = (key, value) => {
+    try {
+      if (typeof localStorage === 'undefined') return false;
+      localStorage.setItem(`${keyPrefix}${key}`, JSON.stringify(value));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  return {
+    get(key, defaultValue = null) {
+      try {
+        if (typeof uni.getStorageSync === 'function') {
+          const value = uni.getStorageSync(key);
+          if (value !== '' && value !== undefined && value !== null) {
+            return value;
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+
+      if (memoryStore.has(key)) {
+        return memoryStore.get(key);
+      }
+
+      const localValue = readLocal(key);
+      if (localValue !== undefined) {
+        memoryStore.set(key, localValue);
+        return localValue;
+      }
+
+      return defaultValue;
+    },
+    set(key, value) {
+      let persisted = false;
+      try {
+        if (typeof uni.setStorageSync === 'function') {
+          uni.setStorageSync(key, value);
+          persisted = true;
+        }
+      } catch {
+        persisted = false;
+      }
+
+      memoryStore.set(key, value);
+      if (!persisted) {
+        writeLocal(key, value);
+      }
+    }
+  };
+}
+
+const queueStorage = createQueueStorageCompat();
 
 const STORAGE_KEY = 'EXAM_OFFLINE_QUEUE';
 const MAX_QUEUE_SIZE = 100;
@@ -114,7 +184,7 @@ class OfflineQueue {
    */
   _loadFromStorage() {
     try {
-      const stored = storageService.get(STORAGE_KEY);
+      const stored = queueStorage.get(STORAGE_KEY, []);
       if (stored && Array.isArray(stored)) {
         // 过滤过期的请求
         const now = Date.now();
@@ -150,7 +220,7 @@ class OfflineQueue {
         metadata: item.metadata
       }));
 
-      storageService.save(STORAGE_KEY, serializable);
+      queueStorage.set(STORAGE_KEY, serializable);
     } catch (error) {
       logger.error('[OfflineQueue] 保存队列失败:', error);
     }

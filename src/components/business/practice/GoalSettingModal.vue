@@ -2,61 +2,33 @@
   <view v-if="visible" class="goal-modal-overlay" @tap="$emit('close')">
     <view class="goal-modal" @tap.stop>
       <view class="goal-modal-header">
-        <text class="goal-modal-title">
-          设置每日目标
-        </text>
+        <text class="goal-modal-title"> 设置每日目标 </text>
         <view class="goal-modal-close" @tap="$emit('close')">
           <BaseIcon name="close" :size="24" />
         </view>
       </view>
       <view class="goal-modal-body">
         <view class="goal-input-group">
-          <button class="goal-adjust-btn" @tap="adjustValue(-5)">
-            -
-          </button>
+          <button class="goal-adjust-btn" @tap="adjustValue(-5)">-</button>
           <view class="goal-input-wrapper">
-            <input
-              v-model="localValue"
-              type="number"
-              class="goal-input"
-              :min="5"
-              :max="200"
-            />
-            <text class="goal-unit">
-              道/天
-            </text>
+            <input v-model="localValue" type="number" class="goal-input" :min="5" :max="200" />
+            <text class="goal-unit"> 道/天 </text>
           </view>
-          <button class="goal-adjust-btn" @tap="adjustValue(5)">
-            +
-          </button>
+          <button class="goal-adjust-btn" @tap="adjustValue(5)">+</button>
         </view>
         <view class="goal-presets">
-          <view class="goal-preset" :class="{ active: localValue === 10 }" @tap="localValue = 10">
-            10道
-          </view>
-          <view class="goal-preset" :class="{ active: localValue === 20 }" @tap="localValue = 20">
-            20道
-          </view>
-          <view class="goal-preset" :class="{ active: localValue === 30 }" @tap="localValue = 30">
-            30道
-          </view>
-          <view class="goal-preset" :class="{ active: localValue === 50 }" @tap="localValue = 50">
-            50道
-          </view>
+          <view class="goal-preset" :class="{ active: localValue === 10 }" @tap="localValue = 10"> 10道 </view>
+          <view class="goal-preset" :class="{ active: localValue === 20 }" @tap="localValue = 20"> 20道 </view>
+          <view class="goal-preset" :class="{ active: localValue === 30 }" @tap="localValue = 30"> 30道 </view>
+          <view class="goal-preset" :class="{ active: localValue === 50 }" @tap="localValue = 50"> 50道 </view>
         </view>
         <view class="goal-tips">
-          <text class="goal-tip-text">
-            建议：每天坚持刷20-30道题，效果最佳
-          </text>
+          <text class="goal-tip-text"> 建议：每天坚持刷20-30道题，效果最佳 </text>
         </view>
       </view>
       <view class="goal-modal-footer">
-        <button class="goal-cancel-btn" @tap="$emit('close')">
-          取消
-        </button>
-        <button class="goal-save-btn" @tap="handleSave">
-          保存
-        </button>
+        <button class="goal-cancel-btn" @tap="$emit('close')">取消</button>
+        <button class="goal-save-btn" @tap="handleSave">保存</button>
       </view>
     </view>
   </view>

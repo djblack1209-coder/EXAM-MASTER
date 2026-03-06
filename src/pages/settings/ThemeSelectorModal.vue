@@ -3,12 +3,8 @@
   <view v-if="visible" class="modal-mask" @tap="$emit('close')">
     <view class="modal-content theme-selector" @tap.stop>
       <view class="modal-header">
-        <text class="modal-title">
-          选择主题风格
-        </text>
-        <text class="close-btn" @tap="$emit('close')">
-          ✕
-        </text>
+        <text class="modal-title"> 选择主题风格 </text>
+        <text class="close-btn" @tap="$emit('close')"> ✕ </text>
       </view>
       <view class="modal-body">
         <view class="theme-option" @tap="handleSelect('wise')">
@@ -16,12 +12,8 @@
             <view class="preview-color" style="background: var(--gradient-primary)" />
           </view>
           <view class="theme-info">
-            <text class="theme-name">
-              Wise 绿色主题
-            </text>
-            <text class="theme-desc">
-              清新自然，护眼舒适
-            </text>
+            <text class="theme-name"> Wise 绿色主题 </text>
+            <text class="theme-desc"> 清新自然，护眼舒适 </text>
           </view>
           <view v-if="currentTheme === 'wise'" class="theme-check">
             <BaseIcon name="check" :size="28" />
@@ -35,12 +27,8 @@
             />
           </view>
           <view class="theme-info">
-            <text class="theme-name">
-              Bitget Wallet 蓝色主题
-            </text>
-            <text class="theme-desc">
-              科技感十足，专业高效
-            </text>
+            <text class="theme-name"> Bitget Wallet 蓝色主题 </text>
+            <text class="theme-desc"> 科技感十足，专业高效 </text>
           </view>
           <view v-if="currentTheme === 'bitget'" class="theme-check">
             <BaseIcon name="check" :size="28" />

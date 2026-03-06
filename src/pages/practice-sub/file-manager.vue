@@ -3,12 +3,8 @@
     <!-- 顶部导航 -->
     <view class="top-nav">
       <view class="nav-left" @tap="goBack">
-        <text class="back-arrow">
-          ←
-        </text>
-        <text class="nav-title">
-          文件管理
-        </text>
+        <text class="back-arrow"> ← </text>
+        <text class="nav-title"> 文件管理 </text>
       </view>
       <view class="nav-right">
         <view v-if="files.length > 0" class="icon-btn danger" @tap="clearAll">
@@ -62,26 +58,17 @@
         </view>
         <view class="file-actions">
           <view class="action-btn view-btn" @tap="viewFile(file)">
-            <text class="action-text">
-              查看
-            </text>
+            <text class="action-text"> 查看 </text>
           </view>
           <view class="action-btn delete-btn" @tap="deleteFile(index)">
-            <text class="action-text">
-              删除
-            </text>
+            <text class="action-text"> 删除 </text>
           </view>
         </view>
       </view>
     </view>
 
     <!-- 空状态 -->
-    <BaseEmpty
-      v-else
-      icon="folder"
-      title="暂无文件"
-      desc="导入学习资料后，文件将显示在这里"
-    />
+    <BaseEmpty v-else icon="folder" title="暂无文件" desc="导入学习资料后，文件将显示在这里" />
   </view>
 </template>
 

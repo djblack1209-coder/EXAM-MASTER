@@ -5,15 +5,9 @@
         <view class="speed-icon">
           <BaseIcon name="lightning" :size="64" />
         </view>
-        <view class="speed-title">
-          极速体验就绪
-        </view>
-        <view class="speed-desc">
-          前 5 道题已生成！您可以立即开始，AI 将在后台静默为您补充剩余题目。
-        </view>
-        <button class="primary-btn" @tap="$emit('start')">
-          立即开始
-        </button>
+        <view class="speed-title"> 极速体验就绪 </view>
+        <view class="speed-desc"> 前 5 道题已生成！您可以立即开始，智能将在后台静默为您补充剩余题目。 </view>
+        <button class="primary-btn" @tap="$emit('start')">立即开始</button>
       </view>
     </view>
   </view>

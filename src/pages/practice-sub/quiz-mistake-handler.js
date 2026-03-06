@@ -1,6 +1,6 @@
 /**
  * 错题本处理模块
- * 从 do-quiz.vue 提取，负责错题的云端/本地保存与 AI 解析更新
+ * 从 do-quiz.vue 提取，负责错题的云端/本地保存与智能解析更新
  *
  * ⚠️ 隐藏约束（Chesterton's Fence）：
  * - 双字段兼容：wrongCount/wrong_count、question/question_content 等是迁移期产物，必须同时写入
@@ -16,7 +16,7 @@ import { logger } from '@/utils/logger.js';
  * @param {Object} params
  * @param {Object} params.currentQuestion - 当前题目对象
  * @param {number} params.userChoice - 用户选择的选项索引
- * @param {string} params.aiComment - AI 解析评论
+ * @param {string} params.aiComment - 智能解析评论
  */
 export async function saveToMistakes({ currentQuestion, userChoice, aiComment }) {
   if (!currentQuestion) return;
@@ -24,17 +24,20 @@ export async function saveToMistakes({ currentQuestion, userChoice, aiComment })
   uni.showLoading({ title: '保存错题中...', mask: false });
 
   const questionText = currentQuestion.question || currentQuestion.title;
-  const userAnswer = currentQuestion.options && currentQuestion.options[userChoice]
-    ? String.fromCharCode(65 + userChoice) // A, B, C, D
-    : '';
+  const userAnswer =
+    currentQuestion.options && currentQuestion.options[userChoice]
+      ? String.fromCharCode(65 + userChoice) // A, B, C, D
+      : '';
   const correctAnswer = currentQuestion.answer || '';
 
   // 检查是否已存在（先查本地缓存）
   const localMistakes = storageService.get('mistake_book', []);
-  const existingMistake = localMistakes.find((m) =>
-    (m.question === questionText || m.question_content === questionText) ||
-    (m.id && m.id === currentQuestion.id) ||
-    (m._id && m._id === currentQuestion.id)
+  const existingMistake = localMistakes.find(
+    (m) =>
+      m.question === questionText ||
+      m.question_content === questionText ||
+      (m.id && m.id === currentQuestion.id) ||
+      (m._id && m._id === currentQuestion.id)
   );
 
   // 构建符合 Schema 的数据格式
@@ -61,9 +64,7 @@ export async function saveToMistakes({ currentQuestion, userChoice, aiComment })
       if (existingMistake && result.source === 'cloud') {
         // 云端保存成功，更新本地缓存中的错误次数
         const updatedMistakes = storageService.get('mistake_book', []);
-        const index = updatedMistakes.findIndex((m) =>
-          m.id === result.id || m._id === result.id
-        );
+        const index = updatedMistakes.findIndex((m) => m.id === result.id || m._id === result.id);
         if (index >= 0) {
           updatedMistakes[index].wrong_count = mistakeData.wrong_count;
           storageService.save('mistake_book', updatedMistakes, true);
@@ -97,9 +98,9 @@ export async function saveToMistakes({ currentQuestion, userChoice, aiComment })
     };
 
     if (existingMistake) {
-      const index = mistakes.findIndex((m) =>
-        (m.question === questionText || m.question_content === questionText) ||
-        (m.id && m.id === currentQuestion.id)
+      const index = mistakes.findIndex(
+        (m) =>
+          m.question === questionText || m.question_content === questionText || (m.id && m.id === currentQuestion.id)
       );
       if (index >= 0) {
         mistakes[index] = { ...mistakes[index], ...mistakeRecord };
@@ -116,19 +117,21 @@ export async function saveToMistakes({ currentQuestion, userChoice, aiComment })
 }
 
 /**
- * 将 AI 解析更新到错题本中的对应记录
+ * 将智能解析更新到错题本中的对应记录
  * @param {Object} params
  * @param {Object} params.currentQuestion - 当前题目对象
- * @param {string} params.aiAnalysis - AI 解析内容
+ * @param {string} params.aiAnalysis - 智能解析内容
  */
 export function updateMistakeWithAI({ currentQuestion, aiAnalysis }) {
   const mistakes = storageService.get('mistake_book', []);
   const questionText = currentQuestion.question || currentQuestion.title;
 
-  const mistakeIndex = mistakes.findIndex((m) =>
-    (m.question === questionText || m.question_content === questionText) ||
-    (m.id && m.id === currentQuestion.id) ||
-    (m._id && m._id === currentQuestion.id)
+  const mistakeIndex = mistakes.findIndex(
+    (m) =>
+      m.question === questionText ||
+      m.question_content === questionText ||
+      (m.id && m.id === currentQuestion.id) ||
+      (m._id && m._id === currentQuestion.id)
   );
 
   if (mistakeIndex >= 0) {

@@ -17,15 +17,15 @@
  * │   _checkRateLimit()     前端 API 限流器                       │
  * │   request()             通用请求方法（重试+缓存+去重+签名）     │
  * ├─────────────────────────────────────────────────────────────┤
- * │ 🤖 AI 服务（L440-871）                                       │
- * │   proxyAI()             AI 代理请求（核心，含兼容桥接）         │
- * │   aiFriendChat()        AI 好友角色化对话                     │
+ * │ 🤖 智能服务（L440-871）                                       │
+ * │   proxyAI()             智能代理请求（核心，含兼容桥接）         │
+ * │   aiFriendChat()        智能好友角色化对话                     │
  * │   adaptiveQuestionPick() 智能组题                             │
  * │   materialUnderstand()  资料理解出题                          │
  * │   trendPredict()        考点趋势预测                          │
  * │   deepMistakeAnalysis() 错题深度分析                          │
  * │   photoSearch()         拍照搜题（视觉识别）                   │
- * │   getAiFriendMemory()   获取 AI 好友对话记忆                  │
+ * │   getAiFriendMemory()   获取智能好友对话记忆                  │
  * ├─────────────────────────────────────────────────────────────┤
  * │ 🏫 学校数据（L936-1026）                                     │
  * │   getSchoolList()       获取学校列表                          │
@@ -97,6 +97,7 @@ import config from '../config/index.js';
 import { getUserId, getToken } from './auth-storage.js';
 // ✅ 6.3: 性能监控集成
 import { perfMonitor } from '@/utils/core/performance.js';
+import { offlineQueue } from '@/utils/core/offline-queue.js';
 
 // ✅ 从统一配置读取，支持环境变量
 const BASE_URL = config.api.baseUrl;
@@ -130,6 +131,7 @@ function _requestSign(path, timestamp) {
  * @property {boolean} [skipNetworkCheck] - 是否跳过网络连通性检查
  * @property {boolean} [skipRateLimit] - 是否跳过前端限流
  * @property {boolean} [skipCache] - 是否跳过只读缓存
+ * @property {boolean} [suppressAuthFailure] - 是否抑制全局 authFailure 广播
  * @property {number} [maxRetries] - 最大重试次数（默认2）
  * @property {number} [coldStartRetries] - Laf 冷启动重试次数（默认6）
  * @property {number} [timeout] - 请求超时毫秒数（默认30000）
@@ -408,7 +410,7 @@ function _checkNetwork() {
 // ✅ I004: 前端 API 限流器 — 滑动窗口，按路径分组
 const _rateLimits = {
   // path前缀 → { maxRequests, windowMs }
-  '/proxy-ai': { maxRequests: 10, windowMs: 60000 }, // AI: 10次/分钟
+  '/proxy-ai': { maxRequests: 10, windowMs: 60000 }, // 智能: 10次/分钟
   '/ai-photo-search': { maxRequests: 5, windowMs: 60000 }, // 拍照搜题: 5次/分钟
   '/voice-service': { maxRequests: 8, windowMs: 60000 }, // 语音: 8次/分钟
   _default: { maxRequests: 30, windowMs: 60000 } // 默认: 30次/分钟
@@ -554,10 +556,15 @@ export const lafService = {
                   }
                   resolve(responseData);
                 } else if (res.statusCode === 401 || res.statusCode === 403) {
-                  // 认证失败，不重试
+                  // 认证相关失败，不重试
                   logger.warn(`[LafService] 认证失败 (${res.statusCode}): ${path}`);
-                  // ✅ I002: 全局广播认证失败，让 App 层统一处理（跳转登录等）
-                  uni.$emit('authFailure', { statusCode: res.statusCode, path });
+
+                  // 仅对 401（凭证失效）广播全局 authFailure；403 往往是业务权限问题，不应强制登出
+                  // 同时允许调用方通过 suppressAuthFailure 控制静默处理
+                  if (res.statusCode === 401 && !options.suppressAuthFailure) {
+                    uni.$emit('authFailure', { statusCode: res.statusCode, path });
+                  }
+
                   reject({
                     statusCode: res.statusCode,
                     message: res.statusCode === 401 ? '登录已过期，请重新登录' : '没有访问权限',
@@ -652,7 +659,7 @@ export const lafService = {
   },
 
   /**
-   * AI 代理请求（适配后端 action/payload 模式）
+   * 智能代理请求（适配后端 action/payload 模式）
    * ⚠️ 重要：后端使用 action/payload 结构，不是直接传 messages
    *
    * @param {string} action - 操作类型：'generate_questions'(生成题目) | 'analyze'(错题分析) | 'chat'(通用聊天)
@@ -689,7 +696,7 @@ export const lafService = {
     // ✅ 检查 content 字段（对于 chat 类型的 action，content 是必需的）
     if (action === 'chat' || action === 'analyze' || action === 'generate_questions') {
       if (!payload.content || typeof payload.content !== 'string' || payload.content.trim() === '') {
-        logger.error('❌ [LafService] 拦截: 尝试发送空内容给 AI');
+        logger.error('❌ [LafService] 拦截: 尝试发送空内容给智能');
         return {
           code: -1,
           success: false,
@@ -701,7 +708,7 @@ export const lafService = {
       payload.content = payload.content.trim();
     }
 
-    logger.log('[LafService] 🚀 发起 AI 请求:', {
+    logger.log('[LafService] 🚀 发起智能请求:', {
       action,
       payloadKeys: Object.keys(payload || {}),
       payloadSample: JSON.stringify(payload).substring(0, 100),
@@ -731,7 +738,7 @@ export const lafService = {
         userId: userId
       });
 
-      // ✅ P1-2: AI 请求超时保护（修复 setTimeout 泄漏）
+      // ✅ P1-2: 智能请求超时保护（修复 setTimeout 泄漏）
       const aiTimeout = _options.timeout || config.ai.timeout || 60000;
       let timeoutId;
       const timeoutPromise = new Promise((_, reject) => {
@@ -764,7 +771,7 @@ export const lafService = {
       // 这样既符合新标准，也能骗过老前端的 (res.code !== 0) 检查
       if (response.success === true) {
         response.code = 0; // <--- 关键兼容补丁！
-        logger.log('[LafService] ✅ AI 响应成功 (兼容模式已激活)');
+        logger.log('[LafService] ✅ 智能响应成功 (兼容模式已激活)');
         logger.log('[LafService] 📦 返回数据:', {
           code: response.code,
           success: response.success,
@@ -776,14 +783,14 @@ export const lafService = {
 
       // 兼容旧格式：{ code: 0, data: {...} }
       if (response.code === 0) {
-        logger.log('[LafService] ✅ AI 响应成功 (旧格式)');
+        logger.log('[LafService] ✅ 智能响应成功 (旧格式)');
         return response;
       }
 
       // 处理错误响应
       if (response.error || response.success === false) {
-        const errorMsg = response.error || response.message || 'AI 服务异常';
-        logger.error('[LafService] ❌ AI 响应错误:', errorMsg);
+        const errorMsg = response.error || response.message || '智能服务异常';
+        logger.error('[LafService] ❌ 智能响应错误:', errorMsg);
         throw new Error(errorMsg);
       }
 
@@ -792,12 +799,12 @@ export const lafService = {
       return {
         code: -1,
         success: false,
-        message: 'AI 服务返回了未知格式的响应',
+        message: '智能服务返回了未知格式的响应',
         data: response,
         _fallback: true
       };
     } catch (error) {
-      logger.error('[LafService] ❌ AI 代理请求失败:', {
+      logger.error('[LafService] ❌ 智能代理请求失败:', {
         error: error,
         message: error.message,
         stack: error.stack
@@ -809,11 +816,11 @@ export const lafService = {
       const isOffline = error.message?.includes('网络') || error.errMsg?.includes('fail');
 
       if (isTimeout) {
-        logger.warn('[LafService] ⏱️ AI 请求超时');
+        logger.warn('[LafService] ⏱️ 智能请求超时');
         return {
           code: -1,
           success: false,
-          message: 'AI 思考时间过长，请稍后重试或简化您的问题',
+          message: '智能思考时间过长，请稍后重试或简化您的问题',
           error: error,
           data: null,
           _timeout: true,
@@ -824,7 +831,7 @@ export const lafService = {
       return {
         code: -1,
         success: false,
-        message: isOffline ? '当前网络不可用，AI功能暂时无法使用' : error.message || 'AI 服务响应异常',
+        message: isOffline ? '当前网络不可用，智能功能暂时无法使用' : error.message || '智能服务响应异常',
         error: error,
         data: null,
         _offline: isOffline,
@@ -954,14 +961,14 @@ export const lafService = {
     }
   },
 
-  // ==================== AI 升级功能 v2.0 ====================
+  // ==================== 智能升级功能 v2.0 ====================
 
   /**
-   * AI好友对话（角色化聊天）
+   * 智能好友对话（角色化聊天）
    * @param {string} friendType - 好友类型: 'yan-cong'(学霸) | 'yan-man'(心理导师) | 'yan-shi'(名师) | 'yan-you'(研友)
    * @param {string} content - 用户消息
    * @param {Object} context - 上下文信息
-   * @returns {Promise} 返回AI回复
+   * @returns {Promise} 返回智能回复
    *
    * @example
    * await lafService.aiFriendChat('yan-cong', '我最近学习压力好大', { emotion: 'anxious' })
@@ -976,7 +983,7 @@ export const lafService = {
       };
     }
 
-    logger.log('[LafService] 🤖 AI好友对话:', { friendType, contentLength: content.length });
+    logger.log('[LafService] 🤖 智能好友对话:', { friendType, contentLength: content.length });
 
     return await this.proxyAI('friend_chat', {
       content: content.trim(),
@@ -1173,7 +1180,7 @@ export const lafService = {
   },
 
   /**
-   * 获取AI好友对话记忆
+   * 获取智能好友对话记忆
    * @param {string} friendType - 好友类型
    * @returns {Promise} 返回历史对话
    */
@@ -1192,8 +1199,8 @@ export const lafService = {
       });
       return response;
     } catch (error) {
-      logger.warn('[LafService] 获取AI好友记忆失败:', error);
-      return normalizeError(error, '获取AI好友记忆');
+      logger.warn('[LafService] 获取智能好友记忆失败:', error);
+      return normalizeError(error, '获取智能好友记忆');
     }
   },
 
@@ -2054,27 +2061,81 @@ export const lafService = {
       logger.warn('[LafService] 去除背景失败:', error);
       return { code: -1, success: false, message: '处理失败', data: null };
     }
+  },
+
+  // ==================== 语音服务 ====================
+
+  /**
+   * 语音转文字
+   * @param {string} audioBase64 - 音频 base64
+   * @param {string} audioFormat - 音频格式（默认 mp3）
+   * @param {object} options - 额外参数（hotwords/prompt）
+   */
+  async speechToText(audioBase64, audioFormat = 'mp3', options = {}) {
+    try {
+      return await this.request(
+        '/voice-service',
+        {
+          action: 'speech_to_text',
+          audioBase64,
+          audioFormat,
+          ...options
+        },
+        { timeout: 60000, maxRetries: 1 }
+      );
+    } catch (error) {
+      logger.warn('[LafService] 语音识别失败:', error);
+      return normalizeError(error, '语音识别');
+    }
+  },
+
+  /**
+   * 文字转语音
+   * @param {string} text - 待合成文本
+   * @param {object} options - 额外参数（voice/speed/volume/format）
+   */
+  async textToSpeech(text, options = {}) {
+    try {
+      return await this.request(
+        '/voice-service',
+        {
+          action: 'text_to_speech',
+          text,
+          ...options
+        },
+        { timeout: 60000, maxRetries: 1 }
+      );
+    } catch (error) {
+      logger.warn('[LafService] 语音合成失败:', error);
+      return normalizeError(error, '语音合成');
+    }
+  },
+
+  /**
+   * 获取可用音色列表
+   */
+  async getVoiceOptions() {
+    try {
+      return await this.request('/voice-service', { action: 'get_voices' });
+    } catch (error) {
+      logger.warn('[LafService] 获取音色列表失败:', error);
+      return normalizeError(error, '获取音色列表');
+    }
   }
 };
 
 // ✅ 问题清单修复：注册离线队列请求重建函数
 // app 重启后 requestFnMap 丢失，通过 requestData 重建请求
 try {
-  import('@/utils/core/offline-queue.js')
-    .then(({ offlineQueue }) => {
-      if (offlineQueue && typeof offlineQueue.registerRebuilder === 'function') {
-        offlineQueue.registerRebuilder((requestData) => {
-          const { path, data, options } = requestData || {};
-          if (!path) {
-            return Promise.reject(new Error('无法重建请求：缺少 path'));
-          }
-          return lafService.request(path, data || {}, options || {});
-        });
+  if (offlineQueue && typeof offlineQueue.registerRebuilder === 'function') {
+    offlineQueue.registerRebuilder((requestData) => {
+      const { path, data, options } = requestData || {};
+      if (!path) {
+        return Promise.reject(new Error('无法重建请求：缺少 path'));
       }
-    })
-    .catch(() => {
-      // 静默失败，offline-queue 可能未加载
+      return lafService.request(path, data || {}, options || {});
     });
+  }
 } catch (_e) {
   // 静默
 }

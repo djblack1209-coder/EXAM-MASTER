@@ -8,9 +8,7 @@
       <!-- 弹窗头部 -->
       <view class="panel-header ds-flex ds-flex-between">
         <view class="header-left ds-flex ds-flex-col">
-          <text class="header-title ds-text-lg ds-font-bold">
-            AI 咨询
-          </text>
+          <text class="header-title ds-text-lg ds-font-bold"> 智能咨询 </text>
           <text class="header-subtitle ds-text-xs ds-text-secondary">
             {{ schoolName }}
           </text>
@@ -23,12 +21,7 @@
       </view>
 
       <!-- 对话内容区域 -->
-      <scroll-view
-        scroll-y
-        class="chat-content"
-        :scroll-into-view="scrollToView"
-        scroll-with-animation
-      >
+      <scroll-view scroll-y class="chat-content" :scroll-into-view="scrollToView" scroll-with-animation>
         <!-- 消息列表 -->
         <view class="message-list ds-flex ds-flex-col ds-gap-md">
           <!-- 欢迎消息 -->
@@ -38,7 +31,7 @@
             </view>
             <view class="message-bubble assistant-bubble">
               <text class="message-text ds-text-sm">
-                你好！我是 AI 升学顾问，有关于 {{ schoolName }} 的任何问题都可以问我。
+                你好！我是智能升学顾问，有关于 {{ schoolName }} 的任何问题都可以问我。
               </text>
             </view>
           </view>
@@ -101,18 +94,14 @@
             @confirm="sendMessage"
           ></textarea>
           <view class="input-actions ds-flex ds-gap-xs">
-            <text class="char-count ds-text-xs ds-text-secondary">
-              {{ inputContent.length }}/200
-            </text>
+            <text class="char-count ds-text-xs ds-text-secondary"> {{ inputContent.length }}/200 </text>
             <view
               class="send-btn ds-touchable ds-flex"
               :class="{ 'can-send': canSend }"
               :disabled="!canSend || isTyping"
               @tap="sendMessage"
             >
-              <text class="send-icon">
-                →
-              </text>
+              <text class="send-icon"> → </text>
             </view>
           </view>
         </view>
@@ -218,7 +207,7 @@ export default {
       this.isTyping = true;
 
       try {
-        // 调用智谱AI API获取回复
+        // 调用智谱智能 API获取回复
         const response = await this.callAIApi(content);
 
         // 添加助手消息
@@ -228,12 +217,12 @@ export default {
           time: this.getCurrentTime()
         });
       } catch (error) {
-        logger.error('AI回复失败:', error);
+        logger.error('智能回复失败:', error);
 
         // 添加可重试的错误消息
         this.messages.push({
           role: 'assistant',
-          content: '抱歉，AI回复失败，请点击重试。',
+          content: '抱歉，智能回复失败，请点击重试。',
           time: this.getCurrentTime(),
           failed: true,
           _retryContent: content
@@ -266,10 +255,10 @@ export default {
           time: this.getCurrentTime()
         });
       } catch (error) {
-        logger.error('AI重试失败:', error);
+        logger.error('智能重试失败:', error);
         this.messages.push({
           role: 'assistant',
-          content: '抱歉，AI回复仍然失败，请稍后再试。',
+          content: '抱歉，智能回复仍然失败，请稍后再试。',
           time: this.getCurrentTime(),
           failed: true,
           _retryContent: content
@@ -279,9 +268,9 @@ export default {
       }
     },
 
-    // 调用智谱AI API
+    // 调用智谱智能 API
     async callAIApi(content) {
-      logger.log('[ai-consult] 🤖 调用后端代理进行 AI 咨询...');
+      logger.log('[ai-consult] 🤖 调用后端代理进行智能咨询...');
 
       // [F3-FIX] 构建多轮对话历史（最近 5 轮）
       const recentHistory = this.messages
@@ -306,11 +295,11 @@ export default {
 
       // 处理API响应
       if (response && response.code === 0 && response.data) {
-        logger.log('[ai-consult] ✅ AI 咨询成功');
+        logger.log('[ai-consult] ✅ 智能咨询成功');
         return response.data.trim();
       } else {
-        logger.warn('[ai-consult] ⚠️ AI 咨询响应异常');
-        throw new Error('AI响应失败');
+        logger.warn('[ai-consult] ⚠️ 智能咨询响应异常');
+        throw new Error('智能响应失败');
       }
     },
 

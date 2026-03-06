@@ -1,7 +1,7 @@
 {
   "name": "Exam-Master",
   "appid": "__UNI__EXAM2026",
-  "description": "考研备考小程序 - AI助力，一战成硕",
+  "description": "考研备考小程序 - 智能助力，一战成硕",
   "versionName": "1.0.0",
   "versionCode": "100",
   "transformPx": false,
@@ -77,8 +77,7 @@
     "requiredBackgroundModes": [],
     "optimization": {
       "subPackages": true
-    },
-    "plugins": {}
+    }
   },
   "mp-alipay": {
     "usingComponents": true,

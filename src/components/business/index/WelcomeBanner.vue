@@ -6,27 +6,19 @@
 
     <view class="banner-content">
       <view class="banner-text">
-        <text class="welcome-title">
-          欢迎回来，{{ userName }}！
-        </text>
+        <text class="welcome-title"> 欢迎回来，{{ userName }}！ </text>
         <text class="welcome-subtitle">
-          你有 <text class="highlight-text">
-            {{ finishedCount }} 道题目
-          </text> 待复习。继续保持学习势头！
+          你有 <text class="highlight-text"> {{ finishedCount }} 道题目 </text> 待复习。继续保持学习势头！
         </text>
       </view>
       <view class="banner-actions">
         <view :class="['action-btn', 'btn-primary', isDark && 'animate-pulse-glow']" @tap="$emit('nav-to-practice')">
           <BaseIcon name="lightning" :size="28" />
-          <text class="btn-text">
-            快速练习
-          </text>
+          <text class="btn-text"> 快速练习 </text>
         </view>
         <view class="action-btn btn-outline" @tap="$emit('nav-to-mock-exam')">
           <BaseIcon name="clock" :size="28" />
-          <text class="btn-text">
-            模拟考试
-          </text>
+          <text class="btn-text"> 模拟考试 </text>
         </view>
       </view>
     </view>

@@ -2,18 +2,14 @@
   <view v-if="visible" class="achievement-modal-overlay" @tap="$emit('close')">
     <view class="achievement-modal" @tap.stop>
       <view class="achievement-modal-header">
-        <text class="achievement-modal-title">
-          我的成就
-        </text>
+        <text class="achievement-modal-title"> 我的成就 </text>
         <view class="achievement-modal-close" @tap="$emit('close')">
           <BaseIcon name="close" :size="24" />
         </view>
       </view>
       <view class="achievement-modal-body">
         <view class="achievement-section">
-          <text class="achievement-section-title">
-            已解锁 ({{ unlockedAchievements.length }})
-          </text>
+          <text class="achievement-section-title"> 已解锁 ({{ unlockedAchievements.length }}) </text>
           <view class="achievement-grid">
             <view v-for="ach in unlockedAchievements" :key="ach.id" class="achievement-item unlocked">
               <view class="achievement-item-icon">
@@ -29,9 +25,7 @@
           </view>
         </view>
         <view v-if="lockedList.length > 0" class="achievement-section">
-          <text class="achievement-section-title">
-            未解锁 ({{ lockedList.length }})
-          </text>
+          <text class="achievement-section-title"> 未解锁 ({{ lockedList.length }}) </text>
           <view class="achievement-grid">
             <view v-for="ach in lockedList" :key="ach.id" class="achievement-item locked">
               <view class="achievement-item-icon">

@@ -8,14 +8,10 @@
       <!-- 导航栏内容 -->
       <view class="navbar-content">
         <view class="navbar-left" @tap="goBack">
-          <text class="back-icon">
-            ‹
-          </text>
+          <text class="back-icon"> ‹ </text>
         </view>
         <view class="navbar-center">
-          <text class="navbar-title">
-            我的好友
-          </text>
+          <text class="navbar-title"> 我的好友 </text>
         </view>
         <view class="navbar-right" />
       </view>
@@ -35,13 +31,7 @@
           @confirm="handleSearch"
           @input="debouncedSearch"
         />
-        <BaseIcon
-          v-if="searchKeyword"
-          name="close"
-          :size="32"
-          class="clear-icon"
-          @tap="clearSearch"
-        />
+        <BaseIcon v-if="searchKeyword" name="close" :size="32" class="clear-icon" @tap="clearSearch" />
       </view>
       <button v-if="searchKeyword" class="search-btn" @tap="handleSearch">
         <text>搜索</text>
@@ -51,15 +41,11 @@
     <!-- Tabs 切换 -->
     <view class="tabs-bar">
       <view class="tab-item" :class="{ active: currentTab === 'friends' }" @tap="switchTab('friends')">
-        <text class="tab-text">
-          我的好友
-        </text>
+        <text class="tab-text"> 我的好友 </text>
         <view v-if="currentTab === 'friends'" class="tab-indicator" />
       </view>
       <view class="tab-item" :class="{ active: currentTab === 'requests' }" @tap="switchTab('requests')">
-        <text class="tab-text">
-          好友请求
-        </text>
+        <text class="tab-text"> 好友请求 </text>
         <view v-if="pendingRequestsCount > 0" class="red-dot">
           {{ pendingRequestsCount }}
         </view>
@@ -80,19 +66,12 @@
         <!-- 加载中 -->
         <view v-if="isSearching" class="loading-state">
           <view class="loading-spinner" />
-          <text class="loading-text">
-            搜索中...
-          </text>
+          <text class="loading-text"> 搜索中... </text>
         </view>
 
         <!-- 搜索结果 -->
         <view v-else-if="searchResults.length > 0" class="search-results">
-          <view
-            v-for="user in searchResults"
-            :key="user._id"
-            class="user-card"
-            @tap="handleAddFriend(user)"
-          >
+          <view v-for="user in searchResults" :key="user._id" class="user-card" @tap="handleAddFriend(user)">
             <image
               class="avatar"
               :src="user.avatar || defaultAvatar"
@@ -104,9 +83,7 @@
               <text class="nickname">
                 {{ user.nickname || '未命名' }}
               </text>
-              <text class="score-text">
-                总分: {{ user.score || 0 }}
-              </text>
+              <text class="score-text"> 总分: {{ user.score || 0 }} </text>
             </view>
             <button class="add-friend-btn" :disabled="isAddingFriend[user._id]" @tap.stop="handleAddFriend(user)">
               <BaseIcon v-if="!isAddingFriend[user._id]" name="sparkle" :size="24" />
@@ -116,12 +93,7 @@
         </view>
 
         <!-- 搜索无结果 -->
-        <BaseEmpty
-          v-else
-          icon="🔍"
-          title="未找到用户"
-          desc="试试搜索其他昵称"
-        />
+        <BaseEmpty v-else icon="🔍" title="未找到用户" desc="试试搜索其他昵称" />
       </view>
 
       <!-- 我的好友 Tab -->
@@ -129,9 +101,7 @@
         <!-- 加载中 -->
         <view v-if="isLoading && friendList.length === 0" class="loading-state">
           <view class="loading-spinner" />
-          <text class="loading-text">
-            加载中...
-          </text>
+          <text class="loading-text"> 加载中... </text>
         </view>
 
         <!-- 空状态 -->
@@ -169,9 +139,7 @@
                 <text class="nickname">
                   {{ friend.nickname || '未命名' }}
                 </text>
-                <text v-if="friend.score" class="level-badge">
-                  Lv.{{ Math.floor(friend.score / 100) }}
-                </text>
+                <text v-if="friend.score" class="level-badge"> Lv.{{ Math.floor(friend.score / 100) }} </text>
               </view>
               <text class="status-text">
                 {{ getStatusText(friend) }}
@@ -183,17 +151,13 @@
               <text class="score-value">
                 {{ friend.score || 0 }}
               </text>
-              <text class="score-label">
-                总分
-              </text>
+              <text class="score-label"> 总分 </text>
             </view>
 
             <!-- PK 挑战按钮 -->
             <button class="pk-btn" @tap.stop="handlePKChallenge(friend)">
               <BaseIcon name="flame" :size="28" class="pk-icon" />
-              <text class="pk-text">
-                PK
-              </text>
+              <text class="pk-text"> PK </text>
             </button>
           </view>
         </view>
@@ -204,20 +168,14 @@
         <!-- 加载中 -->
         <view v-if="isLoadingRequests && requestList.length === 0" class="loading-state">
           <view class="loading-spinner" />
-          <text class="loading-text">
-            加载中...
-          </text>
+          <text class="loading-text"> 加载中... </text>
         </view>
 
         <!-- 空状态 -->
         <view v-else-if="!isLoadingRequests && requestList.length === 0" class="empty-state">
           <BaseIcon name="email" :size="120" class="empty-icon" />
-          <text class="empty-title">
-            暂无好友请求
-          </text>
-          <text class="empty-desc">
-            当有人向你发送好友请求时，会显示在这里
-          </text>
+          <text class="empty-title"> 暂无好友请求 </text>
+          <text class="empty-desc"> 当有人向你发送好友请求时，会显示在这里 </text>
         </view>
 
         <!-- 请求卡片列表 -->
@@ -261,9 +219,7 @@
 
     <!-- 底部统计 -->
     <view v-if="friendList.length > 0" class="bottom-stats">
-      <text class="stats-text">
-        共 {{ friendList.length }} 位好友
-      </text>
+      <text class="stats-text"> 共 {{ friendList.length }} 位好友 </text>
     </view>
   </view>
 </template>

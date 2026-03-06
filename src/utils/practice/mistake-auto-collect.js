@@ -6,13 +6,13 @@
 const STORAGE_KEY = 'mistake_book';
 
 import { storageService } from '@/services/storageService.js';
+import { mistakeClassifier } from '@/utils/practice/mistake-classifier.js';
 
 /**
  * 懒加载分类器（避免硬依赖不存在的模块）
  */
 async function _classify(question) {
   try {
-    const { mistakeClassifier } = await import('@/utils/practice/mistake-classifier.js');
     return mistakeClassifier.classify(question);
   } catch (_e) {
     return null;

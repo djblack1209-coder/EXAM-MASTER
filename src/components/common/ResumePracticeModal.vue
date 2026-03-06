@@ -14,33 +14,21 @@
       <!-- 草稿信息 -->
       <view v-if="draftInfo" class="draft-info">
         <view class="info-row">
-          <text class="info-label">
-            上次进度
-          </text>
-          <text class="info-value">
-            第 {{ draftInfo.currentIndex + 1 }} 题
-          </text>
+          <text class="info-label"> 上次进度 </text>
+          <text class="info-value"> 第 {{ draftInfo.currentIndex + 1 }} 题 </text>
         </view>
         <view class="info-row">
-          <text class="info-label">
-            已答题数
-          </text>
-          <text class="info-value">
-            {{ draftInfo.answeredCount }} 道
-          </text>
+          <text class="info-label"> 已答题数 </text>
+          <text class="info-value"> {{ draftInfo.answeredCount }} 道 </text>
         </view>
         <view class="info-row">
-          <text class="info-label">
-            用时
-          </text>
+          <text class="info-label"> 用时 </text>
           <text class="info-value">
             {{ draftInfo.formattedTime }}
           </text>
         </view>
         <view class="info-row">
-          <text class="info-label">
-            保存时间
-          </text>
+          <text class="info-label"> 保存时间 </text>
           <text class="info-value time-ago">
             {{ draftInfo.timeAgo }}
           </text>

@@ -106,13 +106,13 @@ export const practiceNavigationMixin = {
       );
     },
 
-    /** 跳转到 AI 辅导对话 */
+    /** 跳转到智能辅导对话 */
     goAITutor() {
       requireLogin(
         () => {
           safeNavigateTo('/pages/chat/chat');
         },
-        { message: '请先登录后使用AI辅导', loginUrl: '/pages/settings/index' }
+        { message: '请先登录后使用智能辅导', loginUrl: '/pages/settings/index' }
       );
     },
 

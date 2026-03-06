@@ -11,6 +11,7 @@
 
 import { storageService } from '@/services/storageService.js';
 import { questionQualityOptimizer } from './question-quality-optimizer.js';
+import { pickQuestions } from './smart-question-picker.js';
 
 // 练习模式配置
 const PRACTICE_MODES = {
@@ -156,8 +157,7 @@ class PracticeModeManager {
         break;
 
       default: {
-        // 综合练习 - 使用智能组题（动态加载，避免拉入主包）
-        const { pickQuestions } = await import('./smart-question-picker.js');
+        // 综合练习 - 使用智能组题
         return pickQuestions(questions, {
           count: this.currentSettings.questionCount,
           mode: 'adaptive',
@@ -366,7 +366,7 @@ class PracticeModeManager {
 
     // 基于错题生成相似题目
     const variants = mistakes.map((mistake) => {
-      // 这里简化处理，实际应该使用AI生成相似题目
+      // 这里简化处理，实际应该使用智能生成相似题目
       // 目前返回原始错题
       return {
         ...mistake,

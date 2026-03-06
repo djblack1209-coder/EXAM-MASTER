@@ -1,16 +1,16 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark }]">
+  <view id="e2e-school-detail-root" :class="['container', { 'dark-mode': isDark }]">
     <view class="aurora-bg" />
 
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <view class="back-btn" @tap="navBack">
+        <view id="e2e-school-detail-back-btn" class="back-btn" @tap="navBack">
           <text>←</text>
         </view>
         <text class="nav-title">
           {{ schoolInfo.name || '院校详情' }}
         </text>
-        <view class="share-btn" @tap="handleShare">
+        <view id="e2e-school-detail-share-btn" class="share-btn" @tap="handleShare">
           <BaseIcon name="arrow-right" :size="36" />
         </view>
       </view>
@@ -70,18 +70,16 @@
                 <BaseIcon name="target" :size="20" />
                 <text>{{ schoolInfo.location || '未知地区' }}</text>
               </view>
-              <text v-if="schoolInfo.matchRate" class="rank-tag">
-                匹配度 {{ schoolInfo.matchRate }}%
-              </text>
+              <text v-if="schoolInfo.matchRate" class="rank-tag"> 匹配度 {{ schoolInfo.matchRate }}% </text>
             </view>
           </view>
         </view>
 
-        <!-- AI 预测录取概率卡片 -->
+        <!-- 智能预测录取概率卡片 -->
         <view class="glass-card ai-predict-card">
           <view class="card-title">
             <BaseIcon class="sparkle-icon" name="sparkle" :size="28" />
-            <text>AI 录取概率预测</text>
+            <text>智能录取概率预测</text>
           </view>
 
           <view class="predict-main">
@@ -93,9 +91,7 @@
                   <text class="num">
                     {{ probability }}
                   </text>
-                  <text class="unit">
-                    %
-                  </text>
+                  <text class="unit"> % </text>
                 </view>
               </view>
               <view class="ball-glow" />
@@ -106,56 +102,45 @@
                 {{ statusText }}
               </view>
               <text class="ai-summary">
-                {{ aiReason || '点击下方按钮，由 AI 深度评估您的上岸概率' }}
+                {{ aiReason || '点击下方按钮，由智能深度评估您的上岸概率' }}
               </text>
             </view>
           </view>
 
           <button
+            id="e2e-school-detail-predict-btn"
             class="predict-btn"
             hover-class="btn-hover"
             :loading="isAnalyzing"
             @tap="fetchAIPrediction"
           >
-            {{ isAnalyzing ? 'AI 分析中...' : '更新 AI 深度评估' }}
+            {{ isAnalyzing ? '智能分析中...' : '更新智能深度评估' }}
           </button>
         </view>
 
         <!-- 核心数据统计 -->
-        <view class="section-title">
-          历年录取指标
-        </view>
+        <view class="section-title"> 历年录取指标 </view>
         <view class="stats-grid">
           <view class="glass-card stat-item">
             <text class="stat-val">
               {{ schoolInfo.scoreLine || '---' }}
             </text>
-            <text class="stat-label">
-              复试分数线
-            </text>
+            <text class="stat-label"> 复试分数线 </text>
           </view>
           <view class="glass-card stat-item">
             <text class="stat-val">
               {{ schoolInfo.ratio || '---' }}
             </text>
-            <text class="stat-label">
-              报录比
-            </text>
+            <text class="stat-label"> 报录比 </text>
           </view>
           <view class="glass-card stat-item">
-            <text class="stat-val">
-              {{ schoolInfo.passRate || '---' }}%
-            </text>
-            <text class="stat-label">
-              招生人数
-            </text>
+            <text class="stat-val"> {{ schoolInfo.passRate || '---' }}% </text>
+            <text class="stat-label"> 招生人数 </text>
           </view>
         </view>
 
         <!-- 院校简介 -->
-        <view class="section-title">
-          院校简介
-        </view>
+        <view class="section-title"> 院校简介 </view>
         <view class="glass-card intro-card">
           <text class="intro-text">
             {{ getSchoolDesc() }}
@@ -163,11 +148,10 @@
         </view>
 
         <!-- 热门招生专业 -->
-        <view class="section-title">
-          热门招生专业
-        </view>
+        <view class="section-title"> 热门招生专业 </view>
         <view
           v-for="(major, index) in majorList"
+          :id="`e2e-school-detail-major-${index}`"
           :key="index"
           class="glass-card major-card"
           @tap="viewMajorDetail(major)"
@@ -176,16 +160,12 @@
             <text class="major-name">
               {{ major.name }}
             </text>
-            <text class="major-code">
-              专业代码: {{ major.code }}
-            </text>
+            <text class="major-code"> 专业代码: {{ major.code }} </text>
             <text v-if="major.type" class="major-type">
               {{ major.type }}
             </text>
           </view>
-          <text class="arrow-icon">
-            →
-          </text>
+          <text class="arrow-icon"> → </text>
         </view>
 
         <view class="safe-area" />
@@ -195,17 +175,22 @@
     <!-- 底部操作栏 -->
     <view class="bottom-action">
       <view class="glass-card action-container">
-        <button class="ai-consult-btn" hover-class="btn-hover" @tap="showAIConsult">
+        <button id="e2e-school-detail-consult-btn" class="ai-consult-btn" hover-class="btn-hover" @tap="showAIConsult">
           <BaseIcon name="comment" :size="28" />
-          <text>AI 咨询</text>
+          <text>智能咨询</text>
         </button>
-        <button :class="['target-btn', { 'is-added': isTarget }]" hover-class="btn-hover" @tap="toggleTarget">
+        <button
+          id="e2e-school-detail-target-btn"
+          :class="['target-btn', { 'is-added': isTarget }]"
+          hover-class="btn-hover"
+          @tap="toggleTarget"
+        >
           {{ isTarget ? '从目标中移除' : '加入目标院校' }}
         </button>
       </view>
     </view>
 
-    <!-- AI 咨询组件 -->
+    <!-- 智能咨询组件 -->
     <AiConsult
       :visible="showAIConsultPanel"
       :school-name="schoolInfo.name || '该院校'"
@@ -228,7 +213,7 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 export default {
   components: {
     BaseIcon,
-    // ✅ 懒加载：AiConsult 620行组件，仅在用户点击"AI咨询"时才需要
+    // ✅ 懒加载：AiConsult 620行组件，仅在用户点击"智能咨询"时才需要
     AiConsult: () => import('./ai-consult.vue')
   },
   data() {
@@ -353,9 +338,9 @@ export default {
       }
     }
 
-    // 检查是否需要自动打开 AI 咨询
+    // 检查是否需要自动打开智能咨询
     if (options.openConsult === 'true') {
-      logger.log('[detail] 💬 自动打开 AI 咨询面板');
+      logger.log('[detail] 💬 自动打开智能咨询面板');
       this.showAIConsultPanel = true;
       this.openConsultQuery = '请介绍一下该校的招生简章和核心优势';
     }
@@ -510,12 +495,13 @@ export default {
     getSchoolDesc() {
       if (this.schoolInfo.desc) return this.schoolInfo.desc;
       const name = this.schoolInfo.name || '';
-      return `${name}是一所历史悠久、学术实力雄厚的知名高校。该校在多个学科领域享有盛誉，为研究生培养提供了优质的学术资源和良好的学习环境。AI 正在持续搜集该校最新的考研招生简章、复试分数线等权威数据，为考生提供精准的择校参考。`;
+      return `${name}是一所历史悠久、学术实力雄厚的知名高校。该校在多个学科领域享有盛誉，为研究生培养提供了优质的学术资源和良好的学习环境。智能正在持续搜集该校最新的考研招生简章、复试分数线等权威数据，为考生提供精准的择校参考。`;
     },
     checkTargetStatus() {
       if (!this.schoolId) return;
       const list = storageService.get('target_schools', []);
-      this.isTarget = list.some((item) => item.id === this.schoolId);
+      const currentId = String(this.schoolId);
+      this.isTarget = list.some((item) => String(item.id) === currentId);
     },
     toggleTarget() {
       logger.log('[detail] 🎯 开始切换目标院校状态');
@@ -535,7 +521,11 @@ export default {
       }
 
       let list = storageService.get('target_schools', []);
-      const schoolId = this.schoolId || this.schoolInfo.id;
+      const schoolId = String(this.schoolId || this.schoolInfo.id || '');
+      if (!schoolId) {
+        uni.showToast({ title: '院校信息异常', icon: 'none' });
+        return;
+      }
 
       logger.log('[detail] 📊 当前状态:', {
         schoolId,
@@ -547,7 +537,7 @@ export default {
       if (this.isTarget) {
         // 移除
         const beforeCount = list.length;
-        list = list.filter((item) => item.id !== schoolId);
+        list = list.filter((item) => String(item.id) !== schoolId);
         const afterCount = list.length;
 
         logger.log('[detail] ➖ 从目标中移除:', {
@@ -573,7 +563,7 @@ export default {
           matchRate: this.schoolInfo.matchRate
         };
 
-        const exists = list.some((item) => item.id === schoolId);
+        const exists = list.some((item) => String(item.id) === schoolId);
         if (!exists) {
           list.push(schoolData);
 
@@ -700,11 +690,11 @@ export default {
     },
     async fetchAIPrediction() {
       if (this.isAnalyzing) {
-        logger.log('[detail] ⚠️ AI 预测正在进行中，跳过重复请求');
+        logger.log('[detail] ⚠️ 智能预测正在进行中，跳过重复请求');
         return;
       }
 
-      logger.log('[detail] 🎯 开始 AI 录取概率预测');
+      logger.log('[detail] 🎯 开始智能录取概率预测');
       logger.log('[detail] 📊 目标院校:', {
         id: this.schoolId,
         name: this.schoolInfo.name,
@@ -761,15 +751,40 @@ export default {
         });
 
         if (response && response.code === 0 && response.data) {
-          const result = response.data.trim();
-          logger.log('[detail] 📄 AI 返回内容:', result.substring(0, 100));
+          const raw =
+            response.data && typeof response.data === 'object' && typeof response.data.reply === 'string'
+              ? response.data.reply
+              : response.data;
+          const result = typeof raw === 'string' ? raw.trim() : '';
+          logger.log('[detail] 📄 智能返回内容:', result.substring(0, 100));
 
-          const parts = result.split('|');
-          const p = parseInt(parts[0]) || 60;
-          this.probability = Math.max(40, Math.min(95, p));
-          this.aiReason = parts[1] || parts[0] || '数据样本不足，建议增加模拟卷练习。';
+          let parsedProbability = 60;
+          let parsedReason = '数据样本不足，建议增加模拟卷练习。';
+          if (!result && raw && typeof raw === 'object') {
+            const objectProbability = Number(raw.probability || raw.matchRate || raw.score);
+            if (Number.isFinite(objectProbability)) {
+              parsedProbability = objectProbability;
+            }
+            if (typeof raw.reason === 'string' && raw.reason.trim()) {
+              parsedReason = raw.reason.trim();
+            }
+          } else if (result) {
+            const parts = result
+              .split('|')
+              .map((part) => part.trim())
+              .filter(Boolean);
+            const mainText = parts[0] || result;
+            const numberMatch = mainText.match(/\d{2,3}/);
+            if (numberMatch) {
+              parsedProbability = parseInt(numberMatch[0], 10);
+            }
+            parsedReason = parts[1] || (parts.length > 1 ? parts.slice(1).join('；') : mainText) || parsedReason;
+          }
 
-          logger.log('[detail] ✅ AI 预测成功:', {
+          this.probability = Math.max(40, Math.min(95, parsedProbability));
+          this.aiReason = parsedReason;
+
+          logger.log('[detail] ✅ 智能预测成功:', {
             probability: this.probability,
             reason: this.aiReason.substring(0, 50)
           });
@@ -781,7 +796,7 @@ export default {
           });
         } else {
           // 降级方案：基于数据简单计算
-          logger.warn('[detail] ⚠️ AI API 响应异常，使用降级算法计算概率');
+          logger.warn('[detail] ⚠️ 智能 API 响应异常，使用降级算法计算概率');
           const baseScore = Math.min(
             95,
             40 + studyDays * 2 + Math.min(doneCount / 10, 30) - Math.min(mistakeCount / 5, 20)
@@ -801,7 +816,7 @@ export default {
           });
         }
       } catch (_e) {
-        logger.error('[detail] ❌ AI 预测失败:', _e);
+        logger.error('[detail] ❌ 智能预测失败:', _e);
         // 降级方案
         const baseScore = Math.min(95, 40 + studyDays * 2 + Math.min(doneCount / 10, 30));
         this.probability = Math.max(40, Math.min(95, Math.round(baseScore)));
@@ -819,7 +834,7 @@ export default {
         });
       } finally {
         this.isAnalyzing = false;
-        logger.log('[detail] ✅ AI 预测流程结束');
+        logger.log('[detail] ✅ 智能预测流程结束');
       }
     }
   }
@@ -1120,7 +1135,7 @@ export default {
   height: 200rpx;
 }
 
-/* AI 预测卡片样式 */
+/* 智能预测卡片样式 */
 .ai-predict-card {
   padding: 40rpx;
 }

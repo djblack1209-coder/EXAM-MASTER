@@ -1,5 +1,5 @@
 /**
- * 题目质量优化器 - 提升AI生成题目的质量和多样性
+ * 题目质量优化器 - 提升智能生成题目的质量和多样性
  *
  * 核心功能：
  * 1. 题目格式验证和修复
@@ -24,37 +24,37 @@ const QUALITY_STANDARDS = {
 
 // 题型配置
 const QUESTION_TYPE_CONFIGS = {
-  '单选': {
+  单选: {
     minOptions: 2,
     maxOptions: 8,
     defaultOptions: 4,
     answerPattern: /^[A-H]$/
   },
-  '多选': {
+  多选: {
     minOptions: 2,
     maxOptions: 8,
     defaultOptions: 4,
     answerPattern: /^[A-H]+$/
   },
-  '判断': {
+  判断: {
     minOptions: 2,
     maxOptions: 2,
     defaultOptions: 2,
     answerPattern: /^(对|错|正确|错误)$/
   },
-  '填空': {
+  填空: {
     minOptions: 0,
     maxOptions: 0,
     defaultOptions: 0,
     answerPattern: /.+/
   },
-  '简答': {
+  简答: {
     minOptions: 0,
     maxOptions: 0,
     defaultOptions: 0,
     answerPattern: /.+/
   },
-  '论述': {
+  论述: {
     minOptions: 0,
     maxOptions: 0,
     defaultOptions: 0,
@@ -71,13 +71,13 @@ const DIFFICULTY_KEYWORDS = {
 
 // 知识点关键词映射
 const CATEGORY_KEYWORDS = {
-  '马克思主义哲学': ['唯物', '辩证', '认识论', '实践', '矛盾', '否定'],
-  '毛泽东思想': ['新民主主义', '革命', '毛泽东', '农村包围城市'],
-  '中国特色社会主义': ['改革开放', '社会主义市场', '中国特色', '新时代'],
-  '线性代数': ['矩阵', '行列式', '向量', '特征值', '线性方程'],
-  '高等数学': ['极限', '导数', '积分', '微分', '级数'],
-  '概率论': ['概率', '分布', '期望', '方差', '随机变量'],
-  '英语': ['grammar', 'vocabulary', 'reading', 'writing']
+  马克思主义哲学: ['唯物', '辩证', '认识论', '实践', '矛盾', '否定'],
+  毛泽东思想: ['新民主主义', '革命', '毛泽东', '农村包围城市'],
+  中国特色社会主义: ['改革开放', '社会主义市场', '中国特色', '新时代'],
+  线性代数: ['矩阵', '行列式', '向量', '特征值', '线性方程'],
+  高等数学: ['极限', '导数', '积分', '微分', '级数'],
+  概率论: ['概率', '分布', '期望', '方差', '随机变量'],
+  英语: ['grammar', 'vocabulary', 'reading', 'writing']
 };
 
 /**
@@ -232,7 +232,8 @@ class QuestionQualityOptimizer {
 
     // 基于选项复杂度评估
     if (question.options && question.options.length > 0) {
-      const avgOptionLength = question.options.reduce((sum, opt) => sum + (opt || '').length, 0) / question.options.length;
+      const avgOptionLength =
+        question.options.reduce((sum, opt) => sum + (opt || '').length, 0) / question.options.length;
       if (avgOptionLength < 20) easyScore++;
       else if (avgOptionLength < 50) mediumScore++;
       else hardScore++;

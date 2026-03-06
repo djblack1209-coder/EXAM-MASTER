@@ -4,9 +4,7 @@
       <BaseIcon name="timer" :size="48" />
     </view>
     <view class="time-content">
-      <text class="time-label">
-        今日学习
-      </text>
+      <text class="time-label"> 今日学习 </text>
       <text class="time-value">
         {{ formattedTime }}
       </text>

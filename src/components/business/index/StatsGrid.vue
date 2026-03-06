@@ -5,15 +5,11 @@
         <BaseIcon name="check" :size="48" />
       </view>
       <view class="stat-content">
-        <text class="stat-title">
-          题目总数
-        </text>
+        <text class="stat-title"> 题目总数 </text>
         <text class="stat-value">
           {{ totalQuestions }}
         </text>
-        <text class="stat-change neutral">
-          题库容量
-        </text>
+        <text class="stat-change neutral"> 题库容量 </text>
       </view>
     </view>
 
@@ -22,12 +18,8 @@
         <BaseIcon name="chart-up" :size="48" />
       </view>
       <view class="stat-content">
-        <text class="stat-title">
-          正确率
-        </text>
-        <text class="stat-value">
-          {{ accuracy }}%
-        </text>
+        <text class="stat-title"> 正确率 </text>
+        <text class="stat-value"> {{ accuracy }}% </text>
         <text class="stat-change" :class="accuracy >= 60 ? 'positive' : 'neutral'">
           {{ accuracy >= 60 ? '表现优秀' : '继续加油' }}
         </text>
@@ -39,12 +31,8 @@
         <BaseIcon name="lightning" :size="48" />
       </view>
       <view class="stat-content">
-        <text class="stat-title">
-          学习天数
-        </text>
-        <text class="stat-value">
-          {{ studyDays }} 天
-        </text>
+        <text class="stat-title"> 学习天数 </text>
+        <text class="stat-value"> {{ studyDays }} 天 </text>
         <text class="stat-change" :class="studyDays > 0 ? 'positive' : 'neutral'">
           {{ studyDays > 0 ? '坚持学习' : '开始学习' }}
         </text>
@@ -59,9 +47,7 @@
         <BaseIcon name="trophy" :size="48" />
       </view>
       <view class="stat-content">
-        <text class="stat-title">
-          成就徽章
-        </text>
+        <text class="stat-title"> 成就徽章 </text>
         <text class="stat-value">
           {{ achievementCount }}
         </text>

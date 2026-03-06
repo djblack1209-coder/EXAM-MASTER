@@ -5,14 +5,10 @@
     @tap="$emit('open-poster')"
   >
     <text class="mode-text">
-      <text class="mode-highlight">
-        <BaseIcon name="bulb" :size="28" /> 每日金句：
-      </text>
+      <text class="mode-highlight"> <BaseIcon name="bulb" :size="28" /> 每日金句： </text>
       {{ quote }}
     </text>
-    <text class="quote-hint">
-      轻触查看海报
-    </text>
+    <text class="quote-hint"> 轻触查看海报 </text>
   </view>
 </template>
 

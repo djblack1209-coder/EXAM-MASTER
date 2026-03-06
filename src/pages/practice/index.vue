@@ -1,12 +1,10 @@
 <template>
-  <view class="practice-container" :class="{ 'dark-mode': isDark }">
+  <view id="e2e-practice-root" class="practice-container" :class="{ 'dark-mode': isDark }">
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
     <!-- 顶部导航 -->
     <view class="top-nav">
-      <text class="nav-title">
-        刷题中心
-      </text>
+      <text class="nav-title"> 刷题中心 </text>
       <view class="nav-actions">
         <!-- 移除垃圾桶图标，避免与微信原生胶囊按钮重叠 -->
       </view>
@@ -55,24 +53,13 @@
           />
         </view>
         <view class="status-info">
-          <view class="status-title">
-            题库就绪
-          </view>
-          <view class="status-desc">
-            当前已收录 {{ totalQuestions }} 道真题
-          </view>
+          <view class="status-title"> 题库就绪 </view>
+          <view class="status-desc"> 当前已收录 {{ totalQuestions }} 道真题 </view>
         </view>
         <view class="status-actions">
           <view class="manage-btn" @tap="showQuizManage">
-            <image
-              class="manage-icon-img"
-              src="/static/icons/practice/icon-settings.png"
-              mode="aspectFit"
-              lazy-load
-            />
-            <text class="manage-text">
-              题库管理
-            </text>
+            <image class="manage-icon-img" src="/static/icons/practice/icon-settings.png" mode="aspectFit" lazy-load />
+            <text class="manage-text"> 题库管理 </text>
           </view>
         </view>
       </view>
@@ -82,17 +69,11 @@
         <view class="empty-icon">
           <BaseIcon name="books" :size="64" />
         </view>
-        <view class="empty-title">
-          题库空空如也
-        </view>
-        <view class="empty-desc">
-          导入学习资料，AI 为您智能生成专属题库
-        </view>
+        <view class="empty-title"> 题库空空如也 </view>
+        <view class="empty-desc"> 导入学习资料，智能为您智能生成专属题库 </view>
         <view class="empty-action">
           <BaseIcon name="upload" :size="18" />
-          <text class="action-text">
-            点击导入资料
-          </text>
+          <text class="action-text"> 点击导入资料 </text>
         </view>
       </view>
     </view>
@@ -125,18 +106,14 @@
       <!-- 开始刷题按钮 - ✅ F022: 添加加载状态和点击反馈 -->
       <button
         v-if="hasBank"
+        id="e2e-practice-start-btn"
         class="primary-btn"
         :class="{ 'btn-loading': isNavigating }"
         :disabled="isNavigating"
         @tap="goPractice"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image
-          v-else
-          class="btn-icon-img"
-          src="/static/icons/practice/icon-book.png"
-          mode="aspectFit"
-        />
+        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-book.png" mode="aspectFit" />
         <text class="btn-text">
           {{ isNavigating ? '加载中...' : '开始刷题' }}
         </text>
@@ -145,25 +122,24 @@
       <!-- PK对战入口 - ✅ F022: 添加加载状态和点击反馈 -->
       <button
         v-if="hasBank"
+        id="e2e-practice-battle-btn"
         class="secondary-btn"
         :class="{ 'btn-loading': isNavigating }"
         :disabled="isNavigating"
         @tap="goBattle"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image
-          v-else
-          class="btn-icon-img"
-          src="/static/icons/practice/icon-battle.png"
-          mode="aspectFit"
-        />
-        <text class="btn-text">
-          PK 对战
-        </text>
+        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-battle.png" mode="aspectFit" />
+        <text class="btn-text"> PK 对战 </text>
       </button>
 
       <!-- 导入资料卡片 -->
-      <view class="import-card" :class="{ 'import-loading': isUploadingFile }" @tap="chooseImportSource">
+      <view
+        id="e2e-practice-import-card"
+        class="import-card"
+        :class="{ 'import-loading': isUploadingFile }"
+        @tap="chooseImportSource"
+      >
         <view class="import-icon">
           <BaseIcon v-if="!isUploadingFile" name="upload" :size="32" />
           <view v-else class="import-spinner" />
@@ -173,13 +149,11 @@
             {{ isUploadingFile ? '正在读取文件...' : '导入学习资料' }}
           </view>
           <view class="import-desc">
-            {{ isUploadingFile ? fileName : 'AI 智能分析 · 即刻出题' }}
+            {{ isUploadingFile ? fileName : '智能分析 · 即刻出题' }}
           </view>
         </view>
         <view class="import-arrow">
-          <text v-if="!isUploadingFile" class="arrow">
-            ›
-          </text>
+          <text v-if="!isUploadingFile" class="arrow"> › </text>
         </view>
       </view>
     </view>
@@ -189,29 +163,20 @@
     <!-- 功能菜单 -->
     <view v-if="!isPageLoading" class="feature-menu">
       <!-- 文件管理 -->
-      <view class="menu-item" @tap="goFileManager">
+      <view id="e2e-practice-menu-file-manager" class="menu-item" @tap="goFileManager">
         <view class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-folder.png"
-            mode="aspectFit"
-            lazy-load
-          />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-folder.png" mode="aspectFit" lazy-load />
         </view>
         <view class="menu-info">
-          <view class="menu-title">
-            文件管理
-          </view>
+          <view class="menu-title"> 文件管理 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </view>
       </view>
 
-      <!-- AI导师 -->
-      <view class="menu-item" @tap="goAITutor">
+      <!-- 智能导师 -->
+      <view id="e2e-practice-menu-ai-tutor" class="menu-item" @tap="goAITutor">
         <view class="menu-icon">
           <image
             class="menu-icon-img"
@@ -221,36 +186,23 @@
           />
         </view>
         <view class="menu-info">
-          <view class="menu-title">
-            AI导师
-          </view>
+          <view class="menu-title"> 智能导师 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </view>
       </view>
 
       <!-- 错题本 -->
-      <view class="menu-item" @tap="goMistake">
+      <view id="e2e-practice-menu-mistake" class="menu-item" @tap="goMistake">
         <view class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-error.png"
-            mode="aspectFit"
-            lazy-load
-          />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-error.png" mode="aspectFit" lazy-load />
         </view>
         <view class="menu-info">
-          <view class="menu-title">
-            错题本
-          </view>
+          <view class="menu-title"> 错题本 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </view>
       </view>
 
@@ -260,64 +212,40 @@
           <BaseIcon name="star" :size="36" />
         </view>
         <view class="menu-info">
-          <view class="menu-title">
-            错题重练
-          </view>
-          <view class="menu-subtitle">
-            {{ mistakeCount }} 道错题待巩固
-          </view>
+          <view class="menu-title"> 错题重练 </view>
+          <view class="menu-subtitle"> {{ mistakeCount }} 道错题待巩固 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </view>
       </view>
 
       <!-- 排行榜 -->
-      <view class="menu-item" @tap="goRank">
+      <view id="e2e-practice-menu-rank" class="menu-item" @tap="goRank">
         <view class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-ranking.png"
-            mode="aspectFit"
-            lazy-load
-          />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-ranking.png" mode="aspectFit" lazy-load />
         </view>
         <view class="menu-info">
-          <view class="menu-title">
-            学霸排行榜
-          </view>
+          <view class="menu-title"> 学霸排行榜 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </view>
       </view>
 
       <!-- 学习进度 -->
-      <view class="menu-item" @tap="goToStudyDetail">
+      <view id="e2e-practice-menu-study-detail" class="menu-item" @tap="goToStudyDetail">
         <view class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-check.png"
-            mode="aspectFit"
-            lazy-load
-          />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-check.png" mode="aspectFit" lazy-load />
         </view>
         <view class="menu-info">
-          <view class="menu-title">
-            总学习进度
-          </view>
+          <view class="menu-title"> 总学习进度 </view>
         </view>
         <view class="progress-info">
           <view class="progress-bar">
             <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
           </view>
-          <text class="progress-text">
-            {{ progressPercent }}%
-          </text>
+          <text class="progress-text"> {{ progressPercent }}% </text>
         </view>
       </view>
 
@@ -327,42 +255,30 @@
           <BaseIcon name="star" :size="36" />
         </view>
         <view class="menu-info">
-          <view class="menu-title">
-            我的收藏
-          </view>
-          <view class="menu-subtitle-normal">
-            {{ favoriteCount }} 道题目
-          </view>
+          <view class="menu-title"> 我的收藏 </view>
+          <view class="menu-subtitle-normal"> {{ favoriteCount }} 道题目 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </view>
       </view>
 
       <!-- ✅ P1: 练习模式入口 -->
-      <view class="menu-item" @tap="showPracticeModes">
+      <view id="e2e-practice-menu-modes" class="menu-item" @tap="showPracticeModes">
         <view class="menu-icon">
           <BaseIcon name="target" :size="36" />
         </view>
         <view class="menu-info">
-          <view class="menu-title">
-            练习模式
-          </view>
-          <view class="menu-subtitle-normal">
-            专项突破 · 限时训练
-          </view>
+          <view class="menu-title"> 练习模式 </view>
+          <view class="menu-subtitle-normal"> 专项突破 · 限时训练 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow">
-            ›
-          </text>
+          <text class="arrow"> › </text>
         </view>
       </view>
     </view>
 
-    <!-- AI 加载遮罩 -->
+    <!-- 智能加载遮罩 -->
     <AiGenerationOverlay
       :visible="showMask"
       :file-name="fileName"
@@ -442,14 +358,13 @@ import { QUOTE_LIBRARY } from '@/config/home-data.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getFavorites } from '@/utils/favorite/question-favorite.js';
 import { getLearningStats, getWeakKnowledgePoints } from '@/utils/learning/adaptive-learning-engine.js';
+import { getStreakData as getLearningStreakData } from '@/utils/analytics/learning-analytics.js';
 // ✅ 检查点2.2：导入草稿检测器
 import { detectUnfinishedPractice, clearDraft } from '@/utils/practice/draft-detector.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 // ✅ 2.1: 导航逻辑提取到 mixin，减少主组件方法数量
 import { practiceNavigationMixin } from '@/mixins/practiceNavigationMixin.js';
-// ✅ AI 生成逻辑已抽离到分包 composable，通过 onLoad 动态加载
-// 详见 pages/practice-sub/composables/ai-generation-mixin.js
 
 export default {
   components: {
@@ -478,7 +393,7 @@ export default {
       isDark: false,
       isPageLoading: true, // 页面初始加载状态
 
-      // AI 引擎状态
+      // 智能引擎状态
       fileName: '',
       fullFileContent: '',
       readOffset: 0,
@@ -537,7 +452,11 @@ export default {
       // 励志语录（从配置文件加载）
       currentSoup: '',
       soupList: QUOTE_LIBRARY.map((q) => q.text),
-      soupTimer: null
+      soupTimer: null,
+
+      // 分包动态方法缓存（避免“功能加载中”占位方法长期生效）
+      dynamicMethodsCache: {},
+      subPackageLoaded: false
     };
   },
   onShow() {
@@ -639,13 +558,16 @@ export default {
     this.isDark = initTheme();
     logger.log('[practice] 🎨 初始化主题:', this.isDark);
 
+    // 初始化动态方法容器
+    this.dynamicMethodsCache = Object.create(null);
+
     // 监听全局主题更新事件（仅注册一次）
     onThemeUpdate((mode) => {
       this.isDark = mode === 'dark';
       logger.log('[practice] 🎨 主题更新:', mode, 'isDark:', this.isDark);
     });
 
-    // ✅ 动态加载 AI 生成 mixin（从分包按需加载，减小主包体积）
+    // ✅ 注入智能生成与学习统计 mixin 方法
     // ✅ P1-3: 保存 Promise，onShow 可等待加载完成后再调用 mixin 方法
     this._mixinReady = this._loadAIGenerationMixin();
   },
@@ -660,6 +582,72 @@ export default {
     offThemeUpdate();
   },
   methods: {
+    async _invokeDynamicMethod(methodName, args = [], options = {}) {
+      const { silent = false } = options;
+
+      const cached = this.dynamicMethodsCache?.[methodName];
+      if (typeof cached === 'function') {
+        return cached(...args);
+      }
+
+      if (this._mixinReady) {
+        try {
+          await this._mixinReady;
+        } catch (e) {
+          logger.warn(`[practice] 等待动态方法 ${methodName} 加载失败:`, e);
+        }
+      }
+
+      const loaded = this.dynamicMethodsCache?.[methodName];
+      if (typeof loaded === 'function') {
+        return loaded(...args);
+      }
+
+      if (!silent) {
+        uni.showToast({ title: '功能初始化失败，请稍后重试', icon: 'none' });
+      }
+      return undefined;
+    },
+
+    async _ensurePracticeSubPackageLoaded() {
+      if (this.subPackageLoaded) return;
+
+      // #ifdef MP-WEIXIN
+      if (typeof uni.loadSubPackage === 'function') {
+        await new Promise((resolve, reject) => {
+          uni.loadSubPackage({
+            root: 'pages/practice-sub',
+            success: () => resolve(true),
+            fail: (err) => reject(err)
+          });
+        });
+      }
+      // #endif
+
+      this.subPackageLoaded = true;
+    },
+
+    _requirePracticeSubpackageModule(modulePath) {
+      return new Promise((resolve, reject) => {
+        try {
+          if (typeof require !== 'function') {
+            reject(new Error('当前环境不支持 require 加载分包模块'));
+            return;
+          }
+
+          require(modulePath, (moduleExports) => {
+            if (!moduleExports) {
+              reject(new Error(`分包模块为空: ${modulePath}`));
+              return;
+            }
+            resolve(moduleExports);
+          });
+        } catch (error) {
+          reject(error);
+        }
+      });
+    },
+
     hydrateMainPackageStats() {
       try {
         const favorites = getFavorites();
@@ -677,6 +665,10 @@ export default {
         this.todayQuestions = Number.isFinite(todayQuestions) ? todayQuestions : this.todayQuestions;
         this.weeklyAccuracy = Number.isFinite(weeklyAccuracy) ? weeklyAccuracy : this.weeklyAccuracy;
         this.weakPointsCount = Array.isArray(weakPoints) ? weakPoints.length : this.weakPointsCount;
+
+        const streakData = getLearningStreakData();
+        const currentStreak = Number(streakData?.currentStreak || 0);
+        this.currentStreak = Number.isFinite(currentStreak) ? currentStreak : this.currentStreak;
       } catch (e) {
         logger.warn('[practice] 预加载学习统计失败:', e);
       }
@@ -858,39 +850,59 @@ export default {
     // onGoalSaved, loadFavoriteCount, showPracticeModes, selectPracticeMode
     // 在 _loadLearningStatsMixin 加载前提供占位
     async loadLearningStats() {
-      /* 由分包 mixin 注入 */
+      return this._invokeDynamicMethod('loadLearningStats', [], { silent: true });
     },
     async loadFavoriteCount() {
-      /* 由分包 mixin 注入 */
+      return this._invokeDynamicMethod('loadFavoriteCount', [], { silent: true });
     },
 
     // ✅ P1: goMistakeReview 由 practiceNavigationMixin 提供
 
     // ✅ P2: goFavorites 由 practiceNavigationMixin 提供
 
-    // ==================== 动态加载分包 Mixin ====================
+    // ==================== 动态注入 Mixin 方法 ====================
     async _loadAIGenerationMixin(retryCount = 0) {
       const MAX_RETRIES = 2;
       try {
-        // 并行加载两个分包 mixin
+        await this._ensurePracticeSubPackageLoaded();
+
         const [aiModule, statsModule] = await Promise.all([
-          import('@/pages/practice-sub/composables/ai-generation-mixin.js'),
-          import('@/pages/practice-sub/composables/learning-stats-mixin.js')
+          this._requirePracticeSubpackageModule('../practice-sub/composables/ai-generation-mixin.js'),
+          this._requirePracticeSubpackageModule('../practice-sub/composables/learning-stats-mixin.js')
         ]);
-        // 兼容 ESM / CJS / default 包装：取 named export 或 default 中的值
+
         const resolveExport = (mod, name) => mod[name] || (mod.default && mod.default[name]) || mod.default || mod;
         const aiMixin = resolveExport(aiModule, 'aiGenerationMixin');
         const statsMixin = resolveExport(statsModule, 'learningStatsMixin');
+        if (!aiMixin || !statsMixin) {
+          throw new Error('分包模块导出为空');
+        }
+
         // 将 mixin 的方法混入当前实例
         const mixins = [aiMixin, statsMixin];
+        let injectedCount = 0;
         for (const mixin of mixins) {
           const methods = mixin.methods || mixin;
+          if (!methods || typeof methods !== 'object') {
+            continue;
+          }
           for (const key of Object.keys(methods)) {
             if (typeof methods[key] === 'function') {
-              this[key] = methods[key].bind(this);
+              const bound = methods[key].bind(this);
+              this.dynamicMethodsCache[key] = bound;
+              // 保留主包 chooseImportSource 的兜底行为，避免点击导入无响应
+              if (key !== 'chooseImportSource') {
+                this[key] = bound;
+              }
+              injectedCount++;
             }
           }
         }
+
+        if (injectedCount === 0) {
+          throw new Error('分包模块方法注入失败');
+        }
+
         this._mixinLoaded = true;
         logger.log('[practice] 分包模块加载完成');
       } catch (e) {
@@ -921,56 +933,72 @@ export default {
 
     // 占位方法：在 mixin 加载前提供默认行为
     chooseImportSource() {
-      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+      const dynamicMethod = this.dynamicMethodsCache?.chooseImportSource;
+      if (typeof dynamicMethod === 'function') {
+        return dynamicMethod();
+      }
+
+      // 分包方法未就绪时，直接进入导入页，确保点击必有反馈
+      safeNavigateTo('/pages/practice-sub/import-data');
+      return undefined;
     },
     showQuizManage() {
-      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+      return this._invokeDynamicMethod('showQuizManage');
     },
     closeQuizManage() {
       this.showQuizManageModal = false;
     },
     clearQuizBank() {
-      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+      return this._invokeDynamicMethod('clearQuizBank');
     },
     clearAll() {
-      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+      return this._invokeDynamicMethod('clearAll');
     },
     pauseGeneration() {
-      /* mixin 占位 */
+      return this._invokeDynamicMethod('pauseGeneration', [], { silent: true });
     },
     resumeGeneration() {
-      /* mixin 占位 */
+      return this._invokeDynamicMethod('resumeGeneration', [], { silent: true });
     },
     closeSpeedModalAndPlay() {
+      const method = this.dynamicMethodsCache?.closeSpeedModalAndPlay;
+      if (typeof method === 'function') {
+        return method();
+      }
       this.showSpeedModal = false;
+      this.goPractice();
     },
     startProgressTimer() {
-      /* mixin 占位 */
+      return this._invokeDynamicMethod('startProgressTimer', [], { silent: true });
     },
     updateGenerationProgress() {
-      /* mixin 占位 */
+      return this._invokeDynamicMethod('updateGenerationProgress', [], { silent: true });
     },
     startSoupRotation() {
-      /* mixin 占位 */
+      return this._invokeDynamicMethod('startSoupRotation', [], { silent: true });
     },
     generateNextBatch() {
-      /* mixin 占位 */
+      return this._invokeDynamicMethod('generateNextBatch', [], { silent: true });
     },
     getGeneratedQuestionCount() {
-      return 0; /* mixin 占位 */
+      const method = this.dynamicMethodsCache?.getGeneratedQuestionCount;
+      if (typeof method === 'function') {
+        return method();
+      }
+      return Math.max(0, this.totalQuestions - (this.bankSizeAtGenStart || 0));
     },
     openGoalSetting() {
-      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+      return this._invokeDynamicMethod('openGoalSetting');
     },
     onGoalSaved(value) {
       this.todayGoal = value;
       this.showGoalSettingModal = false;
     },
     showPracticeModes() {
-      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+      return this._invokeDynamicMethod('showPracticeModes');
     },
-    selectPracticeMode() {
-      uni.showToast({ title: '功能加载中，请稍候', icon: 'none' });
+    selectPracticeMode(mode) {
+      return this._invokeDynamicMethod('selectPracticeMode', [mode]);
     }
   }
 };

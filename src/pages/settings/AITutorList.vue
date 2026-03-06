@@ -1,15 +1,11 @@
 <template>
-  <!-- F002: AI 导师列表 — 从 settings/index.vue 提取 -->
+  <!-- F002: 智能导师列表 — 从 settings/index.vue 提取 -->
   <view class="section">
     <view class="section-header ds-flex ds-flex-between">
-      <view class="section-title ds-text-lg ds-font-semibold">
-        AI 导师（在线）
-      </view>
+      <view class="section-title ds-text-lg ds-font-semibold"> 智能导师（在线） </view>
     </view>
     <view class="header-actions ds-flex ds-gap-xs">
-      <text class="online-badge ds-text-xs ds-font-medium">
-        支持语音对讲
-      </text>
+      <text class="online-badge ds-text-xs ds-font-medium"> 支持语音对讲 </text>
     </view>
     <view class="tutor-list">
       <view v-for="(tutor, index) in tutorList" :key="index" class="tutor-item ds-flex">
@@ -31,9 +27,7 @@
             {{ tutor.role }}
           </text>
         </view>
-        <button class="chat-btn ds-touchable" @tap="$emit('start-chat', tutor)">
-          交流
-        </button>
+        <button class="chat-btn ds-touchable" @tap="$emit('start-chat', tutor)">交流</button>
       </view>
     </view>
   </view>

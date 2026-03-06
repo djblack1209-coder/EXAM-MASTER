@@ -23,21 +23,19 @@
     <!-- 考试设置页面 -->
     <view
       v-if="!isExamStarted && !isPageLoading"
+      id="e2e-mock-setup"
       class="setup-container"
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
     >
       <view class="glass-card setup-card">
-        <text class="setup-title">
-          <BaseIcon name="note" :size="32" /> 模拟考试设置
-        </text>
+        <text class="setup-title"> <BaseIcon name="note" :size="32" /> 模拟考试设置 </text>
 
         <view class="setting-item">
-          <text class="setting-label">
-            题目数量
-          </text>
+          <text class="setting-label"> 题目数量 </text>
           <view class="setting-options">
             <view
               v-for="num in [10, 20, 30, 50]"
+              :id="`e2e-mock-count-${num}`"
               :key="num"
               :class="['option-btn', { active: questionCount === num }]"
               @tap="questionCount = num"
@@ -48,9 +46,7 @@
         </view>
 
         <view class="setting-item">
-          <text class="setting-label">
-            考试时长
-          </text>
+          <text class="setting-label"> 考试时长 </text>
           <view class="setting-options">
             <view
               v-for="time in [15, 30, 45, 60]"
@@ -64,9 +60,7 @@
         </view>
 
         <view class="setting-item">
-          <text class="setting-label">
-            题目类型
-          </text>
+          <text class="setting-label"> 题目类型 </text>
           <view class="setting-options">
             <view :class="['option-btn', { active: questionType === 'all' }]" @tap="questionType = 'all'">
               <text>全部</text>
@@ -78,12 +72,11 @@
         </view>
 
         <view class="exam-info">
-          <text class="info-text">
-            <BaseIcon name="chart-bar" :size="28" /> 当前题库共 {{ totalQuestions }} 道题
-          </text>
+          <text class="info-text"> <BaseIcon name="chart-bar" :size="28" /> 当前题库共 {{ totalQuestions }} 道题 </text>
         </view>
 
         <button
+          id="e2e-mock-start-btn"
           class="start-btn"
           hover-class="btn-scale-sm"
           :disabled="totalQuestions < questionCount"
@@ -92,9 +85,7 @@
           <view class="btn-icon">
             <BaseIcon name="rocket" :size="32" />
           </view>
-          <text class="btn-text">
-            开始考试
-          </text>
+          <text class="btn-text"> 开始考试 </text>
         </button>
       </view>
     </view>
@@ -142,22 +133,19 @@
       <view class="progress-bar">
         <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
       </view>
-      <text class="progress-text">
-        {{ currentIndex + 1 }} / {{ examQuestions.length }}
-      </text>
+      <text id="e2e-mock-progress" class="progress-text"> {{ currentIndex + 1 }} / {{ examQuestions.length }} </text>
 
       <!-- 当前题目 -->
       <view v-if="currentQuestion" class="glass-card question-card">
-        <text class="question-number">
-          第 {{ currentIndex + 1 }} 题
-        </text>
-        <text class="question-text">
+        <text class="question-number"> 第 {{ currentIndex + 1 }} 题 </text>
+        <text id="e2e-mock-question-text" class="question-text">
           {{ currentQuestion.question || currentQuestion.question_content }}
         </text>
 
         <view class="options-list">
           <view
             v-for="(opt, idx) in currentQuestion.options"
+            :id="`e2e-mock-option-${idx}`"
             :key="idx"
             :class="['option-item', { selected: userAnswers[currentIndex] === idx }]"
             @tap="selectAnswer(idx)"
@@ -175,6 +163,7 @@
       <!-- 导航按钮 -->
       <view class="nav-buttons">
         <button
+          id="e2e-mock-prev-btn"
           class="nav-btn prev"
           hover-class="btn-scale-sm"
           :disabled="currentIndex === 0 || isNavigating"
@@ -184,6 +173,7 @@
         </button>
         <button
           v-if="currentIndex < examQuestions.length - 1"
+          id="e2e-mock-next-btn"
           class="nav-btn next"
           hover-class="btn-scale-sm"
           :disabled="isNavigating"
@@ -193,6 +183,7 @@
         </button>
         <button
           v-else
+          id="e2e-mock-submit-btn"
           class="nav-btn submit"
           hover-class="btn-scale-sm"
           :disabled="isSubmitting"
@@ -204,9 +195,7 @@
 
       <!-- 答题卡 -->
       <view class="answer-sheet">
-        <text class="sheet-title">
-          答题卡
-        </text>
+        <text class="sheet-title"> 答题卡 </text>
         <view class="sheet-grid">
           <view
             v-for="(q, idx) in examQuestions"
@@ -235,18 +224,14 @@
       class="result-container"
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
     >
-      <view class="glass-card result-card">
-        <text class="result-title">
-          <BaseIcon name="celebrate" :size="36" /> 考试完成
-        </text>
+      <view id="e2e-mock-result" class="glass-card result-card">
+        <text class="result-title"> <BaseIcon name="celebrate" :size="36" /> 考试完成 </text>
 
         <view class="score-display">
-          <text class="score-number">
+          <text id="e2e-mock-score" class="score-number">
             {{ score }}
           </text>
-          <text class="score-unit">
-            分
-          </text>
+          <text class="score-unit"> 分 </text>
         </view>
 
         <view class="result-stats">
@@ -254,25 +239,17 @@
             <text class="stat-value correct">
               {{ correctCount }}
             </text>
-            <text class="stat-label">
-              正确
-            </text>
+            <text class="stat-label"> 正确 </text>
           </view>
           <view class="stat-item">
             <text class="stat-value wrong">
               {{ wrongCount }}
             </text>
-            <text class="stat-label">
-              错误
-            </text>
+            <text class="stat-label"> 错误 </text>
           </view>
           <view class="stat-item">
-            <text class="stat-value">
-              {{ accuracy }}%
-            </text>
-            <text class="stat-label">
-              正确率
-            </text>
+            <text class="stat-value"> {{ accuracy }}% </text>
+            <text class="stat-label"> 正确率 </text>
           </view>
         </view>
 
@@ -284,7 +261,7 @@
           <button class="action-btn review" hover-class="btn-scale-sm" @tap="reviewExam">
             <text><BaseIcon name="book" :size="28" /> 查看解析</text>
           </button>
-          <button class="action-btn retry" hover-class="btn-scale-sm" @tap="retryExam">
+          <button id="e2e-mock-retry-btn" class="action-btn retry" hover-class="btn-scale-sm" @tap="retryExam">
             <text><BaseIcon name="refresh" :size="28" /> 再考一次</text>
           </button>
         </view>
@@ -292,20 +269,14 @@
 
       <!-- 错题列表 -->
       <view v-if="wrongQuestions.length > 0" class="glass-card wrong-list">
-        <text class="list-title">
-          <BaseIcon name="cross" :size="28" /> 错题回顾
-        </text>
+        <text class="list-title"> <BaseIcon name="cross" :size="28" /> 错题回顾 </text>
         <view v-for="(item, idx) in wrongQuestions" :key="idx" class="wrong-item">
           <text class="wrong-question">
             {{ idx + 1 }}. {{ (item.question || item.question_content || '题目内容缺失').substring(0, 50) }}...
           </text>
           <view class="wrong-answer">
-            <text class="user-ans">
-              你的答案: {{ ['A', 'B', 'C', 'D'][item.userAnswer] }}
-            </text>
-            <text class="correct-ans">
-              正确答案: {{ item.answer || item.correct_answer }}
-            </text>
+            <text class="user-ans"> 你的答案: {{ ['A', 'B', 'C', 'D'][item.userAnswer] }} </text>
+            <text class="correct-ans"> 正确答案: {{ item.answer || item.correct_answer }} </text>
           </view>
         </view>
       </view>
@@ -360,6 +331,9 @@ export default {
       isSubmitting: false,
       isNavigating: false,
 
+      // E2E 调试模式（跳过后端拉题）
+      isE2EMode: false,
+
       // E005: 从 computed 移至 data，避免每次渲染反序列化题库
       totalQuestions: 0
     };
@@ -406,6 +380,16 @@ export default {
 
     // [F5-FIX] 检查是否有未完成的考试
     this._checkUnfinishedExam();
+
+    try {
+      const pages = getCurrentPages();
+      const currentPage = pages[pages.length - 1];
+      const query = currentPage?.$page?.options || currentPage?.options || {};
+      const e2eFlag = String(query.e2e || '').toLowerCase();
+      this.isE2EMode = e2eFlag === '1' || e2eFlag === 'true';
+    } catch {
+      this.isE2EMode = false;
+    }
   },
 
   onUnload() {
@@ -527,22 +511,24 @@ export default {
       let sourceQuestions = [];
       let dataSource = 'local';
 
-      try {
-        // 尝试从后端获取随机题目
-        const response = await lafService.getRandomQuestions({
-          count: this.questionCount
-        });
+      if (!this.isE2EMode) {
+        try {
+          // 尝试从后端获取随机题目
+          const response = await lafService.getRandomQuestions({
+            count: this.questionCount
+          });
 
-        if (response && response.code === 0 && response.data) {
-          const backendQuestions = Array.isArray(response.data) ? response.data : response.data.list || [];
-          if (backendQuestions.length >= this.questionCount) {
-            sourceQuestions = backendQuestions;
-            dataSource = 'backend';
-            logger.log('[MockExam] ✅ 从后端获取题目成功:', backendQuestions.length);
+          if (response && response.code === 0 && response.data) {
+            const backendQuestions = Array.isArray(response.data) ? response.data : response.data.list || [];
+            if (backendQuestions.length >= this.questionCount) {
+              sourceQuestions = backendQuestions;
+              dataSource = 'backend';
+              logger.log('[MockExam] ✅ 从后端获取题目成功:', backendQuestions.length);
+            }
           }
+        } catch (err) {
+          logger.warn('[MockExam] ⚠️ 后端获取题目失败，降级使用本地数据:', err.message || err);
         }
-      } catch (err) {
-        logger.warn('[MockExam] ⚠️ 后端获取题目失败，降级使用本地数据:', err.message || err);
       }
 
       // 降级：使用本地缓存题库

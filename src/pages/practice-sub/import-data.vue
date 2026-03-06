@@ -4,27 +4,20 @@
     <view class="custom-navbar" :style="{ height: navBarHeight + 'px' }">
       <view class="navbar-status-bar" :style="{ height: statusBarHeight + 'px' }" />
       <view class="navbar-content" style="height: 44px">
-        <view class="navbar-back-btn" @tap="handleBack">
-          <text class="back-icon">
-            ‹
-          </text>
+        <view id="e2e-import-back-btn" class="navbar-back-btn" @tap="handleBack">
+          <text class="back-icon"> ‹ </text>
         </view>
         <view class="navbar-title-wrapper">
-          <text class="navbar-title">
-            资料导入
-          </text>
+          <text class="navbar-title"> 资料导入 </text>
         </view>
         <view class="navbar-placeholder" />
       </view>
     </view>
 
     <view class="page-header">
-      <text class="header-title">
-        资料导入
-      </text>
-      <text class="header-subtitle">
-        AI 智能分析 · 即刻出题
-      </text>
+      <text class="header-title"> 资料导入 </text>
+      <text class="header-subtitle"> 智能分析 · 即刻出题 </text>
+      <text class="header-note"> 仅对您主动上传的资料进行学习辅助整理，结果仅供备考参考。 </text>
     </view>
 
     <view class="main-glass-card bounce-in-up">
@@ -36,16 +29,14 @@
       </view>
 
       <view class="operation-zone">
-        <view v-if="!fileName" class="upload-trigger glow-effect" @tap="chooseFile">
+        <view v-if="!fileName" id="e2e-import-choose-file" class="upload-trigger glow-effect" @tap="chooseFile">
           <view class="icon-circle">
             <BaseIcon name="folder" :size="48" />
           </view>
           <text class="upload-main-text">
-            选择复习资料
+            {{ isPickingFile ? '正在拉起文件选择...' : '选择复习资料' }}
           </text>
-          <text class="upload-sub-text">
-            从微信聊天记录中选择文件
-          </text>
+          <text class="upload-sub-text"> 请先将资料发送到微信聊天，再从聊天记录选择 </text>
         </view>
 
         <view v-else class="file-capsule glass-morphism">
@@ -75,6 +66,7 @@
     <view class="bottom-action-bar glass-morphism">
       <view class="action-row main-row">
         <button
+          id="e2e-import-start-ai-btn"
           class="apple-btn primary glow-effect"
           hover-class="btn-scale-sm"
           :disabled="isLooping || !fileName"
@@ -82,7 +74,7 @@
           @tap="startAI"
         >
           <BaseIcon name="sparkle" :size="28" style="margin-right: 8px" />
-          {{ isLooping ? 'AI 正在后台生成中...' : '开始 AI 出题' }}
+          {{ isLooping ? '智能正在后台生成中...' : '开始智能出题' }}
         </button>
       </view>
 
@@ -94,13 +86,9 @@
           @tap="continueGenerating"
         >
           <BaseIcon name="refresh" :size="28" style="margin-right: 4px" />
-          <text style="font-size: 30rpx">
-            再出一组
-          </text>
+          <text style="font-size: 30rpx"> 再出一组 </text>
         </button>
-        <button class="apple-btn danger-ghost" hover-class="btn-scale-sm" @tap="clearAll">
-          清空题库
-        </button>
+        <button class="apple-btn danger-ghost" hover-class="btn-scale-sm" @tap="clearAll">清空题库</button>
       </view>
     </view>
 
@@ -133,39 +121,27 @@
             {{ importDetailText }}
           </text>
 
-          <text class="soup-text">
-            "{{ currentSoup }}"
-          </text>
+          <text class="soup-text"> "{{ currentSoup }}" </text>
           <view class="loading-actions">
-            <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="pauseGeneration">
-              暂停生成
-            </button>
-            <button class="glass-btn danger" hover-class="btn-scale-sm" @tap="cancelGeneration">
-              取消
-            </button>
+            <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="pauseGeneration">暂停生成</button>
+            <button class="glass-btn danger" hover-class="btn-scale-sm" @tap="cancelGeneration">取消</button>
           </view>
         </view>
       </view>
     </view>
 
     <!-- 自定义极速体验弹窗 -->
-    <view v-if="showSpeedModal" class="speed-modal-mask">
+    <view v-if="showSpeedModal" id="e2e-import-speed-modal" class="speed-modal-mask">
       <view class="speed-card bounce-in">
         <view class="speed-icon-box">
           <BaseIcon name="lightning" :size="48" />
         </view>
-        <text class="speed-title">
-          极速体验就绪
-        </text>
-        <text class="speed-desc">
-          前 5 道题已生成完毕！您可以立即开始刷题，AI 将在后台静默为您补充剩余题目。
-        </text>
+        <text class="speed-title"> 极速体验就绪 </text>
+        <text class="speed-desc"> 前 5 道题已生成完毕！您可以立即开始刷题，智能将在后台静默为您补充剩余题目。 </text>
 
         <view class="speed-actions">
-          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="stayHere">
-            留在本页
-          </button>
-          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="goQuiz">
+          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="stayHere">留在本页</button>
+          <button id="e2e-import-go-quiz-btn" class="glass-btn shine" hover-class="btn-scale-sm" @tap="goQuiz">
             立即刷题
           </button>
         </view>
@@ -174,16 +150,10 @@
 
     <view v-if="isPaused" class="pause-banner">
       <view class="pause-info">
-        <text class="pause-title">
-          任务已暂停
-        </text>
-        <text class="pause-desc">
-          可随时继续生成题库
-        </text>
+        <text class="pause-title"> 任务已暂停 </text>
+        <text class="pause-desc"> 可随时继续生成题库 </text>
       </view>
-      <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="resumeGeneration">
-        继续生成
-      </button>
+      <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="resumeGeneration">继续生成</button>
     </view>
 
     <!-- ⭐⭐ v5.2 新增：错误卡片（带重试按钮） -->
@@ -200,12 +170,8 @@
         </text>
 
         <view class="error-actions">
-          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="dismissError">
-            关闭
-          </button>
-          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="retryGeneration">
-            重试
-          </button>
+          <button class="glass-btn ghost" hover-class="btn-scale-sm" @tap="dismissError">关闭</button>
+          <button class="glass-btn shine" hover-class="btn-scale-sm" @tap="retryGeneration">重试</button>
         </view>
       </view>
     </view>
@@ -242,6 +208,7 @@ export default {
       isPaused: false,
       showMask: false,
       showSpeedModal: false,
+      isPickingFile: false,
       isRequestInFlight: false,
       progressTimer: null,
 
@@ -312,7 +279,7 @@ export default {
         // v5.8: 显示更详细的进度信息
         const batchNum = this.generatedCount + 1;
         const totalBatch = this.totalQuestionsLimit;
-        return `AI 正在生成第 ${batchNum}/${totalBatch} 批题目...`;
+        return `智能正在生成第 ${batchNum}/${totalBatch} 批题目...`;
       } else if (this.importStatus === 'success') {
         return '导入成功！';
       } else if (this.importStatus === 'error') {
@@ -320,7 +287,7 @@ export default {
       } else if (this.importStatus === 'retrying') {
         return `正在重试 (${this.retryCount}/${this.maxRetryCount})...`;
       }
-      return 'AI 正在分析...';
+      return '智能正在分析...';
     },
 
     // ⭐⭐ v5.8 优化：更直观的进度显示 - TASK-001
@@ -438,12 +405,16 @@ export default {
   methods: {
     // 1. 选择文件 (入口) - 使用 fileHandler 统一处理
     async chooseFile() {
+      if (this.isPickingFile) return;
+
       // 支持的文件类型
       const allowedTypes = ['pdf', 'doc', 'docx', 'txt', 'md', 'json'];
       // 文件大小限制：10MB
       const maxSize = 10 * 1024 * 1024;
 
       try {
+        this.isPickingFile = true;
+
         const result = await fileHandler.chooseFile({
           count: 1,
           allowedTypes: allowedTypes,
@@ -455,13 +426,24 @@ export default {
         } else if (result.cancelled) {
           // 用户取消，不做处理
           logger.log('[导入资料] 用户取消选择文件');
+        } else if (result.privacyScopeMissing) {
+          logger.warn('[导入资料] 文件选择失败：隐私权限声明未完成');
         } else if (result.errors && result.errors.length > 0) {
           // 验证失败，错误已在 fileHandler 中显示
           logger.warn('[导入资料] 文件验证失败:', result.errors);
+        } else {
+          const errMsg = String(result?.error?.errMsg || result?.error?.message || '').trim();
+          logger.error('[导入资料] 文件选择失败:', result?.error || result);
+          uni.showToast({
+            title: errMsg && errMsg.length <= 18 ? errMsg : '文件选择失败，请稍后重试',
+            icon: 'none'
+          });
         }
       } catch (err) {
         logger.error('[导入资料] 文件选择异常:', err);
         uni.showToast({ title: '文件选择失败', icon: 'none' });
+      } finally {
+        this.isPickingFile = false;
       }
     },
 
@@ -529,7 +511,7 @@ export default {
         setTimeout(() => {
           uni.hideLoading();
           uni.showToast({ title: '已提取主题', icon: 'success' });
-          // 自动启动 AI 分析
+          // 自动启动智能分析
           setTimeout(() => {
             that.startAI();
           }, 500);
@@ -545,7 +527,7 @@ export default {
           if (readResult.success) {
             that.fullFileContent = readResult.content;
             uni.showToast({ title: '解析成功', icon: 'success' });
-            // 自动启动 AI 分析
+            // 自动启动智能分析
             setTimeout(() => {
               that.startAI();
             }, 500);
@@ -553,7 +535,7 @@ export default {
             logger.error('[导入资料] 文件读取失败:', readResult.error);
             that.fullFileContent = '';
             uni.showToast({ title: '读取失败，仅使用文件名', icon: 'none' });
-            // 即使失败也启动 AI 分析（使用文件名）
+            // 即使失败也启动智能分析（使用文件名）
             setTimeout(() => {
               that.startAI();
             }, 500);
@@ -580,7 +562,7 @@ export default {
       this.showSpeedModal = false; // 关闭弹窗
     },
 
-    // 4. 启动 AI 连载 (点击按钮触发)
+    // 4. 启动智能连载 (点击按钮触发)
     // 已迁移到 Sealos：使用 lafService.proxyAI 替代 uniCloud.callFunction('proxy-ai')
     async startAI() {
       if (!this.fullFileContent && !this.fileName) {
@@ -686,7 +668,7 @@ export default {
 
         // 处理响应
         if (response.code !== 0 || !response.data) {
-          logger.error('[导入资料] AI响应异常:', response.message);
+          logger.error('[导入资料] 智能响应异常:', response.message);
           this.isLooping = false;
           this.isPaused = true;
           this.stopProgressAnimation();
@@ -708,14 +690,14 @@ export default {
         try {
           newQuestions = JSON.parse(aiText);
           if (!Array.isArray(newQuestions)) {
-            throw new Error('AI 返回格式不是数组');
+            throw new Error('智能返回格式不是数组');
           }
         } catch (parseError) {
           logger.error('[导入资料] JSON解析失败:', parseError);
           logger.error('[导入资料] 原始数据:', aiText.substring(0, 200));
           uni.showModal({
             title: '解析失败',
-            content: 'AI 返回的数据格式不正确，请重试。',
+            content: '智能返回的数据格式不正确，请重试。',
             showCancel: false
           });
           this.isLooping = false;
@@ -829,9 +811,9 @@ export default {
           e.message &&
           (e.message.includes('JSON') || e.message.includes('parse') || e.message.includes('Unexpected'))
         ) {
-          // AI解析失败：可重试
-          errorMessage = 'AI 解析失败';
-          errorDetail = 'AI 返回的数据格式异常，请重试';
+          // 智能解析失败：可重试
+          errorMessage = '智能解析失败';
+          errorDetail = '智能返回的数据格式异常，请重试';
           canRetry = true;
           autoRetry = this.retryCount < 2; // 自动重试2次
           if (autoRetry) {
@@ -1127,7 +1109,7 @@ export default {
     // 10. 处理自定义弹窗点击
     stayHere() {
       this.showSpeedModal = false;
-      uni.showToast({ title: 'AI 正在后台继续生成...', icon: 'none' });
+      uni.showToast({ title: '智能正在后台继续生成...', icon: 'none' });
     },
 
     goQuiz() {
@@ -1413,7 +1395,7 @@ export default {
       storageService.save(this.uploadHistoryKey, records);
     },
 
-    // 12. Apple AI 进度动画控制
+    // 12. Apple 智能进度动画控制
     startProgressAnimation() {
       // 防止重复启动导致多个 interval 叠加
       this.stopProgressAnimation();
@@ -1664,6 +1646,14 @@ export default {
   font-size: 34rpx;
   color: var(--text-tertiary);
   font-weight: 500;
+}
+
+.header-note {
+  margin-top: 10rpx;
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.5;
+  color: var(--text-secondary);
 }
 
 /* --- 主体玻璃卡片 --- */
@@ -1969,7 +1959,7 @@ export default {
   opacity: 1;
 }
 
-/*  Apple AI Loading 样式 */
+/*  Apple 智能 Loading 样式 */
 .ai-loading-mask {
   position: fixed;
   top: 0;
@@ -2001,7 +1991,7 @@ export default {
   transform: translateZ(0);
 }
 
-/* Apple AI 渐变背景 */
+/* Apple 智能渐变背景 */
 .apple-ai-gradient {
   position: absolute;
   top: -50%;
@@ -2020,7 +2010,7 @@ export default {
   animation: rotateGradient 8s linear infinite;
 }
 
-/* Apple AI 发光效果 */
+/* Apple 智能发光效果 */
 .apple-ai-glow {
   position: absolute;
   top: 0;
@@ -2062,7 +2052,7 @@ export default {
   box-sizing: border-box;
 }
 
-/* Apple AI 进度指示器 */
+/* Apple 智能进度指示器 */
 .apple-ai-indicator {
   position: relative;
   width: 120px;

@@ -19,9 +19,7 @@
             @error="onUserAvatarError"
           />
         </view>
-        <view class="vs-text">
-          VS
-        </view>
+        <view class="vs-text"> VS </view>
         <view class="avatar-ring opponent-ring" :class="{ found: opponentFound }">
           <image
             class="user-avatar"
@@ -40,9 +38,7 @@
         <text class="status-title">
           {{ opponentFound ? '匹配成功！' : matchingStatusText }}
         </text>
-        <text v-if="opponentFound" class="status-tip">
-          {{ opponent.name }} 已加入对战
-        </text>
+        <text v-if="opponentFound" class="status-tip"> {{ opponent.name }} 已加入对战 </text>
         <text
           v-if="!opponentFound"
           class="status-tip"
@@ -87,9 +83,7 @@
           </view>
         </view>
 
-        <text class="vs-text">
-          VS
-        </text>
+        <text class="vs-text"> VS </text>
 
         <view class="player-card right">
           <image
@@ -113,13 +107,9 @@
 
       <view class="question-card">
         <view class="question-header">
-          <view class="tag">
-            单选
-          </view>
+          <view class="tag"> 单选 </view>
           <view class="timer-badge" :class="{ warning: timeLeft <= 10, danger: timeLeft <= 5 }">
-            <text class="timer-text">
-              {{ timeLeft }}s
-            </text>
+            <text class="timer-text"> {{ timeLeft }}s </text>
           </view>
         </view>
         <text class="q-text">
@@ -172,9 +162,7 @@
         class="opponent-status"
         :style="{ marginBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)' }"
       >
-        <text class="opponent-tip">
-          {{ opponent.name }} 已答题 ✓
-        </text>
+        <text class="opponent-tip"> {{ opponent.name }} 已答题 ✓ </text>
       </view>
     </view>
 
@@ -188,42 +176,28 @@
           <text class="result-title" :class="{ victory: myScore >= opponentScore, defeat: myScore < opponentScore }">
             {{ myScore >= opponentScore ? 'VICTORY' : 'DEFEAT' }}
           </text>
-          <text class="result-subtitle">
-            战绩对比：{{ myScore }} VS {{ opponentScore }}
-          </text>
+          <text class="result-subtitle"> 战绩对比：{{ myScore }} VS {{ opponentScore }} </text>
         </view>
 
-        <!-- AI 战报分析卡片 -->
+        <!-- 智能战报分析卡片 -->
         <view class="ai-report-box">
           <view class="ai-header">
             <view class="ai-icon">
               <BaseIcon name="robot" :size="32" />
             </view>
-            <text class="ai-title">
-              AI 犀利点评
-            </text>
+            <text class="ai-title"> 智能犀利点评 </text>
           </view>
           <text class="ai-text">
-            {{ aiSummary || 'AI 正在分析本场对局...' }}
+            {{ aiSummary || '智能正在分析本场对局...' }}
           </text>
         </view>
 
         <view class="action-btns">
-          <button class="btn-share" hover-class="btn-scale-sm" @tap.stop="handleShare">
-            分享战报
-          </button>
-          <button class="btn-rank" hover-class="btn-scale-sm" @tap.stop="goToRank">
-            查看排行榜
-          </button>
-          <button class="btn-again" hover-class="btn-scale-sm" @tap.stop="resetGame">
-            再来一局
-          </button>
-          <button class="btn-home" hover-class="btn-scale-sm" @tap.stop="goHome">
-            返回首页
-          </button>
-          <button class="btn-exit" hover-class="btn-scale-sm" @tap.stop="handleExitFromResult">
-            退出
-          </button>
+          <button class="btn-share" hover-class="btn-scale-sm" @tap.stop="handleShare">分享战报</button>
+          <button class="btn-rank" hover-class="btn-scale-sm" @tap.stop="goToRank">查看排行榜</button>
+          <button class="btn-again" hover-class="btn-scale-sm" @tap.stop="resetGame">再来一局</button>
+          <button class="btn-home" hover-class="btn-scale-sm" @tap.stop="goHome">返回首页</button>
+          <button class="btn-exit" hover-class="btn-scale-sm" @tap.stop="handleExitFromResult">退出</button>
         </view>
       </view>
     </view>
@@ -260,6 +234,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { createInviteDeepLink, generateInviteCode, generateShareConfig } from './invite-deep-link.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 
@@ -285,7 +260,7 @@ export default {
       opponentChoice: null,
       opponentAnswered: false,
       showAns: false,
-      aiSummary: 'AI 正在分析本场对局...',
+      aiSummary: '智能正在分析本场对局...',
       opProgress: 0,
       myProgress: 0,
       // ✅ 自定义弹窗状态
@@ -311,8 +286,8 @@ export default {
       knowledgePoints: [], // 掌握的知识点
       questionStartTime: 0, // 当前题目开始时间戳
       answerTimes: [], // 每道题的实际答题时间（毫秒）
-      // AI对手库（从后端获取，本地作为降级方案）
-      // 注意：当前版本为单机PK模式，对手为AI机器人
+      // 智能对手库（从后端获取，本地作为降级方案）
+      // 注意：当前版本为单机PK模式，对手为智能机器人
       // 后续版本将支持真实用户匹配
       botList: [],
       // 是否已从后端加载机器人配置
@@ -338,7 +313,7 @@ export default {
       // 数据规范化：确保题目格式正确
       let options = q.options || [];
 
-      // 修复AI回传格式问题：确保options是数组且格式正确
+      // 修复智能回传格式问题：确保options是数组且格式正确
       if (!Array.isArray(options)) {
         logger.warn('[PK] options不是数组，尝试转换:', options);
         // 尝试从字符串解析
@@ -420,7 +395,7 @@ export default {
     }
 
     this.initData();
-    // 先加载AI对手配置，再开始匹配
+    // 先加载智能对手配置，再开始匹配
     this.loadBotConfig().then(() => {
       this.startMatching();
     });
@@ -482,7 +457,7 @@ export default {
     },
 
     /**
-     * 从后端加载AI对手配置
+     * 从后端加载智能对手配置
      * 如果后端不可用，使用本地默认配置
      */
     async loadBotConfig() {
@@ -492,8 +467,8 @@ export default {
     },
 
     /**
-     * 获取默认AI对手配置
-     * 基于真实用户数据统计生成的AI对手模型
+     * 获取默认智能对手配置
+     * 基于真实用户数据统计生成的智能对手模型
      */
     getDefaultBotConfig() {
       // 根据用户当前分数动态生成对手
@@ -502,28 +477,28 @@ export default {
 
       return [
         {
-          name: 'AI学霸',
+          name: '智能学霸',
           avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Scholar_${Date.now()}`,
           level: `Lv.${baseLevel + 10}`,
-          accuracy: 0.85, // AI答题正确率
-          speed: 'fast' // AI答题速度
+          accuracy: 0.85, // 智能答题正确率
+          speed: 'fast' // 智能答题速度
         },
         {
-          name: 'AI研友',
+          name: '智能研友',
           avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Friend_${Date.now()}`,
           level: `Lv.${baseLevel}`,
           accuracy: 0.7,
           speed: 'normal'
         },
         {
-          name: 'AI新手',
+          name: '智能新手',
           avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Newbie_${Date.now()}`,
           level: `Lv.${baseLevel - 10}`,
           accuracy: 0.55,
           speed: 'slow'
         },
         {
-          name: 'AI挑战者',
+          name: '智能挑战者',
           avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=AI_Challenger_${Date.now()}`,
           level: `Lv.${baseLevel + 5}`,
           accuracy: 0.75,
@@ -532,9 +507,9 @@ export default {
       ];
     },
     startMatching() {
-      // 确保AI对手配置已加载
+      // 确保智能对手配置已加载
       if (!this.botsLoaded || this.botList.length === 0) {
-        logger.warn('[PK] AI对手配置未加载，使用默认配置');
+        logger.warn('[PK] 智能对手配置未加载，使用默认配置');
         this.botList = this.getDefaultBotConfig();
         this.botsLoaded = true;
       }
@@ -551,13 +526,13 @@ export default {
       const matchDelay = Math.random() * 1500 + 1500; // 1.5-3秒
 
       this.matchingTimer = setTimeout(() => {
-        // 随机选择一个AI对手
+        // 随机选择一个智能对手
         const randomBot = this.botList[Math.floor(Math.random() * this.botList.length)];
         this.opponent = {
           name: randomBot.name,
           avatar: randomBot.avatar,
           level: randomBot.level,
-          isBot: true, // 标记为AI对手
+          isBot: true, // 标记为智能对手
           accuracy: randomBot.accuracy || 0.7,
           speed: randomBot.speed || 'normal'
         };
@@ -617,7 +592,7 @@ export default {
     },
 
     handleMatchingTimeout() {
-      // 超时后自动匹配AI对手
+      // 超时后自动匹配智能对手
       const randomBot = this.botList[Math.floor(Math.random() * this.botList.length)];
       this.opponent = {
         name: randomBot.name,
@@ -628,10 +603,10 @@ export default {
         speed: randomBot.speed || 'normal'
       };
       this.opponentFound = true;
-      this.matchingStatusText = '已为您匹配AI对手';
+      this.matchingStatusText = '已为您匹配智能对手';
 
       uni.showToast({
-        title: '已转为AI对战',
+        title: '已转为智能对战',
         icon: 'none',
         duration: 2000
       });
@@ -771,7 +746,7 @@ export default {
       const correctAnswer = correctAnswerRaw.toString().toUpperCase().charAt(0);
       const correctIndex = ['A', 'B', 'C', 'D'].indexOf(correctAnswer);
 
-      // 根据AI对手配置计算答题时间
+      // 根据智能对手配置计算答题时间
       let answerTimeBase = 5000; // 默认5秒
       if (this.opponent.speed === 'fast') {
         answerTimeBase = 3000; // 快速：3秒
@@ -780,7 +755,7 @@ export default {
       }
       const answerTime = Math.random() * 2000 + answerTimeBase; // 在基础时间上浮动2秒
 
-      // 使用AI对手配置的正确率
+      // 使用智能对手配置的正确率
       const accuracy = this.opponent.accuracy || 0.7;
       const willAnswerCorrectly = Math.random() < accuracy;
 
@@ -919,7 +894,7 @@ export default {
 
       // 切换到结算状态（必须在清理定时器之后）
       this.gameState = 'result';
-      // 调用智谱 AI 生成针对性战后分析
+      // 调用智谱智能生成针对性战后分析
       await this.fetchAISummary();
       // 自动上传分数到排行榜（结算页显示时触发）
       // 注意：uploadScoreToRank 现在是 async 方法，但不等待结果（静默上传）
@@ -936,15 +911,15 @@ export default {
     },
     async fetchAISummary() {
       // 设置 Loading 状态
-      this.aiSummary = 'AI 正在分析战局...';
-      uni.showLoading({ title: 'AI分析中...', mask: false });
+      this.aiSummary = '智能正在分析战局...';
+      uni.showLoading({ title: '智能分析中...', mask: false });
 
       const correctCount = Math.floor(this.myScore / 20);
       const accuracy = this.questions.length > 0 ? Math.round((correctCount / this.questions.length) * 100) : 0;
 
       const result = this.myScore > this.opponentScore ? '胜利' : this.myScore < this.opponentScore ? '惜败' : '平局';
 
-      logger.log('[pk-battle] 🤖 调用后端代理生成 AI 战报...');
+      logger.log('[pk-battle] 🤖 调用后端代理生成智能战报...');
 
       try {
         // ✅ 使用后端代理调用（安全）- action: 'pk_summary'
@@ -969,37 +944,37 @@ export default {
           comment = comment.replace(/```json\s*/gi, '');
           comment = comment.replace(/```\s*/g, '');
           this.aiSummary = comment;
-          logger.log('[pk-battle] ✅ AI 战报生成成功');
+          logger.log('[pk-battle] ✅ 智能战报生成成功');
         } else {
-          throw new Error('AI 响应异常');
+          throw new Error('智能响应异常');
         }
       } catch (e) {
-        logger.error('[PK] AI 战报生成失败:', e);
+        logger.error('[PK] 智能战报生成失败:', e);
 
         // 检查是否是401未登录错误
         if (e.message && e.message.includes('未登录')) {
-          logger.warn('[PK] AI 服务需要登录，使用降级方案');
+          logger.warn('[PK] 智能服务需要登录，使用降级方案');
         }
 
-        // 降级方案：如果 AI 挂了，随机显示一条本地库
+        // 降级方案：如果智能挂了，随机显示一条本地库
         const fallback =
           result === '胜利'
             ? [
-              '胜败乃兵家常事，但这局你赢了！手速和准确率都不错，继续保持！',
-              '这手速，阅卷老师都追不上！精准度碾压对手，看来知识点掌握得很扎实。',
-              '大获全胜！这波操作我给满分，继续保持这种学习状态！'
-            ]
+                '胜败乃兵家常事，但这局你赢了！手速和准确率都不错，继续保持！',
+                '这手速，阅卷老师都追不上！精准度碾压对手，看来知识点掌握得很扎实。',
+                '大获全胜！这波操作我给满分，继续保持这种学习状态！'
+              ]
             : result === '惜败'
               ? [
-                '差点就赢了，建议少吃一口饭，多背一个词，下次一定能反超！',
-                '对手很厉害，但你的潜力更大，再多刷几题就能反超。',
-                '虽然惜败，但表现可圈可点。胜败乃兵家常事，大侠请重新来过！'
-              ]
+                  '差点就赢了，建议少吃一口饭，多背一个词，下次一定能反超！',
+                  '对手很厉害，但你的潜力更大，再多刷几题就能反超。',
+                  '虽然惜败，但表现可圈可点。胜败乃兵家常事，大侠请重新来过！'
+                ]
               : [
-                '势均力敌！这局平局，下局见分晓。',
-                '实力与运气并存，这波操作我给满分！再来一局决胜负！',
-                '平分秋色！看来双方都很强，不如再战一局？'
-              ];
+                  '势均力敌！这局平局，下局见分晓。',
+                  '实力与运气并存，这波操作我给满分！再来一局决胜负！',
+                  '平分秋色！看来双方都很强，不如再战一局？'
+                ];
         this.aiSummary = fallback[Math.floor(Math.random() * fallback.length)];
       } finally {
         uni.hideLoading();
@@ -1079,7 +1054,7 @@ export default {
       this.opProgress = 0;
       this.opponentFound = false;
       this.opponent = { name: '寻找中...', avatar: '' };
-      this.aiSummary = 'AI 正在分析本场对局...';
+      this.aiSummary = '智能正在分析本场对局...';
       this.userChoice = null;
       this.opponentChoice = null;
       this.opponentAnswered = false;
@@ -1130,8 +1105,6 @@ export default {
     // 检查点4.2: 好友PK邀请 - 生成分享PK链接
     async generateSharePkLink() {
       const userId = storageService.get('EXAM_USER_ID', '');
-      // ✅ 懒加载：仅在用户触发分享时才加载 invite-deep-link 模块
-      const { createInviteDeepLink, generateInviteCode } = await import('./invite-deep-link.js');
 
       // 生成房间ID
       this.sharePkRoomId = `pk_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
@@ -1172,7 +1145,6 @@ export default {
         const shareInfo = await this.generateSharePkLink();
 
         // 获取分享配置
-        const { generateShareConfig } = await import('./invite-deep-link.js');
         const shareConfig = generateShareConfig({
           type: 'pk',
           roomId: shareInfo.roomId,
@@ -2234,7 +2206,7 @@ export default {
   color: rgba(255, 255, 255, 0.7);
   display: block;
 }
-/* AI 战报分析卡片样式 - 绿色主题，高级质感 */
+/* 智能战报分析卡片样式 - 绿色主题，高级质感 */
 .ai-report-box {
   margin: 40rpx 0;
   padding: 30rpx;
@@ -2477,7 +2449,7 @@ export default {
   }
 }
 
-/* 红光警告遮罩（最后5秒）- 参考苹果AI呼吸感 */
+/* 红光警告遮罩（最后5秒）- 参考苹果智能呼吸感 */
 .red-warning-overlay {
   position: fixed;
   top: 0;

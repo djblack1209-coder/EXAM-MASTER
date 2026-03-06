@@ -23,44 +23,29 @@
     <!-- 展开详情 -->
     <view v-if="expanded" class="offline-indicator__details">
       <view class="offline-indicator__detail-item">
-        <text class="detail-label">
-          网络类型
-        </text>
+        <text class="detail-label"> 网络类型 </text>
         <text class="detail-value">
           {{ networkTypeText }}
         </text>
       </view>
 
       <view class="offline-indicator__detail-item">
-        <text class="detail-label">
-          网络质量
-        </text>
+        <text class="detail-label"> 网络质量 </text>
         <view class="detail-value quality-indicator">
-          <view
-            v-for="i in 4"
-            :key="i"
-            class="quality-bar"
-            :class="{ 'quality-bar--active': i <= qualityLevel }"
-          />
+          <view v-for="i in 4" :key="i" class="quality-bar" :class="{ 'quality-bar--active': i <= qualityLevel }" />
         </view>
       </view>
 
       <view v-if="isOffline" class="offline-indicator__detail-item">
-        <text class="detail-label">
-          离线时长
-        </text>
+        <text class="detail-label"> 离线时长 </text>
         <text class="detail-value">
           {{ offlineDurationText }}
         </text>
       </view>
 
       <view v-if="pendingCount > 0" class="offline-indicator__detail-item">
-        <text class="detail-label">
-          待同步
-        </text>
-        <text class="detail-value">
-          {{ pendingCount }} 条数据
-        </text>
+        <text class="detail-label"> 待同步 </text>
+        <text class="detail-value"> {{ pendingCount }} 条数据 </text>
       </view>
 
       <!-- 操作按钮 -->
@@ -74,9 +59,7 @@
           {{ isSyncing ? '同步中...' : '立即同步' }}
         </button>
 
-        <button class="action-btn action-btn--dismiss" @tap.stop="handleDismiss">
-          暂时忽略
-        </button>
+        <button class="action-btn action-btn--dismiss" @tap.stop="handleDismiss">暂时忽略</button>
       </view>
     </view>
   </view>

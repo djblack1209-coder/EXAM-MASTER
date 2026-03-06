@@ -29,19 +29,21 @@ export default {
   width: 36px;
   height: 36px;
   border: 3px solid rgba(52, 199, 89, 0.2);
-  border-top-color: #34C759;
+  border-top-color: #34c759;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 .loading-text {
   margin-top: 12px;
   font-size: 14px;
-  color: #8E8E93;
+  color: #8e8e93;
 }
 .dark-mode .loading-text {
-  color: #AEAEB2;
+  color: #aeaeb2;
 }
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

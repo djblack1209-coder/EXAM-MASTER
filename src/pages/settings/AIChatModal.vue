@@ -1,5 +1,5 @@
 <template>
-  <!-- F002: AI 对话弹窗 — 从 settings/index.vue 提取 -->
+  <!-- F002: 智能对话弹窗 — 从 settings/index.vue 提取 -->
   <view v-if="visible" class="chat-modal">
     <view class="chat-mask" @tap="handleClose" />
     <view class="chat-panel">
@@ -7,30 +7,13 @@
         <view class="header-left">
           <text>与 {{ tutor.name }} 对话</text>
           <view v-if="isSpeaking || isRecording" class="speaking-indicator">
-            <view
-              v-for="i in 5"
-              :key="i"
-              class="bar"
-              :class="{ 'rec': isRecording }"
-            />
+            <view v-for="i in 5" :key="i" class="bar" :class="{ rec: isRecording }" />
           </view>
         </view>
-        <text class="close-icon" @tap="handleClose">
-          ✕
-        </text>
+        <text class="close-icon" @tap="handleClose"> ✕ </text>
       </view>
-      <scroll-view
-        scroll-y
-        class="chat-content"
-        :scroll-top="chatScrollTop"
-        :scroll-into-view="scrollIntoView"
-      >
-        <view
-          v-for="(msg, i) in chatHistory"
-          :id="`msg-${i}`"
-          :key="i"
-          :class="['msg-bubble', msg.role]"
-        >
+      <scroll-view scroll-y class="chat-content" :scroll-top="chatScrollTop" :scroll-into-view="scrollIntoView">
+        <view v-for="(msg, i) in chatHistory" :id="`msg-${i}`" :key="i" :class="['msg-bubble', msg.role]">
           <rich-text v-if="msg.role === 'assistant'" :nodes="renderMarkdown(msg.content)" />
           <text v-else>
             {{ msg.content }}
@@ -45,7 +28,7 @@
         <view v-if="isThinking" id="thinking" class="msg-bubble assistant">
           <text>正在思考中...</text>
         </view>
-        <view id="msg-bottom" style="height: 20px;" />
+        <view id="msg-bottom" style="height: 20px" />
       </scroll-view>
       <view class="chat-input-area">
         <view class="mode-switch" @tap="toggleInputMode">
@@ -65,7 +48,7 @@
         <view
           v-else
           class="voice-press-btn"
-          :class="{ 'pressing': isRecording }"
+          :class="{ pressing: isRecording }"
           @touchstart="handleTouchStart"
           @touchend="handleTouchEnd"
           @touchcancel="handleTouchEnd"
@@ -77,25 +60,13 @@
           <text>😊</text>
         </view>
 
-        <button
-          v-if="!isVoiceInput"
-          :loading="isRequesting"
-          class="send-btn"
-          @tap="sendToAI"
-        >
-          发送
-        </button>
+        <button v-if="!isVoiceInput" :loading="isRequesting" class="send-btn" @tap="sendToAI">发送</button>
       </view>
 
       <!-- 表情选择器 -->
       <view v-if="showEmojiPicker" class="emoji-picker">
         <view class="emoji-grid">
-          <view
-            v-for="(emoji, idx) in emojiList"
-            :key="idx"
-            class="emoji-item"
-            @tap="selectEmoji(emoji)"
-          >
+          <view v-for="(emoji, idx) in emojiList" :key="idx" class="emoji-item" @tap="selectEmoji(emoji)">
             <text>{{ emoji }}</text>
           </view>
         </view>
@@ -107,6 +78,8 @@
 <script>
 import { logger } from '@/utils/logger.js';
 import { lafService } from '@/services/lafService.js';
+
+const ENABLE_WECHAT_SI_PLUGIN = false;
 
 export default {
   name: 'AIChatModal',
@@ -129,12 +102,66 @@ export default {
       isRequesting: false,
       showEmojiPicker: false,
       emojiList: [
-        '😊', '😄', '😃', '😀', '😁', '😆', '😅', '🤣', '😂', '🙂',
-        '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛',
-        '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨',
-        '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥', '😌', '😔',
-        '👍', '👎', '👏', '🙌', '🤝', '💪', '✌️', '🤞', '🤟', '🤘',
-        '📚', '📖', '✏️', '📝', '🎓', '🏆', '⭐', '💯', '✅', '❌'
+        '😊',
+        '😄',
+        '😃',
+        '😀',
+        '😁',
+        '😆',
+        '😅',
+        '🤣',
+        '😂',
+        '🙂',
+        '😉',
+        '😌',
+        '😍',
+        '🥰',
+        '😘',
+        '😗',
+        '😙',
+        '😚',
+        '😋',
+        '😛',
+        '😜',
+        '🤪',
+        '😝',
+        '🤑',
+        '🤗',
+        '🤭',
+        '🤫',
+        '🤔',
+        '🤐',
+        '🤨',
+        '😐',
+        '😑',
+        '😶',
+        '😏',
+        '😒',
+        '🙄',
+        '😬',
+        '🤥',
+        '😌',
+        '😔',
+        '👍',
+        '👎',
+        '👏',
+        '🙌',
+        '🤝',
+        '💪',
+        '✌️',
+        '🤞',
+        '🤟',
+        '🤘',
+        '📚',
+        '📖',
+        '✏️',
+        '📝',
+        '🎓',
+        '🏆',
+        '⭐',
+        '💯',
+        '✅',
+        '❌'
       ],
       recorderManager: null,
       audioCtx: null
@@ -163,20 +190,28 @@ export default {
   },
   methods: {
     openChat() {
-      this.chatHistory = [{
-        role: 'assistant',
-        content: `你好，考研路上我陪你。我是${this.tutor.name}，请直接对我说话吧。`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }];
+      this.chatHistory = [
+        {
+          role: 'assistant',
+          content: `你好，考研路上我陪你。我是${this.tutor.name}，请直接对我说话吧。`,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ];
       this.userInput = '';
-      setTimeout(() => { this.scrollChatToBottom(); }, 300);
+      setTimeout(() => {
+        this.scrollChatToBottom();
+      }, 300);
     },
     handleClose() {
       if (this.isRecording && this.recorderManager) {
         this.recorderManager.stop();
       }
       if (this.audioCtx) {
-        try { this.audioCtx.stop(); } catch (e) { logger.log('关闭音频', e); }
+        try {
+          this.audioCtx.stop();
+        } catch (e) {
+          logger.log('关闭音频', e);
+        }
       }
       this.chatHistory = [];
       this.userInput = '';
@@ -216,7 +251,8 @@ export default {
         .slice(-6) // 最近 3 轮对话
         .map((msg) => `${msg.role === 'user' ? '用户' : '老师'}：${msg.content}`)
         .join('\n');
-      const systemHint = this.tutor.prompt || `你是一个专业的考研老师，名叫${this.tutor.name}，负责${this.tutor.role}教学。请简洁回答。`;
+      const systemHint =
+        this.tutor.prompt || `你是一个专业的考研老师，名叫${this.tutor.name}，负责${this.tutor.role}教学。请简洁回答。`;
       // 截断上下文，避免超长对话累积过多 token
       const MAX_CONTEXT_CHARS = 3000;
       let contextStr = recentHistory;
@@ -225,41 +261,47 @@ export default {
       }
       const aiContent = `${systemHint}\n\n对话记录：\n${contextStr}`;
 
-      lafService.proxyAI('chat', {
-        content: aiContent,
-        temperature: 0.8 // 聊天场景适当提高创造性
-      }).then((res) => {
-        // 9.6: 可重试错误自动重试（最多1次），非网络错误不重试
-        if (res.success === false && res._offline && !this._aiRetried) {
-          this._aiRetried = true;
-          logger.log('[AIChatModal] Network error, retrying in 2s...');
-          setTimeout(() => {
-            lafService.proxyAI('chat', { content: aiContent }).then((retryRes) => {
-              this._aiRetried = false;
-              this._handleAIResponse(retryRes);
-            }).catch((retryErr) => {
-              this._aiRetried = false;
-              this._handleAIError(retryErr);
-            });
-          }, 2000);
-          return;
-        }
-        this._aiRetried = false;
-        this._handleAIResponse(res);
-      }).catch((err) => {
-        this._aiRetried = false;
-        this._handleAIError(err);
-      });
+      lafService
+        .proxyAI('chat', {
+          content: aiContent,
+          temperature: 0.8 // 聊天场景适当提高创造性
+        })
+        .then((res) => {
+          // 9.6: 可重试错误自动重试（最多1次），非网络错误不重试
+          if (res.success === false && res._offline && !this._aiRetried) {
+            this._aiRetried = true;
+            logger.log('[AIChatModal] Network error, retrying in 2s...');
+            setTimeout(() => {
+              lafService
+                .proxyAI('chat', { content: aiContent })
+                .then((retryRes) => {
+                  this._aiRetried = false;
+                  this._handleAIResponse(retryRes);
+                })
+                .catch((retryErr) => {
+                  this._aiRetried = false;
+                  this._handleAIError(retryErr);
+                });
+            }, 2000);
+            return;
+          }
+          this._aiRetried = false;
+          this._handleAIResponse(res);
+        })
+        .catch((err) => {
+          this._aiRetried = false;
+          this._handleAIError(err);
+        });
     },
 
-    // 9.6: AI 响应处理（提取方法，供重试复用）
+    // 9.6: 智能响应处理（提取方法，供重试复用）
     _handleAIResponse(res) {
       this.isThinking = false;
       this.isRequesting = false;
 
       if (res.success === false || (res.code && res.code !== 0)) {
-        const errorMsg = res.message || 'AI 服务暂时不可用';
-        logger.error('[AIChatModal] AI 响应错误:', errorMsg);
+        const errorMsg = res.message || '智能服务暂时不可用';
+        logger.error('[AIChatModal] 智能响应错误:', errorMsg);
         this.chatHistory.push({
           role: 'assistant',
           content: res._offline ? '当前网络不可用，请检查网络后重试。' : `抱歉，${errorMsg}`,
@@ -283,7 +325,9 @@ export default {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         if (this.voiceEnabled && this.audioCtx) {
-          setTimeout(() => { this.playTTS(answer); }, 300);
+          setTimeout(() => {
+            this.playTTS(answer);
+          }, 300);
         }
       } else {
         this.chatHistory.push({
@@ -296,7 +340,7 @@ export default {
     },
 
     _handleAIError(err) {
-      logger.error('[AIChatModal] AI 请求失败:', err);
+      logger.error('[AIChatModal] 智能请求失败:', err);
       this.isThinking = false;
       this.isRequesting = false;
       this.chatHistory.push({
@@ -318,9 +362,56 @@ export default {
         this.chatScrollTop = 99999;
       }, 100);
     },
-    playTTS(text) {
+    async playTTS(text) {
       if (!text || !this.audioCtx || !this.voiceEnabled) return;
-      logger.log('[AIChatModal] TTS功能已禁用（避免音频解码错误）');
+
+      const trimmedText = String(text).trim().slice(0, 300);
+      if (!trimmedText) return;
+
+      try {
+        const response = await lafService.textToSpeech(trimmedText, {
+          voice: 'tongtong',
+          format: 'wav'
+        });
+
+        if (response.code !== 0 || !response.data?.audioBase64) {
+          return;
+        }
+
+        const audioBase64 = response.data.audioBase64;
+        const mimeType = response.data.mimeType || 'audio/wav';
+
+        // #ifdef MP-WEIXIN
+        try {
+          const fs = uni.getFileSystemManager();
+          const filePath = `${wx.env.USER_DATA_PATH}/tts_${Date.now()}.wav`;
+          fs.writeFile({
+            filePath,
+            data: audioBase64,
+            encoding: 'base64',
+            success: () => {
+              this.audioCtx.src = filePath;
+              this.audioCtx.play();
+            },
+            fail: () => {
+              this.audioCtx.src = `data:${mimeType};base64,${audioBase64}`;
+              this.audioCtx.play();
+            }
+          });
+        } catch (e) {
+          logger.warn('[AIChatModal] 写入 TTS 音频失败，回退 data URL', e);
+          this.audioCtx.src = `data:${mimeType};base64,${audioBase64}`;
+          this.audioCtx.play();
+        }
+        // #endif
+
+        // #ifndef MP-WEIXIN
+        this.audioCtx.src = `data:${mimeType};base64,${audioBase64}`;
+        this.audioCtx.play();
+        // #endif
+      } catch (error) {
+        logger.warn('[AIChatModal] TTS 播放失败:', error);
+      }
     },
     toggleInputMode() {
       this.isVoiceInput = !this.isVoiceInput;
@@ -361,13 +452,19 @@ export default {
     },
     initAudio() {
       this.audioCtx = uni.createInnerAudioContext();
-      this.audioCtx.onPlay(() => { this.isSpeaking = true; });
-      this.audioCtx.onEnded(() => { this.isSpeaking = false; });
+      this.audioCtx.onPlay(() => {
+        this.isSpeaking = true;
+      });
+      this.audioCtx.onEnded(() => {
+        this.isSpeaking = false;
+      });
       this.audioCtx.onError((err) => {
         logger.error('音频播放错误', err);
         this.isSpeaking = false;
       });
-      this.audioCtx.onStop(() => { this.isSpeaking = false; });
+      this.audioCtx.onStop(() => {
+        this.isSpeaking = false;
+      });
     },
     initRecorder() {
       // #ifdef MP-WEIXIN
@@ -400,11 +497,15 @@ export default {
               }
             }
             uni.showToast({ title: errorMsg, icon: 'none' });
-            setTimeout(() => { errorToastShown = false; }, 2000);
+            setTimeout(() => {
+              errorToastShown = false;
+            }, 2000);
           }
         });
         if (this.recorderManager.onInterruptionBegin) {
-          this.recorderManager.onInterruptionBegin(() => { this.isRecording = false; });
+          this.recorderManager.onInterruptionBegin(() => {
+            this.isRecording = false;
+          });
         }
         logger.log('[AIChatModal] 录音管理器初始化成功');
       } catch (e) {
@@ -450,58 +551,152 @@ export default {
     },
     handleTouchEnd() {
       if (this.recorderManager && this.isRecording) {
-        try { this.recorderManager.stop(); } catch (e) {
+        try {
+          this.recorderManager.stop();
+        } catch (e) {
           logger.error('停止录音失败', e);
           this.isRecording = false;
         }
       }
     },
-    processVoice(filePath) {
+    async processVoice(filePath) {
       uni.showLoading({ title: '语音识别中...' });
-      // #ifdef MP-WEIXIN
-      const plugin = requirePlugin('WechatSI');
-      if (plugin && plugin.manager) {
-        plugin.manager.translateVoice({
-          filePath: filePath,
-          success: (res) => {
-            uni.hideLoading();
-            if (res.result) {
-              this.userInput = res.result;
-              uni.showToast({ title: '识别成功', icon: 'success', duration: 1000 });
-              setTimeout(() => { this.sendToAI(); }, 500);
-            } else {
-              uni.showToast({ title: '未识别到语音内容', icon: 'none' });
-            }
-          },
-          fail: (err) => {
-            uni.hideLoading();
-            logger.error('[AIChatModal] 语音识别失败:', err);
-            uni.showToast({ title: '语音识别失败，请重试', icon: 'none' });
-          }
-        });
-      } else {
+
+      try {
+        const backendText = await this.recognizeVoiceByBackend(filePath);
+        if (backendText) {
+          this.userInput = backendText;
+          uni.showToast({ title: '识别成功', icon: 'success', duration: 1000 });
+          setTimeout(() => {
+            this.sendToAI();
+          }, 300);
+          return;
+        }
+
+        const pluginText = await this.recognizeVoiceByWechatPlugin(filePath);
+        if (pluginText) {
+          this.userInput = pluginText;
+          uni.showToast({ title: '识别成功', icon: 'success', duration: 1000 });
+          setTimeout(() => {
+            this.sendToAI();
+          }, 300);
+          return;
+        }
+
+        uni.showToast({ title: '未识别到语音内容，请重试', icon: 'none' });
+      } catch (err) {
+        logger.error('[AIChatModal] 语音识别失败:', err);
+        uni.showToast({ title: '语音识别失败，请重试', icon: 'none' });
+      } finally {
         uni.hideLoading();
-        uni.showToast({ title: '请先安装语音识别插件', icon: 'none' });
       }
-      // #endif
-      // #ifndef MP-WEIXIN
-      setTimeout(() => {
-        uni.hideLoading();
-        uni.showModal({
-          title: '语音识别不可用',
-          content: '当前环境暂不支持语音识别，请使用文字输入。',
-          showCancel: false,
-          confirmText: '知道了'
+    },
+
+    async recognizeVoiceByBackend(filePath) {
+      try {
+        const audioBase64 = await this.readAudioAsBase64(filePath);
+        if (!audioBase64) return '';
+
+        const response = await lafService.speechToText(audioBase64, 'mp3', {
+          prompt: '考研学习场景语音识别，请保留专业术语'
         });
-      }, 500);
-      // #endif
+
+        if (response.code === 0 && response.data?.text) {
+          return String(response.data.text).trim();
+        }
+      } catch (error) {
+        logger.warn('[AIChatModal] 后端语音识别失败:', error);
+      }
+
+      return '';
+    },
+
+    recognizeVoiceByWechatPlugin(filePath) {
+      return new Promise((resolve) => {
+        if (!ENABLE_WECHAT_SI_PLUGIN) {
+          resolve('');
+          return;
+        }
+
+        // #ifdef MP-WEIXIN
+        try {
+          const plugin = requirePlugin('WechatSI');
+          if (plugin?.manager?.translateVoice) {
+            plugin.manager.translateVoice({
+              filePath,
+              success: (res) => resolve((res.result || '').trim()),
+              fail: () => resolve('')
+            });
+            return;
+          }
+        } catch (e) {
+          logger.warn('[AIChatModal] WechatSI 插件识别失败:', e);
+        }
+        // #endif
+        resolve('');
+      });
+    },
+
+    readAudioAsBase64(filePath) {
+      return new Promise((resolve, reject) => {
+        // #ifdef MP-WEIXIN
+        try {
+          const fs = uni.getFileSystemManager();
+          fs.readFile({
+            filePath,
+            encoding: 'base64',
+            success: (res) => resolve(res.data || ''),
+            fail: (err) => reject(err)
+          });
+        } catch (e) {
+          reject(e);
+        }
+        // #endif
+
+        // #ifdef H5
+        fetch(filePath)
+          .then((resp) => resp.blob())
+          .then(
+            (blob) =>
+              new Promise((innerResolve, innerReject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                  const base64 = String(reader.result || '').split(',')[1] || '';
+                  innerResolve(base64);
+                };
+                reader.onerror = innerReject;
+                reader.readAsDataURL(blob);
+              })
+          )
+          .then((base64) => resolve(base64))
+          .catch((err) => reject(err));
+        // #endif
+
+        // #ifdef APP-PLUS
+        plus.io.resolveLocalFileSystemURL(
+          filePath,
+          (entry) => {
+            entry.file((file) => {
+              const reader = new plus.io.FileReader();
+              reader.onloadend = (e) => {
+                const base64 = String(e.target.result || '').split(',')[1] || '';
+                resolve(base64);
+              };
+              reader.onerror = (err) => reject(err);
+              reader.readAsDataURL(file);
+            });
+          },
+          (err) => reject(err)
+        );
+        // #endif
+      });
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-/* AI 对话窗样式 */
+/* 智能对话窗样式 */
 .chat-modal {
   position: fixed;
   inset: 0;
@@ -562,15 +757,29 @@ export default {
   animation-duration: 0.3s;
 }
 
-.speaking-indicator .bar:nth-child(1) { animation-delay: 0s; }
-.speaking-indicator .bar:nth-child(2) { animation-delay: 0.1s; }
-.speaking-indicator .bar:nth-child(3) { animation-delay: 0.2s; }
-.speaking-indicator .bar:nth-child(4) { animation-delay: 0.3s; }
-.speaking-indicator .bar:nth-child(5) { animation-delay: 0.4s; }
+.speaking-indicator .bar:nth-child(1) {
+  animation-delay: 0s;
+}
+.speaking-indicator .bar:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.speaking-indicator .bar:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.speaking-indicator .bar:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.speaking-indicator .bar:nth-child(5) {
+  animation-delay: 0.4s;
+}
 
 @keyframes bounce {
-  from { height: 20%; }
-  to { height: 100%; }
+  from {
+    height: 20%;
+  }
+  to {
+    height: 100%;
+  }
 }
 
 .chat-content {

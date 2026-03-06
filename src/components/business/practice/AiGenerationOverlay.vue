@@ -11,7 +11,7 @@
       </view>
       <view class="loading-content">
         <view class="loading-title">
-          {{ fileName ? '正在研读资料...' : 'AI 准备中...' }}
+          {{ fileName ? '正在研读资料...' : '智能准备中...' }}
         </view>
         <view class="apple-ai-progress">
           <view class="apple-ai-progress-bar">
@@ -21,13 +21,9 @@
             {{ generatedCount === 0 ? '分析文档结构' : '已生成 ' + questionCount + ' 题 / 目标 ' + totalTarget }}
           </view>
         </view>
-        <view class="inspiration-text">
-          "{{ currentSoup }}"
-        </view>
+        <view class="inspiration-text"> "{{ currentSoup }}" </view>
         <view class="loading-actions">
-          <button class="pause-btn" @tap="$emit('pause')">
-            暂停生成
-          </button>
+          <button class="pause-btn" @tap="$emit('pause')">暂停生成</button>
         </view>
       </view>
     </view>

@@ -16,6 +16,7 @@ import { ref } from 'vue';
 // [AUDIT FIX] storageService 使用 default export，需用默认导入
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { useUserStore } from '@/stores/modules/user';
 
 const emit = defineEmits(['logged-out']);
 
@@ -31,8 +32,6 @@ const handleLogout = () => {
       if (res.confirm) {
         isLoggingOut.value = true;
         try {
-          // 使用 userStore 的 logout 方法
-          const { useUserStore } = await import('@/stores/modules/user');
           const userStore = useUserStore();
           userStore.logout();
 

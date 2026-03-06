@@ -461,7 +461,6 @@ export default {
 
 /* VISUAL: Reduced motion support for accessibility */
 @media (prefers-reduced-motion: reduce) {
-
   .skeleton-card,
   .skeleton-avatar,
   .skeleton-greeting-text,

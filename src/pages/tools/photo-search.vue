@@ -4,13 +4,9 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon">
-            &#x2190;
-          </text>
+          <text class="back-icon"> &#x2190; </text>
         </view>
-        <text class="nav-title">
-          拍照搜题
-        </text>
+        <text class="nav-title"> 拍照搜题 </text>
         <view class="nav-action" @tap="selectSubject">
           <text class="nav-action-text">
             {{ selectedSubjectLabel || '学科' }}
@@ -35,9 +31,7 @@
           <view class="corner bottom-left" />
           <view class="corner bottom-right" />
         </view>
-        <text class="camera-tip">
-          将题目放入框内，保持清晰
-        </text>
+        <text class="camera-tip"> 将题目放入框内，保持清晰 </text>
       </camera>
 
       <!-- 预览模式 -->
@@ -60,9 +54,7 @@
           <!-- 识别文本 -->
           <view class="result-section">
             <view class="rs-header">
-              <text class="rs-title">
-                识别结果
-              </text>
+              <text class="rs-title"> 识别结果 </text>
               <view class="confidence-badge">
                 <text class="confidence-text">
                   {{ result.confidence ? (result.confidence * 100).toFixed(0) : 0 }}%
@@ -79,19 +71,10 @@
           <!-- 匹配题目 -->
           <view v-if="result.questions && result.questions.length > 0" class="result-section">
             <view class="rs-header">
-              <text class="rs-title">
-                题库匹配
-              </text>
-              <text class="match-count">
-                找到 {{ result.questions.length }} 道相似题
-              </text>
+              <text class="rs-title"> 题库匹配 </text>
+              <text class="match-count"> 找到 {{ result.questions.length }} 道相似题 </text>
             </view>
-            <view
-              v-for="(q, idx) in result.questions"
-              :key="idx"
-              class="question-card"
-              @click="viewQuestion(q)"
-            >
+            <view v-for="(q, idx) in result.questions" :key="idx" class="question-card" @click="viewQuestion(q)">
               <text class="question-text">
                 {{ q.question }}
               </text>
@@ -102,27 +85,21 @@
                   </text>
                 </view>
                 <view class="meta-tag meta-tag-diff">
-                  <text class="meta-tag-text">
-                    难度 {{ q.difficulty || 3 }}
-                  </text>
+                  <text class="meta-tag-text"> 难度 {{ q.difficulty || 3 }} </text>
                 </view>
               </view>
             </view>
           </view>
 
-          <!-- AI解析 -->
+          <!-- 智能解析 -->
           <view v-if="result.aiGenerated" class="result-section">
             <view class="rs-header">
-              <text class="rs-title">
-                AI 智能解析
-              </text>
+              <text class="rs-title"> 智能解析 </text>
             </view>
             <view class="ai-card">
               <!-- 解题步骤 -->
               <view v-if="result.aiGenerated.analysis && result.aiGenerated.analysis.steps" class="ai-block">
-                <text class="ai-block-title">
-                  解题步骤
-                </text>
+                <text class="ai-block-title"> 解题步骤 </text>
                 <view v-for="(step, idx) in result.aiGenerated.analysis.steps" :key="idx" class="step-item">
                   <view class="step-num-circle">
                     <text class="step-num-text">
@@ -137,9 +114,7 @@
 
               <!-- 参考答案 -->
               <view v-if="result.aiGenerated.answer" class="ai-block">
-                <text class="ai-block-title">
-                  参考答案
-                </text>
+                <text class="ai-block-title"> 参考答案 </text>
                 <view class="answer-card">
                   <text class="answer-text">
                     {{ result.aiGenerated.answer }}
@@ -151,14 +126,12 @@
               <view
                 v-if="
                   result.aiGenerated.analysis &&
-                    result.aiGenerated.analysis.keyPoints &&
-                    result.aiGenerated.analysis.keyPoints.length > 0
+                  result.aiGenerated.analysis.keyPoints &&
+                  result.aiGenerated.analysis.keyPoints.length > 0
                 "
                 class="ai-block"
               >
-                <text class="ai-block-title">
-                  考查知识点
-                </text>
+                <text class="ai-block-title"> 考查知识点 </text>
                 <view class="tags-row">
                   <view v-for="(point, idx) in result.aiGenerated.analysis.keyPoints" :key="idx" class="kp-tag">
                     <text class="kp-tag-text">
@@ -173,9 +146,7 @@
                 v-if="result.aiGenerated.commonMistakes && result.aiGenerated.commonMistakes.length > 0"
                 class="ai-block"
               >
-                <text class="ai-block-title">
-                  易错提醒
-                </text>
+                <text class="ai-block-title"> 易错提醒 </text>
                 <view v-for="(mistake, idx) in result.aiGenerated.commonMistakes" :key="idx" class="mistake-item">
                   <view class="warning-dot" />
                   <text class="mistake-text">
@@ -195,9 +166,7 @@
     <view class="action-bar">
       <template v-if="mode === 'camera'">
         <view class="action-btn-side" @click="chooseFromAlbum">
-          <text class="action-side-text">
-            相册
-          </text>
+          <text class="action-side-text"> 相册 </text>
         </view>
         <view class="capture-btn" @click="takePhoto">
           <view class="capture-outer">
@@ -212,12 +181,7 @@
       </template>
 
       <template v-else-if="mode === 'preview'">
-        <button
-          class="bar-btn bar-btn-secondary"
-          hover-class="btn-hover"
-          :disabled="isRecognizing"
-          @click="retake"
-        >
+        <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" :disabled="isRecognizing" @click="retake">
           <text>重新拍摄</text>
         </button>
         <button
@@ -259,6 +223,7 @@ import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
+import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 
 export default {
   data() {
@@ -267,7 +232,7 @@ export default {
       mode: 'camera', // camera | preview | result
       previewImage: null,
       isRecognizing: false,
-      loadingText: 'AI正在识别题目...',
+      loadingText: '智能正在识别题目...',
       currentTip: '',
       result: null,
       selectedSubject: '',
@@ -387,6 +352,20 @@ export default {
     async startRecognize() {
       if (this.isRecognizing) return;
 
+      if (!isUserLoggedIn()) {
+        uni.showModal({
+          title: '请先登录',
+          content: '登录后可使用拍照搜题功能',
+          confirmText: '去登录',
+          success: (res) => {
+            if (res.confirm) {
+              safeNavigateTo('/pages/login/index');
+            }
+          }
+        });
+        return;
+      }
+
       this.isRecognizing = true;
       this.currentTip = this.loadingTips[0];
       this.startTipRotation();
@@ -435,7 +414,7 @@ export default {
           // 显示识别来源
           const sources = this.result.recognitionSources;
           if (sources) {
-            logger.log('识别来源 - 视觉AI:', sources.vision, ', OCR:', sources.ocr);
+            logger.log('识别来源 - 视觉智能:', sources.vision, ', OCR:', sources.ocr);
           }
         } else {
           throw new Error(response.message || '识别失败');
@@ -607,10 +586,11 @@ export default {
 
 <style lang="scss" scoped>
 .page-container {
-  min-height: 100vh;
+  height: 100vh;
   background: #000;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 // 导航栏
@@ -672,6 +652,7 @@ export default {
   position: relative;
   display: flex;
   flex-direction: column;
+  padding-bottom: calc(176rpx + env(safe-area-inset-bottom, 0px));
 }
 
 .camera-preview {
@@ -729,7 +710,7 @@ export default {
 
 .camera-tip {
   position: absolute;
-  bottom: 40rpx;
+  bottom: calc(220rpx + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   color: #fff;
@@ -805,6 +786,8 @@ export default {
 .result-scroll {
   height: 100%;
   padding: 28rpx 32rpx;
+  box-sizing: border-box;
+  padding-bottom: calc(220rpx + env(safe-area-inset-bottom, 0px));
 }
 
 .result-section {
@@ -899,7 +882,7 @@ export default {
   }
 }
 
-// AI 解析卡片
+// 智能解析卡片
 .ai-card {
   background: var(--bg-card, #fff);
   padding: 24rpx;
@@ -1011,11 +994,16 @@ export default {
 }
 
 .bottom-safe {
-  height: 200rpx;
+  height: 24rpx;
 }
 
 // 底部操作栏
 .action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 120;
   display: flex;
   justify-content: center;
   align-items: center;

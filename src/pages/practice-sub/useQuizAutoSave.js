@@ -34,7 +34,7 @@ const DEBOUNCE_DELAY = 500; // 500ms 防抖延迟
  * @param {number|null} progress.userChoice - 用户选择
  * @param {boolean} progress.hasAnswered - 是否已作答
  * @param {number} progress.seconds - 答题用时（秒）
- * @param {string} progress.aiComment - AI 解析内容
+ * @param {string} progress.aiComment - 智能解析内容
  * @param {Array} progress.answeredQuestions - 已答题目记录
  * @param {boolean} immediate - 是否立即保存（跳过防抖）
  * @returns {boolean} 是否保存成功

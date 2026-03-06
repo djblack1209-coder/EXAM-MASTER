@@ -3,21 +3,13 @@
   <view class="section">
     <view class="friend-entry-card ds-flex ds-flex-between ds-touchable" @tap="navigateToFriends">
       <view class="entry-left ds-flex">
-        <view class="entry-icon ds-flex-center">
-          👥
-        </view>
+        <view class="entry-icon ds-flex-center"> 👥 </view>
         <view class="entry-info">
-          <text class="entry-title ds-text-lg ds-font-semibold">
-            我的好友
-          </text>
-          <text class="entry-desc ds-text-xs">
-            添加好友，一起刷题
-          </text>
+          <text class="entry-title ds-text-lg ds-font-semibold"> 我的好友 </text>
+          <text class="entry-desc ds-text-xs"> 添加好友，一起刷题 </text>
         </view>
       </view>
-      <text class="entry-arrow">
-        ›
-      </text>
+      <text class="entry-arrow"> › </text>
     </view>
   </view>
 </template>

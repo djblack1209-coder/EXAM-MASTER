@@ -10,6 +10,7 @@
 
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { lafService } from '@/services/lafService.js';
 const STORAGE_KEYS = {
   GOALS: 'learning_goals',
   GOAL_RECORDS: 'learning_goal_records',
@@ -667,7 +668,6 @@ class LearningGoalManager {
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return;
 
-      const { lafService } = await import('@/services/lafService.js');
       const res = await lafService.getLearningGoals({ status: 'active' });
       const serverGoals = res?.data || [];
       if (!Array.isArray(serverGoals) || serverGoals.length === 0) return;
@@ -717,7 +717,6 @@ class LearningGoalManager {
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return;
 
-      const { lafService } = await import('@/services/lafService.js');
       if (lafService && typeof lafService.recordGoalProgress === 'function') {
         await lafService.recordGoalProgress(type, value);
       }
@@ -745,7 +744,6 @@ class LearningGoalManager {
       storageService.save('learning_goals_pending_sync', true);
 
       // 尝试调用后端接口（lafService 中需要实现对应接口）
-      const { lafService } = await import('@/services/lafService.js');
       if (lafService && typeof lafService.syncLearningGoals === 'function') {
         await lafService.syncLearningGoals(userId, syncData);
         storageService.remove('learning_goals_pending_sync');
