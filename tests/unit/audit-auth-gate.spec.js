@@ -490,11 +490,11 @@ describe('[审计] 登录门控三种模式 — Modal/Toast/静默', () => {
   it('模式1: Modal 提示 + 跳转 — requireLogin useModal=true', async () => {
     const { requireLogin } = await import('@/utils/auth/loginGuard.js');
 
-    requireLogin(() => {}, { useModal: true, message: '请先登录使用AI匹配' });
+    requireLogin(() => {}, { useModal: true, message: '请先登录使用智能匹配' });
 
     expect(uni.showModal).toHaveBeenCalled();
     const args = uni.showModal.mock.calls[0][0];
-    expect(args.content).toContain('请先登录使用AI匹配');
+    expect(args.content).toContain('请先登录使用智能匹配');
     expect(args.cancelText).toBe('暂不登录');
   });
 
@@ -597,7 +597,7 @@ describe('[审计] 401 处理链 — Token 过期响应处理', () => {
 
     try {
       await lafService.proxyAI('chat', { content: '测试' });
-    } catch (e) {
+    } catch (_e) {
       // 预期抛出错误
     }
 
@@ -659,7 +659,7 @@ describe('[审计] 401 处理链 — Token 过期响应处理', () => {
 
     try {
       await plugin.refreshToken();
-    } catch (e) {
+    } catch (_e) {
       // 预期失败
     }
 

@@ -11,7 +11,11 @@ const mainPageFiles = [
   'pages/profile/index.js'
 ];
 
-const requiredModules = ['utils/favorite/question-favorite.js', 'utils/learning/adaptive-learning-engine.js'];
+const requiredModules = [
+  'utils/favorite/question-favorite.js',
+  'utils/learning/adaptive-learning-engine.js',
+  'utils/analytics/learning-analytics.js'
+];
 
 function readBuildFile(relativePath) {
   const filePath = path.join(buildRoot, relativePath);

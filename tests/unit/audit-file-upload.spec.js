@@ -266,7 +266,7 @@ describe('[审计] ai-generation-mixin handleUpload — 内容读取', () => {
     //   this.startAI(); // 不读取内容，fullFileContent 为空
     // }
     const ext = 'pdf';
-    let fullFileContent = '';
+    const fullFileContent = '';
     let readFile = false;
 
     if (['pdf', 'doc', 'docx'].includes(ext)) {
@@ -278,7 +278,7 @@ describe('[审计] ai-generation-mixin handleUpload — 内容读取', () => {
 
     expect(readFile).toBe(false);
     expect(fullFileContent).toBe('');
-    // AI 只能根据文件名猜测内容
+    // 智能只能根据文件名猜测内容
   });
 
   it('TXT 文件 — 读取内容', () => {
@@ -333,7 +333,7 @@ describe('[审计] ai-generation-mixin handleUpload — 内容读取', () => {
     expect(binaryContent.length).toBeGreaterThan(0);
     expect(binaryContent).toContain('PNG');
 
-    // 乱码会直接作为 content 发给 AI
+    // 乱码会直接作为 content 发给智能
     const contentText = binaryContent.substring(0, 2000) || '主题：fake.txt';
     expect(contentText).toContain('PNG');
   });
@@ -349,7 +349,7 @@ describe('[审计] ai-generation-mixin handleUpload — 内容读取', () => {
 
     expect(fullFileContent).toBe('');
     expect(startAICalled).toBe(true);
-    // AI 会用文件名出题，因为 fullFileContent 为空
+    // 智能会用文件名出题，因为 fullFileContent 为空
   });
 
   it('mixin 文件大小上限 10MB — 超过被拦截', () => {
@@ -396,7 +396,7 @@ describe('[审计] import-data.vue — 文件处理', () => {
     let isLooping = true;
     let isPaused = false;
 
-    // 模拟 AI 响应 code !== 0
+    // 模拟智能响应 code !== 0
     const responseCode = -1;
     if (responseCode !== 0 || !true) {
       // !response.data
@@ -416,7 +416,7 @@ describe('[审计] import-data.vue — 文件处理', () => {
     const aiText = '这不是JSON格式的回复';
     try {
       JSON.parse(aiText);
-    } catch (e) {
+    } catch (_e) {
       isLooping = false;
       isPaused = true;
       showModal = true;
@@ -427,14 +427,14 @@ describe('[审计] import-data.vue — 文件处理', () => {
     expect(showModal).toBe(true);
   });
 
-  it('import-data AI 返回非数组 — 抛出错误', () => {
+  it('import-data 智能返回非数组 — 抛出错误', () => {
     let error = null;
     const aiText = '{"message": "这是一个对象不是数组"}';
 
     try {
       const parsed = JSON.parse(aiText);
       if (!Array.isArray(parsed)) {
-        throw new Error('AI 返回格式不是数组');
+        throw new Error('智能返回格式不是数组');
       }
     } catch (e) {
       error = e;
@@ -479,8 +479,8 @@ describe('[审计] photo-search — 图片处理', () => {
 
   it('[BUG验证] 无图片质量预检 — 任何图片直接发送', () => {
     // photo-search.vue 不检查图片分辨率、清晰度、大小
-    // 用户拍摄模糊照片也会直接发给 AI
-    const imageFile = {
+    // 用户拍摄模糊照片也会直接发给智能
+    const _imageFile = {
       path: '/tmp/blurry_photo.jpg',
       size: 100, // 极小的图片（可能是纯色或损坏）
       width: 10,
@@ -488,9 +488,9 @@ describe('[审计] photo-search — 图片处理', () => {
     };
 
     // 没有质量检查逻辑
-    let qualityCheck = true; // 假设总是通过
+    const qualityCheck = true; // 假设总是通过
     expect(qualityCheck).toBe(true);
-    // 低质量图片会浪费 AI 调用配额
+    // 低质量图片会浪费智能调用配额
   });
 
   it('[BUG验证] 无置信度阈值 — 5% 和 95% 展示完全一样', () => {

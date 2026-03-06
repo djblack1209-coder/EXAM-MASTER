@@ -1,7 +1,7 @@
 /**
  * ESLint Flat Config (v9+)
  * EXAM-MASTER 项目代码规范
- * 
+ *
  * 从 .eslintrc.js 迁移到 eslint.config.js (flat config)
  * @see https://eslint.org/docs/latest/use/configure/configuration-files-new
  */
@@ -86,13 +86,13 @@ export default [
       // ==================== 代码风格 ====================
 
       // 使用单引号
-      'quotes': ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
+      quotes: ['warn', 'single', { avoidEscape: true, allowTemplateLiterals: true }],
 
       // 语句末尾加分号
-      'semi': ['warn', 'always'],
+      semi: ['warn', 'always'],
 
-      // 缩进使用 2 个空格
-      'indent': ['warn', 2, { SwitchCase: 1 }],
+      // 缩进交由 Prettier 统一控制
+      indent: 'off',
 
       // 对象/数组最后一项不加逗号
       'comma-dangle': ['warn', 'never'],
@@ -116,18 +116,21 @@ export default [
       'comma-spacing': ['warn', { before: false, after: true }],
 
       // 最大行长度
-      'max-len': ['warn', {
-        code: 120,
-        ignoreStrings: true,
-        ignoreTemplateLiterals: true,
-        ignoreUrls: true,
-        ignoreComments: true
-      }],
+      'max-len': [
+        'warn',
+        {
+          code: 120,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+          ignoreUrls: true,
+          ignoreComments: true
+        }
+      ],
 
       // ==================== 最佳实践 ====================
 
       // 使用 === 和 !==
-      'eqeqeq': ['error', 'always', { null: 'ignore' }],
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
 
       // 禁止使用 var
       'no-var': 'error',
@@ -136,14 +139,17 @@ export default [
       'prefer-const': ['error', { destructuring: 'all' }],
 
       // 禁止未使用的变量（错误级别，确保代码整洁）
-      'no-unused-vars': ['error', {
-        vars: 'all',
-        args: 'after-used',
-        ignoreRestSiblings: true,
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_'
-      }],
+      'no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          args: 'after-used',
+          ignoreRestSiblings: true,
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_'
+        }
+      ],
 
       // 禁止 console（警告级别，允许 warn 和 error）
       'no-console': ['warn', { allow: ['warn', 'error'] }],
@@ -172,79 +178,85 @@ export default [
       'vue/component-name-in-template-casing': ['warn', 'PascalCase'],
 
       // 属性顺序
-      'vue/attributes-order': ['warn', {
-        order: [
-          'DEFINITION',
-          'LIST_RENDERING',
-          'CONDITIONALS',
-          'RENDER_MODIFIERS',
-          'GLOBAL',
-          'UNIQUE',
-          'TWO_WAY_BINDING',
-          'OTHER_DIRECTIVES',
-          'OTHER_ATTR',
-          'EVENTS',
-          'CONTENT'
-        ]
-      }],
+      'vue/attributes-order': [
+        'warn',
+        {
+          order: [
+            'DEFINITION',
+            'LIST_RENDERING',
+            'CONDITIONALS',
+            'RENDER_MODIFIERS',
+            'GLOBAL',
+            'UNIQUE',
+            'TWO_WAY_BINDING',
+            'OTHER_DIRECTIVES',
+            'OTHER_ATTR',
+            'EVENTS',
+            'CONTENT'
+          ]
+        }
+      ],
 
-      // 每行最多属性数
-      'vue/max-attributes-per-line': ['warn', {
-        singleline: 3,
-        multiline: 1
-      }],
-
-      // HTML 缩进
-      'vue/html-indent': ['warn', 2],
+      // 交由 Prettier 控制模板换行与属性排版，避免规则冲突
+      'vue/max-attributes-per-line': 'off',
+      'vue/html-indent': 'off',
+      'vue/html-closing-bracket-newline': 'off',
+      'vue/singleline-html-element-content-newline': 'off',
 
       // 自闭合标签
-      'vue/html-self-closing': ['warn', {
-        html: { void: 'always', normal: 'never', component: 'always' },
-        svg: 'always',
-        math: 'always'
-      }],
+      'vue/html-self-closing': [
+        'warn',
+        {
+          html: { void: 'always', normal: 'never', component: 'always' },
+          svg: 'always',
+          math: 'always'
+        }
+      ],
 
       // 禁止 v-html（安全考虑，降级为警告）
       'vue/no-v-html': 'warn',
 
       // 组件选项顺序
-      'vue/order-in-components': ['warn', {
-        order: [
-          'el',
-          'name',
-          'key',
-          'parent',
-          'functional',
-          ['delimiters', 'comments'],
-          ['components', 'directives', 'filters'],
-          'extends',
-          'mixins',
-          ['provide', 'inject'],
-          'ROUTER_GUARDS',
-          'layout',
-          'middleware',
-          'validate',
-          'scrollToTop',
-          'transition',
-          'loading',
-          'inheritAttrs',
-          'model',
-          ['props', 'propsData'],
-          'emits',
-          'setup',
-          'asyncData',
-          'data',
-          'fetch',
-          'head',
-          'computed',
-          'watch',
-          'watchQuery',
-          'LIFECYCLE_HOOKS',
-          'methods',
-          ['template', 'render'],
-          'renderError'
-        ]
-      }],
+      'vue/order-in-components': [
+        'warn',
+        {
+          order: [
+            'el',
+            'name',
+            'key',
+            'parent',
+            'functional',
+            ['delimiters', 'comments'],
+            ['components', 'directives', 'filters'],
+            'extends',
+            'mixins',
+            ['provide', 'inject'],
+            'ROUTER_GUARDS',
+            'layout',
+            'middleware',
+            'validate',
+            'scrollToTop',
+            'transition',
+            'loading',
+            'inheritAttrs',
+            'model',
+            ['props', 'propsData'],
+            'emits',
+            'setup',
+            'asyncData',
+            'data',
+            'fetch',
+            'head',
+            'computed',
+            'watch',
+            'watchQuery',
+            'LIFECYCLE_HOOKS',
+            'methods',
+            ['template', 'render'],
+            'renderError'
+          ]
+        }
+      ],
 
       // 多词组件名（关闭，因为 uni-app 页面通常是 index.vue）
       'vue/multi-word-component-names': 'off',
