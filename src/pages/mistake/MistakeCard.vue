@@ -55,9 +55,7 @@
         >
           {{ isAnalyzing ? '检查中...' : '提交答案' }}
         </button>
-        <button class="action-btn" hover-class="ds-hover-btn" @tap="cancelPractice">
-          取消
-        </button>
+        <button class="action-btn" hover-class="ds-hover-btn" @tap="cancelPractice">取消</button>
       </view>
       <view v-if="practiceResult" class="practice-result">
         <view class="result-header">
@@ -76,9 +74,7 @@
           {{ practiceResult.feedback }}
         </text>
         <view v-if="!practiceResult.isCorrect" class="result-actions">
-          <button class="retry-btn" @tap="retryPractice">
-            再试一次
-          </button>
+          <button class="retry-btn" @tap="retryPractice">再试一次</button>
         </view>
       </view>
     </view>
@@ -109,13 +105,9 @@
       </view>
 
       <view v-if="mode === 'recite' || localShowAnalysis" class="analysis-box">
-        <view class="correct-ans">
-          正确答案：{{ item.answer || item.correct_answer || '未知' }}
-        </view>
+        <view class="correct-ans"> 正确答案：{{ item.answer || item.correct_answer || '未知' }} </view>
         <view class="analysis-content">
-          <text class="label">
-            AI 解析：
-          </text>
+          <text class="label"> 智能解析： </text>
           {{ item.desc || item.analysis || '暂无解析' }}
         </view>
       </view>
@@ -127,20 +119,14 @@
       </text>
       <view v-if="(item.wrongCount || item.wrong_count || 0) > 1" class="wrong-count">
         <BaseIcon name="warning" :size="20" class="count-icon" />
-        <text class="count-text">
-          错误 {{ item.wrongCount || item.wrong_count || 1 }} 次
-        </text>
+        <text class="count-text"> 错误 {{ item.wrongCount || item.wrong_count || 1 }} 次 </text>
       </view>
       <view class="actions">
         <button v-if="mode === 'quiz' && !localIsPracticing" class="action-btn sm" @tap="toggleAnalysis">
           {{ localShowAnalysis ? '隐藏解析' : '查看解析' }}
         </button>
-        <button v-if="!localIsPracticing" class="action-btn sm primary" @tap="startPractice">
-          重做此题
-        </button>
-        <button v-if="!localIsPracticing" class="action-btn sm del" @tap="$emit('remove', index)">
-          移除
-        </button>
+        <button v-if="!localIsPracticing" class="action-btn sm primary" @tap="startPractice">重做此题</button>
+        <button v-if="!localIsPracticing" class="action-btn sm del" @tap="$emit('remove', index)">移除</button>
       </view>
     </view>
   </view>
@@ -149,7 +135,7 @@
 <script>
 import { storageService } from '@/services/storageService.js';
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
-import { recordReview } from './utils/adaptive-learning-engine.js';
+import { recordReview } from '@/utils/learning/adaptive-learning-engine.js';
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';

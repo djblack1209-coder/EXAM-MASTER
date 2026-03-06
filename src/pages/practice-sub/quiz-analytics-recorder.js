@@ -11,6 +11,8 @@
 import { recordTime as recordQuestionTime } from './question-timer.js';
 import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
+import { recordSmartAnswer } from '@/utils/learning/smart-question-picker.js';
+import { recordAnswer as recordAnalyticsAnswer } from '@/utils/analytics/learning-analytics.js';
 
 /**
  * 记录答题数据到各个分析模块
@@ -43,15 +45,13 @@ export async function recordAnswerToAnalytics({
 
   // 记录到智能组题模块（懒加载）
   try {
-    const { recordSmartAnswer } = await import('./utils/smart-question-picker.js');
     recordSmartAnswer(currentQuestion, isCorrect, timeSpent);
   } catch (e) {
     logger.warn('[quiz-analytics] 记录到智能组题模块失败:', e);
   }
 
-  // 记录到学习数据分析模块（动态导入，避免主包引入分包依赖）
+  // 记录到学习数据分析模块
   try {
-    const { recordAnswer: recordAnalyticsAnswer } = await import('@/utils/analytics/learning-analytics.js');
     recordAnalyticsAnswer(questionData);
   } catch (e) {
     logger.warn('[quiz-analytics] 记录到学习分析模块失败:', e);

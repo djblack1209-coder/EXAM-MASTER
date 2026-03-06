@@ -4,13 +4,18 @@
  * 包含：学习统计、目标设置、成就、收藏、练习模式
  */
 import { logger } from '@/utils/logger.js';
+import { getStreakData, getComprehensiveReport, getAchievements } from '@/utils/analytics/learning-analytics.js';
+import { getTodayGoals, GOAL_TYPES } from '../utils/learning-goal.js';
+import { getFavorites } from '@/utils/favorite/question-favorite.js';
+import { getAvailablePracticeModes, startPracticeMode } from '../utils/practice-mode-manager.js';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
+import { safeNavigateTo } from '@/utils/safe-navigate';
 
 export const learningStatsMixin = {
   methods: {
     // ✅ P0-2: 加载学习数据统计
     async loadLearningStats() {
       try {
-        const { getStreakData, getComprehensiveReport } = await import('../utils/learning-analytics.js');
         const streakData = getStreakData();
         this.currentStreak = streakData.currentStreak || 0;
 
@@ -44,7 +49,6 @@ export const learningStatsMixin = {
     // ✅ P1: 加载今日学习目标
     async loadTodayGoal() {
       try {
-        const { getTodayGoals, GOAL_TYPES } = await import('../utils/learning-goal.js');
         const todayGoals = getTodayGoals();
         const dailyQuestionGoal = todayGoals.find((g) => g.type === 'DAILY_QUESTIONS');
         if (dailyQuestionGoal) {
@@ -61,7 +65,6 @@ export const learningStatsMixin = {
     // ✅ P2: 加载成就数据
     async loadAchievements() {
       try {
-        const { getAchievements } = await import('../utils/learning-analytics.js');
         const achievementData = getAchievements();
         this.unlockedAchievements = achievementData.unlocked || [];
         this.allAchievements = [...achievementData.unlocked, ...achievementData.locked];
@@ -90,7 +93,6 @@ export const learningStatsMixin = {
     // ✅ P2: 加载收藏数量
     async loadFavoriteCount() {
       try {
-        const { getFavorites } = await import('../utils/question-favorite.js');
         const favorites = getFavorites();
         this.favoriteCount = favorites.length;
         logger.log('[practice] ⭐ 收藏数量:', this.favoriteCount);
@@ -102,51 +104,45 @@ export const learningStatsMixin = {
 
     // ✅ P1: 显示练习模式选择
     async showPracticeModes() {
-      const { getAvailablePracticeModes } = await import('../utils/practice-mode-manager.js');
       this.practiceModes = getAvailablePracticeModes();
       this.showPracticeModesModal = true;
     },
 
     // ✅ P1: 选择练习模式
     async selectPracticeMode(mode) {
-      const { requireLogin } = await import('@/utils/auth/loginGuard.js');
-      const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
-
-      requireLogin(
-        async () => {
-          if (!this.hasBank) {
-            this.showPracticeModesModal = false;
-            return uni.showToast({ title: '请先导入题库', icon: 'none' });
-          }
-
-          try {
-            const { startPracticeMode } = await import('../utils/practice-mode-manager.js');
-            startPracticeMode(mode.id);
-            this.showPracticeModesModal = false;
-
-            safeNavigateTo('/pages/practice-sub/do-quiz', {
-              complete: () => {
-                setTimeout(() => {
-                  this.isNavigating = false;
-                }, 500);
-              }
-            });
-          } catch (error) {
-            logger.warn('[practice] 启动练习模式失败:', error);
-            uni.showToast({
-              title: error.message || '启动失败，请重试',
-              icon: 'none'
-            });
-          }
-        },
-        {
-          message: '请先登录后选择练习模式',
-          loginUrl: '/pages/settings/index',
-          onCancel: () => {
-            this.isNavigating = false;
-          }
+      const loginOptions = /** @type {any} */ ({
+        message: '请先登录后选择练习模式',
+        loginUrl: '/pages/settings/index',
+        onCancel: () => {
+          this.isNavigating = false;
         }
-      );
+      });
+
+      requireLogin(async () => {
+        if (!this.hasBank) {
+          this.showPracticeModesModal = false;
+          return uni.showToast({ title: '请先导入题库', icon: 'none' });
+        }
+
+        try {
+          startPracticeMode(mode.id);
+          this.showPracticeModesModal = false;
+
+          safeNavigateTo('/pages/practice-sub/do-quiz', {
+            complete: () => {
+              setTimeout(() => {
+                this.isNavigating = false;
+              }, 500);
+            }
+          });
+        } catch (error) {
+          logger.warn('[practice] 启动练习模式失败:', error);
+          uni.showToast({
+            title: error.message || '启动失败，请重试',
+            icon: 'none'
+          });
+        }
+      }, loginOptions);
     }
   }
 };
