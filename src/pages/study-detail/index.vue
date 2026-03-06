@@ -4,13 +4,9 @@
     <view class="transparent-navbar" :class="{ 'navbar-solid': scrolled }">
       <view class="navbar-content">
         <view class="navbar-left" @tap="goBack">
-          <text class="back-icon">
-            ←
-          </text>
+          <text class="back-icon"> ← </text>
         </view>
-        <text class="navbar-title" :class="{ 'title-visible': scrolled }">
-          学习详情
-        </text>
+        <text class="navbar-title" :class="{ 'title-visible': scrolled }"> 学习详情 </text>
         <view class="navbar-right">
           <!-- 主题切换按钮 -->
           <view class="theme-toggle" @tap="toggleTheme">
@@ -21,12 +17,7 @@
     </view>
 
     <!-- 滚动容器 -->
-    <scroll-view
-      class="scroll-container"
-      scroll-y
-      :style="{ paddingTop: navbarHeight + 'px' }"
-      @scroll="handleScroll"
-    >
+    <scroll-view class="scroll-container" scroll-y :style="{ paddingTop: navbarHeight + 'px' }" @scroll="handleScroll">
       <!-- 骨架屏加载状态 -->
       <view v-if="isLoading" class="skeleton-container">
         <view class="skeleton-header">
@@ -46,12 +37,8 @@
       <template v-else>
         <!-- 页面标题 -->
         <view class="page-header">
-          <text class="page-title">
-            学习详情
-          </text>
-          <text class="page-subtitle">
-            查看您的学习数据和进度
-          </text>
+          <text class="page-title"> 学习详情 </text>
+          <text class="page-subtitle"> 查看您的学习数据和进度 </text>
         </view>
 
         <!-- 学习概况卡片 -->
@@ -63,9 +50,7 @@
               <text class="stat-value">
                 {{ studyTime }}
               </text>
-              <text class="stat-label">
-                学习时长（分钟）
-              </text>
+              <text class="stat-label"> 学习时长（分钟） </text>
             </view>
           </view>
 
@@ -73,12 +58,8 @@
           <view class="stat-card">
             <image class="stat-icon" src="./static/stack-of-books.png" mode="aspectFit" />
             <view class="stat-content">
-              <text class="stat-value">
-                {{ completionRate }}%
-              </text>
-              <text class="stat-label">
-                完成率
-              </text>
+              <text class="stat-value"> {{ completionRate }}% </text>
+              <text class="stat-label"> 完成率 </text>
             </view>
           </view>
 
@@ -89,9 +70,7 @@
               <text class="stat-value">
                 {{ abilityRank }}
               </text>
-              <text class="stat-label">
-                能力评级
-              </text>
+              <text class="stat-label"> 能力评级 </text>
             </view>
           </view>
         </view>
@@ -99,12 +78,8 @@
         <!-- 学习热力图 -->
         <view class="heatmap-section">
           <view class="section-header">
-            <text class="section-title">
-              学习热力图
-            </text>
-            <text class="section-subtitle">
-              过去一年的学习活跃度
-            </text>
+            <text class="section-title"> 学习热力图 </text>
+            <text class="section-subtitle"> 过去一年的学习活跃度 </text>
           </view>
 
           <view class="heatmap-container">
@@ -115,12 +90,8 @@
         <!-- 学习趋势图表 -->
         <view class="chart-section">
           <view class="section-header">
-            <text class="section-title">
-              学习趋势
-            </text>
-            <text class="section-subtitle">
-              最近学习时长变化
-            </text>
+            <text class="section-title"> 学习趋势 </text>
+            <text class="section-subtitle"> 最近学习时长变化 </text>
           </view>
 
           <view class="chart-container">

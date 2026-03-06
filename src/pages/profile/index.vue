@@ -1,6 +1,7 @@
 <template>
   <!-- 全屏强制接管：fixed 定位铺满整个屏幕 -->
   <view
+    id="e2e-profile-root"
     class="fixed inset-0 w-full h-full z-0"
     :class="{ 'dark-mode': isDark }"
     :style="{
@@ -10,12 +11,7 @@
   >
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
-    <scroll-view
-      scroll-y
-      class="w-full h-full"
-      :scroll-top="0"
-      @scroll="onScroll"
-    >
+    <scroll-view scroll-y class="w-full h-full" :scroll-top="0" @scroll="onScroll">
       <!-- 内容区：顶部留出状态栏+导航栏空间，底部留出 TabBar 空间 -->
       <view
         class="content-wrapper"
@@ -63,12 +59,7 @@
         <!-- #endif -->
 
         <!-- ========== 用户信息卡片 ========== -->
-        <view
-          v-if="!isPageLoading"
-          class="card user-card"
-          hover-class="card-hover"
-          @tap="handleUserCardClick"
-        >
+        <view v-if="!isPageLoading" class="card user-card" hover-class="card-hover" @tap="handleUserCardClick">
           <view class="user-section">
             <!-- 头像 -->
             <view class="avatar-box" @tap.stop="handleAvatarTap">
@@ -101,9 +92,7 @@
             <!-- 编辑/登录按钮 -->
             <view class="edit-btn" hover-class="btn-hover" @tap.stop="isLoggedIn ? handleEditProfile() : handleLogin()">
               <BaseIcon v-if="isLoggedIn" name="edit" :size="36" />
-              <text v-else class="edit-icon">
-                →
-              </text>
+              <text v-else class="edit-icon"> → </text>
             </view>
           </view>
         </view>
@@ -119,9 +108,7 @@
               <text class="stat-value">
                 {{ studyDays }}
               </text>
-              <text class="stat-label">
-                学习天数
-              </text>
+              <text class="stat-label"> 学习天数 </text>
             </view>
 
             <!-- 分隔线 -->
@@ -135,9 +122,7 @@
               <text class="stat-value">
                 {{ badgeCount }}
               </text>
-              <text class="stat-label">
-                获得勋章
-              </text>
+              <text class="stat-label"> 获得勋章 </text>
             </view>
 
             <!-- 分隔线 -->
@@ -148,12 +133,8 @@
               <view class="stat-icon-box">
                 <BaseIcon name="target" :size="40" />
               </view>
-              <text class="stat-value">
-                {{ accuracyRate }}%
-              </text>
-              <text class="stat-label">
-                正确率
-              </text>
+              <text class="stat-value"> {{ accuracyRate }}% </text>
+              <text class="stat-label"> 正确率 </text>
             </view>
           </view>
         </view>
@@ -162,22 +143,19 @@
         <view v-if="!isPageLoading" class="card checkin-card">
           <view class="checkin-header">
             <view class="checkin-title-row">
-              <text class="checkin-title">
-                每日打卡
-              </text>
+              <text class="checkin-title"> 每日打卡 </text>
               <view v-if="checkInStreak > 0" class="checkin-streak">
                 <BaseIcon name="flame" :size="26" />
                 <text>连续 {{ checkInStreak }} 天</text>
               </view>
             </view>
-            <text class="checkin-subtitle">
-              坚持打卡，养成学习好习惯
-            </text>
+            <text class="checkin-subtitle"> 坚持打卡，养成学习好习惯 </text>
           </view>
 
           <view class="checkin-content">
             <!-- 打卡按钮 -->
             <view
+              id="e2e-profile-checkin-btn"
               class="checkin-btn"
               :class="{ checked: todayChecked, 'not-checked': !todayChecked }"
               hover-class="btn-hover"
@@ -196,9 +174,7 @@
             <view v-if="recoveryCards > 0 || missedDaysCount > 0" class="recovery-info">
               <view v-if="recoveryCards > 0" class="recovery-cards">
                 <BaseIcon name="ticket" :size="28" />
-                <text class="recovery-text">
-                  补签卡 x{{ recoveryCards }}
-                </text>
+                <text class="recovery-text"> 补签卡 x{{ recoveryCards }} </text>
               </view>
               <view
                 v-if="missedDaysCount > 0 && recoveryCards > 0"
@@ -206,9 +182,7 @@
                 hover-class="btn-hover"
                 @tap="showRecoveryOptions"
               >
-                <text class="use-recovery-text">
-                  使用补签卡
-                </text>
+                <text class="use-recovery-text"> 使用补签卡 </text>
               </view>
             </view>
           </view>
@@ -218,100 +192,75 @@
             <view class="missed-icon">
               <BaseIcon name="warning" :size="28" />
             </view>
-            <text class="missed-text">
-              您已断签 {{ missedDaysCount }} 天，快来打卡恢复连续记录吧！
-            </text>
+            <text class="missed-text"> 您已断签 {{ missedDaysCount }} 天，快来打卡恢复连续记录吧！ </text>
           </view>
         </view>
 
         <!-- ========== 功能菜单卡片（分组） ========== -->
         <view v-if="!isPageLoading" class="card menu-card">
           <!-- 我的错题 -->
-          <view class="menu-item" hover-class="menu-hover" @tap="navToMistake">
+          <view id="e2e-profile-menu-mistake" class="menu-item" hover-class="menu-hover" @tap="navToMistake">
             <view class="menu-icon-box">
               <BaseIcon name="books" :size="36" />
             </view>
-            <text class="menu-text">
-              我的错题
-            </text>
-            <text class="menu-arrow">
-              ›
-            </text>
+            <text class="menu-text"> 我的错题 </text>
+            <text class="menu-arrow"> › </text>
           </view>
 
           <!-- 分隔线 -->
           <view class="menu-divider" />
 
           <!-- 学习统计 -->
-          <view class="menu-item" hover-class="menu-hover" @tap="navToStudyDetail">
+          <view id="e2e-profile-menu-study-detail" class="menu-item" hover-class="menu-hover" @tap="navToStudyDetail">
             <view class="menu-icon-box">
               <BaseIcon name="chart-bar" :size="36" />
             </view>
-            <text class="menu-text">
-              学习统计
-            </text>
-            <text class="menu-arrow">
-              ›
-            </text>
+            <text class="menu-text"> 学习统计 </text>
+            <text class="menu-arrow"> › </text>
           </view>
 
           <!-- 分隔线 -->
           <view class="menu-divider" />
 
           <!-- 系统设置 -->
-          <view class="menu-item" hover-class="menu-hover" @tap="navToSettings">
+          <view id="e2e-profile-menu-settings" class="menu-item" hover-class="menu-hover" @tap="navToSettings">
             <view class="menu-icon-box">
               <BaseIcon name="settings" :size="36" />
             </view>
-            <text class="menu-text">
-              系统设置
-            </text>
-            <text class="menu-arrow">
-              ›
-            </text>
+            <text class="menu-text"> 系统设置 </text>
+            <text class="menu-arrow"> › </text>
           </view>
 
           <!-- 分隔线 -->
           <view class="menu-divider" />
 
           <!-- 意见反馈 -->
-          <view class="menu-item" hover-class="menu-hover" @tap="handleFeedback">
+          <view id="e2e-profile-menu-feedback" class="menu-item" hover-class="menu-hover" @tap="handleFeedback">
             <view class="menu-icon-box">
               <BaseIcon name="comment" :size="36" />
             </view>
-            <text class="menu-text">
-              意见反馈
-            </text>
-            <text class="menu-arrow">
-              ›
-            </text>
+            <text class="menu-text"> 意见反馈 </text>
+            <text class="menu-arrow"> › </text>
           </view>
         </view>
 
         <!-- ========== 关于卡片 ========== -->
         <view v-if="!isPageLoading" class="card about-card">
           <view class="about-row">
-            <text class="about-label">
-              版本
-            </text>
-            <text class="about-value">
-              v{{ appVersion }}
-            </text>
+            <text class="about-label"> 版本 </text>
+            <text class="about-value"> v{{ appVersion }} </text>
           </view>
           <view class="about-divider" />
           <view class="about-row">
-            <text class="about-label">
-              开发者
-            </text>
-            <text class="about-value">
-              Exam-Master Team
-            </text>
+            <text class="about-label"> 开发者 </text>
+            <text class="about-value"> Exam-Master Team </text>
           </view>
         </view>
 
         <!-- ========== 主题切换按钮 ========== -->
         <view
           v-if="!isPageLoading"
+          id="e2e-profile-theme-btn"
           class="theme-btn"
           hover-class="btn-hover"
           @tap="toggleTheme"
@@ -328,13 +277,12 @@
         <!-- ========== 退出登录按钮 ========== -->
         <view
           v-if="!isPageLoading && isLoggedIn"
+          id="e2e-profile-logout-btn"
           class="logout-btn"
           hover-class="logout-hover"
           @tap="handleLogout"
         >
-          <text class="logout-text">
-            退出登录
-          </text>
+          <text class="logout-text"> 退出登录 </text>
         </view>
       </view>
     </scroll-view>
@@ -348,9 +296,7 @@
       }"
     >
       <view class="nav-content">
-        <text class="nav-title">
-          个人中心
-        </text>
+        <text class="nav-title"> 个人中心 </text>
       </view>
     </view>
 
@@ -380,6 +326,7 @@ import { lafService } from '@/services/lafService.js';
 import config from '@/config/index.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { getSystemTheme } from '@/utils/core/system.js';
+import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
 
 // L6: 版本号从统一配置读取
 const appVersion = config.appVersion || '1.0.0';
@@ -835,6 +782,37 @@ async function chooseAndUploadAvatar(sourceType) {
 
 // 上传头像到服务器
 async function uploadAvatarToServer(filePath, userId) {
+  const uploadByBase64 = async () => {
+    try {
+      const avatarBase64 = await filePathToBase64(filePath);
+      const avatarType = inferImageMimeType(filePath);
+      const response = await lafService.request('/user-profile', {
+        action: 'upload_avatar',
+        userId,
+        avatar_base64: avatarBase64,
+        avatar_type: avatarType
+      });
+
+      if ((response.code === 0 || response.success) && response.data) {
+        return {
+          success: true,
+          avatarUrl: response.data.avatar_url || response.data.avatarUrl || response.data.url
+        };
+      }
+
+      return {
+        success: false,
+        message: response.message || '上传失败'
+      };
+    } catch (e) {
+      logger.error('[Profile] base64 avatar upload failed:', e);
+      return {
+        success: false,
+        message: '上传失败'
+      };
+    }
+  };
+
   return new Promise((resolve) => {
     // I005: 使用统一配置获取 API 基础地址（替代硬编码的旧 Laf 域名）
     const baseUrl = config.api.baseUrl;
@@ -850,7 +828,7 @@ async function uploadAvatarToServer(filePath, userId) {
       header: {
         Authorization: `Bearer ${storageService.get('EXAM_TOKEN', '')}`
       },
-      success: (res) => {
+      success: async (res) => {
         try {
           const data = JSON.parse(res.data);
           if (data.code === 0 || data.success) {
@@ -859,19 +837,17 @@ async function uploadAvatarToServer(filePath, userId) {
               avatarUrl: data.data?.url || data.url || data.avatarUrl
             });
           } else {
-            resolve({
-              success: false,
-              message: data.message || '上传失败'
-            });
+            logger.warn('[Profile] multipart avatar upload failed, fallback to base64:', data.message || data.msg);
+            resolve(await uploadByBase64());
           }
         } catch (e) {
           logger.error('[Profile] parse upload response error:', e);
-          resolve({ success: false, message: '解析响应失败' });
+          resolve(await uploadByBase64());
         }
       },
-      fail: (err) => {
+      fail: async (err) => {
         logger.error('[Profile] uploadFile error:', err);
-        resolve({ success: false, message: '网络错误' });
+        resolve(await uploadByBase64());
       }
     });
   });

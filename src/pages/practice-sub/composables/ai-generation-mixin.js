@@ -1,11 +1,12 @@
 /**
- * AI 题目生成 Mixin（分包动态加载）
+ * 智能题目生成 Mixin（分包动态加载）
  * 从 practice/index.vue 抽离，减小主包体积
- * 包含：文件导入、AI 生成、题库持久化与备份
+ * 包含：文件导入、智能生成、题库持久化与备份
  */
 import { storageService } from '@/services/storageService.js';
 import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
+import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ 以下模块从分包本地引用，避免打入主包
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { deduplicateQuestions } from '../utils/question-dedup-worker.js';
@@ -20,14 +21,27 @@ export const aiGenerationMixin = {
   methods: {
     // ==================== 文件导入 ====================
     chooseImportSource() {
+      const fallbackToImportPage = () => {
+        safeNavigateTo('/pages/practice-sub/import-data');
+      };
+
       requireLogin(
         () => {
+          if (typeof uni.showActionSheet !== 'function') {
+            fallbackToImportPage();
+            return;
+          }
+
           uni.showActionSheet({
             itemList: ['本地文件', '聊天记录', '百度网盘'],
             success: (res) => {
               if (res.tapIndex === 0) this.chooseLocalFile();
               if (res.tapIndex === 1) this.importFromChat();
               if (res.tapIndex === 2) this.importFromBaidu();
+            },
+            fail: (err) => {
+              logger.warn('[practice] 导入来源弹窗拉起失败，回退到导入页:', err);
+              fallbackToImportPage();
             }
           });
         },
@@ -241,7 +255,7 @@ export const aiGenerationMixin = {
       }
     },
 
-    // ==================== AI 题目生成 ====================
+    // ==================== 智能题目生成 ====================
     startAI() {
       if (!this.fullFileContent && !this.fileName) {
         return uni.showToast({ title: '请先导入资料', icon: 'none' });
@@ -273,8 +287,8 @@ export const aiGenerationMixin = {
         logger.warn(`[practice] 连续 ${this._consecutiveFailures} 次生成失败，自动暂停`);
         this.pauseGeneration();
         uni.showModal({
-          title: 'AI 生成暂停',
-          content: `连续 ${this._consecutiveFailures} 次未能解析出有效题目，已自动暂停。\n\n可能原因：资料格式不适合出题，或 AI 服务暂时异常。\n\n你可以更换资料后重试。`,
+          title: '智能生成暂停',
+          content: `连续 ${this._consecutiveFailures} 次未能解析出有效题目，已自动暂停。\n\n可能原因：资料格式不适合出题，或智能服务暂时异常。\n\n你可以更换资料后重试。`,
           showCancel: false,
           confirmText: '我知道了'
         });
@@ -324,7 +338,7 @@ export const aiGenerationMixin = {
       if (res.statusCode === 200 && res.data && res.data.choices && res.data.choices.length > 0) {
         const message = res.data.choices[0]?.message;
         if (!message || !message.content) {
-          logger.warn('[practice] AI 响应缺少 message.content');
+          logger.warn('[practice] 智能响应缺少 message.content');
           this._consecutiveFailures++;
           this._advanceBatch();
           return;
@@ -340,7 +354,7 @@ export const aiGenerationMixin = {
           if (Array.isArray(newQs) && newQs.length > 0) {
             this._mergeValidQuestions(newQs);
           } else {
-            logger.warn('[practice] AI 返回的不是数组格式');
+            logger.warn('[practice] 智能返回的不是数组格式');
             this._consecutiveFailures++;
             this._advanceBatch();
           }
@@ -352,7 +366,7 @@ export const aiGenerationMixin = {
         return;
       }
 
-      logger.error('[practice] AI 请求失败:', res);
+      logger.error('[practice] 智能请求失败:', res);
       this._consecutiveFailures++;
       this._advanceBatch();
     },

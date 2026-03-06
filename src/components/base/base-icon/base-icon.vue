@@ -1,11 +1,6 @@
 <template>
   <view class="base-icon" :style="wrapperStyle">
-    <image
-      v-if="iconSrc"
-      class="base-icon__img"
-      :src="iconSrc"
-      mode="aspectFit"
-    />
+    <image v-if="iconSrc" class="base-icon__img" :src="iconSrc" mode="aspectFit" />
   </view>
 </template>
 

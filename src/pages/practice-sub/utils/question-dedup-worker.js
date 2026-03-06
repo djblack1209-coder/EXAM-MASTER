@@ -151,7 +151,10 @@ export const questionDedupWorker = {
   generateHash(question) {
     const text = this.normalizeText(question.question || question.title || '');
     const options = Array.isArray(question.options)
-      ? question.options.map((o) => this.normalizeText(o)).sort().join('|')
+      ? question.options
+          .map((o) => this.normalizeText(o))
+          .sort()
+          .join('|')
       : '';
     return `${text}::${options}`;
   },

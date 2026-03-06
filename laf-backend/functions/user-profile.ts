@@ -51,7 +51,8 @@ function verifyUserAccess(
   targetUserId: string
 ): { valid: boolean; error?: string; tokenUserId?: string; code?: number } {
   // 从请求头获取token
-  const authHeader = ctx.headers?.authorization || ctx.headers?.Authorization || '';
+  const headers = (ctx.headers || {}) as Record<string, string | undefined>;
+  const authHeader = headers.authorization || headers.Authorization || '';
 
   if (!authHeader) {
     return { valid: false, error: '缺少认证信息', code: 401 };
@@ -194,7 +195,7 @@ export default async function (ctx: FunctionContext) {
 /**
  * 获取用户资料
  */
-async function handleGetProfile(body: UpdateProfileRequest, requestId: string) {
+async function handleGetProfile(body: UpdateProfileRequest, _requestId: string) {
   const { userId } = body;
   const usersCollection = db.collection('users');
 
@@ -348,27 +349,46 @@ async function handleUploadAvatar(body: UpdateProfileRequest, requestId: string)
   // 3. 生成文件名和存储路径
   const fileExt = avatar_type.split('/')[1] || 'jpg';
   const fileName = `avatars/${userId}_${Date.now()}.${fileExt}`;
+  const buffer = Buffer.from(base64Data, 'base64');
+
+  let avatarUrl = '';
 
   try {
-    // 4. 上传到云存储
-    const bucket = cloud.storage.bucket();
-    const buffer = Buffer.from(base64Data, 'base64');
+    // 4. 上传到云存储（失败时降级为 data URL，避免直接 500）
+    try {
+      const bucket: any = cloud.storage.bucket('default');
+      await bucket.putObject(fileName, buffer, {
+        ContentType: avatar_type
+      });
+      avatarUrl = await bucket.getObjectUrl(fileName);
+    } catch (storageError) {
+      logger.warn(`[${requestId}] 云存储上传失败，降级使用 data URL`, storageError);
+      avatarUrl = `data:${avatar_type};base64,${base64Data}`;
+    }
 
-    await bucket.writeFile(fileName, buffer, {
-      ContentType: avatar_type
-    });
-
-    // 5. 获取公开访问URL
-    const avatarUrl = await bucket.getFileUrl(fileName);
-
-    // 6. 更新用户头像URL
+    // 5. 更新用户头像URL
     const usersCollection = db.collection('users');
-    await usersCollection.doc(userId).update({
-      avatar_url: avatarUrl,
-      updated_at: Date.now()
-    });
+    const userById = await usersCollection.where({ _id: userId }).getOne();
+    if (userById.data) {
+      await usersCollection.where({ _id: userId }).update({
+        avatar_url: avatarUrl,
+        avatarUrl,
+        updated_at: Date.now()
+      });
+    } else {
+      const userByOpenid = await usersCollection.where({ openid: userId }).getOne();
+      if (userByOpenid.data) {
+        await usersCollection.where({ openid: userId }).update({
+          avatar_url: avatarUrl,
+          avatarUrl,
+          updated_at: Date.now()
+        });
+      } else {
+        logger.warn(`[${requestId}] 用户不存在，仅返回头像URL: ${userId}`);
+      }
+    }
 
-    // 7. 同步更新排行榜
+    // 6. 同步更新排行榜
     try {
       const rankingsCollection = db.collection('rankings');
       await rankingsCollection.where({ uid: userId }).update({
@@ -403,7 +423,7 @@ async function handleUploadAvatar(body: UpdateProfileRequest, requestId: string)
 /**
  * 获取练习模式配置
  */
-async function handleGetPracticeConfig(body: UpdateProfileRequest, requestId: string) {
+async function handleGetPracticeConfig(body: UpdateProfileRequest, _requestId: string) {
   const { userId } = body;
   const usersCollection = db.collection('users');
 

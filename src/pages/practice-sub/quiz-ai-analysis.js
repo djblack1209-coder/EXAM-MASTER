@@ -1,6 +1,6 @@
 /**
- * AI 深度解析模块
- * 从 do-quiz.vue 提取，负责调用后端 AI 代理进行题目解析
+ * 智能深度解析模块
+ * 从 do-quiz.vue 提取，负责调用后端智能代理进行题目解析
  *
  * ⚠️ 隐藏约束（Chesterton's Fence）：
  * - lafService.proxyAI('analyze', ...) 后端会自动注入考研辅导专家 Prompt
@@ -12,7 +12,7 @@ import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 
 /**
- * 请求 AI 深度解析
+ * 请求智能深度解析
  * @param {Object} params
  * @param {Object} params.question - 题目对象（含 question/title, options, answer）
  * @param {string} params.userChoice - 用户选择的选项文本
@@ -42,23 +42,23 @@ export async function fetchAIDeepAnalysis({ question, userChoice }) {
       };
     } else {
       // API 返回错误
-      logger.warn('[quiz-ai] AI 解析返回异常:', response.message);
+      logger.warn('[quiz-ai] 智能解析返回异常:', response.message);
       return {
-        comment: 'AI 解析暂时不可用，请结合参考答案进行复习。建议重新审视题干与选项的对应关系，查找知识点薄弱环节。',
+        comment: '智能解析暂时不可用，请结合参考答案进行复习。建议重新审视题干与选项的对应关系，查找知识点薄弱环节。',
         success: false
       };
     }
   } catch (e) {
-    logger.warn('[quiz-ai] AI 解析请求失败，降级到本地解析:', e);
+    logger.warn('[quiz-ai] 智能解析请求失败，降级到本地解析:', e);
 
     // 根据错误类型提供更详细的提示
-    let fallbackComment = '网络连接中断，AI 导师未能成功接入。建议重新审视题干与选项的对应关系，查看解析加深理解。';
+    let fallbackComment = '网络连接中断，智能导师未能成功接入。建议重新审视题干与选项的对应关系，查看解析加深理解。';
     if (e.message && e.message.includes('timeout')) {
-      fallbackComment = 'AI 解析请求超时，请稍后重试。建议先查看题目解析，理解知识点。';
+      fallbackComment = '智能解析请求超时，请稍后重试。建议先查看题目解析，理解知识点。';
     } else if (e.message && e.message.includes('401')) {
-      fallbackComment = 'AI 服务配置异常，请联系管理员。建议先查看题目解析，理解知识点。';
+      fallbackComment = '智能服务配置异常，请联系管理员。建议先查看题目解析，理解知识点。';
     } else if (e.message && (e.message.includes('网络') || e.message.includes('fail'))) {
-      fallbackComment = '网络连接中断，AI 导师未能成功接入。建议重新审视题干与选项的对应关系，查看解析加深理解。';
+      fallbackComment = '网络连接中断，智能导师未能成功接入。建议重新审视题干与选项的对应关系，查看解析加深理解。';
     }
 
     logger.log('[quiz-ai] ✅ 已使用降级文案');

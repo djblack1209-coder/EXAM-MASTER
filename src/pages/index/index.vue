@@ -1,6 +1,6 @@
 <template>
   <!-- 最外层：页面容器 -->
-  <view :class="['page-wrapper', { 'page-dark': isDark }]">
+  <view id="e2e-home-root" :class="['page-wrapper', { 'page-dark': isDark }]">
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
     <!-- 主容器：带背景色 -->
@@ -32,9 +32,7 @@
         <view v-if="isRefreshing" class="custom-refresher">
           <view class="refresher-content">
             <view class="refresher-spinner" />
-            <text class="refresher-text">
-              正在刷新...
-            </text>
+            <text class="refresher-text"> 正在刷新... </text>
           </view>
         </view>
         <!-- 顶部占位：为导航栏留空 -->
@@ -56,7 +54,7 @@
             v-if="isNewUser"
             type="home"
             title="开启你的学习之旅"
-            description="上传学习资料，AI 将为你智能生成专属题库，让备考更高效！"
+            description="上传学习资料，智能将为你智能生成专属题库，让备考更高效！"
             hint="支持 PDF、Word、图片等多种格式"
             :theme="isDark ? 'dark' : 'light'"
             @upload="handleEmptyGuideAction({ type: 'new_user_onboarding' })"
@@ -102,12 +100,11 @@
 
           <!-- 实用工具入口 -->
           <view class="section-header">
-            <text class="section-title">
-              实用工具
-            </text>
+            <text class="section-title"> 实用工具 </text>
           </view>
           <view class="tools-grid">
             <view
+              id="e2e-home-tool-doc"
               :class="['tool-entry', isDark ? 'glass' : 'card-light']"
               hover-class="tool-entry-hover"
               @tap="navToTool('doc-convert')"
@@ -119,18 +116,13 @@
                 </view>
               </view>
               <view class="tool-info">
-                <text class="tool-name">
-                  文档转换
-                </text>
-                <text class="tool-desc">
-                  PDF/Word/Excel 互转
-                </text>
+                <text class="tool-name"> 文档转换 </text>
+                <text class="tool-desc"> PDF/Word/Excel 互转 </text>
               </view>
-              <text class="tool-arrow">
-                ›
-              </text>
+              <text class="tool-arrow"> › </text>
             </view>
             <view
+              id="e2e-home-tool-id-photo"
               :class="['tool-entry', isDark ? 'glass' : 'card-light']"
               hover-class="tool-entry-hover"
               @tap="navToTool('id-photo')"
@@ -142,18 +134,13 @@
                 </view>
               </view>
               <view class="tool-info">
-                <text class="tool-name">
-                  证件照制作
-                </text>
-                <text class="tool-desc">
-                  智能抠图换背景
-                </text>
+                <text class="tool-name"> 证件照制作 </text>
+                <text class="tool-desc"> 智能抠图换背景 </text>
               </view>
-              <text class="tool-arrow">
-                ›
-              </text>
+              <text class="tool-arrow"> › </text>
             </view>
             <view
+              id="e2e-home-tool-photo-search"
               :class="['tool-entry', isDark ? 'glass' : 'card-light']"
               hover-class="tool-entry-hover"
               @tap="navToTool('photo-search')"
@@ -165,39 +152,24 @@
                 </view>
               </view>
               <view class="tool-info">
-                <text class="tool-name">
-                  拍照搜题
-                </text>
-                <text class="tool-desc">
-                  AI 智能识别解答
-                </text>
+                <text class="tool-name"> 拍照搜题 </text>
+                <text class="tool-desc"> 智能识别解答 </text>
               </view>
-              <text class="tool-arrow">
-                ›
-              </text>
+              <text class="tool-arrow"> › </text>
             </view>
           </view>
 
           <!-- 待办事项清单 -->
           <view class="section-header">
-            <text class="section-title">
-              待办事项
-            </text>
+            <text class="section-title"> 待办事项 </text>
             <view class="edit-plan-btn" @tap="handleEditPlan">
               <view class="edit-icon">
                 <BaseIcon name="edit" :size="24" />
               </view>
-              <text class="edit-text">
-                编辑计划
-              </text>
+              <text class="edit-text"> 编辑计划 </text>
             </view>
           </view>
-          <TodoList
-            :todos="todos"
-            :is-dark="isDark"
-            @toggle-todo="handleToggleTodo"
-            @edit-todo="openTodoEditor"
-          />
+          <TodoList :todos="todos" :is-dark="isDark" @toggle-todo="handleToggleTodo" @edit-todo="openTodoEditor" />
 
           <!-- 每日金句 -->
           <DailyQuoteCard :is-dark="isDark" :quote="dailyQuote" @open-poster="openQuotePoster" />
@@ -242,7 +214,7 @@
         :visible="showEmptyBankModal"
         type="upload"
         title="题库空空如也"
-        content="上传学习资料，AI 将为您智能生成专属题库，开启高效刷题之旅！"
+        content="上传学习资料，智能将为您智能生成专属题库，开启高效刷题之旅！"
         confirm-text="去上传"
         cancel-text="稍后再说"
         :show-cancel="true"
@@ -504,7 +476,7 @@ export default {
   // [F2-FIX] 微信分享配置
   onShareAppMessage() {
     return {
-      title: 'Exam-Master — AI助力，一战成硕',
+      title: 'Exam-Master — 智能助力，一战成硕',
       path: '/pages/index/index'
     };
   },

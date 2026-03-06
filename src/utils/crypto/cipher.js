@@ -247,6 +247,10 @@ function randomBytes(len) {
  * V2 加密：Feistel 网络 + 随机 IV + SipHash 完整性校验
  */
 export function obfuscate(data) {
+  if (!OBFUSCATION_KEY) {
+    return null;
+  }
+
   try {
     const str = typeof data === 'string' ? data : JSON.stringify(data);
     const iv = randomBytes(4);
@@ -273,6 +277,10 @@ export function obfuscate(data) {
  * 解密数据（自动识别 V1/V2 格式）
  */
 export function deobfuscate(encoded) {
+  if (!OBFUSCATION_KEY) {
+    return null;
+  }
+
   try {
     if (typeof encoded === 'string' && encoded.startsWith('v2.')) {
       const parts = encoded.split('.');

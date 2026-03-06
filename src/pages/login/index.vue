@@ -12,21 +12,15 @@
     <!-- 顶部返回按钮 -->
     <view class="top-bar">
       <view class="back-btn" hover-class="btn-hover" @tap="handleBack">
-        <text class="back-icon">
-          ←
-        </text>
+        <text class="back-icon"> ← </text>
       </view>
     </view>
 
     <!-- Logo区域 -->
     <view class="logo-section">
       <image class="app-logo" src="./static/logo.png" mode="aspectFit" />
-      <text class="app-name">
-        Exam-Master
-      </text>
-      <text class="app-slogan">
-        AI助力，一战成硕
-      </text>
+      <text class="app-name"> Exam-Master </text>
+      <text class="app-slogan"> 智能助力，一战成硕 </text>
     </view>
 
     <!-- 登录方式选择 -->
@@ -34,6 +28,7 @@
       <!-- 微信登录 -->
       <!-- #ifdef MP-WEIXIN -->
       <view
+        id="e2e-login-wechat-btn"
         class="login-btn wechat-btn"
         hover-class="btn-hover"
         :class="{ 'btn-disabled': isLoading }"
@@ -45,9 +40,7 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信一键登录' }}
         </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
 
@@ -65,12 +58,8 @@
         <view class="btn-icon wechat-icon">
           <text>微信</text>
         </view>
-        <text class="btn-text">
-          微信一键登录
-        </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-text"> 微信一键登录 </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
       <!-- #ifdef H5 -->
@@ -88,12 +77,25 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信授权登录' }}
         </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
       <!-- #endif -->
+
+      <view
+        v-if="isE2EMode"
+        id="e2e-login-mock-btn"
+        class="login-btn e2e-btn"
+        hover-class="btn-hover"
+        :class="{ 'btn-disabled': isLoading }"
+        @tap="handleE2EMockLogin"
+      >
+        <view class="btn-icon e2e-icon">
+          <text>E2E</text>
+        </view>
+        <text class="btn-text"> 测试一键登录 </text>
+        <text class="btn-arrow"> → </text>
+      </view>
 
       <!-- #ifndef MP-WEIXIN -->
       <view
@@ -108,27 +110,21 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : 'QQ快捷登录' }}
         </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-arrow"> → </text>
       </view>
       <!-- #endif -->
 
       <!-- 分割线 -->
       <view class="divider">
         <view class="divider-line" />
-        <text class="divider-text">
-          或
-        </text>
+        <text class="divider-text"> 或 </text>
         <view class="divider-line" />
       </view>
 
       <!-- 邮箱登录表单 -->
       <view v-if="showEmailForm" class="email-form">
         <view class="form-item">
-          <text class="form-label">
-            邮箱地址
-          </text>
+          <text class="form-label"> 邮箱地址 </text>
           <input
             v-model="emailForm.email"
             class="form-input"
@@ -143,9 +139,7 @@
         </view>
 
         <view v-if="!isRegister" class="form-item">
-          <text class="form-label">
-            密码
-          </text>
+          <text class="form-label"> 密码 </text>
           <input
             v-model="emailForm.password"
             class="form-input"
@@ -156,9 +150,7 @@
         </view>
 
         <view v-if="isRegister" class="form-item">
-          <text class="form-label">
-            验证码
-          </text>
+          <text class="form-label"> 验证码 </text>
           <view class="code-input-wrapper">
             <input
               v-model="emailForm.code"
@@ -180,9 +172,7 @@
         </view>
 
         <view v-if="isRegister" class="form-item">
-          <text class="form-label">
-            设置密码
-          </text>
+          <text class="form-label"> 设置密码 </text>
           <input
             v-model="emailForm.password"
             class="form-input"
@@ -211,40 +201,27 @@
       </view>
 
       <!-- 邮箱登录入口 -->
-      <view
-        v-else
-        class="login-btn email-btn"
-        hover-class="btn-hover"
-        @tap="showEmailForm = true"
-      >
+      <view v-else class="login-btn email-btn" hover-class="btn-hover" @tap="showEmailForm = true">
         <view class="btn-icon email-icon">
           <BaseIcon name="email" :size="36" />
         </view>
-        <text class="btn-text">
-          邮箱登录/注册
-        </text>
-        <text class="btn-arrow">
-          →
-        </text>
+        <text class="btn-text"> 邮箱登录/注册 </text>
+        <text class="btn-arrow"> → </text>
       </view>
     </view>
 
     <!-- 用户协议 -->
     <view class="agreement">
-      <view class="checkbox-wrapper" @tap="toggleAgreement">
+      <view id="e2e-login-agreement" class="checkbox-wrapper" @tap="toggleAgreement">
         <view class="checkbox" :class="{ checked: agreedToTerms }">
           <BaseIcon v-if="agreedToTerms" name="check" :size="24" />
         </view>
       </view>
       <text class="agreement-text">
         登录即表示同意
-        <text class="link" @tap="openPrivacy">
-          《隐私政策》
-        </text>
+        <text class="link" @tap="openPrivacy"> 《隐私政策》 </text>
         和
-        <text class="link" @tap="openTerms">
-          《用户协议》
-        </text>
+        <text class="link" @tap="openTerms"> 《用户协议》 </text>
       </text>
     </view>
 
@@ -271,7 +248,11 @@ const isDark = ref(false);
 
 // 登录状态
 const isLoading = ref(false);
+let emailLoginLock = false;
+let lastEmailSubmitAt = 0;
+const EMAIL_SUBMIT_COOLDOWN_MS = 2500;
 const agreedToTerms = ref(false);
+const isE2EMode = ref(false);
 // E007: 检测微信 OAuth provider 是否可用（APP-PLUS）
 const hasWechatProvider = ref(false);
 // E007: 检测是否在微信内置浏览器中（H5）
@@ -371,6 +352,51 @@ const handleBack = () => {
       uni.switchTab({ url: '/pages/index/index' });
     }
   });
+};
+
+const isNonReleaseEnv = () => {
+  try {
+    if (typeof uni === 'undefined' || typeof uni.getAccountInfoSync !== 'function') {
+      return false;
+    }
+    const info = uni.getAccountInfoSync();
+    const envVersion = info?.miniProgram?.envVersion;
+    return envVersion !== 'release';
+  } catch {
+    return false;
+  }
+};
+
+const detectE2EMode = () => {
+  try {
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    const query = currentPage?.$page?.options || currentPage?.options || {};
+    const e2eFlag = String(query.e2e || '').toLowerCase();
+    isE2EMode.value = (e2eFlag === '1' || e2eFlag === 'true') && isNonReleaseEnv();
+  } catch {
+    isE2EMode.value = false;
+  }
+};
+
+const handleE2EMockLogin = () => {
+  if (!isE2EMode.value || isLoading.value) return;
+
+  isLoading.value = true;
+  saveLoginInfo({
+    token: `e2e-token-${Date.now()}`,
+    userId: 'e2e_user',
+    userInfo: {
+      nickname: 'E2E Tester',
+      avatar_url: ''
+    }
+  });
+
+  uni.showToast({ title: '测试登录成功', icon: 'success' });
+  setTimeout(() => {
+    isLoading.value = false;
+    navigateAfterLogin();
+  }, 300);
 };
 
 // 微信登录
@@ -793,108 +819,121 @@ const handleQQLogin = async () => {
 
 // 邮箱登录/注册
 const handleEmailLogin = async () => {
-  if (!agreedToTerms.value) {
-    uni.showToast({ title: '请先同意用户协议', icon: 'none' });
-    return;
-  }
-
-  // 表单验证
-  if (!isEmailValid.value) {
-    uni.showToast({ title: '请输入有效的邮箱地址', icon: 'none' });
-    return;
-  }
-
-  // ✅ 问题清单修复：密码校验与后端统一（8-32 位）
-  const password = (emailForm.value.password || '').trim();
-  if (!password || password.length < 8) {
-    uni.showToast({ title: '密码至少8位', icon: 'none' });
-    return;
-  }
-  if (password.length > 32) {
-    uni.showToast({ title: '密码不能超过32位', icon: 'none' });
-    return;
-  }
-
-  // 注册时额外校验（密码强度仅注册时强制，避免锁死使用旧密码的已有用户）
-  if (isRegister.value) {
-    // ✅ M17: 密码强度检查（仅注册时）：需包含大写字母、小写字母和数字
-    if (!/[A-Z]/.test(password)) {
-      uni.showToast({ title: '密码需包含大写字母', icon: 'none' });
-      return;
-    }
-    if (!/[a-z]/.test(password)) {
-      uni.showToast({ title: '密码需包含小写字母', icon: 'none' });
-      return;
-    }
-    if (!/\d/.test(password)) {
-      uni.showToast({ title: '密码需包含数字', icon: 'none' });
-      return;
-    }
-
-    if (!emailForm.value.code) {
-      uni.showToast({ title: '请输入验证码', icon: 'none' });
-      return;
-    }
-
-    if (emailForm.value.code.length !== 6) {
-      uni.showToast({ title: '验证码为6位数字', icon: 'none' });
-      return;
-    }
-  }
-
-  if (isLoading.value) return;
-  isLoading.value = true;
+  if (emailLoginLock || isLoading.value) return;
+  emailLoginLock = true;
 
   try {
-    uni.showLoading({ title: isRegister.value ? '注册中...' : '登录中...' });
-
-    const res = await lafService
-      .login({
-        type: 'email',
-        email: emailForm.value.email.trim().toLowerCase(),
-        password: emailForm.value.password,
-        verifyCode: isRegister.value ? emailForm.value.code : undefined,
-        isRegister: isRegister.value
-      })
-      .catch((err) => {
-        logger.error('[Login] lafService.login (email) failed:', err);
-        return { code: -1, message: '网络请求失败' };
-      });
-
-    uni.hideLoading();
-
-    if (res && res.code === 0 && res.data) {
-      saveLoginInfo(res.data);
-      uni.showToast({ title: isRegister.value ? '注册成功' : '登录成功', icon: 'success' });
-
-      // 清空表单
-      emailForm.value = { email: '', password: '', code: '' };
-
-      setTimeout(() => {
-        navigateAfterLogin();
-      }, 1500);
-    } else {
-      // 根据错误类型给出更友好的提示
-      let errorMsg = res?.message || '操作失败';
-      if (res?.message?.includes('密码')) {
-        errorMsg = '邮箱或密码错误';
-      } else if (res?.message?.includes('验证码')) {
-        errorMsg = '验证码错误或已过期';
-      } else if (res?.message?.includes('已注册') || res?.message?.includes('已存在')) {
-        errorMsg = '该邮箱已注册，请直接登录';
-        isRegister.value = false; // 自动切换到登录模式
-      } else if (res?.message?.includes('不存在') || res?.message?.includes('未注册')) {
-        errorMsg = '该邮箱未注册，请先注册';
-        isRegister.value = true; // 自动切换到注册模式
-      }
-      uni.showToast({ title: errorMsg, icon: 'none' });
+    if (!agreedToTerms.value) {
+      uni.showToast({ title: '请先同意用户协议', icon: 'none' });
+      return;
     }
-  } catch (error) {
-    uni.hideLoading();
-    logger.error('[Login] 邮箱登录失败:', error);
-    uni.showToast({ title: '网络错误，请重试', icon: 'none' });
+
+    // 表单验证
+    if (!isEmailValid.value) {
+      uni.showToast({ title: '请输入有效的邮箱地址', icon: 'none' });
+      return;
+    }
+
+    // ✅ 问题清单修复：密码校验与后端统一（8-32 位）
+    const password = (emailForm.value.password || '').trim();
+    if (!password || password.length < 8) {
+      uni.showToast({ title: '密码至少8位', icon: 'none' });
+      return;
+    }
+    if (password.length > 32) {
+      uni.showToast({ title: '密码不能超过32位', icon: 'none' });
+      return;
+    }
+
+    // 注册时额外校验（密码强度仅注册时强制，避免锁死使用旧密码的已有用户）
+    if (isRegister.value) {
+      // ✅ M17: 密码强度检查（仅注册时）：需包含大写字母、小写字母和数字
+      if (!/[A-Z]/.test(password)) {
+        uni.showToast({ title: '密码需包含大写字母', icon: 'none' });
+        return;
+      }
+      if (!/[a-z]/.test(password)) {
+        uni.showToast({ title: '密码需包含小写字母', icon: 'none' });
+        return;
+      }
+      if (!/\d/.test(password)) {
+        uni.showToast({ title: '密码需包含数字', icon: 'none' });
+        return;
+      }
+
+      if (!emailForm.value.code) {
+        uni.showToast({ title: '请输入验证码', icon: 'none' });
+        return;
+      }
+
+      if (emailForm.value.code.length !== 6) {
+        uni.showToast({ title: '验证码为6位数字', icon: 'none' });
+        return;
+      }
+    }
+
+    const now = Date.now();
+    if (now - lastEmailSubmitAt < EMAIL_SUBMIT_COOLDOWN_MS) {
+      return;
+    }
+    lastEmailSubmitAt = now;
+
+    if (isLoading.value) return;
+    isLoading.value = true;
+
+    try {
+      uni.showLoading({ title: isRegister.value ? '注册中...' : '登录中...' });
+
+      const res = await lafService
+        .login({
+          type: 'email',
+          email: emailForm.value.email.trim().toLowerCase(),
+          password: emailForm.value.password,
+          verifyCode: isRegister.value ? emailForm.value.code : undefined,
+          isRegister: isRegister.value
+        })
+        .catch((err) => {
+          logger.error('[Login] lafService.login (email) failed:', err);
+          return { code: -1, message: '网络请求失败' };
+        });
+
+      uni.hideLoading();
+
+      if (res && res.code === 0 && res.data) {
+        saveLoginInfo(res.data);
+        uni.showToast({ title: isRegister.value ? '注册成功' : '登录成功', icon: 'success' });
+
+        // 清空表单
+        emailForm.value = { email: '', password: '', code: '' };
+
+        setTimeout(() => {
+          navigateAfterLogin();
+        }, 1500);
+      } else {
+        // 根据错误类型给出更友好的提示
+        let errorMsg = res?.message || '操作失败';
+        if (res?.message?.includes('密码')) {
+          errorMsg = '邮箱或密码错误';
+        } else if (res?.message?.includes('验证码')) {
+          errorMsg = '验证码错误或已过期';
+        } else if (res?.message?.includes('已注册') || res?.message?.includes('已存在')) {
+          errorMsg = '该邮箱已注册，请直接登录';
+          isRegister.value = false; // 自动切换到登录模式
+        } else if (res?.message?.includes('不存在') || res?.message?.includes('未注册')) {
+          errorMsg = '该邮箱未注册，请先注册';
+          isRegister.value = true; // 自动切换到注册模式
+        }
+        uni.showToast({ title: errorMsg, icon: 'none' });
+      }
+    } catch (error) {
+      uni.hideLoading();
+      logger.error('[Login] 邮箱登录失败:', error);
+      uni.showToast({ title: '网络错误，请重试', icon: 'none' });
+    } finally {
+      isLoading.value = false;
+    }
   } finally {
-    isLoading.value = false;
+    emailLoginLock = false;
   }
 };
 
@@ -970,6 +1009,8 @@ const openTerms = () => {
 
 // 初始化
 onMounted(() => {
+  detectE2EMode();
+
   // 获取主题状态
   const savedTheme = storageService.get('theme_mode', 'light');
   isDark.value = savedTheme === 'dark';
@@ -1186,6 +1227,10 @@ onUnmounted(() => {
 
 .qq-icon {
   background: linear-gradient(135deg, #12b7f5 0%, #0099ff 100%);
+}
+
+.e2e-icon {
+  background: linear-gradient(135deg, #5c6bc0 0%, #3949ab 100%);
 }
 
 .email-icon {

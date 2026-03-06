@@ -114,7 +114,7 @@ export function normalizeAndValidateQuestions(questions) {
 }
 
 /**
- * 清洗发送给 AI 的用户输入
+ * 清洗发送给智能的用户输入
  * 移除控制字符、截断过长内容
  * @param {string} text - 原始文本
  * @param {number} maxLen - 最大长度

@@ -52,8 +52,8 @@ export default async function (ctx: FunctionContext) {
       return { ...badRequest('只支持 POST 请求'), requestId };
     }
 
-    // 获取上传的文件
-    const file = ctx.files?.file;
+    // 获取上传的文件（兼容不同 runtime 的 multipart 结构）
+    const file = resolveUploadedFile(ctx.files);
     if (!file) {
       return { ...badRequest('请选择要上传的图片'), requestId };
     }
@@ -86,13 +86,13 @@ export default async function (ctx: FunctionContext) {
     }
 
     // 验证文件类型
-    const mimeType = file.mimetype || file.type;
+    const mimeType = normalizeMimeType(file);
     if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
       return { ...badRequest('不支持的图片格式，请上传 JPG、PNG、GIF 或 WebP 格式'), requestId };
     }
 
     // 验证文件大小
-    const fileSize = file.size;
+    const fileSize = Number(file.size || 0);
     if (fileSize > MAX_FILE_SIZE) {
       return { ...badRequest(`图片大小不能超过 ${MAX_FILE_SIZE / 1024 / 1024}MB`), requestId };
     }
@@ -110,10 +110,10 @@ export default async function (ctx: FunctionContext) {
 
     try {
       // 使用 Laf 云存储
-      const bucket = cloud.storage.bucket('default');
+      const bucket: any = cloud.storage.bucket('default');
 
       // 读取文件内容
-      const fileBuffer = file.buffer || (await readFileBuffer(file));
+      const fileBuffer = await readFileBuffer(file);
 
       // 上传文件
       await bucket.putObject(fileName, fileBuffer, {
@@ -129,7 +129,7 @@ export default async function (ctx: FunctionContext) {
 
       // 备选方案：使用 Base64 存储到数据库
       try {
-        const fileBuffer = file.buffer || (await readFileBuffer(file));
+        const fileBuffer = await readFileBuffer(file);
         const base64Data = fileBuffer.toString('base64');
         avatarUrl = `data:${mimeType};base64,${base64Data}`;
 
@@ -217,21 +217,90 @@ function getExtension(mimeType: string): string {
  * 读取文件 Buffer
  */
 async function readFileBuffer(file: Record<string, unknown>): Promise<Buffer> {
-  if (file.buffer) {
-    return file.buffer;
+  const rawBuffer = file.buffer;
+  if (Buffer.isBuffer(rawBuffer)) {
+    return rawBuffer;
+  }
+
+  if (rawBuffer instanceof Uint8Array) {
+    return Buffer.from(rawBuffer);
+  }
+
+  if (typeof file.content === 'string') {
+    return Buffer.from(file.content, 'base64');
   }
 
   if (file.path) {
     return fs.readFileSync(file.path as string);
   }
 
-  if (file.stream) {
+  const streamAny = file.stream as any;
+  if (streamAny && typeof streamAny[Symbol.asyncIterator] === 'function') {
+    const stream = streamAny as AsyncIterable<Buffer | Uint8Array>;
     const chunks: Buffer[] = [];
-    for await (const chunk of file.stream) {
-      chunks.push(chunk);
+    for await (const chunk of stream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
     }
     return Buffer.concat(chunks);
   }
 
   throw new Error('无法读取文件内容');
+}
+
+function toFileLike(value: unknown): Record<string, unknown> | null {
+  if (!value) return null;
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const normalized = toFileLike(item);
+      if (normalized) return normalized;
+    }
+    return null;
+  }
+  if (typeof value === 'object') {
+    return value as Record<string, unknown>;
+  }
+  return null;
+}
+
+function resolveUploadedFile(files: unknown): Record<string, unknown> | null {
+  const direct = toFileLike(files);
+  if (direct && (direct.path || direct.buffer || direct.stream || direct.content)) {
+    return direct;
+  }
+
+  if (!files || typeof files !== 'object') {
+    return null;
+  }
+
+  const fileMap = files as Record<string, unknown>;
+
+  if (fileMap.file) {
+    const directFile = toFileLike(fileMap.file);
+    if (directFile) return directFile;
+  }
+
+  for (const key of Object.keys(fileMap)) {
+    const candidate = toFileLike(fileMap[key]);
+    if (candidate) return candidate;
+  }
+
+  return null;
+}
+
+function normalizeMimeType(file: Record<string, unknown>): string {
+  const mime = typeof file.mimetype === 'string' ? file.mimetype : typeof file.type === 'string' ? file.type : '';
+  if (mime) return mime;
+
+  const name =
+    (typeof file.originalFilename === 'string' && file.originalFilename) ||
+    (typeof file.filename === 'string' && file.filename) ||
+    (typeof file.name === 'string' && file.name) ||
+    '';
+
+  const lowered = name.toLowerCase();
+  if (lowered.endsWith('.png')) return 'image/png';
+  if (lowered.endsWith('.gif')) return 'image/gif';
+  if (lowered.endsWith('.webp')) return 'image/webp';
+  if (lowered.endsWith('.jpg') || lowered.endsWith('.jpeg')) return 'image/jpeg';
+  return '';
 }

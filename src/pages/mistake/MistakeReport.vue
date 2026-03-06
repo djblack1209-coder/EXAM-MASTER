@@ -1,12 +1,12 @@
 <template>
   <view>
-    <!-- 生成 AI 诊断报告按钮 -->
+    <!-- 生成智能诊断报告按钮 -->
     <view v-if="hasMistakes" class="bottom-bar">
       <button class="export-btn ds-flex ds-flex-center ds-gap-xs" :disabled="isGenerating" @tap="prepareReport">
         <BaseIcon name="chart-bar" :size="36" class="export-icon" />
         <view class="export-text-wrapper ds-flex-center">
           <text class="export-text ds-text-sm ds-font-bold">
-            {{ isGenerating ? 'AI 正在深度诊断...' : '生成 AI 诊断报告' }}
+            {{ isGenerating ? '智能正在深度诊断...' : '生成智能诊断报告' }}
           </text>
         </view>
       </button>
@@ -21,12 +21,8 @@
         <view class="loading-spinner">
           <view class="spinner-ring" />
         </view>
-        <text class="loading-text">
-          AI 正在深度诊断...
-        </text>
-        <text class="loading-desc">
-          请稍候，正在生成专属报告
-        </text>
+        <text class="loading-text"> 智能正在深度诊断... </text>
+        <text class="loading-desc"> 请稍候，正在生成专属报告 </text>
       </view>
     </view>
 
@@ -35,13 +31,9 @@
       <view class="modal-bg" @tap="closeReport" />
       <view class="modal-content">
         <view class="modal-header ds-flex ds-flex-between">
-          <text class="modal-title ds-text-xl ds-font-bold">
-            AI 诊断报告
-          </text>
+          <text class="modal-title ds-text-xl ds-font-bold"> 智能诊断报告 </text>
           <view class="modal-close ds-flex-center ds-rounded-full ds-touchable" @tap="closeReport">
-            <text class="modal-close-icon">
-              &times;
-            </text>
+            <text class="modal-close-icon"> &times; </text>
           </view>
         </view>
         <scroll-view scroll-y class="modal-scroll">
@@ -57,20 +49,14 @@
           <!-- E010: 文本降级模式（Canvas 不可用时） -->
           <view v-else-if="reportTextContent" class="report-text-fallback">
             <view class="report-text-header">
-              <text class="report-text-title">
-                Exam Master
-              </text>
-              <text class="report-text-subtitle">
-                AI 智能诊断报告
-              </text>
+              <text class="report-text-title"> Exam Master </text>
+              <text class="report-text-subtitle"> 智能诊断报告 </text>
             </view>
             <view class="report-text-userinfo">
               <text class="report-text-name">
                 {{ userInfo.nickName || '考研人' }}
               </text>
-              <text class="report-text-meta">
-                错题总数：{{ mistakes.length }} 道
-              </text>
+              <text class="report-text-meta"> 错题总数：{{ mistakes.length }} 道 </text>
             </view>
             <view class="report-text-body">
               <text class="report-text-content" selectable>
@@ -78,22 +64,16 @@
               </text>
             </view>
             <view class="report-text-footer">
-              <text>汗水铸就辉煌 · AI 伴你上岸</text>
+              <text>汗水铸就辉煌 · 智能伴你上岸</text>
             </view>
           </view>
           <view v-else class="loading-placeholder">
-            <text class="ds-text-sm">
-              图片加载中...
-            </text>
+            <text class="ds-text-sm"> 图片加载中... </text>
           </view>
         </scroll-view>
         <view class="modal-footer ds-flex ds-gap-xs">
-          <button class="modal-btn secondary ds-font-bold" @tap="closeReport">
-            关闭
-          </button>
-          <button v-if="reportImagePath" class="modal-btn primary ds-font-bold" @tap="saveReport">
-            保存到相册
-          </button>
+          <button class="modal-btn secondary ds-font-bold" @tap="closeReport">关闭</button>
+          <button v-if="reportImagePath" class="modal-btn primary ds-font-bold" @tap="saveReport">保存到相册</button>
           <button v-else-if="reportTextContent" class="modal-btn primary ds-font-bold" @tap="copyReportText">
             复制报告文本
           </button>
@@ -185,12 +165,12 @@ export default {
         if (isTimeoutHandled) return;
         isTimeoutHandled = true;
 
-        logger.warn('[MistakeReport] AI 诊断报告生成超时（30秒）');
+        logger.warn('[MistakeReport] 智能诊断报告生成超时（30秒）');
         this.showCustomLoading = false;
         this.isGenerating = false;
 
         uni.showModal({
-          title: 'AI 分析超时',
+          title: '智能分析超时',
           content: '网络较慢，是否使用本地数据生成简化报告？',
           confirmText: '生成简化版',
           cancelText: '稍后重试',
@@ -228,13 +208,13 @@ export default {
             this.isGenerating = false;
           }
         } else {
-          logger.error('[MistakeReport] AI报告生成失败:', response.message);
+          logger.error('[MistakeReport] 智能报告生成失败:', response.message);
           this.showCustomLoading = false;
           this.isGenerating = false;
           uni.showToast({ title: '报告生成失败，请重试', icon: 'none', duration: 3000 });
         }
       } catch (_e) {
-        logger.error('[MistakeReport] AI 报告生成失败', _e);
+        logger.error('[MistakeReport] 智能报告生成失败', _e);
         this.showCustomLoading = false;
         this.isGenerating = false;
 
@@ -242,7 +222,7 @@ export default {
         if (_e.message && _e.message.includes('timeout')) {
           errorMsg = '请求超时，请稍后重试';
         } else if (_e.message && _e.message.includes('401')) {
-          errorMsg = 'AI 服务配置异常，请联系管理员';
+          errorMsg = '智能服务配置异常，请联系管理员';
         } else if (_e.message && _e.message.includes('500')) {
           errorMsg = '服务器错误，请稍后重试';
         } else if (_e.message && _e.message.includes('JSON')) {
@@ -344,7 +324,7 @@ export default {
 
           // ✅ F011: 使用 drawLabel 消除重复的文本绘制模式
           drawLabel(ctx, 'Exam Master', 50, 150, { fontSize: 48, color: theme.titleColor });
-          drawLabel(ctx, 'AI 智能诊断报告', 50, 200, { fontSize: 28, color: theme.subText });
+          drawLabel(ctx, '智能诊断报告', 50, 200, { fontSize: 28, color: theme.subText });
 
           drawCard(ctx, 50, 250, 650, 180, 30, theme.cardBg, this.isDark);
 
@@ -364,7 +344,7 @@ export default {
             drawRadar(ctx, 375, 730, 160, capabilityData, theme);
           }
 
-          drawLabel(ctx, 'AI 深度诊断', 50, 1000, { fontSize: 32, color: theme.titleColor });
+          drawLabel(ctx, '智能深度诊断', 50, 1000, { fontSize: 32, color: theme.titleColor });
 
           drawDivider(ctx, 50, 700, 1020, theme.dividerColor);
 
@@ -372,7 +352,7 @@ export default {
           ctx.setFontSize(28);
           drawText(ctx, aiSummary, 80, 1060, 590, 50);
 
-          drawLabel(ctx, '汗水铸就辉煌 · AI 伴你上岸', 375, 1330, {
+          drawLabel(ctx, '汗水铸就辉煌 · 智能伴你上岸', 375, 1330, {
             fontSize: 24,
             color: theme.subText,
             align: 'center'
@@ -548,7 +528,7 @@ export default {
     },
 
     retryGenerateReport() {
-      logger.log('[MistakeReport] 重试生成AI报告');
+      logger.log('[MistakeReport] 重试生成智能报告');
       this.prepareReport();
     },
 
@@ -570,7 +550,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* AI 诊断报告按钮 */
+/* 智能诊断报告按钮 */
 .bottom-bar {
   position: fixed;
   bottom: 50rpx;

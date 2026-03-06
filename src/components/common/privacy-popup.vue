@@ -7,9 +7,7 @@
   <!-- #ifdef MP-WEIXIN -->
   <view v-if="showPopup" class="privacy-mask">
     <view class="privacy-dialog">
-      <view class="privacy-title">
-        用户隐私保护提示
-      </view>
+      <view class="privacy-title"> 用户隐私保护提示 </view>
       <view class="privacy-content">
         <text>在使用当前小程序服务之前，请仔细阅读</text>
         <text class="privacy-link" @tap="openPrivacyContract">
@@ -18,9 +16,7 @@
         <text>。如你同意，请点击"同意"开始使用。</text>
       </view>
       <view class="privacy-actions">
-        <button class="privacy-btn privacy-btn-reject" @tap="handleReject">
-          拒绝
-        </button>
+        <button class="privacy-btn privacy-btn-reject" @tap="handleReject">拒绝</button>
         <button
           class="privacy-btn privacy-btn-agree"
           open-type="agreePrivacyAuthorization"

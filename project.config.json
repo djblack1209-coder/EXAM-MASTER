@@ -20,7 +20,8 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "minifyWXML": true
   },
   "compileType": "miniprogram",
   "libVersion": "",
