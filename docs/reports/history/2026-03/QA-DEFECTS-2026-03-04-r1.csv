@@ -1,0 +1,2 @@
+ID,优先级,页面,步骤,结果,根因,状态
+ENV-BLOCKER-001,P2,Native-Maestro,"1) 连接 Android 模拟器; 2) 执行 npm run test:maestro","预期: 运行 Native 00~04 流程; 实际: APP_ID 缺失且设备无业务包, 自动降级执行 10-web-h5-smoke",测试环境未安装业务 App 包且未提供 APP_ID,Blocked

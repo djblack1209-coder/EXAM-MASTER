@@ -1,0 +1,2 @@
+ID,优先级,页面,步骤,结果,根因,状态
+DEF-20260307-R2-001,P1,小程序E2E导入流程,"1) npm run test:qa:full-regression:clean 2) 观察 e2e-tests/specs/exam-flow.spec.js Case 6",断言期望文案与实际文案不一致（开始 智能 出题 vs 开始智能出题）,文案替换后测试期望未同步更新,已修复

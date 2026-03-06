@@ -1,13 +1,15 @@
 # Scripts Reference
 
-Last updated: 2026-02-28
+Last updated: 2026-03-07
 
 ## Core quality gates
 
-- `npm run lint`: frontend ESLint checks.
+- `npm run lint`: frontend ESLint checks (`--max-warnings=0`, warning 直接失败).
 - `npm test`: full Vitest suite.
 - `npm run build:h5`: H5 build validation.
 - `npm run build:mp-weixin`: WeChat mini-program build validation.
+- `npm run test:qa:full-regression`: delivery-grade chain gate (lint/format/laf strict/build/tests/e2e/maestro/secrets/prod-audit/mp-usage).
+- `npm run test:qa:full-regression:clean`: wrapper gate, auto-runs under Node 20.17.0 and ensures Playwright Chromium.
 
 ## Laf backend safety gates
 
@@ -43,9 +45,10 @@ Notes:
 
 ## Generated report outputs
 
-Runtime-generated reports are written to `docs/reports/` and are git-ignored:
+Runtime-generated reports are written to `docs/reports/` and are git-ignored.
 
-- `docs/reports/PROJECT_DEEP_SCAN_REPORT.md`
-- `docs/reports/ui-quality-report.json`
-- `docs/reports/visual-report/`
-- `docs/reports/visual-results.json`
+- Deep scan/UI: `PROJECT_DEEP_SCAN_REPORT.md`, `ui-quality-report.json`
+- Visual: `visual-report/`, `visual-results.json`
+- Playwright e2e: `e2e-regression-results.*`, `e2e-regression-html/`, `e2e-compat-results.*`, `e2e-compat-html/`
+- Maestro: `maestro-preflight.md`, `maestro-results.xml`, `maestro-web-smoke*.xml`
+- Vitest snapshots: `vitest-results*.json`
