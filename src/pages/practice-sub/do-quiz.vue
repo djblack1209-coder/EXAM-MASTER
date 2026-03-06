@@ -5,12 +5,8 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px', height: '44px' }">
         <view class="back-area" hover-class="item-hover" @tap="handleExit">
-          <text class="back-icon">
-            ←
-          </text>
-          <text class="progress-text">
-            {{ currentIndex + 1 }} / {{ questions.length }}
-          </text>
+          <text class="back-icon"> ← </text>
+          <text id="e2e-quiz-progress" class="progress-text"> {{ currentIndex + 1 }} / {{ questions.length }} </text>
         </view>
         <!-- 单题计时器显示 -->
         <view class="timer-group">
@@ -27,9 +23,7 @@
             </text>
           </view>
           <view class="timer-box">
-            <text class="total-label">
-              总
-            </text>
+            <text class="total-label"> 总 </text>
             <text>{{ formatTime(seconds) }}</text>
           </view>
         </view>
@@ -37,6 +31,7 @@
     </view>
 
     <scroll-view
+      id="e2e-quiz-scroll"
       scroll-y
       class="quiz-scroll"
       :style="{ paddingTop: navBarHeight + 'px' }"
@@ -86,6 +81,7 @@
         <view v-if="currentQuestion && currentQuestion.options" class="options-list">
           <view
             v-for="(opt, idx) in currentQuestion.options"
+            :id="`e2e-quiz-option-${idx}`"
             :key="idx"
             :class="[
               'glass-card',
@@ -115,17 +111,15 @@
         </view>
       </view>
 
-      <!-- AI Loading 状态 -->
-      <BaseLoading v-if="isAnalyzing" :text="'AI 正在深度解析逻辑...'" />
+      <!-- 智能 Loading 状态 -->
+      <BaseLoading v-if="isAnalyzing" :text="'智能正在深度解析逻辑...'" />
 
-      <!-- AI 反馈图层动画 -->
+      <!-- 智能反馈图层动画 -->
       <view v-if="isAnalyzing" class="ai-feedback-layer">
         <view class="scan-line" />
         <view class="thinking-box">
           <view class="pulse-ring" />
-          <text class="ai-text">
-            AI 正在深度解析逻辑...
-          </text>
+          <text class="ai-text"> 智能正在深度解析逻辑... </text>
         </view>
       </view>
 
@@ -148,12 +142,10 @@
             <view class="sparkle-icon">
               <BaseIcon name="sparkle" :size="28" />
             </view>
-            <text>AI 深度诊断</text>
+            <text>智能深度诊断</text>
           </view>
           <view class="answer-display">
-            <text class="answer-label">
-              正确答案：
-            </text>
+            <text class="answer-label"> 正确答案： </text>
             <text class="answer-value">
               {{ currentQuestion ? currentQuestion.answer : 'A' }}
             </text>
@@ -164,13 +156,12 @@
         </scroll-view>
 
         <view v-else class="ai-analysis-brief">
-          <text class="label">
-            AI 简评：
-          </text>
+          <text class="label"> 智能简评： </text>
           <text>{{ aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析') }}</text>
         </view>
 
         <button
+          id="e2e-quiz-next-btn"
           class="next-btn"
           hover-class="ds-hover-btn"
           :disabled="isNavigating"
@@ -189,9 +180,7 @@
           <text class="combo-count">
             {{ comboDisplay.count }}
           </text>
-          <text class="combo-label">
-            连击!
-          </text>
+          <text class="combo-label"> 连击! </text>
           <text v-if="comboDisplay.message" class="combo-message">
             {{ comboDisplay.message }}
           </text>
@@ -204,7 +193,7 @@
       :visible="showEmptyBankModal"
       type="upload"
       title="题库空空如也"
-      content="请先去资料库导入学习资料，AI 将为您生成专属题目。"
+      content="请先去资料库导入学习资料，智能将为您生成专属题目。"
       confirm-text="去导入"
       :show-cancel="false"
       :is-dark="isDark"
@@ -259,9 +248,7 @@
     <view v-if="showNoteModal" class="note-modal-overlay" @tap="showNoteModal = false">
       <view class="note-modal" @tap.stop>
         <view class="note-modal-header">
-          <text class="note-modal-title">
-            添加笔记
-          </text>
+          <text class="note-modal-title"> 添加笔记 </text>
           <view class="note-modal-close" hover-class="item-hover" @tap="showNoteModal = false">
             <BaseIcon name="close" :size="28" />
           </view>
@@ -286,12 +273,8 @@
           </view>
         </view>
         <view class="note-modal-footer">
-          <button class="note-cancel-btn" hover-class="item-hover" @tap="showNoteModal = false">
-            取消
-          </button>
-          <button class="note-save-btn" hover-class="item-hover" @tap="handleSaveNote">
-            保存
-          </button>
+          <button class="note-cancel-btn" hover-class="item-hover" @tap="showNoteModal = false">取消</button>
+          <button class="note-save-btn" hover-class="item-hover" @tap="handleSaveNote">保存</button>
         </view>
       </view>
     </view>
@@ -315,7 +298,7 @@ import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 import { getStatusBarHeight, getWindowInfo } from '@/utils/core/system.js';
 // ✅ 检查点 5.3: 自适应学习引擎（懒加载：仅在 isAdaptiveMode 时动态导入）
 // ✅ 导入题目收藏模块
-import { toggleFavorite, isFavorited } from './utils/question-favorite.js';
+import { toggleFavorite, isFavorited } from '@/utils/favorite/question-favorite.js';
 // ✅ 导入滑动手势模块
 import {
   initSwipeGesture,
@@ -328,7 +311,9 @@ import {
 import { playCorrectAnimation, playWrongAnimation, getComboDisplay, resetAnimation } from './quiz-animation.js';
 // ✅ 导入单题计时器模块
 import { startTimer as startQuestionTimer, stopTimer as stopQuestionTimer } from './question-timer.js';
-// ✅ 智能组题模块（懒加载：仅在 smartPickerEnabled 时动态导入）
+// ✅ 智能组题与自适应学习模块
+import { pickQuestions } from '@/utils/learning/smart-question-picker.js';
+import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/learning/adaptive-learning-engine.js';
 // ✅ 导入离线缓存模块
 import { checkOfflineAvailability } from './offline-cache.js';
 // ✅ 导入题目笔记模块
@@ -502,6 +487,7 @@ export default {
     if (this.timer) {
       clearInterval(this.timer);
     }
+    stopQuestionTimer();
     // 移除主题事件监听，避免重复绑定
     uni.$off('themeUpdate', this._themeHandler);
 
@@ -522,6 +508,7 @@ export default {
       clearInterval(this.timer);
       this.timer = null;
     }
+    stopQuestionTimer();
     this.saveCurrentProgress(true);
   },
   methods: {
@@ -697,7 +684,6 @@ export default {
 
       // ✅ 使用智能组题算法优化题目序列（懒加载）
       if (this.smartPickerEnabled && questions.length > 0) {
-        const { pickQuestions } = await import('./utils/smart-question-picker.js');
         questions = pickQuestions(questions, {
           count: Math.min(questions.length, 20),
           mode: 'adaptive',
@@ -706,8 +692,7 @@ export default {
         });
         logger.log('[do-quiz] ✅ 智能组题模式已启用');
       } else if (this.isAdaptiveMode && questions.length > 0) {
-        // 降级到自适应学习引擎（懒加载）
-        const { generateAdaptiveSequence } = await import('./utils/adaptive-learning-engine.js');
+        // 降级到自适应学习引擎
         questions = generateAdaptiveSequence(questions, {
           insertReviewQuestions: true,
           prioritizeWeak: true,
@@ -803,11 +788,11 @@ export default {
         this.playWrongEffect();
 
         this.resultStatus = 'wrong';
-        // 错误时：先保存到错题本（不含 AI 解析）
+        // 错误时：先保存到错题本（不含智能解析）
         this.saveToMistakes().catch((_err) => {
           /* silent save failure */
         });
-        // 然后触发 AI 深度解析（会自动更新错题本中的 AI 解析字段）
+        // 然后触发智能深度解析（会自动更新错题本中的智能解析字段）
         await this.fetchAIDeepAnalysis(this.currentQuestion, this.currentQuestion.options[idx]);
         this.updateStudyStats();
         this.showResult = true;
@@ -817,17 +802,17 @@ export default {
     async fetchAIDeepAnalysis(question, userChoice) {
       // 开启扫描线动画
       this.isAnalyzing = true;
-      this.aiComment = 'AI 导师正在审阅您的逻辑...';
+      this.aiComment = '智能导师正在审阅您的逻辑...';
 
       try {
         const result = await fetchAIAnalysis({ question, userChoice });
         this.aiComment = result.comment;
 
         if (result.success) {
-          // 将 AI 解析同步保存到错题本
+          // 将智能解析同步保存到错题本
           this.updateMistakeWithAI(this.aiComment);
         }
-        // AI 失败时不重复调用 saveToMistakes()，错题已在答题时保存
+        // 智能失败时不重复调用 saveToMistakes()，错题已在答题时保存
       } finally {
         this.isAnalyzing = false; // 关闭扫描动画
 
@@ -837,7 +822,7 @@ export default {
             uni.vibrateShort();
           }
         } catch (e) {
-          logger.warn('Vibrate feedback failed after AI analysis', e);
+          logger.warn('Vibrate feedback failed after 智能 analysis', e);
         }
       }
     },
@@ -877,7 +862,6 @@ export default {
       if (this.currentIndex < this.questions.length - 1) {
         // ✅ 检查点 5.3: 检查是否需要插入复习题
         if (this.isAdaptiveMode) {
-          const { getNextRecommendedQuestion } = await import('./utils/adaptive-learning-engine.js');
           const recommendation = getNextRecommendedQuestion(this.currentIndex, this.questions);
           if (recommendation && recommendation.isReview) {
             // 插入复习题
@@ -947,6 +931,7 @@ export default {
       if (this.timer) {
         clearInterval(this.timer);
       }
+      stopQuestionTimer();
       uni.navigateBack();
     },
 
@@ -977,9 +962,10 @@ export default {
     },
 
     closeResult() {
-      // 关闭结果弹窗，但不进入下一题
-      // ⚠️ 不重置 hasAnswered 和 userChoice，防止用户重复作答同一题
-      // 重复作答会导致 answeredQuestions 重复记录、analytics 双重计数、错题重复保存
+      if (this.hasAnswered) {
+        this.toNext();
+        return;
+      }
       this.showResult = false;
       this.isAnalyzing = false;
     },
@@ -1548,7 +1534,7 @@ export default {
   flex-shrink: 0;
 }
 
-/* AI 反馈图层动画 */
+/* 智能反馈图层动画 */
 .ai-feedback-layer {
   position: fixed;
   top: 0;
@@ -1694,7 +1680,7 @@ export default {
   text-align: center;
 }
 
-/* AI 深度诊断区域 */
+/* 智能深度诊断区域 */
 .ai-analysis-scroll {
   max-height: 400rpx;
   margin-bottom: 30rpx;
