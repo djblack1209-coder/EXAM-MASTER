@@ -1,6 +1,6 @@
 /**
  * 全链路集成测试 — 择校交互全流程
- * 模拟真实用户：3步向导填写 → AI推荐 → 筛选 → 目标院校管理 → 院校详情 → AI预测
+ * 模拟真实用户：3步向导填写 → 智能推荐 → 筛选 → 目标院校管理 → 院校详情 → 智能预测
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
@@ -89,9 +89,9 @@ describe('E2E 择校交互全流程', () => {
     });
   });
 
-  // ==================== Step 3: AI 智能推荐 ====================
+  // ==================== Step 3: 智能推荐 ====================
 
-  describe('Step 3: AI 智能推荐', () => {
+  describe('Step 3: 智能推荐', () => {
     it('submitForm → 调用 proxyAI recommend 获取推荐', async () => {
       const { lafService } = await import('@/services/lafService.js');
       const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
@@ -126,6 +126,7 @@ describe('E2E 择校交互全流程', () => {
         major: '计算机科学'
       });
 
+      expect(mockRequest).toHaveBeenCalled();
       expect(result.code).toBe(0);
       const schools = JSON.parse(result.data.reply);
       expect(schools.length).toBe(2);
@@ -149,8 +150,6 @@ describe('E2E 择校交互全流程', () => {
       expect(filtered[0].name).toBe('浙江大学');
 
       // 无筛选
-      const noFilter = schoolList.filter((s) => !'' || s.location === '');
-      // 空字符串 falsy → !'' = true → 返回全部
       const allSchools = schoolList.filter(() => true);
       expect(allSchools.length).toBe(4);
     });
@@ -361,7 +360,7 @@ describe('E2E 择校交互全流程', () => {
       expect(rate).toBe(80);
     });
 
-    it('AI 录取概率预测 → 调用 proxyAI predict', async () => {
+    it('智能录取概率预测 → 调用 proxyAI predict', async () => {
       const { lafService } = await import('@/services/lafService.js');
       vi.spyOn(lafService, 'request').mockResolvedValue({
         code: 0,
@@ -388,7 +387,7 @@ describe('E2E 择校交互全流程', () => {
       expect(statusText).toBe('大有可为');
     });
 
-    it('AI 院校咨询 → 多轮对话带历史', async () => {
+    it('智能院校咨询 → 多轮对话带历史', async () => {
       const { lafService } = await import('@/services/lafService.js');
       const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
         code: 0,
@@ -520,7 +519,7 @@ describe('E2E 择校交互全流程', () => {
 
   // ==================== 端到端完整旅程 ====================
 
-  describe('完整旅程：填写背景 → AI推荐 → 选择目标 → 查看详情', () => {
+  describe('完整旅程：填写背景 → 智能推荐 → 选择目标 → 查看详情', () => {
     it('用户从零开始完成择校全流程', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
@@ -535,7 +534,7 @@ describe('E2E 择校交互全流程', () => {
       };
       expect(formData.degree).toBe('bk');
 
-      // Step 2: 提交获取 AI 推荐
+      // Step 2: 提交获取智能推荐
       vi.spyOn(lafService, 'request').mockResolvedValue({
         code: 0,
         success: true,

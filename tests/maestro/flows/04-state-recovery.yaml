@@ -1,0 +1,10 @@
+appId: ${APP_ID}
+---
+- launchApp
+- tapOn: '刷题'
+- assertVisible: '刷题中心'
+- back
+- tapOn: '首页'
+- tapOn: '刷题'
+- tapOn: '刷题'
+- assertVisible: '刷题中心'

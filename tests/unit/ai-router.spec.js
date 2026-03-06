@@ -1,5 +1,5 @@
 /**
- * AI Router 单元测试
+ * 智能 Router 单元测试
  * 测试路由配置、缓存机制、超时降级、指标统计等纯逻辑
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -17,7 +17,7 @@ vi.mock('@/utils/logger.js', () => ({
 // 动态导入以确保 mock 生效
 const { aiRouter } = await import('@/pages/chat/ai-router.js');
 
-describe('AI Router', () => {
+describe('智能 Router', () => {
   beforeEach(() => {
     // 重置缓存和指标
     aiRouter.cache.clear();
@@ -112,13 +112,13 @@ describe('AI Router', () => {
 
   describe('超时机制', () => {
     it('executeWithTimeout 应在超时前返回结果', async () => {
-      const fast = new Promise(resolve => setTimeout(() => resolve('done'), 10));
+      const fast = new Promise((resolve) => setTimeout(() => resolve('done'), 10));
       const result = await aiRouter.executeWithTimeout(fast, 1000);
       expect(result).toBe('done');
     });
 
     it('executeWithTimeout 应在超时后抛出 AI_TIMEOUT', async () => {
-      const slow = new Promise(resolve => setTimeout(() => resolve('late'), 5000));
+      const slow = new Promise((resolve) => setTimeout(() => resolve('late'), 5000));
       await expect(aiRouter.executeWithTimeout(slow, 50)).rejects.toThrow('AI_TIMEOUT');
     });
   });
@@ -184,7 +184,7 @@ describe('AI Router', () => {
 
     it('重复 init 不应创建多个定时器', () => {
       aiRouter.init();
-      const timer1 = aiRouter._cacheCleanupTimer;
+      const _timer1 = aiRouter._cacheCleanupTimer;
       aiRouter.isInitialized = false;
       aiRouter.init();
       // 旧定时器应被替换（startCacheCleanup 内部先 clear 再 set）

@@ -1,13 +1,13 @@
 /**
- * 总监级审计测试 - Batch 2: AI 智能分析真实性测试
+ * 总监级审计测试 - Batch 2: 智能分析真实性测试
  *
  * 审计维度：
- * 1. 择校 AI 返回非 JSON / 空数组 / 格式异常时的处理
+ * 1. 择校智能返回非 JSON / 空数组 / 格式异常时的处理
  * 2. proxyAI 对不同 action 的 content 空值检查覆盖范围
- * 3. AI 预测概率解析（"概率|点评"格式异常）
+ * 3. 智能预测概率解析（"概率|点评"格式异常）
  * 4. catch 块 vs else 块降级公式不一致验证
  * 5. 连续失败熔断器（mixin 有、import-data 无）
- * 6. 无关内容/新闻文本直接发给 AI 无语义拦截
+ * 6. 无关内容/新闻文本直接发给智能无语义拦截
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -61,7 +61,7 @@ describe('[审计] proxyAI content 空值检查覆盖范围', () => {
       data: { code: 0, data: '[]' }
     });
 
-    const result = await lafService.proxyAI('generate', { content: '' });
+    await lafService.proxyAI('generate', { content: '' });
     // generate 不在 chat/analyze/generate_questions 白名单中，空 content 不会被拦截
     // 这是一个设计缺陷：import-data.vue 使用 generate action
     expect(spy).toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe('[审计] proxyAI content 空值检查覆盖范围', () => {
       data: { code: 0, data: '[]' }
     });
 
-    const result = await lafService.proxyAI('recommend', { content: '' });
+    await lafService.proxyAI('recommend', { content: '' });
     expect(spy).toHaveBeenCalled();
   });
 
@@ -85,7 +85,7 @@ describe('[审计] proxyAI content 空值检查覆盖范围', () => {
       data: { code: 0, data: '60|预测结果' }
     });
 
-    const result = await lafService.proxyAI('predict', { content: '' });
+    await lafService.proxyAI('predict', { content: '' });
     expect(spy).toHaveBeenCalled();
   });
 
@@ -110,16 +110,16 @@ describe('[审计] proxyAI content 空值检查覆盖范围', () => {
 });
 
 // ============================================================
-// 2. 择校 AI 返回异常数据处理审计
+// 2. 择校智能返回异常数据处理审计
 // ============================================================
-describe('[审计] 择校 submitForm — AI 返回异常数据处理', () => {
+describe('[审计] 择校 submitForm — 智能返回异常数据处理', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('AI 返回合法 JSON 数组 — schoolList 正常更新', async () => {
+  it('智能返回合法 JSON 数组 — schoolList 正常更新', async () => {
     const { lafService } = await import('@/services/lafService.js');
-    // proxyAI 直接返回 request() 的响应，response.data 就是 AI 文本
+    // proxyAI 直接返回 request() 的响应，response.data 就是智能文本
     vi.spyOn(lafService, 'request').mockResolvedValue({
       code: 0,
       data: JSON.stringify([{ name: '北京大学', matchRate: 90, majors: [], tags: ['985'] }])
@@ -141,7 +141,7 @@ describe('[审计] 择校 submitForm — AI 返回异常数据处理', () => {
     expect(parsed[0].name).toBe('北京大学');
   });
 
-  it('AI 返回非 JSON 文本 — JSON.parse 抛异常', async () => {
+  it('智能返回非 JSON 文本 — JSON.parse 抛异常', async () => {
     const { lafService } = await import('@/services/lafService.js');
     vi.spyOn(lafService, 'request').mockResolvedValue({
       code: 0,
@@ -171,7 +171,7 @@ describe('[审计] 择校 submitForm — AI 返回异常数据处理', () => {
     expect(schoolsList[0].name).toBe('旧数据-不应保留'); // 旧值未被清除
   });
 
-  it('AI 返回空数组 [] — hasRealData 应为 false', async () => {
+  it('智能返回空数组 [] — hasRealData 应为 false', async () => {
     const { lafService } = await import('@/services/lafService.js');
     vi.spyOn(lafService, 'request').mockResolvedValue({
       code: 0,
@@ -195,7 +195,7 @@ describe('[审计] 择校 submitForm — AI 返回异常数据处理', () => {
     expect(hasRealData).toBe(false);
   });
 
-  it('AI 返回 { schools: [...] } 嵌套格式 — 正确提取', async () => {
+  it('智能返回 { schools: [...] } 嵌套格式 — 正确提取', async () => {
     const { lafService } = await import('@/services/lafService.js');
     vi.spyOn(lafService, 'request').mockResolvedValue({
       code: 0,
@@ -216,7 +216,7 @@ describe('[审计] 择校 submitForm — AI 返回异常数据处理', () => {
     expect(schoolsList[0].name).toBe('复旦大学');
   });
 
-  it('AI 返回 { result: "text" } 无 schools 字段 — 空状态', async () => {
+  it('智能返回 { result: "text" } 无 schools 字段 — 空状态', async () => {
     const { lafService } = await import('@/services/lafService.js');
     vi.spyOn(lafService, 'request').mockResolvedValue({
       code: 0,
@@ -252,7 +252,7 @@ describe('[审计] 择校 submitForm — AI 返回异常数据处理', () => {
     const response = await lafService.proxyAI('recommend', { content: '推荐院校' });
     // proxyAI 内部会检查 response.code
     // 当后端返回 code !== 0 时，submitForm 的 else 分支处理
-    const isSuccess = response && response.code === 0 && response.data;
+    void (response && response.code === 0 && response.data);
     // 后端返回 code:500 会被 proxyAI 转换
     // 验证调用方需要处理非成功响应
     expect(typeof response).toBe('object');
@@ -260,7 +260,7 @@ describe('[审计] 择校 submitForm — AI 返回异常数据处理', () => {
 });
 
 // ============================================================
-// 3. AI 预测概率解析 — "概率|点评" 格式异常处理
+// 3. 智能预测概率解析 — "概率|点评" 格式异常处理
 // ============================================================
 describe('[审计] detail.vue fetchAIPrediction — 概率解析边界', () => {
   beforeEach(() => {
@@ -453,7 +453,7 @@ describe('[审计] 连续失败熔断器 — mixin vs import-data', () => {
 
   it('[BUG验证] import-data.vue — 无熔断器，失败后直接停止而非计数', async () => {
     // import-data.vue generateNextBatch 中：
-    // - AI 响应 code !== 0 → 直接 isLooping=false, isPaused=true（停止）
+    // - 智能响应 code !== 0 → 直接 isLooping=false, isPaused=true（停止）
     // - JSON 解析失败 → 直接 isLooping=false, isPaused=true（停止）
     // - catch 块 → 根据错误类型决定是否 autoRetry
     // 没有 _consecutiveFailures 计数器，没有渐进式降级
@@ -474,7 +474,7 @@ describe('[审计] 连续失败熔断器 — mixin vs import-data', () => {
 
     // 对比 mixin：mixin 会计数到 5 次才暂停，中间继续尝试
     // import-data：第一次非成功响应就完全停止
-    // 这意味着 import-data 对临时性 AI 服务波动的容忍度为 0
+    // 这意味着 import-data 对临时性智能服务波动的容忍度为 0
   });
 
   it('[BUG验证] import-data — 超时错误会自动重试但无次数上限', () => {
@@ -482,8 +482,6 @@ describe('[审计] 连续失败熔断器 — mixin vs import-data', () => {
     // 但没有 retryCount 上限检查（虽然有 retryCount 变量，但未见上限判断）
     let retryCount = 0;
     let autoRetry = true;
-    const MAX_RETRIES = 100; // 假设无上限
-
     // 模拟无限重试
     while (autoRetry && retryCount < 10) {
       retryCount++;
@@ -500,14 +498,14 @@ describe('[审计] 连续失败熔断器 — mixin vs import-data', () => {
 });
 
 // ============================================================
-// 6. 无关内容/新闻文本 — 无语义验证直接发给 AI
+// 6. 无关内容/新闻文本 — 无语义验证直接发给智能
 // ============================================================
 describe('[审计] 内容语义验证 — 无关内容处理', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('[BUG验证] 新闻文本直接发给 AI 出题 — 无语义拦截', async () => {
+  it('[BUG验证] 新闻文本直接发给智能出题 — 无语义拦截', async () => {
     const { lafService } = await import('@/services/lafService.js');
     const spy = vi.spyOn(lafService, 'request').mockResolvedValue({
       code: 0,
@@ -518,15 +516,15 @@ describe('[审计] 内容语义验证 — 无关内容处理', () => {
     const newsContent = '据新华社报道，今日股市大涨3%，专家分析认为这与近期政策利好有关...';
 
     // import-data 和 mixin 都不做内容语义验证
-    const response = await lafService.proxyAI('generate', { content: newsContent });
+    await lafService.proxyAI('generate', { content: newsContent });
 
-    // 新闻内容直接发给了 AI，没有任何拦截
+    // 新闻内容直接发给了智能，没有任何拦截
     expect(spy).toHaveBeenCalled();
     const callArgs = spy.mock.calls[0];
     expect(callArgs[1].content).toBe(newsContent);
   });
 
-  it('[BUG验证] 纯数字/乱码内容直接发给 AI — 无拦截', async () => {
+  it('[BUG验证] 纯数字/乱码内容直接发给智能 — 无拦截', async () => {
     const { lafService } = await import('@/services/lafService.js');
     const spy = vi.spyOn(lafService, 'request').mockResolvedValue({
       code: 0,
@@ -534,19 +532,19 @@ describe('[审计] 内容语义验证 — 无关内容处理', () => {
     });
 
     const garbageContent = '1234567890!@#$%^&*()_+';
-    const response = await lafService.proxyAI('generate', { content: garbageContent });
+    await lafService.proxyAI('generate', { content: garbageContent });
 
     expect(spy).toHaveBeenCalled();
   });
 
-  it('[BUG验证] 极短内容（1个字）直接发给 AI — 无最小长度检查', async () => {
+  it('[BUG验证] 极短内容（1个字）直接发给智能 — 无最小长度检查', async () => {
     const { lafService } = await import('@/services/lafService.js');
     const spy = vi.spyOn(lafService, 'request').mockResolvedValue({
       code: 0,
       data: '[]'
     });
 
-    const response = await lafService.proxyAI('generate', { content: '啊' });
+    await lafService.proxyAI('generate', { content: '啊' });
     expect(spy).toHaveBeenCalled();
   });
 
@@ -579,13 +577,13 @@ describe('[审计] 内容语义验证 — 无关内容处理', () => {
     const contentText = chunkText || '主题：' + fileName;
 
     expect(contentText).toBe('主题：高等数学期末复习.pdf');
-    // AI 只能根据文件名猜测内容出题，质量无法保证
+    // 智能只能根据文件名猜测内容出题，质量无法保证
   });
 
-  it('import-data — 二进制文件读取为乱码后直接发给 AI', () => {
+  it('import-data — 二进制文件读取为乱码后直接发给智能', () => {
     // 如果用户选择了 .txt 扩展名的二进制文件
     // readFile encoding:'utf8' 会读出乱码
-    // 乱码直接作为 content 发给 AI
+    // 乱码直接作为 content 发给智能
 
     const binaryAsUtf8 = '\x00\x01\x02\xFF\xFE\x89PNG\r\n\x1a\n';
     const contentText = binaryAsUtf8.substring(0, 2000) || '主题：fake.txt';
@@ -597,9 +595,9 @@ describe('[审计] 内容语义验证 — 无关内容处理', () => {
 });
 
 // ============================================================
-// 7. AI 超时保护机制验证
+// 7. 智能超时保护机制验证
 // ============================================================
-describe('[审计] AI 超时保护机制', () => {
+describe('[审计] 智能超时保护机制', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -610,7 +608,7 @@ describe('[审计] AI 超时保护机制', () => {
     // proxyAI L643-646: Promise.race 超时保护
     // const aiTimeout = _options.timeout || config.ai.timeout || 60000;
     // 验证超时机制存在
-    const spy = vi.spyOn(lafService, 'request').mockImplementation(() => {
+    vi.spyOn(lafService, 'request').mockImplementation(() => {
       return new Promise((resolve) => {
         // 永远不 resolve，模拟超时
         setTimeout(() => resolve({ code: 0, data: {} }), 999999);
@@ -621,7 +619,7 @@ describe('[审计] AI 超时保护机制', () => {
     const startTime = Date.now();
     try {
       await lafService.proxyAI('chat', { content: '测试超时' }, { timeout: 100 });
-    } catch (e) {
+    } catch (_e) {
       // 可能抛出 AI_TIMEOUT 错误
     }
     const elapsed = Date.now() - startTime;
@@ -633,13 +631,11 @@ describe('[审计] AI 超时保护机制', () => {
   it('school/index.vue submitForm 有 20s 超时保护', () => {
     // school/index.vue L918-937: setTimeout 20秒超时
     // 超时后：schoolList=[], hasRealData=false, currentStep=3
-    let isTimeoutHandled = false;
     let schoolList = [{ name: '旧数据' }];
     let hasRealData = true;
     let currentStep = 2;
 
     // 模拟超时触发
-    isTimeoutHandled = true;
     schoolList = [];
     hasRealData = false;
     currentStep = 3;
@@ -651,7 +647,7 @@ describe('[审计] AI 超时保护机制', () => {
 
   it('超时后 API 响应到达 — isTimeoutHandled 防重复处理', () => {
     // school/index.vue L1049-1052: if (isTimeoutHandled) return;
-    let isTimeoutHandled = true; // 超时已触发
+    const isTimeoutHandled = true; // 超时已触发
     let processed = false;
 
     // 模拟 API 响应到达

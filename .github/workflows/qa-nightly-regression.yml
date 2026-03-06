@@ -1,0 +1,109 @@
+name: QA Nightly Regression
+
+on:
+  schedule:
+    - cron: '30 20 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: qa-nightly-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20.17.0'
+
+jobs:
+  web-regression:
+    name: Web Regression (Vitest + Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts || npm install --ignore-scripts
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run unit tests (JSON report)
+        run: npx vitest run --reporter=json --outputFile=docs/reports/vitest-results-nightly.json
+
+      - name: Run compatibility regression
+        run: npm run test:e2e:compat
+
+      - name: Run tracked secrets audit
+        run: npm run audit:secrets:tracked
+
+      - name: Upload web regression artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-nightly-web-reports
+          path: |
+            docs/reports/e2e-compat-results.json
+            docs/reports/e2e-compat-results.xml
+            docs/reports/e2e-compat-html
+            docs/reports/e2e-regression-results.json
+            docs/reports/e2e-regression-results.xml
+            docs/reports/e2e-regression-html
+            docs/reports/vitest-results-nightly.json
+            test-results
+
+  maestro-web-fallback:
+    name: Maestro Android H5 Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts || npm install --ignore-scripts
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Run Maestro syntax checks
+        run: npm run test:maestro:syntax
+
+      - name: Run Maestro web smoke on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          script: npm run test:maestro:web:h5
+
+      - name: Upload Maestro artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-nightly-maestro-reports
+          path: |
+            docs/reports/maestro-results.xml
+            docs/reports/maestro-web-smoke.xml
+            test-results/maestro-web

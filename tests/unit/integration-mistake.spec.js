@@ -10,7 +10,7 @@ vi.mock('@/utils/logger.js', () => ({
 vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
-// Mock mistake-classifier（避免复杂 AI 依赖）
+// Mock mistake-classifier（避免复杂智能依赖）
 vi.mock('@/utils/practice/mistake-classifier.js', () => ({
   mistakeClassifier: {
     classify: vi.fn(() => ({
@@ -41,7 +41,7 @@ describe('全链路: 错题本 & 收藏', () => {
         category: '政治'
       };
 
-      const result = await autoCollectMistake(question, 'B', 'AI解析：对立统一规律是核心');
+      const result = await autoCollectMistake(question, 'B', '智能解析：对立统一规律是核心');
 
       expect(result.success).toBe(true);
       expect(result.isNew).toBe(true);
