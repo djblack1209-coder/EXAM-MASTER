@@ -11,9 +11,7 @@
       >
         <!-- 左侧：状态图标 -->
         <view :class="['item-checkbox', item.completed && 'checkbox-completed']">
-          <text v-if="item.completed" class="checkbox-icon">
-            ✓
-          </text>
+          <text v-if="item.completed" class="checkbox-icon"> ✓ </text>
         </view>
 
         <!-- 中间：任务文字 -->

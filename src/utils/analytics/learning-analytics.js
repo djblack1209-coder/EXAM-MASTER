@@ -17,6 +17,7 @@
 import { getWeakKnowledgePoints, getLearningStats } from '@/utils/learning/adaptive-learning-engine.js';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { lafService } from '@/services/lafService.js';
 
 const STORAGE_KEYS = {
   DAILY_STATS: 'learning_daily_stats',
@@ -414,7 +415,6 @@ class LearningAnalytics {
       const userId = storageService.get('EXAM_USER_ID', null);
       if (!userId) return;
 
-      const { lafService } = await import('@/services/lafService.js');
       if (!lafService) return;
 
       // 1. 先触发后端 check（根据用户数据自动解锁满足条件的成就）
@@ -477,7 +477,6 @@ class LearningAnalytics {
       const userId = storageService.get('EXAM_USER_ID', null);
       if (!userId) return; // 未登录不同步
 
-      const { lafService } = await import('@/services/lafService.js');
       if (!lafService) return;
 
       // 逐个解锁成就到后端

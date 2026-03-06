@@ -7,24 +7,16 @@
           <view class="poster-circle poster-circle-2" />
         </view>
         <view class="poster-body">
-          <text class="poster-quote">
-            "{{ quote }}"
-          </text>
-          <text class="poster-author">
-            —— {{ author }}
-          </text>
+          <text class="poster-quote"> "{{ quote }}" </text>
+          <text class="poster-author"> —— {{ author }} </text>
           <view class="poster-date">
             <text class="poster-date-text">
               {{ currentDate }}
             </text>
           </view>
           <view class="poster-brand">
-            <text class="brand-name">
-              Exam-Master
-            </text>
-            <text class="brand-slogan">
-              考研路上，与你同行
-            </text>
+            <text class="brand-name"> Exam-Master </text>
+            <text class="brand-slogan"> 考研路上，与你同行 </text>
           </view>
         </view>
       </view>

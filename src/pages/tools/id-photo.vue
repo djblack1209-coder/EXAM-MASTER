@@ -4,13 +4,9 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon">
-            ←
-          </text>
+          <text class="back-icon"> ← </text>
         </view>
-        <text class="nav-title">
-          证件照制作
-        </text>
+        <text class="nav-title"> 证件照制作 </text>
         <view class="nav-placeholder" />
       </view>
     </view>
@@ -22,21 +18,15 @@
         <view class="hero-icon-wrapper">
           <BaseIcon name="camera" :size="64" class="hero-icon" />
         </view>
-        <text class="hero-title">
-          智能证件照
-        </text>
-        <text class="hero-desc">
-          智能抠图换背景，支持多种证件照尺寸
-        </text>
+        <text class="hero-title"> 智能证件照 </text>
+        <text class="hero-desc"> 智能抠图换背景，支持多种证件照尺寸 </text>
       </view>
 
       <!-- 步骤指示器 -->
       <view class="steps-bar">
         <view v-for="(s, i) in steps" :key="i" :class="['step-item', { active: step >= i, done: step > i }]">
           <view class="step-dot">
-            <text v-if="step > i" class="step-check">
-              ✓
-            </text>
+            <text v-if="step > i" class="step-check"> ✓ </text>
             <text v-else class="step-num">
               {{ i + 1 }}
             </text>
@@ -52,16 +42,10 @@
       <view v-if="step === 0" class="section">
         <view class="upload-area" @click="choosePhoto">
           <view class="upload-icon-box">
-            <text class="upload-icon-text">
-              +
-            </text>
+            <text class="upload-icon-text"> + </text>
           </view>
-          <text class="upload-text">
-            选择或拍摄照片
-          </text>
-          <text class="upload-hint">
-            建议正面免冠、光线均匀
-          </text>
+          <text class="upload-text"> 选择或拍摄照片 </text>
+          <text class="upload-hint"> 建议正面免冠、光线均匀 </text>
         </view>
       </view>
 
@@ -74,9 +58,7 @@
 
         <!-- 尺寸选择 -->
         <view class="config-block">
-          <text class="config-label">
-            证件照尺寸
-          </text>
+          <text class="config-label"> 证件照尺寸 </text>
           <view class="option-grid">
             <view
               v-for="s in sizeOptions"
@@ -96,9 +78,7 @@
 
         <!-- 背景颜色选择 -->
         <view class="config-block">
-          <text class="config-label">
-            背景颜色
-          </text>
+          <text class="config-label"> 背景颜色 </text>
           <view class="color-row">
             <view
               v-for="c in colorOptions"
@@ -117,12 +97,8 @@
         <!-- 美颜开关 -->
         <view class="beauty-card">
           <view class="beauty-info">
-            <text class="beauty-label">
-              智能美颜
-            </text>
-            <text class="beauty-hint">
-              自动优化肤色与光线
-            </text>
+            <text class="beauty-label"> 智能美颜 </text>
+            <text class="beauty-hint"> 自动优化肤色与光线 </text>
           </view>
           <switch :checked="enableBeauty" color="#e84393" @change="enableBeauty = $event.detail.value" />
         </view>
@@ -139,9 +115,7 @@
           <text class="processing-title">
             {{ processingText }}
           </text>
-          <text class="processing-hint">
-            AI 正在处理您的照片...
-          </text>
+          <text class="processing-hint"> 智能正在处理您的照片... </text>
         </view>
       </view>
 
@@ -163,6 +137,7 @@
         </view>
       </view>
 
+      <canvas canvas-id="idPhotoComposeCanvas" class="compose-canvas"></canvas>
       <view class="bottom-safe" />
     </scroll-view>
   </view>
@@ -173,6 +148,8 @@ import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
+import { safeNavigateTo } from '@/utils/safe-navigate';
+import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 const DEFAULT_SIZES = [
@@ -192,6 +169,14 @@ const DEFAULT_COLORS = [
   { key: 'dark_blue', name: '深蓝', hex: '#1E3A8A' }
 ];
 
+const DEFAULT_SIZE_PIXELS = {
+  '1inch': { width: 295, height: 413 },
+  '2inch': { width: 413, height: 579 },
+  small2inch: { width: 390, height: 567 },
+  passport: { width: 390, height: 567 },
+  visa: { width: 413, height: 531 }
+};
+
 export default {
   components: { BaseIcon },
   data() {
@@ -209,7 +194,8 @@ export default {
       isDark: false,
       processingText: '正在抠图...',
       resultImage: '',
-      foregroundBase64: ''
+      foregroundBase64: '',
+      composeCanvasId: 'idPhotoComposeCanvas'
     };
   },
 
@@ -330,6 +316,25 @@ export default {
     },
 
     async startProcess() {
+      if (!isUserLoggedIn()) {
+        uni.showModal({
+          title: '请先登录',
+          content: '登录后可使用证件照处理功能',
+          confirmText: '去登录',
+          success: (res) => {
+            if (res.confirm) {
+              safeNavigateTo('/pages/login/index');
+            }
+          }
+        });
+        return;
+      }
+
+      if (!this.imageBase64) {
+        uni.showToast({ title: '请先上传照片', icon: 'none' });
+        return;
+      }
+
       this.step = 2;
       this.processingText = '正在智能抠图...';
 
@@ -339,16 +344,31 @@ export default {
         });
 
         if (res.code === 0 && res.data) {
-          const resultBase64 = res.data.resultImage || res.data.image;
-          if (resultBase64) {
-            this.resultImage = `data:image/png;base64,${resultBase64}`;
-            if (res.data.foreground) {
-              this.foregroundBase64 = res.data.foreground;
+          const payload = res.data || {};
+          const directResult = payload.resultImage || payload.image || '';
+          const foreground = payload.foreground || payload.imageBase64 || directResult || '';
+          const needComposite = payload.needComposite === true;
+
+          if (needComposite) {
+            if (!foreground) {
+              throw new Error('未返回可合成的前景图');
             }
-            this.step = 3;
+
+            this.processingText = '正在合成证件照...';
+            this.resultImage = await this.composeResultImage({
+              foregroundBase64: foreground,
+              bgColorHex: payload.bgColorHex || this.getSelectedColorHex(),
+              sizeConfig: payload.size
+            });
+            this.foregroundBase64 = foreground;
+          } else if (directResult || foreground) {
+            this.resultImage = this.normalizeImageSource(directResult || foreground);
+            this.foregroundBase64 = payload.foreground || payload.imageBase64 || '';
           } else {
             throw new Error('未返回处理结果');
           }
+
+          this.step = 3;
         } else {
           throw new Error(res.message || '处理失败');
         }
@@ -363,6 +383,192 @@ export default {
       }
     },
 
+    getSelectedColorHex() {
+      const color = (this.colorOptions || []).find((item) => item.key === this.selectedColor);
+      return color?.hex || '#438EDB';
+    },
+
+    normalizeImageSource(input, mime = 'image/png') {
+      const source = String(input || '').trim();
+      if (!source) return '';
+      if (/^(data:image\/|blob:|https?:\/\/|wxfile:\/\/|file:\/\/|\/)/i.test(source)) {
+        return source;
+      }
+      return `data:${mime};base64,${source}`;
+    },
+
+    extractBase64Payload(input) {
+      const source = String(input || '').trim();
+      if (!source) return '';
+      if (source.startsWith('data:image/')) {
+        const commaIndex = source.indexOf(',');
+        return commaIndex >= 0 ? source.slice(commaIndex + 1) : '';
+      }
+      if (/^(wxfile:\/\/|https?:\/\/|blob:|file:\/\/|\/)/i.test(source)) {
+        return '';
+      }
+      return source;
+    },
+
+    resolveSizeConfig(sizeConfig) {
+      const width = Number(sizeConfig?.width);
+      const height = Number(sizeConfig?.height);
+      if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
+        return {
+          width: Math.round(width),
+          height: Math.round(height)
+        };
+      }
+
+      const fallback = DEFAULT_SIZE_PIXELS[this.selectedSize] || DEFAULT_SIZE_PIXELS['1inch'];
+      return {
+        width: fallback.width,
+        height: fallback.height
+      };
+    },
+
+    getImageInfo(src) {
+      return new Promise((resolve, reject) => {
+        uni.getImageInfo({
+          src,
+          success: (res) => resolve(res),
+          fail: (err) => reject(new Error(err?.errMsg || '读取图片信息失败'))
+        });
+      });
+    },
+
+    writeBase64ToTempImage(base64) {
+      const payload = this.extractBase64Payload(base64);
+      if (!payload) {
+        return Promise.reject(new Error('无效的图片数据'));
+      }
+
+      // #ifdef MP-WEIXIN
+      return new Promise((resolve, reject) => {
+        const filePath = `${wx.env.USER_DATA_PATH}/id_photo_fg_${Date.now()}.png`;
+        uni.getFileSystemManager().writeFile({
+          filePath,
+          data: payload,
+          encoding: 'base64',
+          success: () => resolve(filePath),
+          fail: (err) => reject(new Error(err?.errMsg || '写入临时图片失败'))
+        });
+      });
+      // #endif
+
+      // #ifndef MP-WEIXIN
+      return Promise.resolve(this.normalizeImageSource(payload));
+      // #endif
+    },
+
+    async composeResultImage({ foregroundBase64, bgColorHex, sizeConfig }) {
+      const targetSize = this.resolveSizeConfig(sizeConfig);
+      const bg = bgColorHex || this.getSelectedColorHex();
+
+      // #ifdef H5
+      return this.composeResultImageH5(foregroundBase64, bg, targetSize);
+      // #endif
+
+      // #ifndef H5
+      return this.composeResultImageUni(foregroundBase64, bg, targetSize);
+      // #endif
+    },
+
+    async composeResultImageUni(foregroundBase64, bgColorHex, targetSize) {
+      const sourcePath = await this.writeBase64ToTempImage(foregroundBase64);
+      const imageInfo = await this.getImageInfo(sourcePath);
+      const width = targetSize.width;
+      const height = targetSize.height;
+      const scale = Math.min(width / imageInfo.width, height / imageInfo.height);
+      const drawWidth = Math.max(1, Math.round(imageInfo.width * scale));
+      const drawHeight = Math.max(1, Math.round(imageInfo.height * scale));
+      const dx = Math.round((width - drawWidth) / 2);
+      const dy = Math.round((height - drawHeight) / 2);
+
+      const ctx = uni.createCanvasContext(this.composeCanvasId, this);
+      ctx.setFillStyle(bgColorHex || '#FFFFFF');
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(sourcePath, dx, dy, drawWidth, drawHeight);
+
+      await new Promise((resolve) => ctx.draw(false, resolve));
+
+      return new Promise((resolve, reject) => {
+        uni.canvasToTempFilePath(
+          {
+            canvasId: this.composeCanvasId,
+            fileType: 'png',
+            quality: 1,
+            width,
+            height,
+            destWidth: width,
+            destHeight: height,
+            success: (res) => resolve(res.tempFilePath),
+            fail: (err) => reject(new Error(err?.errMsg || '导出证件照失败'))
+          },
+          this
+        );
+      });
+    },
+
+    composeResultImageH5(foregroundBase64, bgColorHex, targetSize) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const width = targetSize.width;
+            const height = targetSize.height;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              reject(new Error('创建画布失败'));
+              return;
+            }
+
+            ctx.fillStyle = bgColorHex || '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+
+            const scale = Math.min(width / img.width, height / img.height);
+            const drawWidth = Math.max(1, Math.round(img.width * scale));
+            const drawHeight = Math.max(1, Math.round(img.height * scale));
+            const dx = Math.round((width - drawWidth) / 2);
+            const dy = Math.round((height - drawHeight) / 2);
+            ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
+
+            resolve(canvas.toDataURL('image/png'));
+          } catch (err) {
+            reject(new Error(err?.message || '合成证件照失败'));
+          }
+        };
+        img.onerror = () => reject(new Error('加载前景图失败'));
+        img.src = this.normalizeImageSource(foregroundBase64);
+      });
+    },
+
+    saveImageToAlbum(filePath) {
+      uni.saveImageToPhotosAlbum({
+        filePath,
+        success: () => {
+          uni.showToast({ title: '已保存到相册', icon: 'success' });
+        },
+        fail: (err) => {
+          if (err.errMsg && err.errMsg.includes('auth deny')) {
+            uni.showModal({
+              title: '提示',
+              content: '需要相册权限才能保存，是否前往设置？',
+              success: (res) => {
+                if (res.confirm) uni.openSetting();
+              }
+            });
+          } else {
+            uni.showToast({ title: '保存失败', icon: 'none' });
+          }
+        }
+      });
+    },
+
     async changeColor() {
       this.step = 1;
     },
@@ -371,34 +577,24 @@ export default {
       if (!this.resultImage) return;
 
       // #ifdef MP-WEIXIN
-      const base64Data = this.resultImage.replace(/^data:image\/\w+;base64,/, '');
-      const filePath = `${wx.env.USER_DATA_PATH}/id_photo_${Date.now()}.png`;
+      const src = String(this.resultImage || '');
+      if (/^(wxfile:\/\/|\/)/i.test(src)) {
+        this.saveImageToAlbum(src);
+        return;
+      }
 
+      const base64Data = this.extractBase64Payload(src);
+      if (!base64Data) {
+        uni.showToast({ title: '保存失败', icon: 'none' });
+        return;
+      }
+
+      const filePath = `${wx.env.USER_DATA_PATH}/id_photo_${Date.now()}.png`;
       uni.getFileSystemManager().writeFile({
         filePath,
         data: base64Data,
         encoding: 'base64',
-        success: () => {
-          uni.saveImageToPhotosAlbum({
-            filePath,
-            success: () => {
-              uni.showToast({ title: '已保存到相册', icon: 'success' });
-            },
-            fail: (err) => {
-              if (err.errMsg && err.errMsg.includes('auth deny')) {
-                uni.showModal({
-                  title: '提示',
-                  content: '需要相册权限才能保存，是否前往设置？',
-                  success: (r) => {
-                    if (r.confirm) uni.openSetting();
-                  }
-                });
-              } else {
-                uni.showToast({ title: '保存失败', icon: 'none' });
-              }
-            }
-          });
-        },
+        success: () => this.saveImageToAlbum(filePath),
         fail: () => {
           uni.showToast({ title: '保存失败', icon: 'none' });
         }
@@ -966,5 +1162,15 @@ export default {
 
 .bottom-safe {
   height: 120rpx;
+}
+
+.compose-canvas {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 </style>

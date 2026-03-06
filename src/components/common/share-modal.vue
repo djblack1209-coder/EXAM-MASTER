@@ -8,21 +8,15 @@
           {{ title }}
         </text>
         <view class="close-btn" @tap="handleClose">
-          <text class="close-icon">
-            ×
-          </text>
+          <text class="close-icon"> × </text>
         </view>
       </view>
 
       <!-- 预览区域 -->
       <view v-if="showPreview" class="preview-section">
         <view class="quote-preview" :class="{ 'preview-dark': isDark }">
-          <text class="preview-quote">
-            "{{ quote }}"
-          </text>
-          <text class="preview-author">
-            —— {{ author }}
-          </text>
+          <text class="preview-quote"> "{{ quote }}" </text>
+          <text class="preview-author"> —— {{ author }} </text>
         </view>
       </view>
 
@@ -48,44 +42,34 @@
           <view class="option-icon icon-wechat">
             <BaseIcon name="comment" :size="40" />
           </view>
-          <text class="option-label">
-            微信好友
-          </text>
+          <text class="option-label"> 微信好友 </text>
         </view>
 
         <view class="option-item" @tap="handleShare('timeline')">
           <view class="option-icon icon-timeline">
             <BaseIcon name="globe" :size="40" />
           </view>
-          <text class="option-label">
-            朋友圈
-          </text>
+          <text class="option-label"> 朋友圈 </text>
         </view>
 
         <view class="option-item" @tap="handleShare('poster')">
           <view class="option-icon icon-poster">
             <BaseIcon name="image" :size="40" />
           </view>
-          <text class="option-label">
-            生成海报
-          </text>
+          <text class="option-label"> 生成海报 </text>
         </view>
 
         <view class="option-item" @tap="handleShare('copy')">
           <view class="option-icon icon-copy">
             <BaseIcon name="copy" :size="40" />
           </view>
-          <text class="option-label">
-            复制文案
-          </text>
+          <text class="option-label"> 复制文案 </text>
         </view>
       </view>
 
       <!-- 底部提示 -->
       <view class="modal-footer">
-        <text class="footer-hint">
-          分享给朋友，一起进步
-        </text>
+        <text class="footer-hint"> 分享给朋友，一起进步 </text>
       </view>
     </view>
 

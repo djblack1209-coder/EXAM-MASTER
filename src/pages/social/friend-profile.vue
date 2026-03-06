@@ -5,14 +5,10 @@
       <view class="status-bar" />
       <view class="navbar-content">
         <view class="navbar-left" hover-class="nav-hover" @tap="goBack">
-          <text class="back-icon">
-            ‹
-          </text>
+          <text class="back-icon"> ‹ </text>
         </view>
         <view class="navbar-center">
-          <text class="navbar-title">
-            好友资料
-          </text>
+          <text class="navbar-title"> 好友资料 </text>
         </view>
         <view class="navbar-right" />
       </view>
@@ -57,9 +53,7 @@
               <view v-if="isOnline" class="online-dot" />
             </view>
             <view v-if="friendInfo.score" class="level-badge">
-              <text class="level-text">
-                Lv.{{ Math.floor(friendInfo.score / 100) }}
-              </text>
+              <text class="level-text"> Lv.{{ Math.floor(friendInfo.score / 100) }} </text>
             </view>
           </view>
 
@@ -79,27 +73,19 @@
               <text class="stat-value">
                 {{ friendInfo.studyDays || 0 }}
               </text>
-              <text class="stat-label">
-                学习天数
-              </text>
+              <text class="stat-label"> 学习天数 </text>
             </view>
             <view class="stat-divider" />
             <view class="stat-item">
-              <text class="stat-value">
-                {{ friendInfo.accuracy || 0 }}%
-              </text>
-              <text class="stat-label">
-                正确率
-              </text>
+              <text class="stat-value"> {{ friendInfo.accuracy || 0 }}% </text>
+              <text class="stat-label"> 正确率 </text>
             </view>
             <view class="stat-divider" />
             <view class="stat-item">
               <text class="stat-value highlight">
                 {{ friendInfo.score || 0 }}
               </text>
-              <text class="stat-label">
-                总分
-              </text>
+              <text class="stat-label"> 总分 </text>
             </view>
           </view>
         </view>
@@ -107,9 +93,7 @@
         <!-- 学习成就 -->
         <view class="section-card glass-card">
           <view class="section-header">
-            <text class="section-title">
-              学习成就
-            </text>
+            <text class="section-title"> 学习成就 </text>
           </view>
           <view class="achievement-grid">
             <view v-for="(badge, index) in achievements" :key="index" class="achievement-item">
@@ -119,9 +103,7 @@
               <view class="achievement-icon">
                 <BaseIcon name="medal" :size="40" />
               </view>
-              <text class="achievement-name">
-                暂无成就
-              </text>
+              <text class="achievement-name"> 暂无成就 </text>
             </view>
           </view>
         </view>
@@ -129,9 +111,7 @@
         <!-- 最近动态 -->
         <view class="section-card glass-card">
           <view class="section-header">
-            <text class="section-title">
-              最近动态
-            </text>
+            <text class="section-title"> 最近动态 </text>
           </view>
           <view class="activity-list">
             <view v-for="(activity, index) in recentActivities" :key="index" class="activity-item">
@@ -150,9 +130,7 @@
                 <BaseIcon name="note" :size="32" />
               </view>
               <view class="activity-content">
-                <text class="activity-text">
-                  暂无动态
-                </text>
+                <text class="activity-text"> 暂无动态 </text>
               </view>
             </view>
           </view>
@@ -167,9 +145,7 @@
             @tap="handlePKChallenge"
           >
             <BaseIcon name="flame" :size="32" class="btn-icon" />
-            <text class="btn-text">
-              发起 PK 挑战
-            </text>
+            <text class="btn-text"> 发起 PK 挑战 </text>
           </button>
           <!-- 消息功能暂未开放，隐藏按钮 -->
           <!-- <button class="action-btn secondary" hover-class="btn-hover" @tap="handleSendMessage"
@@ -184,9 +160,7 @@
             @tap="handleRemoveFriend"
           >
             <BaseIcon name="heart" :size="32" class="btn-icon" />
-            <text class="btn-text">
-              删除好友
-            </text>
+            <text class="btn-text"> 删除好友 </text>
           </button>
         </view>
       </template>

@@ -54,16 +54,10 @@
           <BaseIcon name="upload" :size="36" />
         </view>
         <view class="guide-btn__content">
-          <text class="guide-btn__title">
-            上传资料
-          </text>
-          <text class="guide-btn__desc">
-            AI智能生成题库
-          </text>
+          <text class="guide-btn__title"> 上传资料 </text>
+          <text class="guide-btn__desc"> 智能生成题库 </text>
         </view>
-        <text class="guide-btn__arrow">
-          →
-        </text>
+        <text class="guide-btn__arrow"> → </text>
       </view>
 
       <view class="guide-btn guide-btn--secondary" @tap="handleQuickStart">
@@ -71,16 +65,10 @@
           <BaseIcon name="lightning" :size="36" />
         </view>
         <view class="guide-btn__content">
-          <text class="guide-btn__title">
-            快速开始
-          </text>
-          <text class="guide-btn__desc">
-            体验示例题库
-          </text>
+          <text class="guide-btn__title"> 快速开始 </text>
+          <text class="guide-btn__desc"> 体验示例题库 </text>
         </view>
-        <text class="guide-btn__arrow">
-          →
-        </text>
+        <text class="guide-btn__arrow"> → </text>
       </view>
 
       <view class="guide-btn guide-btn--tertiary" @tap="handleTutorial">
@@ -88,16 +76,10 @@
           <BaseIcon name="book" :size="36" />
         </view>
         <view class="guide-btn__content">
-          <text class="guide-btn__title">
-            使用教程
-          </text>
-          <text class="guide-btn__desc">
-            3分钟快速上手
-          </text>
+          <text class="guide-btn__title"> 使用教程 </text>
+          <text class="guide-btn__desc"> 3分钟快速上手 </text>
         </view>
-        <text class="guide-btn__arrow">
-          →
-        </text>
+        <text class="guide-btn__arrow"> → </text>
       </view>
     </view>
 
@@ -252,7 +234,7 @@ export default {
       uni.showModal({
         title: '📖 快速上手教程',
         content:
-          '1. 上传学习资料（PDF/Word/图片）\n2. AI 自动提取知识点生成题目\n3. 开始刷题，错题自动收录\n4. 查看学习报告，持续进步',
+          '1. 上传学习资料（PDF/Word/图片）\n2. 智能自动提取知识点生成题目\n3. 开始刷题，错题自动收录\n4. 查看学习报告，持续进步',
         confirmText: '开始上传',
         cancelText: '稍后再说',
         success: (res) => {

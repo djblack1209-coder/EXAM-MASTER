@@ -80,22 +80,102 @@ const RATE_LIMIT_MAX_REQUESTS = 20; // 每个用户每分钟最多20次请求
 // checkRateLimitDistributed（已在主函数中调用），此处仅保留 fallback 函数的本地 Map
 const localRateLimitFallback = new Map<string, { count: number; resetTime: number }>();
 
+const AUDIT_MODE_ENABLED =
+  String(process.env.AUDIT_MODE || '')
+    .trim()
+    .toLowerCase() === 'true';
+const REQUEST_SIGN_SALT = process.env.REQUEST_SIGN_SALT || process.env.VITE_REQUEST_SIGN_SALT || '';
+const AUDIT_TOKEN_MAX_AGE_MS = 5 * 60 * 1000;
+let hasLoggedMissingRequestSignSalt = false;
+
+function getHeaderValue(ctx: Record<string, unknown>, headerName: string): string {
+  const headers = (ctx.headers || {}) as Record<string, unknown>;
+  const exactValue = headers[headerName];
+  if (typeof exactValue === 'string' && exactValue.trim()) {
+    return exactValue.trim();
+  }
+
+  const lowered = headerName.toLowerCase();
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() === lowered && typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return '';
+}
+
+/**
+ * 兼容前端 X-Request-* 轻量签名（FNV-1a）
+ * 说明：这是线上兼容兜底，生产审核模式仍以 x-audit-token 为准。
+ */
+function validateRequestSign(path: string, timestampHeader: string, requestSign: string): boolean {
+  if (!timestampHeader || !requestSign) return false;
+
+  const timestamp = Number.parseInt(timestampHeader, 10);
+  if (!Number.isFinite(timestamp)) {
+    return false;
+  }
+
+  if (Math.abs(Date.now() - timestamp) > AUDIT_TOKEN_MAX_AGE_MS) {
+    return false;
+  }
+
+  if (!REQUEST_SIGN_SALT) {
+    if (!hasLoggedMissingRequestSignSalt) {
+      hasLoggedMissingRequestSignSalt = true;
+      logger.warn('[Audit] REQUEST_SIGN_SALT 未配置，跳过 X-Request-Sign 校验（兼容模式）');
+    }
+    return true;
+  }
+
+  const raw = `${path}:${timestamp}:${REQUEST_SIGN_SALT}`;
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < raw.length; i++) {
+    hash ^= raw.charCodeAt(i);
+    hash = (hash * 0x01000193) >>> 0;
+  }
+
+  return requestSign === hash.toString(36);
+}
+
 // ==================== 审计模式检查 ====================
 /**
  * 检查请求是否通过审计模式校验
  * 后端必须是最后一道防线，即使前端被绕过也要拦截
  */
 function checkAuditMode(ctx: Record<string, unknown>): { valid: boolean; error?: string } {
-  // 1. 检查请求头中的审计模式标识
-  const auditToken = ctx.headers?.['x-audit-token'];
+  // 1. 非生产环境直接放行
+  if (!IS_PRODUCTION) {
+    return { valid: true };
+  }
 
-  // 2. 生产环境必须校验审计模式
-  if (IS_PRODUCTION) {
-    // ✅ B020: 生产环境严格校验审计令牌，校验失败直接拒绝请求
+  // 2. 读取请求头
+  const auditToken = getHeaderValue(ctx, 'x-audit-token');
+  const requestTimestamp = getHeaderValue(ctx, 'x-request-timestamp');
+  const requestSign = getHeaderValue(ctx, 'x-request-sign');
+
+  // 3. 审核模式下：必须严格校验 x-audit-token
+  if (AUDIT_MODE_ENABLED) {
     if (!auditToken || !validateAuditToken(auditToken)) {
-      logger.warn('[Audit] 审计令牌无效或缺失，拒绝请求');
+      logger.warn('[Audit] 审核模式下审计令牌无效或缺失，拒绝请求');
       return { valid: false, error: '审计校验失败，请刷新页面重试' };
     }
+    return { valid: true };
+  }
+
+  // 4. 生产非审核模式：
+  //    - 若携带 x-audit-token，则校验其合法性（防伪造）
+  //    - 若携带 X-Request-*，走前端签名兼容校验
+  //    - 两类头都未携带时，不阻断（依赖 JWT + 限流 + 业务校验）
+  if (auditToken && !validateAuditToken(auditToken)) {
+    logger.warn('[Audit] 审计令牌非法，拒绝请求');
+    return { valid: false, error: '审计校验失败，请刷新页面重试' };
+  }
+
+  if ((requestTimestamp || requestSign) && !validateRequestSign('/proxy-ai', requestTimestamp, requestSign)) {
+    logger.warn('[Audit] X-Request-Sign 校验失败，拒绝请求');
+    return { valid: false, error: '请求签名校验失败，请刷新后重试' };
   }
 
   return { valid: true };
@@ -118,7 +198,7 @@ function validateAuditToken(token: string): boolean {
     const now = Date.now();
 
     // 令牌有效期：5分钟
-    if (isNaN(timestamp) || now - timestamp > 5 * 60 * 1000) {
+    if (isNaN(timestamp) || now - timestamp > AUDIT_TOKEN_MAX_AGE_MS) {
       return false;
     }
 

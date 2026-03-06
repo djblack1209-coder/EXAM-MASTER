@@ -5,48 +5,34 @@
         <view class="stat-value">
           {{ todayQuestions }}
         </view>
-        <view class="stat-label">
-          今日刷题
-        </view>
+        <view class="stat-label"> 今日刷题 </view>
         <view v-if="todayQuestions < todayGoal" class="stat-goal editable">
           目标 {{ todayGoal }} <BaseIcon name="edit" :size="14" class="edit-icon" />
         </view>
-        <view v-else class="stat-goal achieved">
-          已达标
-        </view>
+        <view v-else class="stat-goal achieved"> 已达标 </view>
       </view>
       <view class="stat-divider" />
       <view class="stat-item">
         <view class="stat-value streak">
           {{ currentStreak }}
         </view>
-        <view class="stat-label">
-          连续学习
-        </view>
-        <view class="stat-unit">
-          天
-        </view>
+        <view class="stat-label"> 连续学习 </view>
+        <view class="stat-unit"> 天 </view>
       </view>
       <view class="stat-divider" />
       <view class="stat-item">
         <view class="stat-value" :class="{ good: weeklyAccuracy >= 60, excellent: weeklyAccuracy >= 80 }">
           {{ weeklyAccuracy }}%
         </view>
-        <view class="stat-label">
-          正确率
-        </view>
+        <view class="stat-label"> 正确率 </view>
       </view>
       <view v-if="weakPointsCount > 0" class="stat-divider" />
       <view v-if="weakPointsCount > 0" class="stat-item weak" @tap="$emit('go-mistake')">
         <view class="stat-value warning">
           {{ weakPointsCount }}
         </view>
-        <view class="stat-label">
-          薄弱点
-        </view>
-        <view class="stat-action">
-          去强化 ›
-        </view>
+        <view class="stat-label"> 薄弱点 </view>
+        <view class="stat-action"> 去强化 › </view>
       </view>
     </view>
     <!-- 成就展示入口 -->
@@ -56,12 +42,8 @@
           {{ ach.icon }}
         </text>
       </view>
-      <text class="achievement-text">
-        已解锁 {{ unlockedAchievements.length }} 个成就
-      </text>
-      <text class="achievement-arrow">
-        ›
-      </text>
+      <text class="achievement-text"> 已解锁 {{ unlockedAchievements.length }} 个成就 </text>
+      <text class="achievement-arrow"> › </text>
     </view>
   </view>
 </template>

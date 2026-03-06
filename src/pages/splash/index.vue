@@ -3,9 +3,7 @@
     <view class="content-wrapper">
       <image class="logo-icon" src="./static/logo.png" mode="aspectFit" />
 
-      <text class="app-name">
-        Exam-Master
-      </text>
+      <text class="app-name"> Exam-Master </text>
 
       <view class="loading-dots">
         <view class="dot" />

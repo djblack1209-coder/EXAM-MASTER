@@ -1,12 +1,8 @@
 <template>
   <view>
     <view class="section-header">
-      <text class="section-title">
-        学习轨迹
-      </text>
-      <text class="section-action" @tap="$emit('view-all')">
-        查看全部
-      </text>
+      <text class="section-title"> 学习轨迹 </text>
+      <text class="section-action" @tap="$emit('view-all')"> 查看全部 </text>
     </view>
     <view class="activity-list">
       <!-- ✅ F008: 使用稳定的唯一 key 替代 index，避免列表变化时不必要的 DOM 重建 -->

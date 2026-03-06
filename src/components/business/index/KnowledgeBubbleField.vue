@@ -1,9 +1,7 @@
 <template>
   <view>
     <view class="section-header">
-      <text class="section-title">
-        概况
-      </text>
+      <text class="section-title"> 概况 </text>
     </view>
     <view class="bubble-field">
       <view
@@ -27,9 +25,7 @@
           <text class="bubble-title" :style="{ color: point.color }">
             {{ point.title }}
           </text>
-          <text class="bubble-count">
-            {{ point.count }} 项
-          </text>
+          <text class="bubble-count"> {{ point.count }} 项 </text>
           <view class="bubble-progress-bar">
             <view class="bubble-progress-fill" :style="{ width: point.mastery + '%', backgroundColor: point.color }" />
           </view>

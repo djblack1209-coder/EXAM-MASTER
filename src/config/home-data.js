@@ -10,6 +10,9 @@
  * @module config/home-data
  */
 
+import { storageService } from '@/services/storageService.js';
+import { lafService } from '@/services/lafService.js';
+
 /**
  * 励志金句库（30条精选）— 本地 fallback
  */
@@ -135,7 +138,6 @@ const CACHE_TTL = 24 * 60 * 60 * 1000; // 24小时缓存
 export async function fetchHomeData() {
   try {
     // 1. 检查本地缓存是否有效
-    const { storageService } = await import('@/services/storageService.js');
     const cached = storageService.get(CACHE_KEY, null);
     if (cached && cached._ts && Date.now() - cached._ts < CACHE_TTL) {
       return {
@@ -145,7 +147,6 @@ export async function fetchHomeData() {
     }
 
     // 2. 尝试从后端拉取
-    const { lafService } = await import('@/services/lafService.js');
     if (!lafService || typeof lafService.getHomeData !== 'function') {
       // 后端接口尚未实现，静默降级
       return { quotes: QUOTE_LIBRARY, formulas: FORMULA_LIST };

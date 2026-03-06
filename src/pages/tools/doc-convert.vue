@@ -4,13 +4,9 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon">
-            ←
-          </text>
+          <text class="back-icon"> ← </text>
         </view>
-        <text class="nav-title">
-          文档转换
-        </text>
+        <text class="nav-title"> 文档转换 </text>
         <view class="nav-placeholder" />
       </view>
     </view>
@@ -20,23 +16,15 @@
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
-          <text class="hero-icon">
-            📄
-          </text>
+          <text class="hero-icon"> 📄 </text>
         </view>
-        <text class="hero-title">
-          智能文档转换
-        </text>
-        <text class="hero-desc">
-          支持 PDF、Word、Excel、PPT 等格式互转
-        </text>
+        <text class="hero-title"> 智能文档转换 </text>
+        <text class="hero-desc"> 支持 PDF、Word、Excel、PPT 等格式互转 </text>
       </view>
 
       <!-- 转换类型选择 -->
       <view class="section">
-        <text class="section-title">
-          选择转换类型
-        </text>
+        <text class="section-title"> 选择转换类型 </text>
         <view class="type-grid">
           <view
             v-for="item in convertTypes"
@@ -63,27 +51,19 @@
 
       <!-- 文件选择区域 -->
       <view class="section">
-        <text class="section-title">
-          选择文件
-        </text>
+        <text class="section-title"> 选择文件 </text>
         <view v-if="!selectedFile" class="file-placeholder" @click="chooseFile">
           <view class="upload-icon-box">
-            <text class="upload-icon-text">
-              +
-            </text>
+            <text class="upload-icon-text"> + </text>
           </view>
-          <text class="upload-text">
-            点击选择文件
-          </text>
+          <text class="upload-text"> 点击选择文件 </text>
           <text class="upload-hint">
             {{ acceptHint }}
           </text>
         </view>
         <view v-else class="file-info-card">
           <view class="file-icon-box">
-            <text class="file-icon-text">
-              📎
-            </text>
+            <text class="file-icon-text"> 📎 </text>
           </view>
           <view class="file-detail">
             <text class="file-name">
@@ -92,11 +72,10 @@
             <text class="file-size">
               {{ formatSize(selectedFile.size) }}
             </text>
+            <text v-if="isReadingFile" class="file-reading"> 文件读取中... </text>
           </view>
           <view class="file-remove" @click="removeFile">
-            <text class="remove-icon">
-              ✕
-            </text>
+            <text class="remove-icon"> ✕ </text>
           </view>
         </view>
       </view>
@@ -106,23 +85,15 @@
         <view v-if="status === 'uploading'" class="status-card status-loading">
           <view class="status-spinner" />
           <view class="status-text-group">
-            <text class="status-title">
-              正在上传文件
-            </text>
-            <text class="status-hint">
-              请稍候...
-            </text>
+            <text class="status-title"> 正在上传文件 </text>
+            <text class="status-hint"> 请稍候... </text>
           </view>
         </view>
         <view v-else-if="status === 'converting'" class="status-card status-loading">
           <view class="status-spinner" />
           <view class="status-text-group">
-            <text class="status-title">
-              正在转换中
-            </text>
-            <text class="status-hint">
-              AI 正在处理您的文件...
-            </text>
+            <text class="status-title"> 正在转换中 </text>
+            <text class="status-hint"> 智能正在处理您的文件... </text>
           </view>
         </view>
         <view v-else-if="status === 'done'" class="status-card status-done">
@@ -130,24 +101,16 @@
             <BaseIcon name="success" :size="48" />
           </view>
           <view class="status-text-group">
-            <text class="status-title">
-              转换完成
-            </text>
-            <text class="status-hint">
-              文件已准备就绪
-            </text>
+            <text class="status-title"> 转换完成 </text>
+            <text class="status-hint"> 文件已准备就绪 </text>
           </view>
         </view>
         <view v-else-if="status === 'error'" class="status-card status-error">
           <view class="status-error-icon">
-            <text class="error-mark">
-              !
-            </text>
+            <text class="error-mark"> ! </text>
           </view>
           <view class="status-text-group">
-            <text class="status-title">
-              转换失败
-            </text>
+            <text class="status-title"> 转换失败 </text>
             <text class="status-hint">
               {{ errorMsg }}
             </text>
@@ -171,13 +134,8 @@
 
     <!-- 底部操作栏 -->
     <view v-if="status === 'idle' && selectedFile" class="action-bar">
-      <button
-        class="btn-primary btn-full"
-        hover-class="btn-hover"
-        :disabled="!canConvert"
-        @click="startConvert"
-      >
-        <text>开始转换</text>
+      <button class="btn-primary btn-full" hover-class="btn-hover" :disabled="!canConvert" @click="startConvert">
+        <text>{{ isReadingFile ? '文件读取中...' : '开始转换' }}</text>
       </button>
     </view>
   </view>
@@ -188,6 +146,8 @@ import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
+import { safeNavigateTo } from '@/utils/safe-navigate';
+import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 const CONVERT_TYPES = [
@@ -199,6 +159,8 @@ const CONVERT_TYPES = [
   { key: 'pdf2img', icon: 'G', name: 'PDF→图片', desc: 'PDF 转 JPG/PNG', accept: '.pdf' }
 ];
 
+const MAX_FILE_SIZE = 100 * 1024 * 1024;
+
 export default {
   components: { BaseIcon },
   data() {
@@ -209,9 +171,11 @@ export default {
       selectedType: 'word2pdf',
       selectedFile: null,
       fileBase64: null,
+      isReadingFile: false,
       status: 'idle', // idle | uploading | converting | done | error
       errorMsg: '',
       resultUrl: null,
+      resultFiles: [],
       jobId: null,
       pollTimer: null,
       isPollingRequest: false
@@ -224,10 +188,16 @@ export default {
     },
     acceptHint() {
       if (!this.currentType) return '';
-      return `支持 ${this.currentType.accept} 格式`;
+      return `支持 ${this.currentType.accept} 格式，单文件不超过 ${Math.floor(MAX_FILE_SIZE / 1024 / 1024)}MB`;
     },
     canConvert() {
-      return this.selectedFile && this.selectedType && this.status === 'idle';
+      return !!(
+        this.selectedFile &&
+        this.selectedType &&
+        this.status === 'idle' &&
+        this.fileBase64 &&
+        !this.isReadingFile
+      );
     }
   },
 
@@ -246,6 +216,21 @@ export default {
   },
 
   methods: {
+    isPrivacyScopeUndeclaredError(err) {
+      const msg = String(err?.errMsg || '').toLowerCase();
+      return Number(err?.errno) === 112 || msg.includes('privacy agreement') || msg.includes('scope is not declared');
+    },
+
+    showPrivacyScopeGuide() {
+      uni.showModal({
+        title: '文件权限未开启',
+        content:
+          '当前小程序未完成文件选择相关隐私声明，暂时无法读取本地文件。\n\n请先同意隐私指引并重启小程序；若仍失败，请在小程序后台隐私设置中勾选“选择文件（chooseMessageFile）”后重新发布。',
+        showCancel: false,
+        confirmText: '我知道了'
+      });
+    },
+
     goBack() {
       uni.navigateBack({ delta: 1 });
     },
@@ -259,23 +244,60 @@ export default {
     },
 
     chooseFile() {
+      if (this.status !== 'idle') return;
+
       // #ifdef MP-WEIXIN
-      wx.chooseMessageFile({
-        count: 1,
-        type: 'file',
-        success: (res) => {
-          if (res.tempFiles && res.tempFiles.length > 0) {
-            const file = res.tempFiles[0];
-            this.selectedFile = { name: file.name, size: file.size, path: file.path };
-            this.readFileBase64(file.path);
-          }
-        },
-        fail: (err) => {
-          if (err.errMsg && !err.errMsg.includes('cancel')) {
+      const wxApi = globalThis.wx;
+      if (!wxApi || typeof wxApi.chooseMessageFile !== 'function') {
+        uni.showToast({ title: '当前环境不支持文件选择', icon: 'none' });
+        return;
+      }
+
+      const chooseFromWechat = () => {
+        wxApi.chooseMessageFile({
+          count: 1,
+          type: 'file',
+          success: (res) => {
+            if (res.tempFiles && res.tempFiles.length > 0) {
+              const file = res.tempFiles[0];
+              this.handleSelectedFile({
+                name: file.name,
+                size: file.size,
+                path: file.path
+              });
+            }
+          },
+          fail: (err) => {
+            if (err?.errMsg && err.errMsg.includes('cancel')) return;
+            if (this.isPrivacyScopeUndeclaredError(err)) {
+              logger.warn('[文档转换] 隐私协议未声明文件选择权限:', err);
+              this.showPrivacyScopeGuide();
+              return;
+            }
             uni.showToast({ title: '选择文件失败', icon: 'none' });
           }
-        }
-      });
+        });
+      };
+
+      if (typeof wxApi.requirePrivacyAuthorize === 'function') {
+        wxApi.requirePrivacyAuthorize({
+          success: () => {
+            chooseFromWechat();
+          },
+          fail: (err) => {
+            if (err?.errMsg && err.errMsg.includes('cancel')) return;
+            if (this.isPrivacyScopeUndeclaredError(err)) {
+              logger.warn('[文档转换] 隐私授权检查失败（未声明）:', err);
+              this.showPrivacyScopeGuide();
+              return;
+            }
+            logger.warn('[文档转换] 隐私授权检查失败，继续尝试文件选择:', err);
+            chooseFromWechat();
+          }
+        });
+      } else {
+        chooseFromWechat();
+      }
       // #endif
 
       // #ifdef H5
@@ -285,16 +307,87 @@ export default {
       input.onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
-          this.selectedFile = { name: file.name, size: file.size };
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            this.fileBase64 = ev.target.result.split(',')[1];
-          };
-          reader.readAsDataURL(file);
+          this.handleSelectedFile({
+            name: file.name,
+            size: file.size,
+            raw: file
+          });
         }
       };
       input.click();
       // #endif
+    },
+
+    getAcceptExtensions() {
+      if (!this.currentType || !this.currentType.accept) return [];
+      return this.currentType.accept
+        .split(',')
+        .map((item) => item.trim().toLowerCase().replace(/^\./, ''))
+        .filter(Boolean);
+    },
+
+    getFileExtension(fileName) {
+      const name = String(fileName || '').trim();
+      const dotIndex = name.lastIndexOf('.');
+      if (dotIndex < 0) return '';
+      return name.slice(dotIndex + 1).toLowerCase();
+    },
+
+    validateFile(fileName, fileSize) {
+      const ext = this.getFileExtension(fileName);
+      const allowed = this.getAcceptExtensions();
+      if (!ext || (allowed.length > 0 && !allowed.includes(ext))) {
+        return {
+          valid: false,
+          message: `当前类型仅支持 ${this.currentType?.accept || '指定格式'} 文件`
+        };
+      }
+
+      const size = Number(fileSize || 0);
+      if (size <= 0) {
+        return {
+          valid: false,
+          message: '文件为空，请重新选择'
+        };
+      }
+
+      if (size > MAX_FILE_SIZE) {
+        return {
+          valid: false,
+          message: `文件过大，最大支持 ${Math.floor(MAX_FILE_SIZE / 1024 / 1024)}MB`
+        };
+      }
+
+      return { valid: true };
+    },
+
+    handleSelectedFile(file) {
+      const checkResult = this.validateFile(file?.name, file?.size);
+      if (!checkResult.valid) {
+        uni.showToast({ title: checkResult.message || '文件格式不支持', icon: 'none' });
+        return;
+      }
+
+      this.selectedFile = {
+        name: file.name,
+        size: file.size,
+        path: file.path || ''
+      };
+      this.fileBase64 = null;
+      this.errorMsg = '';
+      this.resultUrl = null;
+      this.resultFiles = [];
+      this.jobId = null;
+      this.isReadingFile = true;
+
+      if (file.path) {
+        this.readFileBase64(file.path);
+        return;
+      }
+
+      if (file.raw) {
+        this.readH5FileBase64(file.raw);
+      }
     },
 
     readFileBase64(filePath) {
@@ -304,8 +397,10 @@ export default {
         encoding: 'base64',
         success: (res) => {
           this.fileBase64 = res.data;
+          this.isReadingFile = false;
         },
         fail: (err) => {
+          this.isReadingFile = false;
           logger.error('读取文件失败:', err);
           uni.showToast({ title: '读取文件失败', icon: 'none' });
           this.removeFile();
@@ -314,16 +409,75 @@ export default {
       // #endif
     },
 
+    readH5FileBase64(file) {
+      // #ifdef H5
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        this.fileBase64 = String(ev.target?.result || '').split(',')[1] || '';
+        this.isReadingFile = false;
+      };
+      reader.onerror = (err) => {
+        this.isReadingFile = false;
+        logger.error('读取文件失败:', err);
+        uni.showToast({ title: '读取文件失败', icon: 'none' });
+        this.removeFile();
+      };
+      reader.readAsDataURL(file);
+      // #endif
+    },
+
     removeFile() {
+      this.clearPollTimer();
       this.selectedFile = null;
       this.fileBase64 = null;
+      this.isReadingFile = false;
       this.resultUrl = null;
+      this.resultFiles = [];
+      this.jobId = null;
       this.status = 'idle';
       this.errorMsg = '';
     },
 
+    extractResultUrl(data) {
+      if (!data || typeof data !== 'object') return '';
+      if (typeof data.url === 'string' && data.url) return data.url;
+      if (typeof data.downloadUrl === 'string' && data.downloadUrl) return data.downloadUrl;
+      if (Array.isArray(data.files) && data.files.length > 0 && typeof data.files[0]?.url === 'string') {
+        return data.files[0].url;
+      }
+      return '';
+    },
+
+    normalizeErrorMessage(error, fallback = '操作失败，请重试') {
+      if (!error) return fallback;
+      if (typeof error === 'string') return error;
+      if (typeof error === 'object') {
+        return error.message || error.msg || fallback;
+      }
+      return fallback;
+    },
+
     async startConvert() {
-      if (!this.canConvert || !this.fileBase64) {
+      if (!isUserLoggedIn()) {
+        uni.showModal({
+          title: '请先登录',
+          content: '登录后可使用文档转换功能',
+          confirmText: '去登录',
+          success: (res) => {
+            if (res.confirm) {
+              safeNavigateTo('/pages/login/index');
+            }
+          }
+        });
+        return;
+      }
+
+      if (this.isReadingFile) {
+        uni.showToast({ title: '文件读取中，请稍候', icon: 'none' });
+        return;
+      }
+
+      if (!this.selectedFile || !this.fileBase64) {
         uni.showToast({ title: '请先选择文件', icon: 'none' });
         return;
       }
@@ -331,12 +485,26 @@ export default {
       this.status = 'uploading';
       this.errorMsg = '';
       this.resultUrl = null;
+      this.resultFiles = [];
 
       try {
         const res = await lafService.submitDocConvert(this.fileBase64, this.selectedFile.name, this.selectedType);
 
         if (res.code === 0 && res.data) {
-          this.jobId = res.data.jobId;
+          this.jobId = res.data.jobId || null;
+          this.resultFiles = Array.isArray(res.data.files) ? res.data.files : [];
+          const resultUrl = this.extractResultUrl(res.data);
+
+          if (resultUrl) {
+            this.resultUrl = resultUrl;
+            this.status = 'done';
+            return;
+          }
+
+          if (!this.jobId) {
+            throw new Error('未获取到任务ID，请重试');
+          }
+
           this.status = 'converting';
           this.startPolling();
         } else {
@@ -345,11 +513,17 @@ export default {
       } catch (error) {
         logger.error('转换提交失败:', error);
         this.status = 'error';
-        this.errorMsg = error.message || '转换失败，请重试';
+        this.errorMsg = this.normalizeErrorMessage(error, '转换失败，请重试');
       }
     },
 
     startPolling() {
+      if (!this.jobId) {
+        this.status = 'error';
+        this.errorMsg = '任务ID缺失，请重新提交';
+        return;
+      }
+
       let attempts = 0;
       const maxAttempts = 60;
 
@@ -382,6 +556,10 @@ export default {
               this.status = 'error';
               this.errorMsg = res.data.error || '转换失败';
             }
+          } else if (res.code !== 0) {
+            this.clearPollTimer();
+            this.status = 'error';
+            this.errorMsg = res.message || '查询转换状态失败';
           }
         } catch (error) {
           logger.error('轮询状态失败:', error);
@@ -394,17 +572,23 @@ export default {
     async fetchResult() {
       try {
         const res = await lafService.getDocConvertResult(this.jobId);
-        if (res.code === 0 && res.data && res.data.url) {
-          this.resultUrl = res.data.url;
+        if (res.code === 0 && res.data) {
+          this.resultFiles = Array.isArray(res.data.files) ? res.data.files : [];
+          this.resultUrl = this.extractResultUrl(res.data);
+          if (!this.resultUrl) {
+            throw new Error('转换结果为空，请重试');
+          }
           this.status = 'done';
+        } else if (res.code === 202) {
+          this.status = 'converting';
         } else {
           this.status = 'error';
-          this.errorMsg = '获取结果失败';
+          this.errorMsg = res.message || '获取结果失败';
         }
       } catch (error) {
         logger.error('获取结果失败:', error);
         this.status = 'error';
-        this.errorMsg = '获取结果失败';
+        this.errorMsg = this.normalizeErrorMessage(error, '获取结果失败');
       }
     },
 
@@ -443,9 +627,11 @@ export default {
       this.clearPollTimer();
       this.selectedFile = null;
       this.fileBase64 = null;
+      this.isReadingFile = false;
       this.status = 'idle';
       this.errorMsg = '';
       this.resultUrl = null;
+      this.resultFiles = [];
       this.jobId = null;
     },
 
@@ -735,6 +921,13 @@ export default {
       margin-top: 4rpx;
       display: block;
     }
+
+    .file-reading {
+      font-size: 22rpx;
+      color: #5b86e5;
+      margin-top: 4rpx;
+      display: block;
+    }
   }
 
   .file-remove {
@@ -959,6 +1152,10 @@ export default {
   .file-info-card {
     background: var(--bg-card, #0d1117);
     box-shadow: none;
+
+    .file-reading {
+      color: #8eaaef;
+    }
   }
 
   .file-remove {

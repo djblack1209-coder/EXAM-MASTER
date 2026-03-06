@@ -253,19 +253,6 @@
       ]
     },
     {
-      "root": "pages/universe",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "探索宇宙",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#000000"
-          }
-        }
-      ]
-    },
-    {
       "root": "pages/study-detail",
       "pages": [
         {

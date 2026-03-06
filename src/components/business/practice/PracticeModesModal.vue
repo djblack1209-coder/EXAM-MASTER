@@ -2,21 +2,14 @@
   <view v-if="visible" class="practice-modes-modal-overlay" @tap="$emit('close')">
     <view class="practice-modes-modal" @tap.stop>
       <view class="practice-modes-modal-header">
-        <text class="practice-modes-modal-title">
-          选择练习模式
-        </text>
+        <text class="practice-modes-modal-title"> 选择练习模式 </text>
         <view class="practice-modes-modal-close" @tap="$emit('close')">
           <BaseIcon name="close" :size="24" />
         </view>
       </view>
       <view class="practice-modes-modal-body">
         <view class="practice-modes-grid">
-          <view
-            v-for="mode in modes"
-            :key="mode.id"
-            class="practice-mode-item"
-            @tap="$emit('select', mode)"
-          >
+          <view v-for="mode in modes" :key="mode.id" class="practice-mode-item" @tap="$emit('select', mode)">
             <view class="practice-mode-icon">
               {{ mode.icon }}
             </view>

@@ -15,31 +15,18 @@
     <!-- 导航栏 - 添加设计系统工具类 -->
     <view v-if="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content ds-flex ds-flex-between">
-        <text class="nav-back ds-touchable" @tap="goBack">
-          ←
-        </text>
-        <text class="nav-title ds-text-lg ds-font-semibold">
-          我的学习计划
-        </text>
-        <text class="nav-add ds-touchable" @tap="createPlan">
-          +
-        </text>
+        <text class="nav-back ds-touchable" @tap="goBack"> ← </text>
+        <text class="nav-title ds-text-lg ds-font-semibold"> 我的学习计划 </text>
+        <text class="nav-add ds-touchable" @tap="createPlan"> + </text>
       </view>
     </view>
 
-    <scroll-view
-      v-if="!isLoading"
-      scroll-y
-      class="main-scroll"
-      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
-    >
+    <scroll-view v-if="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 智能提醒卡片 -->
       <view v-if="intelligentReminders.length > 0" class="glass-card reminder-card">
         <view class="reminder-header">
           <BaseIcon name="robot" :size="32" class="reminder-icon" />
-          <text class="reminder-title">
-            智能提醒
-          </text>
+          <text class="reminder-title"> 智能提醒 </text>
         </view>
         <view class="reminder-list">
           <view
@@ -91,28 +78,18 @@
         <view v-if="plan.analytics" class="plan-analytics">
           <view class="analytics-row">
             <view class="analytics-item">
-              <text class="analytics-label">
-                完成率
-              </text>
-              <text class="analytics-value">
-                {{ plan.analytics.completionRate }}%
-              </text>
+              <text class="analytics-label"> 完成率 </text>
+              <text class="analytics-value"> {{ plan.analytics.completionRate }}% </text>
             </view>
             <view class="analytics-item">
-              <text class="analytics-label">
-                趋势
-              </text>
+              <text class="analytics-label"> 趋势 </text>
               <text class="analytics-value" :class="getTrendClass(plan.analytics.progressTrend.trend)">
                 {{ plan.analytics.progressTrend.trend > 0 ? '+' : '' }}{{ plan.analytics.progressTrend.trend }}%
               </text>
             </view>
             <view class="analytics-item">
-              <text class="analytics-label">
-                预计完成
-              </text>
-              <text class="analytics-value">
-                {{ plan.analytics.progressTrend.projected }}%
-              </text>
+              <text class="analytics-label"> 预计完成 </text>
+              <text class="analytics-value"> {{ plan.analytics.progressTrend.projected }}% </text>
             </view>
           </view>
 
@@ -121,9 +98,7 @@
             v-if="plan.analytics.recommendedAdjustments && plan.analytics.recommendedAdjustments.length > 0"
             class="adjustments-section"
           >
-            <text class="adjustments-title">
-              <BaseIcon name="bulb" :size="24" /> 智能建议
-            </text>
+            <text class="adjustments-title"> <BaseIcon name="bulb" :size="24" /> 智能建议 </text>
             <view
               v-for="(adjustment, adjIndex) in plan.analytics.recommendedAdjustments"
               :key="adjIndex"
@@ -139,17 +114,13 @@
 
         <view class="plan-meta ds-flex ds-gap-sm">
           <view class="meta-item ds-flex-col">
-            <text class="meta-label ds-text-xs">
-              开始日期
-            </text>
+            <text class="meta-label ds-text-xs"> 开始日期 </text>
             <text class="meta-value ds-text-sm ds-font-semibold">
               {{ plan.startDate }}
             </text>
           </view>
           <view class="meta-item ds-flex-col">
-            <text class="meta-label ds-text-xs">
-              结束日期
-            </text>
+            <text class="meta-label ds-text-xs"> 结束日期 </text>
             <text class="meta-value ds-text-sm ds-font-semibold">
               {{ plan.endDate }}
             </text>
@@ -158,17 +129,13 @@
 
         <view class="plan-meta ds-flex ds-gap-sm">
           <view class="meta-item ds-flex-col">
-            <text class="meta-label ds-text-xs">
-              每日时长
-            </text>
+            <text class="meta-label ds-text-xs"> 每日时长 </text>
             <text class="meta-value ds-text-sm ds-font-semibold">
               {{ plan.dailyDuration }}
             </text>
           </view>
           <view class="meta-item ds-flex-col">
-            <text class="meta-label ds-text-xs">
-              提醒时间
-            </text>
+            <text class="meta-label ds-text-xs"> 提醒时间 </text>
             <text class="meta-value ds-text-sm ds-font-semibold">
               {{ plan.reminderTime }}
             </text>
@@ -177,9 +144,7 @@
 
         <!-- 任务统计 -->
         <view v-if="plan.tasks && plan.tasks.length > 0" class="task-stats">
-          <text class="task-stats-label">
-            任务进度
-          </text>
+          <text class="task-stats-label"> 任务进度 </text>
           <view class="task-progress-bar">
             <view class="task-progress-fill" :style="{ width: (plan.progress || 0) + '%' }" />
           </view>
@@ -203,15 +168,9 @@
 
         <!-- 计划操作 -->
         <view class="plan-actions">
-          <text class="action-btn" @tap="viewPlanDetail(plan)">
-            查看详情
-          </text>
-          <text class="action-btn" @tap="adjustPlan(plan.id)">
-            智能调整
-          </text>
-          <text class="action-btn danger" @tap="deletePlan(plan.id || index)">
-            删除
-          </text>
+          <text class="action-btn" @tap="viewPlanDetail(plan)"> 查看详情 </text>
+          <text class="action-btn" @tap="adjustPlan(plan.id)"> 智能调整 </text>
+          <text class="action-btn danger" @tap="deletePlan(plan.id || index)"> 删除 </text>
         </view>
       </view>
     </scroll-view>

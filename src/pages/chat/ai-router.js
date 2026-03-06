@@ -1,5 +1,5 @@
 /**
- * AI 多模型路由器
+ * 智能多模型路由器
  *
  * 功能：
  * 1. 智能模型选择 - 根据任务类型自动选择最优模型
@@ -106,7 +106,7 @@ const ROUTING_CONFIG = {
     timeout: 20000,
     fallback: null,
     cacheTTL: 0, // 不缓存聊天
-    description: 'AI好友对话、实时聊天'
+    description: '智能好友对话、实时聊天'
   },
 
   // 实时答疑 - 快速响应
@@ -148,7 +148,7 @@ const ACTION_TASK_MAP = {
 };
 
 /**
- * AI路由器类
+ * 智能路由器类
  */
 class AIRouter {
   constructor() {
@@ -177,11 +177,11 @@ class AIRouter {
   }
 
   /**
-   * 智能AI调用
+   * 智能调用
    * @param {string} action - 操作类型
    * @param {Object} payload - 请求参数
    * @param {Object} options - 可选配置
-   * @returns {Promise<Object>} AI响应
+   * @returns {Promise<Object>} 智能响应
    */
   async call(action, payload, options = {}) {
     if (!this.isInitialized) this.init();
@@ -220,7 +220,7 @@ class AIRouter {
         }
       }
 
-      // 3. 执行AI调用（带超时和降级）
+      // 3. 执行智能调用（带超时和降级）
       let response;
       let usedModel = routeConfig.model;
 
@@ -278,7 +278,7 @@ class AIRouter {
       return {
         code: -1,
         success: false,
-        message: error.message || 'AI调用失败',
+        message: error.message || '智能调用失败',
         requestId,
         duration: Date.now() - startTime
       };
@@ -382,7 +382,7 @@ class AIRouter {
   }
 
   /**
-   * 调用AI服务
+   * 调用智能服务
    */
   async callAI(action, payload, model, options) {
     // 构建请求参数

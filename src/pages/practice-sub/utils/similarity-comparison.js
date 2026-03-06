@@ -125,7 +125,9 @@ export const similarityComparison = {
     const n = s2.length;
 
     // 创建距离矩阵
-    const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+    const dp = Array(m + 1)
+      .fill(null)
+      .map(() => Array(n + 1).fill(0));
 
     // 初始化
     for (let i = 0; i <= m; i++) dp[i][0] = i;

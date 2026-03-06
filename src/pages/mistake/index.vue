@@ -8,12 +8,8 @@
     <!-- 导航栏 - 添加设计系统工具类 -->
     <view v-if="!isInitLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content ds-flex ds-flex-between">
-        <text class="nav-back ds-touchable" @tap="goBack">
-          ←
-        </text>
-        <text class="nav-title ds-text-lg ds-font-semibold">
-          我的错题本
-        </text>
+        <text class="nav-back ds-touchable" @tap="goBack"> ← </text>
+        <text class="nav-title ds-text-lg ds-font-semibold"> 我的错题本 </text>
         <view class="nav-actions">
           <!-- 移除垃圾桶图标 -->
           <view class="nav-placeholder" />
@@ -30,12 +26,7 @@
     >
       <!-- 统计卡片区域 -->
       <view v-if="mistakes.length > 0" class="stats-grid">
-        <StatsCard
-          title="错题总数"
-          :value="mistakes.length"
-          icon="note"
-          :is-dark="isDark"
-        />
+        <StatsCard title="错题总数" :value="mistakes.length" icon="note" :is-dark="isDark" />
         <StatsCard
           title="待复习"
           :value="pendingReviewCount"
@@ -50,34 +41,22 @@
       <view v-if="isReviewMode && mistakes.length > 0" class="review-mode-banner">
         <BaseIcon name="refresh" :size="40" class="review-icon" />
         <view class="review-info">
-          <text class="review-title">
-            错题重练模式
-          </text>
-          <text class="review-desc">
-            {{ filteredReviewMistakes.length }} 道待重练
-          </text>
+          <text class="review-title"> 错题重练模式 </text>
+          <text class="review-desc"> {{ filteredReviewMistakes.length }} 道待重练 </text>
         </view>
-        <button class="start-review-btn" @tap="startSequentialReview">
-          开始重练
-        </button>
+        <button class="start-review-btn" @tap="startSequentialReview">开始重练</button>
       </view>
 
       <!-- ✅ 1.7: 错题筛选栏 -->
       <view v-if="isReviewMode && mistakes.length > 0" class="review-filter-bar">
         <view :class="['filter-chip', { active: reviewFilter === 'all' }]" @tap="reviewFilter = 'all'">
-          <text class="filter-text">
-            全部
-          </text>
+          <text class="filter-text"> 全部 </text>
         </view>
         <view :class="['filter-chip', { active: reviewFilter === 'high_freq' }]" @tap="reviewFilter = 'high_freq'">
-          <text class="filter-text">
-            高频错题
-          </text>
+          <text class="filter-text"> 高频错题 </text>
         </view>
         <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
-          <text class="filter-text">
-            最近错题
-          </text>
+          <text class="filter-text"> 最近错题 </text>
         </view>
       </view>
 
@@ -87,32 +66,22 @@
           :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'quiz' }]"
           @tap="switchMode('quiz')"
         >
-          <text class="ds-text-sm ds-font-medium">
-            刷题模式
-          </text>
+          <text class="ds-text-sm ds-font-medium"> 刷题模式 </text>
         </view>
         <view
           :class="['mode-item', 'ds-flex-center', 'ds-touchable', { active: mode === 'recite' }]"
           @tap="switchMode('recite')"
         >
-          <text class="ds-text-sm ds-font-medium">
-            背诵模式
-          </text>
+          <text class="ds-text-sm ds-font-medium"> 背诵模式 </text>
         </view>
       </view>
 
       <!-- 空状态 - 优化样式 -->
       <view v-if="mistakes.length === 0 && !isInitLoading" class="empty-box ds-flex-col ds-flex-center">
         <BaseIcon name="celebrate" :size="160" class="empty-icon" />
-        <text class="empty-title ds-text-lg ds-font-bold">
-          太厉害了！
-        </text>
-        <text class="empty-text ds-text-sm">
-          暂时没有错题，继续保持这个状态！
-        </text>
-        <text class="empty-hint ds-text-xs">
-          刷题过程中答错的题目会自动收录到这里
-        </text>
+        <text class="empty-title ds-text-lg ds-font-bold"> 太厉害了！ </text>
+        <text class="empty-text ds-text-sm"> 暂时没有错题，继续保持这个状态！ </text>
+        <text class="empty-hint ds-text-xs"> 刷题过程中答错的题目会自动收录到这里 </text>
         <view class="go-practice-btn ds-touchable" @tap="goBack">
           <BaseIcon name="pen" :size="28" /><text>去刷题</text>
         </view>
@@ -146,13 +115,8 @@
       <view class="safe-area" />
     </scroll-view>
 
-    <!-- AI 诊断报告组件 - ✅ 2.3: 仅在有错题时渲染，避免空数据时的无效组件挂载 -->
-    <MistakeReport
-      v-if="mistakes.length > 0"
-      :mistakes="mistakes"
-      :user-info="userInfo"
-      :is-dark="isDark"
-    />
+    <!-- 智能诊断报告组件 - ✅ 2.3: 仅在有错题时渲染，避免空数据时的无效组件挂载 -->
+    <MistakeReport v-if="mistakes.length > 0" :mistakes="mistakes" :user-info="userInfo" :is-dark="isDark" />
   </view>
 </template>
 

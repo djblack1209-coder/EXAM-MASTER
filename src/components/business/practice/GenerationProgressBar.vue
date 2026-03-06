@@ -5,16 +5,12 @@
         <BaseIcon name="books" :size="32" />
       </view>
       <view class="progress-info">
-        <text class="progress-label">
-          正在生成题库
-        </text>
+        <text class="progress-label"> 正在生成题库 </text>
         <text class="progress-detail">
           {{ fileName || '学习资料' }}
         </text>
       </view>
-      <text class="progress-percent">
-        {{ progress }}%
-      </text>
+      <text class="progress-percent"> {{ progress }}% </text>
     </view>
     <view class="progress-bar-wrapper">
       <view class="progress-bar-bg">
@@ -24,39 +20,29 @@
     <view class="progress-steps">
       <view class="step-item" :class="{ active: progress >= 0, done: progress >= 20 }">
         <view class="step-dot" />
-        <text class="step-label">
-          解析文档
-        </text>
+        <text class="step-label"> 解析文档 </text>
       </view>
       <view class="step-line" :class="{ done: progress >= 20 }" />
       <view class="step-item" :class="{ active: progress >= 20, done: progress >= 50 }">
         <view class="step-dot" />
-        <text class="step-label">
-          AI出题
-        </text>
+        <text class="step-label"> 智能出题 </text>
       </view>
       <view class="step-line" :class="{ done: progress >= 50 }" />
       <view class="step-item" :class="{ active: progress >= 50, done: progress >= 80 }">
         <view class="step-dot" />
-        <text class="step-label">
-          校验去重
-        </text>
+        <text class="step-label"> 校验去重 </text>
       </view>
       <view class="step-line" :class="{ done: progress >= 80 }" />
       <view class="step-item" :class="{ active: progress >= 80, done: progress >= 100 }">
         <view class="step-dot" />
-        <text class="step-label">
-          完成
-        </text>
+        <text class="step-label"> 完成 </text>
       </view>
     </view>
     <view class="progress-footer">
       <text class="progress-status">
         {{ statusText }}
       </text>
-      <button class="pause-btn-small" @tap="$emit('pause')">
-        暂停
-      </button>
+      <button class="pause-btn-small" @tap="$emit('pause')">暂停</button>
     </view>
   </view>
 </template>

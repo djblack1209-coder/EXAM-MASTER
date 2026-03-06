@@ -19,19 +19,12 @@
     <view :class="['header-content-area', scrollY > 50 && 'header-scrolled']" style="pointer-events: auto">
       <!-- 左侧：圆形胶囊头像 -->
       <view class="header-avatar" @tap="handleAvatarTap">
-        <image
-          class="avatar-img"
-          :src="displayAvatarUrl"
-          mode="aspectFill"
-          @error="onAvatarError"
-        />
+        <image class="avatar-img" :src="displayAvatarUrl" mode="aspectFill" @error="onAvatarError" />
       </view>
       <!-- 中间：搜索框 -->
       <view class="header-search" @tap="handleSearchTap">
         <view class="search-icon-wrapper">
-          <text class="search-icon">
-            &#x1F50D;
-          </text>
+          <text class="search-icon"> &#x1F50D; </text>
         </view>
         <input
           v-model="searchKeyword"

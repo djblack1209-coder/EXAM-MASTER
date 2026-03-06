@@ -421,6 +421,29 @@ class FileHandler {
   }
 
   /**
+   * 判断是否为微信隐私协议未声明导致的失败
+   * @param {any} err
+   * @returns {boolean}
+   */
+  isPrivacyScopeUndeclaredError(err) {
+    const msg = String(err?.errMsg || '').toLowerCase();
+    return Number(err?.errno) === 112 || msg.includes('privacy agreement') || msg.includes('scope is not declared');
+  }
+
+  /**
+   * 展示隐私协议配置指引
+   */
+  showPrivacyScopeGuide() {
+    uni.showModal({
+      title: '文件权限未开启',
+      content:
+        '当前小程序未完成文件选择相关隐私声明，暂时无法读取本地文件。\n\n请先同意隐私指引并重启小程序；若仍失败，请在小程序后台隐私设置中勾选“选择文件（chooseMessageFile）”后重新发布。',
+      showCancel: false,
+      confirmText: '我知道了'
+    });
+  }
+
+  /**
    * 选择文件
    * @param {Object} options - 选择选项
    * @returns {Promise<{success: boolean, file?: Object}>}
@@ -430,53 +453,129 @@ class FileHandler {
       count = 1,
       allowedTypes = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'md'],
       maxSize = FILE_CONFIG.MAX_FILE_SIZE,
+      timeout = 8000,
       source: _source = 'all' // 'all' | 'album' | 'camera' | 'conversation'
     } = options;
 
     return new Promise((resolve) => {
+      let settled = false;
+      const finish = (result) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutTimer);
+        resolve(result);
+      };
+
+      const timeoutTimer = setTimeout(
+        () => {
+          logger.warn('[FileHandler] 文件选择超时，未收到回调');
+          uni.showToast({ title: '文件选择超时，请重试', icon: 'none' });
+          finish({ success: false, timeout: true, error: new Error('文件选择超时') });
+        },
+        Math.max(3000, Number.isFinite(Number(timeout)) && Number(timeout) > 0 ? Number(timeout) : 8000)
+      );
+
       // #ifdef MP-WEIXIN
       // 微信小程序使用 chooseMessageFile
-      wx.chooseMessageFile({
-        count: count,
-        type: 'file',
-        extension: allowedTypes.map((t) => (t.startsWith('.') ? t.substring(1) : t)),
-        success: (res) => {
-          const file = res.tempFiles[0];
+      const wxApi = globalThis && typeof globalThis.wx === 'object' ? globalThis.wx : null;
+      const chooseMessageFileApi =
+        (wxApi && typeof wxApi.chooseMessageFile === 'function' && wxApi.chooseMessageFile.bind(wxApi)) ||
+        (typeof uni.chooseMessageFile === 'function' && uni.chooseMessageFile.bind(uni));
 
-          // 验证文件
-          const validation = this.validateFile(file, { allowedTypes, maxSize });
+      if (!chooseMessageFileApi) {
+        uni.showToast({ title: '当前环境不支持选择文件', icon: 'none' });
+        finish({ success: false, error: new Error('当前环境不支持选择文件') });
+        return;
+      }
 
-          if (!validation.valid) {
-            uni.showToast({
-              title: validation.errors[0],
-              icon: 'none',
-              duration: 2000
-            });
-            resolve({ success: false, errors: validation.errors });
-            return;
-          }
+      const startChooseMessageFile = () => {
+        try {
+          chooseMessageFileApi({
+            count: count,
+            type: 'file',
+            extension: allowedTypes.map((t) => (t.startsWith('.') ? t.substring(1) : t)),
+            success: (res) => {
+              const file = res.tempFiles && res.tempFiles[0];
+              if (!file) {
+                finish({ success: false, error: new Error('未获取到文件信息') });
+                return;
+              }
 
-          resolve({
-            success: true,
-            file: {
-              name: file.name,
-              path: file.path,
-              size: file.size,
-              type: file.type,
-              ext: validation.ext
+              // 验证文件
+              const validation = this.validateFile(file, { allowedTypes, maxSize });
+
+              if (!validation.valid) {
+                uni.showToast({
+                  title: validation.errors[0],
+                  icon: 'none',
+                  duration: 2000
+                });
+                finish({ success: false, errors: validation.errors });
+                return;
+              }
+
+              finish({
+                success: true,
+                file: {
+                  name: file.name,
+                  path: file.path || file.tempFilePath,
+                  size: file.size,
+                  type: file.type,
+                  ext: validation.ext
+                }
+              });
+            },
+            fail: (err) => {
+              if (err.errMsg && err.errMsg.includes('cancel')) {
+                finish({ success: false, cancelled: true });
+              } else {
+                if (this.isPrivacyScopeUndeclaredError(err)) {
+                  logger.warn('[FileHandler] 隐私协议未声明文件选择权限:', err);
+                  this.showPrivacyScopeGuide();
+                  finish({ success: false, privacyScopeMissing: true, error: err });
+                  return;
+                }
+                logger.error('[FileHandler] 文件选择失败:', err);
+                uni.showToast({ title: '文件选择失败', icon: 'none' });
+                finish({ success: false, error: err });
+              }
             }
           });
-        },
-        fail: (err) => {
-          if (err.errMsg && err.errMsg.includes('cancel')) {
-            resolve({ success: false, cancelled: true });
-          } else {
-            logger.error('[FileHandler] 文件选择失败:', err);
-            uni.showToast({ title: '文件选择失败', icon: 'none' });
-            resolve({ success: false, error: err });
-          }
+        } catch (err) {
+          logger.error('[FileHandler] 拉起文件选择异常:', err);
+          uni.showToast({ title: '文件选择失败', icon: 'none' });
+          finish({ success: false, error: err });
         }
-      });
+      };
+
+      if (wxApi && typeof wxApi.requirePrivacyAuthorize === 'function') {
+        try {
+          wxApi.requirePrivacyAuthorize({
+            success: () => {
+              startChooseMessageFile();
+            },
+            fail: (err) => {
+              if (err?.errMsg && err.errMsg.includes('cancel')) {
+                finish({ success: false, cancelled: true });
+                return;
+              }
+              if (this.isPrivacyScopeUndeclaredError(err)) {
+                logger.warn('[FileHandler] 隐私授权检查失败（未声明）:', err);
+                this.showPrivacyScopeGuide();
+                finish({ success: false, privacyScopeMissing: true, error: err });
+                return;
+              }
+              logger.warn('[FileHandler] 隐私授权检查失败，继续尝试选择文件:', err);
+              startChooseMessageFile();
+            }
+          });
+        } catch (err) {
+          logger.warn('[FileHandler] 隐私授权调用异常，改为直接拉起文件选择:', err);
+          startChooseMessageFile();
+        }
+      } else {
+        startChooseMessageFile();
+      }
       // #endif
 
       // #ifndef MP-WEIXIN
@@ -485,7 +584,11 @@ class FileHandler {
         count: count,
         extension: allowedTypes.map((t) => (t.startsWith('.') ? t : `.${t}`)),
         success: (res) => {
-          const file = res.tempFiles[0];
+          const file = res.tempFiles && res.tempFiles[0];
+          if (!file) {
+            finish({ success: false, error: new Error('未获取到文件信息') });
+            return;
+          }
 
           // 验证文件
           const validation = this.validateFile(file, { allowedTypes, maxSize });
@@ -496,11 +599,11 @@ class FileHandler {
               icon: 'none',
               duration: 2000
             });
-            resolve({ success: false, errors: validation.errors });
+            finish({ success: false, errors: validation.errors });
             return;
           }
 
-          resolve({
+          finish({
             success: true,
             file: {
               name: file.name,
@@ -513,11 +616,11 @@ class FileHandler {
         },
         fail: (err) => {
           if (err.errMsg && err.errMsg.includes('cancel')) {
-            resolve({ success: false, cancelled: true });
+            finish({ success: false, cancelled: true });
           } else {
             logger.error('[FileHandler] 文件选择失败:', err);
             uni.showToast({ title: '文件选择失败', icon: 'none' });
-            resolve({ success: false, error: err });
+            finish({ success: false, error: err });
           }
         }
       });

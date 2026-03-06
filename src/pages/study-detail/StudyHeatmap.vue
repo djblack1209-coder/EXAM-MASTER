@@ -12,17 +12,11 @@
       <!-- 星期标签 -->
       <view class="week-labels">
         <text class="week-label" />
-        <text class="week-label">
-          一
-        </text>
+        <text class="week-label"> 一 </text>
         <text class="week-label" />
-        <text class="week-label">
-          三
-        </text>
+        <text class="week-label"> 三 </text>
         <text class="week-label" />
-        <text class="week-label">
-          五
-        </text>
+        <text class="week-label"> 五 </text>
         <text class="week-label" />
       </view>
 
@@ -45,9 +39,7 @@
 
     <!-- 图例 -->
     <view class="legend">
-      <text class="legend-text">
-        少
-      </text>
+      <text class="legend-text"> 少 </text>
       <view class="legend-cells">
         <view class="legend-cell level-0" />
         <view class="legend-cell level-1" />
@@ -55,9 +47,7 @@
         <view class="legend-cell level-3" />
         <view class="legend-cell level-4" />
       </view>
-      <text class="legend-text">
-        多
-      </text>
+      <text class="legend-text"> 多 </text>
     </view>
 
     <!-- 统计信息 -->
@@ -66,25 +56,19 @@
         <text class="stat-value">
           {{ totalDays }}
         </text>
-        <text class="stat-label">
-          学习天数
-        </text>
+        <text class="stat-label"> 学习天数 </text>
       </view>
       <view class="stat-item">
         <text class="stat-value">
           {{ currentStreak }}
         </text>
-        <text class="stat-label">
-          当前连续
-        </text>
+        <text class="stat-label"> 当前连续 </text>
       </view>
       <view class="stat-item">
         <text class="stat-value">
           {{ maxStreak }}
         </text>
-        <text class="stat-label">
-          最长连续
-        </text>
+        <text class="stat-label"> 最长连续 </text>
       </view>
     </view>
 
@@ -93,9 +77,7 @@
       <text class="detail-date">
         {{ selectedDay.dateStr }}
       </text>
-      <text class="detail-value">
-        学习 {{ selectedDay.minutes }} 分钟
-      </text>
+      <text class="detail-value"> 学习 {{ selectedDay.minutes }} 分钟 </text>
     </view>
   </view>
 </template>
@@ -138,8 +120,8 @@ export default {
   },
   methods: {
     /**
-         * 生成热力图数据
-         */
+     * 生成热力图数据
+     */
     generateHeatmapData() {
       const today = new Date();
       const data = [];
@@ -186,8 +168,8 @@ export default {
     },
 
     /**
-         * 生成月份标签
-         */
+     * 生成月份标签
+     */
     generateMonthLabels() {
       const labels = [];
       const today = new Date();
@@ -208,8 +190,8 @@ export default {
     },
 
     /**
-         * 计算统计数据
-         */
+     * 计算统计数据
+     */
     calculateStats() {
       let totalDays = 0;
       let currentStreak = 0;
@@ -254,8 +236,8 @@ export default {
     },
 
     /**
-         * 根据学习时长获取等级 (0-4)
-         */
+     * 根据学习时长获取等级 (0-4)
+     */
     getLevel(minutes) {
       if (minutes === 0) return 0;
       if (minutes < 15) return 1;
@@ -265,24 +247,24 @@ export default {
     },
 
     /**
-         * 获取日期格子的类名
-         */
+     * 获取日期格子的类名
+     */
     getDayClass(day) {
       if (!day) return 'empty';
       return `level-${day.level}`;
     },
 
     /**
-         * 获取日期格子的样式
-         */
+     * 获取日期格子的样式
+     */
     getDayStyle(day) {
       if (!day) return {};
       return {};
     },
 
     /**
-         * 格式化日期为 YYYY-MM-DD
-         */
+     * 格式化日期为 YYYY-MM-DD
+     */
     formatDate(date) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -291,8 +273,8 @@ export default {
     },
 
     /**
-         * 格式化显示日期
-         */
+     * 格式化显示日期
+     */
     formatDisplayDate(date) {
       const month = date.getMonth() + 1;
       const day = date.getDate();
@@ -301,16 +283,16 @@ export default {
     },
 
     /**
-         * 获取月份标签
-         */
+     * 获取月份标签
+     */
     getMonthLabel(date) {
       const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
       return monthNames[date.getMonth()];
     },
 
     /**
-         * 处理日期点击
-         */
+     * 处理日期点击
+     */
     handleDayTap(day) {
       if (!day) return;
       this.selectedDay = day;
@@ -322,243 +304,243 @@ export default {
 
 <style lang="scss" scoped>
 .study-heatmap {
-    width: 100%;
+  width: 100%;
 }
 
 /* 月份标签 */
 .month-labels {
-    display: flex;
-    padding-left: 48rpx;
-    margin-bottom: 8rpx;
-    overflow: hidden;
+  display: flex;
+  padding-left: 48rpx;
+  margin-bottom: 8rpx;
+  overflow: hidden;
 }
 
 .month-label {
-    flex: 1;
-    min-width: 24rpx;
-    font-size: 20rpx;
-    color: var(--text-sub, #666);
-    text-align: left;
+  flex: 1;
+  min-width: 24rpx;
+  font-size: 20rpx;
+  color: var(--text-sub, #666);
+  text-align: left;
 }
 
 /* 热力图主体 */
 .heatmap-body {
-    display: flex;
-    gap: 8rpx;
+  display: flex;
+  gap: 8rpx;
 }
 
 /* 星期标签 */
 .week-labels {
-    display: flex;
-    flex-direction: column;
-    gap: 4rpx;
-    padding-top: 2rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  padding-top: 2rpx;
 }
 
 .week-label {
-    height: 24rpx;
-    line-height: 24rpx;
-    font-size: 20rpx;
-    color: var(--text-sub, #666);
-    text-align: right;
-    padding-right: 8rpx;
+  height: 24rpx;
+  line-height: 24rpx;
+  font-size: 20rpx;
+  color: var(--text-sub, #666);
+  text-align: right;
+  padding-right: 8rpx;
 }
 
 /* 热力图滚动区域 */
 .heatmap-scroll {
-    flex: 1;
-    white-space: nowrap;
+  flex: 1;
+  white-space: nowrap;
 }
 
 /* 热力图格子容器 */
 .heatmap-grid {
-    display: inline-flex;
-    gap: 4rpx;
+  display: inline-flex;
+  gap: 4rpx;
 }
 
 /* 周列 */
 .week-column {
-    display: flex;
-    flex-direction: column;
-    gap: 4rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
 }
 
 /* 日期格子 */
 .day-cell {
-    width: 24rpx;
-    height: 24rpx;
-    border-radius: 4rpx;
-    transition: all 0.2s ease;
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 4rpx;
+  transition: all 0.2s ease;
 
-    &.empty {
-        background: transparent;
-    }
+  &.empty {
+    background: transparent;
+  }
 
-    &.level-0 {
-        background: var(--heatmap-level-0, #ebedf0);
-    }
+  &.level-0 {
+    background: var(--heatmap-level-0, #ebedf0);
+  }
 
-    &.level-1 {
-        background: var(--heatmap-level-1, #9be9a8);
-    }
+  &.level-1 {
+    background: var(--heatmap-level-1, #9be9a8);
+  }
 
-    &.level-2 {
-        background: var(--heatmap-level-2, #40c463);
-    }
+  &.level-2 {
+    background: var(--heatmap-level-2, #40c463);
+  }
 
-    &.level-3 {
-        background: var(--heatmap-level-3, #30a14e);
-    }
+  &.level-3 {
+    background: var(--heatmap-level-3, #30a14e);
+  }
 
-    &.level-4 {
-        background: var(--heatmap-level-4, #216e39);
-    }
+  &.level-4 {
+    background: var(--heatmap-level-4, #216e39);
+  }
 
-    &:active {
-        transform: scale(1.2);
-    }
+  &:active {
+    transform: scale(1.2);
+  }
 }
 
 /* 图例 */
 .legend {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8rpx;
-    margin-top: 16rpx;
-    padding-right: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding-right: 8rpx;
 }
 
 .legend-text {
-    font-size: 20rpx;
-    color: var(--text-sub, #666);
+  font-size: 20rpx;
+  color: var(--text-sub, #666);
 }
 
 .legend-cells {
-    display: flex;
-    gap: 4rpx;
+  display: flex;
+  gap: 4rpx;
 }
 
 .legend-cell {
-    width: 20rpx;
-    height: 20rpx;
-    border-radius: 4rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 4rpx;
 
-    &.level-0 {
-        background: var(--heatmap-level-0, #ebedf0);
-    }
+  &.level-0 {
+    background: var(--heatmap-level-0, #ebedf0);
+  }
 
-    &.level-1 {
-        background: var(--heatmap-level-1, #9be9a8);
-    }
+  &.level-1 {
+    background: var(--heatmap-level-1, #9be9a8);
+  }
 
-    &.level-2 {
-        background: var(--heatmap-level-2, #40c463);
-    }
+  &.level-2 {
+    background: var(--heatmap-level-2, #40c463);
+  }
 
-    &.level-3 {
-        background: var(--heatmap-level-3, #30a14e);
-    }
+  &.level-3 {
+    background: var(--heatmap-level-3, #30a14e);
+  }
 
-    &.level-4 {
-        background: var(--heatmap-level-4, #216e39);
-    }
+  &.level-4 {
+    background: var(--heatmap-level-4, #216e39);
+  }
 }
 
 /* 统计信息 */
 .stats-row {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 24rpx;
-    padding-top: 24rpx;
-    border-top: 1px solid var(--border-color, #e5e5e5);
+  display: flex;
+  justify-content: space-around;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1px solid var(--border-color, #e5e5e5);
 }
 
 .stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
 }
 
 .stat-value {
-    font-size: 36rpx;
-    font-weight: 700;
-    color: var(--text-main, #111);
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-main, #111);
 }
 
 .stat-label {
-    font-size: 22rpx;
-    color: var(--text-sub, #666);
+  font-size: 22rpx;
+  color: var(--text-sub, #666);
 }
 
 /* 选中日期详情 */
 .day-detail {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16rpx;
-    padding: 16rpx 24rpx;
-    background: var(--muted, #f5f5f7);
-    border-radius: 12rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16rpx;
+  padding: 16rpx 24rpx;
+  background: var(--muted, #f5f5f7);
+  border-radius: 12rpx;
 }
 
 .detail-date {
-    font-size: 24rpx;
-    color: var(--text-main, #111);
-    font-weight: 500;
+  font-size: 24rpx;
+  color: var(--text-main, #111);
+  font-weight: 500;
 }
 
 .detail-value {
-    font-size: 24rpx;
-    color: var(--ds-color-primary, #007AFF);
-    font-weight: 600;
+  font-size: 24rpx;
+  color: var(--ds-color-primary, #007aff);
+  font-weight: 600;
 }
 
 /* 暗色模式适配 */
 .dark {
-    .day-cell {
-        &.level-0 {
-            background: var(--heatmap-level-0-dark, #161b22);
-        }
-
-        &.level-1 {
-            background: var(--heatmap-level-1-dark, #0e4429);
-        }
-
-        &.level-2 {
-            background: var(--heatmap-level-2-dark, #006d32);
-        }
-
-        &.level-3 {
-            background: var(--heatmap-level-3-dark, #26a641);
-        }
-
-        &.level-4 {
-            background: var(--heatmap-level-4-dark, #39d353);
-        }
+  .day-cell {
+    &.level-0 {
+      background: var(--heatmap-level-0-dark, #161b22);
     }
 
-    .legend-cell {
-        &.level-0 {
-            background: var(--heatmap-level-0-dark, #161b22);
-        }
-
-        &.level-1 {
-            background: var(--heatmap-level-1-dark, #0e4429);
-        }
-
-        &.level-2 {
-            background: var(--heatmap-level-2-dark, #006d32);
-        }
-
-        &.level-3 {
-            background: var(--heatmap-level-3-dark, #26a641);
-        }
-
-        &.level-4 {
-            background: var(--heatmap-level-4-dark, #39d353);
-        }
+    &.level-1 {
+      background: var(--heatmap-level-1-dark, #0e4429);
     }
+
+    &.level-2 {
+      background: var(--heatmap-level-2-dark, #006d32);
+    }
+
+    &.level-3 {
+      background: var(--heatmap-level-3-dark, #26a641);
+    }
+
+    &.level-4 {
+      background: var(--heatmap-level-4-dark, #39d353);
+    }
+  }
+
+  .legend-cell {
+    &.level-0 {
+      background: var(--heatmap-level-0-dark, #161b22);
+    }
+
+    &.level-1 {
+      background: var(--heatmap-level-1-dark, #0e4429);
+    }
+
+    &.level-2 {
+      background: var(--heatmap-level-2-dark, #006d32);
+    }
+
+    &.level-3 {
+      background: var(--heatmap-level-3-dark, #26a641);
+    }
+
+    &.level-4 {
+      background: var(--heatmap-level-4-dark, #39d353);
+    }
+  }
 }
 </style>

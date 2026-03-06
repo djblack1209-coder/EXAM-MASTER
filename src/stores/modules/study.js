@@ -38,14 +38,14 @@ export const useStudyStore = defineStore('study', () => {
   const completionRate = computed(() => {
     const { totalQuestions, completedQuestions } = studyProgress.value;
     if (totalQuestions === 0) return 0;
-    return Math.round(completedQuestions / totalQuestions * 1000) / 10;
+    return Math.round((completedQuestions / totalQuestions) * 1000) / 10;
   });
 
   /** @type {import('vue').ComputedRef<number>} 正确率百分比（保留一位小数） */
   const accuracy = computed(() => {
     const { completedQuestions, correctQuestions } = studyProgress.value;
     if (completedQuestions === 0) return 0;
-    return Math.round(correctQuestions / completedQuestions * 1000) / 10;
+    return Math.round((correctQuestions / completedQuestions) * 1000) / 10;
   });
 
   /**
@@ -111,10 +111,14 @@ export const useStudyStore = defineStore('study', () => {
    * 静默失败，不会弹出错误提示
    */
   const saveProgress = () => {
-    storageService.save(APP_CONFIG.cacheKeys.studyProgress, {
-      progress: studyProgress.value,
-      history: questionHistory.value
-    }, true); // 静默失败，避免频繁提示
+    storageService.save(
+      APP_CONFIG.cacheKeys.studyProgress,
+      {
+        progress: studyProgress.value,
+        history: questionHistory.value
+      },
+      true
+    ); // 静默失败，避免频繁提示
   };
 
   /**

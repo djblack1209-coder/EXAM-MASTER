@@ -31,30 +31,22 @@
         <text class="summary-value">
           {{ totalMinutes }}
         </text>
-        <text class="summary-label">
-          总时长(分钟)
-        </text>
+        <text class="summary-label"> 总时长(分钟) </text>
       </view>
       <view class="summary-item">
         <text class="summary-value">
           {{ avgMinutes }}
         </text>
-        <text class="summary-label">
-          日均(分钟)
-        </text>
+        <text class="summary-label"> 日均(分钟) </text>
       </view>
       <view class="summary-item">
         <view class="trend-indicator" :class="trendDirection">
           <text class="trend-arrow">
             {{ trendDirection === 'up' ? '↑' : trendDirection === 'down' ? '↓' : '→' }}
           </text>
-          <text class="trend-percent">
-            {{ trendPercent }}%
-          </text>
+          <text class="trend-percent"> {{ trendPercent }}% </text>
         </view>
-        <text class="summary-label">
-          趋势
-        </text>
+        <text class="summary-label"> 趋势 </text>
       </view>
     </view>
   </view>
@@ -111,28 +103,31 @@ export default {
   },
   methods: {
     /**
-         * 初始化 Canvas
-         */
+     * 初始化 Canvas
+     */
     initCanvas() {
       // 获取容器宽度
       const query = uni.createSelectorQuery().in(this);
-      query.select('.chart-wrapper').boundingClientRect((rect) => {
-        if (rect) {
-          this.canvasWidth = rect.width - 32; // 减去 padding
-          this.canvasHeight = 200;
-        }
-        this.prepareChartData();
-        this.$nextTick(() => {
-          setTimeout(() => {
-            this.drawChart();
-          }, 100);
-        });
-      }).exec();
+      query
+        .select('.chart-wrapper')
+        .boundingClientRect((rect) => {
+          if (rect) {
+            this.canvasWidth = rect.width - 32; // 减去 padding
+            this.canvasHeight = 200;
+          }
+          this.prepareChartData();
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.drawChart();
+            }, 100);
+          });
+        })
+        .exec();
     },
 
     /**
-         * 准备图表数据
-         */
+     * 准备图表数据
+     */
     prepareChartData() {
       const data = [];
       const today = new Date();
@@ -156,8 +151,8 @@ export default {
     },
 
     /**
-         * 计算摘要数据
-         */
+     * 计算摘要数据
+     */
     calculateSummary() {
       const minutes = this.chartData.map((d) => d.minutes);
       this.totalMinutes = minutes.reduce((a, b) => a + b, 0);
@@ -192,8 +187,8 @@ export default {
     },
 
     /**
-         * 绘制图表
-         */
+     * 绘制图表
+     */
     drawChart() {
       const ctx = uni.createCanvasContext('trendChart', this);
       if (!ctx) return;
@@ -228,8 +223,8 @@ export default {
     },
 
     /**
-         * 绘制网格
-         */
+     * 绘制网格
+     */
     drawGrid(ctx, padding, chartWidth, chartHeight, maxValue) {
       const gridLines = 4;
       ctx.setStrokeStyle('rgba(200, 200, 200, 0.3)');
@@ -252,8 +247,8 @@ export default {
     },
 
     /**
-         * 绘制折线和面积
-         */
+     * 绘制折线和面积
+     */
     drawLineAndArea(ctx, padding, chartWidth, chartHeight, maxValue, _minValue) {
       if (this.chartData.length === 0) return;
 
@@ -294,8 +289,8 @@ export default {
     },
 
     /**
-         * 绘制数据点
-         */
+     * 绘制数据点
+     */
     drawDataPoints(ctx, padding, chartWidth, chartHeight, maxValue, _minValue) {
       this.chartData.forEach((d, i) => {
         const x = padding.left + (chartWidth / (this.chartData.length - 1 || 1)) * i;
@@ -319,8 +314,8 @@ export default {
     },
 
     /**
-         * 绘制X轴标签
-         */
+     * 绘制X轴标签
+     */
     drawXLabels(ctx, padding, chartWidth, chartHeight) {
       ctx.setFillStyle('#999');
       ctx.setFontSize(10);
@@ -339,16 +334,16 @@ export default {
     },
 
     /**
-         * 选择时间范围
-         */
+     * 选择时间范围
+     */
     selectRange(range) {
       this.selectedRange = range;
       this.$emit('range-change', range);
     },
 
     /**
-         * 格式化日期为 YYYY-MM-DD
-         */
+     * 格式化日期为 YYYY-MM-DD
+     */
     formatDate(date) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -357,8 +352,8 @@ export default {
     },
 
     /**
-         * 获取日期标签
-         */
+     * 获取日期标签
+     */
     getDateLabel(date) {
       const month = date.getMonth() + 1;
       const day = date.getDate();
@@ -370,118 +365,118 @@ export default {
 
 <style lang="scss" scoped>
 .study-trend-chart {
-    width: 100%;
+  width: 100%;
 }
 
 /* 时间范围选择器 */
 .range-selector {
-    display: flex;
-    gap: 16rpx;
-    margin-bottom: 24rpx;
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
 }
 
 .range-item {
-    flex: 1;
-    padding: 16rpx 24rpx;
-    text-align: center;
-    background: var(--muted, #f5f5f7);
-    border-radius: 12rpx;
-    transition: all 0.2s ease;
+  flex: 1;
+  padding: 16rpx 24rpx;
+  text-align: center;
+  background: var(--muted, #f5f5f7);
+  border-radius: 12rpx;
+  transition: all 0.2s ease;
 
-    &.active {
-        background: var(--ds-color-primary, #007AFF);
+  &.active {
+    background: var(--ds-color-primary, #007aff);
 
-        .range-text {
-            color: #FFFFFF;
-        }
+    .range-text {
+      color: #ffffff;
     }
+  }
 
-    &:active {
-        transform: scale(0.98);
-    }
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .range-text {
-    font-size: 24rpx;
-    color: var(--text-sub, #666);
-    font-weight: 500;
+  font-size: 24rpx;
+  color: var(--text-sub, #666);
+  font-weight: 500;
 }
 
 /* 图表区域 */
 .chart-wrapper {
-    width: 100%;
-    padding: 16rpx;
-    background: var(--bg-card, #fff);
-    border-radius: 16rpx;
+  width: 100%;
+  padding: 16rpx;
+  background: var(--bg-card, #fff);
+  border-radius: 16rpx;
 }
 
 .trend-canvas {
-    width: 100%;
-    height: 200px;
+  width: 100%;
+  height: 200px;
 }
 
 /* 数据摘要 */
 .summary-row {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 24rpx;
-    padding-top: 24rpx;
-    border-top: 1px solid var(--border-color, #e5e5e5);
+  display: flex;
+  justify-content: space-around;
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1px solid var(--border-color, #e5e5e5);
 }
 
 .summary-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
 }
 
 .summary-value {
-    font-size: 36rpx;
-    font-weight: 700;
-    color: var(--text-main, #111);
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-main, #111);
 }
 
 .summary-label {
-    font-size: 22rpx;
-    color: var(--text-sub, #666);
+  font-size: 22rpx;
+  color: var(--text-sub, #666);
 }
 
 /* 趋势指示器 */
 .trend-indicator {
-    display: flex;
-    align-items: center;
-    gap: 4rpx;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
 
-    &.up {
-        .trend-arrow,
-        .trend-percent {
-            color: var(--ds-color-success, #34C759);
-        }
+  &.up {
+    .trend-arrow,
+    .trend-percent {
+      color: var(--ds-color-success, #34c759);
     }
+  }
 
-    &.down {
-        .trend-arrow,
-        .trend-percent {
-            color: var(--ds-color-error, #FF3B30);
-        }
+  &.down {
+    .trend-arrow,
+    .trend-percent {
+      color: var(--ds-color-error, #ff3b30);
     }
+  }
 
-    &.stable {
-        .trend-arrow,
-        .trend-percent {
-            color: var(--text-sub, #666);
-        }
+  &.stable {
+    .trend-arrow,
+    .trend-percent {
+      color: var(--text-sub, #666);
     }
+  }
 }
 
 .trend-arrow {
-    font-size: 32rpx;
-    font-weight: 700;
+  font-size: 32rpx;
+  font-weight: 700;
 }
 
 .trend-percent {
-    font-size: 32rpx;
-    font-weight: 700;
+  font-size: 32rpx;
+  font-weight: 700;
 }
 </style>

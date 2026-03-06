@@ -1,7 +1,3 @@
-<template>
-  <view />
-</template>
-
 <script>
 import { useUserStore } from '@/stores';
 import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-engine.js';

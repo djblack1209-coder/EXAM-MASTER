@@ -1,9 +1,7 @@
 <template>
   <view>
     <view class="section-header">
-      <text class="section-title">
-        为你推荐
-      </text>
+      <text class="section-title"> 为你推荐 </text>
     </view>
     <view class="recommendations-grid">
       <view

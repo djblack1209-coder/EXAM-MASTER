@@ -1,13 +1,9 @@
 <template>
-  <view class="settings-container" :class="{ 'dark-mode': isDark }">
+  <view id="e2e-settings-root" class="settings-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 - 添加设计系统工具类 -->
     <view class="top-nav">
-      <text class="nav-back" @tap="handleGoBack">
-        ←
-      </text>
-      <text class="nav-title ds-text-display ds-font-bold">
-        设置
-      </text>
+      <text id="e2e-settings-back" class="nav-back" @tap="handleGoBack"> ← </text>
+      <text class="nav-title ds-text-display ds-font-bold"> 设置 </text>
       <view class="nav-placeholder" />
     </view>
 
@@ -46,19 +42,10 @@
       <view class="user-header">
         <view class="avatar-section" @tap="handleAvatarClick">
           <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-            <image
-              class="avatar"
-              :src="userInfo.avatarUrl || defaultAvatar"
-              mode="aspectFill"
-              @error="onAvatarError"
-            />
+            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError" />
           </button>
-          <view v-if="!userInfo.uid" class="login-badge">
-            点击登录
-          </view>
-          <view v-else class="login-badge logged-in">
-            已登录
-          </view>
+          <view v-if="!userInfo.uid" class="login-badge"> 点击登录 </view>
+          <view v-else class="login-badge logged-in"> 已登录 </view>
         </view>
         <view class="user-info-section">
           <input
@@ -72,17 +59,13 @@
           />
           <view class="info-grid">
             <view class="info-item" @tap="handleEditSchool">
-              <text class="info-label">
-                报考院校
-              </text>
+              <text class="info-label"> 报考院校 </text>
               <text class="info-value">
                 {{ userSchoolInfo.school || '未设置' }}
               </text>
             </view>
             <view class="info-item" @tap="handleEditMajor">
-              <text class="info-label">
-                报考专业
-              </text>
+              <text class="info-label"> 报考专业 </text>
               <text class="info-value">
                 {{ userSchoolInfo.major || '未设置' }}
               </text>
@@ -94,19 +77,13 @@
         <view v-if="showTargetSchoolsModal" class="modal-mask" @tap="showTargetSchoolsModal = false">
           <view class="modal-content" @tap.stop>
             <view class="modal-header">
-              <text class="modal-title">
-                目标院校管理
-              </text>
-              <text class="close-btn" @tap="showTargetSchoolsModal = false">
-                ✕
-              </text>
+              <text class="modal-title"> 目标院校管理 </text>
+              <text class="close-btn" @tap="showTargetSchoolsModal = false"> ✕ </text>
             </view>
             <view class="modal-body">
               <view v-if="targetSchools.length === 0" class="empty-targets">
                 <text>暂无目标院校</text>
-                <button class="add-btn" @tap="handleAddTargetSchool">
-                  去添加目标院校
-                </button>
+                <button class="add-btn" @tap="handleAddTargetSchool">去添加目标院校</button>
               </view>
               <view v-else class="target-list">
                 <view
@@ -134,9 +111,7 @@
                     </text>
                   </view>
                   <view class="target-actions">
-                    <text class="action-btn delete-btn" @tap="removeTargetSchool(index)">
-                      删除
-                    </text>
+                    <text class="action-btn delete-btn" @tap="removeTargetSchool(index)"> 删除 </text>
                   </view>
                 </view>
               </view>
@@ -149,17 +124,13 @@
           <text class="stat-value">
             {{ studyDays }}
           </text>
-          <text class="stat-label">
-            坚持天数
-          </text>
+          <text class="stat-label"> 坚持天数 </text>
         </view>
         <view class="stat-card" @tap="handleTargetSchoolClick">
           <text class="stat-value">
             {{ targetSchools.length }}
           </text>
-          <text class="stat-label">
-            目标院校
-          </text>
+          <text class="stat-label"> 目标院校 </text>
         </view>
       </view>
     </view>
@@ -167,7 +138,7 @@
     <!-- F002: 好友入口（已提取为独立组件） -->
     <FriendsEntryCard />
 
-    <!-- F002: AI 导师列表（已提取为独立组件） -->
+    <!-- F002: 智能导师列表（已提取为独立组件） -->
     <AITutorList :target-schools="targetSchools" @start-chat="startAIChat" />
 
     <!-- 设置选项 - 优化样式 -->
@@ -176,14 +147,11 @@
         <!-- 语音伴学 -->
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium">
-              AI 语音伴学
-            </text>
-            <text class="setting-desc ds-text-xs">
-              导师回答后自动朗读
-            </text>
+            <text class="setting-title ds-text-sm ds-font-medium"> 智能语音伴学 </text>
+            <text class="setting-desc ds-text-xs"> 导师回答后自动朗读 </text>
           </view>
           <switch
+            id="e2e-settings-voice-switch"
             :color="isDark ? 'var(--primary)' : 'var(--primary)'"
             :checked="isVoiceEnabled"
             @change="toggleVoice"
@@ -193,25 +161,26 @@
         <!-- 深色模式（自动切换 Wise/Bitget 主题） -->
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium">
-              深色模式
-            </text>
-            <text class="setting-desc ds-text-xs">
-              护眼模式，夜间更舒适
-            </text>
+            <text class="setting-title ds-text-sm ds-font-medium"> 深色模式 </text>
+            <text class="setting-desc ds-text-xs"> 护眼模式，夜间更舒适 </text>
           </view>
-          <switch :color="isDark ? 'var(--primary)' : 'var(--primary)'" :checked="isDark" @change="toggleDark" />
+          <switch
+            id="e2e-settings-dark-switch"
+            :color="isDark ? 'var(--primary)' : 'var(--primary)'"
+            :checked="isDark"
+            @change="toggleDark"
+          />
         </view>
 
         <!-- 清除缓存 -->
-        <view class="setting-item ds-flex ds-flex-between ds-touchable" @tap="handleClearCache">
+        <view
+          id="e2e-settings-clear-cache"
+          class="setting-item ds-flex ds-flex-between ds-touchable"
+          @tap="handleClearCache"
+        >
           <view class="setting-info">
-            <text class="setting-title ds-text-sm ds-font-medium">
-              清除缓存数据
-            </text>
-            <text class="setting-desc ds-text-xs">
-              释放存储空间
-            </text>
+            <text class="setting-title ds-text-sm ds-font-medium"> 清除缓存数据 </text>
+            <text class="setting-desc ds-text-xs"> 释放存储空间 </text>
           </view>
           <text class="cache-size ds-text-xs">
             {{ cacheSize }}
@@ -231,24 +200,18 @@
           <text class="deletion-pending-icon">
             <BaseIcon name="warning" :size="32" />
           </text>
-          <text class="deletion-pending-title">
-            账号注销中
-          </text>
+          <text class="deletion-pending-title"> 账号注销中 </text>
         </view>
         <text class="deletion-pending-desc">
           剩余 {{ deletionStatus.remainingDays }} 天后将永久删除所有数据，冷静期内可撤销
         </text>
         <view class="deletion-cancel-btn ds-touchable" @tap="handleCancelDeletion">
-          <text class="deletion-cancel-text">
-            撤销注销
-          </text>
+          <text class="deletion-cancel-text"> 撤销注销 </text>
         </view>
       </view>
       <!-- 正常状态：显示注销按钮 -->
       <view v-else class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
-        <text class="delete-account-text">
-          注销账号
-        </text>
+        <text class="delete-account-text"> 注销账号 </text>
       </view>
     </view>
 
@@ -271,13 +234,8 @@
     <!-- F002: 主题选择器弹窗（已提取为独立组件） -->
     <ThemeSelectorModal :visible="showThemeSelector" @close="showThemeSelector = false" />
 
-    <!-- F002: AI 对话弹窗（已提取为独立组件） -->
-    <AIChatModal
-      :visible="showChat"
-      :tutor="currentTutor"
-      :voice-enabled="isVoiceEnabled"
-      @close="showChat = false"
-    />
+    <!-- F002: 智能对话弹窗（已提取为独立组件） -->
+    <AIChatModal :visible="showChat" :tutor="currentTutor" :voice-enabled="isVoiceEnabled" @close="showChat = false" />
   </view>
 </template>
 
@@ -304,6 +262,7 @@ import { logger } from '@/utils/logger.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // 基础状态
@@ -695,6 +654,30 @@ async function _uploadAvatarToServer(filePath) {
     const userId = storageService.get('EXAM_USER_ID') || userInfo.value?.uid || userInfo.value?._id;
     if (!userId) return;
 
+    const uploadByBase64 = async () => {
+      try {
+        const avatarBase64 = await filePathToBase64(filePath);
+        const avatarType = inferImageMimeType(filePath);
+        const response = await lafService.request('/user-profile', {
+          action: 'upload_avatar',
+          userId,
+          avatar_base64: avatarBase64,
+          avatar_type: avatarType
+        });
+
+        if ((response.code === 0 || response.success) && response.data) {
+          return {
+            success: true,
+            avatarUrl: response.data.avatar_url || response.data.avatarUrl || response.data.url
+          };
+        }
+        return { success: false };
+      } catch (e) {
+        logger.warn('[Settings] base64 avatar upload failed:', e?.message || e);
+        return { success: false };
+      }
+    };
+
     // I005: 使用统一配置获取 API 基础地址（替代硬编码的旧 Laf 域名）
     const baseUrl = config.api.baseUrl;
     const token = storageService.get('EXAM_TOKEN', '');
@@ -706,7 +689,7 @@ async function _uploadAvatarToServer(filePath) {
         name: 'file',
         formData: { userId, type: 'avatar' },
         header: { Authorization: `Bearer ${token}` },
-        success: (r) => {
+        success: async (r) => {
           try {
             const data = JSON.parse(r.data);
             if (data.code === 0 || data.success) {
@@ -715,13 +698,14 @@ async function _uploadAvatarToServer(filePath) {
                 avatarUrl: data.data?.url || data.url || data.avatarUrl
               });
             } else {
-              resolve({ success: false });
+              logger.warn('[Settings] multipart avatar upload failed, fallback to base64');
+              resolve(await uploadByBase64());
             }
           } catch {
-            resolve({ success: false });
+            resolve(await uploadByBase64());
           }
         },
-        fail: () => resolve({ success: false })
+        fail: async () => resolve(await uploadByBase64())
       });
     });
 
@@ -1369,7 +1353,7 @@ const handleClosePosterModal = () => {
   color: white;
 }
 
-/* F002: AI导师列表样式已移至 AITutorList.vue */
+/* F002: 智能导师列表样式已移至 AITutorList.vue */
 
 /* 设置选项列表 */
 .settings-list {
@@ -1635,7 +1619,7 @@ const handleClosePosterModal = () => {
   opacity: 0.8;
 }
 
-/* F002: AI 对话窗样式已移至 AIChatModal.vue */
+/* F002: 智能对话窗样式已移至 AIChatModal.vue */
 
 /* F002: 好友入口卡片样式已移至 FriendsEntryCard.vue */
 

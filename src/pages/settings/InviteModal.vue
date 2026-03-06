@@ -3,34 +3,24 @@
   <view class="modal-mask" :class="{ 'dark-mode': isDark }" @click.self="$emit('close')">
     <view class="modal-container ds-card" @tap.stop>
       <view class="close-btn ds-touchable ds-touch-target ds-flex-center" @click="$emit('close')">
-        <text class="close-icon-text">
-          ✕
-        </text>
+        <text class="close-icon-text"> ✕ </text>
       </view>
 
       <view class="header-brand ds-flex-col ds-flex-center ds-gap-xs">
         <text class="brand-logo-text">
           <BaseIcon name="books" :size="48" />
         </text>
-        <text class="brand-name ds-text-lg ds-font-bold">
-          Exam-Master
-        </text>
+        <text class="brand-name ds-text-lg ds-font-bold"> Exam-Master </text>
       </view>
-      <text class="title ds-text-xl ds-font-bold ds-text-primary">
-        邀请好友，研途有你
-      </text>
-      <text class="subtitle ds-text-sm ds-text-secondary">
-        送TA一份备考神器，并肩作战，一战成硕！
-      </text>
+      <text class="title ds-text-xl ds-font-bold ds-text-primary"> 邀请好友，研途有你 </text>
+      <text class="subtitle ds-text-sm ds-text-secondary"> 送TA一份备考神器，并肩作战，一战成硕！ </text>
 
       <view class="ticket-container">
         <view class="ticket-inner">
           <text class="code-label">
             {{ inviteCode }}
           </text>
-          <text class="code-desc">
-            我的邀请码 (真实可用)
-          </text>
+          <text class="code-desc"> 我的邀请码 (真实可用) </text>
         </view>
       </view>
 
@@ -59,27 +49,21 @@
             }
           "
         />
-        <text class="qr-tip">
-          微信扫一扫，立刻加入
-        </text>
+        <text class="qr-tip"> 微信扫一扫，立刻加入 </text>
       </view>
 
       <view class="wechat-btn" @click="shareToWechat">
         <text class="wechat-icon-text">
           <BaseIcon name="comment" :size="32" />
         </text>
-        <text class="btn-text">
-          分享给微信好友
-        </text>
+        <text class="btn-text"> 分享给微信好友 </text>
       </view>
 
       <view class="poster-btn" @click="openPoster">
         <text class="poster-icon-text">
           <BaseIcon name="image" :size="32" />
         </text>
-        <text class="btn-text">
-          生成分享海报
-        </text>
+        <text class="btn-text"> 生成分享海报 </text>
       </view>
     </view>
   </view>

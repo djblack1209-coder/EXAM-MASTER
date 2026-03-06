@@ -109,16 +109,13 @@ class SelfPositionTracker {
       this.position.isInTop = true;
 
       // 计算超过百分比
-      this.position.percentile = Math.round(
-        ((this.position.totalUsers - newRank) / this.position.totalUsers) * 100
-      );
+      this.position.percentile = Math.round(((this.position.totalUsers - newRank) / this.position.totalUsers) * 100);
 
       // 设置高亮
       this._setHighlight(HIGHLIGHT_TYPE.SELF);
 
       // 更新滚动目标
       this.scrollState.targetIndex = userIndex;
-
     } else {
       // 不在榜单内
       this.position.isInTop = false;
@@ -231,7 +228,6 @@ class SelfPositionTracker {
       await new Promise((resolve) => setTimeout(resolve, ANIMATION_CONFIG.scrollDuration));
 
       return true;
-
     } finally {
       this.scrollState.isScrolling = false;
     }

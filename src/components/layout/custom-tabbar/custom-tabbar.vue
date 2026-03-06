@@ -14,12 +14,7 @@
     "
   >
     <!-- 内层胶囊：唯一可见实体，恢复点击 -->
-    <view
-      class="tabbar-capsule"
-      style="pointer-events: auto"
-      :class="{ 'dark-mode': isDark }"
-      :style="capsuleStyle"
-    >
+    <view class="tabbar-capsule" style="pointer-events: auto" :class="{ 'dark-mode': isDark }" :style="capsuleStyle">
       <view
         v-for="(item, index) in tabList"
         :key="index"
@@ -28,18 +23,8 @@
         @tap="switchTab(item.path, index)"
       >
         <view class="icon-wrapper">
-          <image
-            v-if="resolvedActiveIndex === index"
-            :src="item.selectedIcon"
-            class="tab-icon"
-            mode="aspectFit"
-          />
-          <image
-            v-else
-            :src="item.icon"
-            class="tab-icon"
-            mode="aspectFit"
-          />
+          <image v-if="resolvedActiveIndex === index" :src="item.selectedIcon" class="tab-icon" mode="aspectFit" />
+          <image v-else :src="item.icon" class="tab-icon" mode="aspectFit" />
           <view v-if="item.showDot" class="red-dot" />
         </view>
         <text class="tab-label">
@@ -111,7 +96,7 @@ export default {
       const idx = this.tabList.findIndex((tab) => this.currentRoute.includes(tab.path));
       return idx >= 0 ? idx : 0;
     },
-    // ✅ 审核模式下过滤掉宇宙页入口
+    // ✅ 审核模式下过滤掉隐藏功能入口
     tabList() {
       const allTabs = [
         {
