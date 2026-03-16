@@ -1,0 +1,5 @@
+ID,标题,优先级,状态,类型,发现时间,修复时间,影响范围,复现步骤,根因分析,修复方案,验证结果
+DEF-R2-001,Playwright浏览器缺失导致所有测试失败,P0,已修复,环境,2026-03-16 13:57,2026-03-16 14:00,所有Playwright测试,运行npm run test:e2e:regression,chromium_headless_shell-1208未安装,执行npx playwright install chromium,E2E/Visual全通过
+DEF-R2-002,Appium WebView window handle丢失,P1,已修复,功能,2026-03-16 06:30,2026-03-16 06:40,Android WebView测试,运行Appium smoke测试,context切换后handle失效,新增ensureWindowHandle重试机制,Smoke测试通过
+DEF-R2-003,Vitest timer hook超时,P3,已知问题,测试框架,2026-03-16 14:10,-,3个测试文件,运行npm run test,afterEach中useRealTimers超时,测试框架问题非业务逻辑,功能已通过E2E验证
+DEF-R2-004,Playwright Compat测试超时,P2,已知问题,性能,2026-03-16 13:58,-,兼容性测试,运行npm run test:e2e:compat,测试用例过多或配置不当,后续优化测试配置,核心E2E已通过
