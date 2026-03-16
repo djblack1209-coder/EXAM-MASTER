@@ -27,16 +27,68 @@
 
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { logger } from '@/utils/logger.js';
 
 const splashTimer = ref(null);
 
-onMounted(() => {
-  // 3秒后自动跳转到首页
-  splashTimer.value = setTimeout(() => {
-    uni.reLaunch({
-      url: '/pages/index/index'
+function isVisualSnapshot() {
+  if (typeof location === 'undefined') {
+    return false;
+  }
+  return /visual=1/.test(location.hash || '');
+}
+
+function openHomeTab() {
+  let navigated = false;
+
+  const doNavigate = () => {
+    if (navigated) return;
+    navigated = true;
+    uni.switchTab({
+      url: '/pages/index/index',
+      fail: (err1) => {
+        logger.warn('[Splash] switchTab failed, try reLaunch', err1);
+        uni.reLaunch({
+          url: '/pages/index/index',
+          fail: (err2) => {
+            logger.warn('[Splash] reLaunch failed, try redirectTo', err2);
+            uni.redirectTo({
+              url: '/pages/index/index',
+              fail: (err3) => {
+                logger.error('[Splash] all navigation failed', err3);
+              }
+            });
+          }
+        });
+      }
     });
+  };
+
+  doNavigate();
+
+  // 兜底：如果 3 秒后仍未离开 splash，强制再次跳转
+  setTimeout(() => {
+    if (!navigated) return;
+    // 检查是否仍在 splash 页
+    const pages = typeof getCurrentPages === 'function' ? getCurrentPages() : [];
+    const current = pages.length > 0 ? pages[pages.length - 1] : null;
+    const route = current ? current.route || current.__route__ || '' : '';
+    if (route.includes('splash')) {
+      logger.warn('[Splash] still on splash after 3s, force reLaunch');
+      uni.reLaunch({ url: '/pages/index/index' });
+    }
   }, 3000);
+}
+
+onMounted(() => {
+  if (isVisualSnapshot()) {
+    logger.log('[Splash] visual snapshot mode, skip auto navigation');
+    return;
+  }
+  splashTimer.value = setTimeout(() => {
+    logger.log('[Splash] open home tab');
+    openHomeTab();
+  }, 1200);
 });
 
 // [AUDIT FIX] 页面销毁时清除定时器，防止已卸载页面触发导航
@@ -55,6 +107,7 @@ onBeforeUnmount(() => {
   top: 0;
   left: 0;
   width: 100vw;
+  height: 100%;
   height: 100vh;
   background-color: var(--primary);
   overflow: hidden;
@@ -98,7 +151,13 @@ onBeforeUnmount(() => {
 .loading-dots {
   display: flex;
   margin-top: 24px;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8px;
+  }
 
   .dot {
     width: 8px;
