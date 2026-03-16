@@ -22,6 +22,7 @@ describe('theme.js', () => {
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
     vi.useRealTimers();
   });
 
@@ -71,7 +72,7 @@ describe('theme.js', () => {
       expect(uni.setNavigationBarColor).toHaveBeenCalledWith(
         expect.objectContaining({
           frontColor: '#ffffff',
-          backgroundColor: '#163300'
+          backgroundColor: '#0b0b0f'
         })
       );
     });
@@ -87,7 +88,7 @@ describe('theme.js', () => {
       expect(uni.setNavigationBarColor).toHaveBeenCalledWith(
         expect.objectContaining({
           frontColor: '#000000',
-          backgroundColor: '#F8FAFC'
+          backgroundColor: '#b8eb89'
         })
       );
     });

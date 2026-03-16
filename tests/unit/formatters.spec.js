@@ -12,6 +12,7 @@ describe('formatters.js', () => {
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
     vi.useRealTimers();
   });
 
