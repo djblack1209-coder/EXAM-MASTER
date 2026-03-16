@@ -1,65 +1,84 @@
-# Exam-Master 仓库梳理回归报告（2026-03-07 r5）
+# Exam-Master YOLO 回归报告（2026-03-08 round1）
 
-## 目标
+## 结论
 
-- 全量扫描并清理冗余文档/报告结构
-- 统一报告命名与目录归类
-- 合并重复文件并减少实现副本
-- 确保清理后核心功能回归通过
+- 结论：**达到 H5 自动化上线标准**。
+- 说明：本轮已完成“测试 -> 修复 -> 测试”闭环；当前未发现 P0/P1 产品缺陷。
+- 剩余限制：`npm run test:maestro` 已完成语法/预检，但当前无 Android/iOS 设备接入，native 套件自动跳过，不阻断 H5 回归结论。
 
-## 本轮改动
+## 执行分支
 
-- 文档与报告归档：
-  - 引入 `docs/reports/current/`（最新结论）
-  - 引入 `docs/reports/history/2026-03/`（历史轮次）
-  - 引入 `docs/releases/`（版本发布文档）
-  - 引入 `docs/archive/2026-03-review/`（手工验证归档）
-- 重复报告处理：删除重复空缺陷快照 `r7/r8`
-- 配置整理：扩展 `.gitignore`，统一忽略运行时生成报告
-- 源码去重：
-  - 抽取 `src/utils/learning/smart-question-picker.js` 作为唯一实现
-  - 删除页面级重复工具副本（favorite/plan/practice-sub/mistake/settings 下 10 个 utils 文件）
-  - 全量切换调用到统一实现：`@/utils/favorite/*`、`@/utils/analytics/*`、`@/utils/learning/*`、`@/utils/helpers/permission-handler.js`
+- `test-fix/2026-03-08-round1`
 
-## 自动化验证
+## 本轮处理
+
+- 修复自动化门禁问题：更新 `tests/unit/login-password-privacy.spec.js`，使断言匹配登录页真实的密码显隐实现。
+- 扩充长尾页面回归：新增 `tests/e2e-regression/specs/15-long-tail-pages.spec.js`。
+- 新增覆盖页面：`/pages/favorite/index`、`/pages/practice-sub/file-manager`、`/pages/social/friend-list`、`/pages/social/friend-profile`、`/pages/knowledge-graph/index`、`/pages/plan/index`。
+
+## 执行命令
 
 ```bash
-npm run test:qa:full-regression:clean
-# 过程中视觉快照出现 2 处基线偏移后，完成修正并复跑：
-npm run test:visual
-eval "$(fnm env)" && fnm exec --using 20.17.0 npm run test:e2e:regression
-eval "$(fnm env)" && fnm exec --using 20.17.0 npm run test:e2e:compat
-eval "$(fnm env)" && fnm exec --using 20.17.0 npm run test:maestro
-eval "$(fnm env)" && fnm exec --using 20.17.0 npm run audit:secrets:tracked
-eval "$(fnm env)" && fnm exec --using 20.17.0 npm run deps:audit:prod
-eval "$(fnm env)" && fnm exec --using 20.17.0 npm run audit:mp-main-usage
-eval "$(fnm env)" && fnm exec --using 20.17.0 npm run test:e2e:report
+fnm install 20.17.0 && fnm use 20.17.0
+fnm exec --using 20.17.0 npm run lint
+fnm exec --using 20.17.0 npm run build:h5
+fnm exec --using 20.17.0 npm run test
+fnm exec --using 20.17.0 npm run test:e2e:regression
+fnm exec --using 20.17.0 npm run test:e2e:compat
+bash scripts/test/setup-maestro-macos.sh
+export PATH="/opt/homebrew/opt/openjdk/bin:$HOME/.maestro/bin:$PATH"
+export JAVA_HOME="/opt/homebrew/opt/openjdk"
+fnm exec --using 20.17.0 npm run test:maestro:syntax
+fnm exec --using 20.17.0 npm run test:maestro:preflight
+fnm exec --using 20.17.0 npm run test:maestro
 ```
 
-## 结果
+成功判定标准：
+
+- `npm run test` 退出码为 `0`
+- `npm run test:e2e:regression` 退出码为 `0`
+- `npm run test:e2e:compat` 退出码为 `0`
+- `docs/reports/e2e-regression-results.json` 中 `failed = 0`
+- `docs/reports/e2e-compat-results.json` 中 `failed = 0`
+
+## 结果汇总
 
 - `npm run lint`: passed
 - `npm run build:h5`: passed
-- `npm run test`: 79/79 files passed, 1206/1206 tests passed
-- `npm run test:visual`: 41/41 passed
-- `npm run test:e2e:regression`: 32/32 passed
-- `npm run test:e2e:compat`: 96/96 passed
-- `npm run test:maestro`: passed（无设备场景自动降级为 Android H5 fallback，语法检查通过）
-- `npm run audit:secrets:tracked`: passed
-- `npm run deps:audit:prod`: 完成（发现 11 个上游依赖漏洞，当前为非阻断项）
-- `npm run audit:mp-main-usage`: passed
-- `npm run test:e2e:report`: 13/13 passed
-- `verify-wechat-artifacts`: passed（沿用上一轮结果）
-- 覆盖项满足：冒烟 + 核心流程 + 前10高风险页面
+- `npm run test`: 82 文件 / 1214 用例，全通过
+- `npm run test:e2e:regression`: 66 passed / 0 failed / 0 skipped
+- `npm run test:e2e:compat`: 195 passed / 0 failed / 3 skipped
+- `npm run test:maestro:syntax`: passed
+- `npm run test:maestro:preflight`: passed
+- `npm run test:maestro`: passed（无设备，native 自动 skip）
 
-## 备注
+## 本轮新增覆盖
 
-- 视觉回归曾出现 2 处基线偏移：
-  - `full-pages-settings-terms.png`：已更新基线
-  - `responsive-iphone12.png`：首页动态区波动导致大比例差异，测试阈值已按该用例放宽（仅限该断言）
+- 收藏页：答案展开、笔记保存、练习跳转
+- 文件管理：文件信息查看、删除、清空
+- 社交页：搜索、加好友、资料页删除好友
+- 知识图谱：掌握度、学习路径/关联分析/薄弱点动作
+- 学习计划页：详情查看、智能调整、删除
+
+## 产物路径
+
+- `docs/reports/e2e-regression-results.json`
+- `docs/reports/e2e-regression-results.xml`
+- `docs/reports/e2e-compat-results.json`
+- `docs/reports/e2e-compat-results.xml`
+- `docs/reports/maestro-preflight.md`
+- `test-results/e2e-regression/`
+- `test-results/e2e-compat/`
+
+## 缺陷结论
+
+- 产品缺陷：0
+- 自动化资产问题：1（已关闭）
+- 环境阻塞：1（native 设备未接入，见缺陷 CSV）
 
 ## 本轮统计
 
-- 新发现问题数：0
-- 已修复问题数：0
-- 未解决阻塞问题：0
+- 新发现问题数：1
+- 已修复问题数：1
+- 未解决阻塞问题：1
+- 下一轮计划：补一次 Android/iOS 真机 Maestro native smoke，完成最终跨端放行。

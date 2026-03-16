@@ -1,0 +1,10 @@
+{
+  "contexts": [
+    "NATIVE_APP",
+    "WEBVIEW_com.exam.master"
+  ],
+  "webviewContext": "WEBVIEW_com.exam.master",
+  "handles": [],
+  "title": "",
+  "url": ""
+}

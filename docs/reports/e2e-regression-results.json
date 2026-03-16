@@ -1,0 +1,4497 @@
+{
+  "config": {
+    "configFile": "/Users/blackdj/Desktop/EXAM-MASTER/playwright.regression.config.js",
+    "rootDir": "/Users/blackdj/Desktop/EXAM-MASTER/tests/e2e-regression/specs",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/Users/blackdj/Desktop/EXAM-MASTER/tests/e2e-regression/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "docs/reports/e2e-regression-html",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/reports/e2e-regression-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "docs/reports/e2e-regression-results.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "runAgents": "none",
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.58.2",
+    "workers": 2,
+    "webServer": {
+      "command": "npm run dev:h5",
+      "url": "http://127.0.0.1:5173",
+      "reuseExistingServer": true,
+      "timeout": 180000
+    }
+  },
+  "suites": [
+    {
+      "title": "00-smoke.spec.js",
+      "file": "00-smoke.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-冒烟测试",
+          "file": "00-smoke.spec.js",
+          "line": 20,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SMOKE-001 应用启动并显示首页结构",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3251,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:08.933Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "smoke-home",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-001-应用启动并显示首页结构/attachments/smoke-home-1d10e971a731de5341ae14ad694d0ea61b5332c1.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-001-应用启动并显示首页结构/attachments/network-log-f214900c512cb0d81310c72a984906ef8685578e.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2d4344c4decf7f059886-4133e61a81744e580c47",
+              "file": "00-smoke.spec.js",
+              "line": 21,
+              "column": 3
+            },
+            {
+              "title": "SMOKE-002 刷题页关键入口可见",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12391,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:12.713Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "smoke-practice",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-002-刷题页关键入口可见/attachments/smoke-practice-aa62264f3be80e0cc882bd2d9569b81480f7a99c.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-002-刷题页关键入口可见/attachments/network-log-527758db78ebd1855b9d576c5cb4b439529034bf.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2d4344c4decf7f059886-89eda3f5ee578ef92f5f",
+              "file": "00-smoke.spec.js",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "SMOKE-003 择校页表单可操作",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2657,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:25.111Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "smoke-school",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-003-择校页表单可操作/attachments/smoke-school-1e2b63cbc2ad2eac0d8e4e7e8695f4ab2093750a.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-003-择校页表单可操作/attachments/network-log-35a6e64649a9c24dab77cfce090435c7ab29d220.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2d4344c4decf7f059886-152937ee67e93b3fca4a",
+              "file": "00-smoke.spec.js",
+              "line": 39,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "01-core-flow.spec.js",
+      "file": "01-core-flow.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-核心流程",
+          "file": "01-core-flow.spec.js",
+          "line": 87,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CORE-001 登录页可输入并触发登录动作",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 13901,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:08.918Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "core-login-input",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-001-登录页可输入并触发登录动作/attachments/core-login-input-41ddc457ab1788472f685f01adef90e7c6fbe9c4.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-001-登录页可输入并触发登录动作/attachments/network-log-ce4e93b0d0930fd8bd2409f4bf024dca3a458eb3.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e60e88b8ed7cb958e070-31efde1c1f633498b670",
+              "file": "01-core-flow.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "CORE-002 登录后进入刷题页并打开做题页",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 22765,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:23.348Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "core-practice-to-quiz",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-002-登录后进入刷题页并打开做题页/attachments/core-practice-to-quiz-50be3ea23d388f9af11366fbeb368c4f834dbc3b.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-002-登录后进入刷题页并打开做题页/attachments/network-log-4cbedd6a715676fc0a3874bee7c0bfa2bc26007f.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e60e88b8ed7cb958e070-19c06b25105eafb54325",
+              "file": "01-core-flow.spec.js",
+              "line": 100,
+              "column": 3
+            },
+            {
+              "title": "CORE-003 学习计划结果页可达",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1881,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:46.119Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "core-plan-result-page",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-003-学习计划结果页可达/attachments/core-plan-result-page-36156703d979f710f6cfc6ec52d8d3e48f66d220.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-003-学习计划结果页可达/attachments/network-log-6cbdd450a82d679b09a3ce14aca6fccbc9201fe5.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e60e88b8ed7cb958e070-466c9c11e4b9f91fe5d9",
+              "file": "01-core-flow.spec.js",
+              "line": 137,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "02-exception-flow.spec.js",
+      "file": "02-exception-flow.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-异常流程",
+          "file": "02-exception-flow.spec.js",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "EXC-001 择校空输入触发前端校验",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2185,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:27.786Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "exception-school-empty-input",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-001-择校空输入触发前端校验/attachments/exception-school-empty-input-51d470769ecd81130e0e9f02970e031fbe56c2ad.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-001-择校空输入触发前端校验/attachments/network-log-abac23ab6131deff30f952a009749449d541a2a6.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "562232cc2c0c9429a6f8-0ca64f97077b4054ed20",
+              "file": "02-exception-flow.spec.js",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "EXC-002 文档转换未选文件不能提交",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12112,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:29.977Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "exception-doc-convert-empty-file",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-002-文档转换未选文件不能提交/attachments/exception-doc-convert-empty-file-2aef081570c58fced91991ea9855fafe4c079d4b.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-002-文档转换未选文件不能提交/attachments/network-log-4ebe39c0f057919fa5eb0b63c2a02b520be0bca2.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "562232cc2c0c9429a6f8-9a89b3cf1a0365f35631",
+              "file": "02-exception-flow.spec.js",
+              "line": 28,
+              "column": 3
+            },
+            {
+              "title": "EXC-003 断网后恢复可继续交互",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2854,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:42.094Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "exception-photo-offline",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-003-断网后恢复可继续交互/attachments/exception-photo-offline-aa7b7a9e13a8477f1947c720323efe17bb3fbffa.png"
+                        },
+                        {
+                          "name": "exception-photo-recovered",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-003-断网后恢复可继续交互/attachments/exception-photo-recovered-5eabb38562b1e446cb79b5191e9122daeb95868c.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-003-断网后恢复可继续交互/attachments/network-log-96dc3980cc58119f96bb5ba7fc604f84521949d2.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "562232cc2c0c9429a6f8-f3fa5f03ac2f4b15f18c",
+              "file": "02-exception-flow.spec.js",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "EXC-004 弱网场景页面仍可响应",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14251,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:44.955Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "exception-weak-network-chat",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-004-弱网场景页面仍可响应/attachments/exception-weak-network-chat-aa6498fe236067d8101e34673a6c9a637869fe9f.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-004-弱网场景页面仍可响应/attachments/network-log-114422a5653192f6267dbcb02d84f71be809b612.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "562232cc2c0c9429a6f8-851599312589074bb74f",
+              "file": "02-exception-flow.spec.js",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "EXC-005 智能接口500时聊天页可降级并保持可交互",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4105,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:59.212Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "exception-chat-api-500-fallback",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-005-智能接口500时聊天页可降级并保持可交互/attachments/exception-chat-api-500-fallback-23bff020481fc8af09645bded280f6842246e2c3.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-005-智能接口500时聊天页可降级并保持可交互/attachments/network-log-0c46890532fd6cd065010037cdb381ddc80122b0.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "562232cc2c0c9429a6f8-8d2e5c70e47fca99c565",
+              "file": "02-exception-flow.spec.js",
+              "line": 62,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "03-state-recovery.spec.js",
+      "file": "03-state-recovery.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-状态恢复与幂等",
+          "file": "03-state-recovery.spec.js",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "STATE-001 返回键可回到上一页",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3144,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:48.012Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "state-back-navigation",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-001-返回键可回到上一页/attachments/state-back-navigation-4e89ca148ffa8b8adefcddad2594ffb8a0bf037f.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-001-返回键可回到上一页/attachments/network-log-058189e82ebb9742063a2e9e677183ade35d487b.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e0e5e9b45fed776a7b02-3d2898627057f2f9a190",
+              "file": "03-state-recovery.spec.js",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "STATE-002 快速重复点击不会导致崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1407,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:51.161Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "state-rapid-click",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-002-快速重复点击不会导致崩溃/attachments/state-rapid-click-23ecca250c152cd03b5b0b8d5090fd0c14e808b0.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-002-快速重复点击不会导致崩溃/attachments/network-log-77b1ce3866a78dbc97c6eca0ef500bfe229d6037.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e0e5e9b45fed776a7b02-91aef3a642fb4852870a",
+              "file": "03-state-recovery.spec.js",
+              "line": 27,
+              "column": 3
+            },
+            {
+              "title": "STATE-003 切后台再回来页面仍可继续操作",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2739,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:52.573Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "state-background-resume",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-003-切后台再回来页面仍可继续操作/attachments/state-background-resume-4c838daf98d86a90fb5098606678523529e7de5c.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-003-切后台再回来页面仍可继续操作/attachments/network-log-e2df28182328b6ba0edbe15480b091ad293d7801.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e0e5e9b45fed776a7b02-84c082f5e791abf6f400",
+              "file": "03-state-recovery.spec.js",
+              "line": 40,
+              "column": 3
+            },
+            {
+              "title": "STATE-004 刷新后保留基础会话数据",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2505,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:55.317Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "state-refresh-session",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-004-刷新后保留基础会话数据/attachments/state-refresh-session-5d9202f3d045a2792dbc6b77a819597dbf4ab8b5.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-004-刷新后保留基础会话数据/attachments/network-log-933166eaafad3266a70c7e5c08c25061ee2a8f95.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e0e5e9b45fed776a7b02-463ac7170e135abf5837",
+              "file": "03-state-recovery.spec.js",
+              "line": 50,
+              "column": 3
+            },
+            {
+              "title": "STATE-005 登录按钮快速多次点击仅触发一次请求",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4475,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:19:57.828Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "state-login-debounce",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-005-登录按钮快速多次点击仅触发一次请求/attachments/state-login-debounce-f0669cb6ae2d05e47a1b19f297601c381cc47a70.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-005-登录按钮快速多次点击仅触发一次请求/attachments/network-log-767c3d5ef9d88492c2d5618f3d66acf4427a302a.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e0e5e9b45fed776a7b02-8f9ac3a061ea0eb6c563",
+              "file": "03-state-recovery.spec.js",
+              "line": 60,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "04-performance.spec.js",
+      "file": "04-performance.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-基础性能门禁",
+          "file": "04-performance.spec.js",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "PERF-001 首页首屏时间低于阈值",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2426,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:02.315Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "perf-first-screen-223ms",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-001-首页首屏时间低于阈值/attachments/perf-first-screen-223ms-a4721b41074388356f543b19189ba316a58e589c.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-001-首页首屏时间低于阈值/attachments/network-log-ea66072a519fd2bfcc474578385c1b1378eef248.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a71443d6a770561ca7a-9982fe3c421032af98f2",
+              "file": "04-performance.spec.js",
+              "line": 15,
+              "column": 3
+            },
+            {
+              "title": "PERF-002 首页到刷题页交互响应低于阈值",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 6716,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:04.747Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "perf-home-to-practice-814ms-th1000-samples-826-814",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-002-首页到刷题页交互响应低于阈值/attachments/perf-home-to-practice-814ms-th1000-samples-826-814-560ccec04432e0ac55f15429afaa86a16d811eff.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-002-首页到刷题页交互响应低于阈值/attachments/network-log-302cabafba480a9b1fb0b91626891e27d348e390.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a71443d6a770561ca7a-05a27a957c4c50d759e8",
+              "file": "04-performance.spec.js",
+              "line": 31,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "05-high-risk-pages.spec.js",
+      "file": "05-high-risk-pages.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-高风险页面可达性",
+          "file": "05-high-risk-pages.spec.js",
+          "line": 83,
+          "column": 6,
+          "specs": [
+            {
+              "title": "HR-001 /pages/login/index 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2092,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:03.331Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/login/index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页面可达性-HR-001-pages-login-index-页面渲染/attachments/risk--pages-login-index-308bc1e9237809218abed81f94b3bef24a770f82.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页面可达性-HR-001-pages-login-index-页面渲染/attachments/network-log-224f5f039e91ab3c6b2b13eade52205b2b99637b.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-5e58bd9dfbbe42293496",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-002 /pages/school/index 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2188,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:05.433Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/school/index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-20208-002-pages-school-index-页面渲染/attachments/risk--pages-school-index-7a734107e9a1f61d6a5de96ce31756d04052bfb9.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-20208-002-pages-school-index-页面渲染/attachments/network-log-a1c17db2b73e149349b7838994b6d103fc6d1d5f.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-6db720a2c50b4e85d30e",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-003 /pages/practice-sub/import-data 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2425,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:07.628Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/practice-sub/import-data",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c718a-actice-sub-import-data-页面渲染/attachments/risk--pages-practice-sub-import-data-e983387bbcd051b7c38c5024e504c2047ffb9100.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c718a-actice-sub-import-data-页面渲染/attachments/network-log-f1a075e9004312ea4753c10be7d2532ebe65fb77.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-f867a95851adb7fd49ea",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-004 /pages/practice-sub/do-quiz 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2168,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:10.059Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/practice-sub/do-quiz",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-97d14-s-practice-sub-do-quiz-页面渲染/attachments/risk--pages-practice-sub-do-quiz-08242af858490e54cf1872a53c9cfc6f1dcc6cae.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-97d14-s-practice-sub-do-quiz-页面渲染/attachments/network-log-ab47adf9dbeb5b378c86637fa4141d171d5dbb06.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-74f8cc47f76581a60779",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-005 /pages/practice-sub/pk-battle 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2374,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:12.240Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/practice-sub/pk-battle",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-cca1d-practice-sub-pk-battle-页面渲染/attachments/risk--pages-practice-sub-pk-battle-f9580c10411fca74b5ee5dbcec4cd2531a222a14.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-cca1d-practice-sub-pk-battle-页面渲染/attachments/network-log-f5fa7b1cc55750870087eec49cff7c9ed43aa838.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-7f10acff345c9b3fcacf",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-006 /pages/practice-sub/mock-exam 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1921,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:14.620Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/practice-sub/mock-exam",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-fd119-practice-sub-mock-exam-页面渲染/attachments/risk--pages-practice-sub-mock-exam-f6e76fff4487e59b5c10afc7f38cee2e57ddb7f0.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-fd119-practice-sub-mock-exam-页面渲染/attachments/network-log-20c12f5f811f92eb6d1a3de38d59520c0f465895.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-664b9e9c7f53cdc2d458",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-007 /pages/tools/doc-convert 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2124,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:16.546Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/tools/doc-convert",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-8ef29-ages-tools-doc-convert-页面渲染/attachments/risk--pages-tools-doc-convert-22dd30a6006045468161eb5a253b988aee652143.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-8ef29-ages-tools-doc-convert-页面渲染/attachments/network-log-dcb85954b06e19cfb5a2cdc82394813178850bec.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-daa644355f55a3c932ce",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-008 /pages/tools/photo-search 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1691,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:18.677Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/tools/photo-search",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c97f5-ges-tools-photo-search-页面渲染/attachments/risk--pages-tools-photo-search-f9dc27f69352940f766f27d20f4e6bf2a8de836d.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c97f5-ges-tools-photo-search-页面渲染/attachments/network-log-58af75fa868ac949a3fbfd19c993d9444882aa98.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-33f1d2a1ddda19dbee16",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-009 /pages/tools/id-photo 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1828,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:20.373Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/tools/id-photo",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-8a85f-9-pages-tools-id-photo-页面渲染/attachments/risk--pages-tools-id-photo-8f5d8ef804ebb0201b596b0d6ba6aa00207d4fce.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-8a85f-9-pages-tools-id-photo-页面渲染/attachments/network-log-ab631b4195f80001f507e8c5abd690bbe47a4913.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-a2e798e35daeb102032d",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-010 /pages/settings/index 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2435,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:22.206Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/settings/index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c98ef-0-pages-settings-index-页面渲染/attachments/risk--pages-settings-index-ce216415e63d8a3b3a100956f9e2bf25c1ed97df.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c98ef-0-pages-settings-index-页面渲染/attachments/network-log-cf5a4a6e8727b2cdeedb03cfa547e4b27b692793.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-c5a2c41461a601014bbb",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            },
+            {
+              "title": "HR-011 /pages/chat/chat 页面渲染",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1923,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:24.647Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "risk-/pages/chat/chat",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页面可达性-HR-011-pages-chat-chat-页面渲染/attachments/risk--pages-chat-chat-23f7d681b0ad856aa832fbd1e32c89a70ed30b95.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/05-high-risk-pages-A2-高风险页面可达性-HR-011-pages-chat-chat-页面渲染/attachments/network-log-5fcd933664b024f0eb28c11e3f26a308bcedf384.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ef3de9d0cd4af8d635bc-3be416e7a21b5d80a5f6",
+              "file": "05-high-risk-pages.spec.js",
+              "line": 85,
+              "column": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "06-human-gesture.spec.js",
+      "file": "06-human-gesture.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-人工手势模拟",
+          "file": "06-human-gesture.spec.js",
+          "line": 14,
+          "column": 6,
+          "specs": [
+            {
+              "title": "HUMAN-001 首页上滑后页面保持可交互",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3980,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:11.492Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "human-gesture-home-swipe-up",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/06-human-gesture-A2-人工手势模拟-HUMAN-001-首页上滑后页面保持可交互/attachments/human-gesture-home-swipe-up-4b2c1c65028971191a176533f968983a0250e20b.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/06-human-gesture-A2-人工手势模拟-HUMAN-001-首页上滑后页面保持可交互/attachments/network-log-95008eb2d07c8f515b18637e80f5df1d313211a0.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "08e87d020d766e1f15c6-d6f16ae076b51b94ce69",
+              "file": "06-human-gesture.spec.js",
+              "line": 15,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "07-full-route-coverage.spec.js",
+      "file": "07-full-route-coverage.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-全量页面覆盖与 UI 健康度",
+          "file": "07-full-route-coverage.spec.js",
+          "line": 112,
+          "column": 6,
+          "specs": [
+            {
+              "title": "FULL-ROUTE-001 亮色模式全量路由可达 + UI 健康度检查",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 25909,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:15.491Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/07-full-route-coverage-A2--11416-UTE-001-亮色模式全量路由可达-UI-健康度检查/attachments/network-log-c5ef22e92463ded0640aedd175105ca866eeab8c.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0ffe7e602e38c73d1ed3-5bffbcfed178d4b5734d",
+              "file": "07-full-route-coverage.spec.js",
+              "line": 113,
+              "column": 3
+            },
+            {
+              "title": "FULL-ROUTE-002 深色模式全量路由可达 + UI 健康度检查",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 26055,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:41.405Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/07-full-route-coverage-A2--e7c88-UTE-002-深色模式全量路由可达-UI-健康度检查/attachments/network-log-9b781ae857c3d7d56ba3a8c9efdd6bdb9d112849.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0ffe7e602e38c73d1ed3-0eb9c63f9d5ca953bf04",
+              "file": "07-full-route-coverage.spec.js",
+              "line": 117,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "08-clickable-actions.spec.js",
+      "file": "08-clickable-actions.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-可点击入口真实交互",
+          "file": "08-clickable-actions.spec.js",
+          "line": 24,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CLICK-001 首页工具卡真实点击后可跳转到对应页面",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3817,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:26.585Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/08-clickable-actions-A2-可点-1bff0-LICK-001-首页工具卡真实点击后可跳转到对应页面/attachments/network-log-3e60bc4a0773c0e3af618a32ea9b84c76ecf3e0c.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f16235dc4544951affff-720bd3f0d38eecba048b",
+              "file": "08-clickable-actions.spec.js",
+              "line": 25,
+              "column": 3
+            },
+            {
+              "title": "CLICK-002 刷题页关键入口真实点击后可跳转或打开弹层",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14848,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:30.418Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/08-clickable-actions-A2-可点-2097f-CK-002-刷题页关键入口真实点击后可跳转或打开弹层/attachments/network-log-89fee552ed635c3669e20655d089d6131a1e57a2.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f16235dc4544951affff-9a273eefdb74e86556f2",
+              "file": "08-clickable-actions.spec.js",
+              "line": 55,
+              "column": 3
+            },
+            {
+              "title": "CLICK-003 个人中心菜单真实点击后可跳转",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4171,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:45.273Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/08-clickable-actions-A2-可点击入口真实交互-CLICK-003-个人中心菜单真实点击后可跳转/attachments/network-log-1cfb2e991b76db924031db19196e4c2b82638b72.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f16235dc4544951affff-7a8b2722cec25838a4f8",
+              "file": "08-clickable-actions.spec.js",
+              "line": 82,
+              "column": 3
+            },
+            {
+              "title": "CLICK-004 设置页好友入口真实点击后可跳转",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1711,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:49.451Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/08-clickable-actions-A2-可点击入口真实交互-CLICK-004-设置页好友入口真实点击后可跳转/attachments/network-log-517c6f124815a8dc28ee4d9539276c9019bb5de6.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f16235dc4544951affff-b3f95623fbe56176a180",
+              "file": "08-clickable-actions.spec.js",
+              "line": 104,
+              "column": 3
+            },
+            {
+              "title": "CLICK-005 文档转换页点击选择文件会真实弹出文件选择并更新 UI",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1753,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:51.168Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/08-clickable-actions-A2-可点-2139a--文档转换页点击选择文件会真实弹出文件选择并更新-UI/attachments/network-log-0ef1199065737125027a0d76fabd2d913287888d.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f16235dc4544951affff-6c55f50fa986a5f64f29",
+              "file": "08-clickable-actions.spec.js",
+              "line": 114,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "09-detailed-click-coverage.spec.js",
+      "file": "09-detailed-click-coverage.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-更细颗粒度真实点击覆盖",
+          "file": "09-detailed-click-coverage.spec.js",
+          "line": 75,
+          "column": 6,
+          "specs": [
+            {
+              "title": "DETAIL-001 首页欢迎横幅空题库弹窗与确认跳转可点击",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3746,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:52.945Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-483e6-AIL-001-首页欢迎横幅空题库弹窗与确认跳转可点击/attachments/network-log-9875683ada1ddcd175d3d743576298c45d43fd6d.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-f7f7157b5357a21c1ff0",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 76,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-002 首页欢迎横幅与统计卡真实点击后可跳转",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6593,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:20:56.698Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-99834-TAIL-002-首页欢迎横幅与统计卡真实点击后可跳转/attachments/network-log-3a6783aa42f055c111e5f4dee8bbbda380c51e06.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-7eea70a737dd76a46027",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-003 首页学习卡、推荐卡、金句卡与计划编辑真实点击可响应",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7778,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:03.313Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-17781-3-首页学习卡、推荐卡、金句卡与计划编辑真实点击可响应/attachments/network-log-f1469988991b2c8b7704eb4c209d51703477de90.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-0f3f228082130055b4ab",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 120,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-004 TabBar 四页真实点击切换可达",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4106,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:11.098Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-5f64e-ETAIL-004-TabBar-四页真实点击切换可达/attachments/network-log-259877d0fa136f242b7e4227740aef7c5ac1610e.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-35dc35e56a063696e0ea",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 168,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-005 刷题页剩余菜单与 PK 对战真实点击后可跳转",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6961,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:15.210Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-340a7--005-刷题页剩余菜单与-PK-对战真实点击后可跳转/attachments/network-log-d8eb7a14923b0c5688ecb7587a90f72e3e62050d.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-040e93a4ebfc2150476e",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 190,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-006 练习模式弹层真实点击后可打开并关闭",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24289,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:22.181Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-5f110-ETAIL-006-练习模式弹层真实点击后可打开并关闭/attachments/network-log-a8b9d3eb38c353dffd50a512788a2899df8d81ab.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-d992f9509c387f4c2e96",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 219,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-007 文档转换完整点击流可执行",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1975,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:46.481Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-b94d8-击覆盖-DETAIL-007-文档转换完整点击流可执行/attachments/network-log-921ac29e662a6e7a86a4f0f4acde42bf450b3447.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-2bb3654cddd0b469e78c",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 236,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-008 证件照制作完整点击流可执行",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2147,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:48.464Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-776d4-覆盖-DETAIL-008-证件照制作完整点击流可执行/attachments/network-log-b7ae9f2e1a72e4857819655b8c1e0c560491d38c.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-0aca5221b5a9c3195ecd",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 257,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-009 拍照搜题完整点击流可执行",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1510,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:50.617Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-0bd9c-击覆盖-DETAIL-009-拍照搜题完整点击流可执行/attachments/network-log-955267f4311036bdcc23f694124c7595541bc06d.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-9cf52eb257880213bf18",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 283,
+              "column": 3
+            },
+            {
+              "title": "DETAIL-010 个人中心主题按钮与反馈入口真实点击可响应",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2339,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:52.132Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/09-detailed-click-coverage-1db5d-IL-010-个人中心主题按钮与反馈入口真实点击可响应/attachments/network-log-1f7f9c291e18af70b09192dc9b73fe05d4657ef7.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f0be46d3e20f2df3359-5f814e990a82fab68bbb",
+              "file": "09-detailed-click-coverage.spec.js",
+              "line": 302,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "10-backend-driven-flows.spec.js",
+      "file": "10-backend-driven-flows.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-后端返回重点流转",
+          "file": "10-backend-driven-flows.spec.js",
+          "line": 24,
+          "column": 6,
+          "specs": [
+            {
+              "title": "BACK-001 择校表单提交后真实渲染后端推荐结果，并可进入详情页",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2635,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:07.476Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/10-backend-driven-flows-A2-29a5f-1-择校表单提交后真实渲染后端推荐结果，并可进入详情页/attachments/network-log-17fac7f2acebed87fa7dcdc3de19e66d9743ec62.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c1dd47c5ddeccc840542-ce98a91bdc241bf7f04a",
+              "file": "10-backend-driven-flows.spec.js",
+              "line": 25,
+              "column": 3
+            },
+            {
+              "title": "BACK-002 智能好友聊天真实发送后可渲染后端回复",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2045,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:10.122Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/10-backend-driven-flows-A2-b0d5e-BACK-002-智能好友聊天真实发送后可渲染后端回复/attachments/network-log-44e2b1857a9d8c37fbd3c416745df043cc548e56.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c1dd47c5ddeccc840542-40a248321adacb70c353",
+              "file": "10-backend-driven-flows.spec.js",
+              "line": 48,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "11-login-and-import-precision.spec.js",
+      "file": "11-login-and-import-precision.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-登录与资料导入精细回归",
+          "file": "11-login-and-import-precision.spec.js",
+          "line": 20,
+          "column": 6,
+          "specs": [
+            {
+              "title": "PREC-001 邮箱登录与注册密码输入默认隐藏",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1986,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:12.182Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/11-login-and-import-precis-607d3-回归-PREC-001-邮箱登录与注册密码输入默认隐藏/attachments/network-log-afd9a77f7041787211247f84ec11b96d0d6f4a8c.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "914933e0b0c240b8ccb2-2d6e507aa6e70caa47c2",
+              "file": "11-login-and-import-precision.spec.js",
+              "line": 21,
+              "column": 3
+            },
+            {
+              "title": "PREC-002 邮箱注册发送验证码后显示倒计时并可成功注册",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3545,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:14.174Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/11-login-and-import-precis-d8b65-C-002-邮箱注册发送验证码后显示倒计时并可成功注册/attachments/network-log-ce2285340d97257b16e355edcae025f2841e94d6.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "914933e0b0c240b8ccb2-e4144d8111b30e4b93cb",
+              "file": "11-login-and-import-precision.spec.js",
+              "line": 37,
+              "column": 3
+            },
+            {
+              "title": "PREC-003 验证码发送后按钮进入倒计时而不是假死",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1959,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:17.731Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/11-login-and-import-precis-c9d73-PREC-003-验证码发送后按钮进入倒计时而不是假死/attachments/network-log-0e29846a205c8e426b543d673b8c675329892236.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "914933e0b0c240b8ccb2-b8ff2975224107c4f425",
+              "file": "11-login-and-import-precision.spec.js",
+              "line": 82,
+              "column": 3
+            },
+            {
+              "title": "PREC-004 欢迎横幅进入资料导入页后主卡片与操作栏不重叠",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3153,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:19.696Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/11-login-and-import-precis-cc8f3--004-欢迎横幅进入资料导入页后主卡片与操作栏不重叠/attachments/network-log-29d07a4928eb757f8629bb880941e379c6ffe45b.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "914933e0b0c240b8ccb2-b525b5943bcedf9c9079",
+              "file": "11-login-and-import-precision.spec.js",
+              "line": 100,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "12-full-page-scroll-audit.spec.js",
+      "file": "12-full-page-scroll-audit.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-全页面滚动截图巡检",
+          "file": "12-full-page-scroll-audit.spec.js",
+          "line": 89,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SCROLL-001 全声明页面支持人工式滑动巡检并截图留档",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 300000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 90001,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:22.868Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "scroll-audit-top-pages-splash-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-splash-index-fbbf68f0abed6f07a1e55e487fb2c5eb6586d2dd.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-splash-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-splash-index-8f9585cc0a66ce1af5248445f7a226650e050f66.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-index-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-index-index-25bceec0341a0c627427ff193f957647add34625.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-index-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-index-index-2b8fcc461fcf3ea3aae83b1b0fdbfd278078cf50.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-practice-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-practice-index-a6aeab17bce65c457ab34aeb5764bd97e474ba59.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-practice-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-practice-index-02436654b0250cec3d92b63549faf3ea7de9cac5.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-school-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-school-index-62da5a1ce7a346b032cca76462d5f10d2c9681af.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-school-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-school-index-7929f3a48c3df526c084ca1e497a3622eb5a8544.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-profile-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-profile-index-6001737a7f8883b878abd8859c870c57172fab85.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-profile-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-profile-index-7f1917df701496831b47656b2c0a7eef5cd8d72f.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-practice-sub-do-quiz",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-practice-sub-do-quiz-cc4a4b2d6392d2d4503412c884a9a516b8746a1d.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-practice-sub-do-quiz",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-practice-sub-do-quiz-d4206d6af61f3ec6be6981f61854c1f9949683a1.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-practice-sub-pk-battle",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-practice-sub-pk-battle-12dec369106d07a476cac0456b7cfdcfe63f6500.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-practice-sub-pk-battle",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-practice-sub-pk-battle-45577f409061a8abc7a687375cb747e5b45ec509.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-practice-sub-rank",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-practice-sub-rank-f4e0de2057f6a4fd58d95be63a068c1b29762f21.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-practice-sub-rank",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-practice-sub-rank-c9825fac3bd652155badf52a8596e8549718d811.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-practice-sub-import-data",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-practice-sub-import-data-8fd4b4a4fca942c1c1722bf8a8c7a32e10cf2d57.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-practice-sub-import-data",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-practice-sub-import-data-092729a54ff722406cea0c5afd748cde76f1e014.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-practice-sub-file-manager",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-practice-sub-file-manager-09cb1f4c98517d40d844d3b1bb99921d2325f76d.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-practice-sub-file-manager",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-practice-sub-file-manager-e790cb3b2318cfe31e1a04e36ccf76823b6cab77.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-practice-sub-mock-exam",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-practice-sub-mock-exam-ea196aacff7cacdf6d587c857701f78372a80fc7.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-practice-sub-mock-exam",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-practice-sub-mock-exam-8239eb2df7fdd6f94805f78684f61f4960d8845c.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-school-sub-detail",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-school-sub-detail-c1c1d27f3c819aa2c9549640da5fc53ff400e584.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-school-sub-detail",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-school-sub-detail-bab4508f3cd3026f7d5f9c32f06cf3f9bf2ec5d1.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-login-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-login-index-0c520adb495e7570ab7117cd829cb32fe92ddaa7.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-login-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-login-index-0ed445453e4009afe840b56fa952c9378a73643d.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-login-wechat-callback",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-login-wechat-callback-367cae6ccbc606f653e9d3f20c9050c8fddc1368.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-login-wechat-callback",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-login-wechat-callback-0ec7c935e52d8391b2dedde6495fc44f78e5ce81.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-login-qq-callback",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-login-qq-callback-b51874ad0961e8a50e7148f05a3cfedf2dc6e6e8.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-login-qq-callback",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-login-qq-callback-62125af1780e06d6859d8c5f1f107d9df84b0b64.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-settings-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-settings-index-3beb59f250bdbb6b9d3bf4f892efe76543130fb1.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-settings-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-settings-index-5d0942d43e3ee32f29df0b6430520e06eddc24fd.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-settings-privacy",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-settings-privacy-eb5c8c1e2903abb2acaee562cabf67ea18b6d7c9.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-settings-privacy",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-settings-privacy-013a2c0df4eb2d5b10a0e00f01124adba5cf59bc.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-settings-terms",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-settings-terms-589233e2095391ec348b1f9930171c33ef43abe3.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-settings-terms",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-settings-terms-ca9c8ad36ab403eb95c080af36fe13c40d863f24.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-social-friend-list",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-social-friend-list-6b0397cf40d601eca11af19f75de63bbd12f4713.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-social-friend-list",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-social-friend-list-981aede3733bcf6c5117687345d022f4f73e6d78.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-social-friend-profile",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-social-friend-profile-6d888776d25b7e73d95cccd21349da4aa474ca2a.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-social-friend-profile",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-social-friend-profile-87d447616927f29668939390bea10f55c5ad9397.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-chat-chat",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-chat-chat-00396d12575d5e864711b7d37cb80af04ed43906.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-chat-chat",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-chat-chat-303f4d8a239d2d85d191bc5acd38bc83833fc30c.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-mistake-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-mistake-index-a1dcbf7513f215c1d4daa3278e417268477abbd1.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-mistake-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-mistake-index-f74fb78408524c92d064ae24e4e4068618e76f7a.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-favorite-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-favorite-index-26695eb8df49adffe0b216e77a4ddf37790272c8.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-favorite-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-favorite-index-1c25345bb150c1a60bfe5cc0e9279ca4bc418028.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-plan-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-plan-index-af1ab51fc561956bc2fae574f548135520100994.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-plan-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-plan-index-305368ff7d08cc381e10440d78d8fc340446cbc8.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-plan-create",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-plan-create-e53278359efa2a3b5cb08ca2afb6166704a6d53c.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-plan-create",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-plan-create-e23c4bbbfa64719e927d1ad7a95e257107f2d626.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-study-detail-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-study-detail-index-31286d64b1c5588c28b151414fd2426794f1e98d.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-study-detail-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-study-detail-index-3b9d309c4362ef92e1f1632042a7000afe849ece.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-tools-photo-search",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-tools-photo-search-39bc068b956a0835e6817370fe25984a00126d3b.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-tools-photo-search",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-tools-photo-search-2999a0f74127379b943c2c49d00215dee76856ff.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-tools-doc-convert",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-tools-doc-convert-0b4de0694ddf9be95652b13e946557f83724b5aa.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-tools-doc-convert",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-tools-doc-convert-595ca56556a6c8a3287f5488479c6a04ad481076.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-tools-id-photo",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-tools-id-photo-84b3885c9b44dff86334167377b4ea390a7dfa35.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-tools-id-photo",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-tools-id-photo-37cce398fbb66da380a9b1da29f3e81b182d33ec.png"
+                        },
+                        {
+                          "name": "scroll-audit-top-pages-knowledge-graph-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-knowledge-graph-index-b3511c5fd8b89b7f69e1f750d3916675a9d0b65a.png"
+                        },
+                        {
+                          "name": "scroll-audit-bottom-pages-knowledge-graph-index",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-bottom-pages-knowledge-graph-index-55ac80179e0efc0349edb0451f7ee5a1a46e9e34.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/network-log-e63c7252de089a097a89718663c114c87fa033b0.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6753434187b2ba60afa0-e4566ab107d54263394c",
+              "file": "12-full-page-scroll-audit.spec.js",
+              "line": 90,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "13-profile-settings-actions.spec.js",
+      "file": "13-profile-settings-actions.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-个人中心与设置页精细交互",
+          "file": "13-profile-settings-actions.spec.js",
+          "line": 89,
+          "column": 6,
+          "specs": [
+            {
+              "title": "PROFILE-SET-001 登录页协议链接、个人中心反馈与设置菜单都可触达",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3920,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:54.495Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/13-profile-settings-action-e8142-001-登录页协议链接、个人中心反馈与设置菜单都可触达/attachments/network-log-64bfa5f96d81309eb72bc3897358560e363dcfea.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1fc32bd738899e74092a-ab374d916d0785d406a7",
+              "file": "13-profile-settings-actions.spec.js",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "PROFILE-SET-002 个人中心主题切换、退出确认与打卡按钮可响应",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2067,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:21:58.421Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/13-profile-settings-action-34345-T-002-个人中心主题切换、退出确认与打卡按钮可响应/attachments/network-log-8ee981280ec00b5eb4e897f441ffeeb66e2205d6.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1fc32bd738899e74092a-c1635b350a1430a835f0",
+              "file": "13-profile-settings-actions.spec.js",
+              "line": 115,
+              "column": 3
+            },
+            {
+              "title": "PROFILE-SET-003 设置页开关、清缓存、目标院校弹窗与注销确认可响应",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3386,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:00.494Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/13-profile-settings-action-d069e-03-设置页开关、清缓存、目标院校弹窗与注销确认可响应/attachments/network-log-d13a2d0d10bd363c650d887685bd08ddf5709cd3.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1fc32bd738899e74092a-d6c782de73e30cba156a",
+              "file": "13-profile-settings-actions.spec.js",
+              "line": 135,
+              "column": 3
+            },
+            {
+              "title": "PROFILE-SET-004 设置页目标院校删除与注销撤销状态可自动验证",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3413,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:03.885Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/13-profile-settings-action-1653f-T-004-设置页目标院校删除与注销撤销状态可自动验证/attachments/network-log-fefc441fdf517855a01d6bc17f05e2f05c4457ca.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1fc32bd738899e74092a-b8f41d2f272d79cb803e",
+              "file": "13-profile-settings-actions.spec.js",
+              "line": 167,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "14-share-and-native-fallbacks.spec.js",
+      "file": "14-share-and-native-fallbacks.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-分享与原生降级链路",
+          "file": "14-share-and-native-fallbacks.spec.js",
+          "line": 41,
+          "column": 6,
+          "specs": [
+            {
+              "title": "SHARE-001 首页每日金句分享面板可打开并关闭",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2641,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:07.311Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/14-share-and-native-fallba-a3676--SHARE-001-首页每日金句分享面板可打开并关闭/attachments/network-log-15bc1ccf7cef0a9fbd6d816cf95930c115bdd5cf.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6eaa06a58bb7b3f510b0-87c65dff12fcb85799d7",
+              "file": "14-share-and-native-fallbacks.spec.js",
+              "line": 42,
+              "column": 3
+            },
+            {
+              "title": "SHARE-002 院校详情页分享按钮在 H5 下优先分享，失败时回退复制",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2008,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:09.958Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/14-share-and-native-fallba-4204c-院校详情页分享按钮在-H5-下优先分享，失败时回退复制/attachments/network-log-8e73291b6bde65430db504b3e54481efb832f544.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6eaa06a58bb7b3f510b0-bfb9b4a838be9b3f3771",
+              "file": "14-share-and-native-fallbacks.spec.js",
+              "line": 58,
+              "column": 3
+            },
+            {
+              "title": "SHARE-003 登录页隐私政策与用户协议链接持续可访问",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2562,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:11.974Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/14-share-and-native-fallba-9ed2d-ARE-003-登录页隐私政策与用户协议链接持续可访问/attachments/network-log-fe6a8b954dd7660ac1d50fb5f25ac0f274397029.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6eaa06a58bb7b3f510b0-026a83236ae3fd2b9a0c",
+              "file": "14-share-and-native-fallbacks.spec.js",
+              "line": 83,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "15-long-tail-pages.spec.js",
+      "file": "15-long-tail-pages.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "A2-长尾页面深度回归",
+          "file": "15-long-tail-pages.spec.js",
+          "line": 247,
+          "column": 6,
+          "specs": [
+            {
+              "title": "LONG-001 收藏页支持答案展开、笔记保存与跳转练习",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2677,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:14.551Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/15-long-tail-pages-A2-长尾页面深度回归-LONG-001-收藏页支持答案展开、笔记保存与跳转练习/attachments/network-log-3e4a3f112d15ab5317badde429a6b26e2fec9e30.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "23ec49d9a1db2a38bd28-b7f6e70ff045a1e1bf78",
+              "file": "15-long-tail-pages.spec.js",
+              "line": 248,
+              "column": 3
+            },
+            {
+              "title": "LONG-002 文件管理页支持查看文件信息、删除与清空",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2090,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:17.233Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/15-long-tail-pages-A2-长尾页面深度回归-LONG-002-文件管理页支持查看文件信息、删除与清空/attachments/network-log-14f0b86bb597aa1fd80e294f6a897ad54109da61.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "23ec49d9a1db2a38bd28-4cf7ca72e54f211b0e2f",
+              "file": "15-long-tail-pages.spec.js",
+              "line": 266,
+              "column": 3
+            },
+            {
+              "title": "LONG-003 好友页支持搜索加好友、查看资料与删除好友",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4507,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:19.328Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/15-long-tail-pages-A2-长尾页面深度回归-LONG-003-好友页支持搜索加好友、查看资料与删除好友/attachments/network-log-e0745719f826dcbdf9976e9e6dedbf8cd9a4c3bc.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "23ec49d9a1db2a38bd28-29ac5a8bf97d0aed6a6b",
+              "file": "15-long-tail-pages.spec.js",
+              "line": 286,
+              "column": 3
+            },
+            {
+              "title": "LONG-004 知识图谱支持掌握度查看、节点详情与练习跳转",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2888,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:23.841Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/15-long-tail-pages-A2-长尾页面-631ed-G-004-知识图谱支持掌握度查看、节点详情与练习跳转/attachments/network-log-092af2e00f5da5df9b9335285e811d95523a1e82.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "23ec49d9a1db2a38bd28-813d2056374347cd5205",
+              "file": "15-long-tail-pages.spec.js",
+              "line": 311,
+              "column": 3
+            },
+            {
+              "title": "LONG-005 学习计划支持详情查看、智能调整与删除",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2572,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:26.736Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/15-long-tail-pages-A2-长尾页面深度回归-LONG-005-学习计划支持详情查看、智能调整与删除/attachments/network-log-ccbdca3403268a5d2ad416dacbbb69cdc8a97d40.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "23ec49d9a1db2a38bd28-39ff16cadb370e49c10d",
+              "file": "15-long-tail-pages.spec.js",
+              "line": 336,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "16-gap-coverage.spec.js",
+      "file": "16-gap-coverage.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "GAP-P0 核心流程补充",
+          "file": "16-gap-coverage.spec.js",
+          "line": 47,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GAP-01 择校完整流程: 填表→提交→AI推荐→院校详情",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 17952,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:29.325Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-01-school-full-flow",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-01-择校完整流程-填表→提交→AI推荐→院校详情/attachments/gap-01-school-full-flow-a7b294285027de30b848eae99392b36637ad29a0.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-01-择校完整流程-填表→提交→AI推荐→院校详情/attachments/network-log-9971172aa126ebf0550bebc18eb62b33e92c2c60.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-baa7757343b9211f2f40",
+              "file": "16-gap-coverage.spec.js",
+              "line": 48,
+              "column": 3
+            },
+            {
+              "title": "GAP-02 错题本: 页面可达且空状态正确展示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1732,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:47.284Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-02-mistake-book",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-02-错题本-页面可达且空状态正确展示/attachments/gap-02-mistake-book-4c80c5c4f59374c5aaf8b31a1844c7538a7483b2.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-02-错题本-页面可达且空状态正确展示/attachments/network-log-336cad93613c30104ca7563240fa1585a56d0139.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-93f8ddede6d812fdf0cd",
+              "file": "16-gap-coverage.spec.js",
+              "line": 103,
+              "column": 3
+            },
+            {
+              "title": "GAP-05 Token过期: 清除token后访问需登录页应重定向或提示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2509,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:49.022Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-05-token-expired",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流-829bf-ken过期-清除token后访问需登录页应重定向或提示/attachments/gap-05-token-expired-049584f5a4feb25e64a6a19ae6509587b7b94e78.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流-829bf-ken过期-清除token后访问需登录页应重定向或提示/attachments/network-log-db132f1cfb63eefb4041b5e429e86d9a2d0642a0.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-0db4afaf4d0e5e689662",
+              "file": "16-gap-coverage.spec.js",
+              "line": 114,
+              "column": 3
+            },
+            {
+              "title": "GAP-07 做题进度恢复: 有题库时进入做题页可看到进度UI",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2323,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:51.543Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-07-quiz-progress",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-07-做题进度恢复-有题库时进入做题页可看到进度UI/attachments/gap-07-quiz-progress-7a1e3297c98207944d61e9e61abba32da6dcb8e5.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-07-做题进度恢复-有题库时进入做题页可看到进度UI/attachments/network-log-3372e977f69d1eaa742107d06cb53a2587114768.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-4475008b79092e4ceec2",
+              "file": "16-gap-coverage.spec.js",
+              "line": 140,
+              "column": 3
+            },
+            {
+              "title": "GAP-13 XSS防护: 聊天输入脚本标签不会执行",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3313,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:53.876Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-13-xss-prevention",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-13-XSS防护-聊天输入脚本标签不会执行/attachments/gap-13-xss-prevention-7d01b0aeab0901842e9c21ef26312fa64c14422a.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-13-XSS防护-聊天输入脚本标签不会执行/attachments/network-log-767d7775466425e27cd2a597757fb2bdc1f92f2c.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-ef31116eef5aa94ddc29",
+              "file": "16-gap-coverage.spec.js",
+              "line": 162,
+              "column": 3
+            },
+            {
+              "title": "GAP-14 未登录访问需登录页: 应显示登录提示或降级",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4261,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:57.196Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-14-unauthenticated-access",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-14-未登录访问需登录页-应显示登录提示或降级/attachments/gap-14-unauthenticated-access-a1bd83deca61059a6d47e3866c314b963abe23c2.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-14-未登录访问需登录页-应显示登录提示或降级/attachments/network-log-3331b4be4db384b4f9c8475deee35f4ec3cd0f8f.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-3c27424a3ab174c8ea59",
+              "file": "16-gap-coverage.spec.js",
+              "line": 207,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "GAP-P1 次要流程补充",
+          "file": "16-gap-coverage.spec.js",
+          "line": 243,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GAP-03 PK对战: 页面可达且核心UI元素存在",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3079,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:01.464Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-03-pk-battle",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-03-PK对战-页面可达且核心UI元素存在/attachments/gap-03-pk-battle-66c74ae60c9845d74d92aa2ad2d0c5f67b973b5d.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-03-PK对战-页面可达且核心UI元素存在/attachments/network-log-25e5b364cb35e79574fca59411bf991feab22e78.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-38429e43184f8a2f5d65",
+              "file": "16-gap-coverage.spec.js",
+              "line": 245,
+              "column": 3
+            },
+            {
+              "title": "GAP-04 模拟考试: 页面可达且核心UI元素存在",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2477,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:04.554Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-04-mock-exam",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-04-模拟考试-页面可达且核心UI元素存在/attachments/gap-04-mock-exam-6f7be5581debe55baba17189a2750fe0a2c79fd7.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-04-模拟考试-页面可达且核心UI元素存在/attachments/network-log-31f9f49a485e019edc8431e6349508f5cf3a16b5.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-53e0f37769b7e0792325",
+              "file": "16-gap-coverage.spec.js",
+              "line": 256,
+              "column": 3
+            },
+            {
+              "title": "GAP-06 接口超时: 页面显示loading或超时提示而非白屏",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2728,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:07.036Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-06-api-timeout",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流-8ed78-6-接口超时-页面显示loading或超时提示而非白屏/attachments/gap-06-api-timeout-72de99faf5f142e74991de6e41ed8c3715dfa909.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流-8ed78-6-接口超时-页面显示loading或超时提示而非白屏/attachments/network-log-06d9ac88f8bfbce2c797a1d9e35cdcd054622c7a.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-641aaec97746371ad8b9",
+              "file": "16-gap-coverage.spec.js",
+              "line": 267,
+              "column": 3
+            },
+            {
+              "title": "GAP-08 学习计划创建: 表单可填写且保存按钮可点击",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12049,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:09.772Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-08-plan-create-form",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-08-学习计划创建-表单可填写且保存按钮可点击/attachments/gap-08-plan-create-form-fb8f64dd440b29f46d99e69a1e0df89bbedcb9e4.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-08-学习计划创建-表单可填写且保存按钮可点击/attachments/network-log-6117ce05543b65e2b5d25437c8e128b4aea7f080.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-b221deab0211c9ba800d",
+              "file": "16-gap-coverage.spec.js",
+              "line": 290,
+              "column": 3
+            },
+            {
+              "title": "GAP-09 首页下拉刷新: 触发后页面不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4092,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:21.828Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-09-pull-refresh",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-09-首页下拉刷新-触发后页面不崩溃/attachments/gap-09-pull-refresh-4b78aa96da2cc0d9964c6c102b3f0a9d893e2dae.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-09-首页下拉刷新-触发后页面不崩溃/attachments/network-log-11cd5f5cfe15bd41afee99ddd08b16c536bcc871.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-816e89c3d3ddb696c731",
+              "file": "16-gap-coverage.spec.js",
+              "line": 307,
+              "column": 3
+            },
+            {
+              "title": "GAP-10 聊天页滑动: 页面可滑动且不崩溃",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2981,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:25.926Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-10-chat-scroll",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-10-聊天页滑动-页面可滑动且不崩溃/attachments/gap-10-chat-scroll-c7a02f8a81b7ce9ba9b4e0c9a4a17a8c19748a4c.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-10-聊天页滑动-页面可滑动且不崩溃/attachments/network-log-83874d2d7ac79fd381e229f31e871572f73919bb.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-3295adba68b9154479df",
+              "file": "16-gap-coverage.spec.js",
+              "line": 327,
+              "column": 3
+            },
+            {
+              "title": "GAP-11 375px布局: 关键页面无水平溢出",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5375,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:28.912Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-11-375px-compat",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-11-375px布局-关键页面无水平溢出/attachments/gap-11-375px-compat-5373b8e2afa21a88b672ab8bf8f8c3e5ade5c7fb.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-11-375px布局-关键页面无水平溢出/attachments/network-log-1ad25efc8d186dc4bbab56eea543ca5746b8f77d.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-7019a4b52336671aa035",
+              "file": "16-gap-coverage.spec.js",
+              "line": 343,
+              "column": 3
+            },
+            {
+              "title": "GAP-15 空题库: 各页面空状态正确展示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 13855,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:34.292Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-15-empty-state",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-15-空题库-各页面空状态正确展示/attachments/gap-15-empty-state-67e54a62292c2d72a81ee3dd476831a11d15cbb9.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-15-空题库-各页面空状态正确展示/attachments/network-log-43c3d76190cfd88adfd4e963e9832f1e7cfc9809.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-86cd7a4859296759d345",
+              "file": "16-gap-coverage.spec.js",
+              "line": 365,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "GAP-P2 兼容性补充",
+          "file": "16-gap-coverage.spec.js",
+          "line": 387,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GAP-12 414px布局: 关键页面无水平溢出",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4806,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:48.152Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "gap-12-414px-compat",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P2-兼容性补充-GAP-12-414px布局-关键页面无水平溢出/attachments/gap-12-414px-compat-9aa432a8a191b954e1741c01df59034fcaf02448.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/16-gap-coverage-GAP-P2-兼容性补充-GAP-12-414px布局-关键页面无水平溢出/attachments/network-log-f76d15554b118b1750aecc049482b9e57f146237.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "b7a6a49dedbbb2940124-09356c08dae9e7bee78b",
+              "file": "16-gap-coverage.spec.js",
+              "line": 389,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "17-deep-feature-flows.spec.js",
+      "file": "17-deep-feature-flows.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "深度功能流程 — 真实用户操作模拟",
+          "file": "17-deep-feature-flows.spec.js",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "DEEP-01 上传题库完整流程: 选文件→解析→生成题目→进入刷题",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3311,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:52.886Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "deep-01-import-data-flow",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-958c3-1-上传题库完整流程-选文件→解析→生成题目→进入刷题/attachments/deep-01-import-data-flow-10da0938d58cbbeb48724a045f2b8c790f06ea6f.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-958c3-1-上传题库完整流程-选文件→解析→生成题目→进入刷题/attachments/network-log-32bcbd6a5e95bb76a812236f66a6c6e912ec45bb.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "79519c264ff3084047fc-af5afe9e8378c745331e",
+              "file": "17-deep-feature-flows.spec.js",
+              "line": 20,
+              "column": 3
+            },
+            {
+              "title": "DEEP-02 拍照搜题完整流程: 选图→识别→显示结果→AI解析",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2395,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:56.203Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "deep-02-photo-search-flow",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-d068d-02-拍照搜题完整流程-选图→识别→显示结果→AI解析/attachments/deep-02-photo-search-flow-c142d6700d274b9f7e231904575fc166afe0f455.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-d068d-02-拍照搜题完整流程-选图→识别→显示结果→AI解析/attachments/network-log-5cf1ee96b4e2984d68d4dfd5735d6cce70205d47.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "79519c264ff3084047fc-9920785a15c759eee2e7",
+              "file": "17-deep-feature-flows.spec.js",
+              "line": 65,
+              "column": 3
+            },
+            {
+              "title": "DEEP-03 文档转换完整流程: 选文件→选格式→转换→轮询→结果",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2718,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:22:58.604Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "deep-03-doc-convert-flow",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-b7ca1-3-文档转换完整流程-选文件→选格式→转换→轮询→结果/attachments/deep-03-doc-convert-flow-cd396422f3f12052338603959f314d7a407163d4.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-b7ca1-3-文档转换完整流程-选文件→选格式→转换→轮询→结果/attachments/network-log-bbde0fb3ca44eda5a92d891a510dfd0f68cd1eba.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "79519c264ff3084047fc-e48b8511c4ed90c48d18",
+              "file": "17-deep-feature-flows.spec.js",
+              "line": 101,
+              "column": 3
+            },
+            {
+              "title": "DEEP-04 证件照完整流程: 选照片→选尺寸→选颜色→制作→保存",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2561,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:01.328Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "deep-04-id-photo-flow",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-4938d-4-证件照完整流程-选照片→选尺寸→选颜色→制作→保存/attachments/deep-04-id-photo-flow-e4c77cf7b674b6b4ded2c65b402059d76425150d.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-4938d-4-证件照完整流程-选照片→选尺寸→选颜色→制作→保存/attachments/network-log-b91003c300fa1b4d0977b2e56918bc6a679de039.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "79519c264ff3084047fc-2ba1a18811b1cc55bc12",
+              "file": "17-deep-feature-flows.spec.js",
+              "line": 135,
+              "column": 3
+            },
+            {
+              "title": "DEEP-05 AI聊天完整流程: 输入→发送→等待→回复→重试",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4527,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:03.895Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "deep-05-chat-flow",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-9279c--05-AI聊天完整流程-输入→发送→等待→回复→重试/attachments/deep-05-chat-flow-67729982dd5967f6af8e3c64ddbe4eba8f712110.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-9279c--05-AI聊天完整流程-输入→发送→等待→回复→重试/attachments/network-log-32eef2d58511ca85dbc26f325ee0bdee9f1bd975.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "79519c264ff3084047fc-d4cdd19f7f0e49cc3a9d",
+              "file": "17-deep-feature-flows.spec.js",
+              "line": 188,
+              "column": 3
+            },
+            {
+              "title": "DEEP-06 语音输入流程: 验证录音按钮和权限提示",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2157,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:08.429Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "deep-06-voice-input-ui",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-846b8--DEEP-06-语音输入流程-验证录音按钮和权限提示/attachments/deep-06-voice-input-ui-5492c75a1399118558a466fd12d20b2515b13e95.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-846b8--DEEP-06-语音输入流程-验证录音按钮和权限提示/attachments/network-log-7610e1e860d753b5c726ad1ef5aff2e99bad2fda.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "79519c264ff3084047fc-003705367849917a715e",
+              "file": "17-deep-feature-flows.spec.js",
+              "line": 240,
+              "column": 3
+            },
+            {
+              "title": "DEEP-07 完整刷题流程: 有题库→开始刷题→答题→查看解析→下一题",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 6314,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-03-15T15:23:10.594Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "deep-07-quiz-full-flow",
+                          "contentType": "image/png",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-b9958-完整刷题流程-有题库→开始刷题→答题→查看解析→下一题/attachments/deep-07-quiz-full-flow-5ff03156311599f5c15542852f83e7ae43220f1f.png"
+                        },
+                        {
+                          "name": "network-log",
+                          "contentType": "application/json",
+                          "path": "/Users/blackdj/Desktop/EXAM-MASTER/test-results/e2e-regression/17-deep-feature-flows-深度功能-b9958-完整刷题流程-有题库→开始刷题→答题→查看解析→下一题/attachments/network-log-51f5aa77e4fcdf822f32f0e3e35ef0d02f071513.json"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "79519c264ff3084047fc-f885785f1badd5dfa476",
+              "file": "17-deep-feature-flows.spec.js",
+              "line": 265,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-03-15T15:19:06.176Z",
+    "duration": 287082.944,
+    "expected": 88,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

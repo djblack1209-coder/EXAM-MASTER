@@ -1,29 +1,23 @@
-# Maestro Device Preflight (r10)
+# Maestro Preflight
 
-## Environment
+- Generated at: 2026-03-15 15:07:41 +0800
+- adb available: yes
 
-- Device: `emulator-5554`
-- Source: `adb devices -l`
-
-## Device Check
+## Connected Devices
 
 ```text
 List of devices attached
-emulator-5554          device product:sdk_gphone64_arm64 model:sdk_gphone64_arm64 device:emu64a transport_id:1
+96304553               device usb:1-1 product:vili_global model:2107113SG device:vili transport_id:1
 ```
 
-## Package Check
+## Third-party Packages
 
-- Command: `adb shell pm list packages -3`
-- Result: no output (no third-party packages installed)
+- Count: 37
 
-## Conclusion
+```text
+(none)
+```
 
-- Current emulator does not contain installable Exam-Master native app package.
-- Native Maestro cannot be fully executed in this environment yet.
-- `npm run test:maestro` therefore uses H5 fallback and still produces JUnit report (`docs/reports/maestro-results.xml`).
+## Heuristic
 
-## Automation
-
-- This preflight is now automated via `npm run test:maestro:preflight`.
-- Latest auto-generated output path: `docs/reports/maestro-preflight.md`.
+- Candidate keywords: exam / master / kaoyan / uni
