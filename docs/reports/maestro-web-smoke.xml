@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="1" failures="0" errors="0" skipped="1">
+  <testsuite name="maestro-web-h5" tests="1" failures="0" errors="0" skipped="1">
+    <testcase classname="maestro" name="10-web-h5-smoke">
+      <skipped message="No Android device/emulator connected"/>
+    </testcase>
+  </testsuite>
+</testsuites>
