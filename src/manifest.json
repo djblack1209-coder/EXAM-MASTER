@@ -1,1 +1,165 @@
-../manifest.json
+{
+  "name": "Exam-Master",
+  "appid": "__UNI__8601AE2",
+  "description": "考研备考小程序 - 智能助力，一战成硕",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "modules": {
+      "OAuth": {},
+      "Share": {},
+      "Storage": {}
+    },
+    "distribute": {
+      "android": {
+        "permissions": [
+          "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+          "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+          "<uses-permission android:name=\"android.permission.VIBRATE\"/>"
+        ],
+        "minSdkVersion": 21
+      },
+      "ios": {
+        "privacyDescription": {
+          "NSPhotoLibraryUsageDescription": "用于上传头像和题目图片",
+          "NSCameraUsageDescription": "用于拍照上传题目",
+          "NSPhotoLibraryAddUsageDescription": "用于保存学习海报到相册"
+        },
+        "dSYMs": false
+      },
+      "sdkConfigs": {}
+    }
+  },
+  "plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "modules": {
+      "OAuth": {},
+      "Share": {},
+      "Storage": {}
+    },
+    "distribute": {
+      "android": {
+        "permissions": [
+          "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>",
+          "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
+          "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+          "<uses-permission android:name=\"android.permission.VIBRATE\"/>"
+        ],
+        "minSdkVersion": 21
+      },
+      "ios": {
+        "privacyDescription": {
+          "NSPhotoLibraryUsageDescription": "用于上传头像和题目图片",
+          "NSCameraUsageDescription": "用于拍照上传题目",
+          "NSPhotoLibraryAddUsageDescription": "用于保存学习海报到相册"
+        },
+        "dSYMs": false
+      },
+      "sdkConfigs": {}
+    }
+  },
+  "quickapp": {},
+  "mp-weixin": {
+    "appid": "wxd634d50ad63e14ed",
+    "setting": {
+      "urlCheck": true,
+      "es6": false,
+      "enhance": false,
+      "postcss": false,
+      "minified": true,
+      "autoAudits": true,
+      "checkInvalidKey": true,
+      "checkSiteMap": true,
+      "uploadWithSourceMap": false,
+      "compileHotReLoad": false,
+      "babelSetting": {
+        "ignore": [],
+        "disablePlugins": [],
+        "outputPath": ""
+      }
+    },
+    "usingComponents": true,
+    "lazyCodeLoading": "requiredComponents",
+    "__usePrivacyCheck__": true,
+    "networkTimeout": {
+      "request": 30000,
+      "connectSocket": 10000,
+      "uploadFile": 60000,
+      "downloadFile": 60000
+    },
+    "permission": {
+      "scope.userLocation": {
+        "desc": "用于展示院校所在地区与位置相关信息"
+      }
+    },
+    "requiredPrivateInfos": ["chooseAddress", "chooseLocation", "choosePoi"],
+    "requiredBackgroundModes": [],
+    "optimization": {
+      "subPackages": true
+    }
+  },
+  "mp-alipay": {
+    "usingComponents": true,
+    "component2": true,
+    "enableAppxNg": true
+  },
+  "mp-baidu": {
+    "usingComponents": true,
+    "appid": ""
+  },
+  "mp-toutiao": {
+    "usingComponents": true,
+    "appid": ""
+  },
+  "uniStatistics": {
+    "enable": false
+  },
+  "vueVersion": "3",
+  "h5": {
+    "title": "Exam Master - 考研备考助手",
+    "router": {
+      "mode": "hash",
+      "base": "/"
+    },
+    "optimization": {
+      "treeShaking": {
+        "enable": true
+      },
+      "prefetch": true,
+      "preload": true
+    },
+    "devServer": {
+      "port": 5173,
+      "https": false,
+      "proxy": {}
+    },
+    "sdkConfigs": {
+      "maps": {}
+    }
+  }
+}

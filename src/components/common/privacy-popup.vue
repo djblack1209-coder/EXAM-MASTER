@@ -7,6 +7,8 @@
   <!-- #ifdef MP-WEIXIN -->
   <view v-if="showPopup" class="privacy-mask">
     <view class="privacy-dialog">
+      <view class="privacy-handle" />
+      <text class="privacy-eyebrow"> Privacy </text>
       <view class="privacy-title"> 用户隐私保护提示 </view>
       <view class="privacy-content">
         <text>在使用当前小程序服务之前，请仔细阅读</text>
@@ -105,45 +107,75 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(9, 18, 12, 0.32);
   z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .privacy-dialog {
-  width: 560rpx;
-  background: var(--bg-card, #fff);
-  border-radius: 24rpx;
-  padding: 48rpx 40rpx 36rpx;
+  width: 620rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 36rpx;
+  padding: 18rpx 34rpx 30rpx;
   box-sizing: border-box;
+  box-shadow: var(--apple-shadow-card);
+}
+
+.privacy-handle {
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 18rpx;
+}
+
+.privacy-eyebrow {
+  display: block;
+  text-align: center;
+  margin-bottom: 8rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-sub);
 }
 
 .privacy-title {
   text-align: center;
   font-size: 34rpx;
   font-weight: 600;
-  color: var(--text-primary, #333);
-  margin-bottom: 24rpx;
+  color: var(--text-main);
+  margin-bottom: 22rpx;
 }
 
 .privacy-content {
   font-size: 28rpx;
-  color: var(--text-secondary, #666);
+  color: var(--text-sub);
   line-height: 1.7;
   margin-bottom: 36rpx;
-  text-align: justify;
+  text-align: left;
 }
 
 .privacy-link {
-  color: #4e6ef2;
-  font-weight: 500;
+  color: #22873a;
+  font-weight: 600;
 }
 
 .privacy-actions {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+}
+.privacy-actions > view + view,
+.privacy-actions > text + text,
+.privacy-actions > view + text,
+.privacy-actions > text + view {
+  margin-left: 20rpx;
 }
 
 .privacy-btn {
@@ -151,9 +183,9 @@ export default {
   height: 80rpx;
   line-height: 80rpx;
   text-align: center;
-  border-radius: 40rpx;
+  border-radius: 999rpx;
   font-size: 30rpx;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
   padding: 0;
   margin: 0;
@@ -164,30 +196,55 @@ export default {
 }
 
 .privacy-btn-reject {
-  background: var(--bg-secondary, #f5f5f5);
-  color: var(--text-tertiary, #999);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .privacy-btn-agree {
-  background: #07c160;
-  color: #fff;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 /* 暗色模式适配 */
+.dark-mode .privacy-mask {
+  background: rgba(3, 8, 14, 0.52);
+}
+
 .dark-mode .privacy-dialog {
-  background: var(--bg-card, #1c1c1e);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .privacy-handle {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .privacy-eyebrow,
+.dark-mode .privacy-content {
+  color: rgba(255, 255, 255, 0.68);
 }
 
 .dark-mode .privacy-title {
-  color: var(--text-primary, #e5e5e5);
+  color: #ffffff;
 }
 
-.dark-mode .privacy-content {
-  color: var(--text-secondary, #a0a0a0);
+.dark-mode .privacy-link {
+  color: #7bc0ff;
 }
 
 .dark-mode .privacy-btn-reject {
-  background: var(--bg-secondary, #2c2c2e);
-  color: var(--text-tertiary, #8e8e93);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 </style>

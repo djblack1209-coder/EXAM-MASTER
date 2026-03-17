@@ -1,6 +1,7 @@
 <template>
   <view v-if="visible" class="custom-modal-mask" @tap="handleMaskClick">
-    <view class="custom-modal-container" :class="[type, { dark: isDark }]" @tap.stop>
+    <view class="custom-modal-container apple-glass-card" :class="[type, { dark: isDark }]" @tap.stop>
+      <view class="modal-handle" />
       <!-- 装饰气泡 -->
       <view v-if="isDark" class="decoration-bubble bubble-1" />
       <view v-if="isDark" class="decoration-bubble bubble-2" />
@@ -22,10 +23,10 @@
 
       <!-- 按钮区域 -->
       <view class="modal-buttons" :class="{ single: !showCancel }">
-        <view v-if="showCancel" class="modal-btn cancel-btn" @tap="handleCancel">
+        <view v-if="showCancel" class="modal-btn cancel-btn apple-glass-pill" @tap="handleCancel">
           <text>{{ cancelText }}</text>
         </view>
-        <view class="modal-btn confirm-btn" :class="type" @tap="handleConfirm">
+        <view class="modal-btn confirm-btn apple-cta" :class="type" @tap="handleConfirm">
           <text>{{ confirmText }}</text>
         </view>
       </view>
@@ -161,7 +162,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(9, 18, 12, 0.32);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -182,21 +183,36 @@ export default {
 
 .custom-modal-container {
   width: 600rpx;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 32rpx;
-  padding: 48rpx 40rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 36rpx;
+  padding: 18rpx 40rpx 40rpx;
   position: relative;
   overflow: hidden;
   animation: slideUp 0.3s ease;
-  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.15);
+  box-shadow: var(--apple-shadow-floating);
 
   &.dark {
-    background: linear-gradient(135deg, rgba(40, 40, 40, 0.95) 0%, rgba(30, 30, 30, 0.98) 100%);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+      linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      0 20rpx 60rpx rgba(0, 0, 0, 0.4),
-      0 0 40rpx rgba(0, 229, 255, 0.1);
+    box-shadow: var(--apple-shadow-floating);
   }
+}
+
+.modal-handle {
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 22rpx;
+}
+
+.dark .modal-handle {
+  background: rgba(255, 255, 255, 0.16);
 }
 
 @keyframes slideUp {
@@ -220,7 +236,7 @@ export default {
   &.bubble-1 {
     width: 120rpx;
     height: 120rpx;
-    background: radial-gradient(circle, #00e5ff 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(95, 170, 255, 0.28) 0%, transparent 70%);
     top: -30rpx;
     right: -30rpx;
   }
@@ -228,7 +244,7 @@ export default {
   &.bubble-2 {
     width: 80rpx;
     height: 80rpx;
-    background: radial-gradient(circle, #9fe870 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(107, 208, 150, 0.22) 0%, transparent 70%);
     bottom: 40rpx;
     left: -20rpx;
   }
@@ -245,40 +261,41 @@ export default {
   margin: 0 auto 24rpx;
 
   &.info {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    background: rgba(52, 199, 89, 0.12);
   }
   &.success {
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    background: rgba(52, 199, 89, 0.12);
   }
   &.warning {
-    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    background: rgba(255, 159, 10, 0.14);
   }
   &.error {
-    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    background: rgba(255, 99, 90, 0.14);
   }
   &.empty,
   &.upload,
   &.study {
-    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    background: rgba(52, 199, 89, 0.12);
   }
 
-  .dark & {
+  .dark &,
+  .dark-mode & {
     &.info {
-      background: linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(0, 229, 255, 0.1) 100%);
+      background: rgba(10, 132, 255, 0.14);
     }
     &.success {
-      background: linear-gradient(135deg, rgba(159, 232, 112, 0.2) 0%, rgba(159, 232, 112, 0.1) 100%);
+      background: rgba(10, 132, 255, 0.14);
     }
     &.warning {
-      background: linear-gradient(135deg, rgba(255, 193, 7, 0.2) 0%, rgba(255, 193, 7, 0.1) 100%);
+      background: rgba(255, 159, 10, 0.16);
     }
     &.error {
-      background: linear-gradient(135deg, rgba(244, 67, 54, 0.2) 0%, rgba(244, 67, 54, 0.1) 100%);
+      background: rgba(255, 99, 90, 0.16);
     }
     &.empty,
     &.upload,
     &.study {
-      background: linear-gradient(135deg, rgba(156, 39, 176, 0.2) 0%, rgba(156, 39, 176, 0.1) 100%);
+      background: rgba(10, 132, 255, 0.14);
     }
   }
 
@@ -293,10 +310,11 @@ export default {
   text-align: center;
   font-size: 36rpx;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-main);
   margin-bottom: 16rpx;
 
-  .dark & {
+  .dark &,
+  .dark-mode & {
     color: #ffffff;
   }
 }
@@ -306,12 +324,13 @@ export default {
   display: block;
   text-align: center;
   font-size: 28rpx;
-  color: var(--ds-color-text-secondary);
+  color: var(--text-sub);
   line-height: 1.6;
   margin-bottom: 40rpx;
   white-space: pre-wrap;
 
-  .dark & {
+  .dark &,
+  .dark-mode & {
     color: rgba(255, 255, 255, 0.7);
   }
 }
@@ -319,7 +338,13 @@ export default {
 // 按钮区域
 .modal-buttons {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
 
   &.single {
     justify-content: center;
@@ -343,44 +368,52 @@ export default {
 }
 
 .cancel-btn {
-  background: var(--bg-secondary);
-  color: var(--ds-color-text-secondary);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+  color: var(--text-main);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
 
-  .dark & {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
+  .dark &,
+  .dark-mode & {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+      linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 }
 
 .confirm-btn {
-  background: linear-gradient(135deg, #00a96d 0%, #008055 100%);
-  color: #ffffff;
-  box-shadow: 0 4rpx 16rpx rgba(0, 169, 109, 0.3);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 
   &.warning {
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-    box-shadow: 0 4rpx 16rpx rgba(255, 152, 0, 0.3);
+    background: rgba(255, 159, 10, 0.14);
+    color: #b56a00;
+    border-color: rgba(255, 159, 10, 0.18);
+    box-shadow: var(--apple-shadow-surface);
   }
 
   &.error {
-    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-    box-shadow: 0 4rpx 16rpx rgba(244, 67, 54, 0.3);
+    background: rgba(255, 99, 90, 0.14);
+    color: #c53d35;
+    border-color: rgba(255, 99, 90, 0.18);
+    box-shadow: var(--apple-shadow-surface);
   }
+}
 
-  .dark & {
-    background: linear-gradient(135deg, #00e5ff 0%, #00b8d4 100%);
-    color: #000000;
-    box-shadow: 0 4rpx 16rpx rgba(0, 229, 255, 0.3);
+.custom-modal-container.dark .confirm-btn.warning {
+  background: rgba(255, 159, 10, 0.16);
+  color: #ffd29a;
+}
 
-    &.warning {
-      background: linear-gradient(135deg, #ffb74d 0%, #ffa726 100%);
-    }
-
-    &.error {
-      background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
-      color: #ffffff;
-    }
-  }
+.custom-modal-container.dark .confirm-btn.error {
+  background: rgba(255, 99, 90, 0.16);
+  color: #ffb1ab;
 }
 
 .single .confirm-btn {

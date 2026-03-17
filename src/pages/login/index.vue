@@ -10,7 +10,7 @@
     </view>
 
     <!-- 顶部返回按钮 -->
-    <view class="top-bar">
+    <view class="top-bar" :style="{ paddingTop: statusBarHeight + 'px', paddingRight: capsuleSafeRight + 'px' }">
       <view class="back-btn" hover-class="btn-hover" @tap="handleBack">
         <text class="back-icon"> ← </text>
       </view>
@@ -126,6 +126,7 @@
         <view class="form-item">
           <text class="form-label"> 邮箱地址 </text>
           <input
+            id="e2e-login-email"
             v-model="emailForm.email"
             class="form-input"
             type="text"
@@ -140,19 +141,32 @@
 
         <view v-if="!isRegister" class="form-item">
           <text class="form-label"> 密码 </text>
-          <input
-            v-model="emailForm.password"
-            class="form-input"
-            type="password"
-            placeholder="请输入密码"
-            placeholder-class="input-placeholder"
-          />
+          <view class="password-input-shell">
+            <input
+              id="e2e-login-password"
+              v-model="emailForm.password"
+              :class="['form-input', { 'form-input-password': !showLoginPassword }]"
+              type="text"
+              :password="!showLoginPassword"
+              maxlength="32"
+              placeholder="请输入密码"
+              placeholder-class="input-placeholder"
+            />
+            <text
+              id="e2e-login-toggle-password"
+              class="password-toggle-btn"
+              @tap="showLoginPassword = !showLoginPassword"
+            >
+              {{ showLoginPassword ? '隐藏' : '显示' }}
+            </text>
+          </view>
         </view>
 
         <view v-if="isRegister" class="form-item">
           <text class="form-label"> 验证码 </text>
           <view class="code-input-wrapper">
             <input
+              id="e2e-login-code"
               v-model="emailForm.code"
               class="form-input code-input"
               type="number"
@@ -161,28 +175,42 @@
               maxlength="6"
             />
             <view
+              id="e2e-login-send-code"
               class="send-code-btn"
               hover-class="btn-hover"
-              :class="{ disabled: codeCooldown > 0 || !isEmailValid }"
+              :class="{ disabled: isSendingCode || codeCooldown > 0 || !isEmailValid }"
               @tap="sendVerifyCode"
             >
-              <text>{{ codeCooldown > 0 ? `${codeCooldown}s` : '发送验证码' }}</text>
+              <text>{{ isSendingCode ? '发送中...' : codeCooldown > 0 ? `${codeCooldown}s` : '发送验证码' }}</text>
             </view>
           </view>
         </view>
 
         <view v-if="isRegister" class="form-item">
           <text class="form-label"> 设置密码 </text>
-          <input
-            v-model="emailForm.password"
-            class="form-input"
-            type="password"
-            placeholder="请设置8-32位密码（含大小写字母和数字）"
-            placeholder-class="input-placeholder"
-          />
+          <view class="password-input-shell">
+            <input
+              id="e2e-login-register-password"
+              v-model="emailForm.password"
+              :class="['form-input', { 'form-input-password': !showRegisterPassword }]"
+              type="text"
+              :password="!showRegisterPassword"
+              maxlength="32"
+              placeholder="请设置8-32位密码（含大小写字母和数字）"
+              placeholder-class="input-placeholder"
+            />
+            <text
+              id="e2e-login-toggle-register-password"
+              class="password-toggle-btn"
+              @tap="showRegisterPassword = !showRegisterPassword"
+            >
+              {{ showRegisterPassword ? '隐藏' : '显示' }}
+            </text>
+          </view>
         </view>
 
         <view
+          id="e2e-login-email-submit"
           class="login-btn email-submit-btn"
           hover-class="btn-hover"
           :class="{ 'btn-disabled': isLoading }"
@@ -194,14 +222,20 @@
         </view>
 
         <view class="form-switch">
-          <text @tap="toggleRegister">
+          <text id="e2e-login-toggle-register" @tap="toggleRegister">
             {{ isRegister ? '已有账号？去登录' : '没有账号？去注册' }}
           </text>
         </view>
       </view>
 
       <!-- 邮箱登录入口 -->
-      <view v-else class="login-btn email-btn" hover-class="btn-hover" @tap="showEmailForm = true">
+      <view
+        v-else
+        class="login-btn email-btn"
+        hover-class="btn-hover"
+        @tap="showEmailForm = true"
+        @click="showEmailForm = true"
+      >
         <view class="btn-icon email-icon">
           <BaseIcon name="email" :size="36" />
         </view>
@@ -242,9 +276,13 @@ import { useUserStore } from '@/stores/modules/user';
 import config from '@/config/index.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
+import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
+import { getRetryCooldownSeconds, normalizeEmailAddress, resolveEmailAuthErrorMessage } from './email-auth-utils.js';
 
 // 主题状态
 const isDark = ref(false);
+const statusBarHeight = ref(44);
+const capsuleSafeRight = ref(20);
 
 // 登录状态
 const isLoading = ref(false);
@@ -268,6 +306,9 @@ const emailForm = ref({
 });
 const emailError = ref('');
 const codeCooldown = ref(0);
+const isSendingCode = ref(false);
+const showLoginPassword = ref(false);
+const showRegisterPassword = ref(false);
 let cooldownTimer = null;
 
 // 主题事件处理器（模块级声明，确保 onMounted/onUnmounted 都能访问）
@@ -296,16 +337,47 @@ const validateEmail = () => {
 const toggleRegister = () => {
   isRegister.value = !isRegister.value;
   emailForm.value.code = '';
+  showLoginPassword.value = false;
+  showRegisterPassword.value = false;
+};
+
+const enterCodeCooldownFallback = (seconds = 60) => {
+  startCodeCooldown(seconds);
+  uni.showToast({
+    title: '验证码请求状态不确定，请先检查邮箱',
+    icon: 'none',
+    duration: 2200
+  });
+};
+
+const startCodeCooldown = (seconds) => {
+  const nextCooldown = getRetryCooldownSeconds(seconds);
+
+  if (cooldownTimer) {
+    clearInterval(cooldownTimer);
+    cooldownTimer = null;
+  }
+
+  codeCooldown.value = nextCooldown;
+  cooldownTimer = setInterval(() => {
+    codeCooldown.value -= 1;
+    if (codeCooldown.value <= 0) {
+      codeCooldown.value = 0;
+      clearInterval(cooldownTimer);
+      cooldownTimer = null;
+    }
+  }, 1000);
 };
 
 // 发送验证码
 const sendVerifyCode = async () => {
-  if (codeCooldown.value > 0 || !isEmailValid.value) return;
+  if (isSendingCode.value || codeCooldown.value > 0 || !isEmailValid.value) return;
 
   try {
+    isSendingCode.value = true;
     uni.showLoading({ title: '发送中...' });
 
-    const res = await lafService.sendEmailCode(emailForm.value.email).catch((err) => {
+    const res = await lafService.sendEmailCode(normalizeEmailAddress(emailForm.value.email)).catch((err) => {
       logger.error('[Login] sendEmailCode Promise rejected:', err);
       return { code: -1, message: '网络请求失败' };
     });
@@ -313,21 +385,21 @@ const sendVerifyCode = async () => {
     uni.hideLoading();
 
     if (res && res.code === 0) {
-      uni.showToast({ title: '验证码已发送，请查收邮箱', icon: 'success' });
-      // 开始倒计时
-      codeCooldown.value = 60;
-      cooldownTimer = setInterval(() => {
-        codeCooldown.value--;
-        if (codeCooldown.value <= 0) {
-          clearInterval(cooldownTimer);
-          cooldownTimer = null;
-        }
-      }, 1000);
+      const cooldown = res?.retryAfter || 60;
+      uni.showToast({
+        title: res?.alreadySent ? '验证码已发送，请稍候查收' : '验证码已发送，请查收邮箱',
+        icon: 'success'
+      });
+      startCodeCooldown(cooldown);
     } else {
       // 根据错误类型给出更友好的提示
       let errorMsg = res?.message || '发送失败';
       if (res?.message?.includes('频繁')) {
-        errorMsg = '发送太频繁，请稍后再试';
+        errorMsg = '验证码可能已发送，请先检查邮箱';
+        startCodeCooldown(res?.retryAfter || 60);
+      } else if (res?.message?.includes('网络') || res?.message?.includes('超时')) {
+        enterCodeCooldownFallback(res?.retryAfter || 60);
+        return;
       } else if (res?.message?.includes('邮箱')) {
         errorMsg = '邮箱格式不正确';
       }
@@ -336,7 +408,10 @@ const sendVerifyCode = async () => {
   } catch (error) {
     uni.hideLoading();
     logger.error('[Login] 发送验证码失败:', error);
-    uni.showToast({ title: '网络错误，请重试', icon: 'none' });
+    enterCodeCooldownFallback(60);
+  } finally {
+    uni.hideLoading();
+    isSendingCode.value = false;
   }
 };
 
@@ -887,7 +962,7 @@ const handleEmailLogin = async () => {
       const res = await lafService
         .login({
           type: 'email',
-          email: emailForm.value.email.trim().toLowerCase(),
+          email: normalizeEmailAddress(emailForm.value.email),
           password: emailForm.value.password,
           verifyCode: isRegister.value ? emailForm.value.code : undefined,
           isRegister: isRegister.value
@@ -910,17 +985,10 @@ const handleEmailLogin = async () => {
           navigateAfterLogin();
         }, 1500);
       } else {
-        // 根据错误类型给出更友好的提示
-        let errorMsg = res?.message || '操作失败';
-        if (res?.message?.includes('密码')) {
-          errorMsg = '邮箱或密码错误';
-        } else if (res?.message?.includes('验证码')) {
-          errorMsg = '验证码错误或已过期';
-        } else if (res?.message?.includes('已注册') || res?.message?.includes('已存在')) {
-          errorMsg = '该邮箱已注册，请直接登录';
+        const errorMsg = resolveEmailAuthErrorMessage(res?.message, isRegister.value);
+        if (res?.message?.includes('已注册') || res?.message?.includes('已存在')) {
           isRegister.value = false; // 自动切换到登录模式
         } else if (res?.message?.includes('不存在') || res?.message?.includes('未注册')) {
-          errorMsg = '该邮箱未注册，请先注册';
           isRegister.value = true; // 自动切换到注册模式
         }
         uni.showToast({ title: errorMsg, icon: 'none' });
@@ -930,6 +998,7 @@ const handleEmailLogin = async () => {
       logger.error('[Login] 邮箱登录失败:', error);
       uni.showToast({ title: '网络错误，请重试', icon: 'none' });
     } finally {
+      uni.hideLoading();
       isLoading.value = false;
     }
   } finally {
@@ -1009,6 +1078,9 @@ const openTerms = () => {
 
 // 初始化
 onMounted(() => {
+  statusBarHeight.value = getStatusBarHeight();
+  capsuleSafeRight.value = getCapsuleSafeRight();
+
   detectE2EMode();
 
   // 获取主题状态
@@ -1059,6 +1131,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .login-container {
+  min-height: 100%;
   min-height: 100vh;
   background: linear-gradient(180deg, #f8faf8 0%, #e8f5e9 100%);
   padding: 0 40rpx;
@@ -1090,7 +1163,7 @@ onUnmounted(() => {
 .bg-circle-1 {
   width: 400rpx;
   height: 400rpx;
-  background: #4caf50;
+  background: var(--brand-color);
   top: -100rpx;
   right: -100rpx;
 }
@@ -1098,7 +1171,7 @@ onUnmounted(() => {
 .bg-circle-2 {
   width: 300rpx;
   height: 300rpx;
-  background: #81c784;
+  background: var(--brand-hover, #5ac78f);
   bottom: 200rpx;
   left: -150rpx;
 }
@@ -1106,7 +1179,7 @@ onUnmounted(() => {
 .bg-circle-3 {
   width: 200rpx;
   height: 200rpx;
-  background: #a5d6a7;
+  background: var(--brand-active, #7bc653);
   bottom: -50rpx;
   right: 100rpx;
 }
@@ -1114,13 +1187,12 @@ onUnmounted(() => {
 .dark-mode .bg-circle-1,
 .dark-mode .bg-circle-2,
 .dark-mode .bg-circle-3 {
-  background: #4caf50;
+  background: var(--brand-color);
   opacity: 0.05;
 }
 
 /* 顶部栏 */
 .top-bar {
-  padding-top: 88rpx;
   padding-bottom: 20rpx;
 }
 
@@ -1130,9 +1202,10 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.72);
   border-radius: 50%;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+  box-shadow: var(--apple-shadow-surface);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 
 .dark-mode .back-btn {
@@ -1165,12 +1238,12 @@ onUnmounted(() => {
 .app-name {
   font-size: 48rpx;
   font-weight: 700;
-  color: #2e7d32;
+  color: var(--brand-color);
   margin-bottom: 12rpx;
 }
 
 .dark-mode .app-name {
-  color: #81c784;
+  color: var(--brand-color);
 }
 
 .app-slogan {
@@ -1191,11 +1264,16 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   padding: 32rpx 36rpx;
-  background: #fff;
-  border-radius: 24rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  box-shadow: var(--apple-shadow-card);
   transition: all 0.3s ease;
+  border: 1rpx solid var(--apple-glass-border-strong);
+  position: relative;
+  overflow: hidden;
 }
 
 .login-btn:active {
@@ -1204,14 +1282,14 @@ onUnmounted(() => {
 }
 
 .dark-mode .login-btn {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+  background: linear-gradient(160deg, rgba(16, 20, 28, 0.92) 0%, rgba(12, 15, 22, 0.98) 100%);
+  box-shadow: var(--apple-shadow-card);
 }
 
 .btn-icon {
   width: 80rpx;
   height: 80rpx;
-  border-radius: 20rpx;
+  border-radius: 999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1219,6 +1297,8 @@ onUnmounted(() => {
   font-size: 28rpx;
   font-weight: 600;
   color: #fff;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .wechat-icon {
@@ -1283,14 +1363,17 @@ onUnmounted(() => {
 
 /* 邮箱表单 */
 .email-form {
-  background: #fff;
-  border-radius: 24rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
   padding: 32rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--apple-glass-border-strong);
 }
 
 .dark-mode .email-form {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(160deg, rgba(16, 20, 28, 0.92) 0%, rgba(12, 15, 22, 0.98) 100%);
 }
 
 .form-item {
@@ -1311,17 +1394,30 @@ onUnmounted(() => {
 .form-input {
   width: 100%;
   height: 88rpx;
-  background: #f5f5f5;
-  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999rpx;
   padding: 0 24rpx;
   font-size: 30rpx;
   color: #333;
   box-sizing: border-box;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.68);
+}
+
+.form-input-password {
+  -webkit-text-security: disc;
+  padding-right: 110rpx;
+}
+
+.form-input-password::-ms-reveal,
+.form-input-password::-ms-clear {
+  display: none;
 }
 
 .dark-mode .form-input {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(16, 20, 28, 0.72);
   color: #fff;
+  border-color: rgba(124, 176, 255, 0.18);
 }
 
 .input-placeholder {
@@ -1336,7 +1432,33 @@ onUnmounted(() => {
 
 .code-input-wrapper {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+}
+
+.password-input-shell {
+  position: relative;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 50%;
+  right: 24rpx;
+  transform: translateY(-50%);
+  min-width: 56rpx;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--brand-color);
+}
+
+.dark-mode .password-toggle-btn {
+  color: #7bc0ff;
 }
 
 .code-input {
@@ -1346,17 +1468,20 @@ onUnmounted(() => {
 .send-code-btn {
   min-width: 180rpx;
   height: 88rpx;
-  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
-  border-radius: 16rpx;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  border-radius: 999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 24rpx;
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .send-code-btn text {
   font-size: 26rpx;
-  color: #fff;
+  color: inherit;
   font-weight: 500;
 }
 
@@ -1369,13 +1494,16 @@ onUnmounted(() => {
 }
 
 .email-submit-btn {
-  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
   justify-content: center;
   margin-top: 16rpx;
 }
 
 .email-submit-btn .btn-text {
-  color: #fff;
+  color: inherit;
   flex: none;
 }
 
@@ -1386,10 +1514,10 @@ onUnmounted(() => {
 
 .form-switch text {
   font-size: 26rpx;
-  color: #4caf50;
+  color: var(--brand-color);
 }
 .dark-mode .form-switch text {
-  color: #81c784;
+  color: var(--brand-color);
 }
 
 /* 用户协议 */
@@ -1397,6 +1525,9 @@ onUnmounted(() => {
   display: flex;
   align-items: flex-start;
   padding: 40rpx 20rpx;
+  background: rgba(255, 255, 255, 0.28);
+  border-radius: 24rpx;
+  margin: 0 20rpx;
 }
 
 .checkbox-wrapper {
@@ -1406,7 +1537,7 @@ onUnmounted(() => {
 .checkbox {
   width: 36rpx;
   height: 36rpx;
-  border: 2rpx solid #ccc;
+  border: 2rpx solid rgba(16, 40, 26, 0.18);
   border-radius: 8rpx;
   display: flex;
   align-items: center;
@@ -1415,8 +1546,8 @@ onUnmounted(() => {
 }
 
 .checkbox.checked {
-  background: #4caf50;
-  border-color: #4caf50;
+  background: var(--brand-color);
+  border-color: var(--brand-color);
 }
 
 .checkbox text {
@@ -1432,7 +1563,7 @@ onUnmounted(() => {
 }
 
 .agreement-text .link {
-  color: #4caf50;
+  color: var(--brand-color);
 }
 
 /* 底部提示 */
@@ -1444,6 +1575,9 @@ onUnmounted(() => {
 .footer-tip text {
   font-size: 24rpx;
   color: #777;
+  background: rgba(255, 255, 255, 0.22);
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
 }
 
 /* Dark mode: missing overrides */
@@ -1456,19 +1590,24 @@ onUnmounted(() => {
 }
 
 .dark-mode .checkbox {
-  border-color: #555;
+  border-color: rgba(124, 176, 255, 0.18);
 }
 
 .dark-mode .agreement-text {
   color: #aaa;
 }
 
+.dark-mode .agreement {
+  background: rgba(16, 20, 28, 0.32);
+}
+
 .dark-mode .agreement-text .link {
-  color: #81c784;
+  color: var(--brand-color);
 }
 
 .dark-mode .footer-tip text {
   color: #777;
+  background: rgba(16, 20, 28, 0.28);
 }
 
 .dark-mode .form-error {
@@ -1491,5 +1630,261 @@ onUnmounted(() => {
 .checkbox-wrapper {
   padding: 12rpx;
   margin: -8rpx;
+}
+
+/* Final polish: login page unified with Apple / Liquid Glass */
+.login-container {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+  padding: 0 32rpx;
+  color: var(--text-main);
+}
+
+.login-container.dark-mode {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.bg-circle {
+  opacity: 0.58;
+  filter: blur(18rpx);
+}
+
+.bg-circle-1 {
+  background: radial-gradient(circle, rgba(107, 208, 150, 0.34) 0%, transparent 72%);
+}
+
+.bg-circle-2 {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, transparent 72%);
+}
+
+.bg-circle-3 {
+  background: radial-gradient(circle, rgba(72, 190, 128, 0.2) 0%, transparent 72%);
+}
+
+.dark-mode .bg-circle-1 {
+  background: radial-gradient(circle, rgba(10, 132, 255, 0.26) 0%, transparent 72%);
+}
+
+.dark-mode .bg-circle-2 {
+  background: radial-gradient(circle, rgba(95, 170, 255, 0.18) 0%, transparent 72%);
+}
+
+.dark-mode .bg-circle-3 {
+  background: radial-gradient(circle, rgba(32, 83, 170, 0.18) 0%, transparent 72%);
+  opacity: 0.46;
+}
+
+.top-bar,
+.logo-section,
+.login-methods,
+.agreement,
+.footer-tip {
+  position: relative;
+  z-index: 1;
+}
+
+.back-btn,
+.logo-section,
+.login-methods,
+.login-btn,
+.agreement,
+.footer-tip text,
+.form-input {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .back-btn,
+.dark-mode .logo-section,
+.dark-mode .login-methods,
+.dark-mode .login-btn,
+.dark-mode .agreement,
+.dark-mode .footer-tip text,
+.dark-mode .form-input {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.top-bar {
+  padding-bottom: 24rpx;
+}
+
+.back-btn {
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.back-icon,
+.btn-text,
+.app-name,
+.form-switch text {
+  color: var(--text-main);
+}
+
+.dark-mode .back-icon,
+.dark-mode .btn-text,
+.dark-mode .app-name,
+.dark-mode .form-switch text {
+  color: #ffffff;
+}
+
+.logo-section {
+  margin: 18rpx 12rpx 34rpx;
+  padding: 36rpx 24rpx;
+  border-radius: 38rpx;
+}
+
+.app-name {
+  font-size: 52rpx;
+}
+
+.app-slogan,
+.divider-text,
+.form-label,
+.agreement-text,
+.footer-tip text,
+.btn-arrow,
+.input-placeholder {
+  color: var(--text-sub);
+}
+
+.dark-mode .app-slogan,
+.dark-mode .divider-text,
+.dark-mode .form-label,
+.dark-mode .agreement-text,
+.dark-mode .footer-tip text,
+.dark-mode .btn-arrow,
+.dark-mode .input-placeholder {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.login-methods {
+  padding: 26rpx 20rpx 30rpx;
+  border-radius: 38rpx;
+}
+
+.login-btn {
+  padding: 26rpx 28rpx;
+  margin-bottom: 18rpx;
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.login-btn:active {
+  transform: scale(0.98);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.btn-icon {
+  width: 72rpx;
+  height: 72rpx;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(255, 255, 255, 0.46);
+}
+
+.wechat-icon {
+  background: rgba(52, 199, 89, 0.14);
+  color: #1f7a33;
+}
+
+.qq-icon {
+  background: rgba(10, 132, 255, 0.14);
+  color: #0a84ff;
+}
+
+.e2e-icon {
+  background: rgba(88, 86, 214, 0.14);
+  color: #5856d6;
+}
+
+.email-icon {
+  background: rgba(255, 159, 10, 0.14);
+  color: #b56a00;
+}
+
+.dark-mode .wechat-icon,
+.dark-mode .qq-icon,
+.dark-mode .e2e-icon,
+.dark-mode .email-icon {
+  color: #ffffff;
+}
+
+.divider-line {
+  background: var(--apple-divider);
+}
+
+.email-form {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.form-input {
+  color: var(--text-main);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.dark-mode .form-input {
+  color: #ffffff;
+}
+
+.form-error {
+  color: #c53d35;
+}
+
+.dark-mode .form-error {
+  color: #ff8e86;
+}
+
+.send-code-btn.disabled {
+  background: rgba(255, 255, 255, 0.38);
+  color: var(--text-sub);
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: none;
+}
+
+.dark-mode .send-code-btn.disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.agreement {
+  margin: 0 12rpx;
+  border-radius: 28rpx;
+}
+
+.checkbox {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.dark-mode .checkbox {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.agreement-text .link {
+  color: #22873a;
+}
+
+.dark-mode .agreement-text .link {
+  color: #7bc0ff;
+}
+
+.footer-tip {
+  padding: 36rpx 0 84rpx;
+}
+
+.footer-tip text {
+  display: inline-block;
 }
 </style>

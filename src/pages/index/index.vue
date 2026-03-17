@@ -99,13 +99,13 @@
           />
 
           <!-- 实用工具入口 -->
-          <view class="section-header">
+          <view class="section-header section-header-apple">
             <text class="section-title"> 实用工具 </text>
           </view>
           <view class="tools-grid">
             <view
               id="e2e-home-tool-doc"
-              :class="['tool-entry', isDark ? 'glass' : 'card-light']"
+              :class="['tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
               hover-class="tool-entry-hover"
               @tap="navToTool('doc-convert')"
             >
@@ -123,7 +123,7 @@
             </view>
             <view
               id="e2e-home-tool-id-photo"
-              :class="['tool-entry', isDark ? 'glass' : 'card-light']"
+              :class="['tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
               hover-class="tool-entry-hover"
               @tap="navToTool('id-photo')"
             >
@@ -141,7 +141,7 @@
             </view>
             <view
               id="e2e-home-tool-photo-search"
-              :class="['tool-entry', isDark ? 'glass' : 'card-light']"
+              :class="['tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
               hover-class="tool-entry-hover"
               @tap="navToTool('photo-search')"
             >
@@ -160,9 +160,9 @@
           </view>
 
           <!-- 待办事项清单 -->
-          <view class="section-header">
+          <view class="section-header section-header-apple">
             <text class="section-title"> 待办事项 </text>
-            <view class="edit-plan-btn" @tap="handleEditPlan">
+            <view id="e2e-home-edit-plan" class="edit-plan-btn apple-glass-pill" @tap="handleEditPlan">
               <view class="edit-icon">
                 <BaseIcon name="edit" :size="24" />
               </view>
@@ -181,6 +181,10 @@
       </scroll-view>
 
       <!-- 骨架屏：✅ 问题清单修复 - 添加淡出过渡动画 -->
+      <!-- #ifdef APP-PLUS -->
+      <BaseSkeleton v-if="isLoading" :is-dark="isDark" />
+      <!-- #endif -->
+      <!-- #ifndef APP-PLUS -->
       <!-- #ifndef APP-NVUE -->
       <transition name="skeleton-fade">
         <BaseSkeleton v-if="isLoading" :is-dark="isDark" />
@@ -188,6 +192,7 @@
       <!-- #endif -->
       <!-- #ifdef APP-NVUE -->
       <BaseSkeleton v-if="isLoading" :is-dark="isDark" />
+      <!-- #endif -->
       <!-- #endif -->
     </view>
 
@@ -473,6 +478,17 @@ export default {
     this.formulaList = Object.freeze(FORMULA_LIST);
   },
 
+  // #ifdef APP-PLUS
+  onBackPress() {
+    if (this._backPressTime && Date.now() - this._backPressTime < 2000) {
+      return false; // 允许退出
+    }
+    this._backPressTime = Date.now();
+    uni.showToast({ title: '再按一次退出应用', icon: 'none', duration: 2000 });
+    return true; // 阻止默认退出
+  },
+  // #endif
+
   // [F2-FIX] 微信分享配置
   onShareAppMessage() {
     return {
@@ -549,6 +565,11 @@ export default {
     uni.$off('loginStatusChanged', this._loginHandler);
 
     // ✅ 检查点1.5: 停止计时
+    this.stopStudyTimer();
+  },
+
+  // ✅ P0-FIX: tabBar页面onUnload永不触发，必须在onHide中清理资源
+  onHide() {
     this.stopStudyTimer();
   },
 
@@ -893,33 +914,73 @@ export default {
 <style lang="scss" scoped>
 /* ==================== 页面最外层容器 ==================== */
 .page-wrapper {
+  min-height: 100%;
   min-height: 100vh;
   position: relative;
-  /* 关键：最外层背景白色，这样 TabBar 下方不会显示绿色 */
-  background-color: #ffffff;
+  background-color: var(--bg-page);
 }
 
 /* 深色模式下的页面背景 */
 .page-wrapper.page-dark {
-  background-color: #080808;
+  background-color: var(--bg-page);
 }
 
 .dashboard-container {
+  min-height: 100%;
   min-height: 100vh;
-  background-color: var(--bg-page);
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top, var(--bg-page)) 0%,
+    var(--page-gradient-mid, var(--bg-page)) 56%,
+    var(--page-gradient-bottom, var(--bg-page)) 100%
+  );
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+  isolation: isolate;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Text', 'Noto Sans SC', 'Roboto', sans-serif;
+}
+
+.dashboard-container::before,
+.dashboard-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dashboard-container::before {
+  width: 520rpx;
+  height: 520rpx;
+  right: -200rpx;
+  top: -170rpx;
+  background: radial-gradient(circle, var(--brand-tint-strong) 0%, transparent 72%);
+  filter: blur(12rpx);
+}
+
+.dashboard-container::after {
+  width: 480rpx;
+  height: 480rpx;
+  left: -170rpx;
+  top: 420rpx;
+  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 74%);
+  filter: blur(10rpx);
+}
+
+.page-dark .dashboard-container::before,
+.page-dark .dashboard-container::after {
+  opacity: 0.82;
 }
 
 .glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1rpx solid var(--border);
+  background: var(--bg-card-alpha);
+  backdrop-filter: blur(16rpx) saturate(130%);
+  -webkit-backdrop-filter: blur(16rpx) saturate(130%);
+  border: 1rpx solid rgba(255, 255, 255, 0.16);
 }
 
 .card-light {
-  background: var(--card);
+  background: linear-gradient(165deg, #ffffff 0%, #f4faf6 100%);
 }
 
 /* F002-I1b: 顶部导航栏样式已移至 IndexHeaderBar.vue */
@@ -931,6 +992,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
+  height: 100%;
   height: 100vh;
   width: 100%;
   z-index: 1;
@@ -950,7 +1012,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
 }
 
 .refresher-spinner {
@@ -975,7 +1043,64 @@ export default {
 
 /* 内容包装器 */
 .content-wrapper {
-  padding: var(--ds-spacing-xl, 48rpx) var(--ds-spacing-lg, 32rpx);
+  padding: 40rpx 30rpx;
+}
+
+@media screen and (max-width: 375px) {
+  .content-wrapper {
+    padding: 32rpx 22rpx;
+  }
+
+  .section-header {
+    margin-bottom: 18rpx;
+  }
+
+  .section-title {
+    font-size: 30rpx;
+  }
+
+  .section-header-apple .section-title {
+    font-size: 22rpx;
+    letter-spacing: 2rpx;
+  }
+
+  .edit-plan-btn {
+    padding: 12rpx 18rpx;
+  }
+
+  .edit-text {
+    font-size: 22rpx;
+  }
+
+  .tools-grid {
+    margin-bottom: 32rpx;
+  }
+
+  .tool-entry {
+    padding: 22rpx 18rpx;
+    min-height: 104rpx;
+  }
+
+  .tool-icon-wrapper {
+    width: 72rpx;
+    height: 72rpx;
+  }
+
+  .tool-info {
+    margin-left: 18rpx;
+  }
+
+  .tool-name {
+    font-size: 26rpx;
+  }
+
+  .tool-desc {
+    font-size: 22rpx;
+  }
+
+  .tool-arrow {
+    font-size: 28rpx;
+  }
 }
 
 /* ==================== 章节标题（保留：待办事项区域仍在父组件） ==================== */
@@ -983,13 +1108,25 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32rpx;
+  margin-bottom: 22rpx;
+}
+
+.section-header-apple {
+  margin-bottom: 26rpx;
 }
 
 .section-title {
-  font-size: 40rpx;
-  font-weight: 700;
+  font-size: 36rpx;
+  font-weight: 680;
+  letter-spacing: -0.2rpx;
   color: var(--text-primary);
+}
+
+.section-header-apple .section-title {
+  font-size: 24rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .section-action {
@@ -1002,17 +1139,45 @@ export default {
 .edit-plan-btn {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  padding: 12rpx 24rpx;
-  border-radius: 20rpx;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
+  padding: 14rpx 24rpx;
+  border-radius: 999rpx;
+  background: #ffffff;
+  color: #10281a;
+  border: 1rpx solid rgba(16, 40, 26, 0.08);
+  box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.16);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .edit-plan-btn:active {
   transform: scale(0.95);
   opacity: 0.8;
+}
+
+.page-dark .edit-plan-btn {
+  background: var(--gradient-primary);
+  color: var(--primary-foreground);
+  border-color: transparent;
+  box-shadow: var(--shadow-brand-sm);
+}
+
+.section-header-apple .edit-plan-btn {
+  min-height: 88rpx;
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(255, 255, 255, 0.56);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.page-dark .section-header-apple .edit-plan-btn {
+  background: rgba(16, 20, 28, 0.72);
+  border-color: rgba(124, 176, 255, 0.2);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .edit-icon {
@@ -1030,29 +1195,50 @@ export default {
 .tools-grid {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
-  margin-bottom: 48rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
+  margin-bottom: 42rpx;
 }
 
 .tool-entry {
   display: flex;
   align-items: center;
-  padding: 28rpx 24rpx;
-  border-radius: 24rpx;
+  padding: 26rpx 22rpx;
+  min-height: 112rpx;
+  border-radius: 28rpx;
   border: 1rpx solid var(--border);
+  box-shadow: var(--apple-shadow-card);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .tool-entry-hover {
-  transform: scale(0.97);
-  opacity: 0.85;
+  transform: translateY(-2rpx);
+  opacity: 0.92;
+}
+
+.tool-entry::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
+  pointer-events: none;
 }
 
 .tool-icon-wrapper {
   position: relative;
-  width: 88rpx;
-  height: 88rpx;
-  border-radius: 24rpx;
+  width: 82rpx;
+  height: 82rpx;
+  border-radius: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1067,32 +1253,44 @@ export default {
   width: 200%;
   height: 200%;
   border-radius: 50%;
-  opacity: 0.25;
-  filter: blur(8px);
+  opacity: 0.42;
+  filter: blur(10rpx);
 }
 
 .tool-icon-doc {
-  background: linear-gradient(135deg, #36d1dc, #5b86e5);
+  background: linear-gradient(145deg, #eaf8ef, #dff4e6);
 }
 
 .tool-glow-doc {
-  background: radial-gradient(circle, #36d1dc, transparent 70%);
+  background: radial-gradient(circle, var(--brand-glow), transparent 70%);
 }
 
 .tool-icon-photo {
-  background: linear-gradient(135deg, #e84393, #fd79a8);
+  background: linear-gradient(145deg, #f1fbf5, #e7f7ee);
 }
 
 .tool-glow-photo {
-  background: radial-gradient(circle, #e84393, transparent 70%);
+  background: radial-gradient(circle, var(--brand-glow), transparent 70%);
 }
 
 .tool-icon-search {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(145deg, #f3fbf6, #e9f8ef);
 }
 
 .tool-glow-search {
-  background: radial-gradient(circle, #667eea, transparent 70%);
+  background: radial-gradient(circle, var(--brand-glow), transparent 70%);
+}
+
+.page-dark .tool-icon-doc {
+  background: linear-gradient(145deg, var(--brand-tint-strong), var(--brand-tint));
+}
+
+.page-dark .tool-icon-photo {
+  background: linear-gradient(145deg, var(--brand-tint-strong), var(--brand-tint));
+}
+
+.page-dark .tool-icon-search {
+  background: linear-gradient(145deg, var(--brand-tint-strong), var(--brand-tint));
 }
 
 .tool-icon-glyph {
@@ -1108,24 +1306,30 @@ export default {
   margin-left: 24rpx;
   display: flex;
   flex-direction: column;
-  gap: 4rpx;
+  /* gap: 4rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 4rpx;
+  }
 }
 
 .tool-name {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 640;
   color: var(--text-primary);
 }
 
 .tool-desc {
-  font-size: 22rpx;
+  font-size: 23rpx;
   color: var(--text-secondary);
 }
 
 .tool-arrow {
-  font-size: 36rpx;
+  font-size: 32rpx;
   color: var(--text-secondary);
-  opacity: 0.5;
+  opacity: 0.54;
   margin-left: 12rpx;
 }
 

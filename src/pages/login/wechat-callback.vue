@@ -180,6 +180,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .callback-container {
+  min-height: 100%;
   min-height: 100vh;
   background: linear-gradient(180deg, #f8faf8 0%, #e8f5e9 100%);
   display: flex;
@@ -241,7 +242,13 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
 }
 
 .loading-icon {

@@ -4,14 +4,14 @@
  *
  * ⚠️ 隐藏约束（Chesterton's Fence）：
  * - 每个子模块的 try/catch 是独立的，一个失败不影响其他模块记录
- * - smart-question-picker 使用懒加载（动态 import），因为不一定启用
+ * - smart-question-picker 已下沉到 practice-sub，避免进入主包
  * - learning-analytics 使用动态导入，避免主包引入分包依赖
  */
 
 import { recordTime as recordQuestionTime } from './question-timer.js';
 import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
-import { recordSmartAnswer } from '@/utils/learning/smart-question-picker.js';
+import { recordSmartAnswer } from './utils/smart-question-picker.js';
 import { recordAnswer as recordAnalyticsAnswer } from '@/utils/analytics/learning-analytics.js';
 
 /**

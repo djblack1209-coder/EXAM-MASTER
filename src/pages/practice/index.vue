@@ -3,7 +3,7 @@
     <!-- 微信隐私保护弹窗 -->
     <PrivacyPopup />
     <!-- 顶部导航 -->
-    <view class="top-nav">
+    <view class="top-nav apple-glass">
       <text class="nav-title"> 刷题中心 </text>
       <view class="nav-actions">
         <!-- 移除垃圾桶图标，避免与微信原生胶囊按钮重叠 -->
@@ -11,6 +11,20 @@
     </view>
 
     <!-- 骨架屏加载状态 -->
+    <!-- #ifdef APP-PLUS -->
+    <view v-if="isPageLoading" class="skeleton-container">
+      <view class="skeleton-status-card skeleton-animate" />
+      <view class="skeleton-actions">
+        <view class="skeleton-btn skeleton-animate" />
+        <view class="skeleton-btn skeleton-animate" />
+      </view>
+      <view class="skeleton-import-card skeleton-animate" />
+      <view class="skeleton-menu">
+        <view v-for="i in 5" :key="i" class="skeleton-menu-item skeleton-animate" />
+      </view>
+    </view>
+    <!-- #endif -->
+    <!-- #ifndef APP-PLUS -->
     <!-- #ifndef APP-NVUE -->
     <transition name="skeleton-fade">
       <view v-if="isPageLoading" class="skeleton-container">
@@ -39,9 +53,10 @@
       </view>
     </view>
     <!-- #endif -->
+    <!-- #endif -->
 
     <!-- 状态卡片 -->
-    <view v-if="!isPageLoading" class="status-card" :class="{ 'empty-state': !hasBank }">
+    <view v-if="!isPageLoading" class="status-card apple-glass-card" :class="{ 'empty-state': !hasBank }">
       <!-- 有题库状态 -->
       <view v-if="hasBank" class="status-content">
         <view class="status-icon">
@@ -57,7 +72,7 @@
           <view class="status-desc"> 当前已收录 {{ totalQuestions }} 道真题 </view>
         </view>
         <view class="status-actions">
-          <view class="manage-btn" @tap="showQuizManage">
+          <view class="manage-btn apple-glass-pill" @tap="showQuizManage">
             <image class="manage-icon-img" src="/static/icons/practice/icon-settings.png" mode="aspectFit" lazy-load />
             <text class="manage-text"> 题库管理 </text>
           </view>
@@ -71,7 +86,7 @@
         </view>
         <view class="empty-title"> 题库空空如也 </view>
         <view class="empty-desc"> 导入学习资料，智能为您智能生成专属题库 </view>
-        <view class="empty-action">
+        <view class="empty-action apple-cta">
           <BaseIcon name="upload" :size="18" />
           <text class="action-text"> 点击导入资料 </text>
         </view>
@@ -107,7 +122,7 @@
       <button
         v-if="hasBank"
         id="e2e-practice-start-btn"
-        class="primary-btn"
+        class="primary-btn apple-cta"
         :class="{ 'btn-loading': isNavigating }"
         :disabled="isNavigating"
         @tap="goPractice"
@@ -123,7 +138,7 @@
       <button
         v-if="hasBank"
         id="e2e-practice-battle-btn"
-        class="secondary-btn"
+        class="secondary-btn apple-glass-pill"
         :class="{ 'btn-loading': isNavigating }"
         :disabled="isNavigating"
         @tap="goBattle"
@@ -136,7 +151,7 @@
       <!-- 导入资料卡片 -->
       <view
         id="e2e-practice-import-card"
-        class="import-card"
+        class="import-card apple-glass-card"
         :class="{ 'import-loading': isUploadingFile }"
         @tap="chooseImportSource"
       >
@@ -161,7 +176,7 @@
     <PauseBanner :visible="isPaused" @resume="resumeGeneration" />
 
     <!-- 功能菜单 -->
-    <view v-if="!isPageLoading" class="feature-menu">
+    <view v-if="!isPageLoading" class="feature-menu apple-group-card">
       <!-- 文件管理 -->
       <view id="e2e-practice-menu-file-manager" class="menu-item" @tap="goFileManager">
         <view class="menu-icon">
@@ -628,6 +643,22 @@ export default {
     },
 
     _requirePracticeSubpackageModule(modulePath) {
+      // #ifdef APP-PLUS
+      // App 端所有模块已打包在一起，直接动态 import
+      const moduleMap = {
+        '../practice-sub/composables/ai-generation-mixin.js': () =>
+          import('../practice-sub/composables/ai-generation-mixin.js'),
+        '../practice-sub/composables/learning-stats-mixin.js': () =>
+          import('../practice-sub/composables/learning-stats-mixin.js')
+      };
+      const loader = moduleMap[modulePath];
+      if (loader) {
+        return loader();
+      }
+      return Promise.reject(new Error(`未知的模块路径: ${modulePath}`));
+      // #endif
+
+      // #ifndef APP-PLUS
       return new Promise((resolve, reject) => {
         try {
           if (typeof require !== 'function') {
@@ -646,6 +677,7 @@ export default {
           reject(error);
         }
       });
+      // #endif
     },
 
     hydrateMainPackageStats() {
@@ -955,10 +987,10 @@ export default {
       return this._invokeDynamicMethod('clearAll');
     },
     pauseGeneration() {
-      return this._invokeDynamicMethod('pauseGeneration', [], { silent: true });
+      return this._invokeDynamicMethod('pauseGeneration', [], { silent: false });
     },
     resumeGeneration() {
-      return this._invokeDynamicMethod('resumeGeneration', [], { silent: true });
+      return this._invokeDynamicMethod('resumeGeneration', [], { silent: false });
     },
     closeSpeedModalAndPlay() {
       const method = this.dynamicMethodsCache?.closeSpeedModalAndPlay;
@@ -1011,16 +1043,52 @@ export default {
 
 /* 基础容器 - 使用设计系统变量 */
 .practice-container {
+  min-height: 100%;
   min-height: 100vh;
-  background-color: var(--bg-page);
-  padding: 20px;
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top, var(--bg-page)) 0%,
+    var(--page-gradient-mid, var(--bg-page)) 52%,
+    var(--page-gradient-bottom, var(--bg-page)) 100%
+  );
+  padding: 22rpx;
   /* E008: 使用 safe-area-inset-bottom 适配刘海屏/底部指示条 */
   padding-bottom: calc(140px + constant(safe-area-inset-bottom, 0px));
   padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   color: var(--text-sub);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  transition: background-color 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Text', 'Noto Sans SC', 'Roboto', sans-serif;
+  transition: background 0.3s ease;
+}
+
+.practice-container::before,
+.practice-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.practice-container::before {
+  width: 420rpx;
+  height: 420rpx;
+  right: -150rpx;
+  top: 80rpx;
+  background: radial-gradient(circle, var(--brand-tint-strong) 0%, transparent 70%);
+  filter: blur(10rpx);
+}
+
+.practice-container::after {
+  width: 360rpx;
+  height: 360rpx;
+  left: -120rpx;
+  top: 520rpx;
+  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 72%);
+  filter: blur(10rpx);
 }
 
 /* ============================================
@@ -1030,22 +1098,29 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: var(--status-bar-height, 44px);
-  margin-bottom: 32px;
-  padding: 0 4px;
+  margin-top: calc(var(--status-bar-height, 44px) + 6px);
+  margin-bottom: 22px;
+  padding: 14rpx 18rpx;
+  border-radius: 32rpx;
 }
 
 .nav-title {
-  font-size: 64rpx;
-  font-weight: 700;
+  font-size: 58rpx;
+  font-weight: 680;
+  letter-spacing: -0.5rpx;
   color: var(--text-primary);
-  letter-spacing: 0;
   line-height: 1.2;
 }
 
 .nav-actions {
   display: flex;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
 }
 
 .icon-btn {
@@ -1075,18 +1150,36 @@ export default {
 
 /* 状态卡片 */
 .status-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28px;
   padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.06));
+  margin-bottom: 18px;
+  box-shadow: var(--apple-shadow-card);
   transition: all 0.3s ease;
+  backdrop-filter: blur(14rpx) saturate(120%);
+  -webkit-backdrop-filter: blur(14rpx) saturate(120%);
+}
+
+.status-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .status-card:active {
-  box-shadow: var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.08));
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+}
+
+.dark-mode .status-card {
+  background: linear-gradient(160deg, #1f1f24 0%, #17171b 100%);
 }
 
 /* 空状态样式 - 居中显示 */
@@ -1096,12 +1189,15 @@ export default {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: var(--bg-secondary);
 }
 
 .status-card.empty-state:active {
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.92);
   border-color: var(--primary);
+}
+
+.dark-mode .status-card.empty-state {
+  background: linear-gradient(160deg, #1d1d22 0%, #151518 100%);
 }
 
 .empty-state-content {
@@ -1116,6 +1212,29 @@ export default {
 .empty-icon {
   margin-bottom: 20px;
   animation: float 3s ease-in-out infinite;
+}
+
+.dark-mode .empty-icon,
+.dark-mode .import-icon,
+.dark-mode .menu-icon {
+  width: 84rpx;
+  height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24rpx;
+  background:
+    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border: 1rpx solid rgba(10, 132, 255, 0.18);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.dark-mode .empty-icon {
+  width: 132rpx;
+  height: 132rpx;
+  margin: 0 auto 20px;
+  border-radius: 36rpx;
 }
 
 @keyframes float {
@@ -1157,8 +1276,8 @@ export default {
 }
 
 .empty-title {
-  font-size: 44rpx;
-  font-weight: 600;
+  font-size: 42rpx;
+  font-weight: 680;
   color: var(--text-primary);
   margin: 0 0 24rpx 0;
   letter-spacing: 0;
@@ -1175,12 +1294,20 @@ export default {
 .empty-action {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 28px;
-  background-color: var(--primary);
-  border-radius: 24px;
+  /* gap: 10px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10px;
+  }
+  padding: 12px 28px;
+  min-height: 88rpx;
+  background: var(--cta-primary-bg);
+  border-radius: 999px;
   transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--cta-primary-shadow);
+  border: 1px solid var(--cta-primary-border);
 }
 
 .empty-action:active {
@@ -1199,14 +1326,30 @@ export default {
 .action-text {
   font-size: 32rpx;
   font-weight: 600;
-  color: var(--primary-foreground);
+  color: var(--cta-primary-text);
   letter-spacing: 0.3px;
+}
+
+.dark-mode .empty-action {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+}
+
+.dark-mode .action-text {
+  color: var(--primary-foreground);
 }
 
 .status-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
 }
 
 .status-actions {
@@ -1217,16 +1360,24 @@ export default {
 .manage-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background-color: var(--primary-light);
-  border-radius: 16px;
+  /* gap: 6px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 6px;
+  }
+  padding: 10px 18px;
+  background-color: rgba(255, 255, 255, 0.66);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.52);
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
 }
 
 .manage-btn:active {
-  background-color: var(--primary);
+  background-color: rgba(255, 255, 255, 0.88);
   transform: scale(0.95);
 }
 
@@ -1237,7 +1388,7 @@ export default {
 .manage-text {
   font-size: 28rpx;
   color: var(--primary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .status-icon {
@@ -1269,8 +1420,8 @@ export default {
 }
 
 .status-title {
-  font-size: 40rpx;
-  font-weight: 600;
+  font-size: 38rpx;
+  font-weight: 680;
   color: var(--text-primary);
   margin: 0 0 8px 0;
 }
@@ -1285,8 +1436,14 @@ export default {
 .main-actions {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 32px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12px;
+  }
+  margin-bottom: 22px;
 }
 
 /* 主要按钮 */
@@ -1294,31 +1451,45 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  border: none;
-  border-radius: 20px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12px;
+  }
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  border-radius: 999px;
   padding: 20px 40px;
   font-size: 40rpx;
-  font-weight: 600;
+  font-weight: 680;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--cta-primary-shadow);
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
   margin: 0 auto;
+  min-height: 96rpx;
 }
 
 .primary-btn:hover {
-  opacity: 0.85;
-  box-shadow: var(--shadow-xl);
+  opacity: 0.92;
+  box-shadow: var(--cta-primary-shadow);
   transform: translateY(-2px);
 }
 
 .primary-btn:active {
   transform: translateY(0);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 8rpx 20rpx rgba(16, 40, 26, 0.16);
+}
+
+.dark-mode .primary-btn {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 /* ✅ F022: 按钮加载状态 */
@@ -1365,31 +1536,43 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background-color: var(--primary);
-  color: var(--primary-foreground);
-  border: none;
-  border-radius: 20px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
+  background-color: rgba(255, 255, 255, 0.68);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 999px;
   padding: 20px 40px;
   font-size: 40rpx;
-  font-weight: 600;
+  font-weight: 620;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--apple-shadow-surface);
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
   margin: 0 auto;
+  min-height: 96rpx;
 }
 
 .secondary-btn:hover {
-  opacity: 0.85;
-  box-shadow: var(--shadow-xl);
+  opacity: 0.94;
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
 .secondary-btn:active {
   transform: translateY(0);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark-mode .secondary-btn {
+  background-color: rgba(16, 20, 28, 0.72);
+  border-color: rgba(124, 176, 255, 0.2);
 }
 
 .btn-icon {
@@ -1400,27 +1583,45 @@ export default {
 .import-card {
   display: flex;
   align-items: center;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 26px;
   padding: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--apple-shadow-card);
+  backdrop-filter: blur(14rpx) saturate(120%);
+  -webkit-backdrop-filter: blur(14rpx) saturate(120%);
+}
+
+.import-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
+}
+
+.dark-mode .import-card {
+  background: linear-gradient(160deg, #1f1f24 0%, #17171b 100%);
 }
 
 /* ✅ F026: 文件读取中状态 */
 .import-card.import-loading {
   opacity: 0.8;
   pointer-events: none;
-  border-color: var(--brand-primary, #007aff);
+  border-color: var(--primary);
 }
 
 .import-spinner {
   width: 48rpx;
   height: 48rpx;
   border: 4rpx solid var(--border, #e5e5e5);
-  border-top-color: var(--brand-primary, #007aff);
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: importSpin 0.8s linear infinite;
 }
@@ -1432,7 +1633,7 @@ export default {
 }
 
 .import-card:hover {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
@@ -1472,18 +1673,25 @@ export default {
 
 /* 功能菜单 */
 .feature-menu {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28px;
   overflow: hidden;
-  box-shadow: var(--shadow-md, 0 4px 20px rgba(0, 0, 0, 0.06));
+  box-shadow: var(--apple-shadow-surface);
+  backdrop-filter: blur(14rpx) saturate(120%);
+  -webkit-backdrop-filter: blur(14rpx) saturate(120%);
+}
+
+.dark-mode .feature-menu {
+  background: linear-gradient(160deg, #1f1f24 0%, #17171b 100%);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid var(--border);
+  min-height: 96rpx;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--apple-divider);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -1493,7 +1701,7 @@ export default {
 }
 
 .menu-item:hover {
-  background-color: var(--bg-secondary);
+  background-color: rgba(255, 255, 255, 0.26);
 }
 
 .menu-icon {
@@ -1509,8 +1717,8 @@ export default {
 }
 
 .menu-title {
-  font-size: 32rpx;
-  font-weight: 500;
+  font-size: 31rpx;
+  font-weight: 620;
   color: var(--text-primary);
   margin: 0;
 }
@@ -1523,7 +1731,13 @@ export default {
 .progress-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
 }
 
 .progress-bar {
@@ -1536,7 +1750,7 @@ export default {
 
 .progress-fill {
   height: 100%;
-  background-color: var(--primary);
+  background: var(--gradient-primary);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -1561,7 +1775,13 @@ export default {
 
 .skeleton-actions {
   display: flex;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
   margin-bottom: 20px;
 }
 
@@ -1574,7 +1794,13 @@ export default {
 .skeleton-menu {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12px;
+  }
 }
 
 .skeleton-menu-item {

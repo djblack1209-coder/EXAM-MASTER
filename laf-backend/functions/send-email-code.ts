@@ -17,7 +17,7 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 465);
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
 const SMTP_FROM = process.env.SMTP_FROM || 'Exam-Master <noreply@exam-master.com>';
-const SMTP_RETRY_TIMES = Math.max(1, Number(process.env.SMTP_RETRY_TIMES || 3));
+const SMTP_RETRY_TIMES = Math.min(2, Math.max(1, Number(process.env.SMTP_RETRY_TIMES || 2)));
 const SMTP_RETRY_DELAY_MS = Math.max(200, Number(process.env.SMTP_RETRY_DELAY_MS || 800));
 
 const RESERVED_EMAIL_DOMAINS = new Set(['example.com', 'example.net', 'example.org']);
@@ -99,13 +99,27 @@ export default async function (ctx) {
         email,
         created_at: db.command.gt(now - 60 * 1000)
       })
+      .orderBy('created_at', 'desc')
       .getOne();
 
     if (recentCode.data) {
+      const retryAfter = Math.max(1, Math.ceil((60 * 1000 - (now - Number(recentCode.data.created_at || now))) / 1000));
+      if (!recentCode.data.used) {
+        return {
+          code: 0,
+          success: true,
+          alreadySent: true,
+          retryAfter,
+          message: '验证码已发送，请稍候查收',
+          requestId
+        };
+      }
+
       return {
         code: 429,
         success: false,
         message: '发送太频繁，请1分钟后再试',
+        retryAfter,
         requestId
       };
     }
@@ -161,9 +175,21 @@ export default async function (ctx) {
     });
 
     // 发送邮件
-    const emailSent = await sendEmail(email, code);
+    const emailSent = await sendEmail(email, code, requestId);
 
-    if (!emailSent) {
+    if (emailSent.status === 'uncertain') {
+      console.warn(`[${requestId}] 邮件投递状态不确定，保留验证码记录，等待用户先查收邮箱`);
+      return {
+        code: 0,
+        success: true,
+        pendingDelivery: true,
+        retryAfter: 60,
+        message: '验证码请求已提交，请先检查邮箱，若未收到请在倒计时结束后重试',
+        requestId
+      };
+    }
+
+    if (emailSent.status !== 'sent') {
       // 邮件发送失败
       console.warn(`[${requestId}] 邮件发送失败，准备回滚验证码记录`);
 
@@ -219,11 +245,11 @@ export default async function (ctx) {
 /**
  * 发送邮件
  */
-async function sendEmail(to, code) {
+async function sendEmail(to, code, requestId) {
   // 如果没有配置SMTP，跳过发送
   if (!SMTP_USER || !SMTP_PASS) {
     console.warn('SMTP未配置，跳过邮件发送');
-    return false;
+    return { status: 'failed', reason: 'smtp_not_configured' };
   }
 
   // 使用 nodemailer 发送邮件（动态导入，Laf 运行时提供）
@@ -236,9 +262,9 @@ async function sendEmail(to, code) {
       user: SMTP_USER,
       pass: SMTP_PASS
     },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 8000
   });
 
   const mailOptions = {
@@ -271,20 +297,28 @@ async function sendEmail(to, code) {
   for (let attempt = 1; attempt <= SMTP_RETRY_TIMES; attempt++) {
     try {
       await transporter.sendMail(mailOptions);
-      return true;
+      return { status: 'sent' };
     } catch (error) {
       const canRetry = shouldRetryEmailError(error);
-      console.error(`发送邮件失败(第 ${attempt}/${SMTP_RETRY_TIMES} 次):`, error);
+      const errorCode = String(error?.code || 'unknown');
+      const responseCode = Number(error?.responseCode || 0);
+      console.error(`[${requestId}] 发送邮件失败(第 ${attempt}/${SMTP_RETRY_TIMES} 次):`, {
+        errorCode,
+        responseCode,
+        message: error?.message
+      });
 
       if (!canRetry || attempt >= SMTP_RETRY_TIMES) {
-        return false;
+        return canRetry
+          ? { status: 'uncertain', reason: errorCode || 'transient_failure' }
+          : { status: 'failed', reason: errorCode || 'smtp_failure' };
       }
 
       await sleep(SMTP_RETRY_DELAY_MS * attempt);
     }
   }
 
-  return false;
+  return { status: 'uncertain', reason: 'retry_exhausted' };
 }
 
 function shouldRetryEmailError(error) {

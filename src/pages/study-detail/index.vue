@@ -356,6 +356,7 @@ export default {
 <style lang="scss" scoped>
 /* 页面容器 */
 .study-detail-page {
+  min-height: 100%;
   min-height: 100vh;
   background: var(--bg-secondary, #f5f5f7);
   transition: background-color 0.3s ease;
@@ -373,11 +374,13 @@ export default {
 }
 
 .navbar-solid {
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: var(--shadow-sm);
-  border-bottom: 1px solid var(--border-color);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: var(--apple-shadow-surface);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
 }
 
 .navbar-content {
@@ -418,8 +421,10 @@ export default {
   width: 64rpx;
   height: 64rpx;
   border-radius: 50%;
-  background: var(--muted);
+  background: rgba(255, 255, 255, 0.68);
   transition: all 0.3s ease;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .theme-toggle:active {
@@ -433,6 +438,7 @@ export default {
 
 /* 滚动容器 */
 .scroll-container {
+  height: 100%;
   height: 100vh;
 }
 
@@ -459,7 +465,13 @@ export default {
 .overview-cards {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
   padding: 0 32rpx 32rpx;
 }
 
@@ -467,11 +479,25 @@ export default {
   display: flex;
   align-items: center;
   padding: 32rpx;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 24rpx;
-  box-shadow: var(--shadow-sm);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28rpx;
+  box-shadow: var(--apple-shadow-card);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .stat-card:active {
@@ -514,9 +540,11 @@ export default {
 
 .section-title {
   display: block;
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-size: 24rpx;
+  font-weight: 620;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
   margin-bottom: 8rpx;
 }
 
@@ -528,11 +556,11 @@ export default {
 
 .heatmap-container,
 .chart-container {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 24rpx;
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28rpx;
   padding: 32rpx;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--apple-shadow-card);
 }
 
 /* 底部间距 */
@@ -565,7 +593,13 @@ export default {
 .skeleton-cards {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
   margin-bottom: 32rpx;
 }
 

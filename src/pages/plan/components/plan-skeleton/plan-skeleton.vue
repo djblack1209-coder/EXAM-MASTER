@@ -57,13 +57,14 @@ export default {
 .skeleton-container.dark-mode {
   --skeleton-bg: #2c2c2e;
   --skeleton-highlight: #3a3a3c;
-  --card-bg: #1e3a0f;
-  --card-border: #2d4e1f;
+  --card-bg: var(--bg-card);
+  --card-border: var(--border-color);
 }
 
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--card-border);
   border-radius: 40rpx;
   padding: 30rpx;

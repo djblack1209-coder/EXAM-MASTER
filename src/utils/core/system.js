@@ -66,6 +66,31 @@ export function getMenuButtonBoundingClientRect() {
 }
 
 /**
+ * 获取顶部导航右侧安全间距（避免与微信原生胶囊重叠）
+ * @param {number} [extra=10] - 胶囊右侧额外预留像素
+ * @returns {number} 右侧安全间距（px）
+ */
+export function getCapsuleSafeRight(extra = 10) {
+  // #ifdef MP-WEIXIN
+  try {
+    const capsule = getMenuButtonBoundingClientRect();
+    const windowInfo = uni.getWindowInfo();
+    if (capsule && capsule.width > 0 && windowInfo?.windowWidth) {
+      return Math.max(20, windowInfo.windowWidth - capsule.left + extra);
+    }
+    return 100;
+  } catch (e) {
+    logger.warn('获取胶囊右侧安全间距失败，使用默认值', e);
+    return 100;
+  }
+  // #endif
+
+  // #ifndef MP-WEIXIN
+  return 20;
+  // #endif
+}
+
+/**
  * 获取设备像素比
  * @returns {number} 设备像素比
  */

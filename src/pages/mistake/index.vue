@@ -7,7 +7,7 @@
 
     <!-- 导航栏 - 添加设计系统工具类 -->
     <view v-if="!isInitLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content ds-flex ds-flex-between">
+      <view class="nav-content ds-flex ds-flex-between" :style="{ paddingRight: capsuleSafeRight + 'px' }">
         <text class="nav-back ds-touchable" @tap="goBack"> ← </text>
         <text class="nav-title ds-text-lg ds-font-semibold"> 我的错题本 </text>
         <view class="nav-actions">
@@ -130,6 +130,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
+import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
@@ -143,6 +144,7 @@ export default {
   data() {
     return {
       statusBarHeight: 44,
+      capsuleSafeRight: 20,
       mistakes: [],
       mode: 'quiz', // 'quiz' 或 'recite'
       userInfo: {},
@@ -160,13 +162,8 @@ export default {
     };
   },
   onLoad(options) {
-    // 获取窗口信息
-    try {
-      const windowInfo = uni.getWindowInfo();
-      this.statusBarHeight = windowInfo.statusBarHeight || 44;
-    } catch (_e) {
-      this.statusBarHeight = 44;
-    }
+    this.statusBarHeight = getStatusBarHeight();
+    this.capsuleSafeRight = getCapsuleSafeRight();
 
     // 初始化主题
     const savedTheme = storageService.get('theme_mode', 'light');
@@ -585,8 +582,14 @@ export default {
 }
 
 .container {
+  min-height: 100%;
   min-height: 100vh;
-  background: var(--bg-secondary, #f5f5f7);
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
   position: relative;
   overflow: hidden;
 }
@@ -596,9 +599,9 @@ export default {
   top: 0;
   width: 100%;
   height: 500rpx;
-  background: var(--gradient-primary);
+  background: radial-gradient(circle at 18% 20%, var(--brand-tint-strong) 0%, transparent 70%);
   filter: blur(80px);
-  opacity: 0.6;
+  opacity: 0.8;
   z-index: 0;
 }
 
@@ -610,6 +613,7 @@ export default {
   z-index: 100;
   background: var(--bg-glass);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 
   .nav-content {
     height: 50px;
@@ -642,7 +646,13 @@ export default {
     .nav-clear-btn {
       display: flex;
       align-items: center;
-      gap: 8rpx;
+      /* gap: 8rpx; -- replaced for Android WebView compat */
+      & > view + view,
+      & > text + text,
+      & > view + text,
+      & > text + view {
+        margin-left: 8rpx;
+      }
       padding: 8rpx 16rpx;
       border-radius: 20rpx;
       background: var(--danger-light);
@@ -667,6 +677,7 @@ export default {
 }
 
 .main-scroll {
+  height: 100%;
   height: 100vh;
   padding: 30rpx;
   box-sizing: border-box;
@@ -677,6 +688,7 @@ export default {
 .glass-card {
   background: var(--bg-card);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-radius: 40rpx;
   padding: 30rpx;
@@ -688,7 +700,13 @@ export default {
   display: flex;
   padding: 10rpx;
   border-radius: 20rpx;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
 
   .mode-item {
     flex: 1;
@@ -700,10 +718,11 @@ export default {
     color: var(--text-sub);
 
     &.active {
-      background: var(--primary);
-      color: var(--primary-foreground);
+      background: var(--cta-primary-bg);
+      color: var(--cta-primary-text);
+      border: 1rpx solid var(--cta-primary-border);
       font-weight: bold;
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--cta-primary-shadow);
     }
   }
 }
@@ -757,14 +776,21 @@ export default {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 12rpx;
+    /* gap: 12rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: 12rpx;
+    }
     padding: 24rpx 64rpx;
-    background: var(--gradient-primary);
-    color: var(--primary-foreground);
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
     border-radius: 50rpx;
     font-weight: 600;
     font-size: 30rpx;
-    box-shadow: var(--shadow-lg);
+    border: 1rpx solid var(--cta-primary-border);
+    box-shadow: var(--cta-primary-shadow);
     transition: all 0.3s ease;
   }
 
@@ -778,11 +804,17 @@ export default {
 .review-mode-banner {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   padding: 24rpx 30rpx;
   margin: 0 0 30rpx 0;
-  background: rgba(46, 204, 113, 0.1);
-  border: 1rpx solid rgba(46, 204, 113, 0.3);
+  background: var(--theme-primary-light);
+  border: 1rpx solid var(--brand-glow);
   border-radius: 24rpx;
 
   .review-icon {
@@ -794,7 +826,13 @@ export default {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 6rpx;
+    /* gap: 6rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-top: 6rpx;
+    }
   }
 
   .review-title {
@@ -810,12 +848,13 @@ export default {
 
   .start-review-btn {
     padding: 14rpx 32rpx;
-    background: #2ecc71;
-    color: #fff;
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
     border-radius: 20rpx;
     font-size: 26rpx;
     font-weight: 600;
-    border: none;
+    border: 1rpx solid var(--cta-primary-border);
+    box-shadow: var(--cta-primary-shadow);
     flex-shrink: 0;
 
     &::after {
@@ -837,7 +876,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
   font-size: 28rpx;
   box-shadow: var(--shadow-lg);
   z-index: 99;
@@ -865,7 +910,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
   transition: all 0.2s;
   box-shadow: var(--shadow-sm);
 }
@@ -898,8 +949,8 @@ export default {
   --text-primary: #f1f5f9;
   --text-sub: #b0b0b0;
   --text-main: #f1f5f9;
-  --card-bg: #1e3a0f;
-  --card-border: #2d4e1f;
+  --card-bg: var(--bg-card);
+  --card-border: var(--border-color);
   background-color: var(--bg-color);
 }
 
@@ -938,9 +989,9 @@ export default {
 }
 
 .container.dark-mode .fab-btn {
-  background: #1e3a0f;
+  background: var(--card-bg);
   color: #f1f5f9;
-  border: 1rpx solid #2d4e1f;
+  border: 1rpx solid var(--card-border);
 }
 
 .container.dark-mode .mode-item {
@@ -948,13 +999,13 @@ export default {
 }
 
 .container.dark-mode .mode-item.active {
-  background: #2ecc71;
-  color: #fff;
+  background: var(--brand-color);
+  color: var(--text-inverse);
 }
 
 .container.dark-mode .review-mode-banner {
-  background: rgba(46, 204, 113, 0.15);
-  border-color: rgba(46, 204, 113, 0.3);
+  background: var(--theme-primary-light);
+  border-color: var(--brand-glow);
 }
 
 .container.dark-mode .review-title {
@@ -966,14 +1017,20 @@ export default {
 }
 
 .container.dark-mode .aurora-bg {
-  background: linear-gradient(135deg, var(--bg-body) 0%, #1a2e05 50%, var(--bg-body) 100%) !important;
-  opacity: 0.8;
+  background: radial-gradient(circle at 22% 16%, var(--brand-tint-strong) 0%, transparent 72%) !important;
+  opacity: 0.7;
 }
 
 /* ✅ 1.7: 错题筛选栏 */
 .review-filter-bar {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   padding: 0 30rpx;
   margin-bottom: 24rpx;
 }
@@ -987,12 +1044,12 @@ export default {
 }
 
 .filter-chip.active {
-  background: var(--color-primary, #4caf50);
-  border-color: var(--color-primary, #4caf50);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .filter-chip.active .filter-text {
-  color: #fff;
+  color: var(--primary-foreground);
 }
 
 .filter-text {
@@ -1010,11 +1067,11 @@ export default {
 }
 
 .container.dark-mode .filter-chip.active {
-  background: var(--color-primary, #4caf50);
-  border-color: var(--color-primary, #4caf50);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .container.dark-mode .filter-chip.active .filter-text {
-  color: #fff;
+  color: var(--primary-foreground);
 }
 </style>

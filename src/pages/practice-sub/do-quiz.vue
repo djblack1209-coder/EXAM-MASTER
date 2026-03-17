@@ -312,7 +312,7 @@ import { playCorrectAnimation, playWrongAnimation, getComboDisplay, resetAnimati
 // ✅ 导入单题计时器模块
 import { startTimer as startQuestionTimer, stopTimer as stopQuestionTimer } from './question-timer.js';
 // ✅ 智能组题与自适应学习模块
-import { pickQuestions } from '@/utils/learning/smart-question-picker.js';
+import { pickQuestions } from './utils/smart-question-picker.js';
 import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/learning/adaptive-learning-engine.js';
 // ✅ 导入离线缓存模块
 import { checkOfflineAvailability } from './offline-cache.js';
@@ -793,7 +793,14 @@ export default {
           /* silent save failure */
         });
         // 然后触发智能深度解析（会自动更新错题本中的智能解析字段）
-        await this.fetchAIDeepAnalysis(this.currentQuestion, this.currentQuestion.options[idx]);
+        // ✅ P0-FIX: 捕获AI分析异常，防止答题流程中断
+        try {
+          await this.fetchAIDeepAnalysis(this.currentQuestion, this.currentQuestion.options[idx]);
+        } catch (aiErr) {
+          logger.warn('[do-quiz] AI深度解析失败，不影响答题流程:', aiErr);
+          this.aiComment = '智能解析暂时不可用，请继续答题';
+          this.isAnalyzing = false;
+        }
         this.updateStudyStats();
         this.showResult = true;
       }
@@ -1308,6 +1315,7 @@ export default {
 <style lang="scss" scoped>
 /* 容器样式 */
 .container {
+  min-height: 100%;
   min-height: 100vh;
   background: var(--bg-secondary, #f5f5f7);
   position: relative;
@@ -1346,7 +1354,13 @@ export default {
 .back-area {
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
 }
 .back-icon {
   font-size: 36rpx;
@@ -1366,7 +1380,13 @@ export default {
   border-radius: 20rpx;
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
 }
 .timer-icon {
   font-size: 24rpx;
@@ -1376,7 +1396,13 @@ export default {
 .timer-group {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
 }
 
 .total-label {
@@ -1395,7 +1421,13 @@ export default {
   border-radius: 24rpx;
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
   transition: all 0.3s ease;
 }
 
@@ -1445,6 +1477,7 @@ export default {
 
 /* 滚动区域 */
 .quiz-scroll {
+  height: 100%;
   height: 100vh;
   padding: 0 30rpx;
   box-sizing: border-box;
@@ -1578,7 +1611,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30rpx;
+  /* gap: 30rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 30rpx;
+  }
 }
 .pulse-ring {
   width: 140rpx;
@@ -1644,7 +1683,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   margin-bottom: 20rpx;
   position: relative;
 }
@@ -1658,6 +1703,7 @@ export default {
   border-radius: 50%;
   background: var(--overlay);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: all 0.3s;
   flex-shrink: 0;
 }
@@ -1689,7 +1735,13 @@ export default {
 .analysis-tag {
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
   margin-bottom: 20rpx;
   padding: 10rpx 20rpx;
   background: var(--overlay);
@@ -1714,7 +1766,13 @@ export default {
 .answer-display {
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
   margin-bottom: 20rpx;
   padding: 0 20rpx;
 }
@@ -1753,7 +1811,7 @@ export default {
   height: 300rpx;
   /* 适配 iPhone 底部安全区域 */
   padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* ==================== 新增样式：收藏按钮 ==================== */
@@ -1767,7 +1825,13 @@ export default {
 .q-actions {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .favorite-btn {
@@ -1912,7 +1976,13 @@ export default {
   opacity: 0.6;
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
 }
 
 .swipe-hint-icon {
@@ -2028,7 +2098,13 @@ export default {
 .note-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   margin-bottom: 30rpx;
 }
 
@@ -2050,7 +2126,13 @@ export default {
 
 .note-modal-footer {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
 }
 
 .note-cancel-btn {
@@ -2066,12 +2148,13 @@ export default {
 .note-save-btn {
   flex: 1;
   height: 80rpx;
-  background: var(--primary);
-  color: var(--text-primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   font-size: 28rpx;
   font-weight: bold;
   border-radius: 16rpx;
-  border: none;
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 /* hover-class 反馈 */

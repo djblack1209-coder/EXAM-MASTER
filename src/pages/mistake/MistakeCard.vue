@@ -310,6 +310,7 @@ export default {
 .glass-card {
   background: var(--bg-card);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   border-radius: 40rpx;
   padding: 30rpx;
@@ -419,7 +420,13 @@ export default {
 
   .actions {
     display: flex;
-    gap: 16rpx;
+    /* gap: 16rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: 16rpx;
+    }
   }
 
   .action-btn {
@@ -456,7 +463,13 @@ export default {
   .wrong-count {
     display: flex;
     align-items: center;
-    gap: 8rpx;
+    /* gap: 8rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: 8rpx;
+    }
     font-size: 22rpx;
     color: var(--warning);
   }
@@ -488,7 +501,7 @@ export default {
   }
 
   &.correct-option {
-    background: rgba(46, 204, 113, 0.15);
+    background: var(--success-light);
     border: 1px solid var(--success);
   }
 
@@ -500,7 +513,13 @@ export default {
 
 .practice-actions {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   margin-top: 20rpx;
 }
 
@@ -564,7 +583,13 @@ export default {
 .practice-status-bar {
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
   padding: 16rpx 20rpx;
   margin-bottom: 20rpx;
   border-radius: 12rpx;

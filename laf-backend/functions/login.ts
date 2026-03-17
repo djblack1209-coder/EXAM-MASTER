@@ -582,6 +582,20 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
     return { code: 400, success: false, message: '请提供验证码或密码', requestId };
   }
 
+  // 验证码注册/设置密码时，先校验密码强度，避免错误消耗验证码
+  if (verifyCode && password) {
+    const strengthResult = validatePasswordStrength(password);
+    if (!strengthResult.valid) {
+      return {
+        code: 400,
+        success: false,
+        message: `密码强度不足: ${strengthResult.errors.join('; ')}`,
+        passwordStrength: getPasswordStrengthLevel(strengthResult.score),
+        requestId
+      };
+    }
+  }
+
   // ✅ B005: 验证码校验逻辑
   if (verifyCode) {
     const codeValid = await validateEmailCode(email, verifyCode, requestId);
@@ -657,19 +671,8 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
   const now = Date.now();
   const overrides: Record<string, unknown> = { email };
 
-  // 如果提供了密码，使用 scrypt 保存密码哈希
-  if (password) {
-    const strengthResult = validatePasswordStrength(password);
-    if (!strengthResult.valid) {
-      return {
-        code: 400,
-        success: false,
-        message: `密码强度不足: ${strengthResult.errors.join('; ')}`,
-        passwordStrength: getPasswordStrengthLevel(strengthResult.score),
-        requestId
-      };
-    }
-
+  // 仅在验证码链路中提交密码时，才写入/更新密码哈希
+  if (verifyCode && password) {
     const salt = crypto.randomBytes(16).toString('hex');
     overrides.password_salt = salt;
     overrides.password_hash = await hashPasswordScrypt(password, salt);

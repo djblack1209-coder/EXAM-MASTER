@@ -4,7 +4,6 @@
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { getComprehensiveReport, getStreakData } from '@/utils/analytics/learning-analytics.js';
-import { getLearningReport } from '@/utils/learning/smart-question-picker.js';
 
 class IntelligentPlanManager {
   constructor() {
@@ -452,7 +451,7 @@ class IntelligentPlanManager {
   // 获取智能提醒
   async getIntelligentReminders() {
     const intelligentReminders = [];
-    const learningReport = getLearningReport();
+    const learningReport = getComprehensiveReport();
     const streakData = getStreakData();
 
     // 基于学习习惯的提醒

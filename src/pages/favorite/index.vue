@@ -3,7 +3,7 @@
     <view class="aurora-bg" />
 
     <!-- 导航栏 -->
-    <view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
+    <view class="header-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <text class="nav-back" @tap="goBack"> ← </text>
         <text class="nav-title"> 我的收藏 </text>
@@ -27,7 +27,7 @@
       @scrolltolower="loadMoreFavorites"
     >
       <!-- 统计卡片 -->
-      <view class="stats-row">
+      <view class="stats-row apple-glass-card">
         <view class="stat-item">
           <text class="stat-value">
             {{ totalFavorites }}
@@ -62,7 +62,11 @@
         </view>
         <view class="folder-grid">
           <!-- 全部收藏 -->
-          <view class="folder-card" :class="{ active: currentFolderId === null }" @tap="selectFolder(null)">
+          <view
+            class="folder-card apple-glass-card"
+            :class="{ active: currentFolderId === null }"
+            @tap="selectFolder(null)"
+          >
             <BaseIcon name="books" :size="36" class="folder-icon" />
             <text class="folder-name"> 全部收藏 </text>
             <text class="folder-count"> {{ totalFavorites }} 题 </text>
@@ -70,7 +74,7 @@
           <view
             v-for="folder in folders"
             :key="folder.id"
-            class="folder-card"
+            class="folder-card apple-glass-card"
             :class="{ active: currentFolderId === folder.id }"
             @tap="selectFolder(folder.id)"
             @longpress="showFolderActions(folder)"
@@ -91,7 +95,7 @@
           <text class="section-title">
             {{ currentFolderName }}
           </text>
-          <view class="sort-btn" @tap="toggleSort">
+          <view class="sort-btn apple-glass-pill" @tap="toggleSort">
             <text class="sort-icon"> ↕ </text>
             <text class="sort-text">
               {{ sortLabel }}
@@ -107,7 +111,7 @@
         </view>
 
         <!-- 题目列表 (F007: 增量渲染，避免一次性渲染全部DOM) -->
-        <view v-for="item in displayedFavorites" :key="item.id" class="favorite-card">
+        <view v-for="item in displayedFavorites" :key="item.id" class="favorite-card apple-group-card">
           <view class="card-header">
             <view class="card-tag">
               {{ item.category }}
@@ -148,10 +152,10 @@
           <view class="card-footer">
             <text class="time-text"> 收藏于 {{ formatDate(item.createdAt) }} </text>
             <view class="footer-actions">
-              <button class="action-btn" @tap="toggleOptions(item.id)">
+              <button class="action-btn apple-glass-pill" @tap="toggleOptions(item.id)">
                 {{ showOptions[item.id] ? '收起' : '查看答案' }}
               </button>
-              <button class="action-btn primary" @tap="practiceQuestion(item)">练习此题</button>
+              <button class="action-btn primary apple-cta" @tap="practiceQuestion(item)">练习此题</button>
             </view>
           </view>
 
@@ -173,7 +177,7 @@
 
     <!-- 新建收藏夹弹窗 -->
     <view v-if="showFolderModal" class="modal-overlay" @tap="showFolderModal = false">
-      <view class="modal-content" @tap.stop>
+      <view class="modal-content apple-glass-card" @tap.stop>
         <view class="modal-header">
           <text class="modal-title"> 新建收藏夹 </text>
           <text class="modal-close" @tap="showFolderModal = false"> × </text>
@@ -204,7 +208,7 @@
 
     <!-- 移动到收藏夹弹窗 -->
     <view v-if="showMoveModal" class="modal-overlay" @tap="showMoveModal = false">
-      <view class="modal-content" @tap.stop>
+      <view class="modal-content apple-glass-card" @tap.stop>
         <view class="modal-header">
           <text class="modal-title"> 移动到 </text>
           <text class="modal-close" @tap="showMoveModal = false"> × </text>
@@ -229,7 +233,7 @@
 
     <!-- 笔记编辑弹窗 -->
     <view v-if="showNoteModal" class="modal-overlay" @tap="showNoteModal = false">
-      <view class="modal-content" @tap.stop>
+      <view class="modal-content apple-glass-card" @tap.stop>
         <view class="modal-header">
           <text class="modal-title"> 添加笔记 </text>
           <text class="modal-close" @tap="showNoteModal = false"> × </text>
@@ -610,6 +614,7 @@ export default {
 
 <style lang="scss" scoped>
 .container {
+  min-height: 100%;
   min-height: 100vh;
   background: var(--bg-secondary, #f5f5f7);
 }
@@ -632,8 +637,13 @@ export default {
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .nav-content {
@@ -667,6 +677,7 @@ export default {
 
 /* 主滚动区域 */
 .main-scroll {
+  height: 100%;
   height: 100vh;
   padding: 0 20rpx;
   box-sizing: border-box;
@@ -674,20 +685,39 @@ export default {
 
 /* 统计卡片 */
 .stats-row {
+  position: relative;
+  overflow: hidden;
   display: flex;
   justify-content: space-around;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20rpx;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28rpx;
   padding: 24rpx 16rpx;
   margin-bottom: 30rpx;
+  box-shadow: var(--apple-shadow-card);
+}
+
+.stats-row::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
 }
 
 .stat-value {
@@ -715,7 +745,7 @@ export default {
 
 .section-action {
   font-size: 24rpx;
-  color: var(--primary);
+  color: var(--text-secondary);
   padding: 8rpx 16rpx;
 }
 
@@ -728,23 +758,32 @@ export default {
 .folder-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .folder-card {
   flex: 0 0 calc(25% - 12rpx);
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16rpx;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 24rpx;
   padding: 20rpx 16rpx;
   text-align: center;
   transition: all 0.2s ease;
   position: relative;
+  box-shadow: var(--apple-shadow-surface);
+  overflow: hidden;
 }
 
 .folder-card.active {
-  border-color: var(--primary);
-  background: var(--primary-light);
+  border-color: var(--cta-primary-border);
+  background: var(--cta-primary-bg);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .folder-delete {
@@ -758,7 +797,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.72);
   border-radius: 50%;
 }
 
@@ -793,10 +832,19 @@ export default {
 .sort-btn {
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
   padding: 8rpx 16rpx;
-  background: var(--bg-secondary);
-  border-radius: 20rpx;
+  min-height: 72rpx;
+  background: rgba(255, 255, 255, 0.68);
+  border-radius: 999rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .sort-icon {
@@ -837,11 +885,24 @@ export default {
 
 /* 收藏卡片 */
 .favorite-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20rpx;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28rpx;
   padding: 24rpx;
   margin-bottom: 20rpx;
+  box-shadow: var(--apple-shadow-card);
+}
+
+.favorite-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .card-header {
@@ -853,15 +914,22 @@ export default {
 
 .card-tag {
   font-size: 20rpx;
-  color: var(--primary);
-  background: var(--primary-light);
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 
 .card-actions {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .action-icon {
@@ -886,9 +954,10 @@ export default {
   display: flex;
   align-items: flex-start;
   padding: 16rpx;
-  background: var(--bg-secondary);
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.58);
+  border-radius: 20rpx;
   margin-bottom: 12rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.44);
 }
 
 .option-row.correct {
@@ -915,10 +984,11 @@ export default {
 
 /* 解析区域 */
 .analysis-box {
-  background: var(--bg-secondary);
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.54);
+  border-radius: 20rpx;
   padding: 16rpx;
   margin-bottom: 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.44);
 }
 
 .analysis-label {
@@ -949,21 +1019,30 @@ export default {
 
 .footer-actions {
   display: flex;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
 }
 
 .action-btn {
   font-size: 22rpx;
   padding: 10rpx 20rpx;
-  border-radius: 16rpx;
-  background: var(--bg-secondary);
-  color: var(--text-sub);
-  border: none;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--text-primary);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .action-btn.primary {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .action-btn::after {
@@ -974,8 +1053,9 @@ export default {
 .note-section {
   margin-top: 16rpx;
   padding: 16rpx;
-  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
-  border-radius: 12rpx;
+  background: linear-gradient(160deg, rgba(255, 250, 234, 0.72), rgba(255, 244, 204, 0.58));
+  border-radius: 20rpx;
+  border: 1rpx solid rgba(255, 214, 102, 0.26);
 }
 
 .note-label {
@@ -995,8 +1075,8 @@ export default {
   margin-top: 16rpx;
   padding: 12rpx;
   text-align: center;
-  border: 1px dashed var(--border);
-  border-radius: 12rpx;
+  border: 1px dashed var(--apple-divider);
+  border-radius: 20rpx;
 }
 
 .add-note-text {
@@ -1022,9 +1102,11 @@ export default {
 .modal-content {
   width: 100%;
   max-width: 600rpx;
-  background: var(--bg-card);
-  border-radius: 24rpx;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
   overflow: hidden;
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-floating);
 }
 
 .modal-header {
@@ -1054,9 +1136,9 @@ export default {
 .modal-input {
   width: 100%;
   height: 80rpx;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999rpx;
   padding: 0 20rpx;
   font-size: 28rpx;
   color: var(--text-primary);
@@ -1077,7 +1159,13 @@ export default {
 .icon-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .icon-option {
@@ -1087,39 +1175,48 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 32rpx;
-  background: var(--bg-secondary);
-  border: 2rpx solid var(--border);
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.66);
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
+  border-radius: 18rpx;
 }
 
 .icon-option.selected {
-  border-color: var(--primary);
-  background: var(--primary-light);
+  border-color: var(--cta-primary-border);
+  background: var(--cta-primary-bg);
 }
 
 .modal-footer {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   padding: 24rpx;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--apple-divider);
 }
 
 .modal-btn {
   flex: 1;
   height: 80rpx;
-  border-radius: 16rpx;
+  border-radius: 999rpx;
   font-size: 28rpx;
   border: none;
 }
 
 .modal-btn.secondary {
-  background: var(--bg-secondary);
-  color: var(--text-sub);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-primary);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 
 .modal-btn.primary {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .modal-btn::after {
@@ -1131,7 +1228,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 20rpx;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--apple-divider);
 }
 
 .folder-option:last-child {
@@ -1163,9 +1260,9 @@ export default {
 .note-textarea {
   width: 100%;
   height: 200rpx;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24rpx;
   padding: 16rpx;
   font-size: 28rpx;
   color: var(--text-primary);
