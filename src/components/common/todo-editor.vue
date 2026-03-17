@@ -2,14 +2,15 @@
 <template>
   <view v-if="visible" class="todo-editor-mask" @tap="handleClose">
     <view class="todo-editor-content" :class="{ 'editor-dark': isDark }" @tap.stop>
-      <!-- 拖拽指示条 -->
       <view class="drag-indicator" />
 
-      <!-- 头部 -->
       <view class="editor-header">
-        <text class="editor-title">
-          {{ isEdit ? '编辑待办' : '新建待办' }}
-        </text>
+        <view>
+          <text class="editor-eyebrow"> Todo Editor </text>
+          <text class="editor-title">
+            {{ isEdit ? '编辑待办' : '新建待办' }}
+          </text>
+        </view>
         <view class="header-actions">
           <view v-if="isEdit" class="delete-btn" @tap="handleDelete">
             <BaseIcon name="delete" :size="32" />
@@ -20,8 +21,7 @@
         </view>
       </view>
 
-      <!-- 输入区域 -->
-      <view class="input-section">
+      <view class="group-card input-section">
         <view class="input-wrapper" :class="{ 'input-focused': isFocused }">
           <input
             v-model="todoText"
@@ -40,8 +40,7 @@
         </view>
       </view>
 
-      <!-- 优先级选择 -->
-      <view class="priority-section">
+      <view class="group-card priority-section">
         <text class="section-label"> 优先级 </text>
         <view class="priority-options">
           <view
@@ -59,8 +58,7 @@
         </view>
       </view>
 
-      <!-- 提醒时间（可选） -->
-      <view class="reminder-section">
+      <view class="group-card reminder-section">
         <text class="section-label"> 提醒时间 </text>
         <view class="reminder-picker" @tap="showTimePicker">
           <text class="reminder-text">
@@ -70,22 +68,22 @@
         </view>
       </view>
 
-      <!-- 快捷操作 -->
-      <view v-if="isEdit" class="quick-actions">
-        <view class="action-item" @tap="handleToggleComplete">
-          <BaseIcon :name="todoData.completed ? 'refresh' : 'success'" :size="28" />
-          <text class="action-text">
-            {{ todoData.completed ? '标记未完成' : '标记完成' }}
-          </text>
+      <view v-if="isEdit" class="group-card quick-actions-block">
+        <text class="section-label"> 快捷操作 </text>
+        <view class="quick-actions">
+          <view class="action-item" @tap="handleToggleComplete">
+            <BaseIcon :name="todoData.completed ? 'refresh' : 'success'" :size="28" />
+            <text class="action-text">
+              {{ todoData.completed ? '标记未完成' : '标记完成' }}
+            </text>
+          </view>
+          <view class="action-item" @tap="handleDuplicate">
+            <BaseIcon name="copy" :size="28" />
+            <text class="action-text"> 复制待办 </text>
+          </view>
         </view>
-        <view class="action-item" @tap="handleDuplicate">
-          <BaseIcon name="copy" :size="28" />
-          <text class="action-text"> 复制待办 </text>
-        </view>
-        <!-- 重复的复制按钮已移除，上方已有 BaseIcon 版本 -->
       </view>
 
-      <!-- 底部按钮 -->
       <view class="editor-footer">
         <view class="btn-cancel" @tap="handleClose">
           <text class="btn-text"> 取消 </text>
@@ -315,373 +313,360 @@ export default {
 .todo-editor-mask {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  left: 0;
   z-index: 9999;
   display: flex;
   align-items: flex-end;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  background: rgba(9, 18, 12, 0.32);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .todo-editor-content {
   width: 100%;
-  background: #ffffff;
-  border-radius: 32rpx 32rpx 0 0;
-  padding: 16rpx 32rpx 32rpx;
-  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
-  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &.editor-dark {
-    background: #1a1a1a;
-  }
+  padding: 14rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
+  border-radius: 38rpx 38rpx 0 0;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: 0 -20rpx 70rpx rgba(21, 49, 28, 0.18);
+  animation: slideUp 0.26s ease;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-/* 拖拽指示条 */
 .drag-indicator {
-  width: 80rpx;
+  width: 84rpx;
   height: 8rpx;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4rpx;
-  margin: 0 auto 24rpx;
-
-  .editor-dark & {
-    background: rgba(255, 255, 255, 0.2);
-  }
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 18rpx;
 }
 
-/* 头部 */
-.editor-header {
+.editor-header,
+.header-actions,
+.delete-btn,
+.close-btn,
+.priority-item,
+.reminder-picker,
+.action-item,
+.btn-cancel,
+.btn-save,
+.clear-btn {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 32rpx;
+}
+
+.editor-header {
+  justify-content: space-between;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+  margin-bottom: 20rpx;
+}
+
+.editor-eyebrow,
+.editor-title,
+.section-label,
+.priority-label,
+.reminder-text,
+.action-text,
+.btn-text {
+  display: block;
+}
+
+.editor-eyebrow {
+  margin-bottom: 6rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .editor-title {
   font-size: 36rpx;
   font-weight: 700;
-
-  .todo-editor-content:not(.editor-dark) & {
-    color: #1a1a1a;
-  }
-  .editor-dark & {
-    color: #ffffff;
-  }
+  color: var(--text-main);
 }
 
 .header-actions {
-  display: flex;
-  gap: 16rpx;
+  /* gap: 14rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 14rpx;
+  }
+}
+
+.delete-btn,
+.close-btn,
+.clear-btn {
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+  color: var(--text-main);
 }
 
 .delete-btn,
 .close-btn {
   width: 60rpx;
   height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.05);
-
-  .editor-dark & {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  &:active {
-    opacity: 0.7;
-  }
 }
 
-.delete-icon {
-  font-size: 28rpx;
+.close-icon,
+.clear-icon {
+  color: var(--text-sub);
 }
 
 .close-icon {
   font-size: 40rpx;
-  color: var(--ds-color-text-tertiary);
-}
-
-/* 输入区域 */
-.input-section {
-  margin-bottom: 32rpx;
-}
-
-.input-wrapper {
-  display: flex;
-  align-items: center;
-  padding: 24rpx;
-  border-radius: 20rpx;
-  background: rgba(0, 0, 0, 0.03);
-  border: 2rpx solid transparent;
-  transition: all 0.3s ease;
-
-  .editor-dark & {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  &.input-focused {
-    border-color: #10b981;
-    background: rgba(16, 185, 129, 0.05);
-
-    .editor-dark & {
-      border-color: #34d399;
-      background: rgba(16, 185, 129, 0.1);
-    }
-  }
-}
-
-.todo-input {
-  flex: 1;
-  font-size: 32rpx;
-
-  .todo-editor-content:not(.editor-dark) & {
-    color: #1a1a1a;
-  }
-  &.input-dark {
-    color: #ffffff;
-  }
 }
 
 .clear-btn {
   width: 48rpx;
   height: 48rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.1);
-
-  .editor-dark & {
-    background: rgba(255, 255, 255, 0.2);
-  }
 }
 
-.clear-icon {
-  font-size: 28rpx;
-  color: var(--ds-color-text-tertiary);
-}
-
-/* 优先级选择 */
-.priority-section,
-.reminder-section {
-  margin-bottom: 24rpx;
+.group-card {
+  margin-bottom: 16rpx;
+  padding: 22rpx;
+  border-radius: 26rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .section-label {
-  display: block;
-  font-size: 26rpx;
-  font-weight: 600;
-  margin-bottom: 16rpx;
+  margin-bottom: 14rpx;
+  font-size: 24rpx;
+  font-weight: 620;
+  color: var(--text-secondary);
+}
 
-  .todo-editor-content:not(.editor-dark) & {
-    color: #666666;
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
   }
-  .editor-dark & {
-    color: rgba(255, 255, 255, 0.7);
-  }
+  padding: 20rpx 22rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input-wrapper.input-focused {
+  border-color: rgba(52, 199, 89, 0.34);
+  box-shadow: 0 10rpx 24rpx rgba(52, 199, 89, 0.14);
+}
+
+.todo-input {
+  flex: 1;
+  font-size: 30rpx;
+  color: var(--text-main);
+}
+
+.todo-input.input-dark {
+  color: var(--text-main);
 }
 
 .priority-options {
   display: flex;
-  gap: 16rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
 }
 
 .priority-item {
   flex: 1;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  padding: 20rpx;
-  border-radius: 16rpx;
-  background: rgba(0, 0, 0, 0.03);
-  border: 2rpx solid transparent;
-  transition: all 0.3s ease;
-
-  .editor-dark & {
-    background: rgba(255, 255, 255, 0.05);
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
   }
+  padding: 18rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+}
 
-  &.priority-selected {
-    background: rgba(16, 185, 129, 0.1);
-  }
-
-  &:active {
-    opacity: 0.7;
-  }
+.priority-item.priority-selected {
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .priority-dot {
-  width: 16rpx;
-  height: 16rpx;
+  width: 14rpx;
+  height: 14rpx;
   border-radius: 50%;
 }
 
-.priority-label {
-  font-size: 26rpx;
-
-  .todo-editor-content:not(.editor-dark) & {
-    color: #1a1a1a;
-  }
-  .editor-dark & {
-    color: #ffffff;
-  }
+.priority-label,
+.reminder-text,
+.action-text,
+.btn-text {
+  font-size: 24rpx;
+  color: var(--text-main);
 }
 
-/* 提醒时间 */
 .reminder-picker {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 24rpx;
-  border-radius: 16rpx;
-  background: rgba(0, 0, 0, 0.03);
-
-  .editor-dark & {
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  &:active {
-    opacity: 0.7;
-  }
-}
-
-.reminder-text {
-  font-size: 28rpx;
-
-  .todo-editor-content:not(.editor-dark) & {
-    color: #1a1a1a;
-  }
-  .editor-dark & {
-    color: #ffffff;
-  }
+  padding: 20rpx 22rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.44);
 }
 
 .reminder-arrow {
   font-size: 32rpx;
-  color: var(--ds-color-text-tertiary);
+  color: var(--text-sub);
 }
 
-/* 快捷操作 */
 .quick-actions {
   display: flex;
-  gap: 16rpx;
-  margin-bottom: 32rpx;
-  padding-top: 24rpx;
-  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
-
-  .editor-dark & {
-    border-color: rgba(255, 255, 255, 0.1);
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
   }
 }
 
 .action-item {
   flex: 1;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 8rpx;
-  padding: 20rpx;
-  border-radius: 16rpx;
-  background: rgba(0, 0, 0, 0.03);
-
-  .editor-dark & {
-    background: rgba(255, 255, 255, 0.05);
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
   }
-
-  &:active {
-    opacity: 0.7;
-  }
+  padding: 18rpx 12rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.44);
 }
 
-.action-icon {
-  font-size: 28rpx;
-}
-
-.action-text {
-  font-size: 24rpx;
-
-  .todo-editor-content:not(.editor-dark) & {
-    color: #666666;
-  }
-  .editor-dark & {
-    color: rgba(255, 255, 255, 0.7);
-  }
-}
-
-/* 底部按钮 */
 .editor-footer {
   display: flex;
-  gap: 24rpx;
-  margin-top: 16rpx;
+  /* gap: 14rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 14rpx;
+  }
+  margin-top: 20rpx;
 }
 
 .btn-cancel,
 .btn-save {
   flex: 1;
-  height: 88rpx;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  border-radius: 44rpx;
-  font-size: 30rpx;
-  font-weight: 600;
-  transition: all 0.3s ease;
-
-  &:active {
-    transform: scale(0.98);
-  }
+  height: 88rpx;
+  border-radius: 999rpx;
 }
 
 .btn-cancel {
-  background: rgba(0, 0, 0, 0.05);
-
-  .editor-dark & {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .btn-text {
-    .todo-editor-content:not(.editor-dark) & {
-      color: #666666;
-    }
-    .editor-dark & {
-      color: rgba(255, 255, 255, 0.7);
-    }
-  }
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .btn-save {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--cta-primary-bg);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
 
-  .btn-text {
-    color: #ffffff;
+.btn-save .btn-text {
+  color: var(--cta-primary-text);
+}
+
+.btn-save.btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.delete-btn:active,
+.close-btn:active,
+.clear-btn:active,
+.priority-item:active,
+.reminder-picker:active,
+.action-item:active,
+.btn-cancel:active,
+.btn-save:active {
+  transform: scale(0.97);
+}
+
+.editor-dark,
+.editor-dark .group-card,
+.editor-dark .delete-btn,
+.editor-dark .close-btn,
+.editor-dark .clear-btn,
+.editor-dark .input-wrapper,
+.editor-dark .priority-item,
+.editor-dark .reminder-picker,
+.editor-dark .action-item,
+.editor-dark .btn-cancel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.editor-dark .btn-save {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+}
+
+.editor-dark .delete-btn,
+.editor-dark .action-item {
+  background:
+    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(10, 132, 255, 0.18);
+}
+
+.editor-dark .close-btn,
+.editor-dark .clear-btn {
+  background:
+    linear-gradient(180deg, rgba(95, 170, 255, 0.12) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(95, 170, 255, 0.18);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
   }
 
-  &.btn-disabled {
-    opacity: 0.5;
-    pointer-events: none;
+  to {
+    transform: translateY(0);
   }
 }
 </style>

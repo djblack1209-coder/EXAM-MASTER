@@ -57,13 +57,14 @@ export default {
 .skeleton-container.dark-mode {
   --skeleton-bg: #2c2c2e;
   --skeleton-highlight: #3a3a3c;
-  --card-bg: #1e3a0f;
-  --card-border: #2d4e1f;
+  --card-bg: var(--bg-card);
+  --card-border: var(--border-color);
 }
 
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--card-border);
   border-radius: 40rpx;
   padding: 30rpx;
@@ -86,7 +87,13 @@ export default {
 /* 模式切换骨架 */
 .skeleton-mode-switch {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   padding: 16rpx;
 }
 
@@ -137,7 +144,13 @@ export default {
 .skeleton-option {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   padding: 20rpx 0;
   border-bottom: 1rpx solid var(--card-border);
 
@@ -182,7 +195,13 @@ export default {
 
 .skeleton-actions {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .skeleton-action-btn {

@@ -1,7 +1,19 @@
 import { defineConfig, devices } from '@playwright/test';
+import fs from 'fs';
 
 const isCI = Boolean(process.env.CI);
 const baseURL = process.env.E2E_BASE_URL || 'http://127.0.0.1:5173';
+
+function resolveChromiumExecutable() {
+  const candidates = [
+    process.env.PLAYWRIGHT_EXECUTABLE_PATH,
+    '/Applications/Chromium.app/Contents/MacOS/Chromium'
+  ].filter(Boolean);
+
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+const executablePath = resolveChromiumExecutable();
 
 export default defineConfig({
   testDir: './tests/e2e-regression/specs',
@@ -29,7 +41,12 @@ export default defineConfig({
     video: 'retain-on-failure',
     viewport: { width: 390, height: 844 },
     locale: 'zh-CN',
-    timezoneId: 'Asia/Shanghai'
+    timezoneId: 'Asia/Shanghai',
+    launchOptions: executablePath
+      ? {
+          executablePath
+        }
+      : undefined
   },
   webServer: process.env.E2E_BASE_URL
     ? undefined

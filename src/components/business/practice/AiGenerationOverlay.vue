@@ -1,6 +1,6 @@
 <template>
   <view v-if="visible" class="ai-loading-mask">
-    <view class="loading-card">
+    <view class="loading-card apple-glass-card">
       <view class="apple-ai-loading">
         <view class="apple-ai-ring">
           <view class="apple-ai-pulse" />
@@ -23,7 +23,7 @@
         </view>
         <view class="inspiration-text"> "{{ currentSoup }}" </view>
         <view class="loading-actions">
-          <button class="pause-btn" @tap="$emit('pause')">暂停生成</button>
+          <button class="pause-btn apple-glass-pill" @tap="$emit('pause')">暂停生成</button>
         </view>
       </view>
     </view>
@@ -69,21 +69,24 @@ export default {
   bottom: 0;
   background-color: var(--overlay);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
 }
 .loading-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28px;
   padding: 40px;
   text-align: center;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--apple-shadow-floating);
   max-width: 400px;
   width: 90%;
   animation: fadeInUp 0.3s ease-out;
+  position: relative;
+  overflow: hidden;
 }
 @keyframes fadeInUp {
   from {
@@ -163,7 +166,7 @@ export default {
 .apple-ai-progress-bar {
   width: 100%;
   height: 4px;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(16, 40, 26, 0.08);
   border-radius: 2px;
   overflow: hidden;
   margin-bottom: 8px;
@@ -194,10 +197,10 @@ export default {
   font-style: italic;
   margin: 0;
   max-width: 300px;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.58);
   padding: 12px 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
   animation: fadeIn 0.5s ease;
 }
 @keyframes fadeIn {
@@ -214,11 +217,15 @@ export default {
   justify-content: center;
 }
 .pause-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-sub);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: var(--text-primary);
+  border-radius: 999px;
   padding: 8px 14px;
   font-size: 24rpx;
+}
+
+.pause-btn::after {
+  border: none;
 }
 </style>

@@ -1,70 +1,68 @@
 <template>
   <view class="study-heatmap">
-    <!-- 月份标签 -->
-    <view class="month-labels">
-      <text v-for="(month, index) in monthLabels" :key="index" class="month-label">
-        {{ month }}
-      </text>
-    </view>
-
-    <!-- 热力图主体 -->
-    <view class="heatmap-body">
-      <!-- 星期标签 -->
-      <view class="week-labels">
-        <text class="week-label" />
-        <text class="week-label"> 一 </text>
-        <text class="week-label" />
-        <text class="week-label"> 三 </text>
-        <text class="week-label" />
-        <text class="week-label"> 五 </text>
-        <text class="week-label" />
+    <view class="heatmap-shell">
+      <view class="month-strip">
+        <text v-for="(month, index) in monthLabels" :key="index" class="month-label">
+          {{ month }}
+        </text>
       </view>
 
-      <!-- 热力图格子 -->
-      <scroll-view class="heatmap-scroll" scroll-x :show-scrollbar="false">
-        <view class="heatmap-grid">
-          <view v-for="(week, weekIndex) in heatmapData" :key="weekIndex" class="week-column">
-            <view
-              v-for="(day, dayIndex) in week"
-              :key="dayIndex"
-              class="day-cell"
-              :class="getDayClass(day)"
-              :style="getDayStyle(day)"
-              @tap="handleDayTap(day)"
-            />
-          </view>
+      <view class="heatmap-panel">
+        <view class="week-labels">
+          <text class="week-label" />
+          <text class="week-label"> 一 </text>
+          <text class="week-label" />
+          <text class="week-label"> 三 </text>
+          <text class="week-label" />
+          <text class="week-label"> 五 </text>
+          <text class="week-label" />
         </view>
-      </scroll-view>
-    </view>
 
-    <!-- 图例 -->
-    <view class="legend">
-      <text class="legend-text"> 少 </text>
-      <view class="legend-cells">
-        <view class="legend-cell level-0" />
-        <view class="legend-cell level-1" />
-        <view class="legend-cell level-2" />
-        <view class="legend-cell level-3" />
-        <view class="legend-cell level-4" />
+        <scroll-view class="heatmap-scroll" scroll-x :show-scrollbar="false">
+          <view class="heatmap-grid">
+            <view v-for="(week, weekIndex) in heatmapData" :key="weekIndex" class="week-column">
+              <view
+                v-for="(day, dayIndex) in week"
+                :key="dayIndex"
+                class="day-cell"
+                :class="getDayClass(day)"
+                :style="getDayStyle(day)"
+                @tap="handleDayTap(day)"
+              />
+            </view>
+          </view>
+        </scroll-view>
       </view>
-      <text class="legend-text"> 多 </text>
     </view>
 
-    <!-- 统计信息 -->
+    <view class="legend-row">
+      <view class="legend-pill">
+        <text class="legend-text"> 少 </text>
+        <view class="legend-cells">
+          <view class="legend-cell level-0" />
+          <view class="legend-cell level-1" />
+          <view class="legend-cell level-2" />
+          <view class="legend-cell level-3" />
+          <view class="legend-cell level-4" />
+        </view>
+        <text class="legend-text"> 多 </text>
+      </view>
+    </view>
+
     <view class="stats-row">
-      <view class="stat-item">
+      <view class="stat-item glass-stat">
         <text class="stat-value">
           {{ totalDays }}
         </text>
         <text class="stat-label"> 学习天数 </text>
       </view>
-      <view class="stat-item">
+      <view class="stat-item glass-stat">
         <text class="stat-value">
           {{ currentStreak }}
         </text>
         <text class="stat-label"> 当前连续 </text>
       </view>
-      <view class="stat-item">
+      <view class="stat-item glass-stat">
         <text class="stat-value">
           {{ maxStreak }}
         </text>
@@ -72,11 +70,13 @@
       </view>
     </view>
 
-    <!-- 选中日期详情 -->
     <view v-if="selectedDay" class="day-detail">
-      <text class="detail-date">
-        {{ selectedDay.dateStr }}
-      </text>
+      <view>
+        <text class="detail-caption"> 已选日期 </text>
+        <text class="detail-date">
+          {{ selectedDay.dateStr }}
+        </text>
+      </view>
       <text class="detail-value"> 学习 {{ selectedDay.minutes }} 分钟 </text>
     </view>
   </view>
@@ -307,11 +307,20 @@ export default {
   width: 100%;
 }
 
-/* 月份标签 */
-.month-labels {
+.heatmap-shell {
+  padding: 20rpx;
+  border-radius: 24rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.34) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.month-strip {
   display: flex;
-  padding-left: 48rpx;
-  margin-bottom: 8rpx;
+  padding-left: 56rpx;
+  margin-bottom: 16rpx;
   overflow: hidden;
 }
 
@@ -319,148 +328,213 @@ export default {
   flex: 1;
   min-width: 24rpx;
   font-size: 20rpx;
-  color: var(--text-sub, #666);
+  color: var(--text-secondary, var(--text-sub, #666));
   text-align: left;
 }
 
-/* 热力图主体 */
-.heatmap-body {
+.heatmap-panel {
   display: flex;
-  gap: 8rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+  padding: 20rpx;
+  border-radius: 22rpx;
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-/* 星期标签 */
 .week-labels {
   display: flex;
   flex-direction: column;
-  gap: 4rpx;
-  padding-top: 2rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
+  padding-top: 4rpx;
 }
 
 .week-label {
-  height: 24rpx;
-  line-height: 24rpx;
+  height: 28rpx;
+  line-height: 28rpx;
   font-size: 20rpx;
-  color: var(--text-sub, #666);
+  color: var(--text-secondary, var(--text-sub, #666));
   text-align: right;
-  padding-right: 8rpx;
+  padding-right: 10rpx;
 }
 
-/* 热力图滚动区域 */
 .heatmap-scroll {
   flex: 1;
   white-space: nowrap;
 }
 
-/* 热力图格子容器 */
 .heatmap-grid {
   display: inline-flex;
-  gap: 4rpx;
+  /* gap: 6rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 6rpx;
+  }
 }
 
-/* 周列 */
 .week-column {
   display: flex;
   flex-direction: column;
-  gap: 4rpx;
+  /* gap: 6rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 6rpx;
+  }
 }
 
-/* 日期格子 */
 .day-cell {
-  width: 24rpx;
-  height: 24rpx;
-  border-radius: 4rpx;
+  width: 28rpx;
+  height: 28rpx;
+  border-radius: 10rpx;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
   transition: all 0.2s ease;
 
   &.empty {
     background: transparent;
+    border-color: transparent;
+    box-shadow: none;
   }
 
   &.level-0 {
-    background: var(--heatmap-level-0, #ebedf0);
+    background: rgba(255, 255, 255, 0.34);
   }
 
   &.level-1 {
-    background: var(--heatmap-level-1, #9be9a8);
+    background: rgba(139, 216, 161, 0.92);
   }
 
   &.level-2 {
-    background: var(--heatmap-level-2, #40c463);
+    background: rgba(90, 201, 120, 0.94);
   }
 
   &.level-3 {
-    background: var(--heatmap-level-3, #30a14e);
+    background: rgba(52, 199, 89, 0.96);
   }
 
   &.level-4 {
-    background: var(--heatmap-level-4, #216e39);
+    background: rgba(34, 135, 58, 0.98);
   }
 
   &:active {
-    transform: scale(1.2);
+    transform: scale(1.08);
   }
 }
 
-/* 图例 */
-.legend {
+.legend-row {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8rpx;
-  margin-top: 16rpx;
-  padding-right: 8rpx;
+  margin-top: 20rpx;
+}
+
+.legend-pill {
+  display: inline-flex;
+  align-items: center;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .legend-text {
   font-size: 20rpx;
-  color: var(--text-sub, #666);
+  color: var(--text-secondary, var(--text-sub, #666));
 }
 
 .legend-cells {
   display: flex;
-  gap: 4rpx;
+  /* gap: 6rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 6rpx;
+  }
 }
 
 .legend-cell {
   width: 20rpx;
   height: 20rpx;
-  border-radius: 4rpx;
+  border-radius: 8rpx;
+  border: 1px solid rgba(255, 255, 255, 0.22);
 
   &.level-0 {
-    background: var(--heatmap-level-0, #ebedf0);
+    background: rgba(255, 255, 255, 0.34);
   }
 
   &.level-1 {
-    background: var(--heatmap-level-1, #9be9a8);
+    background: rgba(139, 216, 161, 0.92);
   }
 
   &.level-2 {
-    background: var(--heatmap-level-2, #40c463);
+    background: rgba(90, 201, 120, 0.94);
   }
 
   &.level-3 {
-    background: var(--heatmap-level-3, #30a14e);
+    background: rgba(52, 199, 89, 0.96);
   }
 
   &.level-4 {
-    background: var(--heatmap-level-4, #216e39);
+    background: rgba(34, 135, 58, 0.98);
   }
 }
 
-/* 统计信息 */
 .stats-row {
   display: flex;
-  justify-content: space-around;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   margin-top: 24rpx;
-  padding-top: 24rpx;
-  border-top: 1px solid var(--border-color, #e5e5e5);
 }
 
 .stat-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 10rpx;
+  }
+}
+
+.glass-stat {
+  padding: 22rpx 18rpx;
+  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .stat-value {
@@ -471,76 +545,115 @@ export default {
 
 .stat-label {
   font-size: 22rpx;
-  color: var(--text-sub, #666);
+  color: var(--text-secondary, var(--text-sub, #666));
 }
 
-/* 选中日期详情 */
 .day-detail {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 16rpx;
-  padding: 16rpx 24rpx;
-  background: var(--muted, #f5f5f7);
-  border-radius: 12rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+  margin-top: 24rpx;
+  padding: 22rpx 24rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 46%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 20rpx;
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.detail-caption {
+  display: block;
+  margin-bottom: 8rpx;
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary, var(--text-sub, #666));
 }
 
 .detail-date {
+  display: block;
   font-size: 24rpx;
   color: var(--text-main, #111);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .detail-value {
   font-size: 24rpx;
   color: var(--ds-color-primary, #007aff);
   font-weight: 600;
+  white-space: nowrap;
 }
 
-/* 暗色模式适配 */
 .dark {
+  .heatmap-shell {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+      linear-gradient(160deg, rgba(22, 24, 30, 0.9) 0%, rgba(10, 12, 18, 0.82) 100%);
+  }
+
+  .heatmap-panel,
+  .legend-pill,
+  .glass-stat {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
   .day-cell {
     &.level-0 {
-      background: var(--heatmap-level-0-dark, #161b22);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     &.level-1 {
-      background: var(--heatmap-level-1-dark, #0e4429);
+      background: rgba(28, 63, 110, 0.84);
     }
 
     &.level-2 {
-      background: var(--heatmap-level-2-dark, #006d32);
+      background: rgba(24, 91, 171, 0.88);
     }
 
     &.level-3 {
-      background: var(--heatmap-level-3-dark, #26a641);
+      background: rgba(10, 132, 255, 0.92);
     }
 
     &.level-4 {
-      background: var(--heatmap-level-4-dark, #39d353);
+      background: rgba(69, 159, 255, 0.98);
     }
   }
 
   .legend-cell {
     &.level-0 {
-      background: var(--heatmap-level-0-dark, #161b22);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     &.level-1 {
-      background: var(--heatmap-level-1-dark, #0e4429);
+      background: rgba(28, 63, 110, 0.84);
     }
 
     &.level-2 {
-      background: var(--heatmap-level-2-dark, #006d32);
+      background: rgba(24, 91, 171, 0.88);
     }
 
     &.level-3 {
-      background: var(--heatmap-level-3-dark, #26a641);
+      background: rgba(10, 132, 255, 0.92);
     }
 
     &.level-4 {
-      background: var(--heatmap-level-4-dark, #39d353);
+      background: rgba(69, 159, 255, 0.98);
     }
+  }
+
+  .day-detail {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+      linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(8, 10, 16, 0.9) 100%);
   }
 }
 </style>

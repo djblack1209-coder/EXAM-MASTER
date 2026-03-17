@@ -3,6 +3,10 @@
     <view class="aurora-bg" />
 
     <!-- 骨架屏 -->
+    <!-- #ifdef APP-PLUS -->
+    <PlanSkeleton v-if="isLoading" :is-dark="isDark" />
+    <!-- #endif -->
+    <!-- #ifndef APP-PLUS -->
     <!-- #ifndef APP-NVUE -->
     <transition name="skeleton-fade">
       <PlanSkeleton v-if="isLoading" :is-dark="isDark" />
@@ -11,22 +15,37 @@
     <!-- #ifdef APP-NVUE -->
     <PlanSkeleton v-if="isLoading" :is-dark="isDark" />
     <!-- #endif -->
+    <!-- #endif -->
 
-    <!-- 导航栏 - 添加设计系统工具类 -->
     <view v-if="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content ds-flex ds-flex-between">
-        <text class="nav-back ds-touchable" @tap="goBack"> ← </text>
-        <text class="nav-title ds-text-lg ds-font-semibold"> 我的学习计划 </text>
-        <text class="nav-add ds-touchable" @tap="createPlan"> + </text>
+      <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
+        <text class="nav-back" @tap="goBack"> ← </text>
+        <text class="nav-title"> 学习计划 </text>
+        <view class="nav-add" @tap="createPlan">
+          <text class="nav-add-text"> + </text>
+        </view>
       </view>
     </view>
 
     <scroll-view v-if="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
-      <!-- 智能提醒卡片 -->
-      <view v-if="intelligentReminders.length > 0" class="glass-card reminder-card">
-        <view class="reminder-header">
-          <BaseIcon name="robot" :size="32" class="reminder-icon" />
-          <text class="reminder-title"> 智能提醒 </text>
+      <view class="hero-card">
+        <text class="hero-eyebrow"> Planning Center </text>
+        <text class="hero-title"> 把备考安排成清晰的一周节奏 </text>
+        <text class="hero-subtitle"> 管理每日时长、提醒和任务进度，保持轻盈但持续的推进感。 </text>
+        <view class="hero-actions">
+          <view class="hero-cta" @tap="createPlan">
+            <text class="hero-cta-text"> 新建计划 </text>
+          </view>
+        </view>
+      </view>
+
+      <view v-if="intelligentReminders.length > 0" class="reminder-card">
+        <view class="section-heading">
+          <text class="section-eyebrow"> Smart Reminders </text>
+          <view class="section-title-row">
+            <BaseIcon name="robot" :size="30" class="reminder-icon" />
+            <text class="section-title"> 智能提醒 </text>
+          </view>
         </view>
         <view class="reminder-list">
           <view
@@ -45,7 +64,6 @@
         </view>
       </view>
 
-      <!-- 空状态 -->
       <BaseEmpty
         v-if="plans.length === 0"
         icon="calendar"
@@ -57,24 +75,27 @@
         @action="createPlan"
       />
 
-      <!-- 计划列表 - 优化布局 -->
-      <view v-for="(plan, index) in plans" :key="plan.id || index" class="glass-card plan-card">
-        <view class="plan-header ds-flex ds-flex-between">
-          <text class="plan-name ds-text-base ds-font-semibold">
+      <view v-if="plans.length > 0" class="section-heading plans-heading">
+        <text class="section-eyebrow"> Your Plans </text>
+        <text class="section-title"> 当前进行中的计划 </text>
+      </view>
+
+      <view v-for="(plan, index) in plans" :key="plan.id || index" class="plan-card">
+        <view class="plan-header">
+          <text class="plan-name">
             {{ plan.name }}
           </text>
           <view class="plan-badge" :class="plan.status">
-            <text class="ds-text-xs ds-font-bold">
+            <text class="plan-badge-text">
               {{ getStatusText(plan.status) }}
             </text>
           </view>
         </view>
 
-        <text class="plan-goal ds-text-sm">
+        <text class="plan-goal">
           {{ plan.goal }}
         </text>
 
-        <!-- 智能分析数据 -->
         <view v-if="plan.analytics" class="plan-analytics">
           <view class="analytics-row">
             <view class="analytics-item">
@@ -93,12 +114,11 @@
             </view>
           </view>
 
-          <!-- 推荐调整 -->
           <view
             v-if="plan.analytics.recommendedAdjustments && plan.analytics.recommendedAdjustments.length > 0"
             class="adjustments-section"
           >
-            <text class="adjustments-title"> <BaseIcon name="bulb" :size="24" /> 智能建议 </text>
+            <text class="adjustments-title"> 智能建议 </text>
             <view
               v-for="(adjustment, adjIndex) in plan.analytics.recommendedAdjustments"
               :key="adjIndex"
@@ -112,37 +132,33 @@
           </view>
         </view>
 
-        <view class="plan-meta ds-flex ds-gap-sm">
-          <view class="meta-item ds-flex-col">
-            <text class="meta-label ds-text-xs"> 开始日期 </text>
-            <text class="meta-value ds-text-sm ds-font-semibold">
+        <view class="plan-meta-grid">
+          <view class="meta-item">
+            <text class="meta-label"> 开始日期 </text>
+            <text class="meta-value">
               {{ plan.startDate }}
             </text>
           </view>
-          <view class="meta-item ds-flex-col">
-            <text class="meta-label ds-text-xs"> 结束日期 </text>
-            <text class="meta-value ds-text-sm ds-font-semibold">
+          <view class="meta-item">
+            <text class="meta-label"> 结束日期 </text>
+            <text class="meta-value">
               {{ plan.endDate }}
             </text>
           </view>
-        </view>
-
-        <view class="plan-meta ds-flex ds-gap-sm">
-          <view class="meta-item ds-flex-col">
-            <text class="meta-label ds-text-xs"> 每日时长 </text>
-            <text class="meta-value ds-text-sm ds-font-semibold">
+          <view class="meta-item">
+            <text class="meta-label"> 每日时长 </text>
+            <text class="meta-value">
               {{ plan.dailyDuration }}
             </text>
           </view>
-          <view class="meta-item ds-flex-col">
-            <text class="meta-label ds-text-xs"> 提醒时间 </text>
-            <text class="meta-value ds-text-sm ds-font-semibold">
+          <view class="meta-item">
+            <text class="meta-label"> 提醒时间 </text>
+            <text class="meta-value">
               {{ plan.reminderTime }}
             </text>
           </view>
         </view>
 
-        <!-- 任务统计 -->
         <view v-if="plan.tasks && plan.tasks.length > 0" class="task-stats">
           <text class="ta<REDACTED_SECRET>"> 任务进度 </text>
           <view class="ta<REDACTED_SECRET>">
@@ -153,22 +169,21 @@
           </text>
         </view>
 
-        <view class="plan-footer ds-flex ds-flex-between">
+        <view class="plan-footer">
           <view class="category-tag" :class="plan.category">
-            <text class="ds-text-xs ds-font-bold">
+            <text class="tag-text">
               {{ plan.category }}
             </text>
           </view>
           <view class="priority-tag" :class="plan.priority">
-            <text class="ds-text-xs ds-font-bold">
+            <text class="tag-text">
               {{ getPriorityText(plan.priority) }}
             </text>
           </view>
         </view>
 
-        <!-- 计划操作 -->
         <view class="plan-actions">
-          <text class="action-btn" @tap="viewPlanDetail(plan)"> 查看详情 </text>
+          <text class="action-btn cta" @tap="viewPlanDetail(plan)"> 查看详情 </text>
           <text class="action-btn" @tap="adjustPlan(plan.id)"> 智能调整 </text>
           <text class="action-btn danger" @tap="deletePlan(plan.id || index)"> 删除 </text>
         </view>
@@ -184,7 +199,7 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PlanSkeleton from './components/plan-skeleton/plan-skeleton.vue';
 import { intelligentPlanManager } from './intelligent-plan-manager.js';
 import { logger } from '@/utils/logger.js';
-import { getStatusBarHeight } from '@/utils/core/system.js';
+import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 
@@ -197,6 +212,7 @@ export default {
   data() {
     return {
       statusBarHeight: 44,
+      capsuleSafeRight: 20,
       isDark: false,
       isLoading: true,
       plans: [],
@@ -205,19 +221,17 @@ export default {
   },
   onLoad() {
     this.statusBarHeight = getStatusBarHeight();
+    this.capsuleSafeRight = getCapsuleSafeRight();
 
-    // 初始化主题
     const savedTheme = storageService.get('theme_mode', 'light');
     this.isDark = savedTheme === 'dark';
 
-    // 监听全局主题更新事件
     this._themeHandler = (mode) => {
       this.isDark = mode === 'dark';
     };
     uni.$on('themeUpdate', this._themeHandler);
   },
   onUnload() {
-    // 移除事件监听
     uni.$off('themeUpdate', this._themeHandler);
   },
   onShow() {
@@ -227,20 +241,17 @@ export default {
   methods: {
     loadPlans() {
       try {
-        // 使用智能计划管理器加载学习计划
         this.plans = intelligentPlanManager.getPlans();
       } catch (e) {
         logger.error('[plan] 加载计划失败:', e);
         this.plans = [];
       } finally {
-        // 隐藏骨架屏
         setTimeout(() => {
           this.isLoading = false;
         }, 300);
       }
     },
     async loadIntelligentReminders() {
-      // 加载智能提醒
       this.intelligentReminders = await intelligentPlanManager.getIntelligentReminders();
     },
     createPlan() {
@@ -280,7 +291,6 @@ export default {
     },
     viewPlanDetail(plan) {
       logger.log('[Plan] 查看计划详情:', plan.id);
-      // 构建详情文本展示
       const tasksDone = plan.tasks ? plan.tasks.filter((t) => t.completed).length : 0;
       const tasksTotal = plan.tasks ? plan.tasks.length : 0;
       const lines = [
@@ -305,10 +315,8 @@ export default {
         uni.showToast({ title: '请先登录后调整计划', icon: 'none' });
         return;
       }
-      // 智能调整计划
       logger.log('[Plan] 智能调整计划:', planId);
 
-      // 获取真实学习进度（从本地存储的学习统计中计算）
       const studyStats = storageService.get('study_stats', {});
       const learningProgress = studyStats.completionRate || studyStats.progress || 0;
       const adjustedPlan = intelligentPlanManager.adjustPlan(planId, learningProgress);
@@ -331,7 +339,6 @@ export default {
         uni.showToast({ title: '请先登录后删除计划', icon: 'none' });
         return;
       }
-      // 删除计划
       uni.showModal({
         title: '删除计划',
         content: '确定要删除这个学习计划吗？',
@@ -361,21 +368,30 @@ export default {
 
 <style lang="scss" scoped>
 .container {
+  min-height: 100%;
   min-height: 100vh;
-  background: var(--bg-page);
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
   position: relative;
   overflow: hidden;
-  transition: background-color 0.3s;
+  transition: background 0.3s;
 }
 
 .aurora-bg {
   position: absolute;
-  top: 0;
+  top: -120rpx;
+  left: -80rpx;
   width: 100%;
-  height: 500rpx;
-  background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
-  filter: blur(80px);
-  opacity: 0.6;
+  height: 620rpx;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(107, 208, 150, 0.34) 0%, transparent 40%),
+    radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.42) 0%, transparent 28%);
+  filter: blur(70px);
+  opacity: 0.95;
   z-index: 0;
 }
 
@@ -385,419 +401,509 @@ export default {
   left: 0;
   width: 100%;
   z-index: 100;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-color);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 38%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
+}
 
-  .nav-content {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
+.nav-content {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+}
 
-    .nav-back {
-      font-size: 36rpx;
-      color: var(--text-main);
-      font-weight: bold;
-    }
+.nav-back,
+.nav-add {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+}
 
-    .nav-title {
-      font-size: 34rpx;
-      font-weight: 600;
-      color: var(--text-main);
-    }
+.nav-back {
+  font-size: 36rpx;
+  color: var(--text-main);
+  font-weight: 700;
+}
 
-    .nav-add {
-      font-size: 40rpx;
-      color: var(--text-main);
-      font-weight: bold;
-    }
-  }
+.nav-title {
+  font-size: 32rpx;
+  font-weight: 620;
+  color: var(--text-main);
+}
+
+.nav-add-text {
+  font-size: 40rpx;
+  line-height: 1;
+  color: var(--text-main);
+  font-weight: 600;
 }
 
 .main-scroll {
+  height: 100%;
   height: 100vh;
-  padding: 30rpx;
+  padding: 30rpx 30rpx 96rpx;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
 }
 
-/* 智能提醒卡片 */
-.reminder-card {
-  margin-bottom: 30rpx;
-  padding: 24rpx;
-
-  .reminder-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16rpx;
-
-    .reminder-icon {
-      font-size: 32rpx;
-      margin-right: 12rpx;
-    }
-
-    .reminder-title {
-      font-size: 28rpx;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-  }
-
-  .reminder-list {
-    .reminder-item {
-      padding: 16rpx;
-      border-radius: 16rpx;
-      margin-bottom: 12rpx;
-      background: rgba(46, 204, 113, 0.05);
-
-      &.high {
-        background: rgba(231, 76, 60, 0.1);
-      }
-
-      &.medium {
-        background: rgba(241, 196, 15, 0.1);
-      }
-
-      .reminder-message {
-        font-size: 24rpx;
-        color: var(--text-main);
-        display: block;
-        margin-bottom: 8rpx;
-      }
-
-      .reminder-time {
-        font-size: 20rpx;
-        color: var(--text-sub);
-      }
-    }
-  }
-}
-
-/* 空状态 */
-.empty-box {
-  text-align: center;
-  padding-top: 200rpx;
-
-  .empty-icon {
-    font-size: 120rpx;
-    display: block;
-    margin-bottom: 30rpx;
-  }
-
-  .empty-text {
-    color: var(--text-sub);
-    font-size: 28rpx;
-    margin-bottom: 60rpx;
-    display: block;
-  }
-
-  .create-btn {
-    background: var(--success);
-    color: white;
-    border: none;
-    border-radius: 50rpx;
-    padding: 20rpx 60rpx;
-    font-size: 28rpx;
-    font-weight: bold;
-
-    &::after {
-      border: none;
-    }
-  }
-}
-
-/* 通用玻璃卡片 */
-.glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color);
-  border-radius: 40rpx;
-  padding: 30rpx;
-  margin-bottom: 30rpx;
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s;
-}
-
+.hero-card,
+.reminder-card,
 .plan-card {
+  margin-bottom: 30rpx;
   padding: 30rpx;
+  border-radius: 32rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.hero-card {
+  padding: 36rpx 32rpx;
+}
+
+.hero-eyebrow,
+.section-eyebrow {
+  display: block;
+  margin-bottom: 10rpx;
+  font-size: 22rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.hero-title {
+  display: block;
+  font-size: 44rpx;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.hero-subtitle {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--text-sub);
+}
+
+.hero-actions {
+  margin-top: 28rpx;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200rpx;
+  padding: 22rpx 34rpx;
+  border-radius: 999rpx;
+  background: var(--cta-primary-bg);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.hero-cta-text {
+  font-size: 26rpx;
+  font-weight: 620;
+  color: var(--cta-primary-text);
+}
+
+.section-heading {
+  margin-bottom: 18rpx;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: 680;
+  color: var(--text-main);
+}
+
+.plans-heading {
+  margin-top: 6rpx;
+}
+
+.reminder-icon {
+  color: var(--text-main);
+}
+
+.reminder-item {
+  padding: 18rpx 20rpx;
+  border-radius: 22rpx;
+  margin-bottom: 12rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+}
+
+.reminder-item.high {
+  background: rgba(255, 99, 90, 0.12);
+}
+
+.reminder-item.medium {
+  background: rgba(255, 204, 0, 0.12);
+}
+
+.reminder-message {
+  display: block;
+  margin-bottom: 8rpx;
+  font-size: 24rpx;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+.reminder-time {
+  font-size: 20rpx;
+  color: var(--text-sub);
 }
 
 .plan-header {
   display: flex;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20rpx;
 }
 
 .plan-name {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main);
   flex: 1;
   margin-right: 20rpx;
+  font-size: 32rpx;
+  font-weight: 650;
+  color: var(--text-main);
+}
+
+.plan-badge,
+.category-tag,
+.priority-tag {
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.plan-badge-text,
+.tag-text {
+  font-size: 20rpx;
+  font-weight: 700;
 }
 
 .plan-badge {
-  padding: 6rpx 16rpx;
-  border-radius: 16rpx;
-  font-size: 20rpx;
-  font-weight: bold;
+  color: var(--text-sub);
+}
 
-  &.not_started {
-    background: var(--muted);
-    color: var(--text-sub);
-  }
+.plan-badge.in_progress {
+  background: rgba(52, 199, 89, 0.14);
+  color: var(--success, #34c759);
+}
 
-  &.in_progress {
-    background: rgba(46, 204, 113, 0.1);
-    color: var(--success);
-  }
-
-  &.completed {
-    background: rgba(74, 144, 226, 0.1);
-    color: var(--info);
-  }
+.plan-badge.completed {
+  background: rgba(10, 132, 255, 0.12);
+  color: var(--info, #0a84ff);
 }
 
 .plan-goal {
-  font-size: 26rpx;
-  color: var(--text-sub);
-  line-height: 1.5;
-  margin-bottom: 30rpx;
   display: block;
+  margin-bottom: 24rpx;
+  font-size: 25rpx;
+  line-height: 1.7;
+  color: var(--text-sub);
 }
 
-/* 智能分析数据 */
 .plan-analytics {
   margin-bottom: 30rpx;
   padding: 20rpx;
-  background: rgba(46, 204, 113, 0.05);
+  background: rgba(255, 255, 255, 0.54);
   border-radius: 24rpx;
-
-  .analytics-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20rpx;
-
-    .analytics-item {
-      flex: 1;
-      text-align: center;
-
-      .analytics-label {
-        font-size: 22rpx;
-        color: var(--text-sub);
-        display: block;
-        margin-bottom: 8rpx;
-      }
-
-      .analytics-value {
-        font-size: 28rpx;
-        font-weight: 600;
-        color: var(--text-main);
-
-        &.positive {
-          color: var(--success);
-        }
-
-        &.negative {
-          color: var(--danger);
-        }
-
-        &.neutral {
-          color: var(--warning);
-        }
-      }
-    }
-  }
-
-  .adjustments-section {
-    .adjustments-title {
-      font-size: 24rpx;
-      font-weight: 600;
-      color: var(--text-main);
-      margin-bottom: 12rpx;
-      display: block;
-    }
-
-    .adjustment-item {
-      padding: 12rpx;
-      border-radius: 12rpx;
-      margin-bottom: 8rpx;
-      background: rgba(46, 204, 113, 0.05);
-
-      &.high {
-        background: rgba(231, 76, 60, 0.1);
-      }
-
-      &.medium {
-        background: rgba(241, 196, 15, 0.1);
-      }
-
-      .adjustment-message {
-        font-size: 22rpx;
-        color: var(--text-main);
-      }
-    }
-  }
+  border: 1px solid rgba(255, 255, 255, 0.42);
 }
 
-.plan-meta {
+.analytics-row {
   display: flex;
   justify-content: space-between;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
   margin-bottom: 20rpx;
 }
 
-.meta-item {
+.analytics-item {
   flex: 1;
+  text-align: center;
+}
 
-  &:first-child {
-    margin-right: 20rpx;
-  }
+.analytics-label {
+  display: block;
+  margin-bottom: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.analytics-value {
+  font-size: 28rpx;
+  font-weight: 650;
+  color: var(--text-main);
+}
+
+.analytics-value.positive {
+  color: var(--success, #34c759);
+}
+
+.analytics-value.negative {
+  color: var(--danger, #ff3b30);
+}
+
+.analytics-value.neutral {
+  color: var(--warning, #ff9f0a);
+}
+
+.adjustments-title {
+  display: block;
+  margin-bottom: 12rpx;
+  font-size: 24rpx;
+  font-weight: 620;
+  color: var(--text-main);
+}
+
+.adjustment-item {
+  padding: 14rpx 16rpx;
+  border-radius: 16rpx;
+  margin-bottom: 8rpx;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.adjustment-item.high {
+  background: rgba(255, 99, 90, 0.12);
+}
+
+.adjustment-item.medium {
+  background: rgba(255, 204, 0, 0.12);
+}
+
+.adjustment-message {
+  font-size: 22rpx;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+.plan-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+  margin-bottom: 22rpx;
+}
+
+.meta-item,
+.task-stats,
+.action-btn {
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+}
+
+.meta-item {
+  padding: 18rpx 20rpx;
+  border-radius: 22rpx;
 }
 
 .meta-label {
   display: block;
+  margin-bottom: 8rpx;
   font-size: 22rpx;
   color: var(--text-sub);
-  margin-bottom: 8rpx;
-  opacity: 0.8;
+  letter-spacing: 1rpx;
 }
 
 .meta-value {
   display: block;
   font-size: 26rpx;
-  font-weight: 600;
+  font-weight: 620;
   color: var(--text-main);
 }
 
-/* 任务统计 */
 .task-stats {
   margin-bottom: 24rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 24rpx;
+}
 
-  .ta<REDACTED_SECRET> {
-    font-size: 24rpx;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 12rpx;
-    display: block;
-  }
+.ta<REDACTED_SECRET> {
+  display: block;
+  margin-bottom: 12rpx;
+  font-size: 24rpx;
+  font-weight: 620;
+  color: var(--text-main);
+}
 
-  .ta<REDACTED_SECRET> {
-    height: 8rpx;
-    background: var(--muted);
-    border-radius: 4rpx;
-    margin-bottom: 8rpx;
+.ta<REDACTED_SECRET> {
+  height: 10rpx;
+  margin-bottom: 10rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+}
 
-    .ta<REDACTED_SECRET> {
-      height: 100%;
-      background: var(--success);
-      border-radius: 4rpx;
-      transition: width 0.3s ease;
-    }
-  }
+.ta<REDACTED_SECRET> {
+  height: 100%;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, rgba(52, 199, 89, 0.88) 0%, rgba(101, 219, 138, 0.96) 100%);
+  transition: width 0.3s ease;
+}
 
-  .ta<REDACTED_SECRET> {
-    font-size: 22rpx;
-    color: var(--text-sub);
-  }
+.ta<REDACTED_SECRET> {
+  font-size: 22rpx;
+  color: var(--text-sub);
 }
 
 .plan-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   padding-top: 20rpx;
-  border-top: 1px solid var(--border-color);
   margin-bottom: 20rpx;
+  border-top: 1px solid var(--apple-divider);
 }
 
 .category-tag {
-  padding: 8rpx 16rpx;
-  border-radius: 16rpx;
-  font-size: 22rpx;
-  font-weight: bold;
-
-  &.low {
-    background: rgba(46, 204, 113, 0.1);
-    color: var(--success);
-  }
-
-  &.medium {
-    background: rgba(241, 196, 15, 0.1);
-    color: var(--warning);
-  }
-
-  &.high {
-    background: rgba(231, 76, 60, 0.1);
-    color: var(--danger);
-  }
+  color: var(--text-main);
 }
 
-.priority-tag {
-  padding: 8rpx 16rpx;
-  border-radius: 16rpx;
-  font-size: 22rpx;
-  font-weight: bold;
-
-  &.low {
-    background: rgba(46, 204, 113, 0.1);
-    color: var(--success);
-  }
-
-  &.medium {
-    background: rgba(241, 196, 15, 0.1);
-    color: var(--warning);
-  }
-
-  &.high {
-    background: rgba(231, 76, 60, 0.1);
-    color: var(--danger);
-  }
+.priority-tag.low {
+  color: var(--success, #34c759);
 }
 
-/* 计划操作 */
+.priority-tag.medium {
+  background: rgba(255, 204, 0, 0.12);
+  color: var(--warning, #ff9f0a);
+}
+
+.priority-tag.high {
+  background: rgba(255, 99, 90, 0.12);
+  color: var(--danger, #ff3b30);
+}
+
 .plan-actions {
   display: flex;
-  justify-content: space-around;
-  padding-top: 20rpx;
-  border-top: 1px solid var(--border-color);
-
-  .action-btn {
-    font-size: 24rpx;
-    color: var(--text-main);
-    padding: 12rpx 24rpx;
-    border-radius: 16rpx;
-    background: rgba(46, 204, 113, 0.05);
-    transition: all 0.2s;
-
-    &:active {
-      transform: scale(0.95);
-      opacity: 0.8;
-    }
-
-    &.danger {
-      color: var(--danger);
-      background: rgba(231, 76, 60, 0.1);
-    }
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
   }
+  padding-top: 20rpx;
+  border-top: 1px solid var(--apple-divider);
 }
 
-/* 深色模式适配 - 极光背景 */
+.action-btn {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: var(--text-main);
+}
+
+.action-btn.cta {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.action-btn.danger {
+  background: rgba(255, 99, 90, 0.12);
+  color: var(--danger, #ff3b30);
+}
+
+.action-btn:active,
+.nav-back:active,
+.nav-add:active,
+.hero-cta:active {
+  transform: scale(0.97);
+  opacity: 0.88;
+}
+
 .container.dark-mode .aurora-bg {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
-  opacity: 0.4;
-  filter: blur(120px);
+  background:
+    radial-gradient(circle at 18% 24%, rgba(10, 132, 255, 0.18) 0%, transparent 42%),
+    radial-gradient(circle at 82% 10%, rgba(95, 170, 255, 0.14) 0%, transparent 30%) !important;
+  opacity: 0.9;
+  filter: blur(110px);
 }
 
-/* 骨架屏淡出过渡 */
+.container.dark-mode .nav-back,
+.container.dark-mode .nav-add,
+.container.dark-mode .reminder-item,
+.container.dark-mode .plan-analytics,
+.container.dark-mode .meta-item,
+.container.dark-mode .task-stats,
+.container.dark-mode .category-tag,
+.container.dark-mode .priority-tag,
+.container.dark-mode .action-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.container.dark-mode .action-btn.cta {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+}
+
+.container.dark-mode .hero-card,
+.container.dark-mode .reminder-card,
+.container.dark-mode .plan-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+}
+
 .skeleton-fade-leave-active {
   transition: opacity 0.35s ease-out;
 }
+
 .skeleton-fade-leave-to {
   opacity: 0;
 }

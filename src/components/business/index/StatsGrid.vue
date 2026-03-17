@@ -1,6 +1,10 @@
 <template>
   <view class="stats-grid">
-    <view :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']" @tap="$emit('stat-click', 'questions')">
+    <view
+      id="e2e-home-stat-questions"
+      :class="['stat-card', 'apple-glass-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+      @tap="$emit('stat-click', 'questions')"
+    >
       <view class="stat-icon-wrapper icon-primary">
         <BaseIcon name="check" :size="48" />
       </view>
@@ -13,7 +17,11 @@
       </view>
     </view>
 
-    <view :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']" @tap="$emit('stat-click', 'accuracy')">
+    <view
+      id="e2e-home-stat-accuracy"
+      :class="['stat-card', 'apple-glass-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+      @tap="$emit('stat-click', 'accuracy')"
+    >
       <view class="stat-icon-wrapper icon-success">
         <BaseIcon name="chart-up" :size="48" />
       </view>
@@ -26,7 +34,11 @@
       </view>
     </view>
 
-    <view :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']" @tap="$emit('stat-click', 'streak')">
+    <view
+      id="e2e-home-stat-streak"
+      :class="['stat-card', 'apple-glass-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+      @tap="$emit('stat-click', 'streak')"
+    >
       <view class="stat-icon-wrapper icon-warning">
         <BaseIcon name="lightning" :size="48" />
       </view>
@@ -40,7 +52,8 @@
     </view>
 
     <view
-      :class="['stat-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+      id="e2e-home-stat-achievements"
+      :class="['stat-card', 'apple-glass-card', isDark ? 'glass' : 'card-light', 'card-hover']"
       @tap="$emit('stat-click', 'achievements')"
     >
       <view class="stat-icon-wrapper icon-neutral">
@@ -79,59 +92,102 @@ export default {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--ds-spacing-md, 24rpx);
-  margin-bottom: var(--ds-spacing-lg, 32rpx);
+  gap: 18rpx;
+  margin-bottom: 44rpx;
 }
 
 .glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1rpx solid var(--border);
+  background: var(--bg-card-alpha);
+  backdrop-filter: blur(16rpx) saturate(130%);
+  -webkit-backdrop-filter: blur(16rpx) saturate(130%);
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
 }
 
 .card-light {
-  background: var(--card);
+  background: linear-gradient(160deg, #ffffff 0%, #f4faf6 100%);
 }
 
 .card-hover:active {
-  transform: translateY(-4rpx);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2rpx) scale(0.99);
+  box-shadow: var(--shadow-md);
 }
 
 .stat-card {
-  border-radius: 32rpx;
+  position: relative;
+  overflow: hidden;
+  border-radius: 28rpx;
   padding: 32rpx;
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1rpx solid var(--border);
+  min-height: 220rpx;
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .stat-icon-wrapper {
-  width: 96rpx;
-  height: 96rpx;
-  border-radius: 24rpx;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
 }
 
 .icon-primary {
-  background: var(--primary-light);
+  background: var(--brand-tint);
 }
 
 .icon-success {
-  background: var(--success-light);
+  background: rgba(52, 199, 89, 0.14);
 }
 
 .icon-warning {
-  background: var(--warning-light);
+  background: rgba(255, 159, 10, 0.16);
 }
 
 .icon-neutral {
-  background: var(--bg-secondary);
+  background: rgba(142, 142, 147, 0.12);
+}
+
+.glass .stat-icon-wrapper {
+  border-color: rgba(124, 176, 255, 0.18);
+  box-shadow: none;
+}
+
+.glass .icon-primary {
+  background: rgba(10, 132, 255, 0.16);
+}
+
+.glass .icon-success {
+  background: rgba(64, 200, 160, 0.16);
+}
+
+.glass .icon-warning {
+  background: rgba(95, 170, 255, 0.18);
+}
+
+.glass .icon-neutral {
+  background: rgba(58, 108, 190, 0.16);
 }
 
 .stat-icon {
@@ -141,25 +197,33 @@ export default {
 .stat-content {
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
 }
 
 .stat-title {
   font-size: 24rpx;
   color: var(--text-sub);
-  font-weight: 500;
+  font-weight: 520;
+  letter-spacing: 1rpx;
 }
 
 .stat-value {
-  font-size: 48rpx;
-  font-weight: 700;
+  font-size: 46rpx;
+  font-weight: 680;
+  letter-spacing: -0.3rpx;
   color: var(--text-primary);
   line-height: 1.2;
 }
 
 .stat-change {
   font-size: 24rpx;
-  font-weight: 500;
+  font-weight: 520;
 }
 
 .stat-change.positive {
@@ -168,5 +232,35 @@ export default {
 
 .stat-change.neutral {
   color: var(--text-sub);
+}
+
+@media screen and (max-width: 375px) {
+  .stats-grid {
+    gap: 14rpx;
+    margin-bottom: 36rpx;
+  }
+
+  .stat-card {
+    padding: 24rpx;
+    border-radius: 24rpx;
+    min-height: 200rpx;
+  }
+
+  .stat-icon-wrapper {
+    width: 72rpx;
+    height: 72rpx;
+  }
+
+  .stat-title {
+    font-size: 22rpx;
+  }
+
+  .stat-value {
+    font-size: 38rpx;
+  }
+
+  .stat-change {
+    font-size: 22rpx;
+  }
 }
 </style>

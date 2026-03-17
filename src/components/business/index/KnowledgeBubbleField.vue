@@ -1,6 +1,6 @@
 <template>
   <view>
-    <view class="section-header">
+    <view class="section-header section-header-apple">
       <text class="section-title"> 概况 </text>
     </view>
     <view class="bubble-field">
@@ -94,10 +94,16 @@ export default {
   margin-bottom: 20rpx;
 }
 
+.section-header-apple {
+  margin-bottom: 24rpx;
+}
+
 .section-title {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 620;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .bubble-field {
@@ -173,23 +179,26 @@ export default {
 }
 
 .bubble-card-light {
-  background: var(--bg-card);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1rpx solid var(--border);
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1rpx solid var(--apple-glass-border-strong);
 }
 
 .bubble-card-dark {
-  background: var(--bg-card);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1rpx solid var(--border);
+  background: linear-gradient(160deg, rgba(16, 20, 28, 0.9) 0%, rgba(12, 15, 22, 0.96) 100%);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1rpx solid rgba(124, 176, 255, 0.18);
 }
 
 /* 光晕呼吸 */
 .bubble-glow {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   border-radius: 50%;
   opacity: 0.5;
   pointer-events: none;
@@ -216,7 +225,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4rpx;
+  /* gap: 4rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 4rpx;
+  }
   padding: 16rpx;
   text-align: center;
 }
@@ -226,6 +241,8 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
 }
 
 .bubble-size-sm .bubble-icon {

@@ -568,16 +568,22 @@ export default {
   max-width: 650rpx;
   min-width: 500rpx;
   height: 100rpx;
-  background: var(--gradient-primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   border-radius: 50rpx;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  box-shadow: var(--shadow-lg);
-  border: none;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+  box-shadow: var(--cta-primary-shadow);
+  border: 1rpx solid var(--cta-primary-border);
   padding: 0 30rpx;
   box-sizing: border-box;
 }
@@ -626,6 +632,7 @@ export default {
   height: 100%;
   background: var(--overlay);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -728,6 +735,7 @@ export default {
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 1;
   }
 
@@ -797,7 +805,13 @@ export default {
 
   .modal-footer {
     display: flex;
-    gap: 20rpx;
+    /* gap: 20rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: 20rpx;
+    }
     padding: 30rpx 40rpx;
     border-top: 1rpx solid var(--border, #f0f0f0);
     background: var(--bg-card);
@@ -817,8 +831,8 @@ export default {
       }
 
       &.primary {
-        background: #2ecc71;
-        color: #fff;
+        background: var(--brand-color);
+        color: var(--text-inverse);
       }
 
       &::after {
@@ -854,7 +868,7 @@ export default {
     display: block;
     font-size: 40rpx;
     font-weight: 700;
-    color: #2ecc71;
+    color: var(--brand-color);
     margin-bottom: 12rpx;
   }
 

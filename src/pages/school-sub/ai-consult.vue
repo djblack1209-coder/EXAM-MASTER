@@ -1,107 +1,104 @@
 <template>
   <view v-if="visible" class="ai-consult-container" :class="{ 'dark-mode': isDark }">
-    <!-- 遮罩层 -->
     <view class="consult-mask" @tap="closeConsult" />
 
-    <!-- 咨询弹窗 -->
-    <view class="consult-panel glass-card">
-      <!-- 弹窗头部 -->
-      <view class="panel-header ds-flex ds-flex-between">
-        <view class="header-left ds-flex ds-flex-col">
-          <text class="header-title ds-text-lg ds-font-bold"> 智能咨询 </text>
-          <text class="header-subtitle ds-text-xs ds-text-secondary">
-            {{ schoolName }}
-          </text>
+    <view class="consult-panel" @tap.stop>
+      <view class="panel-handle" />
+
+      <view class="panel-header">
+        <view class="header-copy">
+          <text class="header-eyebrow"> AI Consult </text>
+          <text class="header-title"> 智能咨询 </text>
+          <text class="header-subtitle"> {{ schoolName }} </text>
         </view>
-        <view class="header-right ds-flex">
-          <view class="close-btn ds-touchable ds-touch-target" @tap="closeConsult">
-            <BaseIcon name="close" :size="32" />
-          </view>
+        <view class="close-btn" @tap="closeConsult">
+          <BaseIcon name="close" :size="28" />
         </view>
       </view>
 
-      <!-- 对话内容区域 -->
+      <view class="intro-card">
+        <text class="intro-title"> 你可以直接问我这些问题 </text>
+        <text class="intro-text"> 招生情况、专业推荐、院校优势、报考建议，都会结合 {{ schoolName }} 给你回答。 </text>
+      </view>
+
       <scroll-view scroll-y class="chat-content" :scroll-into-view="scrollToView" scroll-with-animation>
-        <!-- 消息列表 -->
-        <view class="message-list ds-flex ds-flex-col ds-gap-md">
-          <!-- 欢迎消息 -->
-          <view v-if="messages.length === 0" class="message-item assistant-message ds-flex ds-gap-sm">
-            <view class="message-avatar ds-flex">
-              <BaseIcon name="robot" :size="32" />
+        <view class="message-list">
+          <view v-if="messages.length === 0" id="message-empty" class="welcome-card">
+            <view class="welcome-avatar">
+              <BaseIcon name="robot" :size="30" />
             </view>
-            <view class="message-bubble assistant-bubble">
-              <text class="message-text ds-text-sm">
-                你好！我是智能升学顾问，有关于 {{ schoolName }} 的任何问题都可以问我。
-              </text>
+            <view class="welcome-bubble">
+              <text class="message-text"> 你好！我是智能升学顾问，有关于 {{ schoolName }} 的任何问题都可以问我。 </text>
             </view>
           </view>
 
-          <!-- 消息记录 -->
           <view
             v-for="(message, index) in messages"
+            :id="'message-' + index"
             :key="index"
-            :class="[
-              'message-item',
-              'ds-flex',
-              'ds-gap-sm',
-              message.role === 'user' ? 'user-message' : 'assistant-message'
-            ]"
+            :class="['message-row', message.role === 'user' ? 'user-row' : 'assistant-row']"
           >
-            <!-- 用户消息 -->
             <template v-if="message.role === 'user'">
               <view class="message-bubble user-bubble">
-                <text class="message-text ds-text-sm">
-                  {{ message.content }}
-                </text>
+                <text class="message-text"> {{ message.content }} </text>
               </view>
-              <view class="message-avatar ds-flex">
-                <BaseIcon name="heart" :size="32" />
+              <view class="message-avatar user-avatar">
+                <BaseIcon name="heart" :size="28" />
               </view>
             </template>
 
-            <!-- 助手消息 -->
             <template v-else>
-              <view class="message-avatar ds-flex">
-                <BaseIcon name="robot" :size="32" />
+              <view class="message-avatar assistant-avatar">
+                <BaseIcon name="robot" :size="28" />
               </view>
-              <view class="message-bubble assistant-bubble">
-                <text class="message-text ds-text-sm">
-                  {{ message.content }}
-                </text>
+              <view
+                class="message-bubble assistant-bubble"
+                :class="{ failed: message.failed }"
+                @tap="message.failed ? retryMessage(index) : null"
+              >
+                <text class="message-text"> {{ message.content }} </text>
+                <text v-if="message.failed" class="retry-text"> 点按重试 </text>
               </view>
             </template>
           </view>
 
-          <!-- 正在输入状态 -->
-          <view v-if="isTyping" class="message-item assistant-message ds-flex ds-gap-sm">
-            <view class="message-avatar ds-flex">
-              <BaseIcon name="robot" :size="32" />
+          <view v-if="isTyping" id="message-typing" class="message-row assistant-row">
+            <view class="message-avatar assistant-avatar">
+              <BaseIcon name="robot" :size="28" />
+            </view>
+            <view class="message-bubble typing-bubble">
+              <view class="typing-dots">
+                <view class="typing-dot" />
+                <view class="typing-dot" />
+                <view class="typing-dot" />
+              </view>
             </view>
           </view>
         </view>
       </scroll-view>
 
-      <!-- 输入区域 -->
       <view class="input-area">
-        <view class="input-container ds-flex">
+        <view class="input-shell">
           <textarea
+            id="e2e-school-consult-input"
             v-model="inputContent"
-            class="message-input ds-text-sm"
+            class="message-input"
             placeholder="请输入您的问题..."
             placeholder-class="placeholder-text"
             :maxlength="200"
             @input="onInputChange"
             @confirm="sendMessage"
           ></textarea>
-          <view class="input-actions ds-flex ds-gap-xs">
-            <text class="char-count ds-text-xs ds-text-secondary"> {{ inputContent.length }}/200 </text>
+          <view class="input-footer">
+            <text class="char-count"> {{ inputContent.length }}/200 </text>
             <view
-              class="send-btn ds-touchable ds-flex"
+              id="e2e-school-consult-send"
+              class="send-btn"
               :class="{ 'can-send': canSend }"
               :disabled="!canSend || isTyping"
               @tap="sendMessage"
             >
-              <text class="send-icon"> → </text>
+              <text class="send-text"> 发送 </text>
             </view>
           </view>
         </view>
@@ -176,7 +173,11 @@ export default {
   methods: {
     // 滚动到底部
     scrollToBottom() {
-      this.scrollToView = `message-${this.messages.length - 1}`;
+      if (this.isTyping) {
+        this.scrollToView = 'message-typing';
+        return;
+      }
+      this.scrollToView = this.messages.length > 0 ? `message-${this.messages.length - 1}` : 'message-empty';
     },
 
     // 输入内容变化
@@ -320,172 +321,265 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* 基础样式 */
 .ai-consult-container {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
+  left: 0;
   z-index: 9999;
   display: flex;
   align-items: flex-end;
-  justify-content: center;
 }
 
-/* 遮罩层 */
 .consult-mask {
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  left: 0;
+  background: rgba(9, 18, 12, 0.26);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-/* 咨询弹窗 */
 .consult-panel {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-height: 80vh;
-  background: var(--ds-bg-primary);
-  border-radius: 40rpx 40rpx 0 0;
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--ds-border-color);
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15);
+  max-height: 86vh;
+  padding: 14rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
+  border-radius: 38rpx 38rpx 0 0;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: 0 -20rpx 70rpx rgba(21, 49, 28, 0.18);
   display: flex;
   flex-direction: column;
-  position: relative;
-  z-index: 10000;
-  transition: all 150ms ease-out;
 }
 
-/* 弹窗头部 */
+.panel-handle {
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 18rpx;
+}
+
 .panel-header {
+  display: flex;
   align-items: center;
-  padding: 24rpx 32rpx;
-  border-bottom: 1px solid var(--ds-border-color);
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
+  padding: 0 8rpx 18rpx;
 }
 
-.header-left {
-  /* ds-flex ds-flex-col 已应用 */
+.header-copy {
+  flex: 1;
+}
+
+.header-eyebrow,
+.header-title,
+.header-subtitle,
+.intro-title,
+.intro-text,
+.message-text,
+.retry-text,
+.char-count,
+.send-text {
+  display: block;
+}
+
+.header-eyebrow {
+  margin-bottom: 6rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .header-title {
-  color: var(--ds-text-primary);
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .header-subtitle {
-  color: var(--ds-text-secondary);
-  margin-top: 4rpx;
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
 }
 
-.header-right {
-  align-items: center;
-}
-
-.close-btn {
-  font-size: 32rpx;
-  color: var(--ds-text-secondary);
-  width: 44rpx;
-  height: 44rpx;
+.close-btn,
+.message-avatar,
+.send-btn {
+  display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: all 150ms ease-out;
-}
-
-.close-btn:active {
-  background: var(--ds-bg-secondary);
-  color: var(--ds-text-primary);
-}
-
-/* 对话内容区域 */
-.chat-content {
-  flex: 1;
-  padding: 24rpx 32rpx;
-  overflow-y: auto;
-}
-
-/* 消息列表 */
-.message-list {
-  /* ds-flex ds-flex-col ds-gap-md 已应用 */
-}
-
-/* 消息项 */
-.message-item {
-  align-items: flex-end;
-}
-
-/* 用户消息 */
-.user-message {
-  flex-direction: row-reverse;
-}
-
-/* 助手消息 */
-.assistant-message {
-  flex-direction: row;
-}
-
-/* 消息头像 */
-.message-avatar {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
-  background: var(--ds-bg-secondary);
-  align-items: center;
-  justify-content: center;
-  font-size: 32rpx;
   flex-shrink: 0;
 }
 
-/* 消息气泡 */
-.message-bubble {
-  max-width: 70%;
-  padding: 16rpx 24rpx;
-  border-radius: 24rpx;
-  position: relative;
+.close-btn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  box-shadow: var(--apple-shadow-surface);
+  color: var(--text-main);
 }
 
-/* 用户气泡 */
-.user-bubble {
-  background: linear-gradient(180deg, var(--ds-primary) 0%, #279eff 100%);
-  color: white;
-  border-bottom-right-radius: 8rpx;
+.intro-card {
+  margin-bottom: 20rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 26rpx;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 
-/* 助手气泡 */
-.assistant-bubble {
-  background: var(--ds-bg-secondary);
-  color: var(--ds-text-primary);
-  border-bottom-left-radius: 8rpx;
+.intro-title {
+  font-size: 26rpx;
+  font-weight: 650;
+  color: var(--text-main);
 }
 
-/* 消息文本 */
-.message-text {
-  line-height: 1.5;
-  word-break: break-word;
+.intro-text {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--text-sub);
 }
 
-/* 消息时间 */
-.message-time {
-  color: var(--ds-text-secondary);
-  margin-top: 8rpx;
-  display: block;
-  text-align: right;
+.chat-content {
+  flex: 1;
+  min-height: 0;
+  padding: 4rpx 8rpx;
 }
 
-/* 正在输入指示器 */
-.typing-indicator {
+.message-list {
+  display: flex;
+  flex-direction: column;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
+  padding-bottom: 12rpx;
+}
+
+.welcome-card,
+.message-row {
+  display: flex;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12rpx;
+  }
+  align-items: flex-end;
+}
+
+.user-row {
+  justify-content: flex-end;
+}
+
+.welcome-card {
+  align-items: flex-start;
+}
+
+.message-avatar,
+.welcome-avatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+  color: var(--text-main);
+}
+
+.welcome-avatar {
+  display: flex;
   align-items: center;
-  padding: 16rpx 0;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.message-bubble,
+.welcome-bubble,
+.typing-bubble {
+  max-width: 72%;
+  padding: 18rpx 22rpx;
+  border-radius: 26rpx;
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.assistant-bubble,
+.welcome-bubble,
+.typing-bubble {
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+}
+
+.user-bubble {
+  background: var(--cta-primary-bg);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.message-text {
+  font-size: 26rpx;
+  line-height: 1.6;
+  word-break: break-word;
+  color: var(--text-main);
+}
+
+.user-bubble .message-text {
+  color: var(--cta-primary-text);
+}
+
+.assistant-bubble.failed {
+  border-color: rgba(255, 59, 48, 0.35);
+  background: rgba(255, 99, 90, 0.1);
+}
+
+.retry-text {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: var(--ds-color-error, #ff3b30);
+}
+
+.typing-bubble {
+  min-width: 112rpx;
+}
+
+.typing-dots {
+  display: flex;
+  align-items: center;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
 }
 
 .typing-dot {
   width: 12rpx;
   height: 12rpx;
   border-radius: 50%;
-  background: var(--ds-text-secondary);
+  background: var(--text-sub);
   animation: typing 1.4s infinite;
 }
 
@@ -497,108 +591,120 @@ export default {
   animation-delay: 0.4s;
 }
 
+.input-area {
+  padding-top: 18rpx;
+}
+
+.input-shell {
+  padding: 14rpx 16rpx 16rpx;
+  border-radius: 30rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.message-input {
+  width: 100%;
+  min-height: 88rpx;
+  max-height: 180rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+.placeholder-text {
+  color: var(--text-sub);
+}
+
+.input-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+  margin-top: 8rpx;
+}
+
+.char-count {
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.send-btn {
+  min-width: 128rpx;
+  height: 64rpx;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  opacity: 0.6;
+}
+
+.send-btn.can-send {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+  opacity: 1;
+}
+
+.send-text {
+  font-size: 24rpx;
+  font-weight: 620;
+  color: var(--text-main);
+}
+
+.send-btn.can-send .send-text {
+  color: var(--cta-primary-text);
+}
+
+.close-btn:active,
+.send-btn:active,
+.assistant-bubble.failed:active {
+  transform: scale(0.97);
+}
+
+.dark-mode .consult-mask {
+  background: rgba(0, 0, 0, 0.56);
+}
+
+.dark-mode .consult-panel,
+.dark-mode .intro-card,
+.dark-mode .close-btn,
+.dark-mode .message-avatar,
+.dark-mode .welcome-avatar,
+.dark-mode .assistant-bubble,
+.dark-mode .welcome-bubble,
+.dark-mode .typing-bubble,
+.dark-mode .input-shell,
+.dark-mode .send-btn {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .send-btn.can-send,
+.dark-mode .user-bubble {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+}
+
 @keyframes typing {
   0%,
   60%,
   100% {
     transform: translateY(0);
-    opacity: 0.4;
+    opacity: 0.35;
   }
 
   30% {
-    transform: translateY(-10rpx);
+    transform: translateY(-8rpx);
     opacity: 1;
   }
-}
-
-/* 输入区域 */
-.input-area {
-  padding: 24rpx 32rpx;
-  border-top: 1px solid var(--ds-border-color);
-  background: var(--ds-bg-primary);
-  border-radius: 0 0 40rpx 40rpx;
-}
-
-/* 输入容器 */
-.input-container {
-  align-items: flex-end;
-  gap: 16rpx;
-  background: var(--ds-bg-primary);
-  border: 1px solid var(--ds-border-color);
-  border-radius: 36rpx;
-  padding: 12rpx 20rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
-  transition: all 150ms ease-out;
-}
-
-/* 消息输入框 */
-.message-input {
-  flex: 1;
-  min-height: 40rpx;
-  max-height: 120rpx;
-  color: var(--ds-text-primary);
-  line-height: 1.5;
-  padding: 8rpx 0;
-  resize: none;
-}
-
-/* 占位符样式 */
-.placeholder-text {
-  color: var(--ds-text-tertiary);
-}
-
-/* 输入操作区 */
-.input-actions {
-  align-items: center;
-}
-
-/* 字符计数 */
-.char-count {
-  color: var(--ds-text-secondary);
-}
-
-/* 发送按钮 */
-.send-btn {
-  width: 56rpx;
-  height: 56rpx;
-  border-radius: 50%;
-  background: var(--ds-border-color);
-  align-items: center;
-  justify-content: center;
-  transition: all 150ms ease-out;
-  opacity: 0.5;
-}
-
-.send-btn.can-send {
-  background: var(--ds-primary);
-  opacity: 1;
-}
-
-.send-btn:active {
-  transform: scale(0.95);
-}
-
-/* 发送图标 */
-.send-icon {
-  font-size: 28rpx;
-  color: white;
-  font-weight: bold;
-}
-
-/* 深色模式 */
-.dark-mode .consult-mask {
-  background: rgba(0, 0, 0, 0.7);
-}
-
-.dark-mode .consult-panel {
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
-}
-
-.dark-mode .input-container {
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
-}
-
-.dark-mode .user-bubble {
-  color: #1c1c1e;
 }
 </style>

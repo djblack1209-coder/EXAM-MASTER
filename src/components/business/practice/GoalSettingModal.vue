@@ -1,34 +1,42 @@
 <template>
   <view v-if="visible" class="goal-modal-overlay" @tap="$emit('close')">
-    <view class="goal-modal" @tap.stop>
+    <view class="goal-modal apple-glass-card" @tap.stop>
       <view class="goal-modal-header">
         <text class="goal-modal-title"> 设置每日目标 </text>
-        <view class="goal-modal-close" @tap="$emit('close')">
+        <view class="goal-modal-close apple-glass-pill" @tap="$emit('close')">
           <BaseIcon name="close" :size="24" />
         </view>
       </view>
       <view class="goal-modal-body">
         <view class="goal-input-group">
-          <button class="goal-adjust-btn" @tap="adjustValue(-5)">-</button>
+          <button class="goal-adjust-btn apple-glass-pill" @tap="adjustValue(-5)">-</button>
           <view class="goal-input-wrapper">
             <input v-model="localValue" type="number" class="goal-input" :min="5" :max="200" />
             <text class="goal-unit"> 道/天 </text>
           </view>
-          <button class="goal-adjust-btn" @tap="adjustValue(5)">+</button>
+          <button class="goal-adjust-btn apple-glass-pill" @tap="adjustValue(5)">+</button>
         </view>
         <view class="goal-presets">
-          <view class="goal-preset" :class="{ active: localValue === 10 }" @tap="localValue = 10"> 10道 </view>
-          <view class="goal-preset" :class="{ active: localValue === 20 }" @tap="localValue = 20"> 20道 </view>
-          <view class="goal-preset" :class="{ active: localValue === 30 }" @tap="localValue = 30"> 30道 </view>
-          <view class="goal-preset" :class="{ active: localValue === 50 }" @tap="localValue = 50"> 50道 </view>
+          <view class="goal-preset apple-glass-pill" :class="{ active: localValue === 10 }" @tap="localValue = 10">
+            10道
+          </view>
+          <view class="goal-preset apple-glass-pill" :class="{ active: localValue === 20 }" @tap="localValue = 20">
+            20道
+          </view>
+          <view class="goal-preset apple-glass-pill" :class="{ active: localValue === 30 }" @tap="localValue = 30">
+            30道
+          </view>
+          <view class="goal-preset apple-glass-pill" :class="{ active: localValue === 50 }" @tap="localValue = 50">
+            50道
+          </view>
         </view>
         <view class="goal-tips">
           <text class="goal-tip-text"> 建议：每天坚持刷20-30道题，效果最佳 </text>
         </view>
       </view>
       <view class="goal-modal-footer">
-        <button class="goal-cancel-btn" @tap="$emit('close')">取消</button>
-        <button class="goal-save-btn" @tap="handleSave">保存</button>
+        <button class="goal-cancel-btn apple-glass-pill" @tap="$emit('close')">取消</button>
+        <button class="goal-save-btn apple-cta" @tap="handleSave">保存</button>
       </view>
     </view>
   </view>
@@ -105,6 +113,7 @@ export default {
   bottom: 0;
   background: var(--overlay);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -114,10 +123,11 @@ export default {
 .goal-modal {
   width: 100%;
   max-width: 400px;
-  background: var(--bg-card);
-  border-radius: 24px;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28px;
   padding: 32px;
-  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-floating);
   animation: fadeInUp 0.3s ease-out;
 }
 .goal-modal-header {
@@ -141,7 +151,7 @@ export default {
   color: var(--text-sub);
   cursor: pointer;
   border-radius: 50%;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.64);
 }
 .goal-modal-body {
   margin-bottom: 28px;
@@ -150,15 +160,21 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16px;
+  }
   margin-bottom: 24px;
 }
 .goal-adjust-btn {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   font-size: 56rpx;
   font-weight: 600;
   color: var(--text-primary);
@@ -169,13 +185,19 @@ export default {
   transition: all 0.2s ease;
 }
 .goal-adjust-btn:active {
-  background: var(--primary-light);
+  background: rgba(255, 255, 255, 0.9);
   transform: scale(0.95);
 }
 .goal-input-wrapper {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8px;
+  }
 }
 .goal-input {
   width: 80px;
@@ -195,23 +217,30 @@ export default {
 .goal-presets {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
   margin-bottom: 20px;
 }
 .goal-preset {
   padding: 10px 20px;
-  border-radius: 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.48);
   font-size: 28rpx;
   color: var(--text-sub);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 .goal-preset.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+  color: var(--cta-primary-text);
+  box-shadow: var(--cta-primary-shadow);
 }
 .goal-preset:active {
   transform: scale(0.95);
@@ -219,8 +248,9 @@ export default {
 .goal-tips {
   text-align: center;
   padding: 12px;
-  background: var(--bg-secondary);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.54);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.44);
 }
 .goal-tip-text {
   font-size: 26rpx;
@@ -228,27 +258,34 @@ export default {
 }
 .goal-modal-footer {
   display: flex;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16px;
+  }
 }
 .goal-cancel-btn {
   flex: 1;
   height: 52px;
-  background: var(--bg-secondary);
-  color: var(--text-sub);
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--text-primary);
   font-size: 32rpx;
   font-weight: 500;
-  border-radius: 16px;
-  border: none;
+  border-radius: 999px;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 .goal-save-btn {
   flex: 1;
   height: 52px;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   font-size: 32rpx;
   font-weight: 600;
-  border-radius: 16px;
-  border: none;
+  border-radius: 999px;
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 .goal-cancel-btn::after,
 .goal-save-btn::after {

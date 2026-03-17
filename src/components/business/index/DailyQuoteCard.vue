@@ -1,6 +1,7 @@
 <template>
   <view
-    :class="['mode-description', isDark ? 'glass' : 'desc-light']"
+    id="e2e-home-daily-quote"
+    :class="['mode-description', 'apple-glass-card', isDark ? 'glass' : 'desc-light']"
     style="margin-top: 64rpx"
     @tap="$emit('open-poster')"
   >
@@ -30,11 +31,13 @@ export default {
   padding: 48rpx;
   border-radius: 32rpx;
   text-align: center;
-  border: 1rpx solid var(--border);
+  border: 1rpx solid var(--apple-glass-border-strong);
   margin-bottom: 32rpx;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  overflow: hidden;
+  box-shadow: var(--apple-shadow-card);
 }
 
 .mode-description:active {
@@ -43,14 +46,13 @@ export default {
 }
 
 .glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1rpx solid var(--border);
+  background: linear-gradient(160deg, rgba(16, 20, 28, 0.92) 0%, rgba(12, 15, 22, 0.98) 100%);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
 .desc-light {
-  background: var(--bg-secondary);
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
 }
 
 .desc-light .mode-text {

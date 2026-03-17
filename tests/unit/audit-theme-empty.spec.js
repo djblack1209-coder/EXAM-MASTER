@@ -48,24 +48,24 @@ describe('[Audit] Theme Token Correctness', () => {
     }
   });
 
-  it('dark bg-body is significantly darker than light bg-body', () => {
-    expect(tokens.light['--bg-body']).toBe('#F9FAFB');
-    expect(tokens.dark['--bg-body']).toBe('#080808');
+  it('dark bg-body is black-blue and light bg-body keeps green brand surface', () => {
+    expect(tokens.light['--bg-body']).toBe('#B8EB89');
+    expect(tokens.dark['--bg-body']).toBe('#0B0B0F');
   });
 
-  it('dark bg-card uses dark surface color', () => {
-    expect(tokens.dark['--bg-card']).toBe('#0D1117');
-    expect(tokens.light['--bg-card']).toBe('#FFFFFF');
+  it('dark bg-card uses dark glass surface color', () => {
+    expect(tokens.dark['--bg-card']).toBe('#1C1C1E');
+    expect(tokens.light['--bg-card']).toBe('#EAF9D5');
   });
 
-  it('dark text-primary is white, light text-primary is near-black', () => {
-    expect(tokens.dark['--text-primary']).toBe('#FFFFFF');
-    expect(tokens.light['--text-primary']).toBe('#1A1D1F');
+  it('dark text-primary is bright and light text-primary is deep green-black', () => {
+    expect(tokens.dark['--text-primary']).toBe('#F5F5F7');
+    expect(tokens.light['--text-primary']).toBe('#10281A');
   });
 
-  it('brand color differs: light=#9FE870 (green), dark=#00F2FF (cyan)', () => {
-    expect(tokens.light['--brand-color']).toBe('#9FE870');
-    expect(tokens.dark['--brand-color']).toBe('#00F2FF');
+  it('brand color differs: light uses deep green, dark uses iOS blue', () => {
+    expect(tokens.light['--brand-color']).toBe('#0F5F34');
+    expect(tokens.dark['--brand-color']).toBe('#0A84FF');
   });
 
   it('danger color: light=#EF4444 (red), dark=#FF2D75 (neon pink)', () => {
@@ -255,17 +255,17 @@ describe('[Audit] applyTheme DOM Injection', () => {
   it('applies light tokens as CSS custom properties on :root', () => {
     applyTheme('light');
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#F9FAFB');
-    expect(root.style.getPropertyValue('--text-primary')).toBe('#1A1D1F');
-    expect(root.style.getPropertyValue('--brand-color')).toBe('#9FE870');
+    expect(root.style.getPropertyValue('--bg-body')).toBe('#B8EB89');
+    expect(root.style.getPropertyValue('--text-primary')).toBe('#10281A');
+    expect(root.style.getPropertyValue('--brand-color')).toBe('#0F5F34');
   });
 
   it('applies dark tokens as CSS custom properties on :root', () => {
     applyTheme('dark');
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#080808');
-    expect(root.style.getPropertyValue('--text-primary')).toBe('#FFFFFF');
-    expect(root.style.getPropertyValue('--brand-color')).toBe('#00F2FF');
+    expect(root.style.getPropertyValue('--bg-body')).toBe('#0B0B0F');
+    expect(root.style.getPropertyValue('--text-primary')).toBe('#F5F5F7');
+    expect(root.style.getPropertyValue('--brand-color')).toBe('#0A84FF');
   });
 
   it('injects v0-animations style element into head', () => {
@@ -288,13 +288,13 @@ describe('[Audit] applyTheme DOM Injection', () => {
   it('falls back to light tokens for unknown theme name', () => {
     applyTheme('neon');
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#F9FAFB');
+    expect(root.style.getPropertyValue('--bg-body')).toBe('#B8EB89');
   });
 
   it('defaults to light when called with no argument', () => {
     applyTheme();
     const root = document.documentElement;
-    expect(root.style.getPropertyValue('--bg-body')).toBe('#F9FAFB');
+    expect(root.style.getPropertyValue('--bg-body')).toBe('#B8EB89');
   });
 
   it('switching from dark to light replaces all variables', () => {
@@ -384,6 +384,26 @@ describe('[Audit] toggleTheme Persistence', () => {
     vi.resetModules();
     document.documentElement.style.cssText = '';
     window.localStorage.clear();
+    // 确保 uni.setStorageSync/getStorageSync 在测试环境中使用 localStorage 作为后备
+    if (typeof uni !== 'undefined') {
+      const _origSet = uni.setStorageSync;
+      uni.setStorageSync = (key, val) => {
+        try {
+          _origSet(key, val);
+        } catch (_e) {
+          /* ignore */
+        }
+        window.localStorage.setItem(key, val);
+      };
+      const _origGet = uni.getStorageSync;
+      uni.getStorageSync = (key) => {
+        try {
+          return _origGet(key) || window.localStorage.getItem(key);
+        } catch (_e) {
+          return window.localStorage.getItem(key);
+        }
+      };
+    }
     const mod = await import('@/design/theme-engine.js');
     toggleTheme = mod.toggleTheme;
   });
@@ -395,14 +415,14 @@ describe('[Audit] toggleTheme Persistence', () => {
 
   it('applies theme tokens when toggling', () => {
     toggleTheme('dark');
-    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#080808');
+    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#0B0B0F');
   });
 
   it('toggling back to light updates both storage and DOM', () => {
     toggleTheme('dark');
     toggleTheme('light');
     expect(window.localStorage.getItem('theme_mode')).toBe('light');
-    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#F9FAFB');
+    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#B8EB89');
   });
 
   it('rapid toggle does not corrupt state', () => {
@@ -411,7 +431,7 @@ describe('[Audit] toggleTheme Persistence', () => {
     }
     // i=0 dark, i=1 light, ... i=9 light
     expect(window.localStorage.getItem('theme_mode')).toBe('light');
-    expect(document.documentElement.style.getPropertyValue('--text-primary')).toBe('#1A1D1F');
+    expect(document.documentElement.style.getPropertyValue('--text-primary')).toBe('#10281A');
   });
 });
 

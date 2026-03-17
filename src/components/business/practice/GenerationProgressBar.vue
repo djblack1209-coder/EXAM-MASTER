@@ -1,5 +1,5 @@
 <template>
-  <view class="generation-progress-bar">
+  <view class="generation-progress-bar apple-glass-card">
     <view class="progress-header">
       <view class="progress-icon">
         <BaseIcon name="books" :size="32" />
@@ -42,7 +42,7 @@
       <text class="progress-status">
         {{ statusText }}
       </text>
-      <button class="pause-btn-small" @tap="$emit('pause')">暂停</button>
+      <button class="pause-btn-small apple-glass-pill" @tap="$emit('pause')">暂停</button>
     </view>
   </view>
 </template>
@@ -72,20 +72,44 @@ export default {
 
 <style lang="scss" scoped>
 .generation-progress-bar {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 24px;
   padding: 20px;
   margin-bottom: 24px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--apple-shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16px;
+  }
+}
+
+.generation-progress-bar::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 .progress-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
 }
 .progress-icon {
   font-size: 64rpx;
@@ -94,7 +118,13 @@ export default {
 .progress-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 4px;
+  }
   flex: 1;
   min-width: 0;
 }
@@ -122,7 +152,7 @@ export default {
 .progress-bar-bg {
   width: 100%;
   height: 10px;
-  background: var(--primary-light);
+  background: rgba(16, 40, 26, 0.08);
   border-radius: 5px;
   overflow: hidden;
 }
@@ -162,11 +192,11 @@ export default {
 }
 .pause-btn-small {
   padding: 8px 16px;
-  background: var(--warning-light);
-  color: var(--warning);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.66);
+  color: var(--text-primary);
+  border-radius: 999px;
   font-size: 28rpx;
-  border: none;
+  border: 1rpx solid rgba(255, 255, 255, 0.52);
   font-weight: 500;
 }
 .pause-btn-small::after {
@@ -182,7 +212,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  /* gap: 6px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 6px;
+  }
 }
 .step-dot {
   width: 10px;

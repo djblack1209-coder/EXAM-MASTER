@@ -1,8 +1,20 @@
 // @ts-nocheck
 import { defineConfig, devices } from '@playwright/test';
+import fs from 'fs';
 
 const isCI = Boolean(process.env.CI);
 const baseURL = process.env.E2E_BASE_URL || 'http://127.0.0.1:5173';
+
+function resolveChromiumExecutable() {
+  const candidates = [
+    process.env.PLAYWRIGHT_EXECUTABLE_PATH,
+    '/Applications/Chromium.app/Contents/MacOS/Chromium'
+  ].filter(Boolean);
+
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+const executablePath = resolveChromiumExecutable();
 
 const sharedUse = {
   baseURL,
@@ -12,7 +24,12 @@ const sharedUse = {
   screenshot: 'only-on-failure',
   video: 'retain-on-failure',
   locale: 'zh-CN',
-  timezoneId: 'Asia/Shanghai'
+  timezoneId: 'Asia/Shanghai',
+  launchOptions: executablePath
+    ? {
+        executablePath
+      }
+    : undefined
 };
 
 export default defineConfig({
@@ -24,7 +41,7 @@ export default defineConfig({
   },
   fullyParallel: false,
   retries: 1,
-  workers: isCI ? 1 : 2,
+  workers: 1,
   reporter: [
     ['list'],
     ['html', { outputFolder: 'docs/reports/e2e-compat-html', open: 'never' }],
@@ -69,6 +86,6 @@ export default defineConfig({
         command: 'npm run dev:h5',
         url: baseURL,
         reuseExistingServer: true,
-        timeout: 180 * 1000
+        timeout: 300 * 1000
       }
 });

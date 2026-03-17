@@ -14,9 +14,15 @@
     "
   >
     <!-- 内层胶囊：唯一可见实体，恢复点击 -->
-    <view class="tabbar-capsule" style="pointer-events: auto" :class="{ 'dark-mode': isDark }" :style="capsuleStyle">
+    <view
+      class="tabbar-capsule apple-glass"
+      style="pointer-events: auto"
+      :class="{ 'dark-mode': isDark }"
+      :style="capsuleStyle"
+    >
       <view
         v-for="(item, index) in tabList"
+        :id="`e2e-tabbar-${item.path.split('/')[2]}`"
         :key="index"
         class="tab-item"
         :class="{ active: resolvedActiveIndex === index }"
@@ -52,17 +58,39 @@ function getUniApi() {
 }
 
 function fallbackRouteJump(url) {
+  // #ifdef H5
   if (typeof window !== 'undefined' && url) {
     window.location.hash = `#${url}`;
     return true;
   }
+  // #endif
+  // #ifndef H5
+  // App/小程序端使用 uni.reLaunch 作为最终 fallback
+  const uniApi = getUniApi();
+  if (uniApi && typeof uniApi.reLaunch === 'function' && url) {
+    uniApi.reLaunch({ url });
+    return true;
+  }
+  // #endif
   return false;
 }
 
 function getCurrentRoutePath() {
-  if (typeof window === 'undefined') return '/pages/index/index';
-  const hashPath = window.location.hash.replace(/^#/, '');
-  return hashPath || '/pages/index/index';
+  // 优先使用 getCurrentPages（全平台通用）
+  if (typeof getCurrentPages === 'function') {
+    const pages = getCurrentPages();
+    if (pages.length > 0) {
+      const currentPage = pages[pages.length - 1];
+      return '/' + (currentPage.route || currentPage.__route__ || 'pages/index/index');
+    }
+  }
+  // #ifdef H5
+  if (typeof window !== 'undefined') {
+    const hashPath = window.location.hash.replace(/^#/, '');
+    if (hashPath) return hashPath;
+  }
+  // #endif
+  return '/pages/index/index';
 }
 
 export default {
@@ -272,30 +300,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  /* 浅色模式：白色玻璃质感 */
-  background-color: rgba(255, 255, 255, 0.95);
-  /* ✅ P1-6: blur() 必须使用 px 而非 rpx，rpx 在部分小程序环境下不被识别 */
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
   border-radius: 60rpx;
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 深色模式：灰色玻璃质感悬浮导航栏 */
 .tabbar-capsule.dark-mode {
-  /* 深灰色半透明背景 - 更深更不透明以确保可见 */
-  background: linear-gradient(180deg, rgba(35, 35, 35, 0.98) 0%, rgba(25, 25, 25, 0.99) 100%);
-  /* ✅ P1-6: blur() 使用 px 替代 rpx */
-  backdrop-filter: blur(15px) saturate(180%);
-  -webkit-backdrop-filter: blur(15px) saturate(180%);
-  /* 深色模式下的强烈阴影 + 内光晕 */
-  box-shadow:
-    0 12rpx 48rpx rgba(0, 0, 0, 0.7),
-    0 0 0 1rpx rgba(255, 255, 255, 0.15) inset,
-    0 2rpx 8rpx rgba(255, 255, 255, 0.08) inset;
-  /* 添加明显的边框光晕 */
-  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .tab-item {
@@ -306,11 +317,27 @@ export default {
   justify-content: center;
   height: 100%;
   padding: 12rpx 4rpx;
+  margin: 12rpx 8rpx;
+  border-radius: 42rpx;
   transition: transform 0.2s ease;
 }
 
 .tab-item:active {
   transform: scale(0.95);
+}
+
+.tab-item.active {
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow:
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.42),
+    0 8rpx 22rpx rgba(16, 40, 26, 0.12);
+}
+
+.dark-mode .tab-item.active {
+  background: rgba(10, 132, 255, 0.18);
+  box-shadow:
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.1),
+    0 10rpx 24rpx rgba(0, 0, 0, 0.32);
 }
 
 .icon-wrapper {
@@ -355,14 +382,18 @@ export default {
   width: 64rpx;
   height: 64rpx;
   border-radius: 50%;
-  background: var(--ds-color-primary, #007aff);
-  opacity: 0.15;
+  background: rgba(255, 255, 255, 0.45);
+  opacity: 1;
   z-index: -1;
+}
+
+.dark-mode .tab-item.active .icon-wrapper::after {
+  background: rgba(10, 132, 255, 0.2);
 }
 
 .tab-label {
   font-size: 24rpx;
-  color: var(--ds-color-text-tertiary, #8e8e93);
+  color: var(--text-sub, #8e8e93);
   font-weight: 500;
   line-height: 1.2;
   white-space: nowrap;
@@ -375,7 +406,7 @@ export default {
 }
 
 .tab-item.active .tab-label {
-  color: var(--ds-color-text-primary, #111111);
+  color: var(--primary);
   font-weight: 600;
 }
 

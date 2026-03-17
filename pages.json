@@ -1,6 +1,14 @@
 {
   "pages": [
     {
+      "path": "pages/splash/index",
+      "style": {
+        "navigationBarTitleText": "Exam Master",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
+    },
+    {
       "path": "pages/index/index",
       "style": {
         "navigationBarTitleText": "",
@@ -94,19 +102,6 @@
           "path": "detail",
           "style": {
             "navigationBarTitleText": "院校详情",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/splash",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "Exam Master",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }

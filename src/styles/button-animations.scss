@@ -14,30 +14,30 @@
    ============================================ */
 :root,
 page {
-    /* Animation Timing */
-    --btn-transition-fast: 0.1s;
-    --btn-transition-normal: 0.15s;
-    --btn-transition-slow: 0.25s;
-    
-    /* Animation Easing */
-    --btn-ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --btn-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --btn-ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
-    /* Ripple Color */
-    --btn-ripple-color: rgba(255, 255, 255, 0.3);
-    --btn-ripple-color-dark: rgba(0, 0, 0, 0.1);
+  /* Animation Timing */
+  --btn-transition-fast: 0.1s;
+  --btn-transition-normal: 0.15s;
+  --btn-transition-slow: 0.25s;
+
+  /* Animation Easing */
+  --btn-ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --btn-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --btn-ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Ripple Color */
+  --btn-ripple-color: rgba(255, 255, 255, 0.3);
+  --btn-ripple-color-dark: rgba(0, 0, 0, 0.1);
 }
 
 /* ============================================
    Base Button Feedback Mixin
    ============================================ */
 @mixin btn-feedback-base {
-    cursor: pointer;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    position: relative;
-    overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
 }
 
 /* ============================================
@@ -46,42 +46,42 @@ page {
 
 /* 轻微缩放 - 适用于小按钮 */
 .btn-scale-sm {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-fast) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.97);
-    }
+  @include btn-feedback-base;
+  transition: transform var(--btn-transition-fast) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
 /* 标准缩放 - 适用于普通按钮 */
 .btn-scale {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.95);
-    }
+  @include btn-feedback-base;
+  transition: transform var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 /* 明显缩放 - 适用于大按钮/CTA */
 .btn-scale-lg {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-normal) var(--btn-ease-bounce);
-    
-    &:active {
-        transform: scale(0.92);
-    }
+  @include btn-feedback-base;
+  transition: transform var(--btn-transition-normal) var(--btn-ease-bounce);
+
+  &:active {
+    transform: scale(0.92);
+  }
 }
 
 /* 弹性缩放 - 带回弹效果 */
 .btn-scale-bounce {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-slow) var(--btn-ease-elastic);
-    
-    &:active {
-        transform: scale(0.9);
-    }
+  @include btn-feedback-base;
+  transition: transform var(--btn-transition-slow) var(--btn-ease-elastic);
+
+  &:active {
+    transform: scale(0.9);
+  }
 }
 
 /* ============================================
@@ -90,27 +90,29 @@ page {
 
 /* 向下按压效果 */
 .btn-press {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-fast) var(--btn-ease-out),
-                box-shadow var(--btn-transition-fast) var(--btn-ease-out);
-    
-    &:active {
-        transform: translateY(2rpx);
-        box-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
-    }
+  @include btn-feedback-base;
+  transition:
+    transform var(--btn-transition-fast) var(--btn-ease-out),
+    box-shadow var(--btn-transition-fast) var(--btn-ease-out);
+
+  &:active {
+    transform: translateY(2rpx);
+    box-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+  }
 }
 
 /* 深度按压效果 */
 .btn-press-deep {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-normal) var(--btn-ease-out),
-                box-shadow var(--btn-transition-normal) var(--btn-ease-out);
-    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
-    
-    &:active {
-        transform: translateY(4rpx);
-        box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
-    }
+  @include btn-feedback-base;
+  transition:
+    transform var(--btn-transition-normal) var(--btn-ease-out),
+    box-shadow var(--btn-transition-normal) var(--btn-ease-out);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+
+  &:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  }
 }
 
 /* ============================================
@@ -119,32 +121,32 @@ page {
 
 /* 变暗效果 */
 .btn-darken {
-    @include btn-feedback-base;
-    transition: filter var(--btn-transition-fast) var(--btn-ease-out);
-    
-    &:active {
-        filter: brightness(0.85);
-    }
+  @include btn-feedback-base;
+  transition: filter var(--btn-transition-fast) var(--btn-ease-out);
+
+  &:active {
+    filter: brightness(0.85);
+  }
 }
 
 /* 变亮效果 - 适用于深色按钮 */
 .btn-lighten {
-    @include btn-feedback-base;
-    transition: filter var(--btn-transition-fast) var(--btn-ease-out);
-    
-    &:active {
-        filter: brightness(1.1);
-    }
+  @include btn-feedback-base;
+  transition: filter var(--btn-transition-fast) var(--btn-ease-out);
+
+  &:active {
+    filter: brightness(1.1);
+  }
 }
 
 /* 透明度变化 */
 .btn-fade {
-    @include btn-feedback-base;
-    transition: opacity var(--btn-transition-fast) var(--btn-ease-out);
-    
-    &:active {
-        opacity: 0.7;
-    }
+  @include btn-feedback-base;
+  transition: opacity var(--btn-transition-fast) var(--btn-ease-out);
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 /* ============================================
@@ -153,54 +155,60 @@ page {
 
 /* 涟漪效果基础样式 */
 .btn-ripple {
-    @include btn-feedback-base;
-    
-    &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: var(--btn-ripple-color);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
-        pointer-events: none;
-    }
-    
-    &:active::after {
-        width: 200%;
-        height: 200%;
-        opacity: 1;
-    }
+  @include btn-feedback-base;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--btn-ripple-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition:
+      width 0.4s ease-out,
+      height 0.4s ease-out,
+      opacity 0.4s ease-out;
+    pointer-events: none;
+  }
+
+  &:active::after {
+    width: 200%;
+    height: 200%;
+    opacity: 1;
+  }
 }
 
 /* 深色涟漪 - 适用于浅色按钮 */
 .btn-ripple-dark {
-    @include btn-feedback-base;
-    
-    &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: var(--btn-ripple-color-dark);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
-        pointer-events: none;
-    }
-    
-    &:active::after {
-        width: 200%;
-        height: 200%;
-        opacity: 1;
-    }
+  @include btn-feedback-base;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--btn-ripple-color-dark);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition:
+      width 0.4s ease-out,
+      height 0.4s ease-out,
+      opacity 0.4s ease-out;
+    pointer-events: none;
+  }
+
+  &:active::after {
+    width: 200%;
+    height: 200%;
+    opacity: 1;
+  }
 }
 
 /* ============================================
@@ -209,50 +217,54 @@ page {
 
 /* 外发光效果 */
 .btn-glow {
-    @include btn-feedback-base;
-    transition: box-shadow var(--btn-transition-normal) var(--btn-ease-out),
-                transform var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.98);
-        box-shadow: 0 0 20rpx rgba(102, 126, 234, 0.5);
-    }
+  @include btn-feedback-base;
+  transition:
+    box-shadow var(--btn-transition-normal) var(--btn-ease-out),
+    transform var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 20rpx rgba(102, 126, 234, 0.5);
+  }
 }
 
 /* 成功状态发光 */
 .btn-glow-success {
-    @include btn-feedback-base;
-    transition: box-shadow var(--btn-transition-normal) var(--btn-ease-out),
-                transform var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.98);
-        box-shadow: 0 0 20rpx rgba(52, 199, 89, 0.5);
-    }
+  @include btn-feedback-base;
+  transition:
+    box-shadow var(--btn-transition-normal) var(--btn-ease-out),
+    transform var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 20rpx rgba(52, 199, 89, 0.5);
+  }
 }
 
 /* 警告状态发光 */
 .btn-glow-warning {
-    @include btn-feedback-base;
-    transition: box-shadow var(--btn-transition-normal) var(--btn-ease-out),
-                transform var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.98);
-        box-shadow: 0 0 20rpx rgba(255, 149, 0, 0.5);
-    }
+  @include btn-feedback-base;
+  transition:
+    box-shadow var(--btn-transition-normal) var(--btn-ease-out),
+    transform var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 20rpx rgba(255, 149, 0, 0.5);
+  }
 }
 
 /* 错误状态发光 */
 .btn-glow-error {
-    @include btn-feedback-base;
-    transition: box-shadow var(--btn-transition-normal) var(--btn-ease-out),
-                transform var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.98);
-        box-shadow: 0 0 20rpx rgba(255, 59, 48, 0.5);
-    }
+  @include btn-feedback-base;
+  transition:
+    box-shadow var(--btn-transition-normal) var(--btn-ease-out),
+    transform var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 0 20rpx rgba(255, 59, 48, 0.5);
+  }
 }
 
 /* ============================================
@@ -261,52 +273,56 @@ page {
 
 /* 标准按钮反馈 - 缩放+变暗 */
 .btn-feedback {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-normal) var(--btn-ease-out),
-                filter var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.96);
-        filter: brightness(0.9);
-    }
+  @include btn-feedback-base;
+  transition:
+    transform var(--btn-transition-normal) var(--btn-ease-out),
+    filter var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.96);
+    filter: brightness(0.9);
+  }
 }
 
 /* 主要按钮反馈 - 缩放+发光 */
 .btn-feedback-primary {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-normal) var(--btn-ease-out),
-                box-shadow var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.96);
-        box-shadow: 0 0 16rpx rgba(102, 126, 234, 0.4);
-    }
+  @include btn-feedback-base;
+  transition:
+    transform var(--btn-transition-normal) var(--btn-ease-out),
+    box-shadow var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.96);
+    box-shadow: 0 0 16rpx rgba(102, 126, 234, 0.4);
+  }
 }
 
 /* 次要按钮反馈 - 缩放+背景变化 */
 .btn-feedback-secondary {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-normal) var(--btn-ease-out),
-                background-color var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.97);
-        background-color: rgba(0, 0, 0, 0.05);
-    }
+  @include btn-feedback-base;
+  transition:
+    transform var(--btn-transition-normal) var(--btn-ease-out),
+    background-color var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.97);
+    background-color: rgba(0, 0, 0, 0.05);
+  }
 }
 
 /* 幽灵按钮反馈 - 边框+背景 */
 .btn-feedback-ghost {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-normal) var(--btn-ease-out),
-                background-color var(--btn-transition-normal) var(--btn-ease-out),
-                border-color var(--btn-transition-normal) var(--btn-ease-out);
-    
-    &:active {
-        transform: scale(0.97);
-        background-color: rgba(102, 126, 234, 0.1);
-        border-color: var(--ds-color-primary);
-    }
+  @include btn-feedback-base;
+  transition:
+    transform var(--btn-transition-normal) var(--btn-ease-out),
+    background-color var(--btn-transition-normal) var(--btn-ease-out),
+    border-color var(--btn-transition-normal) var(--btn-ease-out);
+
+  &:active {
+    transform: scale(0.97);
+    background-color: rgba(102, 126, 234, 0.1);
+    border-color: var(--ds-color-primary);
+  }
 }
 
 /* ============================================
@@ -315,37 +331,43 @@ page {
 
 /* 图标旋转效果 */
 .btn-icon-rotate {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-normal) var(--btn-ease-bounce);
-    
-    &:active {
-        transform: rotate(15deg) scale(0.9);
-    }
+  @include btn-feedback-base;
+  transition: transform var(--btn-transition-normal) var(--btn-ease-bounce);
+
+  &:active {
+    transform: rotate(15deg) scale(0.9);
+  }
 }
 
 /* 图标弹跳效果 */
 .btn-icon-bounce {
-    @include btn-feedback-base;
-    transition: transform var(--btn-transition-slow) var(--btn-ease-elastic);
-    
-    &:active {
-        transform: scale(0.8);
-    }
+  @include btn-feedback-base;
+  transition: transform var(--btn-transition-slow) var(--btn-ease-elastic);
+
+  &:active {
+    transform: scale(0.8);
+  }
 }
 
 /* 图标脉冲效果 */
 .btn-icon-pulse {
-    @include btn-feedback-base;
-    
-    &:active {
-        animation: btn-pulse 0.3s ease-out;
-    }
+  @include btn-feedback-base;
+
+  &:active {
+    animation: btn-pulse 0.3s ease-out;
+  }
 }
 
 @keyframes btn-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(0.85); }
-    100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* ============================================
@@ -354,47 +376,55 @@ page {
 
 /* 加载中状态 */
 .btn-loading {
-    pointer-events: none;
-    opacity: 0.7;
-    
-    &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 32rpx;
-        height: 32rpx;
-        margin: -16rpx 0 0 -16rpx;
-        border: 3rpx solid transparent;
-        border-top-color: currentColor;
-        border-radius: 50%;
-        animation: btn-spin 0.8s linear infinite;
-    }
+  pointer-events: none;
+  opacity: 0.7;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32rpx;
+    height: 32rpx;
+    margin: -16rpx 0 0 -16rpx;
+    border: 3rpx solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: btn-spin 0.8s linear infinite;
+  }
 }
 
 @keyframes btn-spin {
-    to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* 加载成功状态 */
 .btn-success {
-    background-color: var(--ds-color-success) !important;
-    
-    &::after {
-        content: '✓';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 32rpx;
-        animation: btn-check 0.3s ease-out;
-    }
+  background-color: var(--ds-color-success) !important;
+
+  &::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32rpx;
+    animation: btn-check 0.3s ease-out;
+  }
 }
 
 @keyframes btn-check {
-    0% { transform: translate(-50%, -50%) scale(0); }
-    50% { transform: translate(-50%, -50%) scale(1.2); }
-    100% { transform: translate(-50%, -50%) scale(1); }
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 /* ============================================
@@ -403,15 +433,15 @@ page {
 
 .btn-disabled,
 [disabled] {
-    pointer-events: none;
-    opacity: 0.5;
-    cursor: not-allowed;
-    
-    &:active {
-        transform: none !important;
-        filter: none !important;
-        box-shadow: none !important;
-    }
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+
+  &:active {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
 }
 
 /* ============================================
@@ -420,65 +450,65 @@ page {
 
 /* 用于小程序的 hover-class */
 .hover-scale {
-    transform: scale(0.95);
+  transform: scale(0.95);
 }
 
 .hover-scale-sm {
-    transform: scale(0.97);
+  transform: scale(0.97);
 }
 
 .hover-scale-lg {
-    transform: scale(0.92);
+  transform: scale(0.92);
 }
 
 .hover-press {
-    transform: translateY(2rpx);
-    box-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+  transform: translateY(2rpx);
+  box-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
 }
 
 .hover-darken {
-    filter: brightness(0.85);
+  filter: brightness(0.85);
 }
 
 .hover-lighten {
-    filter: brightness(1.1);
+  filter: brightness(1.1);
 }
 
 .hover-fade {
-    opacity: 0.7;
+  opacity: 0.7;
 }
 
 .hover-glow {
-    transform: scale(0.98);
-    box-shadow: 0 0 20rpx rgba(102, 126, 234, 0.5);
+  transform: scale(0.98);
+  box-shadow: 0 0 20rpx rgba(102, 126, 234, 0.5);
 }
 
 .hover-feedback {
-    transform: scale(0.96);
-    filter: brightness(0.9);
+  transform: scale(0.96);
+  filter: brightness(0.9);
 }
 
 .hover-primary {
-    transform: scale(0.96);
-    box-shadow: 0 0 16rpx rgba(102, 126, 234, 0.4);
+  transform: scale(0.96);
+  box-shadow: 0 0 16rpx rgba(102, 126, 234, 0.4);
 }
 
 .hover-secondary {
-    transform: scale(0.97);
-    background-color: rgba(0, 0, 0, 0.05);
+  transform: scale(0.97);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .hover-ghost {
-    transform: scale(0.97);
-    background-color: rgba(102, 126, 234, 0.1);
+  transform: scale(0.97);
+  background-color: rgba(102, 126, 234, 0.1);
 }
 
 .hover-icon-rotate {
-    transform: rotate(15deg) scale(0.9);
+  transform: rotate(15deg) scale(0.9);
 }
 
 .hover-icon-bounce {
-    transform: scale(0.8);
+  transform: scale(0.8);
 }
 
 /* ============================================
@@ -487,34 +517,34 @@ page {
 
 /* 减少动画偏好 */
 @media (prefers-reduced-motion: reduce) {
-    .btn-scale,
-    .btn-scale-sm,
-    .btn-scale-lg,
-    .btn-scale-bounce,
-    .btn-press,
-    .btn-press-deep,
-    .btn-ripple,
-    .btn-ripple-dark,
-    .btn-glow,
-    .btn-feedback,
-    .btn-feedback-primary,
-    .btn-feedback-secondary,
-    .btn-feedback-ghost,
-    .btn-icon-rotate,
-    .btn-icon-bounce,
-    .btn-icon-pulse {
-        transition: none !important;
-        animation: none !important;
-        
-        &:active {
-            transform: none;
-            opacity: 0.7;
-        }
+  .btn-scale,
+  .btn-scale-sm,
+  .btn-scale-lg,
+  .btn-scale-bounce,
+  .btn-press,
+  .btn-press-deep,
+  .btn-ripple,
+  .btn-ripple-dark,
+  .btn-glow,
+  .btn-feedback,
+  .btn-feedback-primary,
+  .btn-feedback-secondary,
+  .btn-feedback-ghost,
+  .btn-icon-rotate,
+  .btn-icon-bounce,
+  .btn-icon-pulse {
+    transition: none !important;
+    animation: none !important;
+
+    &:active {
+      transform: none;
+      opacity: 0.7;
     }
+  }
 }
 
 /* 焦点可见状态 */
 .btn-focus-visible:focus-visible {
-    outline: 2px solid var(--ds-color-primary);
-    outline-offset: 2px;
+  outline: 2px solid var(--ds-color-primary);
+  outline-offset: 2px;
 }

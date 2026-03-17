@@ -1,7 +1,7 @@
 <template>
   <view :class="['container', { 'dark-mode': isDark }]">
     <!-- 自定义导航栏 -->
-    <view class="custom-navbar">
+    <view class="custom-navbar apple-glass">
       <!-- 状态栏占位 -->
       <view class="status-bar" />
 
@@ -18,8 +18,8 @@
     </view>
 
     <!-- 顶部搜索栏 -->
-    <view class="search-bar">
-      <view class="search-input-wrapper">
+    <view class="search-bar apple-glass">
+      <view class="search-input-wrapper apple-glass-pill">
         <BaseIcon name="search" :size="32" class="search-icon" />
         <input
           v-model="searchKeyword"
@@ -33,13 +33,13 @@
         />
         <BaseIcon v-if="searchKeyword" name="close" :size="32" class="clear-icon" @tap="clearSearch" />
       </view>
-      <button v-if="searchKeyword" class="search-btn" @tap="handleSearch">
+      <button v-if="searchKeyword" class="search-btn apple-cta" @tap="handleSearch">
         <text>搜索</text>
       </button>
     </view>
 
     <!-- Tabs 切换 -->
-    <view class="tabs-bar">
+    <view class="tabs-bar apple-group-card">
       <view class="tab-item" :class="{ active: currentTab === 'friends' }" @tap="switchTab('friends')">
         <text class="tab-text"> 我的好友 </text>
         <view v-if="currentTab === 'friends'" class="tab-indicator" />
@@ -71,7 +71,12 @@
 
         <!-- 搜索结果 -->
         <view v-else-if="searchResults.length > 0" class="search-results">
-          <view v-for="user in searchResults" :key="user._id" class="user-card" @tap="handleAddFriend(user)">
+          <view
+            v-for="user in searchResults"
+            :key="user._id"
+            class="user-card apple-glass-card"
+            @tap="handleAddFriend(user)"
+          >
             <image
               class="avatar"
               :src="user.avatar || defaultAvatar"
@@ -85,7 +90,11 @@
               </text>
               <text class="score-text"> 总分: {{ user.score || 0 }} </text>
             </view>
-            <button class="add-friend-btn" :disabled="isAddingFriend[user._id]" @tap.stop="handleAddFriend(user)">
+            <button
+              class="add-friend-btn apple-cta"
+              :disabled="isAddingFriend[user._id]"
+              @tap.stop="handleAddFriend(user)"
+            >
               <BaseIcon v-if="!isAddingFriend[user._id]" name="sparkle" :size="24" />
               <text>{{ isAddingFriend[user._id] ? '发送中...' : '添加' }}</text>
             </button>
@@ -117,7 +126,7 @@
           <view
             v-for="friend in filteredFriendList"
             :key="friend.uid"
-            class="friend-card"
+            class="friend-card apple-glass-card"
             @tap="goToFriendProfile(friend)"
           >
             <!-- 头像 -->
@@ -155,7 +164,7 @@
             </view>
 
             <!-- PK 挑战按钮 -->
-            <button class="pk-btn" @tap.stop="handlePKChallenge(friend)">
+            <button class="pk-btn apple-glass-pill" @tap.stop="handlePKChallenge(friend)">
               <BaseIcon name="flame" :size="28" class="pk-icon" />
               <text class="pk-text"> PK </text>
             </button>
@@ -180,7 +189,7 @@
 
         <!-- 请求卡片列表 -->
         <view v-else class="request-cards">
-          <view v-for="request in requestList" :key="request.from_uid" class="request-card">
+          <view v-for="request in requestList" :key="request.from_uid" class="request-card apple-glass-card">
             <!-- 头像 -->
             <image
               class="avatar"
@@ -205,10 +214,18 @@
 
             <!-- 操作按钮 -->
             <view class="action-btns">
-              <button class="accept-btn" :disabled="isAccepting[request.from_uid]" @tap.stop="handleAccept(request)">
+              <button
+                class="accept-btn apple-cta"
+                :disabled="isAccepting[request.from_uid]"
+                @tap.stop="handleAccept(request)"
+              >
                 <text>{{ isAccepting[request.from_uid] ? '处理中' : '接受' }}</text>
               </button>
-              <button class="reject-btn" :disabled="isRejecting[request.from_uid]" @tap.stop="handleReject(request)">
+              <button
+                class="reject-btn apple-glass-pill"
+                :disabled="isRejecting[request.from_uid]"
+                @tap.stop="handleReject(request)"
+              >
                 <text>{{ isRejecting[request.from_uid] ? '处理中' : '拒绝' }}</text>
               </button>
             </view>
@@ -218,7 +235,7 @@
     </scroll-view>
 
     <!-- 底部统计 -->
-    <view v-if="friendList.length > 0" class="bottom-stats">
+    <view v-if="friendList.length > 0" class="bottom-stats apple-glass">
       <text class="stats-text"> 共 {{ friendList.length }} 位好友 </text>
     </view>
   </view>
@@ -769,6 +786,7 @@ export default {
 <style lang="scss" scoped>
 /* Wise 风格容器 */
 .container {
+  min-height: 100%;
   min-height: 100vh;
   background-color: var(--bg-body);
   display: flex;
@@ -785,9 +803,12 @@ export default {
   top: 0;
   left: 0;
   right: 0;
-  background-color: var(--bg-card);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
   z-index: 999;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--apple-shadow-surface);
+  border-bottom: 1rpx solid var(--apple-glass-border-strong);
 }
 
 .dark-mode .custom-navbar {
@@ -851,10 +872,16 @@ export default {
 .search-bar {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
   padding: 24rpx 32rpx;
-  background-color: var(--bg-card);
-  border-bottom: 1rpx solid var(--border);
+  background: rgba(255, 255, 255, 0.22);
+  border-bottom: 1rpx solid var(--apple-divider);
   margin-top: calc(var(--status-bar-height) + 88rpx);
 }
 
@@ -867,10 +894,12 @@ export default {
   flex: 1;
   display: flex;
   align-items: center;
-  background-color: var(--bg-secondary);
-  border-radius: 24rpx;
+  background-color: rgba(255, 255, 255, 0.68);
+  border-radius: 999rpx;
   padding: 16rpx 24rpx;
   position: relative;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .dark-mode .search-input-wrapper {
@@ -878,9 +907,18 @@ export default {
 }
 
 .search-icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
   font-size: 32rpx;
   margin-right: 12rpx;
-  opacity: 0.5;
+  opacity: 1;
 }
 
 .search-input {
@@ -899,20 +937,40 @@ export default {
 }
 
 .clear-icon {
+  width: 44rpx;
+  height: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
   font-size: 32rpx;
   color: var(--text-sub);
   padding: 0 12rpx;
 }
 
+.dark-mode .search-icon,
+.dark-mode .clear-icon,
+.dark-mode .pk-btn,
+.dark-mode .empty-icon {
+  background:
+    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(10, 132, 255, 0.18);
+  box-shadow: var(--apple-shadow-surface);
+}
+
 .search-btn {
-  background: var(--gradient-primary);
-  color: #ffffff;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   border-radius: 48rpx;
   padding: 16rpx 32rpx;
   font-size: 26rpx;
   font-weight: 600;
-  border: none;
-  box-shadow: var(--shadow-success);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
   min-width: 120rpx;
   text-align: center;
 }
@@ -929,8 +987,8 @@ export default {
 /* Tabs 切换栏 */
 .tabs-bar {
   display: flex;
-  background-color: var(--bg-card);
-  border-bottom: 1rpx solid var(--border);
+  background-color: rgba(255, 255, 255, 0.36);
+  border-bottom: 1rpx solid var(--apple-divider);
 }
 
 .dark-mode .tabs-bar {
@@ -945,6 +1003,7 @@ export default {
   justify-content: center;
   padding: 32rpx 0;
   position: relative;
+  min-height: 88rpx;
 }
 
 .tab-text {
@@ -970,7 +1029,7 @@ export default {
   transform: translateX(-50%);
   width: 60rpx;
   height: 6rpx;
-  background: var(--gradient-primary);
+  background: var(--cta-primary-bg);
   border-radius: 3rpx;
 }
 
@@ -1038,9 +1097,15 @@ export default {
 }
 
 .empty-icon {
+  width: 160rpx;
+  height: 160rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
   font-size: 120rpx;
   margin-bottom: 24rpx;
-  opacity: 0.3;
+  opacity: 1;
 }
 
 .empty-title {
@@ -1079,18 +1144,45 @@ export default {
 .friend-cards {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
 }
 
 .friend-card {
-  background-color: var(--bg-card);
-  border-radius: 24rpx;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
   padding: 32rpx;
   display: flex;
   align-items: center;
-  gap: 24rpx;
-  box-shadow: var(--shadow-md);
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
+  box-shadow: var(--apple-shadow-card);
   transition: all 0.3s;
+  border: 1rpx solid var(--apple-glass-border-strong);
+}
+
+.friend-card::before,
+.user-card::before,
+.request-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .dark-mode .friend-card {
@@ -1136,13 +1228,25 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
 }
 
 .name-row {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12rpx;
+  }
 }
 
 .nickname {
@@ -1156,12 +1260,13 @@ export default {
 }
 
 .level-badge {
-  background-color: var(--success-light);
-  color: var(--brand-color);
+  background-color: rgba(255, 255, 255, 0.72);
+  color: var(--text-primary);
   font-size: 20rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
   font-weight: 600;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 
 .status-text {
@@ -1174,7 +1279,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4rpx;
+  /* gap: 4rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 4rpx;
+  }
   padding: 0 24rpx;
   border-left: 1rpx solid var(--border);
 }
@@ -1196,17 +1307,23 @@ export default {
 
 /* PK 挑战按钮 */
 .pk-btn {
-  background: var(--gradient-danger);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.7);
+  color: #c44536;
   border-radius: 48rpx;
   padding: 16rpx 24rpx;
   font-size: 24rpx;
   font-weight: 600;
-  border: none;
-  box-shadow: var(--shadow-danger);
+  border: 1rpx solid rgba(255, 130, 112, 0.34);
+  box-shadow: var(--apple-shadow-surface);
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
   min-width: 100rpx;
   justify-content: center;
   flex-shrink: 0;
@@ -1222,6 +1339,12 @@ export default {
 }
 
 .pk-icon {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
   font-size: 28rpx;
   line-height: 1;
 }
@@ -1229,15 +1352,15 @@ export default {
 .pk-text {
   font-size: 24rpx;
   font-weight: 600;
-  color: #ffffff;
+  color: #c44536;
 }
 
 /* 底部统计 */
 .bottom-stats {
   padding: 24rpx 32rpx;
   text-align: center;
-  background-color: var(--bg-card);
-  border-top: 1rpx solid var(--border);
+  background-color: rgba(255, 255, 255, 0.2);
+  border-top: 1rpx solid var(--apple-divider);
 }
 
 .dark-mode .bottom-stats {
@@ -1254,17 +1377,32 @@ export default {
 .search-results {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
 }
 
 .user-card {
-  background-color: var(--bg-card);
-  border-radius: 24rpx;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
   padding: 32rpx;
   display: flex;
   align-items: center;
-  gap: 24rpx;
-  box-shadow: var(--shadow-md);
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
+  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--apple-glass-border-strong);
 }
 
 .dark-mode .user-card {
@@ -1283,7 +1421,13 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
 }
 
 .user-card .nickname {
@@ -1302,14 +1446,14 @@ export default {
 }
 
 .add-friend-btn {
-  background: var(--gradient-primary);
-  color: #ffffff;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   border-radius: 48rpx;
   padding: 16rpx 32rpx;
   font-size: 24rpx;
   font-weight: 600;
-  border: none;
-  box-shadow: var(--shadow-success);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
   min-width: 120rpx;
   text-align: center;
 }
@@ -1327,17 +1471,32 @@ export default {
 .request-cards {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
 }
 
 .request-card {
-  background-color: var(--bg-card);
-  border-radius: 24rpx;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
   padding: 32rpx;
   display: flex;
   align-items: center;
-  gap: 24rpx;
-  box-shadow: var(--shadow-md);
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
+  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--apple-glass-border-strong);
 }
 
 .dark-mode .request-card {
@@ -1357,7 +1516,13 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
 }
 
 .request-card .nickname {
@@ -1384,19 +1549,25 @@ export default {
 .action-btns {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12rpx;
+  }
   flex-shrink: 0;
 }
 
 .accept-btn {
-  background: var(--gradient-primary);
-  color: #ffffff;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   border-radius: 48rpx;
   padding: 12rpx 28rpx;
   font-size: 24rpx;
   font-weight: 600;
-  border: none;
-  box-shadow: var(--shadow-success);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
   min-width: 100rpx;
   text-align: center;
 }
@@ -1411,15 +1582,16 @@ export default {
 }
 
 .reject-btn {
-  background: var(--danger-light);
-  color: var(--danger);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-primary);
   border-radius: 48rpx;
   padding: 12rpx 28rpx;
   font-size: 24rpx;
   font-weight: 600;
-  border: 1rpx solid var(--danger);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   min-width: 100rpx;
   text-align: center;
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .reject-btn::after {

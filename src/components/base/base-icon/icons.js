@@ -4,6 +4,7 @@
  */
 
 const BASE = '/static/icons/ui';
+const BASE_DARK = '/static/icons/ui-dark';
 
 // 自动生成路径映射
 const ICON_NAMES = [
@@ -88,6 +89,11 @@ ICON_NAMES.forEach((name) => {
   ICON_MAP[name] = `${BASE}/${name}.svg`;
 });
 
+export const ICON_MAP_DARK = {};
+ICON_NAMES.forEach((name) => {
+  ICON_MAP_DARK[name] = `${BASE_DARK}/${name}.svg`;
+});
+
 // 别名映射（emoji 语义 -> 图标名）
 const ALIASES = {
   'category-mistakes': 'target',
@@ -128,6 +134,7 @@ const ALIASES = {
 
 Object.keys(ALIASES).forEach((alias) => {
   ICON_MAP[alias] = ICON_MAP[ALIASES[alias]];
+  ICON_MAP_DARK[alias] = ICON_MAP_DARK[ALIASES[alias]];
 });
 
 /**
@@ -136,6 +143,9 @@ Object.keys(ALIASES).forEach((alias) => {
  * @param {string} [fallback] - 未找到时的备选路径
  * @returns {string} SVG 文件路径
  */
-export function getIconPath(name, fallback) {
-  return ICON_MAP[name] || fallback || `${BASE}/info.svg`;
+export function getIconPath(name, fallback, themeMode = 'light') {
+  const isDark = themeMode === 'dark';
+  const map = isDark ? ICON_MAP_DARK : ICON_MAP;
+  const base = isDark ? BASE_DARK : BASE;
+  return map[name] || fallback || `${base}/info.svg`;
 }

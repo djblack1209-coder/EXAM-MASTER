@@ -199,6 +199,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .callback-container {
+  min-height: 100%;
   min-height: 100vh;
   background: linear-gradient(180deg, #f8faf8 0%, #e8f5e9 100%);
   display: flex;
@@ -260,7 +261,13 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
 }
 
 .loading-icon {
@@ -309,7 +316,7 @@ onMounted(() => {
 .success-icon {
   width: 120rpx;
   height: 120rpx;
-  background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+  background: var(--gradient-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -321,7 +328,7 @@ onMounted(() => {
 .success-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: #4caf50;
+  color: var(--brand-color);
 }
 
 .success-hint {
@@ -380,5 +387,123 @@ onMounted(() => {
 .retry-btn:active {
   transform: scale(0.95);
   opacity: 0.9;
+}
+
+/* Final polish: QQ callback page unified with Apple / Liquid Glass */
+.callback-container {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+}
+
+.callback-container.dark-mode {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.bg-circle {
+  opacity: 0.56;
+  filter: blur(18rpx);
+}
+
+.bg-circle-1 {
+  background: radial-gradient(circle, rgba(107, 208, 150, 0.3) 0%, transparent 72%);
+}
+
+.bg-circle-2 {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.24) 0%, transparent 72%);
+}
+
+.dark-mode .bg-circle-1 {
+  background: radial-gradient(circle, rgba(10, 132, 255, 0.24) 0%, transparent 72%);
+}
+
+.dark-mode .bg-circle-2 {
+  background: radial-gradient(circle, rgba(95, 170, 255, 0.16) 0%, transparent 72%);
+  opacity: 0.42;
+}
+
+.loading-section,
+.success-section,
+.error-section {
+  width: 100%;
+  max-width: 640rpx;
+  padding: 40rpx 32rpx;
+  border-radius: 36rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .loading-section,
+.dark-mode .success-section,
+.dark-mode .error-section {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.loading-icon,
+.success-icon,
+.error-icon {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.dark-mode .loading-icon,
+.dark-mode .success-icon,
+.dark-mode .error-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.spinner {
+  border-color: rgba(52, 199, 89, 0.16);
+  border-top-color: #34c759;
+}
+
+.dark-mode .spinner {
+  border-color: rgba(10, 132, 255, 0.16);
+  border-top-color: #0a84ff;
+}
+
+.loading-text,
+.success-text,
+.error-text {
+  color: var(--text-main);
+}
+
+.dark-mode .loading-text,
+.dark-mode .success-text,
+.dark-mode .error-text {
+  color: #ffffff;
+}
+
+.loading-hint,
+.success-hint,
+.error-hint {
+  color: var(--text-sub);
+}
+
+.dark-mode .loading-hint,
+.dark-mode .success-hint,
+.dark-mode .error-hint {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.retry-btn {
+  background: var(--cta-primary-bg);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.retry-btn text {
+  color: var(--cta-primary-text);
 }
 </style>

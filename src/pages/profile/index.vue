@@ -5,8 +5,7 @@
     class="fixed inset-0 w-full h-full z-0"
     :class="{ 'dark-mode': isDark }"
     :style="{
-      backgroundColor: 'var(--bg-page)',
-      transition: 'background-color 0.3s ease'
+      transition: 'background 0.3s ease'
     }"
   >
     <!-- 微信隐私保护弹窗 -->
@@ -21,6 +20,24 @@
         }"
       >
         <!-- ========== 骨架屏加载状态 ========== -->
+        <!-- #ifdef APP-PLUS -->
+        <view v-if="isPageLoading" class="skeleton-wrapper">
+          <view class="card skeleton-user-card">
+            <view class="skeleton-avatar skeleton-animate" />
+            <view class="skeleton-user-info">
+              <view class="skeleton-name skeleton-animate" />
+              <view class="skeleton-id skeleton-animate" />
+            </view>
+          </view>
+          <view class="card skeleton-stats-card">
+            <view v-for="i in 3" :key="i" class="skeleton-stat skeleton-animate" />
+          </view>
+          <view class="card skeleton-menu-card">
+            <view v-for="i in 4" :key="i" class="skeleton-menu-item skeleton-animate" />
+          </view>
+        </view>
+        <!-- #endif -->
+        <!-- #ifndef APP-PLUS -->
         <!-- #ifndef APP-NVUE -->
         <transition name="skeleton-fade">
           <view v-if="isPageLoading" class="skeleton-wrapper">
@@ -56,6 +73,7 @@
             <view v-for="i in 4" :key="i" class="skeleton-menu-item skeleton-animate" />
           </view>
         </template>
+        <!-- #endif -->
         <!-- #endif -->
 
         <!-- ========== 用户信息卡片 ========== -->
@@ -638,7 +656,7 @@ function toggleTheme() {
   try {
     uni.setNavigationBarColor({
       frontColor: isDark.value ? '#ffffff' : '#000000',
-      backgroundColor: isDark.value ? '#000000' : '#ffffff',
+      backgroundColor: isDark.value ? '#0b0b0f' : '#b8eb89',
       animation: { duration: 200 }
     });
   } catch (e) {
@@ -764,6 +782,11 @@ async function chooseAndUploadAvatar(sourceType) {
       uni.$emit('userInfoUpdated', { avatarUrl: uploadRes.avatarUrl });
 
       uni.showToast({ title: '头像更新成功', icon: 'success' });
+
+      // ✅ P0-FIX: 强制刷新页面数据，确保头像立即显示
+      setTimeout(() => {
+        loadData();
+      }, 500);
     } else {
       uni.showToast({ title: uploadRes.message || '上传失败', icon: 'none' });
     }
@@ -999,6 +1022,37 @@ onHide(() => {
 // ========== 基础布局 ==========
 .fixed {
   position: fixed;
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 45%,
+    var(--page-gradient-bottom) 100%
+  );
+}
+
+.fixed::before,
+.fixed::after {
+  content: '';
+  position: absolute;
+  border-radius: 9999rpx;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.fixed::before {
+  width: 520rpx;
+  height: 520rpx;
+  top: -140rpx;
+  left: -120rpx;
+  background: radial-gradient(circle, var(--brand-tint-strong) 0%, transparent 72%);
+}
+
+.fixed::after {
+  width: 460rpx;
+  height: 460rpx;
+  right: -130rpx;
+  top: 340rpx;
+  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 70%);
 }
 
 .inset-0 {
@@ -1024,15 +1078,27 @@ onHide(() => {
 .content-wrapper {
   padding-left: 32rpx;
   padding-right: 32rpx;
+  position: relative;
+  z-index: 1;
+  padding-bottom: 24rpx;
 }
 
 // ========== 通用卡片 ==========
 .card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 24rpx;
+  position: relative;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 34%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--glass-border);
+  border-radius: 30rpx;
   margin-bottom: 24rpx;
-  transition: all 0.2s ease;
+  transition: all 0.24s ease;
+  box-shadow:
+    inset 0 1rpx 0 var(--apple-specular-soft),
+    var(--apple-shadow-card);
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  overflow: hidden;
 }
 
 .card-hover {
@@ -1045,6 +1111,24 @@ onHide(() => {
   padding: 32rpx;
 }
 
+.user-card::before,
+.checkin-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.26) 0%, transparent 28%),
+    linear-gradient(90deg, transparent 16%, var(--apple-specular-line) 50%, transparent 84%);
+  background-size:
+    auto,
+    100% 1px;
+  background-repeat: no-repeat;
+}
+
 .user-section {
   display: flex;
   align-items: center;
@@ -1055,13 +1139,17 @@ onHide(() => {
   width: 120rpx;
   height: 120rpx;
   border-radius: 50%;
-  background-color: var(--muted);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(221, 242, 197, 0.82) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 28rpx;
   flex-shrink: 0;
   overflow: visible;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 12rpx 26rpx rgba(16, 40, 26, 0.12);
 }
 
 .avatar-emoji {
@@ -1082,12 +1170,12 @@ onHide(() => {
   width: 40rpx;
   height: 40rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #9fe870 0%, #7bc653 100%);
+  background: var(--gradient-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   border: 3rpx solid var(--bg-card);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-brand-sm);
 }
 
 .avatar-edit-icon {
@@ -1098,7 +1186,13 @@ onHide(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12rpx;
+  }
 }
 
 .user-name {
@@ -1118,11 +1212,15 @@ onHide(() => {
   width: 88rpx;
   height: 88rpx;
   border-radius: 50%;
-  background-color: var(--muted);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 44%),
+    linear-gradient(160deg, var(--apple-glass-pill-bg) 0%, rgba(255, 255, 255, 0.62) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 1rpx solid var(--apple-divider);
+  box-shadow: 0 10rpx 22rpx rgba(16, 40, 26, 0.1);
 }
 
 .edit-icon {
@@ -1157,11 +1255,14 @@ onHide(() => {
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
-  background-color: var(--muted);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, transparent 46%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.72) 0%, rgba(220, 241, 196, 0.82) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
 }
 
 .stat-emoji {
@@ -1185,7 +1286,7 @@ onHide(() => {
 .stat-divider {
   width: 2rpx;
   height: 80rpx;
-  background-color: var(--border-color);
+  background-color: var(--apple-divider);
   flex-shrink: 0;
 }
 
@@ -1193,28 +1294,35 @@ onHide(() => {
 .menu-card {
   padding: 0;
   overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 32%),
+    linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
 }
 
 .menu-item {
   display: flex;
   align-items: center;
+  min-height: 96rpx;
   padding: 28rpx 32rpx;
 }
 
 .menu-hover {
-  background-color: var(--muted);
+  background-color: rgba(255, 255, 255, 0.18);
 }
 
 .menu-icon-box {
   width: 76rpx;
   height: 76rpx;
   border-radius: 50%;
-  background-color: var(--muted);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, transparent 44%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.7) 0%, rgba(221, 242, 197, 0.82) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 24rpx;
   flex-shrink: 0;
+  border: 1rpx solid rgba(255, 255, 255, 0.42);
 }
 
 .menu-emoji {
@@ -1237,7 +1345,7 @@ onHide(() => {
 
 .menu-divider {
   height: 2rpx;
-  background-color: var(--border-color);
+  background-color: var(--apple-divider);
   margin-left: 132rpx;
 }
 
@@ -1245,6 +1353,9 @@ onHide(() => {
 .about-card {
   padding: 0;
   overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 32%),
+    linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
 }
 
 .about-row {
@@ -1266,7 +1377,7 @@ onHide(() => {
 
 .about-divider {
   height: 2rpx;
-  background-color: var(--border-color);
+  background-color: var(--apple-divider);
   margin-left: 32rpx;
   margin-right: 32rpx;
 }
@@ -1276,7 +1387,13 @@ onHide(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   padding: 28rpx;
   border-radius: 24rpx;
   margin-bottom: 24rpx;
@@ -1285,6 +1402,12 @@ onHide(() => {
 }
 
 .theme-emoji {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
   font-size: 36rpx;
 }
 
@@ -1402,10 +1525,12 @@ onHide(() => {
 }
 
 .fixed-nav.nav-scrolled {
-  background-color: var(--glass-bg);
-  border-bottom: 1px solid var(--border-color);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-bottom: 1px solid var(--apple-divider);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
 .nav-content {
@@ -1423,7 +1548,56 @@ onHide(() => {
 
 // ========== 问题54：打卡卡片样式 ==========
 .checkin-card {
+  position: relative;
   padding: 32rpx;
+}
+
+.dark-mode .card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 34%),
+    linear-gradient(160deg, rgba(24, 26, 34, 0.76) 0%, rgba(18, 20, 28, 0.88) 100%);
+}
+
+.dark-mode .avatar-box,
+.dark-mode .edit-btn,
+.dark-mode .stat-icon-box,
+.dark-mode .menu-icon-box {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 44%),
+    linear-gradient(160deg, rgba(28, 32, 40, 0.92) 0%, rgba(18, 20, 28, 0.88) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12rpx 26rpx rgba(0, 0, 0, 0.24);
+}
+
+.dark-mode .avatar-edit-badge,
+.dark-mode .edit-btn,
+.dark-mode .stat-icon-box,
+.dark-mode .menu-icon-box,
+.dark-mode .theme-emoji,
+.dark-mode .checkin-btn-icon,
+.dark-mode .missed-icon {
+  background:
+    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(10, 132, 255, 0.18);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.dark-mode .avatar-edit-badge,
+.dark-mode .theme-emoji,
+.dark-mode .checkin-btn-icon,
+.dark-mode .missed-icon {
+  border-style: solid;
+  border-width: 1rpx;
+}
+
+.dark-mode .menu-hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.dark-mode .menu-divider,
+.dark-mode .about-divider {
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .checkin-header {
@@ -1445,11 +1619,8 @@ onHide(() => {
 
 .checkin-streak {
   font-size: 26rpx;
-  color: #e05a2b;
+  color: var(--warning);
   font-weight: 600;
-}
-.dark-mode .checkin-streak {
-  color: #ff8a65;
 }
 
 .checkin-subtitle {
@@ -1461,7 +1632,13 @@ onHide(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 24rpx;
+  }
 }
 
 .checkin-btn {
@@ -1469,15 +1646,22 @@ onHide(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
   padding: 28rpx 40rpx;
   border-radius: 50rpx;
   transition: all 0.3s ease;
 }
 
 .checkin-btn.not-checked {
-  background: linear-gradient(135deg, #9fe870 0%, #7bc653 100%);
-  box-shadow: 0 8rpx 24rpx rgba(159, 232, 112, 0.4);
+  background: var(--cta-primary-bg);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .checkin-btn.checked {
@@ -1486,6 +1670,12 @@ onHide(() => {
 }
 
 .checkin-btn-icon {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
   font-size: 36rpx;
 }
 
@@ -1496,23 +1686,36 @@ onHide(() => {
 }
 
 .checkin-btn.not-checked .checkin-btn-text {
-  color: #1a1a1a;
+  color: var(--cta-primary-text);
 }
-.dark-mode .checkin-btn.not-checked .checkin-btn-text {
-  color: #ffffff;
+
+.checkin-btn.not-checked .checkin-btn-icon {
+  color: var(--cta-primary-text);
 }
 
 .recovery-info {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12rpx;
+  }
 }
 
 .recovery-cards {
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
 }
 
 .recovery-icon {
@@ -1526,42 +1729,48 @@ onHide(() => {
 
 .use-recovery-btn {
   padding: 12rpx 24rpx;
-  background: rgba(255, 107, 53, 0.1);
+  background: var(--warning-light);
   border-radius: 20rpx;
-  border: 1rpx solid rgba(255, 107, 53, 0.3);
+  border: 1rpx solid var(--warning);
 }
 
 .use-recovery-text {
   font-size: 24rpx;
-  color: #e05a2b;
+  color: var(--warning);
   font-weight: 500;
-}
-.dark-mode .use-recovery-text {
-  color: #ff8a65;
 }
 
 .missed-tip {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
   margin-top: 20rpx;
   padding: 16rpx 20rpx;
-  background: rgba(255, 107, 53, 0.08);
+  background: var(--warning-light);
   border-radius: 16rpx;
-  border: 1rpx solid rgba(255, 107, 53, 0.2);
+  border: 1rpx solid var(--warning);
 }
 
 .missed-icon {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
   font-size: 28rpx;
 }
 
 .missed-text {
   font-size: 24rpx;
-  color: #e05a2b;
+  color: var(--warning);
   flex: 1;
-}
-.dark-mode .missed-text {
-  color: #ff8a65;
 }
 
 /* 骨架屏淡出过渡 */

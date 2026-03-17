@@ -73,7 +73,10 @@ export default {
 <style lang="scss" scoped>
 .modal-mask {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 1500;
   background-color: var(--overlay-dark);
   display: flex;
@@ -155,7 +158,13 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 4px;
+  }
 }
 
 .theme-name {
@@ -172,7 +181,7 @@ export default {
 
 .theme-check {
   font-size: 48rpx;
-  color: var(--brand-color, #00a96d);
+  color: var(--brand-color);
   font-weight: 700;
   margin-left: 12px;
 }

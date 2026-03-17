@@ -9,7 +9,7 @@
 
     <view v-if="!isLoading" class="header-nav">
       <view :style="{ height: statusBarHeight + 'px' }" />
-      <view class="nav-content">
+      <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
         <text class="nav-back" @tap="handleBack"> ← </text>
         <text class="nav-title"> 智能择校助手 </text>
         <view class="nav-placeholder" />
@@ -212,6 +212,17 @@
           <text class="info-text ds-text-xs"> 全国约有923所大学具有研究生招生资格，另有培养研究生的机构233所 </text>
         </view>
 
+        <view v-if="analysisMeta.visible" class="analysis-card glass-card">
+          <view class="analysis-head ds-flex ds-flex-between ds-gap-sm">
+            <text class="analysis-title ds-text-sm ds-font-semibold"> 本次智能分析说明 </text>
+            <text class="analysis-source ds-text-xs"> {{ analysisMeta.source || '系统' }} </text>
+          </view>
+          <text class="analysis-status ds-text-xs"> {{ analysisMeta.statusText }} </text>
+          <text v-if="analysisMeta.rawSummary" class="analysis-summary ds-text-xs">
+            {{ analysisMeta.rawSummary }}
+          </text>
+        </view>
+
         <view
           v-for="(school, idx) in filteredSchools"
           :id="`e2e-school-card-${idx}`"
@@ -226,8 +237,8 @@
                 <text class="sc-name ds-text-lg ds-font-bold">
                   {{ school.name }}
                 </text>
-                <view class="sc-loc ds-text-xs" style="display: inline-flex; align-items: center; gap: 4rpx">
-                  <BaseIcon name="target" :size="22" />
+                <view class="sc-loc ds-text-xs" style="display: inline-flex; align-items: center">
+                  <BaseIcon name="target" :size="22" style="margin-right: 4rpx" />
                   <text>{{ school.location }}</text>
                 </view>
               </view>
@@ -421,7 +432,7 @@ import { lafService } from '@/services/lafService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
-import { getStatusBarHeight } from '@/utils/core/system.js';
+import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
@@ -502,6 +513,7 @@ export default {
     return {
       statusBarHeight: 44,
       navBarHeight: 88, // 标准导航栏高度 = 44 + 44
+      capsuleSafeRight: 20,
       currentStep: 1,
       showFilter: false,
       isDark: false,
@@ -527,7 +539,13 @@ export default {
       schoolList: [],
 
       // 标记是否有真实数据
-      hasRealData: false
+      hasRealData: false,
+      analysisMeta: {
+        visible: false,
+        source: '',
+        statusText: '',
+        rawSummary: ''
+      }
     };
   },
 
@@ -544,6 +562,7 @@ export default {
     this.statusBarHeight = getStatusBarHeight();
     // 标准导航栏高度 = 状态栏高度 + 44px
     this.navBarHeight = this.statusBarHeight + 44;
+    this.capsuleSafeRight = getCapsuleSafeRight();
     this.syncTargetStatus();
 
     // 初始化主题
@@ -622,6 +641,52 @@ export default {
   },
   watch: {},
   methods: {
+    resetAnalysisMeta() {
+      this.analysisMeta = {
+        visible: false,
+        source: '',
+        statusText: '',
+        rawSummary: ''
+      };
+    },
+
+    setAnalysisMeta({ source = '', statusText = '', rawSummary = '', visible = true } = {}) {
+      this.analysisMeta = {
+        visible,
+        source,
+        statusText,
+        rawSummary: this.normalizeSummaryText(rawSummary)
+      };
+    },
+
+    normalizeSummaryText(text) {
+      if (!text) return '';
+      const normalized = String(text)
+        .replace(/```[\s\S]*?```/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return normalized.slice(0, 180);
+    },
+
+    extractSchoolsFromText(text = '') {
+      if (!text) return [];
+      const nameMatches = String(text).match(/[\u4e00-\u9fa5]{2,24}(大学|学院|研究院|研究所)/g) || [];
+      const uniqueNames = [...new Set(nameMatches)].slice(0, 8);
+      return uniqueNames.map((name, index) => {
+        const normalized = this.normalizeSchoolCard({
+          _id: `text_school_${index}`,
+          code: `text_school_${index}`,
+          name,
+          province: '待确认',
+          tags: ['文本提及']
+        });
+        return {
+          ...normalized,
+          majors: []
+        };
+      });
+    },
+
     estimateMatchRate(school = {}) {
       const tags = Array.isArray(school.tags) ? school.tags : [];
       let base = 72;
@@ -922,6 +987,27 @@ export default {
 
       this.isSubmitting = true;
 
+      const resetAnalysisMeta = () => {
+        if (typeof this.resetAnalysisMeta === 'function') {
+          this.resetAnalysisMeta();
+        }
+      };
+
+      const setAnalysisMeta = (payload) => {
+        if (typeof this.setAnalysisMeta === 'function') {
+          this.setAnalysisMeta(payload);
+        }
+      };
+
+      const extractSchoolsFromText = (text) => {
+        if (typeof this.extractSchoolsFromText === 'function') {
+          return this.extractSchoolsFromText(text);
+        }
+        return [];
+      };
+
+      resetAnalysisMeta();
+
       logger.log('[school] 📝 开始提交择校表单');
       logger.log('[school] 📊 表单数据:', JSON.stringify(this.formData, null, 2));
 
@@ -977,6 +1063,11 @@ export default {
         });
         // 切换到结果页面，显示空状态（不使用模拟数据）
         this.applySchoolList([], false);
+        setAnalysisMeta({
+          source: '智能推荐服务',
+          statusText: '智能分析超时，未获取到可解析的院校列表',
+          rawSummary: '请求超时（20秒）'
+        });
         this.currentStep = 3;
         logger.log('[school] ✅ 超时：切换到结果页面 (Step 3)，显示空状态');
         loadingTimeout = null;
@@ -1010,6 +1101,11 @@ export default {
               : response.data;
           const contentPreview = typeof content === 'string' ? content : JSON.stringify(content);
           logger.log('[school] 🤖 智能返回内容长度:', contentPreview ? contentPreview.length : 0);
+          setAnalysisMeta({
+            source: '智能推荐服务',
+            statusText: '已收到智能响应，正在解析推荐院校',
+            rawSummary: contentPreview
+          });
 
           try {
             // 智能可能返回 JSON 或自然语言文本，需要安全解析
@@ -1020,6 +1116,11 @@ export default {
               try {
                 parsedData = JSON.parse(trimmedContent);
                 logger.log('[school] ✅ JSON 解析成功');
+                setAnalysisMeta({
+                  source: '智能推荐服务',
+                  statusText: '响应为标准 JSON，已完成结构化解析',
+                  rawSummary: trimmedContent
+                });
               } catch (_jsonErr) {
                 // 智能返回了自然语言文本，尝试从文本中提取 JSON 块
                 const jsonMatch = trimmedContent.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
@@ -1027,24 +1128,43 @@ export default {
                   try {
                     parsedData = JSON.parse(jsonMatch[0]);
                     logger.log('[school] ✅ 从文本中提取 JSON 成功');
+                    setAnalysisMeta({
+                      source: '智能推荐服务',
+                      statusText: '响应为文本，已提取其中 JSON 片段并解析',
+                      rawSummary: trimmedContent
+                    });
                   } catch {
                     parsedData = null;
                   }
                 }
                 if (!parsedData) {
-                  logger.warn('[school] ⚠️ 智能返回非 JSON 格式，显示空状态');
-                  this.applySchoolList([], false);
-                  parsedData = {};
+                  logger.warn('[school] ⚠️ 智能返回非 JSON 格式，尝试文本提取院校');
+                  setAnalysisMeta({
+                    source: '智能推荐服务',
+                    statusText: '响应为自然语言，已尝试从文本中提取院校名称',
+                    rawSummary: trimmedContent
+                  });
+                  parsedData = { schools: extractSchoolsFromText(trimmedContent) };
                 }
               }
             } else if (typeof content === 'object') {
               parsedData = content;
               logger.log('[school] ✅ 智能返回对象格式数据');
+              setAnalysisMeta({
+                source: '智能推荐服务',
+                statusText: '响应为对象数据，已尝试读取 schools 字段',
+                rawSummary: JSON.stringify(content)
+              });
             }
 
             if (!parsedData || typeof parsedData !== 'object') {
               logger.warn('[school] ⚠️ 智能返回数据不可解析，显示空状态');
               this.applySchoolList([], false);
+              setAnalysisMeta({
+                source: '智能推荐服务',
+                statusText: '响应内容不可解析，未识别出院校列表',
+                rawSummary: contentPreview
+              });
               parsedData = {};
             }
 
@@ -1062,6 +1182,11 @@ export default {
               logger.log('[school] 📊 返回数据结构:', Object.keys(parsedData));
               logger.log('[school] 📄 返回数据预览:', JSON.stringify(parsedData).substring(0, 200));
               this.hasRealData = false;
+              setAnalysisMeta({
+                source: '智能推荐服务',
+                statusText: '响应中未包含结构化院校列表',
+                rawSummary: contentPreview
+              });
             }
 
             // 规范化数据格式，确保每个专业都有完整的 scores 数组
@@ -1097,15 +1222,30 @@ export default {
 
               this.applySchoolList(schoolsList, true);
               logger.log(`[school] ✅ 更新院校列表: ${schoolsList.length} 所院校（已规范化数据格式）`);
+              setAnalysisMeta({
+                source: '智能推荐服务',
+                statusText: `已解析到 ${schoolsList.length} 所推荐院校`,
+                rawSummary: contentPreview
+              });
             } else {
               // 无数据时显示空状态
               this.applySchoolList([], false);
               logger.log('[school] ⚠️ 智能返回空数据，显示空状态');
+              setAnalysisMeta({
+                source: '智能推荐服务',
+                statusText: '智能已返回内容，但未匹配到可展示院校',
+                rawSummary: contentPreview
+              });
             }
           } catch (parseError) {
             logger.error('[school] ❌ JSON 解析失败:', parseError);
             logger.log('[school] 📄 原始内容预览:', String(contentPreview).substring(0, 200));
             this.applySchoolList([], false);
+            setAnalysisMeta({
+              source: '智能推荐服务',
+              statusText: '响应解析失败，未生成推荐院校',
+              rawSummary: contentPreview
+            });
           }
         } else {
           // 修复验证：明确记录响应异常情况
@@ -1117,6 +1257,11 @@ export default {
           });
           // 显示空状态
           this.applySchoolList([], false);
+          setAnalysisMeta({
+            source: '智能推荐服务',
+            statusText: '接口响应异常，未返回可用数据',
+            rawSummary: JSON.stringify(response || {})
+          });
         }
 
         // 清除超时定时器（如果请求成功，取消30秒超时保护）
@@ -1198,6 +1343,11 @@ export default {
 
           // 切换到结果页面，显示空状态（不使用模拟数据）
           this.applySchoolList([], false);
+          setAnalysisMeta({
+            source: '智能推荐服务',
+            statusText: errorMsg,
+            rawSummary: error.errMsg || error.message || String(error)
+          });
           this.currentStep = 3;
           logger.log('[school] ✅ 错误处理：切换到结果页面 (Step 3)，显示空状态');
         } else {
@@ -1284,11 +1434,16 @@ export default {
 <style lang="scss" scoped>
 .container {
   /* 强调色（页面特有） */
-  --accent-warm: #2ecc71;
-  --accent-cool: #007aff;
+  --accent-warm: var(--brand-color);
+  --accent-cool: var(--color-primary-dark);
+  --accent-warm-soft: rgba(0, 169, 109, 0.1);
+  --accent-warm-mid: rgba(0, 169, 109, 0.2);
+  --accent-warm-shadow: rgba(0, 169, 109, 0.3);
 
   /* 状态色 */
   --error: #ff3b30;
+
+  min-height: 100%;
 
   min-height: 100vh;
   background: var(--bg-page);
@@ -1314,10 +1469,13 @@ export default {
   left: 0;
   width: 100%;
   z-index: 100;
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-color);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 
   .nav-content {
     height: 44px;
@@ -1358,13 +1516,28 @@ export default {
 }
 
 .glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color);
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 34%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid var(--apple-glass-border-strong);
   border-radius: 40rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .step-bar {
@@ -1380,7 +1553,13 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10rpx;
+    /* gap: 10rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-top: 10rpx;
+    }
     opacity: 0.4;
     transition: all 0.3s;
 
@@ -1389,7 +1568,7 @@ export default {
 
       .step-dot {
         background: var(--accent-warm);
-        color: white;
+        color: var(--text-primary-foreground);
         border-color: var(--accent-warm);
       }
     }
@@ -1432,9 +1611,10 @@ export default {
 .compliance-tip {
   margin: 0 8rpx 22rpx;
   padding: 18rpx 20rpx;
-  border-radius: 20rpx;
-  background: var(--bg-card);
-  border: 1px dashed var(--border-color);
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px dashed var(--apple-divider);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .compliance-tip-text {
@@ -1489,9 +1669,9 @@ export default {
   }
 
   .glass-input {
-    background: var(--muted);
-    border: 1rpx solid var(--border-color);
-    border-radius: 24rpx;
+    background: rgba(255, 255, 255, 0.62);
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
+    border-radius: 999rpx;
     height: 100rpx;
     padding: 0 30rpx;
     display: flex;
@@ -1500,11 +1680,12 @@ export default {
     color: var(--text-main);
     box-sizing: border-box;
     transition: all 0.3s;
+    box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
   }
 
   .glass-input:focus-within {
-    border-color: var(--accent-warm);
-    box-shadow: 0 0 15rpx rgba(46, 204, 113, 0.3);
+    border-color: var(--apple-glass-border-strong);
+    box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.08);
   }
 
   .ph-style {
@@ -1532,22 +1713,29 @@ export default {
 .btn-group {
   margin-top: 60rpx;
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
 }
 
 .secondary-btn {
   flex: 1;
   height: 110rpx;
-  background: var(--muted);
+  background: rgba(255, 255, 255, 0.66);
   color: var(--text-main);
-  border-radius: 30rpx;
+  border-radius: 999rpx;
   font-size: 32rpx;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1rpx solid var(--border-color);
+  border: 1rpx solid rgba(255, 255, 255, 0.52);
   transition: all 0.3s ease;
+  box-shadow: var(--apple-shadow-surface);
 
   &::after {
     border: none;
@@ -1556,14 +1744,20 @@ export default {
 
 .tab-group {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
 
   .tab-item {
     flex: 1;
     height: 100rpx;
-    background: var(--muted);
-    border: 1rpx solid var(--border-color);
-    border-radius: 24rpx;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1rpx solid rgba(255, 255, 255, 0.48);
+    border-radius: 999rpx;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1572,10 +1766,11 @@ export default {
     transition: all 0.2s;
 
     &.active {
-      background: rgba(46, 204, 113, 0.1);
-      border-color: var(--accent-warm);
-      color: var(--accent-warm);
+      background: var(--cta-primary-bg);
+      border-color: var(--cta-primary-border);
+      color: var(--cta-primary-text);
       font-weight: bold;
+      box-shadow: var(--cta-primary-shadow);
     }
   }
 }
@@ -1584,17 +1779,23 @@ export default {
   margin-top: 60rpx;
   flex: 2;
   height: 110rpx;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   border-radius: 30rpx;
   font-size: 32rpx;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15rpx;
-  box-shadow: 0 10rpx 30rpx rgba(46, 204, 113, 0.3);
-  border: none;
+  /* gap: 15rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 15rpx;
+  }
+  box-shadow: var(--cta-primary-shadow);
+  border: 1rpx solid var(--cta-primary-border);
   transition: all 0.3s ease;
   /* 修复：确保按钮不被 tabbar 遮挡 */
   position: relative;
@@ -1619,31 +1820,14 @@ export default {
   margin-top: 0;
 }
 
-.dark-mode .primary-btn {
-  box-shadow: 0 10rpx 30rpx rgba(0, 242, 255, 0.3);
-}
-
 @keyframes pulse {
   0%,
   100% {
-    box-shadow: 0 10rpx 30rpx rgba(46, 204, 113, 0.3);
+    box-shadow: var(--cta-primary-shadow);
   }
 
   50% {
-    box-shadow: 0 10rpx 40rpx rgba(46, 204, 113, 0.5);
-  }
-}
-
-.dark-mode {
-  @keyframes pulse {
-    0%,
-    100% {
-      box-shadow: 0 10rpx 30rpx rgba(0, 242, 255, 0.3);
-    }
-
-    50% {
-      box-shadow: 0 10rpx 40rpx rgba(0, 242, 255, 0.5);
-    }
+    box-shadow: var(--shadow-brand-strong);
   }
 }
 
@@ -1651,7 +1835,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
   padding: 20rpx;
   color: var(--text-sub);
   font-size: 24rpx;
@@ -1677,7 +1867,13 @@ export default {
 .rh-left {
   display: flex;
   align-items: baseline;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .rh-title {
@@ -1695,11 +1891,48 @@ export default {
 .info-banner {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   padding: 20rpx 24rpx;
   margin-bottom: 24rpx;
-  background: rgba(46, 204, 113, 0.08);
-  border: 1rpx solid rgba(46, 204, 113, 0.2);
+  background: rgba(255, 255, 255, 0.52);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
+}
+
+.analysis-card {
+  margin-bottom: 24rpx;
+  border-left: 6rpx solid rgba(15, 95, 52, 0.24);
+}
+
+.analysis-head {
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.analysis-title {
+  color: var(--text-main);
+}
+
+.analysis-source {
+  color: var(--text-sub);
+}
+
+.analysis-status {
+  color: var(--text-main);
+  line-height: 1.5;
+  display: block;
+}
+
+.analysis-summary {
+  margin-top: 12rpx;
+  color: var(--text-sub);
+  line-height: 1.5;
+  display: block;
 }
 
 .info-banner .info-icon {
@@ -1723,14 +1956,20 @@ export default {
 .rh-filter {
   font-size: 24rpx;
   color: var(--text-main);
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.68);
   padding: 10rpx 20rpx;
-  border-radius: 20rpx;
+  border-radius: 999rpx;
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border-color);
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
+  box-shadow: var(--apple-shadow-surface);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .filter-arrow {
@@ -1746,7 +1985,7 @@ export default {
     align-items: flex-start;
     margin-bottom: 24rpx;
     padding-bottom: 24rpx;
-    border-bottom: 1rpx solid var(--border-color);
+    border-bottom: 1rpx solid var(--apple-divider);
   }
 
   .sc-logo {
@@ -1782,17 +2021,24 @@ export default {
 
   .sc-tags {
     display: flex;
-    gap: 12rpx;
+    /* gap: 12rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: 12rpx;
+    }
     margin-top: 12rpx;
     flex-wrap: wrap;
   }
 
   .tag-item {
     font-size: 20rpx;
-    color: var(--accent-warm);
-    background: rgba(46, 204, 113, 0.1);
-    padding: 4rpx 12rpx;
-    border-radius: 8rpx;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.62);
+    padding: 8rpx 18rpx;
+    border-radius: 999rpx;
+    border: 1rpx solid rgba(255, 255, 255, 0.48);
     font-weight: 600;
   }
 
@@ -1800,10 +2046,11 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(46, 204, 113, 0.1);
+    background: rgba(255, 255, 255, 0.68);
     padding: 8rpx 16rpx;
-    border-radius: 16rpx;
+    border-radius: 20rpx;
     flex-shrink: 0;
+    border: 1rpx solid rgba(255, 255, 255, 0.48);
   }
 
   .mr-val {
@@ -1828,7 +2075,7 @@ export default {
 .major-item {
   margin-bottom: 24rpx;
   padding-bottom: 24rpx;
-  border-bottom: 1rpx solid var(--border-color);
+  border-bottom: 1rpx solid var(--apple-divider);
 
   &:last-child {
     margin-bottom: 0;
@@ -1860,9 +2107,9 @@ export default {
 
 .mj-type {
   font-size: 20rpx;
-  background: var(--muted);
-  padding: 2rpx 8rpx;
-  border-radius: 8rpx;
+  background: rgba(255, 255, 255, 0.56);
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
   color: var(--text-sub);
   font-weight: 400;
 }
@@ -1870,9 +2117,10 @@ export default {
 .mj-scores {
   display: flex;
   justify-content: space-between;
-  background: var(--muted);
+  background: rgba(255, 255, 255, 0.56);
   padding: 16rpx 24rpx;
-  border-radius: 16rpx;
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
 }
 
 .score-col {
@@ -1905,7 +2153,13 @@ export default {
 
 .card-footer {
   display: flex;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 24rpx;
+  }
   margin-top: 24rpx;
 }
 
@@ -1922,20 +2176,21 @@ export default {
 }
 
 .cf-btn.outline {
-  border: 1rpx solid var(--border-color);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   color: var(--text-main);
-  background: var(--muted);
+  background: rgba(255, 255, 255, 0.68);
 }
 
 .cf-btn.primary {
-  background: var(--primary);
-  color: var(--primary-foreground);
-  box-shadow: 0 8rpx 20rpx rgba(46, 204, 113, 0.2);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  box-shadow: var(--cta-primary-shadow);
+  border: 1rpx solid var(--cta-primary-border);
   transition: all 0.3s ease;
 }
 
 .dark-mode .cf-btn.primary {
-  box-shadow: 0 8rpx 20rpx rgba(0, 242, 255, 0.2);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .cf-btn.disabled {
@@ -1953,7 +2208,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
 }
 
 .empty-icon {
@@ -1970,9 +2231,10 @@ export default {
 .reset-btn {
   margin-top: 16rpx;
   padding: 16rpx 40rpx;
-  background: var(--gradient-primary, linear-gradient(135deg, #9fe870 0%, #7bc653 100%));
+  background: var(--cta-primary-bg);
+  border: 1rpx solid var(--cta-primary-border);
   border-radius: 40rpx;
-  box-shadow: 0 4rpx 16rpx rgba(159, 232, 112, 0.3);
+  box-shadow: var(--cta-primary-shadow);
   transition: all 150ms ease-out;
 }
 
@@ -1981,7 +2243,7 @@ export default {
 }
 
 .reset-btn-text {
-  color: var(--text-inverse, #1a1a1a);
+  color: var(--cta-primary-text);
 }
 
 .reset-link {
@@ -2001,6 +2263,7 @@ export default {
   display: flex;
   align-items: flex-end;
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   animation: fadeIn 0.3s;
 }
 
@@ -2011,6 +2274,9 @@ export default {
   box-sizing: border-box;
   max-height: 70vh;
   animation: slideUp 0.3s;
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-top: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-floating);
 }
 
 .fp-header {
@@ -2052,30 +2318,38 @@ export default {
 .filter-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
 }
 
 .ft-item {
-  background: var(--muted);
+  background: rgba(255, 255, 255, 0.6);
   padding: 16rpx 32rpx;
-  border-radius: 16rpx;
+  border-radius: 999rpx;
   font-size: 26rpx;
   color: var(--text-sub);
-  border: 1rpx solid var(--border-color);
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
   transition: 0.2s;
 }
 
 .ft-item.active {
-  background: rgba(46, 204, 113, 0.1);
-  color: var(--accent-warm);
-  border-color: var(--accent-warm);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: var(--cta-primary-border);
   font-weight: 600;
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .fp-confirm-btn {
   width: 100%;
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
   border-radius: 50rpx;
   margin-top: 20rpx;
   height: 100rpx;
@@ -2084,7 +2358,7 @@ export default {
   justify-content: center;
   font-weight: 700;
   font-size: 32rpx;
-  border: none;
+  box-shadow: var(--cta-primary-shadow);
   transition: all 0.3s ease;
 
   &::after {
@@ -2122,44 +2396,44 @@ export default {
 }
 
 /* ===== 综合暗色模式覆盖 ===== */
+.container.dark-mode {
+  --accent-warm: var(--brand-color);
+  --accent-cool: var(--color-primary-dark);
+  --accent-warm-soft: rgba(0, 242, 255, 0.1);
+  --accent-warm-mid: rgba(0, 242, 255, 0.2);
+  --accent-warm-shadow: rgba(0, 242, 255, 0.3);
+}
+
 .dark-mode .glass-input:focus-within {
-  box-shadow: 0 0 15rpx rgba(0, 242, 255, 0.3);
+  box-shadow: 0 10rpx 24rpx rgba(24, 86, 191, 0.18);
 }
 
 .dark-mode .tab-group .tab-item.active {
-  background: rgba(0, 242, 255, 0.1);
-}
-
-.dark-mode .primary-btn {
-  box-shadow: 0 10rpx 30rpx rgba(0, 242, 255, 0.3);
+  background: var(--cta-primary-bg);
 }
 
 .dark-mode .info-banner {
-  background: rgba(0, 242, 255, 0.08);
-  border-color: rgba(0, 242, 255, 0.2);
+  background: rgba(16, 20, 28, 0.72);
+  border-color: rgba(124, 176, 255, 0.18);
 }
 
 .dark-mode .tag-item {
-  background: rgba(0, 242, 255, 0.1);
+  background: rgba(16, 20, 28, 0.68);
 }
 
 .dark-mode .match-rate {
-  background: rgba(0, 242, 255, 0.1);
+  background: rgba(16, 20, 28, 0.72);
 }
 
 .dark-mode .ft-item.active {
-  background: rgba(0, 242, 255, 0.1);
+  background: var(--cta-primary-bg);
 }
 
 .dark-mode .cf-btn.primary {
-  box-shadow: 0 8rpx 20rpx rgba(0, 242, 255, 0.2);
-}
-
-.dark-mode .reset-btn {
-  box-shadow: 0 4rpx 16rpx rgba(0, 242, 255, 0.3);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .dark-mode .filter-panel {
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(16, 20, 28, 0.96) 0%, rgba(11, 14, 20, 0.98) 100%);
 }
 </style>

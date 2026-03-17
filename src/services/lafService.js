@@ -1342,7 +1342,11 @@ export const lafService = {
     try {
       logger.log('[LafService] 📧 发送验证码:', { email });
 
-      const response = await this.request('/send-email-code', { email }, { skipAuth: true });
+      const response = await this.request(
+        '/send-email-code',
+        { email },
+        { skipAuth: true, maxRetries: 0, timeout: 45000 }
+      );
       return response;
     } catch (error) {
       logger.error('[LafService] ❌ 发送验证码失败:', error);

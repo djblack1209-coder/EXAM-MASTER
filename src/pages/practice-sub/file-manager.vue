@@ -290,6 +290,7 @@ export default {
 <style lang="scss" scoped>
 /* 基础样式 */
 .file-manager-container {
+  min-height: 100%;
   min-height: 100vh;
   background-color: var(--bg-body, var(--bg-card));
   padding: 20px;
@@ -322,7 +323,13 @@ export default {
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8px;
+  }
 }
 
 .back-arrow {
@@ -338,7 +345,13 @@ export default {
 
 .nav-right {
   display: flex;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
 }
 
 .icon-btn {
@@ -386,7 +399,13 @@ export default {
 .file-left {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16px;
+  }
   flex: 1;
   min-width: 0;
 }
@@ -404,7 +423,13 @@ export default {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8px;
+  }
 }
 
 .file-name {
@@ -418,7 +443,13 @@ export default {
 
 .file-meta {
   display: flex;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12px;
+  }
   font-size: 26rpx;
   color: var(--text-secondary, #495057);
 }
@@ -430,7 +461,13 @@ export default {
 
 .file-tags {
   display: flex;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8px;
+  }
   flex-wrap: wrap;
 }
 
@@ -475,7 +512,13 @@ export default {
 .file-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8px;
+  }
   flex-shrink: 0;
   margin-left: 16px;
 }
@@ -521,7 +564,13 @@ export default {
 .skeleton-file-item {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16px;
+  }
   padding: 24px 20px;
   border-bottom: 1px solid var(--card-border, #e9ecef);
 }
@@ -541,7 +590,13 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  /* gap: 10px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 10px;
+  }
 }
 
 .skeleton-name {

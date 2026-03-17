@@ -369,6 +369,7 @@ export default {
 
 <style lang="scss" scoped>
 .container {
+  min-height: 100%;
   min-height: 100vh;
   background-color: var(--bg-body);
 }
@@ -383,9 +384,12 @@ export default {
   top: 0;
   left: 0;
   right: 0;
-  background-color: var(--bg-card);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
   z-index: 999;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--apple-shadow-surface);
+  border-bottom: 1rpx solid var(--apple-glass-border-strong);
 }
 
 .dark-mode .custom-navbar {
@@ -450,16 +454,32 @@ export default {
 .main-scroll {
   padding-top: calc(var(--status-bar-height) + 88rpx + 24rpx);
   padding-bottom: 48rpx;
+  min-height: 100%;
   min-height: 100vh;
   box-sizing: border-box;
 }
 
 /* 玻璃卡片 */
 .glass-card {
-  background-color: var(--bg-card);
-  border-radius: 24rpx;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
   margin: 0 32rpx 24rpx;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--apple-glass-border-strong);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .dark-mode .glass-card {
@@ -488,7 +508,8 @@ export default {
   width: 160rpx;
   height: 160rpx;
   border-radius: 50%;
-  border: 4rpx solid var(--brand-color);
+  border: 4rpx solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .online-dot {
@@ -511,9 +532,11 @@ export default {
   bottom: -8rpx;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--gradient-primary);
+  background: var(--cta-primary-bg);
   padding: 6rpx 20rpx;
-  border-radius: 20rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .level-text {
@@ -547,7 +570,7 @@ export default {
   justify-content: center;
   width: 100%;
   padding: 24rpx 0;
-  border-top: 1rpx solid var(--border);
+  border-top: 1rpx solid var(--apple-divider);
 }
 
 .stat-item {
@@ -555,7 +578,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
 }
 
 .stat-value {
@@ -589,27 +618,43 @@ export default {
 }
 
 .section-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 620;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 /* 成就网格 */
 .achievement-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 24rpx;
+  }
 }
 
 .achievement-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
   padding: 20rpx 24rpx;
-  background-color: var(--bg-secondary);
-  border-radius: 16rpx;
+  background-color: rgba(255, 255, 255, 0.62);
+  border-radius: 22rpx;
   min-width: 140rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .dark-mode .achievement-item {
@@ -633,16 +678,29 @@ export default {
 .activity-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 20rpx;
+  }
 }
 
 .activity-item {
   display: flex;
   align-items: flex-start;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
   padding: 16rpx;
-  background-color: var(--bg-secondary);
-  border-radius: 16rpx;
+  background-color: rgba(255, 255, 255, 0.58);
+  border-radius: 22rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
 }
 
 .dark-mode .activity-item {
@@ -662,7 +720,13 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4rpx;
+  /* gap: 4rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 4rpx;
+  }
 }
 
 .activity-text {
@@ -680,19 +744,31 @@ export default {
   padding: 32rpx;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 20rpx;
+  }
 }
 
 .action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12rpx;
+  }
   padding: 28rpx 0;
-  border-radius: 48rpx;
+  border-radius: 999rpx;
   font-size: 30rpx;
   font-weight: 600;
-  border: none;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 
 .action-btn::after {
@@ -700,9 +776,10 @@ export default {
 }
 
 .action-btn.primary {
-  background: var(--gradient-danger);
-  color: #fff;
-  box-shadow: var(--shadow-danger);
+  background: rgba(255, 255, 255, 0.72);
+  color: #c44536;
+  box-shadow: var(--apple-shadow-surface);
+  border-color: rgba(255, 130, 112, 0.34);
 }
 
 .action-btn.secondary {
@@ -712,9 +789,10 @@ export default {
 }
 
 .action-btn.danger {
-  background-color: var(--bg-secondary);
-  color: var(--danger);
-  border: 2rpx solid var(--danger);
+  background-color: rgba(255, 255, 255, 0.72);
+  color: var(--text-primary);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .dark-mode .action-btn.danger {
@@ -748,7 +826,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
   margin-bottom: 24rpx;
 }
 
@@ -772,7 +856,13 @@ export default {
 
 .skeleton-stats-row {
   display: flex;
-  gap: 32rpx;
+  /* gap: 32rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 32rpx;
+  }
   width: 100%;
   justify-content: center;
   margin-top: 24rpx;
@@ -800,7 +890,13 @@ export default {
 
 .skeleton-grid {
   display: flex;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 24rpx;
+  }
 }
 
 .skeleton-badge {

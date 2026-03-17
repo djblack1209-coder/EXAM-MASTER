@@ -303,23 +303,53 @@ page {
 
 /* Spacing */
 .ds-gap-xs {
-  gap: var(--ds-spacing-xs);
+  /* gap: var(--ds-spacing-xs); -- Android WebView compat */
+  & > view + view,
+& > text + text,
+& > view + text,
+& > text + view {
+    margin-left: var(--ds-spacing-xs);
+  }
 }
 
 .ds-gap-sm {
-  gap: var(--ds-spacing-sm);
+  /* gap: var(--ds-spacing-sm); -- Android WebView compat */
+  & > view + view,
+& > text + text,
+& > view + text,
+& > text + view {
+    margin-left: var(--ds-spacing-sm);
+  }
 }
 
 .ds-gap-md {
-  gap: var(--ds-spacing-md);
+  /* gap: var(--ds-spacing-md); -- Android WebView compat */
+  & > view + view,
+& > text + text,
+& > view + text,
+& > text + view {
+    margin-left: var(--ds-spacing-md);
+  }
 }
 
 .ds-gap-lg {
-  gap: var(--ds-spacing-lg);
+  /* gap: var(--ds-spacing-lg); -- Android WebView compat */
+  & > view + view,
+& > text + text,
+& > view + text,
+& > text + view {
+    margin-left: var(--ds-spacing-lg);
+  }
 }
 
 .ds-gap-xl {
-  gap: var(--ds-spacing-xl);
+  /* gap: var(--ds-spacing-xl); -- Android WebView compat */
+  & > view + view,
+& > text + text,
+& > view + text,
+& > text + view {
+    margin-left: var(--ds-spacing-xl);
+  }
 }
 
 .ds-p-xs {

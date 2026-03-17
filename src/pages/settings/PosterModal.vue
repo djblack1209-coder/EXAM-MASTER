@@ -491,7 +491,13 @@ const copyInviteInfo = () => {
   width: 300px;
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
 }
 
 .action-btn {
@@ -519,8 +525,10 @@ const copyInviteInfo = () => {
 }
 
 .save-btn {
-  background-color: #07c160;
-  color: white;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .share-btn {
@@ -561,11 +569,11 @@ const copyInviteInfo = () => {
 
   /* 底部按钮 */
   .save-btn {
-    background-color: var(--brand-color);
-    color: #1c1c1e;
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
 
     &:active {
-      background-color: #8dd760;
+      opacity: 0.85;
     }
   }
 

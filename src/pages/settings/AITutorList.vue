@@ -7,7 +7,7 @@
     <view class="header-actions ds-flex ds-gap-xs">
       <text class="online-badge ds-text-xs ds-font-medium"> 支持语音对讲 </text>
     </view>
-    <view class="tutor-list">
+    <view class="tutor-list apple-group-card">
       <view v-for="(tutor, index) in tutorList" :key="index" class="tutor-item ds-flex">
         <image
           class="tutor-avatar ds-rounded-full"
@@ -27,7 +27,7 @@
             {{ tutor.role }}
           </text>
         </view>
-        <button class="chat-btn ds-touchable" @tap="$emit('start-chat', tutor)">交流</button>
+        <button class="chat-btn apple-glass-pill ds-touchable" @tap="$emit('start-chat', tutor)">交流</button>
       </view>
     </view>
   </view>
@@ -85,18 +85,18 @@ export default {
 
 <style lang="scss" scoped>
 .tutor-list {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--border);
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.36);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .tutor-item {
   display: flex;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--apple-divider);
   transition: background-color 0.2s ease;
 }
 
@@ -139,9 +139,10 @@ export default {
 }
 
 .chat-btn {
+  min-height: 88rpx;
   background-color: transparent;
-  border: 2px solid var(--brand-color);
-  color: var(--brand-color, #00a96d);
+  border: 1px solid var(--cta-primary-border);
+  color: var(--cta-primary-text);
   border-radius: 20px;
   padding: 8px 16px;
   font-size: 28rpx;
@@ -151,9 +152,8 @@ export default {
 }
 
 .chat-btn:hover {
-  background-color: var(--brand-color, #00a96d);
-  color: white;
-  transform: scale(1.05);
+  opacity: 0.9;
+  transform: scale(1.03);
 }
 
 .section-header {
@@ -168,10 +168,13 @@ export default {
 }
 
 .online-badge {
-  background-color: var(--success-light);
-  color: var(--brand-color, #00a96d);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 48%),
+    linear-gradient(160deg, var(--apple-glass-pill-bg) 0%, rgba(255, 255, 255, 0.58) 100%);
+  color: var(--cta-primary-text);
   padding: 4px 12px;
   border-radius: 12px;
   font-weight: 500;
+  border: 1px solid var(--apple-divider);
 }
 </style>

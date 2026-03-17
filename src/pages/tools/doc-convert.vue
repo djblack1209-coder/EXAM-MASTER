@@ -16,7 +16,7 @@
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
-          <text class="hero-icon"> 📄 </text>
+          <BaseIcon name="file" :size="56" class="hero-icon" />
         </view>
         <text class="hero-title"> 智能文档转换 </text>
         <text class="hero-desc"> 支持 PDF、Word、Excel、PPT 等格式互转 </text>
@@ -30,12 +30,10 @@
             v-for="item in convertTypes"
             :key="item.key"
             :class="['type-card', { active: selectedType === item.key }]"
-            @click="selectType(item.key)"
+            @tap="selectType(item.key)"
           >
             <view class="type-icon-box">
-              <text class="type-icon">
-                {{ item.icon }}
-              </text>
+              <BaseIcon :name="getTypeIcon(item.key)" :size="32" class="type-icon" />
             </view>
             <view class="type-text">
               <text class="type-name">
@@ -52,9 +50,9 @@
       <!-- 文件选择区域 -->
       <view class="section">
         <text class="section-title"> 选择文件 </text>
-        <view v-if="!selectedFile" class="file-placeholder" @click="chooseFile">
+        <view v-if="!selectedFile" id="e2e-doc-file-placeholder" class="file-placeholder" @tap="chooseFile">
           <view class="upload-icon-box">
-            <text class="upload-icon-text"> + </text>
+            <BaseIcon name="upload" :size="44" class="upload-icon-text" />
           </view>
           <text class="upload-text"> 点击选择文件 </text>
           <text class="upload-hint">
@@ -63,7 +61,7 @@
         </view>
         <view v-else class="file-info-card">
           <view class="file-icon-box">
-            <text class="file-icon-text"> 📎 </text>
+            <BaseIcon name="file" :size="36" class="file-icon-text" />
           </view>
           <view class="file-detail">
             <text class="file-name">
@@ -74,8 +72,8 @@
             </text>
             <text v-if="isReadingFile" class="file-reading"> 文件读取中... </text>
           </view>
-          <view class="file-remove" @click="removeFile">
-            <text class="remove-icon"> ✕ </text>
+          <view class="file-remove" @tap="removeFile">
+            <BaseIcon name="close" :size="24" class="remove-icon" />
           </view>
         </view>
       </view>
@@ -107,7 +105,7 @@
         </view>
         <view v-else-if="status === 'error'" class="status-card status-error">
           <view class="status-error-icon">
-            <text class="error-mark"> ! </text>
+            <BaseIcon name="warning" :size="40" class="error-mark" />
           </view>
           <view class="status-text-group">
             <text class="status-title"> 转换失败 </text>
@@ -120,10 +118,10 @@
 
       <!-- 结果区域 -->
       <view v-if="resultUrl" class="section result-section">
-        <button class="btn-primary" hover-class="btn-hover" @click="downloadResult">
+        <button id="e2e-doc-download" class="btn-primary" hover-class="btn-hover" @tap="downloadResult">
           <text>下载转换结果</text>
         </button>
-        <button class="btn-secondary" hover-class="btn-hover" @click="resetAll">
+        <button id="e2e-doc-reset" class="btn-secondary" hover-class="btn-hover" @tap="resetAll">
           <text>继续转换</text>
         </button>
       </view>
@@ -134,7 +132,13 @@
 
     <!-- 底部操作栏 -->
     <view v-if="status === 'idle' && selectedFile" class="action-bar">
-      <button class="btn-primary btn-full" hover-class="btn-hover" :disabled="!canConvert" @click="startConvert">
+      <button
+        id="e2e-doc-start-convert"
+        class="btn-primary btn-full"
+        hover-class="btn-hover"
+        :disabled="!canConvert"
+        @tap="startConvert"
+      >
         <text>{{ isReadingFile ? '文件读取中...' : '开始转换' }}</text>
       </button>
     </view>
@@ -215,6 +219,11 @@ export default {
     offThemeUpdate(this._themeHandler);
   },
 
+  // ✅ P0-FIX: 页面隐藏时也清理轮询，防止后台持续请求
+  onHide() {
+    this.clearPollTimer();
+  },
+
   methods: {
     isPrivacyScopeUndeclaredError(err) {
       const msg = String(err?.errMsg || '').toLowerCase();
@@ -241,6 +250,18 @@ export default {
       if (this.selectedFile) {
         this.removeFile();
       }
+    },
+
+    getTypeIcon(type) {
+      const iconMap = {
+        word2pdf: 'file-doc',
+        pdf2word: 'file-pdf',
+        excel2pdf: 'file-xls',
+        ppt2pdf: 'file-ppt',
+        img2pdf: 'image',
+        pdf2img: 'file-pdf'
+      };
+      return iconMap[type] || 'file';
     },
 
     chooseFile() {
@@ -298,6 +319,27 @@ export default {
       } else {
         chooseFromWechat();
       }
+      // #endif
+
+      // #ifdef APP-PLUS
+      uni.chooseFile({
+        count: 1,
+        type: 'file',
+        success: (res) => {
+          if (res.tempFiles && res.tempFiles.length > 0) {
+            const file = res.tempFiles[0];
+            this.handleSelectedFile({
+              name: file.name,
+              size: file.size,
+              path: file.path
+            });
+          }
+        },
+        fail: (err) => {
+          if (err?.errMsg && err.errMsg.includes('cancel')) return;
+          uni.showToast({ title: '选择文件失败', icon: 'none' });
+        }
+      });
       // #endif
 
       // #ifdef H5
@@ -406,6 +448,35 @@ export default {
           this.removeFile();
         }
       });
+      // #endif
+
+      // #ifdef APP-PLUS
+      plus.io.resolveLocalFileSystemURL(
+        filePath,
+        (entry) => {
+          entry.file((file) => {
+            const reader = new plus.io.FileReader();
+            reader.onloadend = (e) => {
+              const base64Data = e.target.result.split(',')[1] || '';
+              this.fileBase64 = base64Data;
+              this.isReadingFile = false;
+            };
+            reader.onerror = (err) => {
+              this.isReadingFile = false;
+              logger.error('读取文件失败:', err);
+              uni.showToast({ title: '读取文件失败', icon: 'none' });
+              this.removeFile();
+            };
+            reader.readAsDataURL(file);
+          });
+        },
+        (err) => {
+          this.isReadingFile = false;
+          logger.error('解析文件路径失败:', err);
+          uni.showToast({ title: '读取文件失败', icon: 'none' });
+          this.removeFile();
+        }
+      );
       // #endif
     },
 
@@ -618,6 +689,29 @@ export default {
       });
       // #endif
 
+      // #ifdef APP-PLUS
+      uni.showLoading({ title: '下载中...', mask: true });
+      uni.downloadFile({
+        url: this.resultUrl,
+        success: (res) => {
+          uni.hideLoading();
+          if (res.statusCode === 200) {
+            uni.openDocument({
+              filePath: res.tempFilePath,
+              showMenu: true,
+              fail: () => {
+                uni.showToast({ title: '打开文件失败', icon: 'none' });
+              }
+            });
+          }
+        },
+        fail: () => {
+          uni.hideLoading();
+          uni.showToast({ title: '下载失败', icon: 'none' });
+        }
+      });
+      // #endif
+
       // #ifdef H5
       window.open(this.resultUrl, '_blank');
       // #endif
@@ -655,6 +749,7 @@ export default {
 
 <style lang="scss" scoped>
 .page-container {
+  min-height: 100%;
   min-height: 100vh;
   background: var(--bg-secondary, #f5f5f7);
 }
@@ -666,10 +761,13 @@ export default {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 
   .nav-content {
     display: flex;
@@ -686,7 +784,8 @@ export default {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.04);
+    background: rgba(255, 255, 255, 0.68);
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
 
     .back-icon {
       font-size: 36rpx;
@@ -706,6 +805,7 @@ export default {
 }
 
 .main-scroll {
+  min-height: 100%;
   min-height: 100vh;
   padding: 24rpx 32rpx;
   box-sizing: border-box;
@@ -718,20 +818,26 @@ export default {
   align-items: center;
   padding: 48rpx 32rpx 40rpx;
   margin-bottom: 32rpx;
-  background: linear-gradient(135deg, rgba(54, 209, 220, 0.08) 0%, rgba(91, 134, 229, 0.08) 100%);
-  border-radius: 24rpx;
-  border: 1rpx solid rgba(91, 134, 229, 0.12);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+  position: relative;
+  overflow: hidden;
 
   .hero-icon-wrapper {
     width: 100rpx;
     height: 100rpx;
-    border-radius: 28rpx;
-    background: linear-gradient(135deg, #36d1dc, #5b86e5);
+    border-radius: 999rpx;
+    background: var(--apple-glass-pill-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20rpx;
-    box-shadow: 0 8rpx 24rpx rgba(91, 134, 229, 0.3);
+    box-shadow: var(--apple-shadow-surface);
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
   }
 
   .hero-icon {
@@ -768,7 +874,13 @@ export default {
 .type-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .type-card {
@@ -776,16 +888,16 @@ export default {
   display: flex;
   align-items: center;
   padding: 20rpx;
-  background: var(--bg-card, #fff);
-  border-radius: 20rpx;
-  border: 2rpx solid transparent;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 24rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-card);
   transition: all 0.25s ease;
 
   &.active {
-    border-color: #5b86e5;
-    background: rgba(91, 134, 229, 0.06);
-    box-shadow: 0 4rpx 16rpx rgba(91, 134, 229, 0.15);
+    border-color: var(--cta-primary-border);
+    background: var(--cta-primary-bg);
+    box-shadow: var(--cta-primary-shadow);
 
     .dark-mode & {
       border-color: #8eaaef;
@@ -796,13 +908,15 @@ export default {
   .type-icon-box {
     width: 64rpx;
     height: 64rpx;
-    border-radius: 16rpx;
-    background: linear-gradient(135deg, #36d1dc, #5b86e5);
+    border-radius: 999rpx;
+    background: var(--apple-glass-pill-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     margin-right: 16rpx;
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
+    box-shadow: var(--apple-shadow-surface);
   }
 
   .type-icon {
@@ -833,20 +947,21 @@ export default {
 
 // 文件选择
 .file-placeholder {
-  background: var(--bg-card, #fff);
-  border: 2rpx dashed rgba(91, 134, 229, 0.35);
-  border-radius: 20rpx;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 2rpx dashed var(--apple-divider);
+  border-radius: 24rpx;
   padding: 60rpx 30rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: all 0.25s ease;
+  box-shadow: var(--apple-shadow-card);
 
   .upload-icon-box {
     width: 80rpx;
     height: 80rpx;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(54, 209, 220, 0.12), rgba(91, 134, 229, 0.12));
+    background: var(--apple-glass-pill-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -855,7 +970,7 @@ export default {
 
   .upload-icon-text {
     font-size: 48rpx;
-    color: #5b86e5;
+    color: var(--text-primary);
     font-weight: 300;
     line-height: 1;
 
@@ -878,18 +993,19 @@ export default {
 }
 
 .file-info-card {
-  background: var(--bg-card, #fff);
-  border-radius: 20rpx;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 24rpx;
   padding: 24rpx;
   display: flex;
   align-items: center;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--apple-glass-border-strong);
 
   .file-icon-box {
     width: 64rpx;
     height: 64rpx;
-    border-radius: 16rpx;
-    background: linear-gradient(135deg, rgba(54, 209, 220, 0.12), rgba(91, 134, 229, 0.12));
+    border-radius: 999rpx;
+    background: var(--apple-glass-pill-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -934,7 +1050,7 @@ export default {
     width: 56rpx;
     height: 56rpx;
     border-radius: 50%;
-    background: rgba(255, 59, 48, 0.08);
+    background: rgba(255, 255, 255, 0.7);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -956,8 +1072,15 @@ export default {
   display: flex;
   align-items: center;
   padding: 28rpx 24rpx;
-  border-radius: 20rpx;
-  gap: 20rpx;
+  border-radius: 24rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
+  box-shadow: var(--apple-shadow-card);
 
   &.status-loading {
     background: rgba(91, 134, 229, 0.06);
@@ -1047,7 +1170,13 @@ export default {
 .result-section {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
 }
 
 // 底部安全区
@@ -1064,23 +1193,26 @@ export default {
   padding: 24rpx 32rpx;
   padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-top: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-floating);
 }
 
 // 按钮
 .btn-primary {
-  background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
-  color: #fff;
-  border: none;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
   padding: 24rpx;
-  border-radius: 50rpx;
+  border-radius: 999rpx;
   font-size: 30rpx;
   font-weight: 600;
   text-align: center;
-  box-shadow: 0 8rpx 24rpx rgba(91, 134, 229, 0.25);
+  box-shadow: var(--cta-primary-shadow);
 
   &::after {
     border: none;
@@ -1097,13 +1229,14 @@ export default {
 }
 
 .btn-secondary {
-  background: var(--bg-card, #fff);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--text-primary, #111);
-  border: 1rpx solid var(--border, #e5e5e5);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   padding: 24rpx;
-  border-radius: 50rpx;
+  border-radius: 999rpx;
   font-size: 28rpx;
   text-align: center;
+  box-shadow: var(--apple-shadow-surface);
 
   &::after {
     border: none;
@@ -1122,36 +1255,36 @@ export default {
   }
 
   .nav-header {
-    background: rgba(13, 17, 23, 0.85);
-    border-bottom-color: rgba(255, 255, 255, 0.06);
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.96) 0%, rgba(11, 14, 20, 0.98) 100%);
+    border-bottom-color: rgba(124, 176, 255, 0.18);
   }
 
   .nav-back {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(16, 20, 28, 0.72);
   }
 
   .hero-card {
-    background: linear-gradient(135deg, rgba(54, 209, 220, 0.15) 0%, rgba(91, 134, 229, 0.15) 100%);
-    border-color: rgba(91, 134, 229, 0.25);
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    border-color: rgba(124, 176, 255, 0.18);
   }
 
   .type-card {
-    background: var(--bg-card, #0d1117);
-    box-shadow: none;
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    box-shadow: var(--apple-shadow-card);
 
     &.active {
-      background: rgba(91, 134, 229, 0.12);
+      background: var(--cta-primary-bg);
     }
   }
 
   .file-placeholder {
-    background: var(--bg-card, #0d1117);
-    border-color: rgba(91, 134, 229, 0.25);
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    border-color: rgba(124, 176, 255, 0.18);
   }
 
   .file-info-card {
-    background: var(--bg-card, #0d1117);
-    box-shadow: none;
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    box-shadow: var(--apple-shadow-card);
 
     .file-reading {
       color: #8eaaef;
@@ -1180,13 +1313,184 @@ export default {
   }
 
   .action-bar {
-    background: rgba(13, 17, 23, 0.9);
-    border-top-color: rgba(255, 255, 255, 0.06);
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.96) 0%, rgba(11, 14, 20, 0.98) 100%);
+    border-top-color: rgba(124, 176, 255, 0.18);
   }
 
   .btn-secondary {
-    background: var(--bg-card, #0d1117);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(16, 20, 28, 0.72);
+    border-color: rgba(124, 176, 255, 0.18);
   }
+}
+
+/* Final polish: document convert page unified with Apple / Liquid Glass */
+.page-container {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+}
+
+.dark-mode.page-container {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.section .section-title,
+.hero-title,
+.upload-text,
+.file-name,
+.status-title,
+.btn-secondary {
+  color: var(--text-main);
+}
+
+.hero-desc,
+.type-desc,
+.upload-hint,
+.file-size,
+.file-reading,
+.status-hint {
+  color: var(--text-sub);
+}
+
+.dark-mode .section .section-title,
+.dark-mode .hero-title,
+.dark-mode .upload-text,
+.dark-mode .file-name,
+.dark-mode .status-title,
+.dark-mode .btn-secondary {
+  color: #ffffff;
+}
+
+.dark-mode .hero-desc,
+.dark-mode .type-desc,
+.dark-mode .upload-hint,
+.dark-mode .file-size,
+.dark-mode .file-reading,
+.dark-mode .status-hint {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.hero-card,
+.type-card,
+.file-placeholder,
+.file-info-card,
+.status-card,
+.btn-secondary {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .hero-card,
+.dark-mode .type-card,
+.dark-mode .file-placeholder,
+.dark-mode .file-info-card,
+.dark-mode .status-card,
+.dark-mode .btn-secondary {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.type-card {
+  border-width: 1rpx;
+}
+
+.type-card.active {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+}
+
+.dark-mode .type-card.active {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+}
+
+.type-card .type-icon-box,
+.file-placeholder .upload-icon-box,
+.file-info-card .file-icon-box,
+.file-info-card .file-remove {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.dark-mode .type-card .type-icon-box,
+.dark-mode .file-placeholder .upload-icon-box,
+.dark-mode .file-info-card .file-icon-box,
+.dark-mode .file-info-card .file-remove {
+  background: rgba(10, 132, 255, 0.14);
+  border-color: rgba(10, 132, 255, 0.18);
+}
+
+.type-card .type-icon,
+.file-placeholder .upload-icon-text {
+  color: var(--text-main);
+}
+
+.dark-mode .type-card .type-icon,
+.dark-mode .file-placeholder .upload-icon-text {
+  color: #ffffff;
+}
+
+.file-info-card .file-reading {
+  color: #22873a;
+}
+
+.dark-mode .file-info-card .file-reading {
+  color: #7bc0ff;
+}
+
+.status-card.status-loading,
+.status-card.status-done,
+.status-card.status-error {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+}
+
+.dark-mode .status-card.status-loading,
+.dark-mode .status-card.status-done,
+.dark-mode .status-card.status-error {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+}
+
+.status-spinner {
+  border-color: rgba(52, 199, 89, 0.16);
+  border-top-color: #34c759;
+}
+
+.dark-mode .status-spinner {
+  border-color: rgba(10, 132, 255, 0.16);
+  border-top-color: #0a84ff;
+}
+
+.status-done-icon,
+.status-error-icon {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.dark-mode .status-done-icon,
+.dark-mode .status-error-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.action-bar {
+  left: 24rpx;
+  right: 24rpx;
+  bottom: 20rpx;
+  border-radius: 34rpx;
+  border: 1rpx solid var(--apple-glass-border-strong);
 }
 </style>

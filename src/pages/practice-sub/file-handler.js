@@ -727,6 +727,7 @@ class FileHandler {
    * @returns {Promise<{success: boolean, content?: string}>}
    */
   async readTextFile(filePath, encoding = 'utf8') {
+    // #ifdef MP-WEIXIN
     return new Promise((resolve) => {
       const fs = uni.getFileSystemManager();
       fs.readFile({
@@ -741,6 +742,36 @@ class FileHandler {
         }
       });
     });
+    // #endif
+
+    // #ifdef APP-PLUS
+    return new Promise((resolve) => {
+      plus.io.resolveLocalFileSystemURL(
+        filePath,
+        (entry) => {
+          entry.file((f) => {
+            const reader = new plus.io.FileReader();
+            reader.onloadend = (e) => {
+              resolve({ success: true, content: e.target.result || '' });
+            };
+            reader.onerror = (err) => {
+              logger.error('[FileHandler] App端文件读取失败:', err);
+              resolve({ success: false, error: err });
+            };
+            reader.readAsText(f, encoding);
+          });
+        },
+        (err) => {
+          logger.error('[FileHandler] App端文件路径解析失败:', err);
+          resolve({ success: false, error: err });
+        }
+      );
+    });
+    // #endif
+
+    // #ifdef H5
+    return { success: false, error: new Error('H5环境不支持本地文件读取') };
+    // #endif
   }
 }
 

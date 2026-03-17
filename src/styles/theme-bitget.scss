@@ -7,76 +7,76 @@
    Bitget Wallet 主题 - 深色风格（默认）
    ============================================ */
 .theme-bitget {
-    /* Bitget 品牌色 - 深蓝色系（参考Bitget Wallet真实配色）*/
-    --theme-primary: #0A84FF;
-    --theme-primary-light: rgba(10, 132, 255, 0.2);
-    --theme-primary-dark: #007AFF;
+  /* Bitget 品牌色 - 深蓝色系（参考Bitget Wallet真实配色）*/
+  --theme-primary: #0a84ff;
+  --theme-primary-light: rgba(10, 132, 255, 0.2);
+  --theme-primary-dark: #007aff;
 
-    /* 背景色 - 纯黑色 */
-    --theme-bg: #000000;
-    --theme-bg-secondary: #1C1C1E;
-    --theme-bg-elevated: #2C2C2E;
+  /* 背景色 - 纯黑色 */
+  --theme-bg: #000000;
+  --theme-bg-secondary: #1c1c1e;
+  --theme-bg-elevated: #2c2c2e;
 
-    /* 文字颜色 */
-    --theme-text: #FFFFFF;
-    --theme-text-secondary: #E2E8F0;
-    --theme-text-tertiary: #A0AEC0;
+  /* 文字颜色 */
+  --theme-text: #ffffff;
+  --theme-text-secondary: #e2e8f0;
+  --theme-text-tertiary: #a0aec0;
 
-    /* 边框颜色 */
-    --theme-border: #2C2C2E;
-    --theme-border-light: #3A3A3C;
+  /* 边框颜色 */
+  --theme-border: #2c2c2e;
+  --theme-border-light: #3a3a3c;
 
-    /* 按钮样式 - 深蓝色背景 + 黑色符号 */
-    --theme-button-bg: #0A84FF;
-    --theme-button-text: #000000;
-    --theme-button-hover: #007AFF;
+  /* 按钮样式 - 深蓝色背景 + 黑色符号 */
+  --theme-button-bg: #0a84ff;
+  --theme-button-text: #000000;
+  --theme-button-hover: #007aff;
 
-    /* 卡片样式 - 渐变蓝色背景 + 白色文字 */
-    --theme-card-bg-start: #1a2332;
-    --theme-card-bg-end: #2d3e50;
-    --theme-card-text: #FFFFFF;
-    --theme-card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  /* 卡片样式 - 渐变蓝色背景 + 白色文字 */
+  --theme-card-bg-start: #1a2332;
+  --theme-card-bg-end: #2d3e50;
+  --theme-card-text: #ffffff;
+  --theme-card-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 
-    /* 布局背景 - 纯黑色 */
-    --theme-layout-top: #000000;
-    --theme-layout-middle: #000000;
-    --theme-layout-bottom: #000000;
+  /* 布局背景 - 纯黑色 */
+  --theme-layout-top: #000000;
+  --theme-layout-middle: #000000;
+  --theme-layout-bottom: #000000;
 
-    /* 底部导航栏 - 磨砂灰玻璃（参考Bitget Wallet透明度）*/
-    --theme-tabbar-bg: rgba(44, 44, 46, 0.8);
-    --theme-tabbar-border: rgba(58, 58, 60, 0.5);
+  /* 底部导航栏 - 磨砂灰玻璃（参考Bitget Wallet透明度）*/
+  --theme-tabbar-bg: rgba(44, 44, 46, 0.8);
+  --theme-tabbar-border: rgba(58, 58, 60, 0.5);
 
-    /* 渐变色 - 确保在各手机屏幕比例上均体现渲染比例 */
-    --theme-gradient-blue: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
-    --theme-gradient-blue-hover: linear-gradient(135deg, #2d3e50 0%, #1a2332 100%);
+  /* 渐变色 - 确保在各手机屏幕比例上均体现渲染比例 */
+  --theme-gradient-blue: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
+  --theme-gradient-blue-hover: linear-gradient(135deg, #2d3e50 0%, #1a2332 100%);
 }
 
 /* ============================================
    Bitget Wallet 主题 - 深色模式增强
    ============================================ */
 .theme-bitget.dark-mode {
-    /* 深色模式下颜色更鲜艳 */
-    --theme-primary: #409CFF;
-    --theme-primary-light: rgba(64, 156, 255, 0.2);
-    --theme-primary-dark: #0A84FF;
+  /* 深色模式下颜色更鲜艳 */
+  --theme-primary: #409cff;
+  --theme-primary-light: rgba(64, 156, 255, 0.2);
+  --theme-primary-dark: #0a84ff;
 
-    /* 背景色保持黑色 */
-    --theme-bg: #000000;
-    --theme-bg-secondary: #1C1C1E;
-    --theme-bg-elevated: #3A3A3C;
+  /* 背景色保持黑色 */
+  --theme-bg: #000000;
+  --theme-bg-secondary: #1c1c1e;
+  --theme-bg-elevated: #3a3a3c;
 
-    /* 文字颜色 */
-    --theme-text: #FFFFFF;
-    --theme-text-secondary: #E2E8F0;
-    --theme-text-tertiary: #A0AEC0;
+  /* 文字颜色 */
+  --theme-text: #ffffff;
+  --theme-text-secondary: #e2e8f0;
+  --theme-text-tertiary: #a0aec0;
 
-    /* 卡片渐变调整 */
-    --theme-card-bg-start: #1a2840;
-    --theme-card-bg-end: #2d4560;
+  /* 卡片渐变调整 */
+  --theme-card-bg-start: #1a2840;
+  --theme-card-bg-end: #2d4560;
 
-    /* 底部导航栏 */
-    --theme-tabbar-bg: rgba(44, 44, 46, 0.8);
-    --theme-tabbar-border: rgba(58, 58, 60, 0.5);
+  /* 底部导航栏 */
+  --theme-tabbar-bg: rgba(44, 44, 46, 0.8);
+  --theme-tabbar-border: rgba(58, 58, 60, 0.5);
 }
 
 /* ============================================
@@ -85,389 +85,395 @@
 
 /* 按钮 - Bitget 风格：深蓝色背景 + 黑色符号 */
 .theme-bitget .bitget-button {
-    background: var(--theme-button-bg);
-    color: var(--theme-button-text);
-    border: none;
-    border-radius: 24rpx;
-    padding: 24rpx 48rpx;
-    font-size: 28rpx;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 88rpx;
-    box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+  background: var(--theme-button-bg);
+  color: var(--theme-button-text);
+  border: none;
+  border-radius: 24rpx;
+  padding: 24rpx 48rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 88rpx;
+  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
 }
 
 .theme-bitget .bitget-button:active {
-    background: var(--theme-button-hover);
-    transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(10, 132, 255, 0.2);
+  background: var(--theme-button-hover);
+  transform: scale(0.98);
+  box-shadow: 0 2px 8px rgba(10, 132, 255, 0.2);
 }
 
 /* 卡片 - Bitget 风格：渐变蓝色背景 + 白色文字 */
 .theme-bitget .bitget-card {
-    background: var(--theme-gradient-blue);
-    color: var(--theme-card-text);
-    border-radius: 24rpx;
-    padding: 32rpx;
-    box-shadow: var(--theme-card-shadow);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+  background: var(--theme-gradient-blue);
+  color: var(--theme-card-text);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: var(--theme-card-shadow);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .theme-bitget .bitget-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(10, 132, 255, 0.1) 0%, transparent 50%);
-    pointer-events: none;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .theme-bitget .bitget-card:active {
-    transform: translateY(-2rpx);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2rpx);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* 胶囊卡片 - Bitget Hot Picks 风格 */
 .theme-bitget .capsule-card {
-    background: var(--theme-gradient-blue);
-    color: var(--theme-text);
-    border-radius: 32rpx;
-    padding: 32rpx;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+  background: var(--theme-gradient-blue);
+  color: var(--theme-text);
+  border-radius: 32rpx;
+  padding: 32rpx;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 /* 气泡效果 */
 .theme-bitget .bubble {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1rpx solid rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .theme-bitget .bubble:active {
-    background: rgba(255, 255, 255, 0.15);
-    transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0.95);
 }
 
 .theme-bitget .bubble-icon {
-    font-size: 48rpx;
-    margin-bottom: 8rpx;
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
 }
 
 .theme-bitget .bubble-value {
-    font-size: 32rpx;
-    font-weight: 700;
-    color: var(--theme-text);
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--theme-text);
 }
 
 .theme-bitget .bubble-label {
-    font-size: 20rpx;
-    color: var(--theme-text-secondary);
-    margin-top: 4rpx;
+  font-size: 20rpx;
+  color: var(--theme-text-secondary);
+  margin-top: 4rpx;
 }
 
 /* 底部导航栏 - Bitget 磨砂灰玻璃效果 */
 .theme-bitget .bitget-tabbar {
-    background: var(--theme-tabbar-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1rpx solid var(--theme-tabbar-border);
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+  background: var(--theme-tabbar-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1rpx solid var(--theme-tabbar-border);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 /* 布局容器 - Bitget 纯黑背景 */
 .theme-bitget .bitget-layout {
-    min-height: 100vh;
-    background: var(--theme-bg);
-    display: flex;
-    flex-direction: column;
+  min-height: 100%;
+  min-height: 100vh;
+  background: var(--theme-bg);
+  display: flex;
+  flex-direction: column;
 }
 
 /* 输入框 - Bitget 风格 */
 .theme-bitget .bitget-input {
-    background: var(--theme-bg-secondary);
-    border: 1rpx solid var(--theme-border);
-    border-radius: 16rpx;
-    padding: 24rpx 32rpx;
-    font-size: 28rpx;
-    color: var(--theme-text);
-    transition: all 0.3s ease;
+  background: var(--theme-bg-secondary);
+  border: 1rpx solid var(--theme-border);
+  border-radius: 16rpx;
+  padding: 24rpx 32rpx;
+  font-size: 28rpx;
+  color: var(--theme-text);
+  transition: all 0.3s ease;
 }
 
 .theme-bitget .bitget-input:focus {
-    border-color: var(--theme-primary);
-    background: var(--theme-bg-elevated);
-    box-shadow: 0 0 0 4rpx var(--theme-primary-light);
+  border-color: var(--theme-primary);
+  background: var(--theme-bg-elevated);
+  box-shadow: 0 0 0 4rpx var(--theme-primary-light);
 }
 
 /* 标签 - Bitget 风格 */
 .theme-bitget .bitget-tag {
-    background: var(--theme-primary-light);
-    color: var(--theme-primary);
-    border-radius: 16rpx;
-    padding: 8rpx 24rpx;
-    font-size: 24rpx;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    border: 1rpx solid var(--theme-primary);
+  background: var(--theme-primary-light);
+  color: var(--theme-primary);
+  border-radius: 16rpx;
+  padding: 8rpx 24rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  border: 1rpx solid var(--theme-primary);
 }
 
 /* 分割线 - Bitget 风格 */
 .theme-bitget .bitget-divider {
-    height: 1rpx;
-    background: var(--theme-border);
-    margin: 32rpx 0;
+  height: 1rpx;
+  background: var(--theme-border);
+  margin: 32rpx 0;
 }
 
 /* 图标按钮 - Bitget 风格 */
 .theme-bitget .bitget-icon-button {
-    width: 88rpx;
-    height: 88rpx;
-    border-radius: 50%;
-    background: var(--theme-bg-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    border: 1rpx solid var(--theme-border);
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--theme-bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 1rpx solid var(--theme-border);
 }
 
 .theme-bitget .bitget-icon-button:active {
-    background: var(--theme-bg-elevated);
-    border-color: var(--theme-primary);
-    transform: scale(0.95);
+  background: var(--theme-bg-elevated);
+  border-color: var(--theme-primary);
+  transform: scale(0.95);
 }
 
 /* 加载动画 - Bitget 风格 */
 .theme-bitget .bitget-loading {
-    width: 40rpx;
-    height: 40rpx;
-    border: 4rpx solid var(--theme-border);
-    border-top-color: var(--theme-primary);
-    border-radius: 50%;
-    animation: bitget-spin 0.8s linear infinite;
+  width: 40rpx;
+  height: 40rpx;
+  border: 4rpx solid var(--theme-border);
+  border-top-color: var(--theme-primary);
+  border-radius: 50%;
+  animation: bitget-spin 0.8s linear infinite;
 }
 
 @keyframes bitget-spin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* 空状态 - Bitget 风格 */
 .theme-bitget .bitget-empty {
-    text-align: center;
-    padding: 80rpx 40rpx;
-    color: var(--theme-text-tertiary);
+  text-align: center;
+  padding: 80rpx 40rpx;
+  color: var(--theme-text-tertiary);
 }
 
 .theme-bitget .bitget-empty-icon {
-    font-size: 120rpx;
-    margin-bottom: 24rpx;
-    opacity: 0.5;
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.5;
 }
 
 .theme-bitget .bitget-empty-text {
-    font-size: 28rpx;
-    color: var(--theme-text-secondary);
+  font-size: 28rpx;
+  color: var(--theme-text-secondary);
 }
 
 /* 成功/错误提示 - Bitget 风格 */
 .theme-bitget .bitget-toast {
-    background: var(--theme-bg-elevated);
-    color: var(--theme-text);
-    border-radius: 16rpx;
-    padding: 24rpx 32rpx;
-    box-shadow: var(--theme-card-shadow);
-    display: flex;
-    align-items: center;
-    gap: 16rpx;
-    border: 1rpx solid var(--theme-border);
+  background: var(--theme-bg-elevated);
+  color: var(--theme-text);
+  border-radius: 16rpx;
+  padding: 24rpx 32rpx;
+  box-shadow: var(--theme-card-shadow);
+  display: flex;
+  align-items: center;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+& > text + text,
+& > view + text,
+& > text + view {
+    margin-left: 16rpx;
+  }
+  border: 1rpx solid var(--theme-border);
 }
 
 .theme-bitget .bitget-toast-success {
-    border-left: 4rpx solid #34C759;
+  border-left: 4rpx solid #34c759;
 }
 
 .theme-bitget .bitget-toast-error {
-    border-left: 4rpx solid #FF3B30;
+  border-left: 4rpx solid #ff3b30;
 }
 
 /* 陀螺仪光晕效果 - Bitget 风格 */
 .theme-bitget .bitget-glow {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 .theme-bitget .bitget-glow::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(10, 132, 255, 0.3) 0%, transparent 70%);
-    animation: bitget-glow-pulse 3s ease-in-out infinite;
-    pointer-events: none;
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(10, 132, 255, 0.3) 0%, transparent 70%);
+  animation: bitget-glow-pulse 3s ease-in-out infinite;
+  pointer-events: none;
 }
 
 @keyframes bitget-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
 
-    0%,
-    100% {
-        opacity: 0.5;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 1;
-        transform: scale(1.1);
-    }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }
 
 /* 光晕划过效果 */
 .theme-bitget .bitget-shine {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 .theme-bitget .bitget-shine::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg,
-            transparent 30%,
-            rgba(10, 132, 255, 0.2) 50%,
-            transparent 70%);
-    animation: bitget-shine-sweep 3s ease-in-out infinite;
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 30%, rgba(10, 132, 255, 0.2) 50%, transparent 70%);
+  animation: bitget-shine-sweep 3s ease-in-out infinite;
 }
 
 @keyframes bitget-shine-sweep {
-    0% {
-        transform: translateX(-100%) translateY(-100%) rotate(45deg);
-    }
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
 
-    100% {
-        transform: translateX(100%) translateY(100%) rotate(45deg);
-    }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
 }
 
 /* 渐变文字 - Bitget 风格 */
 .theme-bitget .bitget-gradient-text {
-    background: linear-gradient(135deg, #0A84FF 0%, #409CFF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 700;
+  background: linear-gradient(135deg, #0a84ff 0%, #409cff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
 }
 
 /* 玻璃态卡片 - Bitget 风格 */
 .theme-bitget .bitget-glass-card {
-    background: rgba(28, 28, 30, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1rpx solid rgba(255, 255, 255, 0.1);
-    border-radius: 24rpx;
-    padding: 32rpx;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: rgba(28, 28, 30, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* Hot Picks 容器 - Bitget 风格 */
 .theme-bitget .hot-picks-container {
-    background: var(--theme-gradient-blue);
-    border-radius: 32rpx;
-    padding: 40rpx;
-    position: relative;
-    overflow: hidden;
+  background: var(--theme-gradient-blue);
+  border-radius: 32rpx;
+  padding: 40rpx;
+  position: relative;
+  overflow: hidden;
 }
 
 .theme-bitget .hot-picks-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 30%, rgba(10, 132, 255, 0.2) 0%, transparent 50%);
-    pointer-events: none;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 30%, rgba(10, 132, 255, 0.2) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 /* 气泡布局容器 */
 .theme-bitget .bubble-layout {
-    position: relative;
-    min-height: 400rpx;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24rpx;
-    align-items: center;
-    justify-content: space-around;
+  position: relative;
+  min-height: 400rpx;
+  display: flex;
+  flex-wrap: wrap;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+& > text + text,
+& > view + text,
+& > text + view {
+    margin-left: 24rpx;
+  }
+  align-items: center;
+  justify-content: space-around;
 }
 
 /* 不同大小的气泡 */
 .theme-bitget .bubble-large {
-    width: 200rpx;
-    height: 200rpx;
+  width: 200rpx;
+  height: 200rpx;
 }
 
 .theme-bitget .bubble-medium {
-    width: 160rpx;
-    height: 160rpx;
+  width: 160rpx;
+  height: 160rpx;
 }
 
 .theme-bitget .bubble-small {
-    width: 120rpx;
-    height: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
 }
 
 /* 深色模式下的光晕调整 */
 .theme-bitget.dark-mode .bitget-glow::before {
-    background: radial-gradient(circle, rgba(64, 156, 255, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(64, 156, 255, 0.4) 0%, transparent 70%);
 }
 
 .theme-bitget.dark-mode .bitget-shine::after {
-    background: linear-gradient(45deg,
-            transparent 30%,
-            rgba(64, 156, 255, 0.3) 50%,
-            transparent 70%);
+  background: linear-gradient(45deg, transparent 30%, rgba(64, 156, 255, 0.3) 50%, transparent 70%);
 }
 
 /* 响应式调整 */
 @media (max-width: 375px) {
-    .theme-bitget .bubble-large {
-        width: 180rpx;
-        height: 180rpx;
-    }
+  .theme-bitget .bubble-large {
+    width: 180rpx;
+    height: 180rpx;
+  }
 
-    .theme-bitget .bubble-medium {
-        width: 140rpx;
-        height: 140rpx;
-    }
+  .theme-bitget .bubble-medium {
+    width: 140rpx;
+    height: 140rpx;
+  }
 
-    .theme-bitget .bubble-small {
-        width: 100rpx;
-        height: 100rpx;
-    }
+  .theme-bitget .bubble-small {
+    width: 100rpx;
+    height: 100rpx;
+  }
 }

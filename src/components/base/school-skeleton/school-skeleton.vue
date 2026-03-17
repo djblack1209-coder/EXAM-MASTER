@@ -95,13 +95,14 @@ export default {
 .skeleton-container.dark-mode {
   --skeleton-bg: #2c2c2e;
   --skeleton-highlight: #3a3a3c;
-  --card-bg: #1e3a0f;
-  --card-border: #2d4e1f;
+  --card-bg: var(--bg-card);
+  --card-border: var(--border-color);
 }
 
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--card-border);
   border-radius: 40rpx;
   padding: 30rpx;
@@ -126,14 +127,23 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 40rpx;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+}
+
+.skeleton-step-bar .skeleton-step + .skeleton-line,
+.skeleton-step-bar .skeleton-line + .skeleton-step {
+  margin-left: 20rpx;
 }
 
 .skeleton-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+}
+
+.skeleton-step .skeleton-step-text {
+  margin-top: 10rpx;
 }
 
 .skeleton-dot {
@@ -279,7 +289,11 @@ export default {
 
 .skeleton-tags {
   display: flex;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+}
+
+.skeleton-tag + .skeleton-tag {
+  margin-left: 12rpx;
 }
 
 .skeleton-tag {
@@ -323,7 +337,11 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+}
+
+.skeleton-score-col .skeleton-score-num {
+  margin-top: 8rpx;
 }
 
 .skeleton-score-year {
@@ -344,8 +362,12 @@ export default {
 
 .skeleton-card-footer {
   display: flex;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
   margin-top: 24rpx;
+}
+
+.skeleton-footer-btn + .skeleton-footer-btn {
+  margin-left: 24rpx;
 }
 
 .skeleton-footer-btn {

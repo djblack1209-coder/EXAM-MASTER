@@ -39,13 +39,7 @@
           {{ opponentFound ? '匹配成功！' : matchingStatusText }}
         </text>
         <text v-if="opponentFound" class="status-tip"> {{ opponent.name }} 已加入对战 </text>
-        <text
-          v-if="!opponentFound"
-          class="status-tip"
-          style="margin-top: 10rpx; font-size: 22rpx; color: var(--text-inverse-secondary)"
-        >
-          超时将自动匹配机器人对手
-        </text>
+        <text v-if="!opponentFound" class="status-tip status-tip-note"> 超时将自动匹配机器人对手 </text>
       </view>
       <view v-if="!opponentFound" class="exit-btn" @tap="handleExit">
         <text>取消匹配</text>
@@ -57,7 +51,7 @@
 
     <!-- 对战阶段 - iOS 风格重构 -->
     <view v-if="gameState === 'battle'" class="pk-container">
-      <view class="top-bar" :style="{ marginTop: '10px' }">
+      <view class="top-bar">
         <view class="icon-btn" @tap="handleQuit">
           <BaseIcon name="close" :size="32" />
         </view>
@@ -67,7 +61,7 @@
         <view class="icon-btn ghost" />
       </view>
 
-      <view class="battle-stage" :style="{ marginTop: '30px' }">
+      <view class="battle-stage">
         <view class="player-card left">
           <image
             :src="userInfo.avatarUrl || defaultAvatar"
@@ -138,7 +132,6 @@
           :disabled="showAns"
           :data-index="idx"
           hover-class="btn-scale-sm"
-          style="position: relative; z-index: 10; background: transparent; border: none; padding: 0; margin: 0"
           @tap.stop="handleSelect(idx)"
           @click.stop="handleSelect(idx)"
         >
@@ -157,11 +150,7 @@
         </button>
       </view>
 
-      <view
-        v-if="opponentAnswered && !showAns"
-        class="opponent-status"
-        :style="{ marginBottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)' }"
-      >
+      <view v-if="opponentAnswered && !showAns" class="opponent-status">
         <text class="opponent-tip"> {{ opponent.name }} 已答题 ✓ </text>
       </view>
     </view>
@@ -174,7 +163,7 @@
             <BaseIcon :name="myScore >= opponentScore ? 'trophy' : 'warning'" :size="48" />
           </view>
           <text class="result-title" :class="{ victory: myScore >= opponentScore, defeat: myScore < opponentScore }">
-            {{ myScore >= opponentScore ? 'VICTORY' : 'DEFEAT' }}
+            {{ myScore >= opponentScore ? '本局获胜' : '再接再厉' }}
           </text>
           <text class="result-subtitle"> 战绩对比：{{ myScore }} VS {{ opponentScore }} </text>
         </view>
@@ -185,7 +174,7 @@
             <view class="ai-icon">
               <BaseIcon name="robot" :size="32" />
             </view>
-            <text class="ai-title"> 智能犀利点评 </text>
+            <text class="ai-title"> AI 战报点评 </text>
           </view>
           <text class="ai-text">
             {{ aiSummary || '智能正在分析本场对局...' }}
@@ -205,7 +194,16 @@
     <!-- 隐藏的画布，用于生成分享海报 -->
     <canvas
       canvas-id="shareCanvas"
-      :style="{ width: '375px', height: '600px', position: 'fixed', left: '9000px', top: '0' }"
+      :style="{
+        width: '375px',
+        height: '600px',
+        position: 'fixed',
+        left: '0',
+        top: '0',
+        opacity: '0',
+        pointerEvents: 'none',
+        zIndex: '-1'
+      }"
     ></canvas>
 
     <!-- ✅ 自定义弹窗：题库为空提示 -->
@@ -1548,11 +1546,12 @@ export default {
 <style lang="scss" scoped>
 /* iOS 风格全局容器 */
 .container {
+  min-height: 100%;
   min-height: 100vh;
   background-color: var(--text-primary);
   background-image: linear-gradient(180deg, var(--bg-tertiary) 0%, var(--text-primary) 100%);
   color: var(--text-inverse);
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'Noto Sans SC', 'Roboto', sans-serif;
   position: relative;
 }
 .container.dark-mode {
@@ -1671,7 +1670,13 @@ export default {
 .match-core {
   display: flex;
   align-items: center;
-  gap: 40rpx;
+  /* gap: 40rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 40rpx;
+  }
   margin-bottom: 60rpx;
   position: relative;
   z-index: 2;
@@ -1685,6 +1690,7 @@ export default {
   background: var(--bg-overlay);
   position: relative;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 .user-avatar {
   width: 100%;
@@ -1726,7 +1732,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 20rpx;
+  }
   position: relative;
   z-index: 2;
 }
@@ -1753,6 +1765,7 @@ export default {
 
 /* 全局：深空黑 */
 .pk-container {
+  min-height: 100%;
   min-height: 100vh;
   background: radial-gradient(circle at center top, var(--bg-tertiary) 0%, var(--text-primary) 100%);
   padding: 0 24px;
@@ -1784,6 +1797,7 @@ export default {
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: all 0.2s;
 }
 
@@ -1993,9 +2007,15 @@ export default {
 .options-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12px;
+  }
   padding-bottom: calc(constant(safe-area-inset-bottom) + 20px); /* 底部安全区域 + 额外间距 */
-  padding-bottom: calc(env(safe-area-inset-bottom) + 20px); /* 底部安全区域 + 额外间距 */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); /* 底部安全区域 + 额外间距 */
   margin-bottom: 20px;
 }
 
@@ -2131,6 +2151,7 @@ export default {
 
 /* 结算 - 绿色主题，高级质感 */
 .result-stage {
+  height: 100%;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -2289,7 +2310,7 @@ export default {
 .ai-summary .tag {
   display: inline-block;
   background: #00e5ff;
-  color: #000;
+  color: var(--primary-foreground, #111111);
   font-size: 20rpx;
   padding: 4rpx 12rpx;
   border-radius: 6rpx;
@@ -2307,7 +2328,13 @@ export default {
 .action-btns {
   display: flex;
   flex-wrap: wrap;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   margin-top: 40rpx;
 }
 .btn-share {
@@ -2478,5 +2505,702 @@ export default {
     background: rgba(255, 0, 0, 0.15);
     filter: blur(0px);
   }
+}
+
+/* Apple / Liquid Glass visual overrides */
+.container {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+  color: var(--text-main);
+}
+
+.container.dark-mode {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.aurora-bg {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(107, 208, 150, 0.28) 0%, transparent 34%),
+    radial-gradient(circle at 86% 10%, rgba(255, 255, 255, 0.3) 0%, transparent 24%),
+    radial-gradient(circle at 72% 82%, rgba(72, 190, 128, 0.18) 0%, transparent 32%);
+  animation: auroraShift 10s ease-in-out infinite;
+}
+
+.container.dark-mode .aurora-bg {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(10, 132, 255, 0.2) 0%, transparent 34%),
+    radial-gradient(circle at 86% 10%, rgba(95, 170, 255, 0.14) 0%, transparent 24%),
+    radial-gradient(circle at 72% 82%, rgba(32, 83, 170, 0.16) 0%, transparent 34%);
+}
+
+.matching-stage,
+.pk-container,
+.result-stage {
+  position: relative;
+  z-index: 1;
+}
+
+.matching-stage {
+  padding-left: 28rpx;
+  padding-right: 28rpx;
+}
+
+.radar-circle {
+  border-color: rgba(52, 199, 89, 0.18);
+}
+
+.container.dark-mode .radar-circle {
+  border-color: rgba(10, 132, 255, 0.16);
+}
+
+.radar-line {
+  background: linear-gradient(90deg, transparent, rgba(52, 199, 89, 0.7), transparent);
+}
+
+.container.dark-mode .radar-line {
+  background: linear-gradient(90deg, transparent, rgba(10, 132, 255, 0.72), transparent);
+}
+
+.match-core {
+  /* gap: 56rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 56rpx;
+  }
+}
+
+.avatar-ring {
+  width: 192rpx;
+  height: 192rpx;
+  padding: 12rpx;
+  border-radius: 50%;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, transparent 44%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(240, 250, 243, 0.52) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.container.dark-mode .avatar-ring {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.opponent-ring.found {
+  border-color: rgba(10, 132, 255, 0.5);
+}
+
+.user-avatar {
+  border-radius: 50%;
+}
+
+.vs-text {
+  color: var(--text-main);
+  text-shadow: none;
+}
+
+.container.dark-mode .vs-text {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.match-status {
+  padding: 26rpx 28rpx;
+  border-radius: 28rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 44%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.76) 0%, rgba(241, 248, 243, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.container.dark-mode .match-status {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.status-title {
+  color: var(--text-main);
+}
+
+.status-tip {
+  color: var(--text-sub);
+}
+
+.container.dark-mode .status-title {
+  color: #ffffff;
+}
+
+.container.dark-mode .status-tip {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.exit-btn {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: var(--text-main);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.container.dark-mode .exit-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.pk-container {
+  background: transparent;
+  color: var(--text-main);
+  padding: 0 20px;
+}
+
+.top-bar {
+  margin-bottom: 28px;
+}
+
+.icon-btn,
+.round-badge,
+.player-card,
+.question-card,
+.opt-btn-inner,
+.opponent-status,
+.result-glass,
+.ai-report-box,
+.btn-share,
+.btn-rank,
+.btn-home,
+.btn-exit {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.76) 0%, rgba(241, 248, 243, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.container.dark-mode .icon-btn,
+.container.dark-mode .round-badge,
+.container.dark-mode .player-card,
+.container.dark-mode .question-card,
+.container.dark-mode .opt-btn-inner,
+.container.dark-mode .opponent-status,
+.container.dark-mode .result-glass,
+.container.dark-mode .ai-report-box,
+.container.dark-mode .btn-share,
+.container.dark-mode .btn-rank,
+.container.dark-mode .btn-home,
+.container.dark-mode .btn-exit {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.icon-btn {
+  color: var(--text-main);
+}
+
+.round-badge {
+  padding: 10px 18px;
+  border-radius: 999px;
+  color: var(--text-main);
+}
+
+.battle-stage {
+  /* gap: 18rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 18rpx;
+  }
+  align-items: stretch;
+}
+
+.player-card {
+  width: 180rpx;
+  padding: 22rpx 18rpx;
+  border-radius: 28rpx;
+}
+
+.avatar {
+  width: 104rpx;
+  height: 104rpx;
+  margin-bottom: 12rpx;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+}
+
+.score {
+  color: var(--text-main);
+  text-shadow: none;
+}
+
+.score.me {
+  color: #22873a;
+}
+
+.score.opp {
+  color: #0a84ff;
+}
+
+.container.dark-mode .score.me,
+.container.dark-mode .score.opp {
+  color: #ffffff;
+}
+
+.progress-track {
+  height: 10rpx;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999rpx;
+}
+
+.container.dark-mode .progress-track {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.progress-fill.me {
+  background: linear-gradient(90deg, rgba(52, 199, 89, 0.88) 0%, rgba(101, 219, 138, 0.96) 100%);
+}
+
+.progress-fill.opp {
+  background: linear-gradient(90deg, rgba(10, 132, 255, 0.88) 0%, rgba(95, 170, 255, 0.96) 100%);
+}
+
+.question-card {
+  min-height: 0;
+  padding: 24px 22px;
+  border-radius: 30rpx;
+}
+
+.tag {
+  background: rgba(52, 199, 89, 0.14);
+  color: #22873a;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+}
+
+.container.dark-mode .tag {
+  background: rgba(10, 132, 255, 0.14);
+  color: #5faaff;
+}
+
+.timer-badge {
+  background: rgba(255, 255, 255, 0.64);
+  border-color: rgba(255, 255, 255, 0.52);
+}
+
+.timer-text {
+  color: var(--text-main);
+}
+
+.q-text,
+.content {
+  color: var(--text-main);
+}
+
+.container.dark-mode .q-text,
+.container.dark-mode .content,
+.container.dark-mode .round-badge,
+.container.dark-mode .icon-btn,
+.container.dark-mode .opponent-tip,
+.container.dark-mode .result-subtitle,
+.container.dark-mode .ai-text {
+  color: #ffffff;
+}
+
+.opt-btn-inner {
+  min-height: 112rpx;
+  padding: 18px 18px;
+  border-radius: 28rpx;
+}
+
+.letter {
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--text-main);
+}
+
+.container.dark-mode .letter {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.opt-btn.selected .opt-btn-inner {
+  border-color: rgba(52, 199, 89, 0.38);
+  background: rgba(52, 199, 89, 0.12);
+}
+
+.opt-btn.selected .letter {
+  background: rgba(52, 199, 89, 0.84);
+  color: #ffffff;
+}
+
+.container.dark-mode .opt-btn.selected .opt-btn-inner {
+  border-color: rgba(10, 132, 255, 0.34);
+  background: rgba(10, 132, 255, 0.14);
+}
+
+.container.dark-mode .opt-btn.selected .letter {
+  background: rgba(10, 132, 255, 0.88);
+}
+
+.opt-btn.correct .opt-btn-inner {
+  border-color: rgba(52, 199, 89, 0.42);
+  background: rgba(52, 199, 89, 0.12);
+}
+
+.opt-btn.wrong .opt-btn-inner {
+  border-color: rgba(255, 59, 48, 0.34);
+  background: rgba(255, 99, 90, 0.12);
+}
+
+.opt-btn.correct .letter {
+  background: rgba(52, 199, 89, 0.86);
+}
+
+.opt-btn.wrong .letter {
+  background: rgba(255, 59, 48, 0.86);
+}
+
+.opponent-status {
+  padding: 16px 18px;
+  border-radius: 22rpx;
+}
+
+.opponent-tip {
+  color: var(--text-sub);
+}
+
+.result-stage {
+  background: transparent;
+}
+
+.result-glass {
+  padding: 46rpx 28rpx;
+  border-radius: 34rpx;
+}
+
+.result-icon {
+  color: var(--text-main);
+  margin-bottom: 18rpx;
+}
+
+.result-title {
+  font-size: 56rpx;
+  letter-spacing: 0;
+}
+
+.result-title.victory {
+  color: #22873a;
+  text-shadow: none;
+}
+
+.result-title.defeat {
+  color: #0a84ff;
+  text-shadow: none;
+}
+
+.result-subtitle {
+  color: var(--text-sub);
+}
+
+.ai-report-box {
+  padding: 24rpx 22rpx;
+  border-radius: 26rpx;
+}
+
+.ai-header {
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
+}
+
+.ai-title {
+  color: var(--text-main);
+  text-shadow: none;
+}
+
+.ai-text {
+  color: var(--text-main);
+  text-shadow: none;
+}
+
+.action-btns {
+  /* gap: 14rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 14rpx;
+  }
+}
+
+.btn-share,
+.btn-rank,
+.btn-home,
+.btn-exit,
+.btn-again {
+  min-width: calc(50% - 7rpx);
+  border-radius: 999rpx;
+  padding: 22rpx 0;
+  font-size: 28rpx;
+  font-weight: 620;
+}
+
+.btn-share,
+.btn-rank,
+.btn-home,
+.btn-exit {
+  color: var(--text-main);
+}
+
+.btn-again {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.container.dark-mode .btn-again {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+}
+
+.btn-home,
+.btn-exit {
+  min-width: 100%;
+}
+
+.btn-exit {
+  margin-top: 0;
+}
+
+.btn-share::after,
+.btn-rank::after,
+.btn-home::after,
+.btn-exit::after,
+.btn-again::after {
+  border: none;
+}
+
+.btn-share:active,
+.btn-rank:active,
+.btn-home:active,
+.btn-exit:active,
+.btn-again:active,
+.icon-btn:active,
+.exit-btn:active,
+.opt-btn:active .opt-btn-inner {
+  transform: scale(0.97);
+}
+
+/* Final polish: unify battle page glass language */
+.matching-stage {
+  justify-content: flex-start;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 120rpx);
+}
+
+.matching-stage::after {
+  content: '';
+  position: absolute;
+  top: 88rpx;
+  left: 28rpx;
+  right: 28rpx;
+  bottom: 56rpx;
+  border-radius: 40rpx;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 24%),
+    linear-gradient(160deg, rgba(247, 255, 249, 0.72) 0%, rgba(228, 242, 232, 0.32) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-floating);
+  z-index: 0;
+}
+
+.container.dark-mode .matching-stage::after {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 24%),
+    linear-gradient(160deg, rgba(15, 20, 30, 0.92) 0%, rgba(8, 12, 20, 0.88) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.radar-scanner,
+.match-core,
+.match-status,
+.exit-btn {
+  z-index: 1;
+}
+
+.match-core {
+  margin-top: 120rpx;
+  margin-bottom: 44rpx;
+}
+
+.search-overlay {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.container.dark-mode .search-overlay {
+  background: rgba(10, 132, 255, 0.12);
+}
+
+.search-icon {
+  color: var(--text-main);
+}
+
+.container.dark-mode .search-icon {
+  color: #ffffff;
+}
+
+.status-tip-note {
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.container.dark-mode .status-tip-note {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pk-container {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 88rpx);
+  padding-left: 24rpx;
+  padding-right: 24rpx;
+}
+
+.top-bar {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 20rpx);
+  z-index: 3;
+  margin-bottom: 32rpx;
+}
+
+.round-badge {
+  min-width: 260rpx;
+  justify-content: center;
+}
+
+.battle-stage {
+  margin-top: 0;
+  margin-bottom: 28rpx;
+}
+
+.player-card {
+  flex: 1;
+  width: auto;
+  min-height: 212rpx;
+  justify-content: center;
+}
+
+.player-card.left {
+  align-items: flex-start;
+}
+
+.player-card.right {
+  align-items: flex-end;
+}
+
+.question-card {
+  padding: 28rpx 24rpx;
+  margin-bottom: 18rpx;
+}
+
+.question-header {
+  margin-bottom: 18rpx;
+}
+
+.options-group {
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+  margin-bottom: 16rpx;
+}
+
+.opt-btn {
+  position: relative;
+  z-index: 10;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.opt-btn-inner {
+  align-items: flex-start;
+  /* gap: 14rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 14rpx;
+  }
+}
+
+.content {
+  line-height: 1.55;
+}
+
+.opponent-status {
+  margin: 0;
+}
+
+.result-glass {
+  max-width: 680rpx;
+  margin: 0 auto;
+}
+
+.result-icon {
+  width: 112rpx;
+  height: 112rpx;
+  margin: 0 auto 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.container.dark-mode .result-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.action-btns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.btn-home,
+.btn-exit {
+  min-width: 0;
+}
+
+.btn-home {
+  grid-column: span 2;
+}
+
+.btn-exit {
+  grid-column: span 2;
+  color: #c53d35;
+}
+
+.container.dark-mode .btn-exit {
+  color: #ff8e86;
 }
 </style>

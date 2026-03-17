@@ -3,7 +3,7 @@
     <view class="aurora-bg" />
 
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <view class="nav-content">
+      <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
         <view id="e2e-school-detail-back-btn" class="back-btn" @tap="navBack">
           <text>←</text>
         </view>
@@ -18,6 +18,23 @@
 
     <scroll-view scroll-y="true" class="detail-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <!-- 骨架屏加载状态 -->
+      <!-- #ifdef APP-PLUS -->
+      <view v-if="isPageLoading" class="skeleton-loading">
+        <view class="skeleton-header-card">
+          <view class="skeleton-logo skeleton-animate" />
+          <view class="skeleton-info">
+            <view class="skeleton-name skeleton-animate" />
+            <view class="skeleton-tags skeleton-animate" />
+          </view>
+        </view>
+        <view class="skeleton-predict-card skeleton-animate" />
+        <view class="skeleton-stats">
+          <view v-for="i in 3" :key="i" class="skeleton-stat skeleton-animate" />
+        </view>
+        <view class="skeleton-intro skeleton-animate" />
+      </view>
+      <!-- #endif -->
+      <!-- #ifndef APP-PLUS -->
       <!-- #ifndef APP-NVUE -->
       <transition name="skeleton-fade">
         <view v-if="isPageLoading" class="skeleton-loading">
@@ -52,6 +69,7 @@
         <view class="skeleton-intro skeleton-animate" />
       </view>
       <!-- #endif -->
+      <!-- #endif -->
 
       <!-- 实际内容 -->
       <template v-if="!isPageLoading">
@@ -66,8 +84,8 @@
               <text class="type-tag">
                 {{ getTypeTag(schoolInfo.tags) }}
               </text>
-              <view class="location-tag" style="display: inline-flex; align-items: center; gap: 4rpx">
-                <BaseIcon name="target" :size="20" />
+              <view class="location-tag" style="display: inline-flex; align-items: center">
+                <BaseIcon name="target" :size="20" style="margin-right: 4rpx" />
                 <text>{{ schoolInfo.location || '未知地区' }}</text>
               </view>
               <text v-if="schoolInfo.matchRate" class="rank-tag"> 匹配度 {{ schoolInfo.matchRate }}% </text>
@@ -205,7 +223,7 @@ import { lafService } from '@/services/lafService.js';
 import config from '@/config/index.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
-import { getStatusBarHeight } from '@/utils/core/system.js';
+import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
@@ -219,6 +237,7 @@ export default {
   data() {
     return {
       statusBarHeight: 44,
+      capsuleSafeRight: 20,
       isDark: false,
       schoolInfo: {},
       isTarget: false,
@@ -253,9 +272,11 @@ export default {
     }
   },
   onLoad(options) {
+    if (!options) options = {};
     logger.log('[detail] 📄 详情页加载，接收参数:', options);
 
     this.statusBarHeight = getStatusBarHeight();
+    this.capsuleSafeRight = getCapsuleSafeRight();
 
     // 初始化深色模式
     this.isDark = storageService.get('theme_mode') === 'dark';
@@ -597,20 +618,11 @@ export default {
     },
     handleShare() {
       // #ifdef MP-WEIXIN
-      // 微信小程序：提示用户使用右上角分享
-      uni.showActionSheet({
-        itemList: ['分享给好友', '复制院校信息'],
-        success: (res) => {
-          if (res.tapIndex === 0) {
-            uni.showToast({
-              title: '请点击右上角"..."分享',
-              icon: 'none',
-              duration: 2500
-            });
-          } else if (res.tapIndex === 1) {
-            this.copySchoolInfo();
-          }
-        }
+      this.copySchoolInfo();
+      uni.showToast({
+        title: '已复制院校信息，可通过右上角继续分享',
+        icon: 'none',
+        duration: 2500
       });
       // #endif
 
@@ -854,6 +866,8 @@ export default {
   --card-border: var(--border);
   --brand-color: var(--success);
 
+  min-height: 100%;
+
   min-height: 100vh;
   background: var(--bg-body);
   position: relative;
@@ -893,9 +907,13 @@ export default {
   top: 0;
   width: 100%;
   z-index: 100;
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--card-border);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 }
 .nav-content {
   height: 44px;
@@ -930,6 +948,7 @@ export default {
 }
 
 .detail-scroll {
+  height: 100%;
   height: 100vh;
   padding: 0 30rpx;
   box-sizing: border-box;
@@ -938,12 +957,27 @@ export default {
 }
 
 .glass-card {
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid var(--apple-glass-border-strong);
   border-radius: 40rpx;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--apple-shadow-card);
   margin-bottom: 30rpx;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .school-header-card {
@@ -955,9 +989,10 @@ export default {
 .school-logo {
   width: 140rpx;
   height: 140rpx;
-  border-radius: 30rpx;
-  background: var(--bg-page);
-  box-shadow: var(--shadow-sm);
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 .header-main {
   flex: 1;
@@ -973,31 +1008,46 @@ export default {
 .tag-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
 }
 .tag-row text {
   font-size: 20rpx;
-  padding: 4rpx 16rpx;
-  border-radius: 10rpx;
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
 }
 .type-tag {
-  background: var(--success-light);
-  color: var(--success);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-primary);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   font-weight: 600;
 }
 .location-tag {
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.56);
   color: var(--text-sub);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
 }
 .rank-tag {
-  background: var(--danger-light);
-  color: var(--danger);
+  background: rgba(255, 255, 255, 0.66);
+  color: var(--text-primary);
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
   font-weight: 600;
 }
 
 .stats-grid {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   margin-bottom: 30rpx;
 }
 .stat-item {
@@ -1008,6 +1058,7 @@ export default {
   justify-content: center;
   padding: 30rpx 0;
   margin-bottom: 0;
+  border-radius: 28rpx;
 }
 .stat-val {
   font-size: 36rpx;
@@ -1021,9 +1072,11 @@ export default {
 }
 
 .section-title {
-  font-size: 32rpx;
-  font-weight: 800;
-  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 620;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
   margin: 40rpx 0 20rpx 10rpx;
 }
 
@@ -1045,7 +1098,7 @@ export default {
 }
 .major-card:active {
   transform: scale(0.98);
-  background: var(--bg-glass);
+  background: rgba(255, 255, 255, 0.22);
 }
 .major-info {
   flex: 1;
@@ -1065,10 +1118,11 @@ export default {
 }
 .major-type {
   font-size: 20rpx;
-  color: var(--success);
-  background: var(--success-light);
-  padding: 2rpx 12rpx;
-  border-radius: 8rpx;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.64);
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
   display: inline-block;
 }
 .arrow-icon {
@@ -1089,23 +1143,41 @@ export default {
 }
 .action-container {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   margin-bottom: 0;
   padding: 20rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 40%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-floating);
 }
 .ai-consult-btn {
   flex: 1;
   height: 100rpx;
-  border-radius: 24rpx;
-  background: var(--bg-secondary);
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.72);
   color: var(--text-primary);
   font-size: 28rpx;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10rpx;
-  border: none;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 .ai-consult-btn::after {
   border: none;
@@ -1113,22 +1185,22 @@ export default {
 .target-btn {
   flex: 2;
   height: 100rpx;
-  border-radius: 24rpx;
-  background: var(--brand-color);
-  color: var(--text-primary-foreground);
+  border-radius: 999rpx;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   font-size: 30rpx;
   font-weight: bold;
-  border: none;
-  box-shadow: var(--shadow-success);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
   transition: all 0.3s;
 }
 .target-btn::after {
   border: none;
 }
 .target-btn.is-added {
-  background: var(--bg-secondary);
-  color: var(--text-sub);
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-primary);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .safe-area {
@@ -1146,7 +1218,13 @@ export default {
   margin-bottom: 40rpx;
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
 }
 .sparkle-icon {
   font-size: 28rpx;
@@ -1263,16 +1341,17 @@ export default {
 .predict-btn {
   margin-top: 40rpx;
   height: 80rpx;
-  border-radius: 40rpx;
-  background: var(--brand-color);
-  color: var(--text-inverse);
+  border-radius: 999rpx;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   font-size: 26rpx;
   font-weight: bold;
-  border: none;
+  border: 1rpx solid var(--cta-primary-border);
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
+  box-shadow: var(--cta-primary-shadow);
 }
 .predict-btn::after {
   border: none;
@@ -1327,7 +1406,13 @@ export default {
 
 .skeleton-stats {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   margin-bottom: 30rpx;
 }
 

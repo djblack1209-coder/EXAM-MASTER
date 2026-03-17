@@ -1521,12 +1521,14 @@ export default {
 <style lang="scss" scoped>
 /* --- 全局容器与背景 --- */
 .apple-container {
+  min-height: 100%;
   min-height: 100vh;
   background-color: var(--bg-page, #9fe870);
   padding: 20px;
-  padding-bottom: 120px; /* 为底部悬浮栏留空 */
+  padding-bottom: calc(28px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
   padding-top: calc(constant(safe-area-inset-top) + 20px);
-  padding-top: calc(env(safe-area-inset-top) + 20px);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
   box-sizing: border-box;
   color: var(--text-primary);
 }
@@ -1627,10 +1629,10 @@ export default {
 
 /* --- 头部大标题 --- */
 .page-header {
-  margin-top: calc(constant(safe-area-inset-top) + 88px); /* 为导航栏留出空间（标准高度） */
-  margin-top: calc(env(safe-area-inset-top) + 88px); /* 为导航栏留出空间（标准高度） */
-  margin-bottom: 30px;
-  padding-left: 10px;
+  margin-top: calc(constant(safe-area-inset-top) + 64px);
+  margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
+  margin-bottom: 24px;
+  padding: 0 8px;
 }
 
 .header-title {
@@ -1658,15 +1660,18 @@ export default {
 
 /* --- 主体玻璃卡片 --- */
 .main-glass-card {
-  background: var(--bg-glass);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid var(--border);
-  border-radius: 24px;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  backdrop-filter: blur(25px) saturate(155%);
+  -webkit-backdrop-filter: blur(25px) saturate(155%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28px;
   padding: 24px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--apple-shadow-floating);
   overflow: hidden;
   position: relative;
+  margin-bottom: 24px;
 }
 
 /* 状态栏 */
@@ -1699,9 +1704,9 @@ export default {
 /* --- 操作区：上传按钮 --- */
 .upload-trigger {
   height: 160px;
-  background: var(--bg-glass);
-  border-radius: 20px;
-  border: 2px dashed var(--border);
+  background: rgba(255, 255, 255, 0.56);
+  border-radius: 24px;
+  border: 2px dashed var(--apple-divider);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1711,19 +1716,20 @@ export default {
 
 .upload-trigger:active {
   transform: scale(0.98);
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .icon-circle {
   width: 56px;
   height: 56px;
-  background: var(--primary);
+  background: var(--apple-glass-pill-bg);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  box-shadow: var(--shadow-primary);
+  box-shadow: var(--apple-shadow-surface);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 /* 深色模式下的图标圆圈 */
@@ -1758,16 +1764,17 @@ export default {
   display: flex;
   align-items: center;
   padding: 16px;
-  border-radius: 18px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .file-icon-box {
   width: 48px;
   height: 48px;
-  background: var(--bg-secondary);
-  border-radius: 12px;
+  background: var(--apple-glass-pill-bg);
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1804,12 +1811,13 @@ export default {
 
 .meta-tag {
   font-size: 20rpx;
-  padding: 2px 6px;
-  background: var(--primary);
-  border-radius: 4px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
   margin-right: 8px;
   font-weight: 700;
-  color: var(--text-primary-foreground);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .meta-size {
@@ -1820,7 +1828,7 @@ export default {
 .close-btn-circle {
   width: 28px;
   height: 28px;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1829,25 +1837,31 @@ export default {
 
 /* --- 底部悬浮按钮栏 --- */
 .bottom-action-bar {
-  position: fixed;
-  bottom: 30px;
-  left: 20px;
-  right: 20px;
-  background: var(--bg-card-dark);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border: 1px solid var(--border-glass);
+  position: relative;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 40%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(30px) saturate(155%);
+  -webkit-backdrop-filter: blur(30px) saturate(155%);
+  border: 1px solid var(--apple-glass-border-strong);
   border-radius: 28px;
   padding: 15px;
-  box-shadow: var(--shadow-xl);
-  z-index: 100;
+  box-shadow: var(--apple-shadow-floating);
+  z-index: 10;
+  margin-top: 4px;
   padding-bottom: calc(15px + constant(safe-area-inset-bottom));
   padding-bottom: calc(15px + env(safe-area-inset-bottom));
 }
 
 .action-row {
   display: flex;
-  gap: 15px;
+  /* gap: 15px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 15px;
+  }
 }
 
 .main-row {
@@ -1877,9 +1891,10 @@ export default {
 }
 
 .primary {
-  background: linear-gradient(135deg, var(--info-blue), var(--primary-dark));
-  color: var(--text-inverse);
-  box-shadow: var(--shadow-primary);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .primary.disabled {
@@ -1889,10 +1904,12 @@ export default {
 }
 
 .secondary {
-  background: var(--bg-info-light);
-  color: var(--info-blue);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-primary);
   height: 44px;
   font-size: 30rpx;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .secondary::after {
@@ -1900,10 +1917,11 @@ export default {
 }
 
 .danger-ghost {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.32);
   color: var(--danger-red);
   height: 44px;
   font-size: 30rpx;
+  border: 1px solid rgba(255, 130, 112, 0.28);
 }
 
 .danger-ghost::after {
@@ -1912,8 +1930,8 @@ export default {
 
 /* 通用工具类 */
 .glass-morphism {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
 .text-ellipsis {
@@ -2068,6 +2086,7 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1); /* fallback for Android */
   background: conic-gradient(transparent 0deg, var(--info-blue-alpha) 0deg 360deg);
   display: flex;
   align-items: center;
@@ -2081,8 +2100,10 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  background: rgba(0, 0, 0, 0.1); /* fallback for Android */
   background: conic-gradient(var(--info-blue) 0deg, var(--info-light) 50deg, transparent 180deg 360deg);
   transform: translate(-50%, -50%) rotate(-90deg);
+  -webkit-clip-path: circle(50% at 50% 50%);
   clip-path: circle(50% at 50% 50%);
   animation: progressPulse 2s ease-in-out infinite;
 }
@@ -2177,14 +2198,26 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
   z-index: 9000;
 }
 
 .pause-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 4px;
+  }
 }
 
 .pause-title {
@@ -2278,14 +2311,21 @@ export default {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 15px;
+  /* gap: 15px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 15px;
+  }
 }
 
 /* 按钮升级 */
 .glass-btn.ghost {
-  background: var(--bg-glass-light);
-  color: var(--text-inverse);
-  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .glass-btn.ghost::after {
@@ -2293,10 +2333,10 @@ export default {
 }
 
 .glass-btn.shine {
-  background: linear-gradient(90deg, var(--info-light), var(--primary-dark));
-  color: var(--text-inverse);
-  box-shadow: var(--shadow-primary);
-  border: none;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  box-shadow: var(--cta-primary-shadow);
+  border: 1px solid var(--cta-primary-border);
 }
 
 .glass-btn.shine::after {
@@ -2304,10 +2344,11 @@ export default {
 }
 
 .glass-btn.danger {
-  background: var(--bg-danger-light);
+  background: rgba(255, 255, 255, 0.36);
   color: var(--danger-red);
-  border: 1px solid var(--border-danger);
+  border: 1px solid rgba(255, 130, 112, 0.28);
   margin-left: 10px;
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .glass-btn.danger::after {
@@ -2332,15 +2373,15 @@ export default {
 
 .error-card {
   width: 300px;
-  background: var(--bg-card-dark);
-  border: 1px solid var(--border-danger);
-  border-radius: 24px;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid rgba(255, 130, 112, 0.34);
+  border-radius: 28px;
   padding: 30px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: var(--shadow-2xl);
+  box-shadow: var(--apple-shadow-floating);
 }
 
 .error-icon-box {
@@ -2377,11 +2418,370 @@ export default {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  gap: 15px;
+  /* gap: 15px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 15px;
+  }
 }
 
 .progress-wrapper {
   width: 100%;
   margin-bottom: 24px;
+}
+
+/* Final polish: import flow unified with Apple / Liquid Glass */
+.apple-container {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+  color: var(--text-main);
+}
+
+.apple-container.dark-mode {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.apple-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(107, 208, 150, 0.22) 0%, transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(255, 255, 255, 0.24) 0%, transparent 24%),
+    radial-gradient(circle at 62% 82%, rgba(72, 190, 128, 0.15) 0%, transparent 32%);
+}
+
+.apple-container.dark-mode::before {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(10, 132, 255, 0.2) 0%, transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(95, 170, 255, 0.14) 0%, transparent 24%),
+    radial-gradient(circle at 62% 82%, rgba(32, 83, 170, 0.15) 0%, transparent 32%);
+}
+
+.custom-navbar,
+.main-glass-card,
+.bottom-action-bar,
+.pause-banner,
+.speed-card,
+.error-card,
+.ai-card {
+  position: relative;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.apple-container.dark-mode .custom-navbar,
+.apple-container.dark-mode .main-glass-card,
+.apple-container.dark-mode .bottom-action-bar,
+.apple-container.dark-mode .pause-banner,
+.apple-container.dark-mode .speed-card,
+.apple-container.dark-mode .error-card,
+.apple-container.dark-mode .ai-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-navbar {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.navbar-back-btn {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.apple-container.dark-mode .navbar-back-btn {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.page-header,
+.main-glass-card,
+.bottom-action-bar,
+.pause-banner {
+  position: relative;
+  z-index: 1;
+}
+
+.header-title,
+.upload-main-text,
+.fname-text,
+.loading-title,
+.speed-title {
+  color: var(--text-main);
+}
+
+.header-subtitle,
+.header-note,
+.status-text,
+.upload-sub-text,
+.meta-size,
+.loading-step,
+.pause-desc,
+.speed-desc,
+.error-desc,
+.soup-text {
+  color: var(--text-sub);
+}
+
+.apple-container.dark-mode .header-title,
+.apple-container.dark-mode .upload-main-text,
+.apple-container.dark-mode .fname-text,
+.apple-container.dark-mode .loading-title,
+.apple-container.dark-mode .speed-title,
+.apple-container.dark-mode .error-title,
+.apple-container.dark-mode .pause-title,
+.apple-container.dark-mode .loading-progress,
+.apple-container.dark-mode .soup-text {
+  color: #ffffff;
+}
+
+.apple-container.dark-mode .header-subtitle,
+.apple-container.dark-mode .header-note,
+.apple-container.dark-mode .status-text,
+.apple-container.dark-mode .upload-sub-text,
+.apple-container.dark-mode .meta-size,
+.apple-container.dark-mode .loading-step,
+.apple-container.dark-mode .pause-desc,
+.apple-container.dark-mode .speed-desc,
+.apple-container.dark-mode .error-desc {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.upload-trigger,
+.file-capsule,
+.secondary,
+.danger-ghost,
+.glass-btn.ghost,
+.glass-btn.danger {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.apple-container.dark-mode .upload-trigger,
+.apple-container.dark-mode .file-capsule,
+.apple-container.dark-mode .secondary,
+.apple-container.dark-mode .danger-ghost,
+.apple-container.dark-mode .glass-btn.ghost,
+.apple-container.dark-mode .glass-btn.danger {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.upload-trigger {
+  min-height: 320rpx;
+  border-style: solid;
+}
+
+.icon-circle,
+.file-icon-box,
+.close-btn-circle {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+  color: var(--text-main);
+}
+
+.apple-container.dark-mode .icon-circle,
+.apple-container.dark-mode .file-icon-box,
+.apple-container.dark-mode .close-btn-circle {
+  background: rgba(10, 132, 255, 0.14);
+  border-color: rgba(10, 132, 255, 0.18);
+  box-shadow: var(--apple-shadow-surface);
+  color: #ffffff;
+}
+
+.meta-tag {
+  background: rgba(52, 199, 89, 0.12);
+  border-color: rgba(52, 199, 89, 0.18);
+}
+
+.apple-container.dark-mode .meta-tag {
+  background: rgba(10, 132, 255, 0.14);
+  border-color: rgba(10, 132, 255, 0.18);
+  color: #ffffff;
+}
+
+.secondary,
+.danger-ghost {
+  color: var(--text-main);
+}
+
+.glass-btn {
+  min-width: 0;
+  height: 88rpx;
+  padding: 0 26rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 620;
+}
+
+.glass-btn::after {
+  border: none;
+}
+
+.glass-btn.shine,
+.primary {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.glass-btn.danger,
+.danger-ghost {
+  color: #c53d35;
+}
+
+.apple-container.dark-mode .glass-btn.danger,
+.apple-container.dark-mode .danger-ghost {
+  color: #ff8e86;
+}
+
+.glow-effect::after {
+  top: 0;
+  left: -80%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
+  opacity: 0.8;
+  transform: skewX(-18deg);
+  transition:
+    transform 0.5s ease,
+    opacity 0.5s ease;
+}
+
+.glow-effect:active::after {
+  opacity: 1;
+  transform: translateX(240%) skewX(-18deg);
+}
+
+.ai-loading-mask,
+.speed-modal-mask,
+.error-card-mask {
+  background: rgba(9, 18, 12, 0.3);
+}
+
+.apple-container.dark-mode .ai-loading-mask,
+.apple-container.dark-mode .speed-modal-mask,
+.apple-container.dark-mode .error-card-mask {
+  background: rgba(3, 8, 14, 0.52);
+}
+
+.ai-card {
+  width: 640rpx;
+  max-width: calc(100vw - 48rpx);
+  min-height: 760rpx;
+  height: auto;
+  border-radius: 38rpx;
+}
+
+.apple-ai-gradient {
+  top: -30%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(107, 208, 150, 0.36) 0%, transparent 34%),
+    radial-gradient(circle at 80% 24%, rgba(255, 255, 255, 0.34) 0%, transparent 24%),
+    radial-gradient(circle at 56% 76%, rgba(72, 190, 128, 0.2) 0%, transparent 34%);
+  filter: blur(56px);
+  animation: importAuroraShift 10s ease-in-out infinite;
+}
+
+.apple-container.dark-mode .apple-ai-gradient {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(10, 132, 255, 0.3) 0%, transparent 34%),
+    radial-gradient(circle at 80% 24%, rgba(95, 170, 255, 0.22) 0%, transparent 24%),
+    radial-gradient(circle at 56% 76%, rgba(32, 83, 170, 0.18) 0%, transparent 34%);
+}
+
+.apple-ai-glow {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 46%);
+  animation: none;
+}
+
+@keyframes importAuroraShift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.86;
+  }
+
+  50% {
+    transform: translate3d(12rpx, -12rpx, 0) scale(1.06);
+    opacity: 1;
+  }
+}
+
+.loading-progress {
+  color: var(--text-main);
+}
+
+.pause-banner {
+  bottom: 138px;
+  border-radius: 28rpx;
+}
+
+.speed-card,
+.error-card {
+  width: 640rpx;
+  max-width: calc(100vw - 56rpx);
+  border-radius: 36rpx;
+}
+
+.speed-icon-box,
+.error-icon-box {
+  box-shadow: none;
+  border: 1px solid transparent;
+}
+
+.speed-icon-box {
+  background: rgba(52, 199, 89, 0.12);
+  border-color: rgba(52, 199, 89, 0.18);
+  color: #22873a;
+}
+
+.error-icon-box {
+  background: rgba(255, 99, 90, 0.12);
+  border-color: rgba(255, 99, 90, 0.2);
+  color: #c53d35;
+}
+
+.error-title,
+.pause-title {
+  color: var(--text-main);
 }
 </style>

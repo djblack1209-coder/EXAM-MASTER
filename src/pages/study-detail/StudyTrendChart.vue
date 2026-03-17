@@ -371,7 +371,13 @@ export default {
 /* 时间范围选择器 */
 .range-selector {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   margin-bottom: 24rpx;
 }
 
@@ -379,15 +385,19 @@ export default {
   flex: 1;
   padding: 16rpx 24rpx;
   text-align: center;
-  background: var(--muted, #f5f5f7);
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.68);
+  border-radius: 999rpx;
   transition: all 0.2s ease;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 
   &.active {
-    background: var(--ds-color-primary, #007aff);
+    background: var(--cta-primary-bg);
+    border-color: var(--cta-primary-border);
+    box-shadow: var(--cta-primary-shadow);
 
     .range-text {
-      color: #ffffff;
+      color: var(--cta-primary-text);
     }
   }
 
@@ -406,8 +416,9 @@ export default {
 .chart-wrapper {
   width: 100%;
   padding: 16rpx;
-  background: var(--bg-card, #fff);
-  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 24rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
 }
 
 .trend-canvas {
@@ -421,14 +432,24 @@ export default {
   justify-content: space-around;
   margin-top: 24rpx;
   padding-top: 24rpx;
-  border-top: 1px solid var(--border-color, #e5e5e5);
+  border-top: 1px solid var(--apple-divider);
 }
 
 .summary-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
+  background: rgba(255, 255, 255, 0.56);
+  border-radius: 20rpx;
+  padding: 16rpx 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.44);
 }
 
 .summary-value {
@@ -446,7 +467,13 @@ export default {
 .trend-indicator {
   display: flex;
   align-items: center;
-  gap: 4rpx;
+  /* gap: 4rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 4rpx;
+  }
 
   &.up {
     .trend-arrow,

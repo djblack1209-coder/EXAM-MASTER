@@ -18,7 +18,7 @@ if command -v adb >/dev/null 2>&1; then
   THIRD_PARTY_RAW="$(adb shell pm list packages -3 2>/dev/null | tr -d '\r' || true)"
   if [[ -n "$THIRD_PARTY_RAW" ]]; then
     THIRD_PARTY_COUNT="$(printf '%s\n' "$THIRD_PARTY_RAW" | wc -l | tr -d ' ')"
-    CANDIDATE_PACKAGES="$(printf '%s\n' "$THIRD_PARTY_RAW" | while IFS= read -r line; do case "$line" in *exam*|*master*|*kaoyan*|*uni* ) printf '%s\n' "$line" ;; esac; done)"
+    CANDIDATE_PACKAGES="$(printf '%s\n' "$THIRD_PARTY_RAW" | grep -Ei 'exam|master|kaoyan|uni' || true)"
     if [[ -z "$CANDIDATE_PACKAGES" ]]; then
       CANDIDATE_PACKAGES="(none)"
     fi

@@ -4,8 +4,14 @@
     <view class="todo-items">
       <view
         v-for="item in todos"
+        :id="`e2e-home-todo-${item.id}`"
         :key="item.id"
-        :class="['todo-item', isDark ? 'item-dark' : 'item-light', item.completed && 'item-completed']"
+        :class="[
+          'todo-item',
+          'apple-group-card',
+          isDark ? 'item-dark' : 'item-light',
+          item.completed && 'item-completed'
+        ]"
         @tap="handleToggle(item.id)"
         @longpress="handleLongPress(item)"
       >
@@ -100,39 +106,70 @@ const handleLongPress = (item) => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
 }
 
 /* ==================== 待办项列表 ==================== */
 .todo-items {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
 }
 
 /* ==================== 单个待办项 ==================== */
 .todo-item {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 24rpx;
+  }
   padding: 32rpx;
-  border-radius: 24rpx;
+  border-radius: 28rpx;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1rpx solid;
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.todo-item::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 /* 浅色模式 */
 .item-light {
-  background: var(--bg-card);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-color: var(--apple-glass-border-strong);
 }
 
 /* 深色模式 */
 .item-dark {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(160deg, rgba(16, 20, 28, 0.92) 0%, rgba(12, 15, 22, 0.96) 100%);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  border-color: rgba(124, 176, 255, 0.18);
 }
 
 /* 已完成项目样式 */
@@ -216,8 +253,10 @@ const handleLongPress = (item) => {
 /* ==================== 优先级标签 ==================== */
 .item-badge {
   padding: 8rpx 24rpx;
-  border-radius: 20rpx;
+  border-radius: 999rpx;
   flex-shrink: 0;
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.68);
 }
 
 .badge-text {

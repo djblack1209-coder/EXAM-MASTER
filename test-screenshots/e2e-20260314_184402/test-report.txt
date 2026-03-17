@@ -1,0 +1,49 @@
+[18:44:02] ============================================================
+[18:44:02] Exam-Master App 全量 E2E 测试
+[18:44:02] 设备: 96304553
+[18:44:02] 时间: Sat Mar 14 18:44:02 CST 2026
+[18:44:02] ============================================================
+[18:44:02] 
+[18:44:02] --- TEST 0: 启动 App ---
+[18:44:11] 检测到版本提示弹窗，自动关闭...
+[18:44:14] ✅ PASS: App 启动成功
+[18:44:14] ✅ PASS: Splash → 首页跳转成功
+[18:44:15] 📸 Screenshot: 00_app_launched.png
+[18:44:15] ⚠️  WARN: 启动有错误: 03-14 18:44:07.635 15018 19662 I console : [ERROR][Vue Error]---COMMA---Cannot read property 'add' of undefined at utils/logger.js:73
+03-14 18:44:07.636 15018 19662 I console : [ERROR]Stack:---COMMA---TypeError: Cannot read property 'add' of undefined
+03-14 18:44:07.636 15018 19662 I console : [ERROR][GlobalError]---COMMA---Vue Error---COMMA---Cannot read property 'add' of undefined at utils/logger.js:73
+[18:44:15] 
+[18:44:15] --- TEST 1: 首页功能 ---
+[18:44:16] ✅ PASS: 首页路由正确
+[18:44:16] ✅ PASS: 首页模块 StudyTimerMixin 初始化
+[18:44:16] ✅ PASS: 首页模块 DailyQuoteMixin 初始化
+[18:44:16] ✅ PASS: 首页模块 LearningTrajectory 初始化
+[18:44:16] ✅ PASS: 首页模块 CustomTabbar 初始化
+[18:44:17] 📸 Screenshot: 01_home_page.png
+[18:44:21] 📸 Screenshot: 01_home_scrolled.png
+[18:44:22] 
+[18:44:22] --- TEST 2: TabBar 导航 ---
+[18:44:25] ✅ PASS: TabBar → 刷题中心
+[18:44:27] 📸 Screenshot: 02_practice_page.png
+[18:44:30] ✅ PASS: TabBar → 择校分析
+[18:44:30] ⚠️  WARN: 择校数据加载未检测到
+[18:44:32] 📸 Screenshot: 02_school_page.png
+[18:44:36] ✅ PASS: TabBar → 个人中心
+[18:44:37] 📸 Screenshot: 02_profile_page.png
+[18:44:42] 📸 Screenshot: 02_back_home.png
+[18:44:42] 
+[18:44:42] --- TEST 3: 刷题中心详细测试 ---
+[18:44:45] ✅ PASS: 题库状态检查执行
+[18:44:45] ⚠️  WARN: 分包模块加载状态未知
+[18:44:45] ⚠️  WARN: QuestionFavorite 初始化未检测到
+[18:44:45] ⚠️  WARN: AdaptiveLearning 初始化未检测到
+[18:44:47] 📸 Screenshot: 03_practice_detail.png
+[18:44:47] 
+[18:44:47] --- TEST 4: 择校分析详细测试 ---
+[18:44:50] ⚠️  WARN: 择校页网络检测未确认
+[18:44:53] 📸 Screenshot: 04_school_scrolled.png
+[18:44:55] 
+[18:44:55] --- TEST 5: 个人中心详细测试 ---
+[18:45:00] 📸 Screenshot: 05_profile_page.png
+[18:45:00] 
+[18:45:00] --- TEST 6: 返回键测试 ---
