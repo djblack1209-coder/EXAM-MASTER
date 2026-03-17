@@ -35,6 +35,7 @@ export default {
   bottom: 0;
   background-color: var(--overlay);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,12 +97,12 @@ export default {
   width: 100%;
   padding: 14px 0;
   border-radius: 28px;
-  background: var(--gradient-primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   font-size: 36rpx;
   font-weight: 600;
-  border: none;
-  box-shadow: var(--shadow-primary);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
   transition: all 0.3s ease;
 }
 .primary-btn::after {

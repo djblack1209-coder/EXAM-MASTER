@@ -1,15 +1,17 @@
 <template>
   <view>
-    <view class="section-header">
+    <view class="section-header section-header-apple">
       <text class="section-title"> 学习轨迹 </text>
-      <text class="section-action" @tap="$emit('view-all')"> 查看全部 </text>
+      <text id="e2e-home-activity-view-all" class="section-action apple-glass-pill" @tap="$emit('view-all')">
+        查看全部
+      </text>
     </view>
     <view class="activity-list">
       <!-- ✅ F008: 使用稳定的唯一 key 替代 index，避免列表变化时不必要的 DOM 重建 -->
       <view
         v-for="activity in activities"
         :key="activity.id || activity.title + activity.time"
-        :class="['activity-item', isDark ? 'glass' : 'card-light', 'card-hover']"
+        :class="['activity-item', 'apple-group-card', isDark ? 'glass' : 'card-light', 'card-hover']"
       >
         <view :class="['activity-icon-wrapper', 'status-' + activity.status]">
           <view class="activity-icon">
@@ -70,77 +72,108 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.section-header-apple {
+  margin-bottom: 26rpx;
 }
 
 .section-title {
-  font-size: 40rpx;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 620;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .section-action {
-  font-size: 28rpx;
-  color: var(--primary);
-  font-weight: 500;
+  font-size: 24rpx;
+  color: var(--text-primary);
+  font-weight: 600;
+  min-height: 72rpx;
+  padding: 0 24rpx;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1rpx solid var(--border);
+  background: var(--bg-card-alpha);
+  backdrop-filter: blur(14rpx) saturate(130%);
+  -webkit-backdrop-filter: blur(14rpx) saturate(130%);
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
 }
 
 .card-light {
-  background: var(--card);
+  background: linear-gradient(160deg, #ffffff 0%, #f4faf6 100%);
 }
 
 .card-hover:active {
-  transform: translateY(-4rpx);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2rpx);
+  box-shadow: var(--shadow-md);
 }
 
 .activity-list {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
-  margin-bottom: 64rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  margin-bottom: 48rpx;
+}
+
+.activity-item + .activity-item {
+  margin-top: 16rpx;
 }
 
 .activity-item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 32rpx;
-  padding: 32rpx;
-  border-radius: 24rpx;
-  border: 1rpx solid var(--border);
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  padding: 28rpx;
+  min-height: 116rpx;
+  border-radius: 28rpx;
+  border: 1rpx solid var(--apple-glass-border-strong);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--apple-shadow-card);
+  overflow: hidden;
+}
+
+.activity-item::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .activity-icon-wrapper {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
+  width: 74rpx;
+  height: 74rpx;
+  border-radius: 999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
 }
 
 .status-completed {
-  background: var(--success-light);
-  color: var(--success);
+  background: rgba(52, 199, 89, 0.15);
+  color: #30b35f;
 }
 
 .status-in-progress {
-  background: var(--primary-light);
+  background: var(--brand-tint);
   color: var(--primary);
 }
 
 .status-pending {
-  background: var(--bg-secondary);
-  color: var(--text-sub);
+  background: rgba(120, 120, 128, 0.12);
+  color: #7c7c82;
 }
 
 .activity-icon {
@@ -153,13 +186,17 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
   min-width: 0;
+}
+
+.activity-content .activity-subtitle {
+  margin-top: 8rpx;
 }
 
 .activity-title {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 620;
   color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -167,7 +204,7 @@ export default {
 }
 
 .activity-subtitle {
-  font-size: 24rpx;
+  font-size: 23rpx;
   color: var(--text-sub);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -178,8 +215,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
   flex-shrink: 0;
+}
+
+.activity-meta .activity-badge {
+  margin-top: 8rpx;
 }
 
 .activity-time {
@@ -188,9 +229,11 @@ export default {
 }
 
 .activity-badge {
-  padding: 4rpx 16rpx;
-  border-radius: 20rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
   font-size: 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.64);
 }
 
 .badge-completed {
@@ -211,5 +254,22 @@ export default {
 .badge-text {
   font-size: 20rpx;
   font-weight: 500;
+}
+
+.glass .activity-icon-wrapper {
+  border-color: rgba(10, 132, 255, 0.18);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.glass .status-completed {
+  background: rgba(64, 200, 160, 0.16);
+}
+
+.glass .status-in-progress {
+  background: rgba(10, 132, 255, 0.16);
+}
+
+.glass .status-pending {
+  background: rgba(58, 108, 190, 0.16);
 }
 </style>

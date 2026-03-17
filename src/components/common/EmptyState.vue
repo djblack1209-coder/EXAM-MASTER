@@ -302,11 +302,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@use 'sass:color';
-
 // ==================== 变量定义 ====================
-$color-primary: #00a96d;
-$color-primary-dark: #00e5ff;
 $color-text-light: #1a1a1a;
 $color-text-dark: #ffffff;
 $color-text-secondary-light: #64748b;
@@ -375,8 +371,13 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
 
   // 主题变体
   &--light {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: linear-gradient(
+      145deg,
+      rgba(247, 255, 239, 0.9) 0%,
+      rgba(255, 255, 255, 0.96) 50%,
+      rgba(232, 245, 223, 0.9) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.72);
 
     .empty-state__title {
       color: $color-text-light;
@@ -433,7 +434,7 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
   &.deco-2 {
     width: 150rpx;
     height: 150rpx;
-    background: linear-gradient(135deg, #9fe870, #4caf50);
+    background: linear-gradient(135deg, var(--brand-hover), var(--brand-color));
     bottom: 100rpx;
     left: -30rpx;
     animation: float 5s ease-in-out infinite reverse;
@@ -521,19 +522,16 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
   }
 
   &--primary {
-    background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
-    color: #ffffff;
-    box-shadow: 0 4rpx 16rpx rgba(0, 169, 109, 0.3);
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
+    border: 1rpx solid var(--cta-primary-border);
+    box-shadow: var(--cta-primary-shadow);
   }
 
   &--glow {
-    background: linear-gradient(
-      135deg,
-      $color-primary-dark 0%,
-      color.adjust($color-primary-dark, $lightness: -15%) 100%
-    );
-    color: #000000;
-    box-shadow: 0 0 20rpx rgba(0, 229, 255, 0.4);
+    background: linear-gradient(135deg, var(--brand-color) 0%, var(--brand-hover) 100%);
+    color: var(--primary-foreground, #111111);
+    box-shadow: 0 0 20rpx var(--brand-glow);
   }
 
   .btn-icon {
@@ -552,7 +550,13 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 20rpx;
+  }
   margin-top: 16rpx;
 }
 
@@ -569,16 +573,30 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
   }
 
   &--primary {
-    background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+    background: var(--cta-primary-bg);
+    border: 1px solid var(--cta-primary-border);
+    box-shadow: var(--cta-primary-shadow);
 
-    .guide-btn__title,
-    .guide-btn__desc,
-    .guide-btn__arrow {
-      color: #ffffff;
+    .empty-state--light & {
+      .guide-btn__title,
+      .guide-btn__arrow {
+        color: #10281a;
+      }
+
+      .guide-btn__desc {
+        color: rgba(16, 40, 26, 0.68);
+      }
     }
 
     .empty-state--dark & {
-      box-shadow: 0 0 30rpx rgba(0, 169, 109, 0.4);
+      .guide-btn__title,
+      .guide-btn__arrow {
+        color: #ffffff;
+      }
+
+      .guide-btn__desc {
+        color: rgba(255, 255, 255, 0.78);
+      }
     }
   }
 
@@ -655,5 +673,99 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
   &__arrow {
     font-size: 28rpx;
   }
+}
+
+/* Final polish: remove glow / purple leftovers */
+.empty-state {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.empty-state--dark {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.deco-circle.deco-1 {
+  background: linear-gradient(135deg, rgba(107, 208, 150, 0.68), rgba(255, 255, 255, 0.2));
+}
+
+.deco-circle.deco-2 {
+  background: linear-gradient(135deg, rgba(72, 190, 128, 0.48), rgba(107, 208, 150, 0.18));
+}
+
+.deco-circle.deco-3 {
+  background: linear-gradient(135deg, rgba(255, 159, 10, 0.52), rgba(255, 191, 71, 0.18));
+}
+
+.empty-state--dark .deco-circle.deco-1 {
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.54), rgba(95, 170, 255, 0.18));
+}
+
+.empty-state--dark .deco-circle.deco-2 {
+  background: linear-gradient(135deg, rgba(32, 83, 170, 0.42), rgba(95, 170, 255, 0.16));
+}
+
+.empty-state__icon {
+  background: rgba(255, 255, 255, 0.36);
+  border: 1rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.empty-state--dark .empty-state__icon {
+  background:
+    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(10, 132, 255, 0.18);
+}
+
+.action-btn--glow {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.guide-btn {
+  border-radius: 24rpx;
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.empty-state--light .guide-btn--secondary,
+.empty-state--light .guide-btn--tertiary {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+}
+
+.empty-state--dark .guide-btn--secondary,
+.empty-state--dark .guide-btn--tertiary {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.guide-btn__icon--orange {
+  background: rgba(255, 159, 10, 0.14);
+}
+
+.guide-btn__icon--purple {
+  background: rgba(10, 132, 255, 0.14);
+}
+
+.empty-state--dark .guide-btn__icon--green,
+.empty-state--dark .guide-btn__icon--orange,
+.empty-state--dark .guide-btn__icon--purple {
+  background:
+    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border: 1px solid rgba(10, 132, 255, 0.18);
 }
 </style>

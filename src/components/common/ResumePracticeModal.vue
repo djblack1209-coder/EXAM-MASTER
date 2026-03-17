@@ -1,6 +1,8 @@
 <template>
   <view v-if="visible" class="resume-modal-mask" @tap="handleMaskClick">
     <view class="resume-modal-content" @tap.stop>
+      <view class="resume-sheet-handle" />
+      <text class="modal-eyebrow"> Continue Session </text>
       <!-- 头部 -->
       <view class="modal-header">
         <view class="header-icon">
@@ -123,24 +125,45 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(9, 18, 12, 0.32);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   z-index: 9999;
-  padding: 40rpx;
+  padding: 40rpx 24rpx calc(24rpx + env(safe-area-inset-bottom, 0px));
 }
 
 .resume-modal-content {
   width: 100%;
-  max-width: 600rpx;
-  background: var(--bg-card, #ffffff);
-  border-radius: 32rpx;
-  padding: 48rpx 40rpx;
-  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.15);
+  max-width: 700rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 36rpx 36rpx 28rpx 28rpx;
+  padding: 18rpx 28rpx 30rpx;
+  box-shadow: var(--apple-shadow-card);
   animation: modalSlideUp 0.3s ease-out;
+}
+
+.resume-sheet-handle {
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 16rpx;
+}
+
+.modal-eyebrow {
+  display: block;
+  text-align: center;
+  margin-bottom: 16rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-sub);
 }
 
 @keyframes modalSlideUp {
@@ -164,12 +187,14 @@ export default {
 .header-icon {
   width: 100rpx;
   height: 100rpx;
-  background: var(--primary-light, #e8f4fd);
+  background: rgba(52, 199, 89, 0.12);
+  border: 1px solid rgba(52, 199, 89, 0.18);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20rpx;
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .icon-emoji {
@@ -179,14 +204,18 @@ export default {
 .header-title {
   font-size: 36rpx;
   font-weight: 700;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--text-main);
 }
 
 .draft-info {
-  background: var(--bg-secondary, #f5f5f5);
-  border-radius: 20rpx;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 24rpx;
   padding: 24rpx;
   margin-bottom: 24rpx;
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .info-row {
@@ -197,22 +226,22 @@ export default {
 }
 
 .info-row:not(:last-child) {
-  border-bottom: 1px solid var(--border, #eee);
+  border-bottom: 1px solid var(--apple-divider);
 }
 
 .info-label {
   font-size: 28rpx;
-  color: var(--text-secondary, #666);
+  color: var(--text-sub);
 }
 
 .info-value {
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--text-primary, #1a1a1a);
+  color: var(--text-main);
 }
 
 .info-value.time-ago {
-  color: var(--primary, #007aff);
+  color: #22873a;
 }
 
 .modal-tip {
@@ -222,13 +251,19 @@ export default {
 
 .modal-tip-text {
   font-size: 26rpx;
-  color: var(--text-secondary, #666);
+  color: var(--text-sub);
   line-height: 1.6;
 }
 
 .modal-actions {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
 }
 
 .btn-secondary,
@@ -245,60 +280,91 @@ export default {
   transition: all 0.2s;
 }
 
+.btn-secondary::after,
+.btn-primary::after {
+  border: none;
+}
+
 .btn-secondary {
-  background: var(--bg-secondary, #f5f5f5);
-  color: var(--text-secondary, #666);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .btn-secondary:active {
-  background: var(--bg-tertiary, #e5e5e5);
+  transform: scale(0.98);
 }
 
 .btn-primary {
-  background: var(--primary, #007aff);
-  color: #ffffff;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .btn-primary:active {
-  background: var(--primary-dark, #0056b3);
+  opacity: 0.9;
   transform: scale(0.98);
 }
 
 /* 暗色模式适配 */
+.dark-mode .resume-modal-mask {
+  background: rgba(3, 8, 14, 0.52);
+}
+
 .dark-mode .resume-modal-content {
-  background: var(--bg-card-dark, #1c1c1e);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .resume-sheet-handle {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.dark-mode .modal-eyebrow,
+.dark-mode .modal-tip-text,
+.dark-mode .info-label {
+  color: rgba(255, 255, 255, 0.68);
 }
 
 .dark-mode .header-icon {
-  background: rgba(0, 122, 255, 0.2);
+  background: rgba(10, 132, 255, 0.14);
+  border-color: rgba(10, 132, 255, 0.18);
 }
 
 .dark-mode .header-title {
-  color: var(--text-primary-dark, #ffffff);
+  color: #ffffff;
 }
 
 .dark-mode .draft-info {
-  background: var(--bg-secondary-dark, #2c2c2e);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .dark-mode .info-row:not(:last-child) {
-  border-bottom-color: var(--border-dark, #3a3a3c);
-}
-
-.dark-mode .info-label {
-  color: var(--text-secondary-dark, #8e8e93);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 .dark-mode .info-value {
-  color: var(--text-primary-dark, #ffffff);
-}
-
-.dark-mode .modal-tip-text {
-  color: var(--text-secondary-dark, #8e8e93);
+  color: #ffffff;
 }
 
 .dark-mode .btn-secondary {
-  background: var(--bg-secondary-dark, #2c2c2e);
-  color: var(--text-secondary-dark, #8e8e93);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .info-value.time-ago {
+  color: #7bc0ff;
 }
 </style>

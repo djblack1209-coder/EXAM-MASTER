@@ -237,21 +237,62 @@ export const aiGenerationMixin = {
         this.isUploadingFile = false;
         this.startAI();
       } else {
-        const fs = uni.getFileSystemManager();
-        fs.readFile({
-          filePath: file.path || file.tempFilePath,
-          encoding: 'utf8',
-          success: (res) => {
-            this.fullFileContent = res.data;
-            this.isUploadingFile = false;
-            this.startAI();
-          },
-          fail: () => {
-            this.fullFileContent = '';
-            this.isUploadingFile = false;
-            this.startAI();
-          }
-        });
+        // 读取文本文件内容
+        try {
+          const filePath = file.path || file.tempFilePath;
+          // #ifdef MP-WEIXIN
+          const fs = uni.getFileSystemManager();
+          fs.readFile({
+            filePath,
+            encoding: 'utf8',
+            success: (res) => {
+              this.fullFileContent = res.data;
+              this.isUploadingFile = false;
+              this.startAI();
+            },
+            fail: () => {
+              this.fullFileContent = '';
+              this.isUploadingFile = false;
+              this.startAI();
+            }
+          });
+          // #endif
+          // #ifdef APP-PLUS
+          plus.io.resolveLocalFileSystemURL(
+            filePath,
+            (entry) => {
+              entry.file((f) => {
+                const reader = new plus.io.FileReader();
+                reader.onloadend = (e) => {
+                  this.fullFileContent = e.target.result || '';
+                  this.isUploadingFile = false;
+                  this.startAI();
+                };
+                reader.onerror = () => {
+                  this.fullFileContent = '';
+                  this.isUploadingFile = false;
+                  this.startAI();
+                };
+                reader.readAsText(f);
+              });
+            },
+            () => {
+              this.fullFileContent = '';
+              this.isUploadingFile = false;
+              this.startAI();
+            }
+          );
+          // #endif
+          // #ifdef H5
+          this.fullFileContent = '';
+          this.isUploadingFile = false;
+          this.startAI();
+          // #endif
+        } catch (_e) {
+          this.fullFileContent = '';
+          this.isUploadingFile = false;
+          this.startAI();
+        }
       }
     },
 

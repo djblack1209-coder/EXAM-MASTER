@@ -200,7 +200,7 @@
         </view>
 
         <view class="ai-analysis-content">
-          <view class="analysis-tag"> <BaseIcon name="sparkle" :size="28" /> 智能足迹鉴定 </view>
+          <view class="analysis-tag"> <BaseIcon name="sparkle" :size="28" /> AI 学习足迹摘要 </view>
           <scroll-view scroll-y="true" class="analysis-scroll">
             <text class="analysis-text">
               {{ aiAnalysisText }}
@@ -786,6 +786,8 @@ export default {
   --text-primary: var(--text-primary);
   --text-tertiary: var(--text-tertiary);
 
+  height: 100%;
+
   height: 100vh;
   background: var(--bg-body);
   position: relative;
@@ -856,6 +858,7 @@ export default {
 
 /* 滚动区域 */
 .rank-scroll {
+  height: 100%;
   height: 100vh;
   padding: 0 30rpx;
   box-sizing: border-box;
@@ -1231,7 +1234,13 @@ export default {
   color: var(--neon-green);
   padding: 4rpx 12rpx;
   border-radius: 10rpx;
-  gap: 6rpx;
+  /* gap: 6rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 6rpx;
+  }
 }
 .sparkle-icon {
   font-size: 20rpx;
@@ -1313,14 +1322,14 @@ export default {
   width: 100%;
   height: 90rpx;
   line-height: 90rpx;
-  background: var(--gradient-primary);
-  color: var(--text-primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   font-weight: bold;
   font-size: 28rpx;
   border-radius: 20rpx;
-  border: none;
+  border: 1rpx solid var(--cta-primary-border);
   margin-top: 20rpx;
-  box-shadow: var(--shadow-success);
+  box-shadow: var(--cta-primary-shadow);
 }
 .challenge-btn::after {
   border: none;
@@ -1344,5 +1353,407 @@ export default {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+/* Final polish: leaderboard unified with Apple / Liquid Glass */
+.container {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+}
+
+.container.dark-mode {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.aurora-bg {
+  height: 460rpx;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(107, 208, 150, 0.26) 0%, transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(255, 255, 255, 0.28) 0%, transparent 24%),
+    radial-gradient(circle at 58% 72%, rgba(72, 190, 128, 0.16) 0%, transparent 34%);
+  filter: blur(72rpx);
+}
+
+.dark-mode .aurora-bg {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(10, 132, 255, 0.22) 0%, transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(95, 170, 255, 0.16) 0%, transparent 24%),
+    radial-gradient(circle at 58% 72%, rgba(32, 83, 170, 0.15) 0%, transparent 34%);
+}
+
+.nav-bar {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.nav-content {
+  padding: 0 24rpx;
+}
+
+.nav-back {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+  color: var(--text-main);
+}
+
+.dark-mode .nav-back {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.nav-title {
+  color: var(--text-main);
+}
+
+.dark-mode .nav-title {
+  color: #ffffff;
+}
+
+.rank-scroll {
+  padding: 0 24rpx;
+}
+
+.podium-section,
+.rank-item,
+.my-rank-card,
+.footprint-card,
+.go-practice-btn {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .podium-section,
+.dark-mode .rank-item,
+.dark-mode .my-rank-card,
+.dark-mode .footprint-card,
+.dark-mode .go-practice-btn {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.podium-section {
+  padding: 40rpx 20rpx 28rpx;
+  margin-top: 8rpx;
+  margin-bottom: 30rpx;
+  border-radius: 40rpx;
+  align-items: stretch;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+}
+
+.podium-item {
+  justify-content: flex-end;
+  padding: 16rpx 10rpx 12rpx;
+  border-radius: 30rpx;
+}
+
+.rank-1 {
+  transform: translateY(-14rpx);
+}
+
+.avatar-wrap {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, transparent 40%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(240, 248, 243, 0.56) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.dark-mode .avatar-wrap {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.rank-1 .avatar-wrap,
+.rank-2 .avatar-wrap,
+.rank-3 .avatar-wrap {
+  box-shadow: var(--apple-shadow-card);
+}
+
+.rank-1 .avatar-wrap {
+  border-color: rgba(255, 191, 71, 0.34);
+}
+
+.rank-2 .avatar-wrap {
+  border-color: rgba(255, 255, 255, 0.58);
+}
+
+.rank-3 .avatar-wrap {
+  border-color: rgba(255, 159, 10, 0.3);
+}
+
+.crown-glow {
+  top: -18rpx;
+  width: 56rpx;
+  height: 14rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 191, 71, 0.72);
+  filter: blur(8rpx);
+  opacity: 0.72;
+  animation: none;
+}
+
+.badge {
+  min-width: 52rpx;
+  height: 40rpx;
+  padding: 0 14rpx;
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.rank-1 .badge {
+  background: rgba(255, 191, 71, 0.9);
+  color: #4d3300;
+}
+
+.rank-2 .badge {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-main);
+}
+
+.rank-3 .badge {
+  background: rgba(255, 159, 10, 0.88);
+  color: #4b2d00;
+}
+
+.podium-item .name,
+.podium-item .score,
+.item-name,
+.item-desc,
+.item-score,
+.card-name,
+.data-item .val,
+.target-val {
+  color: var(--text-main);
+}
+
+.dark-mode .podium-item .name,
+.dark-mode .podium-item .score,
+.dark-mode .item-name,
+.dark-mode .item-desc,
+.dark-mode .item-score,
+.dark-mode .card-name,
+.dark-mode .data-item .val,
+.dark-mode .target-val,
+.dark-mode .analysis-text {
+  color: #ffffff;
+}
+
+.podium-item .score,
+.item-desc,
+.data-item .lbl,
+.target-label,
+.analysis-text {
+  color: var(--text-sub);
+}
+
+.rank-item {
+  padding: 24rpx 22rpx;
+  margin-bottom: 18rpx;
+  border-radius: 28rpx;
+  border-left: none;
+}
+
+.dark-mode .rank-item {
+  border-left: none;
+  box-shadow: var(--apple-shadow-card);
+}
+
+.rank-num {
+  font-style: normal;
+  color: var(--text-sub);
+}
+
+.dark-mode .rank-num {
+  color: rgba(255, 255, 255, 0.74);
+  text-shadow: none;
+}
+
+.item-avatar,
+.card-avatar,
+.my-rank-card .item-avatar {
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.item-score {
+  color: #22873a;
+}
+
+.dark-mode .item-score {
+  color: #7bc0ff;
+}
+
+.my-rank-fixed {
+  left: 24rpx;
+  right: 24rpx;
+  bottom: 24rpx;
+}
+
+.my-rank-card {
+  padding: 22rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+  border-radius: 32rpx;
+}
+
+.my-rank-card .rank-num,
+.my-rank-card .item-name,
+.my-rank-card .item-desc,
+.my-rank-card .item-score-text {
+  color: var(--text-main);
+}
+
+.dark-mode .my-rank-card .rank-num,
+.dark-mode .my-rank-card .item-name,
+.dark-mode .my-rank-card .item-desc,
+.dark-mode .my-rank-card .item-score-text {
+  color: #ffffff;
+}
+
+.rank-btn,
+.go-practice-btn,
+.challenge-btn {
+  border-radius: 999rpx;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.rank-btn {
+  width: auto;
+  min-width: 160rpx;
+  padding: 0 24rpx;
+  color: var(--cta-primary-text);
+  background: var(--cta-primary-bg);
+}
+
+.go-practice-btn {
+  width: 240rpx;
+  height: 88rpx;
+  font-weight: 620;
+}
+
+.footprint-mask {
+  background: rgba(9, 18, 12, 0.32);
+}
+
+.dark-mode .footprint-mask {
+  background: rgba(3, 8, 14, 0.52);
+}
+
+.footprint-card {
+  padding: 54rpx 34rpx 34rpx;
+  border-radius: 36rpx;
+}
+
+.footprint-card::before {
+  content: '';
+  position: absolute;
+  top: 12rpx;
+  left: 50%;
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.dark-mode .footprint-card::before {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.close-btn {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.64);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+  color: var(--text-main);
+}
+
+.dark-mode .close-btn {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.card-avatar {
+  border-color: rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.ai-label {
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(52, 199, 89, 0.12);
+  color: var(--text-main);
+  border: 1px solid rgba(52, 199, 89, 0.18);
+}
+
+.dark-mode .ai-label {
+  background: rgba(10, 132, 255, 0.14);
+  color: #ffffff;
+  border-color: rgba(10, 132, 255, 0.18);
+}
+
+.analysis-tag {
+  display: inline-flex;
+  align-items: center;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 999rpx;
+  padding: 8rpx 16rpx;
+}
+
+.dark-mode .analysis-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <view :class="['welcome-banner', isDark ? 'banner-dark' : 'banner-light']">
+  <view :class="['welcome-banner', 'apple-glass-card', isDark ? 'banner-dark' : 'banner-light']">
     <!-- 深色模式装饰气泡 -->
     <view v-if="isDark" class="bubble-decoration bubble-1" />
     <view v-if="isDark" class="bubble-decoration bubble-2" />
@@ -12,11 +12,19 @@
         </text>
       </view>
       <view class="banner-actions">
-        <view :class="['action-btn', 'btn-primary', isDark && 'animate-pulse-glow']" @tap="$emit('nav-to-practice')">
+        <view
+          id="e2e-home-banner-practice"
+          :class="['action-btn', 'btn-primary', 'apple-cta']"
+          @tap="$emit('nav-to-practice')"
+        >
           <BaseIcon name="lightning" :size="28" />
           <text class="btn-text"> 快速练习 </text>
         </view>
-        <view class="action-btn btn-outline" @tap="$emit('nav-to-mock-exam')">
+        <view
+          id="e2e-home-banner-mock"
+          class="action-btn btn-outline apple-glass-pill"
+          @tap="$emit('nav-to-mock-exam')"
+        >
           <BaseIcon name="clock" :size="28" />
           <text class="btn-text"> 模拟考试 </text>
         </view>
@@ -43,19 +51,52 @@ export default {
 .welcome-banner {
   position: relative;
   overflow: hidden;
-  border-radius: 48rpx;
-  padding: 48rpx;
-  margin-bottom: 64rpx;
-  border: 1rpx solid var(--border);
+  border-radius: 36rpx;
+  padding: 44rpx;
+  margin-bottom: 52rpx;
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-floating);
 }
 
 .banner-light {
-  background: var(--bg-secondary);
+  background: linear-gradient(
+    145deg,
+    rgba(252, 255, 249, 0.72) 0%,
+    rgba(255, 255, 255, 0.96) 46%,
+    rgba(233, 247, 218, 0.88) 100%
+  );
+  border-color: var(--apple-glass-border-strong);
+}
+
+.banner-light::before,
+.banner-light::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.banner-light::before {
+  top: -120rpx;
+  right: -90rpx;
+  width: 320rpx;
+  height: 320rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 72%);
+  filter: blur(12rpx);
+}
+
+.banner-light::after {
+  left: -80rpx;
+  bottom: -110rpx;
+  width: 360rpx;
+  height: 360rpx;
+  background: radial-gradient(circle, rgba(15, 95, 52, 0.18) 0%, rgba(15, 95, 52, 0) 74%);
+  filter: blur(20rpx);
 }
 
 .banner-dark {
-  background: var(--bg-card);
-  border-color: var(--border);
+  background: linear-gradient(160deg, rgba(18, 22, 30, 0.92) 0%, rgba(12, 14, 20, 0.98) 100%);
+  border-color: rgba(124, 176, 255, 0.18);
 }
 
 .bubble-decoration {
@@ -65,21 +106,21 @@ export default {
 }
 
 .bubble-1 {
-  right: -160rpx;
-  top: -160rpx;
-  width: 512rpx;
-  height: 512rpx;
-  background: var(--primary-light);
-  filter: blur(60px);
+  right: -130rpx;
+  top: -150rpx;
+  width: 420rpx;
+  height: 420rpx;
+  background: var(--brand-tint-strong);
+  filter: blur(70rpx);
 }
 
 .bubble-2 {
-  bottom: -80rpx;
+  bottom: -60rpx;
   left: -80rpx;
-  width: 384rpx;
-  height: 384rpx;
-  background: var(--primary-light);
-  filter: blur(60px);
+  width: 320rpx;
+  height: 320rpx;
+  background: var(--brand-tint);
+  filter: blur(66rpx);
 }
 
 .banner-content {
@@ -87,18 +128,31 @@ export default {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 32rpx;
+  /* gap: 32rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 32rpx;
+  }
 }
 
 .banner-text {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
 }
 
 .welcome-title {
-  font-size: 56rpx;
-  font-weight: 700;
+  font-size: 52rpx;
+  font-weight: 680;
+  letter-spacing: -0.4rpx;
   color: var(--text-primary);
   line-height: 1.2;
 }
@@ -106,7 +160,7 @@ export default {
 .welcome-subtitle {
   font-size: 28rpx;
   color: var(--text-sub);
-  line-height: 1.6;
+  line-height: 1.58;
 }
 
 .banner-light .welcome-subtitle {
@@ -115,11 +169,7 @@ export default {
 
 .highlight-text {
   color: var(--primary);
-  font-weight: 600;
-}
-
-.banner-light .highlight-text {
-  color: #047857;
+  font-weight: 620;
 }
 
 .banner-actions {
@@ -133,34 +183,53 @@ export default {
   align-items: center;
   justify-content: center;
   gap: var(--ds-spacing-sm, 16rpx);
-  padding: var(--ds-spacing-md, 24rpx) var(--ds-spacing-xl, 48rpx);
-  border-radius: var(--ds-radius-lg, 24rpx);
+  padding: 22rpx 44rpx;
+  border-radius: 999rpx;
   font-size: var(--ds-font-size-base, 28rpx);
-  font-weight: 600;
+  font-weight: 620;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 88rpx;
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  border: 1rpx solid transparent;
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.banner-light .btn-primary {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: var(--cta-primary-border);
+}
+
+.banner-dark .btn-primary {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: var(--cta-primary-border);
 }
 
 .btn-outline {
-  background: rgba(255, 255, 255, 0.6);
-  border: 2rpx solid var(--border);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1rpx solid var(--apple-glass-border-strong);
   color: var(--text-primary);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(10rpx);
+  -webkit-backdrop-filter: blur(10rpx);
+}
+
+.banner-light .btn-outline {
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(16, 40, 26, 0.08);
+  box-shadow: 0 12rpx 26rpx rgba(16, 40, 26, 0.1);
 }
 
 .banner-dark .btn-outline {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
 }
 
 .action-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.97);
 }
 
 .btn-icon {
@@ -171,21 +240,55 @@ export default {
   font-size: 28rpx;
 }
 
-@keyframes pulse-glow {
-  0%,
-  100% {
-    box-shadow:
-      0 0 40rpx var(--primary-light),
-      0 0 80rpx var(--primary-light);
+@media screen and (max-width: 375px) {
+  .welcome-banner {
+    padding: 32rpx;
+    margin-bottom: 36rpx;
+    border-radius: 28rpx;
   }
-  50% {
-    box-shadow:
-      0 0 60rpx var(--primary-light),
-      0 0 120rpx var(--primary-light);
-  }
-}
 
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
+  .banner-content {
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-top: 24rpx;
+    }
+  }
+
+  .banner-text {
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-top: 12rpx;
+    }
+  }
+
+  .welcome-title {
+    font-size: 40rpx;
+    letter-spacing: -0.2rpx;
+  }
+
+  .welcome-subtitle {
+    font-size: 24rpx;
+  }
+
+  .banner-actions {
+    flex-direction: column;
+    gap: 14rpx;
+  }
+
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 18rpx 28rpx;
+    min-height: 76rpx;
+    font-size: 26rpx;
+  }
+
+  .btn-text {
+    font-size: 26rpx;
+  }
 }
 </style>

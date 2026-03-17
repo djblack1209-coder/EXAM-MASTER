@@ -1,5 +1,6 @@
 <template>
   <view :class="['page-container', { 'dark-mode': isDark }]">
+    <PrivacyPopup />
     <!-- 自定义导航栏 -->
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
@@ -17,7 +18,14 @@
 
     <!-- 相机/预览区域 -->
     <view class="camera-area" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
+      <view v-if="mode === 'camera'" class="camera-hero">
+        <text class="camera-eyebrow"> Photo Search </text>
+        <text class="camera-hero-title"> 对准题目，一次拍清 </text>
+        <text class="camera-hero-subtitle"> 自动识别题干、匹配题库并生成解析 </text>
+      </view>
+
       <!-- 相机模式 -->
+      <!-- #ifdef MP-WEIXIN -->
       <camera
         v-if="mode === 'camera'"
         device-position="back"
@@ -33,6 +41,16 @@
         </view>
         <text class="camera-tip"> 将题目放入框内，保持清晰 </text>
       </camera>
+      <!-- #endif -->
+
+      <!-- #ifndef MP-WEIXIN -->
+      <!-- ✅ P0-FIX: App端无camera组件，显示占位提示 -->
+      <view v-if="mode === 'camera'" class="camera-placeholder">
+        <view class="placeholder-icon">📷</view>
+        <text class="placeholder-title">拍照搜题</text>
+        <text class="placeholder-hint">点击下方拍照按钮开始</text>
+      </view>
+      <!-- #endif -->
 
       <!-- 预览模式 -->
       <view v-else-if="mode === 'preview'" class="preview-area">
@@ -74,7 +92,7 @@
               <text class="rs-title"> 题库匹配 </text>
               <text class="match-count"> 找到 {{ result.questions.length }} 道相似题 </text>
             </view>
-            <view v-for="(q, idx) in result.questions" :key="idx" class="question-card" @click="viewQuestion(q)">
+            <view v-for="(q, idx) in result.questions" :key="idx" class="question-card" @tap="viewQuestion(q)">
               <text class="question-text">
                 {{ q.question }}
               </text>
@@ -165,15 +183,15 @@
     <!-- 底部操作栏 -->
     <view class="action-bar">
       <template v-if="mode === 'camera'">
-        <view class="action-btn-side" @click="chooseFromAlbum">
+        <view id="e2e-photo-search-album" class="action-btn-side" @tap="chooseFromAlbum">
           <text class="action-side-text"> 相册 </text>
         </view>
-        <view class="capture-btn" @click="takePhoto">
+        <view id="e2e-photo-search-capture" class="capture-btn" @tap="takePhoto">
           <view class="capture-outer">
             <view class="capture-inner" />
           </view>
         </view>
-        <view class="action-btn-side" @click="selectSubject">
+        <view id="e2e-photo-search-subject" class="action-btn-side" @tap="selectSubject">
           <text class="action-side-text">
             {{ selectedSubjectLabel || '学科' }}
           </text>
@@ -181,33 +199,35 @@
       </template>
 
       <template v-else-if="mode === 'preview'">
-        <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" :disabled="isRecognizing" @click="retake">
+        <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" :disabled="isRecognizing" @tap="retake">
           <text>重新拍摄</text>
         </button>
         <button
+          id="e2e-photo-search-start"
           class="bar-btn bar-btn-primary"
           hover-class="btn-hover"
           :disabled="isRecognizing"
-          @click="startRecognize"
+          @tap="startRecognize"
         >
           <text>{{ isRecognizing ? '识别中...' : '开始识别' }}</text>
         </button>
       </template>
 
       <template v-else-if="mode === 'result'">
-        <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" @click="retake">
+        <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" @tap="retake">
           <text>重新搜题</text>
         </button>
         <button
           v-if="result.questions && result.questions.length > 0"
+          id="e2e-photo-search-add-mistake"
           class="bar-btn bar-btn-primary"
           hover-class="btn-hover"
           :disabled="isAddingMistake"
-          @click="addToMistake"
+          @tap="addToMistake"
         >
           <text>{{ isAddingMistake ? '添加中...' : '加入错题本' }}</text>
         </button>
-        <button class="bar-btn bar-btn-ghost" hover-class="btn-hover" @click="searchSimilar">
+        <button class="bar-btn bar-btn-ghost" hover-class="btn-hover" @tap="searchSimilar">
           <text>找相似题</text>
         </button>
       </template>
@@ -224,8 +244,11 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
+import { ensureMiniProgramScope, ensurePrivacyAuthorization } from '@/utils/wechat/privacy-authorization.js';
 
 export default {
+  components: { PrivacyPopup },
   data() {
     return {
       statusBarHeight: 44,
@@ -273,6 +296,11 @@ export default {
     offThemeUpdate(this._themeHandler);
   },
 
+  // ✅ P0-FIX: 页面隐藏时清理Tip定时器，防止后台持续运行
+  onHide() {
+    this.clearTipTimer();
+  },
+
   methods: {
     goBack() {
       uni.navigateBack({ delta: 1 });
@@ -311,25 +339,99 @@ export default {
     },
 
     // 拍照
-    takePhoto() {
-      const ctx = uni.createCameraContext();
-      ctx.takePhoto({
-        quality: 'high',
+    async takePhoto() {
+      const privacyOk = await ensurePrivacyAuthorization();
+      if (!privacyOk) {
+        uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+        return;
+      }
+
+      // #ifdef MP-WEIXIN
+      const cameraGranted = await ensureMiniProgramScope('scope.camera', {
+        title: '相机权限提示',
+        content: '需要相机权限才能拍照搜题，是否前往设置开启？'
+      });
+      if (!cameraGranted) {
+        uni.showToast({ title: '未开启相机权限', icon: 'none' });
+        return;
+      }
+
+      if (typeof uni.createCameraContext === 'function') {
+        const ctx = uni.createCameraContext();
+        ctx.takePhoto({
+          quality: 'high',
+          success: (res) => {
+            this.previewImage = res.tempImagePath;
+            this.mode = 'preview';
+            this.startRecognize();
+          },
+          fail: () => {
+            uni.chooseImage({
+              count: 1,
+              sourceType: ['camera'],
+              success: (res) => {
+                this.previewImage = res.tempFilePaths[0];
+                this.mode = 'preview';
+                this.startRecognize();
+              },
+              fail: (err) => {
+                logger.error('拍照失败:', err);
+                if (err?.errMsg && /deny|auth/i.test(err.errMsg)) {
+                  uni.showModal({
+                    title: '相机权限提示',
+                    content: '需要相机权限才能拍照搜题，是否前往设置开启？',
+                    success: (res) => {
+                      if (res.confirm && typeof uni.openSetting === 'function') {
+                        uni.openSetting();
+                      }
+                    }
+                  });
+                } else {
+                  uni.showToast({ title: '拍照失败，请检查权限', icon: 'none' });
+                }
+              }
+            });
+          }
+        });
+        return;
+      }
+      // #endif
+
+      uni.chooseImage({
+        count: 1,
+        sourceType: ['camera'],
         success: (res) => {
-          this.previewImage = res.tempImagePath;
+          this.previewImage = res.tempFilePaths[0];
           this.mode = 'preview';
-          // 自动开始识别
           this.startRecognize();
         },
         fail: (err) => {
           logger.error('拍照失败:', err);
-          uni.showToast({ title: '拍照失败', icon: 'none' });
+          if (err?.errMsg && /deny|auth/i.test(err.errMsg)) {
+            uni.showModal({
+              title: '相机权限提示',
+              content: '需要相机权限才能拍照搜题，是否前往设置开启？',
+              success: (res) => {
+                if (res.confirm && typeof uni.openSetting === 'function') {
+                  uni.openSetting();
+                }
+              }
+            });
+          } else {
+            uni.showToast({ title: '拍照失败', icon: 'none' });
+          }
         }
       });
     },
 
     // 从相册选择
-    chooseFromAlbum() {
+    async chooseFromAlbum() {
+      const privacyOk = await ensurePrivacyAuthorization();
+      if (!privacyOk) {
+        uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+        return;
+      }
+
       uni.chooseImage({
         count: 1,
         sourceType: ['album'],
@@ -342,7 +444,19 @@ export default {
         fail: (err) => {
           if (err.errMsg !== 'chooseImage:fail cancel') {
             logger.error('选择图片失败:', err);
-            uni.showToast({ title: '选择图片失败', icon: 'none' });
+            if (err?.errMsg && /deny|auth/i.test(err.errMsg)) {
+              uni.showModal({
+                title: '相册权限提示',
+                content: '需要相册权限才能选择图片，是否前往设置开启？',
+                success: (res) => {
+                  if (res.confirm && typeof uni.openSetting === 'function') {
+                    uni.openSetting();
+                  }
+                }
+              });
+            } else {
+              uni.showToast({ title: '选择图片失败', icon: 'none' });
+            }
           }
         }
       });
@@ -371,8 +485,14 @@ export default {
       this.startTipRotation();
 
       try {
-        // 图片转base64
-        const base64 = await this.imageToBase64(this.previewImage);
+        // ✅ P0-FIX: 图片转base64可能失败，需要捕获异常
+        let base64;
+        try {
+          base64 = await this.imageToBase64(this.previewImage);
+        } catch (convertErr) {
+          logger.error('图片转换失败:', convertErr);
+          throw new Error('图片格式转换失败，请重新拍照');
+        }
 
         // 调用云函数
         const response = await lafService.photoSearch(base64, {
@@ -586,6 +706,7 @@ export default {
 
 <style lang="scss" scoped>
 .page-container {
+  height: 100%;
   height: 100vh;
   background: #000;
   display: flex;
@@ -741,6 +862,7 @@ export default {
   bottom: 0;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -749,8 +871,8 @@ export default {
   .loading-spinner {
     width: 64rpx;
     height: 64rpx;
-    border: 4rpx solid rgba(102, 126, 234, 0.25);
-    border-top-color: #667eea;
+    border: 4rpx solid var(--primary-light);
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -815,12 +937,12 @@ export default {
 .confidence-badge {
   padding: 6rpx 16rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+  background: linear-gradient(135deg, var(--brand-tint-subtle), var(--brand-tint));
 
   .confidence-text {
     font-size: 22rpx;
     font-weight: 600;
-    color: #667eea;
+    color: var(--primary);
   }
 }
 
@@ -843,7 +965,7 @@ export default {
   border-radius: 20rpx;
   margin-bottom: 16rpx;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-  border-left: 6rpx solid #667eea;
+  border-left: 6rpx solid var(--primary);
 
   .question-text {
     font-size: 28rpx;
@@ -857,7 +979,13 @@ export default {
 
   .question-meta {
     display: flex;
-    gap: 12rpx;
+    /* gap: 12rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: 12rpx;
+    }
     margin-top: 16rpx;
   }
 }
@@ -865,19 +993,19 @@ export default {
 .meta-tag {
   padding: 6rpx 16rpx;
   border-radius: 12rpx;
-  background: rgba(102, 126, 234, 0.08);
+  background: var(--brand-tint-subtle);
 
   &.meta-tag-diff {
-    background: rgba(255, 149, 0, 0.08);
+    background: var(--warning-light);
 
     .meta-tag-text {
-      color: #ff9500;
+      color: var(--warning);
     }
   }
 
   .meta-tag-text {
     font-size: 20rpx;
-    color: #667eea;
+    color: var(--primary);
     font-weight: 500;
   }
 }
@@ -900,7 +1028,7 @@ export default {
   .ai-block-title {
     font-size: 26rpx;
     font-weight: 700;
-    color: #667eea;
+    color: var(--primary);
     margin-bottom: 12rpx;
     display: block;
   }
@@ -914,7 +1042,7 @@ export default {
   .step-num-circle {
     width: 40rpx;
     height: 40rpx;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    background: var(--gradient-primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -955,17 +1083,23 @@ export default {
 .tags-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
 }
 
 .kp-tag {
   padding: 8rpx 20rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+  background: linear-gradient(135deg, var(--brand-tint-subtle), var(--brand-tint));
 
   .kp-tag-text {
     font-size: 22rpx;
-    color: #667eea;
+    color: var(--primary);
     font-weight: 500;
   }
 }
@@ -1007,7 +1141,13 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 24rpx;
+  }
   padding: 24rpx 32rpx;
   padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
@@ -1038,17 +1178,18 @@ export default {
   width: 110rpx;
   height: 110rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: var(--cta-primary-bg);
+  border: 1rpx solid var(--cta-primary-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.4);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .capture-inner {
   width: 80rpx;
   height: 80rpx;
-  border: 6rpx solid rgba(255, 255, 255, 0.9);
+  border: 6rpx solid rgba(16, 40, 26, 0.18);
   border-radius: 50%;
 }
 
@@ -1075,9 +1216,10 @@ export default {
   font-weight: 600;
 
   &.bar-btn-primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-    box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
+    border: 1rpx solid var(--cta-primary-border);
+    box-shadow: var(--cta-primary-shadow);
 
     &:disabled {
       opacity: 0.5;
@@ -1096,7 +1238,7 @@ export default {
 
   &.bar-btn-ghost {
     background: transparent;
-    color: #667eea;
+    color: var(--primary);
   }
 }
 
@@ -1107,6 +1249,10 @@ export default {
 
 // Dark mode overrides
 .dark-mode {
+  .capture-inner {
+    border-color: rgba(255, 255, 255, 0.9);
+  }
+
   .result-area {
     background: var(--bg-secondary, #1c1c1e);
   }
@@ -1127,14 +1273,14 @@ export default {
   }
 
   .confidence-badge {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+    background: linear-gradient(135deg, var(--brand-tint), var(--brand-tint-strong));
   }
 
   .meta-tag {
-    background: rgba(102, 126, 234, 0.15);
+    background: var(--brand-tint);
 
     &.meta-tag-diff {
-      background: rgba(255, 149, 0, 0.15);
+      background: var(--warning-light);
     }
   }
 
@@ -1144,7 +1290,7 @@ export default {
   }
 
   .kp-tag {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+    background: linear-gradient(135deg, var(--brand-tint), var(--brand-tint-strong));
   }
 
   .action-bar {
@@ -1152,7 +1298,463 @@ export default {
   }
 
   .bar-btn.bar-btn-ghost {
-    color: #a0b0ff;
+    color: var(--primary);
   }
+}
+
+/* Apple / Liquid Glass overrides */
+.page-container {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+}
+
+.dark-mode.page-container {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.nav-header {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.nav-header .nav-back,
+.nav-header .nav-action {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.nav-header .back-icon,
+.nav-header .nav-title,
+.nav-header .nav-action-text {
+  color: var(--text-main);
+}
+
+.dark-mode .nav-header .nav-back,
+.dark-mode .nav-header .nav-action {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .nav-header .back-icon,
+.dark-mode .nav-header .nav-title,
+.dark-mode .nav-header .nav-action-text {
+  color: #ffffff;
+}
+
+.camera-area {
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+}
+
+.camera-preview,
+.preview-area,
+.result-area {
+  border-radius: 34rpx 34rpx 0 0;
+  overflow: hidden;
+}
+
+.camera-preview,
+.preview-area {
+  margin-top: 12rpx;
+  box-shadow: var(--apple-shadow-card);
+}
+
+.viewfinder {
+  border: 2rpx dashed rgba(255, 255, 255, 0.54);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.viewfinder .corner {
+  border-color: rgba(255, 255, 255, 0.9);
+}
+
+.camera-tip {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+  color: var(--text-main);
+}
+
+.dark-mode .camera-tip,
+.dark-mode .loading-overlay {
+  color: #ffffff;
+}
+
+.loading-overlay {
+  background: rgba(9, 18, 12, 0.28);
+}
+
+.result-area {
+  margin-top: 12rpx;
+  background: transparent;
+}
+
+.result-scroll {
+  padding: 24rpx;
+}
+
+.result-section {
+  margin-bottom: 22rpx;
+}
+
+.rs-header .rs-title {
+  font-size: 24rpx;
+  letter-spacing: 2rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary, var(--text-sub));
+}
+
+.rs-header .match-count {
+  color: var(--text-sub);
+}
+
+.confidence-badge,
+.recognized-text-card,
+.question-card,
+.ai-card,
+.action-btn-side,
+.bar-btn.bar-btn-secondary,
+.bar-btn.bar-btn-ghost {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.76) 0%, rgba(241, 248, 243, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .confidence-badge,
+.dark-mode .recognized-text-card,
+.dark-mode .question-card,
+.dark-mode .ai-card,
+.dark-mode .action-btn-side,
+.dark-mode .bar-btn.bar-btn-secondary,
+.dark-mode .bar-btn.bar-btn-ghost,
+.dark-mode .action-bar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.confidence-badge .confidence-text,
+.recognized-text-card .recognized-text,
+.question-card .question-text,
+.ai-block .ai-block-title,
+.step-item .step-text,
+.mistake-item .mistake-text,
+.action-btn-side .action-side-text,
+.bar-btn.bar-btn-secondary,
+.bar-btn.bar-btn-ghost {
+  color: var(--text-main);
+}
+
+.question-card {
+  border-left: none;
+}
+
+.meta-tag {
+  background: rgba(52, 199, 89, 0.12);
+  border: 1px solid rgba(52, 199, 89, 0.18);
+}
+
+.meta-tag.meta-tag-diff {
+  background: rgba(255, 159, 10, 0.12);
+  border-color: rgba(255, 159, 10, 0.18);
+}
+
+.meta-tag .meta-tag-text {
+  color: var(--text-main);
+}
+
+.step-item .step-num-circle {
+  background: var(--cta-primary-bg);
+}
+
+.step-item .step-num-text {
+  color: var(--cta-primary-text);
+}
+
+.answer-card {
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.18);
+}
+
+.answer-card .answer-text {
+  color: var(--text-main);
+}
+
+.kp-tag {
+  background: rgba(52, 199, 89, 0.12);
+  border: 1px solid rgba(52, 199, 89, 0.18);
+}
+
+.kp-tag .kp-tag-text {
+  color: var(--text-main);
+}
+
+.action-bar {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-top: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.action-btn-side {
+  border-radius: 999rpx;
+}
+
+.capture-outer {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+}
+
+.capture-inner {
+  border-color: rgba(19, 48, 28, 0.22);
+}
+
+.bar-btn {
+  border-radius: 999rpx;
+}
+
+.bar-btn.bar-btn-primary {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+}
+
+.dark-mode .bar-btn.bar-btn-primary {
+  background: var(--cta-primary-bg);
+}
+
+.dark-mode .confidence-badge .confidence-text,
+.dark-mode .recognized-text-card .recognized-text,
+.dark-mode .question-card .question-text,
+.dark-mode .ai-block .ai-block-title,
+.dark-mode .step-item .step-text,
+.dark-mode .mistake-item .mistake-text,
+.dark-mode .action-btn-side .action-side-text,
+.dark-mode .bar-btn.bar-btn-secondary,
+.dark-mode .bar-btn.bar-btn-ghost,
+.dark-mode .meta-tag .meta-tag-text,
+.dark-mode .answer-card .answer-text,
+.dark-mode .kp-tag .kp-tag-text {
+  color: #ffffff;
+}
+
+/* Final polish: camera mode and result grouping */
+.camera-area {
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+  padding-left: 24rpx;
+  padding-right: 24rpx;
+}
+
+.camera-hero {
+  margin-top: 8rpx;
+  padding: 22rpx 24rpx;
+  border-radius: 28rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .camera-hero {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.camera-eyebrow,
+.camera-hero-title,
+.camera-hero-subtitle {
+  display: block;
+}
+
+.camera-eyebrow {
+  margin-bottom: 8rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-sub);
+}
+
+.camera-hero-title {
+  font-size: 38rpx;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.camera-hero-subtitle {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--text-sub);
+}
+
+.dark-mode .camera-eyebrow,
+.dark-mode .camera-hero-subtitle {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.dark-mode .camera-hero-title {
+  color: #ffffff;
+}
+
+.camera-preview,
+.preview-area,
+.result-area {
+  flex: 1;
+  min-height: 0;
+}
+
+.camera-preview,
+.preview-area {
+  border-radius: 36rpx;
+}
+
+.viewfinder {
+  top: 48%;
+  width: calc(100% - 72rpx);
+  height: 340rpx;
+  border-radius: 30rpx;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.camera-tip {
+  bottom: calc(242rpx + env(safe-area-inset-bottom, 0px));
+  padding: 14rpx 28rpx;
+}
+
+.result-scroll {
+  padding: 28rpx 24rpx;
+}
+
+.result-section {
+  padding: 20rpx;
+  border-radius: 28rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .result-section {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.result-section .rs-header {
+  margin-bottom: 18rpx;
+}
+
+.recognized-text-card,
+.question-card,
+.ai-card {
+  border-radius: 24rpx;
+}
+
+.question-card {
+  margin-bottom: 14rpx;
+}
+
+.question-meta,
+.tags-row {
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+}
+
+.action-bar {
+  left: 24rpx;
+  right: 24rpx;
+  bottom: 20rpx;
+  border-radius: 34rpx;
+  padding-left: 24rpx;
+  padding-right: 24rpx;
+}
+
+.dark-mode .action-bar {
+  box-shadow: var(--apple-shadow-card);
+}
+
+.action-btn-side,
+.bar-btn {
+  min-height: 92rpx;
+}
+
+.action-btn-side {
+  flex: 0 0 168rpx;
+}
+
+.capture-btn {
+  flex: 1;
+}
+
+.capture-outer {
+  width: 116rpx;
+  height: 116rpx;
+}
+
+/* ✅ P0-FIX: App端相机占位样式 */
+.camera-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+}
+
+.placeholder-icon {
+  font-size: 120rpx;
+  margin-bottom: 32rpx;
+}
+
+.placeholder-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.placeholder-hint {
+  font-size: 28rpx;
+  color: #888;
+}
+
+.dark-mode .placeholder-title {
+  color: #fff;
+}
+
+.dark-mode .placeholder-hint {
+  color: #aaa;
 }
 </style>

@@ -1,7 +1,11 @@
 <template>
   <view class="chat-container" :class="{ 'dark-mode': isDark }">
+    <PrivacyPopup />
     <!-- 导航栏 -->
-    <view class="nav-bar">
+    <view
+      class="nav-bar apple-glass"
+      :style="{ paddingTop: statusBarHeight + 'px', paddingRight: `calc(32rpx + ${capsuleSafeRight}px)` }"
+    >
       <image
         :src="icons8('ios-glyphs', 30, '333333', 'chevron-left')"
         class="back-icon"
@@ -27,7 +31,7 @@
 
     <!-- 智能好友选择器弹窗 -->
     <view v-if="showFriendSelector" class="friend-selector-modal" @tap="showFriendSelector = false">
-      <view class="friend-selector-content" @tap.stop>
+      <view class="friend-selector-content apple-glass-card" @tap.stop>
         <view class="selector-header">
           <text class="selector-title"> 选择智能好友 </text>
           <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false"> × </text>
@@ -76,7 +80,7 @@
       :scroll-into-view="scrollIntoView"
     >
       <!-- 欢迎消息 -->
-      <view v-if="messages.length === 0" class="welcome-card">
+      <view v-if="messages.length === 0" class="welcome-card apple-glass-card">
         <image :src="currentFriend.avatar" class="welcome-avatar" mode="aspectFill" />
         <text class="welcome-name">
           {{ currentFriend.name }}
@@ -156,7 +160,7 @@
     </scroll-view>
 
     <!-- 情绪快捷标签 -->
-    <view v-if="showEmotionTags && !isPageLoading" class="emotion-tags">
+    <view v-if="showEmotionTags && !isPageLoading" class="emotion-tags apple-glass">
       <view
         v-for="emotion in emotionOptions"
         :key="emotion.value"
@@ -183,7 +187,7 @@
     </view>
 
     <!-- 输入区域 -->
-    <view v-if="!isPageLoading" class="input-area">
+    <view v-if="!isPageLoading" class="input-area apple-glass">
       <view class="input-tools">
         <image
           :src="icons8('ios', 50, '666666', 'happy--v1')"
@@ -214,16 +218,23 @@
         />
       </view>
       <input
+        id="e2e-chat-input"
         v-model="messageText"
         type="text"
-        class="msg-input"
+        class="msg-input apple-glass-pill"
         :placeholder="isRealtimeMode ? '实时答疑模式...' : '和智能好友聊聊...'"
         confirm-type="send"
         maxlength="500"
         @confirm="handleSend"
         @focus="onInputFocus"
       />
-      <view class="send-btn" :class="{ active: messageText.trim() }" hover-class="item-hover" @tap="handleSend">
+      <view
+        id="e2e-chat-send"
+        class="send-btn apple-glass-pill"
+        :class="{ active: messageText.trim() }"
+        hover-class="item-hover"
+        @tap="handleSend"
+      >
         <text class="send-icon"> ↑ </text>
       </view>
     </view>
@@ -236,7 +247,10 @@ import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
-import { getStatusBarHeight } from '@/utils/core/system.js';
+import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
+import { requireLogin } from '@/utils/auth/loginGuard.js';
+import { ensureMiniProgramScope, ensurePrivacyAuthorization } from '@/utils/wechat/privacy-authorization.js';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
 // 智能路由器
 import { realtimeAnswer } from './ai-router.js';
 // 外部 CDN 配置
@@ -316,6 +330,7 @@ const messageText = ref('');
 const scrollTop = ref(0);
 const scrollIntoView = ref('');
 const statusBarHeight = ref(20);
+const capsuleSafeRight = ref(20);
 const isTyping = ref(false);
 const showFriendSelector = ref(false);
 const showEmotionTags = ref(false);
@@ -367,6 +382,7 @@ onMounted(async () => {
 
   // 获取状态栏高度
   statusBarHeight.value = getStatusBarHeight();
+  capsuleSafeRight.value = getCapsuleSafeRight();
 
   // 获取路由参数
   const pages = getCurrentPages();
@@ -511,6 +527,24 @@ const toggleEmotionTags = () => {
   showEmotionTags.value = !showEmotionTags.value;
 };
 
+const redirectToLoginForChat = () => {
+  try {
+    storageService.remove('EXAM_TOKEN');
+    storageService.remove('EXAM_USER_ID');
+    storageService.remove('userInfo');
+    storageService.save('redirect_after_login', '/pages/chat/chat');
+  } catch (_error) {
+    // ignore cleanup failure
+  }
+
+  uni.navigateTo({
+    url: '/pages/login/index',
+    fail: () => {
+      uni.switchTab({ url: '/pages/index/index' });
+    }
+  });
+};
+
 // 滚动到底部
 const scrollToBottom = () => {
   nextTick(() => {
@@ -595,11 +629,19 @@ const toggleRealtimeMode = () => {
 // 开始录音
 const startRecording = async () => {
   try {
-    const res = await uni.getSetting();
-    if (!res.authSetting['scope.record']) {
-      const _authRes = await uni.authorize({
-        scope: 'scope.record'
-      });
+    const privacyOk = await ensurePrivacyAuthorization();
+    if (!privacyOk) {
+      uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+      return;
+    }
+
+    const granted = await ensureMiniProgramScope('scope.record', {
+      title: '录音权限提示',
+      content: '需要麦克风权限才能语音提问，是否前往设置开启？'
+    });
+    if (!granted) {
+      uni.showToast({ title: '未开启录音权限', icon: 'none' });
+      return;
     }
 
     isRecording.value = true;
@@ -628,6 +670,11 @@ const startRecording = async () => {
         logger.error('[Chat] 录音错误:', err);
         isRecording.value = false;
         showVoiceWave.value = false;
+        // ✅ P0-FIX: 清理录音定时器，防止内存泄漏
+        if (recordingIntervalId) {
+          clearInterval(recordingIntervalId);
+          recordingIntervalId = null;
+        }
       });
     }
     _recorderManager.start({
@@ -849,6 +896,13 @@ const handleSend = async () => {
   const content = messageText.value.trim();
   if (!content || isTyping.value) return;
 
+  const loggedIn = requireLogin(null, {
+    message: '请先登录后再和智能好友聊天'
+  });
+  if (!loggedIn) {
+    return;
+  }
+
   if (isRealtimeMode.value) {
     // 实时答疑模式
     await handleRealtimeAnswer(content);
@@ -907,6 +961,18 @@ const handleNormalChat = async (content) => {
       reply = response.data;
       logger.log('[Chat] 智能回复成功');
     } else {
+      if (response?.code === 401 || /未登录|登录已过期|重新登录/.test(response?.message || '')) {
+        uni.showModal({
+          title: '登录提示',
+          content: '当前登录已失效，请重新登录后继续聊天',
+          confirmText: '去登录',
+          success: (res) => {
+            if (res.confirm) {
+              redirectToLoginForChat();
+            }
+          }
+        });
+      }
       logger.warn('[Chat] 智能回复异常:', response.message);
     }
 
@@ -1021,17 +1087,52 @@ onUnmounted(() => {
 .chat-container {
   display: flex;
   flex-direction: column;
+  height: 100%;
   height: 100vh;
-  background-color: var(--bg-secondary);
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top, var(--bg-page)) 0%,
+    var(--page-gradient-mid, var(--bg-page)) 56%,
+    var(--page-gradient-bottom, var(--bg-page)) 100%
+  );
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.chat-container::before,
+.chat-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.chat-container::before {
+  width: 380rpx;
+  height: 380rpx;
+  right: -120rpx;
+  top: 120rpx;
+  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 72%);
+  filter: blur(10rpx);
+}
+
+.chat-container::after {
+  width: 320rpx;
+  height: 320rpx;
+  left: -120rpx;
+  bottom: 220rpx;
+  background: radial-gradient(circle, var(--brand-tint-subtle) 0%, transparent 74%);
+  filter: blur(8rpx);
 }
 
 /* ✅ F024: 暗黑模式适配 — 使用 CSS 变量替代硬编码色值 */
 .chat-container.dark-mode {
-  background-color: var(--bg-primary, #0a0a0a);
+  background-color: var(--bg-page, #0b0b0f);
 
   .nav-bar {
-    background-color: var(--bg-secondary, #1a1a1a);
-    border-bottom-color: var(--border-color, #2a2a2a);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .nav-title {
@@ -1048,9 +1149,9 @@ onUnmounted(() => {
   }
 
   .left-bubble {
-    background-color: var(--bg-card, #1e1e1e);
+    background-color: transparent;
     color: var(--text-main, var(--ds-color-text-primary));
-    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
+    box-shadow: var(--apple-shadow-card);
   }
 
   .welcome-card {
@@ -1066,26 +1167,32 @@ onUnmounted(() => {
   }
 
   .input-area {
-    background-color: var(--bg-secondary, #1a1a1a);
-    border-top-color: var(--border-color, #2a2a2a);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .msg-input {
-    background-color: var(--bg-tertiary, #2a2a2a);
     color: var(--text-main, var(--ds-color-text-primary));
   }
 
   .send-btn {
-    background: var(--bg-tertiary, #2a2a2a);
+    background: rgba(255, 255, 255, 0.08);
+
+    &.active {
+      background: var(--cta-primary-bg);
+      box-shadow: var(--cta-primary-shadow);
+    }
   }
 
   .send-icon {
     color: var(--text-tertiary, var(--ds-color-text-tertiary));
+
+    .send-btn.active & {
+      color: var(--primary-foreground);
+    }
   }
 
   .emotion-tags {
-    background: var(--bg-secondary, #1a1a1a);
-    border-top-color: var(--border-color, #2a2a2a);
+    border-color: rgba(255, 255, 255, 0.12);
   }
 
   .emotion-tag {
@@ -1093,13 +1200,13 @@ onUnmounted(() => {
     color: var(--text-secondary, var(--ds-color-text-secondary));
 
     &.active {
-      background: var(--primary, #007aff);
-      color: white;
+      background: var(--cta-primary-bg);
+      color: var(--cta-primary-text);
     }
   }
 
   .friend-selector-content {
-    background: var(--bg-card, #1e1e1e);
+    background: transparent;
   }
 
   .selector-header {
@@ -1143,21 +1250,25 @@ onUnmounted(() => {
 
 .nav-bar {
   height: 88rpx;
-  padding-top: v-bind('statusBarHeight + "px"');
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-left: 32rpx;
   padding-right: 32rpx;
-  background-color: var(--bg-card);
-  border-bottom: 1rpx solid var(--border-light);
+  border-bottom: 1rpx solid transparent;
   z-index: 10;
 }
 
 .nav-center {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .friend-avatar-small {
@@ -1167,8 +1278,9 @@ onUnmounted(() => {
 }
 
 .nav-title {
-  font-size: 34rpx;
-  font-weight: 600;
+  font-size: 32rpx;
+  font-weight: 680;
+  letter-spacing: -0.2rpx;
   color: var(--text-primary);
 }
 
@@ -1205,10 +1317,9 @@ onUnmounted(() => {
 .friend-selector-content {
   width: 90%;
   max-width: 700rpx;
-  background: var(--bg-card);
-  border-radius: 32rpx;
+  border-radius: 28rpx;
   overflow: hidden;
-  box-shadow: 0 20rpx 80rpx rgba(0, 0, 0, 0.2);
+  box-shadow: var(--apple-shadow-floating);
 }
 
 .selector-header {
@@ -1242,16 +1353,17 @@ onUnmounted(() => {
 .friend-item {
   display: flex;
   align-items: center;
-  padding: 24rpx;
-  border-radius: 24rpx;
+  padding: 22rpx;
+  border-radius: 18rpx;
   margin-bottom: 8rpx;
 
   &:active {
-    background: var(--bg-secondary);
+    background: rgba(255, 255, 255, 0.18);
   }
 
   &.active {
-    background: var(--primary-light, rgba(0, 122, 255, 0.1));
+    background: rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.24);
   }
 }
 
@@ -1282,13 +1394,14 @@ onUnmounted(() => {
 .friend-check {
   width: 48rpx;
   height: 48rpx;
-  background: var(--primary, #007aff);
-  color: white;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28rpx;
+  box-shadow: var(--cta-primary-shadow);
 }
 
 /* 聊天列表 */
@@ -1305,6 +1418,9 @@ onUnmounted(() => {
   align-items: center;
   padding: 80rpx 40rpx;
   text-align: center;
+  max-width: 640rpx;
+  margin: 12rpx auto 0;
+  border-radius: 40rpx;
 }
 
 .welcome-avatar {
@@ -1369,19 +1485,25 @@ onUnmounted(() => {
 }
 
 .left-bubble {
-  background-color: var(--bg-card);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
   color: var(--text-primary);
   margin-left: 16rpx;
-  border-bottom-left-radius: 8rpx;
-  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
+  border: 1rpx solid var(--glass-border);
+  border-bottom-left-radius: 10rpx;
+  box-shadow: var(--apple-shadow-card);
 }
 
 .right-bubble {
-  background: linear-gradient(135deg, var(--primary, #007aff), var(--primary-dark, #5856d6));
-  color: white;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 46%),
+    linear-gradient(160deg, rgba(27, 130, 74, 0.98) 0%, rgba(15, 95, 52, 0.92) 100%);
+  color: #fff;
   margin-right: 16rpx;
-  border-bottom-right-radius: 8rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 122, 255, 0.3);
+  border-bottom-right-radius: 10rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 12rpx 28rpx rgba(15, 95, 52, 0.24);
 
   &.sending {
     opacity: 0.7;
@@ -1397,7 +1519,13 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   margin-top: 8rpx;
 }
 
@@ -1432,7 +1560,13 @@ onUnmounted(() => {
 
 .typing-dots {
   display: flex;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
 }
 
 .dot {
@@ -1468,16 +1602,21 @@ onUnmounted(() => {
 .emotion-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   padding: 24rpx 32rpx;
-  background: var(--bg-card);
-  border-top: 1rpx solid var(--border-light);
+  border-top: 1rpx solid transparent;
 }
 
 .emotion-tag {
-  padding: 12rpx 24rpx;
-  background: var(--bg-secondary);
-  border-radius: 32rpx;
+  padding: 12rpx 22rpx;
+  background: rgba(120, 120, 128, 0.12);
+  border-radius: 999rpx;
   font-size: 26rpx;
   color: var(--text-secondary);
 
@@ -1486,8 +1625,9 @@ onUnmounted(() => {
   }
 
   &.active {
-    background: var(--primary, #007aff);
-    color: white;
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
+    box-shadow: var(--cta-primary-shadow);
   }
 }
 
@@ -1498,9 +1638,14 @@ onUnmounted(() => {
   padding: 20rpx 24rpx;
   padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  background-color: var(--bg-card);
-  border-top: 1rpx solid var(--border-light);
-  gap: 16rpx;
+  border-top: 1rpx solid transparent;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .input-tools {
@@ -1520,8 +1665,8 @@ onUnmounted(() => {
 .msg-input {
   flex: 1;
   height: 72rpx;
-  background-color: var(--bg-secondary);
   border-radius: 36rpx;
+  border: 1rpx solid transparent;
   padding: 0 28rpx;
   font-size: 30rpx;
   color: var(--text-primary);
@@ -1531,14 +1676,14 @@ onUnmounted(() => {
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
-  background: var(--bg-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
 
   &.active {
-    background: linear-gradient(135deg, #007aff, #5856d6);
+    background: var(--cta-primary-bg);
+    box-shadow: var(--cta-primary-shadow);
     transform: scale(1.05);
   }
 }
@@ -1549,7 +1694,7 @@ onUnmounted(() => {
   color: var(--text-secondary);
 
   .send-btn.active & {
-    color: white;
+    color: var(--cta-primary-text);
   }
 }
 
@@ -1631,13 +1776,19 @@ onUnmounted(() => {
 .wave-container {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
   margin-bottom: 20rpx;
 }
 
 .wave-bar {
   width: 12rpx;
-  background: linear-gradient(180deg, #007aff, #5856d6);
+  background: linear-gradient(180deg, var(--primary), var(--accent-cool));
   border-radius: 6rpx;
   animation: wave 1s ease-in-out infinite;
 }

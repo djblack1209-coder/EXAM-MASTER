@@ -13,7 +13,7 @@ async function skipWhenRuntimeNotReady(test, page) {
 
 test.describe('A2-人工手势模拟', () => {
   test('HUMAN-001 首页上滑后页面保持可交互', async ({ app, page }) => {
-    await app.goto('/pages/index/index');
+    await app.gotoHome();
     await skipWhenRuntimeNotReady(test, page);
 
     await expectAnyTextVisible(page, ['实用工具', '待办事项', '首页']);

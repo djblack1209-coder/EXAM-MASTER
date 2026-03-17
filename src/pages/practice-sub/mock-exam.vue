@@ -91,6 +91,21 @@
     </view>
 
     <!-- 骨架屏加载状态 -->
+    <!-- #ifdef APP-PLUS -->
+    <view v-if="isPageLoading" class="setup-container" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
+      <view class="glass-card setup-card">
+        <view class="skeleton-title skeleton-animate" />
+        <view v-for="i in 4" :key="i" class="skeleton-setting">
+          <view class="skeleton-label skeleton-animate" />
+          <view class="skeleton-options">
+            <view v-for="j in 4" :key="j" class="skeleton-option skeleton-animate" />
+          </view>
+        </view>
+        <view class="skeleton-btn skeleton-animate" />
+      </view>
+    </view>
+    <!-- #endif -->
+    <!-- #ifndef APP-PLUS -->
     <!-- #ifndef APP-NVUE -->
     <transition name="skeleton-fade">
       <view v-if="isPageLoading" class="setup-container" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
@@ -120,6 +135,7 @@
         <view class="skeleton-btn skeleton-animate" />
       </view>
     </view>
+    <!-- #endif -->
     <!-- #endif -->
 
     <!-- 考试进行中 -->
@@ -421,6 +437,11 @@ export default {
 
   methods: {
     handleBack() {
+      // ✅ P0-FIX: 提交期间禁止退出，防止数据损坏
+      if (this.isSubmitting) {
+        uni.showToast({ title: '正在提交中，请稍候', icon: 'none' });
+        return;
+      }
       if (this.isExamStarted && !this.isExamFinished) {
         uni.showModal({
           title: '确认退出',
@@ -556,6 +577,13 @@ export default {
 
       // 打乱顺序并抽取
       this.examQuestions = this.shuffleArray(sourceQuestions).slice(0, this.questionCount);
+
+      // ✅ P0-FIX: 最终验证题目数量，防止空考试
+      if (!this.examQuestions || this.examQuestions.length === 0) {
+        uni.showToast({ title: '题目加载失败，请重试', icon: 'none' });
+        return;
+      }
+
       this.userAnswers = {};
       this.currentIndex = 0;
       this.remainingTime = this.examDuration * 60;
@@ -747,6 +775,7 @@ export default {
 
 <style lang="scss" scoped>
 .container {
+  min-height: 100%;
   min-height: 100vh;
   background: var(--bg-secondary, #f5f5f7);
 }
@@ -757,9 +786,13 @@ export default {
   left: 0;
   width: 100%;
   z-index: 100;
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .nav-content {
@@ -790,10 +823,18 @@ export default {
 .timer-display {
   display: flex;
   align-items: center;
-  gap: 8rpx;
-  background: var(--danger-light);
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
+  background: rgba(255, 255, 255, 0.72);
   padding: 8rpx 16rpx;
-  border-radius: 20rpx;
+  border-radius: 999rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .timer-icon {
@@ -807,13 +848,28 @@ export default {
 }
 
 .glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid var(--apple-glass-border-strong);
   border-radius: 40rpx;
   padding: 40rpx;
   margin: 30rpx;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 /* 设置页面 */
@@ -843,22 +899,32 @@ export default {
 
 .setting-options {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   flex-wrap: wrap;
 }
 
 .option-btn {
   padding: 16rpx 32rpx;
-  border-radius: 20rpx;
-  background: var(--bg-secondary);
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.68);
   color: var(--text-sub);
   font-size: 26rpx;
   transition: all 0.2s;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .option-btn.active {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
   font-weight: bold;
 }
 
@@ -875,14 +941,21 @@ export default {
 .start-btn {
   width: 100%;
   height: 100rpx;
-  background: var(--gradient-primary);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
   border-radius: 50rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16rpx;
-  border: none;
-  box-shadow: var(--shadow-lg);
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .start-btn[disabled] {
@@ -896,11 +969,12 @@ export default {
 .btn-text {
   font-size: 32rpx;
   font-weight: bold;
-  color: var(--primary-foreground);
+  color: inherit;
 }
 
 /* 考试页面 */
 .exam-container {
+  height: 100%;
   height: 100vh;
   padding: 0 30rpx;
   box-sizing: border-box;
@@ -908,7 +982,7 @@ export default {
 
 .progress-bar {
   height: 8rpx;
-  background: var(--bg-secondary);
+  background: rgba(16, 40, 26, 0.08);
   border-radius: 4rpx;
   margin: 20rpx 0;
   overflow: hidden;
@@ -952,28 +1026,36 @@ export default {
 .options-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 20rpx;
+  }
 }
 
 .option-item {
   display: flex;
   align-items: flex-start;
   padding: 24rpx;
-  background: var(--bg-secondary);
-  border-radius: 20rpx;
-  border: 2rpx solid transparent;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 24rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
   transition: all 0.2s;
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .option-item.selected {
-  background: var(--primary-light);
-  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.88);
+  border-color: var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .option-label {
   width: 48rpx;
   height: 48rpx;
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.82);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -983,6 +1065,7 @@ export default {
   color: var(--text-sub);
   margin-right: 20rpx;
   flex-shrink: 0;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 
 .option-item.selected .option-label {
@@ -999,32 +1082,43 @@ export default {
 
 .nav-buttons {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   margin: 30rpx 0;
 }
 
 .nav-btn {
   flex: 1;
   height: 88rpx;
-  border-radius: 44rpx;
+  border-radius: 999rpx;
   font-size: 28rpx;
   font-weight: bold;
-  border: none;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 
 .nav-btn.prev {
-  background: var(--bg-secondary);
-  color: var(--text-sub);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-primary);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .nav-btn.next {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .nav-btn.submit {
-  background: var(--success);
-  color: white;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .nav-btn[disabled] {
@@ -1033,10 +1127,12 @@ export default {
 
 /* 答题卡 */
 .answer-sheet {
-  background: var(--bg-card);
-  border-radius: 30rpx;
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-radius: 32rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
 }
 
 .sheet-title {
@@ -1050,19 +1146,26 @@ export default {
 .sheet-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
 }
 
 .sheet-item {
   width: 60rpx;
   height: 60rpx;
-  border-radius: 12rpx;
-  background: var(--bg-secondary);
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.68);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24rpx;
   color: var(--text-sub);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
 }
 
 .sheet-item.answered {
@@ -1076,6 +1179,7 @@ export default {
 
 /* 结果页面 */
 .result-container {
+  height: 100%;
   height: 100vh;
   padding: 0 30rpx;
   box-sizing: border-box;
@@ -1144,9 +1248,10 @@ export default {
 
 .result-message {
   padding: 30rpx;
-  background: var(--bg-secondary);
-  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border-radius: 24rpx;
   margin-bottom: 40rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
 }
 
 .result-message text {
@@ -1156,29 +1261,38 @@ export default {
 
 .result-actions {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
 }
 
 .action-btn {
   flex: 1;
   height: 88rpx;
-  border-radius: 44rpx;
+  border-radius: 999rpx;
   font-size: 28rpx;
   font-weight: bold;
-  border: none;
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .action-btn.review {
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--text-primary);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .action-btn.retry {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 /* 错题列表 */
@@ -1196,9 +1310,10 @@ export default {
 
 .wrong-item {
   padding: 24rpx;
-  background: var(--bg-secondary);
-  border-radius: 20rpx;
+  background: rgba(255, 255, 255, 0.58);
+  border-radius: 24rpx;
   margin-bottom: 20rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
 }
 
 .wrong-question {
@@ -1210,7 +1325,13 @@ export default {
 
 .wrong-answer {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   font-size: 24rpx;
 }
 
@@ -1247,7 +1368,13 @@ export default {
 
 .skeleton-options {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
   flex-wrap: wrap;
 }
 

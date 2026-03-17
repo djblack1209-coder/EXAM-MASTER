@@ -2,7 +2,11 @@ appId: ${APP_ID}
 ---
 - launchApp:
     clearState: true
+    stopApp: true
+- waitForAnimationToEnd
 - assertVisible: '首页'
 - assertVisible: '刷题'
 - assertVisible: '择校'
 - assertVisible: '我的'
+- assertVisible:
+    id: app

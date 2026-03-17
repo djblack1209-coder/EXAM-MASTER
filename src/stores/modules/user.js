@@ -100,6 +100,12 @@ export const useUserStore = defineStore('user', () => {
    */
   const login = async (silent = true) => {
     try {
+      // #ifdef APP-PLUS
+      // App 端不支持直接微信静默登录，需通过登录页面选择登录方式
+      logger.warn('[UserStore] App 端不支持微信静默登录，请使用登录页面');
+      return { success: false, error: new Error('请通过登录页面登录') };
+      // #endif
+
       // 1. 调用 uni.login 获取 code
       const loginRes = await new Promise((resolve, reject) => {
         uni.login({

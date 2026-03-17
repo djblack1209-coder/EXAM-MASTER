@@ -1,125 +1,214 @@
 <template>
-  <view class="knowledge-graph-container">
-    <!-- 顶部导航栏 -->
-    <view class="nav-header glassmorphism" :style="{ paddingTop: statusBarHeight + 'px' }">
+  <view :class="['knowledge-graph-page', { 'dark-mode': isDark }]">
+    <view class="aurora-bg" />
+
+    <view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <view class="nav-back" hover-class="item-hover" @tap="handleBack">
+        <view class="nav-back" @tap="handleBack">
           <text class="back-icon"> ← </text>
         </view>
-        <text class="nav-title"> 知识图谱 </text>
-        <view class="nav-actions">
-          <view class="action-btn" hover-class="item-hover" @tap="showMasteryStats">
-            <text class="action-icon">
-              <BaseIcon name="chart-bar" :size="28" />
-            </text>
-          </view>
-          <view class="action-btn" hover-class="item-hover" @tap="showLearningPath">
-            <text class="action-icon">
-              <BaseIcon name="path" :size="28" />
-            </text>
-          </view>
-          <view class="action-btn" hover-class="item-hover" @tap="showConnectionAnalysis">
-            <text class="action-icon">
-              <BaseIcon name="link" :size="28" />
-            </text>
-          </view>
-          <view class="action-btn" hover-class="item-hover" @tap="showPersonalizedPlan">
-            <text class="action-icon">
-              <BaseIcon name="note" :size="28" />
-            </text>
-          </view>
-          <view class="action-btn" hover-class="item-hover" @tap="handleRefresh">
-            <text class="action-icon">
-              <BaseIcon name="refresh" :size="28" />
-            </text>
-          </view>
+        <view class="nav-title-wrap">
+          <text class="nav-title"> 知识图谱 </text>
+          <text class="nav-subtitle"> 关联知识点与练习表现 </text>
+        </view>
+        <view class="nav-refresh" @tap="handleRefresh">
+          <BaseIcon name="refresh" :size="30" />
         </view>
       </view>
     </view>
 
-    <!-- 加载状态 -->
-    <view v-if="isLoading" class="loading-overlay">
-      <view class="loading-spinner" />
-      <text class="loading-text"> 正在构建知识图谱... </text>
-    </view>
+    <scroll-view scroll-y class="page-scroll" :style="{ paddingTop: statusBarHeight + 74 + 'px' }">
+      <view class="hero-card">
+        <text class="hero-eyebrow"> Knowledge Atlas </text>
+        <text class="hero-title"> 用一张图看清你的掌握度、薄弱点和推进顺序 </text>
+        <text class="hero-subtitle"> 点击节点查看详情，按关联关系安排下一轮训练。 </text>
 
-    <!-- 知识图谱主体 -->
-    <scroll-view scroll-y scroll-x class="graph-scroll-view" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
-      <!-- 图谱容器 -->
-      <view class="graph-container">
-        <!-- 中心节点 -->
-        <view class="center-node" hover-class="item-hover" @tap="handleCenterClick">
-          <view class="center-glow" />
-          <view class="center-content">
-            <text class="center-icon">
-              <BaseIcon name="target" :size="36" />
-            </text>
-            <text class="center-title"> 知识体系 </text>
-            <text class="center-subtitle"> {{ totalNodes }} 个知识点 · {{ totalQuestions }} 题 </text>
+        <view class="hero-stats">
+          <view class="hero-stat">
+            <text class="hero-stat-value"> {{ totalNodes }} </text>
+            <text class="hero-stat-label"> 知识点 </text>
+          </view>
+          <view class="hero-stat">
+            <text class="hero-stat-value"> {{ totalQuestions }} </text>
+            <text class="hero-stat-label"> 题目量 </text>
+          </view>
+          <view class="hero-stat">
+            <text class="hero-stat-value"> {{ weakNodes.length }} </text>
+            <text class="hero-stat-label"> 薄弱项 </text>
           </view>
         </view>
+      </view>
 
-        <!-- 知识节点 -->
-        <view
-          v-for="(node, index) in knowledgeNodes"
-          :key="node.id"
-          :class="['knowledge-node', 'node-level-' + node.level, activeNodeId === node.id && 'node-active']"
-          :style="getNodeStyle(node, index)"
-          hover-class="item-hover"
-          @tap="handleNodeClick(node)"
-        >
-          <!-- 连接线 -->
-          <view class="node-connector" :style="getConnectorStyle(node, index)" />
+      <scroll-view scroll-x class="action-strip" :show-scrollbar="false">
+        <view class="action-strip-inner">
+          <view class="quick-action" @tap="showMasteryStats">
+            <BaseIcon name="chart-bar" :size="28" />
+            <text class="quick-action-text"> 掌握分布 </text>
+          </view>
+          <view class="quick-action" @tap="showLearningPath">
+            <BaseIcon name="path" :size="28" />
+            <text class="quick-action-text"> 学习路径 </text>
+          </view>
+          <view class="quick-action" @tap="showConnectionAnalysis">
+            <BaseIcon name="link" :size="28" />
+            <text class="quick-action-text"> 关联分析 </text>
+          </view>
+          <view class="quick-action" @tap="showPersonalizedPlan">
+            <BaseIcon name="note" :size="28" />
+            <text class="quick-action-text"> 个性计划 </text>
+          </view>
+          <view class="quick-action" @tap="showWeakNodes">
+            <BaseIcon name="warning" :size="28" />
+            <text class="quick-action-text"> 薄弱知识点 </text>
+          </view>
+        </view>
+      </scroll-view>
 
-          <!-- 节点内容 -->
-          <view class="node-body" :style="{ borderColor: node.color }">
-            <view
-              class="node-glow"
-              :style="{ background: `radial-gradient(circle, ${node.color}40 0%, transparent 70%)` }"
-            />
-            <text class="node-icon">
-              <BaseIcon :name="node.icon" :size="28" />
-            </text>
-            <text class="node-title">
-              {{ node.title }}
-            </text>
-            <view class="node-progress">
-              <view class="progress-bar">
-                <view class="progress-fill" :style="{ width: node.mastery + '%', backgroundColor: node.color }" />
+      <view v-if="isLoading" class="loading-card">
+        <view class="loading-spinner" />
+        <text class="loading-title"> 正在构建知识图谱 </text>
+        <text class="loading-text"> 汇总题库、错题与掌握度关系中... </text>
+      </view>
+
+      <template v-else>
+        <view class="graph-card">
+          <view class="section-header">
+            <text class="section-eyebrow"> Graph Scene </text>
+            <text class="section-title"> 点击一个节点展开它的关联知识点 </text>
+          </view>
+
+          <scroll-view scroll-x class="graph-scroller" :show-scrollbar="false">
+            <view class="graph-stage">
+              <view class="graph-glow graph-glow-a" />
+              <view class="graph-glow graph-glow-b" />
+
+              <view class="center-node" @tap="handleCenterClick">
+                <view class="center-shine" />
+                <view class="center-content">
+                  <text class="center-icon">
+                    <BaseIcon name="target" :size="36" />
+                  </text>
+                  <text class="center-title"> 知识体系 </text>
+                  <text class="center-subtitle"> {{ totalNodes }} 个知识点 · {{ totalQuestions }} 题 </text>
+                </view>
               </view>
-              <text class="progress-text"> {{ node.mastery }}% </text>
+
+              <view
+                v-for="(node, index) in knowledgeNodes"
+                :key="node.id"
+                :class="['knowledge-node', activeNodeId === node.id && 'node-active']"
+                :style="getNodeStyle(node, index)"
+                @tap="handleNodeClick(node)"
+              >
+                <view class="node-connector" :style="getConnectorStyle(node, index)" />
+                <view class="node-body" :style="{ borderColor: node.color }">
+                  <view
+                    class="node-glow"
+                    :style="{ background: `radial-gradient(circle, ${node.color}30 0%, transparent 70%)` }"
+                  />
+                  <text class="node-icon">
+                    <BaseIcon :name="node.icon" :size="26" />
+                  </text>
+                  <text class="node-title">
+                    {{ node.title }}
+                  </text>
+                  <view class="node-progress">
+                    <view class="progress-bar">
+                      <view class="progress-fill" :style="{ width: node.mastery + '%', backgroundColor: node.color }" />
+                    </view>
+                    <text class="progress-text"> {{ node.mastery }}% </text>
+                  </view>
+                  <text class="node-count"> {{ node.count }} 题 </text>
+                </view>
+              </view>
+
+              <view
+                v-for="(child, idx) in expandedChildren"
+                :key="child.id"
+                class="child-node"
+                :style="getChildNodeStyle(child, idx)"
+                @tap="handleChildClick(child)"
+              >
+                <view class="child-body">
+                  <text class="child-icon">
+                    <BaseIcon :name="child.icon" :size="20" />
+                  </text>
+                  <text class="child-title">
+                    {{ child.title }}
+                  </text>
+                  <text class="child-mastery"> {{ child.mastery }}% </text>
+                </view>
+              </view>
             </view>
-            <text class="node-count"> {{ node.count }} 题 </text>
+          </scroll-view>
+        </view>
+
+        <view class="info-grid">
+          <view class="legend-card">
+            <view class="section-header compact">
+              <text class="section-eyebrow"> Mastery </text>
+              <text class="section-title"> 掌握度图例 </text>
+            </view>
+            <view class="legend-items">
+              <view class="legend-item">
+                <view class="legend-dot weak" />
+                <text class="legend-text"> 薄弱 (&lt;40%) </text>
+              </view>
+              <view class="legend-item">
+                <view class="legend-dot learning" />
+                <text class="legend-text"> 学习中 (40-59%) </text>
+              </view>
+              <view class="legend-item">
+                <view class="legend-dot solid" />
+                <text class="legend-text"> 熟练 (60-79%) </text>
+              </view>
+              <view class="legend-item">
+                <view class="legend-dot master" />
+                <text class="legend-text"> 已掌握 (≥80%) </text>
+              </view>
+            </view>
+          </view>
+
+          <view v-if="weakNodes.length > 0" class="weak-card" @tap="showWeakNodes">
+            <view class="section-header compact">
+              <text class="section-eyebrow"> Weak Spots </text>
+              <text class="section-title"> 优先补强区域 </text>
+            </view>
+            <view class="weak-summary">
+              <text class="weak-count"> {{ weakNodes.length }} </text>
+              <text class="weak-copy"> 个薄弱知识点需要额外练习 </text>
+            </view>
+            <text class="weak-next">
+              优先查看 {{ weakNodes[0].name || weakNodes[0].title }}，然后继续展开关联节点。
+            </text>
           </view>
         </view>
 
-        <!-- 子节点（展开时显示） -->
-        <view
-          v-for="(child, idx) in expandedChildren"
-          :key="child.id"
-          class="child-node"
-          :style="getChildNodeStyle(child, idx)"
-          hover-class="item-hover"
-          @tap="handleChildClick(child)"
-        >
-          <view class="child-body">
-            <text class="child-icon">
-              <BaseIcon :name="child.icon" :size="22" />
-            </text>
-            <text class="child-title">
-              {{ child.title }}
-            </text>
-            <text class="child-mastery"> {{ child.mastery }}% </text>
+        <view v-if="learningPath.length > 0" class="path-card">
+          <view class="section-header compact">
+            <text class="section-eyebrow"> Suggested Flow </text>
+            <text class="section-title"> 推荐学习顺序 </text>
+          </view>
+          <view class="path-list">
+            <view v-for="(item, index) in learningPath.slice(0, 3)" :key="index" class="path-item">
+              <text class="path-index"> 0{{ index + 1 }} </text>
+              <view class="path-meta">
+                <text class="path-name"> {{ item.node.name }} </text>
+                <text class="path-time"> {{ item.estimatedTime }} </text>
+              </view>
+            </view>
           </view>
         </view>
-      </view>
+      </template>
+
+      <view class="bottom-spacer" />
     </scroll-view>
 
-    <!-- 底部信息面板 -->
-    <view v-if="selectedNode" class="info-panel glassmorphism">
+    <view v-if="selectedNode" class="floating-panel">
+      <view class="panel-handle" />
       <view class="panel-header">
         <view class="panel-icon" :style="{ backgroundColor: selectedNode.color + '20' }">
-          <BaseIcon :name="selectedNode.icon" :size="32" />
+          <BaseIcon :name="selectedNode.icon" :size="30" />
         </view>
         <view class="panel-title-area">
           <text class="panel-title">
@@ -127,68 +216,37 @@
           </text>
           <text class="panel-subtitle"> 掌握度 {{ selectedNode.mastery }}% </text>
         </view>
-        <view class="panel-close" hover-class="item-hover" @tap="selectedNode = null">
+        <view class="panel-close" @tap="selectedNode = null">
           <text>×</text>
         </view>
       </view>
+
       <view class="panel-stats">
-        <view class="stat-item">
-          <text class="stat-value">
-            {{ selectedNode.count }}
-          </text>
-          <text class="stat-label"> 题目数 </text>
+        <view class="panel-stat">
+          <text class="panel-stat-value"> {{ selectedNode.count }} </text>
+          <text class="panel-stat-label"> 题目数 </text>
         </view>
-        <view class="stat-item">
-          <text class="stat-value"> {{ selectedNode.correctRate || 0 }}% </text>
-          <text class="stat-label"> 正确率 </text>
+        <view class="panel-stat">
+          <text class="panel-stat-value"> {{ selectedNode.correctRate || 0 }}% </text>
+          <text class="panel-stat-label"> 正确率 </text>
         </view>
-        <view class="stat-item">
-          <text class="stat-value">
-            {{ selectedNode.reviewCount || 0 }}
-          </text>
-          <text class="stat-label"> 复习次数 </text>
+        <view class="panel-stat">
+          <text class="panel-stat-value"> {{ selectedNode.reviewCount || 0 }} </text>
+          <text class="panel-stat-label"> 复习次数 </text>
         </view>
       </view>
+
       <view class="panel-actions">
-        <view class="panel-btn btn-primary" hover-class="item-hover" @tap="startPractice(selectedNode)">
+        <view class="panel-btn primary" @tap="startPractice(selectedNode)">
           <text>开始练习</text>
         </view>
-        <view class="panel-btn btn-outline" hover-class="item-hover" @tap="viewDetails(selectedNode)">
+        <view class="panel-btn" @tap="viewDetails(selectedNode)">
           <text>查看详情</text>
         </view>
-      </view>
-    </view>
-
-    <!-- 图例说明 -->
-    <view class="legend-panel glassmorphism">
-      <text class="legend-title"> 掌握度 </text>
-      <view class="legend-items">
-        <view class="legend-item">
-          <view class="legend-dot" style="background: #ef4444" />
-          <text>薄弱 (&lt;40%)</text>
-        </view>
-        <view class="legend-item">
-          <view class="legend-dot" style="background: #f59e0b" />
-          <text>学习中 (40-59%)</text>
-        </view>
-        <view class="legend-item">
-          <view class="legend-dot" style="background: #3b82f6" />
-          <text>熟练 (60-79%)</text>
-        </view>
-        <view class="legend-item">
-          <view class="legend-dot" style="background: #10b981" />
-          <text>已掌握 (≥80%)</text>
+        <view class="panel-btn" @tap="showNodeConnections(selectedNode)">
+          <text>关联分析</text>
         </view>
       </view>
-    </view>
-
-    <!-- 薄弱知识点提示 -->
-    <view v-if="weakNodes.length > 0" class="weak-hint glassmorphism" hover-class="item-hover" @tap="showWeakNodes">
-      <text class="weak-icon">
-        <BaseIcon name="warning" :size="28" />
-      </text>
-      <text class="weak-text"> {{ weakNodes.length }} 个薄弱知识点需要加强 </text>
-      <text class="weak-arrow"> › </text>
     </view>
   </view>
 </template>
@@ -218,6 +276,7 @@ export default {
   data() {
     return {
       statusBarHeight: 44,
+      isDark: false,
       isLoading: true,
       activeNodeId: null,
       selectedNode: null,
@@ -271,8 +330,19 @@ export default {
   },
 
   onLoad() {
+    const savedTheme = storageService.get('theme_mode', 'light');
+    this.isDark = savedTheme === 'dark';
+    this._themeHandler = (mode) => {
+      this.isDark = mode === 'dark';
+    };
+    uni.$on('themeUpdate', this._themeHandler);
+
     this.initData();
     this.loadKnowledgeData();
+  },
+
+  onUnload() {
+    uni.$off('themeUpdate', this._themeHandler);
   },
 
   methods: {
@@ -848,103 +918,885 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.knowledge-graph-container {
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
+.knowledge-graph-page {
+  min-height: 100%;
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 54%,
+    var(--page-gradient-bottom) 100%
+  );
   position: relative;
   overflow: hidden;
 }
 
-// 导航栏
-.nav-header {
+.aurora-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(107, 208, 150, 0.28) 0%, transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(255, 255, 255, 0.34) 0%, transparent 24%),
+    radial-gradient(circle at 50% 82%, rgba(72, 190, 128, 0.18) 0%, transparent 28%);
+  filter: blur(34px);
+  pointer-events: none;
+}
+
+.header-nav {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(26, 26, 46, 0.8);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
-  .nav-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20rpx 32rpx;
-    height: 88rpx;
-  }
-
-  .nav-back {
-    width: 72rpx;
-    height: 72rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-
-    .back-icon {
-      font-size: 40rpx;
-      color: #fff;
-    }
-  }
-
-  .nav-title {
-    font-size: 36rpx;
-    font-weight: 600;
-    color: #fff;
-  }
-
-  .nav-actions {
-    display: flex;
-    gap: 16rpx;
-
-    .action-btn {
-      width: 72rpx;
-      height: 72rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-
-      .action-icon {
-        font-size: 36rpx;
-        color: #fff;
-      }
-    }
-  }
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 38%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 }
 
-// 加载状态
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 10, 26, 0.95);
+.nav-content {
+  display: flex;
+  align-items: center;
+  /* gap: 18rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 18rpx;
+  }
+  height: 88rpx;
+  padding: 0 28rpx;
+}
+
+.nav-back,
+.nav-refresh {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+  flex-shrink: 0;
+}
+
+.back-icon {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.nav-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-title,
+.nav-subtitle,
+.hero-eyebrow,
+.section-eyebrow,
+.hero-title,
+.hero-subtitle,
+.section-title,
+.legend-text,
+.weak-copy,
+.weak-next,
+.path-name,
+.path-time,
+.loading-title,
+.loading-text,
+.panel-title,
+.panel-subtitle,
+.panel-stat-label,
+.panel-stat-value,
+.hero-stat-value,
+.hero-stat-label,
+.quick-action-text,
+.center-title,
+.center-subtitle,
+.node-title,
+.node-count,
+.progress-text,
+.child-title,
+.child-mastery {
+  display: block;
+}
+
+.nav-title {
+  font-size: 32rpx;
+  font-weight: 650;
+  color: var(--text-main);
+}
+
+.nav-subtitle {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.page-scroll {
+  height: 100%;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
+  padding: 0 24rpx 140rpx;
+  box-sizing: border-box;
+}
+
+.hero-card,
+.graph-card,
+.legend-card,
+.weak-card,
+.path-card,
+.loading-card,
+.floating-panel {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.hero-card {
+  margin-top: 12rpx;
+  padding: 34rpx 30rpx;
+  border-radius: 32rpx;
+}
+
+.hero-eyebrow,
+.section-eyebrow {
+  margin-bottom: 10rpx;
+  font-size: 22rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.hero-title {
+  font-size: 42rpx;
+  line-height: 1.22;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.hero-subtitle {
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--text-sub);
+}
+
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14rpx;
+  margin-top: 28rpx;
+}
+
+.hero-stat,
+.quick-action,
+.panel-stat {
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.hero-stat {
+  padding: 18rpx 16rpx;
+  border-radius: 22rpx;
+  text-align: center;
+}
+
+.hero-stat-value {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.hero-stat-label {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.action-strip {
+  white-space: nowrap;
+  margin: 22rpx 0;
+}
+
+.action-strip-inner {
+  display: inline-flex;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+  padding-right: 24rpx;
+}
+
+.quick-action {
+  display: inline-flex;
+  align-items: center;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 10rpx;
+  }
+  padding: 18rpx 22rpx;
+  border-radius: 999rpx;
+  color: var(--text-main);
+}
+
+.quick-action-text {
+  font-size: 24rpx;
+  font-weight: 520;
+  color: var(--text-main);
+}
+
+.loading-card,
+.graph-card,
+.legend-card,
+.weak-card,
+.path-card {
+  border-radius: 30rpx;
+  padding: 28rpx;
+}
+
+.loading-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  padding: 70rpx 28rpx;
+}
 
-  .loading-spinner {
-    width: 80rpx;
-    height: 80rpx;
-    border: 4rpx solid rgba(0, 242, 255, 0.2);
-    border-top-color: #00f2ff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
+.loading-spinner {
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(52, 199, 89, 0.16);
+  border-top-color: rgba(52, 199, 89, 0.88);
+  animation: spin 1s linear infinite;
+}
 
-  .loading-text {
-    margin-top: 32rpx;
-    font-size: 28rpx;
-    color: rgba(255, 255, 255, 0.7);
+.loading-title {
+  margin-top: 24rpx;
+  font-size: 30rpx;
+  font-weight: 650;
+  color: var(--text-main);
+}
+
+.loading-text {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+.section-header {
+  margin-bottom: 22rpx;
+}
+
+.section-header.compact {
+  margin-bottom: 16rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 650;
+  color: var(--text-main);
+}
+
+.graph-scroller {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.graph-stage {
+  position: relative;
+  width: 780rpx;
+  height: 1180rpx;
+  border-radius: 32rpx;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.36) 0%, transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  overflow: hidden;
+}
+
+.graph-stage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 56rpx 56rpx;
+  opacity: 0.25;
+}
+
+.graph-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+}
+
+.graph-glow-a {
+  top: 180rpx;
+  left: 100rpx;
+  width: 220rpx;
+  height: 220rpx;
+  background: rgba(52, 199, 89, 0.18);
+}
+
+.graph-glow-b {
+  right: 90rpx;
+  bottom: 180rpx;
+  width: 260rpx;
+  height: 260rpx;
+  background: rgba(10, 132, 255, 0.12);
+}
+
+.center-node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 44%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(240, 250, 243, 0.5) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  box-shadow: 0 18rpx 48rpx rgba(32, 76, 44, 0.16);
+  z-index: 10;
+}
+
+.center-shine {
+  position: absolute;
+  top: 14rpx;
+  right: 14rpx;
+  bottom: 14rpx;
+  left: 14rpx;
+  border-radius: 50%;
+  border-top: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
   }
+  position: relative;
+  z-index: 1;
+}
+
+.center-icon {
+  color: var(--text-main);
+}
+
+.center-title {
+  font-size: 28rpx;
+  font-weight: 680;
+  color: var(--text-main);
+}
+
+.center-subtitle {
+  width: 150rpx;
+  text-align: center;
+  font-size: 20rpx;
+  line-height: 1.4;
+  color: var(--text-sub);
+}
+
+.knowledge-node,
+.child-node {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.knowledge-node {
+  margin-left: -88rpx;
+  margin-top: -88rpx;
+  animation: node-in 0.4s ease-out forwards;
+}
+
+.node-connector {
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  height: 2rpx;
+  background: linear-gradient(90deg, rgba(52, 199, 89, 0.06) 0%, rgba(52, 199, 89, 0.55) 100%);
+  transform-origin: right center;
+}
+
+.node-body {
+  width: 176rpx;
+  min-height: 176rpx;
+  padding: 18rpx 14rpx;
+  border-radius: 38rpx;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, transparent 44%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(244, 248, 245, 0.52) 100%);
+  border: 2rpx solid;
+  box-shadow: var(--apple-shadow-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.node-glow {
+  position: absolute;
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 50%;
+  opacity: 0.55;
+}
+
+.node-icon,
+.node-title,
+.node-progress,
+.node-count {
+  position: relative;
+  z-index: 1;
+}
+
+.node-icon {
+  color: var(--text-main);
+}
+
+.node-title {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  font-weight: 620;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text-main);
+}
+
+.node-progress {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
+  margin-top: 10rpx;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8rpx;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999rpx;
+}
+
+.progress-text,
+.node-count {
+  font-size: 19rpx;
+  color: var(--text-sub);
+}
+
+.node-count {
+  margin-top: 8rpx;
+}
+
+.knowledge-node.node-active .node-body {
+  transform: scale(1.06);
+  box-shadow: 0 16rpx 40rpx rgba(52, 199, 89, 0.22);
+}
+
+.child-node {
+  margin-left: -58rpx;
+  margin-top: -58rpx;
+  animation: child-in 0.25s ease-out forwards;
+}
+
+.child-body {
+  width: 116rpx;
+  height: 116rpx;
+  border-radius: 30rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  box-shadow: var(--apple-shadow-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.child-icon {
+  color: var(--text-main);
+}
+
+.child-title {
+  margin-top: 6rpx;
+  font-size: 18rpx;
+  line-height: 1.2;
+  color: var(--text-main);
+}
+
+.child-mastery {
+  margin-top: 4rpx;
+  font-size: 18rpx;
+  color: var(--text-sub);
+}
+
+.info-grid {
+  display: grid;
+  gap: 18rpx;
+  margin-top: 20rpx;
+}
+
+.legend-items,
+.path-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.legend-item,
+.path-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-item {
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12rpx;
+  }
+}
+
+.legend-dot {
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
+}
+
+.legend-dot.weak {
+  background: #ef4444;
+}
+
+.legend-dot.learning {
+  background: #f59e0b;
+}
+
+.legend-dot.solid {
+  background: #3b82f6;
+}
+
+.legend-dot.master {
+  background: #10b981;
+}
+
+.legend-text,
+.weak-copy,
+.weak-next,
+.path-time {
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+.weak-summary {
+  display: flex;
+  align-items: baseline;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+}
+
+.weak-count {
+  font-size: 56rpx;
+  line-height: 1;
+  font-weight: 720;
+  color: var(--ds-color-error, #ff3b30);
+}
+
+.weak-next {
+  margin-top: 14rpx;
+  line-height: 1.6;
+}
+
+.path-item {
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+  padding: 18rpx 18rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+}
+
+.path-index {
+  width: 68rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.path-meta {
+  flex: 1;
+}
+
+.path-name {
+  font-size: 26rpx;
+  font-weight: 620;
+  color: var(--text-main);
+}
+
+.path-time {
+  margin-top: 6rpx;
+}
+
+.floating-panel {
+  position: fixed;
+  left: 20rpx;
+  right: 20rpx;
+  bottom: calc(20rpx + env(safe-area-inset-bottom));
+  z-index: 120;
+  padding: 18rpx 22rpx 22rpx;
+  border-radius: 32rpx;
+  animation: panel-in 0.22s ease-out;
+}
+
+.panel-handle {
+  width: 72rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 0 auto 16rpx;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+}
+
+.panel-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel-title-area {
+  flex: 1;
+}
+
+.panel-title {
+  font-size: 30rpx;
+  font-weight: 680;
+  color: var(--text-main);
+}
+
+.panel-subtitle {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+.panel-close {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.56);
+  color: var(--text-main);
+  font-size: 36rpx;
+}
+
+.panel-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.panel-stat {
+  padding: 16rpx;
+  border-radius: 22rpx;
+  text-align: center;
+}
+
+.panel-stat-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.panel-stat-label {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.panel-actions {
+  display: flex;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+  margin-top: 18rpx;
+}
+
+.panel-btn {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 10rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  color: var(--text-main);
+  font-size: 24rpx;
+  font-weight: 620;
+}
+
+.panel-btn.primary {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
+  color: var(--cta-primary-text);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.bottom-spacer {
+  height: 220rpx;
+}
+
+.nav-back:active,
+.nav-refresh:active,
+.quick-action:active,
+.node-body:active,
+.child-body:active,
+.weak-card:active,
+.panel-btn:active,
+.panel-close:active,
+.center-node:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.dark-mode {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.dark-mode .aurora-bg {
+  background:
+    radial-gradient(circle at 16% 12%, rgba(10, 132, 255, 0.2) 0%, transparent 32%),
+    radial-gradient(circle at 84% 18%, rgba(69, 159, 255, 0.12) 0%, transparent 26%),
+    radial-gradient(circle at 50% 82%, rgba(32, 83, 170, 0.16) 0%, transparent 32%);
+}
+
+.dark-mode .hero-card,
+.dark-mode .graph-card,
+.dark-mode .legend-card,
+.dark-mode .weak-card,
+.dark-mode .path-card,
+.dark-mode .loading-card,
+.dark-mode .floating-panel,
+.dark-mode .center-node,
+.dark-mode .node-body,
+.dark-mode .child-body,
+.dark-mode .hero-stat,
+.dark-mode .quick-action,
+.dark-mode .path-item,
+.dark-mode .panel-stat,
+.dark-mode .panel-btn,
+.dark-mode .panel-close,
+.dark-mode .nav-back,
+.dark-mode .nav-refresh {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .graph-stage {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(10, 132, 255, 0.16) 0%, transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .progress-bar,
+.dark-mode .panel-handle {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .node-connector {
+  background: linear-gradient(90deg, rgba(10, 132, 255, 0.04) 0%, rgba(10, 132, 255, 0.44) 100%);
+}
+
+.dark-mode .panel-btn.primary {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
 }
 
 @keyframes spin {
@@ -953,437 +1805,37 @@ export default {
   }
 }
 
-// 图谱滚动区域
-.graph-scroll-view {
-  width: 100%;
-  height: 100%;
-}
-
-// 图谱容器
-.graph-container {
-  position: relative;
-  width: 750rpx;
-  height: 1200rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-// 中心节点
-.center-node {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 200rpx;
-  height: 200rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
-  border: 3rpx solid rgba(0, 242, 255, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-
-  .center-glow {
-    position: absolute;
-    width: 300rpx;
-    height: 300rpx;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 242, 255, 0.3) 0%, transparent 70%);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  .center-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1;
-
-    .center-icon {
-      font-size: 48rpx;
-    }
-
-    .center-title {
-      font-size: 28rpx;
-      font-weight: 600;
-      color: #fff;
-      margin-top: 8rpx;
-    }
-
-    .center-subtitle {
-      font-size: 22rpx;
-      color: rgba(255, 255, 255, 0.6);
-      margin-top: 4rpx;
-    }
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-}
-
-// 知识节点
-.knowledge-node {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -80rpx;
-  margin-top: -80rpx;
-  animation: fadeIn 0.5s ease-out forwards;
-  opacity: 0;
-
-  .node-connector {
-    position: absolute;
-    top: 50%;
-    right: 100%;
-    height: 2rpx;
-    background: linear-gradient(90deg, rgba(0, 242, 255, 0.1) 0%, rgba(0, 242, 255, 0.5) 100%);
-    transform-origin: right center;
-  }
-
-  .node-body {
-    width: 160rpx;
-    height: 160rpx;
-    border-radius: 50%;
-    background: rgba(26, 26, 46, 0.9);
-    border: 2rpx solid;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: all 0.3s ease;
-
-    .node-glow {
-      position: absolute;
-      width: 200rpx;
-      height: 200rpx;
-      border-radius: 50%;
-      opacity: 0.5;
-    }
-
-    .node-icon {
-      font-size: 36rpx;
-      z-index: 1;
-    }
-
-    .node-title {
-      font-size: 22rpx;
-      color: #fff;
-      margin-top: 8rpx;
-      z-index: 1;
-    }
-
-    .node-progress {
-      display: flex;
-      align-items: center;
-      gap: 8rpx;
-      margin-top: 8rpx;
-      z-index: 1;
-
-      .progress-bar {
-        width: 60rpx;
-        height: 6rpx;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 3rpx;
-        overflow: hidden;
-
-        .progress-fill {
-          height: 100%;
-          border-radius: 3rpx;
-          transition: width 0.5s ease;
-        }
-      }
-
-      .progress-text {
-        font-size: 20rpx;
-        color: rgba(255, 255, 255, 0.7);
-      }
-    }
-
-    .node-count {
-      font-size: 20rpx;
-      color: rgba(255, 255, 255, 0.6);
-      margin-top: 4rpx;
-      z-index: 1;
-    }
-  }
-
-  &.node-active .node-body {
-    transform: scale(1.1);
-    box-shadow: 0 0 30rpx rgba(0, 242, 255, 0.5);
-  }
-}
-
-@keyframes fadeIn {
+@keyframes node-in {
   from {
     opacity: 0;
-    transform: translate(0, 0) scale(0.5);
+    transform: scale(0.86);
   }
+
   to {
     opacity: 1;
   }
 }
 
-// 子节点
-.child-node {
-  position: absolute;
-  animation: childFadeIn 0.3s ease-out forwards;
-
-  .child-body {
-    width: 100rpx;
-    height: 100rpx;
-    border-radius: 50%;
-    background: rgba(26, 26, 46, 0.8);
-    border: 1rpx solid rgba(255, 255, 255, 0.2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    .child-icon {
-      font-size: 28rpx;
-    }
-
-    .child-title {
-      font-size: 20rpx;
-      color: #fff;
-      margin-top: 4rpx;
-    }
-
-    .child-mastery {
-      font-size: 20rpx;
-      color: rgba(255, 255, 255, 0.7);
-    }
-  }
-}
-
-@keyframes childFadeIn {
+@keyframes child-in {
   from {
     opacity: 0;
-    transform: scale(0);
+    transform: scale(0.8);
   }
+
   to {
     opacity: 1;
   }
 }
 
-// 信息面板
-.info-panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(26, 26, 46, 0.95);
-  backdrop-filter: blur(20px);
-  border-top: 1rpx solid rgba(255, 255, 255, 0.1);
-  border-radius: 32rpx 32rpx 0 0;
-  padding: 32rpx;
-  padding-bottom: calc(32rpx + constant(safe-area-inset-bottom));
-  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
-  z-index: 100;
-  animation: slideUp 0.3s ease-out;
-
-  .panel-header {
-    display: flex;
-    align-items: center;
-    gap: 20rpx;
-
-    .panel-icon {
-      width: 80rpx;
-      height: 80rpx;
-      border-radius: 20rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40rpx;
-    }
-
-    .panel-title-area {
-      flex: 1;
-
-      .panel-title {
-        display: block;
-        font-size: 32rpx;
-        font-weight: 600;
-        color: #fff;
-      }
-
-      .panel-subtitle {
-        display: block;
-        font-size: 24rpx;
-        color: rgba(255, 255, 255, 0.6);
-        margin-top: 4rpx;
-      }
-    }
-
-    .panel-close {
-      width: 60rpx;
-      height: 60rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 40rpx;
-      color: rgba(255, 255, 255, 0.5);
-    }
-  }
-
-  .panel-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 32rpx;
-    padding: 24rpx 0;
-    border-top: 1rpx solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
-
-    .stat-item {
-      text-align: center;
-
-      .stat-value {
-        display: block;
-        font-size: 36rpx;
-        font-weight: 600;
-        color: #00f2ff;
-      }
-
-      .stat-label {
-        display: block;
-        font-size: 22rpx;
-        color: rgba(255, 255, 255, 0.5);
-        margin-top: 8rpx;
-      }
-    }
-  }
-
-  .panel-actions {
-    display: flex;
-    gap: 24rpx;
-    margin-top: 32rpx;
-
-    .panel-btn {
-      flex: 1;
-      height: 88rpx;
-      border-radius: 44rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28rpx;
-      font-weight: 500;
-
-      &.btn-primary {
-        background: linear-gradient(135deg, #00f2ff 0%, #00b4d8 100%);
-        color: #000;
-      }
-
-      &.btn-outline {
-        background: transparent;
-        border: 2rpx solid rgba(0, 242, 255, 0.5);
-        color: #00f2ff;
-      }
-    }
-  }
-}
-
-@keyframes slideUp {
+@keyframes panel-in {
   from {
-    transform: translateY(100%);
+    opacity: 0;
+    transform: translateY(30rpx);
   }
+
   to {
+    opacity: 1;
     transform: translateY(0);
   }
-}
-
-// 图例面板
-.legend-panel {
-  position: fixed;
-  top: 200rpx;
-  right: 24rpx;
-  background: rgba(26, 26, 46, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 16rpx;
-  padding: 20rpx;
-  z-index: 50;
-
-  .legend-title {
-    font-size: 22rpx;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 12rpx;
-  }
-
-  .legend-items {
-    display: flex;
-    flex-direction: column;
-    gap: 12rpx;
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 12rpx;
-
-      .legend-dot {
-        width: 16rpx;
-        height: 16rpx;
-        border-radius: 50%;
-      }
-
-      text {
-        font-size: 20rpx;
-        color: rgba(255, 255, 255, 0.6);
-      }
-    }
-  }
-}
-
-// 薄弱知识点提示
-.weak-hint {
-  position: fixed;
-  bottom: calc(32rpx + constant(safe-area-inset-bottom));
-  bottom: calc(32rpx + env(safe-area-inset-bottom));
-  left: 24rpx;
-  right: 24rpx;
-  background: rgba(239, 68, 68, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 16rpx;
-  padding: 24rpx 32rpx;
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-  z-index: 50;
-
-  .weak-icon {
-    font-size: 32rpx;
-  }
-
-  .weak-text {
-    flex: 1;
-    font-size: 26rpx;
-    color: #fff;
-  }
-
-  .weak-arrow {
-    font-size: 32rpx;
-    color: rgba(255, 255, 255, 0.7);
-  }
-}
-
-// 玻璃态效果
-.glassmorphism {
-  background: rgba(26, 26, 46, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-/* hover-class 反馈 */
-.item-hover {
-  opacity: 0.7;
 }
 </style>

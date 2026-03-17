@@ -350,8 +350,9 @@ export default {
 
 .copy-btn {
   width: 70px;
-  background-color: #07c160;
-  color: white;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-left: 1px solid var(--cta-primary-border);
   border-radius: 0 20px 20px 0;
   display: flex;
   align-items: center;
@@ -360,23 +361,25 @@ export default {
   font-weight: 500;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
+  box-shadow: var(--cta-primary-shadow);
 
   &:active {
     opacity: 0.85;
-    background-color: #05a050;
   }
 }
 
 .wechat-btn {
   width: 100%;
   height: 44px;
-  background-color: #07c160;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
   border-radius: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 12px;
-  box-shadow: 0 4px 12px rgba(7, 193, 96, 0.3);
+  box-shadow: var(--cta-primary-shadow);
   -webkit-tap-highlight-color: transparent;
 
   &:active {
@@ -430,7 +433,7 @@ export default {
 }
 
 .btn-text {
-  color: white;
+  color: inherit;
   font-size: 30rpx;
   font-weight: 600;
   -webkit-font-smoothing: antialiased;
@@ -501,11 +504,11 @@ export default {
   }
 
   .copy-btn {
-    background-color: var(--brand-color);
-    color: #1c1c1e;
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
 
     &:active {
-      background-color: #8dd760;
+      opacity: 0.85;
     }
   }
 
@@ -514,15 +517,15 @@ export default {
   }
 
   .wechat-btn {
-    background-color: var(--brand-color);
-    box-shadow: 0 4px 12px rgba(159, 232, 112, 0.3);
+    background: var(--cta-primary-bg);
+    box-shadow: var(--cta-primary-shadow);
 
     .btn-text {
-      color: #1c1c1e;
+      color: var(--cta-primary-text);
     }
 
     &:active {
-      background-color: #8dd760;
+      opacity: 0.85;
     }
   }
 

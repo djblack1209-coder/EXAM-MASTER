@@ -1,30 +1,16 @@
 <template>
-  <!-- 顶部导航栏：外层定位容器完全透明 -->
-  <view
-    class="header-position-wrapper"
-    style="
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background-color: transparent !important;
-      background: transparent !important;
-      pointer-events: none;
-    "
-  >
-    <!-- 状态栏占位：透明 -->
-    <view class="status-bar-placeholder" style="background: transparent !important" />
-    <!-- 内容区域：恢复点击，背景透明（滚动后才显示毛玻璃） -->
-    <view :class="['header-content-area', scrollY > 50 && 'header-scrolled']" style="pointer-events: auto">
+  <!-- 顶部导航栏 -->
+  <view class="header-position-wrapper">
+    <view class="status-bar-placeholder" />
+    <view :class="['header-content-area', scrollY > 50 && 'header-scrolled', scrollY > 50 && 'apple-glass']">
       <!-- 左侧：圆形胶囊头像 -->
-      <view class="header-avatar" @tap="handleAvatarTap">
+      <view class="header-avatar apple-glass-pill" @tap="handleAvatarTap">
         <image class="avatar-img" :src="displayAvatarUrl" mode="aspectFill" @error="onAvatarError" />
       </view>
       <!-- 中间：搜索框 -->
-      <view class="header-search" @tap="handleSearchTap">
+      <view class="header-search apple-glass-pill" @tap="handleSearchTap">
         <view class="search-icon-wrapper">
-          <text class="search-icon"> &#x1F50D; </text>
+          <BaseIcon name="search" :size="24" />
         </view>
         <input
           v-model="searchKeyword"
@@ -51,9 +37,11 @@ import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { logger } from '@/utils/logger.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 export default {
   name: 'IndexHeaderBar',
+  components: { BaseIcon },
 
   props: {
     /** 当前滚动偏移量，用于毛玻璃效果 */
@@ -161,49 +149,60 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* 外层定位容器：绝对不能有任何背景色 */
 .header-position-wrapper {
-  /* 所有背景相关属性都在 inline style 中用 !important 强制透明 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: transparent;
+  pointer-events: none;
 }
 
-/* 状态栏占位 */
 .status-bar-placeholder {
-  height: calc(var(--status-bar-height, 44px) + 100rpx);
+  height: calc(var(--status-bar-height, 44px) + 88rpx);
 }
 
-/* 内容区域：默认透明背景 */
 .header-content-area {
   display: flex;
   align-items: center;
-  height: 100rpx;
-  padding: 0 24rpx;
-  gap: 20rpx;
+  height: 88rpx;
+  padding: 0 28rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 20rpx;
+  }
   background: transparent;
+  pointer-events: auto;
+  border-bottom: 1rpx solid transparent;
   transition:
     background 0.3s ease,
-    backdrop-filter 0.3s ease;
+    backdrop-filter 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .header-content-area.header-scrolled {
-  background: var(--bg-glass);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border-bottom-color: transparent;
+  box-shadow: none;
 }
 
-/* 左侧圆形胶囊头像 */
 .header-avatar {
   flex-shrink: 0;
   width: 76rpx;
   height: 76rpx;
   border-radius: 50%;
   overflow: hidden;
-  border: 4rpx solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  padding: 4rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.36);
+  box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.1);
   transition: transform 0.2s ease;
 }
 
 .header-avatar:active {
-  transform: scale(0.92);
+  transform: scale(0.94);
 }
 
 .avatar-img {
@@ -212,22 +211,27 @@ export default {
   border-radius: 50%;
 }
 
-/* 中间搜索框 */
 .header-search {
   flex: 1;
   display: flex;
   align-items: center;
-  height: 68rpx;
-  background: var(--bg-card, rgba(245, 245, 245, 0.8));
-  border-radius: 34rpx;
-  padding: 0 24rpx;
-  gap: 12rpx;
-  border: 2rpx solid var(--border, rgba(0, 0, 0, 0.06));
+  min-height: 72rpx;
+  border-radius: 999rpx;
+  padding: 0 22rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
 }
 
 .header-search:active {
-  border-color: var(--primary, #10b981);
+  transform: scale(0.99);
+  box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.12);
 }
 
 .search-icon-wrapper {
@@ -239,20 +243,51 @@ export default {
 
 .search-icon {
   font-size: 28rpx;
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .search-input {
   flex: 1;
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: var(--text-primary, #1f2937);
   background: transparent;
-  height: 68rpx;
-  line-height: 68rpx;
+  height: 72rpx;
+  line-height: 72rpx;
 }
 
 .search-placeholder {
-  color: var(--text-sub, #9ca3af);
-  font-size: 28rpx;
+  color: var(--text-sub, #8a8a92);
+  font-size: 26rpx;
+}
+
+@media screen and (max-width: 375px) {
+  .status-bar-placeholder {
+    height: calc(var(--status-bar-height, 44px) + 76rpx);
+  }
+
+  .header-content-area {
+    height: 76rpx;
+    padding: 0 20rpx;
+  }
+
+  .header-avatar {
+    width: 64rpx;
+    height: 64rpx;
+  }
+
+  .header-search {
+    min-height: 64rpx;
+    padding: 0 18rpx;
+  }
+
+  .search-input {
+    font-size: 24rpx;
+    height: 64rpx;
+    line-height: 64rpx;
+  }
+
+  .search-placeholder {
+    font-size: 24rpx;
+  }
 }
 </style>

@@ -22,6 +22,9 @@ const mocked = vi.hoisted(() => {
       scenario.whereCalls.push(query);
       return collection;
     },
+    orderBy() {
+      return collection;
+    },
     async getOne() {
       return scenario.getOneResult;
     },
@@ -116,18 +119,20 @@ describe('[安全审计] send-email-code 敏感信息与错误返回', () => {
     expect(result.message).toContain('不能为空');
   });
 
-  it('1分钟内重复发送时应返回 429 且 success=false', async () => {
+  it('1分钟内重复发送时应返回幂等成功并附带冷却时间', async () => {
     process.env.NODE_ENV = 'production';
-    mocked.scenario.getOneResult = { data: { _id: 'existing_code' } };
+    mocked.scenario.getOneResult = { data: { _id: 'existing_code', created_at: Date.now() - 15 * 1000, used: false } };
 
     const result = await sendEmailCodeHandler({
       body: { email: 'user@validmail.com' },
       headers: {}
     });
 
-    expect(result.code).toBe(429);
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('发送太频繁');
+    expect(result.code).toBe(0);
+    expect(result.success).toBe(true);
+    expect(result.alreadySent).toBe(true);
+    expect(result.message).toContain('验证码已发送');
+    expect(result.retryAfter).toBeGreaterThanOrEqual(1);
   });
 
   it('非生产环境失败提示不应泄露验证码内容', async () => {

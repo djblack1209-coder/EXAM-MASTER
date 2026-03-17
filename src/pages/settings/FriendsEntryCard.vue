@@ -1,7 +1,11 @@
 <template>
   <!-- F002: 好友入口卡片 — 从 settings/index.vue 提取 -->
   <view class="section">
-    <view class="friend-entry-card ds-flex ds-flex-between ds-touchable" @tap="navigateToFriends">
+    <view
+      id="e2e-settings-friends-entry"
+      class="friend-entry-card ds-flex ds-flex-between ds-touchable"
+      @tap="navigateToFriends"
+    >
       <view class="entry-left ds-flex">
         <view class="entry-icon ds-flex-center"> 👥 </view>
         <view class="entry-info">
@@ -63,7 +67,13 @@ export default {
 .entry-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16px;
+  }
 }
 
 .entry-icon {
@@ -81,7 +91,13 @@ export default {
 .entry-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 4px;
+  }
 }
 
 .entry-title {

@@ -1,13 +1,14 @@
 <template>
   <view>
-    <view class="section-header">
+    <view class="section-header section-header-apple">
       <text class="section-title"> 为你推荐 </text>
     </view>
     <view class="recommendations-grid">
       <view
         v-for="recommendation in recommendations"
+        :id="`e2e-home-recommendation-${recommendation.type || recommendation.id}`"
         :key="recommendation.id"
-        :class="['recommendation-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+        :class="['recommendation-card', 'apple-group-card', isDark ? 'glass' : 'card-light', 'card-hover']"
         @tap="$emit('recommendation-click', recommendation)"
       >
         <view class="recommendation-icon-wrapper">
@@ -52,57 +53,91 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.section-header-apple {
+  margin-bottom: 26rpx;
 }
 
 .section-title {
-  font-size: 40rpx;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 24rpx;
+  font-weight: 620;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1rpx solid var(--border);
+  background: var(--bg-card-alpha);
+  backdrop-filter: blur(14rpx) saturate(130%);
+  -webkit-backdrop-filter: blur(14rpx) saturate(130%);
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
 }
 
 .card-light {
-  background: var(--card);
+  background: linear-gradient(160deg, #ffffff 0%, #f4faf6 100%);
 }
 
 .card-hover:active {
-  transform: translateY(-4rpx);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-2rpx);
+  box-shadow: var(--shadow-md);
 }
 
 .recommendations-grid {
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
-  margin-bottom: 64rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
+  margin-bottom: 48rpx;
 }
 
 .recommendation-card {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 24rpx;
-  padding: 32rpx;
-  border-radius: 24rpx;
-  border: 1rpx solid var(--border);
+  /* gap: 20rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 20rpx;
+  }
+  padding: 28rpx;
+  min-height: 116rpx;
+  border-radius: 28rpx;
+  border: 1rpx solid var(--apple-glass-border-strong);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--apple-shadow-card);
+  overflow: hidden;
+}
+
+.recommendation-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 
 .recommendation-icon-wrapper {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 20rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--primary-light);
+  background: var(--brand-tint);
   flex-shrink: 0;
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
 }
 
 .recommendation-icon {
@@ -115,13 +150,19 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
   min-width: 0;
 }
 
 .recommendation-title {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 620;
   color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -129,7 +170,7 @@ export default {
 }
 
 .recommendation-subtitle {
-  font-size: 24rpx;
+  font-size: 23rpx;
   color: var(--text-sub);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -138,6 +179,16 @@ export default {
 
 .recommendation-arrow {
   flex-shrink: 0;
+  color: var(--text-sub);
+  opacity: 0.68;
+}
+
+.glass .recommendation-icon-wrapper {
+  background:
+    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(10, 132, 255, 0.18);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .arrow-icon {

@@ -513,8 +513,34 @@ export default {
         this.recorderManager = null;
       }
       // #endif
-      // #ifndef MP-WEIXIN
-      logger.log('[AIChatModal] 非微信环境，录音功能不可用');
+      // #ifdef APP-PLUS
+      try {
+        this.recorderManager = uni.getRecorderManager();
+        this.recorderManager.onStart(() => {
+          this.isRecording = true;
+          uni.vibrateShort({ type: 'light' });
+        });
+        this.recorderManager.onStop((res) => {
+          this.isRecording = false;
+          if (res.tempFilePath) {
+            this.processVoice(res.tempFilePath);
+          } else {
+            uni.showToast({ title: '录音失败，请重试', icon: 'none' });
+          }
+        });
+        this.recorderManager.onError((err) => {
+          logger.error('录音错误', err);
+          this.isRecording = false;
+          uni.showToast({ title: '录音出错，请重试', icon: 'none' });
+        });
+        logger.log('[AIChatModal] App端录音管理器初始化成功');
+      } catch (e) {
+        logger.error('[AIChatModal] App端录音管理器初始化失败:', e);
+        this.recorderManager = null;
+      }
+      // #endif
+      // #ifdef H5
+      logger.log('[AIChatModal] H5环境，录音功能不可用');
       this.recorderManager = null;
       // #endif
     },
@@ -524,21 +550,27 @@ export default {
         uni.showToast({ title: '录音功能未初始化', icon: 'none' });
         return;
       }
+
+      const startRecording = () => {
+        try {
+          this.recorderManager.start({
+            format: 'mp3',
+            duration: 60000,
+            sampleRate: 16000,
+            numberOfChannels: 1
+          });
+        } catch (e) {
+          logger.error('启动录音失败', e);
+          this.isRecording = false;
+          uni.showToast({ title: '启动录音失败', icon: 'none' });
+        }
+      };
+
+      // #ifdef MP-WEIXIN
       uni.authorize({
         scope: 'scope.record',
         success: () => {
-          try {
-            this.recorderManager.start({
-              format: 'mp3',
-              duration: 60000,
-              sampleRate: 16000,
-              numberOfChannels: 1
-            });
-          } catch (e) {
-            logger.error('启动录音失败', e);
-            this.isRecording = false;
-            uni.showToast({ title: '启动录音失败', icon: 'none' });
-          }
+          startRecording();
         },
         fail: () => {
           uni.showModal({
@@ -548,6 +580,12 @@ export default {
           });
         }
       });
+      // #endif
+
+      // #ifdef APP-PLUS
+      // App 端直接启动录音，系统会自动弹出权限请求
+      startRecording();
+      // #endif
     },
     handleTouchEnd() {
       if (this.recorderManager && this.isRecording) {
@@ -699,13 +737,17 @@ export default {
 /* 智能对话窗样式 */
 .chat-modal {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 2000;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   background-color: var(--overlay-dark);
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .chat-panel {
@@ -732,7 +774,13 @@ export default {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
   font-weight: 600;
   color: var(--text-primary, var(--text-primary));
 }
@@ -740,14 +788,20 @@ export default {
 .speaking-indicator {
   display: flex;
   align-items: flex-end;
-  gap: 4px;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 4px;
+  }
   height: 24px;
 }
 
 .speaking-indicator .bar {
   width: 3px;
   height: 40%;
-  background-color: var(--brand-color, #00a96d);
+  background-color: var(--brand-color);
   border-radius: 2px;
   animation: bounce 0.5s infinite alternate;
 }
@@ -826,7 +880,7 @@ export default {
 }
 
 .msg-bubble.user {
-  background-color: var(--brand-color, #00a96d);
+  background-color: var(--brand-color);
   color: white;
   align-self: flex-end;
   margin-left: auto;
@@ -851,7 +905,13 @@ export default {
 .chat-input-area {
   display: flex;
   align-items: center;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16px;
+  }
   padding-top: 16px;
   border-top: 1px solid var(--border);
 }
@@ -911,15 +971,16 @@ export default {
   min-width: 60px;
   height: 40px;
   padding: 0 16px;
-  background-color: var(--brand-color, #00a96d);
-  color: white;
-  border: none;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
   border-radius: 20px;
   font-size: 28rpx;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .chat-input-area .send-btn:active {
@@ -937,22 +998,24 @@ export default {
   align-items: center;
   justify-content: center;
   font-weight: 500;
-  color: var(--brand-color, #00a96d);
+  color: var(--brand-color);
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 28rpx;
 }
 
 .voice-press-btn.pressing {
-  background-color: var(--brand-color, #00a96d);
-  color: white;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
   transform: scale(0.98);
 }
 
 .chat-input-area button {
-  background-color: var(--brand-color, #00a96d);
-  color: white;
-  border: none;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
   border-radius: 24px;
   padding: 12px 24px;
   font-size: 28rpx;
@@ -960,10 +1023,11 @@ export default {
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .chat-input-area button:hover {
-  background-color: var(--success-dark);
+  opacity: 0.92;
   transform: translateY(-1px);
 }
 
@@ -998,7 +1062,13 @@ export default {
 .emoji-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8px;
+  }
 }
 
 .emoji-item {

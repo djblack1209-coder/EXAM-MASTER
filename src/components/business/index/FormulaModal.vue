@@ -1,8 +1,17 @@
 <template>
   <view v-if="visible" class="formula-modal" @tap="$emit('close')">
     <view class="formula-content" @tap.stop>
+      <view class="panel-handle" />
       <view class="formula-header">
-        <text class="formula-title"> <BaseIcon name="formula" :size="32" /> 公式定理速查 </text>
+        <view>
+          <text class="formula-eyebrow"> Quick Reference </text>
+          <text class="formula-title">
+            <view class="formula-title-icon">
+              <BaseIcon name="formula" :size="32" />
+            </view>
+            <text class="formula-title-text">公式定理速查</text>
+          </text>
+        </view>
         <view class="formula-close" @tap="$emit('close')">
           <text>×</text>
         </view>
@@ -44,36 +53,192 @@ export default {
 .formula-modal {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);
+  left: 0;
   z-index: 1000;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  padding: 30rpx 24rpx calc(24rpx + env(safe-area-inset-bottom, 0px));
+  background: rgba(9, 18, 12, 0.32);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .formula-content {
-  width: 90%;
-  max-width: 680rpx;
-  max-height: 80vh;
-  background: var(--bg-card);
-  border-radius: 32rpx;
-  overflow: hidden;
-  box-shadow: var(--shadow-xl);
-  animation: slideUp 0.3s ease;
+  width: 100%;
+  max-width: 720rpx;
+  max-height: 78vh;
+  padding: 14rpx 22rpx 22rpx;
+  border-radius: 36rpx 36rpx 28rpx 28rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+  animation: slideUp 0.26s ease;
+}
+
+.panel-handle {
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 18rpx;
+}
+
+.formula-header,
+.formula-close,
+.formula-title {
+  display: flex;
+  align-items: center;
+}
+
+.formula-header {
+  justify-content: space-between;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  padding: 6rpx 6rpx 20rpx;
+}
+
+.formula-header > view + view {
+  margin-left: 16rpx;
+}
+
+.formula-eyebrow,
+.formula-name,
+.formula-text,
+.formula-tip {
+  display: block;
+}
+
+.formula-eyebrow {
+  margin-bottom: 6rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.formula-title {
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  font-size: 34rpx;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.formula-title-icon {
+  margin-right: 10rpx;
+  display: inline-flex;
+  align-items: center;
+}
+
+.formula-title-text {
+  display: inline-flex;
+  align-items: center;
+}
+
+.formula-close {
+  justify-content: center;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+  color: var(--text-main);
+  font-size: 40rpx;
+}
+
+.formula-scroll {
+  max-height: 60vh;
+  padding-right: 4rpx;
+}
+
+.formula-item {
+  margin-bottom: 16rpx;
+  padding: 22rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.formula-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: rgba(52, 199, 89, 0.14);
+  color: #22873a;
+  font-size: 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.formula-name {
+  font-size: 28rpx;
+  font-weight: 620;
+  color: var(--text-main);
+  margin-bottom: 10rpx;
+}
+
+.formula-text {
+  font-size: 32rpx;
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--text-main);
+  font-family: 'Times New Roman', serif;
+}
+
+.formula-footer {
+  margin-top: 16rpx;
+  padding-top: 20rpx;
+  border-top: 1px solid var(--apple-divider);
+  text-align: center;
+}
+
+.formula-tip {
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+.formula-close:active {
+  transform: scale(0.97);
+}
+
+:global(.dark-mode) .formula-modal {
+  background: rgba(3, 8, 14, 0.48);
+}
+
+:global(.dark-mode) .panel-handle {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+:global(.dark-mode) .formula-close {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+:global(.dark-mode) .formula-item {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark-mode) .formula-category {
+  background: rgba(10, 132, 255, 0.16);
+  color: #7bc0ff;
+}
+
+:global(.dark-mode) .formula-title,
+:global(.dark-mode) .formula-name,
+:global(.dark-mode) .formula-text,
+:global(.dark-mode) .formula-tip {
+  color: #ffffff;
 }
 
 @keyframes slideUp {
@@ -81,86 +246,10 @@ export default {
     transform: translateY(100rpx);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
   }
-}
-
-.formula-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 32rpx;
-  border-bottom: 1rpx solid var(--border);
-  background: var(--bg-secondary);
-}
-
-.formula-title {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.formula-close {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--bg-card);
-  color: var(--text-sub);
-  font-size: 40rpx;
-}
-
-.formula-scroll {
-  max-height: 60vh;
-  padding: 24rpx;
-}
-
-.formula-item {
-  background: var(--bg-secondary);
-  border-radius: 20rpx;
-  padding: 24rpx;
-  margin-bottom: 20rpx;
-  border: 1rpx solid var(--border);
-}
-
-.formula-category {
-  display: inline-block;
-  background: var(--primary-light);
-  color: var(--primary);
-  font-size: 20rpx;
-  padding: 4rpx 16rpx;
-  border-radius: 10rpx;
-  margin-bottom: 12rpx;
-}
-
-.formula-name {
-  display: block;
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 8rpx;
-}
-
-.formula-text {
-  display: block;
-  font-size: 32rpx;
-  font-weight: 700;
-  color: var(--primary);
-  font-family: 'Times New Roman', serif;
-}
-
-.formula-footer {
-  padding: 24rpx 32rpx;
-  border-top: 1rpx solid var(--border);
-  text-align: center;
-}
-
-.formula-tip {
-  font-size: 24rpx;
-  color: var(--text-sub);
 }
 </style>

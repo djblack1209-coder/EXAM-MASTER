@@ -5,14 +5,19 @@
     <view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <text class="nav-back" @tap="goBack"> ← </text>
-        <text class="nav-title"> 创建学习计划 </text>
+        <text class="nav-title"> 创建计划 </text>
         <view class="nav-placeholder" />
       </view>
     </view>
 
     <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
-      <!-- 骨架屏加载状态 -->
-      <view v-if="isPageLoading" class="glass-card form-card">
+      <view class="hero-card">
+        <text class="hero-eyebrow"> Plan Setup </text>
+        <text class="hero-title"> 给这段备考设定一个稳定的节奏 </text>
+        <text class="hero-subtitle"> 名称、目标、提醒和优先级都会影响后续的智能建议。 </text>
+      </view>
+
+      <view v-if="isPageLoading" class="form-card skeleton-card">
         <view v-for="i in 7" :key="i" class="skeleton-form-item">
           <view class="skeleton-label skeleton-animate" />
           <view class="skeleton-input skeleton-animate" />
@@ -20,137 +25,152 @@
         <view class="skeleton-btn skeleton-animate" />
       </view>
 
-      <!-- 实际表单 -->
-      <view v-else class="glass-card form-card">
-        <view class="form-item">
-          <text class="form-label"> 计划名称 </text>
-          <input
-            v-model="plan.name"
-            class="form-input"
-            placeholder="例如：考研数学基础阶段复习"
-            maxlength="50"
-            @input="onInputChange"
-          />
-        </view>
+      <view v-else class="form-card">
+        <view class="form-group">
+          <text class="group-eyebrow"> Basics </text>
 
-        <view class="form-item">
-          <text class="form-label"> 学习目标 </text>
-          <textarea
-            v-model="plan.goal"
-            class="form-textarea"
-            placeholder="例如：掌握高等数学第一章知识点，完成100道习题"
-            :auto-height="true"
-            maxlength="500"
-            @input="onInputChange"
-          ></textarea>
-        </view>
+          <view class="form-item">
+            <text class="form-label"> 计划名称 </text>
+            <input
+              v-model="plan.name"
+              class="form-input"
+              placeholder="例如：考研数学基础阶段复习"
+              maxlength="50"
+              @input="onInputChange"
+            />
+          </view>
 
-        <view class="form-item">
-          <text class="form-label"> 开始日期 </text>
-          <view class="date-picker" @tap="showStartDatePicker">
-            <text class="date-text">
-              {{ plan.startDate }}
-            </text>
-            <BaseIcon name="calendar" :size="28" class="date-icon" />
+          <view class="form-item no-margin">
+            <text class="form-label"> 学习目标 </text>
+            <textarea
+              v-model="plan.goal"
+              class="form-textarea"
+              placeholder="例如：掌握高等数学第一章知识点，完成100道习题"
+              :auto-height="true"
+              maxlength="500"
+              @input="onInputChange"
+            ></textarea>
           </view>
         </view>
 
-        <view class="form-item">
-          <text class="form-label"> 结束日期 </text>
-          <view class="date-picker" @tap="showEndDatePicker">
-            <text class="date-text">
-              {{ plan.endDate }}
-            </text>
-            <BaseIcon name="calendar" :size="28" class="date-icon" />
+        <view class="form-group">
+          <text class="group-eyebrow"> Schedule </text>
+
+          <view class="form-item">
+            <text class="form-label"> 开始日期 </text>
+            <view class="picker-row" @tap="showStartDatePicker">
+              <text class="picker-text">
+                {{ plan.startDate }}
+              </text>
+              <BaseIcon name="calendar" :size="28" class="picker-icon" />
+            </view>
+          </view>
+
+          <view class="form-item">
+            <text class="form-label"> 结束日期 </text>
+            <view class="picker-row" @tap="showEndDatePicker">
+              <text class="picker-text">
+                {{ plan.endDate }}
+              </text>
+              <BaseIcon name="calendar" :size="28" class="picker-icon" />
+            </view>
+          </view>
+
+          <view class="form-item">
+            <text class="form-label"> 每日学习时长 </text>
+            <view class="pill-grid">
+              <text
+                class="pill-btn"
+                :class="{ active: plan.dailyDuration === '1小时' }"
+                @tap="plan.dailyDuration = '1小时'"
+              >
+                1小时
+              </text>
+              <text
+                class="pill-btn"
+                :class="{ active: plan.dailyDuration === '2小时' }"
+                @tap="plan.dailyDuration = '2小时'"
+              >
+                2小时
+              </text>
+              <text
+                class="pill-btn"
+                :class="{ active: plan.dailyDuration === '3小时' }"
+                @tap="plan.dailyDuration = '3小时'"
+              >
+                3小时
+              </text>
+              <text
+                class="pill-btn"
+                :class="{ active: plan.dailyDuration === '4小时+' }"
+                @tap="plan.dailyDuration = '4小时+'"
+              >
+                4小时+
+              </text>
+            </view>
+          </view>
+
+          <view class="form-item no-margin">
+            <text class="form-label"> 提醒时间 </text>
+            <view class="picker-row" @tap="showReminderTimePicker">
+              <text class="picker-text">
+                {{ plan.reminderTime }}
+              </text>
+              <BaseIcon name="clock" :size="28" class="picker-icon" />
+            </view>
           </view>
         </view>
 
-        <view class="form-item">
-          <text class="form-label"> 每日学习时长 </text>
-          <view class="duration-selector">
-            <text
-              class="duration-btn"
-              :class="{ active: plan.dailyDuration === '1小时' }"
-              @tap="plan.dailyDuration = '1小时'"
-            >
-              1小时
-            </text>
-            <text
-              class="duration-btn"
-              :class="{ active: plan.dailyDuration === '2小时' }"
-              @tap="plan.dailyDuration = '2小时'"
-            >
-              2小时
-            </text>
-            <text
-              class="duration-btn"
-              :class="{ active: plan.dailyDuration === '3小时' }"
-              @tap="plan.dailyDuration = '3小时'"
-            >
-              3小时
-            </text>
-            <text
-              class="duration-btn"
-              :class="{ active: plan.dailyDuration === '4小时+' }"
-              @tap="plan.dailyDuration = '4小时+'"
-            >
-              4小时+
-            </text>
-          </view>
-        </view>
+        <view class="form-group">
+          <text class="group-eyebrow"> Focus </text>
 
-        <view class="form-item">
-          <text class="form-label"> 提醒时间 </text>
-          <view class="time-picker" @tap="showReminderTimePicker">
-            <text class="time-text">
-              {{ plan.reminderTime }}
-            </text>
-            <BaseIcon name="clock" :size="28" class="time-icon" />
+          <view class="form-item">
+            <text class="form-label"> 计划分类 </text>
+            <view class="pill-grid category-grid">
+              <text class="pill-btn" :class="{ active: plan.category === '数学' }" @tap="plan.category = '数学'">
+                数学
+              </text>
+              <text class="pill-btn" :class="{ active: plan.category === '英语' }" @tap="plan.category = '英语'">
+                英语
+              </text>
+              <text class="pill-btn" :class="{ active: plan.category === '政治' }" @tap="plan.category = '政治'">
+                政治
+              </text>
+              <text class="pill-btn" :class="{ active: plan.category === '专业课' }" @tap="plan.category = '专业课'">
+                专业课
+              </text>
+              <text class="pill-btn" :class="{ active: plan.category === '综合' }" @tap="plan.category = '综合'">
+                综合
+              </text>
+            </view>
           </view>
-        </view>
 
-        <view class="form-item">
-          <text class="form-label"> 计划分类 </text>
-          <view class="category-selector">
-            <text class="category-btn" :class="{ active: plan.category === '数学' }" @tap="plan.category = '数学'">
-              数学
-            </text>
-            <text class="category-btn" :class="{ active: plan.category === '英语' }" @tap="plan.category = '英语'">
-              英语
-            </text>
-            <text class="category-btn" :class="{ active: plan.category === '政治' }" @tap="plan.category = '政治'">
-              政治
-            </text>
-            <text class="category-btn" :class="{ active: plan.category === '专业课' }" @tap="plan.category = '专业课'">
-              专业课
-            </text>
-            <text class="category-btn" :class="{ active: plan.category === '综合' }" @tap="plan.category = '综合'">
-              综合
-            </text>
-          </view>
-        </view>
-
-        <view class="form-item">
-          <text class="form-label"> 优先级 </text>
-          <view class="priority-selector">
-            <text class="priority-btn low" :class="{ active: plan.priority === 'low' }" @tap="plan.priority = 'low'">
-              低
-            </text>
-            <text
-              class="priority-btn medium"
-              :class="{ active: plan.priority === 'medium' }"
-              @tap="plan.priority = 'medium'"
-            >
-              中
-            </text>
-            <text class="priority-btn high" :class="{ active: plan.priority === 'high' }" @tap="plan.priority = 'high'">
-              高
-            </text>
+          <view class="form-item no-margin">
+            <text class="form-label"> 优先级 </text>
+            <view class="priority-selector">
+              <text class="priority-btn low" :class="{ active: plan.priority === 'low' }" @tap="plan.priority = 'low'">
+                低
+              </text>
+              <text
+                class="priority-btn medium"
+                :class="{ active: plan.priority === 'medium' }"
+                @tap="plan.priority = 'medium'"
+              >
+                中
+              </text>
+              <text
+                class="priority-btn high"
+                :class="{ active: plan.priority === 'high' }"
+                @tap="plan.priority = 'high'"
+              >
+                高
+              </text>
+            </view>
           </view>
         </view>
       </view>
 
-      <view v-if="!isPageLoading" class="action-buttons">
+      <view v-if="!isPageLoading" class="action-bar">
         <button
           class="action-btn primary"
           hover-class="btn-scale-sm"
@@ -170,14 +190,10 @@ import { debounce } from '@/utils/throttle.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-// 输入验证：过滤危险字符和 Emoji
 const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
   if (!input) return '';
-  let result = String(input)
-    // 过滤危险字符：< > " ' & 和控制字符
-    .replace(/[<>"'&\x00-\x1F\x7F]/g, '');
+  let result = String(input).replace(/[<>"'&\x00-\x1F\x7F]/g, '');
 
-  // 可选：过滤 Emoji 和特殊字符，只保留中文、英文、数字和常用标点
   if (!allowEmoji) {
     result = result.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s\-_.,!?，。！？、]/g, '');
   }
@@ -190,7 +206,6 @@ export default {
     BaseIcon
   },
   data() {
-    // formatDate 内联：data() 执行时 methods 尚未绑定到 this
     const formatDateInline = (date) => {
       const year = date.getFullYear();
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -201,9 +216,9 @@ export default {
       statusBarHeight: 44,
       isDark: false,
       isFormValid: false,
-      isSaving: false, // 防重复点击
-      isPageLoading: true, // 页面初始加载状态
-      debouncedValidate: null, // 防抖验证函数
+      isSaving: false,
+      isPageLoading: true,
+      debouncedValidate: null,
       plan: {
         name: '',
         goal: '',
@@ -214,7 +229,7 @@ export default {
         category: '综合',
         priority: 'medium',
         progress: 0,
-        status: 'not_started', // not_started, in_progress, completed
+        status: 'not_started',
         tasks: [],
         timestamp: Date.now()
       }
@@ -223,28 +238,23 @@ export default {
   onLoad() {
     this.statusBarHeight = getStatusBarHeight();
 
-    // 初始化防抖验证函数（300ms 延迟）
     this.debouncedValidate = debounce(() => {
       this.isFormValid = this.plan.name.trim() !== '' && this.plan.goal.trim() !== '';
     }, 300);
 
-    // 初始化主题
     const savedTheme = storageService.get('theme_mode', 'light');
     this.isDark = savedTheme === 'dark';
 
-    // 监听全局主题更新事件
     this._themeHandler = (mode) => {
       this.isDark = mode === 'dark';
     };
     uni.$on('themeUpdate', this._themeHandler);
 
-    // 模拟加载完成
     setTimeout(() => {
       this.isPageLoading = false;
     }, 300);
   },
   onUnload() {
-    // 移除事件监听
     uni.$off('themeUpdate', this._themeHandler);
   },
   methods: {
@@ -255,7 +265,6 @@ export default {
       return `${year}-${month}-${day}`;
     },
     showStartDatePicker() {
-      // uni.showDatePicker 不存在，使用 uni.datePicker 或 picker view
       uni.showModal({
         title: '选择开始日期',
         editable: true,
@@ -263,7 +272,6 @@ export default {
         success: (res) => {
           if (res.confirm && res.content) {
             const trimmed = res.content.trim();
-            // 验证日期格式和语义有效性
             const parsed = new Date(trimmed);
             if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
               this.plan.startDate = trimmed;
@@ -285,7 +293,6 @@ export default {
             const trimmed = res.content.trim();
             const parsed = new Date(trimmed);
             if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
-              // 校验结束日期必须晚于开始日期
               if (this.plan.startDate && trimmed <= this.plan.startDate) {
                 uni.showToast({ title: '结束日期必须晚于开始日期', icon: 'none' });
                 return;
@@ -318,17 +325,14 @@ export default {
       });
     },
     onInputChange() {
-      // 使用防抖进行表单验证
       if (this.debouncedValidate) {
         this.debouncedValidate();
       } else {
-        // 降级：直接验证
         this.isFormValid = this.plan.name.trim() !== '' && this.plan.goal.trim() !== '';
       }
     },
     savePlan() {
       if (!this.isFormValid || this.isSaving) {
-        // P012: 具体提示哪个字段未填写
         if (!this.isSaving) {
           const name = (this.plan.name || '').trim();
           const goal = (this.plan.goal || '').trim();
@@ -343,14 +347,10 @@ export default {
         return;
       }
 
-      // 防重复点击
       this.isSaving = true;
-
-      // 输入过滤：过滤 Emoji 和特殊字符
       this.plan.name = sanitizeInput(this.plan.name, 50);
       this.plan.goal = sanitizeInput(this.plan.goal, 500);
 
-      // 再次验证过滤后的内容
       if (!this.plan.name || !this.plan.goal) {
         this.isSaving = false;
         const msg = !this.plan.name ? '计划名称含有不支持的字符，请重新输入' : '学习目标含有不支持的字符，请重新输入';
@@ -361,15 +361,12 @@ export default {
         return;
       }
 
-      // 保存到本地存储
       const plans = storageService.get('study_plans', []);
-      // 生成唯一ID，确保后续删除/修改能定位
       this.plan.id = 'plan_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
       this.plan.createdAt = Date.now();
       plans.unshift(this.plan);
       storageService.save('study_plans', plans);
 
-      // 返回上一页
       uni.showToast({
         title: '计划创建成功',
         icon: 'success',
@@ -378,7 +375,6 @@ export default {
           uni.navigateBack();
         },
         complete: () => {
-          // 延迟解锁，防止快速返回后再次点击
           setTimeout(() => {
             this.isSaving = false;
           }, 2000);
@@ -394,20 +390,29 @@ export default {
 
 <style lang="scss" scoped>
 .container {
+  min-height: 100%;
   min-height: 100vh;
-  background: var(--bg-secondary);
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 54%,
+    var(--page-gradient-bottom) 100%
+  );
   position: relative;
   overflow: hidden;
 }
 
 .aurora-bg {
   position: absolute;
-  top: 0;
+  top: -120rpx;
+  left: -80rpx;
   width: 100%;
-  height: 500rpx;
-  background: linear-gradient(135deg, var(--success-light) 0%, var(--bg-success-light) 100%);
-  filter: blur(80px);
-  opacity: 0.6;
+  height: 620rpx;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(107, 208, 150, 0.34) 0%, transparent 40%),
+    radial-gradient(circle at 80% 12%, rgba(255, 255, 255, 0.4) 0%, transparent 28%);
+  filter: blur(70px);
+  opacity: 0.95;
   z-index: 0;
 }
 
@@ -417,265 +422,285 @@ export default {
   left: 0;
   width: 100%;
   z-index: 100;
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  .nav-content {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
-    .nav-back {
-      font-size: 36rpx;
-      color: var(--text-primary);
-      font-weight: bold;
-    }
-    .nav-title {
-      font-size: 34rpx;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .nav-placeholder {
-      width: 36rpx;
-    }
-  }
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 38%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.nav-content {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+}
+
+.nav-back,
+.nav-placeholder {
+  width: 72rpx;
+  height: 72rpx;
+}
+
+.nav-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+  font-size: 36rpx;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.nav-title {
+  font-size: 32rpx;
+  font-weight: 620;
+  color: var(--text-main);
 }
 
 .main-scroll {
+  height: 100%;
   height: 100vh;
-  padding: 30rpx;
+  padding: 30rpx 30rpx 112rpx;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
 }
 
-/* 通用玻璃卡片 */
-.glass-card {
-  background: var(--bg-card-glass);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border-glass);
-  border-radius: 40rpx;
-  padding: 30rpx;
-  margin-bottom: 30rpx;
-  box-shadow: var(--shadow-lg);
+.hero-card,
+.form-card {
+  margin-bottom: 28rpx;
+  border-radius: 32rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.hero-card {
+  padding: 34rpx 32rpx;
+}
+
+.hero-eyebrow,
+.group-eyebrow {
+  display: block;
+  margin-bottom: 10rpx;
+  font-size: 22rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.hero-title {
+  display: block;
+  font-size: 42rpx;
+  line-height: 1.24;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.hero-subtitle {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--text-sub);
 }
 
 .form-card {
-  padding: 40rpx;
+  padding: 18rpx;
+}
+
+.form-group {
+  padding: 26rpx;
+  border-radius: 26rpx;
+  background: rgba(255, 255, 255, 0.48);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  margin-bottom: 18rpx;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
 }
 
 .form-item {
-  margin-bottom: 40rpx;
+  margin-bottom: 32rpx;
+}
+
+.form-item.no-margin {
+  margin-bottom: 0;
 }
 
 .form-label {
   display: block;
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 16rpx;
+  margin-bottom: 14rpx;
+  font-size: 27rpx;
+  font-weight: 620;
+  color: var(--text-main);
+}
+
+.form-input,
+.form-textarea,
+.picker-row,
+.pill-btn,
+.priority-btn {
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.44);
 }
 
 .form-input,
 .form-textarea {
   width: 100%;
   padding: 24rpx;
-  border-radius: 16rpx;
-  background: var(--bg-card);
-  border: 2rpx solid var(--border-light);
-  font-size: 28rpx;
-  color: var(--text-primary);
+  border-radius: 20rpx;
   box-sizing: border-box;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s;
+  font-size: 28rpx;
+  color: var(--text-main);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .form-input:focus,
 .form-textarea:focus {
-  border-color: var(--success-green);
-  box-shadow: var(--shadow-success);
+  border-color: rgba(255, 255, 255, 0.7);
 }
 
-.date-picker,
-.time-picker {
+.picker-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 24rpx;
-  border-radius: 16rpx;
-  background: var(--bg-card);
-  border: 2rpx solid var(--border-light);
-  transition: all 0.2s;
-  box-shadow: var(--shadow-sm);
+  border-radius: 20rpx;
+  box-shadow: var(--apple-shadow-surface);
 }
 
-.date-text,
-.time-text {
+.picker-text {
   font-size: 28rpx;
-  color: var(--text-primary);
+  color: var(--text-main);
   font-weight: 500;
 }
 
-.date-icon,
-.time-icon {
-  font-size: 28rpx;
+.picker-icon {
+  color: var(--text-sub);
 }
 
-.duration-selector,
-.category-selector {
+.pill-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  /* gap: 14rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 14rpx;
+  }
 }
 
-.duration-btn,
-.category-btn {
-  padding: 16rpx 28rpx;
-  border-radius: 24rpx;
-  background: var(--bg-tag);
-  border: 1px solid var(--border-light);
-  font-size: 26rpx;
-  color: var(--text-secondary);
-  transition: all 0.2s;
-  &.active {
-    background: var(--success-green);
-    color: var(--text-inverse);
-    font-weight: bold;
-    border-color: var(--success-green);
-  }
-  &:active {
-    transform: scale(0.95);
-  }
+.category-grid .pill-btn {
+  min-width: 142rpx;
+}
+
+.pill-btn {
+  padding: 16rpx 26rpx;
+  border-radius: 999rpx;
+  font-size: 25rpx;
+  color: var(--text-sub);
+  text-align: center;
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.pill-btn.active {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+  font-weight: 620;
 }
 
 .priority-selector {
   display: flex;
-  gap: 16rpx;
+  /* gap: 14rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 14rpx;
+  }
 }
 
 .priority-btn {
   flex: 1;
   padding: 20rpx;
-  border-radius: 16rpx;
+  border-radius: 22rpx;
   text-align: center;
   font-size: 28rpx;
-  font-weight: bold;
-  transition: all 0.2s;
-  &.low {
-    background: var(--bg-success-light);
-    color: var(--success-green);
-  }
-  &.medium {
-    background: var(--bg-warning-light);
-    color: var(--warning);
-  }
-  &.high {
-    background: var(--bg-danger-light);
-    color: var(--danger-red);
-  }
-  &.active {
-    color: var(--text-inverse);
-    &.low {
-      background: var(--success-green);
-    }
-    &.medium {
-      background: var(--warning);
-    }
-    &.high {
-      background: var(--danger-red);
-    }
-  }
-  &:active {
-    transform: scale(0.95);
-  }
+  font-weight: 620;
+  color: var(--text-sub);
+  box-shadow: var(--apple-shadow-surface);
 }
 
-.action-buttons {
-  margin-top: 60rpx;
-  margin-bottom: 100rpx;
+.priority-btn.low.active {
+  background: rgba(52, 199, 89, 0.16);
+  color: var(--success, #34c759);
+}
+
+.priority-btn.medium.active {
+  background: rgba(255, 204, 0, 0.14);
+  color: var(--warning, #ff9f0a);
+}
+
+.priority-btn.high.active {
+  background: rgba(255, 99, 90, 0.14);
+  color: var(--danger, #ff3b30);
+}
+
+.action-bar {
+  position: sticky;
+  bottom: 24rpx;
+  padding-top: 8rpx;
 }
 
 .action-btn {
   width: 100%;
   padding: 24rpx;
-  border-radius: 50rpx;
+  border-radius: 999rpx;
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 650;
   border: none;
-  transition: all 0.2s;
-  &.primary {
-    background: var(--success-green);
-    color: var(--text-inverse);
-    box-shadow: var(--shadow-success);
-  }
-  &[disabled] {
-    opacity: 0.5;
-  }
-  &::after {
-    border: none;
-  }
-  &:active {
-    transform: scale(0.98);
-  }
 }
 
-/* 深色模式适配 */
-.container.dark-mode {
-  background-color: var(--bg-color);
+.action-btn.primary {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  box-shadow: var(--cta-primary-shadow);
 }
 
-.container.dark-mode .nav-title {
-  color: var(--text-primary);
+.action-btn[disabled] {
+  opacity: 0.5;
 }
 
-.container.dark-mode .nav-back {
-  color: var(--text-primary);
+.action-btn::after {
+  border: none;
 }
 
-.container.dark-mode .glass-card {
-  background: var(--card-bg);
-  border-color: var(--card-border);
+.nav-back:active,
+.pill-btn:active,
+.priority-btn:active,
+.picker-row:active,
+.action-btn:active {
+  transform: scale(0.98);
 }
 
-.container.dark-mode .form-label {
-  color: var(--text-primary);
+.skeleton-card {
+  padding: 32rpx;
 }
 
-.container.dark-mode .form-input,
-.container.dark-mode .form-textarea {
-  background: var(--bg-input-dark);
-  border-color: var(--border-dark);
-  color: var(--text-primary);
-}
-
-.container.dark-mode .date-picker,
-.container.dark-mode .time-picker {
-  background: var(--bg-input-dark);
-  border-color: var(--border-dark);
-}
-
-.container.dark-mode .date-text,
-.container.dark-mode .time-text {
-  color: var(--text-primary);
-}
-
-.container.dark-mode .duration-btn,
-.container.dark-mode .category-btn {
-  background: var(--bg-input-dark);
-  border-color: var(--border-dark);
-  color: var(--text-primary);
-}
-
-.container.dark-mode .aurora-bg {
-  background: linear-gradient(
-    135deg,
-    var(--bg-body) 0%,
-    var(--bg-dark-gradient-1) 50%,
-    var(--bg-glass) 100%
-  ) !important;
-}
-
-/* 骨架屏样式 */
 .skeleton-form-item {
   margin-bottom: 40rpx;
 }
@@ -690,26 +715,58 @@ export default {
 .skeleton-input {
   width: 100%;
   height: 80rpx;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
 }
 
 .skeleton-btn {
   width: 100%;
-  height: 88rpx;
-  border-radius: 50rpx;
+  height: 92rpx;
+  border-radius: 999rpx;
   margin-top: 60rpx;
 }
 
 .skeleton-animate {
-  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+  background: linear-gradient(90deg, var(--muted) 25%, var(--bg-card) 50%, var(--muted) 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
+}
+
+.container.dark-mode .aurora-bg {
+  background:
+    radial-gradient(circle at 18% 24%, rgba(10, 132, 255, 0.18) 0%, transparent 42%),
+    radial-gradient(circle at 80% 12%, rgba(95, 170, 255, 0.14) 0%, transparent 30%) !important;
+  opacity: 0.9;
+  filter: blur(110px);
+}
+
+.container.dark-mode .hero-card,
+.container.dark-mode .form-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+}
+
+.container.dark-mode .nav-back,
+.container.dark-mode .form-group,
+.container.dark-mode .form-input,
+.container.dark-mode .form-textarea,
+.container.dark-mode .picker-row,
+.container.dark-mode .pill-btn,
+.container.dark-mode .priority-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.container.dark-mode .pill-btn.active {
+  background: var(--cta-primary-bg);
+  border-color: var(--cta-primary-border);
 }
 
 @keyframes skeleton-loading {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }

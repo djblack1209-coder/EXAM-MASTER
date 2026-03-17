@@ -16,6 +16,12 @@ tests/maestro/
 ## 一键安装（macOS）
 
 ```bash
+bash scripts/test/setup-qa-macos.sh
+```
+
+如仅补齐 Maestro 运行环境：
+
+```bash
 bash scripts/test/setup-maestro-macos.sh
 ```
 

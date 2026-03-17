@@ -17,20 +17,26 @@ async function skipWhenRuntimeNotReady(test, page) {
 async function ensureEmailFormVisible(page) {
   const emailForm = page.locator('.email-form').first();
   let emailInput = emailForm.locator('input').first();
+  const emailButton = page.locator('.email-btn').first();
 
   if (await emailInput.isVisible().catch(() => false)) {
     return emailInput;
   }
 
+  await Promise.race([
+    emailButton.waitFor({ state: 'visible', timeout: 10_000 }).catch(() => {}),
+    emailForm.waitFor({ state: 'visible', timeout: 10_000 }).catch(() => {})
+  ]);
+
   const entryCandidates = [
     page.getByText('邮箱登录/注册', { exact: false }).first(),
-    page.locator('.email-btn').first(),
+    emailButton,
     page.locator('.login-btn', { hasText: '邮箱登录/注册' }).first(),
     page.locator('text=邮箱登录/注册').first(),
     page.locator('.email-btn .btn-text').first()
   ];
 
-  for (let attempt = 0; attempt < 6; attempt += 1) {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
     for (const candidate of entryCandidates) {
       const visible = await candidate.isVisible().catch(() => false);
       if (!visible) {
@@ -39,6 +45,7 @@ async function ensureEmailFormVisible(page) {
 
       await candidate.scrollIntoViewIfNeeded().catch(() => {});
       await candidate.click({ timeout: 3_000, force: true }).catch(() => {});
+      await candidate.dispatchEvent('click').catch(() => {});
       await page.waitForTimeout(350);
 
       if ((await emailForm.isVisible().catch(() => false)) || (await emailInput.isVisible().catch(() => false))) {
@@ -54,6 +61,12 @@ async function ensureEmailFormVisible(page) {
         }
       })
       .catch(() => {});
+
+    await page.waitForTimeout(350);
+
+    if (await emailButton.isVisible().catch(() => false)) {
+      await emailButton.click({ timeout: 3_000, force: true }).catch(() => {});
+    }
 
     if (await emailForm.isVisible().catch(() => false)) {
       emailInput = emailForm.locator('input').first();

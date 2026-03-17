@@ -25,7 +25,15 @@ tests/e2e-regression/
 ## 运行前准备
 
 ```bash
-nvm install 20.17.0 && nvm use 20.17.0
+bash scripts/test/setup-qa-macos.sh
+```
+
+如需手动执行：
+
+```bash
+brew install node@20 openjdk android-platform-tools
+export PATH="$(brew --prefix node@20)/bin:$(brew --prefix openjdk)/bin:$HOME/.maestro/bin:$PATH"
+export JAVA_HOME="$(brew --prefix openjdk)"
 npm ci
 npx playwright install chromium
 ```

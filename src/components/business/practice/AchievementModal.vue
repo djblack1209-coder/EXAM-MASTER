@@ -1,9 +1,13 @@
 <template>
   <view v-if="visible" class="achievement-modal-overlay" @tap="$emit('close')">
-    <view class="achievement-modal" @tap.stop>
+    <view class="achievement-modal apple-glass-card" @tap.stop>
+      <view class="achievement-modal-handle" />
       <view class="achievement-modal-header">
-        <text class="achievement-modal-title"> 我的成就 </text>
-        <view class="achievement-modal-close" @tap="$emit('close')">
+        <view>
+          <text class="achievement-modal-eyebrow"> Achievement Board </text>
+          <text class="achievement-modal-title"> 我的成就 </text>
+        </view>
+        <view class="achievement-modal-close apple-glass-pill" @tap="$emit('close')">
           <BaseIcon name="close" :size="24" />
         </view>
       </view>
@@ -11,7 +15,7 @@
         <view class="achievement-section">
           <text class="achievement-section-title"> 已解锁 ({{ unlockedAchievements.length }}) </text>
           <view class="achievement-grid">
-            <view v-for="ach in unlockedAchievements" :key="ach.id" class="achievement-item unlocked">
+            <view v-for="ach in unlockedAchievements" :key="ach.id" class="achievement-item unlocked apple-group-card">
               <view class="achievement-item-icon">
                 <BaseIcon name="trophy" :size="20" />
               </view>
@@ -27,7 +31,7 @@
         <view v-if="lockedList.length > 0" class="achievement-section">
           <text class="achievement-section-title"> 未解锁 ({{ lockedList.length }}) </text>
           <view class="achievement-grid">
-            <view v-for="ach in lockedList" :key="ach.id" class="achievement-item locked">
+            <view v-for="ach in lockedList" :key="ach.id" class="achievement-item locked apple-group-card">
               <view class="achievement-item-icon">
                 <BaseIcon name="lock" :size="28" />
               </view>
@@ -73,35 +77,55 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--overlay);
+  background: rgba(9, 18, 12, 0.32);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: 40px;
+  padding: 40rpx 24rpx calc(24rpx + env(safe-area-inset-bottom, 0px));
 }
 .achievement-modal {
   width: 100%;
-  max-width: 420px;
+  max-width: 720rpx;
   max-height: 80vh;
-  background: var(--bg-card);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 36rpx 36rpx 28rpx 28rpx;
+  padding: 18rpx 22rpx 24rpx;
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-floating);
   animation: fadeInUp 0.3s ease-out;
   overflow-y: auto;
+}
+.achievement-modal-handle {
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 18rpx;
+}
+.achievement-modal-eyebrow {
+  display: block;
+  margin-bottom: 8rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-sub);
 }
 .achievement-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20rpx;
+  padding: 0 8rpx;
 }
 .achievement-modal-title {
   font-size: 44rpx;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-main);
 }
 .achievement-modal-close {
   width: 36px;
@@ -113,7 +137,9 @@ export default {
   color: var(--text-sub);
   cursor: pointer;
   border-radius: 50%;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 .achievement-modal-body {
   padding-bottom: 16px;
@@ -131,37 +157,100 @@ export default {
 .achievement-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  gap: 14rpx;
 }
 .achievement-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px 8px;
-  border-radius: 16px;
-  background: var(--bg-secondary);
+  min-height: 196rpx;
+  padding: 20rpx 12rpx;
+  border-radius: 24rpx;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
   text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
 }
 .achievement-item.unlocked {
-  background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+  background:
+    linear-gradient(180deg, rgba(52, 199, 89, 0.16) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border-color: rgba(52, 199, 89, 0.18);
 }
 .achievement-item.locked {
-  opacity: 0.5;
+  opacity: 0.72;
 }
 .achievement-item-icon {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 40rpx;
-  margin-bottom: 8px;
+  margin-bottom: 10rpx;
+  border-radius: 999rpx;
+  background: rgba(52, 199, 89, 0.12);
+  border: 1px solid rgba(52, 199, 89, 0.18);
 }
 .achievement-item-name {
   font-size: 24rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-main);
   margin-bottom: 4px;
 }
 .achievement-item-desc {
   font-size: 20rpx;
   color: var(--text-sub);
   line-height: 1.3;
+}
+
+:global(.dark-mode) .achievement-modal-overlay {
+  background: rgba(3, 8, 14, 0.52);
+}
+
+:global(.dark-mode) .achievement-modal {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark-mode) .achievement-modal-handle {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+:global(.dark-mode) .achievement-modal-eyebrow,
+:global(.dark-mode) .achievement-section-title,
+:global(.dark-mode) .achievement-item-desc {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+:global(.dark-mode) .achievement-modal-title,
+:global(.dark-mode) .achievement-item-name,
+:global(.dark-mode) .achievement-modal-close {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .achievement-modal-close,
+:global(.dark-mode) .achievement-item {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark-mode) .achievement-item.unlocked {
+  background:
+    linear-gradient(180deg, rgba(10, 132, 255, 0.16) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(10, 132, 255, 0.18);
+}
+
+:global(.dark-mode) .achievement-item-icon {
+  background: rgba(10, 132, 255, 0.14);
+  border-color: rgba(10, 132, 255, 0.18);
 }
 @keyframes fadeInUp {
   from {

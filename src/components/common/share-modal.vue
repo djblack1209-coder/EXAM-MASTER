@@ -2,25 +2,28 @@
 <template>
   <view v-if="visible" class="share-modal-mask" @tap="handleClose">
     <view class="share-modal-content" :class="{ 'modal-dark': isDark }" @tap.stop>
-      <!-- 头部 -->
+      <view class="panel-handle" />
+
       <view class="modal-header">
-        <text class="modal-title">
-          {{ title }}
-        </text>
+        <view>
+          <text class="modal-eyebrow"> Share Panel </text>
+          <text class="modal-title">
+            {{ title }}
+          </text>
+        </view>
         <view class="close-btn" @tap="handleClose">
           <text class="close-icon"> × </text>
         </view>
       </view>
 
-      <!-- 预览区域 -->
       <view v-if="showPreview" class="preview-section">
         <view class="quote-preview" :class="{ 'preview-dark': isDark }">
+          <text class="preview-label"> Quote Preview </text>
           <text class="preview-quote"> "{{ quote }}" </text>
           <text class="preview-author"> —— {{ author }} </text>
         </view>
       </view>
 
-      <!-- 收藏按钮（带动画） -->
       <view class="favorite-section">
         <view
           class="favorite-btn"
@@ -36,30 +39,34 @@
         </view>
       </view>
 
-      <!-- 分享选项 -->
+      <view class="share-heading">
+        <text class="share-heading-title"> 选择分享方式 </text>
+        <text class="share-heading-subtitle"> 分享、生成海报或复制文案 </text>
+      </view>
+
       <view class="share-options">
-        <view class="option-item" @tap="handleShare('wechat')">
+        <view class="option-item option-wechat" @tap="handleShare('wechat')">
           <view class="option-icon icon-wechat">
             <BaseIcon name="comment" :size="40" />
           </view>
           <text class="option-label"> 微信好友 </text>
         </view>
 
-        <view class="option-item" @tap="handleShare('timeline')">
+        <view class="option-item option-timeline" @tap="handleShare('timeline')">
           <view class="option-icon icon-timeline">
             <BaseIcon name="globe" :size="40" />
           </view>
           <text class="option-label"> 朋友圈 </text>
         </view>
 
-        <view class="option-item" @tap="handleShare('poster')">
+        <view class="option-item option-poster" @tap="handleShare('poster')">
           <view class="option-icon icon-poster">
             <BaseIcon name="image" :size="40" />
           </view>
           <text class="option-label"> 生成海报 </text>
         </view>
 
-        <view class="option-item" @tap="handleShare('copy')">
+        <view class="option-item option-copy" @tap="handleShare('copy')">
           <view class="option-icon icon-copy">
             <BaseIcon name="copy" :size="40" />
           </view>
@@ -67,7 +74,6 @@
         </view>
       </view>
 
-      <!-- 底部提示 -->
       <view class="modal-footer">
         <text class="footer-hint"> 分享给朋友，一起进步 </text>
       </view>
@@ -76,6 +82,9 @@
     <!-- 海报预览弹窗 -->
     <view v-if="showPosterPreview" class="poster-preview-modal" @tap.stop>
       <view class="poster-preview-content">
+        <view class="poster-preview-header">
+          <text class="poster-preview-title"> 海报预览 </text>
+        </view>
         <canvas
           id="quote-poster-canvas"
           type="2d"
@@ -305,10 +314,15 @@ export default {
           canvas.height = (config.height * dpr) / 2;
           ctx.scale(dpr / 2, dpr / 2);
 
-          // 绘制渐变背景
+          // 绘制品牌渐变背景
           const gradient = ctx.createLinearGradient(0, 0, config.width, config.height);
-          gradient.addColorStop(0, '#667eea');
-          gradient.addColorStop(1, '#764ba2');
+          if (this.isDark) {
+            gradient.addColorStop(0, '#07111c');
+            gradient.addColorStop(1, '#0a84ff');
+          } else {
+            gradient.addColorStop(0, '#6bd096');
+            gradient.addColorStop(1, '#d8f2df');
+          }
           ctx.fillStyle = gradient;
           ctx.fillRect(0, 0, config.width, config.height);
 
@@ -319,7 +333,7 @@ export default {
           ctx.fill();
 
           // 绘制金句
-          ctx.fillStyle = '#ffffff';
+          ctx.fillStyle = this.isDark ? '#ffffff' : '#13301c';
           ctx.font = 'bold 32px sans-serif';
           ctx.textAlign = 'center';
 
@@ -332,21 +346,21 @@ export default {
 
           // 绘制作者
           ctx.font = '24px sans-serif';
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+          ctx.fillStyle = this.isDark ? 'rgba(255, 255, 255, 0.82)' : 'rgba(19, 48, 28, 0.72)';
           ctx.fillText(`—— ${config.author}`, config.width / 2, y + 40);
 
           // 绘制日期
           ctx.font = '20px sans-serif';
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.fillStyle = this.isDark ? 'rgba(255, 255, 255, 0.64)' : 'rgba(19, 48, 28, 0.56)';
           ctx.fillText(config.date, config.width / 2, y + 90);
 
           // 绘制品牌
           ctx.font = 'bold 24px sans-serif';
-          ctx.fillStyle = '#ffffff';
+          ctx.fillStyle = this.isDark ? '#ffffff' : '#13301c';
           ctx.fillText('Exam-Master', config.width / 2, config.height - 80);
 
           ctx.font = '18px sans-serif';
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.fillStyle = this.isDark ? 'rgba(255, 255, 255, 0.74)' : 'rgba(19, 48, 28, 0.64)';
           ctx.fillText('考研路上，与你同行', config.width / 2, config.height - 50);
         });
     },
@@ -411,6 +425,45 @@ export default {
             }
             // #endif
 
+            // #ifdef APP-PLUS
+            try {
+              const tempFilePath = await new Promise((resolve, reject) => {
+                uni.canvasToTempFilePath({
+                  canvas,
+                  success: (res) => resolve(res.tempFilePath),
+                  fail: reject
+                });
+              });
+
+              uni.saveImageToPhotosAlbum({
+                filePath: tempFilePath,
+                success: () => {
+                  uni.showToast({ title: '已保存到相册', icon: 'success' });
+                  this.showPosterPreview = false;
+                },
+                fail: (err) => {
+                  if (err?.errMsg && err.errMsg.includes('deny')) {
+                    uni.showModal({
+                      title: '权限提示',
+                      content: '需要相册权限才能保存图片，请在设置中开启',
+                      confirmText: '去设置',
+                      success: (res) => {
+                        if (res.confirm) {
+                          plus.runtime.openURL('app-settings:');
+                        }
+                      }
+                    });
+                  } else {
+                    uni.showToast({ title: '保存失败', icon: 'none' });
+                  }
+                }
+              });
+            } catch (_e) {
+              logger.error('[ShareModal] App端保存海报失败:', _e);
+              uni.showToast({ title: '保存失败', icon: 'none' });
+            }
+            // #endif
+
             // #ifdef H5
             const dataUrl = canvas.toDataURL('image/png');
             const link = document.createElement('a');
@@ -456,167 +509,185 @@ export default {
 .share-modal-mask {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(5px);
+  left: 0;
   z-index: 9999;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  background: rgba(9, 18, 12, 0.32);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .share-modal-content {
   width: 100%;
-  background: #ffffff;
-  border-radius: 32rpx 32rpx 0 0;
-  padding: 32rpx;
-  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
-  animation: slideUp 0.3s ease;
-
-  &.modal-dark {
-    background: #1a1a1a;
-  }
+  padding: 14rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
+  border-radius: 38rpx 38rpx 0 0;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  box-shadow: 0 -20rpx 70rpx rgba(21, 49, 28, 0.18);
+  animation: slideUp 0.26s ease;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+.panel-handle {
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 18rpx;
+}
+
+.modal-header,
+.favorite-btn,
+.option-item,
+.poster-btn,
+.close-btn {
+  display: flex;
+  align-items: center;
 }
 
 .modal-header {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+  margin-bottom: 22rpx;
+}
+
+.modal-eyebrow,
+.modal-title,
+.preview-label,
+.preview-quote,
+.preview-author,
+.favorite-text,
+.share-heading-title,
+.share-heading-subtitle,
+.option-label,
+.footer-hint,
+.poster-preview-title {
+  display: block;
+}
+
+.modal-eyebrow {
+  margin-bottom: 6rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .modal-title {
   font-size: 36rpx;
   font-weight: 700;
-
-  .share-modal-content:not(.modal-dark) & {
-    color: #1a1a1a;
-  }
-  .modal-dark & {
-    color: #ffffff;
-  }
+  color: var(--text-main);
 }
 
 .close-btn {
+  justify-content: center;
   width: 60rpx;
   height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.05);
-
-  .modal-dark & {
-    background: rgba(255, 255, 255, 0.1);
-  }
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .close-icon {
   font-size: 40rpx;
-  color: var(--ds-color-text-tertiary);
-
-  .modal-dark & {
-    color: var(--ds-color-text-secondary);
-  }
+  color: var(--text-sub);
 }
 
-/* 预览区域 */
 .preview-section {
-  margin-bottom: 24rpx;
+  margin-bottom: 20rpx;
 }
 
 .quote-preview {
-  padding: 32rpx;
-  border-radius: 20rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 28rpx;
+  border-radius: 28rpx;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(245, 255, 248, 0.86) 0%, rgba(221, 242, 228, 0.68) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
 
-  &.preview-dark {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  }
+.quote-preview.preview-dark {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.preview-label {
+  margin-bottom: 10rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: rgba(19, 48, 28, 0.58);
+}
+
+.preview-dark .preview-label {
+  color: rgba(255, 255, 255, 0.58);
 }
 
 .preview-quote {
-  display: block;
   font-size: 32rpx;
-  font-weight: 600;
-  color: #ffffff;
   line-height: 1.6;
-  margin-bottom: 16rpx;
+  font-weight: 650;
+  color: #13301c;
+}
+
+.preview-dark .preview-quote {
+  color: #ffffff;
 }
 
 .preview-author {
-  display: block;
-  font-size: 26rpx;
-  color: rgba(255, 255, 255, 0.8);
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  color: rgba(19, 48, 28, 0.7);
 }
 
-/* 收藏按钮 */
+.preview-dark .preview-author {
+  color: rgba(255, 255, 255, 0.74);
+}
+
 .favorite-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 32rpx;
+  margin-bottom: 22rpx;
 }
 
 .favorite-btn {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  padding: 16rpx 32rpx;
-  border-radius: 40rpx;
-  background: rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-
-  .modal-dark & {
-    background: rgba(255, 255, 255, 0.1);
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
   }
-
-  &.is-favorite {
-    background: rgba(255, 107, 107, 0.1);
-  }
-
-  &.animate-pop {
-    animation: pop 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
+  justify-content: center;
+  padding: 18rpx 30rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 
-@keyframes pop {
-  0% {
-    transform: scale(1);
-  }
-  30% {
-    transform: scale(1.2);
-  }
-  60% {
-    transform: scale(0.9);
-  }
-  100% {
-    transform: scale(1);
-  }
+.favorite-btn.is-favorite {
+  background: rgba(255, 99, 90, 0.12);
+  border-color: rgba(255, 99, 90, 0.24);
+}
+
+.favorite-btn.animate-pop {
+  animation: pop 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .favorite-icon {
@@ -625,152 +696,231 @@ export default {
 
 .favorite-text {
   font-size: 28rpx;
-  font-weight: 500;
-
-  .share-modal-content:not(.modal-dark) & {
-    color: #1a1a1a;
-  }
-  .modal-dark & {
-    color: #ffffff;
-  }
+  font-weight: 620;
+  color: var(--text-main);
 }
 
-/* 分享选项 */
-.share-options {
-  display: flex;
-  justify-content: space-around;
-  padding: 24rpx 0;
-  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+.share-heading {
+  margin-bottom: 18rpx;
+}
 
-  .modal-dark & {
-    border-color: rgba(255, 255, 255, 0.1);
-  }
+.share-heading-title {
+  font-size: 28rpx;
+  font-weight: 660;
+  color: var(--text-main);
+}
+
+.share-heading-subtitle {
+  margin-top: 6rpx;
+  font-size: 23rpx;
+  color: var(--text-sub);
+}
+
+.share-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
 }
 
 .option-item {
-  display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: center;
   gap: 12rpx;
-
-  &:active {
-    opacity: 0.7;
-  }
+  min-height: 188rpx;
+  padding: 24rpx 16rpx;
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .option-icon {
-  width: 96rpx;
-  height: 96rpx;
-  border-radius: 24rpx;
+  width: 92rpx;
+  height: 92rpx;
+  border-radius: 28rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40rpx;
+  color: var(--text-main);
 }
 
 .icon-wechat {
-  background: #07c160;
+  background: rgba(52, 199, 89, 0.16);
 }
+
 .icon-timeline {
-  background: #576b95;
+  background: rgba(10, 132, 255, 0.14);
 }
+
 .icon-poster {
-  background: #ff6b6b;
+  background: rgba(255, 159, 10, 0.14);
 }
+
 .icon-copy {
-  background: #f59e0b;
-}
-.modal-dark .icon-wechat {
-  background: #06a850;
-}
-.modal-dark .icon-timeline {
-  background: #4a5d82;
-}
-.modal-dark .icon-poster {
-  background: #e05555;
-}
-.modal-dark .icon-copy {
-  background: #d98e0a;
+  background: rgba(142, 142, 147, 0.14);
 }
 
 .option-label {
   font-size: 24rpx;
-
-  .share-modal-content:not(.modal-dark) & {
-    color: var(--ds-color-text-secondary);
-  }
-  .modal-dark & {
-    color: rgba(255, 255, 255, 0.7);
-  }
+  color: var(--text-main);
 }
 
-/* 底部提示 */
 .modal-footer {
+  padding-top: 22rpx;
   text-align: center;
-  padding-top: 24rpx;
 }
 
 .footer-hint {
-  font-size: 24rpx;
-  color: var(--ds-color-text-tertiary);
+  font-size: 22rpx;
+  color: var(--text-sub);
 }
 
-/* 海报预览 */
 .poster-preview-modal {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  left: 0;
   z-index: 10000;
+  background: rgba(9, 18, 12, 0.34);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 32rpx 24rpx calc(24rpx + env(safe-area-inset-bottom, 0px));
 }
 
 .poster-preview-content {
+  width: 100%;
+  max-width: 680rpx;
+  padding: 26rpx;
+  border-radius: 30rpx;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+.poster-preview-header {
+  width: 100%;
+  margin-bottom: 18rpx;
+}
+
+.poster-preview-title {
+  font-size: 28rpx;
+  font-weight: 660;
+  color: #ffffff;
+  text-align: center;
+}
+
 .poster-canvas {
-  border-radius: 16rpx;
-  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.3);
+  border-radius: 22rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.34);
 }
 
 .poster-actions {
   display: flex;
-  gap: 24rpx;
-  margin-top: 32rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16rpx;
+  }
+  width: 100%;
+  margin-top: 26rpx;
 }
 
 .poster-btn {
-  padding: 20rpx 48rpx;
-  border-radius: 40rpx;
+  flex: 1;
+  justify-content: center;
+  padding: 20rpx 24rpx;
+  border-radius: 999rpx;
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 620;
+}
 
-  &.btn-cancel {
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+.poster-btn.btn-cancel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.poster-btn.btn-save {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.share-modal-content.modal-dark,
+.share-modal-content.modal-dark .favorite-btn,
+.share-modal-content.modal-dark .option-item,
+.share-modal-content.modal-dark .close-btn {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.share-modal-content.modal-dark .option-icon {
+  background: rgba(10, 132, 255, 0.14);
+  border: 1px solid rgba(10, 132, 255, 0.18);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.share-modal-content.modal-dark .icon-wechat {
+  background: rgba(10, 132, 255, 0.14);
+}
+
+.share-modal-content.modal-dark .icon-timeline {
+  background: rgba(95, 170, 255, 0.16);
+}
+
+.share-modal-content.modal-dark .icon-poster {
+  background: rgba(10, 132, 255, 0.18);
+}
+
+.share-modal-content.modal-dark .icon-copy {
+  background: rgba(80, 120, 190, 0.16);
+}
+
+.close-btn:active,
+.favorite-btn:active,
+.option-item:active,
+.poster-btn:active {
+  transform: scale(0.97);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
   }
 
-  &.btn-save {
-    background: #ffffff;
-    color: #667eea;
+  to {
+    transform: translateY(0);
+  }
+}
 
-    .modal-dark & {
-      background: rgba(255, 255, 255, 0.15);
-      color: #a0b4ff;
-    }
+@keyframes pop {
+  0% {
+    transform: scale(1);
   }
 
-  &:active {
-    opacity: 0.8;
+  30% {
+    transform: scale(1.14);
+  }
+
+  60% {
+    transform: scale(0.92);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }
 </style>

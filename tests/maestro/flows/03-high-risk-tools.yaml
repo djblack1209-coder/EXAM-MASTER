@@ -1,13 +1,17 @@
 appId: ${APP_ID}
 ---
-- launchApp
-- tapOn: '首页'
-- assertVisible: '实用工具'
+- launchApp:
+    stopApp: true
+- waitForAnimationToEnd
+- assertVisible: '首页'
+- scroll
 - tapOn: '文档转换'
 - assertVisible: '文档转换'
 - back
+- scroll
 - tapOn: '证件照制作'
 - assertVisible: '证件照'
 - back
+- scroll
 - tapOn: '拍照搜题'
 - assertVisible: '拍照'

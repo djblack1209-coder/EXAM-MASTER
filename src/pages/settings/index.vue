@@ -1,13 +1,30 @@
 <template>
   <view id="e2e-settings-root" class="settings-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 - 添加设计系统工具类 -->
-    <view class="top-nav">
+    <view
+      class="top-nav apple-glass"
+      :style="{ paddingTop: statusBarHeight + 'px', paddingRight: capsuleSafeRight + 'px' }"
+    >
       <text id="e2e-settings-back" class="nav-back" @tap="handleGoBack"> ← </text>
       <text class="nav-title ds-text-display ds-font-bold"> 设置 </text>
       <view class="nav-placeholder" />
     </view>
 
     <!-- F018: 页面加载骨架屏 -->
+    <!-- #ifdef APP-PLUS -->
+    <view v-if="isPageLoading" class="skeleton-settings">
+      <view class="skeleton-user-card skeleton-pulse" />
+      <view class="skeleton-section">
+        <view class="skeleton-entry skeleton-pulse" />
+      </view>
+      <view class="skeleton-section">
+        <view class="skeleton-item skeleton-pulse" />
+        <view class="skeleton-item skeleton-pulse" />
+        <view class="skeleton-item skeleton-pulse" />
+      </view>
+    </view>
+    <!-- #endif -->
+    <!-- #ifndef APP-PLUS -->
     <!-- #ifndef APP-NVUE -->
     <transition name="skeleton-fade">
       <view v-if="isPageLoading" class="skeleton-settings">
@@ -36,14 +53,22 @@
       </view>
     </view>
     <!-- #endif -->
+    <!-- #endif -->
 
     <!-- 用户信息卡片 - Wise风格重新设计 -->
-    <view v-show="!isPageLoading" class="user-card wise-card">
+    <view v-show="!isPageLoading" class="user-card wise-card apple-glass-card">
       <view class="user-header">
         <view class="avatar-section" @tap="handleAvatarClick">
+          <!-- #ifdef MP-WEIXIN -->
           <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
             <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError" />
           </button>
+          <!-- #endif -->
+          <!-- #ifndef MP-WEIXIN -->
+          <view class="avatar-btn" @tap="onChooseAvatarApp">
+            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError" />
+          </view>
+          <!-- #endif -->
           <view v-if="!userInfo.uid" class="login-badge"> 点击登录 </view>
           <view v-else class="login-badge logged-in"> 已登录 </view>
         </view>
@@ -75,14 +100,24 @@
 
         <!-- 目标院校管理弹窗 -->
         <view v-if="showTargetSchoolsModal" class="modal-mask" @tap="showTargetSchoolsModal = false">
-          <view class="modal-content" @tap.stop>
-            <view class="modal-header">
-              <text class="modal-title"> 目标院校管理 </text>
-              <text class="close-btn" @tap="showTargetSchoolsModal = false"> ✕ </text>
+          <view class="modal-content target-modal-card" @tap.stop>
+            <view class="target-modal-handle" />
+            <view class="modal-header target-modal-header">
+              <view>
+                <text class="target-modal-eyebrow"> Target Schools </text>
+                <text class="modal-title"> 目标院校管理 </text>
+              </view>
+              <text
+                id="e2e-settings-target-modal-close"
+                class="close-btn target-modal-close"
+                @tap="showTargetSchoolsModal = false"
+              >
+                ✕
+              </text>
             </view>
-            <view class="modal-body">
+            <view class="modal-body target-modal-body">
               <view v-if="targetSchools.length === 0" class="empty-targets">
-                <text>暂无目标院校</text>
+                <text class="empty-target-text">暂无目标院校</text>
                 <button class="add-btn" @tap="handleAddTargetSchool">去添加目标院校</button>
               </view>
               <view v-else class="target-list">
@@ -126,7 +161,7 @@
           </text>
           <text class="stat-label"> 坚持天数 </text>
         </view>
-        <view class="stat-card" @tap="handleTargetSchoolClick">
+        <view id="e2e-settings-target-school-stat" class="stat-card" @tap="handleTargetSchoolClick">
           <text class="stat-value">
             {{ targetSchools.length }}
           </text>
@@ -143,7 +178,7 @@
 
     <!-- 设置选项 - 优化样式 -->
     <view class="section">
-      <view class="settings-list">
+      <view class="settings-list apple-group-card">
         <!-- 语音伴学 -->
         <view class="setting-item ds-flex ds-flex-between">
           <view class="setting-info">
@@ -210,7 +245,9 @@
         </view>
       </view>
       <!-- 正常状态：显示注销按钮 -->
-      <view v-else class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
+      <view v-else id="e2e-settings-delete-account" class="delete-account-btn ds-touchable" @tap="handleDeleteAccount">
+        <text class="delete-account-eyebrow"> Account </text>
+        <text class="delete-account-desc"> 注销后将进入冷静期，期间可撤销，逾期后账号与学习数据将永久删除。 </text>
         <text class="delete-account-text"> 注销账号 </text>
       </view>
     </view>
@@ -263,6 +300,7 @@ import { logger } from '@/utils/logger.js';
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
+import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // 基础状态
@@ -273,6 +311,8 @@ const studyDays = ref(1);
 const targetSchools = ref([]);
 const cacheSize = ref('0KB');
 const isDark = ref(false);
+const statusBarHeight = ref(44);
+const capsuleSafeRight = ref(20);
 const isVoiceEnabled = ref(true); // 语音开关
 const isPageLoading = ref(true); // F018: 页面加载状态
 // F002-S5: isLoggingOut moved to LogoutButton component
@@ -295,6 +335,8 @@ const currentTutor = ref({});
 // F002: onlineFriends, watcher, and tutor init moved to AITutorList.vue
 
 onMounted(() => {
+  statusBarHeight.value = getStatusBarHeight();
+  capsuleSafeRight.value = getCapsuleSafeRight();
   loadData();
 
   // 初始化主题系统
@@ -320,21 +362,24 @@ let _updateThemeHandler = null;
 // ✅ FIX: uni.$on moved into onMounted — registering null handler at module scope was a no-op
 
 onShow(() => {
+  statusBarHeight.value = getStatusBarHeight();
+  capsuleSafeRight.value = getCapsuleSafeRight();
+
   // 每次显示时重新加载数据，确保登录状态和头像同步
   loadData();
 
   // ✅ FIX: Use isDark.value instead of shadowing the outer ref with a local const
   const currentIsDark = storageService.get('theme_mode') === 'dark';
   isDark.value = currentIsDark;
-  uni
-    .setNavigationBarColor({
+  try {
+    uni.setNavigationBarColor({
       frontColor: currentIsDark ? '#ffffff' : '#000000',
-      backgroundColor: currentIsDark ? '#1a1a1a' : '#F8FAFC',
+      backgroundColor: currentIsDark ? '#0b0b0f' : '#b8eb89',
       animation: { duration: 0 }
-    })
-    .catch((err) => {
-      logger.log('设置导航栏颜色失败', err);
     });
+  } catch (_e) {
+    logger.log('设置导航栏颜色失败', _e);
+  }
 });
 
 onUnmounted(() => {
@@ -612,21 +657,7 @@ const removeTargetSchool = (index) => {
 
 // 处理目标院校点击
 const handleTargetSchoolClick = () => {
-  if (targetSchools.value.length > 0) {
-    showTargetSchoolsModal.value = true;
-  } else {
-    // 跳转到择校页面（TabBar页面，使用switchTab）
-    uni.switchTab({
-      url: '/pages/school/index',
-      success: () => {
-        logger.log('[Settings] ✅ 已跳转到择校页面');
-      },
-      fail: (err) => {
-        logger.error('[Settings] ❌ 跳转择校页面失败:', err);
-        uni.showToast({ title: '跳转失败', icon: 'none' });
-      }
-    });
-  }
+  showTargetSchoolsModal.value = true;
 };
 
 // 处理添加目标院校
@@ -722,6 +753,11 @@ async function _uploadAvatarToServer(filePath) {
 }
 
 // 微信最新登录规范：获取头像
+// App 端头像选择（非微信环境）
+const onChooseAvatarApp = () => {
+  onChooseAvatar({});
+};
+
 const onChooseAvatar = (e) => {
   if (!isUserLoggedIn()) {
     uni.showToast({ title: '请先登录后设置头像', icon: 'none' });
@@ -883,12 +919,18 @@ const doRealLogin = async () => {
     userInfo.value.nickName = '考研人';
   }
   if (!userInfo.value.uid) {
-    // 安全修复：使用加密安全的随机 ID 替代 Math.random()
-    const randomBytes = new Uint8Array(16);
-    crypto.getRandomValues(randomBytes);
-    const hex = Array.from(randomBytes)
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
+    // 生成随机 ID，兼容所有平台
+    let hex;
+    try {
+      const randomBytes = new Uint8Array(16);
+      (globalThis.crypto || globalThis.msCrypto).getRandomValues(randomBytes);
+      hex = Array.from(randomBytes)
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+    } catch (_e) {
+      // fallback: 非加密安全但功能可用
+      hex = Date.now().toString(16) + Math.random().toString(16).slice(2, 18);
+    }
     userInfo.value.uid = 'USER_' + hex;
   }
   saveUserInfo();
@@ -981,15 +1023,49 @@ const handleClosePosterModal = () => {
 <style lang="scss" scoped>
 /* 基础样式 - 像素完美版 */
 .settings-container {
+  min-height: 100%;
   min-height: 100vh;
-  background-color: var(--bg-body, var(--bg-card));
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 48%,
+    var(--page-gradient-bottom) 100%
+  );
+  --hero-text: #1a1d1f;
+  --hero-subtext: rgba(26, 29, 31, 0.72);
   padding: 32rpx;
   /* 8px网格 */
   padding-bottom: 100px;
   box-sizing: border-box;
   color: var(--text-sub);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.settings-container::before,
+.settings-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 9999rpx;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.settings-container::before {
+  width: 520rpx;
+  height: 520rpx;
+  top: -160rpx;
+  right: -120rpx;
+  background: radial-gradient(circle, var(--brand-tint-strong) 0%, transparent 72%);
+}
+
+.settings-container::after {
+  width: 460rpx;
+  height: 460rpx;
+  left: -130rpx;
+  bottom: 180rpx;
+  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 70%);
 }
 
 /* 添加fadeInUp动画 */
@@ -1010,6 +1086,8 @@ const handleClosePosterModal = () => {
   --bg-body: var(--bg-body);
   --text-secondary: var(--text-sub);
   --text-primary: var(--text-primary);
+  --hero-text: var(--text-primary);
+  --hero-subtext: var(--text-sub);
   --card-bg: var(--bg-glass);
   --card-border: var(--border);
   --brand-color: var(--primary);
@@ -1021,16 +1099,32 @@ const handleClosePosterModal = () => {
 
 /* 顶部导航 - 像素完美版 */
 .top-nav {
-  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 32rpx;
+  position: relative;
+  z-index: 1;
+  border-radius: 24rpx;
+  padding-left: 16rpx;
   /* 8px网格 */
   animation: fadeInUp 0.5s ease-out forwards;
   opacity: 0;
   animation-delay: 0.05s;
 }
 
+.nav-back {
+  width: 88rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44rpx;
+  color: var(--text-primary);
+}
+
 .nav-title {
-  font-size: 64rpx;
+  font-size: 56rpx;
   font-weight: 700;
   color: var(--text-primary, var(--text-primary));
   line-height: 1.3;
@@ -1039,14 +1133,23 @@ const handleClosePosterModal = () => {
   /* 大标题紧凑 */
 }
 
+.nav-placeholder {
+  width: 88rpx;
+  height: 88rpx;
+}
+
 /* 用户信息卡片 - 全新顶级设计（紧凑、现代、高粘性） */
 .user-card.wise-card {
-  background: var(--gradient-primary);
-  border: none;
+  position: relative;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, #fff3 0%, transparent 42%),
+    linear-gradient(160deg, #f1ffe8db 0%, #fffffff0 48%, #e4f6d8d1 100%);
+  border: 1px solid var(--apple-glass-border-strong);
   border-radius: 24px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--apple-shadow-floating);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -1056,12 +1159,20 @@ const handleClosePosterModal = () => {
 .user-card.wise-card::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: var(--gradient-radial-light);
-  opacity: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.56) 0%, transparent 30%),
+    radial-gradient(circle at 84% 24%, rgba(15, 95, 52, 0.16) 0%, transparent 30%),
+    linear-gradient(90deg, transparent 16%, rgba(255, 255, 255, 0.72) 50%, transparent 84%);
+  background-size:
+    auto,
+    auto,
+    100% 1px;
+  background-repeat: no-repeat;
+  opacity: 1;
   transition: opacity 0.4s ease;
   pointer-events: none;
 }
@@ -1071,22 +1182,34 @@ const handleClosePosterModal = () => {
 }
 
 .user-card.wise-card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-4px);
+  box-shadow: 0 22rpx 50rpx rgba(16, 40, 26, 0.18);
+  transform: translateY(-2px);
 }
 
 .user-header {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 16px;
+  }
 }
 
 .avatar-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  /* gap: 6px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 6px;
+  }
   cursor: pointer;
   position: relative;
 }
@@ -1120,39 +1243,44 @@ const handleClosePosterModal = () => {
 }
 
 .login-badge {
-  background: var(--overlay);
-  color: white;
+  background: var(--apple-glass-pill-bg);
+  color: var(--text-primary);
   font-size: 22rpx;
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 10px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--apple-divider);
   text-align: center;
   width: 100%;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8rpx 18rpx rgba(16, 40, 26, 0.08);
 }
 
 .login-badge.logged-in {
-  background: var(--bg-glass);
+  background: rgba(15, 95, 52, 0.12);
 }
 
 .user-info-section {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  /* gap: 10px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 10px;
+  }
 }
 
 .nickname-input {
   font-size: 44rpx;
   font-weight: 700;
-  color: white;
+  color: var(--hero-text);
   background-color: transparent;
   border: none;
   padding: 0;
   width: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Noto Sans SC', 'Roboto', sans-serif;
   text-shadow: var(--shadow-sm);
   letter-spacing: -0.5px;
   line-height: 1.3;
@@ -1160,7 +1288,7 @@ const handleClosePosterModal = () => {
 }
 
 .nickname-placeholder {
-  color: var(--overlay);
+  color: var(--hero-subtext);
 }
 
 .info-grid {
@@ -1170,25 +1298,24 @@ const handleClosePosterModal = () => {
 }
 
 .info-item {
-  background: var(--bg-glass);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.52);
+  border-radius: 16px;
   padding: 10px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44);
 }
 
 .info-item:active {
-  background: var(--overlay);
+  background: rgba(255, 255, 255, 0.64);
   transform: scale(0.97);
 }
 
 .info-label {
   display: block;
   font-size: 20rpx;
-  color: var(--text-primary-foreground);
+  color: rgba(16, 40, 26, 0.56);
   margin-bottom: 3px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1200,7 +1327,7 @@ const handleClosePosterModal = () => {
 .info-value {
   display: block;
   font-size: 26rpx;
-  color: white;
+  color: var(--hero-text);
   font-weight: 700;
   text-shadow: var(--shadow-sm);
   line-height: 1.5;
@@ -1216,19 +1343,18 @@ const handleClosePosterModal = () => {
 }
 
 .stat-card {
-  background: var(--bg-glass);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.56);
+  border-radius: 18px;
   padding: 14px;
   text-align: center;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44);
 }
 
 .stat-card:active {
-  background: var(--overlay);
+  background: rgba(255, 255, 255, 0.68);
   transform: scale(0.97);
 }
 
@@ -1236,11 +1362,11 @@ const handleClosePosterModal = () => {
   display: block;
   font-size: 56rpx;
   font-weight: 900;
-  color: white;
+  color: var(--hero-text);
   margin-bottom: 3px;
   line-height: 1.2;
   /* 数值轻微呼吸感 */
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Noto Sans SC', 'Roboto', sans-serif;
   text-shadow: var(--shadow-sm);
   letter-spacing: -0.5px;
   /* 数字紧凑 */
@@ -1248,7 +1374,7 @@ const handleClosePosterModal = () => {
 
 .stat-label {
   font-size: 24rpx;
-  color: var(--text-primary-foreground);
+  color: rgba(16, 40, 26, 0.62);
   font-weight: 600;
   letter-spacing: 0.3px;
   line-height: 1.5;
@@ -1257,21 +1383,62 @@ const handleClosePosterModal = () => {
 
 /* 深色模式下的用户卡片（Bitget风格） */
 .dark-mode .user-card.wise-card {
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
-  box-shadow: var(--shadow-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 38%),
+    linear-gradient(160deg, rgba(18, 24, 34, 0.84) 0%, rgba(13, 17, 24, 0.92) 100%);
+  box-shadow: var(--apple-shadow-floating);
 }
 
 .dark-mode .user-card.wise-card::before {
-  background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.12) 0%, transparent 30%),
+    radial-gradient(circle at 84% 22%, rgba(10, 132, 255, 0.18) 0%, transparent 32%),
+    linear-gradient(90deg, transparent 16%, rgba(255, 255, 255, 0.22) 50%, transparent 84%);
 }
 
 .dark-mode .user-card.wise-card:hover {
   box-shadow: var(--shadow-xl);
 }
 
+.dark-mode .login-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .login-badge.logged-in {
+  background: rgba(10, 132, 255, 0.16);
+}
+
+.dark-mode .info-item,
+.dark-mode .stat-card {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .info-label,
+.dark-mode .stat-label {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.dark-mode .settings-list {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .setting-item {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .setting-item:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
 /* 通用区块样式 - 像素完美版 */
 .section {
   margin-bottom: 32rpx;
+  position: relative;
+  z-index: 1;
   /* 8px网格 */
   animation: fadeInUp 0.5s ease-out forwards;
   opacity: 0;
@@ -1308,18 +1475,23 @@ const handleClosePosterModal = () => {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12px;
+  }
 }
 
 .section-title {
-  font-size: 40rpx;
+  font-size: 24rpx;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-sub, var(--text-primary));
   margin: 0;
   line-height: 1.5;
-  /* 添加呼吸感 */
-  letter-spacing: 0.3px;
-  /* 轻微拉开 */
+  letter-spacing: 1.4rpx;
+  text-transform: uppercase;
 }
 
 /* F002: online-badge 样式已移至 AITutorList.vue */
@@ -1327,16 +1499,24 @@ const handleClosePosterModal = () => {
 .invite-btn-small {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background-color: var(--brand-color);
-  color: white;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 4px;
+  }
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   padding: 6px 12px;
+  border: 1px solid var(--cta-primary-border);
   border-radius: 16px;
   font-size: 24rpx;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .invite-btn-small:active {
@@ -1350,27 +1530,30 @@ const handleClosePosterModal = () => {
 
 .invite-text-small {
   font-size: 24rpx;
-  color: white;
+  color: inherit;
 }
 
 /* F002: 智能导师列表样式已移至 AITutorList.vue */
 
 /* 设置选项列表 */
 .settings-list {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .setting-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid var(--card-border, #e9ecef);
-  transition: background-color 0.2s ease;
+  min-height: 96rpx;
+  padding: 22px 20px;
+  border-bottom: 1px solid var(--apple-divider);
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
   cursor: pointer;
 }
 
@@ -1379,7 +1562,7 @@ const handleClosePosterModal = () => {
 }
 
 .setting-item:hover {
-  background-color: var(--success-light);
+  background-color: rgba(255, 255, 255, 0.18);
 }
 
 .setting-info {
@@ -1415,25 +1598,73 @@ const handleClosePosterModal = () => {
 /* C5: 注销账号 */
 .delete-account-section {
   margin: 30rpx 32rpx 0;
+  position: relative;
+  z-index: 1;
 }
+
 .delete-account-btn {
-  text-align: center;
-  padding: 20rpx 0;
+  display: flex;
+  flex-direction: column;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 10rpx;
+  }
+  padding: 24rpx 28rpx;
+  border-radius: 28rpx;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(246, 236, 235, 0.72) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-surface);
 }
+
+.delete-account-eyebrow,
+.delete-account-desc,
 .delete-account-text {
-  font-size: 26rpx;
-  color: var(--text-tertiary, #999);
+  display: block;
 }
+
+.delete-account-eyebrow {
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: rgba(160, 52, 46, 0.74);
+}
+
+.delete-account-desc {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: rgba(115, 55, 49, 0.78);
+}
+
+.delete-account-text {
+  font-size: 28rpx;
+  font-weight: 650;
+  color: #9d2f2a;
+}
+
 .deletion-pending-card {
-  background: rgba(255, 59, 48, 0.08);
-  border: 1px solid rgba(255, 59, 48, 0.2);
-  border-radius: 16rpx;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 248, 246, 0.84) 0%, rgba(248, 232, 230, 0.72) 100%);
+  border: 1px solid rgba(255, 99, 90, 0.24);
+  border-radius: 28rpx;
   padding: 24rpx;
+  box-shadow: var(--apple-shadow-surface);
 }
 .deletion-pending-header {
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8rpx;
+  }
   margin-bottom: 12rpx;
 }
 .deletion-pending-icon {
@@ -1442,7 +1673,7 @@ const handleClosePosterModal = () => {
 .deletion-pending-title {
   font-size: 28rpx;
   font-weight: 600;
-  color: #ff3b30;
+  color: var(--danger);
 }
 .deletion-pending-desc {
   font-size: 24rpx;
@@ -1451,15 +1682,43 @@ const handleClosePosterModal = () => {
   margin-bottom: 20rpx;
 }
 .deletion-cancel-btn {
-  background: #ff3b30;
-  border-radius: 12rpx;
+  background: var(--cta-primary-bg);
+  border: 1px solid var(--cta-primary-border);
+  border-radius: 999rpx;
   padding: 16rpx 0;
   text-align: center;
+  box-shadow: var(--cta-primary-shadow);
 }
 .deletion-cancel-text {
   font-size: 28rpx;
-  color: #fff;
+  color: var(--cta-primary-text);
   font-weight: 500;
+}
+
+.dark-mode .delete-account-btn {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(36, 17, 20, 0.94) 0%, rgba(24, 12, 15, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .delete-account-eyebrow {
+  color: rgba(255, 142, 134, 0.78);
+}
+
+.dark-mode .delete-account-desc {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.dark-mode .delete-account-text {
+  color: #ff8e86;
+}
+
+.dark-mode .deletion-pending-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(36, 17, 20, 0.94) 0%, rgba(24, 12, 15, 0.9) 100%);
+  border-color: rgba(255, 142, 134, 0.2);
 }
 
 /* 底部安全区域 */
@@ -1474,8 +1733,9 @@ const handleClosePosterModal = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--overlay-dark);
-  backdrop-filter: blur(5px);
+  background-color: rgba(9, 18, 12, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1483,43 +1743,73 @@ const handleClosePosterModal = () => {
 }
 
 .modal-content {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
-  border-radius: 20px;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28px;
   width: 90%;
   max-width: 400px;
   max-height: 80vh;
   overflow: hidden;
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.target-modal-card {
+  padding: 14rpx 16rpx 18rpx;
+}
+
+.target-modal-handle {
+  width: 84rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.12);
+  margin: 6rpx auto 18rpx;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid var(--card-border, #e9ecef);
+  padding: 12px 12px 18px;
+  border-bottom: 1px solid var(--apple-divider);
 }
 
 .modal-title {
   font-size: 36rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 650;
+  color: var(--text-main);
+}
+
+.target-modal-eyebrow {
+  display: block;
+  margin-bottom: 6rpx;
+  font-size: 20rpx;
+  letter-spacing: 3rpx;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 .close-btn {
-  font-size: 48rpx;
-  color: var(--text-tertiary);
-  cursor: pointer;
-  transition: color 0.2s ease;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
+  font-size: 42rpx;
+  color: var(--text-main);
 }
 
 .close-btn:hover {
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-main);
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 18px 12px 10px;
   max-height: 60vh;
   overflow-y: auto;
 }
@@ -1527,47 +1817,60 @@ const handleClosePosterModal = () => {
 .empty-targets {
   text-align: center;
   padding: 40px 20px;
-  color: var(--text-tertiary, #9e9e9e);
+  color: var(--text-sub);
+}
+
+.empty-target-text {
+  display: block;
+  font-size: 26rpx;
 }
 
 .add-btn {
   margin-top: 20px;
-  background-color: var(--brand-color, #00a96d);
-  color: white;
-  border: none;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
   border-radius: 16px;
   padding: 12px 24px;
   font-size: 28rpx;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: var(--cta-primary-shadow);
 }
 
 .add-btn:hover {
-  background-color: var(--success-dark);
+  opacity: 0.92;
   transform: translateY(-2px);
 }
 
 .target-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  /* gap: 16px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16px;
+  }
 }
 
 .target-item {
   display: flex;
   align-items: center;
-  padding: 16px;
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
-  border-radius: 12px;
+  padding: 18px 16px;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 22px;
   transition: all 0.2s ease;
+  box-shadow: var(--apple-shadow-surface);
 }
 
 .target-item:hover {
-  background-color: var(--success-light);
+  background-color: rgba(255, 255, 255, 0.72);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--apple-shadow-card);
 }
 
 .target-avatar {
@@ -1585,24 +1888,30 @@ const handleClosePosterModal = () => {
 .target-name {
   display: block;
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 650;
+  color: var(--text-main);
   margin-bottom: 4px;
 }
 
 .target-location {
   font-size: 24rpx;
-  color: var(--text-tertiary, #9e9e9e);
+  color: var(--text-sub);
 }
 
 .target-actions {
   display: flex;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 8px;
+  }
 }
 
 .action-btn {
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 999rpx;
   font-size: 24rpx;
   font-weight: 600;
   cursor: pointer;
@@ -1611,7 +1920,8 @@ const handleClosePosterModal = () => {
 
 .delete-btn {
   color: var(--danger);
-  background-color: var(--danger-light);
+  background-color: rgba(255, 99, 90, 0.12);
+  border: 1px solid rgba(255, 99, 90, 0.24);
 }
 
 .delete-btn:hover {
@@ -1627,21 +1937,28 @@ const handleClosePosterModal = () => {
 .invite-btn-header {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, var(--brand-color) 0%, var(--success-dark) 100%);
-  color: white;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 4px;
+  }
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   padding: 8px 16px;
+  border: 1px solid var(--cta-primary-border);
   border-radius: 20px;
   font-size: 24rpx;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-success);
+  box-shadow: var(--cta-primary-shadow);
   -webkit-tap-highlight-color: transparent;
 }
 
 .invite-btn-header:hover {
-  box-shadow: var(--shadow-success);
+  box-shadow: var(--cta-primary-shadow);
   opacity: 0.9;
   transform: translateY(-1px);
 }
@@ -1657,7 +1974,7 @@ const handleClosePosterModal = () => {
 
 .invite-text-header {
   font-size: 24rpx;
-  color: white;
+  color: inherit;
 }
 
 /* F002: 主题选择器样式已移至 ThemeSelectorModal.vue */
@@ -1674,7 +1991,13 @@ const handleClosePosterModal = () => {
 .skeleton-settings {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  /* gap: 20px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 20px;
+  }
 }
 
 .skeleton-user-card {
@@ -1685,7 +2008,13 @@ const handleClosePosterModal = () => {
 .skeleton-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  /* gap: 12px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 12px;
+  }
 }
 
 .skeleton-entry {

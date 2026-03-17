@@ -8,24 +8,59 @@
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 export const tokens = {
-  // Wise模式 - 白昼清爽风格 (v0 Light Mode)
+  // Wise模式 - 绿底白按钮风格 (v0 Light Mode)
   light: {
-    // 背景色系 (v0 Compatible)
-    '--bg-body': '#F9FAFB',
-    '--bg-card': '#FFFFFF',
-    '--bg-hover': '#F3F4F6',
-    '--bg-active': '#E5E7EB',
+    // 核心色系 (aligned with App.vue)
+    '--background': '#B8EB89',
+    '--foreground': '#10281A',
+    '--card': '#EAF9D5',
+    '--card-foreground': '#10281A',
+    '--primary': '#0F5F34',
+    '--primary-foreground': '#FFFFFF',
+    '--muted': '#D0ECAD',
+    '--muted-foreground': '#35533F',
+    '--border': '#98CD6F',
 
-    // 文字色系 (v0 Compatible)
-    '--text-primary': '#1A1D1F',
-    '--text-secondary': '#6B7280',
-    '--text-tertiary': '#9CA3AF',
-    '--text-disabled': '#CED6E0',
+    // 背景色系
+    '--bg-body': '#B8EB89',
+    '--bg-page': '#B8EB89',
+    '--bg-card': '#EAF9D5',
+    '--bg-secondary': '#D4F2B4',
+    '--bg-hover': '#D4F2B4',
+    '--bg-active': '#C3E89C',
 
-    // 品牌色 (v0 Primary)
-    '--brand-color': '#9FE870',
-    '--brand-hover': '#8DD65A',
-    '--brand-active': '#7BC444',
+    // 文字色系
+    '--text-primary': '#10281A',
+    '--text-secondary': '#35533F',
+    '--text-sub': '#35533F',
+    '--text-tertiary': '#8E98A8',
+    '--text-disabled': '#A2B59F',
+
+    // 品牌色
+    '--brand-color': '#0F5F34',
+    '--brand-hover': '#157141',
+    '--brand-active': '#0D522E',
+    '--gradient-primary': 'linear-gradient(135deg, #1A8048 0%, #0F5F34 100%)',
+    '--brand-tint': 'rgba(15, 95, 52, 0.14)',
+    '--brand-tint-strong': 'rgba(15, 95, 52, 0.26)',
+    '--cta-primary-bg': 'rgba(255, 255, 255, 0.96)',
+    '--cta-primary-text': '#10281A',
+    '--cta-primary-border': 'rgba(16, 40, 26, 0.08)',
+    '--cta-primary-shadow': '0 10px 24px rgba(16, 40, 26, 0.16)',
+    '--apple-glass-nav-bg': 'rgba(250, 255, 246, 0.74)',
+    '--apple-glass-card-bg': 'rgba(255, 255, 255, 0.68)',
+    '--apple-glass-pill-bg': 'rgba(255, 255, 255, 0.82)',
+    '--apple-group-bg': 'rgba(247, 255, 239, 0.82)',
+    '--apple-glass-border-strong': 'rgba(255, 255, 255, 0.78)',
+    '--apple-specular-line': 'rgba(255, 255, 255, 0.68)',
+    '--apple-specular-soft': 'rgba(255, 255, 255, 0.24)',
+    '--apple-divider': 'rgba(16, 40, 26, 0.08)',
+    '--apple-shadow-floating': '0 18px 42px rgba(16, 40, 26, 0.18)',
+    '--apple-shadow-surface': '0 12px 32px rgba(16, 40, 26, 0.12)',
+    '--apple-shadow-card': '0 8px 24px rgba(16, 40, 26, 0.10)',
+    '--apple-chromatic-blue': 'rgba(0, 180, 255, 0.05)',
+    '--apple-chromatic-pink': 'rgba(255, 100, 200, 0.04)',
+    '--apple-chromatic-green': 'rgba(100, 255, 180, 0.035)',
 
     // 功能色
     '--action-green': '#00B894',
@@ -41,16 +76,20 @@ export const tokens = {
     '--accent-energy': '#FF6B6B',
 
     // 边框色 (v0 Compatible)
-    '--border-light': '#E5E7EB',
-    '--border-medium': '#CED6E0',
-    '--border-dark': '#A4B0BE',
+    '--border-light': '#98CD6F',
+    '--border-medium': '#98CD6F',
+    '--border-dark': '#6FA14B',
 
-    // v0 特有变量 (NEW)
-    '--glass-bg': 'rgba(255, 255, 255, 0.8)',
-    '--glass-border': 'rgba(255, 255, 255, 0.5)',
-    '--brand-glow': 'rgba(159, 232, 112, 0.3)',
-    '--card-shadow': '0 2px 8px rgba(0, 0, 0, 0.08)',
-    '--card-shadow-hover': '0 4px 16px rgba(0, 0, 0, 0.12)',
+    // v0 特有变量
+    '--glass-bg': 'rgba(247, 255, 239, 0.66)',
+    '--glass-border': 'rgba(255, 255, 255, 0.72)',
+    '--brand-glow': 'rgba(15, 95, 52, 0.28)',
+    '--bg-card-alpha': 'rgba(247, 255, 239, 0.78)',
+    '--page-gradient-top': '#D5F8B2',
+    '--page-gradient-mid': '#B8EB89',
+    '--page-gradient-bottom': '#CAF2A4',
+    '--card-shadow': '0 4px 14px rgba(17, 17, 26, 0.07)',
+    '--card-shadow-hover': '0 10px 24px rgba(17, 17, 26, 0.12)',
 
     // 圆角系统 (8点网格)
     '--radius-xs': '4px',
@@ -91,8 +130,8 @@ export const tokens = {
     '--shadow-3': '0 8px 24px rgba(0,0,0,0.12)',
 
     // 光晕阴影系统
-    '--shadow-glow-brand': '0 4px 12px rgba(159,232,112,0.3)',
-    '--shadow-glow-brand-strong': '0 4px 12px rgba(159,232,112,0.4), 0 0 20px rgba(159,232,112,0.2)',
+    '--shadow-glow-brand': '0 4px 12px rgba(15,95,52,0.24)',
+    '--shadow-glow-brand-strong': '0 4px 12px rgba(15,95,52,0.32), 0 0 20px rgba(15,95,52,0.16)',
     '--shadow-glow-warm': '0 4px 12px rgba(255,184,77,0.3)',
     '--shadow-glow-cool': '0 4px 12px rgba(78,205,196,0.3)',
     '--shadow-glow-energy': '0 4px 12px rgba(255,107,107,0.3)',
@@ -109,24 +148,59 @@ export const tokens = {
     '--ease-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)'
   },
 
-  // Bitget模式 - 黑夜赛博风格 (v0 Dark Mode)
+  // Bitget模式 - 黑底蓝色强调 (v0 Dark Mode)
   dark: {
-    // 背景色系 (v0 Compatible)
-    '--bg-body': '#080808',
-    '--bg-card': '#0D1117',
+    // 核心色系 (aligned with App.vue)
+    '--background': '#0B0B0F',
+    '--foreground': '#F5F5F7',
+    '--card': '#1C1C1E',
+    '--card-foreground': '#F5F5F7',
+    '--primary': '#0A84FF',
+    '--primary-foreground': '#FFFFFF',
+    '--muted': '#2C2C2E',
+    '--muted-foreground': '#9A9AA1',
+    '--border': '#3A3A3C',
+
+    // 背景色系
+    '--bg-body': '#0B0B0F',
+    '--bg-page': '#0B0B0F',
+    '--bg-card': '#1C1C1E',
+    '--bg-secondary': '#1C1C1E',
     '--bg-hover': 'rgba(255,255,255,0.06)',
     '--bg-active': 'rgba(255,255,255,0.09)',
 
-    // 文字色系 (v0 Compatible)
-    '--text-primary': '#FFFFFF',
-    '--text-secondary': '#9CA3AF',
-    '--text-tertiary': '#6B7280',
+    // 文字色系
+    '--text-primary': '#F5F5F7',
+    '--text-secondary': '#9A9AA1',
+    '--text-sub': '#9A9AA1',
+    '--text-tertiary': '#8B8B92',
     '--text-disabled': '#4B5A74',
 
-    // 品牌色 (v0 Primary - Neon Cyan)
-    '--brand-color': '#00F2FF',
-    '--brand-hover': '#33F5FF',
-    '--brand-active': '#00D9E6',
+    // 品牌色
+    '--brand-color': '#0A84FF',
+    '--brand-hover': '#2B95FF',
+    '--brand-active': '#0069D9',
+    '--gradient-primary': 'linear-gradient(135deg, #0A84FF 0%, #5AC8FA 100%)',
+    '--brand-tint': 'rgba(10, 132, 255, 0.14)',
+    '--brand-tint-strong': 'rgba(10, 132, 255, 0.26)',
+    '--cta-primary-bg': 'linear-gradient(135deg, #0A84FF 0%, #5AC8FA 100%)',
+    '--cta-primary-text': '#FFFFFF',
+    '--cta-primary-border': 'transparent',
+    '--cta-primary-shadow': '0 12px 30px rgba(10, 132, 255, 0.32)',
+    '--apple-glass-nav-bg': 'rgba(16, 18, 24, 0.76)',
+    '--apple-glass-card-bg': 'rgba(24, 26, 34, 0.72)',
+    '--apple-glass-pill-bg': 'rgba(34, 38, 48, 0.84)',
+    '--apple-group-bg': 'rgba(28, 28, 30, 0.82)',
+    '--apple-glass-border-strong': 'rgba(255, 255, 255, 0.16)',
+    '--apple-specular-line': 'rgba(255, 255, 255, 0.20)',
+    '--apple-specular-soft': 'rgba(255, 255, 255, 0.08)',
+    '--apple-divider': 'rgba(255, 255, 255, 0.08)',
+    '--apple-shadow-floating': '0 22px 54px rgba(0, 0, 0, 0.46)',
+    '--apple-shadow-surface': '0 16px 40px rgba(0, 0, 0, 0.34)',
+    '--apple-shadow-card': '0 10px 28px rgba(0, 0, 0, 0.28)',
+    '--apple-chromatic-blue': 'rgba(10, 132, 255, 0.08)',
+    '--apple-chromatic-pink': 'rgba(255, 100, 200, 0.06)',
+    '--apple-chromatic-green': 'rgba(100, 255, 180, 0.04)',
 
     // 功能色
     '--action-green': '#00F5A0',
@@ -146,10 +220,14 @@ export const tokens = {
     '--border-medium': 'rgba(255,255,255,0.12)',
     '--border-dark': 'rgba(255,255,255,0.16)',
 
-    // v0 特有变量 (NEW - Dark Mode)
+    // v0 特有变量
     '--glass-bg': 'rgba(255, 255, 255, 0.05)',
-    '--glass-border': 'rgba(255, 255, 255, 0.1)',
-    '--brand-glow': 'rgba(0, 242, 255, 0.3)',
+    '--glass-border': 'rgba(255, 255, 255, 0.14)',
+    '--brand-glow': 'rgba(10, 132, 255, 0.35)',
+    '--bg-card-alpha': 'rgba(28, 28, 30, 0.84)',
+    '--page-gradient-top': '#0B0B0F',
+    '--page-gradient-mid': '#111A2A',
+    '--page-gradient-bottom': '#0B0B0F',
     '--card-shadow': '0 4px 16px rgba(0, 0, 0, 0.2)',
     '--card-shadow-hover': '0 8px 32px rgba(0, 0, 0, 0.3)',
 
@@ -192,8 +270,8 @@ export const tokens = {
     '--shadow-3': 'none',
 
     // 光晕阴影系统 (深色模式光晕更强)
-    '--shadow-glow-brand': '0 0 20px rgba(0,242,255,0.4), 0 0 40px rgba(0,242,255,0.2)',
-    '--shadow-glow-brand-strong': '0 0 30px rgba(0,242,255,0.6), 0 0 60px rgba(0,242,255,0.3)',
+    '--shadow-glow-brand': '0 0 20px rgba(10,132,255,0.4), 0 0 40px rgba(10,132,255,0.2)',
+    '--shadow-glow-brand-strong': '0 0 30px rgba(10,132,255,0.6), 0 0 60px rgba(10,132,255,0.3)',
     '--shadow-glow-warm': '0 0 20px rgba(255,215,0,0.4), 0 0 40px rgba(255,215,0,0.2)',
     '--shadow-glow-cool': '0 0 20px rgba(0,245,255,0.4), 0 0 40px rgba(0,245,255,0.2)',
     '--shadow-glow-energy': '0 0 20px rgba(255,51,102,0.4), 0 0 40px rgba(255,51,102,0.2)',
@@ -339,6 +417,11 @@ export const v0Animations = `
  */
 export function applyTheme(theme = 'light') {
   // #ifndef MP-WEIXIN
+  // App 端 service 层没有 document，需要安全检查
+  if (typeof document === 'undefined' || !document.documentElement) {
+    logger.log('[theme-engine] 非 DOM 环境，跳过主题应用:', theme);
+    return;
+  }
   const root = document.documentElement;
   const themeTokens = tokens[theme] || tokens.light;
 
@@ -379,10 +462,19 @@ export function getCurrentTheme() {
   // #endif
 
   // #ifndef MP-WEIXIN
-  if (typeof window !== 'undefined') {
-    const savedTheme = localStorage.getItem('theme_mode');
+  // App/H5: 优先使用 uni.getStorageSync（比 localStorage 更可靠）
+  try {
+    const savedTheme = uni.getStorageSync('theme_mode');
     if (savedTheme) return savedTheme;
+  } catch (_e) {
+    // fallback to localStorage for H5
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme_mode');
+      if (savedTheme) return savedTheme;
+    }
+  }
 
+  if (typeof window !== 'undefined') {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     return prefersDark ? 'dark' : 'light';
   }
@@ -422,8 +514,12 @@ export function toggleTheme(theme) {
   applyTheme(theme);
 
   // #ifndef MP-WEIXIN
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('theme_mode', theme);
+  try {
+    uni.setStorageSync('theme_mode', theme);
+  } catch (_e) {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme_mode', theme);
+    }
   }
   // #endif
 

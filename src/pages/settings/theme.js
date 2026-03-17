@@ -58,7 +58,7 @@ export function updateNavigationBarColor(mode) {
   uni
     .setNavigationBarColor({
       frontColor: isDark ? '#ffffff' : '#000000',
-      backgroundColor: isDark ? '#163300' : '#F8FAFC',
+      backgroundColor: isDark ? '#0b0b0f' : '#b8eb89',
       animation: {
         duration: 300,
         timingFunc: 'easeInOut'

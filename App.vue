@@ -107,7 +107,7 @@ export default {
       uni
         .setNavigationBarColor({
           frontColor: isDark ? '#ffffff' : '#000000',
-          backgroundColor: isDark ? '#080808' : '#9FE870',
+          backgroundColor: isDark ? '#0b0b0f' : '#b8eb89',
           animation: {
             duration: 300,
             timingFunc: 'easeInOut'
@@ -202,9 +202,9 @@ export default {
 
 <style lang="scss">
 /* 全局按钮动画反馈样式 (P010) */
-@use './src/styles/button-animations.scss';
+@use './styles/button-animations.scss';
 /* 深色模式变量 mixin（单一来源，消除3x重复） */
-@use './src/styles/_dark-mode-vars.scss' as *;
+@use './styles/_dark-mode-vars.scss' as *;
 
 /* ============================================
    EXAM-MASTER 全局配色系统 v3.1
@@ -215,44 +215,108 @@ export default {
    核心颜色变量定义 (从 index.vue 提取)
    ============================================ */
 
-/* 浅色模式（默认） - Wise 风格 */
+/* 浅色模式（默认） - 绿色 + 白色 */
 :root,
 page {
   /* ====== 核心变量 (严格来自 index.vue) ====== */
-  --background: #9fe870; /* 页面背景：Wise绿 */
-  --foreground: #1a1d1f; /* 主文字：深灰黑 */
-  --card: #ffffff; /* 卡片背景：纯白 */
-  --card-foreground: #1a1d1f; /* 卡片文字：深灰黑 */
-  --primary: #ffffff; /* 品牌主色：白色 */
-  --primary-foreground: #1a1d1f; /* 品牌主色文字：深灰黑 */
-  --muted: rgba(255, 255, 255, 0.3); /* 弱化背景：半透明白 */
-  --muted-foreground: #2d3748; /* 弱化文字：中灰 */
-  --border: rgba(255, 255, 255, 0.3); /* 边框：半透明白 */
-  --brand: #ffffff; /* 品牌色：白色 */
-  --brand-glow: rgba(255, 255, 255, 0.3); /* 品牌光晕：半透明白 */
-  --glass-bg: rgba(255, 255, 255, 0.2); /* 毛玻璃背景：半透明白 */
-  --glass-border: rgba(255, 255, 255, 0.4); /* 毛玻璃边框：半透明白 */
+  --background: #b8eb89; /* 页面背景：Wise风清新绿 */
+  --foreground: #10281a; /* 主文字：深绿黑 */
+  --card: #eaf9d5; /* 卡片背景：浅绿层 */
+  --card-foreground: #10281a; /* 卡片文字：深绿黑 */
+  --primary: #0f5f34; /* 品牌主色：深绿 */
+  --primary-foreground: #ffffff; /* 品牌主色文字：白色 */
+  --muted: #d0ecad; /* 弱化背景：浅绿 */
+  --muted-foreground: #35533f; /* 弱化文字 */
+  --border: #98cd6f; /* 边框：青草绿 */
+  --brand: #0f5f34; /* 品牌色：深绿 */
+  --brand-glow: rgba(15, 95, 52, 0.28); /* 品牌光晕 */
+  --glass-bg: rgba(247, 255, 239, 0.66); /* 毛玻璃背景 */
+  --glass-border: rgba(255, 255, 255, 0.72); /* 毛玻璃边框 */
 
   /* ====== 语义化别名（方便使用） ====== */
   --bg-page: var(--background);
   --bg-card: var(--card);
-  --bg-secondary: #f5f5f7;
+  --bg-secondary: #d4f2b4;
   --bg-glass: var(--glass-bg);
   --text-main: var(--foreground);
   --text-primary: var(--foreground);
   --text-sub: var(--muted-foreground);
   --text-secondary: var(--muted-foreground);
   --border-color: var(--border);
-  --primary-light: rgba(159, 232, 112, 0.2);
+  --primary-light: rgba(15, 95, 52, 0.16);
   --success-light: rgba(16, 185, 129, 0.2);
   --warning-light: rgba(245, 158, 11, 0.2);
-  --gradient-primary: linear-gradient(135deg, #9fe870 0%, #7bc653 100%);
+  --gradient-primary: linear-gradient(135deg, #1a8048 0%, #0f5f34 100%);
+  --page-gradient-top: #d5f8b2;
+  --page-gradient-mid: #b8eb89;
+  --page-gradient-bottom: #caf2a4;
 
   /* ====== 扩展功能色 ====== */
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
   --info: #3b82f6;
+
+  /* ====== 兼容变量桥接（解决旧页面/组件变量不一致） ====== */
+  --brand-color: #0f5f34;
+  --brand-hover: #157141;
+  --brand-active: #0d522e;
+  --color-primary: var(--brand-color);
+  --color-primary-dark: #0b4827;
+  --text-tertiary: #8e98a8;
+  --text-inverse: #ffffff;
+  --text-primary-foreground: var(--primary-foreground);
+  --theme-primary: var(--brand-color);
+  --theme-text: var(--text-main);
+  --theme-text-secondary: var(--text-sub);
+  --theme-border: var(--border-color);
+  --theme-card-bg: var(--bg-card);
+  --theme-bg-secondary: var(--bg-secondary);
+  --theme-bg-elevated: #ffffff;
+  --theme-primary-light: rgba(15, 95, 52, 0.16);
+  --danger-red: var(--danger);
+  --success-green: var(--success);
+  --info-blue: var(--info);
+  --danger-light: rgba(239, 68, 68, 0.1);
+  --overlay: rgba(15, 23, 42, 0.36);
+  --mask-dark: rgba(15, 23, 42, 0.56);
+  --bg-overlay: rgba(15, 23, 42, 0.36);
+  --bg-card-alpha: rgba(247, 255, 239, 0.78);
+  --shadow-success: 0 10rpx 30rpx rgba(15, 95, 52, 0.22);
+  --shadow-danger: 0 10rpx 30rpx rgba(239, 68, 68, 0.18);
+  --bg-body: var(--bg-page);
+  --card-bg: var(--bg-card);
+  --bg-tertiary: #bddd95;
+  --accent-warm: #f59e0b;
+  --accent-cool: #34d399;
+  --accent-energy: #22c55e;
+  --skeleton-bg: rgba(220, 220, 228, 0.72);
+  --skeleton-line: rgba(236, 236, 242, 0.9);
+  --skeleton-highlight: rgba(255, 255, 255, 0.98);
+  --brand-tint: rgba(15, 95, 52, 0.14);
+  --brand-tint-strong: rgba(15, 95, 52, 0.26);
+  --brand-tint-subtle: rgba(15, 95, 52, 0.08);
+  --shadow-brand-sm: 0 8rpx 18rpx rgba(15, 95, 52, 0.22);
+  --shadow-brand: 0 12rpx 28rpx rgba(15, 95, 52, 0.3);
+  --shadow-brand-strong: 0 16rpx 34rpx rgba(15, 95, 52, 0.36);
+  --cta-primary-bg: rgba(255, 255, 255, 0.96);
+  --cta-primary-text: #10281a;
+  --cta-primary-border: rgba(16, 40, 26, 0.08);
+  --cta-primary-shadow: 0 12rpx 28rpx rgba(16, 40, 26, 0.16);
+  --apple-glass-nav-bg: rgba(250, 255, 246, 0.74);
+  --apple-glass-card-bg: rgba(255, 255, 255, 0.68);
+  --apple-glass-pill-bg: rgba(255, 255, 255, 0.82);
+  --apple-group-bg: rgba(247, 255, 239, 0.82);
+  --apple-glass-border-strong: rgba(255, 255, 255, 0.78);
+  --apple-specular-line: rgba(255, 255, 255, 0.68);
+  --apple-specular-soft: rgba(255, 255, 255, 0.24);
+  --apple-divider: rgba(16, 40, 26, 0.08);
+  --apple-shadow-floating: 0 18rpx 42rpx rgba(16, 40, 26, 0.18);
+  --apple-shadow-surface: 0 12rpx 32rpx rgba(16, 40, 26, 0.12);
+  --apple-shadow-card: 0 8rpx 24rpx rgba(16, 40, 26, 0.1);
+  --apple-chromatic-blue: rgba(0, 180, 255, 0.05);
+  --apple-chromatic-pink: rgba(255, 100, 200, 0.04);
+  --apple-chromatic-green: rgba(100, 255, 180, 0.035);
 
   /* ====== 设计系统令牌 ====== */
   /* 圆角系统 */
@@ -287,13 +351,13 @@ page {
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
   /* 阴影系统 */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 1px 3px rgba(17, 17, 26, 0.04);
+  --shadow-md: 0 4px 14px rgba(17, 17, 26, 0.07);
+  --shadow-lg: 0 10px 24px rgba(17, 17, 26, 0.12);
+  --shadow-xl: 0 18px 38px rgba(17, 17, 26, 0.16);
 }
 
-/* 深色模式 - Bitget 风格（系统偏好） */
+/* 深色模式 - 黑色 + 蓝色（系统偏好） */
 @media (prefers-color-scheme: dark) {
   :root,
   page {
@@ -371,6 +435,96 @@ scroll-view {
   padding: var(--spacing-md);
   color: var(--text-main);
   transition: all var(--transition-normal) var(--ease-default);
+}
+
+.apple-glass,
+.apple-glass-card,
+.apple-glass-pill,
+.apple-group-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.apple-glass {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(90deg, transparent 10%, var(--apple-specular-line) 50%, transparent 90%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  background-repeat: no-repeat;
+  background-size:
+    100% 100%,
+    100% 1px,
+    100% 100%;
+  background-position:
+    0 0,
+    0 0,
+    0 0;
+  border: 1px solid var(--apple-glass-border-strong);
+  backdrop-filter: blur(24px) saturate(165%) brightness(1.04);
+  -webkit-backdrop-filter: blur(24px) saturate(165%) brightness(1.04);
+  box-shadow:
+    inset 1rpx 0 0 var(--apple-chromatic-blue),
+    inset -1rpx 0 0 var(--apple-chromatic-pink),
+    inset 0 1rpx 0 var(--apple-specular-soft),
+    var(--apple-shadow-floating);
+}
+
+.apple-glass-card {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 38%),
+    linear-gradient(90deg, transparent 16%, var(--apple-specular-line) 50%, transparent 84%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-repeat: no-repeat;
+  background-size:
+    100% 100%,
+    100% 1px,
+    100% 100%;
+  background-position:
+    0 0,
+    0 0,
+    0 0;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(22px) saturate(150%) brightness(1.03);
+  -webkit-backdrop-filter: blur(22px) saturate(150%) brightness(1.03);
+  box-shadow:
+    inset 1rpx 0 0 rgba(255, 255, 255, 0.08),
+    inset -1rpx 0 0 rgba(255, 255, 255, 0.04),
+    inset 0 1rpx 0 var(--apple-specular-soft),
+    var(--apple-shadow-card);
+}
+
+.apple-group-card {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 34%),
+    linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  box-shadow:
+    inset 0 1rpx 0 var(--apple-specular-soft),
+    var(--apple-shadow-surface);
+}
+
+.apple-glass-pill {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 50%),
+    linear-gradient(160deg, var(--apple-glass-pill-bg) 0%, rgba(255, 255, 255, 0.58) 100%);
+  border: 1px solid var(--apple-divider);
+  backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
+  -webkit-backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
+  box-shadow:
+    inset 0 1rpx 0 var(--apple-specular-soft),
+    0 8rpx 20rpx rgba(16, 40, 26, 0.08);
+}
+
+.apple-cta {
+  min-height: 88rpx;
+  border-radius: 999rpx;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
 }
 
 /* 按钮基础样式 */

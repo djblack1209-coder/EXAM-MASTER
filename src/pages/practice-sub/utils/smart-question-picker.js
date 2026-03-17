@@ -9,7 +9,11 @@
  * 5. 学习效率最大化
  */
 
-import { adaptiveLearningEngine, getWeakKnowledgePoints, getLearningStats } from './adaptive-learning-engine.js';
+import {
+  adaptiveLearningEngine,
+  getWeakKnowledgePoints,
+  getLearningStats
+} from '../../../utils/learning/adaptive-learning-engine.js';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 

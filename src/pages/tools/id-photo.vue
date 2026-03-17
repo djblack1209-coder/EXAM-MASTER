@@ -1,5 +1,6 @@
 <template>
   <view :class="['page-container', { 'dark-mode': isDark }]">
+    <PrivacyPopup />
     <!-- 自定义导航栏 -->
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
@@ -40,9 +41,9 @@
 
       <!-- Step 0: 上传照片 -->
       <view v-if="step === 0" class="section">
-        <view class="upload-area" @click="choosePhoto">
+        <view id="e2e-id-photo-upload" class="upload-area" @tap="choosePhoto">
           <view class="upload-icon-box">
-            <text class="upload-icon-text"> + </text>
+            <BaseIcon name="upload" :size="48" class="upload-icon-text" />
           </view>
           <text class="upload-text"> 选择或拍摄照片 </text>
           <text class="upload-hint"> 建议正面免冠、光线均匀 </text>
@@ -62,9 +63,10 @@
           <view class="option-grid">
             <view
               v-for="s in sizeOptions"
+              :id="`e2e-id-photo-size-${s.key}`"
               :key="s.key"
               :class="['option-chip', { active: selectedSize === s.key }]"
-              @click="selectedSize = s.key"
+              @tap="selectedSize = s.key"
             >
               <text class="option-name">
                 {{ s.name }}
@@ -82,9 +84,10 @@
           <view class="color-row">
             <view
               v-for="c in colorOptions"
+              :id="`e2e-id-photo-color-${c.key}`"
               :key="c.key"
               :class="['color-item', { active: selectedColor === c.key }]"
-              @click="selectedColor = c.key"
+              @tap="selectedColor = c.key"
             >
               <view class="color-circle" :style="{ background: c.hex }" />
               <text class="color-name">
@@ -100,10 +103,14 @@
             <text class="beauty-label"> 智能美颜 </text>
             <text class="beauty-hint"> 自动优化肤色与光线 </text>
           </view>
-          <switch :checked="enableBeauty" color="#e84393" @change="enableBeauty = $event.detail.value" />
+          <switch
+            :checked="enableBeauty"
+            :color="isDark ? '#0a84ff' : '#34c759'"
+            @change="enableBeauty = $event.detail.value"
+          />
         </view>
 
-        <button class="btn-primary" hover-class="btn-hover" @click="startProcess">
+        <button id="e2e-id-photo-start" class="btn-primary" hover-class="btn-hover" @tap="startProcess">
           <text>开始制作</text>
         </button>
       </view>
@@ -125,13 +132,13 @@
           <image :src="resultImage" mode="aspectFit" class="result-img" />
         </view>
         <view class="result-actions">
-          <button class="btn-primary" hover-class="btn-hover" @click="saveResult">
+          <button id="e2e-id-photo-save" class="btn-primary" hover-class="btn-hover" @tap="saveResult">
             <text>保存到相册</text>
           </button>
-          <button class="btn-secondary" hover-class="btn-hover" @click="changeColor">
+          <button id="e2e-id-photo-change-color" class="btn-secondary" hover-class="btn-hover" @tap="changeColor">
             <text>换个颜色</text>
           </button>
-          <button class="btn-ghost" hover-class="btn-hover" @click="resetAll">
+          <button id="e2e-id-photo-reset" class="btn-ghost" hover-class="btn-hover" @tap="resetAll">
             <text>重新制作</text>
           </button>
         </view>
@@ -151,6 +158,8 @@ import { getStatusBarHeight } from '@/utils/core/system.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import PrivacyPopup from '@/components/common/privacy-popup.vue';
+import { ensureMiniProgramScope, ensurePrivacyAuthorization } from '@/utils/wechat/privacy-authorization.js';
 
 const DEFAULT_SIZES = [
   { key: '1inch', name: '一寸', desc: '25×35mm' },
@@ -178,7 +187,7 @@ const DEFAULT_SIZE_PIXELS = {
 };
 
 export default {
-  components: { BaseIcon },
+  components: { BaseIcon, PrivacyPopup },
   data() {
     return {
       statusBarHeight: 44,
@@ -242,7 +251,78 @@ export default {
       }
     },
 
+    async ensureMediaPermission(sourceType) {
+      const privacyOk = await ensurePrivacyAuthorization();
+      if (!privacyOk) {
+        uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+        return false;
+      }
+
+      // #ifdef MP-WEIXIN
+      if (sourceType === 'camera') {
+        return ensureMiniProgramScope('scope.camera', {
+          title: '相机权限提示',
+          content: '需要相机权限才能拍摄证件照，是否前往设置开启？'
+        });
+      }
+      // #endif
+
+      return true;
+    },
+
     choosePhoto() {
+      // #ifndef MP-WEIXIN
+      this.choosePhotoLegacy();
+      return;
+      // #endif
+
+      uni.showActionSheet({
+        itemList: ['拍照', '从相册选择'],
+        success: async (res) => {
+          const sourceType = res.tapIndex === 0 ? 'camera' : 'album';
+          const canUse = await this.ensureMediaPermission(sourceType);
+          if (!canUse) return;
+
+          uni.chooseImage({
+            count: 1,
+            sizeType: ['compressed'],
+            sourceType: [sourceType],
+            success: (chooseRes) => {
+              const path = chooseRes.tempFilePaths[0];
+              this.previewSrc = path;
+              this.readBase64(path);
+            },
+            fail: (err) => {
+              if (err.errMsg && /deny|auth/i.test(err.errMsg)) {
+                uni.showModal({
+                  title: '权限提示',
+                  content:
+                    sourceType === 'camera'
+                      ? '需要相机权限才能拍摄证件照，是否前往设置开启？'
+                      : '需要相册权限才能选择照片，是否前往设置开启？',
+                  success: (modalRes) => {
+                    if (modalRes.confirm && typeof uni.openSetting === 'function') {
+                      uni.openSetting();
+                    }
+                  }
+                });
+              } else if (err.errMsg && !err.errMsg.includes('cancel')) {
+                uni.showToast({
+                  title: sourceType === 'camera' ? '拍照失败，请检查权限' : '选择照片失败',
+                  icon: 'none'
+                });
+              }
+            }
+          });
+        },
+        fail: () => {
+          // ignore cancel
+        }
+      });
+    },
+
+    /* legacy path retained for compatibility */
+    choosePhotoLegacy() {
       uni.chooseImage({
         count: 1,
         sizeType: ['compressed'],
@@ -475,8 +555,23 @@ export default {
     },
 
     async composeResultImageUni(foregroundBase64, bgColorHex, targetSize) {
-      const sourcePath = await this.writeBase64ToTempImage(foregroundBase64);
-      const imageInfo = await this.getImageInfo(sourcePath);
+      // ✅ P0-FIX: 捕获文件写入和图片信息读取异常
+      let sourcePath;
+      try {
+        sourcePath = await this.writeBase64ToTempImage(foregroundBase64);
+      } catch (writeErr) {
+        logger.error('[id-photo] 写入临时图片失败:', writeErr);
+        throw new Error('图片处理失败，请重试');
+      }
+
+      let imageInfo;
+      try {
+        imageInfo = await this.getImageInfo(sourcePath);
+      } catch (infoErr) {
+        logger.error('[id-photo] 读取图片信息失败:', infoErr);
+        throw new Error('图片信息读取失败，请重试');
+      }
+
       const width = targetSize.width;
       const height = targetSize.height;
       const scale = Math.min(width / imageInfo.width, height / imageInfo.height);
@@ -577,27 +672,44 @@ export default {
       if (!this.resultImage) return;
 
       // #ifdef MP-WEIXIN
-      const src = String(this.resultImage || '');
-      if (/^(wxfile:\/\/|\/)/i.test(src)) {
-        this.saveImageToAlbum(src);
-        return;
-      }
-
-      const base64Data = this.extractBase64Payload(src);
-      if (!base64Data) {
-        uni.showToast({ title: '保存失败', icon: 'none' });
-        return;
-      }
-
-      const filePath = `${wx.env.USER_DATA_PATH}/id_photo_${Date.now()}.png`;
-      uni.getFileSystemManager().writeFile({
-        filePath,
-        data: base64Data,
-        encoding: 'base64',
-        success: () => this.saveImageToAlbum(filePath),
-        fail: () => {
-          uni.showToast({ title: '保存失败', icon: 'none' });
+      ensurePrivacyAuthorization().then((privacyOk) => {
+        if (!privacyOk) {
+          uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+          return;
         }
+
+        ensureMiniProgramScope('scope.writePhotosAlbum', {
+          title: '相册权限提示',
+          content: '需要相册权限才能保存证件照，是否前往设置开启？'
+        }).then((granted) => {
+          if (!granted) {
+            uni.showToast({ title: '未开启相册权限', icon: 'none' });
+            return;
+          }
+
+          const src = String(this.resultImage || '');
+          if (/^(wxfile:\/\/|\/)/i.test(src)) {
+            this.saveImageToAlbum(src);
+            return;
+          }
+
+          const base64Data = this.extractBase64Payload(src);
+          if (!base64Data) {
+            uni.showToast({ title: '保存失败', icon: 'none' });
+            return;
+          }
+
+          const filePath = `${wx.env.USER_DATA_PATH}/id_photo_${Date.now()}.png`;
+          uni.getFileSystemManager().writeFile({
+            filePath,
+            data: base64Data,
+            encoding: 'base64',
+            success: () => this.saveImageToAlbum(filePath),
+            fail: () => {
+              uni.showToast({ title: '保存失败', icon: 'none' });
+            }
+          });
+        });
       });
       // #endif
 
@@ -623,6 +735,7 @@ export default {
 
 <style lang="scss" scoped>
 .page-container {
+  min-height: 100%;
   min-height: 100vh;
   background: var(--bg-secondary, #f5f5f7);
 }
@@ -634,10 +747,13 @@ export default {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 
   .nav-content {
     display: flex;
@@ -654,7 +770,8 @@ export default {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.04);
+    background: rgba(255, 255, 255, 0.68);
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
 
     .back-icon {
       font-size: 36rpx;
@@ -674,6 +791,7 @@ export default {
 }
 
 .main-scroll {
+  min-height: 100%;
   min-height: 100vh;
   padding: 24rpx 32rpx;
   box-sizing: border-box;
@@ -686,20 +804,26 @@ export default {
   align-items: center;
   padding: 48rpx 32rpx 40rpx;
   margin-bottom: 32rpx;
-  background: linear-gradient(135deg, rgba(232, 67, 147, 0.08) 0%, rgba(253, 121, 168, 0.08) 100%);
-  border-radius: 24rpx;
-  border: 1rpx solid rgba(232, 67, 147, 0.12);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+  position: relative;
+  overflow: hidden;
 
   .hero-icon-wrapper {
     width: 100rpx;
     height: 100rpx;
-    border-radius: 28rpx;
-    background: linear-gradient(135deg, #e84393, #fd79a8);
+    border-radius: 999rpx;
+    background: var(--apple-glass-pill-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20rpx;
-    box-shadow: 0 8rpx 24rpx rgba(232, 67, 147, 0.3);
+    box-shadow: var(--apple-shadow-surface);
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
   }
 
   .hero-icon {
@@ -725,9 +849,10 @@ export default {
   align-items: flex-start;
   padding: 24rpx 16rpx;
   margin-bottom: 24rpx;
-  background: var(--bg-card, #fff);
-  border-radius: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-radius: 24rpx;
+  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--apple-glass-border-strong);
 }
 
 .step-item {
@@ -741,12 +866,13 @@ export default {
     width: 48rpx;
     height: 48rpx;
     border-radius: 50%;
-    background: var(--bg-secondary, #f5f5f7);
+    background: rgba(255, 255, 255, 0.68);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 8rpx;
     transition: all 0.3s ease;
+    border: 1rpx solid rgba(255, 255, 255, 0.5);
   }
 
   .step-num {
@@ -776,14 +902,14 @@ export default {
     transition: background 0.3s ease;
 
     &.filled {
-      background: #e84393;
+      background: var(--cta-primary-bg);
     }
   }
 
   &.active {
     .step-dot {
-      background: linear-gradient(135deg, #e84393, #fd79a8);
-      box-shadow: 0 4rpx 12rpx rgba(232, 67, 147, 0.3);
+      background: var(--cta-primary-bg);
+      box-shadow: var(--cta-primary-shadow);
     }
 
     .step-num {
@@ -816,19 +942,20 @@ export default {
 
 // 上传区域
 .upload-area {
-  background: var(--bg-card, #fff);
-  border: 2rpx dashed rgba(232, 67, 147, 0.35);
-  border-radius: 20rpx;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 2rpx dashed var(--apple-divider);
+  border-radius: 24rpx;
   padding: 80rpx 30rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: var(--apple-shadow-card);
 
   .upload-icon-box {
     width: 96rpx;
     height: 96rpx;
     border-radius: 50%;
-    background: linear-gradient(135deg, rgba(232, 67, 147, 0.1), rgba(253, 121, 168, 0.1));
+    background: var(--apple-glass-pill-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -837,7 +964,7 @@ export default {
 
   .upload-icon-text {
     font-size: 56rpx;
-    color: #e84393;
+    color: var(--text-primary);
     font-weight: 300;
     line-height: 1;
   }
@@ -857,12 +984,14 @@ export default {
 
 // 预览卡片
 .preview-card {
-  background: #000;
-  border-radius: 20rpx;
+  background: linear-gradient(160deg, rgba(10, 12, 16, 0.92) 0%, rgba(18, 22, 30, 0.98) 100%);
+  border-radius: 24rpx;
   overflow: hidden;
   margin-bottom: 24rpx;
   display: flex;
   justify-content: center;
+  border: 1rpx solid rgba(124, 176, 255, 0.18);
+  box-shadow: var(--apple-shadow-floating);
 
   .preview-img {
     width: 100%;
@@ -886,21 +1015,27 @@ export default {
 .option-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 12rpx;
+  }
 }
 
 .option-chip {
   padding: 16rpx 24rpx;
-  background: var(--bg-card, #fff);
-  border-radius: 16rpx;
-  border: 2rpx solid transparent;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.68);
+  border-radius: 999rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
   transition: all 0.25s ease;
 
   &.active {
-    border-color: #e84393;
-    background: rgba(232, 67, 147, 0.06);
-    box-shadow: 0 4rpx 12rpx rgba(232, 67, 147, 0.15);
+    border-color: var(--cta-primary-border);
+    background: var(--cta-primary-bg);
+    box-shadow: var(--cta-primary-shadow);
   }
 
   .option-name {
@@ -919,7 +1054,13 @@ export default {
 
 .color-row {
   display: flex;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 24rpx;
+  }
   flex-wrap: wrap;
 }
 
@@ -927,7 +1068,13 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 8rpx;
+  }
 
   .color-circle {
     width: 64rpx;
@@ -953,11 +1100,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--bg-card, #fff);
+  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
   padding: 24rpx;
-  border-radius: 20rpx;
+  border-radius: 24rpx;
   margin-bottom: 32rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--apple-glass-border-strong);
 
   .beauty-info {
     display: flex;
@@ -983,10 +1131,11 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 60rpx 40rpx;
-  background: var(--bg-card, #fff);
-  border-radius: 24rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 28rpx;
+  box-shadow: var(--apple-shadow-floating);
   width: 100%;
+  border: 1rpx solid var(--apple-glass-border-strong);
 
   .processing-spinner {
     width: 80rpx;
@@ -1019,13 +1168,14 @@ export default {
 
 // 结果
 .result-card {
-  background: var(--bg-card, #fff);
-  border-radius: 20rpx;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border-radius: 24rpx;
   overflow: hidden;
   display: flex;
   justify-content: center;
   margin-bottom: 32rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--apple-glass-border-strong);
 
   .result-img {
     width: 100%;
@@ -1036,20 +1186,26 @@ export default {
 .result-actions {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-top: 16rpx;
+  }
 }
 
 // 按钮
 .btn-primary {
-  background: linear-gradient(135deg, #e84393 0%, #fd79a8 100%);
-  color: #fff;
-  border: none;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1rpx solid var(--cta-primary-border);
   padding: 24rpx;
-  border-radius: 50rpx;
+  border-radius: 999rpx;
   font-size: 30rpx;
   font-weight: 600;
   text-align: center;
-  box-shadow: 0 8rpx 24rpx rgba(232, 67, 147, 0.25);
+  box-shadow: var(--cta-primary-shadow);
 
   &::after {
     border: none;
@@ -1057,13 +1213,14 @@ export default {
 }
 
 .btn-secondary {
-  background: var(--bg-card, #fff);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--text-primary, #111);
-  border: 1rpx solid var(--border, #e5e5e5);
+  border: 1rpx solid rgba(255, 255, 255, 0.5);
   padding: 24rpx;
-  border-radius: 50rpx;
+  border-radius: 999rpx;
   font-size: 28rpx;
   text-align: center;
+  box-shadow: var(--apple-shadow-surface);
 
   &::after {
     border: none;
@@ -1071,12 +1228,13 @@ export default {
 }
 
 .btn-ghost {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.28);
   color: var(--text-secondary, #666);
-  border: none;
+  border: 1rpx solid rgba(255, 255, 255, 0.42);
   padding: 20rpx;
   font-size: 26rpx;
   text-align: center;
+  border-radius: 999rpx;
 
   &::after {
     border: none;
@@ -1095,39 +1253,39 @@ export default {
   }
 
   .nav-header {
-    background: rgba(13, 17, 23, 0.85);
-    border-bottom-color: rgba(255, 255, 255, 0.06);
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.96) 0%, rgba(11, 14, 20, 0.98) 100%);
+    border-bottom-color: rgba(124, 176, 255, 0.18);
   }
 
   .nav-back {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(16, 20, 28, 0.72);
   }
 
   .hero-card {
-    background: linear-gradient(135deg, rgba(232, 67, 147, 0.15) 0%, rgba(253, 121, 168, 0.15) 100%);
-    border-color: rgba(232, 67, 147, 0.25);
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    border-color: rgba(124, 176, 255, 0.18);
   }
 
   .steps-bar {
-    background: var(--bg-card, #0d1117);
-    box-shadow: none;
+    background: linear-gradient(180deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    box-shadow: var(--apple-shadow-card);
   }
 
   .step-item .step-dot {
-    background: var(--bg-secondary, #1c1c1e);
+    background: rgba(16, 20, 28, 0.72);
   }
 
   .upload-area {
-    background: var(--bg-card, #0d1117);
-    border-color: rgba(232, 67, 147, 0.25);
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    border-color: rgba(124, 176, 255, 0.18);
   }
 
   .option-chip {
-    background: var(--bg-card, #0d1117);
-    box-shadow: none;
+    background: rgba(16, 20, 28, 0.72);
+    box-shadow: var(--apple-shadow-surface);
 
     &.active {
-      background: rgba(232, 67, 147, 0.12);
+      background: var(--cta-primary-bg);
     }
   }
 
@@ -1136,18 +1294,18 @@ export default {
   }
 
   .beauty-card {
-    background: var(--bg-card, #0d1117);
-    box-shadow: none;
+    background: linear-gradient(180deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    box-shadow: var(--apple-shadow-card);
   }
 
   .processing-card {
-    background: var(--bg-card, #0d1117);
-    box-shadow: none;
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    box-shadow: var(--apple-shadow-floating);
   }
 
   .result-card {
-    background: var(--bg-card, #0d1117);
-    box-shadow: none;
+    background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
+    box-shadow: var(--apple-shadow-card);
   }
 
   .preview-card {
@@ -1155,8 +1313,8 @@ export default {
   }
 
   .btn-secondary {
-    background: var(--bg-card, #0d1117);
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(16, 20, 28, 0.72);
+    border-color: rgba(124, 176, 255, 0.18);
   }
 }
 
@@ -1172,5 +1330,136 @@ export default {
   height: 1px;
   opacity: 0;
   pointer-events: none;
+}
+
+/* Final polish: ID photo page unified with Apple / Liquid Glass */
+.page-container {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+}
+
+.dark-mode.page-container {
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+}
+
+.hero-title,
+.config-block .config-label,
+.beauty-label,
+.processing-title,
+.upload-text,
+.option-chip .option-name,
+.btn-secondary,
+.btn-ghost {
+  color: var(--text-main);
+}
+
+.hero-desc,
+.step-item .step-label,
+.upload-hint,
+.option-chip .option-desc,
+.color-item .color-name,
+.beauty-hint,
+.processing-hint,
+.btn-ghost {
+  color: var(--text-sub);
+}
+
+.dark-mode .hero-title,
+.dark-mode .config-block .config-label,
+.dark-mode .beauty-label,
+.dark-mode .processing-title,
+.dark-mode .upload-text,
+.dark-mode .option-chip .option-name,
+.dark-mode .btn-secondary,
+.dark-mode .btn-ghost {
+  color: #ffffff;
+}
+
+.dark-mode .hero-desc,
+.dark-mode .step-item .step-label,
+.dark-mode .upload-hint,
+.dark-mode .option-chip .option-desc,
+.dark-mode .color-item .color-name,
+.dark-mode .beauty-hint,
+.dark-mode .processing-hint {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.steps-bar,
+.upload-area,
+.preview-card,
+.option-chip,
+.beauty-card,
+.processing-card,
+.result-card,
+.btn-secondary,
+.btn-ghost {
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .steps-bar,
+.dark-mode .upload-area,
+.dark-mode .preview-card,
+.dark-mode .option-chip,
+.dark-mode .beauty-card,
+.dark-mode .processing-card,
+.dark-mode .result-card,
+.dark-mode .btn-secondary,
+.dark-mode .btn-ghost {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.step-item.active .step-label {
+  color: #22873a;
+}
+
+.dark-mode .step-item.active .step-label {
+  color: #7bc0ff;
+}
+
+.step-item.done .step-dot {
+  background: linear-gradient(135deg, rgba(52, 199, 89, 0.88), rgba(101, 219, 138, 0.96));
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.preview-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(248, 251, 249, 0.86) 0%, rgba(237, 243, 239, 0.76) 100%);
+}
+
+.dark-mode .preview-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+}
+
+.color-item.active .color-circle {
+  box-shadow: 0 0 0 4rpx rgba(52, 199, 89, 0.24);
+}
+
+.dark-mode .color-item.active .color-circle {
+  box-shadow: 0 0 0 4rpx rgba(10, 132, 255, 0.28);
+}
+
+.processing-card .processing-spinner {
+  border-color: rgba(52, 199, 89, 0.16);
+  border-top-color: #34c759;
+}
+
+.dark-mode .processing-card .processing-spinner {
+  border-color: rgba(10, 132, 255, 0.16);
+  border-top-color: #0a84ff;
 }
 </style>

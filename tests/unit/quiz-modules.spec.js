@@ -65,8 +65,8 @@ vi.mock('@/utils/analytics/learning-analytics.js', () => ({
   recordAnswer: vi.fn()
 }));
 
-// Mock smart-question-picker（被 quiz-analytics-recorder 动态导入）
-vi.mock('@/utils/learning/smart-question-picker.js', () => ({
+// Mock smart-question-picker（被 quiz-analytics-recorder 直接导入）
+vi.mock('../../src/pages/practice-sub/utils/smart-question-picker.js', () => ({
   recordSmartAnswer: vi.fn(),
   pickQuestions: vi.fn((q) => q)
 }));

@@ -1,5 +1,5 @@
 <template>
-  <view class="learning-stats-card">
+  <view class="learning-stats-card apple-glass-card">
     <view class="stats-row">
       <view class="stat-item" @tap="$emit('open-goal-setting')">
         <view class="stat-value">
@@ -68,12 +68,24 @@ export default {
 
 <style lang="scss" scoped>
 .learning-stats-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 24px;
   padding: 20px;
   margin-bottom: 24px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--apple-shadow-floating);
+}
+
+.learning-stats-card::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
 }
 .stats-row {
   display: flex;
@@ -109,16 +121,10 @@ export default {
   color: var(--primary);
 }
 .stat-value.good {
-  color: #4caf50;
+  color: var(--success);
 }
 .stat-value.excellent {
-  color: #2196f3;
-}
-.dark-mode .stat-value.good {
-  color: #81c784;
-}
-.dark-mode .stat-value.excellent {
-  color: #64b5f6;
+  color: var(--info);
 }
 .stat-value.warning {
   color: var(--danger);
@@ -153,7 +159,13 @@ export default {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 4px;
+  }
 }
 .stat-goal.editable:active {
   opacity: 0.7;
@@ -167,8 +179,9 @@ export default {
   align-items: center;
   padding: 12px 16px;
   margin-top: 16px;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 152, 0, 0.1));
-  border-radius: 12px;
+  background: linear-gradient(160deg, var(--apple-glass-pill-bg) 0%, rgba(255, 255, 255, 0.56) 100%);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -178,7 +191,13 @@ export default {
 }
 .achievement-icons {
   display: flex;
-  gap: 4px;
+  /* gap: 4px; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 4px;
+  }
 }
 .achievement-icon {
   font-size: 40rpx;

@@ -370,6 +370,7 @@ export default {
   border-radius: 24rpx;
   padding: 16rpx 24rpx;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   max-width: 90vw;
 
@@ -404,7 +405,13 @@ export default {
   &__compact {
     display: flex;
     align-items: center;
-    gap: 12rpx;
+    /* gap: 12rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: 12rpx;
+    }
   }
 
   &__icon {
@@ -453,7 +460,13 @@ export default {
 
   &__actions {
     display: flex;
-    gap: 16rpx;
+    /* gap: 16rpx; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: 16rpx;
+    }
     margin-top: 20rpx;
 
     .action-btn {
@@ -483,7 +496,13 @@ export default {
 
 .quality-indicator {
   display: flex;
-  gap: 4rpx;
+  /* gap: 4rpx; -- replaced for Android WebView compat */
+  & > view + view,
+  & > text + text,
+  & > view + text,
+  & > text + view {
+    margin-left: 4rpx;
+  }
   align-items: flex-end;
 }
 

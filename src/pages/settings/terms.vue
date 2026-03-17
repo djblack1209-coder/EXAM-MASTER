@@ -113,11 +113,17 @@ export default {
 
 <style scoped>
 .page-container {
+  min-height: 100%;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
 }
 .page-container.dark-mode {
-  background-color: #121212;
+  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
 }
 
 .top-nav {
@@ -125,67 +131,100 @@ export default {
   align-items: center;
   padding: 0 32rpx;
   padding-top: calc(constant(safe-area-inset-top) + 20rpx);
-  padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 20rpx);
   height: calc(constant(safe-area-inset-top) + 100rpx);
-  height: calc(env(safe-area-inset-top) + 100rpx);
-  background-color: #1a1a1a;
+  height: calc(env(safe-area-inset-top, 0px) + 100rpx);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  border-bottom: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-surface);
 }
 .nav-back {
-  width: 60rpx;
-  height: 60rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: var(--apple-shadow-surface);
 }
 .back-icon {
-  color: #ffffff;
+  color: var(--text-main);
   font-size: 36rpx;
 }
-.nav-title {
+.dark-mode .nav-back {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.dark-mode .back-icon {
   color: #ffffff;
+}
+.nav-title {
+  color: var(--text-main);
   font-size: 34rpx;
   font-weight: bold;
   margin-left: 16rpx;
 }
+.dark-mode .nav-title {
+  color: #ffffff;
+}
 
 .content-scroll {
   height: calc(100vh - constant(safe-area-inset-top) - 100rpx);
-  height: calc(100vh - env(safe-area-inset-top) - 100rpx);
+  height: calc(100vh - env(safe-area-inset-top, 0px) - 100rpx);
 }
 .content-section {
   padding: 32rpx;
 }
 .update-date {
   font-size: 24rpx;
-  color: #999999;
+  color: var(--text-sub);
   margin-bottom: 32rpx;
   display: block;
 }
 .dark-mode .update-date {
-  color: #666666;
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .section {
-  margin-bottom: 40rpx;
+  margin-bottom: 24rpx;
+  padding: 26rpx 24rpx;
+  border-radius: 28rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: var(--apple-shadow-card);
+}
+.dark-mode .section {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 .section-title {
   font-size: 30rpx;
   font-weight: bold;
-  color: #333333;
+  color: var(--text-main);
   margin-bottom: 16rpx;
   display: block;
 }
 .dark-mode .section-title {
-  color: #e0e0e0;
+  color: #ffffff;
 }
 .section-text {
   font-size: 28rpx;
-  color: #666666;
+  color: var(--text-sub);
   line-height: 1.8;
   margin-bottom: 12rpx;
   display: block;
 }
 .dark-mode .section-text {
-  color: #aaaaaa;
+  color: rgba(255, 255, 255, 0.68);
 }
 </style>

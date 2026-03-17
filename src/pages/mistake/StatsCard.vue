@@ -104,7 +104,10 @@ export default {
 
   &__gradient {
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     background: linear-gradient(135deg, rgba(0, 242, 255, 0.05) 0%, transparent 100%);
     pointer-events: none;
     z-index: 0;
@@ -121,7 +124,13 @@ export default {
   &__info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    /* gap: 4px; -- replaced for Android WebView compat */
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-top: 4px;
+    }
     flex: 1;
   }
 

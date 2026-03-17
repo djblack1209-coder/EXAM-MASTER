@@ -2,9 +2,51 @@ import { defineConfig, loadEnv } from 'vite';
 import uniModule from '@dcloudio/vite-plugin-uni';
 import path from 'path';
 import fs from 'fs';
+import { createRequire } from 'module';
+import { normalizeAppRuntimeIndexFile } from './scripts/build/app-runtime-html.js';
+
+const require = createRequire(path.join(process.cwd(), 'vite.config.js'));
+const uniCliSharedUtils = require('@dcloudio/uni-cli-shared/dist/utils.js');
 
 // 兼容 @dcloudio/vite-plugin-uni CJS/ESM 双层 default 问题
-const uni = typeof uniModule === 'function' ? uniModule : uniModule.default;
+const uni = typeof uniModule === 'function' ? uniModule : Reflect.get(Object(uniModule), 'default') || uniModule;
+
+function guardHBuilderMiniProgramHelpers(platform) {
+  const isRunByHBuilderX =
+    Boolean(process.env.UNI_HBUILDERX_PLUGINS) && Boolean(process.env.RUN_BY_HBUILDERX || process.env.HX_Version);
+
+  if (!platform?.startsWith('mp-') || !isRunByHBuilderX) return;
+
+  try {
+    const helpers = uniCliSharedUtils.requireUniHelpers();
+    if (typeof helpers?.UUVP === 'function') return;
+    console.warn('[Uni Guard] HBuilderX helper UUVP missing, fallback to standard mini program build path');
+  } catch (error) {
+    console.warn(
+      `[Uni Guard] Failed to load HBuilderX helpers, fallback to standard mini program build path: ${error.message}`
+    );
+  }
+
+  const originalRequireUniHelpers = uniCliSharedUtils.requireUniHelpers;
+
+  uniCliSharedUtils.requireUniHelpers = (...args) => {
+    let helpers = {};
+
+    try {
+      helpers = typeof originalRequireUniHelpers === 'function' ? originalRequireUniHelpers(...args) || {} : {};
+    } catch (_error) {
+      helpers = {};
+    }
+
+    if (typeof helpers.UUVP !== 'function') {
+      helpers = Object.assign({}, helpers, {
+        UUVP: () => ({ name: 'noop-hbuilder-uuvp' })
+      });
+    }
+
+    return helpers;
+  };
+}
 
 /**
  * 微信小程序自定义 tabBar 占位组件复制插件
@@ -42,20 +84,139 @@ function copyCustomTabBar() {
   };
 }
 
+function emitAppPackManifest() {
+  return {
+    name: 'emit-app-pack-manifest',
+    writeBundle(options) {
+      try {
+        if (process.env.UNI_COMPILER === 'nvue') return;
+
+        const outDir = options.dir || '';
+        if (!/[/\\]dist[/\\](build[/\\]app|dev[/\\](app|app-plus))$/.test(outDir)) return;
+
+        // 如果 uni-app-plus 编译器已经生成了 manifest.json，不要覆盖
+        const targetPath = path.resolve(outDir, 'manifest.json');
+        if (fs.existsSync(targetPath)) {
+          const existing = JSON.parse(fs.readFileSync(targetPath, 'utf8'));
+          if (existing.launch_path !== 'index.html' || existing.plus?.launchwebview) {
+            console.log(`[App Manifest Plugin] Skipped: uni-app-plus compiler already emitted manifest`);
+            return;
+          }
+        }
+
+        const sourcePath = path.resolve(process.env.UNI_INPUT_DIR || __dirname, 'manifest.json');
+        const source = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+        const appPlus = source['app-plus'] || {};
+
+        const compiledManifest = {
+          id: source.appid || '',
+          name: source.name || '',
+          description: source.description || '',
+          version: {
+            name: source.versionName || '1.0.0',
+            code: source.versionCode || '100'
+          },
+          launch_path: 'index.html',
+          permissions: source.permissions || {},
+          plus: {
+            modules: appPlus.modules || {},
+            splashscreen: appPlus.splashscreen || {},
+            distribute: appPlus.distribute || {}
+          }
+        };
+
+        fs.writeFileSync(targetPath, JSON.stringify(compiledManifest, null, 2));
+        console.log(`[App Manifest Plugin] Emitted ${targetPath}`);
+      } catch (err) {
+        console.error('[App Manifest Plugin] Failed to emit manifest:', err.message);
+      }
+    }
+  };
+}
+
+function normalizeAppRuntimeIndex() {
+  return {
+    name: 'normalize-app-runtime-index',
+    writeBundle(options) {
+      try {
+        if (process.env.UNI_COMPILER === 'nvue') return;
+
+        const outDir = options.dir || '';
+        if (!/[/\\]dist[/\\](build[/\\]app|dev[/\\](app|app-plus))$/.test(outDir)) return;
+
+        const indexPath = path.resolve(outDir, 'index.html');
+        if (normalizeAppRuntimeIndexFile(indexPath)) {
+          console.log(`[App Runtime Plugin] Normalized ${indexPath}`);
+        }
+      } catch (err) {
+        console.error('[App Runtime Plugin] Failed to normalize index:', err.message);
+      }
+    }
+  };
+}
+
+/**
+ * App 端强制 inlineDynamicImports，避免 IIFE + code-splitting 冲突
+ * 必须在 configResolved 阶段修改，因为 uni-app-vite 的 config() 会覆盖 vite.config.js 的 output
+ */
+function forceAppInlineDynamicImports() {
+  return {
+    name: 'force-app-inline-dynamic-imports',
+    enforce: 'post',
+    configResolved(config) {
+      const platform = process.env.UNI_PLATFORM || '';
+      if (platform !== 'app' && platform !== 'app-plus') return;
+
+      const output = config.build?.rollupOptions?.output;
+      if (output && !Array.isArray(output)) {
+        output.inlineDynamicImports = true;
+        delete output.manualChunks;
+      } else if (Array.isArray(output)) {
+        output.forEach((o) => {
+          o.inlineDynamicImports = true;
+          delete o.manualChunks;
+        });
+      }
+    }
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd(), '');
+  const platform = process.env.UNI_PLATFORM || env.UNI_PLATFORM || '';
+  guardHBuilderMiniProgramHelpers(platform);
 
   // 判断是否为生产环境
   const isProduction = mode === 'production';
   const isStaging = mode === 'staging';
   const isDevelopment = mode === 'development';
+  const isAppPlus = platform === 'app' || platform === 'app-plus';
 
-  console.log(`[Vite] Building for mode: ${mode}, command: ${command}`);
+  const isNvueCompiler = process.env.UNI_COMPILER === 'nvue';
+  const appInputDir = process.env.UNI_INPUT_DIR
+    ? path.resolve(process.env.UNI_INPUT_DIR)
+    : path.resolve(__dirname, 'src');
+  const viteRootDir = process.cwd();
+  const shouldBypassNvueHtmlEntry = isAppPlus && isNvueCompiler;
+
+  process.env.VITE_ROOT_DIR = viteRootDir;
+
+  console.log(`[Vite] Building for mode: ${mode}, command: ${command}, platform: ${platform || 'unknown'}`);
 
   return {
-    plugins: [uni(), copyCustomTabBar()],
+    root: viteRootDir,
+
+    base: isAppPlus ? './' : '/',
+
+    plugins: [
+      uni(),
+      copyCustomTabBar(),
+      emitAppPackManifest(),
+      normalizeAppRuntimeIndex(),
+      forceAppInlineDynamicImports()
+    ],
 
     // 环境变量定义
     define: {
@@ -70,7 +231,7 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: {
         // ✅ P008: @ 映射到 src/，子路径自动解析无需重复声明
-        '@': path.resolve(__dirname, 'src')
+        '@': appInputDir
       }
     },
 
@@ -117,14 +278,21 @@ export default defineConfig(({ command, mode }) => {
       },
 
       // 代码分割配置
+      write: !shouldBypassNvueHtmlEntry,
+
       rollupOptions: {
-        output: {
-          // uni-app 小程序构建有自己的分包机制，不使用自定义 manualChunks
-          // 文件命名 - 生产环境使用 hash，开发环境使用可读名称
-          chunkFileNames: isProduction ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
-          entryFileNames: isProduction ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
-          assetFileNames: isProduction ? 'static/[ext]/[name]-[hash].[ext]' : 'static/[ext]/[name].[ext]'
-        }
+        input: shouldBypassNvueHtmlEntry ? path.resolve(__dirname, 'scripts/build/empty-app-nvue-entry.js') : undefined,
+        output: isAppPlus
+          ? {
+              // App 端：IIFE 格式必须内联所有动态导入，禁止代码分割
+              inlineDynamicImports: true
+            }
+          : {
+              // 非 App 端：正常的文件命名配置
+              chunkFileNames: isProduction ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
+              entryFileNames: isProduction ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
+              assetFileNames: isProduction ? 'static/[ext]/[name]-[hash].[ext]' : 'static/[ext]/[name].[ext]'
+            }
       },
 
       // 块大小警告限制（KB）
@@ -137,8 +305,8 @@ export default defineConfig(({ command, mode }) => {
       // 构建目标（es2018 支持 async/await、rest/spread 等，减少 polyfill 体积）
       target: 'es2018',
 
-      // CSS 代码分割
-      cssCodeSplit: true,
+      // CSS 代码分割（App 端禁用，避免 IIFE 格式冲突）
+      cssCodeSplit: isAppPlus ? false : true,
 
       // 生产环境 CSS 压缩（lightningcss 比默认 esbuild 压缩率更高）
       cssMinify: isProduction ? 'esbuild' : false,
