@@ -1,6 +1,6 @@
 <template>
   <view class="container" :class="{ 'dark-mode': isDark, 'screen-shake': screenShake }">
-    <view class="aurora-bg" />
+    <view class="aurora-bg" style="display:none;" />
 
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px', height: '44px' }">
@@ -1848,8 +1848,8 @@ export default {
   width: 100%;
   z-index: 100;
   background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  /* backdrop-filter: blur(20px); removed */ background-color: rgba(28, 28, 30, 0.95);
+  
 }
 .nav-content {
   height: 50px;
@@ -1971,8 +1971,8 @@ export default {
 /* 玻璃卡片通用样式 */
 .glass-card {
   background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  /* backdrop-filter: blur(20px); removed */ background-color: rgba(28, 28, 30, 0.95);
+  
   border: 1px solid var(--border);
   border-radius: 40rpx;
   padding: 40rpx;
@@ -2078,8 +2078,8 @@ export default {
   height: 100%;
   z-index: 200;
   background: var(--overlay);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* backdrop-filter: blur(10px); removed */ background-color: rgba(28, 28, 30, 0.95);
+  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2150,8 +2150,8 @@ export default {
   z-index: 300;
   padding: 40rpx;
   border-radius: 40rpx;
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
+  background-color: rgba(28, 28, 30, 0.95); /* removed blur for performance */
+  
   box-shadow: var(--shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.12));
   animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
@@ -2192,8 +2192,8 @@ export default {
   justify-content: center;
   border-radius: 50%;
   background: var(--overlay);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* backdrop-filter: blur(10px); removed */ background-color: rgba(28, 28, 30, 0.95);
+  
   transition: all 0.3s;
   flex-shrink: 0;
 }
