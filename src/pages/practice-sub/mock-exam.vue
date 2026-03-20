@@ -274,12 +274,8 @@
         </view>
 
         <view class="result-actions">
-          <button class="action-btn review" hover-class="btn-scale-sm" @tap="reviewExam">
-            <text><BaseIcon name="book" :size="28" /> 查看解析</text>
-          </button>
-          <button id="e2e-mock-retry-btn" class="action-btn retry" hover-class="btn-scale-sm" @tap="retryExam">
-            <text><BaseIcon name="refresh" :size="28" /> 再考一次</text>
-          </button>
+          <wd-button type="info" custom-class="action-btn review" @click="reviewExam"><BaseIcon name="book" :size="28" /> 查看解析</wd-button>
+          <wd-button type="primary" id="e2e-mock-retry-btn" custom-class="action-btn retry" @click="retryExam"><BaseIcon name="refresh" :size="28" /> 再考一次</wd-button>
         </view>
       </view>
 
