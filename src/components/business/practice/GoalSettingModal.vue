@@ -1,6 +1,6 @@
 <template>
-  <view v-if="visible" class="goal-modal-overlay" @tap="$emit('close')">
-    <view class="goal-modal apple-glass-card" @tap.stop>
+  <wd-popup :show="visible" position="center" custom-class="goal-modal apple-glass-card" @close="$emit('close')">
+    <view class="goal-modal-inner">
       <view class="goal-modal-header">
         <text class="goal-modal-title"> 设置每日目标 </text>
         <view class="goal-modal-close apple-glass-pill" @tap="$emit('close')">
@@ -9,12 +9,12 @@
       </view>
       <view class="goal-modal-body">
         <view class="goal-input-group">
-          <button class="goal-adjust-btn apple-glass-pill" @tap="adjustValue(-5)">-</button>
+          <wd-button plain custom-class="goal-adjust-btn apple-glass-pill" @click="adjustValue(-5)">-</wd-button>
           <view class="goal-input-wrapper">
-            <input v-model="localValue" type="number" class="goal-input" :min="5" :max="200" />
+            <wd-input-number v-model="localValue" :min="5" :max="200" :step="5" />
             <text class="goal-unit"> 道/天 </text>
           </view>
-          <button class="goal-adjust-btn apple-glass-pill" @tap="adjustValue(5)">+</button>
+          <wd-button plain custom-class="goal-adjust-btn apple-glass-pill" @click="adjustValue(5)">+</wd-button>
         </view>
         <view class="goal-presets">
           <view class="goal-preset apple-glass-pill" :class="{ active: localValue === 10 }" @tap="localValue = 10">
@@ -35,11 +35,11 @@
         </view>
       </view>
       <view class="goal-modal-footer">
-        <button class="goal-cancel-btn apple-glass-pill" @tap="$emit('close')">取消</button>
-        <button class="goal-save-btn apple-cta" @tap="handleSave">保存</button>
+        <wd-button plain custom-class="goal-cancel-btn apple-glass-pill" @click="$emit('close')">取消</wd-button>
+        <wd-button type="primary" custom-class="goal-save-btn apple-cta" @click="handleSave">保存</wd-button>
       </view>
     </view>
-  </view>
+  </wd-popup>
 </template>
 
 <script>
