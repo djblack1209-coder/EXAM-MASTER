@@ -2458,7 +2458,6 @@ export default {
     opacity: 0;
     transform: translateX(-50%) translateY(-80px) scale(0.8);
   }
-}
 
 /* ==================== 新增样式：答题动画 ==================== */
 @keyframes correctPulse {
