@@ -1,0 +1,6 @@
+name: fsrs.service
+methods:
+  - GET
+  - POST
+tags:
+  - shared
