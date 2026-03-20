@@ -16,12 +16,12 @@ function readCompatLocalStorage(key) {
     return '';
   }
 
-  const directValue = localStorage.getItem(key);
+  const directValue = uni.getItem(key);
   if (directValue !== null) {
     return directValue;
   }
 
-  const compatValue = localStorage.getItem(`${LOCAL_COMPAT_PREFIX}${key}`);
+  const compatValue = uni.getItem(`${LOCAL_COMPAT_PREFIX}${key}`);
   if (compatValue === null) {
     return '';
   }
