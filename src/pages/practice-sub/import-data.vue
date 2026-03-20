@@ -21,15 +21,15 @@
     </view>
 
     <view class="main-glass-card bounce-in-up">
-      <view class="status-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <view class="status-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%">
         <view>
           <text class="status-dot" :class="{ active: fileName }" />
           <text class="status-text">
             {{ fileName ? '已加载文件，准备就绪' : '支持 PDF / Word / TXT / MD' }}
           </text>
         </view>
-        <view class="ocr-switch" style="display: flex; align-items: center; gap: 8rpx;" v-if="fileName">
-          <text style="font-size: 24rpx; color: var(--text-sub);">深度OCR图表解析</text>
+        <view class="ocr-switch" style="display: flex; align-items: center; gap: 8rpx" v-if="fileName">
+          <text style="font-size: 24rpx; color: var(--text-sub)">深度OCR图表解析</text>
           <wd-switch v-model="useDeepOcr" size="20px" />
         </view>
       </view>
@@ -86,19 +86,21 @@
         </wd-button>
       </view>
 
-      <view class="action-row sub-row" style="display: flex; gap: 16rpx;">
+      <view class="action-row sub-row" style="display: flex; gap: 16rpx">
         <wd-button
           v-if="!isLooping && (fullFileContent || fileName) && generatedCount > 0"
           plain
           block
-          style="flex: 1;"
+          style="flex: 1"
           @click="continueGenerating"
           custom-class="apple-btn secondary"
         >
           <BaseIcon name="refresh" :size="28" style="margin-right: 4px" />
           <text style="font-size: 30rpx">再出一组</text>
         </wd-button>
-        <wd-button plain type="danger" block style="flex: 1;" @click="clearAll" custom-class="apple-btn">清空题库</wd-button>
+        <wd-button plain type="danger" block style="flex: 1" @click="clearAll" custom-class="apple-btn"
+          >清空题库</wd-button
+        >
       </view>
     </view>
 
