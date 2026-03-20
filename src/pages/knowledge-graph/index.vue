@@ -40,11 +40,22 @@
       </view>
 
       <scroll-view scroll-x class="action-strip" :show-scrollbar="false">
-        <view class="action-strip-inner" style="display: flex; gap: 16rpx; padding-right: 24rpx; align-items: center; white-space: nowrap;">
-          <wd-button size="small" type="primary" plain @click="showMasteryStats"><BaseIcon name="chart-bar" :size="24" style="margin-right: 4rpx;"/>掌握分布</wd-button>
-          <wd-button size="small" type="primary" plain @click="showLearningPath"><BaseIcon name="path" :size="24" style="margin-right: 4rpx;"/>学习路径</wd-button>
-          <wd-button size="small" type="primary" plain @click="showConnectionAnalysis"><BaseIcon name="link" :size="24" style="margin-right: 4rpx;"/>关联分析</wd-button>
-          <wd-button size="small" type="primary" plain @click="showPersonalizedPlan"><BaseIcon name="note" :size="24" style="margin-right: 4rpx;"/>个性计划</wd-button>
+        <view
+          class="action-strip-inner"
+          style="display: flex; gap: 16rpx; padding-right: 24rpx; align-items: center; white-space: nowrap"
+        >
+          <wd-button size="small" type="primary" plain @click="showMasteryStats"
+            ><BaseIcon name="chart-bar" :size="24" style="margin-right: 4rpx" />掌握分布</wd-button
+          >
+          <wd-button size="small" type="primary" plain @click="showLearningPath"
+            ><BaseIcon name="path" :size="24" style="margin-right: 4rpx" />学习路径</wd-button
+          >
+          <wd-button size="small" type="primary" plain @click="showConnectionAnalysis"
+            ><BaseIcon name="link" :size="24" style="margin-right: 4rpx" />关联分析</wd-button
+          >
+          <wd-button size="small" type="primary" plain @click="showPersonalizedPlan"
+            ><BaseIcon name="note" :size="24" style="margin-right: 4rpx" />个性计划</wd-button
+          >
         </view>
       </scroll-view>
 
@@ -232,18 +243,25 @@
         </view>
       </view>
     </view>
-  
+
     <wd-popup v-model="detailModalVisible" position="bottom" custom-class="node-detail-modal">
-      <view v-if="activeNodeData" class="detail-content" style="padding: 40rpx;">
-        <view class="detail-header" style="margin-bottom: 24rpx; border-bottom: 1px solid var(--border-color); padding-bottom: 16rpx;">
-          <text style="font-size: 36rpx; font-weight: bold; color: var(--text-primary)">{{ activeNodeData.title }}</text>
+      <view v-if="activeNodeData" class="detail-content" style="padding: 40rpx">
+        <view
+          class="detail-header"
+          style="margin-bottom: 24rpx; border-bottom: 1px solid var(--border-color); padding-bottom: 16rpx"
+        >
+          <text style="font-size: 36rpx; font-weight: bold; color: var(--text-primary)">{{
+            activeNodeData.title
+          }}</text>
         </view>
-        <view class="detail-stats" style="margin-bottom: 32rpx;">
-          <text style="font-size: 28rpx; color: var(--text-sub);">掌握度: {{ activeNodeData.mastery }}%</text>
+        <view class="detail-stats" style="margin-bottom: 32rpx">
+          <text style="font-size: 28rpx; color: var(--text-sub)">掌握度: {{ activeNodeData.mastery }}%</text>
         </view>
-        <view class="detail-actions" style="display: flex; gap: 16rpx;">
-          <wd-button block style="flex: 1;" @click="goPractice(activeNodeData)">普通练习</wd-button>
-          <wd-button type="warning" block style="flex: 1;" @click="summonAITutor(activeNodeData)">召唤 AI 特训</wd-button>
+        <view class="detail-actions" style="display: flex; gap: 16rpx">
+          <wd-button block style="flex: 1" @click="goPractice(activeNodeData)">普通练习</wd-button>
+          <wd-button type="warning" block style="flex: 1" @click="summonAITutor(activeNodeData)"
+            >召唤 AI 特训</wd-button
+          >
         </view>
       </view>
     </wd-popup>
