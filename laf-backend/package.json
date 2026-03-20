@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Exam-Master 后端云函数服务 (Laf Cloud)",
   "private": true,
+  "type": "module",
   "scripts": {
     "deploy": "laf deploy",
     "dev": "laf dev",

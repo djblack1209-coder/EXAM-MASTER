@@ -728,7 +728,7 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
   };
 }
 
-// ✅ B005: 邮箱验证码校验
+// ✅ B005: 邮箱验证码校验（含暴力破解防护）
 async function validateEmailCode(
   email: string,
   code: string,
@@ -737,6 +737,23 @@ async function validateEmailCode(
   try {
     const now = Date.now();
     const CODE_EXPIRE_MS = 10 * 60 * 1000;
+    const MAX_VERIFY_ATTEMPTS = 5; // 5分钟内最多尝试5次
+    const VERIFY_WINDOW_MS = 5 * 60 * 1000;
+
+    // [安全加固] 暴力破解防护：检查近5分钟内该邮箱的验证失败次数
+    const recentFailures = await db
+      .collection('email_code_attempts')
+      .where({
+        email,
+        success: false,
+        created_at: db.command.gt(now - VERIFY_WINDOW_MS)
+      })
+      .count();
+
+    if (recentFailures.total >= MAX_VERIFY_ATTEMPTS) {
+      logger.warn(`[${requestId}] 验证码暴力破解拦截: email=${email}, failures=${recentFailures.total}`);
+      return { valid: false, error: '验证失败次数过多，请5分钟后再试' };
+    }
 
     // 查询验证码记录
     const codeRecord = await db
@@ -750,6 +767,15 @@ async function validateEmailCode(
       .getOne();
 
     if (!codeRecord.data) {
+      // 记录失败尝试
+      await db
+        .collection('email_code_attempts')
+        .add({
+          email,
+          success: false,
+          created_at: now
+        })
+        .catch(() => {});
       return { valid: false, error: '验证码错误或已过期' };
     }
 
@@ -757,6 +783,15 @@ async function validateEmailCode(
     if (now - codeRecord.data.created_at > CODE_EXPIRE_MS) {
       // 删除过期验证码
       await db.collection('email_codes').doc(codeRecord.data._id).remove();
+      // 记录失败尝试
+      await db
+        .collection('email_code_attempts')
+        .add({
+          email,
+          success: false,
+          created_at: now
+        })
+        .catch(() => {});
       return { valid: false, error: '验证码已过期，请重新获取' };
     }
 
@@ -775,6 +810,16 @@ async function validateEmailCode(
     if (consumeResult.updated !== 1) {
       return { valid: false, error: '验证码已失效，请重新获取' };
     }
+
+    // 记录成功尝试（用于审计）
+    await db
+      .collection('email_code_attempts')
+      .add({
+        email,
+        success: true,
+        created_at: now
+      })
+      .catch(() => {});
 
     logger.info(`[${requestId}] 验证码校验通过: ${email}`);
     return { valid: true };

@@ -13,14 +13,11 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   success,
   badRequest,
-  unauthorized,
   serverError,
-  validateUserId,
   checkRateLimit,
   logger,
   generateRequestId,
@@ -29,11 +26,6 @@ import {
 
 const db = cloud.database();
 const _ = db.command;
-
-function extractToken(ctx: any): string {
-  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization;
-  return extractBearerToken(rawToken);
-}
 
 // ==================== 目标类型定义 ====================
 const GOAL_TYPES = {
@@ -85,17 +77,12 @@ export default async function (ctx) {
     }
 
     // 2. JWT 验证（必须提供有效 token）
-    const rawToken = extractToken(ctx);
-    if (!rawToken) {
-      return wrapResponse(unauthorized('请先登录：缺少认证令牌'), requestId, startTime);
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return wrapResponse(authResult, requestId, startTime);
     }
 
-    const payload = verifyJWT(rawToken);
-    if (!payload || !validateUserId(payload.userId)) {
-      return wrapResponse(unauthorized('认证令牌无效或已过期'), requestId, startTime);
-    }
-
-    const userId = payload.userId;
+    const userId = authResult.userId;
     if (requestUserId && requestUserId !== userId) {
       logger.warn(`[${requestId}] 检测到 userId 不匹配，已使用 token 用户ID`);
     }

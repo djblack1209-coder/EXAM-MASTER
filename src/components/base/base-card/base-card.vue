@@ -33,10 +33,18 @@ const paddingClass = computed(() => `padding-${props.padding}`);
   border-radius: var(--ds-radius-xl, 32rpx);
   overflow: hidden;
 
-  &.padding-none .base-card__body { padding: 0; }
-  &.padding-small .base-card__body { padding: var(--ds-spacing-sm, 16rpx); }
-  &.padding-medium .base-card__body { padding: var(--ds-spacing-md, 24rpx); }
-  &.padding-large .base-card__body { padding: var(--ds-spacing-lg, 32rpx); }
+  &.padding-none .base-card__body {
+    padding: 0;
+  }
+  &.padding-small .base-card__body {
+    padding: var(--ds-spacing-sm, 16rpx);
+  }
+  &.padding-medium .base-card__body {
+    padding: var(--ds-spacing-md, 24rpx);
+  }
+  &.padding-large .base-card__body {
+    padding: var(--ds-spacing-lg, 32rpx);
+  }
 
   &__header {
     padding: var(--ds-spacing-md) var(--ds-spacing-md) 0;

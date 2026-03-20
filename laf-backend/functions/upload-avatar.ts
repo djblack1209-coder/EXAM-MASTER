@@ -23,9 +23,8 @@
 
 import cloud from '@lafjs/cloud';
 import fs from 'fs';
-import { verifyJWT } from './login';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import { logger, success, badRequest, unauthorized, serverError, generateRequestId } from './_shared/api-response';
-import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 
@@ -62,19 +61,12 @@ export default async function (ctx: FunctionContext) {
     const bodyUserId = ctx.body?.userId || ctx.query?.userId;
 
     // JWT 认证：头像上传必须验证身份
-    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
-    let userId = bodyUserId;
-
-    if (!token) {
-      return { ...unauthorized('请先登录'), requestId };
-    }
-    const payload = verifyJWT(token);
-    if (!payload || !payload.userId) {
-      return { ...unauthorized('登录已过期，请重新登录'), requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { ...authResult, requestId };
     }
     // 使用 token 中的 userId，防止伪造
-    userId = payload.userId;
+    const userId = authResult.userId;
 
     if (!userId) {
       return { ...badRequest('缺少用户ID'), requestId };
@@ -91,13 +83,21 @@ export default async function (ctx: FunctionContext) {
       return { ...badRequest('不支持的图片格式，请上传 JPG、PNG、GIF 或 WebP 格式'), requestId };
     }
 
-    // 验证文件大小
-    const fileSize = Number(file.size || 0);
-    if (fileSize > MAX_FILE_SIZE) {
+    // [安全加固] 验证实际文件大小（不信任客户端 file.size）
+    let fileBuffer: Buffer;
+    try {
+      fileBuffer = await readFileBuffer(file);
+    } catch (readErr) {
+      logger.error('读取文件失败:', readErr);
+      return { ...badRequest('文件读取失败'), requestId };
+    }
+
+    const actualFileSize = fileBuffer.length;
+    if (actualFileSize > MAX_FILE_SIZE) {
       return { ...badRequest(`图片大小不能超过 ${MAX_FILE_SIZE / 1024 / 1024}MB`), requestId };
     }
 
-    logger.info(`开始处理头像上传: userId=${userId}, size=${fileSize}, type=${mimeType}`);
+    logger.info(`开始处理头像上传: userId=${userId}, size=${actualFileSize}, type=${mimeType}`);
 
     // 生成文件名
     const ext = getExtension(mimeType);
@@ -112,10 +112,7 @@ export default async function (ctx: FunctionContext) {
       // 使用 Laf 云存储
       const bucket: any = cloud.storage.bucket('default');
 
-      // 读取文件内容
-      const fileBuffer = await readFileBuffer(file);
-
-      // 上传文件
+      // 上传文件（使用已读取的 fileBuffer）
       await bucket.putObject(fileName, fileBuffer, {
         ContentType: mimeType
       });
@@ -127,9 +124,8 @@ export default async function (ctx: FunctionContext) {
     } catch (uploadError: unknown) {
       logger.error('云存储上传失败:', uploadError);
 
-      // 备选方案：使用 Base64 存储到数据库
+      // 备选方案：使用 Base64 存储到数据库（使用已读取的 fileBuffer）
       try {
-        const fileBuffer = await readFileBuffer(file);
         const base64Data = fileBuffer.toString('base64');
         avatarUrl = `data:${mimeType};base64,${base64Data}`;
 
@@ -186,7 +182,7 @@ export default async function (ctx: FunctionContext) {
         avatarUrl: avatarUrl,
         avatar_url: avatarUrl,
         fileName: fileName,
-        size: fileSize,
+        size: actualFileSize,
         type: mimeType
       },
       '头像上传成功'

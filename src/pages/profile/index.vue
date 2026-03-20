@@ -193,13 +193,9 @@
             </view>
             <view class="level-stat-divider" />
             <view v-if="dailyChallenge" class="level-stat-item">
-              <text class="level-stat-value"
-                >
-{{ dailyChallenge.completed ? '✅' : '📋' }} {{ dailyChallenge.progress }}/{{
-                  dailyChallenge.target
-                }}
-</text
-              >
+              <text class="level-stat-value">
+                {{ dailyChallenge.completed ? '✅' : '📋' }} {{ dailyChallenge.progress }}/{{ dailyChallenge.target }}
+              </text>
               <text class="level-stat-label">今日挑战</text>
             </view>
             <view v-else class="level-stat-item">

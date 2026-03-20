@@ -18,9 +18,8 @@
 
 import cloud from '@lafjs/cloud';
 import { validate } from './_shared/validator';
-import { verifyJWT } from './login';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import { checkRateLimit, createLogger } from './_shared/api-response';
-import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const _ = db.command;
@@ -56,11 +55,6 @@ const SUBJECT_KEYS = Object.keys(SUBJECTS);
 
 // ==================== 日志工具 ====================
 const logger = createLogger('[LearningResource]');
-
-function extractToken(ctx: any): string {
-  const rawToken = ctx?.headers?.authorization || ctx?.headers?.Authorization;
-  return extractBearerToken(rawToken);
-}
 
 function extractClientIp(ctx: any): string {
   const xRealIp = ctx?.headers?.['x-real-ip'];
@@ -137,15 +131,12 @@ export default async function (ctx) {
 
     // 需要用户身份的操作（读写都必须鉴权，防止越权读取）
     const authRequiredActions = ['favorite', 'getUserFavorites', 'recordProgress', 'getStats'];
-    const token = extractToken(ctx);
-    const tokenPayload = token ? verifyJWT(token) : null;
+    const authResult = requireAuth(ctx);
+    const tokenPayload = isAuthError(authResult) ? null : authResult;
 
     if (authRequiredActions.includes(action)) {
-      if (!token) {
-        return { code: 401, success: false, message: '请先登录：缺少认证令牌', requestId };
-      }
-      if (!tokenPayload || !tokenPayload.userId) {
-        return { code: 401, success: false, message: '认证令牌无效或已过期', requestId };
+      if (isAuthError(authResult)) {
+        return { code: 401, success: false, message: authResult.message, requestId };
       }
 
       if (requestUserId && requestUserId !== tokenPayload.userId) {

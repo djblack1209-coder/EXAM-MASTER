@@ -259,15 +259,30 @@ export function validateEnum<T>(value: T, allowedValues: T[]): boolean {
 
 /**
  * 清理字符串（防XSS）
+ * 过滤危险 HTML 标签、事件属性和协议
  */
 export function sanitizeString(input: string, maxLength: number = 2000): string {
   if (typeof input !== 'string') return '';
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    .replace(/javascript:/gi, '')
-    .replace(/on\w+\s*=/gi, '')
-    .substring(0, maxLength)
-    .trim();
+  return (
+    input
+      // 危险标签：script / iframe / object / embed / svg / math / link / meta / base / form
+      .replace(/<\s*\/?\s*(script|iframe|object|embed|svg|math|link|meta|base|form|style)\b[^>]*>/gi, '')
+      // 图片标签的事件属性（<img onerror=...>）
+      .replace(
+        /<\s*(img|video|audio|source|input|button|textarea|select|details)\b([^>]*?)\s+on\w+\s*=[^>]*>/gi,
+        '<$1$2>'
+      )
+      // 所有事件属性（on* = ...）— 兜底
+      .replace(/\bon[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+      // 危险协议
+      .replace(/javascript\s*:/gi, '')
+      .replace(/vbscript\s*:/gi, '')
+      .replace(/data\s*:\s*text\/html/gi, '')
+      // expression() CSS 注入
+      .replace(/expression\s*\(/gi, '')
+      .substring(0, maxLength)
+      .trim()
+  );
 }
 
 /**
