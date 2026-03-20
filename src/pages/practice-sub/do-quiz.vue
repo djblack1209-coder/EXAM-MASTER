@@ -2263,7 +2263,6 @@ export default {
   margin-right: 10rpx;
 }
 
-
 .footer-placeholder {
   height: 300rpx;
   /* 适配 iPhone 底部安全区域 */
@@ -2408,10 +2407,21 @@ export default {
 }
 
 @keyframes xpFlyUp {
-  0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.5); }
-  20% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.2); }
-  40% { transform: translateX(-50%) translateY(-10px) scale(1); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(-80px) scale(0.8); }
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1.2);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-10px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-80px) scale(0.8);
+  }
 }
 
 /* ==================== [上瘾引擎] XP Boost指示器 ==================== */
@@ -2433,7 +2443,7 @@ export default {
 .xp-boost-text {
   font-size: 24rpx;
   font-weight: 800;
-  color: #FFD700;
+  color: #ffd700;
   text-shadow: 0 1px 4px rgba(255, 215, 0, 0.4);
 }
 
@@ -2444,8 +2454,15 @@ export default {
 }
 
 @keyframes boostPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.2); }
-  50% { transform: scale(1.05); box-shadow: 0 0 12px 4px rgba(255, 215, 0, 0.15); }
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px 4px rgba(255, 215, 0, 0.15);
+  }
 }
 
 /* ==================== 新增样式：答题动画 ==================== */
