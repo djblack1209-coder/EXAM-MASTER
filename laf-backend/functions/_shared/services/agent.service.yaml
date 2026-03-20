@@ -1,0 +1,6 @@
+name: agent.service
+methods:
+  - GET
+  - POST
+tags:
+  - shared
