@@ -104,35 +104,16 @@
           <RichText class="q-content" :content="currentQuestion.question" />
         </view>
 
-        <view v-if="currentQuestion && currentQuestion.options" class="options-list">
-          <view
-            v-for="(opt, idx) in currentQuestion.options"
-            :id="`e2e-quiz-option-${idx}`"
-            :key="idx"
-            :class="[
-              'glass-card',
-              'option-item',
-              {
-                selected: userChoice === idx,
-                correct: hasAnswered && isCorrectOption(idx),
-                wrong: hasAnswered && userChoice === idx && !isCorrectOption(idx),
-                disabled: isAnalyzing || (hasAnswered && userChoice !== idx)
-              }
-            ]"
-            hover-class="option-hover"
-            @tap="selectOption(idx)"
-          >
-            <view class="opt-index">
-              {{ getOptionLabel(idx) }}
-            </view>
-            <RichText class="opt-text" :content="opt" />
-            <view v-if="hasAnswered" class="select-indicator">
-              <BaseIcon v-if="isCorrectOption(idx)" name="check" :size="28" />
-              <BaseIcon v-else-if="userChoice === idx && !isCorrectOption(idx)" name="cross" :size="28" />
-              <view v-else-if="userChoice === idx" class="indicator-circle" />
-            </view>
-          </view>
-        </view>
+        <QuizOptions 
+          v-if="currentQuestion && currentQuestion.options" 
+          :question="currentQuestion" 
+          :userChoice="userChoice" 
+          :hasAnswered="hasAnswered" 
+          :isAnalyzing="isAnalyzing" 
+          :isCorrectOption="isCorrectOption" 
+          :getOptionLabel="getOptionLabel" 
+          @select="selectOption" 
+        />
       </view>
 
       <!-- ✅ [P0重构] AI分析已改为非阻塞，移除全屏遮罩 -->
@@ -350,6 +331,7 @@
 <script>
 import { storageService } from '@/services/storageService.js';
 import CustomModal from '@/components/common/CustomModal.vue';
+import QuizOptions from './components/QuizOptions.vue';
 // ✅ P0-3: 导入自动保存功能
 import {
   saveQuizProgress,
@@ -424,6 +406,8 @@ import { useQuizEngine } from '@/composables/useQuizEngine.js';
 
 export default {
   components: {
+    QuizOptions,
+
     CustomModal,
     BaseIcon,
     MemoryStatsRow,

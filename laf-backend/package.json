@@ -17,5 +17,8 @@
   "dependencies": {
     "ai-agent-team": "^2.0.1",
     "ts-fsrs": "^5.2.3"
+  },
+  "devDependencies": {
+    "@lafjs/cloud": "^1.0.0"
   }
 }

@@ -1222,7 +1222,7 @@ export const lafService = {
 
     // 调用拍照搜题云函数
     try {
-      const response = await this.request('/ai-photo-search', {
+      const response = await this.request('/api-ocr-glm', {
         imageBase64,
         subject: options.subject || '',
         context: options.context || ''

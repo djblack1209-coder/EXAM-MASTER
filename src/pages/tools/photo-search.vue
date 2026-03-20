@@ -55,14 +55,12 @@
       <!-- 预览模式 -->
       <view v-else-if="mode === 'preview'" class="preview-area">
         <image :src="previewImage" mode="aspectFit" class="preview-image" />
-        <view v-if="isRecognizing" class="loading-overlay">
-          <view class="loading-spinner" />
-          <text class="loading-text">
-            {{ loadingText }}
-          </text>
-          <text class="loading-tips">
-            {{ currentTip }}
-          </text>
+        <view v-if="isRecognizing" class="scanner-overlay">
+          <view class="scan-line" />
+          <view class="scan-info">
+            <text class="scan-badge">[GLM-OCR V1.5]</text>
+            <text class="scan-text">正在深度提取跨模态数学公式...</text>
+          </view>
         </view>
       </view>
 
@@ -906,47 +904,71 @@ export default {
   }
 }
 
-.loading-overlay {
+.scanner-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  .loading-spinner {
-    width: 64rpx;
-    height: 64rpx;
-    border: 4rpx solid var(--primary-light);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-
-  .loading-text {
-    color: #fff;
-    font-size: 28rpx;
-    font-weight: 500;
-    margin-top: 24rpx;
-  }
-
-  .loading-tips {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 24rpx;
-    margin-top: 10rpx;
-  }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 200rpx;
+  background: linear-gradient(
+    to bottom,
+    rgba(52, 199, 89, 0) 0%,
+    rgba(52, 199, 89, 0.2) 50%,
+    rgba(52, 199, 89, 0.8) 100%
+  );
+  border-bottom: 4rpx solid rgba(52, 199, 89, 1);
+  animation: scan 2s linear infinite;
+  z-index: 2;
+}
+
+.scan-info {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 100rpx;
+}
+
+.scan-badge {
+  background: rgba(52, 199, 89, 0.15);
+  border: 1rpx solid rgba(52, 199, 89, 0.4);
+  color: #34c759;
+  padding: 8rpx 20rpx;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  margin-bottom: 16rpx;
+  backdrop-filter: blur(8px);
+}
+
+.scan-text {
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 500;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.5);
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(600rpx); }
 }
 
 // 结果区域
@@ -1440,11 +1462,11 @@ export default {
 }
 
 .dark-mode .camera-tip,
-.dark-mode .loading-overlay {
+.dark-mode .scanner-overlay {
   color: #ffffff;
 }
 
-.loading-overlay {
+.scanner-overlay {
   background: rgba(9, 18, 12, 0.28);
 }
 
