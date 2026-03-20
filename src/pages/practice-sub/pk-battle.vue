@@ -41,8 +41,8 @@
         <text v-if="opponentFound" class="status-tip"> {{ opponent.name }} 已加入对战 </text>
         <text v-if="!opponentFound" class="status-tip status-tip-note"> 超时将自动匹配机器人对手 </text>
       </view>
-      <view v-if="!opponentFound" class="exit-btn" @tap="handleExit">
-        <text>取消匹配</text>
+      <view v-if="!opponentFound" class="exit-btn-wrapper" style="margin-top: 60rpx; z-index: 2; position: relative;">
+        <wd-button plain custom-class="exit-btn" @click="handleExit">取消匹配</wd-button>
       </view>
     </view>
 
@@ -182,11 +182,11 @@
         </view>
 
         <view class="action-btns">
-          <button class="btn-share" hover-class="btn-scale-sm" @tap.stop="handleShare">分享战报</button>
-          <button class="btn-rank" hover-class="btn-scale-sm" @tap.stop="goToRank">查看排行榜</button>
-          <button class="btn-again" hover-class="btn-scale-sm" @tap.stop="resetGame">再来一局</button>
-          <button class="btn-home" hover-class="btn-scale-sm" @tap.stop="goHome">返回首页</button>
-          <button class="btn-exit" hover-class="btn-scale-sm" @tap.stop="handleExitFromResult">退出</button>
+          <wd-button type="info" custom-class="btn-share" @click.stop="handleShare">分享战报</wd-button>
+          <wd-button type="warning" custom-class="btn-rank" @click.stop="goToRank">查看排行榜</wd-button>
+          <wd-button type="primary" custom-class="btn-again" @click.stop="resetGame">再来一局</wd-button>
+          <wd-button plain custom-class="btn-home" @click.stop="goHome">返回首页</wd-button>
+          <wd-button plain type="danger" custom-class="btn-exit" @click.stop="handleExitFromResult">退出</wd-button>
         </view>
       </view>
     </view>

@@ -180,11 +180,9 @@
 
       <!-- 底部操作 -->
       <view class="bottom-actions">
-        <button class="btn-primary" @tap="startSmartReview">开始智能复习 ({{ reviewCount }} 题待复习)</button>
-        <button v-if="weakPoints.length > 0" class="btn-secondary" @tap="startTargetedLesson">
-          针对薄弱点生成课程
-        </button>
-        <button class="btn-ghost" @tap="goBack">返回刷题</button>
+        <wd-button type="primary" block size="large" @click="startSmartReview">开始智能复习 ({{ reviewCount }} 题待复习)</wd-button>
+        <wd-button v-if="weakPoints.length > 0" plain block size="large" @click="startTargetedLesson" custom-style="margin-top: 16rpx">针对薄弱点生成课程</wd-button>
+        <wd-button plain block size="large" custom-class="custom-ghost-btn" @click="goBack" custom-style="margin-top: 16rpx; border: none; background: transparent;">返回刷题</wd-button>
       </view>
     </scroll-view>
   </view>
