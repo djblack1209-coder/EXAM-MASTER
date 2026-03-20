@@ -2447,17 +2447,6 @@ export default {
   0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.2); }
   50% { transform: scale(1.05); box-shadow: 0 0 12px 4px rgba(255, 215, 0, 0.15); }
 }
-  20% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1.2);
-  }
-  40% {
-    transform: translateX(-50%) translateY(-10px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-80px) scale(0.8);
-  }
 
 /* ==================== 新增样式：答题动画 ==================== */
 @keyframes correctPulse {
