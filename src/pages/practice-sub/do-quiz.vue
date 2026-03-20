@@ -178,7 +178,7 @@
           <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
         </view>
         <!-- 新增: FSRS 记忆引擎状态展示 -->
-        <MemoryStatsRow v-if="memoryState" :memoryState="memoryState" />
+        <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
 
         <!-- 新增: AI Tutor 智能体辅导反馈 -->
         <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
