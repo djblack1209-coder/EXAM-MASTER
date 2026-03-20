@@ -33,6 +33,8 @@ import {
 } from './_shared/api-response';
 import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import { createNewCard, type ReviewLogRecord } from './_shared/fsrs-scheduler';
+import { FsrsService } from './_shared/services/fsrs.service';
+import { AgentService } from './_shared/services/agent.service';
 
 const db = cloud.database();
 const _ = db.command;
