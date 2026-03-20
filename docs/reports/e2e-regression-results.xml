@@ -1,6 +1,6 @@
-<testsuites id="" name="" tests="88" failures="0" skipped="0" errors="0" time="285.657527">
-<testsuite name="00-smoke.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="3" failures="0" skipped="0" time="19.368" errors="0">
-<testcase name="A2-冒烟测试 › SMOKE-001 应用启动并显示首页结构" classname="00-smoke.spec.js" time="4.067">
+<testsuites id="" name="" tests="88" failures="0" skipped="0" errors="0" time="301.869993">
+<testsuite name="00-smoke.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="3" failures="0" skipped="0" time="18.364" errors="0">
+<testcase name="A2-冒烟测试 › SMOKE-001 应用启动并显示首页结构" classname="00-smoke.spec.js" time="3.53">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-001-应用启动并显示首页结构/attachments/smoke-home-1d10e971a731de5341ae14ad694d0ea61b5332c1.png]]
@@ -9,7 +9,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-冒烟测试 › SMOKE-002 刷题页关键入口可见" classname="00-smoke.spec.js" time="12.709">
+<testcase name="A2-冒烟测试 › SMOKE-002 刷题页关键入口可见" classname="00-smoke.spec.js" time="12.161">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-002-刷题页关键入口可见/attachments/smoke-practice-aa62264f3be80e0cc882bd2d9569b81480f7a99c.png]]
@@ -18,7 +18,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-冒烟测试 › SMOKE-003 择校页表单可操作" classname="00-smoke.spec.js" time="2.592">
+<testcase name="A2-冒烟测试 › SMOKE-003 择校页表单可操作" classname="00-smoke.spec.js" time="2.673">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/00-smoke-A2-冒烟测试-SMOKE-003-择校页表单可操作/attachments/smoke-school-1e2b63cbc2ad2eac0d8e4e7e8695f4ab2093750a.png]]
@@ -28,8 +28,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="01-core-flow.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="3" failures="0" skipped="0" time="40.04" errors="0">
-<testcase name="A2-核心流程 › CORE-001 登录页可输入并触发登录动作" classname="01-core-flow.spec.js" time="15.134">
+<testsuite name="01-core-flow.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="3" failures="0" skipped="0" time="39.221" errors="0">
+<testcase name="A2-核心流程 › CORE-001 登录页可输入并触发登录动作" classname="01-core-flow.spec.js" time="14.444">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-001-登录页可输入并触发登录动作/attachments/core-login-input-41ddc457ab1788472f685f01adef90e7c6fbe9c4.png]]
@@ -38,7 +38,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-核心流程 › CORE-002 登录后进入刷题页并打开做题页" classname="01-core-flow.spec.js" time="23.055">
+<testcase name="A2-核心流程 › CORE-002 登录后进入刷题页并打开做题页" classname="01-core-flow.spec.js" time="22.906">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-002-登录后进入刷题页并打开做题页/attachments/core-practice-to-quiz-50be3ea23d388f9af11366fbeb368c4f834dbc3b.png]]
@@ -47,7 +47,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-核心流程 › CORE-003 学习计划结果页可达" classname="01-core-flow.spec.js" time="1.851">
+<testcase name="A2-核心流程 › CORE-003 学习计划结果页可达" classname="01-core-flow.spec.js" time="1.871">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/01-core-flow-A2-核心流程-CORE-003-学习计划结果页可达/attachments/core-plan-result-page-36156703d979f710f6cfc6ec52d8d3e48f66d220.png]]
@@ -57,8 +57,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="02-exception-flow.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="5" failures="0" skipped="0" time="35.658" errors="0">
-<testcase name="A2-异常流程 › EXC-001 择校空输入触发前端校验" classname="02-exception-flow.spec.js" time="2.127">
+<testsuite name="02-exception-flow.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="5" failures="0" skipped="0" time="35.515" errors="0">
+<testcase name="A2-异常流程 › EXC-001 择校空输入触发前端校验" classname="02-exception-flow.spec.js" time="2.14">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-001-择校空输入触发前端校验/attachments/exception-school-empty-input-51d470769ecd81130e0e9f02970e031fbe56c2ad.png]]
@@ -67,7 +67,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-异常流程 › EXC-002 文档转换未选文件不能提交" classname="02-exception-flow.spec.js" time="11.974">
+<testcase name="A2-异常流程 › EXC-002 文档转换未选文件不能提交" classname="02-exception-flow.spec.js" time="12.039">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-002-文档转换未选文件不能提交/attachments/exception-doc-convert-empty-file-2aef081570c58fced91991ea9855fafe4c079d4b.png]]
@@ -76,7 +76,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-异常流程 › EXC-003 断网后恢复可继续交互" classname="02-exception-flow.spec.js" time="2.79">
+<testcase name="A2-异常流程 › EXC-003 断网后恢复可继续交互" classname="02-exception-flow.spec.js" time="2.784">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-003-断网后恢复可继续交互/attachments/exception-photo-offline-aa7b7a9e13a8477f1947c720323efe17bb3fbffa.png]]
@@ -87,7 +87,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-异常流程 › EXC-004 弱网场景页面仍可响应" classname="02-exception-flow.spec.js" time="14.501">
+<testcase name="A2-异常流程 › EXC-004 弱网场景页面仍可响应" classname="02-exception-flow.spec.js" time="14.447">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-004-弱网场景页面仍可响应/attachments/exception-weak-network-chat-aa6498fe236067d8101e34673a6c9a637869fe9f.png]]
@@ -96,7 +96,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-异常流程 › EXC-005 智能接口500时聊天页可降级并保持可交互" classname="02-exception-flow.spec.js" time="4.266">
+<testcase name="A2-异常流程 › EXC-005 智能接口500时聊天页可降级并保持可交互" classname="02-exception-flow.spec.js" time="4.105">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/02-exception-flow-A2-异常流程-EXC-005-智能接口500时聊天页可降级并保持可交互/attachments/exception-chat-api-500-fallback-23bff020481fc8af09645bded280f6842246e2c3.png]]
@@ -106,8 +106,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="03-state-recovery.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="5" failures="0" skipped="0" time="14.359" errors="0">
-<testcase name="A2-状态恢复与幂等 › STATE-001 返回键可回到上一页" classname="03-state-recovery.spec.js" time="3.065">
+<testsuite name="03-state-recovery.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="5" failures="0" skipped="0" time="13.138" errors="0">
+<testcase name="A2-状态恢复与幂等 › STATE-001 返回键可回到上一页" classname="03-state-recovery.spec.js" time="3.017">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-001-返回键可回到上一页/attachments/state-back-navigation-4e89ca148ffa8b8adefcddad2594ffb8a0bf037f.png]]
@@ -116,7 +116,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-状态恢复与幂等 › STATE-002 快速重复点击不会导致崩溃" classname="03-state-recovery.spec.js" time="2.496">
+<testcase name="A2-状态恢复与幂等 › STATE-002 快速重复点击不会导致崩溃" classname="03-state-recovery.spec.js" time="1.417">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-002-快速重复点击不会导致崩溃/attachments/state-rapid-click-23ecca250c152cd03b5b0b8d5090fd0c14e808b0.png]]
@@ -125,7 +125,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-状态恢复与幂等 › STATE-003 切后台再回来页面仍可继续操作" classname="03-state-recovery.spec.js" time="2.683">
+<testcase name="A2-状态恢复与幂等 › STATE-003 切后台再回来页面仍可继续操作" classname="03-state-recovery.spec.js" time="2.641">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-003-切后台再回来页面仍可继续操作/attachments/state-background-resume-4c838daf98d86a90fb5098606678523529e7de5c.png]]
@@ -134,7 +134,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-状态恢复与幂等 › STATE-004 刷新后保留基础会话数据" classname="03-state-recovery.spec.js" time="2.506">
+<testcase name="A2-状态恢复与幂等 › STATE-004 刷新后保留基础会话数据" classname="03-state-recovery.spec.js" time="2.504">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-004-刷新后保留基础会话数据/attachments/state-refresh-session-5d9202f3d045a2792dbc6b77a819597dbf4ab8b5.png]]
@@ -143,7 +143,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-状态恢复与幂等 › STATE-005 登录按钮快速多次点击仅触发一次请求" classname="03-state-recovery.spec.js" time="3.609">
+<testcase name="A2-状态恢复与幂等 › STATE-005 登录按钮快速多次点击仅触发一次请求" classname="03-state-recovery.spec.js" time="3.559">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/03-state-recovery-A2-状态恢复与幂等-STATE-005-登录按钮快速多次点击仅触发一次请求/attachments/state-login-debounce-f0669cb6ae2d05e47a1b19f297601c381cc47a70.png]]
@@ -153,28 +153,28 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="04-performance.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="2" failures="0" skipped="0" time="9.078" errors="0">
-<testcase name="A2-基础性能门禁 › PERF-001 首页首屏时间低于阈值" classname="04-performance.spec.js" time="2.537">
+<testsuite name="04-performance.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="2" failures="0" skipped="0" time="9.002" errors="0">
+<testcase name="A2-基础性能门禁 › PERF-001 首页首屏时间低于阈值" classname="04-performance.spec.js" time="2.419">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../../test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-001-首页首屏时间低于阈值/attachments/perf-first-screen-286ms-dfcbf58381e65ade4ece11ac212a973d64f3173a.png]]
+[[ATTACHMENT|../../test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-001-首页首屏时间低于阈值/attachments/perf-first-screen-273ms-f6a8da81297b480ce31333c0088e11c38e4bedcc.png]]
 
 [[ATTACHMENT|../../test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-001-首页首屏时间低于阈值/attachments/network-log-ea66072a519fd2bfcc474578385c1b1378eef248.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-基础性能门禁 › PERF-002 首页到刷题页交互响应低于阈值" classname="04-performance.spec.js" time="6.541">
+<testcase name="A2-基础性能门禁 › PERF-002 首页到刷题页交互响应低于阈值" classname="04-performance.spec.js" time="6.583">
 <system-out>
 <![CDATA[
-[[ATTACHMENT|../../test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-002-首页到刷题页交互响应低于阈值/attachments/perf-home-to-practice-816ms-th1000-samples-826-816-b0b9e3cbb25ac07d970d4b995d92eddb9d288006.png]]
+[[ATTACHMENT|../../test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-002-首页到刷题页交互响应低于阈值/attachments/perf-home-to-practice-812ms-th1000-samples-823-812-0f5d12506d82a84eda272dfc9cd551e2fff3ed1a.png]]
 
 [[ATTACHMENT|../../test-results/e2e-regression/04-performance-A2-基础性能门禁-PERF-002-首页到刷题页交互响应低于阈值/attachments/network-log-302cabafba480a9b1fb0b91626891e27d348e390.json]]
 ]]>
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="05-high-risk-pages.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="11" failures="0" skipped="0" time="23.053" errors="0">
-<testcase name="A2-高风险页面可达性 › HR-001 /pages/login/index 页面渲染" classname="05-high-risk-pages.spec.js" time="2.129">
+<testsuite name="05-high-risk-pages.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="11" failures="0" skipped="0" time="22.602" errors="0">
+<testcase name="A2-高风险页面可达性 › HR-001 /pages/login/index 页面渲染" classname="05-high-risk-pages.spec.js" time="2.083">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页面可达性-HR-001-pages-login-index-页面渲染/attachments/risk--pages-login-index-308bc1e9237809218abed81f94b3bef24a770f82.png]]
@@ -183,7 +183,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-002 /pages/school/index 页面渲染" classname="05-high-risk-pages.spec.js" time="2.335">
+<testcase name="A2-高风险页面可达性 › HR-002 /pages/school/index 页面渲染" classname="05-high-risk-pages.spec.js" time="2.209">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-20208-002-pages-school-index-页面渲染/attachments/risk--pages-school-index-7a734107e9a1f61d6a5de96ce31756d04052bfb9.png]]
@@ -192,7 +192,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-003 /pages/practice-sub/import-data 页面渲染" classname="05-high-risk-pages.spec.js" time="2.368">
+<testcase name="A2-高风险页面可达性 › HR-003 /pages/practice-sub/import-data 页面渲染" classname="05-high-risk-pages.spec.js" time="2.307">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c718a-actice-sub-import-data-页面渲染/attachments/risk--pages-practice-sub-import-data-e983387bbcd051b7c38c5024e504c2047ffb9100.png]]
@@ -201,7 +201,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-004 /pages/practice-sub/do-quiz 页面渲染" classname="05-high-risk-pages.spec.js" time="2.234">
+<testcase name="A2-高风险页面可达性 › HR-004 /pages/practice-sub/do-quiz 页面渲染" classname="05-high-risk-pages.spec.js" time="2.055">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-97d14-s-practice-sub-do-quiz-页面渲染/attachments/risk--pages-practice-sub-do-quiz-08242af858490e54cf1872a53c9cfc6f1dcc6cae.png]]
@@ -210,7 +210,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-005 /pages/practice-sub/pk-battle 页面渲染" classname="05-high-risk-pages.spec.js" time="2.279">
+<testcase name="A2-高风险页面可达性 › HR-005 /pages/practice-sub/pk-battle 页面渲染" classname="05-high-risk-pages.spec.js" time="2.213">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-cca1d-practice-sub-pk-battle-页面渲染/attachments/risk--pages-practice-sub-pk-battle-f9580c10411fca74b5ee5dbcec4cd2531a222a14.png]]
@@ -219,7 +219,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-006 /pages/practice-sub/mock-exam 页面渲染" classname="05-high-risk-pages.spec.js" time="1.875">
+<testcase name="A2-高风险页面可达性 › HR-006 /pages/practice-sub/mock-exam 页面渲染" classname="05-high-risk-pages.spec.js" time="1.885">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-fd119-practice-sub-mock-exam-页面渲染/attachments/risk--pages-practice-sub-mock-exam-f6e76fff4487e59b5c10afc7f38cee2e57ddb7f0.png]]
@@ -228,7 +228,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-007 /pages/tools/doc-convert 页面渲染" classname="05-high-risk-pages.spec.js" time="2.06">
+<testcase name="A2-高风险页面可达性 › HR-007 /pages/tools/doc-convert 页面渲染" classname="05-high-risk-pages.spec.js" time="1.973">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-8ef29-ages-tools-doc-convert-页面渲染/attachments/risk--pages-tools-doc-convert-22dd30a6006045468161eb5a253b988aee652143.png]]
@@ -237,7 +237,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-008 /pages/tools/photo-search 页面渲染" classname="05-high-risk-pages.spec.js" time="1.65">
+<testcase name="A2-高风险页面可达性 › HR-008 /pages/tools/photo-search 页面渲染" classname="05-high-risk-pages.spec.js" time="1.672">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c97f5-ges-tools-photo-search-页面渲染/attachments/risk--pages-tools-photo-search-f9dc27f69352940f766f27d20f4e6bf2a8de836d.png]]
@@ -246,7 +246,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-009 /pages/tools/id-photo 页面渲染" classname="05-high-risk-pages.spec.js" time="1.821">
+<testcase name="A2-高风险页面可达性 › HR-009 /pages/tools/id-photo 页面渲染" classname="05-high-risk-pages.spec.js" time="1.833">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-8a85f-9-pages-tools-id-photo-页面渲染/attachments/risk--pages-tools-id-photo-8f5d8ef804ebb0201b596b0d6ba6aa00207d4fce.png]]
@@ -255,7 +255,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-010 /pages/settings/index 页面渲染" classname="05-high-risk-pages.spec.js" time="2.481">
+<testcase name="A2-高风险页面可达性 › HR-010 /pages/settings/index 页面渲染" classname="05-high-risk-pages.spec.js" time="2.454">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页-c98ef-0-pages-settings-index-页面渲染/attachments/risk--pages-settings-index-ce216415e63d8a3b3a100956f9e2bf25c1ed97df.png]]
@@ -264,7 +264,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-高风险页面可达性 › HR-011 /pages/chat/chat 页面渲染" classname="05-high-risk-pages.spec.js" time="1.821">
+<testcase name="A2-高风险页面可达性 › HR-011 /pages/chat/chat 页面渲染" classname="05-high-risk-pages.spec.js" time="1.918">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/05-high-risk-pages-A2-高风险页面可达性-HR-011-pages-chat-chat-页面渲染/attachments/risk--pages-chat-chat-23f7d681b0ad856aa832fbd1e32c89a70ed30b95.png]]
@@ -274,8 +274,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="06-human-gesture.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="1" failures="0" skipped="0" time="3.814" errors="0">
-<testcase name="A2-人工手势模拟 › HUMAN-001 首页上滑后页面保持可交互" classname="06-human-gesture.spec.js" time="3.814">
+<testsuite name="06-human-gesture.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="1" failures="0" skipped="0" time="3.754" errors="0">
+<testcase name="A2-人工手势模拟 › HUMAN-001 首页上滑后页面保持可交互" classname="06-human-gesture.spec.js" time="3.754">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/06-human-gesture-A2-人工手势模拟-HUMAN-001-首页上滑后页面保持可交互/attachments/human-gesture-home-swipe-up-4b2c1c65028971191a176533f968983a0250e20b.png]]
@@ -285,15 +285,15 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="07-full-route-coverage.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="2" failures="0" skipped="0" time="51.614" errors="0">
-<testcase name="A2-全量页面覆盖与 UI 健康度 › FULL-ROUTE-001 亮色模式全量路由可达 + UI 健康度检查" classname="07-full-route-coverage.spec.js" time="25.832">
+<testsuite name="07-full-route-coverage.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="2" failures="0" skipped="0" time="52.132" errors="0">
+<testcase name="A2-全量页面覆盖与 UI 健康度 › FULL-ROUTE-001 亮色模式全量路由可达 + UI 健康度检查" classname="07-full-route-coverage.spec.js" time="25.923">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/07-full-route-coverage-A2--11416-UTE-001-亮色模式全量路由可达-UI-健康度检查/attachments/network-log-c5ef22e92463ded0640aedd175105ca866eeab8c.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-全量页面覆盖与 UI 健康度 › FULL-ROUTE-002 深色模式全量路由可达 + UI 健康度检查" classname="07-full-route-coverage.spec.js" time="25.782">
+<testcase name="A2-全量页面覆盖与 UI 健康度 › FULL-ROUTE-002 深色模式全量路由可达 + UI 健康度检查" classname="07-full-route-coverage.spec.js" time="26.209">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/07-full-route-coverage-A2--e7c88-UTE-002-深色模式全量路由可达-UI-健康度检查/attachments/network-log-9b781ae857c3d7d56ba3a8c9efdd6bdb9d112849.json]]
@@ -301,36 +301,36 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="08-clickable-actions.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="5" failures="0" skipped="0" time="25.924" errors="0">
-<testcase name="A2-可点击入口真实交互 › CLICK-001 首页工具卡真实点击后可跳转到对应页面" classname="08-clickable-actions.spec.js" time="3.799">
+<testsuite name="08-clickable-actions.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="5" failures="0" skipped="0" time="26.222" errors="0">
+<testcase name="A2-可点击入口真实交互 › CLICK-001 首页工具卡真实点击后可跳转到对应页面" classname="08-clickable-actions.spec.js" time="3.954">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/08-clickable-actions-A2-可点-1bff0-LICK-001-首页工具卡真实点击后可跳转到对应页面/attachments/network-log-3e60bc4a0773c0e3af618a32ea9b84c76ecf3e0c.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-可点击入口真实交互 › CLICK-002 刷题页关键入口真实点击后可跳转或打开弹层" classname="08-clickable-actions.spec.js" time="14.897">
+<testcase name="A2-可点击入口真实交互 › CLICK-002 刷题页关键入口真实点击后可跳转或打开弹层" classname="08-clickable-actions.spec.js" time="14.971">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/08-clickable-actions-A2-可点-2097f-CK-002-刷题页关键入口真实点击后可跳转或打开弹层/attachments/network-log-89fee552ed635c3669e20655d089d6131a1e57a2.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-可点击入口真实交互 › CLICK-003 个人中心菜单真实点击后可跳转" classname="08-clickable-actions.spec.js" time="4.011">
+<testcase name="A2-可点击入口真实交互 › CLICK-003 个人中心菜单真实点击后可跳转" classname="08-clickable-actions.spec.js" time="3.897">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/08-clickable-actions-A2-可点击入口真实交互-CLICK-003-个人中心菜单真实点击后可跳转/attachments/network-log-1cfb2e991b76db924031db19196e4c2b82638b72.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-可点击入口真实交互 › CLICK-004 设置页好友入口真实点击后可跳转" classname="08-clickable-actions.spec.js" time="1.521">
+<testcase name="A2-可点击入口真实交互 › CLICK-004 设置页好友入口真实点击后可跳转" classname="08-clickable-actions.spec.js" time="1.541">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/08-clickable-actions-A2-可点击入口真实交互-CLICK-004-设置页好友入口真实点击后可跳转/attachments/network-log-517c6f124815a8dc28ee4d9539276c9019bb5de6.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-可点击入口真实交互 › CLICK-005 文档转换页点击选择文件会真实弹出文件选择并更新 UI" classname="08-clickable-actions.spec.js" time="1.696">
+<testcase name="A2-可点击入口真实交互 › CLICK-005 文档转换页点击选择文件会真实弹出文件选择并更新 UI" classname="08-clickable-actions.spec.js" time="1.859">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/08-clickable-actions-A2-可点-2139a--文档转换页点击选择文件会真实弹出文件选择并更新-UI/attachments/network-log-0ef1199065737125027a0d76fabd2d913287888d.json]]
@@ -338,71 +338,71 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="09-detailed-click-coverage.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="10" failures="0" skipped="0" time="59.431" errors="0">
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-001 首页欢迎横幅空题库弹窗与确认跳转可点击" classname="09-detailed-click-coverage.spec.js" time="3.504">
+<testsuite name="09-detailed-click-coverage.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="10" failures="0" skipped="0" time="62.501" errors="0">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-001 首页欢迎横幅空题库弹窗与确认跳转可点击" classname="09-detailed-click-coverage.spec.js" time="3.479">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-483e6-AIL-001-首页欢迎横幅空题库弹窗与确认跳转可点击/attachments/network-log-9875683ada1ddcd175d3d743576298c45d43fd6d.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-002 首页欢迎横幅与统计卡真实点击后可跳转" classname="09-detailed-click-coverage.spec.js" time="6.244">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-002 首页欢迎横幅与统计卡真实点击后可跳转" classname="09-detailed-click-coverage.spec.js" time="6.533">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-99834-TAIL-002-首页欢迎横幅与统计卡真实点击后可跳转/attachments/network-log-3a6783aa42f055c111e5f4dee8bbbda380c51e06.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-003 首页学习卡、推荐卡、金句卡与计划编辑真实点击可响应" classname="09-detailed-click-coverage.spec.js" time="7.222">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-003 首页学习卡、推荐卡、金句卡与计划编辑真实点击可响应" classname="09-detailed-click-coverage.spec.js" time="7.523">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-17781-3-首页学习卡、推荐卡、金句卡与计划编辑真实点击可响应/attachments/network-log-f1469988991b2c8b7704eb4c209d51703477de90.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-004 TabBar 四页真实点击切换可达" classname="09-detailed-click-coverage.spec.js" time="3.973">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-004 TabBar 四页真实点击切换可达" classname="09-detailed-click-coverage.spec.js" time="4.199">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-5f64e-ETAIL-004-TabBar-四页真实点击切换可达/attachments/network-log-259877d0fa136f242b7e4227740aef7c5ac1610e.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-005 刷题页剩余菜单与 PK 对战真实点击后可跳转" classname="09-detailed-click-coverage.spec.js" time="6.805">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-005 刷题页剩余菜单与 PK 对战真实点击后可跳转" classname="09-detailed-click-coverage.spec.js" time="7.228">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-340a7--005-刷题页剩余菜单与-PK-对战真实点击后可跳转/attachments/network-log-d8eb7a14923b0c5688ecb7587a90f72e3e62050d.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-006 练习模式弹层真实点击后可打开并关闭" classname="09-detailed-click-coverage.spec.js" time="24.116">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-006 练习模式弹层真实点击后可打开并关闭" classname="09-detailed-click-coverage.spec.js" time="24.345">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-5f110-ETAIL-006-练习模式弹层真实点击后可打开并关闭/attachments/network-log-a8b9d3eb38c353dffd50a512788a2899df8d81ab.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-007 文档转换完整点击流可执行" classname="09-detailed-click-coverage.spec.js" time="1.88">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-007 文档转换完整点击流可执行" classname="09-detailed-click-coverage.spec.js" time="2">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-b94d8-击覆盖-DETAIL-007-文档转换完整点击流可执行/attachments/network-log-921ac29e662a6e7a86a4f0f4acde42bf450b3447.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-008 证件照制作完整点击流可执行" classname="09-detailed-click-coverage.spec.js" time="2.035">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-008 证件照制作完整点击流可执行" classname="09-detailed-click-coverage.spec.js" time="2.324">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-776d4-覆盖-DETAIL-008-证件照制作完整点击流可执行/attachments/network-log-b7ae9f2e1a72e4857819655b8c1e0c560491d38c.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-009 拍照搜题完整点击流可执行" classname="09-detailed-click-coverage.spec.js" time="1.411">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-009 拍照搜题完整点击流可执行" classname="09-detailed-click-coverage.spec.js" time="2.033">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-0bd9c-击覆盖-DETAIL-009-拍照搜题完整点击流可执行/attachments/network-log-955267f4311036bdcc23f694124c7595541bc06d.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-010 个人中心主题按钮与反馈入口真实点击可响应" classname="09-detailed-click-coverage.spec.js" time="2.241">
+<testcase name="A2-更细颗粒度真实点击覆盖 › DETAIL-010 个人中心主题按钮与反馈入口真实点击可响应" classname="09-detailed-click-coverage.spec.js" time="2.837">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/09-detailed-click-coverage-1db5d-IL-010-个人中心主题按钮与反馈入口真实点击可响应/attachments/network-log-1f7f9c291e18af70b09192dc9b73fe05d4657ef7.json]]
@@ -410,15 +410,15 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="10-backend-driven-flows.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="2" failures="0" skipped="0" time="4.292" errors="0">
-<testcase name="A2-后端返回重点流转 › BACK-001 择校表单提交后真实渲染后端推荐结果，并可进入详情页" classname="10-backend-driven-flows.spec.js" time="2.429">
+<testsuite name="10-backend-driven-flows.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="2" failures="0" skipped="0" time="4.677" errors="0">
+<testcase name="A2-后端返回重点流转 › BACK-001 择校表单提交后真实渲染后端推荐结果，并可进入详情页" classname="10-backend-driven-flows.spec.js" time="2.698">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/10-backend-driven-flows-A2-29a5f-1-择校表单提交后真实渲染后端推荐结果，并可进入详情页/attachments/network-log-17fac7f2acebed87fa7dcdc3de19e66d9743ec62.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-后端返回重点流转 › BACK-002 智能好友聊天真实发送后可渲染后端回复" classname="10-backend-driven-flows.spec.js" time="1.863">
+<testcase name="A2-后端返回重点流转 › BACK-002 智能好友聊天真实发送后可渲染后端回复" classname="10-backend-driven-flows.spec.js" time="1.979">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/10-backend-driven-flows-A2-b0d5e-BACK-002-智能好友聊天真实发送后可渲染后端回复/attachments/network-log-44e2b1857a9d8c37fbd3c416745df043cc548e56.json]]
@@ -426,29 +426,29 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="11-login-and-import-precision.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="4" failures="0" skipped="0" time="10.139" errors="0">
-<testcase name="A2-登录与资料导入精细回归 › PREC-001 邮箱登录与注册密码输入默认隐藏" classname="11-login-and-import-precision.spec.js" time="1.844">
+<testsuite name="11-login-and-import-precision.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="4" failures="0" skipped="0" time="11.498" errors="0">
+<testcase name="A2-登录与资料导入精细回归 › PREC-001 邮箱登录与注册密码输入默认隐藏" classname="11-login-and-import-precision.spec.js" time="2.077">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/11-login-and-import-precis-607d3-回归-PREC-001-邮箱登录与注册密码输入默认隐藏/attachments/network-log-afd9a77f7041787211247f84ec11b96d0d6f4a8c.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-登录与资料导入精细回归 › PREC-002 邮箱注册发送验证码后显示倒计时并可成功注册" classname="11-login-and-import-precision.spec.js" time="3.476">
+<testcase name="A2-登录与资料导入精细回归 › PREC-002 邮箱注册发送验证码后显示倒计时并可成功注册" classname="11-login-and-import-precision.spec.js" time="3.539">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/11-login-and-import-precis-d8b65-C-002-邮箱注册发送验证码后显示倒计时并可成功注册/attachments/network-log-ce2285340d97257b16e355edcae025f2841e94d6.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-登录与资料导入精细回归 › PREC-003 验证码发送后按钮进入倒计时而不是假死" classname="11-login-and-import-precision.spec.js" time="1.9">
+<testcase name="A2-登录与资料导入精细回归 › PREC-003 验证码发送后按钮进入倒计时而不是假死" classname="11-login-and-import-precision.spec.js" time="2.46">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/11-login-and-import-precis-c9d73-PREC-003-验证码发送后按钮进入倒计时而不是假死/attachments/network-log-0e29846a205c8e426b543d673b8c675329892236.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-登录与资料导入精细回归 › PREC-004 欢迎横幅进入资料导入页后主卡片与操作栏不重叠" classname="11-login-and-import-precision.spec.js" time="2.919">
+<testcase name="A2-登录与资料导入精细回归 › PREC-004 欢迎横幅进入资料导入页后主卡片与操作栏不重叠" classname="11-login-and-import-precision.spec.js" time="3.422">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/11-login-and-import-precis-cc8f3--004-欢迎横幅进入资料导入页后主卡片与操作栏不重叠/attachments/network-log-29d07a4928eb757f8629bb880941e379c6ffe45b.json]]
@@ -456,8 +456,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="12-full-page-scroll-audit.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="1" failures="0" skipped="0" time="86.537" errors="0">
-<testcase name="A2-全页面滚动截图巡检 › SCROLL-001 全声明页面支持人工式滑动巡检并截图留档" classname="12-full-page-scroll-audit.spec.js" time="86.537">
+<testsuite name="12-full-page-scroll-audit.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="1" failures="0" skipped="0" time="93.869" errors="0">
+<testcase name="A2-全页面滚动截图巡检 › SCROLL-001 全声明页面支持人工式滑动巡检并截图留档" classname="12-full-page-scroll-audit.spec.js" time="93.869">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/12-full-page-scroll-audit--8044a-OLL-001-全声明页面支持人工式滑动巡检并截图留档/attachments/scroll-audit-top-pages-splash-index-fbbf68f0abed6f07a1e55e487fb2c5eb6586d2dd.png]]
@@ -585,29 +585,29 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="13-profile-settings-actions.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="4" failures="0" skipped="0" time="12.697" errors="0">
-<testcase name="A2-个人中心与设置页精细交互 › PROFILE-SET-001 登录页协议链接、个人中心反馈与设置菜单都可触达" classname="13-profile-settings-actions.spec.js" time="3.81">
+<testsuite name="13-profile-settings-actions.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="4" failures="0" skipped="0" time="14.426" errors="0">
+<testcase name="A2-个人中心与设置页精细交互 › PROFILE-SET-001 登录页协议链接、个人中心反馈与设置菜单都可触达" classname="13-profile-settings-actions.spec.js" time="4.394">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/13-profile-settings-action-e8142-001-登录页协议链接、个人中心反馈与设置菜单都可触达/attachments/network-log-64bfa5f96d81309eb72bc3897358560e363dcfea.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-个人中心与设置页精细交互 › PROFILE-SET-002 个人中心主题切换、退出确认与打卡按钮可响应" classname="13-profile-settings-actions.spec.js" time="2.026">
+<testcase name="A2-个人中心与设置页精细交互 › PROFILE-SET-002 个人中心主题切换、退出确认与打卡按钮可响应" classname="13-profile-settings-actions.spec.js" time="2.895">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/13-profile-settings-action-34345-T-002-个人中心主题切换、退出确认与打卡按钮可响应/attachments/network-log-8ee981280ec00b5eb4e897f441ffeeb66e2205d6.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-个人中心与设置页精细交互 › PROFILE-SET-003 设置页开关、清缓存、目标院校弹窗与注销确认可响应" classname="13-profile-settings-actions.spec.js" time="3.549">
+<testcase name="A2-个人中心与设置页精细交互 › PROFILE-SET-003 设置页开关、清缓存、目标院校弹窗与注销确认可响应" classname="13-profile-settings-actions.spec.js" time="3.891">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/13-profile-settings-action-d069e-03-设置页开关、清缓存、目标院校弹窗与注销确认可响应/attachments/network-log-d13a2d0d10bd363c650d887685bd08ddf5709cd3.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-个人中心与设置页精细交互 › PROFILE-SET-004 设置页目标院校删除与注销撤销状态可自动验证" classname="13-profile-settings-actions.spec.js" time="3.312">
+<testcase name="A2-个人中心与设置页精细交互 › PROFILE-SET-004 设置页目标院校删除与注销撤销状态可自动验证" classname="13-profile-settings-actions.spec.js" time="3.246">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/13-profile-settings-action-1653f-T-004-设置页目标院校删除与注销撤销状态可自动验证/attachments/network-log-fefc441fdf517855a01d6bc17f05e2f05c4457ca.json]]
@@ -615,22 +615,22 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="14-share-and-native-fallbacks.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="3" failures="0" skipped="0" time="6.71" errors="0">
-<testcase name="A2-分享与原生降级链路 › SHARE-001 首页每日金句分享面板可打开并关闭" classname="14-share-and-native-fallbacks.spec.js" time="2.336">
+<testsuite name="14-share-and-native-fallbacks.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="3" failures="0" skipped="0" time="7.468" errors="0">
+<testcase name="A2-分享与原生降级链路 › SHARE-001 首页每日金句分享面板可打开并关闭" classname="14-share-and-native-fallbacks.spec.js" time="2.688">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/14-share-and-native-fallba-a3676--SHARE-001-首页每日金句分享面板可打开并关闭/attachments/network-log-15bc1ccf7cef0a9fbd6d816cf95930c115bdd5cf.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-分享与原生降级链路 › SHARE-002 院校详情页分享按钮在 H5 下优先分享，失败时回退复制" classname="14-share-and-native-fallbacks.spec.js" time="1.827">
+<testcase name="A2-分享与原生降级链路 › SHARE-002 院校详情页分享按钮在 H5 下优先分享，失败时回退复制" classname="14-share-and-native-fallbacks.spec.js" time="2.096">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/14-share-and-native-fallba-4204c-院校详情页分享按钮在-H5-下优先分享，失败时回退复制/attachments/network-log-8e73291b6bde65430db504b3e54481efb832f544.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-分享与原生降级链路 › SHARE-003 登录页隐私政策与用户协议链接持续可访问" classname="14-share-and-native-fallbacks.spec.js" time="2.547">
+<testcase name="A2-分享与原生降级链路 › SHARE-003 登录页隐私政策与用户协议链接持续可访问" classname="14-share-and-native-fallbacks.spec.js" time="2.684">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/14-share-and-native-fallba-9ed2d-ARE-003-登录页隐私政策与用户协议链接持续可访问/attachments/network-log-fe6a8b954dd7660ac1d50fb5f25ac0f274397029.json]]
@@ -638,36 +638,36 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="15-long-tail-pages.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="5" failures="0" skipped="0" time="13.972" errors="0">
-<testcase name="A2-长尾页面深度回归 › LONG-001 收藏页支持答案展开、笔记保存与跳转练习" classname="15-long-tail-pages.spec.js" time="2.614">
+<testsuite name="15-long-tail-pages.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="5" failures="0" skipped="0" time="16.229" errors="0">
+<testcase name="A2-长尾页面深度回归 › LONG-001 收藏页支持答案展开、笔记保存与跳转练习" classname="15-long-tail-pages.spec.js" time="2.929">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/15-long-tail-pages-A2-长尾页面深度回归-LONG-001-收藏页支持答案展开、笔记保存与跳转练习/attachments/network-log-3e4a3f112d15ab5317badde429a6b26e2fec9e30.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-长尾页面深度回归 › LONG-002 文件管理页支持查看文件信息、删除与清空" classname="15-long-tail-pages.spec.js" time="1.953">
+<testcase name="A2-长尾页面深度回归 › LONG-002 文件管理页支持查看文件信息、删除与清空" classname="15-long-tail-pages.spec.js" time="2.104">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/15-long-tail-pages-A2-长尾页面深度回归-LONG-002-文件管理页支持查看文件信息、删除与清空/attachments/network-log-14f0b86bb597aa1fd80e294f6a897ad54109da61.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-长尾页面深度回归 › LONG-003 好友页支持搜索加好友、查看资料与删除好友" classname="15-long-tail-pages.spec.js" time="4.554">
+<testcase name="A2-长尾页面深度回归 › LONG-003 好友页支持搜索加好友、查看资料与删除好友" classname="15-long-tail-pages.spec.js" time="5.291">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/15-long-tail-pages-A2-长尾页面深度回归-LONG-003-好友页支持搜索加好友、查看资料与删除好友/attachments/network-log-e0745719f826dcbdf9976e9e6dedbf8cd9a4c3bc.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-长尾页面深度回归 › LONG-004 知识图谱支持掌握度查看、节点详情与练习跳转" classname="15-long-tail-pages.spec.js" time="2.561">
+<testcase name="A2-长尾页面深度回归 › LONG-004 知识图谱支持掌握度查看、节点详情与练习跳转" classname="15-long-tail-pages.spec.js" time="3.223">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/15-long-tail-pages-A2-长尾页面-631ed-G-004-知识图谱支持掌握度查看、节点详情与练习跳转/attachments/network-log-092af2e00f5da5df9b9335285e811d95523a1e82.json]]
 ]]>
 </system-out>
 </testcase>
-<testcase name="A2-长尾页面深度回归 › LONG-005 学习计划支持详情查看、智能调整与删除" classname="15-long-tail-pages.spec.js" time="2.29">
+<testcase name="A2-长尾页面深度回归 › LONG-005 学习计划支持详情查看、智能调整与删除" classname="15-long-tail-pages.spec.js" time="2.682">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/15-long-tail-pages-A2-长尾页面深度回归-LONG-005-学习计划支持详情查看、智能调整与删除/attachments/network-log-ccbdca3403268a5d2ad416dacbbb69cdc8a97d40.json]]
@@ -675,8 +675,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="16-gap-coverage.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="15" failures="0" skipped="0" time="80.887" errors="0">
-<testcase name="GAP-P0 核心流程补充 › GAP-01 择校完整流程: 填表→提交→AI推荐→院校详情" classname="16-gap-coverage.spec.js" time="17.569">
+<testsuite name="16-gap-coverage.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="15" failures="0" skipped="0" time="88.436" errors="0">
+<testcase name="GAP-P0 核心流程补充 › GAP-01 择校完整流程: 填表→提交→AI推荐→院校详情" classname="16-gap-coverage.spec.js" time="18.269">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-01-择校完整流程-填表→提交→AI推荐→院校详情/attachments/gap-01-school-full-flow-a7b294285027de30b848eae99392b36637ad29a0.png]]
@@ -685,7 +685,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P0 核心流程补充 › GAP-02 错题本: 页面可达且空状态正确展示" classname="16-gap-coverage.spec.js" time="1.572">
+<testcase name="GAP-P0 核心流程补充 › GAP-02 错题本: 页面可达且空状态正确展示" classname="16-gap-coverage.spec.js" time="1.823">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-02-错题本-页面可达且空状态正确展示/attachments/gap-02-mistake-book-4c80c5c4f59374c5aaf8b31a1844c7538a7483b2.png]]
@@ -694,7 +694,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P0 核心流程补充 › GAP-05 Token过期: 清除token后访问需登录页应重定向或提示" classname="16-gap-coverage.spec.js" time="2.098">
+<testcase name="GAP-P0 核心流程补充 › GAP-05 Token过期: 清除token后访问需登录页应重定向或提示" classname="16-gap-coverage.spec.js" time="2.633">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流-829bf-ken过期-清除token后访问需登录页应重定向或提示/attachments/gap-05-token-expired-049584f5a4feb25e64a6a19ae6509587b7b94e78.png]]
@@ -703,7 +703,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P0 核心流程补充 › GAP-07 做题进度恢复: 有题库时进入做题页可看到进度UI" classname="16-gap-coverage.spec.js" time="2.108">
+<testcase name="GAP-P0 核心流程补充 › GAP-07 做题进度恢复: 有题库时进入做题页可看到进度UI" classname="16-gap-coverage.spec.js" time="2.576">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-07-做题进度恢复-有题库时进入做题页可看到进度UI/attachments/gap-07-quiz-progress-7a1e3297c98207944d61e9e61abba32da6dcb8e5.png]]
@@ -712,7 +712,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P0 核心流程补充 › GAP-13 XSS防护: 聊天输入脚本标签不会执行" classname="16-gap-coverage.spec.js" time="3.059">
+<testcase name="GAP-P0 核心流程补充 › GAP-13 XSS防护: 聊天输入脚本标签不会执行" classname="16-gap-coverage.spec.js" time="3.408">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-13-XSS防护-聊天输入脚本标签不会执行/attachments/gap-13-xss-prevention-7d01b0aeab0901842e9c21ef26312fa64c14422a.png]]
@@ -721,7 +721,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P0 核心流程补充 › GAP-14 未登录访问需登录页: 应显示登录提示或降级" classname="16-gap-coverage.spec.js" time="3.993">
+<testcase name="GAP-P0 核心流程补充 › GAP-14 未登录访问需登录页: 应显示登录提示或降级" classname="16-gap-coverage.spec.js" time="4.876">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P0-核心流程补充-GAP-14-未登录访问需登录页-应显示登录提示或降级/attachments/gap-14-unauthenticated-access-a1bd83deca61059a6d47e3866c314b963abe23c2.png]]
@@ -730,7 +730,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P1 次要流程补充 › GAP-03 PK对战: 页面可达且核心UI元素存在" classname="16-gap-coverage.spec.js" time="2.722">
+<testcase name="GAP-P1 次要流程补充 › GAP-03 PK对战: 页面可达且核心UI元素存在" classname="16-gap-coverage.spec.js" time="3.404">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-03-PK对战-页面可达且核心UI元素存在/attachments/gap-03-pk-battle-66c74ae60c9845d74d92aa2ad2d0c5f67b973b5d.png]]
@@ -739,7 +739,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P1 次要流程补充 › GAP-04 模拟考试: 页面可达且核心UI元素存在" classname="16-gap-coverage.spec.js" time="2.468">
+<testcase name="GAP-P1 次要流程补充 › GAP-04 模拟考试: 页面可达且核心UI元素存在" classname="16-gap-coverage.spec.js" time="2.811">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-04-模拟考试-页面可达且核心UI元素存在/attachments/gap-04-mock-exam-6f7be5581debe55baba17189a2750fe0a2c79fd7.png]]
@@ -748,7 +748,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P1 次要流程补充 › GAP-06 接口超时: 页面显示loading或超时提示而非白屏" classname="16-gap-coverage.spec.js" time="2.394">
+<testcase name="GAP-P1 次要流程补充 › GAP-06 接口超时: 页面显示loading或超时提示而非白屏" classname="16-gap-coverage.spec.js" time="2.888">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流-8ed78-6-接口超时-页面显示loading或超时提示而非白屏/attachments/gap-06-api-timeout-72de99faf5f142e74991de6e41ed8c3715dfa909.png]]
@@ -757,7 +757,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P1 次要流程补充 › GAP-08 学习计划创建: 表单可填写且保存按钮可点击" classname="16-gap-coverage.spec.js" time="11.917">
+<testcase name="GAP-P1 次要流程补充 › GAP-08 学习计划创建: 表单可填写且保存按钮可点击" classname="16-gap-coverage.spec.js" time="12.417">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-08-学习计划创建-表单可填写且保存按钮可点击/attachments/gap-08-plan-create-form-fb8f64dd440b29f46d99e69a1e0df89bbedcb9e4.png]]
@@ -766,7 +766,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P1 次要流程补充 › GAP-09 首页下拉刷新: 触发后页面不崩溃" classname="16-gap-coverage.spec.js" time="4.118">
+<testcase name="GAP-P1 次要流程补充 › GAP-09 首页下拉刷新: 触发后页面不崩溃" classname="16-gap-coverage.spec.js" time="4.792">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-09-首页下拉刷新-触发后页面不崩溃/attachments/gap-09-pull-refresh-4b78aa96da2cc0d9964c6c102b3f0a9d893e2dae.png]]
@@ -775,7 +775,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P1 次要流程补充 › GAP-10 聊天页滑动: 页面可滑动且不崩溃" classname="16-gap-coverage.spec.js" time="2.939">
+<testcase name="GAP-P1 次要流程补充 › GAP-10 聊天页滑动: 页面可滑动且不崩溃" classname="16-gap-coverage.spec.js" time="3.356">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-10-聊天页滑动-页面可滑动且不崩溃/attachments/gap-10-chat-scroll-c7a02f8a81b7ce9ba9b4e0c9a4a17a8c19748a4c.png]]
@@ -784,7 +784,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P1 次要流程补充 › GAP-11 375px布局: 关键页面无水平溢出" classname="16-gap-coverage.spec.js" time="5.315">
+<testcase name="GAP-P1 次要流程补充 › GAP-11 375px布局: 关键页面无水平溢出" classname="16-gap-coverage.spec.js" time="5.765">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-11-375px布局-关键页面无水平溢出/attachments/gap-11-375px-compat-5373b8e2afa21a88b672ab8bf8f8c3e5ade5c7fb.png]]
@@ -793,7 +793,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P1 次要流程补充 › GAP-15 空题库: 各页面空状态正确展示" classname="16-gap-coverage.spec.js" time="13.814">
+<testcase name="GAP-P1 次要流程补充 › GAP-15 空题库: 各页面空状态正确展示" classname="16-gap-coverage.spec.js" time="14.253">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P1-次要流程补充-GAP-15-空题库-各页面空状态正确展示/attachments/gap-15-empty-state-67e54a62292c2d72a81ee3dd476831a11d15cbb9.png]]
@@ -802,7 +802,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="GAP-P2 兼容性补充 › GAP-12 414px布局: 关键页面无水平溢出" classname="16-gap-coverage.spec.js" time="4.801">
+<testcase name="GAP-P2 兼容性补充 › GAP-12 414px布局: 关键页面无水平溢出" classname="16-gap-coverage.spec.js" time="5.165">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/16-gap-coverage-GAP-P2-兼容性补充-GAP-12-414px布局-关键页面无水平溢出/attachments/gap-12-414px-compat-9aa432a8a191b954e1741c01df59034fcaf02448.png]]
@@ -812,8 +812,8 @@
 </system-out>
 </testcase>
 </testsuite>
-<testsuite name="17-deep-feature-flows.spec.js" timestamp="2026-03-16T05:50:08.140Z" hostname="" tests="7" failures="0" skipped="0" time="22.884" errors="0">
-<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-01 上传题库完整流程: 选文件→解析→生成题目→进入刷题" classname="17-deep-feature-flows.spec.js" time="2.843">
+<testsuite name="17-deep-feature-flows.spec.js" timestamp="2026-03-17T03:22:11.242Z" hostname="" tests="7" failures="0" skipped="0" time="26.145" errors="0">
+<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-01 上传题库完整流程: 选文件→解析→生成题目→进入刷题" classname="17-deep-feature-flows.spec.js" time="3.401">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/17-deep-feature-flows-深度功能-958c3-1-上传题库完整流程-选文件→解析→生成题目→进入刷题/attachments/deep-01-import-data-flow-10da0938d58cbbeb48724a045f2b8c790f06ea6f.png]]
@@ -822,7 +822,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-02 拍照搜题完整流程: 选图→识别→显示结果→AI解析" classname="17-deep-feature-flows.spec.js" time="2.264">
+<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-02 拍照搜题完整流程: 选图→识别→显示结果→AI解析" classname="17-deep-feature-flows.spec.js" time="2.734">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/17-deep-feature-flows-深度功能-d068d-02-拍照搜题完整流程-选图→识别→显示结果→AI解析/attachments/deep-02-photo-search-flow-c142d6700d274b9f7e231904575fc166afe0f455.png]]
@@ -831,7 +831,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-03 文档转换完整流程: 选文件→选格式→转换→轮询→结果" classname="17-deep-feature-flows.spec.js" time="2.632">
+<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-03 文档转换完整流程: 选文件→选格式→转换→轮询→结果" classname="17-deep-feature-flows.spec.js" time="3.151">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/17-deep-feature-flows-深度功能-b7ca1-3-文档转换完整流程-选文件→选格式→转换→轮询→结果/attachments/deep-03-doc-convert-flow-cd396422f3f12052338603959f314d7a407163d4.png]]
@@ -840,7 +840,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-04 证件照完整流程: 选照片→选尺寸→选颜色→制作→保存" classname="17-deep-feature-flows.spec.js" time="2.526">
+<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-04 证件照完整流程: 选照片→选尺寸→选颜色→制作→保存" classname="17-deep-feature-flows.spec.js" time="2.942">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/17-deep-feature-flows-深度功能-4938d-4-证件照完整流程-选照片→选尺寸→选颜色→制作→保存/attachments/deep-04-id-photo-flow-e4c77cf7b674b6b4ded2c65b402059d76425150d.png]]
@@ -849,7 +849,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-05 AI聊天完整流程: 输入→发送→等待→回复→重试" classname="17-deep-feature-flows.spec.js" time="4.394">
+<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-05 AI聊天完整流程: 输入→发送→等待→回复→重试" classname="17-deep-feature-flows.spec.js" time="4.94">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/17-deep-feature-flows-深度功能-9279c--05-AI聊天完整流程-输入→发送→等待→回复→重试/attachments/deep-05-chat-flow-67729982dd5967f6af8e3c64ddbe4eba8f712110.png]]
@@ -858,7 +858,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-06 语音输入流程: 验证录音按钮和权限提示" classname="17-deep-feature-flows.spec.js" time="1.88">
+<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-06 语音输入流程: 验证录音按钮和权限提示" classname="17-deep-feature-flows.spec.js" time="2.361">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/17-deep-feature-flows-深度功能-846b8--DEEP-06-语音输入流程-验证录音按钮和权限提示/attachments/deep-06-voice-input-ui-5492c75a1399118558a466fd12d20b2515b13e95.png]]
@@ -867,7 +867,7 @@
 ]]>
 </system-out>
 </testcase>
-<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-07 完整刷题流程: 有题库→开始刷题→答题→查看解析→下一题" classname="17-deep-feature-flows.spec.js" time="6.345">
+<testcase name="深度功能流程 — 真实用户操作模拟 › DEEP-07 完整刷题流程: 有题库→开始刷题→答题→查看解析→下一题" classname="17-deep-feature-flows.spec.js" time="6.616">
 <system-out>
 <![CDATA[
 [[ATTACHMENT|../../test-results/e2e-regression/17-deep-feature-flows-深度功能-b9958-完整刷题流程-有题库→开始刷题→答题→查看解析→下一题/attachments/deep-07-quiz-full-flow-5ff03156311599f5c15542852f83e7ae43220f1f.png]]

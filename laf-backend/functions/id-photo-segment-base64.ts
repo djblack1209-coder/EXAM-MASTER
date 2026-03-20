@@ -1,6 +1,5 @@
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 const logger = createLogger('[IdPhoto]');
 
 export default async function (ctx) {
@@ -15,16 +14,11 @@ export default async function (ctx) {
   });
 
   // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费腾讯云 API 额度
-  const authToken = extractBearerToken(ctx.headers?.['authorization'] || ctx.headers?.Authorization);
-  if (!authToken) {
-    return unauthorizedResponse('请先登录');
+  const authResult = requireAuth(ctx);
+  if (isAuthError(authResult)) {
+    return unauthorizedResponse(authResult.message);
   }
-
-  const payload = verifyJWT(authToken);
-  if (!payload?.userId) {
-    return unauthorizedResponse('token 无效或已过期');
-  }
-  const authUserId = payload.userId;
+  const authUserId = authResult.userId;
 
   // [AUDIT FIX] 速率限制 — 每用户每分钟最多 10 次证件照抠图
   const rateCheck = await checkRateLimitDistributed(`id_photo:${authUserId}`, 10, 60 * 1000);

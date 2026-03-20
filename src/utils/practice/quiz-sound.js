@@ -54,7 +54,9 @@ function ensureAudioContext() {
   if (_audioCtx && _audioCtx.state !== 'closed') {
     // 某些浏览器需要 resume 被挂起的上下文
     if (_audioCtx.state === 'suspended') {
-      _audioCtx.resume().catch(() => { /* ignore */ });
+      _audioCtx.resume().catch(() => {
+        /* ignore */
+      });
     }
     return _audioCtx;
   }

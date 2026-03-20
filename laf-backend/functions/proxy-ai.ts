@@ -29,8 +29,7 @@ import crypto from 'crypto';
 import { perfMonitor } from './_shared/perf-monitor';
 
 // ✅ B020: 导入 JWT 验证函数
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 // ==================== 环境配置 ====================
 import { IS_PRODUCTION, createLogger, checkRateLimitDistributed } from './_shared/api-response';
@@ -439,11 +438,8 @@ export default async function (ctx: FunctionContext) {
     }
 
     // ✅ B020: JWT 身份验证（必须验证用户身份，防止未授权访问）
-    const rawHeaderToken =
-      ctx.headers?.['authorization'] || ctx.headers?.Authorization || ctx.headers?.['x-auth-token'];
-    const token = extractBearerToken(rawHeaderToken);
-    const jwtPayload = verifyJWT(token);
-    if (!jwtPayload) {
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
       logger.warn(`[${requestId}] JWT 验证失败，拒绝未授权的 AI 请求`);
       return {
         code: 401,
@@ -452,7 +448,7 @@ export default async function (ctx: FunctionContext) {
         requestId
       };
     }
-    const authenticatedUserId = jwtPayload.userId || jwtPayload.uid;
+    const authenticatedUserId = authResult.userId;
 
     // ✅ 运行时检查：智谱 API 密钥是否可用
     if (!ZHIPU_API_KEY) {
@@ -1036,17 +1032,38 @@ function buildAdaptivePickPrompt() {
 }
 
 /**
- * 清理用户可控文本，降低 Prompt 注入风险
+ * [安全加固] 清理用户可控文本，降低 Prompt 注入风险
+ * 增强版：检测并拦截常见的提示词注入攻击模式
  */
 function sanitizePromptInput(input: unknown, maxLength: number = 200): string {
   if (typeof input !== 'string') return '';
 
-  return input
+  const cleaned = input
     .replace(/[`$<>{}]/g, '')
     .replace(/[\r\n\t]+/g, ' ')
     .replace(/\s{2,}/g, ' ')
-    .trim()
-    .substring(0, maxLength);
+    .trim();
+
+  // 检测提示词注入攻击模式
+  const injectionPatterns = [
+    /ignore\s+(previous|all|above|prior)\s+(instruction|prompt|rule|command)/i,
+    /forget\s+(everything|all|previous|above)/i,
+    /you\s+are\s+now\s+(a|an|the)/i,
+    /new\s+(instruction|prompt|rule|command|role)/i,
+    /system\s*:\s*/i,
+    /\[system\]/i,
+    /<\|im_start\|>/i,
+    /<\|im_end\|>/i
+  ];
+
+  for (const pattern of injectionPatterns) {
+    if (pattern.test(cleaned)) {
+      // 检测到注入尝试，返回安全的占位符
+      return '[用户输入已过滤]';
+    }
+  }
+
+  return cleaned.substring(0, maxLength);
 }
 
 /**

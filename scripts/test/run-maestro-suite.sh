@@ -259,8 +259,22 @@ if [[ "${MAESTRO_REQUIRE_NATIVE:-0}" == "1" ]] && ! is_package_installed "$APP_I
   exit 3
 fi
 
+FLOW_DIR="tests/maestro/flows"
+NATIVE_FLOWS=(
+  "$FLOW_DIR/00-smoke.yaml"
+  "$FLOW_DIR/01-login-input.yaml"
+  "$FLOW_DIR/02-core-practice.yaml"
+  "$FLOW_DIR/03-high-risk-tools.yaml"
+  "$FLOW_DIR/04-state-recovery.yaml"
+)
+
+if [[ "${MAESTRO_RUN_WEB_H5:-0}" == "1" ]]; then
+  echo "[maestro-run] MAESTRO_RUN_WEB_H5=1 -> running H5 flow with local dev server"
+  SKIP_MAESTRO_SYNTAX_CHECK=1 SKIP_MAESTRO_PREFLIGHT=1 bash scripts/test/run-maestro-web-h5.sh
+fi
+
 set +e
-maestro test tests/maestro/flows \
+maestro test "${NATIVE_FLOWS[@]}" \
   --format JUNIT \
   --output docs/reports/maestro-results.xml \
   --test-output-dir test-results/maestro \

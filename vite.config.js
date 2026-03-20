@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { createRequire } from 'module';
 import { normalizeAppRuntimeIndexFile } from './scripts/build/app-runtime-html.js';
+import { VitePWA } from 'vite-plugin-pwa';
 
 const require = createRequire(path.join(process.cwd(), 'vite.config.js'));
 const uniCliSharedUtils = require('@dcloudio/uni-cli-shared/dist/utils.js');
@@ -203,6 +204,8 @@ export default defineConfig(({ command, mode }) => {
 
   process.env.VITE_ROOT_DIR = viteRootDir;
 
+  const isH5 = !platform || platform === 'h5';
+
   console.log(`[Vite] Building for mode: ${mode}, command: ${command}, platform: ${platform || 'unknown'}`);
 
   return {
@@ -215,7 +218,66 @@ export default defineConfig(({ command, mode }) => {
       copyCustomTabBar(),
       emitAppPackManifest(),
       normalizeAppRuntimeIndex(),
-      forceAppInlineDynamicImports()
+      forceAppInlineDynamicImports(),
+      // Phase 3-6: PWA 离线体验（仅 H5 平台启用）
+      ...(isH5
+        ? [
+            VitePWA({
+              registerType: 'autoUpdate',
+              includeAssets: ['static/images/logo.png'],
+              manifest: {
+                name: '研友刷题',
+                short_name: '研友刷题',
+                description: '考研备考刷题助手 - 智能间隔重复、PK对战、AI诊断',
+                theme_color: '#6366f1',
+                background_color: '#f5f5f7',
+                display: 'standalone',
+                scope: '/',
+                start_url: '/',
+                icons: [
+                  { src: '/static/images/logo.png', sizes: '192x192', type: 'image/png' },
+                  { src: '/static/images/logo.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+                ]
+              },
+              workbox: {
+                // 预缓存 app shell
+                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                // 运行时缓存策略
+                runtimeCaching: [
+                  {
+                    // API 请求：NetworkFirst，离线时回退缓存
+                    urlPattern: /^https:\/\/.*\.(sealosbja\.site|lafyun\.com)\/.*/i,
+                    handler: 'NetworkFirst',
+                    options: {
+                      cacheName: 'api-cache',
+                      expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 }, // 1天
+                      networkTimeoutSeconds: 5,
+                      cacheableResponse: { statuses: [0, 200] }
+                    }
+                  },
+                  {
+                    // 图片资源：CacheFirst
+                    urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+                    handler: 'CacheFirst',
+                    options: {
+                      cacheName: 'image-cache',
+                      expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 30 } // 30天
+                    }
+                  },
+                  {
+                    // 字体：CacheFirst
+                    urlPattern: /\.(?:woff|woff2|ttf|eot)$/,
+                    handler: 'CacheFirst',
+                    options: {
+                      cacheName: 'font-cache',
+                      expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 } // 1年
+                    }
+                  }
+                ]
+              }
+            })
+          ]
+        : [])
     ],
 
     // 环境变量定义
@@ -242,7 +304,7 @@ export default defineConfig(({ command, mode }) => {
           silenceDeprecations: ['legacy-js-api'],
           // ✅ F003: 自动注入共享 SCSS 变量到所有组件
           additionalData: `
-            @use "${path.resolve(__dirname, 'src/styles/_variables.scss').replace(/\\/g, '/')}" as *;
+            @use "${path.resolve(__dirname, 'src/styles/_design-tokens.scss').replace(/\\/g, '/')}" as *;
             $env-mode: "${mode}";
             $is-production: ${isProduction};
           `

@@ -37,8 +37,7 @@
 
 import cloud from '@lafjs/cloud';
 import { validate } from './_shared/validator';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   success,
   badRequest,
@@ -77,16 +76,11 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费智谱 AI API 额度
-    const authToken = extractBearerToken(ctx.headers?.['authorization'] || ctx.headers?.Authorization);
-    if (!authToken) {
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
       return wrapResponse(unauthorized('请先登录'), requestId, startTime);
     }
-
-    const payload = verifyJWT(authToken);
-    if (!payload?.userId) {
-      return wrapResponse(unauthorized('token 无效或已过期'), requestId, startTime);
-    }
-    const authUserId = payload.userId;
+    const authUserId = authResult.userId;
 
     // [AUDIT FIX] 速率限制 — 每用户每分钟最多 15 次语音请求
     const rateCheck = await checkRateLimitDistributed(`voice:${authUserId}`, 15, 60 * 1000);

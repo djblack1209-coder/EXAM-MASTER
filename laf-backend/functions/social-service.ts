@@ -15,8 +15,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   badRequest,
   unauthorized,
@@ -53,16 +52,11 @@ export default async function (ctx) {
     }
 
     // [R2-P0] JWT 认证：所有操作强制验证（读操作也涉及用户私有数据）
-    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
-    if (!token) {
-      return { ...unauthorized('请先登录'), requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { ...authResult, requestId };
     }
-    const payload = verifyJWT(token);
-    if (!payload || !payload.userId) {
-      return { ...unauthorized('登录已过期，请重新登录'), requestId };
-    }
-    const userId = payload.userId;
+    const userId = authResult.userId;
 
     // 限流
     const rateLimit = await checkRateLimitDistributed(

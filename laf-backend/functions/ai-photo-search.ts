@@ -20,8 +20,7 @@ import { lookup } from 'dns/promises';
 import { isIP } from 'net';
 import { validate } from './_shared/validator';
 import { createLogger, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 const logger = createLogger('[AIPhotoSearch]');
 
@@ -74,16 +73,11 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费 AI API 额度
-    const authToken = extractBearerToken(ctx.headers?.['authorization'] || ctx.headers?.Authorization);
-    if (!authToken) {
-      return { code: 401, success: false, message: '请先登录', requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { code: 401, success: false, message: authResult.message, requestId };
     }
-
-    const payload = verifyJWT(authToken);
-    if (!payload?.userId) {
-      return { code: 401, success: false, message: 'token 无效或已过期', requestId };
-    }
-    const authUserId = payload.userId;
+    const authUserId = authResult.userId;
 
     // [AUDIT FIX] 速率限制 — 每用户每分钟最多 10 次拍照搜题
     const rateCheck = await checkRateLimitDistributed(`photo_search:${authUserId}`, 10, 60 * 1000);

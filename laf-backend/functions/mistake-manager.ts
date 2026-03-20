@@ -25,8 +25,16 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import {
+  scheduleReviewFSRS,
+  createNewCard,
+  hasFSRSState,
+  extractFSRSState,
+  migrateToFSRS,
+  type FSRSScheduleResult,
+  type ReviewLogRecord
+} from './_shared/fsrs-scheduler';
 import {
   sanitizeString,
   validateAction,
@@ -220,17 +228,12 @@ export default async function (ctx: FunctionContext) {
     }
 
     // [H-01 FIX] JWT 认证：始终从 JWT payload 派生 userId，不信任 body
-    const rawHeaderToken = ctx.headers?.authorization || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
-    if (!token) {
-      return { code: 401, ok: false, success: false, message: '缺少认证 token，请重新登录', requestId };
-    }
-    const jwtPayload = verifyJWT(token);
-    if (!jwtPayload || !jwtPayload.userId) {
-      return { code: 401, ok: false, success: false, message: 'token 无效或已过期，请重新登录', requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { code: 401, ok: false, success: false, message: authResult.message, requestId };
     }
     // 始终使用 JWT 中的 userId，忽略 body 中的值
-    const userId = jwtPayload.userId;
+    const userId = authResult.userId;
 
     if (!validateUserId(userId)) {
       return { code: 401, ok: false, success: false, message: '用户未登录或 userId 不合法', requestId };
@@ -379,9 +382,7 @@ async function handleAdd(userId, data, requestId) {
     review_count: 0,
     is_mastered: false,
     last_review_time: null,
-    next_review_time: now + 24 * 60 * 60 * 1000,
-    ease_factor: 2.5,
-    interval_days: 1,
+    ...createNewCard(),
     created_at: now,
     updated_at: now
   };
@@ -548,7 +549,7 @@ async function handleUpdateStatus(userId, data, requestId) {
     return { code: 404, ok: false, success: false, message: '错题不存在' };
   }
 
-  // 计算 SM-2 算法参数
+  // 计算 FSRS 调度参数（优先使用原生 FSRS 路径，回退到旧版 SM-2 兼容路径）
   const isMastered = Boolean(data.is_mastered);
   let updateData: Record<string, unknown> = {
     is_mastered: isMastered,
@@ -557,30 +558,59 @@ async function handleUpdateStatus(userId, data, requestId) {
     updated_at: now
   };
 
-  if (isMastered) {
-    // 掌握了，增加复习间隔
-    const currentEF = mistake.data.ease_factor || 2.5;
-    const currentInterval = mistake.data.interval_days || 1;
+  const rating = isMastered ? 'good' : 'again';
+  let fsrsResult: FSRSScheduleResult;
 
-    // SM-2 算法：新间隔 = 旧间隔 * EF
-    const newInterval = Math.min(Math.round(currentInterval * currentEF), 180); // 最大180天
-    const newEF = Math.max(currentEF + 0.1, 1.3); // EF 增加，最小1.3
+  if (hasFSRSState(mistake.data)) {
+    // ✅ FSRS 原生路径：无损往返，保留 lapses/state/learning_steps
+    const fsrsState = extractFSRSState(mistake.data);
+    fsrsResult = scheduleReviewFSRS(fsrsState, rating);
 
-    updateData.interval_days = newInterval;
-    updateData.ease_factor = newEF;
-    updateData.next_review_time = now + newInterval * 24 * 60 * 60 * 1000;
+    // 持久化完整 FSRS 卡片状态
+    updateData = {
+      ...updateData,
+      ...fsrsResult.card,
+      // 同时写回旧字段，保持向后兼容
+      interval_days: fsrsResult.legacy.interval_days,
+      ease_factor: fsrsResult.legacy.ease_factor,
+      next_review_time: fsrsResult.legacy.next_review_time
+    };
   } else {
-    // 没掌握，重置间隔
-    const currentEF = mistake.data.ease_factor || 2.5;
-    const newEF = Math.max(currentEF - 0.2, 1.3); // EF 减少
+    // 旧卡片：先迁移到 FSRS，再用原生路径调度
+    const migrated = migrateToFSRS({
+      ease_factor: mistake.data.ease_factor,
+      interval_days: mistake.data.interval_days,
+      review_count: mistake.data.review_count || 0,
+      last_review_time: mistake.data.last_review_time,
+      next_review_time: mistake.data.next_review_time
+    });
+    fsrsResult = scheduleReviewFSRS(migrated, rating);
 
-    updateData.interval_days = 1;
-    updateData.ease_factor = newEF;
-    updateData.next_review_time = now + 24 * 60 * 60 * 1000; // 1天后复习
+    updateData = {
+      ...updateData,
+      ...fsrsResult.card,
+      interval_days: fsrsResult.legacy.interval_days,
+      ease_factor: fsrsResult.legacy.ease_factor,
+      next_review_time: fsrsResult.legacy.next_review_time
+    };
   }
 
   // 执行更新
   const result = await collection.doc(data.id).update(updateData);
+
+  // ✅ Phase 3-1: 持久化 review log（异步写入，不阻塞主流程）
+  try {
+    const reviewLog: ReviewLogRecord = {
+      user_id: userId,
+      card_id: data.id,
+      card_type: 'mistake',
+      ...fsrsResult.reviewLog,
+      created_at: now
+    };
+    await db.collection('review_logs').add(reviewLog);
+  } catch (logErr) {
+    logger.warn(`[${requestId}] review_log 写入失败（不影响主流程）:`, logErr.message);
+  }
 
   logger.info(`[${requestId}] 更新错题状态: ${data.id}, is_mastered: ${isMastered}`);
 
@@ -632,7 +662,17 @@ async function handleUpdateFields(userId, data, requestId) {
     'ease_factor',
     'interval_days',
     'source',
-    'notes'
+    'notes',
+    // FSRS 原生字段
+    'due',
+    'stability',
+    'elapsed_days',
+    'scheduled_days',
+    'learning_steps',
+    'reps',
+    'lapses',
+    'state',
+    'last_review'
   ]);
 
   const updateData: Record<string, unknown> = {};
@@ -760,9 +800,7 @@ async function handleBatchSync(userId, data, requestId) {
           is_mastered: mistake.is_mastered || false,
           wrong_count: mistake.wrong_count || 1,
           review_count: 0,
-          ease_factor: 2.5,
-          interval_days: 1,
-          next_review_time: now + 24 * 60 * 60 * 1000,
+          ...createNewCard(),
           created_at: now,
           updated_at: now
         };

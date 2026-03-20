@@ -19,8 +19,7 @@ import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
 import { validate } from './_shared/validator';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 const logger = createLogger('[PhotoBg]');
 
@@ -77,16 +76,11 @@ export default async function (ctx) {
 
   try {
     // [AUDIT FIX] JWT 认证 — 防止未登录用户消耗付费腾讯云 API 额度
-    const authToken = extractBearerToken(ctx.headers?.['authorization'] || ctx.headers?.Authorization);
-    if (!authToken) {
-      return { code: 401, success: false, message: '请先登录', requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { code: 401, success: false, message: authResult.message, requestId };
     }
-
-    const payload = verifyJWT(authToken);
-    if (!payload?.userId) {
-      return { code: 401, success: false, message: 'token 无效或已过期', requestId };
-    }
-    const authUserId = payload.userId;
+    const authUserId = authResult.userId;
 
     // [AUDIT FIX] 速率限制 — 每用户每分钟最多 10 次证件照处理
     const rateCheck = await checkRateLimitDistributed(`photo_bg:${authUserId}`, 10, 60 * 1000);
@@ -185,24 +179,53 @@ function getColors() {
   };
 }
 
+// ==================== Base64 格式验证工具 ====================
+function validateBase64Image(
+  imageBase64: unknown,
+  requestId: string
+): { valid: boolean; error?: string; size?: number } {
+  if (!imageBase64 || typeof imageBase64 !== 'string') {
+    return { valid: false, error: '缺少图片数据 imageBase64' };
+  }
+
+  // 去除可能的 data URL 前缀
+  const cleanBase64 = (imageBase64 as string).replace(/^data:image\/\w+;base64,/, '');
+
+  // 验证 Base64 格式（只允许合法字符）
+  if (!/^[A-Za-z0-9+/]+=*$/.test(cleanBase64)) {
+    logger.warn(`[${requestId}] 无效的 Base64 格式`);
+    return { valid: false, error: '图片数据格式无效' };
+  }
+
+  // 解码并验证实际大小
+  let decoded: Buffer;
+  try {
+    decoded = Buffer.from(cleanBase64, 'base64');
+  } catch {
+    return { valid: false, error: '图片数据解码失败' };
+  }
+
+  if (decoded.length === 0) {
+    return { valid: false, error: '图片数据为空' };
+  }
+
+  if (decoded.length > CONFIG.maxFileSize) {
+    return { valid: false, error: `图片过大，最大支持 ${CONFIG.maxFileSize / 1024 / 1024}MB` };
+  }
+
+  return { valid: true, size: decoded.length };
+}
+
 // ==================== 移除背景（人像抠图）====================
 async function removeBackground(params, requestId) {
   const { imageBase64 } = params;
 
-  if (!imageBase64) {
-    return { code: 400, success: false, message: '缺少图片数据 imageBase64', requestId };
+  // [安全加固] Base64 格式验证 + 实际大小校验
+  const validation = validateBase64Image(imageBase64, requestId);
+  if (!validation.valid) {
+    return { code: 400, success: false, message: validation.error, requestId };
   }
-
-  // 检查文件大小
-  const fileSize = Buffer.from(imageBase64, 'base64').length;
-  if (fileSize > CONFIG.maxFileSize) {
-    return {
-      code: 400,
-      success: false,
-      message: `图片过大，最大支持 ${CONFIG.maxFileSize / 1024 / 1024}MB`,
-      requestId
-    };
-  }
+  const fileSize = validation.size;
 
   logger.info(`[${requestId}] 开始人像抠图, 图片大小: ${(fileSize / 1024).toFixed(2)}KB`);
 
@@ -255,8 +278,10 @@ async function removeBackground(params, requestId) {
 async function changeBackground(params, requestId) {
   const { imageBase64, bgColor, customColor } = params;
 
-  if (!imageBase64) {
-    return { code: 400, success: false, message: '缺少图片数据 imageBase64', requestId };
+  // [安全加固] Base64 格式验证 + 实际大小校验
+  const validation = validateBase64Image(imageBase64, requestId);
+  if (!validation.valid) {
+    return { code: 400, success: false, message: validation.error, requestId };
   }
 
   // 获取背景颜色配置
@@ -317,8 +342,10 @@ async function changeBackground(params, requestId) {
 async function processPhoto(params, requestId) {
   const { imageBase64, bgColor = 'white', customColor, size = '1inch', beauty = false, beautyLevel = 50 } = params;
 
-  if (!imageBase64) {
-    return { code: 400, success: false, message: '缺少图片数据 imageBase64', requestId };
+  // [安全加固] Base64 格式验证 + 实际大小校验
+  const imgValidation = validateBase64Image(imageBase64, requestId);
+  if (!imgValidation.valid) {
+    return { code: 400, success: false, message: imgValidation.error, requestId };
   }
 
   const sizeConfig = PHOTO_SIZES[size];
@@ -429,8 +456,10 @@ async function processPhoto(params, requestId) {
 async function applyBeauty(params, requestId) {
   const { imageBase64, whitening = 50, smoothing = 50, faceLifting = 30, eyeEnlarging = 20 } = params;
 
-  if (!imageBase64) {
-    return { code: 400, success: false, message: '缺少图片数据 imageBase64', requestId };
+  // [安全加固] Base64 格式验证 + 实际大小校验
+  const beautyValidation = validateBase64Image(imageBase64, requestId);
+  if (!beautyValidation.valid) {
+    return { code: 400, success: false, message: beautyValidation.error, requestId };
   }
 
   logger.info(`[${requestId}] 美颜处理: 美白=${whitening}, 磨皮=${smoothing}`);

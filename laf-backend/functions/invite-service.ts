@@ -10,8 +10,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   logger,
   success,
@@ -40,23 +39,17 @@ export default async function (ctx) {
 
   try {
     const { action, ...params } = ctx.body || {};
-    let userId: string;
 
     if (!action || typeof action !== 'string') {
       return { ...badRequest('参数错误: action 不合法'), requestId };
     }
 
     // [R2-P0] JWT 认证：所有操作强制验证（get_info 也涉及用户私有数据）
-    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
-    if (!token) {
-      return { ...unauthorized('请先登录'), requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { ...authResult, requestId };
     }
-    const payload = verifyJWT(token);
-    if (!payload || !payload.userId) {
-      return { ...unauthorized('登录已过期，请重新登录'), requestId };
-    }
-    userId = payload.userId;
+    const userId = authResult.userId;
 
     if (!userId || typeof userId !== 'string' || userId.length > 64) {
       return { ...unauthorized('请先登录'), requestId };

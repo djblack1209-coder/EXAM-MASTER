@@ -472,6 +472,79 @@ export default async function (ctx) {
       results.push({ collection: 'goal_progress (unique)', status: 'warn', message: e.message });
     }
 
+    // ==================== AI课堂: lessons 集合索引 ====================
+    try {
+      const lessonsCol = db.collection('lessons');
+      await lessonsCol.createIndex({ userId: 1, created_at: -1 }, { name: 'idx_user_created' });
+      await lessonsCol.createIndex({ userId: 1, status: 1 }, { name: 'idx_user_status' });
+      await lessonsCol.createIndex({ status: 1, updated_at: -1 }, { name: 'idx_status_updated' });
+      results.push({ collection: 'lessons', status: 'ok', indexes: 3 });
+    } catch (e) {
+      results.push({ collection: 'lessons', status: 'error', message: e.message });
+    }
+
+    // ==================== AI课堂: classroom_sessions 集合索引 ====================
+    try {
+      const sessionsCol = db.collection('classroom_sessions');
+      await sessionsCol.createIndex({ lessonId: 1, userId: 1 }, { name: 'idx_lesson_user' });
+      await sessionsCol.createIndex({ userId: 1, startedAt: -1 }, { name: 'idx_user_started' });
+      await sessionsCol.createIndex({ userId: 1, completedAt: 1 }, { sparse: true, name: 'idx_user_completed' });
+      results.push({ collection: 'classroom_sessions', status: 'ok', indexes: 3 });
+    } catch (e) {
+      results.push({ collection: 'classroom_sessions', status: 'error', message: e.message });
+    }
+
+    // ==================== AI课堂: ai_grade_results 集合索引 ====================
+    try {
+      const gradeCol = db.collection('ai_grade_results');
+      await gradeCol.createIndex({ userId: 1, created_at: -1 }, { name: 'idx_user_created' });
+      await gradeCol.createIndex({ userId: 1, lessonId: 1 }, { sparse: true, name: 'idx_user_lesson' });
+      await gradeCol.createIndex({ userId: 1, questionId: 1 }, { name: 'idx_user_question' });
+      results.push({ collection: 'ai_grade_results', status: 'ok', indexes: 3 });
+    } catch (e) {
+      results.push({ collection: 'ai_grade_results', status: 'error', message: e.message });
+    }
+
+    // ==================== AI诊断: ai_diagnoses 集合索引 ====================
+    try {
+      const diagCol = db.collection('ai_diagnoses');
+      await diagCol.createIndex({ userId: 1, created_at: -1 }, { name: 'idx_user_created' });
+      await diagCol.createIndex({ userId: 1, sessionId: 1 }, { name: 'idx_user_session' });
+      results.push({ collection: 'ai_diagnoses', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'ai_diagnoses', status: 'error', message: e.message });
+    }
+
+    // ==================== AI诊断: practice_session_cache 集合索引 ====================
+    try {
+      const sessionCacheCol = db.collection('practice_session_cache');
+      await sessionCacheCol.createIndex(
+        { user_id: 1, session_id: 1 },
+        { unique: true, name: 'idx_user_session_unique' }
+      );
+      await sessionCacheCol.createIndex({ user_id: 1, diagnosis_status: 1 }, { name: 'idx_user_diag_status' });
+      await sessionCacheCol.createIndex({ created_at: 1 }, { expireAfterSeconds: 7 * 24 * 3600, name: 'idx_ttl_7d' }); // 7天自动过期
+      results.push({ collection: 'practice_session_cache', status: 'ok', indexes: 3 });
+    } catch (e) {
+      results.push({ collection: 'practice_session_cache', status: 'error', message: e.message });
+    }
+
+    // ==================== 错题本: 补充SM-2复习调度索引 ====================
+    try {
+      const mistakeCol = db.collection('mistake_book');
+      await mistakeCol.createIndex(
+        { user_id: 1, is_mastered: 1, next_review_at: 1 },
+        { name: 'idx_user_review_schedule' }
+      );
+      await mistakeCol.createIndex(
+        { user_id: 1, knowledge_point: 1, is_mastered: 1 },
+        { name: 'idx_user_kp_mastered' }
+      );
+      results.push({ collection: 'mistake_book (SM-2)', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'mistake_book (SM-2)', status: 'error', message: e.message });
+    }
+
     const totalIndexes = results.reduce((sum, r) => sum + (r.indexes || 0), 0);
     const failedCollections = results.filter((r) => r.status === 'error');
 

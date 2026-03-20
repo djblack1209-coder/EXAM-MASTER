@@ -23,16 +23,16 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
-  logger,
-  validateUserId,
   success,
   badRequest,
-  unauthorized,
   serverError,
-  generateRequestId
+  validateUserId,
+  checkRateLimit,
+  logger,
+  generateRequestId,
+  wrapResponse
 } from './_shared/api-response';
 
 const db = cloud.database();
@@ -222,24 +222,24 @@ export default async function (ctx) {
     }
 
     // JWT 认证：所有操作强制验证（防止未认证用户查询他人记录或计算ELO）
-    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
-    if (!token) {
-      return { ...unauthorized('请先登录'), requestId };
-    }
-    const payload = verifyJWT(token);
-    if (!payload || !payload.userId) {
-      return { ...unauthorized('登录已过期，请重新登录'), requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { ...authResult, requestId };
     }
     // 将验证后的 userId 注入 params，防止伪造
-    params._authUserId = payload.userId;
+    params._authUserId = authResult.userId;
 
     logger.info(`[${requestId}] action: ${action}`);
 
     const handlers = {
       submit_result: handleSubmitResult,
       get_records: handleGetRecords,
-      calculate_elo: handleCalculateElo
+      calculate_elo: handleCalculateElo,
+      // Phase 3-2: 实时PK房间管理
+      find_match: handleFindMatch,
+      poll_room: handlePollRoom,
+      room_answer: handleRoomAnswer,
+      leave_room: handleLeaveRoom
     };
 
     const handler = handlers[action];
@@ -894,4 +894,422 @@ async function banUser(uid: string, duration: number, reason: string, requestId:
   } catch (e) {
     logger.error('[AntiCheat] 封禁用户失败:', e);
   }
+}
+
+// ==================== Phase 3-2: 实时 PK 房间管理 ====================
+
+const PK_ROOMS_COLLECTION = 'pk_rooms';
+const ROOM_TTL = 10 * 60 * 1000; // 房间 10 分钟过期
+const MATCH_TIMEOUT = 30 * 1000; // 匹配超时 30 秒
+
+/**
+ * 寻找匹配 / 创建房间
+ * 逻辑：查找 waiting 状态的房间 → 有则加入 → 无则创建新房间
+ * 参数：category, questionCount (可选)
+ */
+async function handleFindMatch(params, requestId) {
+  const userId = params._authUserId;
+  const category = params.category || '综合';
+  const questionCount = Math.min(Math.max(parseInt(params.questionCount) || 5, 3), 10);
+  const now = Date.now();
+
+  const rooms = db.collection(PK_ROOMS_COLLECTION);
+
+  // 先清理该用户可能残留的旧 waiting 房间
+  try {
+    await rooms
+      .where({
+        'player1.uid': userId,
+        status: 'waiting',
+        created_at: _.lt(now - ROOM_TTL)
+      })
+      .update({ status: 'expired', updated_at: now });
+  } catch (_e) {
+    /* silent */
+  }
+
+  // 查找可加入的房间（同分类、waiting 状态、未过期、不是自己创建的）
+  const available = await rooms
+    .where({
+      status: 'waiting',
+      category,
+      question_count: questionCount,
+      'player1.uid': _.neq(userId),
+      created_at: _.gt(now - MATCH_TIMEOUT)
+    })
+    .orderBy('created_at', 'asc')
+    .limit(1)
+    .get();
+
+  if (available.data && available.data.length > 0) {
+    // 加入已有房间
+    const room = available.data[0];
+
+    // 获取加入者信息
+    const userDoc = await db.collection('users').doc(userId).get();
+    const userData = userDoc.data || {};
+
+    const player2 = {
+      uid: userId,
+      name: userData.nickname || userData.username || '研友',
+      avatar: userData.avatar || '',
+      score: 0,
+      correct_count: 0,
+      answers: [],
+      current_index: 0,
+      finished: false
+    };
+
+    // 原子更新：只有 status 仍为 waiting 时才能加入（防并发）
+    const updateResult = await rooms
+      .where({
+        _id: room._id,
+        status: 'waiting'
+      })
+      .update({
+        player2,
+        status: 'ready',
+        matched_at: now,
+        updated_at: now
+      });
+
+    if (!updateResult.updated || updateResult.updated === 0) {
+      // 被别人抢先加入了，递归重试一次
+      return handleFindMatch(params, requestId);
+    }
+
+    logger.info(`[${requestId}] 玩家 ${userId} 加入房间 ${room._id}`);
+
+    return {
+      code: 0,
+      success: true,
+      data: {
+        room_id: room._id,
+        role: 'player2',
+        status: 'ready',
+        player1: room.player1,
+        player2,
+        questions: room.questions,
+        question_count: room.question_count
+      },
+      message: '匹配成功'
+    };
+  }
+
+  // 没有可用房间，创建新房间
+  // 从题库随机抽题
+  const questions = await pickRandomQuestions(category, questionCount);
+  if (questions.length === 0) {
+    return badRequest('该分类暂无可用题目');
+  }
+
+  // 获取创建者信息
+  const userDoc = await db.collection('users').doc(userId).get();
+  const userData = userDoc.data || {};
+
+  const player1 = {
+    uid: userId,
+    name: userData.nickname || userData.username || '研友',
+    avatar: userData.avatar || '',
+    score: 0,
+    correct_count: 0,
+    answers: [],
+    current_index: 0,
+    finished: false
+  };
+
+  const roomData = {
+    player1,
+    player2: null,
+    status: 'waiting', // waiting → ready → playing → finished
+    category,
+    question_count: questionCount,
+    questions: questions.map((q) => ({
+      _id: q._id,
+      content: q.content || q.question || '',
+      options: q.options || [],
+      answer: q.answer,
+      analysis: q.analysis || '',
+      category: q.category || category,
+      difficulty: q.difficulty || 'medium'
+    })),
+    current_round: 0,
+    round_start_at: null,
+    created_at: now,
+    updated_at: now,
+    matched_at: null,
+    finished_at: null
+  };
+
+  const insertResult = await rooms.add(roomData);
+
+  logger.info(`[${requestId}] 玩家 ${userId} 创建房间 ${insertResult.id}`);
+
+  return {
+    code: 0,
+    success: true,
+    data: {
+      room_id: insertResult.id,
+      role: 'player1',
+      status: 'waiting',
+      player1,
+      question_count: questionCount
+    },
+    message: '等待匹配中'
+  };
+}
+
+/**
+ * 轮询房间状态（客户端每 1s 调用一次）
+ * 返回：房间状态、双方分数、对手答题进度
+ */
+async function handlePollRoom(params, requestId) {
+  const userId = params._authUserId;
+  const roomId = params.room_id;
+
+  if (!roomId) return badRequest('room_id 不能为空');
+
+  const rooms = db.collection(PK_ROOMS_COLLECTION);
+  const roomDoc = await rooms.doc(roomId).get();
+
+  if (!roomDoc.data) {
+    return { code: 404, success: false, message: '房间不存在或已过期' };
+  }
+
+  const room = roomDoc.data;
+
+  // 验证用户是房间参与者
+  const isP1 = room.player1?.uid === userId;
+  const isP2 = room.player2?.uid === userId;
+  if (!isP1 && !isP2) {
+    return { code: 403, success: false, message: '你不是该房间的参与者' };
+  }
+
+  // 检查房间是否超时（waiting 超过 30s 未匹配）
+  const now = Date.now();
+  if (room.status === 'waiting' && now - room.created_at > MATCH_TIMEOUT) {
+    await rooms.doc(roomId).update({ status: 'timeout', updated_at: now });
+    return {
+      code: 0,
+      success: true,
+      data: { status: 'timeout', room_id: roomId },
+      message: '匹配超时，请降级为机器人对战'
+    };
+  }
+
+  // 构建返回数据（隐藏题目答案，只返回对手已答题的结果）
+  const myRole = isP1 ? 'player1' : 'player2';
+  const opRole = isP1 ? 'player2' : 'player1';
+  const me = room[myRole];
+  const opponent = room[opRole];
+
+  return {
+    code: 0,
+    success: true,
+    data: {
+      room_id: roomId,
+      status: room.status,
+      my_role: myRole,
+      me: me
+        ? { score: me.score, correct_count: me.correct_count, current_index: me.current_index, finished: me.finished }
+        : null,
+      opponent: opponent
+        ? {
+            uid: opponent.uid,
+            name: opponent.name,
+            avatar: opponent.avatar,
+            score: opponent.score,
+            correct_count: opponent.correct_count,
+            current_index: opponent.current_index,
+            finished: opponent.finished
+          }
+        : null,
+      // 只在 ready/playing 状态下发题目（不含答案）
+      questions:
+        room.status === 'ready' || room.status === 'playing'
+          ? room.questions.map((q) => ({
+              _id: q._id,
+              content: q.content,
+              options: q.options,
+              category: q.category,
+              difficulty: q.difficulty
+            }))
+          : undefined,
+      question_count: room.question_count,
+      matched_at: room.matched_at,
+      created_at: room.created_at
+    }
+  };
+}
+
+/**
+ * 提交单题答案（实时同步）
+ * 参数：room_id, question_index, answer, duration
+ */
+async function handleRoomAnswer(params, requestId) {
+  const userId = params._authUserId;
+  const { room_id, question_index, answer, duration } = params;
+
+  if (!room_id) return badRequest('room_id 不能为空');
+  if (question_index === undefined || question_index === null) return badRequest('question_index 不能为空');
+  if (!answer) return badRequest('answer 不能为空');
+
+  const rooms = db.collection(PK_ROOMS_COLLECTION);
+  const roomDoc = await rooms.doc(room_id).get();
+
+  if (!roomDoc.data) {
+    return { code: 404, success: false, message: '房间不存在' };
+  }
+
+  const room = roomDoc.data;
+  const isP1 = room.player1?.uid === userId;
+  const isP2 = room.player2?.uid === userId;
+  if (!isP1 && !isP2) {
+    return { code: 403, success: false, message: '你不是该房间的参与者' };
+  }
+
+  const playerKey = isP1 ? 'player1' : 'player2';
+  const player = room[playerKey];
+  const idx = parseInt(question_index);
+
+  // 防止重复提交同一题
+  if (player.answers && player.answers[idx] !== undefined) {
+    return { code: 0, success: true, data: { duplicate: true }, message: '该题已提交' };
+  }
+
+  // 判断答案正确性
+  const question = room.questions[idx];
+  if (!question) {
+    return badRequest('题目索引越界');
+  }
+
+  const correctAnswer = (question.answer || '').toUpperCase();
+  const userAnswer = (answer || '').toUpperCase();
+  const isCorrect = correctAnswer === userAnswer;
+  const scoreGain = isCorrect ? POINTS_PER_CORRECT : 0;
+  const now = Date.now();
+
+  // 构建更新
+  const updateData: Record<string, unknown> = {
+    [`${playerKey}.answers.${idx}`]: {
+      answer: userAnswer,
+      correct: isCorrect,
+      duration: Math.min(parseInt(duration) || 0, 60),
+      submitted_at: now
+    },
+    [`${playerKey}.score`]: _.inc(scoreGain),
+    [`${playerKey}.correct_count`]: isCorrect ? _.inc(1) : _.inc(0),
+    [`${playerKey}.current_index`]: idx + 1,
+    updated_at: now
+  };
+
+  // 检查是否答完所有题
+  const isLastQuestion = idx + 1 >= room.question_count;
+  if (isLastQuestion) {
+    updateData[`${playerKey}.finished`] = true;
+  }
+
+  // 如果房间还是 ready 状态，第一次答题时切换为 playing
+  if (room.status === 'ready') {
+    updateData.status = 'playing';
+  }
+
+  await rooms.doc(room_id).update(updateData);
+
+  // 检查双方是否都答完 → 标记房间 finished
+  if (isLastQuestion) {
+    const opKey = isP1 ? 'player2' : 'player1';
+    const opFinished = room[opKey]?.finished;
+    if (opFinished) {
+      await rooms.doc(room_id).update({ status: 'finished', finished_at: now, updated_at: now });
+    }
+  }
+
+  return {
+    code: 0,
+    success: true,
+    data: {
+      is_correct: isCorrect,
+      correct_answer: correctAnswer,
+      score_gain: scoreGain,
+      analysis: question.analysis || '',
+      is_last: isLastQuestion
+    },
+    message: isCorrect ? '回答正确' : '回答错误'
+  };
+}
+
+/**
+ * 离开房间
+ */
+async function handleLeaveRoom(params, requestId) {
+  const userId = params._authUserId;
+  const roomId = params.room_id;
+
+  if (!roomId) return badRequest('room_id 不能为空');
+
+  const rooms = db.collection(PK_ROOMS_COLLECTION);
+  const roomDoc = await rooms.doc(roomId).get();
+
+  if (!roomDoc.data) {
+    return { code: 0, success: true, message: '房间已不存在' };
+  }
+
+  const room = roomDoc.data;
+  const now = Date.now();
+
+  if (room.status === 'waiting' && room.player1?.uid === userId) {
+    // 创建者离开等待中的房间 → 直接删除
+    await rooms.doc(roomId).remove();
+  } else if (room.status === 'playing' || room.status === 'ready') {
+    // 对战中离开 → 标记为对手胜利
+    const isP1 = room.player1?.uid === userId;
+    const winnerKey = isP1 ? 'player2' : 'player1';
+    await rooms.doc(roomId).update({
+      status: 'finished',
+      winner: room[winnerKey]?.uid || 'unknown',
+      finish_reason: 'opponent_left',
+      finished_at: now,
+      updated_at: now
+    });
+  }
+
+  logger.info(`[${requestId}] 玩家 ${userId} 离开房间 ${roomId}`);
+
+  return { code: 0, success: true, message: '已离开房间' };
+}
+
+/**
+ * 从题库随机抽取指定数量的题目
+ */
+async function pickRandomQuestions(category: string, count: number) {
+  const collection = db.collection('questions');
+
+  try {
+    // 使用聚合管道随机抽样
+    const result = await collection
+      .aggregate()
+      .match(category === '综合' ? {} : { category })
+      .sample({ size: count })
+      .end();
+
+    if (result.data && result.data.length > 0) {
+      return result.data;
+    }
+  } catch (_e) {
+    // 聚合不可用，降级为 skip+limit
+  }
+
+  // 降级方案：随机 skip
+  const total = await collection.where(category === '综合' ? {} : { category }).count();
+  const maxSkip = Math.max(0, (total.total || 0) - count);
+  const skip = Math.floor(Math.random() * maxSkip);
+
+  const result = await collection
+    .where(category === '综合' ? {} : { category })
+    .skip(skip)
+    .limit(count)
+    .get();
+
+  return result.data || [];
 }

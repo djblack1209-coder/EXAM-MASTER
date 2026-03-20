@@ -15,8 +15,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   logger,
   sanitizeString,
@@ -24,7 +23,6 @@ import {
   success,
   badRequest,
   tooManyRequests,
-  unauthorized,
   serverError,
   generateRequestId,
   checkRateLimitDistributed
@@ -125,23 +123,19 @@ export default async function (ctx) {
     }
 
     // JWT 认证：update 操作强制验证
-    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
     let uid = bodyUid;
 
     if (action === 'update') {
-      if (!token) {
-        return { ...unauthorized('请先登录'), requestId };
+      const authResult = requireAuth(ctx);
+      if (isAuthError(authResult)) {
+        return { ...authResult, requestId };
       }
-      const payload = verifyJWT(token);
-      if (!payload || !payload.userId) {
-        return { ...unauthorized('登录已过期，请重新登录'), requestId };
-      }
-      uid = payload.userId;
-    } else if (token) {
-      const payload = verifyJWT(token);
-      if (payload?.userId) {
-        uid = payload.userId;
+      uid = authResult.userId;
+    } else {
+      // 读操作：可选认证，有 token 则使用 token 中的 userId
+      const authResult = requireAuth(ctx);
+      if (!isAuthError(authResult)) {
+        uid = authResult.userId;
       }
     }
 
