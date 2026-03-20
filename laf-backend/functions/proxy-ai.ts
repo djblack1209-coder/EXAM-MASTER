@@ -706,6 +706,11 @@ async function callAIWithFallback({
 
   for (let attempt = 1; attempt <= AI_MAX_RETRIES; attempt++) {
     try {
+      
+      // Override model for multimodal
+      if (ctx.body.action === 'ocr_parse' || (ctx.body.data && ctx.body.data.base64)) {
+        modelConfig.name = 'glm-4v';
+      }
       aiResponse = await cloud.fetch({
         url: ZHIPU_API_URL,
         method: 'POST',
@@ -715,10 +720,21 @@ async function callAIWithFallback({
         },
         data: {
           model: modelConfig.name,
-          messages: messages || [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt }
-          ],
+          messages: messages || (
+            ctx.body.data && ctx.body.data.base64 
+            ? [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: [
+                    { type: 'text', text: userPrompt },
+                    { type: 'image_url', image_url: { url: ctx.body.data.base64 } }
+                  ] 
+                }
+              ]
+            : [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+              ]
+          ),
           temperature: temperature || modelConfig.temperature,
           max_tokens: modelConfig.maxTokens,
           top_p: 0.9
@@ -867,6 +883,9 @@ function buildPrompt(params) {
       temperature = 0.6;
       break;
 
+    case 'ocr_parse':
+      systemPrompt = "You are an elite exam parser. Extract the text, formulas, and structural layout from the image. 1. ALL math MUST use valid LaTeX format (e.g. $E=mc^2$ or $...$). 2. Return ONLY a pure JSON object containing: { \"content\": \"Full extracted text\", \"type\": \"single/multiple/essay\", \"options\": [\"A\", \"B\"], \"extracted_formulas\": [\"LaTeX\"] }";
+      break;
     case 'chat':
       systemPrompt = `你是一个专业的考研学习助手，名叫"研小助"。你的职责是：
 1. 解答考研相关的学习问题
