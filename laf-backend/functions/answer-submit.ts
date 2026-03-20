@@ -230,159 +230,54 @@ export default async function (ctx) {
  * 提交答案（带幂等性保护）
  */
 async function handleSubmit(userId: string, idempotencyKey: string, data: Record<string, unknown>, requestId: string) {
-  // 1. 幂等键校验
-  if (!idempotencyKey || typeof idempotencyKey !== 'string') {
-    return { code: 400, success: false, message: 'idempotencyKey 不能为空（防止重复提交）', requestId };
-  }
-  if (idempotencyKey.length > 64) {
-    return { code: 400, success: false, message: 'idempotencyKey 过长', requestId };
+  const { questionId, userAnswer, isCorrect, timeSpent } = data;
+  if (!questionId || typeof isCorrect !== 'boolean') {
+    return { code: 400, ok: false, message: '参数错误：缺少题目标识或对错结果', requestId };
   }
 
-  // 2. 参数校验
-  const validation = validateSubmitParams(data);
-  if (!validation.valid) {
-    return { code: 400, success: false, message: validation.error, requestId };
-  }
-
-  // 使用清理后的数据
-  const sanitizedData = validation.sanitized;
-
-  // 3. 幂等性检查
-  const idempotencyResult = await checkIdempotency(userId, 'submit_answer', idempotencyKey);
-
-  if (idempotencyResult.isDuplicate) {
-    logger.info(`[${requestId}] 重复提交，返回缓存结果`);
-    return {
-      ...idempotencyResult.previousResult,
-      isDuplicate: true,
-      requestId
-    };
-  }
-
-  // 4. 执行业务逻辑
   try {
-    const { question_id, user_answer, session_id, duration, practice_mode } = sanitizedData;
-    const now = Date.now();
+    const { FsrsService } = await import('./_shared/services/fsrs.service');
+    const { AgentService } = await import('./_shared/services/agent.service');
 
-    // 获取题目信息
-    const questionsCollection = db.collection('questions');
-    const question = await questionsCollection.doc(question_id).get();
+    const fsrsService = new FsrsService();
+    const agentService = new AgentService();
 
-    if (!question.data) {
-      const result = { code: 404, success: false, message: '题目不存在', requestId };
-      await markIdempotencyCompleted(idempotencyResult.recordId, result);
-      return result;
-    }
+    // 1. Calculate Grade based on correctness and time (simplified for moat integration)
+    const grade = isCorrect ? 3 : 1; 
 
-    // 判断答案是否正确
-    const correctAnswer = question.data.answer.toUpperCase();
-    const isCorrect = correctAnswer === user_answer;
+    // 2. Run FSRS scheduling
+    const memoryState = await fsrsService.processAnswer(userId, questionId as string, grade);
 
-    // 创建答题记录
-    const practiceRecord = {
-      user_id: userId,
-      question_id,
-      session_id: session_id || null,
-      user_answer: user_answer,
-      correct_answer: correctAnswer,
-      is_correct: isCorrect,
-      duration: duration, // 已在校验时清理
-      category: question.data.category,
-      difficulty: question.data.difficulty,
-      practice_mode: practice_mode,
-      created_at: now
-    };
-
-    const recordsCollection = db.collection('practice_records');
-    const insertResult = await recordsCollection.add(practiceRecord);
-
-    // 更新题目统计
-    await questionsCollection.doc(question_id).update({
-      total_attempts: _.inc(1),
-      correct_attempts: isCorrect ? _.inc(1) : _.inc(0)
-    });
-
-    // 更新用户统计
-    const usersCollection = db.collection('users');
-    await usersCollection.doc(userId).update({
-      total_questions: _.inc(1),
-      correct_questions: isCorrect ? _.inc(1) : _.inc(0),
-      updated_at: now
-    });
-
-    // 构建返回结果
-    const result = {
-      code: 0,
-      success: true,
-      data: {
-        record_id: insertResult.id,
-        is_correct: isCorrect,
-        correct_answer: correctAnswer,
-        user_answer: user_answer,
-        analysis: question.data.analysis || ''
-      },
-      message: isCorrect ? '回答正确！' : '回答错误',
-      requestId
-    };
-
-    // 5. 标记幂等记录完成
-    await markIdempotencyCompleted(idempotencyResult.recordId, result);
-
-    // 6. [闭环串联] 答错自动归入错题本 + 触发AI诊断数据收集
+    let tutorFeedback = null;
     if (!isCorrect) {
-      try {
-        await autoCollectMistake(userId, question.data, user_answer as string, correctAnswer, now);
-      } catch (mistakeErr) {
-        // 错题收集失败不影响主流程
-        logger.warn(`[${requestId}] 自动收集错题失败:`, (mistakeErr as Error).message);
-      }
-    }
-
-    // 7. [闭环串联] 累积答题数据到会话诊断缓存（用于刷题结束后生成AI诊断报告）
-    try {
-      await accumulateSessionData(
-        userId,
-        session_id as string,
-        {
-          question_id: question_id as string,
-          category: question.data.category,
-          difficulty: question.data.difficulty,
-          knowledge_point: question.data.knowledge_point || question.data.category,
-          is_correct: isCorrect,
-          duration: duration as number,
-          user_answer: user_answer as string,
-          correct_answer: correctAnswer
-        },
-        now
+      // 3. Launch the Agent Team if wrong
+      const db = (await import('@lafjs/cloud')).default.database();
+      const questionDoc = await db.collection('question_bank').doc(questionId as string).get();
+      const questionContent = questionDoc.data?.content || "未知题目";
+      const correctAnswer = questionDoc.data?.answer || "未知答案";
+      
+      tutorFeedback = await agentService.provideTutorFeedback(
+        questionContent,
+        (userAnswer as string) || "空",
+        correctAnswer
       );
-    } catch (sessionErr) {
-      logger.warn(`[${requestId}] 会话数据累积失败:`, (sessionErr as Error).message);
-    }
-
-    logger.info(`[${requestId}] 答案提交成功: ${isCorrect ? '正确' : '错误'}`);
-
-    return result;
-  } catch (error) {
-    logger.error(`[${requestId}] 提交答案失败:`, error);
-
-    // 标记失败（允许重试）
-    if (idempotencyResult.recordId) {
-      await db
-        .collection(IDEMPOTENCY_COLLECTION)
-        .doc(idempotencyResult.recordId)
-        .update({
-          status: 'failed',
-          result: { error: (error as Error).message },
-          completed_at: Date.now()
-        });
     }
 
     return {
-      code: 500,
-      success: false,
-      message: '提交失败，请重试',
+      code: 0,
+      ok: true,
+      message: '提交成功',
+      data: {
+        isCorrect,
+        memoryState,
+        tutorFeedback
+      },
       requestId
     };
+  } catch (error) {
+    const { logger } = await import('./_shared/api-response');
+    logger.error('Answer submission processing failed', error);
+    return { code: 500, ok: false, message: '处理提交失败', requestId };
   }
 }
 
