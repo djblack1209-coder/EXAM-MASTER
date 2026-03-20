@@ -7,10 +7,10 @@
       </slot>
     </view>
     <view class="base-card__body">
-      <slot />
+      <slot></slot>
     </view>
     <view v-if="$slots.footer" class="base-card__footer">
-      <slot name="footer" />
+      <slot name="footer"></slot>
     </view>
   </view>
 </template>
@@ -32,12 +32,12 @@ const paddingClass = computed(() => `padding-${props.padding}`);
 .base-card {
   border-radius: var(--ds-radius-xl, 32rpx);
   overflow: hidden;
-  
+
   &.padding-none .base-card__body { padding: 0; }
   &.padding-small .base-card__body { padding: var(--ds-spacing-sm, 16rpx); }
   &.padding-medium .base-card__body { padding: var(--ds-spacing-md, 24rpx); }
   &.padding-large .base-card__body { padding: var(--ds-spacing-lg, 32rpx); }
-  
+
   &__header {
     padding: var(--ds-spacing-md) var(--ds-spacing-md) 0;
   }
@@ -55,7 +55,7 @@ const paddingClass = computed(() => `padding-${props.padding}`);
   &__footer {
     padding: 0 var(--ds-spacing-md) var(--ds-spacing-md);
   }
-  
+
   &.is-hoverable:active {
     transform: scale(0.98);
     transition: transform 0.2s;

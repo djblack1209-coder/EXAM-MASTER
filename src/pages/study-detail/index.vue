@@ -87,6 +87,27 @@
           </view>
         </view>
 
+        <!-- 能力雷达图 -->
+        <view class="radar-section">
+          <view class="section-header">
+            <text class="section-title"> 能力雷达 </text>
+            <text class="section-subtitle"> 各知识点掌握度分析 </text>
+          </view>
+
+          <view class="radar-container">
+            <AbilityRadar :mastery-data="knowledgeMastery" />
+          </view>
+        </view>
+
+        <!-- FSRS 记忆模型优化 -->
+        <view class="fsrs-section">
+          <view class="section-header">
+            <text class="section-title"> 智能记忆 </text>
+            <text class="section-subtitle"> 个性化间隔重复参数 </text>
+          </view>
+          <FSRSOptimizer />
+        </view>
+
         <!-- 学习趋势图表 -->
         <view class="chart-section">
           <view class="section-header">
@@ -108,11 +129,14 @@
 
 <script>
 import { useThemeStore } from '@/stores';
+import { useStudyStore } from '@/stores/modules/study';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 // 图表组件
 import StudyHeatmap from './StudyHeatmap.vue';
 import StudyTrendChart from './StudyTrendChart.vue';
+import AbilityRadar from './AbilityRadar.vue';
+import FSRSOptimizer from './FSRSOptimizer.vue';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import { getNavBarHeight } from '@/utils/core/system.js';
@@ -123,11 +147,14 @@ export default {
   components: {
     StudyHeatmap,
     StudyTrendChart,
+    AbilityRadar,
+    FSRSOptimizer,
     BaseIcon
   },
   data() {
     return {
       themeStore: null,
+      studyStore: null,
       isDark: false,
       scrolled: false,
       navbarHeight: 44,
@@ -141,7 +168,10 @@ export default {
       abilityRank: '-',
 
       // 热力图和趋势图数据
-      studyRecordData: {} // { 'YYYY-MM-DD': minutes }
+      studyRecordData: {}, // { 'YYYY-MM-DD': minutes }
+
+      // 能力雷达图数据
+      knowledgeMastery: null // { [id]: { mastery, practiceCount, correctCount } }
     };
   },
   computed: {
@@ -152,6 +182,7 @@ export default {
   },
   onLoad() {
     this.themeStore = useThemeStore();
+    this.studyStore = useStudyStore();
     this.isDark = this.themeStore.isDark;
 
     // 监听主题变化
@@ -234,18 +265,39 @@ export default {
           this.completionRate = 0;
         }
 
-        // 获取能力评级（基于正确率）
+        // ✅ [P1重构] 能力评级 — 综合题量+正确率+一致性，不再只看正确率
         const correctCount = studyRecord.correctCount || 0;
         const totalAnswered = studyRecord.totalAnswered || 0;
         if (totalAnswered > 0) {
           const accuracy = (correctCount / totalAnswered) * 100;
-          if (accuracy >= 90) {
+
+          // 题量权重：答题越多，评级越可信（对数增长，50题满分）
+          const volumeScore = Math.min(Math.log10(totalAnswered + 1) / Math.log10(51), 1) * 100;
+
+          // 一致性权重：最近10次答题的正确率波动（从study_stats推算）
+          let consistencyScore = 70; // 默认中等一致性
+          try {
+            const recentHistory = this.studyStore?.questionHistory || [];
+            if (recentHistory.length >= 5) {
+              const recent = recentHistory.slice(-10);
+              const recentAcc = (recent.filter((r) => r.isCorrect).length / recent.length) * 100;
+              // 一致性 = 100 - |整体正确率 - 近期正确率| 的差距
+              consistencyScore = Math.max(0, 100 - Math.abs(accuracy - recentAcc) * 2);
+            }
+          } catch (_e) {
+            /* use default */
+          }
+
+          // 综合评分：正确率50% + 题量30% + 一致性20%
+          const compositeScore = accuracy * 0.5 + volumeScore * 0.3 + consistencyScore * 0.2;
+
+          if (compositeScore >= 85) {
             this.abilityRank = 'S';
-          } else if (accuracy >= 80) {
+          } else if (compositeScore >= 72) {
             this.abilityRank = 'A';
-          } else if (accuracy >= 70) {
+          } else if (compositeScore >= 58) {
             this.abilityRank = 'B';
-          } else if (accuracy >= 60) {
+          } else if (compositeScore >= 42) {
             this.abilityRank = 'C';
           } else {
             this.abilityRank = 'D';
@@ -256,6 +308,9 @@ export default {
 
         // 加载每日学习记录数据（用于热力图和趋势图）
         this.loadDailyStudyRecords();
+
+        // 加载知识点掌握度数据（用于能力雷达图）
+        this.knowledgeMastery = storageService.get('knowledge_mastery', null);
 
         logger.log('[StudyDetail] 加载学习数据:', {
           studyTime: this.studyTime,
@@ -530,7 +585,8 @@ export default {
 
 /* 热力图区域 */
 .heatmap-section,
-.chart-section {
+.chart-section,
+.radar-section {
   padding: 32rpx;
 }
 
@@ -555,7 +611,8 @@ export default {
 }
 
 .heatmap-container,
-.chart-container {
+.chart-container,
+.radar-container {
   background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
   border: 1px solid var(--apple-glass-border-strong);
   border-radius: 28rpx;

@@ -305,13 +305,40 @@ const CACHEABLE_ACTIONS = new Set([
   'getHotResources',
   'getCategories'
 ]);
-const CACHE_TTL = 30000; // 30秒缓存（默认）
+const CACHE_TTL = config.cache?.defaultTtl || 30000;
 // 9.2: 分级 TTL — 静态/半静态数据使用更长缓存
 const LONG_CACHE_ACTIONS = new Set(['provinces', 'getCategories', 'getHotResources']);
-const LONG_CACHE_TTL = 300000; // 5分钟
-const CACHE_MAX_SIZE = 100;
+const LONG_CACHE_TTL = config.cache?.longTtl || 300000;
+const CACHE_MAX_SIZE = config.cache?.maxSize || 100;
 const _cache = new Map(); // key → { data, expiry } — Map 保持插入顺序，用于 LRU
 const _inflight = new Map(); // key → Promise
+
+// ✅ 2.5: structuredClone 深拷贝（性能优于 JSON 序列化，支持 Date/RegExp/ArrayBuffer 等）
+const deepClone = typeof structuredClone === 'function' ? structuredClone : (obj) => JSON.parse(JSON.stringify(obj));
+
+// ✅ 2.6: 请求去重 — 相同 URL+params 的并发请求复用同一 Promise，减少带宽浪费
+const pendingRequests = new Map(); // requestKey → { promise, abort }
+
+function getRequestKey(url, data) {
+  return url + '|' + JSON.stringify(data || {});
+}
+
+/**
+ * 取消指定的待处理请求（适用于 search-as-you-type 等场景）
+ * @param {string} key - 由 getRequestKey 生成的请求标识
+ * @returns {boolean} 是否成功取消
+ */
+export function abortRequest(key) {
+  const entry = pendingRequests.get(key);
+  if (entry && typeof entry.abort === 'function') {
+    entry.abort();
+    pendingRequests.delete(key);
+    return true;
+  }
+  return false;
+}
+
+export { getRequestKey };
 
 // 定期清理过期缓存（每60秒），避免内存泄漏
 // ✅ P1-2: 支持停止清理（热重载安全 + 可测试）
@@ -475,12 +502,12 @@ export const lafService = {
       // 命中缓存直接返回
       const cached = _getCache(cKey);
       if (cached !== undefined) {
-        return JSON.parse(JSON.stringify(cached)); // 返回深拷贝防止外部修改
+        return deepClone(cached); // 返回深拷贝防止外部修改
       }
       // in-flight 去重：相同请求正在进行中，复用同一个 Promise
       if (_inflight.has(cKey)) {
         const result = await _inflight.get(cKey);
-        return JSON.parse(JSON.stringify(result));
+        return deepClone(result);
       }
     }
 
@@ -641,21 +668,43 @@ export const lafService = {
     }; // end doRequest
 
     // ✅ 2.4: 执行请求，支持 inflight 去重 + 缓存写入
+    // ✅ 2.6: 请求去重 — 相同 URL+params 复用同一 Promise
+    const requestKey = getRequestKey(path, data);
+
     if (isCacheable) {
       const promise = doRequest()
         .then((result) => {
           _setCache(cKey, result, action);
           _inflight.delete(cKey);
+          pendingRequests.delete(requestKey);
           return result;
         })
         .catch((err) => {
           _inflight.delete(cKey);
+          pendingRequests.delete(requestKey);
           throw err;
         });
       _inflight.set(cKey, promise);
+      pendingRequests.set(requestKey, { promise, abort: null });
       return promise;
     }
-    return doRequest();
+
+    // 非缓存请求也做去重
+    if (pendingRequests.has(requestKey)) {
+      return pendingRequests.get(requestKey).promise.then((r) => deepClone(r));
+    }
+
+    const promise = doRequest()
+      .then((result) => {
+        pendingRequests.delete(requestKey);
+        return result;
+      })
+      .catch((err) => {
+        pendingRequests.delete(requestKey);
+        throw err;
+      });
+    pendingRequests.set(requestKey, { promise, abort: null });
+    return promise;
   },
 
   /**
@@ -718,7 +767,13 @@ export const lafService = {
 
     try {
       // ✅ B021: 通过 storageService 获取用户ID
-      const userId = getUserId() || 'anonymous';
+      let userId;
+      try {
+        userId = getUserId() || 'anonymous';
+      } catch (authErr) {
+        logger.warn('[LafService] getUserId() 异常，降级为 anonymous:', authErr);
+        userId = 'anonymous';
+      }
 
       // 构建请求体（符合后端 action/payload 契约）
       const requestData = {
@@ -2124,6 +2179,381 @@ export const lafService = {
     } catch (error) {
       logger.warn('[LafService] 获取音色列表失败:', error);
       return normalizeError(error, '获取音色列表');
+    }
+  },
+
+  // ==================== AI课堂服务（搬运自 OpenMAIC 前端对接层） ====================
+
+  /**
+   * 创建AI课程（异步生成）
+   * @param {string} topic - 学习主题
+   * @param {string} subject - 考研科目 (politics/english/math/professional)
+   * @param {string} [materials] - 学习资料文本
+   * @param {number} [sceneCount=6] - 场景数量
+   */
+  async createLesson(topic, subject, materials, sceneCount = 6) {
+    try {
+      return await this.request(
+        '/lesson-generator',
+        { action: 'create', data: { topic, subject, materials, sceneCount } },
+        { timeout: 30000, maxRetries: 1 }
+      );
+    } catch (error) {
+      logger.warn('[LafService] 创建课程失败:', error);
+      return normalizeError(error, '创建课程');
+    }
+  },
+
+  /**
+   * 查询课程生成进度
+   * @param {string} lessonId - 课程ID
+   */
+  async getLessonStatus(lessonId) {
+    try {
+      return await this.request('/lesson-generator', {
+        action: 'status',
+        data: { lessonId }
+      });
+    } catch (error) {
+      logger.warn('[LafService] 查询课程状态失败:', error);
+      return normalizeError(error, '查询课程状态');
+    }
+  },
+
+  /**
+   * 获取课程详情（含大纲和场景）
+   * @param {string} lessonId - 课程ID
+   */
+  async getLessonDetail(lessonId) {
+    try {
+      return await this.request('/lesson-generator', {
+        action: 'detail',
+        data: { lessonId }
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取课程详情失败:', error);
+      return normalizeError(error, '获取课程详情');
+    }
+  },
+
+  /**
+   * 获取用户课程列表
+   * @param {number} [page=1]
+   * @param {number} [pageSize=20]
+   */
+  async getLessonList(page = 1, pageSize = 20) {
+    try {
+      return await this.request('/lesson-generator', {
+        action: 'list',
+        data: { page, pageSize }
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取课程列表失败:', error);
+      return normalizeError(error, '获取课程列表');
+    }
+  },
+
+  /**
+   * 删除课程
+   * @param {string} lessonId
+   */
+  async deleteLesson(lessonId) {
+    try {
+      return await this.request('/lesson-generator', {
+        action: 'delete',
+        data: { lessonId }
+      });
+    } catch (error) {
+      logger.warn('[LafService] 删除课程失败:', error);
+      return normalizeError(error, '删除课程');
+    }
+  },
+
+  /**
+   * 创建课堂会话（开始上课）
+   * @param {string} lessonId
+   */
+  async startClassroom(lessonId) {
+    try {
+      return await this.request(
+        '/agent-orchestrator',
+        { action: 'start_session', data: { lessonId } },
+        { timeout: 15000 }
+      );
+    } catch (error) {
+      logger.warn('[LafService] 创建课堂会话失败:', error);
+      return normalizeError(error, '创建课堂会话');
+    }
+  },
+
+  /**
+   * 发送课堂消息（推进多Agent对话）
+   * @param {string} sessionId
+   * @param {string} [message] - 用户消息（可选，不传则自动推进）
+   */
+  async sendClassroomMessage(sessionId, message) {
+    try {
+      return await this.request(
+        '/agent-orchestrator',
+        { action: 'send_message', data: { sessionId, message } },
+        { timeout: 60000, maxRetries: 1 }
+      );
+    } catch (error) {
+      logger.warn('[LafService] 课堂消息发送失败:', error);
+      return normalizeError(error, '课堂消息发送');
+    }
+  },
+
+  /**
+   * 获取课堂状态
+   * @param {string} sessionId
+   */
+  async getClassroomState(sessionId) {
+    try {
+      return await this.request('/agent-orchestrator', {
+        action: 'get_state',
+        data: { sessionId }
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取课堂状态失败:', error);
+      return normalizeError(error, '获取课堂状态');
+    }
+  },
+
+  /**
+   * 结束课堂
+   * @param {string} sessionId
+   */
+  async endClassroom(sessionId) {
+    try {
+      return await this.request('/agent-orchestrator', {
+        action: 'end_session',
+        data: { sessionId }
+      });
+    } catch (error) {
+      logger.warn('[LafService] 结束课堂失败:', error);
+      return normalizeError(error, '结束课堂');
+    }
+  },
+
+  /**
+   * AI批改单题
+   * @param {object} params - { questionId, question, correctAnswer, userAnswer, subject, topic, lessonId, sceneId }
+   */
+  async gradeQuiz(params) {
+    try {
+      return await this.request('/ai-quiz-grade', { action: 'grade', data: params }, { timeout: 30000, maxRetries: 1 });
+    } catch (error) {
+      logger.warn('[LafService] AI批改失败:', error);
+      return normalizeError(error, 'AI批改');
+    }
+  },
+
+  /**
+   * AI批量批改
+   * @param {Array} answers - 答案数组
+   * @param {object} context - { subject, topic, lessonId, sceneId }
+   */
+  async batchGradeQuiz(answers, context = {}) {
+    try {
+      return await this.request(
+        '/ai-quiz-grade',
+        { action: 'batch_grade', data: { answers, ...context } },
+        { timeout: 120000, maxRetries: 0 }
+      );
+    } catch (error) {
+      logger.warn('[LafService] AI批量批改失败:', error);
+      return normalizeError(error, 'AI批量批改');
+    }
+  },
+
+  /**
+   * 获取AI批改结果
+   * @param {object} params - { lessonId, questionId, page, pageSize }
+   */
+  async getGradeResults(params = {}) {
+    try {
+      return await this.request('/ai-quiz-grade', {
+        action: 'get_results',
+        data: params
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取批改结果失败:', error);
+      return normalizeError(error, '获取批改结果');
+    }
+  },
+
+  // ==================== AI诊断闭环服务 ====================
+
+  /**
+   * 生成AI诊断报告（刷题结束时调用）
+   * @param {string} sessionId - 刷题会话ID
+   */
+  async generateDiagnosis(sessionId) {
+    try {
+      return await this.request(
+        '/ai-diagnosis',
+        { action: 'generate', data: { sessionId } },
+        { timeout: 60000, maxRetries: 1 }
+      );
+    } catch (error) {
+      logger.warn('[LafService] 生成AI诊断失败:', error);
+      return normalizeError(error, '生成AI诊断');
+    }
+  },
+
+  /**
+   * 获取AI诊断报告
+   * @param {object} params - { diagnosisId } 或 { sessionId }
+   */
+  async getDiagnosis(params) {
+    try {
+      return await this.request('/ai-diagnosis', {
+        action: 'get',
+        data: params
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取诊断报告失败:', error);
+      return normalizeError(error, '获取诊断报告');
+    }
+  },
+
+  /**
+   * 获取历史诊断列表
+   * @param {number} [page=1]
+   * @param {number} [pageSize=10]
+   */
+  async getDiagnosisList(page = 1, pageSize = 10) {
+    try {
+      return await this.request('/ai-diagnosis', {
+        action: 'list',
+        data: { page, pageSize }
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取诊断列表失败:', error);
+      return normalizeError(error, '获取诊断列表');
+    }
+  },
+
+  /**
+   * 获取AI推荐的复习计划（基于诊断+SM-2）
+   */
+  async getReviewPlan() {
+    try {
+      return await this.request('/ai-diagnosis', {
+        action: 'get_review_plan',
+        data: {}
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取复习计划失败:', error);
+      return normalizeError(error, '获取复习计划');
+    }
+  },
+
+  // ==================== FSRS 个性化优化 ====================
+
+  /**
+   * 触发 FSRS 参数优化（需要至少 50 条复习记录）
+   */
+  async optimizeFSRS() {
+    try {
+      return await this.request('/fsrs-optimizer', {
+        action: 'optimize'
+      });
+    } catch (error) {
+      logger.warn('[LafService] FSRS优化失败:', error);
+      return normalizeError(error, 'FSRS优化');
+    }
+  },
+
+  /**
+   * 获取 FSRS 优化状态（是否有个性化参数、优化次数、日志数量等）
+   */
+  async getFSRSStatus() {
+    try {
+      return await this.request('/fsrs-optimizer', {
+        action: 'getStatus'
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取FSRS状态失败:', error);
+      return normalizeError(error, '获取FSRS状态');
+    }
+  },
+
+  /**
+   * 获取用户记忆留存率曲线数据
+   */
+  async getFSRSRetentionCurve() {
+    try {
+      return await this.request('/fsrs-optimizer', {
+        action: 'getRetentionCurve'
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取留存率曲线失败:', error);
+      return normalizeError(error, '获取留存率曲线');
+    }
+  },
+
+  // ==================== 题库浏览 ====================
+
+  /**
+   * 获取题库分类统计
+   */
+  async getQuestionBankStats() {
+    try {
+      return await this.request('/question-bank', {
+        action: 'get_stats'
+      });
+    } catch (error) {
+      logger.warn('[LafService] 获取题库统计失败:', error);
+      return normalizeError(error, '获取题库统计');
+    }
+  },
+
+  /**
+   * 浏览题库（分页+筛选）
+   */
+  async browseQuestions(params = {}) {
+    try {
+      return await this.request('/question-bank', {
+        action: 'get',
+        data: params
+      });
+    } catch (error) {
+      logger.warn('[LafService] 浏览题库失败:', error);
+      return normalizeError(error, '浏览题库');
+    }
+  },
+
+  /**
+   * 从题库随机抽题开始练习
+   */
+  async getQuestionBankRandom(params = {}) {
+    try {
+      return await this.request('/question-bank', {
+        action: 'random',
+        data: params
+      });
+    } catch (error) {
+      logger.warn('[LafService] 随机抽题失败:', error);
+      return normalizeError(error, '随机抽题');
+    }
+  },
+
+  // ==================== AI 个性化推题 ====================
+
+  /**
+   * 获取 AI 个性化推荐题目（基于薄弱点分析）
+   */
+  async getSmartRecommendations(count = 10) {
+    try {
+      return await this.request('/ai-diagnosis', {
+        action: 'smart_recommend',
+        data: { count }
+      });
+    } catch (error) {
+      logger.warn('[LafService] AI推题失败:', error);
+      return normalizeError(error, 'AI推题');
     }
   }
 };

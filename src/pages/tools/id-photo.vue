@@ -159,7 +159,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
-import { ensureMiniProgramScope, ensurePrivacyAuthorization } from '@/utils/wechat/privacy-authorization.js';
+import { ensureMiniProgramScope, ensurePrivacyAuthorization } from './privacy-authorization.js';
 
 const DEFAULT_SIZES = [
   { key: '1inch', name: '一寸', desc: '25×35mm' },

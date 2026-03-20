@@ -473,7 +473,7 @@ const config = {
     pingUrl: getEnv('VITE_PING_URL', '/static/images/logo.png')
   },
 
-  // ==================== P006: HTTP 重试配置 ====================
+  // ==================== HTTP 重试配置 ====================
 
   /**
    * HTTP 请求重试配置（统一 lafService 和 http.js）
@@ -482,6 +482,45 @@ const config = {
     maxRetries: 2,
     retryDelay: 1000,
     retryableStatusCodes: [408, 429, 500, 502, 503, 504]
+  },
+
+  // ==================== 缓存配置 ====================
+
+  /**
+   * API 缓存配置（lafService LRU 缓存）
+   */
+  cache: {
+    /** 默认缓存 TTL（毫秒） */
+    defaultTtl: getEnvNumber('VITE_CACHE_DEFAULT_TTL', 30000),
+    /** 静态数据缓存 TTL（毫秒） */
+    longTtl: getEnvNumber('VITE_CACHE_LONG_TTL', 300000),
+    /** LRU 缓存最大条目数 */
+    maxSize: getEnvNumber('VITE_CACHE_MAX_SIZE', 100)
+  },
+
+  // ==================== API 限流配置 ====================
+
+  /**
+   * 前端 API 限流配置（滑动窗口）
+   */
+  rateLimit: {
+    ai: { maxRequests: 10, windowMs: 60000 },
+    photoSearch: { maxRequests: 5, windowMs: 60000 },
+    voice: { maxRequests: 8, windowMs: 60000 },
+    default: { maxRequests: 30, windowMs: 60000 }
+  },
+
+  // ==================== 考试配置 ====================
+
+  /**
+   * 考研相关配置
+   */
+  exam: {
+    /** 目标考试年份（动态计算：当前月份 >= 9 则为下一年） */
+    get targetYear() {
+      const now = new Date();
+      return now.getMonth() >= 8 ? now.getFullYear() + 1 : now.getFullYear();
+    }
   },
 
   // ==================== 外部 CDN 配置 ====================

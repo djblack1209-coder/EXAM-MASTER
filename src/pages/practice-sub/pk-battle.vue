@@ -233,6 +233,8 @@ import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { createInviteDeepLink, generateInviteCode, generateShareConfig } from './invite-deep-link.js';
+// Phase 3-2: 实时PK房间管理
+import { usePKRoom } from '@/composables/usePKRoom.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 
@@ -294,7 +296,11 @@ export default {
       sharePkRoomId: '', // PK房间ID
       sharePkInviteCode: '', // PK邀请码
       sharePkDeepLink: '', // PK深度链接
-      showSharePkCard: false // 是否显示分享卡片
+      showSharePkCard: false, // 是否显示分享卡片
+      // Phase 3-2: 实时PK房间
+      pkRoom: null, // usePKRoom() 实例
+      isRealMatch: false, // 是否为真人对战模式
+      realMatchPollWatcher: null // 轮询状态监听
     };
   },
   computed: {
@@ -505,7 +511,7 @@ export default {
       ];
     },
     startMatching() {
-      // 确保智能对手配置已加载
+      // 确保智能对手配置已加载（作为降级方案）
       if (!this.botsLoaded || this.botList.length === 0) {
         logger.warn('[PK] 智能对手配置未加载，使用默认配置');
         this.botList = this.getDefaultBotConfig();
@@ -520,49 +526,188 @@ export default {
       // 启动匹配状态更新
       this.startMatchingStatusUpdate();
 
-      // 模拟匹配过程（1.5-3秒随机延迟）
-      const matchDelay = Math.random() * 1500 + 1500; // 1.5-3秒
+      // Phase 3-2: 尝试真人匹配
+      this.tryRealMatch();
+    },
 
+    /**
+     * Phase 3-2: 尝试真人实时匹配，超时降级为 bot
+     */
+    async tryRealMatch() {
+      try {
+        // 初始化 PKRoom composable（Options API 中手动调用）
+        if (!this.pkRoom) {
+          this.pkRoom = usePKRoom();
+        }
+
+        const category = this.questions?.[0]?.category || '综合';
+        const matched = await this.pkRoom.findMatch(category, this.questions.length || 5);
+
+        if (!matched) {
+          logger.warn('[PK] 真人匹配请求失败，降级为 bot');
+          this.fallbackToBot();
+          return;
+        }
+
+        // 开始监听房间状态变化
+        this.watchRoomStatus();
+      } catch (e) {
+        logger.warn('[PK] 真人匹配异常，降级为 bot:', e);
+        this.fallbackToBot();
+      }
+    },
+
+    /**
+     * Phase 3-2: 监听房间状态，处理匹配成功/超时
+     */
+    watchRoomStatus() {
+      // 每 500ms 检查一次 pkRoom 的状态
+      if (this.realMatchPollWatcher) clearInterval(this.realMatchPollWatcher);
+
+      this.realMatchPollWatcher = setInterval(() => {
+        if (!this.pkRoom) return;
+
+        const status = this.pkRoom.roomStatus.value;
+
+        if (status === 'ready' || status === 'playing') {
+          // 匹配成功！切换为真人对战模式
+          clearInterval(this.realMatchPollWatcher);
+          this.realMatchPollWatcher = null;
+          this.stopMatchingStatusUpdate();
+          this.isRealMatch = true;
+
+          const op = this.pkRoom.opponent.value;
+          this.opponent = {
+            name: op?.name || '研友',
+            avatar: op?.avatar || this.defaultAvatar,
+            level: '',
+            isBot: false,
+            accuracy: 0.7,
+            speed: 'normal'
+          };
+          this.opponentFound = true;
+          this.matchingStatusText = '匹配成功！真人对战即将开始...';
+
+          // 使用房间题目替换本地题目
+          if (this.pkRoom.questions.value && this.pkRoom.questions.value.length > 0) {
+            this.questions = this.pkRoom.questions.value;
+          }
+
+          try {
+            if (typeof uni.vibrateShort === 'function') uni.vibrateShort();
+          } catch (_e) {
+            /* silent */
+          }
+
+          setTimeout(() => {
+            this.gameState = 'battle';
+            this.startRealBattle();
+          }, 1000);
+        } else if (status === 'timeout' || status === 'expired') {
+          // 匹配超时，降级为 bot
+          clearInterval(this.realMatchPollWatcher);
+          this.realMatchPollWatcher = null;
+          logger.info('[PK] 真人匹配超时，降级为 bot');
+          this.fallbackToBot();
+        }
+      }, 500);
+
+      // 30 秒硬超时保底
+      setTimeout(() => {
+        if (this.realMatchPollWatcher) {
+          clearInterval(this.realMatchPollWatcher);
+          this.realMatchPollWatcher = null;
+          if (!this.isRealMatch && !this.opponentFound) {
+            this.fallbackToBot();
+          }
+        }
+      }, this.matchingTimeout);
+    },
+
+    /**
+     * Phase 3-2: 降级为 bot 对战
+     */
+    fallbackToBot() {
+      this.isRealMatch = false;
+      if (this.pkRoom) {
+        this.pkRoom.leaveRoom();
+        this.pkRoom = null;
+      }
+
+      // 原有 bot 匹配逻辑
+      const matchDelay = Math.random() * 1500 + 1500;
       this.matchingTimer = setTimeout(() => {
-        // 随机选择一个智能对手
         const randomBot = this.botList[Math.floor(Math.random() * this.botList.length)];
         this.opponent = {
           name: randomBot.name,
           avatar: randomBot.avatar,
           level: randomBot.level,
-          isBot: true, // 标记为智能对手
+          isBot: true,
           accuracy: randomBot.accuracy || 0.7,
           speed: randomBot.speed || 'normal'
         };
         this.opponentFound = true;
         this.matchingStatusText = '匹配成功！正在建立连接...';
-
-        // 停止状态更新
         this.stopMatchingStatusUpdate();
 
-        // 震动反馈
         try {
-          if (typeof uni.vibrateShort === 'function') {
-            uni.vibrateShort();
-          }
-        } catch (e) {
-          logger.warn('Vibrate feedback failed during match success', e);
+          if (typeof uni.vibrateShort === 'function') uni.vibrateShort();
+        } catch (_e) {
+          /* silent */
         }
 
-        // 1秒后进入对战
         setTimeout(() => {
           this.gameState = 'battle';
           this.startBattle();
         }, 1000);
       }, matchDelay);
 
-      // 30秒超时处理
+      // 超时处理
       this.matchingTimeoutTimer = setTimeout(() => {
         if (!this.opponentFound) {
           this.stopMatchingStatusUpdate();
           this.handleMatchingTimeout();
         }
       }, this.matchingTimeout);
+    },
+
+    /**
+     * Phase 3-2: 真人对战开始（使用轮询同步对手状态）
+     */
+    startRealBattle() {
+      this.isScoreUploaded = false;
+      this.currentIndex = 0;
+      this.questionStartTime = Date.now();
+      this.answerTimes = [];
+      this.startQuestionTimer();
+
+      // 启动对手状态同步（通过 pkRoom 的轮询自动更新）
+      this.syncOpponentFromRoom();
+    },
+
+    /**
+     * Phase 3-2: 从房间状态同步对手分数和进度
+     */
+    syncOpponentFromRoom() {
+      if (this._opponentSyncTimer) clearInterval(this._opponentSyncTimer);
+
+      this._opponentSyncTimer = setInterval(() => {
+        if (!this.pkRoom || !this.isRealMatch) {
+          clearInterval(this._opponentSyncTimer);
+          return;
+        }
+
+        const op = this.pkRoom.opponent.value;
+        if (op) {
+          this.opponentScore = op.score || 0;
+          this.opProgress = op.current_index || 0;
+
+          // 对手答完了
+          if (op.finished && this.pkRoom.roomStatus.value === 'finished') {
+            clearInterval(this._opponentSyncTimer);
+          }
+        }
+      }, 500);
     },
 
     startMatchingStatusUpdate() {
@@ -857,6 +1002,13 @@ export default {
       } else {
       }
 
+      // Phase 3-2: 真人对战模式下，提交答案到房间
+      if (this.isRealMatch && this.pkRoom) {
+        const answerLetter = String.fromCharCode(65 + idx); // 0→A, 1→B, ...
+        const duration = this.questionStartTime > 0 ? Math.round((Date.now() - this.questionStartTime) / 1000) : 0;
+        this.pkRoom.submitAnswer(this.currentIndex, answerLetter, duration).catch(() => {});
+      }
+
       // 更新我的进度条
       this.myProgress = ((this.currentIndex + 1) / this.questions.length) * 100;
 
@@ -1037,6 +1189,19 @@ export default {
         this.matchingTimeoutTimer = null;
       }
       this.stopMatchingStatusUpdate();
+
+      // Phase 3-2: 清理实时PK相关
+      if (this.realMatchPollWatcher) {
+        clearInterval(this.realMatchPollWatcher);
+        this.realMatchPollWatcher = null;
+      }
+      if (this._opponentSyncTimer) {
+        clearInterval(this._opponentSyncTimer);
+        this._opponentSyncTimer = null;
+      }
+      if (this.pkRoom) {
+        this.pkRoom.stopPolling();
+      }
     },
     resetGame() {
       // 防止重复点击
@@ -1063,6 +1228,12 @@ export default {
       this.averageTime = 0;
       this.knowledgePoints = [];
       this.isScoreUploaded = false; // 重置分数上传标志
+      // Phase 3-2: 重置实时PK状态
+      if (this.pkRoom) {
+        this.pkRoom.leaveRoom();
+        this.pkRoom = null;
+      }
+      this.isRealMatch = false;
 
       // 重新随机抽取题目
       const allQuestions = storageService.get('v30_bank', []);

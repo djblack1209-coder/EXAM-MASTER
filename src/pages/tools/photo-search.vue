@@ -214,21 +214,22 @@
       </template>
 
       <template v-else-if="mode === 'result'">
+        <!-- ✅ [零摩擦] 最醒目的CTA：直接开始练习 -->
+        <button class="bar-btn bar-btn-primary" hover-class="btn-hover" @tap="startPracticeFromOCR">
+          <text>立即练习</text>
+        </button>
         <button class="bar-btn bar-btn-secondary" hover-class="btn-hover" @tap="retake">
           <text>重新搜题</text>
         </button>
         <button
           v-if="result.questions && result.questions.length > 0"
           id="e2e-photo-search-add-mistake"
-          class="bar-btn bar-btn-primary"
+          class="bar-btn bar-btn-ghost"
           hover-class="btn-hover"
           :disabled="isAddingMistake"
           @tap="addToMistake"
         >
           <text>{{ isAddingMistake ? '添加中...' : '加入错题本' }}</text>
-        </button>
-        <button class="bar-btn bar-btn-ghost" hover-class="btn-hover" @tap="searchSimilar">
-          <text>找相似题</text>
         </button>
       </template>
     </view>
@@ -245,7 +246,7 @@ import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
-import { ensureMiniProgramScope, ensurePrivacyAuthorization } from '@/utils/wechat/privacy-authorization.js';
+import { ensureMiniProgramScope, ensurePrivacyAuthorization } from './privacy-authorization.js';
 
 export default {
   components: { PrivacyPopup },
@@ -649,12 +650,63 @@ export default {
       });
     },
 
-    // 查看题目详情（跳转到刷题页单题模式）
+    // ✅ [零摩擦] 查看题目详情 — 修复：写入temp存储后跳转
     viewQuestion(question) {
-      const id = question._id || question.id;
-      if (id) {
-        safeNavigateTo(`/pages/practice-sub/do-quiz?mode=single&questionId=${id}`);
+      const q = {
+        id: question._id || question.id || `ocr_${Date.now()}`,
+        question: question.question || question.title || '',
+        options: question.options || [],
+        answer: question.answer || question.correctAnswer || '',
+        desc: question.desc || question.analysis || '',
+        difficulty: question.difficulty || 2,
+        tags: question.tags || [],
+        source: 'photo_search'
+      };
+      storageService.save('temp_practice_question', q);
+      safeNavigateTo('/pages/practice-sub/do-quiz?mode=single');
+    },
+
+    // ✅ [零摩擦] 从OCR结果直接开始练习（匹配题+AI生成题一起刷）
+    startPracticeFromOCR() {
+      const questions = [];
+
+      // 收集匹配到的题库题目
+      if (this.result?.questions?.length > 0) {
+        this.result.questions.forEach((q) => {
+          questions.push({
+            id: q._id || q.id || `ocr_match_${Date.now()}_${Math.random()}`,
+            question: q.question || q.title || '',
+            options: q.options || [],
+            answer: q.answer || q.correctAnswer || '',
+            desc: q.desc || q.analysis || '',
+            difficulty: q.difficulty || 2,
+            source: 'photo_search_match'
+          });
+        });
       }
+
+      // 如果有AI生成的解答，也构造为可练习的题目
+      if (this.result?.aiGenerated && this.result.recognizedText) {
+        const ai = this.result.aiGenerated;
+        questions.push({
+          id: `ocr_ai_${Date.now()}`,
+          question: this.result.recognizedText,
+          options: ai.options || [],
+          answer: ai.answer || '',
+          desc: [ai.steps, ai.keyPoints, ai.commonMistakes].filter(Boolean).join('\n\n'),
+          difficulty: 3,
+          source: 'photo_search_ai'
+        });
+      }
+
+      if (questions.length === 0) {
+        uni.showToast({ title: '没有可练习的题目', icon: 'none' });
+        return;
+      }
+
+      // 写入临时题库，跳转刷题
+      storageService.save('temp_practice_questions', questions);
+      safeNavigateTo('/pages/practice-sub/do-quiz?mode=temp_bank');
     },
 
     // 加入错题本

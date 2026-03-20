@@ -1,0 +1,250 @@
+/**
+ * EXAM-MASTER Unified CSS Custom Properties
+ * 
+ * 运行时主题变量，基于 _design-tokens.scss 的 SCSS 变量生成。
+ * 这是 CSS 变量的唯一来源，替代:
+ * - design-system.scss 的 :root 块
+ * - design-system-v2.scss 的 :root 块
+ * - _dark-mode-vars.scss 的 mixin
+ * - theme-engine.js 的 tokens 对象
+ * - design-system-mp.scss 的 page 块
+ * 
+ * 命名: --em-{category}-{variant}
+ */
+
+/* ============================================
+   LIGHT MODE (Wise Style) — Default
+   ============================================ */
+:root,
+page {
+  /* --- Brand --- */
+  --em-brand: #0f5f34;
+  --em-brand-hover: #157141;
+  --em-brand-active: #0d522e;
+  --em-brand-tint: rgba(15, 95, 52, 0.14);
+  --em-brand-tint-strong: rgba(15, 95, 52, 0.26);
+  --em-brand-glow: rgba(15, 95, 52, 0.28);
+  --em-accent-green: #9fe870;
+  --em-accent-green-light: #f2f9ee;
+
+  /* --- Surface --- */
+  --em-bg: #b8eb89;
+  --em-bg-page: #b8eb89;
+  --em-bg-secondary: #d4f2b4;
+  --em-surface: #eaf9d5;
+  --em-surface-secondary: #f8f9fa;
+  --em-surface-elevated: #ffffff;
+
+  /* --- Text --- */
+  --em-text: #10281a;
+  --em-text-secondary: #35533f;
+  --em-text-tertiary: #8e98a8;
+  --em-text-disabled: #a2b59f;
+  --em-text-inverse: #ffffff;
+
+  /* --- Border --- */
+  --em-border: #98cd6f;
+  --em-border-light: #d0ecad;
+
+  /* --- Status --- */
+  --em-success: #34c759;
+  --em-warning: #ff9500;
+  --em-error: #ff3b30;
+  --em-info: #007aff;
+  --em-danger: #ef4444;
+
+  /* --- Glass --- */
+  --em-glass-bg: rgba(247, 255, 239, 0.66);
+  --em-glass-border: rgba(255, 255, 255, 0.72);
+  --em-glass-nav-bg: rgba(250, 255, 246, 0.74);
+  --em-glass-card-bg: rgba(255, 255, 255, 0.68);
+  --em-glass-pill-bg: rgba(255, 255, 255, 0.82);
+
+  /* --- Shadow --- */
+  --em-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --em-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --em-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --em-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --em-shadow-brand: 0 10px 24px rgba(16, 40, 26, 0.16);
+  --em-shadow-floating: 0 18px 42px rgba(16, 40, 26, 0.18);
+
+  /* --- Gradient --- */
+  --em-gradient-primary: linear-gradient(135deg, #1a8048 0%, #0f5f34 100%);
+  --em-gradient-page-top: #d5f8b2;
+  --em-gradient-page-mid: #b8eb89;
+  --em-gradient-page-bottom: #caf2a4;
+
+  /* --- CTA --- */
+  --em-cta-bg: rgba(255, 255, 255, 0.96);
+  --em-cta-text: #10281a;
+  --em-cta-border: rgba(16, 40, 26, 0.08);
+  --em-cta-shadow: 0 10px 24px rgba(16, 40, 26, 0.16);
+
+  /* --- Tabbar --- */
+  --em-tabbar-bg: rgba(255, 255, 255, 0.8);
+  --em-tabbar-border: rgba(229, 229, 229, 0.5);
+
+  /* --- Apple Glass Effects --- */
+  --em-specular-line: rgba(255, 255, 255, 0.68);
+  --em-specular-soft: rgba(255, 255, 255, 0.24);
+  --em-divider: rgba(16, 40, 26, 0.08);
+  --em-chromatic-blue: rgba(0, 180, 255, 0.05);
+  --em-chromatic-pink: rgba(255, 100, 200, 0.04);
+
+  /* --- Skeleton --- */
+  --em-skeleton-bg: rgba(0, 0, 0, 0.06);
+  --em-skeleton-line: rgba(0, 0, 0, 0.08);
+  --em-skeleton-highlight: rgba(0, 0, 0, 0.04);
+
+  /* --- Accent --- */
+  --em-accent-warm: #ffb84d;
+  --em-accent-cool: #4ecdc4;
+  --em-accent-energy: #ff6b6b;
+
+  /* --- Spacing (CSS var mirrors for runtime) --- */
+  --em-spacing-xs: 8rpx;
+  --em-spacing-sm: 16rpx;
+  --em-spacing-md: 24rpx;
+  --em-spacing-lg: 32rpx;
+  --em-spacing-xl: 48rpx;
+  --em-spacing-2xl: 64rpx;
+
+  /* --- Radius --- */
+  --em-radius-sm: 8rpx;
+  --em-radius-md: 16rpx;
+  --em-radius-lg: 24rpx;
+  --em-radius-xl: 32rpx;
+  --em-radius-full: 9999rpx;
+
+  /* --- Typography --- */
+  --em-font-family:
+    -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', 'Roboto', sans-serif;
+  --em-font-xs: 20rpx;
+  --em-font-sm: 24rpx;
+  --em-font-base: 28rpx;
+  --em-font-lg: 32rpx;
+  --em-font-xl: 36rpx;
+  --em-font-2xl: 40rpx;
+  --em-font-3xl: 48rpx;
+
+  /* --- Transition --- */
+  --em-transition-fast: 150ms ease-out;
+  --em-transition-base: 250ms ease-out;
+  --em-transition-slow: 350ms ease-out;
+
+  /* --- Z-index --- */
+  --em-z-dropdown: 1000;
+  --em-z-sticky: 1020;
+  --em-z-fixed: 1030;
+  --em-z-modal-backdrop: 1040;
+  --em-z-modal: 1050;
+  --em-z-popover: 1060;
+  --em-z-tooltip: 1070;
+}
+
+/* ============================================
+   DARK MODE MIXIN — must be defined before @include
+   ============================================ */
+@mixin _em-dark-tokens {
+  --em-brand: #0a84ff;
+  --em-brand-hover: #2b95ff;
+  --em-brand-active: #0069d9;
+  --em-brand-tint: rgba(10, 132, 255, 0.14);
+  --em-brand-tint-strong: rgba(10, 132, 255, 0.26);
+  --em-brand-glow: rgba(10, 132, 255, 0.35);
+  --em-accent-green: #00f5a0;
+  --em-accent-green-light: rgba(0, 245, 160, 0.14);
+  --em-bg: #0b0b0f;
+  --em-bg-page: #0b0b0f;
+  --em-bg-secondary: #1c1c1e;
+  --em-surface: #1c1c1e;
+  --em-surface-secondary: #2c2c2e;
+  --em-surface-elevated: #3a3a3c;
+  --em-text: #f5f5f7;
+  --em-text-secondary: #9a9aa1;
+  --em-text-tertiary: #8b8b92;
+  --em-text-disabled: #4b5a74;
+  --em-text-inverse: #000000;
+  --em-border: #3a3a3c;
+  --em-border-light: #2c2c2e;
+  --em-success: #00f5a0;
+  --em-warning: #ffb800;
+  --em-error: #ff2d75;
+  --em-info: #4d9fff;
+  --em-danger: #ff2d75;
+  --em-glass-bg: rgba(28, 28, 30, 0.74);
+  --em-glass-border: rgba(255, 255, 255, 0.14);
+  --em-glass-nav-bg: rgba(16, 18, 24, 0.76);
+  --em-glass-card-bg: rgba(24, 26, 34, 0.72);
+  --em-glass-pill-bg: rgba(34, 38, 48, 0.84);
+  --em-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --em-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.32);
+  --em-shadow-lg: 0 10px 26px rgba(0, 0, 0, 0.42);
+  --em-shadow-card: 0 4px 16px rgba(0, 0, 0, 0.2);
+  --em-shadow-brand: 0 12px 30px rgba(10, 132, 255, 0.32);
+  --em-shadow-floating: 0 22px 54px rgba(0, 0, 0, 0.46);
+  --em-gradient-primary: linear-gradient(135deg, #0a84ff 0%, #5ac8fa 100%);
+  --em-gradient-page-top: #0b0b0f;
+  --em-gradient-page-mid: #111a2a;
+  --em-gradient-page-bottom: #0b0b0f;
+  --em-cta-bg: linear-gradient(135deg, #0a84ff 0%, #5ac8fa 100%);
+  --em-cta-text: #ffffff;
+  --em-cta-border: transparent;
+  --em-cta-shadow: 0 12px 30px rgba(10, 132, 255, 0.32);
+  --em-tabbar-bg: rgba(44, 44, 46, 0.8);
+  --em-tabbar-border: rgba(58, 58, 60, 0.5);
+  --em-specular-line: rgba(255, 255, 255, 0.2);
+  --em-specular-soft: rgba(255, 255, 255, 0.08);
+  --em-divider: rgba(255, 255, 255, 0.08);
+  --em-chromatic-blue: rgba(10, 132, 255, 0.08);
+  --em-chromatic-pink: rgba(255, 100, 200, 0.06);
+  --em-skeleton-bg: rgba(255, 255, 255, 0.08);
+  --em-skeleton-line: rgba(255, 255, 255, 0.14);
+  --em-skeleton-highlight: rgba(255, 255, 255, 0.18);
+  --em-accent-warm: #ffd700;
+  --em-accent-cool: #00f5ff;
+  --em-accent-energy: #ff3366;
+}
+
+/* Apply dark tokens via media query and class */
+/* #ifdef H5 */
+@media (prefers-color-scheme: dark) {
+  :root,
+  page {
+    @include _em-dark-tokens;
+  }
+}
+/* #endif */
+
+.dark-mode,
+.theme-bitget {
+  @include _em-dark-tokens;
+}
+
+/* ============================================
+   GLOBAL BASE STYLES
+   ============================================ */
+page {
+  background-color: var(--em-bg-page);
+  color: var(--em-text);
+  font-family: var(--em-font-family);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+  /* #ifndef MP */
+  scroll-behavior: smooth;
+  /* #endif */
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

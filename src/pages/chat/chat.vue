@@ -249,12 +249,14 @@ import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
-import { ensureMiniProgramScope, ensurePrivacyAuthorization } from '@/utils/wechat/privacy-authorization.js';
+import { ensureMiniProgramScope, ensurePrivacyAuthorization } from './privacy-authorization.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 // 智能路由器
 import { realtimeAnswer } from './ai-router.js';
 // 外部 CDN 配置
 import config from '@/config';
+// ✅ AI 打字机效果
+import { useTypewriter } from '@/composables/useTypewriter.js';
 
 // icons8 图标 URL 生成器（集中管理，便于替换或自建）
 const icons8 = (style, size, color, name) =>
@@ -862,12 +864,26 @@ const handleRealtimeAnswer = async (question) => {
     // 添加智能回复
     const aiMsg = {
       role: 'assistant',
-      content: reply,
+      content: '',
       time: formatTime(new Date()),
       isRealtime: true,
       status: 'sent' // ✅ F027
     };
     messages.value.push(aiMsg);
+    const rtMsgIndex = messages.value.length - 1;
+
+    // 打字机效果逐字显示
+    const typewriter = useTypewriter({
+      speed: 25,
+      initialDelay: 50,
+      onChar: (text) => {
+        if (messages.value[rtMsgIndex]) {
+          messages.value[rtMsgIndex].content = text;
+        }
+        scrollToBottom();
+      }
+    });
+    await typewriter.startTyping(reply);
 
     // 保存聊天历史
     saveChatHistory();
@@ -979,10 +995,24 @@ const handleNormalChat = async (content) => {
     // 添加智能回复
     const aiMsg = {
       role: 'assistant',
-      content: reply,
+      content: '',
       time: formatTime(new Date())
     };
     messages.value.push(aiMsg);
+    const aiMsgIndex = messages.value.length - 1;
+
+    // 打字机效果逐字显示
+    const typewriter = useTypewriter({
+      speed: 25,
+      initialDelay: 50,
+      onChar: (text) => {
+        if (messages.value[aiMsgIndex]) {
+          messages.value[aiMsgIndex].content = text;
+        }
+        scrollToBottom();
+      }
+    });
+    await typewriter.startTyping(reply);
 
     // 更新最近对话摘要
     userContext.recentConversations = messages.value
