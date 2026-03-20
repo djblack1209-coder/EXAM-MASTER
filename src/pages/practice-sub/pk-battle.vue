@@ -41,7 +41,7 @@
         <text v-if="opponentFound" class="status-tip"> {{ opponent.name }} 已加入对战 </text>
         <text v-if="!opponentFound" class="status-tip status-tip-note"> 超时将自动匹配机器人对手 </text>
       </view>
-      <view v-if="!opponentFound" class="exit-btn-wrapper" style="margin-top: 60rpx; z-index: 2; position: relative;">
+      <view v-if="!opponentFound" class="exit-btn-wrapper" style="margin-top: 60rpx; z-index: 2; position: relative">
         <wd-button plain custom-class="exit-btn" @click="handleExit">取消匹配</wd-button>
       </view>
     </view>

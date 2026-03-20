@@ -274,8 +274,12 @@
         </view>
 
         <view class="result-actions">
-          <wd-button type="info" custom-class="action-btn review" @click="reviewExam"><BaseIcon name="book" :size="28" /> 查看解析</wd-button>
-          <wd-button type="primary" id="e2e-mock-retry-btn" custom-class="action-btn retry" @click="retryExam"><BaseIcon name="refresh" :size="28" /> 再考一次</wd-button>
+          <wd-button type="info" custom-class="action-btn review" @click="reviewExam"
+            ><BaseIcon name="book" :size="28" /> 查看解析</wd-button
+          >
+          <wd-button type="primary" id="e2e-mock-retry-btn" custom-class="action-btn retry" @click="retryExam"
+            ><BaseIcon name="refresh" :size="28" /> 再考一次</wd-button
+          >
         </view>
       </view>
 
