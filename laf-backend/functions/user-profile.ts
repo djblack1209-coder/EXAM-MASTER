@@ -14,8 +14,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 const db = cloud.database();
 
@@ -30,13 +29,12 @@ const AVATAR_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/web
 const logger = createLogger('[UserProfile]');
 
 // ==================== 访问控制工具 ====================
-function verifyTokenAndGetUserId(token: string): string | null {
-  const cleanToken = extractBearerToken(token);
-  const payload = verifyJWT(cleanToken);
-  if (!payload || typeof payload.userId !== 'string') {
+function verifyTokenAndGetUserId(ctx: any): string | null {
+  const authResult = requireAuth(ctx);
+  if (isAuthError(authResult)) {
     return null;
   }
-  return payload.userId;
+  return authResult.userId;
 }
 
 /**
@@ -50,15 +48,7 @@ function verifyUserAccess(
   ctx: Record<string, unknown>,
   targetUserId: string
 ): { valid: boolean; error?: string; tokenUserId?: string; code?: number } {
-  // 从请求头获取token
-  const headers = (ctx.headers || {}) as Record<string, string | undefined>;
-  const authHeader = headers.authorization || headers.Authorization || '';
-
-  if (!authHeader) {
-    return { valid: false, error: '缺少认证信息', code: 401 };
-  }
-
-  const tokenUserId = verifyTokenAndGetUserId(authHeader);
+  const tokenUserId = verifyTokenAndGetUserId(ctx);
 
   if (!tokenUserId) {
     return { valid: false, error: '认证信息无效或已过期', code: 401 };

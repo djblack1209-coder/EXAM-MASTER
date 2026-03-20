@@ -24,7 +24,7 @@
     "minifyWXML": true
   },
   "compileType": "miniprogram",
-  "libVersion": "",
+  "libVersion": "2.32.3",
   "appid": "wxd634d50ad63e14ed",
   "projectname": "Exam-Master",
   "miniprogramRoot": "dist/dev/mp-weixin/",

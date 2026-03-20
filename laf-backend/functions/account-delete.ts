@@ -15,9 +15,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT } from './login';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
-import { extractBearerToken } from './_shared/auth';
 
 const db = cloud.database();
 const logger = createLogger('[AccountDelete]');
@@ -32,14 +31,12 @@ export default async function (ctx: any) {
 
   try {
     // 1. 身份验证
-    const rawHeaderToken = ctx.headers?.authorization || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
-    const payload = verifyJWT(token);
-    if (!payload || !payload.userId) {
-      return { code: 401, success: false, message: '请先登录', requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { ...authResult, requestId };
     }
 
-    const userId = payload.userId;
+    const userId = authResult.userId;
     const action = typeof ctx.body?.action === 'string' ? ctx.body.action.trim() : '';
 
     if (!action) {

@@ -18,9 +18,8 @@
 
 import cloud from '@lafjs/cloud';
 import { validate } from './_shared/validator';
-import { createLogger, checkRateLimitDistributed, unauthorized } from './_shared/api-response';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 const logger = createLogger('[DocConvert]');
 const db = cloud.database();
@@ -91,20 +90,14 @@ export default async function (ctx) {
 
   try {
     // [C1-FIX] 鉴权：文档转换消耗付费API配额，必须验证用户身份
-    const rawHeaderToken = ctx.headers?.authorization || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
-
-    if (!token) {
-      return { ...unauthorized('请先登录'), requestId };
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { ...authResult, requestId };
     }
-    const payload = verifyJWT(token);
-    if (!payload || !payload.userId) {
-      return { ...unauthorized('token 无效或已过期'), requestId };
-    }
-    logger.info(`[${requestId}] 用户已验证: ${payload.userId}`);
+    logger.info(`[${requestId}] 用户已验证: ${authResult.userId}`);
 
     // [AUDIT FIX] 速率限制 — 每用户每分钟最多 5 次文档转换
-    const rateCheck = await checkRateLimitDistributed(`doc_convert:${payload.userId}`, 5, 60 * 1000);
+    const rateCheck = await checkRateLimitDistributed(`doc_convert:${authResult.userId}`, 5, 60 * 1000);
     if (!rateCheck.allowed) {
       return { code: 429, success: false, message: '操作过于频繁，请稍后再试', requestId };
     }
@@ -166,13 +159,13 @@ export default async function (ctx) {
 
     switch (action) {
       case 'convert':
-        return await handleConvert(params, requestId, payload.userId);
+        return await handleConvert(params, requestId, authResult.userId);
       case 'get_status':
-        return await getJobStatus(params, requestId, payload.userId);
+        return await getJobStatus(params, requestId, authResult.userId);
       case 'get_types':
         return getConvertTypes();
       case 'get_result':
-        return await getConvertResult(params, requestId, payload.userId);
+        return await getConvertResult(params, requestId, authResult.userId);
       default:
         return {
           code: 400,

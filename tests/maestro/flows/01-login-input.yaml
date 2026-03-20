@@ -2,14 +2,23 @@ appId: ${APP_ID}
 ---
 - launchApp:
     stopApp: true
+    clearState: true
 - waitForAnimationToEnd
 - assertVisible: '首页'
 - tapOn: '我的'
-- assertVisible: '点击登录，同步学习数据'
-- tapOn: '点击登录，同步学习数据'
-- assertVisible: '请输入邮箱地址'
-- tapOn: '请输入邮箱地址'
+- assertVisible:
+    id: e2e-profile-login-btn
+- tapOn:
+    id: e2e-profile-login-btn
+- tapOn:
+    text: '邮箱登录/注册'
+    optional: true
+- assertVisible:
+    id: e2e-login-email
+- tapOn:
+    id: e2e-login-email
 - inputText: ${E2E_EMAIL}
-- tapOn: '密码'
+- tapOn:
+    id: e2e-login-password
 - inputText: ${E2E_PASSWORD}
 - assertVisible: '登录'

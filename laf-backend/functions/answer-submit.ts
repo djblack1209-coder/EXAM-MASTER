@@ -31,8 +31,8 @@ import {
   logger,
   checkRateLimitDistributed
 } from './_shared/api-response';
-import { verifyJWT } from './login';
-import { extractBearerToken } from './_shared/auth';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { createNewCard, type ReviewLogRecord } from './_shared/fsrs-scheduler';
 
 const db = cloud.database();
 const _ = db.command;
@@ -187,17 +187,12 @@ export default async function (ctx) {
     }
 
     // ✅ P0修复：所有操作强制 JWT 认证，防止未认证用户读取他人数据
-    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    const token = extractBearerToken(rawHeaderToken);
-    if (!token) {
-      return wrapResponse(unauthorized('请先登录'), requestId, startTime);
-    }
-    const payload = verifyJWT(token);
-    if (!payload || !payload.userId) {
-      return wrapResponse(unauthorized('登录已过期，请重新登录'), requestId, startTime);
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return wrapResponse(authResult, requestId, startTime);
     }
     // 始终使用 JWT 中的 userId，忽略客户端传入的 bodyUserId
-    const userId = payload.userId;
+    const userId = authResult.userId;
 
     // 1.5 限流
     const rateLimit = await checkRateLimitDistributed(
@@ -331,6 +326,37 @@ async function handleSubmit(userId: string, idempotencyKey: string, data: Record
     // 5. 标记幂等记录完成
     await markIdempotencyCompleted(idempotencyResult.recordId, result);
 
+    // 6. [闭环串联] 答错自动归入错题本 + 触发AI诊断数据收集
+    if (!isCorrect) {
+      try {
+        await autoCollectMistake(userId, question.data, user_answer as string, correctAnswer, now);
+      } catch (mistakeErr) {
+        // 错题收集失败不影响主流程
+        logger.warn(`[${requestId}] 自动收集错题失败:`, (mistakeErr as Error).message);
+      }
+    }
+
+    // 7. [闭环串联] 累积答题数据到会话诊断缓存（用于刷题结束后生成AI诊断报告）
+    try {
+      await accumulateSessionData(
+        userId,
+        session_id as string,
+        {
+          question_id: question_id as string,
+          category: question.data.category,
+          difficulty: question.data.difficulty,
+          knowledge_point: question.data.knowledge_point || question.data.category,
+          is_correct: isCorrect,
+          duration: duration as number,
+          user_answer: user_answer as string,
+          correct_answer: correctAnswer
+        },
+        now
+      );
+    } catch (sessionErr) {
+      logger.warn(`[${requestId}] 会话数据累积失败:`, (sessionErr as Error).message);
+    }
+
     logger.info(`[${requestId}] 答案提交成功: ${isCorrect ? '正确' : '错误'}`);
 
     return result;
@@ -401,4 +427,138 @@ async function handleGetRecords(userId: string, data: Record<string, unknown>, r
     hasMore: skip + listRes.data.length < countRes.total,
     requestId
   };
+}
+
+// ==================== [闭环串联] 答错自动归入错题本 ====================
+async function autoCollectMistake(
+  userId: string,
+  questionData: any,
+  userAnswer: string,
+  correctAnswer: string,
+  timestamp: number
+) {
+  const mistakeCollection = db.collection('mistake_book');
+
+  // 去重：同一用户同一题目不重复添加
+  const existing = await mistakeCollection.where({ user_id: userId, question_id: questionData._id }).count();
+
+  if (existing.total > 0) {
+    // 已存在，更新错误次数
+    await mistakeCollection.where({ user_id: userId, question_id: questionData._id }).update({
+      error_count: _.inc(1),
+      last_wrong_answer: userAnswer,
+      last_wrong_at: timestamp,
+      is_mastered: false // 又错了，重置掌握状态
+    });
+    return;
+  }
+
+  // 新增错题记录（使用 FSRS 初始化，与 mistake-manager 保持一致）
+  const fsrsInit = createNewCard();
+  const addResult = await mistakeCollection.add({
+    user_id: userId,
+    question_id: questionData._id,
+    question_content: questionData.content || questionData.question || '',
+    options: questionData.options || [],
+    correct_answer: correctAnswer,
+    last_wrong_answer: userAnswer,
+    category: questionData.category || '',
+    difficulty: questionData.difficulty || 'medium',
+    knowledge_point: questionData.knowledge_point || questionData.category || '',
+    analysis: questionData.analysis || '',
+    error_count: 1,
+    review_count: 0,
+    is_mastered: false,
+    // FSRS v6 间隔重复初始参数（与 mistake-manager.handleAdd 一致）
+    ease_factor: 2.5,
+    interval_days: 0,
+    next_review_time: fsrsInit.due,
+    last_wrong_at: timestamp,
+    created_at: timestamp,
+    // FSRS 卡片状态字段
+    ...fsrsInit
+  });
+
+  // ✅ Phase 3-1: 记录首次 review log（答错 = Again rating）
+  try {
+    const reviewLog: ReviewLogRecord = {
+      user_id: userId,
+      card_id: addResult.id,
+      card_type: 'question',
+      rating: 1, // Rating.Again
+      state: 0, // State.New
+      due: fsrsInit.due,
+      stability: 0,
+      difficulty: 0,
+      elapsed_days: 0,
+      scheduled_days: 0,
+      review: timestamp,
+      created_at: timestamp
+    };
+    await db.collection('review_logs').add(reviewLog);
+  } catch (_logErr) {
+    // review log 写入失败不影响主流程
+  }
+}
+
+// ==================== [闭环串联] 累积会话答题数据（用于AI诊断） ====================
+async function accumulateSessionData(
+  userId: string,
+  sessionId: string | null,
+  answerData: {
+    question_id: string;
+    category: string;
+    difficulty: string;
+    knowledge_point: string;
+    is_correct: boolean;
+    duration: number;
+    user_answer: string;
+    correct_answer: string;
+  },
+  timestamp: number
+) {
+  if (!sessionId) return; // 无会话ID则跳过
+
+  const sessionCollection = db.collection('practice_session_cache');
+
+  // 查找或创建会话缓存（使用 upsert 防止并发创建重复文档）
+  const existing = await sessionCollection.where({ user_id: userId, session_id: sessionId }).getOne();
+
+  if (existing.data) {
+    // 追加答题数据
+    await sessionCollection.doc(existing.data._id).update({
+      answers: _.push(answerData),
+      total_count: _.inc(1),
+      correct_count: answerData.is_correct ? _.inc(1) : _.inc(0),
+      total_duration: _.inc(answerData.duration || 0),
+      updated_at: timestamp
+    });
+  } else {
+    // 创建新会话缓存（加 try-catch 处理并发首条插入冲突）
+    try {
+      await sessionCollection.add({
+        user_id: userId,
+        session_id: sessionId,
+        answers: [answerData],
+        total_count: 1,
+        correct_count: answerData.is_correct ? 1 : 0,
+        total_duration: answerData.duration || 0,
+        diagnosis_status: 'pending',
+        created_at: timestamp,
+        updated_at: timestamp
+      });
+    } catch (_dupErr) {
+      // 并发插入冲突，回退到更新模式
+      const retry = await sessionCollection.where({ user_id: userId, session_id: sessionId }).getOne();
+      if (retry.data) {
+        await sessionCollection.doc(retry.data._id).update({
+          answers: _.push(answerData),
+          total_count: _.inc(1),
+          correct_count: answerData.is_correct ? _.inc(1) : _.inc(0),
+          total_duration: _.inc(answerData.duration || 0),
+          updated_at: timestamp
+        });
+      }
+    }
+  }
 }

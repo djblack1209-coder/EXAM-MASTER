@@ -60,6 +60,12 @@ E2E_PASSWORD="your-password" \
 npm run test:maestro
 ```
 
+默认仅运行 native flows（`00-04`），不会执行 `10-web-h5-smoke`。如需同时跑 H5 流程，可加：
+
+```bash
+MAESTRO_RUN_WEB_H5=1 npm run test:maestro
+```
+
 或使用 APK 自动安装并自动解析包名：
 
 ```bash

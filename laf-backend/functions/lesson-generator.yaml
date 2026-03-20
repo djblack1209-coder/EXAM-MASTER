@@ -1,0 +1,6 @@
+name: lesson-generator
+desc: '课程生成管线 - 两阶段异步生成'
+methods:
+  - POST
+tags:
+  - ai-classroom

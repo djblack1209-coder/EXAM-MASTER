@@ -131,10 +131,9 @@
             <text
               class="bar-percent"
               :class="cat.accuracy >= 80 ? 'text-good' : cat.accuracy >= 60 ? 'text-mid' : 'text-bad'"
-              >
-{{ cat.accuracy }}%
-</text
             >
+              {{ cat.accuracy }}%
+            </text>
           </view>
           <view class="bar-track">
             <view

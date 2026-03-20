@@ -6,8 +6,10 @@ appId: ${APP_ID}
 - assertVisible: '首页'
 - tapOn: '刷题'
 - assertVisible: '刷题'
-- assertVisible: '导入学习资料'
-- tapOn: '导入学习资料'
+- assertVisible:
+    id: e2e-practice-import-card
+- tapOn:
+    id: e2e-practice-import-card
 - assertVisible: '资料导入'
 - back
 - assertVisible: '刷题'

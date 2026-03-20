@@ -1,0 +1,5 @@
+name: fsrs-optimizer
+desc: 'FSRS个性化参数优化器 - 聚合用户review_log计算个性化记忆参数'
+methods:
+  - POST
+tags: []

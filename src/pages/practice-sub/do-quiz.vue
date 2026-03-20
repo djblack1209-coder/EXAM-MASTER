@@ -417,7 +417,7 @@ import { useQuizEngine } from '@/composables/useQuizEngine.js';
 
 export default {
   components: {
-        CustomModal,
+    CustomModal,
     BaseIcon,
     XpToast,
     RichText,
