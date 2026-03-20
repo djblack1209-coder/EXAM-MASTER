@@ -16,7 +16,7 @@
     <!-- 空状态 -->
     <view v-if="!loading && empty" class="empty-container">
       <BaseEmpty icon="trophy" title="暂无排行榜数据" desc="快去刷题，成为第一个上榜的学霸吧！" :is-dark="isDark" />
-      <button class="go-practice-btn" hover-class="btn-hover" @tap="toPractice">去刷题</button>
+      <wd-button plain @click="toPractice" custom-class="go-practice-btn">去刷题</wd-button>
     </view>
 
     <!-- 排行榜内容 -->
@@ -140,7 +140,7 @@
           </text>
           <text class="item-score-text"> 分数: {{ myScore }} </text>
         </view>
-        <button class="rank-btn" hover-class="btn-hover" @tap="toPractice">去超车</button>
+        <wd-button size="small" type="primary" custom-class="rank-btn" @click="toPractice">去超车</wd-button>
       </view>
     </view>
 
@@ -208,7 +208,7 @@
           </scroll-view>
         </view>
 
-        <button class="challenge-btn" hover-class="btn-hover" @tap="startPK">向 TA 发起挑战</button>
+        <wd-button type="primary" custom-class="challenge-btn" @click="startPK">向 TA 发起挑战</wd-button>
       </view>
     </view>
   </view>
