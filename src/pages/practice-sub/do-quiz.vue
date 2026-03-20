@@ -177,6 +177,12 @@
           <text class="label"> 智能简评： </text>
           <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
         </view>
+        <!-- 新增: FSRS 记忆引擎状态展示 -->
+        <MemoryStatsRow v-if="memoryState" :memoryState="memoryState" />
+        
+        <!-- 新增: AI Tutor 智能体辅导反馈 -->
+        <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
+
 
         <wd-button
           id="e2e-quiz-next-btn"
@@ -408,6 +414,8 @@ import { logger } from '@/utils/logger.js';
 import { lafService } from '@/services/lafService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import MemoryStatsRow from './components/quiz-result/MemoryStatsRow.vue';
+import TutorFeedbackCard from './components/quiz-result/TutorFeedbackCard.vue';
 import XpToast from './components/xp-toast/xp-toast.vue';
 import RichText from '@/components/common/RichText.vue';
 import AnswerSheet from './components/answer-sheet/answer-sheet.vue';
@@ -419,6 +427,8 @@ export default {
   components: {
     CustomModal,
     BaseIcon,
+    MemoryStatsRow,
+    TutorFeedbackCard,
     XpToast,
     RichText,
     AnswerSheet,
@@ -441,6 +451,8 @@ export default {
   },
   data() {
     return {
+      memoryState: null,
+      tutorFeedback: '',
       statusBarHeight: 44,
       navBarHeight: 88, // 标准导航栏高度 = 44 + 44
       capsuleMargin: 100,
