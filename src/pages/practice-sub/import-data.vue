@@ -21,11 +21,17 @@
     </view>
 
     <view class="main-glass-card bounce-in-up">
-      <view class="status-bar">
-        <text class="status-dot" :class="{ active: fileName }" />
-        <text class="status-text">
-          {{ fileName ? '已加载文件，准备就绪' : '支持 PDF / Word / TXT / MD' }}
-        </text>
+      <view class="status-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <view>
+          <text class="status-dot" :class="{ active: fileName }" />
+          <text class="status-text">
+            {{ fileName ? '已加载文件，准备就绪' : '支持 PDF / Word / TXT / MD' }}
+          </text>
+        </view>
+        <view class="ocr-switch" style="display: flex; align-items: center; gap: 8rpx;" v-if="fileName">
+          <text style="font-size: 24rpx; color: var(--text-sub);">深度OCR图表解析</text>
+          <wd-switch v-model="useDeepOcr" size="20px" />
+        </view>
       </view>
 
       <view class="operation-zone">
@@ -65,30 +71,34 @@
 
     <view class="bottom-action-bar glass-morphism">
       <view class="action-row main-row">
-        <button
+        <wd-button
           id="e2e-import-start-ai-btn"
-          class="apple-btn primary glow-effect"
-          hover-class="btn-scale-sm"
+          type="primary"
+          size="large"
+          block
           :disabled="isLooping || !fileName"
-          :class="{ disabled: isLooping || !fileName }"
-          @tap="startAI"
+          :loading="isLooping"
+          @click="startAI"
+          custom-class="apple-btn"
         >
           <BaseIcon name="sparkle" :size="28" style="margin-right: 8px" />
-          {{ isLooping ? '智能正在后台生成中...' : '开始智能出题' }}
-        </button>
+          {{ isLooping ? '智能后台生成中...' : '开始智能出题' }}
+        </wd-button>
       </view>
 
-      <view class="action-row sub-row">
-        <button
+      <view class="action-row sub-row" style="display: flex; gap: 16rpx;">
+        <wd-button
           v-if="!isLooping && (fullFileContent || fileName) && generatedCount > 0"
-          class="apple-btn secondary"
-          hover-class="btn-scale-sm"
-          @tap="continueGenerating"
+          plain
+          block
+          style="flex: 1;"
+          @click="continueGenerating"
+          custom-class="apple-btn secondary"
         >
           <BaseIcon name="refresh" :size="28" style="margin-right: 4px" />
-          <text style="font-size: 30rpx"> 再出一组 </text>
-        </button>
-        <button class="apple-btn danger-ghost" hover-class="btn-scale-sm" @tap="clearAll">清空题库</button>
+          <text style="font-size: 30rpx">再出一组</text>
+        </wd-button>
+        <wd-button plain type="danger" block style="flex: 1;" @click="clearAll" custom-class="apple-btn">清空题库</wd-button>
       </view>
     </view>
 
@@ -198,6 +208,7 @@ export default {
   },
   data() {
     return {
+      useDeepOcr: true,
       // 导航栏相关
       statusBarHeight: 44,
       navBarHeight: 88,
