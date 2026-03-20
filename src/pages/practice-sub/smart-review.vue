@@ -59,7 +59,9 @@
         <!-- 一键开始（置顶强CTA） -->
         <view v-if="totalPending > 0" class="start-section">
           <wd-button type="primary" block size="large" @click="startBatchReview"
-            >开始今日复习（{{ Math.min(totalPending, 20) }} 题）</wd-button
+            >
+开始今日复习（{{ Math.min(totalPending, 20) }} 题）
+</wd-button
           >
         </view>
 
@@ -149,8 +151,10 @@
             <text class="streak-big">🔥 {{ streakDays }}</text>
             <text class="streak-desc">天连续复习</text>
           </view>
-          <wd-button type="primary" block size="large" @click="goPractice" custom-style="margin-top: 16rpx"
-            >继续刷题</wd-button
+          <wd-button type="primary" block size="large" custom-style="margin-top: 16rpx" @click="goPractice"
+            >
+继续刷题
+</wd-button
           >
         </view>
 

@@ -1,0 +1,5 @@
+name: api-ocr-glm
+desc: 'Laf Cloud function for OCR using GLM-4V'
+methods:
+  - POST
+tags: []

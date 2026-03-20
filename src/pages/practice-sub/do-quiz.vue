@@ -104,15 +104,15 @@
           <RichText class="q-content" :content="currentQuestion.question" />
         </view>
 
-        <QuizOptions 
-          v-if="currentQuestion && currentQuestion.options" 
-          :question="currentQuestion" 
-          :userChoice="userChoice" 
-          :hasAnswered="hasAnswered" 
-          :isAnalyzing="isAnalyzing" 
-          :isCorrectOption="isCorrectOption" 
-          :getOptionLabel="getOptionLabel" 
-          @select="selectOption" 
+        <QuizOptions
+          v-if="currentQuestion && currentQuestion.options"
+          :question="currentQuestion"
+          :user-choice="userChoice"
+          :has-answered="hasAnswered"
+          :is-analyzing="isAnalyzing"
+          :is-correct-option="isCorrectOption"
+          :get-option-label="getOptionLabel"
+          @select="selectOption"
         />
       </view>
 
@@ -1833,7 +1833,7 @@ export default {
   z-index: 100;
   background: var(--bg-glass);
   /* backdrop-filter: blur(20px); removed */ background-color: rgba(28, 28, 30, 0.95);
-  
+
 }
 .nav-content {
   height: 50px;
@@ -1956,7 +1956,7 @@ export default {
 .glass-card {
   background: var(--bg-glass);
   /* backdrop-filter: blur(20px); removed */ background-color: rgba(28, 28, 30, 0.95);
-  
+
   border: 1px solid var(--border);
   border-radius: 40rpx;
   padding: 40rpx;
@@ -2063,7 +2063,7 @@ export default {
   z-index: 200;
   background: var(--overlay);
   /* backdrop-filter: blur(10px); removed */ background-color: rgba(28, 28, 30, 0.95);
-  
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2135,7 +2135,7 @@ export default {
   padding: 40rpx;
   border-radius: 40rpx;
   background-color: rgba(28, 28, 30, 0.95); /* removed blur for performance */
-  
+
   box-shadow: var(--shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.12));
   animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
@@ -2177,7 +2177,7 @@ export default {
   border-radius: 50%;
   background: var(--overlay);
   /* backdrop-filter: blur(10px); removed */ background-color: rgba(28, 28, 30, 0.95);
-  
+
   transition: all 0.3s;
   flex-shrink: 0;
 }

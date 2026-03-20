@@ -28,7 +28,7 @@
             {{ fileName ? '已加载文件，准备就绪' : '支持 PDF / Word / TXT / MD' }}
           </text>
         </view>
-        <view class="ocr-switch" style="display: flex; align-items: center; gap: 8rpx" v-if="fileName">
+        <view v-if="fileName" class="ocr-switch" style="display: flex; align-items: center; gap: 8rpx">
           <text style="font-size: 24rpx; color: var(--text-sub)">深度OCR图表解析</text>
           <wd-switch v-model="useDeepOcr" size="20px" />
         </view>
@@ -78,8 +78,8 @@
           block
           :disabled="isLooping || !fileName"
           :loading="isLooping"
-          @click="startAI"
           custom-class="apple-btn"
+          @click="startAI"
         >
           <BaseIcon name="sparkle" :size="28" style="margin-right: 8px" />
           {{ isLooping ? '智能后台生成中...' : '开始智能出题' }}
@@ -92,14 +92,16 @@
           plain
           block
           style="flex: 1"
-          @click="continueGenerating"
           custom-class="apple-btn secondary"
+          @click="continueGenerating"
         >
           <BaseIcon name="refresh" :size="28" style="margin-right: 4px" />
           <text style="font-size: 30rpx">再出一组</text>
         </wd-button>
-        <wd-button plain type="danger" block style="flex: 1" @click="clearAll" custom-class="apple-btn"
-          >清空题库</wd-button
+        <wd-button plain type="danger" block style="flex: 1" custom-class="apple-btn" @click="clearAll"
+          >
+清空题库
+</wd-button
         >
       </view>
     </view>

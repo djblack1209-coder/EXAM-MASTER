@@ -181,7 +181,9 @@
       <!-- 底部操作 -->
       <view class="bottom-actions">
         <wd-button type="primary" block size="large" @click="startSmartReview"
-          >开始智能复习 ({{ reviewCount }} 题待复习)</wd-button
+          >
+开始智能复习 ({{ reviewCount }} 题待复习)
+</wd-button
         >
         <wd-button
           v-if="weakPoints.length > 0"
@@ -190,7 +192,9 @@
           size="large"
           custom-style="margin-top: 16rpx"
           @click="startTargetedLesson"
-          >针对薄弱点生成课程</wd-button
+          >
+针对薄弱点生成课程
+</wd-button
         >
         <wd-button
           plain
@@ -199,7 +203,9 @@
           custom-class="custom-ghost-btn"
           custom-style="margin-top: 16rpx; border: none; background: transparent;"
           @click="goBack"
-          >返回刷题</wd-button
+          >
+返回刷题
+</wd-button
         >
       </view>
     </scroll-view>

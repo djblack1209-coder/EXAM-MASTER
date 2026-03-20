@@ -16,7 +16,7 @@
     <!-- 空状态 -->
     <view v-if="!loading && empty" class="empty-container">
       <BaseEmpty icon="trophy" title="暂无排行榜数据" desc="快去刷题，成为第一个上榜的学霸吧！" :is-dark="isDark" />
-      <wd-button plain @click="toPractice" custom-class="go-practice-btn">去刷题</wd-button>
+      <wd-button plain custom-class="go-practice-btn" @click="toPractice">去刷题</wd-button>
     </view>
 
     <!-- 排行榜内容 -->
