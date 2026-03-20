@@ -1,0 +1,229 @@
+/**
+ * EXAM-MASTER Unified Design Tokens (Single Source of Truth)
+ * 
+ * 合并自: _variables.scss, design-system.scss, design-system-v2.scss,
+ *         _dark-mode-vars.scss, theme-engine.js
+ * 
+ * 架构:
+ * 1. SCSS 变量 — 编译期使用（mixins、函数、条件逻辑）
+ * 2. CSS Custom Properties — 运行时使用（主题切换、组件样式）
+ * 3. 语义化分层: primitive → semantic → component
+ * 
+ * 命名规范: --em-{category}-{property}-{variant}
+ * em = exam-master, 避免与第三方库冲突
+ */
+
+// ============================================================
+// PART 1: SCSS Variables (compile-time, auto-injected via vite)
+// ============================================================
+
+// --- Primitive Palette ---
+$palette-green-50: #f2f9ee;
+$palette-green-100: #d5f8b2;
+$palette-green-200: #b8eb89;
+$palette-green-300: #9fe870;
+$palette-green-400: #7bc653;
+$palette-green-500: #37b24d;
+$palette-green-600: #2f9e44;
+$palette-green-700: #0f5f34;
+$palette-green-800: #163300;
+$palette-green-900: #10281a;
+
+$palette-blue-50: rgba(10, 132, 255, 0.08);
+$palette-blue-100: rgba(10, 132, 255, 0.14);
+$palette-blue-200: rgba(10, 132, 255, 0.22);
+$palette-blue-300: #5ac8fa;
+$palette-blue-400: #2b95ff;
+$palette-blue-500: #0a84ff;
+$palette-blue-600: #007aff;
+$palette-blue-700: #0069d9;
+$palette-blue-800: #004999;
+
+$palette-neutral-0: #ffffff;
+$palette-neutral-50: #f8f9fa;
+$palette-neutral-100: #f5f5f7;
+$palette-neutral-200: #e9ecef;
+$palette-neutral-300: #e5e5e5;
+$palette-neutral-400: #a1a1a6;
+$palette-neutral-500: #8e8e93;
+$palette-neutral-600: #666666;
+$palette-neutral-700: #495057;
+$palette-neutral-800: #2c2c2e;
+$palette-neutral-850: #1c1c1e;
+$palette-neutral-900: #111111;
+$palette-neutral-950: #0b0b0f;
+$palette-neutral-1000: #000000;
+
+// --- Semantic Colors (SCSS) ---
+$color-success: #34c759;
+$color-warning: #ff9500;
+$color-error: #ff3b30;
+$color-info: #007aff;
+
+// --- Spacing (8px grid, rpx for cross-device) ---
+$spacing-xs: 8rpx;
+$spacing-sm: 16rpx;
+$spacing-md: 24rpx;
+$spacing-lg: 32rpx;
+$spacing-xl: 48rpx;
+$spacing-2xl: 64rpx;
+
+// --- Border Radius ---
+$radius-sm: 8rpx;
+$radius-md: 16rpx;
+$radius-lg: 24rpx;
+$radius-xl: 32rpx;
+$radius-2xl: 48rpx;
+$radius-full: 9999rpx;
+
+// --- Typography ---
+$font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', 'Roboto', sans-serif;
+
+$font-size-xs: 20rpx;
+$font-size-sm: 24rpx;
+$font-size-base: 28rpx;
+$font-size-lg: 32rpx;
+$font-size-xl: 36rpx;
+$font-size-2xl: 40rpx;
+$font-size-3xl: 48rpx;
+
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// --- Shadows (SCSS, for static use) ---
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+$shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+// --- Transitions ---
+$transition-fast: 150ms ease-out;
+$transition-base: 250ms ease-out;
+$transition-slow: 350ms ease-out;
+$transition-spring: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+// --- Layout ---
+$tabbar-height: 120rpx;
+$navbar-height: 88rpx;
+
+// --- Breakpoints ---
+$breakpoint-xs: 320px;
+$breakpoint-sm: 375px;
+$breakpoint-md: 414px;
+$breakpoint-lg: 768px;
+
+// ============================================================
+// PART 2: Responsive Mixins
+// ============================================================
+
+@mixin respond-to($bp) {
+  @if $bp == 'xs' {
+    @media screen and (max-width: $breakpoint-xs) {
+      @content;
+    }
+  } @else if $bp == 'sm' {
+    @media screen and (max-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $bp == 'md' {
+    @media screen and (max-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $bp == 'lg' {
+    @media screen and (max-width: $breakpoint-lg) {
+      @content;
+    }
+  }
+}
+
+// ============================================================
+// PART 3: Component Mixins
+// ============================================================
+
+@mixin em-card {
+  border-radius: var(--em-radius-lg);
+  background: var(--em-surface);
+  /* #ifndef APP-NVUE */
+  box-shadow: var(--em-shadow-card);
+  /* #endif */
+  /* #ifdef APP-NVUE */
+  border-width: 1rpx;
+  border-style: solid;
+  border-color: var(--em-border);
+  /* #endif */
+}
+
+@mixin em-glass {
+  /* #ifndef APP-NVUE */
+  background: var(--em-glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  /* #endif */
+  /* #ifdef APP-NVUE */
+  background: var(--em-surface);
+  /* #endif */
+  border: 0.5px solid var(--em-glass-border);
+  border-radius: var(--em-radius-lg);
+}
+
+@mixin em-tap-feedback {
+  transition: all $transition-fast;
+  /* #ifndef MP */
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.7;
+  }
+  /* #endif */
+}
+
+@mixin em-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin em-line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ============================================================
+// PART 4: Flex/Grid Gap Workaround (Android WebView compat)
+// ============================================================
+// Android WebView 部分版本不支持 flex gap，用 margin 模拟。
+// 用法：
+//   .my-flex-col { display: flex; flex-direction: column; @include em-flex-gap(16rpx); }
+//   .my-flex-row { display: flex; @include em-flex-gap(16rpx, row); }
+
+@mixin em-flex-gap($size, $direction: column) {
+  @if $direction == column {
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-top: $size;
+    }
+  } @else {
+    & > view + view,
+    & > text + text,
+    & > view + text,
+    & > text + view {
+      margin-left: $size;
+    }
+  }
+}
+
+// 简写：仅作用于特定子选择器（更精确，避免误伤）
+@mixin em-gap-children($size, $direction: column, $selector: '> * + *') {
+  #{$selector} {
+    @if $direction == column {
+      margin-top: $size;
+    } @else {
+      margin-left: $size;
+    }
+  }
+}

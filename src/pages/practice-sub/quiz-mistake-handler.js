@@ -10,6 +10,7 @@
 
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { lafService } from '@/services/lafService.js';
 
 /**
  * 保存错题到错题本（云端优先，失败降级本地）
@@ -150,4 +151,65 @@ export function updateMistakeWithAI({ currentQuestion, aiAnalysis }) {
     // 更新本地缓存
     storageService.save('mistake_book', mistakes, true);
   }
+}
+
+/**
+ * ✅ [差异化壁垒] AI自动生成记忆口诀/助记符
+ * 借鉴 AnkiAIUtils 的概念：每道错题自动生成一个记忆钩子
+ * 异步调用，不阻塞答题流程
+ *
+ * @param {Object} params
+ * @param {Object} params.currentQuestion - 当前题目对象
+ * @param {string} params.correctAnswer - 正确答案
+ */
+export async function generateMnemonic({ currentQuestion, correctAnswer }) {
+  if (!currentQuestion) return;
+
+  const questionText = currentQuestion.question || currentQuestion.title || '';
+  const answer = correctAnswer || currentQuestion.answer || '';
+
+  try {
+    // 读取用户学习风格配置
+    let styleHint = '';
+    try {
+      const config = storageService.get('learning_style_config');
+      if (config?.style === 'visual') styleHint = '用图形化/表格化的方式呈现助记符。';
+      else if (config?.style === 'verbal') styleHint = '用押韵或顺口溜的方式。';
+      else if (config?.style === 'example') styleHint = '用一个生动的类比或故事。';
+    } catch (_e) {
+      /* use default */
+    }
+
+    const response = await lafService.proxyAI('analyze', {
+      question: questionText,
+      options: currentQuestion.options || [],
+      correctAnswer: answer,
+      userAnswer: '',
+      mnemonicMode: true,
+      learningStyleHint: `[助记符生成] 请为这道题的正确答案生成一个简短的记忆口诀或助记符（不超过30字），帮助学生快速记住关键知识点。要求朗朗上口、容易联想。${styleHint}`
+    });
+
+    if (response.code === 0 && response.data) {
+      const mnemonic = response.data.trim();
+
+      // 保存到错题记录
+      const mistakes = storageService.get('mistake_book', []);
+      const idx = mistakes.findIndex(
+        (m) =>
+          m.question === questionText || m.question_content === questionText || (m.id && m.id === currentQuestion.id)
+      );
+
+      if (idx >= 0) {
+        mistakes[idx].mnemonic = mnemonic;
+        mistakes[idx].hasMnemonic = true;
+        storageService.save('mistake_book', mistakes, true);
+        logger.log('[quiz-mistake] 助记符已生成:', mnemonic);
+      }
+
+      return mnemonic;
+    }
+  } catch (e) {
+    logger.warn('[quiz-mistake] 助记符生成失败（不影响主流程）:', e);
+  }
+  return null;
 }

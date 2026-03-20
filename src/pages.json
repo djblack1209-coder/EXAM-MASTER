@@ -1,4 +1,10 @@
 {
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue"
+    }
+  },
   "pages": [
     {
       "path": "pages/splash/index",
@@ -78,6 +84,14 @@
           }
         },
         {
+          "path": "question-bank",
+          "style": {
+            "navigationBarTitleText": "考研题库",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        },
+        {
           "path": "file-manager",
           "style": {
             "navigationBarTitleText": "文件管理",
@@ -89,6 +103,22 @@
           "path": "mock-exam",
           "style": {
             "navigationBarTitleText": "模拟考试",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        },
+        {
+          "path": "diagnosis-report",
+          "style": {
+            "navigationBarTitleText": "学习诊断",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        },
+        {
+          "path": "smart-review",
+          "style": {
+            "navigationBarTitleText": "智能复习",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
@@ -110,6 +140,19 @@
           "path": "ai-consult",
           "style": {
             "navigationBarTitleText": "AI择校咨询",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/onboarding",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "欢迎",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
@@ -312,11 +355,46 @@
           }
         }
       ]
+    },
+    {
+      "root": "pages/ai-classroom",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "AI 课堂",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        },
+        {
+          "path": "classroom",
+          "style": {
+            "navigationBarTitleText": "互动课堂",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        }
+      ]
     }
   ],
   "preloadRule": {
-    "pages/index/index": { "network": "all", "packages": ["pages/mistake", "pages/chat", "pages/practice-sub"] },
-    "pages/practice/index": { "network": "all", "packages": ["pages/practice-sub", "pages/chat", "pages/plan"] }
+    "pages/index/index": {
+      "network": "all",
+      "packages": ["pages/chat", "pages/practice-sub"]
+    },
+    "pages/practice/index": {
+      "network": "all",
+      "packages": ["pages/practice-sub"]
+    },
+    "pages/school/index": {
+      "network": "all",
+      "packages": ["pages/school-sub"]
+    },
+    "pages/profile/index": {
+      "network": "wifi",
+      "packages": ["pages/settings", "pages/social"]
+    }
   },
   "globalStyle": {
     "navigationBarTextStyle": "white",

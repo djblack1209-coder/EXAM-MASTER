@@ -9,6 +9,62 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { playCorrectSound, playWrongSound, playComboSound } from '@/utils/practice/quiz-sound.js';
+
+// ✅ [体感革命] 引入 canvas-confetti（12.5k stars）
+let confettiModule = null;
+async function getConfetti() {
+  if (confettiModule) return confettiModule;
+  try {
+    // 动态导入，避免SSR/小程序环境报错
+    const mod = await import('canvas-confetti');
+    confettiModule = mod.default || mod;
+    return confettiModule;
+  } catch (_e) {
+    return null;
+  }
+}
+
+// ✅ [体感革命] 真正的confetti爆炸 — 答对时调用
+async function fireConfetti(intensity = 'normal') {
+  const confetti = await getConfetti();
+  if (!confetti) return;
+
+  if (intensity === 'combo') {
+    // 连击时：双侧喷射
+    confetti({ particleCount: 60, spread: 55, origin: { x: 0.1, y: 0.6 }, colors: ['#FFD700', '#FF6B35', '#FF1744'] });
+    confetti({ particleCount: 60, spread: 55, origin: { x: 0.9, y: 0.6 }, colors: ['#FFD700', '#FF6B35', '#FF1744'] });
+  } else if (intensity === 'milestone') {
+    // 里程碑：全屏烟花
+    const end = Date.now() + 1500;
+    const frame = () => {
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#FFD700', '#26C6DA', '#FF1744']
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#FFD700', '#26C6DA', '#FF1744']
+      });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    };
+    frame();
+  } else {
+    // 普通答对：中央爆发
+    confetti({
+      particleCount: 40,
+      spread: 70,
+      origin: { y: 0.65 },
+      colors: ['#4CAF50', '#8BC34A', '#FFD700', '#26C6DA']
+    });
+  }
+}
 
 // 动画配置
 const ANIMATION_CONFIG = {
@@ -56,7 +112,7 @@ class QuizAnimationManager {
       showCombo: true,
       showMilestone: true,
       vibration: true,
-      sound: false // 默认关闭声音
+      sound: uni.getStorageSync('quiz_sound_enabled') || false
     };
   }
 
@@ -83,6 +139,8 @@ class QuizAnimationManager {
       type: 'correct',
       timestamp: Date.now(),
       combo: this.comboCount,
+      // ✅ [体感革命] XP奖励数据（基础10 + combo加成）
+      xpEarned: 10 + Math.min(this.comboCount * 2, 20),
       ...this._generateCorrectEffects(options)
     };
 
@@ -105,6 +163,27 @@ class QuizAnimationManager {
     // 震动反馈
     if (this.settings.vibration) {
       this._vibrate('light');
+    }
+
+    // ✅ [体感革命] 音效 + 真实confetti
+    if (this.settings.sound) {
+      playCorrectSound();
+      // 连击时播放升调和弦
+      if (this.comboCount >= 3) {
+        const level = Math.min(Math.floor(this.comboCount / 5), 4);
+        setTimeout(() => playComboSound(level), 150);
+      }
+    }
+
+    // ✅ [体感革命] 真实confetti爆炸
+    if (this.settings.showParticles) {
+      if (animationData.milestone) {
+        fireConfetti('milestone');
+      } else if (this.comboCount >= 5) {
+        fireConfetti('combo');
+      } else {
+        fireConfetti('normal');
+      }
     }
 
     return animationData;
@@ -132,6 +211,11 @@ class QuizAnimationManager {
     // 震动反馈
     if (this.settings.vibration) {
       this._vibrate('medium');
+    }
+
+    // 音效反馈
+    if (this.settings.sound) {
+      playWrongSound();
     }
 
     return animationData;

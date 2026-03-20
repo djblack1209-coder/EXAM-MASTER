@@ -581,6 +581,220 @@ class PosterGenerator {
   }
 
   /**
+   * 生成学习成绩单海报（用于社交分享炫耀）
+   * @param {Object} data - 学习数据
+   * @param {string} canvasId - Canvas ID
+   * @param {Object} componentInstance - 组件实例
+   * @returns {Promise<string>} - 临时文件路径
+   */
+  async generateStudyReportPoster(data, canvasId, componentInstance = null) {
+    const {
+      nickname = '考研人',
+      avatarUrl = '',
+      level = 0,
+      xp = 0,
+      streakDays = 0,
+      totalQuestions = 0,
+      accuracy = 0,
+      studyDays = 0,
+      abilityRank = '-',
+      topKnowledge = [] // [{ name, score }]
+    } = data;
+
+    if (this.isGenerating) {
+      throw new Error('正在生成中，请稍候');
+    }
+
+    this.isGenerating = true;
+    uni.showLoading({ title: '生成成绩单...', mask: true });
+
+    try {
+      await this.initCanvas(canvasId, componentInstance);
+
+      // 背景渐变（深色学术风）
+      this.drawGradientBackground(['#1a1a2e', '#16213e', '#0f3460']);
+      this.drawDecorationCircles();
+
+      // 头像
+      if (avatarUrl) {
+        try {
+          const avatarImg = await this.loadImage(avatarUrl);
+          this.drawCircleImage(avatarImg, { x: 120, y: 120, radius: 40 });
+        } catch (_e) {
+          /* skip */
+        }
+      }
+
+      // 用户名 + 等级
+      this.drawText(nickname, {
+        x: 200,
+        y: 105,
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#ffffff',
+        align: 'left'
+      });
+      this.drawText(`Lv.${level}  ·  ${xp} XP`, {
+        x: 200,
+        y: 145,
+        fontSize: 22,
+        fontWeight: 'normal',
+        color: 'rgba(255,255,255,0.7)',
+        align: 'left'
+      });
+
+      // 标题
+      this.drawText('📊 学习成绩单', {
+        y: 230,
+        fontSize: 38,
+        fontWeight: 'bold',
+        color: '#ffffff'
+      });
+
+      const today = this.formatDate(new Date());
+      this.drawText(today, {
+        y: 280,
+        fontSize: 20,
+        fontWeight: 'normal',
+        color: 'rgba(255,255,255,0.6)'
+      });
+
+      // 核心数据卡片区域
+      const cardY = 320;
+      const cardH = 320;
+      const ctx = this.ctx;
+      const dpr = this.dpr;
+
+      // 半透明卡片背景
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.beginPath();
+      const rx = 60 * dpr,
+        ry = cardY * dpr,
+        rw = 630 * dpr,
+        rh = cardH * dpr,
+        rr = 24 * dpr;
+      ctx.moveTo(rx + rr, ry);
+      ctx.lineTo(rx + rw - rr, ry);
+      ctx.quadraticCurveTo(rx + rw, ry, rx + rw, ry + rr);
+      ctx.lineTo(rx + rw, ry + rh - rr);
+      ctx.quadraticCurveTo(rx + rw, ry + rh, rx + rw - rr, ry + rh);
+      ctx.lineTo(rx + rr, ry + rh);
+      ctx.quadraticCurveTo(rx, ry + rh, rx, ry + rh - rr);
+      ctx.lineTo(rx, ry + rr);
+      ctx.quadraticCurveTo(rx, ry, rx + rr, ry);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // 2x3 数据网格
+      const stats = [
+        { label: '累计刷题', value: String(totalQuestions), unit: '题' },
+        { label: '正确率', value: `${accuracy}`, unit: '%' },
+        { label: '连续学习', value: String(streakDays), unit: '天' },
+        { label: '学习天数', value: String(studyDays), unit: '天' },
+        { label: '能力评级', value: abilityRank, unit: '' },
+        { label: '🔥 连击', value: `${streakDays > 0 ? '✓' : '-'}`, unit: '' }
+      ];
+
+      const cols = 3,
+        rows = 2;
+      const cellW = 210,
+        cellH = 140;
+      const gridX = 60,
+        gridY = cardY + 20;
+
+      stats.forEach((stat, i) => {
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const cx = gridX + col * cellW + cellW / 2;
+        const cy = gridY + row * cellH;
+
+        this.drawText(stat.value, {
+          x: cx,
+          y: cy + 50,
+          fontSize: 42,
+          fontWeight: 'bold',
+          color: '#FFD700'
+        });
+        this.drawText(stat.unit, {
+          x: cx + 4,
+          y: cy + 85,
+          fontSize: 18,
+          fontWeight: 'normal',
+          color: 'rgba(255,255,255,0.5)'
+        });
+        this.drawText(stat.label, {
+          x: cx,
+          y: cy + 115,
+          fontSize: 20,
+          fontWeight: 'normal',
+          color: 'rgba(255,255,255,0.7)'
+        });
+      });
+
+      // 知识点掌握 TOP 3
+      if (topKnowledge.length > 0) {
+        this.drawText('掌握最好的知识点', {
+          y: 680,
+          fontSize: 22,
+          fontWeight: '600',
+          color: 'rgba(255,255,255,0.8)'
+        });
+
+        topKnowledge.slice(0, 3).forEach((kp, i) => {
+          const barY = 720 + i * 50;
+          const barWidth = Math.min(500, (kp.score / 100) * 500);
+
+          // 进度条背景
+          ctx.save();
+          ctx.fillStyle = 'rgba(255,255,255,0.06)';
+          ctx.fillRect(125 * dpr, barY * dpr, 500 * dpr, 24 * dpr);
+          // 进度条填充
+          const grad = ctx.createLinearGradient(125 * dpr, 0, (125 + barWidth) * dpr, 0);
+          grad.addColorStop(0, '#4CAF50');
+          grad.addColorStop(1, '#8BC34A');
+          ctx.fillStyle = grad;
+          ctx.fillRect(125 * dpr, barY * dpr, barWidth * dpr, 24 * dpr);
+          ctx.restore();
+
+          this.drawText(`${kp.name}  ${kp.score}%`, {
+            x: 375,
+            y: barY - 8,
+            fontSize: 18,
+            fontWeight: 'normal',
+            color: 'rgba(255,255,255,0.8)'
+          });
+        });
+      }
+
+      // 底部品牌
+      this.drawText('Exam-Master', {
+        y: 910,
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#ffffff'
+      });
+      this.drawText('考研路上，与你同行', {
+        y: 950,
+        fontSize: 20,
+        fontWeight: 'normal',
+        color: 'rgba(255,255,255,0.6)'
+      });
+
+      const tempFilePath = await this.exportImage();
+      uni.hideLoading();
+      this.isGenerating = false;
+      return tempFilePath;
+    } catch (error) {
+      uni.hideLoading();
+      this.isGenerating = false;
+      logger.error('[PosterGenerator] 生成成绩单海报失败:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 格式化日期
    * @param {Date} date - 日期对象
    * @returns {string}

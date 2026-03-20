@@ -7,6 +7,7 @@ const STORAGE_KEY = 'mistake_book';
 
 import { storageService } from '@/services/storageService.js';
 import { mistakeClassifier } from '@/utils/practice/mistake-classifier.js';
+import { initMistakeFSRS, scheduleMistakeReview } from '@/utils/practice/mistake-fsrs-scheduler.js';
 
 /**
  * 懒加载分类器（避免硬依赖不存在的模块）
@@ -113,6 +114,9 @@ export async function autoCollectMistake(question, userAnswer, aiComment) {
     last_wrong_time: Date.now()
   };
 
+  // Initialize FSRS spaced repetition fields
+  initMistakeFSRS(record);
+
   book.push(record);
   _saveMistakeBook(book);
 
@@ -151,21 +155,31 @@ export function getMistakeStats() {
  * 记录复习结果
  * @param {string} id - 错题ID
  * @param {boolean} isCorrect - 是否答对
+ * @param {'again'|'hard'|'good'|'easy'} [rating] - FSRS评分（可选，默认由isCorrect推断）
  */
-export function recordReview(id, isCorrect) {
+export function recordReview(id, isCorrect, rating) {
   const book = _getMistakeBook();
   const mistake = book.find((m) => m.id === id);
   if (!mistake) return;
 
   mistake.review_count = (mistake.review_count || 0) + 1;
 
+  // Legacy +20/-10 mastery display metric (kept as fallback)
   if (isCorrect) {
     mistake.mastery_level = Math.min(100, (mistake.mastery_level || 0) + 20);
   } else {
     mistake.mastery_level = Math.max(0, (mistake.mastery_level || 0) - 10);
   }
 
-  mistake.is_mastered = mistake.mastery_level >= 80;
+  // FSRS spaced repetition scheduling
+  const fsrsRating = rating || (isCorrect ? 'good' : 'again');
+  const fsrsFields = scheduleMistakeReview(mistake, fsrsRating);
+  Object.assign(mistake, fsrsFields);
+
+  // Mastered = FSRS stability > 30 days AND legacy mastery >= 80
+  const stabilityDays = mistake.fsrs_stability || 0;
+  mistake.is_mastered = stabilityDays > 30 && mistake.mastery_level >= 80;
+
   mistake.last_review_time = Date.now();
 
   _saveMistakeBook(book);

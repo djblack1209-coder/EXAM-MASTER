@@ -148,6 +148,23 @@
         <text class="btn-text"> PK 对战 </text>
       </button>
 
+      <!-- Phase 3-7: AI智能推题入口 -->
+      <button
+        v-if="hasBank"
+        class="secondary-btn apple-glass-pill"
+        :class="{ 'btn-loading': isLoadingRecommend }"
+        :disabled="isLoadingRecommend"
+        @tap="goSmartRecommend"
+      >
+        <view v-if="isLoadingRecommend" class="btn-spinner" />
+        <text class="btn-text">{{ isLoadingRecommend ? '分析中...' : 'AI 推题' }}</text>
+      </button>
+
+      <!-- Phase 3-3: 考研题库入口 -->
+      <button class="secondary-btn apple-glass-pill" @tap="goQuestionBank">
+        <text class="btn-text"> 考研题库 </text>
+      </button>
+
       <!-- 导入资料卡片 -->
       <view
         id="e2e-practice-import-card"
@@ -439,6 +456,9 @@ export default {
 
       // 防重复点击: isNavigating 由 practiceNavigationMixin 提供
 
+      // Phase 3-7: AI推题加载状态
+      isLoadingRecommend: false,
+
       // ✅ P0-2: 学习数据统计
       todayQuestions: 0, // 今日刷题数
       todayGoal: 20, // 今日目标（从学习目标模块读取）
@@ -474,7 +494,7 @@ export default {
       subPackageLoaded: false
     };
   },
-  onShow() {
+  async onShow() {
     // 原生 tabBar 已移除，无需隐藏
     // F005: 通知 CustomTabbar 重新检测路由
     uni.$emit('tabbarRouteUpdate');
@@ -483,11 +503,13 @@ export default {
     this.isDark = initTheme();
     logger.log('[practice] onShow 刷新主题:', this.isDark);
 
-    // E005: 批量读取 storage，减少重复 I/O
+    // E005: 批量读取 storage，使用 nextTick 释放主线程让 UI 先渲染
     let bankData = [];
     let userAnswers = {};
     let importedFiles = [];
     try {
+      // 先让 UI 骨架屏渲染出来，再读取大数据
+      await new Promise((resolve) => setTimeout(resolve, 0));
       bankData = storageService.get('v30_bank', []);
       userAnswers = storageService.get('v30_user_answers', {});
       importedFiles = storageService.get('imported_files', []);
@@ -891,6 +913,44 @@ export default {
     // ✅ P1: goMistakeReview 由 practiceNavigationMixin 提供
 
     // ✅ P2: goFavorites 由 practiceNavigationMixin 提供
+
+    // Phase 3-3: 考研题库入口
+    goQuestionBank() {
+      safeNavigateTo('/pages/practice-sub/question-bank');
+    },
+
+    // Phase 3-7: AI智能推题
+    async goSmartRecommend() {
+      if (this.isLoadingRecommend) return;
+      this.isLoadingRecommend = true;
+      try {
+        const { lafService } = await import('@/services/lafService');
+        const res = await lafService.getSmartRecommendations(10);
+        if (res?.code === 0 && res.data?.questions?.length > 0) {
+          const formatted = res.data.questions.map((q, i) => ({
+            id: q._id || `ai_${i}`,
+            question: q.question || q.content || '',
+            options: q.options || [],
+            answer: q.answer || 'A',
+            desc: q.analysis || '',
+            category: q.category || '综合',
+            type: q.type || '单选',
+            difficulty: q.difficulty || 'medium',
+            _recommend_reason: q._recommend_reason || '',
+            _fromAI: true
+          }));
+          const storageService = (await import('@/services/storageService.js')).default;
+          storageService.save('v30_temp_practice', formatted);
+          safeNavigateTo('/pages/practice-sub/do-quiz?source=ai-recommend&mode=normal');
+        } else {
+          uni.showToast({ title: res?.data?.ai_advice || '暂无推荐，请多做几道题', icon: 'none' });
+        }
+      } catch (_e) {
+        uni.showToast({ title: '推题失败，请稍后重试', icon: 'none' });
+      } finally {
+        this.isLoadingRecommend = false;
+      }
+    },
 
     // ==================== 动态注入 Mixin 方法 ====================
     async _loadAIGenerationMixin(retryCount = 0) {

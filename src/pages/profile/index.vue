@@ -108,7 +108,12 @@
               </text>
             </view>
             <!-- 编辑/登录按钮 -->
-            <view class="edit-btn" hover-class="btn-hover" @tap.stop="isLoggedIn ? handleEditProfile() : handleLogin()">
+            <view
+              id="e2e-profile-login-btn"
+              class="edit-btn"
+              hover-class="btn-hover"
+              @tap.stop="isLoggedIn ? handleEditProfile() : handleLogin()"
+            >
               <BaseIcon v-if="isLoggedIn" name="edit" :size="36" />
               <text v-else class="edit-icon"> → </text>
             </view>
@@ -153,6 +158,53 @@
               </view>
               <text class="stat-value"> {{ accuracyRate }}% </text>
               <text class="stat-label"> 正确率 </text>
+            </view>
+          </view>
+        </view>
+
+        <!-- ========== 游戏化等级卡片 ========== -->
+        <view v-if="!isPageLoading" class="card level-card">
+          <view class="level-header">
+            <view class="level-badge">
+              <text class="level-number">{{ playerLevel }}</text>
+            </view>
+            <view class="level-info">
+              <view class="level-title-row">
+                <text class="level-title">Lv.{{ playerLevel }}</text>
+                <text v-if="xpMultiplier > 1" class="xp-multiplier">{{ xpMultiplier }}x XP</text>
+              </view>
+              <view class="xp-bar-bg">
+                <view class="xp-bar-fill" :style="{ width: levelProgress * 100 + '%' }" />
+              </view>
+              <text class="xp-text">{{ playerXp }} XP · 还需 {{ xpToNext }} 升级</text>
+            </view>
+          </view>
+
+          <!-- 成就 + 连续学习 + 每日挑战 -->
+          <view class="level-stats">
+            <view class="level-stat-item">
+              <text class="level-stat-value">🔥 {{ currentStreak }}</text>
+              <text class="level-stat-label">连续学习</text>
+            </view>
+            <view class="level-stat-divider" />
+            <view class="level-stat-item">
+              <text class="level-stat-value">🏅 {{ achievementCount }}</text>
+              <text class="level-stat-label">成就解锁</text>
+            </view>
+            <view class="level-stat-divider" />
+            <view v-if="dailyChallenge" class="level-stat-item">
+              <text class="level-stat-value"
+                >
+{{ dailyChallenge.completed ? '✅' : '📋' }} {{ dailyChallenge.progress }}/{{
+                  dailyChallenge.target
+                }}
+</text
+              >
+              <text class="level-stat-label">今日挑战</text>
+            </view>
+            <view v-else class="level-stat-item">
+              <text class="level-stat-value">📋 -</text>
+              <text class="level-stat-label">今日挑战</text>
             </view>
           </view>
         </view>
@@ -331,6 +383,7 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
+import { useGamificationStore } from '@/stores/modules/gamification';
 // 检查点4.4: 每日打卡 - 连续天数统计和补签卡
 import { checkinStreak } from '@/services/checkin-streak.js';
 import { streakRecovery } from '@/services/streak-recovery.js';
@@ -370,6 +423,17 @@ const layoutInfo = ref({
 // ========== Store ==========
 const studyStore = useStudyStore();
 const userStore = useUserStore();
+const gamificationStore = useGamificationStore();
+
+// ========== 游戏化计算属性 ==========
+const playerLevel = computed(() => gamificationStore.level);
+const playerXp = computed(() => gamificationStore.xp);
+const xpToNext = computed(() => gamificationStore.xpToNextLevel);
+const levelProgress = computed(() => gamificationStore.levelProgress);
+const currentStreak = computed(() => gamificationStore.currentStreak);
+const achievementCount = computed(() => gamificationStore.achievements?.length || 0);
+const dailyChallenge = computed(() => gamificationStore.dailyChallenge);
+const xpMultiplier = computed(() => gamificationStore.getXpMultiplier());
 
 // ========== 计算属性 ==========
 const isLoggedIn = computed(() => {
@@ -446,6 +510,8 @@ function loadData() {
   try {
     userStore.restoreUserInfo?.();
     studyStore.restoreProgress?.();
+    gamificationStore.restoreGamification();
+    gamificationStore.generateDailyChallenge();
     loadBadges();
     // 检查点4.4: 加载打卡数据
     loadCheckinData();
@@ -1288,6 +1354,121 @@ onHide(() => {
   height: 80rpx;
   background-color: var(--apple-divider);
   flex-shrink: 0;
+}
+
+// ========== 游戏化等级卡片 ==========
+.level-card {
+  padding: 32rpx;
+}
+
+.level-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+
+.level-badge {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary, #37b24d), #2f9e44);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  box-shadow: 0 4rpx 16rpx rgba(55, 178, 77, 0.3);
+}
+
+.level-number {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #fff;
+}
+
+.level-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.level-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.level-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.xp-multiplier {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #ff6b35;
+  background: rgba(255, 107, 53, 0.1);
+  padding: 4rpx 12rpx;
+  border-radius: 12rpx;
+}
+
+.xp-bar-bg {
+  height: 12rpx;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary, #37b24d), #8bc34a);
+  border-radius: 6rpx;
+  transition: width 0.5s ease-out;
+}
+
+.xp-text {
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.level-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--apple-divider);
+}
+
+.level-stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.level-stat-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 4rpx;
+}
+
+.level-stat-label {
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.level-stat-divider {
+  width: 2rpx;
+  height: 48rpx;
+  background-color: var(--apple-divider);
+  flex-shrink: 0;
+}
+
+.dark-mode .xp-bar-bg {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 // ========== 菜单卡片 ==========

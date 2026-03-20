@@ -135,6 +135,16 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
         this.sessions = storageService.get(STORAGE_KEYS.LEARNING_SESSIONS, []);
         this.isInitialized = true;
 
+        // 初始化 debounced save
+        let _saveTimer = null;
+        this._debouncedSaveTrajectory = () => {
+          if (_saveTimer) clearTimeout(_saveTimer);
+          _saveTimer = setTimeout(() => {
+            this.saveTrajectory();
+            _saveTimer = null;
+          }, 2000);
+        };
+
         // 监听气泡点击事件
         this._bubbleClickHandler = this.handleBubbleClick.bind(this);
         uni.$on('bubble:clicked', this._bubbleClickHandler);
@@ -147,6 +157,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
         this.knowledgeMastery = {};
         this.sessions = [];
         this.isInitialized = true; // 标记为已初始化（降级模式）
+        this._debouncedSaveTrajectory = () => this.saveTrajectory();
       }
     },
 
@@ -172,7 +183,7 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
         this.trajectory = this.trajectory.slice(0, 1000);
       }
 
-      this.saveTrajectory();
+      this._debouncedSaveTrajectory();
 
       logger.log('[LearningTrajectory] 记录事件:', type, data);
     },

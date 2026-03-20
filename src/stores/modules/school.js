@@ -7,7 +7,10 @@
  */
 
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
+import { storageService } from '@/services/storageService.js';
+
+const STORAGE_KEY = 'school_selection_info';
 
 export const useSchoolStore = defineStore('school', () => {
   /** @type {import('vue').Ref<Object>} 择校计划信息（院校、专业、分数线等） */
@@ -33,10 +36,41 @@ export const useSchoolStore = defineStore('school', () => {
     info.value = {};
   };
 
+  /**
+   * 从本地存储恢复择校信息
+   */
+  const restore = () => {
+    try {
+      const cached = storageService.get(STORAGE_KEY, null);
+      if (cached && typeof cached === 'object') {
+        info.value = cached;
+      }
+    } catch (_e) {
+      // 恢复失败忽略
+    }
+  };
+
+  // 自动持久化：info 变化时写入存储
+  watch(
+    info,
+    (val) => {
+      try {
+        storageService.save(STORAGE_KEY, val);
+      } catch (_e) {
+        // 存储失败忽略
+      }
+    },
+    { deep: true }
+  );
+
+  // 初始化时恢复
+  restore();
+
   return {
     info,
     hasPlan,
     setInfo,
-    clearInfo
+    clearInfo,
+    restore
   };
 });
