@@ -179,10 +179,9 @@
         </view>
         <!-- 新增: FSRS 记忆引擎状态展示 -->
         <MemoryStatsRow v-if="memoryState" :memoryState="memoryState" />
-        
+
         <!-- 新增: AI Tutor 智能体辅导反馈 -->
         <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
-
 
         <wd-button
           id="e2e-quiz-next-btn"
