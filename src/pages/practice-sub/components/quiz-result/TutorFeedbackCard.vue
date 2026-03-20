@@ -48,11 +48,15 @@ const startTyping = (text) => {
   }, 30); // 30ms per char
 };
 
-watch(() => props.feedback, (newVal) => {
-  if (newVal) {
-    startTyping(newVal);
-  }
-}, { immediate: true });
+watch(
+  () => props.feedback,
+  (newVal) => {
+    if (newVal) {
+      startTyping(newVal);
+    }
+  },
+  { immediate: true }
+);
 
 onUnmounted(() => {
   if (typingTimer) clearInterval(typingTimer);
@@ -107,7 +111,12 @@ onUnmounted(() => {
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 </style>
