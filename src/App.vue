@@ -205,6 +205,10 @@ export default {
 @use './styles/button-animations.scss';
 /* 深色模式变量 mixin（单一来源，消除3x重复） */
 @use './styles/_dark-mode-vars.scss' as *;
+/* wot-design-uni 基础变量 */
+@import 'wot-design-uni/components/common/abstracts/variable.scss';
+/* Wot Design Uni Theme Mapping */
+@use './styles/_wot-theme.scss';
 
 /* ============================================
    EXAM-MASTER 全局配色系统 v3.1
