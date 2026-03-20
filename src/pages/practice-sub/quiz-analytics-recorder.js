@@ -13,6 +13,7 @@ import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
 import { recordSmartAnswer } from './utils/smart-question-picker.js';
 import { recordAnswer as recordAnalyticsAnswer } from '@/utils/analytics/learning-analytics.js';
+import { lafService } from '@/services/lafService.js';
 
 /**
  * 记录答题数据到各个分析模块
@@ -23,6 +24,7 @@ import { recordAnswer as recordAnalyticsAnswer } from '@/utils/analytics/learnin
  * @param {number} params.userChoice - 用户选择的选项索引
  * @param {number} params.questionTimeLimit - 单题时限（秒）
  * @param {Function} params.getOptionLabel - 获取选项标签的函数
+ * @param {string} [params.sessionId] - 刷题会话ID（用于AI诊断闭环）
  * @returns {Object} questionData - 记录的题目数据
  */
 export async function recordAnswerToAnalytics({
@@ -31,7 +33,8 @@ export async function recordAnswerToAnalytics({
   timeSpent,
   userChoice,
   questionTimeLimit,
-  getOptionLabel
+  getOptionLabel,
+  sessionId
 }) {
   if (!currentQuestion) return null;
 
@@ -80,6 +83,26 @@ export async function recordAnswerToAnalytics({
     });
   } catch (e) {
     logger.warn('[quiz-analytics] 保存离线答题记录失败:', e);
+  }
+
+  // ✅ [闭环关键] 提交到后端（触发自动错题收集+会话数据累积）
+  if (sessionId) {
+    try {
+      const idempotencyKey = `${currentQuestion.id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+      await lafService.request('/answer-submit', {
+        action: 'submit',
+        idempotencyKey,
+        data: {
+          question_id: currentQuestion.id,
+          user_answer: getOptionLabel(userChoice),
+          session_id: sessionId,
+          duration: Math.round(timeSpent / 1000),
+          practice_mode: 'normal'
+        }
+      });
+    } catch (e) {
+      logger.warn('[quiz-analytics] 后端答题提交失败（不影响前端）:', e);
+    }
   }
 
   logger.log('[quiz-analytics] ✅ 答题数据已记录:', questionData);

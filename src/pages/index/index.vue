@@ -49,6 +49,39 @@
             @nav-to-mock-exam="navToMockExam"
           />
 
+          <!-- ✅ 每日目标进度环 — 首页核心 CTA -->
+          <DailyGoalRing
+            v-if="!isNewUser"
+            :today-questions="todayQuestionCount"
+            :streak-days="realStudyDays"
+            :is-dark="isDark"
+            @start-practice="navToPractice"
+          />
+
+          <!-- ✅ [零摩擦] 一键续刷 — 记住上次位置，打开app直接继续 -->
+          <view v-if="hasUnfinished && !isNewUser" class="resume-banner apple-glass-card" @tap="resumeLastSession">
+            <view class="resume-banner-left">
+              <text class="resume-banner-icon">▶</text>
+              <view class="resume-banner-info">
+                <text class="resume-banner-title">继续上次练习</text>
+                <text class="resume-banner-sub">{{ resumeSummary }}</text>
+              </view>
+            </view>
+            <text class="resume-banner-arrow">›</text>
+          </view>
+
+          <!-- ✅ [P0重构] 今日复习强入口 — 从底部提升到首屏核心位置 -->
+          <view v-if="reviewPending > 0 && !isNewUser" class="review-banner apple-glass-card" @tap="goSmartReview">
+            <view class="review-banner-left">
+              <text class="review-banner-icon">🔥</text>
+              <view class="review-banner-info">
+                <text class="review-banner-title">今日复习</text>
+                <text class="review-banner-sub">{{ reviewPending }} 题待复习，AI 已安排好顺序</text>
+              </view>
+            </view>
+            <text class="review-banner-arrow">›</text>
+          </view>
+
           <!-- ✅ P0-1: 新用户空状态引导 - 增强版 -->
           <EmptyState
             v-if="isNewUser"
@@ -98,50 +131,11 @@
             @recommendation-click="handleRecommendationClick"
           />
 
-          <!-- 实用工具入口 -->
-          <view class="section-header section-header-apple">
-            <text class="section-title"> 实用工具 </text>
-          </view>
-          <view class="tools-grid">
-            <view
-              id="e2e-home-tool-doc"
-              :class="['tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
-              hover-class="tool-entry-hover"
-              @tap="navToTool('doc-convert')"
-            >
-              <view class="tool-icon-wrapper tool-icon-doc">
-                <view class="tool-icon-glow tool-glow-doc" />
-                <view class="tool-icon-glyph">
-                  <BaseIcon name="file" :size="40" />
-                </view>
-              </view>
-              <view class="tool-info">
-                <text class="tool-name"> 文档转换 </text>
-                <text class="tool-desc"> PDF/Word/Excel 互转 </text>
-              </view>
-              <text class="tool-arrow"> › </text>
-            </view>
-            <view
-              id="e2e-home-tool-id-photo"
-              :class="['tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
-              hover-class="tool-entry-hover"
-              @tap="navToTool('id-photo')"
-            >
-              <view class="tool-icon-wrapper tool-icon-photo">
-                <view class="tool-icon-glow tool-glow-photo" />
-                <view class="tool-icon-glyph">
-                  <BaseIcon name="camera" :size="40" />
-                </view>
-              </view>
-              <view class="tool-info">
-                <text class="tool-name"> 证件照制作 </text>
-                <text class="tool-desc"> 智能抠图换背景 </text>
-              </view>
-              <text class="tool-arrow"> › </text>
-            </view>
+          <!-- ✅ [P0重构] 拍照搜题保留为快捷入口（核心学习工具），其余工具降级 -->
+          <view class="quick-tool-row">
             <view
               id="e2e-home-tool-photo-search"
-              :class="['tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
+              :class="['quick-tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
               hover-class="tool-entry-hover"
               @tap="navToTool('photo-search')"
             >
@@ -153,7 +147,7 @@
               </view>
               <view class="tool-info">
                 <text class="tool-name"> 拍照搜题 </text>
-                <text class="tool-desc"> 智能识别解答 </text>
+                <text class="tool-desc"> 拍一拍，AI 秒解 </text>
               </view>
               <text class="tool-arrow"> › </text>
             </view>
@@ -242,6 +236,76 @@
         @cancel="showLoginModal = false"
       />
 
+      <!-- ✅ [差异化壁垒] 学习风格Onboarding — 首次使用3步配置 -->
+      <view v-if="showStyleOnboarding" class="onboarding-overlay">
+        <view class="onboarding-card" :class="{ 'dark-mode': isDark }">
+          <!-- Step指示器 -->
+          <view class="onboarding-steps">
+            <view
+              v-for="i in 3"
+              :key="i"
+              :class="['step-dot', { active: onboardingStep === i, done: onboardingStep > i }]"
+            />
+          </view>
+
+          <!-- Step 1: 目标分数 -->
+          <view v-if="onboardingStep === 1" class="onboarding-content">
+            <text class="onboarding-title">你的目标分数是？</text>
+            <text class="onboarding-desc">帮助AI调整解析深度</text>
+            <view class="onboarding-options">
+              <view
+                v-for="s in [300, 350, 400, 450]"
+                :key="s"
+                :class="['ob-option', { selected: obTargetScore === s }]"
+                @tap="obTargetScore = s"
+              >
+                <text>{{ s }}+</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- Step 2: 学习深度 -->
+          <view v-if="onboardingStep === 2" class="onboarding-content">
+            <text class="onboarding-title">你目前的水平？</text>
+            <text class="onboarding-desc">AI会匹配你的节奏</text>
+            <view class="onboarding-options vertical">
+              <view
+                v-for="d in styleDepths"
+                :key="d.id"
+                :class="['ob-option-row', { selected: obDepth === d.id }]"
+                @tap="obDepth = d.id"
+              >
+                <text class="ob-option-label">{{ d.label }}</text>
+                <text class="ob-option-desc">{{ d.desc }}</text>
+              </view>
+            </view>
+          </view>
+
+          <!-- Step 3: AI语气 -->
+          <view v-if="onboardingStep === 3" class="onboarding-content">
+            <text class="onboarding-title">你喜欢什么风格的AI？</text>
+            <text class="onboarding-desc">答错时AI怎么跟你说</text>
+            <view class="onboarding-options">
+              <view
+                v-for="t in styleTones"
+                :key="t.id"
+                :class="['ob-option', { selected: obTone === t.id }]"
+                @tap="obTone = t.id"
+              >
+                <text>{{ t.label }}</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="onboarding-actions">
+            <button v-if="onboardingStep > 1" class="ob-btn-skip" @tap="onboardingStep--">上一步</button>
+            <button class="ob-btn-next" @tap="nextOnboardingStep">
+              {{ onboardingStep === 3 ? '开始学习' : '下一步' }}
+            </button>
+          </view>
+        </view>
+      </view>
+
       <!-- ✅ 检查点1.2: 每日金句分享弹窗 -->
       <ShareModal
         :visible="showShareModal"
@@ -272,6 +336,7 @@
 
 <script>
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { lafService } from '@/services/lafService.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import BaseSkeleton from '@/components/base/base-skeleton/base-skeleton.vue';
 import TodoList from '@/components/common/TodoList.vue';
@@ -298,23 +363,27 @@ import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory
 import { storageService } from '@/services/storageService.js';
 import { initTheme, toggleTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 // F002-I2: bubbleInteraction moved to knowledgePointMixin
-// ✅ 检查点 5.1: 导入页面追踪 Mixin
+// ✅ 检查点 5.1: 导入页面追踪 Mixin（保留：lifecycle hooks依赖Options API）
 import { trackingMixin } from '@/utils/analytics/tracking-mixin.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { throttle } from '@/utils/throttle.js';
-// ✅ F002: 提取的 Mixins
+// ✅ F002: 保留需要lifecycle hooks的Mixins
 import { studyTimerMixin } from '@/mixins/studyTimerMixin.js';
 import { dailyQuoteMixin } from '@/mixins/dailyQuoteMixin.js';
-import { todoMixin } from '@/mixins/todoMixin.js';
-// F002-I2: 知识点气泡交互 Mixin
+// F002-I2: 知识点气泡交互 Mixin（保留：复杂DOM交互）
 import { knowledgePointMixin } from '@/mixins/knowledgePointMixin.js';
-// F002-I3/I5: 推荐内容 & 导航跳转 Mixins
-import { recommendationMixin } from '@/mixins/recommendationMixin.js';
-import { navigationMixin } from '@/mixins/navigationMixin.js';
+// ✅ [P0重构] 迁移为Composables的模块
+import { useRecommendations } from '@/composables/useRecommendations.js';
+import { useNavigation } from '@/composables/useNavigation.js';
+import { useTodo } from '@/composables/useTodo.js';
 // ✅ P0-3: 从配置文件导入静态数据（消除硬编码）
-import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS, DEFAULT_USER_PREFERENCES } from '@/config/home-data.js';
+import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS } from '@/config/home-data.js';
+// ✅ [零摩擦] 检测未完成的答题进度
+import { hasUnfinishedProgress, getProgressSummary } from '@/pages/practice-sub/useQuizAutoSave.js';
+// ✅ [差异化壁垒] 学习风格onboarding配置项
+import { DEPTH_LEVELS, TONE_OPTIONS } from '@/composables/useLearningStyle.js';
 // F002-I1a: 共享格式化工具
 import { formatRelativeTime, getInitials as _getInitials } from '@/utils/formatters.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
@@ -342,16 +411,72 @@ export default {
     IndexHeaderBar,
     BaseIcon
   },
-  // ✅ 检查点 5.1: 使用页面追踪 Mixin + F002 提取的 Mixins
-  mixins: [
-    trackingMixin,
-    studyTimerMixin,
-    dailyQuoteMixin,
-    todoMixin,
-    knowledgePointMixin,
-    recommendationMixin,
-    navigationMixin
-  ],
+  // ✅ [P0重构] 保留需要lifecycle hooks的Mixins，其余已迁移为Composables
+  mixins: [trackingMixin, studyTimerMixin, dailyQuoteMixin, knowledgePointMixin],
+
+  // ✅ [P0重构] Composables桥接到Options API
+  setup() {
+    const {
+      personalizedRecommendations,
+      userPreferences,
+      loadPersonalizedRecommendations,
+      loadUserPreferences,
+      handleRecommendationClick
+    } = useRecommendations();
+    const {
+      isNavigating,
+      showEmptyBankModal,
+      showLoginModal,
+      openLoginModal,
+      navToPractice,
+      navToMockExam,
+      navToStudyDetail,
+      handleStatClick,
+      handleQuickStart,
+      handleTutorial,
+      tryAutoLogin
+    } = useNavigation();
+    const todoStore = useTodoStore();
+    const {
+      showTodoEditor,
+      editingTodo,
+      handleEditPlan,
+      handleToggleTodo,
+      handleTodoSave,
+      handleTodoDelete,
+      openTodoEditor
+    } = useTodo(todoStore);
+
+    return {
+      // recommendations
+      personalizedRecommendations,
+      userPreferences,
+      loadPersonalizedRecommendations,
+      loadUserPreferences,
+      handleRecommendationClick,
+      // navigation
+      isNavigating,
+      showEmptyBankModal,
+      showLoginModal,
+      openLoginModal,
+      navToPractice,
+      navToMockExam,
+      navToStudyDetail,
+      handleStatClick,
+      handleQuickStart,
+      handleTutorial,
+      tryAutoLogin,
+      // todo
+      todoStore,
+      showTodoEditor,
+      editingTodo,
+      handleEditPlan,
+      handleToggleTodo,
+      handleTodoSave,
+      handleTodoDelete,
+      openTodoEditor
+    };
+  },
 
   data() {
     return {
@@ -368,9 +493,8 @@ export default {
         safeAreaBottom: 0
       },
 
-      // Store实例
+      // Store实例（todoStore 已由 setup() 中的 useTodo 提供）
       studyStore: null,
-      todoStore: null,
       userStore: null,
       trajectoryStore: null,
 
@@ -381,16 +505,14 @@ export default {
       realTotalQuestions: 0,
       realAccuracy: 0,
       realStudyDays: 0,
+      todayQuestionCount: 0,
 
-      // 按钮防重复点击状态
-      isNavigating: false,
+      // ✅ [P0重构] isNavigating, showEmptyBankModal, showLoginModal 已由 useNavigation composable 提供
+      // ✅ [P0重构] personalizedRecommendations, userPreferences 已由 useRecommendations composable 提供
+      // ✅ [P0重构] showTodoEditor, editingTodo 已由 useTodo composable 提供
 
-      // ✅ 自定义弹窗状态
-      showEmptyBankModal: false,
-      showLoginModal: false,
-      // 注意: showShareModal, showTodoEditor, editingTodo 由 dailyQuoteMixin/todoMixin 提供
-      // 注意: isRefreshingQuote, quoteDate, dailyQuote, quoteAuthor, showQuotePoster 由 dailyQuoteMixin 提供
-      // 注意: todayStudyTime, studyTimerInterval, sessionStartTime 由 studyTimerMixin 提供
+      // ✅ 自定义弹窗状态（登录弹窗已移至composable）
+      // 注意: showShareModal, showTodoEditor, editingTodo 由 composable/mixin 提供
 
       // ✅ 2.3: 静态数据移到 created/beforeCreate 避免 Vue 深度响应式开销
       // quoteLibrary, quoteAuthors, formulaList 在 created() 中赋值为非响应式属性
@@ -398,11 +520,25 @@ export default {
       // 知识点数据 - ✅ P0-3: 初始值从配置导入，后续由 loadKnowledgePoints() 动态计算
       knowledgePoints: DEFAULT_KNOWLEDGE_POINTS.map((p) => ({ ...p, count: 0, mastery: 0 })),
 
-      // 个性化推荐内容
-      personalizedRecommendations: [],
+      // ✅ [P0重构] personalizedRecommendations 已由 useRecommendations composable 提供
 
-      // 用户学习偏好 - ✅ P0-3: 默认值从配置导入
-      userPreferences: { ...DEFAULT_USER_PREFERENCES },
+      // ✅ [闭环核心] 今日复习待复习数量
+      reviewPending: 0,
+
+      // ✅ [零摩擦] 一键续刷状态
+      hasUnfinished: false,
+      resumeSummary: '',
+
+      // ✅ [差异化壁垒] 学习风格Onboarding
+      showStyleOnboarding: false,
+      onboardingStep: 1,
+      obTargetScore: 350,
+      obDepth: 'standard',
+      obTone: 'encouraging',
+      styleDepths: DEPTH_LEVELS,
+      styleTones: TONE_OPTIONS,
+
+      // ✅ [P0重构] userPreferences 已由 useRecommendations composable 提供
 
       // 最近活动 - ✅ P0-3: 默认空数组，由 loadRecentActivities() 动态填充
       recentActivities: [],
@@ -511,7 +647,10 @@ export default {
       this.isDark = mode === 'dark';
     });
 
-    // 监听登录状态变化
+    // 监听登录状态变化（防止重复注册）
+    if (this._loginHandler) {
+      uni.$off('loginStatusChanged', this._loginHandler);
+    }
     this._loginHandler = (isLoggedIn) => {
       logger.log('[Index] 登录状态变化:', isLoggedIn);
       this.refreshData().catch((e) => {
@@ -522,7 +661,7 @@ export default {
 
     // 初始化Store
     this.studyStore = useStudyStore();
-    this.todoStore = useTodoStore();
+    // todoStore 已在 setup() 中通过 useTodo 初始化
     this.userStore = useUserStore();
     this.trajectoryStore = useLearningTrajectoryStore();
 
@@ -547,6 +686,17 @@ export default {
     // F005: 通知 CustomTabbar 重新检测路由
     uni.$emit('tabbarRouteUpdate');
 
+    // 重新注册登录状态监听（onHide 中已清理，防止累积）
+    if (!this._loginHandler) {
+      this._loginHandler = (isLoggedIn) => {
+        logger.log('[Index] 登录状态变化:', isLoggedIn);
+        this.refreshData().catch((e) => {
+          logger.error('[Index] 登录状态刷新失败:', e);
+        });
+      };
+    }
+    uni.$on('loginStatusChanged', this._loginHandler);
+
     // 首次 onShow 跳过 refreshData，因为 onLoad 已调用 loadData()
     if (this._skipFirstShow) {
       this._skipFirstShow = false;
@@ -558,6 +708,12 @@ export default {
 
     // ✅ 检查点1.5: 恢复计时
     this.startStudyTimer();
+
+    // ✅ [闭环核心] 加载今日复习数量
+    this.loadReviewPending();
+
+    // ✅ [零摩擦] 每次回到首页检测未完成进度
+    this.checkUnfinishedProgress();
   },
 
   onUnload() {
@@ -571,6 +727,12 @@ export default {
   // ✅ P0-FIX: tabBar页面onUnload永不触发，必须在onHide中清理资源
   onHide() {
     this.stopStudyTimer();
+
+    // 清理登录状态监听（tabBar 页面 onUnload 不触发，onShow 会重新注册）
+    if (this._loginHandler) {
+      uni.$off('loginStatusChanged', this._loginHandler);
+      this._loginHandler = null;
+    }
   },
 
   methods: {
@@ -621,6 +783,9 @@ export default {
         // ✅ 2.3: 同步更新统计数据（避免 computed 重复读 storage）
         this._refreshStats();
 
+        // ✅ [零摩擦] 检测未完成的答题进度
+        this.checkUnfinishedProgress();
+
         // 4-8: 并行加载所有异步/独立数据，提升首屏速度
         // ✅ F011: 使用 allSettled 替代 all，单个模块失败不影响其他模块加载
         const results = await Promise.allSettled([
@@ -646,9 +811,8 @@ export default {
           icon: 'none'
         });
       } finally {
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 300);
+        // 确保骨架屏至少显示 300ms（避免闪烁），但不超过实际加载时间
+        this.isLoading = false;
       }
     },
 
@@ -680,11 +844,19 @@ export default {
       }
     },
 
-    // ✅ 2.3: 集中更新统计数据，避免 computed 中重复读取 storageService
+    // ✅ [P0重构] 集中更新统计数据 — 使用 count 元数据，不再反序列化整个题库
     _refreshStats() {
       try {
-        const questionBank = storageService.get('v30_bank', []);
-        this.realTotalQuestions = Array.isArray(questionBank) ? questionBank.length : 0;
+        // 优先读取轻量 count 元数据，避免反序列化整个题库数组
+        const cachedCount = storageService.get('v30_bank_count', -1);
+        if (cachedCount >= 0) {
+          this.realTotalQuestions = cachedCount;
+        } else {
+          // 首次或元数据丢失时回退到完整读取，并缓存 count
+          const questionBank = storageService.get('v30_bank', []);
+          this.realTotalQuestions = Array.isArray(questionBank) ? questionBank.length : 0;
+          storageService.save('v30_bank_count', this.realTotalQuestions);
+        }
       } catch (_e) {
         this.realTotalQuestions = 0;
       }
@@ -713,6 +885,15 @@ export default {
         }
       } catch (_e) {
         this.realStudyDays = 0;
+      }
+
+      // 今日答题数（用于每日目标进度环）
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const todayRecord = storageService.get('today_answer_count', { date: '', count: 0 });
+        this.todayQuestionCount = todayRecord.date === today ? todayRecord.count || 0 : 0;
+      } catch (_e) {
+        this.todayQuestionCount = 0;
       }
     },
 
@@ -808,6 +989,78 @@ export default {
       safeNavigateTo(`/pages/tools/${name}`);
     },
 
+    // ✅ [闭环核心] 加载今日待复习数量
+    async loadReviewPending() {
+      try {
+        const res = await lafService.getReviewPlan();
+        if (res.code === 0 && res.data) {
+          this.reviewPending = res.data.reviewPlan?.totalPending || 0;
+        }
+      } catch (_e) {
+        // 静默失败，不影响首页
+      }
+    },
+
+    // ✅ [闭环核心] 跳转智能复习
+    goSmartReview() {
+      safeNavigateTo('/pages/practice-sub/smart-review');
+    },
+
+    // ✅ [零摩擦] 一键续刷 — 直接跳转到上次未完成的答题
+    resumeLastSession() {
+      safeNavigateTo('/pages/practice-sub/do-quiz?resume=true');
+    },
+
+    // ✅ [零摩擦] 检测是否有未完成的答题进度
+    checkUnfinishedProgress() {
+      try {
+        if (hasUnfinishedProgress()) {
+          this.hasUnfinished = true;
+          const summary = getProgressSummary();
+          if (summary) {
+            const answered = summary.answeredCount || 0;
+            const total = summary.totalQuestions || 0;
+            this.resumeSummary = `已答 ${answered}/${total} 题，点击继续`;
+          } else {
+            this.resumeSummary = '有未完成的练习，点击继续';
+          }
+        } else {
+          this.hasUnfinished = false;
+        }
+      } catch (_e) {
+        this.hasUnfinished = false;
+      }
+    },
+
+    // ✅ [差异化壁垒] 学习风格Onboarding
+    checkShowOnboarding() {
+      try {
+        const config = storageService.get('learning_style_config');
+        if (!config && !this.isNewUser) {
+          this.showStyleOnboarding = true;
+        }
+      } catch (_e) {
+        /* silent */
+      }
+    },
+
+    nextOnboardingStep() {
+      if (this.onboardingStep < 3) {
+        this.onboardingStep++;
+        return;
+      }
+      // 完成：保存配置
+      storageService.save('learning_style_config', {
+        depth: this.obDepth,
+        style: 'example',
+        tone: this.obTone,
+        targetScore: this.obTargetScore,
+        weakSubjects: []
+      });
+      this.showStyleOnboarding = false;
+      uni.showToast({ title: 'AI已为你个性化配置', icon: 'none' });
+    },
+
     // ✅ F023: 节流滚动监听，减少重渲染
     handleScroll(e) {
       if (!this._throttledScroll) {
@@ -868,32 +1121,6 @@ export default {
           });
         }
       });
-    },
-
-    // ✅ 微信小程序静默登录
-    async doSilentLogin() {
-      try {
-        uni.showLoading({ title: '登录中...' });
-
-        const result = await this.userStore.login(false); // 非静默模式，显示错误
-
-        uni.hideLoading();
-
-        if (result.success) {
-          uni.showToast({ title: '登录成功', icon: 'success' });
-          // 刷新页面数据
-          this.refreshData().catch((e) => {
-            logger.error('[Index] 登录后刷新失败:', e);
-          });
-        } else {
-          // 静默登录失败，跳转到登录页让用户手动操作
-          safeNavigateTo('/pages/login/index');
-        }
-      } catch (error) {
-        uni.hideLoading();
-        logger.error('[Index] 静默登录失败:', error);
-        uni.showToast({ title: '登录失败，请重试', icon: 'none' });
-      }
     }
 
     // ✅ F002: 每日金句功能由 dailyQuoteMixin 提供
@@ -1191,7 +1418,36 @@ export default {
   font-weight: 600;
 }
 
-/* ==================== 实用工具入口 ==================== */
+/* ==================== [P0重构] 拍照搜题快捷入口 ==================== */
+.quick-tool-row {
+  margin-bottom: 32rpx;
+}
+
+.quick-tool-entry {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 22rpx;
+  min-height: 112rpx;
+  border-radius: 28rpx;
+  border: 1rpx solid var(--border);
+  box-shadow: var(--apple-shadow-card);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-tool-entry::before {
+  content: '';
+  position: absolute;
+  left: 24rpx;
+  right: 24rpx;
+  top: 0;
+  height: 1rpx;
+  background: var(--apple-specular-soft);
+  pointer-events: none;
+}
+
+/* ==================== 实用工具入口（已降级，保留样式兼容） ==================== */
 .tools-grid {
   display: flex;
   flex-direction: column;
@@ -1343,5 +1599,112 @@ export default {
 .skeleton-fade-enter-from,
 .skeleton-fade-leave-to {
   opacity: 0;
+}
+
+/* ✅ [闭环核心] 今日复习入口 */
+/* ==================== [零摩擦] 一键续刷入口 ==================== */
+.resume-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+  margin: 20rpx 32rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(79, 70, 229, 0.08));
+  border: 1rpx solid rgba(99, 102, 241, 0.25);
+  animation: resumePulse 2s ease-in-out infinite;
+}
+.page-dark .resume-banner {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(79, 70, 229, 0.06));
+  border-color: rgba(99, 102, 241, 0.2);
+}
+@keyframes resumePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 8rpx rgba(99, 102, 241, 0);
+  }
+}
+.resume-banner-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.resume-banner-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+  color: #6366f1;
+}
+.resume-banner-info {
+  display: flex;
+  flex-direction: column;
+}
+.resume-banner-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.resume-banner-sub {
+  font-size: 24rpx;
+  color: var(--text-sub);
+  margin-top: 4rpx;
+}
+.resume-banner-arrow {
+  font-size: 36rpx;
+  color: #6366f1;
+  font-weight: 300;
+}
+
+/* ==================== [闭环核心] 今日复习入口 ==================== */
+.review-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx;
+  margin: 20rpx 32rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(16, 185, 129, 0.08));
+  border: 1rpx solid rgba(52, 211, 153, 0.2);
+}
+.page-dark .review-banner {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(16, 185, 129, 0.06));
+  border-color: rgba(52, 211, 153, 0.15);
+}
+.review-banner-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.review-banner-icon {
+  font-size: 44rpx;
+  margin-right: 20rpx;
+}
+.review-banner-info {
+  display: flex;
+  flex-direction: column;
+}
+.review-banner-title {
+  font-size: 30rpx;
+  font-weight: 640;
+  color: #10b981;
+}
+.page-dark .review-banner-title {
+  color: #34d399;
+}
+.review-banner-sub {
+  font-size: 24rpx;
+  color: #6b7280;
+  margin-top: 4rpx;
+}
+.page-dark .review-banner-sub {
+  color: #8b949e;
+}
+.review-banner-arrow {
+  font-size: 36rpx;
+  color: #10b981;
+  opacity: 0.6;
+  margin-left: 12rpx;
 }
 </style>

@@ -5,6 +5,13 @@
 
       <text class="app-name"> Exam-Master </text>
 
+      <text class="splash-greeting">{{ greeting }}</text>
+
+      <view v-if="streakDays > 0" class="streak-preview">
+        <text class="streak-flame">🔥</text>
+        <text class="streak-text">连续学习 {{ streakDays }} 天</text>
+      </view>
+
       <view class="loading-dots">
         <view class="dot" />
         <view class="dot" />
@@ -26,16 +33,71 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { onMounted, onBeforeUnmount, ref, computed } from 'vue';
 import { logger } from '@/utils/logger.js';
+import { storageService } from '@/services/storageService.js';
 
 const splashTimer = ref(null);
+
+// 动态问候语
+const greeting = computed(() => {
+  const hour = new Date().getHours();
+  if (hour < 6) return '夜深了，注意休息 🌙';
+  if (hour < 9) return '早安，新的一天加油 ☀️';
+  if (hour < 12) return '上午好，状态正佳 📖';
+  if (hour < 14) return '中午好，适当休息 🍵';
+  if (hour < 18) return '下午好，继续冲刺 💪';
+  if (hour < 22) return '晚上好，坚持就是胜利 🌟';
+  return '夜深了，注意休息 🌙';
+});
+
+// 连续学习天数
+const streakDays = ref(0);
+try {
+  const dailyRecords = storageService.get('daily_study_records', {});
+  const dates = Object.keys(dailyRecords).sort().reverse();
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < dates.length; i++) {
+    const expected = new Date(today);
+    expected.setDate(today.getDate() - i);
+    const expectedStr = expected.toISOString().split('T')[0];
+    if (dates[i] === expectedStr) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  streakDays.value = streak;
+} catch {
+  /* silent */
+}
 
 function isVisualSnapshot() {
   if (typeof location === 'undefined') {
     return false;
   }
   return /visual=1/.test(location.hash || '');
+}
+
+function navigateAfterSplash() {
+  // 检查是否完成过引导
+  const hasOnboarded = storageService.get('onboarding_completed', false);
+
+  if (!hasOnboarded) {
+    // 新用户 → 引导流程
+    logger.log('[Splash] New user, navigate to onboarding');
+    uni.redirectTo({
+      url: '/pages/onboarding/index',
+      fail: (err) => {
+        logger.warn('[Splash] onboarding redirect failed, fallback to home', err);
+        openHomeTab();
+      }
+    });
+  } else {
+    // 老用户 → 首页
+    openHomeTab();
+  }
 }
 
 function openHomeTab() {
@@ -86,8 +148,8 @@ onMounted(() => {
     return;
   }
   splashTimer.value = setTimeout(() => {
-    logger.log('[Splash] open home tab');
-    openHomeTab();
+    logger.log('[Splash] navigating after splash');
+    navigateAfterSplash();
   }, 1200);
 });
 
@@ -146,6 +208,36 @@ onBeforeUnmount(() => {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+.splash-greeting {
+  font-size: 28rpx;
+  color: var(--primary-foreground);
+  opacity: 0.85;
+  margin-top: 12px;
+  letter-spacing: 1rpx;
+}
+
+.streak-preview {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  padding: 8rpx 24rpx;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 32rpx;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.streak-flame {
+  font-size: 32rpx;
+  margin-right: 8rpx;
+}
+
+.streak-text {
+  font-size: 24rpx;
+  color: var(--primary-foreground);
+  font-weight: 600;
 }
 
 .loading-dots {

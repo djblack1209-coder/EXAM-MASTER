@@ -117,7 +117,7 @@
         "desc": "用于展示院校所在地区与位置相关信息"
       }
     },
-    "requiredPrivateInfos": ["chooseAddress", "chooseLocation", "choosePoi"],
+    "requiredPrivateInfos": [],
     "requiredBackgroundModes": [],
     "optimization": {
       "subPackages": true
