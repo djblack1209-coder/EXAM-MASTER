@@ -713,7 +713,7 @@ export default {
       // #endif
 
       // #ifdef H5
-      window.open(this.resultUrl, '_blank');
+      uni.navigateTo({url:'/pages/webview/webview?url='+encodeURIComponent(this.resultUrl)});
       // #endif
     },
 

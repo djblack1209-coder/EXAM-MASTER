@@ -38,18 +38,12 @@ function createNetworkUniCompat() {
       }
     },
     onNetworkStatusChange(callback) {
-      if (typeof window === 'undefined' || typeof callback !== 'function') return;
-      const onlineHandler = () => callback({ isConnected: true, networkType: 'wifi' });
-      const offlineHandler = () => callback({ isConnected: false, networkType: 'none' });
-      window.addEventListener('online', onlineHandler);
-      window.addEventListener('offline', offlineHandler);
+      
       this._onlineHandler = onlineHandler;
       this._offlineHandler = offlineHandler;
     },
     offNetworkStatusChange() {
-      if (typeof window === 'undefined') return;
-      if (this._onlineHandler) window.removeEventListener('online', this._onlineHandler);
-      if (this._offlineHandler) window.removeEventListener('offline', this._offlineHandler);
+      
       this._onlineHandler = null;
       this._offlineHandler = null;
     },

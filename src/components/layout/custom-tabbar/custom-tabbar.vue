@@ -59,8 +59,7 @@ function getUniApi() {
 
 function fallbackRouteJump(url) {
   // #ifdef H5
-  if (typeof window !== 'undefined' && url) {
-    window.location.hash = `#${url}`;
+  `;
     return true;
   }
   // #endif
@@ -85,10 +84,7 @@ function getCurrentRoutePath() {
     }
   }
   // #ifdef H5
-  if (typeof window !== 'undefined') {
-    const hashPath = window.location.hash.replace(/^#/, '');
-    if (hashPath) return hashPath;
-  }
+  
   // #endif
   return '/pages/index/index';
 }

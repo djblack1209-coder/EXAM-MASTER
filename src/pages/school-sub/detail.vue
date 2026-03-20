@@ -656,7 +656,7 @@ export default {
           .share({
             title: `${this.schoolInfo.name} - 考研院校推荐`,
             text: `${this.schoolInfo.name}，${this.schoolInfo.location}，匹配度${this.schoolInfo.matchRate}%`,
-            url: window.location.href
+            url: ''
           })
           .catch(() => {
             this.copySchoolInfo();

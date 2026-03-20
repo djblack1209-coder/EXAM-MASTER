@@ -102,15 +102,14 @@ const handleQQCallback = async () => {
   try {
     // #ifdef H5
     // 从URL获取授权码
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(options);
     let code = urlParams.get('code');
     let state = urlParams.get('state');
     const error = urlParams.get('error');
     const errorDescription = urlParams.get('error_description');
 
     // Hash 模式下参数可能存在于 hash 中
-    if (!code && window.location.hash) {
-      const hashQuery = window.location.hash.split('?')[1];
+    if (!code && options.hash) { const hashQuery = options.hash;
       if (hashQuery) {
         const hashParams = new URLSearchParams(hashQuery);
         code = hashParams.get('code');
@@ -143,9 +142,7 @@ const handleQQCallback = async () => {
     // 调用后端接口完成登录
     const callbackRedirectUri =
       config.qq.redirectUri ||
-      (window.location.href.includes('#')
-        ? `${window.location.origin}/#/pages/login/qq-callback`
-        : `${window.location.origin}/pages/login/qq-callback`);
+      '';
 
     const res = await lafService.login({
       type: 'qq',

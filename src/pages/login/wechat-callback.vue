@@ -100,13 +100,12 @@ const handleWeChatCallback = async () => {
   try {
     // #ifdef H5
     // 从 URL 获取授权码
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(options);
     let code = urlParams.get('code');
     const state = urlParams.get('state');
 
     // Hash 模式下参数可能在 hash 后面
-    if (!code && window.location.hash) {
-      const hashQuery = window.location.hash.split('?')[1];
+    if (!code && options.hash) { const hashQuery = options.hash;
       if (hashQuery) {
         const hashParams = new URLSearchParams(hashQuery);
         code = hashParams.get('code');

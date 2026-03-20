@@ -466,61 +466,7 @@ export function getCurrentTheme() {
   try {
     const savedTheme = uni.getStorageSync('theme_mode');
     if (savedTheme) return savedTheme;
-  } catch (_e) {
-    // fallback to localStorage for H5
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme_mode');
-      if (savedTheme) return savedTheme;
-    }
-  }
-
-  if (typeof window !== 'undefined') {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'dark' : 'light';
-  }
-  return 'light';
-  // #endif
-}
-
-/**
- * 监听主题变化
- * @param {Function} callback - 主题变化回调
- */
-export function watchTheme(callback) {
-  // #ifdef MP-WEIXIN
-  uni.onThemeChange((res) => {
-    const theme = res.theme === 'dark' ? 'dark' : 'light';
-    callback(theme);
-  });
-  // #endif
-
-  // #ifndef MP-WEIXIN
-  if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e) => {
-      callback(e.matches ? 'dark' : 'light');
-    };
-    mediaQuery.addEventListener('change', handler);
-    return () => mediaQuery.removeEventListener('change', handler);
-  }
-  // #endif
-}
-
-/**
- * 切换主题
- * @param {string} theme - 'light' | 'dark'
- */
-export function toggleTheme(theme) {
-  applyTheme(theme);
-
-  // #ifndef MP-WEIXIN
-  try {
-    uni.setStorageSync('theme_mode', theme);
-  } catch (_e) {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('theme_mode', theme);
-    }
-  }
+  } catch (_e) { storageService.save('theme_mode', theme); }
   // #endif
 
   // #ifdef MP-WEIXIN

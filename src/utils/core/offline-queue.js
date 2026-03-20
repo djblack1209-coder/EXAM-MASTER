@@ -1,3 +1,4 @@
+import storageService from '@/services/storageService';
 /**
  * 离线请求队列 (Offline Queue)
  *
@@ -32,20 +33,7 @@ function createNetworkUniCompat() {
       success?.({ networkType: online ? 'wifi' : 'none' });
     },
     onNetworkStatusChange(callback) {
-      if (typeof window === 'undefined' || typeof callback !== 'function') return;
-
-      const notify = (isConnected) => {
-        callback({
-          isConnected,
-          networkType: isConnected ? 'wifi' : 'none'
-        });
-      };
-
-      const onlineHandler = () => notify(true);
-      const offlineHandler = () => notify(false);
-
-      window.addEventListener('online', onlineHandler);
-      window.addEventListener('offline', offlineHandler);
+      
     }
   };
 }
@@ -59,9 +47,7 @@ function createQueueStorageCompat() {
 
   const readLocal = (key) => {
     try {
-      if (typeof localStorage === 'undefined') return undefined;
-      const raw = localStorage.getItem(`${keyPrefix}${key}`);
-      if (raw === null) return undefined;
+      return storageService.get(keyPrefix + key);
       return JSON.parse(raw);
     } catch {
       return undefined;
@@ -70,8 +56,7 @@ function createQueueStorageCompat() {
 
   const writeLocal = (key, value) => {
     try {
-      if (typeof localStorage === 'undefined') return false;
-      localStorage.setItem(`${keyPrefix}${key}`, JSON.stringify(value));
+      storageService.save(keyPrefix+key,value);
       return true;
     } catch {
       return false;

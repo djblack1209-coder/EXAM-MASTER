@@ -36,7 +36,7 @@ let _webAudioSupported = false;
 function getAudioContext() {
   if (_audioCtx && _audioCtx.state !== 'closed') return _audioCtx;
   try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const AudioCtx = typeof window !== 'undefined' ? (window.AudioContext || window.webkitAudioContext) : null;
     if (AudioCtx) {
       _audioCtx = new AudioCtx();
       _webAudioSupported = true;

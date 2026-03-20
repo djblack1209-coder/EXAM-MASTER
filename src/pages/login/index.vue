@@ -639,8 +639,7 @@ const handleWechatH5Login = () => {
       return;
     }
 
-    const currentOrigin = window.location.origin;
-    const hashMode = window.location.href.includes('#');
+    const currentOrigin='';const hashMode=false;
     let callbackUrl;
     if (hashMode) {
       callbackUrl = `${currentOrigin}/#/pages/login/wechat-callback`;
@@ -677,7 +676,7 @@ const handleWechatH5Login = () => {
       `&state=${state}` +
       '#wechat_redirect';
 
-    window.location.href = authUrl;
+    uni.navigateTo({url:})
   } catch (err) {
     logger.error('[Login] 微信H5 OAuth跳转失败:', err);
     uni.showToast({ title: '微信授权跳转失败', icon: 'none' });
@@ -766,8 +765,7 @@ const handleQQLogin = async () => {
       isLoading.value = false;
       return;
     }
-    const currentOrigin = window.location.origin;
-    const hashMode = window.location.href.includes('#');
+    const currentOrigin='';const hashMode=false;
     const callbackUrl =
       config.qq.redirectUri ||
       (hashMode ? `${currentOrigin}/#/pages/login/qq-callback` : `${currentOrigin}/pages/login/qq-callback`);
@@ -798,7 +796,7 @@ const handleQQLogin = async () => {
     const authUrl = `https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=${qqAppId}&redirect_uri=${redirectUri}&state=${state}&scope=get_user_info`;
 
     // 直接跳转，不需要确认弹窗（更好的用户体验）
-    window.location.href = authUrl;
+    uni.navigateTo({url:})
     // #endif
 
     // #ifdef APP-PLUS
