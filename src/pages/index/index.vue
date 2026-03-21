@@ -150,27 +150,32 @@
             @recommendation-click="handleRecommendationClick"
           /> -->
 
-          <!-- [首页精简] 拍照搜题快捷入口 — 可从工具页访问，注释隐藏 -->
-          <!-- <view class="quick-tool-row">
-            <view
-              id="e2e-home-tool-photo-search"
-              :class="['quick-tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
-              hover-class="tool-entry-hover"
-              @tap="navToTool('photo-search')"
-            >
-              <view class="tool-icon-wrapper tool-icon-search">
-                <view class="tool-icon-glow tool-glow-search" />
-                <view class="tool-icon-glyph">
-                  <BaseIcon name="search" :size="40" />
-                </view>
+          <!-- 免费工具（引流入口） -->
+          <view v-if="!isNewUser" class="free-tools-section">
+            <text class="free-tools-title">免费工具</text>
+            <view class="free-tools-grid">
+              <view
+                class="free-tool-item apple-glass-card"
+                hover-class="tool-entry-hover"
+                @tap="navToTool('photo-search')"
+              >
+                <text class="free-tool-emoji">📷</text>
+                <text class="free-tool-name">拍照搜题</text>
               </view>
-              <view class="tool-info">
-                <text class="tool-name"> 拍照搜题 </text>
-                <text class="tool-desc"> 拍一拍，AI 秒解 </text>
+              <view class="free-tool-item apple-glass-card" hover-class="tool-entry-hover" @tap="navToTool('id-photo')">
+                <text class="free-tool-emoji">🪪</text>
+                <text class="free-tool-name">证件照换底色</text>
               </view>
-              <text class="tool-arrow"> › </text>
+              <view
+                class="free-tool-item apple-glass-card"
+                hover-class="tool-entry-hover"
+                @tap="navToTool('doc-convert')"
+              >
+                <text class="free-tool-emoji">📄</text>
+                <text class="free-tool-name">文档转换</text>
+              </view>
             </view>
-          </view> -->
+          </view>
 
           <!-- [首页精简] 待办事项清单 — 可从个人中心访问，注释隐藏 -->
           <!-- <view class="section-header section-header-apple">
@@ -1757,6 +1762,46 @@ export default {
   margin-top: 16rpx;
   border-radius: 24rpx;
   overflow: hidden;
+}
+
+/* 免费工具引流入口 */
+.free-tools-section {
+  margin: 24rpx 30rpx 0;
+}
+.free-tools-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 16rpx;
+  display: block;
+}
+.free-tools-grid {
+  display: flex;
+  gap: 16rpx;
+}
+.free-tool-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 12rpx;
+  border-radius: 20rpx;
+  min-height: 120rpx;
+}
+.free-tool-item:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+.free-tool-emoji {
+  font-size: 40rpx;
+  margin-bottom: 8rpx;
+}
+.free-tool-name {
+  font-size: 22rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
 }
 
 /* ==================== [闭环核心] 今日复习入口 ==================== */

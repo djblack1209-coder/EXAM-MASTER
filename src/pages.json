@@ -317,6 +317,24 @@
             "navigationBarBackgroundColor": "#1A1A1A",
             "enablePullDownRefresh": false
           }
+        },
+        {
+          "path": "id-photo",
+          "style": {
+            "navigationBarTitleText": "免费证件照换底色",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A",
+            "enablePullDownRefresh": false
+          }
+        },
+        {
+          "path": "doc-convert",
+          "style": {
+            "navigationBarTitleText": "文档格式转换",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A",
+            "enablePullDownRefresh": false
+          }
         }
       ]
     },
