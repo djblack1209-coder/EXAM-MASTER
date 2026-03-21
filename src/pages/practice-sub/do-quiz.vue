@@ -327,18 +327,25 @@
     />
 
     <!-- ✅ [P1重构] 练习完成 — 内嵌AI一句话总结 + 薄弱点 + 继续刷题CTA -->
-    <CustomModal
-      :visible="showCompleteModal"
-      type="success"
-      title="练习完成"
-      :content="completeModalContent"
-      :confirm-text="diagnosisLoading ? '正在诊断...' : hasNextRecommendation ? '继续刷下一组' : '查看诊断报告'"
-      cancel-text="返回"
-      :show-cancel="!diagnosisLoading"
-      :is-dark="isDark"
-      @confirm="handleCompleteAction"
-      @cancel="handleCompleteConfirm"
-    />
+    <view
+      :class="{
+        'complete-celebrate': showCompleteModal,
+        'perfect-score-glow': isPerfectScore
+      }"
+    >
+      <CustomModal
+        :visible="showCompleteModal"
+        type="success"
+        title="练习完成"
+        :content="completeModalContent"
+        :confirm-text="diagnosisLoading ? '正在诊断...' : hasNextRecommendation ? '继续刷下一组' : '查看诊断报告'"
+        cancel-text="返回"
+        :show-cancel="!diagnosisLoading"
+        :is-dark="isDark"
+        @confirm="handleCompleteAction"
+        @cancel="handleCompleteConfirm"
+      />
+    </view>
 
     <!-- ✅ 笔记输入弹窗 -->
     <view v-if="showNoteModal" class="note-modal-overlay" @tap="showNoteModal = false">
@@ -641,6 +648,12 @@ export default {
         const optionText = this.currentQuestion.options[idx] || '';
         return optionText.startsWith(correctAnswer) || optionText.includes(correctAnswer);
       };
+    },
+    // ✅ 完美全对检测（用于庆祝动画）
+    isPerfectScore() {
+      return (
+        this.showCompleteModal && this.answeredQuestions.length > 0 && this.answeredQuestions.every((a) => a.isCorrect)
+      );
     },
     // ✅ 可用的笔记标签
     availableNoteTags() {
@@ -2989,5 +3002,53 @@ export default {
   font-size: 22rpx;
   color: rgba(255, 255, 255, 0.7);
   margin-top: 6rpx;
+}
+
+/* ✅ 完成庆祝动画 */
+@keyframes celebrateScale {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes celebrateStars {
+  0% {
+    transform: rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+    opacity: 0.8;
+  }
+}
+
+.complete-celebrate {
+  animation: celebrateScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 完美全对时的特殊效果 */
+.perfect-score-glow {
+  position: relative;
+}
+.perfect-score-glow::after {
+  content: '';
+  position: absolute;
+  inset: -20rpx;
+  border-radius: 50rpx;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+  animation: celebrateStars 2s ease-in-out infinite;
+  pointer-events: none;
 }
 </style>

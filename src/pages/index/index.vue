@@ -150,29 +150,42 @@
             @recommendation-click="handleRecommendationClick"
           /> -->
 
-          <!-- 免费工具（引流入口） -->
-          <view v-if="!isNewUser" class="free-tools-section">
-            <text class="free-tools-title">免费工具</text>
+          <!-- 免费实用工具（引流入口） -->
+          <view class="free-tools-section">
+            <view class="free-tools-header">
+              <text class="free-tools-title">备考工具箱</text>
+              <text class="free-tools-badge">全部免费</text>
+            </view>
             <view class="free-tools-grid">
-              <view
-                class="free-tool-item apple-glass-card"
-                hover-class="tool-entry-hover"
-                @tap="navToTool('photo-search')"
-              >
-                <text class="free-tool-emoji">📷</text>
-                <text class="free-tool-name">拍照搜题</text>
+              <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('id-photo')">
+                <view class="tool-card-icon-wrap">
+                  <text class="tool-card-icon">🪪</text>
+                </view>
+                <text class="tool-card-title">证件照换底色</text>
+                <text class="tool-card-desc">报名免裁剪</text>
+                <view class="tool-card-tag">
+                  <text class="tool-tag-text">考研报名必备</text>
+                </view>
               </view>
-              <view class="free-tool-item apple-glass-card" hover-class="tool-entry-hover" @tap="navToTool('id-photo')">
-                <text class="free-tool-emoji">🪪</text>
-                <text class="free-tool-name">证件照换底色</text>
+              <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('doc-convert')">
+                <view class="tool-card-icon-wrap">
+                  <text class="tool-card-icon">📄</text>
+                </view>
+                <text class="tool-card-title">文档格式转换</text>
+                <text class="tool-card-desc">PDF/Word 互转</text>
+                <view class="tool-card-tag">
+                  <text class="tool-tag-text">资料整理必备</text>
+                </view>
               </view>
-              <view
-                class="free-tool-item apple-glass-card"
-                hover-class="tool-entry-hover"
-                @tap="navToTool('doc-convert')"
-              >
-                <text class="free-tool-emoji">📄</text>
-                <text class="free-tool-name">文档转换</text>
+              <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('photo-search')">
+                <view class="tool-card-icon-wrap">
+                  <text class="tool-card-icon">📷</text>
+                </view>
+                <text class="tool-card-title">拍照搜题</text>
+                <text class="tool-card-desc">AI 秒出答案</text>
+                <view class="tool-card-tag">
+                  <text class="tool-tag-text">AI 驱动</text>
+                </view>
               </view>
             </view>
           </view>
@@ -1764,44 +1777,82 @@ export default {
   overflow: hidden;
 }
 
-/* 免费工具引流入口 */
+/* 备考工具箱（引流核心区） */
 .free-tools-section {
-  margin: 24rpx 30rpx 0;
+  margin: 32rpx 30rpx 0;
+}
+.free-tools-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
 }
 .free-tools-title {
-  font-size: 28rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.free-tools-badge {
+  font-size: 20rpx;
   font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 16rpx;
-  display: block;
+  color: var(--success, #34c759);
+  background: rgba(52, 199, 89, 0.12);
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
 }
 .free-tools-grid {
   display: flex;
   gap: 16rpx;
 }
-.free-tool-item {
+.free-tool-card {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 24rpx 12rpx;
-  border-radius: 20rpx;
-  min-height: 120rpx;
+  padding: 28rpx 12rpx 20rpx;
+  border-radius: 24rpx;
+  position: relative;
+  overflow: hidden;
 }
-.free-tool-item:active {
+.tool-hover {
   transform: scale(0.96);
   opacity: 0.85;
 }
-.free-tool-emoji {
-  font-size: 40rpx;
-  margin-bottom: 8rpx;
+.tool-card-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  background: rgba(52, 199, 89, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12rpx;
 }
-.free-tool-name {
-  font-size: 22rpx;
-  font-weight: 500;
+.tool-card-icon {
+  font-size: 36rpx;
+}
+.tool-card-title {
+  font-size: 24rpx;
+  font-weight: 600;
   color: var(--text-primary);
   text-align: center;
+}
+.tool-card-desc {
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+  margin-top: 4rpx;
+  text-align: center;
+}
+.tool-card-tag {
+  margin-top: 10rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  background: rgba(255, 149, 0, 0.1);
+}
+.tool-tag-text {
+  font-size: 18rpx;
+  color: var(--warning, #ff9500);
+  font-weight: 500;
 }
 
 /* ==================== [闭环核心] 今日复习入口 ==================== */
