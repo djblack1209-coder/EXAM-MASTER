@@ -41,13 +41,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 24rpx;
-  }
-  padding: 26rpx 30rpx;
+padding: 26rpx 30rpx;
   min-height: 120rpx;
   border-radius: 30rpx;
   margin-bottom: 52rpx;
@@ -105,12 +99,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 4rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4rpx;
-  }
 }
 
 .time-label {
@@ -129,13 +117,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
-  padding: 12rpx 18rpx;
+padding: 12rpx 18rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.56);
   border: 1rpx solid rgba(255, 255, 255, 0.5);

@@ -49,7 +49,9 @@ export async function swrFetch(key, fetcher, options = {}) {
           writeCache(key, fresh);
           if (onUpdate) onUpdate(fresh);
         })
-        .catch(() => {});
+        .catch((error) => {
+          console.warn(`[swr-cache] background revalidate failed for ${key}:`, error);
+        });
       return cached.data;
     }
   }
@@ -69,5 +71,7 @@ export function invalidateCache(key) {
 export function prefetch(key, fetcher) {
   fetcher()
     .then((data) => writeCache(key, data))
-    .catch(() => {});
+    .catch((error) => {
+      console.warn(`[swr-cache] prefetch failed for ${key}:`, error);
+    });
 }

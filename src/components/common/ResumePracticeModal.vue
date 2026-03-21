@@ -258,12 +258,6 @@ export default {
 .modal-actions {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
 }
 
 .btn-secondary,

@@ -8,7 +8,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { APP_CONFIG } from '../../../common/config';
-import { storageService, getUserId } from '../../services/storageService.js';
+import { storageService } from '../../services/storageService.js';
 import { lafService } from '../../services/lafService.js';
 import tokenRefreshPlugin from '@/utils/auth/token-refresh-plugin.js';
 import { logger } from '@/utils/logger.js';

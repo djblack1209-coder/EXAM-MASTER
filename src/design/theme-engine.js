@@ -466,12 +466,46 @@ export function getCurrentTheme() {
   try {
     const savedTheme = uni.getStorageSync('theme_mode');
     if (savedTheme) return savedTheme;
-  } catch (_e) { storageService.save('theme_mode', theme); }
-  // #endif
+  } catch (_e) {
+    logger.warn('[theme-engine] 读取已保存主题失败');
+  }
 
-  // #ifdef MP-WEIXIN
-  storageService.save('theme_mode', theme);
+  return 'light';
   // #endif
+}
+
+/**
+ * 监听系统主题变化
+ * @param {(theme: string) => void} callback
+ * @returns {void}
+ */
+export function watchTheme(callback) {
+  if (typeof callback !== 'function') return;
+
+  if (typeof uni !== 'undefined' && typeof uni.onThemeChange === 'function') {
+    uni.onThemeChange((result) => {
+      callback(result?.theme === 'dark' ? 'dark' : 'light');
+    });
+  }
+}
+
+/**
+ * 切换主题并持久化
+ * @param {string} theme
+ * @returns {string}
+ */
+export function toggleTheme(theme) {
+  const nextTheme =
+    theme === 'dark' ? 'dark' : theme === 'light' ? 'light' : getCurrentTheme() === 'dark' ? 'light' : 'dark';
+
+  try {
+    uni.setStorageSync('theme_mode', nextTheme);
+  } catch (_e) {
+    storageService.save('theme_mode', nextTheme);
+  }
+
+  applyTheme(nextTheme);
+  return nextTheme;
 }
 
 export default {

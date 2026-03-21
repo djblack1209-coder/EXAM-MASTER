@@ -697,8 +697,7 @@ class PosterGenerator {
         { label: '🔥 连击', value: `${streakDays > 0 ? '✓' : '-'}`, unit: '' }
       ];
 
-      const cols = 3,
-        rows = 2;
+      const cols = 3;
       const cellW = 210,
         cellH = 140;
       const gridX = 60,

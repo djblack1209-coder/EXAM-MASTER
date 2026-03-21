@@ -31,13 +31,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
-  box-shadow: var(--apple-shadow-card);
+box-shadow: var(--apple-shadow-card);
 }
 
 .pause-banner::before {
@@ -53,12 +47,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4px;
-  }
 }
 .pause-title {
   font-size: 32rpx;

@@ -2,7 +2,7 @@
   <view class="chatbox" :class="[mode, { 'dark-mode': isDark }]">
     <!-- Welcome card (no messages) -->
     <view v-if="messages.length === 0 && persona" class="welcome-card apple-glass-card">
-      <image v-if="persona.avatar" :src="persona.avatar" class="welcome-avatar" mode="aspectFill" />
+      <image v-if="persona.avatar" :src="persona.avatar" class="welcome-avatar" alt="头像" mode="aspectFill" />
       <text class="welcome-name">{{ persona.name }}</text>
       <text class="welcome-role">{{ persona.role }}</text>
       <text v-if="persona.intro" class="welcome-intro">{{ persona.intro }}</text>
@@ -14,11 +14,11 @@
       <view v-for="msg in messages" :id="'msg-' + msg.id" :key="msg.id" class="msg-row" :class="msg.role">
         <!-- Assistant bubble -->
         <template v-if="msg.role === 'assistant'">
-          <image v-if="persona?.avatar" :src="persona.avatar" class="avatar" mode="aspectFill" />
+          <image v-if="persona?.avatar" :src="persona.avatar" class="avatar" alt="头像" mode="aspectFill" />
           <view
             class="bubble left-bubble"
             :class="{ failed: msg.failed }"
-            @tap="msg.failed ? $emit('retry', msg.id) : null"
+            @tap="msg.failed ? handleRetry(msg.id) : null"
           >
             <RichText
               v-if="isStreamingMsg(msg) ? streamingText : msg.content"
@@ -34,7 +34,7 @@
           <view
             class="bubble right-bubble"
             :class="{ sending: msg.status === 'sending', failed: msg.status === 'failed' }"
-            @tap="msg.status === 'failed' ? $emit('retry', msg.id) : null"
+            @tap="msg.status === 'failed' ? handleRetry(msg.id) : null"
           >
             <text>{{ msg.content }}</text>
             <view class="msg-footer">
@@ -49,7 +49,7 @@
 
       <!-- Typing indicator -->
       <view v-if="isTyping && !hasStreamingMsg" class="msg-row assistant">
-        <image v-if="persona?.avatar" :src="persona.avatar" class="avatar" mode="aspectFill" />
+        <image v-if="persona?.avatar" :src="persona.avatar" class="avatar" alt="头像" mode="aspectFill" />
         <view class="bubble left-bubble typing-bubble">
           <view class="typing-dots">
             <view class="dot" />
@@ -101,9 +101,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { useChatBox } from '@/composables/useChatBox.js';
-import RichText from '@/components/common/RichText.vue';
+import RichText from '@/pages/practice-sub/components/RichText.vue';
 
 const props = defineProps({
   mode: { type: String, default: 'fullpage', validator: (v) => ['fullpage', 'modal', 'panel'].includes(v) },
@@ -160,10 +160,6 @@ function isStreamingMsg(msg) {
 const hasStreamingMsg = computed(() => messages.value.some((m) => isStreamingMsg(m)));
 
 // ---- Retry ----
-watch(
-  () => emit,
-  () => {}
-); // keep emit reactive
 function handleRetry(msgId) {
   emit('retry', msgId);
   retryMessage(msgId);
@@ -333,9 +329,6 @@ defineExpose({ clearHistory, messages, scrollToBottom });
   align-items: center;
   justify-content: space-between;
   margin-top: 8rpx;
-  & > text + text {
-    margin-left: 16rpx;
-  }
 }
 .msg-time {
   display: block;
@@ -359,9 +352,6 @@ defineExpose({ clearHistory, messages, scrollToBottom });
 }
 .typing-dots {
   display: flex;
-  & > view + view {
-    margin-left: 8rpx;
-  }
 }
 .dot {
   width: 16rpx;
@@ -409,9 +399,6 @@ defineExpose({ clearHistory, messages, scrollToBottom });
   flex-wrap: wrap;
   padding: 24rpx 32rpx;
   border-top: 1rpx solid transparent;
-  & > view + view {
-    margin-left: 16rpx;
-  }
 }
 .emotion-tag {
   padding: 12rpx 22rpx;
@@ -436,10 +423,6 @@ defineExpose({ clearHistory, messages, scrollToBottom });
   padding: 20rpx 24rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
   border-top: 1rpx solid transparent;
-  & > view + view,
-  & > input + view {
-    margin-left: 16rpx;
-  }
 }
 .msg-input {
   flex: 1;

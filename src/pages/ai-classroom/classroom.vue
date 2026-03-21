@@ -2,7 +2,7 @@
   <view class="classroom-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <image src="/static/icons/chevron-left.png" class="back-icon" mode="aspectFit" @tap="goBack" />
+      <image src="/static/icons/chevron-left.png" class="back-icon" alt="返回" mode="aspectFit" @tap="goBack" />
       <view class="nav-center">
         <text class="nav-title">{{ lessonTitle }}</text>
         <text class="nav-subtitle">{{ phaseText }}</text>
@@ -100,6 +100,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import { lafService } from '@/services/lafService.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
@@ -268,7 +269,7 @@ function updateState(state) {
 }
 
 function goBack() {
-  uni.navigateBack({ delta: 1 });
+  safeNavigateBack();
 }
 
 function handleEndClass() {
@@ -278,7 +279,7 @@ function handleEndClass() {
     success: async (res) => {
       if (res.confirm && sessionId.value) {
         await lafService.endClassroom(sessionId.value);
-        uni.navigateBack({ delta: 1 });
+        safeNavigateBack();
       }
     }
   });
@@ -302,7 +303,7 @@ onMounted(() => {
 
   if (!lessonId.value) {
     uni.showToast({ title: '缺少课程参数', icon: 'none' });
-    setTimeout(() => uni.navigateBack(), 1500);
+    setTimeout(() => safeNavigateBack(), 1500);
   }
 });
 </script>

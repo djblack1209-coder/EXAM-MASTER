@@ -80,7 +80,7 @@
             <image
               class="avatar"
               :src="user.avatar || defaultAvatar"
-              mode="aspectFill"
+              alt="头像" mode="aspectFill"
               lazy-load
               @error="onAvatarError($event, user)"
             />
@@ -134,7 +134,7 @@
               <image
                 class="avatar"
                 :src="friend.avatar || defaultAvatar"
-                mode="aspectFill"
+                alt="头像" mode="aspectFill"
                 lazy-load
                 @error="onAvatarError($event, friend)"
               />
@@ -194,7 +194,7 @@
             <image
               class="avatar"
               :src="request.from_avatar || defaultAvatar"
-              mode="aspectFill"
+              alt="头像" mode="aspectFill"
               lazy-load
               @error="onAvatarError($event, request, 'from_avatar')"
             />
@@ -249,7 +249,7 @@ import { logger } from '@/utils/logger.js';
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 // 防抖工具
 import { debounce } from '@/utils/throttle.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
@@ -346,15 +346,7 @@ export default {
      * 返回上一页
      */
     goBack() {
-      uni.navigateBack({
-        delta: 1,
-        fail: () => {
-          // 如果无法返回（例如直接访问），跳转到设置页面
-          uni.switchTab({
-            url: '/pages/profile/index'
-          });
-        }
-      });
+      safeNavigateBack();
     },
 
     /**
@@ -873,12 +865,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
   padding: 24rpx 32rpx;
   background: rgba(255, 255, 255, 0.22);
   border-bottom: 1rpx solid var(--apple-divider);
@@ -1145,12 +1131,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
 }
 
 .friend-card {
@@ -1162,12 +1142,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
   box-shadow: var(--apple-shadow-card);
   transition: all 0.3s;
   border: 1rpx solid var(--apple-glass-border-strong);
@@ -1229,24 +1203,12 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
 }
 
 .name-row {
   display: flex;
   align-items: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12rpx;
-  }
 }
 
 .nickname {
@@ -1280,12 +1242,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 4rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4rpx;
-  }
   padding: 0 24rpx;
   border-left: 1rpx solid var(--border);
 }
@@ -1318,12 +1274,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
   min-width: 100rpx;
   justify-content: center;
   flex-shrink: 0;
@@ -1378,12 +1328,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
 }
 
 .user-card {
@@ -1395,12 +1339,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
   box-shadow: var(--apple-shadow-card);
   border: 1rpx solid var(--apple-glass-border-strong);
 }
@@ -1422,12 +1360,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
 }
 
 .user-card .nickname {
@@ -1472,12 +1404,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
 }
 
 .request-card {
@@ -1489,12 +1415,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
   box-shadow: var(--apple-shadow-card);
   border: 1rpx solid var(--apple-glass-border-strong);
 }
@@ -1517,12 +1437,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
 }
 
 .request-card .nickname {
@@ -1550,12 +1464,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12rpx;
-  }
   flex-shrink: 0;
 }
 

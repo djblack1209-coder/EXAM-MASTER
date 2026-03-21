@@ -231,7 +231,7 @@
           @click="navToDetail(school.id)"
         >
           <view class="sc-head ds-flex">
-            <!-- <image :src="school.logo" class="sc-logo ds-rounded" mode="aspectFit" /> -->
+            <!-- <image :src="school.logo" class="sc-logo ds-rounded" alt="Exam Master" mode="aspectFit" /> -->
             <view class="sc-info">
               <view class="sc-name-row ds-flex">
                 <text class="sc-name ds-text-lg ds-font-bold">
@@ -433,7 +433,7 @@ import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 // ✅ F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
@@ -807,7 +807,7 @@ export default {
       } else if (this.currentStep === 2) {
         this.currentStep = 1;
       } else {
-        uni.navigateBack();
+        safeNavigateBack();
       }
     },
     /**
@@ -1554,12 +1554,6 @@ export default {
     flex-direction: column;
     align-items: center;
     /* gap: 10rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-top: 10rpx;
-    }
     opacity: 0.4;
     transition: all 0.3s;
 
@@ -1714,12 +1708,6 @@ export default {
   margin-top: 60rpx;
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
 }
 
 .secondary-btn {
@@ -1745,13 +1733,6 @@ export default {
 .tab-group {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
-
   .tab-item {
     flex: 1;
     height: 100rpx;
@@ -1788,12 +1769,6 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 15rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 15rpx;
-  }
   box-shadow: var(--cta-primary-shadow);
   border: 1rpx solid var(--cta-primary-border);
   transition: all 0.3s ease;
@@ -1836,12 +1811,6 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
   padding: 20rpx;
   color: var(--text-sub);
   font-size: 24rpx;
@@ -1868,12 +1837,6 @@ export default {
   display: flex;
   align-items: baseline;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .rh-title {
@@ -1892,12 +1855,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   padding: 20rpx 24rpx;
   margin-bottom: 24rpx;
   background: rgba(255, 255, 255, 0.52);
@@ -1962,12 +1919,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
   box-shadow: var(--apple-shadow-surface);
   border: 1px solid rgba(255, 255, 255, 0.5);
 }
@@ -2022,12 +1973,6 @@ export default {
   .sc-tags {
     display: flex;
     /* gap: 12rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-left: 12rpx;
-    }
     margin-top: 12rpx;
     flex-wrap: wrap;
   }
@@ -2154,12 +2099,6 @@ export default {
 .card-footer {
   display: flex;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 24rpx;
-  }
   margin-top: 24rpx;
 }
 
@@ -2209,12 +2148,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
 }
 
 .empty-icon {
@@ -2319,12 +2252,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
 }
 
 .ft-item {

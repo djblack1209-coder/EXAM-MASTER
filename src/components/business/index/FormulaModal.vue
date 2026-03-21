@@ -101,10 +101,6 @@ export default {
   padding: 6rpx 6rpx 20rpx;
 }
 
-.formula-header > view + view {
-  margin-left: 16rpx;
-}
-
 .formula-eyebrow,
 .formula-name,
 .formula-text,

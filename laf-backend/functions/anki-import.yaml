@@ -1,0 +1,6 @@
+name: anki-import
+desc: 'Anki .apkg 文件导入 - 解析 Anki 牌组并导入到题库'
+methods:
+  - POST
+tags:
+  - import

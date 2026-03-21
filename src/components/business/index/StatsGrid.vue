@@ -119,13 +119,7 @@ export default {
   padding: 32rpx;
   display: flex;
   flex-direction: column;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
+  /* gap: 16rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 220rpx;
   border: 1rpx solid var(--apple-glass-border-strong);
@@ -197,13 +191,7 @@ export default {
 .stat-content {
   display: flex;
   flex-direction: column;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
+  /* gap: 8rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
 }
 
 .stat-title {

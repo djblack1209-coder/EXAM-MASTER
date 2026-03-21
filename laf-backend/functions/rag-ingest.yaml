@@ -1,0 +1,6 @@
+name: rag-ingest
+desc: 'RAG 文档索引 - 分块、嵌入并存储题目/资料到向量知识库'
+methods:
+  - POST
+tags:
+  - rag

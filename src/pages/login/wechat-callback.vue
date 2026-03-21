@@ -105,7 +105,8 @@ const handleWeChatCallback = async () => {
     const state = urlParams.get('state');
 
     // Hash 模式下参数可能在 hash 后面
-    if (!code && options.hash) { const hashQuery = options.hash;
+    if (!code && options.hash) {
+      const hashQuery = options.hash;
       if (hashQuery) {
         const hashParams = new URLSearchParams(hashQuery);
         code = hashParams.get('code');
@@ -242,12 +243,6 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
 }
 
 .loading-icon {

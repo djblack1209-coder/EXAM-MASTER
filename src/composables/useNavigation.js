@@ -10,7 +10,7 @@ import { logger } from '@/utils/logger.js';
 import { DEMO_QUESTIONS } from '@/config/home-data.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 
-export function useNavigation(deps = {}) {
+export function useNavigation() {
   const isNavigating = ref(false);
   const showEmptyBankModal = ref(false);
   const showLoginModal = ref(false);

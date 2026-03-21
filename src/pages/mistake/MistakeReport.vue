@@ -41,7 +41,7 @@
           <image
             v-if="reportImagePath"
             :src="reportImagePath"
-            mode="widthFix"
+            alt="" mode="widthFix"
             class="report-image"
             @error="handleImageError"
             @load="handleImageLoad"
@@ -576,13 +576,7 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
-  box-shadow: var(--cta-primary-shadow);
+box-shadow: var(--cta-primary-shadow);
   border: 1rpx solid var(--cta-primary-border);
   padding: 0 30rpx;
   box-sizing: border-box;
@@ -806,13 +800,7 @@ export default {
   .modal-footer {
     display: flex;
     /* gap: 20rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-left: 20rpx;
-    }
-    padding: 30rpx 40rpx;
+padding: 30rpx 40rpx;
     border-top: 1rpx solid var(--border, #f0f0f0);
     background: var(--bg-card);
 

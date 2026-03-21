@@ -51,7 +51,7 @@ export function useGamificationEffects() {
     confetti({ particleCount: Math.min(days * 10, 150), spread: 60, origin: { y: 0.7 } });
   }
 
-  async function celebrateLevelUp(level) {
+  async function celebrateLevelUp(_level) {
     vibrate('heavy');
     const confetti = await getConfetti();
     if (!confetti) return;

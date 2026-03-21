@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "ai-agent-team": "^2.0.1",
+    "jszip": "^3.10.1",
+    "sql.js": "^1.14.1",
     "ts-fsrs": "^5.2.3"
   }
 }

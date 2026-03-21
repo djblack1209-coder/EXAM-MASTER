@@ -83,12 +83,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16px;
-  }
 }
 
 .generation-progress-bar::before {
@@ -104,12 +98,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
 }
 .progress-icon {
   font-size: 64rpx;
@@ -119,13 +107,7 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4px;
-  }
-  flex: 1;
+flex: 1;
   min-width: 0;
 }
 .progress-label {
@@ -213,12 +195,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 6px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 6px;
-  }
 }
 .step-dot {
   width: 10px;

@@ -62,19 +62,25 @@ export const useVipStore = defineStore('vip', () => {
     vipBenefits.value = [];
   };
 
-  // 监听登出事件
-  uni.$on('user:logout', $reset);
+  // 监听登出事件（避免重复注册）
+  if (!uni.__vipStoreLogoutBound__) {
+    uni.$on('user:logout', $reset);
+    uni.__vipStoreLogoutBound__ = true;
+  }
 
-  // 监听恢复缓存
-  uni.$on('vip:restore', () => {
-    const cachedVipInfo = storageService.get('vip_status', null);
-    if (cachedVipInfo) {
-      vipStatus.value = cachedVipInfo.status || false;
-      vipLevel.value = cachedVipInfo.level || 0;
-      vipExpiry.value = cachedVipInfo.expiry || null;
-      vipBenefits.value = cachedVipInfo.benefits || [];
-    }
-  });
+  // 监听恢复缓存（避免重复注册）
+  if (!uni.__vipStoreRestoreBound__) {
+    uni.$on('vip:restore', () => {
+      const cachedVipInfo = storageService.get('vip_status', null);
+      if (cachedVipInfo) {
+        vipStatus.value = cachedVipInfo.status || false;
+        vipLevel.value = cachedVipInfo.level || 0;
+        vipExpiry.value = cachedVipInfo.expiry || null;
+        vipBenefits.value = cachedVipInfo.benefits || [];
+      }
+    });
+    uni.__vipStoreRestoreBound__ = true;
+  }
 
   return {
     vipStatus,

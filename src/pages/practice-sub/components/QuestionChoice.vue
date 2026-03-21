@@ -30,7 +30,7 @@
 
 <script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-import RichText from '@/components/common/RichText.vue';
+import RichText from './RichText.vue';
 
 defineProps({
   options: {

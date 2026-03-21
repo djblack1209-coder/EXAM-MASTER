@@ -553,13 +553,7 @@ export default {
 .modal-header {
   justify-content: space-between;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
-  margin-bottom: 22rpx;
+margin-bottom: 22rpx;
 }
 
 .modal-eyebrow,
@@ -667,13 +661,7 @@ export default {
 
 .favorite-btn {
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
-  justify-content: center;
+justify-content: center;
   padding: 18rpx 30rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.58);
@@ -823,13 +811,7 @@ export default {
 .poster-actions {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
-  width: 100%;
+width: 100%;
   margin-top: 26rpx;
 }
 

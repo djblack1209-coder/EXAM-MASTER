@@ -1,0 +1,6 @@
+name: anki-export
+desc: 'Anki .apkg 导出 - 将题库导出为 Anki 牌组格式'
+methods:
+  - POST
+tags:
+  - export

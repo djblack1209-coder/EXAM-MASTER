@@ -9,12 +9,12 @@
       <image
         :src="icons8('ios-glyphs', 30, '333333', 'chevron-left')"
         class="back-icon"
-        mode="aspectFit"
+        alt="返回" mode="aspectFit"
         @tap="goBack"
         @error="onCdnIconError"
       />
       <view class="nav-center" hover-class="item-hover" @tap="showFriendSelector = true">
-        <image :src="currentFriend.avatar" class="friend-avatar-small" mode="aspectFill" @error="onAvatarError" />
+        <image :src="currentFriend.avatar" class="friend-avatar-small" alt="头像" mode="aspectFill" @error="onAvatarError" />
         <text class="nav-title">
           {{ currentFriend.name }}
         </text>
@@ -23,7 +23,7 @@
       <image
         :src="icons8('ios', 50, '333333', 'menu--v1')"
         class="menu-icon"
-        mode="aspectFit"
+        alt="" mode="aspectFit"
         @tap="showMenu"
         @error="onCdnIconError"
       />
@@ -45,7 +45,7 @@
             hover-class="item-hover"
             @tap="selectFriend(friend)"
           >
-            <image :src="friend.avatar" class="friend-avatar" mode="aspectFill" lazy-load @error="onAvatarError" />
+            <image :src="friend.avatar" class="friend-avatar" alt="头像" mode="aspectFill" lazy-load @error="onAvatarError" />
             <view class="friend-info">
               <text class="friend-name">
                 {{ friend.name }}
@@ -81,7 +81,7 @@
     >
       <!-- 欢迎消息 -->
       <view v-if="messages.length === 0" class="welcome-card apple-glass-card">
-        <image :src="currentFriend.avatar" class="welcome-avatar" mode="aspectFill" />
+        <image :src="currentFriend.avatar" class="welcome-avatar" alt="头像" mode="aspectFill" />
         <text class="welcome-name">
           {{ currentFriend.name }}
         </text>
@@ -104,7 +104,7 @@
       >
         <!-- 智能消息 -->
         <template v-if="msg.role === 'assistant'">
-          <image :src="currentFriend.avatar" class="avatar" mode="aspectFill" />
+          <image :src="currentFriend.avatar" class="avatar" alt="头像" mode="aspectFill" />
           <view class="bubble left-bubble">
             <text>{{ msg.content }}</text>
             <text class="msg-time">
@@ -138,7 +138,7 @@
           <image
             :src="icons8('color', 96, '', 'user-male-circle--v1')"
             class="avatar"
-            mode="aspectFill"
+            alt="头像" mode="aspectFill"
             @error="onAvatarError"
           />
         </template>
@@ -146,7 +146,7 @@
 
       <!-- 正在输入指示器 -->
       <view v-if="isTyping" class="msg-row assistant">
-        <image :src="currentFriend.avatar" class="avatar" mode="aspectFill" />
+        <image :src="currentFriend.avatar" class="avatar" alt="头像" mode="aspectFill" />
         <view class="bubble left-bubble typing-bubble">
           <view class="typing-dots">
             <view class="dot" />
@@ -192,14 +192,14 @@
         <image
           :src="icons8('ios', 50, '666666', 'happy--v1')"
           class="tool-icon"
-          mode="aspectFit"
+          alt="" mode="aspectFit"
           @tap="toggleEmotionTags"
           @error="onCdnIconError"
         />
         <image
           :src="isRecording ? icons8('ios', 50, 'FF3B30', 'microphone') : icons8('ios', 50, '666666', 'microphone')"
           class="tool-icon"
-          mode="aspectFit"
+          alt="" mode="aspectFit"
           @touchstart="startRecording"
           @touchend="stopRecording"
           @touchcancel="stopRecording"
@@ -212,7 +212,7 @@
               : icons8('ios', 50, '666666', 'lightning-bolt')
           "
           class="tool-icon"
-          mode="aspectFit"
+          alt="" mode="aspectFit"
           @tap="toggleRealtimeMode"
           @error="onCdnIconError"
         />
@@ -243,6 +243,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -575,13 +576,7 @@ const goBack = () => {
   // 保存聊天历史
   saveChatHistory();
 
-  uni.navigateBack({
-    fail: () => {
-      uni.reLaunch({
-        url: '/pages/index/index'
-      });
-    }
-  });
+  safeNavigateBack();
 };
 
 // 显示菜单
@@ -1293,12 +1288,6 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .friend-avatar-small {
@@ -1550,12 +1539,6 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   margin-top: 8rpx;
 }
 
@@ -1591,12 +1574,6 @@ onUnmounted(() => {
 .typing-dots {
   display: flex;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
 }
 
 .dot {
@@ -1633,12 +1610,6 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   padding: 24rpx 32rpx;
   border-top: 1rpx solid transparent;
 }
@@ -1670,12 +1641,6 @@ onUnmounted(() => {
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
   border-top: 1rpx solid transparent;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .input-tools {
@@ -1807,12 +1772,6 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
   margin-bottom: 20rpx;
 }
 

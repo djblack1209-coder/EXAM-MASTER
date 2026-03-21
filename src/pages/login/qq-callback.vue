@@ -109,7 +109,8 @@ const handleQQCallback = async () => {
     const errorDescription = urlParams.get('error_description');
 
     // Hash 模式下参数可能存在于 hash 中
-    if (!code && options.hash) { const hashQuery = options.hash;
+    if (!code && options.hash) {
+      const hashQuery = options.hash;
       if (hashQuery) {
         const hashParams = new URLSearchParams(hashQuery);
         code = hashParams.get('code');
@@ -140,9 +141,7 @@ const handleQQCallback = async () => {
     }
 
     // 调用后端接口完成登录
-    const callbackRedirectUri =
-      config.qq.redirectUri ||
-      '';
+    const callbackRedirectUri = config.qq.redirectUri || '';
 
     const res = await lafService.login({
       type: 'qq',
@@ -259,12 +258,6 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
 }
 
 .loading-icon {

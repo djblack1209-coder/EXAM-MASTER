@@ -343,8 +343,9 @@ export const useGamificationStore = defineStore('gamification', () => {
 
   // 监听登出事件
   try {
-    if (typeof uni !== 'undefined' && uni.$on) {
+    if (typeof uni !== 'undefined' && uni.$on && !uni.__gamificationStoreLogoutBound__) {
       uni.$on('user:logout', resetGamification);
+      uni.__gamificationStoreLogoutBound__ = true;
     }
   } catch {
     /* 静默 */

@@ -18,7 +18,7 @@
 
     <!-- Logo区域 -->
     <view class="logo-section">
-      <image class="app-logo" src="./static/logo.png" mode="aspectFit" />
+      <image class="app-logo" src="./static/logo.png" alt="Exam Master" mode="aspectFit" />
       <text class="app-name"> Exam-Master </text>
       <text class="app-slogan"> 智能助力，一战成硕 </text>
     </view>
@@ -271,7 +271,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { useUserStore } from '@/stores/modules/user';
 import config from '@/config/index.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
@@ -422,11 +422,7 @@ const toggleAgreement = () => {
 
 // 返回上一页
 const handleBack = () => {
-  uni.navigateBack({
-    fail: () => {
-      uni.switchTab({ url: '/pages/index/index' });
-    }
-  });
+  safeNavigateBack();
 };
 
 const isNonReleaseEnv = () => {
@@ -639,7 +635,8 @@ const handleWechatH5Login = () => {
       return;
     }
 
-    const currentOrigin='';const hashMode=false;
+    const currentOrigin = typeof location !== 'undefined' ? location.origin : '';
+    const hashMode = typeof location !== 'undefined' ? location.href.includes('#') : false;
     let callbackUrl;
     if (hashMode) {
       callbackUrl = `${currentOrigin}/#/pages/login/wechat-callback`;
@@ -676,7 +673,12 @@ const handleWechatH5Login = () => {
       `&state=${state}` +
       '#wechat_redirect';
 
-    uni.navigateTo({url:})
+    if (typeof location !== 'undefined') {
+      location.href = authUrl;
+    } else {
+      uni.showToast({ title: '当前环境不支持网页授权跳转', icon: 'none' });
+      isLoading.value = false;
+    }
   } catch (err) {
     logger.error('[Login] 微信H5 OAuth跳转失败:', err);
     uni.showToast({ title: '微信授权跳转失败', icon: 'none' });
@@ -765,7 +767,8 @@ const handleQQLogin = async () => {
       isLoading.value = false;
       return;
     }
-    const currentOrigin='';const hashMode=false;
+    const currentOrigin = typeof location !== 'undefined' ? location.origin : '';
+    const hashMode = typeof location !== 'undefined' ? location.href.includes('#') : false;
     const callbackUrl =
       config.qq.redirectUri ||
       (hashMode ? `${currentOrigin}/#/pages/login/qq-callback` : `${currentOrigin}/pages/login/qq-callback`);
@@ -796,7 +799,12 @@ const handleQQLogin = async () => {
     const authUrl = `https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=${qqAppId}&redirect_uri=${redirectUri}&state=${state}&scope=get_user_info`;
 
     // 直接跳转，不需要确认弹窗（更好的用户体验）
-    uni.navigateTo({url:})
+    if (typeof location !== 'undefined') {
+      location.href = authUrl;
+    } else {
+      uni.showToast({ title: '当前环境不支持网页授权跳转', icon: 'none' });
+      isLoading.value = false;
+    }
     // #endif
 
     // #ifdef APP-PLUS
@@ -1431,12 +1439,6 @@ onUnmounted(() => {
 .code-input-wrapper {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .password-input-shell {

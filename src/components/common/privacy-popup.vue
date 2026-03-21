@@ -171,13 +171,6 @@ export default {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
 }
-.privacy-actions > view + view,
-.privacy-actions > text + text,
-.privacy-actions > view + text,
-.privacy-actions > text + view {
-  margin-left: 20rpx;
-}
-
 .privacy-btn {
   flex: 1;
   height: 80rpx;

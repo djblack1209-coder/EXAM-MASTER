@@ -550,13 +550,7 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
   width: 100%;
   display: flex;
   flex-direction: column;
-  /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 20rpx;
-  }
+  /* gap: 20rpx; -- removed tag-name selectors for WeChat component compat */
   margin-top: 16rpx;
 }
 

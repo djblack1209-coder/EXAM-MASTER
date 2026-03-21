@@ -39,23 +39,64 @@
         </view>
       </view>
 
+      <!-- 智能学习推荐 -->
+      <view v-if="recommendedTopic" class="recommended-topic apple-glass-card">
+        <view class="recommended-header">
+          <text class="recommended-icon">🎯</text>
+          <text class="recommended-title">推荐下一步学习</text>
+        </view>
+        <view class="recommended-body">
+          <text class="recommended-name">{{ recommendedTopic.knowledgePoint }}</text>
+          <text class="recommended-reason">{{ recommendedTopic.reason }}</text>
+          <view class="recommended-mastery-bar">
+            <view class="recommended-mastery-fill" :style="{ width: recommendedTopic.mastery + '%' }"></view>
+          </view>
+          <text class="recommended-mastery-label">当前掌握度 {{ recommendedTopic.mastery }}%</text>
+        </view>
+      </view>
+
+      <!-- 学习路径 -->
+      <view v-if="studyPath.length > 0" class="study-path-section">
+        <text class="section-title">📚 学习路径</text>
+        <view class="study-path-list">
+          <view
+            v-for="(item, index) in studyPath.slice(0, 8)"
+            :key="item.knowledgePoint"
+            :class="['path-item', 'path-status-' + item.status]"
+          >
+            <view class="path-index">{{ index + 1 }}</view>
+            <view class="path-content">
+              <text class="path-name">{{ item.knowledgePoint }}</text>
+              <view class="path-mastery-bar">
+                <view class="path-mastery-fill" :style="{ width: item.mastery + '%' }"></view>
+              </view>
+            </view>
+            <view class="path-badge">
+              <text v-if="item.status === 'mastered'" class="path-badge-text badge-mastered">已掌握</text>
+              <text v-else-if="item.status === 'ready'" class="path-badge-text badge-ready">可学习</text>
+              <text v-else class="path-badge-text badge-blocked">需前置</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
       <scroll-view scroll-x class="action-strip" :show-scrollbar="false">
         <view
           class="action-strip-inner"
           style="display: flex; gap: 16rpx; padding-right: 24rpx; align-items: center; white-space: nowrap"
         >
-          <wd-button size="small" type="primary" plain @click="showMasteryStats"
-            ><BaseIcon name="chart-bar" :size="24" style="margin-right: 4rpx" />掌握分布</wd-button
-          >
-          <wd-button size="small" type="primary" plain @click="showLearningPath"
-            ><BaseIcon name="path" :size="24" style="margin-right: 4rpx" />学习路径</wd-button
-          >
-          <wd-button size="small" type="primary" plain @click="showConnectionAnalysis"
-            ><BaseIcon name="link" :size="24" style="margin-right: 4rpx" />关联分析</wd-button
-          >
-          <wd-button size="small" type="primary" plain @click="showPersonalizedPlan"
-            ><BaseIcon name="note" :size="24" style="margin-right: 4rpx" />个性计划</wd-button
-          >
+          <wd-button size="small" type="primary" plain @click="showMasteryStats">
+            <BaseIcon name="chart-bar" :size="24" style="margin-right: 4rpx" />掌握分布
+          </wd-button>
+          <wd-button size="small" type="primary" plain @click="showLearningPath">
+            <BaseIcon name="path" :size="24" style="margin-right: 4rpx" />学习路径
+          </wd-button>
+          <wd-button size="small" type="primary" plain @click="showConnectionAnalysis">
+            <BaseIcon name="link" :size="24" style="margin-right: 4rpx" />关联分析
+          </wd-button>
+          <wd-button size="small" type="primary" plain @click="showPersonalizedPlan">
+            <BaseIcon name="note" :size="24" style="margin-right: 4rpx" />个性计划
+          </wd-button>
         </view>
       </scroll-view>
 
@@ -250,18 +291,18 @@
           class="detail-header"
           style="margin-bottom: 24rpx; border-bottom: 1px solid var(--border-color); padding-bottom: 16rpx"
         >
-          <text style="font-size: 36rpx; font-weight: bold; color: var(--text-primary)">{{
-            activeNodeData.title
-          }}</text>
+          <text style="font-size: 36rpx; font-weight: bold; color: var(--text-primary)">
+            {{ activeNodeData.title }}
+          </text>
         </view>
         <view class="detail-stats" style="margin-bottom: 32rpx">
           <text style="font-size: 28rpx; color: var(--text-sub)">掌握度: {{ activeNodeData.mastery }}%</text>
         </view>
         <view class="detail-actions" style="display: flex; gap: 16rpx">
           <wd-button block style="flex: 1" @click="goPractice(activeNodeData)">普通练习</wd-button>
-          <wd-button type="warning" block style="flex: 1" @click="summonAITutor(activeNodeData)"
-            >召唤 AI 特训</wd-button
-          >
+          <wd-button type="warning" block style="flex: 1" @click="summonAITutor(activeNodeData)">
+            召唤 AI 特训
+          </wd-button>
         </view>
       </view>
     </wd-popup>
@@ -285,8 +326,9 @@ import {
   MASTERY_LEVELS
 } from './knowledge-graph.js';
 import { storageService } from '@/services/storageService.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { getStatusBarHeight } from '@/utils/core/system.js';
+import { getSmartStudyPath, getKnowledgeMapData, getNextRecommendedTopic } from '@/services/knowledge-engine.js';
 
 export default {
   components: { BaseIcon },
@@ -326,7 +368,13 @@ export default {
       viewMode: 'graph',
 
       // 掌握度等级配置
-      MASTERY_LEVELS
+      MASTERY_LEVELS,
+
+      // 知识引擎增强数据
+      studyPath: [],
+      recommendedTopic: null,
+      knowledgeMapNodes: [],
+      knowledgeMapEdges: []
     };
   },
 
@@ -445,6 +493,18 @@ export default {
         // 如果没有数据，显示默认节点
         if (this.knowledgeNodes.length === 0) {
           this.knowledgeNodes = this.getDefaultNodes(questionBank.length, mistakes.length);
+        }
+
+        // 知识引擎增强：加载学习路径和推荐
+        try {
+          const allQuestions = storageService.get('v30_bank', []);
+          this.studyPath = getSmartStudyPath(allQuestions);
+          this.recommendedTopic = getNextRecommendedTopic(allQuestions);
+          const mapData = getKnowledgeMapData(allQuestions);
+          this.knowledgeMapNodes = mapData.nodes;
+          this.knowledgeMapEdges = mapData.edges;
+        } catch (e) {
+          console.warn('[KnowledgeGraph] 知识引擎加载失败:', e);
         }
 
         logger.log('[KnowledgeGraph] 数据加载完成:', {
@@ -616,12 +676,7 @@ export default {
     },
 
     handleBack() {
-      uni.navigateBack({
-        delta: 1,
-        fail: () => {
-          uni.reLaunch({ url: '/pages/index/index' });
-        }
-      });
+      safeNavigateBack();
     },
 
     handleRefresh() {
@@ -986,12 +1041,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 18rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 18rpx;
-  }
   height: 88rpx;
   padding: 0 28rpx;
 }
@@ -1157,12 +1206,6 @@ export default {
 .action-strip-inner {
   display: inline-flex;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
   padding-right: 24rpx;
 }
 
@@ -1170,12 +1213,6 @@ export default {
   display: inline-flex;
   align-items: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
   padding: 18rpx 22rpx;
   border-radius: 999rpx;
   color: var(--text-main);
@@ -1327,12 +1364,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
   position: relative;
   z-index: 1;
 }
@@ -1432,12 +1463,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
   margin-top: 10rpx;
 }
 
@@ -1527,12 +1552,6 @@ export default {
 
 .legend-item {
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12rpx;
-  }
 }
 
 .legend-dot {
@@ -1569,12 +1588,6 @@ export default {
   display: flex;
   align-items: baseline;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
 }
 
 .weak-count {
@@ -1591,12 +1604,6 @@ export default {
 
 .path-item {
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   padding: 18rpx 18rpx;
   border-radius: 22rpx;
   background: rgba(255, 255, 255, 0.56);
@@ -1647,12 +1654,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .panel-icon {
@@ -1720,12 +1721,6 @@ export default {
 .panel-actions {
   display: flex;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
   margin-top: 18rpx;
 }
 
@@ -1859,5 +1854,147 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* 知识引擎增强：推荐学习 & 学习路径 */
+.recommended-topic {
+  margin: 20rpx 30rpx;
+  padding: 30rpx;
+}
+.recommended-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+.recommended-icon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+}
+.recommended-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.recommended-body {
+  padding-left: 48rpx;
+}
+.recommended-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+}
+.recommended-reason {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-top: 8rpx;
+  display: block;
+}
+.recommended-mastery-bar {
+  width: 100%;
+  height: 8rpx;
+  background: var(--bg-tertiary);
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-top: 16rpx;
+}
+.recommended-mastery-fill {
+  height: 100%;
+  border-radius: 4rpx;
+  background: linear-gradient(90deg, var(--primary), var(--success));
+  transition: width 0.6s ease;
+}
+.recommended-mastery-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-top: 6rpx;
+}
+
+.study-path-section {
+  margin: 20rpx 30rpx;
+}
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+  display: block;
+}
+.study-path-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+.path-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 20rpx 24rpx;
+  border-radius: 16rpx;
+  background: var(--bg-secondary);
+}
+.path-status-blocked {
+  opacity: 0.5;
+}
+.path-status-mastered {
+  opacity: 0.7;
+}
+.path-index {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  background: var(--primary);
+  color: white;
+}
+.path-status-blocked .path-index {
+  background: var(--text-tertiary);
+}
+.path-status-mastered .path-index {
+  background: var(--success);
+}
+.path-content {
+  flex: 1;
+}
+.path-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+}
+.path-mastery-bar {
+  width: 100%;
+  height: 6rpx;
+  background: var(--bg-tertiary);
+  border-radius: 3rpx;
+  overflow: hidden;
+  margin-top: 8rpx;
+}
+.path-mastery-fill {
+  height: 100%;
+  border-radius: 3rpx;
+  background: var(--primary);
+  transition: width 0.6s ease;
+}
+.path-badge-text {
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+.badge-mastered {
+  background: rgba(52, 199, 89, 0.15);
+  color: var(--success);
+}
+.badge-ready {
+  background: rgba(0, 122, 255, 0.15);
+  color: var(--primary);
+}
+.badge-blocked {
+  background: rgba(142, 142, 147, 0.15);
+  color: var(--text-tertiary);
 }
 </style>

@@ -36,7 +36,8 @@ let _webAudioSupported = false;
 function getAudioContext() {
   if (_audioCtx && _audioCtx.state !== 'closed') return _audioCtx;
   try {
-    const AudioCtx = typeof window !== 'undefined' ? (window.AudioContext || window.webkitAudioContext) : null;
+    const AudioCtx =
+      typeof window !== 'undefined' ? window.AudioContext || /** @type {any} */ (window).webkitAudioContext : null;
     if (AudioCtx) {
       _audioCtx = new AudioCtx();
       _webAudioSupported = true;
@@ -68,7 +69,7 @@ function ensureAudioContext() {
 const MAX_POOL_SIZE = 3;
 const _audioPool = [];
 
-function getPooledAudio() {
+function _getPooledAudio() {
   // 回收已停止的实例
   const idle = _audioPool.find((a) => a._idle);
   if (idle) {
@@ -273,7 +274,7 @@ export function setSoundEnabled(enabled) {
   try {
     uni.setStorageSync(STORAGE_KEY, _soundEnabled);
   } catch (_e) {
-    logger.warn('[QuizSound] 保存音效设置失败:', e);
+    logger.warn('[QuizSound] 保存音效设置失败:', _e);
   }
 }
 

@@ -47,7 +47,7 @@
               <image
                 class="avatar"
                 :src="friendInfo.avatar || defaultAvatar"
-                mode="aspectFill"
+                alt="头像" mode="aspectFill"
                 @error="onAvatarError"
               />
               <view v-if="isOnline" class="online-dot" />
@@ -171,7 +171,7 @@
 <script>
 import { socialService } from './socialService.js';
 import { logger } from '@/utils/logger.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 // ✅ F019: 统一使用 storageService
@@ -241,12 +241,7 @@ export default {
   },
   methods: {
     goBack() {
-      uni.navigateBack({
-        delta: 1,
-        fail: () => {
-          uni.switchTab({ url: '/pages/profile/index' });
-        }
-      });
+      safeNavigateBack();
     },
 
     onAvatarError() {
@@ -337,7 +332,7 @@ export default {
                 });
                 // 返回上一页
                 setTimeout(() => {
-                  uni.navigateBack();
+                  safeNavigateBack();
                 }, 1500);
               } else {
                 uni.showToast({
@@ -579,12 +574,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
 }
 
 .stat-value {
@@ -630,12 +619,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 24rpx;
-  }
 }
 
 .achievement-item {
@@ -643,12 +626,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
   padding: 20rpx 24rpx;
   background-color: rgba(255, 255, 255, 0.62);
   border-radius: 22rpx;
@@ -679,24 +656,12 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 20rpx;
-  }
 }
 
 .activity-item {
   display: flex;
   align-items: flex-start;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
   padding: 16rpx;
   background-color: rgba(255, 255, 255, 0.58);
   border-radius: 22rpx;
@@ -721,12 +686,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 4rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4rpx;
-  }
 }
 
 .activity-text {
@@ -745,12 +704,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 20rpx;
-  }
 }
 
 .action-btn {
@@ -758,12 +711,6 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12rpx;
-  }
   padding: 28rpx 0;
   border-radius: 999rpx;
   font-size: 30rpx;
@@ -827,12 +774,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
   margin-bottom: 24rpx;
 }
 
@@ -857,12 +798,6 @@ export default {
 .skeleton-stats-row {
   display: flex;
   /* gap: 32rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 32rpx;
-  }
   width: 100%;
   justify-content: center;
   margin-top: 24rpx;
@@ -891,12 +826,6 @@ export default {
 .skeleton-grid {
   display: flex;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 24rpx;
-  }
 }
 
 .skeleton-badge {

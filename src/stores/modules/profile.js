@@ -41,31 +41,40 @@ export const useProfileStore = defineStore('profile', () => {
     planProgress.value = 0;
   };
 
-  // 监听登出事件
-  uni.$on('user:logout', $reset);
+  // 监听登出事件（避免重复注册）
+  if (!uni.__profileStoreLogoutBound__) {
+    uni.$on('user:logout', $reset);
+    uni.__profileStoreLogoutBound__ = true;
+  }
 
-  // 监听登录时设置用户数据
-  uni.$on('auth:userdata', (userData) => {
-    setUserInfo(userData);
-  });
+  // 监听登录时设置用户数据（避免重复注册）
+  if (!uni.__profileStoreUserdataBound__) {
+    uni.$on('auth:userdata', (userData) => {
+      setUserInfo(userData);
+    });
+    uni.__profileStoreUserdataBound__ = true;
+  }
 
-  // 监听恢复缓存
-  uni.$on('auth:restore', ({ cachedUserInfo, cachedUserId }) => {
-    if (cachedUserInfo) {
-      userInfo.value = cachedUserInfo;
-      if (!cachedUserInfo._id && cachedUserId) {
-        userInfo.value._id = cachedUserId;
-        userInfo.value.id = cachedUserId;
-        userInfo.value.userId = cachedUserId;
+  // 监听恢复缓存（避免重复注册）
+  if (!uni.__profileStoreRestoreBound__) {
+    uni.$on('auth:restore', ({ cachedUserInfo, cachedUserId }) => {
+      if (cachedUserInfo) {
+        userInfo.value = cachedUserInfo;
+        if (!cachedUserInfo._id && cachedUserId) {
+          userInfo.value._id = cachedUserId;
+          userInfo.value.id = cachedUserId;
+          userInfo.value.userId = cachedUserId;
+        }
+      } else if (cachedUserId) {
+        userInfo.value = {
+          _id: cachedUserId,
+          id: cachedUserId,
+          userId: cachedUserId
+        };
       }
-    } else if (cachedUserId) {
-      userInfo.value = {
-        _id: cachedUserId,
-        id: cachedUserId,
-        userId: cachedUserId
-      };
-    }
-  });
+    });
+    uni.__profileStoreRestoreBound__ = true;
+  }
 
   return {
     userInfo,

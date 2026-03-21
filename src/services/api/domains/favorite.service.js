@@ -71,13 +71,6 @@
  * │   handleInvite()        处理邀请（L1512）                     │
  * │   claimInviteReward()   领取邀请奖励（L1534）                 │
  * │   getInviteInfo()       获取邀请信息（L1555）                 │
- * │   getDocConvertTypes()  文档转换类型（L1599）                  │
- * │   submitDocConvert()    提交文档转换（L1615）                  │
- * │   getDocConvertStatus() 查询转换状态（L1634）                  │
- * │   getDocConvertResult() 获取转换结果（L1647）                  │
- * │   getPhotoConfig()      证件照配置（L1661）                    │
- * │   processIdPhoto()      证件照处理（L1688）                    │
- * │   removePhotoBg()       去除背景（L1707）                     │
  * └─────────────────────────────────────────────────────────────┘
  *
  * ⚠️ 隐藏约束（Chesterton's Fence）：
@@ -92,9 +85,9 @@
 
 // ✅ P0-2: 使用相对路径导入配置（避免别名解析问题）
 import { logger } from '@/utils/logger.js';
-import config from '../config/index.js';
+import config from '../../../config/index.js';
 // ✅ B021: 使用独立的 auth-storage 模块读取敏感数据（避免循环依赖）
-import { getUserId, getToken } from './auth-storage.js';
+import { getUserId, getToken } from '../../auth-storage.js';
 // ✅ 6.3: 性能监控集成
 import { perfMonitor } from '@/utils/core/performance.js';
 import { offlineQueue } from '@/utils/core/offline-queue.js';
@@ -257,8 +250,6 @@ function getStorageValue(key, defaultValue) {
       const value = uni.getStorageSync(key);
       return value === '' || value === undefined || value === null ? defaultValue : value;
     }
-
-    
   } catch {
     // ignore
   }
@@ -442,7 +433,6 @@ function _checkRateLimit(path) {
   return { allowed: true };
 }
 
-import { request } from '../core/request.js';
 export const favoriteService = {
   /**
    * 通用请求方法（带自动重试）
@@ -1380,11 +1370,7 @@ export const favoriteService = {
     try {
       logger.log('[LafService] 📧 发送验证码:', { email });
 
-      const response = await request(
-        '/send-email-code',
-        { email },
-        { skipAuth: true, maxRetries: 0, timeout: 45000 }
-      );
+      const response = await request('/send-email-code', { email }, { skipAuth: true, maxRetries: 0, timeout: 45000 });
       return response;
     } catch (error) {
       logger.error('[LafService] ❌ 发送验证码失败:', error);
@@ -1956,115 +1942,6 @@ export const favoriteService = {
     }
   },
 
-  // ==================== 文档转换 ====================
-
-  /**
-   * 获取支持的转换类型列表
-   */
-  async getDocConvertTypes() {
-    try {
-      return await request('/doc-convert', { action: 'get_types' });
-    } catch (error) {
-      logger.warn('[LafService] 获取转换类型失败:', error);
-      return { code: -1, success: false, message: '获取失败', data: null };
-    }
-  },
-
-  /**
-   * 提交文档转换任务
-   * @param {string} fileBase64 - 文件 base64
-   * @param {string} fileName - 文件名
-   * @param {string} convertType - 转换类型 (pdf2img/img2pdf/word2pdf/pdf2word/excel2pdf/ppt2pdf)
-   * @param {object} options - 可选参数
-   */
-  async submitDocConvert(fileBase64, fileName, convertType, options = {}) {
-    try {
-      return await request('/doc-convert', {
-        action: 'convert',
-        fileBase64,
-        fileName,
-        convertType,
-        ...options
-      });
-    } catch (error) {
-      logger.warn('[LafService] 提交转换任务失败:', error);
-      return { code: -1, success: false, message: '提交失败', data: null };
-    }
-  },
-
-  /**
-   * 查询转换任务状态
-   * @param {string} jobId - 任务ID
-   */
-  async getDocConvertStatus(jobId) {
-    try {
-      return await request('/doc-convert', { action: 'get_status', jobId });
-    } catch (error) {
-      logger.warn('[LafService] 查询转换状态失败:', error);
-      return { code: -1, success: false, message: '查询失败', data: null };
-    }
-  },
-
-  /**
-   * 获取转换结果（下载链接）
-   * @param {string} jobId - 任务ID
-   */
-  async getDocConvertResult(jobId) {
-    try {
-      return await request('/doc-convert', { action: 'get_result', jobId });
-    } catch (error) {
-      logger.warn('[LafService] 获取转换结果失败:', error);
-      return { code: -1, success: false, message: '获取失败', data: null };
-    }
-  },
-
-  // ==================== 证件照处理 ====================
-
-  /**
-   * 获取证件照尺寸和颜色配置
-   */
-  async getPhotoConfig() {
-    try {
-      const [sizes, colors] = await Promise.all([
-        request('/photo-bg', { action: 'get_sizes' }),
-        request('/photo-bg', { action: 'get_colors' })
-      ]);
-      return {
-        code: 0,
-        success: true,
-        data: {
-          sizes: sizes.code === 0 ? sizes.data : null,
-          colors: colors.code === 0 ? colors.data : null
-        }
-      };
-    } catch (error) {
-      logger.warn('[LafService] 获取证件照配置失败:', error);
-      return { code: -1, success: false, message: '获取失败', data: null };
-    }
-  },
-
-  /**
-   * 证件照一键处理（抠图 + 换背景 + 裁剪）
-   * @param {string} imageBase64 - 图片 base64
-   * @param {string} bgColor - 背景颜色 key (white/blue/red/gray/light_blue/dark_blue)
-   * @param {string} size - 尺寸 key (1inch/2inch/small2inch/passport/visa)
-   * @param {object} options - 可选参数 { beauty: boolean }
-   */
-  async processIdPhoto(imageBase64, bgColor, size, options = {}) {
-    try {
-      return await request('/photo-bg', {
-        action: 'process',
-        imageBase64,
-        bgColor,
-        size,
-        ...options
-      });
-    } catch (error) {
-      logger.warn('[LafService] 证件照处理失败:', error);
-      return { code: -1, success: false, message: '处理失败', data: null };
-    }
-  },
-
   // ==================== 首页动态数据 ====================
 
   /**
@@ -2258,11 +2135,7 @@ export const favoriteService = {
    */
   async startClassroom(lessonId) {
     try {
-      return await request(
-        '/agent-orchestrator',
-        { action: 'start_session', data: { lessonId } },
-        { timeout: 15000 }
-      );
+      return await request('/agent-orchestrator', { action: 'start_session', data: { lessonId } }, { timeout: 15000 });
     } catch (error) {
       logger.warn('[LafService] 创建课堂会话失败:', error);
       return normalizeError(error, '创建课堂会话');
@@ -2540,6 +2413,11 @@ export const favoriteService = {
     }
   }
 };
+
+function request(path, data, options) {
+  return favoriteService.request(path, data, options);
+}
+const lafService = favoriteService;
 
 // ✅ 问题清单修复：注册离线队列请求重建函数
 // app 重启后 requestFnMap 丢失，通过 requestData 重建请求

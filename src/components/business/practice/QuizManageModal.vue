@@ -114,12 +114,6 @@ export default {
 .modal-footer {
   display: flex;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16px;
-  }
 }
 .modal-btn {
   flex: 1;

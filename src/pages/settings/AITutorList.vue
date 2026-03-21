@@ -12,7 +12,7 @@
         <image
           class="tutor-avatar ds-rounded-full"
           :src="tutor.avatar || '/static/images/default-avatar.png'"
-          mode="aspectFill"
+          alt="头像" mode="aspectFill"
           @error="
             (e) => {
               if (e.target) e.target.src = '/static/images/default-avatar.png';

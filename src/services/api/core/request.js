@@ -71,13 +71,6 @@
  * │   handleInvite()        处理邀请（L1512）                     │
  * │   claimInviteReward()   领取邀请奖励（L1534）                 │
  * │   getInviteInfo()       获取邀请信息（L1555）                 │
- * │   getDocConvertTypes()  文档转换类型（L1599）                  │
- * │   submitDocConvert()    提交文档转换（L1615）                  │
- * │   getDocConvertStatus() 查询转换状态（L1634）                  │
- * │   getDocConvertResult() 获取转换结果（L1647）                  │
- * │   getPhotoConfig()      证件照配置（L1661）                    │
- * │   processIdPhoto()      证件照处理（L1688）                    │
- * │   removePhotoBg()       去除背景（L1707）                     │
  * └─────────────────────────────────────────────────────────────┘
  *
  * ⚠️ 隐藏约束（Chesterton's Fence）：
@@ -92,15 +85,12 @@
 
 // ✅ P0-2: 使用相对路径导入配置（避免别名解析问题）
 
-import config from '../config/index.js';
+import config from '../../../config/index.js';
 // ✅ B021: 使用独立的 auth-storage 模块读取敏感数据（避免循环依赖）
 
 // ✅ 6.3: 性能监控集成
 
-
-
 // ✅ 从统一配置读取，支持环境变量
-
 
 // ✅ 3.5: 请求签名函数（FNV-1a 哈希，轻量级防篡改）
 function _requestSign(path, timestamp) {

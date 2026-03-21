@@ -2,7 +2,7 @@
   <view class="diagnosis-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <image src="/static/icons/chevron-left.png" class="back-icon" mode="aspectFit" @tap="goBack" />
+      <image src="/static/icons/chevron-left.png" class="back-icon" alt="返回" mode="aspectFit" @tap="goBack" />
       <text class="nav-title">学习诊断</text>
       <text class="nav-action" @tap="shareReport">分享</text>
     </view>
@@ -180,9 +180,9 @@
 
       <!-- 底部操作 -->
       <view class="bottom-actions">
-        <wd-button type="primary" block size="large" @click="startSmartReview"
-          >开始智能复习 ({{ reviewCount }} 题待复习)</wd-button
-        >
+        <wd-button type="primary" block size="large" @click="startSmartReview">
+          开始智能复习 ({{ reviewCount }} 题待复习)
+        </wd-button>
         <wd-button
           v-if="weakPoints.length > 0"
           plain
@@ -190,8 +190,9 @@
           size="large"
           custom-style="margin-top: 16rpx"
           @click="startTargetedLesson"
-          >针对薄弱点生成课程</wd-button
         >
+          针对薄弱点生成课程
+        </wd-button>
         <wd-button
           plain
           block
@@ -199,8 +200,9 @@
           custom-class="custom-ghost-btn"
           custom-style="margin-top: 16rpx; border: none; background: transparent;"
           @click="goBack"
-          >返回刷题</wd-button
         >
+          返回刷题
+        </wd-button>
       </view>
     </scroll-view>
   </view>
@@ -208,6 +210,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import { lafService } from '@/services/lafService.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
@@ -401,7 +404,7 @@ function shareReport() {
 }
 
 function goBack() {
-  uni.navigateBack({ delta: 2 });
+  safeNavigateBack({ delta: 2 });
 }
 
 onMounted(() => {

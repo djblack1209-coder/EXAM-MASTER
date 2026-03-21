@@ -75,6 +75,7 @@
 <script>
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 // ✅ 文件处理工具
 import { fileHandler } from './file-handler.js';
 // F019: storageService
@@ -152,7 +153,7 @@ export default {
     },
 
     goBack() {
-      uni.navigateBack();
+      safeNavigateBack();
     },
 
     /**
@@ -324,12 +325,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8px;
-  }
 }
 
 .back-arrow {
@@ -346,12 +341,6 @@ export default {
 .nav-right {
   display: flex;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
 }
 
 .icon-btn {
@@ -400,12 +389,6 @@ export default {
   display: flex;
   align-items: flex-start;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16px;
-  }
   flex: 1;
   min-width: 0;
 }
@@ -424,12 +407,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 8px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8px;
-  }
 }
 
 .file-name {
@@ -444,12 +421,6 @@ export default {
 .file-meta {
   display: flex;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12px;
-  }
   font-size: 26rpx;
   color: var(--text-secondary, #495057);
 }
@@ -462,12 +433,6 @@ export default {
 .file-tags {
   display: flex;
   /* gap: 8px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8px;
-  }
   flex-wrap: wrap;
 }
 
@@ -513,12 +478,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 8px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8px;
-  }
   flex-shrink: 0;
   margin-left: 16px;
 }
@@ -565,12 +524,6 @@ export default {
   display: flex;
   align-items: flex-start;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16px;
-  }
   padding: 24px 20px;
   border-bottom: 1px solid var(--card-border, #e9ecef);
 }
@@ -591,12 +544,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 10px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 10px;
-  }
 }
 
 .skeleton-name {

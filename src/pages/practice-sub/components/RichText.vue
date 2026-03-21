@@ -6,8 +6,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { renderMarkdown } from '@/composables/useMarkdownRenderer';
+import { ref, watch, onMounted } from 'vue';
+import { renderMarkdownAsync } from '@/composables/useMarkdownRenderer';
 
 const props = defineProps({
   content: {
@@ -16,7 +16,18 @@ const props = defineProps({
   }
 });
 
-const renderedHtml = computed(() => renderMarkdown(props.content));
+const renderedHtml = ref('');
+
+async function doRender() {
+  if (!props.content) {
+    renderedHtml.value = '';
+    return;
+  }
+  renderedHtml.value = await renderMarkdownAsync(props.content);
+}
+
+watch(() => props.content, doRender);
+onMounted(doRender);
 </script>
 
 <style lang="scss" scoped>

@@ -160,12 +160,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 4px;
-  }
 }
 .stat-goal.editable:active {
   opacity: 0.7;
@@ -192,12 +186,6 @@ export default {
 .achievement-icons {
   display: flex;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 4px;
-  }
 }
 .achievement-icon {
   font-size: 40rpx;

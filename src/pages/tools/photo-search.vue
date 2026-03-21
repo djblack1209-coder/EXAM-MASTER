@@ -54,7 +54,7 @@
 
       <!-- 预览模式 -->
       <view v-else-if="mode === 'preview'" class="preview-area">
-        <image :src="previewImage" mode="aspectFit" class="preview-image" />
+        <image :src="previewImage" alt="预览图片" mode="aspectFit" class="preview-image" />
         <view v-if="isRecognizing" class="loading-overlay">
           <view class="loading-spinner" />
           <text class="loading-text">
@@ -241,7 +241,7 @@ import { lafService } from '@/services/lafService.js';
 import storageService from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
@@ -304,7 +304,7 @@ export default {
 
   methods: {
     goBack() {
-      uni.navigateBack({ delta: 1 });
+      safeNavigateBack();
     },
 
     // 检查相机权限
@@ -1032,12 +1032,6 @@ export default {
   .question-meta {
     display: flex;
     /* gap: 12rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-left: 12rpx;
-    }
     margin-top: 16rpx;
   }
 }
@@ -1136,12 +1130,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
 }
 
 .kp-tag {
@@ -1194,12 +1182,6 @@ export default {
   justify-content: center;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 24rpx;
-  }
   padding: 24rpx 32rpx;
   padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
@@ -1608,12 +1590,6 @@ export default {
 /* Final polish: camera mode and result grouping */
 .camera-area {
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   padding-left: 24rpx;
   padding-right: 24rpx;
 }
@@ -1736,12 +1712,6 @@ export default {
 .question-meta,
 .tags-row {
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
 }
 
 .action-bar {

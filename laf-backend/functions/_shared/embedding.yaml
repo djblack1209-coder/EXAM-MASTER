@@ -1,0 +1,4 @@
+name: _shared/embedding
+desc: 向量嵌入服务 - 智谱 embedding-3 模型，用于 RAG 检索增强生成
+methods: []
+tags: []

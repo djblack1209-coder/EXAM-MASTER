@@ -1,12 +1,18 @@
 <template>
   <view class="smart-review-container" :class="{ 'dark-mode': isDark }">
     <view class="top-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <image src="/static/icons/chevron-left.png" class="back-icon" mode="aspectFit" @tap="goBack" />
+      <image src="/static/icons/chevron-left.png" class="back-icon" alt="返回" mode="aspectFit" @tap="goBack" />
       <text class="nav-title">智能复习</text>
       <view class="nav-right" />
     </view>
 
-    <scroll-view class="review-scroll" scroll-y>
+    <scroll-view
+      class="review-scroll"
+      scroll-y
+      refresher-enabled
+      :refresher-triggered="isRefreshing"
+      @refresherrefresh="onRefresh"
+    >
       <!-- 加载中 -->
       <view v-if="loading" class="loading-state">
         <view class="loading-brain">
@@ -33,7 +39,7 @@
             <view class="hero-title-row">
               <text class="hero-title">今日复习计划</text>
             </view>
-            <text class="hero-sub">基于 AI 诊断 + SM-2 遗忘曲线</text>
+            <text class="hero-sub">基于 FSRS-5 最优间隔重复算法</text>
             <view class="hero-tags">
               <view class="hero-tag tag-urgent">
                 <view class="tag-dot dot-red" />
@@ -58,9 +64,9 @@
 
         <!-- 一键开始（置顶强CTA） -->
         <view v-if="totalPending > 0" class="start-section">
-          <wd-button type="primary" block size="large" @click="startBatchReview"
-            >开始今日复习（{{ Math.min(totalPending, 20) }} 题）</wd-button
-          >
+          <wd-button type="primary" block size="large" @click="startBatchReview">
+            开始今日复习（{{ Math.min(totalPending, 20) }} 题）
+          </wd-button>
         </view>
 
         <!-- 急需加强 -->
@@ -91,12 +97,13 @@
               <text class="card-time">{{ formatNextReview(item.next_review_at) }}</text>
             </view>
             <!-- 掌握度进度条 -->
-            <view class="card-mastery">
-              <view class="mastery-track">
-                <view class="mastery-fill" :style="{ width: (item.mastery || 10) + '%' }" />
-              </view>
-              <text class="mastery-text">{{ item.mastery || 10 }}%</text>
+            <view class="mastery-bar-container">
+              <view
+                class="mastery-bar"
+                :style="{ width: (item.mastery || 10) + '%', backgroundColor: getMasteryColor(item.mastery || 10) }"
+              />
             </view>
+            <text class="mastery-label">记忆强度 {{ item.mastery || 10 }}%</text>
           </view>
         </view>
 
@@ -107,10 +114,11 @@
             <text class="section-title">需要巩固</text>
             <text class="section-badge badge-orange">{{ normalCount }}</text>
           </view>
+          <text class="section-hint">记忆正在衰退，及时巩固效果最佳</text>
           <view
             v-for="(item, idx) in normalItems"
             :key="item._id"
-            class="review-card apple-glass-card"
+            class="review-card apple-glass-card normal-card"
             :style="{ animationDelay: idx * 0.08 + 's' }"
             @tap="reviewItem(item)"
           >
@@ -119,6 +127,13 @@
               <text class="card-count">错 {{ item.error_count }} 次</text>
             </view>
             <text class="card-question">{{ truncate(item.question_content, 60) }}</text>
+            <view class="mastery-bar-container">
+              <view
+                class="mastery-bar"
+                :style="{ width: (item.mastery || 30) + '%', backgroundColor: getMasteryColor(item.mastery || 30) }"
+              />
+            </view>
+            <text class="mastery-label">记忆强度 {{ item.mastery || 30 }}%</text>
           </view>
         </view>
 
@@ -129,6 +144,7 @@
             <text class="section-title">常规复习</text>
             <text class="section-badge badge-blue">{{ lightCount }}</text>
           </view>
+          <text class="section-hint">记忆状态良好，轻松回顾即可</text>
           <view
             v-for="(item, idx) in lightItems"
             :key="item._id"
@@ -137,6 +153,13 @@
             @tap="reviewItem(item)"
           >
             <text class="card-question">{{ truncate(item.question_content, 60) }}</text>
+            <view class="mastery-bar-container">
+              <view
+                class="mastery-bar"
+                :style="{ width: (item.mastery || 70) + '%', backgroundColor: getMasteryColor(item.mastery || 70) }"
+              />
+            </view>
+            <text class="mastery-label">记忆强度 {{ item.mastery || 70 }}%</text>
           </view>
         </view>
 
@@ -149,9 +172,9 @@
             <text class="streak-big">🔥 {{ streakDays }}</text>
             <text class="streak-desc">天连续复习</text>
           </view>
-          <wd-button type="primary" block size="large" @click="goPractice" custom-style="margin-top: 16rpx"
-            >继续刷题</wd-button
-          >
+          <wd-button type="primary" block size="large" custom-style="margin-top: 16rpx" @click="goPractice">
+            继续刷题
+          </wd-button>
         </view>
 
         <!-- 最近诊断建议 -->
@@ -174,11 +197,12 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import { lafService } from '@/services/lafService.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
 import { storageService } from '@/services/storageService.js';
-import { getMistakesDueForReview, getMistakeReviewPriority } from '@/utils/practice/mistake-fsrs-scheduler.js';
+import { getDueCards } from '@/services/fsrs-service.js';
 
 const isDark = ref(initTheme());
 
@@ -187,6 +211,13 @@ const reviewPlan = ref({ urgent: { items: [] }, normal: { items: [] }, light: { 
 const latestDiagnosis = ref(null);
 const statusBarHeight = ref(0);
 const streakDays = ref(0);
+const isRefreshing = ref(false);
+
+async function onRefresh() {
+  isRefreshing.value = true;
+  await loadReviewPlan();
+  isRefreshing.value = false;
+}
 
 const urgentItems = computed(() => reviewPlan.value.urgent?.items || []);
 const normalItems = computed(() => reviewPlan.value.normal?.items || []);
@@ -311,40 +342,53 @@ async function loadReviewPlan() {
   }
 }
 
-// ✅ [P2] 离线FSRS兜底 — 从本地错题本用FSRS调度生成复习计划
+// ✅ [P2] 离线FSRS兜底 — 使用集中式 FSRS 服务生成复习计划
 function loadOfflineFallback() {
   try {
+    // 从本地存储获取所有题目
+    const allQuestions = storageService.get('v30_bank', []);
     const mistakeBook = storageService.get('mistake_book', []);
-    if (!mistakeBook || mistakeBook.length === 0) return;
 
-    const dueItems = getMistakesDueForReview(mistakeBook);
-    const sorted = getMistakeReviewPriority(dueItems);
+    // 合并题库和错题本
+    const allCards = [
+      ...allQuestions,
+      ...mistakeBook.map((m) => ({
+        id: m.question_id || m.id || m._id,
+        content: m.question || m.question_content || '',
+        tags: m.tags || [],
+        category: m.category || '',
+        error_count: m.error_count || m.wrong_count || 1
+      }))
+    ];
 
-    // 按逾期程度分三档
-    const now = Date.now();
+    if (allCards.length === 0) return;
+
+    // 使用 FSRS 服务获取待复习卡片（按可检索性排序）
+    const dueItems = getDueCards(allCards);
+
+    // 按紧急程度分三档
     const urgent = [];
     const normal = [];
     const light = [];
 
-    sorted.forEach((m) => {
-      const overdueDays = (now - (m.fsrs_due || 0)) / 86400000;
-      const item = {
-        _id: m.id || m._id || m.question_id,
-        question_id: m.question_id || m.id || m._id,
-        question_content: m.question || m.question_content || '',
-        knowledge_point: m.knowledge_point || m.category || '',
-        category: m.category || '',
-        error_count: m.error_count || m.wrong_count || 1,
-        mastery: m.mastery || Math.round(((m.fsrs_stability || 0) / 1.8) * 10),
-        next_review_at: m.fsrs_due || now
+    dueItems.forEach((item) => {
+      const mapped = {
+        _id: item.id,
+        question_id: item.id,
+        question_content: item.content || '',
+        knowledge_point: item.tags?.[0] || item.category || '',
+        category: item.category || '',
+        error_count: item.error_count || 1,
+        mastery: Math.round((item.retrievability || 0) * 100),
+        next_review_at: item.due ? new Date(item.due).getTime() : Date.now()
       };
 
-      if (overdueDays > 3 || m.error_count >= 3) {
-        urgent.push(item);
-      } else if (overdueDays > 1) {
-        normal.push(item);
+      if (item.overdueDays > 3 || item.isNew) {
+        urgent.push(mapped);
+      } else if (item.overdueDays > 1) {
+        normal.push(mapped);
       } else {
-        light.push(item);
+        light.push(mapped);
       }
     });
 
@@ -355,9 +399,9 @@ function loadOfflineFallback() {
       totalPending: urgent.length + normal.length + light.length
     };
 
-    logger.log('[SmartReview] 离线FSRS兜底已加载:', reviewPlan.value.totalPending, '题');
+    logger.log('[SmartReview] FSRS服务离线兜底已加载:', reviewPlan.value.totalPending, '题');
   } catch (e) {
-    logger.warn('[SmartReview] 离线兜底也失败:', e);
+    logger.warn('[SmartReview] FSRS 离线计算失败:', e);
   }
 }
 
@@ -381,10 +425,16 @@ function startBatchReview() {
 }
 
 function goPractice() {
-  uni.navigateBack();
+  safeNavigateBack();
 }
 function goBack() {
-  uni.navigateBack();
+  safeNavigateBack();
+}
+
+function getMasteryColor(mastery) {
+  if (mastery >= 80) return 'var(--success, #34C759)';
+  if (mastery >= 50) return 'var(--warning, #FF9500)';
+  return 'var(--danger, #FF3B30)';
 }
 
 function truncate(str, len) {
@@ -419,10 +469,11 @@ onMounted(() => {
   --text-primary: var(--text-main, #1c1c1e);
   --text-secondary: var(--text-sub, #8e8e93);
   --bg-card: var(--bg-card-alpha, rgba(0, 0, 0, 0.03));
-  --red: #ff453a;
-  --orange: #ff9f0a;
-  --blue: #32ade6;
-  --green: #34c759;
+  /* 语义色映射：引用全局 design tokens，保持 iOS 色调作为回退值 */
+  --red: var(--em-error, #ff453a);
+  --orange: var(--em-warning, #ff9f0a);
+  --blue: var(--em-info, #32ade6);
+  --green: var(--em-success, #34c759);
 }
 
 /* ✅ [P1重构] 暗色模式适配 — 不再硬编码，跟随主题系统 */
@@ -442,10 +493,10 @@ onMounted(() => {
   z-index: 100;
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  backdrop-filter: saturate(180%) blur(20px);
+  padding: 16rpx 32rpx;
+  backdrop-filter: saturate(180%) blur(40rpx);
   background: rgba(245, 245, 247, 0.72);
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
 }
 /* ✅ 暗色模式导航栏 */
 .dark-mode .top-nav {
@@ -453,22 +504,22 @@ onMounted(() => {
   border-bottom-color: rgba(255, 255, 255, 0.06);
 }
 .back-icon {
-  width: 24px;
-  height: 24px;
+  width: 48rpx;
+  height: 48rpx;
   opacity: 0.7;
 }
 .nav-title {
   flex: 1;
   text-align: center;
-  font-size: 17px;
+  font-size: 34rpx;
   font-weight: 600;
   color: var(--text-primary);
 }
 .nav-right {
-  width: 24px;
+  width: 48rpx;
 }
 .review-scroll {
-  padding: 80px 16px 40px;
+  padding: 160rpx 32rpx 80rpx;
 }
 
 /* 加载 */
@@ -476,12 +527,12 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 180px;
+  padding-top: 360rpx;
 }
 .loading-brain {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 160rpx;
+  height: 160rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -489,17 +540,17 @@ onMounted(() => {
 .brain-ring {
   position: absolute;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 4rpx solid transparent;
 }
 .r1 {
-  width: 70px;
-  height: 70px;
+  width: 140rpx;
+  height: 140rpx;
   border-top-color: var(--green);
   animation: spin 2s linear infinite;
 }
 .r2 {
-  width: 50px;
-  height: 50px;
+  width: 100rpx;
+  height: 100rpx;
   border-bottom-color: var(--blue);
   animation: spin 1.5s linear infinite reverse;
 }
@@ -509,23 +560,23 @@ onMounted(() => {
   }
 }
 .brain-emoji {
-  font-size: 24px;
+  font-size: 48rpx;
   z-index: 1;
 }
 .loading-text {
-  margin-top: 20px;
-  font-size: 14px;
+  margin-top: 40rpx;
+  font-size: 28rpx;
   color: var(--text-secondary);
 }
 
 /* 玻璃卡片 */
 .apple-glass-card {
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 12px;
-  border: 0.5px solid rgba(0, 0, 0, 0.06);
-  backdrop-filter: blur(10px);
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(20rpx);
 }
 .dark-mode .apple-glass-card {
   border-color: rgba(255, 255, 255, 0.08);
@@ -535,20 +586,20 @@ onMounted(() => {
 .progress-hero {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 20px;
+  gap: 32rpx;
+  padding: 40rpx;
 }
 .hero-left {
   flex-shrink: 0;
 }
 .ring-wrap {
   position: relative;
-  width: 90px;
-  height: 90px;
+  width: 180rpx;
+  height: 180rpx;
 }
 .review-canvas {
-  width: 90px;
-  height: 90px;
+  width: 180rpx;
+  height: 180rpx;
 }
 .ring-inner {
   position: absolute;
@@ -562,15 +613,15 @@ onMounted(() => {
   justify-content: center;
 }
 .ring-num {
-  font-size: 26px;
+  font-size: 52rpx;
   font-weight: 700;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
 .ring-label {
-  font-size: 10px;
+  font-size: 20rpx;
   color: var(--text-secondary);
-  margin-top: 1px;
+  margin-top: 2rpx;
 }
 .hero-right {
   flex: 1;
@@ -578,36 +629,36 @@ onMounted(() => {
 .hero-title-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16rpx;
 }
 .hero-title {
-  font-size: 16px;
+  font-size: 32rpx;
   font-weight: 600;
   color: var(--text-primary);
 }
 .hero-sub {
-  font-size: 11px;
+  font-size: 22rpx;
   color: var(--text-secondary);
-  margin-top: 4px;
+  margin-top: 8rpx;
   display: block;
 }
 .hero-tags {
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 16rpx;
+  margin-top: 20rpx;
   flex-wrap: wrap;
 }
 .hero-tag {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 8px;
+  gap: 8rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
   background: rgba(255, 255, 255, 0.04);
 }
 .tag-dot {
-  width: 6px;
-  height: 6px;
+  width: 12rpx;
+  height: 12rpx;
   border-radius: 50%;
 }
 .dot-red {
@@ -620,43 +671,43 @@ onMounted(() => {
   background: var(--blue);
 }
 .tag-text {
-  font-size: 11px;
+  font-size: 22rpx;
   color: var(--text-secondary);
 }
 .streak-row {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 8px;
+  gap: 8rpx;
+  margin-top: 16rpx;
 }
 .streak-fire {
-  font-size: 14px;
+  font-size: 28rpx;
 }
 .streak-text {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--orange);
   font-weight: 500;
 }
 
 /* 一键开始 */
 .start-section {
-  padding: 4px 0 8px;
+  padding: 8rpx 0 16rpx;
 }
 .btn-start-review {
   background: linear-gradient(135deg, #34c759, #30d158);
   color: #fff;
   border: none;
-  border-radius: 14px;
-  height: 48px;
-  font-size: 16px;
+  border-radius: 28rpx;
+  height: 96rpx;
+  font-size: 32rpx;
   font-weight: 600;
   width: 100%;
-  box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+  box-shadow: 0 8rpx 32rpx rgba(52, 199, 89, 0.3);
 }
 
 /* 区块 */
 .section {
-  margin-top: 20px;
+  margin-top: 40rpx;
 }
 .animate-in {
   animation: slideUp 0.4s ease-out both;
@@ -664,7 +715,7 @@ onMounted(() => {
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(32rpx);
   }
   to {
     opacity: 1;
@@ -674,17 +725,17 @@ onMounted(() => {
 .section-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
 }
 .section-dot {
-  width: 10px;
-  height: 10px;
+  width: 20rpx;
+  height: 20rpx;
   border-radius: 50%;
 }
 .urgent-dot {
   background: var(--red);
-  box-shadow: 0 0 6px rgba(255, 69, 58, 0.5);
+  box-shadow: 0 0 12rpx rgba(255, 69, 58, 0.5);
 }
 .normal-dot {
   background: var(--orange);
@@ -693,15 +744,15 @@ onMounted(() => {
   background: var(--blue);
 }
 .section-title {
-  font-size: 16px;
+  font-size: 32rpx;
   font-weight: 600;
   color: var(--text-primary);
   flex: 1;
 }
 .section-badge {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 8px;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
   font-weight: 600;
 }
 .badge-red {
@@ -717,22 +768,22 @@ onMounted(() => {
   color: var(--blue);
 }
 .section-hint {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--text-secondary);
-  margin-bottom: 10px;
+  margin-bottom: 20rpx;
   display: block;
-  margin-left: 18px;
+  margin-left: 36rpx;
 }
 
 /* 复习卡片 */
 .review-card {
-  padding: 14px;
+  padding: 28rpx;
   animation: fadeSlideIn 0.3s ease-out both;
 }
 @keyframes fadeSlideIn {
   from {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translateX(-16rpx);
   }
   to {
     opacity: 1;
@@ -740,19 +791,19 @@ onMounted(() => {
   }
 }
 .urgent-card {
-  border-left: 3px solid var(--red);
+  border-left: 6rpx solid var(--red);
 }
 .light-card {
-  border-left: 3px solid var(--blue);
+  border-left: 6rpx solid var(--blue);
 }
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 16rpx;
 }
 .card-kp {
-  font-size: 14px;
+  font-size: 28rpx;
   font-weight: 600;
   color: var(--text-primary);
   flex: 1;
@@ -760,69 +811,71 @@ onMounted(() => {
 .error-badge {
   display: flex;
   align-items: baseline;
-  gap: 2px;
+  gap: 4rpx;
   background: rgba(255, 69, 58, 0.12);
-  padding: 2px 8px;
-  border-radius: 8px;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
 }
 .error-num {
-  font-size: 14px;
+  font-size: 28rpx;
   font-weight: 700;
   color: var(--red);
 }
 .error-label {
-  font-size: 10px;
+  font-size: 20rpx;
   color: var(--red);
   opacity: 0.8;
 }
 .card-count {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--red);
 }
 .card-question {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary);
   line-height: 1.5;
 }
 .card-footer {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: 16rpx;
 }
 .card-category {
-  font-size: 11px;
+  font-size: 22rpx;
   color: var(--text-secondary);
-  padding: 2px 8px;
+  padding: 4rpx 16rpx;
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
+  border-radius: 16rpx;
 }
 .card-time {
-  font-size: 11px;
+  font-size: 22rpx;
   color: var(--orange);
 }
-.card-mastery {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-.mastery-track {
-  flex: 1;
-  height: 3px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.06);
+/* 记忆强度进度条 */
+.mastery-bar-container {
+  width: 100%;
+  height: 12rpx;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6rpx;
   overflow: hidden;
+  margin-top: 20rpx;
 }
-.mastery-fill {
+.dark-mode .mastery-bar-container {
+  background: rgba(255, 255, 255, 0.08);
+}
+.mastery-bar {
   height: 100%;
-  border-radius: 2px;
-  background: var(--orange);
+  border-radius: 6rpx;
   transition: width 0.6s ease;
 }
-.mastery-text {
-  font-size: 10px;
+.mastery-label {
+  font-size: 22rpx;
   color: var(--text-secondary);
-  white-space: nowrap;
+  margin-top: 8rpx;
+  display: block;
+}
+.normal-card {
+  border-left: 6rpx solid var(--orange);
 }
 
 /* 空状态 */
@@ -830,68 +883,68 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px 0;
+  padding: 120rpx 0;
 }
 .empty-icon {
-  font-size: 48px;
+  font-size: 96rpx;
 }
 .empty-title {
-  font-size: 17px;
+  font-size: 34rpx;
   font-weight: 600;
   color: var(--text-primary);
-  margin-top: 16px;
+  margin-top: 32rpx;
 }
 .empty-sub {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary);
-  margin-top: 8px;
+  margin-top: 16rpx;
 }
 .streak-celebrate {
   display: flex;
   align-items: baseline;
-  gap: 4px;
-  margin-top: 16px;
+  gap: 8rpx;
+  margin-top: 32rpx;
 }
 .streak-big {
-  font-size: 32px;
+  font-size: 64rpx;
   font-weight: 700;
   color: var(--orange);
 }
 .streak-desc {
-  font-size: 14px;
+  font-size: 28rpx;
   color: var(--text-secondary);
 }
 .btn-practice {
-  margin-top: 20px;
+  margin-top: 40rpx;
   background: rgba(52, 199, 89, 0.12);
   color: var(--green);
-  border: 0.5px solid rgba(52, 199, 89, 0.2);
-  border-radius: 12px;
-  padding: 10px 24px;
-  font-size: 14px;
+  border: 1rpx solid rgba(52, 199, 89, 0.2);
+  border-radius: 24rpx;
+  padding: 20rpx 48rpx;
+  font-size: 28rpx;
 }
 
 /* 诊断建议 */
 .diagnosis-hint {
-  margin-top: 16px;
+  margin-top: 32rpx;
 }
 .hint-title {
-  font-size: 14px;
+  font-size: 28rpx;
   font-weight: 600;
   color: var(--text-primary);
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 16rpx;
 }
 .hint-text {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary);
   line-height: 1.5;
   display: block;
 }
 .hint-weak {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--orange);
-  margin-top: 6px;
+  margin-top: 12rpx;
   display: block;
 }
 </style>

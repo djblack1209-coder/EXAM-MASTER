@@ -85,14 +85,14 @@
                 v-if="userAvatar && userAvatar.startsWith('http')"
                 class="avatar-image"
                 :src="userAvatar"
-                mode="aspectFill"
+                alt="头像" mode="aspectFill"
               />
               <!-- ✅ F020: 未登录/无头像时使用默认头像图片代替 emoji -->
               <image
                 v-else
                 class="avatar-image avatar-default"
                 src="/static/images/default-avatar.png"
-                mode="aspectFill"
+                alt="头像" mode="aspectFill"
               />
               <view v-if="isLoggedIn" class="avatar-edit-badge">
                 <BaseIcon name="camera" :size="20" />
@@ -1249,12 +1249,6 @@ onHide(() => {
   display: flex;
   flex-direction: column;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12rpx;
-  }
 }
 
 .user-name {
@@ -1565,13 +1559,7 @@ onHide(() => {
   align-items: center;
   justify-content: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
-  padding: 28rpx;
+padding: 28rpx;
   border-radius: 24rpx;
   margin-bottom: 24rpx;
   background-color: var(--bg-card);
@@ -1810,12 +1798,6 @@ onHide(() => {
   align-items: center;
   justify-content: space-between;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 24rpx;
-  }
 }
 
 .checkin-btn {
@@ -1824,13 +1806,7 @@ onHide(() => {
   align-items: center;
   justify-content: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
-  padding: 28rpx 40rpx;
+padding: 28rpx 40rpx;
   border-radius: 50rpx;
   transition: all 0.3s ease;
 }
@@ -1875,24 +1851,12 @@ onHide(() => {
   flex-direction: column;
   align-items: flex-end;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12rpx;
-  }
 }
 
 .recovery-cards {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
 }
 
 .recovery-icon {
@@ -1921,13 +1885,7 @@ onHide(() => {
   display: flex;
   align-items: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
-  margin-top: 20rpx;
+margin-top: 20rpx;
   padding: 16rpx 20rpx;
   background: var(--warning-light);
   border-radius: 16rpx;

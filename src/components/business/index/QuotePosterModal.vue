@@ -226,13 +226,7 @@ export default {
 .poster-actions {
   display: flex;
   /* gap: 14rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 14rpx;
-  }
-  margin-top: 24rpx;
+margin-top: 24rpx;
 }
 
 .poster-btn {

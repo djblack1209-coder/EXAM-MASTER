@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { storageService } from '@/services/storageService.js';
 
 defineProps({
@@ -62,16 +62,22 @@ defineProps({
   currentId: { type: String, default: '' }
 });
 
-const emit = defineEmits(['select', 'delete', 'create', 'close']);
+const emit = defineEmits(['select', 'delete', 'create', 'close', 'rename']);
 
 const isDark = ref(false);
 const actionSession = ref(null);
 
+const handleThemeUpdate = (mode) => {
+  isDark.value = mode === 'dark';
+};
+
 onMounted(() => {
   isDark.value = storageService.get('theme_mode', 'light') === 'dark';
-  uni.$on('themeUpdate', (mode) => {
-    isDark.value = mode === 'dark';
-  });
+  uni.$on('themeUpdate', handleThemeUpdate);
+});
+
+onUnmounted(() => {
+  uni.$off('themeUpdate', handleThemeUpdate);
 });
 
 function onLongPress(session) {

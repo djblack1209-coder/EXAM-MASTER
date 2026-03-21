@@ -32,7 +32,12 @@
       <view class="offline-indicator__detail-item">
         <text class="detail-label"> 网络质量 </text>
         <view class="detail-value quality-indicator">
-          <view v-for="i in 4" :key="i" class="quality-bar" :class="{ 'quality-bar--active': i <= qualityLevel }" />
+          <view
+            v-for="i in 4"
+            :key="i"
+            class="quality-bar"
+            :class="[`quality-bar--${i}`, { 'quality-bar--active': i <= qualityLevel }]"
+          />
         </view>
       </view>
 
@@ -405,13 +410,7 @@ export default {
   &__compact {
     display: flex;
     align-items: center;
-    /* gap: 12rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-left: 12rpx;
-    }
+    /* gap: 12rpx; -- removed tag-name selectors for WeChat component compat */
   }
 
   &__icon {
@@ -460,13 +459,7 @@ export default {
 
   &__actions {
     display: flex;
-    /* gap: 16rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-left: 16rpx;
-    }
+    /* gap: 16rpx; -- removed tag-name selectors for WeChat component compat */
     margin-top: 20rpx;
 
     .action-btn {
@@ -496,13 +489,7 @@ export default {
 
 .quality-indicator {
   display: flex;
-  /* gap: 4rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 4rpx;
-  }
+  /* gap: 4rpx; -- removed tag-name selectors for WeChat component compat */
   align-items: flex-end;
 }
 
@@ -511,16 +498,16 @@ export default {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 4rpx;
 
-  &:nth-child(1) {
+  &--1 {
     height: 12rpx;
   }
-  &:nth-child(2) {
+  &--2 {
     height: 18rpx;
   }
-  &:nth-child(3) {
+  &--3 {
     height: 24rpx;
   }
-  &:nth-child(4) {
+  &--4 {
     height: 30rpx;
   }
 

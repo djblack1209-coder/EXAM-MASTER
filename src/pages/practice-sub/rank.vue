@@ -16,7 +16,7 @@
     <!-- 空状态 -->
     <view v-if="!loading && empty" class="empty-container">
       <BaseEmpty icon="trophy" title="暂无排行榜数据" desc="快去刷题，成为第一个上榜的学霸吧！" :is-dark="isDark" />
-      <wd-button plain @click="toPractice" custom-class="go-practice-btn">去刷题</wd-button>
+      <wd-button plain custom-class="go-practice-btn" @click="toPractice">去刷题</wd-button>
     </view>
 
     <!-- 排行榜内容 -->
@@ -35,7 +35,7 @@
             <image
               class="avatar"
               :src="rankList[1].avatar || defaultAvatar"
-              mode="aspectFill"
+              alt="头像" mode="aspectFill"
               @error="onAvatarError($event, rankList[1])"
             />
             <view class="badge"> 2 </view>
@@ -52,7 +52,7 @@
             <image
               class="avatar"
               :src="rankList[0].avatar || defaultAvatar"
-              mode="aspectFill"
+              alt="头像" mode="aspectFill"
               @error="onAvatarError($event, rankList[0])"
             />
             <view class="badge"> 1 </view>
@@ -68,7 +68,7 @@
             <image
               class="avatar"
               :src="rankList[2].avatar || defaultAvatar"
-              mode="aspectFill"
+              alt="头像" mode="aspectFill"
               @error="onAvatarError($event, rankList[2])"
             />
             <view class="badge"> 3 </view>
@@ -97,7 +97,7 @@
           <image
             class="item-avatar"
             :src="item.avatar || defaultAvatar"
-            mode="aspectFill"
+            alt="头像" mode="aspectFill"
             lazy-load
             @error="onAvatarError($event, item)"
           />
@@ -130,7 +130,7 @@
         <image
           class="item-avatar"
           :src="userInfo.avatarUrl || defaultAvatar"
-          mode="aspectFill"
+          alt="头像" mode="aspectFill"
           @error="onAvatarError($event, userInfo, 'avatarUrl')"
         />
         <view class="item-info">
@@ -155,7 +155,7 @@
           <image
             class="card-avatar"
             :src="activeUser.avatar || defaultAvatar"
-            mode="aspectFill"
+            alt="头像" mode="aspectFill"
             @error="onAvatarError($event, activeUser)"
           />
           <view class="header-info">
@@ -223,7 +223,7 @@ import { selfPositionTracker } from './self-position-tracker.js';
 import { logger } from '@/utils/logger.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { getStatusBarHeight, getWindowInfo as _getWindowInfo } from '@/utils/core/system.js';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
@@ -558,7 +558,7 @@ export default {
       }
     },
     navBack() {
-      uni.navigateBack();
+      safeNavigateBack();
     },
     toPractice() {
       // 防止重复点击
@@ -1235,12 +1235,6 @@ export default {
   padding: 4rpx 12rpx;
   border-radius: 10rpx;
   /* gap: 6rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 6rpx;
-  }
 }
 .sparkle-icon {
   font-size: 20rpx;
@@ -1460,12 +1454,6 @@ export default {
   border-radius: 40rpx;
   align-items: stretch;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
 }
 
 .podium-item {
@@ -1621,12 +1609,6 @@ export default {
 .my-rank-card {
   padding: 22rpx;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
   border-radius: 32rpx;
 }
 
@@ -1738,12 +1720,6 @@ export default {
   display: inline-flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
   background: rgba(255, 255, 255, 0.72);
   color: var(--text-main);
   border: 1px solid rgba(255, 255, 255, 0.42);

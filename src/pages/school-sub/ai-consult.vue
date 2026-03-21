@@ -371,13 +371,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
-  padding: 0 8rpx 18rpx;
+padding: 0 8rpx 18rpx;
 }
 
 .header-copy {
@@ -467,26 +461,14 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
-  padding-bottom: 12rpx;
+padding-bottom: 12rpx;
 }
 
 .welcome-card,
 .message-row {
   display: flex;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12rpx;
-  }
-  align-items: flex-end;
+align-items: flex-end;
 }
 
 .user-row {
@@ -567,12 +549,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
 }
 
 .typing-dot {
@@ -621,13 +597,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
-  margin-top: 8rpx;
+margin-top: 8rpx;
 }
 
 .char-count {

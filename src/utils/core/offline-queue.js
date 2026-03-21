@@ -1,4 +1,3 @@
-import storageService from '@/services/storageService';
 /**
  * 离线请求队列 (Offline Queue)
  *
@@ -25,6 +24,14 @@ import storageService from '@/services/storageService';
 
 import { logger } from '@/utils/logger.js';
 
+/**
+ * 延迟获取 storageService，避免循环依赖：
+ * storageService -> lafService -> ai.service -> offline-queue -> storageService
+ *
+ * 使用 uni 原生存储 API 替代 storageService，因为 offline-queue 的存储需求简单，
+ * 不需要 storageService 的云同步能力。
+ */
+
 function createNetworkUniCompat() {
   return {
     getNetworkType(options = {}) {
@@ -32,8 +39,8 @@ function createNetworkUniCompat() {
       const online = typeof navigator !== 'undefined' ? navigator.onLine !== false : true;
       success?.({ networkType: online ? 'wifi' : 'none' });
     },
-    onNetworkStatusChange(callback) {
-      
+    onNetworkStatusChange(_callback) {
+      // H5 fallback 环境不提供真实网络变更订阅，静默兼容
     }
   };
 }
@@ -47,8 +54,12 @@ function createQueueStorageCompat() {
 
   const readLocal = (key) => {
     try {
-      return storageService.get(keyPrefix + key);
-      return JSON.parse(raw);
+      if (typeof localStorage !== 'undefined') {
+        const raw = localStorage.getItem(keyPrefix + key);
+        if (raw === null) return undefined;
+        return JSON.parse(raw);
+      }
+      return undefined;
     } catch {
       return undefined;
     }
@@ -56,8 +67,11 @@ function createQueueStorageCompat() {
 
   const writeLocal = (key, value) => {
     try {
-      storageService.save(keyPrefix+key,value);
-      return true;
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(keyPrefix + key, JSON.stringify(value));
+        return true;
+      }
+      return false;
     } catch {
       return false;
     }

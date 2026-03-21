@@ -274,12 +274,12 @@
         </view>
 
         <view class="result-actions">
-          <wd-button type="info" custom-class="action-btn review" @click="reviewExam"
-            ><BaseIcon name="book" :size="28" /> 查看解析</wd-button
-          >
-          <wd-button type="primary" id="e2e-mock-retry-btn" custom-class="action-btn retry" @click="retryExam"
-            ><BaseIcon name="refresh" :size="28" /> 再考一次</wd-button
-          >
+          <wd-button type="info" custom-class="action-btn review" @click="reviewExam">
+            <BaseIcon name="book" :size="28" /> 查看解析
+          </wd-button>
+          <wd-button id="e2e-mock-retry-btn" type="primary" custom-class="action-btn retry" @click="retryExam">
+            <BaseIcon name="refresh" :size="28" /> 再考一次
+          </wd-button>
         </view>
       </view>
 
@@ -304,7 +304,7 @@
 
 <script>
 import { logger } from '@/utils/logger.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 // ✅ F024: 统一使用 storageService
 import storageService from '@/services/storageService.js';
@@ -450,12 +450,12 @@ export default {
             if (res.confirm) {
               this._saveExamProgress();
               this.clearTimer();
-              uni.navigateBack();
+              safeNavigateBack();
             }
           }
         });
       } else {
-        uni.navigateBack();
+        safeNavigateBack();
       }
     },
 
@@ -824,12 +824,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
   background: rgba(255, 255, 255, 0.72);
   padding: 8rpx 16rpx;
   border-radius: 999rpx;
@@ -900,12 +894,6 @@ export default {
 .setting-options {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   flex-wrap: wrap;
 }
 
@@ -949,12 +937,6 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   box-shadow: var(--cta-primary-shadow);
 }
 
@@ -1027,12 +1009,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 20rpx;
-  }
 }
 
 .option-item {
@@ -1083,12 +1059,6 @@ export default {
 .nav-buttons {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
   margin: 30rpx 0;
 }
 
@@ -1147,12 +1117,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .sheet-item {
@@ -1262,12 +1226,6 @@ export default {
 .result-actions {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
 }
 
 .action-btn {
@@ -1326,12 +1284,6 @@ export default {
 .wrong-answer {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
   font-size: 24rpx;
 }
 
@@ -1369,12 +1321,6 @@ export default {
 .skeleton-options {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   flex-wrap: wrap;
 }
 

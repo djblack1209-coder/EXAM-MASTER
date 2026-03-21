@@ -161,13 +161,7 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16px;
-  }
-  margin-bottom: 24px;
+margin-bottom: 24px;
 }
 .goal-adjust-btn {
   width: 48px;
@@ -192,12 +186,6 @@ export default {
   display: flex;
   align-items: baseline;
   /* gap: 8px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8px;
-  }
 }
 .goal-input {
   width: 80px;
@@ -218,13 +206,7 @@ export default {
   display: flex;
   justify-content: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
-  margin-bottom: 20px;
+margin-bottom: 20px;
 }
 .goal-preset {
   padding: 10px 20px;
@@ -259,12 +241,6 @@ export default {
 .goal-modal-footer {
   display: flex;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16px;
-  }
 }
 .goal-cancel-btn {
   flex: 1;

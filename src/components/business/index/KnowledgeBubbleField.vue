@@ -226,13 +226,7 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 4rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4rpx;
-  }
-  padding: 16rpx;
+padding: 16rpx;
   text-align: center;
 }
 

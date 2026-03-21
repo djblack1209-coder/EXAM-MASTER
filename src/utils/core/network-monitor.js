@@ -37,13 +37,10 @@ function createNetworkUniCompat() {
         fail?.(error);
       }
     },
-    onNetworkStatusChange(callback) {
-      
-      this._onlineHandler = onlineHandler;
-      this._offlineHandler = offlineHandler;
+    onNetworkStatusChange(_callback) {
+      // H5 fallback 环境不提供真实网络变更订阅，静默兼容
     },
     offNetworkStatusChange() {
-      
       this._onlineHandler = null;
       this._offlineHandler = null;
     },

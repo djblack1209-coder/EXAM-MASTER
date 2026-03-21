@@ -15,7 +15,7 @@
           <image
             class="user-avatar"
             :src="userInfo.avatarUrl || defaultAvatar"
-            mode="aspectFill"
+            alt="头像" mode="aspectFill"
             @error="onUserAvatarError"
           />
         </view>
@@ -24,7 +24,7 @@
           <image
             class="user-avatar"
             :src="opponent.avatar || defaultAvatar"
-            mode="aspectFill"
+            alt="头像" mode="aspectFill"
             @error="onOpponentAvatarError"
           />
           <view v-if="!opponentFound" class="search-overlay">
@@ -66,7 +66,7 @@
           <image
             :src="userInfo.avatarUrl || defaultAvatar"
             class="avatar"
-            mode="aspectFill"
+            alt="头像" mode="aspectFill"
             @error="onUserAvatarError"
           />
           <text class="score me">
@@ -83,7 +83,7 @@
           <image
             :src="opponent.avatar || defaultAvatar"
             class="avatar"
-            mode="aspectFill"
+            alt="头像" mode="aspectFill"
             @error="onOpponentAvatarError"
           />
           <text class="score opp">
@@ -227,7 +227,7 @@ import CustomModal from '@/components/common/CustomModal.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 // ✅ F024: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
@@ -1006,7 +1006,9 @@ export default {
       if (this.isRealMatch && this.pkRoom) {
         const answerLetter = String.fromCharCode(65 + idx); // 0→A, 1→B, ...
         const duration = this.questionStartTime > 0 ? Math.round((Date.now() - this.questionStartTime) / 1000) : 0;
-        this.pkRoom.submitAnswer(this.currentIndex, answerLetter, duration).catch(() => {});
+        this.pkRoom.submitAnswer(this.currentIndex, answerLetter, duration).catch((error) => {
+          logger.warn('[PK] submit answer failed', error);
+        });
       }
 
       // 更新我的进度条
@@ -1686,7 +1688,7 @@ export default {
         success: (res) => {
           if (res.confirm) {
             this.clearAllTimers();
-            uni.navigateBack();
+            safeNavigateBack();
           }
         }
       });
@@ -1703,7 +1705,7 @@ export default {
             uni.switchTab({
               url: '/pages/index/index',
               fail: () => {
-                uni.navigateBack();
+                safeNavigateBack();
               }
             });
           }
@@ -1842,12 +1844,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 40rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 40rpx;
-  }
   margin-bottom: 60rpx;
   position: relative;
   z-index: 2;
@@ -1904,12 +1900,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 20rpx;
-  }
   position: relative;
   z-index: 2;
 }
@@ -2179,12 +2169,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12px;
-  }
   padding-bottom: calc(constant(safe-area-inset-bottom) + 20px); /* 底部安全区域 + 额外间距 */
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); /* 底部安全区域 + 额外间距 */
   margin-bottom: 20px;
@@ -2500,12 +2484,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
   margin-top: 40rpx;
 }
 .btn-share {
@@ -2738,12 +2716,6 @@ export default {
 
 .match-core {
   /* gap: 56rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 56rpx;
-  }
 }
 
 .avatar-ring {
@@ -2887,12 +2859,6 @@ export default {
 
 .battle-stage {
   /* gap: 18rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 18rpx;
-  }
   align-items: stretch;
 }
 
@@ -3089,12 +3055,6 @@ export default {
 
 .ai-header {
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
 }
 
 .ai-title {
@@ -3109,12 +3069,6 @@ export default {
 
 .action-btns {
   /* gap: 14rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 14rpx;
-  }
 }
 
 .btn-share,
@@ -3292,12 +3246,6 @@ export default {
 
 .options-group {
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   margin-bottom: 16rpx;
 }
 
@@ -3313,12 +3261,6 @@ export default {
 .opt-btn-inner {
   align-items: flex-start;
   /* gap: 14rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 14rpx;
-  }
 }
 
 .content {

@@ -200,7 +200,7 @@ import PlanSkeleton from './components/plan-skeleton/plan-skeleton.vue';
 import { intelligentPlanManager } from './intelligent-plan-manager.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 
 export default {
@@ -258,7 +258,7 @@ export default {
       requireLogin(() => safeNavigateTo('/pages/plan/create'), { message: '请先登录后创建计划' });
     },
     goBack() {
-      uni.navigateBack();
+      safeNavigateBack();
     },
     getStatusText(status) {
       switch (status) {
@@ -532,12 +532,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
 }
 
 .section-title {
@@ -586,12 +580,6 @@ export default {
 .plan-header {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20rpx;
@@ -654,12 +642,6 @@ export default {
   display: flex;
   justify-content: space-between;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
   margin-bottom: 20rpx;
 }
 
@@ -795,12 +777,6 @@ export default {
   align-items: center;
   justify-content: space-between;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   padding-top: 20rpx;
   margin-bottom: 20rpx;
   border-top: 1px solid var(--apple-divider);
@@ -827,12 +803,6 @@ export default {
 .plan-actions {
   display: flex;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
   padding-top: 20rpx;
   border-top: 1px solid var(--apple-divider);
 }

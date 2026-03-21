@@ -45,7 +45,7 @@
         <view class="overview-cards">
           <!-- 学习时长卡片 -->
           <view class="stat-card">
-            <image class="stat-icon" src="./static/study.png" mode="aspectFit" />
+            <image class="stat-icon" src="./static/study.png" alt="" mode="aspectFit" />
             <view class="stat-content">
               <text class="stat-value">
                 {{ studyTime }}
@@ -56,7 +56,7 @@
 
           <!-- 完成率卡片 -->
           <view class="stat-card">
-            <image class="stat-icon" src="./static/stack-of-books.png" mode="aspectFit" />
+            <image class="stat-icon" src="./static/stack-of-books.png" alt="" mode="aspectFit" />
             <view class="stat-content">
               <text class="stat-value"> {{ completionRate }}% </text>
               <text class="stat-label"> 完成率 </text>
@@ -65,7 +65,7 @@
 
           <!-- 能力评级卡片 -->
           <view class="stat-card">
-            <image class="stat-icon" src="./static/loading-bar.png" mode="aspectFit" />
+            <image class="stat-icon" src="./static/loading-bar.png" alt="" mode="aspectFit" />
             <view class="stat-content">
               <text class="stat-value">
                 {{ abilityRank }}
@@ -129,6 +129,7 @@
 
 <script>
 import { useThemeStore } from '@/stores';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useStudyStore } from '@/stores/modules/study';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -221,13 +222,7 @@ export default {
      * 返回上一页
      */
     goBack() {
-      uni.navigateBack({
-        fail: () => {
-          uni.switchTab({
-            url: '/pages/index/index'
-          });
-        }
-      });
+      safeNavigateBack();
     },
 
     /**
@@ -521,12 +516,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
   padding: 0 32rpx 32rpx;
 }
 
@@ -651,12 +640,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
   margin-bottom: 32rpx;
 }
 

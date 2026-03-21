@@ -257,7 +257,7 @@
 
 <script>
 import { storageService } from '@/services/storageService.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import {
   getFavorites,
   getFolders,
@@ -408,7 +408,7 @@ export default {
     },
 
     goBack() {
-      uni.navigateBack();
+      safeNavigateBack();
     },
 
     selectFolder(folderId) {
@@ -712,12 +712,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
 }
 
 .stat-value {
@@ -759,12 +753,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .folder-card {
@@ -833,12 +821,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
   padding: 8rpx 16rpx;
   min-height: 72rpx;
   background: rgba(255, 255, 255, 0.68);
@@ -924,12 +906,6 @@ export default {
 .card-actions {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .action-icon {
@@ -1020,12 +996,6 @@ export default {
 .footer-actions {
   display: flex;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
 }
 
 .action-btn {
@@ -1160,12 +1130,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .icon-option {
@@ -1188,12 +1152,6 @@ export default {
 .modal-footer {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
   padding: 24rpx;
   border-top: 1px solid var(--apple-divider);
 }

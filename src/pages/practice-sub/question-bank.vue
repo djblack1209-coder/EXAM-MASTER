@@ -107,6 +107,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import { lafService } from '@/services/lafService';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
@@ -140,7 +141,7 @@ function diffLabel(d) {
 }
 
 function goBack() {
-  uni.navigateBack({ fail: () => uni.switchTab({ url: '/pages/practice/index' }) });
+  safeNavigateBack();
 }
 
 async function loadStats() {

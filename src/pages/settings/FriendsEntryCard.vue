@@ -68,12 +68,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16px;
-  }
 }
 
 .entry-icon {
@@ -92,12 +86,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4px;
-  }
 }
 
 .entry-title {

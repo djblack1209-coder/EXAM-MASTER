@@ -5,7 +5,7 @@
     <view :class="['header-content-area', scrollY > 50 && 'header-scrolled', scrollY > 50 && 'apple-glass']">
       <!-- 左侧：圆形胶囊头像 -->
       <view class="header-avatar apple-glass-pill" @tap="handleAvatarTap">
-        <image class="avatar-img" :src="displayAvatarUrl" mode="aspectFill" @error="onAvatarError" />
+        <image class="avatar-img" :src="displayAvatarUrl" alt="头像" mode="aspectFill" @error="onAvatarError" />
       </view>
       <!-- 中间：搜索框 -->
       <view class="header-search apple-glass-pill" @tap="handleSearchTap">
@@ -168,13 +168,7 @@ export default {
   align-items: center;
   height: 88rpx;
   padding: 0 28rpx;
-  /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
+  /* gap: 20rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
   background: transparent;
   pointer-events: auto;
   border-bottom: 1rpx solid transparent;
@@ -218,13 +212,7 @@ export default {
   min-height: 72rpx;
   border-radius: 999rpx;
   padding: 0 22rpx;
-  /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
+  /* gap: 12rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
   border: 1rpx solid rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
 }

@@ -153,7 +153,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import RichText from '@/components/common/RichText.vue';
+import RichText from '../RichText.vue';
 
 const props = defineProps({
   question: { type: Object, default: () => ({}) },

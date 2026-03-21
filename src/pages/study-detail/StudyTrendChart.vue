@@ -372,13 +372,7 @@ export default {
 .range-selector {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
-  margin-bottom: 24rpx;
+margin-bottom: 24rpx;
 }
 
 .range-item {
@@ -440,13 +434,7 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
-  background: rgba(255, 255, 255, 0.56);
+background: rgba(255, 255, 255, 0.56);
   border-radius: 20rpx;
   padding: 16rpx 20rpx;
   border: 1rpx solid rgba(255, 255, 255, 0.44);
@@ -468,14 +456,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 4rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 4rpx;
-  }
-
-  &.up {
+&.up {
     .trend-arrow,
     .trend-percent {
       color: var(--ds-color-success, #34c759);

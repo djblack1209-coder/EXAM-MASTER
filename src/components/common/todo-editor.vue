@@ -360,13 +360,7 @@ export default {
 
 .editor-header {
   justify-content: space-between;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
+  /* gap: 16rpx; -- removed tag-name selectors for WeChat component compat */
   margin-bottom: 20rpx;
 }
 
@@ -395,13 +389,7 @@ export default {
 }
 
 .header-actions {
-  /* gap: 14rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 14rpx;
-  }
+  /* gap: 14rpx; -- removed tag-name selectors for WeChat component compat */
 }
 
 .delete-btn,
@@ -454,13 +442,7 @@ export default {
 .input-wrapper {
   display: flex;
   align-items: center;
-  /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
+  /* gap: 12rpx; -- removed tag-name selectors for WeChat component compat */
   padding: 20rpx 22rpx;
   border-radius: 22rpx;
   background: rgba(255, 255, 255, 0.68);
@@ -487,25 +469,13 @@ export default {
 
 .priority-options {
   display: flex;
-  /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
+  /* gap: 12rpx; -- removed tag-name selectors for WeChat component compat */
 }
 
 .priority-item {
   flex: 1;
   justify-content: center;
-  /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
+  /* gap: 10rpx; -- removed tag-name selectors for WeChat component compat */
   padding: 18rpx 14rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.68);
@@ -546,25 +516,13 @@ export default {
 
 .quick-actions {
   display: flex;
-  /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
+  /* gap: 12rpx; -- removed tag-name selectors for WeChat component compat */
 }
 
 .action-item {
   flex: 1;
   justify-content: center;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
+  /* gap: 8rpx; -- removed tag-name selectors for WeChat component compat */
   padding: 18rpx 12rpx;
   border-radius: 22rpx;
   background: rgba(255, 255, 255, 0.68);
@@ -573,13 +531,7 @@ export default {
 
 .editor-footer {
   display: flex;
-  /* gap: 14rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 14rpx;
-  }
+  /* gap: 14rpx; -- removed tag-name selectors for WeChat component compat */
   margin-top: 20rpx;
 }
 

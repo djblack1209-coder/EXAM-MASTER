@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { storageService } from '@/services/storageService.js';
 
 defineProps({
@@ -24,11 +24,17 @@ defineProps({
 defineEmits(['select']);
 
 const isDark = ref(false);
+const handleThemeUpdate = (mode) => {
+  isDark.value = mode === 'dark';
+};
+
 onMounted(() => {
   isDark.value = storageService.get('theme_mode', 'light') === 'dark';
-  uni.$on('themeUpdate', (mode) => {
-    isDark.value = mode === 'dark';
-  });
+  uni.$on('themeUpdate', handleThemeUpdate);
+});
+
+onUnmounted(() => {
+  uni.$off('themeUpdate', handleThemeUpdate);
 });
 </script>
 

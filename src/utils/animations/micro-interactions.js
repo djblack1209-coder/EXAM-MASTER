@@ -5,10 +5,6 @@
  * @module utils/animations/micro-interactions
  */
 
-// Auto-animate directive for Vue (list add/remove/reorder animations)
-// Usage: <view v-auto-animate> or <view v-auto-animate="{ duration: 250 }">
-export { vAutoAnimate } from '@formkit/auto-animate/vue';
-
 // ---------------------------------------------------------------------------
 // Number counting animation
 // ---------------------------------------------------------------------------
@@ -23,7 +19,9 @@ export { vAutoAnimate } from '@formkit/auto-animate/vue';
  * @returns {{ cancel: () => void }} 返回可取消句柄
  */
 export function animateNumber(from, to, duration = 800, onUpdate) {
-  if (typeof onUpdate !== 'function') return { cancel: () => {} };
+  if (typeof onUpdate !== 'function') {
+    return { cancel: () => undefined };
+  }
 
   const start = performance.now();
   const delta = to - from;

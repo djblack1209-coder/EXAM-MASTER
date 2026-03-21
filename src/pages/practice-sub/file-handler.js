@@ -43,6 +43,8 @@ const FILE_CONFIG = {
     txt: { mime: 'text/plain', category: 'text' },
     md: { mime: 'text/markdown', category: 'text' },
     json: { mime: 'application/json', category: 'data' },
+    // Anki 牌组
+    apkg: { mime: 'application/octet-stream', category: 'data' },
     // 图片类
     jpg: { mime: 'image/jpeg', category: 'image' },
     jpeg: { mime: 'image/jpeg', category: 'image' },
@@ -66,6 +68,7 @@ const FILE_CONFIG = {
     txt: 'file',
     md: 'note',
     json: 'file',
+    apkg: 'file',
     jpg: 'file-image',
     jpeg: 'file-image',
     png: 'file-image',

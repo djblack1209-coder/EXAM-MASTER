@@ -96,18 +96,24 @@ export const useInviteStore = defineStore('invite', () => {
     inviteRewards.value = [];
   };
 
-  // 监听登出事件
-  uni.$on('user:logout', $reset);
+  // 监听登出事件（避免重复注册）
+  if (!uni.__inviteStoreLogoutBound__) {
+    uni.$on('user:logout', $reset);
+    uni.__inviteStoreLogoutBound__ = true;
+  }
 
-  // 监听恢复缓存
-  uni.$on('invite:restore', () => {
-    const cachedInviteInfo = storageService.get('invite_info', null);
-    if (cachedInviteInfo) {
-      inviteCode.value = cachedInviteInfo.code || '';
-      inviteCount.value = cachedInviteInfo.count || 0;
-      inviteRewards.value = cachedInviteInfo.rewards || [];
-    }
-  });
+  // 监听恢复缓存（避免重复注册）
+  if (!uni.__inviteStoreRestoreBound__) {
+    uni.$on('invite:restore', () => {
+      const cachedInviteInfo = storageService.get('invite_info', null);
+      if (cachedInviteInfo) {
+        inviteCode.value = cachedInviteInfo.code || '';
+        inviteCount.value = cachedInviteInfo.count || 0;
+        inviteRewards.value = cachedInviteInfo.rewards || [];
+      }
+    });
+    uni.__inviteStoreRestoreBound__ = true;
+  }
 
   return {
     inviteCode,

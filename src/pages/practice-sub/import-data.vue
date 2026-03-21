@@ -25,10 +25,10 @@
         <view>
           <text class="status-dot" :class="{ active: fileName }" />
           <text class="status-text">
-            {{ fileName ? '已加载文件，准备就绪' : '支持 PDF / Word / TXT / MD' }}
+            {{ fileName ? '已加载文件，准备就绪' : '支持 PDF / Word / TXT / MD / Anki' }}
           </text>
         </view>
-        <view class="ocr-switch" style="display: flex; align-items: center; gap: 8rpx" v-if="fileName">
+        <view v-if="fileName" class="ocr-switch" style="display: flex; align-items: center; gap: 8rpx">
           <text style="font-size: 24rpx; color: var(--text-sub)">深度OCR图表解析</text>
           <wd-switch v-model="useDeepOcr" size="20px" />
         </view>
@@ -43,6 +43,7 @@
             {{ isPickingFile ? '正在拉起文件选择...' : '选择复习资料' }}
           </text>
           <text class="upload-sub-text"> 请先将资料发送到微信聊天，再从聊天记录选择 </text>
+          <text class="upload-hint-text"> 支持 Anki (.apkg) 牌组文件，导入考研公共题库、自制卡片等 </text>
         </view>
 
         <view v-else class="file-capsule glass-morphism">
@@ -78,8 +79,8 @@
           block
           :disabled="isLooping || !fileName"
           :loading="isLooping"
-          @click="startAI"
           custom-class="apple-btn"
+          @click="startAI"
         >
           <BaseIcon name="sparkle" :size="28" style="margin-right: 8px" />
           {{ isLooping ? '智能后台生成中...' : '开始智能出题' }}
@@ -92,15 +93,15 @@
           plain
           block
           style="flex: 1"
-          @click="continueGenerating"
           custom-class="apple-btn secondary"
+          @click="continueGenerating"
         >
           <BaseIcon name="refresh" :size="28" style="margin-right: 4px" />
           <text style="font-size: 30rpx">再出一组</text>
         </wd-button>
-        <wd-button plain type="danger" block style="flex: 1" @click="clearAll" custom-class="apple-btn"
-          >清空题库</wd-button
-        >
+        <wd-button plain type="danger" block style="flex: 1" custom-class="apple-btn" @click="clearAll">
+          清空题库
+        </wd-button>
       </view>
     </view>
 
@@ -192,6 +193,7 @@
 
 <script>
 import { lafService } from '@/services/lafService.js';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import EnhancedProgress from './EnhancedProgress.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -421,7 +423,7 @@ export default {
       if (this.isPickingFile) return;
 
       // 支持的文件类型
-      const allowedTypes = ['pdf', 'doc', 'docx', 'txt', 'md', 'json'];
+      const allowedTypes = ['pdf', 'doc', 'docx', 'txt', 'md', 'json', 'apkg'];
       // 文件大小限制：10MB
       const maxSize = 10 * 1024 * 1024;
 
@@ -480,7 +482,7 @@ export default {
       const validation = fileHandler.validateFile(
         { name: fileName, size: fileSize },
         {
-          allowedTypes: ['pdf', 'doc', 'docx', 'txt', 'md', 'json'],
+          allowedTypes: ['pdf', 'doc', 'docx', 'txt', 'md', 'json', 'apkg'],
           maxSize: 10 * 1024 * 1024 // 10MB
         }
       );
@@ -515,6 +517,87 @@ export default {
         size: Math.round(fileSize / 1024),
         source: '本地文件'
       });
+
+      if (ext === 'apkg') {
+        // Anki .apkg: 读取文件并转 base64，调用后端 anki-import 云函数
+        uni.showLoading({ title: '正在解析 Anki 牌组...', mask: true });
+
+        try {
+          const fs = uni.getFileSystemManager();
+          const base64String = await new Promise((resolve, reject) => {
+            fs.readFile({
+              filePath: filePath,
+              encoding: 'base64',
+              success: (res) => resolve(res.data),
+              fail: (err) => reject(err)
+            });
+          });
+
+          // 更新状态
+          this.importStatus = 'uploading';
+
+          const response = await lafService.request(
+            '/anki-import',
+            {
+              fileData: base64String,
+              fileName: fileName
+            },
+            { timeout: 60000, maxRetries: 1 }
+          );
+
+          uni.hideLoading();
+
+          if (response.code === 0 && response.data) {
+            const result = response.data;
+            const deckName = result.deckName || fileName.replace('.apkg', '');
+            const cardCount = result.cardCount || 0;
+
+            // 保存导入的题目到本地题库
+            if (result.questions && Array.isArray(result.questions) && result.questions.length > 0) {
+              this.saveQuestions(result.questions);
+            }
+
+            this.importStatus = 'success';
+
+            // 后台触发 RAG 索引（非阻塞，不影响用户流程）
+            if (result.bankId || result.questionBankId) {
+              lafService
+                .request('/rag-ingest', {
+                  action: 'index_questions',
+                  data: { bankId: result.bankId || result.questionBankId }
+                })
+                .catch((err) => {
+                  console.warn('[Import] RAG indexing failed (non-critical):', err);
+                });
+            }
+
+            uni.showModal({
+              title: 'Anki 牌组导入成功',
+              content: `牌组名称：${deckName}\n导入卡片：${cardCount} 张`,
+              confirmText: '立即刷题',
+              cancelText: '留在本页',
+              success: (res) => {
+                if (res.confirm) {
+                  uni.switchTab({ url: '/pages/practice/index' });
+                }
+              }
+            });
+          } else {
+            this.importStatus = 'error';
+            uni.showToast({
+              title: response.message || 'Anki 导入失败',
+              icon: 'none',
+              duration: 2500
+            });
+          }
+        } catch (err) {
+          uni.hideLoading();
+          this.importStatus = 'error';
+          logger.error('[导入资料] Anki 导入异常:', err);
+          uni.showToast({ title: 'Anki 文件解析失败，请重试', icon: 'none' });
+        }
+        return;
+      }
 
       if (['pdf', 'doc', 'docx'].includes(ext)) {
         // PDF/Word: 仅使用文件名
@@ -1152,23 +1235,14 @@ export default {
               this.stopProgressAnimation();
               this.updateUploadRecordStatus('cancelled');
 
-              uni.navigateBack({
-                fail: () => {
-                  uni.switchTab({ url: '/pages/practice/index' });
-                }
-              });
+              safeNavigateBack();
             }
           }
         });
         return;
       }
 
-      uni.navigateBack({
-        fail: () => {
-          // 如果无法返回，跳转到刷题首页
-          uni.switchTab({ url: '/pages/practice/index' });
-        }
-      });
+      safeNavigateBack();
     },
 
     // 11. 清空数据 - 修复：使用箭头函数确保 this 绑定
@@ -1772,6 +1846,13 @@ export default {
   color: var(--text-tertiary);
 }
 
+.upload-hint-text {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-top: 8rpx;
+  opacity: 0.7;
+}
+
 /* --- 操作区：文件胶囊 --- */
 .file-capsule {
   display: flex;
@@ -1869,12 +1950,6 @@ export default {
 .action-row {
   display: flex;
   /* gap: 15px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 15px;
-  }
 }
 
 .main-row {
@@ -2212,12 +2287,6 @@ export default {
   align-items: center;
   justify-content: space-between;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
   z-index: 9000;
 }
 
@@ -2225,12 +2294,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4px;
-  }
 }
 
 .pause-title {
@@ -2325,12 +2388,6 @@ export default {
   display: flex;
   justify-content: space-between;
   /* gap: 15px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 15px;
-  }
 }
 
 /* 按钮升级 */
@@ -2432,12 +2489,6 @@ export default {
   display: flex;
   justify-content: space-between;
   /* gap: 15px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 15px;
-  }
 }
 
 .progress-wrapper {

@@ -41,7 +41,7 @@
       <view class="qr-preview">
         <image
           :src="qrCodeUrl || '/static/images/logo.png'"
-          mode="aspectFit"
+          alt="Exam Master" mode="aspectFit"
           style="width: 100px; height: 100px"
           @error="
             (e) => {

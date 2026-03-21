@@ -75,7 +75,7 @@
       <template v-if="!isPageLoading">
         <!-- 院校头部卡片 -->
         <view class="glass-card school-header-card">
-          <image class="school-logo" :src="schoolInfo.logo || '/static/images/default-avatar.png'" mode="aspectFit" />
+          <image class="school-logo" :src="schoolInfo.logo || '/static/images/default-avatar.png'" alt="Exam Master" mode="aspectFit" />
           <view class="header-main">
             <text class="school-name">
               {{ schoolInfo.name || '加载中...' }}
@@ -220,6 +220,7 @@
 
 <script>
 import { lafService } from '@/services/lafService.js';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import config from '@/config/index.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -614,7 +615,7 @@ export default {
       }
     },
     navBack() {
-      uni.navigateBack();
+      safeNavigateBack();
     },
     handleShare() {
       // #ifdef MP-WEIXIN
@@ -1009,12 +1010,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
 }
 .tag-row text {
   font-size: 20rpx;
@@ -1042,12 +1037,6 @@ export default {
 .stats-grid {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
   margin-bottom: 30rpx;
 }
 .stat-item {
@@ -1144,12 +1133,6 @@ export default {
 .action-container {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
   margin-bottom: 0;
   padding: 20rpx;
   background:
@@ -1170,12 +1153,6 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
   border: 1rpx solid rgba(255, 255, 255, 0.5);
   box-shadow: var(--apple-shadow-surface);
 }
@@ -1219,12 +1196,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
 }
 .sparkle-icon {
   font-size: 28rpx;
@@ -1407,12 +1378,6 @@ export default {
 .skeleton-stats {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
   margin-bottom: 30rpx;
 }
 

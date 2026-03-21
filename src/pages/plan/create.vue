@@ -186,6 +186,7 @@
 
 <script>
 import { storageService } from '@/services/storageService.js';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import { debounce } from '@/utils/throttle.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
@@ -372,7 +373,7 @@ export default {
         icon: 'success',
         duration: 1500,
         success: () => {
-          uni.navigateBack();
+          safeNavigateBack();
         },
         complete: () => {
           setTimeout(() => {
@@ -382,7 +383,7 @@ export default {
       });
     },
     goBack() {
-      uni.navigateBack();
+      safeNavigateBack();
     }
   }
 };
@@ -594,12 +595,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 14rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 14rpx;
-  }
 }
 
 .category-grid .pill-btn {
@@ -626,12 +621,6 @@ export default {
 .priority-selector {
   display: flex;
   /* gap: 14rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 14rpx;
-  }
 }
 
 .priority-btn {

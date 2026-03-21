@@ -87,13 +87,7 @@ export default {
 .recommendations-grid {
   display: flex;
   flex-direction: column;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
+  /* gap: 16rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
   margin-bottom: 48rpx;
 }
 
@@ -101,13 +95,7 @@ export default {
   position: relative;
   display: flex;
   align-items: center;
-  /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 20rpx;
-  }
+  /* gap: 20rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
   padding: 28rpx;
   min-height: 116rpx;
   border-radius: 28rpx;
@@ -150,13 +138,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 8rpx;
-  }
+  /* gap: 8rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
   min-width: 0;
 }
 

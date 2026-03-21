@@ -128,25 +128,13 @@ export default {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  /* gap: 32rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 32rpx;
-  }
+  /* gap: 32rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
 }
 
 .banner-text {
   display: flex;
   flex-direction: column;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
+  /* gap: 16rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
 }
 
 .welcome-title {
@@ -245,24 +233,6 @@ export default {
     padding: 32rpx;
     margin-bottom: 36rpx;
     border-radius: 28rpx;
-  }
-
-  .banner-content {
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-top: 24rpx;
-    }
-  }
-
-  .banner-text {
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-top: 12rpx;
-    }
   }
 
   .welcome-title {

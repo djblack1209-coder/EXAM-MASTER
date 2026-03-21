@@ -775,13 +775,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
-  font-weight: 600;
+font-weight: 600;
   color: var(--text-primary, var(--text-primary));
 }
 
@@ -789,13 +783,7 @@ export default {
   display: flex;
   align-items: flex-end;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 4px;
-  }
-  height: 24px;
+height: 24px;
 }
 
 .speaking-indicator .bar {
@@ -906,13 +894,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16px;
-  }
-  padding-top: 16px;
+padding-top: 16px;
   border-top: 1px solid var(--border);
 }
 
@@ -1063,12 +1045,6 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 8px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8px;
-  }
 }
 
 .emoji-item {

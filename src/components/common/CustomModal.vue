@@ -338,13 +338,7 @@ export default {
 // 按钮区域
 .modal-buttons {
   display: flex;
-  /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
+  /* gap: 20rpx; -- removed tag-name selectors for WeChat component compat */
 
   &.single {
     justify-content: center;

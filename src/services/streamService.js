@@ -174,7 +174,7 @@ async function streamH5({ action, prompt, friendType, history, emotion, onChunk,
 /**
  * 小程序降级：非流式调用 lafService
  */
-async function streamFallback({ action, prompt, friendType, history, emotion, onChunk, onDone, onError, signal }) {
+async function streamFallback({ prompt, friendType, history, emotion, onChunk, onDone, onError, signal }) {
   try {
     // 检查是否已取消
     if (signal?.aborted) return;

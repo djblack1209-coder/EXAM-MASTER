@@ -17,7 +17,7 @@
         <image
           :src="icons8('ios-glyphs', 30, 'ffffff', 'multiply')"
           style="width: 16px; height: 16px"
-          mode="aspectFit"
+          alt="" mode="aspectFit"
           @error="onCdnIconError"
         />
       </view>
@@ -29,7 +29,7 @@
           <image
             :src="icons8('ios-filled', 50, 'ffffff', 'open-book')"
             class="poster-logo"
-            mode="aspectFit"
+            alt="Exam Master" mode="aspectFit"
             @error="onCdnIconError"
           />
           <text class="poster-app-name ds-font-semibold"> Exam-Master </text>
@@ -52,14 +52,14 @@
             <image
               :src="qrCodeUrl || icons8('ios', 100, '000000', 'qr-code--v1')"
               class="qr-img"
-              mode="aspectFit"
+              alt="" mode="aspectFit"
               @error="onCdnIconError"
             />
             <view class="qr-badge">
               <image
                 :src="icons8('ios-filled', 50, '07C160', 'open-book')"
                 style="width: 16px; height: 16px"
-                mode="aspectFit"
+                alt="" mode="aspectFit"
                 @error="onCdnIconError"
               />
             </view>
@@ -492,12 +492,6 @@ const copyInviteInfo = () => {
   display: flex;
   justify-content: space-between;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
 }
 
 .action-btn {

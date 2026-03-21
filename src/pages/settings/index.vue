@@ -61,12 +61,12 @@
         <view class="avatar-section" @tap="handleAvatarClick">
           <!-- #ifdef MP-WEIXIN -->
           <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError" />
+            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" alt="头像" mode="aspectFill" @error="onAvatarError" />
           </button>
           <!-- #endif -->
           <!-- #ifndef MP-WEIXIN -->
           <view class="avatar-btn" @tap="onChooseAvatarApp">
-            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" mode="aspectFill" @error="onAvatarError" />
+            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" alt="头像" mode="aspectFill" @error="onAvatarError" />
           </view>
           <!-- #endif -->
           <view v-if="!userInfo.uid" class="login-badge"> 点击登录 </view>
@@ -129,7 +129,7 @@
                   <image
                     class="target-avatar"
                     :src="school.logo || '/static/images/default-avatar.png'"
-                    mode="aspectFill"
+                    alt="Exam Master" mode="aspectFill"
                     lazy-load
                     @error="
                       (e) => {
@@ -279,6 +279,7 @@
 <script setup>
 // Vue 原生钩子
 import { ref, onMounted, onUnmounted } from 'vue';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 // UniApp 特有钩子
 import { onShow } from '@dcloudio/uni-app';
 // F005: CustomTabbar removed — settings is not a tabBar page
@@ -402,11 +403,7 @@ const startAIChat = (tutor) => {
 };
 
 const handleGoBack = () => {
-  uni.navigateBack({
-    fail: () => {
-      uni.switchTab({ url: '/pages/profile/index' });
-    }
-  });
+  safeNavigateBack();
 };
 
 const loadData = () => {
@@ -1191,12 +1188,6 @@ const handleClosePosterModal = () => {
   align-items: center;
   margin-bottom: 16px;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16px;
-  }
 }
 
 .avatar-section {
@@ -1204,12 +1195,6 @@ const handleClosePosterModal = () => {
   flex-direction: column;
   align-items: center;
   /* gap: 6px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 6px;
-  }
   cursor: pointer;
   position: relative;
 }
@@ -1264,12 +1249,6 @@ const handleClosePosterModal = () => {
   display: flex;
   flex-direction: column;
   /* gap: 10px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 10px;
-  }
 }
 
 .nickname-input {
@@ -1476,12 +1455,6 @@ const handleClosePosterModal = () => {
   display: flex;
   align-items: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
 }
 
 .section-title {
@@ -1500,12 +1473,6 @@ const handleClosePosterModal = () => {
   display: flex;
   align-items: center;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 4px;
-  }
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
   padding: 6px 12px;
@@ -1606,12 +1573,6 @@ const handleClosePosterModal = () => {
   display: flex;
   flex-direction: column;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 10rpx;
-  }
   padding: 24rpx 28rpx;
   border-radius: 28rpx;
   background:
@@ -1659,12 +1620,6 @@ const handleClosePosterModal = () => {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
   margin-bottom: 12rpx;
 }
 .deletion-pending-icon {
@@ -1848,12 +1803,6 @@ const handleClosePosterModal = () => {
   display: flex;
   flex-direction: column;
   /* gap: 16px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16px;
-  }
 }
 
 .target-item {
@@ -1901,12 +1850,6 @@ const handleClosePosterModal = () => {
 .target-actions {
   display: flex;
   /* gap: 8px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8px;
-  }
 }
 
 .action-btn {
@@ -1938,12 +1881,6 @@ const handleClosePosterModal = () => {
   display: flex;
   align-items: center;
   /* gap: 4px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 4px;
-  }
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
   padding: 8px 16px;
@@ -1992,12 +1929,6 @@ const handleClosePosterModal = () => {
   display: flex;
   flex-direction: column;
   /* gap: 20px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 20px;
-  }
 }
 
 .skeleton-user-card {
@@ -2009,12 +1940,6 @@ const handleClosePosterModal = () => {
   display: flex;
   flex-direction: column;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12px;
-  }
 }
 
 .skeleton-entry {

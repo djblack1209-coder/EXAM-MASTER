@@ -421,13 +421,7 @@ export default {
   .actions {
     display: flex;
     /* gap: 16rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-left: 16rpx;
-    }
-  }
+}
 
   .action-btn {
     padding: 10rpx 24rpx;
@@ -464,13 +458,7 @@ export default {
     display: flex;
     align-items: center;
     /* gap: 8rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-left: 8rpx;
-    }
-    font-size: 22rpx;
+font-size: 22rpx;
     color: var(--warning);
   }
 
@@ -514,13 +502,7 @@ export default {
 .practice-actions {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
-  margin-top: 20rpx;
+margin-top: 20rpx;
 }
 
 .practice-result {
@@ -584,13 +566,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
-  padding: 16rpx 20rpx;
+padding: 16rpx 20rpx;
   margin-bottom: 20rpx;
   border-radius: 12rpx;
   background: var(--bg-secondary);

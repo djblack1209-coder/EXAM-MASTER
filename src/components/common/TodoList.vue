@@ -106,26 +106,14 @@ const handleLongPress = (item) => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
+  /* gap: 24rpx; -- removed tag-name selectors for WeChat component compat */
 }
 
 /* ==================== 待办项列表 ==================== */
 .todo-items {
   display: flex;
   flex-direction: column;
-  /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
+  /* gap: 24rpx; -- removed tag-name selectors for WeChat component compat */
 }
 
 /* ==================== 单个待办项 ==================== */
@@ -134,13 +122,7 @@ const handleLongPress = (item) => {
   overflow: hidden;
   display: flex;
   align-items: center;
-  /* gap: 24rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 24rpx;
-  }
+  /* gap: 24rpx; -- removed tag-name selectors for WeChat component compat */
   padding: 32rpx;
   border-radius: 28rpx;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

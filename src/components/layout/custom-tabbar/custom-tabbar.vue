@@ -29,8 +29,8 @@
         @tap="switchTab(item.path, index)"
       >
         <view class="icon-wrapper">
-          <image v-if="resolvedActiveIndex === index" :src="item.selectedIcon" class="tab-icon" mode="aspectFit" />
-          <image v-else :src="item.icon" class="tab-icon" mode="aspectFit" />
+          <image v-if="resolvedActiveIndex === index" :src="item.selectedIcon" class="tab-icon" alt="" mode="aspectFit" />
+          <image v-else :src="item.icon" class="tab-icon" alt="" mode="aspectFit" />
           <view v-if="item.showDot" class="red-dot" />
         </view>
         <text class="tab-label">
@@ -59,7 +59,9 @@ function getUniApi() {
 
 function fallbackRouteJump(url) {
   // #ifdef H5
-  `;
+  if (typeof location !== 'undefined' && url) {
+    const normalized = url.startsWith('/') ? url : `/${url}`;
+    location.hash = `#${normalized}`;
     return true;
   }
   // #endif
@@ -84,7 +86,12 @@ function getCurrentRoutePath() {
     }
   }
   // #ifdef H5
-  
+  if (typeof location !== 'undefined') {
+    const hashPath = location.hash.replace(/^#/, '');
+    if (hashPath) {
+      return hashPath.startsWith('/') ? hashPath : `/${hashPath}`;
+    }
+  }
   // #endif
   return '/pages/index/index';
 }
