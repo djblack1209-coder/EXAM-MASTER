@@ -13,7 +13,7 @@
 
 import { ref } from 'vue';
 import { streamChat } from '@/services/streamService.js';
-import { useTypewriter } from './useTypewriter.js';
+import { useTypewriter } from '@/pages/chat/composables/useTypewriter.js';
 
 /**
  * @param {Object} [options]

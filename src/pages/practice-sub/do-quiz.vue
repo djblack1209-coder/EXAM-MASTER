@@ -454,7 +454,7 @@ import {
   bindGamificationEvents
 } from './quiz-gamification-bridge.js';
 // ✅ AI 打字机效果
-import { useTypewriter } from '@/composables/useTypewriter.js';
+import { useTypewriter } from './composables/useTypewriter.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { lafService } from '@/services/lafService.js';

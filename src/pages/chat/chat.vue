@@ -9,12 +9,19 @@
       <image
         :src="icons8('ios-glyphs', 30, '333333', 'chevron-left')"
         class="back-icon"
-        alt="返回" mode="aspectFit"
+        alt="返回"
+        mode="aspectFit"
         @tap="goBack"
         @error="onCdnIconError"
       />
       <view class="nav-center" hover-class="item-hover" @tap="showFriendSelector = true">
-        <image :src="currentFriend.avatar" class="friend-avatar-small" alt="头像" mode="aspectFill" @error="onAvatarError" />
+        <image
+          :src="currentFriend.avatar"
+          class="friend-avatar-small"
+          alt="头像"
+          mode="aspectFill"
+          @error="onAvatarError"
+        />
         <text class="nav-title">
           {{ currentFriend.name }}
         </text>
@@ -23,7 +30,8 @@
       <image
         :src="icons8('ios', 50, '333333', 'menu--v1')"
         class="menu-icon"
-        alt="" mode="aspectFit"
+        alt=""
+        mode="aspectFit"
         @tap="showMenu"
         @error="onCdnIconError"
       />
@@ -45,7 +53,14 @@
             hover-class="item-hover"
             @tap="selectFriend(friend)"
           >
-            <image :src="friend.avatar" class="friend-avatar" alt="头像" mode="aspectFill" lazy-load @error="onAvatarError" />
+            <image
+              :src="friend.avatar"
+              class="friend-avatar"
+              alt="头像"
+              mode="aspectFill"
+              lazy-load
+              @error="onAvatarError"
+            />
             <view class="friend-info">
               <text class="friend-name">
                 {{ friend.name }}
@@ -138,7 +153,8 @@
           <image
             :src="icons8('color', 96, '', 'user-male-circle--v1')"
             class="avatar"
-            alt="头像" mode="aspectFill"
+            alt="头像"
+            mode="aspectFill"
             @error="onAvatarError"
           />
         </template>
@@ -192,14 +208,16 @@
         <image
           :src="icons8('ios', 50, '666666', 'happy--v1')"
           class="tool-icon"
-          alt="" mode="aspectFit"
+          alt=""
+          mode="aspectFit"
           @tap="toggleEmotionTags"
           @error="onCdnIconError"
         />
         <image
           :src="isRecording ? icons8('ios', 50, 'FF3B30', 'microphone') : icons8('ios', 50, '666666', 'microphone')"
           class="tool-icon"
-          alt="" mode="aspectFit"
+          alt=""
+          mode="aspectFit"
           @touchstart="startRecording"
           @touchend="stopRecording"
           @touchcancel="stopRecording"
@@ -212,7 +230,8 @@
               : icons8('ios', 50, '666666', 'lightning-bolt')
           "
           class="tool-icon"
-          alt="" mode="aspectFit"
+          alt=""
+          mode="aspectFit"
           @tap="toggleRealtimeMode"
           @error="onCdnIconError"
         />
@@ -257,7 +276,7 @@ import { realtimeAnswer } from './ai-router.js';
 // 外部 CDN 配置
 import config from '@/config';
 // ✅ AI 打字机效果
-import { useTypewriter } from '@/composables/useTypewriter.js';
+import { useTypewriter } from './composables/useTypewriter.js';
 
 // icons8 图标 URL 生成器（集中管理，便于替换或自建）
 const icons8 = (style, size, color, name) =>
