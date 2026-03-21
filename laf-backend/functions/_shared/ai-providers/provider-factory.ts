@@ -211,6 +211,26 @@ const PROVIDER_CONFIGS: Record<string, { url: string; model: string }> = {
   siliconflow: {
     url: process.env.SILICONFLOW_API_URL || 'https://apis.iflow.cn/v1/chat/completions',
     model: 'Qwen/Qwen2.5-7B-Instruct'
+  },
+  // NVIDIA NIM — 免费 1000 credits/月，支持 OpenAI 兼容接口
+  nvidia: {
+    url: 'https://integrate.api.nvidia.com/v1/chat/completions',
+    model: 'meta/llama-3.3-70b-instruct'
+  },
+  // 火山引擎 豆包 — 按量计费，价格极低
+  volcengine: {
+    url: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+    model: 'doubao-1-5-lite-32k-250115'
+  },
+  // Cohere — 免费 1000 req/月 trial
+  cohere: {
+    url: 'https://api.cohere.com/v2/chat',
+    model: 'command-r-plus-08-2024'
+  },
+  // 硅基流动官方 API（与 iflow 互备）
+  siliconflow_official: {
+    url: 'https://api.siliconflow.cn/v1/chat/completions',
+    model: 'Qwen/Qwen2.5-7B-Instruct'
   }
 };
 
@@ -231,13 +251,16 @@ export function getProvider(providerName?: string): AIProvider {
   // 自动轮询模式：从号池中选择可用的provider
   if (name === 'auto') {
     const pool = [
-      { name: 'siliconflow', key: process.env.SILICONFLOW_API_KEY_1 },
-      { name: 'groq', key: process.env.GROQ_API_KEY },
-      { name: 'gemini', key: process.env.GEMINI_API_KEY },
-      { name: 'openrouter', key: process.env.OPENROUTER_API_KEY },
-      { name: 'cerebras', key: process.env.CEREBRAS_API_KEY },
-      { name: 'mistral', key: process.env.MISTRAL_API_KEY },
-      { name: 'manus', key: process.env.MANUS_API_KEY },
+      { name: 'siliconflow', key: process.env.SILICONFLOW_API_KEY_1 }, // 无限额度
+      { name: 'nvidia', key: process.env.NVIDIA_API_KEY }, // 1000 credits/月
+      { name: 'groq', key: process.env.GROQ_API_KEY }, // 30 req/min free
+      { name: 'gemini', key: process.env.GEMINI_API_KEY }, // 15 req/min free
+      { name: 'cerebras', key: process.env.CEREBRAS_API_KEY }, // 60 req/min free
+      { name: 'openrouter', key: process.env.OPENROUTER_API_KEY }, // $5 free credits
+      { name: 'mistral', key: process.env.MISTRAL_API_KEY }, // 1 req/sec free
+      { name: 'volcengine', key: process.env.VOLCENGINE_API_KEY }, // 按量极低价
+      { name: 'siliconflow_official', key: process.env.SILICONFLOW_OFFICIAL_API_KEY }, // 官方备用
+      { name: 'manus', key: process.env.MANUS_API_KEY }, // 付费
       { name: 'zhipu', key: process.env.AI_PROVIDER_KEY_PLACEHOLDER
     ].filter((p) => p.key);
 
