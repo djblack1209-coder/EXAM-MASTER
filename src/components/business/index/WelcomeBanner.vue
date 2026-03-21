@@ -6,9 +6,12 @@
 
     <view class="banner-content">
       <view class="banner-text">
-        <text class="welcome-title"> 欢迎回来，{{ userName }}！ </text>
+        <text class="welcome-title"> {{ greeting }}，{{ userName }}！ </text>
+        <text v-if="examCountdown > 0" class="welcome-countdown">
+          距离考研还有 <text class="highlight-text"> {{ examCountdown }} 天 </text>
+        </text>
         <text class="welcome-subtitle">
-          你有 <text class="highlight-text"> {{ finishedCount }} 道题目 </text> 待复习。继续保持学习势头！
+          你有 <text class="highlight-text"> {{ finishedCount }} 道题目 </text> 待复习。继续保持！
         </text>
       </view>
       <view class="banner-actions">
@@ -43,7 +46,30 @@ export default {
     userName: { type: String, default: '小伙伴' },
     finishedCount: { type: Number, default: 0 }
   },
-  emits: ['nav-to-practice', 'nav-to-mock-exam']
+  emits: ['nav-to-practice', 'nav-to-mock-exam'],
+  computed: {
+    greeting() {
+      const h = new Date().getHours();
+      if (h < 6) return '夜深了';
+      if (h < 9) return '早上好';
+      if (h < 12) return '上午好';
+      if (h < 14) return '中午好';
+      if (h < 18) return '下午好';
+      return '晚上好';
+    },
+    examCountdown() {
+      try {
+        // 考研日期：每年12月最后一个周末，简化为12月25日
+        const now = new Date();
+        const examYear = now.getFullYear();
+        const examDate = new Date(examYear, 11, 25);
+        if (now > examDate) examDate.setFullYear(examYear + 1);
+        return Math.ceil((examDate - now) / 86400000);
+      } catch (_e) {
+        return 0;
+      }
+    }
+  }
 };
 </script>
 
@@ -149,6 +175,13 @@ export default {
   font-size: 28rpx;
   color: var(--text-sub);
   line-height: 1.58;
+}
+
+.welcome-countdown {
+  font-size: 26rpx;
+  color: var(--text-sub);
+  display: block;
+  margin-bottom: 4rpx;
 }
 
 .banner-light .welcome-subtitle {

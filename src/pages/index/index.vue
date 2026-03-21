@@ -951,8 +951,16 @@ export default {
       // 今日答题数（用于每日目标进度环）
       try {
         const today = new Date().toISOString().split('T')[0];
-        const todayRecord = storageService.get('today_answer_count', { date: '', count: 0 });
-        this.todayQuestionCount = todayRecord.date === today ? todayRecord.count || 0 : 0;
+        // 支持两种存储格式：字符串计数或 {date, count} 对象
+        const todayAnswerDate = uni.getStorageSync('today_answer_date') || '';
+        const todayAnswerCount = parseInt(uni.getStorageSync('today_answer_count') || '0');
+        if (todayAnswerDate === today) {
+          this.todayQuestionCount = todayAnswerCount;
+        } else {
+          // 降级：尝试旧格式
+          const todayRecord = storageService.get('today_answer_count', { date: '', count: 0 });
+          this.todayQuestionCount = todayRecord.date === today ? todayRecord.count || 0 : 0;
+        }
       } catch (_e) {
         this.todayQuestionCount = 0;
       }
@@ -1084,12 +1092,20 @@ export default {
     // 加载学习热力图数据
     loadHeatmapData() {
       try {
-        const studyRecords = storageService.get('study_daily_records', {});
+        // 优先读取 study_stats（do-quiz 每次答题写入的）
+        const studyStats = storageService.get('study_stats', {});
+        if (studyStats && typeof studyStats === 'object' && Object.keys(studyStats).length > 0) {
+          this.heatmapData = studyStats;
+          return;
+        }
+        // 降级：尝试其他可能的键名
+        const studyRecords =
+          storageService.get('study_daily_records', {}) || storageService.get('daily_study_records', {});
         if (studyRecords && typeof studyRecords === 'object' && Object.keys(studyRecords).length > 0) {
           this.heatmapData = studyRecords;
           return;
         }
-        // 降级：从题库答题记录构建
+        // 最终降级：从题库答题记录构建
         const bank = storageService.get('v30_bank', []);
         const heatmap = {};
         bank.forEach((q) => {

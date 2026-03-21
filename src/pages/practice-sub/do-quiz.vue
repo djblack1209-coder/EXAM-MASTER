@@ -1200,6 +1200,16 @@ export default {
       const stats = storageService.get('study_stats', {});
       stats[today] = (stats[today] || 0) + 1;
       storageService.save('study_stats', stats);
+      // 更新今日答题计数（驱动首页每日目标环）
+      const todayCount = parseInt(uni.getStorageSync('today_answer_count') || '0');
+      const todayDate = uni.getStorageSync('today_answer_date') || '';
+      if (todayDate !== today) {
+        // 日期变更，重置计数
+        uni.setStorageSync('today_answer_count', '1');
+        uni.setStorageSync('today_answer_date', today);
+      } else {
+        uni.setStorageSync('today_answer_count', String(todayCount + 1));
+      }
     },
     formatFsrsInterval(days) {
       return formatInterval(days);
