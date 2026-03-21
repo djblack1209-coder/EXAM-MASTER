@@ -430,6 +430,7 @@ import { getReviewStats } from '@/services/fsrs-service.js';
 // ✅ [知识引擎] 智能学习推荐
 import { getNextRecommendedTopic } from '@/services/knowledge-engine.js';
 import { syncFSRSParams } from '@/services/fsrs-optimizer-client.js';
+import { smartRequestSubscription } from '@/services/subscribe-message.js';
 
 export default {
   components: {
@@ -775,6 +776,9 @@ export default {
 
     // ✅ [FSRS] 参数同步（非阻塞）
     syncFSRSParams().catch(() => {});
+
+    // 微信订阅消息：智能请求授权（每天最多一次）
+    smartRequestSubscription();
 
     // 加载学习热力图
     this.loadHeatmapData();
