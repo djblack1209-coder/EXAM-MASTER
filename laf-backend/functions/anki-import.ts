@@ -61,6 +61,7 @@ interface AnkiCard {
 interface AnkiModel {
   name: string;
   flds: Array<{ name: string; ord: number }>;
+  type: number; // 0=Standard, 1=Cloze
 }
 
 interface AnkiDeck {
@@ -310,7 +311,8 @@ function parseModels(sqlDb: any, requestId: string): Record<string, AnkiModel> {
         const m = model as any;
         models[mid] = {
           name: m.name || 'Unknown',
-          flds: Array.isArray(m.flds) ? m.flds.map((f: any) => ({ name: f.name || '', ord: f.ord ?? 0 })) : []
+          flds: Array.isArray(m.flds) ? m.flds.map((f: any) => ({ name: f.name || '', ord: f.ord ?? 0 })) : [],
+          type: m.type || 0 // 0=Standard, 1=Cloze
         };
       }
     }
@@ -453,6 +455,36 @@ function stripHtml(html: string): string {
 }
 
 /**
+ * 检测并解析 Anki Cloze 填空题
+ * Cloze 格式: {{c1::answer::hint}} 或 {{c1::answer}}
+ */
+function parseCloze(text: string): {
+  isCloze: boolean;
+  clozes: Array<{ index: number; answer: string; hint: string }>;
+  displayText: string;
+} {
+  const clozePattern = /\{\{c(\d+)::([^}]*?)(?:::([^}]*?))?\}\}/g;
+  const matches = [...text.matchAll(clozePattern)];
+
+  if (matches.length === 0) {
+    return { isCloze: false, clozes: [], displayText: text };
+  }
+
+  const clozes = matches.map((m) => ({
+    index: parseInt(m[1]),
+    answer: m[2].trim(),
+    hint: m[3]?.trim() || ''
+  }));
+
+  // 生成显示文本：将 cloze 替换为 [___] 占位符
+  const displayText = text.replace(clozePattern, (_, idx, _answer, hint) => {
+    return hint ? `[${hint}]` : `[填空${idx}]`;
+  });
+
+  return { isCloze: true, clozes, displayText };
+}
+
+/**
  * 批量构建题目文档并写入 MongoDB
  */
 async function insertQuestions(params: {
@@ -527,12 +559,32 @@ async function insertQuestions(params: {
           }
         }
 
+        // 检测 Cloze 填空题（通过模型类型或字段内容中的 cloze 语法）
+        const isClozeModel = model?.type === 1;
+        const clozeResult = parseCloze(front);
+
+        let questionType = '问答';
+        let questionContent = sanitizeString(front, 5000);
+        let questionAnswer = back;
+        let questionOptions: string[] = [];
+
+        if (clozeResult.isCloze || isClozeModel) {
+          questionType = '填空';
+          if (clozeResult.isCloze) {
+            questionContent = sanitizeString(clozeResult.displayText, 5000);
+            // 答案为所有 cloze 的内容，用分号分隔
+            questionAnswer = clozeResult.clozes.map((c) => c.answer).join('；');
+            // 将每个 cloze 的答案作为 option 存储（方便前端渲染）
+            questionOptions = clozeResult.clozes.map((c) => c.answer);
+          }
+        }
+
         const doc: Record<string, any> = {
-          question: sanitizeString(front, 5000),
-          answer: back,
+          question: questionContent,
+          answer: questionAnswer,
           analysis: back, // Anki 背面同时作为解析
-          options: [], // Anki 非选择题，无选项
-          type: '问答',
+          options: questionOptions,
+          type: questionType,
           category: cardDeckName.split('::')[0] || '综合', // Anki 子牌组用 :: 分隔
           sub_category: cardDeckName.includes('::') ? cardDeckName.split('::').slice(1).join(' > ') : null,
           difficulty: primaryCard ? inferDifficulty(primaryCard) : 'medium',

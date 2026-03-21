@@ -120,6 +120,14 @@
               :is-timer-active="!!studyTimerInterval"
               @click="handleStudyTimeClick"
             />
+
+            <!-- 学习热力图（最近 12 周） -->
+            <StudyHeatmap
+              v-if="heatmapData && Object.keys(heatmapData).length > 0"
+              :study-data="heatmapData"
+              :weeks="12"
+              class="heatmap-compact"
+            />
           </view>
 
           <!-- ✅ [知识引擎] 智能学习推荐 -->
@@ -352,6 +360,7 @@ import FormulaModal from '@/components/business/index/FormulaModal.vue';
 import WelcomeBanner from '@/components/business/index/WelcomeBanner.vue';
 import StatsGrid from '@/components/business/index/StatsGrid.vue';
 import StudyTimeCard from '@/components/business/index/StudyTimeCard.vue';
+import StudyHeatmap from '@/pages/study-detail/StudyHeatmap.vue';
 // ✅ [P0重构] KnowledgeBubbleField 已移除（首页精简）
 import ActivityList from '@/components/business/index/ActivityList.vue';
 // RecommendationsList — 已从首页移除（smart-recommend 替代）
@@ -407,6 +416,7 @@ export default {
     WelcomeBanner,
     StatsGrid,
     StudyTimeCard,
+    StudyHeatmap,
     ActivityList,
     IndexHeaderBar
   },
@@ -523,6 +533,8 @@ export default {
 
       // ✅ [闭环核心] 今日复习待复习数量
       reviewPending: 0,
+      // 学习热力图数据
+      heatmapData: {},
       // ✅ [FSRS] 本地调度统计详情
       reviewStats: { dueCount: 0, newCount: 0, learningCount: 0, overdueCount: 0 },
 
@@ -731,6 +743,9 @@ export default {
 
     // ✅ [FSRS] 参数同步（非阻塞）
     syncFSRSParams().catch(() => {});
+
+    // 加载学习热力图
+    this.loadHeatmapData();
   },
 
   onUnload() {
@@ -1032,6 +1047,31 @@ export default {
           });
       } catch (_e) {
         // 静默失败，不影响首页
+      }
+    },
+
+    // 加载学习热力图数据
+    loadHeatmapData() {
+      try {
+        const studyRecords = storageService.get('study_daily_records', {});
+        if (studyRecords && typeof studyRecords === 'object' && Object.keys(studyRecords).length > 0) {
+          this.heatmapData = studyRecords;
+          return;
+        }
+        // 降级：从题库答题记录构建
+        const bank = storageService.get('v30_bank', []);
+        const heatmap = {};
+        bank.forEach((q) => {
+          const ts = q.last_attempt_at || q.updated_at;
+          if (ts) {
+            const date = new Date(ts);
+            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            heatmap[key] = (heatmap[key] || 0) + 1;
+          }
+        });
+        this.heatmapData = heatmap;
+      } catch (_e) {
+        this.heatmapData = {};
       }
     },
 
@@ -1710,6 +1750,13 @@ export default {
   color: var(--text-secondary);
   margin-top: 6rpx;
   display: block;
+}
+
+/* 首页热力图紧凑样式 */
+.heatmap-compact {
+  margin-top: 16rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
 }
 
 /* ==================== [闭环核心] 今日复习入口 ==================== */
