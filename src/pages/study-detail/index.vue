@@ -17,7 +17,10 @@
     </view>
 
     <!-- 滚动容器 -->
-    <scroll-view class="scroll-container" scroll-y :style="{ paddingTop: navbarHeight + 'px' }" @scroll="handleScroll">
+    <scroll-view class="scroll-container" scroll-y :style="{ paddingTop: navbarHeight + 'px' }" @scroll="handleScroll"
+      refresher-enabled
+      :refresher-triggered="isRefreshing"
+      @refresherrefresh="onPullRefresh">
       <!-- 骨架屏加载状态 -->
       <view v-if="isLoading" class="skeleton-container">
         <view class="skeleton-header">
@@ -154,6 +157,7 @@ export default {
   },
   data() {
     return {
+      isRefreshing: false,
       themeStore: null,
       studyStore: null,
       isDark: false,
@@ -203,6 +207,13 @@ export default {
     uni.$off('themeUpdate', this._themeHandler);
   },
   methods: {
+    async onPullRefresh() {
+      this.isRefreshing = true;
+      try {
+        await this.loadStudyData();
+      } catch (_e) { /* silent */ }
+      this.isRefreshing = false;
+    },
     /**
      * 获取导航栏高度
      */

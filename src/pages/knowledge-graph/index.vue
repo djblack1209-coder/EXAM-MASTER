@@ -17,7 +17,14 @@
       </view>
     </view>
 
-    <scroll-view scroll-y class="page-scroll" :style="{ paddingTop: statusBarHeight + 74 + 'px' }">
+    <scroll-view
+      scroll-y
+      class="page-scroll"
+      refresher-enabled
+      :refresher-triggered="isRefreshing"
+      @refresherrefresh="onPullRefresh"
+      :style="{ paddingTop: statusBarHeight + 74 + 'px' }"
+    >
       <view class="hero-card">
         <text class="hero-eyebrow"> Knowledge Atlas </text>
         <text class="hero-title"> 用一张图看清你的掌握度、薄弱点和推进顺序 </text>
@@ -339,6 +346,7 @@ export default {
       statusBarHeight: 44,
       isDark: false,
       isLoading: true,
+      isRefreshing: false,
       activeNodeId: null,
       selectedNode: null,
       expandedChildren: [],
@@ -413,6 +421,15 @@ export default {
   },
 
   methods: {
+    async onPullRefresh() {
+      this.isRefreshing = true;
+      try {
+        await this.loadKnowledgeData();
+      } catch (_e) {
+        /* silent */
+      }
+      this.isRefreshing = false;
+    },
     summonAITutor(node) {
       if (!node) return;
       uni.showLoading({ title: 'AI 导师组卷中...' });

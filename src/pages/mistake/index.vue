@@ -23,7 +23,10 @@
       class="main-scroll"
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       @scrolltolower="loadMore"
-    >
+    
+      refresher-enabled
+      :refresher-triggered="isRefreshing"
+      @refresherrefresh="onPullRefresh">
       <!-- 统计卡片区域 -->
       <view v-if="mistakes.length > 0" class="stats-grid">
         <StatsCard title="错题总数" :value="mistakes.length" icon="note" :is-dark="isDark" />
@@ -143,6 +146,7 @@ export default {
   },
   data() {
     return {
+      isRefreshing: false,
       statusBarHeight: 44,
       capsuleSafeRight: 20,
       mistakes: [],
@@ -226,6 +230,13 @@ export default {
     this.syncPendingMistakes();
   },
   methods: {
+    async onPullRefresh() {
+      this.isRefreshing = true;
+      try {
+        await this.loadData(true);
+      } catch (_e) { /* silent */ }
+      this.isRefreshing = false;
+    },
     // 统一错题字段名，消除 wrongCount/wrong_count 等不一致
     normalizeMistakes(list) {
       return normalizeFields(list).map((item) => ({

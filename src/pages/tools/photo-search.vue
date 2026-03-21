@@ -282,6 +282,20 @@ export default {
     }
   },
 
+  onShareAppMessage() {
+    return {
+      title: 'AI 拍照搜题 - 拍一拍，秒解数学难题',
+      path: '/pages/tools/photo-search',
+      imageUrl: '/static/images/logo.png'
+    };
+  },
+  onShareTimeline() {
+    return {
+      title: 'AI 拍照搜题 - 备考神器，免费使用',
+      query: ''
+    };
+  },
+
   onLoad() {
     this.statusBarHeight = getStatusBarHeight();
     this.isDark = initTheme();

@@ -205,6 +205,20 @@ export default {
     }
   },
 
+  onShareAppMessage() {
+    return {
+      title: '免费文档格式转换 - PDF/Word/Excel 互转',
+      path: '/pages/tools/doc-convert',
+      imageUrl: '/static/images/logo.png'
+    };
+  },
+  onShareTimeline() {
+    return {
+      title: '免费文档格式转换 - 无需注册，即用即走',
+      query: ''
+    };
+  },
+
   onLoad() {
     this.statusBarHeight = getStatusBarHeight();
     this.isDark = initTheme();
@@ -713,7 +727,7 @@ export default {
       // #endif
 
       // #ifdef H5
-      uni.navigateTo({url:'/pages/webview/webview?url='+encodeURIComponent(this.resultUrl)});
+      uni.navigateTo({ url: '/pages/webview/webview?url=' + encodeURIComponent(this.resultUrl) });
       // #endif
     },
 

@@ -208,6 +208,20 @@ export default {
     };
   },
 
+  onShareAppMessage() {
+    return {
+      title: '免费证件照换底色 - 考研考公报名必备',
+      path: '/pages/tools/id-photo',
+      imageUrl: '/static/images/logo.png'
+    };
+  },
+  onShareTimeline() {
+    return {
+      title: '免费证件照换底色 - 不用下载APP，微信直接用',
+      query: ''
+    };
+  },
+
   onLoad() {
     this.statusBarHeight = getStatusBarHeight();
     this.isDark = initTheme();
