@@ -388,7 +388,7 @@ import FormulaModal from '@/components/business/index/FormulaModal.vue';
 import WelcomeBanner from '@/components/business/index/WelcomeBanner.vue';
 import StatsGrid from '@/components/business/index/StatsGrid.vue';
 import StudyTimeCard from '@/components/business/index/StudyTimeCard.vue';
-import StudyHeatmap from '@/pages/study-detail/StudyHeatmap.vue';
+import StudyHeatmap from '@/components/business/index/StudyHeatmap.vue';
 // ✅ [P0重构] KnowledgeBubbleField 已移除（首页精简）
 import ActivityList from '@/components/business/index/ActivityList.vue';
 // RecommendationsList — 已从首页移除（smart-recommend 替代）

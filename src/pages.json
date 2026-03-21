@@ -397,9 +397,7 @@
     "navigationBarBackgroundColor": "#1A1A1A",
     "backgroundColor": "#121212",
     "backgroundTextStyle": "light",
-    "enablePullDownRefresh": false,
-    "animationType": "slide-in-right",
-    "animationDuration": 300
+    "enablePullDownRefresh": false
   },
 
   "uniIdRouter": {},
