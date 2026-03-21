@@ -207,7 +207,11 @@ const PROVIDER_CONFIGS: Record<string, { url: string; model: string }> = {
   openrouter: { url: 'https://openrouter.ai/api/v1/chat/completions', model: 'google/gemini-2.0-flash-exp:free' },
   cerebras: { url: 'https://api.cerebras.ai/v1/chat/completions', model: 'llama-3.3-70b' },
   mistral: { url: 'https://api.mistral.ai/v1/chat/completions', model: 'mistral-small-latest' },
-  manus: { url: 'https://api.manus.im/v1/chat/completions', model: 'gpt-4o-mini' }
+  manus: { url: 'https://api.manus.im/v1/chat/completions', model: 'gpt-4o-mini' },
+  siliconflow: {
+    url: process.env.SILICONFLOW_API_URL || 'https://apis.iflow.cn/v1/chat/completions',
+    model: 'Qwen/Qwen2.5-7B-Instruct'
+  }
 };
 
 // 号池轮询索引
@@ -227,6 +231,7 @@ export function getProvider(providerName?: string): AIProvider {
   // 自动轮询模式：从号池中选择可用的provider
   if (name === 'auto') {
     const pool = [
+      { name: 'siliconflow', key: process.env.SILICONFLOW_API_KEY_1 },
       { name: 'groq', key: process.env.GROQ_API_KEY },
       { name: 'gemini', key: process.env.GEMINI_API_KEY },
       { name: 'openrouter', key: process.env.OPENROUTER_API_KEY },
