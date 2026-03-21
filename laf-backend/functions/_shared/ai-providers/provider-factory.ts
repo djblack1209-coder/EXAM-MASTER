@@ -231,6 +231,11 @@ const PROVIDER_CONFIGS: Record<string, { url: string; model: string }> = {
   siliconflow_official: {
     url: 'https://api.siliconflow.cn/v1/chat/completions',
     model: 'Qwen/Qwen2.5-7B-Instruct'
+  },
+  // GPT_API_free — 免费 GPT-3.5 访问（chatanywhere 项目）
+  gpt_api_free: {
+    url: 'https://api.chatanywhere.tech/v1/chat/completions',
+    model: 'gpt-3.5-turbo'
   }
 };
 
@@ -260,6 +265,7 @@ export function getProvider(providerName?: string): AIProvider {
       { name: 'mistral', key: process.env.MISTRAL_API_KEY }, // 1 req/sec free
       { name: 'volcengine', key: process.env.VOLCENGINE_API_KEY }, // 按量极低价
       { name: 'siliconflow_official', key: process.env.SILICONFLOW_OFFICIAL_API_KEY }, // 官方备用
+      { name: 'gpt_api_free', key: process.env.GPT_API_FREE_KEY }, // GPT-3.5 200req/天
       { name: 'manus', key: process.env.MANUS_API_KEY }, // 付费
       { name: 'zhipu', key: process.env.AI_PROVIDER_KEY_PLACEHOLDER
     ].filter((p) => p.key);
