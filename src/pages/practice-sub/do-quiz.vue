@@ -68,7 +68,18 @@
               : { transition: 'transform 0.3s ease' }
         "
       >
-        <view v-if="currentQuestion" class="glass-card question-card">
+        <view
+          v-if="currentQuestion"
+          :class="[
+            'glass-card',
+            'question-card',
+            {
+              'card-answered': showResult,
+              'card-correct': showResult && resultStatus === 'correct',
+              'card-wrong': showResult && resultStatus === 'wrong'
+            }
+          ]"
+        >
           <view class="q-header">
             <view class="q-tag">
               {{ currentQuestion.type || '单选题' }}
@@ -2068,6 +2079,72 @@ export default {
   line-height: 1.5;
   overflow: hidden;
   max-height: 80rpx;
+}
+
+/* 3D 卡片翻转效果 */
+.question-container {
+  perspective: 1200rpx;
+}
+
+.question-card {
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.question-card.card-answered {
+  animation: cardFlipPulse 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.question-card.card-correct {
+  animation:
+    cardFlipPulse 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+    correctGlow 0.6s ease-out;
+}
+
+.question-card.card-wrong {
+  animation:
+    cardFlipPulse 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+    wrongGlow 0.6s ease-out;
+}
+
+@keyframes cardFlipPulse {
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+  30% {
+    transform: rotateY(12deg) scale(0.97);
+  }
+  60% {
+    transform: rotateY(-6deg) scale(1.01);
+  }
+  100% {
+    transform: rotateY(0deg) scale(1);
+  }
+}
+
+@keyframes correctGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40rpx 10rpx rgba(52, 199, 89, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0);
+  }
+}
+
+@keyframes wrongGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 40rpx 10rpx rgba(255, 59, 48, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+  }
 }
 
 /* 题目卡片 */
