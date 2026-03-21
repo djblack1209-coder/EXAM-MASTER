@@ -1,7 +1,10 @@
 <template>
   <view class="splash-container">
     <view class="content-wrapper">
-      <image class="logo-icon" src="./static/logo.png" alt="Exam Master" mode="aspectFit" />
+      <view class="logo-wrapper">
+        <view class="splash-pulse-ring"></view>
+        <image class="logo-icon" src="./static/logo.png" alt="Exam Master" mode="aspectFit" />
+      </view>
 
       <text class="app-name"> Exam-Master </text>
 
@@ -163,6 +166,68 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+/* ===== Splash 品牌入场动画 ===== */
+@keyframes splashLogoEnter {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes splashTextEnter {
+  0% {
+    transform: translateY(40rpx);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes splashPulseRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+}
+
+@keyframes splashStreakEnter {
+  0% {
+    transform: translateY(20rpx) scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes splashDotsEnter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 /* 全局容器 */
 .splash-container {
   position: fixed;
@@ -171,33 +236,54 @@ onBeforeUnmount(() => {
   width: 100vw;
   height: 100%;
   height: 100vh;
-  background-color: var(--primary);
+  background: linear-gradient(180deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 85%, #000) 100%);
   overflow: hidden;
-  transition: background-color 0.3s;
+  transition: background 0.3s;
 }
 
 .splash-container.dark-mode {
-  background-color: var(--bg-page);
+  background: linear-gradient(180deg, #0b0b0f 0%, #111118 50%, #0a1a0f 100%);
 }
 
 /* 1. 内容区域 */
 .content-wrapper {
   position: absolute;
-  top: 32%; /* 稍微下移，符合原图比例 */
+  top: 32%;
   left: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 50; /* 最高层级 */
+  z-index: 50;
+}
+
+/* Logo 包裹层 — 用于定位脉冲环 */
+.logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  /* 入场动画 */
+  animation: splashLogoEnter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+
+/* 脉冲光环 */
+.splash-pulse-ring {
+  position: absolute;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  border: 4rpx solid var(--primary-foreground, #fff);
+  opacity: 0;
+  animation: splashPulseRing 2s ease-in-out 0.6s infinite;
 }
 
 .logo-icon {
   width: 100px;
   height: 100px;
-  margin-bottom: 16px;
-  /* 增加微弱的深色投影，让白色图标从绿色背景浮出来 */
-  filter: drop-shadow(0 4px 0px rgba(0, 0, 0, 0.15));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
 }
 
 .app-name {
@@ -205,17 +291,22 @@ onBeforeUnmount(() => {
   font-weight: 700;
   color: var(--primary-foreground);
   letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* 入场动画：延迟 0.2s */
+  opacity: 0;
+  animation: splashTextEnter 0.5s ease-out 0.2s forwards;
 }
 
 .splash-greeting {
   font-size: 28rpx;
   color: var(--primary-foreground);
-  opacity: 0.85;
   margin-top: 12px;
   letter-spacing: 1rpx;
+  /* 入场动画：延迟 0.4s */
+  opacity: 0;
+  animation: splashTextEnter 0.5s ease-out 0.4s forwards;
 }
 
 .streak-preview {
@@ -227,6 +318,9 @@ onBeforeUnmount(() => {
   border-radius: 32rpx;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  /* 入场动画：延迟 0.55s */
+  opacity: 0;
+  animation: splashStreakEnter 0.5s ease-out 0.55s forwards;
 }
 
 .streak-flame {
@@ -243,8 +337,11 @@ onBeforeUnmount(() => {
 .loading-dots {
   display: flex;
   margin-top: 24px;
-  /* gap: 8px; -- replaced for Android WebView compat */
-.dot {
+  /* 入场动画：延迟 0.7s，与品牌元素错开 */
+  opacity: 0;
+  animation: splashDotsEnter 0.4s ease-out 0.7s forwards;
+
+  .dot {
     width: 8px;
     height: 8px;
     background-color: var(--primary-foreground);
@@ -252,6 +349,10 @@ onBeforeUnmount(() => {
     opacity: 0.6;
     animation: blink 1.5s infinite ease-in-out both;
     box-shadow: 0 0 12px var(--brand-glow);
+  }
+
+  .dot + .dot {
+    margin-left: 8px;
   }
 
   .dot:nth-child(1) {
