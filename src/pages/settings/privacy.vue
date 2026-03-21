@@ -27,7 +27,7 @@
             2. 学习数据：您的刷题记录、错题本、收藏、学习计划等，用于提供个性化学习服务。
           </text>
           <text class="section-text"> 3. 设备信息：设备型号、操作系统版本、屏幕分辨率，用于适配显示和优化性能。 </text>
-          <text class="section-text"> 4. 相机与相册：仅在您主动使用拍照搜题、证件照制作或更换头像功能时调用。 </text>
+          <text class="section-text"> 4. 相机与相册：仅在您主动使用拍照搜题或更换头像功能时调用。 </text>
           <text class="section-text"> 5. 麦克风：仅在您主动使用智能语音对话功能时调用。 </text>
           <text class="section-text"> 6. 剪贴板：仅在您主动复制分享内容或题目信息时使用。 </text>
         </view>
@@ -91,6 +91,7 @@
 
 <script>
 import { storageService } from '@/services/storageService.js';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 export default {
   data() {
     return {
@@ -103,7 +104,7 @@ export default {
   },
   methods: {
     goBack() {
-      uni.navigateBack({ delta: 1 });
+      safeNavigateBack();
     }
   }
 };

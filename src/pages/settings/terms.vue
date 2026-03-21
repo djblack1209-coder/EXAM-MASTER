@@ -93,6 +93,7 @@
 
 <script>
 import { storageService } from '@/services/storageService.js';
+import { safeNavigateBack } from '@/utils/safe-navigate';
 export default {
   data() {
     return {
@@ -105,7 +106,7 @@ export default {
   },
   methods: {
     goBack() {
-      uni.navigateBack({ delta: 1 });
+      safeNavigateBack();
     }
   }
 };

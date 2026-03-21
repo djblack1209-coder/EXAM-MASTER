@@ -647,13 +647,7 @@ export default {
       display: flex;
       align-items: center;
       /* gap: 8rpx; -- replaced for Android WebView compat */
-      & > view + view,
-      & > text + text,
-      & > view + text,
-      & > text + view {
-        margin-left: 8rpx;
-      }
-      padding: 8rpx 16rpx;
+padding: 8rpx 16rpx;
       border-radius: 20rpx;
       background: var(--danger-light);
       transition: all 0.2s;
@@ -701,14 +695,7 @@ export default {
   padding: 10rpx;
   border-radius: 20rpx;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
-
-  .mode-item {
+.mode-item {
     flex: 1;
     padding: 20rpx 40rpx;
     border-radius: 20rpx;
@@ -777,13 +764,7 @@ export default {
     align-items: center;
     justify-content: center;
     /* gap: 12rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-left: 12rpx;
-    }
-    padding: 24rpx 64rpx;
+padding: 24rpx 64rpx;
     background: var(--cta-primary-bg);
     color: var(--cta-primary-text);
     border-radius: 50rpx;
@@ -805,13 +786,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 20rpx;
-  }
-  padding: 24rpx 30rpx;
+padding: 24rpx 30rpx;
   margin: 0 0 30rpx 0;
   background: var(--theme-primary-light);
   border: 1rpx solid var(--brand-glow);
@@ -827,13 +802,7 @@ export default {
     display: flex;
     flex-direction: column;
     /* gap: 6rpx; -- replaced for Android WebView compat */
-    & > view + view,
-    & > text + text,
-    & > view + text,
-    & > text + view {
-      margin-top: 6rpx;
-    }
-  }
+}
 
   .review-title {
     font-size: 28rpx;
@@ -877,13 +846,7 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10rpx;
-  }
-  font-size: 28rpx;
+font-size: 28rpx;
   box-shadow: var(--shadow-lg);
   z-index: 99;
 }
@@ -911,13 +874,7 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12rpx;
-  }
-  transition: all 0.2s;
+transition: all 0.2s;
   box-shadow: var(--shadow-sm);
 }
 
@@ -1025,13 +982,7 @@ export default {
 .review-filter-bar {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
-  padding: 0 30rpx;
+padding: 0 30rpx;
   margin-bottom: 24rpx;
 }
 

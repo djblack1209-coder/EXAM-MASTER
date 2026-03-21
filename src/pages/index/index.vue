@@ -70,13 +70,19 @@
             <text class="resume-banner-arrow">›</text>
           </view>
 
-          <!-- ✅ [P0重构] 今日复习强入口 — 从底部提升到首屏核心位置 -->
-          <view v-if="reviewPending > 0 && !isNewUser" class="review-banner apple-glass-card" @tap="goSmartReview">
+          <!-- ✅ [P0重构] 今日复习强入口 — FSRS 本地调度驱动 -->
+          <view v-if="!isNewUser" class="review-banner apple-glass-card" @tap="goSmartReview">
             <view class="review-banner-left">
-              <text class="review-banner-icon">🔥</text>
+              <text class="review-banner-icon">{{ reviewPending > 0 ? '🔥' : '✅' }}</text>
               <view class="review-banner-info">
                 <text class="review-banner-title">今日复习</text>
-                <text class="review-banner-sub">{{ reviewPending }} 题待复习，AI 已安排好顺序</text>
+                <text class="review-banner-sub">{{
+                  reviewPending > 0
+                    ? reviewPending +
+                      ' 题待复习' +
+                      (reviewStats.overdueCount > 0 ? '，' + reviewStats.overdueCount + ' 题已逾期' : '')
+                    : '所有复习已完成！'
+                }}</text>
               </view>
             </view>
             <text class="review-banner-arrow">›</text>
@@ -95,44 +101,49 @@
             @tutorial="handleTutorial"
           />
 
-          <!-- 统计卡片网格 -->
-          <StatsGrid
-            :is-dark="isDark"
-            :total-questions="realTotalQuestions"
-            :accuracy="realAccuracy"
-            :study-days="realStudyDays"
-            :achievement-count="achievementCount"
-            @stat-click="handleStatClick"
-          />
+          <!-- 今日数据一览 -->
+          <view v-if="!isNewUser" class="today-dashboard">
+            <!-- 统计卡片网格 -->
+            <StatsGrid
+              :is-dark="isDark"
+              :total-questions="realTotalQuestions"
+              :accuracy="realAccuracy"
+              :study-days="realStudyDays"
+              :achievement-count="achievementCount"
+              @stat-click="handleStatClick"
+            />
 
-          <!-- 今日学习时长卡片 -->
-          <StudyTimeCard
-            :is-dark="isDark"
-            :formatted-time="formatStudyTime(todayStudyTime)"
-            :is-timer-active="!!studyTimerInterval"
-            @click="handleStudyTimeClick"
-          />
+            <!-- 今日学习时长卡片 -->
+            <StudyTimeCard
+              :is-dark="isDark"
+              :formatted-time="formatStudyTime(todayStudyTime)"
+              :is-timer-active="!!studyTimerInterval"
+              @click="handleStudyTimeClick"
+            />
+          </view>
 
-          <!-- 概况气泡场 -->
-          <KnowledgeBubbleField
-            :is-dark="isDark"
-            :knowledge-points="knowledgePoints"
-            :animating-bubble-id="animatingBubbleId"
-            @knowledge-click="handleKnowledgeClick"
-          />
+          <!-- ✅ [知识引擎] 智能学习推荐 -->
+          <view v-if="recommendedTopic && !isNewUser" class="smart-recommend apple-glass-card" @tap="goSmartReview">
+            <view class="smart-recommend-header">
+              <text class="smart-recommend-icon">🎯</text>
+              <text class="smart-recommend-title">推荐学习</text>
+            </view>
+            <text class="smart-recommend-name">{{ recommendedTopic.knowledgePoint }}</text>
+            <text class="smart-recommend-reason">{{ recommendedTopic.reason }}</text>
+          </view>
 
-          <!-- 学习轨迹 -->
-          <ActivityList :is-dark="isDark" :activities="recentActivities" @view-all="navToStudyDetail" />
+          <!-- 学习轨迹（限显3条） -->
+          <ActivityList :is-dark="isDark" :activities="recentActivities.slice(0, 3)" @view-all="navToStudyDetail" />
 
-          <!-- 个性化推荐 -->
-          <RecommendationsList
+          <!-- [首页精简] 个性化推荐 — 已合并到智能推荐卡片，注释隐藏 -->
+          <!-- <RecommendationsList
             :is-dark="isDark"
             :recommendations="personalizedRecommendations"
             @recommendation-click="handleRecommendationClick"
-          />
+          /> -->
 
-          <!-- ✅ [P0重构] 拍照搜题保留为快捷入口（核心学习工具），其余工具降级 -->
-          <view class="quick-tool-row">
+          <!-- [首页精简] 拍照搜题快捷入口 — 可从工具页访问，注释隐藏 -->
+          <!-- <view class="quick-tool-row">
             <view
               id="e2e-home-tool-photo-search"
               :class="['quick-tool-entry', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
@@ -151,10 +162,10 @@
               </view>
               <text class="tool-arrow"> › </text>
             </view>
-          </view>
+          </view> -->
 
-          <!-- 待办事项清单 -->
-          <view class="section-header section-header-apple">
+          <!-- [首页精简] 待办事项清单 — 可从个人中心访问，注释隐藏 -->
+          <!-- <view class="section-header section-header-apple">
             <text class="section-title"> 待办事项 </text>
             <view id="e2e-home-edit-plan" class="edit-plan-btn apple-glass-pill" @tap="handleEditPlan">
               <view class="edit-icon">
@@ -163,10 +174,9 @@
               <text class="edit-text"> 编辑计划 </text>
             </view>
           </view>
-          <TodoList :todos="todos" :is-dark="isDark" @toggle-todo="handleToggleTodo" @edit-todo="openTodoEditor" />
+          <TodoList :todos="todos" :is-dark="isDark" @toggle-todo="handleToggleTodo" @edit-todo="openTodoEditor" /> -->
 
-          <!-- 每日金句 -->
-          <DailyQuoteCard :is-dark="isDark" :quote="dailyQuote" @open-poster="openQuotePoster" />
+          <!-- ✅ [P0重构] DailyQuoteCard 已移除，首页精简 -->
         </view>
         <!-- 内容包装器结束 -->
 
@@ -198,15 +208,7 @@
       <!-- 公式定理弹窗 -->
       <FormulaModal :visible="showFormulaModal" :formula-list="formulaList" @close="showFormulaModal = false" />
 
-      <!-- 每日金句海报弹窗 -->
-      <QuotePosterModal
-        :visible="showQuotePoster"
-        :quote="dailyQuote"
-        :author="quoteAuthor"
-        :is-dark="isDark"
-        @close="showQuotePoster = false"
-        @save="saveQuotePoster"
-      />
+      <!-- ✅ [P0重构] QuotePosterModal 已移除，首页精简 -->
 
       <!-- ✅ 自定义弹窗：题库为空 -->
       <CustomModal
@@ -317,8 +319,8 @@
         @share="handleQuoteShare"
       />
 
-      <!-- ✅ 检查点1.3: 待办事项编辑器 -->
-      <TodoEditor
+      <!-- [首页精简] 待办事项编辑器 — 随 TodoList 一起隐藏 -->
+      <!-- <TodoEditor
         :visible="showTodoEditor"
         :todo-data="editingTodo"
         :is-dark="isDark"
@@ -326,7 +328,7 @@
         @save="handleTodoSave"
         @delete="handleTodoDelete"
         @toggle="handleToggleTodo"
-      />
+      /> -->
     </view>
 
     <!-- ✅ P3: 离线状态指示器 -->
@@ -339,23 +341,22 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { lafService } from '@/services/lafService.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import BaseSkeleton from '@/components/base/base-skeleton/base-skeleton.vue';
-import TodoList from '@/components/common/TodoList.vue';
+// TodoList, TodoEditor — 已从首页模板移除，通过 profile 页访问
 import EmptyState from '@/components/common/EmptyState.vue';
 import ShareModal from '@/components/common/share-modal.vue';
-import TodoEditor from '@/components/common/todo-editor.vue';
+// TodoEditor — 已从首页移除
 import CustomModal from '@/components/common/CustomModal.vue';
 import OfflineIndicator from '@/components/common/offline-indicator.vue';
 import FormulaModal from '@/components/business/index/FormulaModal.vue';
-import QuotePosterModal from '@/components/business/index/QuotePosterModal.vue';
-import DailyQuoteCard from '@/components/business/index/DailyQuoteCard.vue';
+// ✅ [P0重构] QuotePosterModal, DailyQuoteCard 已移除（首页精简）
 import WelcomeBanner from '@/components/business/index/WelcomeBanner.vue';
 import StatsGrid from '@/components/business/index/StatsGrid.vue';
 import StudyTimeCard from '@/components/business/index/StudyTimeCard.vue';
-import KnowledgeBubbleField from '@/components/business/index/KnowledgeBubbleField.vue';
+// ✅ [P0重构] KnowledgeBubbleField 已移除（首页精简）
 import ActivityList from '@/components/business/index/ActivityList.vue';
-import RecommendationsList from '@/components/business/index/RecommendationsList.vue';
+// RecommendationsList — 已从首页移除（smart-recommend 替代）
 import IndexHeaderBar from '@/components/business/index/IndexHeaderBar.vue';
-import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+// BaseIcon — 首页不再直接使用
 import { useStudyStore } from '@/stores/modules/study';
 import { useTodoStore } from '@/stores/modules/todo';
 import { useUserStore } from '@/stores/modules/user';
@@ -373,7 +374,7 @@ import { throttle } from '@/utils/throttle.js';
 import { studyTimerMixin } from '@/mixins/studyTimerMixin.js';
 import { dailyQuoteMixin } from '@/mixins/dailyQuoteMixin.js';
 // F002-I2: 知识点气泡交互 Mixin（保留：复杂DOM交互）
-import { knowledgePointMixin } from '@/mixins/knowledgePointMixin.js';
+// F002-I2: knowledgePointMixin 已移除（KnowledgeBubbleField 已移除）
 // ✅ [P0重构] 迁移为Composables的模块
 import { useRecommendations } from '@/composables/useRecommendations.js';
 import { useNavigation } from '@/composables/useNavigation.js';
@@ -381,38 +382,36 @@ import { useTodo } from '@/composables/useTodo.js';
 // ✅ P0-3: 从配置文件导入静态数据（消除硬编码）
 import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS } from '@/config/home-data.js';
 // ✅ [零摩擦] 检测未完成的答题进度
-import { hasUnfinishedProgress, getProgressSummary } from '@/pages/practice-sub/useQuizAutoSave.js';
+import { hasUnfinishedProgress, getProgressSummary } from '@/composables/useQuizAutoSave.js';
 // ✅ [差异化壁垒] 学习风格onboarding配置项
 import { DEPTH_LEVELS, TONE_OPTIONS } from '@/composables/useLearningStyle.js';
 // F002-I1a: 共享格式化工具
 import { formatRelativeTime, getInitials as _getInitials } from '@/utils/formatters.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
+// ✅ [FSRS] 本地间隔重复调度统计
+import { getReviewStats } from '@/services/fsrs-service.js';
+// ✅ [知识引擎] 智能学习推荐
+import { getNextRecommendedTopic } from '@/services/knowledge-engine.js';
+import { syncFSRSParams } from '@/services/fsrs-optimizer-client.js';
 
 export default {
   components: {
     PrivacyPopup,
     CustomTabbar,
     BaseSkeleton,
-    TodoList,
     EmptyState,
     ShareModal,
-    TodoEditor,
     CustomModal,
     OfflineIndicator,
     FormulaModal,
-    QuotePosterModal,
-    DailyQuoteCard,
     WelcomeBanner,
     StatsGrid,
     StudyTimeCard,
-    KnowledgeBubbleField,
     ActivityList,
-    RecommendationsList,
-    IndexHeaderBar,
-    BaseIcon
+    IndexHeaderBar
   },
   // ✅ [P0重构] 保留需要lifecycle hooks的Mixins，其余已迁移为Composables
-  mixins: [trackingMixin, studyTimerMixin, dailyQuoteMixin, knowledgePointMixin],
+  mixins: [trackingMixin, studyTimerMixin, dailyQuoteMixin],
 
   // ✅ [P0重构] Composables桥接到Options API
   setup() {
@@ -524,6 +523,11 @@ export default {
 
       // ✅ [闭环核心] 今日复习待复习数量
       reviewPending: 0,
+      // ✅ [FSRS] 本地调度统计详情
+      reviewStats: { dueCount: 0, newCount: 0, learningCount: 0, overdueCount: 0 },
+
+      // ✅ [知识引擎] 推荐学习主题
+      recommendedTopic: null,
 
       // ✅ [零摩擦] 一键续刷状态
       hasUnfinished: false,
@@ -714,6 +718,19 @@ export default {
 
     // ✅ [零摩擦] 每次回到首页检测未完成进度
     this.checkUnfinishedProgress();
+
+    // ✅ [知识引擎] 加载推荐学习主题
+    try {
+      const allQuestions = storageService.get('v30_bank', []);
+      if (allQuestions.length > 0) {
+        this.recommendedTopic = getNextRecommendedTopic(allQuestions);
+      }
+    } catch (_e) {
+      /* silent */
+    }
+
+    // ✅ [FSRS] 参数同步（非阻塞）
+    syncFSRSParams().catch(() => {});
   },
 
   onUnload() {
@@ -790,7 +807,6 @@ export default {
         // ✅ F011: 使用 allSettled 替代 all，单个模块失败不影响其他模块加载
         const results = await Promise.allSettled([
           this.loadAchievements(),
-          this.loadKnowledgePoints(),
           this.loadRecentActivities(),
           this.loadPersonalizedRecommendations(),
           this.loadUserPreferences()
@@ -827,7 +843,6 @@ export default {
 
         const settled = await Promise.allSettled([
           Promise.resolve().then(() => this.loadAchievements()),
-          Promise.resolve().then(() => this.loadKnowledgePoints()),
           Promise.resolve().then(() => this.loadRecentActivities())
         ]);
         const failed = settled.filter((item) => item.status === 'rejected');
@@ -989,13 +1004,32 @@ export default {
       safeNavigateTo(`/pages/tools/${name}`);
     },
 
-    // ✅ [闭环核心] 加载今日待复习数量
+    // ✅ [闭环核心] 加载今日待复习数量（FSRS 本地优先 + 服务端增量同步）
     async loadReviewPending() {
       try {
-        const res = await lafService.getReviewPlan();
-        if (res.code === 0 && res.data) {
-          this.reviewPending = res.data.reviewPlan?.totalPending || 0;
+        // 本地 FSRS 优先：从本地存储的题目计算待复习数量
+        const allQuestions = storageService.get('v30_bank', []);
+        if (allQuestions.length > 0) {
+          const stats = getReviewStats(allQuestions);
+          this.reviewStats = stats;
+          this.reviewPending = stats.dueCount + stats.overdueCount;
         }
+
+        // 服务端增量同步（不阻塞 UI）
+        lafService
+          .getReviewPlan()
+          .then((res) => {
+            if (res.code === 0 && res.data) {
+              const serverPending = res.data.reviewPlan?.totalPending || 0;
+              // 取本地和服务端的最大值，确保不遗漏
+              if (serverPending > this.reviewPending) {
+                this.reviewPending = serverPending;
+              }
+            }
+          })
+          .catch(() => {
+            /* 静默失败，服务端不可用时依赖本地 FSRS */
+          });
       } catch (_e) {
         // 静默失败，不影响首页
       }
@@ -1139,6 +1173,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* ==================== 首页精简：今日数据一览容器 ==================== */
+.today-dashboard {
+  margin: 0 30rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
 /* ==================== 页面最外层容器 ==================== */
 .page-wrapper {
   min-height: 100%;
@@ -1240,12 +1282,6 @@ export default {
   flex-direction: column;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
 }
 
 .refresher-spinner {
@@ -1367,12 +1403,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8rpx;
-  }
   padding: 14rpx 24rpx;
   border-radius: 999rpx;
   background: #ffffff;
@@ -1452,12 +1482,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 16rpx;
-  }
   margin-bottom: 42rpx;
 }
 
@@ -1563,12 +1587,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 4rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 4rpx;
-  }
 }
 
 .tool-name {
@@ -1655,6 +1673,43 @@ export default {
   font-size: 36rpx;
   color: #6366f1;
   font-weight: 300;
+}
+
+/* ==================== [知识引擎] 智能学习推荐 ==================== */
+.smart-recommend {
+  margin: 20rpx 30rpx;
+  padding: 24rpx 30rpx;
+  cursor: pointer;
+}
+.smart-recommend:active {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+.smart-recommend-header {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 12rpx;
+}
+.smart-recommend-icon {
+  font-size: 32rpx;
+}
+.smart-recommend-title {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.smart-recommend-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+}
+.smart-recommend-reason {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-top: 6rpx;
+  display: block;
 }
 
 /* ==================== [闭环核心] 今日复习入口 ==================== */

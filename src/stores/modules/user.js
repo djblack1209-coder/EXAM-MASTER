@@ -80,10 +80,13 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  // 监听登出事件重置社交数据
-  uni.$on('user:logout', () => {
-    friendsList.value = [];
-  });
+  // 监听登出事件重置社交数据（避免重复注册）
+  if (!uni.__userStoreLogoutBound__) {
+    uni.$on('user:logout', () => {
+      friendsList.value = [];
+    });
+    uni.__userStoreLogoutBound__ = true;
+  }
 
   // ---- 代理方法（保持向后兼容） ----
   const setToken = authStore.setToken;

@@ -45,6 +45,14 @@
         "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#1A1A1A"
       }
+    },
+    {
+      "path": "pages/onboarding/index",
+      "style": {
+        "navigationBarTitleText": "欢迎",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#1A1A1A"
+      }
     }
   ],
   "subPackages": [
@@ -140,19 +148,6 @@
           "path": "ai-consult",
           "style": {
             "navigationBarTitleText": "AI择校咨询",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/onboarding",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "欢迎",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
@@ -322,24 +317,6 @@
             "navigationBarBackgroundColor": "#1A1A1A",
             "enablePullDownRefresh": false
           }
-        },
-        {
-          "path": "doc-convert",
-          "style": {
-            "navigationBarTitleText": "文档转换",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A",
-            "enablePullDownRefresh": false
-          }
-        },
-        {
-          "path": "id-photo",
-          "style": {
-            "navigationBarTitleText": "证件照制作",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A",
-            "enablePullDownRefresh": false
-          }
         }
       ]
     },
@@ -402,7 +379,9 @@
     "navigationBarBackgroundColor": "#1A1A1A",
     "backgroundColor": "#121212",
     "backgroundTextStyle": "light",
-    "enablePullDownRefresh": false
+    "enablePullDownRefresh": false,
+    "animationType": "slide-in-right",
+    "animationDuration": 300
   },
 
   "uniIdRouter": {},

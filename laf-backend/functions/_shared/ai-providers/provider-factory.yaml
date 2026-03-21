@@ -1,0 +1,4 @@
+name: _shared/ai-providers/provider-factory
+desc: AI供应商工厂 - 多LLM供应商抽象层
+methods: []
+tags: []

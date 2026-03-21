@@ -301,7 +301,7 @@ export default defineConfig(({ command, mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          silenceDeprecations: ['legacy-js-api'],
+          silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin'],
           // ✅ F003: 自动注入共享 SCSS 变量到所有组件
           additionalData: `
             @use "${path.resolve(__dirname, 'src/styles/_design-tokens.scss').replace(/\\/g, '/')}" as *;

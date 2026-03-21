@@ -138,6 +138,9 @@
       <!-- ✅ [P0重构] AI分析已改为非阻塞，移除全屏遮罩 -->
       <!-- AI解析在结果弹窗内异步加载，用户可随时点击下一题 -->
 
+      <!-- 结果弹窗背景遮罩 -->
+      <view v-if="showResult" class="result-backdrop" @tap.stop="closeResult"></view>
+
       <!-- 结果弹窗 -->
       <view v-if="showResult" :class="['result-pop', resultStatus]" @tap.stop>
         <view class="result-header" @tap.stop>
@@ -148,7 +151,7 @@
             </view>
           </view>
           <text class="status-title">
-            {{ resultStatus === 'correct' ? 'PASS' : 'LOGIC ERROR' }}
+            {{ resultStatus === 'correct' ? '回答正确' : '再想想' }}
           </text>
         </view>
 
@@ -183,13 +186,38 @@
         <!-- 新增: AI Tutor 智能体辅导反馈 -->
         <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
 
+        <!-- FSRS 智能评分 -->
+        <view v-if="fsrsPreview" class="fsrs-rating-row">
+          <template v-if="resultStatus === 'correct'">
+            <view class="fsrs-rating-btn fsrs-good" @tap="rateAndNext(3)">
+              <text class="fsrs-rating-label">还行</text>
+              <text class="fsrs-rating-interval">{{ formatFsrsInterval(fsrsPreview.good.intervalDays) }}</text>
+            </view>
+            <view class="fsrs-rating-btn fsrs-easy" @tap="rateAndNext(4)">
+              <text class="fsrs-rating-label">简单</text>
+              <text class="fsrs-rating-interval">{{ formatFsrsInterval(fsrsPreview.easy.intervalDays) }}</text>
+            </view>
+          </template>
+          <template v-else>
+            <view class="fsrs-rating-btn fsrs-again" @tap="rateAndNext(1)">
+              <text class="fsrs-rating-label">没印象</text>
+              <text class="fsrs-rating-interval">{{ formatFsrsInterval(fsrsPreview.again.intervalDays) }}</text>
+            </view>
+            <view class="fsrs-rating-btn fsrs-hard" @tap="rateAndNext(2)">
+              <text class="fsrs-rating-label">有点印象</text>
+              <text class="fsrs-rating-interval">{{ formatFsrsInterval(fsrsPreview.hard.intervalDays) }}</text>
+            </view>
+          </template>
+        </view>
+        <!-- 无 FSRS 数据时的降级按钮 -->
         <wd-button
+          v-else
           id="e2e-quiz-next-btn"
           block
           size="large"
           :disabled="isNavigating"
           :loading="isNavigating"
-          @click="toNext"
+          @click="rateAndNext(3)"
         >
           {{ isNavigating ? '加载中...' : resultStatus === 'correct' ? '进入下一题' : '继续挑战' }}
         </wd-button>
@@ -358,7 +386,7 @@ import {
   clearQuizProgress,
   hasUnfinishedProgress,
   getProgressSummary
-} from './useQuizAutoSave.js';
+} from '@/composables/useQuizAutoSave.js';
 // ✅ 检查点 5.1: 导入分析服务
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 import { getStatusBarHeight, getWindowInfo } from '@/utils/core/system.js';
@@ -412,16 +440,24 @@ import { useTypewriter } from '@/composables/useTypewriter.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { lafService } from '@/services/lafService.js';
-import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import MemoryStatsRow from './components/quiz-result/MemoryStatsRow.vue';
 import TutorFeedbackCard from './components/quiz-result/TutorFeedbackCard.vue';
 import XpToast from './components/xp-toast/xp-toast.vue';
-import RichText from '@/components/common/RichText.vue';
+import RichText from './components/RichText.vue';
 import AnswerSheet from './components/answer-sheet/answer-sheet.vue';
 import QuizProgress from './components/quiz-progress/quiz-progress.vue';
 // ✅ [P0重构] 核心引擎 composable
 import { useQuizEngine } from '@/composables/useQuizEngine.js';
+import {
+  scheduleAndSave,
+  previewSchedule,
+  formatInterval,
+  loadCardState,
+  createNewCard
+} from '@/services/fsrs-service.js';
+import { triggerOptimization } from '@/services/fsrs-optimizer-client.js';
 
 export default {
   components: {
@@ -452,6 +488,7 @@ export default {
   data() {
     return {
       memoryState: null,
+      fsrsPreview: null, // { again: {intervalDays}, hard: {intervalDays}, good: {intervalDays}, easy: {intervalDays} }
       tutorFeedback: '',
       statusBarHeight: 44,
       navBarHeight: 88, // 标准导航栏高度 = 44 + 44
@@ -1011,6 +1048,18 @@ export default {
       // 判断答案是否正确
       const isCorrect = this.isCorrectOption(idx);
 
+      // FSRS 预览：计算 4 种评分的下次复习时间，显示在评分按钮上
+      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
+      if (questionId) {
+        try {
+          const card = loadCardState(questionId) || createNewCard();
+          this.fsrsPreview = previewSchedule(card);
+        } catch (err) {
+          logger.warn('[DoQuiz] FSRS preview failed:', err);
+          this.fsrsPreview = null;
+        }
+      }
+
       // ✅ 记录已答题目
       this.answeredQuestions.push({
         questionId: this.currentQuestion?.id,
@@ -1128,6 +1177,25 @@ export default {
       stats[today] = (stats[today] || 0) + 1;
       storageService.save('study_stats', stats);
     },
+    formatFsrsInterval(days) {
+      return formatInterval(days);
+    },
+    rateAndNext(rating) {
+      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
+      if (questionId) {
+        scheduleAndSave(questionId, rating).catch((err) => {
+          logger.warn('[DoQuiz] FSRS schedule failed:', err);
+        });
+      }
+      // 每 50 次答题触发一次 FSRS 参数优化（非阻塞）
+      const reviewCount = parseInt(uni.getStorageSync('fsrs_review_count') || '0') + 1;
+      uni.setStorageSync('fsrs_review_count', String(reviewCount));
+      if (reviewCount % 50 === 0) {
+        triggerOptimization().catch(() => {});
+      }
+      this.fsrsPreview = null;
+      this.toNext();
+    },
     async toNext() {
       // ✅ 防重复点击保护
       if (this.isNavigating) {
@@ -1237,7 +1305,9 @@ export default {
               frame();
             }
           })
-          .catch(() => {});
+          .catch((error) => {
+            console.warn('[do-quiz] save mistake summary failed:', error);
+          });
         this.autoDiagnose();
       }
     },
@@ -1256,7 +1326,7 @@ export default {
         clearInterval(this.timer);
       }
       stopQuestionTimer();
-      uni.navigateBack();
+      safeNavigateBack();
     },
 
     // ✅ 处理题库为空确认
@@ -1348,7 +1418,7 @@ export default {
         this.showCompleteModal = true;
       } else {
         // 诊断失败，直接返回
-        uni.navigateBack();
+        safeNavigateBack();
       }
     },
 
@@ -1356,7 +1426,7 @@ export default {
     handleCompleteConfirm() {
       this.showCompleteModal = false;
       this.isNavigating = false;
-      uni.navigateBack();
+      safeNavigateBack();
     },
 
     // ✅ [闭环核心] AI智能诊断 — 刷题结束后触发
@@ -1387,7 +1457,7 @@ export default {
                   if (modalRes.confirm) {
                     uni.navigateTo({ url: '/pages/mistake/index' });
                   } else {
-                    uni.navigateBack();
+                    safeNavigateBack();
                   }
                 }
               });
@@ -2154,15 +2224,45 @@ export default {
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
   box-shadow: var(--shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.12));
-  animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  animation: slideUpResult 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+
+  /* FSRS 按钮色彩变量 — 基于全局语义色 (--em-error/warning/success/info) 的半透明变体 */
+  --fsrs-again-bg: rgba(255, 59, 48, 0.3);
+  --fsrs-again-border: rgba(255, 59, 48, 0.5);
+  --fsrs-hard-bg: rgba(255, 179, 0, 0.3);
+  --fsrs-hard-border: rgba(255, 179, 0, 0.5);
+  --fsrs-good-bg: rgba(52, 199, 89, 0.25);
+  --fsrs-good-border: rgba(52, 199, 89, 0.4);
+  --fsrs-easy-bg: rgba(0, 122, 255, 0.25);
+  --fsrs-easy-border: rgba(0, 122, 255, 0.4);
 }
-@keyframes slideUp {
+@keyframes slideUpResult {
   from {
     transform: translateY(100%);
     opacity: 0;
   }
   to {
     transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 结果弹窗背景遮罩 */
+.result-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 299;
+  animation: fadeInBackdrop 0.2s ease forwards;
+}
+@keyframes fadeInBackdrop {
+  from {
+    opacity: 0;
+  }
+  to {
     opacity: 1;
   }
 }
@@ -2755,5 +2855,62 @@ export default {
     transform: translate(calc(cos(var(--angle)) * var(--distance)), calc(sin(var(--angle)) * var(--distance))) scale(0);
     opacity: 0;
   }
+}
+/* FSRS 智能评分按钮（答对/答错各显示2个） */
+.fsrs-rating-row {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.fsrs-rating-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 8rpx;
+  border-radius: 20rpx;
+  min-height: 100rpx;
+  transition:
+    transform 0.15s,
+    opacity 0.15s;
+}
+
+.fsrs-rating-btn:active {
+  transform: scale(0.95);
+  opacity: 0.85;
+}
+
+.fsrs-again {
+  background: var(--fsrs-again-bg);
+  border: 2rpx solid var(--fsrs-again-border);
+}
+
+.fsrs-hard {
+  background: var(--fsrs-hard-bg);
+  border: 2rpx solid var(--fsrs-hard-border);
+}
+
+.fsrs-good {
+  background: var(--fsrs-good-bg);
+  border: 2rpx solid var(--fsrs-good-border);
+}
+
+.fsrs-easy {
+  background: var(--fsrs-easy-bg);
+  border: 2rpx solid var(--fsrs-easy-border);
+}
+
+.fsrs-rating-label {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.fsrs-rating-interval {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 6rpx;
 }
 </style>

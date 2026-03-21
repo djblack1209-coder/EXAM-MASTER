@@ -88,13 +88,7 @@ export default {
 .skeleton-mode-switch {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
-  padding: 16rpx;
+padding: 16rpx;
 }
 
 .skeleton-mode-item {
@@ -145,13 +139,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
-  padding: 20rpx 0;
+padding: 20rpx 0;
   border-bottom: 1rpx solid var(--card-border);
 
   &:last-child {
@@ -196,12 +184,6 @@ export default {
 .skeleton-actions {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
 }
 
 .skeleton-action-btn {

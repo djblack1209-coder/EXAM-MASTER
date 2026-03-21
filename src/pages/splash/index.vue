@@ -1,7 +1,7 @@
 <template>
   <view class="splash-container">
     <view class="content-wrapper">
-      <image class="logo-icon" src="./static/logo.png" mode="aspectFit" />
+      <image class="logo-icon" src="./static/logo.png" alt="Exam Master" mode="aspectFit" />
 
       <text class="app-name"> Exam-Master </text>
 
@@ -244,14 +244,7 @@ onBeforeUnmount(() => {
   display: flex;
   margin-top: 24px;
   /* gap: 8px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 8px;
-  }
-
-  .dot {
+.dot {
     width: 8px;
     height: 8px;
     background-color: var(--primary-foreground);

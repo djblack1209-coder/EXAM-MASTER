@@ -2,18 +2,22 @@
  * Vitest 测试环境设置
  * Mock uni-app 全局 API
  */
-import { vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 import crypto from 'crypto';
 
+const globalScope = /** @type {any} */ (globalThis);
+
 // Polyfill crypto.hash for Node < 20.12 (used by @vitejs/plugin-vue internally)
-if (typeof crypto.hash !== 'function') {
-  crypto.hash = (algorithm, data, outputEncoding) => {
+const cryptoCompat = /** @type {any} */ (crypto);
+
+if (typeof cryptoCompat.hash !== 'function') {
+  cryptoCompat.hash = (algorithm, data, outputEncoding) => {
     return crypto.createHash(algorithm).update(data).digest(outputEncoding);
   };
 }
 
 // Mock uni 全局对象
-global.uni = {
+globalScope.uni = {
   // 存储相关
   getStorageSync: vi.fn((key) => {
     const storage = global.__mockStorage || {};
@@ -112,6 +116,10 @@ global.uni = {
     success?.({ data: {}, statusCode: 200 });
     return { abort: vi.fn() };
   }),
+  getNetworkType: vi.fn(({ success, fail } = {}) => {
+    success?.({ networkType: 'wifi' });
+    fail?.();
+  }),
 
   // 震动反馈
   vibrateShort: vi.fn(() => Promise.resolve()),
@@ -187,10 +195,10 @@ global.uni = {
 };
 
 // Mock getCurrentPages
-global.getCurrentPages = vi.fn(() => [{ route: 'pages/index/index', options: {} }]);
+globalScope.getCurrentPages = vi.fn(() => [{ route: 'pages/index/index', options: {} }]);
 
 // Mock getApp
-global.getApp = vi.fn(() => ({
+globalScope.getApp = vi.fn(() => ({
   globalData: {}
 }));
 

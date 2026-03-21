@@ -63,6 +63,7 @@
           <image
             class="icon-image"
             src="/static/icons/practice/icon-library.png"
+            alt=""
             mode="aspectFit"
             :style="isDark ? 'filter: brightness(0) invert(1) opacity(0.9);' : ''"
           />
@@ -73,7 +74,13 @@
         </view>
         <view class="status-actions">
           <view class="manage-btn apple-glass-pill" @tap="showQuizManage">
-            <image class="manage-icon-img" src="/static/icons/practice/icon-settings.png" mode="aspectFit" lazy-load />
+            <image
+              class="manage-icon-img"
+              src="/static/icons/practice/icon-settings.png"
+              alt=""
+              mode="aspectFit"
+              lazy-load
+            />
             <text class="manage-text"> 题库管理 </text>
           </view>
         </view>
@@ -128,7 +135,7 @@
         @tap="goPractice"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-book.png" mode="aspectFit" />
+        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-book.png" alt="" mode="aspectFit" />
         <text class="btn-text">
           {{ isNavigating ? '加载中...' : '开始刷题' }}
         </text>
@@ -144,7 +151,7 @@
         @tap="goBattle"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-battle.png" mode="aspectFit" />
+        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-battle.png" alt="" mode="aspectFit" />
         <text class="btn-text"> PK 对战 </text>
       </button>
 
@@ -197,7 +204,7 @@
       <!-- 文件管理 -->
       <view id="e2e-practice-menu-file-manager" class="menu-item" @tap="goFileManager">
         <view class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-folder.png" mode="aspectFit" lazy-load />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-folder.png" alt="" mode="aspectFit" lazy-load />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 文件管理 </view>
@@ -213,6 +220,7 @@
           <image
             class="menu-icon-img"
             src="/static/icons/practice/icon-robot.png"
+            alt=""
             mode="aspectFit"
             :style="isDark ? 'filter: brightness(0) invert(1) opacity(0.9);' : ''"
           />
@@ -228,7 +236,7 @@
       <!-- 错题本 -->
       <view id="e2e-practice-menu-mistake" class="menu-item" @tap="goMistake">
         <view class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-error.png" mode="aspectFit" lazy-load />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-error.png" alt="" mode="aspectFit" lazy-load />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 错题本 </view>
@@ -255,7 +263,13 @@
       <!-- 排行榜 -->
       <view id="e2e-practice-menu-rank" class="menu-item" @tap="goRank">
         <view class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-ranking.png" mode="aspectFit" lazy-load />
+          <image
+            class="menu-icon-img"
+            src="/static/icons/practice/icon-ranking.png"
+            alt=""
+            mode="aspectFit"
+            lazy-load
+          />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 学霸排行榜 </view>
@@ -268,7 +282,7 @@
       <!-- 学习进度 -->
       <view id="e2e-practice-menu-study-detail" class="menu-item" @tap="goToStudyDetail">
         <view class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-check.png" mode="aspectFit" lazy-load />
+          <image class="menu-icon-img" src="/static/icons/practice/icon-check.png" alt="" mode="aspectFit" lazy-load />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 总学习进度 </view>
@@ -289,6 +303,20 @@
         <view class="menu-info">
           <view class="menu-title"> 我的收藏 </view>
           <view class="menu-subtitle-normal"> {{ favoriteCount }} 道题目 </view>
+        </view>
+        <view class="menu-arrow">
+          <text class="arrow"> › </text>
+        </view>
+      </view>
+
+      <!-- Anki 导出 -->
+      <view class="menu-item" @tap="exportAnki">
+        <view class="menu-icon">
+          <BaseIcon name="download" :size="36" />
+        </view>
+        <view class="menu-info">
+          <view class="menu-title"> 导出 Anki 牌组 </view>
+          <view class="menu-subtitle-normal"> 导出为 .apkg 文件 </view>
         </view>
         <view class="menu-arrow">
           <text class="arrow"> › </text>
@@ -914,6 +942,42 @@ export default {
 
     // ✅ P2: goFavorites 由 practiceNavigationMixin 提供
 
+    // Anki 导出
+    async exportAnki() {
+      try {
+        uni.showLoading({ title: '导出中...', mask: true });
+        const res = await lafService.request('/anki-export', { deckName: '我的考研题库' });
+        uni.hideLoading();
+        if (res.code === 0 && res.data?.fileData) {
+          // #ifdef MP-WEIXIN
+          const fs = uni.getFileSystemManager();
+          const filePath = `${wx.env.USER_DATA_PATH}/${res.data.fileName || 'export.apkg'}`;
+          fs.writeFile({
+            filePath,
+            data: res.data.fileData,
+            encoding: 'base64',
+            success: () => {
+              uni.shareFileMessage({
+                filePath,
+                success: () => uni.showToast({ title: '导出成功', icon: 'success' }),
+                fail: () => uni.showToast({ title: '已保存', icon: 'success' })
+              });
+            },
+            fail: () => uni.showToast({ title: '保存失败', icon: 'none' })
+          });
+          // #endif
+          // #ifndef MP-WEIXIN
+          uni.showToast({ title: '导出成功', icon: 'success' });
+          // #endif
+        } else {
+          uni.showToast({ title: res.message || '导出失败', icon: 'none' });
+        }
+      } catch (_e) {
+        uni.hideLoading();
+        uni.showToast({ title: '导出失败', icon: 'none' });
+      }
+    },
+
     // Phase 3-3: 考研题库入口
     goQuestionBank() {
       safeNavigateTo('/pages/practice-sub/question-bank');
@@ -1175,12 +1239,6 @@ export default {
 .nav-actions {
   display: flex;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
 }
 
 .icon-btn {
@@ -1355,12 +1413,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 10px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 10px;
-  }
   padding: 12px 28px;
   min-height: 88rpx;
   background: var(--cta-primary-bg);
@@ -1404,12 +1456,6 @@ export default {
   align-items: center;
   justify-content: space-between;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
 }
 
 .status-actions {
@@ -1421,12 +1467,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 6px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 6px;
-  }
   padding: 10px 18px;
   background-color: rgba(255, 255, 255, 0.66);
   border-radius: 999px;
@@ -1497,12 +1537,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12px;
-  }
   margin-bottom: 22px;
 }
 
@@ -1512,12 +1546,6 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12px;
-  }
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
   border: 1px solid var(--cta-primary-border);
@@ -1597,12 +1625,6 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
   background-color: rgba(255, 255, 255, 0.68);
   color: var(--text-primary);
   border: 1px solid rgba(255, 255, 255, 0.52);
@@ -1792,12 +1814,6 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
 }
 
 .progress-bar {
@@ -1836,12 +1852,6 @@ export default {
 .skeleton-actions {
   display: flex;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 12px;
-  }
   margin-bottom: 20px;
 }
 
@@ -1855,12 +1865,6 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 12px; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-top: 12px;
-  }
 }
 
 .skeleton-menu-item {

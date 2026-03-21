@@ -31,6 +31,9 @@ import { perfMonitor } from './_shared/perf-monitor';
 // ✅ B020: 导入 JWT 验证函数
 import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
+// ✅ RAG: 导入向量嵌入与相似度计算
+import { getEmbedding, cosineSimilarity } from './_shared/embedding';
+
 // ==================== 环境配置 ====================
 import { IS_PRODUCTION, createLogger, checkRateLimitDistributed } from './_shared/api-response';
 const logger = createLogger('[ProxyAI]');
@@ -565,7 +568,7 @@ export default async function (ctx: FunctionContext) {
     }
 
     // 3. 根据 action 构建 prompt
-    const { systemPrompt, userPrompt, model, temperature, customMessages } = buildPrompt({
+    let { systemPrompt, userPrompt, model, temperature, customMessages, ragEnabled } = buildPrompt({
       action,
       content: content.trim(),
       questionCount,
@@ -587,6 +590,15 @@ export default async function (ctx: FunctionContext) {
       schoolInfo,
       history
     });
+
+    // 3.5 RAG 增强：为支持的 action 注入知识库检索上下文
+    if (ragEnabled && authenticatedUserId) {
+      const ragContext = await retrieveRAGContext(authenticatedUserId, content || userPrompt);
+      if (ragContext) {
+        systemPrompt = systemPrompt + ragContext;
+        logger.info(`[${requestId}] RAG增强: 已注入知识库上下文`);
+      }
+    }
 
     // 4-5. 调用智谱 AI API（带超时、重试和模型降级机制）
     const preferredModel = model || TASK_MODEL_MAP[action] || 'glm-4-plus';
@@ -706,7 +718,6 @@ async function callAIWithFallback({
 
   for (let attempt = 1; attempt <= AI_MAX_RETRIES; attempt++) {
     try {
-      
       // Override model for multimodal
       if (ctx.body.action === 'ocr_parse' || (ctx.body.data && ctx.body.data.base64)) {
         modelConfig.name = 'glm-4v';
@@ -720,21 +731,23 @@ async function callAIWithFallback({
         },
         data: {
           model: modelConfig.name,
-          messages: messages || (
-            ctx.body.data && ctx.body.data.base64 
-            ? [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: [
-                    { type: 'text', text: userPrompt },
-                    { type: 'image_url', image_url: { url: ctx.body.data.base64 } }
-                  ] 
-                }
-              ]
-            : [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: userPrompt }
-              ]
-          ),
+          messages:
+            messages ||
+            (ctx.body.data && ctx.body.data.base64
+              ? [
+                  { role: 'system', content: systemPrompt },
+                  {
+                    role: 'user',
+                    content: [
+                      { type: 'text', text: userPrompt },
+                      { type: 'image_url', image_url: { url: ctx.body.data.base64 } }
+                    ]
+                  }
+                ]
+              : [
+                  { role: 'system', content: systemPrompt },
+                  { role: 'user', content: userPrompt }
+                ]),
           temperature: temperature || modelConfig.temperature,
           max_tokens: modelConfig.maxTokens,
           top_p: 0.9
@@ -814,6 +827,76 @@ async function callAIWithFallback({
 }
 
 /**
+ * RAG 检索：从用户知识库中检索与查询相关的上下文
+ * 优先使用 Atlas $vectorSearch（服务端高效检索），失败时降级为内存余弦相似度
+ */
+async function retrieveRAGContext(userId: string, query: string, topK = 3): Promise<string> {
+  try {
+    const db = cloud.database();
+    const queryEmbedding = await getEmbedding(query);
+    let scored: Array<{ text: string; source: string; score: number }> = [];
+
+    // 优先尝试 Atlas $vectorSearch
+    try {
+      const pipeline = [
+        {
+          $vectorSearch: {
+            index: 'vector_index',
+            path: 'embedding',
+            queryVector: queryEmbedding,
+            numCandidates: topK * 10,
+            limit: topK,
+            filter: { user_id: userId }
+          }
+        },
+        {
+          $addFields: { score: { $meta: 'vectorSearchScore' } }
+        },
+        {
+          $project: { _id: 0, text: 1, score: 1, source_type: 1, metadata: 1 }
+        }
+      ];
+      const result = await db.collection('document_chunks').aggregate(pipeline).end();
+      const docs = result.data || [];
+      scored = docs
+        .filter((doc: any) => doc.score >= 0.35)
+        .map((doc: any) => ({
+          text: doc.text,
+          source: doc.metadata?.title || doc.source_type || '',
+          score: doc.score
+        }));
+    } catch (_atlasErr) {
+      // Atlas $vectorSearch 不可用，降级为内存暴力搜索
+      const chunks = await db.collection('document_chunks').where({ user_id: userId }).limit(500).get();
+
+      if (!chunks.data || chunks.data.length === 0) return '';
+
+      scored = chunks.data
+        .filter((c: any) => c.embedding && c.embedding.length > 0)
+        .map((chunk: any) => ({
+          text: chunk.text,
+          source: chunk.metadata?.title || chunk.source_type || '',
+          score: cosineSimilarity(queryEmbedding, chunk.embedding)
+        }))
+        .filter((item: any) => item.score > 0.35)
+        .sort((a: any, b: any) => b.score - a.score)
+        .slice(0, topK);
+    }
+
+    if (scored.length === 0) return '';
+
+    const context = scored
+      .map((s, i) => `[参考${i + 1}] (来源:${s.source || '学习资料'}, 相关度:${(s.score * 100).toFixed(0)}%) ${s.text}`)
+      .join('\n\n');
+
+    return `\n\n===== 以下是来自用户学习资料的相关参考内容 =====\n${context}\n===== 参考内容结束 =====\n\n请优先基于以上参考资料回答问题。如果参考资料中没有相关内容，再使用你的通用知识回答，并注明这不是来自用户的资料。`;
+  } catch (err: any) {
+    logger.warn('[RAG] 检索失败，降级为无增强模式:', err.message);
+    return '';
+  }
+}
+
+/**
  * 构建提示词
  */
 function buildPrompt(params) {
@@ -884,7 +967,8 @@ function buildPrompt(params) {
       break;
 
     case 'ocr_parse':
-      systemPrompt = "You are an elite exam parser. Extract the text, formulas, and structural layout from the image. 1. ALL math MUST use valid LaTeX format (e.g. $E=mc^2$ or $...$). 2. Return ONLY a pure JSON object containing: { \"content\": \"Full extracted text\", \"type\": \"single/multiple/essay\", \"options\": [\"A\", \"B\"], \"extracted_formulas\": [\"LaTeX\"] }";
+      systemPrompt =
+        'You are an elite exam parser. Extract the text, formulas, and structural layout from the image. 1. ALL math MUST use valid LaTeX format (e.g. $E=mc^2$ or $...$). 2. Return ONLY a pure JSON object containing: { "content": "Full extracted text", "type": "single/multiple/essay", "options": ["A", "B"], "extracted_formulas": ["LaTeX"] }';
       break;
     case 'chat':
       systemPrompt = `你是一个专业的考研学习助手，名叫"研小助"。你的职责是：
@@ -998,7 +1082,18 @@ function buildPrompt(params) {
       break;
   }
 
-  return { systemPrompt, userPrompt, model, temperature, customMessages };
+  // RAG 增强标记：以下 action 将在调用前注入检索上下文
+  const ragEnabledActions = [
+    'analyze',
+    'chat',
+    'friend_chat',
+    'material_understand',
+    'generate_questions',
+    'adaptive_pick'
+  ];
+  const ragEnabled = ragEnabledActions.includes(action);
+
+  return { systemPrompt, userPrompt, model, temperature, customMessages, ragEnabled };
 }
 
 /**
