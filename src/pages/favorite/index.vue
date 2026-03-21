@@ -25,7 +25,10 @@
       class="main-scroll"
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       @scrolltolower="loadMoreFavorites"
-    >
+    
+      refresher-enabled
+      :refresher-triggered="isRefreshing"
+      @refresherrefresh="onPullRefresh">
       <!-- 统计卡片 -->
       <view class="stats-row apple-glass-card">
         <view class="stat-item">
@@ -276,6 +279,7 @@ export default {
   components: { BaseIcon },
   data() {
     return {
+      isRefreshing: false,
       statusBarHeight: 44,
       isDark: false,
       isLoading: true, // ✅ F018: 加载状态
@@ -385,6 +389,13 @@ export default {
     uni.$off('themeUpdate', this._themeHandler);
   },
   methods: {
+    async onPullRefresh() {
+      this.isRefreshing = true;
+      try {
+        await this.loadData();
+      } catch (_e) { /* silent */ }
+      this.isRefreshing = false;
+    },
     initSystemUI() {
       this.statusBarHeight = getStatusBarHeight();
     },

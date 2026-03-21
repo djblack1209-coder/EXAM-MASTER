@@ -27,7 +27,10 @@
       </view>
     </view>
 
-    <scroll-view v-if="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
+    <scroll-view v-if="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
+      refresher-enabled
+      :refresher-triggered="isRefreshing"
+      @refresherrefresh="onPullRefresh">
       <view class="hero-card">
         <text class="hero-eyebrow"> Planning Center </text>
         <text class="hero-title"> 把备考安排成清晰的一周节奏 </text>
@@ -211,6 +214,7 @@ export default {
   },
   data() {
     return {
+      isRefreshing: false,
       statusBarHeight: 44,
       capsuleSafeRight: 20,
       isDark: false,
@@ -239,6 +243,13 @@ export default {
     this.loadIntelligentReminders();
   },
   methods: {
+    async onPullRefresh() {
+      this.isRefreshing = true;
+      try {
+        await this.loadPlans();
+      } catch (_e) { /* silent */ }
+      this.isRefreshing = false;
+    },
     loadPlans() {
       try {
         this.plans = intelligentPlanManager.getPlans();
