@@ -12,7 +12,7 @@
  */
 
 import { useGamificationStore } from '@/stores/index.js';
-import { useGamificationEffects } from '@/composables/useGamificationEffects.js';
+import { useGamificationEffects } from './composables/useGamificationEffects.js';
 import { logger } from '@/utils/logger.js';
 
 let _store = null;

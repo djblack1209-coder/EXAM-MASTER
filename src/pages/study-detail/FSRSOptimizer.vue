@@ -66,7 +66,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { lafService } from '@/services/lafService';
-import { loadUserFSRSParams } from '@/utils/practice/mistake-fsrs-scheduler';
+import { loadUserFSRSParams } from '@/pages/practice-sub/utils/mistake-fsrs-scheduler';
 
 const status = ref({
   has_custom_params: false,

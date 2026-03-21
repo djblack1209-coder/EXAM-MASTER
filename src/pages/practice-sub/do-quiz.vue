@@ -412,7 +412,7 @@ import { getStatusBarHeight, getWindowInfo } from '@/utils/core/system.js';
 // ✅ 导入题目收藏模块
 import { toggleFavorite, isFavorited } from '@/utils/favorite/question-favorite.js';
 // ✅ [P3] FSRS复习日程预览
-import { scheduleMistakeReview } from '@/utils/practice/mistake-fsrs-scheduler.js';
+import { scheduleMistakeReview } from './utils/mistake-fsrs-scheduler.js';
 // ✅ 导入滑动手势模块
 import {
   initSwipeGesture,
@@ -424,11 +424,11 @@ import {
 // ✅ 导入答题动画模块
 import { playCorrectAnimation, playWrongAnimation, getComboDisplay, resetAnimation } from './quiz-animation.js';
 // ✅ [体感革命] 完成fanfare音效
-import { playCompleteFanfare } from '@/utils/practice/quiz-sound.js';
+import { playCompleteFanfare } from './utils/quiz-sound.js';
 // ✅ [上瘾引擎] XP/等级系统
-import { useXPSystem } from '@/composables/useXPSystem.js';
+import { useXPSystem } from './composables/useXPSystem.js';
 // ✅ Phase 3-4: 卡片堆叠切换
-import { useCardStack } from '@/composables/useCardStack.js';
+import { useCardStack } from './composables/useCardStack.js';
 // ✅ 导入单题计时器模块
 import { startTimer as startQuestionTimer, stopTimer as stopQuestionTimer } from './question-timer.js';
 // ✅ 智能组题与自适应学习模块
@@ -467,7 +467,7 @@ import RichText from './components/RichText.vue';
 import AnswerSheet from './components/answer-sheet/answer-sheet.vue';
 import QuizProgress from './components/quiz-progress/quiz-progress.vue';
 // ✅ [P0重构] 核心引擎 composable
-import { useQuizEngine } from '@/composables/useQuizEngine.js';
+import { useQuizEngine } from './composables/useQuizEngine.js';
 import {
   scheduleAndSave,
   previewSchedule,

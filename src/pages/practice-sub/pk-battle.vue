@@ -234,7 +234,7 @@ import config from '@/config/index.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { createInviteDeepLink, generateInviteCode, generateShareConfig } from './invite-deep-link.js';
 // Phase 3-2: 实时PK房间管理
-import { usePKRoom } from '@/composables/usePKRoom.js';
+import { usePKRoom } from './composables/usePKRoom.js';
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 

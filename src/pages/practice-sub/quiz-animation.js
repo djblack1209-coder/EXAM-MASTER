@@ -9,7 +9,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
-import { playCorrectSound, playWrongSound, playComboSound } from '@/utils/practice/quiz-sound.js';
+import { playCorrectSound, playWrongSound, playComboSound } from './utils/quiz-sound.js';
 
 // ✅ [体感革命] 引入 canvas-confetti（12.5k stars）
 let confettiModule = null;

@@ -7,7 +7,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue';
-import { renderMarkdownAsync } from '@/composables/useMarkdownRenderer';
+import { renderMarkdownAsync } from '../composables/useMarkdownRenderer';
 
 const props = defineProps({
   content: {
