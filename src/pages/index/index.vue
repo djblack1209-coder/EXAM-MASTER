@@ -537,6 +537,9 @@ export default {
 
       // 成就徽章数量（从本地存储获取）
       achievementCount: 0,
+      // 用户考试类型（来自 onboarding）
+      examType: '',
+      dailyGoal: 20,
 
       // ✅ 2.3: 统计数据从 computed 移到 data，避免每次渲染重复读取 storageService
       realTotalQuestions: 0,
@@ -833,6 +836,10 @@ export default {
     async loadData() {
       this.loadError = false;
       try {
+        // 0. 读取用户考试偏好
+        this.examType = storageService.get('exam_type', 'kaoyan');
+        this.dailyGoal = storageService.get('daily_goal', 20);
+
         // 1. 恢复用户信息（同步操作，立即执行）
         this.userStore.restoreUserInfo();
 
