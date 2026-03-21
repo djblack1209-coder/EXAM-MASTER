@@ -16,7 +16,40 @@ export const lafService = {
   ...authService,
   ...favoriteService,
   ...practiceService,
-  ...socialDomain
+  ...socialDomain,
+
+  // ===== 引流工具 API =====
+  // 证件照换底色
+  getPhotoConfig() {
+    return request('/photo-bg', { action: 'config' });
+  },
+  processIdPhoto(imageBase64, color, size, options = {}) {
+    return request('/id-photo-segment-base64', {
+      imageBase64,
+      color,
+      size,
+      ...options
+    });
+  },
+
+  // 文档格式转换
+  getDocConvertTypes() {
+    return request('/doc-convert', { action: 'types' });
+  },
+  submitDocConvert(fileBase64, fileName, targetType) {
+    return request('/doc-convert', {
+      action: 'convert',
+      fileBase64,
+      fileName,
+      targetType
+    });
+  },
+  getDocConvertStatus(jobId) {
+    return request('/doc-convert', { action: 'status', jobId });
+  },
+  getDocConvertResult(jobId) {
+    return request('/doc-convert', { action: 'result', jobId });
+  }
 };
 
 export default lafService;
