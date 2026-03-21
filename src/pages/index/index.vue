@@ -40,6 +40,16 @@
 
         <!-- 内容包装器 -->
         <view class="content-wrapper">
+          <!-- 网络错误重试卡片 -->
+          <view v-if="loadError && !isLoading" class="load-error-card" @tap="loadData">
+            <text class="load-error-icon">⚠️</text>
+            <view class="load-error-text">
+              <text class="load-error-title">加载失败</text>
+              <text class="load-error-hint">点击重试</text>
+            </view>
+            <text class="load-error-arrow">↻</text>
+          </view>
+
           <!-- 欢迎横幅 -->
           <WelcomeBanner
             :is-dark="isDark"
@@ -533,6 +543,7 @@ export default {
       realAccuracy: 0,
       realStudyDays: 0,
       todayQuestionCount: 0,
+      loadError: false,
 
       // ✅ [P0重构] isNavigating, showEmptyBankModal, showLoginModal 已由 useNavigation composable 提供
       // ✅ [P0重构] personalizedRecommendations, userPreferences 已由 useRecommendations composable 提供
@@ -820,6 +831,7 @@ export default {
     },
 
     async loadData() {
+      this.loadError = false;
       try {
         // 1. 恢复用户信息（同步操作，立即执行）
         this.userStore.restoreUserInfo();
@@ -855,6 +867,7 @@ export default {
         }
       } catch (error) {
         logger.error('[Index] 数据加载失败:', error);
+        this.loadError = true;
         uni.showToast({
           title: '部分数据加载失败',
           icon: 'none'
@@ -1775,6 +1788,45 @@ export default {
   margin-top: 16rpx;
   border-radius: 24rpx;
   overflow: hidden;
+}
+
+/* 加载失败重试卡片 */
+.load-error-card {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin: 30rpx;
+  padding: 32rpx;
+  background: var(--bg-secondary, rgba(255, 59, 48, 0.06));
+  border: 2rpx solid rgba(255, 59, 48, 0.15);
+  border-radius: 24rpx;
+}
+.load-error-card:active {
+  opacity: 0.7;
+  transform: scale(0.98);
+}
+.load-error-icon {
+  font-size: 40rpx;
+}
+.load-error-text {
+  flex: 1;
+}
+.load-error-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+}
+.load-error-hint {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+  display: block;
+}
+.load-error-arrow {
+  font-size: 36rpx;
+  color: var(--primary, #34c759);
+  font-weight: 700;
 }
 
 /* 备考工具箱（引流核心区） */
