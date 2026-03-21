@@ -23,10 +23,10 @@
       class="main-scroll"
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       @scrolltolower="loadMore"
-    
       refresher-enabled
       :refresher-triggered="isRefreshing"
-      @refresherrefresh="onPullRefresh">
+      @refresherrefresh="onPullRefresh"
+    >
       <!-- 统计卡片区域 -->
       <view v-if="mistakes.length > 0" class="stats-grid">
         <StatsCard title="错题总数" :value="mistakes.length" icon="note" :is-dark="isDark" />
@@ -50,17 +50,27 @@
         <button class="start-review-btn" @tap="startSequentialReview">开始重练</button>
       </view>
 
-      <!-- ✅ 1.7: 错题筛选栏 -->
-      <view v-if="isReviewMode && mistakes.length > 0" class="review-filter-bar">
-        <view :class="['filter-chip', { active: reviewFilter === 'all' }]" @tap="reviewFilter = 'all'">
-          <text class="filter-text"> 全部 </text>
-        </view>
-        <view :class="['filter-chip', { active: reviewFilter === 'high_freq' }]" @tap="reviewFilter = 'high_freq'">
-          <text class="filter-text"> 高频错题 </text>
-        </view>
-        <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
-          <text class="filter-text"> 最近错题 </text>
-        </view>
+      <!-- 错题筛选栏 -->
+      <view v-if="mistakes.length > 0" class="review-filter-bar">
+        <scroll-view scroll-x :show-scrollbar="false" class="filter-scroll">
+          <view :class="['filter-chip', { active: reviewFilter === 'all' }]" @tap="reviewFilter = 'all'">
+            <text class="filter-text"> 全部 </text>
+          </view>
+          <view :class="['filter-chip', { active: reviewFilter === 'high_freq' }]" @tap="reviewFilter = 'high_freq'">
+            <text class="filter-text"> 高频错题 </text>
+          </view>
+          <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
+            <text class="filter-text"> 最近错题 </text>
+          </view>
+          <view
+            v-for="cat in mistakeCategories"
+            :key="cat"
+            :class="['filter-chip', { active: reviewFilter === 'cat_' + cat }]"
+            @tap="reviewFilter = 'cat_' + cat"
+          >
+            <text class="filter-text"> {{ cat }} </text>
+          </view>
+        </scroll-view>
       </view>
 
       <!-- 模式切换 - 优化布局 -->
@@ -198,13 +208,11 @@ export default {
     // ✅ 1.7: 根据筛选条件过滤错题（兼容 camelCase 和 snake_case 字段名）
     filteredReviewMistakes() {
       if (this.reviewFilter === 'high_freq') {
-        // 高频错题：错误次数>=2，按错误次数降序
         return [...this.mistakes]
           .filter((m) => (m.wrongCount || m.wrong_count || 1) >= 2)
           .sort((a, b) => (b.wrongCount || b.wrong_count || 1) - (a.wrongCount || a.wrong_count || 1));
       }
       if (this.reviewFilter === 'recent') {
-        // 最近错题：按最后错误时间降序，取最近20道
         return [...this.mistakes]
           .sort((a, b) => {
             const ta = a.last_wrong_time || a.lastWrongTime || a.created_at || 0;
@@ -213,10 +221,24 @@ export default {
           })
           .slice(0, 20);
       }
+      // 按分类筛选
+      if (this.reviewFilter.startsWith('cat_')) {
+        const cat = this.reviewFilter.slice(4);
+        return this.mistakes.filter((m) => (m.category || m.knowledge_point || '') === cat);
+      }
       // 全部：按错误次数降序（优先复习高频错题）
       return [...this.mistakes].sort(
         (a, b) => (b.wrongCount || b.wrong_count || 1) - (a.wrongCount || a.wrong_count || 1)
       );
+    },
+    // 错题分类列表（去重）
+    mistakeCategories() {
+      const cats = new Set();
+      this.mistakes.forEach((m) => {
+        const cat = m.category || m.knowledge_point || '';
+        if (cat) cats.add(cat);
+      });
+      return [...cats].sort();
     },
     // F007: 限制渲染到 DOM 的错题数量，防止无限滚动导致 DOM 过大
     displayedMistakes() {
@@ -234,7 +256,9 @@ export default {
       this.isRefreshing = true;
       try {
         await this.loadData(true);
-      } catch (_e) { /* silent */ }
+      } catch (_e) {
+        /* silent */
+      }
       this.isRefreshing = false;
     },
     // 统一错题字段名，消除 wrongCount/wrong_count 等不一致
@@ -658,7 +682,7 @@ export default {
       display: flex;
       align-items: center;
       /* gap: 8rpx; -- replaced for Android WebView compat */
-padding: 8rpx 16rpx;
+      padding: 8rpx 16rpx;
       border-radius: 20rpx;
       background: var(--danger-light);
       transition: all 0.2s;
@@ -706,7 +730,7 @@ padding: 8rpx 16rpx;
   padding: 10rpx;
   border-radius: 20rpx;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-.mode-item {
+  .mode-item {
     flex: 1;
     padding: 20rpx 40rpx;
     border-radius: 20rpx;
@@ -775,7 +799,7 @@ padding: 8rpx 16rpx;
     align-items: center;
     justify-content: center;
     /* gap: 12rpx; -- replaced for Android WebView compat */
-padding: 24rpx 64rpx;
+    padding: 24rpx 64rpx;
     background: var(--cta-primary-bg);
     color: var(--cta-primary-text);
     border-radius: 50rpx;
@@ -797,7 +821,7 @@ padding: 24rpx 64rpx;
   display: flex;
   align-items: center;
   /* gap: 20rpx; -- replaced for Android WebView compat */
-padding: 24rpx 30rpx;
+  padding: 24rpx 30rpx;
   margin: 0 0 30rpx 0;
   background: var(--theme-primary-light);
   border: 1rpx solid var(--brand-glow);
@@ -813,7 +837,7 @@ padding: 24rpx 30rpx;
     display: flex;
     flex-direction: column;
     /* gap: 6rpx; -- replaced for Android WebView compat */
-}
+  }
 
   .review-title {
     font-size: 28rpx;
@@ -857,7 +881,7 @@ padding: 24rpx 30rpx;
   align-items: center;
   justify-content: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-font-size: 28rpx;
+  font-size: 28rpx;
   box-shadow: var(--shadow-lg);
   z-index: 99;
 }
@@ -885,7 +909,7 @@ font-size: 28rpx;
   align-items: center;
   justify-content: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-transition: all 0.2s;
+  transition: all 0.2s;
   box-shadow: var(--shadow-sm);
 }
 
@@ -991,18 +1015,22 @@ transition: all 0.2s;
 
 /* ✅ 1.7: 错题筛选栏 */
 .review-filter-bar {
-  display: flex;
-  /* gap: 16rpx; -- replaced for Android WebView compat */
-padding: 0 30rpx;
+  padding: 0 30rpx;
   margin-bottom: 24rpx;
 }
 
+.filter-scroll {
+  white-space: nowrap;
+}
+
 .filter-chip {
+  display: inline-block;
   padding: 10rpx 24rpx;
   border-radius: 32rpx;
   background: var(--bg-card, #f5f5f5);
   border: 1px solid var(--border-light, #e0e0e0);
   transition: all 0.2s;
+  margin-right: 12rpx;
 }
 
 .filter-chip.active {
