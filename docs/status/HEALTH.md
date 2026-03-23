@@ -16,22 +16,24 @@
 
 > Severity: 🔴 Blocker | 🟠 Important | 🟡 Normal | 🔵 Low
 
-| ID   | Severity | Domain   | Title                                                                                                 | Since      | Owner |
-| ---- | -------- | -------- | ----------------------------------------------------------------------------------------------------- | ---------- | ----- |
-| H001 | 🟡       | deploy   | Nginx backup 到 Sealos 需 HTTPS proxy，upstream 不支持混合协议                                        | 2026-03-23 | —     |
-| H002 | 🟡       | backend  | cloud-shim `cloud.fetch` 非 axios 实例，不支持 `.get()`/`.post()` 短写法                              | 2026-03-23 | —     |
-| H003 | 🔵       | frontend | 部分页面仍用 Options API 未迁移到 `<script setup>`（73个文件）                                        | 2026-03-22 | —     |
-| H004 | 🔵       | frontend | `do-quiz.vue` (3131行) 和 `pk-battle.vue` (3327行) 需要组件拆分                                       | 2026-03-22 | —     |
-| H005 | 🟠       | frontend | 88处页面直接调用 `lafService` 绕过 Store 层（架构违规）                                               | 2026-03-23 | —     |
-| H006 | 🟡       | frontend | 142处 `uni.showToast` 待迁移至 `toast.js`（已迁移 72%）                                               | 2026-03-23 | —     |
-| H007 | 🟡       | backend  | 4个端点用本地 `checkRateLimit` 而非分布式 `checkRateLimitDistributed`                                 | 2026-03-23 | —     |
+| ID   | Severity | Domain   | Title                                                                                                                                                            | Since      | Owner |
+| ---- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----- |
+| H001 | 🟡       | deploy   | Nginx backup 到 Sealos 需 HTTPS proxy，upstream 不支持混合协议                                                                                                   | 2026-03-23 | —     |
+| H002 | 🟡       | backend  | cloud-shim `cloud.fetch` 非 axios 实例，不支持 `.get()`/`.post()` 短写法                                                                                         | 2026-03-23 | —     |
+| H003 | 🔵       | frontend | 部分页面仍用 Options API 未迁移到 `<script setup>`（73个文件）                                                                                                   | 2026-03-22 | —     |
+| H004 | 🔵       | frontend | `do-quiz.vue` (3131行) 和 `pk-battle.vue` (3327行) 需要组件拆分                                                                                                  | 2026-03-22 | —     |
+| H005 | 🟠       | frontend | 88处页面直接调用 `lafService` 绕过 Store 层（架构违规）                                                                                                          | 2026-03-23 | —     |
+| H006 | 🟡       | frontend | 142处 `uni.showToast` 待迁移至 `toast.js`（已迁移 72%）                                                                                                          | 2026-03-23 | —     |
+| H007 | 🟡       | backend  | 4个端点用本地 `checkRateLimit` 而非分布式 `checkRateLimitDistributed`                                                                                            | 2026-03-23 | —     |
 | H008 | 🔴       | testing  | 单元测试：254个断言错误 (含状态码 500/401/404/400 校验异常及 `ReferenceError: logger is not defined`，缺少 `JWT_SECRET_PLACEHOLDER
-| H009 | 🔴       | testing  | 单元测试：`tests/unit/regression-critical-fixes.spec.js` 导入报错导致套件失败，缺少 `useQuizAutoSave.js` | 2026-03-23 | —     |
-| H010 | 🔴       | testing  | 视觉回归测试：11个页面/组件截图不匹配 (`home`, `practice`, `settings` 等，过期快照)                       | 2026-03-23 | —     |
-| H011 | 🔴       | testing  | 视觉回归测试：`ai-classroom`, `onboarding` 完全缺失基准截图                                           | 2026-03-23 | —     |
-| H012 | 🔴       | testing  | E2E回归测试：异常流程 (EXC-005) 聊天页降级交互响应超时 (Timeout)                                      | 2026-03-23 | —     |
-| H013 | 🔴       | testing  | E2E回归测试：状态恢复 (STATE-005) 登录按钮快速多次点击未限制请求 (幂等性失败)                             | 2026-03-23 | —     |
-| H014 | 🔴       | backend  | `group-service` `get_groups` 执行报错 `TypeError: query.count is not a function`                      | 2026-03-23 | —     |
+| H009 | 🔴       | testing  | 单元测试：`tests/unit/regression-critical-fixes.spec.js` 导入报错导致套件失败，缺少 `useQuizAutoSave.js`                                                         | 2026-03-23 | —     |
+| H010 | 🔴       | testing  | 视觉回归测试：11个页面/组件截图不匹配 (`home`, `practice`, `settings` 等，过期快照)                                                                              | 2026-03-23 | —     |
+| H011 | 🔴       | testing  | 视觉回归测试：`ai-classroom`, `onboarding` 完全缺失基准截图                                                                                                      | 2026-03-23 | —     |
+| H012 | 🔴       | testing  | E2E回归测试：异常流程 (EXC-005) 聊天页降级交互响应超时 (Timeout)                                                                                                 | 2026-03-23 | —     |
+| H013 | 🔴       | testing  | E2E回归测试：状态恢复 (STATE-005) 登录按钮快速多次点击未限制请求 (幂等性失败)                                                                                    | 2026-03-23 | —     |
+| H014 | 🔴       | backend  | `group-service` `get_groups` 执行报错 `TypeError: query.count is not a function`                                                                                 | 2026-03-23 | —     |
+| H015 | 🟡       | frontend | UI质量审查：`base-icon.vue`, `MarkdownRenderer.vue`, `WelcomeBanner.vue`, `SchoolSearchInput.vue`, `question-bank.vue`, `InviteModal.vue` 捕获错误但缺少用户提示 | 2026-03-23 | —     |
+| H016 | 🟡       | frontend | UI质量审查：`FSRSOptimizer.vue` 存在异步操作但缺少加载状态                                                                                                       | 2026-03-23 | —     |
 
 ## Recently Resolved
 
