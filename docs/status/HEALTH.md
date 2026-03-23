@@ -61,22 +61,23 @@
 
 ## Tech Debt
 
-| ID       | Domain   | Description                                                                       | Impact                     | Priority |
-| -------- | -------- | --------------------------------------------------------------------------------- | -------------------------- | -------- |
-| D001     | frontend | 5 个 domain service 文件仍包含完整 request 基础设施副本 (~2000行/个)              | 维护困难，改动需同步 6 处  | 🟠       |
-| D002     | frontend | Home page (2310行) + Practice page (1955行) 逻辑应提取到 composables              | 可读性差                   | 🟡       |
-| D003     | backend  | TS 源码缺少 `.js` 扩展名，每次编译需 perl 后处理（已修复5个文件）                 | 构建流程脆弱               | 🟡       |
-| D004     | backend  | `common/config.js` 包含废弃的 `getApiKey()`                                       | 混淆新开发者               | 🔵       |
-| D005     | infra    | Sealos HTTPS backup 需要 `error_page` + `proxy_pass` 方式实现                     | 故障转移不完整             | 🟡       |
-| D006     | frontend | 142处 `uni.showToast` 待迁移至 `toast.js`（已迁移 72%）                           | UX 不一致                  | 🟡       |
-| D007     | frontend | 73个 .vue 文件仍使用 Options API（应迁移到 `<script setup>`）                     | 代码不一致                 | 🔵       |
-| D008     | frontend | 88处页面直接调用 `lafService` 绕过 Store 层                                       | 架构违规                   | 🟠       |
-| D009     | frontend | 6个 mixin 文件应迁移为 composable（部分已有对应 composable）                      | 代码重复                   | 🔵       |
-| ~~D010~~ | frontend | ~~`pages/social/socialService.js` 重复~~ → 已移到 `services/social-facade.js`     | ✅ R20 已解决              | ~~🔵~~   |
-| D011     | backend  | ~~4个端点用本地 `checkRateLimit`~~ → 全部升级为 `checkRateLimitDistributed`       | ✅ R20 已解决              | ~~🟡~~   |
+| ID       | Domain   | Description                                                                                                           | Impact                           | Priority |
+| -------- | -------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------- | -------- |
+| D001     | frontend | 5 个 domain service 文件仍包含完整 request 基础设施副本 (~2000行/个)                                                  | 维护困难，改动需同步 6 处        | 🟠       |
+| D002     | frontend | Home page (2310行) + Practice page (1955行) 逻辑应提取到 composables                                                  | 可读性差                         | 🟡       |
+| D003     | backend  | TS 源码缺少 `.js` 扩展名，每次编译需 perl 后处理（已修复5个文件）                                                     | 构建流程脆弱                     | 🟡       |
+| D004     | backend  | `common/config.js` 包含废弃的 `getApiKey()`                                                                           | 混淆新开发者                     | 🔵       |
+| D005     | infra    | Sealos HTTPS backup 需要 `error_page` + `proxy_pass` 方式实现                                                         | 故障转移不完整                   | 🟡       |
+| D006     | frontend | 142处 `uni.showToast` 待迁移至 `toast.js`（已迁移 72%）                                                               | UX 不一致                        | 🟡       |
+| D007     | frontend | 73个 .vue 文件仍使用 Options API（应迁移到 `<script setup>`）                                                         | 代码不一致                       | 🔵       |
+| D008     | frontend | 88处页面直接调用 `lafService` 绕过 Store 层                                                                           | 架构违规                         | 🟠       |
+| D009     | frontend | 6个 mixin 文件应迁移为 composable（部分已有对应 composable）                                                          | 代码重复                         | 🔵       |
+| ~~D010~~ | frontend | ~~`pages/social/socialService.js` 重复~~ → 已移到 `services/social-facade.js`                                         | ✅ R20 已解决                    | ~~🔵~~   |
+| D011     | backend  | ~~4个端点用本地 `checkRateLimit`~~ → 全部升级为 `checkRateLimitDistributed`                                           | ✅ R20 已解决                    | ~~🟡~~   |
 | D012     | testing  | 单元测试：`JWT_SECRET_PLACEHOLDER
-| D013     | testing  | 单元测试：部分 `src/services/api/domains/` 代码与测试不匹配（如 `logger` 未定义） | 单元测试脆性大             | 🟠       |
-| D014     | testing  | E2E测试环境：部分 E2E 测试因超时或服务不稳定而失败                                | 回归测试稳定性差           | 🟠       |
+| D013     | testing  | 单元测试：部分 `src/services/api/domains/` 代码与测试不匹配（如 `logger` 未定义）                                     | 单元测试脆性大                   | 🟠       |
+| D014     | testing  | E2E测试环境：部分 E2E 测试因超时或服务不稳定而失败                                                                    | 回归测试稳定性差                 | 🟠       |
+| D015     | infra    | 项目中存在冗余或重复目录，例如 `laf-backend/scripts/` 下的 `crawlers`, `data-sync`, `test` 与 `scripts/` 下内容重复。 | 增加维护负担，可能导致修改不一致 | 🟡       |
 
 ## Resource Monitoring
 

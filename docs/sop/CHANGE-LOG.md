@@ -14,6 +14,22 @@
 
 ---
 
+## [2026-03-23] Round 24: 项目深度扫描审计
+
+- **Scope**: docs | infra
+- **Files Changed**:
+  - `docs/status/HEALTH.md`
+  - `docs/AI-SOP/MODULE-INDEX.md`
+  - `docs/sop/CHANGE-LOG.md`
+- **Summary**:
+  - 通过查看自动生成的 `docs/reports/PROJECT_DEEP_SCAN_REPORT.md`，发现项目中存在目录冗余。
+  - 明确发现 `laf-backend/scripts/` 下的 `crawlers`, `data-sync`, `test` 等目录与根目录下相应的 `scripts/` 子目录重复。
+  - 更新了 `docs/status/HEALTH.md` 中的技术债条目（添加了 D015）以记录这些重复目录可能带来的维护负担。
+  - 更新了 `docs/AI-SOP/MODULE-INDEX.md`，在结尾补充了有关脚本目录冗余的注释，以便后续开发注意。
+- **Breaking Changes**: None
+
+---
+
 ## [2026-03-23] Round 23: UI质量门禁审计
 
 - **Scope**: docs | frontend
