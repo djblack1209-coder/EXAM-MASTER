@@ -155,12 +155,9 @@ docs/reports/visual-report/
 # Generated QA runtime artifacts
 docs/reports/e2e-regression-results.json
 docs/reports/e2e-regression-results.xml
-docs/reports/e2e-regression-html/
-docs/reports/e2e-compat-results.json
-docs/reports/e2e-compat-results.xml
+# 测试结果产物（运行时生成，不纳入版本控制）
+docs/reports/*.json
+docs/reports/*.xml
 docs/reports/e2e-compat-html/
-docs/reports/maestro-preflight.md
-docs/reports/maestro-results.xml
-docs/reports/maestro-web-smoke*.xml
-docs/reports/vitest-results*.json
+docs/reports/e2e-regression-html/
 release/
