@@ -179,7 +179,7 @@ Service → 调用 lafService 发 API 请求
 ```bash
 # 三道关卡，全过才能说"完成了"
 npm run lint       # 0 errors 0 warnings
-npm test           # 91 files / 1240 tests passed
+npm test           # 90 files / 1234 tests passed
 npm run build:h5   # Build complete
 ```
 

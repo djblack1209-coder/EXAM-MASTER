@@ -14,6 +14,27 @@
 
 ---
 
+## [2026-03-28] 深度审计三轮 — 页面交互测试+API断链封装+后端死函数清理
+
+- **Scope**: `frontend`, `backend`, `docs`
+- **审计范围**: Phase 17-20，覆盖36页面交互/API断链/后端死函数/文档
+- **审计结果**:
+  - Phase 17: 28个页面交互测试通过，Vite懒编译问题仅影响开发环境，生产构建正常
+  - Phase 18: 9个API断链 → 5个已封装到domain层，4个(pk/mistake/avatar/stream)待渐进迁移
+  - Phase 19: 8个疑似死函数 → 7个确认保留(3个运维工具+4个待对接功能)，1个确认删除
+  - 后端管理函数安全结论：data-cleanup/db-create-indexes/db-migrate-timestamps 均已有 requireAdminAccess 保护（上轮审计结论有误已纠正）
+- **修复内容**:
+  - `practice.api.js`: 新增 exportAnki() + importAnki() + submitAnswer() 三个封装
+  - `ai.api.js`: 新增 ragIngest() 封装
+  - `school.api.js`: 新增 crawlSchoolData() 封装
+  - 删除 `laf-backend/functions/job-bot-handoff-notify.ts` (-601行，与考研业务无关)
+  - 删除 `tests/unit/audit-job-bot-handoff-notify.spec.js`
+  - CLAUDE.md 质量关卡数据更新: 90 files / 1234 tests
+- **当前质量关卡**: lint ✅ | 90文件/1234用例 ✅ | H5构建 ✅
+- **Breaking Changes**: 无
+
+---
+
 ## [2026-03-28] 深度审计二轮 — 分层违规修复+UI交互测试+focus-timer修复+后端验证
 
 - **Scope**: `frontend`, `backend`
