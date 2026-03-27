@@ -23,8 +23,8 @@
           :model-value="progress"
           :size="280"
           :stroke-width="10"
-          :color="isBreak ? '#3b82f6' : 'var(--primary, #0f5f34)'"
-          layer-color="var(--border-color, rgba(0,0,0,0.06))"
+          :color="isBreak ? '#3b82f6' : circleColor"
+          :layer-color="circleLayerColor"
           :speed="100"
           :clockwise="false"
         >
@@ -105,6 +105,10 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 // Layout
 const statusBarHeight = ref(44);
 const isDark = ref(false);
+
+// WdCircle 在 H5 的 Canvas 不支持 CSS 变量，需传实际颜色值
+const circleColor = computed(() => (isDark.value ? '#4ade80' : '#0f5f34'));
+const circleLayerColor = computed(() => (isDark.value ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'));
 
 // Timer state
 const focusDuration = ref(25); // minutes
