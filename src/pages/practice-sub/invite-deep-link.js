@@ -13,6 +13,7 @@ import { ref } from 'vue';
 // P006: 从中央配置读取深度链接配置
 import appConfig from '@/config/index.js';
 import { logger } from '@/utils/logger.js';
+import { lafService } from '@/services/lafService.js';
 
 // 链接类型
 const LINK_TYPE = {
@@ -371,7 +372,6 @@ export function generateShareConfig(inviteInfo) {
  */
 export async function validateInviteCode(code, roomId) {
   try {
-    void roomId;
     if (!code || code.length !== CONFIG.codeLength) {
       return false;
     }
@@ -381,10 +381,31 @@ export async function validateInviteCode(code, roomId) {
       return true;
     }
 
-    logger.warn('[InviteDeepLink] validateInviteCode backend API not implemented');
+    // 调用后端验证邀请码有效性
+    const res = await lafService.request('/pk-battle', {
+      action: 'validate_invite_code',
+      data: { code, roomId }
+    });
+
+    if (res?.code === 0 && res?.data?.valid) {
+      return true;
+    }
+
+    // 后端未实现该 action 时，降级为格式校验：
+    // 邀请码长度正确且仅含合法字符（字母数字）即视为格式有效
+    if (res?.code === 400 && res?.message?.includes('未知')) {
+      logger.warn('[InviteDeepLink] 后端无 validate_invite_code，降级为格式校验');
+      return /^[A-Z0-9]+$/.test(code);
+    }
+
     return false;
   } catch (error) {
     logger.error('[InviteDeepLink] Validate error:', error);
+    // 网络异常时降级为格式校验，避免阻塞用户流程
+    if (code && code.length === CONFIG.codeLength && /^[A-Z0-9]+$/.test(code)) {
+      logger.warn('[InviteDeepLink] 网络异常，降级为格式校验');
+      return true;
+    }
     return false;
   }
 }
@@ -395,7 +416,7 @@ export async function validateInviteCode(code, roomId) {
  * @returns {Promise<Object>} 加入结果
  */
 export async function joinPKRoom(inviteInfo) {
-  const { roomId } = inviteInfo;
+  const { roomId, inviteCode } = inviteInfo;
 
   try {
     if (appConfig.debug.enableMock) {
@@ -407,9 +428,24 @@ export async function joinPKRoom(inviteInfo) {
       };
     }
 
+    // 调用后端加入PK房间
+    const res = await lafService.request('/pk-battle', {
+      action: 'join_room',
+      data: { roomId, inviteCode }
+    });
+
+    if (res?.code === 0) {
+      return {
+        success: true,
+        roomId,
+        data: res.data,
+        message: res.message || '成功加入房间'
+      };
+    }
+
     return {
       success: false,
-      message: '加入房间服务暂不可用'
+      message: res?.message || '加入房间失败'
     };
   } catch (error) {
     logger.error('[InviteDeepLink] Join room error:', error);

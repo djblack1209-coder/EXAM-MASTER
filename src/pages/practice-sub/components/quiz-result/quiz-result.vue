@@ -116,7 +116,7 @@
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { animateNumber } from '@/utils/animations/micro-interactions';
-import { analyzeMastery } from '@/services/api/domains/study.api.js';
+import { analyzeMastery } from '@/services/api/domains/smart-study.api.js';
 
 const props = defineProps({
   visible: { type: Boolean, default: false },

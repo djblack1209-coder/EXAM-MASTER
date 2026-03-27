@@ -17,7 +17,7 @@
 import cloud from '@lafjs/cloud';
 import { verifyJWT, extractBearerToken } from './_shared/auth.js';
 import { requireAdminAccess } from './_shared/admin-auth.js';
-import { createLogger } from './_shared/api-response.js';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -182,6 +182,24 @@ export default async function (ctx) {
 
     if (!action) {
       return { code: 400, success: false, message: '缺少 action 参数', requestId };
+    }
+
+    // 分布式限流：公开端点，按 IP 限制每分钟 30 次请求
+    const clientIp =
+      ctx.headers?.['x-forwarded-for']?.split(',')[0]?.trim() ||
+      ctx.headers?.['x-real-ip'] ||
+      ctx.socket?.remoteAddress ||
+      'unknown';
+    const rateLimitKey = `school-query:${clientIp}:${action}`;
+    const rateLimit = await checkRateLimitDistributed(rateLimitKey, 30, 60 * 1000);
+    if (!rateLimit.allowed) {
+      return {
+        code: 429,
+        success: false,
+        message: '请求过于频繁，请稍后再试',
+        retryAfter: Math.max(1, Math.ceil((rateLimit.resetAt - Date.now()) / 1000)),
+        requestId
+      };
     }
 
     // JWT 身份验证（收藏操作需要认证，公开查询允许匿名）

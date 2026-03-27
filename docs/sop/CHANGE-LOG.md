@@ -14,6 +14,36 @@
 
 ---
 
+## [2026-03-28] 全量审计 Round 7 — 安全漏洞修复+功能阻断修复+代码质量加固
+
+- **Scope**: `backend`, `frontend`, `test`, `docs`
+- **Files Changed**:
+  - `laf-backend/functions/question-bank.ts` — [Critical] seedPreset添加requireAdminAccess校验
+  - `laf-backend/functions/school-query.ts` — [High] 添加checkRateLimitDistributed(30req/min/IP)
+  - `src/pages/practice-sub/invite-deep-link.js` — [Blocker] validateInviteCode和joinPKRoom改为调用后端API
+  - `src/services/api/domains/study.api.js` — 移除7个从smart-study.api.js的重导出
+  - `src/services/api/domains/smart-study.api.js` — 移除generateAdaptivePlan别名
+  - `src/stores/modules/study-engine.js` — generateAdaptivePlan→generateStudyPlan
+  - `src/pages/plan/index.vue` + `adaptive.vue` + `study-detail/index.vue` + `mistake/index.vue` + `quiz-result.vue` — 更新导入路径
+  - `src/services/subscribe-message.js` — 添加isConfigured()优雅降级
+  - `src/pages/plan/intelligent-plan-manager.js` — 最佳学习时间从硬编码→智能推荐
+  - 删除根目录pages.json(过时副本,与src/pages.json分叉)
+  - 3个测试文件适配代码变更(invite-deep-link/school-query/question-bank)
+- **Summary**:
+  - **[Critical安全]** question-bank seedPreset现在需要管理员权限,任何普通用户无法批量插入题目
+  - **[High安全]** school-query添加分布式速率限制,防止爬虫/DDoS
+  - **[Blocker修复]** PK邀请码验证和加入房间从"永远失败"修复为调用后端API
+  - **[D019修复]** study.api.js与smart-study.api.js 7个同名导出消除,generateAdaptivePlan统一为generateStudyPlan
+  - **[D020修复]** subscribe-message.js添加优雅降级,模板ID为空时静默跳过
+  - **[功能增强]** 最佳学习时间从硬编码09:00→基于答题数据智能推荐
+  - **[配置修复]** 删除根目录过时的pages.json(与src/pages.json严重分叉)
+  - **测试**: 92/92文件 1265/1265用例全部通过(+2新测试)
+- **Breaking Changes**:
+  - study.api.js不再重导出smart-study的函数,需从smart-study.api.js直接导入
+  - generateAdaptivePlan已重命名为generateStudyPlan
+
+---
+
 ## [2026-03-28] 全量审计 Round 3-5 — 安全加固+测试全通过+文档清洗+ESLint清零
 
 - **Scope**: `backend`, `frontend`, `docs`, `test`

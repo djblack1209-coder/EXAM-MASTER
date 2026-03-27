@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-async function loadInviteModule({ inviteSecret = '', enableMock = false } = {}) {
+async function loadInviteModule({ inviteSecret = '', enableMock = false, lafRequestMock = null } = {}) {
   vi.resetModules();
 
   const logger = {
@@ -27,8 +27,14 @@ async function loadInviteModule({ inviteSecret = '', enableMock = false } = {}) 
     }
   }));
 
+  // mock lafService — validateInviteCode / joinPKRoom 现在会调用后端 API
+  const mockRequest = lafRequestMock || vi.fn().mockRejectedValue(new Error('网络不可用(测试环境)'));
+  vi.doMock('@/services/lafService.js', () => ({
+    lafService: { request: mockRequest }
+  }));
+
   const mod = await import('@/pages/practice-sub/invite-deep-link.js');
-  return { mod, logger };
+  return { mod, logger, mockRequest };
 }
 
 describe('invite-deep-link security', () => {
@@ -84,16 +90,30 @@ describe('invite-deep-link security', () => {
     });
   });
 
-  it('fails closed for validateInviteCode when mock is disabled', async () => {
+  it('validateInviteCode calls backend API, falls back to format validation on error', async () => {
     const { mod, logger } = await loadInviteModule({
       inviteSecret: 'test_invite_secret',
       enableMock: false
     });
 
+    // lafService.request 在测试环境会抛出错误
+    // catch 分支对格式合法的邀请码降级为格式校验，返回 true
     const valid = await mod.validateInviteCode('ABCD1234', 'room_1');
 
+    expect(valid).toBe(true);
+    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('降级为格式校验'));
+  });
+
+  it('validateInviteCode returns false for invalid format code on error', async () => {
+    const { mod } = await loadInviteModule({
+      inviteSecret: 'test_invite_secret',
+      enableMock: false
+    });
+
+    // 格式不合法的邀请码（包含小写），降级校验也返回 false
+    const valid = await mod.validateInviteCode('abcd1234', 'room_1');
+
     expect(valid).toBe(false);
-    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('backend API not implemented'));
   });
 
   it('allows validateInviteCode mock only in debug mode', async () => {
@@ -107,7 +127,24 @@ describe('invite-deep-link security', () => {
     expect(valid).toBe(true);
   });
 
-  it('returns unavailable for joinPKRoom when mock is disabled', async () => {
+  it('validateInviteCode succeeds when backend returns valid', async () => {
+    const mockRequest = vi.fn().mockResolvedValue({ code: 0, data: { valid: true } });
+    const { mod } = await loadInviteModule({
+      inviteSecret: 'test_invite_secret',
+      enableMock: false,
+      lafRequestMock: mockRequest
+    });
+
+    const valid = await mod.validateInviteCode('ABCD1234', 'room_1');
+
+    expect(valid).toBe(true);
+    expect(mockRequest).toHaveBeenCalledWith('/pk-battle', {
+      action: 'validate_invite_code',
+      data: { code: 'ABCD1234', roomId: 'room_1' }
+    });
+  });
+
+  it('joinPKRoom returns failure with error message when API unavailable', async () => {
     const { mod } = await loadInviteModule({
       inviteSecret: 'test_invite_secret',
       enableMock: false

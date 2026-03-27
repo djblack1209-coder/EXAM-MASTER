@@ -6,6 +6,7 @@
 import cloud from '@lafjs/cloud';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { checkRateLimitDistributed, createLogger } from './_shared/api-response.js';
+import { requireAdminAccess } from './_shared/admin-auth.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -101,8 +102,14 @@ export default async function (ctx) {
         return await getQuestionsByIds(data, requestId, Boolean(authUserId));
       case 'get_stats':
         return await getCategoryStats(requestId);
-      case 'seed_preset':
+      case 'seed_preset': {
+        // 预置题目导入是危险操作，必须验证管理员权限
+        const adminAuth = requireAdminAccess(ctx, { allowBodyFallback: true });
+        if (!adminAuth.ok) {
+          return { code: adminAuth.code, success: false, message: adminAuth.message || '需要管理员权限', requestId };
+        }
         return await seedPresetQuestions(data, requestId);
+      }
 
       default:
         return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };

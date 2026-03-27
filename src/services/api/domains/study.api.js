@@ -136,16 +136,9 @@ export async function getResourceCategories() {
 }
 
 // ==================== 智能学习引擎 ====================
-// ⚠️ 已迁移至 smart-study.api.js，此处仅保留 re-export 兼容
-export {
-  analyzeMastery,
-  getErrorClusters,
-  getSprintPriority,
-  generateAdaptivePlan,
-  getDeepCorrection,
-  getPendingCorrections,
-  markCorrectionRead
-} from './smart-study.api.js';
+// ✅ D019: 已移除 re-export，智能学习函数统一从 smart-study.api.js 导入
+// 旧的 re-export 导致 analyzeMastery / getErrorClusters / getSprintPriority /
+// generateAdaptivePlan 等 4+ 个函数同时从两个模块导出，引发 import 混乱
 
 /**
  * 获取首页动态数据（金句、公式、公告等）

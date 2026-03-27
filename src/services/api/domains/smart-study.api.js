@@ -167,5 +167,4 @@ export async function generateStudyPlan(examDate, dailyHours) {
   }
 }
 
-// 别名：兼容 study.api.js 的旧命名（已发布页面 plan/index.vue 使用此名）
-export const generateAdaptivePlan = generateStudyPlan;
+// ✅ D019: 移除 generateAdaptivePlan 别名，统一使用 generateStudyPlan

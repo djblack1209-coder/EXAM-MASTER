@@ -49,6 +49,13 @@ vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
     info: vi.fn(),
     warn: vi.fn(),
     error: vi.fn()
+  }),
+  // school-query 现在使用分布式限流，单测中默认放行
+  checkRateLimitDistributed: vi.fn().mockResolvedValue({
+    allowed: true,
+    remaining: 29,
+    resetAt: Date.now() + 60000,
+    source: 'memory'
   })
 }));
 

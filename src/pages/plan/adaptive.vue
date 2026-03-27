@@ -163,7 +163,7 @@ async function loadData() {
       return;
     }
 
-    const result = await studyEngineStore.generateAdaptivePlan(examDate, dailyHours);
+    const result = await studyEngineStore.generateStudyPlan(examDate, dailyHours);
     if (result.success && result.data) {
       planData.value = result.data;
       phases.value = result.data.phases || [];

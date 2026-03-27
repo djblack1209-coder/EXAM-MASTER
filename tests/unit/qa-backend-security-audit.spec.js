@@ -69,12 +69,12 @@ describe('[QA 安全审计] question-bank seed_preset 权限检查', () => {
     vi.clearAllMocks();
   });
 
-  it('seed_preset 无 admin 权限时 — 源码当前没有 admin 检查，应成功执行（标记安全隐患）', async () => {
-    // 注意：question-bank.ts 的 seed_preset 当前没有 requireAdminAccess 调用
-    // 这是一个安全隐患——任何认证用户都可以导入题目
-    // 此测试验证当前实际行为
+  it('seed_preset 无 admin 权限时应返回 403（已修复安全隐患）', async () => {
+    // seed_preset 现已添加 requireAdminAccess 检查
+    // 普通用户无法导入题目
     mockRequireAuth.mockReturnValue({ userId: 'normal_user' });
     mockIsAuthError.mockReturnValue(false);
+    mockRequireAdminAccess.mockReturnValue({ ok: false, code: 403, message: '需要管理员权限' });
 
     const questionBank = (await import('../../laf-backend/functions/question-bank')).default;
     const ctx = {
@@ -83,10 +83,9 @@ describe('[QA 安全审计] question-bank seed_preset 权限检查', () => {
     };
 
     const result = await questionBank(ctx);
-    // 当前行为：认证通过后直接执行，返回成功
-    // TODO: 应当在源码中为 seed_preset 添加 requireAdminAccess 检查
-    expect(result.code).toBe(0);
-    expect(result.success).toBe(true);
+    expect(result.code).toBe(403);
+    expect(result.success).toBe(false);
+    expect(result.message).toContain('管理员权限');
   });
 
   it('get 操作不需要 admin 权限', async () => {
