@@ -1367,7 +1367,7 @@ export default {
             }
           })
           .catch((error) => {
-            console.warn('[do-quiz] save mistake summary failed:', error);
+            logger.warn('[do-quiz] save mistake summary failed:', error);
           });
         this.autoDiagnose();
       }

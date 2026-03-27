@@ -14,6 +14,41 @@
 
 ---
 
+## [2026-03-28] 全量全方位审计 — 10阶段SOP级审计+修复+SOP重写
+
+- **Scope**: `frontend`, `backend`, `infra`, `docs`, `test`
+- **审计方案**: 按世界顶级软件开发公司职位架构设计10阶段审计，覆盖构建/代码质量/后端健康/安全/UI-UX/功能完整性/架构治理/SOP/文档/CI-CD
+- **审计结果**:
+  - Phase 1 构建验证: H5构建通过 + 后端TS编译通过
+  - Phase 2 代码质量: ESLint 0错误 + 91文件/1240用例全通过（清理后）
+  - Phase 3 后端健康: PM2在线 + MongoDB运行 + Nginx+SSL正常 + 证书到2026-06-20
+  - Phase 4 安全审计: 前端无密钥泄露 + 后端鉴权覆盖完整 + Git历史干净
+  - Phase 5 UI/UX: 16张截图（深色/浅色），发现TabBar遮挡问题
+- **修复内容**:
+  - 修复首页TabBar遮挡内容: `padding-bottom` 从 `200rpx` 改为 `140px`（与practice页一致）
+  - 清理20个死代码文件: 8个未使用组件 + 2个composables + 7个utils + 3个services
+  - 同步删除关联测试: `integration-mistake.spec.js` + `real-utils.spec.js` config-validator块
+  - `.env.test` 从14行补充至66行，与 `.env.example` 完全同步
+  - 3处 `console.warn` 改为 `logger.warn`（import-data/do-quiz/knowledge-graph）
+  - CLAUDE.md 重写: 移除明文密码 + 新增第8条红线 + 记录分层违规技术债务 + 更新质量关卡数据
+  - 创建 `.env.server`（gitignore）存放服务器敏感凭证
+  - `.gitignore` 新增 `.env.server` 排除规则
+- **Files Changed**:
+  - `src/pages/index/index.vue` — 修复TabBar遮挡
+  - `src/pages/practice-sub/import-data.vue` — console.warn → logger.warn
+  - `src/pages/practice-sub/do-quiz.vue` — console.warn → logger.warn
+  - `src/pages/knowledge-graph/index.vue` — console.warn → logger.warn
+  - `tests/unit/real-utils.spec.js` — 移除已删除模块的测试块
+  - `.env.test` — 补充31个缺失变量
+  - `CLAUDE.md` — SOP重写（安全+质量关卡+已知陷阱更新）
+  - `.env.server` — 新建（服务器凭证）
+  - `.gitignore` — 新增 .env.server 排除
+  - `docs/status/HEALTH.md` — 更新审计日期和资源数据
+  - 删除20个死代码文件（详见审计报告）
+- **Breaking Changes**: 无
+
+---
+
 ## [2026-03-28] 全量审计 Round 7 — 安全漏洞修复+功能阻断修复+代码质量加固
 
 - **Scope**: `backend`, `frontend`, `test`, `docs`

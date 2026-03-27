@@ -35,6 +35,7 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+.env.server
 # ✅ P0-2 改造：排除开发/生产环境配置文件（包含敏感信息）
 .env.development
 .env.production

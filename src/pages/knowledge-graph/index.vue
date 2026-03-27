@@ -522,7 +522,7 @@ export default {
           this.knowledgeMapNodes = mapData.nodes;
           this.knowledgeMapEdges = mapData.edges;
         } catch (e) {
-          console.warn('[KnowledgeGraph] 知识引擎加载失败:', e);
+          logger.warn('[KnowledgeGraph] 知识引擎加载失败:', e);
         }
 
         logger.log('[KnowledgeGraph] 数据加载完成:', {

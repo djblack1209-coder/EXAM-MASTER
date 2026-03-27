@@ -25,12 +25,13 @@
 
 ```
 1. 理解意图 → 用大白话和客户确认："您是想要...对吗？"
-2. 设计方案 → 30秒说清楚怎么做（用类比解释）
-3. 拆分任务 → TodoWrite 列出步骤
-4. 逐步实施 → 每完成一步标记完成 + 汇报进度
-5. 截图展示 → Playwright 截图给客户看效果
-6. 质量关卡 → 跑构建、Lint、相关测试
-7. 收尾 → 更新 CHANGE-LOG + HEALTH.md
+2. 可行性评估 → 30秒说清楚方案（用类比解释），同时评估对现有架构的影响
+3. 搜索开源 → 检查 GitHub 上是否有成熟的高 Star 项目可以直接搬运/集成
+4. 拆分任务 → TodoWrite 列出步骤（颗粒度到单个文件级别）
+5. 逐步实施 → 每完成一步标记完成 + 汇报进度
+6. 截图展示 → Playwright 截图给客户看效果
+7. 质量关卡 → npm run lint + npm test + npm run build:h5（三个全过才算完）
+8. 收尾 → 更新 CHANGE-LOG + HEALTH.md
 ```
 
 ### 流程B: UI/UX改进
@@ -58,7 +59,7 @@
 ```
 1. 构建 → npm run build:h5 / build:mp-weixin
 2. 后端编译 → cd laf-backend && npx tsc --project tsconfig.standalone.json
-3. 上传服务器 → scp + ssh pm2 restart
+3. 上传服务器 → scp + ssh pm2 restart（服务器信息见 .env.server）
 4. 验证 → curl health-check 确认在线
 5. 告诉客户 → "已上线，你可以打开看看"
 ```
@@ -91,6 +92,7 @@
 | **后端语言** | TypeScript (云函数)                       |
 | **Node**     | >= 20.17.0                                |
 | **状态**     | 生产环境 — 双服务器                       |
+| **审计日期** | 2026-03-28（全量通过）                    |
 
 ## 架构
 
@@ -98,30 +100,32 @@
 用户 → 微信小程序 / H5 浏览器
          │
     uni-app Vue 3 前端
-    ├── 36 个页面 → 41 个组件 → 17 个 Pinia Store
+    ├── 36 个页面 → 33 个组件 → 17 个 Pinia Store
     └── Service层 (lafService → api/domains/*.api.js)
               │
               ├─ 主服务器: https://api.245334.xyz (腾讯云)
               │    Nginx → PM2/Express:3001 → MongoDB Docker
               │
               └─ 备用服务器: https://nf98ia8qnt.sealosbja.site (Sealos Laf)
-                   47 个 TypeScript 云函数
+                   45 个 TypeScript 云函数
 
 海外 AI 代理: https://api-gw.245334.xyz (CF Worker, 14 个 AI 提供商)
 ```
 
 ## 服务器信息
 
-| 项        | 值                                            |
-| --------- | --------------------------------------------- |
-| IP        | 101.43.41.96                                  |
-| 用户      | root                                          |
-| 密码      | Pl123456                                      |
-| 后端路径  | /opt/apps/exam-master/backend/                |
-| PM2进程名 | exam-master                                   |
-| Nginx配置 | /opt/nginx/conf.d/exam-master.conf            |
-| MongoDB   | Docker容器 exam-master-mongo, 127.0.0.1:27017 |
-| SSL证书   | /etc/letsencrypt/live/api.245334.xyz/         |
+⚠️ **敏感信息已迁移到 `.env.server`（不在版本控制中）**
+
+| 项        | 值                                                      |
+| --------- | ------------------------------------------------------- |
+| IP        | 101.43.41.96                                            |
+| 后端路径  | /opt/apps/exam-master/backend/                          |
+| PM2进程名 | exam-master                                             |
+| Nginx配置 | /etc/nginx/conf.d/exam-master.conf                      |
+| MongoDB   | Docker容器 exam-master-mongo, 127.0.0.1:27017           |
+| SSL证书   | /etc/letsencrypt/live/api.245334.xyz/（到期2026-06-20） |
+
+SSH 登录方式：`ssh root@101.43.41.96`（密码见 `.env.server`）
 
 ## 常用命令
 
@@ -137,7 +141,7 @@ scp -r dist/* root@101.43.41.96:/opt/apps/exam-master/backend/
 ssh root@101.43.41.96 'cd /opt/apps/exam-master/backend && npm install && pm2 restart exam-master'
 
 # 测试
-npm test                          # 单元测试
+npm test                          # 单元测试（91文件/1240用例）
 npm run lint                      # 代码检查
 
 # 服务器检查
@@ -153,6 +157,7 @@ ssh root@101.43.41.96 'pm2 list && curl -s http://localhost:3001/health-check'
 5. **永远不要**让微信小程序主包超过 2MB
 6. **永远不要**在前端直接调后端（必须走 Service 层）
 7. **永远不要**未经构建验证就说"完成了"
+8. **永远不要**把服务器密码/SSH密钥写在被 Git 跟踪的文件中
 
 ## 分层纪律
 
@@ -162,6 +167,20 @@ ssh root@101.43.41.96 'pm2 list && curl -s http://localhost:3001/health-check'
 Store(Pinia) → 调用 Service，管理全局状态
 Service → 调用 lafService 发 API 请求
 后端云函数 → 操作 MongoDB，调用第三方 API
+```
+
+**已知违规（技术债务，待重构）**：以下8个页面绕过了 Store 直接调用 lafService：
+
+- `import-data.vue`, `pk-battle.vue`, `rank.vue`, `AIChatModal.vue`
+- `MistakeReport.vue`, `chat.vue`, `ai-consult.vue`, `profile/index.vue`
+
+## 质量关卡（每次修改后必须通过）
+
+```bash
+# 三道关卡，全过才能说"完成了"
+npm run lint       # 0 errors 0 warnings
+npm test           # 91 files / 1240 tests passed
+npm run build:h5   # Build complete
 ```
 
 ## 每次任务完成后必做
@@ -179,6 +198,7 @@ Service → 调用 lafService 发 API 请求
 | SiliconFlow DS key 调用Pro模型    | key会永久死亡，只用标准模型                         |
 | canvas-confetti 微信不支持        | 用 `mp-confetti.js` (CSS动画)                       |
 | MongoDB `_.or()` 查询             | 必须用 `.where()` 顶层操作符                        |
+| 首页底部内容被TabBar遮挡          | padding-bottom 至少 140px + safe-area               |
 
 ## 文档归档规则
 
@@ -197,6 +217,8 @@ Service → 调用 lafService 发 API 请求
 | ------------ | ------------------------------------- |
 | 前端环境变量 | `.env.development`, `.env.production` |
 | 后端环境变量 | `laf-backend/.env`                    |
-| 页面路由     | `pages.json`                          |
+| 测试环境变量 | `.env.test`（同步 .env.example）      |
+| 页面路由     | `src/pages.json`                      |
 | Vite构建     | `vite.config.js`                      |
-| uni-app配置  | `manifest.json`                       |
+| uni-app配置  | `src/manifest.json`                   |
+| 服务器凭证   | `.env.server`（不在版本控制中）       |

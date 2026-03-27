@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-28 (全量深度审计-Round8-最终) | Maintainer: AI-SOP
+> Last updated: 2026-03-28 (全量审计-Phase10-SOP重写) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -107,8 +107,8 @@
 
 | Resource                 | Current           | Limit           | Alert Threshold |
 | ------------------------ | ----------------- | --------------- | --------------- |
-| Tencent Cloud RAM        | ~896MB            | 1.9GB           | 1.5GB           |
-| Tencent Cloud Disk       | 14GB              | 40GB            | 32GB            |
+| Tencent Cloud RAM        | ~885MB            | 1.9GB           | 1.5GB           |
+| Tencent Cloud Disk       | 16GB              | 40GB            | 32GB            |
 | Tencent Cloud Bandwidth  | —                 | 200GB/月 @3Mbps | 160GB           |
 | SiliconFlow DS Keys 余额 | 140元 (10条×14元) | —               | < 30元          |
 | LLM Provider Pool        | 14 providers      | —               | < 8 可用        |

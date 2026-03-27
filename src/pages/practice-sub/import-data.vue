@@ -561,7 +561,7 @@ export default {
                   data: { bankId: result.bankId || result.questionBankId }
                 })
                 .catch((err) => {
-                  console.warn('[Import] RAG indexing failed (non-critical):', err);
+                  logger.warn('[Import] RAG indexing failed (non-critical):', err);
                 });
             }
 
