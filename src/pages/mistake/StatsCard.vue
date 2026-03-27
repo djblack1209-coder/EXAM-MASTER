@@ -28,46 +28,42 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'StatsCard',
-  components: { BaseIcon },
-  props: {
-    title: {
-      type: String,
-      required: true
-    },
-    value: {
-      type: [String, Number],
-      required: true
-    },
-    change: {
-      type: String,
-      default: ''
-    },
-    changeType: {
-      type: String,
-      default: 'neutral',
-      validator: (value) => ['positive', 'negative', 'neutral'].includes(value)
-    },
-    icon: {
-      type: String,
-      required: true
-    },
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+defineProps({
+  title: {
+    type: String,
+    required: true
   },
-  emits: ['click'],
-  methods: {
-    handleClick() {
-      this.$emit('click');
-    }
+  value: {
+    type: [String, Number],
+    required: true
+  },
+  change: {
+    type: String,
+    default: ''
+  },
+  changeType: {
+    type: String,
+    default: 'neutral',
+    validator: (value) => ['positive', 'negative', 'neutral'].includes(value)
+  },
+  icon: {
+    type: String,
+    required: true
+  },
+  isDark: {
+    type: Boolean,
+    default: false
   }
-};
+});
+
+const emit = defineEmits(['click']);
+
+function handleClick() {
+  emit('click');
+}
 </script>
 
 <style lang="scss" scoped>
@@ -125,7 +121,7 @@ export default {
     display: flex;
     flex-direction: column;
     /* gap: 4px; -- replaced for Android WebView compat */
-flex: 1;
+    flex: 1;
   }
 
   &__title {

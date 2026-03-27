@@ -14,7 +14,8 @@
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { APP_CONFIG } from '../../../common/config';
+import config from '@/config/index.js';
+const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
 
 export const useStudyStore = defineStore('study', () => {

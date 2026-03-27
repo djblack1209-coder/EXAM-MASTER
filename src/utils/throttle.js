@@ -15,6 +15,7 @@
  *   console.log('搜索:', keyword)
  * }, 300)
  */
+import { toast } from '@/utils/toast.js';
 export function debounce(fn, delay = 300, immediate = false) {
   let timer = null;
   let isInvoked = false;
@@ -132,11 +133,7 @@ export function clickLock(fn, options = {}) {
   return async function (...args) {
     if (isLocked) {
       if (showToast) {
-        uni.showToast({
-          title: '操作太频繁，请稍后',
-          icon: 'none',
-          duration: 1500
-        });
+        toast.info('操作太频繁，请稍后', 1500);
       }
       return;
     }

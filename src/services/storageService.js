@@ -152,6 +152,7 @@ function isSensitiveKey(key) {
 
 // ✅ 从独立模块导入认证函数（打破循环依赖）
 import { getUserId, getToken } from './auth-storage.js';
+import { toast } from '@/utils/toast.js';
 
 // ✅ 用户隔离：全局键（不加 userId 前缀）
 // 所有不在此集合中的键都会自动加 `u_${userId}_` 前缀，实现多用户数据隔离
@@ -370,11 +371,7 @@ class StorageService {
     } catch (error) {
       logger.error(`[StorageService] 保存失败: ${key}`, error);
       if (!silent) {
-        uni.showToast({
-          title: '保存失败，请检查存储空间',
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info('保存失败，请检查存储空间');
       }
       return false;
     }
@@ -515,11 +512,7 @@ class StorageService {
     } catch (error) {
       logger.error(`[StorageService] 删除失败: ${key}`, error);
       if (!silent) {
-        uni.showToast({
-          title: '删除失败',
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info('删除失败');
       }
       return false;
     }
@@ -568,11 +561,7 @@ class StorageService {
     } catch (error) {
       logger.error('[StorageService] 清空存储失败', error);
       if (!silent) {
-        uni.showToast({
-          title: '清空失败',
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info('清空失败');
       }
       return false;
     }
@@ -749,11 +738,7 @@ class StorageService {
     } catch (error) {
       logger.error('[StorageService] 批量保存失败', error);
       if (!silent) {
-        uni.showToast({
-          title: '批量保存失败',
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info('批量保存失败');
       }
       return false;
     }

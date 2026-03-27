@@ -23,8 +23,8 @@
 
 import cloud from '@lafjs/cloud';
 import fs from 'fs';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
-import { logger, success, badRequest, unauthorized, serverError, generateRequestId } from './_shared/api-response';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { logger, success, badRequest, unauthorized, serverError, generateRequestId } from './_shared/api-response.js';
 
 const db = cloud.database();
 

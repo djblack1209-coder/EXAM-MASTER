@@ -189,14 +189,13 @@ describe('useThemeStore', () => {
       expect(storageService.save).not.toHaveBeenCalled();
     });
 
-    it('无用户设置 + window.matchMedia dark → 跟随系统深色', () => {
+    it('无用户设置 + 系统深色模式 → 跟随系统深色', () => {
       storageService.get.mockReturnValue(null);
 
-      // 模拟 window.matchMedia
-      const originalWindow = globalThis.window;
-      globalThis.window = {
-        matchMedia: vi.fn(() => ({ matches: true }))
-      };
+      // 模拟 uni-app 系统深色模式（源码使用 uni API 而非 window.matchMedia）
+      mockGetAppBaseInfo.mockReturnValue({ theme: 'dark' });
+      // #ifndef MP-WEIXIN 分支也会执行，需要同时 mock getSystemInfoSync
+      globalThis.uni.getSystemInfoSync = vi.fn(() => ({ hostTheme: 'dark' }));
 
       const store = useThemeStore();
       store.restoreTheme();
@@ -206,17 +205,14 @@ describe('useThemeStore', () => {
       // 无 savedMode 时写入 storage
       expect(storageService.save).toHaveBeenCalledWith('theme_type', 'bitget');
       expect(storageService.save).toHaveBeenCalledWith('theme_mode', 'dark');
-
-      globalThis.window = originalWindow;
     });
 
-    it('无用户设置 + window.matchMedia light → 跟随系统浅色', () => {
+    it('无用户设置 + 系统浅色模式 → 跟随系统浅色', () => {
       storageService.get.mockReturnValue(null);
 
-      const originalWindow = globalThis.window;
-      globalThis.window = {
-        matchMedia: vi.fn(() => ({ matches: false }))
-      };
+      // 模拟 uni-app 系统浅色模式
+      mockGetAppBaseInfo.mockReturnValue({ theme: 'light' });
+      globalThis.uni.getSystemInfoSync = vi.fn(() => ({ hostTheme: 'light' }));
 
       const store = useThemeStore();
       store.restoreTheme();
@@ -224,8 +220,6 @@ describe('useThemeStore', () => {
       expect(store.isDark).toBe(false);
       expect(store.themeType).toBe('wise');
       expect(storageService.save).toHaveBeenCalledWith('theme_mode', 'light');
-
-      globalThis.window = originalWindow;
     });
 
     it('无用户设置 + 无 window → 默认浅色', () => {

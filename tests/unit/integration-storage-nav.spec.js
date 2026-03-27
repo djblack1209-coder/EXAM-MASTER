@@ -107,7 +107,7 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
 
       // 应该调用了加密存储（_enc_ 前缀）
       const calls = uni.setStorageSync.mock.calls;
-      const encCall = calls.find((c) => c[0] === '_enc_EXAM_TOKEN');
+      const _encCall = calls.find((c) => c[0] === '_enc_EXAM_TOKEN');
       // 如果加密成功，应该有 _enc_ 前缀的调用
       // 如果加密失败（无密钥），会回退到明文
       expect(calls.length).toBeGreaterThan(0);

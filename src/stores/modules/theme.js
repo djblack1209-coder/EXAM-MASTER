@@ -84,7 +84,11 @@ export const useThemeStore = defineStore('theme', () => {
     // #endif
 
     // #ifndef MP-WEIXIN
-    systemTheme = uni.getSystemInfoSync().hostTheme === 'dark' ? 'dark' : 'light';
+    try {
+      systemTheme = uni.getSystemInfoSync?.()?.hostTheme === 'dark' ? 'dark' : 'light';
+    } catch (_e3) {
+      systemTheme = 'light';
+    }
     // #endif
 
     // 检查是否有用户手动设置

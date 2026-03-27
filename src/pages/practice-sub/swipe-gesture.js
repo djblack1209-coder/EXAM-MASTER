@@ -11,6 +11,7 @@
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { getWindowInfo as _getWindowInfo } from '@/utils/core/system.js';
+import { toast } from '@/utils/toast.js';
 const STORAGE_KEY = 'swipe_gesture_settings';
 
 // 默认配置
@@ -382,11 +383,7 @@ class SwipeGestureManager {
     const message = boundary === 'start' ? '已经是第一题了' : '已经是最后一题了';
     try {
       if (typeof uni !== 'undefined') {
-        uni.showToast({
-          title: message,
-          icon: 'none',
-          duration: 1500
-        });
+        toast.info(message, 1500);
       }
     } catch (e) {
       logger.warn('[SwipeGesture] 显示提示失败:', e);

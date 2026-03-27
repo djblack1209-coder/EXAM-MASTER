@@ -34,9 +34,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
 /**
  * 自定义弹窗组件
  * ✅ PM要求：替换原生弹窗，消除"塑料感"
@@ -51,108 +52,98 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
  *   @cancel="handleCancel"
  * />
  */
-export default {
-  name: 'CustomModal',
-  components: { BaseIcon },
 
-  props: {
-    // 是否显示
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    // 弹窗类型：info, success, warning, error
-    type: {
-      type: String,
-      default: 'info'
-    },
-    // 自定义图标
-    icon: {
-      type: String,
-      default: ''
-    },
-    // 标题
-    title: {
-      type: String,
-      default: '提示'
-    },
-    // 内容
-    content: {
-      type: String,
-      default: ''
-    },
-    // 确认按钮文字
-    confirmText: {
-      type: String,
-      default: '确定'
-    },
-    // 取消按钮文字
-    cancelText: {
-      type: String,
-      default: '取消'
-    },
-    // 是否显示取消按钮
-    showCancel: {
-      type: Boolean,
-      default: true
-    },
-    // 点击遮罩是否关闭
-    maskClosable: {
-      type: Boolean,
-      default: false
-    },
-    // 深色模式
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+const props = defineProps({
+  // 是否显示
+  visible: {
+    type: Boolean,
+    default: false
   },
-
-  emits: ['cancel', 'update:visible', 'confirm'],
-
-  data() {
-    return {
-      iconMap: {
-        info: 'bulb',
-        success: 'success',
-        warning: 'warning',
-        error: 'error',
-        question: 'question',
-        empty: 'empty',
-        upload: 'upload',
-        study: 'books'
-      }
-    };
+  // 弹窗类型：info, success, warning, error
+  type: {
+    type: String,
+    default: 'info'
   },
-
-  methods: {
-    handleMaskClick() {
-      if (this.maskClosable) {
-        this.$emit('cancel');
-        this.$emit('update:visible', false);
-      }
-    },
-
-    handleConfirm() {
-      // 震动反馈
-      try {
-        if (typeof uni.vibrateShort === 'function') {
-          uni.vibrateShort();
-        }
-      } catch (e) {
-        logger.warn('[CustomModal] 震动反馈失败:', e.message || e);
-      }
-
-      this.$emit('confirm');
-      this.$emit('update:visible', false);
-    },
-
-    handleCancel() {
-      this.$emit('cancel');
-      this.$emit('update:visible', false);
-    }
+  // 自定义图标
+  icon: {
+    type: String,
+    default: ''
+  },
+  // 标题
+  title: {
+    type: String,
+    default: '提示'
+  },
+  // 内容
+  content: {
+    type: String,
+    default: ''
+  },
+  // 确认按钮文字
+  confirmText: {
+    type: String,
+    default: '确定'
+  },
+  // 取消按钮文字
+  cancelText: {
+    type: String,
+    default: '取消'
+  },
+  // 是否显示取消按钮
+  showCancel: {
+    type: Boolean,
+    default: true
+  },
+  // 点击遮罩是否关闭
+  maskClosable: {
+    type: Boolean,
+    default: false
+  },
+  // 深色模式
+  isDark: {
+    type: Boolean,
+    default: false
   }
+});
+
+const emit = defineEmits(['cancel', 'update:visible', 'confirm']);
+
+const iconMap = {
+  info: 'bulb',
+  success: 'success',
+  warning: 'warning',
+  error: 'error',
+  question: 'question',
+  empty: 'empty',
+  upload: 'upload',
+  study: 'books'
 };
+
+function handleMaskClick() {
+  if (props.maskClosable) {
+    emit('cancel');
+    emit('update:visible', false);
+  }
+}
+
+function handleConfirm() {
+  // 震动反馈
+  try {
+    if (typeof uni.vibrateShort === 'function') {
+      uni.vibrateShort();
+    }
+  } catch (e) {
+    logger.warn('[CustomModal] 震动反馈失败:', e.message || e);
+  }
+
+  emit('confirm');
+  emit('update:visible', false);
+}
+
+function handleCancel() {
+  emit('cancel');
+  emit('update:visible', false);
+}
 </script>
 
 <style lang="scss" scoped>

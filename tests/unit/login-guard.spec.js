@@ -59,6 +59,7 @@ const mockSwitchTab = vi.fn();
 globalThis.uni = {
   showModal: mockShowModal,
   showToast: mockShowToast,
+  hideToast: vi.fn(),
   redirectTo: mockRedirectTo,
   switchTab: mockSwitchTab
 };
@@ -70,7 +71,6 @@ let mod;
 
 beforeEach(async () => {
   vi.clearAllMocks();
-  vi.useFakeTimers();
 
   // 重置 store 状态
   mockUserStore.isLogin = false;
@@ -80,8 +80,11 @@ beforeEach(async () => {
   getUserId.mockReturnValue(null);
   storageService.get.mockReturnValue(null);
 
-  // 动态导入
+  // 动态导入（必须在 useFakeTimers 之前，否则 ESM 导入会在假定时器环境下超时）
   mod = await import('../../src/utils/auth/loginGuard.js');
+
+  // 只 fake 定时器核心函数和 Date，排除 requestAnimationFrame/performance，避免 happy-dom 冲突
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
 });
 
 afterEach(() => {

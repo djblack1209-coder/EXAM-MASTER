@@ -27,10 +27,15 @@
       </view>
     </view>
 
-    <scroll-view v-if="!isLoading" scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
+    <scroll-view
+      v-if="!isLoading"
+      scroll-y
+      class="main-scroll"
+      :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       refresher-enabled
       :refresher-triggered="isRefreshing"
-      @refresherrefresh="onPullRefresh">
+      @refresherrefresh="onPullRefresh"
+    >
       <view class="hero-card">
         <text class="hero-eyebrow"> Planning Center </text>
         <text class="hero-title"> 把备考安排成清晰的一周节奏 </text>
@@ -63,6 +68,48 @@
             <text class="reminder-time">
               {{ reminder.time }}
             </text>
+          </view>
+        </view>
+      </view>
+
+      <!-- AI 自适应学习计划 -->
+      <view v-if="aiPlan || aiPlanLoading" class="ai-plan-section">
+        <view class="section-heading">
+          <text class="section-eyebrow">AI Adaptive Plan</text>
+          <view class="section-title-row">
+            <text class="section-title">AI 自适应计划</text>
+          </view>
+        </view>
+
+        <view v-if="aiPlanLoading" class="ai-plan-loading">
+          <text class="ai-plan-loading-text">AI 正在分析你的学习数据，生成个性化计划...</text>
+        </view>
+
+        <view v-else-if="aiPlan && aiPlan.days" class="ai-plan-days">
+          <view v-if="aiPlan.phase" class="ai-plan-phase">
+            <text class="phase-text">当前阶段：{{ aiPlan.phase }}</text>
+          </view>
+          <view
+            v-for="(day, idx) in aiPlan.days"
+            :key="idx"
+            class="ai-day-card"
+            :class="{ today: idx === 0 }"
+            @tap="startAIPlanDay(day)"
+          >
+            <view class="day-header">
+              <text class="day-label">{{ idx === 0 ? '今天' : `第${idx + 1}天` }}</text>
+              <text v-if="day.focusSubject" class="day-focus">{{ day.focusSubject }}</text>
+            </view>
+            <view v-if="day.tasks" class="day-tasks">
+              <view v-for="(task, ti) in day.tasks.slice(0, 3)" :key="ti" class="day-task-item">
+                <text class="task-dot" :class="[task.type === 'review' ? 'review' : 'practice']" />
+                <text class="task-name">{{ task.name || task.knowledgePoint }}</text>
+                <text v-if="task.minutes" class="task-time">{{ task.minutes }}分钟</text>
+              </view>
+            </view>
+            <view v-if="idx === 0" class="day-cta">
+              <text class="day-cta-text">开始今日任务</text>
+            </view>
           </view>
         </view>
       </view>
@@ -196,6 +243,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
@@ -205,6 +253,7 @@ import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import { generateAdaptivePlan } from '@/services/api/domains/study.api.js';
 
 export default {
   components: {
@@ -220,7 +269,10 @@ export default {
       isDark: false,
       isLoading: true,
       plans: [],
-      intelligentReminders: []
+      intelligentReminders: [],
+      // AI 自适应计划
+      aiPlan: null,
+      aiPlanLoading: false
     };
   },
   onLoad() {
@@ -241,13 +293,16 @@ export default {
   onShow() {
     this.loadPlans();
     this.loadIntelligentReminders();
+    this.loadAIPlan();
   },
   methods: {
     async onPullRefresh() {
       this.isRefreshing = true;
       try {
         await this.loadPlans();
-      } catch (_e) { /* silent */ }
+      } catch (_e) {
+        /* silent */
+      }
       this.isRefreshing = false;
     },
     loadPlans() {
@@ -264,6 +319,45 @@ export default {
     },
     async loadIntelligentReminders() {
       this.intelligentReminders = await intelligentPlanManager.getIntelligentReminders();
+    },
+
+    /** AI 自适应7天计划 — 调用后端 generate_plan API */
+    async loadAIPlan() {
+      // 检查缓存（1小时内有效）
+      const cached = storageService.get('ai_adaptive_plan', null);
+      if (cached && Date.now() - (cached._ts || 0) < 3600000) {
+        this.aiPlan = cached;
+        return;
+      }
+
+      this.aiPlanLoading = true;
+      try {
+        const examDate = storageService.get('exam_date', '');
+        const dailyHours = storageService.get('daily_study_hours', 4);
+        const result = await generateAdaptivePlan(examDate, dailyHours);
+        if (result?.data?.plan) {
+          const plan = result.data.plan;
+          plan._ts = Date.now();
+          this.aiPlan = plan;
+          storageService.save('ai_adaptive_plan', plan);
+        }
+      } catch (err) {
+        logger.warn('[plan] AI 计划加载失败:', err);
+      } finally {
+        this.aiPlanLoading = false;
+      }
+    },
+
+    /** 开始AI计划中的某一天任务 */
+    startAIPlanDay(day) {
+      if (day.tasks && day.tasks.length > 0) {
+        const firstTask = day.tasks[0];
+        if (firstTask.type === 'review') {
+          safeNavigateTo('/pages/practice-sub/smart-review');
+        } else {
+          safeNavigateTo('/pages/practice-sub/do-quiz');
+        }
+      }
     },
     createPlan() {
       requireLogin(() => safeNavigateTo('/pages/plan/create'), { message: '请先登录后创建计划' });
@@ -323,7 +417,7 @@ export default {
     },
     adjustPlan(planId) {
       if (!isUserLoggedIn()) {
-        uni.showToast({ title: '请先登录后调整计划', icon: 'none' });
+        toast.info('请先登录后调整计划');
         return;
       }
       logger.log('[Plan] 智能调整计划:', planId);
@@ -333,21 +427,15 @@ export default {
       const adjustedPlan = intelligentPlanManager.adjustPlan(planId, learningProgress);
 
       if (adjustedPlan) {
-        uni.showToast({
-          title: '计划已智能调整',
-          icon: 'success'
-        });
+        toast.success('计划已智能调整');
         this.loadPlans();
       } else {
-        uni.showToast({
-          title: '调整失败',
-          icon: 'none'
-        });
+        toast.info('调整失败');
       }
     },
     deletePlan(planId) {
       if (!isUserLoggedIn()) {
-        uni.showToast({ title: '请先登录后删除计划', icon: 'none' });
+        toast.info('请先登录后删除计划');
         return;
       }
       uni.showModal({
@@ -358,16 +446,10 @@ export default {
           if (res.confirm) {
             const success = intelligentPlanManager.deletePlan(planId);
             if (success) {
-              uni.showToast({
-                title: '计划已删除',
-                icon: 'success'
-              });
+              toast.success('计划已删除');
               this.loadPlans();
             } else {
-              uni.showToast({
-                title: '删除失败',
-                icon: 'none'
-              });
+              toast.info('删除失败');
             }
           }
         }
@@ -887,5 +969,112 @@ export default {
 
 .skeleton-fade-leave-to {
   opacity: 0;
+}
+
+/* AI 自适应计划 */
+.ai-plan-section {
+  margin: 0 20px 20px;
+}
+.ai-plan-loading {
+  text-align: center;
+  padding: 30px 0;
+}
+.ai-plan-loading-text {
+  font-size: 13px;
+  color: var(--text-sub, #64748b);
+}
+.ai-plan-phase {
+  margin-bottom: 12px;
+}
+.phase-text {
+  font-size: 13px;
+  color: var(--color-primary, #34d399);
+  font-weight: 600;
+}
+.ai-day-card {
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.ai-day-card.today {
+  border-color: var(--color-primary, #34d399);
+  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.2);
+}
+.ai-day-card:active {
+  opacity: 0.9;
+  transform: scale(0.99);
+}
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.day-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+.day-focus {
+  font-size: 12px;
+  color: var(--color-primary, #34d399);
+  background: rgba(52, 211, 153, 0.1);
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+.day-tasks {
+  margin-bottom: 8px;
+}
+.day-task-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+}
+.task-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+.task-dot.review {
+  background: #f59e0b;
+}
+.task-dot.practice {
+  background: #34d399;
+}
+.task-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-primary, #1e293b);
+}
+.task-time {
+  font-size: 12px;
+  color: var(--text-sub, #64748b);
+  margin-left: 8px;
+}
+.day-cta {
+  text-align: center;
+  padding: 10px;
+  background: linear-gradient(135deg, #34d399, #059669);
+  border-radius: 12px;
+  margin-top: 8px;
+}
+.day-cta-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+.dark-mode .ai-day-card {
+  background: var(--bg-card);
+  border-color: var(--border);
+}
+.dark-mode .day-label {
+  color: #f1f5f9;
+}
+.dark-mode .task-name {
+  color: #e2e8f0;
 }
 </style>

@@ -5,6 +5,7 @@
  */
 import { logger } from '@/utils/logger.js';
 import { storageService } from '@/services/storageService.js';
+import { toast } from '@/utils/toast.js';
 
 function _getStorage() {
   return storageService;
@@ -107,11 +108,7 @@ function _handleError(type, error) {
     try {
       // #ifdef MP-WEIXIN
       if (typeof __wxConfig !== 'undefined' && __wxConfig.envVersion === 'develop') {
-        uni.showToast({
-          title: `错误: ${errorInfo.message.substring(0, 20)}...`,
-          icon: 'none',
-          duration: 3000
-        });
+        toast.info(`错误: ${errorInfo.message.substring(0, 20)}...`, 3000);
       }
       // #endif
     } catch (_) {

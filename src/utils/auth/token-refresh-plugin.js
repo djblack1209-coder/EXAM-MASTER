@@ -6,6 +6,7 @@
  */
 
 import { storageService } from '@/services/storageService.js';
+import { toast } from '@/utils/toast.js';
 
 const TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
@@ -143,7 +144,7 @@ class TokenRefreshPlugin {
       } else if (this._onLogout !== null || this._onRefreshFailed !== null) {
         // 自定义处理
       } else {
-        uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
+        toast.info('登录已过期，请重新登录');
         uni.reLaunch({ url: '/pages/index/index' });
       }
       this._refreshPromise = null;

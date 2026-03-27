@@ -10,6 +10,7 @@
 
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { toast } from '@/utils/toast.js';
 const STORAGE_KEYS = {
   FAVORITES: 'question_favorites',
   FAVORITE_FOLDERS: 'favorite_folders',
@@ -414,7 +415,7 @@ class QuestionFavoriteManager {
   _showToast(message) {
     try {
       if (typeof uni !== 'undefined') {
-        uni.showToast({ title: message, icon: 'none', duration: 1500 });
+        toast.info(message, 1500);
       }
     } catch (e) {
       logger.warn('[QuestionFavorite] 显示提示失败:', e);

@@ -1,72 +1,83 @@
 <template>
   <view class="fsrs-card">
-    <view class="fsrs-header">
-      <view class="fsrs-title-row">
-        <text class="fsrs-icon">🧠</text>
-        <text class="fsrs-title">记忆模型</text>
-        <view v-if="status.has_custom_params" class="fsrs-badge">已个性化</view>
-      </view>
-      <text class="fsrs-subtitle">
-        {{
-          status.has_custom_params
-            ? `已优化 ${status.optimize_count} 次 · 基于 ${status.review_log_count} 条复习记录`
-            : '完成更多复习后可优化你的专属记忆模型'
-        }}
-      </text>
+    <!-- 初始加载状态 -->
+    <view v-if="loading" class="fsrs-loading">
+      <text class="fsrs-loading-text">加载中...</text>
     </view>
 
-    <!-- 进度条：复习记录收集进度 -->
-    <view v-if="!status.can_optimize && !status.has_custom_params" class="fsrs-progress-section">
-      <view class="fsrs-progress-bar">
-        <view class="fsrs-progress-fill" :style="{ width: progressPercent + '%' }" />
+    <view v-else>
+      <view class="fsrs-header">
+        <view class="fsrs-title-row">
+          <text class="fsrs-icon">🧠</text>
+          <text class="fsrs-title">记忆模型</text>
+          <view v-if="status.has_custom_params" class="fsrs-badge">已个性化</view>
+        </view>
+        <text class="fsrs-subtitle">
+          {{
+            status.has_custom_params
+              ? `已优化 ${status.optimize_count} 次 · 基于 ${status.review_log_count} 条复习记录`
+              : '完成更多复习后可优化你的专属记忆模型'
+          }}
+        </text>
       </view>
-      <text class="fsrs-progress-text">
-        {{ status.review_log_count || 0 }} / {{ status.min_logs_required }} 条复习记录
-      </text>
-    </view>
 
-    <!-- 留存率曲线（简化版 sparkline） -->
-    <view v-if="curve.length > 0" class="fsrs-curve-section">
-      <view class="fsrs-curve-header">
-        <text class="fsrs-curve-title">记忆留存率</text>
-        <text class="fsrs-retention-value">目标 {{ Math.round((status.request_retention || 0.9) * 100) }}%</text>
+      <!-- 进度条：复习记录收集进度 -->
+      <view v-if="!status.can_optimize && !status.has_custom_params" class="fsrs-progress-section">
+        <view class="fsrs-progress-bar">
+          <view class="fsrs-progress-fill" :style="{ width: progressPercent + '%' }" />
+        </view>
+        <text class="fsrs-progress-text">
+          {{ status.review_log_count || 0 }} / {{ status.min_logs_required }} 条复习记录
+        </text>
       </view>
-      <view class="fsrs-curve-chart">
-        <view
-          v-for="(point, idx) in curveDisplay"
-          :key="idx"
-          class="fsrs-bar"
-          :style="{ height: point.retention + '%', backgroundColor: barColor(point.retention) }"
-        />
-      </view>
-      <view class="fsrs-curve-labels">
-        <text class="fsrs-curve-label">1天</text>
-        <text class="fsrs-curve-label">{{ Math.round(curveDisplay.length / 2) }}天</text>
-        <text class="fsrs-curve-label">{{ curveDisplay.length }}天</text>
-      </view>
-    </view>
 
-    <!-- 优化按钮 -->
-    <view class="fsrs-action">
-      <button
-        class="fsrs-btn"
-        :class="{ 'fsrs-btn-disabled': !canOptimize }"
-        :disabled="!canOptimize || optimizing"
-        @tap="handleOptimize"
-      >
-        <text v-if="optimizing">优化中...</text>
-        <text v-else-if="!status.can_optimize">复习记录不足</text>
-        <text v-else-if="status.cooldown_remaining > 0">{{ cooldownText }}</text>
-        <text v-else>{{ status.has_custom_params ? '重新优化' : '开始优化' }}</text>
-      </button>
+      <!-- 留存率曲线（简化版 sparkline） -->
+      <view v-if="curve.length > 0" class="fsrs-curve-section">
+        <view class="fsrs-curve-header">
+          <text class="fsrs-curve-title">记忆留存率</text>
+          <text class="fsrs-retention-value">目标 {{ Math.round((status.request_retention || 0.9) * 100) }}%</text>
+        </view>
+        <view class="fsrs-curve-chart">
+          <view
+            v-for="(point, idx) in curveDisplay"
+            :key="idx"
+            class="fsrs-bar"
+            :style="{ height: point.retention + '%', backgroundColor: barColor(point.retention) }"
+          />
+        </view>
+        <view class="fsrs-curve-labels">
+          <text class="fsrs-curve-label">1天</text>
+          <text class="fsrs-curve-label">{{ Math.round(curveDisplay.length / 2) }}天</text>
+          <text class="fsrs-curve-label">{{ curveDisplay.length }}天</text>
+        </view>
+      </view>
+
+      <!-- 优化按钮 -->
+      <view class="fsrs-action">
+        <button
+          class="fsrs-btn"
+          :class="{ 'fsrs-btn-disabled': !canOptimize }"
+          :disabled="!canOptimize || optimizing"
+          @tap="handleOptimize"
+        >
+          <text v-if="optimizing">优化中...</text>
+          <text v-else-if="!status.can_optimize">复习记录不足</text>
+          <text v-else-if="status.cooldown_remaining > 0">{{ cooldownText }}</text>
+          <text v-else>{{ status.has_custom_params ? '重新优化' : '开始优化' }}</text>
+        </button>
+      </view>
     </view>
+    <!-- v-else 结束 -->
   </view>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { lafService } from '@/services/lafService';
+import { useReviewStore } from '@/stores/modules/review.js';
 import { loadUserFSRSParams } from '@/pages/practice-sub/utils/mistake-fsrs-scheduler';
+import { toast } from '@/utils/toast.js';
+
+const reviewStore = useReviewStore();
 
 const status = ref({
   has_custom_params: false,
@@ -81,6 +92,8 @@ const status = ref({
 
 const curve = ref([]);
 const optimizing = ref(false);
+// 初始数据加载状态
+const loading = ref(false);
 
 const progressPercent = computed(() => {
   const { review_log_count = 0, min_logs_required = 50 } = status.value;
@@ -112,23 +125,23 @@ function barColor(retention) {
 
 async function loadStatus() {
   try {
-    const res = await lafService.getFSRSStatus();
-    if (res?.code === 0 && res.data) {
+    const res = await reviewStore.fetchFSRSStatus();
+    if (res?.success && res.data) {
       status.value = res.data;
     }
   } catch (_e) {
-    /* silent */
+    toast.error('记忆模型状态加载失败');
   }
 }
 
 async function loadCurve() {
   try {
-    const res = await lafService.getFSRSRetentionCurve();
-    if (res?.code === 0 && res.data?.curve) {
+    const res = await reviewStore.fetchRetentionCurve();
+    if (res?.success && res.data?.curve) {
       curve.value = res.data.curve;
     }
   } catch (_e) {
-    /* silent */
+    toast.error('留存率数据加载失败');
   }
 }
 
@@ -136,16 +149,16 @@ async function handleOptimize() {
   if (!canOptimize.value) return;
   optimizing.value = true;
   try {
-    const res = await lafService.optimizeFSRS();
-    if (res?.code === 0 && res.data) {
-      uni.showToast({ title: '记忆模型已优化', icon: 'success' });
+    const res = await reviewStore.optimizeFSRS();
+    if (res?.success && res.data) {
+      toast.success('记忆模型已优化');
       // 重新加载状态和曲线
       await Promise.all([loadStatus(), loadCurve()]);
       // 通知前端调度器加载新参数
       if (res.data.request_retention) {
         // 从用户 profile 获取完整参数（包含 w 向量）
-        const statusRes = await lafService.getFSRSStatus();
-        if (statusRes?.code === 0 && statusRes.data?.has_custom_params) {
+        const statusRes = await reviewStore.fetchFSRSStatus();
+        if (statusRes?.success && statusRes.data?.has_custom_params) {
           // 参数已存储在后端，前端通过 user profile 获取
           loadUserFSRSParams({
             w: res.data.w,
@@ -154,18 +167,19 @@ async function handleOptimize() {
         }
       }
     } else {
-      uni.showToast({ title: res?.message || '优化失败', icon: 'none' });
+      toast.info(res?.message || '优化失败');
     }
   } catch (_e) {
-    uni.showToast({ title: '优化失败，请稍后重试', icon: 'none' });
+    toast.info('优化失败，请稍后重试');
   } finally {
     optimizing.value = false;
   }
 }
 
-onMounted(() => {
-  loadStatus();
-  loadCurve();
+onMounted(async () => {
+  loading.value = true;
+  await Promise.all([loadStatus(), loadCurve()]);
+  loading.value = false;
 });
 </script>
 
@@ -288,5 +302,16 @@ onMounted(() => {
 .fsrs-btn-disabled {
   background: #e5e7eb;
   color: #9ca3af;
+}
+/* 初始加载状态 */
+.fsrs-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx 0;
+}
+.fsrs-loading-text {
+  font-size: 26rpx;
+  color: #8b8fa3;
 }
 </style>

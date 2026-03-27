@@ -30,11 +30,11 @@ import {
   wrapResponse,
   logger,
   checkRateLimitDistributed
-} from './_shared/api-response';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
-import { createNewCard, type ReviewLogRecord } from './_shared/fsrs-scheduler';
-import { FsrsService } from './_shared/services/fsrs.service';
-import { AgentService } from './_shared/services/agent.service';
+} from './_shared/api-response.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { createNewCard, type ReviewLogRecord } from './_shared/fsrs-scheduler.js';
+import { FsrsService } from './_shared/services/fsrs.service.js';
+import { AgentService } from './_shared/services/agent.service.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -104,7 +104,7 @@ async function markIdempotencyCompleted(recordId: string, result: unknown) {
 function validateSubmitParams(data: unknown): { valid: boolean; error?: string; sanitized?: Record<string, unknown> } {
   if (!data) return { valid: false, error: 'data 不能为空' };
 
-  const { question_id, user_answer, session_id, duration, practice_mode } = data;
+  const { question_id, user_answer, session_id, duration, practice_mode } = data as Record<string, unknown>;
 
   // question_id 校验
   if (!question_id || typeof question_id !== 'string') {
@@ -143,7 +143,7 @@ function validateSubmitParams(data: unknown): { valid: boolean; error?: string; 
   // duration 校验（可选，答题用时，单位秒）
   let sanitizedDuration = 0;
   if (duration !== undefined) {
-    const parsedDuration = parseInt(duration, 10);
+    const parsedDuration = parseInt(duration as string, 10);
     if (isNaN(parsedDuration) || parsedDuration < 0) {
       sanitizedDuration = 0;
     } else {
@@ -166,7 +166,7 @@ function validateSubmitParams(data: unknown): { valid: boolean; error?: string; 
     sanitized: {
       question_id: question_id.trim(),
       user_answer: user_answer.trim().toUpperCase(),
-      session_id: session_id ? session_id.trim() : null,
+      session_id: session_id ? (session_id as string).trim() : null,
       duration: sanitizedDuration,
       practice_mode: sanitizedMode
     }
@@ -213,10 +213,10 @@ export default async function (ctx) {
     // 2. 路由处理
     if (action === 'submit') {
       const result = await handleSubmit(userId, idempotencyKey, data, requestId);
-      return wrapResponse(result, requestId, startTime);
+      return wrapResponse(result as unknown as import('./_shared/api-response.js').ApiResponse, requestId, startTime);
     } else if (action === 'getRecords') {
       const result = await handleGetRecords(userId, data, requestId);
-      return wrapResponse(result, requestId, startTime);
+      return wrapResponse(result as unknown as import('./_shared/api-response.js').ApiResponse, requestId, startTime);
     } else {
       return wrapResponse(badRequest(`不支持的操作: ${action}`), requestId, startTime);
     }
@@ -236,14 +236,14 @@ async function handleSubmit(userId: string, idempotencyKey: string, data: Record
   }
 
   try {
-    const { FsrsService } = await import('./_shared/services/fsrs.service');
-    const { AgentService } = await import('./_shared/services/agent.service');
+    const { FsrsService } = await import('./_shared/services/fsrs.service.js');
+    const { AgentService } = await import('./_shared/services/agent.service.js');
 
     const fsrsService = new FsrsService();
     const agentService = new AgentService();
 
     // 1. Calculate Grade based on correctness and time (simplified for moat integration)
-    const grade = isCorrect ? 3 : 1; 
+    const grade = isCorrect ? 3 : 1;
 
     // 2. Run FSRS scheduling
     const memoryState = await fsrsService.processAnswer(userId, questionId as string, grade);
@@ -252,13 +252,16 @@ async function handleSubmit(userId: string, idempotencyKey: string, data: Record
     if (!isCorrect) {
       // 3. Launch the Agent Team if wrong
       const db = (await import('@lafjs/cloud')).default.database();
-      const questionDoc = await db.collection('question_bank').doc(questionId as string).get();
-      const questionContent = questionDoc.data?.content || "未知题目";
-      const correctAnswer = questionDoc.data?.answer || "未知答案";
-      
+      const questionDoc = await db
+        .collection('question_bank')
+        .doc(questionId as string)
+        .get();
+      const questionContent = questionDoc.data?.content || '未知题目';
+      const correctAnswer = questionDoc.data?.answer || '未知答案';
+
       tutorFeedback = await agentService.provideTutorFeedback(
         questionContent,
-        (userAnswer as string) || "空",
+        (userAnswer as string) || '空',
         correctAnswer
       );
     }
@@ -275,7 +278,7 @@ async function handleSubmit(userId: string, idempotencyKey: string, data: Record
       requestId
     };
   } catch (error) {
-    const { logger } = await import('./_shared/api-response');
+    const { logger } = await import('./_shared/api-response.js');
     logger.error('Answer submission processing failed', error);
     return { code: 500, ok: false, message: '处理提交失败', requestId };
   }
@@ -288,8 +291,8 @@ async function handleGetRecords(userId: string, data: Record<string, unknown>, r
   const collection = db.collection('practice_records');
 
   // 分页参数校验
-  const page = Math.max(1, Math.min(parseInt(data?.page) || 1, 1000));
-  const limit = Math.max(1, Math.min(parseInt(data?.limit) || 20, 100));
+  const page = Math.max(1, Math.min(parseInt(data?.page as string) || 1, 1000));
+  const limit = Math.max(1, Math.min(parseInt(data?.limit as string) || 20, 100));
   const skip = (page - 1) * limit;
 
   // 构建查询条件
@@ -297,7 +300,7 @@ async function handleGetRecords(userId: string, data: Record<string, unknown>, r
 
   if (data?.category) {
     const validCategories = ['政治', '英语', '数学', '专业课', '综合'];
-    if (validCategories.includes(data.category)) {
+    if (validCategories.includes(data.category as string)) {
       query.category = data.category;
     }
   }

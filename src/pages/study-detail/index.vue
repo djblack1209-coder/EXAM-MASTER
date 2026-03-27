@@ -17,10 +17,15 @@
     </view>
 
     <!-- 滚动容器 -->
-    <scroll-view class="scroll-container" scroll-y :style="{ paddingTop: navbarHeight + 'px' }" @scroll="handleScroll"
+    <scroll-view
+      class="scroll-container"
+      scroll-y
+      :style="{ paddingTop: navbarHeight + 'px' }"
       refresher-enabled
       :refresher-triggered="isRefreshing"
-      @refresherrefresh="onPullRefresh">
+      @scroll="handleScroll"
+      @refresherrefresh="onPullRefresh"
+    >
       <!-- 骨架屏加载状态 -->
       <view v-if="isLoading" class="skeleton-container">
         <view class="skeleton-header">
@@ -42,6 +47,21 @@
         <view class="page-header">
           <text class="page-title"> 学习详情 </text>
           <text class="page-subtitle"> 查看您的学习数据和进度 </text>
+        </view>
+
+        <!-- AI 学习洞察 — 一句人话总结数据背后的含义 -->
+        <view v-if="aiInsight" class="ai-insight-card">
+          <view class="insight-header">
+            <BaseIcon name="sparkle" :size="20" class="insight-icon" />
+            <text class="insight-label">AI 学习洞察</text>
+          </view>
+          <text class="insight-text">{{ aiInsight }}</text>
+          <view v-if="aiWeakPoints.length > 0" class="insight-weak">
+            <text class="insight-weak-label">建议重点攻克:</text>
+            <view class="insight-tags">
+              <text v-for="wp in aiWeakPoints" :key="wp" class="insight-tag">{{ wp }}</text>
+            </view>
+          </view>
         </view>
 
         <!-- 学习概况卡片 -->
@@ -131,6 +151,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { useThemeStore } from '@/stores';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useStudyStore } from '@/stores/modules/study';
@@ -145,6 +166,7 @@ import FSRSOptimizer from './FSRSOptimizer.vue';
 import storageService from '@/services/storageService.js';
 import { getNavBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { analyzeMastery } from '@/services/api/domains/study.api.js';
 
 export default {
   name: 'StudyDetail',
@@ -176,7 +198,11 @@ export default {
       studyRecordData: {}, // { 'YYYY-MM-DD': minutes }
 
       // 能力雷达图数据
-      knowledgeMastery: null // { [id]: { mastery, practiceCount, correctCount } }
+      knowledgeMastery: null, // { [id]: { mastery, practiceCount, correctCount } }
+
+      // AI 洞察数据
+      aiInsight: '',
+      aiWeakPoints: []
     };
   },
   computed: {
@@ -201,6 +227,8 @@ export default {
 
     // 加载学习数据
     this.loadStudyData();
+    // 异步加载 AI 洞察（不阻塞页面）
+    this.loadAIInsight();
   },
   onUnload() {
     // 清理事件监听
@@ -211,7 +239,10 @@ export default {
       this.isRefreshing = true;
       try {
         await this.loadStudyData();
-      } catch (_e) { /* silent */ }
+        this.loadAIInsight(); // 刷新时也更新 AI 洞察
+      } catch (_e) {
+        /* silent */
+      }
       this.isRefreshing = false;
     },
     /**
@@ -219,6 +250,45 @@ export default {
      */
     getNavbarHeight() {
       this.navbarHeight = getNavBarHeight();
+    },
+
+    /**
+     * AI 学习洞察 — 调用后端掌握度分析，生成一句话诊断
+     */
+    async loadAIInsight() {
+      try {
+        const result = await analyzeMastery();
+        if (!result?.data?.summary) return;
+
+        const s = result.data.summary;
+        const mastery = result.data.mastery || [];
+
+        // 提取薄弱点列表
+        this.aiWeakPoints = mastery
+          .filter((k) => k.isWeak)
+          .slice(0, 3)
+          .map((k) => k.knowledgePoint);
+
+        // 生成一句话洞察
+        if (s.weakCount === 0 && s.avgMastery >= 80) {
+          this.aiInsight = `各知识点平均掌握度${s.avgMastery}%，整体状态良好！保持当前节奏即可。`;
+        } else if (s.weakCount > 0 && s.avgMastery >= 60) {
+          this.aiInsight = `平均掌握度${s.avgMastery}%，但仍有${s.weakCount}个薄弱点需要突破。建议集中攻克以下知识点，ROI最高。`;
+        } else if (s.weakCount > 0) {
+          this.aiInsight = `当前${s.weakCount}个知识点掌握度不足60%，平均${s.avgMastery}%。建议先从基础最薄弱的开始，逐个击破。`;
+        } else {
+          this.aiInsight = `已分析${s.totalKnowledgePoints}个知识点，其中${s.masteredCount}个已掌握。继续保持！`;
+        }
+
+        // 增加趋势洞察
+        const declining = mastery.filter((k) => k.recentTrend === 'declining');
+        if (declining.length > 0) {
+          this.aiInsight += ` 注意：「${declining[0].knowledgePoint}」近期表现在下滑，建议及时复习。`;
+        }
+      } catch (err) {
+        // 静默降级，不影响页面
+        logger.warn('[study-detail] AI 洞察加载失败:', err);
+      }
     },
 
     /**
@@ -396,11 +466,7 @@ export default {
     handleDayTap(day) {
       logger.log('[StudyDetail] 点击日期:', day);
       if (day.minutes > 0) {
-        uni.showToast({
-          title: `${day.dateStr} 学习 ${day.minutes} 分钟`,
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info(`${day.dateStr} 学习 ${day.minutes} 分钟`);
       }
     },
 
@@ -520,6 +586,81 @@ export default {
   display: block;
   font-size: 28rpx;
   color: var(--text-sub);
+}
+
+/* AI 学习洞察卡片 */
+.ai-insight-card {
+  margin: 0 32rpx 24rpx;
+  padding: 28rpx;
+  border-radius: 28rpx;
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-insight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: linear-gradient(90deg, #34d399, #06b6d4, #8b5cf6);
+}
+
+.insight-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.insight-icon {
+  color: #34d399;
+  margin-right: 8rpx;
+}
+
+.insight-label {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #34d399;
+}
+
+.insight-text {
+  font-size: 28rpx;
+  line-height: 1.6;
+  color: var(--text-primary, #1e293b);
+  display: block;
+}
+
+.insight-weak {
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--border, #e5e7eb);
+}
+
+.insight-weak-label {
+  font-size: 24rpx;
+  color: var(--text-sub, #64748b);
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.insight-tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.insight-tag {
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 14rpx;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  margin-right: 10rpx;
+  margin-bottom: 8rpx;
+  font-weight: 500;
 }
 
 /* 概况卡片 */

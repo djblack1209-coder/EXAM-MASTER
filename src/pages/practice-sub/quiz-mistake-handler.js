@@ -11,6 +11,7 @@
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { lafService } from '@/services/lafService.js';
+import { toast } from '@/utils/toast.js';
 
 /**
  * 保存错题到错题本（云端优先，失败降级本地）
@@ -22,7 +23,7 @@ import { lafService } from '@/services/lafService.js';
 export async function saveToMistakes({ currentQuestion, userChoice, aiComment }) {
   if (!currentQuestion) return;
 
-  uni.showLoading({ title: '保存错题中...', mask: false });
+  const loader = toast.loading('保存错题中...');
 
   const questionText = currentQuestion.question || currentQuestion.title;
   const userAnswer =
@@ -57,7 +58,7 @@ export async function saveToMistakes({ currentQuestion, userChoice, aiComment })
     // 使用云端方法保存（自动云端+本地同步）
     const result = await storageService.saveMistake(mistakeData);
 
-    uni.hideLoading();
+    loader.hide();
 
     if (result.success) {
       logger.log('[quiz-mistake] 错题已保存到云端:', result.id);
@@ -75,7 +76,7 @@ export async function saveToMistakes({ currentQuestion, userChoice, aiComment })
       logger.warn('[quiz-mistake] 错题保存失败，已降级到本地:', result.error);
     }
   } catch (error) {
-    uni.hideLoading();
+    loader.hide();
     logger.warn('[quiz-mistake] 保存错题异常，降级到本地存储:', error);
     // 异常时降级到本地保存
     const mistakes = storageService.get('mistake_book', []);

@@ -4,7 +4,12 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
+import { request } from '@/services/api/domains/_request-core.js';
 
+vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return { ...original, request: vi.fn().mockResolvedValue({ code: 0, success: true, data: {} }) };
+});
 vi.mock('@/utils/logger.js', () => ({
   logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() }
 }));
@@ -19,7 +24,7 @@ import storageService from '@/services/storageService.js';
 describe('E2E 页面按钮交互 & 数据展示准确性', () => {
   let userStore, studyStore;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.restoreAllMocks();
     setActivePinia(createPinia());
     userStore = useUserStore();
@@ -509,7 +514,7 @@ describe('E2E 页面按钮交互 & 数据展示准确性', () => {
       const { lafService } = await import('@/services/lafService.js');
       storageService.save('EXAM_USER_ID', 'u1');
 
-      vi.spyOn(lafService, 'request').mockResolvedValue({
+      request.mockResolvedValue({
         code: 0,
         success: true,
         message: '账号已申请注销'

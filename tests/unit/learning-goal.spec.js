@@ -42,6 +42,7 @@ import storageService from '../../src/services/storageService.js';
 // uni mock
 globalThis.uni = {
   showToast: vi.fn(),
+  hideToast: vi.fn(),
   vibrateShort: vi.fn()
 };
 

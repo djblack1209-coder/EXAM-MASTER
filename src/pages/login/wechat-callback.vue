@@ -40,10 +40,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { useAuthStore } from '@/stores/modules/auth';
+
+// 初始化认证 Store
+const authStore = useAuthStore();
 
 // 状态
 const isDark = ref(false);
@@ -134,10 +137,7 @@ const handleWeChatCallback = async () => {
     }
 
     // 调用后端接口完成登录
-    const res = await lafService.login({
-      type: 'wechat_h5',
-      code: code
-    });
+    const res = await authStore.loginByWechatH5(code);
 
     if (res.code === 0 && res.data) {
       saveLoginInfo(res.data);

@@ -7,6 +7,11 @@ import crypto from 'crypto';
 
 const globalScope = /** @type {any} */ (globalThis);
 
+// 后端审计测试需要的环境变量（JWT认证等）
+process.env.JWT_SECRET_PLACEHOLDER
+process.env.PASSWORD_SALT = process.env.PASSWORD_SALT || 'test-password-salt-for-vitest';
+process.env.NODE_ENV = process.env.NODE_ENV || 'test';
+
 // Polyfill crypto.hash for Node < 20.12 (used by @vitejs/plugin-vue internally)
 const cryptoCompat = /** @type {any} */ (crypto);
 

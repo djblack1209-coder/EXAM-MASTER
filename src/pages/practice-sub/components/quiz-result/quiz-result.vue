@@ -63,9 +63,47 @@
           <text class="motivational-text">{{ motivationalText }}</text>
         </view>
 
+        <!-- AI 推荐下一步 -->
+        <view v-if="nextSteps.length > 0 || loadingNextSteps" class="next-steps glass-card">
+          <text class="section-title">AI 推荐下一步</text>
+          <view v-if="loadingNextSteps" class="next-steps-loading">
+            <text class="loading-text">分析中...</text>
+          </view>
+          <view v-else>
+            <view
+              v-for="(step, idx) in nextSteps"
+              :key="idx"
+              class="next-step-item"
+              hover-class="item-hover"
+              @tap="handleNextStep(step)"
+            >
+              <view class="step-indicator" :class="[step.priority]" />
+              <view class="step-content">
+                <text class="step-title">{{ step.title }}</text>
+                <text class="step-subtitle">{{ step.subtitle }}</text>
+              </view>
+              <text class="step-arrow">›</text>
+            </view>
+          </view>
+        </view>
+
         <!-- 操作按钮 -->
         <view class="action-row">
-          <button class="action-btn primary-btn" hover-class="btn-hover" @tap="emit('viewReport')">查看诊断报告</button>
+          <button
+            v-if="hasNextRecommendation"
+            class="action-btn primary-btn"
+            hover-class="btn-hover"
+            @tap="emit('continueNext')"
+          >
+            继续刷下一组
+          </button>
+          <button
+            :class="['action-btn', hasNextRecommendation ? 'secondary-btn' : 'primary-btn']"
+            hover-class="btn-hover"
+            @tap="emit('viewReport')"
+          >
+            查看诊断报告
+          </button>
           <button class="action-btn secondary-btn" hover-class="btn-hover" @tap="emit('close')">返回</button>
         </view>
 
@@ -78,16 +116,29 @@
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { animateNumber } from '@/utils/animations/micro-interactions';
+import { analyzeMastery } from '@/services/api/domains/study.api.js';
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
   questions: { type: Array, default: () => [] },
   answeredQuestions: { type: Array, default: () => [] },
   totalTime: { type: Number, default: 0 },
-  isDark: { type: Boolean, default: false }
+  isDark: { type: Boolean, default: false },
+  // AI诊断摘要（由do-quiz传入，替代假激励文案）
+  diagnosisSummary: { type: String, default: '' },
+  // 是否有AI推荐的下一组题
+  hasNextRecommendation: { type: Boolean, default: false }
 });
 
-const emit = defineEmits(['viewReport', 'close']);
+const emit = defineEmits([
+  'viewReport',
+  'close',
+  'goMistakes',
+  'goWeakTraining',
+  'goNewPractice',
+  'goAIPlan',
+  'continueNext'
+]);
 
 // --- 基础统计 ---
 const totalCount = computed(() => props.questions.length);
@@ -109,6 +160,93 @@ const avgTimeDisplay = computed(() => {
 const displayAccuracy = ref(0);
 let animHandle = null;
 
+// --- AI 推荐下一步 ---
+const nextSteps = ref([]);
+const loadingNextSteps = ref(false);
+
+/** 根据本次做题表现生成推荐列表 */
+async function loadNextSteps() {
+  loadingNextSteps.value = true;
+  try {
+    const steps = [];
+
+    // 规则1：有错题 → 推荐去错题本
+    if (wrongCount.value > 0) {
+      steps.push({
+        icon: 'note',
+        title: '复习错题',
+        subtitle: `本次答错 ${wrongCount.value} 题，趁热打铁`,
+        action: 'mistakes',
+        priority: 'high'
+      });
+    }
+
+    // 规则2：正确率低于60% → 推荐薄弱点训练
+    if (accuracy.value < 60) {
+      const weakest =
+        categoryBreakdown.value.length > 0 ? categoryBreakdown.value[categoryBreakdown.value.length - 1] : null;
+      steps.push({
+        icon: 'target',
+        title: weakest ? `强化: ${weakest.name}` : '薄弱点专练',
+        subtitle: weakest ? `正确率仅${weakest.accuracy}%，建议针对训练` : '集中突破薄弱知识点',
+        action: 'weak-training',
+        priority: 'high'
+      });
+    }
+
+    // 规则3：正确率高于80% → 推荐挑战更难的
+    if (accuracy.value >= 80) {
+      steps.push({
+        icon: 'award',
+        title: '挑战新题',
+        subtitle: '正确率不错！试试更高难度',
+        action: 'new-practice',
+        priority: 'normal'
+      });
+    }
+
+    // 规则4：尝试调用后端获取更智能的推荐（静默降级）
+    try {
+      const result = await analyzeMastery();
+      if (result?.data?.summary?.weakestPoint) {
+        const weak = result.data.summary;
+        steps.unshift({
+          icon: 'sparkle',
+          title: `AI建议: 攻克${weak.weakestPoint}`,
+          subtitle: `${weak.weakCount}个薄弱点待突破，平均掌握度${weak.avgMastery}%`,
+          action: 'ai-plan',
+          priority: 'urgent'
+        });
+      }
+    } catch {
+      // 后端调用失败，静默降级（只用本地规则）
+    }
+
+    // 最多显示3条
+    nextSteps.value = steps.slice(0, 3);
+  } finally {
+    loadingNextSteps.value = false;
+  }
+}
+
+/** 点击推荐项，触发对应事件 */
+function handleNextStep(step) {
+  switch (step.action) {
+    case 'mistakes':
+      emit('goMistakes');
+      break;
+    case 'weak-training':
+      emit('goWeakTraining');
+      break;
+    case 'new-practice':
+      emit('goNewPractice');
+      break;
+    case 'ai-plan':
+      emit('goAIPlan');
+      break;
+  }
+}
+
 watch(
   () => props.visible,
   (val) => {
@@ -120,6 +258,8 @@ watch(
           displayAccuracy.value = v;
         });
       }, 300);
+      // 异步加载 AI 推荐下一步
+      loadNextSteps();
     }
   },
   { immediate: true }
@@ -157,12 +297,29 @@ const categoryBreakdown = computed(() => {
     .sort((a, b) => b.accuracy - a.accuracy);
 });
 
-// --- 激励文案 ---
-const beatPct = ref(Math.floor(Math.random() * 26) + 60);
+// --- 激励文案 — 优先使用真实AI诊断，降级到本地规则 ---
 const motivationalText = computed(() => {
-  if (accuracy.value >= 90) return `太棒了! 你超过了 ${beatPct.value}% 的用户，继续保持!`;
-  if (accuracy.value >= 60) return `不错! 你超过了 ${beatPct.value}% 的用户，再接再厉!`;
-  return `你超过了 ${beatPct.value}% 的用户，多加练习一定能进步!`;
+  // 有真实 AI 诊断数据时使用（由 do-quiz.vue 的 autoDiagnose 传入）
+  if (props.diagnosisSummary) return props.diagnosisSummary;
+
+  // 降级：基于本次表现的本地规则文案
+  if (accuracy.value >= 90) {
+    const weakCat = categoryBreakdown.value.find((c) => c.accuracy < 80);
+    return weakCat
+      ? `整体表现很棒！「${weakCat.name}」还可以再提升，建议针对训练。`
+      : '全面发挥出色，继续保持这个节奏！';
+  }
+  if (accuracy.value >= 70) {
+    const worst =
+      categoryBreakdown.value.length > 0 ? categoryBreakdown.value[categoryBreakdown.value.length - 1] : null;
+    return worst
+      ? `不错的表现！「${worst.name}」正确率${worst.accuracy}%是主要失分点，建议重点复习。`
+      : `正确率${accuracy.value}%，基础不错，继续巩固！`;
+  }
+  if (accuracy.value >= 50) {
+    return `正确率${accuracy.value}%，还有提升空间。建议先复习错题，再做针对性练习。`;
+  }
+  return `这组题有挑战性，正确率${accuracy.value}%。别灰心，重点攻克薄弱知识点后会有明显进步！`;
 });
 </script>
 

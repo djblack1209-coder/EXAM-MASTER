@@ -32,72 +32,71 @@
   <!-- #endif -->
 </template>
 
-<script>
-export default {
-  name: 'PrivacyPopup',
-  data() {
-    return {
-      showPopup: false,
-      privacyContractName: '《用户隐私保护指引》',
-      resolvePrivacyAuthorization: null
-    };
-  },
-  // #ifdef MP-WEIXIN
-  mounted() {
-    if (wx.onNeedPrivacyAuthorization) {
-      this._privacyHandler = (resolve) => {
-        this.resolvePrivacyAuthorization = resolve;
-        // 获取隐私协议名称
-        if (wx.getPrivacySetting) {
-          wx.getPrivacySetting({
-            success: (res) => {
-              if (res.privacyContractName) {
-                this.privacyContractName = `《${res.privacyContractName}》`;
-              }
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+
+const showPopup = ref(false);
+const privacyContractName = ref('《用户隐私保护指引》');
+let resolvePrivacyAuthorization = null;
+let _privacyHandler = null;
+
+// #ifdef MP-WEIXIN
+onMounted(() => {
+  if (wx.onNeedPrivacyAuthorization) {
+    _privacyHandler = (resolve) => {
+      resolvePrivacyAuthorization = resolve;
+      // 获取隐私协议名称
+      if (wx.getPrivacySetting) {
+        wx.getPrivacySetting({
+          success: (res) => {
+            if (res.privacyContractName) {
+              privacyContractName.value = `《${res.privacyContractName}》`;
             }
-          });
-        }
-        this.showPopup = true;
-      };
-      wx.onNeedPrivacyAuthorization(this._privacyHandler);
-    }
-  },
-  beforeUnmount() {
-    if (wx.offNeedPrivacyAuthorization && this._privacyHandler) {
-      wx.offNeedPrivacyAuthorization(this._privacyHandler);
-      this._privacyHandler = null;
-    }
-  },
-  // #endif
-  methods: {
-    handleAgree() {
-      this.showPopup = false;
-      if (this.resolvePrivacyAuthorization) {
-        this.resolvePrivacyAuthorization({ buttonId: 'agree-btn', event: 'agree' });
-        this.resolvePrivacyAuthorization = null;
-      }
-    },
-    handleReject() {
-      this.showPopup = false;
-      if (this.resolvePrivacyAuthorization) {
-        this.resolvePrivacyAuthorization({ buttonId: 'reject-btn', event: 'disagree' });
-        this.resolvePrivacyAuthorization = null;
-      }
-    },
-    openPrivacyContract() {
-      // #ifdef MP-WEIXIN
-      if (wx.openPrivacyContract) {
-        wx.openPrivacyContract({
-          fail: () => {
-            // 降级：跳转到本地隐私政策页面
-            uni.navigateTo({ url: '/pages/settings/privacy' });
           }
         });
       }
-      // #endif
-    }
+      showPopup.value = true;
+    };
+    wx.onNeedPrivacyAuthorization(_privacyHandler);
   }
-};
+});
+
+onBeforeUnmount(() => {
+  if (wx.offNeedPrivacyAuthorization && _privacyHandler) {
+    wx.offNeedPrivacyAuthorization(_privacyHandler);
+    _privacyHandler = null;
+  }
+});
+// #endif
+
+function handleAgree() {
+  showPopup.value = false;
+  if (resolvePrivacyAuthorization) {
+    resolvePrivacyAuthorization({ buttonId: 'agree-btn', event: 'agree' });
+    resolvePrivacyAuthorization = null;
+  }
+}
+
+function handleReject() {
+  showPopup.value = false;
+  if (resolvePrivacyAuthorization) {
+    resolvePrivacyAuthorization({ buttonId: 'reject-btn', event: 'disagree' });
+    resolvePrivacyAuthorization = null;
+  }
+}
+
+function openPrivacyContract() {
+  // #ifdef MP-WEIXIN
+  if (wx.openPrivacyContract) {
+    wx.openPrivacyContract({
+      fail: () => {
+        // 降级：跳转到本地隐私政策页面
+        uni.navigateTo({ url: '/pages/settings/privacy' });
+      }
+    });
+  }
+  // #endif
+}
 </script>
 
 <style scoped>

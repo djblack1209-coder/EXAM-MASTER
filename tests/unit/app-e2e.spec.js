@@ -3,7 +3,7 @@
  * 通过 uni-app 页面生命周期和 API 模拟完整用户操作路径
  * 运行: npm run test:app-e2e
  */
-import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock uni-app 运行时
 const mockPages = [];
@@ -17,7 +17,7 @@ const mockUni = {
   switchTab: vi.fn(({ url }) => {
     mockNavigations.push({ type: 'switchTab', url });
   }),
-  navigateTo: vi.fn(({ url, success, fail }) => {
+  navigateTo: vi.fn(({ url, success, _fail }) => {
     mockNavigations.push({ type: 'navigateTo', url });
     success?.({ errMsg: 'navigateTo:ok' });
   }),

@@ -2,7 +2,7 @@
   <view class="splash-container">
     <view class="content-wrapper">
       <view class="logo-wrapper">
-        <view class="splash-pulse-ring"></view>
+        <view class="splash-pulse-ring" />
         <image class="logo-icon" src="./static/logo.png" alt="Exam Master" mode="aspectFit" />
       </view>
 

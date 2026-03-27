@@ -1,4 +1,5 @@
 <script>
+import { toast } from '@/utils/toast.js';
 import { useUserStore } from '@/stores';
 import { applyTheme, getCurrentTheme, watchTheme } from '@/design/theme-engine.js';
 // ✅ 检查点 5.1: 导入分析服务
@@ -149,11 +150,7 @@ export default {
           // 静默处理
         }
 
-        uni.showToast({
-          title: '登录已过期，请重新登录',
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info('登录已过期，请重新登录');
 
         // 延迟跳转，让 toast 显示
         setTimeout(() => {
@@ -688,5 +685,12 @@ page[data-theme='dark'] .option-item:active {
   transform: none !important;
   opacity: 1 !important;
   filter: none !important;
+}
+
+/* H5 环境：隐藏原生 tabBar，使用自定义胶囊 tabBar (custom-tabbar.vue) */
+/* 原生 tabBar 和自定义 tabBar 同时显示会互相遮挡 */
+uni-tabbar,
+.uni-tabbar-bottom {
+  display: none !important;
 }
 </style>

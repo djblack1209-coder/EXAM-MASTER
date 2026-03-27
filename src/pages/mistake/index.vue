@@ -22,9 +22,9 @@
       scroll-y
       class="main-scroll"
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
-      @scrolltolower="loadMore"
       refresher-enabled
       :refresher-triggered="isRefreshing"
+      @scrolltolower="loadMore"
       @refresherrefresh="onPullRefresh"
     >
       <!-- 统计卡片区域 -->
@@ -61,6 +61,12 @@
           </view>
           <view :class="['filter-chip', { active: reviewFilter === 'recent' }]" @tap="reviewFilter = 'recent'">
             <text class="filter-text"> 最近错题 </text>
+          </view>
+          <view
+            :class="['filter-chip cluster-chip', { active: reviewFilter === 'cluster' }]"
+            @tap="switchToClusterView"
+          >
+            <text class="filter-text"> ✨ 知识点聚类 </text>
           </view>
           <view
             v-for="cat in mistakeCategories"
@@ -100,19 +106,70 @@
         </view>
       </view>
 
+      <!-- 知识点聚类视图（AI 分析模式） -->
+      <view v-if="reviewFilter === 'cluster'" class="cluster-view">
+        <view v-if="clusterLoading" class="cluster-loading">
+          <view v-for="i in 3" :key="i" class="loading-dot" />
+          <text class="cluster-loading-text">AI 正在分析错题模式...</text>
+        </view>
+        <view v-else-if="errorClusters.length === 0" class="cluster-empty">
+          <text class="cluster-empty-text">暂无足够数据生成聚类分析</text>
+        </view>
+        <view v-else>
+          <view v-for="cluster in errorClusters" :key="cluster.clusterId" class="cluster-card glass-card">
+            <view class="cluster-header">
+              <view class="cluster-badge" :class="[cluster.severity]">
+                <text class="cluster-badge-text">
+{{
+                  cluster.severity === 'high' ? '高频' : cluster.severity === 'medium' ? '中频' : '低频'
+                }}
+</text>
+              </view>
+              <text class="cluster-type">{{ cluster.errorTypeName }}</text>
+              <text class="cluster-count">{{ cluster.questionCount }}题</text>
+            </view>
+            <view v-if="cluster.knowledgePoints && cluster.knowledgePoints.length > 0" class="cluster-kps">
+              <text v-for="kp in cluster.knowledgePoints" :key="kp" class="kp-tag">{{ kp }}</text>
+            </view>
+            <text class="cluster-suggestion">{{ cluster.suggestion }}</text>
+            <view class="cluster-trend">
+              <text :class="['trend-text', cluster.trend]">
+                {{
+                  cluster.trend === 'increasing'
+                    ? '↑ 近期增多'
+                    : cluster.trend === 'decreasing'
+                      ? '↓ 逐渐减少'
+                      : '— 保持稳定'
+                }}
+              </text>
+            </view>
+            <button class="train-btn" @tap="startClusterTraining(cluster)">
+              针对训练
+              {{
+                cluster.knowledgePoints && cluster.knowledgePoints[0]
+                  ? cluster.knowledgePoints[0]
+                  : cluster.errorTypeName
+              }}
+            </button>
+          </view>
+        </view>
+      </view>
+
       <!-- 错题列表 (F007: 限制DOM节点数量，最多渲染 maxDomItems 条) -->
-      <MistakeCard
-        v-for="(item, index) in displayedMistakes"
-        :key="item.id || item._id || index"
-        :item="item"
-        :index="index"
-        :mode="mode"
-        :mistakes="mistakes"
-        @remove="removeMistake"
-      />
+      <template v-if="reviewFilter !== 'cluster'">
+        <MistakeCard
+          v-for="(item, index) in displayedMistakes"
+          :key="item.id || item._id || index"
+          :item="item"
+          :index="index"
+          :mode="mode"
+          :mistakes="mistakes"
+          @remove="removeMistake"
+        />
+      </template>
 
       <!-- 一键清空按钮（显示在列表最底部） - 优化样式 -->
-      <view v-if="mistakes.length > 0 && !isLoading" class="clear-all-section">
+      <view v-if="mistakes.length > 0 && !isLoading && reviewFilter !== 'cluster'" class="clear-all-section">
         <button
           class="clear-all-btn ds-flex ds-flex-center ds-gap-xs ds-touchable"
           :disabled="isClearing"
@@ -134,12 +191,14 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import MistakeSkeleton from './components/mistake-skeleton/mistake-skeleton.vue';
 import StatsCard from './StatsCard.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { getErrorClusters } from '@/services/api/domains/study.api.js';
 import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
@@ -171,8 +230,10 @@ export default {
       isInitLoading: true, // 初始骨架屏加载状态
       isClearing: false, // 防重复点击：清空错题
       isReviewMode: false, // ✅ P1: 错题重练模式
-      reviewFilter: 'all', // ✅ 1.7: 筛选条件 all | high_freq | recent
-      maxDomItems: 80 // F007: DOM 上限，防止无限滚动导致 DOM 节点过多
+      reviewFilter: 'all', // ✅ 1.7: 筛选条件 all | high_freq | recent | cluster
+      maxDomItems: 80, // F007: DOM 上限，防止无限滚动导致 DOM 节点过多
+      errorClusters: [], // 知识点聚类数据
+      clusterLoading: false // 聚类加载状态
     };
   },
   onLoad(options) {
@@ -283,7 +344,7 @@ export default {
       this.userInfo = storageService.get('userInfo', { nickName: '考研人' });
     },
     async syncPendingMistakes() {
-      uni.showLoading({ title: '同步中...', mask: false });
+      toast.loading('同步中...');
       try {
         logger.log('[mistake-book] 开始自动同步待同步错题...');
         const result = await storageService.syncPendingMistakes();
@@ -302,7 +363,7 @@ export default {
       } catch (error) {
         logger.error('[mistake-book] 同步待同步错题异常:', error);
       } finally {
-        uni.hideLoading();
+        toast.hide();
       }
     },
     /**
@@ -394,7 +455,7 @@ export default {
     startSequentialReview() {
       const source = this.isReviewMode ? this.filteredReviewMistakes : this.mistakes;
       if (source.length === 0) {
-        uni.showToast({ title: '暂无错题', icon: 'none' });
+        toast.info('暂无错题');
         return;
       }
 
@@ -448,7 +509,7 @@ export default {
         .filter((q) => q.question && q.options.length >= 2); // 过滤无效题目
 
       if (reviewQuestions.length === 0) {
-        uni.showToast({ title: '错题数据格式异常', icon: 'none' });
+        toast.info('错题数据格式异常');
         logger.error('[mistake-book] ❌ 所有错题数据格式异常，无法开始重练');
         return;
       }
@@ -485,7 +546,7 @@ export default {
 
       // 一键清空所有错题
       if (this.mistakes.length === 0) {
-        return uni.showToast({ title: '已经没有错题了', icon: 'none' });
+        return toast.info('已经没有错题了');
       }
 
       uni.showModal({
@@ -495,7 +556,7 @@ export default {
         success: async (res) => {
           if (res.confirm) {
             this.isClearing = true;
-            uni.showLoading({ title: '清空中...' });
+            toast.loading('清空中...');
 
             try {
               logger.log('[mistake-book] 🧹 开始清空所有错题...');
@@ -518,23 +579,15 @@ export default {
               );
               logger.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
 
-              uni.hideLoading();
+              toast.hide();
               const totalCount = mistakeIds.length;
-              uni.showToast({
-                title: totalCount > 0 ? `已清空 ${totalCount} 道错题` : '已清空所有错题',
-                icon: 'success',
-                duration: 2000
-              });
+              toast.success(totalCount > 0 ? `已清空 ${totalCount} 道错题` : '已清空所有错题', 2000);
 
               // 响应式数据已更新，Vue 会自动触发视图更新
             } catch (error) {
               logger.error('[mistake-book] ❌ 清空错题失败:', error);
-              uni.hideLoading();
-              uni.showToast({
-                title: '清空失败，请重试',
-                icon: 'none',
-                duration: 2000
-              });
+              toast.hide();
+              toast.info('清空失败，请重试');
             } finally {
               this.isClearing = false;
             }
@@ -558,6 +611,102 @@ export default {
     switchMode(newMode) {
       this.mode = newMode;
     },
+
+    // === 知识点聚类功能 ===
+
+    /** 切换到聚类视图，首次切换时加载数据 */
+    async switchToClusterView() {
+      this.reviewFilter = 'cluster';
+      if (this.errorClusters.length === 0) {
+        await this.loadErrorClusters();
+      }
+    },
+
+    /** 调用后端 AI 错题聚类分析 */
+    async loadErrorClusters() {
+      this.clusterLoading = true;
+      try {
+        const result = await getErrorClusters();
+        if (result?.data?.clusters) {
+          this.errorClusters = result.data.clusters;
+        }
+      } catch (error) {
+        logger.error('[mistake-book] 错题聚类加载失败:', error);
+        toast.info('聚类分析暂时不可用');
+      } finally {
+        this.clusterLoading = false;
+      }
+    },
+
+    /** 基于聚类结果筛选错题，跳转到针对训练 */
+    startClusterTraining(cluster) {
+      const kpSet = new Set(cluster.knowledgePoints || []);
+      const filteredMistakes = this.mistakes.filter((m) => {
+        const cat = m.category || m.knowledge_point || '';
+        return kpSet.has(cat) || cat === cluster.errorTypeName;
+      });
+
+      if (filteredMistakes.length === 0) {
+        toast.info('该类型暂无可练习的错题');
+        return;
+      }
+
+      logger.log(
+        '[mistake-book] 开始聚类针对训练，知识点:',
+        cluster.knowledgePoints,
+        '共',
+        filteredMistakes.length,
+        '道题'
+      );
+
+      const reviewQuestions = filteredMistakes
+        .map((m, index) => {
+          const questionContent = m.question || m.question_content || m.title || `错题 ${index + 1}`;
+          let options = m.options;
+          if (!Array.isArray(options) || options.length === 0) {
+            options = m.choices || m.option_list || ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
+          }
+          let answer = m.answer || m.correct_answer || m.correctAnswer || 'A';
+          if (typeof answer === 'string' && answer.length > 1) answer = answer.charAt(0).toUpperCase();
+          if (typeof answer === 'number') answer = ['A', 'B', 'C', 'D'][answer] || 'A';
+
+          return {
+            id: m.id || m._id || `cluster_${index}_${Date.now()}`,
+            question: questionContent,
+            options,
+            answer,
+            desc: m.desc || m.analysis || m.explanation || '暂无解析',
+            category: m.category || m.subject || '针对训练',
+            type: m.type || '单选',
+            difficulty: m.difficulty || 2,
+            wrongCount: m.wrong_count || 1,
+            isReview: true
+          };
+        })
+        .filter((q) => q.question && q.options.length >= 2);
+
+      if (reviewQuestions.length === 0) {
+        toast.info('错题数据格式异常');
+        return;
+      }
+
+      storageService.save('temp_review_questions', reviewQuestions);
+      const currentBank = storageService.get('v30_bank', []);
+      if (currentBank.length > 0) {
+        storageService.save('v30_bank_backup', currentBank);
+      }
+      storageService.save('v30_bank', reviewQuestions);
+      storageService.save('is_review_mode', true);
+
+      safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {
+        success: () => logger.log('[mistake-book] ✅ 聚类训练跳转成功'),
+        fail: (err) => {
+          logger.error('[mistake-book] ❌ 聚类训练跳转失败:', err);
+          this._restoreOriginalBank();
+          storageService.remove('is_review_mode');
+        }
+      });
+    },
     /** @param {number} index - 错题在列表中的索引 */
     async removeMistake(index) {
       const mistake = this.mistakes[index];
@@ -569,7 +718,7 @@ export default {
         confirmColor: '#FF3B30',
         success: async (res) => {
           if (res.confirm) {
-            uni.showLoading({ title: '删除中...' });
+            toast.loading('删除中...');
 
             try {
               // 使用云端方法删除
@@ -581,22 +730,22 @@ export default {
                 // 从列表中移除
                 this.mistakes.splice(index, 1);
                 logger.log(`[mistake-book] ✅ 删除成功，列表剩余 ${this.mistakes.length} 条错题`);
-                uni.showToast({ title: '已移除', icon: 'success' });
+                toast.success('已移除');
               } else {
                 // 如果云端删除失败，尝试本地删除
                 logger.warn(`[mistake-book] ⚠️ 删除失败，降级到本地删除: ${result.error}`);
                 this.mistakes.splice(index, 1);
                 storageService.save('mistake_book', this.mistakes, true);
-                uni.showToast({ title: '已移除（本地）', icon: 'none' });
+                toast.info('已移除（本地）');
               }
             } catch (error) {
               logger.error('[mistake-book] 删除错题异常:', error);
               // 降级到本地删除
               this.mistakes.splice(index, 1);
               storageService.save('mistake_book', this.mistakes, true);
-              uni.showToast({ title: '已移除（本地）', icon: 'none' });
+              toast.info('已移除（本地）');
             } finally {
-              uni.hideLoading();
+              toast.hide();
             }
           }
         }
@@ -1063,5 +1212,185 @@ export default {
 
 .container.dark-mode .filter-chip.active .filter-text {
   color: var(--primary-foreground);
+}
+
+/* === 知识点聚类视图 === */
+.cluster-view {
+  padding: 0 0 30rpx;
+}
+
+.cluster-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 0;
+}
+
+.cluster-loading .loading-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: var(--color-primary, #34d399);
+  margin-right: 8rpx;
+  animation: clusterDotBounce 1.4s ease-in-out infinite;
+}
+.cluster-loading .loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.cluster-loading .loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes clusterDotBounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.cluster-loading-text {
+  font-size: 26rpx;
+  color: var(--text-sub);
+  margin-left: 12rpx;
+}
+
+.cluster-empty {
+  text-align: center;
+  padding: 60rpx 0;
+}
+.cluster-empty-text {
+  font-size: 28rpx;
+  color: var(--text-sub);
+}
+
+.cluster-card {
+  margin-bottom: 24rpx;
+}
+
+.cluster-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.cluster-badge {
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
+  margin-right: 12rpx;
+}
+.cluster-badge.high {
+  background: rgba(239, 68, 68, 0.15);
+}
+.cluster-badge.high .cluster-badge-text {
+  color: #ef4444;
+}
+.cluster-badge.medium {
+  background: rgba(245, 158, 11, 0.15);
+}
+.cluster-badge.medium .cluster-badge-text {
+  color: #f59e0b;
+}
+.cluster-badge.low {
+  background: rgba(148, 163, 184, 0.15);
+}
+.cluster-badge.low .cluster-badge-text {
+  color: #94a3b8;
+}
+
+.cluster-badge-text {
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.cluster-type {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.cluster-count {
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
+.cluster-kps {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 12rpx;
+}
+
+.kp-tag {
+  font-size: 22rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 12rpx;
+  background: var(--bg-secondary, #f0f0f0);
+  color: var(--text-sub);
+  margin-right: 8rpx;
+  margin-bottom: 8rpx;
+}
+
+.cluster-suggestion {
+  font-size: 26rpx;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.cluster-trend {
+  margin-bottom: 16rpx;
+}
+.trend-text {
+  font-size: 22rpx;
+}
+.trend-text.increasing {
+  color: #ef4444;
+}
+.trend-text.decreasing {
+  color: #10b981;
+}
+.trend-text.stable {
+  color: #94a3b8;
+}
+
+.train-btn {
+  width: 100%;
+  padding: 20rpx;
+  border-radius: 20rpx;
+  background: var(--cta-primary-bg, var(--color-primary));
+  color: var(--cta-primary-text, #fff);
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+  box-shadow: var(--cta-primary-shadow, none);
+}
+.train-btn::after {
+  border: none;
+}
+.train-btn:active {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+
+.cluster-chip {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(6, 182, 212, 0.1)) !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+
+/* 暗色模式 - 聚类 */
+.container.dark-mode .cluster-card {
+  background: var(--bg-card);
+  border-color: var(--border);
+}
+.container.dark-mode .kp-tag {
+  background: rgba(255, 255, 255, 0.08);
+  color: #b0b0b0;
 }
 </style>

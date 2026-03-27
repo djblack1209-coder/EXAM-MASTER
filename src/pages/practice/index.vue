@@ -114,6 +114,20 @@
       @show-achievement="showAchievementModal = true"
     />
 
+    <!-- AI 今日推荐训练 — 零决策一键开始 -->
+    <view v-if="hasBank && !isPageLoading && aiRecommendTopic" class="ai-recommend-card" @tap="startAIRecommend">
+      <view class="ai-recommend-badge">
+        <text class="ai-recommend-badge-text">AI 推荐</text>
+      </view>
+      <view class="ai-recommend-body">
+        <text class="ai-recommend-title">{{ aiRecommendTopic.title }}</text>
+        <text class="ai-recommend-reason">{{ aiRecommendTopic.reason }}</text>
+      </view>
+      <view class="ai-recommend-action">
+        <text class="ai-recommend-btn-text">一键开始</text>
+      </view>
+    </view>
+
     <!-- 题库生成进度条 -->
     <GenerationProgressBar
       v-if="isGeneratingQuestions && !isPageLoading"
@@ -399,6 +413,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import ResumePracticeModal from '@/components/common/ResumePracticeModal.vue';
@@ -418,13 +433,19 @@ import { QUOTE_LIBRARY } from '@/config/home-data.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getFavorites } from '@/utils/favorite/question-favorite.js';
 import { getLearningStats, getWeakKnowledgePoints } from '@/utils/learning/adaptive-learning-engine.js';
-import { getStreakData as getLearningStreakData } from '@/utils/analytics/learning-analytics.js';
+// study.api.js 动态导入 — 避免拖进主包
+// learning-analytics 动态导入 — 避免 16KB 拖进主包
 // ✅ 检查点2.2：导入草稿检测器
 import { detectUnfinishedPractice, clearDraft } from '@/utils/practice/draft-detector.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
-// ✅ 2.1: 导航逻辑提取到 mixin，减少主组件方法数量
-import { practiceNavigationMixin } from '@/mixins/practiceNavigationMixin.js';
+// ✅ 2.1: 导航逻辑提取为 composable，减少主组件方法数量
+import { ref } from 'vue';
+import { usePracticeNavigation } from '@/composables/usePracticeNavigation.js';
+import { useReviewStore } from '@/stores/modules/review.js';
+// ✅ [D002重构] 题库状态管理和动态 mixin 加载
+import { useBankStatus } from '@/composables/useBankStatus.js';
+import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
 
 export default {
   components: {
@@ -442,16 +463,60 @@ export default {
     SpeedReadyModal,
     PauseBanner
   },
-  // ✅ 2.1: 导航逻辑提取到 mixin
-  mixins: [practiceNavigationMixin],
+  // ✅ 2.1: 导航逻辑提取为 composable
+  setup() {
+    // ✅ [D002重构] 题库状态管理由 composable 提供
+    const bankStatus = useBankStatus();
+    const { hasBank, totalQuestions, progressPercent, isPageLoading, isGeneratingQuestions } = bankStatus;
+    const mistakeCount = ref(0);
+
+    const {
+      isNavigating,
+      goPractice,
+      goBattle,
+      goMistakeReview,
+      goFileManager,
+      goAITutor,
+      goMistake,
+      goRank,
+      goToStudyDetail,
+      goFavorites
+    } = usePracticeNavigation({ hasBank, totalQuestions, mistakeCount });
+
+    // ✅ [D002重构] 分包动态加载由 composable 提供
+    const dynamicMixin = useDynamicMixin();
+
+    return {
+      hasBank,
+      totalQuestions,
+      progressPercent,
+      isPageLoading,
+      isGeneratingQuestions,
+      mistakeCount,
+      isNavigating,
+      goPractice,
+      goBattle,
+      goMistakeReview,
+      goFileManager,
+      goAITutor,
+      goMistake,
+      goRank,
+      goToStudyDetail,
+      goFavorites,
+      // ✅ [D002重构] 题库状态方法
+      refreshBankStatus: bankStatus.refreshBankStatus,
+      _refreshBankWithData: bankStatus.refreshBankWithData,
+      _checkGenerationWithData: bankStatus.checkGenerationWithData,
+      // ✅ [D002重构] 动态 mixin 方法
+      _dynamicMixin: dynamicMixin,
+      dynamicMethodsCache: dynamicMixin.dynamicMethodsCache
+    };
+  },
   data() {
     return {
-      // 页面状态
-      hasBank: false,
-      totalQuestions: 0,
-      progressPercent: 0,
+      // 页面状态（hasBank, totalQuestions, mistakeCount, progressPercent,
+      //   isPageLoading, isGeneratingQuestions 已由 setup() composable 提供）
       isDark: false,
-      isPageLoading: true, // 页面初始加载状态
 
       // 智能引擎状态
       fileName: '',
@@ -469,11 +534,10 @@ export default {
       uploadHistoryKey: 'imported_files',
       currentUploadSource: '',
       currentUploadId: '',
-      bankSizeAtGenStart: 0, // ✅ 1.6: 生成开始时题库大小，用于精确计算进度
-      isUploadingFile: false, // ✅ F026: 文件读取中状态
+      bankSizeAtGenStart: 0,
+      isUploadingFile: false,
 
       // 题库生成进度
-      isGeneratingQuestions: false,
       generationProgress: 0,
       progressTimer: null,
       showQuizManageModal: false,
@@ -482,28 +546,25 @@ export default {
       showResumeModal: false,
       draftInfo: null,
 
-      // 防重复点击: isNavigating 由 practiceNavigationMixin 提供
-
       // Phase 3-7: AI推题加载状态
       isLoadingRecommend: false,
+      // AI 推荐今日训练的知识点
+      aiRecommendTopic: null,
 
       // ✅ P0-2: 学习数据统计
-      todayQuestions: 0, // 今日刷题数
-      todayGoal: 20, // 今日目标（从学习目标模块读取）
-      currentStreak: 0, // 连续学习天数
-      weeklyAccuracy: 0, // 本周正确率
-      weakPointsCount: 0, // 薄弱知识点数量
+      todayQuestions: 0,
+      todayGoal: 20,
+      currentStreak: 0,
+      weeklyAccuracy: 0,
+      weakPointsCount: 0,
 
       // ✅ P1: 学习目标设置弹窗
       showGoalSettingModal: false,
 
-      // ✅ P1: 错题数量
-      mistakeCount: 0,
-
       // ✅ P2: 成就系统
-      unlockedAchievements: [], // 已解锁的成就
-      allAchievements: [], // 所有成就
-      showAchievementModal: false, // 成就弹窗
+      unlockedAchievements: [],
+      allAchievements: [],
+      showAchievementModal: false,
 
       // ✅ P2: 收藏数量
       favoriteCount: 0,
@@ -517,8 +578,7 @@ export default {
       soupList: QUOTE_LIBRARY.map((q) => q.text),
       soupTimer: null,
 
-      // 分包动态方法缓存（避免“功能加载中”占位方法长期生效）
-      dynamicMethodsCache: {},
+      // ✅ [D002重构] dynamicMethodsCache 已由 useDynamicMixin composable 提供
       subPackageLoaded: false
     };
   },
@@ -547,7 +607,11 @@ export default {
 
     // 关键路径：题库状态（UI 需要立即展示）
     this._refreshBankWithData(bankData, userAnswers);
-    this._checkGenerationWithData(importedFiles);
+    this._checkGenerationWithData(importedFiles, {
+      isLooping: this.isLooping,
+      startProgressTimer: () => this.startProgressTimer(),
+      progressTimer: this.progressTimer
+    });
 
     // 检查是否有来自其他页面的待处理搜索（tabBar 页面无法通过 query 传参）
     try {
@@ -581,7 +645,8 @@ export default {
 
         const settled = await Promise.allSettled([
           Promise.resolve().then(() => this.loadLearningStats()),
-          Promise.resolve().then(() => this.loadFavoriteCount())
+          Promise.resolve().then(() => this.loadFavoriteCount()),
+          Promise.resolve().then(() => this.loadAIRecommend())
         ]);
         const failedTasks = settled.filter((item) => item.status === 'rejected');
         if (failedTasks.length > 0) {
@@ -669,68 +734,15 @@ export default {
       }
 
       if (!silent) {
-        uni.showToast({ title: '功能初始化失败，请稍后重试', icon: 'none' });
+        toast.info('功能初始化失败，请稍后重试');
       }
       return undefined;
     },
 
-    async _ensurePracticeSubPackageLoaded() {
-      if (this.subPackageLoaded) return;
+    // ✅ [D002重构] refreshBankStatus, _refreshBankWithData, _checkGenerationWithData
+    // 已由 useBankStatus composable 提供（setup 返回）
 
-      // #ifdef MP-WEIXIN
-      if (typeof uni.loadSubPackage === 'function') {
-        await new Promise((resolve, reject) => {
-          uni.loadSubPackage({
-            root: 'pages/practice-sub',
-            success: () => resolve(true),
-            fail: (err) => reject(err)
-          });
-        });
-      }
-      // #endif
-
-      this.subPackageLoaded = true;
-    },
-
-    _requirePracticeSubpackageModule(modulePath) {
-      // #ifdef APP-PLUS
-      // App 端所有模块已打包在一起，直接动态 import
-      const moduleMap = {
-        '../practice-sub/composables/ai-generation-mixin.js': () =>
-          import('../practice-sub/composables/ai-generation-mixin.js'),
-        '../practice-sub/composables/learning-stats-mixin.js': () =>
-          import('../practice-sub/composables/learning-stats-mixin.js')
-      };
-      const loader = moduleMap[modulePath];
-      if (loader) {
-        return loader();
-      }
-      return Promise.reject(new Error(`未知的模块路径: ${modulePath}`));
-      // #endif
-
-      // #ifndef APP-PLUS
-      return new Promise((resolve, reject) => {
-        try {
-          if (typeof require !== 'function') {
-            reject(new Error('当前环境不支持 require 加载分包模块'));
-            return;
-          }
-
-          require(modulePath, (moduleExports) => {
-            if (!moduleExports) {
-              reject(new Error(`分包模块为空: ${modulePath}`));
-              return;
-            }
-            resolve(moduleExports);
-          });
-        } catch (error) {
-          reject(error);
-        }
-      });
-      // #endif
-    },
-
-    hydrateMainPackageStats() {
+    async hydrateMainPackageStats() {
       try {
         const favorites = getFavorites();
         this.favoriteCount = Array.isArray(favorites) ? favorites.length : 0;
@@ -748,7 +760,8 @@ export default {
         this.weeklyAccuracy = Number.isFinite(weeklyAccuracy) ? weeklyAccuracy : this.weeklyAccuracy;
         this.weakPointsCount = Array.isArray(weakPoints) ? weakPoints.length : this.weakPointsCount;
 
-        const streakData = getLearningStreakData();
+        const { getStreakData } = await import('@/utils/analytics/learning-analytics.js');
+        const streakData = getStreakData();
         const currentStreak = Number(streakData?.currentStreak || 0);
         this.currentStreak = Number.isFinite(currentStreak) ? currentStreak : this.currentStreak;
       } catch (e) {
@@ -756,100 +769,7 @@ export default {
       }
     },
 
-    // ==================== 题库状态管理 ====================
-    refreshBankStatus() {
-      // E005: 委托给带数据参数的版本，兼容外部直接调用
-      const bankData = storageService.get('v30_bank', []);
-      const userAnswers = storageService.get('v30_user_answers', {});
-      this._refreshBankWithData(bankData, userAnswers);
-    },
-
-    // E005: 仅首次加载显示骨架屏，后续 onShow 不闪烁
-    _refreshBankWithData(bankFromService, userAnswers) {
-      if (!this._hasLoadedOnce) {
-        this.isPageLoading = true;
-      }
-      logger.log('[刷题中心] 开始刷新题库状态');
-
-      try {
-        let bank = bankFromService;
-
-        // 仅在数据为空时才尝试备份恢复（避免每次 onShow 都执行恢复逻辑）
-        if (!bank || bank.length === 0) {
-          // 同时检查 storageService 作为兜底
-          const bankFromUni = storageService.get('v30_bank', []);
-          if (bankFromUni.length > 0) {
-            bank = bankFromUni;
-          } else {
-            logger.warn('[刷题中心] 题库数据为空，尝试从备份恢复...');
-            bank = this._tryRestoreFromBackup() || [];
-          }
-        }
-
-        this.hasBank = bank.length > 0;
-        this.totalQuestions = bank.length;
-
-        logger.log('[刷题中心] 题库状态更新:', {
-          hasBank: this.hasBank,
-          totalQuestions: this.totalQuestions
-        });
-
-        // 计算学习进度
-        const doneCount = Object.keys(userAnswers || {}).length;
-        this.progressPercent = bank.length > 0 ? Math.round((doneCount / bank.length) * 100) : 0;
-      } catch (err) {
-        logger.error('[刷题中心] 刷新题库状态异常:', err);
-      } finally {
-        this.isPageLoading = false;
-      }
-      this._hasLoadedOnce = true;
-    },
-    _tryRestoreFromBackup() {
-      const backupKeys = ['v30_bank_backup', 'v30_bank_backup_before_clear'];
-
-      for (const backupKey of backupKeys) {
-        try {
-          // 尝试 uniStorage
-          const backupFromUni = storageService.get(backupKey);
-          const backupFromService = storageService.get(backupKey, null);
-
-          for (const backup of [backupFromUni, backupFromService]) {
-            if (!backup) continue;
-            try {
-              const restoredData = typeof backup === 'string' ? JSON.parse(backup) : backup;
-              if (Array.isArray(restoredData) && restoredData.length > 0) {
-                logger.log(`[刷题中心] 从备份恢复题库 (${backupKey}):`, restoredData.length, '道题');
-                storageService.save('v30_bank', restoredData);
-                uni.showToast({ title: `已从备份恢复 ${restoredData.length} 道题`, icon: 'success', duration: 2000 });
-                return restoredData;
-              }
-            } catch (parseErr) {
-              logger.warn(`[刷题中心] 解析备份失败 (${backupKey}):`, parseErr);
-            }
-          }
-        } catch (restoreErr) {
-          logger.warn(`[刷题中心] 恢复备份失败 (${backupKey}):`, restoreErr);
-        }
-      }
-
-      logger.warn('[刷题中心] 所有备份都不可用');
-      return null;
-    },
-
-    // E005: 接受预读取的 importedFiles 数据
-    _checkGenerationWithData(importedFiles) {
-      const generatingFile = (importedFiles || []).find((f) => f.status === 'generating');
-
-      if (generatingFile && this.isLooping) {
-        this.isGeneratingQuestions = true;
-        this.startProgressTimer();
-      } else {
-        this.isGeneratingQuestions = false;
-        if (this.progressTimer) {
-          clearInterval(this.progressTimer);
-        }
-      }
-    },
+    // ✅ [D002重构] 题库状态管理已由 useBankStatus composable 提供
 
     /**
      * 在本地题库中搜索匹配关键词的题目
@@ -857,7 +777,7 @@ export default {
      */
     _searchBankByKeyword(keyword) {
       if (!keyword || !this.hasBank) {
-        uni.showToast({ title: this.hasBank ? '搜索关键词为空' : '请先导入题库', icon: 'none' });
+        toast.info(this.hasBank ? '搜索关键词为空' : '请先导入题库');
         return;
       }
 
@@ -880,20 +800,20 @@ export default {
       });
 
       if (matched.length === 0) {
-        uni.showToast({ title: `未找到与"${keyword.substring(0, 10)}"相关的题目`, icon: 'none', duration: 2000 });
+        toast.info(`未找到与"${keyword.substring(0, 10)}"相关的题目`);
         return;
       }
 
       // 将搜索结果存入临时存储，答题页读取
       storageService.save('v30_search_result', matched);
-      uni.showToast({ title: `找到 ${matched.length} 道相关题目`, icon: 'success', duration: 1500 });
+      toast.success(`找到 ${matched.length} 道相关题目`);
 
       setTimeout(() => {
         safeNavigateTo('/pages/practice-sub/do-quiz?mode=search');
       }, 800);
     },
 
-    // ==================== 页面导航（由 practiceNavigationMixin 提供）====================
+    // ==================== 页面导航（由 usePracticeNavigation composable 提供）====================
     // goPractice, goBattle, goMistakeReview, goFileManager, goAITutor,
     // goMistake, goRank, goToStudyDetail, goFavorites, isNavigating
 
@@ -923,9 +843,9 @@ export default {
       safeNavigateTo('/pages/practice-sub/do-quiz');
     },
 
-    // goBattle 由 practiceNavigationMixin 提供
+    // goBattle 由 usePracticeNavigation composable 提供
 
-    // goFileManager, goAITutor, goMistake, goRank, goToStudyDetail 由 practiceNavigationMixin 提供
+    // goFileManager, goAITutor, goMistake, goRank, goToStudyDetail 由 usePracticeNavigation composable 提供
 
     // ==================== 学习数据与统计（由分包 mixin 动态注入）====================
     // loadLearningStats, loadTodayGoal, loadAchievements, openGoalSetting,
@@ -938,16 +858,16 @@ export default {
       return this._invokeDynamicMethod('loadFavoriteCount', [], { silent: true });
     },
 
-    // ✅ P1: goMistakeReview 由 practiceNavigationMixin 提供
+    // ✅ P1: goMistakeReview 由 usePracticeNavigation composable 提供
 
-    // ✅ P2: goFavorites 由 practiceNavigationMixin 提供
+    // ✅ P2: goFavorites 由 usePracticeNavigation composable 提供
 
     // Anki 导出
     async exportAnki() {
       try {
-        uni.showLoading({ title: '导出中...', mask: true });
+        toast.loading('导出中...');
         const res = await lafService.request('/anki-export', { deckName: '我的考研题库' });
-        uni.hideLoading();
+        toast.hide();
         if (res.code === 0 && res.data?.fileData) {
           // #ifdef MP-WEIXIN
           const fs = uni.getFileSystemManager();
@@ -959,22 +879,22 @@ export default {
             success: () => {
               uni.shareFileMessage({
                 filePath,
-                success: () => uni.showToast({ title: '导出成功', icon: 'success' }),
-                fail: () => uni.showToast({ title: '已保存', icon: 'success' })
+                success: () => toast.success('导出成功'),
+                fail: () => toast.success('已保存')
               });
             },
-            fail: () => uni.showToast({ title: '保存失败', icon: 'none' })
+            fail: () => toast.info('保存失败')
           });
           // #endif
           // #ifndef MP-WEIXIN
-          uni.showToast({ title: '导出成功', icon: 'success' });
+          toast.success('导出成功');
           // #endif
         } else {
-          uni.showToast({ title: res.message || '导出失败', icon: 'none' });
+          toast.info(res.message || '导出失败');
         }
       } catch (_e) {
-        uni.hideLoading();
-        uni.showToast({ title: '导出失败', icon: 'none' });
+        toast.hide();
+        toast.info('导出失败');
       }
     },
 
@@ -983,14 +903,49 @@ export default {
       safeNavigateTo('/pages/practice-sub/question-bank');
     },
 
+    // AI 今日推荐训练 — 异步加载薄弱知识点
+    async loadAIRecommend() {
+      try {
+        const { analyzeMastery } = await import('@/services/api/domains/study.api.js');
+        const result = await analyzeMastery();
+        if (result?.data?.mastery?.length > 0) {
+          // 找到最薄弱且先修条件已满足的知识点
+          const weak = result.data.mastery.find((k) => k.isWeak && k.prerequisitesMet);
+          if (weak) {
+            this.aiRecommendTopic = {
+              title: `今日重点：${weak.knowledgePoint}`,
+              reason: `掌握度${weak.mastery}%，${weak.recentTrend === 'declining' ? '且近期在下滑' : '需要重点突破'}`,
+              knowledgePoint: weak.knowledgePoint,
+              subject: weak.subject
+            };
+          } else if (result.data.summary?.weakestPoint) {
+            this.aiRecommendTopic = {
+              title: `今日重点：${result.data.summary.weakestPoint}`,
+              reason: `${result.data.summary.weakCount}个薄弱点待攻克`,
+              knowledgePoint: result.data.summary.weakestPoint
+            };
+          }
+        }
+      } catch (err) {
+        // 静默降级，不显示推荐卡片
+        logger.warn('[practice] AI 推荐加载失败:', err);
+      }
+    },
+
+    // AI 推荐卡片的一键开始
+    startAIRecommend() {
+      // 复用已有的 AI 推题逻辑
+      this.goSmartRecommend();
+    },
+
     // Phase 3-7: AI智能推题
     async goSmartRecommend() {
       if (this.isLoadingRecommend) return;
       this.isLoadingRecommend = true;
       try {
-        const { lafService } = await import('@/services/lafService');
-        const res = await lafService.getSmartRecommendations(10);
-        if (res?.code === 0 && res.data?.questions?.length > 0) {
+        const reviewStore = useReviewStore();
+        const res = await reviewStore.fetchSmartRecommendations({ count: 10 });
+        if (res?.success && res.data?.questions?.length > 0) {
           const formatted = res.data.questions.map((q, i) => ({
             id: q._id || `ai_${i}`,
             question: q.question || q.content || '',
@@ -1007,77 +962,18 @@ export default {
           storageService.save('v30_temp_practice', formatted);
           safeNavigateTo('/pages/practice-sub/do-quiz?source=ai-recommend&mode=normal');
         } else {
-          uni.showToast({ title: res?.data?.ai_advice || '暂无推荐，请多做几道题', icon: 'none' });
+          toast.info(res?.data?.ai_advice || '暂无推荐，请多做几道题');
         }
       } catch (_e) {
-        uni.showToast({ title: '推题失败，请稍后重试', icon: 'none' });
+        toast.info('推题失败，请稍后重试');
       } finally {
         this.isLoadingRecommend = false;
       }
     },
 
-    // ==================== 动态注入 Mixin 方法 ====================
+    // ==================== 动态注入 Mixin 方法（由 useDynamicMixin composable 驱动）====================
     async _loadAIGenerationMixin(retryCount = 0) {
-      const MAX_RETRIES = 2;
-      try {
-        await this._ensurePracticeSubPackageLoaded();
-
-        const [aiModule, statsModule] = await Promise.all([
-          this._requirePracticeSubpackageModule('../practice-sub/composables/ai-generation-mixin.js'),
-          this._requirePracticeSubpackageModule('../practice-sub/composables/learning-stats-mixin.js')
-        ]);
-
-        const resolveExport = (mod, name) => mod[name] || (mod.default && mod.default[name]) || mod.default || mod;
-        const aiMixin = resolveExport(aiModule, 'aiGenerationMixin');
-        const statsMixin = resolveExport(statsModule, 'learningStatsMixin');
-        if (!aiMixin || !statsMixin) {
-          throw new Error('分包模块导出为空');
-        }
-
-        // 将 mixin 的方法混入当前实例
-        const mixins = [aiMixin, statsMixin];
-        let injectedCount = 0;
-        for (const mixin of mixins) {
-          const methods = mixin.methods || mixin;
-          if (!methods || typeof methods !== 'object') {
-            continue;
-          }
-          for (const key of Object.keys(methods)) {
-            if (typeof methods[key] === 'function') {
-              const bound = methods[key].bind(this);
-              this.dynamicMethodsCache[key] = bound;
-              // 保留主包 chooseImportSource 的兜底行为，避免点击导入无响应
-              if (key !== 'chooseImportSource') {
-                this[key] = bound;
-              }
-              injectedCount++;
-            }
-          }
-        }
-
-        if (injectedCount === 0) {
-          throw new Error('分包模块方法注入失败');
-        }
-
-        this._mixinLoaded = true;
-        logger.log('[practice] 分包模块加载完成');
-      } catch (e) {
-        logger.error('[practice] 分包模块加载失败 (尝试 ' + (retryCount + 1) + '):', e);
-        if (retryCount < MAX_RETRIES) {
-          // ✅ P1-3: 用 await 延迟替代 setTimeout，保持 promise 链完整
-          const delay = 500 * Math.pow(2, retryCount);
-          await new Promise((resolve) => setTimeout(resolve, delay));
-          return this._loadAIGenerationMixin(retryCount + 1);
-        } else {
-          // 重试耗尽，提示用户
-          this._mixinLoaded = false;
-          uni.showToast({
-            title: '部分功能加载失败，请检查网络后重新进入',
-            icon: 'none',
-            duration: 3000
-          });
-        }
-      }
+      return this._dynamicMixin.loadAIGenerationMixin(this, retryCount);
     },
 
     // ==================== 以下方法由分包 mixin 动态注入 ====================
@@ -1530,6 +1426,80 @@ export default {
   font-size: 28rpx;
   color: var(--text-sub);
   margin: 0;
+}
+
+/* AI 推荐今日训练卡片 */
+.ai-recommend-card {
+  margin: 0 16px 16px;
+  padding: 20px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(6, 182, 212, 0.08));
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.ai-recommend-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #34d399, #06b6d4);
+}
+.ai-recommend-card:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+.ai-recommend-badge {
+  background: linear-gradient(135deg, #34d399, #06b6d4);
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+.ai-recommend-badge-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+}
+.ai-recommend-body {
+  flex: 1;
+  min-width: 0;
+}
+.ai-recommend-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  display: block;
+}
+.ai-recommend-reason {
+  font-size: 12px;
+  color: var(--text-sub, #64748b);
+  margin-top: 4px;
+  display: block;
+}
+.ai-recommend-action {
+  background: linear-gradient(135deg, #34d399, #059669);
+  padding: 8px 18px;
+  border-radius: 16px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.ai-recommend-btn-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+.dark-mode .ai-recommend-card {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(6, 182, 212, 0.08));
+  border-color: rgba(52, 211, 153, 0.25);
+}
+.dark-mode .ai-recommend-title {
+  color: #f1f5f9;
 }
 
 /* 主要操作区 */

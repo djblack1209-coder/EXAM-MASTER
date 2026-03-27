@@ -9,7 +9,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAdminAccess } from './_shared/admin-auth';
+import { requireAdminAccess } from './_shared/admin-auth.js';
 
 const db = cloud.database();
 

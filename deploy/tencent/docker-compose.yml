@@ -1,0 +1,86 @@
+# ============================================
+# EXAM-MASTER — 腾讯云精简部署
+# 针对 2核2GB 共享服务器优化
+# ============================================
+
+services:
+  # ==================== 后端服务 ====================
+  backend:
+    build:
+      context: ../..
+      dockerfile: deploy/tencent/Dockerfile
+    image: exam-master-backend:${VERSION:-latest}
+    container_name: exam-master-backend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:3000"  # 仅本机访问，Nginx 代理
+    env_file:
+      - ../../laf-backend/.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - TZ=Asia/Shanghai
+      - MONGODB_URI=mongodb://exam_app:${MONGO_APP_PASSWORD}@mongo:27017/exam-master?authSource=exam-master
+      - STORAGE_DIR=/app/storage
+    depends_on:
+      mongo:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+    volumes:
+      - backend-storage:/app/storage
+    networks:
+      - exam-net
+
+  # ==================== MongoDB ====================
+  mongo:
+    image: mongo:7.0
+    container_name: exam-master-mongo
+    restart: unless-stopped
+    # 不暴露外部端口，仅容器网络内可访问
+    expose:
+      - "27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD in .env}
+      - MONGO_INITDB_DATABASE=exam-master
+      - MONGO_APP_USER=exam_app
+      - MONGO_APP_PASSWORD=${MONGO_APP_PASSWORD:?Set MONGO_APP_PASSWORD in .env}
+    volumes:
+      - mongo-data:/data/db
+      - ../docker/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    command: >
+      mongod
+        --wiredTigerCacheSizeGB 0.25
+        --quiet
+        --logpath /dev/null
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 350M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+    networks:
+      - exam-net
+
+networks:
+  exam-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+  backend-storage:
+    driver: local

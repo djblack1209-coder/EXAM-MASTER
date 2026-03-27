@@ -7,11 +7,13 @@
 
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { APP_CONFIG } from '../../../common/config';
+import config from '@/config/index.js';
+const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
 import { lafService } from '../../services/lafService.js';
 import tokenRefreshPlugin from '@/utils/auth/token-refresh-plugin.js';
 import { logger } from '@/utils/logger.js';
+import { toast } from '@/utils/toast.js';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref('');
@@ -107,11 +109,7 @@ export const useAuthStore = defineStore('auth', () => {
         const error = new Error(lafError.message || '登录服务不可用');
 
         if (!silent) {
-          uni.showToast({
-            title: error.message,
-            icon: 'none',
-            duration: 3000
-          });
+          toast.info(error.message, 3000);
         }
 
         return { success: false, error };
@@ -120,11 +118,7 @@ export const useAuthStore = defineStore('auth', () => {
       logger.error('[AuthStore] 登录异常：', error);
 
       if (!silent) {
-        uni.showToast({
-          title: error.message || '登录失败',
-          icon: 'none',
-          duration: 3000
-        });
+        toast.info(error.message || '登录失败', 3000);
       }
 
       return { success: false, error };
@@ -189,6 +183,54 @@ export const useAuthStore = defineStore('auth', () => {
     return { success: false, error: new Error('无缓存会话') };
   };
 
+  /**
+   * 发送邮箱验证码
+   * @param {string} email - 邮箱地址
+   */
+  const sendEmailCode = async (email) => {
+    return await lafService.sendEmailCode(email);
+  };
+
+  /**
+   * 微信登录（小程序 / App）
+   * @param {Object} params - 登录参数（code, accessToken, openid, userInfo, platform 等）
+   */
+  const loginByWechat = async (params) => {
+    return await lafService.login({ type: 'wechat', ...params });
+  };
+
+  /**
+   * 微信 H5 网页授权登录
+   * @param {string} code - OAuth 授权码
+   */
+  const loginByWechatH5 = async (code) => {
+    return await lafService.login({ type: 'wechat_h5', code });
+  };
+
+  /**
+   * QQ 登录（小程序 / App / H5）
+   * @param {Object} params - 登录参数（code, platform, accessToken, openid, userInfo, redirectUri 等）
+   */
+  const loginByQQ = async (params) => {
+    return await lafService.login({ type: 'qq', ...params });
+  };
+
+  /**
+   * QQ H5 网页授权登录
+   * @param {Object} params - { code, redirectUri }
+   */
+  const loginByQQH5 = async (params) => {
+    return await lafService.login({ type: 'qq', ...params });
+  };
+
+  /**
+   * 邮箱登录 / 注册
+   * @param {Object} params - { email, password, verifyCode?, isRegister? }
+   */
+  const loginByEmail = async (params) => {
+    return await lafService.login({ type: 'email', ...params });
+  };
+
   return {
     token,
     isLogin,
@@ -198,6 +240,13 @@ export const useAuthStore = defineStore('auth', () => {
     restoreUserInfo,
     silentLogin,
     syncLoginStatus,
-    _setUserInfoRef
+    _setUserInfoRef,
+    // B1: 新增登录/认证 action
+    sendEmailCode,
+    loginByWechat,
+    loginByWechatH5,
+    loginByQQ,
+    loginByQQH5,
+    loginByEmail
   };
 });

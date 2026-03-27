@@ -11,6 +11,7 @@
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { lafService } from '@/services/lafService.js';
+import { toast } from '@/utils/toast.js';
 const STORAGE_KEYS = {
   GOALS: 'learning_goals',
   GOAL_RECORDS: 'learning_goal_records',
@@ -527,11 +528,7 @@ class LearningGoalManager {
   _sendNotification(notification) {
     try {
       if (typeof uni !== 'undefined') {
-        uni.showToast({
-          title: notification.content,
-          icon: 'none',
-          duration: 3000
-        });
+        toast.info(notification.content, 3000);
       }
     } catch (e) {
       logger.warn('[LearningGoal] 发送通知失败:', e);

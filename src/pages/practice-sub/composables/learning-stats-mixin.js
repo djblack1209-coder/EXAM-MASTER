@@ -10,6 +10,7 @@ import { getFavorites } from '@/utils/favorite/question-favorite.js';
 import { getAvailablePracticeModes, startPracticeMode } from '../utils/practice-mode-manager.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { toast } from '@/utils/toast.js';
 
 export const learningStatsMixin = {
   methods: {
@@ -121,7 +122,7 @@ export const learningStatsMixin = {
       requireLogin(async () => {
         if (!this.hasBank) {
           this.showPracticeModesModal = false;
-          return uni.showToast({ title: '请先导入题库', icon: 'none' });
+          return toast.info('请先导入题库');
         }
 
         try {
@@ -137,10 +138,7 @@ export const learningStatsMixin = {
           });
         } catch (error) {
           logger.warn('[practice] 启动练习模式失败:', error);
-          uni.showToast({
-            title: error.message || '启动失败，请重试',
-            icon: 'none'
-          });
+          toast.info(error.message || '启动失败，请重试');
         }
       }, loginOptions);
     }

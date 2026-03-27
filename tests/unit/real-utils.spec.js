@@ -17,7 +17,8 @@ import { getGreetingTime, formatDate, getRemainingTime, getMonthRange, isToday }
 
 describe('date.js', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
+    // 只 fake Date，不 fake setTimeout/setInterval，避免 happy-dom 内部定时器冲突导致 afterEach 超时
+    vi.useFakeTimers({ toFake: ['Date'] });
   });
 
   afterEach(() => {
@@ -173,10 +174,12 @@ import { debounce, throttle, clickLock, useDebounceFn, useThrottleFn } from '@/u
 
 describe('throttle.js', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
+    // 只 fake 定时器核心函数和 Date，排除 requestAnimationFrame/performance，避免 happy-dom 冲突
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
     vi.useRealTimers();
   });
 

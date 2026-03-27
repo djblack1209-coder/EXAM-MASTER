@@ -25,8 +25,8 @@ const db = cloud.database();
 const _ = db.command;
 
 // ==================== 环境配置 ====================
-import { IS_PRODUCTION, createLogger } from './_shared/api-response';
-import { requireAdminAccess } from './_shared/admin-auth';
+import { IS_PRODUCTION, createLogger } from './_shared/api-response.js';
+import { requireAdminAccess } from './_shared/admin-auth.js';
 
 // ==================== 备份配置 (v2.0新增) ====================
 const BACKUP_COLLECTION = 'data_backups';
@@ -807,15 +807,15 @@ async function getDataToBackup(collectionName: string, requestId: string) {
  * 判断用户是否应该被备份（即将被删除）
  */
 function shouldBackupUser(user: Record<string, unknown>): boolean {
-  if (DIRTY_DATA_PATTERNS.specificIds.users.includes(user._id)) return true;
+  if (DIRTY_DATA_PATTERNS.specificIds.users.includes(user._id as string)) return true;
 
   if (user.nickname) {
     for (const pattern of DIRTY_DATA_PATTERNS.testUserPatterns) {
-      if (pattern.test(user.nickname)) return true;
+      if (pattern.test(user.nickname as string)) return true;
     }
   }
 
-  if (user.openid && (user.openid.length < 20 || /^test/i.test(user.openid))) {
+  if (user.openid && ((user.openid as string).length < 20 || /^test/i.test(user.openid as string))) {
     return true;
   }
 
@@ -826,21 +826,21 @@ function shouldBackupUser(user: Record<string, unknown>): boolean {
  * 判断题目是否应该被备份（即将被删除）
  */
 function shouldBackupQuestion(question: Record<string, unknown>): boolean {
-  if (DIRTY_DATA_PATTERNS.specificIds.questions.includes(question._id)) return true;
+  if (DIRTY_DATA_PATTERNS.specificIds.questions.includes(question._id as string)) return true;
 
   if (question.content) {
     for (const pattern of DIRTY_DATA_PATTERNS.testQuestionPatterns) {
-      if (pattern.test(question.content)) return true;
+      if (pattern.test(question.content as string)) return true;
     }
   }
 
   if (question.title) {
     for (const pattern of DIRTY_DATA_PATTERNS.testQuestionPatterns) {
-      if (pattern.test(question.title)) return true;
+      if (pattern.test(question.title as string)) return true;
     }
   }
 
-  if (!question.content || question.content.trim().length < 5) return true;
+  if (!question.content || (question.content as string).trim().length < 5) return true;
 
   return false;
 }
