@@ -383,6 +383,7 @@ import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
 import { useGamificationStore } from '@/stores/modules/gamification';
+import { useProfileStore } from '@/stores/modules/profile';
 // 打卡和补签动态导入 — 瘦身主包
 // import { checkinStreak } from '@/services/checkin-streak.js';
 // import { streakRecovery } from '@/services/streak-recovery.js';
@@ -392,7 +393,6 @@ import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
-import { lafService } from '@/services/lafService.js';
 import config from '@/config/index.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { getSystemTheme } from '@/utils/core/system.js';
@@ -426,6 +426,7 @@ const layoutInfo = ref({
 const studyStore = useStudyStore();
 const userStore = useUserStore();
 const gamificationStore = useGamificationStore();
+const profileStore = useProfileStore();
 
 // ========== 游戏化计算属性 ==========
 const playerLevel = computed(() => gamificationStore.level);
@@ -751,8 +752,8 @@ async function handleEditProfile() {
           return;
         }
         try {
-          // 1. 持久化到后端 MongoDB
-          await lafService.updateUserProfile({ nickname: newName });
+          // 1. 通过 profileStore 持久化到后端 MongoDB
+          await profileStore.updateProfile({ action: 'update', nickname: newName });
           // 2. 同步更新 Pinia store + 本地存储
           userStore.updateUserInfo?.({ nickName: newName });
           // 3. 同步更新 login 页写入的 'userInfo' key（兼容双存储）
@@ -874,7 +875,7 @@ async function uploadAvatarToServer(filePath, userId) {
     try {
       const avatarBase64 = await filePathToBase64(filePath);
       const avatarType = inferImageMimeType(filePath);
-      const response = await lafService.request('/user-profile', {
+      const response = await profileStore.updateProfile({
         action: 'upload_avatar',
         userId,
         avatar_base64: avatarBase64,
