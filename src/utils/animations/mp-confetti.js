@@ -29,7 +29,9 @@ export function celebrate(options = {}) {
           });
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        /* no-op: canvas-confetti unavailable */
+      });
   } catch (_e) {}
   // #endif
 
@@ -69,7 +71,9 @@ export function celebrateContinuous(options = {}) {
         };
         frame();
       })
-      .catch(() => {});
+      .catch(() => {
+        /* no-op: canvas-confetti unavailable */
+      });
   } catch (_e) {}
   // #endif
 

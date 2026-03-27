@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<testsuites>
-  <testsuite name="Test Suite" device="96304553" tests="1" failures="1" time="2.0">
-    <testcase id="00-smoke" name="00-smoke" classname="00-smoke" time="2.0" status="ERROR">
-      <failure>Unable to launch app undefined</failure>
-    </testcase>
-  </testsuite>
-</testsuites>

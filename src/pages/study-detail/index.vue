@@ -88,7 +88,7 @@
 
           <!-- 能力评级卡片 -->
           <view class="stat-card">
-            <image class="stat-icon" src="./static/loading-bar.png" alt="" mode="aspectFit" />
+            <text class="stat-icon" style="font-size: 52rpx; line-height: 64rpx; text-align: center">📊</text>
             <view class="stat-content">
               <text class="stat-value">
                 {{ abilityRank }}

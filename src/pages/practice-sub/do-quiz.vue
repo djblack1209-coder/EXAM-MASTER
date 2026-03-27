@@ -1254,7 +1254,9 @@ export default {
       const reviewCount = parseInt(uni.getStorageSync('fsrs_review_count') || '0') + 1;
       uni.setStorageSync('fsrs_review_count', String(reviewCount));
       if (reviewCount % 50 === 0) {
-        triggerOptimization().catch(() => {});
+        triggerOptimization().catch(() => {
+          /* no-op */
+        });
       }
       this.fsrsPreview = null;
       this.toNext();
