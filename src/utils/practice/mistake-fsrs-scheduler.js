@@ -1,73 +1,167 @@
 /**
- * 错题 FSRS 间隔重复调度器
- * 为错题记录提供基于 FSRS 算法的复习调度
+ * 错题FSRS间隔重复调度器
+ * 使用ts-fsrs实现科学的间隔重复复习调度，替代简单的+20/-10线性掌握度系统
+ * 支持加载用户个性化FSRS参数（由后端 fsrs-optimizer 计算）
  */
 
-// FSRS 默认参数（简化版，不依赖 ts-fsrs 库减小包体积）
-const DEFAULT_W = [0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26, 0.29, 2.61];
+import { fsrs, generatorParameters, createEmptyCard, Rating, State } from 'ts-fsrs';
 
 /**
- * 初始化错题的 FSRS 字段
- * @param {Object} record - 错题记录对象（会被直接修改）
+ * 默认FSRS参数（与后端保持一致）
  */
-export function initMistakeFSRS(record) {
-  record.fsrs_stability = 0;
-  record.fsrs_difficulty = 0.3;
-  record.fsrs_elapsed_days = 0;
-  record.fsrs_scheduled_days = 0;
-  record.fsrs_reps = 0;
-  record.fsrs_lapses = 0;
-  record.fsrs_state = 0; // 0=New, 1=Learning, 2=Review, 3=Relearning
-  record.fsrs_due = Date.now();
-  record.fsrs_last_review = null;
+const DEFAULT_PARAMS = {
+  maximum_interval: 180,
+  request_retention: 0.9,
+  enable_fuzz: true,
+  enable_short_term: true
+};
+
+/** 当前调度器实例 */
+let scheduler = fsrs(generatorParameters(DEFAULT_PARAMS));
+
+/** 当前加载的用户参数签名（用于判断是否需要重建） */
+let currentParamsKey = '';
+
+/**
+ * 加载用户个性化FSRS参数，重建调度器实例
+ * @param {Object|null} userParams - 用户参数 { w: number[], request_retention: number }
+ * @returns {boolean} 是否成功加载了个性化参数
+ */
+export function loadUserFSRSParams(userParams) {
+  if (!userParams?.w || !Array.isArray(userParams.w) || userParams.w.length === 0) {
+    // 无个性化参数，使用默认
+    if (currentParamsKey !== '') {
+      scheduler = fsrs(generatorParameters(DEFAULT_PARAMS));
+      currentParamsKey = '';
+    }
+    return false;
+  }
+
+  const newKey = JSON.stringify(userParams.w) + ':' + (userParams.request_retention ?? 0.9);
+  if (newKey === currentParamsKey) return true; // 参数未变，无需重建
+
+  scheduler = fsrs(
+    generatorParameters({
+      ...DEFAULT_PARAMS,
+      w: userParams.w,
+      request_retention: userParams.request_retention ?? DEFAULT_PARAMS.request_retention
+    })
+  );
+  currentParamsKey = newKey;
+  return true;
 }
 
 /**
- * 根据评分调度下次复习时间
- * @param {Object} mistake - 错题记录
- * @param {string} rating - 评分: 'again' | 'hard' | 'good' | 'easy'
- * @returns {Object} 需要合并到错题记录的 FSRS 字段
+ * 获取当前是否使用个性化参数
+ */
+export function hasCustomFSRSParams() {
+  return currentParamsKey !== '';
+}
+
+/**
+ * 评分字符串到ts-fsrs Rating的映射
+ */
+const RATING_MAP = {
+  again: Rating.Again,
+  hard: Rating.Hard,
+  good: Rating.Good,
+  easy: Rating.Easy
+};
+
+/**
+ * 从错题对象还原ts-fsrs Card结构
+ */
+function _toFSRSCard(mistake) {
+  if (!mistake.fsrs_due) return null;
+  return {
+    due: new Date(mistake.fsrs_due),
+    stability: mistake.fsrs_stability ?? 0,
+    difficulty: mistake.fsrs_difficulty ?? 0,
+    elapsed_days: 0,
+    scheduled_days: 0,
+    reps: mistake.fsrs_reps ?? 0,
+    lapses: mistake.fsrs_lapses ?? 0,
+    learning_steps: 0,
+    state: mistake.fsrs_state ?? State.New,
+    last_review: mistake.fsrs_last_review ? new Date(mistake.fsrs_last_review) : undefined
+  };
+}
+
+/**
+ * 将FSRS Card字段写回错题对象，返回更新后的字段
+ */
+function _applyFSRSFields(card) {
+  return {
+    fsrs_due: new Date(card.due).getTime(),
+    fsrs_stability: card.stability,
+    fsrs_difficulty: card.difficulty,
+    fsrs_state: card.state,
+    fsrs_reps: card.reps,
+    fsrs_lapses: card.lapses,
+    fsrs_last_review: card.last_review ? new Date(card.last_review).getTime() : Date.now()
+  };
+}
+
+/**
+ * 初始化错题的FSRS字段
+ * @param {Object} mistake - 错题对象（会被就地修改）
+ * @returns {Object} 同一个错题对象，已添加FSRS字段
+ */
+export function initMistakeFSRS(mistake) {
+  const card = createEmptyCard(new Date());
+  Object.assign(mistake, _applyFSRSFields(card));
+  return mistake;
+}
+
+/**
+ * 调度一次错题复习
+ * @param {Object} mistake - 错题对象
+ * @param {'again'|'hard'|'good'|'easy'} rating - 评分
+ * @returns {Object} 更新后的FSRS字段（可直接Object.assign到错题上）
  */
 export function scheduleMistakeReview(mistake, rating) {
-  const now = Date.now();
-  const ratingMap = { again: 1, hard: 2, good: 3, easy: 4 };
-  const r = ratingMap[rating] || 3;
-
-  const stability = mistake.fsrs_stability || 0;
-  const difficulty = mistake.fsrs_difficulty || 0.3;
-  const reps = (mistake.fsrs_reps || 0) + 1;
-  let lapses = mistake.fsrs_lapses || 0;
-
-  let newStability, newDifficulty, scheduledDays;
-
-  if (r === 1) {
-    // Again — 重置
-    lapses++;
-    newStability = Math.max(0.1, stability * 0.2);
-    newDifficulty = Math.min(1, difficulty + 0.1);
-    scheduledDays = 0; // 立即复习
-  } else if (stability < 0.01) {
-    // 新卡片首次评分
-    newStability = DEFAULT_W[r - 1];
-    newDifficulty = difficulty;
-    scheduledDays = Math.max(1, Math.round(newStability));
-  } else {
-    // 复习卡片
-    const factor = r === 2 ? 0.8 : r === 3 ? 1.0 : 1.3;
-    newStability = stability * (1 + Math.exp(DEFAULT_W[8]) * (11 - difficulty * 10) * Math.pow(stability, -DEFAULT_W[9]) * (Math.exp((1 - r / 4) * DEFAULT_W[10]) - 1)) * factor;
-    newDifficulty = Math.max(0, Math.min(1, difficulty - DEFAULT_W[6] * (r - 3)));
-    scheduledDays = Math.max(1, Math.round(newStability));
+  const ratingValue = RATING_MAP[rating];
+  if (ratingValue === undefined) {
+    throw new Error(`Invalid rating: ${rating}. Use 'again', 'hard', 'good', or 'easy'.`);
   }
 
-  return {
-    fsrs_stability: newStability,
-    fsrs_difficulty: newDifficulty,
-    fsrs_elapsed_days: mistake.fsrs_last_review ? Math.round((now - mistake.fsrs_last_review) / 86400000) : 0,
-    fsrs_scheduled_days: scheduledDays,
-    fsrs_reps: reps,
-    fsrs_lapses: lapses,
-    fsrs_state: r === 1 ? 3 : (stability < 0.01 ? 1 : 2),
-    fsrs_due: now + scheduledDays * 86400000,
-    fsrs_last_review: now
-  };
+  let card = _toFSRSCard(mistake);
+  if (!card) {
+    // 没有FSRS字段，先初始化
+    card = createEmptyCard(new Date());
+  }
+
+  const now = new Date();
+  const result = scheduler.repeat(card, now);
+  const updated = result[ratingValue].card;
+
+  return _applyFSRSFields(updated);
+}
+
+/**
+ * 筛选到期需要复习的错题（fsrs_due <= 当前时间）
+ * @param {Array} mistakes - 错题数组
+ * @returns {Array} 到期的错题子集
+ */
+export function getMistakesDueForReview(mistakes) {
+  const now = Date.now();
+  return mistakes.filter((m) => {
+    if (m.is_mastered) return false;
+    if (!m.fsrs_due) return true; // 没有FSRS数据的视为需要复习
+    return m.fsrs_due <= now;
+  });
+}
+
+/**
+ * 按逾期程度排序（最逾期的排最前）
+ * @param {Array} mistakes - 错题数组
+ * @returns {Array} 排序后的新数组
+ */
+export function getMistakeReviewPriority(mistakes) {
+  const now = Date.now();
+  return [...mistakes].sort((a, b) => {
+    const overdueA = now - (a.fsrs_due || 0);
+    const overdueB = now - (b.fsrs_due || 0);
+    return overdueB - overdueA;
+  });
 }

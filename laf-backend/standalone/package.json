@@ -3,10 +3,14 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "express": "^4.21.0",
+    "ai-agent-team": "^2.0.1",
     "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "jszip": "^3.10.1",
+    "mongodb": "^6.12.0",
     "multer": "^1.4.5-lts.1",
-    "mongodb": "^6.12.0"
+    "sql.js": "^1.11.0",
+    "ts-fsrs": "^5.3.1"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

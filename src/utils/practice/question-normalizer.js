@@ -30,7 +30,7 @@ export function normalizeQuestion(raw) {
   const category = raw.category || raw.subject || '未分类';
 
   // 解析兼容: desc / analysis
-  const desc = raw.desc || raw.analysis || '';
+  const desc = raw.desc || raw.analysis || raw.explanation || '';
 
   return {
     ...raw,

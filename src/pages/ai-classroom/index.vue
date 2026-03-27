@@ -261,13 +261,13 @@ onMounted(() => {
 <style scoped>
 .classroom-list-container {
   min-height: 100vh;
-  background: var(--bg-primary, #0a0a0a);
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top, var(--bg-page)) 0%,
+    var(--page-gradient-mid, var(--bg-page)) 52%,
+    var(--page-gradient-bottom, var(--bg-page)) 100%
+  );
   padding-bottom: env(safe-area-inset-bottom);
-}
-.dark-mode {
-  --text-primary: #f5f5f7;
-  --text-secondary: #8e8e93;
-  --bg-card: rgba(255, 255, 255, 0.06);
 }
 .top-nav {
   position: fixed;
@@ -281,19 +281,29 @@ onMounted(() => {
   padding: 12px 16px;
   padding-top: calc(env(safe-area-inset-top) + 12px);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: var(--apple-glass-nav-bg, rgba(250, 255, 246, 0.74));
+}
+.dark-mode .top-nav {
   background: rgba(0, 0, 0, 0.6);
 }
 .nav-title {
   font-size: 17px;
   font-weight: 600;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
 }
 .apple-glass-card {
-  background: var(--bg-card, rgba(255, 255, 255, 0.06));
+  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.68));
   border-radius: 16px;
   padding: 16px;
   margin: 0 16px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.72));
+  box-shadow: var(--apple-shadow-card, 0 4px 12px rgba(0, 0, 0, 0.06));
+}
+.dark-mode .apple-glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 .create-card {
   display: flex;
@@ -321,12 +331,12 @@ onMounted(() => {
 .create-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
   display: block;
 }
 .create-desc {
   font-size: 13px;
-  color: var(--text-secondary, #8e8e93);
+  color: var(--text-secondary, var(--muted-foreground));
   display: block;
   margin-top: 4px;
 }
@@ -336,7 +346,7 @@ onMounted(() => {
 .section-title {
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-secondary, #8e8e93);
+  color: var(--text-secondary, var(--muted-foreground));
   margin: 16px 16px 8px;
   display: block;
 }
@@ -352,7 +362,7 @@ onMounted(() => {
 .lesson-title {
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -389,14 +399,17 @@ onMounted(() => {
 }
 .meta-item {
   font-size: 12px;
-  color: var(--text-secondary, #8e8e93);
+  color: var(--text-secondary, var(--muted-foreground));
 }
 .progress-bar {
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.08));
   margin-top: 10px;
   overflow: hidden;
+}
+.dark-mode .progress-bar {
+  background: rgba(255, 255, 255, 0.08);
 }
 .progress-fill {
   height: 100%;
@@ -425,12 +438,12 @@ onMounted(() => {
 .empty-title {
   font-size: 17px;
   font-weight: 600;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
   margin-top: 16px;
 }
 .empty-desc {
   font-size: 13px;
-  color: var(--text-secondary, #8e8e93);
+  color: var(--text-secondary, var(--muted-foreground));
   margin-top: 8px;
 }
 .modal-mask {
@@ -451,11 +464,15 @@ onMounted(() => {
   max-width: 360px;
   max-height: 80vh;
   overflow-y: auto;
+  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.95));
+}
+.dark-mode .modal-content {
+  background: rgba(30, 30, 36, 0.96);
 }
 .modal-title {
   font-size: 18px;
   font-weight: 700;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
   display: block;
   margin-bottom: 20px;
   text-align: center;
@@ -466,7 +483,7 @@ onMounted(() => {
 .form-label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
   display: block;
   margin-bottom: 8px;
 }
@@ -481,8 +498,11 @@ onMounted(() => {
   align-items: center;
   padding: 10px 4px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
   border: 2px solid transparent;
+}
+.dark-mode .subject-item {
+  background: rgba(255, 255, 255, 0.04);
 }
 .subject-item.active {
   border-color: #34c759;
@@ -493,28 +513,36 @@ onMounted(() => {
 }
 .subject-name {
   font-size: 12px;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
   margin-top: 4px;
 }
 .form-input {
   width: 100%;
   height: 40px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
+  border: 1px solid var(--border, rgba(15, 95, 52, 0.15));
   border-radius: 10px;
   padding: 0 12px;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
   font-size: 14px;
+}
+.dark-mode .form-input {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 .form-textarea {
   width: 100%;
   height: 100px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
+  border: 1px solid var(--border, rgba(15, 95, 52, 0.15));
   border-radius: 10px;
   padding: 10px 12px;
-  color: var(--text-primary, #f5f5f7);
+  color: var(--text-primary, var(--foreground));
   font-size: 14px;
+}
+.dark-mode .form-textarea {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 .modal-actions {
   display: flex;
@@ -524,11 +552,14 @@ onMounted(() => {
 .btn-cancel {
   flex: 1;
   height: 42px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-secondary, #8e8e93);
+  background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
+  color: var(--text-secondary, var(--muted-foreground));
   border: none;
   border-radius: 12px;
   font-size: 15px;
+}
+.dark-mode .btn-cancel {
+  background: rgba(255, 255, 255, 0.08);
 }
 .btn-create {
   flex: 1;

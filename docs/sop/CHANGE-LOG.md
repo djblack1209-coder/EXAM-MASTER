@@ -14,6 +14,36 @@
 
 ---
 
+## [2026-03-28] 全量深度审计 Round 2 — 生产修复 + 文件治理 + SOP重建
+
+- **Scope**: `backend`, `frontend`, `infra`, `docs`
+- **Files Changed**:
+  - `laf-backend/standalone/package.json` — 新增4个缺失依赖(ts-fsrs/jszip/sql.js/ai-agent-team)
+  - 服务器 `/opt/apps/exam-master/backend/` — 安装ts-fsrs修复fsrs-optimizer 404
+  - `src/pages/practice-sub/services/fsrs-service.js` — 640行重复→22行重导出代理
+  - `src/pages/practice-sub/services/fsrs-optimizer-client.js` — 229行重复→10行重导出代理
+  - `src/pages/practice-sub/utils/question-normalizer.js` — 131行分叉→10行重导出代理
+  - `src/pages/practice-sub/utils/mistake-fsrs-scheduler.js` — 167行→12行重导出代理
+  - `src/utils/practice/question-normalizer.js` — 合并B版本的explanation回退逻辑
+  - `src/utils/practice/mistake-fsrs-scheduler.js` — 升级为完整ts-fsrs实现（从practice-sub提升）
+  - `src/pages/_unreleased/` — 删除6个死代码文件+目录
+  - 根目录 `audit-h5-*.png` — 删除4个垃圾截图文件
+  - `src/pages/index/index.vue` — 修复content-wrapper底部padding，避免tabbar遮挡
+  - `src/pages/ai-classroom/index.vue` — 修复背景色（从纯黑硬编码→主题感知渐变）
+  - `CLAUDE.md` — 全面重写为自动化开发引擎（请求路由器+执行流水线）
+  - `docs/status/HEALTH.md` — 更新活跃问题清单(D022-D026)
+- **Summary**:
+  - **生产修复**: 服务器缺少ts-fsrs导致fsrs-optimizer返回404，已安装并重启PM2
+  - **文件治理**: 清理4对重复代码（共~1070行→54行代理），6个死代码文件，4个垃圾文件
+  - **UI修复**: 首页tabbar遮挡内容 + AI课堂背景纯黑
+  - **后端审计**: 47个云函数全部可达，认证机制正确生效
+  - **SOP重建**: CLAUDE.md重写为"请求路由器"模式
+  - **UI审计**: 17个核心页面截图审查（浅色+深色模式）
+  - **发现**: 腾讯云控制台防火墙未放行443（HTTPS外部不可达），需用户操作
+- **Breaking Changes**: 无
+
+---
+
 ## [2026-03-27] 全量审计第二轮 — 页面上线 + DailyGoalRing + E2E + 深色模式
 
 - **Scope**: `frontend`, `docs`
