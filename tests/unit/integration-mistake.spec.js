@@ -125,7 +125,9 @@ describe('全链路: 错题本 & 收藏', () => {
       const mistake = stored.find((m) => m.id === 'q_review');
       expect(mistake.review_count).toBe(4);
       expect(mistake.mastery_level).toBe(80);
-      expect(mistake.is_mastered).toBe(true);
+      // FSRS双重掌握条件：stability > 30天 且 mastery_level >= 80
+      // 4次答对后 stability 远不到30天，所以 is_mastered 仍为 false
+      expect(mistake.is_mastered).toBe(false);
     });
 
     it('recordReview - 答错降低掌握度', async () => {

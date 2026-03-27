@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-28 (全量深度审计-Round2) | Maintainer: AI-SOP
+> Last updated: 2026-03-28 (全量深度审计-Round5) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -73,34 +73,35 @@
 
 ## Tech Debt
 
-| ID       | Domain   | Description                                                                                                                                     | Impact                          | Priority |
-| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | -------- |
-| ~~D001~~ | frontend | ~~5 个 domain service 文件仍包含完整 request 基础设施副本 (~2000行/个)~~ → **R53 删除 6 个 .service.js, 接入 .api.js 体系, -10,085 行**         | ✅ R53 已解决                   | ~~🟠~~   |
-| ~~D002~~ | frontend | ~~Home page (2310行) + Practice page (1955行) 逻辑应提取到 composables~~ → **已提取5个composable，index.vue -218行，practice/index.vue -187行** | ~~可读性差~~                    | ✅       |
-| ~~D003~~ | backend  | ~~TS 源码缺少 `.js` 扩展名，每次编译需 perl 后处理~~                                                                                            | ✅ R49 已全量补全 `.js` 扩展名  | ~~🟡~~   |
-| ~~D004~~ | backend  | ~~`common/config.js` 包含废弃的 `getApiKey()`~~ → **R53 已删除**                                                                                | ✅ R53 已解决                   | ~~🔵~~   |
-| ~~D005~~ | infra    | ~~Sealos HTTPS backup 需要 `error_page` + `proxy_pass` 方式实现~~                                                                               | ✅ R024 已解决                  | ~~🟡~~   |
-| ~~D006~~ | frontend | ~~142处 `uni.showToast` 待迁移至 `toast.js`（已迁移 72%）~~ → **R52 迁移 98.9% (490→8)**                                                        | ✅ 已迁移                       | ~~🟡~~   |
-| ~~D007~~ | frontend | ~~67个 .vue 文件仍使用 Options API~~ → **R54 迁移28个, 剩余42个(均>364行大文件)**                                                               | ✅ R54 主体解决                 | ~~🔵~~   |
-| ~~D008~~ | frontend | ~~88处页面直接调用 `lafService` 绕过 Store 层~~ → **R53 修复31处, 34处标记例外, 19处待扩展**                                                    | ✅ R53 主体解决                 | ~~🟠~~   |
-| ~~D009~~ | frontend | ~~6个 mixin 文件应迁移为 composable~~ → **R53 删除4个, 保留2个动态代码分割模块**                                                                | ✅ R53 已解决                   | ~~🔵~~   |
-| ~~D010~~ | frontend | ~~`pages/social/socialService.js` 重复~~ → 已移到 `services/social-facade.js`                                                                   | ✅ R20 已解决                   | ~~🔵~~   |
-| D011     | backend  | ~~4个端点用本地 `checkRateLimit`~~ → 全部升级为 `checkRateLimitDistributed`                                                                     | ✅ R20 已解决                   | ~~🟡~~   |
+| ID       | Domain   | Description                                                                                                                                     | Impact                         | Priority |
+| -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | -------- |
+| ~~D001~~ | frontend | ~~5 个 domain service 文件仍包含完整 request 基础设施副本 (~2000行/个)~~ → **R53 删除 6 个 .service.js, 接入 .api.js 体系, -10,085 行**         | ✅ R53 已解决                  | ~~🟠~~   |
+| ~~D002~~ | frontend | ~~Home page (2310行) + Practice page (1955行) 逻辑应提取到 composables~~ → **已提取5个composable，index.vue -218行，practice/index.vue -187行** | ~~可读性差~~                   | ✅       |
+| ~~D003~~ | backend  | ~~TS 源码缺少 `.js` 扩展名，每次编译需 perl 后处理~~                                                                                            | ✅ R49 已全量补全 `.js` 扩展名 | ~~🟡~~   |
+| ~~D004~~ | backend  | ~~`common/config.js` 包含废弃的 `getApiKey()`~~ → **R53 已删除**                                                                                | ✅ R53 已解决                  | ~~🔵~~   |
+| ~~D005~~ | infra    | ~~Sealos HTTPS backup 需要 `error_page` + `proxy_pass` 方式实现~~                                                                               | ✅ R024 已解决                 | ~~🟡~~   |
+| ~~D006~~ | frontend | ~~142处 `uni.showToast` 待迁移至 `toast.js`（已迁移 72%）~~ → **R52 迁移 98.9% (490→8)**                                                        | ✅ 已迁移                      | ~~🟡~~   |
+| ~~D007~~ | frontend | ~~67个 .vue 文件仍使用 Options API~~ → **R54 迁移28个, 剩余42个(均>364行大文件)**                                                               | ✅ R54 主体解决                | ~~🔵~~   |
+| ~~D008~~ | frontend | ~~88处页面直接调用 `lafService` 绕过 Store 层~~ → **R53 修复31处, 34处标记例外, 19处待扩展**                                                    | ✅ R53 主体解决                | ~~🟠~~   |
+| ~~D009~~ | frontend | ~~6个 mixin 文件应迁移为 composable~~ → **R53 删除4个, 保留2个动态代码分割模块**                                                                | ✅ R53 已解决                  | ~~🔵~~   |
+| ~~D010~~ | frontend | ~~`pages/social/socialService.js` 重复~~ → 已移到 `services/social-facade.js`                                                                   | ✅ R20 已解决                  | ~~🔵~~   |
+| D011     | backend  | ~~4个端点用本地 `checkRateLimit`~~ → 全部升级为 `checkRateLimitDistributed`                                                                     | ✅ R20 已解决                  | ~~🟡~~   |
 | ~~D012~~ | testing  | ~~单元测试：`JWT_SECRET_PLACEHOLDER
-| ~~D013~~ | testing  | ~~单元测试：部分 `src/services/api/domains/` 代码与测试不匹配（如 `logger` 未定义）~~                                                           | ✅ R50/R51 已解决               | ~~🟠~~   |
-| ~~D014~~ | testing  | ~~E2E测试环境：部分 E2E 测试因超时或服务不稳定而失败~~ → **R52 修复 EXC-005/STATE-005**                                                         | ✅ R52 已解决                   | ~~🟠~~   |
-| ~~D015~~ | infra    | ~~`laf-backend/scripts/` 下 `crawlers`, `data-sync`, `test` 与 `scripts/` 重复~~ → 已删除冗余副本，独有文件迁移至 `scripts/`                    | ✅ 已清理                       | ~~🟡~~   |
-| D016     | frontend | `smart-study-engine` 后端需同步部署到 Sealos Laf；AIDailyBriefing AI增强依赖此函数，Laf备用环境下降级为纯本地规则                               | AI增强在备用环境不可用          | 🟡       |
-| D017     | frontend | `AIDailyBriefing` 的 `examDate` 需用户主动设置，未设置时倒计时不显示                                                                            | 新用户体验缺失                  | 🔵       |
-| ~~D018~~ | backend  | ~~`.env.example` API密钥泄露~~ → **R032 审计确认：Git历史中全部为占位符(your_xxx_here)，无真实密钥泄露**                                        | ✅ R032 已确认安全              | ~~🔴~~   |
-| D019     | frontend | `study.api.js` 与 `smart-study.api.js` 存在 4 个同名导出函数（analyzeMastery 等），且 `generateAdaptivePlan` vs `generateStudyPlan` 命名不一致  | 维护混淆                        | 🟡       |
-| D020     | frontend | `subscribe-message.js` 模板 ID 为空，服务完全不可用；需到微信公众平台申请订阅消息模板                                                           | 订阅提醒功能缺失                | 🟡       |
-| ~~D021~~ | frontend | ~~6 个 `_unreleased/` 页面未注册到 `pages.json`~~ → **R028 删除6个死代码文件和\_unreleased目录**                                                | ✅ R028 已清理                  | ~~🔵~~   |
-| D022     | infra    | 腾讯云轻量服务器控制台防火墙未放行443端口（HTTPS），外部SSL握手失败；HTTP(80)正常                                                               | HTTPS外部不可达                 | 🟠       |
-| D023     | backend  | `standalone/package.json` 缺少 `ts-fsrs`/`jszip`/`sql.js`/`ai-agent-team` 依赖，导致4个云函数加载失败                                           | ✅ R029 已修复（服务器已安装）  | ~~🔴~~   |
-| D024     | frontend | NPM 安全审计报告 73 个漏洞（3 critical, 55 high），主要来自 serialize-javascript 和 yaml                                                        | 安全风险                        | 🟠       |
-| D025     | frontend | 首页 content-wrapper 无底部padding，tabbar遮挡内容                                                                                              | ✅ R030 已修复                  | ~~🟡~~   |
-| D026     | frontend | 4对重复文件（fsrs-service/fsrs-optimizer-client/question-normalizer/mistake-fsrs-scheduler），造成维护混淆                                      | ✅ R031 已清理（2对转为重导出） | ~~🟡~~   |
+| ~~D013~~ | testing  | ~~单元测试：部分 `src/services/api/domains/` 代码与测试不匹配（如 `logger` 未定义）~~                                                           | ✅ R50/R51 已解决              | ~~🟠~~   |
+| ~~D014~~ | testing  | ~~E2E测试环境：部分 E2E 测试因超时或服务不稳定而失败~~ → **R52 修复 EXC-005/STATE-005**                                                         | ✅ R52 已解决                  | ~~🟠~~   |
+| ~~D015~~ | infra    | ~~`laf-backend/scripts/` 下 `crawlers`, `data-sync`, `test` 与 `scripts/` 重复~~ → 已删除冗余副本，独有文件迁移至 `scripts/`                    | ✅ 已清理                      | ~~🟡~~   |
+| D016     | frontend | `smart-study-engine` 后端需同步部署到 Sealos Laf；AIDailyBriefing AI增强依赖此函数，Laf备用环境下降级为纯本地规则                               | AI增强在备用环境不可用         | 🟡       |
+| D017     | frontend | `AIDailyBriefing` 的 `examDate` 需用户主动设置，未设置时倒计时不显示                                                                            | 新用户体验缺失                 | 🔵       |
+| ~~D018~~ | backend  | ~~`.env.example` API密钥泄露~~ → **R032 审计确认：Git历史中全部为占位符(your_xxx_here)，无真实密钥泄露**                                        | ✅ R032 已确认安全             | ~~🔴~~   |
+| D019     | frontend | `study.api.js` 与 `smart-study.api.js` 存在 4 个同名导出函数（analyzeMastery 等），且 `generateAdaptivePlan` vs `generateStudyPlan` 命名不一致  | 维护混淆                       | 🟡       |
+| D020     | frontend | `subscribe-message.js` 模板 ID 为空，服务完全不可用；需到微信公众平台申请订阅消息模板                                                           | 订阅提醒功能缺失               | 🟡       |
+| ~~D021~~ | frontend | ~~6 个 `_unreleased/` 页面未注册到 `pages.json`~~ → **R028 删除6个死代码文件和\_unreleased目录**                                                | ✅ R028 已清理                 | ~~🔵~~   |
+| D022     | infra    | 腾讯云轻量服务器控制台防火墙未放行443端口（HTTPS），外部SSL握手失败；HTTP(80)正常                                                               | HTTPS外部不可达                | 🟠       |
+| D023     | backend  | `standalone/package.json` 缺少 `ts-fsrs`/`jszip`/`sql.js`/`ai-agent-team` 依赖，导致4个云函数加载失败                                           | ✅ R029 已修复（服务器已安装） | ~~🔴~~   |
+| D024     | frontend | NPM 安全审计报告 69 个漏洞（3 critical, 52 high），全部来自上游依赖链(vite-plugin-pwa/workbox/@dcloudio)无法安全修复                            | 等待上游更新                   | 🟡       |
+| ~~D025~~ | frontend | ~~首页 content-wrapper 无底部padding，tabbar遮挡内容~~ → **R030 已修复**                                                                        | ✅ R030 已修复                 | ~~🟡~~   |
+| ~~D026~~ | frontend | ~~4对重复文件~~ → **R031 全部合并为重导出代理**                                                                                                 | ✅ R031 已清理                 | ~~🟡~~   |
+| D027     | frontend | 文件管理页面空态缺少图标和操作按钮，与其他页面设计不一致                                                                                        | UI一致性                       | 🔵       |
 
 ## Resource Monitoring
 

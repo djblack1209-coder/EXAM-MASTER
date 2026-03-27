@@ -222,7 +222,7 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
     expect(result.message).toContain('身份验证失败');
   });
 
-  it('question-bank 缺少 action 时应返回 400 且 success=false', async () => {
+  it('question-bank 未认证且缺少 action 时应返回 401（不暴露参数要求）', async () => {
     const result = /** @type {any} */ (
       await questionBankHandler({
         headers: {},
@@ -230,8 +230,9 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
       })
     );
 
-    expect(result.code).toBe(400);
+    // 防御纵深：未认证时优先返回 401，不向未登录用户暴露接口参数要求
+    expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('缺少 action');
+    expect(result.message).toContain('认证');
   });
 });

@@ -14,6 +14,31 @@
 
 ---
 
+## [2026-03-28] 全量审计 Round 3-5 — 安全加固+测试全通过+文档清洗+ESLint清零
+
+- **Scope**: `backend`, `frontend`, `docs`, `test`
+- **Files Changed**:
+  - `laf-backend/functions/{user-profile,question-bank,answer-submit,upload-avatar}.ts` — 认证顺序修复(参数前→认证前)
+  - `src/pages/practice-sub/do-quiz.vue` — showXpToast未定义修复 + ESLint清零
+  - `src/pages/study-detail/index.vue` — LOADING emoji→📊字符
+  - `src/pages/index/index.vue` + `src/pages/practice-sub/composables/useMarkdownRenderer.js` — ESLint清零
+  - `src/utils/animations/mp-confetti.js` — ESLint清零
+  - `tests/unit/audit-auth-response-shape.spec.js` — 适配认证顺序修复(400→401)
+  - `tests/unit/integration-mistake.spec.js` — 适配ts-fsrs双重掌握条件
+  - 17个冗余文档删除, 8个测试产物移出git追踪, 1个大报告归档
+  - `package.json` — 卸载未使用的@antv/f2
+- **Summary**:
+  - **安全加固**: 4个端点认证顺序修复并部署到生产服务器
+  - **测试**: 92/92文件 1263/1263用例全部通过(修复2个因代码改动导致的测试失败)
+  - **代码质量**: ESLint从6个警告→0个(完全清零)
+  - **文档治理**: 112→95个文档(删除17个冗余+8个测试产物)
+  - **依赖卫生**: 卸载未使用的@antv/f2, NPM漏洞73→69
+  - **UI审计**: 新增4个页面截图(mock-exam/file-manager/import-data/doc-convert), 累计25页
+  - **微信小程序**: 主包1800KB/2048KB(余量248KB)
+- **Breaking Changes**: question-bank无认证请求从400→401(D023认证顺序修复)
+
+---
+
 ## [2026-03-28] 全量深度审计 Round 2 — 生产修复 + 文件治理 + SOP重建
 
 - **Scope**: `backend`, `frontend`, `infra`, `docs`

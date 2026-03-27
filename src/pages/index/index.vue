@@ -852,7 +852,9 @@ export default {
     this.loadRecommendedTopic();
 
     // ✅ [FSRS] 参数同步（非阻塞）
-    syncFSRSParams().catch(() => {});
+    syncFSRSParams().catch(() => {
+      /* no-op */
+    });
 
     // 微信订阅消息：智能请求授权（每天最多一次）
     smartRequestSubscription();
