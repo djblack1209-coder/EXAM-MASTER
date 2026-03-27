@@ -1277,8 +1277,9 @@ export default {
 /* 内容包装器 */
 .content-wrapper {
   padding: 40rpx 30rpx;
-  /* 为底部悬浮胶囊tabbar留出空间 (120rpx高度 + 24rpx底部间距 + 安全区域) */
-  padding-bottom: calc(200rpx + env(safe-area-inset-bottom, 0px));
+  /* 为底部悬浮胶囊tabbar留出空间 — 需与 practice 页保持一致 */
+  padding-bottom: calc(140px + constant(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
 }
 
 @media screen and (max-width: 375px) {
