@@ -68,7 +68,16 @@
     </view>
 
     <!-- 空状态 -->
-    <BaseEmpty v-else icon="folder" title="暂无文件" desc="导入学习资料后，文件将显示在这里" />
+    <BaseEmpty
+      v-else
+      icon="📁"
+      title="暂无文件"
+      desc="导入学习资料后，文件将显示在这里"
+      :show-button="true"
+      button-text="去导入"
+      :is-dark="isDark"
+      @action="goToImport"
+    />
   </view>
 </template>
 
@@ -151,6 +160,11 @@ export default {
 
     goBack() {
       safeNavigateBack();
+    },
+
+    /** 跳转到导入页面 */
+    goToImport() {
+      uni.navigateTo({ url: '/pages/practice-sub/import-data' });
     },
 
     /**

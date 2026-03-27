@@ -96,12 +96,12 @@
 | D019     | frontend | `study.api.js` 与 `smart-study.api.js` 存在 4 个同名导出函数（analyzeMastery 等），且 `generateAdaptivePlan` vs `generateStudyPlan` 命名不一致  | 维护混淆                       | 🟡       |
 | D020     | frontend | `subscribe-message.js` 模板 ID 为空，服务完全不可用；需到微信公众平台申请订阅消息模板                                                           | 订阅提醒功能缺失               | 🟡       |
 | ~~D021~~ | frontend | ~~6 个 `_unreleased/` 页面未注册到 `pages.json`~~ → **R028 删除6个死代码文件和\_unreleased目录**                                                | ✅ R028 已清理                 | ~~🔵~~   |
-| D022     | infra    | 腾讯云轻量服务器控制台防火墙未放行443端口（HTTPS），外部SSL握手失败；HTTP(80)正常                                                               | HTTPS外部不可达                | 🟠       |
+| D022     | infra    | 腾讯云轻量服务器443端口已放行但外部TLS握手仍被重置；HTTP(80)完全正常；疑似WAF/DDoS防护干扰                                                      | HTTPS外部不可达(HTTP正常)      | 🟠       |
 | D023     | backend  | `standalone/package.json` 缺少 `ts-fsrs`/`jszip`/`sql.js`/`ai-agent-team` 依赖，导致4个云函数加载失败                                           | ✅ R029 已修复（服务器已安装） | ~~🔴~~   |
 | D024     | frontend | NPM 安全审计报告 69 个漏洞（3 critical, 52 high），全部来自上游依赖链(vite-plugin-pwa/workbox/@dcloudio)无法安全修复                            | 等待上游更新                   | 🟡       |
 | ~~D025~~ | frontend | ~~首页 content-wrapper 无底部padding，tabbar遮挡内容~~ → **R030 已修复**                                                                        | ✅ R030 已修复                 | ~~🟡~~   |
 | ~~D026~~ | frontend | ~~4对重复文件~~ → **R031 全部合并为重导出代理**                                                                                                 | ✅ R031 已清理                 | ~~🟡~~   |
-| D027     | frontend | 文件管理页面空态缺少图标和操作按钮，与其他页面设计不一致                                                                                        | UI一致性                       | 🔵       |
+| D027     | frontend | 文件管理页面空态缺少图标和操作按钮 → **R033 已修复(添加emoji+导入按钮)**                                                                        | ✅ R033 已修复                 | ~~🔵~~   |
 
 ## Resource Monitoring
 
