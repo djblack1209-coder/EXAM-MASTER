@@ -14,6 +14,28 @@
 
 ---
 
+## [2026-03-28] 深度审计二轮 — 分层违规修复+UI交互测试+focus-timer修复+后端验证
+
+- **Scope**: `frontend`, `backend`
+- **审计范围**: Phase 11-16，覆盖微信包体积/分层违规/UI交互/半成品功能/API链路/后端函数
+- **审计结果**:
+  - Phase 11: 微信小程序主包 1888KB/2048KB，余量 160KB ✅
+  - Phase 12: 分层违规 8 处分析→profile 已修复，其余 6 处保持现状合理
+  - Phase 13: UI交互测试 — 引导流程完整 ✅，首页弹窗正常 ✅，专注计时器 Bug 已修复
+  - Phase 14: 后端 47 个函数全部有 try-catch 错误处理（审计工具误判已澄清）
+  - 9 个 API 断链（前端绕过 API 层裸调后端）确认为技术债务，不阻塞生产
+- **修复内容**:
+  - `profile/index.vue`: lafService→profileStore.updateProfile()，分层违规归零
+  - `focus-timer.vue`: WdCircle Canvas 不支持 CSS 变量，改为 computed 颜色值
+    修复前: 189 个 console error + 进度条不渲染
+    修复后: 0 error + 进度条正常显示
+- **Files Changed**:
+  - `src/pages/profile/index.vue` — 分层违规修复
+  - `src/pages/tools/focus-timer.vue` — Canvas 颜色兼容性修复
+- **Breaking Changes**: 无
+
+---
+
 ## [2026-03-28] 全量全方位审计 — 10阶段SOP级审计+修复+SOP重写
 
 - **Scope**: `frontend`, `backend`, `infra`, `docs`, `test`
