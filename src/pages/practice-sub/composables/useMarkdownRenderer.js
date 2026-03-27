@@ -103,5 +103,7 @@ export function renderMarkdown(text) {
  * @returns {Promise<void>}
  */
 export function preloadMarkdownRenderer() {
-  return getMarkdownRenderer().then(() => {});
+  return getMarkdownRenderer().then(() => {
+    /* no-op */
+  });
 }

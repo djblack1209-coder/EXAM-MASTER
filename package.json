@@ -56,7 +56,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@antv/f2": "^5.14.0",
     "@dcloudio/uni-app-plus": "^3.0.0-alpha-5000220260306001",
     "@dcloudio/uni-app-vite": "^3.0.0-alpha-5000220260306001",
     "@dcloudio/uni-components": "^3.0.0-alpha-5000220260306001",
