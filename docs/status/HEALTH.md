@@ -92,7 +92,7 @@
 | ~~D015~~ | infra    | ~~`laf-backend/scripts/` 下 `crawlers`, `data-sync`, `test` 与 `scripts/` 重复~~ → 已删除冗余副本，独有文件迁移至 `scripts/`                    | ✅ 已清理                       | ~~🟡~~   |
 | D016     | frontend | `smart-study-engine` 后端需同步部署到 Sealos Laf；AIDailyBriefing AI增强依赖此函数，Laf备用环境下降级为纯本地规则                               | AI增强在备用环境不可用          | 🟡       |
 | D017     | frontend | `AIDailyBriefing` 的 `examDate` 需用户主动设置，未设置时倒计时不显示                                                                            | 新用户体验缺失                  | 🔵       |
-| D018     | backend  | `laf-backend/.env.example` 曾提交 7 个真实 API 密钥到 Git 历史，已替换为占位符，需轮换密钥 + BFG 清洗历史                                       | 密钥泄露风险                    | 🔴       |
+| ~~D018~~ | backend  | ~~`.env.example` API密钥泄露~~ → **R032 审计确认：Git历史中全部为占位符(your_xxx_here)，无真实密钥泄露**                                        | ✅ R032 已确认安全              | ~~🔴~~   |
 | D019     | frontend | `study.api.js` 与 `smart-study.api.js` 存在 4 个同名导出函数（analyzeMastery 等），且 `generateAdaptivePlan` vs `generateStudyPlan` 命名不一致  | 维护混淆                        | 🟡       |
 | D020     | frontend | `subscribe-message.js` 模板 ID 为空，服务完全不可用；需到微信公众平台申请订阅消息模板                                                           | 订阅提醒功能缺失                | 🟡       |
 | ~~D021~~ | frontend | ~~6 个 `_unreleased/` 页面未注册到 `pages.json`~~ → **R028 删除6个死代码文件和\_unreleased目录**                                                | ✅ R028 已清理                  | ~~🔵~~   |

@@ -51,16 +51,7 @@ export default async function (ctx: FunctionContext) {
       return { ...badRequest('只支持 POST 请求'), requestId };
     }
 
-    // 获取上传的文件（兼容不同 runtime 的 multipart 结构）
-    const file = resolveUploadedFile(ctx.files);
-    if (!file) {
-      return { ...badRequest('请选择要上传的图片'), requestId };
-    }
-
-    // 获取用户ID
-    const bodyUserId = ctx.body?.userId || ctx.query?.userId;
-
-    // JWT 认证：头像上传必须验证身份
+    // 防御纵深：优先 JWT 认证，再校验上传参数
     const authResult = requireAuth(ctx);
     if (isAuthError(authResult)) {
       return { ...authResult, requestId };
@@ -75,6 +66,12 @@ export default async function (ctx: FunctionContext) {
     // 验证用户ID格式
     if (typeof userId !== 'string' || userId.length < 1 || userId.length > 100) {
       return { ...badRequest('用户ID格式无效'), requestId };
+    }
+
+    // 获取上传的文件（兼容不同 runtime 的 multipart 结构）
+    const file = resolveUploadedFile(ctx.files);
+    if (!file) {
+      return { ...badRequest('请选择要上传的图片'), requestId };
     }
 
     // 验证文件类型
