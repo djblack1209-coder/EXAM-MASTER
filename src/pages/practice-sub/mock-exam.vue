@@ -303,18 +303,23 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 // ✅ F024: 统一使用 storageService
 import storageService from '@/services/storageService.js';
-// ✅ P002: 引入后端服务，支持从后端获取真实题库数据
-import { lafService } from '@/services/lafService.js';
+// ✅ P002: 引入 reviewStore，替代直接调用 lafService
+import { useReviewStore } from '@/stores/modules/review.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 
 export default {
   components: { BaseIcon },
+  setup() {
+    const reviewStore = useReviewStore();
+    return { reviewStore };
+  },
   data() {
     return {
       statusBarHeight: 44,
@@ -439,7 +444,7 @@ export default {
     handleBack() {
       // ✅ P0-FIX: 提交期间禁止退出，防止数据损坏
       if (this.isSubmitting) {
-        uni.showToast({ title: '正在提交中，请稍候', icon: 'none' });
+        toast.info('正在提交中，请稍候');
         return;
       }
       if (this.isExamStarted && !this.isExamFinished) {
@@ -535,11 +540,11 @@ export default {
       if (!this.isE2EMode) {
         try {
           // 尝试从后端获取随机题目
-          const response = await lafService.getRandomQuestions({
+          const response = await this.reviewStore.fetchRandomQuestions({
             count: this.questionCount
           });
 
-          if (response && response.code === 0 && response.data) {
+          if (response && response.success && response.data) {
             const backendQuestions = Array.isArray(response.data) ? response.data : response.data.list || [];
             if (backendQuestions.length >= this.questionCount) {
               sourceQuestions = backendQuestions;
@@ -557,10 +562,7 @@ export default {
         const bank = this._cachedBank || storageService.get('v30_bank', []);
 
         if (bank.length < this.questionCount) {
-          uni.showToast({
-            title: `题库不足${this.questionCount}道题`,
-            icon: 'none'
-          });
+          toast.info(`题库不足${this.questionCount}道题`);
           return;
         }
 
@@ -580,7 +582,7 @@ export default {
 
       // ✅ P0-FIX: 最终验证题目数量，防止空考试
       if (!this.examQuestions || this.examQuestions.length === 0) {
-        uni.showToast({ title: '题目加载失败，请重试', icon: 'none' });
+        toast.info('题目加载失败，请重试');
         return;
       }
 

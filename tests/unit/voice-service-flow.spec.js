@@ -1,5 +1,11 @@
 // @ts-nocheck
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { request } from '@/services/api/domains/_request-core.js';
+
+vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return { ...original, request: vi.fn().mockResolvedValue({ code: 0, success: true, data: {} }) };
+});
 
 vi.mock('@/utils/logger.js', () => ({
   logger: {
@@ -19,7 +25,7 @@ vi.mock('@/utils/core/performance.js', () => ({
 }));
 
 describe('语音链路模拟人工流程', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     global.__mockStorage = {};
   });
@@ -27,7 +33,7 @@ describe('语音链路模拟人工流程', () => {
   it('语音转文字：可返回识别文本和置信度', async () => {
     const { lafService } = await import('@/services/lafService.js');
 
-    const requestMock = vi.spyOn(lafService, 'request').mockResolvedValue({
+    request.mockResolvedValue({
       code: 0,
       success: true,
       data: {
@@ -44,7 +50,7 @@ describe('语音链路模拟人工流程', () => {
     expect(result.code).toBe(0);
     expect(result.data.text).toContain('实践观点');
     expect(result.data.confidence).toBeGreaterThan(0.9);
-    expect(requestMock).toHaveBeenCalledWith(
+    expect(request).toHaveBeenCalledWith(
       '/voice-service',
       expect.objectContaining({
         action: 'speech_to_text',
@@ -58,7 +64,7 @@ describe('语音链路模拟人工流程', () => {
   it('文字转语音：可返回可播放音频地址', async () => {
     const { lafService } = await import('@/services/lafService.js');
 
-    const requestMock = vi.spyOn(lafService, 'request').mockResolvedValue({
+    request.mockResolvedValue({
       code: 0,
       success: true,
       data: {
@@ -76,7 +82,7 @@ describe('语音链路模拟人工流程', () => {
     expect(result.code).toBe(0);
     expect(result.data.audioUrl).toContain('https://example.com/tts/');
     expect(result.data.format).toBe('mp3');
-    expect(requestMock).toHaveBeenCalledWith(
+    expect(request).toHaveBeenCalledWith(
       '/voice-service',
       expect.objectContaining({
         action: 'text_to_speech',
@@ -91,7 +97,7 @@ describe('语音链路模拟人工流程', () => {
   it('音色列表：可返回可选语音角色', async () => {
     const { lafService } = await import('@/services/lafService.js');
 
-    const requestMock = vi.spyOn(lafService, 'request').mockResolvedValue({
+    request.mockResolvedValue({
       code: 0,
       success: true,
       data: [
@@ -105,6 +111,6 @@ describe('语音链路模拟人工流程', () => {
     expect(result.code).toBe(0);
     expect(result.data).toHaveLength(2);
     expect(result.data[0].id).toBe('female_1');
-    expect(requestMock).toHaveBeenCalledWith('/voice-service', { action: 'get_voices' });
+    expect(request).toHaveBeenCalledWith('/voice-service', { action: 'get_voices' });
   });
 });

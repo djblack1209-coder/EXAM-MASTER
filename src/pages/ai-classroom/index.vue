@@ -101,11 +101,14 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref, onMounted } from 'vue';
-import { lafService } from '@/services/lafService.js';
+import { useClassroomStore } from '@/stores/modules/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { logger } from '@/utils/logger.js';
+
+const classroomStore = useClassroomStore();
 
 const isDark = ref(initTheme());
 
@@ -131,9 +134,9 @@ const form = ref({
 async function loadLessons() {
   loading.value = true;
   try {
-    const res = await lafService.getLessonList(1, 50);
-    if (res.code === 0 && res.data) {
-      lessons.value = res.data.list || [];
+    const res = await classroomStore.fetchLessons({ page: 1, limit: 50 });
+    if (res.success && res.data) {
+      lessons.value = Array.isArray(res.data) ? res.data : res.data.list || [];
     }
   } catch (_e) {
     logger.warn('[AI课堂] 加载课程列表失败:', e);
@@ -145,28 +148,28 @@ async function loadLessons() {
 // 创建课程
 async function handleCreate() {
   if (!form.value.topic.trim()) {
-    uni.showToast({ title: '请输入学习主题', icon: 'none' });
+    toast.info('请输入学习主题');
     return;
   }
   creating.value = true;
   try {
-    const res = await lafService.createLesson(
-      form.value.topic.trim(),
-      form.value.subject,
-      form.value.materials.trim() || undefined
-    );
-    if (res.code === 0 && res.data) {
-      uni.showToast({ title: '课程生成已启动', icon: 'success' });
+    const res = await classroomStore.createLesson({
+      topic: form.value.topic.trim(),
+      subject: form.value.subject,
+      materials: form.value.materials.trim() || undefined
+    });
+    if (res.success && res.data) {
+      toast.success('课程生成已启动');
       showCreateModal.value = false;
       form.value = { topic: '', subject: 'politics', materials: '' };
       // 轮询进度
       pollLessonStatus(res.data.lessonId);
       await loadLessons();
     } else {
-      uni.showToast({ title: res.message || '创建失败', icon: 'none' });
+      toast.info(res.message || '创建失败');
     }
   } catch (_e) {
-    uni.showToast({ title: '创建失败，请重试', icon: 'none' });
+    toast.info('创建失败，请重试');
   } finally {
     creating.value = false;
   }
@@ -176,8 +179,8 @@ async function handleCreate() {
 function pollLessonStatus(lessonId) {
   const timer = setInterval(async () => {
     try {
-      const res = await lafService.getLessonStatus(lessonId);
-      if (res.code === 0 && res.data) {
+      const res = await classroomStore.fetchLessonStatus(lessonId);
+      if (res.success && res.data) {
         // 更新列表中的进度
         const idx = lessons.value.findIndex((l) => l._id === lessonId);
         if (idx >= 0) {
@@ -187,7 +190,7 @@ function pollLessonStatus(lessonId) {
         if (res.data.status === 'ready' || res.data.status === 'failed') {
           clearInterval(timer);
           if (res.data.status === 'ready') {
-            uni.showToast({ title: '课程生成完成', icon: 'success' });
+            toast.success('课程生成完成');
           }
           await loadLessons();
         }
@@ -203,11 +206,11 @@ function pollLessonStatus(lessonId) {
 // 进入课程
 function enterLesson(item) {
   if (item.status === 'generating') {
-    uni.showToast({ title: '课程正在生成中...', icon: 'none' });
+    toast.info('课程正在生成中...');
     return;
   }
   if (item.status === 'failed') {
-    uni.showToast({ title: '课程生成失败，请重新创建', icon: 'none' });
+    toast.info('课程生成失败，请重新创建');
     return;
   }
   uni.navigateTo({ url: `/pages/ai-classroom/classroom?lessonId=${item._id}` });
@@ -230,9 +233,9 @@ async function confirmDelete(lessonId) {
     content: '删除后无法恢复，确定要删除这个课程吗？',
     success: async (res) => {
       if (res.confirm) {
-        const result = await lafService.deleteLesson(lessonId);
-        if (result.code === 0) {
-          uni.showToast({ title: '已删除', icon: 'success' });
+        const result = await classroomStore.deleteLesson(lessonId);
+        if (result.success) {
+          toast.success('已删除');
           await loadLessons();
         }
       }

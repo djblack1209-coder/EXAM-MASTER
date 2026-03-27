@@ -61,12 +61,24 @@
         <view class="avatar-section" @tap="handleAvatarClick">
           <!-- #ifdef MP-WEIXIN -->
           <button class="avatar-btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" alt="头像" mode="aspectFill" @error="onAvatarError" />
+            <image
+              class="avatar"
+              :src="userInfo.avatarUrl || defaultAvatar"
+              alt="头像"
+              mode="aspectFill"
+              @error="onAvatarError"
+            />
           </button>
           <!-- #endif -->
           <!-- #ifndef MP-WEIXIN -->
           <view class="avatar-btn" @tap="onChooseAvatarApp">
-            <image class="avatar" :src="userInfo.avatarUrl || defaultAvatar" alt="头像" mode="aspectFill" @error="onAvatarError" />
+            <image
+              class="avatar"
+              :src="userInfo.avatarUrl || defaultAvatar"
+              alt="头像"
+              mode="aspectFill"
+              @error="onAvatarError"
+            />
           </view>
           <!-- #endif -->
           <view v-if="!userInfo.uid" class="login-badge"> 点击登录 </view>
@@ -129,7 +141,8 @@
                   <image
                     class="target-avatar"
                     :src="school.logo || '/static/images/default-avatar.png'"
-                    alt="Exam Master" mode="aspectFill"
+                    alt="Exam Master"
+                    mode="aspectFill"
                     lazy-load
                     @error="
                       (e) => {
@@ -277,6 +290,7 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 // Vue 原生钩子
 import { ref, onMounted, onUnmounted } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
@@ -293,7 +307,8 @@ import PosterModal from './PosterModal.vue';
 import { setTheme, isNightTime } from './theme.js';
 import { storageService } from '@/services/storageService.js';
 import config from '@/config/index.js';
-import { lafService } from '@/services/lafService.js';
+import { useSchoolStore } from '@/stores/modules/school';
+import { useProfileStore } from '@/stores/modules/profile';
 import { useThemeStore } from '@/stores';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -303,6 +318,10 @@ import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
+// 初始化 Store
+const schoolStore = useSchoolStore();
+const profileStore = useProfileStore();
 
 // 基础状态
 const userInfo = ref({});
@@ -435,7 +454,7 @@ const loadData = () => {
 // 编辑报考院校 - 直接使用搜索弹窗（school 是 tabBar 页面，switchTab 不支持 query params 和 events）
 const handleEditSchool = () => {
   if (!isUserLoggedIn()) {
-    uni.showToast({ title: '请先登录后编辑院校', icon: 'none' });
+    toast.info('请先登录后编辑院校');
     return;
   }
   showSchoolSearchModal();
@@ -452,15 +471,15 @@ const showSchoolSearchModal = () => {
       if (res.confirm && res.content) {
         const keyword = res.content.trim();
         if (!keyword) {
-          uni.showToast({ title: '请输入搜索关键词', icon: 'none' });
+          toast.info('请输入搜索关键词');
           return;
         }
 
-        uni.showLoading({ title: '搜索中...' });
+        toast.loading('搜索中...');
         try {
           // 调用后端搜索院校
-          const response = await lafService.searchSchools(keyword, 10);
-          uni.hideLoading();
+          const response = await schoolStore.searchSchools(keyword, 10);
+          toast.hide();
 
           if (response.code === 0 && response.data && response.data.length > 0) {
             // 显示搜索结果供用户选择
@@ -473,16 +492,16 @@ const showSchoolSearchModal = () => {
                 userSchoolInfo.value.school = selectedSchool.name;
                 userSchoolInfo.value.schoolCode = selectedSchool.code || '';
                 storageService.save('user_school_info', userSchoolInfo.value);
-                uni.showToast({ title: '院校已更新', icon: 'success' });
+                toast.success('院校已更新');
               }
             });
           } else {
-            uni.showToast({ title: '未找到匹配的院校', icon: 'none' });
+            toast.info('未找到匹配的院校');
           }
         } catch (error) {
-          uni.hideLoading();
+          toast.hide();
           logger.error('[Settings] 搜索院校失败:', error);
-          uni.showToast({ title: '搜索失败，请重试', icon: 'none' });
+          toast.info('搜索失败，请重试');
         }
       }
     }
@@ -492,7 +511,7 @@ const showSchoolSearchModal = () => {
 // 编辑报考专业
 const handleEditMajor = () => {
   if (!isUserLoggedIn()) {
-    uni.showToast({ title: '请先登录后编辑专业', icon: 'none' });
+    toast.info('请先登录后编辑专业');
     return;
   }
   uni.showModal({
@@ -506,15 +525,12 @@ const handleEditMajor = () => {
         const major = sanitizeInput(res.content, 30);
         if (!major) {
           const isEmpty = !res.content || !res.content.trim();
-          uni.showToast({ title: isEmpty ? '专业名称不能为空' : '专业名称包含不支持的特殊字符', icon: 'none' });
+          toast.info(isEmpty ? '专业名称不能为空' : '专业名称包含不支持的特殊字符');
           return;
         }
         userSchoolInfo.value.major = major;
         storageService.save('user_school_info', userSchoolInfo.value);
-        uni.showToast({
-          title: '更新成功',
-          icon: 'success'
-        });
+        toast.success('更新成功');
       }
     }
   });
@@ -523,10 +539,7 @@ const handleEditMajor = () => {
 const toggleVoice = (e) => {
   isVoiceEnabled.value = e.detail.value;
   storageService.save('voice_enabled', isVoiceEnabled.value);
-  uni.showToast({
-    title: isVoiceEnabled.value ? '已开启语音伴学' : '已关闭语音伴学',
-    icon: 'none'
-  });
+  toast.info(isVoiceEnabled.value ? '已开启语音伴学' : '已关闭语音伴学');
 };
 
 const toggleDark = (e) => {
@@ -540,7 +553,7 @@ const toggleDark = (e) => {
       ? '已开启深色模式（护眼模式已激活）'
       : '已开启深色模式'
     : '已关闭深色模式';
-  uni.showToast({ title: toastMsg, icon: 'none' });
+  toast.info(toastMsg);
 };
 
 const handleClearCache = () => {
@@ -554,7 +567,7 @@ const handleClearCache = () => {
           preserveKeys: ['user_school_info', 'target_schools']
         });
         loadData();
-        uni.showToast({ title: '缓存已清理', icon: 'success' });
+        toast.success('缓存已清理');
       }
     }
   });
@@ -571,10 +584,10 @@ const handleDeleteAccount = () => {
     confirmColor: '#FF3B30',
     success: async (res) => {
       if (res.confirm) {
-        uni.showLoading({ title: '提交中...' });
+        toast.loading('提交中...');
         try {
-          const result = await lafService.requestAccountDeletion();
-          uni.hideLoading();
+          const result = await profileStore.requestAccountDeletion();
+          toast.hide();
           if (result.success) {
             // 刷新注销状态显示
             await checkDeletionStatus();
@@ -584,11 +597,11 @@ const handleDeleteAccount = () => {
               showCancel: false
             });
           } else {
-            uni.showToast({ title: result.message || '操作失败', icon: 'none' });
+            toast.info(result.message || '操作失败');
           }
         } catch (_e) {
-          uni.hideLoading();
-          uni.showToast({ title: '网络异常，请重试', icon: 'none' });
+          toast.hide();
+          toast.info('网络异常，请重试');
         }
       }
     }
@@ -598,7 +611,7 @@ const handleDeleteAccount = () => {
 // C5: 查询注销状态
 const checkDeletionStatus = async () => {
   try {
-    const result = await lafService.getAccountDeletionStatus();
+    const result = await profileStore.getAccountDeletionStatus();
     if (result.success && result.data) {
       deletionStatus.value = result.data;
     }
@@ -615,19 +628,19 @@ const handleCancelDeletion = () => {
     confirmText: '确定撤销',
     success: async (res) => {
       if (res.confirm) {
-        uni.showLoading({ title: '处理中...' });
+        toast.loading('处理中...');
         try {
-          const result = await lafService.cancelAccountDeletion();
-          uni.hideLoading();
+          const result = await profileStore.cancelAccountDeletion();
+          toast.hide();
           if (result.success) {
             deletionStatus.value = { status: 'active', remainingDays: null };
-            uni.showToast({ title: '注销已撤销', icon: 'success' });
+            toast.success('注销已撤销');
           } else {
-            uni.showToast({ title: result.message || '操作失败', icon: 'none' });
+            toast.info(result.message || '操作失败');
           }
         } catch (_e) {
-          uni.hideLoading();
-          uni.showToast({ title: '网络异常，请重试', icon: 'none' });
+          toast.hide();
+          toast.info('网络异常，请重试');
         }
       }
     }
@@ -646,7 +659,7 @@ const removeTargetSchool = (index) => {
         targetSchools.value.splice(index, 1);
         // 更新本地存储
         storageService.save('target_schools', targetSchools.value);
-        uni.showToast({ title: '已删除目标院校', icon: 'success' });
+        toast.success('已删除目标院校');
       }
     }
   });
@@ -668,7 +681,7 @@ const handleAddTargetSchool = () => {
     },
     fail: (err) => {
       logger.error('[Settings] ❌ 跳转择校页面失败:', err);
-      uni.showToast({ title: '跳转失败', icon: 'none' });
+      toast.info('跳转失败');
     }
   });
 };
@@ -686,7 +699,7 @@ async function _uploadAvatarToServer(filePath) {
       try {
         const avatarBase64 = await filePathToBase64(filePath);
         const avatarType = inferImageMimeType(filePath);
-        const response = await lafService.request('/user-profile', {
+        const response = await profileStore.updateProfile({
           action: 'upload_avatar',
           userId,
           avatar_base64: avatarBase64,
@@ -757,7 +770,7 @@ const onChooseAvatarApp = () => {
 
 const onChooseAvatar = (e) => {
   if (!isUserLoggedIn()) {
-    uni.showToast({ title: '请先登录后设置头像', icon: 'none' });
+    toast.info('请先登录后设置头像');
     return;
   }
   // 防抖：如果正在选择，直接返回
@@ -786,7 +799,7 @@ const onChooseAvatar = (e) => {
       // 触发响应式更新（Vue 3 Proxy 可直接赋值触发）
       userInfo.value = { ...userInfo.value };
       // 显示成功提示
-      uni.showToast({ title: '头像已更新', icon: 'success' });
+      toast.success('头像已更新');
       // ✅ F020: 异步上传到服务器（不阻塞本地保存）
       _uploadAvatarToServer(avatarUrl);
       // 如果没有登录，完成登录流程（在清空前保存 uid 判断）
@@ -814,7 +827,7 @@ const onChooseAvatar = (e) => {
           storageService.save('userInfo', userInfo.value);
           // 触发响应式更新
           userInfo.value = { ...userInfo.value };
-          uni.showToast({ title: '头像已更新', icon: 'success' });
+          toast.success('头像已更新');
           // ✅ F020: 异步上传到服务器
           _uploadAvatarToServer(tempFilePath);
           const needLogin = !userInfo.value.uid;
@@ -830,7 +843,7 @@ const onChooseAvatar = (e) => {
     // #endif
   } catch (error) {
     logger.error('[Settings] ❌ 头像选择失败', error);
-    uni.showToast({ title: '头像更新失败', icon: 'none' });
+    toast.info('头像更新失败');
   } finally {
     // 1秒后解锁
     _timers.push(
@@ -859,7 +872,7 @@ const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
 // 微信最新登录规范：获取昵称
 const onNicknameChange = (e) => {
   if (!isUserLoggedIn()) {
-    uni.showToast({ title: '请先登录后修改昵称', icon: 'none' });
+    toast.info('请先登录后修改昵称');
     return;
   }
   const rawNickName = e.detail.value;
@@ -868,7 +881,7 @@ const onNicknameChange = (e) => {
 
   if (!nickName) {
     const isEmpty = !rawNickName || !rawNickName.trim();
-    uni.showToast({ title: isEmpty ? '昵称不能为空' : '昵称包含不支持的特殊字符', icon: 'none' });
+    toast.info(isEmpty ? '昵称不能为空' : '昵称包含不支持的特殊字符');
     return;
   }
 
@@ -889,7 +902,7 @@ const onNicknameChange = (e) => {
     userInfo.value.avatarUrl = DEFAULT_AVATAR;
   }
   saveUserInfo();
-  uni.showToast({ title: '昵称已更新', icon: 'success' });
+  toast.success('昵称已更新');
   // #endif
 };
 
@@ -901,7 +914,7 @@ const doRealLogin = async () => {
     url: '/pages/login/index',
     fail: (err) => {
       logger.error('[Settings] 跳转登录页失败:', err);
-      uni.showToast({ title: '请前往登录页完成登录', icon: 'none' });
+      toast.info('请前往登录页完成登录');
     }
   });
   // #endif
@@ -931,7 +944,7 @@ const doRealLogin = async () => {
     userInfo.value.uid = 'USER_' + hex;
   }
   saveUserInfo();
-  uni.showToast({ title: '信息已保存', icon: 'success' });
+  toast.success('信息已保存');
   // #endif
 };
 
@@ -972,11 +985,7 @@ const handleAvatarClick = () => {
     });
   } else {
     // 已登录，显示用户信息
-    uni.showToast({
-      title: `已登录：${userInfo.value.nickName || '考研人'}`,
-      icon: 'none',
-      duration: 2000
-    });
+    toast.info(`已登录：${userInfo.value.nickName || '考研人'}`);
   }
 };
 

@@ -21,51 +21,48 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
 // REFACTOR: Script unchanged - API contract preserved
-export default {
-  name: 'BaseEmpty',
-  components: { BaseIcon },
-  props: {
-    icon: {
-      type: String,
-      default: 'empty'
-    },
-    title: {
-      type: String,
-      default: '暂无数据'
-    },
-    desc: {
-      type: String,
-      default: ''
-    },
-    showButton: {
-      type: Boolean,
-      default: false
-    },
-    buttonText: {
-      type: String,
-      default: '去添加'
-    },
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+const props = defineProps({
+  icon: {
+    type: String,
+    default: 'empty'
   },
-  emits: ['action'],
-  computed: {
-    isIconName() {
-      const v = this.icon || '';
-      return /^[a-z][a-z0-9-]*$/.test(v);
-    }
+  title: {
+    type: String,
+    default: '暂无数据'
   },
-  methods: {
-    handleAction() {
-      this.$emit('action');
-    }
+  desc: {
+    type: String,
+    default: ''
+  },
+  showButton: {
+    type: Boolean,
+    default: false
+  },
+  buttonText: {
+    type: String,
+    default: '去添加'
+  },
+  isDark: {
+    type: Boolean,
+    default: false
   }
-};
+});
+
+const emit = defineEmits(['action']);
+
+const isIconName = computed(() => {
+  const v = props.icon || '';
+  return /^[a-z][a-z0-9-]*$/.test(v);
+});
+
+function handleAction() {
+  emit('action');
+}
 </script>
 
 <style lang="scss" scoped>

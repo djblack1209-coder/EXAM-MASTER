@@ -1,6 +1,6 @@
 /**
  * 特征测试 (Characterization Test) — adaptive-learning-engine.js
- * 
+ *
  * 目的：锁定当前行为，确保三合一重构后输入A永远得到输出B。
  * 不验证逻辑是否"正确"，只验证行为不变。
  */
@@ -99,7 +99,7 @@ describe('AdaptiveLearningEngine — 特征测试', () => {
       // 无错题本 → 无复习题 → 长度应等于原始长度
       expect(result.length).toBe(3);
       // 所有原始题目都应存在
-      const ids = result.map(q => q.id);
+      const ids = result.map((q) => q.id);
       expect(ids).toContain('q1');
       expect(ids).toContain('q2');
       expect(ids).toContain('q3');
@@ -215,7 +215,7 @@ describe('AdaptiveLearningEngine — 特征测试', () => {
     it('正确率低于60%的知识点应被标记为薄弱', () => {
       adaptiveLearningEngine.knowledgeMap = {
         '数学': { total: 10, correct: 3, lastPractice: Date.now() }, // 30% → 薄弱
-        '英语': { total: 10, correct: 8, lastPractice: Date.now() }  // 80% → 不薄弱
+        '英语': { total: 10, correct: 8, lastPractice: Date.now() } // 80% → 不薄弱
       };
       adaptiveLearningEngine.isInitialized = true;
 
@@ -230,7 +230,7 @@ describe('AdaptiveLearningEngine — 特征测试', () => {
       adaptiveLearningEngine.knowledgeMap = {
         '数学': { total: 10, correct: 5, lastPractice: Date.now() }, // 50%
         '政治': { total: 10, correct: 2, lastPractice: Date.now() }, // 20%
-        '英语': { total: 10, correct: 4, lastPractice: Date.now() }  // 40%
+        '英语': { total: 10, correct: 4, lastPractice: Date.now() } // 40%
       };
       adaptiveLearningEngine.isInitialized = true;
 

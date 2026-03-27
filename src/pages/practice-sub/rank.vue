@@ -215,6 +215,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { lafService } from '@/services/lafService.js';
 // 检查点4.1: 排行榜WebSocket实时更新
 import { rankingSocket } from './ranking-socket.js';
@@ -470,10 +471,7 @@ export default {
       } catch (error) {
         logger.error('[PK] 调用排行榜 API 失败:', error);
         this.empty = true;
-        uni.showToast({
-          title: '获取排行榜数据失败',
-          icon: 'none'
-        });
+        toast.info('获取排行榜数据失败');
       } finally {
         this.loading = false;
       }
@@ -600,7 +598,7 @@ export default {
     async fetchFootprintAnalysis(user) {
       this.isAnalyzing = true;
       this.aiAnalysisText = '智能正在深度扫描足迹...';
-      uni.showLoading({ title: '分析中...', mask: false });
+      toast.loading('分析中...');
 
       logger.log('[rank] 🤖 调用后端代理进行学霸足迹分析...');
 
@@ -646,7 +644,7 @@ export default {
         this.aiPersona = '学霸先锋';
         this.aiAnalysisText = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
       } finally {
-        uni.hideLoading();
+        toast.hide();
         this.isAnalyzing = false;
       }
     },
@@ -732,17 +730,9 @@ export default {
         // 显示排名变化提示
         const change = data.previousRank - data.rank;
         if (change > 0) {
-          uni.showToast({
-            title: `排名上升 ${change} 位！`,
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info(`排名上升 ${change} 位！`);
         } else if (change < 0) {
-          uni.showToast({
-            title: `排名下降 ${Math.abs(change)} 位`,
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info(`排名下降 ${Math.abs(change)} 位`);
         }
       }
     },

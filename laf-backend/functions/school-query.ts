@@ -15,9 +15,9 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT, extractBearerToken } from './_shared/auth';
-import { requireAdminAccess } from './_shared/admin-auth';
-import { createLogger } from './_shared/api-response';
+import { verifyJWT, extractBearerToken } from './_shared/auth.js';
+import { requireAdminAccess } from './_shared/admin-auth.js';
+import { createLogger } from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -425,7 +425,7 @@ async function getSchoolList(data, requestId) {
 
   // 如果数据不完整，添加提示信息
   if (dataStatus.needSync) {
-    response.warning = {
+    (response as Record<string, unknown>).warning = {
       message: `数据库中院校数量(${dataStatus.currentCount})少于${DATA_COMPLETENESS_THRESHOLD}，数据可能不完整，建议执行同步操作`,
       currentCount: dataStatus.currentCount,
       expectedCount: TOTAL_GRADUATE_UNITS,
@@ -631,7 +631,7 @@ async function searchSchools(data, requestId) {
 
   // 如果数据不完整，添加提示信息
   if (dataStatus.needSync) {
-    response.warning = {
+    (response as Record<string, unknown>).warning = {
       message: `数据库中院校数量(${dataStatus.currentCount})少于${DATA_COMPLETENESS_THRESHOLD}，搜索结果可能不完整，建议执行同步操作`,
       currentCount: dataStatus.currentCount,
       expectedCount: TOTAL_GRADUATE_UNITS,
@@ -1250,7 +1250,7 @@ async function syncFromChsi(data, requestId) {
         }
       } else {
         // 新增
-        schoolData.createdAt = Date.now();
+        (schoolData as Record<string, unknown>).createdAt = Date.now();
         await db.collection('schools').add(schoolData);
         inserted++;
       }
@@ -1369,7 +1369,7 @@ async function getAllUnits(data, requestId) {
 
   // 如果数据不完整，添加提示信息
   if (dataStatus.needSync) {
-    response.warning = {
+    (response as Record<string, unknown>).warning = {
       message: `当前数据库中有${dataStatus.currentCount}个招生单位，研招网共有${TOTAL_GRADUATE_UNITS}个，数据不完整`,
       missingCount: TOTAL_GRADUATE_UNITS - dataStatus.currentCount,
       action: 'sync_from_chsi'

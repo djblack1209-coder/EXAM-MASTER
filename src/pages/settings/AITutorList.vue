@@ -12,7 +12,8 @@
         <image
           class="tutor-avatar ds-rounded-full"
           :src="tutor.avatar || '/static/images/default-avatar.png'"
-          alt="头像" mode="aspectFill"
+          alt="头像"
+          mode="aspectFill"
           @error="
             (e) => {
               if (e.target) e.target.src = '/static/images/default-avatar.png';
@@ -33,54 +34,48 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
 
-export default {
-  name: 'AITutorList',
-  props: {
-    targetSchools: { type: Array, default: () => [] }
+const props = defineProps({
+  targetSchools: { type: Array, default: () => [] }
+});
+defineEmits(['start-chat']);
+
+const baseTutors = ref([
+  {
+    name: 'Dr. Logic',
+    role: '逻辑/数学',
+    avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Felix`
   },
-  emits: ['start-chat'],
-  data() {
-    return {
-      baseTutors: [
-        {
-          name: 'Dr. Logic',
-          role: '逻辑/数学',
-          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Felix`
-        },
-        {
-          name: 'Miss English',
-          role: '英语名师',
-          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Aneka`
-        },
-        {
-          name: '知心姐姐',
-          role: '心理疏导',
-          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Liliana`
-        }
-      ]
-    };
+  {
+    name: 'Miss English',
+    role: '英语名师',
+    avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Aneka`
   },
-  computed: {
-    tutorList() {
-      const list = [...this.baseTutors];
-      if (this.targetSchools.length > 0) {
-        const info = storageService.get('user_school_info', {});
-        const major = info.major || '计算机科学与技术';
-        list.push({
-          name: `${major}专业导师`,
-          role: '专业导师',
-          avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Professional`,
-          prompt: `你是${major}的考研指导老师，专业知识丰富，擅长解答考研相关问题，特别是${major}专业的考研规划、复习方法和院校选择等方面的问题。`
-        });
-      }
-      return list;
-    }
+  {
+    name: '知心姐姐',
+    role: '心理疏导',
+    avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Liliana`
   }
-};
+]);
+
+const tutorList = computed(() => {
+  const list = [...baseTutors.value];
+  if (props.targetSchools.length > 0) {
+    const info = storageService.get('user_school_info', {});
+    const major = info.major || '计算机科学与技术';
+    list.push({
+      name: `${major}专业导师`,
+      role: '专业导师',
+      avatar: `${config.externalCdn.dicebearBaseUrl}/avataaars/svg?seed=Professional`,
+      prompt: `你是${major}的考研指导老师，专业知识丰富，擅长解答考研相关问题，特别是${major}专业的考研规划、复习方法和院校选择等方面的问题。`
+    });
+  }
+  return list;
+});
 </script>
 
 <style lang="scss" scoped>

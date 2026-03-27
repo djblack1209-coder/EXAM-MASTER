@@ -1,4 +1,4 @@
-import { fsrs, generatorParameters, createEmptyCard, Rating, State, type RecordLog } from 'ts-fsrs';
+import { fsrs, generatorParameters, createEmptyCard, Rating, State } from 'ts-fsrs';
 import cloud from '@lafjs/cloud';
 
 const db = cloud.database();
@@ -14,13 +14,13 @@ export class FsrsService {
    */
   async processAnswer(userId: string, questionId: string, grade: number) {
     const reviewLogCol = db.collection('review_logs');
-    
+
     // Find existing card state for user+question
     const existingLog = await reviewLogCol
       .where({ user_id: userId, question_id: questionId })
       .orderBy('review', 'desc')
       .get();
-      
+
     let card = createEmptyCard();
     if (existingLog.data && existingLog.data.length > 0) {
       const latest = existingLog.data[0];
@@ -34,22 +34,31 @@ export class FsrsService {
         lapses: latest.card.lapses,
         state: latest.card.state as State,
         last_review: latest.card.last_review
-      };
+      } as typeof card;
     }
-    
+
     const now = new Date();
     const scheduledInfo = this.f.repeat(card, now);
-    let recordLog: RecordLog;
-    
+    let recordLog: { card: typeof card; log: unknown };
+
     // Match TS-FSRS Rating Enum
-    switch(grade) {
-      case 1: recordLog = scheduledInfo[Rating.Again]; break;
-      case 2: recordLog = scheduledInfo[Rating.Hard]; break;
-      case 3: recordLog = scheduledInfo[Rating.Good]; break;
-      case 4: recordLog = scheduledInfo[Rating.Easy]; break;
-      default: recordLog = scheduledInfo[Rating.Good];
+    switch (grade) {
+      case 1:
+        recordLog = scheduledInfo[Rating.Again];
+        break;
+      case 2:
+        recordLog = scheduledInfo[Rating.Hard];
+        break;
+      case 3:
+        recordLog = scheduledInfo[Rating.Good];
+        break;
+      case 4:
+        recordLog = scheduledInfo[Rating.Easy];
+        break;
+      default:
+        recordLog = scheduledInfo[Rating.Good];
     }
-    
+
     // Store in DB
     const newLogEntry = {
       user_id: userId,
@@ -59,9 +68,9 @@ export class FsrsService {
       review: now,
       grade
     };
-    
+
     await reviewLogCol.add(newLogEntry);
-    
+
     return newLogEntry;
   }
 }

@@ -12,6 +12,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { toast } from '@/utils/toast.js';
 
 // 权限类型枚举
 const PERMISSION_TYPES = {
@@ -134,7 +135,7 @@ class PermissionHandler {
                 if (granted) {
                   logger.log('[PermissionHandler] 用户在设置中开启了权限:', scope);
                   this.permissionCache[scope] = 'authorized';
-                  uni.showToast({ title: '权限已开启', icon: 'success' });
+                  toast.success('权限已开启');
                 }
 
                 resolve(granted);
@@ -191,11 +192,7 @@ class PermissionHandler {
     // 5. 不自动引导，显示提示
     if (showTip) {
       const description = PERMISSION_DESCRIPTIONS[scope];
-      uni.showToast({
-        title: `请开启${description?.name || ''}权限`,
-        icon: 'none',
-        duration: 2000
-      });
+      toast.info(`请开启${description?.name || ''}权限`);
     }
 
     return false;
@@ -224,7 +221,7 @@ class PermissionHandler {
 
     // 2. 显示 Loading
     if (showLoading) {
-      uni.showLoading({ title: loadingText, mask: true });
+      toast.loading(loadingText);
     }
 
     // 3. 保存图片
@@ -233,15 +230,15 @@ class PermissionHandler {
         filePath: filePath,
         success: () => {
           if (showLoading) {
-            uni.hideLoading();
+            toast.hide();
           }
-          uni.showToast({ title: successText, icon: 'success' });
+          toast.success(successText);
           logger.log('[PermissionHandler] 图片保存成功:', filePath);
           resolve({ success: true });
         },
         fail: (err) => {
           if (showLoading) {
-            uni.hideLoading();
+            toast.hide();
           }
 
           logger.error('[PermissionHandler] 图片保存失败:', err);
@@ -255,7 +252,7 @@ class PermissionHandler {
             resolve({ success: false, cancelled: true });
             return;
           } else {
-            uni.showToast({ title: failText, icon: 'none' });
+            toast.info(failText);
           }
 
           resolve({ success: false, error: err });

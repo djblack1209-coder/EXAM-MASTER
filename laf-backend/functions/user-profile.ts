@@ -14,12 +14,12 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 
 const db = cloud.database();
 
 // ==================== 环境配置 ====================
-import { createLogger, sanitizeString } from './_shared/api-response';
+import { createLogger, sanitizeString } from './_shared/api-response.js';
 
 // 头像上传配置
 const AVATAR_MAX_SIZE = 2 * 1024 * 1024; // 2MB
@@ -114,7 +114,7 @@ export default async function (ctx: FunctionContext) {
     // 对于敏感操作，验证用户只能访问自己的数据
     const sensitiveActions = ['get', 'get_practice_config', 'update', 'upload_avatar', 'update_practice_config'];
     if (sensitiveActions.includes(action)) {
-      const accessCheck = verifyUserAccess(ctx, userId);
+      const accessCheck = verifyUserAccess(ctx as Record<string, unknown>, userId);
       if (!accessCheck.valid) {
         logger.warn(`[${requestId}] 访问控制拦截: ${accessCheck.error}`);
         return {

@@ -7,8 +7,10 @@
 
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { APP_CONFIG } from '../../../common/config';
+import config from '@/config/index.js';
+const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
+import { lafService } from '../../services/lafService.js';
 
 export const useProfileStore = defineStore('profile', () => {
   const userInfo = ref(null);
@@ -76,11 +78,45 @@ export const useProfileStore = defineStore('profile', () => {
     uni.__profileStoreRestoreBound__ = true;
   }
 
+  /**
+   * 申请注销账号
+   */
+  const requestAccountDeletion = async () => {
+    return await lafService.requestAccountDeletion();
+  };
+
+  /**
+   * 查询注销状态
+   */
+  const getAccountDeletionStatus = async () => {
+    return await lafService.getAccountDeletionStatus();
+  };
+
+  /**
+   * 撤销注销申请
+   */
+  const cancelAccountDeletion = async () => {
+    return await lafService.cancelAccountDeletion();
+  };
+
+  /**
+   * 更新用户资料（通用，支持头像上传等）
+   * @param {Object} data - 请求参数（action, userId, 等）
+   */
+  const updateProfile = async (data) => {
+    return await lafService.request('/user-profile', data);
+  };
+
   return {
     userInfo,
     planProgress,
     setUserInfo,
     updateUserInfo,
-    $reset
+    $reset,
+    // B3: 新增账号管理 action
+    requestAccountDeletion,
+    getAccountDeletionStatus,
+    cancelAccountDeletion,
+    updateProfile
   };
 });

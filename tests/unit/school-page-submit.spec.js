@@ -13,6 +13,18 @@ vi.mock('@/services/lafService.js', () => ({
   }
 }));
 
+// B2 迁移：school 页面现通过 schoolStore 调用，需 mock store
+vi.mock('@/stores/modules/school', () => ({
+  useSchoolStore: vi.fn(() => ({
+    aiRecommend: proxyAIMock,
+    fetchHotSchools: vi.fn().mockResolvedValue({ code: 0, data: [] }),
+    crawlSchoolData: vi.fn().mockResolvedValue({ code: 0, data: { list: [] } }),
+    searchSchools: vi.fn(),
+    fetchSchoolDetail: vi.fn(),
+    aiPredict: vi.fn()
+  }))
+}));
+
 vi.mock('@/services/storageService.js', () => ({
   default: {
     get: storageGetMock,
@@ -115,7 +127,9 @@ describe('school 页面提交逻辑', () => {
       hasRealData: false,
       filter: { location: '', tag: '' },
       applySchoolList: methods.applySchoolList,
-      syncTargetStatus: methods.syncTargetStatus
+      syncTargetStatus: methods.syncTargetStatus,
+      // B2 迁移：提供 schoolStore mock
+      schoolStore: { aiRecommend: proxyAIMock }
     };
 
     Object.defineProperty(ctx, 'filteredSchools', {
@@ -160,7 +174,9 @@ describe('school 页面提交逻辑', () => {
       hasRealData: true,
       filter: { location: '', tag: '' },
       applySchoolList: methods.applySchoolList,
-      syncTargetStatus: methods.syncTargetStatus
+      syncTargetStatus: methods.syncTargetStatus,
+      // B2 迁移：提供 schoolStore mock
+      schoolStore: { aiRecommend: proxyAIMock }
     };
 
     Object.defineProperty(ctx, 'filteredSchools', {

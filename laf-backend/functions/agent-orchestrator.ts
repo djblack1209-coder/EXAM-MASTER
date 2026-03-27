@@ -13,7 +13,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   success,
   badRequest,
@@ -22,9 +22,9 @@ import {
   generateRequestId,
   checkRateLimitDistributed,
   createLogger
-} from './_shared/api-response';
-import { ClassroomSession, Lesson } from './_shared/agents/agent-types';
-import { createInitialState, advanceState } from './_shared/orchestration/state-machine';
+} from './_shared/api-response.js';
+import { ClassroomSession, Lesson } from './_shared/agents/agent-types.js';
+import { createInitialState, advanceState } from './_shared/orchestration/state-machine.js';
 
 const db = cloud.database();
 const logger = createLogger('[AgentOrchestrator]');

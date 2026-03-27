@@ -13,17 +13,13 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'SpeedReadyModal',
-  components: { BaseIcon },
-  props: {
-    visible: { type: Boolean, default: false }
-  },
-  emits: ['start']
-};
+defineProps({
+  visible: { type: Boolean, default: false }
+});
+defineEmits(['start']);
 </script>
 
 <style lang="scss" scoped>

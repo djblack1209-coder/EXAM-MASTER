@@ -91,6 +91,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
@@ -247,7 +248,7 @@ export default {
 
     // 加载示例题库
     async loadDemoQuestions() {
-      uni.showLoading({ title: '加载示例题库...' });
+      toast.loading('加载示例题库...');
 
       try {
         const demoQuestions = [
@@ -278,12 +279,9 @@ export default {
         ];
 
         storageService.save('v30_bank', demoQuestions);
-        uni.hideLoading();
+        toast.hide();
 
-        uni.showToast({
-          title: '示例题库已加载',
-          icon: 'success'
-        });
+        toast.success('示例题库已加载');
 
         setTimeout(() => {
           uni.switchTab({
@@ -292,9 +290,9 @@ export default {
           });
         }, 1500);
       } catch (e) {
-        uni.hideLoading();
+        toast.hide();
         logger.error('[EmptyState] 加载示例题库失败:', e);
-        uni.showToast({ title: '加载失败', icon: 'none' });
+        toast.info('加载失败');
       }
     }
   }

@@ -84,6 +84,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
@@ -139,7 +140,7 @@ export default {
   methods: {
     async prepareReport() {
       if (this.mistakes.length === 0) {
-        return uni.showToast({ title: '先刷题积累错题才能生成报告哦', icon: 'none' });
+        return toast.info('先刷题积累错题才能生成报告哦');
       }
 
       if (this.isGenerating) return;
@@ -211,7 +212,7 @@ export default {
           logger.error('[MistakeReport] 智能报告生成失败:', response.message);
           this.showCustomLoading = false;
           this.isGenerating = false;
-          uni.showToast({ title: '报告生成失败，请重试', icon: 'none', duration: 3000 });
+          toast.info('报告生成失败，请重试', 3000);
         }
       } catch (_e) {
         logger.error('[MistakeReport] 智能报告生成失败', _e);
@@ -229,7 +230,7 @@ export default {
           errorMsg = '数据解析失败，请重试';
         }
 
-        uni.showToast({ title: errorMsg, icon: 'none', duration: 3000 });
+        toast.info(errorMsg, 3000);
       }
     },
 
@@ -244,7 +245,7 @@ export default {
 
     handleImageError(e) {
       logger.error('[MistakeReport] 图片加载失败:', e);
-      uni.showToast({ title: '图片加载失败', icon: 'none', duration: 2000 });
+      toast.info('图片加载失败');
       this.showReportModal = false;
     },
 
@@ -259,7 +260,7 @@ export default {
       uni.saveImageToPhotosAlbum({
         filePath: this.reportImagePath,
         success: () => {
-          uni.showToast({ title: '已保存到相册', icon: 'success' });
+          toast.success('已保存到相册');
           this.showReportModal = false;
         },
         fail: (err) => {
@@ -273,7 +274,7 @@ export default {
               }
             });
           } else {
-            uni.showToast({ title: '保存失败', icon: 'none' });
+            toast.info('保存失败');
           }
         }
       });
@@ -283,11 +284,11 @@ export default {
       uni.saveImageToPhotosAlbum({
         filePath: this.reportImagePath,
         success: () => {
-          uni.showToast({ title: '已保存到相册', icon: 'success' });
+          toast.success('已保存到相册');
           this.showReportModal = false;
         },
         fail: (_err) => {
-          uni.showToast({ title: '保存失败', icon: 'none' });
+          toast.info('保存失败');
         }
       });
       // #endif
@@ -378,11 +379,7 @@ export default {
                 logger.error('[MistakeReport] Canvas导出失败:', err);
                 this.showCustomLoading = false;
                 this.isGenerating = false;
-                uni.showToast({
-                  title: '图片生成失败：' + (err.errMsg || err.message || '未知错误'),
-                  icon: 'none',
-                  duration: 3000
-                });
+                toast.info('图片生成失败：', 3000);
                 reject(err);
               });
           });
@@ -390,11 +387,7 @@ export default {
           logger.error('[MistakeReport] drawReport执行失败:', error);
           this.showCustomLoading = false;
           this.isGenerating = false;
-          uni.showToast({
-            title: '报告生成失败：' + (error.message || '未知错误'),
-            icon: 'none',
-            duration: 3000
-          });
+          toast.info('报告生成失败：', 3000);
           reject(error);
         }
       });
@@ -517,13 +510,13 @@ export default {
             logger.error('[MistakeReport] 本地报告绘制失败:', err);
             this.showCustomLoading = false;
             this.isGenerating = false;
-            uni.showToast({ title: '报告生成失败', icon: 'none' });
+            toast.info('报告生成失败');
           });
       } catch (error) {
         logger.error('[MistakeReport] 本地报告生成异常:', error);
         this.showCustomLoading = false;
         this.isGenerating = false;
-        uni.showToast({ title: '报告生成失败：' + error.message, icon: 'none' });
+        toast.info('报告生成失败：');
       }
     },
 
@@ -538,10 +531,10 @@ export default {
       uni.setClipboardData({
         data: this.reportTextContent,
         success: () => {
-          uni.showToast({ title: '报告已复制到剪贴板', icon: 'success' });
+          toast.success('报告已复制到剪贴板');
         },
         fail: () => {
-          uni.showToast({ title: '复制失败', icon: 'none' });
+          toast.info('复制失败');
         }
       });
     }

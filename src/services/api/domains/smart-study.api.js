@@ -1,0 +1,171 @@
+/**
+ * 智能学习引擎 API
+ * 职责：知识点掌握度分析、错题归因聚类、深度矫正、冲刺优先级、AI学习计划
+ *
+ * @module services/api/domains/smart-study
+ */
+
+import { logger } from '@/utils/logger.js';
+import { request, normalizeError } from './_request-core.js';
+
+/**
+ * 获取知识点掌握度分析
+ * 根据用户历史答题数据，分析各知识点的掌握程度
+ * @returns {Promise} 返回知识点掌握度数据
+ */
+export async function analyzeMastery() {
+  logger.log('[SmartStudy] 调用知识点掌握度分析');
+  try {
+    const response = await request(
+      '/smart-study-engine',
+      {
+        action: 'analyze_mastery',
+        data: {}
+      },
+      { timeout: 15000 }
+    );
+    return response;
+  } catch (error) {
+    logger.warn('[SmartStudy] 知识点掌握度分析失败:', error);
+    return normalizeError(error, '知识点掌握度分析');
+  }
+}
+
+/**
+ * 获取错题归因聚类
+ * 对错题进行智能聚类，找出薄弱环节和共性原因
+ * @returns {Promise} 返回错题聚类数据
+ */
+export async function getErrorClusters() {
+  logger.log('[SmartStudy] 调用错题归因聚类');
+  try {
+    const response = await request(
+      '/smart-study-engine',
+      {
+        action: 'error_clustering',
+        data: {}
+      },
+      { timeout: 15000 }
+    );
+    return response;
+  } catch (error) {
+    logger.warn('[SmartStudy] 错题归因聚类失败:', error);
+    return normalizeError(error, '错题归因聚类');
+  }
+}
+
+/**
+ * 获取深度矫正（AI分析根因 + 推荐同类题）
+ * @param {string} [knowledgePoint] - 可选，指定知识点名称进行定向矫正
+ * @returns {Promise} 返回深度矫正数据
+ */
+export async function getDeepCorrection(knowledgePoint) {
+  logger.log('[SmartStudy] 调用深度矫正, 知识点:', knowledgePoint || '全部');
+  try {
+    const data = {};
+    if (knowledgePoint) {
+      data.knowledgePoint = knowledgePoint;
+    }
+    const response = await request(
+      '/smart-study-engine',
+      {
+        action: 'deep_correction',
+        data
+      },
+      { timeout: 30000 }
+    );
+    return response;
+  } catch (error) {
+    logger.warn('[SmartStudy] 深度矫正失败:', error);
+    return normalizeError(error, '深度矫正');
+  }
+}
+
+/**
+ * 获取待处理的矫正列表
+ * @returns {Promise} 返回待处理矫正数据
+ */
+export async function getPendingCorrections() {
+  logger.log('[SmartStudy] 调用获取待处理矫正');
+  try {
+    const response = await request('/smart-study-engine', {
+      action: 'get_pending_corrections',
+      data: {}
+    });
+    return response;
+  } catch (error) {
+    logger.warn('[SmartStudy] 获取待处理矫正失败:', error);
+    return normalizeError(error, '获取待处理矫正');
+  }
+}
+
+/**
+ * 标记矫正为已读
+ * @param {string} correctionId - 矫正记录ID（必传）
+ * @returns {Promise} 返回操作结果
+ */
+export async function markCorrectionRead(correctionId) {
+  logger.log('[SmartStudy] 标记矫正已读, ID:', correctionId);
+  try {
+    const response = await request('/smart-study-engine', {
+      action: 'mark_correction_read',
+      data: { correctionId }
+    });
+    return response;
+  } catch (error) {
+    logger.warn('[SmartStudy] 标记矫正已读失败:', error);
+    return normalizeError(error, '标记矫正已读');
+  }
+}
+
+/**
+ * 获取冲刺模式ROI优先级排序
+ * 根据考试日期计算剩余时间，按投入产出比排序知识点
+ * @param {string} examDate - 考试日期，格式 YYYY-MM-DD（必传）
+ * @returns {Promise} 返回冲刺优先级数据
+ */
+export async function getSprintPriority(examDate) {
+  logger.log('[SmartStudy] 调用冲刺优先级排序, 考试日期:', examDate);
+  try {
+    const response = await request('/smart-study-engine', {
+      action: 'sprint_priority',
+      data: { examDate }
+    });
+    return response;
+  } catch (error) {
+    logger.warn('[SmartStudy] 冲刺优先级排序失败:', error);
+    return normalizeError(error, '冲刺优先级排序');
+  }
+}
+
+/**
+ * 生成AI自适应学习计划
+ * 根据考试日期和每日可用学时，生成个性化学习计划
+ * @param {string} examDate - 考试日期，格式 YYYY-MM-DD（必传）
+ * @param {number} [dailyHours] - 每日可用学习时长（小时），可选
+ * @returns {Promise} 返回AI生成的学习计划
+ */
+export async function generateStudyPlan(examDate, dailyHours) {
+  logger.log('[SmartStudy] 调用AI学习计划生成, 考试日期:', examDate, '每日学时:', dailyHours || '未指定');
+  try {
+    const data = { examDate };
+    if (dailyHours != null) {
+      data.dailyHours = dailyHours;
+    }
+    const response = await request(
+      '/smart-study-engine',
+      {
+        action: 'generate_plan',
+        data
+      },
+      { timeout: 30000 }
+    );
+    return response;
+  } catch (error) {
+    logger.warn('[SmartStudy] AI学习计划生成失败:', error);
+    return normalizeError(error, 'AI学习计划生成');
+  }
+}
+
+// 别名：兼容 study.api.js 的旧命名（已发布页面 plan/index.vue 使用此名）
+export const generateAdaptivePlan = generateStudyPlan;

@@ -74,14 +74,23 @@ test.describe('A2-异常流程', () => {
       await app.goto('/pages/chat/chat');
       await skipWhenRuntimeNotReady(test, page);
 
-      await app.actions.input('.msg-input, input[type="text"]', '接口异常回归测试');
-      await app.actions.tap('.send-btn');
+      // 等待聊天页骨架屏消失、输入区域可见（骨架屏最长 8s + 安全裕量）
+      const chatInput = page.locator('#e2e-chat-input, .msg-input, input[type="text"]').first();
+      await chatInput.waitFor({ state: 'visible', timeout: 25000 });
 
-      await expectAnyTextVisible(page, [
-        '抱歉，我暂时无法回复，请稍后再试~',
-        '发送失败，点击消息重试',
-        '网络错误，请稍后重试'
-      ]);
+      await chatInput.click();
+      await chatInput.fill('接口异常回归测试');
+      await page.locator('#e2e-chat-send, .send-btn').first().click();
+
+      // 根据 lafService 对 500 的处理方式，可能出现以下任一文本：
+      // - API 返回非 0 code 时的降级回复
+      // - 请求抛出异常时的失败状态文本
+      // - uni.showToast 弹出的错误提示
+      await expectAnyTextVisible(
+        page,
+        ['抱歉，我暂时无法回复，请稍后再试~', '发送失败，点击消息重试', '网络错误，请稍后重试', '点击重试'],
+        20000
+      );
       await app.screenshot('exception-chat-api-500-fallback');
     } finally {
       await page.unroute('**/proxy-ai');

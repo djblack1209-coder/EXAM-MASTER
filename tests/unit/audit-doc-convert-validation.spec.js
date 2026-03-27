@@ -35,6 +35,36 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: vi.fn(() => ({ userId: 'u_doc_1' }))
 }));
 
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: vi.fn((ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    return { userId: 'u_doc_1' };
+  }),
+  isAuthError: (result) => result?.code === 401
+}));
+
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  return createApiResponseMock();
+});
+
+vi.mock('../../laf-backend/functions/_shared/validator', () => ({
+  validate: vi.fn((data, rules) => {
+    // 简单校验逻辑：检查 required 字段
+    const errors = [];
+    for (const [key, rule] of Object.entries(rules)) {
+      if (rule.required && !data[key]) {
+        errors.push(`${key} 是必填项`);
+      }
+      if (rule.enum && data[key] && !rule.enum.includes(data[key])) {
+        errors.push(`${key} 的值不在允许范围内`);
+      }
+    }
+    return { valid: errors.length === 0, errors };
+  })
+}));
+
 describe('[安全审计] doc-convert 输入校验', () => {
   beforeAll(() => {
     process.env.API_KEY_PLACEHOLDER

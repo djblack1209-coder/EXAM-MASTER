@@ -169,6 +169,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { socialService } from './socialService.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
@@ -317,37 +318,28 @@ export default {
         confirmColor: '#FF4757',
         success: async (res) => {
           if (res.confirm) {
-            uni.showLoading({ title: '处理中...' });
+            toast.loading('处理中...');
 
             try {
               const result = await socialService.removeFriend(this.friendInfo.uid);
 
-              uni.hideLoading();
+              toast.hide();
               this.isActionLoading = false;
 
               if (result.code === 0) {
-                uni.showToast({
-                  title: '已删除好友',
-                  icon: 'success'
-                });
+                toast.success('已删除好友');
                 // 返回上一页
                 setTimeout(() => {
                   safeNavigateBack();
                 }, 1500);
               } else {
-                uni.showToast({
-                  title: result.msg || '删除失败',
-                  icon: 'none'
-                });
+                toast.info(result.msg || '删除失败');
               }
             } catch (err) {
-              uni.hideLoading();
+              toast.hide();
               this.isActionLoading = false;
               logger.error('[FriendProfile] 删除好友失败:', err);
-              uni.showToast({
-                title: '删除失败',
-                icon: 'none'
-              });
+              toast.info('删除失败');
             }
           } else {
             this.isActionLoading = false;

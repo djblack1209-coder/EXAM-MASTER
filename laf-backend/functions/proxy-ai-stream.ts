@@ -9,9 +9,9 @@
 
 import cloud from '@lafjs/cloud';
 // @ts-ignore — Laf runtime provides cloud.res but typings lag behind
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 // @ts-ignore
-import { checkRateLimitDistributed, createLogger } from './_shared/api-response';
+import { checkRateLimitDistributed, createLogger } from './_shared/api-response.js';
 
 const logger = createLogger('[ProxyAI-Stream]');
 

@@ -62,14 +62,14 @@ describe('工具函数测试', () => {
       if (!date) return '';
       const d = new Date(date);
       if (isNaN(d.getTime())) return '';
-      
+
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
       const hours = String(d.getHours()).padStart(2, '0');
       const minutes = String(d.getMinutes()).padStart(2, '0');
       const seconds = String(d.getSeconds()).padStart(2, '0');
-      
+
       return format
         .replace('YYYY', year)
         .replace('MM', month)
@@ -121,9 +121,9 @@ describe('工具函数测试', () => {
     const uniqueArray = (arr, key) => {
       if (!Array.isArray(arr)) return [];
       if (!key) return [...new Set(arr)];
-      
+
       const seen = new Set();
-      return arr.filter(item => {
+      return arr.filter((item) => {
         const value = item[key];
         if (seen.has(value)) return false;
         seen.add(value);
@@ -157,8 +157,8 @@ describe('工具函数测试', () => {
     const deepClone = (obj) => {
       if (obj === null || typeof obj !== 'object') return obj;
       if (obj instanceof Date) return new Date(obj.getTime());
-      if (obj instanceof Array) return obj.map(item => deepClone(item));
-      
+      if (obj instanceof Array) return obj.map((item) => deepClone(item));
+
       const cloned = {};
       for (const key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -220,13 +220,13 @@ describe('工具函数测试', () => {
       vi.useFakeTimers();
       const fn = vi.fn();
       const debouncedFn = debounce(fn, 100);
-      
+
       debouncedFn();
       expect(fn).not.toHaveBeenCalled();
-      
+
       vi.advanceTimersByTime(100);
       expect(fn).toHaveBeenCalledTimes(1);
-      
+
       vi.useRealTimers();
     });
 
@@ -234,15 +234,15 @@ describe('工具函数测试', () => {
       vi.useFakeTimers();
       const fn = vi.fn();
       const debouncedFn = debounce(fn, 100);
-      
+
       debouncedFn(1);
       debouncedFn(2);
       debouncedFn(3);
-      
+
       vi.advanceTimersByTime(100);
       expect(fn).toHaveBeenCalledTimes(1);
       expect(fn).toHaveBeenCalledWith(3);
-      
+
       vi.useRealTimers();
     });
   });
@@ -263,21 +263,21 @@ describe('工具函数测试', () => {
       vi.useFakeTimers();
       const fn = vi.fn();
       const throttledFn = throttle(fn, 100);
-      
+
       // 第一次调用应该立即执行
       throttledFn();
       expect(fn).toHaveBeenCalledTimes(1);
-      
+
       // 100ms内的调用应该被忽略
       vi.advanceTimersByTime(50);
       throttledFn();
       expect(fn).toHaveBeenCalledTimes(1);
-      
+
       // 100ms后的调用应该执行
       vi.advanceTimersByTime(50);
       throttledFn();
       expect(fn).toHaveBeenCalledTimes(2);
-      
+
       vi.useRealTimers();
     });
   });
@@ -313,7 +313,7 @@ describe('验证函数测试', () => {
     isEmail: (str) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str),
     isPhone: (str) => /^1[3-9]\d{9}$/.test(str),
     isUrl: (str) => /^https?:\/\/.+/.test(str),
-    isEmpty: (val) => val === null || val === undefined || val === '' || 
+    isEmpty: (val) => val === null || val === undefined || val === '' ||
       (Array.isArray(val) && val.length === 0) ||
       (typeof val === 'object' && Object.keys(val).length === 0)
   };

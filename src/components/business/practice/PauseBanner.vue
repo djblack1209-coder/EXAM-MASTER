@@ -8,14 +8,11 @@
   </view>
 </template>
 
-<script>
-export default {
-  name: 'PauseBanner',
-  props: {
-    visible: { type: Boolean, default: false }
-  },
-  emits: ['resume']
-};
+<script setup>
+defineProps({
+  visible: { type: Boolean, default: false }
+});
+defineEmits(['resume']);
 </script>
 
 <style lang="scss" scoped>
@@ -31,7 +28,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   /* gap: 12px; -- replaced for Android WebView compat */
-box-shadow: var(--apple-shadow-card);
+  box-shadow: var(--apple-shadow-card);
 }
 
 .pause-banner::before {

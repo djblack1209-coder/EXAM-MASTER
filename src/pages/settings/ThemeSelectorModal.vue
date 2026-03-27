@@ -39,35 +39,28 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
+import { toast } from '@/utils/toast.js';
 import { useThemeStore } from '@/stores';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'ThemeSelectorModal',
-  components: { BaseIcon },
-  props: {
-    visible: { type: Boolean, default: false }
-  },
-  emits: ['close'],
-  computed: {
-    currentTheme() {
-      const store = useThemeStore();
-      return store.themeType;
-    }
-  },
-  methods: {
-    handleSelect(type) {
-      const store = useThemeStore();
-      store.setThemeType(type);
-      this.$emit('close');
-      uni.showToast({
-        title: `已切换到${type === 'wise' ? 'Wise' : 'Bitget Wallet'}主题`,
-        icon: 'success'
-      });
-    }
-  }
-};
+defineProps({
+  visible: { type: Boolean, default: false }
+});
+const emit = defineEmits(['close']);
+
+const currentTheme = computed(() => {
+  const store = useThemeStore();
+  return store.themeType;
+});
+
+function handleSelect(type) {
+  const store = useThemeStore();
+  store.setThemeType(type);
+  emit('close');
+  toast.success(`已切换到${type === 'wise' ? 'Wise' : 'Bitget Wallet'}主题`);
+}
 </script>
 
 <style lang="scss" scoped>

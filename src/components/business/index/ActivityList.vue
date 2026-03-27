@@ -41,30 +41,23 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'ActivityList',
-  components: {
-    BaseIcon
-  },
-  props: {
-    isDark: { type: Boolean, default: false },
-    activities: { type: Array, default: () => [] }
-  },
-  emits: ['view-all'],
-  methods: {
-    getStatusText(status) {
-      const map = {
-        completed: '已完成',
-        'in-progress': '进行中',
-        pending: '待开始'
-      };
-      return map[status] || status;
-    }
-  }
-};
+defineProps({
+  isDark: { type: Boolean, default: false },
+  activities: { type: Array, default: () => [] }
+});
+defineEmits(['view-all']);
+
+function getStatusText(status) {
+  const map = {
+    completed: '已完成',
+    'in-progress': '进行中',
+    pending: '待开始'
+  };
+  return map[status] || status;
+}
 </script>
 
 <style lang="scss" scoped>

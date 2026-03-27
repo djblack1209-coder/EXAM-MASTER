@@ -70,299 +70,283 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { networkMonitor, NETWORK_QUALITY } from '@/utils/core/network-monitor.js';
 import { offlineQueue } from '@/utils/core/offline-queue.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'OfflineIndicator',
-  components: { BaseIcon },
-
-  props: {
-    // 是否自动显示
-    autoShow: {
-      type: Boolean,
-      default: true
-    },
-    // 显示位置
-    position: {
-      type: String,
-      default: 'top', // top, bottom
-      validator: (v) => ['top', 'bottom'].includes(v)
-    },
-    // 自动隐藏延迟（ms），0 表示不自动隐藏
-    autoHideDelay: {
-      type: Number,
-      default: 0
-    }
+const props = defineProps({
+  // 是否自动显示
+  autoShow: {
+    type: Boolean,
+    default: true
   },
-
-  data() {
-    return {
-      visible: false,
-      expanded: false,
-      networkStatus: null,
-      pendingCount: 0,
-      isSyncing: false,
-      offlineDuration: 0,
-      offlineTimer: null,
-      autoHideTimer: null,
-      unsubscribers: []
-    };
+  // 显示位置
+  position: {
+    type: String,
+    default: 'top', // top, bottom
+    validator: (v) => ['top', 'bottom'].includes(v)
   },
-
-  computed: {
-    isOffline() {
-      return this.networkStatus && !this.networkStatus.isConnected;
-    },
-
-    isWeakNetwork() {
-      return this.networkStatus && this.networkStatus.isWeakNetwork;
-    },
-
-    statusClass() {
-      if (this.isOffline) return 'offline-indicator--offline';
-      if (this.isWeakNetwork) return 'offline-indicator--weak';
-      if (this.isSyncing) return 'offline-indicator--syncing';
-      return 'offline-indicator--online';
-    },
-
-    statusText() {
-      if (this.isOffline) return '网络已断开';
-      if (this.isWeakNetwork) return '网络较慢';
-      if (this.isSyncing) return '正在同步...';
-      if (this.pendingCount > 0) return `${this.pendingCount} 条待同步`;
-      return '网络正常';
-    },
-
-    networkTypeText() {
-      if (!this.networkStatus) return '未知';
-
-      const typeMap = {
-        wifi: 'WiFi',
-        '5g': '5G',
-        '4g': '4G',
-        '3g': '3G',
-        '2g': '2G',
-        ethernet: '有线网络',
-        none: '无网络',
-        unknown: '未知'
-      };
-
-      return typeMap[this.networkStatus.networkType] || this.networkStatus.networkType;
-    },
-
-    qualityLevel() {
-      if (!this.networkStatus) return 0;
-
-      const qualityMap = {
-        [NETWORK_QUALITY.EXCELLENT]: 4,
-        [NETWORK_QUALITY.GOOD]: 3,
-        [NETWORK_QUALITY.FAIR]: 2,
-        [NETWORK_QUALITY.POOR]: 1,
-        [NETWORK_QUALITY.OFFLINE]: 0
-      };
-
-      return qualityMap[this.networkStatus.quality] || 0;
-    },
-
-    offlineDurationText() {
-      const seconds = Math.floor(this.offlineDuration / 1000);
-
-      if (seconds < 60) return `${seconds} 秒`;
-      if (seconds < 3600) return `${Math.floor(seconds / 60)} 分钟`;
-      return `${Math.floor(seconds / 3600)} 小时`;
-    }
-  },
-
-  mounted() {
-    this._init();
-  },
-
-  beforeUnmount() {
-    this._cleanup();
-  },
-
-  methods: {
-    _init() {
-      // 获取初始状态
-      this.networkStatus = networkMonitor.getStatus();
-      this._updatePendingCount();
-
-      // 监听网络变化
-      const unsubNetwork = networkMonitor.on('change', (status) => {
-        this.networkStatus = status;
-        this._updateVisibility();
-      });
-      this.unsubscribers.push(unsubNetwork);
-
-      // 监听离线事件
-      const unsubOffline = networkMonitor.on('offline', () => {
-        this._startOfflineTimer();
-        this._showIndicator();
-      });
-      this.unsubscribers.push(unsubOffline);
-
-      // 监听在线事件
-      const unsubOnline = networkMonitor.on('online', (status) => {
-        this._stopOfflineTimer();
-        this.offlineDuration = status.offlineDuration || 0;
-
-        // 在线后延迟隐藏
-        if (this.autoHideDelay > 0) {
-          this._scheduleAutoHide();
-        }
-      });
-      this.unsubscribers.push(unsubOnline);
-
-      // 监听弱网事件
-      const unsubWeak = networkMonitor.on('weakNetwork', () => {
-        this._showIndicator();
-      });
-      this.unsubscribers.push(unsubWeak);
-
-      // 监听离线队列变化
-      const unsubQueue = offlineQueue.addListener((event) => {
-        if (['enqueue', 'dequeue', 'processComplete', 'clear'].includes(event.type)) {
-          this._updatePendingCount();
-        }
-      });
-      this.unsubscribers.push(unsubQueue);
-
-      // 初始显示判断
-      this._updateVisibility();
-    },
-
-    _cleanup() {
-      // 取消所有订阅
-      this.unsubscribers.forEach((unsub) => unsub());
-      this.unsubscribers = [];
-
-      // 清除定时器
-      this._stopOfflineTimer();
-      this._clearAutoHideTimer();
-    },
-
-    _updateVisibility() {
-      if (!this.autoShow) return;
-
-      // 离线或弱网时显示
-      if (this.isOffline || this.isWeakNetwork) {
-        this._showIndicator();
-        return;
-      }
-
-      // 有待同步数据时显示
-      if (this.pendingCount > 0) {
-        this._showIndicator();
-        return;
-      }
-
-      // 其他情况隐藏
-      this.visible = false;
-    },
-
-    _showIndicator() {
-      this.visible = true;
-      this._clearAutoHideTimer();
-    },
-
-    _updatePendingCount() {
-      const status = offlineQueue.getStatus();
-      this.pendingCount = status.queueLength;
-      this._updateVisibility();
-    },
-
-    _startOfflineTimer() {
-      this._stopOfflineTimer();
-
-      const startTime = Date.now();
-      this.offlineTimer = setInterval(() => {
-        this.offlineDuration = Date.now() - startTime;
-      }, 1000);
-    },
-
-    _stopOfflineTimer() {
-      if (this.offlineTimer) {
-        clearInterval(this.offlineTimer);
-        this.offlineTimer = null;
-      }
-    },
-
-    _scheduleAutoHide() {
-      this._clearAutoHideTimer();
-
-      this.autoHideTimer = setTimeout(() => {
-        if (!this.isOffline && !this.isWeakNetwork && this.pendingCount === 0) {
-          this.visible = false;
-        }
-      }, this.autoHideDelay);
-    },
-
-    _clearAutoHideTimer() {
-      if (this.autoHideTimer) {
-        clearTimeout(this.autoHideTimer);
-        this.autoHideTimer = null;
-      }
-    },
-
-    toggleExpand() {
-      this.expanded = !this.expanded;
-    },
-
-    async handleSync() {
-      if (this.isSyncing || this.isOffline) return;
-
-      this.isSyncing = true;
-
-      try {
-        const result = await offlineQueue.processQueue();
-
-        if (result.success) {
-          uni.showToast({
-            title: `同步完成：${result.processed} 条`,
-            icon: 'success'
-          });
-        }
-      } catch (error) {
-        logger.error('[OfflineIndicator] 同步失败:', error);
-        uni.showToast({
-          title: '同步失败，请稍后重试',
-          icon: 'none'
-        });
-      } finally {
-        this.isSyncing = false;
-        this._updatePendingCount();
-      }
-    },
-
-    handleDismiss() {
-      this.visible = false;
-      this.expanded = false;
-
-      // 5分钟后重新检查
-      setTimeout(
-        () => {
-          this._updateVisibility();
-        },
-        5 * 60 * 1000
-      );
-    },
-
-    // 公开方法：手动显示
-    show() {
-      this.visible = true;
-    },
-
-    // 公开方法：手动隐藏
-    hide() {
-      this.visible = false;
-      this.expanded = false;
-    }
+  // 自动隐藏延迟（ms），0 表示不自动隐藏
+  autoHideDelay: {
+    type: Number,
+    default: 0
   }
-};
+});
+
+const visible = ref(false);
+const expanded = ref(false);
+const networkStatus = ref(null);
+const pendingCount = ref(0);
+const isSyncing = ref(false);
+const offlineDuration = ref(0);
+let offlineTimer = null;
+let autoHideTimer = null;
+let unsubscribers = [];
+
+const isOffline = computed(() => {
+  return networkStatus.value && !networkStatus.value.isConnected;
+});
+
+const isWeakNetwork = computed(() => {
+  return networkStatus.value && networkStatus.value.isWeakNetwork;
+});
+
+const statusClass = computed(() => {
+  if (isOffline.value) return 'offline-indicator--offline';
+  if (isWeakNetwork.value) return 'offline-indicator--weak';
+  if (isSyncing.value) return 'offline-indicator--syncing';
+  return 'offline-indicator--online';
+});
+
+const statusText = computed(() => {
+  if (isOffline.value) return '网络已断开';
+  if (isWeakNetwork.value) return '网络较慢';
+  if (isSyncing.value) return '正在同步...';
+  if (pendingCount.value > 0) return `${pendingCount.value} 条待同步`;
+  return '网络正常';
+});
+
+const networkTypeText = computed(() => {
+  if (!networkStatus.value) return '未知';
+
+  const typeMap = {
+    wifi: 'WiFi',
+    '5g': '5G',
+    '4g': '4G',
+    '3g': '3G',
+    '2g': '2G',
+    ethernet: '有线网络',
+    none: '无网络',
+    unknown: '未知'
+  };
+
+  return typeMap[networkStatus.value.networkType] || networkStatus.value.networkType;
+});
+
+const qualityLevel = computed(() => {
+  if (!networkStatus.value) return 0;
+
+  const qualityMap = {
+    [NETWORK_QUALITY.EXCELLENT]: 4,
+    [NETWORK_QUALITY.GOOD]: 3,
+    [NETWORK_QUALITY.FAIR]: 2,
+    [NETWORK_QUALITY.POOR]: 1,
+    [NETWORK_QUALITY.OFFLINE]: 0
+  };
+
+  return qualityMap[networkStatus.value.quality] || 0;
+});
+
+const offlineDurationText = computed(() => {
+  const seconds = Math.floor(offlineDuration.value / 1000);
+
+  if (seconds < 60) return `${seconds} 秒`;
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} 分钟`;
+  return `${Math.floor(seconds / 3600)} 小时`;
+});
+
+onMounted(() => {
+  _init();
+});
+
+onBeforeUnmount(() => {
+  _cleanup();
+});
+
+function _init() {
+  // 获取初始状态
+  networkStatus.value = networkMonitor.getStatus();
+  _updatePendingCount();
+
+  // 监听网络变化
+  const unsubNetwork = networkMonitor.on('change', (status) => {
+    networkStatus.value = status;
+    _updateVisibility();
+  });
+  unsubscribers.push(unsubNetwork);
+
+  // 监听离线事件
+  const unsubOffline = networkMonitor.on('offline', () => {
+    _startOfflineTimer();
+    _showIndicator();
+  });
+  unsubscribers.push(unsubOffline);
+
+  // 监听在线事件
+  const unsubOnline = networkMonitor.on('online', (status) => {
+    _stopOfflineTimer();
+    offlineDuration.value = status.offlineDuration || 0;
+
+    // 在线后延迟隐藏
+    if (props.autoHideDelay > 0) {
+      _scheduleAutoHide();
+    }
+  });
+  unsubscribers.push(unsubOnline);
+
+  // 监听弱网事件
+  const unsubWeak = networkMonitor.on('weakNetwork', () => {
+    _showIndicator();
+  });
+  unsubscribers.push(unsubWeak);
+
+  // 监听离线队列变化
+  const unsubQueue = offlineQueue.addListener((event) => {
+    if (['enqueue', 'dequeue', 'processComplete', 'clear'].includes(event.type)) {
+      _updatePendingCount();
+    }
+  });
+  unsubscribers.push(unsubQueue);
+
+  // 初始显示判断
+  _updateVisibility();
+}
+
+function _cleanup() {
+  // 取消所有订阅
+  unsubscribers.forEach((unsub) => unsub());
+  unsubscribers = [];
+
+  // 清除定时器
+  _stopOfflineTimer();
+  _clearAutoHideTimer();
+}
+
+function _updateVisibility() {
+  if (!props.autoShow) return;
+
+  // 离线或弱网时显示
+  if (isOffline.value || isWeakNetwork.value) {
+    _showIndicator();
+    return;
+  }
+
+  // 有待同步数据时显示
+  if (pendingCount.value > 0) {
+    _showIndicator();
+    return;
+  }
+
+  // 其他情况隐藏
+  visible.value = false;
+}
+
+function _showIndicator() {
+  visible.value = true;
+  _clearAutoHideTimer();
+}
+
+function _updatePendingCount() {
+  const status = offlineQueue.getStatus();
+  pendingCount.value = status.queueLength;
+  _updateVisibility();
+}
+
+function _startOfflineTimer() {
+  _stopOfflineTimer();
+
+  const startTime = Date.now();
+  offlineTimer = setInterval(() => {
+    offlineDuration.value = Date.now() - startTime;
+  }, 1000);
+}
+
+function _stopOfflineTimer() {
+  if (offlineTimer) {
+    clearInterval(offlineTimer);
+    offlineTimer = null;
+  }
+}
+
+function _scheduleAutoHide() {
+  _clearAutoHideTimer();
+
+  autoHideTimer = setTimeout(() => {
+    if (!isOffline.value && !isWeakNetwork.value && pendingCount.value === 0) {
+      visible.value = false;
+    }
+  }, props.autoHideDelay);
+}
+
+function _clearAutoHideTimer() {
+  if (autoHideTimer) {
+    clearTimeout(autoHideTimer);
+    autoHideTimer = null;
+  }
+}
+
+function toggleExpand() {
+  expanded.value = !expanded.value;
+}
+
+async function handleSync() {
+  if (isSyncing.value || isOffline.value) return;
+
+  isSyncing.value = true;
+
+  try {
+    const result = await offlineQueue.processQueue();
+
+    if (result.success) {
+      toast.success(`同步完成：${result.processed} 条`);
+    }
+  } catch (error) {
+    logger.error('[OfflineIndicator] 同步失败:', error);
+    toast.info('同步失败，请稍后重试');
+  } finally {
+    isSyncing.value = false;
+    _updatePendingCount();
+  }
+}
+
+function handleDismiss() {
+  visible.value = false;
+  expanded.value = false;
+
+  // 5分钟后重新检查
+  setTimeout(
+    () => {
+      _updateVisibility();
+    },
+    5 * 60 * 1000
+  );
+}
+
+// 公开方法：手动显示/隐藏
+function show() {
+  visible.value = true;
+}
+
+function hide() {
+  visible.value = false;
+  expanded.value = false;
+}
+
+defineExpose({ show, hide });
 </script>
 
 <style lang="scss" scoped>

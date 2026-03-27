@@ -49,25 +49,21 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'AchievementModal',
-  components: { BaseIcon },
-  props: {
-    visible: { type: Boolean, default: false },
-    unlockedAchievements: { type: Array, default: () => [] },
-    allAchievements: { type: Array, default: () => [] }
-  },
-  emits: ['close'],
-  computed: {
-    lockedList() {
-      const unlockedIds = new Set(this.unlockedAchievements.map((a) => a.id));
-      return this.allAchievements.filter((a) => !unlockedIds.has(a.id));
-    }
-  }
-};
+const props = defineProps({
+  visible: { type: Boolean, default: false },
+  unlockedAchievements: { type: Array, default: () => [] },
+  allAchievements: { type: Array, default: () => [] }
+});
+defineEmits(['close']);
+
+const lockedList = computed(() => {
+  const unlockedIds = new Set(props.unlockedAchievements.map((a) => a.id));
+  return props.allAchievements.filter((a) => !unlockedIds.has(a.id));
+});
 </script>
 
 <style lang="scss" scoped>

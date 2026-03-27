@@ -7,10 +7,11 @@ import { logger } from '@/utils/logger.js';
 import { todoStorePatch } from '@/utils/helpers/todo-store-patch.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import { toast } from '@/utils/toast.js';
 
-function _requireAuth(action) {
+function _requireAuth(_action) {
   if (isUserLoggedIn()) return true;
-  uni.showToast({ title: '请先登录后' + action, icon: 'none' });
+  toast.info('请先登录后');
   return false;
 }
 
@@ -40,7 +41,7 @@ export function useTodo(todoStore) {
       }
     } catch (error) {
       logger.error('[useTodo] Toggle failed:', error);
-      uni.showToast({ title: '操作失败，请重试', icon: 'none' });
+      toast.info('操作失败，请重试');
     }
   }
 

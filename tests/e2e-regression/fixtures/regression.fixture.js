@@ -49,17 +49,25 @@ class AppDriver {
 
   async setLoggedInSession() {
     await this.page.addInitScript(() => {
-      localStorage.setItem('EXAM_TOKEN', 'e2e_mock_token');
-      localStorage.setItem('EXAM_USER_ID', 'e2e_user_01');
-      localStorage.setItem(
-        'EXAM_USER_INFO',
-        JSON.stringify({
-          _id: 'e2e_user_01',
-          userId: 'e2e_user_01',
-          nickname: '自动化回归账号',
-          avatar: '/static/images/default-avatar.png'
-        })
-      );
+      const prefix = '__exam_storage__:';
+      const token = 'e2e_mock_token';
+      const userId = 'e2e_user_01';
+      const userInfo = {
+        _id: 'e2e_user_01',
+        userId: 'e2e_user_01',
+        nickname: '自动化回归账号',
+        avatar: '/static/images/default-avatar.png'
+      };
+
+      // 原始键（uni-app 直接读取）
+      localStorage.setItem('EXAM_TOKEN', token);
+      localStorage.setItem('EXAM_USER_ID', userId);
+      localStorage.setItem('EXAM_USER_INFO', JSON.stringify(userInfo));
+
+      // storageService 前缀键（loginGuard.getUserId 读取）
+      localStorage.setItem(`${prefix}EXAM_TOKEN`, JSON.stringify({ value: token }));
+      localStorage.setItem(`${prefix}EXAM_USER_ID`, JSON.stringify({ value: userId }));
+      localStorage.setItem(`${prefix}userInfo`, JSON.stringify({ value: userInfo }));
     });
   }
 

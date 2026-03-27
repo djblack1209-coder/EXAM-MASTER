@@ -272,7 +272,7 @@ test.describe('A2-长尾页面深度回归', () => {
     await expectAnyTextVisible(page, ['文件管理', 'E2E-资料.pdf', 'E2E-总结.docx']);
     await clickVisible(page.getByText('查看', { exact: false }).first());
 
-    let uiSpy = await readUiSpy(page);
+    const uiSpy = await readUiSpy(page);
     expect(uiSpy.modals.at(-1)?.title).toContain('文件信息');
     expect(uiSpy.modals.at(-1)?.content).toContain('E2E-资料.pdf');
 
@@ -296,7 +296,7 @@ test.describe('A2-长尾页面深度回归', () => {
 
     await clickVisible(page.getByText('添加', { exact: false }).first());
     await page.waitForTimeout(600);
-    let uiSpy = await readUiSpy(page);
+    const uiSpy = await readUiSpy(page);
     expect(uiSpy.toasts.some((item) => /好友请求已发送/.test(item.title))).toBe(true);
 
     await clickVisible(page.getByText('回归好友A', { exact: false }).first());

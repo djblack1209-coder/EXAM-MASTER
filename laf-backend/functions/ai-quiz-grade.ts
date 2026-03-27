@@ -11,7 +11,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   success,
   badRequest,
@@ -20,9 +20,9 @@ import {
   generateRequestId,
   checkRateLimitDistributed,
   createLogger
-} from './_shared/api-response';
-import { AiGradeResult } from './_shared/agents/agent-types';
-import { gradeAnswer } from './_shared/agents/examiner-agent';
+} from './_shared/api-response.js';
+import { AiGradeResult } from './_shared/agents/agent-types.js';
+import { gradeAnswer } from './_shared/agents/examiner-agent.js';
 
 const db = cloud.database();
 const logger = createLogger('[AiQuizGrade]');

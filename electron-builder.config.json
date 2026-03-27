@@ -1,0 +1,53 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "com.exammaster.app",
+  "productName": "EXAM MASTER",
+  "copyright": "Copyright © 2026 Exam-Master Team",
+  "directories": {
+    "output": "release"
+  },
+  "files": ["dist/build/h5/**/*", "electron/**/*"],
+  "extraMetadata": {
+    "main": "electron/main.cjs"
+  },
+  "mac": {
+    "category": "public.app-category.education",
+    "icon": "electron/icons/icon.icns",
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["universal"]
+      }
+    ],
+    "darkModeSupport": true,
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false
+  },
+  "dmg": {
+    "title": "EXAM MASTER",
+    "artifactName": "EXAM-MASTER-${version}-mac.${ext}"
+  },
+  "win": {
+    "icon": "electron/icons/icon.ico",
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": false,
+    "artifactName": "EXAM-MASTER-${version}-win-setup.${ext}",
+    "shortcutName": "EXAM MASTER",
+    "uninstallDisplayName": "EXAM MASTER"
+  },
+  "linux": {
+    "icon": "electron/icons",
+    "target": ["AppImage"],
+    "category": "Education",
+    "artifactName": "EXAM-MASTER-${version}-linux.${ext}"
+  }
+}

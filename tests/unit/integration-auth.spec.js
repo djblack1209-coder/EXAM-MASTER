@@ -22,6 +22,49 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
     global.__mockStorage = {};
     vi.clearAllMocks();
 
+    // 重置 store 的"只注册一次"标志位（使事件处理器在新的 pinia 实例上重新注册）
+    delete global.uni.__profileStoreLogoutBound__;
+    delete global.uni.__profileStoreRestoreBound__;
+    delete global.uni.__profileStoreUserdataBound__;
+    delete global.uni.__userStoreLogoutBound__;
+
+    // 让 uni 事件总线实际工作（store 内部依赖 $emit/$on 通信）
+    const eventBus = {};
+    global.uni.$on = vi.fn((event, handler) => {
+      if (!eventBus[event]) eventBus[event] = [];
+      eventBus[event].push(handler);
+    });
+    global.uni.$emit = vi.fn((event, ...args) => {
+      (eventBus[event] || []).forEach((fn) => fn(...args));
+    });
+    global.uni.$off = vi.fn((event, handler) => {
+      if (eventBus[event]) {
+        eventBus[event] = handler ? eventBus[event].filter((fn) => fn !== handler) : [];
+      }
+    });
+    global.uni.$once = vi.fn((event, handler) => {
+      const wrapper = (...args) => {
+        handler(...args);
+        global.uni.$off(event, wrapper);
+      };
+      global.uni.$on(event, wrapper);
+    });
+    global.uni.$emit = vi.fn((event, ...args) => {
+      (eventBus[event] || []).forEach((fn) => fn(...args));
+    });
+    global.uni.$off = vi.fn((event, handler) => {
+      if (eventBus[event]) {
+        eventBus[event] = handler ? eventBus[event].filter((fn) => fn !== handler) : [];
+      }
+    });
+    global.uni.$once = vi.fn((event, handler) => {
+      const wrapper = (...args) => {
+        handler(...args);
+        global.uni.$off(event, wrapper);
+      };
+      global.uni.$on(event, wrapper);
+    });
+
     // Mock uni.login
     global.uni.login = vi.fn(({ success }) => {
       success?.({ code: 'mock_wx_code_123' });

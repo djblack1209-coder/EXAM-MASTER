@@ -11,6 +11,7 @@ import { ref } from 'vue';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
+import { toast } from '@/utils/toast.js';
 
 /**
  * @param {Object} deps - 外部响应式依赖
@@ -35,7 +36,7 @@ export function usePracticeNavigation(deps = {}) {
       () => {
         if (!deps.hasBank?.value) {
           isNavigating.value = false;
-          return uni.showToast({ title: '请先导入题库', icon: 'none' });
+          return toast.info('请先导入题库');
         }
         analytics.track('button_click', {
           buttonName: '开始刷题',
@@ -64,7 +65,7 @@ export function usePracticeNavigation(deps = {}) {
       () => {
         if (!deps.hasBank?.value) {
           isNavigating.value = false;
-          return uni.showToast({ title: '请先导入题库', icon: 'none' });
+          return toast.info('请先导入题库');
         }
         safeNavigateTo('/pages/practice-sub/pk-battle', {
           complete: () => _resetNav()
@@ -84,7 +85,7 @@ export function usePracticeNavigation(deps = {}) {
     requireLogin(
       () => {
         if (deps.mistakeCount?.value === 0) {
-          uni.showToast({ title: '暂无错题', icon: 'none' });
+          toast.info('暂无错题');
           return;
         }
         safeNavigateTo('/pages/mistake/index?mode=review');

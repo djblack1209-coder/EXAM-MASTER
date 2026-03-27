@@ -69,18 +69,22 @@ vi.mock('../../laf-backend/node_modules/@lafjs/cloud/dist/index.js', () => ({
   }
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  createLogger: () => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  }),
-  checkRateLimitDistributed: vi.fn(async () => ({
-    allowed: true,
-    remaining: 9,
-    resetAt: Date.now() + 60000,
-    source: 'memory'
-  }))
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  return createApiResponseMock();
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    // 从 headers.authorization 解析 token
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    // 从 login mock 的 verifyJWT 获取 userId
+    const payload = mocked.verifyJWT(token);
+    if (!payload) return { code: 401, success: false, message: 'token无效' };
+    return { userId: payload.userId };
+  },
+  isAuthError: (result) => result?.code === 401
 }));
 
 import accountDeleteHandler from '../../laf-backend/functions/account-delete';

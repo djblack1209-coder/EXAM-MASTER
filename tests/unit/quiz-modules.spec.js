@@ -118,7 +118,7 @@ describe('quiz-mistake-handler — 特征测试', () => {
 
       expect(uni.showLoading).toHaveBeenCalledWith({
         title: '保存错题中...',
-        mask: false
+        mask: true
       });
       expect(storageService.saveMistake).toHaveBeenCalledTimes(1);
 

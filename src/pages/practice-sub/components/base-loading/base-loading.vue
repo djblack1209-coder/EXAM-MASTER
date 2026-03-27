@@ -7,14 +7,12 @@
   </view>
 </template>
 
-<script>
-export default {
-  props: {
-    visible: { type: Boolean, default: false },
-    text: { type: String, default: '' },
-    isDark: { type: Boolean, default: false }
-  }
-};
+<script setup>
+defineProps({
+  visible: { type: Boolean, default: false },
+  text: { type: String, default: '' },
+  isDark: { type: Boolean, default: false }
+});
 </script>
 
 <style scoped>

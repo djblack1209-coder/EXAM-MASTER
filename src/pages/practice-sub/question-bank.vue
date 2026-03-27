@@ -108,9 +108,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-import { lafService } from '@/services/lafService';
+import { useReviewStore } from '@/stores/modules/review.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
+import { toast } from '@/utils/toast.js';
+
+const reviewStore = useReviewStore();
 
 const statusBarHeight = ref(getStatusBarHeight());
 const loading = ref(false);
@@ -147,13 +150,13 @@ function goBack() {
 async function loadStats() {
   loading.value = true;
   try {
-    const res = await lafService.getQuestionBankStats();
-    if (res?.code === 0 && res.data) {
+    const res = await reviewStore.fetchQuestionBankStats();
+    if (res?.success && res.data) {
       categories.value = res.data.categories || [];
       totalCount.value = res.data.total || 0;
     }
   } catch (_e) {
-    /* silent */
+    toast.error('题库加载失败，请检查网络');
   }
   loading.value = false;
 }
@@ -180,8 +183,8 @@ async function loadQuestions() {
     };
     if (selectedDifficulty.value) params.difficulty = selectedDifficulty.value;
 
-    const res = await lafService.browseQuestions(params);
-    if (res?.code === 0 && res.data) {
+    const res = await reviewStore.browseQuestions(params);
+    if (res?.success && res.data) {
       if (currentPage.value === 1) {
         questionList.value = res.data.list || [];
       } else {
@@ -190,7 +193,7 @@ async function loadQuestions() {
       hasMore.value = res.data.hasMore || false;
     }
   } catch (_e) {
-    /* silent */
+    toast.error('题目加载失败，请检查网络');
   }
   loading.value = false;
 }
@@ -207,8 +210,8 @@ async function startPractice() {
     const params = { category: selectedCategory.value, count: 10 };
     if (selectedDifficulty.value) params.difficulty = selectedDifficulty.value;
 
-    const res = await lafService.getQuestionBankRandom(params);
-    if (res?.code === 0 && res.data && res.data.length > 0) {
+    const res = await reviewStore.fetchQuestionBankRandom(params);
+    if (res?.success && res.data && res.data.length > 0) {
       // 将题目格式化为 v30_bank 兼容格式并存入临时练习
       const formatted = res.data.map((q, i) => ({
         id: q._id || `qb_${i}`,
@@ -230,10 +233,10 @@ async function startPractice() {
         url: '/pages/practice-sub/do-quiz?source=question-bank&mode=normal'
       });
     } else {
-      uni.showToast({ title: '该分类暂无题目', icon: 'none' });
+      toast.info('该分类暂无题目');
     }
   } catch (_e) {
-    uni.showToast({ title: '加载失败，请重试', icon: 'none' });
+    toast.info('加载失败，请重试');
   }
   loading.value = false;
 }

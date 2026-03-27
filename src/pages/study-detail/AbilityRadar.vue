@@ -64,163 +64,156 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, watch } from 'vue';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
-export default {
-  name: 'AbilityRadar',
-  props: {
-    /** 外部传入的知识点掌握度数据，格式 { [id]: { mastery, practiceCount, correctCount } } */
-    masteryData: { type: Object, default: null }
-  },
-  data() {
+const props = defineProps({
+  /** 外部传入的知识点掌握度数据，格式 { [id]: { mastery, practiceCount, correctCount } } */
+  masteryData: { type: Object, default: null }
+});
+
+const activeRange = ref('all');
+const ranges = [
+  { key: 'all', label: '全部' },
+  { key: 'week', label: '本周' },
+  { key: 'month', label: '本月' }
+];
+const rawDimensions = ref([]);
+
+const dimensions = computed(() => {
+  // 取 top 6 维度（雷达图最佳展示数量）
+  return rawDimensions.value.slice(0, 6).map((d) => ({
+    ...d,
+    score: Math.round(Math.max(0, Math.min(100, d.score)))
+  }));
+});
+
+/** 雷达图中心和半径 */
+const center = computed(() => ({ x: 100, y: 100 }));
+const radius = computed(() => 80);
+
+/** SVG polygon 点位字符串 */
+const polygonPoints = computed(() => {
+  return dataPoints.value.map((p) => `${p.x},${p.y}`).join(' ');
+});
+
+/** 各维度在雷达图上的坐标 */
+const dataPoints = computed(() => {
+  const n = dimensions.value.length;
+  if (n === 0) return [];
+  return dimensions.value.map((dim, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const r = (dim.score / 100) * radius.value;
     return {
-      activeRange: 'all',
-      ranges: [
-        { key: 'all', label: '全部' },
-        { key: 'week', label: '本周' },
-        { key: 'month', label: '本月' }
-      ],
-      rawDimensions: []
+      x: Math.round(center.value.x + r * Math.cos(angle)),
+      y: Math.round(center.value.y + r * Math.sin(angle))
     };
+  });
+});
+
+watch(
+  () => props.masteryData,
+  () => {
+    loadData();
   },
-  computed: {
-    dimensions() {
-      // 取 top 6 维度（雷达图最佳展示数量）
-      return this.rawDimensions.slice(0, 6).map((d) => ({
-        ...d,
-        score: Math.round(Math.max(0, Math.min(100, d.score)))
-      }));
-    },
-    /** 雷达图中心和半径 */
-    center() {
-      return { x: 100, y: 100 };
-    },
-    radius() {
-      return 80;
-    },
-    /** SVG polygon 点位字符串 */
-    polygonPoints() {
-      return this.dataPoints.map((p) => `${p.x},${p.y}`).join(' ');
-    },
-    /** 各维度在雷达图上的坐标 */
-    dataPoints() {
-      const n = this.dimensions.length;
-      if (n === 0) return [];
-      return this.dimensions.map((dim, i) => {
-        const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
-        const r = (dim.score / 100) * this.radius;
-        return {
-          x: Math.round(this.center.x + r * Math.cos(angle)),
-          y: Math.round(this.center.y + r * Math.sin(angle))
-        };
-      });
+  { immediate: true }
+);
+
+watch(activeRange, () => {
+  loadData();
+});
+
+function loadData() {
+  try {
+    const source = props.masteryData || _loadFromStorage();
+    if (!source || Object.keys(source).length === 0) {
+      rawDimensions.value = _getDefaultDimensions();
+      return;
     }
-  },
-  watch: {
-    masteryData: {
-      handler() {
-        this.loadData();
-      },
-      immediate: true
-    },
-    activeRange() {
-      this.loadData();
+
+    rawDimensions.value = Object.entries(source)
+      .filter(([, v]) => v && (v.practiceCount > 0 || v.accessCount > 0))
+      .map(([id, v]) => ({
+        id,
+        name: _formatName(id),
+        score: v.mastery != null ? v.mastery : (v.correctCount / Math.max(1, v.practiceCount)) * 100,
+        practiceCount: v.practiceCount || 0
+      }))
+      .sort((a, b) => b.practiceCount - a.practiceCount);
+
+    if (rawDimensions.value.length === 0) {
+      rawDimensions.value = _getDefaultDimensions();
     }
-  },
-  methods: {
-    loadData() {
-      try {
-        const source = this.masteryData || this._loadFromStorage();
-        if (!source || Object.keys(source).length === 0) {
-          this.rawDimensions = this._getDefaultDimensions();
-          return;
-        }
-
-        this.rawDimensions = Object.entries(source)
-          .filter(([, v]) => v && (v.practiceCount > 0 || v.accessCount > 0))
-          .map(([id, v]) => ({
-            id,
-            name: this._formatName(id),
-            score: v.mastery != null ? v.mastery : (v.correctCount / Math.max(1, v.practiceCount)) * 100,
-            practiceCount: v.practiceCount || 0
-          }))
-          .sort((a, b) => b.practiceCount - a.practiceCount);
-
-        if (this.rawDimensions.length === 0) {
-          this.rawDimensions = this._getDefaultDimensions();
-        }
-      } catch (e) {
-        logger.warn('[AbilityRadar] Load error:', e);
-        this.rawDimensions = this._getDefaultDimensions();
-      }
-    },
-
-    _loadFromStorage() {
-      return storageService.get('knowledge_mastery', null);
-    },
-
-    _formatName(id) {
-      // 截断过长的知识点名称
-      const name = String(id).replace(/_/g, ' ');
-      return name.length > 5 ? name.slice(0, 5) + '…' : name;
-    },
-
-    _getDefaultDimensions() {
-      return [
-        { id: 'none1', name: '暂无数据', score: 0, practiceCount: 0 },
-        { id: 'none2', name: '开始练习', score: 0, practiceCount: 0 },
-        { id: 'none3', name: '解锁更多', score: 0, practiceCount: 0 }
-      ];
-    },
-
-    /** 同心多边形网格样式 */
-    gridStyle(level) {
-      const scale = level / 5;
-      const size = this.radius * 2 * scale;
-      return {
-        width: size + 'px',
-        height: size + 'px',
-        left: this.center.x - size / 2 + 'px',
-        top: this.center.y - size / 2 + 'px'
-      };
-    },
-
-    /** 轴线样式 */
-    axisStyle(index) {
-      const n = this.dimensions.length;
-      const angle = (360 / n) * index - 90;
-      return {
-        transform: `rotate(${angle}deg)`,
-        width: this.radius + 'px',
-        left: this.center.x + 'px',
-        top: this.center.y + 'px'
-      };
-    },
-
-    /** 标签位置 */
-    labelStyle(index) {
-      const n = this.dimensions.length;
-      const angle = (Math.PI * 2 * index) / n - Math.PI / 2;
-      const labelR = this.radius + 18;
-      const x = this.center.x + labelR * Math.cos(angle);
-      const y = this.center.y + labelR * Math.sin(angle);
-      return {
-        left: x + 'px',
-        top: y + 'px'
-      };
-    },
-
-    /** 进度条颜色 */
-    barColor(score) {
-      if (score >= 80) return '#4CAF50';
-      if (score >= 60) return '#FF9800';
-      if (score >= 40) return '#FF5722';
-      return '#F44336';
-    }
+  } catch (e) {
+    logger.warn('[AbilityRadar] Load error:', e);
+    rawDimensions.value = _getDefaultDimensions();
   }
-};
+}
+
+function _loadFromStorage() {
+  return storageService.get('knowledge_mastery', null);
+}
+
+function _formatName(id) {
+  // 截断过长的知识点名称
+  const name = String(id).replace(/_/g, ' ');
+  return name.length > 5 ? name.slice(0, 5) + '…' : name;
+}
+
+function _getDefaultDimensions() {
+  return [
+    { id: 'none1', name: '暂无数据', score: 0, practiceCount: 0 },
+    { id: 'none2', name: '开始练习', score: 0, practiceCount: 0 },
+    { id: 'none3', name: '解锁更多', score: 0, practiceCount: 0 }
+  ];
+}
+
+/** 同心多边形网格样式 */
+function gridStyle(level) {
+  const scale = level / 5;
+  const size = radius.value * 2 * scale;
+  return {
+    width: size + 'px',
+    height: size + 'px',
+    left: center.value.x - size / 2 + 'px',
+    top: center.value.y - size / 2 + 'px'
+  };
+}
+
+/** 轴线样式 */
+function axisStyle(index) {
+  const n = dimensions.value.length;
+  const angle = (360 / n) * index - 90;
+  return {
+    transform: `rotate(${angle}deg)`,
+    width: radius.value + 'px',
+    left: center.value.x + 'px',
+    top: center.value.y + 'px'
+  };
+}
+
+/** 标签位置 */
+function labelStyle(index) {
+  const n = dimensions.value.length;
+  const angle = (Math.PI * 2 * index) / n - Math.PI / 2;
+  const labelR = radius.value + 18;
+  const x = center.value.x + labelR * Math.cos(angle);
+  const y = center.value.y + labelR * Math.sin(angle);
+  return {
+    left: x + 'px',
+    top: y + 'px'
+  };
+}
+
+/** 进度条颜色 */
+function barColor(score) {
+  if (score >= 80) return '#4CAF50';
+  if (score >= 60) return '#FF9800';
+  if (score >= 40) return '#FF5722';
+  return '#F44336';
+}
 </script>
 
 <style scoped lang="scss">

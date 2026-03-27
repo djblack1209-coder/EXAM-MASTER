@@ -9,6 +9,7 @@ import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { logger } from '@/utils/logger.js';
 import { DEMO_QUESTIONS } from '@/config/home-data.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
+import { toast } from '@/utils/toast.js';
 
 export function useNavigation() {
   const isNavigating = ref(false);
@@ -97,16 +98,16 @@ export function useNavigation() {
   }
 
   function handleQuickStart() {
-    uni.showLoading({ title: '加载示例题库...' });
+    toast.loading('加载示例题库...');
     try {
       storageService.save('v30_bank', DEMO_QUESTIONS);
     } catch (_e) {
-      uni.hideLoading();
-      uni.showToast({ title: '加载失败，请重试', icon: 'none' });
+      toast.hide();
+      toast.info('加载失败，请重试');
       return;
     }
-    uni.hideLoading();
-    uni.showToast({ title: '示例题库已加载', icon: 'success' });
+    toast.hide();
+    toast.success('示例题库已加载');
     setTimeout(() => {
       uni.switchTab({ url: '/pages/practice/index', fail: () => uni.reLaunch({ url: '/pages/practice/index' }) });
     }, 1500);

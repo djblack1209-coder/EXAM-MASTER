@@ -221,6 +221,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { lafService } from '@/services/lafService.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 // ✅ 懒加载：invite-deep-link 478行，仅在用户分享时才需要（改为方法内动态导入）
@@ -748,11 +749,7 @@ export default {
       this.opponentFound = true;
       this.matchingStatusText = '已为您匹配智能对手';
 
-      uni.showToast({
-        title: '已转为智能对战',
-        icon: 'none',
-        duration: 2000
-      });
+      toast.info('已转为智能对战');
 
       // 1.5秒后进入对战
       setTimeout(() => {
@@ -769,10 +766,7 @@ export default {
 
       if (this.questions.length === 0) {
         logger.error('[PK] 题目为空，无法开始对战');
-        uni.showToast({
-          title: '题目加载失败',
-          icon: 'none'
-        });
+        toast.info('题目加载失败');
         return;
       }
 
@@ -838,11 +832,7 @@ export default {
       }
 
       // 显示超时提示
-      uni.showToast({
-        title: '答题超时',
-        icon: 'none',
-        duration: 1500
-      });
+      toast.info('答题超时', 1500);
 
       // 1.5秒后进入下一题
       setTimeout(() => {
@@ -971,10 +961,7 @@ export default {
         logger.error('[PK] 题目数据不完整，无法答题:', {
           currentQuestion: this.currentQuestion
         });
-        uni.showToast({
-          title: '题目加载中，请稍候',
-          icon: 'none'
-        });
+        toast.info('题目加载中，请稍候');
         return;
       }
 
@@ -1053,7 +1040,7 @@ export default {
       // uploadScoreToRank 内部已有锁机制，防止重复上传
       this.uploadScoreToRank().catch((err) => {
         logger.error('[PK] 上传分数失败（静默）:', err);
-        uni.showToast({ title: '排行榜同步失败，请稍后重试', icon: 'none' });
+        toast.info('排行榜同步失败，请稍后重试');
       });
 
       // 验证结算页状态
@@ -1064,7 +1051,7 @@ export default {
     async fetchAISummary() {
       // 设置 Loading 状态
       this.aiSummary = '智能正在分析战局...';
-      uni.showLoading({ title: '智能分析中...', mask: false });
+      toast.loading('智能分析中...');
 
       const correctCount = Math.floor(this.myScore / 20);
       const accuracy = this.questions.length > 0 ? Math.round((correctCount / this.questions.length) * 100) : 0;
@@ -1129,7 +1116,7 @@ export default {
                 ];
         this.aiSummary = fallback[Math.floor(Math.random() * fallback.length)];
       } finally {
-        uni.hideLoading();
+        toast.hide();
       }
     },
     goHome() {
@@ -1141,7 +1128,7 @@ export default {
       uni.switchTab({
         url: '/pages/index/index',
         fail: () => {
-          uni.showToast({ title: '跳转失败', icon: 'none' });
+          toast.info('跳转失败');
         },
         complete: () => {
           setTimeout(() => {
@@ -1340,20 +1327,13 @@ export default {
         uni.setClipboardData({
           data: shareInfo.deepLink,
           success: () => {
-            uni.showToast({
-              title: 'PK链接已复制，快去分享给好友吧！',
-              icon: 'none',
-              duration: 2000
-            });
+            toast.info('PK链接已复制，快去分享给好友吧！');
           }
         });
         // #endif
       } catch (error) {
         logger.error('[PK-Share] 分享失败:', error);
-        uni.showToast({
-          title: '分享失败，请稍后重试',
-          icon: 'none'
-        });
+        toast.info('分享失败，请稍后重试');
       }
     },
 
@@ -1366,22 +1346,15 @@ export default {
 
       this.isGeneratingShare = true;
       // 使用 mask: true 禁用 Loading 期间的交互
-      uni.showLoading({
-        title: '生成战报中...',
-        mask: true // 禁用交互，防止点击退出
-      });
+      toast.loading('生成战报中...');
 
       // 设置超时处理，避免无限等待
       const timeoutTimer = setTimeout(() => {
         if (this.isGeneratingShare) {
           logger.error('[PK] 生成战报超时');
-          uni.hideLoading();
+          toast.hide();
           this.isGeneratingShare = false;
-          uni.showToast({
-            title: '生成战报超时，请稍后重试',
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info('生成战报超时，请稍后重试');
         }
       }, 10000); // 10秒超时
 
@@ -1590,21 +1563,21 @@ export default {
                 destWidth: W * 3, // 3倍超清
                 destHeight: H * 3,
                 success: (res) => {
-                  uni.hideLoading();
+                  toast.hide();
                   this.isGeneratingShare = false;
                   // 全屏预览海报
                   uni.previewImage({
                     urls: [res.tempFilePath],
                     fail: () => {
-                      uni.showToast({ title: '预览失败', icon: 'none' });
+                      toast.info('预览失败');
                     }
                   });
                 },
                 fail: (err) => {
                   logger.error('[PK] 绘图失败', err);
-                  uni.hideLoading();
+                  toast.hide();
                   this.isGeneratingShare = false;
-                  uni.showToast({ title: '绘图失败，请稍后重试', icon: 'none' });
+                  toast.info('绘图失败，请稍后重试');
                 }
               },
               this
@@ -1615,13 +1588,9 @@ export default {
         // 捕获所有错误，确保关闭 Loading
         logger.error('[PK] 生成战报异常:', error);
         clearTimeout(timeoutTimer);
-        uni.hideLoading();
+        toast.hide();
         this.isGeneratingShare = false;
-        uni.showToast({
-          title: '生成战报失败，请稍后重试',
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info('生成战报失败，请稍后重试');
       }
     },
 
@@ -1671,7 +1640,7 @@ export default {
         .then((_res) => {
           // 标志位已在方法开头设置，这里只记录成功日志
           // 可选：静默提示
-          // uni.showToast({ title: '已上传排行榜', icon: 'success', duration: 1000 });
+          // toast.success('已上传排行榜', 1000);
         })
         .catch((err) => {
           // 🔒 修复 Module 10 Bug: 采用 "Fire and Forget" 策略

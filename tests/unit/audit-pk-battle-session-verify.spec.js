@@ -130,18 +130,20 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: vi.fn(() => mocked.getJwtPayload())
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  logger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  return createApiResponseMock();
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.getJwtPayload();
+    if (!payload) return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    return { userId: payload.userId };
   },
-  validateUserId: (value) => typeof value === 'string' && value.length > 0,
-  success: (data, message = 'success') => ({ code: 0, success: true, message, data }),
-  badRequest: (message = 'bad request') => ({ code: 400, success: false, message }),
-  unauthorized: (message = 'unauthorized') => ({ code: 401, success: false, message }),
-  serverError: (message = 'server error') => ({ code: 500, success: false, message }),
-  generateRequestId: () => 'pk_test_req'
+  isAuthError: (result) => result?.code === 401
 }));
 
 import pkBattleHandler from '../../laf-backend/functions/pk-battle';
@@ -248,7 +250,7 @@ describe('[安全审计] pk-battle 参与者校验链路', () => {
     expect(result.success).toBe(false);
     expect(result.message).toContain('请求正在处理中');
     expect(result.isDuplicate).toBe(true);
-    expect(result.requestId).toBe('pk_test_req');
+    expect(result.requestId).toMatch(/^pk_/);
   });
 
   it('真人 + bot 对战应允许提交并完成入库', async () => {

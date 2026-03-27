@@ -29,7 +29,13 @@
         @tap="switchTab(item.path, index)"
       >
         <view class="icon-wrapper">
-          <image v-if="resolvedActiveIndex === index" :src="item.selectedIcon" class="tab-icon" alt="" mode="aspectFit" />
+          <image
+            v-if="resolvedActiveIndex === index"
+            :src="item.selectedIcon"
+            class="tab-icon"
+            alt=""
+            mode="aspectFit"
+          />
           <image v-else :src="item.icon" class="tab-icon" alt="" mode="aspectFit" />
           <view v-if="item.showDot" class="red-dot" />
         </view>
@@ -41,7 +47,8 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
 import { storageService } from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -96,194 +103,187 @@ function getCurrentRoutePath() {
   return '/pages/index/index';
 }
 
-export default {
-  name: 'CustomTabbar',
-  props: {
-    // ✅ F005: activeIndex 已废弃，保留兼容但优先使用自动路由检测
-    activeIndex: { type: Number, default: -1 },
-    isDark: { type: Boolean, default: false }
-  },
-  data() {
-    return {
-      mistakeDot: false,
-      currentRoute: '',
-      // E008: JS 安全区域回退值（用于不支持 CSS env() 的老设备）
-      safeAreaBottom: 0
-    };
-  },
-  computed: {
-    // E008: 动态计算胶囊底部间距（JS 回退）
-    capsuleStyle() {
-      if (this.safeAreaBottom > 0) {
-        return { marginBottom: `calc(24rpx + ${this.safeAreaBottom}px)` };
-      }
-      return {};
-    },
-    // ✅ F005: 自动检测当前路由对应的 tab 索引
-    resolvedActiveIndex() {
-      // 如果手动传入了有效的 activeIndex，优先使用（向后兼容）
-      if (this.activeIndex >= 0) return this.activeIndex;
-      // 自动检测当前路由
-      const idx = this.tabList.findIndex((tab) => this.currentRoute.includes(tab.path));
-      return idx >= 0 ? idx : 0;
-    },
-    // ✅ 审核模式下过滤掉隐藏功能入口
-    tabList() {
-      const allTabs = [
-        {
-          text: '首页',
-          path: '/pages/index/index',
-          icon: '/static/tabbar/home.png',
-          selectedIcon: '/static/tabbar/home-active.png',
-          showDot: false,
-          isTabBar: true
-        },
-        {
-          text: '刷题',
-          path: '/pages/practice/index',
-          icon: '/static/tabbar/practice.png',
-          selectedIcon: '/static/tabbar/practice-active.png',
-          showDot: this.mistakeDot,
-          isTabBar: true
-        },
-        {
-          text: '择校',
-          path: '/pages/school/index',
-          icon: '/static/tabbar/school.png',
-          selectedIcon: '/static/tabbar/school-active.png',
-          showDot: false,
-          isTabBar: true
-        },
-        {
-          text: '我的',
-          path: '/pages/profile/index',
-          icon: '/static/tabbar/profile.png',
-          selectedIcon: '/static/tabbar/profile-active.png',
-          showDot: false,
-          isTabBar: true
-        }
-      ];
+const props = defineProps({
+  // ✅ F005: activeIndex 已废弃，保留兼容但优先使用自动路由检测
+  activeIndex: { type: Number, default: -1 },
+  isDark: { type: Boolean, default: false }
+});
 
-      // ✅ 审核模式下过滤掉隐藏的功能
-      if (config.audit.isAuditMode) {
-        return allTabs.filter((tab) => {
-          if (!tab.featureKey) return true;
-          return !config.audit.hiddenFeatures.includes(tab.featureKey);
-        });
-      }
+const mistakeDot = ref(false);
+const currentRoute = ref('');
+// E008: JS 安全区域回退值（用于不支持 CSS env() 的老设备）
+const safeAreaBottom = ref(0);
 
-      return allTabs;
-    }
-  },
-  watch: {
-    isDark(newVal) {
-      logger.log('[CustomTabbar] 主题变化:', newVal ? '深色模式' : '浅色模式');
-    }
-  },
-  mounted() {
-    this.checkMistakeStatus();
-    this.detectCurrentRoute();
-    // F005: 监听页面 onShow 事件，确保 switchTab 后重新检测路由
-    const uniApi = getUniApi();
-    if (uniApi && typeof uniApi.$on === 'function') {
-      uniApi.$on('tabbarRouteUpdate', this.detectCurrentRoute);
-    }
-    // E008: JS 安全区域检测回退（兼容不支持 CSS env() 的设备）
-    this.detectSafeArea();
-  },
-  // F005: 清理事件监听，防止内存泄漏
-  beforeUnmount() {
-    const uniApi = getUniApi();
-    if (uniApi && typeof uniApi.$off === 'function') {
-      uniApi.$off('tabbarRouteUpdate', this.detectCurrentRoute);
-    }
-  },
-  methods: {
-    // E008: JS 安全区域检测（兼容老设备）
-    detectSafeArea() {
-      try {
-        const winInfo = getWindowInfo();
-        const bottom = winInfo.safeArea ? winInfo.screenHeight - winInfo.safeArea.bottom : 0;
-        if (bottom > 0) {
-          this.safeAreaBottom = bottom;
-          logger.log('[CustomTabbar] 安全区域底部:', bottom, 'px');
-        }
-      } catch (e) {
-        logger.warn('[CustomTabbar] 安全区域检测失败:', e);
-      }
+// E008: 动态计算胶囊底部间距（JS 回退）
+const capsuleStyle = computed(() => {
+  if (safeAreaBottom.value > 0) {
+    return { marginBottom: `calc(24rpx + ${safeAreaBottom.value}px)` };
+  }
+  return {};
+});
+
+// ✅ F005: 自动检测当前路由对应的 tab 索引
+const resolvedActiveIndex = computed(() => {
+  // 如果手动传入了有效的 activeIndex，优先使用（向后兼容）
+  if (props.activeIndex >= 0) return props.activeIndex;
+  // 自动检测当前路由
+  const idx = tabList.value.findIndex((tab) => currentRoute.value.includes(tab.path));
+  return idx >= 0 ? idx : 0;
+});
+
+// ✅ 审核模式下过滤掉隐藏功能入口
+const tabList = computed(() => {
+  const allTabs = [
+    {
+      text: '首页',
+      path: '/pages/index/index',
+      icon: '/static/tabbar/home.png',
+      selectedIcon: '/static/tabbar/home-active.png',
+      showDot: false,
+      isTabBar: true
     },
-    // ✅ F005: 自动检测当前路由
-    detectCurrentRoute() {
-      try {
-        if (typeof getCurrentPages === 'function') {
-          const pages = getCurrentPages();
-          if (pages.length > 0) {
-            const currentPage = pages[pages.length - 1];
-            this.currentRoute = '/' + (currentPage.route || currentPage.__route__ || '');
-            logger.log('[CustomTabbar] 自动检测路由:', this.currentRoute);
+    {
+      text: '刷题',
+      path: '/pages/practice/index',
+      icon: '/static/tabbar/practice.png',
+      selectedIcon: '/static/tabbar/practice-active.png',
+      showDot: mistakeDot.value,
+      isTabBar: true
+    },
+    {
+      text: '我的',
+      path: '/pages/profile/index',
+      icon: '/static/tabbar/profile.png',
+      selectedIcon: '/static/tabbar/profile-active.png',
+      showDot: false,
+      isTabBar: true
+    }
+  ];
+
+  // ✅ 审核模式下过滤掉隐藏的功能
+  if (config.audit.isAuditMode) {
+    return allTabs.filter((tab) => {
+      if (!tab.featureKey) return true;
+      return !config.audit.hiddenFeatures.includes(tab.featureKey);
+    });
+  }
+
+  return allTabs;
+});
+
+watch(
+  () => props.isDark,
+  (newVal) => {
+    logger.log('[CustomTabbar] 主题变化:', newVal ? '深色模式' : '浅色模式');
+  }
+);
+
+// E008: JS 安全区域检测（兼容老设备）
+function detectSafeArea() {
+  try {
+    const winInfo = getWindowInfo();
+    const bottom = winInfo.safeArea ? winInfo.screenHeight - winInfo.safeArea.bottom : 0;
+    if (bottom > 0) {
+      safeAreaBottom.value = bottom;
+      logger.log('[CustomTabbar] 安全区域底部:', bottom, 'px');
+    }
+  } catch (e) {
+    logger.warn('[CustomTabbar] 安全区域检测失败:', e);
+  }
+}
+
+// ✅ F005: 自动检测当前路由
+function detectCurrentRoute() {
+  try {
+    if (typeof getCurrentPages === 'function') {
+      const pages = getCurrentPages();
+      if (pages.length > 0) {
+        const currentPage = pages[pages.length - 1];
+        currentRoute.value = '/' + (currentPage.route || currentPage.__route__ || '');
+        logger.log('[CustomTabbar] 自动检测路由:', currentRoute.value);
+        return;
+      }
+    }
+
+    currentRoute.value = getCurrentRoutePath();
+  } catch (e) {
+    logger.warn('[CustomTabbar] 路由检测失败:', e);
+    currentRoute.value = getCurrentRoutePath();
+  }
+}
+
+function checkMistakeStatus() {
+  const mistakes = storageService.get('mistake_book', []);
+  mistakeDot.value = mistakes.length > 0;
+}
+
+function switchTab(path, index) {
+  if (resolvedActiveIndex.value === index) return;
+  const uniApi = getUniApi();
+  try {
+    if (uniApi && typeof uniApi.vibrateShort === 'function') uniApi.vibrateShort();
+  } catch (e) {
+    logger.log('[CustomTabbar] 振动反馈失败:', e);
+  }
+
+  const item = tabList.value[index];
+
+  // 根据页面类型选择跳转方式
+  setTimeout(() => {
+    if (item && item.isTabBar && uniApi && typeof uniApi.switchTab === 'function') {
+      // tabBar 页面优先使用 switchTab
+      uniApi.switchTab({
+        url: path,
+        fail: (err) => {
+          logger.warn('[CustomTabbar] switchTab 失败，尝试 reLaunch:', err);
+          if (typeof uniApi.reLaunch === 'function') {
+            uniApi.reLaunch({
+              url: path,
+              fail: (err2) => {
+                logger.error('[CustomTabbar] reLaunch 也失败:', err2);
+                if (!fallbackRouteJump(path)) {
+                  safeNavigateTo(path);
+                }
+              }
+            });
             return;
           }
-        }
 
-        this.currentRoute = getCurrentRoutePath();
-      } catch (e) {
-        logger.warn('[CustomTabbar] 路由检测失败:', e);
-        this.currentRoute = getCurrentRoutePath();
-      }
-    },
-    checkMistakeStatus() {
-      const mistakes = storageService.get('mistake_book', []);
-      this.mistakeDot = mistakes.length > 0;
-    },
-    switchTab(path, index) {
-      if (this.resolvedActiveIndex === index) return;
-      const uniApi = getUniApi();
-      try {
-        if (uniApi && typeof uniApi.vibrateShort === 'function') uniApi.vibrateShort();
-      } catch (e) {
-        logger.log('[CustomTabbar] 振动反馈失败:', e);
-      }
-
-      const item = this.tabList[index];
-
-      // 根据页面类型选择跳转方式
-      setTimeout(() => {
-        if (item && item.isTabBar && uniApi && typeof uniApi.switchTab === 'function') {
-          // tabBar 页面优先使用 switchTab
-          uniApi.switchTab({
-            url: path,
-            fail: (err) => {
-              logger.warn('[CustomTabbar] switchTab 失败，尝试 reLaunch:', err);
-              if (typeof uniApi.reLaunch === 'function') {
-                uniApi.reLaunch({
-                  url: path,
-                  fail: (err2) => {
-                    logger.error('[CustomTabbar] reLaunch 也失败:', err2);
-                    if (!fallbackRouteJump(path)) {
-                      safeNavigateTo(path);
-                    }
-                  }
-                });
-                return;
-              }
-
-              if (!fallbackRouteJump(path)) {
-                safeNavigateTo(path);
-              }
-            }
-          });
-        } else if (item && item.isTabBar) {
           if (!fallbackRouteJump(path)) {
             safeNavigateTo(path);
           }
-        } else {
-          // 非 tabBar 页面使用 navigateTo 或 reLaunch
-          safeNavigateTo(path);
         }
-      }, 50);
+      });
+    } else if (item && item.isTabBar) {
+      if (!fallbackRouteJump(path)) {
+        safeNavigateTo(path);
+      }
+    } else {
+      // 非 tabBar 页面使用 navigateTo 或 reLaunch
+      safeNavigateTo(path);
     }
+  }, 50);
+}
+
+onMounted(() => {
+  checkMistakeStatus();
+  detectCurrentRoute();
+  // F005: 监听页面 onShow 事件，确保 switchTab 后重新检测路由
+  const uniApi = getUniApi();
+  if (uniApi && typeof uniApi.$on === 'function') {
+    uniApi.$on('tabbarRouteUpdate', detectCurrentRoute);
   }
-};
+  // E008: JS 安全区域检测回退（兼容不支持 CSS env() 的设备）
+  detectSafeArea();
+});
+
+// F005: 清理事件监听，防止内存泄漏
+onBeforeUnmount(() => {
+  const uniApi = getUniApi();
+  if (uniApi && typeof uniApi.$off === 'function') {
+    uniApi.$off('tabbarRouteUpdate', detectCurrentRoute);
+  }
+});
 </script>
 
 <style lang="scss" scoped>

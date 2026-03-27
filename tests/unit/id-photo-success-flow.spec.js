@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocked = vi.hoisted(() => {
   const verifyJWT = vi.fn(() => ({ userId: 'id_photo_visual_user' }));
+  const extractBearerToken = vi.fn((raw) => raw?.replace('Bearer ', '') || null);
   const checkRateLimitDistributed = vi.fn(async () => ({
     allowed: true,
     remaining: 9,
@@ -15,13 +16,19 @@ const mocked = vi.hoisted(() => {
 
   return {
     verifyJWT,
+    extractBearerToken,
     checkRateLimitDistributed,
     segmentPortraitPic
   };
 });
 
-vi.mock('../../laf-backend/functions/login', () => ({
-  verifyJWT: mocked.verifyJWT
+// auth-middleware 导入 verifyJWT/extractBearerToken 从 _shared/auth
+// 以及 unauthorized 从 _shared/api-response
+// 需要同时 mock 这两个模块
+
+vi.mock('../../laf-backend/functions/_shared/auth', () => ({
+  verifyJWT: mocked.verifyJWT,
+  extractBearerToken: mocked.extractBearerToken
 }));
 
 vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
@@ -30,7 +37,9 @@ vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
     warn: vi.fn(),
     error: vi.fn()
   }),
-  checkRateLimitDistributed: mocked.checkRateLimitDistributed
+  checkRateLimitDistributed: mocked.checkRateLimitDistributed,
+  // auth-middleware.ts 需要 unauthorized 函数
+  unauthorized: (message) => ({ code: 401, success: false, message, timestamp: Date.now() })
 }));
 
 vi.mock('tencentcloud-sdk-nodejs', () => ({

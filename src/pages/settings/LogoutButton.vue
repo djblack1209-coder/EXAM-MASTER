@@ -12,6 +12,7 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref } from 'vue';
 // [AUDIT FIX] storageService 使用 default export，需用默认导入
 import storageService from '@/services/storageService.js';
@@ -47,7 +48,7 @@ const handleLogout = () => {
           // 通知其他页面登录状态变化
           uni.$emit('loginStatusChanged', false);
 
-          uni.showToast({ title: '已退出登录', icon: 'success' });
+          toast.success('已退出登录');
 
           // 延迟回到首页刷新
           setTimeout(() => {
@@ -55,7 +56,7 @@ const handleLogout = () => {
           }, 1000);
         } catch (error) {
           logger.error('[Settings] 退出登录失败:', error);
-          uni.showToast({ title: '退出失败，请重试', icon: 'none' });
+          toast.info('退出失败，请重试');
           isLoggingOut.value = false;
         }
       }

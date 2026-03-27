@@ -7,6 +7,7 @@
  * @module composables/useGamificationEffects
  */
 
+import { toast } from '@/utils/toast.js';
 let _confetti = null;
 let _storeRef = null;
 
@@ -64,11 +65,7 @@ export function useGamificationEffects() {
     vibrate('medium');
     try {
       if (typeof uni !== 'undefined' && uni.showToast) {
-        uni.showToast({
-          title: `${achievement.icon || '🏅'} ${achievement.name}`,
-          icon: 'none',
-          duration: 3000
-        });
+        toast.info(`${achievement.icon || '🏅'} ${achievement.name}`, 3000);
       }
     } catch {
       /* 静默 */

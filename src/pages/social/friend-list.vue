@@ -242,6 +242,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { socialService } from './socialService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -385,17 +386,11 @@ export default {
           logger.log('[FriendList] 好友数量:', this.friendList.length);
         } else {
           logger.error('[FriendList] 加载失败:', res.msg || res.message);
-          uni.showToast({
-            title: res.msg || res.message || '加载失败',
-            icon: 'none'
-          });
+          toast.info(res.msg || res.message || '加载失败');
         }
       } catch (err) {
         logger.error('[FriendList] 加载异常:', err);
-        uni.showToast({
-          title: '加载失败',
-          icon: 'none'
-        });
+        toast.info('加载失败');
       } finally {
         this.isLoading = false;
         this.isRefreshing = false;
@@ -430,10 +425,7 @@ export default {
      */
     async handleSearch() {
       if (!this.searchKeyword || this.searchKeyword.trim().length < 2) {
-        uni.showToast({
-          title: '请输入至少2个字符',
-          icon: 'none'
-        });
+        toast.info('请输入至少2个字符');
         return;
       }
 
@@ -449,17 +441,11 @@ export default {
           logger.log('[FriendList] 搜索结果:', this.searchResults.length, '个用户');
         } else {
           logger.error('[FriendList] 搜索失败:', res.msg);
-          uni.showToast({
-            title: res.msg || '搜索失败',
-            icon: 'none'
-          });
+          toast.info(res.msg || '搜索失败');
         }
       } catch (err) {
         logger.error('[FriendList] 搜索异常:', err);
-        uni.showToast({
-          title: '搜索失败',
-          icon: 'none'
-        });
+        toast.info('搜索失败');
       } finally {
         this.isSearching = false;
       }
@@ -526,33 +512,24 @@ export default {
         success: async (res) => {
           if (res.confirm) {
             this.isAddingFriend[user._id] = true;
-            uni.showLoading({ title: '发送中...' });
+            toast.loading('发送中...');
 
             try {
               const result = await socialService.sendRequest(user._id, '你好，我想加你为好友');
 
-              uni.hideLoading();
+              toast.hide();
 
               if (result.code === 0) {
-                uni.showToast({
-                  title: '好友请求已发送',
-                  icon: 'success'
-                });
+                toast.success('好友请求已发送');
                 // 清除搜索结果
                 this.clearSearch();
               } else {
-                uni.showToast({
-                  title: result.msg || '发送失败',
-                  icon: 'none'
-                });
+                toast.info(result.msg || '发送失败');
               }
             } catch (err) {
-              uni.hideLoading();
+              toast.hide();
               logger.error('[FriendList] 发送好友请求失败:', err);
-              uni.showToast({
-                title: '发送失败',
-                icon: 'none'
-              });
+              toast.info('发送失败');
             } finally {
               this.isAddingFriend[user._id] = false;
             }
@@ -571,34 +548,25 @@ export default {
       logger.log('[FriendList] 接受好友请求:', request.from_nickname);
 
       this.isAccepting[request.from_uid] = true;
-      uni.showLoading({ title: '处理中...' });
+      toast.loading('处理中...');
 
       try {
         const res = await socialService.handleRequest(request.from_uid, 'accept');
 
-        uni.hideLoading();
+        toast.hide();
 
         if (res.code === 0) {
-          uni.showToast({
-            title: '已添加为好友',
-            icon: 'success'
-          });
+          toast.success('已添加为好友');
           // 刷新列表
           this.loadFriendRequests();
           this.loadFriendList(false);
         } else {
-          uni.showToast({
-            title: res.msg || '操作失败',
-            icon: 'none'
-          });
+          toast.info(res.msg || '操作失败');
         }
       } catch (err) {
-        uni.hideLoading();
+        toast.hide();
         logger.error('[FriendList] 接受好友请求失败:', err);
-        uni.showToast({
-          title: '操作失败',
-          icon: 'none'
-        });
+        toast.info('操作失败');
       } finally {
         this.isAccepting[request.from_uid] = false;
       }
@@ -619,33 +587,24 @@ export default {
         success: async (res) => {
           if (res.confirm) {
             this.isRejecting[request.from_uid] = true;
-            uni.showLoading({ title: '处理中...' });
+            toast.loading('处理中...');
 
             try {
               const result = await socialService.handleRequest(request.from_uid, 'reject');
 
-              uni.hideLoading();
+              toast.hide();
 
               if (result.code === 0) {
-                uni.showToast({
-                  title: '已拒绝',
-                  icon: 'success'
-                });
+                toast.success('已拒绝');
                 // 刷新列表
                 this.loadFriendRequests();
               } else {
-                uni.showToast({
-                  title: result.msg || '操作失败',
-                  icon: 'none'
-                });
+                toast.info(result.msg || '操作失败');
               }
             } catch (err) {
-              uni.hideLoading();
+              toast.hide();
               logger.error('[FriendList] 拒绝好友请求失败:', err);
-              uni.showToast({
-                title: '操作失败',
-                icon: 'none'
-              });
+              toast.info('操作失败');
             } finally {
               this.isRejecting[request.from_uid] = false;
             }

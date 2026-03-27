@@ -5,12 +5,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 
+const mockRequest = vi.hoisted(() => vi.fn().mockResolvedValue({ code: 0, success: true, data: {} }));
+
 vi.mock('@/utils/logger.js', () => ({
   logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() }
 }));
 vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
+vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return { ...original, request: mockRequest };
+});
 
 import { useSchoolStore } from '@/stores/modules/school.js';
 import storageService from '@/services/storageService.js';
@@ -18,8 +24,9 @@ import storageService from '@/services/storageService.js';
 describe('E2E 择校交互全流程', () => {
   let schoolStore;
 
-  beforeEach(() => {
-    vi.restoreAllMocks();
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    mockRequest.mockResolvedValue({ code: 0, success: true, data: {} });
     setActivePinia(createPinia());
     schoolStore = useSchoolStore();
     global.__mockStorage = {};
@@ -94,7 +101,7 @@ describe('E2E 择校交互全流程', () => {
   describe('Step 3: 智能推荐', () => {
     it('submitForm → 调用 proxyAI recommend 获取推荐', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: {
@@ -250,7 +257,7 @@ describe('E2E 择校交互全流程', () => {
   describe('学校搜索', () => {
     it('searchSchools → 关键词搜索调用后端', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: [
@@ -268,7 +275,7 @@ describe('E2E 择校交互全流程', () => {
 
     it('getHotSchools → 获取热门院校', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: [
@@ -284,7 +291,7 @@ describe('E2E 择校交互全流程', () => {
 
     it('getSchoolDetail → 获取院校详情', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: {
@@ -362,7 +369,7 @@ describe('E2E 择校交互全流程', () => {
 
     it('智能录取概率预测 → 调用 proxyAI predict', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { reply: '75|根据你的学习数据，录取概率较高，建议继续保持' }
@@ -389,7 +396,7 @@ describe('E2E 择校交互全流程', () => {
 
     it('智能院校咨询 → 多轮对话带历史', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { reply: '浙江大学计算机技术专业2024年复试分数线为380分...' }
@@ -433,7 +440,6 @@ describe('E2E 择校交互全流程', () => {
 
     it('失败消息重试 → 点击重发', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request');
 
       // 第一次失败
       mockRequest.mockRejectedValueOnce(new Error('网络超时'));
@@ -535,7 +541,7 @@ describe('E2E 择校交互全流程', () => {
       expect(formData.degree).toBe('bk');
 
       // Step 2: 提交获取智能推荐
-      vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: {

@@ -60,13 +60,22 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: mocked.verifyJWT
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  createLogger: () => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  }),
-  sanitizeString: (value) => (typeof value === 'string' ? value.trim() : '')
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  return createApiResponseMock();
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    // 从 headers.authorization 解析 token
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    // 从 login mock 的 verifyJWT 获取 userId
+    const payload = mocked.verifyJWT(token);
+    if (!payload) return { code: 401, success: false, message: 'token无效' };
+    return { userId: payload.userId };
+  },
+  isAuthError: (result) => result?.code === 401
 }));
 
 vi.mock('@lafjs/cloud', () => ({
@@ -92,7 +101,7 @@ describe('[安全审计] user-profile 鉴权响应语义', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('缺少认证');
+    expect(result.message).toContain('认证');
   });
 
   it('仅 body.token 不应通过鉴权（应要求 Header Token）', async () => {

@@ -25,14 +25,6 @@
       }
     },
     {
-      "path": "pages/school/index",
-      "style": {
-        "navigationBarTitleText": "择校分析",
-        "navigationBarBackgroundColor": "#1A1A1A",
-        "navigationStyle": "custom"
-      }
-    },
-    {
       "path": "pages/profile/index",
       "style": {
         "navigationBarTitleText": "个人中心",
@@ -104,6 +96,19 @@
             "navigationBarTitleText": "院校详情",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/school",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "择校分析",
+            "navigationBarBackgroundColor": "#1A1A1A",
+            "navigationStyle": "custom"
           }
         }
       ]
@@ -304,6 +309,40 @@
           }
         }
       ]
+    },
+    {
+      "root": "pages/ai-classroom",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "AI 课堂",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        },
+        {
+          "path": "classroom",
+          "style": {
+            "navigationBarTitleText": "智能教室",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/onboarding",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "新手引导",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        }
+      ]
     }
   ],
   "preloadRule": {
@@ -333,10 +372,6 @@
       {
         "pagePath": "pages/practice/index",
         "text": "刷题"
-      },
-      {
-        "pagePath": "pages/school/index",
-        "text": "择校"
       },
       {
         "pagePath": "pages/profile/index",

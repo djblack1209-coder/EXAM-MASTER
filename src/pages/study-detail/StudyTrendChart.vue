@@ -52,315 +52,314 @@
   </view>
 </template>
 
-<script>
-export default {
-  name: 'StudyTrendChart',
-  props: {
-    // 学习记录数据 { 'YYYY-MM-DD': minutes }
-    studyData: {
-      type: Object,
-      default: () => ({})
-    }
-  },
-  emits: ['range-change'],
-  data() {
-    return {
-      selectedRange: 7,
-      ranges: [
-        { label: '7天', value: 7 },
-        { label: '14天', value: 14 },
-        { label: '30天', value: 30 }
-      ],
-      canvasWidth: 300,
-      canvasHeight: 200,
-      chartData: [],
-      totalMinutes: 0,
-      avgMinutes: 0,
-      trendDirection: 'stable',
-      trendPercent: 0,
-      ctx: null
-    };
-  },
-  watch: {
-    studyData: {
-      handler() {
-        this.prepareChartData();
-        this.$nextTick(() => {
-          this.drawChart();
-        });
-      },
-      deep: true
-    },
-    selectedRange() {
-      this.prepareChartData();
-      this.$nextTick(() => {
-        this.drawChart();
-      });
-    }
-  },
-  mounted() {
-    this.initCanvas();
-  },
-  methods: {
-    /**
-     * 初始化 Canvas
-     */
-    initCanvas() {
-      // 获取容器宽度
-      const query = uni.createSelectorQuery().in(this);
-      query
-        .select('.chart-wrapper')
-        .boundingClientRect((rect) => {
-          if (rect) {
-            this.canvasWidth = rect.width - 32; // 减去 padding
-            this.canvasHeight = 200;
-          }
-          this.prepareChartData();
-          this.$nextTick(() => {
-            setTimeout(() => {
-              this.drawChart();
-            }, 100);
-          });
-        })
-        .exec();
-    },
+<script setup>
+import { ref, watch, onMounted, getCurrentInstance, nextTick } from 'vue';
 
-    /**
-     * 准备图表数据
-     */
-    prepareChartData() {
-      const data = [];
-      const today = new Date();
+const props = defineProps({
+  // 学习记录数据 { 'YYYY-MM-DD': minutes }
+  studyData: {
+    type: Object,
+    default: () => ({})
+  }
+});
 
-      for (let i = this.selectedRange - 1; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const dateStr = this.formatDate(date);
-        const minutes = this.studyData[dateStr] || 0;
+const emit = defineEmits(['range-change']);
 
-        data.push({
-          date: date,
-          dateStr: dateStr,
-          label: this.getDateLabel(date),
-          minutes: minutes
-        });
+const selectedRange = ref(7);
+const ranges = [
+  { label: '7天', value: 7 },
+  { label: '14天', value: 14 },
+  { label: '30天', value: 30 }
+];
+const canvasWidth = ref(300);
+const canvasHeight = ref(200);
+const chartData = ref([]);
+const totalMinutes = ref(0);
+const avgMinutes = ref(0);
+const trendDirection = ref('stable');
+const trendPercent = ref(0);
+
+const instance = getCurrentInstance();
+
+watch(
+  () => props.studyData,
+  () => {
+    prepareChartData();
+    nextTick(() => {
+      drawChart();
+    });
+  },
+  { deep: true }
+);
+
+watch(selectedRange, () => {
+  prepareChartData();
+  nextTick(() => {
+    drawChart();
+  });
+});
+
+onMounted(() => {
+  initCanvas();
+});
+
+/**
+ * 初始化 Canvas
+ */
+function initCanvas() {
+  // 获取容器宽度
+  const query = uni.createSelectorQuery().in(instance.proxy);
+  query
+    .select('.chart-wrapper')
+    .boundingClientRect((rect) => {
+      if (rect) {
+        canvasWidth.value = rect.width - 32; // 减去 padding
+        canvasHeight.value = 200;
       }
-
-      this.chartData = data;
-      this.calculateSummary();
-    },
-
-    /**
-     * 计算摘要数据
-     */
-    calculateSummary() {
-      const minutes = this.chartData.map((d) => d.minutes);
-      this.totalMinutes = minutes.reduce((a, b) => a + b, 0);
-      this.avgMinutes = Math.round(this.totalMinutes / this.chartData.length);
-
-      // 计算趋势（比较前半段和后半段）
-      const mid = Math.floor(minutes.length / 2);
-      const firstHalf = minutes.slice(0, mid);
-      const secondHalf = minutes.slice(mid);
-
-      const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length || 0;
-      const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length || 0;
-
-      if (firstAvg === 0 && secondAvg === 0) {
-        this.trendDirection = 'stable';
-        this.trendPercent = 0;
-      } else if (firstAvg === 0) {
-        this.trendDirection = 'up';
-        this.trendPercent = 100;
-      } else {
-        const change = ((secondAvg - firstAvg) / firstAvg) * 100;
-        this.trendPercent = Math.abs(Math.round(change));
-
-        if (change > 5) {
-          this.trendDirection = 'up';
-        } else if (change < -5) {
-          this.trendDirection = 'down';
-        } else {
-          this.trendDirection = 'stable';
-        }
-      }
-    },
-
-    /**
-     * 绘制图表
-     */
-    drawChart() {
-      const ctx = uni.createCanvasContext('trendChart', this);
-      if (!ctx) return;
-
-      const width = this.canvasWidth;
-      const height = this.canvasHeight;
-      const padding = { top: 20, right: 20, bottom: 40, left: 40 };
-      const chartWidth = width - padding.left - padding.right;
-      const chartHeight = height - padding.top - padding.bottom;
-
-      // 清空画布
-      ctx.clearRect(0, 0, width, height);
-
-      // 获取数据范围
-      const values = this.chartData.map((d) => d.minutes);
-      const maxValue = Math.max(...values, 10); // 至少显示到10
-      const minValue = 0;
-
-      // 绘制背景网格
-      this.drawGrid(ctx, padding, chartWidth, chartHeight, maxValue);
-
-      // 绘制折线和面积
-      this.drawLineAndArea(ctx, padding, chartWidth, chartHeight, maxValue, minValue);
-
-      // 绘制数据点
-      this.drawDataPoints(ctx, padding, chartWidth, chartHeight, maxValue, minValue);
-
-      // 绘制X轴标签
-      this.drawXLabels(ctx, padding, chartWidth, chartHeight);
-
-      ctx.draw();
-    },
-
-    /**
-     * 绘制网格
-     */
-    drawGrid(ctx, padding, chartWidth, chartHeight, maxValue) {
-      const gridLines = 4;
-      ctx.setStrokeStyle('rgba(200, 200, 200, 0.3)');
-      ctx.setLineWidth(1);
-
-      for (let i = 0; i <= gridLines; i++) {
-        const y = padding.top + (chartHeight / gridLines) * i;
-        ctx.beginPath();
-        ctx.moveTo(padding.left, y);
-        ctx.lineTo(padding.left + chartWidth, y);
-        ctx.stroke();
-
-        // Y轴标签
-        const value = Math.round(maxValue - (maxValue / gridLines) * i);
-        ctx.setFillStyle('#999');
-        ctx.setFontSize(10);
-        ctx.setTextAlign('right');
-        ctx.fillText(value.toString(), padding.left - 5, y + 3);
-      }
-    },
-
-    /**
-     * 绘制折线和面积
-     */
-    drawLineAndArea(ctx, padding, chartWidth, chartHeight, maxValue, _minValue) {
-      if (this.chartData.length === 0) return;
-
-      const points = this.chartData.map((d, i) => {
-        const x = padding.left + (chartWidth / (this.chartData.length - 1 || 1)) * i;
-        const y = padding.top + chartHeight - (d.minutes / maxValue) * chartHeight;
-        return { x, y };
+      prepareChartData();
+      nextTick(() => {
+        setTimeout(() => {
+          drawChart();
+        }, 100);
       });
+    })
+    .exec();
+}
 
-      // 绘制渐变面积
-      const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight);
-      gradient.addColorStop(0, 'rgba(0, 122, 255, 0.3)');
-      gradient.addColorStop(1, 'rgba(0, 122, 255, 0.05)');
+/**
+ * 准备图表数据
+ */
+function prepareChartData() {
+  const data = [];
+  const today = new Date();
 
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, padding.top + chartHeight);
-      points.forEach((p) => ctx.lineTo(p.x, p.y));
-      ctx.lineTo(points[points.length - 1].x, padding.top + chartHeight);
-      ctx.closePath();
-      ctx.setFillStyle(gradient);
-      ctx.fill();
+  for (let i = selectedRange.value - 1; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const dateStr = formatDate(date);
+    const minutes = props.studyData[dateStr] || 0;
 
-      // 绘制折线
-      ctx.beginPath();
-      ctx.setStrokeStyle('#007AFF');
-      ctx.setLineWidth(2);
-      ctx.setLineCap('round');
-      ctx.setLineJoin('round');
+    data.push({
+      date: date,
+      dateStr: dateStr,
+      label: getDateLabel(date),
+      minutes: minutes
+    });
+  }
 
-      points.forEach((p, i) => {
-        if (i === 0) {
-          ctx.moveTo(p.x, p.y);
-        } else {
-          ctx.lineTo(p.x, p.y);
-        }
-      });
-      ctx.stroke();
-    },
+  chartData.value = data;
+  calculateSummary();
+}
 
-    /**
-     * 绘制数据点
-     */
-    drawDataPoints(ctx, padding, chartWidth, chartHeight, maxValue, _minValue) {
-      this.chartData.forEach((d, i) => {
-        const x = padding.left + (chartWidth / (this.chartData.length - 1 || 1)) * i;
-        const y = padding.top + chartHeight - (d.minutes / maxValue) * chartHeight;
+/**
+ * 计算摘要数据
+ */
+function calculateSummary() {
+  const minutes = chartData.value.map((d) => d.minutes);
+  totalMinutes.value = minutes.reduce((a, b) => a + b, 0);
+  avgMinutes.value = Math.round(totalMinutes.value / chartData.value.length);
 
-        // 外圈
-        ctx.beginPath();
-        ctx.arc(x, y, 6, 0, Math.PI * 2);
-        ctx.setFillStyle('#FFFFFF');
-        ctx.fill();
-        ctx.setStrokeStyle('#007AFF');
-        ctx.setLineWidth(2);
-        ctx.stroke();
+  // 计算趋势（比较前半段和后半段）
+  const mid = Math.floor(minutes.length / 2);
+  const firstHalf = minutes.slice(0, mid);
+  const secondHalf = minutes.slice(mid);
 
-        // 内圈
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.setFillStyle('#007AFF');
-        ctx.fill();
-      });
-    },
+  const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length || 0;
+  const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length || 0;
 
-    /**
-     * 绘制X轴标签
-     */
-    drawXLabels(ctx, padding, chartWidth, chartHeight) {
-      ctx.setFillStyle('#999');
-      ctx.setFontSize(10);
-      ctx.setTextAlign('center');
+  if (firstAvg === 0 && secondAvg === 0) {
+    trendDirection.value = 'stable';
+    trendPercent.value = 0;
+  } else if (firstAvg === 0) {
+    trendDirection.value = 'up';
+    trendPercent.value = 100;
+  } else {
+    const change = ((secondAvg - firstAvg) / firstAvg) * 100;
+    trendPercent.value = Math.abs(Math.round(change));
 
-      // 根据数据量决定显示哪些标签
-      const step = this.chartData.length <= 7 ? 1 : Math.ceil(this.chartData.length / 7);
-
-      this.chartData.forEach((d, i) => {
-        if (i % step === 0 || i === this.chartData.length - 1) {
-          const x = padding.left + (chartWidth / (this.chartData.length - 1 || 1)) * i;
-          const y = padding.top + chartHeight + 20;
-          ctx.fillText(d.label, x, y);
-        }
-      });
-    },
-
-    /**
-     * 选择时间范围
-     */
-    selectRange(range) {
-      this.selectedRange = range;
-      this.$emit('range-change', range);
-    },
-
-    /**
-     * 格式化日期为 YYYY-MM-DD
-     */
-    formatDate(date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    },
-
-    /**
-     * 获取日期标签
-     */
-    getDateLabel(date) {
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      return `${month}/${day}`;
+    if (change > 5) {
+      trendDirection.value = 'up';
+    } else if (change < -5) {
+      trendDirection.value = 'down';
+    } else {
+      trendDirection.value = 'stable';
     }
   }
-};
+}
+
+/**
+ * 绘制图表
+ */
+function drawChart() {
+  const ctx = uni.createCanvasContext('trendChart', instance.proxy);
+  if (!ctx) return;
+
+  const width = canvasWidth.value;
+  const height = canvasHeight.value;
+  const padding = { top: 20, right: 20, bottom: 40, left: 40 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+
+  // 清空画布
+  ctx.clearRect(0, 0, width, height);
+
+  // 获取数据范围
+  const values = chartData.value.map((d) => d.minutes);
+  const maxValue = Math.max(...values, 10); // 至少显示到10
+  const minValue = 0;
+
+  // 绘制背景网格
+  drawGrid(ctx, padding, chartWidth, chartHeight, maxValue);
+
+  // 绘制折线和面积
+  drawLineAndArea(ctx, padding, chartWidth, chartHeight, maxValue, minValue);
+
+  // 绘制数据点
+  drawDataPoints(ctx, padding, chartWidth, chartHeight, maxValue, minValue);
+
+  // 绘制X轴标签
+  drawXLabels(ctx, padding, chartWidth, chartHeight);
+
+  ctx.draw();
+}
+
+/**
+ * 绘制网格
+ */
+function drawGrid(ctx, padding, chartWidth, chartHeight, maxValue) {
+  const gridLines = 4;
+  ctx.setStrokeStyle('rgba(200, 200, 200, 0.3)');
+  ctx.setLineWidth(1);
+
+  for (let i = 0; i <= gridLines; i++) {
+    const y = padding.top + (chartHeight / gridLines) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(padding.left + chartWidth, y);
+    ctx.stroke();
+
+    // Y轴标签
+    const value = Math.round(maxValue - (maxValue / gridLines) * i);
+    ctx.setFillStyle('#999');
+    ctx.setFontSize(10);
+    ctx.setTextAlign('right');
+    ctx.fillText(value.toString(), padding.left - 5, y + 3);
+  }
+}
+
+/**
+ * 绘制折线和面积
+ */
+function drawLineAndArea(ctx, padding, chartWidth, chartHeight, maxValue, _minValue) {
+  if (chartData.value.length === 0) return;
+
+  const points = chartData.value.map((d, i) => {
+    const x = padding.left + (chartWidth / (chartData.value.length - 1 || 1)) * i;
+    const y = padding.top + chartHeight - (d.minutes / maxValue) * chartHeight;
+    return { x, y };
+  });
+
+  // 绘制渐变面积
+  const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight);
+  gradient.addColorStop(0, 'rgba(0, 122, 255, 0.3)');
+  gradient.addColorStop(1, 'rgba(0, 122, 255, 0.05)');
+
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, padding.top + chartHeight);
+  points.forEach((p) => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(points[points.length - 1].x, padding.top + chartHeight);
+  ctx.closePath();
+  ctx.setFillStyle(gradient);
+  ctx.fill();
+
+  // 绘制折线
+  ctx.beginPath();
+  ctx.setStrokeStyle('#007AFF');
+  ctx.setLineWidth(2);
+  ctx.setLineCap('round');
+  ctx.setLineJoin('round');
+
+  points.forEach((p, i) => {
+    if (i === 0) {
+      ctx.moveTo(p.x, p.y);
+    } else {
+      ctx.lineTo(p.x, p.y);
+    }
+  });
+  ctx.stroke();
+}
+
+/**
+ * 绘制数据点
+ */
+function drawDataPoints(ctx, padding, chartWidth, chartHeight, maxValue, _minValue) {
+  chartData.value.forEach((d, i) => {
+    const x = padding.left + (chartWidth / (chartData.value.length - 1 || 1)) * i;
+    const y = padding.top + chartHeight - (d.minutes / maxValue) * chartHeight;
+
+    // 外圈
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.setFillStyle('#FFFFFF');
+    ctx.fill();
+    ctx.setStrokeStyle('#007AFF');
+    ctx.setLineWidth(2);
+    ctx.stroke();
+
+    // 内圈
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.setFillStyle('#007AFF');
+    ctx.fill();
+  });
+}
+
+/**
+ * 绘制X轴标签
+ */
+function drawXLabels(ctx, padding, chartWidth, chartHeight) {
+  ctx.setFillStyle('#999');
+  ctx.setFontSize(10);
+  ctx.setTextAlign('center');
+
+  // 根据数据量决定显示哪些标签
+  const step = chartData.value.length <= 7 ? 1 : Math.ceil(chartData.value.length / 7);
+
+  chartData.value.forEach((d, i) => {
+    if (i % step === 0 || i === chartData.value.length - 1) {
+      const x = padding.left + (chartWidth / (chartData.value.length - 1 || 1)) * i;
+      const y = padding.top + chartHeight + 20;
+      ctx.fillText(d.label, x, y);
+    }
+  });
+}
+
+/**
+ * 选择时间范围
+ */
+function selectRange(range) {
+  selectedRange.value = range;
+  emit('range-change', range);
+}
+
+/**
+ * 格式化日期为 YYYY-MM-DD
+ */
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * 获取日期标签
+ */
+function getDateLabel(date) {
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${month}/${day}`;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -372,7 +371,7 @@ export default {
 .range-selector {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-margin-bottom: 24rpx;
+  margin-bottom: 24rpx;
 }
 
 .range-item {
@@ -434,7 +433,7 @@ margin-bottom: 24rpx;
   flex-direction: column;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-background: rgba(255, 255, 255, 0.56);
+  background: rgba(255, 255, 255, 0.56);
   border-radius: 20rpx;
   padding: 16rpx 20rpx;
   border: 1rpx solid rgba(255, 255, 255, 0.44);
@@ -456,7 +455,7 @@ background: rgba(255, 255, 255, 0.56);
   display: flex;
   align-items: center;
   /* gap: 4rpx; -- replaced for Android WebView compat */
-&.up {
+  &.up {
     .trend-arrow,
     .trend-percent {
       color: var(--ds-color-success, #34c759);

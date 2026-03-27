@@ -85,14 +85,16 @@
                 v-if="userAvatar && userAvatar.startsWith('http')"
                 class="avatar-image"
                 :src="userAvatar"
-                alt="头像" mode="aspectFill"
+                alt="头像"
+                mode="aspectFill"
               />
               <!-- ✅ F020: 未登录/无头像时使用默认头像图片代替 emoji -->
               <image
                 v-else
                 class="avatar-image avatar-default"
                 src="/static/images/default-avatar.png"
-                alt="头像" mode="aspectFill"
+                alt="头像"
+                mode="aspectFill"
               />
               <view v-if="isLoggedIn" class="avatar-edit-badge">
                 <BaseIcon name="camera" :size="20" />
@@ -372,6 +374,7 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted } from 'vue';
 import { onShow, onHide, onShareAppMessage } from '@dcloudio/uni-app';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
@@ -380,9 +383,9 @@ import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
 import { useGamificationStore } from '@/stores/modules/gamification';
-// 检查点4.4: 每日打卡 - 连续天数统计和补签卡
-import { checkinStreak } from '@/services/checkin-streak.js';
-import { streakRecovery } from '@/services/streak-recovery.js';
+// 打卡和补签动态导入 — 瘦身主包
+// import { checkinStreak } from '@/services/checkin-streak.js';
+// import { streakRecovery } from '@/services/streak-recovery.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
@@ -406,6 +409,9 @@ const isPageLoading = ref(true); // 页面初始加载状态
 // 检查点4.4: 打卡相关状态
 const checkInStreak = ref(0); // 连续打卡天数
 const todayChecked = ref(false); // 今日是否已打卡
+// 动态加载的打卡模块引用
+let _checkinStreak = null;
+let _streakRecovery = null;
 const recoveryCards = ref(0); // 补签卡数量
 const missedDaysCount = ref(0); // 问题54：断签天数
 
@@ -514,7 +520,7 @@ function loadData() {
   } catch (error) {
     logger.error('[Profile] loadData error:', error);
     // P007: 提供用户反馈
-    uni.showToast({ title: '个人数据加载失败，请下拉刷新重试', icon: 'none', duration: 2000 });
+    toast.info('个人数据加载失败，请下拉刷新重试');
   } finally {
     // 短暂延迟后关闭骨架屏，确保数据已渲染
     setTimeout(() => {
@@ -528,9 +534,17 @@ function loadBadges() {
   badgeCount.value = Array.isArray(achievements) ? achievements.length : 0;
 }
 
-// 检查点4.4: 加载打卡数据
+// 检查点4.4: 加载打卡数据（动态导入瘦身主包）
 async function loadCheckinData() {
   try {
+    const [{ checkinStreak }, { streakRecovery }] = await Promise.all([
+      import('@/services/checkin-streak.js'),
+      import('@/services/streak-recovery.js')
+    ]);
+    // 缓存到模块变量供后续方法使用
+    _checkinStreak = checkinStreak;
+    _streakRecovery = streakRecovery;
+
     const userId = storageService.get('EXAM_USER_ID', 'default');
     await checkinStreak.init(userId);
     await streakRecovery.init(userId);
@@ -550,7 +564,7 @@ async function loadCheckinData() {
   } catch (error) {
     logger.error('[Profile] loadCheckinData error:', error);
     // P007: 提供用户反馈，避免打卡数据静默丢失
-    uni.showToast({ title: '打卡数据加载失败', icon: 'none', duration: 1500 });
+    toast.info('打卡数据加载失败', 1500);
   }
 }
 
@@ -561,23 +575,19 @@ async function handleCheckIn() {
     return;
   }
   if (todayChecked.value) {
-    uni.showToast({ title: '今日已打卡', icon: 'none' });
+    toast.info('今日已打卡');
     return;
   }
 
   try {
-    const result = await checkinStreak.checkIn();
+    const result = await _checkinStreak.checkIn();
 
     if (result.success) {
       todayChecked.value = true;
       checkInStreak.value = result.data.streak;
 
       // 显示打卡成功提示
-      uni.showToast({
-        title: `打卡成功！连续${result.data.streak}天`,
-        icon: 'success',
-        duration: 2000
-      });
+      toast.success(`打卡成功！连续${result.data.streak}天`, 2000);
 
       // 如果有里程碑奖励
       if (result.data.milestone) {
@@ -591,11 +601,11 @@ async function handleCheckIn() {
         }, 1500);
       }
     } else {
-      uni.showToast({ title: result.message, icon: 'none' });
+      toast.info(result.message);
     }
   } catch (error) {
     logger.error('[Profile] handleCheckIn error:', error);
-    uni.showToast({ title: '打卡失败，请稍后重试', icon: 'none' });
+    toast.info('打卡失败，请稍后重试');
   }
 }
 
@@ -605,17 +615,17 @@ async function handleRecovery(date) {
     requireLogin(() => handleRecovery(date), { message: '请先登录后再补签' });
     return;
   }
-  const checkResult = streakRecovery.canRecover(date);
+  const checkResult = _streakRecovery.canRecover(date);
 
   if (!checkResult.canRecover) {
-    uni.showToast({ title: checkResult.reason, icon: 'none' });
+    toast.info(checkResult.reason);
     return;
   }
 
   // 显示补签选项
   const options = checkResult.options.filter((o) => o.available);
   if (options.length === 0) {
-    uni.showToast({ title: '没有可用的补签方式', icon: 'none' });
+    toast.info('没有可用的补签方式');
     return;
   }
 
@@ -631,37 +641,34 @@ async function handleRecovery(date) {
   }
 
   if (!method) {
-    uni.showToast({ title: '请先获取补签卡', icon: 'none' });
+    toast.info('请先获取补签卡');
     return;
   }
 
   try {
-    const result = await streakRecovery.recover(date, method);
+    const result = await _streakRecovery.recover(date, method);
 
     if (result.success) {
       // 刷新打卡数据
       await loadCheckinData();
 
-      uni.showToast({
-        title: `补签成功！连续${result.data.streak}天`,
-        icon: 'success'
-      });
+      toast.success(`补签成功！连续${result.data.streak}天`);
     } else {
-      uni.showToast({ title: result.message, icon: 'none' });
+      toast.info(result.message);
     }
   } catch (error) {
     logger.error('[Profile] handleRecovery error:', error);
-    uni.showToast({ title: '补签失败，请稍后重试', icon: 'none' });
+    toast.info('补签失败，请稍后重试');
   }
 }
 
 // 问题54：显示补签选项弹窗
 function showRecoveryOptions() {
   // 获取可补签的日期列表
-  const recoverableDates = streakRecovery.getRecoverableDates();
+  const recoverableDates = _streakRecovery.getRecoverableDates();
 
   if (recoverableDates.length === 0) {
-    uni.showToast({ title: '没有可补签的日期', icon: 'none' });
+    toast.info('没有可补签的日期');
     return;
   }
 
@@ -669,7 +676,7 @@ function showRecoveryOptions() {
   const availableDates = recoverableDates.filter((d) => d.canRecover && d.daysAgo <= 7).slice(0, 5);
 
   if (availableDates.length === 0) {
-    uni.showToast({ title: '没有可补签的日期', icon: 'none' });
+    toast.info('没有可补签的日期');
     return;
   }
 
@@ -728,11 +735,7 @@ function toggleTheme() {
   vibrateLight();
 
   // 显示切换成功提示
-  uni.showToast({
-    title: isDark.value ? '已开启深色模式' : '已关闭深色模式',
-    icon: 'none',
-    duration: 1500
-  });
+  toast.info(isDark.value ? '已开启深色模式' : '已关闭深色模式', 1500);
 }
 
 async function handleEditProfile() {
@@ -744,7 +747,7 @@ async function handleEditProfile() {
       if (res.confirm && res.content) {
         const newName = res.content.trim();
         if (!newName) {
-          uni.showToast({ title: '昵称不能为空', icon: 'none' });
+          toast.info('昵称不能为空');
           return;
         }
         try {
@@ -756,13 +759,13 @@ async function handleEditProfile() {
           const cached = storageService.get('userInfo', {});
           cached.nickName = newName;
           storageService.save('userInfo', cached);
-          uni.showToast({ title: '更新成功', icon: 'success' });
+          toast.success('更新成功');
         } catch (e) {
           logger.error('[Profile] 昵称更新失败:', e);
-          uni.showToast({ title: '更新失败，请重试', icon: 'none' });
+          toast.info('更新失败，请重试');
         }
       } else if (res.confirm && !res.content) {
-        uni.showToast({ title: '昵称不能为空', icon: 'none' });
+        toast.info('昵称不能为空');
       }
     }
   });
@@ -815,20 +818,20 @@ async function chooseAndUploadAvatar(sourceType) {
     const tempFilePath = chooseRes.tempFilePaths[0];
 
     // 显示上传中提示
-    uni.showLoading({ title: '上传中...', mask: true });
+    toast.loading('上传中...');
 
     // 获取用户ID
     const userId = storageService.get('EXAM_USER_ID') || userStore.userInfo?._id;
     if (!userId) {
-      uni.hideLoading();
-      uni.showToast({ title: '请先登录', icon: 'none' });
+      toast.hide();
+      toast.info('请先登录');
       return;
     }
 
     // 上传到服务器
     const uploadRes = await uploadAvatarToServer(tempFilePath, userId);
 
-    uni.hideLoading();
+    toast.hide();
 
     if (uploadRes.success) {
       // 更新本地存储
@@ -843,17 +846,17 @@ async function chooseAndUploadAvatar(sourceType) {
       // 通知其他页面
       uni.$emit('userInfoUpdated', { avatarUrl: uploadRes.avatarUrl });
 
-      uni.showToast({ title: '头像更新成功', icon: 'success' });
+      toast.success('头像更新成功');
 
       // ✅ P0-FIX: 强制刷新页面数据，确保头像立即显示
       setTimeout(() => {
         loadData();
       }, 500);
     } else {
-      uni.showToast({ title: uploadRes.message || '上传失败', icon: 'none' });
+      toast.info(uploadRes.message || '上传失败');
     }
   } catch (error) {
-    uni.hideLoading();
+    toast.hide();
     logger.error('[Profile] chooseAndUploadAvatar error:', error);
 
     // 用户取消选择不提示错误
@@ -861,7 +864,7 @@ async function chooseAndUploadAvatar(sourceType) {
       return;
     }
 
-    uni.showToast({ title: '上传失败，请重试', icon: 'none' });
+    toast.info('上传失败，请重试');
   }
 }
 
@@ -952,7 +955,7 @@ function handleStatTap(type) {
     badges: `已获得 ${badgeCount.value} 个勋章`,
     accuracy: `答题正确率 ${accuracyRate.value}%`
   };
-  uni.showToast({ title: messages[type] || '', icon: 'none', duration: 2000 });
+  toast.info(messages[type] || '');
 }
 
 function navToMistake() {
@@ -995,14 +998,14 @@ function handleLogout() {
           // 通知其他页面登录状态变化
           uni.$emit('loginStatusChanged', false);
 
-          uni.showToast({ title: '已退出登录', icon: 'success' });
+          toast.success('已退出登录');
 
           setTimeout(() => {
             uni.switchTab({ url: '/pages/index/index' });
           }, 1000);
         } catch (error) {
           logger.error('[Profile] 退出登录失败:', error);
-          uni.showToast({ title: '退出失败，请重试', icon: 'none' });
+          toast.info('退出失败，请重试');
         }
       }
     }
@@ -1559,7 +1562,7 @@ onHide(() => {
   align-items: center;
   justify-content: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-padding: 28rpx;
+  padding: 28rpx;
   border-radius: 24rpx;
   margin-bottom: 24rpx;
   background-color: var(--bg-card);
@@ -1806,7 +1809,7 @@ padding: 28rpx;
   align-items: center;
   justify-content: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-padding: 28rpx 40rpx;
+  padding: 28rpx 40rpx;
   border-radius: 50rpx;
   transition: all 0.3s ease;
 }
@@ -1885,7 +1888,7 @@ padding: 28rpx 40rpx;
   display: flex;
   align-items: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-margin-top: 20rpx;
+  margin-top: 20rpx;
   padding: 16rpx 20rpx;
   background: var(--warning-light);
   border-radius: 16rpx;

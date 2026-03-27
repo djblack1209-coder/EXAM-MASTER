@@ -36,8 +36,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate } from './_shared/validator';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { validate } from './_shared/validator.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   success,
   badRequest,
@@ -47,8 +47,8 @@ import {
   wrapResponse,
   checkRateLimitDistributed,
   tooManyRequests
-} from './_shared/api-response';
-import { createLogger } from './_shared/api-response';
+} from './_shared/api-response.js';
+import { createLogger } from './_shared/api-response.js';
 
 const logger = createLogger('[VoiceService]');
 
@@ -160,7 +160,13 @@ async function handleSTT(params, requestId) {
 
   try {
     // 智谱 ASR API 支持 file_base64 参数
-    const requestBody = {
+    const requestBody: {
+      model: string;
+      file_base64: string;
+      stream: boolean;
+      hotwords?: string[];
+      prompt?: string;
+    } = {
       model: 'glm-asr-2512',
       file_base64: audioBase64,
       stream: false

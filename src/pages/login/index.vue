@@ -213,11 +213,11 @@
           id="e2e-login-email-submit"
           class="login-btn email-submit-btn"
           hover-class="btn-hover"
-          :class="{ 'btn-disabled': isLoading }"
+          :class="{ 'btn-disabled': isLoading || emailSubmitting }"
           @tap="handleEmailLogin"
         >
           <text class="btn-text">
-            {{ isLoading ? '登录中...' : isRegister ? '注册并登录' : '登录' }}
+            {{ isLoading || emailSubmitting ? '登录中...' : isRegister ? '注册并登录' : '登录' }}
           </text>
         </view>
 
@@ -267,12 +267,16 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { useUserStore } from '@/stores/modules/user';
+import { useAuthStore } from '@/stores/modules/auth';
+
+// 初始化认证 Store
+const authStore = useAuthStore();
 import config from '@/config/index.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
@@ -286,7 +290,8 @@ const capsuleSafeRight = ref(20);
 
 // 登录状态
 const isLoading = ref(false);
-let emailLoginLock = false;
+// 邮箱登录提交锁（响应式 ref，驱动按钮 disabled 样式，阻止并行点击）
+const emailSubmitting = ref(false);
 let lastEmailSubmitAt = 0;
 const EMAIL_SUBMIT_COOLDOWN_MS = 2500;
 const agreedToTerms = ref(false);
@@ -343,11 +348,7 @@ const toggleRegister = () => {
 
 const enterCodeCooldownFallback = (seconds = 60) => {
   startCodeCooldown(seconds);
-  uni.showToast({
-    title: '验证码请求状态不确定，请先检查邮箱',
-    icon: 'none',
-    duration: 2200
-  });
+  toast.info('验证码请求状态不确定，请先检查邮箱', 2200);
 };
 
 const startCodeCooldown = (seconds) => {
@@ -375,21 +376,18 @@ const sendVerifyCode = async () => {
 
   try {
     isSendingCode.value = true;
-    uni.showLoading({ title: '发送中...' });
+    toast.loading('发送中...');
 
-    const res = await lafService.sendEmailCode(normalizeEmailAddress(emailForm.value.email)).catch((err) => {
+    const res = await authStore.sendEmailCode(normalizeEmailAddress(emailForm.value.email)).catch((err) => {
       logger.error('[Login] sendEmailCode Promise rejected:', err);
       return { code: -1, message: '网络请求失败' };
     });
 
-    uni.hideLoading();
+    toast.hide();
 
     if (res && res.code === 0) {
       const cooldown = res?.retryAfter || 60;
-      uni.showToast({
-        title: res?.alreadySent ? '验证码已发送，请稍候查收' : '验证码已发送，请查收邮箱',
-        icon: 'success'
-      });
+      toast.success(res?.alreadySent ? '验证码已发送，请稍候查收' : '验证码已发送，请查收邮箱');
       startCodeCooldown(cooldown);
     } else {
       // 根据错误类型给出更友好的提示
@@ -403,14 +401,14 @@ const sendVerifyCode = async () => {
       } else if (res?.message?.includes('邮箱')) {
         errorMsg = '邮箱格式不正确';
       }
-      uni.showToast({ title: errorMsg, icon: 'none' });
+      toast.info(errorMsg);
     }
   } catch (error) {
-    uni.hideLoading();
+    toast.hide();
     logger.error('[Login] 发送验证码失败:', error);
     enterCodeCooldownFallback(60);
   } finally {
-    uni.hideLoading();
+    toast.hide();
     isSendingCode.value = false;
   }
 };
@@ -463,7 +461,7 @@ const handleE2EMockLogin = () => {
     }
   });
 
-  uni.showToast({ title: '测试登录成功', icon: 'success' });
+  toast.success('测试登录成功');
   setTimeout(() => {
     isLoading.value = false;
     navigateAfterLogin();
@@ -473,7 +471,7 @@ const handleE2EMockLogin = () => {
 // 微信登录
 const handleWechatLogin = async () => {
   if (!agreedToTerms.value) {
-    uni.showToast({ title: '请先同意用户协议', icon: 'none' });
+    toast.info('请先同意用户协议');
     return;
   }
 
@@ -481,7 +479,7 @@ const handleWechatLogin = async () => {
   isLoading.value = true;
 
   try {
-    uni.showLoading({ title: '登录中...' });
+    toast.loading('登录中...');
 
     // #ifdef MP-WEIXIN
     const loginRes = await new Promise((resolve, reject) => {
@@ -498,22 +496,21 @@ const handleWechatLogin = async () => {
     logger.log('[Login] 微信登录code:', loginRes.code);
 
     // 调用后端登录接口
-    const res = await lafService
-      .login({
-        type: 'wechat',
+    const res = await authStore
+      .loginByWechat({
         code: loginRes.code
       })
       .catch((err) => {
-        logger.error('[Login] lafService.login failed:', err);
+        logger.error('[Login] authStore.loginByWechat failed:', err);
         return { code: -1, message: '登录请求失败' };
       });
 
-    uni.hideLoading();
+    toast.hide();
 
     if (res && res.code === 0 && res.data) {
       // 保存用户信息
       saveLoginInfo(res.data);
-      uni.showToast({ title: '登录成功', icon: 'success' });
+      toast.success('登录成功');
 
       setTimeout(() => {
         navigateAfterLogin();
@@ -532,7 +529,7 @@ const handleWechatLogin = async () => {
       } else if (res?.message) {
         errorMsg = res.message;
       }
-      uni.showToast({ title: errorMsg, icon: 'none' });
+      toast.info(errorMsg);
     }
     // #endif
 
@@ -540,8 +537,8 @@ const handleWechatLogin = async () => {
     // E007: APP-PLUS 环境使用微信 SDK 登录
     // #ifdef APP-PLUS
     if (!hasWechatProvider.value) {
-      uni.hideLoading();
-      uni.showToast({ title: '当前设备不支持微信登录', icon: 'none' });
+      toast.hide();
+      toast.info('当前设备不支持微信登录');
       return;
     }
 
@@ -564,9 +561,8 @@ const handleWechatLogin = async () => {
         });
       });
 
-      const res = await lafService
-        .login({
-          type: 'wechat',
+      const res = await authStore
+        .loginByWechat({
           code: loginRes.code,
           accessToken: loginRes.authResult?.access_token,
           openid: loginRes.authResult?.openid,
@@ -574,43 +570,43 @@ const handleWechatLogin = async () => {
           platform: 'app'
         })
         .catch((err) => {
-          logger.error('[Login] lafService.login (app-wechat) failed:', err);
+          logger.error('[Login] authStore.loginByWechat (app) failed:', err);
           return { code: -1, message: '登录请求失败' };
         });
 
-      uni.hideLoading();
+      toast.hide();
 
       if (res && res.code === 0 && res.data) {
         saveLoginInfo(res.data);
-        uni.showToast({ title: '登录成功', icon: 'success' });
+        toast.success('登录成功');
         setTimeout(() => {
           navigateAfterLogin();
         }, 1500);
       } else {
         let errorMsg = '微信登录失败，请重试';
         if (res?.message) errorMsg = res.message;
-        uni.showToast({ title: errorMsg, icon: 'none' });
+        toast.info(errorMsg);
       }
     } catch (appWechatErr) {
-      uni.hideLoading();
+      toast.hide();
       logger.error('[Login] App微信登录失败:', appWechatErr);
       let errorMsg = '微信登录失败，请重试';
       if (appWechatErr?.errMsg?.includes('cancel')) errorMsg = '已取消微信登录';
-      uni.showToast({ title: errorMsg, icon: 'none' });
+      toast.info(errorMsg);
     }
     // #endif
 
     // #ifndef APP-PLUS
     // H5 环境下微信浏览器走 OAuth 网页授权（由 handleWechatH5Login 处理）
     // 非微信浏览器提示
-    uni.hideLoading();
-    uni.showToast({ title: '请在微信中打开或使用其他方式登录', icon: 'none' });
+    toast.hide();
+    toast.info('请在微信中打开或使用其他方式登录');
     // #endif
     // #endif
   } catch (error) {
-    uni.hideLoading();
+    toast.hide();
     logger.error('[Login] 微信登录失败:', error);
-    uni.showToast({ title: error?.message || '登录失败，请重试', icon: 'none' });
+    toast.info(error?.message || '登录失败，请重试');
   } finally {
     isLoading.value = false;
   }
@@ -619,7 +615,7 @@ const handleWechatLogin = async () => {
 // E007: H5微信浏览器 OAuth 网页授权登录
 const handleWechatH5Login = () => {
   if (!agreedToTerms.value) {
-    uni.showToast({ title: '请先同意用户协议', icon: 'none' });
+    toast.info('请先同意用户协议');
     return;
   }
   if (isLoading.value) return;
@@ -630,7 +626,7 @@ const handleWechatH5Login = () => {
     // I005: 从统一配置获取微信公众号 AppID
     const wxAppId = config.wx.gzhAppId || '';
     if (!wxAppId) {
-      uni.showToast({ title: '微信公众号未配置', icon: 'none' });
+      toast.info('微信公众号未配置');
       isLoading.value = false;
       return;
     }
@@ -676,12 +672,12 @@ const handleWechatH5Login = () => {
     if (typeof location !== 'undefined') {
       location.href = authUrl;
     } else {
-      uni.showToast({ title: '当前环境不支持网页授权跳转', icon: 'none' });
+      toast.info('当前环境不支持网页授权跳转');
       isLoading.value = false;
     }
   } catch (err) {
     logger.error('[Login] 微信H5 OAuth跳转失败:', err);
-    uni.showToast({ title: '微信授权跳转失败', icon: 'none' });
+    toast.info('微信授权跳转失败');
     isLoading.value = false;
   }
   // #endif
@@ -694,7 +690,7 @@ const handleWechatH5Login = () => {
 // QQ登录
 const handleQQLogin = async () => {
   if (!agreedToTerms.value) {
-    uni.showToast({ title: '请先同意用户协议', icon: 'none' });
+    toast.info('请先同意用户协议');
     return;
   }
 
@@ -702,7 +698,7 @@ const handleQQLogin = async () => {
   isLoading.value = true;
 
   try {
-    uni.showLoading({ title: '登录中...' });
+    toast.loading('登录中...');
 
     // #ifdef MP-QQ
     // QQ小程序环境
@@ -717,17 +713,16 @@ const handleQQLogin = async () => {
     logger.log('[Login] QQ小程序登录code:', loginRes.code);
 
     // 调用后端登录接口
-    const res = await lafService.login({
-      type: 'qq',
+    const res = await authStore.loginByQQ({
       code: loginRes.code,
       platform: 'mp-qq'
     });
 
-    uni.hideLoading();
+    toast.hide();
 
     if (res.code === 0 && res.data) {
       saveLoginInfo(res.data);
-      uni.showToast({ title: '登录成功', icon: 'success' });
+      toast.success('登录成功');
 
       setTimeout(() => {
         navigateAfterLogin();
@@ -740,13 +735,13 @@ const handleQQLogin = async () => {
       } else if (res.message) {
         errorMsg = res.message;
       }
-      uni.showToast({ title: errorMsg, icon: 'none' });
+      toast.info(errorMsg);
     }
     // #endif
 
     // #ifdef MP-WEIXIN
     // 微信小程序环境不支持QQ登录，提示用户使用其他方式
-    uni.hideLoading();
+    toast.hide();
     uni.showModal({
       title: 'QQ登录',
       content: '微信小程序暂不支持QQ登录，请使用微信登录或邮箱登录',
@@ -757,13 +752,13 @@ const handleQQLogin = async () => {
 
     // #ifdef H5
     // H5环境：使用QQ OAuth网页授权
-    uni.hideLoading();
+    toast.hide();
 
     // QQ互联配置 — 从统一配置读取，支持环境变量覆盖
     const qqAppId = config.qq.appId;
     if (!qqAppId) {
-      uni.hideLoading();
-      uni.showToast({ title: 'QQ登录未配置', icon: 'none' });
+      toast.hide();
+      toast.info('QQ登录未配置');
       isLoading.value = false;
       return;
     }
@@ -802,7 +797,7 @@ const handleQQLogin = async () => {
     if (typeof location !== 'undefined') {
       location.href = authUrl;
     } else {
-      uni.showToast({ title: '当前环境不支持网页授权跳转', icon: 'none' });
+      toast.info('当前环境不支持网页授权跳转');
       isLoading.value = false;
     }
     // #endif
@@ -820,8 +815,8 @@ const handleQQLogin = async () => {
       });
 
       if (!providers.includes('qq')) {
-        uni.hideLoading();
-        uni.showToast({ title: '请先安装QQ客户端', icon: 'none' });
+        toast.hide();
+        toast.info('请先安装QQ客户端');
         return;
       }
 
@@ -845,8 +840,7 @@ const handleQQLogin = async () => {
       });
 
       // 调用后端登录接口
-      const res = await lafService.login({
-        type: 'qq',
+      const res = await authStore.loginByQQ({
         code: loginRes.code,
         accessToken: loginRes.authResult?.access_token,
         openid: loginRes.authResult?.openid,
@@ -855,11 +849,11 @@ const handleQQLogin = async () => {
         redirectUri: config.qq.redirectUri
       });
 
-      uni.hideLoading();
+      toast.hide();
 
       if (res.code === 0 && res.data) {
         saveLoginInfo(res.data);
-        uni.showToast({ title: '登录成功', icon: 'success' });
+        toast.success('登录成功');
 
         setTimeout(() => {
           navigateAfterLogin();
@@ -872,10 +866,10 @@ const handleQQLogin = async () => {
         } else if (res.message) {
           errorMsg = res.message;
         }
-        uni.showToast({ title: errorMsg, icon: 'none' });
+        toast.info(errorMsg);
       }
     } catch (appError) {
-      uni.hideLoading();
+      toast.hide();
       logger.error('[Login] App QQ登录失败:', appError);
 
       // 根据错误类型给出提示
@@ -886,13 +880,13 @@ const handleQQLogin = async () => {
         errorMsg = '用户拒绝授权';
       }
 
-      uni.showToast({ title: errorMsg, icon: 'none' });
+      toast.info(errorMsg);
     }
     // #endif
   } catch (error) {
-    uni.hideLoading();
+    toast.hide();
     logger.error('[Login] QQ登录失败:', error);
-    uni.showToast({ title: '登录失败，请重试', icon: 'none' });
+    toast.info('登录失败，请重试');
   } finally {
     isLoading.value = false;
   }
@@ -900,29 +894,34 @@ const handleQQLogin = async () => {
 
 // 邮箱登录/注册
 const handleEmailLogin = async () => {
-  if (emailLoginLock || isLoading.value) return;
-  emailLoginLock = true;
+  // 防重复点击：时间戳锁位于最顶部，使用纯 JS 变量保证同步可靠性
+  const now = Date.now();
+  if (now - lastEmailSubmitAt < EMAIL_SUBMIT_COOLDOWN_MS) return;
+  lastEmailSubmitAt = now;
+
+  if (emailSubmitting.value || isLoading.value) return;
+  emailSubmitting.value = true;
 
   try {
     if (!agreedToTerms.value) {
-      uni.showToast({ title: '请先同意用户协议', icon: 'none' });
+      toast.info('请先同意用户协议');
       return;
     }
 
     // 表单验证
     if (!isEmailValid.value) {
-      uni.showToast({ title: '请输入有效的邮箱地址', icon: 'none' });
+      toast.info('请输入有效的邮箱地址');
       return;
     }
 
     // ✅ 问题清单修复：密码校验与后端统一（8-32 位）
     const password = (emailForm.value.password || '').trim();
     if (!password || password.length < 8) {
-      uni.showToast({ title: '密码至少8位', icon: 'none' });
+      toast.info('密码至少8位');
       return;
     }
     if (password.length > 32) {
-      uni.showToast({ title: '密码不能超过32位', icon: 'none' });
+      toast.info('密码不能超过32位');
       return;
     }
 
@@ -930,59 +929,52 @@ const handleEmailLogin = async () => {
     if (isRegister.value) {
       // ✅ M17: 密码强度检查（仅注册时）：需包含大写字母、小写字母和数字
       if (!/[A-Z]/.test(password)) {
-        uni.showToast({ title: '密码需包含大写字母', icon: 'none' });
+        toast.info('密码需包含大写字母');
         return;
       }
       if (!/[a-z]/.test(password)) {
-        uni.showToast({ title: '密码需包含小写字母', icon: 'none' });
+        toast.info('密码需包含小写字母');
         return;
       }
       if (!/\d/.test(password)) {
-        uni.showToast({ title: '密码需包含数字', icon: 'none' });
+        toast.info('密码需包含数字');
         return;
       }
 
       if (!emailForm.value.code) {
-        uni.showToast({ title: '请输入验证码', icon: 'none' });
+        toast.info('请输入验证码');
         return;
       }
 
       if (emailForm.value.code.length !== 6) {
-        uni.showToast({ title: '验证码为6位数字', icon: 'none' });
+        toast.info('验证码为6位数字');
         return;
       }
     }
-
-    const now = Date.now();
-    if (now - lastEmailSubmitAt < EMAIL_SUBMIT_COOLDOWN_MS) {
-      return;
-    }
-    lastEmailSubmitAt = now;
 
     if (isLoading.value) return;
     isLoading.value = true;
 
     try {
-      uni.showLoading({ title: isRegister.value ? '注册中...' : '登录中...' });
+      toast.loading(isRegister.value ? '注册中...' : '登录中...');
 
-      const res = await lafService
-        .login({
-          type: 'email',
+      const res = await authStore
+        .loginByEmail({
           email: normalizeEmailAddress(emailForm.value.email),
           password: emailForm.value.password,
           verifyCode: isRegister.value ? emailForm.value.code : undefined,
           isRegister: isRegister.value
         })
         .catch((err) => {
-          logger.error('[Login] lafService.login (email) failed:', err);
+          logger.error('[Login] authStore.loginByEmail failed:', err);
           return { code: -1, message: '网络请求失败' };
         });
 
-      uni.hideLoading();
+      toast.hide();
 
       if (res && res.code === 0 && res.data) {
         saveLoginInfo(res.data);
-        uni.showToast({ title: isRegister.value ? '注册成功' : '登录成功', icon: 'success' });
+        toast.success(isRegister.value ? '注册成功' : '登录成功');
 
         // 清空表单
         emailForm.value = { email: '', password: '', code: '' };
@@ -997,18 +989,18 @@ const handleEmailLogin = async () => {
         } else if (res?.message?.includes('不存在') || res?.message?.includes('未注册')) {
           isRegister.value = true; // 自动切换到注册模式
         }
-        uni.showToast({ title: errorMsg, icon: 'none' });
+        toast.info(errorMsg);
       }
     } catch (error) {
-      uni.hideLoading();
+      toast.hide();
       logger.error('[Login] 邮箱登录失败:', error);
-      uni.showToast({ title: '网络错误，请重试', icon: 'none' });
+      toast.info('网络错误，请重试');
     } finally {
-      uni.hideLoading();
+      toast.hide();
       isLoading.value = false;
     }
   } finally {
-    emailLoginLock = false;
+    emailSubmitting.value = false;
   }
 };
 

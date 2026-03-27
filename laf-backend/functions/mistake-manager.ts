@@ -25,7 +25,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   scheduleReviewFSRS,
   createNewCard,
@@ -34,14 +34,14 @@ import {
   migrateToFSRS,
   type FSRSScheduleResult,
   type ReviewLogRecord
-} from './_shared/fsrs-scheduler';
+} from './_shared/fsrs-scheduler.js';
 import {
   sanitizeString,
   validateAction,
   validateUserId,
   createLogger,
   generateRequestId
-} from './_shared/api-response';
+} from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;

@@ -36,17 +36,14 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-export default {
-  name: 'FormulaModal',
-  components: { BaseIcon },
-  props: {
-    visible: { type: Boolean, default: false },
-    formulaList: { type: Array, default: () => [] }
-  },
-  emits: ['close']
-};
+
+defineProps({
+  visible: { type: Boolean, default: false },
+  formulaList: { type: Array, default: () => [] }
+});
+defineEmits(['close']);
 </script>
 
 <style lang="scss" scoped>

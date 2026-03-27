@@ -237,7 +237,8 @@
 </template>
 
 <script>
-import { lafService } from '@/services/lafService.js';
+import { toast } from '@/utils/toast.js';
+import { useToolsStore } from '@/stores/modules/tools.js';
 import storageService from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -250,6 +251,10 @@ import { ensureMiniProgramScope, ensurePrivacyAuthorization } from './privacy-au
 
 export default {
   components: { PrivacyPopup },
+  setup() {
+    const toolsStore = useToolsStore();
+    return { toolsStore };
+  },
   data() {
     return {
       statusBarHeight: 44,
@@ -346,18 +351,14 @@ export default {
     // 相机错误处理
     onCameraError(e) {
       logger.error('相机错误:', e);
-      uni.showToast({
-        title: '相机初始化失败，请检查权限',
-        icon: 'none',
-        duration: 2000
-      });
+      toast.info('相机初始化失败，请检查权限');
     },
 
     // 拍照
     async takePhoto() {
       const privacyOk = await ensurePrivacyAuthorization();
       if (!privacyOk) {
-        uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+        toast.info('需要先同意隐私授权');
         return;
       }
 
@@ -367,7 +368,7 @@ export default {
         content: '需要相机权限才能拍照搜题，是否前往设置开启？'
       });
       if (!cameraGranted) {
-        uni.showToast({ title: '未开启相机权限', icon: 'none' });
+        toast.info('未开启相机权限');
         return;
       }
 
@@ -402,7 +403,7 @@ export default {
                     }
                   });
                 } else {
-                  uni.showToast({ title: '拍照失败，请检查权限', icon: 'none' });
+                  toast.info('拍照失败，请检查权限');
                 }
               }
             });
@@ -433,7 +434,7 @@ export default {
               }
             });
           } else {
-            uni.showToast({ title: '拍照失败', icon: 'none' });
+            toast.info('拍照失败');
           }
         }
       });
@@ -443,7 +444,7 @@ export default {
     async chooseFromAlbum() {
       const privacyOk = await ensurePrivacyAuthorization();
       if (!privacyOk) {
-        uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+        toast.info('需要先同意隐私授权');
         return;
       }
 
@@ -470,7 +471,7 @@ export default {
                 }
               });
             } else {
-              uni.showToast({ title: '选择图片失败', icon: 'none' });
+              toast.info('选择图片失败');
             }
           }
         }
@@ -509,13 +510,11 @@ export default {
           throw new Error('图片格式转换失败，请重新拍照');
         }
 
-        // 调用云函数
-        const response = await lafService.photoSearch(base64, {
+        const response = await this.toolsStore.searchByPhoto(base64, {
           subject: this.selectedSubject
         });
 
-        if (response.code === 0 && response.data) {
-          // 数据完整性校验 (CP-20260127-QA: 防止空数据导致白屏)
+        if (response.success && response.data) {
           const rawData = response.data;
           const recognizedText = rawData.recognizedText || rawData.recognition?.questionText || '';
 
@@ -714,7 +713,7 @@ export default {
       }
 
       if (questions.length === 0) {
-        uni.showToast({ title: '没有可练习的题目', icon: 'none' });
+        toast.info('没有可练习的题目');
         return;
       }
 
@@ -729,7 +728,7 @@ export default {
       if (this.result && this.result.questions && this.result.questions.length > 0) {
         this.isAddingMistake = true;
         const question = this.result.questions[0];
-        uni.showLoading({ title: '添加中...', mask: false });
+        toast.loading('添加中...');
         try {
           // 使用 storageService.addMistake（支持云端同步+本地降级）
           await storageService.addMistake({
@@ -741,12 +740,12 @@ export default {
             source: 'photo_search',
             category: question.category || this.selectedSubject || '未分类'
           });
-          uni.hideLoading();
-          uni.showToast({ title: '已加入错题本', icon: 'success' });
+          toast.hide();
+          toast.success('已加入错题本');
         } catch (e) {
-          uni.hideLoading();
+          toast.hide();
           logger.error('加入错题本失败:', e);
-          uni.showToast({ title: '加入失败', icon: 'none' });
+          toast.info('加入失败');
         } finally {
           this.isAddingMistake = false;
         }
@@ -761,7 +760,7 @@ export default {
         // practice/index 是 tabBar 页面，switchTab 不支持 query 参数
         // 通过临时存储传递搜索关键词，供刷题中心后续读取
         storageService.save('_pendingSearch', { keyword, timestamp: Date.now() });
-        uni.showToast({ title: '已跳转到刷题中心', icon: 'none' });
+        toast.info('已跳转到刷题中心');
         // practice/index 是 tabBar 页面，必须用 switchTab
         uni.switchTab({ url: '/pages/practice/index' });
       }

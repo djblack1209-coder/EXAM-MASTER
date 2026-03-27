@@ -209,11 +209,14 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-import { lafService } from '@/services/lafService.js';
+import { useReviewStore } from '@/stores/modules/review.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
+
+const reviewStore = useReviewStore();
 
 const isDark = ref(initTheme());
 
@@ -358,19 +361,19 @@ async function loadReport() {
 
     let res;
     if (diagnosisId) {
-      res = await lafService.getDiagnosis({ diagnosisId });
+      res = await reviewStore.fetchDiagnosis({ diagnosisId });
     } else if (sessionId) {
-      res = await lafService.getDiagnosis({ sessionId });
+      res = await reviewStore.fetchDiagnosis({ sessionId });
     }
 
-    if (res && res.code === 0 && res.data) {
+    if (res && res.success && res.data) {
       diagnosis.value = res.data.diagnosis || {};
       stats.value = res.data.stats || {};
     }
 
     // 获取待复习数量
-    const planRes = await lafService.getReviewPlan();
-    if (planRes && planRes.code === 0 && planRes.data) {
+    const planRes = await reviewStore.fetchReviewPlan();
+    if (planRes && planRes.success && planRes.data) {
       reviewCount.value = planRes.data.reviewPlan?.totalPending || 0;
     }
   } catch (e) {
@@ -400,7 +403,7 @@ function startTargetedLesson() {
 }
 
 function shareReport() {
-  uni.showToast({ title: '长按页面可截图分享', icon: 'none' });
+  toast.info('长按页面可截图分享');
 }
 
 function goBack() {

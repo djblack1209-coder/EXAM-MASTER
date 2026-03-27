@@ -112,7 +112,7 @@ const mocked = vi.hoisted(() => {
     collection: (name) => createCollection(name)
   };
 
-  const checkRateLimitMock = vi.fn((_key, _limit, _windowMs) => ({ allowed: true }));
+  const checkRateLimitMock = vi.fn((_key, _limit, _windowMs) => ({ allowed: true, remaining: 9 }));
 
   return {
     scenario,
@@ -142,13 +142,26 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: vi.fn(() => mocked.getJwtPayload())
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  checkRateLimit: (key, limit, windowMs) => mocked.checkRateLimitMock(key, limit, windowMs),
-  createLogger: () => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  })
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  const mock = createApiResponseMock();
+  mock.checkRateLimit = (key, limit, windowMs) => mocked.checkRateLimitMock(key, limit, windowMs);
+  return mock;
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.getJwtPayload();
+    if (!payload) return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    return { userId: payload.userId };
+  },
+  isAuthError: (result) => result?.code === 401
+}));
+
+vi.mock('../../laf-backend/functions/_shared/validator', () => ({
+  validate: vi.fn(() => ({ valid: true, errors: [] }))
 }));
 
 import learningResourceHandler from '../../laf-backend/functions/learning-resource';
@@ -157,7 +170,7 @@ describe('[安全审计] learning-resource 关键防护', () => {
   beforeEach(() => {
     mocked.setJwtPayload({ userId: 'user_token' });
     mocked.checkRateLimitMock.mockClear();
-    mocked.checkRateLimitMock.mockReturnValue({ allowed: true });
+    mocked.checkRateLimitMock.mockReturnValue({ allowed: true, remaining: 9 });
     mocked.resetScenario();
   });
 

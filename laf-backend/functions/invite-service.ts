@@ -10,7 +10,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   logger,
   success,
@@ -20,7 +20,7 @@ import {
   error as apiError,
   generateRequestId,
   ResponseCode
-} from './_shared/api-response';
+} from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;

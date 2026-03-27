@@ -47,27 +47,23 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'GenerationProgressBar',
-  components: { BaseIcon },
-  props: {
-    progress: { type: Number, default: 0 },
-    fileName: { type: String, default: '' },
-    generatedQuestionCount: { type: Number, default: 0 }
-  },
-  emits: ['pause'],
-  computed: {
-    statusText() {
-      if (this.progress < 20) return '正在分析文档结构...';
-      if (this.progress < 50) return '已生成 ' + this.generatedQuestionCount + ' 道题目';
-      if (this.progress < 80) return '题目生成中，即将完成...';
-      return '最后冲刺，马上就好！';
-    }
-  }
-};
+const props = defineProps({
+  progress: { type: Number, default: 0 },
+  fileName: { type: String, default: '' },
+  generatedQuestionCount: { type: Number, default: 0 }
+});
+defineEmits(['pause']);
+
+const statusText = computed(() => {
+  if (props.progress < 20) return '正在分析文档结构...';
+  if (props.progress < 50) return '已生成 ' + props.generatedQuestionCount + ' 道题目';
+  if (props.progress < 80) return '题目生成中，即将完成...';
+  return '最后冲刺，马上就好！';
+});
 </script>
 
 <style lang="scss" scoped>
@@ -107,7 +103,7 @@ export default {
   display: flex;
   flex-direction: column;
   /* gap: 4px; -- replaced for Android WebView compat */
-flex: 1;
+  flex: 1;
   min-width: 0;
 }
 .progress-label {

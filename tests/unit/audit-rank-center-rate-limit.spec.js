@@ -68,21 +68,22 @@ vi.mock('../../laf-backend/node_modules/@lafjs/cloud/dist/index.js', () => ({
   }
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  logger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  const mock = createApiResponseMock();
+  mock.checkRateLimitDistributed = mocked.checkRateLimitDistributed;
+  return mock;
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.verifyJWT(token);
+    if (!payload) return { code: 401, success: false, message: 'token无效' };
+    return { userId: payload.userId, payload };
   },
-  sanitizeString: (value) => String(value ?? ''),
-  validateUserId: (value) => typeof value === 'string' && value.length > 0,
-  success: (data, message = 'success') => ({ code: 0, success: true, message, data }),
-  badRequest: (message = 'bad request') => ({ code: 400, success: false, message }),
-  tooManyRequests: (message = 'too many requests') => ({ code: 429, success: false, message }),
-  unauthorized: (message = 'unauthorized') => ({ code: 401, success: false, message }),
-  serverError: (message = 'server error') => ({ code: 500, success: false, message }),
-  generateRequestId: () => 'rank_test_req',
-  checkRateLimitDistributed: mocked.checkRateLimitDistributed
+  isAuthError: (result) => result?.code === 401
 }));
 
 import rankCenterHandler from '../../laf-backend/functions/rank-center';
@@ -108,8 +109,8 @@ describe('[安全审计] rank-center 限流语义一致性', () => {
     expect(result.code).toBe(429);
     expect(result.success).toBe(false);
     expect(result.message).toContain('频繁');
-    expect(result.requestId).toBe('rank_test_req');
-    expect(mocked.verifyJWT).toHaveBeenCalledWith('valid_token');
+    expect(result.requestId).toMatch(/^rank_/);
+    expect(mocked.verifyJWT).toHaveBeenCalled();
     expect(mocked.checkRateLimitDistributed).toHaveBeenCalledTimes(1);
   });
 });

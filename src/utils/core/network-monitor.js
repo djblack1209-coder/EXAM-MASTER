@@ -25,6 +25,7 @@ import { offlineQueue } from './offline-queue.js';
 import { logger } from '@/utils/logger.js';
 // P006: 从中央配置读取网络检测 URL
 import config from '@/config/index.js';
+import { toast } from '@/utils/toast.js';
 
 function createNetworkUniCompat() {
   return {
@@ -250,11 +251,7 @@ class NetworkMonitor {
 
         // 显示提示
         if (this.config.showToast) {
-          uni.showToast({
-            title: '网络已恢复',
-            icon: 'success',
-            duration: 1500
-          });
+          toast.success('网络已恢复');
         }
 
         // 自动同步
@@ -271,11 +268,7 @@ class NetworkMonitor {
 
         // 显示提示
         if (this.config.showToast) {
-          uni.showToast({
-            title: '网络已断开',
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info('网络已断开');
         }
       }
     }
@@ -295,11 +288,7 @@ class NetworkMonitor {
         this._emit('weakNetwork', this.getStatus());
 
         if (this.config.showToast) {
-          uni.showToast({
-            title: '当前网络较慢，请耐心等待',
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info('当前网络较慢，请耐心等待');
         }
       }
     }

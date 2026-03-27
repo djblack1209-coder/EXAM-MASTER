@@ -66,20 +66,17 @@
   </view>
 </template>
 
-<script>
-export default {
-  name: 'SchoolSkeleton',
-  props: {
-    isDark: {
-      type: Boolean,
-      default: false
-    },
-    step: {
-      type: Number,
-      default: 1
-    }
+<script setup>
+defineProps({
+  isDark: {
+    type: Boolean,
+    default: false
+  },
+  step: {
+    type: Number,
+    default: 1
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>

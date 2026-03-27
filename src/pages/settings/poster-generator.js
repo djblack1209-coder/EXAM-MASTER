@@ -14,6 +14,7 @@
 
 import { logger } from '@/utils/logger.js';
 import { getPixelRatio } from '@/utils/core/system.js';
+import { toast } from '@/utils/toast.js';
 
 // 海报配置常量
 const POSTER_CONFIG = {
@@ -374,7 +375,7 @@ class PosterGenerator {
     this.isGenerating = true;
 
     // 显示 Loading
-    uni.showLoading({ title: '海报生成中...', mask: true });
+    toast.loading('海报生成中...');
 
     try {
       // 初始化 Canvas
@@ -439,12 +440,12 @@ class PosterGenerator {
       // 导出图片
       const tempFilePath = await this.exportImage();
 
-      uni.hideLoading();
+      toast.hide();
       this.isGenerating = false;
 
       return tempFilePath;
     } catch (error) {
-      uni.hideLoading();
+      toast.hide();
       this.isGenerating = false;
       logger.error('[PosterGenerator] 生成金句海报失败:', error);
       throw error;
@@ -468,7 +469,7 @@ class PosterGenerator {
     this.isGenerating = true;
 
     // 显示 Loading
-    uni.showLoading({ title: '海报生成中...', mask: true });
+    toast.loading('海报生成中...');
 
     try {
       // 初始化 Canvas
@@ -568,12 +569,12 @@ class PosterGenerator {
       // 导出图片
       const tempFilePath = await this.exportImage();
 
-      uni.hideLoading();
+      toast.hide();
       this.isGenerating = false;
 
       return tempFilePath;
     } catch (error) {
-      uni.hideLoading();
+      toast.hide();
       this.isGenerating = false;
       logger.error('[PosterGenerator] 生成邀请海报失败:', error);
       throw error;
@@ -606,7 +607,7 @@ class PosterGenerator {
     }
 
     this.isGenerating = true;
-    uni.showLoading({ title: '生成成绩单...', mask: true });
+    toast.loading('生成成绩单...');
 
     try {
       await this.initCanvas(canvasId, componentInstance);
@@ -782,11 +783,11 @@ class PosterGenerator {
       });
 
       const tempFilePath = await this.exportImage();
-      uni.hideLoading();
+      toast.hide();
       this.isGenerating = false;
       return tempFilePath;
     } catch (error) {
-      uni.hideLoading();
+      toast.hide();
       this.isGenerating = false;
       logger.error('[PosterGenerator] 生成成绩单海报失败:', error);
       throw error;

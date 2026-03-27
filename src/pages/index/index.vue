@@ -59,7 +59,26 @@
             @nav-to-mock-exam="navToMockExam"
           />
 
-          <!-- ✅ 每日目标进度环 — 首页核心 CTA -->
+          <!-- AI 每日学习助手 — 首页核心 AI 入口 -->
+          <AIDailyBriefing
+            :is-dark="isDark"
+            :is-new-user="isNewUser"
+            :review-pending="reviewPending"
+            :overdue-count="reviewStats.overdueCount || 0"
+            :today-done="todayQuestionCount"
+            :accuracy="realAccuracy"
+            :exam-date="examDate || ''"
+            :pending-corrections="0"
+            :has-unfinished="hasUnfinished"
+            @go-review="goSmartReview"
+            @go-practice="navToPractice"
+            @go-correction="navToMistakes"
+            @go-chat="navToChat"
+            @go-weak-training="goSmartReview"
+            @resume-session="resumeLastSession"
+          />
+
+          <!-- 每日目标进度环（D022） -->
           <DailyGoalRing
             v-if="!isNewUser"
             :today-questions="todayQuestionCount"
@@ -86,13 +105,15 @@
               <text class="review-banner-icon">{{ reviewPending > 0 ? '🔥' : '✅' }}</text>
               <view class="review-banner-info">
                 <text class="review-banner-title">今日复习</text>
-                <text class="review-banner-sub">{{
-                  reviewPending > 0
-                    ? reviewPending +
-                      ' 题待复习' +
-                      (reviewStats.overdueCount > 0 ? '，' + reviewStats.overdueCount + ' 题已逾期' : '')
-                    : '所有复习已完成！'
-                }}</text>
+                <text class="review-banner-sub">
+                  {{
+                    reviewPending > 0
+                      ? reviewPending +
+                        ' 题待复习' +
+                        (reviewStats.overdueCount > 0 ? '，' + reviewStats.overdueCount + ' 题已逾期' : '')
+                      : '所有复习已完成！'
+                  }}
+                </text>
               </view>
             </view>
             <text class="review-banner-arrow">›</text>
@@ -373,8 +394,10 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-import { lafService } from '@/services/lafService.js';
+
+import { useReviewStore } from '@/stores/modules/review.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import BaseSkeleton from '@/components/base/base-skeleton/base-skeleton.vue';
 // TodoList, TodoEditor — 已从首页模板移除，通过 profile 页访问
@@ -393,6 +416,8 @@ import StudyHeatmap from '@/components/business/index/StudyHeatmap.vue';
 import ActivityList from '@/components/business/index/ActivityList.vue';
 // RecommendationsList — 已从首页移除（smart-recommend 替代）
 import IndexHeaderBar from '@/components/business/index/IndexHeaderBar.vue';
+import AIDailyBriefing from '@/components/business/index/AIDailyBriefing.vue';
+import DailyGoalRing from '@/components/business/index/DailyGoalRing.vue';
 // BaseIcon — 首页不再直接使用
 import { useStudyStore } from '@/stores/modules/study';
 import { useTodoStore } from '@/stores/modules/todo';
@@ -400,35 +425,28 @@ import { useUserStore } from '@/stores/modules/user';
 import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store';
 import { storageService } from '@/services/storageService.js';
 import { initTheme, toggleTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
-// F002-I2: bubbleInteraction moved to knowledgePointMixin
-// ✅ 检查点 5.1: 导入页面追踪 Mixin（保留：lifecycle hooks依赖Options API）
-import { trackingMixin } from '@/utils/analytics/tracking-mixin.js';
+// ✅ 检查点 5.1: 页面追踪已迁移为 composable
+import { useTracking } from '@/composables/useTracking.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { throttle } from '@/utils/throttle.js';
-// ✅ F002: 保留需要lifecycle hooks的Mixins
-import { studyTimerMixin } from '@/mixins/studyTimerMixin.js';
-import { dailyQuoteMixin } from '@/mixins/dailyQuoteMixin.js';
-// F002-I2: 知识点气泡交互 Mixin（保留：复杂DOM交互）
-// F002-I2: knowledgePointMixin 已移除（KnowledgeBubbleField 已移除）
+// ✅ F002: Mixin 已全部迁移为 Composables
+import { useStudyTimer } from '@/composables/useStudyTimer.js';
+import { useDailyQuote } from '@/composables/useDailyQuote.js';
 // ✅ [P0重构] 迁移为Composables的模块
 import { useRecommendations } from '@/composables/useRecommendations.js';
 import { useNavigation } from '@/composables/useNavigation.js';
 import { useTodo } from '@/composables/useTodo.js';
+// ✅ [D002重构] 提取的 Composables
+import { useHomeStats } from '@/composables/useHomeStats.js';
+import { useHomeReview } from '@/composables/useHomeReview.js';
+import { useStyleOnboarding } from '@/composables/useStyleOnboarding.js';
 // ✅ P0-3: 从配置文件导入静态数据（消除硬编码）
 import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS } from '@/config/home-data.js';
-// ✅ [零摩擦] 检测未完成的答题进度
-import { hasUnfinishedProgress, getProgressSummary } from '@/composables/useQuizAutoSave.js';
-// ✅ [差异化壁垒] 学习风格onboarding配置项
-import { DEPTH_LEVELS, TONE_OPTIONS } from '@/composables/useLearningStyle.js';
 // F002-I1a: 共享格式化工具
 import { formatRelativeTime, getInitials as _getInitials } from '@/utils/formatters.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
-// ✅ [FSRS] 本地间隔重复调度统计
-import { getReviewStats } from '@/services/fsrs-service.js';
-// ✅ [知识引擎] 智能学习推荐
-import { getNextRecommendedTopic } from '@/services/knowledge-engine.js';
 import { syncFSRSParams } from '@/services/fsrs-optimizer-client.js';
 import { smartRequestSubscription } from '@/services/subscribe-message.js';
 
@@ -447,10 +465,11 @@ export default {
     StudyTimeCard,
     StudyHeatmap,
     ActivityList,
-    IndexHeaderBar
+    IndexHeaderBar,
+    AIDailyBriefing,
+    DailyGoalRing
   },
-  // ✅ [P0重构] 保留需要lifecycle hooks的Mixins，其余已迁移为Composables
-  mixins: [trackingMixin, studyTimerMixin, dailyQuoteMixin],
+  // ✅ [P0重构] 所有 Mixin 已迁移为 Composables
 
   // ✅ [P0重构] Composables桥接到Options API
   setup() {
@@ -485,6 +504,54 @@ export default {
       openTodoEditor
     } = useTodo(todoStore);
 
+    // ✅ 页面追踪（自动注册 onLoad/onShow/onHide/onUnload 钩子）
+    useTracking();
+
+    // ✅ 学习计时器
+    const {
+      todayStudyTime,
+      studyTimerInterval,
+      sessionStartTime,
+      initStudyTimer,
+      startStudyTimer,
+      stopStudyTimer,
+      saveStudyTime,
+      formatStudyTime,
+      handleStudyTimeClick
+    } = useStudyTimer();
+
+    // ✅ 每日金句（静态配置数据作为参数传入）
+    const quoteLibrary = Object.freeze(QUOTE_LIBRARY.map((q) => q.text));
+    const quoteAuthors = Object.freeze(
+      QUOTE_LIBRARY.reduce((map, q) => {
+        map[q.text] = q.author;
+        return map;
+      }, {})
+    );
+    const {
+      isRefreshingQuote,
+      quoteDate,
+      dailyQuote,
+      quoteAuthor,
+      showQuotePoster,
+      showShareModal,
+      initDailyQuote,
+      generateDailyQuote,
+      refreshDailyQuote,
+      openQuotePoster,
+      getCurrentDate,
+      saveQuotePoster,
+      handleQuoteFavorite,
+      handleQuoteShare
+    } = useDailyQuote({ quoteLibrary, quoteAuthors });
+
+    // ✅ [D002重构] 首页统计数据
+    const reviewStore = useReviewStore();
+    const studyStoreInstance = useStudyStore();
+    const homeStats = useHomeStats({ studyStore: studyStoreInstance });
+    const homeReview = useHomeReview({ reviewStore });
+    const styleOnboarding = useStyleOnboarding();
+
     return {
       // recommendations
       personalizedRecommendations,
@@ -512,7 +579,69 @@ export default {
       handleToggleTodo,
       handleTodoSave,
       handleTodoDelete,
-      openTodoEditor
+      openTodoEditor,
+      // studyTimer
+      todayStudyTime,
+      studyTimerInterval,
+      sessionStartTime,
+      initStudyTimer,
+      startStudyTimer,
+      stopStudyTimer,
+      saveStudyTime,
+      formatStudyTime,
+      handleStudyTimeClick,
+      // dailyQuote
+      quoteLibrary,
+      quoteAuthors,
+      isRefreshingQuote,
+      quoteDate,
+      dailyQuote,
+      quoteAuthor,
+      showQuotePoster,
+      showShareModal,
+      initDailyQuote,
+      generateDailyQuote,
+      refreshDailyQuote,
+      openQuotePoster,
+      getCurrentDate,
+      saveQuotePoster,
+      handleQuoteFavorite,
+      handleQuoteShare,
+      // ✅ reviewStore
+      reviewStore,
+      // ✅ [D002重构] 首页统计 composable
+      realTotalQuestions: homeStats.realTotalQuestions,
+      realAccuracy: homeStats.realAccuracy,
+      realStudyDays: homeStats.realStudyDays,
+      todayQuestionCount: homeStats.todayQuestionCount,
+      achievementCount: homeStats.achievementCount,
+      recentActivities: homeStats.recentActivities,
+      heatmapData: homeStats.heatmapData,
+      refreshStats: homeStats.refreshStats,
+      loadAchievements: homeStats.loadAchievements,
+      loadRecentActivities: homeStats.loadRecentActivities,
+      loadHeatmapData: homeStats.loadHeatmapData,
+      // ✅ [D002重构] 首页复习 composable
+      reviewPending: homeReview.reviewPending,
+      reviewStats: homeReview.reviewStats,
+      recommendedTopic: homeReview.recommendedTopic,
+      hasUnfinished: homeReview.hasUnfinished,
+      resumeSummary: homeReview.resumeSummary,
+      loadReviewPending: homeReview.loadReviewPending,
+      loadRecommendedTopic: homeReview.loadRecommendedTopic,
+      checkUnfinishedProgress: homeReview.checkUnfinishedProgress,
+      goSmartReview: homeReview.goSmartReview,
+      resumeLastSession: homeReview.resumeLastSession,
+      // ✅ [D002重构] 学习风格引导 composable
+      showStyleOnboarding: styleOnboarding.showStyleOnboarding,
+      onboardingStep: styleOnboarding.onboardingStep,
+      obTargetScore: styleOnboarding.obTargetScore,
+      obDepth: styleOnboarding.obDepth,
+      obTone: styleOnboarding.obTone,
+      styleDepths: styleOnboarding.styleDepths,
+      styleTones: styleOnboarding.styleTones,
+      checkShowOnboarding: styleOnboarding.checkShowOnboarding,
+      nextOnboardingStep: styleOnboarding.nextOnboardingStep
     };
   },
 
@@ -536,68 +665,29 @@ export default {
       userStore: null,
       trajectoryStore: null,
 
-      // 成就徽章数量（从本地存储获取）
-      achievementCount: 0,
       // 用户考试类型（来自 onboarding）
       examType: '',
+      examDate: '', // 考试日期（用于 AI 简报倒计时）
       dailyGoal: 20,
 
-      // ✅ 2.3: 统计数据从 computed 移到 data，避免每次渲染重复读取 storageService
-      realTotalQuestions: 0,
-      realAccuracy: 0,
-      realStudyDays: 0,
-      todayQuestionCount: 0,
+      // ✅ [D002重构] realTotalQuestions, realAccuracy, realStudyDays, todayQuestionCount,
+      //    achievementCount, recentActivities, heatmapData 已由 useHomeStats composable 提供
       loadError: false,
 
-      // ✅ [P0重构] isNavigating, showEmptyBankModal, showLoginModal 已由 useNavigation composable 提供
-      // ✅ [P0重构] personalizedRecommendations, userPreferences 已由 useRecommendations composable 提供
-      // ✅ [P0重构] showTodoEditor, editingTodo 已由 useTodo composable 提供
+      // ✅ [D002重构] reviewPending, reviewStats, recommendedTopic,
+      //    hasUnfinished, resumeSummary 已由 useHomeReview composable 提供
 
-      // ✅ 自定义弹窗状态（登录弹窗已移至composable）
-      // 注意: showShareModal, showTodoEditor, editingTodo 由 composable/mixin 提供
+      // ✅ [D002重构] showStyleOnboarding, onboardingStep, obTargetScore, obDepth, obTone,
+      //    styleDepths, styleTones 已由 useStyleOnboarding composable 提供
 
-      // ✅ 2.3: 静态数据移到 created/beforeCreate 避免 Vue 深度响应式开销
-      // quoteLibrary, quoteAuthors, formulaList 在 created() 中赋值为非响应式属性
-
-      // 知识点数据 - ✅ P0-3: 初始值从配置导入，后续由 loadKnowledgePoints() 动态计算
+      // 知识点数据 - ✅ P0-3: 初始值从配置导入
       knowledgePoints: DEFAULT_KNOWLEDGE_POINTS.map((p) => ({ ...p, count: 0, mastery: 0 })),
-
-      // ✅ [P0重构] personalizedRecommendations 已由 useRecommendations composable 提供
-
-      // ✅ [闭环核心] 今日复习待复习数量
-      reviewPending: 0,
-      // 学习热力图数据
-      heatmapData: {},
-      // ✅ [FSRS] 本地调度统计详情
-      reviewStats: { dueCount: 0, newCount: 0, learningCount: 0, overdueCount: 0 },
-
-      // ✅ [知识引擎] 推荐学习主题
-      recommendedTopic: null,
-
-      // ✅ [零摩擦] 一键续刷状态
-      hasUnfinished: false,
-      resumeSummary: '',
-
-      // ✅ [差异化壁垒] 学习风格Onboarding
-      showStyleOnboarding: false,
-      onboardingStep: 1,
-      obTargetScore: 350,
-      obDepth: 'standard',
-      obTone: 'encouraging',
-      styleDepths: DEPTH_LEVELS,
-      styleTones: TONE_OPTIONS,
-
-      // ✅ [P0重构] userPreferences 已由 useRecommendations composable 提供
-
-      // 最近活动 - ✅ P0-3: 默认空数组，由 loadRecentActivities() 动态填充
-      recentActivities: [],
 
       // 公式定理弹窗
       showFormulaModal: false,
 
       // ✅ 检查点1.4: 气泡动画状态
       animatingBubbleId: null
-      // F002-I1b: searchKeyword moved to IndexHeaderBar
     };
   },
 
@@ -653,13 +743,7 @@ export default {
 
   created() {
     // ✅ 2.3: 静态配置数据作为非响应式实例属性，避免 Vue 递归观察大数组
-    this.quoteLibrary = Object.freeze(QUOTE_LIBRARY.map((q) => q.text));
-    this.quoteAuthors = Object.freeze(
-      QUOTE_LIBRARY.reduce((map, q) => {
-        map[q.text] = q.author;
-        return map;
-      }, {})
-    );
+    // quoteLibrary, quoteAuthors 已由 setup() 中的 useDailyQuote composable 管理
     this.formulaList = Object.freeze(FORMULA_LIST);
   },
 
@@ -669,7 +753,7 @@ export default {
       return false; // 允许退出
     }
     this._backPressTime = Date.now();
-    uni.showToast({ title: '再按一次退出应用', icon: 'none', duration: 2000 });
+    toast.info('再按一次退出应用');
     return true; // 阻止默认退出
   },
   // #endif
@@ -708,7 +792,7 @@ export default {
     };
     uni.$on('loginStatusChanged', this._loginHandler);
 
-    // 初始化Store
+    // 初始化Store（studyStore 在 setup() 中已作为 studyStoreInstance 创建）
     this.studyStore = useStudyStore();
     // todoStore 已在 setup() 中通过 useTodo 初始化
     this.userStore = useUserStore();
@@ -765,14 +849,7 @@ export default {
     this.checkUnfinishedProgress();
 
     // ✅ [知识引擎] 加载推荐学习主题
-    try {
-      const allQuestions = storageService.get('v30_bank', []);
-      if (allQuestions.length > 0) {
-        this.recommendedTopic = getNextRecommendedTopic(allQuestions);
-      }
-    } catch (_e) {
-      /* silent */
-    }
+    this.loadRecommendedTopic();
 
     // ✅ [FSRS] 参数同步（非阻塞）
     syncFSRSParams().catch(() => {});
@@ -842,6 +919,7 @@ export default {
       try {
         // 0. 读取用户考试偏好
         this.examType = storageService.get('exam_type', 'kaoyan');
+        this.examDate = storageService.get('exam_date', '');
         this.dailyGoal = storageService.get('daily_goal', 20);
 
         // 1. 恢复用户信息（同步操作，立即执行）
@@ -853,14 +931,13 @@ export default {
         // 3. 加载待办事项（同步操作）
         this.todoStore.initTasks();
 
-        // ✅ 2.3: 同步更新统计数据（避免 computed 重复读 storage）
-        this._refreshStats();
+        // ✅ [D002重构] 统计数据由 composable 管理
+        this.refreshStats();
 
         // ✅ [零摩擦] 检测未完成的答题进度
         this.checkUnfinishedProgress();
 
-        // 4-8: 并行加载所有异步/独立数据，提升首屏速度
-        // ✅ F011: 使用 allSettled 替代 all，单个模块失败不影响其他模块加载
+        // 4-8: 并行加载所有异步/独立数据
         const results = await Promise.allSettled([
           this.loadAchievements(),
           this.loadRecentActivities(),
@@ -879,24 +956,19 @@ export default {
       } catch (error) {
         logger.error('[Index] 数据加载失败:', error);
         this.loadError = true;
-        uni.showToast({
-          title: '部分数据加载失败',
-          icon: 'none'
-        });
+        toast.info('部分数据加载失败');
       } finally {
-        // 确保骨架屏至少显示 300ms（避免闪烁），但不超过实际加载时间
         this.isLoading = false;
       }
     },
 
     async refreshData() {
-      // 刷新所有数据
       try {
         this.studyStore.restoreProgress();
         this.todoStore.initTasks();
         this.userStore.restoreUserInfo();
-        // ✅ 2.3: 统一更新统计数据（从 computed 移到此处，避免重复读 storage）
-        this._refreshStats();
+        // ✅ [D002重构] 统计数据由 composable 管理
+        this.refreshStats();
 
         const settled = await Promise.allSettled([
           Promise.resolve().then(() => this.loadAchievements()),
@@ -911,71 +983,11 @@ export default {
         }
       } catch (e) {
         logger.error('[Index] refreshData 异常:', e);
-        // P007: 刷新失败时提供用户反馈
-        uni.showToast({ title: '数据刷新失败，请稍后重试', icon: 'none', duration: 1500 });
+        toast.info('数据刷新失败，请稍后重试', 1500);
       }
     },
 
-    // ✅ [P0重构] 集中更新统计数据 — 使用 count 元数据，不再反序列化整个题库
-    _refreshStats() {
-      try {
-        // 优先读取轻量 count 元数据，避免反序列化整个题库数组
-        const cachedCount = storageService.get('v30_bank_count', -1);
-        if (cachedCount >= 0) {
-          this.realTotalQuestions = cachedCount;
-        } else {
-          // 首次或元数据丢失时回退到完整读取，并缓存 count
-          const questionBank = storageService.get('v30_bank', []);
-          this.realTotalQuestions = Array.isArray(questionBank) ? questionBank.length : 0;
-          storageService.save('v30_bank_count', this.realTotalQuestions);
-        }
-      } catch (_e) {
-        this.realTotalQuestions = 0;
-      }
-
-      try {
-        const storeAccuracy = parseFloat(this.studyStore?.accuracy || 0);
-        if (storeAccuracy > 0) {
-          this.realAccuracy = storeAccuracy;
-        } else {
-          const studyRecord = storageService.get('study_record', {});
-          const correct = studyRecord.correctCount || 0;
-          const total = studyRecord.totalAnswered || 0;
-          this.realAccuracy = total === 0 ? 0 : Math.round((correct / total) * 100);
-        }
-      } catch (_e) {
-        this.realAccuracy = 0;
-      }
-
-      try {
-        const storeDays = this.studyStore?.studyProgress?.studyDays || 0;
-        if (storeDays > 0) {
-          this.realStudyDays = storeDays;
-        } else {
-          const studyDates = storageService.get('study_dates', []);
-          this.realStudyDays = Array.isArray(studyDates) ? studyDates.length : 0;
-        }
-      } catch (_e) {
-        this.realStudyDays = 0;
-      }
-
-      // 今日答题数（用于每日目标进度环）
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        // 支持两种存储格式：字符串计数或 {date, count} 对象
-        const todayAnswerDate = uni.getStorageSync('today_answer_date') || '';
-        const todayAnswerCount = parseInt(uni.getStorageSync('today_answer_count') || '0');
-        if (todayAnswerDate === today) {
-          this.todayQuestionCount = todayAnswerCount;
-        } else {
-          // 降级：尝试旧格式
-          const todayRecord = storageService.get('today_answer_count', { date: '', count: 0 });
-          this.todayQuestionCount = todayRecord.date === today ? todayRecord.count || 0 : 0;
-        }
-      } catch (_e) {
-        this.todayQuestionCount = 0;
-      }
-    },
+    // ✅ [D002重构] _refreshStats 已由 useHomeStats.refreshStats composable 提供
 
     // 下拉刷新处理
     async onPullDownRefresh() {
@@ -989,17 +1001,10 @@ export default {
         // 刷新每日金句
         this.refreshDailyQuote();
 
-        uni.showToast({
-          title: '刷新成功',
-          icon: 'success',
-          duration: 1500
-        });
+        toast.success('刷新成功');
       } catch (error) {
         logger.error('[Index] 下拉刷新失败:', error);
-        uni.showToast({
-          title: '刷新失败',
-          icon: 'none'
-        });
+        toast.info('刷新失败');
       } finally {
         // 延迟关闭刷新状态，确保动画完成
         setTimeout(() => {
@@ -1008,33 +1013,11 @@ export default {
       }
     },
 
-    loadAchievements() {
-      // 从本地存储获取成就数量
-      const achievements = storageService.get('learning_achievements', []);
-      this.achievementCount = Array.isArray(achievements) ? achievements.length : 0;
-    },
+    // ✅ [D002重构] loadAchievements 已由 useHomeStats composable 提供（setup 返回）
 
     // F002-I2: loadKnowledgePoints moved to knowledgePointMixin
 
-    loadRecentActivities() {
-      // 从学习历史获取最近活动
-      const history = this.studyStore?.questionHistory || [];
-
-      if (history.length > 0) {
-        this.recentActivities = history.slice(0, 4).map((record) => ({
-          title: `练习：${record.questionType || '综合题'}`,
-          subtitle: record.isCorrect ? '答对，继续保持' : '答错，已加入错题本',
-          time: this.formatTime(record.timestamp),
-          icon: record.isCorrect ? 'check' : 'cross',
-          status: record.isCorrect ? 'completed' : 'in-progress'
-        }));
-      } else {
-        // 默认活动
-        this.recentActivities = [
-          { title: '开始学习', subtitle: '欢迎使用Exam-Master', time: '刚刚', icon: 'celebrate', status: 'completed' }
-        ];
-      }
-    },
+    // ✅ [D002重构] loadRecentActivities 已由 useHomeStats composable 提供
 
     // F002-I3: loadPersonalizedRecommendations, loadUserPreferences moved to recommendationMixin
 
@@ -1069,129 +1052,20 @@ export default {
       safeNavigateTo(`/pages/tools/${name}`);
     },
 
-    // ✅ [闭环核心] 加载今日待复习数量（FSRS 本地优先 + 服务端增量同步）
-    async loadReviewPending() {
-      try {
-        // 本地 FSRS 优先：从本地存储的题目计算待复习数量
-        const allQuestions = storageService.get('v30_bank', []);
-        if (allQuestions.length > 0) {
-          const stats = getReviewStats(allQuestions);
-          this.reviewStats = stats;
-          this.reviewPending = stats.dueCount + stats.overdueCount;
-        }
-
-        // 服务端增量同步（不阻塞 UI）
-        lafService
-          .getReviewPlan()
-          .then((res) => {
-            if (res.code === 0 && res.data) {
-              const serverPending = res.data.reviewPlan?.totalPending || 0;
-              // 取本地和服务端的最大值，确保不遗漏
-              if (serverPending > this.reviewPending) {
-                this.reviewPending = serverPending;
-              }
-            }
-          })
-          .catch(() => {
-            /* 静默失败，服务端不可用时依赖本地 FSRS */
-          });
-      } catch (_e) {
-        // 静默失败，不影响首页
-      }
+    // AI 简报导航：错题本
+    navToMistakes() {
+      safeNavigateTo('/pages/mistake/index');
     },
 
-    // 加载学习热力图数据
-    loadHeatmapData() {
-      try {
-        // 优先读取 study_stats（do-quiz 每次答题写入的）
-        const studyStats = storageService.get('study_stats', {});
-        if (studyStats && typeof studyStats === 'object' && Object.keys(studyStats).length > 0) {
-          this.heatmapData = studyStats;
-          return;
-        }
-        // 降级：尝试其他可能的键名
-        const studyRecords =
-          storageService.get('study_daily_records', {}) || storageService.get('daily_study_records', {});
-        if (studyRecords && typeof studyRecords === 'object' && Object.keys(studyRecords).length > 0) {
-          this.heatmapData = studyRecords;
-          return;
-        }
-        // 最终降级：从题库答题记录构建
-        const bank = storageService.get('v30_bank', []);
-        const heatmap = {};
-        bank.forEach((q) => {
-          const ts = q.last_attempt_at || q.updated_at;
-          if (ts) {
-            const date = new Date(ts);
-            const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-            heatmap[key] = (heatmap[key] || 0) + 1;
-          }
-        });
-        this.heatmapData = heatmap;
-      } catch (_e) {
-        this.heatmapData = {};
-      }
+    // AI 简报导航：AI 聊天
+    navToChat() {
+      safeNavigateTo('/pages/chat/chat');
     },
 
-    // ✅ [闭环核心] 跳转智能复习
-    goSmartReview() {
-      safeNavigateTo('/pages/practice-sub/smart-review');
-    },
+    // ✅ [D002重构] loadReviewPending, loadHeatmapData, goSmartReview, resumeLastSession,
+    // checkUnfinishedProgress 已由 useHomeReview composable 提供（setup 返回）
 
-    // ✅ [零摩擦] 一键续刷 — 直接跳转到上次未完成的答题
-    resumeLastSession() {
-      safeNavigateTo('/pages/practice-sub/do-quiz?resume=true');
-    },
-
-    // ✅ [零摩擦] 检测是否有未完成的答题进度
-    checkUnfinishedProgress() {
-      try {
-        if (hasUnfinishedProgress()) {
-          this.hasUnfinished = true;
-          const summary = getProgressSummary();
-          if (summary) {
-            const answered = summary.answeredCount || 0;
-            const total = summary.totalQuestions || 0;
-            this.resumeSummary = `已答 ${answered}/${total} 题，点击继续`;
-          } else {
-            this.resumeSummary = '有未完成的练习，点击继续';
-          }
-        } else {
-          this.hasUnfinished = false;
-        }
-      } catch (_e) {
-        this.hasUnfinished = false;
-      }
-    },
-
-    // ✅ [差异化壁垒] 学习风格Onboarding
-    checkShowOnboarding() {
-      try {
-        const config = storageService.get('learning_style_config');
-        if (!config && !this.isNewUser) {
-          this.showStyleOnboarding = true;
-        }
-      } catch (_e) {
-        /* silent */
-      }
-    },
-
-    nextOnboardingStep() {
-      if (this.onboardingStep < 3) {
-        this.onboardingStep++;
-        return;
-      }
-      // 完成：保存配置
-      storageService.save('learning_style_config', {
-        depth: this.obDepth,
-        style: 'example',
-        tone: this.obTone,
-        targetScore: this.obTargetScore,
-        weakSubjects: []
-      });
-      this.showStyleOnboarding = false;
-      uni.showToast({ title: 'AI已为你个性化配置', icon: 'none' });
-    },
+    // ✅ [D002重构] checkShowOnboarding, nextOnboardingStep 已由 useStyleOnboarding composable 提供（setup 返回）
 
     // ✅ F023: 节流滚动监听，减少重渲染
     handleScroll(e) {
@@ -1244,18 +1118,14 @@ export default {
           // 备选方案：跳转到设置页
           safeNavigateTo('/pages/settings/index', {
             success: () => {
-              uni.showToast({
-                title: '请点击头像完成登录',
-                icon: 'none',
-                duration: 2000
-              });
+              toast.info('请点击头像完成登录');
             }
           });
         }
       });
     }
 
-    // ✅ F002: 每日金句功能由 dailyQuoteMixin 提供
+    // ✅ F002: 每日金句功能由 useDailyQuote composable 提供
     // (initDailyQuote, generateDailyQuote, refreshDailyQuote, openQuotePoster,
     //  getCurrentDate, saveQuotePoster, handleQuoteFavorite, handleQuoteShare)
 
@@ -1264,7 +1134,7 @@ export default {
 
     // F002-I3: handleRecommendationClick moved to recommendationMixin
 
-    // ✅ F002: 学习计时器功能由 studyTimerMixin 提供
+    // ✅ F002: 学习计时器功能由 useStudyTimer composable 提供
     // (initStudyTimer, startStudyTimer, stopStudyTimer, saveStudyTime, formatStudyTime, handleStudyTimeClick)
   }
 };

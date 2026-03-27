@@ -33,6 +33,14 @@
       </view>
     </view>
 
+    <!-- 学习节奏管理：连续学习休息提醒 -->
+    <view v-if="showBreakReminder" class="break-reminder-bar">
+      <text class="break-reminder-text">你已连续学习 {{ Math.floor(seconds / 60) }} 分钟，适当休息效率更高</text>
+      <view class="break-reminder-actions">
+        <text class="break-dismiss" @tap="showBreakReminder = false">继续</text>
+      </view>
+    </view>
+
     <scroll-view
       id="e2e-quiz-scroll"
       scroll-y
@@ -150,7 +158,7 @@
       <!-- AI解析在结果弹窗内异步加载，用户可随时点击下一题 -->
 
       <!-- 结果弹窗背景遮罩 -->
-      <view v-if="showResult" class="result-backdrop" @tap.stop="closeResult"></view>
+      <view v-if="showResult" class="result-backdrop" @tap.stop="closeResult" />
 
       <!-- 结果弹窗 -->
       <view v-if="showResult" :class="['result-pop', resultStatus]" @tap.stop>
@@ -175,6 +183,10 @@
             <!-- ✅ [P0重构] 内联AI加载指示器 -->
             <text v-if="!aiComment" class="ai-loading-hint">分析中...</text>
           </view>
+          <!-- AI 个人历史微反馈 — 基于错题历史的一句话上下文提醒 -->
+          <view v-if="personalHint" class="personal-hint-bar">
+            <text class="personal-hint-text">{{ personalHint }}</text>
+          </view>
           <view class="answer-display">
             <text class="answer-label"> 正确答案： </text>
             <text class="answer-value">
@@ -196,6 +208,12 @@
 
         <!-- 新增: AI Tutor 智能体辅导反馈 -->
         <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
+
+        <!-- 答错时：一键问AI — 跳转上下文感知对话 -->
+        <view v-if="resultStatus === 'wrong'" class="ask-ai-btn" @tap="askAIAboutThis">
+          <text class="ask-ai-text">还是不懂？问 AI 导师</text>
+          <text class="a<REDACTED_SECRET>">›</text>
+        </view>
 
         <!-- FSRS 智能评分 -->
         <view v-if="fsrsPreview" class="fsrs-rating-row">
@@ -326,26 +344,23 @@
       @cancel="showExitModal = false"
     />
 
-    <!-- ✅ [P1重构] 练习完成 — 内嵌AI一句话总结 + 薄弱点 + 继续刷题CTA -->
-    <view
-      :class="{
-        'complete-celebrate': showCompleteModal,
-        'perfect-score-glow': isPerfectScore
-      }"
-    >
-      <CustomModal
-        :visible="showCompleteModal"
-        type="success"
-        title="练习完成"
-        :content="completeModalContent"
-        :confirm-text="diagnosisLoading ? '正在诊断...' : hasNextRecommendation ? '继续刷下一组' : '查看诊断报告'"
-        cancel-text="返回"
-        :show-cancel="!diagnosisLoading"
-        :is-dark="isDark"
-        @confirm="handleCompleteAction"
-        @cancel="handleCompleteConfirm"
-      />
-    </view>
+    <!-- ✅ [P1重构] 练习完成 — 全屏结果页（含AI诊断+推荐下一步） -->
+    <QuizResult
+      :visible="showCompleteModal"
+      :questions="questions"
+      :answered-questions="answeredQuestions"
+      :total-time="seconds * 1000"
+      :is-dark="isDark"
+      :diagnosis-summary="diagnosisSummary"
+      :has-next-recommendation="hasNextRecommendation"
+      @view-report="viewDiagnosisReport"
+      @close="handleCompleteConfirm"
+      @continue-next="handleCompleteAction"
+      @go-mistakes="navigateFromResult('/pages/mistake/index')"
+      @go-weak-training="navigateFromResult('/pages/practice-sub/smart-review')"
+      @go-new-practice="handleCompleteConfirm"
+      @go-a-i-plan="navigateFromResult('/pages/practice-sub/smart-review')"
+    />
 
     <!-- ✅ 笔记输入弹窗 -->
     <view v-if="showNoteModal" class="note-modal-overlay" @tap="showNoteModal = false">
@@ -394,6 +409,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 
@@ -457,11 +473,13 @@ import {
 import { useTypewriter } from './composables/useTypewriter.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
-import { lafService } from '@/services/lafService.js';
+
+import { useReviewStore } from '@/stores/modules/review.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import MemoryStatsRow from './components/quiz-result/MemoryStatsRow.vue';
 import TutorFeedbackCard from './components/quiz-result/TutorFeedbackCard.vue';
+import QuizResult from './components/quiz-result/quiz-result.vue';
 import XpToast from './components/xp-toast/xp-toast.vue';
 import RichText from './components/RichText.vue';
 import AnswerSheet from './components/answer-sheet/answer-sheet.vue';
@@ -483,6 +501,7 @@ export default {
     BaseIcon,
     MemoryStatsRow,
     TutorFeedbackCard,
+    QuizResult,
     XpToast,
     RichText,
     AnswerSheet,
@@ -493,6 +512,7 @@ export default {
   setup() {
     const engine = useQuizEngine({ smartPicker: true, adaptiveMode: true });
     const xpSystem = useXPSystem();
+    const reviewStore = useReviewStore();
     return {
       _engine: engine,
       engineGetOptionLabel: engine.getOptionLabel,
@@ -500,7 +520,9 @@ export default {
       // ✅ [上瘾引擎] XP系统
       xpSystem,
       xpCurrentLevel: xpSystem.currentLevel,
-      xpLevelProgress: xpSystem.levelProgress
+      xpLevelProgress: xpSystem.levelProgress,
+      // ✅ reviewStore — 替代页面直接调用 lafService
+      reviewStore
     };
   },
   data() {
@@ -521,6 +543,9 @@ export default {
       showResult: false,
       resultStatus: '', // 'correct' or 'wrong'
       aiComment: '',
+      personalHint: '', // 基于个人历史的AI微反馈
+      showBreakReminder: false, // 休息提醒显示状态
+      breakReminderShown: false, // 是否已提醒过（每次练习只提醒一次）
       // ✅ P0-3: 已答题目记录（用于断点续答）
       answeredQuestions: [],
       // ✅ 自定义弹窗状态
@@ -827,11 +852,7 @@ export default {
           answeredCount: this.answeredQuestions.length
         });
 
-        uni.showToast({
-          title: '进度已恢复',
-          icon: 'success',
-          duration: 1500
-        });
+        toast.success('进度已恢复');
       }
       this.startTimer();
     },
@@ -968,7 +989,7 @@ export default {
           }
         }
         // 没找到复习题目，回退到普通模式
-        uni.showToast({ title: '复习题目加载失败，已切换普通模式', icon: 'none' });
+        toast.info('复习题目加载失败，已切换普通模式');
       }
 
       // 从本地存储读取题库
@@ -1052,6 +1073,11 @@ export default {
       }
       this.timer = setInterval(() => {
         this.seconds++;
+        // 学习节奏管理：连续45分钟提醒休息（仅提醒一次）
+        if (this.seconds === 2700 && !this.breakReminderShown) {
+          this.breakReminderShown = true;
+          this.showBreakReminder = true;
+        }
       }, 1000);
     },
     formatTime(s) {
@@ -1120,6 +1146,7 @@ export default {
         }, 300);
 
         this.resultStatus = 'correct';
+        this.personalHint = '';
         this.updateStudyStats();
         this.showResult = true;
       } else {
@@ -1129,6 +1156,7 @@ export default {
         this.resultStatus = 'wrong';
         // ✅ [P0重构] 非阻塞AI分析：先立即显示结果（题目自带解析），AI异步增强
         this.aiComment = ''; // 清空，让模板先显示 currentQuestion.desc
+        this.personalHint = this._buildPersonalHint(); // 生成个人历史微反馈
         this.updateStudyStats();
         this.showResult = true; // 立即显示结果弹窗，不等AI
 
@@ -1256,11 +1284,7 @@ export default {
             logger.log('[do-quiz] ✅ 插入复习题:', recommendation.reason);
 
             // 显示复习提示
-            uni.showToast({
-              title: '复习时间到！',
-              icon: 'none',
-              duration: 1500
-            });
+            toast.info('复习时间到！', 1500);
           }
         }
 
@@ -1391,12 +1415,12 @@ export default {
       try {
         // 并行：诊断 + 获取下一组推荐
         const [diagRes, recRes] = await Promise.allSettled([
-          lafService.generateDiagnosis(this.sessionId),
-          lafService.getSmartRecommendations(10)
+          this.reviewStore.generateDiagnosis({ sessionId: this.sessionId }),
+          this.reviewStore.fetchSmartRecommendations({ count: 10 })
         ]);
 
         // 处理诊断结果
-        if (diagRes.status === 'fulfilled' && diagRes.value.code === 0 && diagRes.value.data) {
+        if (diagRes.status === 'fulfilled' && diagRes.value.success && diagRes.value.data) {
           this.diagnosisId = diagRes.value.data._id;
           const d = diagRes.value.data.diagnosis || {};
           this.diagnosisReady = true;
@@ -1410,7 +1434,7 @@ export default {
         }
 
         // 处理推荐结果 — AI自动推荐下一组
-        if (recRes.status === 'fulfilled' && recRes.value.code === 0 && recRes.value.data) {
+        if (recRes.status === 'fulfilled' && recRes.value.success && recRes.value.data) {
           const ids = (recRes.value.data.questions || recRes.value.data || [])
             .map((q) => q.id || q._id)
             .filter(Boolean);
@@ -1448,7 +1472,7 @@ export default {
         });
       } else if (this.diagnosisLoading) {
         // 还在诊断中，等一下
-        uni.showToast({ title: 'AI 正在分析中，请稍候...', icon: 'none' });
+        toast.info('AI 正在分析中，请稍候...');
         this.showCompleteModal = true;
       } else {
         // 诊断失败，直接返回
@@ -1463,19 +1487,70 @@ export default {
       safeNavigateBack();
     },
 
+    // ✅ AI推荐下一步 → 跳转到指定页面
+    navigateFromResult(url) {
+      this.showCompleteModal = false;
+      safeNavigateTo(url);
+    },
+
+    /**
+     * 答错后"问AI导师" — 保存题目上下文，跳转到AI聊天页
+     * 聊天页会自动读取上下文并发送第一条消息
+     */
+    askAIAboutThis() {
+      if (!this.currentQuestion) return;
+      const q = this.currentQuestion;
+      // 构建上下文消息
+      const contextMsg = `我刚刚做错了一道${q.category || ''}的题目，帮我解释一下：\n\n题目：${(q.question || '').substring(0, 300)}\n\n我选了错误答案，正确答案是${q.answer}。\n\n请用简单易懂的方式帮我理解为什么正确答案是${q.answer}，以及这道题考查的核心知识点。`;
+
+      storageService.save('chat_context_question', contextMsg);
+      safeNavigateTo('/pages/chat/chat?context=question');
+    },
+
+    /**
+     * 基于个人历史生成一句话AI微反馈（纯本地，零延迟）
+     * 在用户答错时调用，根据该知识点的历史错误次数给出上下文提醒
+     */
+    _buildPersonalHint() {
+      if (!this.currentQuestion) return '';
+      const cat = this.currentQuestion.category || '';
+      if (!cat) return '';
+
+      // 统计本次练习中该知识点的错误次数
+      const catWrongCount = this.answeredQuestions.filter(
+        (a) => !a.isCorrect && this.questions[a.index]?.category === cat
+      ).length;
+
+      // 统计总体该知识点的历史错误
+      const mistakes = storageService.get('mistake_book', []);
+      const catMistakes = mistakes.filter((m) => (m.category || m.knowledge_point || '') === cat);
+      const totalWrong = catMistakes.length;
+
+      if (totalWrong >= 5) {
+        return `你在「${cat}」上已累计错${totalWrong}题，建议做完后去错题本集中突破这个知识点。`;
+      }
+      if (catWrongCount >= 2) {
+        return `本次在「${cat}」已错${catWrongCount}题，这可能是你的薄弱点。`;
+      }
+      if (totalWrong >= 2) {
+        return `「${cat}」是你的高频易错知识点（累计${totalWrong}次），注意审题。`;
+      }
+      return `记住这道题的考点：「${cat}」`;
+    },
+
     // ✅ [闭环核心] AI智能诊断 — 刷题结束后触发
     async handleDiagnosis() {
       if (this.diagnosisLoading) return;
       if (!this.sessionId) {
-        uni.showToast({ title: '会话数据不足，无法诊断', icon: 'none' });
+        toast.info('会话数据不足，无法诊断');
         this.handleCompleteConfirm();
         return;
       }
 
       this.diagnosisLoading = true;
       try {
-        const res = await lafService.generateDiagnosis(this.sessionId);
-        if (res.code === 0 && res.data) {
+        const res = await this.reviewStore.generateDiagnosis({ sessionId: this.sessionId });
+        if (res.success && res.data) {
           this.showCompleteModal = false;
           const diagnosisId = res.data._id;
           uni.navigateTo({
@@ -1498,11 +1573,11 @@ export default {
             }
           });
         } else {
-          uni.showToast({ title: res.message || '诊断失败', icon: 'none' });
+          toast.info(res.message || '诊断失败');
         }
       } catch (e) {
         logger.warn('[do-quiz] AI诊断失败:', e);
-        uni.showToast({ title: '诊断失败，请稍后重试', icon: 'none' });
+        toast.info('诊断失败，请稍后重试');
       } finally {
         this.diagnosisLoading = false;
       }
@@ -1693,14 +1768,14 @@ export default {
           this.xpBoostActive = true;
           this.xpBoostRemaining = 3;
           setTimeout(() => {
-            uni.showToast({ title: '2x XP Boost! 接下来3题双倍经验', icon: 'none', duration: 2000 });
+            toast.info('2x XP Boost! 接下来3题双倍经验');
           }, 500);
         }
 
         // ✅ [上瘾引擎] 升级提示
         if (xpResult.levelUp && xpResult.newLevel) {
           setTimeout(() => {
-            uni.showToast({ title: `升级！${xpResult.newLevel.title}`, icon: 'none', duration: 2500 });
+            toast.info(`升级！${xpResult.newLevel.title}`, 2500);
           }, 800);
         }
 
@@ -1770,21 +1845,13 @@ export default {
         },
         onWarning: (data) => {
           if (data.level === 'warning') {
-            uni.showToast({
-              title: data.message,
-              icon: 'none',
-              duration: 2000
-            });
+            toast.info(data.message);
           }
         },
         onTimeout: (_data) => {
           // 超时处理
           if (!this.hasAnswered) {
-            uni.showToast({
-              title: '时间到！',
-              icon: 'none',
-              duration: 2000
-            });
+            toast.info('时间到！');
           }
         }
       });
@@ -1832,11 +1899,7 @@ export default {
       this.isOfflineMode = !status.isOnline && status.available;
 
       if (this.isOfflineMode) {
-        uni.showToast({
-          title: '已切换到离线模式',
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info('已切换到离线模式');
       }
 
       logger.log('[do-quiz] 离线状态:', status);
@@ -1870,10 +1933,7 @@ export default {
     // ✅ 保存笔记
     handleSaveNote() {
       if (!this.noteContent.trim()) {
-        uni.showToast({
-          title: '请输入笔记内容',
-          icon: 'none'
-        });
+        toast.info('请输入笔记内容');
         return;
       }
 
@@ -1886,10 +1946,7 @@ export default {
       });
 
       if (result.success) {
-        uni.showToast({
-          title: '笔记已保存',
-          icon: 'success'
-        });
+        toast.success('笔记已保存');
 
         // 更新当前题目的笔记列表
         this.currentQuestionNotes = getNotesByQuestion(this.currentQuestion.id || this.currentQuestion.question);
@@ -1898,10 +1955,7 @@ export default {
         this.noteContent = '';
         this.selectedNoteTags = [];
       } else {
-        uni.showToast({
-          title: '保存失败',
-          icon: 'none'
-        });
+        toast.info('保存失败');
       }
     },
 
@@ -2447,6 +2501,88 @@ export default {
   word-wrap: break-word;
   display: block;
   padding: 0 20rpx;
+}
+/* AI个人历史微反馈 */
+.personal-hint-bar {
+  margin: 8rpx 20rpx 16rpx;
+  padding: 12rpx 16rpx;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 12rpx;
+  border-left: 4rpx solid #f59e0b;
+}
+.personal-hint-text {
+  font-size: 24rpx;
+  color: #b45309;
+  line-height: 1.5;
+}
+.dark-mode .personal-hint-bar {
+  background: rgba(245, 158, 11, 0.15);
+}
+.dark-mode .personal-hint-text {
+  color: #fbbf24;
+}
+/* 学习节奏：休息提醒条 */
+.break-reminder-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16rpx 30rpx;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.12));
+  border-bottom: 1rpx solid rgba(99, 102, 241, 0.2);
+}
+.break-reminder-text {
+  font-size: 24rpx;
+  color: #6366f1;
+  flex: 1;
+}
+.break-dismiss {
+  font-size: 24rpx;
+  color: #6366f1;
+  font-weight: 600;
+  padding: 6rpx 20rpx;
+  border-radius: 12rpx;
+  background: rgba(99, 102, 241, 0.15);
+}
+.dark-mode .break-reminder-text {
+  color: #a78bfa;
+}
+.dark-mode .break-dismiss {
+  color: #a78bfa;
+  background: rgba(99, 102, 241, 0.2);
+}
+/* 答错时问AI导师按钮 */
+.ask-ai-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12rpx 20rpx 0;
+  padding: 18rpx 24rpx;
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(6, 182, 212, 0.1));
+  border: 1rpx solid rgba(52, 211, 153, 0.25);
+  border-radius: 16rpx;
+}
+.ask-ai-btn:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+.ask-ai-text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #059669;
+}
+.a<REDACTED_SECRET> {
+  font-size: 32rpx;
+  color: #059669;
+}
+.dark-mode .ask-ai-text {
+  color: #34d399;
+}
+.dark-mode .a<REDACTED_SECRET> {
+  color: #34d399;
+}
+.dark-mode .ask-ai-btn {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.15), rgba(6, 182, 212, 0.12));
+  border-color: rgba(52, 211, 153, 0.3);
 }
 .answer-display {
   display: flex;

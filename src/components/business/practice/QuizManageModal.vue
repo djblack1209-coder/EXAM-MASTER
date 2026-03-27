@@ -22,15 +22,12 @@
   </view>
 </template>
 
-<script>
-export default {
-  name: 'QuizManageModal',
-  props: {
-    visible: { type: Boolean, default: false },
-    totalQuestions: { type: Number, default: 0 }
-  },
-  emits: ['close', 'clear']
-};
+<script setup>
+defineProps({
+  visible: { type: Boolean, default: false },
+  totalQuestions: { type: Number, default: 0 }
+});
+defineEmits(['close', 'clear']);
 </script>
 
 <style lang="scss" scoped>

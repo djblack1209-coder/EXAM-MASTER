@@ -426,9 +426,10 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import SchoolSkeleton from '@/components/base/school-skeleton/school-skeleton.vue';
-import { lafService } from '@/services/lafService.js';
+import { useSchoolStore } from '@/stores/modules/school';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
@@ -508,6 +509,11 @@ export default {
     CustomTabbar,
     SchoolSkeleton,
     BaseIcon
+  },
+  setup() {
+    // 初始化择校 Store，供 methods 中通过 this.schoolStore 调用
+    const schoolStore = useSchoolStore();
+    return { schoolStore };
   },
   data() {
     return {
@@ -772,11 +778,11 @@ export default {
 
         if (wasOffline && res.isConnected) {
           // 从离线恢复到在线，尝试刷新数据
-          uni.showToast({ title: '网络已恢复', icon: 'none' });
+          toast.info('网络已恢复');
           this.loadRecommendedSchools();
         } else if (!wasOffline && !res.isConnected) {
           // 从在线变为离线
-          uni.showToast({ title: '网络已断开，使用缓存数据', icon: 'none' });
+          toast.info('网络已断开，使用缓存数据');
         }
       });
     },
@@ -789,13 +795,13 @@ export default {
       if (!this.canGoToStep2) {
         // 更详细的错误提示
         if (!this.formData.school || !this.formData.school.trim()) {
-          uni.showToast({ title: '请输入毕业院校名称', icon: 'none' });
+          toast.info('请输入毕业院校名称');
         } else if (!/^[\u4e00-\u9fa5a-zA-Z0-9\s\-·()（）]+$/.test(this.formData.school.trim())) {
-          uni.showToast({ title: '院校名称包含非法字符', icon: 'none' });
+          toast.info('院校名称包含非法字符');
         } else if (!this.formData.currentMajor || !this.formData.currentMajor.trim()) {
-          uni.showToast({ title: '请输入所学专业', icon: 'none' });
+          toast.info('请输入所学专业');
         } else {
-          uni.showToast({ title: '请完整填写背景信息', icon: 'none' });
+          toast.info('请完整填写背景信息');
         }
         return;
       }
@@ -828,21 +834,13 @@ export default {
           logger.log(`[school] ✅ 离线模式：从本地缓存加载 ${this.schoolList.length} 所院校`);
 
           // 显示离线提示
-          uni.showToast({
-            title: '离线模式，显示缓存数据',
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info('离线模式，显示缓存数据');
           return;
         } else {
           // 无缓存时使用默认数据
           this.applySchoolList([...getDefaultSchoolsFrozen()], false);
           logger.log('[school] ⚠️ 离线且无缓存，使用示例数据');
-          uni.showToast({
-            title: '无网络连接，显示示例数据',
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info('无网络连接，显示示例数据');
           return;
         }
       }
@@ -864,7 +862,7 @@ export default {
 
       try {
         // 1. 尝试从后端获取热门学校
-        const response = await lafService.getHotSchools({ limit: 10 });
+        const response = await this.schoolStore.fetchHotSchools({ limit: 10 });
 
         if (response && response.code === 0 && Array.isArray(response.data) && response.data.length > 0) {
           this.applySchoolList(
@@ -882,8 +880,7 @@ export default {
         }
 
         // 1.1 热门院校为空时，降级使用 crawler 数据
-        const crawlerResp = await lafService.request(
-          '/school-crawler-api',
+        const crawlerResp = await this.schoolStore.crawlSchoolData(
           {
             action: 'list',
             data: {
@@ -938,7 +935,7 @@ export default {
     async submitForm() {
       // ✅ 登录校验
       if (!isUserLoggedIn()) {
-        uni.showToast({ title: '请先登录后使用智能匹配', icon: 'none' });
+        toast.info('请先登录后使用智能匹配');
         return;
       }
       // ✅ 防重复提交保护
@@ -950,11 +947,11 @@ export default {
       if (!this.canSubmit) {
         // P012: 具体提示缺少哪项报考信息
         if (!this.formData.targetSchool || !this.formData.targetSchool.trim()) {
-          uni.showToast({ title: '请输入报考院校名称', icon: 'none' });
+          toast.info('请输入报考院校名称');
         } else if (!this.formData.targetMajor || !this.formData.targetMajor.trim()) {
-          uni.showToast({ title: '请输入报考专业', icon: 'none' });
+          toast.info('请输入报考专业');
         } else {
-          uni.showToast({ title: '请完整填写报考信息', icon: 'none' });
+          toast.info('请完整填写报考信息');
         }
         return;
       }
@@ -973,11 +970,11 @@ export default {
               if (cachedSchools && cachedSchools.length > 0) {
                 this.applySchoolList(cachedSchools, true);
                 this.currentStep = 3;
-                uni.showToast({ title: '显示缓存数据', icon: 'none' });
+                toast.info('显示缓存数据');
               } else {
                 this.applySchoolList([...getDefaultSchoolsFrozen()], false);
                 this.currentStep = 3;
-                uni.showToast({ title: '无缓存，显示示例数据', icon: 'none' });
+                toast.info('无缓存，显示示例数据');
               }
             }
           }
@@ -1015,7 +1012,7 @@ export default {
       if (!this.formData.school || !/^[\u4e00-\u9fa5a-zA-Z0-9\s\-·()（）]+$/.test(this.formData.school.trim())) {
         logger.warn('[school] ⚠️ 表单验证失败: 毕业院校名称无效');
         this.isSubmitting = false;
-        return uni.showToast({ title: '请输入有效的毕业院校名称', icon: 'none' });
+        return toast.info('请输入有效的毕业院校名称');
       }
 
       // 验证报考院校名称
@@ -1025,13 +1022,13 @@ export default {
       ) {
         logger.warn('[school] ⚠️ 表单验证失败: 报考院校名称无效');
         this.isSubmitting = false;
-        return uni.showToast({ title: '请输入有效的报考院校名称', icon: 'none' });
+        return toast.info('请输入有效的报考院校名称');
       }
 
       if (!this.formData.targetMajor || !this.formData.targetMajor.trim()) {
         logger.warn('[school] ⚠️ 表单验证失败: 报考专业为空');
         this.isSubmitting = false;
-        return uni.showToast({ title: '请输入报考专业', icon: 'none' });
+        return toast.info('请输入报考专业');
       }
 
       logger.log('[school] ✅ 表单验证通过');
@@ -1039,10 +1036,7 @@ export default {
       vibrateLight();
 
       // 显示Apple 智能质感的Loading页面
-      uni.showLoading({
-        title: '智能分析中...',
-        mask: true
-      });
+      toast.loading('智能分析中...');
 
       // 设置超时保护标志，避免重复处理
       let isTimeoutHandled = false;
@@ -1055,12 +1049,8 @@ export default {
         }
         isTimeoutHandled = true;
         logger.warn('[school] ⏱️ 智能分析超时（20秒），显示空状态');
-        uni.hideLoading();
-        uni.showToast({
-          title: '智能分析超时，请稍后重试',
-          icon: 'none',
-          duration: 2000
-        });
+        toast.hide();
+        toast.info('智能分析超时，请稍后重试');
         // 切换到结果页面，显示空状态（不使用模拟数据）
         this.applySchoolList([], false);
         setAnalysisMeta({
@@ -1085,7 +1075,7 @@ export default {
           degree: this.formData.degree === 'bk' ? '本科' : '专科',
           englishCert: this.formData.englishCert || '无'
         };
-        const response = await lafService.proxyAI('recommend', {
+        const response = await this.schoolStore.aiRecommend('recommend', {
           content: `请根据以下考生信息推荐适合的考研院校：\n毕业院校：${userProfile.school}\n所学专业：${userProfile.currentMajor}\n报考院校：${userProfile.targetSchool}\n报考专业：${userProfile.targetMajor}\n学历：${userProfile.degree}\n英语水平：${userProfile.englishCert}`,
           ...userProfile
         });
@@ -1278,14 +1268,14 @@ export default {
         }
 
         // 隐藏加载动画，切换到结果页面
-        uni.hideLoading();
+        toast.hide();
         this.currentStep = 3;
         logger.log('[school] ✅ 切换到结果页面 (Step 3)');
         logger.log('[school] 📊 当前推荐院校数量:', this.filteredSchools.length);
         if (this.filteredSchools.length > 0) {
-          uni.showToast({ title: '匹配成功', icon: 'success' });
+          toast.success('匹配成功');
         } else {
-          uni.showToast({ title: '暂无匹配结果', icon: 'none' });
+          toast.info('暂无匹配结果');
         }
       } catch (error) {
         // 清除超时定时器
@@ -1334,12 +1324,8 @@ export default {
 
         // 如果30秒超时保护已经触发，不再重复显示提示和切换页面
         if (!isTimeoutHandled) {
-          uni.hideLoading();
-          uni.showToast({
-            title: errorMsg,
-            icon: 'none',
-            duration: 3000
-          });
+          toast.hide();
+          toast.info(errorMsg, 3000);
 
           // 切换到结果页面，显示空状态（不使用模拟数据）
           this.applySchoolList([], false);
@@ -1364,7 +1350,7 @@ export default {
     },
     toggleTarget(school) {
       if (!isUserLoggedIn()) {
-        uni.showToast({ title: '请先登录后添加目标院校', icon: 'none' });
+        toast.info('请先登录后添加目标院校');
         return;
       }
       school.isTarget = !school.isTarget;
@@ -1375,10 +1361,10 @@ export default {
           targets.push({ id: school.id, name: school.name, location: school.location, logo: school.logo });
         }
         vibrateLight();
-        uni.showToast({ title: '已加入目标库', icon: 'success' });
+        toast.success('已加入目标库');
       } else {
         targets = targets.filter((t) => t.id !== school.id);
-        uni.showToast({ title: '已取消', icon: 'none' });
+        toast.info('已取消');
       }
       // ✅ F019: 统一使用 storageService
       storageService.save('target_schools', targets);

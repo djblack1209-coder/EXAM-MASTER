@@ -14,7 +14,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   success,
   badRequest,
@@ -23,9 +23,9 @@ import {
   generateRequestId,
   checkRateLimitDistributed,
   createLogger
-} from './_shared/api-response';
-import { Lesson } from './_shared/agents/agent-types';
-import { generateOutline, generateScene } from './_shared/generation/generation-pipeline';
+} from './_shared/api-response.js';
+import { Lesson } from './_shared/agents/agent-types.js';
+import { generateOutline, generateScene } from './_shared/generation/generation-pipeline.js';
 
 const db = cloud.database();
 const logger = createLogger('[LessonGenerator]');

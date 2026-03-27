@@ -105,6 +105,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { quoteHandler } from '@/utils/helpers/quote-interaction-handler.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -261,17 +262,14 @@ export default {
       try {
         await quoteHandler.shareQuote(this.quote, this.author, { platform: type });
       } catch (_e) {
-        uni.showToast({
-          title: '分享失败',
-          icon: 'none'
-        });
+        toast.info('分享失败');
       }
       // #endif
     },
 
     // 生成海报
     async generatePoster() {
-      uni.showLoading({ title: '生成中...' });
+      toast.loading('生成中...');
 
       try {
         const result = await quoteHandler.generatePoster(this.quote, this.author);
@@ -288,12 +286,9 @@ export default {
         }
       } catch (e) {
         logger.error('[ShareModal] 生成海报失败:', e);
-        uni.showToast({
-          title: '生成失败，请重试',
-          icon: 'none'
-        });
+        toast.info('生成失败，请重试');
       } finally {
-        uni.hideLoading();
+        toast.hide();
       }
     },
 
@@ -418,10 +413,7 @@ export default {
               }
             } catch (_e) {
               logger.error('[ShareModal] 保存海报失败:', _e);
-              uni.showToast({
-                title: '保存失败',
-                icon: 'none'
-              });
+              toast.info('保存失败');
             }
             // #endif
 
@@ -438,7 +430,7 @@ export default {
               uni.saveImageToPhotosAlbum({
                 filePath: tempFilePath,
                 success: () => {
-                  uni.showToast({ title: '已保存到相册', icon: 'success' });
+                  toast.success('已保存到相册');
                   this.showPosterPreview = false;
                 },
                 fail: (err) => {
@@ -454,13 +446,13 @@ export default {
                       }
                     });
                   } else {
-                    uni.showToast({ title: '保存失败', icon: 'none' });
+                    toast.info('保存失败');
                   }
                 }
               });
             } catch (_e) {
               logger.error('[ShareModal] App端保存海报失败:', _e);
-              uni.showToast({ title: '保存失败', icon: 'none' });
+              toast.info('保存失败');
             }
             // #endif
 
@@ -471,19 +463,13 @@ export default {
             link.href = dataUrl;
             link.click();
 
-            uni.showToast({
-              title: '已下载',
-              icon: 'success'
-            });
+            toast.success('已下载');
             this.showPosterPreview = false;
             // #endif
           });
       } catch (e) {
         logger.error('[ShareModal] 保存海报失败:', e);
-        uni.showToast({
-          title: '保存失败',
-          icon: 'none'
-        });
+        toast.info('保存失败');
       }
     },
 
@@ -494,10 +480,7 @@ export default {
       uni.setClipboardData({
         data: content,
         success: () => {
-          uni.showToast({
-            title: '已复制到剪贴板',
-            icon: 'success'
-          });
+          toast.success('已复制到剪贴板');
         }
       });
     }

@@ -7,6 +7,7 @@ import { useUserStore } from '../../stores';
 import { safeNavigateTo } from '../safe-navigate';
 import { storageService, getUserId } from '../../services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { toast } from '@/utils/toast.js';
 
 function buildCurrentPageFullPath(page) {
   if (!page || !page.route) {
@@ -128,11 +129,7 @@ export function requireLogin(callback, options = {}) {
         }
       });
     } else if (showToast) {
-      uni.showToast({
-        title: message,
-        icon: 'none',
-        duration: 2000
-      });
+      toast.info(message);
 
       // 延迟跳转，让用户看到提示
       setTimeout(() => {
@@ -210,11 +207,7 @@ export function pageRequireLogin(pageInstance, options = {}) {
     } = options;
 
     if (showToast) {
-      uni.showToast({
-        title: message,
-        icon: 'none',
-        duration: 2000
-      });
+      toast.info(message);
     }
 
     // 保存当前页面路径，登录后可以返回
@@ -283,11 +276,7 @@ export function loginRequired(message = '请先登录') {
       if (isUserLoggedIn()) {
         return originalMethod.apply(this, args);
       } else {
-        uni.showToast({
-          title: message,
-          icon: 'none',
-          duration: 2000
-        });
+        toast.info(message);
 
         setTimeout(() => {
           safeNavigateTo('/pages/login/index');

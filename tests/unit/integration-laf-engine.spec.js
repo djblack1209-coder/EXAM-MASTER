@@ -4,17 +4,24 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+const mockRequest = vi.fn().mockResolvedValue({ code: 0, success: true, data: {} });
+
 vi.mock('@/utils/logger.js', () => ({
   logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() }
 }));
 vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
+vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return { ...original, request: mockRequest };
+});
 
 describe('全链路: LafService 核心请求引擎', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     global.__mockStorage = {};
     vi.clearAllMocks();
+    mockRequest.mockResolvedValue({ code: 0, success: true, data: {} });
   });
 
   describe('Phase 1: 收藏管理接口', () => {
@@ -48,7 +55,7 @@ describe('全链路: LafService 核心请求引擎', () => {
       const { lafService } = await import('@/services/lafService.js');
       global.__mockStorage = { EXAM_USER_ID: 'user_fav' };
 
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { id: 'fav_new' }
@@ -63,15 +70,13 @@ describe('全链路: LafService 核心请求引擎', () => {
           userId: 'user_fav'
         })
       );
-
-      mockRequest.mockRestore();
     });
 
     it('getFavorites - 登录后正常请求', async () => {
       const { lafService } = await import('@/services/lafService.js');
       global.__mockStorage = { EXAM_USER_ID: 'user_fav' };
 
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: [
@@ -83,15 +88,13 @@ describe('全链路: LafService 核心请求引擎', () => {
       const result = await lafService.getFavorites({ type: 'question' });
       expect(result.success).toBe(true);
       expect(result.data).toHaveLength(2);
-
-      mockRequest.mockRestore();
     });
   });
 
   describe('Phase 2: 题库接口', () => {
     it('getQuestionBank - 正常请求', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { questions: [], total: 0 }
@@ -103,23 +106,19 @@ describe('全链路: LafService 核心请求引擎', () => {
         action: 'get',
         userId: 'user_001'
       });
-
-      mockRequest.mockRestore();
     });
 
     it('getQuestionBank - 网络失败返回错误', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockRejectedValue(new Error('网络错误'));
+      mockRequest.mockRejectedValue(new Error('网络错误'));
 
       const result = await lafService.getQuestionBank('user_001');
       expect(result.success).toBe(false);
-
-      vi.restoreAllMocks();
     });
 
     it('getRandomQuestions - 默认参数', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: []
@@ -133,13 +132,11 @@ describe('全链路: LafService 核心请求引擎', () => {
           data: expect.objectContaining({ count: 20 })
         })
       );
-
-      mockRequest.mockRestore();
     });
 
     it('getRandomQuestions - 自定义参数', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: []
@@ -152,15 +149,13 @@ describe('全链路: LafService 核心请求引擎', () => {
           data: expect.objectContaining({ count: 10, category: '政治', difficulty: 'hard' })
         })
       );
-
-      mockRequest.mockRestore();
     });
   });
 
   describe('Phase 3: 学习统计接口', () => {
     it('getStudyStats - 正常请求', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { totalQuestions: 500, studyDays: 30 }
@@ -169,13 +164,11 @@ describe('全链路: LafService 核心请求引擎', () => {
       const result = await lafService.getStudyStats('user_001');
       expect(result.success).toBe(true);
       expect(result.data.totalQuestions).toBe(500);
-
-      mockRequest.mockRestore();
     });
 
     it('getStudyStats - 网络失败降级到本地数据', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockRejectedValue(new Error('网络错误'));
+      mockRequest.mockRejectedValue(new Error('网络错误'));
 
       // 预设本地数据
       global.__mockStorage = {
@@ -189,15 +182,13 @@ describe('全链路: LafService 核心请求引擎', () => {
       expect(result.data._source).toBe('local_fallback');
       expect(result.data.totalQuestions).toBe(2);
       expect(result.data.totalMistakes).toBe(1);
-
-      vi.restoreAllMocks();
     });
   });
 
   describe('Phase 4: 智能组题 & 考点预测', () => {
     it('adaptiveQuestionPick - 正常请求', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockProxyAI = vi.spyOn(lafService, 'proxyAI').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { questions: [{ id: 'q1' }] }
@@ -210,20 +201,20 @@ describe('全链路: LafService 核心请求引擎', () => {
       );
 
       expect(result.success).toBe(true);
-      expect(mockProxyAI).toHaveBeenCalledWith(
-        'adaptive_pick',
+      expect(mockRequest).toHaveBeenCalledWith(
+        '/proxy-ai',
         expect.objectContaining({
+          action: 'adaptive_pick',
           content: expect.any(String),
           userProfile: expect.objectContaining({ targetSchool: '清华大学' })
-        })
+        }),
+        expect.any(Object)
       );
-
-      mockProxyAI.mockRestore();
     });
 
     it('trendPredict - 正常请求', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockProxyAI = vi.spyOn(lafService, 'proxyAI').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { predictions: [] }
@@ -232,15 +223,15 @@ describe('全链路: LafService 核心请求引擎', () => {
       const result = await lafService.trendPredict({ topicFrequency: {} }, 2025, '政治');
 
       expect(result.success).toBe(true);
-      expect(mockProxyAI).toHaveBeenCalledWith(
-        'trend_predict',
+      expect(mockRequest).toHaveBeenCalledWith(
+        '/proxy-ai',
         expect.objectContaining({
+          action: 'trend_predict',
           examYear: 2025,
           subject: '政治'
-        })
+        }),
+        expect.any(Object)
       );
-
-      mockProxyAI.mockRestore();
     });
   });
 
@@ -258,7 +249,7 @@ describe('全链路: LafService 核心请求引擎', () => {
       const { lafService } = await import('@/services/lafService.js');
       global.__mockStorage = { EXAM_USER_ID: 'user_mem' };
 
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: [{ role: 'user', content: '你好' }]
@@ -273,27 +264,23 @@ describe('全链路: LafService 核心请求引擎', () => {
           friendType: 'yan-cong'
         })
       );
-
-      mockRequest.mockRestore();
     });
 
     it('getAiFriendMemory - 网络失败返回错误', async () => {
       const { lafService } = await import('@/services/lafService.js');
       global.__mockStorage = { EXAM_USER_ID: 'user_mem' };
 
-      vi.spyOn(lafService, 'request').mockRejectedValue(new Error('timeout'));
+      mockRequest.mockRejectedValue(new Error('timeout'));
 
       const result = await lafService.getAiFriendMemory('yan-shi');
       expect(result.success).toBe(false);
-
-      vi.restoreAllMocks();
     });
   });
 
   describe('Phase 6: 账号注销', () => {
     it('requestAccountDeletion - 正常请求', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { cooldownDays: 7 }
@@ -302,13 +289,11 @@ describe('全链路: LafService 核心请求引擎', () => {
       const result = await lafService.requestAccountDeletion();
       expect(result.success).toBe(true);
       expect(mockRequest).toHaveBeenCalledWith('/account-delete', { action: 'request' });
-
-      mockRequest.mockRestore();
     });
 
     it('cancelAccountDeletion - 正常请求', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         message: '已撤销'
@@ -316,18 +301,14 @@ describe('全链路: LafService 核心请求引擎', () => {
 
       const result = await lafService.cancelAccountDeletion();
       expect(result.success).toBe(true);
-
-      mockRequest.mockRestore();
     });
 
     it('requestAccountDeletion - 网络失败', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockRejectedValue(new Error('服务器错误'));
+      mockRequest.mockRejectedValue(new Error('服务器错误'));
 
       const result = await lafService.requestAccountDeletion();
       expect(result.success).toBe(false);
-
-      vi.restoreAllMocks();
     });
   });
 
@@ -336,7 +317,6 @@ describe('全链路: LafService 核心请求引擎', () => {
       const { lafService } = await import('@/services/lafService.js');
 
       // Step 1: 登录
-      const mockRequest = vi.spyOn(lafService, 'request');
       mockRequest.mockResolvedValueOnce({
         code: 0,
         success: true,
@@ -384,15 +364,13 @@ describe('全链路: LafService 核心请求引擎', () => {
 
       // 验证总共发了 4 次请求
       expect(mockRequest).toHaveBeenCalledTimes(4);
-
-      mockRequest.mockRestore();
     });
 
     it('离线用户旅程: 所有接口优雅降级', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
       // 模拟所有请求失败
-      const mockRequest = vi.spyOn(lafService, 'request').mockRejectedValue(new Error('网络连接失败'));
+      mockRequest.mockRejectedValue(new Error('网络连接失败'));
 
       // 所有接口都不应该抛出未捕获异常
       const results = await Promise.all([
@@ -408,8 +386,6 @@ describe('全链路: LafService 核心请求引擎', () => {
       for (const result of results) {
         expect(result.success).toBe(false);
       }
-
-      mockRequest.mockRestore();
     });
   });
 });

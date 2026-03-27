@@ -103,7 +103,7 @@ test.describe('A2-个人中心与设置页精细交互', () => {
     await installUniUiSpy(page);
 
     await clickVisible(page.locator('#e2e-profile-menu-feedback').first());
-    let uiSpy = await readUiSpy(page);
+    const uiSpy = await readUiSpy(page);
     expect(uiSpy.modals.at(-1)?.title).toBe('意见反馈');
     expect(uiSpy.modals.at(-1)?.content).toContain('feedback@exam-master.com');
 
@@ -147,7 +147,7 @@ test.describe('A2-个人中心与设置页精细交互', () => {
     expect(darkAfter).not.toBe(darkBefore);
 
     await clickVisible(page.locator('#e2e-settings-voice-switch').first());
-    let uiSpy = await readUiSpy(page);
+    const uiSpy = await readUiSpy(page);
     expect(uiSpy.toasts.some((item) => /语音伴学/.test(item.title))).toBe(true);
 
     await clickVisible(page.locator('#e2e-settings-target-school-stat').first());
@@ -174,7 +174,7 @@ test.describe('A2-个人中心与设置页精细交互', () => {
 
     await clickVisible(page.locator('#e2e-settings-target-school-stat').first());
     await clickVisible(page.getByText('删除', { exact: false }).first());
-    let uiSpy = await readUiSpy(page);
+    const uiSpy = await readUiSpy(page);
     expect(uiSpy.modals.some((item) => item.title === '确认删除')).toBe(true);
     await page.reload();
     await expect(page.locator('#e2e-settings-target-school-stat').first()).toContainText('0');

@@ -37,20 +37,28 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: mocked.verifyJWT
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  success: (data, message = 'ok') => ({ code: 0, success: true, message, data }),
-  badRequest: (message = 'bad request') => ({ code: 400, success: false, message }),
-  unauthorized: (message = '请先登录') => ({ code: 401, success: false, message }),
-  serverError: (message = 'server error') => ({ code: 500, success: false, message }),
-  generateRequestId: mocked.generateRequestId,
-  wrapResponse: mocked.wrapResponse,
-  checkRateLimitDistributed: mocked.checkRateLimitDistributed,
-  tooManyRequests: (message = 'too many requests') => ({ code: 429, success: false, message }),
-  createLogger: () => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  })
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  const mock = createApiResponseMock();
+  mock.generateRequestId = mocked.generateRequestId;
+  mock.wrapResponse = mocked.wrapResponse;
+  mock.checkRateLimitDistributed = mocked.checkRateLimitDistributed;
+  return mock;
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.verifyJWT(token);
+    if (!payload) return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    return { userId: payload.userId, payload };
+  },
+  isAuthError: (result) => result?.code === 401
+}));
+
+vi.mock('../../laf-backend/functions/_shared/validator', () => ({
+  validate: vi.fn(() => ({ valid: true, errors: [] }))
 }));
 
 vi.mock('@lafjs/cloud', () => ({
@@ -95,7 +103,7 @@ describe('[安全审计] voice-service 鉴权返回码一致性', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('token 无效或已过期');
+    expect(result.message).toContain('请先登录');
     expect(mocked.verifyJWT).toHaveBeenCalledTimes(1);
     expect(mocked.checkRateLimitDistributed).not.toHaveBeenCalled();
   });

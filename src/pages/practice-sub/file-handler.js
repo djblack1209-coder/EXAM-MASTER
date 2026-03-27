@@ -12,6 +12,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { toast } from '@/utils/toast.js';
 
 // 文件配置常量
 const FILE_CONFIG = {
@@ -297,7 +298,7 @@ class FileHandler {
     const filePath = file.path || file.tempFilePath || file.url;
 
     if (!filePath) {
-      uni.showToast({ title: '文件路径无效', icon: 'none' });
+      toast.info('文件路径无效');
       return { success: false, error: 'invalid path' };
     }
 
@@ -314,7 +315,7 @@ class FileHandler {
     }
 
     // 不支持的类型
-    uni.showToast({ title: '暂不支持预览此类型文件', icon: 'none' });
+    toast.info('暂不支持预览此类型文件');
     return { success: false, error: 'unsupported type' };
   }
 
@@ -333,7 +334,7 @@ class FileHandler {
         },
         fail: (err) => {
           logger.error('[FileHandler] 图片预览失败:', err);
-          uni.showToast({ title: '图片预览失败', icon: 'none' });
+          toast.info('图片预览失败');
           resolve({ success: false, error: err });
         }
       });
@@ -363,26 +364,26 @@ class FileHandler {
    * @returns {Promise<{success: boolean}>}
    */
   async downloadAndPreview(url, fileType) {
-    uni.showLoading({ title: '加载中...', mask: true });
+    toast.loading('加载中...');
 
     return new Promise((resolve) => {
       uni.downloadFile({
         url: url,
         success: (res) => {
-          uni.hideLoading();
+          toast.hide();
 
           if (res.statusCode === 200) {
             this.openDocument(res.tempFilePath, fileType).then(resolve);
           } else {
             logger.error('[FileHandler] 文件下载失败:', res.statusCode);
-            uni.showToast({ title: '文件加载失败', icon: 'none' });
+            toast.info('文件加载失败');
             resolve({ success: false, error: `download failed: ${res.statusCode}` });
           }
         },
         fail: (err) => {
-          uni.hideLoading();
+          toast.hide();
           logger.error('[FileHandler] 文件下载失败:', err);
-          uni.showToast({ title: '文件加载失败', icon: 'none' });
+          toast.info('文件加载失败');
           resolve({ success: false, error: err });
         }
       });
@@ -410,11 +411,11 @@ class FileHandler {
 
           // 针对不同错误给出提示
           if (err.errMsg && err.errMsg.includes('not support')) {
-            uni.showToast({ title: '当前设备不支持预览此文件', icon: 'none' });
+            toast.info('当前设备不支持预览此文件');
           } else if (err.errMsg && err.errMsg.includes('fail')) {
-            uni.showToast({ title: '文件打开失败，请检查文件是否损坏', icon: 'none' });
+            toast.info('文件打开失败，请检查文件是否损坏');
           } else {
-            uni.showToast({ title: '文件打开失败', icon: 'none' });
+            toast.info('文件打开失败');
           }
 
           resolve({ success: false, error: err });
@@ -472,7 +473,7 @@ class FileHandler {
       const timeoutTimer = setTimeout(
         () => {
           logger.warn('[FileHandler] 文件选择超时，未收到回调');
-          uni.showToast({ title: '文件选择超时，请重试', icon: 'none' });
+          toast.info('文件选择超时，请重试');
           finish({ success: false, timeout: true, error: new Error('文件选择超时') });
         },
         Math.max(3000, Number.isFinite(Number(timeout)) && Number(timeout) > 0 ? Number(timeout) : 8000)
@@ -486,7 +487,7 @@ class FileHandler {
         (typeof uni.chooseMessageFile === 'function' && uni.chooseMessageFile.bind(uni));
 
       if (!chooseMessageFileApi) {
-        uni.showToast({ title: '当前环境不支持选择文件', icon: 'none' });
+        toast.info('当前环境不支持选择文件');
         finish({ success: false, error: new Error('当前环境不支持选择文件') });
         return;
       }
@@ -508,11 +509,7 @@ class FileHandler {
               const validation = this.validateFile(file, { allowedTypes, maxSize });
 
               if (!validation.valid) {
-                uni.showToast({
-                  title: validation.errors[0],
-                  icon: 'none',
-                  duration: 2000
-                });
+                toast.info(validation.errors[0]);
                 finish({ success: false, errors: validation.errors });
                 return;
               }
@@ -539,14 +536,14 @@ class FileHandler {
                   return;
                 }
                 logger.error('[FileHandler] 文件选择失败:', err);
-                uni.showToast({ title: '文件选择失败', icon: 'none' });
+                toast.info('文件选择失败');
                 finish({ success: false, error: err });
               }
             }
           });
         } catch (err) {
           logger.error('[FileHandler] 拉起文件选择异常:', err);
-          uni.showToast({ title: '文件选择失败', icon: 'none' });
+          toast.info('文件选择失败');
           finish({ success: false, error: err });
         }
       };
@@ -597,11 +594,7 @@ class FileHandler {
           const validation = this.validateFile(file, { allowedTypes, maxSize });
 
           if (!validation.valid) {
-            uni.showToast({
-              title: validation.errors[0],
-              icon: 'none',
-              duration: 2000
-            });
+            toast.info(validation.errors[0]);
             finish({ success: false, errors: validation.errors });
             return;
           }
@@ -622,7 +615,7 @@ class FileHandler {
             finish({ success: false, cancelled: true });
           } else {
             logger.error('[FileHandler] 文件选择失败:', err);
-            uni.showToast({ title: '文件选择失败', icon: 'none' });
+            toast.info('文件选择失败');
             finish({ success: false, error: err });
           }
         }

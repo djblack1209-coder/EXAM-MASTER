@@ -32,16 +32,13 @@
   </view>
 </template>
 
-<script>
-export default {
-  name: 'MistakeSkeleton',
-  props: {
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+<script setup>
+defineProps({
+  isDark: {
+    type: Boolean,
+    default: false
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>
@@ -88,7 +85,7 @@ export default {
 .skeleton-mode-switch {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-padding: 16rpx;
+  padding: 16rpx;
 }
 
 .skeleton-mode-item {
@@ -139,7 +136,7 @@ padding: 16rpx;
   display: flex;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-padding: 20rpx 0;
+  padding: 20rpx 0;
   border-bottom: 1rpx solid var(--card-border);
 
   &:last-child {

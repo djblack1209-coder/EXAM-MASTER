@@ -11,9 +11,9 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate, sanitizeString } from './_shared/validator';
-import { createLogger, checkRateLimit } from './_shared/api-response';
-import { requireAdminAccess } from './_shared/admin-auth';
+import { validate, sanitizeString } from './_shared/validator.js';
+import { createLogger, checkRateLimit } from './_shared/api-response.js';
+import { requireAdminAccess } from './_shared/admin-auth.js';
 const logger = createLogger('[SchoolCrawler]');
 
 const db = cloud.database();
@@ -198,7 +198,10 @@ async function getSchoolList(data: Record<string, unknown>, requestId: string) {
 
   // 缓存无效，从研招网爬取
   try {
-    const schools = await crawlSchoolPage(province ? PROVINCE_CODE_MAP[province] : '', (page - 1) * pageSize);
+    const schools = await crawlSchoolPage(
+      province ? PROVINCE_CODE_MAP[province as string] : '',
+      ((page as number) - 1) * (pageSize as number)
+    );
     return {
       code: 0,
       data: {
@@ -227,10 +230,16 @@ async function getSchoolsFromDB(params: Record<string, unknown>, requestId: stri
     query.province = province;
   }
 
-  const skip = (page - 1) * pageSize;
+  const skip = ((page as number) - 1) * (pageSize as number);
 
   const [schools, countResult] = await Promise.all([
-    db.collection(CACHE_COLLECTION).where(query).orderBy('code', 'asc').skip(skip).limit(pageSize).get(),
+    db
+      .collection(CACHE_COLLECTION)
+      .where(query)
+      .orderBy('code', 'asc')
+      .skip(skip)
+      .limit(pageSize as number)
+      .get(),
     db.collection(CACHE_COLLECTION).where(query).count()
   ]);
 
@@ -585,7 +594,7 @@ async function refreshSchoolData(data: Record<string, unknown>, requestId: strin
   logger.info(`[${requestId}] 开始强制刷新院校数据`);
 
   try {
-    const provinceCode = province ? PROVINCE_CODE_MAP[province] : '';
+    const provinceCode = province ? PROVINCE_CODE_MAP[province as string] : '';
     const schools = await crawlSchoolPage(provinceCode, 0);
 
     // 更新到数据库
@@ -670,7 +679,7 @@ async function getSchoolsByProvince(data: Record<string, unknown>, requestId: st
 
   // 从研招网爬取
   try {
-    const provinceCode = PROVINCE_CODE_MAP[province];
+    const provinceCode = PROVINCE_CODE_MAP[province as string];
     if (!provinceCode) {
       return { code: 400, success: false, message: '无效的省份名称', requestId };
     }
@@ -722,7 +731,7 @@ async function getProvinceStats(requestId: string) {
     const provinces =
       (result.data as Record<string, unknown>[])?.map((p) => ({
         name: p._id,
-        code: PROVINCE_CODE_MAP[p._id] || '',
+        code: PROVINCE_CODE_MAP[p._id as string] || '',
         total: p.count,
         doubleFirstClass: p.doubleFirstClass
       })) || [];

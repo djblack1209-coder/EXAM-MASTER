@@ -151,7 +151,8 @@
 </template>
 
 <script>
-import { lafService } from '@/services/lafService.js';
+import { toast } from '@/utils/toast.js';
+import { useToolsStore } from '@/stores/modules/tools.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
@@ -188,6 +189,10 @@ const DEFAULT_SIZE_PIXELS = {
 
 export default {
   components: { BaseIcon, PrivacyPopup },
+  setup() {
+    const toolsStore = useToolsStore();
+    return { toolsStore };
+  },
   data() {
     return {
       statusBarHeight: 44,
@@ -243,8 +248,8 @@ export default {
 
     async loadConfig() {
       try {
-        const res = await lafService.getPhotoConfig();
-        if (res.code === 0 && res.data) {
+        const res = await this.toolsStore.fetchPhotoConfig();
+        if (res.success && res.data) {
           if (res.data.sizes) {
             this.sizeOptions = Object.entries(res.data.sizes).map(([key, v]) => ({
               key,
@@ -268,7 +273,7 @@ export default {
     async ensureMediaPermission(sourceType) {
       const privacyOk = await ensurePrivacyAuthorization();
       if (!privacyOk) {
-        uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+        toast.info('需要先同意隐私授权');
         return false;
       }
 
@@ -321,10 +326,7 @@ export default {
                   }
                 });
               } else if (err.errMsg && !err.errMsg.includes('cancel')) {
-                uni.showToast({
-                  title: sourceType === 'camera' ? '拍照失败，请检查权限' : '选择照片失败',
-                  icon: 'none'
-                });
+                toast.info(sourceType === 'camera' ? '拍照失败，请检查权限' : '选择照片失败');
               }
             }
           });
@@ -348,7 +350,7 @@ export default {
         },
         fail: (err) => {
           if (err.errMsg && !err.errMsg.includes('cancel')) {
-            uni.showToast({ title: '选择照片失败', icon: 'none' });
+            toast.info('选择照片失败');
           }
         }
       });
@@ -365,7 +367,7 @@ export default {
         },
         fail: (err) => {
           logger.error('读取照片失败:', err);
-          uni.showToast({ title: '读取照片失败', icon: 'none' });
+          toast.info('读取照片失败');
         }
       });
       // #endif
@@ -381,7 +383,7 @@ export default {
         this.imageBase64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
         this.step = 1;
       };
-      img.onerror = () => uni.showToast({ title: '加载照片失败', icon: 'none' });
+      img.onerror = () => toast.info('加载照片失败');
       img.src = path;
       // #endif
 
@@ -397,13 +399,13 @@ export default {
               this.step = 1;
             };
             reader.onerror = () => {
-              uni.showToast({ title: '读取照片失败', icon: 'none' });
+              toast.info('读取照片失败');
             };
             reader.readAsDataURL(file);
           });
         },
         () => {
-          uni.showToast({ title: '读取照片失败', icon: 'none' });
+          toast.info('读取照片失败');
         }
       );
       // #endif
@@ -425,7 +427,7 @@ export default {
       }
 
       if (!this.imageBase64) {
-        uni.showToast({ title: '请先上传照片', icon: 'none' });
+        toast.info('请先上传照片');
         return;
       }
 
@@ -433,11 +435,11 @@ export default {
       this.processingText = '正在智能抠图...';
 
       try {
-        const res = await lafService.processIdPhoto(this.imageBase64, this.selectedColor, this.selectedSize, {
+        const res = await this.toolsStore.processPhoto(this.imageBase64, this.selectedColor, this.selectedSize, {
           beauty: this.enableBeauty
         });
 
-        if (res.code === 0 && res.data) {
+        if (res.success && res.data) {
           const payload = res.data || {};
           const directResult = payload.resultImage || payload.image || '';
           const foreground = payload.foreground || payload.imageBase64 || directResult || '';
@@ -660,7 +662,7 @@ export default {
       uni.saveImageToPhotosAlbum({
         filePath,
         success: () => {
-          uni.showToast({ title: '已保存到相册', icon: 'success' });
+          toast.success('已保存到相册');
         },
         fail: (err) => {
           if (err.errMsg && err.errMsg.includes('auth deny')) {
@@ -672,7 +674,7 @@ export default {
               }
             });
           } else {
-            uni.showToast({ title: '保存失败', icon: 'none' });
+            toast.info('保存失败');
           }
         }
       });
@@ -688,7 +690,7 @@ export default {
       // #ifdef MP-WEIXIN
       ensurePrivacyAuthorization().then((privacyOk) => {
         if (!privacyOk) {
-          uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+          toast.info('需要先同意隐私授权');
           return;
         }
 
@@ -697,7 +699,7 @@ export default {
           content: '需要相册权限才能保存证件照，是否前往设置开启？'
         }).then((granted) => {
           if (!granted) {
-            uni.showToast({ title: '未开启相册权限', icon: 'none' });
+            toast.info('未开启相册权限');
             return;
           }
 
@@ -709,7 +711,7 @@ export default {
 
           const base64Data = this.extractBase64Payload(src);
           if (!base64Data) {
-            uni.showToast({ title: '保存失败', icon: 'none' });
+            toast.info('保存失败');
             return;
           }
 
@@ -720,7 +722,7 @@ export default {
             encoding: 'base64',
             success: () => this.saveImageToAlbum(filePath),
             fail: () => {
-              uni.showToast({ title: '保存失败', icon: 'none' });
+              toast.info('保存失败');
             }
           });
         });

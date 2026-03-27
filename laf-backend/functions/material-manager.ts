@@ -14,8 +14,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT, extractBearerToken } from './_shared/auth';
-import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { verifyJWT, extractBearerToken } from './_shared/auth.js';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
 
 const db = cloud.database();
 const logger = createLogger('[MaterialManager]');
@@ -303,7 +303,7 @@ async function getQuestions(userId, data, requestId) {
     : [];
 
   // 构建查询条件
-  const query = { userId };
+  const query: Record<string, unknown> = { userId };
 
   if (safeMaterialId) {
     query.materialId = safeMaterialId;

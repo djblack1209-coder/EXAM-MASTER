@@ -1,6 +1,20 @@
 # Testing Infrastructure
 
-> Auto-generated: 2026-03-22 | Last updated: 2026-03-23 (Round 19 QA Audit)
+> Auto-generated: 2026-03-22 | Last updated: 2026-03-26 (Round 51 全量测试绿灯)
+>
+> **Round 51 变更 (全量绿灯)**:
+>
+> - **92 个测试文件全部通过，1263 个测试 0 失败**
+> - Timer 超时修复：`vi.useFakeTimers({ toFake: [...] })` 限定范围，排除 `requestAnimationFrame`/`performance`
+> - 16 个 audit-\* 测试：requireAuth mock 集成 jwtPayload + 补缺 fsrs-scheduler/validator mock + 断言适配后端实际行为
+> - `api-response-mock.js` 补充 `checkRateLimit`、`validateUserId`、`sanitizeString`、`validateAction`
+> - **已知 Mock 最佳实践**：后端 audit 测试中 `requireAuth` mock 必须检查 `jwtPayload` 变量，不能硬编码返回 userId
+>
+> **Round 49/50 变更**:
+>
+> - 新增 `tests/__mocks__/api-response-mock.js`：后端 api-response 完整 mock factory
+> - `tests/setup.js` 新增 `JWT_SECRET_PLACEHOLDER
+> - integration 测试 mock 策略：直接突变 `aiService.request` 而非 mock `_request-core.js`
 
 ## Overview
 

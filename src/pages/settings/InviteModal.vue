@@ -41,7 +41,8 @@
       <view class="qr-preview">
         <image
           :src="qrCodeUrl || '/static/images/logo.png'"
-          alt="Exam Master" mode="aspectFit"
+          alt="Exam Master"
+          mode="aspectFit"
           style="width: 100px; height: 100px"
           @error="
             (e) => {
@@ -69,117 +70,116 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import { logger } from '@/utils/logger.js';
+import { toast } from '@/utils/toast.js';
 import config from '@/config';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  components: { BaseIcon },
-  props: {
-    inviteCode: {
-      type: String,
-      default: 'EXAM8888'
-    },
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+const props = defineProps({
+  inviteCode: {
+    type: String,
+    default: 'EXAM8888'
   },
-  emits: ['close', 'openPoster'],
-  computed: {
-    // 构造真实的 App 启动链接 (Schemes) 或 Web 链接
-    inviteLink() {
-      return `${config.deepLink.h5BaseUrl}/join?c=${this.inviteCode}`;
-    },
-    // 使用公开 API 动态生成二维码
-    qrCodeUrl() {
-      return `${config.externalCdn.qrServerBaseUrl}/create-qr-code/?size=150x150&data=${encodeURIComponent(this.inviteLink)}`;
-    }
-  },
-  methods: {
-    // 功能 2: 复制链接
-    copyLink() {
-      uni.setClipboardData({
-        data: `考研神器 Exam-Master，我的邀请码是【${this.inviteCode}】，快来一起刷题！链接：${this.inviteLink}`,
-        success: () => {
-          uni.showToast({ title: '口令已复制', icon: 'none' });
-        }
-      });
-    },
-    // 功能 3: 分享
-    shareToWechat() {
-      // #ifdef MP-WEIXIN
-      // 微信小程序环境：使用 wx.showShareMenu 或复制链接
-      uni.showActionSheet({
-        itemList: ['分享给好友', '复制邀请链接'],
-        success: (res) => {
-          if (res.tapIndex === 0) {
-            // 触发页面分享
-            // 注意：小程序需要在页面配置 onShareAppMessage
-            uni.showToast({
-              title: '请点击右上角"..."分享给好友',
-              icon: 'none',
-              duration: 2500
-            });
-          } else if (res.tapIndex === 1) {
-            this.copyLink();
-          }
-        }
-      });
-      // #endif
-
-      // #ifdef APP-PLUS
-      // App 环境：使用 uni.share
-      if (typeof uni.share !== 'undefined') {
-        uni.share({
-          provider: 'weixin',
-          scene: 'WXSceneSession',
-          type: 0,
-          href: this.inviteLink,
-          title: 'Exam-Master 考研神器',
-          summary: '输入我的邀请码 ' + this.inviteCode + ' 领取会员！',
-          imageUrl: '/static/tabbar/practice-active.png',
-          success: () => {
-            uni.showToast({ title: '分享成功', icon: 'success' });
-          },
-          fail: (err) => {
-            logger.log('分享失败:', err);
-            // 降级到复制链接
-            this.copyLink();
-          }
-        });
-      } else {
-        this.copyLink();
-      }
-      // #endif
-
-      // #ifdef H5
-      // H5 环境：使用 Web Share API 或复制链接
-      if (navigator.share) {
-        navigator
-          .share({
-            title: 'Exam-Master 考研神器',
-            text: `输入我的邀请码【${this.inviteCode}】领取会员！`,
-            url: this.inviteLink
-          })
-          .then(() => {
-            uni.showToast({ title: '分享成功', icon: 'success' });
-          })
-          .catch(() => {
-            this.copyLink();
-          });
-      } else {
-        this.copyLink();
-      }
-      // #endif
-    },
-    // 功能 4: 打开海报生成
-    openPoster() {
-      this.$emit('openPoster');
-    }
+  isDark: {
+    type: Boolean,
+    default: false
   }
-};
+});
+
+const emit = defineEmits(['close', 'openPoster']);
+
+// 构造真实的 App 启动链接 (Schemes) 或 Web 链接
+const inviteLink = computed(() => {
+  return `${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`;
+});
+
+// 使用公开 API 动态生成二维码
+const qrCodeUrl = computed(() => {
+  return `${config.externalCdn.qrServerBaseUrl}/create-qr-code/?size=150x150&data=${encodeURIComponent(inviteLink.value)}`;
+});
+
+// 功能 2: 复制链接
+function copyLink() {
+  uni.setClipboardData({
+    data: `考研神器 Exam-Master，我的邀请码是【${props.inviteCode}】，快来一起刷题！链接：${inviteLink.value}`,
+    success: () => {
+      toast.info('口令已复制');
+    }
+  });
+}
+
+// 功能 3: 分享
+function shareToWechat() {
+  // #ifdef MP-WEIXIN
+  // 微信小程序环境：使用 wx.showShareMenu 或复制链接
+  uni.showActionSheet({
+    itemList: ['分享给好友', '复制邀请链接'],
+    success: (res) => {
+      if (res.tapIndex === 0) {
+        // 触发页面分享
+        // 注意：小程序需要在页面配置 onShareAppMessage
+        toast.info('请点击右上角"..."分享给好友', 2500);
+      } else if (res.tapIndex === 1) {
+        copyLink();
+      }
+    }
+  });
+  // #endif
+
+  // #ifdef APP-PLUS
+  // App 环境：使用 uni.share
+  if (typeof uni.share !== 'undefined') {
+    uni.share({
+      provider: 'weixin',
+      scene: 'WXSceneSession',
+      type: 0,
+      href: inviteLink.value,
+      title: 'Exam-Master 考研神器',
+      summary: '输入我的邀请码 ' + props.inviteCode + ' 领取会员！',
+      imageUrl: '/static/tabbar/practice-active.png',
+      success: () => {
+        toast.success('分享成功');
+      },
+      fail: (err) => {
+        logger.log('分享失败:', err);
+        toast.info('分享失败，已复制邀请链接');
+        // 降级到复制链接
+        copyLink();
+      }
+    });
+  } else {
+    copyLink();
+  }
+  // #endif
+
+  // #ifdef H5
+  // H5 环境：使用 Web Share API 或复制链接
+  if (navigator.share) {
+    navigator
+      .share({
+        title: 'Exam-Master 考研神器',
+        text: `输入我的邀请码【${props.inviteCode}】领取会员！`,
+        url: inviteLink.value
+      })
+      .then(() => {
+        toast.success('分享成功');
+      })
+      .catch(() => {
+        toast.info('分享失败，已复制邀请链接');
+        copyLink();
+      });
+  } else {
+    copyLink();
+  }
+  // #endif
+}
+
+// 功能 4: 打开海报生成
+function openPoster() {
+  emit('openPoster');
+}
 </script>
 
 <style lang="scss" scoped>

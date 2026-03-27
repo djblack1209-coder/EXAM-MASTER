@@ -15,6 +15,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import { toast } from '@/utils/toast.js';
 
 // tabBar 页面路径列表（与 pages.json 中 tabBar.list 保持一致）
 const TAB_BAR_PAGES = ['/pages/index/index', '/pages/practice/index', '/pages/school/index', '/pages/profile/index'];
@@ -78,7 +79,7 @@ export function safeNavigateTo(url, options = {}) {
           fail(err2) {
             logger.warn('[safeNavigate] reLaunch also failed:', tabUrl, err2);
             if (!silent) {
-              uni.showToast({ title: '页面跳转失败', icon: 'none', duration: 2000 });
+              toast.info('页面跳转失败');
             }
           }
         });
@@ -112,7 +113,7 @@ export function safeNavigateTo(url, options = {}) {
         fail(err2) {
           logger.warn('[safeNavigate] redirectTo also failed:', url, err2);
           if (!silent) {
-            uni.showToast({ title: '页面跳转失败', icon: 'none', duration: 2000 });
+            toast.info('页面跳转失败');
           }
         }
       });

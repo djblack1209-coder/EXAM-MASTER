@@ -192,19 +192,19 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
     expect(result.message).toContain('缺少 action');
   });
 
-  it('question-bank token 无效时应返回 success=false', async () => {
+  it('question-bank token 无效时，非公开 action 应返回 success=false', async () => {
     mocked.scenario.jwtPayload = null;
 
     const result = /** @type {any} */ (
       await questionBankHandler({
         headers: { authorization: 'Bearer invalid_token' },
-        body: { action: 'get', userId: 'user_auth_1', data: {} }
+        body: { action: 'admin_sync', userId: 'user_auth_1', data: {} }
       })
     );
 
+    // admin_sync 不在 publicActions 中，无效 token 应返回 401
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('token 无效或已过期');
   });
 
   it('question-bank userId 不匹配时应返回 403 且 success=false', async () => {

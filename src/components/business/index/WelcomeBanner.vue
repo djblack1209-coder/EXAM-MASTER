@@ -36,41 +36,39 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-export default {
-  name: 'WelcomeBanner',
-  components: { BaseIcon },
-  props: {
-    isDark: { type: Boolean, default: false },
-    userName: { type: String, default: '小伙伴' },
-    finishedCount: { type: Number, default: 0 }
-  },
-  emits: ['nav-to-practice', 'nav-to-mock-exam'],
-  computed: {
-    greeting() {
-      const h = new Date().getHours();
-      if (h < 6) return '夜深了';
-      if (h < 9) return '早上好';
-      if (h < 12) return '上午好';
-      if (h < 14) return '中午好';
-      if (h < 18) return '下午好';
-      return '晚上好';
-    },
-    examCountdown() {
-      try {
-        // 考研日期：每年12月最后一个周末，简化为12月25日
-        const now = new Date();
-        const examYear = now.getFullYear();
-        const examDate = new Date(examYear, 11, 25);
-        if (now > examDate) examDate.setFullYear(examYear + 1);
-        return Math.ceil((examDate - now) / 86400000);
-      } catch (_e) {
-        return 0;
-      }
-    }
+
+defineProps({
+  isDark: { type: Boolean, default: false },
+  userName: { type: String, default: '小伙伴' },
+  finishedCount: { type: Number, default: 0 }
+});
+defineEmits(['nav-to-practice', 'nav-to-mock-exam']);
+
+const greeting = computed(() => {
+  const h = new Date().getHours();
+  if (h < 6) return '夜深了';
+  if (h < 9) return '早上好';
+  if (h < 12) return '上午好';
+  if (h < 14) return '中午好';
+  if (h < 18) return '下午好';
+  return '晚上好';
+});
+
+const examCountdown = computed(() => {
+  try {
+    // 考研日期：每年12月最后一个周末，简化为12月25日
+    const now = new Date();
+    const examYear = now.getFullYear();
+    const examDate = new Date(examYear, 11, 25);
+    if (now > examDate) examDate.setFullYear(examYear + 1);
+    return Math.ceil((examDate - now) / 86400000);
+  } catch (_e) {
+    return 0;
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>

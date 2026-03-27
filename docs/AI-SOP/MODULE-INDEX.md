@@ -42,7 +42,7 @@
 - **Question choice**: `src/pages/practice-sub/components/QuestionChoice.vue`
 - **Quiz progress bar**: `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`
 - **Answer sheet**: `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`
-- **Quiz result**: `src/pages/practice-sub/components/quiz-result/quiz-result.vue`
+- **Quiz result**: `src/pages/practice-sub/components/quiz-result/quiz-result.vue` (全屏结果页，含AI推荐下一步+个性化点评，由do-quiz.vue集成)
 - **Quiz auto-save**: `src/composables/useQuizAutoSave.js`
 - **Question normalizer**: `src/utils/practice/question-normalizer.js`
 - **Draft detector**: `src/utils/practice/draft-detector.js`
@@ -135,6 +135,7 @@
 ### Home page rendering issues
 
 - **Home page**: `src/pages/index/index.vue` (2310 lines)
+- **AI Daily Briefing**: `src/components/business/index/AIDailyBriefing.vue` (AI学习助手，首页核心AI入口)
 - **Welcome banner**: `src/components/business/index/WelcomeBanner.vue`
 - **Stats grid**: `src/components/business/index/StatsGrid.vue`
 - **Study heatmap**: `src/components/business/index/StudyHeatmap.vue`
@@ -166,13 +167,15 @@
 
 ### Mistake book issues
 
-- **Mistake book page**: `src/pages/mistake/index.vue`
+- **Mistake book page**: `src/pages/mistake/index.vue` (含知识点聚类视图 + 一键针对训练)
 - **Mistake card**: `src/pages/mistake/MistakeCard.vue`
 - **Mistake report**: `src/pages/mistake/MistakeReport.vue`
 - **Stats card**: `src/pages/mistake/StatsCard.vue`
 - **Mistake classifier**: `src/utils/practice/mistake-classifier.js`
 - **Mistake auto-collect**: `src/utils/practice/mistake-auto-collect.js`
 - **Backend mistake manager**: `laf-backend/functions/mistake-manager.ts`
+- **Backend error clustering**: `laf-backend/functions/smart-study-engine.ts` (action: error_clustering)
+- **Frontend API**: `src/services/api/domains/study.api.js` → `getErrorClusters()`
 
 ### Favorites issues
 
@@ -280,7 +283,7 @@
 
 ### Study plan issues
 
-- **Plan index**: `src/pages/plan/index.vue`
+- **Plan index**: `src/pages/plan/index.vue` (含AI自适应7天计划，接入generate_plan API)
 - **Plan create**: `src/pages/plan/create.vue`
 - **Todo store**: `src/stores/modules/todo.js`
 - **Todo composable**: `src/composables/useTodo.js`
@@ -295,7 +298,7 @@
 
 ### Stats not showing
 
-- **Study detail page**: `src/pages/study-detail/index.vue`
+- **Study detail page**: `src/pages/study-detail/index.vue` (含AI学习洞察卡片)
 - **Study trend chart**: `src/pages/study-detail/StudyTrendChart.vue`
 - **Study heatmap**: `src/pages/study-detail/StudyHeatmap.vue`
 - **Ability radar**: `src/pages/study-detail/AbilityRadar.vue`
@@ -339,6 +342,4 @@
 
 ## Infrastructure / Scripts
 
-### Duplicate directories
-
-- **Note**: The `laf-backend/scripts/` directory contains subdirectories (`crawlers`, `data-sync`, `test`) that duplicate those in the root `scripts/` directory. Be aware of this redundancy.
+- **Scripts 统一位置**: 所有脚本文件统一存放在根目录 `scripts/` 下。`laf-backend/scripts/` 下原有的 `crawlers`、`data-sync`、`test` 冗余副本已于 2026-03-26 清理（D015 已解决）。

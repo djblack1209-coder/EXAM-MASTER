@@ -12,7 +12,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   success,
   badRequest,
@@ -21,8 +21,8 @@ import {
   generateRequestId,
   createLogger,
   wrapResponse
-} from './_shared/api-response';
-import { getEmbedding, cosineSimilarity } from './_shared/embedding';
+} from './_shared/api-response.js';
+import { getEmbedding, cosineSimilarity } from './_shared/embedding.js';
 
 const db = cloud.database();
 const logger = createLogger('[RAGQuery]');

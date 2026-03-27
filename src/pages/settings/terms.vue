@@ -91,25 +91,22 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue';
+import { onLoad } from '@dcloudio/uni-app';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-export default {
-  data() {
-    return {
-      isDark: false
-    };
-  },
-  onLoad() {
-    const savedTheme = storageService.get('theme_mode', 'light');
-    this.isDark = savedTheme === 'dark';
-  },
-  methods: {
-    goBack() {
-      safeNavigateBack();
-    }
-  }
-};
+
+const isDark = ref(false);
+
+onLoad(() => {
+  const savedTheme = storageService.get('theme_mode', 'light');
+  isDark.value = savedTheme === 'dark';
+});
+
+function goBack() {
+  safeNavigateBack();
+}
 </script>
 
 <style scoped>

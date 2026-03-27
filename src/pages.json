@@ -130,6 +130,22 @@
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
+        },
+        {
+          "path": "error-clusters",
+          "style": {
+            "navigationBarTitleText": "错题聚类分析",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        },
+        {
+          "path": "sprint-mode",
+          "style": {
+            "navigationBarTitleText": "冲刺模式",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
         }
       ]
     },
@@ -290,6 +306,14 @@
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
+        },
+        {
+          "path": "adaptive",
+          "style": {
+            "navigationBarTitleText": "自适应学习计划",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
         }
       ]
     },
@@ -335,6 +359,14 @@
             "navigationBarBackgroundColor": "#1A1A1A",
             "enablePullDownRefresh": false
           }
+        },
+        {
+          "path": "focus-timer",
+          "style": {
+            "navigationBarTitleText": "专注计时",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
         }
       ]
     },
@@ -345,6 +377,14 @@
           "path": "index",
           "style": {
             "navigationBarTitleText": "知识图谱",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        },
+        {
+          "path": "mastery",
+          "style": {
+            "navigationBarTitleText": "掌握度总览",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }

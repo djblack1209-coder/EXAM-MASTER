@@ -76,6 +76,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { lafService } from '@/services/lafService.js';
 
@@ -228,7 +229,7 @@ export default {
       // 9.4: 输入长度限制，防止 API 调用失败或成本过高
       const MAX_INPUT_LENGTH = 2000;
       if (content.length > MAX_INPUT_LENGTH) {
-        uni.showToast({ title: `输入内容过长，请控制在 ${MAX_INPUT_LENGTH} 字以内`, icon: 'none' });
+        toast.info(`输入内容过长，请控制在 ${MAX_INPUT_LENGTH} 字以内`);
         return;
       }
 
@@ -479,7 +480,7 @@ export default {
           if (res.tempFilePath) {
             this.processVoice(res.tempFilePath);
           } else {
-            uni.showToast({ title: '录音失败，请重试', icon: 'none' });
+            toast.info('录音失败，请重试');
           }
         });
         let errorToastShown = false;
@@ -496,7 +497,7 @@ export default {
                 errorMsg = '录音功能初始化失败';
               }
             }
-            uni.showToast({ title: errorMsg, icon: 'none' });
+            toast.info(errorMsg);
             setTimeout(() => {
               errorToastShown = false;
             }, 2000);
@@ -525,13 +526,13 @@ export default {
           if (res.tempFilePath) {
             this.processVoice(res.tempFilePath);
           } else {
-            uni.showToast({ title: '录音失败，请重试', icon: 'none' });
+            toast.info('录音失败，请重试');
           }
         });
         this.recorderManager.onError((err) => {
           logger.error('录音错误', err);
           this.isRecording = false;
-          uni.showToast({ title: '录音出错，请重试', icon: 'none' });
+          toast.info('录音出错，请重试');
         });
         logger.log('[AIChatModal] App端录音管理器初始化成功');
       } catch (e) {
@@ -547,7 +548,7 @@ export default {
     handleTouchStart() {
       if (this.isRecording) return;
       if (!this.recorderManager) {
-        uni.showToast({ title: '录音功能未初始化', icon: 'none' });
+        toast.info('录音功能未初始化');
         return;
       }
 
@@ -562,7 +563,7 @@ export default {
         } catch (e) {
           logger.error('启动录音失败', e);
           this.isRecording = false;
-          uni.showToast({ title: '启动录音失败', icon: 'none' });
+          toast.info('启动录音失败');
         }
       };
 
@@ -598,13 +599,13 @@ export default {
       }
     },
     async processVoice(filePath) {
-      uni.showLoading({ title: '语音识别中...' });
+      toast.loading('语音识别中...');
 
       try {
         const backendText = await this.recognizeVoiceByBackend(filePath);
         if (backendText) {
           this.userInput = backendText;
-          uni.showToast({ title: '识别成功', icon: 'success', duration: 1000 });
+          toast.success('识别成功', 1000);
           setTimeout(() => {
             this.sendToAI();
           }, 300);
@@ -614,19 +615,19 @@ export default {
         const pluginText = await this.recognizeVoiceByWechatPlugin(filePath);
         if (pluginText) {
           this.userInput = pluginText;
-          uni.showToast({ title: '识别成功', icon: 'success', duration: 1000 });
+          toast.success('识别成功', 1000);
           setTimeout(() => {
             this.sendToAI();
           }, 300);
           return;
         }
 
-        uni.showToast({ title: '未识别到语音内容，请重试', icon: 'none' });
+        toast.info('未识别到语音内容，请重试');
       } catch (err) {
         logger.error('[AIChatModal] 语音识别失败:', err);
-        uni.showToast({ title: '语音识别失败，请重试', icon: 'none' });
+        toast.info('语音识别失败，请重试');
       } finally {
-        uni.hideLoading();
+        toast.hide();
       }
     },
 

@@ -26,16 +26,16 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { perfMonitor } from './_shared/perf-monitor';
+import { perfMonitor } from './_shared/perf-monitor.js';
 
 // ✅ B020: 导入 JWT 验证函数
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 
 // ✅ RAG: 导入向量嵌入与相似度计算
-import { getEmbedding, cosineSimilarity } from './_shared/embedding';
+import { getEmbedding, cosineSimilarity } from './_shared/embedding.js';
 
 // ==================== 环境配置 ====================
-import { IS_PRODUCTION, createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { IS_PRODUCTION, createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
 const logger = createLogger('[ProxyAI]');
 
 // 环境变量配置
@@ -429,7 +429,7 @@ export default async function (ctx: FunctionContext) {
     }
 
     // 0. 审计模式检查（后端必须是最后一道防线）
-    const auditCheck = checkAuditMode(ctx);
+    const auditCheck = checkAuditMode(ctx as Record<string, unknown>);
     if (!auditCheck.valid) {
       logger.warn(`[${requestId}] 审计模式校验失败: ${auditCheck.error}`);
       return {
@@ -610,7 +610,9 @@ export default async function (ctx: FunctionContext) {
       userPrompt,
       temperature,
       startTime,
-      messages: customMessages
+      messages: customMessages,
+      action,
+      data: ctx.body?.data || null
     });
 
     if (!aiCallResult.success) {
@@ -702,7 +704,9 @@ async function callAIWithFallback({
   userPrompt,
   temperature,
   startTime,
-  messages = null
+  messages = null,
+  action = '' as string,
+  data = null as Record<string, any> | null
 }) {
   let modelName = selectAvailableModel(preferredModel);
   let modelConfig = MODEL_CONFIG[modelName] || MODEL_CONFIG['glm-4-plus'];
@@ -719,7 +723,7 @@ async function callAIWithFallback({
   for (let attempt = 1; attempt <= AI_MAX_RETRIES; attempt++) {
     try {
       // Override model for multimodal
-      if (ctx.body.action === 'ocr_parse' || (ctx.body.data && ctx.body.data.base64)) {
+      if (action === 'ocr_parse' || (data && data.base64)) {
         modelConfig.name = 'glm-4v';
       }
       aiResponse = await cloud.fetch({
@@ -733,14 +737,14 @@ async function callAIWithFallback({
           model: modelConfig.name,
           messages:
             messages ||
-            (ctx.body.data && ctx.body.data.base64
+            (data && data.base64
               ? [
                   { role: 'system', content: systemPrompt },
                   {
                     role: 'user',
                     content: [
                       { type: 'text', text: userPrompt },
-                      { type: 'image_url', image_url: { url: ctx.body.data.base64 } }
+                      { type: 'image_url', image_url: { url: data.base64 } }
                     ]
                   }
                 ]

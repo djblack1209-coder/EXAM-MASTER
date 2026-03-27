@@ -10,6 +10,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ 以下模块从分包本地引用，避免打入主包
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { deduplicateQuestions } from '../utils/question-dedup-worker.js';
+import { toast } from '@/utils/toast.js';
 import {
   normalizeQuestion,
   isValidQuestion,
@@ -102,7 +103,7 @@ export const aiGenerationMixin = {
       this.getClipboardText()
         .then((text) => {
           if (!text) {
-            uni.showToast({ title: '请先复制聊天记录', icon: 'none' });
+            toast.info('请先复制聊天记录');
             return;
           }
           this.fileName = `聊天记录_${this.formatDate()}.txt`;
@@ -118,7 +119,7 @@ export const aiGenerationMixin = {
         })
         .catch((e) => {
           logger.error('[practice] 导入聊天记录失败:', e);
-          uni.showToast({ title: '导入失败，请重试', icon: 'none' });
+          toast.info('导入失败，请重试');
         });
     },
 
@@ -127,7 +128,7 @@ export const aiGenerationMixin = {
       this.getClipboardText()
         .then((text) => {
           if (!text) {
-            uni.showToast({ title: '请先复制网盘链接或文本', icon: 'none' });
+            toast.info('请先复制网盘链接或文本');
             return;
           }
           this.fileName = `百度网盘_${this.formatDate()}`;
@@ -144,13 +145,13 @@ export const aiGenerationMixin = {
             source: '百度网盘'
           });
           if (!this.fullFileContent) {
-            uni.showToast({ title: '已记录链接，基于主题生成', icon: 'none' });
+            toast.info('已记录链接，基于主题生成');
           }
           this.startAI();
         })
         .catch((e) => {
           logger.error('[practice] 导入百度网盘失败:', e);
-          uni.showToast({ title: '导入失败，请重试', icon: 'none' });
+          toast.info('导入失败，请重试');
         });
     },
 
@@ -210,13 +211,13 @@ export const aiGenerationMixin = {
       this.generatedCount = 0;
       if (!['pdf', 'doc', 'docx', 'txt', 'md', 'json'].includes(ext)) {
         this.isUploadingFile = false;
-        uni.showToast({ title: '暂不支持该格式', icon: 'none' });
+        toast.info('暂不支持该格式');
         return;
       }
       const MAX_FILE_SIZE = 10 * 1024 * 1024;
       if (file.size && file.size > MAX_FILE_SIZE) {
         this.isUploadingFile = false;
-        uni.showToast({ title: '文件过大，请选择 10MB 以内的文件', icon: 'none', duration: 3000 });
+        toast.info('文件过大，请选择 10MB 以内的文件', 3000);
         return;
       }
       this.currentUploadId = this.saveUploadRecord({
@@ -299,7 +300,7 @@ export const aiGenerationMixin = {
     // ==================== 智能题目生成 ====================
     startAI() {
       if (!this.fullFileContent && !this.fileName) {
-        return uni.showToast({ title: '请先导入资料', icon: 'none' });
+        return toast.info('请先导入资料');
       }
 
       this.isLooping = true;
@@ -461,13 +462,13 @@ export const aiGenerationMixin = {
         this.isPaused = true;
         this.updateUploadRecordStatus('failed');
         this.showMask = false;
-        uni.showToast({ title: '网络错误，请检查网络后重试', icon: 'none', duration: 3000 });
+        toast.info('网络错误，请检查网络后重试', 3000);
       } else {
         this.isLooping = false;
         this.isPaused = true;
         this.updateUploadRecordStatus('failed');
         this.showMask = false;
-        uni.showToast({ title: '生成失败：' + (e.message || '未知错误'), icon: 'none', duration: 3000 });
+        toast.info('生成失败：', 3000);
       }
     },
 
@@ -483,7 +484,7 @@ export const aiGenerationMixin = {
       clearInterval(this.soupTimer);
       this.refreshBankStatus();
       this.updateUploadRecordStatus('completed');
-      uni.showToast({ title: '智能出题完毕', icon: 'success' });
+      toast.success('智能出题完毕');
     },
 
     startSoupRotation() {
@@ -521,10 +522,7 @@ export const aiGenerationMixin = {
             this.isLooping = false;
             this.isPaused = false;
 
-            uni.showToast({
-              title: '已清空题库',
-              icon: 'success'
-            });
+            toast.success('已清空题库');
           }
         }
       });
@@ -536,12 +534,12 @@ export const aiGenerationMixin = {
       this.isLooping = false;
       this.showMask = false;
       this.updateUploadRecordStatus('paused');
-      uni.showToast({ title: '已暂停生成', icon: 'none' });
+      toast.info('已暂停生成');
     },
 
     resumeGeneration() {
       if (!this.fileName && !this.fullFileContent) {
-        return uni.showToast({ title: '请先导入资料', icon: 'none' });
+        return toast.info('请先导入资料');
       }
       this.isPaused = false;
       this.isLooping = true;
@@ -577,7 +575,7 @@ export const aiGenerationMixin = {
             storageService.remove('v30_user_answers');
             this.refreshBankStatus();
             this.showQuizManageModal = false;
-            uni.showToast({ title: '已清空题库', icon: 'success' });
+            toast.success('已清空题库');
           }
         }
       });

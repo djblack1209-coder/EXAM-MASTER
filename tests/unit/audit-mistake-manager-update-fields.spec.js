@@ -101,19 +101,28 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: vi.fn(() => mocked.getJwtPayload())
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  sanitizeString: (value, max = 2000) => {
-    const str = String(value ?? '');
-    return str.length > max ? str.slice(0, max) : str;
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  return createApiResponseMock();
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.getJwtPayload();
+    if (!payload) return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    return { userId: payload.userId };
   },
-  validateAction: (action) => typeof action === 'string' && action.length > 0,
-  validateUserId: (value) => typeof value === 'string' && value.length > 0,
-  createLogger: () => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  }),
-  generateRequestId: () => 'mm_test_req'
+  isAuthError: (result) => result?.code === 401
+}));
+
+vi.mock('../../laf-backend/functions/_shared/fsrs-scheduler', () => ({
+  scheduleReviewFSRS: vi.fn(),
+  createNewCard: vi.fn(() => ({})),
+  hasFSRSState: vi.fn(() => false),
+  extractFSRSState: vi.fn(() => null),
+  migrateToFSRS: vi.fn(() => ({}))
 }));
 
 import mistakeManagerHandler from '../../laf-backend/functions/mistake-manager';

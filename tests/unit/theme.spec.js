@@ -15,46 +15,43 @@ vi.mock('@/utils/logger.js', () => ({
   logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
 }));
 
+import { isNightTime, getCurrentTheme, setTheme, updateNavigationBarColor } from '@/pages/settings/theme.js';
+
 describe('theme.js', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
+    // 只 fake Date，不 fake setTimeout/setInterval，避免 happy-dom 内部定时器冲突导致 afterEach 超时
+    vi.useFakeTimers({ toFake: ['Date'] });
   });
 
   afterEach(() => {
-    vi.clearAllTimers();
     vi.useRealTimers();
   });
 
   describe('isNightTime', () => {
-    it('23:00 应返回 true', async () => {
+    it('23:00 应返回 true', () => {
       vi.setSystemTime(new Date(2026, 0, 1, 23, 0));
-      const { isNightTime } = await import('@/pages/settings/theme.js');
       expect(isNightTime()).toBe(true);
     });
 
-    it('03:00 应返回 true', async () => {
+    it('03:00 应返回 true', () => {
       vi.setSystemTime(new Date(2026, 0, 1, 3, 0));
-      const { isNightTime } = await import('@/pages/settings/theme.js');
       expect(isNightTime()).toBe(true);
     });
 
-    it('12:00 应返回 false', async () => {
+    it('12:00 应返回 false', () => {
       vi.setSystemTime(new Date(2026, 0, 1, 12, 0));
-      const { isNightTime } = await import('@/pages/settings/theme.js');
       expect(isNightTime()).toBe(false);
     });
 
-    it('05:00 边界应返回 false', async () => {
+    it('05:00 边界应返回 false', () => {
       vi.setSystemTime(new Date(2026, 0, 1, 5, 0));
-      const { isNightTime } = await import('@/pages/settings/theme.js');
       expect(isNightTime()).toBe(false);
     });
   });
 
   describe('getCurrentTheme', () => {
-    it('默认返回 light', async () => {
-      const { getCurrentTheme } = await import('@/pages/settings/theme.js');
+    it('默认返回 light', () => {
       expect(getCurrentTheme()).toBe('light');
     });
   });
@@ -63,7 +60,6 @@ describe('theme.js', () => {
     it('保存主题并触发事件和导航栏更新', async () => {
       const storageService = (await import('@/services/storageService.js')).default;
       uni.setNavigationBarColor = vi.fn(() => Promise.resolve());
-      const { setTheme } = await import('@/pages/settings/theme.js');
 
       setTheme('dark');
 
@@ -79,9 +75,8 @@ describe('theme.js', () => {
   });
 
   describe('updateNavigationBarColor', () => {
-    it('light 模式设置黑色前景', async () => {
+    it('light 模式设置黑色前景', () => {
       uni.setNavigationBarColor = vi.fn(() => Promise.resolve());
-      const { updateNavigationBarColor } = await import('@/pages/settings/theme.js');
 
       updateNavigationBarColor('light');
 

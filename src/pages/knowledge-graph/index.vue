@@ -22,8 +22,8 @@
       class="page-scroll"
       refresher-enabled
       :refresher-triggered="isRefreshing"
-      @refresherrefresh="onPullRefresh"
       :style="{ paddingTop: statusBarHeight + 74 + 'px' }"
+      @refresherrefresh="onPullRefresh"
     >
       <view class="hero-card">
         <text class="hero-eyebrow"> Knowledge Atlas </text>
@@ -56,7 +56,7 @@
           <text class="recommended-name">{{ recommendedTopic.knowledgePoint }}</text>
           <text class="recommended-reason">{{ recommendedTopic.reason }}</text>
           <view class="recommended-mastery-bar">
-            <view class="recommended-mastery-fill" :style="{ width: recommendedTopic.mastery + '%' }"></view>
+            <view class="recommended-mastery-fill" :style="{ width: recommendedTopic.mastery + '%' }" />
           </view>
           <text class="recommended-mastery-label">当前掌握度 {{ recommendedTopic.mastery }}%</text>
         </view>
@@ -75,7 +75,7 @@
             <view class="path-content">
               <text class="path-name">{{ item.knowledgePoint }}</text>
               <view class="path-mastery-bar">
-                <view class="path-mastery-fill" :style="{ width: item.mastery + '%' }"></view>
+                <view class="path-mastery-fill" :style="{ width: item.mastery + '%' }" />
               </view>
             </view>
             <view class="path-badge">
@@ -317,6 +317,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
@@ -432,9 +433,9 @@ export default {
     },
     summonAITutor(node) {
       if (!node) return;
-      uni.showLoading({ title: 'AI 导师组卷中...' });
+      toast.loading('AI 导师组卷中...');
       setTimeout(() => {
-        uni.hideLoading();
+        toast.hide();
         uni.navigateTo({
           url: `/pages/practice-sub/do-quiz?mode=ai_tutor&topic=${encodeURIComponent(node.title)}`
         });
@@ -535,7 +536,7 @@ export default {
         logger.error('[KnowledgeGraph] 加载数据失败:', error);
         // 降级到默认数据
         this.knowledgeNodes = this.getDefaultNodes(0, 0);
-        uni.showToast({ title: '数据加载失败', icon: 'none' });
+        toast.info('数据加载失败');
       } finally {
         this.isLoading = false;
       }
@@ -697,17 +698,17 @@ export default {
     },
 
     handleRefresh() {
-      uni.showLoading({ title: '刷新中...' });
+      toast.loading('刷新中...');
       this.loadKnowledgeData()
         .then(() => {
-          uni.showToast({ title: '刷新成功', icon: 'success' });
+          toast.success('刷新成功');
         })
         .catch((error) => {
           logger.error('[KnowledgeGraph] 刷新失败:', error);
-          uni.showToast({ title: '刷新失败', icon: 'none' });
+          toast.info('刷新失败');
         })
         .finally(() => {
-          uni.hideLoading();
+          toast.hide();
         });
     },
 
@@ -719,10 +720,7 @@ export default {
         /* vibrateShort not supported on this device */
       }
 
-      uni.showToast({
-        title: `共 ${this.totalNodes} 个知识点`,
-        icon: 'none'
-      });
+      toast.info(`共 ${this.totalNodes} 个知识点`);
     },
 
     handleNodeClick(node) {
@@ -740,7 +738,7 @@ export default {
 
     handleChildClick(child) {
       logger.log('[KnowledgeGraph] 子节点点击:', child.title);
-      uni.showToast({ title: child.title, icon: 'none' });
+      toast.info(child.title);
     },
 
     startPractice(node) {
@@ -820,7 +818,7 @@ export default {
     // 显示学习路径
     showLearningPath() {
       if (this.learningPath.length === 0) {
-        uni.showToast({ title: '暂无学习建议', icon: 'none' });
+        toast.info('暂无学习建议');
         return;
       }
 
@@ -839,7 +837,7 @@ export default {
     // 显示掌握度分布
     showMasteryStats() {
       if (!this.masteryDistribution) {
-        uni.showToast({ title: '暂无统计数据', icon: 'none' });
+        toast.info('暂无统计数据');
         return;
       }
 
@@ -857,7 +855,7 @@ export default {
     // 显示薄弱知识点
     showWeakNodes() {
       if (this.weakNodes.length === 0) {
-        uni.showToast({ title: '暂无薄弱知识点', icon: 'none' });
+        toast.info('暂无薄弱知识点');
         return;
       }
 
@@ -891,7 +889,7 @@ export default {
     // 显示知识关联分析
     showConnectionAnalysis() {
       if (!this.connectionAnalysis) {
-        uni.showToast({ title: '暂无关联数据', icon: 'none' });
+        toast.info('暂无关联数据');
         return;
       }
 
@@ -913,7 +911,7 @@ export default {
     // 显示个性化学习计划
     showPersonalizedPlan() {
       if (!this.personalizedPlan) {
-        uni.showToast({ title: '暂无学习计划', icon: 'none' });
+        toast.info('暂无学习计划');
         return;
       }
 
@@ -943,7 +941,7 @@ export default {
     showNodeConnections(node) {
       const connections = getStrongConnections(node.id, 3);
       if (connections.length === 0) {
-        uni.showToast({ title: '暂无关联知识点', icon: 'none' });
+        toast.info('暂无关联知识点');
         return;
       }
 
@@ -985,7 +983,7 @@ export default {
 
     // 生成学习计划
     generateLearningPlan() {
-      uni.showLoading({ title: '生成学习计划...' });
+      toast.loading('生成学习计划...');
 
       setTimeout(() => {
         try {
@@ -997,13 +995,13 @@ export default {
           });
 
           this.personalizedPlan = plan;
-          uni.hideLoading();
-          uni.showToast({ title: '学习计划生成成功', icon: 'success' });
+          toast.hide();
+          toast.success('学习计划生成成功');
           this.showPersonalizedPlan();
         } catch (error) {
-          uni.hideLoading();
+          toast.hide();
           logger.error('[KnowledgeGraph] 生成学习计划失败:', error);
-          uni.showToast({ title: '生成失败，请重试', icon: 'none' });
+          toast.info('生成失败，请重试');
         }
       }, 1000);
     }

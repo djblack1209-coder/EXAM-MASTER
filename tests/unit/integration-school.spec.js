@@ -5,21 +5,28 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 
+const mockRequest = vi.fn().mockResolvedValue({ code: 0, success: true, data: {} });
+
 vi.mock('@/utils/logger.js', () => ({
   logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() }
 }));
 vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
+vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return { ...original, request: mockRequest };
+});
 
 describe('全链路: 择校分析流程', () => {
   let pinia;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     pinia = createPinia();
     setActivePinia(pinia);
     global.__mockStorage = {};
     vi.clearAllMocks();
+    mockRequest.mockResolvedValue({ code: 0, success: true, data: {} });
   });
 
   describe('Phase 1: SchoolStore 状态管理', () => {
@@ -125,7 +132,7 @@ describe('全链路: 择校分析流程', () => {
       const { lafService } = await import('@/services/lafService.js');
 
       // Mock request
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: [
@@ -142,14 +149,12 @@ describe('全链路: 择校分析流程', () => {
       });
       expect(result.success).toBe(true);
       expect(result.data).toHaveLength(2);
-
-      mockRequest.mockRestore();
     });
 
     it('lafService.getSchoolDetail 参数构建正确', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: {
@@ -167,14 +172,12 @@ describe('全链路: 择校分析流程', () => {
         data: { code: '10001' }
       });
       expect(result.data.name).toBe('北京大学');
-
-      mockRequest.mockRestore();
     });
 
     it('lafService.getProvinces 获取省份列表', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: ['北京', '上海', '广东', '浙江']
@@ -183,20 +186,16 @@ describe('全链路: 择校分析流程', () => {
       const result = await lafService.getProvinces();
       expect(result.success).toBe(true);
       expect(result.data).toContain('北京');
-
-      mockRequest.mockRestore();
     });
 
     it('lafService.getHotSchools 网络失败返回空数组', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
-      const mockRequest = vi.spyOn(lafService, 'request').mockRejectedValue(new Error('网络错误'));
+      mockRequest.mockRejectedValue(new Error('网络错误'));
 
       const result = await lafService.getHotSchools();
       expect(result.success).toBe(false);
       expect(result.data).toEqual([]);
-
-      mockRequest.mockRestore();
     });
   });
 });

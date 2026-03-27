@@ -18,8 +18,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { createLogger } from './_shared/api-response';
-import { requireAdminAccess } from './_shared/admin-auth';
+import { createLogger } from './_shared/api-response.js';
+import { requireAdminAccess } from './_shared/admin-auth.js';
 
 const logger = createLogger('[DbMigrate]');
 const db = cloud.database();

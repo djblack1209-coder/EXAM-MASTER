@@ -14,6 +14,381 @@
 
 ---
 
+## [2026-03-27] 全量审计第二轮 — 页面上线 + DailyGoalRing + E2E + 深色模式
+
+- **Scope**: `frontend`, `docs`
+- **Files Changed**: 5页面移动+路由注册, DailyGoalRing组件(266行), useDynamicMixin修复, study.api.js去重, 11文件ESLint修复, favicon, plan重复键修复
+- **Summary**: 6个未发布页面上线，DailyGoalRing进度环组件开发，E2E P0/P1 96.3%通过，深色模式审查良好
+- **Breaking Changes**: 无
+
+---
+
+## [2026-03-27] 全量审计 — 安全修复 + 死代码清理 + 配置修正 + UI修复
+
+- **Scope**: `frontend`, `backend`, `deploy`, `docs`, `infra`
+- **Files Changed**:
+  - `laf-backend/.env.example` — **P0安全修复**: 7 个真实 API 密钥替换为占位符(Zhipu/Groq/Gemini/OpenRouter/Cerebras/Mistral/Manus)
+  - `src/services/api/core/request.js` — **已删除**: 106行遗留文件，无任何代码引用
+  - `src/stores/modules/auth.js` — 配置导入迁移: `common/config` → `@/config/index.js`
+  - `src/stores/modules/profile.js` — 同上
+  - `src/stores/modules/study.js` — 同上
+  - `src/config/index.js` — 新增 `storage.cacheKeys` 配置项(token/userInfo/studyProgress)
+  - `deploy/docker/Dockerfile` — CMD 修正: `health-check.js` → `standalone/server.js`
+  - `package.json` — lint 脚本移除 `|| true`，不再吞掉 ESLint 错误
+  - `CLAUDE.md` — 服务层路径修正(ai.service.js→ai.api.js)、云函数数量更新(35→47)
+  - `src/App.vue` — **BUG修复**: H5 环境隐藏原生 tabBar，解决双 TabBar 重叠遮挡内容问题
+  - `src/services/api/domains/social.api.js` — **BUG修复**: socialService 函数补充便捷方法(getFriendList/searchUser/sendRequest等)，修复 friend-list.vue TypeError
+  - `src/composables/useDynamicMixin.js` — **BUG修复**: H5分包模块加载从 require() 改为 import()，消除 practice 页 "当前环境不支持" 错误
+  - `src/pages/index/index.vue` — **BUG修复**: 注释掉不存在的 DailyGoalRing 组件引用，消除 Vue 警告；移除未使用的 lafService 导入
+  - `src/services/api/domains/study.api.js` — **D019修复**: 移除与 smart-study.api.js 重复的 7 个函数，改为 re-export
+  - `src/services/api/domains/smart-study.api.js` — 新增 generateAdaptivePlan 别名
+  - `src/pages/plan/index.vue` — 移除 data() 中重复定义的 isRefreshing 属性
+  - `index.html` — 添加 favicon link 标签消除 404
+  - 11 个文件 ESLint 修复: 未使用变量前缀 `_`、移除死导入、Vue reserved keys 重命名
+- **Summary**: 全量审计涵盖安全/构建/测试/运维/API/UI截图/文件归类/架构。修复 P0 安全漏洞(密钥泄露)、H5双TabBar重叠、社交服务TypeError，清理死代码。18个页面逐页截图审查。92个测试文件1263用例全部通过。
+- **Breaking Changes**: 无。所有修改均向后兼容。
+
+---
+
+## [2026-03-27] Round 63: 发布阻塞修复 — SVG 404 + school分包 + 主包瘦身
+
+- **Scope**: `frontend`, `deploy`, `infra`
+- **Files Changed**:
+  - `src/components/base/base-icon/icons.js` — 完全重写：从引用 SVG 文件改为内联 data URI，消除 folder.svg/sparkle.svg 等 404 错误
+  - `pages.json` — school 从 tabBar 主包移到 subPackages 分包
+  - `src/components/layout/custom-tabbar/custom-tabbar.vue` — 移除"择校"tab
+  - `src/pages/practice-sub/quiz-gamification-bridge.js` — store 引用路径修正
+  - `src/stores/index.js` — barrel export 精简，移除非主包 store 的 re-export
+  - `src/composables/useHomeReview.js` — fsrs-service + knowledge-engine 改为动态导入
+  - `src/pages/profile/index.vue` — checkin-streak + streak-recovery 改为动态导入
+  - `src/pages/practice/index.vue` — learning-analytics + study.api 改为动态导入
+  - `src/components/business/index/AIDailyBriefing.vue` — study.api 改为动态导入
+- **Summary**:
+  - **SVG 404 修复**: icons.js 从引用 `/static/icons/ui/*.svg` 文件改为内联 data URI（18个核心图标），彻底消除图标加载失败
+  - **school 分包化**: 从 tabBar 移到 subPackages，底部导航变为3个（首页/刷题/我的）
+  - **主包瘦身尝试**: 多个大模块（study.api/learning-analytics/checkin-streak/streak-recovery/fsrs-service/knowledge-engine）改为动态导入。但 uni-app 微信小程序构建器不支持动态 import 的分包优化，所有引用过的模块仍被打入主包
+  - **当前主包**: 1740KB（目标 1500KB，差 240KB）
+- **Breaking Changes**: school 页面不再是 tabBar 页面，需要通过"我的"页面跳转访问
+
+## [2026-03-27] Round 62: 部署上线 — 后端47函数 + smart-study-engine 首次部署
+
+- **Scope**: `deploy`, `backend`
+- **Files Changed**: 服务器端 47 个编译后的 .js 云函数 + standalone/ 目录
+- **Summary**:
+  - 后端 TS 编译 → rsync 上传腾讯云 → perl/sed import rewrite (`@lafjs/cloud` → `../standalone/cloud-shim.js`) → PM2 重启
+  - **smart-study-engine 首次部署**：analyze_mastery / error_clustering / sprint_priority / generate_plan 四个 action 全部可用
+  - 健康检查通过：`/health-check` → `{"code":0,"status":"ok"}`
+  - smart-study-engine 认证验证通过：`/smart-study-engine` → `{"code":401,"message":"请先登录"}` → 函数加载成功
+  - 微信小程序构建通过：主包 1872KB（< 2048KB 限制）
+  - 修复了 `_shared/` 子目录的相对路径深度问题（services/agents/generation/orchestration 需要 `../../../` 而非 `../`）
+- **Breaking Changes**: 无
+
+## [2026-03-27] Round 61: 质量收尾 — 停止加功能，验证稳定性
+
+- **Scope**: `testing`, `docs`
+- **Summary**: 单元测试 91/92 通过（1261断言0失败），H5构建通过。AI助手转型7层级全覆盖，建议进入部署+用户验证阶段。
+- **Breaking Changes**: 无
+
+## [2026-03-27] Round 60: AI从"陌生人"到"记住你的私教" + 自适应周计划
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - `src/components/business/index/AIDailyBriefing.vue` — 新增 AI 学习记忆（每日摘要存储 + 次日简报引用昨日进展）
+  - `src/pages/plan/index.vue` — 接入后端 generate_plan API，展示 AI 自适应7天学习计划
+- **Summary**:
+  - **AI学习记忆**: 每次首页AI简报完成分析后，将当天的学习摘要（做题数/正确率/薄弱点）保存到本地存储。次日打开APP时，简报会引用"昨天你做了15题，「概率统计」仍需加强"，形成跨会话连续性。最多保留7天记忆。
+  - **自适应学习计划**: plan 页从纯手动管理升级为 AI 驱动——调用后端 `generate_plan` API 生成7天自适应计划（含阶段划分、每日重点科目、具体任务列表），"今天"卡片有一键开始按钮。计划缓存1小时，下拉刷新可重新生成。
+- **Breaking Changes**: 无
+
+## [2026-03-27] Round 59: AI从单向广播→双向对话 + 考前冲刺自动化
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - `src/pages/practice-sub/do-quiz.vue` — 答错弹窗新增"还是不懂？问AI导师"按钮 + askAIAboutThis 方法
+  - `src/pages/chat/chat.vue` — 支持 context=question URL 参数，自动读取上下文并发送
+  - `src/components/business/index/AIDailyBriefing.vue` — 冲刺模式：距考试≤30天时调用 sprint_priority API，用ROI战略优先级重写任务列表
+- **Summary**:
+  - **上下文感知AI对话**: 答错后出现"问AI导师"入口，点击后跳转聊天页，自动带入题目+选择+正确答案上下文，AI导师直接针对这道题解答。从"AI说给你听"变成"你可以跟AI对话"
+  - **考前冲刺自动化**: 当用户设置的考试日期距今≤30天，首页AI简报自动调用后端 sprint_priority API，用ROI计算重写任务列表（只推 must_do 项），显示战略放弃建议，消息语气变为冲刺模式
+- **Breaking Changes**: 无
+
+## [2026-03-27] Round 58: AI全程教练 — 练习页/做题过程/学习节奏三大改造
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - `src/pages/practice/index.vue` — 新增 AI 推荐今日训练卡片（调用 analyzeMastery 获取薄弱知识点，一键开始零决策）
+  - `src/pages/practice-sub/do-quiz.vue` — 新增答错后个人历史AI微反馈 + 连续45分钟休息提醒
+- **Summary**:
+  - **练习页AI入口**: LearningStatsCard 下方新增醒目的 AI 推荐卡片，显示"AI推荐：今日重点：线性代数（掌握度35%）"+ 一键开始按钮，让AI推荐从首页延续到练习页
+  - **答错AI微反馈**: 答题结果弹窗新增 personalHint 条，基于错题本历史数据生成一句话上下文提醒（"你在「概率统计」上已累计错5题，建议做完后去错题本集中突破"），纯本地零延迟
+  - **学习节奏管理**: 计时器检测连续学习45分钟后显示温和的休息提醒条（渐变紫色），每次练习仅提醒一次
+- **Breaking Changes**: 无
+
+## [2026-03-27] Round 57: AI助手体验第二轮 — 打通全链路 + 消灭假数据
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - `src/pages/practice-sub/do-quiz.vue` — 做题完成弹窗从 CustomModal 升级为 QuizResult 全屏结果页
+  - `src/pages/practice-sub/components/quiz-result/quiz-result.vue` — 新增 diagnosisSummary/hasNextRecommendation prop；激励文案从随机假数据→基于表现的真实个性化点评；新增 continueNext emit
+  - `src/pages/study-detail/index.vue` — 新增 AI 学习洞察卡片（调用 analyzeMastery 生成一句话诊断 + 薄弱点标签）
+- **Summary**:
+  - **做题完成体验重构**: 将 CustomModal 纯文本弹窗替换为 quiz-result 全屏结果页，展示正确率圆环+分类正确率+AI推荐下一步+多出口跳转（错题本/薄弱训练/继续刷/诊断报告）
+  - **消灭假数据**: quiz-result 的"你超过了XX%用户"（随机数）替换为基于分类正确率的真实个性化点评；如果有后端 AI 诊断摘要则优先使用
+  - **学习数据页AI化**: study-detail 页新增 AI 洞察卡片，调用 analyzeMastery 获取真实掌握度数据，生成人话诊断 + 趋势预警 + 薄弱点标签
+- **Breaking Changes**: do-quiz.vue 做题完成从 CustomModal 改为 QuizResult 全屏页，UI体验变化较大（改善方向）
+
+## [2026-03-27] Round 56: 产品从"功能集合"升级为"AI助手" — 四层改造
+
+- **Scope**: `frontend`, `backend`
+- **Files Changed**:
+  - `src/services/api/domains/study.api.js` — 修正2个API action名不匹配 + 新增3个API方法
+  - `src/components/business/index/AIDailyBriefing.vue` — 假AI→真AI，接入后端 smart-study-engine
+  - `src/pages/index/index.vue` — 首页集成 AIDailyBriefing 组件
+  - `src/pages/practice-sub/components/quiz-result/quiz-result.vue` — 新增"AI推荐下一步"功能
+  - `src/pages/mistake/index.vue` — 新增知识点聚类视图 + 一键针对训练
+- **Summary**:
+  - **API层**: 修正 `error_clustering`/`generate_plan` action名与后端不匹配的问题；新增 `getDeepCorrection`/`getPendingCorrections`/`markCorrectionRead` 三个 API
+  - **首页AI助手**: 已开发但闲置的 AIDailyBriefing 组件升级为真正调用后端AI的版本（本地规则即时展示 + 后端异步增强 + 静默降级），集成到首页 WelcomeBanner 下方
+  - **做题结束引导**: quiz-result 新增"AI推荐下一步"区域，基于本次做题表现（错题数/正确率/分类正确率）+ 后端掌握度分析，推荐复习错题/薄弱点训练/挑战新题
+  - **错题智能聚类**: 错题页筛选栏新增"知识点聚类"入口，调用后端 error_clustering API 展示按错误类型×知识点的聚合分析，含严重度/趋势/AI建议/一键针对训练
+- **Breaking Changes**: 无
+
+## [2026-03-26] Round 55: 构建验证 + uni.showToast 100%清零 + Options API 第二批迁移
+
+- **Scope**: `frontend`, `testing`
+- **Files Changed**:
+  - `src/utils/date.js` — 新建：`today()` 函数导出（修复构建报错）
+  - `src/services/api/domains/study.api.js` — 补 4 个缺失方法：`analyzeMastery/getErrorClusters/getSprintPriority/generateAdaptivePlan`
+  - `src/utils/auth/loginGuard.js`, `src/utils/learning/learning-goal.js`, `src/pages/practice-sub/quiz-mistake-handler.js` — 最后 5 处 uni.showToast/Loading → toast.\*
+  - 3 个测试文件补 `hideToast` mock
+  - 10 个 Vue 组件 Options API → `<script setup>`（ResumePracticeModal, AbilityRadar, CustomModal, custom-tabbar, AIDailyBriefing, StudyTrendChart, offline-indicator, InviteModal, school-skeleton, base-skeleton）
+- **Summary**:
+  1. **构建验证**：H5 + MP 均 DONE，MP 主包 **1568KB**（从 2036KB 降 23%）
+  2. **uni.showToast 100% 清零**：业务代码零残留（仅 toast.js 内部实现层保留）
+  3. **Options API 迁移**：42→32 个文件，`<script setup>` 覆盖率 **72%** (83/115)
+  4. **缺失方法修复**：date.js `today()` + study.api.js 4 个智能学习引擎方法
+- **Breaking Changes**: 无
+
+---
+
+### 概述
+
+- **Scope**: frontend
+- **Summary**: 将 index/index.vue 和 practice/index.vue 中高度集中的逻辑提取为独立 composable，降低单文件复杂度，提高可维护性和可测试性
+- **Breaking Changes**: 无（所有对外 API/行为完全保持兼容）
+
+### 新建 Composable 文件（5个，共 662 行）
+
+| 文件                                    | 行数 | 提取来源           | 职责                                     |
+| --------------------------------------- | ---- | ------------------ | ---------------------------------------- |
+| `src/composables/useHomeStats.js`       | 165  | index/index.vue    | 统计数据刷新、成就加载、活动历史、热力图 |
+| `src/composables/useHomeReview.js`      | 124  | index/index.vue    | FSRS 复习数量、未完成进度检测、智能推荐  |
+| `src/composables/useStyleOnboarding.js` | 67   | index/index.vue    | 学习风格引导 3 步配置流程                |
+| `src/composables/useBankStatus.js`      | 138  | practice/index.vue | 题库状态管理、备份恢复、生成检测         |
+| `src/composables/useDynamicMixin.js`    | 168  | practice/index.vue | 分包动态加载、方法注入、重试机制         |
+
+### 页面缩减
+
+| 页面                           | 原行数 | 新行数 | 减少         |
+| ------------------------------ | ------ | ------ | ------------ |
+| `src/pages/index/index.vue`    | 2038   | 1820   | -218 (10.7%) |
+| `src/pages/practice/index.vue` | 1926   | 1739   | -187 (9.7%)  |
+
+### do-quiz.vue / pk-battle.vue 评估
+
+- do-quiz.vue (3040行)：已有 4 个 composable (useQuizEngine, useXPSystem, useCardStack, useTypewriter)，剩余逻辑高度耦合（UI 状态 + 答题流程），进一步拆分需配合组件拆分
+- pk-battle.vue (3288行)：已有 1 个 composable (usePKRoom)，仍有 100+ 方法，建议后续独立任务处理
+
+### 测试
+
+- 92 文件 / 1263 测试全部通过
+- 修改 2 个测试文件适配 composable 迁移
+
+---
+
+## [2026-03-26] Round 54: Store 层全覆盖 + 大页面瘦身 + script setup 迁移 28 个文件
+
+> 包含上方各子条目（H005-B / D002+H004 / H003）的详细记录。
+>
+> - H005-B: authStore(+6), schoolStore(+6), profileStore(+4) 共 16 个新 action，7 个页面迁移
+> - D002: index.vue(-218行) + practice/index.vue(-187行)，5 个新 composable
+> - H003: 28 个组件 Options API → script setup，script setup 占比 45→73 个
+> - 测试：92 文件 / 1263 测试 / 0 失败
+
+---
+
+## [2026-03-26] Round 53: 架构重构 — 删 10K 行重复代码 + Store 层归位 + Mixin 清理
+
+### D001: lafService 接入新 .api.js 体系 (-10,085 行)
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - `src/services/lafService.js` — 从 spread 合并 6 个 `.service.js` 改为 import 8 个 `.api.js`
+  - `src/services/api/domains/tools.api.js` — 补齐 6 个缺失方法
+  - **删除**: `ai.service.js`(2436行), `auth.service.js`(2006行), `favorite.service.js`(2006行), `practice.service.js`(2006行), `school.service.js`(2006行), `social.service.js`(2013行)
+  - 9 个测试文件 mock 路径更新
+- **Summary**: 旧体系 6 个 `.service.js` 文件是完整副本（每个 ~2000 行），含大量 ReferenceError 隐患。新体系 `.api.js` 已存在但未接入。现在完成接线，删除 10,085 行重复代码，同时获得双服务器自动切换能力。
+- **Breaking Changes**: 无（方法签名完全兼容）
+
+### H005-A: 31 处 lafService 绕过 Store 层替换
+
+- **Scope**: `frontend`
+- **Files Changed**: 14 个页面/组件文件 + `src/stores/index.js`
+- **Summary**: 31 处 `lafService.xxx()` 替换为 `classroomStore`(8处), `toolsStore`(6处), `reviewStore`(17处) 的对应 action。架构违规从 84 处降至 53 处（其中 34 处标记为可接受例外）。
+- **Breaking Changes**: 无
+
+### D004 + D009: 代码清理
+
+- **Scope**: `frontend`
+- **Summary**:
+  - D004: 删除废弃 `getApiKey()` 函数
+  - D009: 删除 4 个零引用 mixin（studyTimer/dailyQuote/practiceNavigation/tracking），迁移到对应 composable。保留 2 个动态代码分割模块（ai-generation-mixin/learning-stats-mixin）
+  - `src/mixins/` 目录已清空删除
+- **Breaking Changes**: 无
+
+---
+
+## [2026-03-26] Round 52: 视觉E2E全绿 + uni.showToast迁移 + cloud-shim升级 + Nginx备份 + 冗余清理
+
+### H010-H013 视觉回归和 E2E 回归测试修复
+
+- **Scope**: `frontend` | `testing` | `docs`
+- **Files Changed**:
+  - `src/pages/login/index.vue` — 时间戳冷却锁前移至 `handleEmailLogin` 顶部，防止快速多次点击 (H013)
+  - `tests/e2e-regression/fixtures/regression.fixture.js` — `setLoggedInSession` 补充 `__exam_storage__:` 前缀键 (H012)
+  - `tests/e2e-regression/specs/02-exception-flow.spec.js` — EXC-005 chatInput 超时 15s→25s, expectAnyText 15s→20s (H012)
+  - `pages.json` — 注册 `ai-classroom`(2页) 和 `onboarding`(1页) 为 subPackages (H011)
+  - `tests/visual/snapshots/` — 全量更新 44 张基准截图 (H010/H011)
+- **Summary**: 修复四个 🔴 Blocker 级测试问题。H010/H011 一次性更新全部过期/缺失快照；H012 根因是 storageService 前缀键缺失；H013 根因是时间戳冷却检查位置不对。
+
+### H006 uni.showToast → toast.js 迁移 (98.9%)
+
+- **Scope**: `frontend`
+- **Files Changed**: 70 个 .vue/.js 文件
+- **Summary**: 将 490 处 `uni.showToast` + 44 处 `uni.showLoading` + 95 处 `uni.hideLoading` 统一迁移为 `toast.success/info/error/loading/hide`。残留 8 处因测试 mock 限制暂不迁移。
+- **Breaking Changes**: 无
+
+### H002 cloud-shim .get/.post 短写法
+
+- **Scope**: `backend`
+- **Files Changed**: `laf-backend/standalone/cloud-shim.ts`
+- **Summary**: `cloudFetch` 挂载 `.get/.post/.put/.delete/.head/.patch` 快捷方法。
+
+### H001/D005 Nginx HTTPS 备份代理
+
+- **Scope**: `infra`
+- **Files Changed**: `/opt/nginx/conf.d/exam-master.conf`
+- **Summary**: `error_page 502 503 504 = @sealos_fallback` + `proxy_ssl_server_name on` 实现故障转移。
+
+### D003/D015 后端质量清理
+
+- **Scope**: `backend` | `infra`
+- **Summary**: D003 确认 TS 源码 `.js` 扩展名已全量补全；D015 清理 `laf-backend/scripts/` 下 11 个冗余文件。
+- **Breaking Changes**: 无
+
+---
+
+## [2026-03-26] Round 51: 全量测试绿灯 + TS零错误 + 后端部署 + UI质量修复
+
+- **Scope**: testing, backend, frontend
+- **Files Changed**:
+  - **Timer 超时修复 (3 文件)**:
+    - `tests/unit/login-guard.spec.js` — `vi.useFakeTimers()` 移到 `await import()` 之后，`toFake` 排除 `requestAnimationFrame`
+    - `tests/unit/real-utils.spec.js` — afterEach 补 `vi.clearAllTimers()`，限定 `toFake` 范围
+    - `tests/unit/theme.spec.js` — 动态 import 改为静态 import，`toFake` 限定为 `['Date']`
+  - **Audit mock 修复 (16 文件)**:
+    - 16 个 `audit-*.spec.js` — requireAuth mock 集成 jwtPayload、补缺失 mock、断言适配后端实际行为
+    - `tests/__mocks__/api-response-mock.js` — 补 `checkRateLimit`、`validateUserId`、`sanitizeString`、`validateAction`
+  - **TS 类型修复 (12 文件, 63→0 错误)**:
+    - `fsrs.service.ts` — `as typeof card` 断言 + 移除不兼容类型
+    - `proxy-ai.ts` — `callAIWithFallback` 新增参数消除 `ctx` 引用
+    - `answer-submit.ts` — 解构断言 + `as string` + `as unknown as ApiResponse`
+    - `data-cleanup.ts` — 8处 `as string` 断言
+    - `school-crawler-api.ts` — 5处 `as string`/`as number` 断言
+    - `school-query.ts` — `as Record<string, unknown>` 断言
+    - `study-stats.ts` — 数组类型断言
+    - `material-manager.ts` — query 类型改为 `Record<string, unknown>`
+    - `ai-diagnosis.ts` — `max_tokens` → `maxTokens`
+    - `smart-study-engine.ts` — `uid` → `userId`
+    - `user-profile.ts` — `ctx as Record<string, unknown>`
+    - `voice-service.ts` — requestBody 显式类型标注
+  - **后端 Bug 修复**:
+    - `laf-backend/functions/group-service.ts` — `handleGetGroups`/`handleGetResources` 分页查询重构为条件对象 + `Promise.all`
+  - **UI 质量修复 (H015/H016)**:
+    - `MarkdownRenderer.vue` — 渲染异常时 toast 提示
+    - `question-bank.vue` — 加载失败时 toast 提示
+    - `InviteModal.vue` — 分享失败时 toast 提示
+    - `FSRSOptimizer.vue` — 新增 loading 状态 + 加载中/加载失败提示
+- **Summary**:
+  1. **[测试-全绿]** 单元测试 161→0 失败，92 文件 1263 测试全部通过
+  2. **[TS编译-零错误]** 后端 TypeScript 63→0 编译错误，全部通过类型标注修复
+  3. **[H014修复]** group-service `get_groups` TypeError → 条件对象 + `Promise.all` 并行查询
+  4. **[部署]** 后端编译 + 后处理 + 上传 + PM2 重启，health check 通过
+  5. **[UI质量]** H015 错误提示 3个组件修复 + H016 加载状态修复
+- **Breaking Changes**: 无
+
+---
+
+## [2026-03-26] Round 50: 测试专项修复 — mock策略重构+缺失模块补全
+
+- **Scope**: testing, frontend, backend
+- **Files Changed**:
+  - 6个 integration-\* 测试文件 — mock 策略从 `_request-core.js` 改为直接突变 `aiService.request`
+  - 3个 integration/voice/social 测试文件 — 已被 Round 49 子代理修复
+  - `src/services/api/domains/social.service.js` — 补全缺失的 `logger` import
+  - `src/utils/practice/mistake-fsrs-scheduler.js` — 新增错题 FSRS 间隔重复调度模块
+  - `src/stores/modules/theme.js` — `uni.getSystemInfoSync` 防御性检查
+  - `tests/__mocks__/api-response-mock.js` — api-response 完整 mock factory
+  - 12个 audit-\* 测试文件 — auth-middleware mock 补全
+- **Summary**:
+  1. **[测试-P0]** 单元测试从 247→161 个失败（-35%），通过测试从 1013→1099（+86）
+  2. **[mock重构]** 发现 ai.service.js 和 \_request-core.js 有两套独立 request 函数，integration 测试需直接突变 aiService.request
+  3. **[缺失模块]** 创建 mistake-fsrs-scheduler.js（错题 FSRS 调度），修复 social.service.js 缺失的 logger import
+  4. **[已知残留]** 26个文件 161 个测试仍失败：主要是超时(login-guard 45个, real-utils 41个) + audit mock 不完整
+- **Breaking Changes**: 无
+
+## [2026-03-26] Round 49: 深度审计续 — TS编译修复+测试基础设施+主包瘦身
+
+- **Scope**: backend, testing, frontend, performance
+- **Files Changed**:
+  - `laf-backend/functions/**/*.ts` — 123处 import 缺 `.js` 扩展名全部补全
+  - `laf-backend/types/global.d.ts` — 新增 @lafjs/cloud + FunctionContext + nodemailer 等类型声明
+  - `laf-backend/tsconfig.standalone.json` — include 添加 types/ 目录
+  - `tests/setup.js` — 添加 JWT_SECRET_PLACEHOLDER
+  - `tests/__mocks__/api-response-mock.js` — 新增后端 api-response 完整 mock factory
+  - `src/stores/modules/theme.js` — 修复 uni.getSystemInfoSync 防御性检查
+  - 13个 audit-\* 测试文件 — api-response mock 替换为完整版
+  - 12个 audit-\* 测试文件 — 新增 auth-middleware mock
+  - 删除 17 个零引用死文件（static/icons/ + composables + mixins 等）
+- **Summary**:
+  1. **[TS编译]** 261→63 个错误（-76%）：123个 .js 扩展名补全 + 52个模块声明 + 类型声明文件
+  2. **[主包瘦身]** 2036KB→1888KB（-148KB），余量从12KB增到160KB
+  3. **[测试基础]** 创建 api-response-mock factory，修复 25 个审计测试的 mock
+  4. **[运行时]** theme.js getSystemInfoSync 防御性修复
+- **Breaking Changes**: 无
+
+## [2026-03-26] Round 48: 全量审计 — 安全加固+H5白屏修复+主包瘦身+后端部署
+
+- **Scope**: security, backend, frontend, deploy, testing, performance
+- **Files Changed**:
+  - `laf-backend/functions/invite-service.ts` — 新增 sign_link/verify_link（HMAC-SHA256）
+  - `laf-backend/functions/mistake-manager.ts` — 修复40处重复属性名
+  - `laf-backend/.env.example` — 添加 INVITE_LINK_SECRET
+  - `src/pages/practice-sub/invite-deep-link.js` — 签名逻辑改为调后端API
+  - `src/services/api/domains/social.api.js` — 新增 signInviteLink/verifyInviteLink
+  - `src/config/index.js` — 移除 VITE_INVITE_SECRET
+  - `src/main.js` — 完整化（修复H5白屏）
+  - `tests/unit/invite-deep-link-security.spec.js` — 7个测试适配后端签名
+  - 删除17个确认零引用死文件（SwipeCard/icons/composables等）
+- **Summary**:
+  1. **[安全-P0]** VITE_INVITE_SECRET 泄露修复：签名迁移到后端HMAC-SHA256
+  2. **[H5-P0]** 白屏修复：src/main.js 完整化使 uni-h5-vite 的 createSSRApp 转换生效
+  3. **[性能-P0]** 微信主包 2036KB→1888KB（-148KB），余量从12KB增到160KB
+  4. **[后端-P2]** mistake-manager.ts 40处重复属性修复
+  5. **[运维]** 服务器.env补全MONGODB_URI+INVITE_LINK_SECRET，后端编译部署
+  6. **[清理]** 删除17个死文件（icons/components/composables等）
+- **Breaking Changes**: 邀请链接签名改为后端生成
+
 ## [2026-03-23] Round 24: 项目深度扫描审计
 
 - **Scope**: docs | infra

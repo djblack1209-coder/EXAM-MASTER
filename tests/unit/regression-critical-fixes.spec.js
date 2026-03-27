@@ -48,7 +48,7 @@ describe('关键回归修复', () => {
   });
 
   it('答题进度自动恢复支持对象格式存储，不会误清除数据', async () => {
-    const { saveQuizProgress, loadQuizProgress } = await import('@/pages/practice-sub/useQuizAutoSave.js');
+    const { saveQuizProgress, loadQuizProgress } = await import('@/composables/useQuizAutoSave.js');
     const { default: storageService } = await import('@/services/storageService.js');
 
     const progress = {

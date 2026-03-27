@@ -47,6 +47,18 @@ vi.mock('@/services/lafService.js', () => ({
   }
 }));
 
+// B2 迁移：school 页面现通过 schoolStore 调用，需 mock store
+vi.mock('@/stores/modules/school', () => ({
+  useSchoolStore: vi.fn(() => ({
+    aiRecommend: proxyAIMock,
+    fetchHotSchools: vi.fn().mockResolvedValue({ code: 0, data: [] }),
+    crawlSchoolData: vi.fn().mockResolvedValue({ code: 0, data: { list: [] } }),
+    searchSchools: vi.fn(),
+    fetchSchoolDetail: vi.fn(),
+    aiPredict: vi.fn()
+  }))
+}));
+
 vi.mock('@/services/storageService.js', () => {
   const mockService = {
     get: storageGetMock,
@@ -114,11 +126,12 @@ describe('模拟用户真实点击与输入（组件交互层）', () => {
 
   it('刷题页：用户真实点击导入资料卡片后可立即进入导入页', async () => {
     const wrapper = shallowMount(PracticePage);
-    await wrapper.setData({
-      isPageLoading: false,
-      hasBank: true,
-      dynamicMethodsCache: {}
-    });
+    // ✅ [D002重构] isPageLoading, hasBank 现为 setup() 返回的 ref，
+    // 需要直接修改 vm 属性而非 setData
+    wrapper.vm.isPageLoading = false;
+    wrapper.vm.hasBank = true;
+    wrapper.vm.dynamicMethodsCache = {};
+    await wrapper.vm.$nextTick();
 
     const importCard = wrapper.find('.import-card');
     expect(importCard.exists()).toBe(true);

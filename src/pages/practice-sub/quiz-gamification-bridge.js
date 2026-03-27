@@ -11,7 +11,7 @@
  * @module practice-sub/quiz-gamification-bridge
  */
 
-import { useGamificationStore } from '@/stores/index.js';
+import { useGamificationStore } from '@/stores/modules/gamification';
 import { useGamificationEffects } from './composables/useGamificationEffects.js';
 import { logger } from '@/utils/logger.js';
 

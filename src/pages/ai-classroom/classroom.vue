@@ -99,11 +99,14 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-import { lafService } from '@/services/lafService.js';
+import { useClassroomStore } from '@/stores/modules/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
+
+const classroomStore = useClassroomStore();
 
 const isDark = ref(initTheme());
 
@@ -170,8 +173,8 @@ async function startClass() {
   loading.value = true;
   loadingAgent.value = '系统';
   try {
-    const res = await lafService.startClassroom(lessonId.value);
-    if (res.code === 0 && res.data) {
+    const res = await classroomStore.startSession(lessonId.value);
+    if (res.success && res.data) {
       sessionId.value = res.data.sessionId;
       if (res.data.state) {
         updateState(res.data.state);
@@ -183,11 +186,11 @@ async function startClass() {
       // 自动推进第一步
       await continueClass();
     } else {
-      uni.showToast({ title: res.message || '开始失败', icon: 'none' });
+      toast.info(res.message || '开始失败');
     }
   } catch (e) {
     logger.warn('[课堂] 开始失败:', e);
-    uni.showToast({ title: '网络异常，请重试', icon: 'none' });
+    toast.info('网络异常，请重试');
   } finally {
     loading.value = false;
   }
@@ -199,8 +202,8 @@ async function continueClass() {
   loading.value = true;
   loadingAgent.value = 'AI';
   try {
-    const res = await lafService.sendClassroomMessage(sessionId.value);
-    if (res.code === 0 && res.data) {
+    const res = await classroomStore.sendMessage(null, sessionId.value);
+    if (res.success && res.data) {
       if (res.data.message) {
         messages.value.push(res.data.message);
         loadingAgent.value = res.data.message.agentName || 'AI';
@@ -238,8 +241,8 @@ async function sendMessage() {
   loading.value = true;
   loadingAgent.value = 'AI';
   try {
-    const res = await lafService.sendClassroomMessage(sessionId.value, msg);
-    if (res.code === 0 && res.data) {
+    const res = await classroomStore.sendMessage(msg, sessionId.value);
+    if (res.success && res.data) {
       if (res.data.message) {
         messages.value.push(res.data.message);
       }
@@ -259,7 +262,7 @@ async function sendMessage() {
 async function askQuestion() {
   userInput.value = '';
   phase.value = 'waiting_input';
-  uni.showToast({ title: '请输入你的问题', icon: 'none' });
+  toast.info('请输入你的问题');
 }
 
 function updateState(state) {
@@ -278,7 +281,7 @@ function handleEndClass() {
     content: '确定要结束当前课堂吗？',
     success: async (res) => {
       if (res.confirm && sessionId.value) {
-        await lafService.endClassroom(sessionId.value);
+        await classroomStore.endSession(sessionId.value);
         safeNavigateBack();
       }
     }
@@ -302,7 +305,7 @@ onMounted(() => {
   statusBarHeight.value = sysInfo.statusBarHeight || 0;
 
   if (!lessonId.value) {
-    uni.showToast({ title: '缺少课程参数', icon: 'none' });
+    toast.info('缺少课程参数');
     setTimeout(() => safeNavigateBack(), 1500);
   }
 });

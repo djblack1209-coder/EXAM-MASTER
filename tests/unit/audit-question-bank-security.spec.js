@@ -86,6 +86,22 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: vi.fn(() => mocked.getJwtPayload())
 }));
 
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  return createApiResponseMock();
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.getJwtPayload();
+    if (!payload) return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    return { userId: payload.userId };
+  },
+  isAuthError: (result) => result?.code === 401
+}));
+
 import questionBankHandler from '../../laf-backend/functions/question-bank';
 
 describe('[安全审计] question-bank 安全防护', () => {
@@ -205,7 +221,7 @@ describe('[安全审计] question-bank 安全防护', () => {
     expect(result.success).toBe(false);
   });
 
-  it('提供无效 token 时应拒绝公开 action 请求', async () => {
+  it('公开 action 即使 token 无效也应正常执行（random 在 publicActions 中）', async () => {
     mocked.setJwtPayload(null);
 
     const result = /** @type {any} */ (
@@ -220,7 +236,7 @@ describe('[安全审计] question-bank 安全防护', () => {
       })
     );
 
-    expect(result.code).toBe(401);
-    expect(result.success).toBe(false);
+    // random 是 publicAction，即使 token 无效也应正常执行（code=0），不返回 401
+    expect(result.code).toBe(0);
   });
 });

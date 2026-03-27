@@ -42,66 +42,65 @@
   </wd-popup>
 </template>
 
-<script>
+<script setup>
+import { ref, watch } from 'vue';
+import { toast } from '@/utils/toast.js';
 import { getTodayGoals, GOAL_TYPES, learningGoalManager } from '@/utils/learning/learning-goal.js';
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'GoalSettingModal',
-  components: { BaseIcon },
-  props: {
-    visible: { type: Boolean, default: false },
-    currentGoal: { type: Number, default: 20 }
-  },
-  emits: ['close', 'saved'],
-  data() {
-    return { localValue: 20 };
-  },
-  watch: {
-    visible(val) {
-      if (val) this.localValue = this.currentGoal;
-    }
-  },
-  methods: {
-    adjustValue(delta) {
-      this.localValue = Math.max(5, Math.min(200, Number(this.localValue) + delta));
-    },
-    handleSave() {
-      try {
-        const minValue = GOAL_TYPES.DAILY_QUESTIONS.minValue;
-        const maxValue = GOAL_TYPES.DAILY_QUESTIONS.maxValue;
-        this.localValue = Math.max(minValue, Math.min(maxValue, this.localValue));
+const props = defineProps({
+  visible: { type: Boolean, default: false },
+  currentGoal: { type: Number, default: 20 }
+});
+const emit = defineEmits(['close', 'saved']);
 
-        const todayGoals = getTodayGoals();
-        const existingGoal = todayGoals.find((g) => g.type === 'DAILY_QUESTIONS');
+const localValue = ref(20);
 
-        if (existingGoal) {
-          learningGoalManager.goals = learningGoalManager.goals.map((g) => {
-            if (g.id === existingGoal.id) {
-              return { ...g, targetValue: this.localValue, updatedAt: Date.now() };
-            }
-            return g;
-          });
-          learningGoalManager._saveGoals();
-        } else {
-          learningGoalManager.createGoal({
-            type: 'DAILY_QUESTIONS',
-            targetValue: this.localValue,
-            period: 'daily'
-          });
-        }
-
-        this.$emit('saved', this.localValue);
-        uni.showToast({ title: '目标已更新', icon: 'success' });
-        logger.log('[GoalSettingModal] 学习目标已保存:', this.localValue);
-      } catch (e) {
-        logger.warn('[GoalSettingModal] 保存学习目标失败:', e);
-        uni.showToast({ title: '保存失败', icon: 'none' });
-      }
-    }
+watch(
+  () => props.visible,
+  (val) => {
+    if (val) localValue.value = props.currentGoal;
   }
-};
+);
+
+function adjustValue(delta) {
+  localValue.value = Math.max(5, Math.min(200, Number(localValue.value) + delta));
+}
+
+function handleSave() {
+  try {
+    const minValue = GOAL_TYPES.DAILY_QUESTIONS.minValue;
+    const maxValue = GOAL_TYPES.DAILY_QUESTIONS.maxValue;
+    localValue.value = Math.max(minValue, Math.min(maxValue, localValue.value));
+
+    const todayGoals = getTodayGoals();
+    const existingGoal = todayGoals.find((g) => g.type === 'DAILY_QUESTIONS');
+
+    if (existingGoal) {
+      learningGoalManager.goals = learningGoalManager.goals.map((g) => {
+        if (g.id === existingGoal.id) {
+          return { ...g, targetValue: localValue.value, updatedAt: Date.now() };
+        }
+        return g;
+      });
+      learningGoalManager._saveGoals();
+    } else {
+      learningGoalManager.createGoal({
+        type: 'DAILY_QUESTIONS',
+        targetValue: localValue.value,
+        period: 'daily'
+      });
+    }
+
+    emit('saved', localValue.value);
+    toast.success('目标已更新');
+    logger.log('[GoalSettingModal] 学习目标已保存:', localValue.value);
+  } catch (e) {
+    logger.warn('[GoalSettingModal] 保存学习目标失败:', e);
+    toast.info('保存失败');
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -161,7 +160,7 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 16px; -- replaced for Android WebView compat */
-margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 .goal-adjust-btn {
   width: 48px;
@@ -206,7 +205,7 @@ margin-bottom: 24px;
   display: flex;
   justify-content: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 .goal-preset {
   padding: 10px 20px;

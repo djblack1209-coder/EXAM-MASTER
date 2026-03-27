@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
@@ -131,11 +132,7 @@ export default {
                 logger.log('[文件管理] 🔄 从备份恢复文件列表:', restored.length, '个文件');
                 storageService.save('imported_files', restored);
                 savedFiles = restored;
-                uni.showToast({
-                  title: '已从备份恢复文件列表',
-                  icon: 'success',
-                  duration: 2000
-                });
+                toast.success('已从备份恢复文件列表', 2000);
               }
             }
           } catch (restoreErr) {
@@ -176,7 +173,7 @@ export default {
       // 如果有本地路径或 URL，尝试预览
       if (filePath) {
         // 显示 Loading
-        uni.showLoading({ title: '加载中...', mask: true });
+        toast.loading('加载中...');
 
         try {
           const result = await fileHandler.previewFile({
@@ -184,14 +181,14 @@ export default {
             path: filePath
           });
 
-          uni.hideLoading();
+          toast.hide();
 
           if (!result.success && !result.error?.includes('unsupported')) {
             // 预览失败，显示文件信息
             this.showFileInfo(file);
           }
         } catch (err) {
-          uni.hideLoading();
+          toast.hide();
           logger.error('[文件管理] ❌ 文件预览失败:', err);
           this.showFileInfo(file);
         }
@@ -253,13 +250,9 @@ export default {
               const _bank = storageService.get('v30_bank', []);
               // 注意：这里简化处理，实际应该根据文件ID关联题目
               // 暂时不清空整个题库，只提示用户
-              uni.showToast({
-                title: '文件已删除，题库仍保留',
-                icon: 'none',
-                duration: 2000
-              });
+              toast.info('文件已删除，题库仍保留');
             } else {
-              uni.showToast({ title: '删除成功', icon: 'success' });
+              toast.success('删除成功');
             }
           }
         }
@@ -268,7 +261,7 @@ export default {
 
     clearAll() {
       if (this.files.length === 0) {
-        uni.showToast({ title: '暂无文件可删除', icon: 'none' });
+        toast.info('暂无文件可删除');
         return;
       }
 
@@ -279,7 +272,7 @@ export default {
           if (res.confirm) {
             this.files = [];
             storageService.save('imported_files', []);
-            uni.showToast({ title: '已清空所有文件', icon: 'success' });
+            toast.success('已清空所有文件');
           }
         }
       });

@@ -22,18 +22,15 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-export default {
-  name: 'StudyTimeCard',
-  components: { BaseIcon },
-  props: {
-    isDark: { type: Boolean, default: false },
-    formattedTime: { type: String, default: '0分钟' },
-    isTimerActive: { type: Boolean, default: false }
-  },
-  emits: ['click']
-};
+
+defineProps({
+  isDark: { type: Boolean, default: false },
+  formattedTime: { type: String, default: '0分钟' },
+  isTimerActive: { type: Boolean, default: false }
+});
+defineEmits(['click']);
 </script>
 
 <style lang="scss" scoped>
@@ -41,7 +38,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-padding: 26rpx 30rpx;
+  padding: 26rpx 30rpx;
   min-height: 120rpx;
   border-radius: 30rpx;
   margin-bottom: 52rpx;
@@ -117,7 +114,7 @@ padding: 26rpx 30rpx;
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-padding: 12rpx 18rpx;
+  padding: 12rpx 18rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.56);
   border: 1rpx solid rgba(255, 255, 255, 0.5);

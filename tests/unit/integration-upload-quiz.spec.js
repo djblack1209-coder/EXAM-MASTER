@@ -4,12 +4,18 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+const mockRequest = vi.fn().mockResolvedValue({ code: 0, success: true, data: {} });
+
 vi.mock('@/utils/logger.js', () => ({
   logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() }
 }));
 vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
+vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return { ...original, request: mockRequest };
+});
 
 import {
   normalizeQuestion,
@@ -19,8 +25,9 @@ import {
 } from '@/pages/practice-sub/utils/question-normalizer.js';
 
 describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks();
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    mockRequest.mockResolvedValue({ code: 0, success: true, data: {} });
     global.__mockStorage = {};
   });
 
@@ -158,7 +165,7 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
 
     it('materialUnderstand → 正常内容调用 proxyAI', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: {
@@ -183,7 +190,7 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
 
     it('materialUnderstand → 默认参数填充', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({ code: 0, success: true });
+      mockRequest.mockResolvedValue({ code: 0, success: true });
 
       await lafService.materialUnderstand('一些内容');
 
@@ -196,7 +203,12 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
     it('智能生成题目 → 经过标准化和验证后存入题库', () => {
       // 模拟智能返回的原始题目（字段名不统一）
       const aiResponse = [
-        { title: '智能题1', options: ['A.选项1', 'B.选项2', 'C.选项3', 'D.选项4'], correct_answer: 'b', subject: '政治' },
+        {
+          title: '智能题1',
+          options: ['A.选项1', 'B.选项2', 'C.选项3', 'D.选项4'],
+          correct_answer: 'b',
+          subject: '政治'
+        },
         { content: '智能题2', options: ['A.甲', 'B.乙', 'C.丙', 'D.丁'], answer: 2, analysis: '解析内容' },
         { question: '', options: ['A', 'B'], answer: 'A' } // 无效题
       ];
@@ -243,7 +255,7 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
 
     it('photoSearch → 正常图片调用后端识别', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: {
@@ -267,7 +279,7 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
 
     it('photoSearch → 网络失败返回错误', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockRejectedValue(new Error('网络超时'));
+      mockRequest.mockRejectedValue(new Error('网络超时'));
 
       const result = await lafService.photoSearch('base64data');
       expect(result.success).toBe(false);
@@ -362,7 +374,7 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
   describe('考点趋势预测', () => {
     it('trendPredict → 调用 proxyAI 并传递历史数据', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { hotTopics: ['唯物辩证法', '剩余价值'], predictedWeight: [0.3, 0.25] }
@@ -387,7 +399,7 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
   describe('错题深度分析', () => {
     it('deepMistakeAnalysis → 传递错题数据和用户历史', async () => {
       const { lafService } = await import('@/services/lafService.js');
-      const mockRequest = vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: { analysis: '知识点薄弱', suggestion: '建议复习唯物辩证法' }
@@ -416,7 +428,7 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
       expect(cleanContent.length).toBeGreaterThan(0);
 
       // Step 2: 智能生成题目
-      vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: {
@@ -447,7 +459,7 @@ describe('E2E 上传题目 & 智能出题 & 拍照搜题', () => {
       expect(bank.length).toBe(2);
 
       // Step 5: 拍照搜题补充
-      vi.spyOn(lafService, 'request').mockResolvedValue({
+      mockRequest.mockResolvedValue({
         code: 0,
         success: true,
         data: {

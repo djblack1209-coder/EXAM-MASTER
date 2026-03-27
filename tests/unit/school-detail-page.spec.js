@@ -12,6 +12,18 @@ vi.mock('@/services/lafService.js', () => ({
   }
 }));
 
+// B2 迁移：detail 页面现通过 schoolStore 调用，需 mock store
+vi.mock('@/stores/modules/school', () => ({
+  useSchoolStore: vi.fn(() => ({
+    aiPredict: proxyAIMock,
+    fetchSchoolDetail: vi.fn().mockResolvedValue({ code: 0, data: null }),
+    aiRecommend: vi.fn(),
+    fetchHotSchools: vi.fn(),
+    crawlSchoolData: vi.fn(),
+    searchSchools: vi.fn()
+  }))
+}));
+
 vi.mock('@/services/storageService.js', () => ({
   default: {
     get: storageGetMock,
@@ -87,7 +99,9 @@ describe('school-detail 页面行为', () => {
       },
       probability: 75,
       aiReason: '',
-      isAnalyzing: false
+      isAnalyzing: false,
+      // B2 迁移：提供 schoolStore mock
+      schoolStore: { aiPredict: proxyAIMock }
     };
 
     await SchoolDetailPage.methods.fetchAIPrediction.call(ctx);
@@ -116,7 +130,9 @@ describe('school-detail 页面行为', () => {
       },
       probability: 70,
       aiReason: '',
-      isAnalyzing: false
+      isAnalyzing: false,
+      // B2 迁移：提供 schoolStore mock
+      schoolStore: { aiPredict: proxyAIMock }
     };
 
     await SchoolDetailPage.methods.fetchAIPrediction.call(ctx);

@@ -6,8 +6,8 @@
  * 阶段2：场景内容生成（scene-generator）
  */
 
-import { OutlineItem, Scene, SceneType, SlideContent, QuizContent, DiscussionContent } from '../agents/agent-types';
-import { getProvider, ChatMessage } from '../ai-providers/provider-factory';
+import { OutlineItem, Scene, SceneType, SlideContent, QuizContent, DiscussionContent } from '../agents/agent-types.js';
+import { getProvider, ChatMessage } from '../ai-providers/provider-factory.js';
 
 // ==================== 阶段1：大纲生成 ====================
 

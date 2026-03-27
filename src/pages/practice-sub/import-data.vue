@@ -192,6 +192,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { lafService } from '@/services/lafService.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import EnhancedProgress from './EnhancedProgress.vue';
@@ -449,14 +450,11 @@ export default {
         } else {
           const errMsg = String(result?.error?.errMsg || result?.error?.message || '').trim();
           logger.error('[导入资料] 文件选择失败:', result?.error || result);
-          uni.showToast({
-            title: errMsg && errMsg.length <= 18 ? errMsg : '文件选择失败，请稍后重试',
-            icon: 'none'
-          });
+          toast.info(errMsg && errMsg.length <= 18 ? errMsg : '文件选择失败，请稍后重试');
         }
       } catch (err) {
         logger.error('[导入资料] 文件选择异常:', err);
-        uni.showToast({ title: '文件选择失败', icon: 'none' });
+        toast.info('文件选择失败');
       } finally {
         this.isPickingFile = false;
       }
@@ -488,11 +486,7 @@ export default {
       );
 
       if (!validation.valid) {
-        uni.showToast({
-          title: validation.errors[0],
-          icon: 'none',
-          duration: 2500
-        });
+        toast.info(validation.errors[0], 2500);
         return;
       }
 
@@ -520,7 +514,7 @@ export default {
 
       if (ext === 'apkg') {
         // Anki .apkg: 读取文件并转 base64，调用后端 anki-import 云函数
-        uni.showLoading({ title: '正在解析 Anki 牌组...', mask: true });
+        toast.loading('正在解析 Anki 牌组...');
 
         try {
           const fs = uni.getFileSystemManager();
@@ -545,7 +539,7 @@ export default {
             { timeout: 60000, maxRetries: 1 }
           );
 
-          uni.hideLoading();
+          toast.hide();
 
           if (response.code === 0 && response.data) {
             const result = response.data;
@@ -584,17 +578,13 @@ export default {
             });
           } else {
             this.importStatus = 'error';
-            uni.showToast({
-              title: response.message || 'Anki 导入失败',
-              icon: 'none',
-              duration: 2500
-            });
+            toast.info(response.message || 'Anki 导入失败', 2500);
           }
         } catch (err) {
-          uni.hideLoading();
+          toast.hide();
           this.importStatus = 'error';
           logger.error('[导入资料] Anki 导入异常:', err);
-          uni.showToast({ title: 'Anki 文件解析失败，请重试', icon: 'none' });
+          toast.info('Anki 文件解析失败，请重试');
         }
         return;
       }
@@ -603,10 +593,10 @@ export default {
         // PDF/Word: 仅使用文件名
         this.fullFileContent = '';
         // ✅ F026: 添加文件解析进度提示
-        uni.showLoading({ title: '正在解析文档...', mask: true });
+        toast.loading('正在解析文档...');
         setTimeout(() => {
-          uni.hideLoading();
-          uni.showToast({ title: '已提取主题', icon: 'success' });
+          toast.hide();
+          toast.success('已提取主题');
           // 自动启动智能分析
           setTimeout(() => {
             that.startAI();
@@ -614,15 +604,15 @@ export default {
         }, 300);
       } else {
         // TXT/MD/JSON: 读取内容
-        uni.showLoading({ title: '解析文件中...', mask: true });
+        toast.loading('解析文件中...');
 
         try {
           const readResult = await fileHandler.readTextFile(filePath);
-          uni.hideLoading();
+          toast.hide();
 
           if (readResult.success) {
             that.fullFileContent = readResult.content;
-            uni.showToast({ title: '解析成功', icon: 'success' });
+            toast.success('解析成功');
             // 自动启动智能分析
             setTimeout(() => {
               that.startAI();
@@ -630,17 +620,17 @@ export default {
           } else {
             logger.error('[导入资料] 文件读取失败:', readResult.error);
             that.fullFileContent = '';
-            uni.showToast({ title: '读取失败，仅使用文件名', icon: 'none' });
+            toast.info('读取失败，仅使用文件名');
             // 即使失败也启动智能分析（使用文件名）
             setTimeout(() => {
               that.startAI();
             }, 500);
           }
         } catch (err) {
-          uni.hideLoading();
+          toast.hide();
           logger.error('[导入资料] 文件读取异常:', err);
           that.fullFileContent = '';
-          uni.showToast({ title: '读取失败，仅使用文件名', icon: 'none' });
+          toast.info('读取失败，仅使用文件名');
           setTimeout(() => {
             that.startAI();
           }, 500);
@@ -662,7 +652,7 @@ export default {
     // 已迁移到 Sealos：使用 lafService.proxyAI 替代 uniCloud.callFunction('proxy-ai')
     async startAI() {
       if (!this.fullFileContent && !this.fileName) {
-        uni.showToast({ title: '请先导入文件', icon: 'none' });
+        toast.info('请先导入文件');
         return;
       }
 
@@ -770,7 +760,7 @@ export default {
           this.stopProgressAnimation();
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
-          uni.showToast({ title: response.message || '生成失败', icon: 'none' });
+          toast.info(response.message || '生成失败');
           return;
         }
 
@@ -813,7 +803,7 @@ export default {
           this.importStatus = 'error';
           this.updateUploadRecordStatus('failed');
           this.showMask = false;
-          uni.showToast({ title: '解析失败，请重试', icon: 'none' });
+          toast.info('解析失败，请重试');
           return;
         }
         this.readOffset += this.chunkSize;
@@ -842,11 +832,7 @@ export default {
         } else {
           // 后续批次：静默生成，只在底部给一个小 Toast 提示进度
           if (this.isLooping) {
-            uni.showToast({
-              title: `后台已更新一批新题`,
-              icon: 'none',
-              duration: 2000
-            });
+            toast.info(`后台已更新一批新题`);
           }
         }
 
@@ -952,11 +938,7 @@ export default {
         if (autoRetry && this.retryCount < this.maxRetryCount) {
           this.retryCount++;
           logger.log(`[自动重试] 第 ${this.retryCount} 次重试...`);
-          uni.showToast({
-            title: `正在重试 (${this.retryCount}/${this.maxRetryCount})...`,
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info(`正在重试 (${this.retryCount}/${this.maxRetryCount})...`);
           this.startProgressAnimation();
           setTimeout(() => {
             if (this.isLooping) {
@@ -965,7 +947,7 @@ export default {
           }, 2000);
         } else if (!autoRetry) {
           // 显示错误提示
-          uni.showToast({ title: errorMessage, icon: 'none', duration: 3000 });
+          toast.info(errorMessage, 3000);
         }
       } finally {
         this.isRequestInFlight = false; // ⚡️ 解锁：无论成功失败，请求结束
@@ -1101,11 +1083,7 @@ export default {
           logger.log(
             `[题库保存] ✅ 未登录状态：成功存入 ${newQuestions.length} 道题，本地缓存总数: ${finalBank.length}（保留最新${finalBank.length}道）`
           );
-          uni.showToast({
-            title: `已保存${newQuestions.length}道题（本地缓存）`,
-            icon: 'none',
-            duration: 2000
-          });
+          toast.info(`已保存${newQuestions.length}道题（本地缓存）`);
         } else {
           logger.log(`[题库保存] ✅ 成功存入 ${newQuestions.length} 道题，当前总数: ${finalBank.length}`);
         }
@@ -1205,7 +1183,7 @@ export default {
     // 10. 处理自定义弹窗点击
     stayHere() {
       this.showSpeedModal = false;
-      uni.showToast({ title: '智能正在后台继续生成...', icon: 'none' });
+      toast.info('智能正在后台继续生成...');
     },
 
     goQuiz() {
@@ -1276,7 +1254,7 @@ export default {
             that.progressWidth = 0;
             that.stopProgressAnimation();
             that.stopBatchProgressSimulation();
-            uni.showToast({ title: '已清空' });
+            toast.info('已清空');
           }
         },
         fail: (err) => {
@@ -1292,7 +1270,7 @@ export default {
       this.showMask = false;
       this.stopProgressAnimation();
       this.updateUploadRecordStatus('paused');
-      uni.showToast({ title: '已暂停生成', icon: 'none' });
+      toast.info('已暂停生成');
     },
 
     // ⭐⭐ v5.2 新增：取消生成
@@ -1313,7 +1291,7 @@ export default {
               clearInterval(this.soupTimer);
               this.soupTimer = null;
             }
-            uni.showToast({ title: '已取消生成', icon: 'none' });
+            toast.info('已取消生成');
           }
         }
       });
@@ -1330,7 +1308,7 @@ export default {
           logger.log('[重试] 使用缓存的文件内容，长度:', this.fullFileContent.length);
         }
       } else if (!this.fullFileContent && !this.fileName) {
-        uni.showToast({ title: '请先导入文件', icon: 'none' });
+        toast.info('请先导入文件');
         return;
       }
 
@@ -1362,10 +1340,7 @@ export default {
       this.updateUploadRecordStatus('generating');
       this.generateNextBatch();
 
-      uni.showToast({
-        title: `正在重试 (${this.retryCount}/${this.maxRetryCount})...`,
-        icon: 'none'
-      });
+      toast.info(`正在重试 (${this.retryCount}/${this.maxRetryCount})...`);
     },
 
     // ⭐⭐ v5.2 新增：关闭错误提示
@@ -1375,7 +1350,7 @@ export default {
 
     resumeGeneration() {
       if (!this.fullFileContent && !this.fileName) {
-        return uni.showToast({ title: '请先导入文件', icon: 'none' });
+        return toast.info('请先导入文件');
       }
       this.isPaused = false;
       this.isLooping = true;

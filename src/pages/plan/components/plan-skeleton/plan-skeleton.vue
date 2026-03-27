@@ -32,16 +32,13 @@
   </view>
 </template>
 
-<script>
-export default {
-  name: 'PlanSkeleton',
-  props: {
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+<script setup>
+defineProps({
+  isDark: {
+    type: Boolean,
+    default: false
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>

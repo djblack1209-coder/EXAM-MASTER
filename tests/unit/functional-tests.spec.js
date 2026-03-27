@@ -11,7 +11,7 @@
  * - JWT 安全验证
  * - 网络中断恢复验证
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock logger
 vi.mock('@/utils/logger.js', () => ({
@@ -49,9 +49,7 @@ describe('FT001: 核心页面功能流程', () => {
 
     it('登录成功后跳转首页', () => {
       uni.switchTab({ url: '/pages/index/index' });
-      expect(uni.switchTab).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/pages/index/index' })
-      );
+      expect(uni.switchTab).toHaveBeenCalledWith(expect.objectContaining({ url: '/pages/index/index' }));
     });
 
     it('token 过期时跳转登录页', () => {
@@ -128,9 +126,7 @@ describe('FT002: 择校页面功能', () => {
       { name: '复旦大学', province: '上海' }
     ];
     const keyword = '北京';
-    const filtered = schools.filter(
-      s => s.name.includes(keyword) || s.province.includes(keyword)
-    );
+    const filtered = schools.filter((s) => s.name.includes(keyword) || s.province.includes(keyword));
     expect(filtered).toHaveLength(2);
   });
 
@@ -185,9 +181,7 @@ describe('FT003: 个人中心功能', () => {
 
   it('头像选择调用 chooseImage', () => {
     uni.chooseImage({ count: 1 });
-    expect(uni.chooseImage).toHaveBeenCalledWith(
-      expect.objectContaining({ count: 1 })
-    );
+    expect(uni.chooseImage).toHaveBeenCalledWith(expect.objectContaining({ count: 1 }));
   });
 });
 
@@ -331,7 +325,7 @@ describe('FT012: 网络中断恢复', () => {
     expect(pendingQueue).toHaveLength(2);
 
     const syncFn = vi.fn();
-    pendingQueue.forEach(item => syncFn(item));
+    pendingQueue.forEach((item) => syncFn(item));
     expect(syncFn).toHaveBeenCalledTimes(2);
   });
 

@@ -89,8 +89,14 @@ test.describe('A2-状态恢复与幂等', () => {
 
     try {
       const submitBtn = page.locator('.email-submit-btn').first();
-      await Promise.all([submitBtn.click(), submitBtn.click(), submitBtn.click()]);
-      await page.waitForTimeout(1200);
+      // 在浏览器内直接派发 3 次 click 事件，绕过 Playwright actionability 检查
+      // 这比 Promise.all 更能模拟真实的快速多次点击
+      await submitBtn.evaluate((el) => {
+        el.click();
+        el.click();
+        el.click();
+      });
+      await page.waitForTimeout(1500);
       expect(loginReqCount).toBe(1);
       await app.screenshot('state-login-debounce');
     } finally {

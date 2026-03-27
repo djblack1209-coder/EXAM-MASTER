@@ -75,7 +75,12 @@
       <template v-if="!isPageLoading">
         <!-- 院校头部卡片 -->
         <view class="glass-card school-header-card">
-          <image class="school-logo" :src="schoolInfo.logo || '/static/images/default-avatar.png'" alt="Exam Master" mode="aspectFit" />
+          <image
+            class="school-logo"
+            :src="schoolInfo.logo || '/static/images/default-avatar.png'"
+            alt="Exam Master"
+            mode="aspectFit"
+          />
           <view class="header-main">
             <text class="school-name">
               {{ schoolInfo.name || '加载中...' }}
@@ -219,7 +224,8 @@
 </template>
 
 <script>
-import { lafService } from '@/services/lafService.js';
+import { toast } from '@/utils/toast.js';
+import { useSchoolStore } from '@/stores/modules/school';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import config from '@/config/index.js';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -234,6 +240,11 @@ export default {
     BaseIcon,
     // ✅ 懒加载：AiConsult 620行组件，仅在用户点击"智能咨询"时才需要
     AiConsult: () => import('./ai-consult.vue')
+  },
+  setup() {
+    // 初始化择校 Store，供 methods 中通过 this.schoolStore 调用
+    const schoolStore = useSchoolStore();
+    return { schoolStore };
   },
   data() {
     return {
@@ -381,7 +392,7 @@ export default {
 
       try {
         // 从后端获取学校详情
-        const response = await lafService.getSchoolDetail(id);
+        const response = await this.schoolStore.fetchSchoolDetail(id);
 
         if (response && response.code === 0 && response.data) {
           const school = response.data;
@@ -437,11 +448,7 @@ export default {
       this.probability = 0;
       this.isPageLoading = false;
 
-      uni.showToast({
-        title: '数据加载失败，请稍后重试',
-        icon: 'none',
-        duration: 2000
-      });
+      toast.info('数据加载失败，请稍后重试');
     },
 
     /**
@@ -530,7 +537,7 @@ export default {
 
       if (!this.schoolId && !this.schoolInfo.id) {
         logger.warn('[detail] ⚠️ 院校数据未加载，无法操作');
-        uni.showToast({ title: '数据加载中，请稍候', icon: 'none' });
+        toast.info('数据加载中，请稍候');
         return;
       }
 
@@ -545,7 +552,7 @@ export default {
       let list = storageService.get('target_schools', []);
       const schoolId = String(this.schoolId || this.schoolInfo.id || '');
       if (!schoolId) {
-        uni.showToast({ title: '院校信息异常', icon: 'none' });
+        toast.info('院校信息异常');
         return;
       }
 
@@ -573,7 +580,7 @@ export default {
         storageService.save('target_schools', list);
         this.isTarget = false;
 
-        uni.showToast({ title: '已取消关注', icon: 'none' });
+        toast.info('已取消关注');
         logger.log('[detail] ✅ 移除成功，已保存到本地存储');
       } else {
         // 添加：确保数据完整
@@ -597,7 +604,7 @@ export default {
           storageService.save('target_schools', list);
           this.isTarget = true;
 
-          uni.showToast({ title: '成功加入目标', icon: 'success' });
+          toast.success('成功加入目标');
           logger.log('[detail] ✅ 添加成功，已保存到本地存储');
 
           // 验证保存结果
@@ -610,7 +617,7 @@ export default {
         } else {
           logger.warn('[detail] ⚠️ 院校已在目标列表中，无需重复添加');
           this.isTarget = true; // 同步状态
-          uni.showToast({ title: '已在目标列表中', icon: 'none' });
+          toast.info('已在目标列表中');
         }
       }
     },
@@ -620,11 +627,7 @@ export default {
     handleShare() {
       // #ifdef MP-WEIXIN
       this.copySchoolInfo();
-      uni.showToast({
-        title: '已复制院校信息，可通过右上角继续分享',
-        icon: 'none',
-        duration: 2500
-      });
+      toast.info('已复制院校信息，可通过右上角继续分享', 2500);
       // #endif
 
       // #ifdef APP-PLUS
@@ -639,7 +642,7 @@ export default {
           summary: `${this.schoolInfo.name}，${this.schoolInfo.location}，匹配度${this.schoolInfo.matchRate}%`,
           imageUrl: this.schoolInfo.logo,
           success: () => {
-            uni.showToast({ title: '分享成功', icon: 'success' });
+            toast.success('分享成功');
           },
           fail: () => {
             this.copySchoolInfo();
@@ -672,7 +675,7 @@ export default {
       uni.setClipboardData({
         data: info,
         success: () => {
-          uni.showToast({ title: '院校信息已复制', icon: 'success' });
+          toast.success('院校信息已复制');
         }
       });
     },
@@ -692,11 +695,7 @@ export default {
         success: (res) => {
           if (res.confirm) {
             // 跳转到专业详情页或显示更多信息
-            uni.showToast({
-              title: '更多专业信息正在整理中',
-              icon: 'none',
-              duration: 2000
-            });
+            toast.info('更多专业信息正在整理中');
           }
         }
       });
@@ -750,7 +749,7 @@ export default {
         logger.log('[detail] 🤖 调用后端代理进行录取概率预测...');
 
         // ✅ 使用后端代理调用（安全）- action: 'predict'
-        const response = await lafService.proxyAI('predict', {
+        const response = await this.schoolStore.aiPredict('predict', {
           content: `请预测以下考生的录取概率：目标院校${this.schoolInfo.name}，已备考${studyDays}天，完成${doneCount}题，错题${mistakeCount}道`,
           schoolName: this.schoolInfo.name,
           studyDays: studyDays,
@@ -802,11 +801,7 @@ export default {
             reason: this.aiReason.substring(0, 50)
           });
 
-          uni.showToast({
-            title: `预测完成：${this.probability}%`,
-            icon: 'success',
-            duration: 2000
-          });
+          toast.success(`预测完成：${this.probability}%`, 2000);
         } else {
           // 降级方案：基于数据简单计算
           logger.warn('[detail] ⚠️ 智能 API 响应异常，使用降级算法计算概率');
@@ -822,11 +817,7 @@ export default {
             reason: this.aiReason.substring(0, 50)
           });
 
-          uni.showToast({
-            title: `预测完成：${this.probability}%`,
-            icon: 'success',
-            duration: 2000
-          });
+          toast.success(`预测完成：${this.probability}%`, 2000);
         }
       } catch (_e) {
         logger.error('[detail] ❌ 智能预测失败:', _e);
@@ -840,11 +831,7 @@ export default {
           reason: this.aiReason.substring(0, 50)
         });
 
-        uni.showToast({
-          title: `预测完成：${this.probability}%`,
-          icon: 'success',
-          duration: 2000
-        });
+        toast.success(`预测完成：${this.probability}%`, 2000);
       } finally {
         this.isAnalyzing = false;
         logger.log('[detail] ✅ 智能预测流程结束');

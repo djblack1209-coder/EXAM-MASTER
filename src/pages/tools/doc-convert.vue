@@ -146,7 +146,8 @@
 </template>
 
 <script>
-import { lafService } from '@/services/lafService.js';
+import { toast } from '@/utils/toast.js';
+import { useToolsStore } from '@/stores/modules/tools.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
@@ -167,6 +168,10 @@ const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
 export default {
   components: { BaseIcon },
+  setup() {
+    const toolsStore = useToolsStore();
+    return { toolsStore };
+  },
   data() {
     return {
       statusBarHeight: 44,
@@ -284,7 +289,7 @@ export default {
       // #ifdef MP-WEIXIN
       const wxApi = globalThis.wx;
       if (!wxApi || typeof wxApi.chooseMessageFile !== 'function') {
-        uni.showToast({ title: '当前环境不支持文件选择', icon: 'none' });
+        toast.info('当前环境不支持文件选择');
         return;
       }
 
@@ -309,7 +314,7 @@ export default {
               this.showPrivacyScopeGuide();
               return;
             }
-            uni.showToast({ title: '选择文件失败', icon: 'none' });
+            toast.info('选择文件失败');
           }
         });
       };
@@ -351,7 +356,7 @@ export default {
         },
         fail: (err) => {
           if (err?.errMsg && err.errMsg.includes('cancel')) return;
-          uni.showToast({ title: '选择文件失败', icon: 'none' });
+          toast.info('选择文件失败');
         }
       });
       // #endif
@@ -420,7 +425,7 @@ export default {
     handleSelectedFile(file) {
       const checkResult = this.validateFile(file?.name, file?.size);
       if (!checkResult.valid) {
-        uni.showToast({ title: checkResult.message || '文件格式不支持', icon: 'none' });
+        toast.info(checkResult.message || '文件格式不支持');
         return;
       }
 
@@ -458,7 +463,7 @@ export default {
         fail: (err) => {
           this.isReadingFile = false;
           logger.error('读取文件失败:', err);
-          uni.showToast({ title: '读取文件失败', icon: 'none' });
+          toast.info('读取文件失败');
           this.removeFile();
         }
       });
@@ -478,7 +483,7 @@ export default {
             reader.onerror = (err) => {
               this.isReadingFile = false;
               logger.error('读取文件失败:', err);
-              uni.showToast({ title: '读取文件失败', icon: 'none' });
+              toast.info('读取文件失败');
               this.removeFile();
             };
             reader.readAsDataURL(file);
@@ -487,7 +492,7 @@ export default {
         (err) => {
           this.isReadingFile = false;
           logger.error('解析文件路径失败:', err);
-          uni.showToast({ title: '读取文件失败', icon: 'none' });
+          toast.info('读取文件失败');
           this.removeFile();
         }
       );
@@ -504,7 +509,7 @@ export default {
       reader.onerror = (err) => {
         this.isReadingFile = false;
         logger.error('读取文件失败:', err);
-        uni.showToast({ title: '读取文件失败', icon: 'none' });
+        toast.info('读取文件失败');
         this.removeFile();
       };
       reader.readAsDataURL(file);
@@ -558,12 +563,12 @@ export default {
       }
 
       if (this.isReadingFile) {
-        uni.showToast({ title: '文件读取中，请稍候', icon: 'none' });
+        toast.info('文件读取中，请稍候');
         return;
       }
 
       if (!this.selectedFile || !this.fileBase64) {
-        uni.showToast({ title: '请先选择文件', icon: 'none' });
+        toast.info('请先选择文件');
         return;
       }
 
@@ -573,9 +578,9 @@ export default {
       this.resultFiles = [];
 
       try {
-        const res = await lafService.submitDocConvert(this.fileBase64, this.selectedFile.name, this.selectedType);
+        const res = await this.toolsStore.submitConvert(this.fileBase64, this.selectedFile.name, this.selectedType);
 
-        if (res.code === 0 && res.data) {
+        if (res.success && res.data) {
           this.jobId = res.data.jobId || null;
           this.resultFiles = Array.isArray(res.data.files) ? res.data.files : [];
           const resultUrl = this.extractResultUrl(res.data);
@@ -593,7 +598,7 @@ export default {
           this.status = 'converting';
           this.startPolling();
         } else {
-          throw new Error(res.message || '提交转换失败');
+          throw new Error(res.error?.message || '提交转换失败');
         }
       } catch (error) {
         logger.error('转换提交失败:', error);
@@ -630,8 +635,8 @@ export default {
         }
 
         try {
-          const res = await lafService.getDocConvertStatus(this.jobId);
-          if (res.code === 0 && res.data) {
+          const res = await this.toolsStore.pollConvertStatus(this.jobId);
+          if (res.success && res.data) {
             const { status } = res.data;
             if (status === 'completed' || status === 'finished') {
               this.clearPollTimer();
@@ -641,10 +646,10 @@ export default {
               this.status = 'error';
               this.errorMsg = res.data.error || '转换失败';
             }
-          } else if (res.code !== 0) {
+          } else if (!res.success) {
             this.clearPollTimer();
             this.status = 'error';
-            this.errorMsg = res.message || '查询转换状态失败';
+            this.errorMsg = res.error?.message || '查询转换状态失败';
           }
         } catch (error) {
           logger.error('轮询状态失败:', error);
@@ -656,19 +661,17 @@ export default {
 
     async fetchResult() {
       try {
-        const res = await lafService.getDocConvertResult(this.jobId);
-        if (res.code === 0 && res.data) {
+        const res = await this.toolsStore.fetchConvertResult(this.jobId);
+        if (res.success && res.data) {
           this.resultFiles = Array.isArray(res.data.files) ? res.data.files : [];
           this.resultUrl = this.extractResultUrl(res.data);
           if (!this.resultUrl) {
             throw new Error('转换结果为空，请重试');
           }
           this.status = 'done';
-        } else if (res.code === 202) {
-          this.status = 'converting';
         } else {
           this.status = 'error';
-          this.errorMsg = res.message || '获取结果失败';
+          this.errorMsg = res.error?.message || '获取结果失败';
         }
       } catch (error) {
         logger.error('获取结果失败:', error);
@@ -681,47 +684,47 @@ export default {
       if (!this.resultUrl) return;
 
       // #ifdef MP-WEIXIN
-      uni.showLoading({ title: '下载中...', mask: true });
+      toast.loading('下载中...');
       uni.downloadFile({
         url: this.resultUrl,
         success: (res) => {
-          uni.hideLoading();
+          toast.hide();
           if (res.statusCode === 200) {
             uni.openDocument({
               filePath: res.tempFilePath,
               showMenu: true,
               fail: () => {
-                uni.showToast({ title: '打开文件失败', icon: 'none' });
+                toast.info('打开文件失败');
               }
             });
           }
         },
         fail: () => {
-          uni.hideLoading();
-          uni.showToast({ title: '下载失败', icon: 'none' });
+          toast.hide();
+          toast.info('下载失败');
         }
       });
       // #endif
 
       // #ifdef APP-PLUS
-      uni.showLoading({ title: '下载中...', mask: true });
+      toast.loading('下载中...');
       uni.downloadFile({
         url: this.resultUrl,
         success: (res) => {
-          uni.hideLoading();
+          toast.hide();
           if (res.statusCode === 200) {
             uni.openDocument({
               filePath: res.tempFilePath,
               showMenu: true,
               fail: () => {
-                uni.showToast({ title: '打开文件失败', icon: 'none' });
+                toast.info('打开文件失败');
               }
             });
           }
         },
         fail: () => {
-          uni.hideLoading();
-          uni.showToast({ title: '下载失败', icon: 'none' });
+          toast.hide();
+          toast.info('下载失败');
         }
       });
       // #endif

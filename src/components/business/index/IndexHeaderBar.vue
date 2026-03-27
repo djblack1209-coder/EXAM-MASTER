@@ -28,7 +28,9 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, watch } from 'vue';
+import { toast } from '@/utils/toast.js';
 /**
  * IndexHeaderBar — 首页顶部导航栏（头像 + 搜索框）
  * F002-I1b: 从 index/index.vue 提取
@@ -39,113 +41,97 @@ import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'IndexHeaderBar',
-  components: { BaseIcon },
+const props = defineProps({
+  /** 当前滚动偏移量，用于毛玻璃效果 */
+  scrollY: { type: Number, default: 0 },
+  /** 用户头像URL */
+  avatarUrl: { type: String, default: '/static/images/default-avatar.png' },
+  /** 是否已登录 */
+  isLoggedIn: { type: Boolean, default: false }
+});
 
-  props: {
-    /** 当前滚动偏移量，用于毛玻璃效果 */
-    scrollY: { type: Number, default: 0 },
-    /** 用户头像URL */
-    avatarUrl: { type: String, default: '/static/images/default-avatar.png' },
-    /** 是否已登录 */
-    isLoggedIn: { type: Boolean, default: false }
-  },
+const emit = defineEmits(['open-login-modal']);
 
-  emits: ['open-login-modal'],
+const searchKeyword = ref('');
+const avatarLoadFailed = ref(false);
 
-  data() {
-    return {
-      searchKeyword: '',
-      avatarLoadFailed: false
-    };
-  },
-
-  computed: {
-    /** 实际显示的头像URL：加载失败时降级为默认头像 */
-    displayAvatarUrl() {
-      if (this.avatarLoadFailed) {
-        return '/static/images/default-avatar.png';
-      }
-      return this.avatarUrl || '/static/images/default-avatar.png';
-    }
-  },
-
-  watch: {
-    // 当外部传入新的 avatarUrl 时，重置失败状态以重新尝试加载
-    avatarUrl() {
-      this.avatarLoadFailed = false;
-    }
-  },
-
-  methods: {
-    onAvatarError() {
-      logger.warn('[IndexHeaderBar] 头像加载失败，降级为默认头像');
-      this.avatarLoadFailed = true;
-    },
-
-    handleSearchTap() {
-      // 聚焦搜索框（input会自动聚焦）
-    },
-
-    onSearchFocus() {
-      vibrateLight();
-    },
-
-    doSearch() {
-      const keyword = (this.searchKeyword || '').trim();
-      if (!keyword) {
-        uni.showToast({ title: '请输入搜索内容', icon: 'none' });
-        return;
-      }
-
-      vibrateLight();
-
-      // 在题库中搜索
-      const questionBank = storageService.get('v30_bank', []);
-      const results = questionBank.filter((q) => {
-        const text = (q.question || q.title || q.content || '').toLowerCase();
-        const tags = (q.tags || []).join(' ').toLowerCase();
-        const category = (q.category || q.subject || '').toLowerCase();
-        const kw = keyword.toLowerCase();
-        return text.includes(kw) || tags.includes(kw) || category.includes(kw);
-      });
-
-      if (results.length > 0) {
-        storageService.save('search_results', results);
-        storageService.save('search_keyword', keyword);
-        uni.switchTab({
-          url: '/pages/practice/index',
-          success: () => {
-            uni.$emit('searchResults', { keyword, count: results.length });
-          },
-          fail: () => uni.reLaunch({ url: '/pages/practice/index' })
-        });
-      } else {
-        uni.showToast({
-          title: `未找到"${keyword}"相关题目`,
-          icon: 'none',
-          duration: 2000
-        });
-      }
-    },
-
-    handleAvatarTap() {
-      vibrateLight();
-
-      if (!this.isLoggedIn) {
-        this.$emit('open-login-modal');
-      } else {
-        uni.switchTab({
-          url: '/pages/profile/index',
-          fail: () => {
-            safeNavigateTo('/pages/settings/index');
-          }
-        });
-      }
-    }
+/** 实际显示的头像URL：加载失败时降级为默认头像 */
+const displayAvatarUrl = computed(() => {
+  if (avatarLoadFailed.value) {
+    return '/static/images/default-avatar.png';
   }
-};
+  return props.avatarUrl || '/static/images/default-avatar.png';
+});
+
+// 当外部传入新的 avatarUrl 时，重置失败状态以重新尝试加载
+watch(
+  () => props.avatarUrl,
+  () => {
+    avatarLoadFailed.value = false;
+  }
+);
+
+function onAvatarError() {
+  logger.warn('[IndexHeaderBar] 头像加载失败，降级为默认头像');
+  avatarLoadFailed.value = true;
+}
+
+function handleSearchTap() {
+  // 聚焦搜索框（input会自动聚焦）
+}
+
+function onSearchFocus() {
+  vibrateLight();
+}
+
+function doSearch() {
+  const keyword = (searchKeyword.value || '').trim();
+  if (!keyword) {
+    toast.info('请输入搜索内容');
+    return;
+  }
+
+  vibrateLight();
+
+  // 在题库中搜索
+  const questionBank = storageService.get('v30_bank', []);
+  const results = questionBank.filter((q) => {
+    const text = (q.question || q.title || q.content || '').toLowerCase();
+    const tags = (q.tags || []).join(' ').toLowerCase();
+    const category = (q.category || q.subject || '').toLowerCase();
+    const kw = keyword.toLowerCase();
+    return text.includes(kw) || tags.includes(kw) || category.includes(kw);
+  });
+
+  if (results.length > 0) {
+    storageService.save('search_results', results);
+    storageService.save('search_keyword', keyword);
+    uni.switchTab({
+      url: '/pages/practice/index',
+      success: () => {
+        uni.$emit('searchResults', { keyword, count: results.length });
+      },
+      fail: () => uni.reLaunch({ url: '/pages/practice/index' })
+    });
+  } else {
+    toast.info(`未找到"${keyword}"相关题目`);
+  }
+}
+
+function handleAvatarTap() {
+  vibrateLight();
+
+  if (!props.isLoggedIn) {
+    emit('open-login-modal');
+  } else {
+    uni.switchTab({
+      url: '/pages/profile/index',
+      fail: () => {
+        safeNavigateTo('/pages/settings/index');
+      }
+    });
+  }
+}
 </script>
 
 <style lang="scss" scoped>

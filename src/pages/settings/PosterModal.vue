@@ -89,6 +89,7 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref, getCurrentInstance } from 'vue';
 import { posterGenerator } from './poster-generator.js';
 import { permissionHandler } from '@/utils/helpers/permission-handler.js';
@@ -155,7 +156,7 @@ const handleSave = async () => {
 
   try {
     // 1. 生成海报图片
-    uni.showLoading({ title: '海报生成中...', mask: true });
+    toast.loading('海报生成中...');
 
     const posterPath = await posterGenerator.generateInvitePoster(
       {
@@ -168,10 +169,10 @@ const handleSave = async () => {
       instance?.proxy
     );
 
-    uni.hideLoading();
+    toast.hide();
 
     if (!posterPath) {
-      uni.showToast({ title: '海报生成失败', icon: 'none' });
+      toast.info('海报生成失败');
       return;
     }
 
@@ -188,7 +189,7 @@ const handleSave = async () => {
       emit('saved', posterPath);
     }
   } catch (error) {
-    uni.hideLoading();
+    toast.hide();
     logger.error('[PosterModal] 保存失败:', error);
 
     // 提供预览选项作为备选
@@ -207,7 +208,7 @@ const handleSave = async () => {
         }
       });
     } else {
-      uni.showToast({ title: '生成失败，请重试', icon: 'none' });
+      toast.info('生成失败，请重试');
     }
   } finally {
     isGenerating.value = false;
@@ -221,11 +222,7 @@ const handleShare = () => {
     itemList: ['分享给好友', '复制邀请信息'],
     success: (res) => {
       if (res.tapIndex === 0) {
-        uni.showToast({
-          title: '请点击右上角"..."分享',
-          icon: 'none',
-          duration: 2500
-        });
+        toast.info('请点击右上角"..."分享', 2500);
       } else if (res.tapIndex === 1) {
         copyInviteInfo();
       }
@@ -243,7 +240,7 @@ const handleShare = () => {
       summary: `输入邀请码 ${props.inviteCode} 领取会员！`,
       imageUrl: '/static/tabbar/practice-active.png',
       success: () => {
-        uni.showToast({ title: '分享成功', icon: 'success' });
+        toast.success('分享成功');
         emit('shared');
       },
       fail: () => {
@@ -280,7 +277,7 @@ const copyInviteInfo = () => {
   uni.setClipboardData({
     data: `【Exam-Master 考研神器】\n邀请码：${props.inviteCode}\n智能助力，一战成硕！\n下载链接：${config.deepLink.h5BaseUrl}/join?c=${props.inviteCode}`,
     success: () => {
-      uni.showToast({ title: '邀请信息已复制', icon: 'success' });
+      toast.success('邀请信息已复制');
     }
   });
 };

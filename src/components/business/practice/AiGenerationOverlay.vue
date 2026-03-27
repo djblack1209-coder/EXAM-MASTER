@@ -30,34 +30,32 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'AiGenerationOverlay',
-  components: { BaseIcon },
-  props: {
-    visible: { type: Boolean, default: false },
-    fileName: { type: String, default: '' },
-    generatedCount: { type: Number, default: 0 },
-    totalQuestionsLimit: { type: Number, default: 10 },
-    batchQuestionCount: { type: Number, default: 5 },
-    currentSoup: { type: String, default: '' }
-  },
-  emits: ['pause'],
-  computed: {
-    progressPercent() {
-      if (this.totalQuestionsLimit === 0) return 0;
-      return (this.generatedCount / this.totalQuestionsLimit) * 100;
-    },
-    questionCount() {
-      return this.generatedCount === 0 ? 0 : this.generatedCount * this.batchQuestionCount;
-    },
-    totalTarget() {
-      return this.totalQuestionsLimit * this.batchQuestionCount;
-    }
-  }
-};
+const props = defineProps({
+  visible: { type: Boolean, default: false },
+  fileName: { type: String, default: '' },
+  generatedCount: { type: Number, default: 0 },
+  totalQuestionsLimit: { type: Number, default: 10 },
+  batchQuestionCount: { type: Number, default: 5 },
+  currentSoup: { type: String, default: '' }
+});
+defineEmits(['pause']);
+
+const progressPercent = computed(() => {
+  if (props.totalQuestionsLimit === 0) return 0;
+  return (props.generatedCount / props.totalQuestionsLimit) * 100;
+});
+
+const questionCount = computed(() => {
+  return props.generatedCount === 0 ? 0 : props.generatedCount * props.batchQuestionCount;
+});
+
+const totalTarget = computed(() => {
+  return props.totalQuestionsLimit * props.batchQuestionCount;
+});
 </script>
 
 <style lang="scss" scoped>

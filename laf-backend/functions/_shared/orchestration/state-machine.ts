@@ -17,11 +17,11 @@ import {
   AgentRole,
   DirectorDecision,
   Scene
-} from '../agents/agent-types';
-import { teacherChat } from '../agents/teacher-agent';
-import { studentChat, StudentPersona } from '../agents/student-agent';
-import { generateQuiz, gradeAnswer } from '../agents/examiner-agent';
-import { ChatMessage } from '../ai-providers/provider-factory';
+} from '../agents/agent-types.js';
+import { teacherChat } from '../agents/teacher-agent.js';
+import { studentChat, StudentPersona } from '../agents/student-agent.js';
+import { generateQuiz, gradeAnswer } from '../agents/examiner-agent.js';
+import { ChatMessage } from '../ai-providers/provider-factory.js';
 
 // ==================== 导演图：决定下一步谁说话、做什么 ====================
 // 搬运自 OpenMAIC lib/orchestration/director-graph 的轮次控制逻辑

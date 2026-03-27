@@ -72,20 +72,17 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-export default {
-  name: 'StatsGrid',
-  components: { BaseIcon },
-  props: {
-    isDark: { type: Boolean, default: false },
-    totalQuestions: { type: Number, default: 0 },
-    accuracy: { type: Number, default: 0 },
-    studyDays: { type: Number, default: 0 },
-    achievementCount: { type: Number, default: 0 }
-  },
-  emits: ['stat-click']
-};
+
+defineProps({
+  isDark: { type: Boolean, default: false },
+  totalQuestions: { type: Number, default: 0 },
+  accuracy: { type: Number, default: 0 },
+  studyDays: { type: Number, default: 0 },
+  achievementCount: { type: Number, default: 0 }
+});
+defineEmits(['stat-click']);
 </script>
 
 <style lang="scss" scoped>

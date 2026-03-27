@@ -15,7 +15,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   success,
   badRequest,
@@ -24,8 +24,8 @@ import {
   generateRequestId,
   checkRateLimitDistributed,
   createLogger
-} from './_shared/api-response';
-import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory';
+} from './_shared/api-response.js';
+import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -665,7 +665,7 @@ async function generateAIAdvice(weakPoints: any[], userProfile: any, requestId: 
       }
     ];
 
-    const result = await provider.chat(messages, { max_tokens: 200, temperature: 0.7 });
+    const result = await provider.chat(messages, { maxTokens: 200, temperature: 0.7 });
     return result?.content || '';
   } catch (e) {
     logger.warn(`[${requestId}] AI建议生成失败:`, e);

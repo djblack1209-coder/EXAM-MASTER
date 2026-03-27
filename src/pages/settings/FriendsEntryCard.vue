@@ -18,25 +18,20 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 
-export default {
-  name: 'FriendsEntryCard',
-  methods: {
-    navigateToFriends() {
-      requireLogin(
-        () => {
-          logger.log('[FriendsEntryCard] 跳转到好友列表');
-          safeNavigateTo('/pages/social/friend-list');
-        },
-        { message: '请先登录后查看好友列表' }
-      );
-    }
-  }
-};
+function navigateToFriends() {
+  requireLogin(
+    () => {
+      logger.log('[FriendsEntryCard] 跳转到好友列表');
+      safeNavigateTo('/pages/social/friend-list');
+    },
+    { message: '请先登录后查看好友列表' }
+  );
+}
 </script>
 
 <style lang="scss" scoped>

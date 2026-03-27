@@ -9,8 +9,6 @@
  * - 所有云函数调用已替换为 lafService
  */
 
-import { logger } from '@/utils/logger.js';
-
 // 智谱AI配置
 // ⚠️ 安全升级：前端不再持有任何API Key
 // 所有AI请求必须通过 Sealos 后端 /proxy-ai 接口转发
@@ -18,16 +16,6 @@ export const AI_CONFIG = {
   baseURL: 'https://open.bigmodel.cn/api/paas/v4',
   model: 'glm-4-plus',
   timeout: 60000
-};
-
-/**
- * ⚠️ 已废弃：getApiKey() 方法
- * 请使用 lafService.proxyAI() 替代直接调用智谱AI
- * @deprecated 使用 lafService.proxyAI(messages, options) 替代
- */
-export const getApiKey = () => {
-  logger.error('❌ getApiKey() 已废弃！请使用 lafService.proxyAI() 调用后端代理');
-  return '';
 };
 
 // API基础配置

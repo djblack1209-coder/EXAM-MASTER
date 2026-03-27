@@ -36,18 +36,14 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'PracticeModesModal',
-  components: { BaseIcon },
-  props: {
-    visible: { type: Boolean, default: false },
-    modes: { type: Array, default: () => [] }
-  },
-  emits: ['close', 'select']
-};
+defineProps({
+  visible: { type: Boolean, default: false },
+  modes: { type: Array, default: () => [] }
+});
+defineEmits(['close', 'select']);
 </script>
 
 <style lang="scss" scoped>

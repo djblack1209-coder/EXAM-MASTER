@@ -17,8 +17,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT, extractBearerToken } from './_shared/auth';
-import { sanitizeString } from './_shared/api-response';
+import { verifyJWT, extractBearerToken } from './_shared/auth.js';
+import { sanitizeString } from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -256,7 +256,8 @@ async function handleGetGroups(userId, params, requestId) {
   const safePageSize = Math.min(Math.max(1, pageSize), 50);
 
   try {
-    let query = db.collection('groups');
+    const collection = db.collection('groups');
+    let whereCondition: Record<string, any> = {};
 
     if (type === 'joined') {
       // 获取用户加入的小组
@@ -264,22 +265,23 @@ async function handleGetGroups(userId, params, requestId) {
 
       const groupIds = memberGroups.data.map((m) => m.group_id);
       if (groupIds.length > 0) {
-        query = query.where({ _id: _.in(groupIds) });
+        whereCondition = { _id: _.in(groupIds) };
       } else {
         return { code: 0, success: true, data: [], message: '暂无小组', total: 0 };
       }
     }
 
-    // 计算总数
-    const totalResult = await query.count();
-    const total = totalResult.total;
-
-    // 分页查询
-    const groups = await query
-      .orderBy('created_at', 'desc')
-      .skip((page - 1) * safePageSize)
-      .limit(safePageSize)
-      .get();
+    // 并行查询总数和分页数据，每次从 collection.where() 构建独立查询链
+    const [countResult, groups] = await Promise.all([
+      collection.where(whereCondition).count(),
+      collection
+        .where(whereCondition)
+        .orderBy('created_at', 'desc')
+        .skip((page - 1) * safePageSize)
+        .limit(safePageSize)
+        .get()
+    ]);
+    const total = countResult.total;
 
     logger.info(`[${requestId}] 获取小组列表:`, groups.data.length, '个');
 
@@ -553,22 +555,24 @@ async function handleGetResources(userId, params, requestId) {
       return { code: 403, success: false, message: '您不是该小组成员', data: [] };
     }
 
-    let query = db.collection('group_resources').where({ group_id: groupId });
+    const collection = db.collection('group_resources');
+    const whereCondition: Record<string, any> = { group_id: groupId };
 
     if (type !== 'all') {
-      query = query.where({ resource_type: type });
+      whereCondition.resource_type = type;
     }
 
-    // 计算总数
-    const totalResult = await query.count();
-    const total = totalResult.total;
-
-    // 分页查询
-    const resources = await query
-      .orderBy('created_at', 'desc')
-      .skip((page - 1) * safePageSize)
-      .limit(safePageSize)
-      .get();
+    // 并行查询总数和分页数据，每次从 collection.where() 构建独立查询链
+    const [countResult, resources] = await Promise.all([
+      collection.where(whereCondition).count(),
+      collection
+        .where(whereCondition)
+        .orderBy('created_at', 'desc')
+        .skip((page - 1) * safePageSize)
+        .limit(safePageSize)
+        .get()
+    ]);
+    const total = countResult.total;
 
     // 获取用户信息
     const userIds = [...new Set(resources.data.map((r) => r.user_id))];

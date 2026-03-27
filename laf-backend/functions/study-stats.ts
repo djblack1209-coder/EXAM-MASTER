@@ -11,8 +11,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT, extractBearerToken } from './_shared/auth';
-import { createLogger } from './_shared/api-response';
+import { verifyJWT, extractBearerToken } from './_shared/auth.js';
+import { createLogger } from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -211,7 +211,7 @@ async function getWeeklyTrend(userId, requestId) {
   }
 
   // 按周分组
-  const weeks = [{}, {}, {}, {}];
+  const weeks = [{}, {}, {}, {}] as Array<{ total: number; correct: number }>;
   for (const record of records.data || []) {
     const daysAgo = Math.floor((Date.now() - record.created_at) / (24 * 60 * 60 * 1000));
     const weekIdx = Math.min(3, Math.floor(daysAgo / 7));

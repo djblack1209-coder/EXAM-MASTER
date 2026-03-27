@@ -40,11 +40,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { lafService } from '@/services/lafService.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import config from '@/config/index.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { useAuthStore } from '@/stores/modules/auth';
+
+// 初始化认证 Store
+const authStore = useAuthStore();
 
 // 状态
 const isDark = ref(false);
@@ -143,8 +146,7 @@ const handleQQCallback = async () => {
     // 调用后端接口完成登录
     const callbackRedirectUri = config.qq.redirectUri || '';
 
-    const res = await lafService.login({
-      type: 'qq',
+    const res = await authStore.loginByQQH5({
       code,
       redirectUri: callbackRedirectUri
     });

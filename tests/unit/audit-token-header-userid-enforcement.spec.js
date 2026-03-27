@@ -126,16 +126,20 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: vi.fn(() => mocked.getJwtPayload())
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  success: (data, message = 'ok') => ({ code: 0, success: true, message, data }),
-  badRequest: (message = 'bad') => ({ code: 400, success: false, message }),
-  unauthorized: (message = 'unauthorized') => ({ code: 401, success: false, message }),
-  serverError: (message = 'server error') => ({ code: 500, success: false, message }),
-  validateUserId: (userId) => typeof userId === 'string' && userId.length > 0,
-  checkRateLimit: () => ({ allowed: true }),
-  logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
-  generateRequestId: () => 'token_test_req',
-  wrapResponse: (response, requestId) => ({ ...response, requestId })
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  return createApiResponseMock();
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.getJwtPayload();
+    if (!payload) return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    return { userId: payload.userId };
+  },
+  isAuthError: (result) => result?.code === 401
 }));
 
 import learningGoalHandler from '../../laf-backend/functions/learning-goal';

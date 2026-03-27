@@ -15,6 +15,7 @@ import { permissionHandler } from './permission-handler.js';
 import storageService from '@/services/storageService.js';
 import { logger } from '../logger.js';
 import { getPixelRatio } from '../core/system.js';
+import { toast } from '@/utils/toast.js';
 
 // 收藏状态存储键
 const STORAGE_KEYS = {
@@ -61,11 +62,7 @@ class QuoteInteractionHandler {
     if (isFav) {
       // 取消收藏
       this.favoriteQuotes = this.favoriteQuotes.filter((q) => q.text !== quote);
-      uni.showToast({
-        title: '已取消收藏',
-        icon: 'none',
-        duration: 1500
-      });
+      toast.info('已取消收藏', 1500);
     } else {
       // 添加收藏
       const newFavorite = {
@@ -79,11 +76,7 @@ class QuoteInteractionHandler {
       // 触发收藏动画
       await this.playFavoriteAnimation();
 
-      uni.showToast({
-        title: '已收藏',
-        icon: 'none',
-        duration: 1500
-      });
+      toast.info('已收藏', 1500);
     }
 
     // 保存到本地
@@ -179,10 +172,7 @@ class QuoteInteractionHandler {
       uni.setClipboardData({
         data: shareContent,
         success: () => {
-          uni.showToast({
-            title: '已复制，快去分享吧',
-            icon: 'none'
-          });
+          toast.info('已复制，快去分享吧');
           resolve({ success: true, platform: 'clipboard' });
         }
       });

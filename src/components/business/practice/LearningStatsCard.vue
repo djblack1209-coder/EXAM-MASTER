@@ -48,22 +48,18 @@
   </view>
 </template>
 
-<script>
+<script setup>
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'LearningStatsCard',
-  components: { BaseIcon },
-  props: {
-    todayQuestions: { type: Number, default: 0 },
-    todayGoal: { type: Number, default: 20 },
-    currentStreak: { type: Number, default: 0 },
-    weeklyAccuracy: { type: Number, default: 0 },
-    weakPointsCount: { type: Number, default: 0 },
-    unlockedAchievements: { type: Array, default: () => [] }
-  },
-  emits: ['open-goal-setting', 'go-mistake', 'show-achievement']
-};
+defineProps({
+  todayQuestions: { type: Number, default: 0 },
+  todayGoal: { type: Number, default: 20 },
+  currentStreak: { type: Number, default: 0 },
+  weeklyAccuracy: { type: Number, default: 0 },
+  weakPointsCount: { type: Number, default: 0 },
+  unlockedAchievements: { type: Array, default: () => [] }
+});
+defineEmits(['open-goal-setting', 'go-mistake', 'show-achievement']);
 </script>
 
 <style lang="scss" scoped>

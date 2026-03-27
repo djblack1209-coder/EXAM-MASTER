@@ -5,12 +5,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 
+const mockRequest = vi.hoisted(() => vi.fn().mockResolvedValue({ code: 0, success: true, data: {} }));
+
 vi.mock('@/utils/logger.js', () => ({
   logger: { log: vi.fn(), warn: vi.fn(), error: vi.fn(), info: vi.fn() }
 }));
 vi.mock('@/utils/core/performance.js', () => ({
   perfMonitor: { trackApi: vi.fn(), trackRender: vi.fn(), getReport: vi.fn(() => ({})) }
 }));
+vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
+  const original = await importOriginal();
+  return { ...original, request: mockRequest };
+});
 
 import { useUserStore } from '@/stores/modules/user.js';
 import { useStudyStore } from '@/stores/modules/study.js';
@@ -19,8 +25,9 @@ import storageService from '@/services/storageService.js';
 describe('E2E 个人资料交互', () => {
   let userStore, studyStore;
 
-  beforeEach(() => {
-    vi.restoreAllMocks();
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    mockRequest.mockResolvedValue({ code: 0, success: true, data: {} });
     setActivePinia(createPinia());
     userStore = useUserStore();
     studyStore = useStudyStore();
@@ -278,7 +285,7 @@ describe('E2E 个人资料交互', () => {
       storageService.save('EXAM_USER_ID', 'u1');
 
       const { lafService } = await import('@/services/lafService.js');
-      const spy = vi.spyOn(lafService, 'request').mockResolvedValue({ code: 0, success: true });
+      mockRequest.mockResolvedValue({ code: 0, success: true });
 
       const newName = '新昵称2024';
 
@@ -296,7 +303,7 @@ describe('E2E 个人资料交互', () => {
       // 验证三方一致
       expect(userStore.userInfo.nickName).toBe('新昵称2024');
       expect(storageService.get('userInfo').nickName).toBe('新昵称2024');
-      expect(spy).toHaveBeenCalled();
+      expect(mockRequest).toHaveBeenCalled();
     });
 
     it('空昵称 → 应被拒绝', () => {
@@ -319,7 +326,7 @@ describe('E2E 个人资料交互', () => {
       storageService.save('EXAM_USER_ID', 'u1');
 
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockRejectedValue(new Error('网络超时'));
+      mockRequest.mockRejectedValue(new Error('网络超时'));
 
       const result = await lafService.updateUserProfile({ nickname: '新昵称' });
       // updateUserProfile 内部 catch，返回 { code: -1, success: false }
@@ -475,7 +482,7 @@ describe('E2E 个人资料交互', () => {
 
       // Step 2: 修改昵称
       const { lafService } = await import('@/services/lafService.js');
-      vi.spyOn(lafService, 'request').mockResolvedValue({ code: 0, success: true });
+      mockRequest.mockResolvedValue({ code: 0, success: true });
       await lafService.updateUserProfile({ nickname: '考研冲冲冲' });
       userStore.updateUserInfo({ nickName: '考研冲冲冲' });
       storageService.save('userInfo', { ...storageService.get('userInfo', {}), nickName: '考研冲冲冲' });

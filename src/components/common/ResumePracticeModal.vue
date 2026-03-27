@@ -57,65 +57,65 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'ResumePracticeModal',
-  components: { BaseIcon },
-  props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    draftInfo: {
-      type: Object,
-      default: null
-    },
-    type: {
-      type: String,
-      default: 'quiz' // quiz, pk, import
-    }
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false
   },
-  emits: ['resume', 'restart', 'close'],
-  computed: {
-    title() {
-      const titles = {
-        quiz: '检测到未完成的练习',
-        pk: '检测到未完成的对战',
-        import: '检测到未完成的导入'
-      };
-      return titles[this.type] || titles.quiz;
-    },
-    iconName() {
-      const icons = {
-        quiz: 'note',
-        pk: 'sword',
-        import: 'download'
-      };
-      return icons[this.type] || icons.quiz;
-    },
-    tipText() {
-      const tips = {
-        quiz: '是否继续上次的练习？重新开始将清除之前的进度。',
-        pk: '是否继续上次的对战？',
-        import: '是否继续上次的导入任务？'
-      };
-      return tips[this.type] || tips.quiz;
-    }
+  draftInfo: {
+    type: Object,
+    default: null
   },
-  methods: {
-    handleMaskClick() {
-      this.$emit('close');
-    },
-    handleResume() {
-      this.$emit('resume', this.draftInfo);
-    },
-    handleRestart() {
-      this.$emit('restart');
-    }
+  type: {
+    type: String,
+    default: 'quiz' // quiz, pk, import
   }
-};
+});
+
+const emit = defineEmits(['resume', 'restart', 'close']);
+
+const title = computed(() => {
+  const titles = {
+    quiz: '检测到未完成的练习',
+    pk: '检测到未完成的对战',
+    import: '检测到未完成的导入'
+  };
+  return titles[props.type] || titles.quiz;
+});
+
+const iconName = computed(() => {
+  const icons = {
+    quiz: 'note',
+    pk: 'sword',
+    import: 'download'
+  };
+  return icons[props.type] || icons.quiz;
+});
+
+const tipText = computed(() => {
+  const tips = {
+    quiz: '是否继续上次的练习？重新开始将清除之前的进度。',
+    pk: '是否继续上次的对战？',
+    import: '是否继续上次的导入任务？'
+  };
+  return tips[props.type] || tips.quiz;
+});
+
+function handleMaskClick() {
+  emit('close');
+}
+
+function handleResume() {
+  emit('resume', props.draftInfo);
+}
+
+function handleRestart() {
+  emit('restart');
+}
 </script>
 
 <style lang="scss" scoped>

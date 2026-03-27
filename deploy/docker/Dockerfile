@@ -66,10 +66,8 @@ USER nodejs
 # 使用 dumb-init 作为 PID 1 进程
 ENTRYPOINT ["dumb-init", "--"]
 
-# [C-03 FIX] 启动命令 — 原 CMD 指向 health-check.js 导致容器无法正常工作
-# Laf 云函数项目需要通过 Laf runtime 启动，此处改为 functions 入口
-# 如果使用自定义 Express 服务器，请替换为实际入口文件
-CMD ["node", "functions/health-check.js"]
+# 启动 Express 服务器（standalone 模式）
+CMD ["node", "standalone/server.js"]
 
 # ==================== 标签 ====================
 LABEL maintainer="Exam-Master DevOps Team" \

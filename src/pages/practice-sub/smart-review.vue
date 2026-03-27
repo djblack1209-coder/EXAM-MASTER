@@ -196,11 +196,14 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-import { lafService } from '@/services/lafService.js';
+import { useReviewStore } from '@/stores/modules/review.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
+
+const reviewStore = useReviewStore();
 import { storageService } from '@/services/storageService.js';
 import { getDueCards } from '@/services/fsrs-service.js';
 
@@ -324,8 +327,8 @@ function drawReviewRing() {
 async function loadReviewPlan() {
   loading.value = true;
   try {
-    const res = await lafService.getReviewPlan();
-    if (res.code === 0 && res.data) {
+    const res = await reviewStore.fetchReviewPlan();
+    if (res.success && res.data) {
       reviewPlan.value = res.data.reviewPlan || reviewPlan.value;
       latestDiagnosis.value = res.data.latestDiagnosis;
     } else {
@@ -415,7 +418,7 @@ function startBatchReview() {
   const allItems = [...urgentItems.value, ...normalItems.value, ...lightItems.value].slice(0, 20);
   const ids = allItems.map((i) => i.question_id).filter(Boolean);
   if (ids.length === 0) {
-    uni.showToast({ title: '暂无可复习的题目', icon: 'none' });
+    toast.info('暂无可复习的题目');
     return;
   }
   // ✅ [P1修复] 开始批量复习时记录streak（而非页面访问时）

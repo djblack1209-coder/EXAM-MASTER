@@ -88,7 +88,7 @@
   </view>
 </template>
 
-<script>
+<script setup>
 /**
  * BaseSkeleton Component
  *
@@ -102,18 +102,15 @@
  * @example
  * <base-skeleton :isDark="isDarkMode" />
  */
-export default {
-  name: 'BaseSkeleton',
-  props: {
-    /**
-     * Dark mode flag for skeleton appearance
-     */
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+defineProps({
+  /**
+   * Dark mode flag for skeleton appearance
+   */
+  isDark: {
+    type: Boolean,
+    default: false
   }
-};
+});
 </script>
 
 <style lang="scss" scoped>

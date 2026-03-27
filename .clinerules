@@ -1,0 +1,28 @@
+# Cline Rules for EXAM-MASTER
+# This file mirrors CLAUDE.md — see that file for full documentation.
+# Auto-loaded by Cline extension.
+
+# Read CLAUDE.md first for the complete project context.
+# Key points:
+
+## Stack
+# uni-app (Vue 3.4) + Express/PM2 + Laf Cloud (Sealos) + MongoDB
+
+## Iron Rules
+# 1. Layer order: Page → Component → Store → Service → Backend. No skipping.
+# 2. All AI requests through proxy-ai.ts or ai.service.js
+# 3. WeChat MP main package < 2MB
+# 4. <script setup> Composition API only for new code
+# 5. wot-design-uni components preferred
+# 6. NEVER commit .env with real keys
+# 7. NEVER skip requireAuth(ctx) on authenticated endpoints
+# 8. NEVER call Pro/ prefix models on SiliconFlow DS keys
+
+## Completion Protocol
+# After every task: Update CHANGE-LOG → Update module docs → Update HEALTH.md → Self-check
+
+## Must-Read Docs
+# docs/PROJECT-INDEX.md — project nav map
+# docs/status/HEALTH.md — bugs + tech debt
+# docs/sop/AI-DEV-RULES.md — iron rules
+# docs/AI-SOP/MODULE-INDEX.md — file locator

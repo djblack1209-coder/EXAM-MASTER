@@ -17,9 +17,9 @@
 
 import cloud from '@lafjs/cloud';
 import { fsrs, generatorParameters, State, createEmptyCard, type Grade, type RecordLogItem } from 'ts-fsrs';
-import { requireAuth, isAuthError } from './_shared/auth-middleware';
-import { generateRequestId, createLogger } from './_shared/api-response';
-import type { UserFSRSParams, ReviewLogRecord } from './_shared/fsrs-scheduler';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { generateRequestId, createLogger } from './_shared/api-response.js';
+import type { UserFSRSParams, ReviewLogRecord } from './_shared/fsrs-scheduler.js';
 
 const db = cloud.database();
 const logger = createLogger('[FSRSOptimizer]');

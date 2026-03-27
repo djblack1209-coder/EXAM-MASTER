@@ -24,10 +24,10 @@
       scroll-y
       class="main-scroll"
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
-      @scrolltolower="loadMoreFavorites"
-    
       refresher-enabled
+
       :refresher-triggered="isRefreshing"
+      @scrolltolower="loadMoreFavorites"
       @refresherrefresh="onPullRefresh">
       <!-- 统计卡片 -->
       <view class="stats-row apple-glass-card">
@@ -259,6 +259,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import {
@@ -459,7 +460,7 @@ export default {
     // 显示收藏夹操作菜单
     showFolderActions(folder) {
       if (folder.isDefault) {
-        uni.showToast({ title: '默认收藏夹不可操作', icon: 'none' });
+        toast.info('默认收藏夹不可操作');
         return;
       }
       uni.showActionSheet({
@@ -488,7 +489,7 @@ export default {
             if (idx >= 0) {
               this.folders[idx].name = res.content.trim();
               storageService.save('favorite_folders', this.folders);
-              uni.showToast({ title: '重命名成功', icon: 'success' });
+              toast.success('重命名成功');
               this.loadData();
             }
           }
@@ -505,10 +506,10 @@ export default {
           if (res.confirm) {
             const result = questionFavoriteManager.deleteFolder(folder.id);
             if (result.success) {
-              uni.showToast({ title: '删除成功', icon: 'success' });
+              toast.success('删除成功');
               this.loadData();
             } else {
-              uni.showToast({ title: result.error || '删除失败', icon: 'none' });
+              toast.info(result.error || '删除失败');
             }
           }
         }
@@ -518,7 +519,7 @@ export default {
     // 创建收藏夹
     createFolder() {
       if (!this.newFolderName.trim()) {
-        uni.showToast({ title: '请输入收藏夹名称', icon: 'none' });
+        toast.info('请输入收藏夹名称');
         return;
       }
 
@@ -528,13 +529,13 @@ export default {
       });
 
       if (result.success) {
-        uni.showToast({ title: '创建成功', icon: 'success' });
+        toast.success('创建成功');
         this.showFolderModal = false;
         this.newFolderName = '';
         this.newFolderIcon = 'folder';
         this.loadData();
       } else {
-        uni.showToast({ title: result.error || '创建失败', icon: 'none' });
+        toast.info(result.error || '创建失败');
       }
     },
 
@@ -550,12 +551,12 @@ export default {
       const result = moveFavoriteToFolder(this.movingItem.id, folderId);
 
       if (result.success) {
-        uni.showToast({ title: '移动成功', icon: 'success' });
+        toast.success('移动成功');
         this.showMoveModal = false;
         this.movingItem = null;
         this.loadData();
       } else {
-        uni.showToast({ title: result.error || '移动失败', icon: 'none' });
+        toast.info(result.error || '移动失败');
       }
     },
 
@@ -568,10 +569,10 @@ export default {
           if (res.confirm) {
             const result = removeFromFavorites(item.id);
             if (result.success) {
-              uni.showToast({ title: '已取消收藏', icon: 'success' });
+              toast.success('已取消收藏');
               this.loadData();
             } else {
-              uni.showToast({ title: result.message || '取消收藏失败', icon: 'none' });
+              toast.info(result.message || '取消收藏失败');
             }
           }
         }
@@ -591,13 +592,13 @@ export default {
       const result = updateNote(this.editingItem.id, this.noteContent.trim());
 
       if (result.success) {
-        uni.showToast({ title: '保存成功', icon: 'success' });
+        toast.success('保存成功');
         this.showNoteModal = false;
         this.editingItem = null;
         this.noteContent = '';
         this.loadData();
       } else {
-        uni.showToast({ title: '保存失败', icon: 'none' });
+        toast.info('保存失败');
       }
     },
 
@@ -616,7 +617,7 @@ export default {
 
         safeNavigateTo('/pages/practice-sub/do-quiz?mode=single');
       } catch (_error) {
-        uni.showToast({ title: '跳转练习失败', icon: 'none' });
+        toast.info('跳转练习失败');
       }
     }
   }

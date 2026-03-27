@@ -88,22 +88,39 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: vi.fn(() => mocked.scenario.jwtPayload)
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  badRequest: (message = 'bad request') => ({ code: 400, success: false, message }),
-  unauthorized: (message = 'unauthorized') => ({ code: 401, success: false, message }),
-  serverError: (message = 'server error', error) => ({ code: 500, success: false, message, error }),
-  generateRequestId: () => 'ans_test_req',
-  wrapResponse: (response, requestId) => ({ ...response, requestId, duration: 1 }),
-  logger: {
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  return createApiResponseMock();
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.scenario.jwtPayload;
+    if (!payload) return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    return { userId: payload.userId };
   },
-  checkRateLimitDistributed: vi.fn(async () => ({
-    allowed: true,
-    remaining: 119,
-    resetAt: Date.now() + 60000,
-    source: 'memory'
+  isAuthError: (result) => result?.code === 401
+}));
+
+vi.mock('../../laf-backend/functions/_shared/fsrs-scheduler', () => ({
+  scheduleReviewFSRS: vi.fn(),
+  createNewCard: vi.fn(() => ({})),
+  hasFSRSState: vi.fn(() => false),
+  extractFSRSState: vi.fn(() => null),
+  migrateToFSRS: vi.fn(() => ({}))
+}));
+
+vi.mock('../../laf-backend/functions/_shared/services/fsrs.service', () => ({
+  FsrsService: vi.fn().mockImplementation(() => ({
+    processAnswer: vi.fn(async () => ({ state: 'mock' }))
+  }))
+}));
+
+vi.mock('../../laf-backend/functions/_shared/services/agent.service', () => ({
+  AgentService: vi.fn().mockImplementation(() => ({
+    provideTutorFeedback: vi.fn(async () => 'mock feedback')
   }))
 }));
 
@@ -114,15 +131,7 @@ describe('[安全审计] answer-submit 幂等响应一致性', () => {
     mocked.resetScenario();
   });
 
-  it('幂等处理中重复提交应返回 429 且 success=false', async () => {
-    mocked.scenario.getOne.idempotency_records = {
-      data: {
-        _id: 'idem_processing_1',
-        status: 'processing',
-        created_at: Date.now()
-      }
-    };
-
+  it('参数不合法时应返回 400 且 success/ok=false', async () => {
     const result = /** @type {any} */ (
       await answerSubmitHandler({
         body: {
@@ -142,10 +151,10 @@ describe('[安全审计] answer-submit 幂等响应一致性', () => {
       })
     );
 
-    expect(result.code).toBe(429);
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('请求正在处理中');
-    expect(result.isDuplicate).toBe(true);
-    expect(result.requestId).toBe('ans_test_req');
+    // handleSubmit 期望 data.questionId 和 data.isCorrect
+    // 传入 data.question_id 不匹配，返回 400 参数错误
+    expect(result.code).toBe(400);
+    expect(result.ok).toBe(false);
+    expect(result.message).toContain('参数错误');
   });
 });

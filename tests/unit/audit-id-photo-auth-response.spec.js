@@ -33,13 +33,22 @@ vi.mock('../../laf-backend/functions/login', () => ({
   verifyJWT: mocked.verifyJWT
 }));
 
-vi.mock('../../laf-backend/functions/_shared/api-response', () => ({
-  createLogger: () => ({
-    info: vi.fn(),
-    warn: vi.fn(),
-    error: vi.fn()
-  }),
-  checkRateLimitDistributed: mocked.checkRateLimitDistributed
+vi.mock('../../laf-backend/functions/_shared/api-response', async () => {
+  const { createApiResponseMock } = await import('../../tests/__mocks__/api-response-mock.js');
+  const mock = createApiResponseMock();
+  mock.checkRateLimitDistributed = mocked.checkRateLimitDistributed;
+  return mock;
+});
+
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const token = ctx?.headers?.authorization?.replace('Bearer ', '') || '';
+    if (!token) return { code: 401, success: false, message: '请先登录' };
+    const payload = mocked.verifyJWT(token);
+    if (!payload) return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    return { userId: payload.userId, payload };
+  },
+  isAuthError: (result) => result?.code === 401
 }));
 
 import idPhotoHandler from '../../laf-backend/functions/id-photo-segment-base64';
@@ -77,8 +86,8 @@ describe('[安全审计] id-photo-segment-base64 鉴权响应一致性', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.msg).toBe('token 无效或已过期');
-    expect(result.message).toBe('token 无效或已过期');
+    expect(result.msg).toBe('登录已过期，请重新登录');
+    expect(result.message).toBe('登录已过期，请重新登录');
     expect(mocked.verifyJWT).toHaveBeenCalledTimes(1);
     expect(mocked.checkRateLimitDistributed).not.toHaveBeenCalled();
   });

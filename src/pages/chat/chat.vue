@@ -261,6 +261,7 @@
 </template>
 
 <script setup>
+import { toast } from '@/utils/toast.js';
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import { lafService } from '@/services/lafService.js';
@@ -426,6 +427,19 @@ onMounted(async () => {
         currentFriend.value = friend;
       }
     }
+
+    // 如果从做题页带了上下文问题 → 自动填入并发送
+    if (currentPage.options.context === 'question') {
+      const ctx = storageService.get('chat_context_question', '');
+      if (ctx) {
+        // 延迟到页面加载完成后自动发送
+        setTimeout(() => {
+          messageText.value = ctx;
+          storageService.remove('chat_context_question');
+          handleSend();
+        }, 1500);
+      }
+    }
   }
 
   // 加载用户学习数据 + 历史对话，带安全超时 (P011)
@@ -468,7 +482,7 @@ const loadUserContext = async () => {
   } catch (e) {
     logger.warn('[Chat] 加载用户上下文失败:', e);
     // P007: 提供用户反馈，避免静默失败
-    uni.showToast({ title: '学习数据加载失败，智能回复可能不够精准', icon: 'none', duration: 2000 });
+    toast.info('学习数据加载失败，智能回复可能不够精准');
   }
 };
 
@@ -493,7 +507,7 @@ const loadChatHistory = async () => {
   } catch (e) {
     logger.warn('[Chat] 加载聊天历史失败:', e);
     // P007: 提供用户反馈
-    uni.showToast({ title: '聊天记录加载失败', icon: 'none', duration: 1500 });
+    toast.info('聊天记录加载失败', 1500);
   }
 };
 
@@ -536,11 +550,7 @@ const selectEmotion = (emotion) => {
   // 显示提示
   const emotionInfo = emotionOptions.value.find((e) => e.value === emotion);
   if (emotionInfo) {
-    uni.showToast({
-      title: `已标记心情: ${emotionInfo.emoji}`,
-      icon: 'none',
-      duration: 1500
-    });
+    toast.info(`已标记心情: ${emotionInfo.emoji}`, 1500);
   }
 };
 
@@ -613,7 +623,7 @@ const showMenu = () => {
               messages.value = [];
               conversationCount.value = 0;
               saveChatHistory();
-              uni.showToast({ title: '已清空', icon: 'success' });
+              toast.success('已清空');
             }
           }
         });
@@ -635,11 +645,7 @@ const showMenu = () => {
 // 切换实时答疑模式
 const toggleRealtimeMode = () => {
   isRealtimeMode.value = !isRealtimeMode.value;
-  uni.showToast({
-    title: isRealtimeMode.value ? '已切换到实时答疑模式' : '已切换到普通聊天模式',
-    icon: 'none',
-    duration: 1500
-  });
+  toast.info(isRealtimeMode.value ? '已切换到实时答疑模式' : '已切换到普通聊天模式', 1500);
 };
 
 // 开始录音
@@ -647,7 +653,7 @@ const startRecording = async () => {
   try {
     const privacyOk = await ensurePrivacyAuthorization();
     if (!privacyOk) {
-      uni.showToast({ title: '需要先同意隐私授权', icon: 'none' });
+      toast.info('需要先同意隐私授权');
       return;
     }
 
@@ -656,7 +662,7 @@ const startRecording = async () => {
       content: '需要麦克风权限才能语音提问，是否前往设置开启？'
     });
     if (!granted) {
-      uni.showToast({ title: '未开启录音权限', icon: 'none' });
+      toast.info('未开启录音权限');
       return;
     }
 
@@ -679,7 +685,7 @@ const startRecording = async () => {
         if (res.tempFilePath) {
           processVoiceToText(res.tempFilePath);
         } else {
-          uni.showToast({ title: '录音文件读取失败', icon: 'none' });
+          toast.info('录音文件读取失败');
         }
       });
       _recorderManager.onError((err) => {
@@ -707,10 +713,7 @@ const startRecording = async () => {
     recordingIntervalId = interval;
   } catch (error) {
     logger.error('[Chat] 录音权限获取失败:', error);
-    uni.showToast({
-      title: '录音权限被拒绝',
-      icon: 'none'
-    });
+    toast.info('录音权限被拒绝');
   }
 };
 
@@ -794,7 +797,7 @@ const readAudioAsBase64 = (filePath) =>
 const processVoiceToText = async (filePath) => {
   if (!filePath) return;
 
-  uni.showLoading({ title: '语音识别中...' });
+  toast.loading('语音识别中...');
   try {
     const audioBase64 = await readAudioAsBase64(filePath);
     if (!audioBase64) {
@@ -811,18 +814,14 @@ const processVoiceToText = async (filePath) => {
     }
 
     messageText.value = recognizedText;
-    uni.showToast({ title: '识别成功', icon: 'success', duration: 1000 });
+    toast.success('识别成功', 1000);
 
     await handleSend();
   } catch (error) {
     logger.error('[Chat] 语音识别失败:', error);
-    uni.showToast({
-      title: error?.message || '语音识别失败，请重试',
-      icon: 'none',
-      duration: 1800
-    });
+    toast.info(error?.message || '语音识别失败，请重试', 1800);
   } finally {
-    uni.hideLoading();
+    toast.hide();
   }
 };
 
@@ -914,10 +913,7 @@ const handleRealtimeAnswer = async (question) => {
     userMsg.status = 'failed';
     logger.error('[Chat] 实时答疑失败:', error);
 
-    uni.showToast({
-      title: '网络错误，请稍后重试',
-      icon: 'none'
-    });
+    toast.info('网络错误，请稍后重试');
   }
 };
 
@@ -1054,10 +1050,7 @@ const handleNormalChat = async (content) => {
     isTyping.value = false;
     logger.error('[Chat] 发送消息失败:', error);
 
-    uni.showToast({
-      title: '发送失败，点击消息重试',
-      icon: 'none'
-    });
+    toast.info('发送失败，点击消息重试');
   }
 };
 
@@ -1109,10 +1102,7 @@ const retryMessage = async (index) => {
 
       messages.value[index].status = 'failed';
       isTyping.value = false;
-      uni.showToast({
-        title: '重试失败',
-        icon: 'none'
-      });
+      toast.info('重试失败');
     }
   }
 };

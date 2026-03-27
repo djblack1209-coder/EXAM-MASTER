@@ -73,55 +73,47 @@ describe('practice 动态方法加载', () => {
   });
 
   it('_ensurePracticeSubPackageLoaded 应仅加载一次分包', async () => {
+    // ✅ [D002重构] 此方法已由 useDynamicMixin composable 提供
+    // 测试 composable 的 ensurePracticeSubPackageLoaded 逻辑
+    const { useDynamicMixin } = await import('@/composables/useDynamicMixin.js');
     const loadSubPackageMock = vi.fn(({ root, success }) => {
       expect(root).toBe('pages/practice-sub');
       success?.();
     });
     uni.loadSubPackage = loadSubPackageMock;
 
-    const ctx = {
-      subPackageLoaded: false
-    };
+    const mixin = useDynamicMixin();
+    await mixin.ensurePracticeSubPackageLoaded();
+    await mixin.ensurePracticeSubPackageLoaded();
 
-    await PracticePage.methods._ensurePracticeSubPackageLoaded.call(ctx);
-    await PracticePage.methods._ensurePracticeSubPackageLoaded.call(ctx);
-
-    expect(ctx.subPackageLoaded).toBe(true);
+    expect(mixin.subPackageLoaded.value).toBe(true);
     expect(loadSubPackageMock).toHaveBeenCalledTimes(1);
   });
 
   it('_loadAIGenerationMixin 应先加载分包再注入方法', async () => {
+    // ✅ [D002重构] 此方法已由 useDynamicMixin composable 提供
+    // 通过组件方法测试，需要提供 _dynamicMixin 上下文
     const chooseImportSource = vi.fn(() => 'ok');
     const loadLearningStats = vi.fn(() => Promise.resolve());
+
+    const mockDynamicMixin = {
+      loadAIGenerationMixin: vi.fn(async (instance) => {
+        instance.dynamicMethodsCache = instance.dynamicMethodsCache || {};
+        instance.dynamicMethodsCache.chooseImportSource = chooseImportSource;
+        instance.dynamicMethodsCache.loadLearningStats = loadLearningStats;
+        instance._mixinLoaded = true;
+      })
+    };
 
     const ctx = {
       _mixinLoaded: false,
       dynamicMethodsCache: {},
-      _ensurePracticeSubPackageLoaded: vi.fn(() => Promise.resolve()),
-      _requirePracticeSubpackageModule: vi.fn((modulePath) => {
-        if (modulePath.includes('ai-generation-mixin')) {
-          return Promise.resolve({
-            aiGenerationMixin: {
-              methods: {
-                chooseImportSource
-              }
-            }
-          });
-        }
-        return Promise.resolve({
-          learningStatsMixin: {
-            methods: {
-              loadLearningStats
-            }
-          }
-        });
-      })
+      _dynamicMixin: mockDynamicMixin
     };
 
     await PracticePage.methods._loadAIGenerationMixin.call(ctx);
 
-    expect(ctx._ensurePracticeSubPackageLoaded).toHaveBeenCalledTimes(1);
-    expect(ctx._requirePracticeSubpackageModule).toHaveBeenCalledTimes(2);
+    expect(mockDynamicMixin.loadAIGenerationMixin).toHaveBeenCalledTimes(1);
     expect(ctx._mixinLoaded).toBe(true);
     expect(typeof ctx.dynamicMethodsCache.chooseImportSource).toBe('function');
     expect(typeof ctx.dynamicMethodsCache.loadLearningStats).toBe('function');

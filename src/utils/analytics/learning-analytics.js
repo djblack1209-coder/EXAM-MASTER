@@ -18,6 +18,7 @@ import { getWeakKnowledgePoints, getLearningStats } from '@/utils/learning/adapt
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { lafService } from '@/services/lafService.js';
+import { toast } from '@/utils/toast.js';
 
 const STORAGE_KEYS = {
   DAILY_STATS: 'learning_daily_stats',
@@ -299,7 +300,7 @@ class LearningAnalytics {
       for (const id of newAchievements) {
         const achievement = Object.values(ACHIEVEMENTS).find((a) => a.id === id);
         if (achievement) {
-          uni.showToast({ title: '解锁成就：' + achievement.name, icon: 'none', duration: 3000 });
+          toast.info('解锁成就：', 3000);
         }
       }
     }
@@ -430,11 +431,7 @@ class LearningAnalytics {
           this._saveAchievements();
           // 显示第一个新解锁的成就
           const first = newlyUnlocked[0];
-          uni.showToast({
-            title: `解锁成就：${first.name || first.id}`,
-            icon: 'none',
-            duration: 3000
-          });
+          toast.info(`解锁成就：${first.name || first.id}`, 3000);
           logger.log(`[LearningAnalytics] 后端自动检测解锁了 ${newlyUnlocked.length} 个成就`);
         }
       } catch (e) {

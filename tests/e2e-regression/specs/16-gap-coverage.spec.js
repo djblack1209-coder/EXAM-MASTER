@@ -5,7 +5,7 @@
  *       做题进度恢复、下拉刷新、空题库状态、兼容性布局
  */
 import { test, expect } from '../fixtures/regression.fixture.js';
-import { expectAnyTextVisible, expectRoute, expectSchoolPageReady } from '../helpers/assertions.js';
+import { expectAnyTextVisible, expectSchoolPageReady } from '../helpers/assertions.js';
 import { schoolFormData } from '../data/test-data.js';
 
 function buildQuestionBank(count = 5) {

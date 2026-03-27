@@ -185,6 +185,7 @@
 </template>
 
 <script>
+import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import { debounce } from '@/utils/throttle.js';
@@ -278,7 +279,7 @@ export default {
               this.plan.startDate = trimmed;
               this.onInputChange();
             } else {
-              uni.showToast({ title: '请输入有效日期：YYYY-MM-DD', icon: 'none' });
+              toast.info('请输入有效日期：YYYY-MM-DD');
             }
           }
         }
@@ -295,13 +296,13 @@ export default {
             const parsed = new Date(trimmed);
             if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
               if (this.plan.startDate && trimmed <= this.plan.startDate) {
-                uni.showToast({ title: '结束日期必须晚于开始日期', icon: 'none' });
+                toast.info('结束日期必须晚于开始日期');
                 return;
               }
               this.plan.endDate = trimmed;
               this.onInputChange();
             } else {
-              uni.showToast({ title: '请输入有效日期：YYYY-MM-DD', icon: 'none' });
+              toast.info('请输入有效日期：YYYY-MM-DD');
             }
           }
         }
@@ -319,7 +320,7 @@ export default {
               this.plan.reminderTime = res.content.trim();
               this.onInputChange();
             } else {
-              uni.showToast({ title: '请输入正确格式：HH:MM', icon: 'none' });
+              toast.info('请输入正确格式：HH:MM');
             }
           }
         }
@@ -338,11 +339,11 @@ export default {
           const name = (this.plan.name || '').trim();
           const goal = (this.plan.goal || '').trim();
           if (!name && !goal) {
-            uni.showToast({ title: '请填写计划名称和学习目标', icon: 'none' });
+            toast.info('请填写计划名称和学习目标');
           } else if (!name) {
-            uni.showToast({ title: '请填写计划名称', icon: 'none' });
+            toast.info('请填写计划名称');
           } else if (!goal) {
-            uni.showToast({ title: '请填写学习目标', icon: 'none' });
+            toast.info('请填写学习目标');
           }
         }
         return;
@@ -355,10 +356,7 @@ export default {
       if (!this.plan.name || !this.plan.goal) {
         this.isSaving = false;
         const msg = !this.plan.name ? '计划名称含有不支持的字符，请重新输入' : '学习目标含有不支持的字符，请重新输入';
-        uni.showToast({
-          title: msg,
-          icon: 'none'
-        });
+        toast.info(msg);
         return;
       }
 
@@ -368,19 +366,7 @@ export default {
       plans.unshift(this.plan);
       storageService.save('study_plans', plans);
 
-      uni.showToast({
-        title: '计划创建成功',
-        icon: 'success',
-        duration: 1500,
-        success: () => {
-          safeNavigateBack();
-        },
-        complete: () => {
-          setTimeout(() => {
-            this.isSaving = false;
-          }, 2000);
-        }
-      });
+      toast.success('计划创建成功');
     },
     goBack() {
       safeNavigateBack();

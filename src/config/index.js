@@ -252,6 +252,15 @@ const config = {
     cacheExpire: getEnvNumber('VITE_CACHE_EXPIRE', 86400),
 
     /**
+     * 本地缓存键名映射（兼容旧 APP_CONFIG.cacheKeys）
+     */
+    cacheKeys: {
+      token: 'EXAM_TOKEN',
+      userInfo: 'EXAM_USER_INFO',
+      studyProgress: 'EXAM_STUDY_PROGRESS'
+    },
+
+    /**
      * 云端优先
      */
     cloudFirst: true,

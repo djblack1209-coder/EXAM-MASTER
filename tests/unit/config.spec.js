@@ -65,7 +65,7 @@ describe('config/index.js', () => {
         'audit', 'monitor', 'cdn', 'websocket', 'deepLink',
         'network', 'retry', '_source'
       ];
-      requiredKeys.forEach(key => {
+      requiredKeys.forEach((key) => {
         expect(config).toHaveProperty(key);
       });
     });

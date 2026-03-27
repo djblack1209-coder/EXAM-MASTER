@@ -120,7 +120,8 @@
         </view>
 
         <button class="start-btn" @tap="completeOnboarding">开始学习之旅</button>
-      </view> </view
+      </view>
+</view
     ><!-- /steps-wrapper -->
   </view>
 </template>
