@@ -77,7 +77,7 @@ laf-backend/.app.yaml
 
 # Additional env patterns
 .env.staging
-.env.test
+# 注意：.env.test 不在此排除列表中——它仅包含测试占位值，需要提交到版本控制供 CI 使用
 
 # Test output
 coverage/
