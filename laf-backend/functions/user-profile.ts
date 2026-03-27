@@ -37,32 +37,6 @@ function verifyTokenAndGetUserId(ctx: any): string | null {
   return authResult.userId;
 }
 
-/**
- * 验证用户访问权限
- * 确保用户只能访问自己的数据
- * @param ctx 请求上下文
- * @param targetUserId 目标用户ID
- * @returns 验证结果
- */
-function verifyUserAccess(
-  ctx: Record<string, unknown>,
-  targetUserId: string
-): { valid: boolean; error?: string; tokenUserId?: string; code?: number } {
-  const tokenUserId = verifyTokenAndGetUserId(ctx);
-
-  if (!tokenUserId) {
-    return { valid: false, error: '认证信息无效或已过期', code: 401 };
-  }
-
-  // 验证用户只能访问自己的数据
-  if (tokenUserId !== targetUserId) {
-    logger.warn(`访问控制拦截: token用户=${tokenUserId}, 目标用户=${targetUserId}`);
-    return { valid: false, error: '无权访问该用户数据', code: 403 };
-  }
-
-  return { valid: true, tokenUserId };
-}
-
 interface UpdateProfileRequest {
   action: 'update' | 'get' | 'upload_avatar' | 'get_practice_config' | 'update_practice_config';
   userId: string;
@@ -100,7 +74,20 @@ export default async function (ctx: FunctionContext) {
     const body = ctx.body as UpdateProfileRequest;
     const { action, userId } = body;
 
-    // 参数校验
+    // ==================== 访问控制检查（优先于参数校验） ====================
+    // 防御纵深：未认证用户不应看到任何参数校验提示
+    const tokenUserId = verifyTokenAndGetUserId(ctx);
+    if (!tokenUserId) {
+      logger.warn(`[${requestId}] 认证失败`);
+      return {
+        code: 401,
+        success: false,
+        message: '认证信息无效或已过期',
+        requestId
+      };
+    }
+
+    // 参数校验（已通过认证）
     if (!userId || typeof userId !== 'string' || userId.length > 64) {
       return {
         code: 400,
@@ -110,21 +97,19 @@ export default async function (ctx: FunctionContext) {
       };
     }
 
-    // ==================== 访问控制检查 ====================
-    // 对于敏感操作，验证用户只能访问自己的数据
+    // 验证用户只能访问自己的数据
     const sensitiveActions = ['get', 'get_practice_config', 'update', 'upload_avatar', 'update_practice_config'];
     if (sensitiveActions.includes(action)) {
-      const accessCheck = verifyUserAccess(ctx as Record<string, unknown>, userId);
-      if (!accessCheck.valid) {
-        logger.warn(`[${requestId}] 访问控制拦截: ${accessCheck.error}`);
+      if (tokenUserId !== userId) {
+        logger.warn(`[${requestId}] 访问控制拦截: token用户=${tokenUserId}, 目标用户=${userId}`);
         return {
-          code: accessCheck.code || 403,
+          code: 403,
           success: false,
-          message: accessCheck.error || '无权执行此操作',
+          message: '无权访问该用户数据',
           requestId
         };
       }
-      logger.info(`[${requestId}] 访问控制验证通过: ${accessCheck.tokenUserId}`);
+      logger.info(`[${requestId}] 访问控制验证通过: ${tokenUserId}`);
     }
 
     // 路由到对应处理函数

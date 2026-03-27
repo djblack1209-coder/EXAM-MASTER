@@ -583,6 +583,7 @@ export default {
       wrongAnimationClass: '', // 错误答案动画类
       screenShake: false, // ✅ [体感革命] 屏幕微震
       xpEarned: 0, // ✅ [体感革命] 本次获得的XP
+      showXpToast: false, // ✅ [体感革命] 是否显示XP飞入动画
       xpBoostActive: false, // ✅ [上瘾引擎] 2x XP boost激活
       xpBoostRemaining: 0, // ✅ [上瘾引擎] boost剩余题数
       // ✅ P0-2: 粒子特效状态

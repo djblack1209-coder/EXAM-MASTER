@@ -43,10 +43,7 @@ export default async function (ctx) {
   try {
     const { action, userId: claimedUserId, data } = ctx.body || {};
 
-    if (!action) {
-      return { code: 400, success: false, message: '缺少 action 参数', requestId };
-    }
-
+    // 防御纵深：优先检查认证，再校验参数
     const publicActions = new Set(['get', 'random', 'getByIds']);
     let authUserId = null;
 
@@ -56,7 +53,19 @@ export default async function (ctx) {
         return { code: 403, success: false, message: '身份验证失败', requestId };
       }
       authUserId = authResult.userId;
-    } else if (!publicActions.has(action)) {
+    }
+
+    // 参数校验（已尝试认证后再检查）
+    if (!action) {
+      // 未认证且缺少action → 返回401，不暴露参数要求
+      if (!authUserId) {
+        return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
+      }
+      return { code: 400, success: false, message: '缺少 action 参数', requestId };
+    }
+
+    // 非公开操作需要认证
+    if (!authUserId && !publicActions.has(action)) {
       return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
     }
 

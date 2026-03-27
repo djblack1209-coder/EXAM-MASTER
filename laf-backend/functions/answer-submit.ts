@@ -183,18 +183,18 @@ export default async function (ctx) {
   try {
     const { action, idempotencyKey, data } = ctx.body || {};
 
-    // 1. 基础参数校验 - ✅ B003: 使用共享响应格式
-    if (!action || typeof action !== 'string') {
-      return wrapResponse(badRequest('action 不能为空'), requestId, startTime);
-    }
-
-    // ✅ P0修复：所有操作强制 JWT 认证，防止未认证用户读取他人数据
+    // 防御纵深：优先 JWT 认证，再校验参数
     const authResult = requireAuth(ctx);
     if (isAuthError(authResult)) {
       return wrapResponse(authResult, requestId, startTime);
     }
     // 始终使用 JWT 中的 userId，忽略客户端传入的 bodyUserId
     const userId = authResult.userId;
+
+    // 1. 基础参数校验（已通过认证） - ✅ B003: 使用共享响应格式
+    if (!action || typeof action !== 'string') {
+      return wrapResponse(badRequest('action 不能为空'), requestId, startTime);
+    }
 
     // 1.5 限流
     const rateLimit = await checkRateLimitDistributed(
