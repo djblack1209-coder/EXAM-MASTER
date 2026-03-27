@@ -163,3 +163,4 @@ docs/reports/maestro-preflight.md
 docs/reports/maestro-results.xml
 docs/reports/maestro-web-smoke*.xml
 docs/reports/vitest-results*.json
+release/
