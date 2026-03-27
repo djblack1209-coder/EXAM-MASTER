@@ -251,3 +251,64 @@ export async function getFSRSRetentionCurve() {
     return normalizeError(error, '获取留存率曲线');
   }
 }
+
+// ==================== Anki 导入导出 ====================
+
+/**
+ * 导出 Anki 牌组
+ * @param {string} [deckName='我的考研题库'] - 牌组名称
+ */
+export async function exportAnki(deckName = '我的考研题库') {
+  try {
+    return await request('/anki-export', { deckName });
+  } catch (error) {
+    logger.warn('[Practice] Anki导出失败:', error);
+    return normalizeError(error, 'Anki导出');
+  }
+}
+
+/**
+ * 导入 Anki 牌组文件
+ * @param {string} fileData - 文件 base64 数据
+ * @param {string} fileName - 文件名
+ */
+export async function importAnki(fileData, fileName) {
+  try {
+    return await request('/anki-import', { fileData, fileName }, { timeout: 60000, maxRetries: 1 });
+  } catch (error) {
+    logger.warn('[Practice] Anki导入失败:', error);
+    return normalizeError(error, 'Anki导入');
+  }
+}
+
+// ==================== 答题提交 ====================
+
+/**
+ * 提交答题记录（触发后端自动错题收集+会话累积）
+ * @param {Object} params - { idempotencyKey, questionId, userAnswer, sessionId, duration, practiceMode }
+ */
+export async function submitAnswer({
+  idempotencyKey,
+  questionId,
+  userAnswer,
+  sessionId,
+  duration,
+  practiceMode = 'normal'
+}) {
+  try {
+    return await request('/answer-submit', {
+      action: 'submit',
+      idempotencyKey,
+      data: {
+        question_id: questionId,
+        user_answer: userAnswer,
+        session_id: sessionId,
+        duration,
+        practice_mode: practiceMode
+      }
+    });
+  } catch (error) {
+    logger.warn('[Practice] 答题提交失败:', error);
+    return normalizeError(error, '答题提交');
+  }
+}
