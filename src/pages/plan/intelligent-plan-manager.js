@@ -477,11 +477,55 @@ class IntelligentPlanManager {
     return intelligentReminders;
   }
 
-  // 获取最佳学习时间
+  // 获取最佳学习时间（基于用户历史学习数据分析）
   getOptimalStudyTime() {
-    // 基于用户历史学习数据推荐最佳学习时间
-    // 暂时返回默认时间
-    return '09:00';
+    try {
+      // 尝试从题库答题记录分析用户最活跃的学习时段
+      const bank = storageService.get('v30_bank', []);
+      if (Array.isArray(bank) && bank.length >= 5) {
+        // 统计每个小时的答题次数
+        const hourCounts = new Array(24).fill(0);
+        let validRecords = 0;
+
+        for (const q of bank) {
+          const ts = q.last_attempt_at || q.updated_at;
+          if (ts) {
+            const hour = new Date(ts).getHours();
+            if (hour >= 0 && hour < 24) {
+              hourCounts[hour]++;
+              validRecords++;
+            }
+          }
+        }
+
+        // 至少有5条有效记录才采信数据分析结果
+        if (validRecords >= 5) {
+          let peakHour = 9;
+          let maxCount = 0;
+          for (let h = 0; h < 24; h++) {
+            if (hourCounts[h] > maxCount) {
+              maxCount = hourCounts[h];
+              peakHour = h;
+            }
+          }
+          return `${String(peakHour).padStart(2, '0')}:00`;
+        }
+      }
+    } catch (error) {
+      logger.warn('[IntelligentPlanManager] 分析最佳学习时间失败，使用时段推荐:', error);
+    }
+
+    // 降级策略：根据当前时段推荐合适的学习时间
+    const currentHour = new Date().getHours();
+    if (currentHour >= 6 && currentHour < 12) {
+      return '09:00'; // 上午时段 → 推荐上午黄金时间
+    } else if (currentHour >= 12 && currentHour < 18) {
+      return '14:00'; // 下午时段 → 推荐午后专注时间
+    } else if (currentHour >= 18 && currentHour < 24) {
+      return '20:00'; // 晚间时段 → 推荐晚间复习时间
+    } else {
+      return '09:00'; // 凌晨时段 → 推荐次日上午
+    }
   }
 
   // 保存计划

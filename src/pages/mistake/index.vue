@@ -120,10 +120,8 @@
             <view class="cluster-header">
               <view class="cluster-badge" :class="[cluster.severity]">
                 <text class="cluster-badge-text">
-{{
-                  cluster.severity === 'high' ? '高频' : cluster.severity === 'medium' ? '中频' : '低频'
-                }}
-</text>
+                  {{ cluster.severity === 'high' ? '高频' : cluster.severity === 'medium' ? '中频' : '低频' }}
+                </text>
               </view>
               <text class="cluster-type">{{ cluster.errorTypeName }}</text>
               <text class="cluster-count">{{ cluster.questionCount }}题</text>
@@ -198,7 +196,7 @@ import StatsCard from './StatsCard.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-import { getErrorClusters } from '@/services/api/domains/study.api.js';
+import { getErrorClusters } from '@/services/api/domains/smart-study.api.js';
 import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';

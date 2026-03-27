@@ -8,7 +8,7 @@
  *   - analyzeMastery (knowledge-graph--mastery.vue)
  *   - getErrorClusters (practice-sub--error-clusters.vue)
  *   - getSprintPriority (practice-sub--sprint-mode.vue)
- *   - generateAdaptivePlan (plan--adaptive.vue)
+ *   - generateStudyPlan (plan--adaptive.vue)
  *
  * @module stores/study-engine
  */
@@ -57,13 +57,13 @@ export const useStudyEngineStore = defineStore('studyEngine', () => {
   };
 
   /** F3: 自适应学习计划 — 7天计划 + 阶段划分 */
-  const generateAdaptivePlan = async (examDate, dailyHours) => {
+  const generateStudyPlan = async (examDate, dailyHours) => {
     try {
-      const res = await lafService.generateAdaptivePlan(examDate, dailyHours);
+      const res = await lafService.generateStudyPlan(examDate, dailyHours);
       if (res?.code === 0) return { success: true, data: res.data };
       return { success: false, error: { message: res?.message || '自适应计划生成失败' } };
     } catch (e) {
-      logger.error('[studyEngineStore] generateAdaptivePlan failed:', e);
+      logger.error('[studyEngineStore] generateStudyPlan failed:', e);
       return { success: false, error: { message: e?.message || '自适应计划生成失败' } };
     }
   };
@@ -72,6 +72,6 @@ export const useStudyEngineStore = defineStore('studyEngine', () => {
     analyzeMastery,
     getErrorClusters,
     getSprintPriority,
-    generateAdaptivePlan
+    generateStudyPlan
   };
 });

@@ -166,7 +166,7 @@ import FSRSOptimizer from './FSRSOptimizer.vue';
 import storageService from '@/services/storageService.js';
 import { getNavBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-import { analyzeMastery } from '@/services/api/domains/study.api.js';
+import { analyzeMastery } from '@/services/api/domains/smart-study.api.js';
 
 export default {
   name: 'StudyDetail',
