@@ -11,7 +11,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT, extractBearerToken } from './_shared/auth.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { createLogger } from './_shared/api-response.js';
 
 const db = cloud.database();
@@ -37,18 +37,13 @@ export default async function (ctx) {
       return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
 
-    // [C-02 FIX] JWT 身份验证：始终从 JWT payload 派生 userId，不信任 body
-    const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    if (!authToken) {
-      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
-    }
-    const rawToken = extractBearerToken(authToken);
-    const payload = verifyJWT(rawToken);
-    if (!payload || !payload.userId) {
-      return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
+    // [C-02 FIX] 使用 requireAuth 统一认证，始终从 JWT payload 派生 userId
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { code: 401, success: false, message: authResult.message || 'token 无效或已过期，请重新登录', requestId };
     }
     // 始终使用 JWT 中的 userId，忽略 body 中的值
-    const userId = payload.userId;
+    const userId = authResult.userId;
 
     logger.info(`[${requestId}] 学习统计: action=${action}, userId=${userId}`);
 

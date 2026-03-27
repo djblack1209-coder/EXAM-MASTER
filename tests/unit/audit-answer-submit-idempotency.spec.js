@@ -154,7 +154,7 @@ describe('[安全审计] answer-submit 幂等响应一致性', () => {
     // handleSubmit 期望 data.questionId 和 data.isCorrect
     // 传入 data.question_id 不匹配，返回 400 参数错误
     expect(result.code).toBe(400);
-    expect(result.ok).toBe(false);
+    expect(result.success).toBe(false);
     expect(result.message).toContain('参数错误');
   });
 });

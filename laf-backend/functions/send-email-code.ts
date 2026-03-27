@@ -10,6 +10,9 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
+import { createLogger } from './_shared/api-response.js';
+
+const logger = createLogger('[SendEmailCode]');
 
 // 邮件服务配置（使用环境变量）
 const SMTP_HOST = process.env.SMTP_HOST || 'smtp.qq.com';
@@ -178,7 +181,7 @@ export default async function (ctx) {
     const emailSent = await sendEmail(email, code, requestId);
 
     if (emailSent.status === 'uncertain') {
-      console.warn(`[${requestId}] 邮件投递状态不确定，保留验证码记录，等待用户先查收邮箱`);
+      logger.warn(`[${requestId}] 邮件投递状态不确定，保留验证码记录，等待用户先查收邮箱`);
       return {
         code: 0,
         success: true,
@@ -191,17 +194,17 @@ export default async function (ctx) {
 
     if (emailSent.status !== 'sent') {
       // 邮件发送失败
-      console.warn(`[${requestId}] 邮件发送失败，准备回滚验证码记录`);
+      logger.warn(`[${requestId}] 邮件发送失败，准备回滚验证码记录`);
 
       // 回滚未送达验证码，避免用户因 1 分钟限流无法立即重试
       try {
         if (codeDoc?.id && typeof codesCollection.doc === 'function') {
           await codesCollection.doc(codeDoc.id).remove();
         } else {
-          console.warn(`[${requestId}] 当前数据库适配器不支持按 doc 回滚验证码记录`);
+          logger.warn(`[${requestId}] 当前数据库适配器不支持按 doc 回滚验证码记录`);
         }
       } catch (rollbackError) {
-        console.error(`[${requestId}] 验证码回滚失败:`, rollbackError);
+        logger.error(`[${requestId}] 验证码回滚失败:`, rollbackError);
       }
 
       // 不返回验证码，避免泄露
@@ -222,7 +225,7 @@ export default async function (ctx) {
       };
     }
 
-    console.log(`[${requestId}] 验证码已发送到: ${maskEmail(email)}`);
+    logger.info(`[${requestId}] 验证码已发送到: ${maskEmail(email)}`);
 
     return {
       code: 0,
@@ -231,7 +234,7 @@ export default async function (ctx) {
       requestId
     };
   } catch (error) {
-    console.error(`[${requestId}] 发送验证码异常:`, error);
+    logger.error(`[${requestId}] 发送验证码异常:`, error);
 
     return {
       code: 500,
@@ -248,7 +251,7 @@ export default async function (ctx) {
 async function sendEmail(to, code, requestId) {
   // 如果没有配置SMTP，跳过发送
   if (!SMTP_USER || !SMTP_PASS) {
-    console.warn('SMTP未配置，跳过邮件发送');
+    logger.warn('SMTP未配置，跳过邮件发送');
     return { status: 'failed', reason: 'smtp_not_configured' };
   }
 
@@ -302,7 +305,7 @@ async function sendEmail(to, code, requestId) {
       const canRetry = shouldRetryEmailError(error);
       const errorCode = String(error?.code || 'unknown');
       const responseCode = Number(error?.responseCode || 0);
-      console.error(`[${requestId}] 发送邮件失败(第 ${attempt}/${SMTP_RETRY_TIMES} 次):`, {
+      logger.error(`[${requestId}] 发送邮件失败(第 ${attempt}/${SMTP_RETRY_TIMES} 次):`, {
         errorCode,
         responseCode,
         message: error?.message

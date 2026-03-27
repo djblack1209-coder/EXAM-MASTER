@@ -10,8 +10,10 @@
 
 import cloud from '@lafjs/cloud';
 import { requireAdminAccess } from './_shared/admin-auth.js';
+import { createLogger } from './_shared/api-response.js';
 
 const db = cloud.database();
+const logger = createLogger('[HealthCheck]');
 
 export default async function (ctx: any) {
   const requestId = `hc_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
@@ -20,6 +22,8 @@ export default async function (ctx: any) {
     if (!ctx || typeof ctx !== 'object') {
       throw new Error('invalid context');
     }
+
+    logger.info(`[${requestId}] 健康检查开始`);
 
     const adminAuth = requireAdminAccess(ctx, {
       allowBodyFallback: true,
@@ -80,6 +84,7 @@ export default async function (ctx: any) {
       latency: Date.now() - startTime
     };
   } catch (error: any) {
+    logger.error(`[${requestId}] 健康检查异常:`, error);
     return { code: 500, success: false, status: 'error', message: '健康检查异常', requestId };
   }
 }

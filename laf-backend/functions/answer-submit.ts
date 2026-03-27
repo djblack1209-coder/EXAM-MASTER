@@ -232,7 +232,7 @@ export default async function (ctx) {
 async function handleSubmit(userId: string, idempotencyKey: string, data: Record<string, unknown>, requestId: string) {
   const { questionId, userAnswer, isCorrect, timeSpent } = data;
   if (!questionId || typeof isCorrect !== 'boolean') {
-    return { code: 400, ok: false, message: '参数错误：缺少题目标识或对错结果', requestId };
+    return { code: 400, success: false, message: '参数错误：缺少题目标识或对错结果', requestId };
   }
 
   try {
@@ -268,7 +268,7 @@ async function handleSubmit(userId: string, idempotencyKey: string, data: Record
 
     return {
       code: 0,
-      ok: true,
+      success: true,
       message: '提交成功',
       data: {
         isCorrect,
@@ -280,7 +280,7 @@ async function handleSubmit(userId: string, idempotencyKey: string, data: Record
   } catch (error) {
     const { logger } = await import('./_shared/api-response.js');
     logger.error('Answer submission processing failed', error);
-    return { code: 500, ok: false, message: '处理提交失败', requestId };
+    return { code: 500, success: false, message: '处理提交失败', requestId };
   }
 }
 

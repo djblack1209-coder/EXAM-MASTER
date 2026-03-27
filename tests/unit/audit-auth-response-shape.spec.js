@@ -104,7 +104,7 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('缺少认证 token');
+    expect(result.message).toContain('登录');
   });
 
   it('study-stats token 无效时应返回 success=false', async () => {
@@ -119,7 +119,7 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('token 无效或已过期');
+    expect(result.message).toContain('登录');
   });
 
   it('study-stats body userId 被忽略，始终使用 JWT userId（C-02 安全加固）', async () => {
