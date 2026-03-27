@@ -97,3 +97,19 @@ export async function getProvinces() {
     return { code: -1, success: false, data: [] };
   }
 }
+
+// ==================== 院校爬虫 ====================
+
+/**
+ * 爬虫接口 - 获取院校实时数据
+ * @param {Object} params - 请求参数（含 action, data 等）
+ * @param {Object} [options] - 请求选项
+ */
+export async function crawlSchoolData(params, options = {}) {
+  try {
+    return await request('/school-crawler-api', params, options);
+  } catch (error) {
+    logger.warn('[School] 院校爬虫请求失败:', error);
+    return normalizeError(error, '院校数据获取');
+  }
+}

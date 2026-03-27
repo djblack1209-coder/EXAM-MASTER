@@ -660,3 +660,21 @@ export async function getSmartRecommendations(count = 10) {
     return normalizeError(error, 'AI推题');
   }
 }
+
+// ==================== RAG 知识库 ====================
+
+/**
+ * RAG 向量化索引（将题库导入知识库，非阻塞）
+ * @param {string} bankId - 题库 ID
+ */
+export async function ragIngest(bankId) {
+  try {
+    return await request('/rag-ingest', {
+      action: 'index_questions',
+      data: { bankId }
+    });
+  } catch (error) {
+    logger.warn('[AI] RAG索引失败:', error);
+    return normalizeError(error, 'RAG索引');
+  }
+}
