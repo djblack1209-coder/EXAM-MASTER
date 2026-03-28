@@ -14,6 +14,28 @@
 
 ---
 
+## [2026-03-29] 八轮审计 — 仓库瘦身+NPM清理+微信小程序包验证+后端函数全量测试+性能审计
+
+- **Scope**: `infra`, `frontend`, `backend`, `performance`
+- **审计范围**: 仓库清理、NPM依赖健康、Git跟踪治理、微信小程序包大小验证、46个后端云函数运行时测试、H5性能审计
+- **质量关卡**: ESLint 0错误, 90文件/1234测试全过, H5构建通过, 微信小程序构建通过
+- **清理内容**:
+  - **Git仓库瘦身**: `git rm -r --cached audit-screenshots/` 移除54个PNG文件(~10MB)的Git跟踪（文件仍在本地，仅从版本控制移除）
+  - **NPM依赖清理**: 卸载 `@vitest/coverage-istanbul`（vitest使用v8 provider，非istanbul）、`ai-agent-team`（后端有独立package.json）
+  - **废弃脚本删除**: 删除10个一次性/过期脚本（add-will-change, apply-design-tokens, convert-to-webp, final-quality-review, 3个hljs/katex/markdown-it shim, cleanup-test-data, fix-wxss-universal-selector, setup-maestro-macos）
+- **验证结果**:
+  - **微信小程序主包**: 1896KB < 2048KB ✅（余量152KB，13个分包共2040KB，总计3936KB）
+  - **后端云函数**: 46/46全部正常 — 41个对外函数正常响应（200 + JSON），5个内部管理函数（db-create-indexes, db-migrate-timestamps, data-cleanup, account-purge, material-manager）按设计不暴露路由
+  - **H5性能评分**: 7.5/10 — 总包3MB(gzip后~1MB)，86个代码分割chunk，页面级分割+动态懒加载优秀，依赖管理干净无臃肿库
+- **性能审计发现**:
+  - 主入口452KB(gzip 149KB)偏大，缺少vendor分离（vue/pinia/uni-app运行时）
+  - 未配置vite-plugin-compression构建时预压缩
+  - 5组重复图片浪费~76KB（uni-app静态资源复制行为）
+  - 建议：安装vite-plugin-compression + 配置manualChunks可将首屏JS从149KB降至~80KB
+- **Files Changed**: `package.json`, `package-lock.json`, 54个`audit-screenshots/*.png`移出跟踪, 10个`scripts/`废弃脚本删除
+
+---
+
 ## [2026-03-29] 七轮审计 — CI/CD修复+全量UI截图审计(34子包页面+暗色模式)
 
 - **Scope**: `ci`, `infra`, `docs`
