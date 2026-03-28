@@ -158,7 +158,7 @@ import { useStudyStore } from '@/stores/modules/study';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 // 图表组件
-import StudyHeatmap from './StudyHeatmap.vue';
+import StudyHeatmap from '@/components/business/index/StudyHeatmap.vue';
 import StudyTrendChart from './StudyTrendChart.vue';
 import AbilityRadar from './AbilityRadar.vue';
 import FSRSOptimizer from './FSRSOptimizer.vue';
