@@ -177,64 +177,6 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
     });
   });
 
-  describe('Phase 3: VIP 与邀请系统', () => {
-    it('VIP 状态管理 - 有效期内', async () => {
-      const { useUserStore } = await import('@/stores/modules/user.js');
-      const userStore = useUserStore();
-
-      const futureDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-      userStore.setVipStatus(true, 2, futureDate, ['无广告', '高级题库']);
-
-      expect(userStore.isVip).toBe(true);
-      expect(userStore.vipLevelName).toBe('白银会员');
-      expect(userStore.vipDaysLeft).toBeGreaterThan(0);
-      expect(userStore.vipBenefits).toHaveLength(2);
-    });
-
-    it('VIP 状态管理 - 已过期', async () => {
-      const { useUserStore } = await import('@/stores/modules/user.js');
-      const userStore = useUserStore();
-
-      const pastDate = new Date(Date.now() - 1000).toISOString();
-      userStore.setVipStatus(true, 1, pastDate, []);
-
-      expect(userStore.isVip).toBe(false);
-      expect(userStore.vipDaysLeft).toBe(0);
-    });
-
-    it('邀请信息管理', async () => {
-      const { useUserStore } = await import('@/stores/modules/user.js');
-      const userStore = useUserStore();
-
-      userStore.setInviteInfo('INVITE_ABC', 5, [
-        { id: 'r1', amount: 10, claimed: false },
-        { id: 'r2', amount: 20, claimed: true }
-      ]);
-
-      expect(userStore.inviteCode).toBe('INVITE_ABC');
-      expect(userStore.inviteCount).toBe(5);
-      expect(userStore.totalInviteRewards).toBe(30);
-    });
-
-    it('VIP 等级名称映射', async () => {
-      const { useUserStore } = await import('@/stores/modules/user.js');
-      const userStore = useUserStore();
-
-      const levels = [
-        [0, '普通用户'],
-        [1, '青铜会员'],
-        [2, '白银会员'],
-        [3, '黄金会员'],
-        [4, '钻石会员']
-      ];
-
-      for (const [level, name] of levels) {
-        userStore.setVipStatus(true, level, null, []);
-        expect(userStore.vipLevelName).toBe(name);
-      }
-    });
-  });
-
   describe('Phase 4: silentLogin 完整流程', () => {
     it('有缓存时直接恢复，不发起网络请求', async () => {
       global.__mockStorage = {

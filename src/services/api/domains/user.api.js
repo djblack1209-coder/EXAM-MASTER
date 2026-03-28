@@ -98,29 +98,6 @@ export async function getAccountDeletionStatus() {
   }
 }
 
-// ==================== 用户统计 ====================
-
-/**
- * 获取用户学习统计概览
- * @returns {Promise} 返回统计数据
- */
-export async function getUserStatsOverview() {
-  try {
-    const userId = getUserId();
-    if (!userId) return { code: -1, success: false, message: '请先登录', data: null };
-
-    const response = await request('/user-stats', {
-      action: 'getOverview',
-      userId,
-      data: {}
-    });
-    return response;
-  } catch (error) {
-    logger.warn('[LafService] 获取用户统计失败:', error);
-    return { code: -1, success: false, message: '获取失败', data: null };
-  }
-}
-
 // ==================== 学习目标同步 ====================
 
 /**

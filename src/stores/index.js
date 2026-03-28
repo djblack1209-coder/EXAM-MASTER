@@ -4,7 +4,7 @@
  * 分包页面应直接 import 对应的 store 模块（如 import { useClassroomStore } from '@/stores/modules/classroom'）
  */
 
-export { useUserStore, useAuthStore, useProfileStore, useVipStore, useInviteStore } from './modules/user';
+export { useUserStore, useAuthStore, useProfileStore } from './modules/user';
 export { useStudyStore } from './modules/study';
 export { useSchoolStore } from './modules/school';
 export { useTodoStore } from './modules/todo';

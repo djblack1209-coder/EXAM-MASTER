@@ -175,39 +175,6 @@ export async function removeFavorite(id) {
   }
 }
 
-/**
- * 检查是否已收藏
- * @param {string|Array} questionId - 题目ID或ID数组
- * @returns {Promise} 返回检查结果
- */
-export async function checkFavorite(questionId) {
-  try {
-    const userId = getUserId();
-
-    if (!userId) {
-      return { code: 0, success: true, data: { isFavorite: false } };
-    }
-
-    const data = Array.isArray(questionId) ? { questionIds: questionId } : { questionId };
-
-    const response = await request('/favorite-manager', {
-      action: 'check',
-      userId,
-      data
-    });
-    return response;
-  } catch (error) {
-    logger.error('[LafService] 检查收藏失败:', error);
-    return {
-      code: -1,
-      success: false,
-      data: { isFavorite: false },
-      message: '检查收藏状态失败',
-      _errorSource: 'network'
-    };
-  }
-}
-
 // ==================== FSRS 间隔重复优化 ====================
 
 /**
@@ -267,20 +234,6 @@ export async function exportAnki(deckName = '我的考研题库') {
   }
 }
 
-/**
- * 导入 Anki 牌组文件
- * @param {string} fileData - 文件 base64 数据
- * @param {string} fileName - 文件名
- */
-export async function importAnki(fileData, fileName) {
-  try {
-    return await request('/anki-import', { fileData, fileName }, { timeout: 60000, maxRetries: 1 });
-  } catch (error) {
-    logger.warn('[Practice] Anki导入失败:', error);
-    return normalizeError(error, 'Anki导入');
-  }
-}
-
 // ==================== 答题提交 ====================
 
 /**
@@ -319,7 +272,7 @@ export async function submitAnswer({
  * 通用错题管理请求
  * @param {Object} params - { action, userId, data, ... }
  */
-export async function mistakeManager(params) {
+async function mistakeManager(params) {
   try {
     return await request('/mistake-manager', params);
   } catch (error) {
