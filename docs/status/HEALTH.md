@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (八轮审计 — 仓库瘦身+云函数全量测试+性能审计) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (九轮审计 — 深度冗余清理+配置一致性修复) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -57,6 +57,13 @@
 | R041 | infra    | 54个审计截图PNG仍被Git跟踪（~10MB仓库膨胀）                           | git rm -r --cached audit-screenshots/                                                               | 2026-03-29 |
 | R042 | infra    | @vitest/coverage-istanbul和ai-agent-team两个未使用NPM包               | npm uninstall（vitest用v8 provider，ai-agent-team后端有独立package.json）                           | 2026-03-29 |
 | R043 | infra    | 10个废弃脚本（一次性修复/过期shim/废弃工具）                          | 删除add-will-change/apply-design-tokens/convert-to-webp等10个文件                                   | 2026-03-29 |
+| R044 | config   | manifest.json重复`plus`块（39行与app-plus完全重复）                   | 删除plus块，仅保留app-plus                                                                          | 2026-03-29 |
+| R045 | config   | requiredPrivateInfos声明4个隐私API但仅1个实际使用                     | 移除chooseAddress/chooseLocation/choosePoi，仅保留chooseMessageFile                                 | 2026-03-29 |
+| R046 | infra    | 根manifest.json与src/manifest.json重复                                | 删除根manifest.json，src/为唯一真实版本                                                             | 2026-03-29 |
+| R047 | config   | project.config.json的es6/enhance与manifest.json设置冲突               | 同步为false与manifest.json一致                                                                      | 2026-03-29 |
+| R048 | config   | jsconfig.json 14行冗余路径别名+1个指向已删除目录的死别名              | 精简为仅`@/*`通配符                                                                                 | 2026-03-29 |
+| R049 | frontend | 2个孤儿composable零引用（useSearchHistory、useStreamChat）            | 删除                                                                                                | 2026-03-29 |
+| R050 | frontend | 2个废弃TabBar图标（universe/universe-active，无对应Tab）              | 删除                                                                                                | 2026-03-29 |
 | R028 | arch     | PK Battle API action名不匹配(4函数会被后端拒绝)                       | 重写为后端实际支持的7个action(find_match/poll_room/submit_result/room_answer/leave_room等)          | 2026-03-29 |
 | R029 | arch     | 3对完全重复文件(useTypewriter/privacy-authorization/StudyHeatmap)     | 提取到共享位置(@/composables/@/utils/auth/),原位置改为代理re-export                                 | 2026-03-29 |
 | R030 | infra    | 25个已合并本地分支+1个孤立pre-release分支堆积                         | 批量删除26个过期分支,保留2个有价值未合并分支(mp-html/yolo-optimizations)                            | 2026-03-29 |

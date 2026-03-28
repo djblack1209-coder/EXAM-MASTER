@@ -5,21 +5,7 @@
     "strict": false,
     "noImplicitAny": false,
     "paths": {
-      "@/*": ["./src/*"],
-      "@/stores": ["./src/stores"],
-      "@/stores/*": ["./src/stores/*"],
-      "@/common": ["./common"],
-      "@/common/*": ["./common/*"],
-      "@/components": ["./src/components"],
-      "@/components/*": ["./src/components/*"],
-      "@/pages": ["./src/pages"],
-      "@/pages/*": ["./src/pages/*"],
-      "@/services": ["./src/services"],
-      "@/services/*": ["./src/services/*"],
-      "@/utils": ["./src/utils"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/static": ["./src/static"],
-      "@/static/*": ["./src/static/*"]
+      "@/*": ["./src/*"]
     }
   },
   "exclude": ["node_modules", "unpackage", "dist", "laf-backend"]

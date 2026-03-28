@@ -19,6 +19,7 @@ describe('app-plus launch config', () => {
 
   it('lets native splashscreen autoclose to avoid indefinite startup hangs', () => {
     expect(manifestJson['app-plus']?.splashscreen?.autoclose).toBe(true);
-    expect(manifestJson.plus?.splashscreen?.autoclose).toBe(true);
+    // 注意: 'plus' 是 'app-plus' 的遗留重复键，已在第九轮审计中清理
+    expect(manifestJson.plus).toBeUndefined();
   });
 });

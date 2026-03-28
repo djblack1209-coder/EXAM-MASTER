@@ -14,6 +14,27 @@
 
 ---
 
+## [2026-03-29] 九轮审计 — 深度冗余清理+配置一致性修复+孤儿代码消除
+
+- **Scope**: `infra`, `frontend`, `config`, `docs`
+- **审计范围**: 全量孤儿代码扫描（组件/Store/Composable/静态资源/API导出）、配置文件一致性审计、文档状态检查
+- **质量关卡**: ESLint 0错误, 90文件/1234测试全过, H5构建通过
+- **扫描结果**:
+  - 34个组件 → 1个孤儿（ErrorBoundary.vue，保留备用）
+  - 16个Store → 2个间接消费（vip/invite通过useUserStore组合，保留）、1个仅测试引用（app，保留）
+  - 18个Composable → **2个真孤儿已删除**（useSearchHistory、useStreamChat）
+  - 12个静态资源 → **2个废弃图标已删除**（universe tab图标对，已无对应Tab）
+  - 104个API导出 → 35个未使用（保留，代表后端已支持但前端未接入的能力）
+- **配置修复**:
+  - **manifest.json**: 删除重复`plus`块（与`app-plus`完全重复的39行）、`requiredPrivateInfos`从4项修正为1项（仅`chooseMessageFile`实际使用，移除3个虚假声明避免微信审核风险）、清理空的百度/头条/quickapp平台占位
+  - **根目录manifest.json**: 删除（与`src/manifest.json`重复，uni-app只用src/下的）
+  - **project.config.json**: `es6`和`enhance`与manifest.json同步（true→false）
+  - **jsconfig.json**: 移除14行冗余路径别名（`@/*`通配符已全覆盖）+ 移除指向已删除`common/`的死别名
+  - **测试修复**: `app-launch-config.spec.js`适配`plus`块删除（改为断言`plus`不存在）
+- **Files Changed**: `src/manifest.json`, `manifest.json`(删除), `project.config.json`, `jsconfig.json`, `src/composables/useSearchHistory.js`(删除), `src/composables/useStreamChat.js`(删除), `src/static/tabbar/universe.png`(删除), `src/static/tabbar/universe-active.png`(删除), `tests/unit/app-launch-config.spec.js`
+
+---
+
 ## [2026-03-29] 八轮审计 — 仓库瘦身+NPM清理+微信小程序包验证+后端函数全量测试+性能审计
 
 - **Scope**: `infra`, `frontend`, `backend`, `performance`
