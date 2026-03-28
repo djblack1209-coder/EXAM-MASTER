@@ -22,27 +22,19 @@ Layer 5: Utility Classes (global in App.vue)
 | -------------- | --------------------------------- | -------------------------------------------------------------------------------------- |
 | Design Tokens  | `src/styles/_design-tokens.scss`  | Core SCSS variables (colors, spacing, typography) — auto-injected into every component |
 | Dark Mode Vars | `src/styles/_dark-mode-vars.scss` | `@mixin dark-mode-vars` — all CSS variable overrides for dark mode                     |
-| Theme Vars     | `src/styles/_theme-vars.scss`     | Theme variable bridge/aliases                                                          |
-| Variables      | `src/styles/_variables.scss`      | Legacy SCSS variables (backward compat)                                                |
 
 ### Theme Files
 
-| File         | Path                           | Purpose                                                                           |
-| ------------ | ------------------------------ | --------------------------------------------------------------------------------- |
-| Wise Theme   | `src/styles/theme-wise.scss`   | Green + white theme (default)                                                     |
-| Bitget Theme | `src/styles/theme-bitget.scss` | Dark blue theme (Bitget Wallet inspired)                                          |
-| Wot Theme    | `src/styles/_wot-theme.scss`   | wot-design-uni component library theme overrides                                  |
-| Theme Engine | `src/design/theme-engine.js`   | Runtime theme switching (JS: `applyTheme()`, `getCurrentTheme()`, `watchTheme()`) |
+| File         | Path                         | Purpose                                                                           |
+| ------------ | ---------------------------- | --------------------------------------------------------------------------------- |
+| Wot Theme    | `src/styles/_wot-theme.scss` | wot-design-uni component library theme overrides                                  |
+| Theme Engine | `src/design/theme-engine.js` | Runtime theme switching (JS: `applyTheme()`, `getCurrentTheme()`, `watchTheme()`) |
 
 ### Design System Utilities
 
 | File              | Path                                | Purpose                                 |
 | ----------------- | ----------------------------------- | --------------------------------------- |
-| Design System v1  | `src/styles/design-system.scss`     | Utility classes and mixins              |
-| Design System v2  | `src/styles/design-system-v2.scss`  | Updated design system                   |
-| MP Design System  | `src/styles/design-system-mp.scss`  | Mini program specific styles            |
 | Button Animations | `src/styles/button-animations.scss` | Global button press feedback animations |
-| Responsive        | `src/styles/responsive.scss`        | Responsive breakpoint mixins            |
 
 ### Global Styles (App.vue)
 
@@ -195,9 +187,7 @@ The project maintains UI quality through an automated gate check (`npm run audit
 
 - Missing user prompts in error catch blocks:
   - `src/components/base/base-icon/base-icon.vue`
-  - `src/components/business/chat/MarkdownRenderer.vue`
   - `src/components/business/index/WelcomeBanner.vue`
-  - `src/components/business/school/SchoolSearchInput.vue`
   - `src/pages/practice-sub/question-bank.vue`
   - `src/pages/settings/InviteModal.vue`
 - Missing loading states for asynchronous operations:

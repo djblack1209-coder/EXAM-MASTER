@@ -149,16 +149,6 @@ src/components/
 
 ```
 src/services/
-├── api/
-│   ├── core/
-│   │   └── request.js         # Base request infrastructure (retry, cache, dedup, sign)
-│   └── domains/
-│       ├── ai.service.js      # Master service (2436 lines): AI, school, auth, favorites, practice, social
-│       ├── auth.service.js    # Auth domain (reuses ai.service request infra)
-│       ├── practice.service.js # Practice domain
-│       ├── school.service.js  # School domain
-│       ├── favorite.service.js # Favorites domain
-│       └── social.service.js  # Social domain
 ├── lafService.js              # Facade: merges all domain services into single export
 ├── fsrs-service.js            # FSRS-5 spaced repetition scheduler (singleton)
 ├── knowledge-engine.js        # Knowledge graph x FSRS fusion engine
@@ -169,7 +159,6 @@ src/services/
 ├── streak-recovery.js         # Streak recovery logic
 ├── fsrs-optimizer-client.js   # Client for cloud FSRS parameter optimization
 ├── offline-cache-service.js   # Offline data caching
-├── onboarding-service.js      # New user onboarding flow
 └── subscribe-message.js       # WeChat subscription messages
 ```
 
@@ -177,20 +166,12 @@ src/services/
 
 ```
 src/composables/
-├── useStreamChat.js           # SSE streaming chat integration
 ├── useQuizAutoSave.js         # Quiz auto-save with debouncing
 ├── useNavigation.js           # Safe page navigation utilities
 ├── useTodo.js                 # Todo list CRUD operations
-├── useVirtualScroll.js        # Virtual scrolling for long lists
 ├── usePracticeNavigation.js   # Practice-specific navigation
 ├── useRecommendations.js      # Learning recommendations engine
-├── useLearningStats.js        # Learning statistics computation
 ├── useLearningStyle.js        # Adaptive learning style detection
-├── useChatSessions.js         # Chat session management
-├── useKnowledgePoints.js      # Knowledge point UI interactions
-├── useChatBox.js              # Chat input/output management
-├── useAnimatedNumber.js       # Smooth number transition animations
-├── useAIGeneration.js         # AI question generation flow
 └── useTheme.js                # Theme switching hook
 ```
 
@@ -401,16 +382,8 @@ agent-orchestrator.ts
 src/styles/
 ├── _design-tokens.scss          # Core SCSS variables (auto-injected via vite.config.js additionalData)
 ├── _dark-mode-vars.scss         # Dark mode CSS variable overrides (@mixin dark-mode-vars)
-├── _variables.scss              # Legacy SCSS variables
-├── _theme-vars.scss             # Theme variable aliases
 ├── _wot-theme.scss              # wot-design-uni theme overrides
-├── design-system.scss           # Design system v1
-├── design-system-v2.scss        # Design system v2
-├── design-system-mp.scss        # Mini program specific styles
-├── theme-wise.scss              # Wise theme (green + white, default)
-├── theme-bitget.scss            # Bitget Wallet theme (dark blue)
-├── button-animations.scss       # Global button press animations
-└── responsive.scss              # Responsive breakpoints
+└── button-animations.scss       # Global button press animations
 
 src/design/
 └── theme-engine.js              # Runtime theme switching (CSS class + CSS vars)

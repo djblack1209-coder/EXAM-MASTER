@@ -23,20 +23,17 @@
 
 ### Domain Services (Round 41 按领域拆分)
 
-| File              | Path                                        | Lines | Domain                                             |
-| ----------------- | ------------------------------------------- | ----- | -------------------------------------------------- |
-| ai.service.js     | `src/services/api/domains/ai.service.js`    | 89    | **薄入口**: 重新导出所有领域 + 组装 aiService 对象 |
-| \_request-core.js | `src/services/api/domains/_request-core.js` | 592   | 请求基础设施                                       |
-| auth.api.js       | `src/services/api/domains/auth.api.js`      | 65    | 登录、邮箱验证码                                   |
-| school.api.js     | `src/services/api/domains/school.api.js`    | 99    | 院校查询、热门院校、省份列表                       |
-| ai.api.js         | `src/services/api/domains/ai.api.js`        | 662   | AI 代理、流式聊天、诊断、拍照搜题、AI 课堂         |
-| practice.api.js   | `src/services/api/domains/practice.api.js`  | 253   | 题库、答题提交、错题、收藏、FSRS                   |
-| social.api.js     | `src/services/api/domains/social.api.js`    | 116   | 好友系统、排行榜、邀请奖励                         |
-| user.api.js       | `src/services/api/domains/user.api.js`      | 307   | 用户档案、账号注销、统计、学习目标、成就           |
-| tools.api.js      | `src/services/api/domains/tools.api.js`     | 85    | 去背景、语音识别/合成、音色列表                    |
-| study.api.js      | `src/services/api/domains/study.api.js`     | 159   | 学习统计、学习资源、首页数据                       |
-
-> **向后兼容**: `import { aiService } from '.../ai.service.js'` 继续正常工作，aiService 对象包含全部 70+ 方法。
+| File              | Path                                        | Lines | Domain                                     |
+| ----------------- | ------------------------------------------- | ----- | ------------------------------------------ |
+| \_request-core.js | `src/services/api/domains/_request-core.js` | 592   | 请求基础设施                               |
+| auth.api.js       | `src/services/api/domains/auth.api.js`      | 65    | 登录、邮箱验证码                           |
+| school.api.js     | `src/services/api/domains/school.api.js`    | 99    | 院校查询、热门院校、省份列表               |
+| ai.api.js         | `src/services/api/domains/ai.api.js`        | 662   | AI 代理、流式聊天、诊断、拍照搜题、AI 课堂 |
+| practice.api.js   | `src/services/api/domains/practice.api.js`  | 253   | 题库、答题提交、错题、收藏、FSRS           |
+| social.api.js     | `src/services/api/domains/social.api.js`    | 116   | 好友系统、排行榜、邀请奖励                 |
+| user.api.js       | `src/services/api/domains/user.api.js`      | 307   | 用户档案、账号注销、统计、学习目标、成就   |
+| tools.api.js      | `src/services/api/domains/tools.api.js`     | 85    | 去背景、语音识别/合成、音色列表            |
+| study.api.js      | `src/services/api/domains/study.api.js`     | 159   | 学习统计、学习资源、首页数据               |
 
 ### Service Facade
 
@@ -124,37 +121,24 @@ const schools = await lafService.getSchoolList(params);
 
 | File                     | Path                                    | Purpose                                                                                             |
 | ------------------------ | --------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| code-highlight.js        | `src/utils/code-highlight.js`           | **(Round 13)** highlight.js 按需加载 + 内联样式转换 + GitHub 双主题 (15 语言, ~50KB)                |
 | toast.js                 | `src/utils/toast.js`                    | **(Round 14)** 中心化 Toast：success/error/info/warning/loading/hide                                |
-| timeago.js               | `src/utils/timeago.js`                  | **(Round 14)** 中文相对时间：formatTimeago() + smartTimeFormat()，基于 timeago.js 5k+               |
 | auth-storage.js          | `src/services/auth-storage.js`          | Auth token persistence (R18: 修复 `uni.getItem` → `localStorage.getItem`)                           |
 | checkin-streak.js        | `src/services/checkin-streak.js`        | Daily check-in streak calculation                                                                   |
 | streak-recovery.js       | `src/services/streak-recovery.js`       | Streak recovery (freeze, skip) logic                                                                |
 | fsrs-optimizer-client.js | `src/services/fsrs-optimizer-client.js` | Client for cloud FSRS parameter optimization                                                        |
 | offline-cache-service.js | `src/services/offline-cache-service.js` | Offline data caching + answer queue + sync; exports `saveOfflineAnswer`, `checkOfflineAvailability` |
-| onboarding-service.js    | `src/services/onboarding-service.js`    | New user onboarding state tracking                                                                  |
 | subscribe-message.js     | `src/services/subscribe-message.js`     | WeChat subscription message API                                                                     |
 
 ---
 
 ## Composables (Vue 3 Hooks)
 
-| File                     | Path                                       | Purpose                                                    |
-| ------------------------ | ------------------------------------------ | ---------------------------------------------------------- |
-| useStreamChat.js         | `src/composables/useStreamChat.js`         | SSE streaming integration for chat UI                      |
-| useQuizAutoSave.js       | `src/composables/useQuizAutoSave.js`       | Auto-save quiz progress with debouncing                    |
-| useNavigation.js         | `src/composables/useNavigation.js`         | Safe uni-app page navigation                               |
-| useTodo.js               | `src/composables/useTodo.js`               | Todo list CRUD tied to todo store                          |
-| useVirtualScroll.js      | `src/composables/useVirtualScroll.js`      | Virtual scrolling for long lists                           |
-| usePracticeNavigation.js | `src/composables/usePracticeNavigation.js` | Practice-specific navigation logic                         |
-| useRecommendations.js    | `src/composables/useRecommendations.js`    | AI-powered learning recommendations                        |
-| useLearningStats.js      | `src/composables/useLearningStats.js`      | Aggregate learning statistics                              |
-| useLearningStyle.js      | `src/composables/useLearningStyle.js`      | Adaptive learning style detection                          |
-| useChatSessions.js       | `src/composables/useChatSessions.js`       | Chat session management (create, list, delete)             |
-| useKnowledgePoints.js    | `src/composables/useKnowledgePoints.js`    | Knowledge point UI interactions                            |
-| useChatBox.js            | `src/composables/useChatBox.js`            | Chat input/output state management                         |
-| useAnimatedNumber.js     | `src/composables/useAnimatedNumber.js`     | Smooth number counting animation                           |
-| useCountUp.js            | `src/composables/useCountUp.js`            | **(Round 14)** 数字滚动动画：easeOutExpo + 千分位 + 前后缀 |
-| useSearchHistory.js      | `src/composables/useSearchHistory.js`      | **(Round 17)** 搜索历史持久化：去重+置顶+上限+多场景隔离   |
-| useAIGeneration.js       | `src/composables/useAIGeneration.js`       | AI question generation flow control                        |
-| useTheme.js              | `src/composables/useTheme.js`              | Theme switching reactive hook                              |
+| File                     | Path                                       | Purpose                                 |
+| ------------------------ | ------------------------------------------ | --------------------------------------- |
+| useQuizAutoSave.js       | `src/composables/useQuizAutoSave.js`       | Auto-save quiz progress with debouncing |
+| useNavigation.js         | `src/composables/useNavigation.js`         | Safe uni-app page navigation            |
+| useTodo.js               | `src/composables/useTodo.js`               | Todo list CRUD tied to todo store       |
+| usePracticeNavigation.js | `src/composables/usePracticeNavigation.js` | Practice-specific navigation logic      |
+| useRecommendations.js    | `src/composables/useRecommendations.js`    | AI-powered learning recommendations     |
+| useLearningStyle.js      | `src/composables/useLearningStyle.js`      | Adaptive learning style detection       |
+| useTheme.js              | `src/composables/useTheme.js`              | Theme switching reactive hook           |

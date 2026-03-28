@@ -75,47 +75,44 @@ EXAM-MASTER/
 
 ## Key File Paths (Quick Reference)
 
-| What                | Path                                                                        |
-| ------------------- | --------------------------------------------------------------------------- |
-| Main entry          | `src/main.js`                                                               |
-| App root            | `src/App.vue` (773 lines, global styles + theme init)                       |
-| Page routes         | `pages.json` (36 pages across 14 subPackages)                               |
-| Global config       | `common/config.js`                                                          |
-| Vite config         | `vite.config.js`                                                            |
-| **Core Pages**      |                                                                             |
-| Home page           | `src/pages/index/index.vue` (2310 lines)                                    |
-| Practice hub        | `src/pages/practice/index.vue` (1955 lines)                                 |
-| Quiz engine         | `src/pages/practice-sub/do-quiz.vue` (3131 lines)                           |
-| PK Battle           | `src/pages/practice-sub/pk-battle.vue` (3327 lines)                         |
-| Login               | `src/pages/login/index.vue` (1890 lines)                                    |
-| AI Chat             | `src/pages/chat/chat.vue` (2024 lines)                                      |
-| Knowledge Graph     | `src/pages/knowledge-graph/index.vue` (1961 lines)                          |
-| School Search       | `src/pages/school/index.vue` (2396 lines)                                   |
-| **Services**        |                                                                             |
-| API facade          | `src/services/lafService.js`                                                |
-| Core request        | `src/services/api/core/request.js`                                          |
-| AI service          | `src/services/api/domains/ai.service.js` (2436 lines, master request infra) |
-| FSRS service        | `src/services/fsrs-service.js` (640 lines)                                  |
-| Knowledge engine    | `src/services/knowledge-engine.js` (684 lines)                              |
-| Storage service     | `src/services/storageService.js`                                            |
-| Stream chat         | `src/services/streamService.js`                                             |
-| **Stores**          |                                                                             |
-| User (facade)       | `src/stores/modules/user.js`                                                |
-| Auth                | `src/stores/modules/auth.js`                                                |
-| Study progress      | `src/stores/modules/study.js`                                               |
-| Gamification        | `src/stores/modules/gamification.js`                                        |
-| Theme               | `src/stores/modules/theme.js`                                               |
-| Learning trajectory | `src/stores/modules/learning-trajectory-store.js`                           |
-| **Design**          |                                                                             |
-| Design tokens       | `src/styles/_design-tokens.scss`                                            |
-| Theme engine        | `src/design/theme-engine.js`                                                |
-| Dark mode vars      | `src/styles/_dark-mode-vars.scss`                                           |
-| **Backend**         |                                                                             |
-| Backend functions   | `laf-backend/functions/`                                                    |
-| Auth middleware     | `laf-backend/functions/_shared/auth-middleware.ts`                          |
-| FSRS scheduler      | `laf-backend/functions/_shared/fsrs-scheduler.ts`                           |
-| Agent orchestrator  | `laf-backend/functions/agent-orchestrator.ts`                               |
-| DB schemas          | `laf-backend/database-schema/`                                              |
+| What                | Path                                                  |
+| ------------------- | ----------------------------------------------------- |
+| Main entry          | `src/main.js`                                         |
+| App root            | `src/App.vue` (773 lines, global styles + theme init) |
+| Page routes         | `pages.json` (36 pages across 14 subPackages)         |
+| Vite config         | `vite.config.js`                                      |
+| **Core Pages**      |                                                       |
+| Home page           | `src/pages/index/index.vue` (2310 lines)              |
+| Practice hub        | `src/pages/practice/index.vue` (1955 lines)           |
+| Quiz engine         | `src/pages/practice-sub/do-quiz.vue` (3131 lines)     |
+| PK Battle           | `src/pages/practice-sub/pk-battle.vue` (3327 lines)   |
+| Login               | `src/pages/login/index.vue` (1890 lines)              |
+| AI Chat             | `src/pages/chat/chat.vue` (2024 lines)                |
+| Knowledge Graph     | `src/pages/knowledge-graph/index.vue` (1961 lines)    |
+| School Search       | `src/pages/school/index.vue` (2396 lines)             |
+| **Services**        |                                                       |
+| API facade          | `src/services/lafService.js`                          |
+| FSRS service        | `src/services/fsrs-service.js` (640 lines)            |
+| Knowledge engine    | `src/services/knowledge-engine.js` (684 lines)        |
+| Storage service     | `src/services/storageService.js`                      |
+| Stream chat         | `src/services/streamService.js`                       |
+| **Stores**          |                                                       |
+| User (facade)       | `src/stores/modules/user.js`                          |
+| Auth                | `src/stores/modules/auth.js`                          |
+| Study progress      | `src/stores/modules/study.js`                         |
+| Gamification        | `src/stores/modules/gamification.js`                  |
+| Theme               | `src/stores/modules/theme.js`                         |
+| Learning trajectory | `src/stores/modules/learning-trajectory-store.js`     |
+| **Design**          |                                                       |
+| Design tokens       | `src/styles/_design-tokens.scss`                      |
+| Theme engine        | `src/design/theme-engine.js`                          |
+| Dark mode vars      | `src/styles/_dark-mode-vars.scss`                     |
+| **Backend**         |                                                       |
+| Backend functions   | `laf-backend/functions/`                              |
+| Auth middleware     | `laf-backend/functions/_shared/auth-middleware.ts`    |
+| FSRS scheduler      | `laf-backend/functions/_shared/fsrs-scheduler.ts`     |
+| Agent orchestrator  | `laf-backend/functions/agent-orchestrator.ts`         |
+| DB schemas          | `laf-backend/database-schema/`                        |
 
 ---
 
@@ -187,7 +184,7 @@ EXAM-MASTER/
 
 - Expanded AI provider pool (10+ providers including NVIDIA, Volcengine, SiliconFlow)
 - WeChat subscription message service for study reminders
-- Service file deduplication (5 domain services reuse ai.service infrastructure)
+- Service file deduplication and domain API consolidation
 - Composables/utils moved out of main package to subpackage for WeChat MP size optimization
 - 3 runtime error fixes from WeChat dev console
 
@@ -196,10 +193,9 @@ EXAM-MASTER/
 ## Known Issues / Technical Debt
 
 1. **Large page files** — `do-quiz.vue` (3131 lines) and `pk-battle.vue` (3327 lines) need component extraction
-2. **Domain service duplication** — All 5 domain services (auth, practice, school, favorite, social) still contain a full copy of the request infrastructure (~2000 lines each) despite the dedup effort
-3. **Options API legacy** — Some pages still use Options API instead of `<script setup>` Composition API
-4. **Missing composable extraction** — Home page (2310 lines) and practice page (1955 lines) have inline logic that should be extracted to composables
-5. **Deprecated code paths** — `common/config.js` contains deprecated `getApiKey()` for backward compatibility
+2. **Options API legacy** — Some pages still use Options API instead of `<script setup>` Composition API
+3. **Missing composable extraction** — Home page (2310 lines) and practice page (1955 lines) have inline logic that should be extracted to composables
+4. **Deprecated code paths** — `common/config.js` contains deprecated `getApiKey()` for backward compatibility
 
 ---
 

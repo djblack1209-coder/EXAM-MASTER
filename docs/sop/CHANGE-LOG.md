@@ -14,6 +14,48 @@
 
 ---
 
+## [2026-03-29] 十二轮审计 — 孤儿SCSS/文档/Store/快照深度清理+死引用修复
+
+- **Scope**: `frontend`, `backend`, `docs`, `config`, `infra`
+- **审计范围**: SCSS孤儿扫描、文档死引用审计、Store/Composable孤儿审计、后端TS/YAML一致性、构建配置审计
+- **质量关卡**: ESLint 0错误, 90文件/1231测试全过, H5构建通过
+
+### 前端清理
+
+- 删除8个孤儿SCSS文件(~84KB/3956行): responsive/design-system/design-system-v2/theme-bitget/design-system-mp/theme-wise/\_theme-vars/\_variables.scss
+- 删除孤儿Store `useAppStore`(app.js, 110行) — 从未被任何页面/组件实例化, 同步移除stores/index.js导出+3个测试用例
+- 测试用例数从1234→1231(删除3个测试孤儿useAppStore的用例)
+
+### 文档清理
+
+- 删除 docs/superpowers/ 整个目录(13个spec/plan文件, 1080行) — 功能均已实现
+- 删除10个旧vitest/maestro快照(~2.9MB未跟踪文件)
+- 修复11个AI-SOP文档中的160个死文件引用(3组并行Agent处理)
+  - utils-reference.md: 39个死引用清理, 55→22个条目
+  - MODULE-INDEX.md: 38个死引用清理
+  - frontend-components.md: 29个死引用清理(含4个整节删除)
+  - frontend-services.md: 14个死引用清理
+  - ARCHITECTURE.md: 22个死引用清理(Service Layer/Composables/Design System树)
+  - styling-system.md: 10个死引用清理(含8个已删SCSS文件)
+  - PROJECT-BRIEF.md: 5个死引用清理
+  - frontend-pages.md: 1个死引用清理
+  - testing-infra.md: 1个死引用清理
+  - backend-functions.md: 1个死引用清理
+  - api-documentation.md: 主URL从Sealos备用修正为腾讯云主服务器
+- 修复 docs/reports/current/README.md(列出6个文件但仅1个存在)
+
+### 后端修复
+
+- 创建 proxy-ai-stream.yaml(缺失的YAML配置)
+- 删除 dist/functions/job-bot-handoff-notify.js(源.ts已删除的幽灵编译产物)
+- 清理 .env.example: 移除5个已删除功能的JOB*BOT_HANDOFF*\*变量, 精简12个未集成AI提供商Key为3个
+
+### 配置修复
+
+- vite.config.js line 374: 注释从"lightningcss"修正为"esbuild"(与实际代码一致)
+
+---
+
 ## [2026-03-29] 十一轮审计 — 冗余文件/文档/死代码/孤儿导出深度清理
 
 - **Scope**: `frontend`, `infra`, `config`, `docs`

@@ -2,7 +2,8 @@
 
 > 版本: 2.1.0  
 > 更新日期: 2026-02-20  
-> 基础URL: `https://nf98ia8qnt.sealosbja.site`  
+> 基础URL: `https://api.245334.xyz`（腾讯云主服务器）  
+> 备用URL: `https://nf98ia8qnt.sealosbja.site`（Sealos 备用）  
 > 认证方式: JWT Token（通过 `body.token` 或 `Authorization` header 传递）  
 > 请求格式: `POST` JSON，所有接口通过 `action` 字段分发
 

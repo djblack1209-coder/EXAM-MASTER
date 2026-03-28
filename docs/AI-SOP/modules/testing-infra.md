@@ -114,7 +114,6 @@ EXAM-MASTER has a comprehensive multi-layer testing setup:
 - `audit-material-manager-security.spec.js` — Material access control
 - `audit-group-service-auth.spec.js` — Group auth
 - `audit-school-crawler-auth-response.spec.js` — Crawler auth
-- `audit-job-bot-handoff-notify.spec.js` — Bot handoff
 
 **Other Tests:**
 

@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (十一轮审计 — 冗余文件/文档/死代码/孤儿导出深度清理) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (十二轮审计 — 孤儿SCSS/文档/Store/快照深度清理+死引用修复) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -44,6 +44,17 @@
 | ID   | Domain   | Title                                                                  | Solution                                                                                            | Resolved   |
 | ---- | -------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
 | R061 | infra    | 2个孤儿工具文件(code-highlight.js/mistake-classifier.js)零引用         | 删除文件                                                                                            | 2026-03-29 |
+| R069 | frontend | 8个孤儿SCSS文件(~84KB/3956行)从未被import                              | 删除responsive/design-system\*/theme-bitget/theme-wise/\_theme-vars/\_variables.scss                | 2026-03-29 |
+| R070 | docs     | docs/superpowers/ 13个已完成的spec/plan文件(1080行)                    | 确认功能均已实现后删除整个目录                                                                      | 2026-03-29 |
+| R071 | docs     | 10个旧vitest/maestro快照JSON/XML(~2.9MB)未跟踪仍占磁盘                 | 删除vitest-results-r1/r3/r4/r5/r7/r8/r9/r10+maestro-smoke-r9/r10                                    | 2026-03-29 |
+| R072 | frontend | useAppStore(app.js,110行)从未被任何页面/组件实例化                     | 删除store文件+从stores/index.js移除导出+删除3个对应测试                                             | 2026-03-29 |
+| R073 | backend  | proxy-ai-stream.ts缺少对应.yaml配置文件                                | 创建proxy-ai-stream.yaml                                                                            | 2026-03-29 |
+| R074 | backend  | laf-backend/dist/functions/job-bot-handoff-notify.js(.ts已删除的幽灵)  | 删除dist幽灵文件                                                                                    | 2026-03-29 |
+| R075 | backend  | .env.example含已删除功能的5个JOB*BOT_HANDOFF*\*变量+12个未集成AI Key   | 移除JOB*BOT_HANDOFF*\*,精简未集成提供商为3个(GPT_API_FREE/NVIDIA/VOLCENGINE)                        | 2026-03-29 |
+| R076 | config   | vite.config.js line 374注释说lightningcss但实际用esbuild               | 修正注释为esbuild                                                                                   | 2026-03-29 |
+| R077 | docs     | 11个AI-SOP文档含160个死文件引用(删除的.service.js/chat组件/composable) | 3组并行Agent清理,utils-reference.md重建(39死),MODULE-INDEX(38),components(29)等                     | 2026-03-29 |
+| R078 | docs     | docs/reports/current/README.md列出6个文件但仅1个存在                   | 更新为实际文件列表                                                                                  | 2026-03-29 |
+| R079 | docs     | api-documentation.md主URL错误指向Sealos备用而非腾讯云主服务器          | 修正为https://api.245334.xyz为主,Sealos为备用                                                       | 2026-03-29 |
 | R062 | docs     | 34+过期历史报告文件仍被Git跟踪(docs/reports/history/+current/)         | git rm + 删除96MB未跟踪HTML报告                                                                     | 2026-03-29 |
 | R063 | frontend | performance.js含9个孤儿导出(memoize/batchProcess/useVirtualList等)     | 删除孤儿导出,474→238行                                                                              | 2026-03-29 |
 | R064 | frontend | 8个工具文件共30个孤儿导出(未使用的函数/常量仍在打包)                   | 逐文件清理,总计删减约600行死代码                                                                    | 2026-03-29 |

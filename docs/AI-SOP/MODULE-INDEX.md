@@ -1,6 +1,6 @@
 # Module Index
 
-> Last updated: 2026-03-22 | AI-SOP Version: 1.0
+> Last updated: 2026-03-29 | AI-SOP Version: 1.0
 >
 > Use this file to quickly locate relevant files when fixing bugs or adding features.
 > Pattern: **When you need to fix: [problem]** → Look at: [files]
@@ -15,7 +15,6 @@
 - **WeChat callback**: `src/pages/login/wechat-callback.vue`
 - **QQ callback**: `src/pages/login/qq-callback.vue`
 - **Auth store**: `src/stores/modules/auth.js`
-- **Auth service (frontend)**: `src/services/api/domains/auth.service.js`
 - **Login guard util**: `src/utils/auth/loginGuard.js`
 - **Token refresh**: `src/utils/auth/token-refresh-plugin.js`
 - **Backend login function**: `laf-backend/functions/login.yaml`
@@ -26,7 +25,6 @@
 ### Token expired / 401 errors
 
 - **Auth failure handler**: `src/App.vue` → `initApiErrorInterceptor()`
-- **Request layer**: `src/services/api/domains/ai.service.js` (emits `authFailure` event)
 - **Auth store logout**: `src/stores/modules/auth.js`
 
 ---
@@ -37,7 +35,6 @@
 
 - **Quiz engine page**: `src/pages/practice-sub/do-quiz.vue` (3131 lines)
 - **Practice hub**: `src/pages/practice/index.vue` (1955 lines)
-- **Practice config panel**: `src/components/business/practice/PracticeConfigPanel.vue`
 - **Question renderer**: `src/pages/practice-sub/components/question-renderer/question-renderer.vue`
 - **Question choice**: `src/pages/practice-sub/components/QuestionChoice.vue`
 - **Quiz progress bar**: `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`
@@ -62,14 +59,12 @@
 - **Practice modes modal**: `src/components/business/practice/PracticeModesModal.vue`
 - **AI generation overlay**: `src/components/business/practice/AiGenerationOverlay.vue`
 - **Generation progress**: `src/components/business/practice/GenerationProgressBar.vue`
-- **AI generation composable**: `src/composables/useAIGeneration.js`
 - **Backend generation pipeline**: `laf-backend/functions/_shared/generation/generation-pipeline.ts`
 
 ### Answer submission / backend
 
 - **Backend answer submit**: `laf-backend/functions/answer-submit.yaml`
 - **Backend question bank**: `laf-backend/functions/question-bank.yaml`
-- **Practice service (frontend)**: `src/services/api/domains/practice.service.js`
 
 ---
 
@@ -79,9 +74,7 @@
 
 - **Knowledge graph page**: `src/pages/knowledge-graph/index.vue` (1961 lines)
 - **Force graph component**: `src/pages/knowledge-graph/components/ForceGraph.vue`
-- **Force graph (shared)**: `src/components/business/knowledge/ForceGraph.vue`
 - **Knowledge engine**: `src/services/knowledge-engine.js` (684 lines)
-- **Knowledge points composable**: `src/composables/useKnowledgePoints.js`
 
 ---
 
@@ -90,17 +83,7 @@
 ### Chat not working
 
 - **Chat page**: `src/pages/chat/chat.vue` (2024 lines)
-- **Chat box component**: `src/components/business/chat/ChatBox.vue`
-- **Stream chat composable**: `src/composables/useStreamChat.js`
-- **Chat sessions composable**: `src/composables/useChatSessions.js`
-- **Chat box composable**: `src/composables/useChatBox.js`
 - **Stream service**: `src/services/streamService.js`
-- **Markdown renderer**: `src/components/business/chat/MarkdownRenderer.vue`
-- **Thinking block**: `src/components/business/chat/ThinkingBlock.vue`
-- **Suggested replies**: `src/components/business/chat/SuggestedReplies.vue`
-- **Session list**: `src/components/business/chat/SessionList.vue`
-- **Message actions**: `src/components/business/chat/MessageActions.vue`
-- **AI service (frontend)**: `src/services/api/domains/ai.service.js`
 - **Backend AI proxy**: `laf-backend/functions/proxy-ai.ts`
 - **Backend AI provider factory**: `laf-backend/functions/_shared/ai-providers/provider-factory.ts`
 
@@ -140,24 +123,16 @@
 - **Stats grid**: `src/components/business/index/StatsGrid.vue`
 - **Study heatmap**: `src/components/business/index/StudyHeatmap.vue`
 - **Daily goal ring**: `src/components/business/index/DailyGoalRing.vue`
-- **Knowledge bubbles**: `src/components/business/index/KnowledgeBubbleField.vue`
 - **Study time card**: `src/components/business/index/StudyTimeCard.vue`
-- **Daily quote card**: `src/components/business/index/DailyQuoteCard.vue`
 - **Activity list**: `src/components/business/index/ActivityList.vue`
-- **Recommendations**: `src/components/business/index/RecommendationsList.vue`
 - **Header bar**: `src/components/business/index/IndexHeaderBar.vue`
-- **Quote poster modal**: `src/components/business/index/QuotePosterModal.vue`
 - **Formula modal**: `src/components/business/index/FormulaModal.vue`
-- **Learning stats composable**: `src/composables/useLearningStats.js`
 - **Recommendations composable**: `src/composables/useRecommendations.js`
 
 ### Charts not displaying
 
 - **Study trend chart**: `src/components/charts/StudyTrend.vue`
-- **Forgetting curve chart**: `src/components/charts/ForgettingCurve.vue`
-- **Skill radar chart**: `src/components/charts/SkillRadar.vue`
 - **Study trend (detail)**: `src/pages/study-detail/StudyTrendChart.vue`
-- **Study heatmap (detail)**: `src/pages/study-detail/StudyHeatmap.vue`
 - **Ability radar (detail)**: `src/pages/study-detail/AbilityRadar.vue`
 - **ECharts dependency**: `echarts` + `uni-echarts` packages
 
@@ -171,8 +146,6 @@
 - **Mistake card**: `src/pages/mistake/MistakeCard.vue`
 - **Mistake report**: `src/pages/mistake/MistakeReport.vue`
 - **Stats card**: `src/pages/mistake/StatsCard.vue`
-- **Mistake classifier**: `src/utils/practice/mistake-classifier.js`
-- **Mistake auto-collect**: `src/utils/practice/mistake-auto-collect.js`
 - **Backend mistake manager**: `laf-backend/functions/mistake-manager.ts`
 - **Backend error clustering**: `laf-backend/functions/smart-study-engine.ts` (action: error_clustering)
 - **Frontend API**: `src/services/api/domains/study.api.js` → `getErrorClusters()`
@@ -181,7 +154,6 @@
 
 - **Favorites page**: `src/pages/favorite/index.vue`
 - **Question favorite util**: `src/utils/favorite/question-favorite.js`
-- **Favorite service**: `src/services/api/domains/favorite.service.js`
 - **Backend favorite manager**: `laf-backend/functions/favorite-manager.ts`
 
 ---
@@ -192,10 +164,8 @@
 
 - **School search page**: `src/pages/school/index.vue` (2396 lines)
 - **School detail page**: `src/pages/school-sub/detail.vue`
-- **School search input**: `src/components/business/school/SchoolSearchInput.vue`
 - **AI consult page**: `src/pages/school-sub/ai-consult.vue`
 - **School store**: `src/stores/modules/school.js`
-- **School service**: `src/services/api/domains/school.service.js`
 - **Backend school query**: `laf-backend/functions/school-query.ts`
 - **Backend school crawler**: `laf-backend/functions/school-crawler-api.ts`
 - **School data**: `laf-backend/data/schools/`
@@ -209,7 +179,6 @@
 - **Friend list**: `src/pages/social/friend-list.vue`
 - **Friend profile**: `src/pages/social/friend-profile.vue`
 - **Settings friends entry**: `src/pages/settings/FriendsEntryCard.vue`
-- **Social service**: `src/services/api/domains/social.service.js`
 - **User store (friends)**: `src/stores/modules/user.js`
 - **Backend social service**: `laf-backend/functions/social-service.ts`
 - **Backend AI friend memory**: `laf-backend/functions/ai-friend-memory.yaml`
@@ -246,9 +215,6 @@
 - **App.vue theme init**: `src/App.vue` → `initThemeSystem()` / `switchTheme()`
 - **Design tokens**: `src/styles/_design-tokens.scss`
 - **Dark mode vars**: `src/styles/_dark-mode-vars.scss`
-- **Theme vars**: `src/styles/_theme-vars.scss`
-- **Wise theme**: `src/styles/theme-wise.scss`
-- **Bitget theme**: `src/styles/theme-bitget.scss`
 - **Wot theme mapping**: `src/styles/_wot-theme.scss`
 
 ---
@@ -287,8 +253,6 @@
 - **Plan create**: `src/pages/plan/create.vue`
 - **Todo store**: `src/stores/modules/todo.js`
 - **Todo composable**: `src/composables/useTodo.js`
-- **Todo list component**: `src/components/common/TodoList.vue`
-- **Todo editor**: `src/components/common/todo-editor.vue`
 - **Learning goal util**: `src/utils/learning/learning-goal.js`
 - **Backend learning goal**: `laf-backend/functions/learning-goal.ts`
 
@@ -300,7 +264,6 @@
 
 - **Study detail page**: `src/pages/study-detail/index.vue` (含AI学习洞察卡片)
 - **Study trend chart**: `src/pages/study-detail/StudyTrendChart.vue`
-- **Study heatmap**: `src/pages/study-detail/StudyHeatmap.vue`
 - **Ability radar**: `src/pages/study-detail/AbilityRadar.vue`
 - **Study store**: `src/stores/modules/study.js`
 - **Learning trajectory store**: `src/stores/modules/learning-trajectory-store.js`
@@ -321,7 +284,6 @@
 - **Offline queue**: `src/utils/core/offline-queue.js`
 - **Offline cache service**: `src/services/offline-cache-service.js`
 - **Offline indicator**: `src/components/common/offline-indicator.vue`
-- **SWR cache**: `src/utils/cache/swr-cache.js`
 
 ---
 

@@ -149,7 +149,6 @@ Some pages have co-located components in their directories:
 | StatsCard          | `src/pages/mistake/StatsCard.vue`                                           | mistake         |
 | FSRSOptimizer      | `src/pages/study-detail/FSRSOptimizer.vue`                                  | study-detail    |
 | StudyTrendChart    | `src/pages/study-detail/StudyTrendChart.vue`                                | study-detail    |
-| StudyHeatmap       | `src/pages/study-detail/StudyHeatmap.vue`                                   | study-detail    |
 | AbilityRadar       | `src/pages/study-detail/AbilityRadar.vue`                                   | study-detail    |
 | ThemeSelectorModal | `src/pages/settings/ThemeSelectorModal.vue`                                 | settings        |
 | AITutorList        | `src/pages/settings/AITutorList.vue`                                        | settings        |

@@ -152,12 +152,11 @@ These modules are imported by cloud functions but are not endpoints themselves.
 
 ### Infrastructure
 
-| Function               | File                         | Auth  | Purpose                               |
-| ---------------------- | ---------------------------- | ----- | ------------------------------------- |
-| Health Check           | `health-check.ts`            | No    | Service health monitoring endpoint    |
-| Data Cleanup           | `data-cleanup.ts`            | Admin | Database cleanup and maintenance jobs |
-| DB Migrate Timestamps  | `db-migrate-timestamps.yaml` | Admin | Database timestamp migration utility  |
-| Job Bot Handoff Notify | `job-bot-handoff-notify.ts`  | Yes   | Bot handoff notification              |
+| Function              | File                         | Auth  | Purpose                               |
+| --------------------- | ---------------------------- | ----- | ------------------------------------- |
+| Health Check          | `health-check.ts`            | No    | Service health monitoring endpoint    |
+| Data Cleanup          | `data-cleanup.ts`            | Admin | Database cleanup and maintenance jobs |
+| DB Migrate Timestamps | `db-migrate-timestamps.yaml` | Admin | Database timestamp migration utility  |
 
 ## Backend Dependencies
 

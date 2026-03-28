@@ -6,7 +6,6 @@
 
 export { useUserStore, useAuthStore, useProfileStore, useVipStore, useInviteStore } from './modules/user';
 export { useStudyStore } from './modules/study';
-export { useAppStore } from './modules/app';
 export { useSchoolStore } from './modules/school';
 export { useTodoStore } from './modules/todo';
 export { useThemeStore } from './modules/theme';
