@@ -229,6 +229,7 @@ export default defineConfig(({ command, mode }) => {
                 name: '研友刷题',
                 short_name: '研友刷题',
                 description: '考研备考刷题助手 - 智能间隔重复、PK对战、AI诊断',
+                lang: 'zh-CN',
                 theme_color: '#6366f1',
                 background_color: '#f5f5f7',
                 display: 'standalone',
@@ -246,7 +247,7 @@ export default defineConfig(({ command, mode }) => {
                 runtimeCaching: [
                   {
                     // API 请求：NetworkFirst，离线时回退缓存
-                    urlPattern: /^https:\/\/.*\.(sealosbja\.site|lafyun\.com)\/.*/i,
+                    urlPattern: /^https:\/\/(api\.245334\.xyz|.*\.(sealosbja\.site|lafyun\.com))\/.*/i,
                     handler: 'NetworkFirst',
                     options: {
                       cacheName: 'api-cache',

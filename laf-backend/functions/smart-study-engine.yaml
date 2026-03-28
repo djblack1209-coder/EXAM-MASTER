@@ -1,0 +1,5 @@
+name: smart-study-engine
+desc: '智能学习引擎 - 自适应学习计划/知识图谱分析/间隔重复调度'
+methods:
+  - POST
+tags: []
