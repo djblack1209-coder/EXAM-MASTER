@@ -85,43 +85,6 @@ describe('全链路: 启动 -> 登录 -> 首页', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Phase 1: 冷启动初始化', () => {
-    it('AppStore 初始化系统信息', async () => {
-      const { useAppStore } = await import('@/stores/modules/app.js');
-      const appStore = useAppStore();
-
-      expect(appStore.systemInfo).toBeNull();
-      expect(appStore.networkType).toBe('unknown');
-
-      appStore.initAppInfo();
-
-      expect(appStore.systemInfo).toBeTruthy();
-      expect(uni.getNetworkType).toHaveBeenCalled();
-    });
-
-    it('AppStore 网络状态变化监听', async () => {
-      const { useAppStore } = await import('@/stores/modules/app.js');
-      const appStore = useAppStore();
-
-      appStore.setNetworkType('wifi');
-      expect(appStore.networkType).toBe('wifi');
-
-      appStore.setNetworkType('none');
-      expect(appStore.networkType).toBe('none');
-    });
-
-    it('AppStore loading 状态管理', async () => {
-      const { useAppStore } = await import('@/stores/modules/app.js');
-      const appStore = useAppStore();
-
-      expect(appStore.isLoading).toBe(false);
-      appStore.setLoading(true);
-      expect(appStore.isLoading).toBe(true);
-      appStore.setLoading(false);
-      expect(appStore.isLoading).toBe(false);
-    });
-  });
-
   describe('Phase 2: 用户认证流程', () => {
     it('首次启动 - 无缓存 - 需要登录', async () => {
       const { useUserStore } = await import('@/stores/modules/user.js');

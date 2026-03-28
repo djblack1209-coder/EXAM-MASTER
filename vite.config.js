@@ -371,7 +371,7 @@ export default defineConfig(({ command, mode }) => {
       // CSS 代码分割（App 端禁用，避免 IIFE 格式冲突）
       cssCodeSplit: isAppPlus ? false : true,
 
-      // 生产环境 CSS 压缩（lightningcss 比默认 esbuild 压缩率更高）
+      // 生产环境 CSS 压缩（esbuild 内置，零依赖）
       cssMinify: isProduction ? 'esbuild' : false,
 
       // 生产环境报告压缩后的大小
