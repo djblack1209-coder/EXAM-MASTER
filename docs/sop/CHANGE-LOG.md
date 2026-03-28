@@ -14,6 +14,22 @@
 
 ---
 
+## [2026-03-28] 深度审计四轮 — 后端部署+性能审计+全量API封装+CI/CD修正
+
+- **Scope**: `backend`, `frontend`, `infra`, `ci`, `docs`
+- **审计范围**: Phase 21-26
+- **修复内容**:
+  - 后端部署: TS编译→scp上传→pm2 restart
+  - cloud-shim修复: 创建 @lafjs/cloud shim package 让 health-check 正常加载
+  - 性能审计: H5总JS Gzip 529KB，最大bundle 149KB Gzip，markdown-it已懒加载，无明显优化点
+  - API断链: mistake-manager封装7函数 + pk-battle封装5函数，9条断链全部完成
+  - CI/CD修正: smoke test URL从占位地址改为真实 api.245334.xyz
+  - .gitignore: 新增 audit-screenshots/ 排除
+- **当前质量关卡**: lint ✅ | 90文件/1234用例 ✅ | H5构建 ✅ | 后端部署在线 ✅
+- **Breaking Changes**: 无
+
+---
+
 ## [2026-03-28] 深度审计三轮 — 页面交互测试+API断链封装+后端死函数清理
 
 - **Scope**: `frontend`, `backend`, `docs`
