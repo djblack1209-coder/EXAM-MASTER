@@ -165,3 +165,52 @@ export async function verifyInviteLink(linkParams, signature) {
     return { code: -1, success: false, message: '验签失败', data: null };
   }
 }
+
+// ==================== PK 对战 ====================
+
+/**
+ * PK对战通用请求（封装 /pk-battle 路由）
+ * @param {Object} params - { action, roomId, ... }
+ */
+export async function pkBattle(params) {
+  try {
+    return await request('/pk-battle', params);
+  } catch (error) {
+    logger.warn('[Social] PK对战请求失败:', error);
+    return normalizeError(error, 'PK对战');
+  }
+}
+
+/**
+ * 创建PK房间
+ * @param {Object} data - { userId, questionBankId, mode, ... }
+ */
+export async function createPKRoom(data) {
+  return pkBattle({ action: 'create', ...data });
+}
+
+/**
+ * 加入PK房间
+ * @param {string} roomId
+ * @param {Object} userInfo
+ */
+export async function joinPKRoom(roomId, userInfo) {
+  return pkBattle({ action: 'join', roomId, ...userInfo });
+}
+
+/**
+ * 获取PK房间状态
+ * @param {string} roomId
+ */
+export async function getPKRoomStatus(roomId) {
+  return pkBattle({ action: 'getStatus', roomId });
+}
+
+/**
+ * 提交PK答题结果
+ * @param {string} roomId
+ * @param {Object} result - { userId, answers, score, ... }
+ */
+export async function submitPKResult(roomId, result) {
+  return pkBattle({ action: 'submit', roomId, ...result });
+}

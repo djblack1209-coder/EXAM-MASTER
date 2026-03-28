@@ -312,3 +312,71 @@ export async function submitAnswer({
     return normalizeError(error, '答题提交');
   }
 }
+
+// ==================== 错题管理 ====================
+
+/**
+ * 通用错题管理请求
+ * @param {Object} params - { action, userId, data, ... }
+ */
+export async function mistakeManager(params) {
+  try {
+    return await request('/mistake-manager', params);
+  } catch (error) {
+    logger.warn('[Practice] 错题管理失败:', error);
+    return normalizeError(error, '错题管理');
+  }
+}
+
+/**
+ * 新增错题到云端
+ * @param {string} userId - 用户 ID
+ * @param {Object} mistakeData - 错题数据
+ */
+export async function addMistake(userId, mistakeData) {
+  return mistakeManager({ action: 'add', data: mistakeData, userId });
+}
+
+/**
+ * 获取错题列表（分页）
+ * @param {string} userId - 用户 ID
+ * @param {Object} params - { page, limit, is_mastered, id }
+ */
+export async function getMistakes(userId, params = {}) {
+  return mistakeManager({ action: 'get', userId, ...params });
+}
+
+/**
+ * 删除单条错题
+ */
+export async function removeMistake(userId, id) {
+  return mistakeManager({ action: 'remove', data: { id }, userId });
+}
+
+/**
+ * 批量删除错题
+ */
+export async function batchRemoveMistakes(userId, ids) {
+  return mistakeManager({ action: 'batchRemove', data: { ids }, userId });
+}
+
+/**
+ * 更新错题掌握状态
+ */
+export async function updateMistakeStatus(userId, id, isMastered) {
+  return mistakeManager({ action: 'updateStatus', data: { id, is_mastered: isMastered }, userId });
+}
+
+/**
+ * 更新错题字段
+ */
+export async function updateMistakeFields(userId, id, fields) {
+  return mistakeManager({ action: 'updateFields', userId, data: { id, fields } });
+}
+
+/**
+ * 批量同步错题到云端
+ */
+export async function batchSyncMistakes(userId, mistakes) {
+  return mistakeManager({ action: 'batchSync', userId, data: { mistakes } });
+}
