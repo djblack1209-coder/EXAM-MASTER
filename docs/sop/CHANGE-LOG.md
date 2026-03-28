@@ -14,6 +14,28 @@
 
 ---
 
+## [2026-03-29] 六轮全量全方位审计 — SOP重写+文件治理+BUG修复+Electron补全
+
+- **Scope**: `frontend`, `backend`, `infra`, `arch`, `docs`
+- **审计范围**: 12阶段全覆盖（质量关卡/后端编译/服务器运维/API全链路/架构分层/安全/UI截图/UX交互/文件治理/SOP重写/BUG修复/最终验证）
+- **质量关卡**: ESLint 0错误, 90文件/1234测试全过, H5构建通过, 后端TS编译通过
+- **服务器状态**: PM2在线(63MB/19h), MongoDB正常(6天), Nginx正常, SSL有效至2026-06-20, 磁盘42%
+- **API全链路审计**: 101个前端API函数 → 36个后端云函数，链路100%匹配，0断裂
+- **安全审计**: 无CRITICAL发现，密钥管理/Auth防护/XSS防护/IDOR防护全部合规
+- **修复内容**:
+  - **TabBar缺失"择校"标签(Critical)**: custom-tabbar.vue 的 allTabs 数组只有3个标签（首页/刷题/我的），遗漏了"择校"。已修复，4个标签全部显示正常
+  - **practice/index.vue lafService未导入BUG**: 第869行使用未导入的 lafService.request()，改为使用 practice.api.js 的 exportAnki() 封装函数
+  - **文件治理**: 删除根目录重复 App.vue（与src/App.vue内容不同步）、删除孤儿目录 common/（2个零引用文件）、删除无效脚本 update_changelog.sh
+  - **依赖清理**: 卸载未使用的 @formkit/auto-animate（仅注释中提及，无实际import）
+  - **Electron桌面应用补全**: 安装 electron + electron-builder，添加 electron:dev/build:mac/build:win npm scripts
+  - **manifest.json同步**: src/manifest.json 的 requiredPrivateInfos 从空数组补全为与根目录一致的4项
+  - **CLAUDE.md SOP重写**: 升级为CEO模式（AI局限性防护/8个请求路由/开源搬运流程/Electron命令/配置文件索引）
+- **审计发现(已知技术债务)**:
+  - 9个文件绕过Service层直接调用lafService（与CLAUDE.md记录一致）
+  - 5个孤儿后端函数（upload-avatar/rag-query/proxy-ai-stream/material-manager/group-service）待评估
+  - 3个LOW级安全建议（material-manager等3个函数建议统一用requireAuth）
+  - npm有46个构建工具链漏洞（不影响运行时，需等uni-app框架升级）
+
 ## [2026-03-29] 五轮全量全方位审计 — 架构修复+文件治理+35页面UI审计+分支清理
 
 - **Scope**: `frontend`, `backend`, `infra`, `arch`, `docs`

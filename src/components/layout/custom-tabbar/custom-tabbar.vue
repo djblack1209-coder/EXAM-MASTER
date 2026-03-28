@@ -151,6 +151,14 @@ const tabList = computed(() => {
       isTabBar: true
     },
     {
+      text: '择校',
+      path: '/pages/school/index',
+      icon: '/static/tabbar/school.png',
+      selectedIcon: '/static/tabbar/school-active.png',
+      showDot: false,
+      isTabBar: true
+    },
+    {
       text: '我的',
       path: '/pages/profile/index',
       icon: '/static/tabbar/profile.png',
