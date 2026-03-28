@@ -985,15 +985,6 @@ export const learningAnalytics = new LearningAnalytics();
 export function recordAnswer(data) {
   return learningAnalytics.recordAnswer(data);
 }
-export function getHeatmapData(days) {
-  return learningAnalytics.getHeatmapData(days);
-}
-export function getAccuracyTrend(days) {
-  return learningAnalytics.getAccuracyTrend(days);
-}
-export function getKnowledgePointAnalysis() {
-  return learningAnalytics.getKnowledgePointAnalysis();
-}
 export function getStreakData() {
   return learningAnalytics.getStreakData();
 }
@@ -1003,21 +994,5 @@ export function getAchievements() {
 export function getComprehensiveReport() {
   return learningAnalytics.getComprehensiveReport();
 }
-export function getMultiDimensionReport(options) {
-  return learningAnalytics.getMultiDimensionReport(options);
-}
-export function getLearningEfficiency() {
-  return learningAnalytics.getLearningEfficiency();
-}
-export function getProgressTrend(days) {
-  return learningAnalytics.getProgressTrend(days);
-}
-export function getPeerComparison() {
-  return learningAnalytics.getPeerComparison();
-}
-export function predictScore() {
-  return learningAnalytics.predictScore();
-}
 
-export { ACHIEVEMENTS };
 export default learningAnalytics;

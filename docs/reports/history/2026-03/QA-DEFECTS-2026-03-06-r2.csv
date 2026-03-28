@@ -1,3 +1,0 @@
-ID,优先级,页面,步骤,结果,根因,状态
-DEF-20260306-R2-001,P1,Native自动化环境,"执行 npm run test:maestro",无Android设备导致native流程跳过,当前执行环境缺少可连接真机或模拟器,阻塞中
-DEF-20260306-R2-002,P2,依赖安全,"执行 npm run deps:audit:prod",发现11项依赖漏洞但修复需breaking变更,@dcloudio/uni生态链上游版本约束导致短期不可无风险强升,待规划

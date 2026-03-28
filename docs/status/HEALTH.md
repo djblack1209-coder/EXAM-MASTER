@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (十轮审计 — 后端/PWA/Electron/环境变量/孤儿代码深度审计) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (十一轮审计 — 冗余文件/文档/死代码/孤儿导出深度清理) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,14 @@
 
 | ID   | Domain   | Title                                                                  | Solution                                                                                            | Resolved   |
 | ---- | -------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| R061 | infra    | 2个孤儿工具文件(code-highlight.js/mistake-classifier.js)零引用         | 删除文件                                                                                            | 2026-03-29 |
+| R062 | docs     | 34+过期历史报告文件仍被Git跟踪(docs/reports/history/+current/)         | git rm + 删除96MB未跟踪HTML报告                                                                     | 2026-03-29 |
+| R063 | frontend | performance.js含9个孤儿导出(memoize/batchProcess/useVirtualList等)     | 删除孤儿导出,474→238行                                                                              | 2026-03-29 |
+| R064 | frontend | 8个工具文件共30个孤儿导出(未使用的函数/常量仍在打包)                   | 逐文件清理,总计删减约600行死代码                                                                    | 2026-03-29 |
+| R065 | config   | .gitignore重复laf-backend/.app.yaml条目(行51和63)                      | 移除重复行                                                                                          | 2026-03-29 |
+| R066 | config   | docker-compose.yml含已弃用version字段                                  | 移除version: '3.8'                                                                                  | 2026-03-29 |
+| R067 | config   | .env.test含2个幽灵变量+缺少5个.env.example变量                         | 移除幽灵变量,补充缺失变量                                                                           | 2026-03-29 |
+| R068 | docs     | 重复文档PROJECT_DEEP_SCAN_REPORT(2026-02-reset vs 2026-03-review)      | 删除2026-02-reset副本(2152行)                                                                       | 2026-03-29 |
 | R027 | testing  | 视觉回归 44 快照过期/缺失 (H010/H011)                                  | `--update-snapshots` 全量更新 + ai-classroom/onboarding 注册到 pages.json subPackages               | 2026-03-26 |
 | R031 | frontend | TabBar缺失"择校"标签（仅显示3个Tab）                                   | custom-tabbar.vue allTabs数组添加择校Tab（icon已存在于static/tabbar/）                              | 2026-03-29 |
 | R032 | frontend | practice/index.vue:869 使用未导入的lafService导致运行时ReferenceError  | 改用practice.api.js的exportAnki()函数（动态import）                                                 | 2026-03-29 |
@@ -136,7 +144,7 @@
 | D029     | performance | 主入口JS 452KB(gzip 149KB)偏大，缺少manualChunks vendor分离（vue/pinia/uni-app运行时混在主chunk）                                               | 首屏加载偏慢，重复访问缓存命中率低 | 🟡       |
 | D030     | performance | 未配置vite-plugin-compression构建时gzip/brotli预压缩，Nginx需实时压缩                                                                           | 安装后JS可从1968KB降至~589KB       | 🟡       |
 | D031     | frontend    | 微信小程序主包1896KB/2048KB，余量仅152KB，新增功能需注意分包                                                                                    | 新功能可能导致主包超限             | 🟡       |
-| D032     | backend     | 3个冗余tsconfig文件（tsconfig.standalone.json/tsconfig.standalone-esm.json/standalone/tsconfig.json），功能重叠但合并风险高                     | 维护冗余，暂不合并                 | 🔵       |
+| ~~D032~~ | backend     | ~~3个冗余tsconfig文件~~ → **实际仅2个，分别服务Laf Cloud和Express Standalone，不可合并**                                                        | ✅ 已确认非冗余                    | ~~🔵~~   |
 | D033     | frontend    | PWA图标512x512声称但文件仅4.8KB，可能非真实分辨率                                                                                               | PWA安装图标模糊                    | 🔵       |
 | D034     | frontend    | PWA maskable图标与any图标使用同一文件（应分离为两个独立图标）                                                                                   | 部分设备图标显示不佳               | 🔵       |
 | D035     | frontend    | 35个后端API导出未在前端使用（后端已支持但前端未接入的能力）                                                                                     | 保留，代表可扩展能力               | 🔵       |

@@ -1,2 +1,0 @@
-ID,优先级,页面,步骤,结果,根因,状态
-ENV-BLOCKER-001,P2,Native-Maestro,"1) 连接 Android 模拟器; 2) 执行 MAESTRO_REQUIRE_NATIVE=1 npm run test:maestro","预期: 执行原生 00~04 flow; 实际: APP_ID 缺失且设备无业务包, 无法启动原生回归",回归流程缺少 native 包构建安装门禁导致 APP_ID 无法注入,Blocked-Repeat-R2

@@ -481,8 +481,5 @@ class AnalyticsService {
 // 创建单例
 export const analytics = new AnalyticsService();
 
-// 导出转化事件常量
-export { CONVERSION_EVENTS, EVENT_PRIORITY };
-
 // 默认导出
 export default analytics;

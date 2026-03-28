@@ -18,17 +18,3 @@ export function vibrateLight(type = 'light') {
     // 震动反馈失败不影响业务逻辑
   }
 }
-
-/**
- * 中等强度震动
- */
-export function vibrateMedium() {
-  vibrateLight('medium');
-}
-
-/**
- * 强震动（用于重要操作确认）
- */
-export function vibrateHeavy() {
-  vibrateLight('heavy');
-}

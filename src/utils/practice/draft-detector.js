@@ -122,102 +122,6 @@ export function detectUnfinishedPractice() {
 }
 
 /**
- * 检测是否有未完成的PK对战
- * @returns {Object|null} PK草稿信息
- */
-export function detectUnfinishedPK() {
-  try {
-    const draftStr = storageService.get(DRAFT_KEYS.PK_DRAFT);
-    if (!draftStr) return null;
-
-    let draft;
-    try {
-      // [AUDIT FIX] storageService.get 可能返回已解析的对象，兼容两种情况
-      draft = typeof draftStr === 'string' ? JSON.parse(draftStr) : draftStr;
-    } catch (parseError) {
-      logger.error('[DraftDetector] PK草稿JSON解析失败，清除无效数据:', parseError);
-      clearDraft('pk');
-      return null;
-    }
-
-    const now = Date.now();
-
-    // PK草稿过期时间较短（1小时）
-    if (now - (draft.savedAt || 0) > 60 * 60 * 1000) {
-      clearDraft('pk');
-      return null;
-    }
-
-    return {
-      type: 'pk',
-      ...draft
-    };
-  } catch (error) {
-    logger.error('[DraftDetector] 检测PK草稿失败:', error);
-    return null;
-  }
-}
-
-/**
- * 检测是否有未完成的导入任务
- * @returns {Object|null} 导入草稿信息
- */
-export function detectUnfinishedImport() {
-  try {
-    const draftStr = storageService.get(DRAFT_KEYS.IMPORT_DRAFT);
-    if (!draftStr) return null;
-
-    let draft;
-    try {
-      // [AUDIT FIX] storageService.get 可能返回已解析的对象，兼容两种情况
-      draft = typeof draftStr === 'string' ? JSON.parse(draftStr) : draftStr;
-    } catch (parseError) {
-      logger.error('[DraftDetector] 导入草稿JSON解析失败，清除无效数据:', parseError);
-      clearDraft('import');
-      return null;
-    }
-
-    const now = Date.now();
-
-    // 导入草稿过期时间（12小时）
-    if (now - (draft.savedAt || 0) > 12 * 60 * 60 * 1000) {
-      clearDraft('import');
-      return null;
-    }
-
-    return {
-      type: 'import',
-      fileName: draft.fileName,
-      progress: draft.progress,
-      generatedCount: draft.generatedCount,
-      ...draft
-    };
-  } catch (error) {
-    logger.error('[DraftDetector] 检测导入草稿失败:', error);
-    return null;
-  }
-}
-
-/**
- * 检测所有类型的草稿
- * @returns {Array} 所有草稿列表
- */
-export function detectAllDrafts() {
-  const drafts = [];
-
-  const quizDraft = detectUnfinishedPractice();
-  if (quizDraft) drafts.push(quizDraft);
-
-  const pkDraft = detectUnfinishedPK();
-  if (pkDraft) drafts.push(pkDraft);
-
-  const importDraft = detectUnfinishedImport();
-  if (importDraft) drafts.push(importDraft);
-
-  return drafts;
-}
-
-/**
  * 清除指定类型的草稿
  * @param {string} type - 草稿类型：quiz, pk, import, all
  */
@@ -239,47 +143,8 @@ export function clearDraft(type = 'all') {
   }
 }
 
-/**
- * 保存PK草稿
- * @param {Object} data - PK进度数据
- */
-export function savePKDraft(data) {
-  try {
-    const draft = {
-      ...data,
-      savedAt: Date.now()
-    };
-    storageService.save(DRAFT_KEYS.PK_DRAFT, draft);
-    logger.log('[DraftDetector] PK草稿已保存');
-  } catch (error) {
-    logger.error('[DraftDetector] 保存PK草稿失败:', error);
-  }
-}
-
-/**
- * 保存导入草稿
- * @param {Object} data - 导入进度数据
- */
-export function saveImportDraft(data) {
-  try {
-    const draft = {
-      ...data,
-      savedAt: Date.now()
-    };
-    storageService.save(DRAFT_KEYS.IMPORT_DRAFT, draft);
-    logger.log('[DraftDetector] 导入草稿已保存');
-  } catch (error) {
-    logger.error('[DraftDetector] 保存导入草稿失败:', error);
-  }
-}
-
 export default {
   detectUnfinishedPractice,
-  detectUnfinishedPK,
-  detectUnfinishedImport,
-  detectAllDrafts,
   clearDraft,
-  savePKDraft,
-  saveImportDraft,
   DRAFT_KEYS
 };

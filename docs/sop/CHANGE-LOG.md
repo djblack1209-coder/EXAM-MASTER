@@ -14,6 +14,46 @@
 
 ---
 
+## [2026-03-29] 十一轮审计 — 冗余文件/文档/死代码/孤儿导出深度清理
+
+- **Scope**: `frontend`, `infra`, `config`, `docs`
+- **审计范围**: 静态资源孤儿扫描、NPM依赖审计、文档新鲜度审计、工具函数导出审计、配置文件一致性审计
+- **质量关卡**: ESLint 0错误, 90文件/1234测试全过, H5构建通过
+
+### 文件/文档清理
+
+- 删除2个孤儿工具文件: `code-highlight.js`(11行), `mistake-classifier.js`(22行)
+- git rm 34+历史报告文件(docs/reports/history/ 全部 + docs/reports/current/ 16个过期文件)
+- 删除重复文档 `docs/archive/2026-02-reset/PROJECT_DEEP_SCAN_REPORT.md`(2152行)
+- 删除本地未跟踪大型报告目录: `e2e-compat-html/`(96MB), `e2e-regression-html/`, `visual-report/`
+
+### 孤儿导出清理（8个文件共清理约30个未使用导出）
+
+- `performance.js`: 删除9个孤儿导出(memoize/memoizeAsync/requestIdleCallback等), 474→238行
+- `learning-analytics.js`: 删除7个孤儿包装函数(getMultiDimensionReport/getLearningEfficiency等)+ACHIEVEMENTS导出
+- `draft-detector.js`: 删除5个孤儿函数(detectUnfinishedPK/detectUnfinishedImport/savePKDraft等), 285→150行
+- `micro-interactions.js`: 删除3个孤儿导出(hapticFeedback/celebrate/pageTransition)+关联私有代码, 226→59行
+- `mp-confetti.js`: 删除3个孤儿快捷方法(celebrateSuccess/celebrateHighScore/celebrateCombo), 138→97行
+- `haptic.js`: 删除2个孤儿函数(vibrateMedium/vibrateHeavy), 34→20行
+- `system.js`: 删除3个孤儿函数(getWindowHeight/getPlatformInfo/getUserAgent), 247→198行
+- `global-error-handler.js`: 删除2个孤儿函数(wrapAsync/safeExecute), 213→171行
+- `event-bus-analytics.js`: 移除2个未使用常量导出(CONVERSION_EVENTS/EVENT_PRIORITY), 488→485行
+
+### 配置修复
+
+- `.gitignore`: 移除重复的`laf-backend/.app.yaml`条目(行51和63重复)
+- `docker-compose.yml`: 移除已弃用的`version: '3.8'`字段
+- `.env.test`: 移除2个幽灵变量(VITE_API_FALLBACK_URL/VITE_USER_NODE_ENV), 补充5个缺失变量
+
+### 审计扫描结论
+
+- 静态资源: 10个文件全部有引用, 0个孤儿
+- NPM依赖: 11+27个包全部在用, 0个冗余
+- 配置文件: pages.json 36路由全部对应文件, ESLint↔Prettier零冲突, jsconfig↔vite完全一致
+- D032(3冗余tsconfig): 实际仅2个,分别服务Laf Cloud和Express Standalone编译目标, 不可合并, 已关闭
+
+---
+
 ## [2026-03-29] 十轮审计 — 后端深度清理+PWA关键修复+Electron审计+环境变量同步
 
 - **Scope**: `backend`, `frontend`, `infra`, `config`, `docs`

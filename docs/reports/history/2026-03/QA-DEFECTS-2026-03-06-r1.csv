@@ -1,3 +1,0 @@
-ID,优先级,页面,步骤,结果,根因,状态
-DEF-20260306-001,P0,全局E2E运行时,"1) eval \"$(fnm env)\" && fnm use 20.17.0; 2) npm run test:e2e:regression",Playwright启动失败: browserType.launch缺少chromium_headless_shell可执行文件,本机Playwright浏览器二进制未安装,已修复
-DEF-20260306-002,P1,Native移动端回归,"1) npm run test:maestro",Maestro native用例被跳过: 无Android设备/模拟器连接,执行环境缺少可连接移动设备,阻塞中

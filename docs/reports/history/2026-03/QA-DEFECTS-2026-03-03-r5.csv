@@ -1,2 +1,0 @@
-ID,优先级,页面,步骤,结果,根因,状态
-QA-R5-001,P1,/pages/login/index,"1) 运行 npx playwright test tests/e2e-regression/specs/03-state-recovery.spec.js --config=playwright.regression.config.js 2) 执行STATE-005 3) 观察邮箱输入定位阶段","修复前: placeholder选择器未命中导致locator超时; 修复后: 定位稳定且登录请求计数=1","uni-app输入组件渲染层级导致placeholder定位脆弱",Fixed

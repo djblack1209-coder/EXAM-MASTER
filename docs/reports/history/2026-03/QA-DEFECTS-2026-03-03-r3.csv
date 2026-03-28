@@ -1,2 +1,0 @@
-ID,优先级,页面,步骤,结果,根因,状态
-QA-R3-001,P1,/pages/login/index -> /pages/practice/index -> /pages/practice-sub/do-quiz,"1) 不设置E2E_EMAIL/E2E_PASSWORD 2) 运行npm run test:e2e:regression 3) 观察CORE-002执行状态","修复前: CORE-002被skip导致核心链路覆盖缺口; 修复后: CORE-002通过并进入做题页","自动化用例对真实账号强依赖, 缺少无账号兜底路径",Fixed

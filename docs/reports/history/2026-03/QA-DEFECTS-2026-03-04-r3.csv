@@ -1,5 +1,0 @@
-ID,优先级,页面,步骤,结果,根因,状态
-CQ-001,P1,/pages/practice/index,"1) 执行代码质量扫描; 2) 查看主包JS未使用列表","预期: learning-analytics 不在未使用列表; 实际: 被标记未通过",学习分析模块仅被分包引用导致主包可达性缺失,Fixed
-QA-AUTO-001,P1,/pages/login/index,"1) 执行 npm run test:e2e:compat; 2) 观察 CORE-001@mobile-390x844","预期: 邮箱输入框可见并可输入; 实际: 偶发找不到 textbox",邮箱入口点击命中不稳且断言过度依赖 role 定位,Fixed
-QA-AUTO-002,P2,/pages/index/index -> /pages/practice/index,"1) 执行 npm run test:e2e:compat; 2) 观察 PERF-002@mobile-390x844","预期: 交互耗时低于阈值; 实际: 偶发 1044ms 超过 1000ms",统一阈值未区分移动项目抖动导致边界误报,Fixed
-ENV-BLOCKER-001,P2,Native-Maestro,"1) 连接模拟器; 2) 执行 MAESTRO_REQUIRE_NATIVE=1 npm run test:maestro","预期: 执行原生 00~04 flow; 实际: APP_ID 缺失且设备无业务包",回归前置缺少 native 包安装与 APP_ID 注入门禁,Blocked-Repeat-R3

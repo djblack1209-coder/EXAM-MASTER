@@ -1,7 +1,0 @@
-ID,优先级,页面,步骤,预期结果,实际结果,根因,状态
-QA-VIS-001,P1,Splash,运行 `npx playwright test --config=playwright.visual.config.js`,启动页快照稳定,快照跳转导致差异0.88,Splash自动跳转导致视觉漂移,FIXED
-QA-VIS-002,P1,首页响应式快照,运行 `npx playwright test --config=playwright.visual.config.js`,iPhone12/SE稳定快照,快照差异>0.9,未等待App挂载,FIXED
-QA-MAE-001,P0,Android Maestro,运行 `maestro test tests/maestro/flows`,流程执行不被系统拦截,驱动安装被系统拦截,系统限制ADB安装/需手动授权,BLOCKED
-QA-MAE-002,P0,Android 首页可见性,运行 00~04 flows 断言首页可见,断言“首页”失败,前台可视性不稳定/可访问性文本不可读,OPEN
-QA-MAE-003,P1,登录流程,运行 01-login-input,可见“邮箱登录/注册/登录”并输入,断言“邮箱登录”失败,登录页元素文本与用例不一致,FIXED
-QA-MAE-004,P1,登录流程密码输入,运行 01-login-input,可点击密码输入框,未找到“请输入密码”,输入框标签为“密码”,FIXED

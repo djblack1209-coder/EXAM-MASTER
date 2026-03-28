@@ -1,3 +1,0 @@
-ID,优先级,页面,步骤,结果,根因,状态
-QA-AUTO-001,P1,登录页单测,执行 `fnm exec --using 20.17.0 npm run test`,单测失败但登录页真实密码显隐逻辑正常；已更新断言并回归通过,测试断言过期，未适配 `:password="!showLoginPassword"` / `:password="!showRegisterPassword"`,closed
-QA-ENV-001,P2,Android/iOS Native,执行 `fnm exec --using 20.17.0 npm run test:maestro`,H5 fallback 可运行但 native 套件因无设备自动 skip,当前环境无已连接设备且未提供可安装 APP_ID / APK,blocked
