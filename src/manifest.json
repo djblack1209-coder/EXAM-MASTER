@@ -44,46 +44,6 @@
       "sdkConfigs": {}
     }
   },
-  "plus": {
-    "usingComponents": true,
-    "nvueStyleCompiler": "uni-app",
-    "compilerVersion": 3,
-    "splashscreen": {
-      "alwaysShowBeforeRender": true,
-      "waiting": true,
-      "autoclose": true,
-      "delay": 0
-    },
-    "modules": {
-      "OAuth": {},
-      "Share": {},
-      "Storage": {}
-    },
-    "distribute": {
-      "android": {
-        "permissions": [
-          "<uses-permission android:name=\"android.permission.INTERNET\"/>",
-          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
-          "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
-          "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>",
-          "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
-          "<uses-permission android:name=\"android.permission.CAMERA\"/>",
-          "<uses-permission android:name=\"android.permission.VIBRATE\"/>"
-        ],
-        "minSdkVersion": 21
-      },
-      "ios": {
-        "privacyDescription": {
-          "NSPhotoLibraryUsageDescription": "用于上传头像和题目图片",
-          "NSCameraUsageDescription": "用于拍照上传题目",
-          "NSPhotoLibraryAddUsageDescription": "用于保存学习海报到相册"
-        },
-        "dSYMs": false
-      },
-      "sdkConfigs": {}
-    }
-  },
-  "quickapp": {},
   "mp-weixin": {
     "appid": "wxd634d50ad63e14ed",
     "setting": {
@@ -117,8 +77,7 @@
         "desc": "用于展示院校所在地区与位置相关信息"
       }
     },
-    "requiredPrivateInfos": ["chooseAddress", "chooseLocation", "choosePoi", "chooseMessageFile"],
-    "requiredBackgroundModes": [],
+    "requiredPrivateInfos": ["chooseMessageFile"],
     "optimization": {
       "subPackages": true
     }
@@ -127,14 +86,6 @@
     "usingComponents": true,
     "component2": true,
     "enableAppxNg": true
-  },
-  "mp-baidu": {
-    "usingComponents": true,
-    "appid": ""
-  },
-  "mp-toutiao": {
-    "usingComponents": true,
-    "appid": ""
   },
   "uniStatistics": {
     "enable": false
@@ -157,9 +108,6 @@
       "port": 5173,
       "https": false,
       "proxy": {}
-    },
-    "sdkConfigs": {
-      "maps": {}
     }
   }
 }
