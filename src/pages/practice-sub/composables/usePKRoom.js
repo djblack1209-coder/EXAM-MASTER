@@ -29,7 +29,7 @@ export function usePKRoom() {
     roomStatus.value = 'matching';
 
     try {
-      const res = await lafService.request('/pk-battle', {
+      const res = await lafService.pkBattle({
         action: 'find_match',
         category,
         questionCount: count
@@ -68,7 +68,7 @@ export function usePKRoom() {
     if (!roomId.value) return null;
 
     try {
-      const res = await lafService.request('/pk-battle', {
+      const res = await lafService.pkBattle({
         action: 'room_answer',
         room_id: roomId.value,
         question_index: questionIndex,
@@ -93,7 +93,7 @@ export function usePKRoom() {
     stopPolling();
     if (roomId.value) {
       try {
-        await lafService.request('/pk-battle', {
+        await lafService.pkBattle({
           action: 'leave_room',
           room_id: roomId.value
         });
@@ -115,7 +115,7 @@ export function usePKRoom() {
       if (!roomId.value) return;
 
       try {
-        const res = await lafService.request('/pk-battle', {
+        const res = await lafService.pkBattle({
           action: 'poll_room',
           room_id: roomId.value
         });

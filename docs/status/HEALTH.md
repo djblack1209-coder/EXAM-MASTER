@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-28 (四轮深度审计-Phase26-完结) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (五轮全量全方位审计) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -44,6 +44,9 @@
 | ID   | Domain   | Title                                                             | Solution                                                                                            | Resolved   |
 | ---- | -------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
 | R027 | testing  | 视觉回归 44 快照过期/缺失 (H010/H011)                             | `--update-snapshots` 全量更新 + ai-classroom/onboarding 注册到 pages.json subPackages               | 2026-03-26 |
+| R028 | arch     | PK Battle API action名不匹配(4函数会被后端拒绝)                   | 重写为后端实际支持的7个action(find_match/poll_room/submit_result/room_answer/leave_room等)          | 2026-03-29 |
+| R029 | arch     | 3对完全重复文件(useTypewriter/privacy-authorization/StudyHeatmap) | 提取到共享位置(@/composables/@/utils/auth/),原位置改为代理re-export                                 | 2026-03-29 |
+| R030 | infra    | 25个已合并本地分支+1个孤立pre-release分支堆积                     | 批量删除26个过期分支,保留2个有价值未合并分支(mp-html/yolo-optimizations)                            | 2026-03-29 |
 | R026 | testing  | EXC-005 聊天页降级超时 (H012)                                     | `setLoggedInSession` 补 `__exam_storage__:` 前缀键 + chatInput/expectAnyText 超时增至 25s/20s       | 2026-03-26 |
 | R025 | frontend | STATE-005 登录按钮快速多次点击幂等性 (H013)                       | `handleEmailLogin` 时间戳冷却检查 (`lastEmailSubmitAt`) 前移至函数首行，在 Vue ref 之前拦截         | 2026-03-26 |
 | R024 | deploy   | Nginx upstream 不支持 HTTPS 后端，Sealos 备份失效                 | 移除 upstream backup，改用 `error_page 502 503 504 = @sealos_fallback` + `proxy_ssl_server_name on` | 2026-03-26 |

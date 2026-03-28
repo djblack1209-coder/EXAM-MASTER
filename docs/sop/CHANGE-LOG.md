@@ -14,6 +14,26 @@
 
 ---
 
+## [2026-03-29] 五轮全量全方位审计 — 架构修复+文件治理+35页面UI审计+分支清理
+
+- **Scope**: `frontend`, `backend`, `infra`, `arch`, `docs`
+- **审计范围**: 10阶段全覆盖（全貌扫描/构建/运维/架构/API/UI截图/安全/SOP/文档）
+- **质量关卡**: ESLint 0错误, 90文件/1234测试全过, H5构建通过, 后端TS编译通过
+- **服务器状态**: PM2在线(65MB), MongoDB正常, Nginx正常, SSL有效至2026-06-20, 磁盘42%
+- **修复内容**:
+  - **PK Battle API动作名不匹配(Critical)**: social.api.js 中4个便捷函数(createPKRoom/joinPKRoom/getPKRoomStatus/submitPKResult)使用了后端不支持的action名，会被拒绝。重写为后端实际支持的7个action: find_match/poll_room/submit_result/room_answer/leave_room/get_records/calculate_elo
+  - **3对完全重复文件消除(-1632行)**: useTypewriter.js(2处→共享composable), privacy-authorization.js(2处→共享utils/auth), StudyHeatmap.vue(2处→共享component)。原位置改为代理re-export文件
+  - **26个过期本地分支清理**: 24个已合并的test-fix分支 + 1个孤立pre-release分支 + 1个已合并feature分支。保留2个有价值未合并分支(feat/integrate-mp-html, refactor/yolo-optimizations)
+  - **35页面UI截图审计**: 使用Playwright headless Chromium(390x844 @2x)对全部36个路由页面截图审查。结论: 所有页面UI正常，空态显示正确，深色/浅色模式切换正常
+- **审计发现(待观察)**:
+  - 19个文件存在分层违规(pages直接调用lafService)，其中usePKRoom.js和storageService.js已有修改待提交
+  - learning-analytics.js生成模拟的"同伴对比"数据(标记了\_isEstimated:true)
+  - 3个未使用组件(ErrorBoundary/ConfettiOverlay/StudyTrend)和4个未使用服务
+  - 本地网络到腾讯云间歇性RST(D022已记录)，服务器内部一切正常
+- **Files Changed**: `src/services/api/domains/social.api.js`, `src/composables/useTypewriter.js`(new), `src/utils/auth/privacy-authorization.js`(new), `src/pages/practice-sub/composables/useTypewriter.js`, `src/pages/chat/composables/useTypewriter.js`, `src/pages/tools/privacy-authorization.js`, `src/pages/chat/privacy-authorization.js`, `src/pages/study-detail/index.vue`, `docs/status/HEALTH.md`, `docs/sop/CHANGE-LOG.md`
+
+---
+
 ## [2026-03-28] 深度审计四轮 — 后端部署+性能审计+全量API封装+CI/CD修正
 
 - **Scope**: `backend`, `frontend`, `infra`, `ci`, `docs`

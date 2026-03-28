@@ -182,28 +182,19 @@ export async function pkBattle(params) {
 }
 
 /**
- * 创建PK房间
- * @param {Object} data - { userId, questionBankId, mode, ... }
+ * 匹配PK对手（自动创建/加入房间）
+ * @param {Object} data - { userId, subject, difficulty, ... }
  */
-export async function createPKRoom(data) {
-  return pkBattle({ action: 'create', ...data });
+export async function findPKMatch(data) {
+  return pkBattle({ action: 'find_match', ...data });
 }
 
 /**
- * 加入PK房间
- * @param {string} roomId
- * @param {Object} userInfo
- */
-export async function joinPKRoom(roomId, userInfo) {
-  return pkBattle({ action: 'join', roomId, ...userInfo });
-}
-
-/**
- * 获取PK房间状态
+ * 轮询PK房间状态
  * @param {string} roomId
  */
-export async function getPKRoomStatus(roomId) {
-  return pkBattle({ action: 'getStatus', roomId });
+export async function pollPKRoom(roomId) {
+  return pkBattle({ action: 'poll_room', roomId });
 }
 
 /**
@@ -212,5 +203,39 @@ export async function getPKRoomStatus(roomId) {
  * @param {Object} result - { userId, answers, score, ... }
  */
 export async function submitPKResult(roomId, result) {
-  return pkBattle({ action: 'submit', roomId, ...result });
+  return pkBattle({ action: 'submit_result', roomId, ...result });
+}
+
+/**
+ * 提交单题答案（实时对战模式）
+ * @param {string} roomId
+ * @param {Object} answerData - { userId, questionIndex, answer, timeUsed }
+ */
+export async function submitPKAnswer(roomId, answerData) {
+  return pkBattle({ action: 'room_answer', roomId, ...answerData });
+}
+
+/**
+ * 离开PK房间
+ * @param {string} roomId
+ * @param {string} userId
+ */
+export async function leavePKRoom(roomId, userId) {
+  return pkBattle({ action: 'leave_room', roomId, userId });
+}
+
+/**
+ * 获取PK历史记录
+ * @param {Object} params - { userId, page, pageSize }
+ */
+export async function getPKRecords(params) {
+  return pkBattle({ action: 'get_records', ...params });
+}
+
+/**
+ * 计算ELO评分
+ * @param {Object} params - { userId }
+ */
+export async function calculateElo(params) {
+  return pkBattle({ action: 'calculate_elo', ...params });
 }
