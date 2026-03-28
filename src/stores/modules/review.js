@@ -15,7 +15,7 @@
  */
 
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { lafService } from '@/services/lafService.js';
 import { logger } from '@/utils/logger.js';
 
@@ -24,16 +24,7 @@ export const useReviewStore = defineStore('review', () => {
   const fsrsStatus = ref(null);
   const retentionCurve = ref(null);
   const currentDiagnosis = ref(null);
-  const diagnosisList = ref([]);
   const reviewPlan = ref(null);
-
-  // ==================== Getters ====================
-  const hasDiagnosis = computed(() => !!currentDiagnosis.value);
-  const hasReviewPlan = computed(() => !!reviewPlan.value);
-  const urgentReviewCount = computed(() => {
-    if (!reviewPlan.value?.urgent) return 0;
-    return reviewPlan.value.urgent.length;
-  });
 
   // ==================== Actions ====================
 
@@ -189,16 +180,6 @@ export const useReviewStore = defineStore('review', () => {
   };
 
   return {
-    // state
-    fsrsStatus,
-    retentionCurve,
-    currentDiagnosis,
-    diagnosisList,
-    reviewPlan,
-    // getters
-    hasDiagnosis,
-    hasReviewPlan,
-    urgentReviewCount,
     // actions
     fetchFSRSStatus,
     fetchRetentionCurve,

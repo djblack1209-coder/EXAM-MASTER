@@ -420,22 +420,6 @@ export async function getLessonStatus(lessonId) {
 }
 
 /**
- * 获取课程详情（含大纲和场景）
- * @param {string} lessonId - 课程ID
- */
-export async function getLessonDetail(lessonId) {
-  try {
-    return await request('/lesson-generator', {
-      action: 'detail',
-      data: { lessonId }
-    });
-  } catch (error) {
-    logger.warn('[LafService] 获取课程详情失败:', error);
-    return normalizeError(error, '获取课程详情');
-  }
-}
-
-/**
  * 获取用户课程列表
  * @param {number} [page=1]
  * @param {number} [pageSize=20]
@@ -500,22 +484,6 @@ export async function sendClassroomMessage(sessionId, message) {
 }
 
 /**
- * 获取课堂状态
- * @param {string} sessionId
- */
-export async function getClassroomState(sessionId) {
-  try {
-    return await request('/agent-orchestrator', {
-      action: 'get_state',
-      data: { sessionId }
-    });
-  } catch (error) {
-    logger.warn('[LafService] 获取课堂状态失败:', error);
-    return normalizeError(error, '获取课堂状态');
-  }
-}
-
-/**
  * 结束课堂
  * @param {string} sessionId
  */
@@ -528,53 +496,6 @@ export async function endClassroom(sessionId) {
   } catch (error) {
     logger.warn('[LafService] 结束课堂失败:', error);
     return normalizeError(error, '结束课堂');
-  }
-}
-
-/**
- * AI批改单题
- * @param {object} params - { questionId, question, correctAnswer, userAnswer, subject, topic, lessonId, sceneId }
- */
-export async function gradeQuiz(params) {
-  try {
-    return await request('/ai-quiz-grade', { action: 'grade', data: params }, { timeout: 30000, maxRetries: 1 });
-  } catch (error) {
-    logger.warn('[LafService] AI批改失败:', error);
-    return normalizeError(error, 'AI批改');
-  }
-}
-
-/**
- * AI批量批改
- * @param {Array} answers - 答案数组
- * @param {object} context - { subject, topic, lessonId, sceneId }
- */
-export async function batchGradeQuiz(answers, context = {}) {
-  try {
-    return await request(
-      '/ai-quiz-grade',
-      { action: 'batch_grade', data: { answers, ...context } },
-      { timeout: 120000, maxRetries: 0 }
-    );
-  } catch (error) {
-    logger.warn('[LafService] AI批量批改失败:', error);
-    return normalizeError(error, 'AI批量批改');
-  }
-}
-
-/**
- * 获取AI批改结果
- * @param {object} params - { lessonId, questionId, page, pageSize }
- */
-export async function getGradeResults(params = {}) {
-  try {
-    return await request('/ai-quiz-grade', {
-      action: 'get_results',
-      data: params
-    });
-  } catch (error) {
-    logger.warn('[LafService] 获取批改结果失败:', error);
-    return normalizeError(error, '获取批改结果');
   }
 }
 
@@ -614,23 +535,6 @@ export async function getDiagnosis(params) {
 }
 
 /**
- * 获取历史诊断列表
- * @param {number} [page=1]
- * @param {number} [pageSize=10]
- */
-export async function getDiagnosisList(page = 1, pageSize = 10) {
-  try {
-    return await request('/ai-diagnosis', {
-      action: 'list',
-      data: { page, pageSize }
-    });
-  } catch (error) {
-    logger.warn('[LafService] 获取诊断列表失败:', error);
-    return normalizeError(error, '获取诊断列表');
-  }
-}
-
-/**
  * 获取AI推荐的复习计划（基于诊断+SM-2）
  */
 export async function getReviewPlan() {
@@ -642,39 +546,5 @@ export async function getReviewPlan() {
   } catch (error) {
     logger.warn('[LafService] 获取复习计划失败:', error);
     return normalizeError(error, '获取复习计划');
-  }
-}
-
-/**
- * 获取 AI 个性化推荐题目（基于薄弱点分析）
- * @param {number} [count=10] - 推荐数量
- */
-export async function getSmartRecommendations(count = 10) {
-  try {
-    return await request('/ai-diagnosis', {
-      action: 'smart_recommend',
-      data: { count }
-    });
-  } catch (error) {
-    logger.warn('[LafService] AI推题失败:', error);
-    return normalizeError(error, 'AI推题');
-  }
-}
-
-// ==================== RAG 知识库 ====================
-
-/**
- * RAG 向量化索引（将题库导入知识库，非阻塞）
- * @param {string} bankId - 题库 ID
- */
-export async function ragIngest(bankId) {
-  try {
-    return await request('/rag-ingest', {
-      action: 'index_questions',
-      data: { bankId }
-    });
-  } catch (error) {
-    logger.warn('[AI] RAG索引失败:', error);
-    return normalizeError(error, 'RAG索引');
   }
 }

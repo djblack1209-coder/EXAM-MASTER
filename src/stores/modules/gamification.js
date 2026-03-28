@@ -135,10 +135,6 @@ export const useGamificationStore = defineStore('gamification', () => {
   const lastStudyDate = ref('');
   const streakFreezeCount = ref(0);
 
-  const isStreakAtRisk = computed(() => {
-    return lastStudyDate.value !== todayISO() && currentStreak.value > 0;
-  });
-
   function checkStreak() {
     const today = todayISO();
     if (lastStudyDate.value === today) return; // 今天已记录
@@ -362,10 +358,6 @@ export const useGamificationStore = defineStore('gamification', () => {
     getXpMultiplier,
     // 连续学习
     currentStreak,
-    longestStreak,
-    lastStudyDate,
-    streakFreezeCount,
-    isStreakAtRisk,
     checkStreak,
     // 成就
     achievements,
@@ -376,7 +368,6 @@ export const useGamificationStore = defineStore('gamification', () => {
     updateChallengeProgress,
     // 持久化
     restoreGamification,
-    resetGamification,
     // 常量（供外部使用）
     XP_REWARDS
   };

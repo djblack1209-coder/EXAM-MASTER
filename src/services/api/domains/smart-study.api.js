@@ -55,33 +55,6 @@ export async function getErrorClusters() {
 }
 
 /**
- * 获取深度矫正（AI分析根因 + 推荐同类题）
- * @param {string} [knowledgePoint] - 可选，指定知识点名称进行定向矫正
- * @returns {Promise} 返回深度矫正数据
- */
-export async function getDeepCorrection(knowledgePoint) {
-  logger.log('[SmartStudy] 调用深度矫正, 知识点:', knowledgePoint || '全部');
-  try {
-    const data = {};
-    if (knowledgePoint) {
-      data.knowledgePoint = knowledgePoint;
-    }
-    const response = await request(
-      '/smart-study-engine',
-      {
-        action: 'deep_correction',
-        data
-      },
-      { timeout: 30000 }
-    );
-    return response;
-  } catch (error) {
-    logger.warn('[SmartStudy] 深度矫正失败:', error);
-    return normalizeError(error, '深度矫正');
-  }
-}
-
-/**
  * 获取待处理的矫正列表
  * @returns {Promise} 返回待处理矫正数据
  */
@@ -96,25 +69,6 @@ export async function getPendingCorrections() {
   } catch (error) {
     logger.warn('[SmartStudy] 获取待处理矫正失败:', error);
     return normalizeError(error, '获取待处理矫正');
-  }
-}
-
-/**
- * 标记矫正为已读
- * @param {string} correctionId - 矫正记录ID（必传）
- * @returns {Promise} 返回操作结果
- */
-export async function markCorrectionRead(correctionId) {
-  logger.log('[SmartStudy] 标记矫正已读, ID:', correctionId);
-  try {
-    const response = await request('/smart-study-engine', {
-      action: 'mark_correction_read',
-      data: { correctionId }
-    });
-    return response;
-  } catch (error) {
-    logger.warn('[SmartStudy] 标记矫正已读失败:', error);
-    return normalizeError(error, '标记矫正已读');
   }
 }
 

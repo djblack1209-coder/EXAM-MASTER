@@ -18,17 +18,13 @@ vi.mock('@/services/api/domains/_request-core.js', async (importOriginal) => {
   return { ...original, request: mockRequest };
 });
 
-import { useSchoolStore } from '@/stores/modules/school.js';
 import storageService from '@/services/storageService.js';
 
 describe('E2E 择校交互全流程', () => {
-  let schoolStore;
-
   beforeEach(async () => {
     vi.clearAllMocks();
     mockRequest.mockResolvedValue({ code: 0, success: true, data: {} });
     setActivePinia(createPinia());
-    schoolStore = useSchoolStore();
     global.__mockStorage = {};
   });
 
@@ -503,26 +499,6 @@ describe('E2E 择校交互全流程', () => {
     });
   });
 
-  // ==================== SchoolStore 状态管理 ====================
-
-  describe('SchoolStore 状态', () => {
-    it('setInfo / clearInfo → 择校计划状态管理', () => {
-      schoolStore.setInfo({ school: '浙江大学', major: '计算机技术', year: 2025 });
-      expect(schoolStore.info.school).toBe('浙江大学');
-
-      schoolStore.clearInfo();
-      expect(Object.keys(schoolStore.info).length).toBe(0);
-    });
-
-    it('hasPlan → 有计划时返回 true', () => {
-      schoolStore.setInfo({ school: '浙江大学' });
-      expect(schoolStore.hasPlan).toBe(true);
-
-      schoolStore.clearInfo();
-      expect(schoolStore.hasPlan).toBe(false);
-    });
-  });
-
   // ==================== 端到端完整旅程 ====================
 
   describe('完整旅程：填写背景 → 智能推荐 → 选择目标 → 查看详情', () => {
@@ -594,11 +570,6 @@ describe('E2E 择校交互全流程', () => {
       storageService.save('school_detail_s1', schools[0]);
       const detail = storageService.get('school_detail_s1');
       expect(detail.majors[0].scores[0]).toBe(380); // 最新年分数线
-
-      // Step 6: 设置择校计划
-      schoolStore.setInfo({ school: '浙江大学', major: '计算机技术', year: 2025 });
-      expect(schoolStore.hasPlan).toBe(true);
-      expect(schoolStore.info.school).toBe('浙江大学');
     });
   });
 });

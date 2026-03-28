@@ -14,21 +14,15 @@ import { logger } from '@/utils/logger.js';
 
 import { useAuthStore } from './auth';
 import { useProfileStore } from './profile';
-import { useVipStore } from './vip';
-import { useInviteStore } from './invite';
 
 // 同时导出子 store，允许直接使用
 export { useAuthStore } from './auth';
 export { useProfileStore } from './profile';
-export { useVipStore } from './vip';
-export { useInviteStore } from './invite';
 
 export const useUserStore = defineStore('user', () => {
   // ---- 初始化子 store ----
   const authStore = useAuthStore();
   const profileStore = useProfileStore();
-  const vipStore = useVipStore();
-  const inviteStore = useInviteStore();
 
   // 将 profile 的 userInfo ref 注入 auth store，用于 syncLoginStatus
   const { userInfo } = storeToRefs(profileStore);
@@ -37,12 +31,6 @@ export const useUserStore = defineStore('user', () => {
   // ---- 解构子 store 的 refs ----
   const { token, isLogin } = storeToRefs(authStore);
   const { planProgress } = storeToRefs(profileStore);
-  const { vipStatus, vipLevel, vipExpiry, vipBenefits } = storeToRefs(vipStore);
-  const { inviteCode, inviteCount, inviteRewards } = storeToRefs(inviteStore);
-
-  // ---- 解构子 store 的 computed ----
-  const { isVip, vipDaysLeft, vipLevelName } = storeToRefs(vipStore);
-  const { totalInviteRewards } = storeToRefs(inviteStore);
 
   // ---- 社交功能（直接保留） ----
   const friendsList = ref([]);
@@ -101,12 +89,6 @@ export const useUserStore = defineStore('user', () => {
   };
   const updateUserInfo = profileStore.updateUserInfo;
 
-  const setVipStatus = vipStore.setVipStatus;
-
-  const setInviteInfo = inviteStore.setInviteInfo;
-  const handleNewInvite = inviteStore.handleNewInvite;
-  const claimInviteReward = inviteStore.claimInviteReward;
-
   return {
     // 状态
     token,
@@ -114,23 +96,6 @@ export const useUserStore = defineStore('user', () => {
     isLogin,
     planProgress,
     friendsList,
-
-    // VIP相关状态
-    vipStatus,
-    vipLevel,
-    vipExpiry,
-    vipBenefits,
-
-    // 邀请相关状态
-    inviteCode,
-    inviteCount,
-    inviteRewards,
-
-    // 计算属性
-    isVip,
-    vipDaysLeft,
-    vipLevelName,
-    totalInviteRewards,
 
     // 方法
     setToken,
@@ -140,14 +105,6 @@ export const useUserStore = defineStore('user', () => {
     logout,
     fetchFriends,
     restoreUserInfo,
-    silentLogin,
-
-    // VIP相关方法
-    setVipStatus,
-
-    // 邀请相关方法
-    setInviteInfo,
-    handleNewInvite,
-    claimInviteReward
+    silentLogin
   };
 });

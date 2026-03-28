@@ -9,24 +9,6 @@ import { logger } from '@/utils/logger.js';
 import { request, normalizeError } from './_request-core.js';
 
 /**
- * 获取学校列表
- * @param {Object} params - 查询参数
- * @returns {Promise} 返回学校列表
- */
-export async function getSchoolList(params = {}) {
-  try {
-    const response = await request('/school-query', {
-      action: 'list',
-      data: params
-    });
-    return response;
-  } catch (error) {
-    logger.warn('[LafService] 获取学校列表失败:', error);
-    return normalizeError(error, '获取学校列表');
-  }
-}
-
-/**
  * 获取学校详情
  * @param {string} schoolId - 学校ID或代码
  * @returns {Promise} 返回学校详情

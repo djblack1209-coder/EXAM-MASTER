@@ -14,6 +14,43 @@
 
 ---
 
+## [2026-03-29] 十三轮审计 — 死代码深度清理+盲区扫描+.env同步修复
+
+- **Scope**: `frontend`, `backend`, `config`, `docs`
+- **审计范围**: Store/API孤儿导出清理、全量盲区扫描(硬编码/Console泄漏/错误处理/a11y/i18n/.env同步/后端响应一致性/TODO/Git Hooks/全局错误处理)
+- **质量关卡**: ESLint 0错误, 90文件/1196测试全过, H5构建通过
+
+### 死代码清理
+
+- 删除2个完全死亡Store: `vip.js`(68行) + `invite.js`(64行) — 零UI消费者
+- 清理user.js facade: 移除17个VIP/邀请代理导出, 153→112行
+- 清理5个Store孤儿导出(-373行/-31导出):
+  - study.js: 174→66行, 删除8个孤儿(dailyGoal/todayStudyTime/weeklyProgress等)
+  - school.js: 136→73行, 删除5个孤儿(info/hasPlan/setInfo/clearInfo/restore)
+  - theme.js: 263→89行, 删除5个孤儿(toggleDarkMode/restoreTheme/watchSystemTheme/currentThemeConfig)
+  - review.js: 215→196行, 删除8个孤儿(fsrsStatus/retentionCurve/currentDiagnosis/diagnosisList等)
+  - gamification.js: 383→374行, 删除5个孤儿导出(longestStreak/lastStudyDate/streakFreezeCount/isStreakAtRisk/resetGamification)
+- 清理30个未使用API导出(8个文件, -473行):
+  - ai.api.js: -130行(getLessonDetail/getClassroomState/gradeQuiz等8个)
+  - social.api.js: -117行(getInviteInfo/signInviteLink/findPKMatch等10个)
+  - study.api.js: -63行, smart-study.api.js: -46行, practice.api.js: -47行
+  - tools.api.js: -29行, user.api.js: -23行, school.api.js: -18行
+- 删除35个测试已删除代码的测试用例(VIP/邀请/孤儿Store测试)
+
+### 配置修复
+
+- package.json: dev/build脚本显式指定`-p h5`(消除歧义)
+- .env.production(本地): 补充缺失的VITE_INVITE_SECRET
+
+### 盲区扫描结果(10项检查)
+
+- CLEAN(5项): 硬编码字符串0, Console泄漏0, Service API错误处理完善, 全局错误处理完善(5层覆盖), i18n不需要(纯中文应用)
+- MINOR(2项): 3个TODO注释(learning-analytics.js, 已知技术债), pre-push hook未跑测试(有CI保护)
+- ISSUE(2项): .env.production缺失VITE_INVITE_SECRET(已修复), 后端3种响应格式不一致(记入技术债D036)
+- INFO(1项): a11y基础缺失(无aria-label, 微信小程序场景非阻塞)
+
+---
+
 ## [2026-03-29] 十二轮审计 — 孤儿SCSS/文档/Store/快照深度清理+死引用修复
 
 - **Scope**: `frontend`, `backend`, `docs`, `config`, `infra`

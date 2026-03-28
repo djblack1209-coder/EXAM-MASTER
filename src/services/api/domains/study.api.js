@@ -51,29 +51,6 @@ export async function getStudyStats(userId) {
   }
 }
 
-// ==================== 学习资源推荐 ====================
-
-/**
- * 获取推荐学习资源
- * @param {Object} params - 查询参数
- * @returns {Promise} 返回推荐资源
- */
-export async function getLearningResources(params = {}) {
-  try {
-    const userId = getUserId();
-
-    const response = await request('/learning-resource', {
-      action: 'getRecommendations',
-      userId: userId || '',
-      data: params
-    });
-    return response;
-  } catch (error) {
-    logger.error('[LafService] 获取学习资源失败:', error);
-    return { code: -1, success: false, message: '获取失败', data: { resources: [] } };
-  }
-}
-
 /**
  * 获取热门学习资源
  * @param {Object} params - 查询参数
@@ -92,46 +69,6 @@ export async function getHotResources(params = {}) {
   } catch (error) {
     logger.error('[LafService] 获取热门资源失败:', error);
     return { code: -1, success: false, message: '获取失败', data: [] };
-  }
-}
-
-/**
- * 搜索学习资源
- * @param {string} keyword - 搜索关键词
- * @param {Object} params - 其他参数
- * @returns {Promise} 返回搜索结果
- */
-export async function searchResources(keyword, params = {}) {
-  try {
-    const userId = getUserId();
-
-    const response = await request('/learning-resource', {
-      action: 'search',
-      userId: userId || '',
-      data: { keyword, ...params }
-    });
-    return response;
-  } catch (error) {
-    logger.error('[LafService] 搜索资源失败:', error);
-    return { code: -1, success: false, message: '搜索失败', data: { resources: [] } };
-  }
-}
-
-/**
- * 获取资源分类
- * @returns {Promise} 返回分类列表
- */
-export async function getResourceCategories() {
-  try {
-    const response = await request('/learning-resource', {
-      action: 'getCategories',
-      userId: '',
-      data: {}
-    });
-    return response;
-  } catch (error) {
-    logger.error('[LafService] 获取资源分类失败:', error);
-    return { code: -1, success: false, message: '获取失败', data: {} };
   }
 }
 

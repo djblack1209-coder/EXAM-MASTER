@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (十二轮审计 — 孤儿SCSS/文档/Store/快照深度清理+死引用修复) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (十三轮审计 — 死代码深度清理+盲区扫描+.env同步修复) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -55,6 +55,11 @@
 | R077 | docs     | 11个AI-SOP文档含160个死文件引用(删除的.service.js/chat组件/composable) | 3组并行Agent清理,utils-reference.md重建(39死),MODULE-INDEX(38),components(29)等                     | 2026-03-29 |
 | R078 | docs     | docs/reports/current/README.md列出6个文件但仅1个存在                   | 更新为实际文件列表                                                                                  | 2026-03-29 |
 | R079 | docs     | api-documentation.md主URL错误指向Sealos备用而非腾讯云主服务器          | 修正为https://api.245334.xyz为主,Sealos为备用                                                       | 2026-03-29 |
+| R080 | frontend | vip.js(68行)+invite.js(64行)两个Store零UI消费者                        | 删除文件+从user.js移除17个代理导出+从stores/index.js移除                                            | 2026-03-29 |
+| R081 | frontend | 5个Store共31个孤儿导出(-373行): study/school/theme/review/gamification | 逐文件验证后删除,study 174→66行,theme 263→89行,school 136→73行                                      | 2026-03-29 |
+| R082 | frontend | 30个API导出零引用(-473行): ai/social/study/smart-study/practice等      | 8个文件逐函数grep验证后删除                                                                         | 2026-03-29 |
+| R083 | config   | package.json dev/build脚本与dev:h5/build:h5语义重复                    | dev/build显式指定-p h5消除歧义                                                                      | 2026-03-29 |
+| R084 | config   | .env.production缺失VITE_INVITE_SECRET(邀请签名功能异常)                | 本地补充(不入Git)                                                                                   | 2026-03-29 |
 | R062 | docs     | 34+过期历史报告文件仍被Git跟踪(docs/reports/history/+current/)         | git rm + 删除96MB未跟踪HTML报告                                                                     | 2026-03-29 |
 | R063 | frontend | performance.js含9个孤儿导出(memoize/batchProcess/useVirtualList等)     | 删除孤儿导出,474→238行                                                                              | 2026-03-29 |
 | R064 | frontend | 8个工具文件共30个孤儿导出(未使用的函数/常量仍在打包)                   | 逐文件清理,总计删减约600行死代码                                                                    | 2026-03-29 |
@@ -158,7 +163,8 @@
 | ~~D032~~ | backend     | ~~3个冗余tsconfig文件~~ → **实际仅2个，分别服务Laf Cloud和Express Standalone，不可合并**                                                        | ✅ 已确认非冗余                    | ~~🔵~~   |
 | D033     | frontend    | PWA图标512x512声称但文件仅4.8KB，可能非真实分辨率                                                                                               | PWA安装图标模糊                    | 🔵       |
 | D034     | frontend    | PWA maskable图标与any图标使用同一文件（应分离为两个独立图标）                                                                                   | 部分设备图标显示不佳               | 🔵       |
-| D035     | frontend    | 35个后端API导出未在前端使用（后端已支持但前端未接入的能力）                                                                                     | 保留，代表可扩展能力               | 🔵       |
+| ~~D035~~ | frontend    | ~~35个后端API导出未在前端使用~~ → **R082 清理30个，剩余5个为合理预留**                                                                          | ✅ R082 已清理                     | ~~🔵~~   |
+| D036     | backend     | 后端46个云函数存在3种响应格式(wrapResponse/内联对象/混合ok字段)，mistake-manager独有ok字段，social-service缺requestId                           | 不影响运行，后续统一               | 🔵       |
 | ~~D025~~ | frontend    | ~~首页 content-wrapper 无底部padding，tabbar遮挡内容~~ → **R030 已修复**                                                                        | ✅ R030 已修复                     | ~~🟡~~   |
 | ~~D026~~ | frontend    | ~~4对重复文件~~ → **R031 全部合并为重导出代理**                                                                                                 | ✅ R031 已清理                     | ~~🟡~~   |
 | D027     | frontend    | 文件管理页面空态缺少图标和操作按钮 → **R033 已修复(添加emoji+导入按钮)**                                                                        | ✅ R033 已修复                     | ~~🔵~~   |

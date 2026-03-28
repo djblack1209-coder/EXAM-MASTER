@@ -45,22 +45,6 @@ export async function processIdPhoto(imageBase64, color, size, options = {}) {
   }
 }
 
-/**
- * 去除图片背景（返回透明PNG）
- * @param {string} imageBase64 - 图片 base64
- */
-export async function removePhotoBg(imageBase64) {
-  try {
-    return await request('/photo-bg', {
-      action: 'remove_bg',
-      imageBase64
-    });
-  } catch (error) {
-    logger.warn('[LafService] 去除背景失败:', error);
-    return { code: -1, success: false, message: '处理失败', data: null };
-  }
-}
-
 // ==================== 语音服务 ====================
 
 /**
@@ -122,19 +106,6 @@ export async function getVoiceOptions() {
 }
 
 // ==================== 文档格式转换 ====================
-
-/**
- * 获取支持的文档转换类型
- * @returns {Promise} 返回支持的格式列表
- */
-export async function getDocConvertTypes() {
-  try {
-    return await request('/doc-convert', { action: 'types' });
-  } catch (error) {
-    logger.warn('[LafService] 获取转换类型失败:', error);
-    return normalizeError(error, '获取转换类型');
-  }
-}
 
 /**
  * 提交文档格式转换任务
