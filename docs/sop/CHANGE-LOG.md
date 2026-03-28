@@ -14,6 +14,21 @@
 
 ---
 
+## [2026-03-29] 七轮审计 — CI/CD修复+全量UI截图审计(34子包页面+暗色模式)
+
+- **Scope**: `ci`, `infra`, `docs`
+- **审计范围**: CI/CD流水线诊断修复、34个子包页面UI截图审计、暗色模式验证
+- **质量关卡**: ESLint 0错误, 90文件/1234测试全过, H5构建通过
+- **修复内容**:
+  - **CI/CD: trivy-action版本不存在(Critical)**: `aquasecurity/trivy-action@0.28.0`版本号不存在（标签格式应为`v`前缀），导致所有CI运行失败。更新为`@v0.35.0`，影响ci-cd.yml(2处)+security-scan.yml(2处)共4处
+  - **CI/CD: Maestro Java 17兼容性**: GitHub Runner环境变量`JAVA_TOOL_OPTIONS`包含Java 17不支持的`--sun-misc-unsafe-memory-access=allow`参数，导致QA Nightly Regression失败。在qa-nightly-regression.yml中覆盖JAVA_TOOL_OPTIONS
+  - **UI截图审计(34页面)**: 使用Playwright对全部36个子包页面截图审查(390x844@2x)。结论：所有页面UI正常，空态/加载态显示正确
+  - **暗色模式验证**: 10个关键页面暗色模式截图，确认CSS变量切换正常
+- **审计发现**: lint-and-test job一直通过，但security-scan和build job因trivy-action版本错误持续失败
+- **Files Changed**: `.github/workflows/ci-cd.yml`, `.github/workflows/security-scan.yml`, `.github/workflows/qa-nightly-regression.yml`, `docs/sop/CHANGE-LOG.md`, `docs/status/HEALTH.md`
+
+---
+
 ## [2026-03-29] 六轮全量全方位审计 — SOP重写+文件治理+BUG修复+Electron补全
 
 - **Scope**: `frontend`, `backend`, `infra`, `arch`, `docs`

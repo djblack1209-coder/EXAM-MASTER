@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (六轮全量全方位审计) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (七轮审计 — CI/CD修复+全量UI审计) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -52,6 +52,8 @@
 | R036 | infra    | Electron桌面应用缺少electron+electron-builder包和npm scripts          | 安装包+添加electron:dev/build:mac/build:win scripts                                                 | 2026-03-29 |
 | R037 | infra    | src/manifest.json requiredPrivateInfos为空数组与根目录不一致          | 同步为4项（chooseAddress/chooseLocation/choosePoi/chooseMessageFile）                               | 2026-03-29 |
 | R038 | docs     | CLAUDE.md SOP不完整（缺少技术咨询/性能优化路由+AI局限性防护）         | 全面重写：CEO模式+8个请求路由+AI防护表+Electron命令+配置文件索引                                    | 2026-03-29 |
+| R039 | ci       | CI/CD trivy-action@0.28.0版本不存在，所有流水线失败                   | 更新为@v0.35.0（ci-cd.yml 2处 + security-scan.yml 2处）                                             | 2026-03-29 |
+| R040 | ci       | QA Nightly Maestro因JAVA_TOOL_OPTIONS含Java 17不支持的参数而失败      | qa-nightly-regression.yml覆盖JAVA_TOOL_OPTIONS移除不兼容参数                                        | 2026-03-29 |
 | R028 | arch     | PK Battle API action名不匹配(4函数会被后端拒绝)                       | 重写为后端实际支持的7个action(find_match/poll_room/submit_result/room_answer/leave_room等)          | 2026-03-29 |
 | R029 | arch     | 3对完全重复文件(useTypewriter/privacy-authorization/StudyHeatmap)     | 提取到共享位置(@/composables/@/utils/auth/),原位置改为代理re-export                                 | 2026-03-29 |
 | R030 | infra    | 25个已合并本地分支+1个孤立pre-release分支堆积                         | 批量删除26个过期分支,保留2个有价值未合并分支(mp-html/yolo-optimizations)                            | 2026-03-29 |

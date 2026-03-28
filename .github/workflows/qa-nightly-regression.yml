@@ -61,6 +61,9 @@ jobs:
     name: Maestro Android H5 Smoke
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      # 覆盖 Runner 环境变量，移除 Java 17 不支持的 --sun-misc-unsafe-memory-access 参数
+      JAVA_TOOL_OPTIONS: '--enable-native-access=ALL-UNNAMED'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
