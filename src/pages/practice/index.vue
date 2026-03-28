@@ -862,11 +862,12 @@ export default {
 
     // ✅ P2: goFavorites 由 usePracticeNavigation composable 提供
 
-    // Anki 导出
+    // Anki 导出（使用 practice.api.js 的封装函数）
     async exportAnki() {
       try {
         toast.loading('导出中...');
-        const res = await lafService.request('/anki-export', { deckName: '我的考研题库' });
+        const { exportAnki: ankiExport } = await import('@/services/api/domains/practice.api.js');
+        const res = await ankiExport('我的考研题库');
         toast.hide();
         if (res.code === 0 && res.data?.fileData) {
           // #ifdef MP-WEIXIN

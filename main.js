@@ -1,6 +1,6 @@
 import { createSSRApp } from 'vue';
 import { createPinia } from 'pinia';
-import App from './App.vue';
+import App from './src/App.vue';
 import { globalErrorHandler } from '@/utils/error/global-error-handler.js';
 import { logger } from '@/utils/logger.js';
 import { storageService } from '@/services/storageService.js';
