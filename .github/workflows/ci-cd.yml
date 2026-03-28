@@ -185,7 +185,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' && vars.DEPLOY_ENABLED == 'true'
     environment:
       name: staging
-      url: https://staging.exam-master.example.com
+      url: https://api.245334.xyz
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -210,7 +210,7 @@ jobs:
       - name: Run smoke tests
         run: |
           sleep 30
-          curl -f https://staging.exam-master.example.com/health-check || exit 1
+          curl -f https://api.245334.xyz/health-check || exit 1
 
   # ==================== 部署到生产 ====================
   deploy-production:
@@ -220,7 +220,7 @@ jobs:
     if: github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
     environment:
       name: production
-      url: https://exam-master.example.com
+      url: https://api.245334.xyz
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -245,7 +245,7 @@ jobs:
       - name: Verify deployment
         run: |
           kubectl get pods -n exam-master -l app.kubernetes.io/component=frontend
-          curl -f https://exam-master.example.com/health-check || exit 1
+          curl -f https://api.245334.xyz/health-check || exit 1
 
       - name: Rollback on failure
         if: failure()
