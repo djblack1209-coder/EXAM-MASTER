@@ -3,7 +3,7 @@
  * 在渲染进程中提供安全的 API 桥接
  */
 
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge } = require('electron');
 
 // 暴露安全的 API 到渲染进程
 contextBridge.exposeInMainWorld('electronAPI', {

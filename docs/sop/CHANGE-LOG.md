@@ -14,6 +14,49 @@
 
 ---
 
+## [2026-03-29] 十轮审计 — 后端深度清理+PWA关键修复+Electron审计+环境变量同步
+
+- **Scope**: `backend`, `frontend`, `infra`, `config`, `docs`
+- **审计范围**: 后端孤儿代码/配置/工具类扫描、PWA离线缓存审计、Electron安全审计、环境变量一致性审计、前端死代码扫描、测试孤儿检查、.claude/目录清理
+- **质量关卡**: ESLint 0错误, 90文件/1234测试全过, H5构建通过
+
+### 关键修复
+
+- **[Critical] PWA API缓存失效**: `vite.config.js:249` urlPattern正则仅匹配Sealos/Laf域名，完全遗漏主服务器`api.245334.xyz`，导致H5离线缓存无效。已修复
+- **PWA manifest语言**: `lang`从默认`en`改为`zh-CN`
+- **Electron preload.cjs**: 移除未使用的`ipcRenderer`导入
+
+### 后端清理
+
+- 删除孤儿YAML `job-bot-handoff-notify.yaml`（对应.ts已在Round 3删除）
+- 创建缺失配置 `smart-study-engine.yaml`
+- 删除3个零引用工具类: `anomaly-detector.ts`, `audit-logger.ts`, `env-validator.ts`
+- 删除未引用脚本 `test-connection.js` + 空目录 `scripts/`
+- 同步 `standalone/package.json` 版本号: `sql.js` ^1.11.0→^1.14.1, `ts-fsrs` ^5.3.1→^5.2.3
+
+### 环境变量同步
+
+- **laf-backend/.env.example**: 补充24个缺失键（SiliconFlow DS Keys ×10、其他AI提供商 ×12、REQUEST_SIGN_SALT、ENABLE_RANK_CACHE、SMTP_RETRY_TIMES/DELAY_MS）
+- **前端.env.example**: 补充3个VITE*CACHE*\*变量（DEFAULT_TTL/LONG_TTL/MAX_SIZE）
+
+### 代码健康扫描结论
+
+- 前端89个.js文件 / 254条import → **0个死导入**
+- 前端0个循环依赖
+- 90个测试文件 → **0个孤儿测试**
+- `.claude/` 清理: 删除23MB未使用的thread-manager ONNX模型 + 1个备份文件
+
+### 新增技术债务
+
+- D032: 3个冗余tsconfig文件（合并风险高，暂记录）
+- D033: PWA图标4.8KB可能非真实512×512分辨率
+- D034: PWA maskable与any图标应分离
+- D035: 35个后端API导出未在前端使用（保留为可扩展能力）
+
+- **Files Changed**: `vite.config.js`, `electron/preload.cjs`, `laf-backend/functions/smart-study-engine.yaml`(新建), `laf-backend/functions/job-bot-handoff-notify.yaml`(删除), `laf-backend/utils/{anomaly-detector,audit-logger,env-validator}.ts`(删除), `laf-backend/test-connection.js`(删除), `laf-backend/standalone/package.json`, `laf-backend/.env.example`, `.env.example`, `CLAUDE.md`
+
+---
+
 ## [2026-03-29] 九轮审计 — 深度冗余清理+配置一致性修复+孤儿代码消除
 
 - **Scope**: `infra`, `frontend`, `config`, `docs`

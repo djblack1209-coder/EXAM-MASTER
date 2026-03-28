@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (九轮审计 — 深度冗余清理+配置一致性修复) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (十轮审计 — 后端/PWA/Electron/环境变量/孤儿代码深度审计) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -41,58 +41,68 @@
 
 > Severity: 🔴 Blocker | 🟠 Important | 🟡 Normal | 🔵 Low
 
-| ID   | Domain   | Title                                                                 | Solution                                                                                            | Resolved   |
-| ---- | -------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
-| R027 | testing  | 视觉回归 44 快照过期/缺失 (H010/H011)                                 | `--update-snapshots` 全量更新 + ai-classroom/onboarding 注册到 pages.json subPackages               | 2026-03-26 |
-| R031 | frontend | TabBar缺失"择校"标签（仅显示3个Tab）                                  | custom-tabbar.vue allTabs数组添加择校Tab（icon已存在于static/tabbar/）                              | 2026-03-29 |
-| R032 | frontend | practice/index.vue:869 使用未导入的lafService导致运行时ReferenceError | 改用practice.api.js的exportAnki()函数（动态import）                                                 | 2026-03-29 |
-| R033 | infra    | 根目录App.vue与src/App.vue内容不同步（陈旧副本）                      | 删除根目录App.vue，src/App.vue为唯一真实版本                                                        | 2026-03-29 |
-| R034 | infra    | common/目录2个文件零引用（config.js+common.scss）                     | 删除整个common/目录                                                                                 | 2026-03-29 |
-| R035 | infra    | @formkit/auto-animate在dependencies中但从未import                     | npm uninstall                                                                                       | 2026-03-29 |
-| R036 | infra    | Electron桌面应用缺少electron+electron-builder包和npm scripts          | 安装包+添加electron:dev/build:mac/build:win scripts                                                 | 2026-03-29 |
-| R037 | infra    | src/manifest.json requiredPrivateInfos为空数组与根目录不一致          | 同步为4项（chooseAddress/chooseLocation/choosePoi/chooseMessageFile）                               | 2026-03-29 |
-| R038 | docs     | CLAUDE.md SOP不完整（缺少技术咨询/性能优化路由+AI局限性防护）         | 全面重写：CEO模式+8个请求路由+AI防护表+Electron命令+配置文件索引                                    | 2026-03-29 |
-| R039 | ci       | CI/CD trivy-action@0.28.0版本不存在，所有流水线失败                   | 更新为@v0.35.0（ci-cd.yml 2处 + security-scan.yml 2处）                                             | 2026-03-29 |
-| R040 | ci       | QA Nightly Maestro因JAVA_TOOL_OPTIONS含Java 17不支持的参数而失败      | qa-nightly-regression.yml覆盖JAVA_TOOL_OPTIONS移除不兼容参数                                        | 2026-03-29 |
-| R041 | infra    | 54个审计截图PNG仍被Git跟踪（~10MB仓库膨胀）                           | git rm -r --cached audit-screenshots/                                                               | 2026-03-29 |
-| R042 | infra    | @vitest/coverage-istanbul和ai-agent-team两个未使用NPM包               | npm uninstall（vitest用v8 provider，ai-agent-team后端有独立package.json）                           | 2026-03-29 |
-| R043 | infra    | 10个废弃脚本（一次性修复/过期shim/废弃工具）                          | 删除add-will-change/apply-design-tokens/convert-to-webp等10个文件                                   | 2026-03-29 |
-| R044 | config   | manifest.json重复`plus`块（39行与app-plus完全重复）                   | 删除plus块，仅保留app-plus                                                                          | 2026-03-29 |
-| R045 | config   | requiredPrivateInfos声明4个隐私API但仅1个实际使用                     | 移除chooseAddress/chooseLocation/choosePoi，仅保留chooseMessageFile                                 | 2026-03-29 |
-| R046 | infra    | 根manifest.json与src/manifest.json重复                                | 删除根manifest.json，src/为唯一真实版本                                                             | 2026-03-29 |
-| R047 | config   | project.config.json的es6/enhance与manifest.json设置冲突               | 同步为false与manifest.json一致                                                                      | 2026-03-29 |
-| R048 | config   | jsconfig.json 14行冗余路径别名+1个指向已删除目录的死别名              | 精简为仅`@/*`通配符                                                                                 | 2026-03-29 |
-| R049 | frontend | 2个孤儿composable零引用（useSearchHistory、useStreamChat）            | 删除                                                                                                | 2026-03-29 |
-| R050 | frontend | 2个废弃TabBar图标（universe/universe-active，无对应Tab）              | 删除                                                                                                | 2026-03-29 |
-| R028 | arch     | PK Battle API action名不匹配(4函数会被后端拒绝)                       | 重写为后端实际支持的7个action(find_match/poll_room/submit_result/room_answer/leave_room等)          | 2026-03-29 |
-| R029 | arch     | 3对完全重复文件(useTypewriter/privacy-authorization/StudyHeatmap)     | 提取到共享位置(@/composables/@/utils/auth/),原位置改为代理re-export                                 | 2026-03-29 |
-| R030 | infra    | 25个已合并本地分支+1个孤立pre-release分支堆积                         | 批量删除26个过期分支,保留2个有价值未合并分支(mp-html/yolo-optimizations)                            | 2026-03-29 |
-| R026 | testing  | EXC-005 聊天页降级超时 (H012)                                         | `setLoggedInSession` 补 `__exam_storage__:` 前缀键 + chatInput/expectAnyText 超时增至 25s/20s       | 2026-03-26 |
-| R025 | frontend | STATE-005 登录按钮快速多次点击幂等性 (H013)                           | `handleEmailLogin` 时间戳冷却检查 (`lastEmailSubmitAt`) 前移至函数首行，在 Vue ref 之前拦截         | 2026-03-26 |
-| R024 | deploy   | Nginx upstream 不支持 HTTPS 后端，Sealos 备份失效                     | 移除 upstream backup，改用 `error_page 502 503 504 = @sealos_fallback` + `proxy_ssl_server_name on` | 2026-03-26 |
-| R021 | testing  | 单元测试 161/1263 失败（26个文件）                                    | Timer 超时：限定 `toFake` 范围；Audit mock：集成 jwtPayload + 补缺依赖                              | 2026-03-26 |
-| R022 | backend  | group-service get_groups TypeError: query.count is not a function     | 条件对象 + `collection.where(cond).count()` + `Promise.all` 并行                                    | 2026-03-26 |
-| R023 | backend  | cloud-shim `cloud.fetch` 不支持 `.get()`/`.post()` 短写法             | `cloudFetch` 上挂载 `.get/.post/.put/.delete/.head/.patch` 快捷方法                                 | 2026-03-26 |
-| ---- | -------- | ----------------------------------------------------------------      | -------------------------------------------------------------------                                 | ---------- |
-| R017 | backend  | `question-bank.ts` seed_preset 无 admin 权限校验（权限提升漏洞）      | 添加 `requireAdminAccess` 权限检查                                                                  | 2026-03-23 |
-| R018 | backend  | `group-service.ts` 手动 JWT + 无限流 + 自定义 logger                  | 重写为 `requireAuth` + `checkRateLimitDistributed` + `createLogger`                                 | 2026-03-23 |
-| R019 | backend  | `ai-friend-memory.ts` 手动 JWT + 无限流                               | 重写为 `requireAuth` + `checkRateLimitDistributed`                                                  | 2026-03-23 |
-| R007 | frontend | `auth-storage.js` 调用不存在的 `uni.getItem()` 导致崩溃               | 替换为 `localStorage.getItem()`                                                                     | 2026-03-23 |
-| R008 | frontend | `ai-classroom/index.vue` setInterval 泄漏（无 onUnmounted）           | 添加 activeTimers 追踪 + onBeforeUnmount 清理                                                       | 2026-03-23 |
-| R009 | frontend | `ai.service.js` 双服务器切换用 console.warn/log 而非 logger           | 替换为 logger.warn/log                                                                              | 2026-03-23 |
-| R010 | frontend | `config/index.js` 硬编码错误域名 `exam-master.com`                    | 更新为实际生产域名 `245334.xyz`                                                                     | 2026-03-23 |
-| R011 | frontend | `swr-cache.js` 用 console.warn 而非 logger                            | 导入 logger 并替换                                                                                  | 2026-03-23 |
-| R012 | frontend | 重复的 `useQuizAutoSave.js`（pages/practice-sub/ 孤儿副本）           | 删除孤儿文件，所有导入均指向 composables/                                                           | 2026-03-23 |
-| R013 | frontend | `offline-queue.js` 构造函数未初始化 `this.paused`                     | 添加 `this.paused = false`                                                                          | 2026-03-23 |
-| R014 | frontend | `index/index.vue` onLoad 重复注册 loginStatusChanged 监听             | 移除 onLoad 中的 uni.$on，由 onShow 统一管理                                                        | 2026-03-23 |
-| R015 | backend  | 5个后端文件缺少 `.js` 导入扩展名                                      | 补全 study-stats/upload-avatar/user-profile/user-stats/voice 扩展名                                 | 2026-03-23 |
-| R016 | backend  | `study-stats.ts` weeks 数组类型错误 (`{}[]`)                          | 添加正确类型 `{ total: number; correct: number }[]`                                                 | 2026-03-23 |
-| R001 | backend  | Cerebras 模型 `llama-3.3-70b` 已下线                                  | 更新为 `llama3.1-8b`                                                                                | 2026-03-22 |
-| R002 | backend  | cloud-shim `_.or()` 在 `where()` 中产生错误查询                       | 添加顶层逻辑操作符处理                                                                              | 2026-03-23 |
-| R003 | backend  | cloud-shim 缺少 `_.all()` 导致 TypeError                              | 添加 `all` 操作符                                                                                   | 2026-03-23 |
-| R004 | backend  | Express 404 handler 先于路由注册                                      | 移到 `registerFunctions()` 之后                                                                     | 2026-03-23 |
-| R005 | backend  | ESM `__dirname` 不可用                                                | 使用 `fileURLToPath(import.meta.url)`                                                               | 2026-03-23 |
-| R006 | deploy   | Docker Hub 大陆被墙                                                   | 配置镜像加速 + 改为本地编译部署                                                                     | 2026-03-23 |
+| ID   | Domain   | Title                                                                  | Solution                                                                                            | Resolved   |
+| ---- | -------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| R027 | testing  | 视觉回归 44 快照过期/缺失 (H010/H011)                                  | `--update-snapshots` 全量更新 + ai-classroom/onboarding 注册到 pages.json subPackages               | 2026-03-26 |
+| R031 | frontend | TabBar缺失"择校"标签（仅显示3个Tab）                                   | custom-tabbar.vue allTabs数组添加择校Tab（icon已存在于static/tabbar/）                              | 2026-03-29 |
+| R032 | frontend | practice/index.vue:869 使用未导入的lafService导致运行时ReferenceError  | 改用practice.api.js的exportAnki()函数（动态import）                                                 | 2026-03-29 |
+| R033 | infra    | 根目录App.vue与src/App.vue内容不同步（陈旧副本）                       | 删除根目录App.vue，src/App.vue为唯一真实版本                                                        | 2026-03-29 |
+| R034 | infra    | common/目录2个文件零引用（config.js+common.scss）                      | 删除整个common/目录                                                                                 | 2026-03-29 |
+| R035 | infra    | @formkit/auto-animate在dependencies中但从未import                      | npm uninstall                                                                                       | 2026-03-29 |
+| R036 | infra    | Electron桌面应用缺少electron+electron-builder包和npm scripts           | 安装包+添加electron:dev/build:mac/build:win scripts                                                 | 2026-03-29 |
+| R037 | infra    | src/manifest.json requiredPrivateInfos为空数组与根目录不一致           | 同步为4项（chooseAddress/chooseLocation/choosePoi/chooseMessageFile）                               | 2026-03-29 |
+| R038 | docs     | CLAUDE.md SOP不完整（缺少技术咨询/性能优化路由+AI局限性防护）          | 全面重写：CEO模式+8个请求路由+AI防护表+Electron命令+配置文件索引                                    | 2026-03-29 |
+| R039 | ci       | CI/CD trivy-action@0.28.0版本不存在，所有流水线失败                    | 更新为@v0.35.0（ci-cd.yml 2处 + security-scan.yml 2处）                                             | 2026-03-29 |
+| R040 | ci       | QA Nightly Maestro因JAVA_TOOL_OPTIONS含Java 17不支持的参数而失败       | qa-nightly-regression.yml覆盖JAVA_TOOL_OPTIONS移除不兼容参数                                        | 2026-03-29 |
+| R041 | infra    | 54个审计截图PNG仍被Git跟踪（~10MB仓库膨胀）                            | git rm -r --cached audit-screenshots/                                                               | 2026-03-29 |
+| R042 | infra    | @vitest/coverage-istanbul和ai-agent-team两个未使用NPM包                | npm uninstall（vitest用v8 provider，ai-agent-team后端有独立package.json）                           | 2026-03-29 |
+| R043 | infra    | 10个废弃脚本（一次性修复/过期shim/废弃工具）                           | 删除add-will-change/apply-design-tokens/convert-to-webp等10个文件                                   | 2026-03-29 |
+| R044 | config   | manifest.json重复`plus`块（39行与app-plus完全重复）                    | 删除plus块，仅保留app-plus                                                                          | 2026-03-29 |
+| R045 | config   | requiredPrivateInfos声明4个隐私API但仅1个实际使用                      | 移除chooseAddress/chooseLocation/choosePoi，仅保留chooseMessageFile                                 | 2026-03-29 |
+| R046 | infra    | 根manifest.json与src/manifest.json重复                                 | 删除根manifest.json，src/为唯一真实版本                                                             | 2026-03-29 |
+| R047 | config   | project.config.json的es6/enhance与manifest.json设置冲突                | 同步为false与manifest.json一致                                                                      | 2026-03-29 |
+| R048 | config   | jsconfig.json 14行冗余路径别名+1个指向已删除目录的死别名               | 精简为仅`@/*`通配符                                                                                 | 2026-03-29 |
+| R049 | frontend | 2个孤儿composable零引用（useSearchHistory、useStreamChat）             | 删除                                                                                                | 2026-03-29 |
+| R050 | frontend | 2个废弃TabBar图标（universe/universe-active，无对应Tab）               | 删除                                                                                                | 2026-03-29 |
+| R051 | frontend | PWA API缓存urlPattern缺少主服务器api.245334.xyz（离线缓存完全失效）    | vite.config.js:249 urlPattern添加api\.245334\.xyz匹配                                               | 2026-03-29 |
+| R052 | frontend | PWA manifest lang默认"en"应为"zh-CN"                                   | vite.config.js manifest.lang改为'zh-CN'                                                             | 2026-03-29 |
+| R053 | frontend | Electron preload.cjs未使用的ipcRenderer导入                            | 删除未使用import                                                                                    | 2026-03-29 |
+| R054 | backend  | 孤儿YAML job-bot-handoff-notify.yaml（对应.ts已在Round 3删除）         | 删除orphan YAML                                                                                     | 2026-03-29 |
+| R055 | backend  | smart-study-engine.ts缺少对应.yaml配置文件                             | 创建smart-study-engine.yaml                                                                         | 2026-03-29 |
+| R056 | backend  | 3个孤儿工具类零引用（anomaly-detector/audit-logger/env-validator）     | 删除3个文件                                                                                         | 2026-03-29 |
+| R057 | backend  | test-connection.js未引用+scripts/空目录                                | 删除文件和空目录                                                                                    | 2026-03-29 |
+| R058 | backend  | standalone/package.json版本不一致（sql.js/ts-fsrs与laf-backend不同步） | 同步为sql.js ^1.14.1, ts-fsrs ^5.2.3                                                                | 2026-03-29 |
+| R059 | backend  | laf-backend/.env.example缺少24个生产环境变量                           | 补充SiliconFlow DS Keys/其他AI提供商/请求签名/排行榜缓存/邮件重试等                                 | 2026-03-29 |
+| R060 | frontend | 前端.env.example缺少3个VITE*CACHE*\*变量                               | 补充VITE_CACHE_DEFAULT_TTL/LONG_TTL/MAX_SIZE                                                        | 2026-03-29 |
+| R028 | arch     | PK Battle API action名不匹配(4函数会被后端拒绝)                        | 重写为后端实际支持的7个action(find_match/poll_room/submit_result/room_answer/leave_room等)          | 2026-03-29 |
+| R029 | arch     | 3对完全重复文件(useTypewriter/privacy-authorization/StudyHeatmap)      | 提取到共享位置(@/composables/@/utils/auth/),原位置改为代理re-export                                 | 2026-03-29 |
+| R030 | infra    | 25个已合并本地分支+1个孤立pre-release分支堆积                          | 批量删除26个过期分支,保留2个有价值未合并分支(mp-html/yolo-optimizations)                            | 2026-03-29 |
+| R026 | testing  | EXC-005 聊天页降级超时 (H012)                                          | `setLoggedInSession` 补 `__exam_storage__:` 前缀键 + chatInput/expectAnyText 超时增至 25s/20s       | 2026-03-26 |
+| R025 | frontend | STATE-005 登录按钮快速多次点击幂等性 (H013)                            | `handleEmailLogin` 时间戳冷却检查 (`lastEmailSubmitAt`) 前移至函数首行，在 Vue ref 之前拦截         | 2026-03-26 |
+| R024 | deploy   | Nginx upstream 不支持 HTTPS 后端，Sealos 备份失效                      | 移除 upstream backup，改用 `error_page 502 503 504 = @sealos_fallback` + `proxy_ssl_server_name on` | 2026-03-26 |
+| R021 | testing  | 单元测试 161/1263 失败（26个文件）                                     | Timer 超时：限定 `toFake` 范围；Audit mock：集成 jwtPayload + 补缺依赖                              | 2026-03-26 |
+| R022 | backend  | group-service get_groups TypeError: query.count is not a function      | 条件对象 + `collection.where(cond).count()` + `Promise.all` 并行                                    | 2026-03-26 |
+| R023 | backend  | cloud-shim `cloud.fetch` 不支持 `.get()`/`.post()` 短写法              | `cloudFetch` 上挂载 `.get/.post/.put/.delete/.head/.patch` 快捷方法                                 | 2026-03-26 |
+| ---- | -------- | ----------------------------------------------------------------       | -------------------------------------------------------------------                                 | ---------- |
+| R017 | backend  | `question-bank.ts` seed_preset 无 admin 权限校验（权限提升漏洞）       | 添加 `requireAdminAccess` 权限检查                                                                  | 2026-03-23 |
+| R018 | backend  | `group-service.ts` 手动 JWT + 无限流 + 自定义 logger                   | 重写为 `requireAuth` + `checkRateLimitDistributed` + `createLogger`                                 | 2026-03-23 |
+| R019 | backend  | `ai-friend-memory.ts` 手动 JWT + 无限流                                | 重写为 `requireAuth` + `checkRateLimitDistributed`                                                  | 2026-03-23 |
+| R007 | frontend | `auth-storage.js` 调用不存在的 `uni.getItem()` 导致崩溃                | 替换为 `localStorage.getItem()`                                                                     | 2026-03-23 |
+| R008 | frontend | `ai-classroom/index.vue` setInterval 泄漏（无 onUnmounted）            | 添加 activeTimers 追踪 + onBeforeUnmount 清理                                                       | 2026-03-23 |
+| R009 | frontend | `ai.service.js` 双服务器切换用 console.warn/log 而非 logger            | 替换为 logger.warn/log                                                                              | 2026-03-23 |
+| R010 | frontend | `config/index.js` 硬编码错误域名 `exam-master.com`                     | 更新为实际生产域名 `245334.xyz`                                                                     | 2026-03-23 |
+| R011 | frontend | `swr-cache.js` 用 console.warn 而非 logger                             | 导入 logger 并替换                                                                                  | 2026-03-23 |
+| R012 | frontend | 重复的 `useQuizAutoSave.js`（pages/practice-sub/ 孤儿副本）            | 删除孤儿文件，所有导入均指向 composables/                                                           | 2026-03-23 |
+| R013 | frontend | `offline-queue.js` 构造函数未初始化 `this.paused`                      | 添加 `this.paused = false`                                                                          | 2026-03-23 |
+| R014 | frontend | `index/index.vue` onLoad 重复注册 loginStatusChanged 监听              | 移除 onLoad 中的 uni.$on，由 onShow 统一管理                                                        | 2026-03-23 |
+| R015 | backend  | 5个后端文件缺少 `.js` 导入扩展名                                       | 补全 study-stats/upload-avatar/user-profile/user-stats/voice 扩展名                                 | 2026-03-23 |
+| R016 | backend  | `study-stats.ts` weeks 数组类型错误 (`{}[]`)                           | 添加正确类型 `{ total: number; correct: number }[]`                                                 | 2026-03-23 |
+| R001 | backend  | Cerebras 模型 `llama-3.3-70b` 已下线                                   | 更新为 `llama3.1-8b`                                                                                | 2026-03-22 |
+| R002 | backend  | cloud-shim `_.or()` 在 `where()` 中产生错误查询                        | 添加顶层逻辑操作符处理                                                                              | 2026-03-23 |
+| R003 | backend  | cloud-shim 缺少 `_.all()` 导致 TypeError                               | 添加 `all` 操作符                                                                                   | 2026-03-23 |
+| R004 | backend  | Express 404 handler 先于路由注册                                       | 移到 `registerFunctions()` 之后                                                                     | 2026-03-23 |
+| R005 | backend  | ESM `__dirname` 不可用                                                 | 使用 `fileURLToPath(import.meta.url)`                                                               | 2026-03-23 |
+| R006 | deploy   | Docker Hub 大陆被墙                                                    | 配置镜像加速 + 改为本地编译部署                                                                     | 2026-03-23 |
 
 ## Tech Debt
 
@@ -126,6 +136,10 @@
 | D029     | performance | 主入口JS 452KB(gzip 149KB)偏大，缺少manualChunks vendor分离（vue/pinia/uni-app运行时混在主chunk）                                               | 首屏加载偏慢，重复访问缓存命中率低 | 🟡       |
 | D030     | performance | 未配置vite-plugin-compression构建时gzip/brotli预压缩，Nginx需实时压缩                                                                           | 安装后JS可从1968KB降至~589KB       | 🟡       |
 | D031     | frontend    | 微信小程序主包1896KB/2048KB，余量仅152KB，新增功能需注意分包                                                                                    | 新功能可能导致主包超限             | 🟡       |
+| D032     | backend     | 3个冗余tsconfig文件（tsconfig.standalone.json/tsconfig.standalone-esm.json/standalone/tsconfig.json），功能重叠但合并风险高                     | 维护冗余，暂不合并                 | 🔵       |
+| D033     | frontend    | PWA图标512x512声称但文件仅4.8KB，可能非真实分辨率                                                                                               | PWA安装图标模糊                    | 🔵       |
+| D034     | frontend    | PWA maskable图标与any图标使用同一文件（应分离为两个独立图标）                                                                                   | 部分设备图标显示不佳               | 🔵       |
+| D035     | frontend    | 35个后端API导出未在前端使用（后端已支持但前端未接入的能力）                                                                                     | 保留，代表可扩展能力               | 🔵       |
 | ~~D025~~ | frontend    | ~~首页 content-wrapper 无底部padding，tabbar遮挡内容~~ → **R030 已修复**                                                                        | ✅ R030 已修复                     | ~~🟡~~   |
 | ~~D026~~ | frontend    | ~~4对重复文件~~ → **R031 全部合并为重导出代理**                                                                                                 | ✅ R031 已清理                     | ~~🟡~~   |
 | D027     | frontend    | 文件管理页面空态缺少图标和操作按钮 → **R033 已修复(添加emoji+导入按钮)**                                                                        | ✅ R033 已修复                     | ~~🔵~~   |
