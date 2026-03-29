@@ -9,6 +9,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import config from '../../../config/index.js';
 import { getUserId } from '../../auth-storage.js';
 import { request, normalizeError, getStorageValue } from './_request-core.js';
 
@@ -88,7 +89,7 @@ export async function getHomeData() {
       {},
       {
         skipAuth: true,
-        timeout: 10000
+        timeout: config.api.homeDataTimeout
       }
     );
     return response;

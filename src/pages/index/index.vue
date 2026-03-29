@@ -221,19 +221,7 @@
             </view>
           </view>
 
-          <!-- [首页精简] 待办事项清单 — 可从个人中心访问，注释隐藏 -->
-          <!-- <view class="section-header section-header-apple">
-            <text class="section-title"> 待办事项 </text>
-            <view id="e2e-home-edit-plan" class="edit-plan-btn apple-glass-pill" @tap="handleEditPlan">
-              <view class="edit-icon">
-                <BaseIcon name="edit" :size="24" />
-              </view>
-              <text class="edit-text"> 编辑计划 </text>
-            </view>
-          </view>
-          <TodoList :todos="todos" :is-dark="isDark" @toggle-todo="handleToggleTodo" @edit-todo="openTodoEditor" /> -->
-
-          <!-- ✅ [P0重构] DailyQuoteCard 已移除，首页精简 -->
+          <!-- [P0重构] 待办事项、DailyQuoteCard 已移至个人中心，首页精简 -->
         </view>
         <!-- 内容包装器结束 -->
 

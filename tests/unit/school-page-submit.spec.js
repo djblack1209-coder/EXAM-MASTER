@@ -57,6 +57,9 @@ vi.mock('@/config/index.js', () => ({
   default: {
     externalCdn: {
       dicebearBaseUrl: 'https://example.com'
+    },
+    ui: {
+      toastDuration: 2000
     }
   }
 }));

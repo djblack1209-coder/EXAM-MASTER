@@ -253,7 +253,7 @@ import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
-import { generateStudyPlan } from '@/services/api/domains/smart-study.api.js';
+import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 
 export default {
   components: {
@@ -278,6 +278,7 @@ export default {
   onLoad() {
     this.statusBarHeight = getStatusBarHeight();
     this.capsuleSafeRight = getCapsuleSafeRight();
+    this.studyEngineStore = useStudyEngineStore();
 
     const savedTheme = storageService.get('theme_mode', 'light');
     this.isDark = savedTheme === 'dark';
@@ -334,7 +335,7 @@ export default {
       try {
         const examDate = storageService.get('exam_date', '');
         const dailyHours = storageService.get('daily_study_hours', 4);
-        const result = await generateStudyPlan(examDate, dailyHours);
+        const result = await this.studyEngineStore.generateStudyPlan(examDate, dailyHours);
         if (result?.data?.plan) {
           const plan = result.data.plan;
           plan._ts = Date.now();

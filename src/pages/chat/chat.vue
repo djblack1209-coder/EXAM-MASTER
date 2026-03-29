@@ -264,7 +264,8 @@
 import { toast } from '@/utils/toast.js';
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-import { lafService } from '@/services/lafService.js';
+import { useSchoolStore } from '@/stores/modules/school.js';
+import { useToolsStore } from '@/stores/modules/tools.js';
 import { storageService } from '@/services/storageService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
@@ -805,7 +806,7 @@ const processVoiceToText = async (filePath) => {
       throw new Error('语音文件解析失败');
     }
 
-    const response = await lafService.speechToText(audioBase64, 'mp3', {
+    const response = await useToolsStore().speechToText(audioBase64, 'mp3', {
       prompt: '考研学习场景语音识别，请保留专业术语'
     });
 
@@ -964,7 +965,7 @@ const handleNormalChat = async (content) => {
 
   try {
     // 调用智能好友对话API
-    const response = await lafService.aiFriendChat(sessionFriendType, content, {
+    const response = await useSchoolStore().aiFriendChat(sessionFriendType, content, {
       emotion: currentEmotion.value,
       conversationCount: conversationCount.value,
       studyState: userContext.studyState,
@@ -1067,7 +1068,7 @@ const retryMessage = async (index) => {
     try {
       isTyping.value = true;
 
-      const response = await lafService.aiFriendChat(sessionFriendType, msg.content, {
+      const response = await useSchoolStore().aiFriendChat(sessionFriendType, msg.content, {
         emotion: currentEmotion.value,
         conversationCount: conversationCount.value,
         studyState: userContext.studyState,

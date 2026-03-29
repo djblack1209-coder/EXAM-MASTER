@@ -24,16 +24,7 @@
 
 import cloud from '@lafjs/cloud';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import {
-  success,
-  badRequest,
-  serverError,
-  validateUserId,
-  checkRateLimit,
-  logger,
-  generateRequestId,
-  wrapResponse
-} from './_shared/api-response.js';
+import { success, badRequest, serverError, validateUserId, logger, generateRequestId } from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -1063,7 +1054,7 @@ async function handleFindMatch(params, requestId) {
  * 轮询房间状态（客户端每 1s 调用一次）
  * 返回：房间状态、双方分数、对手答题进度
  */
-async function handlePollRoom(params, requestId) {
+async function handlePollRoom(params, _requestId) {
   const userId = params._authUserId;
   const roomId = params.room_id;
 
@@ -1146,7 +1137,7 @@ async function handlePollRoom(params, requestId) {
  * 提交单题答案（实时同步）
  * 参数：room_id, question_index, answer, duration
  */
-async function handleRoomAnswer(params, requestId) {
+async function handleRoomAnswer(params, _requestId) {
   const userId = params._authUserId;
   const { room_id, question_index, answer, duration } = params;
 

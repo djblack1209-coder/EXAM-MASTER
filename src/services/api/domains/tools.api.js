@@ -6,6 +6,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import config from '../../../config/index.js';
 import { request, normalizeError } from './_request-core.js';
 
 // ==================== 证件照服务 ====================
@@ -63,7 +64,7 @@ export async function speechToText(audioBase64, audioFormat = 'mp3', options = {
         audioFormat,
         ...options
       },
-      { timeout: 60000, maxRetries: 1 }
+      { timeout: config.ai.timeout, maxRetries: 1 }
     );
   } catch (error) {
     logger.warn('[LafService] 语音识别失败:', error);
@@ -85,7 +86,7 @@ export async function textToSpeech(text, options = {}) {
         text,
         ...options
       },
-      { timeout: 60000, maxRetries: 1 }
+      { timeout: config.ai.timeout, maxRetries: 1 }
     );
   } catch (error) {
     logger.warn('[LafService] 语音合成失败:', error);

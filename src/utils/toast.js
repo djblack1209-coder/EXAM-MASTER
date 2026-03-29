@@ -24,6 +24,8 @@
  * @module utils/toast
  */
 
+import config from '@/config/index.js';
+
 // 防抖计时器
 let _timer = null;
 
@@ -40,7 +42,7 @@ function show(options = {}) {
   }
 
   const merged = {
-    duration: 2000,
+    duration: config.ui.toastDuration,
     mask: false,
     ...options
   };
@@ -50,7 +52,7 @@ function show(options = {}) {
   // 自动清理定时器
   _timer = setTimeout(() => {
     _timer = null;
-  }, merged.duration || 2000);
+  }, merged.duration || config.ui.toastDuration);
 
   return {
     hide: () => {

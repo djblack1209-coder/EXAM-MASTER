@@ -40,6 +40,9 @@ vi.mock('@/config/index.js', () => ({
     },
     deepLink: {
       h5BaseUrl: 'https://example.com'
+    },
+    ui: {
+      toastDuration: 2000
     }
   }
 }));

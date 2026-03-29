@@ -17,29 +17,26 @@
 import { getWeakKnowledgePoints, getLearningStats } from '@/utils/learning/adaptive-learning-engine.js';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { lafService } from '@/services/lafService.js';
+import { checkAchievements, getAllAchievements, unlockAchievement } from '@/services/api/domains/user.api.js';
 import { toast } from '@/utils/toast.js';
+import { ACHIEVEMENT_DEFS, GAME_STORAGE_KEYS } from '@/config/game-constants.js';
 
 const STORAGE_KEYS = {
-  DAILY_STATS: 'learning_daily_stats',
-  STREAK_DATA: 'learning_streak_data',
-  ACHIEVEMENT_DATA: 'learning_achievements'
+  DAILY_STATS: GAME_STORAGE_KEYS.DAILY_STATS,
+  STREAK_DATA: GAME_STORAGE_KEYS.STREAK_DATA,
+  ACHIEVEMENT_DATA: GAME_STORAGE_KEYS.ACHIEVEMENT_DATA
 };
 
-const ACHIEVEMENTS = {
-  FIRST_QUESTION: { id: 'first_question', name: '初出茅庐', description: '完成第一道题目', icon: 'achieve-first' },
-  TEN_QUESTIONS: { id: 'ten_questions', name: '小试牛刀', description: '累计完成10道题目', icon: 'ach10' },
-  HUNDRED_QUESTIONS: {
-    id: 'hundred_questions',
-    name: '勤学苦练',
-    description: '累计完成100道题目',
-    icon: 'achieve-100'
-  },
-  STREAK_3: { id: 'streak_3', name: '三天打鱼', description: '连续学习3天', icon: 'achieve-streak3' },
-  STREAK_7: { id: 'streak_7', name: '一周坚持', description: '连续学习7天', icon: 'achieve-streak7' },
-  STREAK_30: { id: 'streak_30', name: '月度学霸', description: '连续学习30天', icon: 'achieve-streak30' },
-  ACCURACY_80: { id: 'accuracy_80', name: '准确达人', description: '单日正确率达到80%', icon: 'achieve-accuracy' }
-};
+// analytics 子系统关心的 7 个成就 ID（对应 ACHIEVEMENT_DEFS 中的 key）
+const ANALYTICS_ACHIEVEMENT_IDS = [
+  'first_question',
+  'ten_questions',
+  'hundred_questions',
+  'streak_3',
+  'streak_7',
+  'streak_30',
+  'accuracy_80'
+];
 
 class LearningAnalytics {
   constructor() {
@@ -186,9 +183,10 @@ class LearningAnalytics {
 
   getAchievements() {
     this.init();
-    const allAchievements = Object.values(ACHIEVEMENTS).map((a) => ({
-      ...a,
-      unlocked: this.achievements.includes(a.id)
+    const allAchievements = ANALYTICS_ACHIEVEMENT_IDS.map((id) => ({
+      id,
+      ...ACHIEVEMENT_DEFS[id],
+      unlocked: this.achievements.includes(id)
     }));
     return {
       unlocked: allAchievements.filter((a) => a.unlocked),
@@ -298,7 +296,7 @@ class LearningAnalytics {
       // ✅ F013: 同步新解锁的成就到后端
       this._syncAchievementsToServer(newAchievements);
       for (const id of newAchievements) {
-        const achievement = Object.values(ACHIEVEMENTS).find((a) => a.id === id);
+        const achievement = ACHIEVEMENT_DEFS[id];
         if (achievement) {
           toast.info('解锁成就：', 3000);
         }
@@ -416,11 +414,9 @@ class LearningAnalytics {
       const userId = storageService.get('EXAM_USER_ID', null);
       if (!userId) return;
 
-      if (!lafService) return;
-
       // 1. 先触发后端 check（根据用户数据自动解锁满足条件的成就）
       try {
-        const checkRes = await lafService.checkAchievements();
+        const checkRes = await checkAchievements();
         const newlyUnlocked = checkRes?.data?.newlyUnlocked || [];
         if (newlyUnlocked.length > 0) {
           for (const ach of newlyUnlocked) {
@@ -440,7 +436,7 @@ class LearningAnalytics {
 
       // 2. 拉取后端已解锁成就列表，合并到本地
       try {
-        const res = await lafService.getAllAchievements();
+        const res = await getAllAchievements();
         const allAch = res?.data?.achievements || [];
         const serverUnlocked = allAch.filter((a) => a.unlocked).map((a) => a.id);
 
@@ -474,12 +470,10 @@ class LearningAnalytics {
       const userId = storageService.get('EXAM_USER_ID', null);
       if (!userId) return; // 未登录不同步
 
-      if (!lafService) return;
-
       // 逐个解锁成就到后端
       for (const achievementId of newAchievementIds) {
         try {
-          await lafService.unlockAchievement(achievementId);
+          await unlockAchievement(achievementId);
         } catch (e) {
           logger.warn(`[LearningAnalytics] 同步成就 ${achievementId} 失败:`, e.message);
         }

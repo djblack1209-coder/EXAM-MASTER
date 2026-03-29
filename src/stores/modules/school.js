@@ -7,7 +7,13 @@
  */
 
 import { defineStore } from 'pinia';
-import { lafService } from '@/services/lafService.js';
+import {
+  getHotSchools,
+  crawlSchoolData as crawlSchoolDataApi,
+  getSchoolDetail,
+  searchSchools as searchSchoolsApi
+} from '@/services/api/domains/school.api.js';
+import { proxyAI, aiFriendChat as aiFriendChatApi } from '@/services/api/domains/ai.api.js';
 
 export const useSchoolStore = defineStore('school', () => {
   /**
@@ -15,7 +21,7 @@ export const useSchoolStore = defineStore('school', () => {
    * @param {Object} [params] - 查询参数（如 { limit: 10 }）
    */
   const fetchHotSchools = async (params) => {
-    return await lafService.getHotSchools(params);
+    return await getHotSchools(params);
   };
 
   /**
@@ -24,7 +30,7 @@ export const useSchoolStore = defineStore('school', () => {
    * @param {Object} [options] - 请求选项（skipAuth, maxRetries 等）
    */
   const crawlSchoolData = async (params, options) => {
-    return await lafService.request('/school-crawler-api', params, options);
+    return await crawlSchoolDataApi(params, options);
   };
 
   /**
@@ -33,7 +39,7 @@ export const useSchoolStore = defineStore('school', () => {
    * @param {Object} params - 推荐参数
    */
   const aiRecommend = async (action, params) => {
-    return await lafService.proxyAI(action, params);
+    return await proxyAI(action, params);
   };
 
   /**
@@ -41,7 +47,7 @@ export const useSchoolStore = defineStore('school', () => {
    * @param {string} id - 院校 ID
    */
   const fetchSchoolDetail = async (id) => {
-    return await lafService.getSchoolDetail(id);
+    return await getSchoolDetail(id);
   };
 
   /**
@@ -50,7 +56,7 @@ export const useSchoolStore = defineStore('school', () => {
    * @param {Object} params - 预测参数
    */
   const aiPredict = async (action, params) => {
-    return await lafService.proxyAI(action, params);
+    return await proxyAI(action, params);
   };
 
   /**
@@ -59,7 +65,17 @@ export const useSchoolStore = defineStore('school', () => {
    * @param {number} [limit=10] - 返回数量限制
    */
   const searchSchools = async (keyword, limit = 10) => {
-    return await lafService.searchSchools(keyword, limit);
+    return await searchSchoolsApi(keyword, limit);
+  };
+
+  /**
+   * AI 智能好友聊天
+   * @param {string} friendType - 好友类型（如 'yan-cong'）
+   * @param {string} content - 用户发送的消息内容
+   * @param {Object} context - 上下文信息（情绪、学习状态等）
+   */
+  const aiFriendChat = async (friendType, content, context) => {
+    return await aiFriendChatApi(friendType, content, context);
   };
 
   return {
@@ -68,6 +84,7 @@ export const useSchoolStore = defineStore('school', () => {
     aiRecommend,
     fetchSchoolDetail,
     aiPredict,
-    searchSchools
+    searchSchools,
+    aiFriendChat
   };
 });

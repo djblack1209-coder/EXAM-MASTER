@@ -10,7 +10,7 @@
 
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { lafService } from '@/services/lafService.js';
+import { getLearningGoals, recordGoalProgress, syncLearningGoals } from '@/services/api/domains/user.api.js';
 import { toast } from '@/utils/toast.js';
 const STORAGE_KEYS = {
   GOALS: 'learning_goals',
@@ -665,7 +665,7 @@ class LearningGoalManager {
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return;
 
-      const res = await lafService.getLearningGoals({ status: 'active' });
+      const res = await getLearningGoals({ status: 'active' });
       const serverGoals = res?.data || [];
       if (!Array.isArray(serverGoals) || serverGoals.length === 0) return;
 
@@ -714,9 +714,7 @@ class LearningGoalManager {
       const userId = storageService.get('EXAM_USER_ID');
       if (!userId) return;
 
-      if (lafService && typeof lafService.recordGoalProgress === 'function') {
-        await lafService.recordGoalProgress(type, value);
-      }
+      await recordGoalProgress(type, value);
     } catch (e) {
       logger.warn('[LearningGoal] 进度同步失败:', e.message);
     }
@@ -740,12 +738,9 @@ class LearningGoalManager {
       // 标记待同步
       storageService.save('learning_goals_pending_sync', true);
 
-      // 尝试调用后端接口（lafService 中需要实现对应接口）
-      if (lafService && typeof lafService.syncLearningGoals === 'function') {
-        await lafService.syncLearningGoals(userId, syncData);
-        storageService.remove('learning_goals_pending_sync');
-        logger.log('[LearningGoal] 目标已同步到服务器');
-      }
+      await syncLearningGoals(userId, syncData);
+      storageService.remove('learning_goals_pending_sync');
+      logger.log('[LearningGoal] 目标已同步到服务器');
     } catch (e) {
       // 同步失败不影响本地使用，下次保存时重试
       logger.warn('[LearningGoal] 后端同步失败（将在下次保存时重试）:', e.message);

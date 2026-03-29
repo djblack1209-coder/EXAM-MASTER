@@ -35,7 +35,8 @@
             <image
               class="avatar"
               :src="rankList[1].avatar || defaultAvatar"
-              alt="头像" mode="aspectFill"
+              alt="头像"
+              mode="aspectFill"
               @error="onAvatarError($event, rankList[1])"
             />
             <view class="badge"> 2 </view>
@@ -52,7 +53,8 @@
             <image
               class="avatar"
               :src="rankList[0].avatar || defaultAvatar"
-              alt="头像" mode="aspectFill"
+              alt="头像"
+              mode="aspectFill"
               @error="onAvatarError($event, rankList[0])"
             />
             <view class="badge"> 1 </view>
@@ -68,7 +70,8 @@
             <image
               class="avatar"
               :src="rankList[2].avatar || defaultAvatar"
-              alt="头像" mode="aspectFill"
+              alt="头像"
+              mode="aspectFill"
               @error="onAvatarError($event, rankList[2])"
             />
             <view class="badge"> 3 </view>
@@ -97,7 +100,8 @@
           <image
             class="item-avatar"
             :src="item.avatar || defaultAvatar"
-            alt="头像" mode="aspectFill"
+            alt="头像"
+            mode="aspectFill"
             lazy-load
             @error="onAvatarError($event, item)"
           />
@@ -130,7 +134,8 @@
         <image
           class="item-avatar"
           :src="userInfo.avatarUrl || defaultAvatar"
-          alt="头像" mode="aspectFill"
+          alt="头像"
+          mode="aspectFill"
           @error="onAvatarError($event, userInfo, 'avatarUrl')"
         />
         <view class="item-info">
@@ -155,7 +160,8 @@
           <image
             class="card-avatar"
             :src="activeUser.avatar || defaultAvatar"
-            alt="头像" mode="aspectFill"
+            alt="头像"
+            mode="aspectFill"
             @error="onAvatarError($event, activeUser)"
           />
           <view class="header-info">
@@ -216,7 +222,8 @@
 
 <script>
 import { toast } from '@/utils/toast.js';
-import { lafService } from '@/services/lafService.js';
+import { useSchoolStore } from '@/stores/modules/school.js';
+import { useUserStore } from '@/stores/modules/user.js';
 // 检查点4.1: 排行榜WebSocket实时更新
 import { rankingSocket } from './ranking-socket.js';
 import { selfPositionTracker } from './self-position-tracker.js';
@@ -369,7 +376,8 @@ export default {
       try {
         const userId = storageService.get('EXAM_USER_ID', '');
         // 调用 rank-center 云函数获取排行榜数据
-        const res = await lafService.rankCenter({
+        const userStore = useUserStore();
+        const res = await userStore.fetchRankCenter({
           action: 'get',
           userId: userId
         });
@@ -603,8 +611,9 @@ export default {
       logger.log('[rank] 🤖 调用后端代理进行学霸足迹分析...');
 
       try {
-        // ✅ 使用后端代理调用（安全）- action: 'footprint'
-        const response = await lafService.proxyAI('footprint', {
+        // 通过 school store 调用 AI 足迹分析（遵循分层纪律）
+        const schoolStore = useSchoolStore();
+        const response = await schoolStore.aiRecommend('footprint', {
           name: user.name,
           days: user.days || 0,
           score: user.score || 0,

@@ -5,6 +5,7 @@
 import { ref } from 'vue';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
+import config from '@/config/index.js';
 
 export function useDynamicMixin() {
   // 分包加载状态
@@ -93,7 +94,7 @@ export function useDynamicMixin() {
    * @param {number} retryCount - 当前重试次数
    */
   async function loadAIGenerationMixin(componentInstance, retryCount = 0) {
-    const MAX_RETRIES = 2;
+    const MAX_RETRIES = config.retry.maxRetries;
     try {
       await ensurePracticeSubPackageLoaded();
 

@@ -78,7 +78,8 @@
 <script>
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
-import { lafService } from '@/services/lafService.js';
+import { useSchoolStore } from '@/stores/modules/school.js';
+import { useToolsStore } from '@/stores/modules/tools.js';
 
 const ENABLE_WECHAT_SI_PLUGIN = false;
 
@@ -262,8 +263,9 @@ export default {
       }
       const aiContent = `${systemHint}\n\n对话记录：\n${contextStr}`;
 
-      lafService
-        .proxyAI('chat', {
+      const schoolStore = useSchoolStore();
+      schoolStore
+        .aiRecommend('chat', {
           content: aiContent,
           temperature: 0.8 // 聊天场景适当提高创造性
         })
@@ -273,8 +275,8 @@ export default {
             this._aiRetried = true;
             logger.log('[AIChatModal] Network error, retrying in 2s...');
             setTimeout(() => {
-              lafService
-                .proxyAI('chat', { content: aiContent })
+              schoolStore
+                .aiRecommend('chat', { content: aiContent })
                 .then((retryRes) => {
                   this._aiRetried = false;
                   this._handleAIResponse(retryRes);
@@ -370,7 +372,8 @@ export default {
       if (!trimmedText) return;
 
       try {
-        const response = await lafService.textToSpeech(trimmedText, {
+        const toolsStore = useToolsStore();
+        const response = await toolsStore.textToSpeech(trimmedText, {
           voice: 'tongtong',
           format: 'wav'
         });
@@ -636,7 +639,8 @@ export default {
         const audioBase64 = await this.readAudioAsBase64(filePath);
         if (!audioBase64) return '';
 
-        const response = await lafService.speechToText(audioBase64, 'mp3', {
+        const toolsStore = useToolsStore();
+        const response = await toolsStore.speechToText(audioBase64, 'mp3', {
           prompt: '考研学习场景语音识别，请保留专业术语'
         });
 
@@ -776,7 +780,7 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-font-weight: 600;
+  font-weight: 600;
   color: var(--text-primary, var(--text-primary));
 }
 
@@ -784,7 +788,7 @@ font-weight: 600;
   display: flex;
   align-items: flex-end;
   /* gap: 4px; -- replaced for Android WebView compat */
-height: 24px;
+  height: 24px;
 }
 
 .speaking-indicator .bar {
@@ -895,7 +899,7 @@ height: 24px;
   display: flex;
   align-items: center;
   /* gap: 16px; -- replaced for Android WebView compat */
-padding-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--border);
 }
 

@@ -15,51 +15,21 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { storageService } from '../../services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import {
+  XP_REWARDS,
+  getLevelByXP,
+  getNextLevel,
+  getLevelProgress,
+  STREAK_MILESTONES,
+  getStreakMultiplier,
+  ACHIEVEMENT_DEFS,
+  CHALLENGE_TEMPLATES,
+  GAME_STORAGE_KEYS
+} from '@/config/game-constants.js';
 
 // ==================== 常量 ====================
 
-const STORAGE_KEY = 'gamification_state';
-
-/** XP 奖励值 */
-const XP_REWARDS = {
-  CORRECT_ANSWER: 10,
-  STREAK_BONUS_PER_DAY: 5,
-  PERFECT_SCORE: 50,
-  FIRST_PRACTICE_OF_DAY: 20
-};
-
-/** 连续学习里程碑 */
-const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100, 365];
-
-/** 预定义成就 */
-const ACHIEVEMENT_DEFS = {
-  first_blood: { name: '初试锋芒', description: '完成第一道题目', icon: '🎯', category: 'volume' },
-  streak_3: { name: '三日不辍', description: '连续学习 3 天', icon: '🔥', category: 'streak' },
-  streak_7: { name: '周周坚持', description: '连续学习 7 天', icon: '🔥', category: 'streak' },
-  streak_14: { name: '两周达人', description: '连续学习 14 天', icon: '🔥', category: 'streak' },
-  streak_30: { name: '月度之星', description: '连续学习 30 天', icon: '⭐', category: 'streak' },
-  streak_100: { name: '百日征途', description: '连续学习 100 天', icon: '🏆', category: 'streak' },
-  perfect_10: { name: '十全十美', description: '连续答对 10 题', icon: '💯', category: 'accuracy' },
-  speed_demon: { name: '闪电侠', description: '5 秒内正确作答', icon: '⚡', category: 'speed' },
-  night_owl: { name: '夜猫子', description: '23 点后学习', icon: '🦉', category: 'volume' },
-  early_bird: { name: '早起鸟', description: '7 点前学习', icon: '🐦', category: 'volume' },
-  centurion: { name: '百题斩', description: '累计完成 100 题', icon: '💪', category: 'volume' },
-  thousand: { name: '千题王', description: '累计完成 1000 题', icon: '👑', category: 'volume' },
-  accuracy_90: { name: '精准射手', description: '50 题内保持 90%+ 正确率', icon: '🎯', category: 'accuracy' },
-  social_butterfly: { name: '社交达人', description: '添加 5 位好友', icon: '🦋', category: 'social' },
-  comeback_kid: { name: '绝地反击', description: '使用连续学习保护卡', icon: '🛡️', category: 'streak' },
-  marathon: { name: '马拉松', description: '单次学习超过 2 小时', icon: '🏃', category: 'volume' }
-};
-
-/** 每日挑战模板 */
-const CHALLENGE_TEMPLATES = [
-  { type: 'answer_count', description: '完成 {target} 道题目', target: 20, reward: 30 },
-  { type: 'correct_streak', description: '连续答对 {target} 题', target: 5, reward: 40 },
-  { type: 'study_minutes', description: '学习 {target} 分钟', target: 30, reward: 35 },
-  { type: 'answer_count', description: '完成 {target} 道题目', target: 10, reward: 20 },
-  { type: 'correct_streak', description: '连续答对 {target} 题', target: 3, reward: 25 },
-  { type: 'study_minutes', description: '学习 {target} 分钟', target: 15, reward: 20 }
-];
+const STORAGE_KEY = GAME_STORAGE_KEYS.GAMIFICATION_STATE;
 
 // ==================== 工具函数 ====================
 
@@ -85,25 +55,19 @@ export const useGamificationStore = defineStore('gamification', () => {
   const todayXp = ref(0);
   const _todayDate = ref(todayISO());
 
-  const level = computed(() => Math.floor(Math.sqrt(xp.value / 100)));
+  const level = computed(() => getLevelByXP(xp.value).level);
+
+  const levelTitle = computed(() => getLevelByXP(xp.value).title);
 
   const xpToNextLevel = computed(() => {
-    const next = level.value + 1;
-    return next * next * 100 - xp.value;
+    const next = getNextLevel(getLevelByXP(xp.value).level);
+    return next ? next.xpRequired - xp.value : 0;
   });
 
-  const levelProgress = computed(() => {
-    const cur = level.value;
-    const curThreshold = cur * cur * 100;
-    const nextThreshold = (cur + 1) * (cur + 1) * 100;
-    const range = nextThreshold - curThreshold;
-    return range > 0 ? (xp.value - curThreshold) / range : 0;
-  });
+  const levelProgress = computed(() => getLevelProgress(xp.value) / 100);
 
   function getXpMultiplier() {
-    if (currentStreak.value >= 30) return 2;
-    if (currentStreak.value >= 7) return 1.5;
-    return 1;
+    return getStreakMultiplier(currentStreak.value);
   }
 
   function addXp(amount, reason = '') {
@@ -352,6 +316,7 @@ export const useGamificationStore = defineStore('gamification', () => {
     xp,
     todayXp,
     level,
+    levelTitle,
     xpToNextLevel,
     levelProgress,
     addXp,

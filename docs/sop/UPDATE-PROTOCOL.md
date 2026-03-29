@@ -22,6 +22,11 @@
 | Change test infra                                | `modules/testing-infra.md` + CHANGE-LOG                |
 | Add new LLM provider                             | `modules/backend-functions.md` (号池章节) + CHANGE-LOG |
 | Change server config                             | CHANGE-LOG (scope: `deploy` or `infra`)                |
+| Make a major technical decision                  | `AI-DECISION-LOG.md` → 追加决策记录                    |
+| Complete a new feature                           | `ACCEPTANCE-CHECKLIST.md` → 对照相关条目验收           |
+| Fix a bug that may affect other features         | `REGRESSION-TEST-STRATEGY.md` → 按触发矩阵执行测试     |
+| Modify code that affects multiple files          | `CHANGE-IMPACT-ANALYSIS.md` → 填写影响分析报告         |
+| Change SOP rules or create new SOP doc           | `WORKFLOW-PLAYBOOK.md` + CLAUDE.md 文档体系表          |
 
 ## CHANGE-LOG Entry Format
 

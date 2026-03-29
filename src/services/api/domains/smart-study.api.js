@@ -6,6 +6,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import config from '../../../config/index.js';
 import { request, normalizeError } from './_request-core.js';
 
 /**
@@ -22,7 +23,7 @@ export async function analyzeMastery() {
         action: 'analyze_mastery',
         data: {}
       },
-      { timeout: 15000 }
+      { timeout: config.ai.analysisTimeout }
     );
     return response;
   } catch (error) {
@@ -45,7 +46,7 @@ export async function getErrorClusters() {
         action: 'error_clustering',
         data: {}
       },
-      { timeout: 15000 }
+      { timeout: config.ai.analysisTimeout }
     );
     return response;
   } catch (error) {
@@ -112,7 +113,7 @@ export async function generateStudyPlan(examDate, dailyHours) {
         action: 'generate_plan',
         data
       },
-      { timeout: 30000 }
+      { timeout: config.api.timeout }
     );
     return response;
   } catch (error) {

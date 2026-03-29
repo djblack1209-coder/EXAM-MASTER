@@ -97,6 +97,52 @@ vi.mock('@/config/index.js', () => ({
     },
     deepLink: {
       h5BaseUrl: 'https://example.com'
+    },
+    ui: {
+      toastDuration: 2000
+    },
+    security: {
+      obfuscationKey: 'test-key-for-unit-tests',
+      requestSignSalt: 'test-salt'
+    },
+    api: {
+      baseUrl: 'https://test-api.example.com',
+      fallbackUrl: '',
+      fallbackThreshold: 3,
+      fallbackRecoveryMs: 60000,
+      timeout: 15000,
+      homeDataTimeout: 10000,
+      emailCodeTimeout: 45000
+    },
+    ai: {
+      analysisTimeout: 15000,
+      sessionTimeout: 15000,
+      pollIntervalMs: 3000,
+      pollTimeoutMs: 300000
+    },
+    retry: {
+      maxRetries: 2,
+      retryDelay: 1000,
+      maxRetryDelay: 10000,
+      retryableStatusCodes: [408, 429, 500, 502, 503, 504],
+      coldStartRetries: 6
+    },
+    cache: {
+      defaultTtl: 30000,
+      longTtl: 300000,
+      maxSize: 100
+    },
+    rateLimit: {
+      ai: { maxRequests: 10, windowMs: 60000 },
+      photoSearch: { maxRequests: 5, windowMs: 60000 },
+      voice: { maxRequests: 8, windowMs: 60000 },
+      default: { maxRequests: 30, windowMs: 60000 }
+    },
+    upload: {
+      uploadTimeout: 60000
+    },
+    network: {
+      checkTimeout: 5000
     }
   }
 }));

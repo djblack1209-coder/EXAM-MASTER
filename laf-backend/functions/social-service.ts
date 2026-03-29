@@ -18,7 +18,6 @@ import cloud from '@lafjs/cloud';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   badRequest,
-  unauthorized,
   serverError,
   validateUserId,
   sanitizeString,
@@ -391,7 +390,7 @@ async function handleGetFriendList(userId, params, requestId) {
 /**
  * 获取好友请求列表
  */
-async function handleGetFriendRequests(userId, params, requestId) {
+async function handleGetFriendRequests(userId, _params, requestId) {
   if (!validateUserId(userId)) {
     return { code: 401, success: false, message: '用户未登录', data: [] };
   }

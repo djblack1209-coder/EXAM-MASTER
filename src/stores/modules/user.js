@@ -9,7 +9,7 @@
 import { defineStore, storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import { getUserId } from '../../services/storageService.js';
-import { lafService } from '../../services/lafService.js';
+import { socialService, rankCenter as rankCenterApi } from '@/services/api/domains/social.api.js';
 import { logger } from '@/utils/logger.js';
 
 import { useAuthStore } from './auth';
@@ -48,7 +48,7 @@ export const useUserStore = defineStore('user', () => {
         return [];
       }
 
-      const res = await lafService.socialService({
+      const res = await socialService({
         action: 'get_friend_list',
         userId
       });
@@ -66,6 +66,16 @@ export const useUserStore = defineStore('user', () => {
       friendsList.value = [];
       return [];
     }
+  };
+
+  // ---- 排行榜功能 ----
+
+  /**
+   * 排行榜操作（获取排行、上传分数等）
+   * @param {Object} data - 排行榜请求参数
+   */
+  const fetchRankCenter = async (data) => {
+    return await rankCenterApi(data);
   };
 
   // 监听登出事件重置社交数据（避免重复注册）
@@ -104,6 +114,7 @@ export const useUserStore = defineStore('user', () => {
     login,
     logout,
     fetchFriends,
+    fetchRankCenter,
     restoreUserInfo,
     silentLogin
   };

@@ -200,8 +200,6 @@
 - **Poster modal**: `src/pages/settings/PosterModal.vue`
 - **Logout button**: `src/pages/settings/LogoutButton.vue`
 - **Profile store**: `src/stores/modules/profile.js`
-- **VIP store**: `src/stores/modules/vip.js`
-- **Invite store**: `src/stores/modules/invite.js`
 
 ---
 

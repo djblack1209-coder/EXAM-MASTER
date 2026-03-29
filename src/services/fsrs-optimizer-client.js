@@ -12,7 +12,7 @@
  * @module fsrs-optimizer-client
  */
 
-import { lafService } from './lafService.js';
+import { getFSRSParams, optimizeFSRS, getFSRSReviewStats } from './api/domains/practice.api.js';
 import { loadUserParams, restoreUserParams, hasCustomParams } from './fsrs-service.js';
 import { logger } from '@/utils/logger.js';
 
@@ -54,7 +54,7 @@ export async function syncFSRSParams() {
     }
 
     // Step 3: 从后端拉取
-    const res = await lafService.request('/fsrs-optimizer', { action: 'get_params' });
+    const res = await getFSRSParams();
 
     if (!res || res.code !== 0 || !res.data) {
       logger.warn(TAG, '获取参数失败:', res?.message || '未知错误');
@@ -102,7 +102,7 @@ export async function triggerOptimization() {
   try {
     logger.log(TAG, '开始触发参数优化...');
 
-    const res = await lafService.request('/fsrs-optimizer', { action: 'optimize' });
+    const res = await optimizeFSRS();
 
     if (!res || (res.code !== 0 && res.code !== 200)) {
       const msg = res?.message || '优化请求失败';
@@ -153,7 +153,7 @@ export async function triggerOptimization() {
  */
 export async function getReviewStats() {
   try {
-    const res = await lafService.request('/fsrs-optimizer', { action: 'get_review_stats' });
+    const res = await getFSRSReviewStats();
 
     if (!res || res.code !== 0 || !res.data) {
       logger.warn(TAG, '获取统计失败:', res?.message || '未知错误');
@@ -186,7 +186,7 @@ export async function getReviewStats() {
  */
 export async function getOptimizationStatus() {
   try {
-    const res = await lafService.request('/fsrs-optimizer', { action: 'get_params' });
+    const res = await getFSRSParams();
 
     if (!res || res.code !== 0 || !res.data) {
       return null;

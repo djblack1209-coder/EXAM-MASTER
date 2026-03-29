@@ -27,14 +27,14 @@ async function loadInviteModule({ inviteSecret = '', enableMock = false, lafRequ
     }
   }));
 
-  // mock lafService — validateInviteCode / joinPKRoom 现在会调用后端 API
-  const mockRequest = lafRequestMock || vi.fn().mockRejectedValue(new Error('网络不可用(测试环境)'));
-  vi.doMock('@/services/lafService.js', () => ({
-    lafService: { request: mockRequest }
+  // mock social.api.js — validateInviteCode / joinPKRoom 现在调用 pkBattle
+  const mockPkBattle = lafRequestMock || vi.fn().mockRejectedValue(new Error('网络不可用(测试环境)'));
+  vi.doMock('@/services/api/domains/social.api.js', () => ({
+    pkBattle: mockPkBattle
   }));
 
   const mod = await import('@/pages/practice-sub/invite-deep-link.js');
-  return { mod, logger, mockRequest };
+  return { mod, logger, mockRequest: mockPkBattle };
 }
 
 describe('invite-deep-link security', () => {
@@ -138,7 +138,7 @@ describe('invite-deep-link security', () => {
     const valid = await mod.validateInviteCode('ABCD1234', 'room_1');
 
     expect(valid).toBe(true);
-    expect(mockRequest).toHaveBeenCalledWith('/pk-battle', {
+    expect(mockRequest).toHaveBeenCalledWith({
       action: 'validate_invite_code',
       data: { code: 'ABCD1234', roomId: 'room_1' }
     });

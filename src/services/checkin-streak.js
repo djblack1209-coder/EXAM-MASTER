@@ -13,35 +13,13 @@
 import { logger } from '@/utils/logger.js';
 import { reactive, computed } from 'vue';
 import storageService from '@/services/storageService.js';
+import { CHECKIN_STATUS, CHECKIN_REWARD, STREAK_MULTIPLIER, getStreakMultiplier } from '@/config/game-constants.js';
 
-// 打卡状态
-const CHECKIN_STATUS = {
-  NOT_CHECKED: 'not_checked', // 未打卡
-  CHECKED: 'checked', // 已打卡
-  MISSED: 'missed', // 已断签
-  RECOVERED: 'recovered' // 已补签
-};
-
-// 奖励配置
+// 本地别名 — 保持内部 REWARD_CONFIG.xxx 形式不变，减少改动面
 const REWARD_CONFIG = {
-  // 基础奖励
-  base: { exp: 5, coins: 2 },
-  // 连续奖励倍数
-  streakMultiplier: {
-    3: 1.5, // 连续3天，1.5倍
-    7: 2, // 连续7天，2倍
-    14: 2.5, // 连续14天，2.5倍
-    30: 3, // 连续30天，3倍
-    60: 4, // 连续60天，4倍
-    100: 5 // 连续100天，5倍
-  },
-  // 里程碑奖励
-  milestones: {
-    7: { exp: 50, coins: 30, badge: 'streak_7', recoveryCards: 1 },
-    30: { exp: 200, coins: 100, badge: 'streak_30', recoveryCards: 2 },
-    100: { exp: 1000, coins: 500, badge: 'streak_100', recoveryCards: 3 },
-    365: { exp: 5000, coins: 2000, badge: 'streak_365', recoveryCards: 5 }
-  }
+  base: CHECKIN_REWARD.BASE,
+  streakMultiplier: STREAK_MULTIPLIER,
+  milestones: CHECKIN_REWARD.MILESTONES
 };
 
 class CheckinStreakService {
@@ -168,20 +146,10 @@ class CheckinStreakService {
    * 计算奖励
    */
   _calculateReward() {
-    const { base, streakMultiplier } = REWARD_CONFIG;
+    const { base } = REWARD_CONFIG;
 
-    // 获取倍数
-    let multiplier = 1;
-    const streakDays = Object.keys(streakMultiplier)
-      .map(Number)
-      .sort((a, b) => b - a);
-
-    for (const days of streakDays) {
-      if (this.data.currentStreak >= days) {
-        multiplier = streakMultiplier[days];
-        break;
-      }
-    }
+    // 使用统一的连续天数倍率计算
+    const multiplier = getStreakMultiplier(this.data.currentStreak);
 
     return {
       exp: Math.round(base.exp * multiplier),

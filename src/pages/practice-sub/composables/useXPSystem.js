@@ -7,47 +7,22 @@
  * - XP 累积升级，等级决定称号
  * - 每日首次答题 bonus，连续天数 streak multiplier
  * - 本地存储，无需服务端
+ *
+ * 常量全部从 config/game-constants.js 导入（单一数据源）
  */
 import { ref, computed } from 'vue';
 import { storageService } from '@/services/storageService.js';
+import {
+  XP_REWARDS,
+  LEVEL_TABLE,
+  getLevelByXP,
+  getNextLevel,
+  getLevelProgress,
+  getStreakMultiplier,
+  GAME_STORAGE_KEYS
+} from '@/config/game-constants.js';
 
-const STORAGE_KEY = 'xp_system';
-
-// 等级阈值表（借鉴 level-up 的指数增长模型）
-const LEVEL_TABLE = [
-  { level: 1, xpRequired: 0, title: '初学者' },
-  { level: 2, xpRequired: 50, title: '入门学徒' },
-  { level: 3, xpRequired: 150, title: '勤奋学子' },
-  { level: 4, xpRequired: 350, title: '知识探索者' },
-  { level: 5, xpRequired: 700, title: '题海勇士' },
-  { level: 6, xpRequired: 1200, title: '解题达人' },
-  { level: 7, xpRequired: 2000, title: '学霸预备' },
-  { level: 8, xpRequired: 3200, title: '知识精英' },
-  { level: 9, xpRequired: 5000, title: '考研战神' },
-  { level: 10, xpRequired: 8000, title: '满分传说' },
-  { level: 11, xpRequired: 12000, title: '学术巅峰' },
-  { level: 12, xpRequired: 18000, title: '知识之王' }
-];
-
-// XP 奖励配置
-const XP_REWARDS = {
-  correctBase: 10, // 答对基础XP
-  comboMultiplier: 2, // 每连击+2 XP
-  comboMax: 20, // combo加成上限
-  difficultyBonus: {
-    // 难度加成
-    1: 0, // 简单
-    2: 3, // 中等
-    3: 8, // 困难
-    4: 15, // 极难
-    5: 25 // 地狱
-  },
-  dailyFirstBonus: 20, // 每日首次答题bonus
-  streakMultiplier: 0.1, // 连续天数加成（每天+10%，上限50%）
-  streakMultiplierMax: 0.5,
-  reviewBonus: 5, // 复习模式额外奖励
-  perfectSessionBonus: 50 // 全对session奖励
-};
+const STORAGE_KEY = GAME_STORAGE_KEYS.XP_SYSTEM;
 
 function getDefaultState() {
   return {
@@ -93,36 +68,17 @@ export function useXPSystem() {
     storageService.save(STORAGE_KEY, state.value);
   }
 
-  // 当前等级信息
-  const currentLevel = computed(() => {
-    let lvl = LEVEL_TABLE[0];
-    for (let i = LEVEL_TABLE.length - 1; i >= 0; i--) {
-      if (state.value.totalXP >= LEVEL_TABLE[i].xpRequired) {
-        lvl = LEVEL_TABLE[i];
-        break;
-      }
-    }
-    return lvl;
-  });
+  // 当前等级信息（委托给 game-constants helper）
+  const currentLevel = computed(() => getLevelByXP(state.value.totalXP));
 
   // 下一等级信息
-  const nextLevel = computed(() => {
-    const idx = LEVEL_TABLE.findIndex((l) => l.level === currentLevel.value.level);
-    return idx < LEVEL_TABLE.length - 1 ? LEVEL_TABLE[idx + 1] : null;
-  });
+  const nextLevel = computed(() => getNextLevel(currentLevel.value.level));
 
   // 当前等级进度百分比
-  const levelProgress = computed(() => {
-    if (!nextLevel.value) return 100;
-    const currentXP = state.value.totalXP - currentLevel.value.xpRequired;
-    const needed = nextLevel.value.xpRequired - currentLevel.value.xpRequired;
-    return Math.round((currentXP / needed) * 100);
-  });
+  const levelProgress = computed(() => getLevelProgress(state.value.totalXP));
 
-  // streak加成倍率
-  const streakBonus = computed(() => {
-    return Math.min(state.value.streakDays * XP_REWARDS.streakMultiplier, XP_REWARDS.streakMultiplierMax);
-  });
+  // streak加成倍率（使用统一的阶梯模型）
+  const streakBonus = computed(() => getStreakMultiplier(state.value.streakDays) - 1);
 
   /**
    * 答对题目获得XP
@@ -133,25 +89,25 @@ export function useXPSystem() {
     const { combo = 0, difficulty = 2, isReview = false } = opts;
     const prevLevel = currentLevel.value.level;
 
-    let xp = XP_REWARDS.correctBase;
+    let xp = XP_REWARDS.CORRECT_ANSWER;
 
     // combo加成
-    xp += Math.min(combo * XP_REWARDS.comboMultiplier, XP_REWARDS.comboMax);
+    xp += Math.min(combo * XP_REWARDS.COMBO_MULTIPLIER, XP_REWARDS.COMBO_MAX);
 
     // 难度加成
-    xp += XP_REWARDS.difficultyBonus[difficulty] || 0;
+    xp += XP_REWARDS.DIFFICULTY_BONUS[difficulty] || 0;
 
     // 复习模式bonus
-    if (isReview) xp += XP_REWARDS.reviewBonus;
+    if (isReview) xp += XP_REWARDS.REVIEW_BONUS;
 
     // 每日首次bonus
     if (!state.value.dailyBonusClaimed) {
-      xp += XP_REWARDS.dailyFirstBonus;
+      xp += XP_REWARDS.FIRST_PRACTICE_OF_DAY;
       state.value.dailyBonusClaimed = true;
     }
 
-    // streak倍率
-    xp = Math.round(xp * (1 + streakBonus.value));
+    // streak倍率（getStreakMultiplier 返回绝对倍率，直接用）
+    xp = Math.round(xp * getStreakMultiplier(state.value.streakDays));
 
     state.value.totalXP += xp;
     state.value.todayXP += xp;
@@ -176,11 +132,11 @@ export function useXPSystem() {
     state.value.sessionsCompleted++;
     if (isPerfect) {
       state.value.perfectSessions++;
-      state.value.totalXP += XP_REWARDS.perfectSessionBonus;
-      state.value.todayXP += XP_REWARDS.perfectSessionBonus;
+      state.value.totalXP += XP_REWARDS.PERFECT_SCORE;
+      state.value.todayXP += XP_REWARDS.PERFECT_SCORE;
     }
     save();
-    return isPerfect ? XP_REWARDS.perfectSessionBonus : 0;
+    return isPerfect ? XP_REWARDS.PERFECT_SCORE : 0;
   }
 
   // 初始化

@@ -14,6 +14,7 @@ Before writing ANY code, read these files in order:
 1. `CLAUDE.md` — 30-second project overview
 2. `docs/status/HEALTH.md` — current bugs and deploy status
 3. `docs/AI-SOP/MODULE-INDEX.md` — locate relevant files
+4. 按 `docs/sop/DOC-FETCH-RULES.md` 第一条分级判断，查阅对应技术的官方文档（优先用 Context7 → 本地缓存 `docs/doc-cache/` → web_fetch 兜底）
 
 ## Rule 2: Locate Before Fix
 
@@ -88,7 +89,14 @@ Main package MUST stay under **2MB**.
 
 ## Rule 9: Completion Protocol
 
-After finishing ANY task, execute all 4 steps from `CLAUDE.md` → Completion Protocol section. No exceptions.
+After finishing ANY task:
+
+1. 质量关卡 → `npm run lint` + `npm test` + `npm run build:h5`（全过才算完）
+2. 按 `docs/sop/REGRESSION-TEST-STRATEGY.md` 触发矩阵执行对应级别回归测试
+3. 新功能 → 按 `docs/sop/ACCEPTANCE-CHECKLIST.md` 对照相关条目验收
+4. 重大决策 → 记入 `docs/sop/AI-DECISION-LOG.md`
+5. 更新 `docs/sop/CHANGE-LOG.md` + `docs/status/HEALTH.md`
+6. 自检 → 构建通过？没泄露密钥？文档更新了？
 
 ## Rule 10: Verify Before Claim
 

@@ -2,71 +2,45 @@
  * Study Engine Store — 智能学习引擎状态管理
  *
  * 集中管理 smart-study-engine 相关的后端调用，
- * 替代页面直接调用 lafService 的架构违规。
+ * 作为页面与 smart-study.api.js 之间的分层网关。
+ * 页面不应直接 import smart-study.api.js，而应通过本 Store 调用。
  *
- * 覆盖 4 个调用点 (页面均已移至 src/pages/_unreleased/):
- *   - analyzeMastery (knowledge-graph--mastery.vue)
- *   - getErrorClusters (practice-sub--error-clusters.vue)
- *   - getSprintPriority (practice-sub--sprint-mode.vue)
- *   - generateStudyPlan (plan--adaptive.vue)
+ * 服务的页面:
+ *   - study-detail/index.vue  → analyzeMastery()
+ *   - plan/index.vue          → generateStudyPlan()
+ *   - mistake/index.vue       → getErrorClusters()
+ *   - quiz-result.vue         → analyzeMastery()
+ *
+ * 响应格式: 直接透传 smart-study.api.js 的返回值，
+ *   成功时返回后端原始 response（含 data 字段），
+ *   失败时返回 normalizeError 结构（含 success: false）。
  *
  * @module stores/study-engine
  */
 
 import { defineStore } from 'pinia';
-import { lafService } from '@/services/lafService.js';
-import { logger } from '@/utils/logger.js';
+import {
+  analyzeMastery as apiAnalyzeMastery,
+  getErrorClusters as apiGetErrorClusters,
+  getSprintPriority as apiGetSprintPriority,
+  generateStudyPlan as apiGenerateStudyPlan
+} from '@/services/api/domains/smart-study.api.js';
 
 export const useStudyEngineStore = defineStore('studyEngine', () => {
   // ==================== Actions ====================
+  // 透传 API 调用，不修改响应结构，保持页面现有的数据访问方式
 
-  /** F4: 掌握度分析 — 各知识点掌握度 + 薄弱点识别 */
-  const analyzeMastery = async () => {
-    try {
-      const res = await lafService.analyzeMastery();
-      if (res?.code === 0) return { success: true, data: res.data };
-      return { success: false, error: { message: res?.message || '掌握度分析失败' } };
-    } catch (e) {
-      logger.error('[studyEngineStore] analyzeMastery failed:', e);
-      return { success: false, error: { message: e?.message || '掌握度分析失败' } };
-    }
-  };
+  /** 掌握度分析 — 各知识点掌握度 + 薄弱点识别 */
+  const analyzeMastery = () => apiAnalyzeMastery();
 
-  /** F1: 错题归因聚类 — 按错误类型×科目聚类 + 趋势分析 */
-  const getErrorClusters = async () => {
-    try {
-      const res = await lafService.getErrorClusters();
-      if (res?.code === 0) return { success: true, data: res.data };
-      return { success: false, error: { message: res?.message || '错题聚类分析失败' } };
-    } catch (e) {
-      logger.error('[studyEngineStore] getErrorClusters failed:', e);
-      return { success: false, error: { message: e?.message || '错题聚类分析失败' } };
-    }
-  };
+  /** 错题归因聚类 — 按错误类型×科目聚类 + 趋势分析 */
+  const getErrorClusters = () => apiGetErrorClusters();
 
-  /** F2: 冲刺模式 — ROI优先级排序 + 战略放弃建议 */
-  const getSprintPriority = async (examDate) => {
-    try {
-      const res = await lafService.getSprintPriority(examDate);
-      if (res?.code === 0) return { success: true, data: res.data };
-      return { success: false, error: { message: res?.message || '冲刺优先级获取失败' } };
-    } catch (e) {
-      logger.error('[studyEngineStore] getSprintPriority failed:', e);
-      return { success: false, error: { message: e?.message || '冲刺优先级获取失败' } };
-    }
-  };
+  /** 冲刺模式 — ROI优先级排序 + 战略放弃建议 */
+  const getSprintPriority = (examDate) => apiGetSprintPriority(examDate);
 
-  /** F3: 自适应学习计划 — 7天计划 + 阶段划分 */
-  const generateStudyPlan = async (examDate, dailyHours) => {
-    try {
-      const res = await lafService.generateStudyPlan(examDate, dailyHours);
-      if (res?.code === 0) return { success: true, data: res.data };
-      return { success: false, error: { message: res?.message || '自适应计划生成失败' } };
-    } catch (e) {
-      logger.error('[studyEngineStore] generateStudyPlan failed:', e);
-      return { success: false, error: { message: e?.message || '自适应计划生成失败' } };
-    }
-  };
+  /** 自适应学习计划 — 7天计划 + 阶段划分 */
+  const generateStudyPlan = (examDate, dailyHours) => apiGenerateStudyPlan(examDate, dailyHours);
 
   return {
     analyzeMastery,

@@ -11,13 +11,12 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate, sanitizeString } from './_shared/validator.js';
+import { validate } from './_shared/validator.js';
 import { createLogger, checkRateLimit } from './_shared/api-response.js';
 import { requireAdminAccess } from './_shared/admin-auth.js';
 const logger = createLogger('[SchoolCrawler]');
 
 const db = cloud.database();
-const _ = db.command;
 
 // 研招网配置
 const YANZHAO_CONFIG = {
@@ -319,12 +318,8 @@ async function crawlSchoolPage(provinceCode: string, start: number = 0): Promise
 /**
  * 解析院校 HTML 页面
  */
-function parseSchoolHtml(html: string, defaultProvinceCode: string = ''): Record<string, unknown>[] {
+function parseSchoolHtml(html: string, _defaultProvinceCode: string = ''): Record<string, unknown>[] {
   const schools: Record<string, unknown>[] = [];
-
-  // 匹配每个院校块
-  // 格式: <div class="sch-item">...</div>
-  const schItemRegex = /<div class="sch-item">([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/g;
 
   // 更简单的方式：提取关键信息
   // 1. 院校代码：从 dwdm=10001 提取
@@ -335,10 +330,6 @@ function parseSchoolHtml(html: string, defaultProvinceCode: string = ''): Record
   // 提取所有院校代码和省份代码
   const dwdmRegex = /dwdm=(\d+)&ssdm=(\d+)/g;
   const nameRegex = /<a class="name js-yxk-yxmc[^"]*"[^>]*>\s*([^<]+)\s*<\/a>/g;
-  const tagRegex = /<span class="sch-tag">([^<]+)<\/span>/g;
-  const departmentRegex = /<span class="item-depart-title">主管部门：<\/span>\s*([^<\n]+)/g;
-  const hasYjsyRegex = /研究生院/g;
-  const hasZhxRegex = /自划线/g;
 
   // 收集所有匹配
   const codes: Array<{ code: string; provinceCode: string }> = [];

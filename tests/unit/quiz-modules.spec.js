@@ -27,15 +27,13 @@ vi.mock('@/services/storageService.js', () => {
   };
 });
 
-// Mock lafService（被 quiz-ai-analysis 直接导入）
-vi.mock('@/services/lafService.js', () => ({
-  lafService: {
-    proxyAI: vi.fn(async (_action, _data) => ({
-      code: 0,
-      data: 'Mock 智能解析：这道题考查的是...',
-      success: true
-    }))
-  }
+// Mock ai.api.js（被 quiz-ai-analysis 直接导入）
+vi.mock('@/services/api/domains/ai.api.js', () => ({
+  proxyAI: vi.fn(async (_action, _data) => ({
+    code: 0,
+    data: 'Mock 智能解析：这道题考查的是...',
+    success: true
+  }))
 }));
 
 // Mock logger
@@ -78,7 +76,7 @@ import { saveToMistakes, updateMistakeWithAI } from '../../src/pages/practice-su
 import { fetchAIDeepAnalysis } from '../../src/pages/practice-sub/quiz-ai-analysis.js';
 import { recordAnswerToAnalytics } from '../../src/pages/practice-sub/quiz-analytics-recorder.js';
 import { storageService } from '@/services/storageService.js';
-import { lafService } from '@/services/lafService.js';
+import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { recordTime } from '../../src/pages/practice-sub/question-timer.js';
 import { saveOfflineAnswer } from '../../src/pages/practice-sub/offline-cache.js';
 import { recordAnswer } from '@/utils/analytics/learning-analytics.js';
@@ -269,13 +267,13 @@ describe('quiz-ai-analysis — 特征测试', () => {
       expect(result.comment).toBe('Mock 智能解析：这道题考查的是...');
     });
 
-    it('应调用 lafService.proxyAI 并传入正确参数', async () => {
+    it('应调用 proxyAI 并传入正确参数', async () => {
       await fetchAIDeepAnalysis({
         question: mockQuestion,
         userChoice: 'A. 选项A'
       });
 
-      expect(lafService.proxyAI).toHaveBeenCalledWith('analyze', {
+      expect(proxyAI).toHaveBeenCalledWith('analyze', {
         question: '以下哪个是正确的？',
         options: mockQuestion.options,
         userAnswer: 'A. 选项A',
@@ -284,7 +282,7 @@ describe('quiz-ai-analysis — 特征测试', () => {
     });
 
     it('API 返回错误码时应返回降级文案', async () => {
-      lafService.proxyAI.mockResolvedValueOnce({
+      proxyAI.mockResolvedValueOnce({
         code: 500,
         data: null,
         message: '服务异常'
@@ -300,7 +298,7 @@ describe('quiz-ai-analysis — 特征测试', () => {
     });
 
     it('网络超时时应返回超时降级文案', async () => {
-      lafService.proxyAI.mockRejectedValueOnce(new Error('timeout'));
+      proxyAI.mockRejectedValueOnce(new Error('timeout'));
 
       const result = await fetchAIDeepAnalysis({
         question: mockQuestion,
@@ -312,7 +310,7 @@ describe('quiz-ai-analysis — 特征测试', () => {
     });
 
     it('401 错误时应返回配置异常降级文案', async () => {
-      lafService.proxyAI.mockRejectedValueOnce(new Error('401 Unauthorized'));
+      proxyAI.mockRejectedValueOnce(new Error('401 Unauthorized'));
 
       const result = await fetchAIDeepAnalysis({
         question: mockQuestion,
@@ -324,7 +322,7 @@ describe('quiz-ai-analysis — 特征测试', () => {
     });
 
     it('网络错误时应返回网络中断降级文案', async () => {
-      lafService.proxyAI.mockRejectedValueOnce(new Error('网络连接失败'));
+      proxyAI.mockRejectedValueOnce(new Error('网络连接失败'));
 
       const result = await fetchAIDeepAnalysis({
         question: mockQuestion,

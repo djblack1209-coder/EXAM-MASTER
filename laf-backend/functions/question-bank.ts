@@ -322,7 +322,7 @@ async function seedPresetQuestions(data, requestId) {
   const BATCH_SIZE = 10;
   for (let i = 0; i < questions.length; i += BATCH_SIZE) {
     const batch = questions.slice(i, i + BATCH_SIZE);
-    const _results = await Promise.allSettled(
+    await Promise.allSettled(
       batch.map(async (q) => {
         // 基本校验
         if (!q.question || !q.options || !q.answer) {

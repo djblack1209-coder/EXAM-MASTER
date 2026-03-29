@@ -15,7 +15,8 @@
           <image
             class="user-avatar"
             :src="userInfo.avatarUrl || defaultAvatar"
-            alt="头像" mode="aspectFill"
+            alt="头像"
+            mode="aspectFill"
             @error="onUserAvatarError"
           />
         </view>
@@ -24,7 +25,8 @@
           <image
             class="user-avatar"
             :src="opponent.avatar || defaultAvatar"
-            alt="头像" mode="aspectFill"
+            alt="头像"
+            mode="aspectFill"
             @error="onOpponentAvatarError"
           />
           <view v-if="!opponentFound" class="search-overlay">
@@ -66,7 +68,8 @@
           <image
             :src="userInfo.avatarUrl || defaultAvatar"
             class="avatar"
-            alt="头像" mode="aspectFill"
+            alt="头像"
+            mode="aspectFill"
             @error="onUserAvatarError"
           />
           <text class="score me">
@@ -83,7 +86,8 @@
           <image
             :src="opponent.avatar || defaultAvatar"
             class="avatar"
-            alt="头像" mode="aspectFill"
+            alt="头像"
+            mode="aspectFill"
             @error="onOpponentAvatarError"
           />
           <text class="score opp">
@@ -222,7 +226,8 @@
 
 <script>
 import { toast } from '@/utils/toast.js';
-import { lafService } from '@/services/lafService.js';
+import { useSchoolStore } from '@/stores/modules/school.js';
+import { useUserStore } from '@/stores/modules/user.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 // ✅ 懒加载：invite-deep-link 478行，仅在用户分享时才需要（改为方法内动态导入）
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -1061,8 +1066,9 @@ export default {
       logger.log('[pk-battle] 🤖 调用后端代理生成智能战报...');
 
       try {
-        // ✅ 使用后端代理调用（安全）- action: 'pk_summary'
-        const response = await lafService.proxyAI('pk_summary', {
+        // 通过 school store 调用 AI 生成战报（遵循分层纪律）
+        const schoolStore = useSchoolStore();
+        const response = await schoolStore.aiRecommend('pk_summary', {
           myScore: this.myScore,
           opponentScore: this.opponentScore,
           totalQuestions: this.questions.length,
@@ -1633,10 +1639,11 @@ export default {
         score: pkScore // 本局增量分数，后端 _.inc(score) 累加
       };
 
-      // 已迁移到 Sealos：使用 lafService.rankCenter 替代 uniCloud.callFunction('rank-center')
+      // 已迁移到 Sealos：使用 user store 的 fetchRankCenter 替代 uniCloud.callFunction('rank-center')
       // 静默上传，不显示 loading（避免打断用户体验）
-      lafService
-        .rankCenter(uploadData)
+      const userStore = useUserStore();
+      userStore
+        .fetchRankCenter(uploadData)
         .then((_res) => {
           // 标志位已在方法开头设置，这里只记录成功日志
           // 可选：静默提示

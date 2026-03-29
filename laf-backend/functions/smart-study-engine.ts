@@ -29,7 +29,6 @@ import {
 // import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory.js'; // 预留 AI 增强
 
 const db = cloud.database();
-const _ = db.command;
 const logger = createLogger('[SmartStudyEngine]');
 
 // ==================== Constants ====================
@@ -133,24 +132,6 @@ const FSRS_FACTOR = 19 / 81; // (0.9^(1/DECAY) - 1)
 function retrievability(elapsedDays: number, stability: number): number {
   if (stability <= 0) return 0;
   return Math.pow(1 + (FSRS_FACTOR * elapsedDays) / stability, FSRS_DECAY);
-}
-
-/**
- * 余弦相似度 — 搬运自 vercel/ai packages/ai/src/util/cosine-similarity.ts
- */
-function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length !== b.length) return 0;
-  let dot = 0,
-    normA = 0,
-    normB = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  normA = Math.sqrt(normA);
-  normB = Math.sqrt(normB);
-  return normA === 0 || normB === 0 ? 0 : dot / (normA * normB);
 }
 
 /**
@@ -740,7 +721,6 @@ async function sprintPriority(
   const items: SprintItem[] = masteryData.map((kp) => {
     const weight = subjectWeights[kp.subject] || 0.2;
     const gap = Math.max(0, 100 - kp.mastery) / 100; // 提升空间 0-1
-    const r = kp.avgRetrievability / 100; // 当前可提取性 0-1
 
     // ROI = (提升空间 × 科目权重) / 预估时间
     // 预估时间 = 基础30分钟 + 每5道错题加10分钟
@@ -834,7 +814,8 @@ async function generatePlan(
   const topoOrder = topologicalSort(PREREQUISITE_MAP);
 
   // 将知识点按拓扑顺序排列
-  const orderedKPs = topoOrder.filter((kp) => masteryData.some((m) => m.knowledgePoint === kp && m.mastery < 85));
+  // 将知识点按拓扑顺序过滤（掌握度低于85的需要重点学习）
+  topoOrder.filter((kp) => masteryData.some((m) => m.knowledgePoint === kp && m.mastery < 85));
 
   // 阶段划分
   const phases: Array<{ name: string; startDate: string; endDate: string; focus: string }> = [];
@@ -898,7 +879,6 @@ async function generatePlan(
     const tasks: DailyPlan['tasks'] = [];
 
     // 1. 先安排 FSRS 到期复习（占 30% 时间）
-    const reviewBudget = Math.floor(dailyMinutes * 0.3);
     const reviewKPs = masteryData
       .filter((kp) => kp.avgRetrievability < 70 && kp.mastery >= 30) // 有遗忘风险但不是全新的
       .sort((a, b) => a.avgRetrievability - b.avgRetrievability) // R 最低的优先
@@ -919,7 +899,6 @@ async function generatePlan(
     }
 
     // 2. 薄弱点新学/强化（占 50% 时间）
-    const drillBudget = Math.floor(dailyMinutes * 0.5);
     const weakKPs = masteryData
       .filter((kp) => kp.isWeak && kp.prerequisitesMet)
       .sort((a, b) => a.mastery - b.mastery)

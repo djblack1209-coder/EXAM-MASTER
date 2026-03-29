@@ -1,12 +1,12 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (十六轮审计 — 遗留问题清零+安全加固+响应格式统一) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (架构清爽化重构 — Task 1~5 全部完成) | Maintainer: AI-SOP
 
 ## Deployment Status
 
 | Environment                 | URL                                 | Status    | Last Deploy |
 | --------------------------- | ----------------------------------- | --------- | ----------- |
-| **Tencent Cloud (PRIMARY)** | `https://api.245334.xyz`            | 🟢 Online | 2026-03-27  |
+| **Tencent Cloud (PRIMARY)** | `https://api.245334.xyz`            | 🟢 Online | 2026-03-29  |
 | **Sealos Laf (FALLBACK)**   | `https://nf98ia8qnt.sealosbja.site` | 🟢 Online | 2026-03-22  |
 | **CF Worker (API Proxy)**   | `https://api-gw.245334.xyz`         | 🟢 Online | 2026-03-23  |
 | **WeChat MP**               | 微信搜索「考研备考」                | 🟡 审核中 | —           |
@@ -44,6 +44,14 @@
 | ID   | Domain   | Title                                                                   | Solution                                                                                            | Resolved   |
 | ---- | -------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
 | R096 | backend  | fsrs-optimizer/mistake-manager使用非标准ok字段(D036)                    | fsrs-optimizer 8处ok→success,mistake-manager 17处ok移除,测试同步                                    | 2026-03-29 |
+| R103 | frontend | 游戏常量碎片化：XP奖励/等级公式/连续签到倍率/成就定义分散在4个文件      | 创建game-constants.js统一源，4个消费者重构                                                          | 2026-03-29 |
+| R104 | frontend | 13个文件含67个硬编码魔法数字(超时/阈值/重试次数等)                      | config/index.js扩展18个配置键，13个文件重构为读取配置                                               | 2026-03-29 |
+| R105 | frontend | study-engine.js Store调用不存在的lafService方法(运行时静默失败)         | 重构为直接调用smart-study.api.js，4个页面同步更新                                                   | 2026-03-29 |
+| R106 | frontend | 全部生产代码通过lafService中间层调用API(stores+pages+services共40+文件) | 方案B彻底重构：stores改用domain API直接导入，pages改走Store，0生产导入残留                          | 2026-03-29 |
+| R107 | frontend | ErrorBoundary.vue孤儿组件零引用(90行)                                   | 删除文件                                                                                            | 2026-03-29 |
+| R108 | frontend | offline-cache-service.js空文件(0字节)被2个composable导入(运行时崩溃)    | 实现完整离线缓存服务：offlineCache对象+checkOfflineAvailability()，do-quiz.vue重定向导入            | 2026-03-29 |
+| R109 | frontend | index.vue含11行注释掉的待办事项UI死代码                                 | 替换为单行注释说明                                                                                  | 2026-03-29 |
+| R110 | docs     | MODULE-INDEX.md引用已删除的vip.js和invite.js                            | 移除2行过期引用                                                                                     | 2026-03-29 |
 | R097 | security | Electron缺少CSP+shell.openExternal无协议过滤                            | CSP header注入+限制仅http:/https:协议                                                               | 2026-03-29 |
 | R098 | security | login.ts日志泄露QQ/WeChat OAuth token+明文邮箱                          | maskEmailForLog()函数+3处OAuth脱敏+2处邮箱掩码                                                      | 2026-03-29 |
 | R099 | security | agent.service.ts日志泄露完整error对象                                   | 仅记录e?.message                                                                                    | 2026-03-29 |

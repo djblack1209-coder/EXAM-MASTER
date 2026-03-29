@@ -24,7 +24,6 @@ import cloud from '@lafjs/cloud';
 // ✅ B003: 使用共享 API 响应模块，统一错误处理格式
 import {
   badRequest,
-  unauthorized,
   serverError,
   generateRequestId,
   wrapResponse,
@@ -33,8 +32,7 @@ import {
 } from './_shared/api-response.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { createNewCard, type ReviewLogRecord } from './_shared/fsrs-scheduler.js';
-import { FsrsService } from './_shared/services/fsrs.service.js';
-import { AgentService } from './_shared/services/agent.service.js';
+// FsrsService 和 AgentService 在 handleSubmit 中通过动态 import() 按需加载
 
 const db = cloud.database();
 const _ = db.command;
@@ -46,7 +44,7 @@ const ANSWER_RATE_LIMIT_MAX = 120;
 const IDEMPOTENCY_COLLECTION = 'idempotency_records';
 const IDEMPOTENCY_TTL = 24 * 60 * 60 * 1000;
 
-async function checkIdempotency(userId: string, action: string, idempotencyKey: string) {
+export async function checkIdempotency(userId: string, action: string, idempotencyKey: string) {
   const fullKey = `${userId}:${action}:${idempotencyKey}`;
   const collection = db.collection(IDEMPOTENCY_COLLECTION);
   const now = Date.now();
@@ -87,7 +85,7 @@ async function checkIdempotency(userId: string, action: string, idempotencyKey: 
   }
 }
 
-async function markIdempotencyCompleted(recordId: string, result: unknown) {
+export async function markIdempotencyCompleted(recordId: string, result: unknown) {
   if (!recordId) return;
   try {
     await db.collection(IDEMPOTENCY_COLLECTION).doc(recordId).update({
@@ -101,7 +99,11 @@ async function markIdempotencyCompleted(recordId: string, result: unknown) {
 }
 
 // ==================== 参数校验 ====================
-function validateSubmitParams(data: unknown): { valid: boolean; error?: string; sanitized?: Record<string, unknown> } {
+export function validateSubmitParams(data: unknown): {
+  valid: boolean;
+  error?: string;
+  sanitized?: Record<string, unknown>;
+} {
   if (!data) return { valid: false, error: 'data 不能为空' };
 
   const { question_id, user_answer, session_id, duration, practice_mode } = data as Record<string, unknown>;
@@ -229,8 +231,8 @@ export default async function (ctx) {
 /**
  * 提交答案（带幂等性保护）
  */
-async function handleSubmit(userId: string, idempotencyKey: string, data: Record<string, unknown>, requestId: string) {
-  const { questionId, userAnswer, isCorrect, timeSpent } = data;
+async function handleSubmit(userId: string, _idempotencyKey: string, data: Record<string, unknown>, requestId: string) {
+  const { questionId, userAnswer, isCorrect, timeSpent: _timeSpent } = data;
   if (!questionId || typeof isCorrect !== 'boolean') {
     return { code: 400, success: false, message: '参数错误：缺少题目标识或对错结果', requestId };
   }
@@ -330,7 +332,7 @@ async function handleGetRecords(userId: string, data: Record<string, unknown>, r
 }
 
 // ==================== [闭环串联] 答错自动归入错题本 ====================
-async function autoCollectMistake(
+export async function autoCollectMistake(
   userId: string,
   questionData: any,
   userAnswer: string,
@@ -402,7 +404,7 @@ async function autoCollectMistake(
 }
 
 // ==================== [闭环串联] 累积会话答题数据（用于AI诊断） ====================
-async function accumulateSessionData(
+export async function accumulateSessionData(
   userId: string,
   sessionId: string | null,
   answerData: {

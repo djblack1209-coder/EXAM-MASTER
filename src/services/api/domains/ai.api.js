@@ -395,7 +395,7 @@ export async function createLesson(topic, subject, materials, sceneCount = 6) {
     return await request(
       '/lesson-generator',
       { action: 'create', data: { topic, subject, materials, sceneCount } },
-      { timeout: 30000, maxRetries: 1 }
+      { timeout: config.api.timeout, maxRetries: 1 }
     );
   } catch (error) {
     logger.warn('[LafService] 创建课程失败:', error);
@@ -458,7 +458,11 @@ export async function deleteLesson(lessonId) {
  */
 export async function startClassroom(lessonId) {
   try {
-    return await request('/agent-orchestrator', { action: 'start_session', data: { lessonId } }, { timeout: 15000 });
+    return await request(
+      '/agent-orchestrator',
+      { action: 'start_session', data: { lessonId } },
+      { timeout: config.ai.sessionTimeout }
+    );
   } catch (error) {
     logger.warn('[LafService] 创建课堂会话失败:', error);
     return normalizeError(error, '创建课堂会话');
@@ -475,7 +479,7 @@ export async function sendClassroomMessage(sessionId, message) {
     return await request(
       '/agent-orchestrator',
       { action: 'send_message', data: { sessionId, message } },
-      { timeout: 60000, maxRetries: 1 }
+      { timeout: config.ai.timeout, maxRetries: 1 }
     );
   } catch (error) {
     logger.warn('[LafService] 课堂消息发送失败:', error);
@@ -510,7 +514,7 @@ export async function generateDiagnosis(sessionId) {
     return await request(
       '/ai-diagnosis',
       { action: 'generate', data: { sessionId } },
-      { timeout: 60000, maxRetries: 1 }
+      { timeout: config.ai.timeout, maxRetries: 1 }
     );
   } catch (error) {
     logger.warn('[LafService] 生成AI诊断失败:', error);
@@ -546,5 +550,22 @@ export async function getReviewPlan() {
   } catch (error) {
     logger.warn('[LafService] 获取复习计划失败:', error);
     return normalizeError(error, '获取复习计划');
+  }
+}
+
+/**
+ * 获取智能推荐题目（基于 AI 诊断的个性化推题）
+ * @param {Object} params - 推荐参数 { count, limit, ... }
+ * @returns {Promise} 返回推荐题目列表
+ */
+export async function getSmartRecommendations(params = {}) {
+  try {
+    return await request('/ai-diagnosis', {
+      action: 'smart_recommend',
+      data: params
+    });
+  } catch (error) {
+    logger.warn('[LafService] 获取智能推荐失败:', error);
+    return normalizeError(error, '获取智能推荐');
   }
 }

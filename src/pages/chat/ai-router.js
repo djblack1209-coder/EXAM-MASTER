@@ -11,7 +11,7 @@
  * @author EXAM-MASTER Team
  */
 
-import { lafService } from '@/services/lafService.js';
+import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { logger } from '@/utils/logger.js';
 
 // 模型性能基线配置
@@ -394,7 +394,7 @@ class AIRouter {
     };
 
     // 调用后端服务
-    const response = await lafService.proxyAI(action, requestData);
+    const response = await proxyAI(action, requestData);
 
     return response;
   }

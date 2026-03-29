@@ -107,6 +107,7 @@ import { useClassroomStore } from '@/stores/modules/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { logger } from '@/utils/logger.js';
+import config from '@/config/index.js';
 
 const classroomStore = useClassroomStore();
 
@@ -205,9 +206,9 @@ function pollLessonStatus(lessonId) {
     } catch {
       clearPollTimers();
     }
-  }, 3000);
+  }, config.ai.pollIntervalMs);
   // 5分钟超时兜底
-  _pollTimeout = setTimeout(() => clearPollTimers(), 300000);
+  _pollTimeout = setTimeout(() => clearPollTimers(), config.ai.pollTimeoutMs);
 }
 
 // R14: 清理轮询定时器

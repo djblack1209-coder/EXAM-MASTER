@@ -13,6 +13,7 @@
 
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
+import config from '@/config/index.js';
 
 // 文件配置常量
 const FILE_CONFIG = {
@@ -631,7 +632,14 @@ class FileHandler {
    * @returns {Promise<{success: boolean, data?: any}>}
    */
   async uploadFile(file, options = {}) {
-    const { url, name = 'file', formData = {}, header = {}, onProgress = null, timeout = 60000 } = options;
+    const {
+      url,
+      name = 'file',
+      formData = {},
+      header = {},
+      onProgress = null,
+      timeout = config.upload.uploadTimeout
+    } = options;
 
     if (!url) {
       return { success: false, error: 'upload url is required' };

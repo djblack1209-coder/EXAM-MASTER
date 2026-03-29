@@ -14,6 +14,71 @@
 
 ---
 
+## [2026-03-30] AI 治理体系全面升级 — 7 个方向全部完成
+
+- **Scope**: `docs`
+- **Files Changed**:
+  - 新建 `docs/sop/ACCEPTANCE-CHECKLIST.md` — 66项功能验收清单(CHK-001~CHK-066)
+  - 新建 `docs/sop/REGRESSION-TEST-STRATEGY.md` — 4级回归测试策略+触发矩阵
+  - 新建 `docs/sop/CHANGE-IMPACT-ANALYSIS.md` — 变更影响分析模板+风险映射表
+  - 新建 `docs/sop/AI-DECISION-LOG.md` — 决策黑匣子(含7条历史决策DEC-001~007)
+  - 新建 `docs/sop/WORKFLOW-PLAYBOOK.md` — 8个流程详细步骤+参考手册(从CLAUDE.md拆出)
+  - 重构 `CLAUDE.md` — 277行→141行(减少49%),详细内容按需加载
+  - 更新 `docs/sop/UPDATE-PROTOCOL.md` — 新增5条SOP文档触发规则
+  - 更新 `docs/sop/AI-DEV-RULES.md` — Rule 9完成协议扩展为6步
+- **Summary**: 建立完整的非技术人员友好型AI开发治理体系。此前项目有700+行规则但全是代码级(lint/test/build),缺乏功能级验证。本次新增6个方向的SOP文档覆盖：功能验收、回归测试策略、变更影响分析、决策追踪、规则分层精简、体系集成。CLAUDE.md重构为"核心必读+按需加载"架构,避免上下文窗口稀释。
+- **Breaking Changes**: CLAUDE.md结构变化——8个流程详细步骤移至WORKFLOW-PLAYBOOK.md,服务器信息/常用命令/已知陷阱/配置文件位置同步移出。AI需按路由表指示按需读取SOP文档。
+
+---
+
+## [2026-03-29] 架构清爽化重构 — Task 1~5 完成
+
+- **Scope**: `frontend`, `docs`
+- **审计范围**: 配置碎片化统一(Task 1)、硬编码魔法数字集中化(Task 2)、Store/Page分层修复(Task 3)、lafService中间层彻底消除(Task 4)、死代码清理(Task 5)
+- **质量关卡**: ESLint 0错误, 90文件/1196测试全过, H5构建通过
+
+### Task 1: 配置碎片化修复
+
+- 创建 `src/config/game-constants.js` — 游戏常量唯一源(XP奖励/等级/连续签到/成就/存储键)
+- 重构4个消费者: `gamification.js`, `useXPSystem.js`, `learning-analytics.js`, `checkin-streak.js`
+
+### Task 2: 硬编码魔法数字集中化
+
+- `config/index.js` 扩展18个配置键(api.fallbackUrl/Threshold, ai.analysisTimeout, retry.maxRetryDelay等)
+- 重构13个文件从魔法数字改为读取中央配置
+
+### Task 3: smart-study API分层修复
+
+- `study-engine.js` Store从lafService改为直接调用 `smart-study.api.js`(修复运行时静默失败的latent bug)
+- 4个页面(`study-detail`, `plan`, `mistake`, `quiz-result`)同步更新
+
+### Task 4: lafService彻底消除(方案B)
+
+- **Stores**: 7个Store(`school/tools/review/user/profile/auth/classroom`)从lafService改为domain API直接导入
+- **Pages**: 8个页面(`ai-consult/AIConsultPanel/MistakeReport/pk-battle/rank/AIChatModal/chat/import-data`)从lafService改走Store
+- **Services**: 17个文件的剩余lafService引用全部替换为对应domain API
+- **新增API**: `ai.api.js`(getSmartRecommendations), `practice.api.js`(ankiImport/ragIngest/getFSRSParams/getFSRSReviewStats), `social.api.js`(rankCenter)
+- **测试**: 3个测试文件mock从lafService改为对应domain API mock
+- **lafService.js保留**: 0生产导入, 263测试引用, 作为测试兼容层不删除
+
+### Task 5: 死代码清理
+
+- 删除孤儿 `ErrorBoundary.vue`(90行, 零引用)
+- 实现 `offline-cache-service.js`(原为0字节空文件, 被2个composable导入导致运行时崩溃)
+  - 新增 `offlineCache` 对象: isOnline/getCachedQuestions/cacheQuestions/addToSyncQueue
+  - 新增 `checkOfflineAvailability()` 返回 `{ available, isOnline }` 结构化状态
+  - `do-quiz.vue` 从旧 `offline-cache.js`(返回boolean) 重定向到新服务(返回对象)
+- 移除 `index.vue` 11行注释掉的待办事项UI死代码
+- 修复 `MODULE-INDEX.md` 引用已删除的 `vip.js` 和 `invite.js`
+
+### 文件变更汇总
+
+- **新建**: `src/config/game-constants.js`, `src/services/offline-cache-service.js`(重写)
+- **删除**: `src/components/common/ErrorBoundary.vue`
+- **修改**: 40+文件(stores/pages/services/composables/tests/docs)
+
+---
+
 ## [2026-03-29] 十六轮审计 — 遗留问题清零+安全加固+响应格式统一
 
 - **Scope**: `backend`, `frontend`, `security`, `database`, `infra`

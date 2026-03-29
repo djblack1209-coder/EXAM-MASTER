@@ -193,7 +193,9 @@
 
 <script>
 import { toast } from '@/utils/toast.js';
-import { lafService } from '@/services/lafService.js';
+import config from '@/config/index.js';
+import { ankiImport, ragIngest } from '@/services/api/domains/practice.api.js';
+import { useSchoolStore } from '@/stores/modules/school.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import EnhancedProgress from './EnhancedProgress.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -530,14 +532,7 @@ export default {
           // 更新状态
           this.importStatus = 'uploading';
 
-          const response = await lafService.request(
-            '/anki-import',
-            {
-              fileData: base64String,
-              fileName: fileName
-            },
-            { timeout: 60000, maxRetries: 1 }
-          );
+          const response = await ankiImport(base64String, fileName, { timeout: config.ai.timeout, maxRetries: 1 });
 
           toast.hide();
 
@@ -555,14 +550,9 @@ export default {
 
             // 后台触发 RAG 索引（非阻塞，不影响用户流程）
             if (result.bankId || result.questionBankId) {
-              lafService
-                .request('/rag-ingest', {
-                  action: 'index_questions',
-                  data: { bankId: result.bankId || result.questionBankId }
-                })
-                .catch((err) => {
-                  logger.warn('[Import] RAG indexing failed (non-critical):', err);
-                });
+              ragIngest('index_questions', { bankId: result.bankId || result.questionBankId }).catch((err) => {
+                logger.warn('[Import] RAG indexing failed (non-critical):', err);
+              });
             }
 
             uni.showModal({
@@ -649,7 +639,7 @@ export default {
     },
 
     // 4. 启动智能连载 (点击按钮触发)
-    // 已迁移到 Sealos：使用 lafService.proxyAI 替代 uniCloud.callFunction('proxy-ai')
+    // 已迁移到独立服务器：通过 school store 的 aiRecommend 调用后端代理
     async startAI() {
       if (!this.fullFileContent && !this.fileName) {
         toast.info('请先导入文件');
@@ -748,7 +738,7 @@ export default {
 
         // ✅ 使用后端代理调用（安全）- action: 'generate'
         // 后端会自动添加 "请生成题目..." 的 Prompt
-        const response = await lafService.proxyAI('generate', {
+        const response = await useSchoolStore().aiRecommend('generate', {
           content: contentText
         });
 

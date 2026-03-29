@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { lafService } from '@/services/lafService.js';
+import { useSchoolStore } from '@/stores/modules/school.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
@@ -280,8 +280,9 @@ export default {
         .slice(-10) // 最近 10 条消息（5 轮对话）
         .map((m) => ({ role: m.role, content: m.content }));
 
-      // ✅ 使用后端代理调用（安全）- action: 'consult'
-      const response = await lafService.proxyAI('consult', {
+      // 通过 school store 调用 AI 咨询（遵循分层纪律）
+      const schoolStore = useSchoolStore();
+      const response = await schoolStore.aiRecommend('consult', {
         content: content,
         schoolName: this.schoolName,
         question: content,

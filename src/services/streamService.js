@@ -9,7 +9,7 @@
 
 import config from '../config/index.js';
 import { getToken, getUserId } from './auth-storage.js';
-import { lafService } from './lafService.js';
+import { aiFriendChat } from './api/domains/ai.api.js';
 import { logger } from '@/utils/logger.js';
 
 const BASE_URL = config.api.baseUrl;
@@ -179,7 +179,7 @@ async function streamFallback({ prompt, friendType, history, emotion, onChunk, o
     // 检查是否已取消
     if (signal?.aborted) return;
 
-    const result = await lafService.aiFriendChat(friendType, prompt, {
+    const result = await aiFriendChat(friendType, prompt, {
       emotion: emotion || 'neutral',
       recentConversations: Array.isArray(history) ? history.map((m) => `${m.role}: ${m.content}`).join('\n') : ''
     });

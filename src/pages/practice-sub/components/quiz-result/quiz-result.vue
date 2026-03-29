@@ -116,7 +116,9 @@
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { animateNumber } from '@/utils/animations/micro-interactions';
-import { analyzeMastery } from '@/services/api/domains/smart-study.api.js';
+import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
+
+const studyEngineStore = useStudyEngineStore();
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -207,7 +209,7 @@ async function loadNextSteps() {
 
     // 规则4：尝试调用后端获取更智能的推荐（静默降级）
     try {
-      const result = await analyzeMastery();
+      const result = await studyEngineStore.analyzeMastery();
       if (result?.data?.summary?.weakestPoint) {
         const weak = result.data.summary;
         steps.unshift({

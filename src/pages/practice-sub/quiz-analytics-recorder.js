@@ -13,7 +13,7 @@ import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
 import { recordSmartAnswer } from './utils/smart-question-picker.js';
 import { recordAnswer as recordAnalyticsAnswer } from '@/utils/analytics/learning-analytics.js';
-import { lafService } from '@/services/lafService.js';
+import { request } from '@/services/api/domains/_request-core.js';
 
 /**
  * 记录答题数据到各个分析模块
@@ -89,7 +89,7 @@ export async function recordAnswerToAnalytics({
   if (sessionId) {
     try {
       const idempotencyKey = `${currentQuestion.id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      await lafService.request('/answer-submit', {
+      await request('/answer-submit', {
         action: 'submit',
         idempotencyKey,
         data: {

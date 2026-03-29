@@ -4,7 +4,7 @@
  * 包含：文件导入、智能生成、题库持久化与备份
  */
 import { storageService } from '@/services/storageService.js';
-import { lafService } from '@/services/lafService.js';
+import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // ✅ 以下模块从分包本地引用，避免打入主包
@@ -351,7 +351,7 @@ export const aiGenerationMixin = {
 
       try {
         logger.log('[practice] 🤖 调用后端代理生成题目...');
-        const res = await lafService.proxyAI('generate_questions', {
+        const res = await proxyAI('generate_questions', {
           content: sanitizedContent,
           questionCount: batchSize
         });

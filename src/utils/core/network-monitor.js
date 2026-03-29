@@ -49,7 +49,7 @@ function createNetworkUniCompat() {
       // H5/测试环境静默处理
     },
     request(options = {}) {
-      const { url, method = 'GET', timeout = 5000, success, fail } = options;
+      const { url, method = 'GET', timeout = config.network.checkTimeout, success, fail } = options;
       const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
       const timer = setTimeout(() => controller?.abort(), timeout);
 

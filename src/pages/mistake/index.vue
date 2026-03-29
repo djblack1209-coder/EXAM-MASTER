@@ -196,7 +196,7 @@ import StatsCard from './StatsCard.vue';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-import { getErrorClusters } from '@/services/api/domains/smart-study.api.js';
+import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 import MistakeCard from './MistakeCard.vue';
 import MistakeReport from './MistakeReport.vue';
 import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.js';
@@ -235,6 +235,7 @@ export default {
     };
   },
   onLoad(options) {
+    this.studyEngineStore = useStudyEngineStore();
     this.statusBarHeight = getStatusBarHeight();
     this.capsuleSafeRight = getCapsuleSafeRight();
 
@@ -624,7 +625,7 @@ export default {
     async loadErrorClusters() {
       this.clusterLoading = true;
       try {
-        const result = await getErrorClusters();
+        const result = await this.studyEngineStore.getErrorClusters();
         if (result?.data?.clusters) {
           this.errorClusters = result.data.clusters;
         }

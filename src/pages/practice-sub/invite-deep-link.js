@@ -13,7 +13,7 @@ import { ref } from 'vue';
 // P006: 从中央配置读取深度链接配置
 import appConfig from '@/config/index.js';
 import { logger } from '@/utils/logger.js';
-import { lafService } from '@/services/lafService.js';
+import { pkBattle } from '@/services/api/domains/social.api.js';
 
 // 链接类型
 const LINK_TYPE = {
@@ -382,7 +382,7 @@ export async function validateInviteCode(code, roomId) {
     }
 
     // 调用后端验证邀请码有效性
-    const res = await lafService.request('/pk-battle', {
+    const res = await pkBattle({
       action: 'validate_invite_code',
       data: { code, roomId }
     });
@@ -429,7 +429,7 @@ export async function joinPKRoom(inviteInfo) {
     }
 
     // 调用后端加入PK房间
-    const res = await lafService.request('/pk-battle', {
+    const res = await pkBattle({
       action: 'join_room',
       data: { roomId, inviteCode }
     });

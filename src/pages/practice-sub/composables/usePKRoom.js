@@ -3,7 +3,7 @@
  * 基于Laf云函数轮询实现轻量级实时对战
  */
 import { ref, onUnmounted } from 'vue';
-import { lafService } from '@/services/lafService';
+import { pkBattle } from '@/services/api/domains/social.api.js';
 import { logger } from '@/utils/logger.js';
 
 const POLL_INTERVAL = 1000; // 1秒轮询
@@ -29,7 +29,7 @@ export function usePKRoom() {
     roomStatus.value = 'matching';
 
     try {
-      const res = await lafService.pkBattle({
+      const res = await pkBattle({
         action: 'find_match',
         category,
         questionCount: count
@@ -68,7 +68,7 @@ export function usePKRoom() {
     if (!roomId.value) return null;
 
     try {
-      const res = await lafService.pkBattle({
+      const res = await pkBattle({
         action: 'room_answer',
         room_id: roomId.value,
         question_index: questionIndex,
@@ -93,7 +93,7 @@ export function usePKRoom() {
     stopPolling();
     if (roomId.value) {
       try {
-        await lafService.pkBattle({
+        await pkBattle({
           action: 'leave_room',
           room_id: roomId.value
         });
@@ -115,7 +115,7 @@ export function usePKRoom() {
       if (!roomId.value) return;
 
       try {
-        const res = await lafService.pkBattle({
+        const res = await pkBattle({
           action: 'poll_room',
           room_id: roomId.value
         });

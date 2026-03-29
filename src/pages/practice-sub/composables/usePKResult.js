@@ -6,7 +6,8 @@
  *
  * @module composables/usePKResult
  */
-import { lafService } from '@/services/lafService.js';
+import { proxyAI } from '@/services/api/domains/ai.api.js';
+import { rankCenter } from '@/services/api/domains/social.api.js';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 import storageService from '@/services/storageService.js';
@@ -85,7 +86,7 @@ export const pkResultMixin = {
       logger.log('[pk-battle] 🤖 调用后端代理生成智能战报...');
 
       try {
-        const response = await lafService.proxyAI('pk_summary', {
+        const response = await proxyAI('pk_summary', {
           myScore: this.myScore,
           opponentScore: this.opponentScore,
           totalQuestions: this.questions.length,
@@ -178,8 +179,7 @@ export const pkResultMixin = {
       };
 
       // 静默上传，不显示 loading
-      lafService
-        .rankCenter(uploadData)
+      rankCenter(uploadData)
         .then((_res) => {
           // 成功日志已记录
         })

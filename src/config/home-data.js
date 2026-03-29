@@ -11,7 +11,7 @@
  */
 
 import { storageService } from '@/services/storageService.js';
-import { lafService } from '@/services/lafService.js';
+import { getHomeData } from '@/services/api/domains/study.api.js';
 
 /**
  * 励志金句库（30条精选）— 本地 fallback
@@ -147,12 +147,7 @@ export async function fetchHomeData() {
     }
 
     // 2. 尝试从后端拉取
-    if (!lafService || typeof lafService.getHomeData !== 'function') {
-      // 后端接口尚未实现，静默降级
-      return { quotes: QUOTE_LIBRARY, formulas: FORMULA_LIST };
-    }
-
-    const res = await lafService.getHomeData();
+    const res = await getHomeData();
     const data = res?.data || {};
 
     const result = {
