@@ -191,17 +191,9 @@ import { safeNavigateBack } from '@/utils/safe-navigate';
 import { debounce } from '@/utils/throttle.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { sanitizeInput } from '@/utils/security/sanitize.js';
 
-const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
-  if (!input) return '';
-  let result = String(input).replace(/[<>"'&\x00-\x1F\x7F]/g, '');
-
-  if (!allowEmoji) {
-    result = result.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s\-_.,!?，。！？、]/g, '');
-  }
-
-  return result.trim().slice(0, maxLength);
-};
+// R14: sanitizeInput 已提取为全局工具
 
 export default {
   components: {

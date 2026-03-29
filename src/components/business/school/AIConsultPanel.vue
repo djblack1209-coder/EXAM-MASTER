@@ -112,6 +112,7 @@ import { lafService } from '@/services/lafService.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
 
 export default {
   name: 'AiConsult',
@@ -190,7 +191,7 @@ export default {
     async sendMessage() {
       if (!this.canSend || this.isTyping) return;
 
-      const content = this.inputContent.trim();
+      const content = sanitizeAIChatInput(this.inputContent.trim());
       if (content.length === 0) return;
 
       // 添加用户消息

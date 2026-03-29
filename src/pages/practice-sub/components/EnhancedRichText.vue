@@ -32,8 +32,17 @@ const processedContent = computed(() => {
   if (!props.content) return '';
   let html = props.content;
 
+  // R14: 净化危险 HTML 标签，防止 XSS（题库数据可能被污染）
+  html = html.replace(/<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi, '');
+  html = html.replace(/<\s*style[^>]*>[\s\S]*?<\s*\/\s*style\s*>/gi, '');
+  html = html.replace(/<\s*iframe[^>]*>[\s\S]*?<\s*\/\s*iframe\s*>/gi, '');
+  html = html.replace(/<\s*object[^>]*>[\s\S]*?<\s*\/\s*object\s*>/gi, '');
+  html = html.replace(/<\s*embed[^>]*>/gi, '');
+  html = html.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
+  html = html.replace(/javascript\s*:/gi, '');
+
   // If content looks like plain text (no HTML tags), wrap in paragraph
-  if (!/<[a-z][\s\S]*>/i.test(html)) {
+  if (!/\<[a-z][\s\S]*\>/i.test(html)) {
     // Convert line breaks to <br>
     html = html.replace(/\n/g, '<br>');
     html = `<p>${html}</p>`;

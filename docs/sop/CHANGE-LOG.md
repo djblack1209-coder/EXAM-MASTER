@@ -14,6 +14,48 @@
 
 ---
 
+## [2026-03-29] 十四轮审计 — 安全加固+内存泄漏修复+全局路由守卫
+
+- **Scope**: `frontend`, `security`, `performance`
+- **审计范围**: 路由权限守卫(36页面)、前端XSS防护(v-html/输入校验)、后端接口鉴权(46云函数)、内存泄漏(定时器/监听器/watch)
+- **质量关卡**: ESLint 0错误, 90文件/1196测试全过, H5构建通过
+
+### 安全加固（P0修复）
+
+- App.vue 添加全局路由守卫: `uni.addInterceptor`拦截navigateTo/redirectTo，14个公开页面白名单，未登录用户无法访问22个需保护页面
+- 新建 `src/utils/security/sanitize.js`: 统一XSS防护工具(sanitizeInput+sanitizeAIChatInput+escapeHtml)
+- 消除重复代码: settings/index.vue 和 plan/create.vue 中的 sanitizeInput 改为从全局工具导入
+- 4个AI对话入口补齐输入过滤: chat.vue、ai-classroom/classroom.vue、AIConsultPanel.vue、ai-consult.vue
+- EnhancedRichText.vue: 添加script/style/iframe/object/embed标签+事件处理器+javascript:协议过滤
+- MarkdownRenderer.vue: fallback路径改用escapeHtml()转义，防止绕过markdown-it的html:false
+
+### 内存泄漏修复
+
+- ai-classroom/index.vue: 轮询定时器提升为模块变量，onBeforeUnmount清理，clearPollTimers()集中管理
+- useTypewriter.js: 添加getCurrentInstance()+onBeforeUnmount自动清理，组件销毁时定时器不再泄漏
+
+### 审计结论（无需修复）
+
+- 后端接口鉴权: 46个云函数逐一检查，**0个漏洞**，JWT实现安全(HS256+timingSafeEqual+过期检查)
+- 前端XSS: 零v-html使用，markdown-it配置html:false，Vue模板{{}}自动转义，整体风险中低
+
+### Files Changed (12 files)
+
+- `src/App.vue` — 添加全局路由守卫(initRouteGuard)
+- `src/utils/security/sanitize.js` — **新建** 全局输入净化工具
+- `src/pages/settings/index.vue` — 删除本地sanitizeInput，改为全局导入
+- `src/pages/plan/create.vue` — 同上
+- `src/pages/chat/chat.vue` — 添加sanitizeAIChatInput
+- `src/pages/ai-classroom/classroom.vue` — 添加sanitizeAIChatInput
+- `src/pages/ai-classroom/index.vue` — 修复轮询定时器泄漏
+- `src/components/business/school/AIConsultPanel.vue` — 添加sanitizeAIChatInput
+- `src/pages/school-sub/ai-consult.vue` — 添加sanitizeAIChatInput
+- `src/pages/practice-sub/components/EnhancedRichText.vue` — 添加HTML净化
+- `src/pages/chat/components/MarkdownRenderer.vue` — fallback路径安全修复
+- `src/composables/useTypewriter.js` — 添加自动清理
+
+---
+
 ## [2026-03-29] 十三轮审计 — 死代码深度清理+盲区扫描+.env同步修复
 
 - **Scope**: `frontend`, `backend`, `config`, `docs`

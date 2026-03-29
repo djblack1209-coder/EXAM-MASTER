@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (十三轮审计 — 死代码深度清理+盲区扫描+.env同步修复) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (十四轮审计 — 安全加固+内存泄漏修复+全局路由守卫) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,12 @@
 
 | ID   | Domain   | Title                                                                  | Solution                                                                                            | Resolved   |
 | ---- | -------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| R085 | security | 22个页面无登录保护,H5可直接URL访问(AI页面白嫖Token)                    | App.vue添加全局路由守卫(uni.addInterceptor navigateTo/redirectTo),14个公开页面白名单                | 2026-03-29 |
+| R086 | security | sanitizeInput重复定义(settings+plan/create),4个AI对话入口无输入过滤    | 提取全局sanitize.js(sanitizeInput+sanitizeAIChatInput+escapeHtml),4个AI对话文件接入                 | 2026-03-29 |
+| R087 | security | EnhancedRichText.vue直接传递props.content为HTML无净化                  | 添加script/style/iframe/object/embed/事件处理器/javascript:协议过滤                                 | 2026-03-29 |
+| R088 | security | MarkdownRenderer fallback路径将原始内容直接赋值给renderedHtml          | fallback时使用escapeHtml()转义后包裹在\<p\>标签中                                                   | 2026-03-29 |
+| R089 | perf     | ai-classroom/index.vue轮询定时器在页面卸载时不清理(最多后台5分钟)      | 提升timer为模块变量+onBeforeUnmount清理+clearPollTimers集中管理                                     | 2026-03-29 |
+| R090 | perf     | useTypewriter.js composable缺少onUnmounted自动清理                     | 添加getCurrentInstance()检测+onBeforeUnmount自动\_cleanup                                           | 2026-03-29 |
 | R061 | infra    | 2个孤儿工具文件(code-highlight.js/mistake-classifier.js)零引用         | 删除文件                                                                                            | 2026-03-29 |
 | R069 | frontend | 8个孤儿SCSS文件(~84KB/3956行)从未被import                              | 删除responsive/design-system\*/theme-bitget/theme-wise/\_theme-vars/\_variables.scss                | 2026-03-29 |
 | R070 | docs     | docs/superpowers/ 13个已完成的spec/plan文件(1080行)                    | 确认功能均已实现后删除整个目录                                                                      | 2026-03-29 |

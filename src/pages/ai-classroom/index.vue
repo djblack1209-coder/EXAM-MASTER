@@ -102,7 +102,7 @@
 
 <script setup>
 import { toast } from '@/utils/toast.js';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useClassroomStore } from '@/stores/modules/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
@@ -116,6 +116,10 @@ const lessons = ref([]);
 const loading = ref(false);
 const showCreateModal = ref(false);
 const creating = ref(false);
+
+// R14: 轮询定时器引用，用于页面卸载时清理
+let _pollTimer = null;
+let _pollTimeout = null;
 
 const subjects = [
   { value: 'politics', label: '政治', icon: '🏛️' },
@@ -177,7 +181,10 @@ async function handleCreate() {
 
 // 轮询课程生成进度
 function pollLessonStatus(lessonId) {
-  const timer = setInterval(async () => {
+  // 先清理之前的轮询（防止重复）
+  clearPollTimers();
+
+  _pollTimer = setInterval(async () => {
     try {
       const res = await classroomStore.fetchLessonStatus(lessonId);
       if (res.success && res.data) {
@@ -188,7 +195,7 @@ function pollLessonStatus(lessonId) {
           lessons.value[idx].status = res.data.status;
         }
         if (res.data.status === 'ready' || res.data.status === 'failed') {
-          clearInterval(timer);
+          clearPollTimers();
           if (res.data.status === 'ready') {
             toast.success('课程生成完成');
           }
@@ -196,12 +203,29 @@ function pollLessonStatus(lessonId) {
         }
       }
     } catch {
-      clearInterval(timer);
+      clearPollTimers();
     }
   }, 3000);
-  // 5分钟超时
-  setTimeout(() => clearInterval(timer), 300000);
+  // 5分钟超时兜底
+  _pollTimeout = setTimeout(() => clearPollTimers(), 300000);
 }
+
+// R14: 清理轮询定时器
+function clearPollTimers() {
+  if (_pollTimer) {
+    clearInterval(_pollTimer);
+    _pollTimer = null;
+  }
+  if (_pollTimeout) {
+    clearTimeout(_pollTimeout);
+    _pollTimeout = null;
+  }
+}
+
+// R14: 页面卸载时清理定时器，防止内存泄漏
+onBeforeUnmount(() => {
+  clearPollTimers();
+});
 
 // 进入课程
 function enterLesson(item) {

@@ -11,7 +11,7 @@
  * @module composables/useTypewriter
  */
 
-import { ref } from 'vue';
+import { ref, onBeforeUnmount, getCurrentInstance } from 'vue';
 
 /**
  * @param {Object} options
@@ -113,6 +113,13 @@ export function useTypewriter(options = {}) {
       return speed * 5;
     }
     return speed;
+  }
+
+  // R14: 如果在组件 setup 上下文中使用，自动注册清理钩子防止内存泄漏
+  if (getCurrentInstance()) {
+    onBeforeUnmount(() => {
+      _cleanup();
+    });
   }
 
   return {

@@ -278,6 +278,7 @@ import { realtimeAnswer } from './ai-router.js';
 import config from '@/config';
 // ✅ AI 打字机效果
 import { useTypewriter } from './composables/useTypewriter.js';
+import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
 
 // icons8 图标 URL 生成器（集中管理，便于替换或自建）
 const icons8 = (style, size, color, name) =>
@@ -919,7 +920,7 @@ const handleRealtimeAnswer = async (question) => {
 
 // 发送消息（更新）
 const handleSend = async () => {
-  const content = messageText.value.trim();
+  const content = sanitizeAIChatInput(messageText.value.trim());
   if (!content || isTyping.value) return;
 
   const loggedIn = requireLogin(null, {

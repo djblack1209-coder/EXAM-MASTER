@@ -105,6 +105,7 @@ import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useClassroomStore } from '@/stores/modules/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
+import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
 
 const classroomStore = useClassroomStore();
 
@@ -222,7 +223,7 @@ async function continueClass() {
 
 // 发送用户消息
 async function sendMessage() {
-  const msg = userInput.value.trim();
+  const msg = sanitizeAIChatInput(userInput.value.trim());
   if (!msg || loading.value) return;
 
   // 先在本地显示用户消息

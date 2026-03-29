@@ -318,6 +318,7 @@ import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { sanitizeInput } from '@/utils/security/sanitize.js';
 
 // 初始化 Store
 const schoolStore = useSchoolStore();
@@ -854,20 +855,7 @@ const onChooseAvatar = (e) => {
   }
 };
 
-// 输入验证：过滤危险字符和 Emoji
-const sanitizeInput = (input, maxLength = 50, allowEmoji = false) => {
-  if (!input) return '';
-  let result = String(input)
-    // 过滤危险字符：< > " ' & 和控制字符
-    .replace(/[<>"'&\x00-\x1F\x7F]/g, '');
-
-  // 可选：过滤 Emoji 和特殊字符，只保留中文、英文、数字和常用标点
-  if (!allowEmoji) {
-    result = result.replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s\-_.,!?，。！？、]/g, '');
-  }
-
-  return result.trim().slice(0, maxLength);
-};
+// R14: sanitizeInput 已提取为全局工具 @/utils/security/sanitize.js
 
 // 微信最新登录规范：获取昵称
 const onNicknameChange = (e) => {

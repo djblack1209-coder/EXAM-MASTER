@@ -27,6 +27,7 @@ import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 import { ref, computed, watch, onMounted } from 'vue';
 import { renderMarkdownAsync } from '@/pages/practice-sub/composables/useMarkdownRenderer';
+import { escapeHtml } from '@/utils/security/sanitize.js';
 import mpHtml from 'mp-html/dist/uni-app/components/mp-html/mp-html.vue';
 
 const props = defineProps({
@@ -51,8 +52,9 @@ async function doRender() {
   try {
     renderedHtml.value = await renderMarkdownAsync(props.content, { isDark: props.isDark });
   } catch (e) {
-    logger.warn('[MarkdownRenderer] render failed, fallback to raw text:', e?.message);
-    renderedHtml.value = props.content;
+    logger.warn('[MarkdownRenderer] render failed, fallback to escaped text:', e?.message);
+    // R14: fallback 时转义 HTML，防止绕过 markdown-it 的 html:false 保护
+    renderedHtml.value = `<p>${escapeHtml(props.content)}</p>`;
     // 非流式模式下提示用户渲染异常（流式输出时避免频繁弹提示）
     if (!props.streaming) {
       toast.info('内容渲染异常，已显示原始文本');
