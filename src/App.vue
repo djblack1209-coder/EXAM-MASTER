@@ -7,6 +7,8 @@ import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 // ✅ 检查点 5.2: 导入增强错误处理器
 import { globalErrorHandler } from '@/utils/error/global-error-handler.js';
 import { logger } from '@/utils/logger.js';
+import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
+import { safeNavigateTo } from '@/utils/safe-navigate.js';
 
 export default {
   onLaunch() {
@@ -22,6 +24,9 @@ export default {
 
     // ✅ 2.4: 初始化全局 API 错误拦截（认证失败自动跳转登录）
     this.initApiErrorInterceptor();
+
+    // ✅ R14: 全局路由守卫 — 拦截未登录用户访问需登录页面
+    this.initRouteGuard();
 
     // 初始化双模主题系统
     this.initThemeSystem();
@@ -47,6 +52,58 @@ export default {
     // 应用进入后台
   },
   methods: {
+    /**
+     * ✅ R14: 全局路由守卫
+     * 拦截 navigateTo / redirectTo，未登录用户无法进入需要登录的页面
+     * 公开页面白名单之外的所有页面都需要登录
+     */
+    initRouteGuard() {
+      // 公开页面白名单 — 不需要登录即可访问
+      const PUBLIC_PAGES = [
+        '/pages/splash/index',
+        '/pages/index/index',
+        '/pages/onboarding/index',
+        '/pages/login/index',
+        '/pages/login/wechat-callback',
+        '/pages/login/qq-callback',
+        '/pages/settings/privacy',
+        '/pages/settings/terms',
+        '/pages/settings/index',
+        '/pages/school/index',
+        '/pages/school-sub/detail',
+        '/pages/practice/index',
+        '/pages/profile/index',
+        '/pages/practice-sub/import-data'
+      ];
+
+      const checkAuth = (args) => {
+        if (!args || !args.url) return;
+        // 提取路径（去掉查询参数）
+        const path = args.url.split('?')[0];
+        // 公开页面放行
+        if (PUBLIC_PAGES.some((p) => path.startsWith(p))) return;
+        // 已登录放行
+        if (isUserLoggedIn()) return;
+        // 未登录：阻止跳转，弹窗引导登录
+        logger.log(`[RouteGuard] 拦截未登录访问: ${path}`);
+        toast.info('请先登录后使用此功能');
+        setTimeout(() => {
+          safeNavigateTo('/pages/login/index');
+        }, 300);
+        // 返回 false 阻止原始跳转
+        return false;
+      };
+
+      // 拦截 navigateTo
+      uni.addInterceptor('navigateTo', {
+        invoke: checkAuth
+      });
+      // 拦截 redirectTo
+      uni.addInterceptor('redirectTo', {
+        invoke: checkAuth
+      });
+    },
+
     /**
      * 初始化双模主题系统
      */
