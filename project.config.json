@@ -27,7 +27,7 @@
   "libVersion": "2.32.3",
   "appid": "wxd634d50ad63e14ed",
   "projectname": "Exam-Master",
-  "miniprogramRoot": "dist/dev/mp-weixin/",
+  "miniprogramRoot": "dist/build/mp-weixin/",
   "condition": {
     "search": {
       "current": -1,
