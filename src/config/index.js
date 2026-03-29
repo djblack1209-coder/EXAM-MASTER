@@ -165,10 +165,28 @@ const config = {
     baseUrl: getEnv('VITE_API_BASE_URL', ''),
 
     /**
+     * 备用 API 地址（主后端不可用时自动切换）
+     * 配置方式：VITE_API_FALLBACK_URL=https://fallback-api.com
+     */
+    fallbackUrl: getEnv('VITE_API_FALLBACK_URL', ''),
+
+    /**
      * API 请求超时时间（毫秒）
      * 配置方式：VITE_API_TIMEOUT=30000
      */
-    timeout: getEnvNumber('VITE_API_TIMEOUT', 30000)
+    timeout: getEnvNumber('VITE_API_TIMEOUT', 30000),
+
+    /** 主后端连续失败多少次后切换到备用 */
+    fallbackThreshold: 3,
+
+    /** 切换到备用后，多久尝试恢复主后端（毫秒） */
+    fallbackRecoveryMs: 60000,
+
+    /** 首页数据请求超时（毫秒，比默认更短以加快首屏） */
+    homeDataTimeout: 10000,
+
+    /** 发送邮箱验证码超时（毫秒，邮件服务较慢） */
+    emailCodeTimeout: 45000
   },
 
   // ==================== 智能服务配置 ====================
@@ -184,10 +202,22 @@ const config = {
     model: getEnv('VITE_AI_MODEL', 'glm-4-plus'),
 
     /**
-     * 智能请求超时时间（毫秒）
+     * 智能请求超时时间（毫秒） — 用于长耗时 AI 调用
      * 配置方式：VITE_AI_TIMEOUT=60000
      */
-    timeout: getEnvNumber('VITE_AI_TIMEOUT', 60000)
+    timeout: getEnvNumber('VITE_AI_TIMEOUT', 60000),
+
+    /** AI 分析类请求超时（毫秒，知识点掌握度/错题归因等） */
+    analysisTimeout: 15000,
+
+    /** AI 会话创建超时（毫秒） */
+    sessionTimeout: 15000,
+
+    /** AI 课程生成轮询间隔（毫秒） */
+    pollIntervalMs: 3000,
+
+    /** AI 课程生成轮询最大等待（毫秒，5分钟） */
+    pollTimeoutMs: 300000
   },
 
   // ==================== 应用配置 ====================
@@ -290,7 +320,10 @@ const config = {
     /**
      * 允许的图片类型
      */
-    allowedImageTypes: getEnv('VITE_ALLOWED_IMAGE_TYPES', 'image/jpeg,image/png,image/gif,image/webp').split(',')
+    allowedImageTypes: getEnv('VITE_ALLOWED_IMAGE_TYPES', 'image/jpeg,image/png,image/gif,image/webp').split(','),
+
+    /** 文件上传超时（毫秒，大文件上传需要更长时间） */
+    uploadTimeout: 60000
   },
 
   // ==================== 功能开关 ====================
@@ -479,7 +512,10 @@ const config = {
     /**
      * 网络连通性检测 URL
      */
-    pingUrl: getEnv('VITE_PING_URL', '/static/images/logo.png')
+    pingUrl: getEnv('VITE_PING_URL', '/static/images/logo.png'),
+
+    /** 网络连通性检测超时（毫秒） */
+    checkTimeout: 5000
   },
 
   // ==================== HTTP 重试配置 ====================
@@ -488,9 +524,16 @@ const config = {
    * HTTP 请求重试配置（统一 lafService 和 http.js）
    */
   retry: {
+    /** 普通请求最大重试次数 */
     maxRetries: 2,
+    /** 重试指数退避基础延迟（毫秒） */
     retryDelay: 1000,
-    retryableStatusCodes: [408, 429, 500, 502, 503, 504]
+    /** 重试最大延迟上限（毫秒） */
+    maxRetryDelay: 10000,
+    /** 可重试的 HTTP 状态码列表 */
+    retryableStatusCodes: [408, 429, 500, 502, 503, 504],
+    /** Laf 冷启动 404 专用重试次数 */
+    coldStartRetries: 6
   },
 
   // ==================== 缓存配置 ====================

@@ -17,9 +17,7 @@ import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import {
   success,
   badRequest,
-  unauthorized,
   serverError,
-  validateUserId,
   checkRateLimit,
   logger,
   generateRequestId,

@@ -6,6 +6,7 @@
  */
 
 import { logger } from '@/utils/logger.js';
+import config from '../../../config/index.js';
 import { request } from './_request-core.js';
 
 /**
@@ -52,7 +53,11 @@ export async function sendEmailCode(email) {
   try {
     logger.log('[LafService] 📧 发送验证码:', { email });
 
-    const response = await request('/send-email-code', { email }, { skipAuth: true, maxRetries: 0, timeout: 45000 });
+    const response = await request(
+      '/send-email-code',
+      { email },
+      { skipAuth: true, maxRetries: 0, timeout: config.api.emailCodeTimeout }
+    );
     return response;
   } catch (error) {
     logger.error('[LafService] ❌ 发送验证码失败:', error);

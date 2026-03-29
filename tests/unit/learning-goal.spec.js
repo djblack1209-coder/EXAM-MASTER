@@ -28,13 +28,11 @@ vi.mock('../../src/utils/logger.js', () => ({
   }
 }));
 
-// Mock lafService (dynamic import)
-vi.mock('../../src/services/lafService.js', () => ({
-  lafService: {
-    getLearningGoals: vi.fn(() => Promise.resolve({ data: [] })),
-    recordGoalProgress: vi.fn(() => Promise.resolve()),
-    syncLearningGoals: vi.fn(() => Promise.resolve())
-  }
+// Mock user.api.js (learning-goal.js 直接导入)
+vi.mock('../../src/services/api/domains/user.api.js', () => ({
+  getLearningGoals: vi.fn(() => Promise.resolve({ data: [] })),
+  recordGoalProgress: vi.fn(() => Promise.resolve()),
+  syncLearningGoals: vi.fn(() => Promise.resolve())
 }));
 
 import storageService from '../../src/services/storageService.js';
@@ -524,8 +522,8 @@ describe('LearningGoalManager', () => {
         return defaultValue;
       });
 
-      const { lafService } = await import('../../src/services/lafService.js');
-      lafService.getLearningGoals.mockResolvedValue({
+      const { getLearningGoals } = await import('../../src/services/api/domains/user.api.js');
+      getLearningGoals.mockResolvedValue({
         data: [{ type: 'STREAK_DAYS', target_value: 14, period: 'daily' }]
       });
 
@@ -552,8 +550,8 @@ describe('LearningGoalManager', () => {
         return defaultValue;
       });
 
-      const { lafService } = await import('../../src/services/lafService.js');
-      lafService.recordGoalProgress.mockRejectedValue(new Error('network error'));
+      const { recordGoalProgress } = await import('../../src/services/api/domains/user.api.js');
+      recordGoalProgress.mockRejectedValue(new Error('network error'));
 
       await manager._syncProgressToServer('DAILY_QUESTIONS', 5);
       // 不应抛异常

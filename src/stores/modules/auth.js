@@ -10,7 +10,8 @@ import { ref } from 'vue';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
-import { lafService } from '../../services/lafService.js';
+import { sendEmailCode as apiSendEmailCode, login as apiLogin } from '../../services/api/domains/auth.api.js';
+import { request } from '../../services/api/domains/_request-core.js';
 import tokenRefreshPlugin from '@/utils/auth/token-refresh-plugin.js';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
@@ -70,7 +71,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       // 2. 调用 Laf 登录接口（skipAuth: true 避免登录请求携带过期 token）
       try {
-        const res = await lafService.request('/login', { type: 'weixin', code }, { skipAuth: true });
+        const res = await request('/login', { type: 'weixin', code }, { skipAuth: true });
 
         if (res.code === 0 && res.data && res.data.userId) {
           const userId = res.data.userId;
@@ -188,7 +189,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {string} email - 邮箱地址
    */
   const sendEmailCode = async (email) => {
-    return await lafService.sendEmailCode(email);
+    return await apiSendEmailCode(email);
   };
 
   /**
@@ -196,7 +197,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {Object} params - 登录参数（code, accessToken, openid, userInfo, platform 等）
    */
   const loginByWechat = async (params) => {
-    return await lafService.login({ type: 'wechat', ...params });
+    return await apiLogin({ type: 'wechat', ...params });
   };
 
   /**
@@ -204,7 +205,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {string} code - OAuth 授权码
    */
   const loginByWechatH5 = async (code) => {
-    return await lafService.login({ type: 'wechat_h5', code });
+    return await apiLogin({ type: 'wechat_h5', code });
   };
 
   /**
@@ -212,7 +213,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {Object} params - 登录参数（code, platform, accessToken, openid, userInfo, redirectUri 等）
    */
   const loginByQQ = async (params) => {
-    return await lafService.login({ type: 'qq', ...params });
+    return await apiLogin({ type: 'qq', ...params });
   };
 
   /**
@@ -220,7 +221,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {Object} params - { code, redirectUri }
    */
   const loginByQQH5 = async (params) => {
-    return await lafService.login({ type: 'qq', ...params });
+    return await apiLogin({ type: 'qq', ...params });
   };
 
   /**
@@ -228,7 +229,7 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {Object} params - { email, password, verifyCode?, isRegister? }
    */
   const loginByEmail = async (params) => {
-    return await lafService.login({ type: 'email', ...params });
+    return await apiLogin({ type: 'email', ...params });
   };
 
   return {

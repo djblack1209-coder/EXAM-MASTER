@@ -10,7 +10,12 @@ import { ref } from 'vue';
 import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
-import { lafService } from '../../services/lafService.js';
+import {
+  requestAccountDeletion as apiRequestAccountDeletion,
+  getAccountDeletionStatus as apiGetAccountDeletionStatus,
+  cancelAccountDeletion as apiCancelAccountDeletion
+} from '../../services/api/domains/user.api.js';
+import { request } from '../../services/api/domains/_request-core.js';
 
 export const useProfileStore = defineStore('profile', () => {
   const userInfo = ref(null);
@@ -82,21 +87,21 @@ export const useProfileStore = defineStore('profile', () => {
    * 申请注销账号
    */
   const requestAccountDeletion = async () => {
-    return await lafService.requestAccountDeletion();
+    return await apiRequestAccountDeletion();
   };
 
   /**
    * 查询注销状态
    */
   const getAccountDeletionStatus = async () => {
-    return await lafService.getAccountDeletionStatus();
+    return await apiGetAccountDeletionStatus();
   };
 
   /**
    * 撤销注销申请
    */
   const cancelAccountDeletion = async () => {
-    return await lafService.cancelAccountDeletion();
+    return await apiCancelAccountDeletion();
   };
 
   /**
@@ -104,7 +109,7 @@ export const useProfileStore = defineStore('profile', () => {
    * @param {Object} data - 请求参数（action, userId, 等）
    */
   const updateProfile = async (data) => {
-    return await lafService.request('/user-profile', data);
+    return await request('/user-profile', data);
   };
 
   return {

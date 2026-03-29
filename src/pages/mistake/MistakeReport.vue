@@ -41,7 +41,8 @@
           <image
             v-if="reportImagePath"
             :src="reportImagePath"
-            alt="" mode="widthFix"
+            alt=""
+            mode="widthFix"
             class="report-image"
             @error="handleImageError"
             @load="handleImageLoad"
@@ -85,7 +86,7 @@
 
 <script>
 import { toast } from '@/utils/toast.js';
-import { lafService } from '@/services/lafService.js';
+import { useSchoolStore } from '@/stores/modules/school.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import {
@@ -184,7 +185,8 @@ export default {
       }, 30000);
 
       try {
-        const response = await lafService.proxyAI('report', {
+        const schoolStore = useSchoolStore();
+        const response = await schoolStore.aiRecommend('report', {
           userName: this.userInfo.nickName || '考研人',
           mistakeSummary: mistakeSummary,
           mistakeCount: this.mistakes.length
@@ -569,7 +571,7 @@ export default {
   align-items: center;
   justify-content: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-box-shadow: var(--cta-primary-shadow);
+  box-shadow: var(--cta-primary-shadow);
   border: 1rpx solid var(--cta-primary-border);
   padding: 0 30rpx;
   box-sizing: border-box;
@@ -793,7 +795,7 @@ box-shadow: var(--cta-primary-shadow);
   .modal-footer {
     display: flex;
     /* gap: 20rpx; -- replaced for Android WebView compat */
-padding: 30rpx 40rpx;
+    padding: 30rpx 40rpx;
     border-top: 1rpx solid var(--border, #f0f0f0);
     background: var(--bg-card);
 

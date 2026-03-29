@@ -176,13 +176,6 @@ export default async function (ctx) {
  */
 async function cleanupCollection(collectionName: string, dryRun: boolean, requestId: string) {
   const collection = db.collection(collectionName);
-  const result = {
-    scanned: 0,
-    matched: 0,
-    deleted: 0,
-    details: []
-  };
-
   switch (collectionName) {
     case 'users':
       return await cleanupUsers(collection, dryRun, requestId);
@@ -742,7 +735,7 @@ async function createBackupBeforeCleanup(targets: string[], requestId: string) {
 /**
  * 获取将被清理的数据（用于备份）
  */
-async function getDataToBackup(collectionName: string, requestId: string) {
+async function getDataToBackup(collectionName: string, _requestId: string) {
   const collection = db.collection(collectionName);
   const toBackup = [];
 

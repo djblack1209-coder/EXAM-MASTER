@@ -24,7 +24,15 @@
  */
 
 import { logger } from '@/utils/logger.js';
-import { lafService } from './lafService.js';
+import {
+  addMistake as apiAddMistake,
+  getMistakes as apiGetMistakes,
+  removeMistake as apiRemoveMistake,
+  batchRemoveMistakes as apiBatchRemoveMistakes,
+  updateMistakeStatus as apiUpdateMistakeStatus,
+  updateMistakeFields as apiUpdateMistakeFields,
+  batchSyncMistakes as apiBatchSyncMistakes
+} from './api/domains/practice.api.js';
 import { offlineMistakeToBackend } from '@/utils/field-normalizer.js';
 
 function createUniCompat() {
@@ -329,7 +337,7 @@ class StorageService {
     }
 
     try {
-      const res = await lafService.updateMistakeFields(userId, mistakeId, fields);
+      const res = await apiUpdateMistakeFields(userId, mistakeId, fields);
       const resAny = /** @type {any} */ (res);
       return Boolean(resAny?.ok === true || resAny?.code === 0 || (resAny?.updated || 0) > 0);
     } catch (e) {
@@ -837,7 +845,7 @@ class StorageService {
       // 获取云端版本
       let cloudMistake = null;
       try {
-        const res = await lafService.getMistakes(userId, { id: mistakeId });
+        const res = await apiGetMistakes(userId, { id: mistakeId });
         if (res.data && !Array.isArray(res.data)) {
           cloudMistake = res.data;
         } else if (Array.isArray(res.data)) {
@@ -990,7 +998,7 @@ class StorageService {
       logger.log('[StorageService] 📡 开始保存错题到云端...');
       // 统一字段名：前端 question → 后端 question_content
       const normalizedData = offlineMistakeToBackend(data);
-      const res = await lafService.addMistake(userId, normalizedData);
+      const res = await apiAddMistake(userId, normalizedData);
       const resAny = /** @type {any} */ (res);
 
       // 统一返回格式：后端可能返回 {id: "...", ok: true} 或 {code: 0, data: {...}}
@@ -1093,7 +1101,7 @@ class StorageService {
 
       try {
         logger.log(`[StorageService] 开始从云端获取错题列表 (page: ${page}, limit: ${limit})`);
-        const res = await lafService.getMistakes(userId, {
+        const res = await apiGetMistakes(userId, {
           // ✅ P2-1: 传递分页参数给后端，避免全量拉取
           page,
           limit,
@@ -1232,7 +1240,7 @@ class StorageService {
     // 使用 Laf 后端删除
     try {
       logger.log(`[StorageService] 开始删除错题: ${id}`);
-      const res = await lafService.removeMistake(userId, id);
+      const res = await apiRemoveMistake(userId, id);
       const resAny = /** @type {any} */ (res);
 
       // 后端返回格式: {deleted: 1, ok: true} 或 {deleted: 0, ok: true}
@@ -1310,7 +1318,7 @@ class StorageService {
 
       try {
         logger.log(`[StorageService] 开始批量删除 ${ids.length} 条错题`);
-        const res = await lafService.batchRemoveMistakes(userId, ids);
+        const res = await apiBatchRemoveMistakes(userId, ids);
         const resAny = /** @type {any} */ (res);
 
         if (resAny?.ok === true) {
@@ -1366,7 +1374,7 @@ class StorageService {
       logger.log(
         `[StorageService] 🌐 发送云端更新请求: /mistake-manager { action: 'updateStatus', id: ${id}, is_mastered: ${is_mastered} }`
       );
-      const res = await lafService.updateMistakeStatus(userId, id, is_mastered);
+      const res = await apiUpdateMistakeStatus(userId, id, is_mastered);
       const resAny = /** @type {any} */ (res);
 
       logger.log(`[StorageService] 📥 云端更新响应:`, res);
@@ -1463,7 +1471,7 @@ class StorageService {
 
         let useBatch = true;
         try {
-          const batchRes = await lafService.batchSyncMistakes(userId, batchData);
+          const batchRes = await apiBatchSyncMistakes(userId, batchData);
 
           if (batchRes.code === 0 && batchRes.data?.results) {
             // 批量同步成功，逐条更新本地状态
@@ -1512,7 +1520,7 @@ class StorageService {
               };
 
               const oldId = mistake.id || mistake._id;
-              const res = await lafService.addMistake(userId, mistakeData);
+              const res = await apiAddMistake(userId, mistakeData);
               const resAny = /** @type {any} */ (res);
 
               const cloudId = resAny?.data?.id || resAny?.data?._id || resAny?.id || resAny?._id;

@@ -8,7 +8,7 @@
  * - 降级文案根据错误类型区分（timeout / 401 / 网络），不可合并
  */
 
-import { lafService } from '@/services/lafService.js';
+import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { logger } from '@/utils/logger.js';
 import { storageService } from '@/services/storageService.js';
 
@@ -67,7 +67,7 @@ export async function fetchAIDeepAnalysis({ question, userChoice }) {
     // 后端会自动添加 "你是一位专业的考研辅导专家..." 的 Prompt
     // ✅ [P3] 注入用户学习风格指令，实现个性化AI解析
     const styleDirective = _getLearningStyleDirective();
-    const response = await lafService.proxyAI('analyze', {
+    const response = await proxyAI('analyze', {
       question: questionText,
       options: options,
       userAnswer: userAnswer,

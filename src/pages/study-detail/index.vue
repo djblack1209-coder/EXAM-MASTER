@@ -166,7 +166,7 @@ import FSRSOptimizer from './FSRSOptimizer.vue';
 import storageService from '@/services/storageService.js';
 import { getNavBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
-import { analyzeMastery } from '@/services/api/domains/smart-study.api.js';
+import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 
 export default {
   name: 'StudyDetail',
@@ -214,6 +214,7 @@ export default {
   onLoad() {
     this.themeStore = useThemeStore();
     this.studyStore = useStudyStore();
+    this.studyEngineStore = useStudyEngineStore();
     this.isDark = this.themeStore.isDark;
 
     // 监听主题变化
@@ -257,7 +258,7 @@ export default {
      */
     async loadAIInsight() {
       try {
-        const result = await analyzeMastery();
+        const result = await this.studyEngineStore.analyzeMastery();
         if (!result?.data?.summary) return;
 
         const s = result.data.summary;

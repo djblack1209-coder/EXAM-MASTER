@@ -219,6 +219,34 @@ export async function getFSRSRetentionCurve() {
   }
 }
 
+/**
+ * 获取用户个性化 FSRS 参数（含优化状态信息）
+ */
+export async function getFSRSParams() {
+  try {
+    return await request('/fsrs-optimizer', {
+      action: 'get_params'
+    });
+  } catch (error) {
+    logger.warn('[Practice] 获取FSRS参数失败:', error);
+    return normalizeError(error, '获取FSRS参数');
+  }
+}
+
+/**
+ * 获取用户复习统计数据（用于学习分析和遗忘曲线）
+ */
+export async function getFSRSReviewStats() {
+  try {
+    return await request('/fsrs-optimizer', {
+      action: 'get_review_stats'
+    });
+  } catch (error) {
+    logger.warn('[Practice] 获取复习统计失败:', error);
+    return normalizeError(error, '获取复习统计');
+  }
+}
+
 // ==================== Anki 导入导出 ====================
 
 /**
@@ -231,6 +259,44 @@ export async function exportAnki(deckName = '我的考研题库') {
   } catch (error) {
     logger.warn('[Practice] Anki导出失败:', error);
     return normalizeError(error, 'Anki导出');
+  }
+}
+
+/**
+ * 导入 Anki .apkg 牌组
+ * @param {string} fileData - base64 编码的文件数据
+ * @param {string} fileName - 原始文件名
+ * @param {Object} [options] - 可选配置
+ * @param {number} [options.timeout] - 超时时间
+ * @param {number} [options.maxRetries=1] - 最大重试次数
+ */
+export async function ankiImport(fileData, fileName, options = {}) {
+  try {
+    return await request(
+      '/anki-import',
+      { fileData, fileName },
+      {
+        timeout: options.timeout,
+        maxRetries: options.maxRetries ?? 1
+      }
+    );
+  } catch (error) {
+    logger.warn('[Practice] Anki导入失败:', error);
+    return normalizeError(error, 'Anki导入');
+  }
+}
+
+/**
+ * 触发 RAG 知识库索引（非阻塞，用于导入后自动建立向量索引）
+ * @param {string} action - 动作名称（如 'index_questions'）
+ * @param {Object} data - 索引参数
+ */
+export async function ragIngest(action, data) {
+  try {
+    return await request('/rag-ingest', { action, data });
+  } catch (error) {
+    logger.warn('[Practice] RAG索引失败:', error);
+    return normalizeError(error, 'RAG索引');
   }
 }
 

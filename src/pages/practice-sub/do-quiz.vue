@@ -450,8 +450,8 @@ import { startTimer as startQuestionTimer, stopTimer as stopQuestionTimer } from
 // ✅ 智能组题与自适应学习模块
 import { pickQuestions } from './utils/smart-question-picker.js';
 import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/learning/adaptive-learning-engine.js';
-// ✅ 导入离线缓存模块
-import { checkOfflineAvailability } from './offline-cache.js';
+// 离线缓存：使用统一的离线缓存服务
+import { checkOfflineAvailability } from '@/services/offline-cache-service.js';
 // ✅ 导入题目笔记模块
 import { addQuestionNote, getNotesByQuestion, getNoteTags } from './question-note.js';
 // ✅ P1: 提取的模块

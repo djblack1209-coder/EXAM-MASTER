@@ -33,7 +33,7 @@ function getActiveBaseUrl() {
 function markPrimaryFail() {
   if (!FALLBACK_URL) return;
   _primaryFailCount++;
-  if (_primaryFailCount >= 3 && !_useFallback) {
+  if (_primaryFailCount >= config.api.fallbackThreshold && !_useFallback) {
     _useFallback = true;
     logger.warn('[API] 主后端连续失败，切换到备用:', FALLBACK_URL);
     clearTimeout(_fallbackTimer);
@@ -41,7 +41,7 @@ function markPrimaryFail() {
       _useFallback = false;
       _primaryFailCount = 0;
       logger.log('[API] 尝试恢复主后端:', BASE_URL);
-    }, 60000);
+    }, config.api.fallbackRecoveryMs);
   }
 }
 
@@ -188,8 +188,8 @@ export function normalizeError(error, context = '') {
  * @param {number} baseDelay - 基础延迟毫秒数
  * @returns {Promise<void>}
  */
-function delay(attempt, baseDelay = 1000) {
-  const ms = Math.min(baseDelay * Math.pow(2, attempt), 10000);
+function delay(attempt, baseDelay = config.retry.retryDelay) {
+  const ms = Math.min(baseDelay * Math.pow(2, attempt), config.retry.maxRetryDelay);
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -345,10 +345,10 @@ function _checkNetwork() {
 }
 
 const _rateLimits = {
-  '/proxy-ai': { maxRequests: 10, windowMs: 60000 },
-  '/ai-photo-search': { maxRequests: 5, windowMs: 60000 },
-  '/voice-service': { maxRequests: 8, windowMs: 60000 },
-  _default: { maxRequests: 30, windowMs: 60000 }
+  '/proxy-ai': config.rateLimit.ai,
+  '/ai-photo-search': config.rateLimit.photoSearch,
+  '/voice-service': config.rateLimit.voice,
+  _default: config.rateLimit.default
 };
 const _requestTimestamps = new Map();
 
@@ -418,10 +418,10 @@ export async function request(path, data = {}, options = {}) {
   }
 
   const doRequest = async () => {
-    const maxRetries = options.maxRetries ?? 2;
-    const coldStartRetries = Math.max(maxRetries, options.coldStartRetries ?? 6);
+    const maxRetries = options.maxRetries ?? config.retry.maxRetries;
+    const coldStartRetries = Math.max(maxRetries, options.coldStartRetries ?? config.retry.coldStartRetries);
     const maxRetryLoop = Math.max(maxRetries, coldStartRetries);
-    const retryableStatuses = [408, 429, 500, 502, 503, 504];
+    const retryableStatuses = config.retry.retryableStatusCodes;
     const nonRetryableStatuses = [400, 401, 403, 404, 405, 409, 422];
 
     const headers = {
@@ -465,7 +465,7 @@ export async function request(path, data = {}, options = {}) {
             method: 'POST',
             data: data,
             header: headers,
-            timeout: options.timeout || 30000,
+            timeout: options.timeout || config.api.timeout,
             success: (res) => {
               if (res.statusCode === 200) {
                 let responseData = res.data;

@@ -10,7 +10,7 @@
 
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { lafService } from '@/services/lafService.js';
+import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { toast } from '@/utils/toast.js';
 
 /**
@@ -181,7 +181,7 @@ export async function generateMnemonic({ currentQuestion, correctAnswer }) {
       /* use default */
     }
 
-    const response = await lafService.proxyAI('analyze', {
+    const response = await proxyAI('analyze', {
       question: questionText,
       options: currentQuestion.options || [],
       correctAnswer: answer,
