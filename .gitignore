@@ -5,6 +5,8 @@ dist/
 
 # IDE
 .idea/
+.clinerules
+.cursorrules
 # .vscode/ - 保留VSC自动化配置
 .vscode/*.log
 .vscode/build.log

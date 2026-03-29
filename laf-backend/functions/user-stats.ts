@@ -18,7 +18,7 @@ import {
   success,
   badRequest,
   serverError,
-  checkRateLimit,
+  checkRateLimitDistributed,
   logger,
   generateRequestId,
   wrapResponse
@@ -49,8 +49,8 @@ export default async function (ctx) {
       logger.warn(`[${requestId}] 检测到 userId 不匹配，已使用 token 用户ID`);
     }
 
-    // 频率限制
-    const rateLimit = checkRateLimit(`stats_${userId}`, 60, 60000);
+    // 频率限制（分布式）
+    const rateLimit = await checkRateLimitDistributed(`stats_${userId}`, 60, 60000);
     if (!rateLimit.allowed) {
       return wrapResponse(
         { code: 429, success: false, message: '请求过于频繁', timestamp: Date.now() },

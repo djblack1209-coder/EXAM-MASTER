@@ -411,7 +411,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding-top: 20rpx;
-  border-top: 1rpx solid var(--border, #f0f0f0);
+  border-top: 1rpx solid var(--border);
 
   .time-text {
     font-size: 22rpx;
@@ -421,7 +421,7 @@ export default {
   .actions {
     display: flex;
     /* gap: 16rpx; -- replaced for Android WebView compat */
-}
+  }
 
   .action-btn {
     padding: 10rpx 24rpx;
@@ -458,7 +458,7 @@ export default {
     display: flex;
     align-items: center;
     /* gap: 8rpx; -- replaced for Android WebView compat */
-font-size: 22rpx;
+    font-size: 22rpx;
     color: var(--warning);
   }
 
@@ -494,7 +494,7 @@ font-size: 22rpx;
   }
 
   &.wrong-option {
-    background: rgba(255, 59, 48, 0.15);
+    background: var(--danger-light);
     border: 1px solid var(--danger);
   }
 }
@@ -502,7 +502,7 @@ font-size: 22rpx;
 .practice-actions {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-margin-top: 20rpx;
+  margin-top: 20rpx;
 }
 
 .practice-result {
@@ -535,7 +535,7 @@ margin-top: 20rpx;
 .result-text {
   font-size: 28rpx;
   font-weight: bold;
-  color: var(--text-primary, #333);
+  color: var(--text-primary);
 }
 
 .result-desc {
@@ -566,7 +566,7 @@ margin-top: 20rpx;
   display: flex;
   align-items: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-padding: 16rpx 20rpx;
+  padding: 16rpx 20rpx;
   margin-bottom: 20rpx;
   border-radius: 12rpx;
   background: var(--bg-secondary);

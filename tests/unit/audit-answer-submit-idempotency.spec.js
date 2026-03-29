@@ -105,22 +105,53 @@ vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
 }));
 
 vi.mock('../../laf-backend/functions/_shared/fsrs-scheduler', () => ({
-  scheduleReviewFSRS: vi.fn(),
-  createNewCard: vi.fn(() => ({})),
+  scheduleReviewFSRS: vi.fn(() => ({
+    card: {
+      due: Date.now(),
+      stability: 1,
+      difficulty: 5,
+      elapsed_days: 0,
+      scheduled_days: 1,
+      learning_steps: 0,
+      reps: 1,
+      lapses: 0,
+      state: 0
+    },
+    reviewLog: {
+      rating: 1,
+      state: 0,
+      due: Date.now(),
+      stability: 1,
+      difficulty: 5,
+      elapsed_days: 0,
+      scheduled_days: 1,
+      review: Date.now()
+    },
+    legacy: { interval_days: 1, ease_factor: 2.5, next_review_time: Date.now() + 86400000, stability: 1, difficulty: 5 }
+  })),
+  createNewCard: vi.fn(() => ({
+    due: Date.now(),
+    stability: 0,
+    difficulty: 0,
+    elapsed_days: 0,
+    scheduled_days: 0,
+    learning_steps: 0,
+    reps: 0,
+    lapses: 0,
+    state: 0
+  })),
   hasFSRSState: vi.fn(() => false),
   extractFSRSState: vi.fn(() => null),
-  migrateToFSRS: vi.fn(() => ({}))
-}));
-
-vi.mock('../../laf-backend/functions/_shared/services/fsrs.service', () => ({
-  FsrsService: vi.fn().mockImplementation(() => ({
-    processAnswer: vi.fn(async () => ({ state: 'mock' }))
-  }))
-}));
-
-vi.mock('../../laf-backend/functions/_shared/services/agent.service', () => ({
-  AgentService: vi.fn().mockImplementation(() => ({
-    provideTutorFeedback: vi.fn(async () => 'mock feedback')
+  migrateToFSRS: vi.fn(() => ({
+    due: Date.now(),
+    stability: 0,
+    difficulty: 0,
+    elapsed_days: 0,
+    scheduled_days: 0,
+    learning_steps: 0,
+    reps: 0,
+    lapses: 0,
+    state: 0
   }))
 }));
 

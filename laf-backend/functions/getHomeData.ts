@@ -119,7 +119,7 @@ export default async function (_ctx) {
     logger.error(`[${requestId}] 获取首页数据失败:`, err);
 
     return {
-      ...serverError('获取首页数据失败', err.message),
+      ...serverError('获取首页数据失败'),
       requestId,
       duration
     };

@@ -5,6 +5,7 @@ import fs from 'fs';
 import { createRequire } from 'module';
 import { normalizeAppRuntimeIndexFile } from './scripts/build/app-runtime-html.js';
 import { VitePWA } from 'vite-plugin-pwa';
+import { compression, defineAlgorithm } from 'vite-plugin-compression2';
 
 const require = createRequire(path.join(process.cwd(), 'vite.config.js'));
 const uniCliSharedUtils = require('@dcloudio/uni-cli-shared/dist/utils.js');
@@ -225,9 +226,9 @@ export default defineConfig(({ command, mode }) => {
             VitePWA({
               registerType: 'autoUpdate',
               includeAssets: [
-                'static/images/icon-192x192.png',
-                'static/images/icon-512x512.png',
-                'static/images/icon-512x512-maskable.png'
+                'static/pwa-icons/icon-192x192.png',
+                'static/pwa-icons/icon-512x512.png',
+                'static/pwa-icons/icon-512x512-maskable.png'
               ],
               manifest: {
                 name: '研友刷题',
@@ -240,10 +241,10 @@ export default defineConfig(({ command, mode }) => {
                 scope: '/',
                 start_url: '/',
                 icons: [
-                  { src: '/static/images/icon-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-                  { src: '/static/images/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+                  { src: '/static/pwa-icons/icon-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+                  { src: '/static/pwa-icons/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
                   {
-                    src: '/static/images/icon-512x512-maskable.png',
+                    src: '/static/pwa-icons/icon-512x512-maskable.png',
                     sizes: '512x512',
                     type: 'image/png',
                     purpose: 'maskable'
@@ -286,7 +287,26 @@ export default defineConfig(({ command, mode }) => {
                   }
                 ]
               }
-            })
+            }),
+            // 构建时预压缩：生成 .gz 和 .br 文件，Nginx 直接发送预压缩文件以降低 CPU 开销
+            ...(isProduction
+              ? [
+                  // gzip 预压缩（兼容性最广，所有现代浏览器都支持）
+                  compression({
+                    algorithms: [defineAlgorithm('gzip', { level: 6 })],
+                    threshold: 1024,
+                    include: /\.(js|css|html|svg|json|xml|txt|ico|wasm)$/,
+                    deleteOriginalAssets: false
+                  }),
+                  // brotli 预压缩（压缩率更高，Chrome/Firefox/Edge/Safari 均支持）
+                  compression({
+                    algorithms: [defineAlgorithm('brotliCompress', { params: { [1]: 6 } })],
+                    threshold: 1024,
+                    include: /\.(js|css|html|svg|json|xml|txt|ico|wasm)$/,
+                    deleteOriginalAssets: false
+                  })
+                ]
+              : [])
           ]
         : [])
     ],

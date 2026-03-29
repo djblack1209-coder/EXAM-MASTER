@@ -24,7 +24,15 @@
 import cloud from '@lafjs/cloud';
 import fs from 'fs';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { logger, success, badRequest, serverError, generateRequestId } from './_shared/api-response.js';
+import {
+  logger,
+  success,
+  badRequest,
+  serverError,
+  tooManyRequests,
+  generateRequestId,
+  checkRateLimitDistributed
+} from './_shared/api-response.js';
 
 const db = cloud.database();
 
@@ -61,6 +69,13 @@ export default async function (ctx: FunctionContext) {
 
     if (!userId) {
       return { ...badRequest('缺少用户ID'), requestId };
+    }
+
+    // [安全加固] 速率限制：每用户每分钟最多上传 5 次头像
+    const rateResult = await checkRateLimitDistributed(`avatar:${userId}`, 5, 60_000);
+    if (!rateResult.allowed) {
+      logger.warn(`头像上传频率过高: userId=${userId}, resetAt=${rateResult.resetAt}`);
+      return { ...tooManyRequests('上传太频繁，请稍后再试'), requestId };
     }
 
     // 验证用户ID格式

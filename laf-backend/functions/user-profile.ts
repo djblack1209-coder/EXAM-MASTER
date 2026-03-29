@@ -19,7 +19,7 @@ import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 const db = cloud.database();
 
 // ==================== 环境配置 ====================
-import { createLogger, sanitizeString } from './_shared/api-response.js';
+import { createLogger, sanitizeString, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response.js';
 
 // 头像上传配置
 const AVATAR_MAX_SIZE = 2 * 1024 * 1024; // 2MB
@@ -110,6 +110,15 @@ export default async function (ctx: FunctionContext) {
         };
       }
       logger.info(`[${requestId}] 访问控制验证通过: ${tokenUserId}`);
+    }
+
+    // 频率限制：20次/分钟/用户
+    const rateLimitResult = await checkRateLimitDistributed(`user_profile_${tokenUserId}`, 20, 60000);
+    if (!rateLimitResult.allowed) {
+      return {
+        ...tooManyRequests('请求过于频繁，请稍后再试'),
+        requestId
+      };
     }
 
     // 路由到对应处理函数

@@ -907,7 +907,7 @@ export default {
     // AI 今日推荐训练 — 异步加载薄弱知识点
     async loadAIRecommend() {
       try {
-        const { analyzeMastery } = await import('@/services/api/domains/study.api.js');
+        const { analyzeMastery } = await import('@/services/api/domains/smart-study.api.js');
         const result = await analyzeMastery();
         if (result?.data?.mastery?.length > 0) {
           // 找到最薄弱且先修条件已满足的知识点

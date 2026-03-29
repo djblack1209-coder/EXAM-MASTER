@@ -18,7 +18,7 @@
 import cloud from '@lafjs/cloud';
 import { fsrs, generatorParameters, State, createEmptyCard, type Grade, type RecordLogItem } from 'ts-fsrs';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { generateRequestId, createLogger } from './_shared/api-response.js';
+import { generateRequestId, createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
 import type { UserFSRSParams, ReviewLogRecord } from './_shared/fsrs-scheduler.js';
 
 const db = cloud.database();
@@ -56,6 +56,12 @@ export default async function (ctx: FunctionContext) {
       return { code: 401, success: false, message: authResult.message, requestId };
     }
     const userId = authResult.userId;
+
+    // 频率限制：3次/小时/用户（计算密集型操作）
+    const rateLimitResult = await checkRateLimitDistributed(`fsrs_opt_${userId}`, 3, 3600000);
+    if (!rateLimitResult.allowed) {
+      return { code: 429, success: false, message: '请求过于频繁，请稍后再试', requestId };
+    }
 
     switch (action) {
       case 'optimize':
