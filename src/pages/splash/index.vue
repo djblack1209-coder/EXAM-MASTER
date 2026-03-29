@@ -91,7 +91,7 @@ function navigateAfterSplash() {
     // 新用户 → 引导流程
     logger.log('[Splash] New user, navigate to onboarding');
     uni.redirectTo({
-      url: '/pages/onboarding/index',
+      url: '/pages/login/onboarding',
       fail: (err) => {
         logger.warn('[Splash] onboarding redirect failed, fallback to home', err);
         openHomeTab();

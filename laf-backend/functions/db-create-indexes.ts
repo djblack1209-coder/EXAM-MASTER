@@ -14,8 +14,11 @@
  * B004 更新：补充 9 个缺失索引（rankings 按周期查询、mistake_book 按 error_type/tags、
  *   practice_records 按 is_correct、favorites 按 source、learning_resources 文本索引+subject、
  *   users 按 total_questions），修正 rankings 过时索引
+ * B005 更新：补充 10 个缺失集合索引（review_logs、email_code_attempts、pk_rooms、
+ *   user_questions、user_materials、deep_corrections、user_school_favorites、
+ *   admission_ratios、document_chunks、colleges），补充已有集合缺失字段索引
  *
- * @version 1.3.0
+ * @version 1.4.0
  */
 
 import cloud from '@lafjs/cloud';
@@ -543,6 +546,153 @@ export default async function (ctx) {
       results.push({ collection: 'mistake_book (SM-2)', status: 'ok', indexes: 2 });
     } catch (e) {
       results.push({ collection: 'mistake_book (SM-2)', status: 'error', message: e.message });
+    }
+
+    // ==================== B005: 以下为第15轮审计新增的缺失集合索引 ====================
+
+    // ==================== review_logs 复习日志索引 [P0] ====================
+    // 高频读写，FSRS 优化器需全量读取，数据增长最快的集合
+    try {
+      const reviewLogsCol = db.collection('review_logs');
+      await reviewLogsCol.createIndex({ user_id: 1, review: -1 }, { name: 'idx_user_review' });
+      await reviewLogsCol.createIndex({ user_id: 1, card_id: 1, card_type: 1 }, { name: 'idx_user_card' });
+      await reviewLogsCol.createIndex({ user_id: 1, created_at: -1 }, { name: 'idx_user_created' });
+      results.push({ collection: 'review_logs', status: 'ok', indexes: 3 });
+    } catch (e) {
+      results.push({ collection: 'review_logs', status: 'error', message: e.message });
+    }
+
+    // ==================== email_code_attempts 邮箱验证码尝试记录索引 [P0] ====================
+    // 安全防护查询（防暴力破解），每次邮箱登录都执行
+    try {
+      const emailAttemptsCol = db.collection('email_code_attempts');
+      await emailAttemptsCol.createIndex(
+        { email: 1, success: 1, created_at: -1 },
+        { name: 'idx_email_success_created' }
+      );
+      // TTL 自动清理 24 小时前的记录
+      await emailAttemptsCol.createIndex({ created_at: 1 }, { expireAfterSeconds: 86400, name: 'idx_ttl_24h' });
+      results.push({ collection: 'email_code_attempts', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'email_code_attempts', status: 'error', message: e.message });
+    }
+
+    // ==================== pk_rooms PK匹配房间索引 [P0] ====================
+    // 实时匹配高频查询，匹配中每秒轮询
+    try {
+      const pkRoomsCol = db.collection('pk_rooms');
+      await pkRoomsCol.createIndex(
+        { status: 1, category: 1, question_count: 1, created_at: 1 },
+        { name: 'idx_match_query' }
+      );
+      await pkRoomsCol.createIndex({ 'player1.uid': 1, status: 1 }, { name: 'idx_player1_status' });
+      // TTL 自动清理 1 小时前的过期房间
+      await pkRoomsCol.createIndex({ created_at: 1 }, { expireAfterSeconds: 3600, name: 'idx_ttl_1h' });
+      results.push({ collection: 'pk_rooms', status: 'ok', indexes: 3 });
+    } catch (e) {
+      results.push({ collection: 'pk_rooms', status: 'error', message: e.message });
+    }
+
+    // ==================== user_questions 用户自定义题库索引 [P0] ====================
+    // 题库管理高频分页查询
+    try {
+      const userQuestionsCol = db.collection('user_questions');
+      await userQuestionsCol.createIndex({ userId: 1, createdAt: -1 }, { name: 'idx_user_created' });
+      await userQuestionsCol.createIndex({ userId: 1, materialId: 1 }, { name: 'idx_user_material' });
+      await userQuestionsCol.createIndex({ userId: 1, category: 1 }, { name: 'idx_user_category' });
+      results.push({ collection: 'user_questions', status: 'ok', indexes: 3 });
+    } catch (e) {
+      results.push({ collection: 'user_questions', status: 'error', message: e.message });
+    }
+
+    // ==================== user_materials 用户学习资料索引 [P1] ====================
+    try {
+      const userMaterialsCol = db.collection('user_materials');
+      await userMaterialsCol.createIndex({ userId: 1, createdAt: -1 }, { name: 'idx_user_created' });
+      results.push({ collection: 'user_materials', status: 'ok', indexes: 1 });
+    } catch (e) {
+      results.push({ collection: 'user_materials', status: 'error', message: e.message });
+    }
+
+    // ==================== deep_corrections 深度纠错索引 [P1] ====================
+    try {
+      const deepCorrectionsCol = db.collection('deep_corrections');
+      await deepCorrectionsCol.createIndex(
+        { user_id: 1, status: 1, created_at: -1 },
+        { name: 'idx_user_status_created' }
+      );
+      results.push({ collection: 'deep_corrections', status: 'ok', indexes: 1 });
+    } catch (e) {
+      results.push({ collection: 'deep_corrections', status: 'error', message: e.message });
+    }
+
+    // ==================== user_school_favorites 院校收藏索引 [P1] ====================
+    try {
+      const userSchoolFavCol = db.collection('user_school_favorites');
+      await userSchoolFavCol.createIndex({ userId: 1, schoolId: 1 }, { unique: true, name: 'idx_user_school' });
+      await userSchoolFavCol.createIndex({ userId: 1, created_at: -1 }, { name: 'idx_user_created' });
+      results.push({ collection: 'user_school_favorites', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'user_school_favorites', status: 'error', message: e.message });
+    }
+
+    // ==================== admission_ratios 录取比例索引 [P1] ====================
+    try {
+      const admissionCol = db.collection('admission_ratios');
+      await admissionCol.createIndex({ majorId: 1, year: -1 }, { name: 'idx_major_year' });
+      await admissionCol.createIndex({ schoolId: 1, year: -1 }, { name: 'idx_school_year' });
+      results.push({ collection: 'admission_ratios', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'admission_ratios', status: 'error', message: e.message });
+    }
+
+    // ==================== document_chunks RAG文档切片索引 [P2] ====================
+    try {
+      const docChunksCol = db.collection('document_chunks');
+      await docChunksCol.createIndex({ user_id: 1, bank_id: 1 }, { name: 'idx_user_bank' });
+      results.push({ collection: 'document_chunks', status: 'ok', indexes: 1 });
+    } catch (e) {
+      results.push({ collection: 'document_chunks', status: 'error', message: e.message });
+    }
+
+    // ==================== colleges 学院索引 [P2] ====================
+    try {
+      const collegesCol = db.collection('colleges');
+      await collegesCol.createIndex({ schoolId: 1 }, { name: 'idx_school' });
+      results.push({ collection: 'colleges', status: 'ok', indexes: 1 });
+    } catch (e) {
+      results.push({ collection: 'colleges', status: 'error', message: e.message });
+    }
+
+    // ==================== B005: 已有集合补充缺失索引 ====================
+
+    // rankings: 乐观锁条件更新需要 uid+version 复合索引
+    try {
+      const rankCol2 = db.collection('rankings');
+      await rankCol2.createIndex({ uid: 1, version: 1 }, { name: 'idx_uid_version' });
+      results.push({ collection: 'rankings (B005)', status: 'ok', indexes: 1 });
+    } catch (e) {
+      results.push({ collection: 'rankings (B005)', status: 'error', message: e.message });
+    }
+
+    // schools: status 筛选 + code 唯一约束
+    try {
+      const schoolsCol2 = db.collection('schools');
+      await schoolsCol2.createIndex({ status: 1 }, { name: 'idx_status' });
+      await schoolsCol2.createIndex({ code: 1 }, { unique: true, sparse: true, name: 'idx_code_unique' });
+      results.push({ collection: 'schools (B005)', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'schools (B005)', status: 'error', message: e.message });
+    }
+
+    // questions: PK对战抽题按 is_active 和 category 筛选
+    try {
+      const questionsCol2 = db.collection('questions');
+      await questionsCol2.createIndex({ is_active: 1 }, { name: 'idx_is_active' });
+      await questionsCol2.createIndex({ category: 1 }, { name: 'idx_category' });
+      results.push({ collection: 'questions (B005)', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'questions (B005)', status: 'error', message: e.message });
     }
 
     const totalIndexes = results.reduce((sum, r) => sum + (r.indexes || 0), 0);
