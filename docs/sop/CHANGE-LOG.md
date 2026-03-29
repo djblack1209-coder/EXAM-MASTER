@@ -14,6 +14,48 @@
 
 ---
 
+## [2026-03-29] 十五轮审计 — 分包优化+Bundle拆分+MongoDB索引补全
+
+- **Scope**: `frontend`, `backend`, `performance`, `database`
+- **审计范围**: 微信小程序分包优化(D031)、H5 Bundle vendor拆分(D029)、53组件Props校验、MongoDB缺失索引补全(10集合+5已有集合补充)、preloadRule增强
+- **质量关卡**: ESLint 0错误, 90文件/1196测试全过, H5构建通过, 后端TS编译通过
+
+### 微信小程序分包优化
+
+- onboarding页面从主包移入login分包: `/pages/onboarding/index` → `/pages/login/onboarding`，主包减少~24KB
+- preloadRule增强: 首页预加载新增plan+ai-classroom，刷题页新增mistake，个人中心新增favorite+study-detail
+
+### H5 Bundle Vendor拆分（D029修复）
+
+- vite.config.js 添加 manualChunks（仅H5平台）: vendor-core(Vue+Pinia+uni-app运行时 309KB) + vendor-wot(wot-design UI 27KB)
+- **入口JS从443KB降至135KB（-69.5%）**，vendor chunks独立缓存，后续访问只需加载业务代码
+
+### MongoDB索引补全（B005）
+
+- 10个完全缺失索引的集合: review_logs、email_code_attempts、pk_rooms、user_questions、user_materials、deep_corrections、user_school_favorites、admission_ratios、document_chunks、colleges
+- 5个已有集合补充缺失索引: rankings(uid+version)、schools(status+code)、questions(is_active+category)
+- P0级别: review_logs(3索引)、email_code_attempts(2索引+TTL)、pk_rooms(3索引+TTL)、user_questions(3索引)
+- P1级别: user_materials(1)、deep_corrections(1)、user_school_favorites(2)、admission_ratios(2)
+- P2级别: document_chunks(1)、colleges(1)
+- db-create-indexes.ts 版本升级 1.3.0 → 1.4.0，新增约25个索引
+
+### 审计结论（无需修复）
+
+- 53个组件Props校验: **全部A+**，零数组形式props，零缺type，零缺default/required，零引用类型默认值非工厂函数
+- 静态资源: tabbar图标44KB(10个PNG)可优化为SVG但非阻塞
+- 网络异常韧性: \_request-core.js已有统一超时/错误处理/重试，offline-indicator已实现，无P0问题
+
+### Files Changed (6 files)
+
+- `src/pages.json` — onboarding移入login分包 + preloadRule增强
+- `src/App.vue` — 路由守卫白名单更新onboarding路径
+- `src/pages/splash/index.vue` — onboarding跳转路径更新
+- `src/pages/login/onboarding.vue` — 从pages/onboarding/index.vue移入（物理移动）
+- `vite.config.js` — 添加H5 manualChunks vendor拆分
+- `laf-backend/functions/db-create-indexes.ts` — 新增10集合+5补充共25个索引(B005)
+
+---
+
 ## [2026-03-29] 十四轮审计 — 安全加固+内存泄漏修复+全局路由守卫
 
 - **Scope**: `frontend`, `security`, `performance`

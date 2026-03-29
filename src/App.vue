@@ -62,7 +62,7 @@ export default {
       const PUBLIC_PAGES = [
         '/pages/splash/index',
         '/pages/index/index',
-        '/pages/onboarding/index',
+        '/pages/login/onboarding',
         '/pages/login/index',
         '/pages/login/wechat-callback',
         '/pages/login/qq-callback',

@@ -45,14 +45,6 @@
         "navigationStyle": "custom",
         "navigationBarBackgroundColor": "#1A1A1A"
       }
-    },
-    {
-      "path": "pages/onboarding/index",
-      "style": {
-        "navigationBarTitleText": "欢迎",
-        "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#1A1A1A"
-      }
     }
   ],
   "subPackages": [
@@ -193,6 +185,14 @@
           "path": "qq-callback",
           "style": {
             "navigationBarTitleText": "QQ登录",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        },
+        {
+          "path": "onboarding",
+          "style": {
+            "navigationBarTitleText": "欢迎",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
@@ -416,11 +416,11 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["pages/chat", "pages/practice-sub"]
+      "packages": ["pages/chat", "pages/practice-sub", "pages/plan", "pages/ai-classroom"]
     },
     "pages/practice/index": {
       "network": "all",
-      "packages": ["pages/practice-sub"]
+      "packages": ["pages/practice-sub", "pages/mistake"]
     },
     "pages/school/index": {
       "network": "all",
@@ -428,7 +428,7 @@
     },
     "pages/profile/index": {
       "network": "wifi",
-      "packages": ["pages/settings", "pages/social"]
+      "packages": ["pages/settings", "pages/social", "pages/favorite", "pages/study-detail"]
     }
   },
   "globalStyle": {

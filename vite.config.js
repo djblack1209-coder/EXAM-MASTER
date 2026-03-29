@@ -354,7 +354,27 @@ export default defineConfig(({ command, mode }) => {
               // 非 App 端：正常的文件命名配置
               chunkFileNames: isProduction ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
               entryFileNames: isProduction ? 'static/js/[name]-[hash].js' : 'static/js/[name].js',
-              assetFileNames: isProduction ? 'static/[ext]/[name]-[hash].[ext]' : 'static/[ext]/[name].[ext]'
+              assetFileNames: isProduction ? 'static/[ext]/[name]-[hash].[ext]' : 'static/[ext]/[name].[ext]',
+              // H5: 拆分 vendor chunks，提升缓存命中率和首屏加载速度
+              ...(isH5
+                ? {
+                    manualChunks(id) {
+                      // Vue + uni-app 核心运行时（互相依赖，必须合并避免循环引用）
+                      if (
+                        id.includes('node_modules/vue/') ||
+                        id.includes('node_modules/@vue/') ||
+                        id.includes('node_modules/pinia/') ||
+                        id.includes('node_modules/@dcloudio/')
+                      ) {
+                        return 'vendor-core';
+                      }
+                      // wot-design UI 组件库（按需引入，独立缓存）
+                      if (id.includes('node_modules/wot-design-uni/')) {
+                        return 'vendor-wot';
+                      }
+                    }
+                  }
+                : {})
             }
       },
 
