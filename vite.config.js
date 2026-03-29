@@ -224,7 +224,11 @@ export default defineConfig(({ command, mode }) => {
         ? [
             VitePWA({
               registerType: 'autoUpdate',
-              includeAssets: ['static/images/logo.png'],
+              includeAssets: [
+                'static/images/icon-192x192.png',
+                'static/images/icon-512x512.png',
+                'static/images/icon-512x512-maskable.png'
+              ],
               manifest: {
                 name: '研友刷题',
                 short_name: '研友刷题',
@@ -236,8 +240,14 @@ export default defineConfig(({ command, mode }) => {
                 scope: '/',
                 start_url: '/',
                 icons: [
-                  { src: '/static/images/logo.png', sizes: '192x192', type: 'image/png' },
-                  { src: '/static/images/logo.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+                  { src: '/static/images/icon-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+                  { src: '/static/images/icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+                  {
+                    src: '/static/images/icon-512x512-maskable.png',
+                    sizes: '512x512',
+                    type: 'image/png',
+                    purpose: 'maskable'
+                  }
                 ]
               },
               workbox: {

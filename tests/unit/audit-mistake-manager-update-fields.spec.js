@@ -151,7 +151,6 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
     });
 
     expect(result.code).toBe(404);
-    expect(result.ok).toBe(false);
     expect(result.success).toBe(false);
     expect(result.message).toContain('错题不存在');
     expect(mocked.scenario.docUpdateCalls.length).toBe(0);
@@ -174,7 +173,6 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
     });
 
     expect(result.code).toBe(401);
-    expect(result.ok).toBe(false);
     expect(result.success).toBe(false);
   });
 
@@ -221,7 +219,6 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
     });
 
     expect(result.code).toBe(0);
-    expect(result.ok).toBe(true);
     expect(result.success).toBe(true);
 
     const updateCall = mocked.scenario.docUpdateCalls.find((item) => item.name === 'mistake_book');
@@ -253,7 +250,6 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
     });
 
     expect(result.code).toBe(400);
-    expect(result.ok).toBe(false);
     expect(result.success).toBe(false);
     expect(result.message).toContain('没有可更新字段');
     expect(mocked.scenario.docUpdateCalls.length).toBe(0);
@@ -274,7 +270,6 @@ describe('[安全审计] mistake-manager updateFields 行为', () => {
     });
 
     expect(result.code).toBe(0);
-    expect(result.ok).toBe(true);
     expect(result.deleted).toBe(2);
 
     const removeCall = mocked.scenario.removeCalls.find((item) => item.name === 'mistake_book');

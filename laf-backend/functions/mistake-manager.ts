@@ -19,7 +19,7 @@
  * - data: object (可选) - 操作数据
  *
  * 返回格式：
- * { code: 0, ok: true, success: true, data: {...}, message: 'success' }
+ * { code: 0, success: true, data: {...}, message: 'success' }
  *
  * @version 2.0.0
  */
@@ -224,25 +224,25 @@ export default async function (ctx: FunctionContext) {
     const { action, data } = ctx.body || {};
 
     if (!validateAction(action)) {
-      return { code: 400, ok: false, success: false, message: '参数错误: action 不合法', requestId };
+      return { code: 400, success: false, message: '参数错误: action 不合法', requestId };
     }
 
     // [H-01 FIX] JWT 认证：始终从 JWT payload 派生 userId，不信任 body
     const authResult = requireAuth(ctx);
     if (isAuthError(authResult)) {
-      return { code: 401, ok: false, success: false, message: authResult.message, requestId };
+      return { code: 401, success: false, message: authResult.message, requestId };
     }
     // 始终使用 JWT 中的 userId，忽略 body 中的值
     const userId = authResult.userId;
 
     if (!validateUserId(userId)) {
-      return { code: 401, ok: false, success: false, message: '用户未登录或 userId 不合法', requestId };
+      return { code: 401, success: false, message: '用户未登录或 userId 不合法', requestId };
     }
 
     // 校验并清理 data
     const dataValidation = validateMistakeData(data);
     if (!dataValidation.valid) {
-      return { code: 400, ok: false, success: false, message: `参数错误: ${dataValidation.error}`, requestId };
+      return { code: 400, success: false, message: `参数错误: ${dataValidation.error}`, requestId };
     }
 
     logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
@@ -263,7 +263,7 @@ export default async function (ctx: FunctionContext) {
 
     const handler = handlers[action];
     if (!handler) {
-      return { code: 400, ok: false, success: false, message: `不支持的操作: ${action}`, requestId };
+      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId };
     }
 
     // 4. 执行操作（已清理字段覆盖原始字段，保留 action 特有参数）
@@ -308,7 +308,6 @@ export default async function (ctx: FunctionContext) {
 
     return {
       code,
-      ok: false,
       success: false,
       message,
       requestId,
@@ -323,7 +322,7 @@ export default async function (ctx: FunctionContext) {
  */
 async function handleAdd(userId, data, requestId) {
   if (!data || !data.question_content) {
-    return { code: 400, ok: false, success: false, message: '参数错误: 题目内容不能为空' };
+    return { code: 400, success: false, message: '参数错误: 题目内容不能为空' };
   }
 
   const collection = db.collection('mistake_book');
@@ -354,7 +353,6 @@ async function handleAdd(userId, data, requestId) {
 
       return {
         code: 0,
-        ok: true,
         success: true,
         id: existing.data._id,
         _id: existing.data._id,
@@ -393,7 +391,6 @@ async function handleAdd(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
     success: true,
     id: result.id,
     _id: result.id,
@@ -439,7 +436,6 @@ async function handleGet(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
     success: true,
     data: listRes.data,
     total: countRes.total,
@@ -455,7 +451,7 @@ async function handleGet(userId, data, requestId) {
  */
 async function handleRemove(userId, data, requestId) {
   if (!data?.id) {
-    return { code: 400, ok: false, success: false, message: '参数错误: id 不能为空' };
+    return { code: 400, success: false, message: '参数错误: id 不能为空' };
   }
 
   const collection = db.collection('mistake_book');
@@ -470,7 +466,7 @@ async function handleRemove(userId, data, requestId) {
 
   if (!mistake.data) {
     logger.warn(`[${requestId}] 错题不存在: ${data.id}`);
-    return { code: 0, ok: true, success: true, deleted: 0, message: '错题不存在' };
+    return { code: 0, success: true, deleted: 0, message: '错题不存在' };
   }
 
   // 执行删除
@@ -480,7 +476,6 @@ async function handleRemove(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
     success: true,
     deleted: result.deleted || 1,
     message: '删除成功'
@@ -494,12 +489,12 @@ async function handleRemove(userId, data, requestId) {
 async function handleBatchRemove(userId, data, requestId) {
   const ids: string[] = data?.ids;
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
-    return { code: 400, ok: false, success: false, message: '参数错误: ids 必须是非空数组' };
+    return { code: 400, success: false, message: '参数错误: ids 必须是非空数组' };
   }
 
   // 上限 500 条，防止滥用
   if (ids.length > 500) {
-    return { code: 400, ok: false, success: false, message: '单次最多删除 500 条' };
+    return { code: 400, success: false, message: '单次最多删除 500 条' };
   }
 
   const collection = db.collection('mistake_book');
@@ -517,7 +512,6 @@ async function handleBatchRemove(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
     success: true,
     deleted,
     requested: ids.length,
@@ -530,7 +524,7 @@ async function handleBatchRemove(userId, data, requestId) {
  */
 async function handleUpdateStatus(userId, data, requestId) {
   if (!data?.id) {
-    return { code: 400, ok: false, success: false, message: '参数错误: id 不能为空' };
+    return { code: 400, success: false, message: '参数错误: id 不能为空' };
   }
 
   const collection = db.collection('mistake_book');
@@ -546,7 +540,7 @@ async function handleUpdateStatus(userId, data, requestId) {
 
   if (!mistake.data) {
     logger.warn(`[${requestId}] 错题不存在: ${data.id}`);
-    return { code: 404, ok: false, success: false, message: '错题不存在' };
+    return { code: 404, success: false, message: '错题不存在' };
   }
 
   // 计算 FSRS 调度参数（优先使用原生 FSRS 路径，回退到旧版 SM-2 兼容路径）
@@ -616,7 +610,6 @@ async function handleUpdateStatus(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
     success: true,
     updated: result.updated || 1,
     id: data.id,
@@ -630,17 +623,17 @@ async function handleUpdateStatus(userId, data, requestId) {
  */
 async function handleUpdateFields(userId, data, requestId) {
   if (!data?.id) {
-    return { code: 400, ok: false, success: false, message: '参数错误: id 不能为空' };
+    return { code: 400, success: false, message: '参数错误: id 不能为空' };
   }
 
   const rawFields = data?.fields;
   if (!rawFields || typeof rawFields !== 'object' || Array.isArray(rawFields)) {
-    return { code: 400, ok: false, success: false, message: '参数错误: fields 必须是对象' };
+    return { code: 400, success: false, message: '参数错误: fields 必须是对象' };
   }
 
   const fieldValidation = validateMistakeData(rawFields);
   if (!fieldValidation.valid) {
-    return { code: 400, ok: false, success: false, message: `参数错误: ${fieldValidation.error}` };
+    return { code: 400, success: false, message: `参数错误: ${fieldValidation.error}` };
   }
 
   const allowedFields = new Set([
@@ -685,7 +678,7 @@ async function handleUpdateFields(userId, data, requestId) {
   }
 
   if (Object.keys(updateData).length === 0) {
-    return { code: 400, ok: false, success: false, message: '没有可更新字段' };
+    return { code: 400, success: false, message: '没有可更新字段' };
   }
 
   const collection = db.collection('mistake_book');
@@ -699,7 +692,7 @@ async function handleUpdateFields(userId, data, requestId) {
 
   if (!existing.data) {
     logger.warn(`[${requestId}] updateFields 权限校验失败或记录不存在: ${data.id}`);
-    return { code: 404, ok: false, success: false, message: '错题不存在' };
+    return { code: 404, success: false, message: '错题不存在' };
   }
 
   const now = Date.now();
@@ -718,7 +711,6 @@ async function handleUpdateFields(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
     success: true,
     id: data.id,
     updated: result.updated || 1,
@@ -735,13 +727,13 @@ async function handleUpdateFields(userId, data, requestId) {
  */
 async function handleBatchSync(userId, data, requestId) {
   if (!data?.mistakes || !Array.isArray(data.mistakes)) {
-    return { code: 400, ok: false, success: false, message: '参数错误: mistakes 必须是数组' };
+    return { code: 400, success: false, message: '参数错误: mistakes 必须是数组' };
   }
 
   // ✅ P1-7: 限制批量同步上限，防止滥用
   const MAX_SYNC_SIZE = 200;
   if (data.mistakes.length > MAX_SYNC_SIZE) {
-    return { code: 400, ok: false, success: false, message: `单次同步上限 ${MAX_SYNC_SIZE} 条` };
+    return { code: 400, success: false, message: `单次同步上限 ${MAX_SYNC_SIZE} 条` };
   }
 
   const collection = db.collection('mistake_book');
@@ -824,7 +816,6 @@ async function handleBatchSync(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
     success: true,
     synced,
     failed,
@@ -906,7 +897,6 @@ async function handleGetCategories(userId, _data, requestId) {
 
     return {
       code: 0,
-      ok: true,
       success: true,
       data: {
         categories,
@@ -963,7 +953,6 @@ async function handleGetCategories(userId, _data, requestId) {
 
     return {
       code: 0,
-      ok: true,
       success: true,
       data: {
         categories,
@@ -992,7 +981,7 @@ async function handleManageTags(userId, data, requestId) {
     case 'add': {
       // 为错题添加标签
       if (!mistakeId || !tags || !Array.isArray(tags)) {
-        return { code: 400, ok: false, success: false, message: '参数错误: 需要 mistakeId 和 tags' };
+        return { code: 400, success: false, message: '参数错误: 需要 mistakeId 和 tags' };
       }
 
       // 验证权限
@@ -1004,7 +993,7 @@ async function handleManageTags(userId, data, requestId) {
         .getOne();
 
       if (!mistake.data) {
-        return { code: 404, ok: false, success: false, message: '错题不存在' };
+        return { code: 404, success: false, message: '错题不存在' };
       }
 
       // 合并标签（去重）
@@ -1020,7 +1009,6 @@ async function handleManageTags(userId, data, requestId) {
 
       return {
         code: 0,
-        ok: true,
         success: true,
         data: { tags: newTags },
         message: '标签添加成功'
@@ -1030,7 +1018,7 @@ async function handleManageTags(userId, data, requestId) {
     case 'remove': {
       // 从错题移除标签
       if (!mistakeId || !tags || !Array.isArray(tags)) {
-        return { code: 400, ok: false, success: false, message: '参数错误: 需要 mistakeId 和 tags' };
+        return { code: 400, success: false, message: '参数错误: 需要 mistakeId 和 tags' };
       }
 
       const mistake = await collection
@@ -1041,7 +1029,7 @@ async function handleManageTags(userId, data, requestId) {
         .getOne();
 
       if (!mistake.data) {
-        return { code: 404, ok: false, success: false, message: '错题不存在' };
+        return { code: 404, success: false, message: '错题不存在' };
       }
 
       const existingTags = mistake.data.tags || [];
@@ -1057,7 +1045,6 @@ async function handleManageTags(userId, data, requestId) {
 
       return {
         code: 0,
-        ok: true,
         success: true,
         data: { tags: newTags },
         message: '标签移除成功'
@@ -1068,7 +1055,7 @@ async function handleManageTags(userId, data, requestId) {
       // 批量重命名标签（用户所有错题中的该标签）
       // ✅ E004: 只拉取含目标标签的记录，减少内存占用
       if (!oldTag || !newTag) {
-        return { code: 400, ok: false, success: false, message: '参数错误: 需要 oldTag 和 newTag' };
+        return { code: 400, success: false, message: '参数错误: 需要 oldTag 和 newTag' };
       }
 
       // 只查询包含 oldTag 的错题，避免全量拉取
@@ -1105,7 +1092,6 @@ async function handleManageTags(userId, data, requestId) {
 
       return {
         code: 0,
-        ok: true,
         success: true,
         data: { updated },
         message: `标签重命名成功，更新了 ${updated} 条错题`
@@ -1132,7 +1118,6 @@ async function handleManageTags(userId, data, requestId) {
 
         return {
           code: 0,
-          ok: true,
           success: true,
           data: tagList,
           message: '获取成功'
@@ -1164,7 +1149,6 @@ async function handleManageTags(userId, data, requestId) {
 
         return {
           code: 0,
-          ok: true,
           success: true,
           data: tagList,
           message: '获取成功'
@@ -1173,7 +1157,7 @@ async function handleManageTags(userId, data, requestId) {
     }
 
     default:
-      return { code: 400, ok: false, success: false, message: '不支持的标签操作' };
+      return { code: 400, success: false, message: '不支持的标签操作' };
   }
 }
 
@@ -1185,7 +1169,7 @@ async function handleGetByTags(userId, data, requestId) {
   const { tags, matchAll = false, page = 1, limit = 50 } = data || {};
 
   if (!tags || !Array.isArray(tags) || tags.length === 0) {
-    return { code: 400, ok: false, success: false, message: '参数错误: tags 必须是非空数组' };
+    return { code: 400, success: false, message: '参数错误: tags 必须是非空数组' };
   }
 
   const collection = db.collection('mistake_book');
@@ -1211,7 +1195,6 @@ async function handleGetByTags(userId, data, requestId) {
 
   return {
     code: 0,
-    ok: true,
     success: true,
     data: result.data,
     total,
