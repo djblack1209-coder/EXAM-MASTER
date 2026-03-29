@@ -14,6 +14,18 @@
 
 ---
 
+## [2026-03-30] 第二十轮审计 — 微信小程序审核合规修复（2 BLOCKER + 1 HIGH + 1 MEDIUM）
+
+- **Scope**: `frontend`, `config`, `docs`
+- **Files Changed**:
+  - `scripts/build/inject-mp-weixin-privacy.mjs` — [B-001] 移除虚假 `requiredPrivateInfos` 声明（`chooseAddress`/`chooseLocation`/`choosePoi` 从未被调用），仅保留 `chooseMessageFile`；移除 `scope.userLocation` 权限注入逻辑
+  - `src/manifest.json` — [B-002] 移除 `permission.scope.userLocation` 块（应用从未调用任何位置 API，属"过度数据收集"）
+  - `src/pages/settings/privacy.vue` — [H-003] 更新账号删除说明，从"联系我们"改为准确描述应用内自助删除流程（7天冷静期）
+  - `project.config.json` — [M-004] `miniprogramRoot` 从 `dist/dev/mp-weixin/` 修正为 `dist/build/mp-weixin/`（生产构建路径）
+- **Summary**: 第二十轮审计，针对微信小程序提交审核前的合规检查。对照微信官方审核标准执行深度审计，发现并修复 2 个 BLOCKER 级问题（虚假隐私 API 声明 + 过度权限申请，均为**审核必拒**项）、1 个 HIGH 级问题（隐私政策描述与实际功能不符）、1 个 MEDIUM 级问题（DevTools 配置指向开发路径）。构建验证：主包 1298KB（远低于 2048KB 限制），总包 2609KB，13 个分包正常，隐私弹窗 `__usePrivacyCheck__` 启用。另有 1 个 HIGH 待办（H-002: AI 内容安全检测未接入 `security.msgSecCheck`），风险可控但建议后续补全。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK | MP-Weixin build OK (主包 1298KB)
+
 ## [2026-03-30] 第十九轮审计 — 深度扫描：微信MP超限修复 + 安全加固(error泄露+速率限制) + 部署同步
 
 - **Scope**: `backend`, `frontend`, `security`, `deploy`, `performance`
