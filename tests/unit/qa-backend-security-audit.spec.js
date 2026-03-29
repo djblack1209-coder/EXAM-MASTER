@@ -3,8 +3,8 @@
  *
  * 覆盖：
  * 1. question-bank seed_preset 需要认证
- * 2. group-service 直接使用 verifyJWT/extractBearerToken 认证
- * 3. ai-friend-memory 直接使用 verifyJWT/extractBearerToken 认证 + userId 校验
+ * 2. group-service 使用 requireAuth 统一认证中间件
+ * 3. ai-friend-memory 使用 requireAuth 统一认证中间件 + userId 校验
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
@@ -104,12 +104,16 @@ describe('[QA 安全审计] question-bank seed_preset 权限检查', () => {
   });
 });
 
-describe('[QA 安全审计] group-service 认证（直接使用 verifyJWT）', () => {
+describe('[QA 安全审计] group-service 认证（使用 requireAuth 统一中间件）', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('无 token 时应返回 401', async () => {
+    // requireAuth 在缺少 token 时返回错误响应
+    mockRequireAuth.mockReturnValue({ code: 401, success: false, message: '请先登录' });
+    mockIsAuthError.mockReturnValue(true);
+
     const groupService = (await import('../../laf-backend/functions/group-service')).default;
     const ctx = {
       body: { action: 'get_groups' },
@@ -118,14 +122,13 @@ describe('[QA 安全审计] group-service 认证（直接使用 verifyJWT）', (
 
     const result = await groupService(ctx);
     expect(result.code).toBe(401);
-    // group-service 不使用 requireAuth，直接检查 authorization header
-    expect(result.message).toContain('认证');
+    expect(result.message).toContain('登录');
   });
 
   it('有效 token 时应正常执行', async () => {
-    // group-service 使用 extractBearerToken + verifyJWT 做认证
-    mockExtractBearerToken.mockReturnValue('valid_token');
-    mockVerifyJWT.mockReturnValue({ userId: 'user_abc' });
+    // requireAuth 在有效 token 时返回 userId
+    mockRequireAuth.mockReturnValue({ userId: 'user_abc', payload: { userId: 'user_abc' } });
+    mockIsAuthError.mockReturnValue(false);
 
     const groupService = (await import('../../laf-backend/functions/group-service')).default;
     const ctx = {
@@ -134,8 +137,7 @@ describe('[QA 安全审计] group-service 认证（直接使用 verifyJWT）', (
     };
 
     const result = await groupService(ctx);
-    expect(mockExtractBearerToken).toHaveBeenCalled();
-    expect(mockVerifyJWT).toHaveBeenCalled();
+    expect(mockRequireAuth).toHaveBeenCalled();
     // 不应崩溃
     expect(result.requestId).toBeDefined();
   });
@@ -147,6 +149,10 @@ describe('[QA 安全审计] ai-friend-memory 认证 + userId 校验', () => {
   });
 
   it('无 token 时应返回 401', async () => {
+    // requireAuth 在缺少 token 时返回错误响应
+    mockRequireAuth.mockReturnValue({ code: 401, success: false, message: '请先登录' });
+    mockIsAuthError.mockReturnValue(true);
+
     const aiFriendMemory = (await import('../../laf-backend/functions/ai-friend-memory')).default;
     const ctx = {
       body: { action: 'get', friendType: 'study_buddy' },
@@ -155,14 +161,13 @@ describe('[QA 安全审计] ai-friend-memory 认证 + userId 校验', () => {
 
     const result = await aiFriendMemory(ctx);
     expect(result.code).toBe(401);
-    // ai-friend-memory 直接检查 authorization header，不使用 requireAuth
-    expect(result.message).toContain('认证');
+    expect(result.message).toContain('登录');
   });
 
   it('userId 不匹配时应返回 403', async () => {
-    // ai-friend-memory 使用 extractBearerToken + verifyJWT 做认证
-    mockExtractBearerToken.mockReturnValue('valid_token');
-    mockVerifyJWT.mockReturnValue({ userId: 'real_user' });
+    // requireAuth 返回有效用户
+    mockRequireAuth.mockReturnValue({ userId: 'real_user', payload: { userId: 'real_user' } });
+    mockIsAuthError.mockReturnValue(false);
 
     const aiFriendMemory = (await import('../../laf-backend/functions/ai-friend-memory')).default;
     const ctx = {

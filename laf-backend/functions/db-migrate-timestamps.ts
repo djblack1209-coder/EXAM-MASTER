@@ -79,7 +79,6 @@ export default async function (ctx) {
       code: 500,
       success: false,
       message: '迁移脚本执行异常',
-      error: (error as Error).message,
       requestId
     };
   }

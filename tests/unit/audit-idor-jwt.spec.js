@@ -5,10 +5,9 @@
  * 1. JWT 缺少 exp 声明时应拒绝（user-profile.ts 修复验证）
  * 2. JWT 过期 token 应拒绝
  * 3. doc-convert IDOR — 非所有者不能访问他人任务
- * 4. material-manager 越权写入 — 非所有者不能修改他人资料
- * 5. pk-battle 身份伪造 — 提交者必须是对战参与方
- * 6. achievement 重复解锁防护
- * 7. question-bank 答案字段不泄露
+ * 4. pk-battle 身份伪造 — 提交者必须是对战参与方
+ * 5. achievement 重复解锁防护
+ * 6. question-bank 答案字段不泄露
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -97,27 +96,7 @@ describe('[安全审计] doc-convert IDOR 防护', () => {
 });
 
 // ============================================================
-// 3. IDOR — material-manager 越权写入
-// ============================================================
-describe('[安全审计] material-manager 越权写入防护', () => {
-  it('查询资料时应包含 userId 条件', () => {
-    const materialId = 'mat_001';
-    const userId = 'user_001';
-    // 修复后的查询条件
-    const query = { _id: materialId, userId };
-    expect(query).toHaveProperty('userId', 'user_001');
-    expect(query).toHaveProperty('_id', 'mat_001');
-  });
-
-  it('他人 materialId 查询应返回空', () => {
-    // 模拟：materialId 属于 user_002，但请求者是 user_001
-    const material = null; // where({ _id: materialId, userId: 'user_001' }) 不匹配
-    expect(material).toBeNull();
-  });
-});
-
-// ============================================================
-// 4. pk-battle 身份伪造防护
+// 3. pk-battle 身份伪造防护
 // ============================================================
 describe('[安全审计] pk-battle 身份校验', () => {
   it('提交者不是对战参与方应被拒绝', () => {

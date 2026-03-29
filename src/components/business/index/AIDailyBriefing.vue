@@ -48,8 +48,8 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 
-// 动态导入 — 避免 study.api.js 被静态打包进主包（瘦身约15KB）
-const loadStudyApi = () => import('@/services/api/domains/study.api.js');
+// 动态导入 — analyzeMastery/getPendingCorrections/getSprintPriority 在 smart-study.api.js 中
+const loadStudyApi = () => import('@/services/api/domains/smart-study.api.js');
 
 const props = defineProps({
   isDark: { type: Boolean, default: false },

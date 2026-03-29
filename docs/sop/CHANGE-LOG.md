@@ -14,6 +14,63 @@
 
 ---
 
+## [2026-03-30] 第十九轮审计 — 深度扫描：微信MP超限修复 + 安全加固(error泄露+速率限制) + 部署同步
+
+- **Scope**: `backend`, `frontend`, `security`, `deploy`, `performance`
+- **Files Changed**:
+  - `vite.config.js` — PWA manifest 图标路径从 `static/images/` 改为 `static/pwa-icons/`，避免PWA图标占用微信MP主包空间
+  - `src/static/pwa-icons/` — 新建目录，从 `src/static/images/` 迁入 icon-192x192.png、icon-512x512.png、icon-512x512-maskable.png
+  - `laf-backend/functions/getHomeData.ts` — 移除 serverError() 中 err.message 参数（防止内部错误泄露）
+  - `laf-backend/functions/anki-export.ts` — 移除2处 String(e) 错误泄露 + 新增 checkRateLimitDistributed(5次/5分钟)
+  - `laf-backend/functions/anki-import.ts` — 移除 String(e) 错误泄露 + 新增 checkRateLimitDistributed(5次/5分钟)
+  - `laf-backend/functions/db-create-indexes.ts` — 移除 error.message 直接返回客户端
+  - `laf-backend/functions/db-migrate-timestamps.ts` — 移除 error.message 直接返回客户端
+  - `laf-backend/functions/group-service.ts` — 新增 checkRateLimitDistributed 写操作限制(10次/分钟)
+  - `laf-backend/functions/fsrs-optimizer.ts` — 新增 checkRateLimitDistributed(3次/小时)
+  - `laf-backend/functions/user-profile.ts` — 新增 checkRateLimitDistributed(20次/分钟)
+  - `laf-backend/functions/user-stats.ts` — 从内存 checkRateLimit 升级为 checkRateLimitDistributed
+- **Summary**: 第十九轮深度扫描审计。**BLOCKER修复**：微信小程序主包从2072KB(超出2048KB限制)降至1840KB，通过将PWA专用图标迁移到独立目录避免被打包进小程序主包。**安全加固**：修复6处HIGH级error.message泄露（getHomeData/anki-export×2/anki-import/db-create-indexes/db-migrate-timestamps），攻击者无法再通过错误响应获取内部堆栈信息；新增5个端点的分布式速率限制（group-service/anki-export/anki-import/fsrs-optimizer/user-profile），升级1个端点从内存限制到分布式限制（user-stats）。服务器同步部署完成，PM2重启0错误。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK | TypeScript 0 errors
+
+## [2026-03-30] 第十八轮审计 — 安全修复 + 暗黑模式修复 + 空状态/骨架屏 + 部署同步
+
+- **Scope**: `backend`, `frontend`, `security`, `deploy`
+- **Files Changed**:
+  - `laf-backend/functions/upload-avatar.ts` — 新增 `checkRateLimitDistributed` 速率限制（每用户每分钟最多5次上传）
+  - `laf-backend/functions/answer-submit.ts` — 移除 `serverError()` 中的 `error.message` 参数，防止内部错误信息泄露到客户端
+  - `src/pages/settings/ThemeSelectorModal.vue` — 移除2处硬编码色值 `#495057` fallback，改用 CSS 变量
+  - `src/pages/mistake/MistakeCard.vue` — 移除3处硬编码色值（`#f0f0f0`、`#333`、`rgba(255,59,48,0.15)`），改用 CSS 变量
+  - `src/pages/settings/AIChatModal.vue` — 移除5处硬编码色值/冗余 fallback（`#e9ecef`、`#495057`、`rgba(0,0,0,0.1)` 等），改用 CSS 变量
+  - `src/components/business/practice/AiGenerationOverlay.vue` — 修复进度条背景、灵感气泡、暂停按钮使用硬编码 rgba 颜色，改用 CSS 变量
+  - `src/pages/study-detail/index.vue` — 新增空状态引导（新用户无学习记录时展示引导卡片+「开始学习」按钮）
+  - `src/pages/ai-classroom/index.vue` — 新增加载骨架屏（3卡片骨架动画）+ 修复 catch 块变量名 bug（`_e` vs `e`）
+- **Summary**: 第十八轮审计。安全方面：upload-avatar 新增分布式速率限制（LOW-02），answer-submit 移除错误信息泄露（LOW-04）。UI方面：4个P1组件暗黑模式修复（ThemeSelectorModal/MistakeCard/AIChatModal/AiGenerationOverlay），共修复13处硬编码色值。UX方面：study-detail 新增空状态引导页，ai-classroom 新增加载骨架屏。修复1个运行时 bug（ai-classroom catch块变量引用错误）。服务器同步部署完成。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
+## [2026-03-30] 第十七轮全量审计 — P0修复 + 安全强化 + 孤儿清理 + 部署同步
+
+- **Scope**: `backend`, `frontend`, `security`, `deploy`, `infra`
+- **Files Changed**:
+  - `laf-backend/functions/answer-submit.ts` — 重构 handleSubmit：移除已删除的 FsrsService/AgentService 动态导入，改为直接使用 fsrs-scheduler.ts 函数
+  - `src/pages/practice/index.vue` — 修复 analyzeMastery 导入路径（study.api.js → smart-study.api.js）
+  - `src/components/business/index/AIDailyBriefing.vue` — 修复 analyzeMastery/getPendingCorrections/getSprintPriority 导入路径
+  - `src/services/api/domains/_request-core.js` — 移除浏览器禁止的 Accept-Encoding header
+  - `laf-backend/functions/group-service.ts` — 手动JWT验证替换为 requireAuth 中间件
+  - `laf-backend/functions/ai-friend-memory.ts` — 手动JWT验证替换为 requireAuth 中间件
+  - `laf-backend/functions/school-query.ts` — 21处成功响应添加 success: true 字段
+  - `src/pages/practice-sub/question-bank.vue` — 16处硬编码色值替换为 CSS 变量（暗黑模式支持）
+  - 删除 14 个前端孤儿文件（AIConsultPanel.vue, StudyTrend.vue, 6个 useQuiz\* composable, usePKMatching.js, core/index.js, core/date.js, ConfettiOverlay.vue, ForceGraph.vue, QuestionChoice.vue, question-renderer/, streamService.js, usePKResult.js, usePKGameplay.js, usePKShare.js）
+  - 删除 5 个后端孤儿文件（rag-query.ts, ai-quiz-grade.ts, material-manager.ts, fsrs.service.ts, agent.service.ts）+ \_shared/services/ 空目录
+  - `tests/unit/real-utils.spec.js` — 移除已删除 core/date.js 的测试
+  - `tests/unit/audit-idor-jwt.spec.js` — 移除已删除 material-manager 的测试
+  - 删除 `tests/unit/audit-material-manager-security.spec.js`（整个文件）
+  - `.gitignore` — 添加 .clinerules 和 .cursorrules
+- **Summary**: 第十七轮全量审计。修复3个P0运行时崩溃（answer-submit引用已删除文件、practice/AIDailyBriefing导入路径错误），移除1个浏览器禁止的header。安全强化：2个云函数手动JWT替换为统一中间件，school-query 21处响应补全success字段。UI修复：question-bank 16处硬编码色值改为CSS变量支持暗黑模式。文件治理：清理19个孤儿文件共5757行死代码。部署同步：服务器TS重编译+rsync+PM2重启，0错误。Electron桌面端验证通过。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
 ## [2026-03-30] AI 治理体系全面升级 — 7 个方向全部完成
 
 - **Scope**: `docs`

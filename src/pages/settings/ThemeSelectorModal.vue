@@ -96,12 +96,12 @@ function handleSelect(type) {
 .modal-title {
   font-size: 36rpx;
   font-weight: 700;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
 }
 
 .close-btn {
   font-size: 48rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 4px;
 }
@@ -157,12 +157,12 @@ function handleSelect(type) {
 .theme-name {
   font-size: 32rpx;
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
 }
 
 .theme-desc {
   font-size: 26rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
   opacity: 0.8;
 }
 

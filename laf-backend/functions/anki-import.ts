@@ -18,7 +18,9 @@ import {
   generateRequestId,
   createLogger,
   wrapResponse,
-  sanitizeString
+  sanitizeString,
+  checkRateLimitDistributed,
+  tooManyRequests
 } from './_shared/api-response.js';
 
 const db = cloud.database();
@@ -89,6 +91,12 @@ export default async function (ctx) {
     }
     const { userId } = authResult;
 
+    // 频率限制：5次/5分钟/用户（I/O密集型操作）
+    const rateLimitResult = await checkRateLimitDistributed(`anki_import_${userId}`, 5, 300000);
+    if (!rateLimitResult.allowed) {
+      return wrapResponse(tooManyRequests('请求过于频繁，请稍后再试'), requestId, startTime);
+    }
+
     logger.info(`[${requestId}] 用户 ${userId} 发起 Anki 导入请求`);
 
     // ---- 获取文件数据 ----
@@ -140,7 +148,7 @@ export default async function (ctx) {
       parsedData = await parseSqliteDatabase(sqliteBuffer, requestId);
     } catch (e) {
       logger.error(`[${requestId}] SQLite 解析失败:`, e);
-      return wrapResponse(serverError('Anki 数据库解析失败', String(e)), requestId, startTime);
+      return wrapResponse(serverError('Anki 数据库解析失败'), requestId, startTime);
     }
 
     const { notes, cards, models, decks } = parsedData;

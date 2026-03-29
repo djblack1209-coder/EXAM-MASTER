@@ -203,6 +203,7 @@ async function getSchoolList(data: Record<string, unknown>, requestId: string) {
     );
     return {
       code: 0,
+      success: true,
       data: {
         list: schools,
         total: YANZHAO_CONFIG.totalSchools,
@@ -244,6 +245,7 @@ async function getSchoolsFromDB(params: Record<string, unknown>, requestId: stri
 
   return {
     code: 0,
+    success: true,
     data: {
       list: schools.data || [],
       total: countResult.total || 0,
@@ -612,6 +614,7 @@ async function refreshSchoolData(data: Record<string, unknown>, requestId: strin
 
     return {
       code: 0,
+      success: true,
       data: {
         list: schools,
         total: schools.length,
@@ -656,6 +659,7 @@ async function getSchoolsByProvince(data: Record<string, unknown>, requestId: st
 
     return {
       code: 0,
+      success: true,
       data: {
         list: schools.data || [],
         total: countResult.total || 0,
@@ -679,6 +683,7 @@ async function getSchoolsByProvince(data: Record<string, unknown>, requestId: st
 
     return {
       code: 0,
+      success: true,
       data: {
         list: schools,
         total: schools.length,
@@ -729,6 +734,7 @@ async function getProvinceStats(requestId: string) {
 
     return {
       code: 0,
+      success: true,
       data: {
         provinces,
         totalProvinces: provinces.length,
@@ -746,6 +752,7 @@ async function getProvinceStats(requestId: string) {
 
   return {
     code: 0,
+    success: true,
     data: {
       provinces,
       totalProvinces: provinces.length,
@@ -771,6 +778,7 @@ async function getCrawlerStatus(requestId: string) {
 
     return {
       code: 0,
+      success: true,
       data: {
         totalCached: count.total || 0,
         expectedTotal: YANZHAO_CONFIG.totalSchools,
@@ -906,6 +914,7 @@ async function crawlAllSchools(requestId: string) {
 
     return {
       code: 0,
+      success: true,
       data: {
         crawledCount,
         errorCount,

@@ -773,7 +773,7 @@ export default {
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--card-border, #e9ecef);
+  border-bottom: 1px solid var(--border);
 }
 
 .header-left {
@@ -781,7 +781,7 @@ export default {
   align-items: center;
   /* gap: 12px; -- replaced for Android WebView compat */
   font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
 }
 
 .speaking-indicator {
@@ -930,7 +930,7 @@ export default {
   border-radius: 24px;
   padding: 12px 20px;
   font-size: 28rpx;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   min-height: 40px;
   box-sizing: border-box;
 }
@@ -1020,14 +1020,14 @@ export default {
 
 .close-icon {
   font-size: 48rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 4px;
 }
 
 .close-icon:hover {
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
   transform: scale(1.1);
 }
 
@@ -1042,7 +1042,7 @@ export default {
   padding: 16px;
   max-height: 200px;
   overflow-y: auto;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
   border-radius: 16px 16px 0 0;
 }
 

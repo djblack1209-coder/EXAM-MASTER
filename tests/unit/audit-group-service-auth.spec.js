@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocked = vi.hoisted(() => {
   const scenario = {
-    jwtPayload: { userId: 'group_user_1' }
+    jwtPayload: { userId: 'group_user_1' },
+    authError: false
   };
 
   const verifyJWT = vi.fn(() => scenario.jwtPayload);
@@ -36,6 +37,7 @@ const mocked = vi.hoisted(() => {
 
   function resetScenario() {
     scenario.jwtPayload = { userId: 'group_user_1' };
+    scenario.authError = false;
     verifyJWT.mockClear();
   }
 
@@ -55,6 +57,21 @@ vi.mock('../../laf-backend/functions/_shared/auth', () => ({
     const match = trimmed.match(/^Bearer(?:\s+(.+))?$/i);
     return match ? (match[1] || '').trim() : trimmed;
   }
+}));
+
+// group-service 现在使用 requireAuth 统一认证中间件
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (_ctx) => {
+    if (mocked.scenario.authError) {
+      return { code: 401, success: false, message: '请先登录' };
+    }
+    const payload = mocked.scenario.jwtPayload;
+    if (!payload || !payload.userId) {
+      return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    }
+    return { userId: payload.userId, payload };
+  },
+  isAuthError: (result) => 'code' in result && result.code !== 0
 }));
 
 vi.mock('@lafjs/cloud', () => ({
@@ -82,7 +99,6 @@ describe('[安全审计] group-service 鉴权 userId 一致性', () => {
       body: {}
     });
 
-    expect(mocked.verifyJWT).toHaveBeenCalledWith('valid_token');
     expect(result.code).toBe(400);
     expect(result.message).toContain('action 不能为空');
   });
@@ -101,7 +117,10 @@ describe('[安全审计] group-service 鉴权 userId 一致性', () => {
     expect(result.message).toContain('用户不匹配');
   });
 
-  it('Bearer 头为空 token 时，应返回 401 缺少认证 token', async () => {
+  it('Bearer 头为空 token 时，应返回 401', async () => {
+    // 模拟 requireAuth 因空 token 返回认证失败
+    mocked.scenario.jwtPayload = null;
+
     const result = await groupServiceHandler({
       headers: { authorization: 'Bearer   ' },
       body: { action: 'get_groups' }
@@ -109,6 +128,6 @@ describe('[安全审计] group-service 鉴权 userId 一致性', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('缺少认证 token');
+    expect(result.message).toContain('登录');
   });
 });

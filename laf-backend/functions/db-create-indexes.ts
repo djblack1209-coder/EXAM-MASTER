@@ -769,7 +769,6 @@ export default async function (ctx) {
       code: 500,
       success: false,
       message: '索引创建脚本执行异常',
-      error: (error as Error).message,
       requestId
     };
   }

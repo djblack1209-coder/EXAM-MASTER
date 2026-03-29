@@ -85,6 +85,22 @@ vi.mock('../../laf-backend/functions/_shared/auth', () => ({
   }
 }));
 
+// ai-friend-memory 现在使用 requireAuth 统一认证中间件
+vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
+  requireAuth: (ctx) => {
+    const payload = mocked.scenario.jwtPayload;
+    const rawToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
+    if (!rawToken) {
+      return { code: 401, success: false, message: '请先登录' };
+    }
+    if (!payload || !payload.userId) {
+      return { code: 401, success: false, message: '登录已过期，请重新登录' };
+    }
+    return { userId: payload.userId, payload };
+  },
+  isAuthError: (result) => 'code' in result && result.code !== 0
+}));
+
 import studyStatsHandler from '../../laf-backend/functions/study-stats';
 import aiFriendMemoryHandler from '../../laf-backend/functions/ai-friend-memory';
 import questionBankHandler from '../../laf-backend/functions/question-bank';
@@ -161,7 +177,7 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
 
     expect(result.code).toBe(401);
     expect(result.success).toBe(false);
-    expect(result.message).toContain('缺少认证 token');
+    expect(result.message).toContain('登录');
   });
 
   it('ai-friend-memory userId 不匹配时应返回 403 且 success=false', async () => {

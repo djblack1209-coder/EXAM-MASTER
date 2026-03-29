@@ -431,6 +431,7 @@ async function getSchoolList(data, requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: {
       list: schools.data || [],
       total: countResult.total || 0,
@@ -516,6 +517,7 @@ async function checkDataHealth(requestId) {
 
   return {
     code: 0,
+    success: true,
     data: {
       status,
       healthScore,
@@ -581,6 +583,7 @@ async function getSchoolDetail(data, requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: {
       ...result.data,
       colleges: colleges.data || [],
@@ -642,6 +645,7 @@ async function searchSchools(data, requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: result.data || [],
     totalUnits: TOTAL_GRADUATE_UNITS,
     requestId
@@ -704,6 +708,7 @@ async function getHotSchools(data, requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: result.data || [],
     requestId
   };
@@ -793,6 +798,7 @@ async function getMajors(data, requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: {
       list: majors.data || [],
       total: countResult.total || 0,
@@ -859,6 +865,7 @@ async function getColleges(data, requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: { list, total: list.length },
     requestId
   };
@@ -892,6 +899,7 @@ async function getMajorDetail(data, requestId) {
 
   return {
     code: 0,
+    success: true,
     data: {
       ...result.data,
       scoreLines: scoreLines.data || [],
@@ -922,6 +930,7 @@ async function getScoreLines(data, requestId) {
 
   return {
     code: 0,
+    success: true,
     data: result.data || [],
     requestId
   };
@@ -954,6 +963,7 @@ async function getNationalLines(data, requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: result.data || [],
     requestId
   };
@@ -981,6 +991,7 @@ async function getAdmissionRatios(data, requestId) {
 
   return {
     code: 0,
+    success: true,
     data: result.data || [],
     requestId
   };
@@ -1016,7 +1027,7 @@ async function addFavorite(ctx, data, requestId) {
       updatedAt: Date.now()
     });
 
-    return { code: 0, message: '更新成功', requestId };
+    return { code: 0, success: true, message: '更新成功', requestId };
   }
 
   // 新增收藏
@@ -1031,7 +1042,7 @@ async function addFavorite(ctx, data, requestId) {
     updatedAt: Date.now()
   });
 
-  return { code: 0, message: '收藏成功', requestId };
+  return { code: 0, success: true, message: '收藏成功', requestId };
 }
 
 /**
@@ -1053,7 +1064,7 @@ async function removeFavorite(ctx, data, requestId) {
 
   await db.collection('user_school_favorites').where({ userId, schoolId }).remove();
 
-  return { code: 0, message: '取消收藏成功', requestId };
+  return { code: 0, success: true, message: '取消收藏成功', requestId };
 }
 
 /**
@@ -1108,10 +1119,10 @@ async function getFavorites(ctx, data, requestId) {
       school: schoolMap.get(f.schoolId) || null
     }));
 
-    return { code: 0, data: result, requestId };
+    return { code: 0, success: true, data: result, requestId };
   }
 
-  return { code: 0, data: [], requestId };
+  return { code: 0, success: true, data: [], requestId };
 }
 
 /**
@@ -1138,6 +1149,7 @@ async function getStats(requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: {
       totalSchools: schoolCount.total || 0,
       totalMajors: majorCount.total || 0,
@@ -1180,6 +1192,7 @@ async function getProvinces(requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: provinces,
     requestId
   };
@@ -1201,6 +1214,7 @@ async function syncFromChsi(data, requestId) {
 
     return {
       code: 0,
+      success: true,
       message: '请提供要同步的院校数据，或使用爬虫服务获取数据',
       data: {
         currentCount: dataStatus.currentCount,
@@ -1294,6 +1308,7 @@ async function syncFromChsi(data, requestId) {
 
   return {
     code: 0,
+    success: true,
     message: '同步完成',
     data: {
       inserted,
@@ -1372,6 +1387,7 @@ async function getAllUnits(data, requestId) {
 
   const response = {
     code: 0,
+    success: true,
     data: {
       list: units.data || [],
       total: countResult.total || 0,

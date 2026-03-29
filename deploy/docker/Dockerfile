@@ -12,8 +12,9 @@ WORKDIR /app
 COPY laf-backend/ ./
 
 # 安装依赖（仅在 package.json 有实际依赖时）
+# 注: 使用 npm install 代替 npm ci，因为 lockfile 可能由更高版本 npm 生成
 RUN if [ -f package.json ] && [ -f package-lock.json ]; then \
-      npm ci --omit=dev && npm cache clean --force; \
+      npm install --omit=dev && npm cache clean --force; \
     elif [ -f package.json ]; then \
       DEPS=$(node -e "const p=require('./package.json'); console.log(Object.keys(p.dependencies||{}).length)" 2>/dev/null || echo "0"); \
       if [ "$DEPS" != "0" ]; then \

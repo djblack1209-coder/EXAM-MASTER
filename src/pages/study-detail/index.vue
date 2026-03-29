@@ -43,108 +43,125 @@
 
       <!-- 实际内容 -->
       <template v-else>
-        <!-- 页面标题 -->
-        <view class="page-header">
-          <text class="page-title"> 学习详情 </text>
-          <text class="page-subtitle"> 查看您的学习数据和进度 </text>
-        </view>
-
-        <!-- AI 学习洞察 — 一句人话总结数据背后的含义 -->
-        <view v-if="aiInsight" class="ai-insight-card">
-          <view class="insight-header">
-            <BaseIcon name="sparkle" :size="20" class="insight-icon" />
-            <text class="insight-label">AI 学习洞察</text>
+        <!-- 空状态：新用户无学习记录 -->
+        <view v-if="studyTime === 0 && completionRate === 0 && abilityRank === '-'" class="empty-state-container">
+          <view class="page-header">
+            <text class="page-title"> 学习详情 </text>
+            <text class="page-subtitle"> 查看您的学习数据和进度 </text>
           </view>
-          <text class="insight-text">{{ aiInsight }}</text>
-          <view v-if="aiWeakPoints.length > 0" class="insight-weak">
-            <text class="insight-weak-label">建议重点攻克:</text>
-            <view class="insight-tags">
-              <text v-for="wp in aiWeakPoints" :key="wp" class="insight-tag">{{ wp }}</text>
-            </view>
+          <view class="empty-state-card">
+            <text class="empty-icon">📖</text>
+            <text class="empty-title">还没有学习记录</text>
+            <text class="empty-desc">完成第一次练习后，这里将展示你的学习数据、热力图和能力分析</text>
+            <button class="empty-action-btn" @tap="goToPractice">开始学习</button>
           </view>
         </view>
 
-        <!-- 学习概况卡片 -->
-        <view class="overview-cards">
-          <!-- 学习时长卡片 -->
-          <view class="stat-card">
-            <image class="stat-icon" src="./static/study.png" alt="" mode="aspectFit" />
-            <view class="stat-content">
-              <text class="stat-value">
-                {{ studyTime }}
-              </text>
-              <text class="stat-label"> 学习时长（分钟） </text>
-            </view>
+        <!-- 有数据时展示完整内容 -->
+        <template v-else>
+          <!-- 页面标题 -->
+          <view class="page-header">
+            <text class="page-title"> 学习详情 </text>
+            <text class="page-subtitle"> 查看您的学习数据和进度 </text>
           </view>
 
-          <!-- 完成率卡片 -->
-          <view class="stat-card">
-            <image class="stat-icon" src="./static/stack-of-books.png" alt="" mode="aspectFit" />
-            <view class="stat-content">
-              <text class="stat-value"> {{ completionRate }}% </text>
-              <text class="stat-label"> 完成率 </text>
+          <!-- AI 学习洞察 — 一句人话总结数据背后的含义 -->
+          <view v-if="aiInsight" class="ai-insight-card">
+            <view class="insight-header">
+              <BaseIcon name="sparkle" :size="20" class="insight-icon" />
+              <text class="insight-label">AI 学习洞察</text>
+            </view>
+            <text class="insight-text">{{ aiInsight }}</text>
+            <view v-if="aiWeakPoints.length > 0" class="insight-weak">
+              <text class="insight-weak-label">建议重点攻克:</text>
+              <view class="insight-tags">
+                <text v-for="wp in aiWeakPoints" :key="wp" class="insight-tag">{{ wp }}</text>
+              </view>
             </view>
           </view>
 
-          <!-- 能力评级卡片 -->
-          <view class="stat-card">
-            <text class="stat-icon" style="font-size: 52rpx; line-height: 64rpx; text-align: center">📊</text>
-            <view class="stat-content">
-              <text class="stat-value">
-                {{ abilityRank }}
-              </text>
-              <text class="stat-label"> 能力评级 </text>
+          <!-- 学习概况卡片 -->
+          <view class="overview-cards">
+            <!-- 学习时长卡片 -->
+            <view class="stat-card">
+              <image class="stat-icon" src="./static/study.png" alt="" mode="aspectFit" />
+              <view class="stat-content">
+                <text class="stat-value">
+                  {{ studyTime }}
+                </text>
+                <text class="stat-label"> 学习时长（分钟） </text>
+              </view>
+            </view>
+
+            <!-- 完成率卡片 -->
+            <view class="stat-card">
+              <image class="stat-icon" src="./static/stack-of-books.png" alt="" mode="aspectFit" />
+              <view class="stat-content">
+                <text class="stat-value"> {{ completionRate }}% </text>
+                <text class="stat-label"> 完成率 </text>
+              </view>
+            </view>
+
+            <!-- 能力评级卡片 -->
+            <view class="stat-card">
+              <text class="stat-icon" style="font-size: 52rpx; line-height: 64rpx; text-align: center">📊</text>
+              <view class="stat-content">
+                <text class="stat-value">
+                  {{ abilityRank }}
+                </text>
+                <text class="stat-label"> 能力评级 </text>
+              </view>
             </view>
           </view>
-        </view>
 
-        <!-- 学习热力图 -->
-        <view class="heatmap-section">
-          <view class="section-header">
-            <text class="section-title"> 学习热力图 </text>
-            <text class="section-subtitle"> 过去一年的学习活跃度 </text>
+          <!-- 学习热力图 -->
+          <view class="heatmap-section">
+            <view class="section-header">
+              <text class="section-title"> 学习热力图 </text>
+              <text class="section-subtitle"> 过去一年的学习活跃度 </text>
+            </view>
+
+            <view class="heatmap-container">
+              <StudyHeatmap :study-data="studyRecordData" :weeks="26" @day-tap="handleDayTap" />
+            </view>
           </view>
 
-          <view class="heatmap-container">
-            <StudyHeatmap :study-data="studyRecordData" :weeks="26" @day-tap="handleDayTap" />
-          </view>
-        </view>
+          <!-- 能力雷达图 -->
+          <view class="radar-section">
+            <view class="section-header">
+              <text class="section-title"> 能力雷达 </text>
+              <text class="section-subtitle"> 各知识点掌握度分析 </text>
+            </view>
 
-        <!-- 能力雷达图 -->
-        <view class="radar-section">
-          <view class="section-header">
-            <text class="section-title"> 能力雷达 </text>
-            <text class="section-subtitle"> 各知识点掌握度分析 </text>
-          </view>
-
-          <view class="radar-container">
-            <AbilityRadar :mastery-data="knowledgeMastery" />
-          </view>
-        </view>
-
-        <!-- FSRS 记忆模型优化 -->
-        <view class="fsrs-section">
-          <view class="section-header">
-            <text class="section-title"> 智能记忆 </text>
-            <text class="section-subtitle"> 个性化间隔重复参数 </text>
-          </view>
-          <FSRSOptimizer />
-        </view>
-
-        <!-- 学习趋势图表 -->
-        <view class="chart-section">
-          <view class="section-header">
-            <text class="section-title"> 学习趋势 </text>
-            <text class="section-subtitle"> 最近学习时长变化 </text>
+            <view class="radar-container">
+              <AbilityRadar :mastery-data="knowledgeMastery" />
+            </view>
           </view>
 
-          <view class="chart-container">
-            <StudyTrendChart :study-data="studyRecordData" @range-change="handleRangeChange" />
+          <!-- FSRS 记忆模型优化 -->
+          <view class="fsrs-section">
+            <view class="section-header">
+              <text class="section-title"> 智能记忆 </text>
+              <text class="section-subtitle"> 个性化间隔重复参数 </text>
+            </view>
+            <FSRSOptimizer />
           </view>
-        </view>
 
-        <!-- 底部间距 -->
-        <view class="bottom-spacer" />
+          <!-- 学习趋势图表 -->
+          <view class="chart-section">
+            <view class="section-header">
+              <text class="section-title"> 学习趋势 </text>
+              <text class="section-subtitle"> 最近学习时长变化 </text>
+            </view>
+
+            <view class="chart-container">
+              <StudyTrendChart :study-data="studyRecordData" @range-change="handleRangeChange" />
+            </view>
+          </view>
+
+          <!-- 底部间距 -->
+          <view class="bottom-spacer" />
+        </template>
       </template>
     </scroll-view>
   </view>
@@ -305,6 +322,13 @@ export default {
      */
     goBack() {
       safeNavigateBack();
+    },
+
+    /**
+     * 跳转到练习页面（空状态引导按钮）
+     */
+    goToPractice() {
+      uni.switchTab({ url: '/pages/practice/index' });
     },
 
     /**
@@ -830,5 +854,58 @@ export default {
   100% {
     background-position: -200% 0;
   }
+}
+
+/* 空状态样式 */
+.empty-state-container {
+  padding: 0 30rpx;
+}
+
+.empty-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 40rpx;
+  margin-top: 40rpx;
+  background: var(--bg-card);
+  border-radius: 28rpx;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.empty-state-card .empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-state-card .empty-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+}
+
+.empty-state-card .empty-desc {
+  font-size: 28rpx;
+  color: var(--text-sub);
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 40rpx;
+  max-width: 500rpx;
+}
+
+.empty-action-btn {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border: 1px solid var(--cta-primary-border);
+  border-radius: 999rpx;
+  padding: 20rpx 60rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.empty-action-btn::after {
+  border: none;
 }
 </style>

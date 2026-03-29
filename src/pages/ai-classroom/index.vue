@@ -17,6 +17,17 @@
       </view>
     </view>
 
+    <!-- 加载骨架屏 -->
+    <view v-if="loading" class="skeleton-list">
+      <view v-for="i in 3" :key="i" class="skeleton-card">
+        <view class="skeleton-header-row">
+          <view class="skeleton-title skeleton-animate" />
+          <view class="skeleton-badge skeleton-animate" />
+        </view>
+        <view class="skeleton-meta skeleton-animate" />
+      </view>
+    </view>
+
     <!-- 课程列表 -->
     <view v-if="lessons.length > 0" class="lesson-list">
       <view class="section-title">我的课程</view>
@@ -144,7 +155,7 @@ async function loadLessons() {
       lessons.value = Array.isArray(res.data) ? res.data : res.data.list || [];
     }
   } catch (_e) {
-    logger.warn('[AI课堂] 加载课程列表失败:', e);
+    logger.warn('[AI课堂] 加载课程列表失败:', _e);
   } finally {
     loading.value = false;
   }
@@ -598,5 +609,58 @@ onMounted(() => {
 }
 .btn-create[disabled] {
   opacity: 0.5;
+}
+
+/* 加载骨架屏 */
+.skeleton-list {
+  padding: 0 16px;
+}
+
+.skeleton-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+
+.skeleton-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 20px;
+  border-radius: 8px;
+}
+
+.skeleton-badge {
+  width: 60px;
+  height: 24px;
+  border-radius: 12px;
+}
+
+.skeleton-meta {
+  width: 40%;
+  height: 14px;
+  border-radius: 6px;
+}
+
+.skeleton-animate {
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 </style>

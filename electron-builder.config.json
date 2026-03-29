@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "com.exammaster.app",
-  "productName": "EXAM MASTER",
+  "productName": "ExamMaster",
   "copyright": "Copyright © 2026 Exam-Master Team",
   "directories": {
     "output": "release"
@@ -10,13 +10,14 @@
   "extraMetadata": {
     "main": "electron/main.cjs"
   },
+  "electronDist": "node_modules/electron/dist",
   "mac": {
     "category": "public.app-category.education",
     "icon": "electron/icons/icon.icns",
     "target": [
       {
         "target": "dmg",
-        "arch": ["universal"]
+        "arch": ["arm64"]
       }
     ],
     "darkModeSupport": true,

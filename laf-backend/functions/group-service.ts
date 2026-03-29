@@ -17,8 +17,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT, extractBearerToken } from './_shared/auth.js';
-import { sanitizeString } from './_shared/api-response.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { sanitizeString, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -629,59 +629,56 @@ export default async function (ctx) {
   try {
     const { action, ...params } = ctx.body || {};
 
-    // 获取用户ID（客户端声明，仅用于与 JWT 做一致性校验）
-    const claimedUserId = ctx.headers?.['x-user-id'] || params.userId;
-
-    // JWT 身份验证
-    const rawHeaderToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    if (typeof rawHeaderToken === 'string' && rawHeaderToken) {
-      const token = extractBearerToken(rawHeaderToken);
-      if (!token) {
-        return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
-      }
-
-      const payload = verifyJWT(token);
-      if (!payload || !payload.userId) {
-        return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
-      }
-
-      if (claimedUserId && payload.userId !== claimedUserId) {
-        return { code: 403, success: false, message: '身份验证失败：用户不匹配', requestId };
-      }
-
-      const userId = payload.userId;
-
-      if (!action) {
-        return { code: 400, success: false, message: '参数错误: action 不能为空', requestId };
-      }
-
-      logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
-
-      // 路由到对应处理函数
-      const handlers = {
-        create_group: handleCreateGroup,
-        join_group: handleJoinGroup,
-        get_groups: handleGetGroups,
-        get_group_detail: handleGetGroupDetail,
-        leave_group: handleLeaveGroup,
-        share_resource: handleShareResource,
-        get_resources: handleGetResources
-      };
-
-      const handler = handlers[action];
-      if (!handler) {
-        return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId };
-      }
-
-      const result = await handler(userId, params, requestId);
-
-      const duration = Date.now() - startTime;
-      logger.info(`[${requestId}] 操作完成，耗时: ${duration}ms`);
-
-      return { ...result, requestId, duration };
-    } else {
-      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
+    // 统一认证中间件验证
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { ...authResult, requestId };
     }
+    const userId = authResult.userId;
+
+    // 客户端声明的 userId 一致性校验（防止越权）
+    const claimedUserId = ctx.headers?.['x-user-id'] || params.userId;
+    if (claimedUserId && userId !== claimedUserId) {
+      return { code: 403, success: false, message: '身份验证失败：用户不匹配', requestId };
+    }
+
+    if (!action) {
+      return { code: 400, success: false, message: '参数错误: action 不能为空', requestId };
+    }
+
+    logger.info(`[${requestId}] action: ${action}, userId: ${userId}`);
+
+    // 写操作频率限制：10次/分钟/用户
+    const writeActions = ['create_group', 'join_group', 'share_resource'];
+    if (writeActions.includes(action)) {
+      const rateLimitResult = await checkRateLimitDistributed(`group_write_${userId}`, 10, 60000);
+      if (!rateLimitResult.allowed) {
+        return { ...tooManyRequests('请求过于频繁，请稍后再试'), requestId };
+      }
+    }
+
+    // 路由到对应处理函数
+    const handlers = {
+      create_group: handleCreateGroup,
+      join_group: handleJoinGroup,
+      get_groups: handleGetGroups,
+      get_group_detail: handleGetGroupDetail,
+      leave_group: handleLeaveGroup,
+      share_resource: handleShareResource,
+      get_resources: handleGetResources
+    };
+
+    const handler = handlers[action];
+    if (!handler) {
+      return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId };
+    }
+
+    const result = await handler(userId, params, requestId);
+
+    const duration = Date.now() - startTime;
+    logger.info(`[${requestId}] 操作完成，耗时: ${duration}ms`);
+
+    return { ...result, requestId, duration };
   } catch (error) {
     const duration = Date.now() - startTime;
     logger.error(`[${requestId}] 学习小组服务异常:`, error);

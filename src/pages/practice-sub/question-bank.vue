@@ -249,7 +249,7 @@ onMounted(() => {
 <style scoped>
 .qb-page {
   min-height: 100vh;
-  background: #f5f5f7;
+  background: var(--bg-page);
 }
 .navbar {
   position: fixed;
@@ -257,7 +257,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--glass-bg);
   backdrop-filter: blur(20px);
 }
 .navbar-inner {
@@ -269,14 +269,14 @@ onMounted(() => {
 .nav-back {
   width: 40px;
   font-size: 20px;
-  color: #333;
+  color: var(--text-primary);
 }
 .nav-title {
   flex: 1;
   text-align: center;
   font-size: 17px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
 .nav-right {
   width: 40px;
@@ -291,12 +291,12 @@ onMounted(() => {
 .stats-total {
   font-size: 36rpx;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
 .stats-sub {
   display: block;
   font-size: 24rpx;
-  color: #8b8fa3;
+  color: var(--text-secondary);
   margin-top: 8rpx;
 }
 
@@ -307,7 +307,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 20rpx;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 20rpx;
   padding: 28rpx 24rpx;
   margin-bottom: 16rpx;
@@ -329,12 +329,12 @@ onMounted(() => {
 .cat-name {
   font-size: 30rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
 .cat-count {
   display: block;
   font-size: 22rpx;
-  color: #8b8fa3;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 .cat-diff {
@@ -373,9 +373,9 @@ onMounted(() => {
   padding: 10rpx 28rpx;
   border-radius: 32rpx;
   font-size: 24rpx;
-  background: #fff;
-  color: #666;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 }
 .filter-chip.selected {
   background: #6366f1;
@@ -401,7 +401,7 @@ onMounted(() => {
   padding: 0 24rpx;
 }
 .q-item {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 16rpx;
@@ -414,7 +414,7 @@ onMounted(() => {
 }
 .q-index {
   font-size: 22rpx;
-  color: #8b8fa3;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 .q-tags {
@@ -441,14 +441,14 @@ onMounted(() => {
 .q-source,
 .q-year {
   font-size: 20rpx;
-  color: #8b8fa3;
-  background: #f3f4f6;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
   padding: 4rpx 12rpx;
   border-radius: 8rpx;
 }
 .q-content {
   font-size: 28rpx;
-  color: #1a1a2e;
+  color: var(--text-primary);
   line-height: 1.6;
   margin-bottom: 16rpx;
 }
@@ -459,7 +459,7 @@ onMounted(() => {
 }
 .q-opt {
   font-size: 26rpx;
-  color: #4b5563;
+  color: var(--text-secondary);
   line-height: 1.5;
   padding: 8rpx 0;
 }
@@ -470,18 +470,18 @@ onMounted(() => {
 }
 .empty-text {
   font-size: 30rpx;
-  color: #8b8fa3;
+  color: var(--text-secondary);
 }
 .empty-sub {
   display: block;
   font-size: 24rpx;
-  color: #b0b3c6;
+  color: var(--text-tertiary);
   margin-top: 12rpx;
 }
 .loading-state {
   text-align: center;
   padding: 40rpx;
-  color: #8b8fa3;
+  color: var(--text-secondary);
   font-size: 26rpx;
 }
 .bottom-spacer {

@@ -11,7 +11,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT, extractBearerToken } from './_shared/auth.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
 import { createLogger } from './_shared/api-response.js';
 
 const db = cloud.database();
@@ -49,22 +49,15 @@ export default async function (ctx) {
       return { code: 400, success: false, message: '缺少 action 参数', requestId };
     }
 
-    // [AUDIT FIX] JWT 身份验证 — 始终要求认证（移除 NODE_ENV 条件），且强制校验 payload.userId
-    const authToken = ctx.headers?.['authorization'] || ctx.headers?.Authorization;
-    if (!authToken) {
-      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
+    // 统一认证中间件验证
+    const authResult = requireAuth(ctx);
+    if (isAuthError(authResult)) {
+      return { ...authResult, requestId };
     }
-    const rawToken = extractBearerToken(authToken);
-    const payload = verifyJWT(rawToken);
-    if (!payload) {
-      return { code: 401, success: false, message: 'token 无效或已过期，请重新登录', requestId };
-    }
-    if (!payload.userId) {
-      return { code: 401, success: false, message: '无效的 token（缺少用户标识）', requestId };
-    }
-    const authUserId = payload.userId;
+    const authUserId = authResult.userId;
 
-    if (requestUserId && payload.userId !== requestUserId) {
+    // 客户端声明的 userId 一致性校验（防止越权）
+    if (requestUserId && authUserId !== requestUserId) {
       return { code: 403, success: false, message: '身份验证失败', requestId };
     }
 

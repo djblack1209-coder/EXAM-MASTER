@@ -31,8 +31,16 @@ import {
   checkRateLimitDistributed
 } from './_shared/api-response.js';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { createNewCard, type ReviewLogRecord } from './_shared/fsrs-scheduler.js';
-// FsrsService 和 AgentService 在 handleSubmit 中通过动态 import() 按需加载
+import {
+  createNewCard,
+  scheduleReviewFSRS,
+  hasFSRSState,
+  extractFSRSState,
+  migrateToFSRS,
+  type ReviewLogRecord,
+  type FSRSScheduleResult,
+  type ReviewRating
+} from './_shared/fsrs-scheduler.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -224,7 +232,7 @@ export default async function (ctx) {
     }
   } catch (error) {
     logger.error(`[${requestId}] 答案提交异常:`, error);
-    return wrapResponse(serverError('服务器内部错误', (error as Error)?.message), requestId, startTime);
+    return wrapResponse(serverError('服务器内部错误'), requestId, startTime);
   }
 }
 
@@ -232,41 +240,53 @@ export default async function (ctx) {
  * 提交答案（带幂等性保护）
  */
 async function handleSubmit(userId: string, _idempotencyKey: string, data: Record<string, unknown>, requestId: string) {
-  const { questionId, userAnswer, isCorrect, timeSpent: _timeSpent } = data;
+  const { questionId, userAnswer: _userAnswer, isCorrect, timeSpent: _timeSpent } = data;
   if (!questionId || typeof isCorrect !== 'boolean') {
     return { code: 400, success: false, message: '参数错误：缺少题目标识或对错结果', requestId };
   }
 
   try {
-    const { FsrsService } = await import('./_shared/services/fsrs.service.js');
-    const { AgentService } = await import('./_shared/services/agent.service.js');
+    // 1. 根据对错映射 FSRS 评分（答对=good, 答错=again）
+    const rating: ReviewRating = isCorrect ? 'good' : 'again';
 
-    const fsrsService = new FsrsService();
-    const agentService = new AgentService();
+    // 2. 从 practice_records 获取已有卡片状态（如果有的话）
+    const recordDoc = await db
+      .collection('practice_records')
+      .where({ user_id: userId, question_id: questionId })
+      .orderBy('created_at', 'desc')
+      .limit(1)
+      .get();
 
-    // 1. Calculate Grade based on correctness and time (simplified for moat integration)
-    const grade = isCorrect ? 3 : 1;
+    let fsrsResult: FSRSScheduleResult;
+    const existingRecord = recordDoc.data?.[0];
 
-    // 2. Run FSRS scheduling
-    const memoryState = await fsrsService.processAnswer(userId, questionId as string, grade);
-
-    let tutorFeedback = null;
-    if (!isCorrect) {
-      // 3. Launch the Agent Team if wrong
-      const db = (await import('@lafjs/cloud')).default.database();
-      const questionDoc = await db
-        .collection('question_bank')
-        .doc(questionId as string)
-        .get();
-      const questionContent = questionDoc.data?.content || '未知题目';
-      const correctAnswer = questionDoc.data?.answer || '未知答案';
-
-      tutorFeedback = await agentService.provideTutorFeedback(
-        questionContent,
-        (userAnswer as string) || '空',
-        correctAnswer
-      );
+    if (existingRecord && hasFSRSState(existingRecord)) {
+      // 已有 FSRS 原生状态：无损往返调度
+      const fsrsState = extractFSRSState(existingRecord);
+      fsrsResult = scheduleReviewFSRS(fsrsState, rating);
+    } else if (existingRecord?.ease_factor) {
+      // 旧 SM-2 卡片：先迁移再调度
+      const migrated = migrateToFSRS({
+        ease_factor: existingRecord.ease_factor,
+        interval_days: existingRecord.interval_days,
+        review_count: existingRecord.review_count || 0,
+        last_review_time: existingRecord.last_review_time,
+        next_review_time: existingRecord.next_review_time
+      });
+      fsrsResult = scheduleReviewFSRS(migrated, rating);
+    } else {
+      // 新卡片：创建初始状态后调度
+      const newCard = createNewCard();
+      fsrsResult = scheduleReviewFSRS(newCard, rating);
     }
+
+    // 3. 构建返回的记忆状态
+    const memoryState = {
+      ...fsrsResult.card,
+      interval_days: fsrsResult.legacy.interval_days,
+      ease_factor: fsrsResult.legacy.ease_factor,
+      next_review_time: fsrsResult.legacy.next_review_time
+    };
 
     return {
       code: 0,
@@ -275,12 +295,11 @@ async function handleSubmit(userId: string, _idempotencyKey: string, data: Recor
       data: {
         isCorrect,
         memoryState,
-        tutorFeedback
+        tutorFeedback: null // AI 辅导反馈通过独立的 AI 咨询接口提供
       },
       requestId
     };
   } catch (error) {
-    const { logger } = await import('./_shared/api-response.js');
     logger.error('Answer submission processing failed', error);
     return { code: 500, success: false, message: '处理提交失败', requestId };
   }

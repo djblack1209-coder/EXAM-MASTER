@@ -164,14 +164,14 @@ const totalTarget = computed(() => {
 .apple-ai-progress-bar {
   width: 100%;
   height: 4px;
-  background-color: rgba(16, 40, 26, 0.08);
+  background-color: var(--bg-secondary);
   border-radius: 2px;
   overflow: hidden;
   margin-bottom: 8px;
 }
 .apple-ai-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #00e5ff, #007aff);
+  background: linear-gradient(90deg, var(--brand-color, #00e5ff), var(--primary, #007aff));
   border-radius: 2px;
   transition: width 0.3s ease;
   animation: appleAIProgress 1s ease-in-out infinite alternate;
@@ -195,10 +195,10 @@ const totalTarget = computed(() => {
   font-style: italic;
   margin: 0;
   max-width: 300px;
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.58));
   padding: 12px 20px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.48);
+  border: 1px solid var(--border);
   animation: fadeIn 0.5s ease;
 }
 @keyframes fadeIn {
@@ -215,8 +215,8 @@ const totalTarget = computed(() => {
   justify-content: center;
 }
 .pause-btn {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.7));
+  border: 1px solid var(--border);
   color: var(--text-primary);
   border-radius: 999px;
   padding: 8px 14px;

@@ -50,8 +50,8 @@
 | **后端语言** | TypeScript (云函数)                                  |
 | **Node**     | >= 20.17.0                                           |
 | **状态**     | 生产环境 — 腾讯云主服务器 + Sealos备用               |
-| **审计日期** | 2026-03-29（十六轮全量审计通过）                     |
-| **测试覆盖** | 90 文件 / 1196 用例                                  |
+| **审计日期** | 2026-03-30（十九轮全量审计通过）                     |
+| **测试覆盖** | 89 文件 / 1168 用例                                  |
 | **页面数**   | 36 页面 / 53 组件 / 13 Store / 18 Composable         |
 | **后端函数** | 46 TypeScript 云函数                                 |
 
@@ -101,7 +101,7 @@ Service(api/domains/) → 调用 _request-core.js 发 API 请求
 
 ```bash
 npm run lint       # 0 errors 0 warnings
-npm test           # 90 files / 1196 tests passed
+npm test           # 89 files / 1168 tests passed
 npm run build:h5   # Build complete
 ```
 

@@ -18,7 +18,9 @@ import {
   serverError,
   generateRequestId,
   createLogger,
-  wrapResponse
+  wrapResponse,
+  checkRateLimitDistributed,
+  tooManyRequests
 } from './_shared/api-response.js';
 
 const db = cloud.database();
@@ -78,6 +80,12 @@ export default async function (ctx) {
       return wrapResponse(unauthorized('请先登录'), requestId, startTime);
     }
     const { userId } = authResult;
+
+    // 频率限制：5次/5分钟/用户（CPU密集型操作）
+    const rateLimitResult = await checkRateLimitDistributed(`anki_export_${userId}`, 5, 300000);
+    if (!rateLimitResult.allowed) {
+      return wrapResponse(tooManyRequests('请求过于频繁，请稍后再试'), requestId, startTime);
+    }
 
     logger.info(`[${requestId}] 用户 ${userId} 发起 Anki 导出请求`);
 
@@ -139,7 +147,7 @@ export default async function (ctx) {
       sqliteData = await buildAnkiDatabase(questions, exportDeckName, requestId);
     } catch (e) {
       logger.error(`[${requestId}] SQLite 数据库构建失败:`, e);
-      return wrapResponse(serverError('Anki 数据库构建失败', String(e)), requestId, startTime);
+      return wrapResponse(serverError('Anki 数据库构建失败'), requestId, startTime);
     }
 
     logger.info(`[${requestId}] SQLite 数据库构建完成: ${(sqliteData.length / 1024).toFixed(1)} KB`);
@@ -150,7 +158,7 @@ export default async function (ctx) {
       apkgBase64 = await packageApkg(sqliteData, requestId);
     } catch (e) {
       logger.error(`[${requestId}] .apkg 打包失败:`, e);
-      return wrapResponse(serverError('.apkg 文件打包失败', String(e)), requestId, startTime);
+      return wrapResponse(serverError('.apkg 文件打包失败'), requestId, startTime);
     }
 
     // ---- 生成文件名 ----

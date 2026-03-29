@@ -426,7 +426,7 @@ export async function request(path, data = {}, options = {}) {
 
     const headers = {
       'Content-Type': 'application/json',
-      'Accept-Encoding': 'gzip, deflate',
+      // 注意：不设置 Accept-Encoding，浏览器/小程序会自动协商压缩编码
       ...options.headers
     };
 
