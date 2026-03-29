@@ -31,6 +31,28 @@
 
 ---
 
+## [2026-03-30] 后端TS编译错误清零 + 架构重构提交
+
+- **Scope**: `backend`, `frontend`, `docs`, `infra`
+- **Files Changed**:
+  - `laf-backend/functions/answer-submit.ts` — 10个TS6133修复(未使用导入/变量)
+  - `laf-backend/functions/school-crawler-api.ts` — 8个TS6133修复(未使用导入/正则/变量)
+  - `laf-backend/functions/smart-study-engine.ts` — 6个TS6133修复(未使用变量/函数)
+  - `laf-backend/functions/pk-battle.ts` — 4个TS6133修复(未使用导入/参数)
+  - `laf-backend/functions/data-cleanup.ts` — 2个TS6133修复(未使用变量/参数)
+  - `laf-backend/functions/social-service.ts` — 2个TS6133修复(未使用导入/参数)
+  - `laf-backend/functions/upload-avatar.ts` — 1个TS6133修复(未使用导入)
+  - `laf-backend/functions/user-stats.ts` — 2个TS6133修复(未使用导入)
+  - `laf-backend/functions/question-bank.ts` — 1个TS6133修复(未使用变量)
+  - 新建 `docs/doc-cache/` — 8个官方文档缓存(vue3/uniapp/pinia/mongodb/typescript/eslint/wot-design/wechat-mp)
+  - 新建 `src/config/game-constants.js` — 游戏常量唯一源
+  - 40+前端文件 — lafService消除/API分层/配置集中化/死代码清理
+  - 6个SOP文档 — 验收清单/回归测试/影响分析/决策日志/流程手册/文档规则
+- **Summary**: 后端TypeScript编译从36个TS6133错误降至0错误。修复策略：移除未使用导入、前缀化未使用参数(`_varName`)、导出保留的基础设施函数、删除重复声明的局部变量。同时完成架构重构(lafService消除+游戏常量统一+魔法数字集中化)和AI治理体系建设(6个SOP文档)的合并提交。
+- **Breaking Changes**: 无
+
+---
+
 ## [2026-03-29] 架构清爽化重构 — Task 1~5 完成
 
 - **Scope**: `frontend`, `docs`
