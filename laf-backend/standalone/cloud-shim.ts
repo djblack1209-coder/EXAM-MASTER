@@ -120,7 +120,12 @@ function translateQuery(query: Record<string, any>): Record<string, any> {
       }
       result[key] = hasOps ? nested : val;
     } else {
-      result[key] = val;
+      // 自动将 _id 字符串转回 ObjectId（normalizeDoc 输出的 _id 是字符串）
+      if (key === '_id' && typeof val === 'string' && /^[a-fA-F0-9]{24}$/.test(val)) {
+        result[key] = new ObjectId(val);
+      } else {
+        result[key] = val;
+      }
     }
   }
   return result;
