@@ -53,7 +53,7 @@ export default async function (ctx: FunctionContext) {
 
     const authResult = requireAuth(ctx);
     if (isAuthError(authResult)) {
-      return { code: 401, ok: false, message: authResult.message, requestId };
+      return { code: 401, success: false, message: authResult.message, requestId };
     }
     const userId = authResult.userId;
 
@@ -70,11 +70,11 @@ export default async function (ctx: FunctionContext) {
         return await handleGetReviewStats(userId, requestId, startTime);
 
       default:
-        return { code: 400, ok: false, message: `不支持的操作: ${action}`, requestId };
+        return { code: 400, success: false, message: `不支持的操作: ${action}`, requestId };
     }
   } catch (error) {
     logger.error(`[${requestId}] 优化器异常:`, error);
-    return { code: 500, ok: false, message: '服务器内部错误', requestId };
+    return { code: 500, success: false, message: '服务器内部错误', requestId };
   }
 }
 
@@ -101,7 +101,7 @@ async function handleOptimize(userId: string, requestId: string, startTime: numb
     const remaining = Math.ceil((OPTIMIZE_COOLDOWN_MS - (Date.now() - existingParams.optimized_at)) / 3600000);
     return {
       code: 429,
-      ok: false,
+      success: false,
       message: `优化冷却中，${remaining} 小时后可再次优化`,
       requestId,
       duration: Date.now() - startTime
@@ -121,7 +121,7 @@ async function handleOptimize(userId: string, requestId: string, startTime: numb
   if (logs.length < MIN_LOGS_FOR_OPTIMIZE) {
     return {
       code: 400,
-      ok: false,
+      success: false,
       message: `复习记录不足，需要至少 ${MIN_LOGS_FOR_OPTIMIZE} 条（当前 ${logs.length} 条）`,
       data: { current: logs.length, required: MIN_LOGS_FOR_OPTIMIZE },
       requestId,
@@ -171,7 +171,7 @@ async function handleOptimize(userId: string, requestId: string, startTime: numb
 
   return {
     code: 0,
-    ok: true,
+    success: true,
     data: {
       w: optimResult.w,
       requestRetention: optimResult.retention,
@@ -210,7 +210,7 @@ async function handleGetParams(userId: string, requestId: string, startTime: num
 
   return {
     code: 0,
-    ok: true,
+    success: true,
     data: {
       // 核心参数（前端可直接传给 loadUserParams）
       w: hasCustom ? params.w : FSRS5_DEFAULT_W,
@@ -268,7 +268,7 @@ async function handleGetReviewStats(userId: string, requestId: string, startTime
 
   return {
     code: 0,
-    ok: true,
+    success: true,
     data: {
       totalReviews: logs.length,
       retentionRate: globalRetention.rate,

@@ -728,6 +728,15 @@ async function handleEmailLogin(ctx, requestId: string, startTime: number) {
   };
 }
 
+// 邮箱脱敏工具：日志中隐藏邮箱中间字符，防止敏感信息泄露
+function maskEmailForLog(email: string): string {
+  if (typeof email !== 'string' || !email.includes('@')) return '***';
+  const [localPart, domain] = email.split('@');
+  if (!localPart || !domain) return '***';
+  if (localPart.length <= 2) return `${localPart[0] || '*'}***@${domain}`;
+  return `${localPart[0]}***${localPart[localPart.length - 1]}@${domain}`;
+}
+
 // ✅ B005: 邮箱验证码校验（含暴力破解防护）
 async function validateEmailCode(
   email: string,
@@ -751,7 +760,9 @@ async function validateEmailCode(
       .count();
 
     if (recentFailures.total >= MAX_VERIFY_ATTEMPTS) {
-      logger.warn(`[${requestId}] 验证码暴力破解拦截: email=${email}, failures=${recentFailures.total}`);
+      logger.warn(
+        `[${requestId}] 验证码暴力破解拦截: email=${maskEmailForLog(email)}, failures=${recentFailures.total}`
+      );
       return { valid: false, error: '验证失败次数过多，请5分钟后再试' };
     }
 
@@ -821,7 +832,7 @@ async function validateEmailCode(
       })
       .catch(() => {});
 
-    logger.info(`[${requestId}] 验证码校验通过: ${email}`);
+    logger.info(`[${requestId}] 验证码校验通过: ${maskEmailForLog(email)}`);
     return { valid: true };
   } catch (e) {
     logger.error(`[${requestId}] 验证码校验异常:`, e);
@@ -982,7 +993,10 @@ async function handleQQLogin(ctx, requestId: string, startTime: number) {
       const tokenRaw = typeof tokenRes.data === 'string' ? tokenRes.data : '';
       const tokenErrorPayload = parseQQCallbackPayload(tokenRaw);
       if (tokenErrorPayload?.error) {
-        logger.error(`[${requestId}] QQ token 交换失败:`, tokenErrorPayload);
+        logger.error(`[${requestId}] QQ token 交换失败:`, {
+          error: tokenErrorPayload.error,
+          error_description: tokenErrorPayload.error_description
+        });
         return {
           code: 401,
           success: false,
@@ -994,7 +1008,7 @@ async function handleQQLogin(ctx, requestId: string, startTime: number) {
       const tokenParams = parseQueryStringPayload(tokenRaw);
       qqAccessToken = tokenParams.access_token || '';
       if (!qqAccessToken) {
-        logger.error(`[${requestId}] QQ token 返回异常:`, tokenRes.data);
+        logger.error(`[${requestId}] QQ token 返回异常: 未获取到 access_token`);
         return {
           code: 401,
           success: false,
@@ -1345,7 +1359,9 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
   const tokenData = tokenRes.data;
 
   if (tokenData.errcode) {
-    logger.error(`[${requestId}] H5微信 access_token 获取失败:`, tokenData);
+    logger.error(
+      `[${requestId}] H5微信 access_token 获取失败: errcode=${tokenData.errcode}, errmsg=${tokenData.errmsg || 'N/A'}`
+    );
     let errorMsg = tokenData.errmsg || '微信授权失败';
     if (tokenData.errcode === 40029) errorMsg = '授权码无效或已过期，请重新授权';
     if (tokenData.errcode === 40163) errorMsg = '授权码已被使用，请重新授权';
@@ -1355,7 +1371,7 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
   const { access_token, openid, unionid: tokenUnionid } = tokenData;
 
   if (!access_token || !openid) {
-    logger.error(`[${requestId}] H5微信返回数据不完整:`, tokenData);
+    logger.error(`[${requestId}] H5微信返回数据不完整: access_token=${!!access_token}, openid=${!!openid}`);
     return { code: 401, success: false, message: '获取微信用户标识失败', requestId };
   }
 

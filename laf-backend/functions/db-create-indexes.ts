@@ -695,6 +695,64 @@ export default async function (ctx) {
       results.push({ collection: 'questions (B005)', status: 'error', message: e.message });
     }
 
+    // ==================== B006: 竞态条件防护 — 唯一复合索引 ====================
+    // Round 16 审计发现 5 个关键 check-then-create 竞态漏洞，
+    // 通过唯一索引从数据库层面结构性防止并发重复插入
+
+    // rankings: 每个用户只有一条排行记录，防止并发登录创建重复记录
+    try {
+      const rankUniqueCol = db.collection('rankings');
+      await rankUniqueCol.createIndex({ uid: 1 }, { unique: true, name: 'idx_uid_unique' });
+      results.push({ collection: 'rankings (race-fix)', status: 'ok', indexes: 1 });
+    } catch (e) {
+      // 已有非 unique 的 idx_uid 或脏数据可能冲突，记录告警
+      results.push({ collection: 'rankings (race-fix)', status: 'warn', message: (e as Error).message });
+    }
+
+    // mistake_book: 同一用户 + 同一内容哈希 = 同一道错题，禁止重复添加
+    try {
+      const mistakeUniqueCol = db.collection('mistake_book');
+      await mistakeUniqueCol.createIndex(
+        { user_id: 1, _content_hash: 1 },
+        { unique: true, name: 'idx_user_content_hash_unique' }
+      );
+      results.push({ collection: 'mistake_book (race-fix)', status: 'ok', indexes: 1 });
+    } catch (e) {
+      results.push({ collection: 'mistake_book (race-fix)', status: 'warn', message: (e as Error).message });
+    }
+
+    // group_members: 同一用户不能重复加入同一学习小组
+    try {
+      const groupMembersCol = db.collection('group_members');
+      await groupMembersCol.createIndex({ group_id: 1, user_id: 1 }, { unique: true, name: 'idx_group_user_unique' });
+      await groupMembersCol.createIndex({ user_id: 1, joined_at: -1 }, { name: 'idx_user_joined' });
+      results.push({ collection: 'group_members (race-fix)', status: 'ok', indexes: 2 });
+    } catch (e) {
+      results.push({ collection: 'group_members (race-fix)', status: 'warn', message: (e as Error).message });
+    }
+
+    // idempotency_records: 幂等键必须唯一，防止并发 PK 提交产生重复记录
+    try {
+      const idempotencyUniqueCol = db.collection('idempotency_records');
+      await idempotencyUniqueCol.createIndex({ key: 1 }, { unique: true, name: 'idx_key_unique' });
+      results.push({ collection: 'idempotency_records (race-fix)', status: 'ok', indexes: 1 });
+    } catch (e) {
+      results.push({ collection: 'idempotency_records (race-fix)', status: 'warn', message: (e as Error).message });
+    }
+
+    // learning_goals: 同一用户同一类型只能有一个 active 目标
+    try {
+      const learningGoalsUniqueCol = db.collection('learning_goals');
+      await learningGoalsUniqueCol.createIndex(
+        { user_id: 1, type: 1, status: 1 },
+        { unique: true, name: 'idx_user_type_status_unique' }
+      );
+      results.push({ collection: 'learning_goals (race-fix)', status: 'ok', indexes: 1 });
+    } catch (e) {
+      // 如果同一用户已有多个同类型同状态的目标，唯一索引创建会失败
+      results.push({ collection: 'learning_goals (race-fix)', status: 'warn', message: (e as Error).message });
+    }
+
     const totalIndexes = results.reduce((sum, r) => sum + (r.indexes || 0), 0);
     const failedCollections = results.filter((r) => r.status === 'error');
 

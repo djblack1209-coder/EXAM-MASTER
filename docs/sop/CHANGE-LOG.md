@@ -14,6 +14,73 @@
 
 ---
 
+## [2026-03-29] 十六轮审计 — 遗留问题清零+安全加固+响应格式统一
+
+- **Scope**: `backend`, `frontend`, `security`, `database`, `infra`
+- **审计范围**: D036后端响应格式统一、Electron安全加固(CSP+协议过滤)、后端日志敏感信息脱敏、竞态条件MongoDB唯一索引防护、PWA图标修复(D033/D034)、CSS死代码清理、pages.json路由一致性验证、Pinia Store反模式检查
+- **质量关卡**: ESLint 0错误, 90文件/1196测试全过, H5构建通过, 后端TS编译通过
+
+### 后端响应格式统一（D036部分修复）
+
+- `fsrs-optimizer.ts`: 全部8处 `ok:` 字段改为 `success:` 与标准 `api-response.ts` 格式对齐
+- `mistake-manager.ts`: 全部17处冗余 `ok:` 字段移除（原本已有 `success:` 字段，`ok:` 为非标准重复）
+- 测试文件同步更新: `audit-mistake-manager-update-fields.spec.js` 移除5处 `result.ok` 断言
+
+### Electron安全加固
+
+- `electron/main.cjs`: 添加 CSP header（`session.defaultSession.webRequest.onHeadersReceived`）
+- `electron/main.cjs`: `shell.openExternal` 限制仅允许 `http:`/`https:` 协议，防止 `file:`/`javascript:` 等危险协议
+
+### 后端日志敏感信息脱敏（4个HIGH修复）
+
+- `login.ts`: 新增 `maskEmailForLog()` 函数，QQ/WeChat OAuth token数据脱敏（3处）+ 邮箱地址脱敏（2处）
+- `agent.service.ts`: 错误日志从完整error对象改为仅记录 `e?.message`
+
+### 竞态条件防护（B006: 5个唯一索引）
+
+- `db-create-indexes.ts` 新增 B006 章节，6个唯一复合索引:
+  - `rankings { uid: 1 }` — 防止重复用户排行记录
+  - `mistake_book { user_id: 1, _content_hash: 1 }` — 防止重复错题
+  - `group_members { group_id: 1, user_id: 1 }` + `{ user_id: 1, joined_at: -1 }` — 防止重复成员
+  - `idempotency_records { key: 1 }` — 防止PK重复提交
+  - `learning_goals { user_id: 1, type: 1, status: 1 }` — 防止重复活跃目标
+- **全部6个索引已部署到生产MongoDB**
+
+### PWA图标修复（D033/D034）
+
+- 从 `electron/icons/icon.png`(1024x1024) 生成3个标准PWA图标: 192x192, 512x512, 512x512-maskable
+- `vite.config.js` PWA manifest更新: 分离 `purpose: "any"` 和 `purpose: "maskable"` 图标条目
+- 修复原配置中192和512均指向同一64x64 logo.png的问题
+
+### CSS死代码清理
+
+- `button-animations.scss`: 从550行精简至108行，移除35个未使用的CSS类（仅保留4个实际引用的动画类）
+
+### 审计结论（无需修复）
+
+- pages.json路由一致性: 42条路由全部有对应.vue文件，零孤儿路由
+- Pinia Store反模式检查: 零违规（无解构reactive/computed后丢失响应性）
+- ErrorBoundary.vue: 存在但未被任何页面引用（42页面无保护），记录为技术债务
+- D030 vite-plugin-compression: Nginx已配置gzip，无需构建时预压缩，关闭
+- 80+个catch块日志完整error对象: 系统性问题，记录为已接受风险
+
+### Files Changed (9 files + 3 new)
+
+- `electron/main.cjs` — CSP header + shell.openExternal协议过滤
+- `laf-backend/functions/login.ts` — maskEmailForLog() + 6处日志脱敏
+- `laf-backend/functions/_shared/services/agent.service.ts` — 错误日志精简
+- `laf-backend/functions/db-create-indexes.ts` — B006竞态条件防护索引(6个)
+- `laf-backend/functions/fsrs-optimizer.ts` — 8处ok→success
+- `laf-backend/functions/mistake-manager.ts` — 17处ok字段移除
+- `src/styles/button-animations.scss` — 550→108行CSS精简
+- `vite.config.js` — PWA图标配置更新
+- `tests/unit/audit-mistake-manager-update-fields.spec.js` — 5处result.ok断言移除
+- **(new)** `src/static/images/icon-192x192.png` — PWA图标192x192
+- **(new)** `src/static/images/icon-512x512.png` — PWA图标512x512
+- **(new)** `src/static/images/icon-512x512-maskable.png` — PWA maskable图标
+
+---
+
 ## [2026-03-29] 十五轮审计 — 分包优化+Bundle拆分+MongoDB索引补全
 
 - **Scope**: `frontend`, `backend`, `performance`, `database`

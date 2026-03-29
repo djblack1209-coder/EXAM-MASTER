@@ -5,7 +5,7 @@
  * 策略：加载本地 dist/build/h5 目录中的文件，无需网络
  */
 
-const { app, BrowserWindow, shell, Menu, nativeTheme } = require('electron');
+const { app, BrowserWindow, shell, Menu, nativeTheme, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -128,6 +128,23 @@ function createMenu() {
 // ==================== 生命周期 ====================
 
 app.whenReady().then(() => {
+  // 安全: Content Security Policy — 纵深防御，防止 XSS 注入任意脚本
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        'Content-Security-Policy': [
+          "default-src 'self';" +
+            " script-src 'self';" +
+            " style-src 'self' 'unsafe-inline';" +
+            " img-src 'self' data: https:;" +
+            " font-src 'self' data:;" +
+            " connect-src 'self' https://api.245334.xyz https://nf98ia8qnt.sealosbja.site https://api-gw.245334.xyz"
+        ]
+      }
+    });
+  });
+
   createMenu();
   createWindow();
 
@@ -146,13 +163,20 @@ app.on('window-all-closed', () => {
   }
 });
 
-// 安全: 阻止新窗口导航到外部
+// 安全: 阻止新窗口导航到外部（仅允许 http/https 协议，防止恶意协议执行系统命令）
 app.on('web-contents-created', (_event, contents) => {
   contents.on('will-navigate', (event, url) => {
-    const parsed = new URL(url);
-    if (parsed.protocol !== 'file:') {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        event.preventDefault();
+        shell.openExternal(url);
+      } else if (parsed.protocol !== 'file:') {
+        // 阻止所有非 http/https/file 协议（如 javascript:, ms-msdt:, vbscript: 等）
+        event.preventDefault();
+      }
+    } catch {
       event.preventDefault();
-      shell.openExternal(url);
     }
   });
 });

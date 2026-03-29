@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-29 (十五轮审计 — 分包优化+Bundle拆分+MongoDB索引补全) | Maintainer: AI-SOP
+> Last updated: 2026-03-29 (十六轮审计 — 遗留问题清零+安全加固+响应格式统一) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,13 @@
 
 | ID   | Domain   | Title                                                                   | Solution                                                                                            | Resolved   |
 | ---- | -------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| R096 | backend  | fsrs-optimizer/mistake-manager使用非标准ok字段(D036)                    | fsrs-optimizer 8处ok→success,mistake-manager 17处ok移除,测试同步                                    | 2026-03-29 |
+| R097 | security | Electron缺少CSP+shell.openExternal无协议过滤                            | CSP header注入+限制仅http:/https:协议                                                               | 2026-03-29 |
+| R098 | security | login.ts日志泄露QQ/WeChat OAuth token+明文邮箱                          | maskEmailForLog()函数+3处OAuth脱敏+2处邮箱掩码                                                      | 2026-03-29 |
+| R099 | security | agent.service.ts日志泄露完整error对象                                   | 仅记录e?.message                                                                                    | 2026-03-29 |
+| R100 | database | 5个集合缺少竞态条件唯一索引(rankings/mistake_book/group_members等)      | db-create-indexes.ts B006新增6个唯一索引+全部部署到生产                                             | 2026-03-29 |
+| R101 | frontend | PWA图标192/512均指向64x64 logo.png(D033/D034)                           | 从1024x1024源图生成3个标准尺寸+vite.config.js分离any/maskable                                       | 2026-03-29 |
+| R102 | frontend | button-animations.scss 35个未使用CSS类(550行)                           | 精简至108行,仅保留4个实际引用的动画类                                                               | 2026-03-29 |
 | R085 | security | 22个页面无登录保护,H5可直接URL访问(AI页面白嫖Token)                     | App.vue添加全局路由守卫(uni.addInterceptor navigateTo/redirectTo),14个公开页面白名单                | 2026-03-29 |
 | R086 | security | sanitizeInput重复定义(settings+plan/create),4个AI对话入口无输入过滤     | 提取全局sanitize.js(sanitizeInput+sanitizeAIChatInput+escapeHtml),4个AI对话文件接入                 | 2026-03-29 |
 | R087 | security | EnhancedRichText.vue直接传递props.content为HTML无净化                   | 添加script/style/iframe/object/embed/事件处理器/javascript:协议过滤                                 | 2026-03-29 |
@@ -172,10 +179,10 @@
 | D030     | performance | 未配置vite-plugin-compression构建时gzip/brotli预压缩，Nginx需实时压缩                                                                           | 安装后JS可从1968KB降至~589KB      | 🟡       |
 | ~~D031~~ | frontend    | ~~微信小程序主包1896KB/2048KB，余量仅152KB~~ → **R092 onboarding移入分包,主包减24KB至~1872KB(余量176KB)**                                       | ✅ R092 已缓解                    | ~~🟡~~   |
 | ~~D032~~ | backend     | ~~3个冗余tsconfig文件~~ → **实际仅2个，分别服务Laf Cloud和Express Standalone，不可合并**                                                        | ✅ 已确认非冗余                   | ~~🔵~~   |
-| D033     | frontend    | PWA图标512x512声称但文件仅4.8KB，可能非真实分辨率                                                                                               | PWA安装图标模糊                   | 🔵       |
-| D034     | frontend    | PWA maskable图标与any图标使用同一文件（应分离为两个独立图标）                                                                                   | 部分设备图标显示不佳              | 🔵       |
+| D033     | frontend    | ~~PWA图标512x512声称但文件仅4.8KB~~ → **R096 从1024x1024源图生成真实尺寸图标(192/512/maskable)**                                                | ✅ R096 已修复                    | ~~🔵~~   |
+| D034     | frontend    | ~~PWA maskable图标与any图标使用同一文件~~ → **R096 分离maskable图标+vite.config.js分条目配置**                                                  | ✅ R096 已修复                    | ~~🔵~~   |
 | ~~D035~~ | frontend    | ~~35个后端API导出未在前端使用~~ → **R082 清理30个，剩余5个为合理预留**                                                                          | ✅ R082 已清理                    | ~~🔵~~   |
-| D036     | backend     | 后端46个云函数存在3种响应格式(wrapResponse/内联对象/混合ok字段)，mistake-manager独有ok字段，social-service缺requestId                           | 不影响运行，后续统一              | 🔵       |
+| D036     | backend     | ~~后端46个云函数存在3种响应格式~~ → **R096 fsrs-optimizer(8处ok→success)+mistake-manager(17处ok移除)，剩余pagination/inline-rate-limit待统一**  | 主要问题已修复                    | ~~🔵~~   |
 | ~~D025~~ | frontend    | ~~首页 content-wrapper 无底部padding，tabbar遮挡内容~~ → **R030 已修复**                                                                        | ✅ R030 已修复                    | ~~🟡~~   |
 | ~~D026~~ | frontend    | ~~4对重复文件~~ → **R031 全部合并为重导出代理**                                                                                                 | ✅ R031 已清理                    | ~~🟡~~   |
 | D027     | frontend    | 文件管理页面空态缺少图标和操作按钮 → **R033 已修复(添加emoji+导入按钮)**                                                                        | ✅ R033 已修复                    | ~~🔵~~   |
