@@ -655,6 +655,11 @@ export function clearAICache() {
   return aiRouter.clearCache();
 }
 
+// [AUDIT FIX R263] 导出停止缓存清理函数，供页面 onUnmounted 调用防止内存泄漏
+export function stopAICacheCleanup() {
+  return aiRouter.stopCacheCleanup();
+}
+
 export function realtimeAnswer(question, context) {
   return aiRouter.realtimeAnswer(question, context);
 }

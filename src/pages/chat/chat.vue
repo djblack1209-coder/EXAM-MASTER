@@ -274,7 +274,7 @@ import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { ensureMiniProgramScope, ensurePrivacyAuthorization } from './privacy-authorization.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 // 智能路由器
-import { realtimeAnswer } from './ai-router.js';
+import { realtimeAnswer, stopAICacheCleanup } from './ai-router.js';
 // 外部 CDN 配置
 import config from '@/config';
 // ✅ AI 打字机效果
@@ -376,6 +376,18 @@ const isRealtimeMode = ref(false);
 // 录音定时器ID（组件级变量，避免污染全局作用域）
 let recordingIntervalId = null;
 
+// [AUDIT FIX R266] 追踪所有 setTimeout，防止组件销毁后回调
+const _pendingTimers = [];
+const safeTimeout = (fn, delay) => {
+  const id = setTimeout(() => {
+    const idx = _pendingTimers.indexOf(id);
+    if (idx > -1) _pendingTimers.splice(idx, 1);
+    fn();
+  }, delay);
+  _pendingTimers.push(id);
+  return id;
+};
+
 // ✅ 图片加载失败处理
 const onAvatarError = (e) => {
   const target = e?.target;
@@ -435,7 +447,7 @@ onMounted(async () => {
       const ctx = storageService.get('chat_context_question', '');
       if (ctx) {
         // 延迟到页面加载完成后自动发送
-        setTimeout(() => {
+        safeTimeout(() => {
           messageText.value = ctx;
           storageService.remove('chat_context_question');
           handleSend();
@@ -445,7 +457,7 @@ onMounted(async () => {
   }
 
   // 加载用户学习数据 + 历史对话，带安全超时 (P011)
-  const loadingTimeout = setTimeout(() => {
+  const loadingTimeout = safeTimeout(() => {
     if (isPageLoading.value) {
       isPageLoading.value = false;
       logger.warn('[Chat] 加载超时，强制关闭骨架屏');
@@ -459,7 +471,7 @@ onMounted(async () => {
     logger.error('[Chat] 初始化加载失败:', e);
   } finally {
     clearTimeout(loadingTimeout);
-    setTimeout(() => {
+    safeTimeout(() => {
       isPageLoading.value = false;
     }, 300);
   }
@@ -583,7 +595,7 @@ const redirectToLoginForChat = () => {
 const scrollToBottom = () => {
   nextTick(() => {
     scrollIntoView.value = 'msg-bottom';
-    setTimeout(() => {
+    safeTimeout(() => {
       scrollIntoView.value = '';
     }, 100);
   });
@@ -1116,6 +1128,11 @@ onUnmounted(() => {
     clearInterval(recordingIntervalId);
     recordingIntervalId = null;
   }
+  // [AUDIT FIX R263] 停止 AI 路由器缓存清理定时器，防止内存泄漏
+  stopAICacheCleanup();
+  // [AUDIT FIX R266] 清理所有未完成的 setTimeout，防止组件销毁后回调
+  _pendingTimers.forEach(clearTimeout);
+  _pendingTimers.length = 0;
 });
 </script>
 

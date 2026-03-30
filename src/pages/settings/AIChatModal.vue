@@ -167,7 +167,9 @@ export default {
         '❌'
       ],
       recorderManager: null,
-      audioCtx: null
+      audioCtx: null,
+      // [AUDIT FIX R262] 追踪所有 setTimeout，防止组件销毁后回调操作已卸载组件
+      pendingTimers: []
     };
   },
   watch: {
@@ -182,6 +184,9 @@ export default {
     this.initRecorder();
   },
   beforeUnmount() {
+    // [AUDIT FIX R262] 批量清理所有待执行的 setTimeout
+    this.pendingTimers.forEach(clearTimeout);
+    this.pendingTimers = [];
     if (this.audioCtx) {
       this.audioCtx.destroy();
       this.audioCtx = null;
@@ -192,6 +197,15 @@ export default {
     }
   },
   methods: {
+    // [AUDIT FIX R262] 安全的 setTimeout — 自动追踪，组件销毁时批量清理
+    _safeTimeout(fn, delay) {
+      const id = setTimeout(() => {
+        this.pendingTimers = this.pendingTimers.filter((t) => t !== id);
+        fn();
+      }, delay);
+      this.pendingTimers.push(id);
+      return id;
+    },
     openChat() {
       this.chatHistory = [
         {
@@ -201,7 +215,7 @@ export default {
         }
       ];
       this.userInput = '';
-      setTimeout(() => {
+      this._safeTimeout(() => {
         this.scrollChatToBottom();
       }, 300);
     },
@@ -277,7 +291,7 @@ export default {
           if (res.success === false && res._offline && !this._aiRetried) {
             this._aiRetried = true;
             logger.log('[AIChatModal] Network error, retrying in 2s...');
-            setTimeout(() => {
+            this._safeTimeout(() => {
               schoolStore
                 .aiRecommend('chat', { content: aiContent })
                 .then((retryRes) => {
@@ -331,7 +345,7 @@ export default {
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         if (this.voiceEnabled && this.audioCtx) {
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.playTTS(answer);
           }, 300);
         }
@@ -357,7 +371,7 @@ export default {
       this.scrollChatToBottom();
     },
     scrollChatToBottom() {
-      setTimeout(() => {
+      this._safeTimeout(() => {
         if (this.chatHistory.length > 0) {
           this.scrollIntoView = `msg-${this.chatHistory.length - 1}`;
         } else if (this.isThinking) {
@@ -504,7 +518,7 @@ export default {
               }
             }
             toast.info(errorMsg);
-            setTimeout(() => {
+            this._safeTimeout(() => {
               errorToastShown = false;
             }, 2000);
           }
@@ -612,7 +626,7 @@ export default {
         if (backendText) {
           this.userInput = backendText;
           toast.success('识别成功', 1000);
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.sendToAI();
           }, 300);
           return;
@@ -622,7 +636,7 @@ export default {
         if (pluginText) {
           this.userInput = pluginText;
           toast.success('识别成功', 1000);
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.sendToAI();
           }, 300);
           return;

@@ -605,7 +605,8 @@ export default {
       showNoteModal: false, // 是否显示笔记弹窗
       noteContent: '', // 笔记内容
       selectedNoteTags: [], // 选中的笔记标签
-      showAnswerSheet: false // 答题卡显示状态
+      showAnswerSheet: false, // 答题卡显示状态
+      pendingTimers: [] // [AUDIT FIX R264] setTimeout 追踪，防止内存泄漏
     };
   },
   computed: {
@@ -740,7 +741,7 @@ export default {
     }
 
     // E005: 延迟重计算，让 UI 先渲染
-    setTimeout(() => {
+    this._safeTimeout(() => {
       this.loadQuestions();
 
       // ✅ P0-3: 检查是否有未完成的进度
@@ -770,6 +771,11 @@ export default {
       clearInterval(this.timer);
     }
     stopQuestionTimer();
+
+    // [AUDIT FIX R264] 清理所有未完成的 setTimeout，防止内存泄漏
+    this.pendingTimers.forEach(clearTimeout);
+    this.pendingTimers = [];
+
     // 移除主题事件监听，避免重复绑定
     uni.$off('themeUpdate', this._themeHandler);
 
@@ -800,6 +806,15 @@ export default {
     this.saveCurrentProgress(true);
   },
   methods: {
+    // [AUDIT FIX R264] 安全的 setTimeout 包装，组件卸载时自动清理
+    _safeTimeout(fn, delay) {
+      const id = setTimeout(() => {
+        this.pendingTimers = this.pendingTimers.filter((t) => t !== id);
+        fn();
+      }, delay);
+      this.pendingTimers.push(id);
+      return id;
+    },
     // ✅ FIX: 恢复错题复习模式前的题库
     _restoreQuestionBankIfReview() {
       try {
@@ -1142,7 +1157,7 @@ export default {
         }
 
         // ✅ 延迟解锁防重复点击（300ms后允许再次点击）
-        setTimeout(() => {
+        this._safeTimeout(() => {
           this.isNavigating = false;
         }, 300);
 
@@ -1313,7 +1328,7 @@ export default {
         }
 
         // ✅ 延迟解锁防重复点击（300ms后允许再次点击）
-        setTimeout(() => {
+        this._safeTimeout(() => {
           this.isNavigating = false;
         }, 300);
       } else {
@@ -1335,7 +1350,7 @@ export default {
         if (sessionBonus > 0) {
           this.xpEarned = sessionBonus;
           this.showXpToast = true;
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.showXpToast = false;
           }, 2000);
         }
@@ -1762,7 +1777,7 @@ export default {
         }
         this.xpEarned = finalXP;
         this.showXpToast = true;
-        setTimeout(() => {
+        this._safeTimeout(() => {
           this.showXpToast = false;
         }, 1800);
 
@@ -1770,14 +1785,14 @@ export default {
         if ((animData.combo || 0) === 5 && !this.xpBoostActive) {
           this.xpBoostActive = true;
           this.xpBoostRemaining = 3;
-          setTimeout(() => {
+          this._safeTimeout(() => {
             toast.info('2x XP Boost! 接下来3题双倍经验');
           }, 500);
         }
 
         // ✅ [上瘾引擎] 升级提示
         if (xpResult.levelUp && xpResult.newLevel) {
-          setTimeout(() => {
+          this._safeTimeout(() => {
             toast.info(`升级！${xpResult.newLevel.title}`, 2500);
           }, 800);
         }
@@ -1786,7 +1801,7 @@ export default {
         if (animData.particles && animData.particles.length > 0) {
           this.particles = animData.particles;
           this.showParticles = true;
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.showParticles = false;
             this.particles = [];
           }, 1000);
@@ -1796,13 +1811,13 @@ export default {
         this.comboDisplay = getComboDisplay();
         if (this.comboDisplay && this.comboDisplay.count >= 3) {
           this.showComboEffect = true;
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.showComboEffect = false;
           }, 2000);
         }
 
         // 动画结束后清除类名
-        setTimeout(() => {
+        this._safeTimeout(() => {
           this.correctAnimationClass = '';
         }, 600);
       }
@@ -1816,7 +1831,7 @@ export default {
 
         // ✅ [体感革命] 屏幕微震效果
         this.screenShake = true;
-        setTimeout(() => {
+        this._safeTimeout(() => {
           this.screenShake = false;
         }, 500);
 
@@ -1825,7 +1840,7 @@ export default {
         this.showComboEffect = false;
 
         // 动画结束后清除类名
-        setTimeout(() => {
+        this._safeTimeout(() => {
           this.wrongAnimationClass = '';
         }, 500);
       }

@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-31 (第二十五轮审计：P0-P5 全量生产就绪审计 — 10安全+1功能+3性能+1文档 共15修复 R247-R261) | Maintainer: AI-SOP
+> Last updated: 2026-03-31 (第二十六轮审计：P2 内存泄漏全面修复 — 2 HIGH + 3 MEDIUM 共5修复 R262-R266) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,11 @@
 
 | ID   | Domain   | Title                                                                                 | Solution                                                                                                                                                 | Resolved   |
 | ---- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| R266 | frontend | chat.vue 4个setTimeout未追踪（自动发送/加载超时/骨架屏/滚动）                         | 添加\_pendingTimers数组+safeTimeout辅助函数，onUnmounted批量清理                                                                                         | 2026-03-31 |
+| R265 | frontend | pk-battle.vue ~10个匿名setTimeout未追踪（匹配延迟/对手动画/分享超时）                 | 添加safePendingTimers数组+\_safeTimeout方法，clearAllTimers()追加批量清理                                                                                | 2026-03-31 |
+| R264 | frontend | do-quiz.vue ~12个setTimeout未追踪（选项反馈/XP toast/防重复）                         | 添加pendingTimers数组+\_safeTimeout方法，onUnload批量清理                                                                                                | 2026-03-31 |
+| R263 | frontend | ai-router.js模块级单例setInterval永不停止（5分钟缓存清理）                            | 导出stopAICacheCleanup()，chat.vue onUnmounted中调用                                                                                                     | 2026-03-31 |
+| R262 | frontend | AIChatModal.vue 7个setTimeout无清理（含AI重试2s timer）                               | 添加pendingTimers数组+\_safeTimeout辅助方法，beforeUnmount批量清理                                                                                       | 2026-03-31 |
 | R261 | backend  | study-stats.ts缺少分布式限流                                                          | 添加checkRateLimitDistributed（30次/分钟）                                                                                                               | 2026-03-31 |
 | R260 | backend  | rag-ingest.ts缺少分布式限流                                                           | 添加checkRateLimitDistributed（5次/5分钟，重型嵌入API保护）                                                                                              | 2026-03-31 |
 | R259 | backend  | pk-battle.ts缺少分布式限流                                                            | 添加checkRateLimitDistributed（20次/分钟）                                                                                                               | 2026-03-31 |
@@ -351,6 +356,6 @@
 | WeChat MP Main Package   | ~1298KB               | 2048KB          | 1900KB          |
 | H5 Entry JS (gzip)       | ~45KB (入口135KB)     | —               | 200KB           |
 | Test Coverage            | 89 files / 1168 tests | —               | < 1000 tests    |
-| Audit Issues Resolved    | 261 (R001-R261)       | —               | —               |
+| Audit Issues Resolved    | 266 (R001-R266)       | —               | —               |
 | SiliconFlow DS Keys 余额 | 140元 (10条×14元)     | —               | < 30元          |
 | LLM Provider Pool        | 14 providers          | —               | < 8 可用        |

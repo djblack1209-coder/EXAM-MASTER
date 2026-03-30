@@ -306,7 +306,8 @@ export default {
       // Phase 3-2: 实时PK房间
       pkRoom: null, // usePKRoom() 实例
       isRealMatch: false, // 是否为真人对战模式
-      realMatchPollWatcher: null // 轮询状态监听
+      realMatchPollWatcher: null, // 轮询状态监听
+      safePendingTimers: [] // [AUDIT FIX R265] 追踪所有匿名 setTimeout，防止内存泄漏
     };
   },
   computed: {
@@ -605,7 +606,7 @@ export default {
             /* silent */
           }
 
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.gameState = 'battle';
             this.startRealBattle();
           }, 1000);
@@ -619,7 +620,7 @@ export default {
       }, 500);
 
       // 30 秒硬超时保底
-      setTimeout(() => {
+      this._safeTimeout(() => {
         if (this.realMatchPollWatcher) {
           clearInterval(this.realMatchPollWatcher);
           this.realMatchPollWatcher = null;
@@ -662,7 +663,7 @@ export default {
           /* silent */
         }
 
-        setTimeout(() => {
+        this._safeTimeout(() => {
           this.gameState = 'battle';
           this.startBattle();
         }, 1000);
@@ -757,7 +758,7 @@ export default {
       toast.info('已转为智能对战');
 
       // 1.5秒后进入对战
-      setTimeout(() => {
+      this._safeTimeout(() => {
         this.gameState = 'battle';
         this.startBattle();
       }, 1500);
@@ -840,7 +841,7 @@ export default {
       toast.info('答题超时', 1500);
 
       // 1.5秒后进入下一题
-      setTimeout(() => {
+      this._safeTimeout(() => {
         this.goToNextQuestion();
       }, 1500);
     },
@@ -936,7 +937,7 @@ export default {
           // 对手答对，增加得分并显示冲刺动画
           this.opponentScore += 20;
           this.opponentRushing = true;
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.opponentRushing = false;
           }, 500);
         } else {
@@ -1013,7 +1014,7 @@ export default {
       }
 
       // 1.5秒后进入下一题
-      setTimeout(() => {
+      this._safeTimeout(() => {
         this.goToNextQuestion();
       }, 1500);
     },
@@ -1137,7 +1138,7 @@ export default {
           toast.info('跳转失败');
         },
         complete: () => {
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.isNavigating = false;
           }, 500);
         }
@@ -1154,11 +1155,20 @@ export default {
           /* navigation succeeded */
         },
         complete: () => {
-          setTimeout(() => {
+          this._safeTimeout(() => {
             this.isNavigating = false;
           }, 500);
         }
       });
+    },
+    // [AUDIT FIX R265] 安全的 setTimeout 包装，自动追踪定时器防止内存泄漏
+    _safeTimeout(fn, delay) {
+      const id = setTimeout(() => {
+        this.safePendingTimers = this.safePendingTimers.filter((t) => t !== id);
+        fn();
+      }, delay);
+      this.safePendingTimers.push(id);
+      return id;
     },
     clearAllTimers() {
       // 清除对手答题定时器
@@ -1197,6 +1207,9 @@ export default {
       if (this.pkRoom) {
         this.pkRoom.stopPolling();
       }
+      // [AUDIT FIX R265] 清理所有追踪的匿名 setTimeout
+      this.safePendingTimers.forEach(clearTimeout);
+      this.safePendingTimers = [];
     },
     resetGame() {
       // 防止重复点击
@@ -1236,7 +1249,7 @@ export default {
       this.questions = shuffled.slice(0, Math.min(5, shuffled.length));
 
       // 重置防重复点击状态
-      setTimeout(() => {
+      this._safeTimeout(() => {
         this.isNavigating = false;
       }, 500);
 
@@ -1355,7 +1368,7 @@ export default {
       toast.loading('生成战报中...');
 
       // 设置超时处理，避免无限等待
-      const timeoutTimer = setTimeout(() => {
+      const timeoutTimer = this._safeTimeout(() => {
         if (this.isGeneratingShare) {
           logger.error('[PK] 生成战报超时');
           toast.hide();
@@ -1557,7 +1570,7 @@ export default {
 
         // C. 渲染并导出图片
         ctx.draw(false, () => {
-          setTimeout(() => {
+          this._safeTimeout(() => {
             // 延时确保绘制完成
             clearTimeout(timeoutTimer); // 清除超时定时器
 

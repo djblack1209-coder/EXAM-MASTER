@@ -14,6 +14,21 @@
 
 ---
 
+## [2026-03-31] 第二十六轮审计 — P2 内存泄漏全面修复（5 fixes）
+
+- **Scope**: `frontend`, `performance`
+- **Files Changed**:
+  - **P2 内存泄漏 — HIGH (2 fixes)**:
+    - `src/pages/settings/AIChatModal.vue` — 7个 setTimeout 无清理：添加 pendingTimers 数组 + \_safeTimeout 辅助方法，beforeUnmount 批量清理（含 AI 重试 2s timer、TTS 延迟、语音识别后发送等） [R262]
+    - `src/pages/chat/ai-router.js` + `src/pages/chat/chat.vue` — 模块级单例 AIRouter 的 5 分钟缓存清理 setInterval 永不停止：导出 stopAICacheCleanup()，在 chat.vue onUnmounted 中调用 [R263]
+  - **P2 内存泄漏 — MEDIUM (3 fixes)**:
+    - `src/pages/practice-sub/do-quiz.vue` — ~12 个 setTimeout 未追踪：添加 pendingTimers 数组 + \_safeTimeout 方法，onUnload 批量清理（含选项反馈动画、XP toast、防重复点击等） [R264]
+    - `src/pages/practice-sub/pk-battle.vue` — ~10 个匿名 setTimeout 未追踪：添加 safePendingTimers 数组 + \_safeTimeout 方法，clearAllTimers() 中追加批量清理（含匹配成功延迟、对手动画、分享超时等） [R265]
+    - `src/pages/chat/chat.vue` — 4 个 setTimeout 未追踪：添加 \_pendingTimers 数组 + safeTimeout 辅助函数，onUnmounted 批量清理（含自动发送、加载超时、骨架屏关闭、滚动重置） [R266]
+- **Summary**: 第二十六轮审计专注 P2 内存泄漏修复。全面扫描了 src/ 下所有 setInterval(32处)、setTimeout(167处)、uni.$on(42处)、addEventListener、watch、$subscribe。发现 2 个 HIGH + 5 个 MEDIUM + 6 个 LOW。修复全部 2 个 HIGH 和 3 个 MEDIUM（共涉及 ~36 个 setTimeout 的追踪清理）；1 个 MEDIUM（learning-trajectory-store 的 bubble:clicked）经分析为全局单例 + tabBar 页面组合，实际不会泄漏，判定为 LOW 跳过；6 个 LOW 为 Store 单例/App 级事件（正常运行不泄漏）。共计 R262-R266 (5 fixes)。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
 ## [2026-03-31] 第二十五轮审计 — P0-P5 全量生产就绪审计（15 fixes）
 
 - **Scope**: `backend`, `frontend`, `config`, `performance`
