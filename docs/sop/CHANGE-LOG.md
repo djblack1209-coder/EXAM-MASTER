@@ -14,6 +14,22 @@
 
 ---
 
+## [2026-03-31] 第二十七轮审计 — P1 API 错误处理一致性修复（3 批次 20 catches）
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **P1 API 错误处理一致性 — 全部 catch 分支统一使用 normalizeError() (3 批次)**:
+    - `src/services/api/domains/auth.api.js` — 2 个 catch 分支手动构造错误对象→normalizeError()，新增 import [R267]
+    - `src/services/api/domains/school.api.js` — 2 个 catch 分支→normalizeError()（保留 data: [] 兼容列表接口） [R267]
+    - `src/services/api/domains/social.api.js` — 2 个 catch 分支→normalizeError() [R267]
+    - `src/services/api/domains/user.api.js` — 7 个 catch 分支→normalizeError()，新增 import [R268]
+    - `src/services/api/domains/practice.api.js` — 3 个 catch 分支→normalizeError() [R268]
+    - `src/services/api/domains/study.api.js` — 2 个 catch 分支→normalizeError()，新增 import [R269]
+    - `src/services/api/domains/ai.api.js` — 2 个 catch（proxyAI 流式/非流式）→normalizeError() [R269]
+- **Summary**: 第二十七轮审计专注 P1 API 错误处理一致性。全面扫描 9 个 `.api.js` 文件（64 个 catch 分支），发现 20 个 catch 分支手动构造 `{ success: false, message: '...' }` 而未使用 `_request-core.js` 提供的 `normalizeError()` 工具函数。此前仅 `smart-study.api.js`（5/5）和 `tools.api.js`（8/8）完全合规。本轮将剩余 7 个文件的 20 个 catch 全部迁移至 normalizeError()，实现 64/64 catch 分支 100% 使用标准化错误处理，确保所有 API 层错误响应结构一致（含 success/message/code 字段）。
+- **Breaking Changes**: 无（normalizeError 输出结构与手动构造兼容）
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
 ## [2026-03-31] 第二十六轮审计 — P2 内存泄漏全面修复（5 fixes）
 
 - **Scope**: `frontend`, `performance`

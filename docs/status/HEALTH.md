@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-31 (第二十六轮审计：P2 内存泄漏全面修复 — 2 HIGH + 3 MEDIUM 共5修复 R262-R266) | Maintainer: AI-SOP
+> Last updated: 2026-03-31 (第二十七轮审计：P1 API 错误处理一致性修复 — 7文件 20 catches 全部→normalizeError() R267-R269) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,9 @@
 
 | ID   | Domain   | Title                                                                                 | Solution                                                                                                                                                 | Resolved   |
 | ---- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| R269 | frontend | study.api.js(2) + ai.api.js(2) catch分支手动构造错误对象                              | 全部替换为normalizeError()，新增import                                                                                                                   | 2026-03-31 |
+| R268 | frontend | user.api.js(7) + practice.api.js(3) catch分支手动构造错误对象                         | 全部替换为normalizeError()，新增import                                                                                                                   | 2026-03-31 |
+| R267 | frontend | auth.api.js(2) + school.api.js(2) + social.api.js(2) catch分支手动构造错误对象        | 全部替换为normalizeError()（school保留data:[]兼容），新增import                                                                                          | 2026-03-31 |
 | R266 | frontend | chat.vue 4个setTimeout未追踪（自动发送/加载超时/骨架屏/滚动）                         | 添加\_pendingTimers数组+safeTimeout辅助函数，onUnmounted批量清理                                                                                         | 2026-03-31 |
 | R265 | frontend | pk-battle.vue ~10个匿名setTimeout未追踪（匹配延迟/对手动画/分享超时）                 | 添加safePendingTimers数组+\_safeTimeout方法，clearAllTimers()追加批量清理                                                                                | 2026-03-31 |
 | R264 | frontend | do-quiz.vue ~12个setTimeout未追踪（选项反馈/XP toast/防重复）                         | 添加pendingTimers数组+\_safeTimeout方法，onUnload批量清理                                                                                                | 2026-03-31 |

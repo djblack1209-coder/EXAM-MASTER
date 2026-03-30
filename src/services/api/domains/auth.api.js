@@ -7,7 +7,7 @@
 
 import { logger } from '@/utils/logger.js';
 import config from '../../../config/index.js';
-import { request } from './_request-core.js';
+import { request, normalizeError } from './_request-core.js';
 
 /**
  * 统一登录接口
@@ -36,11 +36,7 @@ export async function login(params) {
     return response;
   } catch (error) {
     logger.error('[LafService] ❌ 登录失败:', error);
-    return {
-      code: -1,
-      success: false,
-      message: error.message || '登录失败，请重试'
-    };
+    return normalizeError(error, '登录'); // [AUDIT FIX R267]
   }
 }
 
@@ -61,10 +57,6 @@ export async function sendEmailCode(email) {
     return response;
   } catch (error) {
     logger.error('[LafService] ❌ 发送验证码失败:', error);
-    return {
-      code: -1,
-      success: false,
-      message: error.message || '发送失败，请重试'
-    };
+    return normalizeError(error, '发送验证码'); // [AUDIT FIX R267]
   }
 }

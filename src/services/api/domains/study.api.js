@@ -69,7 +69,8 @@ export async function getHotResources(params = {}) {
     return response;
   } catch (error) {
     logger.error('[LafService] 获取热门资源失败:', error);
-    return { code: -1, success: false, message: '获取失败', data: [] };
+    // [AUDIT FIX R269] 统一使用 normalizeError
+    return { ...normalizeError(error, '获取热门资源'), data: [] };
   }
 }
 
@@ -95,6 +96,7 @@ export async function getHomeData() {
     return response;
   } catch (error) {
     logger.warn('[LafService] 获取首页数据失败:', error);
-    return { code: -1, success: false, message: '获取失败', data: null };
+    // [AUDIT FIX R269] 统一使用 normalizeError
+    return normalizeError(error, '获取首页数据');
   }
 }

@@ -155,26 +155,12 @@ export async function proxyAI(action, payload, _options = {}) {
 
     if (isTimeout) {
       logger.warn('[LafService] ⏱️ 智能请求超时');
-      return {
-        code: -1,
-        success: false,
-        message: '智能思考时间过长，请稍后重试或简化您的问题',
-        error: error,
-        data: null,
-        _timeout: true,
-        _fallback: true
-      };
+      // [AUDIT FIX R269] 统一使用 normalizeError
+      return { ...normalizeError(error, 'AI代理请求超时'), _timeout: true, _fallback: true };
     }
 
-    return {
-      code: -1,
-      success: false,
-      message: isOffline ? '当前网络不可用，智能功能暂时无法使用' : error.message || '智能服务响应异常',
-      error: error,
-      data: null,
-      _offline: isOffline,
-      _fallback: true
-    };
+    // [AUDIT FIX R269] 统一使用 normalizeError
+    return { ...normalizeError(error, 'AI代理请求'), _offline: isOffline, _fallback: true };
   }
 }
 

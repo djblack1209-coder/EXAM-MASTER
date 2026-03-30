@@ -82,7 +82,7 @@ export async function handleInvite(inviterId) {
     return response;
   } catch (error) {
     logger.warn('[LafService] 处理邀请失败:', error);
-    return { code: -1, success: false, message: '邀请处理失败' };
+    return normalizeError(error, '处理邀请'); // [AUDIT FIX R267]
   }
 }
 
@@ -104,7 +104,7 @@ export async function claimInviteReward(threshold) {
     return response;
   } catch (error) {
     logger.warn('[LafService] 领取邀请奖励失败:', error);
-    return { code: -1, success: false, message: '领取失败' };
+    return normalizeError(error, '领取邀请奖励'); // [AUDIT FIX R267]
   }
 }
 
