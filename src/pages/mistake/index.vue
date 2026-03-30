@@ -1083,83 +1083,7 @@ export default {
   white-space: nowrap;
 }
 
-/* 深色模式适配 */
-.container.dark-mode {
-  --bg-color: var(--bg-body);
-  --text-primary: #f1f5f9;
-  --text-sub: #b0b0b0;
-  --text-main: #f1f5f9;
-  --card-bg: var(--bg-card);
-  --card-border: var(--border-color);
-  background-color: var(--bg-color);
-}
-
-.container.dark-mode .nav-title {
-  color: #f1f5f9;
-}
-
-.container.dark-mode .nav-back {
-  color: #f1f5f9;
-}
-
-.container.dark-mode .nav-clear-btn {
-  background: rgba(255, 59, 48, 0.2);
-
-  .clear-text {
-    color: #ff6b6b;
-  }
-}
-
-.container.dark-mode .clear-all-btn {
-  background: rgba(255, 59, 48, 0.2);
-  border-color: rgba(255, 59, 48, 0.4);
-
-  .clear-all-text {
-    color: #ff6b6b;
-  }
-}
-
-.container.dark-mode .empty-title {
-  color: #f1f5f9;
-}
-
-.container.dark-mode .empty-text,
-.container.dark-mode .empty-hint {
-  color: #b0b0b0;
-}
-
-.container.dark-mode .fab-btn {
-  background: var(--card-bg);
-  color: #f1f5f9;
-  border: 1rpx solid var(--card-border);
-}
-
-.container.dark-mode .mode-item {
-  color: var(--text-sub);
-}
-
-.container.dark-mode .mode-item.active {
-  background: var(--brand-color);
-  color: var(--text-inverse);
-}
-
-.container.dark-mode .review-mode-banner {
-  background: var(--theme-primary-light);
-  border-color: var(--brand-glow);
-}
-
-.container.dark-mode .review-title {
-  color: #f1f5f9;
-}
-
-.container.dark-mode .review-desc {
-  color: #b0b0b0;
-}
-
-.container.dark-mode .aurora-bg {
-  background: radial-gradient(circle at 22% 16%, var(--brand-tint-strong) 0%, transparent 72%) !important;
-  opacity: 0.7;
-}
+/* [AUDIT FIX R201] 移除20个冗余 .dark-mode 覆盖块 — 基础规则已使用 CSS 变量自动适配暗色模式 */
 
 /* ✅ 1.7: 错题筛选栏 */
 .review-filter-bar {
@@ -1195,23 +1119,7 @@ export default {
   color: var(--text-sub, #666);
 }
 
-.container.dark-mode .filter-chip {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-}
-
-.container.dark-mode .filter-text {
-  color: #b0b0b0;
-}
-
-.container.dark-mode .filter-chip.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.container.dark-mode .filter-chip.active .filter-text {
-  color: var(--primary-foreground);
-}
+/* [AUDIT FIX R201] 筛选栏 .dark-mode 块已移除 — var(--bg-card)/var(--border-light)/var(--text-sub) 已自动适配 */
 
 /* === 知识点聚类视图 === */
 .cluster-view {
@@ -1284,22 +1192,22 @@ export default {
   margin-right: 12rpx;
 }
 .cluster-badge.high {
-  background: rgba(239, 68, 68, 0.15);
+  background: color-mix(in srgb, var(--danger) 15%, transparent); /* [AUDIT FIX R196] */
 }
 .cluster-badge.high .cluster-badge-text {
-  color: #ef4444;
+  color: var(--danger); /* [AUDIT FIX R196] */
 }
 .cluster-badge.medium {
-  background: rgba(245, 158, 11, 0.15);
+  background: color-mix(in srgb, var(--warning) 15%, transparent); /* [AUDIT FIX R197] */
 }
 .cluster-badge.medium .cluster-badge-text {
-  color: #f59e0b;
+  color: var(--warning); /* [AUDIT FIX R197] */
 }
 .cluster-badge.low {
-  background: rgba(148, 163, 184, 0.15);
+  background: color-mix(in srgb, var(--text-tertiary) 15%, transparent); /* [AUDIT FIX R198] */
 }
 .cluster-badge.low .cluster-badge-text {
-  color: #94a3b8;
+  color: var(--text-tertiary); /* [AUDIT FIX R198] */
 }
 
 .cluster-badge-text {
@@ -1350,13 +1258,13 @@ export default {
   font-size: 22rpx;
 }
 .trend-text.increasing {
-  color: #ef4444;
+  color: var(--danger); /* [AUDIT FIX R199] */
 }
 .trend-text.decreasing {
-  color: #10b981;
+  color: var(--success); /* [AUDIT FIX R199] */
 }
 .trend-text.stable {
-  color: #94a3b8;
+  color: var(--text-tertiary); /* [AUDIT FIX R199] */
 }
 
 .train-btn {
@@ -1379,17 +1287,13 @@ export default {
 }
 
 .cluster-chip {
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(6, 182, 212, 0.1)) !important;
-  border-color: rgba(52, 211, 153, 0.3) !important;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--success) 10%, transparent),
+    color-mix(in srgb, var(--info-blue) 10%, transparent)
+  ) !important; /* [AUDIT FIX R200] */
+  border-color: color-mix(in srgb, var(--success) 30%, transparent) !important; /* [AUDIT FIX R200] */
 }
 
-/* 暗色模式 - 聚类 */
-.container.dark-mode .cluster-card {
-  background: var(--bg-card);
-  border-color: var(--border);
-}
-.container.dark-mode .kp-tag {
-  background: rgba(255, 255, 255, 0.08);
-  color: #b0b0b0;
-}
+/* [AUDIT FIX R201] 聚类 .dark-mode 块已移除 — .cluster-card 继承 .glass-card var(--bg-card), .kp-tag 使用 var(--bg-secondary) */
 </style>
