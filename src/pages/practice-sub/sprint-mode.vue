@@ -136,8 +136,18 @@ const strategyText = ref('');
 const overallProgress = ref(0);
 const sprintItems = ref([]);
 
-const mustDoCount = computed(() => sprintItems.value.filter((i) => i.priority === 'must_do').length);
-const shouldDoCount = computed(() => sprintItems.value.filter((i) => i.priority === 'should_do').length);
+// [AUDIT FIX R135] 单次遍历同时计算两种优先级数量，避免重复 filter
+const priorityCounts = computed(() => {
+  let mustDo = 0;
+  let shouldDo = 0;
+  for (const i of sprintItems.value) {
+    if (i.priority === 'must_do') mustDo++;
+    else if (i.priority === 'should_do') shouldDo++;
+  }
+  return { mustDo, shouldDo };
+});
+const mustDoCount = computed(() => priorityCounts.value.mustDo);
+const shouldDoCount = computed(() => priorityCounts.value.shouldDo);
 
 const progressColor = computed(() => {
   if (daysRemaining.value <= 7) return '#ff453a';

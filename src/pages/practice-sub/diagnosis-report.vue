@@ -24,6 +24,16 @@
       </view>
     </view>
 
+    <!-- [AUDIT FIX R135] 加载失败状态 — 给用户明确反馈和重试入口 -->
+    <view v-else-if="loadFailed" class="fail-state">
+      <text class="fail-icon">😵</text>
+      <text class="fail-title">报告加载失败</text>
+      <text class="fail-desc">网络不太给力，请稍后重试</text>
+      <view class="fail-retry" @tap="retryLoad">
+        <text class="fail-retry-text">点击重试</text>
+      </view>
+    </view>
+
     <scroll-view v-else class="report-scroll" scroll-y>
       <!-- 总览卡片：动画环形图 -->
       <view class="overview-card apple-glass-card" :class="{ 'animate-in': showOverview }">
@@ -210,17 +220,19 @@
 
 <script setup>
 import { toast } from '@/utils/toast.js';
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useReviewStore } from '@/stores/modules/review.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 
 const reviewStore = useReviewStore();
 
 const isDark = ref(initTheme());
 
 const loading = ref(true);
+const loadFailed = ref(false); // [AUDIT FIX R135] 加载失败状态
 const diagnosis = ref({});
 const stats = ref({});
 const statusBarHeight = ref(0);
@@ -239,6 +251,9 @@ const showWeak = ref(false);
 const showStrong = ref(false);
 const showCategory = ref(false);
 const showPlan = ref(false);
+
+// [AUDIT FIX R135] 收集所有 setTimeout id，页面卸载时统一清理，防止内存泄漏
+const pendingTimers = [];
 
 const weakPoints = computed(() => diagnosis.value.weakPoints || []);
 const strongPoints = computed(() => diagnosis.value.strongPoints || []);
@@ -275,7 +290,11 @@ function animateNumber(target, duration = 1200) {
     // easeOutExpo
     const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
     animatedAccuracy.value = Math.round(start + (target - start) * eased);
-    if (progress < 1) setTimeout(tick, 16);
+    if (progress < 1) {
+      // [AUDIT FIX R135] 追踪定时器，防止页面卸载后继续执行
+      const id = setTimeout(tick, 16);
+      pendingTimers.push(id);
+    }
   };
   tick();
 }
@@ -317,35 +336,51 @@ function drawScoreRing(accuracy) {
 }
 
 // 渐进式展示各区块
+// [AUDIT FIX R135] 追踪所有 setTimeout id，防止页面卸载后继续执行
 function staggerReveal() {
-  setTimeout(() => {
-    showOverview.value = true;
-  }, 100);
-  setTimeout(() => {
-    showPatterns.value = true;
-  }, 400);
-  setTimeout(() => {
-    showWeak.value = true;
-  }, 600);
-  setTimeout(() => {
-    showStrong.value = true;
-  }, 800);
-  setTimeout(() => {
-    showCategory.value = true;
-  }, 1000);
-  setTimeout(() => {
-    showPlan.value = true;
-  }, 1200);
+  pendingTimers.push(
+    setTimeout(() => {
+      showOverview.value = true;
+    }, 100)
+  );
+  pendingTimers.push(
+    setTimeout(() => {
+      showPatterns.value = true;
+    }, 400)
+  );
+  pendingTimers.push(
+    setTimeout(() => {
+      showWeak.value = true;
+    }, 600)
+  );
+  pendingTimers.push(
+    setTimeout(() => {
+      showStrong.value = true;
+    }, 800)
+  );
+  pendingTimers.push(
+    setTimeout(() => {
+      showCategory.value = true;
+    }, 1000)
+  );
+  pendingTimers.push(
+    setTimeout(() => {
+      showPlan.value = true;
+    }, 1200)
+  );
 }
 
 // 模拟加载步骤进度
+// [AUDIT FIX R135] 追踪 setTimeout id
 function simulateLoadingSteps() {
   const texts = ['正在收集答题数据...', '分析错误模式中...', '识别薄弱知识点...', '生成个性化学习建议...'];
   texts.forEach((text, i) => {
-    setTimeout(() => {
-      loadingStep.value = i;
-      loadingText.value = text;
-    }, i * 800);
+    pendingTimers.push(
+      setTimeout(() => {
+        loadingStep.value = i;
+        loadingText.value = text;
+      }, i * 800)
+    );
   });
 }
 
@@ -378,6 +413,9 @@ async function loadReport() {
     }
   } catch (e) {
     logger.warn('[DiagnosisReport] 加载失败:', e);
+    // [AUDIT FIX R135] 加载失败时给用户明确提示，而不是展示空白页面
+    loadFailed.value = true;
+    toast.error('诊断报告加载失败，请返回重试');
   } finally {
     loading.value = false;
     // 数据加载完成后触发动画
@@ -387,6 +425,12 @@ async function loadReport() {
     drawScoreRing(accuracy);
     staggerReveal();
   }
+}
+
+// [AUDIT FIX R135] 重试加载
+function retryLoad() {
+  loadFailed.value = false;
+  loadReport();
 }
 
 function startSmartReview() {
@@ -411,13 +455,20 @@ function goBack() {
 }
 
 onMounted(() => {
-  const sysInfo = uni.getSystemInfoSync();
-  statusBarHeight.value = sysInfo.statusBarHeight || 0;
+  // [AUDIT FIX R135] 使用统一工具函数获取状态栏高度
+  statusBarHeight.value = getStatusBarHeight();
   loadReport();
+});
+
+// [AUDIT FIX R135] 页面卸载时清理所有待执行的定时器，防止内存泄漏
+onBeforeUnmount(() => {
+  pendingTimers.forEach(clearTimeout);
+  pendingTimers.length = 0;
 });
 </script>
 
 <style scoped>
+/* [AUDIT FIX R135] px→rpx 响应式适配 */
 .diagnosis-container {
   min-height: 100vh;
   background: linear-gradient(180deg, #0a0a0f 0%, #111118 50%, #0d0d14 100%);
@@ -440,25 +491,25 @@ onMounted(() => {
   z-index: 100;
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 16rpx 32rpx;
   backdrop-filter: saturate(180%) blur(20px);
   background: rgba(10, 10, 15, 0.72);
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 .back-icon {
-  width: 24px;
-  height: 24px;
+  width: 48rpx;
+  height: 48rpx;
   opacity: 0.7;
 }
 .nav-title {
   flex: 1;
   text-align: center;
-  font-size: 17px;
+  font-size: 34rpx;
   font-weight: 600;
   color: var(--text-primary);
 }
 .nav-action {
-  font-size: 14px;
+  font-size: 28rpx;
   color: var(--green);
 }
 
@@ -468,12 +519,12 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding-top: 180px;
+  padding-top: 360rpx;
 }
 .loading-brain {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 200rpx;
+  height: 200rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -484,22 +535,22 @@ onMounted(() => {
   border: 2px solid transparent;
 }
 .ring-1 {
-  width: 80px;
-  height: 80px;
+  width: 160rpx;
+  height: 160rpx;
   border-top-color: var(--green);
   border-right-color: rgba(52, 199, 89, 0.3);
   animation: spin 2s linear infinite;
 }
 .ring-2 {
-  width: 60px;
-  height: 60px;
+  width: 120rpx;
+  height: 120rpx;
   border-bottom-color: var(--blue);
   border-left-color: rgba(50, 173, 230, 0.3);
   animation: spin 1.5s linear infinite reverse;
 }
 .ring-3 {
-  width: 40px;
-  height: 40px;
+  width: 80rpx;
+  height: 80rpx;
   border-top-color: var(--orange);
   border-right-color: rgba(255, 159, 10, 0.3);
   animation: spin 1s linear infinite;
@@ -510,26 +561,26 @@ onMounted(() => {
   }
 }
 .brain-icon {
-  font-size: 28px;
+  font-size: 56rpx;
   z-index: 1;
 }
 .loading-title {
-  margin-top: 28px;
-  font-size: 16px;
+  margin-top: 56rpx;
+  font-size: 32rpx;
   font-weight: 500;
   color: var(--text-primary);
   transition: opacity 0.3s;
 }
 .loading-steps {
-  margin-top: 32px;
+  margin-top: 64rpx;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24rpx;
 }
 .step-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 20rpx;
   opacity: 0.3;
   transition: opacity 0.4s ease;
 }
@@ -537,8 +588,8 @@ onMounted(() => {
   opacity: 1;
 }
 .step-dot {
-  width: 8px;
-  height: 8px;
+  width: 16rpx;
+  height: 16rpx;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
   transition: background 0.4s;
@@ -548,13 +599,13 @@ onMounted(() => {
   box-shadow: 0 0 8px rgba(52, 199, 89, 0.5);
 }
 .step-text {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary);
 }
 
 /* 报告滚动区 */
 .report-scroll {
-  padding: 80px 16px 40px;
+  padding: 160rpx 32rpx 80rpx;
 }
 
 /* 渐进式展示动画 */
@@ -575,9 +626,9 @@ onMounted(() => {
 /* 玻璃卡片 */
 .apple-glass-card {
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 12px;
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
   border: 0.5px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
 }
@@ -586,8 +637,8 @@ onMounted(() => {
 .overview-card {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
+  gap: 40rpx;
+  padding: 40rpx;
 }
 .score-section {
   display: flex;
@@ -596,12 +647,12 @@ onMounted(() => {
 }
 .ring-container {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 200rpx;
+  height: 200rpx;
 }
 .score-canvas {
-  width: 100px;
-  height: 100px;
+  width: 200rpx;
+  height: 200rpx;
 }
 .ring-center {
   position: absolute;
@@ -614,32 +665,32 @@ onMounted(() => {
   justify-content: center;
 }
 .score-number {
-  font-size: 30px;
+  font-size: 60rpx;
   font-weight: 700;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
 .score-unit {
-  font-size: 14px;
+  font-size: 28rpx;
   color: rgba(255, 255, 255, 0.6);
-  margin-top: 4px;
-  margin-left: 1px;
+  margin-top: 8rpx;
+  margin-left: 2rpx;
 }
 .score-label {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--text-secondary);
-  margin-top: 6px;
+  margin-top: 12rpx;
 }
 .overview-right {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24rpx;
 }
 .level-badge {
   align-self: flex-start;
-  padding: 4px 12px;
-  border-radius: 12px;
+  padding: 8rpx 24rpx;
+  border-radius: 24rpx;
 }
 .level-excellent {
   background: rgba(52, 199, 89, 0.2);
@@ -654,7 +705,7 @@ onMounted(() => {
   background: rgba(255, 69, 58, 0.2);
 }
 .level-text {
-  font-size: 13px;
+  font-size: 26rpx;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -667,14 +718,14 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 8px 0;
+  padding: 16rpx 0;
   border-right: 0.5px solid rgba(255, 255, 255, 0.06);
 }
 .mini-stat:last-child {
   border-right: none;
 }
 .mini-value {
-  font-size: 18px;
+  font-size: 36rpx;
   font-weight: 700;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
@@ -686,63 +737,63 @@ onMounted(() => {
   color: var(--red);
 }
 .mini-label {
-  font-size: 11px;
+  font-size: 22rpx;
   color: var(--text-secondary);
-  margin-top: 2px;
+  margin-top: 4rpx;
 }
 
 /* 区块标题 */
 .section {
-  margin-top: 24px;
+  margin-top: 48rpx;
 }
 .section-title {
-  font-size: 17px;
+  font-size: 34rpx;
   font-weight: 600;
   color: var(--text-primary);
   display: block;
 }
 .section-sub {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--text-secondary);
   display: block;
-  margin-top: 4px;
-  margin-bottom: 12px;
+  margin-top: 8rpx;
+  margin-bottom: 24rpx;
 }
 
 /* 错误模式洞察 */
 .pattern-card {
-  margin-top: 8px;
+  margin-top: 16rpx;
 }
 .pattern-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
 }
 .pattern-icon {
-  font-size: 18px;
+  font-size: 36rpx;
 }
 .pattern-type {
-  font-size: 14px;
+  font-size: 28rpx;
   font-weight: 600;
   color: var(--text-primary);
   flex: 1;
 }
 .pattern-count {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--orange);
   background: rgba(255, 159, 10, 0.12);
-  padding: 2px 8px;
-  border-radius: 8px;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
 }
 .pattern-desc {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary);
   line-height: 1.5;
-  margin-bottom: 6px;
+  margin-bottom: 12rpx;
 }
 .pattern-fix {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--green);
   line-height: 1.5;
 }
@@ -775,28 +826,28 @@ onMounted(() => {
 .weak-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
 }
 .severity-indicator {
   position: relative;
-  width: 10px;
-  height: 10px;
+  width: 20rpx;
+  height: 20rpx;
 }
 .severity-dot {
-  width: 8px;
-  height: 8px;
+  width: 16rpx;
+  height: 16rpx;
   border-radius: 50%;
   position: absolute;
-  top: 1px;
-  left: 1px;
+  top: 2rpx;
+  left: 2rpx;
 }
 .severity-pulse {
   position: absolute;
-  top: -2px;
-  left: -2px;
-  width: 14px;
-  height: 14px;
+  top: -4rpx;
+  left: -4rpx;
+  width: 28rpx;
+  height: 28rpx;
   border-radius: 50%;
   opacity: 0;
 }
@@ -825,15 +876,15 @@ onMounted(() => {
   }
 }
 .weak-name {
-  font-size: 15px;
+  font-size: 30rpx;
   font-weight: 600;
   color: var(--text-primary);
   flex: 1;
 }
 .severity-tag {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 8px;
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
 }
 .tag-high {
   background: rgba(255, 69, 58, 0.15);
@@ -848,37 +899,37 @@ onMounted(() => {
   color: var(--blue);
 }
 .weak-mastery {
-  margin-bottom: 8px;
+  margin-bottom: 16rpx;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16rpx;
 }
 .mastery-track {
   flex: 1;
-  height: 4px;
-  border-radius: 2px;
+  height: 8rpx;
+  border-radius: 4rpx;
   background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 .mastery-fill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: 4rpx;
   background: var(--orange);
   transition: width 0.8s ease;
 }
 .mastery-text {
-  font-size: 11px;
+  font-size: 22rpx;
   color: var(--text-secondary);
   white-space: nowrap;
 }
 .weak-pattern {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: 12rpx;
   line-height: 1.4;
 }
 .weak-suggestion {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--green);
   line-height: 1.4;
 }
@@ -887,43 +938,43 @@ onMounted(() => {
 .strong-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 16rpx;
+  margin-top: 24rpx;
 }
 .strong-tag {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border-radius: 12px;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  border-radius: 24rpx;
   background: rgba(52, 199, 89, 0.1);
   border: 0.5px solid rgba(52, 199, 89, 0.2);
   animation: fadeSlideIn 0.3s ease-out both;
 }
 .strong-check {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--green);
 }
 .strong-text {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--green);
 }
 
 /* 各科表现 */
 .bar-item {
-  margin-bottom: 14px;
+  margin-bottom: 28rpx;
 }
 .bar-label {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 12rpx;
 }
 .bar-name {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-primary);
 }
 .bar-percent {
-  font-size: 13px;
+  font-size: 26rpx;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -937,14 +988,14 @@ onMounted(() => {
   color: var(--red);
 }
 .bar-track {
-  height: 6px;
-  border-radius: 3px;
+  height: 12rpx;
+  border-radius: 6rpx;
   background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 .bar-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: 6rpx;
   transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .fill-good {
@@ -965,29 +1016,29 @@ onMounted(() => {
 .plan-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 14px 16px;
+  gap: 24rpx;
+  padding: 28rpx 32rpx;
   border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
 }
 .plan-row:last-child {
   border-bottom: none;
 }
 .plan-icon {
-  font-size: 20px;
-  margin-top: 2px;
+  font-size: 40rpx;
+  margin-top: 4rpx;
 }
 .plan-content {
   flex: 1;
 }
 .plan-label {
-  font-size: 13px;
+  font-size: 26rpx;
   font-weight: 600;
   color: var(--text-primary);
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 8rpx;
 }
 .plan-text {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -995,28 +1046,28 @@ onMounted(() => {
 /* 鼓励语 */
 .encouragement {
   text-align: center;
-  padding: 24px 0;
+  padding: 48rpx 0;
 }
 .encourage-text {
-  font-size: 15px;
+  font-size: 30rpx;
   color: var(--green);
   font-weight: 500;
 }
 
 /* 底部操作 */
 .bottom-actions {
-  padding: 20px 0 40px;
+  padding: 40rpx 0 80rpx;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20rpx;
 }
 .btn-primary {
   background: linear-gradient(135deg, #34c759, #30d158);
   color: #fff;
   border: none;
-  border-radius: 14px;
-  height: 48px;
-  font-size: 16px;
+  border-radius: 28rpx;
+  height: 96rpx;
+  font-size: 32rpx;
   font-weight: 600;
   box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
 }
@@ -1024,15 +1075,50 @@ onMounted(() => {
   background: rgba(52, 199, 89, 0.12);
   color: var(--green);
   border: 0.5px solid rgba(52, 199, 89, 0.2);
-  border-radius: 14px;
-  height: 44px;
-  font-size: 15px;
+  border-radius: 28rpx;
+  height: 88rpx;
+  font-size: 30rpx;
 }
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
   border: none;
-  height: 40px;
-  font-size: 14px;
+  height: 80rpx;
+  font-size: 28rpx;
+}
+
+/* [AUDIT FIX R135] 加载失败状态样式 */
+.fail-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  padding: 80rpx 40rpx;
+}
+.fail-icon {
+  font-size: 128rpx;
+  margin-bottom: 32rpx;
+}
+.fail-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+}
+.fail-desc {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-bottom: 48rpx;
+}
+.fail-retry {
+  padding: 20rpx 64rpx;
+  background: var(--color-primary, #007aff);
+  border-radius: 40rpx;
+}
+.fail-retry-text {
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 500;
 }
 </style>

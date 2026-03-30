@@ -1084,11 +1084,13 @@ async function getFavorites(ctx, data, requestId) {
   const query: Record<string, any> = { userId };
   if (safeStatus) query.status = safeStatus;
 
+  // [AUDIT FIX R135] 限制收藏列表最大返回数量，防止无界查询
   const favorites = await db
     .collection('user_school_favorites')
     .where(query)
     .orderBy('priority', 'asc')
     .orderBy('createdAt', 'desc')
+    .limit(200)
     .get();
 
   // 获取学校详情

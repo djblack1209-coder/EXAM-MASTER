@@ -1,0 +1,73 @@
+- generic [ref=e617]:
+  - generic [ref=e619]: 刷题中心
+  - generic [ref=e1037]:
+    - generic [ref=e1041]:
+      - generic [ref=e1042]: 题库就绪
+      - generic [ref=e1043]: 当前已收录 3 道真题
+    - generic [ref=e1048] [cursor=pointer]: 题库管理
+  - generic [ref=e1050]:
+    - generic [ref=e1051]:
+      - generic [ref=e1052]: "0"
+      - generic [ref=e1053]: 今日刷题
+      - generic [ref=e1054] [cursor=pointer]:
+        - text: 目标 20
+        - img [ref=e1058]
+    - generic [ref=e1060]:
+      - generic [ref=e1061]: "0"
+      - generic [ref=e1062]: 连续学习
+      - generic [ref=e1063]: 天
+    - generic [ref=e1065]:
+      - generic [ref=e1066]: 0%
+      - generic [ref=e1067]: 正确率
+  - generic [ref=e635]:
+    - generic [ref=e1071] [cursor=pointer]: 开始刷题
+    - generic [ref=e1075] [cursor=pointer]: PK 对战
+    - generic [ref=e1077] [cursor=pointer]: AI 推题
+    - generic [ref=e637] [cursor=pointer]: 考研题库
+    - generic [ref=e638] [cursor=pointer]:
+      - img [ref=e643]
+      - generic [ref=e644]:
+        - generic [ref=e645]: 导入学习资料
+        - generic [ref=e646]: 智能分析 · 即刻出题
+      - generic [ref=e648]: ›
+  - generic [ref=e649]:
+    - generic [ref=e650] [cursor=pointer]:
+      - generic [ref=e655]: 文件管理
+      - generic [ref=e657]: ›
+    - generic [ref=e658] [cursor=pointer]:
+      - generic [ref=e663]: 智能导师
+      - generic [ref=e665]: ›
+    - generic [ref=e666] [cursor=pointer]:
+      - generic [ref=e671]: 错题本
+      - generic [ref=e673]: ›
+    - generic [ref=e674] [cursor=pointer]:
+      - generic [ref=e679]: 学霸排行榜
+      - generic [ref=e681]: ›
+    - generic [ref=e682] [cursor=pointer]:
+      - generic [ref=e687]: 总学习进度
+      - generic [ref=e690]: 0%
+    - generic [ref=e691] [cursor=pointer]:
+      - img [ref=e696]
+      - generic [ref=e697]:
+        - generic [ref=e698]: 导出 Anki 牌组
+        - generic [ref=e699]: 导出为 .apkg 文件
+      - generic [ref=e701]: ›
+    - generic [ref=e702] [cursor=pointer]:
+      - img [ref=e707]
+      - generic [ref=e708]:
+        - generic [ref=e709]: 练习模式
+        - generic [ref=e710]: 专项突破 · 限时训练
+      - generic [ref=e712]: ›
+  - generic [ref=e713]:
+    - generic [ref=e714]:
+      - img [ref=e1080]
+      - generic [ref=e719]: 首页
+    - generic [ref=e720]:
+      - img [ref=e1083]
+      - generic [ref=e725]: 刷题
+    - generic [ref=e726]:
+      - img [ref=e730]
+      - generic [ref=e731]: 择校
+    - generic [ref=e732]:
+      - img [ref=e736]
+      - generic [ref=e737]: 我的

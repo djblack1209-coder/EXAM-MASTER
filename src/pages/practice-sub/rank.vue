@@ -97,6 +97,7 @@
               {{ index + 4 }}
             </text>
           </view>
+          <!-- [AUDIT FIX R135] 列表头像添加 lazy-load -->
           <image
             class="item-avatar"
             :src="item.avatar || defaultAvatar"

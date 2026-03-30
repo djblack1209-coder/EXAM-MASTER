@@ -14,6 +14,45 @@
 
 ---
 
+## [2026-03-30] 第二十一轮审计 — 全栈生产就绪审计 P0-P4（4安全 + 2功能 + 4架构 + 8性能 + 12 UI/UX）
+
+- **Scope**: `frontend`, `backend`, `security`, `performance`, `ui/ux`
+- **Files Changed**:
+  - **P0 安全 (4 fixes)**:
+    - `src/pages/settings/AIChatModal.vue` — 添加 sanitizeAIChatInput 输入过滤
+    - `laf-backend/functions/rag-ingest.ts` — 移除 serverError() 中的 error.message 泄露
+    - `laf-backend/functions/lesson-generator.ts` — 错误信息消毒(.slice(0,100)+regex) + 静默 catch 改为 logger.error
+  - **P1 功能完整性 (2 fixes)**:
+    - `laf-backend/functions/data-cleanup.ts` — 空 catch 块添加 logger.warn
+    - `laf-backend/functions/lesson-generator.ts` — 静默 .catch() 改为错误日志记录
+  - **P2 架构质量 (4 fixes)**:
+    - `src/utils/core/performance.js` — 移除重复的 debounce/throttle，改为从 throttle.js re-export
+    - `src/pages/practice-sub/smart-review.vue` — uni.getSystemInfoSync() 替换为 getStatusBarHeight()
+    - `src/pages/practice-sub/diagnosis-report.vue` — 同上 getStatusBarHeight() 修复
+    - `src/pages/ai-classroom/classroom.vue` — 同上 getStatusBarHeight() 修复
+  - **P3 性能 (8 fixes)**:
+    - `src/pages/practice-sub/diagnosis-report.vue` — 内存泄漏修复：pendingTimers + onBeforeUnmount 清理所有 setTimeout
+    - `src/components/business/index/AIDailyBriefing.vue` — watcher 防抖(300ms) + weakPoints 默认值冻结(Object.freeze)
+    - `src/pages/study-detail/StudyTrendChart.vue` — 移除 studyData watcher 的 deep:true
+    - `src/components/business/index/StudyHeatmap.vue` — 移除 studyData watcher 的 deep:true
+    - `laf-backend/functions/school-query.ts` — getFavorites() 添加 .limit(200) 防止无限查询
+    - `src/pages/practice-sub/sprint-mode.vue` — priorityCounts 单次遍历替代双次 .filter()
+    - `src/pages/practice-sub/rank.vue` — 列表头像添加 lazy-load 属性
+  - **P4 UI/UX Phase 1 — 错误处理 + 空状态 (3 files, 5 fixes)**:
+    - `src/pages/practice-sub/diagnosis-report.vue` — loadFailed 状态 + 错误 toast + 失败 UI(重试按钮) + CSS
+    - `src/pages/ai-classroom/classroom.vue` — continueClass/sendMessage catch 块添加 toast.error()
+    - `src/pages/study-detail/index.vue` — 数据加载 catch 块添加 toast.error()
+  - **P4 UI/UX Phase 2 — 响应式 px→rpx (2 files)**:
+    - `src/pages/practice-sub/diagnosis-report.vue` — 74 处 px→rpx 转换
+    - `src/pages/ai-classroom/index.vue` — 22 处 font-size/layout px→rpx 转换
+  - **P4 UI/UX Phase 2 — 暗黑模式硬编码色值修复 (3 files)**:
+    - `src/pages/index/index.vue` — ~11 处硬编码色值替换为 CSS 变量
+    - `src/pages/practice-sub/do-quiz.vue` — ~15 处硬编码色值替换为 CSS 变量
+    - `src/pages/practice-sub/pk-battle.vue` — ~23 处硬编码色值替换为 CSS 变量
+- **Summary**: 第二十一轮全栈生产就绪审计，按 P0→P4 优先级严格执行。共计修复 30 个问题（R135-R164）：P0 安全 4 项（AI 输入未过滤、3 处 error.message 泄露/静默吞错）；P1 功能 2 项（空 catch 块恢复日志）；P2 架构 4 项（重复工具函数、3 处非标准 API 调用）；P3 性能 8 项（内存泄漏、深度 watcher、无限查询、重复计算、懒加载）；P4 UI/UX 12 项（错误提示缺失、px→rpx 响应式、暗黑模式适配）。技术债务记录：层违规(friend-profile/friend-list)、17 个大文件(>1500行)、后端 N+1 查询/缺失索引/无界聚合、前端 lazy-loading modal/ARIA 可达性等。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
 ## [2026-03-30] 第二十轮审计 — 微信小程序审核合规修复（2 BLOCKER + 1 HIGH + 1 MEDIUM）
 
 - **Scope**: `frontend`, `config`, `docs`

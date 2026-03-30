@@ -295,6 +295,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* [AUDIT FIX R135] px→rpx 响应式适配 */
 .classroom-list-container {
   min-height: 100vh;
   background: linear-gradient(
@@ -314,25 +315,25 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 16px;
-  padding-top: calc(env(safe-area-inset-top) + 12px);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  padding: 24rpx 32rpx;
+  padding-top: calc(env(safe-area-inset-top) + 24rpx);
+  backdrop-filter: blur(40rpx);
+  -webkit-backdrop-filter: blur(40rpx);
   background: var(--apple-glass-nav-bg, rgba(250, 255, 246, 0.74));
 }
 .dark-mode .top-nav {
   background: rgba(0, 0, 0, 0.6);
 }
 .nav-title {
-  font-size: 17px;
+  font-size: 34rpx;
   font-weight: 600;
   color: var(--text-primary, var(--foreground));
 }
 .apple-glass-card {
   background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.68));
-  border-radius: 16px;
-  padding: 16px;
-  margin: 0 16px 12px;
+  border-radius: 32rpx;
+  padding: 32rpx;
+  margin: 0 32rpx 24rpx;
   border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.72));
   box-shadow: var(--apple-shadow-card, 0 4px 12px rgba(0, 0, 0, 0.06));
 }
@@ -344,20 +345,20 @@ onMounted(() => {
 .create-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-top: 80px;
+  gap: 28rpx;
+  margin-top: 160rpx;
 }
 .create-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 28rpx;
   background: linear-gradient(135deg, #34c759, #30d158);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .icon-text {
-  font-size: 28px;
+  font-size: 56rpx;
   color: #fff;
   font-weight: 300;
 }
@@ -365,25 +366,25 @@ onMounted(() => {
   flex: 1;
 }
 .create-title {
-  font-size: 16px;
+  font-size: 32rpx;
   font-weight: 600;
   color: var(--text-primary, var(--foreground));
   display: block;
 }
 .create-desc {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary, var(--muted-foreground));
   display: block;
-  margin-top: 4px;
+  margin-top: 8rpx;
 }
 .lesson-list {
-  padding-top: 8px;
+  padding-top: 16rpx;
 }
 .section-title {
-  font-size: 15px;
+  font-size: 30rpx;
   font-weight: 600;
   color: var(--text-secondary, var(--muted-foreground));
-  margin: 16px 16px 8px;
+  margin: 32rpx 32rpx 16rpx;
   display: block;
 }
 .lesson-card {
@@ -393,10 +394,10 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 16rpx;
 }
 .lesson-title {
-  font-size: 15px;
+  font-size: 30rpx;
   font-weight: 600;
   color: var(--text-primary, var(--foreground));
   flex: 1;
@@ -405,8 +406,8 @@ onMounted(() => {
   white-space: nowrap;
 }
 .lesson-status {
-  padding: 2px 8px;
-  border-radius: 8px;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
 }
 .status-generating {
   background: rgba(255, 159, 10, 0.15);
@@ -418,7 +419,7 @@ onMounted(() => {
   background: rgba(255, 69, 58, 0.15);
 }
 .status-text {
-  font-size: 11px;
+  font-size: 22rpx;
 }
 .status-generating .status-text {
   color: #ff9f0a;
@@ -431,17 +432,17 @@ onMounted(() => {
 }
 .lesson-meta {
   display: flex;
-  gap: 12px;
+  gap: 24rpx;
 }
 .meta-item {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--text-secondary, var(--muted-foreground));
 }
 .progress-bar {
-  height: 4px;
-  border-radius: 2px;
+  height: 8rpx;
+  border-radius: 4rpx;
   background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.08));
-  margin-top: 10px;
+  margin-top: 20rpx;
   overflow: hidden;
 }
 .dark-mode .progress-bar {
@@ -449,38 +450,38 @@ onMounted(() => {
 }
 .progress-fill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: 4rpx;
   background: linear-gradient(90deg, #ff9f0a, #34c759);
   transition: width 0.3s;
 }
 .lesson-actions {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 32rpx;
+  right: 32rpx;
 }
 .action-delete {
-  font-size: 12px;
+  font-size: 24rpx;
   color: #ff453a;
 }
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 80px 0;
+  padding: 160rpx 0;
 }
 .empty-icon {
-  font-size: 48px;
+  font-size: 96rpx;
 }
 .empty-title {
-  font-size: 17px;
+  font-size: 34rpx;
   font-weight: 600;
   color: var(--text-primary, var(--foreground));
-  margin-top: 16px;
+  margin-top: 32rpx;
 }
 .empty-desc {
-  font-size: 13px;
+  font-size: 26rpx;
   color: var(--text-secondary, var(--muted-foreground));
-  margin-top: 8px;
+  margin-top: 16rpx;
 }
 .modal-mask {
   position: fixed;
@@ -493,11 +494,11 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 40rpx;
 }
 .modal-content {
   width: 100%;
-  max-width: 360px;
+  max-width: 720rpx;
   max-height: 80vh;
   overflow-y: auto;
   background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.95));
@@ -506,34 +507,34 @@ onMounted(() => {
   background: rgba(30, 30, 36, 0.96);
 }
 .modal-title {
-  font-size: 18px;
+  font-size: 36rpx;
   font-weight: 700;
   color: var(--text-primary, var(--foreground));
   display: block;
-  margin-bottom: 20px;
+  margin-bottom: 40rpx;
   text-align: center;
 }
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 32rpx;
 }
 .form-label {
-  font-size: 14px;
+  font-size: 28rpx;
   font-weight: 600;
   color: var(--text-primary, var(--foreground));
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 16rpx;
 }
 .subject-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 16rpx;
 }
 .subject-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 4px;
-  border-radius: 12px;
+  padding: 20rpx 8rpx;
+  border-radius: 24rpx;
   background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
   border: 2px solid transparent;
 }
@@ -545,22 +546,22 @@ onMounted(() => {
   background: rgba(52, 199, 89, 0.1);
 }
 .subject-icon {
-  font-size: 24px;
+  font-size: 48rpx;
 }
 .subject-name {
-  font-size: 12px;
+  font-size: 24rpx;
   color: var(--text-primary, var(--foreground));
-  margin-top: 4px;
+  margin-top: 8rpx;
 }
 .form-input {
   width: 100%;
-  height: 40px;
+  height: 80rpx;
   background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
   border: 1px solid var(--border, rgba(15, 95, 52, 0.15));
-  border-radius: 10px;
-  padding: 0 12px;
+  border-radius: 20rpx;
+  padding: 0 24rpx;
   color: var(--text-primary, var(--foreground));
-  font-size: 14px;
+  font-size: 28rpx;
 }
 .dark-mode .form-input {
   background: rgba(255, 255, 255, 0.06);
@@ -568,13 +569,13 @@ onMounted(() => {
 }
 .form-textarea {
   width: 100%;
-  height: 100px;
+  height: 200rpx;
   background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
   border: 1px solid var(--border, rgba(15, 95, 52, 0.15));
-  border-radius: 10px;
-  padding: 10px 12px;
+  border-radius: 20rpx;
+  padding: 20rpx 24rpx;
   color: var(--text-primary, var(--foreground));
-  font-size: 14px;
+  font-size: 28rpx;
 }
 .dark-mode .form-textarea {
   background: rgba(255, 255, 255, 0.06);
@@ -582,29 +583,29 @@ onMounted(() => {
 }
 .modal-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 20rpx;
+  margin-top: 40rpx;
 }
 .btn-cancel {
   flex: 1;
-  height: 42px;
+  height: 84rpx;
   background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
   color: var(--text-secondary, var(--muted-foreground));
   border: none;
-  border-radius: 12px;
-  font-size: 15px;
+  border-radius: 24rpx;
+  font-size: 30rpx;
 }
 .dark-mode .btn-cancel {
   background: rgba(255, 255, 255, 0.08);
 }
 .btn-create {
   flex: 1;
-  height: 42px;
+  height: 84rpx;
   background: linear-gradient(135deg, #34c759, #30d158);
   color: #fff;
   border: none;
-  border-radius: 12px;
-  font-size: 15px;
+  border-radius: 24rpx;
+  font-size: 30rpx;
   font-weight: 600;
 }
 .btn-create[disabled] {
@@ -613,40 +614,40 @@ onMounted(() => {
 
 /* 加载骨架屏 */
 .skeleton-list {
-  padding: 0 16px;
+  padding: 0 32rpx;
 }
 
 .skeleton-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 12px;
+  border-radius: 32rpx;
+  padding: 40rpx;
+  margin-bottom: 24rpx;
 }
 
 .skeleton-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 24rpx;
 }
 
 .skeleton-title {
   width: 60%;
-  height: 20px;
-  border-radius: 8px;
+  height: 40rpx;
+  border-radius: 16rpx;
 }
 
 .skeleton-badge {
-  width: 60px;
-  height: 24px;
-  border-radius: 12px;
+  width: 120rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
 }
 
 .skeleton-meta {
   width: 40%;
-  height: 14px;
-  border-radius: 6px;
+  height: 28rpx;
+  border-radius: 12rpx;
 }
 
 .skeleton-animate {

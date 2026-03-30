@@ -194,15 +194,20 @@ async function generateLessonAsync(
     logger.info(`[${requestId}] 课程生成完成: ${lessonId}, ${scenes.length} 个场景`);
   } catch (err: any) {
     logger.error(`[${requestId}] 课程生成失败: ${err.message}`);
+    // [AUDIT FIX R135] 不存储原始错误详情到DB，防止间接信息泄露
+    const safeError = (err.message || '未知错误').slice(0, 100).replace(/[^\u4e00-\u9fa5a-zA-Z0-9\s\-_.,:;!?]/g, '');
     await db
       .collection('lessons')
       .doc(lessonId)
       .update({
         status: 'failed',
-        error: err.message,
+        error: safeError,
         updated_at: Date.now()
       })
-      .catch(() => {});
+      .catch((dbErr: any) => {
+        // [AUDIT FIX R135] 记录状态更新失败，防止课程永久卡在 generating
+        logger.error(`课程状态更新失败: ${lessonId} - ${dbErr?.message || '未知错误'}`);
+      });
   }
 }
 

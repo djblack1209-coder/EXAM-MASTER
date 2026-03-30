@@ -1693,6 +1693,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* [AUDIT FIX R135] */
 /* iOS 风格全局容器 */
 .container {
   min-height: 100%;
@@ -2272,7 +2273,7 @@ export default {
 }
 
 .opponent-tip {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-inverse-secondary);
   font-size: 28rpx;
 }
 
@@ -2350,12 +2351,12 @@ export default {
     0 0 60rpx rgba(159, 232, 112, 0.3);
 }
 .result-title.defeat {
-  color: #ff6b6b; /* 柔和的红色 */
+  color: var(--danger); /* 柔和的红色 */
   text-shadow: 0 0 30rpx rgba(255, 107, 107, 0.5);
 }
 .result-subtitle {
   font-size: 28rpx;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-inverse-secondary);
   display: block;
 }
 /* 智能战报分析卡片样式 - 绿色主题，高级质感 */
@@ -2416,7 +2417,7 @@ export default {
 }
 
 .ai-text {
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 28rpx;
   line-height: 1.8;
   text-align: left;
@@ -2440,7 +2441,7 @@ export default {
 }
 .ai-summary .tag {
   display: inline-block;
-  background: #00e5ff;
+  background: var(--info-blue);
   color: var(--primary-foreground, #111111);
   font-size: 20rpx;
   padding: 4rpx 12rpx;
@@ -2485,7 +2486,7 @@ export default {
   flex: 1;
   min-width: calc(50% - 10rpx);
   background: linear-gradient(135deg, var(--brand-color), #7ed321);
-  color: #1a1a1a;
+  color: var(--text-primary);
   border-radius: 16rpx;
   font-size: 28rpx;
   border: none;
@@ -2505,7 +2506,7 @@ export default {
   flex: 1;
   min-width: calc(50% - 10rpx);
   background: linear-gradient(135deg, #ffd700, #ffa500);
-  color: #1a1a1a;
+  color: var(--text-primary);
   border-radius: 16rpx;
   font-size: 28rpx;
   border: none;
@@ -2547,7 +2548,7 @@ export default {
   border-radius: 16rpx;
   font-size: 28rpx;
   border: 1px solid rgba(255, 107, 107, 0.3);
-  color: #ff6b6b;
+  color: var(--danger);
   padding: 20rpx 0;
   margin-top: 20rpx;
   font-weight: 500;
@@ -2756,11 +2757,11 @@ export default {
 }
 
 .container.dark-mode .status-title {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .container.dark-mode .status-tip {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-inverse-secondary);
 }
 
 .exit-btn {
@@ -2857,16 +2858,16 @@ export default {
 }
 
 .score.me {
-  color: #22873a;
+  color: var(--success);
 }
 
 .score.opp {
-  color: #0a84ff;
+  color: var(--info-blue);
 }
 
 .container.dark-mode .score.me,
 .container.dark-mode .score.opp {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .progress-track {
@@ -2895,14 +2896,14 @@ export default {
 
 .tag {
   background: rgba(52, 199, 89, 0.14);
-  color: #22873a;
+  color: var(--success);
   padding: 8rpx 14rpx;
   border-radius: 999rpx;
 }
 
 .container.dark-mode .tag {
   background: rgba(10, 132, 255, 0.14);
-  color: #5faaff;
+  color: var(--info-blue);
 }
 
 .timer-badge {
@@ -2926,7 +2927,7 @@ export default {
 .container.dark-mode .opponent-tip,
 .container.dark-mode .result-subtitle,
 .container.dark-mode .ai-text {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .opt-btn-inner {
@@ -2942,7 +2943,7 @@ export default {
 
 .container.dark-mode .letter {
   background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .opt-btn.selected .opt-btn-inner {
@@ -2952,7 +2953,7 @@ export default {
 
 .opt-btn.selected .letter {
   background: rgba(52, 199, 89, 0.84);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .container.dark-mode .opt-btn.selected .opt-btn-inner {
@@ -3011,12 +3012,12 @@ export default {
 }
 
 .result-title.victory {
-  color: #22873a;
+  color: var(--success);
   text-shadow: none;
 }
 
 .result-title.defeat {
-  color: #0a84ff;
+  color: var(--info-blue);
   text-shadow: none;
 }
 
@@ -3160,7 +3161,7 @@ export default {
 }
 
 .container.dark-mode .search-icon {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .status-tip-note {
@@ -3286,7 +3287,7 @@ export default {
 
 .btn-exit {
   grid-column: span 2;
-  color: #c53d35;
+  color: var(--danger);
 }
 
 .container.dark-mode .btn-exit {

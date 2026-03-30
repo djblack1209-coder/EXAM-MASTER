@@ -47,6 +47,7 @@ import { ref, computed, watch, onMounted } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { debounce } from '@/utils/throttle.js';
 
 // 动态导入 — analyzeMastery/getPendingCorrections/getSprintPriority 在 smart-study.api.js 中
 const loadStudyApi = () => import('@/services/api/domains/smart-study.api.js');
@@ -59,7 +60,8 @@ const props = defineProps({
   todayDone: { type: Number, default: 0 },
   accuracy: { type: Number, default: 0 },
   examDate: { type: String, default: '' },
-  weakPoints: { type: Array, default: () => [] },
+  // [AUDIT FIX R135] 冻结空数组常量，避免每次父组件渲染时创建新引用导致不必要的子组件重渲染
+  weakPoints: { type: Array, default: () => Object.freeze([]) },
   pendingCorrections: { type: Number, default: 0 },
   hasUnfinished: { type: Boolean, default: false }
 });
@@ -97,16 +99,21 @@ const daysToExam = computed(() => {
   return Math.max(0, diff);
 });
 
+// [AUDIT FIX R135] 对 watcher 添加 debounce，防止父组件快速重渲染时触发多次 API 调用
+const debouncedGenerateBriefing = debounce(() => {
+  generateBriefing();
+}, 300);
+
 watch(
   () => props.reviewPending,
   () => {
-    generateBriefing();
+    debouncedGenerateBriefing();
   }
 );
 watch(
   () => props.todayDone,
   () => {
-    generateBriefing();
+    debouncedGenerateBriefing();
   }
 );
 

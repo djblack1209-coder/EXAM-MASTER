@@ -78,6 +78,7 @@
 <script>
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
+import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
 import { useSchoolStore } from '@/stores/modules/school.js';
 import { useToolsStore } from '@/stores/modules/tools.js';
 
@@ -225,7 +226,9 @@ export default {
     sendToAI() {
       if (!this.userInput.trim() || this.isRequesting) return;
 
-      const content = this.userInput.trim();
+      // [AUDIT FIX R135] 净化用户输入 — 移除危险字符，防 XSS/注入
+      const content = sanitizeAIChatInput(this.userInput.trim(), 2000);
+      if (!content) return;
 
       // 9.4: 输入长度限制，防止 API 调用失败或成本过高
       const MAX_INPUT_LENGTH = 2000;

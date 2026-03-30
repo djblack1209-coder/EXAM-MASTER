@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-30 (第二十轮审计：微信小程序审核合规修复 — 虚假隐私声明+过度权限+隐私政策+DevTools配置) | Maintainer: AI-SOP
+> Last updated: 2026-03-30 (第二十一轮审计：全栈生产就绪审计 P0-P4 — 安全4+功能2+架构4+性能8+UI/UX12 共30项修复) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,31 @@
 
 | ID   | Domain   | Title                                                                                 | Solution                                                                                                                                                 | Resolved   |
 | ---- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| R164 | frontend | pk-battle.vue ~23处硬编码色值暗黑模式不适配                                           | 替换为CSS变量(--text-primary/--bg-card/--border-color等)                                                                                                 | 2026-03-30 |
+| R163 | frontend | do-quiz.vue ~15处硬编码色值暗黑模式不适配                                             | 替换为CSS变量                                                                                                                                            | 2026-03-30 |
+| R162 | frontend | index.vue ~11处硬编码色值暗黑模式不适配                                               | 替换为CSS变量                                                                                                                                            | 2026-03-30 |
+| R161 | frontend | ai-classroom/index.vue 22处px单位在小程序端不响应                                     | px→rpx转换(font-size/layout)                                                                                                                             | 2026-03-30 |
+| R160 | frontend | diagnosis-report.vue 74处px单位不响应                                                 | px→rpx转换(font-size/width/height/padding/margin/border-radius/gap)                                                                                      | 2026-03-30 |
+| R159 | frontend | study-detail/index.vue 数据加载失败无用户提示                                         | catch块添加toast.error()                                                                                                                                 | 2026-03-30 |
+| R158 | frontend | classroom.vue sendMessage失败无用户提示                                               | catch块添加toast.error()                                                                                                                                 | 2026-03-30 |
+| R157 | frontend | classroom.vue continueClass失败无用户提示                                             | catch块添加toast.error()                                                                                                                                 | 2026-03-30 |
+| R156 | frontend | diagnosis-report.vue 加载失败无任何反馈(白屏)                                         | 添加loadFailed状态+失败UI+重试按钮+CSS                                                                                                                   | 2026-03-30 |
+| R155 | frontend | rank.vue 列表头像未懒加载(一次性加载全部图片)                                         | img添加lazy-load属性                                                                                                                                     | 2026-03-30 |
+| R154 | frontend | sprint-mode.vue priorityCounts双次filter性能浪费                                      | 单次遍历替代                                                                                                                                             | 2026-03-30 |
+| R153 | backend  | school-query.ts getFavorites()无limit限制(可能返回无限条)                             | 添加.limit(200)                                                                                                                                          | 2026-03-30 |
+| R152 | frontend | StudyHeatmap.vue studyData watcher不必要的deep:true                                   | 移除deep:true                                                                                                                                            | 2026-03-30 |
+| R151 | frontend | StudyTrendChart.vue studyData watcher不必要的deep:true                                | 移除deep:true                                                                                                                                            | 2026-03-30 |
+| R150 | frontend | AIDailyBriefing.vue weakPoints默认prop未冻结+watcher无防抖                            | Object.freeze([])冻结+watcher添加300ms防抖                                                                                                               | 2026-03-30 |
+| R149 | frontend | diagnosis-report.vue setTimeout内存泄漏(onBeforeUnmount未清理)                        | pendingTimers数组+onBeforeUnmount批量clearTimeout                                                                                                        | 2026-03-30 |
+| R148 | frontend | classroom.vue 使用uni.getSystemInfoSync()而非统一工具函数                             | 替换为getStatusBarHeight()                                                                                                                               | 2026-03-30 |
+| R147 | frontend | diagnosis-report.vue 使用uni.getSystemInfoSync()而非统一工具函数                      | 替换为getStatusBarHeight()                                                                                                                               | 2026-03-30 |
+| R146 | frontend | smart-review.vue 使用uni.getSystemInfoSync()而非统一工具函数                          | 替换为getStatusBarHeight()                                                                                                                               | 2026-03-30 |
+| R145 | frontend | performance.js 重复定义debounce/throttle(与throttle.js冲突)                           | 移除重复代码，改为re-export from throttle.js                                                                                                             | 2026-03-30 |
+| R144 | backend  | data-cleanup.ts 空catch块静默吞错(无任何日志)                                         | 添加logger.warn记录                                                                                                                                      | 2026-03-30 |
+| R143 | backend  | lesson-generator.ts .catch(()=>{})静默吞错                                            | 改为.catch((dbErr)=>logger.error(...))                                                                                                                   | 2026-03-30 |
+| R142 | backend  | lesson-generator.ts 错误信息未消毒直接写入DB                                          | .slice(0,100)+regex清理后再存储                                                                                                                          | 2026-03-30 |
+| R141 | backend  | rag-ingest.ts serverError()泄露error.message到客户端                                  | 移除error?.message参数                                                                                                                                   | 2026-03-30 |
+| R140 | security | AIChatModal.vue AI对话输入未经sanitize过滤                                            | 添加sanitizeAIChatInput导入和调用                                                                                                                        | 2026-03-30 |
 | R134 | config   | project.config.json miniprogramRoot指向dev路径而非production                          | 修正为dist/build/mp-weixin/                                                                                                                              | 2026-03-30 |
 | R133 | frontend | 隐私政策页面账号删除描述与实际功能不符                                                | 更新为准确描述自助删除流程(7天冷静期)                                                                                                                    | 2026-03-30 |
 | R132 | config   | manifest.json声明scope.userLocation权限但从未调用位置API(过度数据收集)                | 移除permission.scope.userLocation块                                                                                                                      | 2026-03-30 |
@@ -221,12 +246,14 @@
 
 ## Resource Monitoring
 
-| Resource                 | Current           | Limit           | Alert Threshold |
-| ------------------------ | ----------------- | --------------- | --------------- |
-| Tencent Cloud RAM        | ~948MB            | 1.9GB           | 1.5GB           |
-| Tencent Cloud Disk       | 16GB              | 40GB            | 32GB            |
-| Tencent Cloud Bandwidth  | —                 | 200GB/月 @3Mbps | 160GB           |
-| WeChat MP Main Package   | ~1298KB           | 2048KB          | 1900KB          |
-| H5 Entry JS (gzip)       | ~45KB (入口135KB) | —               | 200KB           |
-| SiliconFlow DS Keys 余额 | 140元 (10条×14元) | —               | < 30元          |
-| LLM Provider Pool        | 14 providers      | —               | < 8 可用        |
+| Resource                 | Current               | Limit           | Alert Threshold |
+| ------------------------ | --------------------- | --------------- | --------------- |
+| Tencent Cloud RAM        | ~948MB                | 1.9GB           | 1.5GB           |
+| Tencent Cloud Disk       | 16GB                  | 40GB            | 32GB            |
+| Tencent Cloud Bandwidth  | —                     | 200GB/月 @3Mbps | 160GB           |
+| WeChat MP Main Package   | ~1298KB               | 2048KB          | 1900KB          |
+| H5 Entry JS (gzip)       | ~45KB (入口135KB)     | —               | 200KB           |
+| Test Coverage            | 89 files / 1168 tests | —               | < 1000 tests    |
+| Audit Issues Resolved    | 164 (R001-R164)       | —               | —               |
+| SiliconFlow DS Keys 余额 | 140元 (10条×14元)     | —               | < 30元          |
+| LLM Provider Pool        | 14 providers          | —               | < 8 可用        |

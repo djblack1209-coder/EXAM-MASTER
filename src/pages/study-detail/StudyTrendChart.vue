@@ -81,6 +81,8 @@ const trendPercent = ref(0);
 
 const instance = getCurrentInstance();
 
+// [AUDIT FIX R135] 移除 deep: true —— 父组件替换整个 studyData 对象引用时
+// 浅引用比较已能捕获变化，无需深度遍历每个属性
 watch(
   () => props.studyData,
   () => {
@@ -88,8 +90,7 @@ watch(
     nextTick(() => {
       drawChart();
     });
-  },
-  { deep: true }
+  }
 );
 
 watch(selectedRange, () => {

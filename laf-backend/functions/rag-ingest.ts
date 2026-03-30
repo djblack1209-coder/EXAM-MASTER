@@ -93,7 +93,8 @@ export default async function (ctx) {
     }
   } catch (error: any) {
     logger.error(`[${requestId}] RAG 索引异常:`, error);
-    return wrapResponse(serverError('RAG 索引服务异常，请稍后重试', error?.message), requestId, startTime);
+    // [AUDIT FIX R135] 不向客户端暴露内部错误详情，仅记录日志
+    return wrapResponse(serverError('RAG 索引服务异常，请稍后重试'), requestId, startTime);
   }
 }
 

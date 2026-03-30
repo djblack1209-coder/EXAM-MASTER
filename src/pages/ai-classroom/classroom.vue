@@ -105,6 +105,7 @@ import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useClassroomStore } from '@/stores/modules/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
 
 const classroomStore = useClassroomStore();
@@ -216,6 +217,8 @@ async function continueClass() {
     }
   } catch (e) {
     logger.warn('[课堂] 推进失败:', e);
+    // [AUDIT FIX R135] 用户操作失败时给出明确提示
+    toast.error('课堂加载失败，请稍后重试');
   } finally {
     loading.value = false;
   }
@@ -254,6 +257,8 @@ async function sendMessage() {
     }
   } catch (e) {
     logger.warn('[课堂] 发送消息失败:', e);
+    // [AUDIT FIX R135] 消息发送失败提示用户
+    toast.error('消息发送失败，请重试');
   } finally {
     loading.value = false;
   }
@@ -301,9 +306,8 @@ onMounted(() => {
   const options = currentPage?.$page?.options || currentPage?.options || {};
   lessonId.value = options.lessonId || '';
 
-  // 获取状态栏高度
-  const sysInfo = uni.getSystemInfoSync();
-  statusBarHeight.value = sysInfo.statusBarHeight || 0;
+  // [AUDIT FIX R135] 使用统一工具函数获取状态栏高度
+  statusBarHeight.value = getStatusBarHeight();
 
   if (!lessonId.value) {
     toast.info('缺少课程参数');

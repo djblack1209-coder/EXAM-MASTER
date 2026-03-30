@@ -895,8 +895,9 @@ export async function restoreFromBackup(ctx) {
               await collection.add(restData);
               restored++;
             }
-          } catch (e) {
-            // 单条恢复失败不影响其他
+          } catch (e: any) {
+            // [AUDIT FIX R135] 记录单条恢复失败，便于排查
+            logger.warn(`[${requestId}] 恢复记录失败: ${record._id} - ${e?.message || '未知错误'}`);
           }
         }
 

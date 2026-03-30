@@ -109,12 +109,13 @@ export default {
     };
   },
   watch: {
+    // [AUDIT FIX R135] 移除 deep: true —— 父组件替换整个 studyData 对象引用时
+    // 浅引用比较已能捕获变化，无需深度遍历 52×7 个属性
     studyData: {
       handler() {
         this.generateHeatmapData();
         this.calculateStats();
       },
-      deep: true,
       immediate: true
     }
   },
@@ -335,7 +336,7 @@ export default {
 .heatmap-panel {
   display: flex;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-padding: 20rpx;
+  padding: 20rpx;
   border-radius: 22rpx;
   background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
   border: 1px solid rgba(255, 255, 255, 0.4);
@@ -345,7 +346,7 @@ padding: 20rpx;
   display: flex;
   flex-direction: column;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-padding-top: 4rpx;
+  padding-top: 4rpx;
 }
 
 .week-label {
@@ -423,7 +424,7 @@ padding-top: 4rpx;
   display: inline-flex;
   align-items: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-padding: 12rpx 18rpx;
+  padding: 12rpx 18rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.58);
   border: 1px solid rgba(255, 255, 255, 0.44);
@@ -470,7 +471,7 @@ padding: 12rpx 18rpx;
 .stats-row {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-margin-top: 24rpx;
+  margin-top: 24rpx;
 }
 
 .stat-item {
@@ -505,7 +506,7 @@ margin-top: 24rpx;
   justify-content: space-between;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-margin-top: 24rpx;
+  margin-top: 24rpx;
   padding: 22rpx 24rpx;
   background:
     linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 46%),

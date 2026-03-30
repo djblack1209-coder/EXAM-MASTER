@@ -202,6 +202,7 @@ import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useReviewStore } from '@/stores/modules/review.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
+import { getStatusBarHeight } from '@/utils/core/system.js';
 
 const reviewStore = useReviewStore();
 import { storageService } from '@/services/storageService.js';
@@ -457,8 +458,8 @@ function formatNextReview(ts) {
 }
 
 onMounted(() => {
-  const sysInfo = uni.getSystemInfoSync();
-  statusBarHeight.value = sysInfo.statusBarHeight || 0;
+  // [AUDIT FIX R135] 使用统一工具函数获取状态栏高度
+  statusBarHeight.value = getStatusBarHeight();
   loadStreak();
   loadReviewPlan();
 });
