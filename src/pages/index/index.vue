@@ -1131,6 +1131,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* [AUDIT FIX R135] */
 /* ==================== 首页精简：今日数据一览容器 ==================== */
 .today-dashboard {
   margin: 0 30rpx;
@@ -1203,11 +1204,11 @@ export default {
   background: var(--bg-card-alpha);
   backdrop-filter: blur(16rpx) saturate(130%);
   -webkit-backdrop-filter: blur(16rpx) saturate(130%);
-  border: 1rpx solid rgba(255, 255, 255, 0.16);
+  border: 1rpx solid var(--glass-border, rgba(255, 255, 255, 0.16));
 }
 
 .card-light {
-  background: linear-gradient(165deg, #ffffff 0%, #f4faf6 100%);
+  background: linear-gradient(165deg, var(--bg-card) 0%, #f4faf6 100%);
 }
 
 /* F002-I1b: 顶部导航栏样式已移至 IndexHeaderBar.vue */
@@ -1366,8 +1367,8 @@ export default {
   /* gap: 8rpx; -- replaced for Android WebView compat */
   padding: 14rpx 24rpx;
   border-radius: 999rpx;
-  background: #ffffff;
-  color: #10281a;
+  background: var(--bg-card);
+  color: var(--text-primary);
   border: 1rpx solid rgba(16, 40, 26, 0.08);
   box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.16);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1614,7 +1615,7 @@ export default {
 .resume-banner-icon {
   font-size: 40rpx;
   margin-right: 20rpx;
-  color: #6366f1;
+  color: var(--indigo, #6366f1);
 }
 .resume-banner-info {
   display: flex;
@@ -1632,7 +1633,7 @@ export default {
 }
 .resume-banner-arrow {
   font-size: 36rpx;
-  color: #6366f1;
+  color: var(--indigo, #6366f1);
   font-weight: 300;
 }
 
@@ -1828,22 +1829,22 @@ export default {
 .review-banner-title {
   font-size: 30rpx;
   font-weight: 640;
-  color: #10b981;
+  color: var(--success, #10b981);
 }
 .page-dark .review-banner-title {
-  color: #34d399;
+  color: var(--success-light, #34d399);
 }
 .review-banner-sub {
   font-size: 24rpx;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 .page-dark .review-banner-sub {
-  color: #8b949e;
+  color: var(--text-secondary);
 }
 .review-banner-arrow {
   font-size: 36rpx;
-  color: #10b981;
+  color: var(--success, #10b981);
   opacity: 0.6;
   margin-left: 12rpx;
 }

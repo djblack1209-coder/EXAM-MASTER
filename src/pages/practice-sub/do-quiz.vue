@@ -1982,6 +1982,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* [AUDIT FIX R135] */
 /* 容器样式 */
 .container {
   min-height: 100%;
@@ -2411,7 +2412,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--overlay, rgba(0, 0, 0, 0.3));
   z-index: 299;
   animation: fadeInBackdrop 0.2s ease forwards;
 }
@@ -2511,18 +2512,18 @@ export default {
   padding: 12rpx 16rpx;
   background: rgba(245, 158, 11, 0.1);
   border-radius: 12rpx;
-  border-left: 4rpx solid #f59e0b;
+  border-left: 4rpx solid var(--warning, #f59e0b);
 }
 .personal-hint-text {
   font-size: 24rpx;
-  color: #b45309;
+  color: var(--warning, #b45309);
   line-height: 1.5;
 }
 .dark-mode .personal-hint-bar {
   background: rgba(245, 158, 11, 0.15);
 }
 .dark-mode .personal-hint-text {
-  color: #fbbf24;
+  color: var(--warning, #fbbf24);
 }
 /* 学习节奏：休息提醒条 */
 .break-reminder-bar {
@@ -2535,22 +2536,22 @@ export default {
 }
 .break-reminder-text {
   font-size: 24rpx;
-  color: #6366f1;
+  color: var(--text-accent, #6366f1);
   flex: 1;
 }
 .break-dismiss {
   font-size: 24rpx;
-  color: #6366f1;
+  color: var(--text-accent, #6366f1);
   font-weight: 600;
   padding: 6rpx 20rpx;
   border-radius: 12rpx;
   background: rgba(99, 102, 241, 0.15);
 }
 .dark-mode .break-reminder-text {
-  color: #a78bfa;
+  color: var(--text-accent, #a78bfa);
 }
 .dark-mode .break-dismiss {
-  color: #a78bfa;
+  color: var(--text-accent, #a78bfa);
   background: rgba(99, 102, 241, 0.2);
 }
 /* 答错时问AI导师按钮 */
@@ -2571,17 +2572,17 @@ export default {
 .ask-ai-text {
   font-size: 26rpx;
   font-weight: 600;
-  color: #059669;
+  color: var(--success, #059669);
 }
 .a<REDACTED_SECRET> {
   font-size: 32rpx;
-  color: #059669;
+  color: var(--success, #059669);
 }
 .dark-mode .ask-ai-text {
-  color: #34d399;
+  color: var(--success, #34d399);
 }
 .dark-mode .a<REDACTED_SECRET> {
-  color: #34d399;
+  color: var(--success, #34d399);
 }
 .dark-mode .ask-ai-btn {
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.15), rgba(6, 182, 212, 0.12));
@@ -2655,7 +2656,7 @@ export default {
 }
 
 .favorite-btn.is-favorited .favorite-icon {
-  color: #fff;
+  color: var(--text-inverse, #fff);
 }
 
 .favorite-icon {
@@ -2933,7 +2934,7 @@ export default {
   min-width: 28rpx;
   height: 28rpx;
   background: var(--danger);
-  color: #fff;
+  color: var(--text-inverse, #fff);
   font-size: 20rpx;
   font-weight: bold;
   border-radius: 14rpx;
@@ -2950,7 +2951,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay, rgba(0, 0, 0, 0.5));
   z-index: 1000;
   display: flex;
   align-items: center;

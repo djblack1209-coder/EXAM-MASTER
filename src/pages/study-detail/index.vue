@@ -420,6 +420,8 @@ export default {
         });
       } catch (error) {
         logger.error('[StudyDetail] 加载学习数据失败:', error);
+        // [AUDIT FIX R135] 加载失败时提示用户，而不是静默展示默认数据
+        toast.error('学习数据加载失败');
         // 使用默认值
         this.studyTime = 0;
         this.completionRate = 0;

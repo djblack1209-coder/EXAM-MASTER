@@ -1,101 +1,15 @@
 /**
- * 性能优化工具集
- * 包含防抖、节流、性能监控等核心性能函数
+ * 性能监控工具
+ *
+ * 防抖(debounce)和节流(throttle)请使用 @/utils/throttle.js，
+ * 本文件仅提供性能监控(PerformanceMonitor)功能。
+ *
+ * [AUDIT FIX R135] 移除重复的 debounce/throttle 定义，统一到 throttle.js
+ * 为保持向后兼容，default export 中仍 re-export throttle.js 的 debounce/throttle
  */
 
 import { logger } from '@/utils/logger.js';
-
-/**
- * 防抖函数
- * @param {Function} fn - 要防抖的函数
- * @param {number} delay - 延迟时间（毫秒）
- * @param {boolean} immediate - 是否立即执行
- * @returns {Function} 防抖后的函数
- */
-export function debounce(fn, delay = 300, immediate = false) {
-  let timer = null;
-  let isInvoked = false;
-
-  const debounced = function (...args) {
-    const context = this;
-
-    if (timer) {
-      clearTimeout(timer);
-    }
-
-    if (immediate && !isInvoked) {
-      fn.apply(context, args);
-      isInvoked = true;
-    }
-
-    timer = setTimeout(() => {
-      if (!immediate) {
-        fn.apply(context, args);
-      }
-      isInvoked = false;
-      timer = null;
-    }, delay);
-  };
-
-  debounced.cancel = function () {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-      isInvoked = false;
-    }
-  };
-
-  return debounced;
-}
-
-/**
- * 节流函数
- * @param {Function} fn - 要节流的函数
- * @param {number} interval - 间隔时间（毫秒）
- * @param {Object} options - 配置选项
- * @returns {Function} 节流后的函数
- */
-export function throttle(fn, interval = 300, options = {}) {
-  const { leading = true, trailing = true } = options;
-  let lastTime = 0;
-  let timer = null;
-
-  const throttled = function (...args) {
-    const context = this;
-    const now = Date.now();
-
-    if (!lastTime && !leading) {
-      lastTime = now;
-    }
-
-    const remaining = interval - (now - lastTime);
-
-    if (remaining <= 0 || remaining > interval) {
-      if (timer) {
-        clearTimeout(timer);
-        timer = null;
-      }
-      lastTime = now;
-      fn.apply(context, args);
-    } else if (!timer && trailing) {
-      timer = setTimeout(() => {
-        lastTime = leading ? Date.now() : 0;
-        timer = null;
-        fn.apply(context, args);
-      }, remaining);
-    }
-  };
-
-  throttled.cancel = function () {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-    lastTime = 0;
-  };
-
-  return throttled;
-}
+import { debounce, throttle } from '@/utils/throttle.js';
 
 /**
  * 性能监控（含 API 响应时间 + 页面加载追踪）
