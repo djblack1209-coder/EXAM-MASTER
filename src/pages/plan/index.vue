@@ -1041,10 +1041,10 @@ export default {
   flex-shrink: 0;
 }
 .task-dot.review {
-  background: #f59e0b;
+  background: var(--warning, #f59e0b); /* [AUDIT FIX R190] */
 }
 .task-dot.practice {
-  background: #34d399;
+  background: var(--success, #34d399); /* [AUDIT FIX R191] */
 }
 .task-name {
   flex: 1;
@@ -1059,23 +1059,15 @@ export default {
 .day-cta {
   text-align: center;
   padding: 10px;
-  background: linear-gradient(135deg, #34d399, #059669);
+  background: linear-gradient(135deg, var(--success, #34d399), var(--success-dark, #059669)); /* [AUDIT FIX R192] */
   border-radius: 12px;
   margin-top: 8px;
 }
 .day-cta-text {
   font-size: 14px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-inverse, #fff); /* [AUDIT FIX R193] */
 }
-.dark-mode .ai-day-card {
-  background: var(--bg-card);
-  border-color: var(--border);
-}
-.dark-mode .day-label {
-  color: #f1f5f9;
-}
-.dark-mode .task-name {
-  color: #e2e8f0;
-}
+/* [AUDIT FIX R194] 移除3个冗余 .dark-mode 覆盖块 — .day-label/.task-name 已使用 --text-primary 自动切换 */
+/* [AUDIT FIX R195] .ai-day-card dark override 已由 --bg-card/--border-color 处理 */
 </style>

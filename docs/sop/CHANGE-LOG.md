@@ -14,6 +14,22 @@
 
 ---
 
+## [2026-03-30] 第二十三轮审计 — P4 暗黑模式硬编码色值修复（4文件 22 fixes）
+
+- **Scope**: `frontend`, `ui/ux`
+- **Files Changed**:
+  - **P4 UI/UX — CustomModal.vue 暗黑模式修复 (3 fixes)**:
+    - `src/components/common/CustomModal.vue` — 移除2个手动`.dark`/`.dark-mode`覆盖块，取消/确认按钮文字色→CSS变量 [R180-R182]
+  - **P4 UI/UX — practice/index.vue 暗黑模式修复 (7 fixes)**:
+    - `src/pages/practice/index.vue` — AI推荐卡片装饰渐变/徽章/按钮硬编码色→CSS变量，移除冗余`.dark-mode`覆盖块，spinner/导入卡暗色背景→变量 [R183-R189]
+  - **P4 UI/UX — plan/index.vue 暗黑模式修复 (6 fixes)**:
+    - `src/pages/plan/index.vue` — 任务圆点review/practice硬编码色→`var(--warning)`/`var(--success)`，CTA按钮渐变+文字色→CSS变量，移除3个冗余`.dark-mode`覆盖块 [R190-R195]
+  - **P4 UI/UX — mistake/index.vue 暗黑模式全量修复 (6 fixes)**:
+    - `src/pages/mistake/index.vue` — 11处硬编码色值→CSS变量(cluster-badge/trend-text/cluster-chip)，移除20个冗余`.dark-mode`覆盖块（净减113行CSS）[R196-R201]
+- **Summary**: 第二十三轮审计继续推进P4暗黑模式适配。CustomModal 消除手动暗色覆盖；practice 修复AI推荐卡片全部装饰性色值；plan 修复任务圆点和CTA按钮；mistake 是本轮最大工作量——11处硬编码色值改为`color-mix()`+CSS变量方案，20个冗余`.dark-mode`覆盖块全部清除。共计 R180-R201 (22 fixes)。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
 ## [2026-03-30] 第二十二轮审计 — P4 暗黑模式硬编码色值修复（3文件 15 fixes）
 
 - **Scope**: `frontend`, `ui/ux`

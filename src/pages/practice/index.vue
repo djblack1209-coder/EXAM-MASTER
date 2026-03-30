@@ -1441,6 +1441,7 @@ export default {
   position: relative;
   overflow: hidden;
 }
+/* [AUDIT FIX R183] AI推荐卡片顶部装饰条 → CSS变量 */
 .ai-recommend-card::before {
   content: '';
   position: absolute;
@@ -1448,14 +1449,15 @@ export default {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #34d399, #06b6d4);
+  background: linear-gradient(90deg, var(--success, #34d399), var(--info-blue, #06b6d4));
 }
 .ai-recommend-card:active {
   transform: scale(0.98);
   opacity: 0.9;
 }
+/* [AUDIT FIX R184] AI推荐徽章渐变 → CSS变量 */
 .ai-recommend-badge {
-  background: linear-gradient(135deg, #34d399, #06b6d4);
+  background: linear-gradient(135deg, var(--success, #34d399), var(--info-blue, #06b6d4));
   padding: 4px 12px;
   border-radius: 12px;
   margin-right: 14px;
@@ -1464,7 +1466,7 @@ export default {
 .ai-recommend-badge-text {
   font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-inverse, #fff);
 }
 .ai-recommend-body {
   flex: 1;
@@ -1482,8 +1484,9 @@ export default {
   margin-top: 4px;
   display: block;
 }
+/* [AUDIT FIX R185] AI推荐操作按钮 → CSS变量 */
 .ai-recommend-action {
-  background: linear-gradient(135deg, #34d399, #059669);
+  background: linear-gradient(135deg, var(--success, #34d399), var(--success-dark, #059669));
   padding: 8px 18px;
   border-radius: 16px;
   flex-shrink: 0;
@@ -1492,15 +1495,13 @@ export default {
 .ai-recommend-btn-text {
   font-size: 13px;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-inverse, #fff);
   white-space: nowrap;
 }
+/* [AUDIT FIX R186] AI推荐标题暗黑覆盖 → 移除(--text-primary自动切换) */
 .dark-mode .ai-recommend-card {
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(6, 182, 212, 0.08));
   border-color: rgba(52, 211, 153, 0.25);
-}
-.dark-mode .ai-recommend-title {
-  color: #f1f5f9;
 }
 
 /* 主要操作区 */
@@ -1544,12 +1545,7 @@ export default {
   box-shadow: 0 8rpx 20rpx rgba(16, 40, 26, 0.16);
 }
 
-.dark-mode .primary-btn {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border-color: var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-}
+/* [AUDIT FIX R187] 主按钮暗黑覆盖块冗余(已使用CTA变量) → 移除 */
 
 /* ✅ F022: 按钮加载状态 */
 .primary-btn.btn-loading,
@@ -1558,11 +1554,12 @@ export default {
   pointer-events: none;
 }
 
+/* [AUDIT FIX R188] 加载spinner → CSS变量 */
 .btn-spinner {
   width: 24px;
   height: 24px;
   border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
+  border-top-color: var(--text-inverse, #fff);
   border-radius: 50%;
   animation: btn-spin 0.6s linear infinite;
 }
@@ -1659,8 +1656,9 @@ export default {
   background: var(--apple-specular-soft);
 }
 
+/* [AUDIT FIX R189] 导入卡片/功能菜单暗黑渐变 → CSS变量 */
 .dark-mode .import-card {
-  background: linear-gradient(160deg, #1f1f24 0%, #17171b 100%);
+  background: linear-gradient(160deg, var(--bg-secondary, #1f1f24) 0%, var(--bg-tertiary, #17171b) 100%);
 }
 
 /* ✅ F026: 文件读取中状态 */
@@ -1736,7 +1734,7 @@ export default {
 }
 
 .dark-mode .feature-menu {
-  background: linear-gradient(160deg, #1f1f24 0%, #17171b 100%);
+  background: linear-gradient(160deg, var(--bg-secondary, #1f1f24) 0%, var(--bg-tertiary, #17171b) 100%);
 }
 
 .menu-item {

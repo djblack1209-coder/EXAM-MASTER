@@ -295,6 +295,7 @@ function handleCancel() {
   }
 }
 
+/* [AUDIT FIX R180] 标题/内容文字色 → CSS变量，移除手动暗黑覆盖 */
 // 标题
 .modal-title {
   display: block;
@@ -303,11 +304,6 @@ function handleCancel() {
   font-weight: 600;
   color: var(--text-main);
   margin-bottom: 16rpx;
-
-  .dark &,
-  .dark-mode & {
-    color: #ffffff;
-  }
 }
 
 // 内容
@@ -319,11 +315,6 @@ function handleCancel() {
   line-height: 1.6;
   margin-bottom: 40rpx;
   white-space: pre-wrap;
-
-  .dark &,
-  .dark-mode & {
-    color: rgba(255, 255, 255, 0.7);
-  }
 }
 
 // 按钮区域
@@ -360,12 +351,13 @@ function handleCancel() {
   border: 1rpx solid rgba(255, 255, 255, 0.46);
   box-shadow: var(--apple-shadow-surface);
 
+  /* [AUDIT FIX R181] 取消按钮暗黑文字 → CSS变量 */
   .dark &,
   .dark-mode & {
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
       linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary, rgba(255, 255, 255, 0.8));
     border-color: rgba(255, 255, 255, 0.1);
   }
 }
@@ -376,16 +368,17 @@ function handleCancel() {
   border: 1rpx solid var(--cta-primary-border);
   box-shadow: var(--cta-primary-shadow);
 
+  /* [AUDIT FIX R182] 警告/错误确认按钮文字色 → CSS变量 */
   &.warning {
     background: rgba(255, 159, 10, 0.14);
-    color: #b56a00;
+    color: var(--warning-dark, #b56a00);
     border-color: rgba(255, 159, 10, 0.18);
     box-shadow: var(--apple-shadow-surface);
   }
 
   &.error {
     background: rgba(255, 99, 90, 0.14);
-    color: #c53d35;
+    color: var(--danger, #c53d35);
     border-color: rgba(255, 99, 90, 0.18);
     box-shadow: var(--apple-shadow-surface);
   }
@@ -393,12 +386,12 @@ function handleCancel() {
 
 .custom-modal-container.dark .confirm-btn.warning {
   background: rgba(255, 159, 10, 0.16);
-  color: #ffd29a;
+  color: var(--warning-light, #ffd29a);
 }
 
 .custom-modal-container.dark .confirm-btn.error {
   background: rgba(255, 99, 90, 0.16);
-  color: #ffb1ab;
+  color: var(--danger-light, #ffb1ab);
 }
 
 .single .confirm-btn {
