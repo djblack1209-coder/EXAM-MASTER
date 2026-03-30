@@ -162,7 +162,7 @@ function openPrivacyContract() {
 }
 
 .privacy-link {
-  color: #22873a;
+  color: var(--success-dark);
   font-weight: 600;
 }
 
@@ -225,18 +225,18 @@ function openPrivacyContract() {
 }
 
 .dark-mode .privacy-title {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .dark-mode .privacy-link {
-  color: #7bc0ff;
+  color: var(--info-blue);
 }
 
 .dark-mode .privacy-btn-reject {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
     linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
   border-color: rgba(255, 255, 255, 0.1);
 }
 </style>

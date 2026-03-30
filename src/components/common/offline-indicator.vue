@@ -404,7 +404,7 @@ defineExpose({ show, hide });
 
   &__text {
     font-size: 26rpx;
-    color: #fff;
+    color: var(--text-inverse);
     font-weight: 500;
   }
 
@@ -436,7 +436,7 @@ defineExpose({ show, hide });
 
     .detail-value {
       font-size: 24rpx;
-      color: #fff;
+      color: var(--text-inverse);
       font-weight: 500;
     }
   }
@@ -465,7 +465,7 @@ defineExpose({ show, hide });
 
       &--dismiss {
         background: rgba(255, 255, 255, 0.2);
-        color: #fff;
+        color: var(--text-inverse);
       }
     }
   }
@@ -496,7 +496,7 @@ defineExpose({ show, hide });
   }
 
   &--active {
-    background: #fff;
+    background: var(--text-inverse);
   }
 }
 
