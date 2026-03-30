@@ -1546,7 +1546,7 @@ onUnmounted(() => {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 46%),
     linear-gradient(160deg, rgba(27, 130, 74, 0.98) 0%, rgba(15, 95, 52, 0.92) 100%);
-  color: #fff;
+  color: var(--text-inverse);
   margin-right: 16rpx;
   border-bottom-right-radius: 10rpx;
   border: 1rpx solid rgba(255, 255, 255, 0.14);
@@ -1557,7 +1557,7 @@ onUnmounted(() => {
   }
 
   &.failed {
-    background: linear-gradient(135deg, var(--ds-color-error, #ff3b30), #ff6b6b);
+    background: linear-gradient(135deg, var(--ds-color-error, #ff3b30), var(--danger-light, #ff6b6b));
     box-shadow: 0 4rpx 16rpx rgba(255, 59, 48, 0.3);
   }
 }
@@ -1583,7 +1583,7 @@ onUnmounted(() => {
   }
 
   &.failed {
-    color: #ffd60a;
+    color: var(--warning);
     font-size: 22rpx;
   }
 }
@@ -1644,7 +1644,7 @@ onUnmounted(() => {
 
 .emotion-tag {
   padding: 12rpx 22rpx;
-  background: rgba(120, 120, 128, 0.12);
+  background: var(--fill-tertiary, rgba(120, 120, 128, 0.12));
   border-radius: 999rpx;
   font-size: 26rpx;
   color: var(--text-secondary);
@@ -1821,7 +1821,7 @@ onUnmounted(() => {
 }
 
 .voice-hint {
-  color: white;
+  color: var(--text-inverse);
   font-size: 28rpx;
   opacity: 0.8;
 }

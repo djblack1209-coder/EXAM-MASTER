@@ -14,6 +14,20 @@
 
 ---
 
+## [2026-03-31] 第三十一轮审计 — P4 UI 一致性 Tier 2：3 文件 15 处硬编码 CSS 颜色 → CSS 自定义属性（R283-R285）
+
+- **Scope**: `frontend`, `ui`
+- **Files Changed**:
+  - **P4 CSS 颜色变量统一 — Tier 2 中等优先级组件 (3 files)**:
+    - `src/pages/social/friend-list.vue` — 4 处：`#ffffff`×2 → `var(--text-inverse)`，`#c44536`×2 → `var(--danger)` [R283]
+    - `src/components/business/index/DailyGoalRing.vue` — 6 处：暗黑模式文字 `#f0f0f5`×2 → `var(--text-inverse)`，连续天数 `#f59e0b`/`#fbbf24` → `var(--warning)`/`var(--warning-light)`，CTA 按钮渐变 → `var(--success)`/`var(--success-dark)`，CTA 文字 `#ffffff` → `var(--text-inverse)` [R284]
+    - `src/pages/chat/chat.vue` — 5 处：右侧气泡 `#fff` → `var(--text-inverse)`，失败气泡 `#ff6b6b` → `var(--danger-light)`，失败状态 `#ffd60a` → `var(--warning)`，表情标签 `rgba(120,120,128,0.12)` → `var(--fill-tertiary)`，语音提示 `white` → `var(--text-inverse)` [R285]
+  - **跳过 splash/index.vue** — 全量审计确认 10 处均为开屏动画品牌色/波浪渐变/阴影装饰，无迁移价值
+- **审计发现（仅记录）**: 4 文件共 86 处硬编码颜色，其中 70 处为玻璃态 rgba / CSS 变量 fallback / JS API 参数 / SVG stroke 等技术约束，无法迁移（已标记为 KEEP_AS_IS）
+- **Summary**: 第三十一轮审计完成 Tier 2 颜色迁移的最后一批。至此 P4 UI 一致性专项（R278-R285）共迁移 11 个组件 53 处硬编码颜色为 CSS 自定义属性。剩余 70 处因技术约束保留，不再需要后续处理。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1141 tests passed | H5 build OK
+
 ## [2026-03-31] 第三十轮审计 — P4 UI 一致性：硬编码 CSS 颜色 → CSS 自定义属性迁移（9 files, 4 fixes R278-R282）
 
 - **Scope**: `frontend`, `ui`

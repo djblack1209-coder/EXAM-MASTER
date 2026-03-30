@@ -186,7 +186,7 @@ function handleStartPractice() {
 }
 
 .dark .ring-percent {
-  color: #f0f0f5;
+  color: var(--text-inverse);
 }
 
 .dark .ring-percent-sign {
@@ -208,7 +208,7 @@ function handleStartPractice() {
 }
 
 .dark .goal-title {
-  color: #f0f0f5;
+  color: var(--text-inverse);
 }
 
 .goal-detail {
@@ -228,12 +228,12 @@ function handleStartPractice() {
 
 .streak-text {
   font-size: 24rpx;
-  color: #f59e0b;
+  color: var(--warning);
   font-weight: 500;
 }
 
 .dark .streak-text {
-  color: #fbbf24;
+  color: var(--warning-light, #fbbf24);
 }
 
 /* ==================== 下半部分：CTA 按钮 ==================== */
@@ -243,7 +243,7 @@ function handleStartPractice() {
   justify-content: center;
   padding: 22rpx 0;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, #34d399, #059669);
+  background: linear-gradient(135deg, var(--success), var(--success-dark, #059669));
   transition: all 0.25s ease;
 }
 
@@ -255,7 +255,7 @@ function handleStartPractice() {
 .cta-text {
   font-size: 30rpx;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-inverse);
   margin-right: 8rpx;
 }
 

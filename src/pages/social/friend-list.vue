@@ -1010,7 +1010,7 @@ export default {
   top: 20rpx;
   right: 30%;
   background-color: var(--danger);
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 20rpx;
   padding: 2rpx 8rpx;
   border-radius: 20rpx;
@@ -1099,7 +1099,7 @@ export default {
 
 .empty-btn {
   background: var(--gradient-primary);
-  color: #ffffff;
+  color: var(--text-inverse);
   border-radius: 48rpx;
   padding: 24rpx 64rpx;
   font-size: 28rpx;
@@ -1250,7 +1250,7 @@ export default {
 /* PK 挑战按钮 */
 .pk-btn {
   background: rgba(255, 255, 255, 0.7);
-  color: #c44536;
+  color: var(--danger);
   border-radius: 48rpx;
   padding: 16rpx 24rpx;
   font-size: 24rpx;
@@ -1288,7 +1288,7 @@ export default {
 .pk-text {
   font-size: 24rpx;
   font-weight: 600;
-  color: #c44536;
+  color: var(--danger);
 }
 
 /* 底部统计 */
