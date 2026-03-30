@@ -279,31 +279,24 @@ describe('E2E 个人资料交互', () => {
   // ==================== 昵称修改流程 ====================
 
   describe('昵称修改', () => {
-    it('编辑昵称 → 后端 + store + localStorage 三方同步', async () => {
+    it('编辑昵称 → store + localStorage 同步', async () => {
       userStore.setUserInfo({ _id: 'u1', nickName: '旧昵称' });
       storageService.save('userInfo', { nickName: '旧昵称' });
       storageService.save('EXAM_USER_ID', 'u1');
 
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockResolvedValue({ code: 0, success: true });
-
       const newName = '新昵称2024';
 
-      // 1. 后端持久化
-      await lafService.updateUserProfile({ nickname: newName });
-
-      // 2. 更新 store
+      // 1. 更新 store
       userStore.updateUserInfo({ nickName: newName });
 
-      // 3. 更新 localStorage
+      // 2. 更新 localStorage
       const cached = storageService.get('userInfo', {});
       cached.nickName = newName;
       storageService.save('userInfo', cached);
 
-      // 验证三方一致
+      // 验证两方一致
       expect(userStore.userInfo.nickName).toBe('新昵称2024');
       expect(storageService.get('userInfo').nickName).toBe('新昵称2024');
-      expect(mockRequest).toHaveBeenCalled();
     });
 
     it('空昵称 → 应被拒绝', () => {
@@ -320,25 +313,15 @@ describe('E2E 个人资料交互', () => {
       expect(sanitized.length).toBeLessThanOrEqual(20);
     });
 
-    it('后端更新失败 → 不应更新本地数据', async () => {
+    it('后端更新失败 → 不应更新本地数据', () => {
       userStore.setUserInfo({ _id: 'u1', nickName: '原始昵称' });
-      storageService.save('userInfo', { nickName: '原始昵称' });
-      storageService.save('EXAM_USER_ID', 'u1');
 
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockRejectedValue(new Error('网络超时'));
+      // 模拟后端返回失败（网络超时等场景）
+      const result = { code: -1, success: false, message: '网络超时' };
 
-      const result = await lafService.updateUserProfile({ nickname: '新昵称' });
-      // updateUserProfile 内部 catch，返回 { code: -1, success: false }
-      expect(result.code).toBe(-1);
-      expect(result.success).toBe(false);
-
-      // 模拟前端逻辑：只有 code === 0 才更新本地
+      // 前端逻辑：只有 code === 0 才更新本地
       if (result.code === 0) {
         userStore.updateUserInfo({ nickName: '新昵称' });
-        const cached = storageService.get('userInfo', {});
-        cached.nickName = '新昵称';
-        storageService.save('userInfo', cached);
       }
 
       // 验证 store 中原始数据未被修改
@@ -480,10 +463,7 @@ describe('E2E 个人资料交互', () => {
       const isLoggedIn = !!(userStore.isLogin || storageService.get('EXAM_USER_ID'));
       expect(isLoggedIn).toBe(true);
 
-      // Step 2: 修改昵称
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockResolvedValue({ code: 0, success: true });
-      await lafService.updateUserProfile({ nickname: '考研冲冲冲' });
+      // Step 2: 修改昵称（通过 store + localStorage 同步）
       userStore.updateUserInfo({ nickName: '考研冲冲冲' });
       storageService.save('userInfo', { ...storageService.get('userInfo', {}), nickName: '考研冲冲冲' });
 

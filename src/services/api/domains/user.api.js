@@ -1,6 +1,6 @@
 /**
  * 用户服务 API
- * 职责：用户资料更新、账号注销、用户统计概览、
+ * 职责：账号注销、用户统计概览、
  *       学习目标同步、成就系统
  *
  * ⚠️ 隐藏约束：
@@ -13,43 +13,7 @@ import { logger } from '@/utils/logger.js';
 import { getUserId } from '../../auth-storage.js';
 import { request, normalizeError } from './_request-core.js';
 
-// ==================== 用户资料 ====================
-
-/**
- * 更新用户资料（昵称、头像等）
- * @param {Object} profileData - 用户资料数据
- * @returns {Promise} 返回更新结果
- */
-export async function updateUserProfile(profileData) {
-  try {
-    const userId = getUserId();
-
-    if (!userId) {
-      return {
-        code: -1,
-        success: false,
-        message: '用户未登录'
-      };
-    }
-
-    logger.log('[LafService] 📝 更新用户资料:', {
-      userId,
-      hasNickname: !!profileData.nickname,
-      hasAvatar: !!profileData.avatar_url
-    });
-
-    const response = await request('/user-profile', {
-      action: 'update',
-      userId,
-      ...profileData
-    });
-    return response;
-  } catch (error) {
-    // [AUDIT FIX R268] 统一 normalizeError
-    logger.error('[LafService] 更新用户资料失败:', error);
-    return normalizeError(error, '更新用户资料');
-  }
-}
+// [AUDIT R276] 已删除 1 个无调用方的死代码函数: updateUserProfile
 
 // ==================== 账号注销（7天冷静期） ====================
 
