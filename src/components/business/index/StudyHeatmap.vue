@@ -553,7 +553,11 @@ export default {
     border-color: rgba(255, 255, 255, 0.08);
   }
 
+  /* [AUDIT FIX R178] 暗黑模式下日期格子边框/阴影适配 */
   .day-cell {
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+
     &.level-0 {
       background: rgba(255, 255, 255, 0.08);
     }
@@ -575,7 +579,10 @@ export default {
     }
   }
 
+  /* [AUDIT FIX R179] 暗黑模式下图例格子边框适配 */
   .legend-cell {
+    border-color: rgba(255, 255, 255, 0.08);
+
     &.level-0 {
       background: rgba(255, 255, 255, 0.08);
     }
