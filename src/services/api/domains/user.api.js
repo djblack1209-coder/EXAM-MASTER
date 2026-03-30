@@ -45,12 +45,9 @@ export async function updateUserProfile(profileData) {
     });
     return response;
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.error('[LafService] 更新用户资料失败:', error);
-    return {
-      code: -1,
-      success: false,
-      message: '更新失败，请重试'
-    };
+    return normalizeError(error, '更新用户资料');
   }
 }
 
@@ -139,8 +136,9 @@ export async function syncLearningGoals(userId, syncData) {
     }
     return { code: 0, success: true, message: `已同步 ${successCount}/${activeGoals.length} 个目标`, data: results };
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.warn('[LafService] 同步学习目标失败:', error);
-    return { code: -1, success: false, message: '同步失败', _errorSource: 'network' };
+    return { ...normalizeError(error, '同步学习目标'), _errorSource: 'network' };
   }
 }
 
@@ -161,8 +159,9 @@ export async function getLearningGoals(params = {}) {
     });
     return response;
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.warn('[LafService] 获取学习目标失败:', error);
-    return { code: -1, success: false, message: '获取失败', data: [] };
+    return { ...normalizeError(error, '获取学习目标'), data: [] };
   }
 }
 
@@ -184,8 +183,9 @@ export async function recordGoalProgress(type, value) {
     });
     return response;
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.warn('[LafService] 记录目标进度失败:', error);
-    return { code: -1, success: false, message: '记录失败' };
+    return normalizeError(error, '记录目标进度');
   }
 }
 
@@ -225,8 +225,9 @@ export async function checkAchievements() {
     });
     return response;
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.warn('[LafService] 检查成就失败:', error);
-    return { code: -1, success: false, message: '检查失败', data: { newlyUnlocked: [] } };
+    return { ...normalizeError(error, '检查成就'), data: { newlyUnlocked: [] } };
   }
 }
 
@@ -246,8 +247,9 @@ export async function getAllAchievements() {
     });
     return response;
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.warn('[LafService] 获取成就失败:', error);
-    return { code: -1, success: false, message: '获取失败', data: { achievements: [] } };
+    return { ...normalizeError(error, '获取成就'), data: { achievements: [] } };
   }
 }
 
@@ -279,6 +281,7 @@ export async function unlockAchievement(achievementId) {
     } catch (_e) {
       /* 存储失败忽略 */
     }
-    return { code: -1, success: false, message: '解锁失败，将自动重试' };
+    // [AUDIT FIX R268] 统一 normalizeError
+    return { ...normalizeError(error, '解锁成就'), message: '解锁失败，将自动重试' };
   }
 }

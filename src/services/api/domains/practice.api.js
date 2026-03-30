@@ -120,8 +120,9 @@ export async function addFavorite(data) {
     });
     return response;
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.error('[LafService] 添加收藏失败:', error);
-    return { code: -1, success: false, message: '添加失败' };
+    return normalizeError(error, '添加收藏');
   }
 }
 
@@ -145,8 +146,9 @@ export async function getFavorites(params = {}) {
     });
     return response;
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.error('[LafService] 获取收藏失败:', error);
-    return { code: -1, success: false, message: '获取失败', data: [] };
+    return { ...normalizeError(error, '获取收藏'), data: [] };
   }
 }
 
@@ -170,8 +172,9 @@ export async function removeFavorite(id) {
     });
     return response;
   } catch (error) {
+    // [AUDIT FIX R268] 统一 normalizeError
     logger.error('[LafService] 删除收藏失败:', error);
-    return { code: -1, success: false, message: '删除失败' };
+    return normalizeError(error, '删除收藏');
   }
 }
 
