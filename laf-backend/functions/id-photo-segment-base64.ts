@@ -111,19 +111,16 @@ export default async function (ctx) {
   } catch (err) {
     logger.error('[id-photo] 处理失败:', err.message, err.code);
 
-    let errorMsg = err.message || '服务器内部错误';
-    let errorCode = err.code || 'UNKNOWN';
+    const errorCode = err.code || 'UNKNOWN';
 
-    // 常见错误提示
-    if (errorCode === 'FailedOperation.ImageNotSupported') {
-      errorMsg = '图片格式不支持，请上传 JPG/PNG 格式的证件照';
-    } else if (errorCode === 'FailedOperation.NoFaceInPhoto') {
-      errorMsg = '未检测到人脸，请上传正面免冠证件照';
-    } else if (errorCode === 'FailedOperation.ImageSizeExceed') {
-      errorMsg = '图片尺寸过大，请压缩后重试';
-    } else if (errorCode === 'FailedOperation.ImageDecodeFailed') {
-      errorMsg = '图片解码失败，请确保图片完整';
-    }
+    // 已知错误码映射为用户友好提示，未知错误不暴露内部信息
+    const ERROR_MAP: Record<string, string> = {
+      'FailedOperation.ImageNotSupported': '图片格式不支持，请上传 JPG/PNG 格式的证件照',
+      'FailedOperation.NoFaceInPhoto': '未检测到人脸，请上传正面免冠证件照',
+      'FailedOperation.ImageSizeExceed': '图片尺寸过大，请压缩后重试',
+      'FailedOperation.ImageDecodeFailed': '图片解码失败，请确保图片完整'
+    };
+    const errorMsg = ERROR_MAP[errorCode] || '证件照处理失败，请稍后重试';
 
     return {
       code: 500,

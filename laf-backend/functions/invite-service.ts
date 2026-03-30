@@ -19,7 +19,8 @@ import {
   serverError,
   error as apiError,
   generateRequestId,
-  ResponseCode
+  ResponseCode,
+  checkRateLimitDistributed
 } from './_shared/api-response.js';
 
 const db = cloud.database();
@@ -53,6 +54,13 @@ export default async function (ctx) {
 
     if (!userId || typeof userId !== 'string' || userId.length > 64) {
       return { ...unauthorized('请先登录'), requestId };
+    }
+
+    // 分布式频率限制（每用户每分钟15次）
+    const rateResult = await checkRateLimitDistributed(`invite:${userId}`, 15, 60_000);
+    if (!rateResult.allowed) {
+      logger.warn(`[${requestId}] 邀请服务请求频率过高: userId=${userId}`);
+      return { code: 429, success: false, message: '请求过于频繁，请稍后再试', requestId };
     }
 
     logger.info(`[${requestId}] invite action: ${action}, userId: ${userId}`);

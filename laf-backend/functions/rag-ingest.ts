@@ -20,7 +20,9 @@ import {
   serverError,
   generateRequestId,
   createLogger,
-  wrapResponse
+  wrapResponse,
+  checkRateLimitDistributed,
+  tooManyRequests
 } from './_shared/api-response.js';
 import { getBatchEmbeddings, chunkText } from './_shared/embedding.js';
 
@@ -74,6 +76,13 @@ export default async function (ctx) {
       return wrapResponse(unauthorized('请先登录'), requestId, startTime);
     }
     const { userId } = authResult;
+
+    // 分布式频率限制（每用户每5分钟5次 — 嵌入API消耗大）
+    const rateResult = await checkRateLimitDistributed(`rag:${userId}`, 5, 300_000);
+    if (!rateResult.allowed) {
+      logger.warn(`[${requestId}] RAG索引请求频率过高: userId=${userId}`);
+      return wrapResponse(tooManyRequests('索引请求过于频繁，请5分钟后再试'), requestId, startTime);
+    }
 
     const { action, data } = ctx.body || {};
 

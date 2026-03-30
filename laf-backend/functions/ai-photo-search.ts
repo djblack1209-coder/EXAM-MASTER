@@ -202,7 +202,7 @@ async function handlePhotoSearch(params, requestId) {
       return {
         code: 400,
         success: false,
-        message: error instanceof Error ? error.message : '图片地址无效或不可访问',
+        message: '图片地址无效或不可访问',
         requestId
       };
     }

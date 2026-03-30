@@ -40,7 +40,8 @@ import {
   validateAction,
   validateUserId,
   createLogger,
-  generateRequestId
+  generateRequestId,
+  checkRateLimitDistributed
 } from './_shared/api-response.js';
 
 const db = cloud.database();
@@ -237,6 +238,13 @@ export default async function (ctx: FunctionContext) {
 
     if (!validateUserId(userId)) {
       return { code: 401, success: false, message: '用户未登录或 userId 不合法', requestId };
+    }
+
+    // 分布式频率限制（每用户每分钟30次）
+    const rateResult = await checkRateLimitDistributed(`mistake:${userId}`, 30, 60_000);
+    if (!rateResult.allowed) {
+      logger.warn(`[${requestId}] 错题本请求频率过高: userId=${userId}`);
+      return { code: 429, success: false, message: '请求过于频繁，请稍后再试', requestId };
     }
 
     // 校验并清理 data

@@ -12,7 +12,7 @@
 
 import cloud from '@lafjs/cloud';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { createLogger } from './_shared/api-response.js';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
 
 const db = cloud.database();
 const logger = createLogger('[AiFriendMemory]');
@@ -59,6 +59,13 @@ export default async function (ctx) {
     // 客户端声明的 userId 一致性校验（防止越权）
     if (requestUserId && authUserId !== requestUserId) {
       return { code: 403, success: false, message: '身份验证失败', requestId };
+    }
+
+    // 分布式频率限制（每用户每分钟20次）
+    const rateResult = await checkRateLimitDistributed(`ai_mem:${authUserId}`, 20, 60_000);
+    if (!rateResult.allowed) {
+      logger.warn(`[${requestId}] AI记忆请求频率过高: userId=${authUserId}`);
+      return { code: 429, success: false, message: '请求过于频繁，请稍后再试', requestId };
     }
 
     logger.info(`[${requestId}] AI记忆: action=${action}, friendType=${safeFriendType || 'all'}`);

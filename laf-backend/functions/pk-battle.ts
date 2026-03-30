@@ -24,7 +24,15 @@
 
 import cloud from '@lafjs/cloud';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { success, badRequest, serverError, validateUserId, logger, generateRequestId } from './_shared/api-response.js';
+import {
+  success,
+  badRequest,
+  serverError,
+  validateUserId,
+  logger,
+  generateRequestId,
+  checkRateLimitDistributed
+} from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -219,6 +227,13 @@ export default async function (ctx) {
     }
     // 将验证后的 userId 注入 params，防止伪造
     params._authUserId = authResult.userId;
+
+    // 分布式频率限制（每用户每分钟20次）
+    const rateResult = await checkRateLimitDistributed(`pk:${authResult.userId}`, 20, 60_000);
+    if (!rateResult.allowed) {
+      logger.warn(`[${requestId}] PK对战请求频率过高: userId=${authResult.userId}`);
+      return { code: 429, success: false, message: '请求过于频繁，请稍后再试', requestId };
+    }
 
     logger.info(`[${requestId}] action: ${action}`);
 

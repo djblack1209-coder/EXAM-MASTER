@@ -12,7 +12,7 @@
 
 import cloud from '@lafjs/cloud';
 import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { createLogger } from './_shared/api-response.js';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
 
 const db = cloud.database();
 const _ = db.command;
@@ -44,6 +44,13 @@ export default async function (ctx) {
     }
     // 始终使用 JWT 中的 userId，忽略 body 中的值
     const userId = authResult.userId;
+
+    // 分布式频率限制（每用户每分钟30次）
+    const rateResult = await checkRateLimitDistributed(`stats:${userId}`, 30, 60_000);
+    if (!rateResult.allowed) {
+      logger.warn(`[${requestId}] 学习统计请求频率过高: userId=${userId}`);
+      return { code: 429, success: false, message: '请求过于频繁，请稍后再试', requestId };
+    }
 
     logger.info(`[${requestId}] 学习统计: action=${action}, userId=${userId}`);
 

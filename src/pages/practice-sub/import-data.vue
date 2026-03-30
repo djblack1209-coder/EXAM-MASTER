@@ -1585,11 +1585,6 @@ export default {
   color: var(--text-primary);
 }
 
-/* 深色模式样式 */
-.apple-container.dark-mode {
-  background-color: var(--background, #080808);
-}
-
 /* --- 苹果质感自定义导航栏 --- */
 .custom-navbar {
   position: fixed;
@@ -1601,12 +1596,6 @@ export default {
   background: var(--bg-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 0.5px solid var(--border);
-}
-
-/* 深色模式下的导航栏 */
-.apple-container.dark-mode .custom-navbar {
-  background: var(--bg-glass);
   border-bottom: 0.5px solid var(--border);
 }
 
@@ -1639,20 +1628,12 @@ export default {
   transform: scale(0.95);
 }
 
-.apple-container.dark-mode .navbar-back-btn:active {
-  background: var(--bg-secondary);
-}
-
 .back-icon {
   font-size: 64rpx;
   font-weight: 300;
   color: var(--text-primary);
   line-height: 1;
   margin-left: -4px;
-}
-
-.apple-container.dark-mode .back-icon {
-  color: var(--text-primary);
 }
 
 .navbar-title-wrapper {
@@ -1668,10 +1649,6 @@ export default {
   color: var(--text-primary);
   letter-spacing: -0.41px;
   -webkit-font-smoothing: antialiased;
-}
-
-.apple-container.dark-mode .navbar-title {
-  color: var(--text-primary);
 }
 
 .navbar-placeholder {
@@ -1756,7 +1733,7 @@ export default {
 /* --- 操作区：上传按钮 --- */
 .upload-trigger {
   height: 160px;
-  background: rgba(255, 255, 255, 0.56);
+  background: var(--apple-glass-card-bg);
   border-radius: 24px;
   border: 2px dashed var(--apple-divider);
   display: flex;
@@ -1768,7 +1745,7 @@ export default {
 
 .upload-trigger:active {
   transform: scale(0.98);
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--apple-glass-card-bg);
 }
 
 .icon-circle {
@@ -1781,13 +1758,7 @@ export default {
   justify-content: center;
   margin-bottom: 16px;
   box-shadow: var(--apple-shadow-surface);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-/* 深色模式下的图标圆圈 */
-.apple-container.dark-mode .icon-circle {
-  background: var(--brand, #00f2ff);
-  box-shadow: 0 4px 12px rgba(0, 242, 255, 0.3);
+  border: 1px solid var(--glass-border);
 }
 
 .icon-text {
@@ -1799,11 +1770,6 @@ export default {
   font-weight: 600;
   margin-bottom: 4px;
   color: var(--text-primary);
-}
-
-/* 深色模式下的上传文字 */
-.apple-container.dark-mode .upload-main-text {
-  color: var(--foreground, #ffffff);
 }
 
 .upload-sub-text {
@@ -1824,7 +1790,7 @@ export default {
   align-items: center;
   padding: 16px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.62);
+  background: var(--apple-glass-card-bg);
   border: 1px solid var(--apple-glass-border-strong);
   box-shadow: var(--apple-shadow-surface);
 }
@@ -1840,11 +1806,6 @@ export default {
   margin-right: 16px;
 }
 
-/* 深色模式下的文件图标盒子 */
-.apple-container.dark-mode .file-icon-box {
-  background: var(--muted, #1a1c1e);
-}
-
 .file-info-col {
   flex: 1;
   overflow: hidden;
@@ -1858,11 +1819,6 @@ export default {
   color: var(--text-primary);
 }
 
-/* 深色模式下的文件名文字 */
-.apple-container.dark-mode .fname-text {
-  color: var(--foreground, #ffffff);
-}
-
 .fmeta-row {
   display: flex;
   align-items: center;
@@ -1871,12 +1827,12 @@ export default {
 .meta-tag {
   font-size: 20rpx;
   padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--apple-glass-card-bg);
   border-radius: 999px;
   margin-right: 8px;
   font-weight: 700;
   color: var(--text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--glass-border);
 }
 
 .meta-size {
@@ -1887,7 +1843,7 @@ export default {
 .close-btn-circle {
   width: 28px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--apple-glass-card-bg);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1957,11 +1913,11 @@ export default {
 }
 
 .secondary {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--apple-glass-card-bg);
   color: var(--text-primary);
   height: 44px;
   font-size: 30rpx;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--glass-border);
   box-shadow: var(--apple-shadow-surface);
 }
 
@@ -1970,11 +1926,11 @@ export default {
 }
 
 .danger-ghost {
-  background: rgba(255, 255, 255, 0.32);
+  background: var(--apple-glass-card-bg);
   color: var(--danger-red);
   height: 44px;
   font-size: 30rpx;
-  border: 1px solid rgba(255, 130, 112, 0.28);
+  border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
 }
 
 .danger-ghost::after {
@@ -2357,9 +2313,9 @@ export default {
 
 /* 按钮升级 */
 .glass-btn.ghost {
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--apple-glass-card-bg);
   color: var(--text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--glass-border);
   box-shadow: var(--apple-shadow-surface);
 }
 
@@ -2379,9 +2335,9 @@ export default {
 }
 
 .glass-btn.danger {
-  background: rgba(255, 255, 255, 0.36);
+  background: var(--apple-glass-card-bg);
   color: var(--danger-red);
-  border: 1px solid rgba(255, 130, 112, 0.28);
+  border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
   margin-left: 10px;
   box-shadow: var(--apple-shadow-surface);
 }
@@ -2409,7 +2365,7 @@ export default {
 .error-card {
   width: 300px;
   background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid rgba(255, 130, 112, 0.34);
+  border: 1px solid color-mix(in srgb, var(--danger) 34%, transparent);
   border-radius: 28px;
   padding: 30px 24px;
   display: flex;
@@ -2473,10 +2429,6 @@ export default {
   color: var(--text-main);
 }
 
-.apple-container.dark-mode {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
-}
-
 .apple-container::before {
   content: '';
   position: fixed;
@@ -2514,19 +2466,6 @@ export default {
   box-shadow: var(--apple-shadow-card);
 }
 
-.apple-container.dark-mode .custom-navbar,
-.apple-container.dark-mode .main-glass-card,
-.apple-container.dark-mode .bottom-action-bar,
-.apple-container.dark-mode .pause-banner,
-.apple-container.dark-mode .speed-card,
-.apple-container.dark-mode .error-card,
-.apple-container.dark-mode .ai-card {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
 .custom-navbar {
   background:
     linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
@@ -2536,16 +2475,9 @@ export default {
 }
 
 .navbar-back-btn {
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: var(--apple-glass-card-bg);
+  border: 1px solid var(--glass-border);
   box-shadow: var(--apple-shadow-surface);
-}
-
-.apple-container.dark-mode .navbar-back-btn {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .page-header,
@@ -2577,53 +2509,15 @@ export default {
   color: var(--text-sub);
 }
 
-.apple-container.dark-mode .header-title,
-.apple-container.dark-mode .upload-main-text,
-.apple-container.dark-mode .fname-text,
-.apple-container.dark-mode .loading-title,
-.apple-container.dark-mode .speed-title,
-.apple-container.dark-mode .error-title,
-.apple-container.dark-mode .pause-title,
-.apple-container.dark-mode .loading-progress,
-.apple-container.dark-mode .soup-text {
-  color: #ffffff;
-}
-
-.apple-container.dark-mode .header-subtitle,
-.apple-container.dark-mode .header-note,
-.apple-container.dark-mode .status-text,
-.apple-container.dark-mode .upload-sub-text,
-.apple-container.dark-mode .meta-size,
-.apple-container.dark-mode .loading-step,
-.apple-container.dark-mode .pause-desc,
-.apple-container.dark-mode .speed-desc,
-.apple-container.dark-mode .error-desc {
-  color: rgba(255, 255, 255, 0.68);
-}
-
 .upload-trigger,
 .file-capsule,
 .secondary,
 .danger-ghost,
 .glass-btn.ghost,
 .glass-btn.danger {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.46);
+  background: linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%), var(--apple-glass-card-bg);
+  border: 1px solid var(--apple-glass-border-strong);
   box-shadow: var(--apple-shadow-surface);
-}
-
-.apple-container.dark-mode .upload-trigger,
-.apple-container.dark-mode .file-capsule,
-.apple-container.dark-mode .secondary,
-.apple-container.dark-mode .danger-ghost,
-.apple-container.dark-mode .glass-btn.ghost,
-.apple-container.dark-mode .glass-btn.danger {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .upload-trigger {
@@ -2634,30 +2528,15 @@ export default {
 .icon-circle,
 .file-icon-box,
 .close-btn-circle {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.46);
+  background: var(--apple-glass-card-bg);
+  border: 1px solid var(--glass-border);
   box-shadow: var(--apple-shadow-surface);
   color: var(--text-main);
 }
 
-.apple-container.dark-mode .icon-circle,
-.apple-container.dark-mode .file-icon-box,
-.apple-container.dark-mode .close-btn-circle {
-  background: rgba(10, 132, 255, 0.14);
-  border-color: rgba(10, 132, 255, 0.18);
-  box-shadow: var(--apple-shadow-surface);
-  color: #ffffff;
-}
-
 .meta-tag {
-  background: rgba(52, 199, 89, 0.12);
-  border-color: rgba(52, 199, 89, 0.18);
-}
-
-.apple-container.dark-mode .meta-tag {
-  background: rgba(10, 132, 255, 0.14);
-  border-color: rgba(10, 132, 255, 0.18);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border-color: color-mix(in srgb, var(--success) 18%, transparent);
 }
 
 .secondary,
@@ -2691,12 +2570,7 @@ export default {
 
 .glass-btn.danger,
 .danger-ghost {
-  color: #c53d35;
-}
-
-.apple-container.dark-mode .glass-btn.danger,
-.apple-container.dark-mode .danger-ghost {
-  color: #ff8e86;
+  color: var(--danger);
 }
 
 .glow-effect::after {
@@ -2720,7 +2594,7 @@ export default {
 .ai-loading-mask,
 .speed-modal-mask,
 .error-card-mask {
-  background: rgba(9, 18, 12, 0.3);
+  background: var(--overlay);
 }
 
 .apple-container.dark-mode .ai-loading-mask,
@@ -2758,7 +2632,7 @@ export default {
 }
 
 .apple-ai-glow {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, transparent 46%);
+  background: linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 46%);
   animation: none;
 }
 
@@ -2798,15 +2672,15 @@ export default {
 }
 
 .speed-icon-box {
-  background: rgba(52, 199, 89, 0.12);
-  border-color: rgba(52, 199, 89, 0.18);
-  color: #22873a;
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border-color: color-mix(in srgb, var(--success) 18%, transparent);
+  color: var(--success-dark);
 }
 
 .error-icon-box {
-  background: rgba(255, 99, 90, 0.12);
-  border-color: rgba(255, 99, 90, 0.2);
-  color: #c53d35;
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 20%, transparent);
+  color: var(--danger);
 }
 
 .error-title,

@@ -14,6 +14,45 @@
 
 ---
 
+## [2026-03-31] 第二十五轮审计 — P0-P5 全量生产就绪审计（15 fixes）
+
+- **Scope**: `backend`, `frontend`, `config`, `performance`
+- **Files Changed**:
+  - **P0 安全 (10 fixes)**:
+    - `laf-backend/functions/ai-photo-search.ts` — 移除 error.message 直接返回客户端（改为固定中文提示） [R247]
+    - `laf-backend/functions/id-photo-segment-base64.ts` — 重构错误处理：if-else 链改为 ERROR_MAP 查表，未匹配错误码时返回通用中文提示而非原始 error.message [R248]
+    - `laf-backend/functions/achievement-manager.ts` — 旧版内存限流 checkRateLimit 替换为分布式限流 checkRateLimitDistributed（30次/分钟） [R254]
+    - `laf-backend/functions/ai-friend-memory.ts` — 添加分布式限流 checkRateLimitDistributed（20次/分钟） [R255]
+    - `laf-backend/functions/invite-service.ts` — 添加分布式限流 checkRateLimitDistributed（15次/分钟） [R256]
+    - `laf-backend/functions/learning-goal.ts` — 旧版内存限流 checkRateLimit 替换为分布式限流 checkRateLimitDistributed（30次/分钟） [R257]
+    - `laf-backend/functions/mistake-manager.ts` — 添加分布式限流 checkRateLimitDistributed（30次/分钟） [R258]
+    - `laf-backend/functions/pk-battle.ts` — 添加分布式限流 checkRateLimitDistributed（20次/分钟） [R259]
+    - `laf-backend/functions/rag-ingest.ts` — 添加分布式限流 checkRateLimitDistributed（5次/5分钟，重型嵌入API保护） [R260]
+    - `laf-backend/functions/study-stats.ts` — 添加分布式限流 checkRateLimitDistributed（30次/分钟） [R261]
+  - **P1 功能完整性 (1 fix)**:
+    - `src/services/api/domains/school.api.js` — getHotSchools/getProvinces catch 分支补充缺失的 message 字段（用户友好中文提示） [R249]
+  - **P3 性能与稳定性 (3 fixes)**:
+    - `src/pages/study-detail/StudyTrendChart.vue` — calculateSummary 除零防护：avgMinutes 计算添加 chartData.length > 0 守卫 [R250]
+    - `src/pages.json` — preloadRule 增强：首页预加载新增 login 分包（新用户首次启动路径），刷题页新增 tools 分包（拍照搜题入口）；个人中心预加载从 wifi-only 改为 all（蜂窝网络也预加载） [R251]
+    - `src/pages/chat/chat.vue` — 3 处聊天页头像 image 标签添加 lazy-load 属性（欢迎页+消息列表+输入指示器） [R252]
+  - **P5 文档 (1 fix)**:
+    - `.env.example` — 补充缺失的 VITE_API_FALLBACK_URL 条目（双服务器容灾备用地址） [R253]
+- **Summary**: 第二十五轮全量生产就绪审计，按 P0→P5 严格执行。P0 密钥扫描零泄露、43 个云函数鉴权全部正确、前端 XSS 防护完善（零 v-html/eval）；修复 2 个 error.message 泄露；**8 个云函数补齐分布式限流**（achievement-manager/ai-friend-memory/invite-service/learning-goal/mistake-manager/pk-battle/rag-ingest/study-stats），其中 2 个从旧版内存限流升级、6 个新增，至此全部需鉴权接口均具备分布式限流保护。P1 扫描确认零 TODO 未实现、零 mock 残留、零空函数体；修复 1 个 API 错误响应缺 message 字段。P2 确认 ESLint 零报错、分层纪律无违规、lafService 零生产导入。P3 修复 1 个除零边界、增强分包预加载覆盖（login/tools + wifi→all）、添加 3 处 lazy-load。P4 暗黑模式经 24 轮修复确认无遗漏。P5 确认 5 个 CI workflow 配置正确、Husky 钩子正常、Electron 安全配置完善；修复 1 个 .env.example 遗漏。共计 R247-R261 (15 fixes)。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
+## [2026-03-30] 第二十四轮审计 — P4 暗黑模式硬编码色值修复（2文件 45 fixes）
+
+- **Scope**: `frontend`, `ui/ux`
+- **Files Changed**:
+  - **P4 UI/UX — login/index.vue 暗黑模式全量修复 (35 edits)**:
+    - `src/pages/login/index.vue` — 23处早期+活跃区硬编码色值→CSS变量，26个冗余`.dark-mode`覆盖块移除(早期23+活跃区3)，compound glass/icon/checkbox/link等全部迁移 [R202-R226]
+  - **P4 UI/UX — import-data.vue 暗黑模式全量修复 (30 edits)**:
+    - `src/pages/practice-sub/import-data.vue` — 25处硬编码色值→CSS变量/color-mix()，18个冗余`.dark-mode`覆盖块移除(早期9+Final polish 9)，upload-trigger/file-capsule/meta-tag/glass-btn/speed-icon-box/error-icon-box等全部迁移，净减126行CSS [R227-R246]
+- **Summary**: 第二十四轮审计继续推进P4暗黑模式适配CRITICAL级文件。login/index.vue 处理双层样式架构（早期结构层+Final polish覆盖层），清除所有冗余暗色覆盖块并统一为CSS变量驱动。import-data.vue 同样双层架构，全量迁移glass/icon/badge/button/mask色值，引入color-mix()方案处理语义化半透明色。两文件共计 R202-R246 (45 fixes)。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
 ## [2026-03-30] 第二十三轮审计 — P4 暗黑模式硬编码色值修复（4文件 22 fixes）
 
 - **Scope**: `frontend`, `ui/ux`

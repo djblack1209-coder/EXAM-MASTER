@@ -96,7 +96,7 @@
     >
       <!-- 欢迎消息 -->
       <view v-if="messages.length === 0" class="welcome-card apple-glass-card">
-        <image :src="currentFriend.avatar" class="welcome-avatar" alt="头像" mode="aspectFill" />
+        <image :src="currentFriend.avatar" class="welcome-avatar" alt="头像" mode="aspectFill" lazy-load />
         <text class="welcome-name">
           {{ currentFriend.name }}
         </text>
@@ -119,7 +119,7 @@
       >
         <!-- 智能消息 -->
         <template v-if="msg.role === 'assistant'">
-          <image :src="currentFriend.avatar" class="avatar" alt="头像" mode="aspectFill" />
+          <image :src="currentFriend.avatar" class="avatar" alt="头像" mode="aspectFill" lazy-load />
           <view class="bubble left-bubble">
             <text>{{ msg.content }}</text>
             <text class="msg-time">
@@ -162,7 +162,7 @@
 
       <!-- 正在输入指示器 -->
       <view v-if="isTyping" class="msg-row assistant">
-        <image :src="currentFriend.avatar" class="avatar" alt="头像" mode="aspectFill" />
+        <image :src="currentFriend.avatar" class="avatar" alt="头像" mode="aspectFill" lazy-load />
         <view class="bubble left-bubble typing-bubble">
           <view class="typing-dots">
             <view class="dot" />

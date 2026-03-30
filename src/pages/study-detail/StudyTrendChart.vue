@@ -158,7 +158,7 @@ function prepareChartData() {
 function calculateSummary() {
   const minutes = chartData.value.map((d) => d.minutes);
   totalMinutes.value = minutes.reduce((a, b) => a + b, 0);
-  avgMinutes.value = Math.round(totalMinutes.value / chartData.value.length);
+  avgMinutes.value = chartData.value.length > 0 ? Math.round(totalMinutes.value / chartData.value.length) : 0;
 
   // 计算趋势（比较前半段和后半段）
   const mid = Math.floor(minutes.length / 2);

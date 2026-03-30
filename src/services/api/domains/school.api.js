@@ -59,7 +59,7 @@ export async function getHotSchools(params = {}) {
     return response;
   } catch (error) {
     logger.warn('[LafService] 获取热门学校失败:', error);
-    return { code: -1, success: false, data: [] };
+    return { code: -1, success: false, message: '获取热门学校失败', data: [] };
   }
 }
 
@@ -76,7 +76,7 @@ export async function getProvinces() {
     return response;
   } catch (error) {
     logger.warn('[LafService] 获取省份列表失败:', error);
-    return { code: -1, success: false, data: [] };
+    return { code: -1, success: false, message: '获取省份列表失败', data: [] };
   }
 }
 
