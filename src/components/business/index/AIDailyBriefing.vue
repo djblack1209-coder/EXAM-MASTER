@@ -475,7 +475,7 @@ function handleTaskTap(task) {
     left: 0;
     right: 0;
     height: 4rpx;
-    background: linear-gradient(90deg, #34d399, #06b6d4, #8b5cf6);
+    background: linear-gradient(90deg, var(--wise-green, #34d399), var(--info-blue, #06b6d4), var(--purple, #8b5cf6));
     border-radius: 28rpx 28rpx 0 0;
   }
 }
@@ -490,7 +490,11 @@ function handleTaskTap(task) {
 .briefing-badge {
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.15), rgba(6, 182, 212, 0.15));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--wise-green) 15%, transparent),
+    color-mix(in srgb, var(--info-blue) 15%, transparent)
+  );
   padding: 8rpx 20rpx;
   border-radius: 20rpx;
 }
@@ -573,7 +577,7 @@ function handleTaskTap(task) {
   display: flex;
   align-items: center;
   padding: 18rpx 0;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1rpx solid var(--apple-divider);
 }
 
 .task-item:last-child {
@@ -589,16 +593,16 @@ function handleTaskTap(task) {
 }
 
 .ta<REDACTED_SECRET>.urgent {
-  background: #ef4444;
+  background: var(--danger);
 }
 .ta<REDACTED_SECRET>.high {
-  background: #f59e0b;
+  background: var(--warning);
 }
 .ta<REDACTED_SECRET>.normal {
   background: var(--wise-green, #34d399);
 }
 .ta<REDACTED_SECRET>.low {
-  background: #94a3b8;
+  background: var(--text-tertiary);
 }
 
 .task-content {
@@ -631,7 +635,7 @@ function handleTaskTap(task) {
   justify-content: center;
   padding: 22rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, #34d399, #059669);
+  background: linear-gradient(135deg, var(--wise-green, #34d399), var(--wise-green-dark, #059669));
   transition: opacity 0.2s;
 }
 
@@ -640,14 +644,14 @@ function handleTaskTap(task) {
 }
 
 .action-icon {
-  color: #fff;
+  color: var(--text-inverse);
   margin-right: 10rpx;
 }
 
 .action-text {
   font-size: 30rpx;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 /* 暗色模式 */

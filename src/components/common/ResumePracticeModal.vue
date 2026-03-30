@@ -241,7 +241,7 @@ function handleRestart() {
 }
 
 .info-value.time-ago {
-  color: #22873a;
+  color: var(--success-dark);
 }
 
 .modal-tip {
@@ -332,7 +332,7 @@ function handleRestart() {
 }
 
 .dark-mode .header-title {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .dark-mode .draft-info {
@@ -347,18 +347,18 @@ function handleRestart() {
 }
 
 .dark-mode .info-value {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .dark-mode .btn-secondary {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
     linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  color: #ffffff;
+  color: var(--text-inverse);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
 .dark-mode .info-value.time-ago {
-  color: #7bc0ff;
+  color: var(--info-blue);
 }
 </style>

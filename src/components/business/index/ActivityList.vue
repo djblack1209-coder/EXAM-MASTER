@@ -99,7 +99,7 @@ function getStatusText(status) {
 }
 
 .card-light {
-  background: linear-gradient(160deg, #ffffff 0%, #f4faf6 100%);
+  background: linear-gradient(160deg, var(--bg-card, #ffffff) 0%, var(--bg-card-tinted, #f4faf6) 100%);
 }
 
 .card-hover:active {
@@ -156,7 +156,7 @@ function getStatusText(status) {
 
 .status-completed {
   background: rgba(52, 199, 89, 0.15);
-  color: #30b35f;
+  color: var(--success);
 }
 
 .status-in-progress {
@@ -166,7 +166,7 @@ function getStatusText(status) {
 
 .status-pending {
   background: rgba(120, 120, 128, 0.12);
-  color: #7c7c82;
+  color: var(--text-tertiary);
 }
 
 .activity-icon {

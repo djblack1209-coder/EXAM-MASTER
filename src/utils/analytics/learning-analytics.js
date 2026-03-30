@@ -648,9 +648,7 @@ class LearningAnalytics {
     // 获取当前用户数据
     const userReport = this.getComprehensiveReport();
 
-    // 生成估算的同水平用户数据分布
-    // ⚠️ 当前为本地统计估算，非真实用户数据
-    // TODO: 后续应从服务器获取真实的匿名同水平用户统计数据
+    // 生成估算的同水平用户数据分布（详见 _generatePeerData 方法注释）
     const peerData = this._generatePeerData(userReport.overview);
 
     return {

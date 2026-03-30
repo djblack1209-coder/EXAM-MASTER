@@ -300,12 +300,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// ==================== 变量定义 ====================
-$color-text-light: #1a1a1a;
-$color-text-dark: #ffffff;
-$color-text-secondary-light: #64748b;
-$color-text-secondary-dark: rgba(255, 255, 255, 0.7);
-
 // ==================== 主容器 ====================
 .empty-state {
   position: relative;
@@ -378,13 +372,13 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.72);
 
     .empty-state__title {
-      color: $color-text-light;
+      color: var(--text-primary);
     }
     .empty-state__desc {
-      color: $color-text-secondary-light;
+      color: var(--text-sub);
     }
     .empty-state__hint {
-      color: #94a3b8;
+      color: var(--text-tertiary);
     }
   }
 
@@ -393,10 +387,10 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
 
     .empty-state__title {
-      color: $color-text-dark;
+      color: var(--text-inverse);
     }
     .empty-state__desc {
-      color: $color-text-secondary-dark;
+      color: rgba(255, 255, 255, 0.7);
     }
     .empty-state__hint {
       color: rgba(255, 255, 255, 0.5);
@@ -572,7 +566,7 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
     .empty-state--light & {
       .guide-btn__title,
       .guide-btn__arrow {
-        color: #10281a;
+        color: var(--text-primary);
       }
 
       .guide-btn__desc {
@@ -583,7 +577,7 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
     .empty-state--dark & {
       .guide-btn__title,
       .guide-btn__arrow {
-        color: #ffffff;
+        color: var(--text-inverse);
       }
 
       .guide-btn__desc {
@@ -599,13 +593,13 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(0, 0, 0, 0.1);
 
       .guide-btn__title {
-        color: $color-text-light;
+        color: var(--text-primary);
       }
       .guide-btn__desc {
-        color: $color-text-secondary-light;
+        color: var(--text-sub);
       }
       .guide-btn__arrow {
-        color: #94a3b8;
+        color: var(--text-tertiary);
       }
     }
 
@@ -614,10 +608,10 @@ $color-text-secondary-dark: rgba(255, 255, 255, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.1);
 
       .guide-btn__title {
-        color: $color-text-dark;
+        color: var(--text-inverse);
       }
       .guide-btn__desc {
-        color: $color-text-secondary-dark;
+        color: rgba(255, 255, 255, 0.7);
       }
       .guide-btn__arrow {
         color: rgba(255, 255, 255, 0.4);

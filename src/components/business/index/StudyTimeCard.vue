@@ -130,7 +130,7 @@ defineEmits(['click']);
 }
 
 .card-light .time-indicator.indicator-active {
-  background: #ffffff;
+  background: var(--bg-card, #ffffff);
   border-color: rgba(15, 95, 52, 0.12);
   box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.14);
 }
@@ -139,7 +139,7 @@ defineEmits(['click']);
   width: 12rpx;
   height: 12rpx;
   border-radius: 50%;
-  background: #8e8e93;
+  background: var(--text-tertiary);
 }
 
 .indicator-active .indicator-dot {

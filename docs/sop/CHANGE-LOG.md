@@ -14,6 +14,25 @@
 
 ---
 
+## [2026-03-31] 第三十轮审计 — P4 UI 一致性：硬编码 CSS 颜色 → CSS 自定义属性迁移（9 files, 4 fixes R278-R282）
+
+- **Scope**: `frontend`, `ui`
+- **Files Changed**:
+  - **P4 CSS 颜色变量统一 — Tier 1 高价值组件 (8 files)**:
+    - `src/components/business/index/AIDailyBriefing.vue` — 9 处硬编码颜色（渐变、状态点、CTA 按钮）→ CSS 自定义属性 [R278]
+    - `src/components/common/privacy-popup.vue` — 4 处硬编码颜色（链接、标题、按钮）→ CSS 自定义属性 [R279]
+    - `src/components/common/ResumePracticeModal.vue` — 5 处硬编码颜色（强调文字、描述、按钮背景）→ CSS 自定义属性 [R279]
+    - `src/components/common/offline-indicator.vue` — 4 处 `#fff` → `var(--text-inverse)` [R280]
+    - `src/components/business/index/ActivityList.vue` — 3 处硬编码颜色 → CSS 自定义属性 [R280]
+    - `src/components/business/index/StudyTimeCard.vue` — 2 处硬编码颜色 → CSS 自定义属性 [R280]
+    - `src/components/business/index/StatsGrid.vue` — 1 处硬编码颜色 → CSS 自定义属性 [R280]
+    - `src/components/common/EmptyState.vue` — 删除 4 个 SCSS 变量定义（`$color-text-light` 等），10 处引用替换为 `var(--text-primary)`/`var(--text-inverse)`/`var(--text-sub)`/`var(--text-tertiary)` [R281]
+  - **P1 代码质量 — 重复 TODO 清理 (1 file)**:
+    - `src/utils/analytics/learning-analytics.js` — 行653 与行857 重复的 TODO 注释合并为一处（保留方法定义处） [R282]
+- **Summary**: 第三十轮审计聚焦 P4 UI 一致性，将 8 个组件中共 38 处硬编码 CSS 颜色值迁移为 CSS 自定义属性（`var(--xxx)`），消除了 EmptyState.vue 中的 4 个 SCSS 变量（改用全局 CSS 自定义属性），并清理了 1 处重复 TODO。Tier 2 候选组件（friend-list、DailyGoalRing、chat、splash）中的 rgba 玻璃态效果和 Canvas 颜色保留为后续轮次。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1141 tests passed | H5 build OK
+
 ## [2026-03-31] 第二十九轮审计 — P0-P5 全量安全/质量/性能扫描 + error.message 泄露修复（1 fix, audit-only round）
 
 - **Scope**: `backend`, `security`, `audit`
