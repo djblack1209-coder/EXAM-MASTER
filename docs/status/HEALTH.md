@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-31 (第二十八轮审计：P3 性能优化 + P4 死代码清除 — 24 dead functions + 2 dead components + 1 duplicate image R270-R276) | Maintainer: AI-SOP
+> Last updated: 2026-03-31 (第二十九轮审计：P0-P5 全量安全/质量/性能扫描 + error.message 泄露修复 R277) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,7 @@
 
 | ID   | Domain   | Title                                                                                 | Solution                                                                                                                                                 | Resolved   |
 | ---- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| R277 | backend  | lesson-generator.ts safeError正则清洗后仍存储原始error.message至DB                    | 替换为硬编码中文提示'课程生成失败，请稍后重试'，阻断DB→status API间接泄露                                                                                | 2026-03-31 |
 | R276 | frontend | 5个API文件各含1-2个死函数（study/social/user/school/tools）                           | 删除7个死函数，grep确认无调用                                                                                                                            | 2026-03-31 |
 | R275 | frontend | practice.api.js含5个死函数（getQuestionBank/submitAnswer/addFavorite等）              | 删除5个死函数，favorites使用localStorage实现                                                                                                             | 2026-03-31 |
 | R274 | frontend | ai.api.js含12个死函数（classroom/lesson/分析相关）                                    | 删除12个死函数，classroom.js直接调request()                                                                                                              | 2026-03-31 |

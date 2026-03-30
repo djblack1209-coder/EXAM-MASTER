@@ -14,6 +14,27 @@
 
 ---
 
+## [2026-03-31] 第二十九轮审计 — P0-P5 全量安全/质量/性能扫描 + error.message 泄露修复（1 fix, audit-only round）
+
+- **Scope**: `backend`, `security`, `audit`
+- **Files Changed**:
+  - **P0 安全修复 — 间接 error.message 泄露 (1 fix)**:
+    - `laf-backend/functions/lesson-generator.ts` — 行198: `safeError` 正则清洗后仍存储原始错误信息至 DB，前端通过 status API 可间接读取 → 替换为硬编码中文提示 `'课程生成失败，请稍后重试'` [R277]
+- **Audit-Only Findings (0 fix needed)**:
+  - **P0 安全**: 源码零硬编码密钥、git-tracked 配置全用占位符、43 云函数认证/限流完备、前端零 XSS 向量（无 v-html/eval/innerHTML）
+  - **P1 代码质量**: 3 个 TODO 均为信息性（learning-analytics.js 未来 ML/服务器增强，均有本地回退）、零 mock 残留、零空函数体、零 console.log（集中 logger.js）
+  - **P2 代码规范**: ESLint 0 errors 0 warnings、层级纪律 9 文件绕过 Store 为已知可接受例外、抽样 20 文件零无用 import
+  - **P3 性能**: 仅 26 张图片(0.34MB)、H5 构建 2.39MB 零 >500KB chunk、关键长列表均有增量渲染
+  - **P3 发现 3 对重复图片（设计问题，登记为技术债务）**:
+    1. `pwa-icons/icon-512x512.png` = `icon-512x512-maskable.png` (99KB×2) — maskable 版应有不同内边距
+    2. `practice-sub/static/icons/icon-library.png` = `icon-book.png` (5.4KB×2) — 占位符重复
+    3. `static/images/default-avatar.png` = `logo.png` (4.7KB×2) — 头像和 logo 不应相同
+  - **P5 CI/文档**: 5 个 GitHub Actions 工作流（ci-cd/security-scan/qa-nightly/backup/mp-e2e）结构完备、Husky hooks 齐全（pre-commit ESLint + commit-msg commitlint + pre-push 检查）
+- **Tech Debt Logged**: D031 (3 对重复图片需设计师提供正确素材)
+- **Summary**: 第二十九轮审计为全量 P0-P5 扫描。P0 安全发现 1 个 LOW 级间接 error.message 泄露（lesson-generator.ts 通过 DB→status API 路径）并立即修复。其余 P0-P5 所有扫描项均通过，系统安全和代码质量处于生产就绪状态。3 对重复图片为设计问题（非简单去重），登记为技术债务 D031。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1141 tests passed | H5 build OK
+
 ## [2026-03-31] 第二十八轮审计 — P3 性能优化 + P4 死代码清除（7 fixes, 24 dead functions + 2 dead components + 1 duplicate image）
 
 - **Scope**: `frontend`, `performance`, `tests`
