@@ -8,13 +8,15 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# 升级 npm 到与本地开发环境一致的大版本，确保 lockfileVersion 3 完全兼容
+RUN npm install -g npm@11 && npm cache clean --force
+
 # 复制依赖文件（先复制 lock 文件利用 Docker 缓存）
 COPY package.json package-lock.json .npmrc ./
 
 # 安装所有依赖（包括 devDependencies，构建需要）
 # --ignore-scripts 跳过 prepare(husky) 等生命周期脚本（Docker 内无 .git）
-# 注: 使用 npm install 代替 npm ci，因为 lockfile 可能由更高版本 npm 生成
-RUN npm install --ignore-scripts && npm cache clean --force
+RUN npm ci --ignore-scripts && npm cache clean --force
 
 # 复制源代码
 COPY . .

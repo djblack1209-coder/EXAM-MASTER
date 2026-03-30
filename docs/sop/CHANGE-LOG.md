@@ -14,6 +14,27 @@
 
 ---
 
+## [2026-03-31] 第三十二轮审计 — P3 性能优化 + 部署基础设施（R286-R289）
+
+- **Scope**: `deploy`, `infra`, `docs`
+- **Files Changed**:
+  - **P3 静态资源压缩传输 — Nginx gzip_static (2 files)** [R286]:
+    - `deploy/tencent/nginx/nginx.conf` — 添加 `gzip_static on;` 启用预压缩 .gz 文件直传，附注释说明 brotli_static 需 ngx_brotli 模块
+    - `deploy/docker/nginx.conf` — 同上，Docker 环境 Nginx 配置同步
+  - **P1 构建修复 — Docker npm 版本兼容 D028 (2 files)** [R287]:
+    - `deploy/docker/Dockerfile` — 添加 `RUN npm install -g npm@11` 解决 lockfileVersion 3 不兼容，恢复 `npm ci` 可复现构建
+    - `deploy/docker/Dockerfile.frontend` — 同上，前端 Docker 构建同步修复
+  - **P2 部署 — H5 端部署配置 (2 new files)** [R288]:
+    - `deploy/tencent/nginx/conf.d/exam-master-h5.conf` — 新建：端口 8080 静态文件服务、SPA fallback、静态资源缓存、API 反向代理到 localhost:3001
+    - `deploy/tencent/scripts/deploy-h5.sh` — 新建：一键部署脚本（构建 → rsync 上传 → nginx 同步 → reload → 健康检查）
+  - **P2 部署 — smart-study-engine Sealos 部署指南 (1 new file)** [R289]:
+    - `deploy/docs/DEPLOY-SMART-STUDY-ENGINE.md` — 新建：Sealos Laf 云函数手动部署步骤文档（D016 降级为文档方案）
+  - **文档更新**:
+    - `docs/status/HEALTH.md` — H5 状态 🔵未部署 → 🟡待部署，D028/D030 标记已解决，测试数修正 1168→1141，审计数更新 R001-R289
+- **Summary**: 第三十二轮审计聚焦部署基础设施。启用 Nginx gzip_static 让服务器直接发送 Vite 构建产生的 .gz/.br 预压缩文件（解决 D030 根因）；修复 Docker 构建中 npm 版本不兼容问题（D028）；创建 H5 端完整部署配置（Nginx 站点 + 一键脚本）；为 Sealos Laf 云函数创建手动部署指南（D016 降级）。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1141 tests passed | H5 build OK
+
 ## [2026-03-31] 第三十一轮审计 — P4 UI 一致性 Tier 2：3 文件 15 处硬编码 CSS 颜色 → CSS 自定义属性（R283-R285）
 
 - **Scope**: `frontend`, `ui`

@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-31 (第三十一轮审计：P4 UI 一致性 Tier 2 — 3 文件 15 处硬编码颜色迁移 R283-R285) | Maintainer: AI-SOP
+> Last updated: 2026-03-31 (第三十二轮：性能优化 + 部署 — gzip_static/Docker npm修复/H5部署配置/smart-study-engine部署指南) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -10,7 +10,7 @@
 | **Sealos Laf (FALLBACK)**   | `https://nf98ia8qnt.sealosbja.site` | 🟢 Online | 2026-03-22  |
 | **CF Worker (API Proxy)**   | `https://api-gw.245334.xyz`         | 🟢 Online | 2026-03-23  |
 | **WeChat MP**               | 微信搜索「考研备考」                | 🟡 审核中 | —           |
-| **H5 (PWA)**                | —                                   | 🔵 未部署 | —           |
+| **H5 (PWA)**                | `http://101.43.41.96:8080`          | 🟡 待部署 | —           |
 
 ## Active Issues
 
@@ -343,9 +343,9 @@
 | D022     | infra       | HTTPS 443外部TLS握手被客户端RST重置，tcpdump确认服务器SSL响应正常发出；问题在客户端网络环境（ISP DPI或VPN）                                                                                       | 客户端网络问题,微信小程序不受影响 | 🔵       |
 | D023     | backend     | `standalone/package.json` 缺少 `ts-fsrs`/`jszip`/`sql.js`/`ai-agent-team` 依赖，导致4个云函数加载失败                                                                                             | ✅ R029 已修复（服务器已安装）    | ~~🔴~~   |
 | D024     | frontend    | NPM 安全审计报告 69 个漏洞（3 critical, 52 high），全部来自上游依赖链(vite-plugin-pwa/workbox/@dcloudio)无法安全修复                                                                              | 等待上游更新                      | 🟡       |
-| D028     | ci          | Docker构建`npm ci`失败：`node:20-alpine`(npm10)与本地`npm11`生成的lockfile不兼容；实际部署用scp不受影响                                                                                           | 等待统一Node版本或改用npm install | 🔵       |
+| ~~D028~~ | ci          | ~~Docker构建`npm ci`失败：`node:20-alpine`(npm10)与本地`npm11`生成的lockfile不兼容~~ → **R32 Dockerfile升级npm@11+恢复npm ci**                                                                    | ✅ R32 已修复                     | ~~🔵~~   |
 | ~~D029~~ | performance | ~~主入口JS 452KB(gzip 149KB)偏大，缺少manualChunks vendor分离~~ → **R091 manualChunks拆分,入口135KB(-69.5%)**                                                                                     | ✅ R091 已解决                    | ~~🟡~~   |
-| D030     | performance | 未配置vite-plugin-compression构建时gzip/brotli预压缩，Nginx需实时压缩                                                                                                                             | 安装后JS可从1968KB降至~589KB      | 🟡       |
+| ~~D030~~ | performance | ~~未配置vite-plugin-compression构建时gzip/brotli预压缩~~ → **实际已配置vite-plugin-compression2，R32 Nginx添加gzip_static on启用预压缩文件**                                                      | ✅ R32 已解决                     | ~~🟡~~   |
 | ~~D031~~ | frontend    | ~~微信小程序主包1896KB/2048KB，余量仅152KB~~ → **R092 onboarding移入分包,主包减24KB至~1872KB(余量176KB)**                                                                                         | ✅ R092 已缓解                    | ~~🟡~~   |
 | ~~D032~~ | backend     | ~~3个冗余tsconfig文件~~ → **实际仅2个，分别服务Laf Cloud和Express Standalone，不可合并**                                                                                                          | ✅ 已确认非冗余                   | ~~🔵~~   |
 | D033     | frontend    | ~~PWA图标512x512声称但文件仅4.8KB~~ → **R096 从1024x1024源图生成真实尺寸图标(192/512/maskable)**                                                                                                  | ✅ R096 已修复                    | ~~🔵~~   |
@@ -365,7 +365,7 @@
 | Tencent Cloud Bandwidth  | —                     | 200GB/月 @3Mbps | 160GB           |
 | WeChat MP Main Package   | ~1298KB               | 2048KB          | 1900KB          |
 | H5 Entry JS (gzip)       | ~45KB (入口135KB)     | —               | 200KB           |
-| Test Coverage            | 89 files / 1168 tests | —               | < 1000 tests    |
-| Audit Issues Resolved    | 266 (R001-R266)       | —               | —               |
+| Test Coverage            | 89 files / 1141 tests | —               | < 1000 tests    |
+| Audit Issues Resolved    | 289 (R001-R289)       | —               | —               |
 | SiliconFlow DS Keys 余额 | 140元 (10条×14元)     | —               | < 30元          |
 | LLM Provider Pool        | 14 providers          | —               | < 8 可用        |
