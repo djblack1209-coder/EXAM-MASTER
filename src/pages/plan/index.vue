@@ -400,12 +400,12 @@ export default {
       const tasksDone = plan.tasks ? plan.tasks.filter((t) => t.completed).length : 0;
       const tasksTotal = plan.tasks ? plan.tasks.length : 0;
       const lines = [
-        `📌 ${plan.name}`,
-        `🎯 目标：${plan.goal || '未设置'}`,
-        `📅 ${plan.startDate} → ${plan.endDate}`,
-        `⏱ 每日 ${plan.dailyDuration || '未设置'}`,
-        tasksTotal > 0 ? `✅ 任务进度：${tasksDone}/${tasksTotal}` : null,
-        plan.analytics ? `📈 完成率：${plan.analytics.completionRate}%` : null
+        `[计划] ${plan.name}`,
+        `[目标] 目标：${plan.goal || '未设置'}`,
+        `[日期] ${plan.startDate} → ${plan.endDate}`,
+        `[时长] 每日 ${plan.dailyDuration || '未设置'}`,
+        tasksTotal > 0 ? `[进度] 任务进度：${tasksDone}/${tasksTotal}` : null,
+        plan.analytics ? `[趋势] 完成率：${plan.analytics.completionRate}%` : null
       ]
         .filter(Boolean)
         .join('\n');

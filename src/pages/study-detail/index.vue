@@ -50,7 +50,7 @@
             <text class="page-subtitle"> 查看您的学习数据和进度 </text>
           </view>
           <view class="empty-state-card">
-            <text class="empty-icon">📖</text>
+            <text class="empty-icon">[书]</text>
             <text class="empty-title">还没有学习记录</text>
             <text class="empty-desc">完成第一次练习后，这里将展示你的学习数据、热力图和能力分析</text>
             <button class="empty-action-btn" @tap="goToPractice">开始学习</button>
@@ -104,7 +104,7 @@
 
             <!-- 能力评级卡片 -->
             <view class="stat-card">
-              <text class="stat-icon" style="font-size: 52rpx; line-height: 64rpx; text-align: center">📊</text>
+              <text class="stat-icon" style="font-size: 52rpx; line-height: 64rpx; text-align: center">[统计]</text>
               <view class="stat-content">
                 <text class="stat-value">
                   {{ abilityRank }}

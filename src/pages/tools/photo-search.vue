@@ -46,7 +46,7 @@
       <!-- #ifndef MP-WEIXIN -->
       <!-- ✅ P0-FIX: App端无camera组件，显示占位提示 -->
       <view v-if="mode === 'camera'" class="camera-placeholder">
-        <view class="placeholder-icon">📷</view>
+        <view class="placeholder-icon">[相机]</view>
         <text class="placeholder-title">拍照搜题</text>
         <text class="placeholder-hint">点击下方拍照按钮开始</text>
       </view>

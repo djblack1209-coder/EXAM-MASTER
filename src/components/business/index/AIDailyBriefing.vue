@@ -261,7 +261,9 @@ async function _enrichWithAI() {
   loading.value = true;
   try {
     // 动态加载 API 模块（不静态打包进主包）
-    const api = await loadStudyApi();
+    // 兼容小程序构建：动态 import() 可能把命名导出包在 .default 下
+    const raw = await loadStudyApi();
+    const api = raw.default || raw;
     const { analyzeMastery, getPendingCorrections, getSprintPriority } = api;
 
     // 基础请求：掌握度 + 待矫正

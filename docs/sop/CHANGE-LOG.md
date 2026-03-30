@@ -14,7 +14,52 @@
 
 ---
 
-## [2026-03-31] Bug 修复 — requiredPrivateInfos 非法值导致微信开发者工具报错（R290）
+## [2026-03-31] 紧急修复轮 — 首页崩溃/导入页UI/全项目Emoji替换 (R291-R293)
+
+- **Scope**: `frontend`, `config`
+- **Files Changed**:
+  - **P0 首页 analyzeMastery 崩溃修复** [R291]:
+    - `src/components/business/index/AIDailyBriefing.vue` — 动态 import() 兼容小程序构建：添加 `raw.default || raw` 模块命名空间互操作，解决 `analyzeMastery is not a function` 错误
+  - **P1 导入页 UI 修复** [R292]:
+    - `src/pages/practice-sub/import-data.vue` — 6处CSS修复：`.glow-effect::after` opacity 0.8→0 解决文字遮挡；`.apple-container::before` 白色光斑降低透明度；`.main-glass-card` 等卡片添加 backdrop-filter + color-mix 降低白色不透明度；`.upload-trigger` border-style solid→dashed 恢复拖放区视觉；`.icon-circle`/`.navbar-back-btn` 同步降低白色背景并添加模糊效果
+  - **P2 全项目 Emoji 替换 (约150处)** [R293]:
+    - `src/config/game-constants.js` — 22处：成就图标 emoji→方括号标记
+    - `src/pages/login/onboarding.vue` — 15处：步骤/考试类型图标→中文/方括号标记
+    - `src/pages/practice-sub/diagnosis-report.vue` — 13处：诊断图标→中文/方括号标记
+    - `src/pages/index/index.vue` — 6处：工具图标→方括号标记
+    - `src/pages/splash/index.vue` — 8处：问候语 emoji 移除
+    - `src/pages/practice-sub/smart-review.vue` — 7处
+    - `src/pages/plan/index.vue` — 6处
+    - `src/pages/ai-classroom/classroom.vue` — 8处
+    - `src/pages/practice-sub/question-bank.vue` — 6处
+    - `src/pages/profile/index.vue` — 11处
+    - `src/pages/chat/chat.vue` — 21处
+    - `src/pages/ai-classroom/index.vue` — 5处
+    - `src/components/business/index/DailyGoalRing.vue` — 1处
+    - `src/pages/practice-sub/do-quiz.vue` — 1处
+    - `src/pages/practice-sub/pk-battle.vue` — 4处(含Canvas绘制)
+    - `src/pages/knowledge-graph/index.vue` — 2处
+    - `src/pages/mistake/index.vue` — 1处
+    - `src/pages/study-detail/index.vue` — 2处
+    - `src/pages/study-detail/FSRSOptimizer.vue` — 1处
+    - `src/pages/social/friend-profile.vue` — 1处
+    - `src/pages/social/friend-list.vue` — 2处
+    - `src/pages/tools/photo-search.vue` — 1处
+    - `src/pages/settings/FriendsEntryCard.vue` — 1处
+    - `src/components/common/EmptyState.vue` — 1处
+    - `src/pages/practice-sub/composables/ai-generation-mixin.js` — 14处
+    - `src/pages/practice-sub/composables/useGamificationEffects.js` — 1处
+    - `src/pages/practice-sub/question-note.js` — 1处
+    - `src/pages/practice-sub/file-manager.vue` — 9处
+    - `src/pages/settings/poster-generator.js` — 2处
+    - `src/services/streak-recovery.js` — 3处
+    - `src/utils/favorite/question-favorite.js` — 1处
+  - **保留不动**: `src/pages/settings/AIChatModal.vue` 的 emoji 列表（聊天表情选择器功能，合理保留）
+- **Summary**: 修复3个用户报告的关键问题：(1) 首页 AIDailyBriefing 组件动态导入在小程序构建时 `analyzeMastery` 函数被包裹在 `.default` 下导致崩溃；(2) 导入数据页面 CSS override 导致白色半透明层叠加严重、文字被光晕遮挡、上传区域缺少虚线边框；(3) 全项目约150处用户可见 emoji 替换为中文文字/方括号标记，达到商业交付标准。AIChatModal 的聊天表情选择器作为功能性组件保留。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1141 tests passed | H5 build OK
+
+---
 
 - **Scope**: `frontend`, `config`
 - **Files Changed**:

@@ -42,7 +42,7 @@
         <text class="goal-title">今日目标</text>
         <text class="goal-detail">已练 {{ todayQuestions }} / {{ dailyGoal }} 题</text>
         <view class="streak-row">
-          <text class="streak-text">🔥 连续学习 {{ streakDays }} 天</text>
+          <text class="streak-text">连续学习 {{ streakDays }} 天</text>
         </view>
       </view>
     </view>

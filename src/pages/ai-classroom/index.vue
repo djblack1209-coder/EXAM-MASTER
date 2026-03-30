@@ -54,7 +54,7 @@
 
     <!-- 空状态 -->
     <view v-if="!loading && lessons.length === 0" class="empty-state">
-      <text class="empty-icon">📚</text>
+      <text class="empty-icon">[书]</text>
       <text class="empty-title">还没有课程</text>
       <text class="empty-desc">点击上方创建你的第一个 AI 互动课程</text>
     </view>
@@ -134,10 +134,10 @@ let _pollTimer = null;
 let _pollTimeout = null;
 
 const subjects = [
-  { value: 'politics', label: '政治', icon: '🏛️' },
-  { value: 'english', label: '英语', icon: '🌍' },
-  { value: 'math', label: '数学', icon: '📐' },
-  { value: 'professional', label: '专业课', icon: '📖' }
+  { value: 'politics', label: '政治', icon: '[政]' },
+  { value: 'english', label: '英语', icon: '[英]' },
+  { value: 'math', label: '数学', icon: '[数]' },
+  { value: 'professional', label: '专业课', icon: '[专]' }
 ];
 
 const form = ref({

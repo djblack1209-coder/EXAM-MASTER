@@ -18,7 +18,7 @@
         <view class="loading-brain">
           <view class="brain-ring r1" />
           <view class="brain-ring r2" />
-          <text class="brain-emoji">📋</text>
+          <text class="brain-emoji">[复习]</text>
         </view>
         <text class="loading-text">AI 正在安排今日复习...</text>
       </view>
@@ -56,7 +56,7 @@
             </view>
             <!-- 连续复习天数 -->
             <view v-if="streakDays > 0" class="streak-row">
-              <text class="streak-fire">🔥</text>
+              <text class="streak-fire">连续</text>
               <text class="streak-text">已连续复习 {{ streakDays }} 天</text>
             </view>
           </view>
@@ -165,11 +165,11 @@
 
         <!-- 空状态 -->
         <view v-if="totalPending === 0" class="empty-state">
-          <text class="empty-icon">🎉</text>
+          <text class="empty-icon">已完成</text>
           <text class="empty-title">今日复习已完成</text>
           <text class="empty-sub">保持这个节奏，考研稳了</text>
           <view v-if="streakDays > 0" class="streak-celebrate">
-            <text class="streak-big">🔥 {{ streakDays }}</text>
+            <text class="streak-big">连续 {{ streakDays }}</text>
             <text class="streak-desc">天连续复习</text>
           </view>
           <wd-button type="primary" block size="large" custom-style="margin-top: 16rpx" @click="goPractice">
@@ -179,7 +179,7 @@
 
         <!-- 最近诊断建议 -->
         <view v-if="latestDiagnosis" class="diagnosis-hint apple-glass-card">
-          <text class="hint-title">📊 最近诊断建议</text>
+          <text class="hint-title">最近诊断建议</text>
           <text class="hint-text">{{ latestDiagnosis.studyPlan?.immediate || '' }}</text>
           <text v-if="latestDiagnosis.weakPoints?.length" class="hint-weak">
             薄弱点：{{
@@ -231,7 +231,7 @@ const normalCount = computed(() => reviewPlan.value.normal?.count || 0);
 const lightCount = computed(() => reviewPlan.value.light?.count || 0);
 const totalPending = computed(() => reviewPlan.value.totalPending || 0);
 
-// ✅ [P1修复] 连续复习天数 — 只读取显示，不在页面访问时自增
+// [OK] [P1修复] 连续复习天数 — 只读取显示，不在页面访问时自增
 function loadStreak() {
   try {
     const data = uni.getStorageSync('review_streak') || {};
@@ -251,7 +251,7 @@ function loadStreak() {
   }
 }
 
-// ✅ [P1修复] 完成复习后才记录streak（由startBatchReview返回后调用）
+// [OK] [P1修复] 完成复习后才记录streak（由startBatchReview返回后调用）
 function recordStreakCompletion() {
   try {
     const today = new Date().toDateString();
@@ -346,7 +346,7 @@ async function loadReviewPlan() {
   }
 }
 
-// ✅ [P2] 离线FSRS兜底 — 使用集中式 FSRS 服务生成复习计划
+// [OK] [P2] 离线FSRS兜底 — 使用集中式 FSRS 服务生成复习计划
 function loadOfflineFallback() {
   try {
     // 从本地存储获取所有题目
@@ -422,7 +422,7 @@ function startBatchReview() {
     toast.info('暂无可复习的题目');
     return;
   }
-  // ✅ [P1修复] 开始批量复习时记录streak（而非页面访问时）
+  // [OK] [P1修复] 开始批量复习时记录streak（而非页面访问时）
   recordStreakCompletion();
   uni.setStorageSync('smart_review_ids', ids);
   uni.navigateTo({ url: '/pages/practice-sub/do-quiz?mode=smart_review' });
@@ -480,7 +480,7 @@ onMounted(() => {
   --green: var(--em-success, #34c759);
 }
 
-/* ✅ [P1重构] 暗色模式适配 — 不再硬编码，跟随主题系统 */
+/* [OK] [P1重构] 暗色模式适配 — 不再硬编码，跟随主题系统 */
 .smart-review-container.dark-mode {
   background: linear-gradient(180deg, #0a0a0f 0%, #111118 50%, #0d0d14 100%);
   --text-primary: #f5f5f7;
@@ -502,7 +502,7 @@ onMounted(() => {
   background: rgba(245, 245, 247, 0.72);
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
 }
-/* ✅ 暗色模式导航栏 */
+/* [OK] 暗色模式导航栏 */
 .dark-mode .top-nav {
   background: rgba(10, 10, 15, 0.72);
   border-bottom-color: rgba(255, 255, 255, 0.06);

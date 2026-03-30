@@ -133,10 +133,10 @@ const difficultyOptions = [
   { label: '困难', value: 'hard' }
 ];
 
-const CATEGORY_ICONS = { 政治: '📕', 英语: '📘', 数学: '📗', 专业课: '📙', 综合: '📚' };
+const CATEGORY_ICONS = { 政治: '[政]', 英语: '[英]', 数学: '[数]', 专业课: '[专]', 综合: '[综]' };
 
 function categoryIcon(cat) {
-  return CATEGORY_ICONS[cat] || '📄';
+  return CATEGORY_ICONS[cat] || '[文]';
 }
 
 function diffLabel(d) {

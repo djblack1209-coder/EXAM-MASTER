@@ -22,7 +22,7 @@
     <scroll-view class="message-list" scroll-y :scroll-top="scrollTop" scroll-with-animation>
       <!-- 课堂开始提示 -->
       <view v-if="messages.length === 0 && !loading" class="welcome-card apple-glass-card">
-        <text class="welcome-icon">🎓</text>
+        <text class="welcome-icon">[课堂]</text>
         <text class="welcome-title">课堂即将开始</text>
         <text class="welcome-desc">AI 老师和同学已就位，点击下方按钮开始上课</text>
         <button class="btn-start" @tap="startClass">开始上课</button>
@@ -47,7 +47,7 @@
         <view class="message-bubble" :class="msg.metadata?.isUser ? 'bubble-user' : 'bubble-agent'">
           <!-- 测验类型消息 -->
           <view v-if="msg.type === 'quiz'" class="quiz-content">
-            <text class="quiz-label">📝 课堂测验</text>
+            <text class="quiz-label">[测验] 课堂测验</text>
             <text class="quiz-body">{{ parseQuizDisplay(msg.content) }}</text>
           </view>
           <!-- 普通文本消息 -->
@@ -91,7 +91,7 @@
           {{ loading ? '思考中...' : '继续' }}
         </button>
         <button class="btn-action btn-question" :disabled="loading" @tap="askQuestion">举手提问</button>
-        <!-- ✅ [闭环核心] 课后测验入口 -->
+        <!-- [OK] [闭环核心] 课后测验入口 -->
         <button v-if="phase === 'completed'" class="btn-action btn-quiz" @tap="goQuiz">课后测验</button>
       </view>
     </view>
@@ -147,8 +147,8 @@ const phaseText = computed(() => {
 });
 
 function avatarEmoji(role) {
-  const map = { teacher: '👨‍🏫', student: '🧑‍🎓', examiner: '📋' };
-  return map[role] || '🤖';
+  const map = { teacher: '[师]', student: '[生]', examiner: '[考]' };
+  return map[role] || '[智能]';
 }
 
 function parseQuizDisplay(content) {
@@ -294,7 +294,7 @@ function handleEndClass() {
   });
 }
 
-// ✅ [闭环核心] 课后测验
+// [OK] [闭环核心] 课后测验
 function goQuiz() {
   uni.navigateTo({ url: '/pages/practice-sub/do-quiz' });
 }

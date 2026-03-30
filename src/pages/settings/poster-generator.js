@@ -645,7 +645,7 @@ class PosterGenerator {
       });
 
       // 标题
-      this.drawText('📊 学习成绩单', {
+      this.drawText('[统计] 学习成绩单', {
         y: 230,
         fontSize: 38,
         fontWeight: 'bold',
@@ -695,7 +695,7 @@ class PosterGenerator {
         { label: '连续学习', value: String(streakDays), unit: '天' },
         { label: '学习天数', value: String(studyDays), unit: '天' },
         { label: '能力评级', value: abilityRank, unit: '' },
-        { label: '🔥 连击', value: `${streakDays > 0 ? '✓' : '-'}`, unit: '' }
+        { label: '连续 连击', value: `${streakDays > 0 ? '✓' : '-'}`, unit: '' }
       ];
 
       const cols = 3;

@@ -233,7 +233,7 @@ export default {
       this.$emit('tutorial');
 
       uni.showModal({
-        title: '📖 快速上手教程',
+        title: '快速上手教程',
         content:
           '1. 上传学习资料（PDF/Word/图片）\n2. 智能自动提取知识点生成题目\n3. 开始刷题，错题自动收录\n4. 查看学习报告，持续进步',
         confirmText: '开始上传',

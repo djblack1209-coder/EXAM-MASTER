@@ -1440,7 +1440,7 @@ export default {
           // 中间 VS 闪电符号
           ctx.setFontSize(24);
           ctx.setFillStyle('#FFD700');
-          ctx.fillText('⚡', W / 2, 200);
+          ctx.fillText('VS', W / 2, 200);
 
           // 右侧（对手）
           ctx.setFillStyle('rgba(255, 255, 255, 0.2)');
@@ -1465,7 +1465,7 @@ export default {
           ctx.fillRect(20, cardY, cardWidth - 10, 100);
           ctx.setFontSize(20);
           ctx.setFillStyle('#FFD700');
-          ctx.fillText('🎯', 20 + (cardWidth - 10) / 2, cardY + 30);
+          ctx.fillText('精准', 20 + (cardWidth - 10) / 2, cardY + 30);
           ctx.setFontSize(16);
           ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText(`${this.accuracy}%`, 20 + (cardWidth - 10) / 2, cardY + 55);
@@ -1478,7 +1478,7 @@ export default {
           ctx.fillRect(20 + cardWidth, cardY, cardWidth - 10, 100);
           ctx.setFontSize(20);
           ctx.setFillStyle('#FFD700');
-          ctx.fillText('⚡', 20 + cardWidth + (cardWidth - 10) / 2, cardY + 30);
+          ctx.fillText('闪电', 20 + cardWidth + (cardWidth - 10) / 2, cardY + 30);
           ctx.setFontSize(16);
           ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText(`${this.averageTime.toFixed(1)}s`, 20 + cardWidth + (cardWidth - 10) / 2, cardY + 55);
@@ -1491,7 +1491,7 @@ export default {
           ctx.fillRect(20 + cardWidth * 2, cardY, cardWidth - 10, 100);
           ctx.setFontSize(20);
           ctx.setFillStyle('#FFD700');
-          ctx.fillText('📚', 20 + cardWidth * 2 + (cardWidth - 10) / 2, cardY + 30);
+          ctx.fillText('知识', 20 + cardWidth * 2 + (cardWidth - 10) / 2, cardY + 30);
           ctx.setFontSize(16);
           ctx.setFillStyle(this.isDark ? '#1c1c1e' : '#ffffff');
           ctx.fillText(`${this.knowledgePoints.length}`, 20 + cardWidth * 2 + (cardWidth - 10) / 2, cardY + 55);

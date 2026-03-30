@@ -13,7 +13,7 @@
         <view class="brain-ring ring-1" />
         <view class="brain-ring ring-2" />
         <view class="brain-ring ring-3" />
-        <text class="brain-icon">🧠</text>
+        <text class="brain-icon">智能分析</text>
       </view>
       <text class="loading-title">{{ loadingText }}</text>
       <view class="loading-steps">
@@ -26,7 +26,7 @@
 
     <!-- [AUDIT FIX R135] 加载失败状态 — 给用户明确反馈和重试入口 -->
     <view v-else-if="loadFailed" class="fail-state">
-      <text class="fail-icon">😵</text>
+      <text class="fail-icon">加载失败</text>
       <text class="fail-title">报告加载失败</text>
       <text class="fail-desc">网络不太给力，请稍后重试</text>
       <view class="fail-retry" @tap="retryLoad">
@@ -87,7 +87,7 @@
             <text class="pattern-count">出现 {{ ep.count || 0 }} 次</text>
           </view>
           <text class="pattern-desc">{{ ep.description }}</text>
-          <text class="pattern-fix">💡 {{ ep.fix }}</text>
+          <text class="pattern-fix">建议: {{ ep.fix }}</text>
         </view>
       </view>
 
@@ -160,21 +160,21 @@
         <text class="section-title">AI 学习建议</text>
         <view class="plan-card apple-glass-card">
           <view v-if="studyPlan.immediate" class="plan-row">
-            <text class="plan-icon">🔥</text>
+            <text class="plan-icon">[紧急]</text>
             <view class="plan-content">
               <text class="plan-label">立即复习</text>
               <text class="plan-text">{{ studyPlan.immediate }}</text>
             </view>
           </view>
           <view v-if="studyPlan.thisWeek" class="plan-row">
-            <text class="plan-icon">📅</text>
+            <text class="plan-icon">[周计划]</text>
             <view class="plan-content">
               <text class="plan-label">本周重点</text>
               <text class="plan-text">{{ studyPlan.thisWeek }}</text>
             </view>
           </view>
           <view v-if="studyPlan.suggestion" class="plan-row">
-            <text class="plan-icon">💡</text>
+            <text class="plan-icon">[建议]</text>
             <view class="plan-content">
               <text class="plan-label">整体建议</text>
               <text class="plan-text">{{ studyPlan.suggestion }}</text>
@@ -271,13 +271,13 @@ function severityText(s) {
 }
 
 function patternIcon(type) {
-  if (!type) return '❓';
-  if (type.includes('概念')) return '📖';
-  if (type.includes('计算')) return '🔢';
-  if (type.includes('审题')) return '👁️';
-  if (type.includes('记忆')) return '🧠';
-  if (type.includes('理解')) return '💭';
-  return '⚡';
+  if (!type) return '[?]';
+  if (type.includes('概念')) return '[概念]';
+  if (type.includes('计算')) return '[计算]';
+  if (type.includes('审题')) return '[审题]';
+  if (type.includes('记忆')) return '[智能]';
+  if (type.includes('理解')) return '[理解]';
+  return '[其他]';
 }
 
 // 数字递增动画

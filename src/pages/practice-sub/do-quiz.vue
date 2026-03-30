@@ -269,7 +269,7 @@
 
       <!-- ✅ [体感革命] XP飞入动画 -->
       <view v-if="showXpToast" class="xp-flyout">
-        <text class="xp-flyout-text">+{{ xpEarned }} XP{{ xpBoostActive ? ' 🔥2x' : '' }}</text>
+        <text class="xp-flyout-text">+{{ xpEarned }} XP{{ xpBoostActive ? ' 2x加速' : '' }}</text>
       </view>
 
       <!-- ✅ [上瘾引擎] XP Boost激活指示器 -->

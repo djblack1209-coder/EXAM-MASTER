@@ -47,7 +47,8 @@
               <image
                 class="avatar"
                 :src="friendInfo.avatar || defaultAvatar"
-                alt="头像" mode="aspectFill"
+                alt="头像"
+                mode="aspectFill"
                 @error="onAvatarError"
               />
               <view v-if="isOnline" class="online-dot" />
@@ -150,7 +151,7 @@
           <!-- 消息功能暂未开放，隐藏按钮 -->
           <!-- <button class="action-btn secondary" hover-class="btn-hover" @tap="handleSendMessage"
 					:disabled="isActionLoading">
-					<text class="btn-icon">💬</text>
+					<text class="btn-icon">[消息]</text>
 					<text class="btn-text">发送消息</text>
 				</button> -->
           <button

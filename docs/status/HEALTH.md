@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-31 (第三十二轮：性能优化 + 部署 — gzip_static/Docker npm修复/H5部署配置/smart-study-engine部署指南) | Maintainer: AI-SOP
+> Last updated: 2026-03-31 (紧急修复轮：首页崩溃/导入页UI/全项目Emoji替换 — R291-R293) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,9 @@
 
 | ID   | Domain   | Title                                                                                 | Solution                                                                                                                                                 | Resolved   |
 | ---- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| R293 | frontend | 全项目约150处用户可见emoji不符合商业交付标准                                          | 30+文件emoji替换为中文文字/方括号标记，AIChatModal聊天表情选择器保留                                                                                     | 2026-03-31 |
+| R292 | frontend | import-data.vue白色遮挡/光晕/虚线丢失                                                 | glow opacity 0.8→0, 卡片backdrop-filter+color-mix降低白色, border-style恢复dashed                                                                        | 2026-03-31 |
+| R291 | frontend | AIDailyBriefing analyzeMastery is not a function首页崩溃                              | 动态import()添加raw.default\|\|raw模块命名空间互操作                                                                                                     | 2026-03-31 |
 | R277 | backend  | lesson-generator.ts safeError正则清洗后仍存储原始error.message至DB                    | 替换为硬编码中文提示'课程生成失败，请稍后重试'，阻断DB→status API间接泄露                                                                                | 2026-03-31 |
 | R276 | frontend | 5个API文件各含1-2个死函数（study/social/user/school/tools）                           | 删除7个死函数，grep确认无调用                                                                                                                            | 2026-03-31 |
 | R275 | frontend | practice.api.js含5个死函数（getQuestionBank/submitAnswer/addFavorite等）              | 删除5个死函数，favorites使用localStorage实现                                                                                                             | 2026-03-31 |

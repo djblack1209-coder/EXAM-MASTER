@@ -7,7 +7,7 @@ import { storageService } from '@/services/storageService.js';
 import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-// ✅ 以下模块从分包本地引用，避免打入主包
+// [勾] 以下模块从分包本地引用，避免打入主包
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { deduplicateQuestions } from '../utils/question-dedup-worker.js';
 import { toast } from '@/utils/toast.js';
@@ -350,7 +350,7 @@ export const aiGenerationMixin = {
       const sanitizedContent = this._sanitizeAIInput(chunk || this.fileName, MAX_CONTENT_LEN);
 
       try {
-        logger.log('[practice] 🤖 调用后端代理生成题目...');
+        logger.log('[practice] [智能] 调用后端代理生成题目...');
         const res = await proxyAI('generate_questions', {
           content: sanitizedContent,
           questionCount: batchSize
@@ -501,7 +501,7 @@ export const aiGenerationMixin = {
 
     clearAll() {
       uni.showModal({
-        title: '⚠️ 危险操作',
+        title: '[警告] 危险操作',
         content: '确定清空所有题库吗？此操作不可恢复！\n\n建议：清空前请确保已备份数据。',
         confirmColor: '#FF3B30',
         success: (res) => {
@@ -511,10 +511,10 @@ export const aiGenerationMixin = {
               if (currentBank.length > 0) {
                 const backup = JSON.stringify(currentBank);
                 storageService.save('v30_bank_backup_before_clear', backup);
-                logger.log('[刷题中心] 💾 清空前已创建备份:', currentBank.length, '道题');
+                logger.log('[刷题中心] [存档] 清空前已创建备份:', currentBank.length, '道题');
               }
             } catch (backupErr) {
-              logger.warn('[刷题中心] ⚠️ 创建备份失败:', backupErr);
+              logger.warn('[刷题中心] [警告] 创建备份失败:', backupErr);
             }
 
             storageService.remove('v30_bank');
@@ -593,7 +593,7 @@ export const aiGenerationMixin = {
     updateGenerationProgress() {
       const bank = storageService.get('v30_bank', []);
       const newlyGenerated = Math.max(0, bank.length - this.bankSizeAtGenStart);
-      // ✅ 修复：目标数量就是 totalQuestionsLimit，不应乘以 batchQuestionCount
+      // [勾] 修复：目标数量就是 totalQuestionsLimit，不应乘以 batchQuestionCount
       const targetCount = this.totalQuestionsLimit || 10;
       this.generationProgress = Math.min(100, Math.round((newlyGenerated / targetCount) * 100));
 
@@ -612,16 +612,16 @@ export const aiGenerationMixin = {
       try {
         const backup = JSON.stringify(merged);
         storageService.save('v30_bank_backup', backup);
-        logger.log('[practice] 💾 已创建题库备份:', merged.length, '道题');
+        logger.log('[practice] [存档] 已创建题库备份:', merged.length, '道题');
       } catch (backupErr) {
-        logger.warn('[practice] ⚠️ 备份失败（不影响主流程）:', backupErr);
+        logger.warn('[practice] [警告] 备份失败（不影响主流程）:', backupErr);
       }
 
       storageService.save('v30_bank', merged);
 
       const saved = storageService.get('v30_bank', []);
       const isSuccess = saved.length === merged.length;
-      logger.log('[practice] ✅ 保存验证:', {
+      logger.log('[practice] [勾] 保存验证:', {
         savedCount: saved.length,
         expectedCount: merged.length,
         match: isSuccess
@@ -645,16 +645,16 @@ export const aiGenerationMixin = {
     },
 
     _restoreFromBackup() {
-      logger.error('[practice] ❌ 保存验证失败！尝试从备份恢复...');
+      logger.error('[practice] [叉] 保存验证失败！尝试从备份恢复...');
       try {
         const backup = storageService.get('v30_bank_backup');
         if (backup) {
           const restored = JSON.parse(backup);
           storageService.save('v30_bank', restored);
-          logger.log('[practice] 🔄 已从备份恢复数据');
+          logger.log('[practice] [恢复] 已从备份恢复数据');
         }
       } catch (restoreErr) {
-        logger.error('[practice] ❌ 恢复备份失败:', restoreErr);
+        logger.error('[practice] [叉] 恢复备份失败:', restoreErr);
       }
     },
 
@@ -687,7 +687,7 @@ export const aiGenerationMixin = {
     },
 
     _handleNewFormatResponse(res) {
-      logger.log('[practice] ✅ 检测到新格式响应，直接使用 data');
+      logger.log('[practice] [勾] 检测到新格式响应，直接使用 data');
       try {
         let newQs = res.data;
         if (typeof newQs === 'string') {

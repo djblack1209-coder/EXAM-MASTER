@@ -2438,9 +2438,9 @@ export default {
   left: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 12% 12%, rgba(107, 208, 150, 0.22) 0%, transparent 34%),
-    radial-gradient(circle at 84% 10%, rgba(255, 255, 255, 0.24) 0%, transparent 24%),
-    radial-gradient(circle at 62% 82%, rgba(72, 190, 128, 0.15) 0%, transparent 32%);
+    radial-gradient(circle at 12% 12%, rgba(107, 208, 150, 0.16) 0%, transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(255, 255, 255, 0.1) 0%, transparent 24%),
+    radial-gradient(circle at 62% 82%, rgba(72, 190, 128, 0.1) 0%, transparent 32%);
 }
 
 .apple-container.dark-mode::before {
@@ -2461,9 +2461,15 @@ export default {
   z-index: 1;
   background:
     linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--apple-glass-card-bg) 60%, transparent) 0%,
+      color-mix(in srgb, var(--apple-group-bg) 60%, transparent) 100%
+    );
   border: 1px solid var(--apple-glass-border-strong);
   box-shadow: var(--apple-shadow-card);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
 }
 
 .custom-navbar {
@@ -2475,9 +2481,11 @@ export default {
 }
 
 .navbar-back-btn {
-  background: var(--apple-glass-card-bg);
+  background: color-mix(in srgb, var(--apple-glass-card-bg) 55%, transparent);
   border: 1px solid var(--glass-border);
   box-shadow: var(--apple-shadow-surface);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .page-header,
@@ -2515,23 +2523,29 @@ export default {
 .danger-ghost,
 .glass-btn.ghost,
 .glass-btn.danger {
-  background: linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%), var(--apple-glass-card-bg);
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    color-mix(in srgb, var(--apple-glass-card-bg) 55%, transparent);
   border: 1px solid var(--apple-glass-border-strong);
   box-shadow: var(--apple-shadow-surface);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
 }
 
 .upload-trigger {
   min-height: 320rpx;
-  border-style: solid;
+  border-style: dashed;
 }
 
 .icon-circle,
 .file-icon-box,
 .close-btn-circle {
-  background: var(--apple-glass-card-bg);
+  background: color-mix(in srgb, var(--apple-glass-card-bg) 50%, transparent);
   border: 1px solid var(--glass-border);
   box-shadow: var(--apple-shadow-surface);
   color: var(--text-main);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .meta-tag {
@@ -2579,7 +2593,7 @@ export default {
   width: 70%;
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
-  opacity: 0.8;
+  opacity: 0;
   transform: skewX(-18deg);
   transition:
     transform 0.5s ease,

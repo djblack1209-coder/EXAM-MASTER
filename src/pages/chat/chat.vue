@@ -142,10 +142,10 @@
                 {{ msg.time }}
               </text>
               <view v-if="msg.status" class="msg-status">
-                <text v-if="msg.status === 'sending'" class="status-icon"> ⏳ </text>
+                <text v-if="msg.status === 'sending'" class="status-icon"> [等待] </text>
                 <text v-else-if="msg.status === 'sent'" class="status-icon sent"> ✓ </text>
                 <text v-else-if="msg.status === 'failed'" class="status-icon failed" @tap="retryMessage(index)">
-                  ⚠️ 点击重试
+                  [!] 点击重试
                 </text>
               </view>
             </view>
@@ -267,7 +267,7 @@ import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useSchoolStore } from '@/stores/modules/school.js';
 import { useToolsStore } from '@/stores/modules/tools.js';
 import { storageService } from '@/services/storageService.js';
-// ✅ 统一日志工具（生产环境自动禁用）
+// [OK] 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
@@ -277,7 +277,7 @@ import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { realtimeAnswer, stopAICacheCleanup } from './ai-router.js';
 // 外部 CDN 配置
 import config from '@/config';
-// ✅ AI 打字机效果
+// [OK] AI 打字机效果
 import { useTypewriter } from './composables/useTypewriter.js';
 import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
 
@@ -288,7 +288,7 @@ const icons8 = (style, size, color, name) =>
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 
-// ✅ F024: 暗黑模式状态
+// [OK] F024: 暗黑模式状态
 const isDark = ref(false);
 const initTheme = () => {
   const savedTheme = storageService.get('theme_mode', 'light');
@@ -340,12 +340,12 @@ const aiFriends = ref([
 
 // 情绪选项
 const emotionOptions = ref([
-  { value: 'frustrated', emoji: '😫', label: '沮丧' },
-  { value: 'anxious', emoji: '😰', label: '焦虑' },
-  { value: 'excited', emoji: '🎉', label: '开心' },
-  { value: 'tired', emoji: '😴', label: '疲惫' },
-  { value: 'confused', emoji: '🤔', label: '困惑' },
-  { value: 'neutral', emoji: '😊', label: '平静' }
+  { value: 'frustrated', emoji: '[沮丧]', label: '沮丧' },
+  { value: 'anxious', emoji: '[焦虑]', label: '焦虑' },
+  { value: 'excited', emoji: '[开心]', label: '开心' },
+  { value: 'tired', emoji: '[疲惫]', label: '疲惫' },
+  { value: 'confused', emoji: '[困惑]', label: '困惑' },
+  { value: 'neutral', emoji: '[平静]', label: '平静' }
 ]);
 
 // 状态
@@ -368,7 +368,7 @@ const isPageLoading = ref(true); // 页面初始加载状态
 const isRecording = ref(false);
 const showVoiceWave = ref(false);
 const voiceLevel = ref(0);
-const audioChunks = ref([]); // ✅ BUG FIX: 声明 audioChunks ref（之前缺失导致运行时错误）
+const audioChunks = ref([]); // [OK] BUG FIX: 声明 audioChunks ref（之前缺失导致运行时错误）
 
 // 实时答疑状态
 const isRealtimeMode = ref(false);
@@ -388,7 +388,7 @@ const safeTimeout = (fn, delay) => {
   return id;
 };
 
-// ✅ 图片加载失败处理
+// [OK] 图片加载失败处理
 const onAvatarError = (e) => {
   const target = e?.target;
   if (target && target.src && target.src !== defaultAvatar) {
@@ -413,7 +413,7 @@ const userContext = reactive({
 });
 
 onMounted(async () => {
-  // ✅ F024: 初始化主题
+  // [OK] F024: 初始化主题
   initTheme();
   uni.$on('themeUpdate', onThemeUpdate);
 
@@ -706,7 +706,7 @@ const startRecording = async () => {
         logger.error('[Chat] 录音错误:', err);
         isRecording.value = false;
         showVoiceWave.value = false;
-        // ✅ P0-FIX: 清理录音定时器，防止内存泄漏
+        // [OK] P0-FIX: 清理录音定时器，防止内存泄漏
         if (recordingIntervalId) {
           clearInterval(recordingIntervalId);
           recordingIntervalId = null;
@@ -850,7 +850,7 @@ const handleRealtimeAnswer = async (question) => {
     role: 'user',
     content: question,
     time: formatTime(new Date()),
-    status: 'sending' // ✅ F027: 实时模式也添加消息状态
+    status: 'sending' // [OK] F027: 实时模式也添加消息状态
   };
   messages.value.push(userMsg);
   messageText.value = '';
@@ -876,7 +876,7 @@ const handleRealtimeAnswer = async (question) => {
     }
 
     isTyping.value = false;
-    // ✅ F027: 标记用户消息发送成功
+    // [OK] F027: 标记用户消息发送成功
     userMsg.status = 'sent';
 
     let reply = '抱歉，我暂时无法回复，请稍后再试~';
@@ -894,7 +894,7 @@ const handleRealtimeAnswer = async (question) => {
       content: '',
       time: formatTime(new Date()),
       isRealtime: true,
-      status: 'sent' // ✅ F027
+      status: 'sent' // [OK] F027
     };
     messages.value.push(aiMsg);
     const rtMsgIndex = messages.value.length - 1;
@@ -923,7 +923,7 @@ const handleRealtimeAnswer = async (question) => {
     }
 
     isTyping.value = false;
-    // ✅ F027: 标记用户消息发送失败
+    // [OK] F027: 标记用户消息发送失败
     userMsg.status = 'failed';
     logger.error('[Chat] 实时答疑失败:', error);
 
@@ -1121,7 +1121,7 @@ const retryMessage = async (index) => {
   }
 };
 
-// ✅ F024: 清理主题监听 + 录音定时器
+// [OK] F024: 清理主题监听 + 录音定时器
 onUnmounted(() => {
   uni.$off('themeUpdate', onThemeUpdate);
   if (recordingIntervalId) {
@@ -1180,7 +1180,7 @@ onUnmounted(() => {
   filter: blur(8rpx);
 }
 
-/* ✅ F024: 暗黑模式适配 — 使用 CSS 变量替代硬编码色值 */
+/* [OK] F024: 暗黑模式适配 — 使用 CSS 变量替代硬编码色值 */
 .chat-container.dark-mode {
   background-color: var(--bg-page, #0b0b0f);
 

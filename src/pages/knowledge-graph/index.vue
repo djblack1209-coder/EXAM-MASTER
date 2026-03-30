@@ -49,7 +49,7 @@
       <!-- 智能学习推荐 -->
       <view v-if="recommendedTopic" class="recommended-topic apple-glass-card">
         <view class="recommended-header">
-          <text class="recommended-icon">🎯</text>
+          <text class="recommended-icon">[标]</text>
           <text class="recommended-title">推荐下一步学习</text>
         </view>
         <view class="recommended-body">
@@ -64,7 +64,7 @@
 
       <!-- 学习路径 -->
       <view v-if="studyPath.length > 0" class="study-path-section">
-        <text class="section-title">📚 学习路径</text>
+        <text class="section-title">学习路径</text>
         <view class="study-path-list">
           <view
             v-for="(item, index) in studyPath.slice(0, 8)"

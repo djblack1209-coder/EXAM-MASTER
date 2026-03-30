@@ -286,7 +286,7 @@ class QuestionNoteManager {
       id: 'tag_' + Date.now().toString(36),
       name: tagData.name,
       color: tagData.color || '#9E9E9E',
-      icon: tagData.icon || '🏷️',
+      icon: tagData.icon || '[标签]',
       isCustom: true
     };
 

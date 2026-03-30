@@ -70,7 +70,7 @@
     <!-- 空状态 -->
     <BaseEmpty
       v-else
-      icon="📁"
+      icon="[文件夹]"
       title="暂无文件"
       desc="导入学习资料后，文件将显示在这里"
       :show-button="true"
@@ -83,10 +83,10 @@
 
 <script>
 import { toast } from '@/utils/toast.js';
-// ✅ 统一日志工具（生产环境自动禁用）
+// [勾] 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-// ✅ 文件处理工具
+// [勾] 文件处理工具
 import { fileHandler } from './file-handler.js';
 // F019: storageService
 import storageService from '@/services/storageService.js';
@@ -125,33 +125,33 @@ export default {
   methods: {
     loadFiles() {
       // 从本地存储加载文件列表
-      logger.log('[文件管理] 🔍 开始加载文件列表');
+      logger.log('[文件管理] [搜索] 开始加载文件列表');
       try {
         let savedFiles = storageService.get('imported_files', []);
 
         // E005: 仅首次尝试备份恢复，避免每次 onShow 都执行
         if (savedFiles.length === 0 && !this._recoveryAttempted) {
           this._recoveryAttempted = true;
-          logger.warn('[文件管理] ⚠️ 文件列表为空，尝试从备份恢复...');
+          logger.warn('[文件管理] [警告] 文件列表为空，尝试从备份恢复...');
           try {
             const backup = storageService.get('imported_files_backup');
             if (backup) {
               const restored = JSON.parse(backup);
               if (Array.isArray(restored) && restored.length > 0) {
-                logger.log('[文件管理] 🔄 从备份恢复文件列表:', restored.length, '个文件');
+                logger.log('[文件管理] [恢复] 从备份恢复文件列表:', restored.length, '个文件');
                 storageService.save('imported_files', restored);
                 savedFiles = restored;
                 toast.success('已从备份恢复文件列表', 2000);
               }
             }
           } catch (restoreErr) {
-            logger.error('[文件管理] ❌ 恢复备份失败:', restoreErr);
+            logger.error('[文件管理] [叉] 恢复备份失败:', restoreErr);
           }
         }
 
         this.files = savedFiles;
       } catch (err) {
-        logger.error('[文件管理] ❌ 加载文件列表异常:', err);
+        logger.error('[文件管理] [叉] 加载文件列表异常:', err);
         this.files = [];
       } finally {
         this.isPageLoading = false;
@@ -178,7 +178,7 @@ export default {
      * 查看文件 - 使用 fileHandler 统一处理
      */
     async viewFile(file) {
-      logger.log('[文件管理] 📄 查看文件:', file.name);
+      logger.log('[文件管理] [文档] 查看文件:', file.name);
 
       const fileName = file.name || '';
       const _ext = fileHandler.getFileExtension(fileName);
@@ -203,7 +203,7 @@ export default {
           }
         } catch (err) {
           toast.hide();
-          logger.error('[文件管理] ❌ 文件预览失败:', err);
+          logger.error('[文件管理] [叉] 文件预览失败:', err);
           this.showFileInfo(file);
         }
       } else {

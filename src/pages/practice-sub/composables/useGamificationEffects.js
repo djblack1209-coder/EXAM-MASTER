@@ -65,7 +65,7 @@ export function useGamificationEffects() {
     vibrate('medium');
     try {
       if (typeof uni !== 'undefined' && uni.showToast) {
-        toast.info(`${achievement.icon || '🏅'} ${achievement.name}`, 3000);
+        toast.info(`${achievement.icon || '[奖章]'} ${achievement.name}`, 3000);
       }
     } catch {
       /* 静默 */

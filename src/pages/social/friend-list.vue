@@ -104,7 +104,7 @@
         </view>
 
         <!-- 搜索无结果 -->
-        <BaseEmpty v-else icon="🔍" title="未找到用户" desc="试试搜索其他昵称" />
+        <BaseEmpty v-else icon="[搜索]" title="未找到用户" desc="试试搜索其他昵称" />
       </view>
 
       <!-- 我的好友 Tab -->
@@ -118,7 +118,7 @@
         <!-- 空状态 -->
         <BaseEmpty
           v-else-if="!isLoading && friendList.length === 0"
-          icon="👥"
+          icon="[好友]"
           title="还没有好友"
           desc="快去搜索添加好友，一起刷题吧！"
         />

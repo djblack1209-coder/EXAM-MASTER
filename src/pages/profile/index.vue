@@ -88,7 +88,7 @@
                 alt="头像"
                 mode="aspectFill"
               />
-              <!-- ✅ F020: 未登录/无头像时使用默认头像图片代替 emoji -->
+              <!-- [OK] F020: 未登录/无头像时使用默认头像图片代替 emoji -->
               <image
                 v-else
                 class="avatar-image avatar-default"
@@ -185,23 +185,25 @@
           <!-- 成就 + 连续学习 + 每日挑战 -->
           <view class="level-stats">
             <view class="level-stat-item">
-              <text class="level-stat-value">🔥 {{ currentStreak }}</text>
+              <text class="level-stat-value">连续 {{ currentStreak }}</text>
               <text class="level-stat-label">连续学习</text>
             </view>
             <view class="level-stat-divider" />
             <view class="level-stat-item">
-              <text class="level-stat-value">🏅 {{ achievementCount }}</text>
+              <text class="level-stat-value">[奖] {{ achievementCount }}</text>
               <text class="level-stat-label">成就解锁</text>
             </view>
             <view class="level-stat-divider" />
             <view v-if="dailyChallenge" class="level-stat-item">
               <text class="level-stat-value">
-                {{ dailyChallenge.completed ? '✅' : '📋' }} {{ dailyChallenge.progress }}/{{ dailyChallenge.target }}
+                {{ dailyChallenge.completed ? '[完成]' : '[进行中]' }} {{ dailyChallenge.progress }}/{{
+                  dailyChallenge.target
+                }}
               </text>
               <text class="level-stat-label">今日挑战</text>
             </view>
             <view v-else class="level-stat-item">
-              <text class="level-stat-value">📋 -</text>
+              <text class="level-stat-value">[进行中] -</text>
               <text class="level-stat-label">今日挑战</text>
             </view>
           </view>
@@ -387,11 +389,11 @@ import { useProfileStore } from '@/stores/modules/profile';
 // 打卡和补签动态导入 — 瘦身主包
 // import { checkinStreak } from '@/services/checkin-streak.js';
 // import { streakRecovery } from '@/services/streak-recovery.js';
-// ✅ 统一日志工具（生产环境自动禁用）
+// [OK] 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
-// ✅ F019: 统一使用 storageService 进行数据缓存管理
+// [OK] F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
@@ -718,7 +720,7 @@ function onScroll(e) {
 function toggleTheme() {
   isDark.value = !isDark.value;
   const mode = isDark.value ? 'dark' : 'light';
-  // ✅ F019: 统一使用 storageService
+  // [OK] F019: 统一使用 storageService
   storageService.save('theme_mode', mode);
   uni.$emit('themeUpdate', mode);
 
@@ -836,7 +838,7 @@ async function chooseAndUploadAvatar(sourceType) {
 
     if (uploadRes.success) {
       // 更新本地存储
-      // ✅ F019: 统一使用 storageService
+      // [OK] F019: 统一使用 storageService
       const localUserInfo = storageService.get('userInfo', {});
       localUserInfo.avatarUrl = uploadRes.avatarUrl;
       storageService.save('userInfo', localUserInfo);
@@ -849,7 +851,7 @@ async function chooseAndUploadAvatar(sourceType) {
 
       toast.success('头像更新成功');
 
-      // ✅ P0-FIX: 强制刷新页面数据，确保头像立即显示
+      // [OK] P0-FIX: 强制刷新页面数据，确保头像立即显示
       setTimeout(() => {
         loadData();
       }, 500);
@@ -993,7 +995,7 @@ function handleLogout() {
           // 清除本地存储的用户信息
           storageService.remove('userInfo');
           storageService.remove('EXAM_USER_ID');
-          // ✅ B021-3: 不再存储明文 user_id，无需清理
+          // [OK] B021-3: 不再存储明文 user_id，无需清理
           storageService.remove('EXAM_TOKEN');
 
           // 通知其他页面登录状态变化
