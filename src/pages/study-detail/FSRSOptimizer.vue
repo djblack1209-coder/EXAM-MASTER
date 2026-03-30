@@ -8,7 +8,7 @@
     <view v-else>
       <view class="fsrs-header">
         <view class="fsrs-title-row">
-          <text class="fsrs-icon">🧠</text>
+          <text class="fsrs-icon">[智能]</text>
           <text class="fsrs-title">记忆模型</text>
           <view v-if="status.has_custom_params" class="fsrs-badge">已个性化</view>
         </view>

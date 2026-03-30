@@ -12,7 +12,7 @@
     <view class="steps-wrapper">
       <!-- Step 0: 选择考试类型 -->
       <view v-show="step === 0" :class="['step-container', { 'step-active': step === 0, 'step-hidden': step !== 0 }]">
-        <text class="step-emoji">🎯</text>
+        <text class="step-emoji">目标</text>
         <text class="step-title">你在准备什么考试？</text>
         <text class="step-desc">我们会为你定制学习计划</text>
 
@@ -34,7 +34,7 @@
 
       <!-- Step 1: 设定每日目标 -->
       <view v-show="step === 1" :class="['step-container', { 'step-active': step === 1, 'step-hidden': step !== 1 }]">
-        <text class="step-emoji">📊</text>
+        <text class="step-emoji">统计</text>
         <text class="step-title">每天想练多少题？</text>
         <text class="step-desc">设定一个适合自己的目标</text>
 
@@ -58,13 +58,13 @@
 
       <!-- Step 2: 导入内容 -->
       <view v-show="step === 2" :class="['step-content', { 'step-active': step === 2, 'step-hidden': step !== 2 }]">
-        <text class="step-emoji">📚</text>
+        <text class="step-emoji">书</text>
         <text class="step-title">导入学习资料</text>
         <text class="step-desc">导入 Anki 牌组或上传学习资料，立即开始刷题</text>
 
         <view class="import-options">
           <view class="import-option" @tap="goImportAnki">
-            <text class="import-icon">📦</text>
+            <text class="import-icon">[导入]</text>
             <view class="import-info">
               <text class="import-name">导入 Anki 牌组</text>
               <text class="import-hint">支持 .apkg 格式，考研社区数万牌组可用</text>
@@ -73,7 +73,7 @@
           </view>
 
           <view class="import-option" @tap="goImportFile">
-            <text class="import-icon">📄</text>
+            <text class="import-icon">[文档]</text>
             <view class="import-info">
               <text class="import-name">上传学习资料</text>
               <text class="import-hint">支持 PDF、Word、TXT 等格式</text>
@@ -91,27 +91,27 @@
 
       <!-- Step 3: 准备开始 -->
       <view v-show="step === 3" :class="['step-container', { 'step-active': step === 3, 'step-hidden': step !== 3 }]">
-        <text class="step-emoji">🚀</text>
+        <text class="step-emoji">提升</text>
         <text class="step-title">一切就绪！</text>
         <text class="step-desc">{{ readySummary }}</text>
 
         <view class="ready-features">
           <view class="feature-item">
-            <text class="feature-icon">🧠</text>
+            <text class="feature-icon">[智能]</text>
             <view class="feature-text">
               <text class="feature-title">智能出题</text>
               <text class="feature-desc">AI 根据你的水平自动调整难度</text>
             </view>
           </view>
           <view class="feature-item">
-            <text class="feature-icon">📈</text>
+            <text class="feature-icon">[趋势]</text>
             <view class="feature-text">
               <text class="feature-title">科学复习</text>
               <text class="feature-desc">FSRS 算法帮你在最佳时机复习</text>
             </view>
           </view>
           <view class="feature-item">
-            <text class="feature-icon">🏆</text>
+            <text class="feature-icon">[成就]</text>
             <view class="feature-text">
               <text class="feature-title">成就系统</text>
               <text class="feature-desc">每道题都有 XP 奖励，解锁成就徽章</text>
@@ -120,8 +120,7 @@
         </view>
 
         <button class="start-btn" @tap="completeOnboarding">开始学习之旅</button>
-      </view>
-</view
+      </view> </view
     ><!-- /steps-wrapper -->
   </view>
 </template>
@@ -145,12 +144,12 @@ const selectedExam = ref('');
 const dailyGoal = ref(0);
 
 const examTypes = [
-  { id: 'kaoyan', name: '考研', icon: '🎓' },
-  { id: 'cet4', name: '四级', icon: '📝' },
-  { id: 'cet6', name: '六级', icon: '📖' },
-  { id: 'gongkao', name: '公考', icon: '🏛️' },
-  { id: 'sikao', name: '司考', icon: '⚖️' },
-  { id: 'other', name: '其他', icon: '📚' }
+  { id: 'kaoyan', name: '考研', icon: '[学位]' },
+  { id: 'cet4', name: '四级', icon: '[笔记]' },
+  { id: 'cet6', name: '六级', icon: '[阅读]' },
+  { id: 'gongkao', name: '公考', icon: '[公务]' },
+  { id: 'sikao', name: '司考', icon: '[法律]' },
+  { id: 'other', name: '其他', icon: '[书]' }
 ];
 
 const goalOptions = [

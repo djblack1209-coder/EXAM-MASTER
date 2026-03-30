@@ -11,7 +11,7 @@
       <text class="splash-greeting">{{ greeting }}</text>
 
       <view v-if="streakDays > 0" class="streak-preview">
-        <text class="streak-flame">🔥</text>
+        <text class="streak-flame">[火]</text>
         <text class="streak-text">连续学习 {{ streakDays }} 天</text>
       </view>
 
@@ -45,13 +45,13 @@ const splashTimer = ref(null);
 // 动态问候语
 const greeting = computed(() => {
   const hour = new Date().getHours();
-  if (hour < 6) return '夜深了，注意休息 🌙';
-  if (hour < 9) return '早安，新的一天加油 ☀️';
-  if (hour < 12) return '上午好，状态正佳 📖';
-  if (hour < 14) return '中午好，适当休息 🍵';
-  if (hour < 18) return '下午好，继续冲刺 💪';
-  if (hour < 22) return '晚上好，坚持就是胜利 🌟';
-  return '夜深了，注意休息 🌙';
+  if (hour < 6) return '夜深了，注意休息';
+  if (hour < 9) return '早安，新的一天加油';
+  if (hour < 12) return '上午好，状态正佳';
+  if (hour < 14) return '中午好，适当休息';
+  if (hour < 18) return '下午好，继续冲刺';
+  if (hour < 22) return '晚上好，坚持就是胜利';
+  return '夜深了，注意休息';
 });
 
 // 连续学习天数

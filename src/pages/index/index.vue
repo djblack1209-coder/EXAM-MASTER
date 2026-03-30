@@ -42,7 +42,7 @@
         <view class="content-wrapper">
           <!-- 网络错误重试卡片 -->
           <view v-if="loadError && !isLoading" class="load-error-card" @tap="loadData">
-            <text class="load-error-icon">⚠️</text>
+            <text class="load-error-icon">警告</text>
             <view class="load-error-text">
               <text class="load-error-title">加载失败</text>
               <text class="load-error-hint">点击重试</text>
@@ -102,7 +102,7 @@
           <!-- ✅ [P0重构] 今日复习强入口 — FSRS 本地调度驱动 -->
           <view v-if="!isNewUser" class="review-banner apple-glass-card" @tap="goSmartReview">
             <view class="review-banner-left">
-              <text class="review-banner-icon">{{ reviewPending > 0 ? '🔥' : '✅' }}</text>
+              <text class="review-banner-icon">{{ reviewPending > 0 ? '待复习' : '已完成' }}</text>
               <view class="review-banner-info">
                 <text class="review-banner-title">今日复习</text>
                 <text class="review-banner-sub">
@@ -164,7 +164,7 @@
           <!-- ✅ [知识引擎] 智能学习推荐 -->
           <view v-if="recommendedTopic && !isNewUser" class="smart-recommend apple-glass-card" @tap="goSmartReview">
             <view class="smart-recommend-header">
-              <text class="smart-recommend-icon">🎯</text>
+              <text class="smart-recommend-icon">[标]</text>
               <text class="smart-recommend-title">推荐学习</text>
             </view>
             <text class="smart-recommend-name">{{ recommendedTopic.knowledgePoint }}</text>
@@ -190,7 +190,7 @@
             <view class="free-tools-grid">
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('id-photo')">
                 <view class="tool-card-icon-wrap">
-                  <text class="tool-card-icon">🪪</text>
+                  <text class="tool-card-icon">[证件照]</text>
                 </view>
                 <text class="tool-card-title">证件照换底色</text>
                 <text class="tool-card-desc">报名免裁剪</text>
@@ -200,7 +200,7 @@
               </view>
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('doc-convert')">
                 <view class="tool-card-icon-wrap">
-                  <text class="tool-card-icon">📄</text>
+                  <text class="tool-card-icon">[文档]</text>
                 </view>
                 <text class="tool-card-title">文档格式转换</text>
                 <text class="tool-card-desc">PDF/Word 互转</text>
@@ -210,7 +210,7 @@
               </view>
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('photo-search')">
                 <view class="tool-card-icon-wrap">
-                  <text class="tool-card-icon">📷</text>
+                  <text class="tool-card-icon">[相机]</text>
                 </view>
                 <text class="tool-card-title">拍照搜题</text>
                 <text class="tool-card-desc">AI 秒出答案</text>

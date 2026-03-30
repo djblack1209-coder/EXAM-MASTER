@@ -307,7 +307,7 @@ class QuestionFavoriteManager {
     const folder = {
       id: this._generateId(),
       name: folderData.name,
-      icon: folderData.icon || '📁',
+      icon: folderData.icon || '[文件夹]',
       color: folderData.color || '#9E9E9E',
       isDefault: false,
       createdAt: Date.now()

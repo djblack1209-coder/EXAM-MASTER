@@ -66,7 +66,7 @@
             :class="['filter-chip cluster-chip', { active: reviewFilter === 'cluster' }]"
             @tap="switchToClusterView"
           >
-            <text class="filter-text"> ✨ 知识点聚类 </text>
+            <text class="filter-text"> 知识点聚类 </text>
           </view>
           <view
             v-for="cat in mistakeCategories"
