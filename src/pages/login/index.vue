@@ -1131,14 +1131,10 @@ onUnmounted(() => {
 .login-container {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #f8faf8 0%, #e8f5e9 100%);
+  background: linear-gradient(180deg, var(--page-gradient-top) 0%, var(--page-gradient-bottom) 100%);
   padding: 0 40rpx;
   position: relative;
   overflow: hidden;
-}
-
-.login-container.dark-mode {
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
 }
 
 /* 背景装饰 */
@@ -1182,13 +1178,6 @@ onUnmounted(() => {
   right: 100rpx;
 }
 
-.dark-mode .bg-circle-1,
-.dark-mode .bg-circle-2,
-.dark-mode .bg-circle-3 {
-  background: var(--brand-color);
-  opacity: 0.05;
-}
-
 /* 顶部栏 */
 .top-bar {
   padding-bottom: 20rpx;
@@ -1200,23 +1189,15 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--apple-glass-card-bg);
   border-radius: 50%;
   box-shadow: var(--apple-shadow-surface);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-}
-
-.dark-mode .back-btn {
-  background: rgba(255, 255, 255, 0.1);
+  border: 1rpx solid var(--glass-border);
 }
 
 .back-icon {
   font-size: 36rpx;
-  color: #333;
-}
-
-.dark-mode .back-icon {
-  color: #fff;
+  color: var(--text-primary);
 }
 
 /* Logo区域 */
@@ -1240,17 +1221,9 @@ onUnmounted(() => {
   margin-bottom: 12rpx;
 }
 
-.dark-mode .app-name {
-  color: var(--brand-color);
-}
-
 .app-slogan {
   font-size: 28rpx;
-  color: #666;
-}
-
-.dark-mode .app-slogan {
-  color: #aaa;
+  color: var(--text-sub);
 }
 
 /* 登录方式 */
@@ -1279,11 +1252,6 @@ onUnmounted(() => {
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
 }
 
-.dark-mode .login-btn {
-  background: linear-gradient(160deg, rgba(16, 20, 28, 0.92) 0%, rgba(12, 15, 22, 0.98) 100%);
-  box-shadow: var(--apple-shadow-card);
-}
-
 .btn-icon {
   width: 80rpx;
   height: 80rpx;
@@ -1294,8 +1262,8 @@ onUnmounted(() => {
   margin-right: 24rpx;
   font-size: 28rpx;
   font-weight: 600;
-  color: #fff;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  color: var(--text-inverse);
+  border: 1rpx solid var(--glass-border);
   box-shadow: var(--apple-shadow-surface);
 }
 
@@ -1320,20 +1288,12 @@ onUnmounted(() => {
   flex: 1;
   font-size: 32rpx;
   font-weight: 600;
-  color: #333;
-}
-
-.dark-mode .btn-text {
-  color: #fff;
+  color: var(--text-main);
 }
 
 .btn-arrow {
   font-size: 32rpx;
-  color: #777;
-}
-
-.dark-mode .btn-arrow {
-  color: #666;
+  color: var(--text-tertiary);
 }
 
 /* 分割线 */
@@ -1346,17 +1306,13 @@ onUnmounted(() => {
 .divider-line {
   flex: 1;
   height: 2rpx;
-  background: #e0e0e0;
-}
-
-.dark-mode .divider-line {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--apple-divider);
 }
 
 .divider-text {
   padding: 0 24rpx;
   font-size: 26rpx;
-  color: #777;
+  color: var(--text-sub);
 }
 
 /* 邮箱表单 */
@@ -1370,10 +1326,6 @@ onUnmounted(() => {
   border: 1rpx solid var(--apple-glass-border-strong);
 }
 
-.dark-mode .email-form {
-  background: linear-gradient(160deg, rgba(16, 20, 28, 0.92) 0%, rgba(12, 15, 22, 0.98) 100%);
-}
-
 .form-item {
   margin-bottom: 28rpx;
 }
@@ -1381,24 +1333,20 @@ onUnmounted(() => {
 .form-label {
   display: block;
   font-size: 26rpx;
-  color: #666;
+  color: var(--text-sub);
   margin-bottom: 12rpx;
-}
-
-.dark-mode .form-label {
-  color: #aaa;
 }
 
 .form-input {
   width: 100%;
   height: 88rpx;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--apple-glass-card-bg);
   border-radius: 999rpx;
   padding: 0 24rpx;
   font-size: 30rpx;
-  color: #333;
+  color: var(--text-main);
   box-sizing: border-box;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  border: 1rpx solid var(--glass-border);
   box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.68);
 }
 
@@ -1412,19 +1360,13 @@ onUnmounted(() => {
   display: none;
 }
 
-.dark-mode .form-input {
-  background: rgba(16, 20, 28, 0.72);
-  color: #fff;
-  border-color: rgba(124, 176, 255, 0.18);
-}
-
 .input-placeholder {
-  color: #888;
+  color: var(--text-tertiary);
 }
 
 .form-error {
   font-size: 24rpx;
-  color: #f44336;
+  color: var(--danger);
   margin-top: 8rpx;
 }
 
@@ -1450,7 +1392,7 @@ onUnmounted(() => {
 }
 
 .dark-mode .password-toggle-btn {
-  color: #7bc0ff;
+  color: var(--info-blue);
 }
 
 .code-input {
@@ -1478,11 +1420,7 @@ onUnmounted(() => {
 }
 
 .send-code-btn.disabled {
-  background: #ccc;
-}
-
-.dark-mode .send-code-btn.disabled {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-tertiary);
 }
 
 .email-submit-btn {
@@ -1508,16 +1446,13 @@ onUnmounted(() => {
   font-size: 26rpx;
   color: var(--brand-color);
 }
-.dark-mode .form-switch text {
-  color: var(--brand-color);
-}
 
 /* 用户协议 */
 .agreement {
   display: flex;
   align-items: flex-start;
   padding: 40rpx 20rpx;
-  background: rgba(255, 255, 255, 0.28);
+  background: var(--apple-glass-card-bg);
   border-radius: 24rpx;
   margin: 0 20rpx;
 }
@@ -1529,7 +1464,7 @@ onUnmounted(() => {
 .checkbox {
   width: 36rpx;
   height: 36rpx;
-  border: 2rpx solid rgba(16, 40, 26, 0.18);
+  border: 2rpx solid var(--border-color);
   border-radius: 8rpx;
   display: flex;
   align-items: center;
@@ -1550,7 +1485,7 @@ onUnmounted(() => {
 .agreement-text {
   flex: 1;
   font-size: 24rpx;
-  color: #777;
+  color: var(--text-sub);
   line-height: 1.6;
 }
 
@@ -1566,44 +1501,10 @@ onUnmounted(() => {
 
 .footer-tip text {
   font-size: 24rpx;
-  color: #777;
-  background: rgba(255, 255, 255, 0.22);
+  color: var(--text-tertiary);
+  background: var(--apple-glass-card-bg);
   padding: 10rpx 18rpx;
   border-radius: 999rpx;
-}
-
-/* Dark mode: missing overrides */
-.dark-mode .divider-text {
-  color: #aaa;
-}
-
-.dark-mode .input-placeholder {
-  color: #666;
-}
-
-.dark-mode .checkbox {
-  border-color: rgba(124, 176, 255, 0.18);
-}
-
-.dark-mode .agreement-text {
-  color: #aaa;
-}
-
-.dark-mode .agreement {
-  background: rgba(16, 20, 28, 0.32);
-}
-
-.dark-mode .agreement-text .link {
-  color: var(--brand-color);
-}
-
-.dark-mode .footer-tip text {
-  color: #777;
-  background: rgba(16, 20, 28, 0.28);
-}
-
-.dark-mode .form-error {
-  color: #ff6b6b;
 }
 
 /* Hover feedback for mini program */
@@ -1634,10 +1535,6 @@ onUnmounted(() => {
   );
   padding: 0 32rpx;
   color: var(--text-main);
-}
-
-.login-container.dark-mode {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
 }
 
 .bg-circle {
@@ -1686,24 +1583,9 @@ onUnmounted(() => {
 .agreement,
 .footer-tip text,
 .form-input {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
-  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  background: linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%), var(--apple-glass-card-bg);
+  border: 1rpx solid var(--apple-glass-border-strong);
   box-shadow: var(--apple-shadow-card);
-}
-
-.dark-mode .back-btn,
-.dark-mode .logo-section,
-.dark-mode .login-methods,
-.dark-mode .login-btn,
-.dark-mode .agreement,
-.dark-mode .footer-tip text,
-.dark-mode .form-input {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .top-bar {
@@ -1719,13 +1601,6 @@ onUnmounted(() => {
 .app-name,
 .form-switch text {
   color: var(--text-main);
-}
-
-.dark-mode .back-icon,
-.dark-mode .btn-text,
-.dark-mode .app-name,
-.dark-mode .form-switch text {
-  color: #ffffff;
 }
 
 .logo-section {
@@ -1748,16 +1623,6 @@ onUnmounted(() => {
   color: var(--text-sub);
 }
 
-.dark-mode .app-slogan,
-.dark-mode .divider-text,
-.dark-mode .form-label,
-.dark-mode .agreement-text,
-.dark-mode .footer-tip text,
-.dark-mode .btn-arrow,
-.dark-mode .input-placeholder {
-  color: rgba(255, 255, 255, 0.68);
-}
-
 .login-methods {
   padding: 26rpx 20rpx 30rpx;
   border-radius: 38rpx;
@@ -1778,8 +1643,8 @@ onUnmounted(() => {
   width: 72rpx;
   height: 72rpx;
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.72);
-  border-color: rgba(255, 255, 255, 0.46);
+  background: var(--apple-glass-card-bg);
+  border-color: var(--glass-border);
 }
 
 .wechat-icon {
@@ -1806,7 +1671,7 @@ onUnmounted(() => {
 .dark-mode .qq-icon,
 .dark-mode .e2e-icon,
 .dark-mode .email-icon {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .divider-line {
@@ -1825,28 +1690,15 @@ onUnmounted(() => {
   box-shadow: var(--apple-shadow-surface);
 }
 
-.dark-mode .form-input {
-  color: #ffffff;
-}
-
 .form-error {
-  color: #c53d35;
-}
-
-.dark-mode .form-error {
-  color: #ff8e86;
+  color: var(--danger);
 }
 
 .send-code-btn.disabled {
-  background: rgba(255, 255, 255, 0.38);
-  color: var(--text-sub);
-  border-color: rgba(255, 255, 255, 0.24);
+  background: var(--apple-glass-card-bg);
+  color: var(--text-tertiary);
+  border-color: var(--glass-border);
   box-shadow: none;
-}
-
-.dark-mode .send-code-btn.disabled {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.48);
 }
 
 .agreement {
@@ -1855,21 +1707,12 @@ onUnmounted(() => {
 }
 
 .checkbox {
-  background: rgba(255, 255, 255, 0.7);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.dark-mode .checkbox {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--apple-glass-card-bg);
+  border-color: var(--glass-border);
 }
 
 .agreement-text .link {
-  color: #22873a;
-}
-
-.dark-mode .agreement-text .link {
-  color: #7bc0ff;
+  color: var(--success-dark);
 }
 
 .footer-tip {
