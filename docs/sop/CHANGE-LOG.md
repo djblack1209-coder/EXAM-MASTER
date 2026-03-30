@@ -14,6 +14,20 @@
 
 ---
 
+## [2026-03-30] 第二十二轮审计 — P4 暗黑模式硬编码色值修复（3文件 15 fixes）
+
+- **Scope**: `frontend`, `ui/ux`
+- **Files Changed**:
+  - **P4 UI/UX — classroom.vue 暗黑模式全量修复 (12 fixes)**:
+    - `src/pages/ai-classroom/classroom.vue` — 58处硬编码色值替换为CSS变量，16个手动`.dark-mode`覆盖块全部移除 [R165-R176]
+  - **P4 UI/UX — rank.vue 残留硬编码色值修复 (1 fix)**:
+    - `src/pages/practice-sub/rank.vue` — `.item-score` 硬编码 `#22873a`/`#7bc0ff` + `.dark-mode` 覆盖块 → 单行 `var(--success-dark)` [R177]
+  - **P4 UI/UX — StudyHeatmap.vue 暗黑模式遗漏修复 (2 fixes)**:
+    - `src/components/business/index/StudyHeatmap.vue` — `.dark` 块内 `.day-cell` 缺少 border-color/box-shadow 暗黑覆盖 [R178]；`.legend-cell` 缺少 border-color 暗黑覆盖 [R179]
+- **Summary**: 第二十二轮审计专注 P4 暗黑模式适配。classroom.vue 是本轮主要工作量（58处硬编码色值→CSS变量、16个手动暗黑覆盖块全部消除），rank.vue 修复残留的2处语义硬编码色值并消除 `.dark-mode` 覆盖块，StudyHeatmap.vue 补全3处缺失的暗黑模式边框/阴影覆盖。共计 R165-R179 (15 fixes)。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1168 tests passed | H5 build OK
+
 ## [2026-03-30] 第二十一轮审计 — 全栈生产就绪审计 P0-P4（4安全 + 2功能 + 4架构 + 8性能 + 12 UI/UX）
 
 - **Scope**: `frontend`, `backend`, `security`, `performance`, `ui/ux`

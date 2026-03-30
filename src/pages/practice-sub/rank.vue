@@ -1592,12 +1592,9 @@ export default {
   box-shadow: var(--apple-shadow-surface);
 }
 
+/* [AUDIT FIX R177] 硬编码分数颜色 → CSS变量，自动适配暗黑模式 */
 .item-score {
-  color: #22873a;
-}
-
-.dark-mode .item-score {
-  color: #7bc0ff;
+  color: var(--success-dark, #22873a);
 }
 
 .my-rank-fixed {

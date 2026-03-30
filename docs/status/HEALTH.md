@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-30 (第二十一轮审计：全栈生产就绪审计 P0-P4 — 安全4+功能2+架构4+性能8+UI/UX12 共30项修复) | Maintainer: AI-SOP
+> Last updated: 2026-03-30 (第二十二轮审计：P4暗黑模式硬编码色值修复 — classroom.vue 12 + rank.vue 1 + StudyHeatmap.vue 2 共15项修复) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,21 @@
 
 | ID   | Domain   | Title                                                                                 | Solution                                                                                                                                                 | Resolved   |
 | ---- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| R179 | frontend | StudyHeatmap.vue .legend-cell暗黑模式border未覆盖(白色边框)                           | .dark块内添加border-color: rgba(255,255,255,0.08)                                                                                                        | 2026-03-30 |
+| R178 | frontend | StudyHeatmap.vue .day-cell暗黑模式border/box-shadow未覆盖(白色边框+高光)              | .dark块内添加border-color+box-shadow:none                                                                                                                | 2026-03-30 |
+| R177 | frontend | rank.vue .item-score硬编码#22873a/#7bc0ff+手动.dark-mode覆盖块                        | 替换为var(--success-dark)，消除.dark-mode覆盖块                                                                                                          | 2026-03-30 |
+| R176 | frontend | classroom.vue 按钮文字硬编码#fff暗黑模式不可见                                        | 替换为var(--text-inverse)                                                                                                                                | 2026-03-30 |
+| R175 | frontend | classroom.vue 输入框背景rgba(0,0,0,0.04)暗黑模式不适配                                | 替换为var(--bg-tertiary)                                                                                                                                 | 2026-03-30 |
+| R174 | frontend | classroom.vue 边框rgba(0,0,0,0.06)暗黑模式不适配                                      | 替换为var(--border-color)                                                                                                                                | 2026-03-30 |
+| R173 | frontend | classroom.vue 卡片背景rgba(255,255,255,0.82)暗黑模式不适配                            | 替换为var(--apple-glass-card-bg)                                                                                                                         | 2026-03-30 |
+| R172 | frontend | classroom.vue 导航背景rgba(255,255,255,0.72)暗黑模式不适配                            | 替换为var(--apple-glass-nav-bg)                                                                                                                          | 2026-03-30 |
+| R171 | frontend | classroom.vue 品牌色#6366f1暗黑模式不适配                                             | 替换为var(--info-blue)                                                                                                                                   | 2026-03-30 |
+| R170 | frontend | classroom.vue 成功色#34d399/#10b981暗黑模式不适配                                     | 替换为var(--success)/var(--success-dark)                                                                                                                 | 2026-03-30 |
+| R169 | frontend | classroom.vue 警告色#f59e0b暗黑模式不适配                                             | 替换为var(--warning)                                                                                                                                     | 2026-03-30 |
+| R168 | frontend | classroom.vue 危险色#e74c3c暗黑模式不适配                                             | 替换为var(--danger)                                                                                                                                      | 2026-03-30 |
+| R167 | frontend | classroom.vue 辅助文字#8b949e暗黑模式不适配                                           | 替换为var(--text-tertiary)                                                                                                                               | 2026-03-30 |
+| R166 | frontend | classroom.vue 暗黑文字#e6edf3硬编码(需CSS变量自动切换)                                | 移除手动覆盖，由--text-primary自动切换                                                                                                                   | 2026-03-30 |
+| R165 | frontend | classroom.vue 主文字#1a1a2e硬编码暗黑模式不适配                                       | 替换为var(--text-primary)                                                                                                                                | 2026-03-30 |
 | R164 | frontend | pk-battle.vue ~23处硬编码色值暗黑模式不适配                                           | 替换为CSS变量(--text-primary/--bg-card/--border-color等)                                                                                                 | 2026-03-30 |
 | R163 | frontend | do-quiz.vue ~15处硬编码色值暗黑模式不适配                                             | 替换为CSS变量                                                                                                                                            | 2026-03-30 |
 | R162 | frontend | index.vue ~11处硬编码色值暗黑模式不适配                                               | 替换为CSS变量                                                                                                                                            | 2026-03-30 |
