@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-31 (第二十七轮审计：P1 API 错误处理一致性修复 — 7文件 20 catches 全部→normalizeError() R267-R269) | Maintainer: AI-SOP
+> Last updated: 2026-03-31 (第二十八轮审计：P3 性能优化 + P4 死代码清除 — 24 dead functions + 2 dead components + 1 duplicate image R270-R276) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -43,6 +43,12 @@
 
 | ID   | Domain   | Title                                                                                 | Solution                                                                                                                                                 | Resolved   |
 | ---- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| R276 | frontend | 5个API文件各含1-2个死函数（study/social/user/school/tools）                           | 删除7个死函数，grep确认无调用                                                                                                                            | 2026-03-31 |
+| R275 | frontend | practice.api.js含5个死函数（getQuestionBank/submitAnswer/addFavorite等）              | 删除5个死函数，favorites使用localStorage实现                                                                                                             | 2026-03-31 |
+| R274 | frontend | ai.api.js含12个死函数（classroom/lesson/分析相关）                                    | 删除12个死函数，classroom.js直接调request()                                                                                                              | 2026-03-31 |
+| R272 | frontend | splash/static/logo.png与login/static/logo.png完全重复(13.6KB)                         | 删除splash副本，index.vue改为相对路径引用../login/static/logo.png                                                                                        | 2026-03-31 |
+| R271 | frontend | friend-list.vue好友列表一次性渲染全部数据                                             | 增量渲染：初始30条+scroll-view @scrolltolower每次加载20条                                                                                                | 2026-03-31 |
+| R270 | frontend | MarkdownRenderer.vue + EnhancedRichText.vue死代码组件                                 | 删除2个组件（依赖未安装的mp-html，且无文件导入）                                                                                                         | 2026-03-31 |
 | R269 | frontend | study.api.js(2) + ai.api.js(2) catch分支手动构造错误对象                              | 全部替换为normalizeError()，新增import                                                                                                                   | 2026-03-31 |
 | R268 | frontend | user.api.js(7) + practice.api.js(3) catch分支手动构造错误对象                         | 全部替换为normalizeError()，新增import                                                                                                                   | 2026-03-31 |
 | R267 | frontend | auth.api.js(2) + school.api.js(2) + social.api.js(2) catch分支手动构造错误对象        | 全部替换为normalizeError()（school保留data:[]兼容），新增import                                                                                          | 2026-03-31 |

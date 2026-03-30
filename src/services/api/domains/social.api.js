@@ -1,12 +1,11 @@
 /**
  * 社交服务 API
- * 职责：好友系统、排行榜、邀请与奖励
+ * 职责：好友系统、排行榜、PK 对战
  *
  * @module services/api/domains/social
  */
 
 import { logger } from '@/utils/logger.js';
-import { getUserId } from '../../auth-storage.js';
 import { request, normalizeError } from './_request-core.js';
 
 /**
@@ -62,51 +61,8 @@ socialService.clearCache = () => {
   /* 本地缓存清理，无需请求后端 */
 };
 
-// ==================== 邀请系统 ====================
-
-/**
- * 处理新邀请（后端验证+持久化）
- * @param {string} inviterId - 邀请人ID
- * @returns {Promise} 返回邀请结果
- */
-export async function handleInvite(inviterId) {
-  try {
-    const userId = getUserId();
-    if (!userId) return { code: -1, success: false, message: '请先登录' };
-
-    const response = await request('/invite-service', {
-      action: 'handle',
-      userId,
-      inviterId
-    });
-    return response;
-  } catch (error) {
-    logger.warn('[LafService] 处理邀请失败:', error);
-    return normalizeError(error, '处理邀请'); // [AUDIT FIX R267]
-  }
-}
-
-/**
- * 领取邀请奖励
- * @param {number} threshold - 奖励阈值（邀请人数）
- * @returns {Promise} 返回领取结果
- */
-export async function claimInviteReward(threshold) {
-  try {
-    const userId = getUserId();
-    if (!userId) return { code: -1, success: false, message: '请先登录' };
-
-    const response = await request('/invite-service', {
-      action: 'claim_reward',
-      userId,
-      threshold
-    });
-    return response;
-  } catch (error) {
-    logger.warn('[LafService] 领取邀请奖励失败:', error);
-    return normalizeError(error, '领取邀请奖励'); // [AUDIT FIX R267]
-  }
-}
+// [AUDIT R276] 已删除 2 个无调用方的死代码函数:
+// handleInvite, claimInviteReward
 
 // ==================== PK 对战 ====================
 

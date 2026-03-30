@@ -76,19 +76,7 @@ describe('全链路: 择校分析流程', () => {
       expect(result.data.name).toBe('北京大学');
     });
 
-    it('lafService.getProvinces 获取省份列表', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: ['北京', '上海', '广东', '浙江']
-      });
-
-      const result = await lafService.getProvinces();
-      expect(result.success).toBe(true);
-      expect(result.data).toContain('北京');
-    });
+    // getProvinces 测试已在 Round 28 移除死代码时删除
 
     it('lafService.getHotSchools 网络失败返回空数组', async () => {
       const { lafService } = await import('@/services/lafService.js');

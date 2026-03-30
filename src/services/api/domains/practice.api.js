@@ -1,13 +1,16 @@
 /**
  * 题库与练习 API
- * 职责：题库查询/浏览/随机抽题、收藏管理、FSRS 间隔重复优化
+ * 职责：题库浏览/随机抽题、FSRS 间隔重复优化、Anki 导入导出、
+ *       RAG 知识库索引、错题管理
  *
  * @module services/api/domains/practice
  */
 
 import { logger } from '@/utils/logger.js';
-import { getUserId } from '../../auth-storage.js';
 import { request, normalizeError } from './_request-core.js';
+
+// [AUDIT R275] 已删除 5 个无调用方的死代码函数:
+// getQuestionBank, submitAnswer, addFavorite, getFavorites, removeFavorite
 
 // ==================== 题库 ====================
 
@@ -95,86 +98,6 @@ export async function getQuestionBankRandom(params = {}) {
   } catch (error) {
     logger.warn('[LafService] 随机抽题失败:', error);
     return normalizeError(error, '随机抽题');
-  }
-}
-
-// ==================== 收藏管理 ====================
-
-/**
- * 添加收藏
- * @param {Object} data - 收藏数据
- * @returns {Promise} 返回操作结果
- */
-export async function addFavorite(data) {
-  try {
-    const userId = getUserId();
-
-    if (!userId) {
-      return { code: -1, success: false, message: '请先登录' };
-    }
-
-    const response = await request('/favorite-manager', {
-      action: 'add',
-      userId,
-      data
-    });
-    return response;
-  } catch (error) {
-    // [AUDIT FIX R268] 统一 normalizeError
-    logger.error('[LafService] 添加收藏失败:', error);
-    return normalizeError(error, '添加收藏');
-  }
-}
-
-/**
- * 获取收藏列表
- * @param {Object} params - 查询参数
- * @returns {Promise} 返回收藏列表
- */
-export async function getFavorites(params = {}) {
-  try {
-    const userId = getUserId();
-
-    if (!userId) {
-      return { code: -1, success: false, message: '请先登录', data: [] };
-    }
-
-    const response = await request('/favorite-manager', {
-      action: 'get',
-      userId,
-      data: params
-    });
-    return response;
-  } catch (error) {
-    // [AUDIT FIX R268] 统一 normalizeError
-    logger.error('[LafService] 获取收藏失败:', error);
-    return { ...normalizeError(error, '获取收藏'), data: [] };
-  }
-}
-
-/**
- * 删除收藏
- * @param {string} id - 收藏ID或题目ID
- * @returns {Promise} 返回操作结果
- */
-export async function removeFavorite(id) {
-  try {
-    const userId = getUserId();
-
-    if (!userId) {
-      return { code: -1, success: false, message: '请先登录' };
-    }
-
-    const response = await request('/favorite-manager', {
-      action: 'remove',
-      userId,
-      data: { id }
-    });
-    return response;
-  } catch (error) {
-    // [AUDIT FIX R268] 统一 normalizeError
-    logger.error('[LafService] 删除收藏失败:', error);
-    return normalizeError(error, '删除收藏');
   }
 }
 
@@ -300,38 +223,6 @@ export async function ragIngest(action, data) {
   } catch (error) {
     logger.warn('[Practice] RAG索引失败:', error);
     return normalizeError(error, 'RAG索引');
-  }
-}
-
-// ==================== 答题提交 ====================
-
-/**
- * 提交答题记录（触发后端自动错题收集+会话累积）
- * @param {Object} params - { idempotencyKey, questionId, userAnswer, sessionId, duration, practiceMode }
- */
-export async function submitAnswer({
-  idempotencyKey,
-  questionId,
-  userAnswer,
-  sessionId,
-  duration,
-  practiceMode = 'normal'
-}) {
-  try {
-    return await request('/answer-submit', {
-      action: 'submit',
-      idempotencyKey,
-      data: {
-        question_id: questionId,
-        user_answer: userAnswer,
-        session_id: sessionId,
-        duration,
-        practice_mode: practiceMode
-      }
-    });
-  } catch (error) {
-    logger.warn('[Practice] 答题提交失败:', error);
-    return normalizeError(error, '答题提交');
   }
 }
 

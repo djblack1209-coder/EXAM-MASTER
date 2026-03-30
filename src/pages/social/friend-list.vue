@@ -60,6 +60,7 @@
       :refresher-enabled="true"
       :refresher-triggered="isRefreshing"
       @refresherrefresh="onRefresh"
+      @scrolltolower="loadMoreFriends"
     >
       <!-- 搜索结果模式 -->
       <view v-if="isSearchMode">
@@ -80,7 +81,8 @@
             <image
               class="avatar"
               :src="user.avatar || defaultAvatar"
-              alt="头像" mode="aspectFill"
+              alt="头像"
+              mode="aspectFill"
               lazy-load
               @error="onAvatarError($event, user)"
             />
@@ -124,7 +126,7 @@
         <!-- 好友卡片列表 -->
         <view v-else class="friend-cards">
           <view
-            v-for="friend in filteredFriendList"
+            v-for="friend in displayedFriendList"
             :key="friend.uid"
             class="friend-card apple-glass-card"
             @tap="goToFriendProfile(friend)"
@@ -134,7 +136,8 @@
               <image
                 class="avatar"
                 :src="friend.avatar || defaultAvatar"
-                alt="头像" mode="aspectFill"
+                alt="头像"
+                mode="aspectFill"
                 lazy-load
                 @error="onAvatarError($event, friend)"
               />
@@ -194,7 +197,8 @@
             <image
               class="avatar"
               :src="request.from_avatar || defaultAvatar"
-              alt="头像" mode="aspectFill"
+              alt="头像"
+              mode="aspectFill"
               lazy-load
               @error="onAvatarError($event, request, 'from_avatar')"
             />
@@ -280,7 +284,9 @@ export default {
       isAccepting: {}, // { [requestId]: boolean }
       isRejecting: {}, // { [requestId]: boolean }
       // 防抖搜索函数
-      debouncedSearch: null
+      debouncedSearch: null,
+      // 增量渲染：初始显示30条好友，滚动加载更多
+      displayFriendCount: 30
     };
   },
   computed: {
@@ -296,6 +302,16 @@ export default {
 
       const keyword = this.searchKeyword.toLowerCase();
       return this.friendList.filter((friend) => friend.nickname?.toLowerCase().includes(keyword));
+    },
+    // 增量渲染 — 只渲染前 displayFriendCount 条到 DOM，滚动加载更多
+    displayedFriendList() {
+      return this.filteredFriendList.slice(0, this.displayFriendCount);
+    }
+  },
+  watch: {
+    // 搜索关键词变化时重置增量渲染计数，确保过滤后从头显示
+    searchKeyword() {
+      this.displayFriendCount = 30;
     }
   },
   created() {
@@ -334,6 +350,15 @@ export default {
     }
   },
   methods: {
+    /**
+     * 滚动到底部时增量加载更多好友（每次加30条）
+     */
+    loadMoreFriends() {
+      if (this.displayFriendCount < this.filteredFriendList.length) {
+        this.displayFriendCount = Math.min(this.displayFriendCount + 30, this.filteredFriendList.length);
+      }
+    },
+
     /**
      * 头像加载失败处理
      */
@@ -404,6 +429,7 @@ export default {
     async onRefresh() {
       logger.log('[FriendList] 刷新好友列表');
       this.isRefreshing = true;
+      this.displayFriendCount = 30; // 刷新后重置增量渲染计数
       // 清除缓存，强制从云端获取
       socialService.clearCache();
       await this.loadFriendList(false);
@@ -458,6 +484,7 @@ export default {
       this.searchKeyword = '';
       this.isSearchMode = false;
       this.searchResults = [];
+      this.displayFriendCount = 30; // 切回好友列表时重置增量渲染
     },
 
     /**

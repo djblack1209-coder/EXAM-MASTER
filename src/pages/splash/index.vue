@@ -3,7 +3,7 @@
     <view class="content-wrapper">
       <view class="logo-wrapper">
         <view class="splash-pulse-ring" />
-        <image class="logo-icon" src="./static/logo.png" alt="Exam Master" mode="aspectFit" />
+        <image class="logo-icon" src="../login/static/logo.png" alt="Exam Master" mode="aspectFit" />
       </view>
 
       <text class="app-name"> Exam-Master </text>

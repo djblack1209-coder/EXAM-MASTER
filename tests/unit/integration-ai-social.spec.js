@@ -194,78 +194,7 @@ describe('全链路: 智能对话 & 拍照搜题 & 社交', () => {
     });
   });
 
-  describe('Phase 4: 资料理解出题', () => {
-    it('materialUnderstand - 空资料拦截', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      const result = await lafService.materialUnderstand('');
-      expect(result.success).toBe(false);
-    });
-
-    it('materialUnderstand - 正常请求', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: { questions: [] }
-      });
-
-      const result = await lafService.materialUnderstand('马克思主义基本原理...', {
-        materialType: '教材',
-        difficulty: 3,
-        topicFocus: '唯物辩证法'
-      });
-
-      expect(result.success).toBe(true);
-      expect(mockRequest).toHaveBeenCalledWith(
-        '/proxy-ai',
-        expect.objectContaining({
-          action: 'material_understand',
-          content: '马克思主义基本原理...',
-          materialType: '教材',
-          difficulty: 3
-        }),
-        expect.any(Object)
-      );
-    });
-  });
-
-  describe('Phase 5: 错题深度分析', () => {
-    it('deepMistakeAnalysis - 空数据拦截', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      const result = await lafService.deepMistakeAnalysis(null);
-      expect(result.success).toBe(false);
-      expect(result.message).toContain('不完整');
-    });
-
-    it('deepMistakeAnalysis - 缺少 question 字段拦截', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      const result = await lafService.deepMistakeAnalysis({ options: ['A', 'B'] });
-      expect(result.success).toBe(false);
-    });
-
-    it('deepMistakeAnalysis - 正常分析', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      const mockProxyAI = vi.spyOn(lafService, 'proxyAI').mockResolvedValue({
-        code: 0,
-        success: true,
-        data: { analysis: '知识点薄弱' }
-      });
-
-      const result = await lafService.deepMistakeAnalysis(
-        {
-          question: '唯物辩证法的核心？',
-          options: ['A', 'B', 'C', 'D'],
-          userAnswer: 'B',
-          correctAnswer: 'A',
-          category: '马原'
-        },
-        { topicAccuracy: 60 }
-      );
-
-      expect(result.success).toBe(true);
-      mockProxyAI.mockRestore();
-    });
-  });
+  // Phase 4 (materialUnderstand) 和 Phase 5 (deepMistakeAnalysis) 已在 Round 28 移除死代码时删除
 
   describe('Phase 6: 社交服务 & 排行榜', () => {
     it('socialService - 正常请求', async () => {
@@ -361,14 +290,6 @@ describe('全链路: 智能对话 & 拍照搜题 & 社交', () => {
       expect(result.success).toBe(true);
     });
 
-    it('updateUserProfile - 未登录时返回错误', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      // 确保无 userId
-      global.__mockStorage = {};
-
-      const result = await lafService.updateUserProfile({ nickname: '新昵称' });
-      expect(result.success).toBe(false);
-      expect(result.message).toContain('未登录');
-    });
+    // updateUserProfile 测试已在 Round 28 移除死代码时删除
   });
 });

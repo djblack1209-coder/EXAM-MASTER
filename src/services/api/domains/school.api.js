@@ -63,22 +63,7 @@ export async function getHotSchools(params = {}) {
   }
 }
 
-/**
- * 获取省份列表
- * @returns {Promise} 返回省份列表
- */
-export async function getProvinces() {
-  try {
-    const response = await request('/school-query', {
-      action: 'provinces',
-      data: {}
-    });
-    return response;
-  } catch (error) {
-    logger.warn('[LafService] 获取省份列表失败:', error);
-    return { ...normalizeError(error, '获取省份列表'), data: [] }; // [AUDIT FIX R267]
-  }
-}
+// [AUDIT R276] 已删除 1 个无调用方的死代码函数: getProvinces
 
 // ==================== 院校爬虫 ====================
 

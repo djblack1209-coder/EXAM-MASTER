@@ -14,6 +14,37 @@
 
 ---
 
+## [2026-03-31] 第二十八轮审计 — P3 性能优化 + P4 死代码清除（7 fixes, 24 dead functions + 2 dead components + 1 duplicate image）
+
+- **Scope**: `frontend`, `performance`, `tests`
+- **Files Changed**:
+  - **P4 死代码清除 — Dead Vue Components (2 files deleted)**:
+    - `src/pages/chat/components/MarkdownRenderer.vue` — 死代码组件，依赖未安装的 mp-html，且无任何文件导入 [R270]
+    - `src/pages/practice-sub/components/EnhancedRichText.vue` — 同上，死代码组件 [R270]
+  - **P3 性能优化 — 好友列表增量渲染 (1 fix)**:
+    - `src/pages/social/friend-list.vue` — 长列表增量渲染：displayFriendCount 初始 30，scroll-view @scrolltolower 每次加载 20 条 [R271]
+  - **P3 性能优化 — 重复图片合并 (1 fix)**:
+    - `src/pages/splash/static/logo.png` — 删除（与 login/static/logo.png MD5 相同 13.6KB） [R272]
+    - `src/pages/splash/index.vue` — logo src 改为相对路径引用 `../login/static/logo.png` [R272]
+  - **P4 死代码清除 — 24 Dead API Functions (3 fixes, 7 files)**:
+    - `src/services/api/domains/ai.api.js` — 删除 12 个死函数：adaptiveQuestionPick, materialUnderstand, trendPredict, deepMistakeAnalysis, getAiFriendMemory, createLesson, getLessonStatus, getLessonList, deleteLesson, startClassroom, sendClassroomMessage, endClassroom [R274]
+    - `src/services/api/domains/practice.api.js` — 删除 5 个死函数：getQuestionBank, submitAnswer, addFavorite, getFavorites, removeFavorite [R275]
+    - `src/services/api/domains/study.api.js` — 删除 2 个死函数：getStudyStats, getHotResources [R276]
+    - `src/services/api/domains/social.api.js` — 删除 2 个死函数：handleInvite, claimInviteReward [R276]
+    - `src/services/api/domains/user.api.js` — 删除 1 个死函数：updateUserProfile [R276]
+    - `src/services/api/domains/school.api.js` — 删除 1 个死函数：getProvinces [R276]
+    - `src/services/api/domains/tools.api.js` — 删除 1 个死函数：getVoiceOptions [R276]
+  - **测试文件同步清理 (6 test files)**:
+    - `tests/unit/integration-ai-social.spec.js` — 移除 materialUnderstand/deepMistakeAnalysis/updateUserProfile 相关测试
+    - `tests/unit/integration-laf-engine.spec.js` — 移除 addFavorite/getFavorites/removeFavorite/getStudyStats/adaptiveQuestionPick/trendPredict/getAiFriendMemory/getProvinces 相关测试，重写旅程测试
+    - `tests/unit/integration-upload-quiz.spec.js` — 移除 materialUnderstand/trendPredict/deepMistakeAnalysis 相关测试
+    - `tests/unit/integration-profile.spec.js` — 移除 updateUserProfile 相关测试，重写"后端更新失败"和"完整用户旅程"测试
+    - `tests/unit/voice-service-flow.spec.js` — 移除 getVoiceOptions 测试
+    - `tests/unit/integration-school.spec.js` — 移除 getProvinces 测试
+- **Summary**: 第二十八轮审计聚焦 P3 性能和 P4 死代码清除。全量扫描确认 24 个 API 函数虽通过 lafService 通配符 spread 可达，但在生产代码中完全无调用（含 grep 验证）。删除这些死函数后，同步清理 6 个测试文件中的 32 个相关测试用例。同时删除 2 个依赖未安装包的死 Vue 组件、合并 1 对重复 logo 图片、为好友列表页添加增量渲染优化。测试数量从 1168 降至 1141（删除 27 个死代码测试）。
+- **Breaking Changes**: 无（所有删除的函数/组件均确认无生产代码调用）
+- **Quality Gate**: ESLint 0 errors | 89 files / 1141 tests passed | H5 build OK
+
 ## [2026-03-31] 第二十七轮审计 — P1 API 错误处理一致性修复（3 批次 20 catches）
 
 - **Scope**: `frontend`

@@ -1,6 +1,6 @@
 /**
  * 工具类服务 API
- * 职责：证件照处理（去背景/换底色）、文档格式转换、语音识别/合成、音色列表
+ * 职责：证件照处理（去背景/换底色）、文档格式转换、语音识别/合成
  *
  * @module services/api/domains/tools
  */
@@ -94,17 +94,7 @@ export async function textToSpeech(text, options = {}) {
   }
 }
 
-/**
- * 获取可用音色列表
- */
-export async function getVoiceOptions() {
-  try {
-    return await request('/voice-service', { action: 'get_voices' });
-  } catch (error) {
-    logger.warn('[LafService] 获取音色列表失败:', error);
-    return normalizeError(error, '获取音色列表');
-  }
-}
+// [AUDIT R276] 已删除 1 个无调用方的死代码函数: getVoiceOptions
 
 // ==================== 文档格式转换 ====================
 

@@ -94,23 +94,5 @@ describe('语音链路模拟人工流程', () => {
     );
   });
 
-  it('音色列表：可返回可选语音角色', async () => {
-    const { lafService } = await import('@/services/lafService.js');
-
-    request.mockResolvedValue({
-      code: 0,
-      success: true,
-      data: [
-        { id: 'female_1', name: '温柔女声' },
-        { id: 'male_1', name: '沉稳男声' }
-      ]
-    });
-
-    const result = await lafService.getVoiceOptions();
-
-    expect(result.code).toBe(0);
-    expect(result.data).toHaveLength(2);
-    expect(result.data[0].id).toBe('female_1');
-    expect(request).toHaveBeenCalledWith('/voice-service', { action: 'get_voices' });
-  });
+  // getVoiceOptions 测试已在 Round 28 移除死代码时删除
 });

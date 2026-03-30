@@ -24,72 +24,7 @@ describe('全链路: LafService 核心请求引擎', () => {
     mockRequest.mockResolvedValue({ code: 0, success: true, data: {} });
   });
 
-  describe('Phase 1: 收藏管理接口', () => {
-    it('addFavorite - 未登录时返回错误', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      global.__mockStorage = {};
-
-      const result = await lafService.addFavorite({ questionId: 'q1' });
-      expect(result.success).toBe(false);
-      expect(result.message).toContain('登录');
-    });
-
-    it('getFavorites - 未登录时返回错误', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      global.__mockStorage = {};
-
-      const result = await lafService.getFavorites();
-      expect(result.success).toBe(false);
-      expect(result.data).toEqual([]);
-    });
-
-    it('removeFavorite - 未登录时返回错误', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      global.__mockStorage = {};
-
-      const result = await lafService.removeFavorite('fav_001');
-      expect(result.success).toBe(false);
-    });
-
-    it('addFavorite - 登录后正常请求', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      global.__mockStorage = { EXAM_USER_ID: 'user_fav' };
-
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: { id: 'fav_new' }
-      });
-
-      const result = await lafService.addFavorite({ questionId: 'q1', type: 'question' });
-      expect(result.success).toBe(true);
-      expect(mockRequest).toHaveBeenCalledWith(
-        '/favorite-manager',
-        expect.objectContaining({
-          action: 'add',
-          userId: 'user_fav'
-        })
-      );
-    });
-
-    it('getFavorites - 登录后正常请求', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      global.__mockStorage = { EXAM_USER_ID: 'user_fav' };
-
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: [
-          { id: 'fav_1', questionId: 'q1' },
-          { id: 'fav_2', questionId: 'q2' }
-        ]
-      });
-
-      const result = await lafService.getFavorites({ type: 'question' });
-      expect(result.success).toBe(true);
-      expect(result.data).toHaveLength(2);
-    });
-  });
+  // Phase 1 (收藏管理 addFavorite/getFavorites/removeFavorite) 已在 Round 28 移除死代码时删除
 
   describe('Phase 2: 题库接口', () => {
     it('getQuestionBank - 正常请求', async () => {
@@ -152,130 +87,7 @@ describe('全链路: LafService 核心请求引擎', () => {
     });
   });
 
-  describe('Phase 3: 学习统计接口', () => {
-    it('getStudyStats - 正常请求', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: { totalQuestions: 500, studyDays: 30 }
-      });
-
-      const result = await lafService.getStudyStats('user_001');
-      expect(result.success).toBe(true);
-      expect(result.data.totalQuestions).toBe(500);
-    });
-
-    it('getStudyStats - 网络失败降级到本地数据', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockRejectedValue(new Error('网络错误'));
-
-      // 预设本地数据
-      global.__mockStorage = {
-        study_stats: { '2024-01-01': { correct: 10, total: 15 } },
-        v30_bank: [{ id: 1 }, { id: 2 }],
-        mistake_book: [{ id: 'm1' }]
-      };
-
-      const result = await lafService.getStudyStats('user_001');
-      expect(result.code).toBe(0);
-      expect(result.data._source).toBe('local_fallback');
-      expect(result.data.totalQuestions).toBe(2);
-      expect(result.data.totalMistakes).toBe(1);
-    });
-  });
-
-  describe('Phase 4: 智能组题 & 考点预测', () => {
-    it('adaptiveQuestionPick - 正常请求', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: { questions: [{ id: 'q1' }] }
-      });
-
-      const result = await lafService.adaptiveQuestionPick(
-        { targetSchool: '清华大学', questionCount: 10 },
-        { totalMistakes: 50 },
-        { lastAccuracy: 70 }
-      );
-
-      expect(result.success).toBe(true);
-      expect(mockRequest).toHaveBeenCalledWith(
-        '/proxy-ai',
-        expect.objectContaining({
-          action: 'adaptive_pick',
-          content: expect.any(String),
-          userProfile: expect.objectContaining({ targetSchool: '清华大学' })
-        }),
-        expect.any(Object)
-      );
-    });
-
-    it('trendPredict - 正常请求', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: { predictions: [] }
-      });
-
-      const result = await lafService.trendPredict({ topicFrequency: {} }, 2025, '政治');
-
-      expect(result.success).toBe(true);
-      expect(mockRequest).toHaveBeenCalledWith(
-        '/proxy-ai',
-        expect.objectContaining({
-          action: 'trend_predict',
-          examYear: 2025,
-          subject: '政治'
-        }),
-        expect.any(Object)
-      );
-    });
-  });
-
-  describe('Phase 5: 智能好友记忆', () => {
-    it('getAiFriendMemory - 未登录返回空数组', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      global.__mockStorage = {};
-
-      const result = await lafService.getAiFriendMemory('yan-cong');
-      expect(result.success).toBe(true);
-      expect(result.data).toEqual([]);
-    });
-
-    it('getAiFriendMemory - 登录后正常请求', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      global.__mockStorage = { EXAM_USER_ID: 'user_mem' };
-
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: [{ role: 'user', content: '你好' }]
-      });
-
-      const result = await lafService.getAiFriendMemory('yan-cong');
-      expect(result.success).toBe(true);
-      expect(mockRequest).toHaveBeenCalledWith(
-        '/ai-friend-memory',
-        expect.objectContaining({
-          action: 'get',
-          friendType: 'yan-cong'
-        })
-      );
-    });
-
-    it('getAiFriendMemory - 网络失败返回错误', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      global.__mockStorage = { EXAM_USER_ID: 'user_mem' };
-
-      mockRequest.mockRejectedValue(new Error('timeout'));
-
-      const result = await lafService.getAiFriendMemory('yan-shi');
-      expect(result.success).toBe(false);
-    });
-  });
+  // Phase 3 (getStudyStats), Phase 4 (adaptiveQuestionPick/trendPredict), Phase 5 (getAiFriendMemory) 已在 Round 28 移除死代码时删除
 
   describe('Phase 6: 账号注销', () => {
     it('requestAccountDeletion - 正常请求', async () => {
@@ -313,7 +125,7 @@ describe('全链路: LafService 核心请求引擎', () => {
   });
 
   describe('Phase 7: 端到端场景 - 完整用户旅程', () => {
-    it('新用户完整旅程: 登录 -> 刷题 -> 收藏 -> 查看统计', async () => {
+    it('新用户完整旅程: 登录 -> 刷题 -> 查看排行', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
       // Step 1: 登录
@@ -342,28 +154,18 @@ describe('全链路: LafService 核心请求引擎', () => {
       const bankResult = await lafService.getQuestionBank('new_user_001');
       expect(bankResult.success).toBe(true);
 
-      // Step 3: 收藏题目
+      // Step 3: 查看排行
       mockRequest.mockResolvedValueOnce({
         code: 0,
         success: true,
-        data: { id: 'fav_001' }
+        data: { rank: 1, score: 100 }
       });
 
-      const favResult = await lafService.addFavorite({ questionId: 'q1', type: 'question' });
-      expect(favResult.success).toBe(true);
+      const rankResult = await lafService.rankCenter({ action: 'getAll', userId: 'new_user_001' });
+      expect(rankResult.success).toBe(true);
 
-      // Step 4: 获取学习统计
-      mockRequest.mockResolvedValueOnce({
-        code: 0,
-        success: true,
-        data: { totalQuestions: 2, studyDays: 1 }
-      });
-
-      const statsResult = await lafService.getStudyStats('new_user_001');
-      expect(statsResult.success).toBe(true);
-
-      // 验证总共发了 4 次请求
-      expect(mockRequest).toHaveBeenCalledTimes(4);
+      // 验证总共发了 3 次请求
+      expect(mockRequest).toHaveBeenCalledTimes(3);
     });
 
     it('离线用户旅程: 所有接口优雅降级', async () => {
@@ -377,7 +179,6 @@ describe('全链路: LafService 核心请求引擎', () => {
         lafService.getQuestionBank('user_001'),
         lafService.getRandomQuestions(),
         lafService.getHotSchools(),
-        lafService.getProvinces(),
         lafService.rankCenter({ action: 'getAll' }),
         lafService.socialService({ action: 'get_friend_list' })
       ]);
