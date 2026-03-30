@@ -72,7 +72,7 @@
       "uploadFile": 60000,
       "downloadFile": 60000
     },
-    "requiredPrivateInfos": ["chooseMessageFile"],
+    "requiredPrivateInfos": [],
     "optimization": {
       "subPackages": true
     }
