@@ -14,6 +14,16 @@
 
 ---
 
+## [2026-03-31] Bug 修复 — requiredPrivateInfos 非法值导致微信开发者工具报错（R290）
+
+- **Scope**: `frontend`, `config`
+- **Files Changed**:
+  - `src/manifest.json` — `requiredPrivateInfos` 从 `["chooseMessageFile"]` 改为 `[]`，因为该字段仅支持 8 个地理位置 API，chooseMessageFile 不在合法枚举内 [R290]
+  - `scripts/build/inject-mp-weixin-privacy.mjs` — 同步修改注入逻辑，设为空数组并补充注释说明 chooseMessageFile 的隐私保护由 `__usePrivacyCheck__` 机制管理
+- **Summary**: 微信开发者工具（lib 3.15.0）校验 `requiredPrivateInfos` 时报错，因为 `chooseMessageFile` 不属于该字段的合法值（仅支持 chooseAddress/chooseLocation/choosePoi/getFuzzyLocation/getLocation/onLocationChange/startLocationUpdate/startLocationUpdateBackground 这 8 个地理位置接口）。项目未使用任何地理位置 API，故设为空数组。chooseMessageFile 的隐私声明由 `__usePrivacyCheck__: true` 机制自动处理。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1141 tests passed | H5 build OK
+
 ## [2026-03-31] 第三十二轮审计 — P3 性能优化 + 部署基础设施（R286-R289）
 
 - **Scope**: `deploy`, `infra`, `docs`

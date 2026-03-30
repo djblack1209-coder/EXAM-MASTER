@@ -183,7 +183,7 @@
 | R134 | config   | project.config.json miniprogramRoot指向dev路径而非production                          | 修正为dist/build/mp-weixin/                                                                                                                              | 2026-03-30 |
 | R133 | frontend | 隐私政策页面账号删除描述与实际功能不符                                                | 更新为准确描述自助删除流程(7天冷静期)                                                                                                                    | 2026-03-30 |
 | R132 | config   | manifest.json声明scope.userLocation权限但从未调用位置API(过度数据收集)                | 移除permission.scope.userLocation块                                                                                                                      | 2026-03-30 |
-| R131 | config   | inject-mp-weixin-privacy.mjs注入虚假requiredPrivateInfos(chooseAddress等3个未调用API) | 移除虚假声明，仅保留chooseMessageFile                                                                                                                    | 2026-03-30 |
+| R131 | config   | inject-mp-weixin-privacy.mjs注入虚假requiredPrivateInfos(chooseAddress等3个未调用API) | requiredPrivateInfos仅支持8个地理位置API，chooseMessageFile不在其中；改为空数组，chooseMessageFile隐私由**usePrivacyCheck**管理                          | 2026-03-31 |
 | R130 | security | user-stats.ts 内存速率限制升级为分布式                                                | checkRateLimit→checkRateLimitDistributed                                                                                                                 | 2026-03-30 |
 | R129 | security | user-profile.ts 无速率限制                                                            | 新增checkRateLimitDistributed(20/min)                                                                                                                    | 2026-03-30 |
 | R128 | security | fsrs-optimizer.ts 无速率限制                                                          | 新增checkRateLimitDistributed(3/hour)                                                                                                                    | 2026-03-30 |
@@ -366,6 +366,6 @@
 | WeChat MP Main Package   | ~1298KB               | 2048KB          | 1900KB          |
 | H5 Entry JS (gzip)       | ~45KB (入口135KB)     | —               | 200KB           |
 | Test Coverage            | 89 files / 1141 tests | —               | < 1000 tests    |
-| Audit Issues Resolved    | 289 (R001-R289)       | —               | —               |
+| Audit Issues Resolved    | 290 (R001-R290)       | —               | —               |
 | SiliconFlow DS Keys 余额 | 140元 (10条×14元)     | —               | < 30元          |
 | LLM Provider Pool        | 14 providers          | —               | < 8 可用        |
