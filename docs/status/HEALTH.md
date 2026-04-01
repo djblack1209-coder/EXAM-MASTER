@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-04-01 (QA夜间回归测试修复：3处CI失败根因修复 — R324-R326) | Maintainer: AI-SOP
+> Last updated: 2026-04-01 (QA夜间回归测试修复 + CI基础设施加固 — R324-R333) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -47,6 +47,10 @@
 | R326 | infra    | maestro-check-syntax.sh Java 17 JVM崩溃                                               | --sun-misc-unsafe-memory-access=allow参数增加java版本检测，仅Java 21+时追加                                                                              | 2026-04-01 |
 | R325 | testing  | page-routes.js ENOENT pages.json导致CI兼容性回归全失败                                | PAGES_CONFIG_PATH增加fallback查找src/pages.json                                                                                                          | 2026-04-01 |
 | R324 | infra    | npm ci失败：yaml@2.8.3缺失于lock file                                                 | 显式安装yaml@2同步package-lock.json                                                                                                                      | 2026-04-01 |
+| R329 | infra    | 3个Maestro脚本重复Java环境设置逻辑                                                    | 提取maestro-env.sh共享脚本，3处source引用                                                                                                                | 2026-04-01 |
+| R330 | testing  | integration-doc-convert-real-files.spec.js硬编码/Users/blackdj路径                    | 改用$HOME/Downloads/+existsSync自动跳过                                                                                                                  | 2026-04-01 |
+| R331 | infra    | 4个workflow硬编码NODE_VERSION维护成本高                                               | 统一使用node-version-file: '.node-version'单一来源                                                                                                       | 2026-04-01 |
+| R333 | infra    | audit-tracked-secrets.sh /tmp/硬编码可能并行冲突                                      | 改用mktemp+trap EXIT自动清理                                                                                                                             | 2026-04-01 |
 | R321 | audit    | 全页面深/浅色UI截图审查(8页面×2模式=16张)                                             | 所有页面UI正常，导入资料页色块已修复，无硬编码颜色/主题切换异常                                                                                          | 2026-03-31 |
 | R320 | frontend | classroom store物理迁移到ai-classroom分包                                             | stores/modules/classroom.js→pages/ai-classroom/stores/classroom.js，主包减2.7KB                                                                          | 2026-03-31 |
 | R319 | frontend | AIDailyBriefing analyzeMastery is not a function(小程序环境)                          | raw.default\|\|raw解构改为命名导出优先双路兼容+typeof类型守卫                                                                                            | 2026-03-31 |

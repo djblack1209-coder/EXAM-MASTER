@@ -1,8 +1,11 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-const PDF_FILE = '/Users/blackdj/Downloads/【李彬】基层自治制度考点笔记.pdf';
-const PNG_FILE = '/Users/blackdj/Downloads/预览图0.png';
+// 真实大文件回归测试：仅在本地开发环境有对应文件时才执行，CI 中自动跳过
+const LOCAL_DOWNLOADS = resolve(process.env.HOME || '/tmp', 'Downloads');
+const PDF_FILE = resolve(LOCAL_DOWNLOADS, '【李彬】基层自治制度考点笔记.pdf');
+const PNG_FILE = resolve(LOCAL_DOWNLOADS, '预览图0.png');
 
 const mocked = vi.hoisted(() => {
   const state = {

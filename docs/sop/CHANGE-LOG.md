@@ -14,7 +14,7 @@
 
 ---
 
-## [2026-04-01] QA夜间回归测试修复 — 3处CI失败根因修复 + 2处同类Java兼容性修复 (R324-R328)
+## [2026-04-01] QA夜间回归测试修复 + CI基础设施加固 (R324-R333)
 
 - **Scope**: `infra` `testing`
 - **Files Changed**:
@@ -22,13 +22,17 @@
     - `package.json` / `package-lock.json` — 显式安装 `yaml@2` 解决 vite 6.4 传递依赖缺失导致 `npm ci` 失败的问题
   - **R325 — page-routes.js 路径兼容 src/pages.json**:
     - `tests/shared/page-routes.js` — `PAGES_CONFIG_PATH` 从硬编码 `process.cwd()/pages.json` 改为先查根目录再 fallback `src/pages.json`，修复 CI 中 `ENOENT: pages.json` 导致兼容性回归测试全部失败
-  - **R326 — maestro-check-syntax.sh Java 17 兼容**:
-    - `scripts/test/maestro-check-syntax.sh` — `--sun-misc-unsafe-memory-access=allow` 参数仅 Java 21+ 支持，增加 `java -version` 检测，Java 17 环境不再追加该参数，修复 JVM 启动崩溃
-  - **R327 — run-maestro-suite.sh Java 17 兼容**:
-    - `scripts/test/run-maestro-suite.sh` — 同 R326，增加 Java 版本检测
-  - **R328 — run-maestro-web-h5.sh Java 17 兼容**:
-    - `scripts/test/run-maestro-web-h5.sh` — 同 R326，增加 Java 版本检测（此脚本被 nightly CI 的 Maestro emulator 步骤直接调用）
-- **Summary**: QA Nightly Regression 连续 3 天失败。根因是 3 个独立问题：(1) vite 6.4 升级引入 yaml@2 传递依赖但 lock 文件未同步；(2) pages.json 已移至 src/ 但测试辅助代码仍找根目录；(3) Maestro 语法检查脚本无条件追加 Java 21+ 参数导致 Java 17 环境 JVM 崩溃。排查后发现另外 2 个 Maestro 脚本有同样的 Java 兼容性问题（R327-R328），一并修复。
+  - **R326~R328 — 3个 Maestro 脚本 Java 17 兼容**:
+    - `scripts/test/maestro-check-syntax.sh` / `run-maestro-suite.sh` / `run-maestro-web-h5.sh` — `--sun-misc-unsafe-memory-access=allow` 参数仅 Java 21+ 支持，增加版本检测
+  - **R329 — 提取 maestro-env.sh 共享环境脚本**:
+    - `scripts/test/maestro-env.sh`（新建）— 统一 Java PATH/JAVA_HOME/JAVA_TOOL_OPTIONS 逻辑，3个 Maestro 脚本改为 `source maestro-env.sh`，消除重复代码
+  - **R330 — 测试文件去除硬编码本地路径**:
+    - `tests/unit/integration-doc-convert-real-files.spec.js` — `/Users/blackdj/Downloads/` 改为 `$HOME/Downloads/`，CI 中无文件自动跳过
+  - **R331~R332 — 4个 workflow 统一 Node 版本管理**:
+    - `qa-nightly-regression.yml` / `ci-cd.yml` / `security-scan.yml` / `mp-e2e-self-hosted.yml` — 删除硬编码 `NODE_VERSION: '20.17.0'`，改用 `node-version-file: '.node-version'`，版本单一来源
+  - **R333 — 密钥审计脚本临时文件安全**:
+    - `scripts/build/audit-tracked-secrets.sh` — `/tmp/exam-master-secret-audit.txt` 改为 `mktemp` + `trap` 自动清理
+- **Summary**: QA Nightly Regression 连续 3 天失败的根因修复（R324-R328），加上排查发现的 5 项 CI 基础设施加固（R329-R333）：Maestro 环境脚本提取消除重复维护、测试文件去除硬编码路径、Node 版本统一管理、密钥审计临时文件安全。
 - **Breaking Changes**: 无
 - **Quality Gates**:
   - `npm run lint` → 0 errors 0 warnings

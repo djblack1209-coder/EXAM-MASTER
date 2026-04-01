@@ -9,18 +9,8 @@ if [[ "${SKIP_MAESTRO_PREFLIGHT:-0}" != "1" ]]; then
   bash scripts/test/maestro-preflight.sh
 fi
 
-export PATH="/opt/homebrew/opt/openjdk/bin:$HOME/.maestro/bin:$PATH"
-export JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk}"
-
-if [[ " ${JAVA_TOOL_OPTIONS:-} " != *" --enable-native-access=ALL-UNNAMED "* ]]; then
-  JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} --enable-native-access=ALL-UNNAMED"
-fi
-# --sun-misc-unsafe-memory-access=allow 仅 Java 21+ 支持，低版本会导致 JVM 启动失败
-JAVA_MAJOR=$(java -version 2>&1 | head -1 | sed -E 's/.*"([0-9]+).*/\1/' || echo 0)
-if [[ "$JAVA_MAJOR" -ge 21 ]] && [[ " ${JAVA_TOOL_OPTIONS:-} " != *" --sun-misc-unsafe-memory-access=allow "* ]]; then
-  JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} --sun-misc-unsafe-memory-access=allow"
-fi
-export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS# }"
+# 加载 Maestro 共享环境（Java PATH / JAVA_HOME / JAVA_TOOL_OPTIONS）
+source "$(dirname "$0")/maestro-env.sh"
 
 BASE_URL_VALUE="${BASE_URL:-http://10.0.2.2:5173}"
 H5_HOST_VALUE="${H5_HOST:-0.0.0.0}"
