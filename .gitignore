@@ -128,6 +128,7 @@ scripts/test/
 !scripts/test/
 scripts/test/*
 !scripts/test/maestro-check-syntax.sh
+!scripts/test/maestro-env.sh
 !scripts/test/maestro-preflight.sh
 !scripts/test/run-maestro-suite.sh
 !scripts/test/run-maestro-web-h5.sh
@@ -162,3 +163,12 @@ docs/reports/*.xml
 docs/reports/e2e-compat-html/
 docs/reports/e2e-regression-html/
 release/
+
+# Playwright/测试运行时产物
+output/
+
+# 一次性优化脚本
+scripts/optimize/
+
+# public/ 目录下的 PWA 图标（仅 H5 使用）
+# public/static/pwa-icons/ 文件由 Vite 复制到 H5 构建产物，不打入小程序包
