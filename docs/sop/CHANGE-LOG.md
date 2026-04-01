@@ -14,6 +14,212 @@
 
 ---
 
+## [2026-04-01] QA夜间回归测试修复 — 3处CI失败根因修复 + 2处同类Java兼容性修复 (R324-R328)
+
+- **Scope**: `infra` `testing`
+- **Files Changed**:
+  - **R324 — package-lock.json 同步 yaml@2.8.3 依赖**:
+    - `package.json` / `package-lock.json` — 显式安装 `yaml@2` 解决 vite 6.4 传递依赖缺失导致 `npm ci` 失败的问题
+  - **R325 — page-routes.js 路径兼容 src/pages.json**:
+    - `tests/shared/page-routes.js` — `PAGES_CONFIG_PATH` 从硬编码 `process.cwd()/pages.json` 改为先查根目录再 fallback `src/pages.json`，修复 CI 中 `ENOENT: pages.json` 导致兼容性回归测试全部失败
+  - **R326 — maestro-check-syntax.sh Java 17 兼容**:
+    - `scripts/test/maestro-check-syntax.sh` — `--sun-misc-unsafe-memory-access=allow` 参数仅 Java 21+ 支持，增加 `java -version` 检测，Java 17 环境不再追加该参数，修复 JVM 启动崩溃
+  - **R327 — run-maestro-suite.sh Java 17 兼容**:
+    - `scripts/test/run-maestro-suite.sh` — 同 R326，增加 Java 版本检测
+  - **R328 — run-maestro-web-h5.sh Java 17 兼容**:
+    - `scripts/test/run-maestro-web-h5.sh` — 同 R326，增加 Java 版本检测（此脚本被 nightly CI 的 Maestro emulator 步骤直接调用）
+- **Summary**: QA Nightly Regression 连续 3 天失败。根因是 3 个独立问题：(1) vite 6.4 升级引入 yaml@2 传递依赖但 lock 文件未同步；(2) pages.json 已移至 src/ 但测试辅助代码仍找根目录；(3) Maestro 语法检查脚本无条件追加 Java 21+ 参数导致 Java 17 环境 JVM 崩溃。排查后发现另外 2 个 Maestro 脚本有同样的 Java 兼容性问题（R327-R328），一并修复。
+- **Breaking Changes**: 无
+- **Quality Gates**:
+  - `npm run lint` → 0 errors 0 warnings
+  - `npm test` → 89 files / 1141 tests passed
+  - `npm run build:h5` → Build complete
+
+---
+
+## [2026-03-31] 第四十轮审计 — 全页面深/浅色截图审查 + 专注计时器深色模式修复 (R322-R323)
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **全页面截图全覆盖审查 (R322)**:
+    - 浅色模式 23 张 + 深色模式 23 张 = 共 46 张截图
+    - 覆盖全部核心页面：首页/刷题/择校/我的/设置/登录/引导/导入资料/聊天/错题本/收藏/创建计划/学习详情/拍照搜题/文档转换/证件照/专注计时/知识图谱/AI课堂/好友列表/题库管理/智能复习/AI择校咨询
+    - 发现 1 个问题：专注计时器页面深色模式未生效
+  - **专注计时器深色模式修复 (R323)**:
+    - `src/pages/tools/focus-timer.vue` — 新增 `onShow` 生命周期同步主题状态 + `themeUpdate` 全局事件监听 + `onUnmounted` 清理事件
+- **Summary**: 46 张全页面截图审查发现专注计时器是唯一一个深色模式未生效的页面，根因是缺少 onShow 主题同步和 themeUpdate 事件监听。修复后深色模式可正确切换。
+- **Breaking Changes**: 无
+- **Quality Gates**:
+  - `npm run lint` → 0 errors 0 warnings
+  - `npm test` → 89 files / 1141 tests passed
+  - `npm run build:h5` → Build complete
+
+---
+
+## [2026-03-31] 第三十九轮审计 — 主包继续瘦身 + 全页面UI截图审查 (R320-R321)
+
+- **Scope**: `frontend`, `docs`
+- **Files Changed**:
+  - **主包瘦身 — classroom store 物理迁移到分包 (R320)**:
+    - `src/stores/modules/classroom.js` → 删除
+    - `src/pages/ai-classroom/stores/classroom.js` → 新建（从 stores/modules/ 迁移）
+    - `src/pages/ai-classroom/classroom.vue:105` — import 路径改为 `./stores/classroom.js`
+    - `src/pages/ai-classroom/index.vue:117` — 同上
+  - **UI截图全覆盖审查 (R321)**:
+    - 浅色/深色两种模式下共截取 16 张截图覆盖 8 个核心页面
+    - 审查结果：所有页面 UI 正常，无色块/硬编码颜色/主题切换异常
+    - 导入资料页 #9fe870 绿色色块已确认修复
+    - 截图存放：`output/ui-audit/light/` 和 `output/ui-audit/dark/`
+- **Summary**: 将 classroom.js（2.7KB）从主包物理迁移到 ai-classroom 分包目录，进一步缩减主包体积。全页面深/浅色双模式截图审查确认所有 UI 问题均已修复。主包精确体积 1.04 MB，距 1.5M 目标有 ~470KB 余量。
+- **Breaking Changes**: 无
+- **Quality Gates**:
+  - `npm run lint` → 0 errors 0 warnings
+  - `npm test` → 89 files / 1141 tests passed
+  - `npm run build:h5` → Build complete
+  - `npm run build:mp-weixin` → Build complete
+  - 主包体积: 1.04 MB (1086730 bytes)
+
+---
+
+## [2026-03-31] 第三十八轮审计 — 功能性缺陷修复 (R318-R319)
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **首页服务端复习同步修复 (R318)**:
+    - `src/composables/useHomeReview.js` — `loadReviewPending` 中当 `reviewStore` 为 null（动态导入延迟）时，增加 fallback 逻辑：自动动态导入 `review.js` 并调用 `fetchReviewPlan`，恢复服务端增量同步功能
+  - **AIDailyBriefing analyzeMastery 报错修复 (R319)**:
+    - `src/components/business/index/AIDailyBriefing.vue:263-267` — `raw.default || raw` 解构逻辑在微信小程序构建环境下失效（命名导出不在 default 下），改为 `raw.analyzeMastery || raw.default?.analyzeMastery` 双路兼容 + 类型守卫
+- **Summary**: 修复两个功能性缺陷：(1) 上轮主包瘦身将 reviewStore 改为动态导入后，useHomeReview composable 闭包持有 null 引用导致服务端复习同步永远跳过——增加动态 fallback 恢复功能；(2) AIDailyBriefing 的 `raw.default || raw` 兼容逻辑在微信小程序 require 环境下适得其反，导致 analyzeMastery 解构为 undefined——改为命名导出优先的双路解构。
+- **Breaking Changes**: 无
+- **Quality Gates**:
+  - `npm run lint` → 0 errors 0 warnings
+  - `npm test` → 89 files / 1141 tests passed
+  - `npm run build:h5` → Build complete
+
+---
+
+## [2026-03-31] 第三十七轮审计 — CSS变量fallback统一 + JS硬编码色消除 (R315-R319)
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **JS硬编码背景色统一 — NAV_BAR_COLORS常量提取 (R315)**:
+    - `src/composables/useTheme.js` — 新增 `NAV_BAR_COLORS` 常量（light/dark 导航栏颜色集中管理）
+    - `src/App.vue:168` — `backgroundColor: isDark ? '#0b0b0f' : '#b8eb89'` → 使用 `NAV_BAR_COLORS` 常量
+    - `src/pages/profile/index.vue:732` — 同上
+    - `src/pages/settings/index.vue:398` — 同上
+  - **login 页 fallback 修正 (R316)**:
+    - `src/pages/login/index.vue:1168` — `var(--brand-hover, #5ac78f)` → `var(--brand-hover, #157141)` 与 App.vue 定义一致
+    - `src/pages/login/index.vue:1176` — `var(--brand-active, #7bc653)` → `var(--brand-active, #0d522e)` 与 App.vue 定义一致
+  - **--color-primary fallback 统一 (R317)**:
+    - `src/pages/practice-sub/diagnosis-report.vue:1116` — fallback `#007aff`(蓝) → `#0f5f34`(品牌深绿)
+    - `src/pages/mistake/index.vue:1140` — fallback `#34d399`(翠绿) → `#0f5f34`(品牌深绿)
+    - `src/pages/study-detail/AbilityRadar.vue` — 5处 fallback `#4caf50`(Material绿) → `#0f5f34`(品牌深绿)
+- **Summary**: 消除 CSS 变量系统中 3 类不一致问题：(1) 3处 JS 中硬编码导航栏颜色提取为 `NAV_BAR_COLORS` 统一常量，未来改主题色只需改一处；(2) login 页 2 个背景圆 fallback 值与全局定义色差巨大（亮绿 vs 深绿），已对齐；(3) 3 个页面 `--color-primary` 的 fallback 分别是蓝/翠绿/Material绿，现统一为品牌色 `#0f5f34`。
+- **Breaking Changes**: 无
+- **Quality Gates**:
+  - `npm run lint` → 0 errors 0 warnings
+  - `npm test` → 89 files / 1141 tests passed
+  - `npm run build:h5` → Build complete
+
+---
+
+## [2026-03-31] 第三十六轮审计 — 主包瘦身 + UI色块修复 + CSS变量补全 (R309-R314)
+
+- **Scope**: `frontend`, `docs`
+- **Files Changed**:
+  - **UI色块修复 — 导入资料页背景色硬编码 (R309)**:
+    - `src/pages/practice-sub/import-data.vue:1578` — `var(--bg-page, #9fe870)` fallback 由亮绿改为 `#f5f5f7`（中性灰），消除变量未加载时的怪异绿色色块
+  - **主包瘦身 — 首页动态导入重构 (R310)**:
+    - `src/pages/index/index.vue` — `useReviewStore`、`useLearningTrajectoryStore`、`syncFSRSParams`、`smartRequestSubscription` 从静态 import 改为动态 `import()`，减少主包静态依赖链
+  - **主包瘦身 — 刷题页动态导入重构 (R311)**:
+    - `src/pages/practice/index.vue` — `useReviewStore` 从静态 import 改为方法内动态 `import()`（仅在用户点击 AI 推题时才加载）
+  - **主包瘦身 — 个人中心动态导入重构 (R312)**:
+    - `src/pages/profile/index.vue` — `useGamificationStore` 从静态 import 改为 `shallowRef(null)` + `onMounted` 中动态 `import()`，8个 computed 属性添加 null 保护和默认值
+  - **CSS变量补全 — --wise-green 全局定义 (R313)**:
+    - `src/App.vue` — 新增 `--wise-green: #34d399` 和 `--wise-green-dark: #059669` 全局CSS变量定义，修复 AIDailyBriefing 组件中2处永远使用 fallback 硬编码值的问题
+- **Summary**: 核心目标：将微信小程序主包体积从超标降至 ~1.03MB（限制1.5M）。通过将3个主包页面中6个分包级依赖改为动态 `import()`，切断了 `review.js → practice.api.js → ai.api.js`、`fsrs-optimizer-client.js → ts-fsrs`、`gamification.js → game-constants.js` 等依赖链。同时修复了导入资料页面的绿色色块UI问题和未定义CSS变量问题。
+- **Breaking Changes**: 无。所有动态导入均有静默降级处理，功能行为不变。
+- **Quality Gates**:
+  - `npm run lint` → 0 errors 0 warnings
+  - `npm test` → 89 files / 1141 tests passed
+  - `npm run build:h5` → Build complete
+  - `npm run build:mp-weixin` → Build complete
+  - 主包体积: ~1.03 MB（目标 < 1.5 MB）
+
+---
+
+## [2026-03-31] 第三十五轮审计 — 微信小程序审核全量合规 + 项目清理 + Emoji清除 (R301-R308)
+
+- **Scope**: `frontend`, `config`, `infra`, `docs`
+- **Files Changed**:
+  - **微信合规 — PWA 图标排除小程序主包 (R301)**:
+    - `src/static/pwa-icons/` → `public/static/pwa-icons/` — PWA 图标（3 文件 225KB）移出 src/ 避免打入微信小程序主包；H5/PWA 通过 Vite public 目录直接复制
+  - **Emoji 清除 — 用户可见 Emoji 替换 (R302)**:
+    - `src/components/business/index/AIDailyBriefing.vue:159` — `⚠️` → `[注意]`
+    - `src/pages/settings/poster-generator.js:698` — `✓` → `[v]`
+  - **Emoji 清除 — 日志模板字符串 Emoji 移除 (R303)**:
+    - `src/pages/mistake/index.vue` — 6 处日志 Emoji 移除（🔄/✅/📊/📭）
+    - `src/pages/school/index.vue:862` — 1 处日志 ✅ 移除
+  - **项目清理 — Git 跟踪冗余文件取消 (R304)**:
+    - `.gitignore` — 新增 `output/`（Playwright 截图）和 `scripts/optimize/`（一次性脚本）排除规则
+    - `output/playwright/` — 16 个测试截图取消 Git 跟踪（git rm --cached）
+    - `scripts/optimize/` — 2 个一次性优化脚本取消 Git 跟踪
+  - **项目清理 — 磁盘冗余文件删除 (R305)**:
+    - `scripts/fix/` — 4 个一次性修复脚本删除
+    - `scripts/crawlers/` — 2 个一次性爬虫脚本删除
+    - `scripts/data-sync/` — 1 个一次性同步脚本删除
+    - `scripts/refactor/` — 2 个一次性重构脚本删除
+    - `data/schools/schools-fixed.json` + `fix-report.json` — 一次性修复产物删除
+  - **ESLint 修复 (R306)**:
+    - `src/pages/login/onboarding.vue:123` — vue/multiline-html-element-content-newline 格式修复
+  - **微信合规检测报告 (R307)**:
+    - 8 个维度 36 项检测，含微信官方文档引用和置信度评估
+  - **用户体验合规检测 (R308)**:
+    - 9 个维度 25 项检测，含审核角度和用户使用角度双维度分析
+- **微信官方文档全量检测结果**:
+  - ✅ 包体积：主包 1059KB（≤1536KB 新规限制内）
+  - ✅ 隐私合规：`__usePrivacyCheck__` 启用、privacy-popup 覆盖 9 个页面、`requiredPrivateInfos: []`
+  - ✅ 权限声明：零过度权限、相机/录音/相册权限按需动态请求
+  - ✅ 登录流程：免登录体验、标准 wx.login + code2Session
+  - ✅ API 使用：未使用已弃用 API（getUserInfo/getUserProfile）
+  - ✅ 安全区适配：114 处 safe-area 适配、constant()+env() 双写兼容
+  - ❌ **BLOCKER**：未接入 security.msgSecCheck 内容安全检测（记录为 H019）
+- **Summary**: 第三十五轮审计聚焦微信小程序审核合规。完成 PWA 图标排除小程序主包（主包从 ~1298KB 降至 1059KB）、全量 Emoji 清除（用户可见 + 日志模板共 9 处）、项目磁盘清理（删除 11 个冗余文件/目录 + 18 个文件取消 Git 跟踪）。对照微信官方技术文档执行 36+25 项全量合规检测，除 msgSecCheck（需要后端开发 + 微信后台申请）外全部通过。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors 0 warnings | 89 files / 1141 tests passed | H5 build OK | MP-Weixin build OK (主包 1059KB)
+
+---
+
+## [2026-03-31] 第三十四轮审计 — P0-P3 全量安全/质量/性能扫描 + 7 fixes (R294-R300)
+
+- **Scope**: `backend`, `frontend`, `performance`, `security`
+- **Files Changed**:
+  - **P0 安全 — 触发器日志规范化 (1 fix)**:
+    - `laf-backend/triggers/on-user-create.js` — 4处裸 console.log + 1处 console.warn + 1处 console.error 替换为受 LOG_LEVEL 控制的 logger 对象 [R294]
+  - **P2 内存泄漏 — setTimeout 追踪清理 (2 fixes)**:
+    - `src/pages/school/index.vue` — 20秒 AI 分析超时 setTimeout 追踪：添加 `_pendingTimers` 实例数组 + onUnload 批量清理 [R295]
+    - `src/pages/practice-sub/rank.vue` — 3秒高亮 setTimeout 追踪：添加 `_highlightTimer` 实例引用 + onUnload 清理 [R296]
+  - **P3 除零防护 (3 fixes)**:
+    - `src/utils/analytics/learning-analytics.js` — `_generatePeerInsights` 添加 peerData 空数组提前返回守卫 [R297]
+    - `src/pages/practice-sub/question-timer.js` — `previousAvg === 0` 时提前返回 'stable' [R298]
+    - `src/pages/practice-sub/utils/practice-mode-manager.js` — `h.questionCount > 0` 三元表达式防止除零 [R299]
+  - **P3 崩溃防护 (1 fix)**:
+    - `src/pages/knowledge-graph/index.vue` — `graphData.nodes || []` + `graphData.edges || []` 防止 undefined.map() TypeError [R300]
+  - **P4 ESLint 修复**:
+    - `src/pages/login/onboarding.vue` — eslint --fix 修复 vue/multiline-html-element-content-newline 警告
+- **Audit-Only Findings (0 fix needed)**:
+  - **P0 安全**: 源码零硬编码密钥（所有 .env 未被 Git 追踪）、43 云函数认证/限流完备、前端零 XSS 向量（无 v-html/eval/innerHTML）、Electron 安全配置 A+ 级（contextIsolation + sandbox + CSP + 协议白名单）、请求签名 100% 覆盖
+  - **P1 代码质量**: 2 个 TODO 均为信息性（learning-analytics.js 未来 ML/服务器增强）、零 FIXME/HACK/@placeholder、零 mock 残留、零空函数体
+  - **P1 API 错误处理**: 9 个 API 域文件 58 个导出函数 + 6 个便捷方法，100% 使用 normalizeError()，零空 catch 块
+  - **P2 代码规范**: ESLint 0 errors 0 warnings、分层纪律无违规
+  - **P3 分包预加载**: 4 个 Tab 页预加载覆盖 14 个分包、静态资源总计 0.34MB 无超标
+  - **P3 列表分页**: 错题本/题库/排行榜/好友列表均有分页或增量渲染
+- **Summary**: 第三十四轮全量 P0-P3 审计。P0 安全扫描确认零密钥泄露、43 云函数鉴权完备、前端三层 XSS 防护完善、Electron 安全配置达行业最佳实践。P1 扫描确认 API 错误处理 100% 覆盖率。P2 修复 2 个 setTimeout 内存泄漏（school/index.vue 20秒 + rank.vue 3秒）。P3 修复 3 个除零风险（peerData/previousAvg/questionCount）和 1 个 undefined.map() 崩溃风险。共计 R294-R300 (7 fixes)。
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1141 tests passed | H5 build OK
+
+---
+
 ## [2026-03-31] 紧急修复轮 — 首页崩溃/导入页UI/全项目Emoji替换 (R291-R293)
 
 - **Scope**: `frontend`, `config`

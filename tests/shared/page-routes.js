@@ -1,7 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const PAGES_CONFIG_PATH = path.resolve(process.cwd(), 'pages.json');
+const PAGES_CONFIG_PATH = (() => {
+  const root = path.resolve(process.cwd(), 'pages.json');
+  if (fs.existsSync(root)) return root;
+  return path.resolve(process.cwd(), 'src', 'pages.json');
+})();
 
 const ROUTE_QUERY_MAP = {
   'pages/login/index': 'e2e=1',

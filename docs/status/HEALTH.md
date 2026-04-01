@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-03-31 (紧急修复轮：首页崩溃/导入页UI/全项目Emoji替换 — R291-R293) | Maintainer: AI-SOP
+> Last updated: 2026-04-01 (QA夜间回归测试修复：3处CI失败根因修复 — R324-R326) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -18,6 +18,7 @@
 
 | ID       | Severity | Domain   | Title                                                                                                                | Since      | Owner |
 | -------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------- | ---------- | ----- |
+| H019     | 🔴       | backend  | 未接入微信 security.msgSecCheck 内容安全检测（UGC文本/AI生成内容需经过微信后端审查，审核高频拒绝项）                 | 2026-03-31 | —     |
 | ~~H001~~ | ~~🟡~~   | deploy   | ~~Nginx backup 到 Sealos 需 HTTPS proxy，upstream 不支持混合协议~~ → **R024 error_page + @sealos_fallback**          | 2026-03-23 | ✅    |
 | ~~H002~~ | ~~🟡~~   | backend  | ~~cloud-shim `cloud.fetch` 非 axios 实例，不支持 `.get()`/`.post()` 短写法~~ → **已修复，添加 6 个短写法方法**       | 2026-03-23 | ✅    |
 | ~~H003~~ | ~~🔵~~   | frontend | ~~部分页面仍用 Options API（73个文件）~~ → **R54 迁移28个, 剩余42个(均>364行)**                                      | 2026-03-22 | ✅    |
@@ -35,7 +36,7 @@
 | ~~H015~~ | ~~🟡~~   | frontend | ~~UI质量审查：6个组件捕获错误但缺少用户提示~~ → **R51 修复3个(MarkdownRenderer/question-bank/InviteModal)**          | 2026-03-23 | ✅    |
 | ~~H016~~ | ~~🟡~~   | frontend | ~~FSRSOptimizer.vue 缺少加载状态~~ → **R51 新增 loading ref + 加载中/失败提示**                                      | 2026-03-23 | ✅    |
 | ~~H017~~ | ~~🟡~~   | testing  | ~~单元测试 161/1260 失败~~ → **R51 全量修复 0/1263 失败**                                                            | 2026-03-26 | ✅    |
-| ~~H018~~ | ~~🟡~~   | frontend | ~~微信MP主包2036KB~~ → **1888KB (R48/R49瘦身, 在2048KB限值内)**                                                      | 2026-03-25 | ✅    |
+| ~~H018~~ | ~~🟡~~   | frontend | ~~微信MP主包2036KB~~ → **1.04MB (R310-R314动态导入+R320分包迁移, 目标<1.5MB)**                                       | 2026-03-31 | ✅    |
 
 ## Recently Resolved
 
@@ -43,6 +44,37 @@
 
 | ID   | Domain   | Title                                                                                 | Solution                                                                                                                                                 | Resolved   |
 | ---- | -------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| R326 | infra    | maestro-check-syntax.sh Java 17 JVM崩溃                                               | --sun-misc-unsafe-memory-access=allow参数增加java版本检测，仅Java 21+时追加                                                                              | 2026-04-01 |
+| R325 | testing  | page-routes.js ENOENT pages.json导致CI兼容性回归全失败                                | PAGES_CONFIG_PATH增加fallback查找src/pages.json                                                                                                          | 2026-04-01 |
+| R324 | infra    | npm ci失败：yaml@2.8.3缺失于lock file                                                 | 显式安装yaml@2同步package-lock.json                                                                                                                      | 2026-04-01 |
+| R321 | audit    | 全页面深/浅色UI截图审查(8页面×2模式=16张)                                             | 所有页面UI正常，导入资料页色块已修复，无硬编码颜色/主题切换异常                                                                                          | 2026-03-31 |
+| R320 | frontend | classroom store物理迁移到ai-classroom分包                                             | stores/modules/classroom.js→pages/ai-classroom/stores/classroom.js，主包减2.7KB                                                                          | 2026-03-31 |
+| R319 | frontend | AIDailyBriefing analyzeMastery is not a function(小程序环境)                          | raw.default\|\|raw解构改为命名导出优先双路兼容+typeof类型守卫                                                                                            | 2026-03-31 |
+| R318 | frontend | 首页服务端复习同步因reviewStore闭包为null永远不执行                                   | useHomeReview.loadReviewPending增加动态import fallback逻辑                                                                                               | 2026-03-31 |
+| R317 | frontend | 3个页面--color-primary fallback互相矛盾(蓝/翠绿/Material绿)                           | diagnosis-report/mistake/AbilityRadar共7处fallback统一为品牌色#0f5f34                                                                                    | 2026-03-31 |
+| R316 | frontend | login页--brand-hover/--brand-active fallback与定义值色差巨大                          | #5ac78f→#157141, #7bc653→#0d522e与App.vue定义对齐                                                                                                        | 2026-03-31 |
+| R315 | frontend | 3处JS硬编码导航栏颜色绕过CSS变量系统                                                  | useTheme.js提取NAV_BAR_COLORS常量，App.vue/profile/settings统一引用                                                                                      | 2026-03-31 |
+| R314 | frontend | 主包瘦身：3个主包页面6个分包级依赖改为动态import()                                    | index:useReviewStore/useLearningTrajectoryStore/syncFSRSParams/smartRequestSubscription,practice:useReviewStore,profile:useGamificationStore→动态导入    | 2026-03-31 |
+| R313 | frontend | CSS变量--wise-green从未定义，AIDailyBriefing 2处永远使用硬编码fallback                | App.vue新增--wise-green:#34d399和--wise-green-dark:#059669全局定义                                                                                       | 2026-03-31 |
+| R312 | frontend | profile/index.vue useGamificationStore静态导入拖入主包                                | shallowRef(null)+onMounted动态import+8个computed添加null保护默认值                                                                                       | 2026-03-31 |
+| R311 | frontend | practice/index.vue useReviewStore静态导入拖入主包                                     | goSmartRecommend方法内动态import(仅用户点击时加载)                                                                                                       | 2026-03-31 |
+| R310 | frontend | index/index.vue 4个静态导入拖入主包(review/trajectory/fsrs/subscribe)                 | 全部改为动态import()，切断review→practice.api→ai.api和fsrs→ts-fsrs依赖链                                                                                 | 2026-03-31 |
+| R309 | frontend | import-data.vue背景色fallback #9fe870导致绿色色块                                     | var(--bg-page,#9fe870)→var(--bg-page,#f5f5f7)                                                                                                            | 2026-03-31 |
+| R308 | audit    | 微信用户体验合规检测(9维度25项)                                                       | 登录流程/授权时机/导航栏/域名白名单/分享/性能/无障碍/适配全面检测通过                                                                                    | 2026-03-31 |
+| R307 | audit    | 微信官方技术文档全量合规检测(8维度36项)                                               | 包体积/页面配置/隐私/权限/分包预加载/API/内容安全全面检测，发现H019                                                                                      | 2026-03-31 |
+| R306 | frontend | onboarding.vue ESLint格式警告                                                         | eslint --fix修复vue/multiline-html-element-content-newline                                                                                               | 2026-03-31 |
+| R305 | infra    | 11个冗余磁盘文件(scripts/fix,crawlers,data-sync,refactor+data修复产物)                | 全部删除释放磁盘空间                                                                                                                                     | 2026-03-31 |
+| R304 | infra    | output/(16个截图)+scripts/optimize/(2个脚本)被Git错误跟踪                             | .gitignore新增规则+git rm --cached取消跟踪                                                                                                               | 2026-03-31 |
+| R303 | frontend | mistake/index.vue+school/index.vue日志模板7处Emoji残留                                | 移除日志字符串中的Emoji前缀(保留文本内容)                                                                                                                | 2026-03-31 |
+| R302 | frontend | AIDailyBriefing.vue+poster-generator.js用户可见Emoji                                  | 替换为中文文字([注意]/[v])                                                                                                                               | 2026-03-31 |
+| R301 | config   | PWA图标(3文件225KB)打入微信小程序主包                                                 | 移至public/static/pwa-icons/,Vite仅H5构建时复制,小程序主包减225KB                                                                                        | 2026-03-31 |
+| R300 | frontend | knowledge-graph/index.vue graphData.nodes/edges可能为undefined导致TypeError           | 添加(graphData.nodes or []).map()防护+graphData.edges or []                                                                                              | 2026-03-31 |
+| R299 | frontend | practice-mode-manager.js h.questionCount可能为0导致Infinity                           | 三元表达式 h.questionCount > 0 ? h.duration / h.questionCount : 0                                                                                        | 2026-03-31 |
+| R298 | frontend | question-timer.js previousAvg可能为0导致Infinity                                      | previousAvg === 0 时提前返回 'stable'                                                                                                                    | 2026-03-31 |
+| R297 | frontend | learning-analytics.js peerData空数组除零产生NaN                                       | 添加 peerData.length === 0 提前返回空数组守卫                                                                                                            | 2026-03-31 |
+| R296 | frontend | rank.vue 3秒高亮setTimeout未追踪(卸载后操作已销毁组件)                                | 添加\_highlightTimer实例引用+onUnload clearTimeout                                                                                                       | 2026-03-31 |
+| R295 | frontend | school/index.vue 20秒AI分析超时setTimeout未在onUnload清理                             | 添加\_pendingTimers实例数组追踪+onUnload批量clearTimeout                                                                                                 | 2026-03-31 |
+| R294 | backend  | on-user-create.js 4处裸console.log不受LOG_LEVEL控制                                   | 创建本地logger对象(info/warn/error)，所有console调用替换为logger                                                                                         | 2026-03-31 |
 | R293 | frontend | 全项目约150处用户可见emoji不符合商业交付标准                                          | 30+文件emoji替换为中文文字/方括号标记，AIChatModal聊天表情选择器保留                                                                                     | 2026-03-31 |
 | R292 | frontend | import-data.vue白色遮挡/光晕/虚线丢失                                                 | glow opacity 0.8→0, 卡片backdrop-filter+color-mix降低白色, border-style恢复dashed                                                                        | 2026-03-31 |
 | R291 | frontend | AIDailyBriefing analyzeMastery is not a function首页崩溃                              | 动态import()添加raw.default\|\|raw模块命名空间互操作                                                                                                     | 2026-03-31 |
@@ -366,9 +398,9 @@
 | Tencent Cloud RAM        | ~948MB                | 1.9GB           | 1.5GB           |
 | Tencent Cloud Disk       | 16GB                  | 40GB            | 32GB            |
 | Tencent Cloud Bandwidth  | —                     | 200GB/月 @3Mbps | 160GB           |
-| WeChat MP Main Package   | ~1298KB               | 2048KB          | 1900KB          |
+| WeChat MP Main Package   | ~1059KB               | 1536KB          | 1400KB          |
 | H5 Entry JS (gzip)       | ~45KB (入口135KB)     | —               | 200KB           |
 | Test Coverage            | 89 files / 1141 tests | —               | < 1000 tests    |
-| Audit Issues Resolved    | 290 (R001-R290)       | —               | —               |
+| Audit Issues Resolved    | 308 (R001-R308)       | —               | —               |
 | SiliconFlow DS Keys 余额 | 140元 (10条×14元)     | —               | < 30元          |
 | LLM Provider Pool        | 14 providers          | —               | < 8 可用        |
