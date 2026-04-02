@@ -12,19 +12,27 @@
 import cloud from '@lafjs/cloud';
 
 const db = cloud.database();
+const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+const LOG_LEVELS = { error: 0, warn: 1, info: 2, debug: 3 };
+const currentLevel = LOG_LEVELS[LOG_LEVEL] ?? 2;
+const logger = {
+  info: (...args) => currentLevel >= 2 && console.log(...args),
+  warn: (...args) => currentLevel >= 1 && console.warn(...args),
+  error: (...args) => console.error(...args)
+};
 
 export default async function (ctx) {
   const { doc } = ctx; // 新创建的用户文档
 
   if (!doc || !doc._id) {
-    console.warn('[Trigger] 无效的用户文档');
+    logger.warn('[Trigger] 无效的用户文档');
     return;
   }
 
   const userId = doc._id;
   const now = Date.now();
 
-  console.log(`[Trigger] 新用户创建: ${userId}`);
+  logger.info(`[Trigger] 新用户创建: ${userId}`);
 
   try {
     // 1. 创建默认学习计划
@@ -53,7 +61,7 @@ export default async function (ctx) {
     };
 
     await db.collection('study_plans').add(defaultPlan);
-    console.log(`[Trigger] 创建默认学习计划: ${userId}`);
+    logger.info(`[Trigger] 创建默认学习计划: ${userId}`);
 
     // 2. 发放新手成就
     const firstLoginAchievement = {
@@ -69,7 +77,7 @@ export default async function (ctx) {
       .update({
         achievements: db.command.push(firstLoginAchievement)
       });
-    console.log(`[Trigger] 发放新手成就: ${userId}`);
+    logger.info(`[Trigger] 发放新手成就: ${userId}`);
 
     // 3. 初始化排行榜记录
     const today = new Date().toISOString().split('T')[0];
@@ -89,9 +97,9 @@ export default async function (ctx) {
     };
 
     await db.collection('rankings').add(rankRecord);
-    console.log(`[Trigger] 初始化排行榜记录: ${userId}`);
+    logger.info(`[Trigger] 初始化排行榜记录: ${userId}`);
   } catch (error) {
-    console.error(`[Trigger] 新用户初始化失败: ${userId}`, error);
+    logger.error(`[Trigger] 新用户初始化失败: ${userId}`, error);
   }
 }
 

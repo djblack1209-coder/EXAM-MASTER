@@ -170,7 +170,7 @@ export const CHECKIN_REWARD = {
 /**
  * 统一成就定义
  * 合并了 gamification.js（16 个）和 learning-analytics.js（7 个）
- * 去除重复后共 18 个成就。图标统一使用方括号文字标记（前端用 CSS/图标组件渲染）。
+ * 去除重复后共 18 个成就。图标统一使用英文短标识名（前端用图标组件渲染）。
  *
  * category: volume / streak / accuracy / speed / social
  */
@@ -179,57 +179,57 @@ export const ACHIEVEMENT_DEFS = {
   first_blood: {
     name: '初试锋芒',
     description: '完成第一道题目',
-    icon: '[标]',
+    icon: 'star',
     category: 'volume'
   },
   // analytics 子系统使用 first_question 作为 id（兼容已有 localStorage 数据）
   first_question: {
     name: '初出茅庐',
     description: '完成第一道题目',
-    icon: '[标]',
+    icon: 'star',
     category: 'volume'
   },
   ten_questions: {
     name: '小试牛刀',
     description: '累计完成 10 道题目',
-    icon: '[笔]',
+    icon: 'edit',
     category: 'volume'
   },
   centurion: {
     name: '百题斩',
     description: '累计完成 100 道题目',
-    icon: '[力]',
+    icon: 'target',
     category: 'volume'
   },
   // analytics 子系统使用 hundred_questions 作为 id（兼容已有 localStorage 数据）
   hundred_questions: {
     name: '勤学苦练',
     description: '累计完成 100 道题目',
-    icon: '[力]',
+    icon: 'target',
     category: 'volume'
   },
   thousand: {
     name: '千题王',
     description: '累计完成 1000 道题目',
-    icon: '[冠]',
+    icon: 'crown',
     category: 'volume'
   },
   night_owl: {
     name: '夜猫子',
     description: '23 点后学习',
-    icon: '[夜]',
+    icon: 'moon',
     category: 'volume'
   },
   early_bird: {
     name: '早起鸟',
     description: '7 点前学习',
-    icon: '[晨]',
+    icon: 'sun',
     category: 'volume'
   },
   marathon: {
     name: '马拉松',
     description: '单次学习超过 2 小时',
-    icon: '[跑]',
+    icon: 'trophy',
     category: 'volume'
   },
 
@@ -237,37 +237,37 @@ export const ACHIEVEMENT_DEFS = {
   streak_3: {
     name: '三日不辍',
     description: '连续学习 3 天',
-    icon: '[火]',
+    icon: 'fire',
     category: 'streak'
   },
   streak_7: {
     name: '周周坚持',
     description: '连续学习 7 天',
-    icon: '[火]',
+    icon: 'fire',
     category: 'streak'
   },
   streak_14: {
     name: '两周达人',
     description: '连续学习 14 天',
-    icon: '[火]',
+    icon: 'fire',
     category: 'streak'
   },
   streak_30: {
     name: '月度之星',
     description: '连续学习 30 天',
-    icon: '[星]',
+    icon: 'star',
     category: 'streak'
   },
   streak_100: {
     name: '百日征途',
     description: '连续学习 100 天',
-    icon: '[杯]',
+    icon: 'trophy',
     category: 'streak'
   },
   comeback_kid: {
     name: '绝地反击',
     description: '使用连续学习保护卡',
-    icon: '[盾]',
+    icon: 'shield',
     category: 'streak'
   },
 
@@ -275,19 +275,19 @@ export const ACHIEVEMENT_DEFS = {
   perfect_10: {
     name: '十全十美',
     description: '连续答对 10 题',
-    icon: '[百]',
+    icon: 'check-circle',
     category: 'accuracy'
   },
   accuracy_80: {
     name: '准确达人',
     description: '单日正确率达到 80%',
-    icon: '[标]',
+    icon: 'medal',
     category: 'accuracy'
   },
   accuracy_90: {
     name: '精准射手',
     description: '50 题内保持 90%+ 正确率',
-    icon: '[标]',
+    icon: 'medal',
     category: 'accuracy'
   },
 
@@ -295,7 +295,7 @@ export const ACHIEVEMENT_DEFS = {
   speed_demon: {
     name: '闪电侠',
     description: '5 秒内正确作答',
-    icon: '[电]',
+    icon: 'lightning',
     category: 'speed'
   },
 
@@ -303,7 +303,7 @@ export const ACHIEVEMENT_DEFS = {
   social_butterfly: {
     name: '社交达人',
     description: '添加 5 位好友',
-    icon: '[蝶]',
+    icon: 'share',
     category: 'social'
   }
 };

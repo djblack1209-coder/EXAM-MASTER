@@ -26,7 +26,9 @@
 
     <!-- 错误状态 -->
     <view v-else-if="loginError" class="error-section">
-      <view class="error-icon"> ✕ </view>
+      <view class="error-icon">
+        <BaseIcon name="error" :size="64" />
+      </view>
       <text class="error-text"> 登录失败 </text>
       <text class="error-hint">
         {{ errorMessage }}
@@ -182,7 +184,7 @@ onMounted(() => {
 .callback-container {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #f8faf8 0%, #e8f5e9 100%);
+  background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -193,7 +195,7 @@ onMounted(() => {
 }
 
 .callback-container.dark-mode {
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  background: var(--background);
 }
 
 /* 背景装饰 */
@@ -216,7 +218,7 @@ onMounted(() => {
 .bg-circle-1 {
   width: 400rpx;
   height: 400rpx;
-  background: #07c160;
+  background: var(--success);
   top: -100rpx;
   right: -100rpx;
 }
@@ -224,14 +226,14 @@ onMounted(() => {
 .bg-circle-2 {
   width: 300rpx;
   height: 300rpx;
-  background: #06ad56;
+  background: var(--success-dark);
   bottom: 200rpx;
   left: -150rpx;
 }
 
 .dark-mode .bg-circle-1,
 .dark-mode .bg-circle-2 {
-  background: #07c160;
+  background: var(--success);
   opacity: 0.05;
 }
 
@@ -257,7 +259,7 @@ onMounted(() => {
   width: 80rpx;
   height: 80rpx;
   border: 6rpx solid rgba(7, 193, 96, 0.2);
-  border-top-color: #07c160;
+  border-top-color: var(--success);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -271,84 +273,84 @@ onMounted(() => {
 .loading-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: #333;
+  color: var(--text-main);
 }
 
 .dark-mode .loading-text {
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .loading-hint {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .dark-mode .loading-hint {
-  color: #aaa;
+  color: var(--text-tertiary);
 }
 
 /* 成功状态 */
 .success-icon {
   width: 120rpx;
   height: 120rpx;
-  background: linear-gradient(135deg, #07c160 0%, #06ad56 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 60rpx;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .success-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: #07c160;
+  color: var(--success);
 }
 
 .success-hint {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .dark-mode .success-hint {
-  color: #aaa;
+  color: var(--text-tertiary);
 }
 
 /* 错误状态 */
 .error-icon {
   width: 120rpx;
   height: 120rpx;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, var(--danger) 0%, var(--danger) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 60rpx;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .error-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .error-hint {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
   max-width: 500rpx;
 }
 
 .dark-mode .error-hint {
-  color: #aaa;
+  color: var(--text-tertiary);
 }
 
 .retry-btn {
   margin-top: 40rpx;
   padding: 24rpx 80rpx;
-  background: linear-gradient(135deg, #07c160 0%, #06ad56 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
   border-radius: 48rpx;
   box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
 }
@@ -356,11 +358,134 @@ onMounted(() => {
 .retry-btn text {
   font-size: 32rpx;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .retry-btn:active {
   transform: scale(0.95);
   opacity: 0.9;
+}
+
+/* Final polish: WeChat callback page unified with Apple / Liquid Glass */
+.callback-container {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-mid) 52%,
+    var(--page-gradient-bottom) 100%
+  );
+}
+
+.callback-container.dark-mode {
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-bottom) 48%,
+    var(--page-gradient-top) 100%
+  );
+}
+
+.bg-circle {
+  opacity: 0.56;
+  filter: blur(18rpx);
+}
+
+.bg-circle-1 {
+  background: radial-gradient(circle, rgba(107, 208, 150, 0.3) 0%, transparent 72%);
+}
+
+.bg-circle-2 {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.24) 0%, transparent 72%);
+}
+
+.dark-mode .bg-circle-1 {
+  background: radial-gradient(circle, rgba(7, 193, 96, 0.24) 0%, transparent 72%);
+}
+
+.dark-mode .bg-circle-2 {
+  background: radial-gradient(circle, rgba(6, 173, 86, 0.16) 0%, transparent 72%);
+  opacity: 0.42;
+}
+
+.loading-section,
+.success-section,
+.error-section {
+  width: 100%;
+  max-width: 640rpx;
+  padding: 40rpx 32rpx;
+  border-radius: 36rpx;
+  background:
+    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
+    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: var(--apple-shadow-card);
+}
+
+.dark-mode .loading-section,
+.dark-mode .success-section,
+.dark-mode .error-section {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
+    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.loading-icon,
+.success-icon,
+.error-icon {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: var(--apple-shadow-surface);
+}
+
+.dark-mode .loading-icon,
+.dark-mode .success-icon,
+.dark-mode .error-icon {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.spinner {
+  border-color: rgba(52, 199, 89, 0.16);
+  border-top-color: var(--success);
+}
+
+.dark-mode .spinner {
+  border-color: rgba(7, 193, 96, 0.16);
+  border-top-color: var(--success);
+}
+
+.loading-text,
+.success-text,
+.error-text {
+  color: var(--text-main);
+}
+
+.dark-mode .loading-text,
+.dark-mode .success-text,
+.dark-mode .error-text {
+  color: var(--text-primary);
+}
+
+.loading-hint,
+.success-hint,
+.error-hint {
+  color: var(--text-sub);
+}
+
+.dark-mode .loading-hint,
+.dark-mode .success-hint,
+.dark-mode .error-hint {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.retry-btn {
+  background: var(--cta-primary-bg);
+  border: 1rpx solid var(--cta-primary-border);
+  box-shadow: var(--cta-primary-shadow);
+}
+
+.retry-btn text {
+  color: var(--cta-primary-text);
 }
 </style>

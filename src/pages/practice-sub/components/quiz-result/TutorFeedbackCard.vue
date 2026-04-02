@@ -70,9 +70,12 @@ onUnmounted(() => {
   .tutor-header {
     display: flex;
     align-items: center;
-    gap: 12rpx;
+    /* gap: 12rpx; */
     padding-bottom: 16rpx;
     border-bottom: 1rpx solid var(--border-color);
+  }
+  .tutor-header > view + view {
+    margin-left: 12rpx;
   }
 
   .tutor-avatar {

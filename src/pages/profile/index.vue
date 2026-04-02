@@ -87,6 +87,7 @@
                 :src="userAvatar"
                 alt="头像"
                 mode="aspectFill"
+                lazy-load
               />
               <!-- [OK] F020: 未登录/无头像时使用默认头像图片代替 emoji -->
               <image
@@ -190,20 +191,20 @@
             </view>
             <view class="level-stat-divider" />
             <view class="level-stat-item">
-              <text class="level-stat-value">[奖] {{ achievementCount }}</text>
+              <text class="level-stat-value">{{ achievementCount }}</text>
               <text class="level-stat-label">成就解锁</text>
             </view>
             <view class="level-stat-divider" />
             <view v-if="dailyChallenge" class="level-stat-item">
               <text class="level-stat-value">
-                {{ dailyChallenge.completed ? '[完成]' : '[进行中]' }} {{ dailyChallenge.progress }}/{{
+                {{ dailyChallenge.completed ? '完成' : '进行中' }} {{ dailyChallenge.progress }}/{{
                   dailyChallenge.target
                 }}
               </text>
               <text class="level-stat-label">今日挑战</text>
             </view>
             <view v-else class="level-stat-item">
-              <text class="level-stat-value">[进行中] -</text>
+              <text class="level-stat-value">进行中 -</text>
               <text class="level-stat-label">今日挑战</text>
             </view>
           </view>
@@ -377,27 +378,36 @@
 
 <script setup>
 import { toast } from '@/utils/toast.js';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, shallowRef, onErrorCaptured } from 'vue';
 import { onShow, onHide, onShareAppMessage } from '@dcloudio/uni-app';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
-import { useGamificationStore } from '@/stores/modules/gamification';
+// useGamificationStore — 动态导入减小主包体积
 import { useProfileStore } from '@/stores/modules/profile';
 // 打卡和补签动态导入 — 瘦身主包
 // import { checkinStreak } from '@/services/checkin-streak.js';
 // import { streakRecovery } from '@/services/streak-recovery.js';
 // [OK] 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+
+// 错误边界：捕获子组件运行时错误，防止整个页面白屏
+onErrorCaptured((err, instance, info) => {
+  logger.error('[个人中心] 子组件运行时错误:', err?.message || err, '| 来源:', info);
+  return false;
+});
+
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeImport } from '@/utils/helpers/safe-import.js';
 // [OK] F019: 统一使用 storageService 进行数据缓存管理
 import storageService from '@/services/storageService.js';
 import config from '@/config/index.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { getSystemTheme } from '@/utils/core/system.js';
+import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
 
 // L6: 版本号从统一配置读取
@@ -427,18 +437,19 @@ const layoutInfo = ref({
 // ========== Store ==========
 const studyStore = useStudyStore();
 const userStore = useUserStore();
-const gamificationStore = useGamificationStore();
+// gamificationStore 延迟加载（动态导入减小主包体积）
+const gamificationStore = shallowRef(null);
 const profileStore = useProfileStore();
 
-// ========== 游戏化计算属性 ==========
-const playerLevel = computed(() => gamificationStore.level);
-const playerXp = computed(() => gamificationStore.xp);
-const xpToNext = computed(() => gamificationStore.xpToNextLevel);
-const levelProgress = computed(() => gamificationStore.levelProgress);
-const currentStreak = computed(() => gamificationStore.currentStreak);
-const achievementCount = computed(() => gamificationStore.achievements?.length || 0);
-const dailyChallenge = computed(() => gamificationStore.dailyChallenge);
-const xpMultiplier = computed(() => gamificationStore.getXpMultiplier());
+// ========== 游戏化计算属性（带 null 保护） ==========
+const playerLevel = computed(() => gamificationStore.value?.level ?? 1);
+const playerXp = computed(() => gamificationStore.value?.xp ?? 0);
+const xpToNext = computed(() => gamificationStore.value?.xpToNextLevel ?? 100);
+const levelProgress = computed(() => gamificationStore.value?.levelProgress ?? 0);
+const currentStreak = computed(() => gamificationStore.value?.currentStreak ?? 0);
+const achievementCount = computed(() => gamificationStore.value?.achievements?.length || 0);
+const dailyChallenge = computed(() => gamificationStore.value?.dailyChallenge ?? null);
+const xpMultiplier = computed(() => gamificationStore.value?.getXpMultiplier?.() ?? 1);
 
 // ========== 计算属性 ==========
 const isLoggedIn = computed(() => {
@@ -515,8 +526,8 @@ function loadData() {
   try {
     userStore.restoreUserInfo?.();
     studyStore.restoreProgress?.();
-    gamificationStore.restoreGamification();
-    gamificationStore.generateDailyChallenge();
+    gamificationStore.value?.restoreGamification?.();
+    gamificationStore.value?.generateDailyChallenge?.();
     loadBadges();
     // 检查点4.4: 加载打卡数据
     loadCheckinData();
@@ -540,10 +551,12 @@ function loadBadges() {
 // 检查点4.4: 加载打卡数据（动态导入瘦身主包）
 async function loadCheckinData() {
   try {
-    const [{ checkinStreak }, { streakRecovery }] = await Promise.all([
-      import('@/services/checkin-streak.js'),
-      import('@/services/streak-recovery.js')
+    const [checkinMod, recoveryMod] = await Promise.all([
+      safeImport(import('@/services/checkin-streak.js')),
+      safeImport(import('@/services/streak-recovery.js'))
     ]);
+    const checkinStreak = checkinMod.checkinStreak || checkinMod.default?.checkinStreak || checkinMod.default;
+    const streakRecovery = recoveryMod.streakRecovery || recoveryMod.default?.streakRecovery || recoveryMod.default;
     // 缓存到模块变量供后续方法使用
     _checkinStreak = checkinStreak;
     _streakRecovery = streakRecovery;
@@ -585,12 +598,12 @@ async function handleCheckIn() {
   try {
     const result = await _checkinStreak.checkIn();
 
-    if (result.success) {
+    if (result.success && result.data) {
       todayChecked.value = true;
-      checkInStreak.value = result.data.streak;
+      checkInStreak.value = result.data.streak || 0;
 
       // 显示打卡成功提示
-      toast.success(`打卡成功！连续${result.data.streak}天`, 2000);
+      toast.success(`打卡成功！连续${result.data.streak || 0}天`, 2000);
 
       // 如果有里程碑奖励
       if (result.data.milestone) {
@@ -651,11 +664,11 @@ async function handleRecovery(date) {
   try {
     const result = await _streakRecovery.recover(date, method);
 
-    if (result.success) {
+    if (result.success && result.data) {
       // 刷新打卡数据
       await loadCheckinData();
 
-      toast.success(`补签成功！连续${result.data.streak}天`);
+      toast.success(`补签成功！连续${result.data.streak || 0}天`);
     } else {
       toast.info(result.message);
     }
@@ -726,9 +739,10 @@ function toggleTheme() {
 
   // 同步更新导航栏颜色
   try {
+    const colors = isDark.value ? NAV_BAR_COLORS.dark : NAV_BAR_COLORS.light;
     uni.setNavigationBarColor({
-      frontColor: isDark.value ? '#ffffff' : '#000000',
-      backgroundColor: isDark.value ? '#0b0b0f' : '#b8eb89',
+      frontColor: colors.frontColor,
+      backgroundColor: colors.backgroundColor,
       animation: { duration: 200 }
     });
   } catch (e) {
@@ -1037,9 +1051,19 @@ onShareAppMessage(() => ({
   path: '/pages/profile/index'
 }));
 
-onMounted(() => {
+onMounted(async () => {
   initLayoutInfo();
   initTheme();
+
+  // 动态导入 gamificationStore（减小主包体积）
+  try {
+    const gamMod = await safeImport(import('@/stores/modules/gamification'));
+    const useGamificationStore = gamMod.useGamificationStore || gamMod.default?.useGamificationStore;
+    gamificationStore.value = useGamificationStore();
+  } catch {
+    /* 游戏化功能降级 */
+  }
+
   loadData();
 
   // 标记首次 onShow 跳过（onMounted 已加载数据）
@@ -1367,7 +1391,7 @@ onHide(() => {
   width: 88rpx;
   height: 88rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary, #37b24d), #2f9e44);
+  background: linear-gradient(135deg, var(--primary, #37b24d), var(--brand, #2f9e44));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1379,7 +1403,7 @@ onHide(() => {
 .level-number {
   font-size: 36rpx;
   font-weight: 800;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .level-info {
@@ -1403,7 +1427,7 @@ onHide(() => {
 .xp-multiplier {
   font-size: 22rpx;
   font-weight: 600;
-  color: #ff6b35;
+  color: var(--warning);
   background: rgba(255, 107, 53, 0.1);
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
@@ -1419,7 +1443,7 @@ onHide(() => {
 
 .xp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary, #37b24d), #8bc34a);
+  background: linear-gradient(90deg, var(--primary, #37b24d), var(--wise-green, #8bc34a));
   border-radius: 6rpx;
   transition: width 0.5s ease-out;
 }

@@ -42,12 +42,12 @@
         <view class="content-wrapper">
           <!-- 网络错误重试卡片 -->
           <view v-if="loadError && !isLoading" class="load-error-card" @tap="loadData">
-            <text class="load-error-icon">警告</text>
+            <BaseIcon name="warning" :size="48" />
             <view class="load-error-text">
               <text class="load-error-title">加载失败</text>
               <text class="load-error-hint">点击重试</text>
             </view>
-            <text class="load-error-arrow">↻</text>
+            <BaseIcon name="refresh" :size="36" />
           </view>
 
           <!-- 欢迎横幅 -->
@@ -90,19 +90,19 @@
           <!-- ✅ [零摩擦] 一键续刷 — 记住上次位置，打开app直接继续 -->
           <view v-if="hasUnfinished && !isNewUser" class="resume-banner apple-glass-card" @tap="resumeLastSession">
             <view class="resume-banner-left">
-              <text class="resume-banner-icon">▶</text>
+              <BaseIcon name="play" :size="36" />
               <view class="resume-banner-info">
                 <text class="resume-banner-title">继续上次练习</text>
                 <text class="resume-banner-sub">{{ resumeSummary }}</text>
               </view>
             </view>
-            <text class="resume-banner-arrow">›</text>
+            <BaseIcon name="arrow-right" :size="32" />
           </view>
 
           <!-- ✅ [P0重构] 今日复习强入口 — FSRS 本地调度驱动 -->
           <view v-if="!isNewUser" class="review-banner apple-glass-card" @tap="goSmartReview">
             <view class="review-banner-left">
-              <text class="review-banner-icon">{{ reviewPending > 0 ? '待复习' : '已完成' }}</text>
+              <BaseIcon :name="reviewPending > 0 ? 'clock' : 'check'" :size="36" />
               <view class="review-banner-info">
                 <text class="review-banner-title">今日复习</text>
                 <text class="review-banner-sub">
@@ -116,7 +116,7 @@
                 </text>
               </view>
             </view>
-            <text class="review-banner-arrow">›</text>
+            <BaseIcon name="arrow-right" :size="32" />
           </view>
 
           <!-- ✅ P0-1: 新用户空状态引导 - 增强版 -->
@@ -164,7 +164,7 @@
           <!-- ✅ [知识引擎] 智能学习推荐 -->
           <view v-if="recommendedTopic && !isNewUser" class="smart-recommend apple-glass-card" @tap="goSmartReview">
             <view class="smart-recommend-header">
-              <text class="smart-recommend-icon">[标]</text>
+              <BaseIcon name="sparkle" :size="36" />
               <text class="smart-recommend-title">推荐学习</text>
             </view>
             <text class="smart-recommend-name">{{ recommendedTopic.knowledgePoint }}</text>
@@ -190,7 +190,7 @@
             <view class="free-tools-grid">
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('id-photo')">
                 <view class="tool-card-icon-wrap">
-                  <text class="tool-card-icon">[证件照]</text>
+                  <BaseIcon name="camera" :size="48" />
                 </view>
                 <text class="tool-card-title">证件照换底色</text>
                 <text class="tool-card-desc">报名免裁剪</text>
@@ -200,7 +200,7 @@
               </view>
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('doc-convert')">
                 <view class="tool-card-icon-wrap">
-                  <text class="tool-card-icon">[文档]</text>
+                  <BaseIcon name="file-text" :size="48" />
                 </view>
                 <text class="tool-card-title">文档格式转换</text>
                 <text class="tool-card-desc">PDF/Word 互转</text>
@@ -210,7 +210,7 @@
               </view>
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('photo-search')">
                 <view class="tool-card-icon-wrap">
-                  <text class="tool-card-icon">[相机]</text>
+                  <BaseIcon name="search" :size="48" />
                 </view>
                 <text class="tool-card-title">拍照搜题</text>
                 <text class="tool-card-desc">AI 秒出答案</text>
@@ -384,33 +384,36 @@
 <script>
 import { toast } from '@/utils/toast.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeImport } from '@/utils/helpers/safe-import.js';
 
-import { useReviewStore } from '@/stores/modules/review.js';
+// useReviewStore — 动态导入减小主包体积，通过 shallowRef 延迟注入
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import BaseSkeleton from '@/components/base/base-skeleton/base-skeleton.vue';
 // TodoList, TodoEditor — 已从首页模板移除，通过 profile 页访问
-import EmptyState from '@/components/common/EmptyState.vue';
-import ShareModal from '@/components/common/share-modal.vue';
+import { defineAsyncComponent } from 'vue';
+// 非关键组件 — 异步加载减小主包体积
+const EmptyState = defineAsyncComponent(() => import('@/components/common/EmptyState.vue'));
+const ShareModal = defineAsyncComponent(() => import('@/components/common/share-modal.vue'));
 // TodoEditor — 已从首页移除
-import CustomModal from '@/components/common/CustomModal.vue';
-import OfflineIndicator from '@/components/common/offline-indicator.vue';
-import FormulaModal from '@/components/business/index/FormulaModal.vue';
+const CustomModal = defineAsyncComponent(() => import('@/components/common/CustomModal.vue'));
+const OfflineIndicator = defineAsyncComponent(() => import('@/components/common/offline-indicator.vue'));
+const FormulaModal = defineAsyncComponent(() => import('@/components/business/index/FormulaModal.vue'));
 // ✅ [P0重构] QuotePosterModal, DailyQuoteCard 已移除（首页精简）
 import WelcomeBanner from '@/components/business/index/WelcomeBanner.vue';
 import StatsGrid from '@/components/business/index/StatsGrid.vue';
 import StudyTimeCard from '@/components/business/index/StudyTimeCard.vue';
-import StudyHeatmap from '@/components/business/index/StudyHeatmap.vue';
+const StudyHeatmap = defineAsyncComponent(() => import('@/components/business/index/StudyHeatmap.vue'));
 // ✅ [P0重构] KnowledgeBubbleField 已移除（首页精简）
-import ActivityList from '@/components/business/index/ActivityList.vue';
+const ActivityList = defineAsyncComponent(() => import('@/components/business/index/ActivityList.vue'));
 // RecommendationsList — 已从首页移除（smart-recommend 替代）
 import IndexHeaderBar from '@/components/business/index/IndexHeaderBar.vue';
-import AIDailyBriefing from '@/components/business/index/AIDailyBriefing.vue';
+const AIDailyBriefing = defineAsyncComponent(() => import('@/components/business/index/AIDailyBriefing.vue'));
 import DailyGoalRing from '@/components/business/index/DailyGoalRing.vue';
-// BaseIcon — 首页不再直接使用
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useStudyStore } from '@/stores/modules/study';
 import { useTodoStore } from '@/stores/modules/todo';
 import { useUserStore } from '@/stores/modules/user';
-import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store';
+// useLearningTrajectoryStore — 动态导入减小主包体积
 import { storageService } from '@/services/storageService.js';
 import { initTheme, toggleTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 // ✅ 检查点 5.1: 页面追踪已迁移为 composable
@@ -435,12 +438,12 @@ import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS } from '@/config/
 // F002-I1a: 共享格式化工具
 import { formatRelativeTime, getInitials as _getInitials } from '@/utils/formatters.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
-import { syncFSRSParams } from '@/services/fsrs-optimizer-client.js';
-import { smartRequestSubscription } from '@/services/subscribe-message.js';
+// syncFSRSParams, smartRequestSubscription — 动态导入减小主包体积
 
 export default {
   components: {
     PrivacyPopup,
+    BaseIcon,
     CustomTabbar,
     BaseSkeleton,
     EmptyState,
@@ -457,7 +460,6 @@ export default {
     AIDailyBriefing,
     DailyGoalRing
   },
-  // ✅ [P0重构] 所有 Mixin 已迁移为 Composables
 
   // ✅ [P0重构] Composables桥接到Options API
   setup() {
@@ -534,7 +536,8 @@ export default {
     } = useDailyQuote({ quoteLibrary, quoteAuthors });
 
     // ✅ [D002重构] 首页统计数据
-    const reviewStore = useReviewStore();
+    // reviewStore 延迟加载（动态导入减小主包体积），useHomeReview 内部已有 null 保护
+    const reviewStore = null;
     const studyStoreInstance = useStudyStore();
     const homeStats = useHomeStats({ studyStore: studyStoreInstance });
     const homeReview = useHomeReview({ reviewStore });
@@ -728,6 +731,14 @@ export default {
       return this.isQuestionBankEmpty && this.totalStudyDays === 0;
     }
   },
+  // ✅ [P0重构] 所有 Mixin 已迁移为 Composables
+
+  // 错误边界：捕获子组件运行时错误，防止整个页面白屏
+  errorCaptured(err, instance, info) {
+    logger.error('[首页] 子组件运行时错误:', err?.message || err, '| 来源:', info);
+    // 返回 false 阻止错误继续向上传播（页面不会崩溃）
+    return false;
+  },
 
   created() {
     // ✅ 2.3: 静态配置数据作为非响应式实例属性，避免 Vue 递归观察大数组
@@ -784,10 +795,25 @@ export default {
     this.studyStore = useStudyStore();
     // todoStore 已在 setup() 中通过 useTodo 初始化
     this.userStore = useUserStore();
-    this.trajectoryStore = useLearningTrajectoryStore();
 
-    // 初始化学习轨迹Store
-    this.trajectoryStore.init();
+    // 初始化学习轨迹Store（动态导入，减小主包体积）
+    safeImport(import('@/stores/modules/learning-trajectory-store'))
+      .then(({ useLearningTrajectoryStore }) => {
+        this.trajectoryStore = useLearningTrajectoryStore();
+        this.trajectoryStore.init();
+      })
+      .catch(() => {
+        /* 静默降级 */
+      });
+
+    // 动态加载 reviewStore（减小主包体积）
+    safeImport(import('@/stores/modules/review.js'))
+      .then(({ useReviewStore }) => {
+        this.reviewStore = useReviewStore();
+      })
+      .catch(() => {
+        /* 静默降级 */
+      });
 
     // 初始化每日金句
     this.initDailyQuote();
@@ -839,13 +865,19 @@ export default {
     // ✅ [知识引擎] 加载推荐学习主题
     this.loadRecommendedTopic();
 
-    // ✅ [FSRS] 参数同步（非阻塞）
-    syncFSRSParams().catch(() => {
-      /* no-op */
-    });
+    // [FSRS] 参数同步（非阻塞，动态导入）
+    safeImport(import('@/pages/practice-sub/services/fsrs-optimizer-client.js'))
+      .then(({ syncFSRSParams }) => syncFSRSParams())
+      .catch(() => {
+        /* 静默降级 */
+      });
 
-    // 微信订阅消息：智能请求授权（每天最多一次）
-    smartRequestSubscription();
+    // 微信订阅消息：智能请求授权（每天最多一次，动态导入）
+    safeImport(import('@/services/subscribe-message.js'))
+      .then(({ smartRequestSubscription }) => smartRequestSubscription())
+      .catch(() => {
+        /* 静默降级 */
+      });
 
     // 加载学习热力图
     this.loadHeatmapData();
@@ -1137,7 +1169,10 @@ export default {
   margin: 0 30rpx;
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+}
+.today-dashboard > view + view {
+  margin-top: 16rpx;
 }
 
 /* ==================== 页面最外层容器 ==================== */
@@ -1208,7 +1243,7 @@ export default {
 }
 
 .card-light {
-  background: linear-gradient(165deg, var(--bg-card) 0%, #f4faf6 100%);
+  background: linear-gradient(165deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
 }
 
 /* F002-I1b: 顶部导航栏样式已移至 IndexHeaderBar.vue */
@@ -1369,8 +1404,8 @@ export default {
   border-radius: 999rpx;
   background: var(--bg-card);
   color: var(--text-primary);
-  border: 1rpx solid rgba(16, 40, 26, 0.08);
-  box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.16);
+  border: 1rpx solid var(--border);
+  box-shadow: var(--shadow-sm);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1500,7 +1535,7 @@ export default {
 }
 
 .tool-icon-doc {
-  background: linear-gradient(145deg, #eaf8ef, #dff4e6);
+  background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
 }
 
 .tool-glow-doc {
@@ -1508,7 +1543,7 @@ export default {
 }
 
 .tool-icon-photo {
-  background: linear-gradient(145deg, #f1fbf5, #e7f7ee);
+  background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
 }
 
 .tool-glow-photo {
@@ -1516,7 +1551,7 @@ export default {
 }
 
 .tool-icon-search {
-  background: linear-gradient(145deg, #f3fbf6, #e9f8ef);
+  background: linear-gradient(145deg, var(--bg-card), var(--bg-secondary));
 }
 
 .tool-glow-search {
@@ -1558,7 +1593,7 @@ export default {
 }
 
 .tool-desc {
-  font-size: 23rpx;
+  font-size: 24rpx;
   color: var(--text-secondary);
 }
 
@@ -1590,21 +1625,29 @@ export default {
   padding: 28rpx 32rpx;
   margin: 20rpx 32rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(79, 70, 229, 0.08));
-  border: 1rpx solid rgba(99, 102, 241, 0.25);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--info) 12%, transparent),
+    color-mix(in srgb, var(--info) 8%, transparent)
+  );
+  border: 1rpx solid color-mix(in srgb, var(--info) 25%, transparent);
   animation: resumePulse 2s ease-in-out infinite;
 }
 .page-dark .resume-banner {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(79, 70, 229, 0.06));
-  border-color: rgba(99, 102, 241, 0.2);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--info) 10%, transparent),
+    color-mix(in srgb, var(--info) 6%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--info) 20%, transparent);
 }
 @keyframes resumePulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--info) 15%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 8rpx rgba(99, 102, 241, 0);
+    box-shadow: 0 0 0 8rpx transparent;
   }
 }
 .resume-banner-left {
@@ -1613,9 +1656,10 @@ export default {
   flex: 1;
 }
 .resume-banner-icon {
-  font-size: 40rpx;
   margin-right: 20rpx;
-  color: var(--indigo, #6366f1);
+  color: var(--info, #6366f1);
+  display: flex;
+  align-items: center;
 }
 .resume-banner-info {
   display: flex;
@@ -1632,9 +1676,9 @@ export default {
   margin-top: 4rpx;
 }
 .resume-banner-arrow {
-  font-size: 36rpx;
-  color: var(--indigo, #6366f1);
-  font-weight: 300;
+  color: var(--info, #6366f1);
+  display: flex;
+  align-items: center;
 }
 
 /* ==================== [知识引擎] 智能学习推荐 ==================== */
@@ -1650,11 +1694,16 @@ export default {
 .smart-recommend-header {
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  /* gap: 10rpx; -- replaced for Android WebView compat */
   margin-bottom: 12rpx;
 }
+.smart-recommend-header > view + view {
+  margin-left: 10rpx;
+}
 .smart-recommend-icon {
-  font-size: 32rpx;
+  color: var(--warning, #ff9500);
+  display: flex;
+  align-items: center;
 }
 .smart-recommend-title {
   font-size: 26rpx;
@@ -1685,19 +1734,24 @@ export default {
 .load-error-card {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
   margin: 30rpx;
   padding: 32rpx;
   background: var(--bg-secondary, rgba(255, 59, 48, 0.06));
   border: 2rpx solid rgba(255, 59, 48, 0.15);
   border-radius: 24rpx;
 }
+.load-error-card > view + view {
+  margin-left: 20rpx;
+}
 .load-error-card:active {
   opacity: 0.7;
   transform: scale(0.98);
 }
 .load-error-icon {
-  font-size: 40rpx;
+  color: var(--danger, #ff3b30);
+  display: flex;
+  align-items: center;
 }
 .load-error-text {
   flex: 1;
@@ -1715,12 +1769,12 @@ export default {
   display: block;
 }
 .load-error-arrow {
-  font-size: 36rpx;
   color: var(--primary, #34c759);
-  font-weight: 700;
+  display: flex;
+  align-items: center;
 }
 
-/* 备考工具箱（引流核心区） */
+/* 备考工具箱（v0 风格工具卡片） */
 .free-tools-section {
   margin: 32rpx 30rpx 0;
 }
@@ -1736,16 +1790,19 @@ export default {
   color: var(--text-primary);
 }
 .free-tools-badge {
-  font-size: 20rpx;
+  font-size: 22rpx;
   font-weight: 600;
   color: var(--success, #34c759);
-  background: rgba(52, 199, 89, 0.12);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
   padding: 4rpx 16rpx;
   border-radius: 20rpx;
 }
 .free-tools-grid {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+}
+.free-tools-grid > view + view {
+  margin-left: 16rpx;
 }
 .free-tool-card {
   flex: 1;
@@ -1756,23 +1813,28 @@ export default {
   border-radius: 24rpx;
   position: relative;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .tool-hover {
   transform: scale(0.96);
   opacity: 0.85;
 }
 .tool-card-icon-wrap {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 20rpx;
-  background: rgba(52, 199, 89, 0.1);
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 22rpx;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12rpx;
+  margin-bottom: 16rpx;
+  transition: background 0.3s ease;
+}
+.page-dark .tool-card-icon-wrap {
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
 }
 .tool-card-icon {
-  font-size: 36rpx;
+  color: var(--primary);
 }
 .tool-card-title {
   font-size: 24rpx;
@@ -1781,7 +1843,7 @@ export default {
   text-align: center;
 }
 .tool-card-desc {
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: var(--text-tertiary);
   margin-top: 4rpx;
   text-align: center;
@@ -1790,10 +1852,10 @@ export default {
   margin-top: 10rpx;
   padding: 2rpx 10rpx;
   border-radius: 8rpx;
-  background: rgba(255, 149, 0, 0.1);
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
 }
 .tool-tag-text {
-  font-size: 18rpx;
+  font-size: 22rpx;
   color: var(--warning, #ff9500);
   font-weight: 500;
 }
@@ -1806,12 +1868,20 @@ export default {
   padding: 28rpx 32rpx;
   margin: 20rpx 32rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(16, 185, 129, 0.08));
-  border: 1rpx solid rgba(52, 211, 153, 0.2);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--success) 12%, transparent),
+    color-mix(in srgb, var(--success) 8%, transparent)
+  );
+  border: 1rpx solid color-mix(in srgb, var(--success) 20%, transparent);
 }
 .page-dark .review-banner {
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(16, 185, 129, 0.06));
-  border-color: rgba(52, 211, 153, 0.15);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--success) 10%, transparent),
+    color-mix(in srgb, var(--success) 6%, transparent)
+  );
+  border-color: color-mix(in srgb, var(--success) 15%, transparent);
 }
 .review-banner-left {
   display: flex;
@@ -1819,8 +1889,10 @@ export default {
   flex: 1;
 }
 .review-banner-icon {
-  font-size: 44rpx;
   margin-right: 20rpx;
+  color: var(--success, #10b981);
+  display: flex;
+  align-items: center;
 }
 .review-banner-info {
   display: flex;
@@ -1843,9 +1915,10 @@ export default {
   color: var(--text-secondary);
 }
 .review-banner-arrow {
-  font-size: 36rpx;
   color: var(--success, #10b981);
   opacity: 0.6;
   margin-left: 12rpx;
+  display: flex;
+  align-items: center;
 }
 </style>

@@ -16,6 +16,7 @@ import {
   cancelAccountDeletion as apiCancelAccountDeletion
 } from '../../services/api/domains/user.api.js';
 import { request } from '../../services/api/domains/_request-core.js';
+import { logger } from '@/utils/logger.js';
 
 export const useProfileStore = defineStore('profile', () => {
   const userInfo = ref(null);
@@ -87,21 +88,36 @@ export const useProfileStore = defineStore('profile', () => {
    * 申请注销账号
    */
   const requestAccountDeletion = async () => {
-    return await apiRequestAccountDeletion();
+    try {
+      return await apiRequestAccountDeletion();
+    } catch (err) {
+      logger.error('[ProfileStore] requestAccountDeletion 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   /**
    * 查询注销状态
    */
   const getAccountDeletionStatus = async () => {
-    return await apiGetAccountDeletionStatus();
+    try {
+      return await apiGetAccountDeletionStatus();
+    } catch (err) {
+      logger.error('[ProfileStore] getAccountDeletionStatus 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   /**
    * 撤销注销申请
    */
   const cancelAccountDeletion = async () => {
-    return await apiCancelAccountDeletion();
+    try {
+      return await apiCancelAccountDeletion();
+    } catch (err) {
+      logger.error('[ProfileStore] cancelAccountDeletion 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   /**
@@ -109,7 +125,12 @@ export const useProfileStore = defineStore('profile', () => {
    * @param {Object} data - 请求参数（action, userId, 等）
    */
   const updateProfile = async (data) => {
-    return await request('/user-profile', data);
+    try {
+      return await request('/user-profile', data);
+    } catch (err) {
+      logger.error('[ProfileStore] updateProfile 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   return {

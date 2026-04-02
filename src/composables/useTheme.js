@@ -21,6 +21,15 @@ import { storageService } from '@/services/storageService.js';
 const THEME_KEY = 'theme_mode';
 const THEME_EVENT = 'themeUpdate';
 
+/**
+ * 导航栏颜色常量（与 App.vue CSS 变量 --bg-page 对应）
+ * 修改主题色时只需改这一处，3 个页面自动同步
+ */
+export const NAV_BAR_COLORS = {
+  light: { frontColor: '#000000', backgroundColor: '#b8eb89' },
+  dark: { frontColor: '#ffffff', backgroundColor: '#0b0b0f' }
+};
+
 // 跟踪所有已注册的回调，支持多组件并发使用
 const _registeredCallbacks = new Set();
 

@@ -1,5 +1,5 @@
 <template>
-  <view class="study-heatmap">
+  <view class="study-heatmap" :class="{ dark: isDark }">
     <view class="heatmap-shell">
       <view class="month-strip">
         <text v-for="(month, index) in monthLabels" :key="index" class="month-label">
@@ -83,6 +83,8 @@
 </template>
 
 <script>
+import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme';
+
 export default {
   name: 'StudyHeatmap',
   props: {
@@ -105,7 +107,9 @@ export default {
       selectedDay: null,
       totalDays: 0,
       currentStreak: 0,
-      maxStreak: 0
+      maxStreak: 0,
+      isDark: false,
+      themeHandlerRef: null
     };
   },
   watch: {
@@ -117,6 +121,23 @@ export default {
         this.calculateStats();
       },
       immediate: true
+    }
+  },
+  mounted() {
+    this.isDark = initTheme();
+    this.themeHandlerRef = (mode) => {
+      this.isDark = mode === 'dark';
+    };
+    onThemeUpdate(this.themeHandlerRef);
+  },
+  beforeUnmount() {
+    if (this.themeHandlerRef) {
+      offThemeUpdate(this.themeHandlerRef);
+    }
+  },
+  beforeUnmount() {
+    if (this._themeHandler) {
+      offThemeUpdate(this._themeHandler);
     }
   },
   methods: {
@@ -311,10 +332,8 @@ export default {
 .heatmap-shell {
   padding: 20rpx;
   border-radius: 24rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 40%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.34) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background: var(--bg-card);
+  border: 1rpx solid var(--border);
   box-shadow: var(--apple-shadow-surface);
 }
 
@@ -329,7 +348,7 @@ export default {
   flex: 1;
   min-width: 24rpx;
   font-size: 20rpx;
-  color: var(--text-secondary, var(--text-sub, #666));
+  color: var(--text-sub);
   text-align: left;
 }
 
@@ -338,8 +357,12 @@ export default {
   /* gap: 12rpx; -- replaced for Android WebView compat */
   padding: 20rpx;
   border-radius: 22rpx;
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: var(--bg-secondary);
+  border: 1rpx solid var(--border);
+}
+
+.heatmap-panel > .week-labels {
+  margin-right: 12rpx;
 }
 
 .week-labels {
@@ -353,9 +376,14 @@ export default {
   height: 28rpx;
   line-height: 28rpx;
   font-size: 20rpx;
-  color: var(--text-secondary, var(--text-sub, #666));
+  color: var(--text-sub);
   text-align: right;
   padding-right: 10rpx;
+  margin-bottom: 8rpx;
+}
+
+.week-label:last-child {
+  margin-bottom: 0;
 }
 
 .heatmap-scroll {
@@ -368,19 +396,37 @@ export default {
   /* gap: 6rpx; -- replaced for Android WebView compat */
 }
 
+.heatmap-grid > .week-column {
+  margin-right: 6rpx;
+}
+
+.heatmap-grid > .week-column:last-child {
+  margin-right: 0;
+}
+
 .week-column {
   display: flex;
   flex-direction: column;
   /* gap: 6rpx; -- replaced for Android WebView compat */
 }
 
+.week-column > .day-cell {
+  margin-bottom: 2rpx;
+}
+
+.week-column > .day-cell:last-child {
+  margin-bottom: 0;
+}
+
 .day-cell {
   width: 28rpx;
   height: 28rpx;
   border-radius: 10rpx;
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.3);
+  border: 1rpx solid var(--border);
   transition: all 0.2s ease;
+  /* 扩大点击区域：视觉尺寸不变，但通过 padding 增加触控面积 */
+  padding: 4rpx;
+  position: relative;
 
   &.empty {
     background: transparent;
@@ -389,23 +435,25 @@ export default {
   }
 
   &.level-0 {
-    background: rgba(255, 255, 255, 0.34);
+    background: var(--muted);
   }
 
   &.level-1 {
-    background: rgba(139, 216, 161, 0.92);
+    background: var(--primary-light);
   }
 
   &.level-2 {
-    background: rgba(90, 201, 120, 0.94);
+    background: var(--primary);
+    opacity: 0.5;
   }
 
   &.level-3 {
-    background: rgba(52, 199, 89, 0.96);
+    background: var(--primary);
+    opacity: 0.75;
   }
 
   &.level-4 {
-    background: rgba(34, 135, 58, 0.98);
+    background: var(--primary);
   }
 
   &:active {
@@ -426,14 +474,27 @@ export default {
   /* gap: 10rpx; -- replaced for Android WebView compat */
   padding: 12rpx 18rpx;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.44);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-secondary);
+  border: 1rpx solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.legend-pill > .legend-text {
+  margin-right: 10rpx;
+}
+
+.legend-pill > .legend-text:last-child {
+  margin-right: 0;
+  margin-left: 10rpx;
+}
+
+.legend-pill > .legend-cells {
+  margin-right: 10rpx;
 }
 
 .legend-text {
   font-size: 20rpx;
-  color: var(--text-secondary, var(--text-sub, #666));
+  color: var(--text-sub);
 }
 
 .legend-cells {
@@ -441,30 +502,40 @@ export default {
   /* gap: 6rpx; -- replaced for Android WebView compat */
 }
 
+.legend-cells > .legend-cell {
+  margin-right: 6rpx;
+}
+
+.legend-cells > .legend-cell:last-child {
+  margin-right: 0;
+}
+
 .legend-cell {
   width: 20rpx;
   height: 20rpx;
   border-radius: 8rpx;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1rpx solid var(--border);
 
   &.level-0 {
-    background: rgba(255, 255, 255, 0.34);
+    background: var(--muted);
   }
 
   &.level-1 {
-    background: rgba(139, 216, 161, 0.92);
+    background: var(--primary-light);
   }
 
   &.level-2 {
-    background: rgba(90, 201, 120, 0.94);
+    background: var(--primary);
+    opacity: 0.5;
   }
 
   &.level-3 {
-    background: rgba(52, 199, 89, 0.96);
+    background: var(--primary);
+    opacity: 0.75;
   }
 
   &.level-4 {
-    background: rgba(34, 135, 58, 0.98);
+    background: var(--primary);
   }
 }
 
@@ -482,23 +553,32 @@ export default {
   /* gap: 10rpx; -- replaced for Android WebView compat */
 }
 
+.stat-item + .stat-item {
+  margin-left: 16rpx;
+}
+
 .glass-stat {
   padding: 22rpx 18rpx;
   border-radius: 20rpx;
-  background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-secondary);
+  border: 1rpx solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.glass-stat > .stat-value {
+  margin-bottom: 10rpx;
 }
 
 .stat-value {
   font-size: 36rpx;
   font-weight: 700;
-  color: var(--text-main, #111);
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
   font-size: 22rpx;
-  color: var(--text-secondary, var(--text-sub, #666));
+  color: var(--text-sub);
 }
 
 .day-detail {
@@ -508,12 +588,10 @@ export default {
   /* gap: 16rpx; -- replaced for Android WebView compat */
   margin-top: 24rpx;
   padding: 22rpx 24rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 46%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background: var(--bg-card);
   border-radius: 20rpx;
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  border: 1rpx solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .detail-caption {
@@ -522,92 +600,94 @@ export default {
   font-size: 20rpx;
   letter-spacing: 2rpx;
   text-transform: uppercase;
-  color: var(--text-secondary, var(--text-sub, #666));
+  color: var(--text-sub);
 }
 
 .detail-date {
   display: block;
   font-size: 24rpx;
-  color: var(--text-main, #111);
+  color: var(--text-main);
   font-weight: 600;
 }
 
 .detail-value {
   font-size: 24rpx;
-  color: var(--ds-color-primary, #007aff);
+  color: var(--primary);
   font-weight: 600;
   white-space: nowrap;
 }
 
 .dark {
   .heatmap-shell {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-      linear-gradient(160deg, rgba(22, 24, 30, 0.9) 0%, rgba(10, 12, 18, 0.82) 100%);
+    background: var(--bg-card);
+    border-color: var(--border);
   }
 
   .heatmap-panel,
   .legend-pill,
   .glass-stat {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.08);
+    background: var(--muted);
+    border-color: var(--border);
   }
 
   /* [AUDIT FIX R178] 暗黑模式下日期格子边框/阴影适配 */
   .day-cell {
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--border);
     box-shadow: none;
 
     &.level-0 {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--muted);
     }
 
     &.level-1 {
-      background: rgba(28, 63, 110, 0.84);
+      background: var(--primary-light);
     }
 
     &.level-2 {
-      background: rgba(24, 91, 171, 0.88);
+      background: var(--primary);
+      opacity: 0.5;
     }
 
     &.level-3 {
-      background: rgba(10, 132, 255, 0.92);
+      background: var(--primary);
+      opacity: 0.75;
     }
 
     &.level-4 {
-      background: rgba(69, 159, 255, 0.98);
+      background: var(--primary);
     }
   }
 
   /* [AUDIT FIX R179] 暗黑模式下图例格子边框适配 */
   .legend-cell {
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--border);
 
     &.level-0 {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--muted);
     }
 
     &.level-1 {
-      background: rgba(28, 63, 110, 0.84);
+      background: var(--primary-light);
     }
 
     &.level-2 {
-      background: rgba(24, 91, 171, 0.88);
+      background: var(--primary);
+      opacity: 0.5;
     }
 
     &.level-3 {
-      background: rgba(10, 132, 255, 0.92);
+      background: var(--primary);
+      opacity: 0.75;
     }
 
     &.level-4 {
-      background: rgba(69, 159, 255, 0.98);
+      background: var(--primary);
     }
   }
 
   .day-detail {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-      linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(8, 10, 16, 0.9) 100%);
+    background: var(--bg-card);
+    border-color: var(--border);
   }
 }
 </style>

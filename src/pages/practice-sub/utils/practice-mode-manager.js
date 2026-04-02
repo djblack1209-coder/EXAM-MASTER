@@ -282,9 +282,10 @@ class PracticeModeManager {
     }
 
     if (history.length > 0) {
+      // [AUDIT R299] 防止 questionCount 为 0 时除零产生 Infinity
       const avgTimePerQuestion =
         history.reduce((sum, h) => {
-          return sum + h.duration / h.questionCount;
+          return sum + (h.questionCount > 0 ? h.duration / h.questionCount : 0);
         }, 0) / history.length;
 
       if (avgTimePerQuestion > 30) {

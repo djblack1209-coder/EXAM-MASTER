@@ -60,13 +60,7 @@
       <!-- 有题库状态 -->
       <view v-if="hasBank" class="status-content">
         <view class="status-icon">
-          <image
-            class="icon-image"
-            src="/static/icons/practice/icon-library.png"
-            alt=""
-            mode="aspectFit"
-            :style="isDark ? 'filter: brightness(0) invert(1) opacity(0.9);' : ''"
-          />
+          <BaseIcon name="books" :size="48" class="icon-image" />
         </view>
         <view class="status-info">
           <view class="status-title"> 题库就绪 </view>
@@ -74,13 +68,7 @@
         </view>
         <view class="status-actions">
           <view class="manage-btn apple-glass-pill" @tap="showQuizManage">
-            <image
-              class="manage-icon-img"
-              src="/static/icons/practice/icon-settings.png"
-              alt=""
-              mode="aspectFit"
-              lazy-load
-            />
+            <BaseIcon name="settings" :size="28" class="manage-icon-img" />
             <text class="manage-text"> 题库管理 </text>
           </view>
         </view>
@@ -149,7 +137,7 @@
         @tap="goPractice"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-book.png" alt="" mode="aspectFit" />
+        <BaseIcon v-else name="book" :size="40" class="btn-icon-img" />
         <text class="btn-text">
           {{ isNavigating ? '加载中...' : '开始刷题' }}
         </text>
@@ -165,7 +153,7 @@
         @tap="goBattle"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <image v-else class="btn-icon-img" src="/static/icons/practice/icon-battle.png" alt="" mode="aspectFit" />
+        <BaseIcon v-else name="sword" :size="40" class="btn-icon-img" />
         <text class="btn-text"> PK 对战 </text>
       </button>
 
@@ -218,7 +206,7 @@
       <!-- 文件管理 -->
       <view id="e2e-practice-menu-file-manager" class="menu-item" @tap="goFileManager">
         <view class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-folder.png" alt="" mode="aspectFit" lazy-load />
+          <BaseIcon name="folder" :size="44" class="menu-icon-img" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 文件管理 </view>
@@ -231,13 +219,7 @@
       <!-- 智能导师 -->
       <view id="e2e-practice-menu-ai-tutor" class="menu-item" @tap="goAITutor">
         <view class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-robot.png"
-            alt=""
-            mode="aspectFit"
-            :style="isDark ? 'filter: brightness(0) invert(1) opacity(0.9);' : ''"
-          />
+          <BaseIcon name="robot" :size="44" class="menu-icon-img" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 智能导师 </view>
@@ -250,7 +232,7 @@
       <!-- 错题本 -->
       <view id="e2e-practice-menu-mistake" class="menu-item" @tap="goMistake">
         <view class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-error.png" alt="" mode="aspectFit" lazy-load />
+          <BaseIcon name="error" :size="44" class="menu-icon-img" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 错题本 </view>
@@ -277,13 +259,7 @@
       <!-- 排行榜 -->
       <view id="e2e-practice-menu-rank" class="menu-item" @tap="goRank">
         <view class="menu-icon">
-          <image
-            class="menu-icon-img"
-            src="/static/icons/practice/icon-ranking.png"
-            alt=""
-            mode="aspectFit"
-            lazy-load
-          />
+          <BaseIcon name="trophy" :size="44" class="menu-icon-img" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 学霸排行榜 </view>
@@ -296,7 +272,7 @@
       <!-- 学习进度 -->
       <view id="e2e-practice-menu-study-detail" class="menu-item" @tap="goToStudyDetail">
         <view class="menu-icon">
-          <image class="menu-icon-img" src="/static/icons/practice/icon-check.png" alt="" mode="aspectFit" lazy-load />
+          <BaseIcon name="check" :size="44" class="menu-icon-img" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 总学习进度 </view>
@@ -414,17 +390,19 @@
 
 <script>
 import { toast } from '@/utils/toast.js';
+import { safeImport } from '@/utils/helpers/safe-import.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
-import ResumePracticeModal from '@/components/common/ResumePracticeModal.vue';
-import GoalSettingModal from '@/components/business/practice/GoalSettingModal.vue';
-import AchievementModal from '@/components/business/practice/AchievementModal.vue';
-import PracticeModesModal from '@/components/business/practice/PracticeModesModal.vue';
-import QuizManageModal from '@/components/business/practice/QuizManageModal.vue';
+import { defineAsyncComponent } from 'vue';
+const ResumePracticeModal = defineAsyncComponent(() => import('@/components/common/ResumePracticeModal.vue'));
+const GoalSettingModal = defineAsyncComponent(() => import('@/components/business/practice/GoalSettingModal.vue'));
+const AchievementModal = defineAsyncComponent(() => import('@/components/business/practice/AchievementModal.vue'));
+const PracticeModesModal = defineAsyncComponent(() => import('@/components/business/practice/PracticeModesModal.vue'));
+const QuizManageModal = defineAsyncComponent(() => import('@/components/business/practice/QuizManageModal.vue'));
+const SpeedReadyModal = defineAsyncComponent(() => import('@/components/business/practice/SpeedReadyModal.vue'));
 import LearningStatsCard from '@/components/business/practice/LearningStatsCard.vue';
 import GenerationProgressBar from '@/components/business/practice/GenerationProgressBar.vue';
 import AiGenerationOverlay from '@/components/business/practice/AiGenerationOverlay.vue';
-import SpeedReadyModal from '@/components/business/practice/SpeedReadyModal.vue';
 import PauseBanner from '@/components/business/practice/PauseBanner.vue';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { storageService } from '@/services/storageService.js';
@@ -432,7 +410,7 @@ import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { QUOTE_LIBRARY } from '@/config/home-data.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
 import { getFavorites } from '@/utils/favorite/question-favorite.js';
-import { getLearningStats, getWeakKnowledgePoints } from '@/utils/learning/adaptive-learning-engine.js';
+// adaptive-learning-engine.js — 动态导入减小主包体积（18KB）
 // study.api.js 动态导入 — 避免拖进主包
 // learning-analytics 动态导入 — 避免 16KB 拖进主包
 // ✅ 检查点2.2：导入草稿检测器
@@ -442,7 +420,7 @@ import { logger } from '@/utils/logger.js';
 // ✅ 2.1: 导航逻辑提取为 composable，减少主组件方法数量
 import { ref } from 'vue';
 import { usePracticeNavigation } from '@/composables/usePracticeNavigation.js';
-import { useReviewStore } from '@/stores/modules/review.js';
+// useReviewStore — 仅在用户点击时需要，改为动态导入减小主包体积
 // ✅ [D002重构] 题库状态管理和动态 mixin 加载
 import { useBankStatus } from '@/composables/useBankStatus.js';
 import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
@@ -581,6 +559,11 @@ export default {
       // ✅ [D002重构] dynamicMethodsCache 已由 useDynamicMixin composable 提供
       subPackageLoaded: false
     };
+  },
+  // 错误边界：捕获子组件运行时错误，防止整个页面白屏
+  errorCaptured(err, instance, info) {
+    logger.error('[刷题] 子组件运行时错误:', err?.message || err, '| 来源:', info);
+    return false;
   },
   async onShow() {
     // 原生 tabBar 已移除，无需隐藏
@@ -751,6 +734,9 @@ export default {
       }
 
       try {
+        const { getLearningStats, getWeakKnowledgePoints } = await safeImport(
+          import('@/utils/learning/adaptive-learning-engine.js')
+        );
         const stats = getLearningStats();
         const weakPoints = getWeakKnowledgePoints();
         const todayQuestions = Number(stats.todayQuestions || 0);
@@ -760,7 +746,8 @@ export default {
         this.weeklyAccuracy = Number.isFinite(weeklyAccuracy) ? weeklyAccuracy : this.weeklyAccuracy;
         this.weakPointsCount = Array.isArray(weakPoints) ? weakPoints.length : this.weakPointsCount;
 
-        const { getStreakData } = await import('@/utils/analytics/learning-analytics.js');
+        const mod = await safeImport(import('../practice-sub/utils/learning-analytics.js'));
+        const getStreakData = mod.getStreakData || mod.default?.getStreakData;
         const streakData = getStreakData();
         const currentStreak = Number(streakData?.currentStreak || 0);
         this.currentStreak = Number.isFinite(currentStreak) ? currentStreak : this.currentStreak;
@@ -866,7 +853,8 @@ export default {
     async exportAnki() {
       try {
         toast.loading('导出中...');
-        const { exportAnki: ankiExport } = await import('@/services/api/domains/practice.api.js');
+        const ankiMod = await safeImport(import('@/services/api/domains/practice.api.js'));
+        const ankiExport = ankiMod.exportAnki || ankiMod.default?.exportAnki;
         const res = await ankiExport('我的考研题库');
         toast.hide();
         if (res.code === 0 && res.data?.fileData) {
@@ -907,7 +895,9 @@ export default {
     // AI 今日推荐训练 — 异步加载薄弱知识点
     async loadAIRecommend() {
       try {
-        const { analyzeMastery } = await import('@/services/api/domains/smart-study.api.js');
+        const smartStudyMod = await safeImport(import('@/services/api/domains/smart-study.api.js'));
+        const analyzeMastery = smartStudyMod.analyzeMastery || smartStudyMod.default?.analyzeMastery;
+        if (typeof analyzeMastery !== 'function') throw new Error('analyzeMastery 未正确加载');
         const result = await analyzeMastery();
         if (result?.data?.mastery?.length > 0) {
           // 找到最薄弱且先修条件已满足的知识点
@@ -919,7 +909,7 @@ export default {
               knowledgePoint: weak.knowledgePoint,
               subject: weak.subject
             };
-          } else if (result.data.summary?.weakestPoint) {
+          } else if (result?.data?.summary?.weakestPoint) {
             this.aiRecommendTopic = {
               title: `今日重点：${result.data.summary.weakestPoint}`,
               reason: `${result.data.summary.weakCount}个薄弱点待攻克`,
@@ -944,6 +934,8 @@ export default {
       if (this.isLoadingRecommend) return;
       this.isLoadingRecommend = true;
       try {
+        const reviewMod = await safeImport(import('@/stores/modules/review.js'));
+        const useReviewStore = reviewMod.useReviewStore || reviewMod.default?.useReviewStore;
         const reviewStore = useReviewStore();
         const res = await reviewStore.fetchSmartRecommendations({ count: 10 });
         if (res?.success && res.data?.questions?.length > 0) {
@@ -959,7 +951,8 @@ export default {
             _recommend_reason: q._recommend_reason || '',
             _fromAI: true
           }));
-          const storageService = (await import('@/services/storageService.js')).default;
+          const storageMod = await safeImport(import('@/services/storageService.js'));
+          const storageService = storageMod.default || storageMod.storageService || storageMod;
           storageService.save('v30_temp_practice', formatted);
           safeNavigateTo('/pages/practice-sub/do-quiz?source=ai-recommend&mode=normal');
         } else {
@@ -1194,7 +1187,7 @@ export default {
 }
 
 .dark-mode .status-card {
-  background: linear-gradient(160deg, #1f1f24 0%, #17171b 100%);
+  background: linear-gradient(160deg, var(--card) 0%, var(--background) 100%);
 }
 
 /* 空状态样式 - 居中显示 */
@@ -1212,7 +1205,7 @@ export default {
 }
 
 .dark-mode .status-card.empty-state {
-  background: linear-gradient(160deg, #1d1d22 0%, #151518 100%);
+  background: linear-gradient(160deg, var(--muted) 0%, var(--background) 100%);
 }
 
 .empty-state-content {
@@ -1511,6 +1504,9 @@ export default {
   /* gap: 12px; -- replaced for Android WebView compat */
   margin-bottom: 22px;
 }
+.main-actions > view + view {
+  margin-top: 12px;
+}
 
 /* 主要按钮 */
 .primary-btn {
@@ -1579,6 +1575,7 @@ export default {
   width: 64rpx;
   height: 64rpx;
   object-fit: contain;
+  margin-right: 12px;
 }
 
 .menu-icon-img {
@@ -1772,6 +1769,12 @@ export default {
   font-weight: 620;
   color: var(--text-primary);
   margin: 0;
+}
+
+.menu-subtitle {
+  font-size: 24rpx;
+  color: var(--text-sub);
+  margin-top: 4px;
 }
 
 .menu-arrow {

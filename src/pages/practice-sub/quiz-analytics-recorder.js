@@ -12,7 +12,7 @@ import { recordTime as recordQuestionTime } from './question-timer.js';
 import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
 import { recordSmartAnswer } from './utils/smart-question-picker.js';
-import { recordAnswer as recordAnalyticsAnswer } from '@/utils/analytics/learning-analytics.js';
+import { recordAnswer as recordAnalyticsAnswer } from './utils/learning-analytics.js';
 import { request } from '@/services/api/domains/_request-core.js';
 
 /**

@@ -1,9 +1,9 @@
 <template>
-  <view class="splash-container">
+  <view class="splash-container" :class="{ 'dark-mode': isDark }">
     <view class="content-wrapper">
       <view class="logo-wrapper">
         <view class="splash-pulse-ring" />
-        <image class="logo-icon" src="../login/static/logo.png" alt="Exam Master" mode="aspectFit" />
+        <image class="logo-icon" src="/static/images/logo-full.png" alt="Exam Master" mode="aspectFit" />
       </view>
 
       <text class="app-name"> Exam-Master </text>
@@ -11,7 +11,7 @@
       <text class="splash-greeting">{{ greeting }}</text>
 
       <view v-if="streakDays > 0" class="streak-preview">
-        <text class="streak-flame">[火]</text>
+        <BaseIcon name="flame" :size="40" class="streak-flame" />
         <text class="streak-text">连续学习 {{ streakDays }} 天</text>
       </view>
 
@@ -39,6 +39,12 @@
 import { onMounted, onBeforeUnmount, ref, computed } from 'vue';
 import { logger } from '@/utils/logger.js';
 import { storageService } from '@/services/storageService.js';
+import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme';
+
+const isDark = ref(initTheme());
+const themeHandler = (mode) => {
+  isDark.value = mode === 'dark';
+};
 
 const splashTimer = ref(null);
 
@@ -146,6 +152,7 @@ function openHomeTab() {
 }
 
 onMounted(() => {
+  onThemeUpdate(themeHandler);
   if (isVisualSnapshot()) {
     logger.log('[Splash] visual snapshot mode, skip auto navigation');
     return;
@@ -158,6 +165,7 @@ onMounted(() => {
 
 // [AUDIT FIX] 页面销毁时清除定时器，防止已卸载页面触发导航
 onBeforeUnmount(() => {
+  offThemeUpdate(themeHandler);
   if (splashTimer.value) {
     clearTimeout(splashTimer.value);
     splashTimer.value = null;
@@ -242,7 +250,7 @@ onBeforeUnmount(() => {
 }
 
 .splash-container.dark-mode {
-  background: linear-gradient(180deg, #0b0b0f 0%, #111118 50%, #0a1a0f 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 50%, var(--background) 100%);
 }
 
 /* 1. 内容区域 */

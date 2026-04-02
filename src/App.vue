@@ -9,6 +9,7 @@ import { globalErrorHandler } from '@/utils/error/global-error-handler.js';
 import { logger } from '@/utils/logger.js';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
+import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 
 export default {
   onLaunch() {
@@ -162,10 +163,11 @@ export default {
      */
     updateNavigationBarColor(theme) {
       const isDark = theme === 'dark';
+      const colors = isDark ? NAV_BAR_COLORS.dark : NAV_BAR_COLORS.light;
       uni
         .setNavigationBarColor({
-          frontColor: isDark ? '#ffffff' : '#000000',
-          backgroundColor: isDark ? '#0b0b0f' : '#b8eb89',
+          frontColor: colors.frontColor,
+          backgroundColor: colors.backgroundColor,
           animation: {
             duration: 300,
             timingFunc: 'easeInOut'
@@ -265,63 +267,68 @@ export default {
 @import 'wot-design-uni/components/common/abstracts/variable.scss';
 
 /* ============================================
-   EXAM-MASTER 全局配色系统 v3.1
-   深色模式变量已提取到 _dark-mode-vars.scss
-   ============================================ */
+   EXAM-MASTER 全局配色系统 v4.0
+    亮色: Wise-Light (蓝色金融科技风格)
+    暗色: Bitget-Dark (赛博朋克风格) → _dark-mode-vars.scss
+    ============================================ */
 
 /* ============================================
-   核心颜色变量定义 (从 index.vue 提取)
+   核心颜色变量定义
    ============================================ */
 
-/* 浅色模式（默认） - 绿色 + 白色 */
+/* 浅色模式（默认） - Wise-Light 金融科技风格：灰蓝底 + 柔和蓝强调 */
 :root,
 page {
-  /* ====== 核心变量 (严格来自 index.vue) ====== */
-  --background: #b8eb89; /* 页面背景：Wise风清新绿 */
-  --foreground: #10281a; /* 主文字：深绿黑 */
-  --card: #eaf9d5; /* 卡片背景：浅绿层 */
-  --card-foreground: #10281a; /* 卡片文字：深绿黑 */
-  --primary: #0f5f34; /* 品牌主色：深绿 */
+  /* ====== 核心变量（灰蓝底 + 白色卡片 + 蓝色强调色） ====== */
+  --background: #f5f7fa; /* 页面背景：淡灰蓝（Wise 金融风格） */
+  --foreground: #1a1d1f; /* 主文字：近黑（高对比可读） */
+  --card: #ffffff; /* 卡片背景：纯白（与灰蓝底拉开层次） */
+  --card-foreground: #1a1d1f; /* 卡片文字 */
+  --primary: #4a90e2; /* 品牌主色：柔和蓝（仅用于按钮/图标强调） */
   --primary-foreground: #ffffff; /* 品牌主色文字：白色 */
-  --muted: #d0ecad; /* 弱化背景：浅绿 */
-  --muted-foreground: #35533f; /* 弱化文字 */
-  --border: #98cd6f; /* 边框：青草绿 */
-  --brand: #0f5f34; /* 品牌色：深绿 */
-  --brand-glow: rgba(15, 95, 52, 0.28); /* 品牌光晕 */
-  --glass-bg: rgba(247, 255, 239, 0.66); /* 毛玻璃背景 */
-  --glass-border: rgba(255, 255, 255, 0.72); /* 毛玻璃边框 */
+  --muted: #e8eef4; /* 弱化背景：浅灰蓝 */
+  --muted-foreground: #6b7280; /* 弱化文字：中性灰 */
+  --border: #e2e8f0; /* 边框：浅灰（实色，更清晰） */
+  --brand: #4a90e2; /* 品牌色：柔和蓝 */
+  --brand-glow: rgba(74, 144, 226, 0.18); /* 品牌光晕 */
+  --glass-bg: rgba(255, 255, 255, 0.72); /* 毛玻璃背景：白色透明 */
+  --glass-border: rgba(255, 255, 255, 0.82); /* 毛玻璃边框 */
 
   /* ====== 语义化别名（方便使用） ====== */
   --bg-page: var(--background);
   --bg-card: var(--card);
-  --bg-secondary: #d4f2b4;
+  --bg-secondary: #e8eef4; /* 二级背景：浅灰蓝 */
   --bg-glass: var(--glass-bg);
   --text-main: var(--foreground);
   --text-primary: var(--foreground);
   --text-sub: var(--muted-foreground);
   --text-secondary: var(--muted-foreground);
   --border-color: var(--border);
-  --primary-light: rgba(15, 95, 52, 0.16);
-  --success-light: rgba(16, 185, 129, 0.2);
-  --warning-light: rgba(245, 158, 11, 0.2);
-  --gradient-primary: linear-gradient(135deg, #1a8048 0%, #0f5f34 100%);
-  --page-gradient-top: #d5f8b2;
-  --page-gradient-mid: #b8eb89;
-  --page-gradient-bottom: #caf2a4;
+  --primary-light: rgba(74, 144, 226, 0.08);
+  --success-light: rgba(52, 211, 153, 0.12);
+  --warning-light: rgba(245, 158, 11, 0.12);
+  --gradient-primary: linear-gradient(135deg, #5a9fe8 0%, #4a90e2 50%, #3a7bd5 100%);
+  --page-gradient-top: #f5f7fa;
+  --page-gradient-mid: #eef2f7;
+  --page-gradient-bottom: #e8edf3;
 
   /* ====== 扩展功能色 ====== */
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --info: #3b82f6;
+  --success: #34d399; /* 翡翠绿 */
+  --warning: #f59e0b; /* 琥珀橙 */
+  --danger: #ef4444; /* 红色 */
+  --info: #4a90e2; /* 主蓝（与品牌色统一） */
+  --wise-blue: #4a90e2; /* Wise 蓝（替代原 wise-green） */
+  --wise-blue-dark: #3a7bd5; /* Wise 蓝深色态 */
+  --wise-green: #4a90e2; /* 兼容别名：映射到 wise-blue，旧组件不受影响 */
+  --wise-green-dark: #3a7bd5; /* 兼容别名 */
 
   /* ====== 兼容变量桥接（解决旧页面/组件变量不一致） ====== */
-  --brand-color: #0f5f34;
-  --brand-hover: #157141;
-  --brand-active: #0d522e;
+  --brand-color: #4a90e2;
+  --brand-hover: #5a9fe8;
+  --brand-active: #3a7bd5;
   --color-primary: var(--brand-color);
-  --color-primary-dark: #0b4827;
-  --text-tertiary: #8e98a8;
+  --color-primary-dark: #2e6bbf;
+  --text-tertiary: #9ca3af; /* 三级灰 */
   --text-inverse: #ffffff;
   --text-primary-foreground: var(--primary-foreground);
   --theme-primary: var(--brand-color);
@@ -331,50 +338,50 @@ page {
   --theme-card-bg: var(--bg-card);
   --theme-bg-secondary: var(--bg-secondary);
   --theme-bg-elevated: #ffffff;
-  --theme-primary-light: rgba(15, 95, 52, 0.16);
+  --theme-primary-light: rgba(74, 144, 226, 0.08);
   --danger-red: var(--danger);
   --success-green: var(--success);
   --info-blue: var(--info);
   --danger-light: rgba(239, 68, 68, 0.1);
-  --overlay: rgba(15, 23, 42, 0.36);
-  --mask-dark: rgba(15, 23, 42, 0.56);
-  --bg-overlay: rgba(15, 23, 42, 0.36);
-  --bg-card-alpha: rgba(247, 255, 239, 0.78);
-  --shadow-success: 0 10rpx 30rpx rgba(15, 95, 52, 0.22);
-  --shadow-danger: 0 10rpx 30rpx rgba(239, 68, 68, 0.18);
+  --overlay: rgba(0, 0, 0, 0.3);
+  --mask-dark: rgba(0, 0, 0, 0.5);
+  --bg-overlay: rgba(0, 0, 0, 0.3);
+  --bg-card-alpha: rgba(255, 255, 255, 0.88);
+  --shadow-success: 0 10rpx 30rpx rgba(52, 211, 153, 0.18);
+  --shadow-danger: 0 10rpx 30rpx rgba(239, 68, 68, 0.16);
   --bg-body: var(--bg-page);
   --card-bg: var(--bg-card);
-  --bg-tertiary: #bddd95;
+  --bg-tertiary: #dde3ea; /* 三级背景：冷灰蓝 */
   --accent-warm: #f59e0b;
-  --accent-cool: #34d399;
-  --accent-energy: #22c55e;
-  --skeleton-bg: rgba(220, 220, 228, 0.72);
-  --skeleton-line: rgba(236, 236, 242, 0.9);
-  --skeleton-highlight: rgba(255, 255, 255, 0.98);
-  --brand-tint: rgba(15, 95, 52, 0.14);
-  --brand-tint-strong: rgba(15, 95, 52, 0.26);
-  --brand-tint-subtle: rgba(15, 95, 52, 0.08);
-  --shadow-brand-sm: 0 8rpx 18rpx rgba(15, 95, 52, 0.22);
-  --shadow-brand: 0 12rpx 28rpx rgba(15, 95, 52, 0.3);
-  --shadow-brand-strong: 0 16rpx 34rpx rgba(15, 95, 52, 0.36);
-  --cta-primary-bg: rgba(255, 255, 255, 0.96);
-  --cta-primary-text: #10281a;
-  --cta-primary-border: rgba(16, 40, 26, 0.08);
-  --cta-primary-shadow: 0 12rpx 28rpx rgba(16, 40, 26, 0.16);
-  --apple-glass-nav-bg: rgba(250, 255, 246, 0.74);
-  --apple-glass-card-bg: rgba(255, 255, 255, 0.68);
-  --apple-glass-pill-bg: rgba(255, 255, 255, 0.82);
-  --apple-group-bg: rgba(247, 255, 239, 0.82);
-  --apple-glass-border-strong: rgba(255, 255, 255, 0.78);
-  --apple-specular-line: rgba(255, 255, 255, 0.68);
-  --apple-specular-soft: rgba(255, 255, 255, 0.24);
-  --apple-divider: rgba(16, 40, 26, 0.08);
-  --apple-shadow-floating: 0 18rpx 42rpx rgba(16, 40, 26, 0.18);
-  --apple-shadow-surface: 0 12rpx 32rpx rgba(16, 40, 26, 0.12);
-  --apple-shadow-card: 0 8rpx 24rpx rgba(16, 40, 26, 0.1);
-  --apple-chromatic-blue: rgba(0, 180, 255, 0.05);
-  --apple-chromatic-pink: rgba(255, 100, 200, 0.04);
-  --apple-chromatic-green: rgba(100, 255, 180, 0.035);
+  --accent-cool: #5ac8fa;
+  --accent-energy: #4a90e2;
+  --skeleton-bg: rgba(0, 0, 0, 0.04);
+  --skeleton-line: rgba(0, 0, 0, 0.06);
+  --skeleton-highlight: rgba(255, 255, 255, 0.96);
+  --brand-tint: rgba(74, 144, 226, 0.08);
+  --brand-tint-strong: rgba(74, 144, 226, 0.16);
+  --brand-tint-subtle: rgba(74, 144, 226, 0.04);
+  --shadow-brand-sm: 0 8rpx 18rpx rgba(74, 144, 226, 0.12);
+  --shadow-brand: 0 12rpx 28rpx rgba(74, 144, 226, 0.18);
+  --shadow-brand-strong: 0 16rpx 34rpx rgba(74, 144, 226, 0.24);
+  --cta-primary-bg: var(--gradient-primary);
+  --cta-primary-text: #ffffff;
+  --cta-primary-border: transparent;
+  --cta-primary-shadow: 0 12rpx 28rpx rgba(74, 144, 226, 0.22);
+  --apple-glass-nav-bg: rgba(245, 247, 250, 0.78);
+  --apple-glass-card-bg: rgba(255, 255, 255, 0.72);
+  --apple-glass-pill-bg: rgba(255, 255, 255, 0.86);
+  --apple-group-bg: rgba(255, 255, 255, 0.78);
+  --apple-glass-border-strong: rgba(226, 232, 240, 0.82);
+  --apple-specular-line: rgba(255, 255, 255, 0.72);
+  --apple-specular-soft: rgba(255, 255, 255, 0.28);
+  --apple-divider: rgba(0, 0, 0, 0.06);
+  --apple-shadow-floating: 0 18rpx 42rpx rgba(0, 0, 0, 0.08);
+  --apple-shadow-surface: 0 12rpx 32rpx rgba(0, 0, 0, 0.06);
+  --apple-shadow-card: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
+  --apple-chromatic-blue: rgba(74, 144, 226, 0.04);
+  --apple-chromatic-pink: rgba(255, 45, 85, 0.03);
+  --apple-chromatic-green: rgba(52, 211, 153, 0.03);
 
   /* ====== 设计系统令牌 ====== */
   /* 圆角系统 */
@@ -408,14 +415,34 @@ page {
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-  /* 阴影系统 */
-  --shadow-sm: 0 1px 3px rgba(17, 17, 26, 0.04);
-  --shadow-md: 0 4px 14px rgba(17, 17, 26, 0.07);
-  --shadow-lg: 0 10px 24px rgba(17, 17, 26, 0.12);
-  --shadow-xl: 0 18px 38px rgba(17, 17, 26, 0.16);
+  /* 阴影系统（中性色调） */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 18px 38px rgba(0, 0, 0, 0.14);
+
+  /* 设计系统 ds-* 变量映射（供 base 组件使用） */
+  --ds-spacing-xs: var(--spacing-xs);
+  --ds-spacing-sm: var(--spacing-sm);
+  --ds-spacing-md: var(--spacing-md);
+  --ds-spacing-lg: var(--spacing-lg);
+  --ds-spacing-xl: var(--spacing-xl);
+  --ds-radius-sm: var(--radius-sm);
+  --ds-radius-md: var(--radius-md);
+  --ds-radius-lg: var(--radius-lg);
+  --ds-radius-full: var(--radius-full);
+  --ds-color-accent-green: var(--primary);
+  --ds-color-accent-green-light: var(--primary-light);
+  --ds-color-surface: var(--bg-card);
+  --ds-color-surface-elevated: var(--bg-secondary);
+  --ds-font-size-base: 28rpx;
+  --ds-font-size-sm: 24rpx;
+  --ds-font-size-lg: 32rpx;
+  --ds-line-height-relaxed: 1.6;
+  --ds-transition-base: 250ms ease-out;
 }
 
-/* 深色模式 - 黑色 + 蓝色（系统偏好） */
+/* 深色模式 - Bitget-Dark 赛博朋克风格（系统偏好） */
 @media (prefers-color-scheme: dark) {
   :root,
   page {
@@ -425,7 +452,8 @@ page {
 
 /* 手动深色模式类（支持用户切换） */
 .dark,
-.dark-mode {
+.dark-mode,
+.page-dark {
   @include dark-mode-vars;
 }
 
@@ -472,27 +500,33 @@ scroll-view {
    全局工具类 (使用语义化变量)
    ============================================ */
 
-/* 卡片组件 */
+/* 卡片组件（Apple HIG 风格：大圆角 + 极细描边 + 弥散阴影） */
 .card {
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border: 0.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-md);
   color: var(--text-main);
   box-shadow: var(--shadow-md);
-  transition: all var(--transition-normal) var(--ease-default);
+  transition:
+    transform var(--transition-normal) var(--ease-default),
+    box-shadow var(--transition-normal) var(--ease-default),
+    opacity var(--transition-normal) var(--ease-default);
 }
 
-/* 毛玻璃卡片 */
+/* 毛玻璃卡片（Apple HIG 风格：大圆角 + 极细描边） */
 .glass-card {
   background: var(--glass-bg);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
+  border: 0.5px solid var(--glass-border);
+  border-radius: var(--radius-lg);
   padding: var(--spacing-md);
   color: var(--text-main);
-  transition: all var(--transition-normal) var(--ease-default);
+  transition:
+    transform var(--transition-normal) var(--ease-default),
+    box-shadow var(--transition-normal) var(--ease-default),
+    opacity var(--transition-normal) var(--ease-default);
 }
 
 .apple-glass,
@@ -573,7 +607,7 @@ scroll-view {
   -webkit-backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
   box-shadow:
     inset 0 1rpx 0 var(--apple-specular-soft),
-    0 8rpx 20rpx rgba(16, 40, 26, 0.08);
+    0 8rpx 20rpx rgba(0, 0, 0, 0.06);
 }
 
 .apple-cta {
@@ -585,35 +619,43 @@ scroll-view {
   box-shadow: var(--cta-primary-shadow);
 }
 
-/* 按钮基础样式 */
+/* 按钮基础样式（Apple HIG 风格：胶囊圆角 + 中等字重） */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-sm);
-  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
   font-size: 14px;
-  transition: all var(--transition-fast) var(--ease-default);
+  letter-spacing: -0.01em;
+  transition:
+    transform var(--transition-fast) var(--ease-default),
+    box-shadow var(--transition-fast) var(--ease-default),
+    filter var(--transition-fast) var(--ease-default),
+    opacity var(--transition-fast) var(--ease-default);
   cursor: pointer;
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
+  opacity: 0.85;
 }
 
-/* 主色按钮 */
+/* 主色按钮（渐变背景 + 品牌阴影） */
 .btn-primary {
-  background: var(--primary);
+  background: var(--gradient-primary);
   color: var(--primary-foreground);
   border: none;
+  box-shadow: var(--shadow-brand-sm);
 }
 
-/* 次要按钮 */
+/* 次要按钮（白底 + 极细描边） */
 .btn-secondary {
   background: var(--bg-card);
   color: var(--text-main);
-  border: 1px solid var(--border-color);
+  border: 0.5px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 /* 文字颜色工具类 */
@@ -644,6 +686,29 @@ scroll-view {
   background-color: var(--bg-card);
 }
 
+/* 输入框通用样式（Apple HIG 风格：通透底色 + focus ring） */
+/* 注意: 这里去掉了原生的 input, textarea 裸标签选择器，避免污染 wot-design-uni 内部的组件样式 */
+.input,
+.textarea {
+  background: var(--muted);
+  color: var(--text-main);
+  border: 0.5px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 24rpx 28rpx;
+  font-size: 30rpx;
+  line-height: 1.5;
+  transition: all 0.2s ease-out;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+  background: var(--bg-card);
+}
+
 /* ============================================
    性能优化
    ============================================ */
@@ -670,7 +735,10 @@ scroll-view {
 .clickable,
 .touchable,
 [hover-class] {
-  transition: all 0.15s ease-out;
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.15s ease-out,
+    opacity 0.15s ease-out;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -744,10 +812,12 @@ page[data-theme='dark'] .option-item:active {
   filter: none !important;
 }
 
+/* #ifdef H5 */
 /* H5 环境：隐藏原生 tabBar，使用自定义胶囊 tabBar (custom-tabbar.vue) */
 /* 原生 tabBar 和自定义 tabBar 同时显示会互相遮挡 */
 uni-tabbar,
 .uni-tabbar-bottom {
   display: none !important;
 }
+/* #endif */
 </style>

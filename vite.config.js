@@ -350,8 +350,8 @@ export default defineConfig(({ command, mode }) => {
       // 源码映射：开发和测试环境启用，生产环境关闭
       sourcemap: isDevelopment ? 'inline' : isStaging ? true : false,
 
-      // 代码压缩配置
-      minify: isProduction || isStaging ? 'terser' : false,
+      // 代码压缩配置 — 小程序 dev 模式也启用轻量压缩以控制主包体积
+      minify: isProduction || isStaging ? 'terser' : platform.startsWith('mp-') ? 'esbuild' : false,
 
       terserOptions: {
         compress: {

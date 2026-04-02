@@ -25,22 +25,51 @@ import {
   getSprintPriority as apiGetSprintPriority,
   generateStudyPlan as apiGenerateStudyPlan
 } from '@/services/api/domains/smart-study.api.js';
+import { logger } from '@/utils/logger.js';
 
 export const useStudyEngineStore = defineStore('studyEngine', () => {
   // ==================== Actions ====================
   // 透传 API 调用，不修改响应结构，保持页面现有的数据访问方式
 
   /** 掌握度分析 — 各知识点掌握度 + 薄弱点识别 */
-  const analyzeMastery = () => apiAnalyzeMastery();
+  const analyzeMastery = async () => {
+    try {
+      return await apiAnalyzeMastery();
+    } catch (err) {
+      logger.error('[StudyEngineStore] analyzeMastery 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
+  };
 
   /** 错题归因聚类 — 按错误类型×科目聚类 + 趋势分析 */
-  const getErrorClusters = () => apiGetErrorClusters();
+  const getErrorClusters = async () => {
+    try {
+      return await apiGetErrorClusters();
+    } catch (err) {
+      logger.error('[StudyEngineStore] getErrorClusters 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
+  };
 
   /** 冲刺模式 — ROI优先级排序 + 战略放弃建议 */
-  const getSprintPriority = (examDate) => apiGetSprintPriority(examDate);
+  const getSprintPriority = async (examDate) => {
+    try {
+      return await apiGetSprintPriority(examDate);
+    } catch (err) {
+      logger.error('[StudyEngineStore] getSprintPriority 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
+  };
 
   /** 自适应学习计划 — 7天计划 + 阶段划分 */
-  const generateStudyPlan = (examDate, dailyHours) => apiGenerateStudyPlan(examDate, dailyHours);
+  const generateStudyPlan = async (examDate, dailyHours) => {
+    try {
+      return await apiGenerateStudyPlan(examDate, dailyHours);
+    } catch (err) {
+      logger.error('[StudyEngineStore] generateStudyPlan 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
+  };
 
   return {
     analyzeMastery,

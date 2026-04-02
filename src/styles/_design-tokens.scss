@@ -55,26 +55,26 @@ $palette-neutral-950: #0b0b0f;
 $palette-neutral-1000: #000000;
 
 // --- Semantic Colors (SCSS) ---
-$color-success: #34c759;
-$color-warning: #ff9500;
-$color-error: #ff3b30;
-$color-info: #007aff;
+$color-success: #34d399; // Align with App.vue --success
+$color-warning: #f59e0b; // Align with App.vue --warning
+$color-error: #ef4444; // Align with App.vue --danger
+$color-info: #4a90e2; // Align with App.vue --info
 
 // --- Spacing (8px grid, rpx for cross-device) ---
-$spacing-xs: 8rpx;
-$spacing-sm: 16rpx;
-$spacing-md: 24rpx;
-$spacing-lg: 32rpx;
-$spacing-xl: 48rpx;
-$spacing-2xl: 64rpx;
+$spacing-xs: 4px; // Align with App.vue --spacing-xs
+$spacing-sm: 8px; // Align with App.vue --spacing-sm
+$spacing-md: 16px; // Align with App.vue --spacing-md
+$spacing-lg: 20px; // Align with App.vue --spacing-lg
+$spacing-xl: 24px; // Align with App.vue --spacing-xl
+$spacing-2xl: 32px; // Align with App.vue --spacing-2xl
 
 // --- Border Radius ---
-$radius-sm: 8rpx;
-$radius-md: 16rpx;
-$radius-lg: 24rpx;
-$radius-xl: 32rpx;
-$radius-2xl: 48rpx;
-$radius-full: 9999rpx;
+$radius-sm: 8px; // Align with App.vue --radius-sm
+$radius-md: 16px; // Align with App.vue --radius-md
+$radius-lg: 24px; // Align with App.vue --radius-lg
+$radius-xl: 32px; // Align with App.vue --radius-xl
+$radius-2xl: 48px;
+$radius-full: 9999px; // Align with App.vue --radius-full
 
 // --- Typography ---
 $font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Segoe UI', 'Roboto', sans-serif;
@@ -93,10 +93,10 @@ $font-weight-semibold: 600;
 $font-weight-bold: 700;
 
 // --- Shadows (SCSS, for static use) ---
-$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-$shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
-$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
-$shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04); // Align with App.vue --shadow-sm
+$shadow-md: 0 4px 14px rgba(0, 0, 0, 0.06); // Align with App.vue --shadow-md
+$shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.1); // Align with App.vue --shadow-lg
+$shadow-card: 0 8px 24px rgba(0, 0, 0, 0.05); // Align with App.vue --apple-shadow-card
 
 // --- Transitions ---
 $transition-fast: 150ms ease-out;

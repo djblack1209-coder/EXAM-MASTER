@@ -145,7 +145,7 @@ function handleClick() {
     margin-top: 4px;
 
     &--positive {
-      color: #10b981;
+      color: var(--success);
     }
 
     &--negative {

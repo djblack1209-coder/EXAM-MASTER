@@ -25,10 +25,10 @@
       class="main-scroll"
       :style="{ paddingTop: statusBarHeight + 50 + 'px' }"
       refresher-enabled
-
       :refresher-triggered="isRefreshing"
       @scrolltolower="loadMoreFavorites"
-      @refresherrefresh="onPullRefresh">
+      @refresherrefresh="onPullRefresh"
+    >
       <!-- 统计卡片 -->
       <view class="stats-row apple-glass-card">
         <view class="stat-item">
@@ -394,7 +394,9 @@ export default {
       this.isRefreshing = true;
       try {
         await this.loadData();
-      } catch (_e) { /* silent */ }
+      } catch (_e) {
+        /* silent */
+      }
       this.isRefreshing = false;
     },
     initSystemUI() {
@@ -768,6 +770,8 @@ export default {
 }
 
 .folder-card {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
   flex: 0 0 calc(25% - 12rpx);
   background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
   border: 1px solid var(--apple-glass-border-strong);
@@ -780,6 +784,10 @@ export default {
   overflow: hidden;
 }
 
+.folder-card:nth-child(4n) {
+  margin-right: 0;
+}
+
 .folder-card.active {
   border-color: var(--cta-primary-border);
   background: var(--cta-primary-bg);
@@ -788,10 +796,11 @@ export default {
 
 .folder-delete {
   position: absolute;
-  top: 4rpx;
-  right: 4rpx;
-  width: 32rpx;
-  height: 32rpx;
+  top: 0;
+  right: 0;
+  width: 64rpx;
+  height: 64rpx;
+  padding: 12rpx;
   font-size: 24rpx;
   color: var(--text-sub);
   display: flex;
@@ -799,6 +808,7 @@ export default {
   justify-content: center;
   background: rgba(255, 255, 255, 0.72);
   border-radius: 50%;
+  box-sizing: border-box;
 }
 
 .folder-icon {
@@ -808,7 +818,7 @@ export default {
 }
 
 .folder-name {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--text-primary);
   display: block;
   margin-bottom: 4rpx;
@@ -818,7 +828,7 @@ export default {
 }
 
 .folder-count {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--text-sub);
 }
 
@@ -920,6 +930,10 @@ export default {
   /* gap: 16rpx; -- replaced for Android WebView compat */
 }
 
+.card-actions > view + view {
+  margin-left: 16rpx;
+}
+
 .action-icon {
   font-size: 28rpx;
   padding: 8rpx;
@@ -1008,6 +1022,10 @@ export default {
 .footer-actions {
   display: flex;
   /* gap: 12rpx; -- replaced for Android WebView compat */
+}
+
+.action-btn + .action-btn {
+  margin-left: 12rpx;
 }
 
 .action-btn {
@@ -1145,6 +1163,8 @@ export default {
 }
 
 .icon-option {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
   width: 60rpx;
   height: 60rpx;
   display: flex;
@@ -1166,6 +1186,10 @@ export default {
   /* gap: 16rpx; -- replaced for Android WebView compat */
   padding: 24rpx;
   border-top: 1px solid var(--apple-divider);
+}
+
+.modal-btn + .modal-btn {
+  margin-left: 16rpx;
 }
 
 .modal-btn {
@@ -1280,5 +1304,47 @@ export default {
 
 .dark-mode .note-section {
   background: linear-gradient(135deg, rgba(255, 193, 7, 0.05), rgba(255, 152, 0, 0.05));
+}
+
+/* 深色模式文字颜色覆盖 */
+.dark-mode .nav-back,
+.dark-mode .nav-title,
+.dark-mode .section-title,
+.dark-mode .folder-name,
+.dark-mode .empty-title,
+.dark-mode .question-text,
+.dark-mode .opt-text,
+.dark-mode .note-content,
+.dark-mode .modal-title,
+.dark-mode .modal-input,
+.dark-mode .folder-option-name,
+.dark-mode .note-textarea,
+.dark-mode .card-tag {
+  color: var(--text-main, #ffffff);
+}
+
+.dark-mode .action-btn,
+.dark-mode .modal-btn.secondary {
+  color: var(--text-main, #ffffff);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.dark-mode .folder-count,
+.dark-mode .empty-desc,
+.dark-mode .card-info {
+  color: var(--text-sub, #9ca3af);
+}
+
+.dark-mode .folder-card,
+.dark-mode .question-card,
+.dark-mode .modal-body {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+
+.dark-mode .modal-input,
+.dark-mode .note-textarea {
+  background: var(--bg-secondary, #2c2c2e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
 }
 </style>

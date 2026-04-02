@@ -377,7 +377,7 @@ export default {
 
       this.isLoading = true;
       logger.log(
-        `[mistake-book] 🔄 开始加载数据 - reset: ${reset}, currentPage: ${this.currentPage}, pageSize: ${this.pageSize}`
+        `[mistake-book] 开始加载数据 - reset: ${reset}, currentPage: ${this.currentPage}, pageSize: ${this.pageSize}`
       );
 
       try {
@@ -403,19 +403,19 @@ export default {
           const beforeCount = this.mistakes.length;
           if (reset) {
             this.mistakes = normalizedList;
-            logger.log(`[mistake-book] ✅ 重置模式：加载了 ${normalizedList.length} 条错题`);
+            logger.log(`[mistake-book] 重置模式：加载了 ${normalizedList.length} 条错题`);
           } else {
             // 追加数据（用于分页加载）
             this.mistakes = [...this.mistakes, ...normalizedList];
             logger.log(
-              `[mistake-book] ✅ 追加模式：从 ${beforeCount} 条增加到 ${this.mistakes.length} 条（新增 ${normalizedList.length} 条）`
+              `[mistake-book] 追加模式：从 ${beforeCount} 条增加到 ${this.mistakes.length} 条（新增 ${normalizedList.length} 条）`
             );
           }
 
           // 如果本页返回空列表，强制终止分页，防止无限加载
           this.hasMore = normalizedList.length > 0 && (result.hasMore || false);
           logger.log(
-            `[mistake-book] 📊 当前状态 - 总错题数: ${this.mistakes.length}, hasMore: ${this.hasMore}, currentPage: ${this.currentPage}`
+            `[mistake-book] 当前状态 - 总错题数: ${this.mistakes.length}, hasMore: ${this.hasMore}, currentPage: ${this.currentPage}`
           );
 
           // 空状态检查
@@ -574,9 +574,9 @@ export default {
               this.hasMore = false;
 
               logger.log(
-                `[mistake-book] ✅ 清空完成: 已删除 ${deletedCount}/${mistakeIds.length} 条云端错题，本地缓存已清空`
+                `[mistake-book] 清空完成: 已删除 ${deletedCount}/${mistakeIds.length} 条云端错题，本地缓存已清空`
               );
-              logger.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
+              logger.log(`[mistake-book] 空状态：错题列表为空，显示空状态UI`);
 
               toast.hide();
               const totalCount = mistakeIds.length;
@@ -1097,7 +1097,7 @@ export default {
 
 .filter-chip {
   display: inline-block;
-  padding: 10rpx 24rpx;
+  padding: 16rpx 28rpx;
   border-radius: 32rpx;
   background: var(--bg-card, #f5f5f5);
   border: 1px solid var(--border-light, #e0e0e0);
@@ -1137,7 +1137,7 @@ export default {
   width: 12rpx;
   height: 12rpx;
   border-radius: 50%;
-  background: var(--color-primary, #34d399);
+  background: var(--color-primary, #0f5f34);
   margin-right: 8rpx;
   animation: clusterDotBounce 1.4s ease-in-out infinite;
 }
@@ -1211,7 +1211,7 @@ export default {
 }
 
 .cluster-badge-text {
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 600;
 }
 
@@ -1234,7 +1234,7 @@ export default {
 }
 
 .kp-tag {
-  font-size: 22rpx;
+  font-size: 24rpx;
   padding: 4rpx 14rpx;
   border-radius: 12rpx;
   background: var(--bg-secondary, #f0f0f0);
@@ -1255,7 +1255,7 @@ export default {
   margin-bottom: 16rpx;
 }
 .trend-text {
-  font-size: 22rpx;
+  font-size: 24rpx;
 }
 .trend-text.increasing {
   color: var(--danger); /* [AUDIT FIX R199] */
