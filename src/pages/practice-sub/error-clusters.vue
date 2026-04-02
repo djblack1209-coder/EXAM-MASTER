@@ -3,7 +3,9 @@
     <view class="aurora-bg" />
 
     <view class="top-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <text class="nav-back-arrow" @tap="goBack">←</text>
+      <text class="nav-back-arrow" @tap="goBack">
+        <BaseIcon name="arrow-left" :size="36" />
+      </text>
       <text class="nav-title">错题聚类分析</text>
       <view class="nav-right" />
     </view>
@@ -57,7 +59,7 @@
             <view class="cluster-header">
               <text class="cluster-name">{{ cluster.errorTypeName }}</text>
               <text class="cluster-trend" :class="'trend-' + trendDir(cluster.trend)">
-                {{ trendArrow(cluster.trend) }}
+                <BaseIcon :name="trendArrow(cluster.trend)" :size="28" />
               </text>
             </view>
             <view class="cluster-meta">
@@ -135,9 +137,7 @@ function trendDir(trend) {
   return 'flat';
 }
 function trendArrow(trend) {
-  if (trend === 'up') return '↑';
-  if (trend === 'down') return '↓';
-  return '→';
+  return trend === 'up' ? 'trend-up' : trend === 'down' ? 'trend-down' : 'arrow-right';
 }
 
 async function loadData() {
@@ -192,7 +192,7 @@ onMounted(() => {
   --green: var(--success, #34c759);
 }
 .error-clusters-container.dark-mode {
-  background: linear-gradient(180deg, #0a0a0f 0%, #111118 50%, #0d0d14 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 50%, var(--background) 100%);
 }
 .aurora-bg {
   position: absolute;
@@ -233,7 +233,7 @@ onMounted(() => {
 .nav-back-arrow {
   font-size: 36rpx;
   color: var(--text-main, #1a1a1a);
-  padding: 10rpx;
+  padding: 20rpx;
 }
 .nav-title {
   flex: 1;

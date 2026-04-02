@@ -33,7 +33,9 @@
         <view class="modal-header ds-flex ds-flex-between">
           <text class="modal-title ds-text-xl ds-font-bold"> 智能诊断报告 </text>
           <view class="modal-close ds-flex-center ds-rounded-full ds-touchable" @tap="closeReport">
-            <text class="modal-close-icon"> &times; </text>
+            <text class="modal-close-icon">
+              <BaseIcon name="close" :size="24" />
+            </text>
           </view>
         </view>
         <scroll-view scroll-y class="modal-scroll">

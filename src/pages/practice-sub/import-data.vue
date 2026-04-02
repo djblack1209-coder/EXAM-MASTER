@@ -1,5 +1,5 @@
 <template>
-  <view class="apple-container" :class="{ 'dark-mode': isDark }">
+  <view class="apple-container" :class="{ 'dark-mode': isDark, 'wot-theme-dark': isDark }">
     <!-- 苹果质感自定义导航栏 -->
     <view class="custom-navbar" :style="{ height: navBarHeight + 'px' }">
       <view class="navbar-status-bar" :style="{ height: statusBarHeight + 'px' }" />
@@ -21,15 +21,15 @@
     </view>
 
     <view class="main-glass-card bounce-in-up">
-      <view class="status-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%">
-        <view>
+      <view class="status-bar">
+        <view style="display: flex; align-items: center">
           <text class="status-dot" :class="{ active: fileName }" />
           <text class="status-text">
             {{ fileName ? '已加载文件，准备就绪' : '支持 PDF / Word / TXT / MD / Anki' }}
           </text>
         </view>
-        <view v-if="fileName" class="ocr-switch" style="display: flex; align-items: center; gap: 8rpx">
-          <text style="font-size: 24rpx; color: var(--text-sub)">深度OCR图表解析</text>
+        <view v-if="fileName" class="ocr-switch" style="display: flex; align-items: center">
+          <text style="font-size: 24rpx; color: var(--text-sub); margin-right: 8rpx">深度OCR图表解析</text>
           <wd-switch v-model="useDeepOcr" size="20px" />
         </view>
       </view>
@@ -87,7 +87,7 @@
         </wd-button>
       </view>
 
-      <view class="action-row sub-row" style="display: flex; gap: 16rpx">
+      <view class="action-row sub-row sub-row-flex">
         <wd-button
           v-if="!isLooping && (fullFileContent || fileName) && generatedCount > 0"
           plain
@@ -1575,12 +1575,10 @@ export default {
 .apple-container {
   min-height: 100%;
   min-height: 100vh;
-  background-color: var(--bg-page, #9fe870);
-  padding: 20px;
+  background-color: var(--bg-page, #f5f5f7);
+  padding: 0 20px 20px;
   padding-bottom: calc(28px + constant(safe-area-inset-bottom));
   padding-bottom: calc(28px + env(safe-area-inset-bottom));
-  padding-top: calc(constant(safe-area-inset-top) + 20px);
-  padding-top: calc(env(safe-area-inset-top, 0px) + 20px);
   box-sizing: border-box;
   color: var(--text-primary);
 }
@@ -1658,9 +1656,9 @@ export default {
 
 /* --- 头部大标题 --- */
 .page-header {
-  margin-top: calc(constant(safe-area-inset-top) + 64px);
-  margin-top: calc(env(safe-area-inset-top, 0px) + 64px);
-  margin-bottom: 24px;
+  margin-top: calc(constant(safe-area-inset-top) + 88px);
+  margin-top: calc(env(safe-area-inset-top, 0px) + 88px);
+  margin-bottom: 32px;
   padding: 0 8px;
 }
 
@@ -1680,10 +1678,10 @@ export default {
 }
 
 .header-note {
-  margin-top: 10rpx;
+  margin-top: 16rpx;
   display: block;
-  font-size: 24rpx;
-  line-height: 1.5;
+  font-size: 28rpx;
+  line-height: 1.8;
   color: var(--text-secondary);
 }
 
@@ -1707,7 +1705,9 @@ export default {
 .status-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 24px;
+  width: 100%;
 }
 
 .status-dot {
@@ -1732,7 +1732,7 @@ export default {
 
 /* --- 操作区：上传按钮 --- */
 .upload-trigger {
-  height: 160px;
+  min-height: 280px;
   background: var(--apple-glass-card-bg);
   border-radius: 24px;
   border: 2px dashed var(--apple-divider);
@@ -1740,6 +1740,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 40px 24px;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
@@ -1773,15 +1774,21 @@ export default {
 }
 
 .upload-sub-text {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: var(--text-tertiary);
+  margin-top: 12rpx;
+  line-height: 1.6;
+  text-align: center;
+  padding: 0 20rpx;
 }
 
 .upload-hint-text {
-  font-size: 22rpx;
+  font-size: 26rpx;
   color: var(--text-tertiary);
-  margin-top: 8rpx;
-  opacity: 0.7;
+  margin-top: 16rpx;
+  line-height: 1.6;
+  text-align: center;
+  padding: 0 20rpx;
 }
 
 /* --- 操作区：文件胶囊 --- */
@@ -1841,8 +1848,8 @@ export default {
 }
 
 .close-btn-circle {
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
   background: var(--apple-glass-card-bg);
   border-radius: 50%;
   display: flex;
@@ -1852,20 +1859,23 @@ export default {
 
 /* --- 底部悬浮按钮栏 --- */
 .bottom-action-bar {
-  position: relative;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 40%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(30px) saturate(155%);
-  -webkit-backdrop-filter: blur(30px) saturate(155%);
-  border: 1px solid var(--apple-glass-border-strong);
-  border-radius: 28px;
-  padding: 15px;
-  box-shadow: var(--apple-shadow-floating);
-  z-index: 10;
-  margin-top: 4px;
-  padding-bottom: calc(15px + constant(safe-area-inset-bottom));
-  padding-bottom: calc(15px + env(safe-area-inset-bottom));
+  padding: 24px;
+  background: var(--apple-glass-card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 32px 32px 0 0;
+  border-top: 1px solid var(--apple-glass-border-strong);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.04);
+}
+
+.sub-row-flex {
+  display: flex;
+  margin-top: 16rpx;
+}
+.sub-row-flex > button + button,
+.sub-row-flex > view + view,
+.sub-row-flex > wd-button + wd-button {
+  margin-left: 16rpx;
 }
 
 .action-row {
@@ -2450,7 +2460,6 @@ export default {
     radial-gradient(circle at 62% 82%, rgba(32, 83, 170, 0.15) 0%, transparent 32%);
 }
 
-.custom-navbar,
 .main-glass-card,
 .bottom-action-bar,
 .pause-banner,
@@ -2473,11 +2482,19 @@ export default {
 }
 
 .custom-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  border-radius: 0;
   background:
     linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
     linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
   border-bottom: 1px solid var(--apple-glass-border-strong);
   box-shadow: var(--apple-shadow-surface);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
 }
 
 .navbar-back-btn {
@@ -2533,7 +2550,6 @@ export default {
 }
 
 .upload-trigger {
-  min-height: 320rpx;
   border-style: dashed;
 }
 

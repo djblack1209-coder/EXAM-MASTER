@@ -189,7 +189,12 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {string} email - 邮箱地址
    */
   const sendEmailCode = async (email) => {
-    return await apiSendEmailCode(email);
+    try {
+      return await apiSendEmailCode(email);
+    } catch (err) {
+      logger.error('[AuthStore] sendEmailCode 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   /**
@@ -197,7 +202,12 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {Object} params - 登录参数（code, accessToken, openid, userInfo, platform 等）
    */
   const loginByWechat = async (params) => {
-    return await apiLogin({ type: 'wechat', ...params });
+    try {
+      return await apiLogin({ type: 'wechat', ...params });
+    } catch (err) {
+      logger.error('[AuthStore] loginByWechat 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   /**
@@ -205,7 +215,12 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {string} code - OAuth 授权码
    */
   const loginByWechatH5 = async (code) => {
-    return await apiLogin({ type: 'wechat_h5', code });
+    try {
+      return await apiLogin({ type: 'wechat_h5', code });
+    } catch (err) {
+      logger.error('[AuthStore] loginByWechatH5 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   /**
@@ -213,7 +228,12 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {Object} params - 登录参数（code, platform, accessToken, openid, userInfo, redirectUri 等）
    */
   const loginByQQ = async (params) => {
-    return await apiLogin({ type: 'qq', ...params });
+    try {
+      return await apiLogin({ type: 'qq', ...params });
+    } catch (err) {
+      logger.error('[AuthStore] loginByQQ 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   /**
@@ -221,7 +241,12 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {Object} params - { code, redirectUri }
    */
   const loginByQQH5 = async (params) => {
-    return await apiLogin({ type: 'qq', ...params });
+    try {
+      return await apiLogin({ type: 'qq', ...params });
+    } catch (err) {
+      logger.error('[AuthStore] loginByQQH5 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   /**
@@ -229,7 +254,12 @@ export const useAuthStore = defineStore('auth', () => {
    * @param {Object} params - { email, password, verifyCode?, isRegister? }
    */
   const loginByEmail = async (params) => {
-    return await apiLogin({ type: 'email', ...params });
+    try {
+      return await apiLogin({ type: 'email', ...params });
+    } catch (err) {
+      logger.error('[AuthStore] loginByEmail 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   return {

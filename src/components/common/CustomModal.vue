@@ -202,7 +202,7 @@ function handleCancel() {
   margin: 6rpx auto 22rpx;
 }
 
-.dark .modal-handle {
+.custom-modal-container.dark .modal-handle {
   background: rgba(255, 255, 255, 0.16);
 }
 
@@ -269,8 +269,7 @@ function handleCancel() {
     background: rgba(52, 199, 89, 0.12);
   }
 
-  .dark &,
-  .dark-mode & {
+  .custom-modal-container.dark & {
     &.info {
       background: rgba(10, 132, 255, 0.14);
     }
@@ -352,8 +351,7 @@ function handleCancel() {
   box-shadow: var(--apple-shadow-surface);
 
   /* [AUDIT FIX R181] 取消按钮暗黑文字 → CSS变量 */
-  .dark &,
-  .dark-mode & {
+  .custom-modal-container.dark & {
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
       linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
@@ -386,12 +384,12 @@ function handleCancel() {
 
 .custom-modal-container.dark .confirm-btn.warning {
   background: rgba(255, 159, 10, 0.16);
-  color: var(--warning-light, #ffd29a);
+  color: var(--warning-text, #ffd29a);
 }
 
 .custom-modal-container.dark .confirm-btn.error {
   background: rgba(255, 99, 90, 0.16);
-  color: var(--danger-light, #ffb1ab);
+  color: var(--danger-text, #ffb1ab);
 }
 
 .single .confirm-btn {

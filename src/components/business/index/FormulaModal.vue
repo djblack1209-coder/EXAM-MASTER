@@ -13,7 +13,9 @@
           </text>
         </view>
         <view class="formula-close" @tap="$emit('close')">
-          <text>×</text>
+          <text>
+            <BaseIcon name="close" :size="24" />
+          </text>
         </view>
       </view>
       <scroll-view scroll-y class="formula-scroll">
@@ -163,7 +165,7 @@ defineEmits(['close']);
   padding: 8rpx 16rpx;
   border-radius: 999rpx;
   background: rgba(52, 199, 89, 0.14);
-  color: #22873a;
+  color: var(--primary);
   font-size: 20rpx;
   margin-bottom: 12rpx;
 }

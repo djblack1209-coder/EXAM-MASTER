@@ -30,7 +30,7 @@
           <text class="task-title">{{ task.title }}</text>
           <text v-if="task.subtitle" class="ta<REDACTED_SECRET>">{{ task.subtitle }}</text>
         </view>
-        <text class="task-arrow">›</text>
+        <BaseIcon name="arrow-right" :size="28" class="task-arrow" />
       </view>
     </view>
 
@@ -48,9 +48,10 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { debounce } from '@/utils/throttle.js';
+import { safeImport } from '@/utils/helpers/safe-import.js';
 
 // 动态导入 — analyzeMastery/getPendingCorrections/getSprintPriority 在 smart-study.api.js 中
-const loadStudyApi = () => import('@/services/api/domains/smart-study.api.js');
+const loadStudyApi = () => safeImport(import('@/services/api/domains/smart-study.api.js'));
 
 const props = defineProps({
   isDark: { type: Boolean, default: false },
@@ -156,7 +157,7 @@ function _buildBriefing() {
     message = message || `你有 ${props.overdueCount} 道复习已逾期，遗忘曲线在加速下滑，先把它们捡回来！`;
     taskList.push({
       title: `复习 ${props.reviewPending} 道到期卡片`,
-      subtitle: props.overdueCount > 0 ? `⚠️ ${props.overdueCount} 道已逾期` : 'FSRS 算法调度',
+      subtitle: props.overdueCount > 0 ? `${props.overdueCount} 道已逾期，请尽快复习` : 'FSRS 算法调度',
       priority: 'urgent',
       action: 'review',
       actionText: '开始复习'
@@ -261,10 +262,15 @@ async function _enrichWithAI() {
   loading.value = true;
   try {
     // 动态加载 API 模块（不静态打包进主包）
-    // 兼容小程序构建：动态 import() 可能把命名导出包在 .default 下
+    // 兼容小程序构建：优先从命名导出取，备选从 .default 取
     const raw = await loadStudyApi();
-    const api = raw.default || raw;
-    const { analyzeMastery, getPendingCorrections, getSprintPriority } = api;
+    const analyzeMastery = raw.analyzeMastery || raw.default?.analyzeMastery;
+    const getPendingCorrections = raw.getPendingCorrections || raw.default?.getPendingCorrections;
+    const getSprintPriority = raw.getSprintPriority || raw.default?.getSprintPriority;
+
+    if (typeof analyzeMastery !== 'function') {
+      throw new Error('analyzeMastery 未正确加载');
+    }
 
     // 基础请求：掌握度 + 待矫正
     const requests = [analyzeMastery(), getPendingCorrections()];
@@ -477,7 +483,7 @@ function handleTaskTap(task) {
     left: 0;
     right: 0;
     height: 4rpx;
-    background: linear-gradient(90deg, var(--wise-green, #34d399), var(--info-blue, #06b6d4), var(--purple, #8b5cf6));
+    background: linear-gradient(90deg, var(--primary), var(--info, #06b6d4), var(--purple, #8b5cf6));
     border-radius: 28rpx 28rpx 0 0;
   }
 }
@@ -492,24 +498,20 @@ function handleTaskTap(task) {
 .briefing-badge {
   display: flex;
   align-items: center;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--wise-green) 15%, transparent),
-    color-mix(in srgb, var(--info-blue) 15%, transparent)
-  );
+  background: var(--primary-light);
   padding: 8rpx 20rpx;
   border-radius: 20rpx;
 }
 
 .badge-icon {
-  color: var(--wise-green, #34d399);
+  color: var(--primary);
   margin-right: 8rpx;
 }
 
 .badge-text {
   font-size: 24rpx;
   font-weight: 600;
-  color: var(--wise-green, #34d399);
+  color: var(--primary);
 }
 
 .briefing-time {
@@ -539,7 +541,7 @@ function handleTaskTap(task) {
   width: 12rpx;
   height: 12rpx;
   border-radius: 50%;
-  background: var(--wise-green, #34d399);
+  background: var(--primary);
   margin-right: 8rpx;
   animation: dotBounce 1.4s ease-in-out infinite;
 }
@@ -601,7 +603,7 @@ function handleTaskTap(task) {
   background: var(--warning);
 }
 .ta<REDACTED_SECRET>.normal {
-  background: var(--wise-green, #34d399);
+  background: var(--primary);
 }
 .ta<REDACTED_SECRET>.low {
   background: var(--text-tertiary);
@@ -616,18 +618,24 @@ function handleTaskTap(task) {
   font-size: 28rpx;
   color: var(--text-main);
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ta<REDACTED_SECRET> {
   font-size: 22rpx;
   color: var(--text-sub);
   margin-top: 4rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .task-arrow {
-  font-size: 32rpx;
-  color: var(--text-hint);
+  color: var(--text-hint, var(--text-tertiary));
   margin-left: 12rpx;
+  flex-shrink: 0;
 }
 
 /* 一键开始按钮 */
@@ -637,7 +645,7 @@ function handleTaskTap(task) {
   justify-content: center;
   padding: 22rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, var(--wise-green, #34d399), var(--wise-green-dark, #059669));
+  background: linear-gradient(135deg, var(--primary), var(--brand-active, #3a7bd5));
   transition: opacity 0.2s;
 }
 
@@ -659,7 +667,7 @@ function handleTaskTap(task) {
 /* 暗色模式 */
 .ai-briefing.dark {
   .task-item {
-    border-bottom-color: rgba(255, 255, 255, 0.08);
+    border-bottom-color: var(--border);
   }
 }
 </style>

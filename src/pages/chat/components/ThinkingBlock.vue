@@ -11,7 +11,9 @@
       <text class="thinking-label">
         {{ isThinking ? '思考中...' : `思考完成 · ${thinkingDuration}s` }}
       </text>
-      <text class="expand-arrow">{{ isExpanded ? '▲' : '▼' }}</text>
+      <text class="expand-arrow">
+        <BaseIcon :name="isExpanded ? 'chevron-up' : 'chevron-down'" :size="24" />
+      </text>
     </view>
     <view v-if="isExpanded && content" class="thinking-content">
       <text class="thinking-text">{{ content }}</text>

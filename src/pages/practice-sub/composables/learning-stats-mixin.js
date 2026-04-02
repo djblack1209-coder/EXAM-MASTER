@@ -4,7 +4,7 @@
  * 包含：学习统计、目标设置、成就、收藏、练习模式
  */
 import { logger } from '@/utils/logger.js';
-import { getStreakData, getComprehensiveReport, getAchievements } from '@/utils/analytics/learning-analytics.js';
+import { getStreakData, getComprehensiveReport, getAchievements } from '../utils/learning-analytics.js';
 import { getTodayGoals, GOAL_TYPES } from '../utils/learning-goal.js';
 import { getFavorites } from '@/utils/favorite/question-favorite.js';
 import { getAvailablePracticeModes, startPracticeMode } from '../utils/practice-mode-manager.js';

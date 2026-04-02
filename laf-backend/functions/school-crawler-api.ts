@@ -130,7 +130,7 @@ export default async function (ctx: FunctionContext) {
       crawl_all: { limit: 2, windowMs: 30 * 60 * 1000 }
     };
     const cfg = rateConfig[action as string] || { limit: 30, windowMs: 60 * 1000 };
-    const rate = checkRateLimit(`crawler:${action}:${clientIp}`, cfg.limit, cfg.windowMs);
+    const rate = checkRateLimit(`crawler:${action}:${clientIp}`, cfg.limit, cfg.windowMs); // 本地限流（单实例爬虫场景足够）
     if (!rate.allowed) {
       return { code: 429, success: false, message: '请求过于频繁，请稍后重试', requestId };
     }

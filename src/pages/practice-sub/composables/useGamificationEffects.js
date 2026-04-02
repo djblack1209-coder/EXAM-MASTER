@@ -14,7 +14,8 @@ let _storeRef = null;
 function _getStore() {
   if (!_storeRef) {
     try {
-      const { useGamificationStore } = require('@/stores/index.js');
+      // 直接从模块文件导入，不经过 barrel（stores/index.js 不导出分包 store 以避免拖入主包）
+      const { useGamificationStore } = require('@/stores/modules/gamification');
       _storeRef = useGamificationStore();
     } catch {
       /* pinia 未就绪 */

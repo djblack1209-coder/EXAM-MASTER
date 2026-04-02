@@ -76,10 +76,13 @@ defineExpose({ show });
 .xp-toast-inner {
   display: flex;
   align-items: center;
-  gap: 4rpx;
+  /* gap: 4rpx; */
   opacity: 1;
   transform: translateY(0);
   transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.xp-toast-inner > view + view {
+  margin-left: 4rpx;
 }
 
 .xp-toast-inner.xp-toast-animate {

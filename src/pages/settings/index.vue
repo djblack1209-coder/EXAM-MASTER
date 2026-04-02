@@ -5,7 +5,7 @@
       class="top-nav apple-glass"
       :style="{ paddingTop: statusBarHeight + 'px', paddingRight: capsuleSafeRight + 'px' }"
     >
-      <text id="e2e-settings-back" class="nav-back" @tap="handleGoBack"> ← </text>
+      <view id="e2e-settings-back" class="nav-back" @tap="handleGoBack"><BaseIcon name="arrow-left" :size="36" /></view>
       <text class="nav-title ds-text-display ds-font-bold"> 设置 </text>
       <view class="nav-placeholder" />
     </view>
@@ -124,7 +124,7 @@
                 class="close-btn target-modal-close"
                 @tap="showTargetSchoolsModal = false"
               >
-                ✕
+                <BaseIcon name="close" :size="32" />
               </text>
             </view>
             <view class="modal-body target-modal-body">
@@ -292,7 +292,7 @@
 <script setup>
 import { toast } from '@/utils/toast.js';
 // Vue 原生钩子
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, onErrorCaptured } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 // UniApp 特有钩子
 import { onShow } from '@dcloudio/uni-app';
@@ -310,8 +310,16 @@ import config from '@/config/index.js';
 import { useSchoolStore } from '@/stores/modules/school';
 import { useProfileStore } from '@/stores/modules/profile';
 import { useThemeStore } from '@/stores';
+import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+
+// 错误边界：捕获子组件运行时错误，防止整个页面白屏
+onErrorCaptured((err, instance, info) => {
+  logger.error('[设置] 子组件运行时错误:', err?.message || err, '| 来源:', info);
+  return false;
+});
+
 // 统一默认头像
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
@@ -393,9 +401,10 @@ onShow(() => {
   const currentIsDark = storageService.get('theme_mode') === 'dark';
   isDark.value = currentIsDark;
   try {
+    const colors = currentIsDark ? NAV_BAR_COLORS.dark : NAV_BAR_COLORS.light;
     uni.setNavigationBarColor({
-      frontColor: currentIsDark ? '#ffffff' : '#000000',
-      backgroundColor: currentIsDark ? '#0b0b0f' : '#b8eb89',
+      frontColor: colors.frontColor,
+      backgroundColor: colors.backgroundColor,
       animation: { duration: 0 }
     });
   } catch (_e) {
@@ -1025,7 +1034,7 @@ const handleClosePosterModal = () => {
     var(--page-gradient-mid) 48%,
     var(--page-gradient-bottom) 100%
   );
-  --hero-text: #1a1d1f;
+  --hero-text: var(--text-primary);
   --hero-subtext: rgba(26, 29, 31, 0.72);
   padding: 32rpx;
   /* 8px网格 */
@@ -1097,8 +1106,9 @@ const handleClosePosterModal = () => {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 32rpx;
-  position: relative;
-  z-index: 1;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   border-radius: 24rpx;
   padding-left: 16rpx;
   /* 8px网格 */
@@ -1227,7 +1237,7 @@ const handleClosePosterModal = () => {
 .login-badge {
   background: var(--apple-glass-pill-bg);
   color: var(--text-primary);
-  font-size: 22rpx;
+  font-size: 24rpx;
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 10px;
@@ -1290,7 +1300,7 @@ const handleClosePosterModal = () => {
 
 .info-label {
   display: block;
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: rgba(16, 40, 26, 0.56);
   margin-bottom: 3px;
   font-weight: 600;
@@ -1547,7 +1557,7 @@ const handleClosePosterModal = () => {
 
 .setting-desc {
   font-size: 24rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
   line-height: 1.5;
   /* 添加呼吸感 */
   letter-spacing: 0.3px;
@@ -1556,7 +1566,7 @@ const handleClosePosterModal = () => {
 
 .cache-size {
   font-size: 28rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
 }
 
 /* C5: 注销账号 */
@@ -1586,7 +1596,7 @@ const handleClosePosterModal = () => {
 }
 
 .delete-account-eyebrow {
-  font-size: 20rpx;
+  font-size: 22rpx;
   letter-spacing: 3rpx;
   text-transform: uppercase;
   color: rgba(160, 52, 46, 0.74);
@@ -1601,7 +1611,7 @@ const handleClosePosterModal = () => {
 .delete-account-text {
   font-size: 28rpx;
   font-weight: 650;
-  color: #9d2f2a;
+  color: var(--danger);
 }
 
 .deletion-pending-card {
@@ -1629,7 +1639,7 @@ const handleClosePosterModal = () => {
 }
 .deletion-pending-desc {
   font-size: 24rpx;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
   line-height: 1.5;
   margin-bottom: 20rpx;
 }
@@ -1663,7 +1673,7 @@ const handleClosePosterModal = () => {
 }
 
 .dark-mode .delete-account-text {
-  color: #ff8e86;
+  color: var(--danger);
 }
 
 .dark-mode .deletion-pending-card {
@@ -1915,7 +1925,7 @@ const handleClosePosterModal = () => {
 
 .setting-arrow {
   font-size: 40rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
   opacity: 0.4;
 }
 
@@ -1950,23 +1960,13 @@ const handleClosePosterModal = () => {
 }
 
 .skeleton-pulse {
-  background: linear-gradient(
-    90deg,
-    var(--bg-secondary, #f0f0f0) 25%,
-    var(--bg-hover, #e0e0e0) 50%,
-    var(--bg-secondary, #f0f0f0) 75%
-  );
+  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-hover) 50%, var(--bg-secondary) 75%);
   background-size: 200% 100%;
   animation: skeletonPulse 1.5s ease-in-out infinite;
 }
 
 .dark-mode .skeleton-pulse {
-  background: linear-gradient(
-    90deg,
-    var(--bg-glass, #2a2a2a) 25%,
-    var(--overlay, #3a3a3a) 50%,
-    var(--bg-glass, #2a2a2a) 75%
-  );
+  background: linear-gradient(90deg, var(--bg-glass) 25%, var(--overlay) 50%, var(--bg-glass) 75%);
   background-size: 200% 100%;
   animation: skeletonPulse 1.5s ease-in-out infinite;
 }

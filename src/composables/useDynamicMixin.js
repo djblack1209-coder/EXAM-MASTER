@@ -6,6 +6,7 @@ import { ref } from 'vue';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 import config from '@/config/index.js';
+import { safeImport } from '@/utils/helpers/safe-import.js';
 
 export function useDynamicMixin() {
   // 分包加载状态
@@ -43,9 +44,9 @@ export function useDynamicMixin() {
     // App 端所有模块已打包在一起，直接动态 import
     const moduleMap = {
       '../practice-sub/composables/ai-generation-mixin.js': () =>
-        import('../pages/practice-sub/composables/ai-generation-mixin.js'),
+        safeImport(import('../pages/practice-sub/composables/ai-generation-mixin.js')),
       '../practice-sub/composables/learning-stats-mixin.js': () =>
-        import('../pages/practice-sub/composables/learning-stats-mixin.js')
+        safeImport(import('../pages/practice-sub/composables/learning-stats-mixin.js'))
     };
     const loader = moduleMap[modulePath];
     if (loader) {
@@ -59,9 +60,9 @@ export function useDynamicMixin() {
     // 微信小程序环境下 require() 可用，但 import() 同样被 uni-app 支持
     const moduleMapNonApp = {
       '../practice-sub/composables/ai-generation-mixin.js': () =>
-        import('../pages/practice-sub/composables/ai-generation-mixin.js'),
+        safeImport(import('../pages/practice-sub/composables/ai-generation-mixin.js')),
       '../practice-sub/composables/learning-stats-mixin.js': () =>
-        import('../pages/practice-sub/composables/learning-stats-mixin.js')
+        safeImport(import('../pages/practice-sub/composables/learning-stats-mixin.js'))
     };
     const loaderNonApp = moduleMapNonApp[modulePath];
     if (loaderNonApp) {

@@ -25,7 +25,7 @@
         <text class="nav-title">
           {{ currentFriend.name }}
         </text>
-        <text class="nav-arrow"> ▼ </text>
+        <text class="nav-arrow"><BaseIcon name="chevron-down" :size="24" /></text>
       </view>
       <image
         :src="icons8('ios', 50, '333333', 'menu--v1')"
@@ -142,10 +142,10 @@
                 {{ msg.time }}
               </text>
               <view v-if="msg.status" class="msg-status">
-                <text v-if="msg.status === 'sending'" class="status-icon"> [等待] </text>
+                <text v-if="msg.status === 'sending'" class="status-icon"> ··· </text>
                 <text v-else-if="msg.status === 'sent'" class="status-icon sent"> ✓ </text>
                 <text v-else-if="msg.status === 'failed'" class="status-icon failed" @tap="retryMessage(index)">
-                  [!] 点击重试
+                  ! 点击重试
                 </text>
               </view>
             </view>
@@ -155,6 +155,7 @@
             class="avatar"
             alt="头像"
             mode="aspectFill"
+            lazy-load
             @error="onAvatarError"
           />
         </template>
@@ -340,12 +341,12 @@ const aiFriends = ref([
 
 // 情绪选项
 const emotionOptions = ref([
-  { value: 'frustrated', emoji: '[沮丧]', label: '沮丧' },
-  { value: 'anxious', emoji: '[焦虑]', label: '焦虑' },
-  { value: 'excited', emoji: '[开心]', label: '开心' },
-  { value: 'tired', emoji: '[疲惫]', label: '疲惫' },
-  { value: 'confused', emoji: '[困惑]', label: '困惑' },
-  { value: 'neutral', emoji: '[平静]', label: '平静' }
+  { value: 'frustrated', emoji: '沮丧', label: '沮丧' },
+  { value: 'anxious', emoji: '焦虑', label: '焦虑' },
+  { value: 'excited', emoji: '开心', label: '开心' },
+  { value: 'tired', emoji: '疲惫', label: '疲惫' },
+  { value: 'confused', emoji: '困惑', label: '困惑' },
+  { value: 'neutral', emoji: '平静', label: '平静' }
 ]);
 
 // 状态
@@ -1291,13 +1292,12 @@ onUnmounted(() => {
   }
 
   .skeleton-animate {
-    background: linear-gradient(
-      90deg,
-      var(--bg-card, #1e1e1e) 25%,
-      var(--bg-tertiary, #2a2a2a) 50%,
-      var(--bg-card, #1e1e1e) 75%
-    );
+    background: linear-gradient(90deg, var(--card) 25%, var(--muted) 50%, var(--card) 75%);
     background-size: 200% 100%;
+  }
+
+  .right-bubble {
+    color: #ffffff;
   }
 }
 
@@ -1316,6 +1316,14 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
+}
+
+.nav-center .friend-avatar-small {
+  margin-right: 16rpx;
+}
+
+.nav-center .nav-title {
+  margin-right: 8rpx;
 }
 
 .friend-avatar-small {
@@ -1340,6 +1348,9 @@ onUnmounted(() => {
 .menu-icon {
   width: 48rpx;
   height: 48rpx;
+  /* 扩大点击区域到 88rpx，通过 padding 实现 */
+  padding: 20rpx;
+  box-sizing: content-box;
 
   &:active {
     opacity: 0.6;
@@ -1605,11 +1616,16 @@ onUnmounted(() => {
 }
 
 .dot {
+  margin-right: 8rpx;
   width: 16rpx;
   height: 16rpx;
   background: var(--text-secondary);
   border-radius: 50%;
   animation: typing 1.4s infinite ease-in-out;
+
+  &:last-child {
+    margin-right: 0;
+  }
 
   &:nth-child(2) {
     animation-delay: 0.2s;
@@ -1643,6 +1659,8 @@ onUnmounted(() => {
 }
 
 .emotion-tag {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
   padding: 12rpx 22rpx;
   background: var(--fill-tertiary, rgba(120, 120, 128, 0.12));
   border-radius: 999rpx;
@@ -1672,6 +1690,7 @@ onUnmounted(() => {
 }
 
 .input-tools {
+  margin-right: 16rpx;
   display: flex;
   align-items: center;
 }
@@ -1686,6 +1705,7 @@ onUnmounted(() => {
 }
 
 .msg-input {
+  margin-right: 16rpx;
   flex: 1;
   height: 72rpx;
   border-radius: 36rpx;
@@ -1804,6 +1824,7 @@ onUnmounted(() => {
 }
 
 .wave-bar {
+  margin-right: 4rpx;
   width: 12rpx;
   background: linear-gradient(180deg, var(--primary), var(--accent-cool));
   border-radius: 6rpx;
@@ -1821,7 +1842,7 @@ onUnmounted(() => {
 }
 
 .voice-hint {
-  color: var(--text-inverse);
+  color: #ffffff;
   font-size: 28rpx;
   opacity: 0.8;
 }

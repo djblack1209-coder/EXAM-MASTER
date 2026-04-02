@@ -32,7 +32,7 @@
           {{ weakPointsCount }}
         </view>
         <view class="stat-label"> 薄弱点 </view>
-        <view class="stat-action"> 去强化 › </view>
+        <view class="stat-action"> 去强化 <BaseIcon name="chevron-right" :size="16" /> </view>
       </view>
     </view>
     <!-- 成就展示入口 -->
@@ -43,7 +43,9 @@
         </text>
       </view>
       <text class="achievement-text"> 已解锁 {{ unlockedAchievements.length }} 个成就 </text>
-      <text class="achievement-arrow"> › </text>
+      <text class="achievement-arrow">
+        <BaseIcon name="chevron-right" :size="24" />
+      </text>
     </view>
   </view>
 </template>
@@ -196,5 +198,15 @@ defineEmits(['open-goal-setting', 'go-mistake', 'show-achievement']);
   font-size: 36rpx;
   color: var(--text-sub);
   font-weight: 600;
+}
+:global(.dark-mode) .stats-card-container {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+:global(.dark-mode) .stat-value {
+  color: var(--text-primary, #f5f5f7);
+}
+:global(.dark-mode) .stat-label {
+  color: var(--text-secondary, #8e8e93);
 }
 </style>

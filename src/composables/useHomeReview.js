@@ -5,6 +5,7 @@
 import { ref } from 'vue';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
+import { safeImport } from '@/utils/helpers/safe-import.js';
 // 动态导入 — 避免 fsrs-service(5KB) 和 knowledge-engine(6KB) 拖进主包
 // import { getReviewStats } from '@/services/fsrs-service.js';
 // import { getNextRecommendedTopic } from '@/services/knowledge-engine.js';
@@ -29,13 +30,15 @@ export function useHomeReview({ reviewStore } = {}) {
       // 本地 FSRS 优先：从本地存储的题目计算待复习数量
       const allQuestions = storageService.get('v30_bank', []);
       if (allQuestions.length > 0) {
-        const { getReviewStats } = await import('@/services/fsrs-service.js');
+        const fsrsMod = await safeImport(import('@/services/fsrs-service.js'));
+        const getReviewStats = fsrsMod.getReviewStats || fsrsMod.default?.getReviewStats;
         const stats = getReviewStats(allQuestions);
         reviewStats.value = stats;
         reviewPending.value = stats.dueCount + stats.overdueCount;
       }
 
       // 服务端增量同步（不阻塞 UI）
+      // 支持 ref 包装和普通对象两种传入方式，也支持延迟加载（初始 null 后赋值）
       const store = reviewStore?.value || reviewStore;
       if (store?.fetchReviewPlan) {
         store
@@ -52,6 +55,31 @@ export function useHomeReview({ reviewStore } = {}) {
           .catch(() => {
             /* 静默失败，服务端不可用时依赖本地 FSRS */
           });
+      } else {
+        // reviewStore 尚未加载（动态导入延迟），尝试动态获取
+        safeImport(import('@/stores/modules/review.js'))
+          .then((mod) => {
+            const useReviewStore = mod.useReviewStore || mod.default?.useReviewStore;
+            const dynamicStore = useReviewStore();
+            if (dynamicStore?.fetchReviewPlan) {
+              dynamicStore
+                .fetchReviewPlan()
+                .then((res) => {
+                  if (res.success && res.data) {
+                    const serverPending = res.data.reviewPlan?.totalPending || 0;
+                    if (serverPending > reviewPending.value) {
+                      reviewPending.value = serverPending;
+                    }
+                  }
+                })
+                .catch(() => {
+                  /* 静默降级 */
+                });
+            }
+          })
+          .catch(() => {
+            /* 静默降级：reviewStore 不可用，纯依赖本地 FSRS */
+          });
       }
     } catch (_e) {
       // 静默失败，不影响首页
@@ -65,7 +93,8 @@ export function useHomeReview({ reviewStore } = {}) {
     try {
       const allQuestions = storageService.get('v30_bank', []);
       if (allQuestions.length > 0) {
-        const { getNextRecommendedTopic } = await import('@/services/knowledge-engine.js');
+        const keMod = await safeImport(import('@/pages/knowledge-graph/knowledge-engine.js'));
+        const getNextRecommendedTopic = keMod.getNextRecommendedTopic || keMod.default?.getNextRecommendedTopic;
         recommendedTopic.value = getNextRecommendedTopic(allQuestions);
       }
     } catch (_e) {

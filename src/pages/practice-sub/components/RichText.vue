@@ -18,12 +18,20 @@ const props = defineProps({
 
 const renderedHtml = ref('');
 
+// 竞态防护计数器：确保快速切换 content 时只有最新的渲染结果生效
+let _renderSeq = 0;
+
 async function doRender() {
   if (!props.content) {
     renderedHtml.value = '';
     return;
   }
-  renderedHtml.value = await renderMarkdownAsync(props.content);
+  const seq = ++_renderSeq;
+  const html = await renderMarkdownAsync(props.content);
+  // 仅当没有更新的渲染请求时才赋值（防止旧结果覆盖新结果）
+  if (seq === _renderSeq) {
+    renderedHtml.value = html;
+  }
 }
 
 watch(() => props.content, doRender);

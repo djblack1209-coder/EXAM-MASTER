@@ -2,7 +2,9 @@
   <view class="classroom-container" :class="{ 'dark-mode': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <image src="/static/icons/chevron-left.png" class="back-icon" alt="返回" mode="aspectFit" @tap="goBack" />
+      <view class="back-icon" @tap="goBack">
+        <BaseIcon name="arrow-left" :size="36" />
+      </view>
       <view class="nav-center">
         <text class="nav-title">{{ lessonTitle }}</text>
         <text class="nav-subtitle">{{ phaseText }}</text>
@@ -22,7 +24,7 @@
     <scroll-view class="message-list" scroll-y :scroll-top="scrollTop" scroll-with-animation>
       <!-- 课堂开始提示 -->
       <view v-if="messages.length === 0 && !loading" class="welcome-card apple-glass-card">
-        <text class="welcome-icon">[课堂]</text>
+        <text class="welcome-icon">课堂</text>
         <text class="welcome-title">课堂即将开始</text>
         <text class="welcome-desc">AI 老师和同学已就位，点击下方按钮开始上课</text>
         <button class="btn-start" @tap="startClass">开始上课</button>
@@ -47,7 +49,7 @@
         <view class="message-bubble" :class="msg.metadata?.isUser ? 'bubble-user' : 'bubble-agent'">
           <!-- 测验类型消息 -->
           <view v-if="msg.type === 'quiz'" class="quiz-content">
-            <text class="quiz-label">[测验] 课堂测验</text>
+            <text class="quiz-label">课堂测验</text>
             <text class="quiz-body">{{ parseQuizDisplay(msg.content) }}</text>
           </view>
           <!-- 普通文本消息 -->
@@ -102,7 +104,7 @@
 import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-import { useClassroomStore } from '@/stores/modules/classroom.js';
+import { useClassroomStore } from './stores/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
@@ -147,8 +149,8 @@ const phaseText = computed(() => {
 });
 
 function avatarEmoji(role) {
-  const map = { teacher: '[师]', student: '[生]', examiner: '[考]' };
-  return map[role] || '[智能]';
+  const map = { teacher: '师', student: '生', examiner: '考' };
+  return map[role] || '智';
 }
 
 function parseQuizDisplay(content) {
@@ -342,6 +344,7 @@ onMounted(() => {
 .back-icon {
   width: 40rpx;
   height: 40rpx;
+  padding: 24rpx;
   opacity: 0.6;
 }
 .nav-center {
@@ -616,7 +619,10 @@ onMounted(() => {
 }
 .action-section {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; */
+}
+.action-section > view + view {
+  margin-left: 16rpx;
 }
 .btn-action {
   flex: 1;
@@ -643,5 +649,19 @@ onMounted(() => {
 .btn-quiz {
   background: linear-gradient(135deg, var(--warning), var(--warning-dark, #d97706));
   color: var(--text-inverse, #fff);
+}
+.dark-mode {
+  background: var(--bg-page, #0b0b0f);
+}
+.dark-mode .nav-bar {
+  background: var(--bg-card, #1c1c1e);
+}
+.dark-mode .nav-title,
+.dark-mode .back-icon,
+.dark-mode .nav-action {
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .btn-question {
+  background: rgba(99, 102, 241, 0.2); /* existing is 0.12 */
 }
 </style>

@@ -83,12 +83,7 @@ const examCountdown = computed(() => {
 }
 
 .banner-light {
-  background: linear-gradient(
-    145deg,
-    rgba(252, 255, 249, 0.72) 0%,
-    rgba(255, 255, 255, 0.96) 46%,
-    rgba(233, 247, 218, 0.88) 100%
-  );
+  background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-card) 46%, var(--bg-secondary) 100%);
   border-color: var(--apple-glass-border-strong);
 }
 
@@ -105,7 +100,7 @@ const examCountdown = computed(() => {
   right: -90rpx;
   width: 320rpx;
   height: 320rpx;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 72%);
+  background: radial-gradient(circle, var(--bg-card) 0%, transparent 72%);
   filter: blur(12rpx);
 }
 
@@ -114,13 +109,13 @@ const examCountdown = computed(() => {
   bottom: -110rpx;
   width: 360rpx;
   height: 360rpx;
-  background: radial-gradient(circle, rgba(15, 95, 52, 0.18) 0%, rgba(15, 95, 52, 0) 74%);
+  background: radial-gradient(circle, var(--primary-light) 0%, transparent 74%);
   filter: blur(20rpx);
 }
 
 .banner-dark {
-  background: linear-gradient(160deg, rgba(18, 22, 30, 0.92) 0%, rgba(12, 14, 20, 0.98) 100%);
-  border-color: rgba(124, 176, 255, 0.18);
+  background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-page) 100%);
+  border-color: var(--apple-glass-border-strong);
 }
 
 .bubble-decoration {
@@ -155,10 +150,22 @@ const examCountdown = computed(() => {
   /* gap: 32rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
 }
 
+.banner-content > .banner-text {
+  margin-bottom: 32rpx;
+}
+
 .banner-text {
   display: flex;
   flex-direction: column;
   /* gap: 16rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
+}
+
+.banner-text > .welcome-title {
+  margin-bottom: 8rpx;
+}
+
+.banner-text > .welcome-countdown {
+  margin-bottom: 4rpx;
 }
 
 .welcome-title {
@@ -167,12 +174,18 @@ const examCountdown = computed(() => {
   letter-spacing: -0.4rpx;
   color: var(--text-primary);
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .welcome-subtitle {
   font-size: 28rpx;
   color: var(--text-sub);
   line-height: 1.58;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .welcome-countdown {
@@ -228,22 +241,22 @@ const examCountdown = computed(() => {
 }
 
 .btn-outline {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  background: var(--bg-secondary);
+  border: 1rpx solid var(--border);
   color: var(--text-primary);
   backdrop-filter: blur(10rpx);
   -webkit-backdrop-filter: blur(10rpx);
 }
 
 .banner-light .btn-outline {
-  background: rgba(255, 255, 255, 0.62);
-  border-color: rgba(16, 40, 26, 0.08);
-  box-shadow: 0 12rpx 26rpx rgba(16, 40, 26, 0.1);
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .banner-dark .btn-outline {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: var(--muted);
+  border-color: var(--border);
   color: var(--text-primary);
 }
 

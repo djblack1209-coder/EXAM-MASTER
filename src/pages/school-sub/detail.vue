@@ -5,7 +5,7 @@
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
         <view id="e2e-school-detail-back-btn" class="back-btn" @tap="navBack">
-          <text>←</text>
+          <BaseIcon name="arrow-left" :size="36" />
         </view>
         <text class="nav-title">
           {{ schoolInfo.name || '院校详情' }}
@@ -188,7 +188,9 @@
               {{ major.type }}
             </text>
           </view>
-          <text class="arrow-icon"> → </text>
+          <text class="arrow-icon">
+            <BaseIcon name="arrow-right" :size="32" />
+          </text>
         </view>
 
         <view class="safe-area" />
@@ -998,8 +1000,11 @@ export default {
   flex-wrap: wrap;
   /* gap: 10rpx; -- replaced for Android WebView compat */
 }
+.tag-row text + text {
+  margin-left: 10rpx;
+}
 .tag-row text {
-  font-size: 20rpx;
+  font-size: 24rpx;
   padding: 8rpx 18rpx;
   border-radius: 999rpx;
 }
@@ -1026,6 +1031,9 @@ export default {
   /* gap: 20rpx; -- replaced for Android WebView compat */
   margin-bottom: 30rpx;
 }
+.stat-item + .stat-item {
+  margin-left: 20rpx;
+}
 .stat-item {
   flex: 1;
   display: flex;
@@ -1042,7 +1050,7 @@ export default {
   color: var(--text-primary);
 }
 .stat-label {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: var(--text-tertiary);
   margin-top: 8rpx;
 }
@@ -1093,7 +1101,7 @@ export default {
   margin-bottom: 4rpx;
 }
 .major-type {
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.64);
   padding: 6rpx 14rpx;
@@ -1129,6 +1137,7 @@ export default {
   box-shadow: var(--apple-shadow-floating);
 }
 .ai-consult-btn {
+  margin-right: 20rpx;
   flex: 1;
   height: 100rpx;
   border-radius: 999rpx;
@@ -1366,6 +1375,10 @@ export default {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
   margin-bottom: 30rpx;
+}
+
+.skeleton-stat + .skeleton-stat {
+  margin-left: 20rpx;
 }
 
 .skeleton-stat {

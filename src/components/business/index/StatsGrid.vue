@@ -97,7 +97,7 @@ defineEmits(['stat-click']);
   background: var(--bg-card-alpha);
   backdrop-filter: blur(16rpx) saturate(130%);
   -webkit-backdrop-filter: blur(16rpx) saturate(130%);
-  border: 1rpx solid rgba(255, 255, 255, 0.14);
+  border: 1rpx solid var(--border);
 }
 
 .card-light {
@@ -140,45 +140,44 @@ defineEmits(['stat-click']);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
+  margin-bottom: 16rpx;
 }
 
 .icon-primary {
-  background: var(--brand-tint);
+  background: var(--primary-light);
 }
 
 .icon-success {
-  background: rgba(52, 199, 89, 0.14);
+  background: var(--success-light);
 }
 
 .icon-warning {
-  background: rgba(255, 159, 10, 0.16);
+  background: var(--warning-light);
 }
 
 .icon-neutral {
-  background: rgba(142, 142, 147, 0.12);
+  background: var(--muted);
 }
 
 .glass .stat-icon-wrapper {
-  border-color: rgba(124, 176, 255, 0.18);
+  border: none;
   box-shadow: none;
 }
 
 .glass .icon-primary {
-  background: rgba(10, 132, 255, 0.16);
+  background: var(--primary-light);
 }
 
 .glass .icon-success {
-  background: rgba(64, 200, 160, 0.16);
+  background: var(--success-light);
 }
 
 .glass .icon-warning {
-  background: rgba(95, 170, 255, 0.18);
+  background: var(--warning-light);
 }
 
 .glass .icon-neutral {
-  background: rgba(58, 108, 190, 0.16);
+  background: var(--muted);
 }
 
 .stat-icon {
@@ -189,6 +188,14 @@ defineEmits(['stat-click']);
   display: flex;
   flex-direction: column;
   /* gap: 8rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
+}
+
+.stat-content > .stat-title {
+  margin-bottom: 4rpx;
+}
+
+.stat-content > .stat-value {
+  margin-bottom: 4rpx;
 }
 
 .stat-title {
@@ -204,6 +211,7 @@ defineEmits(['stat-click']);
   letter-spacing: -0.3rpx;
   color: var(--text-primary);
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-change {

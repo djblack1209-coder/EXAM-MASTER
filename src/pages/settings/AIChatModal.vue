@@ -10,7 +10,7 @@
             <view v-for="i in 5" :key="i" class="bar" :class="{ rec: isRecording }" />
           </view>
         </view>
-        <text class="close-icon" @tap="handleClose"> ✕ </text>
+        <text class="close-icon" @tap="handleClose"><BaseIcon name="close" :size="32" /></text>
       </view>
       <scroll-view scroll-y class="chat-content" :scroll-top="chatScrollTop" :scroll-into-view="scrollIntoView">
         <view v-for="(msg, i) in chatHistory" :id="`msg-${i}`" :key="i" :class="['msg-bubble', msg.role]">
@@ -22,7 +22,7 @@
             {{ msg.time }}
           </view>
           <view v-if="msg.role === 'assistant' && voiceEnabled" class="voice-play-icon" @tap="playTTS(msg.content)">
-            <text>🔊</text>
+            <BaseIcon name="volume" :size="32" />
           </view>
         </view>
         <view v-if="isThinking" id="thinking" class="msg-bubble assistant">
@@ -32,7 +32,8 @@
       </scroll-view>
       <view class="chat-input-area">
         <view class="mode-switch" @tap="toggleInputMode">
-          <text>{{ isVoiceInput ? '⌨️' : '🎤' }}</text>
+          <BaseIcon v-if="isVoiceInput" name="keyboard" :size="40" />
+          <BaseIcon v-else name="microphone" :size="40" />
         </view>
 
         <input
@@ -57,7 +58,7 @@
         </view>
 
         <view v-if="!isVoiceInput" class="emoji-btn" @tap="handleEmoji">
-          <text>😊</text>
+          <BaseIcon name="smiley" :size="40" />
         </view>
 
         <button v-if="!isVoiceInput" :loading="isRequesting" class="send-btn" @tap="sendToAI">发送</button>
@@ -891,7 +892,7 @@ export default {
 
 .msg-bubble.user {
   background-color: var(--brand-color);
-  color: white;
+  color: var(--text-inverse);
   align-self: flex-end;
   margin-left: auto;
   border-bottom-right-radius: 4px;
@@ -1070,8 +1071,8 @@ export default {
 }
 
 .emoji-item {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;

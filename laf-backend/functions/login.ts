@@ -858,8 +858,29 @@ function parseQQCallbackPayload(raw: string): Record<string, unknown> | null {
   }
 }
 
+/**
+ * 允许的 QQ OAuth 回调域名白名单
+ * 防止开放重定向攻击：客户端传入的 redirect_uri 必须匹配已知域名
+ */
+const ALLOWED_REDIRECT_DOMAINS = ['245334.xyz', 'nf98ia8qnt.sealosbja.site', '101.43.41.96', 'localhost', '127.0.0.1'];
+
+/** 检查 URL 的主机名是否在白名单内 */
+function isAllowedRedirectDomain(urlStr: string): boolean {
+  try {
+    const hostname = new URL(urlStr).hostname;
+    return ALLOWED_REDIRECT_DOMAINS.some((d) => hostname === d || hostname.endsWith(`.${d}`));
+  } catch {
+    return false;
+  }
+}
+
 function resolveQQRedirectUri(ctx: any, bodyRedirectUri: unknown): string {
-  if (typeof bodyRedirectUri === 'string' && /^https?:\/\//.test(bodyRedirectUri)) {
+  // 客户端传入的 redirect_uri 必须通过域名白名单校验
+  if (
+    typeof bodyRedirectUri === 'string' &&
+    /^https?:\/\//.test(bodyRedirectUri) &&
+    isAllowedRedirectDomain(bodyRedirectUri)
+  ) {
     return bodyRedirectUri;
   }
 
@@ -868,7 +889,7 @@ function resolveQQRedirectUri(ctx: any, bodyRedirectUri: unknown): string {
   }
 
   const origin = ctx.headers?.origin || ctx.headers?.Origin;
-  if (typeof origin === 'string' && /^https?:\/\//.test(origin)) {
+  if (typeof origin === 'string' && /^https?:\/\//.test(origin) && isAllowedRedirectDomain(origin)) {
     return `${origin.replace(/\/$/, '')}/#/pages/login/qq-callback`;
   }
 

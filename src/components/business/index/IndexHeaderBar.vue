@@ -171,8 +171,8 @@ function handleAvatarTap() {
 
 .header-avatar {
   flex-shrink: 0;
-  width: 76rpx;
-  height: 76rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 50%;
   overflow: hidden;
   padding: 4rpx;
@@ -245,8 +245,8 @@ function handleAvatarTap() {
   }
 
   .header-avatar {
-    width: 64rpx;
-    height: 64rpx;
+    width: 80rpx;
+    height: 80rpx;
   }
 
   .header-search {

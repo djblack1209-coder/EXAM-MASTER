@@ -3,7 +3,9 @@
   <view class="modal-mask" :class="{ 'dark-mode': isDark }" @click.self="$emit('close')">
     <view class="modal-container ds-card" @tap.stop>
       <view class="close-btn ds-touchable ds-touch-target ds-flex-center" @click="$emit('close')">
-        <text class="close-icon-text"> ✕ </text>
+        <text class="close-icon-text">
+          <BaseIcon name="close" :size="24" />
+        </text>
       </view>
 
       <view class="header-brand ds-flex-col ds-flex-center ds-gap-xs">
@@ -209,8 +211,8 @@ function openPoster() {
   position: absolute;
   top: 16px;
   right: 16px;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -237,7 +239,7 @@ function openPoster() {
 .brand-name {
   font-size: 36rpx;
   font-weight: 700;
-  color: #07c160;
+  color: var(--success);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -252,7 +254,7 @@ function openPoster() {
 
 .subtitle {
   font-size: 26rpx;
-  color: var(--ds-color-text-secondary, #666);
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 20px;
   line-height: 1.5;
@@ -262,7 +264,7 @@ function openPoster() {
 /* Ticket Style */
 .ticket-container {
   width: 100%;
-  background-color: #07c160;
+  background-color: var(--success);
   border-radius: 12px;
   padding: 8px;
   /* Outer spacing for dashed border */
@@ -282,7 +284,7 @@ function openPoster() {
 .code-label {
   font-size: 64rpx;
   font-weight: 800;
-  color: white;
+  color: var(--text-inverse);
   letter-spacing: 1px;
   -webkit-font-smoothing: antialiased;
 }
@@ -329,7 +331,7 @@ function openPoster() {
 
 .close-icon-text {
   font-size: 40rpx;
-  color: var(--ds-color-text-tertiary, #999);
+  color: var(--text-tertiary);
   font-weight: bold;
 }
 
@@ -341,7 +343,7 @@ function openPoster() {
 
 .link-text {
   font-size: 24rpx;
-  color: var(--ds-color-text-secondary, #666);
+  color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -391,8 +393,8 @@ function openPoster() {
 .poster-btn {
   width: 100%;
   height: 44px;
-  background-color: #ffd700;
-  border: 1px solid #ffa500;
+  background-color: var(--warning);
+  border: 1px solid var(--warning);
   border-radius: 22px;
   display: flex;
   align-items: center;
@@ -404,7 +406,7 @@ function openPoster() {
   &:active {
     opacity: 0.9;
     transform: scale(0.98);
-    background-color: #ffc107;
+    background-color: var(--warning);
   }
 }
 
@@ -448,7 +450,7 @@ function openPoster() {
 
 .qr-tip {
   font-size: 20rpx;
-  color: var(--ds-color-text-tertiary, #999);
+  color: var(--text-tertiary);
   margin-top: 4px;
   -webkit-font-smoothing: antialiased;
 }
@@ -458,12 +460,12 @@ function openPoster() {
   background: rgba(0, 0, 0, 0.8);
 
   .modal-container {
-    background: var(--ds-color-surface-secondary, #1c1c1e);
+    background: var(--bg-secondary);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   }
 
   .close-icon-text {
-    color: #8e8e93;
+    color: var(--text-tertiary);
   }
 
   .brand-name {
@@ -476,7 +478,7 @@ function openPoster() {
   }
 
   .subtitle {
-    color: var(--ds-color-text-secondary, #8e8e93);
+    color: var(--text-secondary);
   }
 
   .ticket-container {
@@ -488,7 +490,7 @@ function openPoster() {
   }
 
   .code-label {
-    color: #1c1c1e;
+    color: var(--background);
   }
 
   .code-desc {
@@ -496,11 +498,11 @@ function openPoster() {
   }
 
   .link-box {
-    background-color: #2c2c2e;
+    background-color: var(--bg-tertiary);
   }
 
   .link-text {
-    color: #8e8e93;
+    color: var(--text-tertiary);
   }
 
   .copy-btn {
@@ -513,7 +515,7 @@ function openPoster() {
   }
 
   .qr-tip {
-    color: #8e8e93;
+    color: var(--text-tertiary);
   }
 
   .wechat-btn {
@@ -530,12 +532,12 @@ function openPoster() {
   }
 
   .poster-btn {
-    background-color: #ffa500;
-    border-color: #ff8c00;
+    background-color: var(--warning);
+    border-color: var(--warning);
     box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
 
     &:active {
-      background-color: #ff8c00;
+      background-color: var(--warning);
     }
   }
 }

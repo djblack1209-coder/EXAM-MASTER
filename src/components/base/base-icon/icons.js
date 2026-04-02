@@ -1,7 +1,9 @@
 /**
- * 图标注册表 — 内联关键图标 data URI，消除 SVG 文件 404 错误
- * 只内联主包 tabBar 页面使用的图标（约2KB），不拖入完整的 svg-data.js（27KB）
+ * 图标注册表 — 合并完整图标库，确保所有 84 个图标可用
+ * 优先使用 INLINE（主包核心图标），兜底查找 SVG_DATA（完整图标库）
  */
+
+import { SVG_DATA } from './svg-data.js';
 
 // 主包页面使用的核心图标（内联 data URI，消除文件依赖）
 const INLINE = {
@@ -35,7 +37,24 @@ const INLINE = {
   search:
     'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Ccircle cx="11" cy="11" r="8"/%3E%3Cpath d="m21 21-4.35-4.35"/%3E%3C/svg%3E',
   empty:
-    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Crect x="3" y="3" width="18" height="18" rx="2"/%3E%3Cpath d="M12 8v4M12 16h.01"/%3E%3C/svg%3E'
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Crect x="3" y="3" width="18" height="18" rx="2"/%3E%3Cpath d="M12 8v4M12 16h.01"/%3E%3C/svg%3E',
+  bulb: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/%3E%3Cpath d="M9 18h6M10 22h4"/%3E%3C/svg%3E',
+  'trend-up':
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="m23 6-9.5 9.5-5-5L1 18"/%3E%3Cpath d="M17 6h6v6"/%3E%3C/svg%3E',
+  trophy:
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/%3E%3Cpath d="M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22h10c0-2-1-3.25-2.03-3.79A1.07 1.07 0 0 1 14 17v-2.34"/%3E%3Cpath d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/%3E%3C/svg%3E',
+  download:
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/%3E%3C/svg%3E',
+  'file-text':
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/%3E%3Cpath d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/%3E%3C/svg%3E',
+  graduate:
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="m2 10 10-5 10 5-10 5z"/%3E%3Cpath d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/%3E%3C/svg%3E',
+  'book-open':
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/%3E%3Cpath d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/%3E%3C/svg%3E',
+  briefcase:
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Crect x="2" y="7" width="20" height="14" rx="2"/%3E%3Cpath d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/%3E%3C/svg%3E',
+  gavel:
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"%3E%3Cpath d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M12 3 8 8M12 3l4 5"/%3E%3C/svg%3E'
 };
 
 // 别名映射
@@ -49,12 +68,24 @@ const ALIASES = {
 };
 
 /**
- * 获取图标路径 — 内联 data URI，零文件依赖
+ * 获取图标路径 — 优先 INLINE，兜底 SVG_DATA 完整库
+ * @param {string} name - 图标名称
+ * @param {string} [fallback] - 找不到时的兜底图标
+ * @param {string} [theme='light'] - 主题模式 'light' | 'dark'
  */
-export function getIconPath(name, fallback) {
+export function getIconPath(name, fallback, theme) {
   const realName = ALIASES[name] || name;
-  return INLINE[realName] || INLINE[name] || fallback || INLINE['info'];
+  let uri = INLINE[realName] || INLINE[name] || SVG_DATA[realName] || SVG_DATA[name] || fallback || INLINE['info'];
+  // 深色模式：将 SVG 中的 currentColor（默认黑色）替换为白色
+  if (theme === 'dark' && uri) {
+    uri = uri.replace(/currentColor/g, '%23ffffff');
+  }
+  return uri;
 }
 
-export const ICON_MAP = INLINE;
-export const ICON_MAP_DARK = INLINE;
+// 导出合并后的完整图标集（动态更新：SVG_DATA 异步加载完成后 ICON_MAP 自动包含）
+export function getIconMap() {
+  return { ...SVG_DATA, ...INLINE };
+}
+export const ICON_MAP = INLINE; // 初始仅包含内联图标，SVG_DATA 加载后通过 getIconPath 兜底
+export const ICON_MAP_DARK = ICON_MAP;

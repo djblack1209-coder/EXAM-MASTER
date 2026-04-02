@@ -153,7 +153,14 @@ const lockedList = computed(() => {
 .achievement-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14rpx;
+  /* gap: 14rpx; */
+}
+.achievement-grid > view {
+  margin-right: 14rpx;
+  margin-bottom: 14rpx;
+}
+.achievement-grid > view:nth-child(3n) {
+  margin-right: 0;
 }
 .achievement-item {
   display: flex;

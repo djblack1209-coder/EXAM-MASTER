@@ -1,5 +1,5 @@
 <template>
-  <view class="qb-page">
+  <view :class="['qb-page', { 'dark-mode': isDark }]">
     <!-- 自定义导航栏 -->
     <view class="navbar">
       <view class="navbar-inner" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -106,12 +106,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useReviewStore } from '@/stores/modules/review.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
 import { toast } from '@/utils/toast.js';
+
+// 暗色模式
+const isDark = ref(storageService.get('theme_mode', 'light') === 'dark');
+const _themeHandler = (mode) => {
+  isDark.value = mode === 'dark';
+};
+uni.$on('themeUpdate', _themeHandler);
+onBeforeUnmount(() => {
+  uni.$off('themeUpdate', _themeHandler);
+});
 
 const reviewStore = useReviewStore();
 
@@ -133,10 +143,10 @@ const difficultyOptions = [
   { label: '困难', value: 'hard' }
 ];
 
-const CATEGORY_ICONS = { 政治: '[政]', 英语: '[英]', 数学: '[数]', 专业课: '[专]', 综合: '[综]' };
+const CATEGORY_ICONS = { 政治: '政', 英语: '英', 数学: '数', 专业课: '专', 综合: '综' };
 
 function categoryIcon(cat) {
-  return CATEGORY_ICONS[cat] || '[文]';
+  return CATEGORY_ICONS[cat] || '文';
 }
 
 function diffLabel(d) {
@@ -314,11 +324,11 @@ onMounted(() => {
   transition: all 0.2s;
 }
 .cat-card.active {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light, #8b5cf6));
 }
 .cat-card.active .cat-name,
 .cat-card.active .cat-count {
-  color: #fff;
+  color: var(--text-inverse, #fff);
 }
 .cat-icon {
   font-size: 40rpx;
@@ -351,13 +361,13 @@ onMounted(() => {
   min-width: 2rpx;
 }
 .diff-bar.easy {
-  background: #34d399;
+  background: var(--success);
 }
 .diff-bar.medium {
-  background: #fbbf24;
+  background: var(--warning, #fbbf24);
 }
 .diff-bar.hard {
-  background: #f87171;
+  background: var(--danger, #f87171);
 }
 
 .filter-bar {
@@ -378,9 +388,9 @@ onMounted(() => {
   border: 1px solid var(--border-color);
 }
 .filter-chip.selected {
-  background: #6366f1;
-  color: #fff;
-  border-color: #6366f1;
+  background: var(--primary, #6366f1);
+  color: var(--text-inverse, #fff);
+  border-color: var(--primary, #6366f1);
 }
 .filter-actions {
   margin-top: 8rpx;
@@ -393,8 +403,8 @@ onMounted(() => {
   font-weight: 500;
 }
 .action-btn.primary {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #fff;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light, #8b5cf6));
+  color: var(--text-inverse, #fff);
 }
 
 .question-list {
@@ -428,15 +438,15 @@ onMounted(() => {
 }
 .q-diff.easy {
   background: rgba(52, 211, 153, 0.1);
-  color: #059669;
+  color: var(--primary);
 }
 .q-diff.medium {
   background: rgba(251, 191, 36, 0.1);
-  color: #d97706;
+  color: var(--warning, #d97706);
 }
 .q-diff.hard {
   background: rgba(248, 113, 113, 0.1);
-  color: #dc2626;
+  color: var(--danger, #dc2626);
 }
 .q-source,
 .q-year {
@@ -486,5 +496,42 @@ onMounted(() => {
 }
 .bottom-spacer {
   height: 120rpx;
+}
+
+/* 暗色模式 */
+.dark-mode {
+  background: var(--bg-page, #0b0b0f);
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .navbar {
+  background: var(--bg-card, #1c1c1e);
+}
+.dark-mode .nav-title,
+.dark-mode .nav-back {
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .cat-card {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .cat-card.active {
+  background: linear-gradient(135deg, var(--primary, #4a90e2), var(--primary-light, #6ba3eb));
+}
+.dark-mode .filter-chip {
+  background: var(--bg-secondary, #2c2c2e);
+  color: var(--text-secondary, #8e8e93);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .filter-chip.selected {
+  background: var(--primary, #4a90e2);
+  color: #fff;
+  border-color: var(--primary, #4a90e2);
+}
+.dark-mode .q-item {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .action-btn.primary {
+  background: linear-gradient(135deg, var(--primary, #4a90e2), var(--primary-light, #6ba3eb));
 }
 </style>

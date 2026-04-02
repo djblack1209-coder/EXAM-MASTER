@@ -1,11 +1,11 @@
 <template>
-  <view :class="['knowledge-graph-page', { 'dark-mode': isDark }]">
+  <view :class="['knowledge-graph-page', { 'dark-mode': isDark, 'wot-theme-dark': isDark }]">
     <view class="aurora-bg" />
 
     <view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="handleBack">
-          <text class="back-icon"> ← </text>
+          <BaseIcon name="arrow-left" :size="36" />
         </view>
         <view class="nav-title-wrap">
           <text class="nav-title"> 知识图谱 </text>
@@ -49,16 +49,16 @@
       <!-- 智能学习推荐 -->
       <view v-if="recommendedTopic" class="recommended-topic apple-glass-card">
         <view class="recommended-header">
-          <text class="recommended-icon">[标]</text>
+          <text class="recommended-icon">标</text>
           <text class="recommended-title">推荐下一步学习</text>
         </view>
         <view class="recommended-body">
           <text class="recommended-name">{{ recommendedTopic.knowledgePoint }}</text>
           <text class="recommended-reason">{{ recommendedTopic.reason }}</text>
           <view class="recommended-mastery-bar">
-            <view class="recommended-mastery-fill" :style="{ width: recommendedTopic.mastery + '%' }" />
+            <view class="recommended-mastery-fill" :style="{ width: (recommendedTopic.mastery || 0) + '%' }" />
           </view>
-          <text class="recommended-mastery-label">当前掌握度 {{ recommendedTopic.mastery }}%</text>
+          <text class="recommended-mastery-label">当前掌握度 {{ recommendedTopic.mastery || 0 }}%</text>
         </view>
       </view>
 
@@ -75,7 +75,7 @@
             <view class="path-content">
               <text class="path-name">{{ item.knowledgePoint }}</text>
               <view class="path-mastery-bar">
-                <view class="path-mastery-fill" :style="{ width: item.mastery + '%' }" />
+                <view class="path-mastery-fill" :style="{ width: (item.mastery || 0) + '%' }" />
               </view>
             </view>
             <view class="path-badge">
@@ -90,7 +90,7 @@
       <scroll-view scroll-x class="action-strip" :show-scrollbar="false">
         <view
           class="action-strip-inner"
-          style="display: flex; gap: 16rpx; padding-right: 24rpx; align-items: center; white-space: nowrap"
+          style="display: flex; padding-right: 24rpx; align-items: center; white-space: nowrap"
         >
           <wd-button size="small" type="primary" plain @click="showMasteryStats">
             <BaseIcon name="chart-bar" :size="24" style="margin-right: 4rpx" />掌握分布
@@ -260,7 +260,7 @@
           <text class="panel-subtitle"> 掌握度 {{ selectedNode.mastery }}% </text>
         </view>
         <view class="panel-close" @tap="selectedNode = null">
-          <text>×</text>
+          <BaseIcon name="close" :size="32" />
         </view>
       </view>
 
@@ -305,7 +305,7 @@
         <view class="detail-stats" style="margin-bottom: 32rpx">
           <text style="font-size: 28rpx; color: var(--text-sub)">掌握度: {{ activeNodeData.mastery }}%</text>
         </view>
-        <view class="detail-actions" style="display: flex; gap: 16rpx">
+        <view class="detail-actions" style="display: flex">
           <wd-button block style="flex: 1" @click="goPractice(activeNodeData)">普通练习</wd-button>
           <wd-button type="warning" block style="flex: 1" @click="summonAITutor(activeNodeData)">
             召唤 AI 特训
@@ -336,7 +336,7 @@ import {
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { getStatusBarHeight } from '@/utils/core/system.js';
-import { getSmartStudyPath, getKnowledgeMapData, getNextRecommendedTopic } from '@/services/knowledge-engine.js';
+import { getSmartStudyPath, getKnowledgeMapData, getNextRecommendedTopic } from './knowledge-engine.js';
 
 export default {
   components: { BaseIcon },
@@ -419,6 +419,11 @@ export default {
 
   onUnload() {
     uni.$off('themeUpdate', this._themeHandler);
+    // 清理所有待执行的定时器
+    if (this._pendingTimers) {
+      this._pendingTimers.forEach((t) => clearTimeout(t));
+      this._pendingTimers = [];
+    }
   },
 
   methods: {
@@ -434,13 +439,15 @@ export default {
     summonAITutor(node) {
       if (!node) return;
       toast.loading('AI 导师组卷中...');
-      setTimeout(() => {
+      if (!this._pendingTimers) this._pendingTimers = [];
+      const t = setTimeout(() => {
         toast.hide();
         uni.navigateTo({
           url: `/pages/practice-sub/do-quiz?mode=ai_tutor&topic=${encodeURIComponent(node.title)}`
         });
         this.detailModalVisible = false;
       }, 1500);
+      this._pendingTimers.push(t);
     },
     initData() {
       this.statusBarHeight = getStatusBarHeight();
@@ -466,8 +473,8 @@ export default {
         // 获取图谱可视化数据
         const graphData = getGraphData();
 
-        // 转换节点数据格式
-        this.knowledgeNodes = graphData.nodes.map((node, _index) => ({
+        // 转换节点数据格式 [AUDIT R300] 防止 nodes 为 undefined 导致 TypeError
+        this.knowledgeNodes = (graphData.nodes || []).map((node, _index) => ({
           id: node.id,
           title: node.name,
           count: node.value || 0,
@@ -481,8 +488,8 @@ export default {
           category: node.category
         }));
 
-        // 获取边数据
-        this.graphEdges = graphData.edges;
+        // 获取边数据 [AUDIT R300] 防止 edges 为 undefined
+        this.graphEdges = graphData.edges || [];
 
         // 获取薄弱知识点
         this.weakNodes = getWeakNodes(5);
@@ -984,8 +991,8 @@ export default {
     // 生成学习计划
     generateLearningPlan() {
       toast.loading('生成学习计划...');
-
-      setTimeout(() => {
+      if (!this._pendingTimers) this._pendingTimers = [];
+      const t = setTimeout(() => {
         try {
           const plan = generatePersonalizedPlan({
             duration: 30,
@@ -1004,6 +1011,7 @@ export default {
           toast.info('生成失败，请重试');
         }
       }, 1000);
+      this._pendingTimers.push(t);
     }
   }
 };
@@ -1396,7 +1404,7 @@ export default {
 .center-subtitle {
   width: 150rpx;
   text-align: center;
-  font-size: 20rpx;
+  font-size: 22rpx;
   line-height: 1.4;
   color: var(--text-sub);
 }
@@ -1496,7 +1504,7 @@ export default {
 
 .progress-text,
 .node-count {
-  font-size: 19rpx;
+  font-size: 22rpx;
   color: var(--text-sub);
 }
 
@@ -1535,14 +1543,14 @@ export default {
 
 .child-title {
   margin-top: 6rpx;
-  font-size: 18rpx;
+  font-size: 22rpx;
   line-height: 1.2;
   color: var(--text-main);
 }
 
 .child-mastery {
   margin-top: 4rpx;
-  font-size: 18rpx;
+  font-size: 22rpx;
   color: var(--text-sub);
 }
 
@@ -1570,25 +1578,26 @@ export default {
 }
 
 .legend-dot {
+  margin-right: 12rpx;
   width: 18rpx;
   height: 18rpx;
   border-radius: 50%;
 }
 
 .legend-dot.weak {
-  background: #ef4444;
+  background: var(--danger);
 }
 
 .legend-dot.learning {
-  background: #f59e0b;
+  background: var(--warning);
 }
 
 .legend-dot.solid {
-  background: #3b82f6;
+  background: var(--primary);
 }
 
 .legend-dot.master {
-  background: #10b981;
+  background: var(--success);
 }
 
 .legend-text,
@@ -1609,7 +1618,7 @@ export default {
   font-size: 56rpx;
   line-height: 1;
   font-weight: 720;
-  color: var(--ds-color-error, #ff3b30);
+  color: var(--danger);
 }
 
 .weak-next {
@@ -1739,6 +1748,10 @@ export default {
   margin-top: 18rpx;
 }
 
+.panel-btn + .panel-btn {
+  margin-left: 12rpx;
+}
+
 .panel-btn {
   flex: 1;
   text-align: center;
@@ -1776,7 +1789,7 @@ export default {
 }
 
 .dark-mode {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
 }
 
 .dark-mode .aurora-bg {
@@ -1964,7 +1977,7 @@ export default {
   font-size: 24rpx;
   font-weight: 700;
   background: var(--primary);
-  color: white;
+  color: var(--text-inverse);
 }
 .path-status-blocked .path-index {
   background: var(--text-tertiary);

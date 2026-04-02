@@ -1165,7 +1165,7 @@ onUnmounted(() => {
 .bg-circle-2 {
   width: 300rpx;
   height: 300rpx;
-  background: var(--brand-hover, #5ac78f);
+  background: var(--brand-hover, #157141);
   bottom: 200rpx;
   left: -150rpx;
 }
@@ -1173,7 +1173,7 @@ onUnmounted(() => {
 .bg-circle-3 {
   width: 200rpx;
   height: 200rpx;
-  background: var(--brand-active, #7bc653);
+  background: var(--brand-active, #0d522e);
   bottom: -50rpx;
   right: 100rpx;
 }
@@ -1268,19 +1268,19 @@ onUnmounted(() => {
 }
 
 .wechat-icon {
-  background: linear-gradient(135deg, #07c160 0%, #06ad56 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--wise-green-dark) 100%);
 }
 
 .qq-icon {
-  background: linear-gradient(135deg, #12b7f5 0%, #0099ff 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
 }
 
 .e2e-icon {
-  background: linear-gradient(135deg, #5c6bc0 0%, #3949ab 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
 }
 
 .email-icon {
-  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
   font-size: 36rpx;
 }
 
@@ -1479,7 +1479,7 @@ onUnmounted(() => {
 
 .checkbox text {
   font-size: 24rpx;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .agreement-text {
@@ -1519,10 +1519,15 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-/* Checkbox touch target */
+/* Checkbox touch target — 最小点击区域 44px（88rpx） */
 .checkbox-wrapper {
+  min-height: 88rpx;
+  min-width: 88rpx;
   padding: 12rpx;
   margin: -8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Final polish: login page unified with Apple / Liquid Glass */
@@ -1649,22 +1654,22 @@ onUnmounted(() => {
 
 .wechat-icon {
   background: rgba(52, 199, 89, 0.14);
-  color: #1f7a33;
+  color: var(--primary);
 }
 
 .qq-icon {
   background: rgba(10, 132, 255, 0.14);
-  color: #0a84ff;
+  color: var(--primary);
 }
 
 .e2e-icon {
   background: rgba(88, 86, 214, 0.14);
-  color: #5856d6;
+  color: var(--primary);
 }
 
 .email-icon {
   background: rgba(255, 159, 10, 0.14);
-  color: #b56a00;
+  color: var(--warning);
 }
 
 .dark-mode .wechat-icon,

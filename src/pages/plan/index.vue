@@ -215,7 +215,10 @@
             <view class="ta<REDACTED_SECRET>" :style="{ width: (plan.progress || 0) + '%' }" />
           </view>
           <text class="ta<REDACTED_SECRET>">
-            {{ plan.tasks.filter((t) => t.completed).length }}/{{ plan.tasks.length }} 个任务
+            {{ plan.tasks ? plan.tasks.reduce((n, t) => n + (t.completed ? 1 : 0), 0) : 0 }}/{{
+              plan.tasks ? plan.tasks.length : 0
+            }}
+            个任务
           </text>
         </view>
 
@@ -319,7 +322,12 @@ export default {
       }
     },
     async loadIntelligentReminders() {
-      this.intelligentReminders = await intelligentPlanManager.getIntelligentReminders();
+      try {
+        this.intelligentReminders = await intelligentPlanManager.getIntelligentReminders();
+      } catch {
+        // 智能提醒加载失败不影响主流程，静默降级
+        this.intelligentReminders = [];
+      }
     },
 
     /** AI 自适应7天计划 — 调用后端 generate_plan API */
@@ -400,12 +408,12 @@ export default {
       const tasksDone = plan.tasks ? plan.tasks.filter((t) => t.completed).length : 0;
       const tasksTotal = plan.tasks ? plan.tasks.length : 0;
       const lines = [
-        `[计划] ${plan.name}`,
-        `[目标] 目标：${plan.goal || '未设置'}`,
-        `[日期] ${plan.startDate} → ${plan.endDate}`,
-        `[时长] 每日 ${plan.dailyDuration || '未设置'}`,
-        tasksTotal > 0 ? `[进度] 任务进度：${tasksDone}/${tasksTotal}` : null,
-        plan.analytics ? `[趋势] 完成率：${plan.analytics.completionRate}%` : null
+        plan.name,
+        `目标：${plan.goal || '未设置'}`,
+        `${plan.startDate} → ${plan.endDate}`,
+        `每日 ${plan.dailyDuration || '未设置'}`,
+        tasksTotal > 0 ? `任务进度：${tasksDone}/${tasksTotal}` : null,
+        plan.analytics ? `完成率：${plan.analytics.completionRate}%` : null
       ]
         .filter(Boolean)
         .join('\n');
@@ -574,7 +582,7 @@ export default {
 .section-eyebrow {
   display: block;
   margin-bottom: 10rpx;
-  font-size: 22rpx;
+  font-size: 24rpx;
   letter-spacing: 3rpx;
   text-transform: uppercase;
   color: var(--text-secondary);
@@ -667,7 +675,7 @@ export default {
 }
 
 .reminder-time {
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: var(--text-sub);
 }
 
@@ -698,7 +706,7 @@ export default {
 
 .plan-badge-text,
 .tag-text {
-  font-size: 20rpx;
+  font-size: 24rpx;
   font-weight: 700;
 }
 
@@ -974,7 +982,7 @@ export default {
 
 /* AI 自适应计划 */
 .ai-plan-section {
-  margin: 0 20px 20px;
+  margin: 0 0 30rpx 0;
 }
 .ai-plan-loading {
   text-align: center;

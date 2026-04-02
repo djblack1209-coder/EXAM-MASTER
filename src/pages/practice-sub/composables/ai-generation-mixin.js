@@ -501,7 +501,7 @@ export const aiGenerationMixin = {
 
     clearAll() {
       uni.showModal({
-        title: '[警告] 危险操作',
+        title: '危险操作',
         content: '确定清空所有题库吗？此操作不可恢复！\n\n建议：清空前请确保已备份数据。',
         confirmColor: '#FF3B30',
         success: (res) => {

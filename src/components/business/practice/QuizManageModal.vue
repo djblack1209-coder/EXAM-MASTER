@@ -5,7 +5,9 @@
       <view class="modal-header">
         <text class="modal-title"> 题库管理 </text>
         <view class="modal-close apple-glass-pill" @tap="$emit('close')">
-          <text class="modal-close-icon"> &times; </text>
+          <text class="modal-close-icon">
+            <BaseIcon name="close" :size="24" />
+          </text>
         </view>
       </view>
       <view class="modal-body">

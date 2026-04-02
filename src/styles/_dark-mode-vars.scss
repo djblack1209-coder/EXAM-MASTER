@@ -1,103 +1,117 @@
 /**
  * 深色模式 CSS 变量定义（单一来源）
- * 解决 App.vue 中深色模式变量重复定义3次的问题
+ * Bitget-Dark 主题：赛博朋克/交易所风格
+ * 主色：霓虹青 #00E0FF | 强调色：霓虹紫 #9B51E0
  * 通过 @mixin 在 @media、.dark、.dark-mode 三处复用
  */
 
 @mixin dark-mode-vars {
-  /* ====== 核心变量（黑色 + 蓝色） ====== */
-  --background: #0b0b0f;
-  --foreground: #f5f5f7;
-  --card: #1c1c1e;
-  --card-foreground: #f5f5f7;
-  --primary: #0a84ff;
-  --primary-foreground: #ffffff;
-  --muted: #2c2c2e;
-  --muted-foreground: #9a9aa1;
-  --border: #3a3a3c;
-  --brand: #0a84ff;
-  --brand-color: #0a84ff;
-  --brand-hover: #2b95ff;
-  --brand-active: #0069d9;
-  --brand-glow: rgba(10, 132, 255, 0.35);
-  --glass-bg: rgba(28, 28, 30, 0.74);
-  --glass-border: rgba(255, 255, 255, 0.14);
-  --text-tertiary: #8b8b92;
-  --text-inverse: var(--primary-foreground);
+  /* ====== 核心变量（Bitget-Dark 赛博朋克风格） ====== */
+  --background: #1a1c23; /* 页面背景：深蓝黑（非纯黑，更有层次） */
+  --foreground: #ffffff; /* 主文字：纯白 */
+  --card: #22252d; /* 卡片背景：暗灰（与背景拉开层次） */
+  --card-foreground: #ffffff;
+  --primary: #00e0ff; /* 品牌主色：霓虹青 */
+  --primary-foreground: #1a1c23; /* 霓虹青上的文字用深色 */
+  --muted: #2a2d36; /* 弱化背景：深灰 */
+  --muted-foreground: #9ca3af; /* 弱化文字：浅灰 */
+  --border: #3a3d47; /* 边框：暗灰 */
+  --brand: #00e0ff; /* 品牌色：霓虹青 */
+  --brand-color: #00e0ff;
+  --brand-hover: #33e8ff; /* 悬停态：更亮的青 */
+  --brand-active: #00b8d4; /* 按下态：稍暗的青 */
+  --brand-glow: rgba(0, 224, 255, 0.35); /* 品牌光晕 */
+  --accent: #9b51e0; /* 新增：霓虹紫强调色 */
+  --glass-bg: rgba(34, 37, 45, 0.74); /* 毛玻璃背景 */
+  --glass-border: rgba(0, 224, 255, 0.14); /* 毛玻璃边框：带霓虹青色调 */
+  --text-tertiary: #6b7280;
+  --text-inverse: #1a1c23;
   --text-primary-foreground: var(--primary-foreground);
   --color-primary: var(--brand-color);
-  --color-primary-dark: #0069d9;
+  --color-primary-dark: #00b8d4;
   --theme-primary: var(--brand-color);
   --theme-text: var(--text-main);
   --theme-text-secondary: var(--text-sub);
   --theme-border: var(--border-color);
   --theme-card-bg: var(--bg-card);
   --theme-bg-secondary: var(--bg-secondary);
-  --theme-bg-elevated: #2c2c2e;
-  --theme-primary-light: rgba(10, 132, 255, 0.22);
+  --theme-bg-elevated: #2a2d36;
+  --theme-primary-light: rgba(0, 224, 255, 0.22);
   --danger-red: var(--danger);
   --success-green: var(--success);
   --info-blue: var(--info);
-  --danger-light: rgba(239, 68, 68, 0.16);
+  --danger-light: rgba(248, 113, 113, 0.16);
   --overlay: rgba(0, 0, 0, 0.62);
   --mask-dark: rgba(0, 0, 0, 0.74);
   --bg-overlay: rgba(0, 0, 0, 0.62);
-  --bg-card-alpha: rgba(28, 28, 30, 0.84);
-  --shadow-success: 0 10rpx 30rpx rgba(10, 132, 255, 0.28);
-  --shadow-danger: 0 10rpx 30rpx rgba(239, 68, 68, 0.22);
+  --bg-card-alpha: rgba(34, 37, 45, 0.84);
+  --shadow-success: 0 10rpx 30rpx rgba(0, 224, 255, 0.28);
+  --shadow-danger: 0 10rpx 30rpx rgba(248, 113, 113, 0.22);
   --bg-body: var(--bg-page);
   --card-bg: var(--bg-card);
-  --bg-tertiary: #2c2c2e;
-  --accent-warm: #ff9f0a;
-  --accent-cool: #64d2ff;
-  --accent-energy: #0a84ff;
+  --bg-tertiary: #2a2d36;
+  --accent-warm: #f59e0b;
+  --accent-cool: #00e0ff;
+  --accent-energy: #00e0ff;
   --skeleton-bg: rgba(255, 255, 255, 0.08);
   --skeleton-line: rgba(255, 255, 255, 0.14);
-  --skeleton-highlight: rgba(255, 255, 255, 0.18);
-  --brand-tint: rgba(10, 132, 255, 0.14);
-  --brand-tint-strong: rgba(10, 132, 255, 0.26);
-  --brand-tint-subtle: rgba(10, 132, 255, 0.08);
-  --shadow-brand-sm: 0 8rpx 18rpx rgba(10, 132, 255, 0.26);
-  --shadow-brand: 0 12rpx 30rpx rgba(10, 132, 255, 0.32);
-  --shadow-brand-strong: 0 16rpx 38rpx rgba(10, 132, 255, 0.38);
+  --skeleton-highlight: rgba(0, 224, 255, 0.12);
+  --brand-tint: rgba(0, 224, 255, 0.14);
+  --brand-tint-strong: rgba(0, 224, 255, 0.26);
+  --brand-tint-subtle: rgba(0, 224, 255, 0.08);
+  --shadow-brand-sm: 0 8rpx 18rpx rgba(0, 224, 255, 0.26);
+  --shadow-brand: 0 12rpx 30rpx rgba(0, 224, 255, 0.32);
+  --shadow-brand-strong: 0 16rpx 38rpx rgba(0, 224, 255, 0.38);
+  --neon-glow: 0 0 12rpx rgba(0, 224, 255, 0.5), 0 0 32rpx rgba(0, 224, 255, 0.2); /* 霓虹发光效果 */
+  --neon-glow-purple: 0 0 12rpx rgba(155, 81, 224, 0.5), 0 0 32rpx rgba(155, 81, 224, 0.2); /* 紫色霓虹发光 */
   --cta-primary-bg: var(--gradient-primary);
-  --cta-primary-text: #ffffff;
+  --cta-primary-text: #1a1c23; /* 霓虹青按钮上用深色文字 */
   --cta-primary-border: transparent;
   --cta-primary-shadow: var(--shadow-brand);
-  --apple-glass-nav-bg: rgba(16, 18, 24, 0.76);
-  --apple-glass-card-bg: rgba(24, 26, 34, 0.72);
-  --apple-glass-pill-bg: rgba(34, 38, 48, 0.84);
-  --apple-group-bg: rgba(28, 28, 30, 0.82);
-  --apple-glass-border-strong: rgba(255, 255, 255, 0.16);
-  --apple-specular-line: rgba(255, 255, 255, 0.2);
-  --apple-specular-soft: rgba(255, 255, 255, 0.08);
+  --apple-glass-nav-bg: rgba(26, 28, 35, 0.76);
+  --apple-glass-card-bg: rgba(34, 37, 45, 0.72);
+  --apple-glass-pill-bg: rgba(42, 45, 54, 0.84);
+  --apple-group-bg: rgba(34, 37, 45, 0.82);
+  --apple-glass-border-strong: rgba(0, 224, 255, 0.16);
+  --apple-specular-line: rgba(0, 224, 255, 0.12);
+  --apple-specular-soft: rgba(255, 255, 255, 0.06);
   --apple-divider: rgba(255, 255, 255, 0.08);
   --apple-shadow-floating: 0 22rpx 54rpx rgba(0, 0, 0, 0.46);
   --apple-shadow-surface: 0 16rpx 40rpx rgba(0, 0, 0, 0.34);
   --apple-shadow-card: 0 10rpx 28rpx rgba(0, 0, 0, 0.28);
-  --apple-chromatic-blue: rgba(10, 132, 255, 0.08);
-  --apple-chromatic-pink: rgba(255, 100, 200, 0.06);
-  --apple-chromatic-green: rgba(100, 255, 180, 0.04);
+  --apple-chromatic-blue: rgba(0, 224, 255, 0.08); /* 霓虹青色散 */
+  --apple-chromatic-pink: rgba(155, 81, 224, 0.06); /* 霓虹紫色散 */
+  --apple-chromatic-green: rgba(52, 211, 153, 0.04);
 
   /* ====== 语义化别名 ====== */
   --bg-page: var(--background);
   --bg-card: var(--card);
-  --bg-secondary: #1c1c1e;
+  --bg-secondary: #22252d;
   --bg-glass: var(--glass-bg);
-  --page-gradient-top: #0b0b0f;
-  --page-gradient-mid: #111a2a;
-  --page-gradient-bottom: #0b0b0f;
+  --page-gradient-top: #1a1c23;
+  --page-gradient-mid: #1e2029;
+  --page-gradient-bottom: #1a1c23;
   --text-main: var(--foreground);
   --text-primary: var(--foreground);
   --text-sub: var(--muted-foreground);
   --text-secondary: var(--muted-foreground);
   --border-color: var(--border);
-  --primary-light: rgba(10, 132, 255, 0.2);
-  --success-light: rgba(16, 185, 129, 0.2);
+  --primary-light: rgba(0, 224, 255, 0.2);
+  --success-light: rgba(52, 211, 153, 0.2);
   --warning-light: rgba(245, 158, 11, 0.2);
-  --gradient-primary: linear-gradient(135deg, #0a84ff 0%, #5ac8fa 100%);
+  --gradient-primary: linear-gradient(135deg, #00e0ff 0%, #9b51e0 100%); /* 霓虹青 → 霓虹紫渐变 */
 
-  /* 阴影系统（Apple 深色更柔和） */
+  /* ====== 功能色（Bitget-Dark 风格） ====== */
+  --success: #34d399; /* 翡翠绿 */
+  --warning: #f59e0b; /* 琥珀橙 */
+  --danger: #f87171; /* 浅红（暗色模式下更柔和） */
+  --info: #00e0ff; /* 霓虹青 */
+  --wise-blue: #00e0ff; /* 替代原 wise-green */
+  --wise-blue-dark: #00b8d4;
+  --wise-green: #00e0ff; /* 兼容别名：映射到 wise-blue */
+  --wise-green-dark: #00b8d4; /* 兼容别名 */
+
+  /* 阴影系统（深色模式更深沉） */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.32);
   --shadow-lg: 0 10px 26px rgba(0, 0, 0, 0.42);

@@ -7,21 +7,14 @@
       <view class="ring-wrapper">
         <svg viewBox="0 0 100 100" class="ring-svg">
           <!-- 轨道（背景圆环） -->
-          <circle
-            cx="50"
-            cy="50"
-            r="40"
-            fill="none"
-            :stroke="isDark ? 'rgba(255,255,255,0.1)' : '#e8e8ed'"
-            stroke-width="6"
-          />
+          <circle cx="50" cy="50" r="40" fill="none" stroke-width="6" :style="{ stroke: 'var(--border, #e2e8f0)' }" />
           <!-- 进度弧线 -->
           <circle
             cx="50"
             cy="50"
             r="40"
             fill="none"
-            :stroke="progressColor"
+            :style="{ stroke: 'var(--primary, #4a90e2)' }"
             stroke-width="6"
             stroke-linecap="round"
             :stroke-dasharray="circumference"
@@ -50,7 +43,7 @@
     <!-- 下半部分：CTA 按钮 -->
     <view class="goal-cta" hover-class="cta-hover" @tap="handleStartPractice">
       <text class="cta-text">{{ todayQuestions > 0 ? '继续练习' : '开始练习' }}</text>
-      <text class="cta-arrow">→</text>
+      <BaseIcon name="arrow-right" :size="28" class="cta-arrow-icon" />
     </view>
   </view>
 </template>
@@ -61,6 +54,7 @@
  * 展示今日答题进度、连续学习天数，并提供快速练习入口
  */
 import { computed } from 'vue';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 const props = defineProps({
   /** 今日已答题数 */
@@ -84,18 +78,13 @@ const percentage = computed(() => {
   return Math.min(100, Math.round((props.todayQuestions / props.dailyGoal) * 100));
 });
 
-/** 是否已达成目标 */
-const isComplete = computed(() => percentage.value >= 100);
-
 /** 进度弧线的 dashoffset 值（控制弧长） */
 const dashOffset = computed(() => {
   return circumference * (1 - percentage.value / 100);
 });
 
-/** 进度弧线颜色：达成目标时变为更鲜明的绿色 */
-const progressColor = computed(() => {
-  return isComplete.value ? '#34c759' : '#34d399';
-});
+// 进度弧线和轨道颜色现在通过模板中的 CSS 变量 inline style 控制，
+// 不再需要 JS 计算颜色值。SVG stroke 通过 :style 绑定使用 CSS 变量。
 
 /** 点击练习按钮 */
 function handleStartPractice() {
@@ -129,8 +118,8 @@ function handleStartPractice() {
 
 /* 深色模式 */
 .daily-goal-ring.dark {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(30, 30, 40, 0.65);
+  border-color: var(--border);
+  background: var(--bg-card);
 }
 
 /* ==================== 上半部分：环 + 信息 ==================== */
@@ -186,11 +175,11 @@ function handleStartPractice() {
 }
 
 .dark .ring-percent {
-  color: var(--text-inverse);
+  color: var(--text-primary);
 }
 
 .dark .ring-percent-sign {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-sub);
 }
 
 /* ==================== 右侧：文字统计 ==================== */
@@ -208,7 +197,7 @@ function handleStartPractice() {
 }
 
 .dark .goal-title {
-  color: var(--text-inverse);
+  color: var(--text-primary);
 }
 
 .goal-detail {
@@ -218,7 +207,7 @@ function handleStartPractice() {
 }
 
 .dark .goal-detail {
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--text-sub);
 }
 
 .streak-row {
@@ -243,7 +232,7 @@ function handleStartPractice() {
   justify-content: center;
   padding: 22rpx 0;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, var(--success), var(--success-dark, #059669));
+  background: linear-gradient(135deg, var(--primary), var(--brand-active, #3a7bd5));
   transition: all 0.25s ease;
 }
 
@@ -259,8 +248,8 @@ function handleStartPractice() {
   margin-right: 8rpx;
 }
 
-.cta-arrow {
-  font-size: 30rpx;
-  color: rgba(255, 255, 255, 0.85);
+.cta-arrow-icon {
+  color: var(--text-inverse);
+  opacity: 0.85;
 }
 </style>

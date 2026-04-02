@@ -8,7 +8,7 @@
     <view v-else>
       <view class="fsrs-header">
         <view class="fsrs-title-row">
-          <text class="fsrs-icon">[智能]</text>
+          <text class="fsrs-icon">智能</text>
           <text class="fsrs-title">记忆模型</text>
           <view v-if="status.has_custom_params" class="fsrs-badge">已个性化</view>
         </view>
@@ -74,7 +74,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useReviewStore } from '@/stores/modules/review.js';
-import { loadUserFSRSParams } from '@/pages/practice-sub/utils/mistake-fsrs-scheduler';
+import { loadUserFSRSParams } from './utils/mistake-fsrs-scheduler';
 import { toast } from '@/utils/toast.js';
 
 const reviewStore = useReviewStore();
@@ -185,7 +185,7 @@ onMounted(async () => {
 
 <style scoped>
 .fsrs-card {
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 20rpx;
@@ -198,8 +198,11 @@ onMounted(async () => {
 .fsrs-title-row {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  /* gap: 12rpx; */
   margin-bottom: 8rpx;
+}
+.fsrs-title-row > view + view {
+  margin-left: 12rpx;
 }
 .fsrs-icon {
   font-size: 36rpx;
@@ -207,18 +210,18 @@ onMounted(async () => {
 .fsrs-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--text-main);
 }
 .fsrs-badge {
   font-size: 20rpx;
-  color: #6366f1;
-  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  background: var(--primary-light);
   padding: 4rpx 16rpx;
   border-radius: 20rpx;
 }
 .fsrs-subtitle {
   font-size: 24rpx;
-  color: #8b8fa3;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -227,19 +230,19 @@ onMounted(async () => {
 }
 .fsrs-progress-bar {
   height: 12rpx;
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--muted);
   border-radius: 6rpx;
   overflow: hidden;
 }
 .fsrs-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  background: var(--primary);
   border-radius: 6rpx;
   transition: width 0.6s ease;
 }
 .fsrs-progress-text {
   font-size: 22rpx;
-  color: #8b8fa3;
+  color: var(--text-secondary);
   margin-top: 8rpx;
 }
 
@@ -254,19 +257,22 @@ onMounted(async () => {
 }
 .fsrs-curve-title {
   font-size: 26rpx;
-  color: #1a1a2e;
+  color: var(--text-main);
   font-weight: 500;
 }
 .fsrs-retention-value {
   font-size: 22rpx;
-  color: #6366f1;
+  color: var(--primary);
 }
 .fsrs-curve-chart {
   display: flex;
   align-items: flex-end;
-  gap: 4rpx;
+  /* gap: 4rpx; */
   height: 120rpx;
   padding: 0 4rpx;
+}
+.fsrs-curve-chart > view + view {
+  margin-left: 4rpx;
 }
 .fsrs-bar {
   flex: 1;
@@ -281,7 +287,7 @@ onMounted(async () => {
 }
 .fsrs-curve-label {
   font-size: 20rpx;
-  color: #b0b3c6;
+  color: var(--text-tertiary);
 }
 
 .fsrs-action {
@@ -294,14 +300,14 @@ onMounted(async () => {
   text-align: center;
   font-size: 28rpx;
   font-weight: 500;
-  color: #fff;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: var(--text-inverse);
+  background: var(--primary);
   border-radius: 16rpx;
   border: none;
 }
 .fsrs-btn-disabled {
-  background: #e5e7eb;
-  color: #9ca3af;
+  background: var(--muted);
+  color: var(--text-tertiary);
 }
 /* 初始加载状态 */
 .fsrs-loading {
@@ -312,6 +318,13 @@ onMounted(async () => {
 }
 .fsrs-loading-text {
   font-size: 26rpx;
-  color: #8b8fa3;
+  color: var(--text-secondary);
+}
+.dark-mode .fsrs-card {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .fsrs-title {
+  color: var(--text-primary, #f5f5f7);
 }
 </style>

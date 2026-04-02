@@ -10,7 +10,7 @@
     <view v-if="!isLoading" class="header-nav">
       <view :style="{ height: statusBarHeight + 'px' }" />
       <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <text class="nav-back" @tap="handleBack"> ← </text>
+        <view class="nav-back" @tap="handleBack"><BaseIcon name="arrow-left" :size="36" /></view>
         <text class="nav-title"> 智能择校助手 </text>
         <view class="nav-placeholder" />
       </view>
@@ -157,7 +157,7 @@
               <text :class="{ 'placeholder-text': !formData.englishCert }">
                 {{ formData.englishCert || '点击选择英语证明（可选）' }}
               </text>
-              <text class="picker-arrow"> ▼ </text>
+              <BaseIcon name="chevron-down" :size="24" />
             </view>
           </picker>
         </view>
@@ -202,7 +202,7 @@
             <text class="ds-text-xs ds-font-medium">
               {{ activeFilterCount > 0 ? `已选(${activeFilterCount})` : '筛选' }}
             </text>
-            <text class="filter-arrow"> ▼ </text>
+            <BaseIcon name="chevron-down" :size="24" />
           </view>
         </view>
 
@@ -554,6 +554,49 @@ export default {
       }
     };
   },
+  computed: {
+    // 第一步表单验证：学历已选、毕业院校和专业都已填写
+    canGoToStep2() {
+      const schoolValid = this.formData.school && this.formData.school.trim().length > 0;
+      const majorValid = this.formData.currentMajor && this.formData.currentMajor.trim().length > 0;
+      // 额外验证：院校名称格式
+      const schoolFormatValid =
+        schoolValid && /^[\u4e00-\u9fa5a-zA-Z0-9\s\-·()（）]+$/.test(this.formData.school.trim());
+      return schoolFormatValid && majorValid;
+    },
+    // 第二步表单验证：报考院校和专业都已填写
+    canSubmit() {
+      const targetSchoolValid = this.formData.targetSchool && this.formData.targetSchool.trim().length > 0;
+      const targetMajorValid = this.formData.targetMajor && this.formData.targetMajor.trim().length > 0;
+      // 额外验证：报考院校名称格式
+      const targetSchoolFormatValid =
+        targetSchoolValid && /^[\u4e00-\u9fa5a-zA-Z0-9\s\-·()（）]+$/.test(this.formData.targetSchool.trim());
+      return targetSchoolFormatValid && targetMajorValid;
+    },
+    // 是否有激活的筛选条件
+    hasActiveFilter() {
+      return this.filter.location || this.filter.tag;
+    },
+    filteredSchools() {
+      return this.schoolList.filter((school) => {
+        const matchLoc = this.filter.location ? school.location === this.filter.location : true;
+        const matchTag = this.filter.tag ? (school.tags || []).includes(this.filter.tag) : true;
+        return matchLoc && matchTag;
+      });
+    },
+    activeFilterCount() {
+      let c = 0;
+      if (this.filter.location) c++;
+      if (this.filter.tag) c++;
+      return c;
+    }
+  },
+  watch: {},
+  // 错误边界：捕获子组件运行时错误，防止整个页面白屏
+  errorCaptured(err, instance, info) {
+    logger.error('[择校] 子组件运行时错误:', err?.message || err, '| 来源:', info);
+    return false;
+  },
 
   // [F2-FIX] 微信分享配置
   onShareAppMessage() {
@@ -607,45 +650,12 @@ export default {
     uni.$off('themeUpdate', this._themeHandler);
     // 问题53：移除网络监听
     uni.offNetworkStatusChange && uni.offNetworkStatusChange();
-  },
-  computed: {
-    // 第一步表单验证：学历已选、毕业院校和专业都已填写
-    canGoToStep2() {
-      const schoolValid = this.formData.school && this.formData.school.trim().length > 0;
-      const majorValid = this.formData.currentMajor && this.formData.currentMajor.trim().length > 0;
-      // 额外验证：院校名称格式
-      const schoolFormatValid =
-        schoolValid && /^[\u4e00-\u9fa5a-zA-Z0-9\s\-·()（）]+$/.test(this.formData.school.trim());
-      return schoolFormatValid && majorValid;
-    },
-    // 第二步表单验证：报考院校和专业都已填写
-    canSubmit() {
-      const targetSchoolValid = this.formData.targetSchool && this.formData.targetSchool.trim().length > 0;
-      const targetMajorValid = this.formData.targetMajor && this.formData.targetMajor.trim().length > 0;
-      // 额外验证：报考院校名称格式
-      const targetSchoolFormatValid =
-        targetSchoolValid && /^[\u4e00-\u9fa5a-zA-Z0-9\s\-·()（）]+$/.test(this.formData.targetSchool.trim());
-      return targetSchoolFormatValid && targetMajorValid;
-    },
-    // 是否有激活的筛选条件
-    hasActiveFilter() {
-      return this.filter.location || this.filter.tag;
-    },
-    filteredSchools() {
-      return this.schoolList.filter((school) => {
-        const matchLoc = this.filter.location ? school.location === this.filter.location : true;
-        const matchTag = this.filter.tag ? (school.tags || []).includes(this.filter.tag) : true;
-        return matchLoc && matchTag;
-      });
-    },
-    activeFilterCount() {
-      let c = 0;
-      if (this.filter.location) c++;
-      if (this.filter.tag) c++;
-      return c;
+    // [AUDIT R295] 清理可能残留的 AI 分析超时定时器
+    if (this._pendingTimers) {
+      this._pendingTimers.forEach((t) => clearTimeout(t));
+      this._pendingTimers = [];
     }
   },
-  watch: {},
   methods: {
     resetAnalysisMeta() {
       this.analysisMeta = {
@@ -854,7 +864,7 @@ export default {
           this.applySchoolList(freshCache, true);
           this.lastSyncTime = cachedTime;
           logger.log(
-            `[school] ✅ 缓存未过期（${Math.round((Date.now() - cachedTime) / 1000)}s），使用本地缓存 ${freshCache.length} 所院校`
+            `[school] 缓存未过期（${Math.round((Date.now() - cachedTime) / 1000)}s），使用本地缓存 ${freshCache.length} 所院校`
           );
           return;
         }
@@ -1042,6 +1052,8 @@ export default {
       let isTimeoutHandled = false;
 
       // 设置超时保护（20秒后自动取消Loading，优化用户体验）
+      // [AUDIT R295] 使用实例属性追踪定时器，以便 onUnload 可以清理
+      if (!this._pendingTimers) this._pendingTimers = [];
       let loadingTimeout = setTimeout(() => {
         if (isTimeoutHandled) {
           logger.log('[school] ⏱️ 超时处理已执行，跳过重复处理');
@@ -1062,6 +1074,7 @@ export default {
         logger.log('[school] ✅ 超时：切换到结果页面 (Step 3)，显示空状态');
         loadingTimeout = null;
       }, 20000); // 20秒超时
+      this._pendingTimers.push(loadingTimeout);
 
       try {
         logger.log('[school] 🤖 调用后端代理进行择校匹配...');
@@ -1427,7 +1440,7 @@ export default {
   --accent-warm-shadow: rgba(0, 169, 109, 0.3);
 
   /* 状态色 */
-  --error: #ff3b30;
+  --error: var(--danger);
 
   min-height: 100%;
 
@@ -1694,6 +1707,10 @@ export default {
   margin-top: 60rpx;
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
+}
+
+.btn-group .secondary-btn {
+  margin-right: 20rpx;
 }
 
 .secondary-btn {
@@ -1964,6 +1981,8 @@ export default {
   }
 
   .tag-item {
+    margin-right: 12rpx;
+    margin-bottom: 8rpx;
     font-size: 20rpx;
     color: var(--text-primary);
     background: rgba(255, 255, 255, 0.62);
@@ -2086,6 +2105,10 @@ export default {
   display: flex;
   /* gap: 24rpx; -- replaced for Android WebView compat */
   margin-top: 24rpx;
+}
+
+.cf-btn + .cf-btn {
+  margin-left: 24rpx;
 }
 
 .cf-btn {
@@ -2241,6 +2264,8 @@ export default {
 }
 
 .ft-item {
+  margin-right: 20rpx;
+  margin-bottom: 20rpx;
   background: rgba(255, 255, 255, 0.6);
   padding: 16rpx 32rpx;
   border-radius: 999rpx;

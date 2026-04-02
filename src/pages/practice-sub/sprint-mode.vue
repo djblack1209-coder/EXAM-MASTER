@@ -3,7 +3,9 @@
     <view class="aurora-bg" />
 
     <view class="top-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <text class="nav-back-arrow" @tap="goBack">←</text>
+      <text class="nav-back-arrow" @tap="goBack">
+        <BaseIcon name="arrow-left" :size="36" />
+      </text>
       <text class="nav-title">冲刺模式</text>
       <view class="nav-right" />
     </view>
@@ -233,7 +235,7 @@ onMounted(() => {
   --green: var(--success, #34c759);
 }
 .sprint-container.dark-mode {
-  background: linear-gradient(180deg, #0a0a0f 0%, #111118 50%, #0d0d14 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 50%, var(--background) 100%);
 }
 .aurora-bg {
   position: absolute;
@@ -274,7 +276,7 @@ onMounted(() => {
 .nav-back-arrow {
   font-size: 36rpx;
   color: var(--text-main, #1a1a1a);
-  padding: 10rpx;
+  padding: 20rpx;
 }
 .nav-title {
   flex: 1;

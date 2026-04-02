@@ -237,14 +237,14 @@ function barColor(score) {
   text-align: center;
   padding: 12rpx 0;
   font-size: 24rpx;
-  color: #999;
+  color: var(--text-secondary);
   border-radius: 12rpx;
   transition: all 0.2s;
 }
 
 .range-tab.active {
-  background: #fff;
-  color: var(--color-primary, #4caf50);
+  background: var(--bg-card);
+  color: var(--color-primary, #0f5f34);
   font-weight: 600;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
@@ -289,13 +289,13 @@ function barColor(score) {
 
 .radar-stroke {
   fill: none;
-  stroke: var(--color-primary, #4caf50);
+  stroke: var(--color-primary, #0f5f34);
   stroke-width: 2;
   transition: all 0.3s;
 }
 
 .radar-dot {
-  fill: var(--color-primary, #4caf50);
+  fill: var(--color-primary, #0f5f34);
 }
 
 .radar-mp-dot {
@@ -303,14 +303,14 @@ function barColor(score) {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--color-primary, #4caf50);
+  background: var(--color-primary, #0f5f34);
   transform: translate(-50%, -50%);
 }
 
 .radar-label {
   position: absolute;
   font-size: 20rpx;
-  color: #666;
+  color: var(--text-secondary);
   transform: translate(-50%, -50%);
   white-space: nowrap;
 }
@@ -342,13 +342,13 @@ function barColor(score) {
 
 .dim-name {
   font-size: 24rpx;
-  color: #333;
+  color: var(--text-main);
 }
 
 .dim-score {
   font-size: 24rpx;
   font-weight: 600;
-  color: var(--color-primary, #4caf50);
+  color: var(--color-primary, #0f5f34);
 }
 
 .dim-bar-bg {
@@ -387,12 +387,12 @@ function barColor(score) {
 
 .dark .radar-label,
 .dark-mode .radar-label {
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .dark .dim-name,
 .dark-mode .dim-name {
-  color: #ddd;
+  color: var(--text-primary);
 }
 
 .dark .dim-bar-bg,

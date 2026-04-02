@@ -1,7 +1,9 @@
 <template>
-  <view class="smart-review-container" :class="{ 'dark-mode': isDark }">
+  <view class="smart-review-container" :class="{ 'dark-mode': isDark, 'wot-theme-dark': isDark }">
     <view class="top-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <image src="/static/icons/chevron-left.png" class="back-icon" alt="返回" mode="aspectFit" @tap="goBack" />
+      <view class="back-icon" @tap="goBack">
+        <BaseIcon name="arrow-left" :size="36" />
+      </view>
       <text class="nav-title">智能复习</text>
       <view class="nav-right" />
     </view>
@@ -18,7 +20,7 @@
         <view class="loading-brain">
           <view class="brain-ring r1" />
           <view class="brain-ring r2" />
-          <text class="brain-emoji">[复习]</text>
+          <text class="brain-emoji">复习</text>
         </view>
         <text class="loading-text">AI 正在安排今日复习...</text>
       </view>
@@ -482,9 +484,9 @@ onMounted(() => {
 
 /* [OK] [P1重构] 暗色模式适配 — 不再硬编码，跟随主题系统 */
 .smart-review-container.dark-mode {
-  background: linear-gradient(180deg, #0a0a0f 0%, #111118 50%, #0d0d14 100%);
-  --text-primary: #f5f5f7;
-  --text-secondary: #8e8e93;
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 50%, var(--background) 100%);
+  --text-primary: var(--text-main, #f5f5f7);
+  --text-secondary: var(--text-sub, #8e8e93);
   --bg-card: rgba(255, 255, 255, 0.06);
 }
 
@@ -510,6 +512,7 @@ onMounted(() => {
 .back-icon {
   width: 48rpx;
   height: 48rpx;
+  padding: 20rpx;
   opacity: 0.7;
 }
 .nav-title {
@@ -590,8 +593,11 @@ onMounted(() => {
 .progress-hero {
   display: flex;
   align-items: center;
-  gap: 32rpx;
+  /* gap: 32rpx; */
   padding: 40rpx;
+}
+.progress-hero > view + view {
+  margin-left: 32rpx;
 }
 .hero-left {
   flex-shrink: 0;
@@ -633,7 +639,10 @@ onMounted(() => {
 .hero-title-row {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; */
+}
+.hero-title-row > view + view {
+  margin-left: 16rpx;
 }
 .hero-title {
   font-size: 32rpx;
@@ -648,17 +657,24 @@ onMounted(() => {
 }
 .hero-tags {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; */
   margin-top: 20rpx;
   flex-wrap: wrap;
+}
+.hero-tags > view {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
 }
 .hero-tag {
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; */
   padding: 6rpx 16rpx;
   border-radius: 16rpx;
   background: rgba(255, 255, 255, 0.04);
+}
+.hero-tag > view + view {
+  margin-left: 8rpx;
 }
 .tag-dot {
   width: 12rpx;
@@ -681,8 +697,11 @@ onMounted(() => {
 .streak-row {
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; */
   margin-top: 16rpx;
+}
+.streak-row > view + view {
+  margin-left: 8rpx;
 }
 .streak-fire {
   font-size: 28rpx;
@@ -698,8 +717,8 @@ onMounted(() => {
   padding: 8rpx 0 16rpx;
 }
 .btn-start-review {
-  background: linear-gradient(135deg, #34c759, #30d158);
-  color: #fff;
+  background: linear-gradient(135deg, var(--success), var(--wise-green));
+  color: var(--text-inverse, #fff);
   border: none;
   border-radius: 28rpx;
   height: 96rpx;
@@ -729,8 +748,11 @@ onMounted(() => {
 .section-header {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; */
   margin-bottom: 8rpx;
+}
+.section-header > view + view {
+  margin-left: 16rpx;
 }
 .section-dot {
   width: 20rpx;
@@ -815,10 +837,13 @@ onMounted(() => {
 .error-badge {
   display: flex;
   align-items: baseline;
-  gap: 4rpx;
+  /* gap: 4rpx; */
   background: rgba(255, 69, 58, 0.12);
   padding: 4rpx 16rpx;
   border-radius: 16rpx;
+}
+.error-badge > view + view {
+  margin-left: 4rpx;
 }
 .error-num {
   font-size: 28rpx;
@@ -906,8 +931,11 @@ onMounted(() => {
 .streak-celebrate {
   display: flex;
   align-items: baseline;
-  gap: 8rpx;
+  /* gap: 8rpx; */
   margin-top: 32rpx;
+}
+.streak-celebrate > view + view {
+  margin-left: 8rpx;
 }
 .streak-big {
   font-size: 64rpx;

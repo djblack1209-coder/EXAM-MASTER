@@ -75,7 +75,12 @@ export const useUserStore = defineStore('user', () => {
    * @param {Object} data - 排行榜请求参数
    */
   const fetchRankCenter = async (data) => {
-    return await rankCenterApi(data);
+    try {
+      return await rankCenterApi(data);
+    } catch (err) {
+      logger.error('[UserStore] fetchRankCenter 失败:', err);
+      throw err; // 重新抛出让调用方处理
+    }
   };
 
   // 监听登出事件重置社交数据（避免重复注册）

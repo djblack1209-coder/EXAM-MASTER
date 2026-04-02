@@ -83,7 +83,7 @@ const handleLogout = () => {
 
 .logout-btn:hover {
   background-color: var(--danger);
-  color: white;
+  color: var(--text-inverse);
   transform: translateY(-2px);
   box-shadow: var(--shadow-danger);
 }

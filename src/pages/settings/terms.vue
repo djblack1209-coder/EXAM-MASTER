@@ -2,7 +2,9 @@
   <view class="page-container" :class="{ 'dark-mode': isDark }">
     <view class="top-nav">
       <view class="nav-back" @tap="goBack">
-        <text class="back-icon"> ← </text>
+        <text class="back-icon">
+          <BaseIcon name="arrow-left" :size="36" />
+        </text>
       </view>
       <text class="nav-title"> 用户协议 </text>
     </view>
@@ -121,7 +123,7 @@ function goBack() {
   );
 }
 .page-container.dark-mode {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
 }
 
 .top-nav {

@@ -1,13 +1,13 @@
 <template>
   <!-- F002: 好友入口卡片 — 从 settings/index.vue 提取 -->
-  <view class="section">
+  <view class="section" :class="{ 'dark-mode': isDark }">
     <view
       id="e2e-settings-friends-entry"
       class="friend-entry-card ds-flex ds-flex-between ds-touchable"
       @tap="navigateToFriends"
     >
       <view class="entry-left ds-flex">
-        <view class="entry-icon ds-flex-center"> [好友] </view>
+        <view class="entry-icon ds-flex-center"> <BaseIcon name="users" :size="40" /> </view>
         <view class="entry-info">
           <text class="entry-title ds-text-lg ds-font-semibold"> 我的好友 </text>
           <text class="entry-desc ds-text-xs"> 添加好友，一起刷题 </text>
@@ -19,9 +19,24 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
+import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme';
+
+const isDark = ref(initTheme());
+const themeHandler = (mode) => {
+  isDark.value = mode === 'dark';
+};
+
+onMounted(() => {
+  onThemeUpdate(themeHandler);
+});
+
+onBeforeUnmount(() => {
+  offThemeUpdate(themeHandler);
+});
 
 function navigateToFriends() {
   requireLogin(
@@ -100,5 +115,29 @@ function navigateToFriends() {
   color: var(--text-secondary, #495057);
   opacity: 0.4;
   font-weight: 300;
+}
+
+/* 暗色模式覆盖 */
+.dark-mode .friend-entry-card {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+  box-shadow: none;
+}
+
+.dark-mode .entry-title {
+  color: var(--text-primary, #f5f5f7);
+}
+
+.dark-mode .entry-desc {
+  color: var(--text-secondary, #8e8e93);
+}
+
+.dark-mode .entry-icon {
+  background: var(--bg-secondary, #2c2c2e);
+  color: var(--text-primary, #f5f5f7);
+}
+
+.dark-mode .entry-arrow {
+  color: var(--text-tertiary, #636366);
 }
 </style>

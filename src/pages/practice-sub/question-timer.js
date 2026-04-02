@@ -515,6 +515,8 @@ class QuestionTimer {
     const recentAvg = recent.reduce((sum, r) => sum + r.timeSpent, 0) / recent.length;
     const previousAvg = previous.reduce((sum, r) => sum + r.timeSpent, 0) / previous.length;
 
+    // [AUDIT R298] 防止 previousAvg 为 0 时除零产生 Infinity
+    if (previousAvg === 0) return 'stable';
     const change = (recentAvg - previousAvg) / previousAvg;
 
     if (change < -0.1) return 'improving'; // 用时减少10%以上

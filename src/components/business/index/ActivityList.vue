@@ -95,7 +95,7 @@ function getStatusText(status) {
   background: var(--bg-card-alpha);
   backdrop-filter: blur(14rpx) saturate(130%);
   -webkit-backdrop-filter: blur(14rpx) saturate(130%);
-  border: 1rpx solid rgba(255, 255, 255, 0.14);
+  border: 1rpx solid var(--border);
 }
 
 .card-light {
@@ -150,22 +150,21 @@ function getStatusText(status) {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1rpx solid rgba(255, 255, 255, 0.48);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
+  margin-right: 24rpx;
 }
 
 .status-completed {
-  background: rgba(52, 199, 89, 0.15);
+  background: var(--success-light);
   color: var(--success);
 }
 
 .status-in-progress {
-  background: var(--brand-tint);
+  background: var(--primary-light);
   color: var(--primary);
 }
 
 .status-pending {
-  background: rgba(120, 120, 128, 0.12);
+  background: var(--muted);
   color: var(--text-tertiary);
 }
 
@@ -225,8 +224,6 @@ function getStatusText(status) {
   padding: 8rpx 16rpx;
   border-radius: 999rpx;
   font-size: 20rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.4);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.64);
 }
 
 .badge-completed {
@@ -250,19 +247,19 @@ function getStatusText(status) {
 }
 
 .glass .activity-icon-wrapper {
-  border-color: rgba(10, 132, 255, 0.18);
-  box-shadow: var(--apple-shadow-surface);
+  border: none;
+  box-shadow: none;
 }
 
 .glass .status-completed {
-  background: rgba(64, 200, 160, 0.16);
+  background: var(--success-light);
 }
 
 .glass .status-in-progress {
-  background: rgba(10, 132, 255, 0.16);
+  background: var(--primary-light);
 }
 
 .glass .status-pending {
-  background: rgba(58, 108, 190, 0.16);
+  background: var(--muted);
 }
 </style>

@@ -42,7 +42,9 @@
       <view class="summary-item">
         <view class="trend-indicator" :class="trendDirection">
           <text class="trend-arrow">
-            {{ trendDirection === 'up' ? '↑' : trendDirection === 'down' ? '↓' : '→' }}
+            <BaseIcon v-if="trendDirection === 'up'" name="trend-up" :size="32" />
+            <BaseIcon v-else-if="trendDirection === 'down'" name="trend-down" :size="32" />
+            <BaseIcon v-else name="arrow-right" :size="32" />
           </text>
           <text class="trend-percent"> {{ trendPercent }}% </text>
         </view>
@@ -53,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, getCurrentInstance, nextTick } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, getCurrentInstance, nextTick } from 'vue';
 
 const props = defineProps({
   // 学习记录数据 { 'YYYY-MM-DD': minutes }
@@ -100,8 +102,18 @@ watch(selectedRange, () => {
   });
 });
 
+// 定时器追踪，防止组件卸载后执行回调
+let _chartTimer = null;
+
 onMounted(() => {
   initCanvas();
+});
+
+onBeforeUnmount(() => {
+  if (_chartTimer) {
+    clearTimeout(_chartTimer);
+    _chartTimer = null;
+  }
 });
 
 /**
@@ -119,7 +131,8 @@ function initCanvas() {
       }
       prepareChartData();
       nextTick(() => {
-        setTimeout(() => {
+        _chartTimer = setTimeout(() => {
+          _chartTimer = null;
           drawChart();
         }, 100);
       });

@@ -26,7 +26,9 @@
 
     <!-- 错误状态 -->
     <view v-else-if="loginError" class="error-section">
-      <view class="error-icon"> ✕ </view>
+      <view class="error-icon">
+        <BaseIcon name="error" :size="64" />
+      </view>
       <text class="error-text"> 登录失败 </text>
       <text class="error-hint">
         {{ errorMessage }}
@@ -199,7 +201,7 @@ onMounted(() => {
 .callback-container {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #f8faf8 0%, #e8f5e9 100%);
+  background: linear-gradient(180deg, var(--page-gradient-top) 0%, var(--page-gradient-bottom) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -210,7 +212,7 @@ onMounted(() => {
 }
 
 .callback-container.dark-mode {
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(180deg, var(--page-gradient-top) 0%, var(--page-gradient-bottom) 100%);
 }
 
 /* 背景装饰 */
@@ -233,7 +235,7 @@ onMounted(() => {
 .bg-circle-1 {
   width: 400rpx;
   height: 400rpx;
-  background: #12b7f5;
+  background: var(--info-blue);
   top: -100rpx;
   right: -100rpx;
 }
@@ -241,14 +243,14 @@ onMounted(() => {
 .bg-circle-2 {
   width: 300rpx;
   height: 300rpx;
-  background: #0099ff;
+  background: var(--info-blue);
   bottom: 200rpx;
   left: -150rpx;
 }
 
 .dark-mode .bg-circle-1,
 .dark-mode .bg-circle-2 {
-  background: #12b7f5;
+  background: var(--info-blue);
   opacity: 0.05;
 }
 
@@ -274,7 +276,7 @@ onMounted(() => {
   width: 80rpx;
   height: 80rpx;
   border: 6rpx solid rgba(18, 183, 245, 0.2);
-  border-top-color: #12b7f5;
+  border-top-color: var(--info-blue);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -288,20 +290,20 @@ onMounted(() => {
 .loading-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: #333;
+  color: var(--text-main);
 }
 
 .dark-mode .loading-text {
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .loading-hint {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .dark-mode .loading-hint {
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 /* 成功状态 */
@@ -314,7 +316,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   font-size: 60rpx;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .success-text {
@@ -325,47 +327,47 @@ onMounted(() => {
 
 .success-hint {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .dark-mode .success-hint {
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 /* 错误状态 */
 .error-icon {
   width: 120rpx;
   height: 120rpx;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, var(--danger) 0%, var(--danger) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 60rpx;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .error-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .error-hint {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
   max-width: 500rpx;
 }
 
 .dark-mode .error-hint {
-  color: #aaa;
+  color: var(--text-secondary);
 }
 
 .retry-btn {
   margin-top: 40rpx;
   padding: 24rpx 80rpx;
-  background: linear-gradient(135deg, #12b7f5 0%, #0099ff 100%);
+  background: linear-gradient(135deg, var(--info-blue) 0%, var(--info-blue) 100%);
   border-radius: 48rpx;
   box-shadow: 0 8rpx 24rpx rgba(18, 183, 245, 0.3);
 }
@@ -373,7 +375,7 @@ onMounted(() => {
 .retry-btn text {
   font-size: 32rpx;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .retry-btn:active {
@@ -392,7 +394,12 @@ onMounted(() => {
 }
 
 .callback-container.dark-mode {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top) 0%,
+    var(--page-gradient-bottom) 48%,
+    var(--page-gradient-top) 100%
+  );
 }
 
 .bg-circle {
@@ -457,12 +464,12 @@ onMounted(() => {
 
 .spinner {
   border-color: rgba(52, 199, 89, 0.16);
-  border-top-color: #34c759;
+  border-top-color: var(--success);
 }
 
 .dark-mode .spinner {
   border-color: rgba(10, 132, 255, 0.16);
-  border-top-color: #0a84ff;
+  border-top-color: var(--primary);
 }
 
 .loading-text,
@@ -474,7 +481,7 @@ onMounted(() => {
 .dark-mode .loading-text,
 .dark-mode .success-text,
 .dark-mode .error-text {
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .loading-hint,

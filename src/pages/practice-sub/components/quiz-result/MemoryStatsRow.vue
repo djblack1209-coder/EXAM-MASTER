@@ -41,7 +41,10 @@ const formatDate = (dateStr) => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4rpx;
+    /* gap: 4rpx; */
+  }
+  .stat-item > view + view {
+    margin-top: 4rpx;
   }
 
   .stat-label {

@@ -490,17 +490,17 @@ async function handleShareResource(userId, params, requestId) {
       return { code: 403, success: false, message: '您不是该小组成员', data: null };
     }
 
-    // 创建资源
+    // 创建资源（对用户输入进行消毒处理，防止存储型XSS）
     const resourceId = generateId('resource_');
     const resource = {
       _id: resourceId,
       group_id: groupId,
       user_id: userId,
-      title: title.trim(),
-      content: content?.trim() || '',
+      title: sanitizeString(title.trim(), 200),
+      content: sanitizeString(content?.trim() || '', 5000),
       resource_type: RESOURCE_TYPE[resourceType] || RESOURCE_TYPE.NOTE,
-      file_url: fileUrl || '',
-      tags: Array.isArray(tags) ? tags : [],
+      file_url: sanitizeString(fileUrl || '', 500),
+      tags: Array.isArray(tags) ? tags.slice(0, 20).map((t: string) => sanitizeString(String(t), 50)) : [],
       likes_count: 0,
       comments_count: 0,
       created_at: Date.now(),

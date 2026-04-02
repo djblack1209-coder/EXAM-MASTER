@@ -5,7 +5,7 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon"> &#x2190; </text>
+          <BaseIcon name="arrow-left" :size="36" />
         </view>
         <text class="nav-title"> 拍照搜题 </text>
         <view class="nav-action" @tap="selectSubject">
@@ -46,7 +46,7 @@
       <!-- #ifndef MP-WEIXIN -->
       <!-- ✅ P0-FIX: App端无camera组件，显示占位提示 -->
       <view v-if="mode === 'camera'" class="camera-placeholder">
-        <view class="placeholder-icon">[相机]</view>
+        <view class="placeholder-icon">相机</view>
         <text class="placeholder-title">拍照搜题</text>
         <text class="placeholder-hint">点击下方拍照按钮开始</text>
       </view>
@@ -773,7 +773,7 @@ export default {
 .page-container {
   height: 100%;
   height: 100vh;
-  background: #000;
+  background: var(--background);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -809,14 +809,14 @@ export default {
 
     .back-icon {
       font-size: 36rpx;
-      color: #fff;
+      color: var(--text-inverse);
     }
   }
 
   .nav-title {
     font-size: 34rpx;
     font-weight: 600;
-    color: #fff;
+    color: var(--text-inverse);
   }
 
   .nav-action {
@@ -826,7 +826,7 @@ export default {
 
     .nav-action-text {
       font-size: 24rpx;
-      color: #fff;
+      color: var(--text-inverse);
       font-weight: 500;
     }
   }
@@ -861,7 +861,7 @@ export default {
     position: absolute;
     width: 40rpx;
     height: 40rpx;
-    border-color: #fff;
+    border-color: var(--text-inverse);
     border-style: solid;
 
     &.top-left {
@@ -899,7 +899,7 @@ export default {
   bottom: calc(220rpx + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
-  color: #fff;
+  color: var(--text-inverse);
   font-size: 24rpx;
   background: rgba(0, 0, 0, 0.5);
   padding: 12rpx 32rpx;
@@ -943,7 +943,7 @@ export default {
   }
 
   .loading-text {
-    color: #fff;
+    color: var(--text-inverse);
     font-size: 28rpx;
     font-weight: 500;
     margin-top: 24rpx;
@@ -1113,7 +1113,7 @@ export default {
 
   .step-num-text {
     font-size: 20rpx;
-    color: #fff;
+    color: var(--text-inverse);
     font-weight: 700;
   }
 
@@ -1133,7 +1133,7 @@ export default {
 
   .answer-text {
     font-size: 28rpx;
-    color: #34c759;
+    color: var(--success);
     font-weight: 600;
     line-height: 1.6;
   }
@@ -1166,7 +1166,7 @@ export default {
     width: 12rpx;
     height: 12rpx;
     border-radius: 50%;
-    background: #ff9500;
+    background: var(--warning);
     flex-shrink: 0;
     margin-right: 14rpx;
     margin-top: 14rpx;
@@ -1249,7 +1249,7 @@ export default {
 
   .action-side-text {
     font-size: 26rpx;
-    color: #fff;
+    color: var(--text-inverse);
     font-weight: 500;
   }
 }
@@ -1276,7 +1276,7 @@ export default {
 
   &.bar-btn-secondary {
     background: rgba(255, 255, 255, 0.12);
-    color: #fff;
+    color: var(--text-inverse);
 
     &:disabled {
       opacity: 0.5;
@@ -1360,7 +1360,7 @@ export default {
 }
 
 .dark-mode.page-container {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
 }
 
 .nav-header {
@@ -1395,7 +1395,7 @@ export default {
 .dark-mode .nav-header .back-icon,
 .dark-mode .nav-header .nav-title,
 .dark-mode .nav-header .nav-action-text {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .camera-area {
@@ -1436,7 +1436,7 @@ export default {
 
 .dark-mode .camera-tip,
 .dark-mode .loading-overlay {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .loading-overlay {
@@ -1597,7 +1597,7 @@ export default {
 .dark-mode .meta-tag .meta-tag-text,
 .dark-mode .answer-card .answer-text,
 .dark-mode .kp-tag .kp-tag-text {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 /* Final polish: camera mode and result grouping */
@@ -1658,7 +1658,7 @@ export default {
 }
 
 .dark-mode .camera-hero-title {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .camera-preview,
@@ -1776,20 +1776,20 @@ export default {
 .placeholder-title {
   font-size: 40rpx;
   font-weight: 600;
-  color: #333;
+  color: var(--text-main);
   margin-bottom: 16rpx;
 }
 
 .placeholder-hint {
   font-size: 28rpx;
-  color: #888;
+  color: var(--text-tertiary);
 }
 
 .dark-mode .placeholder-title {
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .dark-mode .placeholder-hint {
-  color: #aaa;
+  color: var(--text-tertiary);
 }
 </style>

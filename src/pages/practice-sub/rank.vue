@@ -1,5 +1,5 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark }]">
+  <view :class="['container', { 'dark-mode': isDark, 'wot-theme-dark': isDark }]">
     <view class="aurora-bg" />
 
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
@@ -37,6 +37,7 @@
               :src="rankList[1].avatar || defaultAvatar"
               alt="头像"
               mode="aspectFill"
+              lazy-load
               @error="onAvatarError($event, rankList[1])"
             />
             <view class="badge"> 2 </view>
@@ -55,6 +56,7 @@
               :src="rankList[0].avatar || defaultAvatar"
               alt="头像"
               mode="aspectFill"
+              lazy-load
               @error="onAvatarError($event, rankList[0])"
             />
             <view class="badge"> 1 </view>
@@ -72,6 +74,7 @@
               :src="rankList[2].avatar || defaultAvatar"
               alt="头像"
               mode="aspectFill"
+              lazy-load
               @error="onAvatarError($event, rankList[2])"
             />
             <view class="badge"> 3 </view>
@@ -137,6 +140,7 @@
           :src="userInfo.avatarUrl || defaultAvatar"
           alt="头像"
           mode="aspectFill"
+          lazy-load
           @error="onAvatarError($event, userInfo, 'avatarUrl')"
         />
         <view class="item-info">
@@ -163,6 +167,7 @@
             :src="activeUser.avatar || defaultAvatar"
             alt="头像"
             mode="aspectFill"
+            lazy-load
             @error="onAvatarError($event, activeUser)"
           />
           <view class="header-info">
@@ -331,6 +336,11 @@ export default {
     uni.$off('themeUpdate', this._themeHandler);
     // 检查点4.1: 断开WebSocket连接
     this.disconnectRankingWebsocket();
+    // [AUDIT R296] 清理高亮定时器
+    if (this._highlightTimer) {
+      clearTimeout(this._highlightTimer);
+      this._highlightTimer = null;
+    }
   },
   methods: {
     // ✅ 图片加载失败处理
@@ -732,9 +742,11 @@ export default {
         // 滚动到自己位置
         selfPositionTracker.scrollToSelf();
 
-        // 3秒后取消高亮
-        setTimeout(() => {
+        // 3秒后取消高亮 [AUDIT R296] 追踪定时器防止卸载后泄漏
+        if (this._highlightTimer) clearTimeout(this._highlightTimer);
+        this._highlightTimer = setTimeout(() => {
           this.selfPositionHighlighted = false;
+          this._highlightTimer = null;
         }, 3000);
 
         // 显示排名变化提示
@@ -1293,7 +1305,7 @@ export default {
 .analysis-tag {
   display: inline-block;
   background: var(--text-primary);
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 20rpx;
   padding: 4rpx 12rpx;
   border-radius: 6rpx;
@@ -1360,7 +1372,7 @@ export default {
 }
 
 .container.dark-mode {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
 }
 
 .aurora-bg {
@@ -1409,7 +1421,7 @@ export default {
     linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
     linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
   border-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .nav-title {
@@ -1417,7 +1429,7 @@ export default {
 }
 
 .dark-mode .nav-title {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .rank-scroll {
@@ -1552,7 +1564,7 @@ export default {
 .dark-mode .data-item .val,
 .dark-mode .target-val,
 .dark-mode .analysis-text {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .podium-item .score,
@@ -1620,7 +1632,7 @@ export default {
 .dark-mode .my-rank-card .item-name,
 .dark-mode .my-rank-card .item-desc,
 .dark-mode .my-rank-card .item-score-text {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .rank-btn,
@@ -1677,8 +1689,8 @@ export default {
 }
 
 .close-btn {
-  width: 60rpx;
-  height: 60rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.64);
   border: 1px solid rgba(255, 255, 255, 0.42);
@@ -1691,7 +1703,7 @@ export default {
     linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
     linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
   border-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .card-avatar {
@@ -1709,7 +1721,7 @@ export default {
 
 .dark-mode .ai-label {
   background: rgba(10, 132, 255, 0.14);
-  color: #ffffff;
+  color: var(--text-inverse);
   border-color: rgba(10, 132, 255, 0.18);
 }
 
@@ -1726,7 +1738,7 @@ export default {
 
 .dark-mode .analysis-tag {
   background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  color: var(--text-inverse);
   border-color: rgba(255, 255, 255, 0.1);
 }
 </style>

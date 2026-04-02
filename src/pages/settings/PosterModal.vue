@@ -17,7 +17,8 @@
         <image
           :src="icons8('ios-glyphs', 30, 'ffffff', 'multiply')"
           style="width: 16px; height: 16px"
-          alt="" mode="aspectFit"
+          alt=""
+          mode="aspectFit"
           @error="onCdnIconError"
         />
       </view>
@@ -29,7 +30,8 @@
           <image
             :src="icons8('ios-filled', 50, 'ffffff', 'open-book')"
             class="poster-logo"
-            alt="Exam Master" mode="aspectFit"
+            alt="Exam Master"
+            mode="aspectFit"
             @error="onCdnIconError"
           />
           <text class="poster-app-name ds-font-semibold"> Exam-Master </text>
@@ -52,14 +54,16 @@
             <image
               :src="qrCodeUrl || icons8('ios', 100, '000000', 'qr-code--v1')"
               class="qr-img"
-              alt="" mode="aspectFit"
+              alt=""
+              mode="aspectFit"
               @error="onCdnIconError"
             />
             <view class="qr-badge">
               <image
                 :src="icons8('ios-filled', 50, '07C160', 'open-book')"
                 style="width: 16px; height: 16px"
-                alt="" mode="aspectFit"
+                alt=""
+                mode="aspectFit"
                 @error="onCdnIconError"
               />
             </view>
@@ -330,8 +334,8 @@ const copyInviteInfo = () => {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 50%;
   padding: 4px;
-  width: 24px;
-  height: 24px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -351,7 +355,7 @@ const copyInviteInfo = () => {
   width: 100%;
   height: 100%;
   /* Reusing the "Fluid Wave" colors from splash screen */
-  background: linear-gradient(135deg, #07c160 0%, #0052d4 50%, #ffc107 100%);
+  background: linear-gradient(135deg, var(--success) 0%, var(--primary) 50%, var(--warning) 100%);
   z-index: 1;
 }
 
@@ -380,7 +384,7 @@ const copyInviteInfo = () => {
 }
 
 .poster-app-name {
-  color: white;
+  color: var(--text-inverse);
   font-size: 32rpx;
   font-weight: 600;
   -webkit-font-smoothing: antialiased;
@@ -389,7 +393,7 @@ const copyInviteInfo = () => {
 .poster-title {
   font-size: 64rpx;
   font-weight: 800;
-  color: white;
+  color: var(--text-inverse);
   margin-bottom: 8px;
   letter-spacing: 2px;
   -webkit-font-smoothing: antialiased;
@@ -414,7 +418,7 @@ const copyInviteInfo = () => {
 }
 
 .ticket-dashed-box {
-  border: 2px dashed #07c160;
+  border: 2px dashed var(--success);
   border-radius: 8px;
   padding: 16px 0;
   display: flex;
@@ -425,7 +429,7 @@ const copyInviteInfo = () => {
 .ticket-code {
   font-size: 56rpx;
   font-weight: 800;
-  color: #07c160;
+  color: var(--success);
   letter-spacing: 1px;
   -webkit-font-smoothing: antialiased;
 }
@@ -477,7 +481,7 @@ const copyInviteInfo = () => {
 }
 
 .scan-text {
-  color: white;
+  color: var(--text-inverse);
   font-size: 24rpx;
   opacity: 0.9;
   -webkit-font-smoothing: antialiased;
@@ -524,7 +528,7 @@ const copyInviteInfo = () => {
 
 .share-btn {
   background-color: rgba(255, 255, 255, 0.9);
-  color: #07c160;
+  color: var(--success);
 }
 
 /* VISUAL: Dark mode styles */
@@ -537,7 +541,7 @@ const copyInviteInfo = () => {
 
   /* 深色模式下渐变背景调整为更深的色调 */
   .poster-bg {
-    background: linear-gradient(135deg, #05a050 0%, #003d99 50%, #e6a800 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, #003d99 50%, #e6a800 100%);
   }
 
   /* 票券在深色模式下使用浅色 */
@@ -570,7 +574,7 @@ const copyInviteInfo = () => {
 
   .share-btn {
     background-color: rgba(245, 245, 245, 0.95);
-    color: #05a050;
+    color: var(--success-dark);
 
     &:active {
       background-color: rgba(230, 230, 230, 0.95);

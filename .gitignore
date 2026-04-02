@@ -7,6 +7,7 @@ dist/
 .idea/
 .clinerules
 .cursorrules
+.hbuilderx/
 # .vscode/ - 保留VSC自动化配置
 .vscode/*.log
 .vscode/build.log
@@ -166,6 +167,12 @@ release/
 
 # Playwright/测试运行时产物
 output/
+
+# Playwright MCP 运行时日志
+.playwright-mcp/
+
+# AI 工具运行时缓存
+.superpowers/
 
 # 一次性优化脚本
 scripts/optimize/

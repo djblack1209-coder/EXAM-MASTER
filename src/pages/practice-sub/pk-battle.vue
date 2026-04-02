@@ -1,5 +1,5 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark }]">
+  <view :class="['container', { 'dark-mode': isDark, 'wot-theme-dark': isDark }]">
     <view class="aurora-bg" />
 
     <!-- 匹配阶段 -->
@@ -17,6 +17,7 @@
             :src="userInfo.avatarUrl || defaultAvatar"
             alt="头像"
             mode="aspectFill"
+            lazy-load
             @error="onUserAvatarError"
           />
         </view>
@@ -27,6 +28,7 @@
             :src="opponent.avatar || defaultAvatar"
             alt="头像"
             mode="aspectFill"
+            lazy-load
             @error="onOpponentAvatarError"
           />
           <view v-if="!opponentFound" class="search-overlay">
@@ -70,6 +72,7 @@
             class="avatar"
             alt="头像"
             mode="aspectFill"
+            lazy-load
             @error="onUserAvatarError"
           />
           <text class="score me">
@@ -88,6 +91,7 @@
             class="avatar"
             alt="头像"
             mode="aspectFill"
+            lazy-load
             @error="onOpponentAvatarError"
           />
           <text class="score opp">
@@ -2305,7 +2309,7 @@ export default {
   box-sizing: border-box;
   position: relative;
   z-index: 10;
-  background: linear-gradient(135deg, var(--bg-body) 0%, #0f2400 50%, var(--bg-body) 100%);
+  background: linear-gradient(135deg, var(--bg-body) 0%, var(--background) 50%, var(--bg-body) 100%);
   background-size: 200% 200%;
   animation: gradientShift 8s ease infinite;
 }
@@ -2498,7 +2502,7 @@ export default {
 .btn-again {
   flex: 1;
   min-width: calc(50% - 10rpx);
-  background: linear-gradient(135deg, var(--brand-color), #7ed321);
+  background: linear-gradient(135deg, var(--brand-color), var(--success));
   color: var(--text-primary);
   border-radius: 16rpx;
   font-size: 28rpx;
@@ -2518,7 +2522,7 @@ export default {
 .btn-rank {
   flex: 1;
   min-width: calc(50% - 10rpx);
-  background: linear-gradient(135deg, #ffd700, #ffa500);
+  background: var(--warning);
   color: var(--text-primary);
   border-radius: 16rpx;
   font-size: 28rpx;
@@ -2658,7 +2662,7 @@ export default {
 }
 
 .container.dark-mode {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
 }
 
 .aurora-bg {
@@ -3304,6 +3308,6 @@ export default {
 }
 
 .container.dark-mode .btn-exit {
-  color: #ff8e86;
+  color: var(--danger);
 }
 </style>

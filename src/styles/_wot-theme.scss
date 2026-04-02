@@ -1,27 +1,30 @@
 /* Inject Exam-Master theme into wot-design-uni */
 page {
   /* Primary brand colors mapped to Wot */
-  --wot-color-theme: var(--em-brand);
-  --wot-color-success: var(--em-success);
-  --wot-color-warning: var(--em-warning);
-  --wot-color-danger: var(--em-danger);
-  
-  /* Button overrides to maintain our aesthetic */
-  --wot-button-border-radius: var(--ds-radius-full, 999px);
+  --wot-color-theme: var(--primary);
+  --wot-color-success: var(--success);
+  --wot-color-warning: var(--warning);
+  --wot-color-danger: var(--danger);
+
+  /* Button overrides — Apple HIG 胶囊风格 */
+  --wot-button-border-radius: var(--radius-full, 999px);
   --wot-button-height: 88rpx;
-  --wot-button-primary-bg-color: var(--em-brand);
-  --wot-button-primary-color: var(--em-text-inverse);
-  
-  /* Popup / Modal backgrounds for glassmorphism */
-  --wot-popup-bg: var(--bg-glass, rgba(255, 255, 255, 0.8));
-  
-  /* Inputs */
-  --wot-input-bg: var(--ds-surface-secondary, #f8f9fa);
-  --wot-input-padding: 24rpx;
+  --wot-button-primary-bg-color: var(--primary);
+  --wot-button-primary-color: var(--primary-foreground);
+
+  /* Popup / Modal — 毛玻璃 */
+  --wot-popup-bg: var(--glass-bg);
+
+  /* Inputs — 通透浅灰底色 + 舒适内边距 + 大圆角 */
+  --wot-input-bg: var(--muted);
+  --wot-input-padding: 28rpx;
+  --wot-input-border-radius: var(--radius-md, 16px);
+  --wot-input-font-size: 30rpx;
 }
 
 /* Dark mode overrides for wot-design */
-.dark-mode, .page-dark {
-  --wot-popup-bg: var(--bg-glass-dark, rgba(30, 30, 30, 0.8));
-  --wot-input-bg: var(--ds-surface-elevated, #2a2a2a);
+.dark-mode,
+.page-dark {
+  --wot-popup-bg: var(--glass-bg);
+  --wot-input-bg: var(--muted);
 }

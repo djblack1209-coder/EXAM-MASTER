@@ -4,7 +4,7 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon"> ← </text>
+          <BaseIcon name="arrow-left" :size="36" />
         </view>
         <text class="nav-title"> 文档转换 </text>
         <view class="nav-placeholder" />
@@ -917,7 +917,7 @@ export default {
     box-shadow: var(--cta-primary-shadow);
 
     .dark-mode & {
-      border-color: #8eaaef;
+      border-color: var(--primary);
       background: rgba(91, 134, 229, 0.12);
     }
   }
@@ -939,7 +939,7 @@ export default {
   .type-icon {
     font-size: 26rpx;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-inverse);
   }
 
   .type-text {
@@ -992,7 +992,7 @@ export default {
     line-height: 1;
 
     .dark-mode & {
-      color: #8eaaef;
+      color: var(--primary);
     }
   }
 
@@ -1057,7 +1057,7 @@ export default {
 
     .file-reading {
       font-size: 22rpx;
-      color: #5b86e5;
+      color: var(--primary);
       margin-top: 4rpx;
       display: block;
     }
@@ -1075,10 +1075,10 @@ export default {
 
     .remove-icon {
       font-size: 24rpx;
-      color: #ff3b30;
+      color: var(--danger);
 
       .dark-mode & {
-        color: #ff6b6b;
+        color: var(--danger);
       }
     }
   }
@@ -1119,7 +1119,7 @@ export default {
   width: 48rpx;
   height: 48rpx;
   border: 4rpx solid rgba(91, 134, 229, 0.2);
-  border-top-color: #5b86e5;
+  border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   flex-shrink: 0;
@@ -1135,14 +1135,14 @@ export default {
   width: 48rpx;
   height: 48rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #34c759, #30d158);
+  background: linear-gradient(135deg, var(--success), var(--wise-green));
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
   .done-check {
-    color: #fff;
+    color: var(--text-inverse);
     font-size: 26rpx;
     font-weight: 700;
   }
@@ -1152,14 +1152,14 @@ export default {
   width: 48rpx;
   height: 48rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff3b30, #ff6961);
+  background: linear-gradient(135deg, var(--danger), var(--danger));
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
   .error-mark {
-    color: #fff;
+    color: var(--text-inverse);
     font-size: 28rpx;
     font-weight: 700;
   }
@@ -1304,7 +1304,7 @@ export default {
     box-shadow: var(--apple-shadow-card);
 
     .file-reading {
-      color: #8eaaef;
+      color: var(--primary);
     }
   }
 
@@ -1351,7 +1351,7 @@ export default {
 }
 
 .dark-mode.page-container {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
 }
 
 .section .section-title,
@@ -1378,7 +1378,7 @@ export default {
 .dark-mode .file-name,
 .dark-mode .status-title,
 .dark-mode .btn-secondary {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .dark-mode .hero-desc,
@@ -1453,15 +1453,15 @@ export default {
 
 .dark-mode .type-card .type-icon,
 .dark-mode .file-placeholder .upload-icon-text {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .file-info-card .file-reading {
-  color: #22873a;
+  color: var(--success-dark);
 }
 
 .dark-mode .file-info-card .file-reading {
-  color: #7bc0ff;
+  color: var(--primary);
 }
 
 .status-card.status-loading,
@@ -1482,12 +1482,12 @@ export default {
 
 .status-spinner {
   border-color: rgba(52, 199, 89, 0.16);
-  border-top-color: #34c759;
+  border-top-color: var(--success);
 }
 
 .dark-mode .status-spinner {
   border-color: rgba(10, 132, 255, 0.16);
-  border-top-color: #0a84ff;
+  border-top-color: var(--primary);
 }
 
 .status-done-icon,

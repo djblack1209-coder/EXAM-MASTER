@@ -416,7 +416,15 @@
   "preloadRule": {
     "pages/index/index": {
       "network": "all",
-      "packages": ["pages/chat", "pages/practice-sub", "pages/plan", "pages/ai-classroom", "pages/login"]
+      "packages": [
+        "pages/chat",
+        "pages/practice-sub",
+        "pages/plan",
+        "pages/ai-classroom",
+        "pages/login",
+        "pages/tools",
+        "pages/mistake"
+      ]
     },
     "pages/practice/index": {
       "network": "all",
@@ -428,7 +436,14 @@
     },
     "pages/profile/index": {
       "network": "all",
-      "packages": ["pages/settings", "pages/social", "pages/favorite", "pages/study-detail"]
+      "packages": [
+        "pages/settings",
+        "pages/social",
+        "pages/favorite",
+        "pages/study-detail",
+        "pages/login",
+        "pages/mistake"
+      ]
     }
   },
   "globalStyle": {

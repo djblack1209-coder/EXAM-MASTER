@@ -28,21 +28,21 @@ const RECOVERY_CARD_CONFIG = {
     description: '可补签1天',
     days: 1,
     price: { coins: 50 },
-    icon: '[券]'
+    icon: 'ticket'
   },
   [RECOVERY_CARD_TYPE.SUPER]: {
     name: '超级补签卡',
     description: '可补签3天',
     days: 3,
     price: { coins: 120 },
-    icon: '[票]'
+    icon: 'ticket'
   },
   [RECOVERY_CARD_TYPE.ULTIMATE]: {
     name: '终极补签卡',
     description: '可补签7天',
     days: 7,
     price: { coins: 250 },
-    icon: '[杯]'
+    icon: 'trophy'
   }
 };
 

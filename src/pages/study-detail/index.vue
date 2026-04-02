@@ -4,7 +4,9 @@
     <view class="transparent-navbar" :class="{ 'navbar-solid': scrolled }">
       <view class="navbar-content">
         <view class="navbar-left" @tap="goBack">
-          <text class="back-icon"> ← </text>
+          <text class="back-icon">
+            <BaseIcon name="arrow-left" :size="36" />
+          </text>
         </view>
         <text class="navbar-title" :class="{ 'title-visible': scrolled }"> 学习详情 </text>
         <view class="navbar-right">
@@ -50,7 +52,9 @@
             <text class="page-subtitle"> 查看您的学习数据和进度 </text>
           </view>
           <view class="empty-state-card">
-            <text class="empty-icon">[书]</text>
+            <text class="empty-icon">
+              <BaseIcon name="book" :size="80" />
+            </text>
             <text class="empty-title">还没有学习记录</text>
             <text class="empty-desc">完成第一次练习后，这里将展示你的学习数据、热力图和能力分析</text>
             <button class="empty-action-btn" @tap="goToPractice">开始学习</button>
@@ -104,7 +108,7 @@
 
             <!-- 能力评级卡片 -->
             <view class="stat-card">
-              <text class="stat-icon" style="font-size: 52rpx; line-height: 64rpx; text-align: center">[统计]</text>
+              <text class="stat-icon" style="font-size: 52rpx; line-height: 64rpx; text-align: center">统计</text>
               <view class="stat-content">
                 <text class="stat-value">
                   {{ abilityRank }}
@@ -644,14 +648,14 @@ export default {
 }
 
 .insight-icon {
-  color: #34d399;
+  color: var(--success);
   margin-right: 8rpx;
 }
 
 .insight-label {
   font-size: 24rpx;
   font-weight: 600;
-  color: #34d399;
+  color: var(--success);
 }
 
 .insight-text {
@@ -680,7 +684,7 @@ export default {
 }
 
 .insight-tag {
-  font-size: 22rpx;
+  font-size: 24rpx;
   padding: 6rpx 16rpx;
   border-radius: 14rpx;
   background: rgba(239, 68, 68, 0.1);
@@ -696,6 +700,10 @@ export default {
   flex-direction: column;
   /* gap: 24rpx; -- replaced for Android WebView compat */
   padding: 0 32rpx 32rpx;
+}
+
+.stat-card + .stat-card {
+  margin-top: 24rpx;
 }
 
 .stat-card {
@@ -820,6 +828,10 @@ export default {
   flex-direction: column;
   /* gap: 24rpx; -- replaced for Android WebView compat */
   margin-bottom: 32rpx;
+}
+
+.skeleton-card + .skeleton-card {
+  margin-top: 24rpx;
 }
 
 .skeleton-card {

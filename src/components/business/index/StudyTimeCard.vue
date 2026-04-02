@@ -48,6 +48,14 @@ defineEmits(['click']);
   overflow: hidden;
 }
 
+.study-time-card > .time-icon-wrapper {
+  margin-right: 24rpx;
+}
+
+.study-time-card > .time-content {
+  margin-right: 24rpx;
+}
+
 .study-time-card::before {
   content: '';
   position: absolute;
@@ -62,17 +70,12 @@ defineEmits(['click']);
   background: var(--bg-card-alpha);
   backdrop-filter: blur(16rpx) saturate(130%);
   -webkit-backdrop-filter: blur(16rpx) saturate(130%);
-  border: 1rpx solid rgba(255, 255, 255, 0.14);
+  border: 1rpx solid var(--border);
 }
 
 .card-light {
-  background: linear-gradient(
-    150deg,
-    rgba(255, 255, 255, 0.82) 0%,
-    rgba(244, 250, 246, 0.9) 48%,
-    rgba(232, 245, 223, 0.92) 100%
-  );
-  border-color: var(--apple-glass-border-strong);
+  background: linear-gradient(150deg, var(--bg-card) 0%, var(--bg-secondary) 48%, var(--muted) 100%);
+  border-color: var(--border);
 }
 
 .time-icon-wrapper {
@@ -82,9 +85,8 @@ defineEmits(['click']);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--apple-glass-pill-bg);
-  border: 1rpx solid rgba(255, 255, 255, 0.48);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.7);
+  background: var(--primary-light);
+  border: 1rpx solid var(--border);
 }
 
 .time-icon {
@@ -96,6 +98,10 @@ defineEmits(['click']);
   display: flex;
   flex-direction: column;
   /* gap: 4rpx; -- replaced for Android WebView compat */
+}
+
+.time-content > .time-label {
+  margin-bottom: 4rpx;
 }
 
 .time-label {
@@ -116,23 +122,26 @@ defineEmits(['click']);
   /* gap: 8rpx; -- replaced for Android WebView compat */
   padding: 12rpx 18rpx;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.56);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
+  background: var(--muted);
+  border: 1rpx solid var(--border);
+}
+
+.time-indicator > .indicator-dot {
+  margin-right: 8rpx;
 }
 
 .time-indicator.indicator-active {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--primary-light);
 }
 
 .card-light .time-indicator {
-  border-color: rgba(16, 40, 26, 0.04);
+  border-color: var(--border);
 }
 
 .card-light .time-indicator.indicator-active {
-  background: var(--bg-card, #ffffff);
-  border-color: rgba(15, 95, 52, 0.12);
-  box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.14);
+  background: var(--primary-light);
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .indicator-dot {
@@ -169,21 +178,19 @@ defineEmits(['click']);
 }
 
 .glass .time-indicator {
-  background: rgba(20, 26, 36, 0.44);
-  border-color: rgba(124, 176, 255, 0.18);
+  background: var(--muted);
+  border-color: var(--border);
   box-shadow: none;
 }
 
 .glass .time-icon-wrapper {
-  background:
-    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(10, 132, 255, 0.18);
+  background: var(--primary-light);
+  border-color: var(--border);
   box-shadow: var(--apple-shadow-surface);
 }
 
 .glass .time-indicator.indicator-active {
-  background: rgba(36, 82, 170, 0.24);
+  background: var(--primary-light);
 }
 
 @media screen and (max-width: 375px) {

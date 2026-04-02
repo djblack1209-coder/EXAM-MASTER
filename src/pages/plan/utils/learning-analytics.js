@@ -1,6 +1,10 @@
 /**
  * 学习数据分析模块 - 提供全面的学习统计和可视化数据
  *
+ * [分包隔离副本] 与 pages/practice-sub/utils/learning-analytics.js 内容完全相同。
+ * 因微信小程序分包不能跨包引用（否则会拉入主包增加约16KB），需在各分包维护独立副本。
+ * 修改时请同步更新对应副本。
+ *
  * 核心功能：
  * 1. 学习热力图数据 - 每日学习记录
  * 2. 正确率趋势分析 - 历史正确率变化
@@ -898,6 +902,9 @@ class LearningAnalytics {
    */
   _generatePeerInsights(userData, peerData) {
     const insights = [];
+
+    // [AUDIT R297] 防止空数组除零产生 NaN
+    if (!peerData || peerData.length === 0) return insights;
 
     const avgPeerScore = peerData.reduce((sum, p) => sum + p.score, 0) / peerData.length;
     const avgPeerAccuracy = peerData.reduce((sum, p) => sum + p.accuracy, 0) / peerData.length;

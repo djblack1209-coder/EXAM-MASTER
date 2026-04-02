@@ -54,7 +54,7 @@
 
     <!-- 空状态 -->
     <view v-if="!loading && lessons.length === 0" class="empty-state">
-      <text class="empty-icon">[书]</text>
+      <text class="empty-icon">书</text>
       <text class="empty-title">还没有课程</text>
       <text class="empty-desc">点击上方创建你的第一个 AI 互动课程</text>
     </view>
@@ -114,7 +114,7 @@
 <script setup>
 import { toast } from '@/utils/toast.js';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useClassroomStore } from '@/stores/modules/classroom.js';
+import { useClassroomStore } from './stores/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { logger } from '@/utils/logger.js';
@@ -134,10 +134,10 @@ let _pollTimer = null;
 let _pollTimeout = null;
 
 const subjects = [
-  { value: 'politics', label: '政治', icon: '[政]' },
-  { value: 'english', label: '英语', icon: '[英]' },
-  { value: 'math', label: '数学', icon: '[数]' },
-  { value: 'professional', label: '专业课', icon: '[专]' }
+  { value: 'politics', label: '政治', icon: '政' },
+  { value: 'english', label: '英语', icon: '英' },
+  { value: 'math', label: '数学', icon: '数' },
+  { value: 'professional', label: '专业课', icon: '专' }
 ];
 
 const form = ref({
@@ -345,21 +345,24 @@ onMounted(() => {
 .create-card {
   display: flex;
   align-items: center;
-  gap: 28rpx;
+  /* gap: 28rpx; */
   margin-top: 160rpx;
+}
+.create-card > view + view {
+  margin-left: 28rpx;
 }
 .create-icon {
   width: 96rpx;
   height: 96rpx;
   border-radius: 28rpx;
-  background: linear-gradient(135deg, #34c759, #30d158);
+  background: linear-gradient(135deg, var(--success), var(--wise-green));
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .icon-text {
   font-size: 56rpx;
-  color: #fff;
+  color: var(--text-inverse);
   font-weight: 300;
 }
 .create-info {
@@ -422,17 +425,20 @@ onMounted(() => {
   font-size: 22rpx;
 }
 .status-generating .status-text {
-  color: #ff9f0a;
+  color: var(--warning);
 }
 .status-ready .status-text {
-  color: #34c759;
+  color: var(--success);
 }
 .status-failed .status-text {
-  color: #ff453a;
+  color: var(--danger);
 }
 .lesson-meta {
   display: flex;
-  gap: 24rpx;
+  /* gap: 24rpx; */
+}
+.lesson-meta > view + view {
+  margin-left: 24rpx;
 }
 .meta-item {
   font-size: 24rpx;
@@ -451,7 +457,7 @@ onMounted(() => {
 .progress-fill {
   height: 100%;
   border-radius: 4rpx;
-  background: linear-gradient(90deg, #ff9f0a, #34c759);
+  background: linear-gradient(90deg, var(--warning), var(--success));
   transition: width 0.3s;
 }
 .lesson-actions {
@@ -461,7 +467,7 @@ onMounted(() => {
 }
 .action-delete {
   font-size: 24rpx;
-  color: #ff453a;
+  color: var(--danger);
 }
 .empty-state {
   display: flex;
@@ -527,7 +533,14 @@ onMounted(() => {
 .subject-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16rpx;
+  /* gap: 16rpx; */
+}
+.subject-grid > view {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
+}
+.subject-grid > view:nth-child(4n) {
+  margin-right: 0;
 }
 .subject-item {
   display: flex;
@@ -542,7 +555,7 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.04);
 }
 .subject-item.active {
-  border-color: #34c759;
+  border-color: var(--success);
   background: rgba(52, 199, 89, 0.1);
 }
 .subject-icon {
@@ -583,8 +596,11 @@ onMounted(() => {
 }
 .modal-actions {
   display: flex;
-  gap: 20rpx;
+  /* gap: 20rpx; */
   margin-top: 40rpx;
+}
+.modal-actions > view + view {
+  margin-left: 20rpx;
 }
 .btn-cancel {
   flex: 1;
@@ -601,8 +617,8 @@ onMounted(() => {
 .btn-create {
   flex: 1;
   height: 84rpx;
-  background: linear-gradient(135deg, #34c759, #30d158);
-  color: #fff;
+  background: linear-gradient(135deg, var(--success), var(--wise-green));
+  color: var(--text-inverse);
   border: none;
   border-radius: 24rpx;
   font-size: 30rpx;

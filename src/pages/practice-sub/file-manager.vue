@@ -3,7 +3,9 @@
     <!-- 顶部导航 -->
     <view class="top-nav">
       <view class="nav-left" @tap="goBack">
-        <text class="back-arrow"> ← </text>
+        <text class="back-arrow">
+          <BaseIcon name="arrow-left" :size="36" />
+        </text>
         <text class="nav-title"> 文件管理 </text>
       </view>
       <view class="nav-right">
@@ -70,7 +72,7 @@
     <!-- 空状态 -->
     <BaseEmpty
       v-else
-      icon="[文件夹]"
+      icon="folder"
       title="暂无文件"
       desc="导入学习资料后，文件将显示在这里"
       :show-button="true"

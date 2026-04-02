@@ -58,8 +58,8 @@ vi.mock('../../src/pages/practice-sub/offline-cache.js', () => ({
   saveOfflineAnswer: vi.fn()
 }));
 
-// Mock learning-analytics（被 quiz-analytics-recorder 导入）
-vi.mock('@/utils/analytics/learning-analytics.js', () => ({
+// Mock learning-analytics（被 quiz-analytics-recorder 导入，已迁移到分包）
+vi.mock('@/pages/practice-sub/utils/learning-analytics.js', () => ({
   recordAnswer: vi.fn()
 }));
 
@@ -79,7 +79,7 @@ import { storageService } from '@/services/storageService.js';
 import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { recordTime } from '../../src/pages/practice-sub/question-timer.js';
 import { saveOfflineAnswer } from '../../src/pages/practice-sub/offline-cache.js';
-import { recordAnswer } from '@/utils/analytics/learning-analytics.js';
+import { recordAnswer } from '@/pages/practice-sub/utils/learning-analytics.js';
 
 // ============================================================
 // 测试用的 fixture

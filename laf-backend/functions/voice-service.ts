@@ -262,8 +262,12 @@ async function handleTTS(params, requestId) {
     // 检查是否返回错误
     if (response.headers['content-type']?.includes('application/json')) {
       // 如果返回 JSON，说明是错误响应
-      const errorData = JSON.parse(Buffer.from(response.data).toString());
-      logger.error(`[${requestId}] TTS 错误:`, errorData);
+      try {
+        const errorData = JSON.parse(Buffer.from(response.data).toString());
+        logger.error(`[${requestId}] TTS 错误:`, errorData);
+      } catch {
+        logger.error(`[${requestId}] TTS 错误（响应体无法解析为 JSON）`);
+      }
       return serverError('语音合成失败，请稍后重试');
     }
 

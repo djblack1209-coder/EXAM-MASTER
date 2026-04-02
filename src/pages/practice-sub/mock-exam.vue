@@ -1,10 +1,10 @@
 <template>
-  <view :class="['container', { 'dark-mode': isDark }]">
+  <view :class="['container', { 'dark-mode': isDark, 'wot-theme-dark': isDark }]">
     <!-- 顶部导航 -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="back-btn" @tap="handleBack">
-          <text>←</text>
+          <BaseIcon name="arrow-left" :size="36" />
         </view>
         <text class="nav-title">
           {{ isExamStarted ? '模拟考试' : '考试设置' }}
@@ -806,8 +806,8 @@ export default {
 }
 
 .back-btn {
-  width: 60rpx;
-  height: 60rpx;
+  width: 88rpx;
+  height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -831,6 +831,9 @@ export default {
   border-radius: 999rpx;
   border: 1rpx solid rgba(255, 255, 255, 0.5);
   box-shadow: var(--apple-shadow-surface);
+}
+.timer-display > view + view {
+  margin-left: 8rpx;
 }
 
 .timer-icon {
@@ -898,6 +901,10 @@ export default {
   /* gap: 16rpx; -- replaced for Android WebView compat */
   flex-wrap: wrap;
 }
+.setting-options > .option-btn {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
+}
 
 .option-btn {
   padding: 16rpx 32rpx;
@@ -940,6 +947,9 @@ export default {
   justify-content: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
   box-shadow: var(--cta-primary-shadow);
+}
+.start-btn > view + view {
+  margin-left: 16rpx;
 }
 
 .start-btn[disabled] {
@@ -1012,6 +1022,9 @@ export default {
   flex-direction: column;
   /* gap: 20rpx; -- replaced for Android WebView compat */
 }
+.options-list > .option-item + .option-item {
+  margin-top: 20rpx;
+}
 
 .option-item {
   display: flex;
@@ -1062,6 +1075,9 @@ export default {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
   margin: 30rpx 0;
+}
+.nav-buttons > .nav-btn + .nav-btn {
+  margin-left: 20rpx;
 }
 
 .nav-btn {
@@ -1119,6 +1135,10 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 16rpx; -- replaced for Android WebView compat */
+}
+.sheet-grid > .sheet-item {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
 }
 
 .sheet-item {
@@ -1229,6 +1249,9 @@ export default {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
 }
+.result-actions > .action-btn + .action-btn {
+  margin-left: 20rpx;
+}
 
 .action-btn {
   flex: 1;
@@ -1287,6 +1310,9 @@ export default {
   display: flex;
   /* gap: 20rpx; -- replaced for Android WebView compat */
   font-size: 24rpx;
+}
+.wrong-answer > text + text {
+  margin-left: 20rpx;
 }
 
 .user-ans {
@@ -1360,5 +1386,90 @@ export default {
 }
 .skeleton-fade-leave-to {
   opacity: 0;
+}
+
+/* 暗色模式 */
+.dark-mode {
+  background: var(--bg-page, #0b0b0f);
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .nav-bar {
+  background: var(--bg-card, #1c1c1e);
+}
+.dark-mode .nav-title {
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .back-btn {
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .glass-card {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .setting-label {
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .progress-bar {
+  background: var(--bg-secondary, #2c2c2e);
+}
+.dark-mode .option-item {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .option-item.selected {
+  background: var(--bg-secondary, #2c2c2e);
+  border-color: var(--cta-primary-border);
+}
+.dark-mode .option-label {
+  background: var(--bg-secondary, #2c2c2e);
+  color: var(--text-secondary, #8e8e93);
+}
+.dark-mode .question-card {
+  background: var(--bg-card, #1c1c1e);
+}
+.dark-mode .result-card {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .result-message {
+  background: var(--bg-secondary, #2c2c2e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .sheet-item {
+  background: var(--bg-secondary, #2c2c2e);
+  color: var(--text-primary, #f5f5f7);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .nav-btn {
+  background: var(--bg-card, #1c1c1e);
+  color: var(--text-primary, #f5f5f7);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .nav-btn.next,
+.dark-mode .nav-btn.submit {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+}
+.dark-mode .option-btn {
+  background: var(--bg-secondary, #2c2c2e);
+  color: var(--text-secondary, #8e8e93);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .option-btn.active {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+}
+.dark-mode .timer-display {
+  background: var(--bg-secondary, #2c2c2e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .wrong-item {
+  background: var(--bg-secondary, #2c2c2e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .answer-sheet {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
 }
 </style>

@@ -5,7 +5,7 @@
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <view class="nav-back" @tap="goBack">
-          <text class="back-icon"> ← </text>
+          <BaseIcon name="arrow-left" :size="36" />
         </view>
         <text class="nav-title"> 证件照制作 </text>
         <view class="nav-placeholder" />
@@ -27,7 +27,7 @@
       <view class="steps-bar">
         <view v-for="(s, i) in steps" :key="i" :class="['step-item', { active: step >= i, done: step > i }]">
           <view class="step-dot">
-            <text v-if="step > i" class="step-check"> ✓ </text>
+            <BaseIcon v-if="step > i" name="check" :size="28" />
             <text v-else class="step-num">
               {{ i + 1 }}
             </text>
@@ -899,7 +899,7 @@ export default {
 
   .step-check {
     font-size: 22rpx;
-    color: #fff;
+    color: var(--text-inverse);
     font-weight: 700;
   }
 
@@ -929,17 +929,17 @@ export default {
     }
 
     .step-num {
-      color: #fff;
+      color: var(--text-inverse);
     }
 
     .step-label {
-      color: #e84393;
+      color: var(--primary);
       font-weight: 600;
     }
   }
 
   &.done .step-dot {
-    background: linear-gradient(135deg, #34c759, #30d158);
+    background: linear-gradient(135deg, var(--success), var(--wise-green));
     box-shadow: 0 4rpx 12rpx rgba(52, 199, 89, 0.3);
   }
 }
@@ -1101,7 +1101,7 @@ export default {
   }
 
   &.active .color-circle {
-    box-shadow: 0 0 0 4rpx #e84393;
+    box-shadow: 0 0 0 4rpx var(--primary);
     transform: scale(1.1);
   }
 
@@ -1157,7 +1157,7 @@ export default {
     width: 80rpx;
     height: 80rpx;
     border: 6rpx solid rgba(232, 67, 147, 0.15);
-    border-top-color: #e84393;
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
   }
@@ -1325,7 +1325,7 @@ export default {
   }
 
   .preview-card {
-    background: #000;
+    background: var(--background);
   }
 
   .btn-secondary {
@@ -1359,7 +1359,7 @@ export default {
 }
 
 .dark-mode.page-container {
-  background: linear-gradient(180deg, #04070d 0%, #0a1018 48%, #04070d 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 48%, var(--background) 100%);
 }
 
 .hero-title,
@@ -1392,7 +1392,7 @@ export default {
 .dark-mode .option-chip .option-name,
 .dark-mode .btn-secondary,
 .dark-mode .btn-ghost {
-  color: #ffffff;
+  color: var(--text-inverse);
 }
 
 .dark-mode .hero-desc,
@@ -1437,11 +1437,11 @@ export default {
 }
 
 .step-item.active .step-label {
-  color: #22873a;
+  color: var(--primary);
 }
 
 .dark-mode .step-item.active .step-label {
-  color: #7bc0ff;
+  color: var(--primary);
 }
 
 .step-item.done .step-dot {
@@ -1471,11 +1471,11 @@ export default {
 
 .processing-card .processing-spinner {
   border-color: rgba(52, 199, 89, 0.16);
-  border-top-color: #34c759;
+  border-top-color: var(--success);
 }
 
 .dark-mode .processing-card .processing-spinner {
   border-color: rgba(10, 132, 255, 0.16);
-  border-top-color: #0a84ff;
+  border-top-color: var(--primary);
 }
 </style>

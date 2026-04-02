@@ -3,7 +3,9 @@
     <!-- Custom nav bar -->
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-back" hover-class="hover-scale" @tap="handleBack">
-        <text class="back-icon">&lt;</text>
+        <text class="back-icon">
+          <BaseIcon name="arrow-left" :size="36" />
+        </text>
       </view>
       <text class="nav-title">专注计时</text>
       <view class="nav-placeholder" />
@@ -42,7 +44,9 @@
         </view>
         <view v-else class="control-row">
           <view class="control-btn" hover-class="hover-scale" @tap="resetTimer">
-            <text class="ctrl-icon">⟲</text>
+            <text class="ctrl-icon">
+              <BaseIcon name="refresh" :size="36" />
+            </text>
             <text class="ctrl-label">重置</text>
           </view>
           <view
@@ -96,6 +100,7 @@
 import WdCircle from 'wot-design-uni/components/wd-circle/wd-circle.vue';
 
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 import { toast } from '@/utils/toast.js';
 import storageService from '@/services/storageService.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
@@ -256,15 +261,29 @@ function handleBack() {
 }
 
 // Lifecycle
+// 主题事件处理函数 — 提升到组件作用域以便 onUnmounted 精确移除
+const _themeHandler = (mode) => {
+  isDark.value = mode === 'dark';
+};
+
 onMounted(() => {
   const sysInfo = uni.getWindowInfo();
   statusBarHeight.value = sysInfo.statusBarHeight || 44;
   isDark.value = uni.getStorageSync('theme_mode') === 'dark';
   loadTodayStats();
+
+  // 监听全局主题切换事件
+  uni.$on('themeUpdate', _themeHandler);
+});
+
+onShow(() => {
+  // 每次页面显示时同步主题状态
+  isDark.value = uni.getStorageSync('theme_mode') === 'dark';
 });
 
 onUnmounted(() => {
   if (interval) clearInterval(interval);
+  uni.$off('themeUpdate', _themeHandler);
   // #ifdef APP-PLUS
   plus.device.setKeepScreenOn(false);
   // #endif
@@ -285,8 +304,8 @@ onUnmounted(() => {
 }
 
 .nav-back {
-  width: 60rpx;
-  height: 60rpx;
+  width: 88rpx;
+  height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -334,7 +353,7 @@ onUnmounted(() => {
 }
 
 .type-break {
-  color: #3b82f6;
+  color: var(--primary);
   background: rgba(59, 130, 246, 0.1);
 }
 
@@ -349,15 +368,8 @@ onUnmounted(() => {
   /* gap: 8rpx; -- replaced for MP WebView compat */
 }
 
-.timer-display {
-  font-size: 72rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 2rpx;
-}
-
 .timer-session {
+  margin-top: 8rpx;
   font-size: 24rpx;
   color: var(--text-sub);
 }
@@ -376,13 +388,17 @@ onUnmounted(() => {
 .btn-text {
   font-size: 32rpx;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .control-row {
   display: flex;
   align-items: center;
   /* gap: 32rpx; -- replaced for MP WebView compat */
+}
+
+.control-row .control-btn + .control-btn {
+  margin-left: 32rpx;
 }
 
 .control-btn {
@@ -396,6 +412,10 @@ onUnmounted(() => {
   min-width: 120rpx;
 }
 
+.control-btn .ctrl-icon {
+  margin-bottom: 8rpx;
+}
+
 .primary-btn {
   background: var(--primary, #0f5f34);
   box-shadow: 0 4rpx 16rpx rgba(15, 95, 52, 0.25);
@@ -403,11 +423,11 @@ onUnmounted(() => {
 
 .primary-btn .ctrl-icon,
 .primary-btn .ctrl-label {
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .break-btn {
-  background: #3b82f6;
+  background: var(--primary);
   box-shadow: 0 4rpx 16rpx rgba(59, 130, 246, 0.25);
 }
 
@@ -417,7 +437,7 @@ onUnmounted(() => {
 }
 
 .ctrl-label {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--text-sub);
 }
 
@@ -439,6 +459,10 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   /* gap: 16rpx; -- replaced for MP WebView compat */
+}
+
+.duration-chip + .duration-chip {
+  margin-left: 16rpx;
 }
 
 .duration-chip {
@@ -488,13 +512,32 @@ onUnmounted(() => {
 }
 
 .stat-label {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: var(--text-sub);
 }
 
 .stat-divider {
+  margin: 0 24rpx;
   width: 1rpx;
   height: 48rpx;
   background: var(--border-color, rgba(0, 0, 0, 0.08));
+}
+.dark-mode {
+  background: var(--bg-page, #0b0b0f);
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .custom-navbar {
+  background: transparent;
+}
+.dark-mode .nav-title,
+.dark-mode .nav-back {
+  color: var(--text-primary, #f5f5f7);
+}
+.dark-mode .timer-card {
+  background: var(--bg-card, #1c1c1e);
+  border-color: var(--border, rgba(255, 255, 255, 0.1));
+}
+.dark-mode .type-selector {
+  background: var(--bg-secondary, #2c2c2e);
 }
 </style>

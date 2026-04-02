@@ -5,7 +5,9 @@
       <view class="result-top-bar">
         <text class="result-title">练习报告</text>
         <view class="close-btn" hover-class="item-hover" @tap="emit('close')">
-          <text>✕</text>
+          <text>
+            <BaseIcon name="close" :size="24" />
+          </text>
         </view>
       </view>
 
@@ -82,7 +84,9 @@
                 <text class="step-title">{{ step.title }}</text>
                 <text class="step-subtitle">{{ step.subtitle }}</text>
               </view>
-              <text class="step-arrow">›</text>
+              <text class="step-arrow">
+                <BaseIcon name="chevron-right" :size="24" />
+              </text>
             </view>
           </view>
         </view>
@@ -115,7 +119,7 @@
 
 <script setup>
 import { ref, computed, watch, onUnmounted } from 'vue';
-import { animateNumber } from '@/utils/animations/micro-interactions';
+import { animateNumber } from '../../utils/micro-interactions.js';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 
 const studyEngineStore = useStudyEngineStore();
@@ -249,12 +253,21 @@ function handleNextStep(step) {
   }
 }
 
+// --- 动画延迟定时器 ---
+let _animDelayTimer = null;
+
 watch(
   () => props.visible,
   (val) => {
+    // 清理上一次的延迟定时器（防止快速切换导致泄漏）
+    if (_animDelayTimer) {
+      clearTimeout(_animDelayTimer);
+      _animDelayTimer = null;
+    }
     if (val) {
       displayAccuracy.value = 0;
-      setTimeout(() => {
+      _animDelayTimer = setTimeout(() => {
+        _animDelayTimer = null;
         if (animHandle) animHandle.cancel();
         animHandle = animateNumber(0, accuracy.value, 1200, (v) => {
           displayAccuracy.value = v;
@@ -268,6 +281,10 @@ watch(
 );
 
 onUnmounted(() => {
+  if (_animDelayTimer) {
+    clearTimeout(_animDelayTimer);
+    _animDelayTimer = null;
+  }
   if (animHandle) animHandle.cancel();
 });
 

@@ -8,7 +8,9 @@
       <!-- 导航栏内容 -->
       <view class="navbar-content">
         <view class="navbar-left" @tap="goBack">
-          <text class="back-icon"> ‹ </text>
+          <text class="back-icon">
+            <BaseIcon name="arrow-left" :size="36" />
+          </text>
         </view>
         <view class="navbar-center">
           <text class="navbar-title"> 我的好友 </text>
@@ -104,7 +106,7 @@
         </view>
 
         <!-- 搜索无结果 -->
-        <BaseEmpty v-else icon="[搜索]" title="未找到用户" desc="试试搜索其他昵称" />
+        <BaseEmpty v-else icon="search" title="未找到用户" desc="试试搜索其他昵称" />
       </view>
 
       <!-- 我的好友 Tab -->
@@ -118,7 +120,7 @@
         <!-- 空状态 -->
         <BaseEmpty
           v-else-if="!isLoading && friendList.length === 0"
-          icon="[好友]"
+          icon="star"
           title="还没有好友"
           desc="快去搜索添加好友，一起刷题吧！"
         />
@@ -857,84 +859,8 @@ export default {
   margin-top: calc(var(--status-bar-height) + 88rpx);
 }
 
-.dark-mode .search-bar {
-  background-color: var(--bg-glass);
-  border-bottom-color: var(--border);
-}
-
-.search-input-wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.68);
-  border-radius: 999rpx;
-  padding: 16rpx 24rpx;
-  position: relative;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
-}
-
-.dark-mode .search-input-wrapper {
-  background-color: var(--overlay);
-}
-
-.search-icon {
-  width: 44rpx;
-  height: 44rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
-  font-size: 32rpx;
-  margin-right: 12rpx;
-  opacity: 1;
-}
-
-.search-input {
-  flex: 1;
-  font-size: 28rpx;
-  color: var(--text-main, var(--ds-color-text-primary));
-  background-color: transparent;
-}
-
-.dark-mode .search-input {
-  color: var(--text-main, var(--ds-color-text-primary));
-}
-
-.search-input::placeholder {
-  color: var(--text-sub);
-}
-
-.clear-icon {
-  width: 44rpx;
-  height: 44rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
-  font-size: 32rpx;
-  color: var(--text-sub);
-  padding: 0 12rpx;
-}
-
-.dark-mode .search-icon,
-.dark-mode .clear-icon,
-.dark-mode .pk-btn,
-.dark-mode .empty-icon {
-  background:
-    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(10, 132, 255, 0.18);
-  box-shadow: var(--apple-shadow-surface);
-}
-
 .search-btn {
+  margin-left: 12rpx;
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
   border-radius: 48rpx;
@@ -1120,6 +1046,7 @@ export default {
 }
 
 .friend-card {
+  margin-bottom: 24rpx;
   position: relative;
   overflow: hidden;
   background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
@@ -1157,6 +1084,7 @@ export default {
 
 /* 头像 */
 .avatar-wrapper {
+  margin-right: 24rpx;
   position: relative;
   flex-shrink: 0;
 }
@@ -1198,6 +1126,7 @@ export default {
 }
 
 .nickname {
+  margin-right: 12rpx;
   font-size: 32rpx;
   font-weight: 600;
   color: var(--text-main, var(--ds-color-text-primary));
@@ -1243,7 +1172,7 @@ export default {
 }
 
 .score-label {
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: var(--text-sub);
 }
 
@@ -1335,6 +1264,7 @@ export default {
 }
 
 .user-card .avatar {
+  margin-right: 24rpx;
   width: 96rpx;
   height: 96rpx;
   border-radius: 50%;
@@ -1411,6 +1341,7 @@ export default {
 }
 
 .request-card .avatar {
+  margin-right: 24rpx;
   width: 96rpx;
   height: 96rpx;
   border-radius: 50%;
@@ -1454,6 +1385,7 @@ export default {
 }
 
 .accept-btn {
+  margin-bottom: 12rpx;
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
   border-radius: 48rpx;

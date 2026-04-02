@@ -1,11 +1,11 @@
 <template>
-  <view class="container" :class="{ 'dark-mode': isDark, 'screen-shake': screenShake }">
+  <view class="container" :class="{ 'dark-mode': isDark, 'wot-theme-dark': isDark, 'screen-shake': screenShake }">
     <view class="aurora-bg" />
 
     <view class="nav-header" :style="{ paddingTop: statusBarHeight + 'px', height: navBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px', height: '44px' }">
         <view class="back-area" hover-class="item-hover" @tap="handleExit">
-          <text class="back-icon"> ← </text>
+          <BaseIcon name="arrow-left" :size="36" />
           <text id="e2e-quiz-progress" class="progress-text" @tap.stop="showAnswerSheet = true">
             {{ currentIndex + 1 }} / {{ questions.length }}
           </text>
@@ -411,6 +411,7 @@
 <script>
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
+import { safeImport } from '@/utils/helpers/safe-import.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 
 // ✅ P0-3: 导入自动保存功能
@@ -451,7 +452,7 @@ import { startTimer as startQuestionTimer, stopTimer as stopQuestionTimer } from
 import { pickQuestions } from './utils/smart-question-picker.js';
 import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/learning/adaptive-learning-engine.js';
 // 离线缓存：使用统一的离线缓存服务
-import { checkOfflineAvailability } from '@/services/offline-cache-service.js';
+import { checkOfflineAvailability } from './services/offline-cache-service.js';
 // ✅ 导入题目笔记模块
 import { addQuestionNote, getNotesByQuestion, getNoteTags } from './question-note.js';
 // ✅ P1: 提取的模块
@@ -493,7 +494,7 @@ import {
   loadCardState,
   createNewCard
 } from '@/services/fsrs-service.js';
-import { triggerOptimization } from '@/services/fsrs-optimizer-client.js';
+import { triggerOptimization } from './services/fsrs-optimizer-client.js';
 
 export default {
   components: {
@@ -621,9 +622,9 @@ export default {
       let scheduleHint = '';
       if (wrong > 0) {
         try {
-          // 模拟一次 "Again" 评分，预测下次复习时间
-          const mockMistake = { fsrs_due: Date.now() };
-          const result = scheduleMistakeReview(mockMistake, 'again');
+          // 模拟一次 \"Again\" 评分，预测下次复习时间
+          const previewMistake = { fsrs_due: Date.now() };
+          const result = scheduleMistakeReview(previewMistake, 'again');
           if (result.fsrs_due) {
             const nextDue = result.fsrs_due - Date.now();
             const mins = Math.round(nextDue / 60000);
@@ -1356,7 +1357,7 @@ export default {
         }
         // ✅ [体感革命] 完成fanfare + confetti
         playCompleteFanfare();
-        import('canvas-confetti')
+        safeImport(import('canvas-confetti'))
           .then((mod) => {
             const confetti = mod.default || mod;
             if (confetti) {
@@ -2073,7 +2074,7 @@ export default {
 }
 
 .total-label {
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: var(--text-sub);
   opacity: 0.7;
 }
@@ -2103,13 +2104,13 @@ export default {
 
 /* 时间警告状态 */
 .question-timer-box.warning {
-  background: linear-gradient(135deg, var(--ds-color-warning, #ff9800), #f57c00);
+  background: linear-gradient(135deg, var(--ds-color-warning, #ff9800), var(--warning));
   animation: timerPulse 1s ease-in-out infinite;
 }
 
 /* 时间危险状态 */
 .question-timer-box.danger {
-  background: linear-gradient(135deg, var(--ds-color-error, #f44336), #d32f2f);
+  background: linear-gradient(135deg, var(--ds-color-error, #f44336), var(--danger));
   animation: timerShake 0.5s ease-in-out infinite;
 }
 
@@ -2248,7 +2249,7 @@ export default {
   display: inline-block;
   background: var(--primary);
   color: var(--text-primary-foreground);
-  font-size: 20rpx;
+  font-size: 24rpx;
   padding: 4rpx 16rpx;
   border-radius: 10rpx;
   margin-bottom: 20rpx;
@@ -2667,7 +2668,7 @@ export default {
 }
 
 .favorite-btn.is-favorited {
-  background: linear-gradient(135deg, #ffd700, #ffa500);
+  background: linear-gradient(135deg, var(--warning), var(--warning));
 }
 
 .favorite-btn.is-favorited .favorite-icon {
@@ -2766,7 +2767,7 @@ export default {
 .xp-flyout-text {
   font-size: 52rpx;
   font-weight: 800;
-  color: #ffd700;
+  color: var(--warning);
   text-shadow:
     0 2px 8px rgba(255, 215, 0, 0.5),
     0 0 20px rgba(255, 215, 0, 0.3);
@@ -2810,12 +2811,12 @@ export default {
 .xp-boost-text {
   font-size: 24rpx;
   font-weight: 800;
-  color: #ffd700;
+  color: var(--warning);
   text-shadow: 0 1px 4px rgba(255, 215, 0, 0.4);
 }
 
 .xp-boost-remaining {
-  font-size: 18rpx;
+  font-size: 22rpx;
   color: rgba(255, 215, 0, 0.7);
   margin-top: 2rpx;
 }
@@ -2931,7 +2932,7 @@ export default {
 }
 
 .note-btn.has-notes {
-  background: linear-gradient(135deg, #2196f3, #03a9f4);
+  background: linear-gradient(135deg, var(--primary), var(--primary));
 }
 
 .note-btn.has-notes .note-icon {
@@ -3114,8 +3115,11 @@ export default {
 /* FSRS 智能评分按钮（答对/答错各显示2个） */
 .fsrs-rating-row {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
   margin-top: 20rpx;
+}
+.fsrs-rating-btn + .fsrs-rating-btn {
+  margin-left: 16rpx;
 }
 
 .fsrs-rating-btn {

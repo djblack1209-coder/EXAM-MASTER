@@ -417,7 +417,7 @@ export default {
   &.deco-1 {
     width: 200rpx;
     height: 200rpx;
-    background: linear-gradient(135deg, #00e5ff, #00b8d4);
+    background: linear-gradient(135deg, var(--info), var(--accent-cool));
     top: -60rpx;
     right: -40rpx;
     animation: float 6s ease-in-out infinite;

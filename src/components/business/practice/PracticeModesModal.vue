@@ -21,7 +21,7 @@
             @tap="$emit('select', mode)"
           >
             <view class="practice-mode-icon">
-              {{ mode.icon }}
+              <BaseIcon :name="mode.iconName || 'bookmark'" :size="40" />
             </view>
             <text class="practice-mode-name">
               {{ mode.name }}
@@ -118,7 +118,14 @@ defineEmits(['close', 'select']);
 .practice-modes-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14rpx;
+  /* gap: 14rpx; */
+}
+.practice-modes-grid > view {
+  margin-right: 14rpx;
+  margin-bottom: 14rpx;
+}
+.practice-modes-grid > view:nth-child(2n) {
+  margin-right: 0;
 }
 .practice-mode-item {
   display: flex;

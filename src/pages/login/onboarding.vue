@@ -12,7 +12,7 @@
     <view class="steps-wrapper">
       <!-- Step 0: 选择考试类型 -->
       <view v-show="step === 0" :class="['step-container', { 'step-active': step === 0, 'step-hidden': step !== 0 }]">
-        <text class="step-emoji">目标</text>
+        <view class="step-emoji"><BaseIcon name="target" :size="96" /></view>
         <text class="step-title">你在准备什么考试？</text>
         <text class="step-desc">我们会为你定制学习计划</text>
 
@@ -24,7 +24,7 @@
             :class="{ selected: selectedExam === exam.id }"
             @tap="selectedExam = exam.id"
           >
-            <text class="exam-icon">{{ exam.icon }}</text>
+            <BaseIcon :name="exam.icon" :size="56" class="exam-icon" />
             <text class="exam-name">{{ exam.name }}</text>
           </view>
         </view>
@@ -34,7 +34,7 @@
 
       <!-- Step 1: 设定每日目标 -->
       <view v-show="step === 1" :class="['step-container', { 'step-active': step === 1, 'step-hidden': step !== 1 }]">
-        <text class="step-emoji">统计</text>
+        <view class="step-emoji"><BaseIcon name="chart-bar" :size="96" /></view>
         <text class="step-title">每天想练多少题？</text>
         <text class="step-desc">设定一个适合自己的目标</text>
 
@@ -58,13 +58,13 @@
 
       <!-- Step 2: 导入内容 -->
       <view v-show="step === 2" :class="['step-content', { 'step-active': step === 2, 'step-hidden': step !== 2 }]">
-        <text class="step-emoji">书</text>
+        <view class="step-emoji"><BaseIcon name="book" :size="96" /></view>
         <text class="step-title">导入学习资料</text>
         <text class="step-desc">导入 Anki 牌组或上传学习资料，立即开始刷题</text>
 
         <view class="import-options">
           <view class="import-option" @tap="goImportAnki">
-            <text class="import-icon">[导入]</text>
+            <BaseIcon name="download" :size="48" class="import-icon" />
             <view class="import-info">
               <text class="import-name">导入 Anki 牌组</text>
               <text class="import-hint">支持 .apkg 格式，考研社区数万牌组可用</text>
@@ -73,7 +73,7 @@
           </view>
 
           <view class="import-option" @tap="goImportFile">
-            <text class="import-icon">[文档]</text>
+            <BaseIcon name="file-text" :size="48" class="import-icon" />
             <view class="import-info">
               <text class="import-name">上传学习资料</text>
               <text class="import-hint">支持 PDF、Word、TXT 等格式</text>
@@ -91,27 +91,27 @@
 
       <!-- Step 3: 准备开始 -->
       <view v-show="step === 3" :class="['step-container', { 'step-active': step === 3, 'step-hidden': step !== 3 }]">
-        <text class="step-emoji">提升</text>
+        <view class="step-emoji"><BaseIcon name="trend-up" :size="96" /></view>
         <text class="step-title">一切就绪！</text>
         <text class="step-desc">{{ readySummary }}</text>
 
         <view class="ready-features">
           <view class="feature-item">
-            <text class="feature-icon">[智能]</text>
+            <BaseIcon name="bulb" :size="48" class="feature-icon" />
             <view class="feature-text">
               <text class="feature-title">智能出题</text>
               <text class="feature-desc">AI 根据你的水平自动调整难度</text>
             </view>
           </view>
           <view class="feature-item">
-            <text class="feature-icon">[趋势]</text>
+            <BaseIcon name="trend-up" :size="48" class="feature-icon" />
             <view class="feature-text">
               <text class="feature-title">科学复习</text>
               <text class="feature-desc">FSRS 算法帮你在最佳时机复习</text>
             </view>
           </view>
           <view class="feature-item">
-            <text class="feature-icon">[成就]</text>
+            <BaseIcon name="trophy" :size="48" class="feature-icon" />
             <view class="feature-text">
               <text class="feature-title">成就系统</text>
               <text class="feature-desc">每道题都有 XP 奖励，解锁成就徽章</text>
@@ -120,8 +120,9 @@
         </view>
 
         <button class="start-btn" @tap="completeOnboarding">开始学习之旅</button>
-      </view> </view
-    ><!-- /steps-wrapper -->
+      </view>
+    </view>
+    <!-- /steps-wrapper -->
   </view>
 </template>
 
@@ -130,6 +131,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
+import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 const isDark = ref(initTheme());
 
@@ -144,12 +146,12 @@ const selectedExam = ref('');
 const dailyGoal = ref(0);
 
 const examTypes = [
-  { id: 'kaoyan', name: '考研', icon: '[学位]' },
-  { id: 'cet4', name: '四级', icon: '[笔记]' },
-  { id: 'cet6', name: '六级', icon: '[阅读]' },
-  { id: 'gongkao', name: '公考', icon: '[公务]' },
-  { id: 'sikao', name: '司考', icon: '[法律]' },
-  { id: 'other', name: '其他', icon: '[书]' }
+  { id: 'kaoyan', name: '考研', icon: 'graduate' },
+  { id: 'cet4', name: '四级', icon: 'book' },
+  { id: 'cet6', name: '六级', icon: 'book-open' },
+  { id: 'gongkao', name: '公考', icon: 'briefcase' },
+  { id: 'sikao', name: '司考', icon: 'gavel' },
+  { id: 'other', name: '其他', icon: 'folder' }
 ];
 
 const goalOptions = [
@@ -297,11 +299,6 @@ function skipOnboarding() {
   transform: scale(1.05);
 }
 
-.exam-icon {
-  font-size: 56rpx;
-  margin-bottom: 12rpx;
-}
-
 .exam-name {
   font-size: 26rpx;
   font-weight: 600;
@@ -382,9 +379,16 @@ function skipOnboarding() {
 }
 
 .feature-icon {
-  font-size: 48rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-right: 24rpx;
   flex-shrink: 0;
+}
+
+.exam-icon {
+  width: 56rpx;
+  height: 56rpx;
+  margin-bottom: 12rpx;
 }
 
 .feature-text {
@@ -425,7 +429,7 @@ function skipOnboarding() {
 }
 
 .start-btn {
-  background: linear-gradient(135deg, var(--primary, #37b24d), #2f9e44);
+  background: linear-gradient(135deg, var(--primary, #37b24d), var(--primary));
   font-size: 34rpx;
 }
 
@@ -462,7 +466,9 @@ function skipOnboarding() {
   transform: scale(0.98);
 }
 .import-icon {
-  font-size: 48rpx;
+  width: 48rpx;
+  height: 48rpx;
+  flex-shrink: 0;
 }
 .import-info {
   flex: 1;
@@ -518,7 +524,7 @@ function skipOnboarding() {
 
 /* 暗色模式 */
 .dark-mode {
-  background: linear-gradient(180deg, #0b0b0f 0%, #1a1a2e 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 100%);
 }
 
 .dark-mode .step-title {

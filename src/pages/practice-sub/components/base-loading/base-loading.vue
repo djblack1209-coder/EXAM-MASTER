@@ -27,17 +27,14 @@ defineProps({
   width: 36px;
   height: 36px;
   border: 3px solid rgba(52, 199, 89, 0.2);
-  border-top-color: #34c759;
+  border-top-color: var(--success);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 .loading-text {
   margin-top: 12px;
   font-size: 14px;
-  color: #8e8e93;
-}
-.dark-mode .loading-text {
-  color: #aeaeb2;
+  color: var(--text-tertiary);
 }
 @keyframes spin {
   to {

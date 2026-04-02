@@ -171,6 +171,13 @@ export default {
     }
   },
 
+  beforeUnmount() {
+    if (this._animTimer) {
+      clearTimeout(this._animTimer);
+      this._animTimer = null;
+    }
+  },
+
   methods: {
     // 检查收藏状态
     checkFavoriteStatus() {
@@ -200,7 +207,8 @@ export default {
       this.isFavorite = result;
 
       // 动画结束
-      setTimeout(() => {
+      this._animTimer = setTimeout(() => {
+        this._animTimer = null;
         this.isAnimating = false;
       }, 600);
 
@@ -536,7 +544,7 @@ export default {
 .modal-header {
   justify-content: space-between;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-margin-bottom: 22rpx;
+  margin-bottom: 22rpx;
 }
 
 .modal-eyebrow,
@@ -619,7 +627,7 @@ margin-bottom: 22rpx;
   font-size: 32rpx;
   line-height: 1.6;
   font-weight: 650;
-  color: #13301c;
+  color: var(--foreground);
 }
 
 .preview-dark .preview-quote {
@@ -644,7 +652,7 @@ margin-bottom: 22rpx;
 
 .favorite-btn {
   /* gap: 12rpx; -- replaced for Android WebView compat */
-justify-content: center;
+  justify-content: center;
   padding: 18rpx 30rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.58);
@@ -794,7 +802,7 @@ justify-content: center;
 .poster-actions {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-width: 100%;
+  width: 100%;
   margin-top: 26rpx;
 }
 

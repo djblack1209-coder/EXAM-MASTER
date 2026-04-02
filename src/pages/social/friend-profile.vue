@@ -5,7 +5,9 @@
       <view class="status-bar" />
       <view class="navbar-content">
         <view class="navbar-left" hover-class="nav-hover" @tap="goBack">
-          <text class="back-icon"> ‹ </text>
+          <text class="back-icon">
+            <BaseIcon name="arrow-left" :size="36" />
+          </text>
         </view>
         <view class="navbar-center">
           <text class="navbar-title"> 好友资料 </text>
@@ -151,7 +153,7 @@
           <!-- 消息功能暂未开放，隐藏按钮 -->
           <!-- <button class="action-btn secondary" hover-class="btn-hover" @tap="handleSendMessage"
 					:disabled="isActionLoading">
-					<text class="btn-icon">[消息]</text>
+					<text class="btn-icon">消息</text>
 					<text class="btn-text">发送消息</text>
 				</button> -->
           <button

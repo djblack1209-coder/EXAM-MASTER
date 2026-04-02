@@ -1,25 +1,8 @@
 <template>
   <!-- 外层定位容器：完全透明，不阻挡点击 -->
-  <view
-    class="tabbar-position-wrapper"
-    style="
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 999;
-      background-color: transparent !important;
-      background: transparent !important;
-      pointer-events: none;
-    "
-  >
+  <view class="tabbar-position-wrapper">
     <!-- 内层胶囊：唯一可见实体，恢复点击 -->
-    <view
-      class="tabbar-capsule apple-glass"
-      style="pointer-events: auto"
-      :class="{ 'dark-mode': isDark }"
-      :style="capsuleStyle"
-    >
+    <view class="tabbar-capsule" :class="{ 'dark-mode': isDark }" :style="capsuleStyle">
       <view
         v-for="(item, index) in tabList"
         :id="`e2e-tabbar-${item.path.split('/')[2]}`"
@@ -225,6 +208,9 @@ function checkMistakeStatus() {
   mistakeDot.value = mistakes.length > 0;
 }
 
+// 定时器追踪，防止组件卸载后执行回调
+let _switchTabTimer = null;
+
 function switchTab(path, index) {
   if (resolvedActiveIndex.value === index) return;
   const uniApi = getUniApi();
@@ -237,7 +223,8 @@ function switchTab(path, index) {
   const item = tabList.value[index];
 
   // 根据页面类型选择跳转方式
-  setTimeout(() => {
+  _switchTabTimer = setTimeout(() => {
+    _switchTabTimer = null;
     if (item && item.isTabBar && uniApi && typeof uniApi.switchTab === 'function') {
       // tabBar 页面优先使用 switchTab
       uniApi.switchTab({
@@ -287,6 +274,10 @@ onMounted(() => {
 
 // F005: 清理事件监听，防止内存泄漏
 onBeforeUnmount(() => {
+  if (_switchTabTimer) {
+    clearTimeout(_switchTabTimer);
+    _switchTabTimer = null;
+  }
   const uniApi = getUniApi();
   if (uniApi && typeof uniApi.$off === 'function') {
     uniApi.$off('tabbarRouteUpdate', detectCurrentRoute);
@@ -295,9 +286,15 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 外层定位容器：绝对不能有任何背景色 */
+/* 外层定位容器：绝对透明，不阻挡点击 */
 .tabbar-position-wrapper {
-  /* 所有背景相关属性都在 inline style 中用 !important 强制透明 */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: transparent;
+  pointer-events: none;
 }
 
 /* 内层胶囊：唯一可见的实体元素 */
@@ -312,12 +309,35 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-around;
   border-radius: 60rpx;
+  pointer-events: auto;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+
+  /* 亮色模式：白色背景 + 底部边框 + 轻阴影 */
+  background: var(--bg-card, #ffffff);
+  border: 1rpx solid var(--border);
+  box-shadow: var(--shadow-sm, 0 2rpx 12rpx rgba(0, 0, 0, 0.08));
 }
 
-/* 深色模式：灰色玻璃质感悬浮导航栏 */
+/* 深色模式：深色毛玻璃质感 + 霓虹顶线 */
 .tabbar-capsule.dark-mode {
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(26, 28, 35, 0.95);
+  backdrop-filter: blur(24rpx);
+  -webkit-backdrop-filter: blur(24rpx);
+  border-color: transparent;
+  box-shadow: 0 -4rpx 24rpx rgba(0, 0, 0, 0.3);
+}
+
+/* 暗色模式顶部霓虹渐变线 */
+.tabbar-capsule.dark-mode::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, var(--primary), var(--accent, #9b51e0), var(--primary), transparent);
+  border-radius: 60rpx 60rpx 0 0;
 }
 
 .tab-item {
@@ -338,17 +358,17 @@ onBeforeUnmount(() => {
 }
 
 .tab-item.active {
-  background: rgba(255, 255, 255, 0.38);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
   box-shadow:
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.42),
-    0 8rpx 22rpx rgba(16, 40, 26, 0.12);
+    inset 0 1rpx 0 color-mix(in srgb, var(--primary) 8%, transparent),
+    0 4rpx 16rpx color-mix(in srgb, var(--primary) 6%, transparent);
 }
 
 .dark-mode .tab-item.active {
-  background: rgba(10, 132, 255, 0.18);
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
   box-shadow:
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.1),
-    0 10rpx 24rpx rgba(0, 0, 0, 0.32);
+    inset 0 1rpx 0 color-mix(in srgb, var(--primary) 10%, transparent),
+    0 6rpx 20rpx rgba(0, 0, 0, 0.28);
 }
 
 .icon-wrapper {
@@ -372,7 +392,7 @@ onBeforeUnmount(() => {
     filter 0.3s ease;
 }
 
-/* 深色模式下图标亮度调整 - 使用白色滤镜使其可见 */
+/* 深色模式下图标亮度调整 — 使用白色滤镜使其可见 */
 .dark-mode .tab-icon {
   filter: brightness(0) invert(1) opacity(0.7);
 }
@@ -381,7 +401,7 @@ onBeforeUnmount(() => {
   transform: scale(1.15);
 }
 
-/* 深色模式下激活图标 - 完全白色且更亮 */
+/* 深色模式下激活图标 — 完全白色且更亮 */
 .dark-mode .tab-item.active .tab-icon {
   filter: brightness(0) invert(1) opacity(1);
 }
@@ -393,37 +413,39 @@ onBeforeUnmount(() => {
   width: 64rpx;
   height: 64rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.45);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
   opacity: 1;
   z-index: -1;
 }
 
 .dark-mode .tab-item.active .icon-wrapper::after {
-  background: rgba(10, 132, 255, 0.2);
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
+/* 未选中态文字：使用 --text-secondary */
 .tab-label {
   font-size: 24rpx;
-  color: var(--text-sub, #8e8e93);
+  color: var(--text-secondary);
   font-weight: 500;
   line-height: 1.2;
   white-space: nowrap;
   transition: color 0.3s ease;
 }
 
-/* 深色模式下的文字颜色 - 使用浅灰色确保可见 */
+/* 深色模式下的未选中文字 */
 .dark-mode .tab-label {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
 }
 
+/* 选中态文字：使用 --primary */
 .tab-item.active .tab-label {
   color: var(--primary);
   font-weight: 600;
 }
 
-/* 深色模式下激活文字颜色 - 使用白色确保可见 */
+/* 深色模式下选中文字 — 同样使用 --primary */
 .dark-mode .tab-item.active .tab-label {
-  color: var(--ds-color-text-inverse, #ffffff);
+  color: var(--primary);
 }
 
 .red-dot {
@@ -432,14 +454,14 @@ onBeforeUnmount(() => {
   right: -4rpx;
   width: 16rpx;
   height: 16rpx;
-  background-color: var(--ds-color-error, #ff3b30);
+  background-color: var(--danger, #ff3b30);
   border-radius: 50%;
-  border: 2rpx solid var(--ds-color-surface, #ffffff);
+  border: 2rpx solid var(--bg-card, #ffffff);
   transition: border-color 0.3s ease;
 }
 
 /* 深色模式下红点边框颜色 */
 .dark-mode .red-dot {
-  border-color: rgba(45, 45, 45, 0.9);
+  border-color: rgba(26, 28, 35, 0.95);
 }
 </style>

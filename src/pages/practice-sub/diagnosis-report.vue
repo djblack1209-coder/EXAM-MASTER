@@ -1,8 +1,10 @@
 <template>
-  <view class="diagnosis-container" :class="{ 'dark-mode': isDark }">
+  <view class="diagnosis-container" :class="{ 'dark-mode': isDark, 'wot-theme-dark': isDark }">
     <!-- 顶部导航 -->
     <view class="top-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
-      <image src="/static/icons/chevron-left.png" class="back-icon" alt="返回" mode="aspectFit" @tap="goBack" />
+      <view class="back-icon" @tap="goBack">
+        <BaseIcon name="arrow-left" :size="36" />
+      </view>
       <text class="nav-title">学习诊断</text>
       <text class="nav-action" @tap="shareReport">分享</text>
     </view>
@@ -117,7 +119,10 @@
             <text class="mastery-text">掌握度 {{ wp.mastery || 20 }}%</text>
           </view>
           <text class="weak-pattern">{{ wp.errorPattern }}</text>
-          <text class="weak-suggestion">→ {{ wp.suggestion }}</text>
+          <view class="weak-suggestion">
+            <BaseIcon name="arrow-right" :size="24" style="margin-right: 8rpx; vertical-align: middle" />
+            {{ wp.suggestion }}
+          </view>
         </view>
       </view>
 
@@ -126,7 +131,7 @@
         <text class="section-title">掌握较好</text>
         <view class="strong-list">
           <view v-for="(sp, i) in strongPoints" :key="i" class="strong-tag" :style="{ animationDelay: i * 0.05 + 's' }">
-            <text class="strong-check">✓</text>
+            <BaseIcon name="check" :size="24" class="strong-check" />
             <text class="strong-text">{{ sp }}</text>
           </view>
         </view>
@@ -160,21 +165,21 @@
         <text class="section-title">AI 学习建议</text>
         <view class="plan-card apple-glass-card">
           <view v-if="studyPlan.immediate" class="plan-row">
-            <text class="plan-icon">[紧急]</text>
+            <text class="plan-icon">紧急</text>
             <view class="plan-content">
               <text class="plan-label">立即复习</text>
               <text class="plan-text">{{ studyPlan.immediate }}</text>
             </view>
           </view>
           <view v-if="studyPlan.thisWeek" class="plan-row">
-            <text class="plan-icon">[周计划]</text>
+            <text class="plan-icon">周计划</text>
             <view class="plan-content">
               <text class="plan-label">本周重点</text>
               <text class="plan-text">{{ studyPlan.thisWeek }}</text>
             </view>
           </view>
           <view v-if="studyPlan.suggestion" class="plan-row">
-            <text class="plan-icon">[建议]</text>
+            <text class="plan-icon">建议</text>
             <view class="plan-content">
               <text class="plan-label">整体建议</text>
               <text class="plan-text">{{ studyPlan.suggestion }}</text>
@@ -271,13 +276,13 @@ function severityText(s) {
 }
 
 function patternIcon(type) {
-  if (!type) return '[?]';
-  if (type.includes('概念')) return '[概念]';
-  if (type.includes('计算')) return '[计算]';
-  if (type.includes('审题')) return '[审题]';
-  if (type.includes('记忆')) return '[智能]';
-  if (type.includes('理解')) return '[理解]';
-  return '[其他]';
+  if (!type) return '?';
+  if (type.includes('概念')) return '概念';
+  if (type.includes('计算')) return '计算';
+  if (type.includes('审题')) return '审题';
+  if (type.includes('记忆')) return '记忆';
+  if (type.includes('理解')) return '理解';
+  return '其他';
 }
 
 // 数字递增动画
@@ -471,15 +476,13 @@ onBeforeUnmount(() => {
 /* [AUDIT FIX R135] px→rpx 响应式适配 */
 .diagnosis-container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #0a0a0f 0%, #111118 50%, #0d0d14 100%);
+  background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 50%, var(--background) 100%);
   padding-bottom: env(safe-area-inset-bottom);
-  --text-primary: #f5f5f7;
-  --text-secondary: #8e8e93;
   --bg-card: rgba(255, 255, 255, 0.06);
-  --green: #34c759;
-  --orange: #ff9f0a;
-  --red: #ff453a;
-  --blue: #32ade6;
+  --green: var(--success);
+  --orange: var(--warning);
+  --red: var(--danger);
+  --blue: var(--primary);
 }
 
 /* 顶部导航 */
@@ -575,14 +578,20 @@ onBeforeUnmount(() => {
   margin-top: 64rpx;
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; */
+}
+.loading-steps > view + view {
+  margin-top: 24rpx;
 }
 .step-item {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  /* gap: 20rpx; */
   opacity: 0.3;
   transition: opacity 0.4s ease;
+}
+.step-item > view + view {
+  margin-left: 20rpx;
 }
 .step-item.active {
   opacity: 1;
@@ -637,8 +646,11 @@ onBeforeUnmount(() => {
 .overview-card {
   display: flex;
   align-items: center;
-  gap: 40rpx;
+  /* gap: 40rpx; */
   padding: 40rpx;
+}
+.overview-card > view + view {
+  margin-left: 40rpx;
 }
 .score-section {
   display: flex;
@@ -685,7 +697,10 @@ onBeforeUnmount(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24rpx;
+  /* gap: 24rpx; */
+}
+.overview-right > view + view {
+  margin-top: 24rpx;
 }
 .level-badge {
   align-self: flex-start;
@@ -767,8 +782,11 @@ onBeforeUnmount(() => {
 .pattern-header {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; */
   margin-bottom: 16rpx;
+}
+.pattern-header > view + view {
+  margin-left: 16rpx;
 }
 .pattern-icon {
   font-size: 36rpx;
@@ -826,8 +844,11 @@ onBeforeUnmount(() => {
 .weak-header {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; */
   margin-bottom: 16rpx;
+}
+.weak-header > view + view {
+  margin-left: 16rpx;
 }
 .severity-indicator {
   position: relative;
@@ -902,7 +923,10 @@ onBeforeUnmount(() => {
   margin-bottom: 16rpx;
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; */
+}
+.weak-mastery > view + view {
+  margin-left: 16rpx;
 }
 .mastery-track {
   flex: 1;
@@ -938,18 +962,25 @@ onBeforeUnmount(() => {
 .strong-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  /* gap: 16rpx; */
   margin-top: 24rpx;
+}
+.strong-list > view {
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
 }
 .strong-tag {
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  /* gap: 8rpx; */
   padding: 12rpx 24rpx;
   border-radius: 24rpx;
   background: rgba(52, 199, 89, 0.1);
   border: 0.5px solid rgba(52, 199, 89, 0.2);
   animation: fadeSlideIn 0.3s ease-out both;
+}
+.strong-tag > view + view {
+  margin-left: 8rpx;
 }
 .strong-check {
   font-size: 24rpx;
@@ -999,13 +1030,13 @@ onBeforeUnmount(() => {
   transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .fill-good {
-  background: linear-gradient(90deg, #30d158, #34c759);
+  background: linear-gradient(90deg, var(--success), var(--wise-green));
 }
 .fill-mid {
-  background: linear-gradient(90deg, #ff9f0a, #ffb340);
+  background: linear-gradient(90deg, var(--warning), var(--warning-light, #ffb340));
 }
 .fill-bad {
-  background: linear-gradient(90deg, #ff453a, #ff6961);
+  background: linear-gradient(90deg, var(--danger), var(--danger-light, #ff6961));
 }
 
 /* AI学习建议 */
@@ -1016,9 +1047,12 @@ onBeforeUnmount(() => {
 .plan-row {
   display: flex;
   align-items: flex-start;
-  gap: 24rpx;
+  /* gap: 24rpx; */
   padding: 28rpx 32rpx;
   border-bottom: 0.5px solid rgba(255, 255, 255, 0.04);
+}
+.plan-row > view + view {
+  margin-left: 24rpx;
 }
 .plan-row:last-child {
   border-bottom: none;
@@ -1059,11 +1093,14 @@ onBeforeUnmount(() => {
   padding: 40rpx 0 80rpx;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  /* gap: 20rpx; */
+}
+.bottom-actions > view + view {
+  margin-top: 20rpx;
 }
 .btn-primary {
-  background: linear-gradient(135deg, #34c759, #30d158);
-  color: #fff;
+  background: linear-gradient(135deg, var(--success), var(--wise-green));
+  color: var(--text-inverse);
   border: none;
   border-radius: 28rpx;
   height: 96rpx;
@@ -1113,11 +1150,11 @@ onBeforeUnmount(() => {
 }
 .fail-retry {
   padding: 20rpx 64rpx;
-  background: var(--color-primary, #007aff);
+  background: var(--success-dark);
   border-radius: 40rpx;
 }
 .fail-retry-text {
-  color: #fff;
+  color: var(--text-inverse);
   font-size: 30rpx;
   font-weight: 500;
 }

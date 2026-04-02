@@ -14,6 +14,7 @@
           :src="tutor.avatar || '/static/images/default-avatar.png'"
           alt="头像"
           mode="aspectFill"
+          lazy-load
           @error="
             (e) => {
               if (e.target) e.target.src = '/static/images/default-avatar.png';
