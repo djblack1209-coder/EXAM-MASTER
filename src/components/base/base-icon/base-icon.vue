@@ -29,7 +29,7 @@ const currentTheme = computed(() => {
 });
 
 const iconSrc = computed(() => {
-  return getIconPath(props.name, undefined, currentTheme.value);
+  return getIconPath(props.name, undefined, currentTheme.value, props.color);
 });
 
 const wrapperStyle = computed(() => {
