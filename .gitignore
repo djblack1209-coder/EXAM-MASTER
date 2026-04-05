@@ -174,8 +174,25 @@ output/
 # AI 工具运行时缓存
 .superpowers/
 
+# Playwright CLI 运行时缓存
+.playwright-cli/
+
+# 截图/审计产物目录
+screenshots/
+test-screenshots/
+ui-audit/
+
+# AI 生成的中间图片
+art-gen-*.png
+ui-check-*.png
+gemini-*.png
+h5-*.png
+
 # 一次性优化脚本
 scripts/optimize/
 
 # public/ 目录下的 PWA 图标（仅 H5 使用）
 # public/static/pwa-icons/ 文件由 Vite 复制到 H5 构建产物，不打入小程序包
+
+# 数据目录（学校统计等大文件不纳入版本控制）
+data/schools/stats.json

@@ -72,12 +72,19 @@ const ALIASES = {
  * @param {string} name - 图标名称
  * @param {string} [fallback] - 找不到时的兜底图标
  * @param {string} [theme='light'] - 主题模式 'light' | 'dark'
+ * @param {string} [color] - 自定义颜色（如 '#1CB0F6'），会替换 SVG 中的 currentColor
  */
-export function getIconPath(name, fallback, theme) {
+export function getIconPath(name, fallback, theme, color) {
   const realName = ALIASES[name] || name;
   let uri = INLINE[realName] || INLINE[name] || SVG_DATA[realName] || SVG_DATA[name] || fallback || INLINE['info'];
-  // 深色模式：将 SVG 中的 currentColor（默认黑色）替换为白色
-  if (theme === 'dark' && uri) {
+  if (!uri) return uri;
+  // 优先级：显式传入的 color > 深色模式白色 > 默认 currentColor（黑色）
+  if (color) {
+    // 将 '#' 转为 URL 编码 '%23'，确保 data URI 合法
+    const encoded = color.startsWith('#') ? '%23' + color.slice(1) : color;
+    uri = uri.replace(/currentColor/g, encoded);
+  } else if (theme === 'dark') {
+    // 深色模式：将 SVG 中的 currentColor（默认黑色）替换为白色
     uri = uri.replace(/currentColor/g, '%23ffffff');
   }
   return uri;
