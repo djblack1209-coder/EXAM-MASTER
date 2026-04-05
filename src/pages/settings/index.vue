@@ -220,6 +220,23 @@
           />
         </view>
 
+        <!-- 安全/隐私 -->
+        <view class="setting-item ds-flex ds-flex-between">
+          <view class="setting-info" style="flex-direction: row; align-items: center; display: flex">
+            <!-- 卡通盾牌图标装饰 -->
+            <image
+              class="feature-cartoon-icon"
+              src="./static/icons/shield-check.png"
+              mode="aspectFit"
+              style="margin-right: 16rpx"
+            />
+            <view>
+              <text class="setting-title ds-text-sm ds-font-medium"> 安全与隐私 </text>
+              <text class="setting-desc ds-text-xs"> 数据安全，放心使用 </text>
+            </view>
+          </view>
+        </view>
+
         <!-- 清除缓存 -->
         <view
           id="e2e-settings-clear-cache"
@@ -290,6 +307,7 @@
 </template>
 
 <script setup>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 // Vue 原生钩子
 import { ref, onMounted, onUnmounted, onErrorCaptured } from 'vue';
@@ -306,7 +324,6 @@ import InviteModal from './InviteModal.vue';
 import PosterModal from './PosterModal.vue';
 import { setTheme, isNightTime } from './theme.js';
 import { storageService } from '@/services/storageService.js';
-import config from '@/config/index.js';
 import { useSchoolStore } from '@/stores/modules/school';
 import { useProfileStore } from '@/stores/modules/profile';
 import { useThemeStore } from '@/stores';
@@ -324,6 +341,8 @@ onErrorCaptured((err, instance, info) => {
 const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
+// H025 FIX: 头像上传走 Service 层
+import { uploadAvatar } from '@/services/api/domains/user.api.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { sanitizeInput } from '@/utils/security/sanitize.js';
@@ -472,7 +491,7 @@ const handleEditSchool = () => {
 
 // 备用：院校搜索弹窗
 const showSchoolSearchModal = () => {
-  uni.showModal({
+  modal.show({
     title: '搜索报考院校',
     editable: true,
     placeholderText: '输入院校名称或代码搜索',
@@ -524,7 +543,7 @@ const handleEditMajor = () => {
     toast.info('请先登录后编辑专业');
     return;
   }
-  uni.showModal({
+  modal.show({
     title: '编辑报考专业',
     editable: true,
     placeholderText: '请输入报考专业（最多30字）',
@@ -567,7 +586,7 @@ const toggleDark = (e) => {
 };
 
 const handleClearCache = () => {
-  uni.showModal({
+  modal.show({
     title: '提示',
     content: '确定清理缓存吗？（登录信息和主题设置将保留）',
     success: (res) => {
@@ -587,11 +606,11 @@ const handleClearCache = () => {
 
 // C5: 注销账号处理
 const handleDeleteAccount = () => {
-  uni.showModal({
+  modal.show({
     title: '注销账号',
     content: '注销后将有7天冷静期，期间可撤销。冷静期结束后账号数据将被永久删除，且无法恢复。确定要注销吗？',
     confirmText: '确定注销',
-    confirmColor: '#FF3B30',
+    confirmColor: 'var(--danger)',
     success: async (res) => {
       if (res.confirm) {
         toast.loading('提交中...');
@@ -601,7 +620,7 @@ const handleDeleteAccount = () => {
           if (result.success) {
             // 刷新注销状态显示
             await checkDeletionStatus();
-            uni.showModal({
+            modal.show({
               title: '注销申请已提交',
               content: result.message || '7天冷静期内可在此页面撤销注销',
               showCancel: false
@@ -632,7 +651,7 @@ const checkDeletionStatus = async () => {
 
 // C5: 撤销注销
 const handleCancelDeletion = () => {
-  uni.showModal({
+  modal.show({
     title: '撤销注销',
     content: '确定要撤销注销申请吗？撤销后账号将恢复正常使用。',
     confirmText: '确定撤销',
@@ -659,10 +678,10 @@ const handleCancelDeletion = () => {
 
 // 移除目标院校
 const removeTargetSchool = (index) => {
-  uni.showModal({
+  modal.show({
     title: '确认删除',
     content: `确定要删除目标院校 "${targetSchools.value[index].name}" 吗？`,
-    confirmColor: '#FF3B30',
+    confirmColor: 'var(--danger)',
     success: (res) => {
       if (res.confirm) {
         // 从数组中删除
@@ -700,65 +719,13 @@ const handleAddTargetSchool = () => {
 const isChoosingAvatar = ref(false);
 
 // ✅ F020: 上传头像到服务器（异步，不阻塞本地保存）
+// H025 FIX: 通过 Service 层 uploadAvatar 调用，消除分层违规
 async function _uploadAvatarToServer(filePath) {
   try {
     const userId = storageService.get('EXAM_USER_ID') || userInfo.value?.uid || userInfo.value?._id;
     if (!userId) return;
 
-    const uploadByBase64 = async () => {
-      try {
-        const avatarBase64 = await filePathToBase64(filePath);
-        const avatarType = inferImageMimeType(filePath);
-        const response = await profileStore.updateProfile({
-          action: 'upload_avatar',
-          userId,
-          avatar_base64: avatarBase64,
-          avatar_type: avatarType
-        });
-
-        if ((response.code === 0 || response.success) && response.data) {
-          return {
-            success: true,
-            avatarUrl: response.data.avatar_url || response.data.avatarUrl || response.data.url
-          };
-        }
-        return { success: false };
-      } catch (e) {
-        logger.warn('[Settings] base64 avatar upload failed:', e?.message || e);
-        return { success: false };
-      }
-    };
-
-    // I005: 使用统一配置获取 API 基础地址（替代硬编码的旧 Laf 域名）
-    const baseUrl = config.api.baseUrl;
-    const token = storageService.get('EXAM_TOKEN', '');
-
-    const res = await new Promise((resolve) => {
-      uni.uploadFile({
-        url: `${baseUrl}/upload-avatar`,
-        filePath,
-        name: 'file',
-        formData: { userId, type: 'avatar' },
-        header: { Authorization: `Bearer ${token}` },
-        success: async (r) => {
-          try {
-            const data = JSON.parse(r.data);
-            if (data.code === 0 || data.success) {
-              resolve({
-                success: true,
-                avatarUrl: data.data?.url || data.url || data.avatarUrl
-              });
-            } else {
-              logger.warn('[Settings] multipart avatar upload failed, fallback to base64');
-              resolve(await uploadByBase64());
-            }
-          } catch {
-            resolve(await uploadByBase64());
-          }
-        },
-        fail: async () => resolve(await uploadByBase64())
-      });
-    });
+    const res = await uploadAvatar(filePath, userId, { filePathToBase64, inferImageMimeType });
 
     if (res.success && res.avatarUrl) {
       // 用服务器返回的永久URL替换临时路径
@@ -974,7 +941,7 @@ const handleAvatarClick = () => {
 
   if (!userInfo.value.uid) {
     // 未登录状态，提示用户点击头像按钮进行登录
-    uni.showModal({
+    modal.show({
       title: '登录提示',
       content: '请点击头像按钮选择头像和昵称完成登录',
       showCancel: false,
@@ -1129,8 +1096,8 @@ const handleClosePosterModal = () => {
 
 .nav-title {
   font-size: 56rpx;
-  font-weight: 700;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 800;
+  color: var(--text-primary);
   line-height: 1.3;
   /* 大标题紧凑 */
   letter-spacing: -0.5px;
@@ -1147,8 +1114,8 @@ const handleClosePosterModal = () => {
   position: relative;
   z-index: 1;
   background:
-    linear-gradient(180deg, #fff3 0%, transparent 42%),
-    linear-gradient(160deg, #f1ffe8db 0%, #fffffff0 48%, #e4f6d8d1 100%);
+    linear-gradient(180deg, var(--apple-specular-soft, rgba(255, 255, 255, 0.2)) 0%, transparent 42%),
+    linear-gradient(160deg, var(--bg-secondary) 0%, var(--bg-card) 48%, var(--bg-secondary) 100%);
   border: 1px solid var(--apple-glass-border-strong);
   border-radius: 24px;
   padding: 20px;
@@ -1260,8 +1227,8 @@ const handleClosePosterModal = () => {
 
 .nickname-input {
   font-size: 44rpx;
-  font-weight: 700;
-  color: var(--hero-text);
+  font-weight: 800;
+  color: var(--text-primary);
   background-color: transparent;
   border: none;
   padding: 0;
@@ -1301,7 +1268,7 @@ const handleClosePosterModal = () => {
 .info-label {
   display: block;
   font-size: 24rpx;
-  color: rgba(16, 40, 26, 0.56);
+  color: var(--text-secondary);
   margin-bottom: 3px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1313,8 +1280,8 @@ const handleClosePosterModal = () => {
 .info-value {
   display: block;
   font-size: 26rpx;
-  color: var(--hero-text);
-  font-weight: 700;
+  color: var(--text-primary);
+  font-weight: 800;
   text-shadow: var(--shadow-sm);
   line-height: 1.5;
   /* 添加呼吸感 */
@@ -1347,8 +1314,8 @@ const handleClosePosterModal = () => {
 .stat-value {
   display: block;
   font-size: 56rpx;
-  font-weight: 900;
-  color: var(--hero-text);
+  font-weight: 800;
+  color: var(--text-primary);
   margin-bottom: 3px;
   line-height: 1.2;
   /* 数值轻微呼吸感 */
@@ -1360,7 +1327,7 @@ const handleClosePosterModal = () => {
 
 .stat-label {
   font-size: 24rpx;
-  color: rgba(16, 40, 26, 0.62);
+  color: var(--text-secondary);
   font-weight: 600;
   letter-spacing: 0.3px;
   line-height: 1.5;
@@ -1466,8 +1433,8 @@ const handleClosePosterModal = () => {
 
 .section-title {
   font-size: 24rpx;
-  font-weight: 600;
-  color: var(--text-sub, var(--text-primary));
+  font-weight: 700;
+  color: var(--text-secondary);
   margin: 0;
   line-height: 1.5;
   letter-spacing: 1.4rpx;
@@ -1546,8 +1513,8 @@ const handleClosePosterModal = () => {
 
 .setting-title {
   font-size: 32rpx;
-  font-weight: 500;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 4px;
   line-height: 1.5;
   /* 添加呼吸感 */
@@ -1567,6 +1534,11 @@ const handleClosePosterModal = () => {
 .cache-size {
   font-size: 28rpx;
   color: var(--text-secondary);
+}
+/* 卡通图标通用样式 */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
 }
 
 /* C5: 注销账号 */

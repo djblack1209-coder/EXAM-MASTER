@@ -314,7 +314,8 @@
         </view>
 
         <view v-if="filteredSchools.length === 0" class="empty-tip ds-flex-col ds-flex-center ds-gap-sm">
-          <BaseIcon class="empty-icon" name="graduation" :size="80" />
+          <!-- 择校引导插画 -->
+          <image class="empty-illustration" src="/static/illustrations/school-guide.png" mode="aspectFit" lazy-load />
           <text class="empty-title ds-text-base ds-font-semibold"> 暂无推荐院校数据 </text>
           <text v-if="hasActiveFilter" class="ds-text-sm ds-text-secondary"> 试试调整筛选条件 </text>
           <text v-else class="ds-text-sm ds-text-secondary"> 暂时没有找到匹配的院校，请稍后再试 </text>
@@ -337,7 +338,10 @@
           class="back-edit-btn ds-flex ds-flex-center ds-touchable"
           @tap="goToStep1"
         >
-          <text class="ds-text-sm"> ← 返回修改信息 </text>
+          <view class="ds-flex ds-flex-center" style="gap: 4rpx">
+            <BaseIcon name="arrow-left" :size="24" />
+            <text class="ds-text-sm"> 返回修改信息 </text>
+          </view>
         </view>
 
         <view class="safe-area-bottom" />
@@ -426,6 +430,7 @@
 </template>
 
 <script>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import SchoolSkeleton from '@/components/base/school-skeleton/school-skeleton.vue';
@@ -602,7 +607,8 @@ export default {
   onShareAppMessage() {
     return {
       title: '择校分析 - Exam-Master 考研备考',
-      path: '/pages/school/index'
+      path: '/pages/school/index',
+      imageUrl: '/static/images/app-share-cover.png'
     };
   },
 
@@ -968,7 +974,7 @@ export default {
 
       // 问题53：离线状态检查
       if (this.isOffline) {
-        uni.showModal({
+        modal.show({
           title: '网络不可用',
           content: '当前处于离线状态，无法进行智能匹配。是否查看缓存的推荐院校？',
           confirmText: '查看缓存',
@@ -1432,12 +1438,12 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  /* 强调色（页面特有） */
-  --accent-warm: var(--brand-color);
-  --accent-cool: var(--color-primary-dark);
-  --accent-warm-soft: rgba(0, 169, 109, 0.1);
-  --accent-warm-mid: rgba(0, 169, 109, 0.2);
-  --accent-warm-shadow: rgba(0, 169, 109, 0.3);
+  /* 强调色（School 模块 - 热橙） */
+  --accent-warm: var(--warning);
+  --accent-cool: var(--warning-hover, #e68600);
+  --accent-warm-soft: rgba(255, 150, 0, 0.1);
+  --accent-warm-mid: rgba(255, 150, 0, 0.2);
+  --accent-warm-shadow: rgba(255, 150, 0, 0.3);
 
   /* 状态色 */
   --error: var(--danger);
@@ -1445,7 +1451,7 @@ export default {
   min-height: 100%;
 
   min-height: 100vh;
-  background: var(--bg-page);
+  background: var(--background);
   position: relative;
   overflow: hidden;
   transition: background-color 0.3s;
@@ -1456,9 +1462,9 @@ export default {
   top: 0;
   width: 100%;
   height: 500rpx;
-  background: linear-gradient(135deg, var(--accent-warm) 0%, var(--accent-cool) 100%);
+  background: linear-gradient(135deg, var(--warning) 0%, var(--warning-light, #ffb84d) 100%);
   filter: blur(80px);
-  opacity: 0.3;
+  opacity: 0.15;
   z-index: 0;
 }
 
@@ -1468,13 +1474,9 @@ export default {
   left: 0;
   width: 100%;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 
   .nav-content {
     height: 44px;
@@ -1485,14 +1487,14 @@ export default {
 
     .nav-back {
       font-size: 36rpx;
-      color: var(--text-main);
+      color: var(--text-primary);
       font-weight: bold;
     }
 
     .nav-title {
       font-size: 34rpx;
-      font-weight: 600;
-      color: var(--text-main);
+      font-weight: 800;
+      color: var(--text-primary);
     }
 
     .nav-placeholder {
@@ -1509,7 +1511,7 @@ export default {
   box-sizing: border-box;
   position: relative;
   z-index: 1;
-  background: var(--bg-page);
+  background: var(--background);
   /* 优化滚动性能 */
   -webkit-overflow-scrolling: touch;
 }
@@ -1517,16 +1519,12 @@ export default {
 .glass-card {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 34%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  backdrop-filter: blur(22px) saturate(150%);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
-  border: 1px solid var(--apple-glass-border-strong);
-  border-radius: 40rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 28rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .glass-card::before {
@@ -1535,8 +1533,8 @@ export default {
   left: 24rpx;
   right: 24rpx;
   top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+  height: 0;
+  background: transparent;
 }
 
 .step-bar {
@@ -1560,9 +1558,9 @@ export default {
       opacity: 1;
 
       .step-dot {
-        background: var(--accent-warm);
-        color: var(--text-primary-foreground);
-        border-color: var(--accent-warm);
+        background: var(--warning);
+        color: var(--text-inverse);
+        border-color: var(--warning);
       }
     }
 
@@ -1570,33 +1568,33 @@ export default {
       width: 44rpx;
       height: 44rpx;
       border-radius: 22rpx;
-      border: 2rpx solid var(--text-main);
+      border: 2rpx solid var(--text-secondary);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 24rpx;
       transition: all 0.3s;
-      font-weight: bold;
-      color: var(--text-main);
+      font-weight: 800;
+      color: var(--text-primary);
     }
 
     text {
       font-size: 24rpx;
-      font-weight: bold;
-      color: var(--text-main);
+      font-weight: 700;
+      color: var(--text-primary);
     }
   }
 
   .step-line {
     flex: 1;
     height: 2rpx;
-    background: var(--border-color);
+    background: rgba(0, 0, 0, 0.08);
     margin: 0 20rpx;
     margin-top: -30rpx;
     transition: all 0.3s;
 
     &.active {
-      background: var(--accent-warm);
+      background: var(--warning);
     }
   }
 }
@@ -1605,15 +1603,15 @@ export default {
   margin: 0 8rpx 22rpx;
   padding: 18rpx 20rpx;
   border-radius: 24rpx;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px dashed var(--apple-divider);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border: 2rpx dashed rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
 .compliance-tip-text {
   font-size: 23rpx;
   line-height: 1.55;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .form-card {
@@ -1625,14 +1623,14 @@ export default {
     .title {
       font-size: 40rpx;
       font-weight: 800;
-      color: var(--text-main);
+      color: var(--text-primary);
       display: block;
       margin-bottom: 10rpx;
     }
 
     .subtitle {
       font-size: 24rpx;
-      color: var(--text-sub);
+      color: var(--text-secondary);
     }
   }
 }
@@ -1646,7 +1644,7 @@ export default {
 /* 输入框字数提示 */
 .input-hint {
   text-align: right;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin-top: 8rpx;
 }
 
@@ -1656,48 +1654,47 @@ export default {
   .label {
     font-size: 28rpx;
     font-weight: 600;
-    color: var(--text-main);
+    color: var(--text-primary);
     margin-bottom: 20rpx;
     display: block;
   }
 
   .glass-input {
-    background: rgba(255, 255, 255, 0.62);
-    border: 1rpx solid rgba(255, 255, 255, 0.5);
+    background: var(--bg-secondary);
+    border: 2rpx solid rgba(0, 0, 0, 0.04);
     border-radius: 999rpx;
     height: 100rpx;
     padding: 0 30rpx;
     display: flex;
     align-items: center;
     font-size: 28rpx;
-    color: var(--text-main);
+    color: var(--text-primary);
     box-sizing: border-box;
     transition: all 0.3s;
-    box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
   }
 
   .glass-input:focus-within {
-    border-color: var(--apple-glass-border-strong);
-    box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.08);
+    border-color: var(--warning);
+    box-shadow: 0 0 0 4rpx rgba(255, 150, 0, 0.12);
   }
 
   .ph-style {
-    color: var(--text-sub) !important;
+    color: var(--text-secondary) !important;
     opacity: 0.7;
   }
 
   .placeholder-text {
-    color: var(--text-sub) !important;
+    color: var(--text-secondary) !important;
     opacity: 0.7;
   }
 
   .picker-val {
     justify-content: space-between;
-    color: var(--text-main);
+    color: var(--text-primary);
 
     .picker-arrow {
       font-size: 20rpx;
-      color: var(--text-sub);
+      color: var(--text-secondary);
     }
   }
 }
@@ -1716,17 +1713,17 @@ export default {
 .secondary-btn {
   flex: 1;
   height: 110rpx;
-  background: rgba(255, 255, 255, 0.66);
-  color: var(--text-main);
-  border-radius: 999rpx;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: 28rpx;
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1rpx solid rgba(255, 255, 255, 0.52);
+  border: 2rpx solid rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 4rpx 0 rgba(0, 0, 0, 0.08);
 
   &::after {
     border: none;
@@ -1739,22 +1736,22 @@ export default {
   .tab-item {
     flex: 1;
     height: 100rpx;
-    background: rgba(255, 255, 255, 0.6);
-    border: 1rpx solid rgba(255, 255, 255, 0.48);
+    background: var(--bg-secondary);
+    border: 2rpx solid rgba(0, 0, 0, 0.04);
     border-radius: 999rpx;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 28rpx;
-    color: var(--text-sub);
+    color: var(--text-secondary);
     transition: all 0.2s;
 
     &.active {
-      background: var(--cta-primary-bg);
-      border-color: var(--cta-primary-border);
-      color: var(--cta-primary-text);
-      font-weight: bold;
-      box-shadow: var(--cta-primary-shadow);
+      background: var(--warning);
+      border-color: var(--warning);
+      color: var(--text-inverse);
+      font-weight: 700;
+      box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
     }
   }
 }
@@ -1763,29 +1760,34 @@ export default {
   margin-top: 60rpx;
   flex: 2;
   height: 110rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border-radius: 30rpx;
+  background: var(--warning);
+  color: var(--text-inverse);
+  border-radius: 28rpx;
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
   /* gap: 15rpx; -- replaced for Android WebView compat */
-  box-shadow: var(--cta-primary-shadow);
-  border: 1rpx solid var(--cta-primary-border);
-  transition: all 0.3s ease;
+  box-shadow: 0 8rpx 0 var(--warning-dark, #cc7800);
+  border: none;
+  transition: all 0.15s ease;
   /* 修复：确保按钮不被 tabbar 遮挡 */
   position: relative;
   z-index: 5;
 
   &[disabled] {
     opacity: 0.5;
-    box-shadow: none;
+    box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
   }
 
   &.pulse-btn:not([disabled]) {
     animation: pulse 2s infinite;
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(4rpx);
+    box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
   }
 
   &::after {
@@ -1801,11 +1803,13 @@ export default {
 @keyframes pulse {
   0%,
   100% {
-    box-shadow: var(--cta-primary-shadow);
+    box-shadow: 0 8rpx 0 var(--warning-dark, #cc7800);
   }
 
   50% {
-    box-shadow: var(--shadow-brand-strong);
+    box-shadow:
+      0 8rpx 0 var(--warning-dark, #cc7800),
+      0 0 20rpx rgba(255, 150, 0, 0.4);
   }
 }
 
@@ -1815,7 +1819,7 @@ export default {
   justify-content: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
   padding: 20rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   font-size: 24rpx;
   margin-bottom: 30rpx;
   /* 修复：确保提示文字不被 tabbar 遮挡 */
@@ -1844,13 +1848,13 @@ export default {
 
 .rh-title {
   font-size: 32rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .rh-subtitle {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 /* 信息提示横幅 */
@@ -1860,13 +1864,13 @@ export default {
   /* gap: 16rpx; -- replaced for Android WebView compat */
   padding: 20rpx 24rpx;
   margin-bottom: 24rpx;
-  background: rgba(255, 255, 255, 0.52);
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .analysis-card {
   margin-bottom: 24rpx;
-  border-left: 6rpx solid rgba(15, 95, 52, 0.24);
+  border-left: 6rpx solid rgba(255, 150, 0, 0.4);
 }
 
 .analysis-head {
@@ -1875,22 +1879,22 @@ export default {
 }
 
 .analysis-title {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .analysis-source {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .analysis-status {
-  color: var(--text-main);
+  color: var(--text-primary);
   line-height: 1.5;
   display: block;
 }
 
 .analysis-summary {
   margin-top: 12rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   line-height: 1.5;
   display: block;
 }
@@ -1901,7 +1905,7 @@ export default {
 
 .info-banner .info-text {
   flex: 1;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -1909,26 +1913,26 @@ export default {
 .back-edit-btn {
   margin-top: 30rpx;
   padding: 20rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   text-align: center;
 }
 
 .rh-filter {
   font-size: 24rpx;
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.68);
+  color: var(--text-primary);
+  background: var(--bg-card);
   padding: 10rpx 20rpx;
   border-radius: 999rpx;
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  box-shadow: var(--apple-shadow-surface);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .filter-arrow {
   font-size: 20rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .school-card {
@@ -1939,15 +1943,15 @@ export default {
     align-items: flex-start;
     margin-bottom: 24rpx;
     padding-bottom: 24rpx;
-    border-bottom: 1rpx solid var(--apple-divider);
+    border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
   }
 
   .sc-logo {
     width: 96rpx;
     height: 96rpx;
-    border-radius: 16rpx;
+    border-radius: 20rpx;
     margin-right: 24rpx;
-    background: var(--muted);
+    background: var(--bg-secondary);
     flex-shrink: 0;
   }
 
@@ -1963,14 +1967,14 @@ export default {
 
   .sc-name {
     font-size: 32rpx;
-    font-weight: 700;
-    color: var(--text-main);
+    font-weight: 800;
+    color: var(--text-primary);
     margin-right: 16rpx;
   }
 
   .sc-loc {
     font-size: 22rpx;
-    color: var(--text-sub);
+    color: var(--text-secondary);
   }
 
   .sc-tags {
@@ -1984,11 +1988,11 @@ export default {
     margin-right: 12rpx;
     margin-bottom: 8rpx;
     font-size: 20rpx;
-    color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.62);
+    color: var(--warning);
+    background: rgba(255, 150, 0, 0.12);
     padding: 8rpx 18rpx;
     border-radius: 999rpx;
-    border: 1rpx solid rgba(255, 255, 255, 0.48);
+    border: none;
     font-weight: 600;
   }
 
@@ -1996,23 +2000,23 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: rgba(255, 255, 255, 0.68);
+    background: rgba(255, 150, 0, 0.12);
     padding: 8rpx 16rpx;
     border-radius: 20rpx;
     flex-shrink: 0;
-    border: 1rpx solid rgba(255, 255, 255, 0.48);
+    border: none;
   }
 
   .mr-val {
     font-size: 32rpx;
     font-weight: 800;
-    color: var(--accent-warm);
+    color: var(--warning);
     line-height: var(--line-height-normal);
   }
 
   .mr-lbl {
     font-size: 20rpx;
-    color: var(--accent-warm);
+    color: var(--warning);
     opacity: 0.8;
     margin-top: 4rpx;
   }
@@ -2025,7 +2029,7 @@ export default {
 .major-item {
   margin-bottom: 24rpx;
   padding-bottom: 24rpx;
-  border-bottom: 1rpx solid var(--apple-divider);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
 
   &:last-child {
     margin-bottom: 0;
@@ -2037,40 +2041,40 @@ export default {
 .mj-title {
   font-size: 26rpx;
   margin-bottom: 16rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
 .mj-code {
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin-right: 12rpx;
   font-weight: 400;
 }
 
 .mj-name {
   margin-right: 12rpx;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .mj-type {
   font-size: 20rpx;
-  background: rgba(255, 255, 255, 0.56);
+  background: rgba(255, 150, 0, 0.12);
   padding: 6rpx 12rpx;
   border-radius: 999rpx;
-  color: var(--text-sub);
-  font-weight: 400;
+  color: var(--warning);
+  font-weight: 600;
 }
 
 .mj-scores {
   display: flex;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.56);
+  background: var(--bg-secondary);
   padding: 16rpx 24rpx;
   border-radius: 24rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .score-col {
@@ -2082,14 +2086,14 @@ export default {
 
 .sc-year {
   font-size: 20rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin-bottom: 4rpx;
 }
 
 .sc-num {
   font-size: 28rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .sc-num.high {
@@ -2097,7 +2101,7 @@ export default {
 }
 
 .sc-num.sub {
-  color: var(--text-sub);
+  color: var(--text-secondary);
   font-weight: 400;
 }
 
@@ -2124,32 +2128,39 @@ export default {
 }
 
 .cf-btn.outline {
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.68);
+  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  color: var(--text-primary);
+  background: var(--bg-card);
 }
 
 .cf-btn.primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  box-shadow: var(--cta-primary-shadow);
-  border: 1rpx solid var(--cta-primary-border);
-  transition: all 0.3s ease;
+  background: var(--warning);
+  color: var(--text-inverse);
+  box-shadow: 0 6rpx 0 var(--warning-dark, #cc7800);
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.cf-btn.primary:active {
+  transform: translateY(3rpx);
+  box-shadow: 0 3rpx 0 var(--warning-dark, #cc7800);
 }
 
 .dark-mode .cf-btn.primary {
   box-shadow: var(--cta-primary-shadow);
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
 }
 
 .cf-btn.disabled {
-  background: var(--muted);
-  color: var(--text-sub);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
   box-shadow: none;
 }
 
 .empty-tip {
   text-align: center;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   font-size: 26rpx;
   margin-top: 80rpx;
   padding: 40rpx;
@@ -2159,37 +2170,39 @@ export default {
   /* gap: 16rpx; -- replaced for Android WebView compat */
 }
 
-.empty-icon {
-  font-size: 100rpx;
-  opacity: 0.6;
-  margin-bottom: 8rpx;
+/* 择校空状态引导插画 */
+.empty-illustration {
+  width: 320rpx;
+  height: 260rpx;
+  margin-bottom: 24rpx;
 }
 
 .empty-title {
-  color: var(--text-main, var(--ds-color-text-primary));
+  color: var(--text-primary);
   margin-bottom: 4rpx;
 }
 
 .reset-btn {
   margin-top: 16rpx;
   padding: 16rpx 40rpx;
-  background: var(--cta-primary-bg);
-  border: 1rpx solid var(--cta-primary-border);
-  border-radius: 40rpx;
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--warning);
+  border: none;
+  border-radius: 24rpx;
+  box-shadow: 0 6rpx 0 var(--warning-dark, #cc7800);
   transition: all 150ms ease-out;
 }
 
 .reset-btn:active {
-  transform: scale(0.98);
+  transform: translateY(3rpx);
+  box-shadow: 0 3rpx 0 var(--warning-dark, #cc7800);
 }
 
 .reset-btn-text {
-  color: var(--cta-primary-text);
+  color: var(--text-inverse);
 }
 
 .reset-link {
-  color: var(--accent-warm);
+  color: var(--warning);
   text-decoration: underline;
 }
 
@@ -2200,7 +2213,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--overlay);
   z-index: 200;
   display: flex;
   align-items: flex-end;
@@ -2211,14 +2224,14 @@ export default {
 
 .filter-panel {
   width: 100%;
-  border-radius: 40rpx 40rpx 0 0;
+  border-radius: 28rpx 28rpx 0 0;
   padding: 48rpx;
   box-sizing: border-box;
   max-height: 70vh;
   animation: slideUp 0.3s;
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border-top: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  background: var(--bg-card);
+  border-top: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.1);
 }
 
 .fp-header {
@@ -2230,13 +2243,13 @@ export default {
 
 .fp-title {
   font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .fp-reset {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   padding: 8rpx 16rpx;
 }
 
@@ -2249,7 +2262,7 @@ export default {
   font-weight: 600;
   margin-bottom: 24rpx;
   display: block;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .tag-scroll {
@@ -2266,38 +2279,43 @@ export default {
 .ft-item {
   margin-right: 20rpx;
   margin-bottom: 20rpx;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--bg-secondary);
   padding: 16rpx 32rpx;
   border-radius: 999rpx;
   font-size: 26rpx;
-  color: var(--text-sub);
-  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  color: var(--text-secondary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   transition: 0.2s;
 }
 
 .ft-item.active {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border-color: var(--cta-primary-border);
+  background: var(--warning);
+  color: var(--text-inverse);
+  border-color: var(--warning);
   font-weight: 600;
-  box-shadow: var(--cta-primary-shadow);
+  box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
 }
 
 .fp-confirm-btn {
   width: 100%;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  border-radius: 50rpx;
+  background: var(--warning);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 28rpx;
   margin-top: 20rpx;
   height: 100rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 32rpx;
-  box-shadow: var(--cta-primary-shadow);
-  transition: all 0.3s ease;
+  box-shadow: 0 8rpx 0 var(--warning-dark, #cc7800);
+  transition: all 0.15s ease;
+
+  &:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
+  }
 
   &::after {
     border: none;
@@ -2357,6 +2375,8 @@ export default {
 
 .dark-mode .tag-item {
   background: rgba(16, 20, 28, 0.68);
+  color: var(--text-primary);
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .dark-mode .match-rate {

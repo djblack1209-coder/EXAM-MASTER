@@ -118,7 +118,7 @@
               @tap.stop="isLoggedIn ? handleEditProfile() : handleLogin()"
             >
               <BaseIcon v-if="isLoggedIn" name="edit" :size="36" />
-              <text v-else class="edit-icon"> → </text>
+              <BaseIcon v-else name="arrow-right" :size="32" class="edit-icon" />
             </view>
           </view>
         </view>
@@ -129,7 +129,8 @@
             <!-- 学习天数 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('days')">
               <view class="stat-icon-box">
-                <BaseIcon name="calendar" :size="40" />
+                <!-- 卡通图标替代装饰性 BaseIcon -->
+                <image class="feature-cartoon-icon" src="/static/icons/clock-timer.png" mode="aspectFit" />
               </view>
               <text class="stat-value">
                 {{ studyDays }}
@@ -143,7 +144,8 @@
             <!-- 获得勋章 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('badges')">
               <view class="stat-icon-box">
-                <BaseIcon name="trophy" :size="40" />
+                <!-- 卡通图标替代装饰性 BaseIcon -->
+                <image class="feature-cartoon-icon" src="/static/icons/trophy-cup.png" mode="aspectFit" />
               </view>
               <text class="stat-value">
                 {{ badgeCount }}
@@ -157,7 +159,8 @@
             <!-- 正确率 -->
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('accuracy')">
               <view class="stat-icon-box">
-                <BaseIcon name="target" :size="40" />
+                <!-- 卡通图标替代装饰性 BaseIcon -->
+                <image class="feature-cartoon-icon" src="/static/icons/target-bullseye.png" mode="aspectFit" />
               </view>
               <text class="stat-value"> {{ accuracyRate }}% </text>
               <text class="stat-label"> 正确率 </text>
@@ -216,7 +219,8 @@
             <view class="checkin-title-row">
               <text class="checkin-title"> 每日打卡 </text>
               <view v-if="checkInStreak > 0" class="checkin-streak">
-                <BaseIcon name="flame" :size="26" />
+                <!-- 卡通火焰图标替代装饰性 BaseIcon -->
+                <image class="streak-flame-icon" src="/static/icons/flame-streak.png" mode="aspectFit" />
                 <text>连续 {{ checkInStreak }} 天</text>
               </view>
             </view>
@@ -275,7 +279,7 @@
               <BaseIcon name="books" :size="36" />
             </view>
             <text class="menu-text"> 我的错题 </text>
-            <text class="menu-arrow"> › </text>
+            <BaseIcon name="chevron-right" :size="24" class="menu-arrow" />
           </view>
 
           <!-- 分隔线 -->
@@ -287,7 +291,7 @@
               <BaseIcon name="chart-bar" :size="36" />
             </view>
             <text class="menu-text"> 学习统计 </text>
-            <text class="menu-arrow"> › </text>
+            <BaseIcon name="chevron-right" :size="24" class="menu-arrow" />
           </view>
 
           <!-- 分隔线 -->
@@ -299,7 +303,7 @@
               <BaseIcon name="settings" :size="36" />
             </view>
             <text class="menu-text"> 系统设置 </text>
-            <text class="menu-arrow"> › </text>
+            <BaseIcon name="chevron-right" :size="24" class="menu-arrow" />
           </view>
 
           <!-- 分隔线 -->
@@ -311,7 +315,7 @@
               <BaseIcon name="comment" :size="36" />
             </view>
             <text class="menu-text"> 意见反馈 </text>
-            <text class="menu-arrow"> › </text>
+            <BaseIcon name="chevron-right" :size="24" class="menu-arrow" />
           </view>
         </view>
 
@@ -377,8 +381,9 @@
 </template>
 
 <script setup>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
-import { ref, computed, onMounted, shallowRef, onErrorCaptured } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, shallowRef, onErrorCaptured } from 'vue';
 import { onShow, onHide, onShareAppMessage } from '@dcloudio/uni-app';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
@@ -409,6 +414,8 @@ import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { getSystemTheme } from '@/utils/core/system.js';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
+// H025 FIX: 头像上传走 Service 层
+import { uploadAvatar } from '@/services/api/domains/user.api.js';
 
 // L6: 版本号从统一配置读取
 const appVersion = config.appVersion || '1.0.0';
@@ -424,6 +431,11 @@ const todayChecked = ref(false); // 今日是否已打卡
 // 动态加载的打卡模块引用
 let _checkinStreak = null;
 let _streakRecovery = null;
+/** @type {number|null} 定时器ID跟踪（防泄漏） */
+let _skeletonTimer = null;
+let _milestoneTimer = null;
+let _avatarReloadTimer = null;
+let _logoutNavTimer = null;
 const recoveryCards = ref(0); // 补签卡数量
 const missedDaysCount = ref(0); // 问题54：断签天数
 
@@ -537,7 +549,7 @@ function loadData() {
     toast.info('个人数据加载失败，请下拉刷新重试');
   } finally {
     // 短暂延迟后关闭骨架屏，确保数据已渲染
-    setTimeout(() => {
+    _skeletonTimer = setTimeout(() => {
       isPageLoading.value = false;
     }, 300);
   }
@@ -607,8 +619,8 @@ async function handleCheckIn() {
 
       // 如果有里程碑奖励
       if (result.data.milestone) {
-        setTimeout(() => {
-          uni.showModal({
+        _milestoneTimer = setTimeout(() => {
+          modal.show({
             title: '里程碑达成！',
             content: `恭喜连续打卡${result.data.streak}天！\n获得 ${result.data.milestone.exp} 经验 + ${result.data.milestone.coins} 金币`,
             showCancel: false,
@@ -710,7 +722,7 @@ function showRecoveryOptions() {
       const selectedDate = availableDates[res.tapIndex];
       if (selectedDate) {
         // 确认补签
-        uni.showModal({
+        modal.show({
           title: '确认补签',
           content: `确定使用补签卡补签 ${dateOptions[res.tapIndex]} 吗？`,
           confirmText: '确认补签',
@@ -756,7 +768,7 @@ function toggleTheme() {
 }
 
 async function handleEditProfile() {
-  uni.showModal({
+  modal.show({
     title: '编辑昵称',
     editable: true,
     placeholderText: '请输入新昵称',
@@ -866,7 +878,7 @@ async function chooseAndUploadAvatar(sourceType) {
       toast.success('头像更新成功');
 
       // [OK] P0-FIX: 强制刷新页面数据，确保头像立即显示
-      setTimeout(() => {
+      _avatarReloadTimer = setTimeout(() => {
         loadData();
       }, 500);
     } else {
@@ -885,77 +897,9 @@ async function chooseAndUploadAvatar(sourceType) {
   }
 }
 
-// 上传头像到服务器
+// 上传头像到服务器 — H025 FIX: 通过 Service 层 uploadAvatar 调用
 async function uploadAvatarToServer(filePath, userId) {
-  const uploadByBase64 = async () => {
-    try {
-      const avatarBase64 = await filePathToBase64(filePath);
-      const avatarType = inferImageMimeType(filePath);
-      const response = await profileStore.updateProfile({
-        action: 'upload_avatar',
-        userId,
-        avatar_base64: avatarBase64,
-        avatar_type: avatarType
-      });
-
-      if ((response.code === 0 || response.success) && response.data) {
-        return {
-          success: true,
-          avatarUrl: response.data.avatar_url || response.data.avatarUrl || response.data.url
-        };
-      }
-
-      return {
-        success: false,
-        message: response.message || '上传失败'
-      };
-    } catch (e) {
-      logger.error('[Profile] base64 avatar upload failed:', e);
-      return {
-        success: false,
-        message: '上传失败'
-      };
-    }
-  };
-
-  return new Promise((resolve) => {
-    // I005: 使用统一配置获取 API 基础地址（替代硬编码的旧 Laf 域名）
-    const baseUrl = config.api.baseUrl;
-
-    uni.uploadFile({
-      url: `${baseUrl}/upload-avatar`,
-      filePath: filePath,
-      name: 'file',
-      formData: {
-        userId: userId,
-        type: 'avatar'
-      },
-      header: {
-        Authorization: `Bearer ${storageService.get('EXAM_TOKEN', '')}`
-      },
-      success: async (res) => {
-        try {
-          const data = JSON.parse(res.data);
-          if (data.code === 0 || data.success) {
-            resolve({
-              success: true,
-              avatarUrl: data.data?.url || data.url || data.avatarUrl
-            });
-          } else {
-            logger.warn('[Profile] multipart avatar upload failed, fallback to base64:', data.message || data.msg);
-            resolve(await uploadByBase64());
-          }
-        } catch (e) {
-          logger.error('[Profile] parse upload response error:', e);
-          resolve(await uploadByBase64());
-        }
-      },
-      fail: async (err) => {
-        logger.error('[Profile] uploadFile error:', err);
-        resolve(await uploadByBase64());
-      }
-    });
-  });
+  return uploadAvatar(filePath, userId, { filePathToBase64, inferImageMimeType });
 }
 
 // 处理登录
@@ -988,7 +932,7 @@ function navToSettings() {
 }
 
 function handleFeedback() {
-  uni.showModal({
+  modal.show({
     title: '意见反馈',
     content: '如有问题或建议，请联系：\nfeedback@exam-master.com',
     showCancel: false,
@@ -997,7 +941,7 @@ function handleFeedback() {
 }
 
 function handleLogout() {
-  uni.showModal({
+  modal.show({
     title: '确认退出',
     content: '确定要退出登录吗？',
     success: async (res) => {
@@ -1017,7 +961,7 @@ function handleLogout() {
 
           toast.success('已退出登录');
 
-          setTimeout(() => {
+          _logoutNavTimer = setTimeout(() => {
             uni.switchTab({ url: '/pages/index/index' });
           }, 1000);
         } catch (error) {
@@ -1048,7 +992,8 @@ const _userInfoHandler = (info) => {
 // [F2-FIX] 微信分享配置
 onShareAppMessage(() => ({
   title: '个人中心 - Exam-Master 考研备考',
-  path: '/pages/profile/index'
+  path: '/pages/profile/index',
+  imageUrl: '/static/images/app-share-cover.png'
 }));
 
 onMounted(async () => {
@@ -1108,18 +1053,33 @@ onHide(() => {
   uni.$off('userInfoUpdated', _userInfoHandler);
   uni.$off('themeUpdate', _themeHandler);
 });
+
+// 组件销毁时清理所有定时器，防止内存泄漏
+onBeforeUnmount(() => {
+  if (_skeletonTimer) {
+    clearTimeout(_skeletonTimer);
+    _skeletonTimer = null;
+  }
+  if (_milestoneTimer) {
+    clearTimeout(_milestoneTimer);
+    _milestoneTimer = null;
+  }
+  if (_avatarReloadTimer) {
+    clearTimeout(_avatarReloadTimer);
+    _avatarReloadTimer = null;
+  }
+  if (_logoutNavTimer) {
+    clearTimeout(_logoutNavTimer);
+    _logoutNavTimer = null;
+  }
+});
 </script>
 
 <style lang="scss" scoped>
 // ========== 基础布局 ==========
 .fixed {
   position: fixed;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 45%,
-    var(--page-gradient-bottom) 100%
-  );
+  background: var(--background);
 }
 
 .fixed::before,
@@ -1136,7 +1096,7 @@ onHide(() => {
   height: 520rpx;
   top: -140rpx;
   left: -120rpx;
-  background: radial-gradient(circle, var(--brand-tint-strong) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(88, 204, 2, 0.08) 0%, transparent 72%);
 }
 
 .fixed::after {
@@ -1144,7 +1104,7 @@ onHide(() => {
   height: 460rpx;
   right: -130rpx;
   top: 340rpx;
-  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(88, 204, 2, 0.04) 0%, transparent 70%);
 }
 
 .inset-0 {
@@ -1178,18 +1138,12 @@ onHide(() => {
 // ========== 通用卡片 ==========
 .card {
   position: relative;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 34%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--glass-border);
-  border-radius: 30rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 28rpx;
   margin-bottom: 24rpx;
   transition: all 0.24s ease;
-  box-shadow:
-    inset 0 1rpx 0 var(--apple-specular-soft),
-    var(--apple-shadow-card);
-  backdrop-filter: blur(20px) saturate(145%);
-  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
@@ -1212,13 +1166,7 @@ onHide(() => {
   bottom: 0;
   left: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.26) 0%, transparent 28%),
-    linear-gradient(90deg, transparent 16%, var(--apple-specular-line) 50%, transparent 84%);
-  background-size:
-    auto,
-    100% 1px;
-  background-repeat: no-repeat;
+  background: none;
 }
 
 .user-section {
@@ -1231,17 +1179,15 @@ onHide(() => {
   width: 120rpx;
   height: 120rpx;
   border-radius: 50%;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(221, 242, 197, 0.82) 100%);
+  background: rgba(88, 204, 2, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 28rpx;
   flex-shrink: 0;
   overflow: visible;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 12rpx 26rpx rgba(16, 40, 26, 0.12);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .avatar-emoji {
@@ -1262,12 +1208,12 @@ onHide(() => {
   width: 40rpx;
   height: 40rpx;
   border-radius: 50%;
-  background: var(--gradient-primary);
+  background: #58cc02;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 3rpx solid var(--bg-card);
-  box-shadow: var(--shadow-brand-sm);
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 .avatar-edit-icon {
@@ -1283,30 +1229,28 @@ onHide(() => {
 
 .user-name {
   font-size: 40rpx;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .user-id {
   font-size: 26rpx;
   line-height: 1.2;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .edit-btn {
   width: 88rpx;
   height: 88rpx;
   border-radius: 50%;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 44%),
-    linear-gradient(160deg, var(--apple-glass-pill-bg) 0%, rgba(255, 255, 255, 0.62) 100%);
+  background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1rpx solid var(--apple-divider);
-  box-shadow: 0 10rpx 22rpx rgba(16, 40, 26, 0.1);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .edit-icon {
@@ -1340,15 +1284,13 @@ onHide(() => {
 .stat-icon-box {
   width: 80rpx;
   height: 80rpx;
-  border-radius: 50%;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, transparent 46%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.72) 0%, rgba(220, 241, 196, 0.82) 100%);
+  border-radius: 22rpx;
+  background: rgba(88, 204, 2, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  border: none;
 }
 
 .stat-emoji {
@@ -1360,19 +1302,20 @@ onHide(() => {
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 8rpx;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .stat-label {
   font-size: 24rpx;
+  font-weight: 600;
   line-height: 1.2;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .stat-divider {
   width: 2rpx;
   height: 80rpx;
-  background-color: var(--apple-divider);
+  background-color: rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
 }
 
@@ -1391,13 +1334,13 @@ onHide(() => {
   width: 88rpx;
   height: 88rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary, #37b24d), var(--brand, #2f9e44));
+  background: #58cc02;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 24rpx;
   flex-shrink: 0;
-  box-shadow: 0 4rpx 16rpx rgba(55, 178, 77, 0.3);
+  box-shadow: 0 8rpx 0 #46a302;
 }
 
 .level-number {
@@ -1420,15 +1363,15 @@ onHide(() => {
 
 .level-title {
   font-size: 32rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .xp-multiplier {
   font-size: 22rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--warning);
-  background: rgba(255, 107, 53, 0.1);
+  background: rgba(255, 150, 0, 0.12);
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
 }
@@ -1443,14 +1386,14 @@ onHide(() => {
 
 .xp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary, #37b24d), var(--wise-green, #8bc34a));
+  background: linear-gradient(90deg, #58cc02, #89e219);
   border-radius: 6rpx;
   transition: width 0.5s ease-out;
 }
 
 .xp-text {
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .level-stats {
@@ -1458,7 +1401,7 @@ onHide(() => {
   align-items: center;
   justify-content: space-between;
   padding-top: 24rpx;
-  border-top: 1rpx solid var(--apple-divider);
+  border-top: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .level-stat-item {
@@ -1470,20 +1413,20 @@ onHide(() => {
 
 .level-stat-value {
   font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
   margin-bottom: 4rpx;
 }
 
 .level-stat-label {
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .level-stat-divider {
   width: 2rpx;
   height: 48rpx;
-  background-color: var(--apple-divider);
+  background-color: rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
 }
 
@@ -1495,9 +1438,7 @@ onHide(() => {
 .menu-card {
   padding: 0;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 32%),
-    linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  background: var(--bg-card);
 }
 
 .menu-item {
@@ -1508,22 +1449,40 @@ onHide(() => {
 }
 
 .menu-hover {
-  background-color: rgba(255, 255, 255, 0.18);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .menu-icon-box {
   width: 76rpx;
   height: 76rpx;
-  border-radius: 50%;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, transparent 44%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.7) 0%, rgba(221, 242, 197, 0.82) 100%);
+  border-radius: 20rpx;
+  background: rgba(88, 204, 2, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 24rpx;
   flex-shrink: 0;
-  border: 1rpx solid rgba(255, 255, 255, 0.42);
+  border: none;
+}
+
+/* 我的错题 — 学习/数据类：绿色 */
+.menu-item:nth-child(1) .menu-icon-box {
+  background: rgba(88, 204, 2, 0.12);
+}
+
+/* 学习统计 — 学习/数据类：绿色 */
+.menu-item:nth-child(3) .menu-icon-box {
+  background: rgba(88, 204, 2, 0.12);
+}
+
+/* 系统设置 — 设置类：蓝色 */
+.menu-item:nth-child(5) .menu-icon-box {
+  background: rgba(28, 176, 246, 0.12);
+}
+
+/* 意见反馈 — 社交类：红色 */
+.menu-item:nth-child(7) .menu-icon-box {
+  background: rgba(255, 75, 75, 0.12);
 }
 
 .menu-emoji {
@@ -1533,20 +1492,20 @@ onHide(() => {
 .menu-text {
   flex: 1;
   font-size: 32rpx;
-  font-weight: 500;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .menu-arrow {
   font-size: 48rpx;
   font-weight: 300;
   flex-shrink: 0;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .menu-divider {
   height: 2rpx;
-  background-color: var(--apple-divider);
+  background-color: rgba(0, 0, 0, 0.04);
   margin-left: 132rpx;
 }
 
@@ -1554,9 +1513,7 @@ onHide(() => {
 .about-card {
   padding: 0;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 32%),
-    linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  background: var(--bg-card);
 }
 
 .about-row {
@@ -1568,17 +1525,19 @@ onHide(() => {
 
 .about-label {
   font-size: 28rpx;
-  color: var(--text-sub);
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .about-value {
   font-size: 28rpx;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .about-divider {
   height: 2rpx;
-  background-color: var(--apple-divider);
+  background-color: rgba(0, 0, 0, 0.04);
   margin-left: 32rpx;
   margin-right: 32rpx;
 }
@@ -1593,7 +1552,8 @@ onHide(() => {
   border-radius: 24rpx;
   margin-bottom: 24rpx;
   background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8rpx 0 rgba(0, 0, 0, 0.08);
 }
 
 .theme-emoji {
@@ -1608,8 +1568,8 @@ onHide(() => {
 
 .theme-text {
   font-size: 30rpx;
-  font-weight: 500;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 // ========== 退出按钮 ==========
@@ -1620,24 +1580,27 @@ onHide(() => {
   padding: 28rpx;
   border-radius: 24rpx;
   margin-bottom: 24rpx;
-  background-color: transparent;
-  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  border: 2rpx solid rgba(255, 75, 75, 0.2);
+  box-shadow: 0 8rpx 0 rgba(255, 75, 75, 0.15);
 }
 
 .logout-text {
   font-size: 30rpx;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--danger);
 }
 
 .logout-hover {
-  background-color: var(--muted);
+  background-color: rgba(255, 75, 75, 0.06);
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 rgba(255, 75, 75, 0.15);
 }
 
 // ========== 按钮通用 hover ==========
 .btn-hover {
-  opacity: 0.7;
-  transform: scale(0.95);
+  opacity: 0.9;
+  transform: translateY(4rpx);
 }
 
 // ========== 骨架屏样式 ==========
@@ -1694,7 +1657,7 @@ onHide(() => {
 }
 
 .skeleton-animate {
-  background: linear-gradient(90deg, var(--muted) 25%, var(--bg-card) 50%, var(--muted) 75%);
+  background: linear-gradient(90deg, var(--muted) 25%, var(--background) 50%, var(--muted) 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
 }
@@ -1720,12 +1683,9 @@ onHide(() => {
 }
 
 .fixed-nav.nav-scrolled {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border-bottom: 1px solid var(--apple-divider);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .nav-content {
@@ -1737,8 +1697,8 @@ onHide(() => {
 
 .nav-title {
   font-size: 36rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 // ========== 问题54：打卡卡片样式 ==========
@@ -1808,19 +1768,24 @@ onHide(() => {
 
 .checkin-title {
   font-size: 34rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .checkin-streak {
   font-size: 26rpx;
   color: var(--warning);
-  font-weight: 600;
+  font-weight: 700;
+}
+/* 卡通火焰图标 */
+.streak-flame-icon {
+  width: 56rpx;
+  height: 56rpx;
 }
 
 .checkin-subtitle {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .checkin-content {
@@ -1842,14 +1807,14 @@ onHide(() => {
 }
 
 .checkin-btn.not-checked {
-  background: var(--cta-primary-bg);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: #58cc02;
+  border: none;
+  box-shadow: 0 8rpx 0 #46a302;
 }
 
 .checkin-btn.checked {
-  background: var(--muted);
-  border: 2rpx solid var(--border-color);
+  background: rgba(0, 0, 0, 0.04);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .checkin-btn-icon {
@@ -1864,16 +1829,16 @@ onHide(() => {
 
 .checkin-btn-text {
   font-size: 30rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .checkin-btn.not-checked .checkin-btn-text {
-  color: var(--cta-primary-text);
+  color: var(--text-inverse);
 }
 
 .checkin-btn.not-checked .checkin-btn-icon {
-  color: var(--cta-primary-text);
+  color: var(--text-inverse);
 }
 
 .recovery-info {
@@ -1895,20 +1860,20 @@ onHide(() => {
 
 .recovery-text {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .use-recovery-btn {
   padding: 12rpx 24rpx;
-  background: var(--warning-light);
+  background: rgba(255, 150, 0, 0.12);
   border-radius: 20rpx;
-  border: 1rpx solid var(--warning);
+  border: 2rpx solid var(--warning);
 }
 
 .use-recovery-text {
   font-size: 24rpx;
   color: var(--warning);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .missed-tip {
@@ -1917,9 +1882,9 @@ onHide(() => {
   /* gap: 12rpx; -- replaced for Android WebView compat */
   margin-top: 20rpx;
   padding: 16rpx 20rpx;
-  background: var(--warning-light);
+  background: rgba(255, 150, 0, 0.08);
   border-radius: 16rpx;
-  border: 1rpx solid var(--warning);
+  border: 2rpx solid rgba(255, 150, 0, 0.2);
 }
 
 .missed-icon {
@@ -1944,5 +1909,11 @@ onHide(() => {
 }
 .skeleton-fade-leave-to {
   opacity: 0;
+}
+
+/* 功能级卡通图标（替代 BaseIcon size 36-79） */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
 }
 </style>
