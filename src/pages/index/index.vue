@@ -190,7 +190,8 @@
             <view class="free-tools-grid">
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('id-photo')">
                 <view class="tool-card-icon-wrap">
-                  <BaseIcon name="camera" :size="48" />
+                  <!-- 卡通图标替代装饰性 BaseIcon -->
+                  <image class="feature-cartoon-icon" src="/static/icons/camera-search.png" mode="aspectFit" />
                 </view>
                 <text class="tool-card-title">证件照换底色</text>
                 <text class="tool-card-desc">报名免裁剪</text>
@@ -200,7 +201,8 @@
               </view>
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('doc-convert')">
                 <view class="tool-card-icon-wrap">
-                  <BaseIcon name="file-text" :size="48" />
+                  <!-- 卡通图标替代装饰性 BaseIcon -->
+                  <image class="feature-cartoon-icon" src="/static/icons/doc-convert.png" mode="aspectFit" />
                 </view>
                 <text class="tool-card-title">文档格式转换</text>
                 <text class="tool-card-desc">PDF/Word 互转</text>
@@ -390,24 +392,24 @@ import { safeImport } from '@/utils/helpers/safe-import.js';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 import BaseSkeleton from '@/components/base/base-skeleton/base-skeleton.vue';
 // TodoList, TodoEditor — 已从首页模板移除，通过 profile 页访问
-import { defineAsyncComponent } from 'vue';
-// 非关键组件 — 异步加载减小主包体积
-const EmptyState = defineAsyncComponent(() => import('@/components/common/EmptyState.vue'));
-const ShareModal = defineAsyncComponent(() => import('@/components/common/share-modal.vue'));
-// TodoEditor — 已从首页移除
-const CustomModal = defineAsyncComponent(() => import('@/components/common/CustomModal.vue'));
-const OfflineIndicator = defineAsyncComponent(() => import('@/components/common/offline-indicator.vue'));
-const FormulaModal = defineAsyncComponent(() => import('@/components/business/index/FormulaModal.vue'));
+// ✅ [BUG-FIX] defineAsyncComponent 在微信小程序中不受支持，
+// 异步组件不会注册到 usingComponents，导致组件无法渲染（快速练习点击无反应的根因）。
+// 全部改为静态 import。
+import EmptyState from '@/components/common/EmptyState.vue';
+import ShareModal from '@/components/common/share-modal.vue';
+import CustomModal from '@/components/common/CustomModal.vue';
+import OfflineIndicator from '@/components/common/offline-indicator.vue';
+import FormulaModal from '@/components/business/index/FormulaModal.vue';
 // ✅ [P0重构] QuotePosterModal, DailyQuoteCard 已移除（首页精简）
 import WelcomeBanner from '@/components/business/index/WelcomeBanner.vue';
 import StatsGrid from '@/components/business/index/StatsGrid.vue';
 import StudyTimeCard from '@/components/business/index/StudyTimeCard.vue';
-const StudyHeatmap = defineAsyncComponent(() => import('@/components/business/index/StudyHeatmap.vue'));
+import StudyHeatmap from '@/components/business/index/StudyHeatmap.vue';
 // ✅ [P0重构] KnowledgeBubbleField 已移除（首页精简）
-const ActivityList = defineAsyncComponent(() => import('@/components/business/index/ActivityList.vue'));
+import ActivityList from '@/components/business/index/ActivityList.vue';
 // RecommendationsList — 已从首页移除（smart-recommend 替代）
 import IndexHeaderBar from '@/components/business/index/IndexHeaderBar.vue';
-const AIDailyBriefing = defineAsyncComponent(() => import('@/components/business/index/AIDailyBriefing.vue'));
+import AIDailyBriefing from '@/components/business/index/AIDailyBriefing.vue';
 import DailyGoalRing from '@/components/business/index/DailyGoalRing.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useStudyStore } from '@/stores/modules/study';
@@ -761,7 +763,8 @@ export default {
   onShareAppMessage() {
     return {
       title: 'Exam-Master — 智能助力，一战成硕',
-      path: '/pages/index/index'
+      path: '/pages/index/index',
+      imageUrl: '/static/images/app-share-cover.png'
     };
   },
 
@@ -1180,7 +1183,7 @@ export default {
   min-height: 100%;
   min-height: 100vh;
   position: relative;
-  background-color: var(--bg-page);
+  background-color: var(--background);
 }
 
 /* 深色模式下的页面背景 */
@@ -1191,16 +1194,14 @@ export default {
 .dashboard-container {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top, var(--bg-page)) 0%,
-    var(--page-gradient-mid, var(--bg-page)) 56%,
-    var(--page-gradient-bottom, var(--bg-page)) 100%
-  );
+  background: var(--background);
   position: relative;
   overflow: hidden;
   isolation: isolate;
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Text', 'Noto Sans SC', 'Roboto', sans-serif;
+}
+.page-dark .dashboard-container {
+  background: var(--bg-page);
 }
 
 .dashboard-container::before,
@@ -1217,7 +1218,7 @@ export default {
   height: 520rpx;
   right: -200rpx;
   top: -170rpx;
-  background: radial-gradient(circle, var(--brand-tint-strong) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(88, 204, 2, 0.08) 0%, transparent 72%);
   filter: blur(12rpx);
 }
 
@@ -1226,7 +1227,7 @@ export default {
   height: 480rpx;
   left: -170rpx;
   top: 420rpx;
-  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 74%);
+  background: radial-gradient(circle, rgba(28, 176, 246, 0.06) 0%, transparent 74%);
   filter: blur(10rpx);
 }
 
@@ -1281,8 +1282,8 @@ export default {
 .refresher-spinner {
   width: 48rpx;
   height: 48rpx;
-  border: 4rpx solid var(--border);
-  border-top-color: var(--primary);
+  border: 4rpx solid rgba(88, 204, 2, 0.2);
+  border-top-color: #58cc02;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -1295,7 +1296,8 @@ export default {
 
 .refresher-text {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  margin-top: 12rpx;
 }
 
 /* 内容包装器 */
@@ -1363,7 +1365,7 @@ export default {
   }
 }
 
-/* ==================== 章节标题（保留：待办事项区域仍在父组件） ==================== */
+/* ==================== 章节标题 — 多邻国风格 ==================== */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -1377,8 +1379,11 @@ export default {
 
 .section-title {
   font-size: 36rpx;
-  font-weight: 680;
+  font-weight: 800;
   letter-spacing: -0.2rpx;
+  color: var(--text-primary);
+}
+.page-dark .section-title {
   color: var(--text-primary);
 }
 
@@ -1386,13 +1391,17 @@ export default {
   font-size: 24rpx;
   letter-spacing: 3rpx;
   text-transform: uppercase;
+  font-weight: 700;
   color: var(--text-secondary);
 }
 
 .section-action {
-  font-size: 28rpx;
-  color: var(--primary);
-  font-weight: 500;
+  font-size: 26rpx;
+  color: #58cc02;
+  font-weight: 700;
+  padding: 6rpx 16rpx;
+  background: rgba(88, 204, 2, 0.1);
+  border-radius: 20rpx;
 }
 
 /* ==================== 编辑计划按钮 ==================== */
@@ -1616,6 +1625,248 @@ export default {
   opacity: 0;
 }
 
+/* ==================== [差异化壁垒] 学习风格 Onboarding Overlay ==================== */
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 40rpx;
+  animation: overlayFadeIn 0.3s ease both;
+}
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.onboarding-card {
+  width: 100%;
+  max-width: 620rpx;
+  background: var(--bg-card);
+  border-radius: 32rpx;
+  padding: 48rpx 40rpx 40rpx;
+  box-shadow: 0 24rpx 80rpx rgba(0, 0, 0, 0.18);
+  animation: cardPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.1s;
+}
+.onboarding-card.dark-mode {
+  background: var(--bg-card);
+  box-shadow: 0 24rpx 80rpx rgba(0, 0, 0, 0.5);
+}
+
+/* Step指示器 — 三个圆点 */
+.onboarding-steps {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40rpx;
+}
+.step-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: var(--border);
+  margin: 0 8rpx;
+  transition: all 0.3s ease;
+}
+.step-dot.active {
+  width: 40rpx;
+  border-radius: 8rpx;
+  background: #58cc02;
+}
+.step-dot.done {
+  background: rgba(88, 204, 2, 0.4);
+}
+.dark-mode .step-dot {
+  background: rgba(255, 255, 255, 0.15);
+}
+.dark-mode .step-dot.active {
+  background: #58cc02;
+}
+.dark-mode .step-dot.done {
+  background: rgba(88, 204, 2, 0.3);
+}
+
+/* Onboarding 内容区 */
+.onboarding-content {
+  text-align: center;
+}
+.onboarding-title {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 12rpx;
+}
+.dark-mode .onboarding-title {
+  color: var(--text-primary);
+}
+.onboarding-desc {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 36rpx;
+}
+
+/* 横向选项（Step 1 & 3） */
+.onboarding-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.onboarding-options > view {
+  margin: 8rpx;
+}
+.ob-option {
+  padding: 20rpx 32rpx;
+  border-radius: 20rpx;
+  background: var(--bg-secondary);
+  border: 2rpx solid transparent;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  min-width: 120rpx;
+  text-align: center;
+}
+.ob-option.selected {
+  background: rgba(88, 204, 2, 0.12);
+  border-color: #58cc02;
+  color: #58cc02;
+  box-shadow: 0 4rpx 12rpx rgba(88, 204, 2, 0.2);
+}
+.ob-option:active {
+  transform: scale(0.95);
+}
+.dark-mode .ob-option {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+.dark-mode .ob-option.selected {
+  background: rgba(88, 204, 2, 0.15);
+  border-color: #58cc02;
+  color: #58cc02;
+}
+
+/* 竖向选项（Step 2） */
+.onboarding-options.vertical {
+  flex-direction: column;
+}
+.onboarding-options.vertical > view {
+  margin: 6rpx 0;
+}
+.ob-option-row {
+  padding: 24rpx 28rpx;
+  border-radius: 20rpx;
+  background: var(--bg-secondary);
+  border: 2rpx solid transparent;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+.ob-option-row.selected {
+  background: rgba(88, 204, 2, 0.12);
+  border-color: #58cc02;
+  box-shadow: 0 4rpx 12rpx rgba(88, 204, 2, 0.2);
+}
+.ob-option-row:active {
+  transform: scale(0.98);
+}
+.dark-mode .ob-option-row {
+  background: rgba(255, 255, 255, 0.08);
+}
+.dark-mode .ob-option-row.selected {
+  background: rgba(88, 204, 2, 0.15);
+  border-color: #58cc02;
+}
+.ob-option-label {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+}
+.ob-option-row.selected .ob-option-label {
+  color: #58cc02;
+}
+.dark-mode .ob-option-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+.dark-mode .ob-option-row.selected .ob-option-label {
+  color: #58cc02;
+}
+.ob-option-desc {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+  display: block;
+}
+
+/* Onboarding 底部操作栏 */
+.onboarding-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 40rpx;
+}
+.onboarding-actions > button {
+  margin: 0 8rpx;
+}
+.ob-btn-skip {
+  padding: 20rpx 40rpx !important;
+  font-size: 28rpx !important;
+  font-weight: 700 !important;
+  color: var(--text-secondary) !important;
+  background: var(--bg-secondary) !important;
+  border-radius: 20rpx !important;
+  border: none !important;
+  line-height: 1.2 !important;
+}
+.ob-btn-skip:active {
+  background: var(--muted) !important;
+}
+.dark-mode .ob-btn-skip {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+.ob-btn-next {
+  padding: 20rpx 56rpx !important;
+  font-size: 30rpx !important;
+  font-weight: 800 !important;
+  color: var(--text-inverse) !important;
+  background: #58cc02 !important;
+  border-radius: 20rpx !important;
+  border: none !important;
+  box-shadow: 0 6rpx 0 #46a302 !important;
+  line-height: 1.2 !important;
+  transition: all 0.1s ease !important;
+}
+.ob-btn-next:active {
+  transform: translateY(4rpx) !important;
+  box-shadow: 0 2rpx 0 #46a302 !important;
+}
+.dark-mode .ob-btn-next {
+  background: #58cc02 !important;
+  box-shadow: 0 6rpx 0 #3d8f02 !important;
+}
+
+/* cardPopIn 动画 — 全局复用 */
+@keyframes cardPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 /* ✅ [闭环核心] 今日复习入口 */
 /* ==================== [零摩擦] 一键续刷入口 ==================== */
 .resume-banner {
@@ -1625,26 +1876,18 @@ export default {
   padding: 28rpx 32rpx;
   margin: 20rpx 32rpx;
   border-radius: 20rpx;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--info) 12%, transparent),
-    color-mix(in srgb, var(--info) 8%, transparent)
-  );
-  border: 1rpx solid color-mix(in srgb, var(--info) 25%, transparent);
+  background: linear-gradient(135deg, rgba(28, 176, 246, 0.1), rgba(28, 176, 246, 0.05));
+  border: 2rpx solid rgba(28, 176, 246, 0.15);
   animation: resumePulse 2s ease-in-out infinite;
 }
 .page-dark .resume-banner {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--info) 10%, transparent),
-    color-mix(in srgb, var(--info) 6%, transparent)
-  );
-  border-color: color-mix(in srgb, var(--info) 20%, transparent);
+  background: linear-gradient(135deg, rgba(28, 176, 246, 0.08), rgba(28, 176, 246, 0.04));
+  border-color: rgba(28, 176, 246, 0.12);
 }
 @keyframes resumePulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--info) 15%, transparent);
+    box-shadow: 0 0 0 0 rgba(28, 176, 246, 0.15);
   }
   50% {
     box-shadow: 0 0 0 8rpx transparent;
@@ -1657,7 +1900,7 @@ export default {
 }
 .resume-banner-icon {
   margin-right: 20rpx;
-  color: var(--info, #6366f1);
+  color: var(--info);
   display: flex;
   align-items: center;
 }
@@ -1667,29 +1910,50 @@ export default {
 }
 .resume-banner-title {
   font-size: 30rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 .resume-banner-sub {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin-top: 4rpx;
 }
 .resume-banner-arrow {
-  color: var(--info, #6366f1);
+  color: var(--info);
   display: flex;
   align-items: center;
 }
 
-/* ==================== [知识引擎] 智能学习推荐 ==================== */
+/* ==================== [知识引擎] 智能学习推荐 — 橙色模块 ==================== */
 .smart-recommend {
   margin: 20rpx 30rpx;
-  padding: 24rpx 30rpx;
-  cursor: pointer;
+  padding: 28rpx 30rpx;
+  border-radius: 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+  animation: cardPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.smart-recommend::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, var(--warning), var(--warning-light, #ffb800));
+  border-radius: 0 0 4rpx 4rpx;
 }
 .smart-recommend:active {
-  opacity: 0.85;
-  transform: scale(0.98);
+  transform: scale(0.97);
+}
+.page-dark .smart-recommend {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 .smart-recommend-header {
   display: flex;
@@ -1701,20 +1965,29 @@ export default {
   margin-left: 10rpx;
 }
 .smart-recommend-icon {
-  color: var(--warning, #ff9500);
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 14rpx;
+  background: rgba(255, 150, 0, 0.12);
   display: flex;
   align-items: center;
+  justify-content: center;
+  color: var(--warning);
+  margin-right: 10rpx;
 }
 .smart-recommend-title {
   font-size: 26rpx;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-weight: 700;
+  color: var(--warning);
 }
 .smart-recommend-name {
   font-size: 32rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
+}
+.page-dark .smart-recommend-name {
+  color: var(--text-primary);
 }
 .smart-recommend-reason {
   font-size: 24rpx;
@@ -1730,22 +2003,22 @@ export default {
   overflow: hidden;
 }
 
-/* 加载失败重试卡片 */
+/* 加载失败重试卡片 — 多邻国风格 */
 .load-error-card {
   display: flex;
   align-items: center;
   /* gap: 20rpx; -- replaced for Android WebView compat */
   margin: 30rpx;
   padding: 32rpx;
-  background: var(--bg-secondary, rgba(255, 59, 48, 0.06));
-  border: 2rpx solid rgba(255, 59, 48, 0.15);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(255, 75, 75, 0.15);
   border-radius: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .load-error-card > view + view {
   margin-left: 20rpx;
 }
 .load-error-card:active {
-  opacity: 0.7;
   transform: scale(0.98);
 }
 .load-error-icon {
@@ -1758,18 +2031,19 @@ export default {
 }
 .load-error-title {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   display: block;
 }
 .load-error-hint {
   font-size: 24rpx;
-  color: var(--text-secondary);
+  color: var(--danger);
   margin-top: 4rpx;
   display: block;
+  font-weight: 600;
 }
 .load-error-arrow {
-  color: var(--primary, #34c759);
+  color: var(--danger);
   display: flex;
   align-items: center;
 }
@@ -1786,14 +2060,14 @@ export default {
 }
 .free-tools-title {
   font-size: 30rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .free-tools-badge {
   font-size: 22rpx;
-  font-weight: 600;
-  color: var(--success, #34c759);
-  background: color-mix(in srgb, var(--success) 12%, transparent);
+  font-weight: 700;
+  color: #58cc02;
+  background: rgba(88, 204, 2, 0.12);
   padding: 4rpx 16rpx;
   border-radius: 20rpx;
 }
@@ -1811,24 +2085,34 @@ export default {
   align-items: center;
   padding: 28rpx 12rpx 20rpx;
   border-radius: 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s ease;
 }
 .tool-hover {
   transform: scale(0.96);
-  opacity: 0.85;
 }
 .tool-card-icon-wrap {
   width: 80rpx;
   height: 80rpx;
-  border-radius: 22rpx;
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  border-radius: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
-  transition: background 0.3s ease;
+}
+/* 每个工具卡片独立配色 */
+.free-tool-card:nth-child(1) .tool-card-icon-wrap {
+  background: rgba(28, 176, 246, 0.12);
+}
+.free-tool-card:nth-child(2) .tool-card-icon-wrap {
+  background: rgba(255, 150, 0, 0.12);
+}
+.free-tool-card:nth-child(3) .tool-card-icon-wrap {
+  background: rgba(206, 130, 255, 0.12);
 }
 .page-dark .tool-card-icon-wrap {
   background: color-mix(in srgb, var(--primary) 18%, transparent);
@@ -1838,13 +2122,13 @@ export default {
 }
 .tool-card-title {
   font-size: 24rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   text-align: center;
 }
 .tool-card-desc {
   font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   margin-top: 4rpx;
   text-align: center;
 }
@@ -1852,36 +2136,50 @@ export default {
   margin-top: 10rpx;
   padding: 2rpx 10rpx;
   border-radius: 8rpx;
-  background: color-mix(in srgb, var(--warning) 10%, transparent);
+  background: rgba(255, 150, 0, 0.1);
 }
 .tool-tag-text {
   font-size: 22rpx;
-  color: var(--warning, #ff9500);
-  font-weight: 500;
+  color: var(--warning);
+  font-weight: 600;
 }
 
-/* ==================== [闭环核心] 今日复习入口 ==================== */
+/* ==================== [闭环核心] 今日复习入口 — 多邻国绿色风格 ==================== */
 .review-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 28rpx 32rpx;
   margin: 20rpx 32rpx;
-  border-radius: 20rpx;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--success) 12%, transparent),
-    color-mix(in srgb, var(--success) 8%, transparent)
-  );
-  border: 1rpx solid color-mix(in srgb, var(--success) 20%, transparent);
+  border-radius: 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+  /* 左侧绿色装饰条 */
+}
+.review-banner::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8rpx;
+  background: #58cc02;
+  border-radius: 0 4rpx 4rpx 0;
+}
+.review-banner:active {
+  transform: scale(0.98);
 }
 .page-dark .review-banner {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--success) 10%, transparent),
-    color-mix(in srgb, var(--success) 6%, transparent)
-  );
-  border-color: color-mix(in srgb, var(--success) 15%, transparent);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+.page-dark .review-banner::before {
+  background: #58cc02;
 }
 .review-banner-left {
   display: flex;
@@ -1889,10 +2187,16 @@ export default {
   flex: 1;
 }
 .review-banner-icon {
-  margin-right: 20rpx;
-  color: var(--success, #10b981);
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 18rpx;
+  background: rgba(88, 204, 2, 0.12);
   display: flex;
   align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  color: #58cc02;
+  flex-shrink: 0;
 }
 .review-banner-info {
   display: flex;
@@ -1900,11 +2204,11 @@ export default {
 }
 .review-banner-title {
   font-size: 30rpx;
-  font-weight: 640;
-  color: var(--success, #10b981);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .page-dark .review-banner-title {
-  color: var(--success-light, #34d399);
+  color: var(--text-primary);
 }
 .review-banner-sub {
   font-size: 24rpx;
@@ -1912,13 +2216,18 @@ export default {
   margin-top: 4rpx;
 }
 .page-dark .review-banner-sub {
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.5);
 }
 .review-banner-arrow {
-  color: var(--success, #10b981);
-  opacity: 0.6;
+  color: #58cc02;
   margin-left: 12rpx;
   display: flex;
   align-items: center;
+}
+
+/* 功能级卡通图标（替代 BaseIcon size 36-79） */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
 }
 </style>
