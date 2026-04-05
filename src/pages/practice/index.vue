@@ -137,7 +137,13 @@
         @tap="goPractice"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <BaseIcon v-else name="book" :size="40" class="btn-icon-img" />
+        <!-- 卡通火箭图标替代装饰性 BaseIcon -->
+        <image
+          v-else
+          class="feature-cartoon-icon btn-icon-img"
+          src="/static/icons/rocket-launch.png"
+          mode="aspectFit"
+        />
         <text class="btn-text">
           {{ isNavigating ? '加载中...' : '开始刷题' }}
         </text>
@@ -153,7 +159,13 @@
         @tap="goBattle"
       >
         <view v-if="isNavigating" class="btn-spinner" />
-        <BaseIcon v-else name="sword" :size="40" class="btn-icon-img" />
+        <!-- 卡通图标替代装饰性 BaseIcon -->
+        <image
+          v-else
+          class="feature-cartoon-icon btn-icon-img"
+          src="/static/icons/crossed-swords.png"
+          mode="aspectFit"
+        />
         <text class="btn-text"> PK 对战 </text>
       </button>
 
@@ -194,7 +206,7 @@
           </view>
         </view>
         <view class="import-arrow">
-          <text v-if="!isUploadingFile" class="arrow"> › </text>
+          <BaseIcon v-if="!isUploadingFile" name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
     </view>
@@ -212,20 +224,21 @@
           <view class="menu-title"> 文件管理 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow"> › </text>
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
 
       <!-- 智能导师 -->
       <view id="e2e-practice-menu-ai-tutor" class="menu-item" @tap="goAITutor">
         <view class="menu-icon">
-          <BaseIcon name="robot" :size="44" class="menu-icon-img" />
+          <!-- 卡通图标替代装饰性 BaseIcon -->
+          <image class="feature-cartoon-icon" src="/static/icons/ai-chat.png" mode="aspectFit" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 智能导师 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow"> › </text>
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
 
@@ -238,34 +251,36 @@
           <view class="menu-title"> 错题本 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow"> › </text>
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
 
       <!-- ✅ P1: 错题重练入口 -->
       <view v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
         <view class="menu-icon">
-          <BaseIcon name="star" :size="36" />
+          <!-- 卡通星标图标替代装饰性 BaseIcon -->
+          <image class="feature-cartoon-icon" src="/static/icons/star-badge.png" mode="aspectFit" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 错题重练 </view>
           <view class="menu-subtitle"> {{ mistakeCount }} 道错题待巩固 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow"> › </text>
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
 
       <!-- 排行榜 -->
       <view id="e2e-practice-menu-rank" class="menu-item" @tap="goRank">
         <view class="menu-icon">
-          <BaseIcon name="trophy" :size="44" class="menu-icon-img" />
+          <!-- 卡通图标替代装饰性 BaseIcon -->
+          <image class="feature-cartoon-icon" src="/static/icons/trophy-cup.png" mode="aspectFit" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 学霸排行榜 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow"> › </text>
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
 
@@ -288,14 +303,15 @@
       <!-- ✅ P2: 收藏夹管理入口 -->
       <view v-if="favoriteCount > 0" class="menu-item" @tap="goFavorites">
         <view class="menu-icon">
-          <BaseIcon name="star" :size="36" />
+          <!-- 卡通书签图标替代装饰性 BaseIcon -->
+          <image class="feature-cartoon-icon" src="/static/icons/bookmark-save.png" mode="aspectFit" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 我的收藏 </view>
           <view class="menu-subtitle-normal"> {{ favoriteCount }} 道题目 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow"> › </text>
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
 
@@ -309,7 +325,7 @@
           <view class="menu-subtitle-normal"> 导出为 .apkg 文件 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow"> › </text>
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
 
@@ -323,7 +339,7 @@
           <view class="menu-subtitle-normal"> 专项突破 · 限时训练 </view>
         </view>
         <view class="menu-arrow">
-          <text class="arrow"> › </text>
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
         </view>
       </view>
     </view>
@@ -393,13 +409,14 @@ import { toast } from '@/utils/toast.js';
 import { safeImport } from '@/utils/helpers/safe-import.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
-import { defineAsyncComponent } from 'vue';
-const ResumePracticeModal = defineAsyncComponent(() => import('@/components/common/ResumePracticeModal.vue'));
-const GoalSettingModal = defineAsyncComponent(() => import('@/components/business/practice/GoalSettingModal.vue'));
-const AchievementModal = defineAsyncComponent(() => import('@/components/business/practice/AchievementModal.vue'));
-const PracticeModesModal = defineAsyncComponent(() => import('@/components/business/practice/PracticeModesModal.vue'));
-const QuizManageModal = defineAsyncComponent(() => import('@/components/business/practice/QuizManageModal.vue'));
-const SpeedReadyModal = defineAsyncComponent(() => import('@/components/business/practice/SpeedReadyModal.vue'));
+// ✅ [BUG-FIX] defineAsyncComponent 在微信小程序中不生成 usingComponents 注册，
+// 导致组件无法渲染。全部改为静态 import。
+import ResumePracticeModal from '@/components/common/ResumePracticeModal.vue';
+import GoalSettingModal from '@/components/business/practice/GoalSettingModal.vue';
+import AchievementModal from '@/components/business/practice/AchievementModal.vue';
+import PracticeModesModal from '@/components/business/practice/PracticeModesModal.vue';
+import QuizManageModal from '@/components/business/practice/QuizManageModal.vue';
+import SpeedReadyModal from '@/components/business/practice/SpeedReadyModal.vue';
 import LearningStatsCard from '@/components/business/practice/LearningStatsCard.vue';
 import GenerationProgressBar from '@/components/business/practice/GenerationProgressBar.vue';
 import AiGenerationOverlay from '@/components/business/practice/AiGenerationOverlay.vue';
@@ -662,7 +679,8 @@ export default {
   onShareAppMessage() {
     return {
       title: '智能刷题 - Exam-Master 考研备考',
-      path: '/pages/practice/index'
+      path: '/pages/practice/index',
+      imageUrl: '/static/images/app-share-cover.png'
     };
   },
 
@@ -1052,19 +1070,15 @@ export default {
 
 <style lang="scss" scoped>
 /* ============================================
-   Wise-Style 刷题页面样式 - Phase 3 页面级重构
+   多邻国风格刷题页面样式 - Design System 2.0
+   模块色: var(--info) 天蓝
    ============================================ */
 
-/* 基础容器 - 使用设计系统变量 */
+/* 基础容器 — 暖白背景 */
 .practice-container {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top, var(--bg-page)) 0%,
-    var(--page-gradient-mid, var(--bg-page)) 52%,
-    var(--page-gradient-bottom, var(--bg-page)) 100%
-  );
+  background: var(--background);
   padding: 22rpx;
   /* E008: 使用 safe-area-inset-bottom 适配刘海屏/底部指示条 */
   padding-bottom: calc(140px + constant(safe-area-inset-bottom, 0px));
@@ -1073,11 +1087,15 @@ export default {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Text', 'Noto Sans SC', 'Roboto', sans-serif;
-  transition: background 0.3s ease;
+}
+.practice-container.dark-mode {
+  background: var(--bg-page);
+  color: var(--text-sub);
 }
 
+/* 装饰光斑 */
 .practice-container::before,
 .practice-container::after {
   content: '';
@@ -1086,27 +1104,25 @@ export default {
   z-index: -1;
   pointer-events: none;
 }
-
 .practice-container::before {
   width: 420rpx;
   height: 420rpx;
   right: -150rpx;
   top: 80rpx;
-  background: radial-gradient(circle, var(--brand-tint-strong) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(28, 176, 246, 0.08) 0%, transparent 70%);
   filter: blur(10rpx);
 }
-
 .practice-container::after {
   width: 360rpx;
   height: 360rpx;
   left: -120rpx;
   top: 520rpx;
-  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(88, 204, 2, 0.06) 0%, transparent 72%);
   filter: blur(10rpx);
 }
 
 /* ============================================
-   顶部导航 - 优化文字间距和对齐
+   顶部导航 — 加粗标题
    ============================================ */
 .top-nav {
   display: flex;
@@ -1120,10 +1136,13 @@ export default {
 
 .nav-title {
   font-size: 58rpx;
-  font-weight: 680;
+  font-weight: 800;
   letter-spacing: -0.5rpx;
   color: var(--text-primary);
   line-height: 1.2;
+}
+.dark-mode .nav-title {
+  color: var(--text-primary);
 }
 
 .nav-actions {
@@ -1156,56 +1175,49 @@ export default {
   background-color: var(--danger);
 }
 
-/* 状态卡片 */
+/* 状态卡片 — 白底卡片 + clean阴影 */
 .status-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-radius: 28px;
   padding: 24px;
   margin-bottom: 18px;
-  box-shadow: var(--apple-shadow-card);
-  transition: all 0.3s ease;
-  backdrop-filter: blur(14rpx) saturate(120%);
-  -webkit-backdrop-filter: blur(14rpx) saturate(120%);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease;
 }
-
 .status-card::before {
   content: '';
   position: absolute;
-  left: 24rpx;
-  right: 24rpx;
   top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+  left: 0;
+  right: 0;
+  height: 6rpx;
+  background: linear-gradient(90deg, var(--info), #58cc02);
+  border-radius: 0 0 4rpx 4rpx;
 }
-
 .status-card:active {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: scale(0.98);
 }
-
 .dark-mode .status-card {
-  background: linear-gradient(160deg, var(--card) 0%, var(--background) 100%);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 
-/* 空状态样式 - 居中显示 */
+/* 空状态样式 */
 .status-card.empty-state {
   min-height: 280px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
-
 .status-card.empty-state:active {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: var(--primary);
+  transform: scale(0.98);
 }
-
 .dark-mode .status-card.empty-state {
-  background: linear-gradient(160deg, var(--muted) 0%, var(--background) 100%);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .empty-state-content {
@@ -1219,30 +1231,28 @@ export default {
 
 .empty-icon {
   margin-bottom: 20px;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 30rpx;
+  background: rgba(28, 176, 246, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: float 3s ease-in-out infinite;
 }
 
 .dark-mode .empty-icon,
 .dark-mode .import-icon,
 .dark-mode .menu-icon {
-  width: 84rpx;
-  height: 84rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 24rpx;
-  background:
-    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border: 1rpx solid rgba(10, 132, 255, 0.18);
-  box-shadow: var(--apple-shadow-surface);
+  background: rgba(28, 176, 246, 0.15) !important;
 }
 
 .dark-mode .empty-icon {
-  width: 132rpx;
-  height: 132rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin: 0 auto 20px;
-  border-radius: 36rpx;
+  border-radius: 30rpx;
+  background: rgba(28, 176, 246, 0.15) !important;
 }
 
 @keyframes float {
@@ -1285,60 +1295,47 @@ export default {
 
 .empty-title {
   font-size: 42rpx;
-  font-weight: 680;
+  font-weight: 800;
   color: var(--text-primary);
   margin: 0 0 24rpx 0;
   letter-spacing: 0;
 }
+.dark-mode .empty-title {
+  color: var(--text-primary);
+}
 
 .empty-desc {
   font-size: 30rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin: 0 0 48rpx 0;
   line-height: 1.6;
   max-width: 280px;
 }
 
+/* 空状态操作按钮 — 3D蓝色按钮 */
 .empty-action {
   display: flex;
   align-items: center;
   /* gap: 10px; -- replaced for Android WebView compat */
   padding: 12px 28px;
   min-height: 88rpx;
-  background: var(--cta-primary-bg);
-  border-radius: 999px;
-  transition: all 0.3s ease;
-  box-shadow: var(--cta-primary-shadow);
-  border: 1px solid var(--cta-primary-border);
+  background: var(--info);
+  border-radius: 20rpx;
+  border: none;
+  box-shadow: 0 6rpx 0 var(--info-dark, #1899d6);
+  transition: all 0.1s ease;
 }
-
 .empty-action:active {
-  transform: scale(0.95);
-  box-shadow: var(--shadow-sm);
-}
-
-.action-icon {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  /* 按钮背景是主色（绿色），图标需要深色以保持对比度 */
-  filter: brightness(0) opacity(0.8);
+  transform: translateY(4rpx);
+  box-shadow: 0 2rpx 0 var(--info-dark, #1899d6);
 }
 
 .action-text {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--cta-primary-text);
+  font-weight: 800;
+  color: var(--text-inverse);
   letter-spacing: 0.3px;
-}
-
-.dark-mode .empty-action {
-  background: var(--cta-primary-bg);
-  border-color: var(--cta-primary-border);
-}
-
-.dark-mode .action-text {
-  color: var(--primary-foreground);
+  margin-left: 10px;
 }
 
 .status-content {
@@ -1358,34 +1355,32 @@ export default {
   align-items: center;
   /* gap: 6px; -- replaced for Android WebView compat */
   padding: 10px 18px;
-  background-color: rgba(255, 255, 255, 0.66);
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.52);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.72);
+  background: rgba(28, 176, 246, 0.1);
+  border-radius: 20rpx;
+  border: none;
+  transition: all 0.15s ease;
 }
-
 .manage-btn:active {
-  background-color: rgba(255, 255, 255, 0.88);
   transform: scale(0.95);
+  background: rgba(28, 176, 246, 0.18);
 }
-
-.manage-icon {
-  font-size: 32rpx;
-}
-
 .manage-text {
   font-size: 28rpx;
-  color: var(--primary);
-  font-weight: 600;
+  color: var(--info);
+  font-weight: 700;
+  margin-left: 6px;
 }
 
 .status-icon {
   margin-right: 16px;
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 22rpx;
+  background: rgba(28, 176, 246, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 /* 图标图片样式 */
@@ -1411,46 +1406,49 @@ export default {
 
 .status-title {
   font-size: 38rpx;
-  font-weight: 680;
+  font-weight: 800;
   color: var(--text-primary);
   margin: 0 0 8px 0;
+}
+.dark-mode .status-title {
+  color: var(--text-primary);
 }
 
 .status-desc {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin: 0;
 }
 
-/* AI 推荐今日训练卡片 */
+/* AI 推荐今日训练卡片 — 紫色AI模块 */
 .ai-recommend-card {
   margin: 0 16px 16px;
   padding: 20px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(6, 182, 212, 0.08));
-  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
   position: relative;
   overflow: hidden;
+  transition: transform 0.15s ease;
 }
-/* [AUDIT FIX R183] AI推荐卡片顶部装饰条 → CSS变量 */
 .ai-recommend-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--success, #34d399), var(--info-blue, #06b6d4));
+  height: 6rpx;
+  background: linear-gradient(90deg, var(--purple-light, #ce82ff), var(--purple-dark, #9b51e0));
+  border-radius: 0 0 4rpx 4rpx;
 }
 .ai-recommend-card:active {
   transform: scale(0.98);
-  opacity: 0.9;
 }
-/* [AUDIT FIX R184] AI推荐徽章渐变 → CSS变量 */
 .ai-recommend-badge {
-  background: linear-gradient(135deg, var(--success, #34d399), var(--info-blue, #06b6d4));
+  background: linear-gradient(135deg, var(--purple-light, #ce82ff), var(--purple-dark, #9b51e0));
   padding: 4px 12px;
   border-radius: 12px;
   margin-right: 14px;
@@ -1458,8 +1456,8 @@ export default {
 }
 .ai-recommend-badge-text {
   font-size: 12px;
-  font-weight: 700;
-  color: var(--text-inverse, #fff);
+  font-weight: 800;
+  color: var(--text-inverse);
 }
 .ai-recommend-body {
   flex: 1;
@@ -1467,34 +1465,42 @@ export default {
 }
 .ai-recommend-title {
   font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary, #1e293b);
+  font-weight: 700;
+  color: var(--text-primary);
   display: block;
+}
+.dark-mode .ai-recommend-title {
+  color: var(--text-primary);
 }
 .ai-recommend-reason {
   font-size: 12px;
-  color: var(--text-sub, #64748b);
+  color: var(--text-secondary);
   margin-top: 4px;
   display: block;
 }
-/* [AUDIT FIX R185] AI推荐操作按钮 → CSS变量 */
 .ai-recommend-action {
-  background: linear-gradient(135deg, var(--success, #34d399), var(--success-dark, #059669));
+  background: var(--purple-light, #ce82ff);
   padding: 8px 18px;
-  border-radius: 16px;
+  border-radius: 16rpx;
   flex-shrink: 0;
   margin-left: 12px;
+  box-shadow: 0 4rpx 0 var(--purple, #a855c7);
+  transition: all 0.1s ease;
+}
+.ai-recommend-action:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 0 var(--purple, #a855c7);
 }
 .ai-recommend-btn-text {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--text-inverse, #fff);
+  font-weight: 700;
+  color: var(--text-inverse);
   white-space: nowrap;
 }
-/* [AUDIT FIX R186] AI推荐标题暗黑覆盖 → 移除(--text-primary自动切换) */
 .dark-mode .ai-recommend-card {
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.12), rgba(6, 182, 212, 0.08));
-  border-color: rgba(52, 211, 153, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 
 /* 主要操作区 */
@@ -1508,37 +1514,29 @@ export default {
   margin-top: 12px;
 }
 
-/* 主要按钮 */
+/* 主要按钮 — 3D蓝色刷题按钮 */
 .primary-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
-  border-radius: 999px;
+  background: var(--info);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 20rpx;
   padding: 20px 40px;
   font-size: 40rpx;
-  font-weight: 680;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--cta-primary-shadow);
+  font-weight: 800;
+  box-shadow: 0 8rpx 0 var(--info-dark, #1899d6);
   width: 100%;
   max-width: 360px;
   margin: 0 auto;
   min-height: 96rpx;
+  transition: all 0.1s ease;
 }
-
-.primary-btn:hover {
-  opacity: 0.92;
-  box-shadow: var(--cta-primary-shadow);
-  transform: translateY(-2px);
-}
-
 .primary-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 8rpx 20rpx rgba(16, 40, 26, 0.16);
+  transform: translateY(6rpx);
+  box-shadow: 0 2rpx 0 var(--info-dark, #1899d6);
 }
 
 /* [AUDIT FIX R187] 主按钮暗黑覆盖块冗余(已使用CTA变量) → 移除 */
@@ -1584,92 +1582,75 @@ export default {
   object-fit: contain;
 }
 
-/* 次要按钮（PK对战） */
+/* 次要按钮 — 白色3D按钮 */
 .secondary-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   /* gap: 12px; -- replaced for Android WebView compat */
-  background-color: rgba(255, 255, 255, 0.68);
+  background: var(--bg-card);
   color: var(--text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.52);
-  border-radius: 999px;
+  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  border-radius: 20rpx;
   padding: 20px 40px;
   font-size: 40rpx;
-  font-weight: 620;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--apple-shadow-surface);
+  font-weight: 700;
+  box-shadow: 0 6rpx 0 var(--border);
   width: 100%;
   max-width: 360px;
   margin: 0 auto;
   min-height: 96rpx;
+  transition: all 0.1s ease;
 }
-
-.secondary-btn:hover {
-  opacity: 0.94;
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-
 .secondary-btn:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
+  transform: translateY(4rpx);
+  box-shadow: 0 2rpx 0 var(--border);
 }
-
 .dark-mode .secondary-btn {
-  background-color: rgba(16, 20, 28, 0.72);
-  border-color: rgba(124, 176, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-inverse);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6rpx 0 rgba(0, 0, 0, 0.3);
 }
 
 .btn-icon {
   font-size: 56rpx;
 }
 
-/* 导入资料卡片 */
+/* 导入资料卡片 — 白底clean风格 */
 .import-card {
   display: flex;
   align-items: center;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
-  border-radius: 26px;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
   padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--apple-shadow-card);
-  backdrop-filter: blur(14rpx) saturate(120%);
-  -webkit-backdrop-filter: blur(14rpx) saturate(120%);
+  transition: transform 0.15s ease;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
-
-.import-card::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+.import-card:active {
+  transform: scale(0.98);
 }
-
-/* [AUDIT FIX R189] 导入卡片/功能菜单暗黑渐变 → CSS变量 */
 .dark-mode .import-card {
-  background: linear-gradient(160deg, var(--bg-secondary, #1f1f24) 0%, var(--bg-tertiary, #17171b) 100%);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 
 /* ✅ F026: 文件读取中状态 */
 .import-card.import-loading {
   opacity: 0.8;
   pointer-events: none;
-  border-color: var(--primary);
+  border-color: var(--info);
 }
 
 .import-spinner {
   width: 48rpx;
   height: 48rpx;
-  border: 4rpx solid var(--border, #e5e5e5);
-  border-top-color: var(--primary);
+  border: 4rpx solid rgba(28, 176, 246, 0.2);
+  border-top-color: var(--info);
   border-radius: 50%;
   animation: importSpin 0.8s linear infinite;
 }
@@ -1681,12 +1662,19 @@ export default {
 }
 
 .import-card:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  transform: scale(0.98);
 }
 
 .import-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 18rpx;
+  background: rgba(28, 176, 246, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 16px;
+  flex-shrink: 0;
 }
 
 .import-icon .emoji {
@@ -1699,19 +1687,22 @@ export default {
 
 .import-title {
   font-size: 36rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 4px 0;
+}
+.dark-mode .import-title {
+  color: var(--text-primary);
 }
 
 .import-desc {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .import-arrow {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .arrow {
@@ -1719,19 +1710,18 @@ export default {
   font-weight: 600;
 }
 
-/* 功能菜单 */
+/* 功能菜单 — 白底卡片 + 彩色图标 */
 .feature-menu {
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
-  border-radius: 28px;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
   overflow: hidden;
-  box-shadow: var(--apple-shadow-surface);
-  backdrop-filter: blur(14rpx) saturate(120%);
-  -webkit-backdrop-filter: blur(14rpx) saturate(120%);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
-
 .dark-mode .feature-menu {
-  background: linear-gradient(160deg, var(--bg-secondary, #1f1f24) 0%, var(--bg-tertiary, #17171b) 100%);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 
 .menu-item {
@@ -1739,21 +1729,70 @@ export default {
   align-items: center;
   min-height: 96rpx;
   padding: 18px 20px;
-  border-bottom: 1px solid var(--apple-divider);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
+  transition: background-color 0.15s ease;
 }
-
 .menu-item:last-child {
   border-bottom: none;
 }
-
-.menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.26);
+.menu-item:active {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+.dark-mode .menu-item {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+.dark-mode .menu-item:active {
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
+/* 每个菜单项独立图标色 */
 .menu-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 16px;
+  flex-shrink: 0;
+}
+/* 文件管理 — 蓝色 */
+.menu-item:nth-child(1) .menu-icon {
+  background: rgba(28, 176, 246, 0.12);
+  color: var(--info);
+}
+/* 智能导师 — 紫色 */
+.menu-item:nth-child(2) .menu-icon {
+  background: rgba(206, 130, 255, 0.12);
+  color: var(--purple-light, #ce82ff);
+}
+/* 错题本 — 红色 */
+.menu-item:nth-child(3) .menu-icon {
+  background: rgba(255, 75, 75, 0.12);
+  color: var(--danger);
+}
+/* 错题重练(动态) / 排行榜 — 橙色 */
+.menu-item.mistake-review .menu-icon,
+.menu-item:nth-child(4) .menu-icon {
+  background: rgba(255, 150, 0, 0.12);
+  color: var(--warning);
+}
+/* 排行榜 — 金色 */
+.menu-item:nth-child(5) .menu-icon {
+  background: rgba(255, 150, 0, 0.12);
+  color: var(--warning);
+}
+/* 学习进度 — 绿色 */
+.menu-item:nth-child(6) .menu-icon {
+  background: rgba(88, 204, 2, 0.12);
+  color: #58cc02;
+}
+/* 收藏/Anki/练习模式 — 青色 */
+.menu-item:nth-child(7) .menu-icon,
+.menu-item:nth-child(8) .menu-icon,
+.menu-item:nth-child(9) .menu-icon {
+  background: rgba(45, 201, 196, 0.12);
+  color: var(--teal, #2dc9c4);
 }
 
 .menu-icon .emoji {
@@ -1766,22 +1805,32 @@ export default {
 
 .menu-title {
   font-size: 31rpx;
-  font-weight: 620;
+  font-weight: 700;
   color: var(--text-primary);
   margin: 0;
+}
+.dark-mode .menu-title {
+  color: var(--text-primary);
 }
 
 .menu-subtitle {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--danger);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.menu-subtitle-normal {
+  font-size: 24rpx;
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
 .menu-arrow {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
-/* 进度条 */
+/* 进度条 — 绿色 */
 .progress-info {
   display: flex;
   align-items: center;
@@ -1790,23 +1839,24 @@ export default {
 
 .progress-bar {
   width: 120px;
-  height: 8px;
-  background-color: var(--primary-light);
-  border-radius: 4px;
+  height: 12rpx;
+  background-color: rgba(88, 204, 2, 0.15);
+  border-radius: 6rpx;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--gradient-primary);
-  border-radius: 4px;
+  background: #58cc02;
+  border-radius: 6rpx;
   transition: width 0.3s ease;
 }
 
 .progress-text {
   font-size: 28rpx;
-  font-weight: 600;
-  color: var(--primary);
+  font-weight: 800;
+  color: #58cc02;
+  margin-left: 12px;
 }
 
 .skeleton-import-card {
@@ -1845,9 +1895,18 @@ export default {
 }
 
 .skeleton-animate {
-  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+  background: linear-gradient(90deg, var(--muted) 25%, var(--background) 50%, var(--muted) 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
+}
+.dark-mode .skeleton-animate {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
 }
 
 @keyframes skeleton-loading {
@@ -1865,5 +1924,11 @@ export default {
 }
 .skeleton-fade-leave-to {
   opacity: 0;
+}
+
+/* 功能级卡通图标（替代 BaseIcon size 36-79） */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
 }
 </style>
