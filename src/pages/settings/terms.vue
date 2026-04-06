@@ -162,16 +162,16 @@ function goBack() {
   border-color: rgba(255, 255, 255, 0.1);
 }
 .dark-mode .back-icon {
-  color: #ffffff;
+  color: var(--foreground);
 }
 .nav-title {
-  color: var(--text-main);
+  color: var(--text-primary);
   font-size: 34rpx;
-  font-weight: bold;
+  font-weight: 800;
   margin-left: 16rpx;
 }
 .dark-mode .nav-title {
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 .content-scroll {
@@ -209,17 +209,17 @@ function goBack() {
 }
 .section-title {
   font-size: 30rpx;
-  font-weight: bold;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
   margin-bottom: 16rpx;
   display: block;
 }
 .dark-mode .section-title {
-  color: #ffffff;
+  color: var(--foreground);
 }
 .section-text {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   line-height: 1.8;
   margin-bottom: 12rpx;
   display: block;

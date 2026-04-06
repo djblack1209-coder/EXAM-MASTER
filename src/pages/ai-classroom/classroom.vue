@@ -101,8 +101,9 @@
 </template>
 
 <script setup>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useClassroomStore } from './stores/classroom.js';
 import { initTheme } from '@/composables/useTheme.js';
@@ -284,7 +285,7 @@ function goBack() {
 }
 
 function handleEndClass() {
-  uni.showModal({
+  modal.show({
     title: '结束课堂',
     content: '确定要结束当前课堂吗？',
     success: async (res) => {
@@ -313,7 +314,16 @@ onMounted(() => {
 
   if (!lessonId.value) {
     toast.info('缺少课程参数');
-    setTimeout(() => safeNavigateBack(), 1500);
+    _navTimer = setTimeout(() => safeNavigateBack(), 1500);
+  }
+});
+
+// [R397] 清理导航延迟定时器
+let _navTimer = null;
+onBeforeUnmount(() => {
+  if (_navTimer) {
+    clearTimeout(_navTimer);
+    _navTimer = null;
   }
 });
 </script>
@@ -322,7 +332,7 @@ onMounted(() => {
 <style scoped>
 .classroom-container {
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--page-gradient-top, #f0f4f8) 0%, var(--page-gradient-mid, #e8edf2) 100%);
+  background: var(--background);
   display: flex;
   flex-direction: column;
 }
@@ -332,9 +342,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 12rpx 24rpx;
-  backdrop-filter: saturate(180%) blur(20px);
-  background: var(--apple-glass-nav-bg, rgba(255, 255, 255, 0.72));
-  border-bottom: 1rpx solid var(--border-color, rgba(0, 0, 0, 0.06));
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   position: fixed;
   top: 0;
   left: 0;
@@ -355,12 +365,12 @@ onMounted(() => {
 }
 .nav-title {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .nav-subtitle {
   font-size: 22rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   margin-top: 2rpx;
 }
 .nav-action {
@@ -410,10 +420,10 @@ onMounted(() => {
   align-items: center;
   padding: 60rpx 40rpx;
   margin: 40rpx 0;
-  border-radius: 24rpx;
-  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.72));
-  backdrop-filter: saturate(180%) blur(20px);
-  border: 1rpx solid var(--glass-border, rgba(255, 255, 255, 0.3));
+  border-radius: 28rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .welcome-icon {
   font-size: 80rpx;
@@ -421,24 +431,25 @@ onMounted(() => {
 }
 .welcome-title {
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 12rpx;
 }
 .welcome-desc {
   font-size: 26rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   margin-bottom: 32rpx;
   text-align: center;
 }
 .btn-start {
-  background: linear-gradient(135deg, var(--success), var(--success-dark, #10b981));
-  color: var(--text-inverse, #fff);
+  background: var(--purple-light, #ce82ff);
+  color: var(--text-inverse);
   border: none;
   border-radius: 48rpx;
   padding: 20rpx 64rpx;
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 8rpx 0 #a458d9;
 }
 
 /* 消息气泡 */
@@ -488,13 +499,13 @@ onMounted(() => {
   line-height: 1.6;
 }
 .bubble-agent {
-  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.82));
-  border: 1rpx solid var(--border-color, rgba(0, 0, 0, 0.04));
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-radius: 4rpx 20rpx 20rpx 20rpx;
 }
 .bubble-user {
-  background: linear-gradient(135deg, var(--success), var(--success-dark, #10b981));
-  color: var(--text-inverse, #fff);
+  background: var(--purple-light, #ce82ff);
+  color: var(--text-inverse);
   border-radius: 20rpx 4rpx 20rpx 20rpx;
   margin-left: auto;
 }
@@ -505,7 +516,7 @@ onMounted(() => {
   word-break: break-word;
 }
 .bubble-user .message-text {
-  color: var(--text-inverse, #fff);
+  color: var(--text-inverse);
 }
 .user-tag {
   margin-left: 12rpx;
@@ -585,9 +596,9 @@ onMounted(() => {
   right: 0;
   padding: 16rpx 24rpx;
   padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
-  backdrop-filter: saturate(180%) blur(20px);
-  background: var(--apple-glass-nav-bg, rgba(255, 255, 255, 0.82));
-  border-top: 1rpx solid var(--border-color, rgba(0, 0, 0, 0.06));
+  background: var(--bg-card);
+  border-top: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .input-section {
   display: flex;
@@ -604,15 +615,16 @@ onMounted(() => {
 }
 .btn-send {
   margin-left: 16rpx;
-  background: linear-gradient(135deg, var(--success), var(--success-dark, #10b981));
-  color: var(--text-inverse, #fff);
+  background: var(--purple-light, #ce82ff);
+  color: var(--text-inverse);
   border: none;
   border-radius: 36rpx;
   padding: 0 32rpx;
   height: 72rpx;
   line-height: 72rpx;
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 8rpx 0 #a458d9;
 }
 .btn-send[disabled] {
   opacity: 0.4;
@@ -636,8 +648,9 @@ onMounted(() => {
   justify-content: center;
 }
 .btn-continue {
-  background: linear-gradient(135deg, var(--success), var(--success-dark, #10b981));
-  color: var(--text-inverse, #fff);
+  background: var(--purple-light, #ce82ff);
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #a458d9;
 }
 .btn-continue[disabled] {
   opacity: 0.5;

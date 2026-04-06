@@ -106,7 +106,16 @@
         </view>
 
         <!-- 搜索无结果 -->
-        <BaseEmpty v-else icon="search" title="未找到用户" desc="试试搜索其他昵称" />
+        <view v-else class="empty-state">
+          <!-- 搜索无结果插图 -->
+          <image
+            class="empty-search-illustration"
+            src="/static/illustrations/empty-search.png"
+            mode="aspectFit"
+            lazy-load
+          />
+          <BaseEmpty icon="search" title="未找到用户" desc="试试搜索其他昵称" />
+        </view>
       </view>
 
       <!-- 我的好友 Tab -->
@@ -187,7 +196,8 @@
 
         <!-- 空状态 -->
         <view v-else-if="!isLoadingRequests && requestList.length === 0" class="empty-state">
-          <BaseIcon name="email" :size="120" class="empty-icon" />
+          <!-- 卡通图标替代装饰性 BaseIcon -->
+          <image class="hero-cartoon-icon" src="./static/icons/friends.png" mode="aspectFit" />
           <text class="empty-title"> 暂无好友请求 </text>
           <text class="empty-desc"> 当有人向你发送好友请求时，会显示在这里 </text>
         </view>
@@ -247,520 +257,528 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, computed, watch } from 'vue';
+import { onLoad, onShow, onUnload, onPullDownRefresh } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { socialService } from './socialService.js';
-// ✅ 统一日志工具（生产环境自动禁用）
+// 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
-// 统一默认头像
-const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 // 防抖工具
 import { debounce } from '@/utils/throttle.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
-// ✅ F019: 统一使用 storageService
+// 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  components: {
-    BaseEmpty,
-    BaseIcon
-  },
-  data() {
-    return {
-      isDark: false,
-      currentTab: 'friends', // 'friends' | 'requests'
-      searchKeyword: '',
-      friendList: [],
-      requestList: [],
-      searchResults: [],
-      isLoading: false,
-      isLoadingRequests: false,
-      isRefreshing: false,
-      isSearching: false,
-      isSearchMode: false,
-      defaultAvatar: DEFAULT_AVATAR,
-      // 防重复点击
-      isAddingFriend: {}, // { [userId]: boolean }
-      isAccepting: {}, // { [requestId]: boolean }
-      isRejecting: {}, // { [requestId]: boolean }
-      // 防抖搜索函数
-      debouncedSearch: null,
-      // 增量渲染：初始显示30条好友，滚动加载更多
-      displayFriendCount: 30
-    };
-  },
-  computed: {
-    // 待处理的好友请求数量
-    pendingRequestsCount() {
-      return this.requestList.length;
-    },
-    // 过滤后的好友列表（根据搜索关键词）
-    filteredFriendList() {
-      if (!this.searchKeyword.trim()) {
-        return this.friendList;
-      }
+// ==================== 常量 ====================
 
-      const keyword = this.searchKeyword.toLowerCase();
-      return this.friendList.filter((friend) => friend.nickname?.toLowerCase().includes(keyword));
-    },
-    // 增量渲染 — 只渲染前 displayFriendCount 条到 DOM，滚动加载更多
-    displayedFriendList() {
-      return this.filteredFriendList.slice(0, this.displayFriendCount);
-    }
-  },
-  watch: {
-    // 搜索关键词变化时重置增量渲染计数，确保过滤后从头显示
-    searchKeyword() {
-      this.displayFriendCount = 30;
-    }
-  },
-  created() {
-    // 初始化防抖搜索函数（300ms 延迟）
-    this.debouncedSearch = debounce(this.handleSearch, 300);
-  },
-  onLoad() {
-    logger.log('[FriendList] 页面加载');
-    this.isDark = storageService.get('theme_mode') === 'dark';
-    // ✅ F024: 监听主题实时切换
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
-    this.loadFriendList();
-    this.loadFriendRequests();
-    this._loadedOnce = true;
-  },
-  onShow() {
-    logger.log('[FriendList] 页面显示');
-    // 首次进入时 onLoad 已加载，跳过 onShow 的重复请求
-    if (!this._loadedOnce) {
-      this.loadFriendList(false);
-      this.loadFriendRequests();
-    }
-    this._loadedOnce = false;
-  },
-  onPullDownRefresh() {
-    logger.log('[FriendList] 下拉刷新');
-    this.onRefresh();
-  },
-  onUnload() {
-    // ✅ F024: 清理主题监听，防止内存泄漏
-    if (this._themeHandler) {
-      uni.$off('themeUpdate', this._themeHandler);
-    }
-  },
-  methods: {
-    /**
-     * 滚动到底部时增量加载更多好友（每次加30条）
-     */
-    loadMoreFriends() {
-      if (this.displayFriendCount < this.filteredFriendList.length) {
-        this.displayFriendCount = Math.min(this.displayFriendCount + 30, this.filteredFriendList.length);
-      }
-    },
+// 统一默认头像
+const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 
-    /**
-     * 头像加载失败处理
-     */
-    onAvatarError(e, obj, key = 'avatar') {
-      if (obj) {
-        obj[key] = this.defaultAvatar;
-      }
-    },
+// ==================== 响应式状态 ====================
 
-    /**
-     * 返回上一页
-     */
-    goBack() {
-      safeNavigateBack();
-    },
+const isDark = ref(false);
+const currentTab = ref('friends'); // 'friends' | 'requests'
+const searchKeyword = ref('');
+const friendList = ref([]);
+const requestList = ref([]);
+const searchResults = ref([]);
+const isLoading = ref(false);
+const isLoadingRequests = ref(false);
+const isRefreshing = ref(false);
+const isSearching = ref(false);
+const isSearchMode = ref(false);
+const defaultAvatar = DEFAULT_AVATAR;
+// 防重复点击
+const isAddingFriend = reactive({}); // { [userId]: boolean }
+const isAccepting = reactive({}); // { [requestId]: boolean }
+const isRejecting = reactive({}); // { [requestId]: boolean }
+// 增量渲染：初始显示30条好友，滚动加载更多
+const displayFriendCount = ref(30);
 
-    /**
-     * 加载好友列表
-     */
-    async loadFriendList(showLoading = true) {
-      if (showLoading) {
-        this.isLoading = true;
-      }
+// 非响应式变量（实例级别）
+let _themeHandler = null;
+let _loadedOnce = false;
 
-      try {
-        logger.log('[FriendList] 开始加载好友列表');
+// ==================== 计算属性 ====================
 
-        const res = await socialService.getFriendList('score', !showLoading);
+// 待处理的好友请求数量
+const pendingRequestsCount = computed(() => requestList.value.length);
 
-        logger.log('[FriendList] 加载结果:', res);
-
-        if (res.code === 0) {
-          // 映射后端字段到前端格式
-          // 后端: _id, nickname, avatar_url, streak_days, total_questions
-          // 前端: uid, nickname, avatar, score, last_active
-          this.friendList = (res.data || []).map((friend) => ({
-            ...friend,
-            uid: friend._id || friend.uid,
-            nickname: friend.nickname || '未命名',
-            avatar: friend.avatar_url || friend.avatar || this.defaultAvatar,
-            avatar_url: friend.avatar_url || friend.avatar || this.defaultAvatar,
-            score: friend.total_questions || friend.score || 0,
-            studyDays: friend.streak_days || friend.studyDays || 0,
-            accuracy:
-              friend.correct_questions && friend.total_questions
-                ? Math.round((friend.correct_questions / friend.total_questions) * 100)
-                : friend.accuracy || 0,
-            last_active: friend.last_study_date || friend.last_active || 0
-          }));
-          logger.log('[FriendList] 好友数量:', this.friendList.length);
-        } else {
-          logger.error('[FriendList] 加载失败:', res.msg || res.message);
-          toast.info(res.msg || res.message || '加载失败');
-        }
-      } catch (err) {
-        logger.error('[FriendList] 加载异常:', err);
-        toast.info('加载失败');
-      } finally {
-        this.isLoading = false;
-        this.isRefreshing = false;
-        uni.stopPullDownRefresh();
-      }
-    },
-
-    /**
-     * 下拉刷新
-     */
-    async onRefresh() {
-      logger.log('[FriendList] 刷新好友列表');
-      this.isRefreshing = true;
-      this.displayFriendCount = 30; // 刷新后重置增量渲染计数
-      // 清除缓存，强制从云端获取
-      socialService.clearCache();
-      await this.loadFriendList(false);
-    },
-
-    /**
-     * 切换 Tab
-     */
-    switchTab(tab) {
-      logger.log('[FriendList] 切换 Tab:', tab);
-      this.currentTab = tab;
-      this.isSearchMode = false;
-      this.searchKeyword = '';
-      this.searchResults = [];
-    },
-
-    /**
-     * 搜索用户（云端搜索）
-     */
-    async handleSearch() {
-      if (!this.searchKeyword || this.searchKeyword.trim().length < 2) {
-        toast.info('请输入至少2个字符');
-        return;
-      }
-
-      logger.log('[FriendList] 搜索用户:', this.searchKeyword);
-      this.isSearching = true;
-      this.isSearchMode = true;
-
-      try {
-        const res = await socialService.searchUser(this.searchKeyword.trim());
-
-        if (res.code === 0) {
-          this.searchResults = res.data || [];
-          logger.log('[FriendList] 搜索结果:', this.searchResults.length, '个用户');
-        } else {
-          logger.error('[FriendList] 搜索失败:', res.msg);
-          toast.info(res.msg || '搜索失败');
-        }
-      } catch (err) {
-        logger.error('[FriendList] 搜索异常:', err);
-        toast.info('搜索失败');
-      } finally {
-        this.isSearching = false;
-      }
-    },
-
-    /**
-     * 清除搜索
-     */
-    clearSearch() {
-      this.searchKeyword = '';
-      this.isSearchMode = false;
-      this.searchResults = [];
-      this.displayFriendCount = 30; // 切回好友列表时重置增量渲染
-    },
-
-    /**
-     * 加载好友请求列表
-     */
-    async loadFriendRequests() {
-      this.isLoadingRequests = true;
-
-      try {
-        logger.log('[FriendList] 开始加载好友请求列表');
-
-        const res = await socialService.getFriendRequests();
-
-        logger.log('[FriendList] 好友请求结果:', res);
-
-        if (res.code === 0) {
-          // 映射后端字段到前端格式
-          // 后端返回: { user_id, requester_info: { _id, nickname, avatar_url, streak_days } }
-          // 前端期望: { from_uid, from_nickname, from_avatar, message, created_at }
-          this.requestList = (res.data || []).map((request) => ({
-            ...request,
-            from_uid: request.user_id || request.from_uid,
-            from_nickname: request.requester_info?.nickname || request.from_nickname || '未命名',
-            from_avatar: request.requester_info?.avatar_url || request.from_avatar || this.defaultAvatar,
-            message: request.request_message || request.message || '',
-            created_at: request.created_at || Date.now()
-          }));
-          logger.log('[FriendList] 好友请求数量:', this.requestList.length);
-        } else {
-          logger.error('[FriendList] 加载好友请求失败:', res.msg || res.message);
-        }
-      } catch (err) {
-        logger.error('[FriendList] 加载好友请求异常:', err);
-        // 静默失败，不打扰用户（好友请求非核心功能）
-      } finally {
-        this.isLoadingRequests = false;
-      }
-    },
-
-    /**
-     * 添加好友
-     */
-    async handleAddFriend(user) {
-      // 防重复点击
-      if (this.isAddingFriend[user._id]) return;
-
-      logger.log('[FriendList] 添加好友:', user.nickname);
-
-      uni.showModal({
-        title: '添加好友',
-        content: `确定要添加 ${user.nickname} 为好友吗？`,
-        success: async (res) => {
-          if (res.confirm) {
-            this.isAddingFriend[user._id] = true;
-            toast.loading('发送中...');
-
-            try {
-              const result = await socialService.sendRequest(user._id, '你好，我想加你为好友');
-
-              toast.hide();
-
-              if (result.code === 0) {
-                toast.success('好友请求已发送');
-                // 清除搜索结果
-                this.clearSearch();
-              } else {
-                toast.info(result.msg || '发送失败');
-              }
-            } catch (err) {
-              toast.hide();
-              logger.error('[FriendList] 发送好友请求失败:', err);
-              toast.info('发送失败');
-            } finally {
-              this.isAddingFriend[user._id] = false;
-            }
-          }
-        }
-      });
-    },
-
-    /**
-     * 接受好友请求
-     */
-    async handleAccept(request) {
-      // 防重复点击
-      if (this.isAccepting[request.from_uid]) return;
-
-      logger.log('[FriendList] 接受好友请求:', request.from_nickname);
-
-      this.isAccepting[request.from_uid] = true;
-      toast.loading('处理中...');
-
-      try {
-        const res = await socialService.handleRequest(request.from_uid, 'accept');
-
-        toast.hide();
-
-        if (res.code === 0) {
-          toast.success('已添加为好友');
-          // 刷新列表
-          this.loadFriendRequests();
-          this.loadFriendList(false);
-        } else {
-          toast.info(res.msg || '操作失败');
-        }
-      } catch (err) {
-        toast.hide();
-        logger.error('[FriendList] 接受好友请求失败:', err);
-        toast.info('操作失败');
-      } finally {
-        this.isAccepting[request.from_uid] = false;
-      }
-    },
-
-    /**
-     * 拒绝好友请求
-     */
-    async handleReject(request) {
-      // 防重复点击
-      if (this.isRejecting[request.from_uid]) return;
-
-      logger.log('[FriendList] 拒绝好友请求:', request.from_nickname);
-
-      uni.showModal({
-        title: '确认拒绝',
-        content: `确定要拒绝 ${request.from_nickname} 的好友请求吗？`,
-        success: async (res) => {
-          if (res.confirm) {
-            this.isRejecting[request.from_uid] = true;
-            toast.loading('处理中...');
-
-            try {
-              const result = await socialService.handleRequest(request.from_uid, 'reject');
-
-              toast.hide();
-
-              if (result.code === 0) {
-                toast.success('已拒绝');
-                // 刷新列表
-                this.loadFriendRequests();
-              } else {
-                toast.info(result.msg || '操作失败');
-              }
-            } catch (err) {
-              toast.hide();
-              logger.error('[FriendList] 拒绝好友请求失败:', err);
-              toast.info('操作失败');
-            } finally {
-              this.isRejecting[request.from_uid] = false;
-            }
-          }
-        }
-      });
-    },
-
-    /**
-     * 跳转到好友资料页
-     */
-    goToFriendProfile(friend) {
-      logger.log('[FriendList] 查看好友资料:', friend.nickname);
-
-      // 使用普通字符串拼接构建URL参数（兼容小程序，避免URLSearchParams不可用）
-      const uid = friend.uid || '';
-      const nickname = encodeURIComponent(friend.nickname || '未命名');
-      const avatar = encodeURIComponent(friend.avatar || this.defaultAvatar);
-      const score = friend.score || 0;
-      const studyDays = friend.studyDays || 0;
-      const accuracy = friend.accuracy || 0;
-      const lastActive = friend.last_active || 0;
-
-      const queryStr = `uid=${uid}&nickname=${nickname}&avatar=${avatar}&score=${score}&studyDays=${studyDays}&accuracy=${accuracy}&lastActive=${lastActive}`;
-
-      safeNavigateTo(`/pages/social/friend-profile?${queryStr}`);
-    },
-
-    /**
-     * 发起 PK 挑战
-     */
-    handlePKChallenge(friend) {
-      logger.log('[FriendList] 发起 PK 挑战:', friend.nickname);
-
-      uni.showModal({
-        title: '发起挑战',
-        content: `确定要向 ${friend.nickname} 发起 PK 挑战吗？`,
-        confirmText: '挑战',
-        confirmColor: '#FF3B30',
-        success: (res) => {
-          if (res.confirm) {
-            // 跳转到 PK 对战页面
-            safeNavigateTo(
-              `/pages/practice-sub/pk-battle?mode=friend&opponentId=${friend.uid}&opponentName=${encodeURIComponent(friend.nickname)}&opponentAvatar=${encodeURIComponent(friend.avatar || this.defaultAvatar)}&opponentScore=${friend.score || 0}`,
-              {
-                success: () => {
-                  logger.log('[FriendList] ✅ 成功跳转到 PK 对战页面');
-                }
-              }
-            );
-          }
-        }
-      });
-    },
-
-    /**
-     * 判断好友是否在线（模拟）
-     */
-    isOnline(friend) {
-      if (!friend.last_active) return false;
-
-      const now = Date.now();
-      const lastActive = friend.last_active;
-
-      // 5分钟内活跃视为在线
-      return now - lastActive < 5 * 60 * 1000;
-    },
-
-    /**
-     * 获取状态文本
-     */
-    getStatusText(friend) {
-      if (this.isOnline(friend)) {
-        return '在线';
-      }
-
-      if (!friend.last_active) {
-        return '很久未见';
-      }
-
-      const now = Date.now();
-      const diff = now - friend.last_active;
-
-      // 计算时间差
-      const minutes = Math.floor(diff / (60 * 1000));
-      const hours = Math.floor(diff / (60 * 60 * 1000));
-      const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-
-      if (minutes < 60) {
-        return `${minutes}分钟前活跃`;
-      } else if (hours < 24) {
-        return `${hours}小时前活跃`;
-      } else if (days < 7) {
-        return `${days}天前活跃`;
-      } else {
-        return '很久未见';
-      }
-    },
-
-    /**
-     * 格式化时间
-     */
-    formatTime(timestamp) {
-      if (!timestamp) return '';
-
-      const now = Date.now();
-      const diff = now - timestamp;
-
-      const minutes = Math.floor(diff / (60 * 1000));
-      const hours = Math.floor(diff / (60 * 60 * 1000));
-      const days = Math.floor(diff / (24 * 60 * 60 * 1000));
-
-      if (minutes < 1) {
-        return '刚刚';
-      } else if (minutes < 60) {
-        return `${minutes}分钟前`;
-      } else if (hours < 24) {
-        return `${hours}小时前`;
-      } else if (days < 7) {
-        return `${days}天前`;
-      } else {
-        const date = new Date(timestamp);
-        return `${date.getMonth() + 1}月${date.getDate()}日`;
-      }
-    }
+// 过滤后的好友列表（根据搜索关键词）
+const filteredFriendList = computed(() => {
+  if (!searchKeyword.value.trim()) {
+    return friendList.value;
   }
-};
+  const keyword = searchKeyword.value.toLowerCase();
+  return friendList.value.filter((friend) => friend.nickname?.toLowerCase().includes(keyword));
+});
+
+// 增量渲染 — 只渲染前 displayFriendCount 条到 DOM，滚动加载更多
+const displayedFriendList = computed(() => {
+  return filteredFriendList.value.slice(0, displayFriendCount.value);
+});
+
+// ==================== 侦听器 ====================
+
+// 搜索关键词变化时重置增量渲染计数，确保过滤后从头显示
+watch(searchKeyword, () => {
+  displayFriendCount.value = 30;
+});
+
+// ==================== 防抖搜索（相当于 created 中初始化） ====================
+
+const debouncedSearch = debounce(handleSearch, 300);
+
+// ==================== 页面生命周期 ====================
+
+onLoad(() => {
+  logger.log('[FriendList] 页面加载');
+  isDark.value = storageService.get('theme_mode') === 'dark';
+  // 监听主题实时切换
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+  loadFriendList();
+  loadFriendRequests();
+  _loadedOnce = true;
+});
+
+onShow(() => {
+  logger.log('[FriendList] 页面显示');
+  // 首次进入时 onLoad 已加载，跳过 onShow 的重复请求
+  if (!_loadedOnce) {
+    loadFriendList(false);
+    loadFriendRequests();
+  }
+  _loadedOnce = false;
+});
+
+onPullDownRefresh(() => {
+  logger.log('[FriendList] 下拉刷新');
+  onRefresh();
+});
+
+onUnload(() => {
+  // 清理主题监听，防止内存泄漏
+  if (_themeHandler) {
+    uni.$off('themeUpdate', _themeHandler);
+  }
+});
+
+// ==================== 方法 ====================
+
+/**
+ * 滚动到底部时增量加载更多好友（每次加30条）
+ */
+function loadMoreFriends() {
+  if (displayFriendCount.value < filteredFriendList.value.length) {
+    displayFriendCount.value = Math.min(displayFriendCount.value + 30, filteredFriendList.value.length);
+  }
+}
+
+/**
+ * 头像加载失败处理
+ */
+function onAvatarError(e, obj, key = 'avatar') {
+  if (obj) {
+    obj[key] = defaultAvatar;
+  }
+}
+
+/**
+ * 返回上一页
+ */
+function goBack() {
+  safeNavigateBack();
+}
+
+/**
+ * 加载好友列表
+ */
+async function loadFriendList(showLoading = true) {
+  if (showLoading) {
+    isLoading.value = true;
+  }
+
+  try {
+    logger.log('[FriendList] 开始加载好友列表');
+
+    const res = await socialService.getFriendList('score', !showLoading);
+
+    logger.log('[FriendList] 加载结果:', res);
+
+    if (res.code === 0) {
+      // 映射后端字段到前端格式
+      // 后端: _id, nickname, avatar_url, streak_days, total_questions
+      // 前端: uid, nickname, avatar, score, last_active
+      friendList.value = (res.data || []).map((friend) => ({
+        ...friend,
+        uid: friend._id || friend.uid,
+        nickname: friend.nickname || '未命名',
+        avatar: friend.avatar_url || friend.avatar || defaultAvatar,
+        avatar_url: friend.avatar_url || friend.avatar || defaultAvatar,
+        score: friend.total_questions || friend.score || 0,
+        studyDays: friend.streak_days || friend.studyDays || 0,
+        accuracy:
+          friend.correct_questions && friend.total_questions
+            ? Math.round((friend.correct_questions / friend.total_questions) * 100)
+            : friend.accuracy || 0,
+        last_active: friend.last_study_date || friend.last_active || 0
+      }));
+      logger.log('[FriendList] 好友数量:', friendList.value.length);
+    } else {
+      logger.error('[FriendList] 加载失败:', res.msg || res.message);
+      toast.info(res.msg || res.message || '加载失败');
+    }
+  } catch (err) {
+    logger.error('[FriendList] 加载异常:', err);
+    toast.info('加载失败');
+  } finally {
+    isLoading.value = false;
+    isRefreshing.value = false;
+    uni.stopPullDownRefresh();
+  }
+}
+
+/**
+ * 下拉刷新
+ */
+async function onRefresh() {
+  logger.log('[FriendList] 刷新好友列表');
+  isRefreshing.value = true;
+  displayFriendCount.value = 30; // 刷新后重置增量渲染计数
+  // 清除缓存，强制从云端获取
+  socialService.clearCache();
+  await loadFriendList(false);
+}
+
+/**
+ * 切换 Tab
+ */
+function switchTab(tab) {
+  logger.log('[FriendList] 切换 Tab:', tab);
+  currentTab.value = tab;
+  isSearchMode.value = false;
+  searchKeyword.value = '';
+  searchResults.value = [];
+}
+
+/**
+ * 搜索用户（云端搜索）
+ */
+async function handleSearch() {
+  if (!searchKeyword.value || searchKeyword.value.trim().length < 2) {
+    toast.info('请输入至少2个字符');
+    return;
+  }
+
+  logger.log('[FriendList] 搜索用户:', searchKeyword.value);
+  isSearching.value = true;
+  isSearchMode.value = true;
+
+  try {
+    const res = await socialService.searchUser(searchKeyword.value.trim());
+
+    if (res.code === 0) {
+      searchResults.value = res.data || [];
+      logger.log('[FriendList] 搜索结果:', searchResults.value.length, '个用户');
+    } else {
+      logger.error('[FriendList] 搜索失败:', res.msg);
+      toast.info(res.msg || '搜索失败');
+    }
+  } catch (err) {
+    logger.error('[FriendList] 搜索异常:', err);
+    toast.info('搜索失败');
+  } finally {
+    isSearching.value = false;
+  }
+}
+
+/**
+ * 清除搜索
+ */
+function clearSearch() {
+  searchKeyword.value = '';
+  isSearchMode.value = false;
+  searchResults.value = [];
+  displayFriendCount.value = 30; // 切回好友列表时重置增量渲染
+}
+
+/**
+ * 加载好友请求列表
+ */
+async function loadFriendRequests() {
+  isLoadingRequests.value = true;
+
+  try {
+    logger.log('[FriendList] 开始加载好友请求列表');
+
+    const res = await socialService.getFriendRequests();
+
+    logger.log('[FriendList] 好友请求结果:', res);
+
+    if (res.code === 0) {
+      // 映射后端字段到前端格式
+      // 后端返回: { user_id, requester_info: { _id, nickname, avatar_url, streak_days } }
+      // 前端期望: { from_uid, from_nickname, from_avatar, message, created_at }
+      requestList.value = (res.data || []).map((request) => ({
+        ...request,
+        from_uid: request.user_id || request.from_uid,
+        from_nickname: request.requester_info?.nickname || request.from_nickname || '未命名',
+        from_avatar: request.requester_info?.avatar_url || request.from_avatar || defaultAvatar,
+        message: request.request_message || request.message || '',
+        created_at: request.created_at || Date.now()
+      }));
+      logger.log('[FriendList] 好友请求数量:', requestList.value.length);
+    } else {
+      logger.error('[FriendList] 加载好友请求失败:', res.msg || res.message);
+    }
+  } catch (err) {
+    logger.error('[FriendList] 加载好友请求异常:', err);
+    // 静默失败，不打扰用户（好友请求非核心功能）
+  } finally {
+    isLoadingRequests.value = false;
+  }
+}
+
+/**
+ * 添加好友
+ */
+function handleAddFriend(user) {
+  // 防重复点击
+  if (isAddingFriend[user._id]) return;
+
+  logger.log('[FriendList] 添加好友:', user.nickname);
+
+  modal.show({
+    title: '添加好友',
+    content: `确定要添加 ${user.nickname} 为好友吗？`,
+    success: async (res) => {
+      if (res.confirm) {
+        isAddingFriend[user._id] = true;
+        toast.loading('发送中...');
+
+        try {
+          const result = await socialService.sendRequest(user._id, '你好，我想加你为好友');
+
+          toast.hide();
+
+          if (result.code === 0) {
+            toast.success('好友请求已发送');
+            // 清除搜索结果
+            clearSearch();
+          } else {
+            toast.info(result.msg || '发送失败');
+          }
+        } catch (err) {
+          toast.hide();
+          logger.error('[FriendList] 发送好友请求失败:', err);
+          toast.info('发送失败');
+        } finally {
+          isAddingFriend[user._id] = false;
+        }
+      }
+    }
+  });
+}
+
+/**
+ * 接受好友请求
+ */
+async function handleAccept(request) {
+  // 防重复点击
+  if (isAccepting[request.from_uid]) return;
+
+  logger.log('[FriendList] 接受好友请求:', request.from_nickname);
+
+  isAccepting[request.from_uid] = true;
+  toast.loading('处理中...');
+
+  try {
+    const res = await socialService.handleRequest(request.from_uid, 'accept');
+
+    toast.hide();
+
+    if (res.code === 0) {
+      toast.success('已添加为好友');
+      // 刷新列表
+      loadFriendRequests();
+      loadFriendList(false);
+    } else {
+      toast.info(res.msg || '操作失败');
+    }
+  } catch (err) {
+    toast.hide();
+    logger.error('[FriendList] 接受好友请求失败:', err);
+    toast.info('操作失败');
+  } finally {
+    isAccepting[request.from_uid] = false;
+  }
+}
+
+/**
+ * 拒绝好友请求
+ */
+function handleReject(request) {
+  // 防重复点击
+  if (isRejecting[request.from_uid]) return;
+
+  logger.log('[FriendList] 拒绝好友请求:', request.from_nickname);
+
+  modal.show({
+    title: '确认拒绝',
+    content: `确定要拒绝 ${request.from_nickname} 的好友请求吗？`,
+    success: async (res) => {
+      if (res.confirm) {
+        isRejecting[request.from_uid] = true;
+        toast.loading('处理中...');
+
+        try {
+          const result = await socialService.handleRequest(request.from_uid, 'reject');
+
+          toast.hide();
+
+          if (result.code === 0) {
+            toast.success('已拒绝');
+            // 刷新列表
+            loadFriendRequests();
+          } else {
+            toast.info(result.msg || '操作失败');
+          }
+        } catch (err) {
+          toast.hide();
+          logger.error('[FriendList] 拒绝好友请求失败:', err);
+          toast.info('操作失败');
+        } finally {
+          isRejecting[request.from_uid] = false;
+        }
+      }
+    }
+  });
+}
+
+/**
+ * 跳转到好友资料页
+ */
+function goToFriendProfile(friend) {
+  logger.log('[FriendList] 查看好友资料:', friend.nickname);
+
+  // 使用普通字符串拼接构建URL参数（兼容小程序，避免URLSearchParams不可用）
+  const uid = friend.uid || '';
+  const nickname = encodeURIComponent(friend.nickname || '未命名');
+  const avatar = encodeURIComponent(friend.avatar || defaultAvatar);
+  const score = friend.score || 0;
+  const studyDays = friend.studyDays || 0;
+  const accuracy = friend.accuracy || 0;
+  const lastActive = friend.last_active || 0;
+
+  const queryStr = `uid=${uid}&nickname=${nickname}&avatar=${avatar}&score=${score}&studyDays=${studyDays}&accuracy=${accuracy}&lastActive=${lastActive}`;
+
+  safeNavigateTo(`/pages/social/friend-profile?${queryStr}`);
+}
+
+/**
+ * 发起 PK 挑战
+ */
+function handlePKChallenge(friend) {
+  logger.log('[FriendList] 发起 PK 挑战:', friend.nickname);
+
+  modal.show({
+    title: '发起挑战',
+    content: `确定要向 ${friend.nickname} 发起 PK 挑战吗？`,
+    confirmText: '挑战',
+    confirmColor: 'var(--danger)',
+    success: (res) => {
+      if (res.confirm) {
+        // 跳转到 PK 对战页面
+        safeNavigateTo(
+          `/pages/practice-sub/pk-battle?mode=friend&opponentId=${friend.uid}&opponentName=${encodeURIComponent(friend.nickname)}&opponentAvatar=${encodeURIComponent(friend.avatar || defaultAvatar)}&opponentScore=${friend.score || 0}`,
+          {
+            success: () => {
+              logger.log('[FriendList] 成功跳转到 PK 对战页面');
+            }
+          }
+        );
+      }
+    }
+  });
+}
+
+/**
+ * 判断好友是否在线（模拟）
+ */
+function isOnline(friend) {
+  if (!friend.last_active) return false;
+
+  const now = Date.now();
+  const lastActive = friend.last_active;
+
+  // 5分钟内活跃视为在线
+  return now - lastActive < 5 * 60 * 1000;
+}
+
+/**
+ * 获取状态文本
+ */
+function getStatusText(friend) {
+  if (isOnline(friend)) {
+    return '在线';
+  }
+
+  if (!friend.last_active) {
+    return '很久未见';
+  }
+
+  const now = Date.now();
+  const diff = now - friend.last_active;
+
+  // 计算时间差
+  const minutes = Math.floor(diff / (60 * 1000));
+  const hours = Math.floor(diff / (60 * 60 * 1000));
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+
+  if (minutes < 60) {
+    return `${minutes}分钟前活跃`;
+  } else if (hours < 24) {
+    return `${hours}小时前活跃`;
+  } else if (days < 7) {
+    return `${days}天前活跃`;
+  } else {
+    return '很久未见';
+  }
+}
+
+/**
+ * 格式化时间
+ */
+function formatTime(timestamp) {
+  if (!timestamp) return '';
+
+  const now = Date.now();
+  const diff = now - timestamp;
+
+  const minutes = Math.floor(diff / (60 * 1000));
+  const hours = Math.floor(diff / (60 * 60 * 1000));
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+
+  if (minutes < 1) {
+    return '刚刚';
+  } else if (minutes < 60) {
+    return `${minutes}分钟前`;
+  } else if (hours < 24) {
+    return `${hours}小时前`;
+  } else if (days < 7) {
+    return `${days}天前`;
+  } else {
+    const date = new Date(timestamp);
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -768,7 +786,7 @@ export default {
 .container {
   min-height: 100%;
   min-height: 100vh;
-  background-color: var(--bg-body);
+  background-color: var(--background);
   display: flex;
   flex-direction: column;
 }
@@ -783,12 +801,10 @@ export default {
   top: 0;
   left: 0;
   right: 0;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  background: var(--bg-card);
   z-index: 999;
-  box-shadow: var(--apple-shadow-surface);
-  border-bottom: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .dark-mode .custom-navbar {
@@ -818,7 +834,7 @@ export default {
 
 .back-icon {
   font-size: 48rpx;
-  color: var(--text-main, var(--ds-color-text-primary));
+  color: var(--text-primary);
   font-weight: 300;
   line-height: 1;
 }
@@ -836,8 +852,8 @@ export default {
 
 .navbar-title {
   font-size: 36rpx;
-  font-weight: 600;
-  color: var(--text-main, var(--ds-color-text-primary));
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .dark-mode .navbar-title {
@@ -854,21 +870,21 @@ export default {
   align-items: center;
   /* gap: 12rpx; -- replaced for Android WebView compat */
   padding: 24rpx 32rpx;
-  background: rgba(255, 255, 255, 0.22);
-  border-bottom: 1rpx solid var(--apple-divider);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
   margin-top: calc(var(--status-bar-height) + 88rpx);
 }
 
 .search-btn {
   margin-left: 12rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
+  background: var(--danger);
+  color: var(--text-inverse);
   border-radius: 48rpx;
   padding: 16rpx 32rpx;
   font-size: 26rpx;
-  font-weight: 600;
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 8rpx 0 #cc3333;
   min-width: 120rpx;
   text-align: center;
 }
@@ -879,14 +895,15 @@ export default {
 
 .search-btn:active {
   opacity: 0.85;
-  transform: scale(0.98);
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #cc3333;
 }
 
 /* Tabs 切换栏 */
 .tabs-bar {
   display: flex;
-  background-color: rgba(255, 255, 255, 0.36);
-  border-bottom: 1rpx solid var(--apple-divider);
+  background-color: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .dark-mode .tabs-bar {
@@ -906,14 +923,14 @@ export default {
 
 .tab-text {
   font-size: 30rpx;
-  color: var(--text-sub);
-  font-weight: 500;
+  color: var(--text-secondary);
+  font-weight: 600;
   transition: all 0.3s;
 }
 
 .tab-item.active .tab-text {
-  color: var(--text-main, var(--ds-color-text-primary));
-  font-weight: 600;
+  color: var(--text-primary);
+  font-weight: 800;
 }
 
 .dark-mode .tab-item.active .tab-text {
@@ -927,7 +944,7 @@ export default {
   transform: translateX(-50%);
   width: 60rpx;
   height: 6rpx;
-  background: var(--cta-primary-bg);
+  background: var(--danger);
   border-radius: 3rpx;
 }
 
@@ -942,7 +959,7 @@ export default {
   border-radius: 20rpx;
   min-width: 32rpx;
   text-align: center;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* 内容滚动区 */
@@ -963,8 +980,8 @@ export default {
 .loading-spinner {
   width: 80rpx;
   height: 80rpx;
-  border: 6rpx solid var(--success-light);
-  border-top-color: var(--brand-color);
+  border: 6rpx solid rgba(255, 75, 75, 0.2);
+  border-top-color: var(--danger);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -982,7 +999,7 @@ export default {
 .loading-text {
   margin-top: 24rpx;
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 /* 空状态 */
@@ -992,6 +1009,12 @@ export default {
   align-items: center;
   justify-content: center;
   padding: 120rpx 0;
+}
+
+/* 英雄级卡通图标（替代 BaseIcon size>=80） */
+.hero-cartoon-icon {
+  width: 160rpx;
+  height: 160rpx;
 }
 
 .empty-icon {
@@ -1008,8 +1031,8 @@ export default {
 
 .empty-title {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main, var(--ds-color-text-primary));
+  font-weight: 800;
+  color: var(--text-primary);
   margin-bottom: 12rpx;
 }
 
@@ -1019,7 +1042,7 @@ export default {
 
 .empty-desc {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin-bottom: 48rpx;
 }
 
@@ -1049,27 +1072,21 @@ export default {
   margin-bottom: 24rpx;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background: var(--bg-card);
   border-radius: 28rpx;
   padding: 32rpx;
   display: flex;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   transition: all 0.3s;
-  border: 1rpx solid var(--apple-glass-border-strong);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .friend-card::before,
 .user-card::before,
 .request-card::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+  content: none;
 }
 
 .dark-mode .friend-card {
@@ -1079,7 +1096,7 @@ export default {
 
 .friend-card:active {
   transform: scale(0.98);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
 /* 头像 */
@@ -1093,7 +1110,7 @@ export default {
   width: 96rpx;
   height: 96rpx;
   border-radius: 50%;
-  border: 2rpx solid var(--success-light);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .online-indicator {
@@ -1102,9 +1119,9 @@ export default {
   right: 4rpx;
   width: 20rpx;
   height: 20rpx;
-  background-color: var(--success);
+  background-color: #58cc02;
   border-radius: 50%;
-  border: 3rpx solid var(--bg-card);
+  border: 3rpx solid #ffffff;
 }
 
 .dark-mode .online-indicator {
@@ -1128,8 +1145,8 @@ export default {
 .nickname {
   margin-right: 12rpx;
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main, var(--ds-color-text-primary));
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .dark-mode .nickname {
@@ -1137,18 +1154,18 @@ export default {
 }
 
 .level-badge {
-  background-color: rgba(255, 255, 255, 0.72);
-  color: var(--text-primary);
+  background-color: rgba(255, 75, 75, 0.12);
+  color: var(--danger);
   font-size: 20rpx;
   padding: 6rpx 14rpx;
   border-radius: 999rpx;
-  font-weight: 600;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  border: none;
 }
 
 .status-text {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 /* 分数区 */
@@ -1158,7 +1175,7 @@ export default {
   align-items: center;
   /* gap: 4rpx; -- replaced for Android WebView compat */
   padding: 0 24rpx;
-  border-left: 1rpx solid var(--border);
+  border-left: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .dark-mode .score-section {
@@ -1167,25 +1184,26 @@ export default {
 
 .score-value {
   font-size: 36rpx;
-  font-weight: 700;
-  color: var(--brand-color);
+  font-weight: 800;
+  color: var(--danger);
 }
 
 .score-label {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* PK 挑战按钮 */
 .pk-btn {
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--danger);
+  background: var(--danger);
+  color: var(--text-inverse);
   border-radius: 48rpx;
   padding: 16rpx 24rpx;
   font-size: 24rpx;
-  font-weight: 600;
-  border: 1rpx solid rgba(255, 130, 112, 0.34);
-  box-shadow: var(--apple-shadow-surface);
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 8rpx 0 #cc3333;
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
@@ -1200,7 +1218,8 @@ export default {
 
 .pk-btn:active {
   opacity: 0.85;
-  transform: scale(0.95);
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #cc3333;
 }
 
 .pk-icon {
@@ -1216,16 +1235,16 @@ export default {
 
 .pk-text {
   font-size: 24rpx;
-  font-weight: 600;
-  color: var(--danger);
+  font-weight: 700;
+  color: var(--text-inverse);
 }
 
 /* 底部统计 */
 .bottom-stats {
   padding: 24rpx 32rpx;
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-top: 1rpx solid var(--apple-divider);
+  background-color: var(--bg-card);
+  border-top: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .dark-mode .bottom-stats {
@@ -1235,7 +1254,8 @@ export default {
 
 .stats-text {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* 搜索结果 */
@@ -1248,14 +1268,15 @@ export default {
 .user-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background: var(--bg-card);
   border-radius: 28rpx;
   padding: 32rpx;
   display: flex;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  box-shadow: var(--apple-shadow-card);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  margin-bottom: 24rpx;
 }
 
 .dark-mode .user-card {
@@ -1268,7 +1289,7 @@ export default {
   width: 96rpx;
   height: 96rpx;
   border-radius: 50%;
-  border: 2rpx solid var(--success-light);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .user-card .info-section {
@@ -1280,8 +1301,8 @@ export default {
 
 .user-card .nickname {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main, var(--ds-color-text-primary));
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .dark-mode .user-card .nickname {
@@ -1290,18 +1311,18 @@ export default {
 
 .user-card .score-text {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .add-friend-btn {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
+  background: var(--danger);
+  color: var(--text-inverse);
   border-radius: 48rpx;
   padding: 16rpx 32rpx;
   font-size: 24rpx;
-  font-weight: 600;
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 8rpx 0 #cc3333;
   min-width: 120rpx;
   text-align: center;
 }
@@ -1312,7 +1333,8 @@ export default {
 
 .add-friend-btn:active {
   opacity: 0.85;
-  transform: scale(0.95);
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #cc3333;
 }
 
 /* 好友请求卡片 */
@@ -1325,14 +1347,15 @@ export default {
 .request-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background: var(--bg-card);
   border-radius: 28rpx;
   padding: 32rpx;
   display: flex;
   align-items: center;
   /* gap: 24rpx; -- replaced for Android WebView compat */
-  box-shadow: var(--apple-shadow-card);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  margin-bottom: 24rpx;
 }
 
 .dark-mode .request-card {
@@ -1345,7 +1368,7 @@ export default {
   width: 96rpx;
   height: 96rpx;
   border-radius: 50%;
-  border: 2rpx solid var(--success-light);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
 }
 
@@ -1358,8 +1381,8 @@ export default {
 
 .request-card .nickname {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main, var(--ds-color-text-primary));
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .dark-mode .request-card .nickname {
@@ -1368,13 +1391,13 @@ export default {
 
 .request-card .message {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
 .request-card .time {
   font-size: 20rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .action-btns {
@@ -1386,14 +1409,14 @@ export default {
 
 .accept-btn {
   margin-bottom: 12rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
+  background: var(--danger);
+  color: var(--text-inverse);
   border-radius: 48rpx;
   padding: 12rpx 28rpx;
   font-size: 24rpx;
-  font-weight: 600;
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 8rpx 0 #cc3333;
   min-width: 100rpx;
   text-align: center;
 }
@@ -1404,20 +1427,21 @@ export default {
 
 .accept-btn:active {
   opacity: 0.85;
-  transform: scale(0.95);
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #cc3333;
 }
 
 .reject-btn {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--background);
   color: var(--text-primary);
   border-radius: 48rpx;
   padding: 12rpx 28rpx;
   font-size: 24rpx;
-  font-weight: 600;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  border: 2rpx solid rgba(0, 0, 0, 0.06);
   min-width: 100rpx;
   text-align: center;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: none;
 }
 
 .reject-btn::after {
@@ -1427,5 +1451,13 @@ export default {
 .reject-btn:active {
   opacity: 0.85;
   transform: scale(0.95);
+}
+
+/* 搜索无结果插图 */
+.empty-search-illustration {
+  width: 280rpx;
+  height: 220rpx;
+  margin: 0 auto 16rpx;
+  display: block;
 }
 </style>

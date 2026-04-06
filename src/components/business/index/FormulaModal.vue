@@ -164,7 +164,7 @@ defineEmits(['close']);
   align-items: center;
   padding: 8rpx 16rpx;
   border-radius: 999rpx;
-  background: rgba(52, 199, 89, 0.14);
+  background: color-mix(in srgb, var(--success) 14%, transparent);
   color: var(--primary);
   font-size: 20rpx;
   margin-bottom: 12rpx;
@@ -214,7 +214,7 @@ defineEmits(['close']);
     linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
     linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
   border-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 :global(.dark-mode) .formula-item {
@@ -226,14 +226,14 @@ defineEmits(['close']);
 
 :global(.dark-mode) .formula-category {
   background: rgba(10, 132, 255, 0.16);
-  color: #7bc0ff;
+  color: var(--info);
 }
 
 :global(.dark-mode) .formula-title,
 :global(.dark-mode) .formula-name,
 :global(.dark-mode) .formula-text,
 :global(.dark-mode) .formula-tip {
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 @keyframes slideUp {

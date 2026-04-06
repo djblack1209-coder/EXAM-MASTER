@@ -226,6 +226,7 @@
 </template>
 
 <script>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { useSchoolStore } from '@/stores/modules/school';
 import { safeNavigateBack } from '@/utils/safe-navigate';
@@ -689,7 +690,7 @@ export default {
     },
     viewMajorDetail(major) {
       // 显示专业详情弹窗
-      uni.showModal({
+      modal.show({
         title: `${major.name}`,
         content: `专业代码：${major.code}\n类型：${major.type || '学硕'}\n\n该专业是${this.schoolInfo.name}的热门招生专业，每年吸引大量考生报考。\n\n建议：\n1. 关注该专业历年分数线\n2. 了解导师研究方向\n3. 准备专业课复习资料`,
         confirmText: '查看更多',
@@ -844,22 +845,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* --- 平铺式 CSS 样式适配 --- */
+/* --- Duolingo 风格 Design System 2.0 --- */
 .container {
-  --ball-bg: var(--success-light);
-  --wave-color: var(--success);
-  --ball-glow: var(--success-glow);
-  --bg-body: var(--bg-body);
+  --ball-bg: rgba(255, 150, 0, 0.12);
+  --wave-color: var(--warning);
+  --ball-glow: rgba(255, 150, 0, 0.3);
+  --bg-body: var(--background);
   --text-primary: var(--text-primary);
-  --text-tertiary: var(--text-sub);
-  --card-bg: var(--bg-card);
-  --card-border: var(--border);
-  --brand-color: var(--success);
+  --text-tertiary: var(--text-secondary);
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.04);
+  --brand-color: var(--warning);
 
   min-height: 100%;
 
   min-height: 100vh;
-  background: var(--bg-body);
+  background: var(--background);
   position: relative;
   overflow: hidden;
   transition: background 0.3s;
@@ -883,8 +884,9 @@ export default {
   top: 0;
   width: 100%;
   height: 500rpx;
-  background: var(--gradient-aurora);
+  background: linear-gradient(135deg, var(--warning) 0%, var(--warning-light, #ffb84d) 100%);
   filter: blur(60px);
+  opacity: 0.12;
   z-index: 0;
 }
 
@@ -897,13 +899,9 @@ export default {
   top: 0;
   width: 100%;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 .nav-content {
   height: 44px;
@@ -924,7 +922,7 @@ export default {
 }
 .nav-title {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .share-btn {
@@ -949,14 +947,10 @@ export default {
 .glass-card {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  backdrop-filter: blur(22px) saturate(150%);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
-  border: 1px solid var(--apple-glass-border-strong);
-  border-radius: 40rpx;
-  box-shadow: var(--apple-shadow-card);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   margin-bottom: 30rpx;
 }
 
@@ -966,8 +960,8 @@ export default {
   left: 24rpx;
   right: 24rpx;
   top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+  height: 0;
+  background: transparent;
 }
 
 .school-header-card {
@@ -979,10 +973,10 @@ export default {
 .school-logo {
   width: 140rpx;
   height: 140rpx;
-  border-radius: 32rpx;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  border-radius: 24rpx;
+  background: var(--bg-secondary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
 }
 .header-main {
   flex: 1;
@@ -1009,20 +1003,20 @@ export default {
   border-radius: 999rpx;
 }
 .type-tag {
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--text-primary);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 150, 0, 0.12);
+  color: var(--warning);
+  border: none;
   font-weight: 600;
 }
 .location-tag {
-  background: rgba(255, 255, 255, 0.56);
-  color: var(--text-sub);
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 .rank-tag {
-  background: rgba(255, 255, 255, 0.66);
-  color: var(--text-primary);
-  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  background: rgba(255, 150, 0, 0.12);
+  color: var(--warning);
+  border: none;
   font-weight: 600;
 }
 
@@ -1042,22 +1036,23 @@ export default {
   justify-content: center;
   padding: 30rpx 0;
   margin-bottom: 0;
-  border-radius: 28rpx;
+  border-radius: 24rpx;
 }
 .stat-val {
   font-size: 36rpx;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .stat-label {
   font-size: 22rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   margin-top: 8rpx;
+  font-weight: 600;
 }
 
 .section-title {
   font-size: 24rpx;
-  font-weight: 620;
+  font-weight: 800;
   letter-spacing: 3rpx;
   text-transform: uppercase;
   color: var(--text-secondary);
@@ -1069,7 +1064,7 @@ export default {
 }
 .intro-text {
   font-size: 28rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   line-height: 1.8;
 }
 
@@ -1082,36 +1077,37 @@ export default {
 }
 .major-card:active {
   transform: scale(0.98);
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 150, 0, 0.06);
 }
 .major-info {
   flex: 1;
 }
 .major-name {
   font-size: 30rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
   margin-bottom: 8rpx;
 }
 .major-code {
   font-size: 22rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   display: block;
   margin-bottom: 4rpx;
 }
 .major-type {
   font-size: 24rpx;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.64);
+  color: var(--warning);
+  background: rgba(255, 150, 0, 0.12);
   padding: 6rpx 14rpx;
   border-radius: 999rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.48);
+  border: none;
   display: inline-block;
+  font-weight: 600;
 }
 .arrow-icon {
   font-size: 32rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .bottom-action {
@@ -1130,27 +1126,25 @@ export default {
   /* gap: 20rpx; -- replaced for Android WebView compat */
   margin-bottom: 0;
   padding: 20rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 40%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .ai-consult-btn {
   margin-right: 20rpx;
   flex: 1;
   height: 100rpx;
-  border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.72);
+  border-radius: 24rpx;
+  background: var(--bg-card);
   color: var(--text-primary);
   font-size: 28rpx;
-  font-weight: bold;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   /* gap: 10rpx; -- replaced for Android WebView compat */
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4rpx 0 rgba(0, 0, 0, 0.06);
 }
 .ai-consult-btn::after {
   border: none;
@@ -1158,22 +1152,26 @@ export default {
 .target-btn {
   flex: 2;
   height: 100rpx;
-  border-radius: 999rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
+  border-radius: 24rpx;
+  background: var(--warning);
+  color: var(--text-inverse);
   font-size: 30rpx;
-  font-weight: bold;
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-  transition: all 0.3s;
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 8rpx 0 var(--warning-dark, #cc7800);
+  transition: all 0.15s;
+}
+.target-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
 }
 .target-btn::after {
   border: none;
 }
 .target-btn.is-added {
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--bg-secondary);
   color: var(--text-primary);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 4rpx 0 rgba(0, 0, 0, 0.06);
 }
 
 .safe-area {
@@ -1186,7 +1184,7 @@ export default {
 }
 .card-title {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 40rpx;
   display: flex;
@@ -1195,6 +1193,11 @@ export default {
 }
 .sparkle-icon {
   font-size: 28rpx;
+  color: var(--warning);
+  background: rgba(255, 150, 0, 0.12);
+  border-radius: 18rpx;
+  padding: 8rpx;
+  margin-right: 10rpx;
 }
 
 .predict-main {
@@ -1264,9 +1267,9 @@ export default {
 }
 .percent-content .num {
   font-size: 56rpx;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--text-primary);
-  text-shadow: var(--shadow-text);
+  text-shadow: none;
 }
 .percent-content .unit {
   font-size: 24rpx;
@@ -1300,7 +1303,7 @@ export default {
 }
 .ai-summary {
   font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   line-height: 1.5;
   display: block;
 }
@@ -1308,17 +1311,21 @@ export default {
 .predict-btn {
   margin-top: 40rpx;
   height: 80rpx;
-  border-radius: 999rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
+  border-radius: 24rpx;
+  background: var(--warning);
+  color: var(--text-inverse);
   font-size: 26rpx;
-  font-weight: bold;
-  border: 1rpx solid var(--cta-primary-border);
+  font-weight: 800;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  box-shadow: var(--cta-primary-shadow);
+  box-shadow: 0 6rpx 0 var(--warning-dark, #cc7800);
+}
+.predict-btn:active {
+  transform: translateY(3rpx);
+  box-shadow: 0 3rpx 0 var(--warning-dark, #cc7800);
 }
 .predict-btn::after {
   border: none;
@@ -1332,8 +1339,8 @@ export default {
 .skeleton-header-card {
   display: flex;
   padding: 40rpx;
-  background: var(--card-bg);
-  border-radius: 40rpx;
+  background: var(--bg-card);
+  border-radius: 28rpx;
   margin-bottom: 30rpx;
 }
 

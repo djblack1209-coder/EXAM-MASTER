@@ -1,7 +1,7 @@
 <template>
   <view
     id="e2e-home-study-time-card"
-    :class="['study-time-card', 'apple-glass-card', isDark ? 'glass' : 'card-light']"
+    :class="['study-time-card', isDark ? 'card-dark' : 'card-light']"
     @tap="$emit('click')"
   >
     <view class="time-icon-wrapper">
@@ -34,20 +34,55 @@ defineEmits(['click']);
 </script>
 
 <style lang="scss" scoped>
+/* ── Duolingo Design System 2.0 · 学习时长卡片 ── */
+/* 模块色: #2DC9C4 (teal/mint) */
+
+/* 入场动画 */
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(16rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 指示灯脉冲 */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.25);
+  }
+}
+
+/* ── 卡片主体 ── */
 .study-time-card {
   display: flex;
   align-items: center;
-  /* gap: 24rpx; -- replaced for Android WebView compat */
-  padding: 26rpx 30rpx;
+  padding: 28rpx 32rpx;
   min-height: 120rpx;
-  border-radius: 30rpx;
-  margin-bottom: 52rpx;
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  border-radius: 24rpx;
+  margin-bottom: 24rpx;
   position: relative;
   overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  animation: fadeSlideIn 0.35s ease-out both;
+
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
+/* 子元素间距（替代 gap） */
 .study-time-card > .time-icon-wrapper {
   margin-right: 24rpx;
 }
@@ -56,154 +91,161 @@ defineEmits(['click']);
   margin-right: 24rpx;
 }
 
-.study-time-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 22rpx;
-  right: 22rpx;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
-}
-
-.glass {
-  background: var(--bg-card-alpha);
-  backdrop-filter: blur(16rpx) saturate(130%);
-  -webkit-backdrop-filter: blur(16rpx) saturate(130%);
-  border: 1rpx solid var(--border);
-}
-
+/* ── 浅色模式 ── */
 .card-light {
-  background: linear-gradient(150deg, var(--bg-card) 0%, var(--bg-secondary) 48%, var(--muted) 100%);
-  border-color: var(--border);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
+/* ── 暗色模式 ── */
+.card-dark {
+  background: var(--bg-card, #1e2028);
+  border: 2rpx solid var(--border, rgba(255, 255, 255, 0.08));
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.25);
+}
+
+/* ── 图标容器 ── */
 .time-icon-wrapper {
-  width: 70rpx;
-  height: 70rpx;
-  border-radius: 999rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--primary-light);
-  border: 1rpx solid var(--border);
+  flex-shrink: 0;
 }
 
-.time-icon {
-  font-size: 32rpx;
+.card-light .time-icon-wrapper {
+  background: rgba(45, 201, 196, 0.12);
 }
 
+.card-dark .time-icon-wrapper {
+  background: rgba(45, 201, 196, 0.18);
+}
+
+/* ── 文本区域 ── */
 .time-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  /* gap: 4rpx; -- replaced for Android WebView compat */
+  min-width: 0;
 }
 
 .time-content > .time-label {
-  margin-bottom: 4rpx;
+  margin-bottom: 6rpx;
 }
 
 .time-label {
   font-size: 24rpx;
-  color: var(--text-sub);
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+}
+
+.card-light .time-label {
+  color: #8e8e93;
+}
+
+.card-dark .time-label {
+  color: var(--text-sub, #8a8f98);
 }
 
 .time-value {
-  font-size: 34rpx;
-  font-weight: 680;
-  letter-spacing: -0.2rpx;
-  color: var(--text-primary);
+  font-size: 36rpx;
+  font-weight: 800;
+  letter-spacing: -0.3rpx;
 }
 
+.card-light .time-value {
+  color: #1c1c1e;
+}
+
+.card-dark .time-value {
+  color: var(--text-primary, #e8eaed);
+}
+
+/* ── 状态指示器 ── */
 .time-indicator {
   display: flex;
   align-items: center;
-  /* gap: 8rpx; -- replaced for Android WebView compat */
-  padding: 12rpx 18rpx;
+  padding: 10rpx 20rpx;
   border-radius: 999rpx;
-  background: var(--muted);
-  border: 1rpx solid var(--border);
+  flex-shrink: 0;
 }
 
 .time-indicator > .indicator-dot {
-  margin-right: 8rpx;
-}
-
-.time-indicator.indicator-active {
-  background: var(--primary-light);
+  margin-right: 10rpx;
 }
 
 .card-light .time-indicator {
-  border-color: var(--border);
+  background: #f2f2f7;
 }
 
+.card-dark .time-indicator {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* 指示器激活态 */
 .card-light .time-indicator.indicator-active {
-  background: var(--primary-light);
-  border-color: var(--border);
-  box-shadow: var(--shadow-sm);
+  background: rgba(45, 201, 196, 0.12);
 }
 
+.card-dark .time-indicator.indicator-active {
+  background: rgba(45, 201, 196, 0.18);
+}
+
+/* 指示灯圆点 */
 .indicator-dot {
   width: 12rpx;
   height: 12rpx;
   border-radius: 50%;
-  background: var(--text-tertiary);
+}
+
+.card-light .indicator-dot {
+  background: #c7c7cc;
+}
+
+.card-dark .indicator-dot {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .indicator-active .indicator-dot {
-  background: var(--primary);
+  background: #2dc9c4;
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.2);
-  }
-}
-
+/* 指示器文字 */
 .indicator-text {
   font-size: 22rpx;
-  color: var(--text-sub);
+  font-weight: 600;
+}
+
+.card-light .indicator-text {
+  color: #8e8e93;
+}
+
+.card-dark .indicator-text {
+  color: var(--text-sub, #8a8f98);
 }
 
 .indicator-active .indicator-text {
-  color: var(--primary);
+  color: #2dc9c4;
+  font-weight: 700;
 }
 
-.glass .time-indicator {
-  background: var(--muted);
-  border-color: var(--border);
-  box-shadow: none;
-}
-
-.glass .time-icon-wrapper {
-  background: var(--primary-light);
-  border-color: var(--border);
-  box-shadow: var(--apple-shadow-surface);
-}
-
-.glass .time-indicator.indicator-active {
-  background: var(--primary-light);
-}
-
+/* ── 小屏适配 ── */
 @media screen and (max-width: 375px) {
   .study-time-card {
-    padding: 20rpx 24rpx;
+    padding: 22rpx 24rpx;
     min-height: 104rpx;
-    border-radius: 24rpx;
-    margin-bottom: 36rpx;
+    border-radius: 20rpx;
+    margin-bottom: 20rpx;
   }
 
   .time-icon-wrapper {
     width: 60rpx;
     height: 60rpx;
+    border-radius: 16rpx;
   }
 
   .time-label {
@@ -211,11 +253,11 @@ defineEmits(['click']);
   }
 
   .time-value {
-    font-size: 30rpx;
+    font-size: 32rpx;
   }
 
   .time-indicator {
-    padding: 10rpx 14rpx;
+    padding: 8rpx 16rpx;
   }
 
   .indicator-text {

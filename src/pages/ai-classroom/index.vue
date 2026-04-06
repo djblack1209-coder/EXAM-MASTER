@@ -9,7 +9,7 @@
     <!-- 创建课程卡片 -->
     <view class="create-card apple-glass-card" @tap="showCreateModal = true">
       <view class="create-icon">
-        <text class="icon-text">+</text>
+        <BaseIcon name="plus" :size="40" />
       </view>
       <view class="create-info">
         <text class="create-title">创建互动课程</text>
@@ -54,7 +54,10 @@
 
     <!-- 空状态 -->
     <view v-if="!loading && lessons.length === 0" class="empty-state">
-      <text class="empty-icon">书</text>
+      <view class="empty-icon-wrap">
+        <!-- 卡通图标替代装饰性 BaseIcon -->
+        <image class="feature-cartoon-icon" src="./static/icons/book-sparkle.png" mode="aspectFit" />
+      </view>
       <text class="empty-title">还没有课程</text>
       <text class="empty-desc">点击上方创建你的第一个 AI 互动课程</text>
     </view>
@@ -74,7 +77,9 @@
               :class="{ active: form.subject === s.value }"
               @tap="form.subject = s.value"
             >
-              <text class="subject-icon">{{ s.icon }}</text>
+              <view class="subject-icon">
+                <BaseIcon :name="s.icon" :size="32" />
+              </view>
               <text class="subject-name">{{ s.label }}</text>
             </view>
           </view>
@@ -112,6 +117,7 @@
 </template>
 
 <script setup>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useClassroomStore } from './stores/classroom.js';
@@ -134,10 +140,10 @@ let _pollTimer = null;
 let _pollTimeout = null;
 
 const subjects = [
-  { value: 'politics', label: '政治', icon: '政' },
-  { value: 'english', label: '英语', icon: '英' },
-  { value: 'math', label: '数学', icon: '数' },
-  { value: 'professional', label: '专业课', icon: '专' }
+  { value: 'politics', label: '政治', icon: 'shield' },
+  { value: 'english', label: '英语', icon: 'globe' },
+  { value: 'math', label: '数学', icon: 'formula' },
+  { value: 'professional', label: '专业课', icon: 'notebook' }
 ];
 
 const form = ref({
@@ -264,7 +270,7 @@ function formatTime(ts) {
 }
 
 async function confirmDelete(lessonId) {
-  uni.showModal({
+  modal.show({
     title: '确认删除',
     content: '删除后无法恢复，确定要删除这个课程吗？',
     success: async (res) => {
@@ -298,12 +304,7 @@ onMounted(() => {
 /* [AUDIT FIX R135] px→rpx 响应式适配 */
 .classroom-list-container {
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top, var(--bg-page)) 0%,
-    var(--page-gradient-mid, var(--bg-page)) 52%,
-    var(--page-gradient-bottom, var(--bg-page)) 100%
-  );
+  background: var(--background);
   padding-bottom: env(safe-area-inset-bottom);
 }
 .top-nav {
@@ -317,25 +318,25 @@ onMounted(() => {
   justify-content: center;
   padding: 24rpx 32rpx;
   padding-top: calc(env(safe-area-inset-top) + 24rpx);
-  backdrop-filter: blur(40rpx);
-  -webkit-backdrop-filter: blur(40rpx);
-  background: var(--apple-glass-nav-bg, rgba(250, 255, 246, 0.74));
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .dark-mode .top-nav {
   background: rgba(0, 0, 0, 0.6);
 }
 .nav-title {
   font-size: 34rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--foreground));
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .apple-glass-card {
-  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.68));
-  border-radius: 32rpx;
+  background: var(--bg-card);
+  border-radius: 28rpx;
   padding: 32rpx;
   margin: 0 32rpx 24rpx;
-  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.72));
-  box-shadow: var(--apple-shadow-card, 0 4px 12px rgba(0, 0, 0, 0.06));
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .dark-mode .apple-glass-card {
   background: rgba(255, 255, 255, 0.06);
@@ -355,13 +356,13 @@ onMounted(() => {
   width: 96rpx;
   height: 96rpx;
   border-radius: 28rpx;
-  background: linear-gradient(135deg, var(--success), var(--wise-green));
+  background: var(--purple-light, #ce82ff);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 8rpx 0 #a458d9;
 }
 .icon-text {
-  font-size: 56rpx;
   color: var(--text-inverse);
   font-weight: 300;
 }
@@ -370,13 +371,13 @@ onMounted(() => {
 }
 .create-title {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--foreground));
+  font-weight: 800;
+  color: var(--text-primary);
   display: block;
 }
 .create-desc {
   font-size: 26rpx;
-  color: var(--text-secondary, var(--muted-foreground));
+  color: var(--text-secondary);
   display: block;
   margin-top: 8rpx;
 }
@@ -385,8 +386,8 @@ onMounted(() => {
 }
 .section-title {
   font-size: 30rpx;
-  font-weight: 600;
-  color: var(--text-secondary, var(--muted-foreground));
+  font-weight: 800;
+  color: var(--text-secondary);
   margin: 32rpx 32rpx 16rpx;
   display: block;
 }
@@ -401,8 +402,8 @@ onMounted(() => {
 }
 .lesson-title {
   font-size: 30rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--foreground));
+  font-weight: 700;
+  color: var(--text-primary);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -413,13 +414,13 @@ onMounted(() => {
   border-radius: 16rpx;
 }
 .status-generating {
-  background: rgba(255, 159, 10, 0.15);
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
 }
 .status-ready {
-  background: rgba(52, 199, 89, 0.15);
+  background: color-mix(in srgb, var(--success) 15%, transparent);
 }
 .status-failed {
-  background: rgba(255, 69, 58, 0.15);
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
 }
 .status-text {
   font-size: 22rpx;
@@ -442,7 +443,7 @@ onMounted(() => {
 }
 .meta-item {
   font-size: 24rpx;
-  color: var(--text-secondary, var(--muted-foreground));
+  color: var(--text-secondary);
 }
 .progress-bar {
   height: 8rpx;
@@ -475,18 +476,31 @@ onMounted(() => {
   align-items: center;
   padding: 160rpx 0;
 }
-.empty-icon {
-  font-size: 96rpx;
+.empty-icon-wrap {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 28rpx;
+  background: rgba(206, 130, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--purple-light, #ce82ff);
+  margin-bottom: 16rpx;
+}
+/* 卡通图标通用样式 */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
 }
 .empty-title {
   font-size: 34rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--foreground));
+  font-weight: 800;
+  color: var(--text-primary);
   margin-top: 32rpx;
 }
 .empty-desc {
   font-size: 26rpx;
-  color: var(--text-secondary, var(--muted-foreground));
+  color: var(--text-secondary);
   margin-top: 16rpx;
 }
 .modal-mask {
@@ -495,7 +509,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--mask-dark);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -514,8 +528,8 @@ onMounted(() => {
 }
 .modal-title {
   font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-primary, var(--foreground));
+  font-weight: 800;
+  color: var(--text-primary);
   display: block;
   margin-bottom: 40rpx;
   text-align: center;
@@ -525,8 +539,8 @@ onMounted(() => {
 }
 .form-label {
   font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--foreground));
+  font-weight: 700;
+  color: var(--text-primary);
   display: block;
   margin-bottom: 16rpx;
 }
@@ -548,18 +562,23 @@ onMounted(() => {
   align-items: center;
   padding: 20rpx 8rpx;
   border-radius: 24rpx;
-  background: var(--brand-tint-subtle, rgba(15, 95, 52, 0.06));
+  background: rgba(206, 130, 255, 0.06);
   border: 2px solid transparent;
 }
 .dark-mode .subject-item {
   background: rgba(255, 255, 255, 0.04);
 }
 .subject-item.active {
-  border-color: var(--success);
-  background: rgba(52, 199, 89, 0.1);
+  border-color: var(--purple-light, #ce82ff);
+  background: rgba(206, 130, 255, 0.1);
 }
 .subject-icon {
-  font-size: 48rpx;
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary, var(--foreground));
 }
 .subject-name {
   font-size: 24rpx;
@@ -617,12 +636,13 @@ onMounted(() => {
 .btn-create {
   flex: 1;
   height: 84rpx;
-  background: linear-gradient(135deg, var(--success), var(--wise-green));
+  background: var(--purple-light, #ce82ff);
   color: var(--text-inverse);
   border: none;
   border-radius: 24rpx;
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 8rpx 0 #a458d9;
 }
 .btn-create[disabled] {
   opacity: 0.5;

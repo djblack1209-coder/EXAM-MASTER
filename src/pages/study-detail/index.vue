@@ -52,9 +52,13 @@
             <text class="page-subtitle"> 查看您的学习数据和进度 </text>
           </view>
           <view class="empty-state-card">
-            <text class="empty-icon">
-              <BaseIcon name="book" :size="80" />
-            </text>
+            <!-- 学习旅程空状态插图 -->
+            <image
+              class="empty-illustration"
+              src="./static/illustrations/empty-journey.png"
+              mode="aspectFit"
+              lazy-load
+            />
             <text class="empty-title">还没有学习记录</text>
             <text class="empty-desc">完成第一次练习后，这里将展示你的学习数据、热力图和能力分析</text>
             <button class="empty-action-btn" @tap="goToPractice">开始学习</button>
@@ -108,7 +112,7 @@
 
             <!-- 能力评级卡片 -->
             <view class="stat-card">
-              <text class="stat-icon" style="font-size: 52rpx; line-height: 64rpx; text-align: center">统计</text>
+              <BaseIcon name="chart-bar" :size="52" class="stat-icon" />
               <view class="stat-content">
                 <text class="stat-value">
                   {{ abilityRank }}
@@ -171,7 +175,9 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { onLoad, onUnload } from '@dcloudio/uni-app';
 import { toast } from '@/utils/toast.js';
 import { useThemeStore } from '@/stores';
 import { safeNavigateBack } from '@/utils/safe-navigate';
@@ -189,326 +195,280 @@ import { getNavBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 
-export default {
-  name: 'StudyDetail',
-  components: {
-    StudyHeatmap,
-    StudyTrendChart,
-    AbilityRadar,
-    FSRSOptimizer,
-    BaseIcon
-  },
-  data() {
-    return {
-      isRefreshing: false,
-      themeStore: null,
-      studyStore: null,
-      isDark: false,
-      scrolled: false,
-      navbarHeight: 44,
+defineOptions({ name: 'StudyDetail' });
 
-      // 页面加载状态
-      isLoading: true,
+// Store 实例
+const themeStore = useThemeStore();
+const studyStore = useStudyStore();
+const studyEngineStore = useStudyEngineStore();
 
-      // 学习数据
-      studyTime: 0,
-      completionRate: 0,
-      abilityRank: '-',
+// 非响应式实例属性（事件回调引用，用于解绑）
+let _themeHandler = null;
 
-      // 热力图和趋势图数据
-      studyRecordData: {}, // { 'YYYY-MM-DD': minutes }
+// === 响应式状态 ===
+const isRefreshing = ref(false);
+const isDark = ref(false);
+const scrolled = ref(false);
+const navbarHeight = ref(44);
 
-      // 能力雷达图数据
-      knowledgeMastery: null, // { [id]: { mastery, practiceCount, correctCount } }
+// 页面加载状态
+const isLoading = ref(true);
 
-      // AI 洞察数据
-      aiInsight: '',
-      aiWeakPoints: []
-    };
-  },
-  computed: {
-    // 安全获取主题类名
-    themeClass() {
-      return this.themeStore?.themeClass || (this.isDark ? 'dark' : 'light');
-    }
-  },
-  onLoad() {
-    this.themeStore = useThemeStore();
-    this.studyStore = useStudyStore();
-    this.studyEngineStore = useStudyEngineStore();
-    this.isDark = this.themeStore.isDark;
+// 学习数据
+const studyTime = ref(0);
+const completionRate = ref(0);
+const abilityRank = ref('-');
 
-    // 监听主题变化
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
+// 热力图和趋势图数据
+const studyRecordData = ref({}); // { 'YYYY-MM-DD': minutes }
 
-    // 获取导航栏高度
-    this.getNavbarHeight();
+// 能力雷达图数据
+const knowledgeMastery = ref(null); // { [id]: { mastery, practiceCount, correctCount } }
 
-    // 加载学习数据
-    this.loadStudyData();
-    // 异步加载 AI 洞察（不阻塞页面）
-    this.loadAIInsight();
-  },
-  onUnload() {
-    // 清理事件监听
-    uni.$off('themeUpdate', this._themeHandler);
-  },
-  methods: {
-    async onPullRefresh() {
-      this.isRefreshing = true;
-      try {
-        await this.loadStudyData();
-        this.loadAIInsight(); // 刷新时也更新 AI 洞察
-      } catch (_e) {
-        /* silent */
-      }
-      this.isRefreshing = false;
-    },
-    /**
-     * 获取导航栏高度
-     */
-    getNavbarHeight() {
-      this.navbarHeight = getNavBarHeight();
-    },
+// AI 洞察数据
+const aiInsight = ref('');
+const aiWeakPoints = ref([]);
 
-    /**
-     * AI 学习洞察 — 调用后端掌握度分析，生成一句话诊断
-     */
-    async loadAIInsight() {
-      try {
-        const result = await this.studyEngineStore.analyzeMastery();
-        if (!result?.data?.summary) return;
+// === 计算属性 ===
 
-        const s = result.data.summary;
-        const mastery = result.data.mastery || [];
+/** 安全获取主题类名 */
+const themeClass = computed(() => {
+  return themeStore?.themeClass || (isDark.value ? 'dark' : 'light');
+});
 
-        // 提取薄弱点列表
-        this.aiWeakPoints = mastery
-          .filter((k) => k.isWeak)
-          .slice(0, 3)
-          .map((k) => k.knowledgePoint);
+// === 生命周期 ===
 
-        // 生成一句话洞察
-        if (s.weakCount === 0 && s.avgMastery >= 80) {
-          this.aiInsight = `各知识点平均掌握度${s.avgMastery}%，整体状态良好！保持当前节奏即可。`;
-        } else if (s.weakCount > 0 && s.avgMastery >= 60) {
-          this.aiInsight = `平均掌握度${s.avgMastery}%，但仍有${s.weakCount}个薄弱点需要突破。建议集中攻克以下知识点，ROI最高。`;
-        } else if (s.weakCount > 0) {
-          this.aiInsight = `当前${s.weakCount}个知识点掌握度不足60%，平均${s.avgMastery}%。建议先从基础最薄弱的开始，逐个击破。`;
-        } else {
-          this.aiInsight = `已分析${s.totalKnowledgePoints}个知识点，其中${s.masteredCount}个已掌握。继续保持！`;
-        }
+onLoad(() => {
+  isDark.value = themeStore.isDark;
 
-        // 增加趋势洞察
-        const declining = mastery.filter((k) => k.recentTrend === 'declining');
-        if (declining.length > 0) {
-          this.aiInsight += ` 注意：「${declining[0].knowledgePoint}」近期表现在下滑，建议及时复习。`;
-        }
-      } catch (err) {
-        // 静默降级，不影响页面
-        logger.warn('[study-detail] AI 洞察加载失败:', err);
-      }
-    },
+  // 监听主题变化
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
 
-    /**
-     * 处理滚动事件
-     */
-    handleScroll(e) {
-      const scrollTop = e.detail.scrollTop;
-      this.scrolled = scrollTop > 50;
-    },
+  // 获取导航栏高度
+  navbarHeight.value = getNavBarHeight();
 
-    /**
-     * 返回上一页
-     */
-    goBack() {
-      safeNavigateBack();
-    },
+  // 加载学习数据
+  loadStudyData();
+  // 异步加载 AI 洞察（不阻塞页面）
+  loadAIInsight();
+});
 
-    /**
-     * 跳转到练习页面（空状态引导按钮）
-     */
-    goToPractice() {
-      uni.switchTab({ url: '/pages/practice/index' });
-    },
+onUnload(() => {
+  // 清理事件监听
+  uni.$off('themeUpdate', _themeHandler);
+});
 
-    /**
-     * 切换主题
-     */
-    toggleTheme() {
-      this.themeStore.toggleTheme();
-    },
+// === 方法 ===
 
-    /**
-     * 加载学习数据
-     */
-    loadStudyData() {
-      this.isLoading = true;
-      // 从本地存储加载真实数据
-      try {
-        // 获取今日学习时长
-        const savedDate = storageService.get('study_date');
-        const today = new Date().toISOString().split('T')[0];
-        if (savedDate === today) {
-          this.studyTime = storageService.get('today_study_time', 0);
-        } else {
-          this.studyTime = 0;
-        }
-
-        // 获取完成率（从题库和学习记录计算）
-        const questionBank = storageService.get('v30_bank', []);
-        const studyRecord = storageService.get('study_record', {});
-        const totalQuestions = questionBank.length;
-        const completedQuestions = studyRecord.totalAnswered || 0;
-
-        if (totalQuestions > 0) {
-          this.completionRate = Math.round((completedQuestions / totalQuestions) * 100);
-        } else {
-          this.completionRate = 0;
-        }
-
-        // ✅ [P1重构] 能力评级 — 综合题量+正确率+一致性，不再只看正确率
-        const correctCount = studyRecord.correctCount || 0;
-        const totalAnswered = studyRecord.totalAnswered || 0;
-        if (totalAnswered > 0) {
-          const accuracy = (correctCount / totalAnswered) * 100;
-
-          // 题量权重：答题越多，评级越可信（对数增长，50题满分）
-          const volumeScore = Math.min(Math.log10(totalAnswered + 1) / Math.log10(51), 1) * 100;
-
-          // 一致性权重：最近10次答题的正确率波动（从study_stats推算）
-          let consistencyScore = 70; // 默认中等一致性
-          try {
-            const recentHistory = this.studyStore?.questionHistory || [];
-            if (recentHistory.length >= 5) {
-              const recent = recentHistory.slice(-10);
-              const recentAcc = (recent.filter((r) => r.isCorrect).length / recent.length) * 100;
-              // 一致性 = 100 - |整体正确率 - 近期正确率| 的差距
-              consistencyScore = Math.max(0, 100 - Math.abs(accuracy - recentAcc) * 2);
-            }
-          } catch (_e) {
-            /* use default */
-          }
-
-          // 综合评分：正确率50% + 题量30% + 一致性20%
-          const compositeScore = accuracy * 0.5 + volumeScore * 0.3 + consistencyScore * 0.2;
-
-          if (compositeScore >= 85) {
-            this.abilityRank = 'S';
-          } else if (compositeScore >= 72) {
-            this.abilityRank = 'A';
-          } else if (compositeScore >= 58) {
-            this.abilityRank = 'B';
-          } else if (compositeScore >= 42) {
-            this.abilityRank = 'C';
-          } else {
-            this.abilityRank = 'D';
-          }
-        } else {
-          this.abilityRank = '-';
-        }
-
-        // 加载每日学习记录数据（用于热力图和趋势图）
-        this.loadDailyStudyRecords();
-
-        // 加载知识点掌握度数据（用于能力雷达图）
-        this.knowledgeMastery = storageService.get('knowledge_mastery', null);
-
-        logger.log('[StudyDetail] 加载学习数据:', {
-          studyTime: this.studyTime,
-          completionRate: this.completionRate,
-          abilityRank: this.abilityRank
-        });
-      } catch (error) {
-        logger.error('[StudyDetail] 加载学习数据失败:', error);
-        // [AUDIT FIX R135] 加载失败时提示用户，而不是静默展示默认数据
-        toast.error('学习数据加载失败');
-        // 使用默认值
-        this.studyTime = 0;
-        this.completionRate = 0;
-        this.abilityRank = '-';
-        this.studyRecordData = {};
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    /**
-     * 加载每日学习记录
-     */
-    loadDailyStudyRecords() {
-      try {
-        // 尝试从本地存储获取每日学习记录
-        const dailyRecords = storageService.get('daily_study_records', {});
-
-        // 如果没有历史记录，仅显示今日数据（不注入虚假历史）
-        if (Object.keys(dailyRecords).length === 0) {
-          // 添加今日数据
-          const today = new Date().toISOString().split('T')[0];
-          if (this.studyTime > 0) {
-            dailyRecords[today] = this.studyTime;
-          }
-        }
-
-        // 确保今日数据是最新的
-        const today = new Date().toISOString().split('T')[0];
-        if (this.studyTime > 0) {
-          dailyRecords[today] = this.studyTime;
-        }
-
-        this.studyRecordData = dailyRecords;
-
-        logger.log('[StudyDetail] 加载每日学习记录:', Object.keys(dailyRecords).length + '天');
-      } catch (error) {
-        logger.error('[StudyDetail] 加载每日学习记录失败:', error);
-        this.studyRecordData = {};
-      }
-    },
-
-    /**
-     * 生成演示数据
-     */
-    generateDemoData() {
-      const data = {};
-      const today = new Date();
-
-      // 生成过去90天的随机数据
-      for (let i = 1; i <= 90; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
-
-        // 随机决定是否有学习记录（约60%的天数有记录）
-        if (Math.random() > 0.4) {
-          // 随机学习时长 5-120 分钟
-          data[dateStr] = Math.floor(Math.random() * 115) + 5;
-        }
-      }
-
-      return data;
-    },
-
-    /**
-     * 处理热力图日期点击
-     */
-    handleDayTap(day) {
-      logger.log('[StudyDetail] 点击日期:', day);
-      if (day.minutes > 0) {
-        toast.info(`${day.dateStr} 学习 ${day.minutes} 分钟`);
-      }
-    },
-
-    /**
-     * 处理趋势图时间范围变化
-     */
-    handleRangeChange(range) {
-      logger.log('[StudyDetail] 切换时间范围:', range + '天');
-    }
+/** 下拉刷新 */
+async function onPullRefresh() {
+  isRefreshing.value = true;
+  try {
+    await loadStudyData();
+    loadAIInsight(); // 刷新时也更新 AI 洞察
+  } catch (_e) {
+    /* 静默处理 */
   }
-};
+  isRefreshing.value = false;
+}
+
+/**
+ * AI 学习洞察 — 调用后端掌握度分析，生成一句话诊断
+ */
+async function loadAIInsight() {
+  try {
+    const result = await studyEngineStore.analyzeMastery();
+    if (!result?.data?.summary) return;
+
+    const s = result.data.summary;
+    const mastery = result.data.mastery || [];
+
+    // 提取薄弱点列表
+    aiWeakPoints.value = mastery
+      .filter((k) => k.isWeak)
+      .slice(0, 3)
+      .map((k) => k.knowledgePoint);
+
+    // 生成一句话洞察
+    if (s.weakCount === 0 && s.avgMastery >= 80) {
+      aiInsight.value = `各知识点平均掌握度${s.avgMastery}%，整体状态良好！保持当前节奏即可。`;
+    } else if (s.weakCount > 0 && s.avgMastery >= 60) {
+      aiInsight.value = `平均掌握度${s.avgMastery}%，但仍有${s.weakCount}个薄弱点需要突破。建议集中攻克以下知识点，ROI最高。`;
+    } else if (s.weakCount > 0) {
+      aiInsight.value = `当前${s.weakCount}个知识点掌握度不足60%，平均${s.avgMastery}%。建议先从基础最薄弱的开始，逐个击破。`;
+    } else {
+      aiInsight.value = `已分析${s.totalKnowledgePoints}个知识点，其中${s.masteredCount}个已掌握。继续保持！`;
+    }
+
+    // 增加趋势洞察
+    const declining = mastery.filter((k) => k.recentTrend === 'declining');
+    if (declining.length > 0) {
+      aiInsight.value += ` 注意：「${declining[0].knowledgePoint}」近期表现在下滑，建议及时复习。`;
+    }
+  } catch (err) {
+    // 静默降级，不影响页面
+    logger.warn('[study-detail] AI 洞察加载失败:', err);
+  }
+}
+
+/** 处理滚动事件 */
+function handleScroll(e) {
+  const scrollTop = e.detail.scrollTop;
+  scrolled.value = scrollTop > 50;
+}
+
+/** 返回上一页 */
+function goBack() {
+  safeNavigateBack();
+}
+
+/** 跳转到练习页面（空状态引导按钮） */
+function goToPractice() {
+  uni.switchTab({ url: '/pages/practice/index' });
+}
+
+/** 切换主题 */
+function toggleTheme() {
+  themeStore.toggleTheme();
+}
+
+/** 加载学习数据 */
+function loadStudyData() {
+  isLoading.value = true;
+  // 从本地存储加载真实数据
+  try {
+    // 获取今日学习时长
+    const savedDate = storageService.get('study_date');
+    const today = new Date().toISOString().split('T')[0];
+    if (savedDate === today) {
+      studyTime.value = storageService.get('today_study_time', 0);
+    } else {
+      studyTime.value = 0;
+    }
+
+    // 获取完成率（从题库和学习记录计算）
+    const questionBank = storageService.get('v30_bank', []);
+    const studyRecord = storageService.get('study_record', {});
+    const totalQuestions = questionBank.length;
+    const completedQuestions = studyRecord.totalAnswered || 0;
+
+    if (totalQuestions > 0) {
+      completionRate.value = Math.round((completedQuestions / totalQuestions) * 100);
+    } else {
+      completionRate.value = 0;
+    }
+
+    // ✅ [P1重构] 能力评级 — 综合题量+正确率+一致性，不再只看正确率
+    const correctCount = studyRecord.correctCount || 0;
+    const totalAnswered = studyRecord.totalAnswered || 0;
+    if (totalAnswered > 0) {
+      const accuracy = (correctCount / totalAnswered) * 100;
+
+      // 题量权重：答题越多，评级越可信（对数增长，50题满分）
+      const volumeScore = Math.min(Math.log10(totalAnswered + 1) / Math.log10(51), 1) * 100;
+
+      // 一致性权重：最近10次答题的正确率波动（从study_stats推算）
+      let consistencyScore = 70; // 默认中等一致性
+      try {
+        const recentHistory = studyStore?.questionHistory || [];
+        if (recentHistory.length >= 5) {
+          const recent = recentHistory.slice(-10);
+          const recentAcc = (recent.filter((r) => r.isCorrect).length / recent.length) * 100;
+          // 一致性 = 100 - |整体正确率 - 近期正确率| 的差距
+          consistencyScore = Math.max(0, 100 - Math.abs(accuracy - recentAcc) * 2);
+        }
+      } catch (_e) {
+        /* 使用默认值 */
+      }
+
+      // 综合评分：正确率50% + 题量30% + 一致性20%
+      const compositeScore = accuracy * 0.5 + volumeScore * 0.3 + consistencyScore * 0.2;
+
+      if (compositeScore >= 85) {
+        abilityRank.value = 'S';
+      } else if (compositeScore >= 72) {
+        abilityRank.value = 'A';
+      } else if (compositeScore >= 58) {
+        abilityRank.value = 'B';
+      } else if (compositeScore >= 42) {
+        abilityRank.value = 'C';
+      } else {
+        abilityRank.value = 'D';
+      }
+    } else {
+      abilityRank.value = '-';
+    }
+
+    // 加载每日学习记录数据（用于热力图和趋势图）
+    loadDailyStudyRecords();
+
+    // 加载知识点掌握度数据（用于能力雷达图）
+    knowledgeMastery.value = storageService.get('knowledge_mastery', null);
+
+    logger.log('[StudyDetail] 加载学习数据:', {
+      studyTime: studyTime.value,
+      completionRate: completionRate.value,
+      abilityRank: abilityRank.value
+    });
+  } catch (error) {
+    logger.error('[StudyDetail] 加载学习数据失败:', error);
+    // [AUDIT FIX R135] 加载失败时提示用户，而不是静默展示默认数据
+    toast.error('学习数据加载失败');
+    // 使用默认值
+    studyTime.value = 0;
+    completionRate.value = 0;
+    abilityRank.value = '-';
+    studyRecordData.value = {};
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+/** 加载每日学习记录 */
+function loadDailyStudyRecords() {
+  try {
+    // 尝试从本地存储获取每日学习记录
+    const dailyRecords = storageService.get('daily_study_records', {});
+
+    // 如果没有历史记录，仅显示今日数据（不注入虚假历史）
+    if (Object.keys(dailyRecords).length === 0) {
+      // 添加今日数据
+      const today = new Date().toISOString().split('T')[0];
+      if (studyTime.value > 0) {
+        dailyRecords[today] = studyTime.value;
+      }
+    }
+
+    // 确保今日数据是最新的
+    const today = new Date().toISOString().split('T')[0];
+    if (studyTime.value > 0) {
+      dailyRecords[today] = studyTime.value;
+    }
+
+    studyRecordData.value = dailyRecords;
+
+    logger.log('[StudyDetail] 加载每日学习记录:', Object.keys(dailyRecords).length + '天');
+  } catch (error) {
+    logger.error('[StudyDetail] 加载每日学习记录失败:', error);
+    studyRecordData.value = {};
+  }
+}
+
+/** 处理热力图日期点击 */
+function handleDayTap(day) {
+  logger.log('[StudyDetail] 点击日期:', day);
+  if (day.minutes > 0) {
+    toast.info(`${day.dateStr} 学习 ${day.minutes} 分钟`);
+  }
+}
+
+/** 处理趋势图时间范围变化 */
+function handleRangeChange(range) {
+  logger.log('[StudyDetail] 切换时间范围:', range + '天');
+}
 </script>
 
 <style lang="scss" scoped>
@@ -516,7 +476,7 @@ export default {
 .study-detail-page {
   min-height: 100%;
   min-height: 100vh;
-  background: var(--bg-secondary, #f5f5f7);
+  background: var(--background);
   transition: background-color 0.3s ease;
 }
 
@@ -532,13 +492,9 @@ export default {
 }
 
 .navbar-solid {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  box-shadow: var(--apple-shadow-surface);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .navbar-content {
@@ -557,13 +513,13 @@ export default {
 
 .back-icon {
   font-size: 40rpx;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .navbar-title {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -579,10 +535,10 @@ export default {
   width: 64rpx;
   height: 64rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--bg-card);
   transition: all 0.3s ease;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .theme-toggle:active {
@@ -608,15 +564,15 @@ export default {
 .page-title {
   display: block;
   font-size: 48rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
   margin-bottom: 16rpx;
 }
 
 .page-subtitle {
   display: block;
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 /* AI 学习洞察卡片 */
@@ -624,9 +580,9 @@ export default {
   margin: 0 32rpx 24rpx;
   padding: 28rpx;
   border-radius: 28rpx;
-  background: var(--bg-card, #fff);
-  border: 1px solid var(--border, #e5e7eb);
-  box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   position: relative;
   overflow: hidden;
 }
@@ -638,7 +594,7 @@ export default {
   left: 0;
   right: 0;
   height: 4rpx;
-  background: linear-gradient(90deg, #34d399, #06b6d4, #8b5cf6);
+  background: linear-gradient(90deg, #58cc02, var(--info), var(--purple-light, #ce82ff));
 }
 
 .insight-header {
@@ -648,20 +604,20 @@ export default {
 }
 
 .insight-icon {
-  color: var(--success);
+  color: #58cc02;
   margin-right: 8rpx;
 }
 
 .insight-label {
   font-size: 24rpx;
-  font-weight: 600;
-  color: var(--success);
+  font-weight: 700;
+  color: #58cc02;
 }
 
 .insight-text {
   font-size: 28rpx;
   line-height: 1.6;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary);
   display: block;
 }
 
@@ -687,8 +643,8 @@ export default {
   font-size: 24rpx;
   padding: 6rpx 16rpx;
   border-radius: 14rpx;
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  color: var(--danger);
   margin-right: 10rpx;
   margin-bottom: 8rpx;
   font-weight: 500;
@@ -710,12 +666,10 @@ export default {
   display: flex;
   align-items: center;
   padding: 32rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-radius: 28rpx;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -748,15 +702,16 @@ export default {
 .stat-value {
   display: block;
   font-size: 40rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: #58cc02;
   margin-bottom: 8rpx;
 }
 
 .stat-label {
   display: block;
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* 热力图区域 */
@@ -773,27 +728,27 @@ export default {
 .section-title {
   display: block;
   font-size: 24rpx;
-  font-weight: 620;
+  font-weight: 800;
   letter-spacing: 3rpx;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   margin-bottom: 8rpx;
 }
 
 .section-subtitle {
   display: block;
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .heatmap-container,
 .chart-container,
 .radar-container {
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-radius: 28rpx;
   padding: 32rpx;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 /* 底部间距 */
@@ -883,8 +838,8 @@ export default {
   margin-top: 40rpx;
   background: var(--bg-card);
   border-radius: 28rpx;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .empty-state-card .empty-icon {
@@ -892,16 +847,23 @@ export default {
   margin-bottom: 24rpx;
 }
 
+/* 空状态插图 */
+.empty-illustration {
+  width: 320rpx;
+  height: 260rpx;
+  margin-bottom: 24rpx;
+}
+
 .empty-state-card .empty-title {
   font-size: 36rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 16rpx;
 }
 
 .empty-state-card .empty-desc {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   text-align: center;
   line-height: 1.6;
   margin-bottom: 40rpx;
@@ -909,14 +871,14 @@ export default {
 }
 
 .empty-action-btn {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
+  background: #58cc02;
+  color: var(--text-inverse);
+  border: none;
   border-radius: 999rpx;
   padding: 20rpx 60rpx;
   font-size: 30rpx;
-  font-weight: 600;
-  box-shadow: var(--cta-primary-shadow);
+  font-weight: 700;
+  box-shadow: 0 8rpx 0 #46a302;
 }
 
 .empty-action-btn::after {

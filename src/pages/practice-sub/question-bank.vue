@@ -4,7 +4,7 @@
     <view class="navbar">
       <view class="navbar-inner" :style="{ paddingTop: statusBarHeight + 'px' }">
         <view class="nav-back" @tap="goBack">
-          <text>←</text>
+          <BaseIcon name="arrow-left" :size="32" />
         </view>
         <text class="nav-title">考研题库</text>
         <view class="nav-right" />
@@ -32,7 +32,9 @@
           :class="{ active: selectedCategory === cat.category }"
           @tap="selectCategory(cat.category)"
         >
-          <view class="cat-icon">{{ categoryIcon(cat.category) }}</view>
+          <view class="cat-icon">
+            <BaseIcon :name="categoryIcon(cat.category)" :size="36" />
+          </view>
           <view class="cat-info">
             <text class="cat-name">{{ cat.category }}</text>
             <text class="cat-count">{{ cat.total }} 题</text>
@@ -91,6 +93,8 @@
 
       <!-- 空状态 -->
       <view v-if="selectedCategory && !loading && questionList.length === 0" class="empty-state">
+        <!-- 搜索无结果插图 -->
+        <image class="empty-illustration" src="/static/illustrations/empty-search.png" mode="aspectFit" lazy-load />
         <text class="empty-text">该分类暂无题目</text>
         <text class="empty-sub">可通过"资料导入"或管理后台添加题目</text>
       </view>
@@ -143,10 +147,17 @@ const difficultyOptions = [
   { label: '困难', value: 'hard' }
 ];
 
-const CATEGORY_ICONS = { 政治: '政', 英语: '英', 数学: '数', 专业课: '专', 综合: '综' };
+// 分类图标映射（BaseIcon SVG 名称）
+const CATEGORY_ICONS = {
+  政治: 'shield',
+  英语: 'globe',
+  数学: 'formula',
+  专业课: 'notebook',
+  综合: 'books'
+};
 
 function categoryIcon(cat) {
-  return CATEGORY_ICONS[cat] || '文';
+  return CATEGORY_ICONS[cat] || 'book';
 }
 
 function diffLabel(d) {
@@ -259,7 +270,7 @@ onMounted(() => {
 <style scoped>
 .qb-page {
   min-height: 100vh;
-  background: var(--bg-page);
+  background: var(--background);
 }
 .navbar {
   position: fixed;
@@ -267,8 +278,11 @@ onMounted(() => {
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(40rpx);
+  -webkit-backdrop-filter: blur(40rpx);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .navbar-inner {
   display: flex;
@@ -284,8 +298,8 @@ onMounted(() => {
 .nav-title {
   flex: 1;
   text-align: center;
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 34rpx;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .nav-right {
@@ -300,7 +314,7 @@ onMounted(() => {
 }
 .stats-total {
   font-size: 36rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .stats-sub {
@@ -316,29 +330,61 @@ onMounted(() => {
 .cat-card {
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  /* gap: 20rpx; -- replaced for Android WebView compat */
   background: var(--bg-card);
-  border-radius: 20rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
   padding: 28rpx 24rpx;
   margin-bottom: 16rpx;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+.cat-card > view + view {
+  margin-left: 20rpx;
 }
 .cat-card.active {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light, #8b5cf6));
+  background: var(--info);
+  border-color: transparent;
+  box-shadow: 0 8rpx 0 #0e8ac0;
+}
+.cat-card.active:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #0e8ac0;
+}
+.cat-card.active .cat-name,
+.cat-card.active .cat-count {
+  color: var(--text-inverse);
+}
+.cat-card.active .cat-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-inverse);
 }
 .cat-card.active .cat-name,
 .cat-card.active .cat-count {
   color: var(--text-inverse, #fff);
 }
+.cat-card.active .cat-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-inverse, #fff);
+}
 .cat-icon {
-  font-size: 40rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: rgba(28, 176, 246, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--info);
+  transition: all 0.25s ease;
 }
 .cat-info {
   flex: 1;
 }
 .cat-name {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .cat-count {
@@ -353,7 +399,10 @@ onMounted(() => {
   height: 8rpx;
   border-radius: 4rpx;
   overflow: hidden;
-  gap: 2rpx;
+  /* gap: 2rpx; -- replaced for Android WebView compat */
+}
+.cat-diff > view + view {
+  margin-left: 2rpx;
 }
 .diff-bar {
   height: 100%;
@@ -375,36 +424,48 @@ onMounted(() => {
 }
 .filter-row {
   display: flex;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
   margin-bottom: 16rpx;
   flex-wrap: wrap;
 }
+.filter-row > view {
+  margin-right: 16rpx;
+  margin-bottom: 8rpx;
+}
 .filter-chip {
-  padding: 10rpx 28rpx;
+  padding: 12rpx 32rpx;
   border-radius: 32rpx;
   font-size: 24rpx;
   background: var(--bg-card);
   color: var(--text-secondary);
-  border: 1px solid var(--border-color);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
 }
 .filter-chip.selected {
-  background: var(--primary, #6366f1);
-  color: var(--text-inverse, #fff);
-  border-color: var(--primary, #6366f1);
+  background: var(--info);
+  color: var(--text-inverse);
+  border-color: var(--info);
+  box-shadow: 0 4rpx 16rpx rgba(28, 176, 246, 0.25);
 }
 .filter-actions {
   margin-top: 8rpx;
 }
 .action-btn {
   text-align: center;
-  padding: 20rpx;
-  border-radius: 16rpx;
+  padding: 22rpx;
+  border-radius: 20rpx;
   font-size: 28rpx;
-  font-weight: 500;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 .action-btn.primary {
-  background: linear-gradient(135deg, var(--primary), var(--primary-light, #8b5cf6));
-  color: var(--text-inverse, #fff);
+  background: var(--info);
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #0e8ac0;
+}
+.action-btn.primary:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #0e8ac0;
 }
 
 .question-list {
@@ -412,9 +473,11 @@ onMounted(() => {
 }
 .q-item {
   background: var(--bg-card);
-  border-radius: 16rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
   padding: 24rpx;
   margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .q-header {
   display: flex;
@@ -429,23 +492,27 @@ onMounted(() => {
 }
 .q-tags {
   display: flex;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+}
+.q-tags > text + text {
+  margin-left: 8rpx;
 }
 .q-diff {
   font-size: 20rpx;
   padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
 }
 .q-diff.easy {
-  background: rgba(52, 211, 153, 0.1);
-  color: var(--primary);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  color: var(--success);
 }
 .q-diff.medium {
-  background: rgba(251, 191, 36, 0.1);
+  background: color-mix(in srgb, var(--warning, #fbbf24) 12%, transparent);
   color: var(--warning, #d97706);
 }
 .q-diff.hard {
-  background: rgba(248, 113, 113, 0.1);
+  background: color-mix(in srgb, var(--danger, #f87171) 12%, transparent);
   color: var(--danger, #dc2626);
 }
 .q-source,
@@ -454,7 +521,7 @@ onMounted(() => {
   color: var(--text-secondary);
   background: var(--bg-secondary);
   padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: 12rpx;
 }
 .q-content {
   font-size: 28rpx;
@@ -465,7 +532,10 @@ onMounted(() => {
 .q-options {
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
+}
+.q-options > text + text {
+  margin-top: 8rpx;
 }
 .q-opt {
   font-size: 26rpx;
@@ -477,6 +547,13 @@ onMounted(() => {
 .empty-state {
   text-align: center;
   padding: 80rpx 0;
+}
+/* 空状态插图 */
+.empty-illustration {
+  width: 320rpx;
+  height: 260rpx;
+  margin: 0 auto 24rpx;
+  display: block;
 }
 .empty-text {
   font-size: 30rpx;
@@ -500,36 +577,48 @@ onMounted(() => {
 
 /* 暗色模式 */
 .dark-mode {
-  background: var(--bg-page, #0b0b0f);
+  background: linear-gradient(
+    180deg,
+    var(--page-gradient-top, #0b0b0f) 0%,
+    var(--page-gradient-mid, #0b0b0f) 52%,
+    var(--page-gradient-bottom, #0b0b0f) 100%
+  );
   color: var(--text-primary, #f5f5f7);
 }
 .dark-mode .navbar {
-  background: var(--bg-card, #1c1c1e);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(40rpx);
+  -webkit-backdrop-filter: blur(40rpx);
 }
 .dark-mode .nav-title,
 .dark-mode .nav-back {
   color: var(--text-primary, #f5f5f7);
 }
 .dark-mode .cat-card {
-  background: var(--bg-card, #1c1c1e);
-  border-color: var(--border, rgba(255, 255, 255, 0.1));
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+.dark-mode .cat-icon {
+  background: rgba(255, 255, 255, 0.06);
 }
 .dark-mode .cat-card.active {
   background: linear-gradient(135deg, var(--primary, #4a90e2), var(--primary-light, #6ba3eb));
 }
 .dark-mode .filter-chip {
-  background: var(--bg-secondary, #2c2c2e);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--text-secondary, #8e8e93);
-  border-color: var(--border, rgba(255, 255, 255, 0.1));
+  border-color: rgba(255, 255, 255, 0.08);
 }
 .dark-mode .filter-chip.selected {
   background: var(--primary, #4a90e2);
-  color: #fff;
+  color: var(--text-inverse);
   border-color: var(--primary, #4a90e2);
 }
 .dark-mode .q-item {
-  background: var(--bg-card, #1c1c1e);
-  border-color: var(--border, rgba(255, 255, 255, 0.1));
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
 }
 .dark-mode .action-btn.primary {
   background: linear-gradient(135deg, var(--primary, #4a90e2), var(--primary-light, #6ba3eb));

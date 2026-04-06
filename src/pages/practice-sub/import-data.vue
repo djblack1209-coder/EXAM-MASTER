@@ -5,7 +5,7 @@
       <view class="navbar-status-bar" :style="{ height: statusBarHeight + 'px' }" />
       <view class="navbar-content" style="height: 44px">
         <view id="e2e-import-back-btn" class="navbar-back-btn" @tap="handleBack">
-          <text class="back-icon"> ‹ </text>
+          <BaseIcon name="arrow-left" :size="32" class="back-icon" />
         </view>
         <view class="navbar-title-wrapper">
           <text class="navbar-title"> 资料导入 </text>
@@ -192,7 +192,9 @@
 </template>
 
 <script>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
+import { pageRequireLogin } from '@/utils/auth/loginGuard.js';
 import config from '@/config/index.js';
 import { ankiImport, ragIngest } from '@/services/api/domains/practice.api.js';
 import { useSchoolStore } from '@/stores/modules/school.js';
@@ -272,6 +274,7 @@ export default {
       currentQuestionIndex: 0, // 当前导入到第几题
       totalQuestionsToImport: 0, // 预计总题数
       importErrorDetail: null, // 详细错误信息
+      loopPendingTimers: [], // [R393] 追踪未完成的setTimeout，onUnload时批量清理
       retryCount: 0, // 重试次数
       maxRetryCount: 3, // 最大重试次数
       canGoBack: true, // 是否允许返回
@@ -370,14 +373,17 @@ export default {
   },
 
   onLoad() {
+    // 页面级登录保护 — 未登录用户跳转到登录页
+    if (!pageRequireLogin(this, { message: '请先登录后导入学习资料' })) return;
+
     // 获取系统信息，设置状态栏和导航栏高度
     try {
       this.statusBarHeight = getStatusBarHeight();
       // 标准导航栏高度 = 状态栏高度 + 44px
       this.navBarHeight = this.statusBarHeight + 44;
 
-      // 初始化深色模式
-      const savedTheme = storageService.get('theme_mode', 'light');
+      // 初始化深色模式（直接读 uni storage，与 App.vue switchTheme 对齐）
+      const savedTheme = uni.getStorageSync('theme_mode') || 'light';
       this.isDark = savedTheme === 'dark';
 
       // 监听全局主题更新事件
@@ -418,6 +424,11 @@ export default {
     this.stopProgressAnimation();
     // M16: 清理批量进度模拟定时器
     this.stopBatchProgressSimulation();
+    // [R393] 批量清理所有未完成的 setTimeout
+    if (this.loopPendingTimers) {
+      this.loopPendingTimers.forEach((tid) => clearTimeout(tid));
+      this.loopPendingTimers = [];
+    }
   },
 
   methods: {
@@ -555,7 +566,7 @@ export default {
               });
             }
 
-            uni.showModal({
+            modal.show({
               title: 'Anki 牌组导入成功',
               content: `牌组名称：${deckName}\n导入卡片：${cardCount} 张`,
               confirmText: '立即刷题',
@@ -584,14 +595,18 @@ export default {
         this.fullFileContent = '';
         // ✅ F026: 添加文件解析进度提示
         toast.loading('正在解析文档...');
-        setTimeout(() => {
+        const _docTid1 = setTimeout(() => {
           toast.hide();
           toast.success('已提取主题');
           // 自动启动智能分析
-          setTimeout(() => {
+          const _docTid2 = setTimeout(() => {
             that.startAI();
+            that.loopPendingTimers = that.loopPendingTimers.filter((t) => t !== _docTid2);
           }, 500);
+          that.loopPendingTimers.push(_docTid2);
+          that.loopPendingTimers = that.loopPendingTimers.filter((t) => t !== _docTid1);
         }, 300);
+        that.loopPendingTimers.push(_docTid1);
       } else {
         // TXT/MD/JSON: 读取内容
         toast.loading('解析文件中...');
@@ -604,26 +619,32 @@ export default {
             that.fullFileContent = readResult.content;
             toast.success('解析成功');
             // 自动启动智能分析
-            setTimeout(() => {
+            const _readSuccTid = setTimeout(() => {
               that.startAI();
+              that.loopPendingTimers = that.loopPendingTimers.filter((t) => t !== _readSuccTid);
             }, 500);
+            that.loopPendingTimers.push(_readSuccTid);
           } else {
             logger.error('[导入资料] 文件读取失败:', readResult.error);
             that.fullFileContent = '';
             toast.info('读取失败，仅使用文件名');
             // 即使失败也启动智能分析（使用文件名）
-            setTimeout(() => {
+            const _readFailTid = setTimeout(() => {
               that.startAI();
+              that.loopPendingTimers = that.loopPendingTimers.filter((t) => t !== _readFailTid);
             }, 500);
+            that.loopPendingTimers.push(_readFailTid);
           }
         } catch (err) {
           toast.hide();
           logger.error('[导入资料] 文件读取异常:', err);
           that.fullFileContent = '';
           toast.info('读取失败，仅使用文件名');
-          setTimeout(() => {
+          const _readErrTid = setTimeout(() => {
             that.startAI();
+            that.loopPendingTimers = that.loopPendingTimers.filter((t) => t !== _readErrTid);
           }, 500);
+          that.loopPendingTimers.push(_readErrTid);
         }
       }
     },
@@ -771,7 +792,7 @@ export default {
         } catch (parseError) {
           logger.error('[导入资料] JSON解析失败:', parseError);
           logger.error('[导入资料] 原始数据:', aiText.substring(0, 200));
-          uni.showModal({
+          modal.show({
             title: '解析失败',
             content: '智能返回的数据格式不正确，请重试。',
             showCancel: false
@@ -826,12 +847,14 @@ export default {
           }
         }
 
-        // 继续下一轮 - 修复：使用箭头函数确保 this 绑定
-        setTimeout(() => {
+        // 继续下一轮 - [R393] 使用追踪版 setTimeout 防止页面卸载后泄漏
+        const tid = setTimeout(() => {
+          this.loopPendingTimers = this.loopPendingTimers.filter((t) => t !== tid);
           if (this.isLooping) {
             this.generateNextBatch();
           }
         }, 1500);
+        this.loopPendingTimers.push(tid);
       } catch (e) {
         logger.error('生成报错:', e);
 
@@ -930,11 +953,14 @@ export default {
           logger.log(`[自动重试] 第 ${this.retryCount} 次重试...`);
           toast.info(`正在重试 (${this.retryCount}/${this.maxRetryCount})...`);
           this.startProgressAnimation();
-          setTimeout(() => {
+          // [R393] 使用追踪版 setTimeout 防止页面卸载后泄漏
+          const retryTid = setTimeout(() => {
+            this.loopPendingTimers = this.loopPendingTimers.filter((t) => t !== retryTid);
             if (this.isLooping) {
               this.generateNextBatch();
             }
           }, 2000);
+          this.loopPendingTimers.push(retryTid);
         } else if (!autoRetry) {
           // 显示错误提示
           toast.info(errorMessage, 3000);
@@ -1123,7 +1149,7 @@ export default {
         enhancedMsg += `平均速度：${avgSpeed} 题/秒`;
       }
 
-      uni.showModal({
+      modal.show({
         title: '题库装填完毕',
         content: enhancedMsg,
         confirmText: '立即刷题',
@@ -1185,12 +1211,12 @@ export default {
     handleBack() {
       // v5.8: 检查是否正在生成，如果是则显示确认弹窗
       if (!this.canGoBack || this.isLooping) {
-        uni.showModal({
+        modal.show({
           title: '任务进行中',
           content: '当前正在生成题目，返回将中断任务。已生成的题目将保留，确定要返回吗？',
           confirmText: '确定返回',
           cancelText: '继续生成',
-          confirmColor: '#FF3B30',
+          confirmColor: 'var(--danger)',
           success: (res) => {
             if (res.confirm) {
               // 用户确认返回，停止生成
@@ -1216,10 +1242,10 @@ export default {
     // 11. 清空数据 - 修复：使用箭头函数确保 this 绑定
     clearAll() {
       const that = this; // 保存 this 引用
-      uni.showModal({
+      modal.show({
         title: '危险操作',
         content: '确定清空所有本地题库吗？此操作不可恢复！\n\n建议：清空前请确保已备份数据。',
-        confirmColor: '#FF3B30',
+        confirmColor: 'var(--danger)',
         success: (res) => {
           if (res.confirm) {
             // 清空前先创建备份（以防误操作）
@@ -1265,10 +1291,10 @@ export default {
 
     // ⭐⭐ v5.2 新增：取消生成
     cancelGeneration() {
-      uni.showModal({
+      modal.show({
         title: '确认取消',
         content: '确定要取消当前生成任务吗？已生成的题目将保留。',
-        confirmColor: '#FF3B30',
+        confirmColor: 'var(--danger)',
         success: (res) => {
           if (res.confirm) {
             this.isLooping = false;
@@ -1310,7 +1336,7 @@ export default {
 
       // 检查重试次数限制
       if (this.retryCount > this.maxRetryCount) {
-        uni.showModal({
+        modal.show({
           title: '重试次数过多',
           content: `已重试 ${this.maxRetryCount} 次，建议检查网络连接或稍后再试。`,
           showCancel: false
@@ -1575,7 +1601,7 @@ export default {
 .apple-container {
   min-height: 100%;
   min-height: 100vh;
-  background-color: var(--bg-page, #f5f5f7);
+  background-color: var(--background);
   padding: 0 20px 20px;
   padding-bottom: calc(28px + constant(safe-area-inset-bottom));
   padding-bottom: calc(28px + env(safe-area-inset-bottom));
@@ -1590,11 +1616,10 @@ export default {
   left: 0;
   right: 0;
   z-index: 1000;
-  /* 毛玻璃背景 - 苹果质感 */
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 0.5px solid var(--border);
+  /* 导航栏背景 */
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .navbar-status-bar {
@@ -1643,7 +1668,7 @@ export default {
 
 .navbar-title {
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   letter-spacing: -0.41px;
   -webkit-font-smoothing: antialiased;
@@ -1673,7 +1698,7 @@ export default {
 
 .header-subtitle {
   font-size: 34rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -1687,15 +1712,11 @@ export default {
 
 /* --- 主体玻璃卡片 --- */
 .main-glass-card {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  backdrop-filter: blur(25px) saturate(155%);
-  -webkit-backdrop-filter: blur(25px) saturate(155%);
-  border: 1px solid var(--apple-glass-border-strong);
-  border-radius: 28px;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 28rpx;
   padding: 24px;
-  box-shadow: var(--apple-shadow-floating);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   overflow: hidden;
   position: relative;
   margin-bottom: 24px;
@@ -1726,16 +1747,16 @@ export default {
 
 .status-text {
   font-size: 26rpx;
-  color: var(--text-tertiary);
-  font-weight: 500;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* --- 操作区：上传按钮 --- */
 .upload-trigger {
   min-height: 280px;
-  background: var(--apple-glass-card-bg);
-  border-radius: 24px;
-  border: 2px dashed var(--apple-divider);
+  background: var(--bg-card);
+  border-radius: 24rpx;
+  border: 4rpx dashed rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1752,14 +1773,14 @@ export default {
 .icon-circle {
   width: 56px;
   height: 56px;
-  background: var(--apple-glass-pill-bg);
+  background: rgba(28, 176, 246, 0.12);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
-  box-shadow: var(--apple-shadow-surface);
-  border: 1px solid var(--glass-border);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: none;
 }
 
 .icon-text {
@@ -1768,14 +1789,14 @@ export default {
 
 .upload-main-text {
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 800;
   margin-bottom: 4px;
   color: var(--text-primary);
 }
 
 .upload-sub-text {
   font-size: 28rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   margin-top: 12rpx;
   line-height: 1.6;
   text-align: center;
@@ -1784,7 +1805,7 @@ export default {
 
 .upload-hint-text {
   font-size: 26rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   margin-top: 16rpx;
   line-height: 1.6;
   text-align: center;
@@ -1796,16 +1817,16 @@ export default {
   display: flex;
   align-items: center;
   padding: 16px;
-  border-radius: 24px;
-  background: var(--apple-glass-card-bg);
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  border-radius: 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .file-icon-box {
   width: 48px;
   height: 48px;
-  background: var(--apple-glass-pill-bg);
+  background: rgba(28, 176, 246, 0.12);
   border-radius: 999px;
   display: flex;
   align-items: center;
@@ -1820,7 +1841,7 @@ export default {
 
 .fname-text {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   margin-bottom: 6px;
   display: block;
   color: var(--text-primary);
@@ -1844,7 +1865,7 @@ export default {
 
 .meta-size {
   font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .close-btn-circle {
@@ -1860,12 +1881,10 @@ export default {
 /* --- 底部悬浮按钮栏 --- */
 .bottom-action-bar {
   padding: 24px;
-  background: var(--apple-glass-card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 32px 32px 0 0;
-  border-top: 1px solid var(--apple-glass-border-strong);
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.04);
+  background: var(--bg-card);
+  border-radius: 28rpx 28rpx 0 0;
+  border-top: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .sub-row-flex {
@@ -1896,7 +1915,7 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 800;
   border: none;
   transition: all 0.3s;
 }
@@ -1923,12 +1942,12 @@ export default {
 }
 
 .secondary {
-  background: var(--apple-glass-card-bg);
+  background: var(--bg-card);
   color: var(--text-primary);
   height: 44px;
   font-size: 30rpx;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .secondary::after {
@@ -2427,16 +2446,11 @@ export default {
   margin-bottom: 24px;
 }
 
-/* Final polish: import flow unified with Apple / Liquid Glass */
+/* Final polish: import flow unified with Duolingo gamified design */
 .apple-container {
   position: relative;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 52%,
-    var(--page-gradient-bottom) 100%
-  );
-  color: var(--text-main);
+  background: var(--background);
+  color: var(--text-primary);
 }
 
 .apple-container::before {
@@ -2448,9 +2462,8 @@ export default {
   left: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 12% 12%, rgba(107, 208, 150, 0.16) 0%, transparent 34%),
-    radial-gradient(circle at 84% 10%, rgba(255, 255, 255, 0.1) 0%, transparent 24%),
-    radial-gradient(circle at 62% 82%, rgba(72, 190, 128, 0.1) 0%, transparent 32%);
+    radial-gradient(circle at 12% 12%, rgba(28, 176, 246, 0.1) 0%, transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(28, 176, 246, 0.06) 0%, transparent 24%);
 }
 
 .apple-container.dark-mode::before {
@@ -2468,17 +2481,9 @@ export default {
 .ai-card {
   position: relative;
   z-index: 1;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(
-      160deg,
-      color-mix(in srgb, var(--apple-glass-card-bg) 60%, transparent) 0%,
-      color-mix(in srgb, var(--apple-group-bg) 60%, transparent) 100%
-    );
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
-  backdrop-filter: blur(18px) saturate(1.3);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .custom-navbar {
@@ -2488,21 +2493,15 @@ export default {
   right: 0;
   z-index: 1000;
   border-radius: 0;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
-  backdrop-filter: blur(18px) saturate(1.3);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .navbar-back-btn {
-  background: color-mix(in srgb, var(--apple-glass-card-bg) 55%, transparent);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--apple-shadow-surface);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(28, 176, 246, 0.12);
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .page-header,
@@ -2518,7 +2517,7 @@ export default {
 .fname-text,
 .loading-title,
 .speed-title {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .header-subtitle,
@@ -2531,7 +2530,7 @@ export default {
 .speed-desc,
 .error-desc,
 .soup-text {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .upload-trigger,
@@ -2540,13 +2539,9 @@ export default {
 .danger-ghost,
 .glass-btn.ghost,
 .glass-btn.danger {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    color-mix(in srgb, var(--apple-glass-card-bg) 55%, transparent);
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .upload-trigger {
@@ -2556,22 +2551,20 @@ export default {
 .icon-circle,
 .file-icon-box,
 .close-btn-circle {
-  background: color-mix(in srgb, var(--apple-glass-card-bg) 50%, transparent);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--apple-shadow-surface);
-  color: var(--text-main);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(28, 176, 246, 0.12);
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  color: var(--info);
 }
 
 .meta-tag {
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  border-color: color-mix(in srgb, var(--success) 18%, transparent);
+  background: rgba(28, 176, 246, 0.12);
+  border-color: rgba(28, 176, 246, 0.18);
 }
 
 .secondary,
 .danger-ghost {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .glass-btn {
@@ -2592,10 +2585,16 @@ export default {
 
 .glass-btn.shine,
 .primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--info);
+  color: var(--text-inverse);
+  border: none;
+  box-shadow: 0 8rpx 0 #0e8ac0;
+}
+
+.glass-btn.shine:active,
+.primary:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #0e8ac0;
 }
 
 .glass-btn.danger,
@@ -2680,7 +2679,7 @@ export default {
 }
 
 .loading-progress {
-  color: var(--text-main);
+  color: var(--info);
 }
 
 .pause-banner {
@@ -2715,6 +2714,6 @@ export default {
 
 .error-title,
 .pause-title {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 </style>

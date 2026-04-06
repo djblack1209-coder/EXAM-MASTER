@@ -19,6 +19,9 @@
         </text>
       </view>
 
+      <!-- 卡通沙漏装饰图标 -->
+      <image class="timer-cartoon-icon" src="./static/icons/hourglass.png" mode="aspectFit" />
+
       <!-- Main timer ring -->
       <view class="ring-wrapper">
         <WdCircle
@@ -97,6 +100,7 @@
 
 <script setup>
 // wot-design-uni 组件（显式导入，分包优化）
+import { modal } from '@/utils/modal.js';
 import WdCircle from 'wot-design-uni/components/wd-circle/wd-circle.vue';
 
 import { ref, computed, onMounted, onUnmounted } from 'vue';
@@ -245,7 +249,7 @@ function loadTodayStats() {
 
 function handleBack() {
   if (isRunning.value && !isPaused.value) {
-    uni.showModal({
+    modal.show({
       title: '确认退出？',
       content: '专注计时正在进行中，退出将丢失当前进度',
       success: (res) => {
@@ -293,7 +297,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .focus-page {
   min-height: 100vh;
-  background: var(--bg-page);
+  background: var(--background);
 }
 
 .nav-bar {
@@ -311,6 +315,8 @@ onUnmounted(() => {
   justify-content: center;
   border-radius: 50%;
   background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .back-icon {
@@ -321,7 +327,7 @@ onUnmounted(() => {
 
 .nav-title {
   font-size: 34rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
@@ -335,6 +341,11 @@ onUnmounted(() => {
   align-items: center;
   padding: 40rpx 32rpx;
 }
+/* 卡通沙漏图标 */
+.timer-cartoon-icon {
+  width: 64rpx;
+  height: 64rpx;
+}
 
 .session-type {
   margin-bottom: 48rpx;
@@ -342,14 +353,14 @@ onUnmounted(() => {
 
 .type-tag {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   padding: 10rpx 32rpx;
   border-radius: 999rpx;
 }
 
 .type-focus {
-  color: var(--primary, #0f5f34);
-  background: rgba(15, 95, 52, 0.1);
+  color: #2dc9c4;
+  background: rgba(45, 201, 196, 0.12);
 }
 
 .type-break {
@@ -371,7 +382,7 @@ onUnmounted(() => {
 .timer-session {
   margin-top: 8rpx;
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .controls {
@@ -380,14 +391,19 @@ onUnmounted(() => {
 
 .start-btn {
   padding: 24rpx 80rpx;
-  background: var(--primary, #0f5f34);
+  background: #2dc9c4;
   border-radius: 999rpx;
-  box-shadow: 0 8rpx 24rpx rgba(15, 95, 52, 0.3);
+  box-shadow: 0 8rpx 0 #22a09c;
+}
+
+.start-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #22a09c;
 }
 
 .btn-text {
   font-size: 32rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-inverse);
 }
 
@@ -407,8 +423,10 @@ onUnmounted(() => {
   align-items: center;
   /* gap: 8rpx; -- replaced for MP WebView compat */
   padding: 20rpx 28rpx;
-  border-radius: 20rpx;
+  border-radius: 24rpx;
   background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   min-width: 120rpx;
 }
 
@@ -417,8 +435,13 @@ onUnmounted(() => {
 }
 
 .primary-btn {
-  background: var(--primary, #0f5f34);
-  box-shadow: 0 4rpx 16rpx rgba(15, 95, 52, 0.25);
+  background: #2dc9c4;
+  box-shadow: 0 8rpx 0 #22a09c;
+}
+
+.primary-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #22a09c;
 }
 
 .primary-btn .ctrl-icon,
@@ -438,7 +461,7 @@ onUnmounted(() => {
 
 .ctrl-label {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .config-section {
@@ -448,7 +471,7 @@ onUnmounted(() => {
 
 .config-title {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 16rpx;
   display: block;
@@ -468,19 +491,20 @@ onUnmounted(() => {
 .duration-chip {
   padding: 14rpx 28rpx;
   border-radius: 999rpx;
-  border: 2rpx solid var(--border-color, rgba(0, 0, 0, 0.08));
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   background: var(--bg-card);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   transition: all 0.2s;
 }
 
 .duration-chip.active {
-  border-color: var(--primary, #0f5f34);
-  background: rgba(15, 95, 52, 0.08);
+  border-color: #2dc9c4;
+  background: rgba(45, 201, 196, 0.12);
 }
 
 .duration-chip.active .chip-text {
-  color: var(--primary, #0f5f34);
-  font-weight: 600;
+  color: #2dc9c4;
+  font-weight: 700;
 }
 
 .chip-text {
@@ -495,7 +519,8 @@ onUnmounted(() => {
   padding: 28rpx 48rpx;
   background: var(--bg-card);
   border-radius: 24rpx;
-  border: 1rpx solid var(--border-color, rgba(0, 0, 0, 0.06));
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .stat-item {
@@ -507,20 +532,20 @@ onUnmounted(() => {
 
 .stat-value {
   font-size: 40rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
 .stat-label {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .stat-divider {
   margin: 0 24rpx;
   width: 1rpx;
   height: 48rpx;
-  background: var(--border-color, rgba(0, 0, 0, 0.08));
+  background: rgba(0, 0, 0, 0.06);
 }
 .dark-mode {
   background: var(--bg-page, #0b0b0f);

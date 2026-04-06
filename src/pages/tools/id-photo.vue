@@ -17,7 +17,8 @@
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
-          <BaseIcon name="camera" :size="64" class="hero-icon" />
+          <!-- 卡通图标替代装饰性 BaseIcon -->
+          <image class="hero-cartoon-icon" src="./static/icons/id-card.png" mode="aspectFit" />
         </view>
         <text class="hero-title"> 智能证件照 </text>
         <text class="hero-desc"> 智能抠图换背景，支持多种证件照尺寸 </text>
@@ -150,7 +151,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, getCurrentInstance } from 'vue';
+import { onLoad, onUnload, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { useToolsStore } from '@/stores/modules/tools.js';
 import { logger } from '@/utils/logger.js';
@@ -162,6 +166,7 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { ensureMiniProgramScope, ensurePrivacyAuthorization } from './privacy-authorization.js';
 
+// ===== 常量定义 =====
 const DEFAULT_SIZES = [
   { key: '1inch', name: '一寸', desc: '25×35mm' },
   { key: '2inch', name: '二寸', desc: '35×49mm' },
@@ -187,573 +192,592 @@ const DEFAULT_SIZE_PIXELS = {
   visa: { width: 413, height: 531 }
 };
 
-export default {
-  components: { BaseIcon, PrivacyPopup },
-  setup() {
-    const toolsStore = useToolsStore();
-    return { toolsStore };
-  },
-  data() {
-    return {
-      statusBarHeight: 44,
-      steps: ['上传照片', '选择配置', '处理中', '完成'],
-      step: 0,
-      previewSrc: '',
-      imageBase64: '',
-      sizeOptions: DEFAULT_SIZES,
-      colorOptions: DEFAULT_COLORS,
-      selectedSize: '1inch',
-      selectedColor: 'blue',
-      enableBeauty: false,
-      isDark: false,
-      processingText: '正在抠图...',
-      resultImage: '',
-      foregroundBase64: '',
-      composeCanvasId: 'idPhotoComposeCanvas'
-    };
-  },
+// ===== Store =====
+const toolsStore = useToolsStore();
 
-  onShareAppMessage() {
-    return {
-      title: '免费证件照换底色 - 考研考公报名必备',
-      path: '/pages/tools/id-photo',
-      imageUrl: '/static/images/logo.png'
-    };
-  },
-  onShareTimeline() {
-    return {
-      title: '免费证件照换底色 - 不用下载APP，微信直接用',
-      query: ''
-    };
-  },
+// ===== 组件实例（Canvas API 需要） =====
+const instance = getCurrentInstance();
 
-  onLoad() {
-    this.statusBarHeight = getStatusBarHeight();
-    this.isDark = initTheme();
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    onThemeUpdate(this._themeHandler);
-    this.loadConfig();
-  },
+// ===== 响应式状态 =====
+const statusBarHeight = ref(44);
+const steps = ['上传照片', '选择配置', '处理中', '完成'];
+const step = ref(0);
+const previewSrc = ref('');
+const imageBase64 = ref('');
+const sizeOptions = ref(DEFAULT_SIZES);
+const colorOptions = ref(DEFAULT_COLORS);
+const selectedSize = ref('1inch');
+const selectedColor = ref('blue');
+const enableBeauty = ref(false);
+const isDark = ref(false);
+const processingText = ref('正在抠图...');
+const resultImage = ref('');
+const foregroundBase64 = ref('');
+const composeCanvasId = 'idPhotoComposeCanvas';
 
-  onUnload() {
-    offThemeUpdate(this._themeHandler);
-  },
+// ===== 主题处理器引用 =====
+let _themeHandler = null;
 
-  methods: {
-    goBack() {
-      uni.navigateBack({ delta: 1 });
-    },
+// ===== 分享配置 =====
+onShareAppMessage(() => ({
+  title: '免费证件照换底色 - 考研考公报名必备',
+  path: '/pages/tools/id-photo',
+  imageUrl: '/static/images/logo.png'
+}));
 
-    async loadConfig() {
-      try {
-        const res = await this.toolsStore.fetchPhotoConfig();
-        if (res.success && res.data) {
-          if (res.data.sizes) {
-            this.sizeOptions = Object.entries(res.data.sizes).map(([key, v]) => ({
-              key,
-              name: v.name,
-              desc: v.desc
-            }));
-          }
-          if (res.data.colors) {
-            this.colorOptions = Object.entries(res.data.colors).map(([key, v]) => ({
-              key,
-              name: v.name,
-              hex: v.hex
-            }));
-          }
-        }
-      } catch (e) {
-        logger.warn('加载配置失败，使用默认值:', e);
+onShareTimeline(() => ({
+  title: '免费证件照换底色 - 不用下载APP，微信直接用',
+  query: ''
+}));
+
+// ===== 页面生命周期 =====
+onLoad(() => {
+  statusBarHeight.value = getStatusBarHeight();
+  isDark.value = initTheme();
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  onThemeUpdate(_themeHandler);
+  loadConfig();
+});
+
+onUnload(() => {
+  offThemeUpdate(_themeHandler);
+});
+
+// ===== 方法 =====
+
+/** 返回上一页 */
+function goBack() {
+  uni.navigateBack({ delta: 1 });
+}
+
+/** 从服务端加载尺寸和颜色配置 */
+async function loadConfig() {
+  try {
+    const res = await toolsStore.fetchPhotoConfig();
+    if (res.success && res.data) {
+      if (res.data.sizes) {
+        sizeOptions.value = Object.entries(res.data.sizes).map(([key, v]) => ({
+          key,
+          name: v.name,
+          desc: v.desc
+        }));
       }
-    },
-
-    async ensureMediaPermission(sourceType) {
-      const privacyOk = await ensurePrivacyAuthorization();
-      if (!privacyOk) {
-        toast.info('需要先同意隐私授权');
-        return false;
+      if (res.data.colors) {
+        colorOptions.value = Object.entries(res.data.colors).map(([key, v]) => ({
+          key,
+          name: v.name,
+          hex: v.hex
+        }));
       }
+    }
+  } catch (e) {
+    logger.warn('加载配置失败，使用默认值:', e);
+  }
+}
 
-      // #ifdef MP-WEIXIN
-      if (sourceType === 'camera') {
-        return ensureMiniProgramScope('scope.camera', {
-          title: '相机权限提示',
-          content: '需要相机权限才能拍摄证件照，是否前往设置开启？'
-        });
-      }
-      // #endif
+/** 确保媒体权限已授予 */
+async function ensureMediaPermission(sourceType) {
+  const privacyOk = await ensurePrivacyAuthorization();
+  if (!privacyOk) {
+    toast.info('需要先同意隐私授权');
+    return false;
+  }
 
-      return true;
-    },
+  // #ifdef MP-WEIXIN
+  if (sourceType === 'camera') {
+    return ensureMiniProgramScope('scope.camera', {
+      title: '相机权限提示',
+      content: '需要相机权限才能拍摄证件照，是否前往设置开启？'
+    });
+  }
+  // #endif
 
-    choosePhoto() {
-      // #ifndef MP-WEIXIN
-      this.choosePhotoLegacy();
-      return;
-      // #endif
+  return true;
+}
 
-      uni.showActionSheet({
-        itemList: ['拍照', '从相册选择'],
-        success: async (res) => {
-          const sourceType = res.tapIndex === 0 ? 'camera' : 'album';
-          const canUse = await this.ensureMediaPermission(sourceType);
-          if (!canUse) return;
+/** 选择照片（微信小程序走 ActionSheet，其他平台走兼容模式） */
+function choosePhoto() {
+  // #ifndef MP-WEIXIN
+  choosePhotoLegacy();
+  return;
+  // #endif
 
-          uni.chooseImage({
-            count: 1,
-            sizeType: ['compressed'],
-            sourceType: [sourceType],
-            success: (chooseRes) => {
-              const path = chooseRes.tempFilePaths[0];
-              this.previewSrc = path;
-              this.readBase64(path);
-            },
-            fail: (err) => {
-              if (err.errMsg && /deny|auth/i.test(err.errMsg)) {
-                uni.showModal({
-                  title: '权限提示',
-                  content:
-                    sourceType === 'camera'
-                      ? '需要相机权限才能拍摄证件照，是否前往设置开启？'
-                      : '需要相册权限才能选择照片，是否前往设置开启？',
-                  success: (modalRes) => {
-                    if (modalRes.confirm && typeof uni.openSetting === 'function') {
-                      uni.openSetting();
-                    }
-                  }
-                });
-              } else if (err.errMsg && !err.errMsg.includes('cancel')) {
-                toast.info(sourceType === 'camera' ? '拍照失败，请检查权限' : '选择照片失败');
-              }
-            }
-          });
-        },
-        fail: () => {
-          // ignore cancel
-        }
-      });
-    },
+  uni.showActionSheet({
+    itemList: ['拍照', '从相册选择'],
+    success: async (res) => {
+      const sourceType = res.tapIndex === 0 ? 'camera' : 'album';
+      const canUse = await ensureMediaPermission(sourceType);
+      if (!canUse) return;
 
-    /* legacy path retained for compatibility */
-    choosePhotoLegacy() {
       uni.chooseImage({
         count: 1,
         sizeType: ['compressed'],
-        sourceType: ['album', 'camera'],
-        success: (res) => {
-          const path = res.tempFilePaths[0];
-          this.previewSrc = path;
-          this.readBase64(path);
+        sourceType: [sourceType],
+        success: (chooseRes) => {
+          const path = chooseRes.tempFilePaths[0];
+          previewSrc.value = path;
+          readBase64(path);
         },
         fail: (err) => {
-          if (err.errMsg && !err.errMsg.includes('cancel')) {
-            toast.info('选择照片失败');
-          }
-        }
-      });
-    },
-
-    readBase64(path) {
-      // #ifdef MP-WEIXIN
-      uni.getFileSystemManager().readFile({
-        filePath: path,
-        encoding: 'base64',
-        success: (res) => {
-          this.imageBase64 = res.data;
-          this.step = 1;
-        },
-        fail: (err) => {
-          logger.error('读取照片失败:', err);
-          toast.info('读取照片失败');
-        }
-      });
-      // #endif
-
-      // #ifdef H5
-      const img = new Image();
-      img.crossOrigin = 'Anonymous';
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        this.imageBase64 = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
-        this.step = 1;
-      };
-      img.onerror = () => toast.info('加载照片失败');
-      img.src = path;
-      // #endif
-
-      // #ifdef APP-PLUS
-      plus.io.resolveLocalFileSystemURL(
-        path,
-        (entry) => {
-          entry.file((file) => {
-            const reader = new plus.io.FileReader();
-            reader.onloadend = (e) => {
-              const base64Data = e.target.result.split(',')[1];
-              this.imageBase64 = base64Data;
-              this.step = 1;
-            };
-            reader.onerror = () => {
-              toast.info('读取照片失败');
-            };
-            reader.readAsDataURL(file);
-          });
-        },
-        () => {
-          toast.info('读取照片失败');
-        }
-      );
-      // #endif
-    },
-
-    async startProcess() {
-      if (!isUserLoggedIn()) {
-        uni.showModal({
-          title: '请先登录',
-          content: '登录后可使用证件照处理功能',
-          confirmText: '去登录',
-          success: (res) => {
-            if (res.confirm) {
-              safeNavigateTo('/pages/login/index');
-            }
-          }
-        });
-        return;
-      }
-
-      if (!this.imageBase64) {
-        toast.info('请先上传照片');
-        return;
-      }
-
-      this.step = 2;
-      this.processingText = '正在智能抠图...';
-
-      try {
-        const res = await this.toolsStore.processPhoto(this.imageBase64, this.selectedColor, this.selectedSize, {
-          beauty: this.enableBeauty
-        });
-
-        if (res.success && res.data) {
-          const payload = res.data || {};
-          const directResult = payload.resultImage || payload.image || '';
-          const foreground = payload.foreground || payload.imageBase64 || directResult || '';
-          const needComposite = payload.needComposite === true;
-
-          if (needComposite) {
-            if (!foreground) {
-              throw new Error('未返回可合成的前景图');
-            }
-
-            this.processingText = '正在合成证件照...';
-            this.resultImage = await this.composeResultImage({
-              foregroundBase64: foreground,
-              bgColorHex: payload.bgColorHex || this.getSelectedColorHex(),
-              sizeConfig: payload.size
-            });
-            this.foregroundBase64 = foreground;
-          } else if (directResult || foreground) {
-            this.resultImage = this.normalizeImageSource(directResult || foreground);
-            this.foregroundBase64 = payload.foreground || payload.imageBase64 || '';
-          } else {
-            throw new Error('未返回处理结果');
-          }
-
-          this.step = 3;
-        } else {
-          throw new Error(res.message || '处理失败');
-        }
-      } catch (error) {
-        logger.error('证件照处理失败:', error);
-        uni.showModal({
-          title: '处理失败',
-          content: error.message || '请确保照片为正面免冠照',
-          showCancel: false
-        });
-        this.step = 1;
-      }
-    },
-
-    getSelectedColorHex() {
-      const color = (this.colorOptions || []).find((item) => item.key === this.selectedColor);
-      return color?.hex || '#438EDB';
-    },
-
-    normalizeImageSource(input, mime = 'image/png') {
-      const source = String(input || '').trim();
-      if (!source) return '';
-      if (/^(data:image\/|blob:|https?:\/\/|wxfile:\/\/|file:\/\/|\/)/i.test(source)) {
-        return source;
-      }
-      return `data:${mime};base64,${source}`;
-    },
-
-    extractBase64Payload(input) {
-      const source = String(input || '').trim();
-      if (!source) return '';
-      if (source.startsWith('data:image/')) {
-        const commaIndex = source.indexOf(',');
-        return commaIndex >= 0 ? source.slice(commaIndex + 1) : '';
-      }
-      if (/^(wxfile:\/\/|https?:\/\/|blob:|file:\/\/|\/)/i.test(source)) {
-        return '';
-      }
-      return source;
-    },
-
-    resolveSizeConfig(sizeConfig) {
-      const width = Number(sizeConfig?.width);
-      const height = Number(sizeConfig?.height);
-      if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
-        return {
-          width: Math.round(width),
-          height: Math.round(height)
-        };
-      }
-
-      const fallback = DEFAULT_SIZE_PIXELS[this.selectedSize] || DEFAULT_SIZE_PIXELS['1inch'];
-      return {
-        width: fallback.width,
-        height: fallback.height
-      };
-    },
-
-    getImageInfo(src) {
-      return new Promise((resolve, reject) => {
-        uni.getImageInfo({
-          src,
-          success: (res) => resolve(res),
-          fail: (err) => reject(new Error(err?.errMsg || '读取图片信息失败'))
-        });
-      });
-    },
-
-    writeBase64ToTempImage(base64) {
-      const payload = this.extractBase64Payload(base64);
-      if (!payload) {
-        return Promise.reject(new Error('无效的图片数据'));
-      }
-
-      // #ifdef MP-WEIXIN
-      return new Promise((resolve, reject) => {
-        const filePath = `${wx.env.USER_DATA_PATH}/id_photo_fg_${Date.now()}.png`;
-        uni.getFileSystemManager().writeFile({
-          filePath,
-          data: payload,
-          encoding: 'base64',
-          success: () => resolve(filePath),
-          fail: (err) => reject(new Error(err?.errMsg || '写入临时图片失败'))
-        });
-      });
-      // #endif
-
-      // #ifndef MP-WEIXIN
-      return Promise.resolve(this.normalizeImageSource(payload));
-      // #endif
-    },
-
-    async composeResultImage({ foregroundBase64, bgColorHex, sizeConfig }) {
-      const targetSize = this.resolveSizeConfig(sizeConfig);
-      const bg = bgColorHex || this.getSelectedColorHex();
-
-      // #ifdef H5
-      return this.composeResultImageH5(foregroundBase64, bg, targetSize);
-      // #endif
-
-      // #ifndef H5
-      return this.composeResultImageUni(foregroundBase64, bg, targetSize);
-      // #endif
-    },
-
-    async composeResultImageUni(foregroundBase64, bgColorHex, targetSize) {
-      // ✅ P0-FIX: 捕获文件写入和图片信息读取异常
-      let sourcePath;
-      try {
-        sourcePath = await this.writeBase64ToTempImage(foregroundBase64);
-      } catch (writeErr) {
-        logger.error('[id-photo] 写入临时图片失败:', writeErr);
-        throw new Error('图片处理失败，请重试');
-      }
-
-      let imageInfo;
-      try {
-        imageInfo = await this.getImageInfo(sourcePath);
-      } catch (infoErr) {
-        logger.error('[id-photo] 读取图片信息失败:', infoErr);
-        throw new Error('图片信息读取失败，请重试');
-      }
-
-      const width = targetSize.width;
-      const height = targetSize.height;
-      const scale = Math.min(width / imageInfo.width, height / imageInfo.height);
-      const drawWidth = Math.max(1, Math.round(imageInfo.width * scale));
-      const drawHeight = Math.max(1, Math.round(imageInfo.height * scale));
-      const dx = Math.round((width - drawWidth) / 2);
-      const dy = Math.round((height - drawHeight) / 2);
-
-      const ctx = uni.createCanvasContext(this.composeCanvasId, this);
-      ctx.setFillStyle(bgColorHex || '#FFFFFF');
-      ctx.fillRect(0, 0, width, height);
-      ctx.drawImage(sourcePath, dx, dy, drawWidth, drawHeight);
-
-      await new Promise((resolve) => ctx.draw(false, resolve));
-
-      return new Promise((resolve, reject) => {
-        uni.canvasToTempFilePath(
-          {
-            canvasId: this.composeCanvasId,
-            fileType: 'png',
-            quality: 1,
-            width,
-            height,
-            destWidth: width,
-            destHeight: height,
-            success: (res) => resolve(res.tempFilePath),
-            fail: (err) => reject(new Error(err?.errMsg || '导出证件照失败'))
-          },
-          this
-        );
-      });
-    },
-
-    composeResultImageH5(foregroundBase64, bgColorHex, targetSize) {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          try {
-            const width = targetSize.width;
-            const height = targetSize.height;
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-              reject(new Error('创建画布失败'));
-              return;
-            }
-
-            ctx.fillStyle = bgColorHex || '#FFFFFF';
-            ctx.fillRect(0, 0, width, height);
-
-            const scale = Math.min(width / img.width, height / img.height);
-            const drawWidth = Math.max(1, Math.round(img.width * scale));
-            const drawHeight = Math.max(1, Math.round(img.height * scale));
-            const dx = Math.round((width - drawWidth) / 2);
-            const dy = Math.round((height - drawHeight) / 2);
-            ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
-
-            resolve(canvas.toDataURL('image/png'));
-          } catch (err) {
-            reject(new Error(err?.message || '合成证件照失败'));
-          }
-        };
-        img.onerror = () => reject(new Error('加载前景图失败'));
-        img.src = this.normalizeImageSource(foregroundBase64);
-      });
-    },
-
-    saveImageToAlbum(filePath) {
-      uni.saveImageToPhotosAlbum({
-        filePath,
-        success: () => {
-          toast.success('已保存到相册');
-        },
-        fail: (err) => {
-          if (err.errMsg && err.errMsg.includes('auth deny')) {
-            uni.showModal({
-              title: '提示',
-              content: '需要相册权限才能保存，是否前往设置？',
-              success: (res) => {
-                if (res.confirm) uni.openSetting();
+          if (err.errMsg && /deny|auth/i.test(err.errMsg)) {
+            modal.show({
+              title: '权限提示',
+              content:
+                sourceType === 'camera'
+                  ? '需要相机权限才能拍摄证件照，是否前往设置开启？'
+                  : '需要相册权限才能选择照片，是否前往设置开启？',
+              success: (modalRes) => {
+                if (modalRes.confirm && typeof uni.openSetting === 'function') {
+                  uni.openSetting();
+                }
               }
             });
-          } else {
-            toast.info('保存失败');
+          } else if (err.errMsg && !err.errMsg.includes('cancel')) {
+            toast.info(sourceType === 'camera' ? '拍照失败，请检查权限' : '选择照片失败');
           }
         }
       });
     },
+    fail: () => {
+      // 用户取消，忽略
+    }
+  });
+}
 
-    async changeColor() {
-      this.step = 1;
+/** 兼容模式选择照片（非微信平台） */
+function choosePhotoLegacy() {
+  uni.chooseImage({
+    count: 1,
+    sizeType: ['compressed'],
+    sourceType: ['album', 'camera'],
+    success: (res) => {
+      const path = res.tempFilePaths[0];
+      previewSrc.value = path;
+      readBase64(path);
     },
+    fail: (err) => {
+      if (err.errMsg && !err.errMsg.includes('cancel')) {
+        toast.info('选择照片失败');
+      }
+    }
+  });
+}
 
-    saveResult() {
-      if (!this.resultImage) return;
+/** 将图片文件读取为 base64 */
+function readBase64(path) {
+  // #ifdef MP-WEIXIN
+  uni.getFileSystemManager().readFile({
+    filePath: path,
+    encoding: 'base64',
+    success: (res) => {
+      imageBase64.value = res.data;
+      step.value = 1;
+    },
+    fail: (err) => {
+      logger.error('读取照片失败:', err);
+      toast.info('读取照片失败');
+    }
+  });
+  // #endif
 
-      // #ifdef MP-WEIXIN
-      ensurePrivacyAuthorization().then((privacyOk) => {
-        if (!privacyOk) {
-          toast.info('需要先同意隐私授权');
+  // #ifdef H5
+  const img = new Image();
+  img.crossOrigin = 'Anonymous';
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    imageBase64.value = canvas.toDataURL('image/jpeg', 0.9).split(',')[1];
+    step.value = 1;
+  };
+  img.onerror = () => toast.info('加载照片失败');
+  img.src = path;
+  // #endif
+
+  // #ifdef APP-PLUS
+  plus.io.resolveLocalFileSystemURL(
+    path,
+    (entry) => {
+      entry.file((file) => {
+        const reader = new plus.io.FileReader();
+        reader.onloadend = (e) => {
+          const base64Data = e.target.result.split(',')[1];
+          imageBase64.value = base64Data;
+          step.value = 1;
+        };
+        reader.onerror = () => {
+          toast.info('读取照片失败');
+        };
+        reader.readAsDataURL(file);
+      });
+    },
+    () => {
+      toast.info('读取照片失败');
+    }
+  );
+  // #endif
+}
+
+/** 开始证件照处理流程 */
+async function startProcess() {
+  if (!isUserLoggedIn()) {
+    modal.show({
+      title: '请先登录',
+      content: '登录后可使用证件照处理功能',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) {
+          safeNavigateTo('/pages/login/index');
+        }
+      }
+    });
+    return;
+  }
+
+  if (!imageBase64.value) {
+    toast.info('请先上传照片');
+    return;
+  }
+
+  step.value = 2;
+  processingText.value = '正在智能抠图...';
+
+  try {
+    const res = await toolsStore.processPhoto(imageBase64.value, selectedColor.value, selectedSize.value, {
+      beauty: enableBeauty.value
+    });
+
+    if (res.success && res.data) {
+      const payload = res.data || {};
+      const directResult = payload.resultImage || payload.image || '';
+      const fg = payload.foreground || payload.imageBase64 || directResult || '';
+      const needComposite = payload.needComposite === true;
+
+      if (needComposite) {
+        if (!fg) {
+          throw new Error('未返回可合成的前景图');
+        }
+
+        processingText.value = '正在合成证件照...';
+        resultImage.value = await composeResultImage({
+          foregroundBase64: fg,
+          bgColorHex: payload.bgColorHex || getSelectedColorHex(),
+          sizeConfig: payload.size
+        });
+        foregroundBase64.value = fg;
+      } else if (directResult || fg) {
+        resultImage.value = normalizeImageSource(directResult || fg);
+        foregroundBase64.value = payload.foreground || payload.imageBase64 || '';
+      } else {
+        throw new Error('未返回处理结果');
+      }
+
+      step.value = 3;
+    } else {
+      throw new Error(res.message || '处理失败');
+    }
+  } catch (error) {
+    logger.error('证件照处理失败:', error);
+    modal.show({
+      title: '处理失败',
+      content: error.message || '请确保照片为正面免冠照',
+      showCancel: false
+    });
+    step.value = 1;
+  }
+}
+
+/** 获取当前选中颜色的十六进制值 */
+function getSelectedColorHex() {
+  const color = (colorOptions.value || []).find((item) => item.key === selectedColor.value);
+  return color?.hex || '#438EDB';
+}
+
+/** 标准化图片来源（自动补全 data URI 前缀） */
+function normalizeImageSource(input, mime = 'image/png') {
+  const source = String(input || '').trim();
+  if (!source) return '';
+  if (/^(data:image\/|blob:|https?:\/\/|wxfile:\/\/|file:\/\/|\/)/i.test(source)) {
+    return source;
+  }
+  return `data:${mime};base64,${source}`;
+}
+
+/** 从 data URI 中提取纯 base64 载荷 */
+function extractBase64Payload(input) {
+  const source = String(input || '').trim();
+  if (!source) return '';
+  if (source.startsWith('data:image/')) {
+    const commaIndex = source.indexOf(',');
+    return commaIndex >= 0 ? source.slice(commaIndex + 1) : '';
+  }
+  if (/^(wxfile:\/\/|https?:\/\/|blob:|file:\/\/|\/)/i.test(source)) {
+    return '';
+  }
+  return source;
+}
+
+/** 解析尺寸配置，无效时回退到默认值 */
+function resolveSizeConfig(sizeConfig) {
+  const width = Number(sizeConfig?.width);
+  const height = Number(sizeConfig?.height);
+  if (Number.isFinite(width) && width > 0 && Number.isFinite(height) && height > 0) {
+    return {
+      width: Math.round(width),
+      height: Math.round(height)
+    };
+  }
+
+  const fallback = DEFAULT_SIZE_PIXELS[selectedSize.value] || DEFAULT_SIZE_PIXELS['1inch'];
+  return {
+    width: fallback.width,
+    height: fallback.height
+  };
+}
+
+/** 获取图片信息（Promise 封装） */
+function getImageInfo(src) {
+  return new Promise((resolve, reject) => {
+    uni.getImageInfo({
+      src,
+      success: (res) => resolve(res),
+      fail: (err) => reject(new Error(err?.errMsg || '读取图片信息失败'))
+    });
+  });
+}
+
+/** 将 base64 数据写入临时文件 */
+function writeBase64ToTempImage(base64) {
+  const payload = extractBase64Payload(base64);
+  if (!payload) {
+    return Promise.reject(new Error('无效的图片数据'));
+  }
+
+  // #ifdef MP-WEIXIN
+  return new Promise((resolve, reject) => {
+    const filePath = `${wx.env.USER_DATA_PATH}/id_photo_fg_${Date.now()}.png`;
+    uni.getFileSystemManager().writeFile({
+      filePath,
+      data: payload,
+      encoding: 'base64',
+      success: () => resolve(filePath),
+      fail: (err) => reject(new Error(err?.errMsg || '写入临时图片失败'))
+    });
+  });
+  // #endif
+
+  // #ifndef MP-WEIXIN
+  return Promise.resolve(normalizeImageSource(payload));
+  // #endif
+}
+
+/** 合成证件照（自动分发到对应平台实现） */
+async function composeResultImage({ foregroundBase64: fgBase64, bgColorHex, sizeConfig }) {
+  const targetSize = resolveSizeConfig(sizeConfig);
+  const bg = bgColorHex || getSelectedColorHex();
+
+  // #ifdef H5
+  return composeResultImageH5(fgBase64, bg, targetSize);
+  // #endif
+
+  // #ifndef H5
+  return composeResultImageUni(fgBase64, bg, targetSize);
+  // #endif
+}
+
+/** 原生平台：通过 Canvas 合成证件照 */
+async function composeResultImageUni(fgBase64, bgColorHex, targetSize) {
+  // ✅ P0-FIX: 捕获文件写入和图片信息读取异常
+  let sourcePath;
+  try {
+    sourcePath = await writeBase64ToTempImage(fgBase64);
+  } catch (writeErr) {
+    logger.error('[id-photo] 写入临时图片失败:', writeErr);
+    throw new Error('图片处理失败，请重试');
+  }
+
+  let imageInfo;
+  try {
+    imageInfo = await getImageInfo(sourcePath);
+  } catch (infoErr) {
+    logger.error('[id-photo] 读取图片信息失败:', infoErr);
+    throw new Error('图片信息读取失败，请重试');
+  }
+
+  const width = targetSize.width;
+  const height = targetSize.height;
+  const scale = Math.min(width / imageInfo.width, height / imageInfo.height);
+  const drawWidth = Math.max(1, Math.round(imageInfo.width * scale));
+  const drawHeight = Math.max(1, Math.round(imageInfo.height * scale));
+  const dx = Math.round((width - drawWidth) / 2);
+  const dy = Math.round((height - drawHeight) / 2);
+
+  // Canvas API 需要组件实例作为第二个参数
+  const proxy = instance.proxy;
+  const ctx = uni.createCanvasContext(composeCanvasId, proxy);
+  ctx.setFillStyle(bgColorHex || '#FFFFFF');
+  ctx.fillRect(0, 0, width, height);
+  ctx.drawImage(sourcePath, dx, dy, drawWidth, drawHeight);
+
+  await new Promise((resolve) => ctx.draw(false, resolve));
+
+  return new Promise((resolve, reject) => {
+    uni.canvasToTempFilePath(
+      {
+        canvasId: composeCanvasId,
+        fileType: 'png',
+        quality: 1,
+        width,
+        height,
+        destWidth: width,
+        destHeight: height,
+        success: (res) => resolve(res.tempFilePath),
+        fail: (err) => reject(new Error(err?.errMsg || '导出证件照失败'))
+      },
+      proxy
+    );
+  });
+}
+
+/** H5 平台：通过 DOM Canvas 合成证件照 */
+function composeResultImageH5(fgBase64, bgColorHex, targetSize) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const width = targetSize.width;
+        const height = targetSize.height;
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('创建画布失败'));
           return;
         }
 
-        ensureMiniProgramScope('scope.writePhotosAlbum', {
-          title: '相册权限提示',
-          content: '需要相册权限才能保存证件照，是否前往设置开启？'
-        }).then((granted) => {
-          if (!granted) {
-            toast.info('未开启相册权限');
-            return;
-          }
+        ctx.fillStyle = bgColorHex || '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
 
-          const src = String(this.resultImage || '');
-          if (/^(wxfile:\/\/|\/)/i.test(src)) {
-            this.saveImageToAlbum(src);
-            return;
-          }
+        const scale = Math.min(width / img.width, height / img.height);
+        const drawWidth = Math.max(1, Math.round(img.width * scale));
+        const drawHeight = Math.max(1, Math.round(img.height * scale));
+        const dx = Math.round((width - drawWidth) / 2);
+        const dy = Math.round((height - drawHeight) / 2);
+        ctx.drawImage(img, dx, dy, drawWidth, drawHeight);
 
-          const base64Data = this.extractBase64Payload(src);
-          if (!base64Data) {
-            toast.info('保存失败');
-            return;
-          }
+        resolve(canvas.toDataURL('image/png'));
+      } catch (err) {
+        reject(new Error(err?.message || '合成证件照失败'));
+      }
+    };
+    img.onerror = () => reject(new Error('加载前景图失败'));
+    img.src = normalizeImageSource(fgBase64);
+  });
+}
 
-          const filePath = `${wx.env.USER_DATA_PATH}/id_photo_${Date.now()}.png`;
-          uni.getFileSystemManager().writeFile({
-            filePath,
-            data: base64Data,
-            encoding: 'base64',
-            success: () => this.saveImageToAlbum(filePath),
-            fail: () => {
-              toast.info('保存失败');
-            }
-          });
-        });
-      });
-      // #endif
-
-      // #ifdef H5
-      const link = document.createElement('a');
-      link.href = this.resultImage;
-      link.download = `id_photo_${Date.now()}.png`;
-      link.click();
-      // #endif
+/** 保存图片到系统相册 */
+function saveImageToAlbum(filePath) {
+  uni.saveImageToPhotosAlbum({
+    filePath,
+    success: () => {
+      toast.success('已保存到相册');
     },
-
-    resetAll() {
-      this.step = 0;
-      this.previewSrc = '';
-      this.imageBase64 = '';
-      this.resultImage = '';
-      this.foregroundBase64 = '';
-      this.enableBeauty = false;
+    fail: (err) => {
+      if (err.errMsg && err.errMsg.includes('auth deny')) {
+        modal.show({
+          title: '提示',
+          content: '需要相册权限才能保存，是否前往设置？',
+          success: (res) => {
+            if (res.confirm) uni.openSetting();
+          }
+        });
+      } else {
+        toast.info('保存失败');
+      }
     }
-  }
-};
+  });
+}
+
+/** 返回配置步骤以更换颜色 */
+function changeColor() {
+  step.value = 1;
+}
+
+/** 保存处理结果 */
+function saveResult() {
+  if (!resultImage.value) return;
+
+  // #ifdef MP-WEIXIN
+  ensurePrivacyAuthorization().then((privacyOk) => {
+    if (!privacyOk) {
+      toast.info('需要先同意隐私授权');
+      return;
+    }
+
+    ensureMiniProgramScope('scope.writePhotosAlbum', {
+      title: '相册权限提示',
+      content: '需要相册权限才能保存证件照，是否前往设置开启？'
+    }).then((granted) => {
+      if (!granted) {
+        toast.info('未开启相册权限');
+        return;
+      }
+
+      const src = String(resultImage.value || '');
+      if (/^(wxfile:\/\/|\/)/i.test(src)) {
+        saveImageToAlbum(src);
+        return;
+      }
+
+      const base64Data = extractBase64Payload(src);
+      if (!base64Data) {
+        toast.info('保存失败');
+        return;
+      }
+
+      const filePath = `${wx.env.USER_DATA_PATH}/id_photo_${Date.now()}.png`;
+      uni.getFileSystemManager().writeFile({
+        filePath,
+        data: base64Data,
+        encoding: 'base64',
+        success: () => saveImageToAlbum(filePath),
+        fail: () => {
+          toast.info('保存失败');
+        }
+      });
+    });
+  });
+  // #endif
+
+  // #ifdef H5
+  const link = document.createElement('a');
+  link.href = resultImage.value;
+  link.download = `id_photo_${Date.now()}.png`;
+  link.click();
+  // #endif
+}
+
+/** 重置所有状态，重新开始 */
+function resetAll() {
+  step.value = 0;
+  previewSrc.value = '';
+  imageBase64.value = '';
+  resultImage.value = '';
+  foregroundBase64.value = '';
+  enableBeauty.value = false;
+}
 </script>
 
 <style lang="scss" scoped>
 .page-container {
   min-height: 100%;
   min-height: 100vh;
-  background: var(--bg-secondary, #f5f5f7);
+  background: var(--background);
 }
 
 // 导航栏
@@ -797,8 +821,8 @@ export default {
 
   .nav-title {
     font-size: 34rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 800;
+    color: var(--text-primary);
   }
 
   .nav-placeholder {
@@ -846,16 +870,22 @@ export default {
     font-size: 48rpx;
   }
 
+  /* 英雄级卡通图标（替代 BaseIcon size>=64） */
+  .hero-cartoon-icon {
+    width: 120rpx;
+    height: 120rpx;
+  }
+
   .hero-title {
     font-size: 36rpx;
-    font-weight: 700;
-    color: var(--text-primary, #111);
+    font-weight: 800;
+    color: var(--text-primary);
     margin-bottom: 8rpx;
   }
 
   .hero-desc {
     font-size: 24rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
   }
 }
 
@@ -1021,8 +1051,8 @@ export default {
 
   .config-label {
     font-size: 28rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 700;
+    color: var(--text-primary);
     margin-bottom: 16rpx;
     display: block;
   }
@@ -1056,14 +1086,14 @@ export default {
 
   .option-name {
     font-size: 26rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 700;
+    color: var(--text-primary);
     display: block;
   }
 
   .option-desc {
     font-size: 20rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
     margin-top: 2rpx;
   }
 }
@@ -1130,13 +1160,13 @@ export default {
 
   .beauty-label {
     font-size: 28rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 700;
+    color: var(--text-primary);
   }
 
   .beauty-hint {
     font-size: 22rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
     margin-top: 4rpx;
   }
 }
@@ -1164,14 +1194,14 @@ export default {
 
   .processing-title {
     font-size: 30rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 800;
+    color: var(--text-primary);
     margin-top: 28rpx;
   }
 
   .processing-hint {
     font-size: 24rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
     margin-top: 10rpx;
   }
 }
@@ -1213,15 +1243,20 @@ export default {
 
 // 按钮
 .btn-primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
+  background: #2dc9c4;
+  color: var(--text-inverse);
+  border: none;
   padding: 24rpx;
   border-radius: 999rpx;
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 800;
   text-align: center;
-  box-shadow: var(--cta-primary-shadow);
+  box-shadow: 0 8rpx 0 #22a09c;
+
+  &:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 4rpx 0 #22a09c;
+  }
 
   &::after {
     border: none;
@@ -1445,7 +1480,7 @@ export default {
 }
 
 .step-item.done .step-dot {
-  background: linear-gradient(135deg, rgba(52, 199, 89, 0.88), rgba(101, 219, 138, 0.96));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--success) 88%, transparent), rgba(101, 219, 138, 0.96));
   box-shadow: var(--apple-shadow-surface);
 }
 
@@ -1470,7 +1505,7 @@ export default {
 }
 
 .processing-card .processing-spinner {
-  border-color: rgba(52, 199, 89, 0.16);
+  border-color: color-mix(in srgb, var(--success) 16%, transparent);
   border-top-color: var(--success);
 }
 

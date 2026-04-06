@@ -82,7 +82,8 @@
 
         <!-- 空状态 -->
         <view v-if="clusters.length === 0" class="empty-state">
-          <BaseIcon name="sparkle" :size="96" />
+          <!-- 卡通图标替代装饰性 BaseIcon -->
+          <image class="hero-cartoon-icon" src="./static/icons/lightbulb-idea.png" mode="aspectFit" />
           <text class="empty-title">暂无错题聚类</text>
           <text class="empty-sub">多做几套题后，AI 会自动分析错题模式</text>
         </view>
@@ -182,11 +183,11 @@ onMounted(() => {
 <style scoped>
 .error-clusters-container {
   min-height: 100vh;
-  background: var(--bg-page, linear-gradient(180deg, #f5f5f7 0%, #eeeef0 50%, #f5f5f7 100%));
+  background: var(--background);
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
-  --red: var(--danger, #ff453a);
+  --red: var(--danger);
   --orange: var(--warning, #ff9f0a);
   --blue: var(--em-info, #32ade6);
   --green: var(--success, #34c759);
@@ -201,8 +202,8 @@ onMounted(() => {
   width: 100%;
   height: 620rpx;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255, 69, 58, 0.2) 0%, transparent 40%),
-    radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.3) 0%, transparent 28%);
+    radial-gradient(circle at 20% 20%, rgba(255, 75, 75, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 80% 10%, rgba(255, 75, 75, 0.08) 0%, transparent 28%);
   filter: blur(70px);
   opacity: 0.9;
   z-index: 0;
@@ -223,8 +224,9 @@ onMounted(() => {
   padding: 16rpx 32rpx;
   -webkit-backdrop-filter: saturate(180%) blur(40rpx);
   backdrop-filter: saturate(180%) blur(40rpx);
-  background: var(--apple-glass-nav-bg, rgba(245, 245, 247, 0.72));
-  border-bottom: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .dark-mode .top-nav {
   background: rgba(10, 10, 15, 0.72);
@@ -232,15 +234,15 @@ onMounted(() => {
 }
 .nav-back-arrow {
   font-size: 36rpx;
-  color: var(--text-main, #1a1a1a);
+  color: var(--text-primary);
   padding: 20rpx;
 }
 .nav-title {
   flex: 1;
   text-align: center;
   font-size: 34rpx;
-  font-weight: 600;
-  color: var(--text-primary, #1c1c1e);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .nav-right {
   width: 48rpx;
@@ -277,13 +279,12 @@ onMounted(() => {
 
 /* Hero */
 .apple-glass-card {
-  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.72));
-  border-radius: 32rpx;
+  background: var(--bg-card);
+  border-radius: 28rpx;
   padding: 32rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
-  -webkit-backdrop-filter: blur(20rpx);
-  backdrop-filter: blur(20rpx);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .dark-mode .apple-glass-card {
   background: rgba(255, 255, 255, 0.06);
@@ -301,7 +302,7 @@ onMounted(() => {
 }
 .hero-num {
   font-size: 64rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--red);
   font-variant-numeric: tabular-nums;
   display: block;
@@ -317,8 +318,8 @@ onMounted(() => {
 }
 .hero-title {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary, #1c1c1e);
+  font-weight: 800;
+  color: var(--text-primary);
   display: block;
 }
 .hero-sub {
@@ -334,7 +335,7 @@ onMounted(() => {
   margin-top: 16rpx;
   padding: 6rpx 16rpx;
   border-radius: 16rpx;
-  background: rgba(255, 69, 58, 0.1);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
 }
 .tag-dot {
   width: 12rpx;
@@ -376,7 +377,7 @@ onMounted(() => {
 }
 .section-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   flex: 1;
 }
@@ -387,11 +388,11 @@ onMounted(() => {
   font-weight: 600;
 }
 .badge-high {
-  background: rgba(255, 69, 58, 0.12);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
   color: var(--red);
 }
 .badge-medium {
-  background: rgba(255, 159, 10, 0.12);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
   color: var(--orange);
 }
 .badge-low {
@@ -431,13 +432,13 @@ onMounted(() => {
 }
 .cluster-name {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   flex: 1;
 }
 .cluster-trend {
   font-size: 28rpx;
-  font-weight: 700;
+  font-weight: 800;
 }
 .trend-up {
   color: var(--red);
@@ -484,6 +485,11 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: 120rpx 0;
+}
+/* 英雄级卡通图标（替代 BaseIcon size>=80） */
+.hero-cartoon-icon {
+  width: 160rpx;
+  height: 160rpx;
 }
 .empty-icon {
   font-size: 96rpx;

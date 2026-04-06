@@ -132,7 +132,7 @@ defineEmits(['close', 'clear']);
 }
 .modal-btn.danger {
   background: linear-gradient(135deg, rgba(255, 94, 87, 0.94) 0%, rgba(255, 59, 48, 1) 100%);
-  color: #fff;
+  color: var(--text-inverse);
   border: 1rpx solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 10rpx 24rpx rgba(255, 59, 48, 0.24);
 }

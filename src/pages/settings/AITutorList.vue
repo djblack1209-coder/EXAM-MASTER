@@ -120,8 +120,8 @@ const tutorList = computed(() => {
 .tutor-name {
   display: block;
   font-size: 32rpx;
-  font-weight: 500;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 4px;
   line-height: 1.5;
   letter-spacing: 0.3px;
@@ -129,27 +129,28 @@ const tutorList = computed(() => {
 
 .tutor-role {
   font-size: 28rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
   line-height: 1.5;
   letter-spacing: 0.3px;
 }
 
 .chat-btn {
   min-height: 88rpx;
-  background-color: transparent;
-  border: 1px solid var(--cta-primary-border);
-  color: var(--cta-primary-text);
+  background-color: var(--info);
+  border: none;
+  color: var(--text-inverse);
   border-radius: 20px;
   padding: 8px 16px;
   font-size: 28rpx;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 6rpx 0 #1499d6;
 }
 
-.chat-btn:hover {
-  opacity: 0.9;
-  transform: scale(1.03);
+.chat-btn:active {
+  transform: translateY(3rpx);
+  box-shadow: 0 3rpx 0 #1499d6;
 }
 
 .section-header {

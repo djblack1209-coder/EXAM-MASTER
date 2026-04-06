@@ -181,6 +181,13 @@
 
         <!-- 最近诊断建议 -->
         <view v-if="latestDiagnosis" class="diagnosis-hint apple-glass-card">
+          <!-- 卡通脑电图标装饰 -->
+          <image
+            class="feature-cartoon-icon"
+            src="./static/icons/brain-bolt.png"
+            mode="aspectFit"
+            style="margin-bottom: 12rpx"
+          />
           <text class="hint-title">最近诊断建议</text>
           <text class="hint-text">{{ latestDiagnosis.studyPlan?.immediate || '' }}</text>
           <text v-if="latestDiagnosis.weakPoints?.length" class="hint-weak">
@@ -440,7 +447,7 @@ function goBack() {
 function getMasteryColor(mastery) {
   if (mastery >= 80) return 'var(--success, #34C759)';
   if (mastery >= 50) return 'var(--warning, #FF9500)';
-  return 'var(--danger, #FF3B30)';
+  return 'var(--danger, var(--danger))';
 }
 
 function truncate(str, len) {
@@ -470,16 +477,16 @@ onMounted(() => {
 <style scoped>
 .smart-review-container {
   min-height: 100vh;
-  background: var(--bg-page, linear-gradient(180deg, #f5f5f7 0%, #eeeef0 50%, #f5f5f7 100%));
+  background: var(--background);
   padding-bottom: env(safe-area-inset-bottom);
-  --text-primary: var(--text-main, #1c1c1e);
-  --text-secondary: var(--text-sub, #8e8e93);
-  --bg-card: var(--bg-card-alpha, rgba(0, 0, 0, 0.03));
+  --text-primary: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --bg-card: #ffffff;
   /* 语义色映射：引用全局 design tokens，保持 iOS 色调作为回退值 */
   --red: var(--em-error, #ff453a);
   --orange: var(--em-warning, #ff9f0a);
   --blue: var(--em-info, #32ade6);
-  --green: var(--em-success, #34c759);
+  --green: #58cc02;
 }
 
 /* [OK] [P1重构] 暗色模式适配 — 不再硬编码，跟随主题系统 */
@@ -501,8 +508,9 @@ onMounted(() => {
   align-items: center;
   padding: 16rpx 32rpx;
   backdrop-filter: saturate(180%) blur(40rpx);
-  background: rgba(245, 245, 247, 0.72);
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 /* [OK] 暗色模式导航栏 */
 .dark-mode .top-nav {
@@ -579,11 +587,11 @@ onMounted(() => {
 /* 玻璃卡片 */
 .apple-glass-card {
   background: var(--bg-card);
-  border-radius: 32rpx;
+  border-radius: 28rpx;
   padding: 32rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid rgba(0, 0, 0, 0.06);
-  backdrop-filter: blur(20rpx);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .dark-mode .apple-glass-card {
   border-color: rgba(255, 255, 255, 0.08);
@@ -624,7 +632,7 @@ onMounted(() => {
 }
 .ring-num {
   font-size: 52rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
@@ -646,7 +654,7 @@ onMounted(() => {
 }
 .hero-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .hero-sub {
@@ -717,15 +725,19 @@ onMounted(() => {
   padding: 8rpx 0 16rpx;
 }
 .btn-start-review {
-  background: linear-gradient(135deg, var(--success), var(--wise-green));
-  color: var(--text-inverse, #fff);
+  background: #58cc02;
+  color: var(--text-inverse);
   border: none;
   border-radius: 28rpx;
   height: 96rpx;
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   width: 100%;
-  box-shadow: 0 8rpx 32rpx rgba(52, 199, 89, 0.3);
+  box-shadow: 0 8rpx 0 #46a302;
+}
+.btn-start-review:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 /* 区块 */
@@ -771,7 +783,7 @@ onMounted(() => {
 }
 .section-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   flex: 1;
 }
@@ -782,15 +794,15 @@ onMounted(() => {
   font-weight: 600;
 }
 .badge-red {
-  background: rgba(255, 69, 58, 0.15);
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
   color: var(--red);
 }
 .badge-orange {
-  background: rgba(255, 159, 10, 0.15);
+  background: color-mix(in srgb, var(--warning) 15%, transparent);
   color: var(--orange);
 }
 .badge-blue {
-  background: rgba(50, 173, 230, 0.15);
+  background: color-mix(in srgb, var(--info) 15%, transparent);
   color: var(--blue);
 }
 .section-hint {
@@ -830,7 +842,7 @@ onMounted(() => {
 }
 .card-kp {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   flex: 1;
 }
@@ -838,7 +850,7 @@ onMounted(() => {
   display: flex;
   align-items: baseline;
   /* gap: 4rpx; */
-  background: rgba(255, 69, 58, 0.12);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
   padding: 4rpx 16rpx;
   border-radius: 16rpx;
 }
@@ -847,7 +859,7 @@ onMounted(() => {
 }
 .error-num {
   font-size: 28rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--red);
 }
 .error-label {
@@ -948,9 +960,9 @@ onMounted(() => {
 }
 .btn-practice {
   margin-top: 40rpx;
-  background: rgba(52, 199, 89, 0.12);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
   color: var(--green);
-  border: 1rpx solid rgba(52, 199, 89, 0.2);
+  border: 1rpx solid color-mix(in srgb, var(--success) 20%, transparent);
   border-radius: 24rpx;
   padding: 20rpx 48rpx;
   font-size: 28rpx;
@@ -978,5 +990,10 @@ onMounted(() => {
   color: var(--orange);
   margin-top: 12rpx;
   display: block;
+}
+/* 卡通图标通用样式 */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
 }
 </style>

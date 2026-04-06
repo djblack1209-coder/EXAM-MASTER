@@ -187,8 +187,8 @@ function handleRestart() {
 .header-icon {
   width: 100rpx;
   height: 100rpx;
-  background: rgba(52, 199, 89, 0.12);
-  border: 1px solid rgba(52, 199, 89, 0.18);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
   border-radius: 50%;
   display: flex;
   align-items: center;

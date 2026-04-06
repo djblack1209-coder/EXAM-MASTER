@@ -3,9 +3,10 @@
     <view
       id="e2e-home-stat-questions"
       :class="['stat-card', 'apple-glass-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+      style="--card-accent: #58cc02"
       @tap="$emit('stat-click', 'questions')"
     >
-      <view class="stat-icon-wrapper icon-primary">
+      <view class="stat-icon-wrapper">
         <BaseIcon name="check" :size="48" />
       </view>
       <view class="stat-content">
@@ -20,9 +21,10 @@
     <view
       id="e2e-home-stat-accuracy"
       :class="['stat-card', 'apple-glass-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+      style="--card-accent: var(--info)"
       @tap="$emit('stat-click', 'accuracy')"
     >
-      <view class="stat-icon-wrapper icon-success">
+      <view class="stat-icon-wrapper">
         <BaseIcon name="chart-up" :size="48" />
       </view>
       <view class="stat-content">
@@ -37,9 +39,10 @@
     <view
       id="e2e-home-stat-streak"
       :class="['stat-card', 'apple-glass-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+      style="--card-accent: var(--warning)"
       @tap="$emit('stat-click', 'streak')"
     >
-      <view class="stat-icon-wrapper icon-warning">
+      <view class="stat-icon-wrapper">
         <BaseIcon name="lightning" :size="48" />
       </view>
       <view class="stat-content">
@@ -54,9 +57,10 @@
     <view
       id="e2e-home-stat-achievements"
       :class="['stat-card', 'apple-glass-card', isDark ? 'glass' : 'card-light', 'card-hover']"
+      style="--card-accent: var(--purple-light, #ce82ff)"
       @tap="$emit('stat-click', 'achievements')"
     >
-      <view class="stat-icon-wrapper icon-neutral">
+      <view class="stat-icon-wrapper">
         <BaseIcon name="trophy" :size="48" />
       </view>
       <view class="stat-content">
@@ -86,10 +90,22 @@ defineEmits(['stat-click']);
 </script>
 
 <style lang="scss" scoped>
+/* ── 入场动画 ── */
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18rpx;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -9rpx;
   margin-bottom: 44rpx;
 }
 
@@ -101,36 +117,48 @@ defineEmits(['stat-click']);
 }
 
 .card-light {
-  background: linear-gradient(160deg, var(--bg-card, #ffffff) 0%, var(--bg-card-tinted, #f4faf6) 100%);
+  background: var(--bg-card);
 }
 
 .card-hover:active {
-  transform: translateY(-2rpx) scale(0.99);
-  box-shadow: var(--shadow-md);
+  transform: scale(0.96);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
 .stat-card {
   position: relative;
   overflow: hidden;
-  border-radius: 28rpx;
+  width: calc(50% - 18rpx);
+  margin: 9rpx;
+  border-radius: 24rpx;
   padding: 32rpx;
   display: flex;
   flex-direction: column;
-  /* gap: 16rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
+  /* gap: 16rpx; -- 微信 WXSS 不支持 */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 220rpx;
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+
+  /* 交错入场动画 */
+  opacity: 0;
+  animation: cardFadeIn 0.4s ease-out both;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+.stat-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.stat-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.stat-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.stat-card:nth-child(4) {
+  animation-delay: 0.2s;
 }
 
 .stat-icon-wrapper {
@@ -141,43 +169,13 @@ defineEmits(['stat-click']);
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
-}
-
-.icon-primary {
-  background: var(--primary-light);
-}
-
-.icon-success {
-  background: var(--success-light);
-}
-
-.icon-warning {
-  background: var(--warning-light);
-}
-
-.icon-neutral {
-  background: var(--muted);
+  background: color-mix(in srgb, var(--card-accent) 12%, transparent);
 }
 
 .glass .stat-icon-wrapper {
   border: none;
   box-shadow: none;
-}
-
-.glass .icon-primary {
-  background: var(--primary-light);
-}
-
-.glass .icon-success {
-  background: var(--success-light);
-}
-
-.glass .icon-warning {
-  background: var(--warning-light);
-}
-
-.glass .icon-neutral {
-  background: var(--muted);
+  background: color-mix(in srgb, var(--card-accent) 12%, transparent);
 }
 
 .stat-icon {
@@ -187,7 +185,7 @@ defineEmits(['stat-click']);
 .stat-content {
   display: flex;
   flex-direction: column;
-  /* gap: 8rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
+  /* gap: 8rpx; -- 微信 WXSS 不支持 */
 }
 
 .stat-content > .stat-title {
@@ -206,8 +204,8 @@ defineEmits(['stat-click']);
 }
 
 .stat-value {
-  font-size: 46rpx;
-  font-weight: 680;
+  font-size: 48rpx;
+  font-weight: 800;
   letter-spacing: -0.3rpx;
   color: var(--text-primary);
   line-height: 1.2;
@@ -227,15 +225,22 @@ defineEmits(['stat-click']);
   color: var(--text-sub);
 }
 
+/* ── 暗黑模式下数值颜色回退 ── */
+.glass .stat-value {
+  color: var(--text-primary);
+}
+
 @media screen and (max-width: 375px) {
   .stats-grid {
-    gap: 14rpx;
+    margin: 0 -7rpx;
     margin-bottom: 36rpx;
   }
 
   .stat-card {
+    width: calc(50% - 14rpx);
+    margin: 7rpx;
     padding: 24rpx;
-    border-radius: 24rpx;
+    border-radius: 20rpx;
     min-height: 200rpx;
   }
 

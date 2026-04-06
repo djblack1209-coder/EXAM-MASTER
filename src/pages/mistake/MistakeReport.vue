@@ -86,7 +86,9 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, nextTick, getCurrentInstance, onBeforeUnmount } from 'vue';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { useSchoolStore } from '@/stores/modules/school.js';
 import { storageService } from '@/services/storageService.js';
@@ -103,447 +105,460 @@ import {
 } from './canvas-report.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'MistakeReport',
-  components: { BaseIcon },
-  props: {
-    /** 错题列表 */
-    mistakes: {
-      type: Array,
-      default: () => []
-    },
-    /** 用户信息 */
-    userInfo: {
-      type: Object,
-      default: () => ({})
-    },
-    /** 是否深色模式 */
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+// --- Props 定义 ---
+const props = defineProps({
+  /** 错题列表 */
+  mistakes: {
+    type: Array,
+    default: () => []
   },
-  data() {
-    return {
-      isGenerating: false,
-      showReportModal: false,
-      reportImagePath: '',
-      // E010: Canvas 不可用时的文本降级内容
-      reportTextContent: '',
-      showCustomLoading: false,
-      cachedBankData: null,
-      cachedBankTimestamp: 0
-    };
+  /** 用户信息 */
+  userInfo: {
+    type: Object,
+    default: () => ({})
   },
-  computed: {
-    hasMistakes() {
-      return this.mistakes && this.mistakes.length > 0;
-    }
-  },
-  methods: {
-    async prepareReport() {
-      if (this.mistakes.length === 0) {
-        return toast.info('先刷题积累错题才能生成报告哦');
+  /** 是否深色模式 */
+  isDark: {
+    type: Boolean,
+    default: false
+  }
+});
+
+// --- 获取组件实例（Canvas API 需要传入 this） ---
+const instance = getCurrentInstance();
+
+// --- 响应式状态 ---
+const isGenerating = ref(false);
+const showReportModal = ref(false);
+const reportImagePath = ref('');
+// E010: Canvas 不可用时的文本降级内容
+const reportTextContent = ref('');
+const showCustomLoading = ref(false);
+let cachedBankData = null;
+let cachedBankTimestamp = 0;
+
+// 关闭弹窗的延时器引用（非响应式）
+let closeTimer = null;
+
+// --- 计算属性 ---
+const hasMistakes = computed(() => {
+  return props.mistakes && props.mistakes.length > 0;
+});
+
+// --- 生命周期 ---
+onBeforeUnmount(() => {
+  // 清理关闭弹窗的延时器，防止组件销毁后仍执行回调
+  if (closeTimer) clearTimeout(closeTimer);
+});
+
+// --- 方法 ---
+
+/** 准备并生成智能诊断报告 */
+async function prepareReport() {
+  if (props.mistakes.length === 0) {
+    return toast.info('先刷题积累错题才能生成报告哦');
+  }
+
+  if (isGenerating.value) return;
+
+  isGenerating.value = true;
+  showCustomLoading.value = true;
+  showReportModal.value = false;
+  reportImagePath.value = '';
+  reportTextContent.value = '';
+
+  const mistakeSummary = props.mistakes
+    .map((m, i) => {
+      const questionText = (m.question || m.question_content || m.title || '题目内容').substring(0, 50);
+      const safeQuestionText = questionText.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
+      const category = m.category || '未分类';
+      const safeCategory = category.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
+      return i + 1 + '. [' + safeCategory + '] ' + safeQuestionText;
+    })
+    .join('\n');
+
+  let isTimeoutHandled = false;
+  const timeoutId = setTimeout(() => {
+    if (isTimeoutHandled) return;
+    isTimeoutHandled = true;
+
+    logger.warn('[MistakeReport] 智能诊断报告生成超时（30秒）');
+    showCustomLoading.value = false;
+    isGenerating.value = false;
+
+    modal.show({
+      title: '智能分析超时',
+      content: '网络较慢，是否使用本地数据生成简化报告？',
+      confirmText: '生成简化版',
+      cancelText: '稍后重试',
+      success: (res) => {
+        if (res.confirm) {
+          generateLocalReport();
+        }
       }
+    });
+  }, 30000);
 
-      if (this.isGenerating) return;
+  try {
+    const schoolStore = useSchoolStore();
+    const response = await schoolStore.aiRecommend('report', {
+      userName: props.userInfo.nickName || '考研人',
+      mistakeSummary: mistakeSummary,
+      mistakeCount: props.mistakes.length
+    });
 
-      this.isGenerating = true;
-      this.showCustomLoading = true;
-      this.showReportModal = false;
-      this.reportImagePath = '';
-      this.reportTextContent = '';
+    clearTimeout(timeoutId);
+    if (isTimeoutHandled) {
+      logger.log('[MistakeReport] 超时已处理，跳过正常响应处理');
+      return;
+    }
 
-      const mistakeSummary = this.mistakes
-        .map((m, i) => {
-          const questionText = (m.question || m.question_content || m.title || '题目内容').substring(0, 50);
-          const safeQuestionText = questionText.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
-          const category = m.category || '未分类';
-          const safeCategory = category.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
-          return i + 1 + '. [' + safeCategory + '] ' + safeQuestionText;
-        })
-        .join('\n');
+    if (response.code === 0 && response.data) {
+      const reportText = response.data.trim();
+      const finalReportText = typeof reportText === 'string' ? reportText : JSON.stringify(reportText);
 
-      let isTimeoutHandled = false;
-      const timeoutId = setTimeout(() => {
-        if (isTimeoutHandled) return;
-        isTimeoutHandled = true;
+      try {
+        await drawReport(finalReportText);
+        logger.log('[MistakeReport] 报告生成完成');
+      } catch (drawError) {
+        logger.error('[MistakeReport] 绘制报告失败:', drawError);
+        showCustomLoading.value = false;
+        isGenerating.value = false;
+      }
+    } else {
+      logger.error('[MistakeReport] 智能报告生成失败:', response.message);
+      showCustomLoading.value = false;
+      isGenerating.value = false;
+      toast.info('报告生成失败，请重试', 3000);
+    }
+  } catch (_e) {
+    logger.error('[MistakeReport] 智能报告生成失败', _e);
+    showCustomLoading.value = false;
+    isGenerating.value = false;
 
-        logger.warn('[MistakeReport] 智能诊断报告生成超时（30秒）');
-        this.showCustomLoading = false;
-        this.isGenerating = false;
+    let errorMsg = '网络错误，请检查网络后重试';
+    if (_e.message && _e.message.includes('timeout')) {
+      errorMsg = '请求超时，请稍后重试';
+    } else if (_e.message && _e.message.includes('401')) {
+      errorMsg = '智能服务配置异常，请联系管理员';
+    } else if (_e.message && _e.message.includes('500')) {
+      errorMsg = '服务器错误，请稍后重试';
+    } else if (_e.message && _e.message.includes('JSON')) {
+      errorMsg = '数据解析失败，请重试';
+    }
 
-        uni.showModal({
-          title: '智能分析超时',
-          content: '网络较慢，是否使用本地数据生成简化报告？',
-          confirmText: '生成简化版',
-          cancelText: '稍后重试',
+    toast.info(errorMsg, 3000);
+  }
+}
+
+/** 关闭报告弹窗 */
+function closeReport() {
+  logger.log('[MistakeReport] 关闭报告弹窗');
+  showReportModal.value = false;
+  // 记录定时器引用，便于 onBeforeUnmount 时清理
+  closeTimer = setTimeout(() => {
+    reportImagePath.value = '';
+    reportTextContent.value = '';
+  }, 300);
+}
+
+/** 图片加载失败回调 */
+function handleImageError(e) {
+  logger.error('[MistakeReport] 图片加载失败:', e);
+  toast.info('图片加载失败');
+  showReportModal.value = false;
+}
+
+/** 图片加载成功回调 */
+function handleImageLoad() {
+  logger.log('[MistakeReport] 图片加载成功');
+}
+
+/** 保存报告图片到相册 */
+function saveReport() {
+  if (!reportImagePath.value) return;
+
+  // #ifdef MP-WEIXIN
+  uni.saveImageToPhotosAlbum({
+    filePath: reportImagePath.value,
+    success: () => {
+      toast.success('已保存到相册');
+      showReportModal.value = false;
+    },
+    fail: (err) => {
+      logger.error(err);
+      if (err.errMsg && err.errMsg.includes('auth')) {
+        modal.show({
+          title: '提示',
+          content: '需要保存到相册权限',
           success: (res) => {
-            if (res.confirm) {
-              this.generateLocalReport();
-            }
+            if (res.confirm) uni.openSetting();
           }
         });
-      }, 30000);
-
-      try {
-        const schoolStore = useSchoolStore();
-        const response = await schoolStore.aiRecommend('report', {
-          userName: this.userInfo.nickName || '考研人',
-          mistakeSummary: mistakeSummary,
-          mistakeCount: this.mistakes.length
-        });
-
-        clearTimeout(timeoutId);
-        if (isTimeoutHandled) {
-          logger.log('[MistakeReport] 超时已处理，跳过正常响应处理');
-          return;
-        }
-
-        if (response.code === 0 && response.data) {
-          const reportText = response.data.trim();
-          const finalReportText = typeof reportText === 'string' ? reportText : JSON.stringify(reportText);
-
-          try {
-            await this.drawReport(finalReportText);
-            logger.log('[MistakeReport] 报告生成完成');
-          } catch (drawError) {
-            logger.error('[MistakeReport] 绘制报告失败:', drawError);
-            this.showCustomLoading = false;
-            this.isGenerating = false;
-          }
-        } else {
-          logger.error('[MistakeReport] 智能报告生成失败:', response.message);
-          this.showCustomLoading = false;
-          this.isGenerating = false;
-          toast.info('报告生成失败，请重试', 3000);
-        }
-      } catch (_e) {
-        logger.error('[MistakeReport] 智能报告生成失败', _e);
-        this.showCustomLoading = false;
-        this.isGenerating = false;
-
-        let errorMsg = '网络错误，请检查网络后重试';
-        if (_e.message && _e.message.includes('timeout')) {
-          errorMsg = '请求超时，请稍后重试';
-        } else if (_e.message && _e.message.includes('401')) {
-          errorMsg = '智能服务配置异常，请联系管理员';
-        } else if (_e.message && _e.message.includes('500')) {
-          errorMsg = '服务器错误，请稍后重试';
-        } else if (_e.message && _e.message.includes('JSON')) {
-          errorMsg = '数据解析失败，请重试';
-        }
-
-        toast.info(errorMsg, 3000);
+      } else {
+        toast.info('保存失败');
       }
+    }
+  });
+  // #endif
+
+  // #ifndef MP-WEIXIN
+  uni.saveImageToPhotosAlbum({
+    filePath: reportImagePath.value,
+    success: () => {
+      toast.success('已保存到相册');
+      showReportModal.value = false;
     },
+    fail: (_err) => {
+      toast.info('保存失败');
+    }
+  });
+  // #endif
+}
 
-    closeReport() {
-      logger.log('[MistakeReport] 关闭报告弹窗');
-      this.showReportModal = false;
-      setTimeout(() => {
-        this.reportImagePath = '';
-        this.reportTextContent = '';
-      }, 300);
-    },
+/** 绘制 Canvas 报告图片 */
+function drawReport(aiSummary) {
+  return new Promise((resolve, reject) => {
+    // E010: Canvas 兼容性检测 — 不支持时走文本降级
+    if (typeof uni.createCanvasContext !== 'function') {
+      logger.warn('[MistakeReport] drawReport: 当前平台不支持 createCanvasContext，使用文本降级');
+      reportTextContent.value = aiSummary || '报告生成失败';
+      reportImagePath.value = '';
+      showCustomLoading.value = false;
+      isGenerating.value = false;
+      showReportModal.value = true;
+      return resolve('text-fallback');
+    }
 
-    handleImageError(e) {
-      logger.error('[MistakeReport] 图片加载失败:', e);
-      toast.info('图片加载失败');
-      this.showReportModal = false;
-    },
+    if (!aiSummary || typeof aiSummary !== 'string') {
+      logger.error('[MistakeReport] drawReport: aiSummary必须是字符串', typeof aiSummary);
+      aiSummary = String(aiSummary || '报告生成失败，请重试');
+    }
 
-    handleImageLoad() {
-      logger.log('[MistakeReport] 图片加载成功');
-    },
+    logger.log('[MistakeReport] 开始绘制报告，内容长度:', aiSummary.length);
 
-    saveReport() {
-      if (!this.reportImagePath) return;
+    try {
+      // uni-app Composition API 中需要传入组件实例的 proxy 作为第二个参数
+      const ctx = uni.createCanvasContext('reportCanvas', instance.proxy);
+      if (!ctx) throw new Error('Canvas上下文创建失败');
 
-      // #ifdef MP-WEIXIN
-      uni.saveImageToPhotosAlbum({
-        filePath: this.reportImagePath,
-        success: () => {
-          toast.success('已保存到相册');
-          this.showReportModal = false;
-        },
-        fail: (err) => {
-          logger.error(err);
-          if (err.errMsg && err.errMsg.includes('auth')) {
-            uni.showModal({
-              title: '提示',
-              content: '需要保存到相册权限',
-              success: (res) => {
-                if (res.confirm) uni.openSetting();
-              }
+      const theme = getCanvasTheme(props.isDark);
+
+      // ✅ F011: 使用提取的工具函数绘制背景
+      drawReportBackground(ctx, 750, 1334, theme, props.isDark);
+
+      // ✅ F011: 使用 drawLabel 消除重复的文本绘制模式
+      drawLabel(ctx, 'Exam Master', 50, 150, { fontSize: 48, color: theme.titleColor });
+      drawLabel(ctx, '智能诊断报告', 50, 200, { fontSize: 28, color: theme.subText });
+
+      drawCard(ctx, 50, 250, 650, 180, 30, theme.cardBg, props.isDark);
+
+      const userName = props.userInfo.nickName || '考研人';
+      drawLabel(ctx, userName, 100, 330, { fontSize: 42, color: theme.mainText });
+
+      const now = new Date();
+      const dateStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
+      drawLabel(ctx, '错题总数：' + props.mistakes.length + ' 道  |  生成日期：' + dateStr, 100, 390, {
+        fontSize: 26,
+        color: theme.subText
+      });
+
+      const capabilityData = calculateCapabilityData();
+      if (capabilityData && capabilityData.length > 0) {
+        drawLabel(ctx, '学科能力模型', 80, 490, { fontSize: 32, color: theme.mainText });
+        drawRadar(ctx, 375, 730, 160, capabilityData, theme);
+      }
+
+      drawLabel(ctx, '智能深度诊断', 50, 1000, { fontSize: 32, color: theme.titleColor });
+
+      drawDivider(ctx, 50, 700, 1020, theme.dividerColor);
+
+      ctx.setFillStyle(theme.mainText);
+      ctx.setFontSize(28);
+      drawText(ctx, aiSummary, 80, 1060, 590, 50);
+
+      drawLabel(ctx, '汗水铸就辉煌 · 智能伴你上岸', 375, 1330, {
+        fontSize: 24,
+        color: theme.subText,
+        align: 'center'
+      });
+
+      ctx.draw(false, () => {
+        logger.log('[MistakeReport] Canvas绘制完成');
+
+        canvasToImage('reportCanvas', instance.proxy)
+          .then((imagePath) => {
+            logger.log('[MistakeReport] 图片路径:', imagePath);
+
+            reportImagePath.value = imagePath;
+            showCustomLoading.value = false;
+            isGenerating.value = false;
+
+            showReportModal.value = true;
+            nextTick(() => {
+              resolve(imagePath);
             });
-          } else {
-            toast.info('保存失败');
-          }
-        }
-      });
-      // #endif
-
-      // #ifndef MP-WEIXIN
-      uni.saveImageToPhotosAlbum({
-        filePath: this.reportImagePath,
-        success: () => {
-          toast.success('已保存到相册');
-          this.showReportModal = false;
-        },
-        fail: (_err) => {
-          toast.info('保存失败');
-        }
-      });
-      // #endif
-    },
-
-    drawReport(aiSummary) {
-      return new Promise((resolve, reject) => {
-        // E010: Canvas 兼容性检测 — 不支持时走文本降级
-        if (typeof uni.createCanvasContext !== 'function') {
-          logger.warn('[MistakeReport] drawReport: 当前平台不支持 createCanvasContext，使用文本降级');
-          this.reportTextContent = aiSummary || '报告生成失败';
-          this.reportImagePath = '';
-          this.showCustomLoading = false;
-          this.isGenerating = false;
-          this.showReportModal = true;
-          return resolve('text-fallback');
-        }
-
-        if (!aiSummary || typeof aiSummary !== 'string') {
-          logger.error('[MistakeReport] drawReport: aiSummary必须是字符串', typeof aiSummary);
-          aiSummary = String(aiSummary || '报告生成失败，请重试');
-        }
-
-        logger.log('[MistakeReport] 开始绘制报告，内容长度:', aiSummary.length);
-
-        try {
-          const ctx = uni.createCanvasContext('reportCanvas', this);
-          if (!ctx) throw new Error('Canvas上下文创建失败');
-
-          const theme = getCanvasTheme(this.isDark);
-
-          // ✅ F011: 使用提取的工具函数绘制背景
-          drawReportBackground(ctx, 750, 1334, theme, this.isDark);
-
-          // ✅ F011: 使用 drawLabel 消除重复的文本绘制模式
-          drawLabel(ctx, 'Exam Master', 50, 150, { fontSize: 48, color: theme.titleColor });
-          drawLabel(ctx, '智能诊断报告', 50, 200, { fontSize: 28, color: theme.subText });
-
-          drawCard(ctx, 50, 250, 650, 180, 30, theme.cardBg, this.isDark);
-
-          const userName = this.userInfo.nickName || '考研人';
-          drawLabel(ctx, userName, 100, 330, { fontSize: 42, color: theme.mainText });
-
-          const now = new Date();
-          const dateStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() + '日';
-          drawLabel(ctx, '错题总数：' + this.mistakes.length + ' 道  |  生成日期：' + dateStr, 100, 390, {
-            fontSize: 26,
-            color: theme.subText
-          });
-
-          const capabilityData = this.calculateCapabilityData();
-          if (capabilityData && capabilityData.length > 0) {
-            drawLabel(ctx, '学科能力模型', 80, 490, { fontSize: 32, color: theme.mainText });
-            drawRadar(ctx, 375, 730, 160, capabilityData, theme);
-          }
-
-          drawLabel(ctx, '智能深度诊断', 50, 1000, { fontSize: 32, color: theme.titleColor });
-
-          drawDivider(ctx, 50, 700, 1020, theme.dividerColor);
-
-          ctx.setFillStyle(theme.mainText);
-          ctx.setFontSize(28);
-          drawText(ctx, aiSummary, 80, 1060, 590, 50);
-
-          drawLabel(ctx, '汗水铸就辉煌 · 智能伴你上岸', 375, 1330, {
-            fontSize: 24,
-            color: theme.subText,
-            align: 'center'
-          });
-
-          ctx.draw(false, () => {
-            logger.log('[MistakeReport] Canvas绘制完成');
-
-            canvasToImage('reportCanvas', this)
-              .then((imagePath) => {
-                logger.log('[MistakeReport] 图片路径:', imagePath);
-
-                this.reportImagePath = imagePath;
-                this.showCustomLoading = false;
-                this.isGenerating = false;
-
-                this.showReportModal = true;
-                this.$nextTick(() => {
-                  resolve(imagePath);
-                });
-              })
-              .catch((err) => {
-                logger.error('[MistakeReport] Canvas导出失败:', err);
-                this.showCustomLoading = false;
-                this.isGenerating = false;
-                toast.info('图片生成失败：', 3000);
-                reject(err);
-              });
-          });
-        } catch (error) {
-          logger.error('[MistakeReport] drawReport执行失败:', error);
-          this.showCustomLoading = false;
-          this.isGenerating = false;
-          toast.info('报告生成失败：', 3000);
-          reject(error);
-        }
-      });
-    },
-
-    calculateCapabilityData() {
-      const now = Date.now();
-      const CACHE_TTL = 5 * 60 * 1000;
-
-      let allQuestions = this.cachedBankData;
-      if (!allQuestions || now - this.cachedBankTimestamp > CACHE_TTL) {
-        allQuestions = storageService.get('v30_bank', []) || [];
-        this.cachedBankData = allQuestions;
-        this.cachedBankTimestamp = now;
-        logger.log('[MistakeReport] calculateCapabilityData: 从storage刷新题库缓存，共', allQuestions.length, '题');
-      }
-      const mistakes = this.mistakes || [];
-
-      // ✅ F021: 当题库为空但有错题时，从错题数据计算能力值（而非返回空数组）
-      if (!allQuestions || allQuestions.length === 0) {
-        if (mistakes.length === 0) return [];
-
-        // 按分类统计错题数量，错题越多该分类能力越低
-        const mistakeStats = {};
-        mistakes.forEach((m) => {
-          if (!m) return;
-          const cat = m.category || '其他';
-          if (!mistakeStats[cat]) mistakeStats[cat] = 0;
-          mistakeStats[cat]++;
-        });
-
-        const maxMistakes = Math.max(...Object.values(mistakeStats), 1);
-        const data = Object.keys(mistakeStats).map((cat) => {
-          // 错题占比越高，能力值越低（最低0.3）
-          const ratio = mistakeStats[cat] / maxMistakes;
-          return {
-            category: cat,
-            rate: Math.max(0.3, 1 - ratio * 0.7)
-          };
-        });
-
-        return data.sort((a, b) => b.rate - a.rate).slice(0, 6);
-      }
-
-      const stats = {};
-      allQuestions.forEach((q) => {
-        if (!q) return;
-        const cat = q.category || '其他';
-        if (!stats[cat]) stats[cat] = { total: 0, mistakes: 0 };
-        stats[cat].total++;
-      });
-
-      mistakes.forEach((m) => {
-        if (!m) return;
-        const cat = m.category || '其他';
-        if (stats[cat]) stats[cat].mistakes++;
-      });
-
-      const data = Object.keys(stats).map((cat) => {
-        const total = stats[cat].total || 1;
-        const correctRate = (total - stats[cat].mistakes) / total;
-        return {
-          category: cat,
-          rate: Math.max(0.3, correctRate || 0.3)
-        };
-      });
-
-      return data.sort((a, b) => b.rate - a.rate).slice(0, 6);
-    },
-
-    generateLocalReport() {
-      logger.log('[MistakeReport] 开始生成本地简化版报告');
-
-      this.isGenerating = true;
-      this.showCustomLoading = true;
-
-      try {
-        const categoryStats = {};
-        this.mistakes.forEach((m) => {
-          const cat = m.category || '未分类';
-          if (!categoryStats[cat]) {
-            categoryStats[cat] = { count: 0, questions: [] };
-          }
-          categoryStats[cat].count++;
-          categoryStats[cat].questions.push(m.question || m.question_content || '题目');
-        });
-
-        const sortedCategories = Object.entries(categoryStats).sort((a, b) => b[1].count - a[1].count);
-
-        const weakestCategory = sortedCategories[0] ? sortedCategories[0][0] : '未知';
-        const weakestCount = sortedCategories[0] ? sortedCategories[0][1].count : 0;
-
-        const userName = this.userInfo.nickName || '考研人';
-        const totalMistakes = this.mistakes.length;
-        const categoryCount = Object.keys(categoryStats).length;
-
-        let reportText = '错题诊断报告（简化版）\n\n';
-        reportText += '亲爱的' + userName + '，\n\n';
-        reportText += '错题总数：' + totalMistakes + ' 道\n';
-        reportText += '涉及分类：' + categoryCount + ' 个\n\n';
-        reportText += '薄弱环节：' + weakestCategory + '（' + weakestCount + '道错题）\n\n';
-        reportText += '各分类错题分布：\n';
-
-        sortedCategories.slice(0, 5).forEach(([cat, data], idx) => {
-          const percentage = Math.round((data.count / totalMistakes) * 100);
-          reportText += idx + 1 + '. ' + cat + '：' + data.count + '道（' + percentage + '%）\n';
-        });
-
-        reportText += '\n建议：\n';
-        reportText += '1. 重点复习「' + weakestCategory + '」相关知识点\n';
-        reportText += '2. 每日坚持错题重练，巩固薄弱环节\n';
-        reportText += '3. 建议使用错题重练功能逐题攻克\n\n';
-        reportText += '加油！坚持就是胜利！';
-
-        this.drawReport(reportText)
-          .then(() => {
-            logger.log('[MistakeReport] 本地简化版报告生成成功');
           })
           .catch((err) => {
-            logger.error('[MistakeReport] 本地报告绘制失败:', err);
-            this.showCustomLoading = false;
-            this.isGenerating = false;
-            toast.info('报告生成失败');
+            logger.error('[MistakeReport] Canvas导出失败:', err);
+            showCustomLoading.value = false;
+            isGenerating.value = false;
+            toast.info('图片生成失败：', 3000);
+            reject(err);
           });
-      } catch (error) {
-        logger.error('[MistakeReport] 本地报告生成异常:', error);
-        this.showCustomLoading = false;
-        this.isGenerating = false;
-        toast.info('报告生成失败：');
-      }
-    },
-
-    retryGenerateReport() {
-      logger.log('[MistakeReport] 重试生成智能报告');
-      this.prepareReport();
-    },
-
-    // E010: Canvas 不可用时复制报告文本
-    copyReportText() {
-      if (!this.reportTextContent) return;
-      uni.setClipboardData({
-        data: this.reportTextContent,
-        success: () => {
-          toast.success('报告已复制到剪贴板');
-        },
-        fail: () => {
-          toast.info('复制失败');
-        }
       });
+    } catch (error) {
+      logger.error('[MistakeReport] drawReport执行失败:', error);
+      showCustomLoading.value = false;
+      isGenerating.value = false;
+      toast.info('报告生成失败：', 3000);
+      reject(error);
     }
+  });
+}
+
+/** 计算学科能力雷达图数据 */
+function calculateCapabilityData() {
+  const now = Date.now();
+  const CACHE_TTL = 5 * 60 * 1000;
+
+  let allQuestions = cachedBankData;
+  if (!allQuestions || now - cachedBankTimestamp > CACHE_TTL) {
+    allQuestions = storageService.get('v30_bank', []) || [];
+    cachedBankData = allQuestions;
+    cachedBankTimestamp = now;
+    logger.log('[MistakeReport] calculateCapabilityData: 从storage刷新题库缓存，共', allQuestions.length, '题');
   }
-};
+  const mistakes = props.mistakes || [];
+
+  // ✅ F021: 当题库为空但有错题时，从错题数据计算能力值（而非返回空数组）
+  if (!allQuestions || allQuestions.length === 0) {
+    if (mistakes.length === 0) return [];
+
+    // 按分类统计错题数量，错题越多该分类能力越低
+    const mistakeStats = {};
+    mistakes.forEach((m) => {
+      if (!m) return;
+      const cat = m.category || '其他';
+      if (!mistakeStats[cat]) mistakeStats[cat] = 0;
+      mistakeStats[cat]++;
+    });
+
+    const maxMistakes = Math.max(...Object.values(mistakeStats), 1);
+    const data = Object.keys(mistakeStats).map((cat) => {
+      // 错题占比越高，能力值越低（最低0.3）
+      const ratio = mistakeStats[cat] / maxMistakes;
+      return {
+        category: cat,
+        rate: Math.max(0.3, 1 - ratio * 0.7)
+      };
+    });
+
+    return data.sort((a, b) => b.rate - a.rate).slice(0, 6);
+  }
+
+  const stats = {};
+  allQuestions.forEach((q) => {
+    if (!q) return;
+    const cat = q.category || '其他';
+    if (!stats[cat]) stats[cat] = { total: 0, mistakes: 0 };
+    stats[cat].total++;
+  });
+
+  mistakes.forEach((m) => {
+    if (!m) return;
+    const cat = m.category || '其他';
+    if (stats[cat]) stats[cat].mistakes++;
+  });
+
+  const data = Object.keys(stats).map((cat) => {
+    const total = stats[cat].total || 1;
+    const correctRate = (total - stats[cat].mistakes) / total;
+    return {
+      category: cat,
+      rate: Math.max(0.3, correctRate || 0.3)
+    };
+  });
+
+  return data.sort((a, b) => b.rate - a.rate).slice(0, 6);
+}
+
+/** 生成本地简化版报告（网络超时时的降级方案） */
+function generateLocalReport() {
+  logger.log('[MistakeReport] 开始生成本地简化版报告');
+
+  isGenerating.value = true;
+  showCustomLoading.value = true;
+
+  try {
+    const categoryStats = {};
+    props.mistakes.forEach((m) => {
+      const cat = m.category || '未分类';
+      if (!categoryStats[cat]) {
+        categoryStats[cat] = { count: 0, questions: [] };
+      }
+      categoryStats[cat].count++;
+      categoryStats[cat].questions.push(m.question || m.question_content || '题目');
+    });
+
+    const sortedCategories = Object.entries(categoryStats).sort((a, b) => b[1].count - a[1].count);
+
+    const weakestCategory = sortedCategories[0] ? sortedCategories[0][0] : '未知';
+    const weakestCount = sortedCategories[0] ? sortedCategories[0][1].count : 0;
+
+    const userName = props.userInfo.nickName || '考研人';
+    const totalMistakes = props.mistakes.length;
+    const categoryCount = Object.keys(categoryStats).length;
+
+    let reportText = '错题诊断报告（简化版）\n\n';
+    reportText += '亲爱的' + userName + '，\n\n';
+    reportText += '错题总数：' + totalMistakes + ' 道\n';
+    reportText += '涉及分类：' + categoryCount + ' 个\n\n';
+    reportText += '薄弱环节：' + weakestCategory + '（' + weakestCount + '道错题）\n\n';
+    reportText += '各分类错题分布：\n';
+
+    sortedCategories.slice(0, 5).forEach(([cat, data], idx) => {
+      const percentage = Math.round((data.count / totalMistakes) * 100);
+      reportText += idx + 1 + '. ' + cat + '：' + data.count + '道（' + percentage + '%）\n';
+    });
+
+    reportText += '\n建议：\n';
+    reportText += '1. 重点复习「' + weakestCategory + '」相关知识点\n';
+    reportText += '2. 每日坚持错题重练，巩固薄弱环节\n';
+    reportText += '3. 建议使用错题重练功能逐题攻克\n\n';
+    reportText += '加油！坚持就是胜利！';
+
+    drawReport(reportText)
+      .then(() => {
+        logger.log('[MistakeReport] 本地简化版报告生成成功');
+      })
+      .catch((err) => {
+        logger.error('[MistakeReport] 本地报告绘制失败:', err);
+        showCustomLoading.value = false;
+        isGenerating.value = false;
+        toast.info('报告生成失败');
+      });
+  } catch (error) {
+    logger.error('[MistakeReport] 本地报告生成异常:', error);
+    showCustomLoading.value = false;
+    isGenerating.value = false;
+    toast.info('报告生成失败：');
+  }
+}
+
+/** E010: Canvas 不可用时复制报告文本 */
+function copyReportText() {
+  if (!reportTextContent.value) return;
+  uni.setClipboardData({
+    data: reportTextContent.value,
+    success: () => {
+      toast.success('报告已复制到剪贴板');
+    },
+    fail: () => {
+      toast.info('复制失败');
+    }
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -724,7 +739,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--mask-dark);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     z-index: 1;
@@ -749,7 +764,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     padding: 30rpx 40rpx;
-    border-bottom: 1rpx solid var(--border, #f0f0f0);
+    border-bottom: 1rpx solid var(--border, var(--muted));
 
     .modal-title {
       font-size: 36rpx;
@@ -798,7 +813,7 @@ export default {
     display: flex;
     /* gap: 20rpx; -- replaced for Android WebView compat */
     padding: 30rpx 40rpx;
-    border-top: 1rpx solid var(--border, #f0f0f0);
+    border-top: 1rpx solid var(--border, var(--muted));
     background: var(--bg-card);
 
     .modal-btn {
@@ -846,7 +861,7 @@ export default {
     text-align: center;
     margin-bottom: 40rpx;
     padding-bottom: 30rpx;
-    border-bottom: 2rpx solid var(--border, #e0e0e0);
+    border-bottom: 2rpx solid var(--border, var(--border));
   }
 
   .report-text-title {
@@ -866,7 +881,7 @@ export default {
   .report-text-userinfo {
     margin-bottom: 30rpx;
     padding: 24rpx;
-    background: var(--bg-secondary, #f5f5f5);
+    background: var(--bg-secondary, var(--bg-secondary));
     border-radius: 16rpx;
   }
 
@@ -899,7 +914,7 @@ export default {
   .report-text-footer {
     text-align: center;
     padding-top: 30rpx;
-    border-top: 2rpx solid var(--border, #e0e0e0);
+    border-top: 2rpx solid var(--border, var(--border));
 
     text {
       font-size: 24rpx;

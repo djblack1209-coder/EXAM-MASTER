@@ -156,8 +156,8 @@ defineEmits(['close', 'select']);
   font-size: 42rpx;
   margin-bottom: 16rpx;
   border-radius: 999rpx;
-  background: rgba(52, 199, 89, 0.12);
-  border: 1px solid rgba(52, 199, 89, 0.18);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
 }
 .practice-mode-name {
   font-size: 28rpx;
@@ -194,7 +194,7 @@ defineEmits(['close', 'select']);
 :global(.dark-mode) .practice-modes-modal-title,
 :global(.dark-mode) .practice-mode-name,
 :global(.dark-mode) .practice-modes-modal-close {
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 :global(.dark-mode) .practice-modes-modal-close,

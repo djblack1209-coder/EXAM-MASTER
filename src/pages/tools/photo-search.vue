@@ -19,6 +19,13 @@
     <!-- 相机/预览区域 -->
     <view class="camera-area" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <view v-if="mode === 'camera'" class="camera-hero">
+        <!-- 卡通搜题图标装饰 -->
+        <image
+          class="hero-cartoon-icon"
+          src="./static/icons/magnify-question.png"
+          mode="aspectFit"
+          style="margin: 0 auto 16rpx; display: block"
+        />
         <text class="camera-eyebrow"> Photo Search </text>
         <text class="camera-hero-title"> 对准题目，一次拍清 </text>
         <text class="camera-hero-subtitle"> 自动识别题干、匹配题库并生成解析 </text>
@@ -236,7 +243,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { onLoad, onUnload, onHide, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { useToolsStore } from '@/stores/modules/tools.js';
 import storageService from '@/services/storageService.js';
@@ -249,221 +259,153 @@ import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { ensureMiniProgramScope, ensurePrivacyAuthorization } from './privacy-authorization.js';
 
-export default {
-  components: { PrivacyPopup },
-  setup() {
-    const toolsStore = useToolsStore();
-    return { toolsStore };
-  },
-  data() {
-    return {
-      statusBarHeight: 44,
-      mode: 'camera', // camera | preview | result
-      previewImage: null,
-      isRecognizing: false,
-      loadingText: '智能正在识别题目...',
-      currentTip: '',
-      result: null,
-      selectedSubject: '',
-      isAddingMistake: false,
-      subjects: [
-        { label: '全部', value: '' },
-        { label: '政治', value: 'politics' },
-        { label: '英语', value: 'english' },
-        { label: '数学', value: 'math' },
-        { label: '专业课', value: 'major' }
-      ],
-      loadingTips: ['正在识别文字...', '正在分析题目结构...', '正在匹配题库...', '正在生成解析...'],
-      isDark: false,
-      tipIndex: 0,
-      tipTimer: null
-    };
-  },
+// ---- Store ----
+const toolsStore = useToolsStore();
 
-  computed: {
-    selectedSubjectLabel() {
-      const found = this.subjects.find((s) => s.value === this.selectedSubject);
-      return found ? found.label : '学科';
+// ---- 响应式状态（原 data） ----
+const statusBarHeight = ref(44);
+const mode = ref('camera'); // camera | preview | result
+const previewImage = ref(null);
+const isRecognizing = ref(false);
+const loadingText = ref('智能正在识别题目...');
+const currentTip = ref('');
+const result = ref(null);
+const selectedSubject = ref('');
+const isAddingMistake = ref(false);
+const isDark = ref(false);
+
+// 提示轮换相关（非响应式即可）
+let tipIndex = 0;
+let tipTimer = null;
+
+// ---- 常量 ----
+const subjects = [
+  { label: '全部', value: '' },
+  { label: '政治', value: 'politics' },
+  { label: '英语', value: 'english' },
+  { label: '数学', value: 'math' },
+  { label: '专业课', value: 'major' }
+];
+const loadingTips = ['正在识别文字...', '正在分析题目结构...', '正在匹配题库...', '正在生成解析...'];
+
+// ---- 计算属性 ----
+const selectedSubjectLabel = computed(() => {
+  const found = subjects.find((s) => s.value === selectedSubject.value);
+  return found ? found.label : '学科';
+});
+
+// ---- 分享 ----
+onShareAppMessage(() => ({
+  title: 'AI 拍照搜题 - 拍一拍，秒解数学难题',
+  path: '/pages/tools/photo-search',
+  imageUrl: '/static/images/logo.png'
+}));
+onShareTimeline(() => ({
+  title: 'AI 拍照搜题 - 备考神器，免费使用',
+  query: ''
+}));
+
+// ---- 主题监听回调（需要引用以便卸载） ----
+let themeHandler = null;
+
+// ---- 生命周期 ----
+onLoad(() => {
+  statusBarHeight.value = getStatusBarHeight();
+  isDark.value = initTheme();
+  themeHandler = (m) => {
+    isDark.value = m === 'dark';
+  };
+  onThemeUpdate(themeHandler);
+  checkCameraPermission();
+});
+
+onUnload(() => {
+  clearTipTimer();
+  offThemeUpdate(themeHandler);
+});
+
+// ✅ P0-FIX: 页面隐藏时清理Tip定时器，防止后台持续运行
+onHide(() => {
+  clearTipTimer();
+});
+
+// ---- 方法（原 methods） ----
+
+/** 返回上一页 */
+function goBack() {
+  safeNavigateBack();
+}
+
+/** 检查相机权限 */
+async function checkCameraPermission() {
+  // #ifdef MP-WEIXIN
+  try {
+    const setting = await uni.getSetting();
+    if (setting.authSetting && setting.authSetting['scope.camera'] === false) {
+      modal.show({
+        title: '提示',
+        content: '需要相机权限才能拍照搜题，是否前往设置？',
+        success: (res) => {
+          if (res.confirm) {
+            uni.openSetting();
+          }
+        }
+      });
     }
-  },
+  } catch (e) {
+    logger.error('检查权限失败:', e);
+  }
+  // #endif
+}
 
-  onShareAppMessage() {
-    return {
-      title: 'AI 拍照搜题 - 拍一拍，秒解数学难题',
-      path: '/pages/tools/photo-search',
-      imageUrl: '/static/images/logo.png'
-    };
-  },
-  onShareTimeline() {
-    return {
-      title: 'AI 拍照搜题 - 备考神器，免费使用',
-      query: ''
-    };
-  },
+/** 相机错误处理 */
+function onCameraError(e) {
+  logger.error('相机错误:', e);
+  toast.info('相机初始化失败，请检查权限');
+}
 
-  onLoad() {
-    this.statusBarHeight = getStatusBarHeight();
-    this.isDark = initTheme();
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    onThemeUpdate(this._themeHandler);
-    this.checkCameraPermission();
-  },
+/** 拍照 */
+async function takePhoto() {
+  const privacyOk = await ensurePrivacyAuthorization();
+  if (!privacyOk) {
+    toast.info('需要先同意隐私授权');
+    return;
+  }
 
-  onUnload() {
-    this.clearTipTimer();
-    offThemeUpdate(this._themeHandler);
-  },
+  // #ifdef MP-WEIXIN
+  const cameraGranted = await ensureMiniProgramScope('scope.camera', {
+    title: '相机权限提示',
+    content: '需要相机权限才能拍照搜题，是否前往设置开启？'
+  });
+  if (!cameraGranted) {
+    toast.info('未开启相机权限');
+    return;
+  }
 
-  // ✅ P0-FIX: 页面隐藏时清理Tip定时器，防止后台持续运行
-  onHide() {
-    this.clearTipTimer();
-  },
-
-  methods: {
-    goBack() {
-      safeNavigateBack();
-    },
-
-    // 检查相机权限
-    async checkCameraPermission() {
-      // #ifdef MP-WEIXIN
-      try {
-        const setting = await uni.getSetting();
-        if (setting.authSetting && setting.authSetting['scope.camera'] === false) {
-          uni.showModal({
-            title: '提示',
-            content: '需要相机权限才能拍照搜题，是否前往设置？',
-            success: (res) => {
-              if (res.confirm) {
-                uni.openSetting();
-              }
-            }
-          });
-        }
-      } catch (e) {
-        logger.error('检查权限失败:', e);
-      }
-      // #endif
-    },
-
-    // 相机错误处理
-    onCameraError(e) {
-      logger.error('相机错误:', e);
-      toast.info('相机初始化失败，请检查权限');
-    },
-
-    // 拍照
-    async takePhoto() {
-      const privacyOk = await ensurePrivacyAuthorization();
-      if (!privacyOk) {
-        toast.info('需要先同意隐私授权');
-        return;
-      }
-
-      // #ifdef MP-WEIXIN
-      const cameraGranted = await ensureMiniProgramScope('scope.camera', {
-        title: '相机权限提示',
-        content: '需要相机权限才能拍照搜题，是否前往设置开启？'
-      });
-      if (!cameraGranted) {
-        toast.info('未开启相机权限');
-        return;
-      }
-
-      if (typeof uni.createCameraContext === 'function') {
-        const ctx = uni.createCameraContext();
-        ctx.takePhoto({
-          quality: 'high',
+  if (typeof uni.createCameraContext === 'function') {
+    const ctx = uni.createCameraContext();
+    ctx.takePhoto({
+      quality: 'high',
+      success: (res) => {
+        previewImage.value = res.tempImagePath;
+        mode.value = 'preview';
+        startRecognize();
+      },
+      fail: () => {
+        uni.chooseImage({
+          count: 1,
+          sourceType: ['camera'],
           success: (res) => {
-            this.previewImage = res.tempImagePath;
-            this.mode = 'preview';
-            this.startRecognize();
+            previewImage.value = res.tempFilePaths[0];
+            mode.value = 'preview';
+            startRecognize();
           },
-          fail: () => {
-            uni.chooseImage({
-              count: 1,
-              sourceType: ['camera'],
-              success: (res) => {
-                this.previewImage = res.tempFilePaths[0];
-                this.mode = 'preview';
-                this.startRecognize();
-              },
-              fail: (err) => {
-                logger.error('拍照失败:', err);
-                if (err?.errMsg && /deny|auth/i.test(err.errMsg)) {
-                  uni.showModal({
-                    title: '相机权限提示',
-                    content: '需要相机权限才能拍照搜题，是否前往设置开启？',
-                    success: (res) => {
-                      if (res.confirm && typeof uni.openSetting === 'function') {
-                        uni.openSetting();
-                      }
-                    }
-                  });
-                } else {
-                  toast.info('拍照失败，请检查权限');
-                }
-              }
-            });
-          }
-        });
-        return;
-      }
-      // #endif
-
-      uni.chooseImage({
-        count: 1,
-        sourceType: ['camera'],
-        success: (res) => {
-          this.previewImage = res.tempFilePaths[0];
-          this.mode = 'preview';
-          this.startRecognize();
-        },
-        fail: (err) => {
-          logger.error('拍照失败:', err);
-          if (err?.errMsg && /deny|auth/i.test(err.errMsg)) {
-            uni.showModal({
-              title: '相机权限提示',
-              content: '需要相机权限才能拍照搜题，是否前往设置开启？',
-              success: (res) => {
-                if (res.confirm && typeof uni.openSetting === 'function') {
-                  uni.openSetting();
-                }
-              }
-            });
-          } else {
-            toast.info('拍照失败');
-          }
-        }
-      });
-    },
-
-    // 从相册选择
-    async chooseFromAlbum() {
-      const privacyOk = await ensurePrivacyAuthorization();
-      if (!privacyOk) {
-        toast.info('需要先同意隐私授权');
-        return;
-      }
-
-      uni.chooseImage({
-        count: 1,
-        sourceType: ['album'],
-        success: (res) => {
-          this.previewImage = res.tempFilePaths[0];
-          this.mode = 'preview';
-          // 自动开始识别
-          this.startRecognize();
-        },
-        fail: (err) => {
-          if (err.errMsg !== 'chooseImage:fail cancel') {
-            logger.error('选择图片失败:', err);
+          fail: (err) => {
+            logger.error('拍照失败:', err);
             if (err?.errMsg && /deny|auth/i.test(err.errMsg)) {
-              uni.showModal({
-                title: '相册权限提示',
-                content: '需要相册权限才能选择图片，是否前往设置开启？',
+              modal.show({
+                title: '相机权限提示',
+                content: '需要相机权限才能拍照搜题，是否前往设置开启？',
                 success: (res) => {
                   if (res.confirm && typeof uni.openSetting === 'function') {
                     uni.openSetting();
@@ -471,302 +413,368 @@ export default {
                 }
               });
             } else {
-              toast.info('选择图片失败');
+              toast.info('拍照失败，请检查权限');
             }
           }
-        }
-      });
+        });
+      }
+    });
+    return;
+  }
+  // #endif
+
+  uni.chooseImage({
+    count: 1,
+    sourceType: ['camera'],
+    success: (res) => {
+      previewImage.value = res.tempFilePaths[0];
+      mode.value = 'preview';
+      startRecognize();
     },
-
-    // 开始识别
-    async startRecognize() {
-      if (this.isRecognizing) return;
-
-      if (!isUserLoggedIn()) {
-        uni.showModal({
-          title: '请先登录',
-          content: '登录后可使用拍照搜题功能',
-          confirmText: '去登录',
+    fail: (err) => {
+      logger.error('拍照失败:', err);
+      if (err?.errMsg && /deny|auth/i.test(err.errMsg)) {
+        modal.show({
+          title: '相机权限提示',
+          content: '需要相机权限才能拍照搜题，是否前往设置开启？',
           success: (res) => {
-            if (res.confirm) {
-              safeNavigateTo('/pages/login/index');
+            if (res.confirm && typeof uni.openSetting === 'function') {
+              uni.openSetting();
             }
           }
         });
-        return;
-      }
-
-      this.isRecognizing = true;
-      this.currentTip = this.loadingTips[0];
-      this.startTipRotation();
-
-      try {
-        // ✅ P0-FIX: 图片转base64可能失败，需要捕获异常
-        let base64;
-        try {
-          base64 = await this.imageToBase64(this.previewImage);
-        } catch (convertErr) {
-          logger.error('图片转换失败:', convertErr);
-          throw new Error('图片格式转换失败，请重新拍照');
-        }
-
-        const response = await this.toolsStore.searchByPhoto(base64, {
-          subject: this.selectedSubject
-        });
-
-        if (response.success && response.data) {
-          const rawData = response.data;
-          const recognizedText = rawData.recognizedText || rawData.recognition?.questionText || '';
-
-          if (!recognizedText && (!rawData.matchedQuestions || rawData.matchedQuestions.length === 0)) {
-            throw new Error('未能识别到有效内容，请确保图片清晰完整');
-          }
-
-          // 标准化数据结构，添加空值防护
-          const aiSolution = rawData.aiSolution || rawData.aiGenerated || null;
-          // 兼容后端返回中文字段名（步骤→steps）
-          if (aiSolution && aiSolution.analysis) {
-            if (!aiSolution.analysis.steps && aiSolution.analysis['步骤']) {
-              aiSolution.analysis.steps = aiSolution.analysis['步骤'];
-            }
-            if (!aiSolution.answer && aiSolution['答案']) {
-              aiSolution.answer = aiSolution['答案'];
-            }
-            if (!aiSolution.analysis.keyPoints && aiSolution.analysis['考点']) {
-              aiSolution.analysis.keyPoints = aiSolution.analysis['考点'];
-            }
-          }
-          this.result = {
-            confidence: rawData.confidence ?? rawData.recognition?.confidence ?? 0,
-            recognizedText: recognizedText,
-            questions: rawData.matchedQuestions || rawData.questions || [],
-            aiGenerated: aiSolution,
-            recognitionSources: rawData.recognitionSources || null
-          };
-          this.mode = 'result';
-
-          // 显示识别来源
-          const sources = this.result.recognitionSources;
-          if (sources) {
-            logger.log('识别来源 - 视觉智能:', sources.vision, ', OCR:', sources.ocr);
-          }
-        } else {
-          throw new Error(response.message || '识别失败');
-        }
-      } catch (error) {
-        logger.error('识别失败:', error);
-        uni.showModal({
-          title: '识别失败',
-          content: error.message || '请确保题目清晰、光线充足',
-          showCancel: false
-        });
-        // 识别失败回到预览模式，允许重试
-        this.mode = 'preview';
-      } finally {
-        this.isRecognizing = false;
-        this.clearTipTimer();
-      }
-    },
-
-    // 图片转Base64
-    imageToBase64(path) {
-      return new Promise((resolve, reject) => {
-        // #ifdef MP-WEIXIN
-        uni.getFileSystemManager().readFile({
-          filePath: path,
-          encoding: 'base64',
-          success: (res) => resolve(res.data),
-          fail: (err) => {
-            logger.error('读取文件失败:', err);
-            reject(new Error('读取图片失败'));
-          }
-        });
-        // #endif
-
-        // #ifdef H5
-        // H5环境使用canvas转换
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          const dataURL = canvas.toDataURL('image/jpeg', 0.9);
-          resolve(dataURL.split(',')[1]);
-        };
-        img.onerror = () => reject(new Error('加载图片失败'));
-        img.src = path;
-        // #endif
-
-        // #ifdef APP-PLUS
-        plus.io.resolveLocalFileSystemURL(
-          path,
-          (entry) => {
-            entry.file((file) => {
-              const reader = new plus.io.FileReader();
-              reader.onloadend = (e) => {
-                const base64 = e.target.result.split(',')[1];
-                resolve(base64);
-              };
-              reader.onerror = () => reject(new Error('读取图片失败'));
-              reader.readAsDataURL(file);
-            });
-          },
-          () => reject(new Error('解析路径失败'))
-        );
-        // #endif
-      });
-    },
-
-    // 开始提示轮换
-    startTipRotation() {
-      this.tipIndex = 0;
-      this.currentTip = this.loadingTips[0];
-
-      this.tipTimer = setInterval(() => {
-        this.tipIndex = (this.tipIndex + 1) % this.loadingTips.length;
-        this.currentTip = this.loadingTips[this.tipIndex];
-      }, 2000);
-    },
-
-    // 清除提示定时器
-    clearTipTimer() {
-      if (this.tipTimer) {
-        clearInterval(this.tipTimer);
-        this.tipTimer = null;
-      }
-    },
-
-    // 重新拍摄
-    retake() {
-      this.previewImage = null;
-      this.result = null;
-      this.mode = 'camera';
-    },
-
-    // 选择学科 - 使用原生 ActionSheet
-    selectSubject() {
-      const itemList = this.subjects.map((s) => s.label);
-
-      uni.showActionSheet({
-        itemList,
-        success: (res) => {
-          this.selectedSubject = this.subjects[res.tapIndex].value;
-        },
-        fail: (err) => {
-          if (err.errMsg !== 'showActionSheet:fail cancel') {
-            logger.error('选择学科失败:', err);
-          }
-        }
-      });
-    },
-
-    // ✅ [零摩擦] 查看题目详情 — 修复：写入temp存储后跳转
-    viewQuestion(question) {
-      const q = {
-        id: question._id || question.id || `ocr_${Date.now()}`,
-        question: question.question || question.title || '',
-        options: question.options || [],
-        answer: question.answer || question.correctAnswer || '',
-        desc: question.desc || question.analysis || '',
-        difficulty: question.difficulty || 2,
-        tags: question.tags || [],
-        source: 'photo_search'
-      };
-      storageService.save('temp_practice_question', q);
-      safeNavigateTo('/pages/practice-sub/do-quiz?mode=single');
-    },
-
-    // ✅ [零摩擦] 从OCR结果直接开始练习（匹配题+AI生成题一起刷）
-    startPracticeFromOCR() {
-      const questions = [];
-
-      // 收集匹配到的题库题目
-      if (this.result?.questions?.length > 0) {
-        this.result.questions.forEach((q) => {
-          questions.push({
-            id: q._id || q.id || `ocr_match_${Date.now()}_${Math.random()}`,
-            question: q.question || q.title || '',
-            options: q.options || [],
-            answer: q.answer || q.correctAnswer || '',
-            desc: q.desc || q.analysis || '',
-            difficulty: q.difficulty || 2,
-            source: 'photo_search_match'
-          });
-        });
-      }
-
-      // 如果有AI生成的解答，也构造为可练习的题目
-      if (this.result?.aiGenerated && this.result.recognizedText) {
-        const ai = this.result.aiGenerated;
-        questions.push({
-          id: `ocr_ai_${Date.now()}`,
-          question: this.result.recognizedText,
-          options: ai.options || [],
-          answer: ai.answer || '',
-          desc: [ai.steps, ai.keyPoints, ai.commonMistakes].filter(Boolean).join('\n\n'),
-          difficulty: 3,
-          source: 'photo_search_ai'
-        });
-      }
-
-      if (questions.length === 0) {
-        toast.info('没有可练习的题目');
-        return;
-      }
-
-      // 写入临时题库，跳转刷题
-      storageService.save('temp_practice_questions', questions);
-      safeNavigateTo('/pages/practice-sub/do-quiz?mode=temp_bank');
-    },
-
-    // 加入错题本
-    async addToMistake() {
-      if (this.isAddingMistake) return;
-      if (this.result && this.result.questions && this.result.questions.length > 0) {
-        this.isAddingMistake = true;
-        const question = this.result.questions[0];
-        toast.loading('添加中...');
-        try {
-          // 使用 storageService.addMistake（支持云端同步+本地降级）
-          await storageService.addMistake({
-            questionId: question._id || question.id,
-            question: question.question,
-            options: question.options || [],
-            correctAnswer: question.answer || question.correctAnswer || '',
-            userAnswer: '',
-            source: 'photo_search',
-            category: question.category || this.selectedSubject || '未分类'
-          });
-          toast.hide();
-          toast.success('已加入错题本');
-        } catch (e) {
-          toast.hide();
-          logger.error('加入错题本失败:', e);
-          toast.info('加入失败');
-        } finally {
-          this.isAddingMistake = false;
-        }
-      }
-    },
-
-    // 搜索相似题
-    searchSimilar() {
-      if (this.result && this.result.recognizedText) {
-        // 取前50个字符作为搜索关键词
-        const keyword = this.result.recognizedText.substring(0, 50);
-        // practice/index 是 tabBar 页面，switchTab 不支持 query 参数
-        // 通过临时存储传递搜索关键词，供刷题中心后续读取
-        storageService.save('_pendingSearch', { keyword, timestamp: Date.now() });
-        toast.info('已跳转到刷题中心');
-        // practice/index 是 tabBar 页面，必须用 switchTab
-        uni.switchTab({ url: '/pages/practice/index' });
+      } else {
+        toast.info('拍照失败');
       }
     }
+  });
+}
+
+/** 从相册选择 */
+async function chooseFromAlbum() {
+  const privacyOk = await ensurePrivacyAuthorization();
+  if (!privacyOk) {
+    toast.info('需要先同意隐私授权');
+    return;
   }
-};
+
+  uni.chooseImage({
+    count: 1,
+    sourceType: ['album'],
+    success: (res) => {
+      previewImage.value = res.tempFilePaths[0];
+      mode.value = 'preview';
+      // 自动开始识别
+      startRecognize();
+    },
+    fail: (err) => {
+      if (err.errMsg !== 'chooseImage:fail cancel') {
+        logger.error('选择图片失败:', err);
+        if (err?.errMsg && /deny|auth/i.test(err.errMsg)) {
+          modal.show({
+            title: '相册权限提示',
+            content: '需要相册权限才能选择图片，是否前往设置开启？',
+            success: (res) => {
+              if (res.confirm && typeof uni.openSetting === 'function') {
+                uni.openSetting();
+              }
+            }
+          });
+        } else {
+          toast.info('选择图片失败');
+        }
+      }
+    }
+  });
+}
+
+/** 开始识别 */
+async function startRecognize() {
+  if (isRecognizing.value) return;
+
+  if (!isUserLoggedIn()) {
+    modal.show({
+      title: '请先登录',
+      content: '登录后可使用拍照搜题功能',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) {
+          safeNavigateTo('/pages/login/index');
+        }
+      }
+    });
+    return;
+  }
+
+  isRecognizing.value = true;
+  currentTip.value = loadingTips[0];
+  startTipRotation();
+
+  try {
+    // ✅ P0-FIX: 图片转base64可能失败，需要捕获异常
+    let base64;
+    try {
+      base64 = await imageToBase64(previewImage.value);
+    } catch (convertErr) {
+      logger.error('图片转换失败:', convertErr);
+      throw new Error('图片格式转换失败，请重新拍照');
+    }
+
+    const response = await toolsStore.searchByPhoto(base64, {
+      subject: selectedSubject.value
+    });
+
+    if (response.success && response.data) {
+      const rawData = response.data;
+      const recognizedText = rawData.recognizedText || rawData.recognition?.questionText || '';
+
+      if (!recognizedText && (!rawData.matchedQuestions || rawData.matchedQuestions.length === 0)) {
+        throw new Error('未能识别到有效内容，请确保图片清晰完整');
+      }
+
+      // 标准化数据结构，添加空值防护
+      const aiSolution = rawData.aiSolution || rawData.aiGenerated || null;
+      // 兼容后端返回中文字段名（步骤→steps）
+      if (aiSolution && aiSolution.analysis) {
+        if (!aiSolution.analysis.steps && aiSolution.analysis['步骤']) {
+          aiSolution.analysis.steps = aiSolution.analysis['步骤'];
+        }
+        if (!aiSolution.answer && aiSolution['答案']) {
+          aiSolution.answer = aiSolution['答案'];
+        }
+        if (!aiSolution.analysis.keyPoints && aiSolution.analysis['考点']) {
+          aiSolution.analysis.keyPoints = aiSolution.analysis['考点'];
+        }
+      }
+      result.value = {
+        confidence: rawData.confidence ?? rawData.recognition?.confidence ?? 0,
+        recognizedText: recognizedText,
+        questions: rawData.matchedQuestions || rawData.questions || [],
+        aiGenerated: aiSolution,
+        recognitionSources: rawData.recognitionSources || null
+      };
+      mode.value = 'result';
+
+      // 显示识别来源
+      const sources = result.value.recognitionSources;
+      if (sources) {
+        logger.log('识别来源 - 视觉智能:', sources.vision, ', OCR:', sources.ocr);
+      }
+    } else {
+      throw new Error(response.message || '识别失败');
+    }
+  } catch (error) {
+    logger.error('识别失败:', error);
+    modal.show({
+      title: '识别失败',
+      content: error.message || '请确保题目清晰、光线充足',
+      showCancel: false
+    });
+    // 识别失败回到预览模式，允许重试
+    mode.value = 'preview';
+  } finally {
+    isRecognizing.value = false;
+    clearTipTimer();
+  }
+}
+
+/** 图片转Base64 */
+function imageToBase64(path) {
+  return new Promise((resolve, reject) => {
+    // #ifdef MP-WEIXIN
+    uni.getFileSystemManager().readFile({
+      filePath: path,
+      encoding: 'base64',
+      success: (res) => resolve(res.data),
+      fail: (err) => {
+        logger.error('读取文件失败:', err);
+        reject(new Error('读取图片失败'));
+      }
+    });
+    // #endif
+
+    // #ifdef H5
+    // H5环境使用canvas转换
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+      resolve(dataURL.split(',')[1]);
+    };
+    img.onerror = () => reject(new Error('加载图片失败'));
+    img.src = path;
+    // #endif
+
+    // #ifdef APP-PLUS
+    plus.io.resolveLocalFileSystemURL(
+      path,
+      (entry) => {
+        entry.file((file) => {
+          const reader = new plus.io.FileReader();
+          reader.onloadend = (e) => {
+            const base64 = e.target.result.split(',')[1];
+            resolve(base64);
+          };
+          reader.onerror = () => reject(new Error('读取图片失败'));
+          reader.readAsDataURL(file);
+        });
+      },
+      () => reject(new Error('解析路径失败'))
+    );
+    // #endif
+  });
+}
+
+/** 开始提示轮换 */
+function startTipRotation() {
+  tipIndex = 0;
+  currentTip.value = loadingTips[0];
+
+  tipTimer = setInterval(() => {
+    tipIndex = (tipIndex + 1) % loadingTips.length;
+    currentTip.value = loadingTips[tipIndex];
+  }, 2000);
+}
+
+/** 清除提示定时器 */
+function clearTipTimer() {
+  if (tipTimer) {
+    clearInterval(tipTimer);
+    tipTimer = null;
+  }
+}
+
+/** 重新拍摄 */
+function retake() {
+  previewImage.value = null;
+  result.value = null;
+  mode.value = 'camera';
+}
+
+/** 选择学科 - 使用原生 ActionSheet */
+function selectSubject() {
+  const itemList = subjects.map((s) => s.label);
+
+  uni.showActionSheet({
+    itemList,
+    success: (res) => {
+      selectedSubject.value = subjects[res.tapIndex].value;
+    },
+    fail: (err) => {
+      if (err.errMsg !== 'showActionSheet:fail cancel') {
+        logger.error('选择学科失败:', err);
+      }
+    }
+  });
+}
+
+/** ✅ [零摩擦] 查看题目详情 — 写入temp存储后跳转 */
+function viewQuestion(question) {
+  const q = {
+    id: question._id || question.id || `ocr_${Date.now()}`,
+    question: question.question || question.title || '',
+    options: question.options || [],
+    answer: question.answer || question.correctAnswer || '',
+    desc: question.desc || question.analysis || '',
+    difficulty: question.difficulty || 2,
+    tags: question.tags || [],
+    source: 'photo_search'
+  };
+  storageService.save('temp_practice_question', q);
+  safeNavigateTo('/pages/practice-sub/do-quiz?mode=single');
+}
+
+/** ✅ [零摩擦] 从OCR结果直接开始练习（匹配题+AI生成题一起刷） */
+function startPracticeFromOCR() {
+  const questions = [];
+
+  // 收集匹配到的题库题目
+  if (result.value?.questions?.length > 0) {
+    result.value.questions.forEach((q) => {
+      questions.push({
+        id: q._id || q.id || `ocr_match_${Date.now()}_${Math.random()}`,
+        question: q.question || q.title || '',
+        options: q.options || [],
+        answer: q.answer || q.correctAnswer || '',
+        desc: q.desc || q.analysis || '',
+        difficulty: q.difficulty || 2,
+        source: 'photo_search_match'
+      });
+    });
+  }
+
+  // 如果有AI生成的解答，也构造为可练习的题目
+  if (result.value?.aiGenerated && result.value.recognizedText) {
+    const ai = result.value.aiGenerated;
+    questions.push({
+      id: `ocr_ai_${Date.now()}`,
+      question: result.value.recognizedText,
+      options: ai.options || [],
+      answer: ai.answer || '',
+      desc: [ai.steps, ai.keyPoints, ai.commonMistakes].filter(Boolean).join('\n\n'),
+      difficulty: 3,
+      source: 'photo_search_ai'
+    });
+  }
+
+  if (questions.length === 0) {
+    toast.info('没有可练习的题目');
+    return;
+  }
+
+  // 写入临时题库，跳转刷题
+  storageService.save('temp_practice_questions', questions);
+  safeNavigateTo('/pages/practice-sub/do-quiz?mode=temp_bank');
+}
+
+/** 加入错题本 */
+async function addToMistake() {
+  if (isAddingMistake.value) return;
+  if (result.value && result.value.questions && result.value.questions.length > 0) {
+    isAddingMistake.value = true;
+    const question = result.value.questions[0];
+    toast.loading('添加中...');
+    try {
+      // 使用 storageService.addMistake（支持云端同步+本地降级）
+      await storageService.addMistake({
+        questionId: question._id || question.id,
+        question: question.question,
+        options: question.options || [],
+        correctAnswer: question.answer || question.correctAnswer || '',
+        userAnswer: '',
+        source: 'photo_search',
+        category: question.category || selectedSubject.value || '未分类'
+      });
+      toast.hide();
+      toast.success('已加入错题本');
+    } catch (e) {
+      toast.hide();
+      logger.error('加入错题本失败:', e);
+      toast.info('加入失败');
+    } finally {
+      isAddingMistake.value = false;
+    }
+  }
+}
+
+/** 搜索相似题（预留，模板当前未使用） */
+function _searchSimilar() {
+  if (result.value && result.value.recognizedText) {
+    // 取前50个字符作为搜索关键词
+    const keyword = result.value.recognizedText.substring(0, 50);
+    // practice/index 是 tabBar 页面，switchTab 不支持 query 参数
+    // 通过临时存储传递搜索关键词，供刷题中心后续读取
+    storageService.save('_pendingSearch', { keyword, timestamp: Date.now() });
+    toast.info('已跳转到刷题中心');
+    // practice/index 是 tabBar 页面，必须用 switchTab
+    uni.switchTab({ url: '/pages/practice/index' });
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -815,7 +823,7 @@ export default {
 
   .nav-title {
     font-size: 34rpx;
-    font-weight: 600;
+    font-weight: 800;
     color: var(--text-inverse);
   }
 
@@ -966,7 +974,7 @@ export default {
 .result-area {
   width: 100%;
   flex: 1;
-  background: var(--bg-secondary, #f5f5f7);
+  background: var(--background);
   border-radius: 32rpx 32rpx 0 0;
 }
 
@@ -989,13 +997,13 @@ export default {
 
   .rs-title {
     font-size: 30rpx;
-    font-weight: 700;
-    color: var(--text-primary, #111);
+    font-weight: 800;
+    color: var(--text-primary, var(--text-primary));
   }
 
   .match-count {
     font-size: 22rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
   }
 }
 
@@ -1012,29 +1020,31 @@ export default {
 }
 
 .recognized-text-card {
-  background: var(--bg-card, #fff);
+  background: var(--bg-card);
   padding: 24rpx;
-  border-radius: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 
   .recognized-text {
     font-size: 28rpx;
     line-height: 1.7;
-    color: var(--text-primary, #111);
+    color: var(--text-primary);
   }
 }
 
 .question-card {
-  background: var(--bg-card, #fff);
+  background: var(--bg-card);
   padding: 24rpx;
-  border-radius: 20rpx;
+  border-radius: 24rpx;
   margin-bottom: 16rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-  border-left: 6rpx solid var(--primary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border-left: 6rpx solid #2dc9c4;
 
   .question-text {
     font-size: 28rpx;
-    color: var(--text-primary, #111);
+    color: var(--text-primary);
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -1053,6 +1063,7 @@ export default {
   padding: 6rpx 16rpx;
   border-radius: 12rpx;
   background: var(--brand-tint-subtle);
+  margin-right: 12rpx;
 
   &.meta-tag-diff {
     background: var(--warning-light);
@@ -1064,17 +1075,18 @@ export default {
 
   .meta-tag-text {
     font-size: 20rpx;
-    color: var(--primary);
-    font-weight: 500;
+    color: #2dc9c4;
+    font-weight: 600;
   }
 }
 
 // 智能解析卡片
 .ai-card {
-  background: var(--bg-card, #fff);
+  background: var(--bg-card);
   padding: 24rpx;
-  border-radius: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .ai-block {
@@ -1086,8 +1098,8 @@ export default {
 
   .ai-block-title {
     font-size: 26rpx;
-    font-weight: 700;
-    color: var(--primary);
+    font-weight: 800;
+    color: #2dc9c4;
     margin-bottom: 12rpx;
     display: block;
   }
@@ -1114,22 +1126,22 @@ export default {
   .step-num-text {
     font-size: 20rpx;
     color: var(--text-inverse);
-    font-weight: 700;
+    font-weight: 800;
   }
 
   .step-text {
     font-size: 26rpx;
-    color: var(--text-primary, #111);
+    color: var(--text-primary);
     line-height: 1.6;
     flex: 1;
   }
 }
 
 .answer-card {
-  background: linear-gradient(135deg, rgba(52, 199, 89, 0.06), rgba(48, 209, 88, 0.06));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--success) 6%, transparent), rgba(48, 209, 88, 0.06));
   padding: 20rpx;
   border-radius: 16rpx;
-  border: 1rpx solid rgba(52, 199, 89, 0.15);
+  border: 1rpx solid color-mix(in srgb, var(--success) 15%, transparent);
 
   .answer-text {
     font-size: 28rpx;
@@ -1149,6 +1161,8 @@ export default {
   padding: 8rpx 20rpx;
   border-radius: 20rpx;
   background: linear-gradient(135deg, var(--brand-tint-subtle), var(--brand-tint));
+  margin-right: 10rpx;
+  margin-bottom: 10rpx;
 
   .kp-tag-text {
     font-size: 22rpx;
@@ -1174,7 +1188,7 @@ export default {
 
   .mistake-text {
     font-size: 26rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
     line-height: 1.6;
     flex: 1;
   }
@@ -1263,10 +1277,15 @@ export default {
   font-weight: 600;
 
   &.bar-btn-primary {
-    background: var(--cta-primary-bg);
-    color: var(--cta-primary-text);
-    border: 1rpx solid var(--cta-primary-border);
-    box-shadow: var(--cta-primary-shadow);
+    background: #2dc9c4;
+    color: var(--text-inverse);
+    border: none;
+    box-shadow: 0 8rpx 0 #22a09c;
+
+    &:active {
+      transform: translateY(4rpx);
+      box-shadow: 0 4rpx 0 #22a09c;
+    }
 
     &:disabled {
       opacity: 0.5;
@@ -1512,13 +1531,13 @@ export default {
 }
 
 .meta-tag {
-  background: rgba(52, 199, 89, 0.12);
-  border: 1px solid rgba(52, 199, 89, 0.18);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
 }
 
 .meta-tag.meta-tag-diff {
-  background: rgba(255, 159, 10, 0.12);
-  border-color: rgba(255, 159, 10, 0.18);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  border-color: color-mix(in srgb, var(--warning) 18%, transparent);
 }
 
 .meta-tag .meta-tag-text {
@@ -1534,8 +1553,8 @@ export default {
 }
 
 .answer-card {
-  background: rgba(52, 199, 89, 0.1);
-  border: 1px solid rgba(52, 199, 89, 0.18);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
 }
 
 .answer-card .answer-text {
@@ -1543,8 +1562,8 @@ export default {
 }
 
 .kp-tag {
-  background: rgba(52, 199, 89, 0.12);
-  border: 1px solid rgba(52, 199, 89, 0.18);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
 }
 
 .kp-tag .kp-tag-text {
@@ -1783,6 +1802,11 @@ export default {
 .placeholder-hint {
   font-size: 28rpx;
   color: var(--text-tertiary);
+}
+/* 卡通图标通用样式 */
+.hero-cartoon-icon {
+  width: 160rpx;
+  height: 160rpx;
 }
 
 .dark-mode .placeholder-title {

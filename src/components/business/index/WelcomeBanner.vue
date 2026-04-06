@@ -21,7 +21,7 @@
           @tap="$emit('nav-to-practice')"
         >
           <BaseIcon name="lightning" :size="28" />
-          <text class="btn-text"> 快速练习 </text>
+          <text class="btn-text"><text class="btn-label">快速练习</text></text>
         </view>
         <view
           id="e2e-home-banner-mock"
@@ -72,47 +72,36 @@ const examCountdown = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+/* ── 入场动画 ── */
+@keyframes bannerSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── 卡片容器 ── */
 .welcome-banner {
   position: relative;
   overflow: hidden;
-  border-radius: 36rpx;
+  border-radius: 32rpx;
   padding: 44rpx;
   margin-bottom: 52rpx;
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  animation: bannerSlideIn 0.5s ease-out;
 }
 
+/* ── 浅色模式：柔和多彩渐变 ── */
 .banner-light {
-  background: linear-gradient(145deg, var(--bg-card) 0%, var(--bg-card) 46%, var(--bg-secondary) 100%);
-  border-color: var(--apple-glass-border-strong);
+  background: linear-gradient(135deg, #f0fce8 0%, #e8f7fe 50%, #fef3e8 100%);
 }
 
-.banner-light::before,
-.banner-light::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.banner-light::before {
-  top: -120rpx;
-  right: -90rpx;
-  width: 320rpx;
-  height: 320rpx;
-  background: radial-gradient(circle, var(--bg-card) 0%, transparent 72%);
-  filter: blur(12rpx);
-}
-
-.banner-light::after {
-  left: -80rpx;
-  bottom: -110rpx;
-  width: 360rpx;
-  height: 360rpx;
-  background: radial-gradient(circle, var(--primary-light) 0%, transparent 74%);
-  filter: blur(20rpx);
-}
-
+/* ── 深色模式 ── */
 .banner-dark {
   background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-page) 100%);
   border-color: var(--apple-glass-border-strong);
@@ -142,12 +131,12 @@ const examCountdown = computed(() => {
   filter: blur(66rpx);
 }
 
+/* ── 内容布局 ── */
 .banner-content {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  /* gap: 32rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
 }
 
 .banner-content > .banner-text {
@@ -157,7 +146,6 @@ const examCountdown = computed(() => {
 .banner-text {
   display: flex;
   flex-direction: column;
-  /* gap: 16rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
 }
 
 .banner-text > .welcome-title {
@@ -168,9 +156,10 @@ const examCountdown = computed(() => {
   margin-bottom: 4rpx;
 }
 
+/* ── 标题 ── */
 .welcome-title {
-  font-size: 52rpx;
-  font-weight: 680;
+  font-size: 56rpx;
+  font-weight: 800;
   letter-spacing: -0.4rpx;
   color: var(--text-primary);
   line-height: 1.2;
@@ -179,6 +168,11 @@ const examCountdown = computed(() => {
   white-space: nowrap;
 }
 
+.banner-dark .welcome-title {
+  color: var(--text-primary);
+}
+
+/* ── 副标题 / 倒计时 ── */
 .welcome-subtitle {
   font-size: 28rpx;
   color: var(--text-sub);
@@ -195,92 +189,115 @@ const examCountdown = computed(() => {
   margin-bottom: 4rpx;
 }
 
-.banner-light .welcome-subtitle {
-  color: var(--text-sub);
-}
-
+/* ── 高亮数字 ── */
 .highlight-text {
-  color: var(--primary);
-  font-weight: 620;
+  color: #58cc02;
+  font-weight: 700;
 }
 
+/* ── 按钮组 ── */
 .banner-actions {
   display: flex;
-  gap: var(--ds-spacing-md, 24rpx);
   flex-wrap: wrap;
 }
 
+.banner-actions > .action-btn {
+  margin-right: 24rpx;
+}
+
+.banner-actions > .action-btn:last-child {
+  margin-right: 0;
+}
+
+/* ── 按钮基础 ── */
 .action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--ds-spacing-sm, 16rpx);
   padding: 22rpx 44rpx;
-  border-radius: 999rpx;
-  font-size: var(--ds-font-size-base, 28rpx);
-  font-weight: 620;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.1s ease;
   min-height: 88rpx;
 }
 
-.btn-primary {
-  border: 1rpx solid transparent;
-  box-shadow: var(--cta-primary-shadow);
+.action-btn .btn-text {
+  margin-left: 16rpx;
 }
 
-.banner-light .btn-primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border-color: var(--cta-primary-border);
+/* ── 主按钮（3D 多邻国风格） ── */
+.btn-primary {
+  background: #58cc02;
+  color: var(--text-inverse);
+  font-weight: 800;
+  border: none;
+  box-shadow: 0 8rpx 0 #46a302;
+}
+
+.btn-primary:active {
+  transform: translateY(6rpx);
+  box-shadow: 0 2rpx 0 #46a302;
 }
 
 .banner-dark .btn-primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border-color: var(--cta-primary-border);
+  background: linear-gradient(135deg, #00e0ff, var(--purple-dark, #9b51e0));
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 rgba(0, 0, 0, 0.3);
 }
 
+.banner-dark .btn-primary:active {
+  transform: translateY(6rpx);
+  box-shadow: 0 2rpx 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ── 次按钮（3D 轮廓风格） ── */
 .btn-outline {
-  background: var(--bg-secondary);
-  border: 1rpx solid var(--border);
+  background: var(--bg-card);
+  border: 3rpx solid #e5e5ea;
+  box-shadow: 0 6rpx 0 #e5e5ea;
   color: var(--text-primary);
-  backdrop-filter: blur(10rpx);
-  -webkit-backdrop-filter: blur(10rpx);
+  font-weight: 700;
 }
 
-.banner-light .btn-outline {
-  background: var(--bg-secondary);
-  border-color: var(--border);
-  box-shadow: var(--shadow-sm);
+.btn-outline:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 2rpx 0 #e5e5ea;
 }
 
 .banner-dark .btn-outline {
   background: var(--muted);
   border-color: var(--border);
   color: var(--text-primary);
+  box-shadow: 0 6rpx 0 var(--border);
 }
 
-.action-btn:active {
-  transform: scale(0.97);
+.banner-dark .btn-outline:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 2rpx 0 var(--border);
 }
 
-.btn-icon {
-  font-size: 32rpx;
-}
-
+/* ── 按钮文字 ── */
 .btn-text {
   font-size: 28rpx;
 }
 
+.btn-label {
+  font-weight: 800;
+}
+
+/* ── 小屏适配 ── */
 @media screen and (max-width: 375px) {
   .welcome-banner {
     padding: 32rpx;
     margin-bottom: 36rpx;
-    border-radius: 28rpx;
+    border-radius: 24rpx;
   }
 
   .welcome-title {
-    font-size: 40rpx;
+    font-size: 44rpx;
     letter-spacing: -0.2rpx;
   }
 
@@ -290,7 +307,15 @@ const examCountdown = computed(() => {
 
   .banner-actions {
     flex-direction: column;
-    gap: 14rpx;
+  }
+
+  .banner-actions > .action-btn {
+    margin-right: 0;
+    margin-bottom: 14rpx;
+  }
+
+  .banner-actions > .action-btn:last-child {
+    margin-bottom: 0;
   }
 
   .action-btn {

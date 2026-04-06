@@ -7,6 +7,8 @@
           <text class="achievement-modal-eyebrow"> Achievement Board </text>
           <text class="achievement-modal-title"> 我的成就 </text>
         </view>
+        <!-- 成就星光特效 -->
+        <image class="achievement-sparkle" src="/static/effects/star-sparkle.png" mode="aspectFit" />
         <view class="achievement-modal-close apple-glass-pill" @tap="$emit('close')">
           <BaseIcon name="close" :size="24" />
         </view>
@@ -17,7 +19,7 @@
           <view class="achievement-grid">
             <view v-for="ach in unlockedAchievements" :key="ach.id" class="achievement-item unlocked apple-group-card">
               <view class="achievement-item-icon">
-                <BaseIcon name="trophy" :size="20" />
+                <image :src="getBadgeImage(ach)" class="achievement-badge-img" mode="aspectFit" />
               </view>
               <text class="achievement-item-name">
                 {{ ach.name }}
@@ -33,7 +35,11 @@
           <view class="achievement-grid">
             <view v-for="ach in lockedList" :key="ach.id" class="achievement-item locked apple-group-card">
               <view class="achievement-item-icon">
-                <BaseIcon name="lock" :size="28" />
+                <image
+                  :src="getBadgeImage(ach)"
+                  class="achievement-badge-img achievement-badge-locked"
+                  mode="aspectFit"
+                />
               </view>
               <text class="achievement-item-name">
                 {{ ach.name }}
@@ -52,6 +58,30 @@
 <script setup>
 import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
+// 成就徽章图片映射
+const BADGE_IMAGES = {
+  'streak-7': '/static/badges/streak-7day.png',
+  'streak-30': '/static/badges/streak-30day.png',
+  accuracy: '/static/badges/accuracy-90.png',
+  'first-100': '/static/badges/first-100.png',
+  master: '/static/badges/master-500.png',
+  'pk-victory': '/static/badges/pk-victory.png',
+  scholar: '/static/badges/scholar.png',
+  speed: '/static/badges/speed-demon.png',
+  perfect: '/static/badges/perfect-score.png',
+  explorer: '/static/badges/knowledge-explorer.png'
+};
+
+// 根据成就类型获取徽章图片路径
+function getBadgeImage(achievement) {
+  const key = achievement.id || achievement.type || '';
+  for (const [prefix, path] of Object.entries(BADGE_IMAGES)) {
+    if (key.includes(prefix)) return path;
+  }
+  // 默认返回通用徽章图标
+  return '/static/badges/scholar.png';
+}
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -117,6 +147,25 @@ const lockedList = computed(() => {
   justify-content: space-between;
   margin-bottom: 20rpx;
   padding: 0 8rpx;
+  position: relative;
+}
+
+/* 成就星光特效 */
+.achievement-sparkle {
+  width: 80rpx;
+  height: 80rpx;
+  position: absolute;
+  top: -20rpx;
+  right: 60rpx;
+  animation: sparkle-rotate 3s linear infinite;
+}
+@keyframes sparkle-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .achievement-modal-title {
   font-size: 44rpx;
@@ -178,9 +227,9 @@ const lockedList = computed(() => {
 }
 .achievement-item.unlocked {
   background:
-    linear-gradient(180deg, rgba(52, 199, 89, 0.16) 0%, transparent 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--success) 16%, transparent) 0%, transparent 42%),
     linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
-  border-color: rgba(52, 199, 89, 0.18);
+  border-color: color-mix(in srgb, var(--success) 18%, transparent);
 }
 .achievement-item.locked {
   opacity: 0.72;
@@ -194,8 +243,8 @@ const lockedList = computed(() => {
   font-size: 40rpx;
   margin-bottom: 10rpx;
   border-radius: 999rpx;
-  background: rgba(52, 199, 89, 0.12);
-  border: 1px solid rgba(52, 199, 89, 0.18);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
 }
 .achievement-item-name {
   font-size: 24rpx;
@@ -207,6 +256,14 @@ const lockedList = computed(() => {
   font-size: 20rpx;
   color: var(--text-sub);
   line-height: 1.3;
+}
+.achievement-badge-img {
+  width: 56rpx;
+  height: 56rpx;
+}
+.achievement-badge-locked {
+  filter: grayscale(100%);
+  opacity: 0.4;
 }
 
 :global(.dark-mode) .achievement-modal-overlay {
@@ -233,7 +290,7 @@ const lockedList = computed(() => {
 :global(.dark-mode) .achievement-modal-title,
 :global(.dark-mode) .achievement-item-name,
 :global(.dark-mode) .achievement-modal-close {
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 :global(.dark-mode) .achievement-modal-close,

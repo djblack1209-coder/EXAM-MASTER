@@ -42,7 +42,9 @@
       <view class="friend-selector-content apple-glass-card" @tap.stop>
         <view class="selector-header">
           <text class="selector-title"> 选择智能好友 </text>
-          <text class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false"> × </text>
+          <view class="selector-close" hover-class="item-hover" @tap="showFriendSelector = false">
+            <BaseIcon name="close" :size="24" />
+          </view>
         </view>
         <view class="friend-list">
           <view
@@ -69,7 +71,9 @@
                 {{ friend.role }}
               </text>
             </view>
-            <view v-if="currentFriend.type === friend.type" class="friend-check"> ✓ </view>
+            <view v-if="currentFriend.type === friend.type" class="friend-check">
+              <BaseIcon name="check" :size="24" />
+            </view>
           </view>
         </view>
       </view>
@@ -143,7 +147,9 @@
               </text>
               <view v-if="msg.status" class="msg-status">
                 <text v-if="msg.status === 'sending'" class="status-icon"> ··· </text>
-                <text v-else-if="msg.status === 'sent'" class="status-icon sent"> ✓ </text>
+                <view v-else-if="msg.status === 'sent'" class="status-icon sent">
+                  <BaseIcon name="check" :size="18" />
+                </view>
                 <text v-else-if="msg.status === 'failed'" class="status-icon failed" @tap="retryMessage(index)">
                   ! 点击重试
                 </text>
@@ -255,13 +261,14 @@
         hover-class="item-hover"
         @tap="handleSend"
       >
-        <text class="send-icon"> ↑ </text>
+        <BaseIcon name="arrow-right" :size="24" class="send-icon" style="transform: rotate(-90deg)" />
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { ref, reactive, onMounted, onUnmounted, nextTick } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
@@ -271,7 +278,7 @@ import { storageService } from '@/services/storageService.js';
 // [OK] 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
-import { requireLogin } from '@/utils/auth/loginGuard.js';
+import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { ensureMiniProgramScope, ensurePrivacyAuthorization } from './privacy-authorization.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 // 智能路由器
@@ -292,7 +299,8 @@ const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 // [OK] F024: 暗黑模式状态
 const isDark = ref(false);
 const initTheme = () => {
-  const savedTheme = storageService.get('theme_mode', 'light');
+  // 直接用 uni.getStorageSync，避免 storageService 前缀不一致问题
+  const savedTheme = uni.getStorageSync('theme_mode') || 'light';
   isDark.value = savedTheme === 'dark';
 };
 const onThemeUpdate = (mode) => {
@@ -414,6 +422,15 @@ const userContext = reactive({
 });
 
 onMounted(async () => {
+  // 页面级登录保护 — 未登录拦截
+  if (!isUserLoggedIn()) {
+    toast.info('请先登录后使用AI聊天');
+    setTimeout(() => {
+      uni.navigateTo({ url: '/pages/login/index', fail: () => uni.reLaunch({ url: '/pages/login/index' }) });
+    }, 300);
+    return;
+  }
+
   // [OK] F024: 初始化主题
   initTheme();
   uni.$on('themeUpdate', onThemeUpdate);
@@ -630,7 +647,7 @@ const showMenu = () => {
     success: (res) => {
       if (res.tapIndex === 0) {
         // 清空聊天记录
-        uni.showModal({
+        modal.show({
           title: '确认清空',
           content: `确定要清空与${currentFriend.value.name}的聊天记录吗？`,
           success: (modalRes) => {
@@ -644,7 +661,7 @@ const showMenu = () => {
         });
       } else if (res.tapIndex === 1) {
         // 查看好友资料
-        uni.showModal({
+        modal.show({
           title: currentFriend.value.name,
           content: `${currentFriend.value.role}\n\n${currentFriend.value.intro}`,
           showCancel: false
@@ -1003,7 +1020,7 @@ const handleNormalChat = async (content) => {
       logger.log('[Chat] 智能回复成功');
     } else {
       if (response?.code === 401 || /未登录|登录已过期|重新登录/.test(response?.message || '')) {
-        uni.showModal({
+        modal.show({
           title: '登录提示',
           content: '当前登录已失效，请重新登录后继续聊天',
           confirmText: '去登录',
@@ -1143,12 +1160,7 @@ onUnmounted(() => {
   flex-direction: column;
   height: 100%;
   height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top, var(--bg-page)) 0%,
-    var(--page-gradient-mid, var(--bg-page)) 56%,
-    var(--page-gradient-bottom, var(--bg-page)) 100%
-  );
+  background: var(--background);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -1168,7 +1180,7 @@ onUnmounted(() => {
   height: 380rpx;
   right: -120rpx;
   top: 120rpx;
-  background: radial-gradient(circle, var(--brand-tint) 0%, transparent 72%);
+  background: radial-gradient(circle, rgba(206, 130, 255, 0.1) 0%, transparent 72%);
   filter: blur(10rpx);
 }
 
@@ -1177,7 +1189,7 @@ onUnmounted(() => {
   height: 320rpx;
   left: -120rpx;
   bottom: 220rpx;
-  background: radial-gradient(circle, var(--brand-tint-subtle) 0%, transparent 74%);
+  background: radial-gradient(circle, rgba(206, 130, 255, 0.06) 0%, transparent 74%);
   filter: blur(8rpx);
 }
 
@@ -1297,7 +1309,7 @@ onUnmounted(() => {
   }
 
   .right-bubble {
-    color: #ffffff;
+    color: var(--text-inverse);
   }
 }
 
@@ -1308,7 +1320,8 @@ onUnmounted(() => {
   justify-content: space-between;
   padding-left: 32rpx;
   padding-right: 32rpx;
-  border-bottom: 1rpx solid transparent;
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  background: var(--bg-card);
   z-index: 10;
 }
 
@@ -1334,7 +1347,7 @@ onUnmounted(() => {
 
 .nav-title {
   font-size: 32rpx;
-  font-weight: 680;
+  font-weight: 800;
   letter-spacing: -0.2rpx;
   color: var(--text-primary);
 }
@@ -1364,7 +1377,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 100;
   display: flex;
   align-items: flex-start;
@@ -1377,7 +1390,9 @@ onUnmounted(() => {
   max-width: 700rpx;
   border-radius: 28rpx;
   overflow: hidden;
-  box-shadow: var(--apple-shadow-floating);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .selector-header {
@@ -1385,12 +1400,12 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 32rpx 40rpx;
-  border-bottom: 1rpx solid var(--border-light);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .selector-title {
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
@@ -1416,12 +1431,12 @@ onUnmounted(() => {
   margin-bottom: 8rpx;
 
   &:active {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(206, 130, 255, 0.08);
   }
 
   &.active {
-    background: rgba(255, 255, 255, 0.28);
-    box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.24);
+    background: rgba(206, 130, 255, 0.12);
+    box-shadow: none;
   }
 }
 
@@ -1438,7 +1453,7 @@ onUnmounted(() => {
 
 .friend-name {
   font-size: 32rpx;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-primary);
   display: block;
 }
@@ -1452,14 +1467,14 @@ onUnmounted(() => {
 .friend-check {
   width: 48rpx;
   height: 48rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
+  background: var(--purple-light, #ce82ff);
+  color: var(--text-inverse);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28rpx;
-  box-shadow: var(--cta-primary-shadow);
+  box-shadow: 0 4rpx 0 #a855d6;
 }
 
 /* 聊天列表 */
@@ -1478,7 +1493,10 @@ onUnmounted(() => {
   text-align: center;
   max-width: 640rpx;
   margin: 12rpx auto 0;
-  border-radius: 40rpx;
+  border-radius: 28rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .welcome-avatar {
@@ -1490,14 +1508,15 @@ onUnmounted(() => {
 
 .welcome-name {
   font-size: 40rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 8rpx;
 }
 
 .welcome-role {
   font-size: 28rpx;
-  color: var(--text-secondary);
+  color: var(--purple-light, #ce82ff);
+  font-weight: 600;
   margin-bottom: 32rpx;
 }
 
@@ -1511,7 +1530,7 @@ onUnmounted(() => {
 .welcome-note {
   margin-top: 18rpx;
   font-size: 22rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -1538,38 +1557,35 @@ onUnmounted(() => {
   padding: 20rpx 28rpx;
   border-radius: 32rpx;
   font-size: 30rpx;
+  font-weight: 700;
   line-height: 1.5;
   position: relative;
 }
 
 .left-bubble {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background: var(--bg-card);
   color: var(--text-primary);
   margin-left: 16rpx;
-  border: 1rpx solid var(--glass-border);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-bottom-left-radius: 10rpx;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .right-bubble {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 46%),
-    linear-gradient(160deg, rgba(27, 130, 74, 0.98) 0%, rgba(15, 95, 52, 0.92) 100%);
+  background: linear-gradient(135deg, var(--purple-light, #ce82ff) 0%, #b55cf0 100%);
   color: var(--text-inverse);
   margin-right: 16rpx;
   border-bottom-right-radius: 10rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.14);
-  box-shadow: 0 12rpx 28rpx rgba(15, 95, 52, 0.24);
+  border: none;
+  box-shadow: 0 8rpx 0 #9a3fd6;
 
   &.sending {
     opacity: 0.7;
   }
 
   &.failed {
-    background: linear-gradient(135deg, var(--ds-color-error, #ff3b30), var(--danger-light, #ff6b6b));
-    box-shadow: 0 4rpx 16rpx rgba(255, 59, 48, 0.3);
+    background: linear-gradient(135deg, var(--danger), #ff6b6b);
+    box-shadow: 0 8rpx 0 #cc3333;
   }
 }
 
@@ -1602,7 +1618,8 @@ onUnmounted(() => {
 .msg-time {
   display: block;
   font-size: 22rpx;
-  opacity: 0.6;
+  color: var(--text-secondary);
+  opacity: 0.8;
 }
 
 /* 输入指示器 */
@@ -1619,7 +1636,7 @@ onUnmounted(() => {
   margin-right: 8rpx;
   width: 16rpx;
   height: 16rpx;
-  background: var(--text-secondary);
+  background: var(--purple-light, #ce82ff);
   border-radius: 50%;
   animation: typing 1.4s infinite ease-in-out;
 
@@ -1655,26 +1672,28 @@ onUnmounted(() => {
   flex-wrap: wrap;
   /* gap: 16rpx; -- replaced for Android WebView compat */
   padding: 24rpx 32rpx;
-  border-top: 1rpx solid transparent;
+  border-top: 2rpx solid rgba(0, 0, 0, 0.04);
+  background: var(--bg-card);
 }
 
 .emotion-tag {
   margin-right: 16rpx;
   margin-bottom: 16rpx;
   padding: 12rpx 22rpx;
-  background: var(--fill-tertiary, rgba(120, 120, 128, 0.12));
+  background: rgba(206, 130, 255, 0.12);
   border-radius: 999rpx;
   font-size: 26rpx;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--text-primary);
 
   &:active {
     opacity: 0.7;
   }
 
   &.active {
-    background: var(--cta-primary-bg);
-    color: var(--cta-primary-text);
-    box-shadow: var(--cta-primary-shadow);
+    background: var(--purple-light, #ce82ff);
+    color: var(--text-inverse);
+    box-shadow: 0 8rpx 0 #a855d6;
   }
 }
 
@@ -1685,7 +1704,8 @@ onUnmounted(() => {
   padding: 20rpx 24rpx;
   padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  border-top: 1rpx solid transparent;
+  border-top: 2rpx solid rgba(0, 0, 0, 0.04);
+  background: var(--bg-card);
   /* gap: 16rpx; -- replaced for Android WebView compat */
 }
 
@@ -1709,10 +1729,12 @@ onUnmounted(() => {
   flex: 1;
   height: 72rpx;
   border-radius: 36rpx;
-  border: 1rpx solid transparent;
+  border: 2rpx solid rgba(0, 0, 0, 0.06);
   padding: 0 28rpx;
   font-size: 30rpx;
+  font-weight: 600;
   color: var(--text-primary);
+  background: var(--background);
 }
 
 .send-btn {
@@ -1723,11 +1745,17 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  background: rgba(206, 130, 255, 0.12);
 
   &.active {
-    background: var(--cta-primary-bg);
-    box-shadow: var(--cta-primary-shadow);
+    background: var(--purple-light, #ce82ff);
+    box-shadow: 0 8rpx 0 #a855d6;
     transform: scale(1.05);
+
+    &:active {
+      transform: scale(1.05) translateY(4rpx);
+      box-shadow: 0 4rpx 0 #a855d6;
+    }
   }
 }
 
@@ -1737,7 +1765,7 @@ onUnmounted(() => {
   color: var(--text-secondary);
 
   .send-btn.active & {
-    color: var(--cta-primary-text);
+    color: var(--text-inverse);
   }
 }
 
@@ -1787,7 +1815,7 @@ onUnmounted(() => {
 }
 
 .skeleton-animate {
-  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
+  background: linear-gradient(90deg, var(--muted) 25%, var(--muted) 50%, var(--muted) 75%);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
 }
@@ -1826,7 +1854,7 @@ onUnmounted(() => {
 .wave-bar {
   margin-right: 4rpx;
   width: 12rpx;
-  background: linear-gradient(180deg, var(--primary), var(--accent-cool));
+  background: linear-gradient(180deg, var(--purple-light, #ce82ff), #b55cf0);
   border-radius: 6rpx;
   animation: wave 1s ease-in-out infinite;
 }
@@ -1842,7 +1870,7 @@ onUnmounted(() => {
 }
 
 .voice-hint {
-  color: #ffffff;
+  color: var(--text-inverse);
   font-size: 28rpx;
   opacity: 0.8;
 }

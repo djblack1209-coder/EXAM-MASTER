@@ -234,6 +234,12 @@ function _cleanup() {
   // 清除定时器
   _stopOfflineTimer();
   _clearAutoHideTimer();
+
+  // 清除 dismiss 重检定时器
+  if (_dismissRecheckTimer) {
+    clearTimeout(_dismissRecheckTimer);
+    _dismissRecheckTimer = null;
+  }
 }
 
 function _updateVisibility() {
@@ -323,12 +329,15 @@ async function handleSync() {
   }
 }
 
+/** @type {number|null} dismiss 后的重新检查定时器 */
+let _dismissRecheckTimer = null;
+
 function handleDismiss() {
   visible.value = false;
   expanded.value = false;
 
   // 5分钟后重新检查
-  setTimeout(
+  _dismissRecheckTimer = setTimeout(
     () => {
       _updateVisibility();
     },

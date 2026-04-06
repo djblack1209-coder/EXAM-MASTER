@@ -16,7 +16,8 @@
       <!-- 顶部描述卡片 -->
       <view class="hero-card">
         <view class="hero-icon-wrapper">
-          <BaseIcon name="file" :size="56" class="hero-icon" />
+          <!-- 卡通图标替代装饰性 BaseIcon -->
+          <image class="hero-cartoon-icon" src="/static/icons/doc-convert.png" mode="aspectFit" />
         </view>
         <text class="hero-title"> 智能文档转换 </text>
         <text class="hero-desc"> 支持 PDF、Word、Excel、PPT 等格式互转 </text>
@@ -145,7 +146,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { onLoad, onUnload, onHide, onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { useToolsStore } from '@/stores/modules/tools.js';
 import { logger } from '@/utils/logger.js';
@@ -155,6 +159,7 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
+// 转换类型配置
 const CONVERT_TYPES = [
   { key: 'word2pdf', icon: 'W', name: 'Word→PDF', desc: 'doc/docx 转 PDF', accept: '.doc,.docx,.odt,.rtf' },
   { key: 'pdf2word', icon: 'P', name: 'PDF→Word', desc: 'PDF 转 docx', accept: '.pdf' },
@@ -164,611 +169,631 @@ const CONVERT_TYPES = [
   { key: 'pdf2img', icon: 'G', name: 'PDF→图片', desc: 'PDF 转 JPG/PNG', accept: '.pdf' }
 ];
 
+// 文件大小上限 100MB
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
-export default {
-  components: { BaseIcon },
-  setup() {
-    const toolsStore = useToolsStore();
-    return { toolsStore };
-  },
-  data() {
-    return {
-      statusBarHeight: 44,
-      isDark: false,
-      convertTypes: CONVERT_TYPES,
-      selectedType: 'word2pdf',
-      selectedFile: null,
-      fileBase64: null,
-      isReadingFile: false,
-      status: 'idle', // idle | uploading | converting | done | error
-      errorMsg: '',
-      resultUrl: null,
-      resultFiles: [],
-      jobId: null,
-      pollTimer: null,
-      isPollingRequest: false
-    };
-  },
+// Store
+const toolsStore = useToolsStore();
 
-  computed: {
-    currentType() {
-      return CONVERT_TYPES.find((t) => t.key === this.selectedType);
-    },
-    acceptHint() {
-      if (!this.currentType) return '';
-      return `支持 ${this.currentType.accept} 格式，单文件不超过 ${Math.floor(MAX_FILE_SIZE / 1024 / 1024)}MB`;
-    },
-    canConvert() {
-      return !!(
-        this.selectedFile &&
-        this.selectedType &&
-        this.status === 'idle' &&
-        this.fileBase64 &&
-        !this.isReadingFile
-      );
-    }
-  },
+// ========== 响应式状态 ==========
+const statusBarHeight = ref(44);
+const isDark = ref(false);
+const convertTypes = CONVERT_TYPES; // 静态数据，无需 ref
+const selectedType = ref('word2pdf');
+const selectedFile = ref(null);
+const fileBase64 = ref(null);
+const isReadingFile = ref(false);
+const status = ref('idle'); // idle | uploading | converting | done | error
+const errorMsg = ref('');
+const resultUrl = ref(null);
+const resultFiles = ref([]);
+const jobId = ref(null);
 
-  onShareAppMessage() {
-    return {
-      title: '免费文档格式转换 - PDF/Word/Excel 互转',
-      path: '/pages/tools/doc-convert',
-      imageUrl: '/static/images/logo.png'
-    };
-  },
-  onShareTimeline() {
-    return {
-      title: '免费文档格式转换 - 无需注册，即用即走',
-      query: ''
-    };
-  },
+// ========== 非响应式变量（定时器 / 标志位） ==========
+let pollTimer = null;
+let isPollingRequest = false;
+let _themeHandler = null;
 
-  onLoad() {
-    this.statusBarHeight = getStatusBarHeight();
-    this.isDark = initTheme();
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    onThemeUpdate(this._themeHandler);
-  },
+// ========== 计算属性 ==========
+const currentType = computed(() => {
+  return CONVERT_TYPES.find((t) => t.key === selectedType.value);
+});
 
-  onUnload() {
-    this.clearPollTimer();
-    offThemeUpdate(this._themeHandler);
-  },
+const acceptHint = computed(() => {
+  if (!currentType.value) return '';
+  return `支持 ${currentType.value.accept} 格式，单文件不超过 ${Math.floor(MAX_FILE_SIZE / 1024 / 1024)}MB`;
+});
 
-  // ✅ P0-FIX: 页面隐藏时也清理轮询，防止后台持续请求
-  onHide() {
-    this.clearPollTimer();
-  },
+const canConvert = computed(() => {
+  return !!(
+    selectedFile.value &&
+    selectedType.value &&
+    status.value === 'idle' &&
+    fileBase64.value &&
+    !isReadingFile.value
+  );
+});
 
-  methods: {
-    isPrivacyScopeUndeclaredError(err) {
-      const msg = String(err?.errMsg || '').toLowerCase();
-      return Number(err?.errno) === 112 || msg.includes('privacy agreement') || msg.includes('scope is not declared');
-    },
+// ========== 分享配置 ==========
+onShareAppMessage(() => ({
+  title: '免费文档格式转换 - PDF/Word/Excel 互转',
+  path: '/pages/tools/doc-convert',
+  imageUrl: '/static/images/logo.png'
+}));
 
-    showPrivacyScopeGuide() {
-      uni.showModal({
-        title: '文件权限未开启',
-        content:
-          '当前小程序未完成文件选择相关隐私声明，暂时无法读取本地文件。\n\n请先同意隐私指引并重启小程序；若仍失败，请在小程序后台隐私设置中勾选“选择文件（chooseMessageFile）”后重新发布。',
-        showCancel: false,
-        confirmText: '我知道了'
-      });
-    },
+onShareTimeline(() => ({
+  title: '免费文档格式转换 - 无需注册，即用即走',
+  query: ''
+}));
 
-    goBack() {
-      uni.navigateBack({ delta: 1 });
-    },
+// ========== 生命周期 ==========
+onLoad(() => {
+  statusBarHeight.value = getStatusBarHeight();
+  isDark.value = initTheme();
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  onThemeUpdate(_themeHandler);
+});
 
-    selectType(key) {
-      if (this.status !== 'idle') return;
-      this.selectedType = key;
-      if (this.selectedFile) {
-        this.removeFile();
-      }
-    },
+onUnload(() => {
+  clearPollTimer();
+  offThemeUpdate(_themeHandler);
+});
 
-    getTypeIcon(type) {
-      const iconMap = {
-        word2pdf: 'file-doc',
-        pdf2word: 'file-pdf',
-        excel2pdf: 'file-xls',
-        ppt2pdf: 'file-ppt',
-        img2pdf: 'image',
-        pdf2img: 'file-pdf'
-      };
-      return iconMap[type] || 'file';
-    },
+// 页面隐藏时也清理轮询，防止后台持续请求
+onHide(() => {
+  clearPollTimer();
+});
 
-    chooseFile() {
-      if (this.status !== 'idle') return;
+// ========== 方法 ==========
 
-      // #ifdef MP-WEIXIN
-      const wxApi = globalThis.wx;
-      if (!wxApi || typeof wxApi.chooseMessageFile !== 'function') {
-        toast.info('当前环境不支持文件选择');
-        return;
-      }
+/** 判断是否为隐私协议未声明错误 */
+function isPrivacyScopeUndeclaredError(err) {
+  const msg = String(err?.errMsg || '').toLowerCase();
+  return Number(err?.errno) === 112 || msg.includes('privacy agreement') || msg.includes('scope is not declared');
+}
 
-      const chooseFromWechat = () => {
-        wxApi.chooseMessageFile({
-          count: 1,
-          type: 'file',
-          success: (res) => {
-            if (res.tempFiles && res.tempFiles.length > 0) {
-              const file = res.tempFiles[0];
-              this.handleSelectedFile({
-                name: file.name,
-                size: file.size,
-                path: file.path
-              });
-            }
-          },
-          fail: (err) => {
-            if (err?.errMsg && err.errMsg.includes('cancel')) return;
-            if (this.isPrivacyScopeUndeclaredError(err)) {
-              logger.warn('[文档转换] 隐私协议未声明文件选择权限:', err);
-              this.showPrivacyScopeGuide();
-              return;
-            }
-            toast.info('选择文件失败');
-          }
-        });
-      };
+/** 显示隐私权限引导弹窗 */
+function showPrivacyScopeGuide() {
+  modal.show({
+    title: '文件权限未开启',
+    content:
+      '当前小程序未完成文件选择相关隐私声明，暂时无法读取本地文件。\n\n请先同意隐私指引并重启小程序；若仍失败，请在小程序后台隐私设置中勾选"选择文件（chooseMessageFile）"后重新发布。',
+    showCancel: false,
+    confirmText: '我知道了'
+  });
+}
 
-      if (typeof wxApi.requirePrivacyAuthorize === 'function') {
-        wxApi.requirePrivacyAuthorize({
-          success: () => {
-            chooseFromWechat();
-          },
-          fail: (err) => {
-            if (err?.errMsg && err.errMsg.includes('cancel')) return;
-            if (this.isPrivacyScopeUndeclaredError(err)) {
-              logger.warn('[文档转换] 隐私授权检查失败（未声明）:', err);
-              this.showPrivacyScopeGuide();
-              return;
-            }
-            logger.warn('[文档转换] 隐私授权检查失败，继续尝试文件选择:', err);
-            chooseFromWechat();
-          }
-        });
-      } else {
-        chooseFromWechat();
-      }
-      // #endif
+/** 返回上一页 */
+function goBack() {
+  uni.navigateBack({ delta: 1 });
+}
 
-      // #ifdef APP-PLUS
-      uni.chooseFile({
-        count: 1,
-        type: 'file',
-        success: (res) => {
-          if (res.tempFiles && res.tempFiles.length > 0) {
-            const file = res.tempFiles[0];
-            this.handleSelectedFile({
-              name: file.name,
-              size: file.size,
-              path: file.path
-            });
-          }
-        },
-        fail: (err) => {
-          if (err?.errMsg && err.errMsg.includes('cancel')) return;
-          toast.info('选择文件失败');
-        }
-      });
-      // #endif
+/** 选择转换类型 */
+function selectType(key) {
+  if (status.value !== 'idle') return;
+  selectedType.value = key;
+  if (selectedFile.value) {
+    removeFile();
+  }
+}
 
-      // #ifdef H5
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = this.currentType ? this.currentType.accept : '*';
-      input.onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          this.handleSelectedFile({
+/** 根据转换类型返回图标名称 */
+function getTypeIcon(type) {
+  const iconMap = {
+    word2pdf: 'file-doc',
+    pdf2word: 'file-pdf',
+    excel2pdf: 'file-xls',
+    ppt2pdf: 'file-ppt',
+    img2pdf: 'image',
+    pdf2img: 'file-pdf'
+  };
+  return iconMap[type] || 'file';
+}
+
+/** 选择文件（多平台兼容） */
+function chooseFile() {
+  if (status.value !== 'idle') return;
+
+  // #ifdef MP-WEIXIN
+  const wxApi = globalThis.wx;
+  if (!wxApi || typeof wxApi.chooseMessageFile !== 'function') {
+    toast.info('当前环境不支持文件选择');
+    return;
+  }
+
+  const chooseFromWechat = () => {
+    wxApi.chooseMessageFile({
+      count: 1,
+      type: 'file',
+      success: (res) => {
+        if (res.tempFiles && res.tempFiles.length > 0) {
+          const file = res.tempFiles[0];
+          handleSelectedFile({
             name: file.name,
             size: file.size,
-            raw: file
+            path: file.path
           });
         }
-      };
-      input.click();
-      // #endif
-    },
-
-    getAcceptExtensions() {
-      if (!this.currentType || !this.currentType.accept) return [];
-      return this.currentType.accept
-        .split(',')
-        .map((item) => item.trim().toLowerCase().replace(/^\./, ''))
-        .filter(Boolean);
-    },
-
-    getFileExtension(fileName) {
-      const name = String(fileName || '').trim();
-      const dotIndex = name.lastIndexOf('.');
-      if (dotIndex < 0) return '';
-      return name.slice(dotIndex + 1).toLowerCase();
-    },
-
-    validateFile(fileName, fileSize) {
-      const ext = this.getFileExtension(fileName);
-      const allowed = this.getAcceptExtensions();
-      if (!ext || (allowed.length > 0 && !allowed.includes(ext))) {
-        return {
-          valid: false,
-          message: `当前类型仅支持 ${this.currentType?.accept || '指定格式'} 文件`
-        };
+      },
+      fail: (err) => {
+        if (err?.errMsg && err.errMsg.includes('cancel')) return;
+        if (isPrivacyScopeUndeclaredError(err)) {
+          logger.warn('[文档转换] 隐私协议未声明文件选择权限:', err);
+          showPrivacyScopeGuide();
+          return;
+        }
+        toast.info('选择文件失败');
       }
+    });
+  };
 
-      const size = Number(fileSize || 0);
-      if (size <= 0) {
-        return {
-          valid: false,
-          message: '文件为空，请重新选择'
-        };
+  if (typeof wxApi.requirePrivacyAuthorize === 'function') {
+    wxApi.requirePrivacyAuthorize({
+      success: () => {
+        chooseFromWechat();
+      },
+      fail: (err) => {
+        if (err?.errMsg && err.errMsg.includes('cancel')) return;
+        if (isPrivacyScopeUndeclaredError(err)) {
+          logger.warn('[文档转换] 隐私授权检查失败（未声明）:', err);
+          showPrivacyScopeGuide();
+          return;
+        }
+        logger.warn('[文档转换] 隐私授权检查失败，继续尝试文件选择:', err);
+        chooseFromWechat();
       }
+    });
+  } else {
+    chooseFromWechat();
+  }
+  // #endif
 
-      if (size > MAX_FILE_SIZE) {
-        return {
-          valid: false,
-          message: `文件过大，最大支持 ${Math.floor(MAX_FILE_SIZE / 1024 / 1024)}MB`
-        };
+  // #ifdef APP-PLUS
+  uni.chooseFile({
+    count: 1,
+    type: 'file',
+    success: (res) => {
+      if (res.tempFiles && res.tempFiles.length > 0) {
+        const file = res.tempFiles[0];
+        handleSelectedFile({
+          name: file.name,
+          size: file.size,
+          path: file.path
+        });
       }
-
-      return { valid: true };
     },
+    fail: (err) => {
+      if (err?.errMsg && err.errMsg.includes('cancel')) return;
+      toast.info('选择文件失败');
+    }
+  });
+  // #endif
 
-    handleSelectedFile(file) {
-      const checkResult = this.validateFile(file?.name, file?.size);
-      if (!checkResult.valid) {
-        toast.info(checkResult.message || '文件格式不支持');
-        return;
-      }
-
-      this.selectedFile = {
+  // #ifdef H5
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = currentType.value ? currentType.value.accept : '*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      handleSelectedFile({
         name: file.name,
         size: file.size,
-        path: file.path || ''
-      };
-      this.fileBase64 = null;
-      this.errorMsg = '';
-      this.resultUrl = null;
-      this.resultFiles = [];
-      this.jobId = null;
-      this.isReadingFile = true;
+        raw: file
+      });
+    }
+  };
+  input.click();
+  // #endif
+}
 
-      if (file.path) {
-        this.readFileBase64(file.path);
-        return;
-      }
+/** 获取当前类型允许的扩展名列表 */
+function getAcceptExtensions() {
+  if (!currentType.value || !currentType.value.accept) return [];
+  return currentType.value.accept
+    .split(',')
+    .map((item) => item.trim().toLowerCase().replace(/^\./, ''))
+    .filter(Boolean);
+}
 
-      if (file.raw) {
-        this.readH5FileBase64(file.raw);
-      }
+/** 从文件名中提取扩展名 */
+function getFileExtension(fileName) {
+  const name = String(fileName || '').trim();
+  const dotIndex = name.lastIndexOf('.');
+  if (dotIndex < 0) return '';
+  return name.slice(dotIndex + 1).toLowerCase();
+}
+
+/** 校验文件格式和大小 */
+function validateFile(fileName, fileSize) {
+  const ext = getFileExtension(fileName);
+  const allowed = getAcceptExtensions();
+  if (!ext || (allowed.length > 0 && !allowed.includes(ext))) {
+    return {
+      valid: false,
+      message: `当前类型仅支持 ${currentType.value?.accept || '指定格式'} 文件`
+    };
+  }
+
+  const size = Number(fileSize || 0);
+  if (size <= 0) {
+    return {
+      valid: false,
+      message: '文件为空，请重新选择'
+    };
+  }
+
+  if (size > MAX_FILE_SIZE) {
+    return {
+      valid: false,
+      message: `文件过大，最大支持 ${Math.floor(MAX_FILE_SIZE / 1024 / 1024)}MB`
+    };
+  }
+
+  return { valid: true };
+}
+
+/** 处理已选文件 */
+function handleSelectedFile(file) {
+  const checkResult = validateFile(file?.name, file?.size);
+  if (!checkResult.valid) {
+    toast.info(checkResult.message || '文件格式不支持');
+    return;
+  }
+
+  selectedFile.value = {
+    name: file.name,
+    size: file.size,
+    path: file.path || ''
+  };
+  fileBase64.value = null;
+  errorMsg.value = '';
+  resultUrl.value = null;
+  resultFiles.value = [];
+  jobId.value = null;
+  isReadingFile.value = true;
+
+  if (file.path) {
+    readFileBase64(file.path);
+    return;
+  }
+
+  if (file.raw) {
+    readH5FileBase64(file.raw);
+  }
+}
+
+/** 读取文件为 Base64（小程序 / App） */
+function readFileBase64(filePath) {
+  // #ifdef MP-WEIXIN
+  uni.getFileSystemManager().readFile({
+    filePath,
+    encoding: 'base64',
+    success: (res) => {
+      fileBase64.value = res.data;
+      isReadingFile.value = false;
     },
+    fail: (err) => {
+      isReadingFile.value = false;
+      logger.error('读取文件失败:', err);
+      toast.info('读取文件失败');
+      removeFile();
+    }
+  });
+  // #endif
 
-    readFileBase64(filePath) {
-      // #ifdef MP-WEIXIN
-      uni.getFileSystemManager().readFile({
-        filePath,
-        encoding: 'base64',
-        success: (res) => {
-          this.fileBase64 = res.data;
-          this.isReadingFile = false;
-        },
-        fail: (err) => {
-          this.isReadingFile = false;
+  // #ifdef APP-PLUS
+  plus.io.resolveLocalFileSystemURL(
+    filePath,
+    (entry) => {
+      entry.file((file) => {
+        const reader = new plus.io.FileReader();
+        reader.onloadend = (e) => {
+          const base64Data = e.target.result.split(',')[1] || '';
+          fileBase64.value = base64Data;
+          isReadingFile.value = false;
+        };
+        reader.onerror = (err) => {
+          isReadingFile.value = false;
           logger.error('读取文件失败:', err);
           toast.info('读取文件失败');
-          this.removeFile();
-        }
+          removeFile();
+        };
+        reader.readAsDataURL(file);
       });
-      // #endif
+    },
+    (err) => {
+      isReadingFile.value = false;
+      logger.error('解析文件路径失败:', err);
+      toast.info('读取文件失败');
+      removeFile();
+    }
+  );
+  // #endif
+}
 
-      // #ifdef APP-PLUS
-      plus.io.resolveLocalFileSystemURL(
-        filePath,
-        (entry) => {
-          entry.file((file) => {
-            const reader = new plus.io.FileReader();
-            reader.onloadend = (e) => {
-              const base64Data = e.target.result.split(',')[1] || '';
-              this.fileBase64 = base64Data;
-              this.isReadingFile = false;
-            };
-            reader.onerror = (err) => {
-              this.isReadingFile = false;
-              logger.error('读取文件失败:', err);
-              toast.info('读取文件失败');
-              this.removeFile();
-            };
-            reader.readAsDataURL(file);
-          });
-        },
-        (err) => {
-          this.isReadingFile = false;
-          logger.error('解析文件路径失败:', err);
-          toast.info('读取文件失败');
-          this.removeFile();
+/** 读取文件为 Base64（H5） */
+function readH5FileBase64(file) {
+  // #ifdef H5
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    fileBase64.value = String(ev.target?.result || '').split(',')[1] || '';
+    isReadingFile.value = false;
+  };
+  reader.onerror = (err) => {
+    isReadingFile.value = false;
+    logger.error('读取文件失败:', err);
+    toast.info('读取文件失败');
+    removeFile();
+  };
+  reader.readAsDataURL(file);
+  // #endif
+}
+
+/** 移除已选文件并重置状态 */
+function removeFile() {
+  clearPollTimer();
+  selectedFile.value = null;
+  fileBase64.value = null;
+  isReadingFile.value = false;
+  resultUrl.value = null;
+  resultFiles.value = [];
+  jobId.value = null;
+  status.value = 'idle';
+  errorMsg.value = '';
+}
+
+/** 从后端返回数据中提取下载链接 */
+function extractResultUrl(data) {
+  if (!data || typeof data !== 'object') return '';
+  if (typeof data.url === 'string' && data.url) return data.url;
+  if (typeof data.downloadUrl === 'string' && data.downloadUrl) return data.downloadUrl;
+  if (Array.isArray(data.files) && data.files.length > 0 && typeof data.files[0]?.url === 'string') {
+    return data.files[0].url;
+  }
+  return '';
+}
+
+/** 规范化错误消息 */
+function normalizeErrorMessage(error, fallback = '操作失败，请重试') {
+  if (!error) return fallback;
+  if (typeof error === 'string') return error;
+  if (typeof error === 'object') {
+    return error.message || error.msg || fallback;
+  }
+  return fallback;
+}
+
+/** 开始转换 */
+async function startConvert() {
+  if (!isUserLoggedIn()) {
+    modal.show({
+      title: '请先登录',
+      content: '登录后可使用文档转换功能',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) {
+          safeNavigateTo('/pages/login/index');
         }
-      );
-      // #endif
-    },
-
-    readH5FileBase64(file) {
-      // #ifdef H5
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        this.fileBase64 = String(ev.target?.result || '').split(',')[1] || '';
-        this.isReadingFile = false;
-      };
-      reader.onerror = (err) => {
-        this.isReadingFile = false;
-        logger.error('读取文件失败:', err);
-        toast.info('读取文件失败');
-        this.removeFile();
-      };
-      reader.readAsDataURL(file);
-      // #endif
-    },
-
-    removeFile() {
-      this.clearPollTimer();
-      this.selectedFile = null;
-      this.fileBase64 = null;
-      this.isReadingFile = false;
-      this.resultUrl = null;
-      this.resultFiles = [];
-      this.jobId = null;
-      this.status = 'idle';
-      this.errorMsg = '';
-    },
-
-    extractResultUrl(data) {
-      if (!data || typeof data !== 'object') return '';
-      if (typeof data.url === 'string' && data.url) return data.url;
-      if (typeof data.downloadUrl === 'string' && data.downloadUrl) return data.downloadUrl;
-      if (Array.isArray(data.files) && data.files.length > 0 && typeof data.files[0]?.url === 'string') {
-        return data.files[0].url;
       }
-      return '';
-    },
+    });
+    return;
+  }
 
-    normalizeErrorMessage(error, fallback = '操作失败，请重试') {
-      if (!error) return fallback;
-      if (typeof error === 'string') return error;
-      if (typeof error === 'object') {
-        return error.message || error.msg || fallback;
+  if (isReadingFile.value) {
+    toast.info('文件读取中，请稍候');
+    return;
+  }
+
+  if (!selectedFile.value || !fileBase64.value) {
+    toast.info('请先选择文件');
+    return;
+  }
+
+  status.value = 'uploading';
+  errorMsg.value = '';
+  resultUrl.value = null;
+  resultFiles.value = [];
+
+  try {
+    const res = await toolsStore.submitConvert(fileBase64.value, selectedFile.value.name, selectedType.value);
+
+    if (res.success && res.data) {
+      jobId.value = res.data.jobId || null;
+      resultFiles.value = Array.isArray(res.data.files) ? res.data.files : [];
+      const url = extractResultUrl(res.data);
+
+      if (url) {
+        resultUrl.value = url;
+        status.value = 'done';
+        return;
       }
-      return fallback;
-    },
 
-    async startConvert() {
-      if (!isUserLoggedIn()) {
-        uni.showModal({
-          title: '请先登录',
-          content: '登录后可使用文档转换功能',
-          confirmText: '去登录',
-          success: (res) => {
-            if (res.confirm) {
-              safeNavigateTo('/pages/login/index');
-            }
+      if (!jobId.value) {
+        throw new Error('未获取到任务ID，请重试');
+      }
+
+      status.value = 'converting';
+      startPolling();
+    } else {
+      throw new Error(res.error?.message || '提交转换失败');
+    }
+  } catch (error) {
+    logger.error('转换提交失败:', error);
+    status.value = 'error';
+    errorMsg.value = normalizeErrorMessage(error, '转换失败，请重试');
+  }
+}
+
+/** 开始轮询转换状态 */
+function startPolling() {
+  if (!jobId.value) {
+    status.value = 'error';
+    errorMsg.value = '任务ID缺失，请重新提交';
+    return;
+  }
+
+  let attempts = 0;
+  const maxAttempts = 60;
+
+  clearPollTimer();
+
+  pollTimer = setInterval(async () => {
+    if (isPollingRequest) {
+      return;
+    }
+
+    isPollingRequest = true;
+    attempts++;
+    if (attempts > maxAttempts) {
+      clearPollTimer();
+      status.value = 'error';
+      errorMsg.value = '转换超时，请重试';
+      isPollingRequest = false;
+      return;
+    }
+
+    try {
+      const res = await toolsStore.pollConvertStatus(jobId.value);
+      if (res.success && res.data) {
+        // 注意：解构时用 jobStatus 避免与外层 ref 同名
+        const jobStatus = res.data.status;
+        if (jobStatus === 'completed' || jobStatus === 'finished') {
+          clearPollTimer();
+          await fetchResult();
+        } else if (jobStatus === 'error' || jobStatus === 'failed') {
+          clearPollTimer();
+          status.value = 'error';
+          errorMsg.value = res.data.error || '转换失败';
+        }
+      } else if (!res.success) {
+        clearPollTimer();
+        status.value = 'error';
+        errorMsg.value = res.error?.message || '查询转换状态失败';
+      }
+    } catch (error) {
+      logger.error('轮询状态失败:', error);
+    } finally {
+      isPollingRequest = false;
+    }
+  }, 2000);
+}
+
+/** 获取转换结果 */
+async function fetchResult() {
+  try {
+    const res = await toolsStore.fetchConvertResult(jobId.value);
+    if (res.success && res.data) {
+      resultFiles.value = Array.isArray(res.data.files) ? res.data.files : [];
+      resultUrl.value = extractResultUrl(res.data);
+      if (!resultUrl.value) {
+        throw new Error('转换结果为空，请重试');
+      }
+      status.value = 'done';
+    } else {
+      status.value = 'error';
+      errorMsg.value = res.error?.message || '获取结果失败';
+    }
+  } catch (error) {
+    logger.error('获取结果失败:', error);
+    status.value = 'error';
+    errorMsg.value = normalizeErrorMessage(error, '获取结果失败');
+  }
+}
+
+/** 下载转换结果（多平台兼容） */
+function downloadResult() {
+  if (!resultUrl.value) return;
+
+  // #ifdef MP-WEIXIN
+  toast.loading('下载中...');
+  uni.downloadFile({
+    url: resultUrl.value,
+    success: (res) => {
+      toast.hide();
+      if (res.statusCode === 200) {
+        uni.openDocument({
+          filePath: res.tempFilePath,
+          showMenu: true,
+          fail: () => {
+            toast.info('打开文件失败');
           }
         });
-        return;
-      }
-
-      if (this.isReadingFile) {
-        toast.info('文件读取中，请稍候');
-        return;
-      }
-
-      if (!this.selectedFile || !this.fileBase64) {
-        toast.info('请先选择文件');
-        return;
-      }
-
-      this.status = 'uploading';
-      this.errorMsg = '';
-      this.resultUrl = null;
-      this.resultFiles = [];
-
-      try {
-        const res = await this.toolsStore.submitConvert(this.fileBase64, this.selectedFile.name, this.selectedType);
-
-        if (res.success && res.data) {
-          this.jobId = res.data.jobId || null;
-          this.resultFiles = Array.isArray(res.data.files) ? res.data.files : [];
-          const resultUrl = this.extractResultUrl(res.data);
-
-          if (resultUrl) {
-            this.resultUrl = resultUrl;
-            this.status = 'done';
-            return;
-          }
-
-          if (!this.jobId) {
-            throw new Error('未获取到任务ID，请重试');
-          }
-
-          this.status = 'converting';
-          this.startPolling();
-        } else {
-          throw new Error(res.error?.message || '提交转换失败');
-        }
-      } catch (error) {
-        logger.error('转换提交失败:', error);
-        this.status = 'error';
-        this.errorMsg = this.normalizeErrorMessage(error, '转换失败，请重试');
       }
     },
-
-    startPolling() {
-      if (!this.jobId) {
-        this.status = 'error';
-        this.errorMsg = '任务ID缺失，请重新提交';
-        return;
-      }
-
-      let attempts = 0;
-      const maxAttempts = 60;
-
-      this.clearPollTimer();
-
-      this.pollTimer = setInterval(async () => {
-        if (this.isPollingRequest) {
-          return;
-        }
-
-        this.isPollingRequest = true;
-        attempts++;
-        if (attempts > maxAttempts) {
-          this.clearPollTimer();
-          this.status = 'error';
-          this.errorMsg = '转换超时，请重试';
-          this.isPollingRequest = false;
-          return;
-        }
-
-        try {
-          const res = await this.toolsStore.pollConvertStatus(this.jobId);
-          if (res.success && res.data) {
-            const { status } = res.data;
-            if (status === 'completed' || status === 'finished') {
-              this.clearPollTimer();
-              await this.fetchResult();
-            } else if (status === 'error' || status === 'failed') {
-              this.clearPollTimer();
-              this.status = 'error';
-              this.errorMsg = res.data.error || '转换失败';
-            }
-          } else if (!res.success) {
-            this.clearPollTimer();
-            this.status = 'error';
-            this.errorMsg = res.error?.message || '查询转换状态失败';
-          }
-        } catch (error) {
-          logger.error('轮询状态失败:', error);
-        } finally {
-          this.isPollingRequest = false;
-        }
-      }, 2000);
-    },
-
-    async fetchResult() {
-      try {
-        const res = await this.toolsStore.fetchConvertResult(this.jobId);
-        if (res.success && res.data) {
-          this.resultFiles = Array.isArray(res.data.files) ? res.data.files : [];
-          this.resultUrl = this.extractResultUrl(res.data);
-          if (!this.resultUrl) {
-            throw new Error('转换结果为空，请重试');
-          }
-          this.status = 'done';
-        } else {
-          this.status = 'error';
-          this.errorMsg = res.error?.message || '获取结果失败';
-        }
-      } catch (error) {
-        logger.error('获取结果失败:', error);
-        this.status = 'error';
-        this.errorMsg = this.normalizeErrorMessage(error, '获取结果失败');
-      }
-    },
-
-    downloadResult() {
-      if (!this.resultUrl) return;
-
-      // #ifdef MP-WEIXIN
-      toast.loading('下载中...');
-      uni.downloadFile({
-        url: this.resultUrl,
-        success: (res) => {
-          toast.hide();
-          if (res.statusCode === 200) {
-            uni.openDocument({
-              filePath: res.tempFilePath,
-              showMenu: true,
-              fail: () => {
-                toast.info('打开文件失败');
-              }
-            });
-          }
-        },
-        fail: () => {
-          toast.hide();
-          toast.info('下载失败');
-        }
-      });
-      // #endif
-
-      // #ifdef APP-PLUS
-      toast.loading('下载中...');
-      uni.downloadFile({
-        url: this.resultUrl,
-        success: (res) => {
-          toast.hide();
-          if (res.statusCode === 200) {
-            uni.openDocument({
-              filePath: res.tempFilePath,
-              showMenu: true,
-              fail: () => {
-                toast.info('打开文件失败');
-              }
-            });
-          }
-        },
-        fail: () => {
-          toast.hide();
-          toast.info('下载失败');
-        }
-      });
-      // #endif
-
-      // #ifdef H5
-      uni.navigateTo({ url: '/pages/webview/webview?url=' + encodeURIComponent(this.resultUrl) });
-      // #endif
-    },
-
-    resetAll() {
-      this.clearPollTimer();
-      this.selectedFile = null;
-      this.fileBase64 = null;
-      this.isReadingFile = false;
-      this.status = 'idle';
-      this.errorMsg = '';
-      this.resultUrl = null;
-      this.resultFiles = [];
-      this.jobId = null;
-    },
-
-    clearPollTimer() {
-      if (this.pollTimer) {
-        clearInterval(this.pollTimer);
-        this.pollTimer = null;
-      }
-      this.isPollingRequest = false;
-    },
-
-    formatSize(bytes) {
-      if (!bytes) return '';
-      if (bytes < 1024) return bytes + ' B';
-      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    fail: () => {
+      toast.hide();
+      toast.info('下载失败');
     }
+  });
+  // #endif
+
+  // #ifdef APP-PLUS
+  toast.loading('下载中...');
+  uni.downloadFile({
+    url: resultUrl.value,
+    success: (res) => {
+      toast.hide();
+      if (res.statusCode === 200) {
+        uni.openDocument({
+          filePath: res.tempFilePath,
+          showMenu: true,
+          fail: () => {
+            toast.info('打开文件失败');
+          }
+        });
+      }
+    },
+    fail: () => {
+      toast.hide();
+      toast.info('下载失败');
+    }
+  });
+  // #endif
+
+  // #ifdef H5
+  uni.navigateTo({ url: '/pages/webview/webview?url=' + encodeURIComponent(resultUrl.value) });
+  // #endif
+}
+
+/** 重置所有状态，准备下一次转换 */
+function resetAll() {
+  clearPollTimer();
+  selectedFile.value = null;
+  fileBase64.value = null;
+  isReadingFile.value = false;
+  status.value = 'idle';
+  errorMsg.value = '';
+  resultUrl.value = null;
+  resultFiles.value = [];
+  jobId.value = null;
+}
+
+/** 清除轮询定时器 */
+function clearPollTimer() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
   }
-};
+  isPollingRequest = false;
+}
+
+/** 格式化文件大小为可读字符串 */
+function formatSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
 </script>
 
 <style lang="scss" scoped>
 .page-container {
   min-height: 100%;
   min-height: 100vh;
-  background: var(--bg-secondary, #f5f5f7);
+  background: var(--background);
 }
 
 // 导航栏
@@ -812,8 +837,8 @@ export default {
 
   .nav-title {
     font-size: 34rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 800;
+    color: var(--text-primary);
   }
 
   .nav-placeholder {
@@ -861,16 +886,22 @@ export default {
     font-size: 48rpx;
   }
 
+  /* 英雄级卡通图标（替代 BaseIcon size>=56） */
+  .hero-cartoon-icon {
+    width: 100rpx;
+    height: 100rpx;
+  }
+
   .hero-title {
     font-size: 36rpx;
-    font-weight: 700;
-    color: var(--text-primary, #111);
+    font-weight: 800;
+    color: var(--text-primary);
     margin-bottom: 8rpx;
   }
 
   .hero-desc {
     font-size: 24rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
   }
 }
 
@@ -880,8 +911,8 @@ export default {
 
   .section-title {
     font-size: 30rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 800;
+    color: var(--text-primary);
     margin-bottom: 20rpx;
     display: block;
   }
@@ -892,12 +923,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  & > view + view,
-  & > text + text,
-  & > view + text,
-  & > text + view {
-    margin-left: 16rpx;
-  }
+  justify-content: space-between;
 }
 
 .type-card {
@@ -905,6 +931,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 20rpx;
+  margin-bottom: 16rpx;
   background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
   border-radius: 24rpx;
   border: 2rpx solid rgba(255, 255, 255, 0.46);
@@ -949,14 +976,14 @@ export default {
 
   .type-name {
     font-size: 26rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 700;
+    color: var(--text-primary);
     display: block;
   }
 
   .type-desc {
     font-size: 20rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
     margin-top: 2rpx;
     display: block;
   }
@@ -1105,13 +1132,13 @@ export default {
   }
 
   &.status-done {
-    background: rgba(52, 199, 89, 0.06);
-    border: 1rpx solid rgba(52, 199, 89, 0.12);
+    background: color-mix(in srgb, var(--success) 6%, transparent);
+    border: 1rpx solid color-mix(in srgb, var(--success) 12%, transparent);
   }
 
   &.status-error {
-    background: rgba(255, 59, 48, 0.06);
-    border: 1rpx solid rgba(255, 59, 48, 0.12);
+    background: color-mix(in srgb, var(--danger) 6%, transparent);
+    border: 1rpx solid color-mix(in srgb, var(--danger) 12%, transparent);
   }
 }
 
@@ -1170,14 +1197,14 @@ export default {
 
   .status-title {
     font-size: 28rpx;
-    font-weight: 600;
-    color: var(--text-primary, #111);
+    font-weight: 700;
+    color: var(--text-primary);
     display: block;
   }
 
   .status-hint {
     font-size: 22rpx;
-    color: var(--text-secondary, #666);
+    color: var(--text-secondary);
     margin-top: 4rpx;
     display: block;
   }
@@ -1221,15 +1248,20 @@ export default {
 
 // 按钮
 .btn-primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
+  background: #2dc9c4;
+  color: var(--text-inverse);
+  border: none;
   padding: 24rpx;
   border-radius: 999rpx;
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 800;
   text-align: center;
-  box-shadow: var(--cta-primary-shadow);
+  box-shadow: 0 8rpx 0 #22a09c;
+
+  &:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 4rpx 0 #22a09c;
+  }
 
   &::after {
     border: none;

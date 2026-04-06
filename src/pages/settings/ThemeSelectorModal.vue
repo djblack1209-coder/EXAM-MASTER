@@ -4,7 +4,7 @@
     <view class="modal-content theme-selector" @tap.stop>
       <view class="modal-header">
         <text class="modal-title"> 选择主题风格 </text>
-        <text class="close-btn" @tap="$emit('close')"> ✕ </text>
+        <view class="close-btn" @tap="$emit('close')"><BaseIcon name="close" :size="24" /></view>
       </view>
       <view class="modal-body">
         <view class="theme-option" @tap="handleSelect('wise')">
@@ -95,7 +95,7 @@ function handleSelect(type) {
 
 .modal-title {
   font-size: 36rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
@@ -156,7 +156,7 @@ function handleSelect(type) {
 
 .theme-name {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
 }
 

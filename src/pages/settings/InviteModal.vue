@@ -9,9 +9,8 @@
       </view>
 
       <view class="header-brand ds-flex-col ds-flex-center ds-gap-xs">
-        <text class="brand-logo-text">
-          <BaseIcon name="books" :size="48" />
-        </text>
+        <!-- 品牌Logo -->
+        <image class="brand-logo-img" src="/static/images/logo-full.png" mode="aspectFit" lazy-load />
         <text class="brand-name ds-text-lg ds-font-bold"> Exam-Master </text>
       </view>
       <text class="title ds-text-xl ds-font-bold ds-text-primary"> 邀请好友，研途有你 </text>
@@ -56,9 +55,13 @@
       </view>
 
       <view class="wechat-btn" @click="shareToWechat">
-        <text class="wechat-icon-text">
-          <BaseIcon name="comment" :size="32" />
-        </text>
+        <!-- 卡通分享图标装饰 -->
+        <image
+          class="feature-cartoon-icon"
+          src="./static/icons/share-arrow.png"
+          mode="aspectFit"
+          style="width: 56rpx; height: 56rpx; margin-right: 8px"
+        />
         <text class="btn-text"> 分享给微信好友 </text>
       </view>
 
@@ -140,7 +143,7 @@ function shareToWechat() {
       href: inviteLink.value,
       title: 'Exam-Master 考研神器',
       summary: '输入我的邀请码 ' + props.inviteCode + ' 领取会员！',
-      imageUrl: '/static/tabbar/practice-active.png',
+      imageUrl: '/static/images/app-share-cover.png',
       success: () => {
         toast.success('分享成功');
       },
@@ -191,7 +194,7 @@ function openPoster() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--mask-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -341,6 +344,12 @@ function openPoster() {
   display: block;
 }
 
+/* 品牌Logo图片 */
+.brand-logo-img {
+  width: 80rpx;
+  height: 80rpx;
+}
+
 .link-text {
   font-size: 24rpx;
   color: var(--text-secondary);
@@ -453,6 +462,11 @@ function openPoster() {
   color: var(--text-tertiary);
   margin-top: 4px;
   -webkit-font-smoothing: antialiased;
+}
+/* 卡通图标通用样式 */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
 }
 
 /* VISUAL: Dark mode styles */

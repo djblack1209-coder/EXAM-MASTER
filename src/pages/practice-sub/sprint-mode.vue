@@ -103,7 +103,8 @@
 
         <!-- 空状态 -->
         <view v-if="sprintItems.length === 0" class="empty-state">
-          <BaseIcon name="target" :size="96" />
+          <!-- 卡通图标替代装饰性 BaseIcon -->
+          <image class="hero-cartoon-icon" src="/static/icons/target-bullseye.png" mode="aspectFit" />
           <text class="empty-title">请先设置考试日期</text>
           <text class="empty-sub">设置后 AI 将生成最优冲刺优先级</text>
         </view>
@@ -165,7 +166,7 @@ function priorityLabel(p) {
 function getMasteryColor(mastery) {
   if (mastery >= 80) return 'var(--success, #34C759)';
   if (mastery >= 50) return 'var(--warning, #FF9500)';
-  return 'var(--danger, #FF3B30)';
+  return 'var(--danger, var(--danger))';
 }
 
 function getExamDate() {
@@ -225,13 +226,13 @@ onMounted(() => {
 <style scoped>
 .sprint-container {
   min-height: 100vh;
-  background: var(--bg-page, linear-gradient(180deg, #f5f5f7 0%, #eeeef0 50%, #f5f5f7 100%));
+  background: var(--background);
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
   --red: var(--danger, #ff453a);
   --orange: var(--warning, #ff9f0a);
-  --blue: var(--em-info, #32ade6);
+  --blue: var(--info);
   --green: var(--success, #34c759);
 }
 .sprint-container.dark-mode {
@@ -244,8 +245,8 @@ onMounted(() => {
   width: 100%;
   height: 620rpx;
   background:
-    radial-gradient(circle at 18% 24%, rgba(255, 159, 10, 0.22) 0%, transparent 40%),
-    radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.32) 0%, transparent 28%);
+    radial-gradient(circle at 18% 24%, rgba(28, 176, 246, 0.16) 0%, transparent 40%),
+    radial-gradient(circle at 82% 10%, rgba(28, 176, 246, 0.08) 0%, transparent 28%);
   filter: blur(70px);
   opacity: 0.9;
   z-index: 0;
@@ -266,24 +267,21 @@ onMounted(() => {
   padding: 16rpx 32rpx;
   -webkit-backdrop-filter: saturate(180%) blur(40rpx);
   backdrop-filter: saturate(180%) blur(40rpx);
-  background: var(--apple-glass-nav-bg, rgba(245, 245, 247, 0.72));
-  border-bottom: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
-}
-.dark-mode .top-nav {
-  background: rgba(10, 10, 15, 0.72);
-  border-bottom-color: rgba(255, 255, 255, 0.06);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .nav-back-arrow {
   font-size: 36rpx;
-  color: var(--text-main, #1a1a1a);
+  color: var(--text-primary);
   padding: 20rpx;
 }
 .nav-title {
   flex: 1;
   text-align: center;
   font-size: 34rpx;
-  font-weight: 600;
-  color: var(--text-primary, #1c1c1e);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .nav-right {
   width: 48rpx;
@@ -320,13 +318,12 @@ onMounted(() => {
 
 /* 玻璃卡片 */
 .apple-glass-card {
-  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.72));
-  border-radius: 32rpx;
+  background: var(--bg-card);
+  border-radius: 28rpx;
   padding: 32rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
-  -webkit-backdrop-filter: blur(20rpx);
-  backdrop-filter: blur(20rpx);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .dark-mode .apple-glass-card {
   background: rgba(255, 255, 255, 0.06);
@@ -361,7 +358,7 @@ onMounted(() => {
 }
 .ring-num {
   font-size: 52rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
@@ -375,7 +372,7 @@ onMounted(() => {
 }
 .hero-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
 }
@@ -398,10 +395,10 @@ onMounted(() => {
   border-radius: 16rpx;
 }
 .tag-must {
-  background: rgba(255, 69, 58, 0.12);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 .tag-should {
-  background: rgba(255, 159, 10, 0.12);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
 }
 .tag-text {
   font-size: 22rpx;
@@ -437,7 +434,7 @@ onMounted(() => {
 }
 .sprint-kp {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   flex: 1;
 }
@@ -446,10 +443,10 @@ onMounted(() => {
   border-radius: 16rpx;
 }
 .priority-must_do {
-  background: rgba(255, 69, 58, 0.12);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 .priority-should_do {
-  background: rgba(255, 159, 10, 0.12);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
 }
 .priority-nice_to_have {
   background: rgba(50, 173, 230, 0.12);
@@ -514,6 +511,11 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   padding: 120rpx 0;
+}
+/* 英雄级卡通图标（替代 BaseIcon size>=80） */
+.hero-cartoon-icon {
+  width: 160rpx;
+  height: 160rpx;
 }
 .empty-icon {
   font-size: 96rpx;

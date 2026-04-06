@@ -4,6 +4,8 @@
 
     <!-- 匹配阶段 -->
     <view v-if="gameState === 'matching'" class="matching-stage">
+      <!-- PK对战等待插画 -->
+      <image class="pk-waiting-illustration" src="./static/illustrations/pk-waiting.png" mode="aspectFit" lazy-load />
       <view class="radar-scanner">
         <view class="radar-circle radar-1" />
         <view class="radar-circle radar-2" />
@@ -229,6 +231,7 @@
 </template>
 
 <script>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { useSchoolStore } from '@/stores/modules/school.js';
 import { useUserStore } from '@/stores/modules/user.js';
@@ -400,7 +403,8 @@ export default {
   onShareAppMessage() {
     return {
       title: 'PK 对战 - Exam-Master 考研备考',
-      path: '/pages/practice-sub/pk-battle'
+      path: '/pages/practice-sub/pk-battle',
+      imageUrl: './static/images/pk-share-cover.png'
     };
   },
 
@@ -1265,7 +1269,7 @@ export default {
     },
     handleExitFromResult() {
       // 从结算页退出
-      uni.showModal({
+      modal.show({
         title: '确认退出？',
         content: '退出后将返回首页',
         success: (res) => {
@@ -1675,7 +1679,7 @@ export default {
         });
     },
     handleExit() {
-      uni.showModal({
+      modal.show({
         title: '确认退出？',
         content: '退出后将丢失当前匹配进度',
         success: (res) => {
@@ -1687,10 +1691,10 @@ export default {
       });
     },
     handleQuit() {
-      uni.showModal({
+      modal.show({
         title: '退出对战',
         content: '中途退出将视为放弃本局，确定吗？',
-        confirmColor: '#FF3B30',
+        confirmColor: 'var(--danger)',
         success: (res) => {
           if (res.confirm) {
             this.clearAllTimers();
@@ -2652,13 +2656,8 @@ export default {
 
 /* Apple / Liquid Glass visual overrides */
 .container {
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 52%,
-    var(--page-gradient-bottom) 100%
-  );
-  color: var(--text-main);
+  background: var(--background);
+  color: var(--text-primary);
 }
 
 .container.dark-mode {
@@ -2667,9 +2666,9 @@ export default {
 
 .aurora-bg {
   background:
-    radial-gradient(circle at 14% 12%, rgba(107, 208, 150, 0.28) 0%, transparent 34%),
-    radial-gradient(circle at 86% 10%, rgba(255, 255, 255, 0.3) 0%, transparent 24%),
-    radial-gradient(circle at 72% 82%, rgba(72, 190, 128, 0.18) 0%, transparent 32%);
+    radial-gradient(circle at 14% 12%, rgba(255, 75, 75, 0.16) 0%, transparent 34%),
+    radial-gradient(circle at 86% 10%, rgba(255, 75, 75, 0.08) 0%, transparent 24%),
+    radial-gradient(circle at 72% 82%, rgba(255, 75, 75, 0.06) 0%, transparent 32%);
   animation: auroraShift 10s ease-in-out infinite;
 }
 
@@ -2693,7 +2692,7 @@ export default {
 }
 
 .radar-circle {
-  border-color: rgba(52, 199, 89, 0.18);
+  border-color: rgba(255, 75, 75, 0.18);
 }
 
 .container.dark-mode .radar-circle {
@@ -2701,7 +2700,7 @@ export default {
 }
 
 .radar-line {
-  background: linear-gradient(90deg, transparent, rgba(52, 199, 89, 0.7), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 75, 75, 0.7), transparent);
 }
 
 .container.dark-mode .radar-line {
@@ -2717,11 +2716,9 @@ export default {
   height: 192rpx;
   padding: 12rpx;
   border-radius: 50%;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.72) 0%, transparent 44%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(240, 250, 243, 0.52) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.56);
-  box-shadow: var(--apple-shadow-card);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .container.dark-mode .avatar-ring {
@@ -2732,7 +2729,7 @@ export default {
 }
 
 .opponent-ring.found {
-  border-color: rgba(10, 132, 255, 0.5);
+  border-color: var(--danger);
 }
 
 .user-avatar {
@@ -2740,7 +2737,7 @@ export default {
 }
 
 .vs-text {
-  color: var(--text-main);
+  color: var(--text-primary);
   text-shadow: none;
 }
 
@@ -2751,11 +2748,9 @@ export default {
 .match-status {
   padding: 26rpx 28rpx;
   border-radius: 28rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 44%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.76) 0%, rgba(241, 248, 243, 0.5) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.52);
-  box-shadow: var(--apple-shadow-card);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .container.dark-mode .match-status {
@@ -2766,11 +2761,11 @@ export default {
 }
 
 .status-title {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .status-tip {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .container.dark-mode .status-title {
@@ -2782,10 +2777,10 @@ export default {
 }
 
 .exit-btn {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  color: var(--text-main);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .container.dark-mode .exit-btn {
@@ -2816,11 +2811,9 @@ export default {
 .btn-rank,
 .btn-home,
 .btn-exit {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.76) 0%, rgba(241, 248, 243, 0.5) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .container.dark-mode .icon-btn,
@@ -2842,13 +2835,13 @@ export default {
 }
 
 .icon-btn {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .round-badge {
   padding: 10px 18px;
   border-radius: 999px;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .battle-stage {
@@ -2870,16 +2863,16 @@ export default {
 }
 
 .score {
-  color: var(--text-main);
+  color: var(--text-primary);
   text-shadow: none;
 }
 
 .score.me {
-  color: var(--success);
+  color: #58cc02;
 }
 
 .score.opp {
-  color: var(--info-blue);
+  color: var(--danger);
 }
 
 .container.dark-mode .score.me,
@@ -2898,11 +2891,19 @@ export default {
 }
 
 .progress-fill.me {
-  background: linear-gradient(90deg, rgba(52, 199, 89, 0.88) 0%, rgba(101, 219, 138, 0.96) 100%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--success) 88%, transparent) 0%,
+    rgba(101, 219, 138, 0.96) 100%
+  );
 }
 
 .progress-fill.opp {
-  background: linear-gradient(90deg, rgba(10, 132, 255, 0.88) 0%, rgba(95, 170, 255, 0.96) 100%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--info) 88%, transparent) 0%,
+    rgba(95, 170, 255, 0.96) 100%
+  );
 }
 
 .question-card {
@@ -2912,8 +2913,8 @@ export default {
 }
 
 .tag {
-  background: rgba(52, 199, 89, 0.14);
-  color: var(--success);
+  background: rgba(255, 75, 75, 0.12);
+  color: var(--danger);
   padding: 8rpx 14rpx;
   border-radius: 999rpx;
 }
@@ -2929,12 +2930,12 @@ export default {
 }
 
 .timer-text {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .q-text,
 .content {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .container.dark-mode .q-text,
@@ -2954,8 +2955,8 @@ export default {
 }
 
 .letter {
-  background: rgba(255, 255, 255, 0.74);
-  color: var(--text-main);
+  background: rgba(255, 75, 75, 0.12);
+  color: var(--text-primary);
 }
 
 .container.dark-mode .letter {
@@ -2964,12 +2965,12 @@ export default {
 }
 
 .opt-btn.selected .opt-btn-inner {
-  border-color: rgba(52, 199, 89, 0.38);
-  background: rgba(52, 199, 89, 0.12);
+  border-color: var(--danger);
+  background: rgba(255, 75, 75, 0.08);
 }
 
 .opt-btn.selected .letter {
-  background: rgba(52, 199, 89, 0.84);
+  background: var(--danger);
   color: var(--text-inverse);
 }
 
@@ -2983,21 +2984,21 @@ export default {
 }
 
 .opt-btn.correct .opt-btn-inner {
-  border-color: rgba(52, 199, 89, 0.42);
-  background: rgba(52, 199, 89, 0.12);
+  border-color: color-mix(in srgb, var(--success) 42%, transparent);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
 }
 
 .opt-btn.wrong .opt-btn-inner {
-  border-color: rgba(255, 59, 48, 0.34);
-  background: rgba(255, 99, 90, 0.12);
+  border-color: color-mix(in srgb, var(--danger) 34%, transparent);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 
 .opt-btn.correct .letter {
-  background: rgba(52, 199, 89, 0.86);
+  background: color-mix(in srgb, var(--success) 86%, transparent);
 }
 
 .opt-btn.wrong .letter {
-  background: rgba(255, 59, 48, 0.86);
+  background: color-mix(in srgb, var(--danger) 86%, transparent);
 }
 
 .opponent-status {
@@ -3006,7 +3007,7 @@ export default {
 }
 
 .opponent-tip {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .result-stage {
@@ -3019,27 +3020,28 @@ export default {
 }
 
 .result-icon {
-  color: var(--text-main);
+  color: var(--text-primary);
   margin-bottom: 18rpx;
 }
 
 .result-title {
   font-size: 56rpx;
+  font-weight: 800;
   letter-spacing: 0;
 }
 
 .result-title.victory {
-  color: var(--success);
+  color: #58cc02;
   text-shadow: none;
 }
 
 .result-title.defeat {
-  color: var(--info-blue);
+  color: var(--danger);
   text-shadow: none;
 }
 
 .result-subtitle {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .ai-report-box {
@@ -3052,12 +3054,12 @@ export default {
 }
 
 .ai-title {
-  color: var(--text-main);
+  color: var(--danger);
   text-shadow: none;
 }
 
 .ai-text {
-  color: var(--text-main);
+  color: var(--text-primary);
   text-shadow: none;
 }
 
@@ -3074,21 +3076,26 @@ export default {
   border-radius: 999rpx;
   padding: 22rpx 0;
   font-size: 28rpx;
-  font-weight: 620;
+  font-weight: 800;
 }
 
 .btn-share,
 .btn-rank,
 .btn-home,
 .btn-exit {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .btn-again {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--danger);
+  color: var(--text-inverse);
+  border: none;
+  box-shadow: 0 8rpx 0 #cc3c3c;
+}
+
+.btn-again:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #cc3c3c;
 }
 
 .container.dark-mode .btn-again {
@@ -3130,6 +3137,26 @@ export default {
   padding-top: calc(env(safe-area-inset-top, 0px) + 120rpx);
 }
 
+/* PK对战等待插画 */
+.pk-waiting-illustration {
+  width: 300rpx;
+  height: 240rpx;
+  margin: 0 auto 24rpx;
+  display: block;
+  position: relative;
+  z-index: 1;
+  animation: pk-waiting-float 3s ease-in-out infinite;
+}
+@keyframes pk-waiting-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16rpx);
+  }
+}
+
 .matching-stage::after {
   content: '';
   position: absolute;
@@ -3137,12 +3164,10 @@ export default {
   left: 28rpx;
   right: 28rpx;
   bottom: 56rpx;
-  border-radius: 40rpx;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 24%),
-    linear-gradient(160deg, rgba(247, 255, 249, 0.72) 0%, rgba(228, 242, 232, 0.32) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-floating);
+  border-radius: 28rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   z-index: 0;
 }
 
@@ -3166,7 +3191,7 @@ export default {
 }
 
 .search-overlay {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 75, 75, 0.08);
 }
 
 .container.dark-mode .search-overlay {
@@ -3174,7 +3199,7 @@ export default {
 }
 
 .search-icon {
-  color: var(--text-main);
+  color: var(--danger);
 }
 
 .container.dark-mode .search-icon {
@@ -3184,7 +3209,7 @@ export default {
 .status-tip-note {
   padding: 10rpx 18rpx;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 75, 75, 0.08);
 }
 
 .container.dark-mode .status-tip-note {
@@ -3277,10 +3302,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 32rpx;
-  background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border-radius: 28rpx;
+  background: rgba(255, 75, 75, 0.12);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .container.dark-mode .result-icon {

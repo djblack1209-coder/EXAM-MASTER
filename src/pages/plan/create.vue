@@ -4,7 +4,7 @@
 
     <view class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-back" @tap="goBack"> ← </text>
+        <view class="nav-back" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
         <text class="nav-title"> 创建计划 </text>
         <view class="nav-placeholder" />
       </view>
@@ -12,6 +12,13 @@
 
     <scroll-view scroll-y class="main-scroll" :style="{ paddingTop: statusBarHeight + 50 + 'px' }">
       <view class="hero-card">
+        <!-- 卡通铅笔图标装饰 -->
+        <image
+          class="feature-cartoon-icon"
+          src="./static/icons/pencil-paper.png"
+          mode="aspectFit"
+          style="margin-bottom: 12rpx"
+        />
         <text class="hero-eyebrow"> Plan Setup </text>
         <text class="hero-title"> 给这段备考设定一个稳定的节奏 </text>
         <text class="hero-subtitle"> 名称、目标、提醒和优先级都会影响后续的智能建议。 </text>
@@ -184,7 +191,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive } from 'vue';
+import { onLoad, onUnload } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
@@ -195,176 +205,187 @@ import { sanitizeInput } from '@/utils/security/sanitize.js';
 
 // R14: sanitizeInput 已提取为全局工具
 
-export default {
-  components: {
-    BaseIcon
-  },
-  data() {
-    const formatDateInline = (date) => {
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-    return {
-      statusBarHeight: 44,
-      isDark: false,
-      isFormValid: false,
-      isSaving: false,
-      isPageLoading: true,
-      debouncedValidate: null,
-      plan: {
-        name: '',
-        goal: '',
-        startDate: formatDateInline(new Date()),
-        endDate: formatDateInline(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
-        dailyDuration: '2小时',
-        reminderTime: '08:00',
-        category: '综合',
-        priority: 'medium',
-        progress: 0,
-        status: 'not_started',
-        tasks: [],
-        timestamp: Date.now()
-      }
-    };
-  },
-  onLoad() {
-    this.statusBarHeight = getStatusBarHeight();
+// ── 工具函数 ──
+/** 格式化日期为 YYYY-MM-DD */
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
-    this.debouncedValidate = debounce(() => {
-      this.isFormValid = this.plan.name.trim() !== '' && this.plan.goal.trim() !== '';
-    }, 300);
+// ── 响应式状态 ──
+const statusBarHeight = ref(44);
+const isDark = ref(false);
+const isFormValid = ref(false);
+const isSaving = ref(false);
+const isPageLoading = ref(true);
 
-    const savedTheme = storageService.get('theme_mode', 'light');
-    this.isDark = savedTheme === 'dark';
+const plan = reactive({
+  name: '',
+  goal: '',
+  startDate: formatDate(new Date()),
+  endDate: formatDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)),
+  dailyDuration: '2小时',
+  reminderTime: '08:00',
+  category: '综合',
+  priority: 'medium',
+  progress: 0,
+  status: 'not_started',
+  tasks: [],
+  timestamp: Date.now()
+});
 
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
+// ── 非响应式模块级变量 ──
+let debouncedValidate = null;
+let _themeHandler = null;
 
-    setTimeout(() => {
-      this.isPageLoading = false;
-    }, 300);
-  },
-  onUnload() {
-    uni.$off('themeUpdate', this._themeHandler);
-  },
-  methods: {
-    formatDate(date) {
-      const year = date.getFullYear();
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const day = date.getDate().toString().padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    },
-    showStartDatePicker() {
-      uni.showModal({
-        title: '选择开始日期',
-        editable: true,
-        placeholderText: this.plan.startDate,
-        success: (res) => {
-          if (res.confirm && res.content) {
-            const trimmed = res.content.trim();
-            const parsed = new Date(trimmed);
-            if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
-              this.plan.startDate = trimmed;
-              this.onInputChange();
-            } else {
-              toast.info('请输入有效日期：YYYY-MM-DD');
-            }
-          }
-        }
-      });
-    },
-    showEndDatePicker() {
-      uni.showModal({
-        title: '选择结束日期',
-        editable: true,
-        placeholderText: this.plan.endDate,
-        success: (res) => {
-          if (res.confirm && res.content) {
-            const trimmed = res.content.trim();
-            const parsed = new Date(trimmed);
-            if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
-              if (this.plan.startDate && trimmed <= this.plan.startDate) {
-                toast.info('结束日期必须晚于开始日期');
-                return;
-              }
-              this.plan.endDate = trimmed;
-              this.onInputChange();
-            } else {
-              toast.info('请输入有效日期：YYYY-MM-DD');
-            }
-          }
-        }
-      });
-    },
-    showReminderTimePicker() {
-      uni.showModal({
-        title: '设置提醒时间',
-        editable: true,
-        placeholderText: this.plan.reminderTime,
-        success: (res) => {
-          if (res.confirm && res.content) {
-            const timeRegex = /^\d{2}:\d{2}$/;
-            if (timeRegex.test(res.content.trim())) {
-              this.plan.reminderTime = res.content.trim();
-              this.onInputChange();
-            } else {
-              toast.info('请输入正确格式：HH:MM');
-            }
-          }
-        }
-      });
-    },
-    onInputChange() {
-      if (this.debouncedValidate) {
-        this.debouncedValidate();
-      } else {
-        this.isFormValid = this.plan.name.trim() !== '' && this.plan.goal.trim() !== '';
-      }
-    },
-    savePlan() {
-      if (!this.isFormValid || this.isSaving) {
-        if (!this.isSaving) {
-          const name = (this.plan.name || '').trim();
-          const goal = (this.plan.goal || '').trim();
-          if (!name && !goal) {
-            toast.info('请填写计划名称和学习目标');
-          } else if (!name) {
-            toast.info('请填写计划名称');
-          } else if (!goal) {
-            toast.info('请填写学习目标');
-          }
-        }
-        return;
-      }
+// ── 页面生命周期 ──
+onLoad(() => {
+  statusBarHeight.value = getStatusBarHeight();
 
-      this.isSaving = true;
-      this.plan.name = sanitizeInput(this.plan.name, 50);
-      this.plan.goal = sanitizeInput(this.plan.goal, 500);
+  // 防抖校验：名称和目标都填写后才允许保存
+  debouncedValidate = debounce(() => {
+    isFormValid.value = plan.name.trim() !== '' && plan.goal.trim() !== '';
+  }, 300);
 
-      if (!this.plan.name || !this.plan.goal) {
-        this.isSaving = false;
-        const msg = !this.plan.name ? '计划名称含有不支持的字符，请重新输入' : '学习目标含有不支持的字符，请重新输入';
-        toast.info(msg);
-        return;
-      }
+  // 主题初始化
+  const savedTheme = storageService.get('theme_mode', 'light');
+  isDark.value = savedTheme === 'dark';
 
-      const plans = storageService.get('study_plans', []);
-      this.plan.id = 'plan_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      this.plan.createdAt = Date.now();
-      plans.unshift(this.plan);
-      storageService.save('study_plans', plans);
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
 
-      toast.success('计划创建成功');
-    },
-    goBack() {
-      safeNavigateBack();
-    }
+  // 骨架屏延迟隐藏
+  setTimeout(() => {
+    isPageLoading.value = false;
+  }, 300);
+});
+
+onUnload(() => {
+  uni.$off('themeUpdate', _themeHandler);
+});
+
+// ── 方法 ──
+
+/** 输入变更时触发校验 */
+function onInputChange() {
+  if (debouncedValidate) {
+    debouncedValidate();
+  } else {
+    isFormValid.value = plan.name.trim() !== '' && plan.goal.trim() !== '';
   }
-};
+}
+
+/** 显示开始日期选择器 */
+function showStartDatePicker() {
+  modal.show({
+    title: '选择开始日期',
+    editable: true,
+    placeholderText: plan.startDate,
+    success: (res) => {
+      if (res.confirm && res.content) {
+        const trimmed = res.content.trim();
+        const parsed = new Date(trimmed);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
+          plan.startDate = trimmed;
+          onInputChange();
+        } else {
+          toast.info('请输入有效日期：YYYY-MM-DD');
+        }
+      }
+    }
+  });
+}
+
+/** 显示结束日期选择器 */
+function showEndDatePicker() {
+  modal.show({
+    title: '选择结束日期',
+    editable: true,
+    placeholderText: plan.endDate,
+    success: (res) => {
+      if (res.confirm && res.content) {
+        const trimmed = res.content.trim();
+        const parsed = new Date(trimmed);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed) && !isNaN(parsed.getTime())) {
+          if (plan.startDate && trimmed <= plan.startDate) {
+            toast.info('结束日期必须晚于开始日期');
+            return;
+          }
+          plan.endDate = trimmed;
+          onInputChange();
+        } else {
+          toast.info('请输入有效日期：YYYY-MM-DD');
+        }
+      }
+    }
+  });
+}
+
+/** 显示提醒时间选择器 */
+function showReminderTimePicker() {
+  modal.show({
+    title: '设置提醒时间',
+    editable: true,
+    placeholderText: plan.reminderTime,
+    success: (res) => {
+      if (res.confirm && res.content) {
+        const timeRegex = /^\d{2}:\d{2}$/;
+        if (timeRegex.test(res.content.trim())) {
+          plan.reminderTime = res.content.trim();
+          onInputChange();
+        } else {
+          toast.info('请输入正确格式：HH:MM');
+        }
+      }
+    }
+  });
+}
+
+/** 保存计划到本地存储 */
+function savePlan() {
+  if (!isFormValid.value || isSaving.value) {
+    if (!isSaving.value) {
+      const name = (plan.name || '').trim();
+      const goal = (plan.goal || '').trim();
+      if (!name && !goal) {
+        toast.info('请填写计划名称和学习目标');
+      } else if (!name) {
+        toast.info('请填写计划名称');
+      } else if (!goal) {
+        toast.info('请填写学习目标');
+      }
+    }
+    return;
+  }
+
+  isSaving.value = true;
+  plan.name = sanitizeInput(plan.name, 50);
+  plan.goal = sanitizeInput(plan.goal, 500);
+
+  if (!plan.name || !plan.goal) {
+    isSaving.value = false;
+    const msg = !plan.name ? '计划名称含有不支持的字符，请重新输入' : '学习目标含有不支持的字符，请重新输入';
+    toast.info(msg);
+    return;
+  }
+
+  const plans = storageService.get('study_plans', []);
+  plan.id = 'plan_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  plan.createdAt = Date.now();
+  plans.unshift(plan);
+  storageService.save('study_plans', plans);
+
+  toast.success('计划创建成功');
+}
+
+/** 返回上一页 */
+function goBack() {
+  safeNavigateBack();
+}
 </script>
 
 <style lang="scss" scoped>
@@ -446,7 +467,7 @@ export default {
 .main-scroll {
   height: 100%;
   height: 100vh;
-  padding: 30rpx 30rpx 112rpx;
+  padding: 30rpx 30rpx 200rpx;
   box-sizing: border-box;
   position: relative;
   z-index: 1;
@@ -466,6 +487,11 @@ export default {
 .hero-card {
   padding: 34rpx 32rpx;
 }
+/* 卡通图标通用样式 */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
+}
 
 .hero-eyebrow,
 .group-eyebrow {
@@ -481,8 +507,8 @@ export default {
   display: block;
   font-size: 42rpx;
   line-height: 1.24;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .hero-subtitle {
@@ -521,8 +547,8 @@ export default {
   display: block;
   margin-bottom: 14rpx;
   font-size: 27rpx;
-  font-weight: 620;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .form-input,
@@ -586,14 +612,22 @@ export default {
   color: var(--text-sub);
   text-align: center;
   box-shadow: var(--apple-shadow-surface);
+  /* R-UI: gap 替代方案，兼容 Android WebView */
+  margin-right: 14rpx;
+  margin-bottom: 14rpx;
 }
 
 .pill-btn.active {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border-color: var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-  font-weight: 620;
+  background: #58cc02;
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: 0 6rpx 0 #46a302;
+  font-weight: 800;
+}
+
+.pill-btn.active:active {
+  transform: translateY(3rpx);
+  box-shadow: 0 3rpx 0 #46a302;
 }
 
 .priority-selector {
@@ -607,13 +641,19 @@ export default {
   border-radius: 22rpx;
   text-align: center;
   font-size: 28rpx;
-  font-weight: 620;
+  font-weight: 700;
   color: var(--text-sub);
   box-shadow: var(--apple-shadow-surface);
+  /* R-UI: gap 替代方案，兼容 Android WebView */
+  margin-right: 14rpx;
+}
+
+.priority-btn:last-child {
+  margin-right: 0;
 }
 
 .priority-btn.low.active {
-  background: rgba(52, 199, 89, 0.16);
+  background: color-mix(in srgb, var(--success) 16%, transparent);
   color: var(--success, #34c759);
 }
 
@@ -624,13 +664,15 @@ export default {
 
 .priority-btn.high.active {
   background: rgba(255, 99, 90, 0.14);
-  color: var(--danger, #ff3b30);
+  color: var(--danger, var(--danger));
 }
 
 .action-bar {
   position: sticky;
   bottom: 24rpx;
   padding-top: 8rpx;
+  /* R411: 防止按钮遮盖上方最后一个表单项 */
+  margin-top: 40rpx;
 }
 
 .action-btn {
@@ -643,9 +685,14 @@ export default {
 }
 
 .action-btn.primary {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  box-shadow: var(--cta-primary-shadow);
+  background: #58cc02;
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #46a302;
+}
+
+.action-btn.primary:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 .action-btn[disabled] {

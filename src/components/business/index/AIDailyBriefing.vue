@@ -475,15 +475,15 @@ function handleTaskTap(task) {
   border-radius: 28rpx;
   overflow: hidden;
   position: relative;
-  /* 渐变边框效果 */
+  /* 顶部渐变条 — AI 紫色标识 */
   &::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 4rpx;
-    background: linear-gradient(90deg, var(--primary), var(--info, #06b6d4), var(--purple, #8b5cf6));
+    height: 6rpx;
+    background: linear-gradient(90deg, var(--purple-light, #ce82ff), #a855f7, #7c3aed);
     border-radius: 28rpx 28rpx 0 0;
   }
 }
@@ -498,20 +498,20 @@ function handleTaskTap(task) {
 .briefing-badge {
   display: flex;
   align-items: center;
-  background: var(--primary-light);
+  background: rgba(206, 130, 255, 0.12);
   padding: 8rpx 20rpx;
   border-radius: 20rpx;
 }
 
 .badge-icon {
-  color: var(--primary);
+  color: var(--purple-light, #ce82ff);
   margin-right: 8rpx;
 }
 
 .badge-text {
   font-size: 24rpx;
-  font-weight: 600;
-  color: var(--primary);
+  font-weight: 700;
+  color: var(--purple-light, #ce82ff);
 }
 
 .briefing-time {
@@ -527,7 +527,7 @@ function handleTaskTap(task) {
   font-size: 30rpx;
   line-height: 1.6;
   color: var(--text-main);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* 加载动画 */
@@ -541,7 +541,7 @@ function handleTaskTap(task) {
   width: 12rpx;
   height: 12rpx;
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--purple-light, #ce82ff);
   margin-right: 8rpx;
   animation: dotBounce 1.4s ease-in-out infinite;
 }
@@ -617,7 +617,7 @@ function handleTaskTap(task) {
 .task-title {
   font-size: 28rpx;
   color: var(--text-main);
-  font-weight: 500;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -638,19 +638,25 @@ function handleTaskTap(task) {
   flex-shrink: 0;
 }
 
-/* 一键开始按钮 */
+/* 一键开始按钮 — 3D 立体风格（AI紫色） */
 .briefing-action {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 22rpx;
-  border-radius: 20rpx;
-  background: linear-gradient(135deg, var(--primary), var(--brand-active, #3a7bd5));
-  transition: opacity 0.2s;
+  padding: 24rpx;
+  border-radius: 18rpx;
+  background: linear-gradient(135deg, var(--purple-light, #ce82ff), #a855f7);
+  box-shadow:
+    0 6rpx 0 #8b45d6,
+    0 10rpx 20rpx rgba(168, 85, 247, 0.25);
+  transition: all 0.08s ease;
 }
 
 .briefing-action:active {
-  opacity: 0.85;
+  transform: translateY(4rpx);
+  box-shadow:
+    0 2rpx 0 #8b45d6,
+    0 4rpx 10rpx rgba(168, 85, 247, 0.2);
 }
 
 .action-icon {
@@ -660,7 +666,7 @@ function handleTaskTap(task) {
 
 .action-text {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-inverse);
 }
 

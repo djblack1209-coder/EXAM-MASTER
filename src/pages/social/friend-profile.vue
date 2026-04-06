@@ -85,6 +85,8 @@
             </view>
             <view class="stat-divider" />
             <view class="stat-item">
+              <!-- 生命值装饰 -->
+              <image class="heart-deco" src="./static/effects/heart-lives.png" mode="aspectFit" lazy-load />
               <text class="stat-value highlight">
                 {{ friendInfo.score || 0 }}
               </text>
@@ -162,7 +164,7 @@
             :disabled="isActionLoading"
             @tap="handleRemoveFriend"
           >
-            <BaseIcon name="heart" :size="32" class="btn-icon" />
+            <BaseIcon name="cross" :size="32" class="btn-icon" />
             <text class="btn-text"> 删除好友 </text>
           </button>
         </view>
@@ -171,197 +173,214 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { onLoad, onUnload } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { socialService } from './socialService.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
-// 统一默认头像
-const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 // ✅ F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'FriendProfile',
-  components: { BaseIcon },
-  data() {
-    return {
-      isDark: false,
-      isPageLoading: true, // F018: 页面加载状态
-      friendInfo: {},
-      isActionLoading: false,
-      defaultAvatar: DEFAULT_AVATAR,
-      // 成就数据从好友信息中获取（achievement-manager 提供）
-      achievements: [],
-      // 模拟动态数据
-      recentActivities: []
-    };
-  },
-  computed: {
-    isOnline() {
-      if (!this.friendInfo.last_active) return false;
-      const now = Date.now();
-      return now - this.friendInfo.last_active < 5 * 60 * 1000;
-    },
-    statusText() {
-      if (this.isOnline) return '在线';
-      if (!this.friendInfo.last_active) return '很久未见';
+// 统一默认头像
+const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 
-      const now = Date.now();
-      const diff = now - this.friendInfo.last_active;
-      const minutes = Math.floor(diff / (60 * 1000));
-      const hours = Math.floor(diff / (60 * 60 * 1000));
-      const days = Math.floor(diff / (24 * 60 * 60 * 1000));
+// --- 非响应式实例属性（定时器引用） ---
+let _navTimer = null;
 
-      if (minutes < 60) return `${minutes}分钟前活跃`;
-      if (hours < 24) return `${hours}小时前活跃`;
-      if (days < 7) return `${days}天前活跃`;
-      return '很久未见';
-    }
-  },
-  onLoad(options) {
-    logger.log('[FriendProfile] 页面加载, options:', options);
-    this.isDark = storageService.get('theme_mode') === 'dark';
+// --- 响应式状态 ---
+const isDark = ref(false);
+const isPageLoading = ref(true); // F018: 页面加载状态
+const friendInfo = ref({});
+const isActionLoading = ref(false);
+const defaultAvatar = DEFAULT_AVATAR;
+// 成就数据从好友信息中获取（achievement-manager 提供）
+const achievements = ref([]);
+// 模拟动态数据
+const recentActivities = ref([]);
 
-    // 从路由参数获取好友信息
-    if (options) {
-      this.friendInfo = {
-        uid: options.uid || '',
-        nickname: options.nickname ? decodeURIComponent(options.nickname) : '未命名',
-        avatar: options.avatar ? decodeURIComponent(options.avatar) : this.defaultAvatar,
-        score: parseInt(options.score) || 0,
-        studyDays: parseInt(options.studyDays) || 0,
-        accuracy: parseInt(options.accuracy) || 0,
-        last_active: parseInt(options.lastActive) || 0
-      };
-    }
+// --- 计算属性 ---
+const isOnline = computed(() => {
+  if (!friendInfo.value.last_active) return false;
+  const now = Date.now();
+  return now - friendInfo.value.last_active < 5 * 60 * 1000;
+});
 
-    // 生成模拟动态
-    this.generateActivities();
+const statusText = computed(() => {
+  if (isOnline.value) return '在线';
+  if (!friendInfo.value.last_active) return '很久未见';
 
-    // F018: 数据加载完成
-    this.isPageLoading = false;
-  },
-  methods: {
-    goBack() {
-      safeNavigateBack();
-    },
+  const now = Date.now();
+  const diff = now - friendInfo.value.last_active;
+  const minutes = Math.floor(diff / (60 * 1000));
+  const hours = Math.floor(diff / (60 * 60 * 1000));
+  const days = Math.floor(diff / (24 * 60 * 60 * 1000));
 
-    onAvatarError() {
-      logger.warn('[FriendProfile] 头像加载失败，使用默认头像');
-      this.friendInfo.avatar = this.defaultAvatar;
-    },
+  if (minutes < 60) return `${minutes}分钟前活跃`;
+  if (hours < 24) return `${hours}小时前活跃`;
+  if (days < 7) return `${days}天前活跃`;
+  return '很久未见';
+});
 
-    generateActivities() {
-      // 根据好友数据生成模拟动态
-      const activities = [];
+// --- 方法 ---
 
-      if (this.friendInfo.studyDays > 0) {
-        activities.push({
-          icon: 'calendar',
-          text: `已坚持学习 ${this.friendInfo.studyDays} 天`,
-          time: '持续中'
-        });
-      }
+/** 返回上一页 */
+function goBack() {
+  safeNavigateBack();
+}
 
-      if (this.friendInfo.score > 0) {
-        activities.push({
-          icon: 'trophy',
-          text: `累计获得 ${this.friendInfo.score} 分`,
-          time: '总计'
-        });
-      }
+/** 头像加载失败时使用默认头像 */
+function onAvatarError() {
+  logger.warn('[FriendProfile] 头像加载失败，使用默认头像');
+  friendInfo.value.avatar = defaultAvatar;
+}
 
-      if (this.friendInfo.accuracy > 0) {
-        activities.push({
-          icon: 'target',
-          text: `答题正确率达到 ${this.friendInfo.accuracy}%`,
-          time: '当前'
-        });
-      }
+/** 根据好友数据生成模拟动态 */
+function generateActivities() {
+  const activities = [];
 
-      this.recentActivities = activities;
-    },
-
-    handlePKChallenge() {
-      if (this.isActionLoading) return;
-      this.isActionLoading = true;
-
-      logger.log('[FriendProfile] 发起 PK 挑战:', this.friendInfo.nickname);
-
-      uni.showModal({
-        title: '发起挑战',
-        content: `确定要向 ${this.friendInfo.nickname} 发起 PK 挑战吗？`,
-        confirmText: '挑战',
-        success: (res) => {
-          this.isActionLoading = false;
-          if (res.confirm) {
-            safeNavigateTo(
-              `/pages/practice-sub/pk-battle?mode=friend&opponentId=${this.friendInfo.uid}&opponentName=${encodeURIComponent(this.friendInfo.nickname)}&opponentAvatar=${encodeURIComponent(this.friendInfo.avatar)}&opponentScore=${this.friendInfo.score}`
-            );
-          }
-        },
-        fail: () => {
-          this.isActionLoading = false;
-        }
-      });
-    },
-
-    async handleRemoveFriend() {
-      if (this.isActionLoading) return;
-      this.isActionLoading = true;
-
-      logger.log('[FriendProfile] 删除好友:', this.friendInfo.nickname);
-
-      uni.showModal({
-        title: '删除好友',
-        content: `确定要删除好友 ${this.friendInfo.nickname} 吗？删除后需要重新添加。`,
-        confirmText: '删除',
-        confirmColor: '#FF4757',
-        success: async (res) => {
-          if (res.confirm) {
-            toast.loading('处理中...');
-
-            try {
-              const result = await socialService.removeFriend(this.friendInfo.uid);
-
-              toast.hide();
-              this.isActionLoading = false;
-
-              if (result.code === 0) {
-                toast.success('已删除好友');
-                // 返回上一页
-                setTimeout(() => {
-                  safeNavigateBack();
-                }, 1500);
-              } else {
-                toast.info(result.msg || '删除失败');
-              }
-            } catch (err) {
-              toast.hide();
-              this.isActionLoading = false;
-              logger.error('[FriendProfile] 删除好友失败:', err);
-              toast.info('删除失败');
-            }
-          } else {
-            this.isActionLoading = false;
-          }
-        },
-        fail: () => {
-          this.isActionLoading = false;
-        }
-      });
-    }
+  if (friendInfo.value.studyDays > 0) {
+    activities.push({
+      icon: 'calendar',
+      text: `已坚持学习 ${friendInfo.value.studyDays} 天`,
+      time: '持续中'
+    });
   }
-};
+
+  if (friendInfo.value.score > 0) {
+    activities.push({
+      icon: 'trophy',
+      text: `累计获得 ${friendInfo.value.score} 分`,
+      time: '总计'
+    });
+  }
+
+  if (friendInfo.value.accuracy > 0) {
+    activities.push({
+      icon: 'target',
+      text: `答题正确率达到 ${friendInfo.value.accuracy}%`,
+      time: '当前'
+    });
+  }
+
+  recentActivities.value = activities;
+}
+
+/** 发起 PK 挑战 */
+function handlePKChallenge() {
+  if (isActionLoading.value) return;
+  isActionLoading.value = true;
+
+  logger.log('[FriendProfile] 发起 PK 挑战:', friendInfo.value.nickname);
+
+  modal.show({
+    title: '发起挑战',
+    content: `确定要向 ${friendInfo.value.nickname} 发起 PK 挑战吗？`,
+    confirmText: '挑战',
+    success: (res) => {
+      isActionLoading.value = false;
+      if (res.confirm) {
+        safeNavigateTo(
+          `/pages/practice-sub/pk-battle?mode=friend&opponentId=${friendInfo.value.uid}&opponentName=${encodeURIComponent(friendInfo.value.nickname)}&opponentAvatar=${encodeURIComponent(friendInfo.value.avatar)}&opponentScore=${friendInfo.value.score}`
+        );
+      }
+    },
+    fail: () => {
+      isActionLoading.value = false;
+    }
+  });
+}
+
+/** 删除好友 */
+async function handleRemoveFriend() {
+  if (isActionLoading.value) return;
+  isActionLoading.value = true;
+
+  logger.log('[FriendProfile] 删除好友:', friendInfo.value.nickname);
+
+  modal.show({
+    title: '删除好友',
+    content: `确定要删除好友 ${friendInfo.value.nickname} 吗？删除后需要重新添加。`,
+    confirmText: '删除',
+    confirmColor: '#FF4757',
+    success: async (res) => {
+      if (res.confirm) {
+        toast.loading('处理中...');
+
+        try {
+          const result = await socialService.removeFriend(friendInfo.value.uid);
+
+          toast.hide();
+          isActionLoading.value = false;
+
+          if (result.code === 0) {
+            toast.success('已删除好友');
+            // 返回上一页
+            _navTimer = setTimeout(() => {
+              safeNavigateBack();
+            }, 1500);
+          } else {
+            toast.info(result.msg || '删除失败');
+          }
+        } catch (err) {
+          toast.hide();
+          isActionLoading.value = false;
+          logger.error('[FriendProfile] 删除好友失败:', err);
+          toast.info('删除失败');
+        }
+      } else {
+        isActionLoading.value = false;
+      }
+    },
+    fail: () => {
+      isActionLoading.value = false;
+    }
+  });
+}
+
+// --- 生命周期 / 页面钩子 ---
+
+onLoad((options) => {
+  logger.log('[FriendProfile] 页面加载, options:', options);
+  isDark.value = storageService.get('theme_mode') === 'dark';
+
+  // 从路由参数获取好友信息
+  if (options) {
+    friendInfo.value = {
+      uid: options.uid || '',
+      nickname: options.nickname ? decodeURIComponent(options.nickname) : '未命名',
+      avatar: options.avatar ? decodeURIComponent(options.avatar) : defaultAvatar,
+      score: parseInt(options.score) || 0,
+      studyDays: parseInt(options.studyDays) || 0,
+      accuracy: parseInt(options.accuracy) || 0,
+      last_active: parseInt(options.lastActive) || 0
+    };
+  }
+
+  // 生成模拟动态
+  generateActivities();
+
+  // F018: 数据加载完成
+  isPageLoading.value = false;
+});
+
+// [R397] 页面卸载时清理待执行的导航延迟定时器
+onUnload(() => {
+  if (_navTimer) {
+    clearTimeout(_navTimer);
+    _navTimer = null;
+  }
+});
 </script>
 
 <style lang="scss" scoped>
 .container {
   min-height: 100%;
   min-height: 100vh;
-  background-color: var(--bg-body);
+  background-color: var(--background);
 }
 
 .container.dark-mode {
@@ -374,12 +393,10 @@ export default {
   top: 0;
   left: 0;
   right: 0;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  background: var(--bg-card);
   z-index: 999;
-  box-shadow: var(--apple-shadow-surface);
-  border-bottom: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .dark-mode .custom-navbar {
@@ -428,7 +445,7 @@ export default {
 
 .navbar-title {
   font-size: 36rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
@@ -453,23 +470,15 @@ export default {
 .glass-card {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background: var(--bg-card);
   border-radius: 28rpx;
   margin: 0 32rpx 24rpx;
-  box-shadow: var(--apple-shadow-card);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .glass-card::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+  content: none;
 }
 
 .dark-mode .glass-card {
@@ -498,8 +507,8 @@ export default {
   width: 160rpx;
   height: 160rpx;
   border-radius: 50%;
-  border: 4rpx solid rgba(255, 255, 255, 0.7);
-  box-shadow: var(--apple-shadow-surface);
+  border: 4rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .online-dot {
@@ -508,9 +517,9 @@ export default {
   right: 8rpx;
   width: 28rpx;
   height: 28rpx;
-  background-color: var(--success);
+  background-color: #58cc02;
   border-radius: 50%;
-  border: 4rpx solid var(--bg-card);
+  border: 4rpx solid #ffffff;
 }
 
 .dark-mode .online-dot {
@@ -522,17 +531,17 @@ export default {
   bottom: -8rpx;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--cta-primary-bg);
+  background: var(--danger);
   padding: 6rpx 20rpx;
   border-radius: 999rpx;
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  border: none;
+  box-shadow: 0 4rpx 0 #cc3333;
 }
 
 .level-text {
   font-size: 22rpx;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 700;
+  color: var(--text-inverse);
 }
 
 .info-section {
@@ -543,14 +552,14 @@ export default {
 .nickname {
   display: block;
   font-size: 40rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   margin-bottom: 8rpx;
 }
 
 .status-text {
   font-size: 26rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 /* 统计行 */
@@ -560,7 +569,7 @@ export default {
   justify-content: center;
   width: 100%;
   padding: 24rpx 0;
-  border-top: 1rpx solid var(--apple-divider);
+  border-top: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .stat-item {
@@ -573,23 +582,24 @@ export default {
 
 .stat-value {
   font-size: 40rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
 .stat-value.highlight {
-  color: var(--brand-color);
+  color: var(--danger);
 }
 
 .stat-label {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 .stat-divider {
-  width: 1rpx;
+  width: 2rpx;
   height: 60rpx;
-  background-color: var(--border);
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 /* 区块卡片 */
@@ -603,7 +613,7 @@ export default {
 
 .section-title {
   font-size: 24rpx;
-  font-weight: 620;
+  font-weight: 800;
   letter-spacing: 3rpx;
   text-transform: uppercase;
   color: var(--text-secondary);
@@ -622,11 +632,13 @@ export default {
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
   padding: 20rpx 24rpx;
-  background-color: rgba(255, 255, 255, 0.62);
+  background-color: rgba(255, 75, 75, 0.08);
   border-radius: 22rpx;
   min-width: 140rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: none;
+  margin-right: 24rpx;
+  margin-bottom: 24rpx;
 }
 
 .dark-mode .achievement-item {
@@ -643,7 +655,8 @@ export default {
 
 .achievement-name {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* 动态列表 */
@@ -658,9 +671,10 @@ export default {
   align-items: flex-start;
   /* gap: 16rpx; -- replaced for Android WebView compat */
   padding: 16rpx;
-  background-color: rgba(255, 255, 255, 0.58);
+  background-color: rgba(255, 75, 75, 0.06);
   border-radius: 22rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  margin-bottom: 20rpx;
 }
 
 .dark-mode .activity-item {
@@ -685,12 +699,13 @@ export default {
 
 .activity-text {
   font-size: 28rpx;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
 .activity-time {
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 /* 操作区 */
@@ -709,8 +724,9 @@ export default {
   padding: 28rpx 0;
   border-radius: 999rpx;
   font-size: 30rpx;
-  font-weight: 600;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  border: none;
+  margin-bottom: 20rpx;
 }
 
 .action-btn::after {
@@ -718,23 +734,23 @@ export default {
 }
 
 .action-btn.primary {
-  background: rgba(255, 255, 255, 0.72);
-  color: #c44536;
-  box-shadow: var(--apple-shadow-surface);
-  border-color: rgba(255, 130, 112, 0.34);
+  background: var(--danger);
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #cc3333;
+  border-color: transparent;
 }
 
 .action-btn.secondary {
-  background: var(--gradient-primary);
-  color: #fff;
-  box-shadow: var(--shadow-success);
+  background: #58cc02;
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #46a302;
 }
 
 .action-btn.danger {
-  background-color: rgba(255, 255, 255, 0.72);
+  background-color: var(--background);
   color: var(--text-primary);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: none;
 }
 
 .dark-mode .action-btn.danger {
@@ -743,7 +759,7 @@ export default {
 
 .btn-hover {
   opacity: 0.85;
-  transform: scale(0.98);
+  transform: translateY(4rpx);
 }
 
 .action-btn:disabled {
@@ -832,9 +848,9 @@ export default {
 .skeleton-pulse {
   background: linear-gradient(
     90deg,
-    var(--bg-secondary, #f0f0f0) 25%,
-    var(--bg-hover, #e0e0e0) 50%,
-    var(--bg-secondary, #f0f0f0) 75%
+    var(--bg-secondary, var(--muted)) 25%,
+    var(--bg-hover, var(--border)) 50%,
+    var(--bg-secondary, var(--muted)) 75%
   );
   background-size: 200% 100%;
   animation: skeletonPulse 1.5s ease-in-out infinite;
@@ -858,5 +874,11 @@ export default {
   100% {
     background-position: -200% 0;
   }
+}
+
+/* 生命值装饰图标 */
+.heart-deco {
+  width: 48rpx;
+  height: 48rpx;
 }
 </style>

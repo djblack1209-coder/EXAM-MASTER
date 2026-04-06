@@ -26,14 +26,12 @@
       <view class="poster-bg" />
 
       <view class="poster-content ds-flex-col ds-flex-center">
+        <!-- 分享海报封面图 -->
+        <image class="poster-cover" src="/static/images/app-share-cover.png" mode="aspectFill" />
+
         <view class="poster-header ds-flex ds-gap-xs">
-          <image
-            :src="icons8('ios-filled', 50, 'ffffff', 'open-book')"
-            class="poster-logo"
-            alt="Exam Master"
-            mode="aspectFit"
-            @error="onCdnIconError"
-          />
+          <!-- 品牌Logo（本地图片） -->
+          <image class="poster-logo" src="/static/images/logo-full.png" alt="Exam Master" mode="aspectFit" />
           <text class="poster-app-name ds-font-semibold"> Exam-Master </text>
         </view>
 
@@ -93,6 +91,7 @@
 </template>
 
 <script setup>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { ref, getCurrentInstance } from 'vue';
 import { posterGenerator } from './poster-generator.js';
@@ -198,7 +197,7 @@ const handleSave = async () => {
 
     // 提供预览选项作为备选
     if (generatedPosterPath.value) {
-      uni.showModal({
+      modal.show({
         title: '保存失败',
         content: '无法直接保存，是否预览图片后长按保存？',
         confirmText: '预览图片',
@@ -242,7 +241,7 @@ const handleShare = () => {
       type: 5, // 小程序类型
       title: 'Exam-Master 考研神器',
       summary: `输入邀请码 ${props.inviteCode} 领取会员！`,
-      imageUrl: '/static/tabbar/practice-active.png',
+      imageUrl: '/static/images/app-share-cover.png',
       success: () => {
         toast.success('分享成功');
         emit('shared');
@@ -367,8 +366,15 @@ const copyInviteInfo = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 40px;
+  padding-top: 0;
   box-sizing: border-box;
+}
+
+/* 分享海报封面图 */
+.poster-cover {
+  width: 100%;
+  height: 280rpx;
+  border-radius: 24rpx 24rpx 0 0;
 }
 
 .poster-header {
@@ -541,7 +547,7 @@ const copyInviteInfo = () => {
 
   /* 深色模式下渐变背景调整为更深的色调 */
   .poster-bg {
-    background: linear-gradient(135deg, var(--primary) 0%, #003d99 50%, #e6a800 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark, #003d99) 50%, var(--warning) 100%);
   }
 
   /* 票券在深色模式下使用浅色 */

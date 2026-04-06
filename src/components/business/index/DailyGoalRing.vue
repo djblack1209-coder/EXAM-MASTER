@@ -1,21 +1,21 @@
 <template>
   <!-- 每日目标进度环卡片 -->
-  <view :class="['daily-goal-ring', 'apple-glass-card', isDark ? 'dark' : '']">
+  <view :class="['daily-goal-ring', isDark ? 'dark' : '']">
     <!-- 上半部分：进度环 + 统计信息 -->
     <view class="goal-top">
       <!-- 左侧：SVG 进度环 -->
       <view class="ring-wrapper">
         <svg viewBox="0 0 100 100" class="ring-svg">
           <!-- 轨道（背景圆环） -->
-          <circle cx="50" cy="50" r="40" fill="none" stroke-width="6" :style="{ stroke: 'var(--border, #e2e8f0)' }" />
+          <circle cx="50" cy="50" r="40" fill="none" stroke-width="6" :style="{ stroke: '#E5E5EA' }" />
           <!-- 进度弧线 -->
           <circle
             cx="50"
             cy="50"
             r="40"
             fill="none"
-            :style="{ stroke: 'var(--primary, #4a90e2)' }"
-            stroke-width="6"
+            :style="{ stroke: '#58CC02' }"
+            stroke-width="8"
             stroke-linecap="round"
             :stroke-dasharray="circumference"
             :stroke-dashoffset="dashOffset"
@@ -96,24 +96,13 @@ function handleStartPractice() {
 /* ==================== 每日目标进度环卡片 ==================== */
 .daily-goal-ring {
   margin: 20rpx 30rpx;
-  padding: 32rpx 30rpx 24rpx;
+  padding: 32rpx;
   border-radius: 28rpx;
-  border: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
-  box-shadow: var(--apple-shadow-card, 0 4rpx 16rpx rgba(0, 0, 0, 0.06));
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  background: var(--bg-card);
   position: relative;
   overflow: hidden;
-}
-
-/* 顶部高光线（与其他卡片一致） */
-.daily-goal-ring::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 22rpx;
-  right: 22rpx;
-  height: 1rpx;
-  background: var(--apple-specular-soft, rgba(255, 255, 255, 0.5));
-  pointer-events: none;
 }
 
 /* 深色模式 */
@@ -136,6 +125,7 @@ function handleStartPractice() {
   height: 160rpx;
   flex-shrink: 0;
   margin-right: 28rpx;
+  animation: ringPulseIn 0.5s ease-out both;
 }
 
 .ring-svg {
@@ -161,9 +151,9 @@ function handleStartPractice() {
 }
 
 .ring-percent {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-primary, #1a1a2e);
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #58cc02;
   letter-spacing: -1rpx;
 }
 
@@ -175,7 +165,7 @@ function handleStartPractice() {
 }
 
 .dark .ring-percent {
-  color: var(--text-primary);
+  color: #78e018;
 }
 
 .dark .ring-percent-sign {
@@ -190,9 +180,9 @@ function handleStartPractice() {
 }
 
 .goal-title {
-  font-size: 28rpx;
-  font-weight: 650;
-  color: var(--text-primary, #1a1a2e);
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 8rpx;
 }
 
@@ -218,32 +208,33 @@ function handleStartPractice() {
 .streak-text {
   font-size: 24rpx;
   color: var(--warning);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .dark .streak-text {
   color: var(--warning-light, #fbbf24);
 }
 
-/* ==================== 下半部分：CTA 按钮 ==================== */
+/* ==================== 下半部分：CTA 按钮（3D 多邻国风格） ==================== */
 .goal-cta {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 22rpx 0;
-  border-radius: 20rpx;
-  background: linear-gradient(135deg, var(--primary), var(--brand-active, #3a7bd5));
-  transition: all 0.25s ease;
+  border-radius: 18rpx;
+  background: #58cc02;
+  box-shadow: 0 6rpx 0 #46a302;
+  transition: all 0.15s ease;
 }
 
 .cta-hover {
-  opacity: 0.85;
-  transform: scale(0.98);
+  transform: translateY(4rpx);
+  box-shadow: 0 2rpx 0 #46a302;
 }
 
 .cta-text {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-inverse);
   margin-right: 8rpx;
 }
@@ -251,5 +242,36 @@ function handleStartPractice() {
 .cta-arrow-icon {
   color: var(--text-inverse);
   opacity: 0.85;
+}
+
+/* 深色模式 CTA：霓虹渐变 */
+.dark .goal-cta {
+  background: linear-gradient(135deg, #58cc02, #78e018);
+  box-shadow:
+    0 6rpx 0 #3a8a01,
+    0 0 16rpx rgba(88, 204, 2, 0.25);
+}
+
+.dark .cta-hover {
+  transform: translateY(4rpx);
+  box-shadow:
+    0 2rpx 0 #3a8a01,
+    0 0 8rpx rgba(88, 204, 2, 0.15);
+}
+
+/* ==================== 入场动画 ==================== */
+@keyframes ringPulseIn {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>

@@ -8,8 +8,9 @@
       <view v-if="type === 'home'" class="deco-circle deco-3" />
     </view>
 
-    <!-- 图标/动画区域 -->
-    <view class="empty-state__icon" :class="{ 'animate-float': animated }">
+    <!-- 图标/插图区域 -->
+    <image v-if="illustration" :src="illustration" class="empty-state__illustration" mode="aspectFit" lazy-load />
+    <view v-else class="empty-state__icon" :class="{ 'animate-float': animated }">
       <BaseIcon :name="icon" :size="80" />
     </view>
 
@@ -57,7 +58,7 @@
           <text class="guide-btn__title"> 上传资料 </text>
           <text class="guide-btn__desc"> 智能生成题库 </text>
         </view>
-        <text class="guide-btn__arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="guide-btn__arrow" />
       </view>
 
       <view class="guide-btn guide-btn--secondary" @tap="handleQuickStart">
@@ -68,7 +69,7 @@
           <text class="guide-btn__title"> 快速开始 </text>
           <text class="guide-btn__desc"> 体验示例题库 </text>
         </view>
-        <text class="guide-btn__arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="guide-btn__arrow" />
       </view>
 
       <view class="guide-btn guide-btn--tertiary" @tap="handleTutorial">
@@ -79,7 +80,7 @@
           <text class="guide-btn__title"> 使用教程 </text>
           <text class="guide-btn__desc"> 3分钟快速上手 </text>
         </view>
-        <text class="guide-btn__arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="guide-btn__arrow" />
       </view>
     </view>
 
@@ -90,310 +91,419 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, onBeforeUnmount } from 'vue';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'EmptyState',
-  components: { BaseIcon },
-
-  props: {
-    /**
-     * 组件类型
-     * - simple: 简单空状态（默认）
-     * - guide: 引导空状态
-     * - home: 首页空状态（3个按钮）
-     */
-    type: {
-      type: String,
-      default: 'simple',
-      validator: (v) => ['simple', 'guide', 'home'].includes(v)
-    },
-
-    /**
-     * 主题
-     * - light: 浅色主题
-     * - dark: 深色主题
-     * - auto: 跟随系统
-     */
-    theme: {
-      type: String,
-      default: 'light',
-      validator: (v) => ['light', 'dark', 'auto'].includes(v)
-    },
-
-    /**
-     * 尺寸
-     * - small: 紧凑型
-     * - medium: 标准型（默认）
-     * - large: 大型
-     */
-    size: {
-      type: String,
-      default: 'medium',
-      validator: (v) => ['small', 'medium', 'large'].includes(v)
-    },
-
-    // 图标名称（对应 BaseIcon 的 name）
-    icon: {
-      type: String,
-      default: 'books'
-    },
-
-    // 标题
-    title: {
-      type: String,
-      default: '暂无数据'
-    },
-
-    // 描述
-    description: {
-      type: String,
-      default: ''
-    },
-
-    // 是否显示按钮
-    showButton: {
-      type: Boolean,
-      default: true
-    },
-
-    // 按钮图标
-    buttonIcon: {
-      type: String,
-      default: ''
-    },
-
-    // 按钮文案
-    buttonText: {
-      type: String,
-      default: '立即添加'
-    },
-
-    // 底部提示
-    hint: {
-      type: String,
-      default: ''
-    },
-
-    // 是否显示装饰
-    showDecoration: {
-      type: Boolean,
-      default: true
-    },
-
-    // 是否启用动画
-    animated: {
-      type: Boolean,
-      default: true
-    }
+// ==================== Props 定义 ====================
+defineProps({
+  /**
+   * 组件类型
+   * - simple: 简单空状态（默认）
+   * - guide: 引导空状态
+   * - home: 首页空状态（3个按钮）
+   */
+  type: {
+    type: String,
+    default: 'simple',
+    validator: (v) => ['simple', 'guide', 'home'].includes(v)
   },
 
-  emits: ['action', 'upload', 'quickStart', 'tutorial'],
+  /**
+   * 主题
+   * - light: 浅色主题
+   * - dark: 深色主题
+   * - auto: 跟随系统
+   */
+  theme: {
+    type: String,
+    default: 'light',
+    validator: (v) => ['light', 'dark', 'auto'].includes(v)
+  },
 
-  methods: {
-    // 震动反馈
-    vibrate() {
-      try {
-        if (typeof uni.vibrateShort === 'function') {
-          uni.vibrateShort({ type: 'light' });
-        }
-      } catch (e) {
-        logger.warn('[EmptyState] 震动反馈失败:', e.message || e);
-      }
-    },
+  /**
+   * 尺寸
+   * - small: 紧凑型
+   * - medium: 标准型（默认）
+   * - large: 大型
+   */
+  size: {
+    type: String,
+    default: 'medium',
+    validator: (v) => ['small', 'medium', 'large'].includes(v)
+  },
 
-    // 通用操作
-    handleAction() {
-      this.vibrate();
-      this.$emit('action');
-    },
+  // 图标名称（对应 BaseIcon 的 name）
+  icon: {
+    type: String,
+    default: 'books'
+  },
 
-    // 上传资料
-    handleUpload() {
-      this.vibrate();
-      this.$emit('upload');
-      safeNavigateTo('/pages/practice-sub/import-data');
-    },
+  // 插图路径（传入后替代图标显示）
+  illustration: {
+    type: String,
+    default: ''
+  },
 
-    // 快速开始
-    handleQuickStart() {
-      this.vibrate();
-      this.$emit('quickStart');
-      this.loadDemoQuestions();
-    },
+  // 标题
+  title: {
+    type: String,
+    default: '暂无数据'
+  },
 
-    // 查看教程
-    handleTutorial() {
-      this.vibrate();
-      this.$emit('tutorial');
+  // 描述
+  description: {
+    type: String,
+    default: ''
+  },
 
-      uni.showModal({
-        title: '快速上手教程',
-        content:
-          '1. 上传学习资料（PDF/Word/图片）\n2. 智能自动提取知识点生成题目\n3. 开始刷题，错题自动收录\n4. 查看学习报告，持续进步',
-        confirmText: '开始上传',
-        cancelText: '稍后再说',
-        success: (res) => {
-          if (res.confirm) {
-            this.handleUpload();
-          }
-        }
-      });
-    },
+  // 是否显示按钮
+  showButton: {
+    type: Boolean,
+    default: true
+  },
 
-    // 加载示例题库
-    async loadDemoQuestions() {
-      toast.loading('加载示例题库...');
+  // 按钮图标
+  buttonIcon: {
+    type: String,
+    default: ''
+  },
 
-      try {
-        const demoQuestions = [
-          {
-            id: 'demo_1',
-            question: '马克思主义哲学的直接理论来源是？',
-            options: ['A. 德国古典哲学', 'B. 英国古典政治经济学', 'C. 法国空想社会主义', 'D. 古希腊哲学'],
-            answer: 'A',
-            analysis: '马克思主义哲学的直接理论来源是德国古典哲学，特别是黑格尔的辩证法和费尔巴哈的唯物主义。',
-            category: '政治'
-          },
-          {
-            id: 'demo_2',
-            question: '下列选项中，属于唯物辩证法基本规律的是？',
-            options: ['A. 质量互变规律', 'B. 因果规律', 'C. 形式逻辑规律', 'D. 价值规律'],
-            answer: 'A',
-            analysis: '唯物辩证法的三大基本规律是：对立统一规律、质量互变规律、否定之否定规律。',
-            category: '政治'
-          },
-          {
-            id: 'demo_3',
-            question: '实践是检验真理的唯一标准，这是因为？',
-            options: ['A. 实践具有直接现实性', 'B. 实践是认识的来源', 'C. 实践是认识的目的', 'D. 实践是认识发展的动力'],
-            answer: 'A',
-            analysis: '实践是检验真理的唯一标准，因为实践具有直接现实性的特点，能够把主观认识与客观实际联系起来。',
-            category: '政治'
-          }
-        ];
+  // 按钮文案
+  buttonText: {
+    type: String,
+    default: '立即添加'
+  },
 
-        storageService.save('v30_bank', demoQuestions);
-        toast.hide();
+  // 底部提示
+  hint: {
+    type: String,
+    default: ''
+  },
 
-        toast.success('示例题库已加载');
+  // 是否显示装饰
+  showDecoration: {
+    type: Boolean,
+    default: true
+  },
 
-        setTimeout(() => {
-          uni.switchTab({
-            url: '/pages/practice/index',
-            fail: () => uni.reLaunch({ url: '/pages/practice/index' })
-          });
-        }, 1500);
-      } catch (e) {
-        toast.hide();
-        logger.error('[EmptyState] 加载示例题库失败:', e);
-        toast.info('加载失败');
+  // 是否启用动画
+  animated: {
+    type: Boolean,
+    default: true
+  }
+});
+
+// ==================== Emits 定义 ====================
+const emit = defineEmits(['action', 'upload', 'quickStart', 'tutorial']);
+
+// ==================== 响应式状态 ====================
+/** 导航定时器ID */
+const navTimerId = ref(null);
+
+// ==================== 生命周期 ====================
+onBeforeUnmount(() => {
+  if (navTimerId.value) {
+    clearTimeout(navTimerId.value);
+    navTimerId.value = null;
+  }
+});
+
+// ==================== 方法 ====================
+
+// 震动反馈
+function vibrate() {
+  try {
+    if (typeof uni.vibrateShort === 'function') {
+      uni.vibrateShort({ type: 'light' });
+    }
+  } catch (e) {
+    logger.warn('[EmptyState] 震动反馈失败:', e.message || e);
+  }
+}
+
+// 通用操作
+function handleAction() {
+  vibrate();
+  emit('action');
+}
+
+// 上传资料
+function handleUpload() {
+  vibrate();
+  emit('upload');
+  safeNavigateTo('/pages/practice-sub/import-data');
+}
+
+// 快速开始
+function handleQuickStart() {
+  vibrate();
+  emit('quickStart');
+  loadDemoQuestions();
+}
+
+// 查看教程
+function handleTutorial() {
+  vibrate();
+  emit('tutorial');
+
+  modal.show({
+    title: '快速上手教程',
+    content:
+      '1. 上传学习资料（PDF/Word/图片）\n2. 智能自动提取知识点生成题目\n3. 开始刷题，错题自动收录\n4. 查看学习报告，持续进步',
+    confirmText: '开始上传',
+    cancelText: '稍后再说',
+    success: (res) => {
+      if (res.confirm) {
+        handleUpload();
       }
     }
+  });
+}
+
+// 加载示例题库
+async function loadDemoQuestions() {
+  toast.loading('加载示例题库...');
+
+  try {
+    const demoQuestions = [
+      {
+        id: 'demo_1',
+        question: '马克思主义哲学的直接理论来源是？',
+        options: ['A. 德国古典哲学', 'B. 英国古典政治经济学', 'C. 法国空想社会主义', 'D. 古希腊哲学'],
+        answer: 'A',
+        analysis: '马克思主义哲学的直接理论来源是德国古典哲学，特别是黑格尔的辩证法和费尔巴哈的唯物主义。',
+        category: '政治'
+      },
+      {
+        id: 'demo_2',
+        question: '下列选项中，属于唯物辩证法基本规律的是？',
+        options: ['A. 质量互变规律', 'B. 因果规律', 'C. 形式逻辑规律', 'D. 价值规律'],
+        answer: 'A',
+        analysis: '唯物辩证法的三大基本规律是：对立统一规律、质量互变规律、否定之否定规律。',
+        category: '政治'
+      },
+      {
+        id: 'demo_3',
+        question: '实践是检验真理的唯一标准，这是因为？',
+        options: ['A. 实践具有直接现实性', 'B. 实践是认识的来源', 'C. 实践是认识的目的', 'D. 实践是认识发展的动力'],
+        answer: 'A',
+        analysis: '实践是检验真理的唯一标准，因为实践具有直接现实性的特点，能够把主观认识与客观实际联系起来。',
+        category: '政治'
+      }
+    ];
+
+    storageService.save('v30_bank', demoQuestions);
+    toast.hide();
+
+    toast.success('示例题库已加载');
+
+    navTimerId.value = setTimeout(() => {
+      uni.switchTab({
+        url: '/pages/practice/index',
+        fail: () => uni.reLaunch({ url: '/pages/practice/index' })
+      });
+    }, 1500);
+  } catch (e) {
+    toast.hide();
+    logger.error('[EmptyState] 加载示例题库失败:', e);
+    toast.info('加载失败');
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
+/* ==================== Duolingo Design System 2.0 ==================== */
+
+// 主色调变量
+$duo-green: #58cc02;
+$duo-green-dark: #46a302;
+$duo-green-light: rgba(88, 204, 2, 0.1);
+$duo-green-glow: rgba(88, 204, 2, 0.25);
+$duo-title: var(--text-primary);
+$duo-desc: var(--text-secondary);
+$duo-hint: #c4c4c4;
+$duo-radius: 28rpx;
+$duo-btn-radius: 24rpx;
+$duo-orange: var(--warning);
+$duo-orange-dark: #e08600;
+$duo-purple: var(--purple-light, #ce82ff);
+$duo-purple-dark: #a855f7;
+
+// ==================== 入场动画 ====================
+@keyframes duo-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(40rpx);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08) translateY(-10rpx);
+  }
+  70% {
+    transform: scale(0.95) translateY(4rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes duo-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(32rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes duo-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-16rpx) scale(1.04);
+  }
+}
+
+@keyframes duo-bounce-loop {
+  0%,
+  100% {
+    transform: scale(1) translateY(0);
+  }
+  40% {
+    transform: scale(1.08) translateY(-12rpx);
+  }
+  60% {
+    transform: scale(0.97) translateY(4rpx);
+  }
+}
+
+@keyframes duo-deco-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(10rpx, -14rpx) rotate(4deg);
+  }
+  66% {
+    transform: translate(-8rpx, 8rpx) rotate(-3deg);
+  }
+}
+
 // ==================== 主容器 ====================
 .empty-state {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-radius: 24rpx;
+  border-radius: $duo-radius;
   overflow: hidden;
 
-  // 尺寸变体
+  // ---- 尺寸变体 ----
   &--small {
     padding: 32rpx 24rpx;
+
     .empty-state__icon {
-      width: 80rpx;
-      height: 80rpx;
+      width: 96rpx;
+      height: 96rpx;
+      margin-bottom: 20rpx;
     }
-    .icon-emoji {
-      font-size: 48rpx;
-    }
+
     .empty-state__title {
-      font-size: 28rpx;
+      font-size: 32rpx;
     }
+
     .empty-state__desc {
       font-size: 24rpx;
     }
   }
 
   &--medium {
-    padding: 48rpx 32rpx;
+    padding: 48rpx 36rpx;
+
     .empty-state__icon {
-      width: 120rpx;
-      height: 120rpx;
+      width: 136rpx;
+      height: 136rpx;
+      margin-bottom: 28rpx;
     }
-    .icon-emoji {
-      font-size: 64rpx;
-    }
+
     .empty-state__title {
-      font-size: 36rpx;
+      font-size: 44rpx;
     }
+
     .empty-state__desc {
       font-size: 28rpx;
     }
   }
 
   &--large {
-    padding: 64rpx 40rpx;
+    padding: 64rpx 44rpx;
+
     .empty-state__icon {
-      width: 160rpx;
-      height: 160rpx;
+      width: 176rpx;
+      height: 176rpx;
+      margin-bottom: 36rpx;
     }
-    .icon-emoji {
-      font-size: 80rpx;
-    }
+
     .empty-state__title {
-      font-size: 40rpx;
+      font-size: 48rpx;
     }
+
     .empty-state__desc {
       font-size: 30rpx;
     }
   }
 
-  // 主题变体
+  // ---- 浅色主题 ----
   &--light {
-    background: linear-gradient(
-      145deg,
-      rgba(247, 255, 239, 0.9) 0%,
-      rgba(255, 255, 255, 0.96) 50%,
-      rgba(232, 245, 223, 0.9) 100%
-    );
-    border: 1px solid rgba(255, 255, 255, 0.72);
+    background: var(--bg-card);
+    border: 2rpx solid #e5e5e5;
+    box-shadow:
+      0 4rpx 0 #e5e5e5,
+      0 12rpx 32rpx rgba(0, 0, 0, 0.06);
 
     .empty-state__title {
-      color: var(--text-primary);
+      color: $duo-title;
     }
+
     .empty-state__desc {
-      color: var(--text-sub);
+      color: $duo-desc;
     }
+
     .empty-state__hint {
-      color: var(--text-tertiary);
+      color: $duo-hint;
     }
   }
 
+  // ---- 深色主题 ----
   &--dark {
-    background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(15, 15, 15, 0.98) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1f1f1f;
+    border: 2rpx solid #3a3a3a;
+    box-shadow:
+      0 4rpx 0 #171717,
+      0 12rpx 32rpx rgba(0, 0, 0, 0.3);
 
     .empty-state__title {
-      color: var(--text-inverse);
+      color: var(--bg-secondary);
     }
+
     .empty-state__desc {
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 255, 255, 0.6);
     }
+
     .empty-state__hint {
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.4);
     }
   }
 }
@@ -412,128 +522,158 @@ export default {
 .deco-circle {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.15;
+  opacity: 0.5;
 
   &.deco-1 {
-    width: 200rpx;
-    height: 200rpx;
-    background: linear-gradient(135deg, var(--info), var(--accent-cool));
-    top: -60rpx;
-    right: -40rpx;
-    animation: float 6s ease-in-out infinite;
+    width: 180rpx;
+    height: 180rpx;
+    background: $duo-green-light;
+    top: -50rpx;
+    right: -30rpx;
+    animation: duo-deco-drift 8s ease-in-out infinite;
   }
 
   &.deco-2 {
-    width: 150rpx;
-    height: 150rpx;
-    background: linear-gradient(135deg, var(--brand-hover), var(--brand-color));
-    bottom: 100rpx;
-    left: -30rpx;
-    animation: float 5s ease-in-out infinite reverse;
+    width: 140rpx;
+    height: 140rpx;
+    background: rgba(88, 204, 2, 0.06);
+    bottom: 80rpx;
+    left: -40rpx;
+    animation: duo-deco-drift 6s ease-in-out infinite reverse;
   }
 
   &.deco-3 {
     width: 100rpx;
     height: 100rpx;
-    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    background: rgba(255, 150, 0, 0.08);
     top: 40%;
-    right: 10%;
-    animation: float 4s ease-in-out infinite;
+    right: 12%;
+    animation: duo-deco-drift 7s ease-in-out infinite 1s;
   }
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-20rpx) scale(1.05);
-  }
+// 深色装饰覆盖
+.empty-state--dark .deco-circle.deco-1 {
+  background: rgba(88, 204, 2, 0.08);
+}
+
+.empty-state--dark .deco-circle.deco-2 {
+  background: rgba(88, 204, 2, 0.04);
+}
+
+.empty-state--dark .deco-circle.deco-3 {
+  background: rgba(255, 150, 0, 0.06);
 }
 
 // ==================== 图标区域 ====================
+.empty-state__illustration {
+  width: 320rpx;
+  height: 260rpx;
+  margin-bottom: 32rpx;
+}
+
 .empty-state__icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24rpx;
-  background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
+  background: $duo-green-light;
+  border: 3rpx solid rgba(88, 204, 2, 0.15);
+  animation: duo-bounce-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 
   &.animate-float {
-    animation: bounce 2s ease-in-out infinite;
+    animation:
+      duo-bounce-in 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+      duo-bounce-loop 3s ease-in-out 0.8s infinite;
   }
 }
 
-@keyframes bounce {
-  0%,
-  100% {
-    transform: scale(1) translateY(0);
-  }
-  50% {
-    transform: scale(1.1) translateY(-10rpx);
-  }
+// 深色图标背景
+.empty-state--dark .empty-state__icon {
+  background: rgba(88, 204, 2, 0.12);
+  border-color: rgba(88, 204, 2, 0.2);
 }
 
 // ==================== 文本区域 ====================
 .empty-state__title {
-  font-weight: 600;
-  margin-bottom: 12rpx;
+  font-weight: 800;
   text-align: center;
+  margin-bottom: 12rpx;
+  letter-spacing: 0.5rpx;
+  animation: duo-slide-up 0.5s ease-out 0.25s both;
 }
 
 .empty-state__desc {
+  font-weight: 500;
   text-align: center;
   line-height: 1.6;
   max-width: 500rpx;
-  margin-bottom: 32rpx;
+  margin-bottom: 36rpx;
+  animation: duo-slide-up 0.5s ease-out 0.4s both;
 }
 
 .empty-state__hint {
   font-size: 24rpx;
-  margin-top: 24rpx;
+  font-weight: 500;
+  margin-top: 28rpx;
   text-align: center;
+  animation: duo-slide-up 0.5s ease-out 0.6s both;
 }
 
 // ==================== 简单/引导模式按钮 ====================
 .empty-state__action {
-  margin-top: 16rpx;
+  margin-top: 20rpx;
+  animation: duo-slide-up 0.5s ease-out 0.55s both;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20rpx 48rpx;
-  border-radius: 40rpx;
-  transition: all 0.3s ease;
+  padding: 22rpx 56rpx;
+  border-radius: $duo-btn-radius;
+  transition: transform 0.12s ease;
+  position: relative;
 
-  &:active {
-    transform: scale(0.95);
-  }
-
+  // 3D Duolingo 按钮 - 浅色
   &--primary {
-    background: var(--cta-primary-bg);
-    color: var(--cta-primary-text);
-    border: 1rpx solid var(--cta-primary-border);
-    box-shadow: var(--cta-primary-shadow);
+    background: $duo-green;
+    color: var(--text-inverse);
+    border: none;
+    box-shadow: 0 8rpx 0 $duo-green-dark;
+
+    &:active {
+      transform: translateY(6rpx);
+      box-shadow: 0 2rpx 0 $duo-green-dark;
+    }
   }
 
+  // 深色主题发光按钮
   &--glow {
-    background: linear-gradient(135deg, var(--brand-color) 0%, var(--brand-hover) 100%);
-    color: var(--primary-foreground, #111111);
-    box-shadow: 0 0 20rpx var(--brand-glow);
+    background: $duo-green;
+    color: var(--text-inverse);
+    border: none;
+    box-shadow:
+      0 8rpx 0 $duo-green-dark,
+      0 0 24rpx $duo-green-glow;
+
+    &:active {
+      transform: translateY(6rpx);
+      box-shadow:
+        0 2rpx 0 $duo-green-dark,
+        0 0 16rpx $duo-green-glow;
+    }
   }
 
   .btn-icon {
-    font-size: 28rpx;
-    margin-right: 8rpx;
+    font-size: 30rpx;
+    margin-right: 10rpx;
   }
 
   .btn-text {
-    font-size: 28rpx;
-    font-weight: 600;
+    font-size: 30rpx;
+    font-weight: 700;
+    letter-spacing: 1rpx;
   }
 }
 
@@ -542,101 +682,125 @@ export default {
   width: 100%;
   display: flex;
   flex-direction: column;
-  /* gap: 20rpx; -- removed tag-name selectors for WeChat component compat */
-  margin-top: 16rpx;
+  margin-top: 20rpx;
 }
 
 .guide-btn {
   display: flex;
   align-items: center;
-  padding: 24rpx;
-  border-radius: 20rpx;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 28rpx;
+  border-radius: $duo-btn-radius;
+  transition: transform 0.12s ease;
+  position: relative;
+  margin-bottom: 16rpx;
+  animation: duo-slide-up 0.5s ease-out both;
 
-  &:active {
-    transform: scale(0.98);
-    opacity: 0.9;
+  &:last-child {
+    margin-bottom: 0;
   }
 
+  // 交错入场延迟
+  &:nth-child(1) {
+    animation-delay: 0.45s;
+  }
+  &:nth-child(2) {
+    animation-delay: 0.55s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.65s;
+  }
+
+  // ---- 主按钮（上传资料）3D绿色 ----
   &--primary {
-    background: var(--cta-primary-bg);
-    border: 1px solid var(--cta-primary-border);
-    box-shadow: var(--cta-primary-shadow);
+    background: $duo-green;
+    border: none;
+    box-shadow: 0 6rpx 0 $duo-green-dark;
 
-    .empty-state--light & {
-      .guide-btn__title,
-      .guide-btn__arrow {
-        color: var(--text-primary);
-      }
-
-      .guide-btn__desc {
-        color: rgba(16, 40, 26, 0.68);
-      }
+    &:active {
+      transform: translateY(4rpx);
+      box-shadow: 0 2rpx 0 $duo-green-dark;
     }
 
-    .empty-state--dark & {
-      .guide-btn__title,
-      .guide-btn__arrow {
-        color: var(--text-inverse);
-      }
+    .guide-btn__title,
+    .guide-btn__arrow {
+      color: var(--text-inverse);
+    }
 
-      .guide-btn__desc {
-        color: rgba(255, 255, 255, 0.78);
-      }
+    .guide-btn__desc {
+      color: rgba(255, 255, 255, 0.8);
     }
   }
 
+  // ---- 次要按钮（快速开始 / 教程）----
   &--secondary,
   &--tertiary {
     .empty-state--light & {
-      background: #ffffff;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: #f7f7f7;
+      border: 2rpx solid #e5e5e5;
+      box-shadow: 0 4rpx 0 #e5e5e5;
+
+      &:active {
+        transform: translateY(3rpx);
+        box-shadow: 0 1rpx 0 #e5e5e5;
+      }
 
       .guide-btn__title {
-        color: var(--text-primary);
+        color: $duo-title;
       }
+
       .guide-btn__desc {
-        color: var(--text-sub);
+        color: $duo-desc;
       }
+
       .guide-btn__arrow {
-        color: var(--text-tertiary);
+        color: $duo-hint;
       }
     }
 
     .empty-state--dark & {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #2a2a2a;
+      border: 2rpx solid #3a3a3a;
+      box-shadow: 0 4rpx 0 #1a1a1a;
+
+      &:active {
+        transform: translateY(3rpx);
+        box-shadow: 0 1rpx 0 #1a1a1a;
+      }
 
       .guide-btn__title {
-        color: var(--text-inverse);
+        color: var(--bg-secondary);
       }
+
       .guide-btn__desc {
-        color: rgba(255, 255, 255, 0.7);
+        color: rgba(255, 255, 255, 0.6);
       }
+
       .guide-btn__arrow {
-        color: rgba(255, 255, 255, 0.4);
+        color: rgba(255, 255, 255, 0.3);
       }
     }
   }
 
+  // ---- 图标区域 ----
   &__icon {
-    width: 64rpx;
-    height: 64rpx;
-    border-radius: 16rpx;
+    width: 72rpx;
+    height: 72rpx;
+    border-radius: 20rpx;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 20rpx;
-    font-size: 32rpx;
 
     &--green {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
     }
+
     &--orange {
-      background: rgba(245, 158, 11, 0.15);
+      background: rgba(255, 150, 0, 0.12);
     }
+
     &--purple {
-      background: rgba(139, 92, 246, 0.15);
+      background: rgba(206, 130, 255, 0.12);
     }
   }
 
@@ -646,14 +810,16 @@ export default {
 
   &__title {
     display: block;
-    font-size: 28rpx;
-    font-weight: 600;
+    font-size: 30rpx;
+    font-weight: 700;
     margin-bottom: 4rpx;
+    letter-spacing: 0.5rpx;
   }
 
   &__desc {
     display: block;
-    font-size: 22rpx;
+    font-size: 24rpx;
+    font-weight: 500;
   }
 
   &__arrow {
@@ -661,97 +827,29 @@ export default {
   }
 }
 
-/* Final polish: remove glow / purple leftovers */
-.empty-state {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+// 深色主题主按钮发光
+.empty-state--dark .guide-btn--primary {
+  box-shadow:
+    0 6rpx 0 $duo-green-dark,
+    0 0 20rpx $duo-green-glow;
+
+  &:active {
+    box-shadow:
+      0 2rpx 0 $duo-green-dark,
+      0 0 12rpx $duo-green-glow;
+  }
 }
 
-.empty-state--dark {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
+// 深色主题图标覆盖
+.empty-state--dark .guide-btn__icon--green {
+  background: rgba(88, 204, 2, 0.2);
 }
 
-.deco-circle.deco-1 {
-  background: linear-gradient(135deg, rgba(107, 208, 150, 0.68), rgba(255, 255, 255, 0.2));
+.empty-state--dark .guide-btn__icon--orange {
+  background: rgba(255, 150, 0, 0.15);
 }
 
-.deco-circle.deco-2 {
-  background: linear-gradient(135deg, rgba(72, 190, 128, 0.48), rgba(107, 208, 150, 0.18));
-}
-
-.deco-circle.deco-3 {
-  background: linear-gradient(135deg, rgba(255, 159, 10, 0.52), rgba(255, 191, 71, 0.18));
-}
-
-.empty-state--dark .deco-circle.deco-1 {
-  background: linear-gradient(135deg, rgba(10, 132, 255, 0.54), rgba(95, 170, 255, 0.18));
-}
-
-.empty-state--dark .deco-circle.deco-2 {
-  background: linear-gradient(135deg, rgba(32, 83, 170, 0.42), rgba(95, 170, 255, 0.16));
-}
-
-.empty-state__icon {
-  background: rgba(255, 255, 255, 0.36);
-  border: 1rpx solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
-}
-
-.empty-state--dark .empty-state__icon {
-  background:
-    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(10, 132, 255, 0.18);
-}
-
-.action-btn--glow {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-}
-
-.guide-btn {
-  border-radius: 24rpx;
-  box-shadow: var(--apple-shadow-surface);
-}
-
-.empty-state--light .guide-btn--secondary,
-.empty-state--light .guide-btn--tertiary {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.46);
-}
-
-.empty-state--dark .guide-btn--secondary,
-.empty-state--dark .guide-btn--tertiary {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.guide-btn__icon--orange {
-  background: rgba(255, 159, 10, 0.14);
-}
-
-.guide-btn__icon--purple {
-  background: rgba(10, 132, 255, 0.14);
-}
-
-.empty-state--dark .guide-btn__icon--green,
-.empty-state--dark .guide-btn__icon--orange,
 .empty-state--dark .guide-btn__icon--purple {
-  background:
-    linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border: 1px solid rgba(10, 132, 255, 0.18);
+  background: rgba(206, 130, 255, 0.15);
 }
 </style>

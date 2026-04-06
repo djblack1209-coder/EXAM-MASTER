@@ -104,396 +104,405 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, watch, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { quoteHandler } from '@/utils/helpers/quote-interaction-handler.js';
-// ✅ 统一日志工具（生产环境自动禁用）
+// 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { getPixelRatio } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  name: 'ShareModal',
-  components: { BaseIcon },
-
-  props: {
-    // 是否显示
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    // 标题
-    title: {
-      type: String,
-      default: '分享金句'
-    },
-    // 金句内容
-    quote: {
-      type: String,
-      default: ''
-    },
-    // 作者
-    author: {
-      type: String,
-      default: '古人云'
-    },
-    // 是否显示预览
-    showPreview: {
-      type: Boolean,
-      default: true
-    },
-    // 深色模式
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+// --- 属性定义 ---
+const props = defineProps({
+  // 是否显示
+  visible: {
+    type: Boolean,
+    default: false
   },
-
-  emits: ['close', 'update:visible', 'favorite', 'share'],
-
-  data() {
-    return {
-      isFavorite: false,
-      isAnimating: false,
-      showPosterPreview: false,
-      posterTempPath: ''
-    };
+  // 标题
+  title: {
+    type: String,
+    default: '分享金句'
   },
-
-  watch: {
-    visible(val) {
-      if (val) {
-        this.checkFavoriteStatus();
-      }
-    },
-    quote() {
-      this.checkFavoriteStatus();
-    }
+  // 金句内容
+  quote: {
+    type: String,
+    default: ''
   },
-
-  beforeUnmount() {
-    if (this._animTimer) {
-      clearTimeout(this._animTimer);
-      this._animTimer = null;
-    }
+  // 作者
+  author: {
+    type: String,
+    default: '古人云'
   },
+  // 是否显示预览
+  showPreview: {
+    type: Boolean,
+    default: true
+  },
+  // 深色模式
+  isDark: {
+    type: Boolean,
+    default: false
+  }
+});
 
-  methods: {
-    // 检查收藏状态
-    checkFavoriteStatus() {
-      this.isFavorite = quoteHandler.isFavorite(this.quote);
-    },
+// --- 事件定义 ---
+const emit = defineEmits(['close', 'update:visible', 'favorite', 'share']);
 
-    // 关闭弹窗
-    handleClose() {
-      this.$emit('close');
-      this.$emit('update:visible', false);
-    },
+// --- 组件实例（用于 uni.createSelectorQuery） ---
+const instance = getCurrentInstance();
 
-    // 收藏/取消收藏
-    async handleFavorite() {
-      if (this.isAnimating) return;
+// --- 响应式状态 ---
+const isFavorite = ref(false);
+const isAnimating = ref(false);
+const showPosterPreview = ref(false);
+const posterTempPath = ref('');
 
-      this.isAnimating = true;
+// 非响应式：动画定时器引用
+let _animTimer = null;
 
-      // 震动反馈
-      try {
-        uni.vibrateShort({ type: 'medium' });
-      } catch (e) {
-        logger.warn('[ShareModal] vibrateShort failed in handleFavorite', e);
-      }
-
-      const result = await quoteHandler.toggleFavorite(this.quote, this.author);
-      this.isFavorite = result;
-
-      // 动画结束
-      this._animTimer = setTimeout(() => {
-        this._animTimer = null;
-        this.isAnimating = false;
-      }, 600);
-
-      this.$emit('favorite', { isFavorite: result, quote: this.quote });
-    },
-
-    // 分享处理
-    async handleShare(platform) {
-      // 震动反馈
-      try {
-        uni.vibrateShort({ type: 'light' });
-      } catch (e) {
-        logger.warn('[ShareModal] vibrateShort failed in handleShare', e);
-      }
-
-      switch (platform) {
-        case 'wechat':
-        case 'timeline':
-          await this.shareToWechat(platform);
-          break;
-        case 'poster':
-          await this.generatePoster();
-          break;
-        case 'copy':
-          this.copyQuote();
-          break;
-      }
-
-      this.$emit('share', { platform, quote: this.quote });
-    },
-
-    // 微信分享
-    async shareToWechat(type) {
-      // #ifdef MP-WEIXIN
-      // 小程序环境：微信小程序不支持直接调用分享API，需要用户主动触发
-      // 关闭当前弹窗，提示用户使用右上角分享按钮
-      this.handleClose();
-
-      if (type === 'wechat') {
-        // 微信好友分享：设置分享数据，提示用户点击右上角
-        uni.showModal({
-          title: '分享到微信好友',
-          content: '微信小程序需要点击右上角「...」按钮，选择「发送给朋友」进行分享',
-          showCancel: false,
-          confirmText: '我知道了'
-        });
-      } else {
-        // 朋友圈分享：设置分享数据，提示用户点击右上角
-        uni.showModal({
-          title: '分享到朋友圈',
-          content: '微信小程序需要点击右上角「...」按钮，选择「分享到朋友圈」进行分享',
-          showCancel: false,
-          confirmText: '我知道了'
-        });
-      }
-      // #endif
-
-      // #ifdef APP-PLUS
-      try {
-        await quoteHandler.shareQuote(this.quote, this.author, { platform: type });
-      } catch (_e) {
-        toast.info('分享失败');
-      }
-      // #endif
-    },
-
-    // 生成海报
-    async generatePoster() {
-      toast.loading('生成中...');
-
-      try {
-        const result = await quoteHandler.generatePoster(this.quote, this.author);
-
-        if (result.needCanvas) {
-          // 需要组件创建 canvas
-          this.showPosterPreview = true;
-          this.$nextTick(() => {
-            this.drawPoster(result.config);
-          });
-        } else if (result.success) {
-          this.posterTempPath = result.tempFilePath;
-          this.showPosterPreview = true;
-        }
-      } catch (e) {
-        logger.error('[ShareModal] 生成海报失败:', e);
-        toast.info('生成失败，请重试');
-      } finally {
-        toast.hide();
-      }
-    },
-
-    // 绘制海报
-    drawPoster(config) {
-      const query = uni.createSelectorQuery().in(this);
-      query
-        .select('#quote-poster-canvas')
-        .fields({ node: true, size: true })
-        .exec((res) => {
-          if (!res[0]) return;
-
-          const canvas = res[0].node;
-          const ctx = canvas.getContext('2d');
-          const dpr = getPixelRatio();
-
-          canvas.width = (config.width * dpr) / 2;
-          canvas.height = (config.height * dpr) / 2;
-          ctx.scale(dpr / 2, dpr / 2);
-
-          // 绘制品牌渐变背景
-          const gradient = ctx.createLinearGradient(0, 0, config.width, config.height);
-          if (this.isDark) {
-            gradient.addColorStop(0, '#07111c');
-            gradient.addColorStop(1, '#0a84ff');
-          } else {
-            gradient.addColorStop(0, '#6bd096');
-            gradient.addColorStop(1, '#d8f2df');
-          }
-          ctx.fillStyle = gradient;
-          ctx.fillRect(0, 0, config.width, config.height);
-
-          // 绘制装饰
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-          ctx.beginPath();
-          ctx.arc(config.width - 100, 100, 150, 0, Math.PI * 2);
-          ctx.fill();
-
-          // 绘制金句
-          ctx.fillStyle = this.isDark ? '#ffffff' : '#13301c';
-          ctx.font = 'bold 32px sans-serif';
-          ctx.textAlign = 'center';
-
-          const lines = this.wrapText(ctx, `"${config.quote}"`, config.width - 100);
-          let y = 350;
-          lines.forEach((line) => {
-            ctx.fillText(line, config.width / 2, y);
-            y += 48;
-          });
-
-          // 绘制作者
-          ctx.font = '24px sans-serif';
-          ctx.fillStyle = this.isDark ? 'rgba(255, 255, 255, 0.82)' : 'rgba(19, 48, 28, 0.72)';
-          ctx.fillText(`—— ${config.author}`, config.width / 2, y + 40);
-
-          // 绘制日期
-          ctx.font = '20px sans-serif';
-          ctx.fillStyle = this.isDark ? 'rgba(255, 255, 255, 0.64)' : 'rgba(19, 48, 28, 0.56)';
-          ctx.fillText(config.date, config.width / 2, y + 90);
-
-          // 绘制品牌
-          ctx.font = 'bold 24px sans-serif';
-          ctx.fillStyle = this.isDark ? '#ffffff' : '#13301c';
-          ctx.fillText('Exam-Master', config.width / 2, config.height - 80);
-
-          ctx.font = '18px sans-serif';
-          ctx.fillStyle = this.isDark ? 'rgba(255, 255, 255, 0.74)' : 'rgba(19, 48, 28, 0.64)';
-          ctx.fillText('考研路上，与你同行', config.width / 2, config.height - 50);
-        });
-    },
-
-    // 文字换行
-    wrapText(ctx, text, maxWidth) {
-      const lines = [];
-      let line = '';
-
-      for (let i = 0; i < text.length; i++) {
-        const testLine = line + text[i];
-        const metrics = ctx.measureText(testLine);
-
-        if (metrics.width > maxWidth && i > 0) {
-          lines.push(line);
-          line = text[i];
-        } else {
-          line = testLine;
-        }
-      }
-      lines.push(line);
-
-      return lines;
-    },
-
-    // 保存海报
-    async handleSavePoster() {
-      try {
-        const query = uni.createSelectorQuery().in(this);
-        query
-          .select('#quote-poster-canvas')
-          .fields({ node: true })
-          .exec(async (res) => {
-            if (!res[0]) return;
-
-            const canvas = res[0].node;
-
-            // #ifdef MP-WEIXIN
-            try {
-              const tempFilePath = await new Promise((resolve, reject) => {
-                uni.canvasToTempFilePath({
-                  canvas,
-                  success: (res) => resolve(res.tempFilePath),
-                  fail: reject
-                });
-              });
-
-              const result = await quoteHandler.savePosterToAlbum(tempFilePath);
-              if (result.success) {
-                this.showPosterPreview = false;
-              } else if (result.cancelled) {
-                // 用户取消，不做任何处理
-              } else if (result.permissionDenied) {
-                // 权限被拒绝，已在 handler 中处理
-              }
-            } catch (_e) {
-              logger.error('[ShareModal] 保存海报失败:', _e);
-              toast.info('保存失败');
-            }
-            // #endif
-
-            // #ifdef APP-PLUS
-            try {
-              const tempFilePath = await new Promise((resolve, reject) => {
-                uni.canvasToTempFilePath({
-                  canvas,
-                  success: (res) => resolve(res.tempFilePath),
-                  fail: reject
-                });
-              });
-
-              uni.saveImageToPhotosAlbum({
-                filePath: tempFilePath,
-                success: () => {
-                  toast.success('已保存到相册');
-                  this.showPosterPreview = false;
-                },
-                fail: (err) => {
-                  if (err?.errMsg && err.errMsg.includes('deny')) {
-                    uni.showModal({
-                      title: '权限提示',
-                      content: '需要相册权限才能保存图片，请在设置中开启',
-                      confirmText: '去设置',
-                      success: (res) => {
-                        if (res.confirm) {
-                          plus.runtime.openURL('app-settings:');
-                        }
-                      }
-                    });
-                  } else {
-                    toast.info('保存失败');
-                  }
-                }
-              });
-            } catch (_e) {
-              logger.error('[ShareModal] App端保存海报失败:', _e);
-              toast.info('保存失败');
-            }
-            // #endif
-
-            // #ifdef H5
-            const dataUrl = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.download = `quote_${Date.now()}.png`;
-            link.href = dataUrl;
-            link.click();
-
-            toast.success('已下载');
-            this.showPosterPreview = false;
-            // #endif
-          });
-      } catch (e) {
-        logger.error('[ShareModal] 保存海报失败:', e);
-        toast.info('保存失败');
-      }
-    },
-
-    // 复制文案
-    copyQuote() {
-      const content = `"${this.quote}"\n—— ${this.author}\n\n来自 Exam-Master，让学习更高效`;
-
-      uni.setClipboardData({
-        data: content,
-        success: () => {
-          toast.success('已复制到剪贴板');
-        }
-      });
+// --- 侦听器 ---
+watch(
+  () => props.visible,
+  (val) => {
+    if (val) {
+      checkFavoriteStatus();
     }
   }
-};
+);
+
+watch(
+  () => props.quote,
+  () => {
+    checkFavoriteStatus();
+  }
+);
+
+// --- 生命周期 ---
+onBeforeUnmount(() => {
+  if (_animTimer) {
+    clearTimeout(_animTimer);
+    _animTimer = null;
+  }
+});
+
+// --- 方法 ---
+
+// 检查收藏状态
+function checkFavoriteStatus() {
+  isFavorite.value = quoteHandler.isFavorite(props.quote);
+}
+
+// 关闭弹窗
+function handleClose() {
+  emit('close');
+  emit('update:visible', false);
+}
+
+// 收藏/取消收藏
+async function handleFavorite() {
+  if (isAnimating.value) return;
+
+  isAnimating.value = true;
+
+  // 震动反馈
+  try {
+    uni.vibrateShort({ type: 'medium' });
+  } catch (e) {
+    logger.warn('[ShareModal] vibrateShort failed in handleFavorite', e);
+  }
+
+  const result = await quoteHandler.toggleFavorite(props.quote, props.author);
+  isFavorite.value = result;
+
+  // 动画结束
+  _animTimer = setTimeout(() => {
+    _animTimer = null;
+    isAnimating.value = false;
+  }, 600);
+
+  emit('favorite', { isFavorite: result, quote: props.quote });
+}
+
+// 分享处理
+async function handleShare(platform) {
+  // 震动反馈
+  try {
+    uni.vibrateShort({ type: 'light' });
+  } catch (e) {
+    logger.warn('[ShareModal] vibrateShort failed in handleShare', e);
+  }
+
+  switch (platform) {
+    case 'wechat':
+    case 'timeline':
+      await shareToWechat(platform);
+      break;
+    case 'poster':
+      await generatePoster();
+      break;
+    case 'copy':
+      copyQuote();
+      break;
+  }
+
+  emit('share', { platform, quote: props.quote });
+}
+
+// 微信分享
+async function shareToWechat(type) {
+  // #ifdef MP-WEIXIN
+  // 小程序环境：微信小程序不支持直接调用分享API，需要用户主动触发
+  // 关闭当前弹窗，提示用户使用右上角分享按钮
+  handleClose();
+
+  if (type === 'wechat') {
+    // 微信好友分享：设置分享数据，提示用户点击右上角
+    modal.show({
+      title: '分享到微信好友',
+      content: '微信小程序需要点击右上角「...」按钮，选择「发送给朋友」进行分享',
+      showCancel: false,
+      confirmText: '我知道了'
+    });
+  } else {
+    // 朋友圈分享：设置分享数据，提示用户点击右上角
+    modal.show({
+      title: '分享到朋友圈',
+      content: '微信小程序需要点击右上角「...」按钮，选择「分享到朋友圈」进行分享',
+      showCancel: false,
+      confirmText: '我知道了'
+    });
+  }
+  // #endif
+
+  // #ifdef APP-PLUS
+  try {
+    await quoteHandler.shareQuote(props.quote, props.author, { platform: type });
+  } catch (_e) {
+    toast.info('分享失败');
+  }
+  // #endif
+}
+
+// 生成海报
+async function generatePoster() {
+  toast.loading('生成中...');
+
+  try {
+    const result = await quoteHandler.generatePoster(props.quote, props.author);
+
+    if (result.needCanvas) {
+      // 需要组件创建 canvas
+      showPosterPreview.value = true;
+      nextTick(() => {
+        drawPoster(result.config);
+      });
+    } else if (result.success) {
+      posterTempPath.value = result.tempFilePath;
+      showPosterPreview.value = true;
+    }
+  } catch (e) {
+    logger.error('[ShareModal] 生成海报失败:', e);
+    toast.info('生成失败，请重试');
+  } finally {
+    toast.hide();
+  }
+}
+
+// 绘制海报
+function drawPoster(config) {
+  const query = uni.createSelectorQuery().in(instance.proxy);
+  query
+    .select('#quote-poster-canvas')
+    .fields({ node: true, size: true })
+    .exec((res) => {
+      if (!res[0]) return;
+
+      const canvas = res[0].node;
+      const ctx = canvas.getContext('2d');
+      const dpr = getPixelRatio();
+
+      canvas.width = (config.width * dpr) / 2;
+      canvas.height = (config.height * dpr) / 2;
+      ctx.scale(dpr / 2, dpr / 2);
+
+      // 绘制品牌渐变背景
+      const gradient = ctx.createLinearGradient(0, 0, config.width, config.height);
+      if (props.isDark) {
+        gradient.addColorStop(0, '#07111c');
+        gradient.addColorStop(1, '#0a84ff');
+      } else {
+        gradient.addColorStop(0, '#6bd096');
+        gradient.addColorStop(1, '#d8f2df');
+      }
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, config.width, config.height);
+
+      // 绘制装饰
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.beginPath();
+      ctx.arc(config.width - 100, 100, 150, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 绘制金句
+      ctx.fillStyle = props.isDark ? '#ffffff' : '#13301c';
+      ctx.font = 'bold 32px sans-serif';
+      ctx.textAlign = 'center';
+
+      const lines = wrapText(ctx, `"${config.quote}"`, config.width - 100);
+      let y = 350;
+      lines.forEach((line) => {
+        ctx.fillText(line, config.width / 2, y);
+        y += 48;
+      });
+
+      // 绘制作者
+      ctx.font = '24px sans-serif';
+      ctx.fillStyle = props.isDark ? 'rgba(255, 255, 255, 0.82)' : 'rgba(19, 48, 28, 0.72)';
+      ctx.fillText(`—— ${config.author}`, config.width / 2, y + 40);
+
+      // 绘制日期
+      ctx.font = '20px sans-serif';
+      ctx.fillStyle = props.isDark ? 'rgba(255, 255, 255, 0.64)' : 'rgba(19, 48, 28, 0.56)';
+      ctx.fillText(config.date, config.width / 2, y + 90);
+
+      // 绘制品牌
+      ctx.font = 'bold 24px sans-serif';
+      ctx.fillStyle = props.isDark ? '#ffffff' : '#13301c';
+      ctx.fillText('Exam-Master', config.width / 2, config.height - 80);
+
+      ctx.font = '18px sans-serif';
+      ctx.fillStyle = props.isDark ? 'rgba(255, 255, 255, 0.74)' : 'rgba(19, 48, 28, 0.64)';
+      ctx.fillText('考研路上，与你同行', config.width / 2, config.height - 50);
+    });
+}
+
+// 文字换行
+function wrapText(ctx, text, maxWidth) {
+  const lines = [];
+  let line = '';
+
+  for (let i = 0; i < text.length; i++) {
+    const testLine = line + text[i];
+    const metrics = ctx.measureText(testLine);
+
+    if (metrics.width > maxWidth && i > 0) {
+      lines.push(line);
+      line = text[i];
+    } else {
+      line = testLine;
+    }
+  }
+  lines.push(line);
+
+  return lines;
+}
+
+// 保存海报
+async function handleSavePoster() {
+  try {
+    const query = uni.createSelectorQuery().in(instance.proxy);
+    query
+      .select('#quote-poster-canvas')
+      .fields({ node: true })
+      .exec(async (res) => {
+        if (!res[0]) return;
+
+        const canvas = res[0].node;
+
+        // #ifdef MP-WEIXIN
+        try {
+          const tempFilePath = await new Promise((resolve, reject) => {
+            uni.canvasToTempFilePath({
+              canvas,
+              success: (res) => resolve(res.tempFilePath),
+              fail: reject
+            });
+          });
+
+          const result = await quoteHandler.savePosterToAlbum(tempFilePath);
+          if (result.success) {
+            showPosterPreview.value = false;
+          } else if (result.cancelled) {
+            // 用户取消，不做任何处理
+          } else if (result.permissionDenied) {
+            // 权限被拒绝，已在 handler 中处理
+          }
+        } catch (_e) {
+          logger.error('[ShareModal] 保存海报失败:', _e);
+          toast.info('保存失败');
+        }
+        // #endif
+
+        // #ifdef APP-PLUS
+        try {
+          const tempFilePath = await new Promise((resolve, reject) => {
+            uni.canvasToTempFilePath({
+              canvas,
+              success: (res) => resolve(res.tempFilePath),
+              fail: reject
+            });
+          });
+
+          uni.saveImageToPhotosAlbum({
+            filePath: tempFilePath,
+            success: () => {
+              toast.success('已保存到相册');
+              showPosterPreview.value = false;
+            },
+            fail: (err) => {
+              if (err?.errMsg && err.errMsg.includes('deny')) {
+                modal.show({
+                  title: '权限提示',
+                  content: '需要相册权限才能保存图片，请在设置中开启',
+                  confirmText: '去设置',
+                  success: (res) => {
+                    if (res.confirm) {
+                      plus.runtime.openURL('app-settings:');
+                    }
+                  }
+                });
+              } else {
+                toast.info('保存失败');
+              }
+            }
+          });
+        } catch (_e) {
+          logger.error('[ShareModal] App端保存海报失败:', _e);
+          toast.info('保存失败');
+        }
+        // #endif
+
+        // #ifdef H5
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `quote_${Date.now()}.png`;
+        link.href = dataUrl;
+        link.click();
+
+        toast.success('已下载');
+        showPosterPreview.value = false;
+        // #endif
+      });
+  } catch (e) {
+    logger.error('[ShareModal] 保存海报失败:', e);
+    toast.info('保存失败');
+  }
+}
+
+// 复制文案
+function copyQuote() {
+  const content = `"${props.quote}"\n—— ${props.author}\n\n来自 Exam-Master，让学习更高效`;
+
+  uni.setClipboardData({
+    data: content,
+    success: () => {
+      toast.success('已复制到剪贴板');
+    }
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -631,7 +640,7 @@ export default {
 }
 
 .preview-dark .preview-quote {
-  color: #ffffff;
+  color: var(--foreground);
 }
 
 .preview-author {
@@ -724,15 +733,15 @@ export default {
 }
 
 .icon-wechat {
-  background: rgba(52, 199, 89, 0.16);
+  background: color-mix(in srgb, var(--success) 16%, transparent);
 }
 
 .icon-timeline {
-  background: rgba(10, 132, 255, 0.14);
+  background: color-mix(in srgb, var(--info) 14%, transparent);
 }
 
 .icon-poster {
-  background: rgba(255, 159, 10, 0.14);
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
 }
 
 .icon-copy {
@@ -790,7 +799,7 @@ export default {
 .poster-preview-title {
   font-size: 28rpx;
   font-weight: 660;
-  color: #ffffff;
+  color: var(--text-inverse);
   text-align: center;
 }
 
@@ -819,7 +828,7 @@ export default {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
     linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  color: #ffffff;
+  color: var(--foreground);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 

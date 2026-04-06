@@ -302,7 +302,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { onLoad, onUnload, onHide, onShareAppMessage } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
@@ -314,472 +317,492 @@ import { useReviewStore } from '@/stores/modules/review.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 
-export default {
-  components: { BaseIcon },
-  setup() {
-    const reviewStore = useReviewStore();
-    return { reviewStore };
-  },
-  data() {
-    return {
-      statusBarHeight: 44,
-      isDark: false,
-      isPageLoading: true, // 页面初始加载状态
+// Store 实例
+const reviewStore = useReviewStore();
 
-      // 考试设置
-      questionCount: 20,
-      examDuration: 30, // 分钟
-      questionType: 'all',
+// ========== 响应式状态 ==========
 
-      // 考试状态
-      isExamStarted: false,
-      isExamFinished: false,
-      examQuestions: [],
-      userAnswers: {},
-      currentIndex: 0,
+// 页面基础状态
+const statusBarHeight = ref(44);
+const isDark = ref(false);
+const isPageLoading = ref(true); // 页面初始加载状态
 
-      // 计时器
-      remainingTime: 0, // 秒
-      timerInterval: null,
+// 考试设置
+const questionCount = ref(20);
+const examDuration = ref(30); // 分钟
+const questionType = ref('all');
 
-      // 结果
-      score: 0,
-      correctCount: 0,
-      wrongCount: 0,
-      wrongQuestions: [],
+// 考试状态
+const isExamStarted = ref(false);
+const isExamFinished = ref(false);
+const examQuestions = ref([]);
+const userAnswers = ref({});
+const currentIndex = ref(0);
 
-      // 防重复点击
-      isSubmitting: false,
-      isNavigating: false,
+// 计时器
+const remainingTime = ref(0); // 秒
 
-      // E2E 调试模式（跳过后端拉题）
-      isE2EMode: false,
+// 结果
+const score = ref(0);
+const correctCount = ref(0);
+const wrongCount = ref(0);
+const wrongQuestions = ref([]);
 
-      // E005: 从 computed 移至 data，避免每次渲染反序列化题库
-      totalQuestions: 0
-    };
-  },
+// 防重复点击
+const isSubmitting = ref(false);
+const isNavigating = ref(false);
 
-  computed: {
-    currentQuestion() {
-      return this.examQuestions[this.currentIndex];
-    },
+// E2E 调试模式（跳过后端拉题）
+const isE2EMode = ref(false);
 
-    progressPercent() {
-      if (this.examQuestions.length === 0) return 0;
-      return Math.round(((this.currentIndex + 1) / this.examQuestions.length) * 100);
-    },
+// E005: 题库总数，从 computed 移至 ref，避免每次渲染反序列化题库
+const totalQuestions = ref(0);
 
-    accuracy() {
-      if (this.examQuestions.length === 0) return 0;
-      return Math.round((this.correctCount / this.examQuestions.length) * 100);
+// ========== 非响应式变量（定时器 / 缓存 / 事件引用） ==========
+
+let timerInterval = null;
+let _cachedBank = [];
+let _themeHandler = null;
+let _navTimer = null;
+
+// ========== 计算属性 ==========
+
+/** 当前题目 */
+const currentQuestion = computed(() => examQuestions.value[currentIndex.value]);
+
+/** 进度百分比 */
+const progressPercent = computed(() => {
+  if (examQuestions.value.length === 0) return 0;
+  return Math.round(((currentIndex.value + 1) / examQuestions.value.length) * 100);
+});
+
+/** 正确率 */
+const accuracy = computed(() => {
+  if (examQuestions.value.length === 0) return 0;
+  return Math.round((correctCount.value / examQuestions.value.length) * 100);
+});
+
+// ========== 方法 ==========
+
+/** 格式化倒计时显示 */
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+/** 打乱数组顺序（Fisher-Yates 洗牌） */
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/** 启动倒计时 */
+function startTimer() {
+  clearTimer();
+  timerInterval = setInterval(() => {
+    if (remainingTime.value > 0) {
+      remainingTime.value--;
+    } else {
+      timeUp();
     }
-  },
+  }, 1000);
+}
 
-  onLoad() {
-    this.statusBarHeight = getStatusBarHeight();
+/** 清除计时器 */
+function clearTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
 
-    // ✅ F024: 统一使用 storageService 读取主题
-    this.isDark = storageService.get('theme_mode', 'light') === 'dark';
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
-
-    // E005: 缓存题库数据，避免 totalQuestions computed 每次反序列化
-    try {
-      const bank = storageService.get('v30_bank', []);
-      this.totalQuestions = bank.length;
-      this._cachedBank = bank;
-    } catch (err) {
-      logger.error('[模拟考试] 加载题库异常:', err);
-      this.totalQuestions = 0;
-      this._cachedBank = [];
-    } finally {
-      this.isPageLoading = false;
+/** 时间到，自动提交 */
+function timeUp() {
+  clearTimer();
+  modal.show({
+    title: '时间到',
+    content: '考试时间已结束，系统将自动提交试卷',
+    showCancel: false,
+    success: () => {
+      calculateResult();
     }
+  });
+}
 
-    // [F5-FIX] 检查是否有未完成的考试
-    this._checkUnfinishedExam();
-
-    try {
-      const pages = getCurrentPages();
-      const currentPage = pages[pages.length - 1];
-      const query = currentPage?.$page?.options || currentPage?.options || {};
-      const e2eFlag = String(query.e2e || '').toLowerCase();
-      this.isE2EMode = e2eFlag === '1' || e2eFlag === 'true';
-    } catch {
-      this.isE2EMode = false;
-    }
-  },
-
-  onUnload() {
-    uni.$off('themeUpdate', this._themeHandler);
-    this.clearTimer();
-    // 清理导航防抖定时器
-    if (this._navTimer) {
-      clearTimeout(this._navTimer);
-      this._navTimer = null;
-    }
-    // [F5-FIX] 退出时保存进度（如果考试进行中）
-    this._saveExamProgress();
-  },
-
-  // [F5-FIX] 切后台 / 接电话时自动保存进度
-  onHide() {
-    if (this.isExamStarted && !this.isExamFinished) {
-      this._saveExamProgress();
-    }
-  },
-
-  // [F2-FIX] 微信分享配置
-  onShareAppMessage() {
-    return {
-      title: '模拟考试 - Exam-Master 考研备考',
-      path: '/pages/practice-sub/mock-exam'
-    };
-  },
-
-  methods: {
-    handleBack() {
-      // ✅ P0-FIX: 提交期间禁止退出，防止数据损坏
-      if (this.isSubmitting) {
-        toast.info('正在提交中，请稍候');
-        return;
-      }
-      if (this.isExamStarted && !this.isExamFinished) {
-        uni.showModal({
-          title: '确认退出',
-          content: '退出后可从上次进度继续考试，确定退出吗？',
-          success: (res) => {
-            if (res.confirm) {
-              this._saveExamProgress();
-              this.clearTimer();
-              safeNavigateBack();
-            }
-          }
-        });
-      } else {
-        safeNavigateBack();
-      }
-    },
-
-    // [F5-FIX] 保存考试进度到本地
-    _saveExamProgress() {
-      if (!this.isExamStarted || this.isExamFinished) return;
-      try {
-        storageService.save('MOCK_EXAM_PROGRESS', {
-          examQuestions: this.examQuestions,
-          userAnswers: this.userAnswers,
-          currentIndex: this.currentIndex,
-          remainingTime: this.remainingTime,
-          correctCount: this.correctCount,
-          wrongCount: this.wrongCount,
-          wrongQuestions: this.wrongQuestions,
-          questionCount: this.questionCount,
-          examDuration: this.examDuration,
-          savedAt: Date.now()
-        });
-        logger.log('[MockExam] 考试进度已保存, index:', this.currentIndex);
-      } catch (e) {
-        logger.warn('[MockExam] 保存进度失败:', e);
-      }
-    },
-
-    // [F5-FIX] 检查并恢复未完成的考试
-    _checkUnfinishedExam() {
-      try {
-        const progress = storageService.get('MOCK_EXAM_PROGRESS');
-        if (!progress || !progress.examQuestions?.length) return;
-        // 24小时过期
-        if (Date.now() - progress.savedAt > 24 * 60 * 60 * 1000) {
-          storageService.remove('MOCK_EXAM_PROGRESS');
-          return;
+/** 返回按钮处理 */
+function handleBack() {
+  // ✅ P0-FIX: 提交期间禁止退出，防止数据损坏
+  if (isSubmitting.value) {
+    toast.info('正在提交中，请稍候');
+    return;
+  }
+  if (isExamStarted.value && !isExamFinished.value) {
+    modal.show({
+      title: '确认退出',
+      content: '退出后可从上次进度继续考试，确定退出吗？',
+      success: (res) => {
+        if (res.confirm) {
+          _saveExamProgress();
+          clearTimer();
+          safeNavigateBack();
         }
-        uni.showModal({
-          title: '发现未完成的考试',
-          content: `上次答到第 ${progress.currentIndex + 1}/${progress.questionCount} 题，剩余 ${Math.floor(progress.remainingTime / 60)} 分钟，是否继续？`,
-          confirmText: '继续考试',
-          cancelText: '重新开始',
-          success: (res) => {
-            if (res.confirm) {
-              this._restoreExamProgress(progress);
-            } else {
-              storageService.remove('MOCK_EXAM_PROGRESS');
-            }
-          }
-        });
-      } catch (e) {
-        logger.warn('[MockExam] 检查未完成考试失败:', e);
       }
-    },
+    });
+  } else {
+    safeNavigateBack();
+  }
+}
 
-    // [F5-FIX] 恢复考试进度
-    _restoreExamProgress(progress) {
-      this.examQuestions = progress.examQuestions;
-      this.userAnswers = progress.userAnswers || {};
-      this.currentIndex = progress.currentIndex || 0;
-      this.remainingTime = progress.remainingTime || 0;
-      this.correctCount = progress.correctCount || 0;
-      this.wrongCount = progress.wrongCount || 0;
-      this.wrongQuestions = progress.wrongQuestions || [];
-      this.questionCount = progress.questionCount || 20;
-      this.examDuration = progress.examDuration || 30;
-      this.isExamStarted = true;
-      this.isExamFinished = false;
+/** [F5-FIX] 保存考试进度到本地 */
+function _saveExamProgress() {
+  if (!isExamStarted.value || isExamFinished.value) return;
+  try {
+    storageService.save('MOCK_EXAM_PROGRESS', {
+      examQuestions: examQuestions.value,
+      userAnswers: userAnswers.value,
+      currentIndex: currentIndex.value,
+      remainingTime: remainingTime.value,
+      correctCount: correctCount.value,
+      wrongCount: wrongCount.value,
+      wrongQuestions: wrongQuestions.value,
+      questionCount: questionCount.value,
+      examDuration: examDuration.value,
+      savedAt: Date.now()
+    });
+    logger.log('[MockExam] 考试进度已保存, index:', currentIndex.value);
+  } catch (e) {
+    logger.warn('[MockExam] 保存进度失败:', e);
+  }
+}
+
+/** [F5-FIX] 检查并恢复未完成的考试 */
+function _checkUnfinishedExam() {
+  try {
+    const progress = storageService.get('MOCK_EXAM_PROGRESS');
+    if (!progress || !progress.examQuestions?.length) return;
+    // 24小时过期
+    if (Date.now() - progress.savedAt > 24 * 60 * 60 * 1000) {
       storageService.remove('MOCK_EXAM_PROGRESS');
-      this.startTimer();
-      logger.log('[MockExam] 考试进度已恢复, index:', this.currentIndex);
-    },
-
-    async startExam() {
-      // ✅ P002: 优先从后端获取真实题库数据，本地数据作为降级方案
-      let sourceQuestions = [];
-      let dataSource = 'local';
-
-      if (!this.isE2EMode) {
-        try {
-          // 尝试从后端获取随机题目
-          const response = await this.reviewStore.fetchRandomQuestions({
-            count: this.questionCount
-          });
-
-          if (response && response.success && response.data) {
-            const backendQuestions = Array.isArray(response.data) ? response.data : response.data.list || [];
-            if (backendQuestions.length >= this.questionCount) {
-              sourceQuestions = backendQuestions;
-              dataSource = 'backend';
-              logger.log('[MockExam] ✅ 从后端获取题目成功:', backendQuestions.length);
-            }
-          }
-        } catch (err) {
-          logger.warn('[MockExam] ⚠️ 后端获取题目失败，降级使用本地数据:', err.message || err);
-        }
-      }
-
-      // 降级：使用本地缓存题库
-      if (sourceQuestions.length < this.questionCount) {
-        const bank = this._cachedBank || storageService.get('v30_bank', []);
-
-        if (bank.length < this.questionCount) {
-          toast.info(`题库不足${this.questionCount}道题`);
-          return;
-        }
-
-        sourceQuestions = [...bank];
-        dataSource = 'local';
-
-        if (this.questionType === 'mistakes') {
-          const mistakes = storageService.get('mistake_book', []);
-          if (mistakes.length >= this.questionCount) {
-            sourceQuestions = [...mistakes];
-          }
-        }
-      }
-
-      // 打乱顺序并抽取
-      this.examQuestions = this.shuffleArray(sourceQuestions).slice(0, this.questionCount);
-
-      // ✅ P0-FIX: 最终验证题目数量，防止空考试
-      if (!this.examQuestions || this.examQuestions.length === 0) {
-        toast.info('题目加载失败，请重试');
-        return;
-      }
-
-      this.userAnswers = {};
-      this.currentIndex = 0;
-      this.remainingTime = this.examDuration * 60;
-      this.isExamStarted = true;
-      this.isExamFinished = false;
-
-      // 开始计时
-      this.startTimer();
-
-      logger.log('[MockExam] 考试开始:', {
-        questionCount: this.examQuestions.length,
-        duration: this.examDuration,
-        dataSource
-      });
-    },
-
-    shuffleArray(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    },
-
-    startTimer() {
-      this.clearTimer();
-      this.timerInterval = setInterval(() => {
-        if (this.remainingTime > 0) {
-          this.remainingTime--;
+      return;
+    }
+    modal.show({
+      title: '发现未完成的考试',
+      content: `上次答到第 ${progress.currentIndex + 1}/${progress.questionCount} 题，剩余 ${Math.floor(progress.remainingTime / 60)} 分钟，是否继续？`,
+      confirmText: '继续考试',
+      cancelText: '重新开始',
+      success: (res) => {
+        if (res.confirm) {
+          _restoreExamProgress(progress);
         } else {
-          this.timeUp();
+          storageService.remove('MOCK_EXAM_PROGRESS');
         }
-      }, 1000);
-    },
-
-    clearTimer() {
-      if (this.timerInterval) {
-        clearInterval(this.timerInterval);
-        this.timerInterval = null;
       }
-    },
+    });
+  } catch (e) {
+    logger.warn('[MockExam] 检查未完成考试失败:', e);
+  }
+}
 
-    timeUp() {
-      this.clearTimer();
-      uni.showModal({
-        title: '时间到',
-        content: '考试时间已结束，系统将自动提交试卷',
-        showCancel: false,
-        success: () => {
-          this.calculateResult();
+/** [F5-FIX] 恢复考试进度 */
+function _restoreExamProgress(progress) {
+  examQuestions.value = progress.examQuestions;
+  userAnswers.value = progress.userAnswers || {};
+  currentIndex.value = progress.currentIndex || 0;
+  remainingTime.value = progress.remainingTime || 0;
+  correctCount.value = progress.correctCount || 0;
+  wrongCount.value = progress.wrongCount || 0;
+  wrongQuestions.value = progress.wrongQuestions || [];
+  questionCount.value = progress.questionCount || 20;
+  examDuration.value = progress.examDuration || 30;
+  isExamStarted.value = true;
+  isExamFinished.value = false;
+  storageService.remove('MOCK_EXAM_PROGRESS');
+  startTimer();
+  logger.log('[MockExam] 考试进度已恢复, index:', currentIndex.value);
+}
+
+/** 开始考试 */
+async function startExam() {
+  // ✅ P002: 优先从后端获取真实题库数据，本地数据作为降级方案
+  let sourceQuestions = [];
+  let dataSource = 'local';
+
+  if (!isE2EMode.value) {
+    try {
+      // 尝试从后端获取随机题目
+      const response = await reviewStore.fetchRandomQuestions({
+        count: questionCount.value
+      });
+
+      if (response && response.success && response.data) {
+        const backendQuestions = Array.isArray(response.data) ? response.data : response.data.list || [];
+        if (backendQuestions.length >= questionCount.value) {
+          sourceQuestions = backendQuestions;
+          dataSource = 'backend';
+          logger.log('[MockExam] ✅ 从后端获取题目成功:', backendQuestions.length);
         }
-      });
-    },
-
-    formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    },
-
-    selectAnswer(idx) {
-      // Vue 3 中数组索引赋值已自动响应式，无需 $set
-      this.userAnswers[this.currentIndex] = idx;
-    },
-
-    prevQuestion() {
-      if (this.currentIndex > 0) {
-        this.currentIndex--;
       }
-    },
-
-    nextQuestion() {
-      if (this.isNavigating) return;
-      this.isNavigating = true;
-
-      if (this.currentIndex < this.examQuestions.length - 1) {
-        this.currentIndex++;
-      }
-
-      // 短暂延迟后解锁，保存引用以便 onUnload 清理
-      this._navTimer = setTimeout(() => {
-        this.isNavigating = false;
-      }, 300);
-    },
-
-    jumpToQuestion(idx) {
-      this.currentIndex = idx;
-    },
-
-    submitExam() {
-      if (this.isSubmitting) return;
-
-      const unanswered = this.examQuestions.length - Object.keys(this.userAnswers).length;
-
-      if (unanswered > 0) {
-        uni.showModal({
-          title: '提示',
-          content: `还有 ${unanswered} 道题未作答，确定提交吗？`,
-          success: (res) => {
-            if (res.confirm) {
-              this.isSubmitting = true;
-              this.calculateResult();
-            }
-          }
-        });
-      } else {
-        this.isSubmitting = true;
-        this.calculateResult();
-      }
-    },
-
-    calculateResult() {
-      this.clearTimer();
-
-      this.correctCount = 0;
-      this.wrongCount = 0;
-      this.wrongQuestions = [];
-
-      this.examQuestions.forEach((q, idx) => {
-        const userAnswer = this.userAnswers[idx];
-        const correctAnswer = q.answer || q.correct_answer || 'A';
-        const correctIndex = ['A', 'B', 'C', 'D'].indexOf(correctAnswer.toUpperCase());
-
-        if (userAnswer === correctIndex) {
-          this.correctCount++;
-        } else {
-          this.wrongCount++;
-          this.wrongQuestions.push({
-            ...q,
-            userAnswer: userAnswer
-          });
-        }
-      });
-
-      this.score =
-        this.examQuestions.length > 0 ? Math.round((this.correctCount / this.examQuestions.length) * 100) : 0;
-      this.isExamFinished = true;
-      this.isSubmitting = false;
-
-      // 保存考试记录
-      this.saveExamRecord();
-
-      logger.log('[MockExam] 考试结束:', {
-        score: this.score,
-        correct: this.correctCount,
-        wrong: this.wrongCount
-      });
-    },
-
-    saveExamRecord() {
-      const records = storageService.get('exam_records', []);
-      records.unshift({
-        date: Date.now(),
-        questionCount: this.examQuestions.length,
-        duration: this.examDuration,
-        score: this.score,
-        correctCount: this.correctCount,
-        wrongCount: this.wrongCount,
-        accuracy: this.accuracy
-      });
-      // 只保留最近20条记录
-      storageService.save('exam_records', records.slice(0, 20));
-    },
-
-    getResultMessage() {
-      if (this.score >= 90) return '太棒了！你已经掌握得非常好！';
-      if (this.score >= 80) return '很不错！继续保持！';
-      if (this.score >= 60) return '及格了！还有提升空间！';
-      return '需要加油！多复习错题吧！';
-    },
-
-    reviewExam() {
-      // 跳转到错题本查看
-      requireLogin(() => safeNavigateTo('/pages/mistake/index'), { message: '请先登录后查看错题集' });
-    },
-
-    retryExam() {
-      this.isExamStarted = false;
-      this.isExamFinished = false;
-      this.examQuestions = [];
-      this.userAnswers = {};
-      this.currentIndex = 0;
-      this.wrongQuestions = [];
+    } catch (err) {
+      logger.warn('[MockExam] ⚠️ 后端获取题目失败，降级使用本地数据:', err.message || err);
     }
   }
-};
+
+  // 降级：使用本地缓存题库
+  if (sourceQuestions.length < questionCount.value) {
+    const bank = _cachedBank.length > 0 ? _cachedBank : storageService.get('v30_bank', []);
+
+    if (bank.length < questionCount.value) {
+      toast.info(`题库不足${questionCount.value}道题`);
+      return;
+    }
+
+    sourceQuestions = [...bank];
+    dataSource = 'local';
+
+    if (questionType.value === 'mistakes') {
+      const mistakes = storageService.get('mistake_book', []);
+      if (mistakes.length >= questionCount.value) {
+        sourceQuestions = [...mistakes];
+      }
+    }
+  }
+
+  // 打乱顺序并抽取
+  examQuestions.value = shuffleArray(sourceQuestions).slice(0, questionCount.value);
+
+  // ✅ P0-FIX: 最终验证题目数量，防止空考试
+  if (!examQuestions.value || examQuestions.value.length === 0) {
+    toast.info('题目加载失败，请重试');
+    return;
+  }
+
+  userAnswers.value = {};
+  currentIndex.value = 0;
+  remainingTime.value = examDuration.value * 60;
+  isExamStarted.value = true;
+  isExamFinished.value = false;
+
+  // 开始计时
+  startTimer();
+
+  logger.log('[MockExam] 考试开始:', {
+    questionCount: examQuestions.value.length,
+    duration: examDuration.value,
+    dataSource
+  });
+}
+
+/** 选择答案 */
+function selectAnswer(idx) {
+  // Vue 3 Proxy 响应式，动态属性赋值自动追踪
+  userAnswers.value[currentIndex.value] = idx;
+}
+
+/** 上一题 */
+function prevQuestion() {
+  if (currentIndex.value > 0) {
+    currentIndex.value--;
+  }
+}
+
+/** 下一题 */
+function nextQuestion() {
+  if (isNavigating.value) return;
+  isNavigating.value = true;
+
+  if (currentIndex.value < examQuestions.value.length - 1) {
+    currentIndex.value++;
+  }
+
+  // 短暂延迟后解锁，保存引用以便 onUnload 清理
+  _navTimer = setTimeout(() => {
+    isNavigating.value = false;
+  }, 300);
+}
+
+/** 跳转到指定题目 */
+function jumpToQuestion(idx) {
+  currentIndex.value = idx;
+}
+
+/** 提交试卷 */
+function submitExam() {
+  if (isSubmitting.value) return;
+
+  const unanswered = examQuestions.value.length - Object.keys(userAnswers.value).length;
+
+  if (unanswered > 0) {
+    modal.show({
+      title: '提示',
+      content: `还有 ${unanswered} 道题未作答，确定提交吗？`,
+      success: (res) => {
+        if (res.confirm) {
+          isSubmitting.value = true;
+          calculateResult();
+        }
+      }
+    });
+  } else {
+    isSubmitting.value = true;
+    calculateResult();
+  }
+}
+
+/** 计算考试结果 */
+function calculateResult() {
+  clearTimer();
+
+  correctCount.value = 0;
+  wrongCount.value = 0;
+  wrongQuestions.value = [];
+
+  examQuestions.value.forEach((q, idx) => {
+    const userAnswer = userAnswers.value[idx];
+    const correctAnswer = q.answer || q.correct_answer || 'A';
+    const correctIdx = ['A', 'B', 'C', 'D'].indexOf(correctAnswer.toUpperCase());
+
+    if (userAnswer === correctIdx) {
+      correctCount.value++;
+    } else {
+      wrongCount.value++;
+      wrongQuestions.value.push({
+        ...q,
+        userAnswer: userAnswer
+      });
+    }
+  });
+
+  score.value =
+    examQuestions.value.length > 0 ? Math.round((correctCount.value / examQuestions.value.length) * 100) : 0;
+  isExamFinished.value = true;
+  isSubmitting.value = false;
+
+  // 保存考试记录
+  saveExamRecord();
+
+  logger.log('[MockExam] 考试结束:', {
+    score: score.value,
+    correct: correctCount.value,
+    wrong: wrongCount.value
+  });
+}
+
+/** 保存考试记录到本地 */
+function saveExamRecord() {
+  const records = storageService.get('exam_records', []);
+  records.unshift({
+    date: Date.now(),
+    questionCount: examQuestions.value.length,
+    duration: examDuration.value,
+    score: score.value,
+    correctCount: correctCount.value,
+    wrongCount: wrongCount.value,
+    accuracy: accuracy.value
+  });
+  // 只保留最近20条记录
+  storageService.save('exam_records', records.slice(0, 20));
+}
+
+/** 获取结果评语 */
+function getResultMessage() {
+  if (score.value >= 90) return '太棒了！你已经掌握得非常好！';
+  if (score.value >= 80) return '很不错！继续保持！';
+  if (score.value >= 60) return '及格了！还有提升空间！';
+  return '需要加油！多复习错题吧！';
+}
+
+/** 查看解析（跳转到错题本） */
+function reviewExam() {
+  requireLogin(() => safeNavigateTo('/pages/mistake/index'), { message: '请先登录后查看错题集' });
+}
+
+/** 重新考试 */
+function retryExam() {
+  isExamStarted.value = false;
+  isExamFinished.value = false;
+  examQuestions.value = [];
+  userAnswers.value = {};
+  currentIndex.value = 0;
+  wrongQuestions.value = [];
+}
+
+// ========== 页面生命周期 ==========
+
+onLoad(() => {
+  statusBarHeight.value = getStatusBarHeight();
+
+  // ✅ F024: 统一使用 storageService 读取主题
+  isDark.value = storageService.get('theme_mode', 'light') === 'dark';
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+
+  // E005: 缓存题库数据，避免每次反序列化
+  try {
+    const bank = storageService.get('v30_bank', []);
+    totalQuestions.value = bank.length;
+    _cachedBank = bank;
+  } catch (err) {
+    logger.error('[模拟考试] 加载题库异常:', err);
+    totalQuestions.value = 0;
+    _cachedBank = [];
+  } finally {
+    isPageLoading.value = false;
+  }
+
+  // [F5-FIX] 检查是否有未完成的考试
+  _checkUnfinishedExam();
+
+  // 读取 E2E 调试模式标识
+  try {
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    const query = currentPage?.$page?.options || currentPage?.options || {};
+    const e2eFlag = String(query.e2e || '').toLowerCase();
+    isE2EMode.value = e2eFlag === '1' || e2eFlag === 'true';
+  } catch {
+    isE2EMode.value = false;
+  }
+});
+
+onUnload(() => {
+  uni.$off('themeUpdate', _themeHandler);
+  clearTimer();
+  // 清理导航防抖定时器
+  if (_navTimer) {
+    clearTimeout(_navTimer);
+    _navTimer = null;
+  }
+  // [F5-FIX] 退出时保存进度（如果考试进行中）
+  _saveExamProgress();
+});
+
+// [F5-FIX] 切后台 / 接电话时自动保存进度
+onHide(() => {
+  if (isExamStarted.value && !isExamFinished.value) {
+    _saveExamProgress();
+  }
+});
+
+// [F2-FIX] 微信分享配置
+onShareAppMessage(() => ({
+  title: '模拟考试 - Exam-Master 考研备考',
+  path: '/pages/practice-sub/mock-exam',
+  imageUrl: '/static/images/app-share-cover.png'
+}));
 </script>
 
 <style lang="scss" scoped>
 .container {
   min-height: 100%;
   min-height: 100vh;
-  background: var(--bg-secondary, #f5f5f7);
+  background: var(--background);
 }
 
 .nav-bar {
@@ -788,13 +811,11 @@ export default {
   left: 0;
   width: 100%;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
+  background: var(--bg-card);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .nav-content {
@@ -818,7 +839,7 @@ export default {
 
 .nav-title {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
 }
 
@@ -826,11 +847,11 @@ export default {
   display: flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--bg-card);
   padding: 8rpx 16rpx;
   border-radius: 999rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .timer-display > view + view {
   margin-left: 8rpx;
@@ -849,16 +870,12 @@ export default {
 .glass-card {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  backdrop-filter: blur(22px) saturate(150%);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
-  border: 1px solid var(--apple-glass-border-strong);
-  border-radius: 40rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 28rpx;
   padding: 40rpx;
   margin: 30rpx;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .glass-card::before {
@@ -878,7 +895,7 @@ export default {
 
 .setup-title {
   font-size: 40rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
   margin-bottom: 40rpx;
@@ -891,7 +908,7 @@ export default {
 
 .setting-label {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   display: block;
   margin-bottom: 20rpx;
 }
@@ -909,20 +926,25 @@ export default {
 .option-btn {
   padding: 16rpx 32rpx;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.68);
-  color: var(--text-sub);
+  background: var(--bg-card);
+  color: var(--text-secondary);
   font-size: 26rpx;
   transition: all 0.2s;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .option-btn.active {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
-  font-weight: bold;
+  background: var(--info);
+  color: var(--text-inverse);
+  border: 2rpx solid var(--info);
+  box-shadow: 0 8rpx 0 #0e8ac0;
+  font-weight: 800;
+}
+
+.option-btn.active:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #0e8ac0;
 }
 
 .exam-info {
@@ -932,21 +954,25 @@ export default {
 
 .info-text {
   font-size: 26rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .start-btn {
   width: 100%;
   height: 100rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
+  background: var(--info);
+  color: var(--text-inverse);
+  border: none;
   border-radius: 50rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   /* gap: 16rpx; -- replaced for Android WebView compat */
-  box-shadow: var(--cta-primary-shadow);
+  box-shadow: 0 8rpx 0 #0e8ac0;
+}
+.start-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #0e8ac0;
 }
 .start-btn > view + view {
   margin-left: 16rpx;
@@ -962,7 +988,7 @@ export default {
 
 .btn-text {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: inherit;
 }
 
@@ -976,7 +1002,7 @@ export default {
 
 .progress-bar {
   height: 8rpx;
-  background: rgba(16, 40, 26, 0.08);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: 4rpx;
   margin: 20rpx 0;
   overflow: hidden;
@@ -984,14 +1010,14 @@ export default {
 
 .progress-fill {
   height: 100%;
-  background: var(--primary);
+  background: var(--info);
   border-radius: 4rpx;
   transition: width 0.3s;
 }
 
 .progress-text {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   text-align: center;
   display: block;
   margin-bottom: 20rpx;
@@ -1003,8 +1029,8 @@ export default {
 
 .question-number {
   font-size: 24rpx;
-  color: var(--primary);
-  font-weight: bold;
+  color: var(--info);
+  font-weight: 800;
   display: block;
   margin-bottom: 20rpx;
 }
@@ -1030,38 +1056,38 @@ export default {
   display: flex;
   align-items: flex-start;
   padding: 24rpx;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--bg-card);
   border-radius: 24rpx;
-  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   transition: all 0.2s;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .option-item.selected {
-  background: rgba(255, 255, 255, 0.88);
-  border-color: var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: rgba(28, 176, 246, 0.12);
+  border-color: var(--info);
+  box-shadow: 0 4rpx 16rpx rgba(28, 176, 246, 0.15);
 }
 
 .option-label {
   width: 48rpx;
   height: 48rpx;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(28, 176, 246, 0.12);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 26rpx;
-  font-weight: bold;
-  color: var(--text-sub);
+  font-weight: 800;
+  color: var(--text-secondary);
   margin-right: 20rpx;
   flex-shrink: 0;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  border: none;
 }
 
 .option-item.selected .option-label {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--info);
+  color: var(--text-inverse);
 }
 
 .option-text {
@@ -1085,28 +1111,37 @@ export default {
   height: 88rpx;
   border-radius: 999rpx;
   font-size: 28rpx;
-  font-weight: bold;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  font-weight: 800;
+  border: none;
 }
 
 .nav-btn.prev {
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--bg-card);
   color: var(--text-primary);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .nav-btn.next {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--info);
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #0e8ac0;
+}
+
+.nav-btn.next:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #0e8ac0;
 }
 
 .nav-btn.submit {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: #58cc02;
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #46a302;
+}
+
+.nav-btn.submit:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 .nav-btn[disabled] {
@@ -1115,17 +1150,17 @@ export default {
 
 /* 答题卡 */
 .answer-sheet {
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border-radius: 32rpx;
+  background: var(--bg-card);
+  border-radius: 28rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .sheet-title {
   font-size: 28rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
   margin-bottom: 20rpx;
@@ -1145,22 +1180,22 @@ export default {
   width: 60rpx;
   height: 60rpx;
   border-radius: 16rpx;
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24rpx;
-  color: var(--text-sub);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .sheet-item.answered {
-  background: var(--primary);
-  color: var(--primary-foreground);
+  background: var(--info);
+  color: var(--text-inverse);
 }
 
 .sheet-item.current {
-  border: 2rpx solid var(--primary);
+  border: 2rpx solid var(--info);
 }
 
 /* 结果页面 */
@@ -1178,7 +1213,7 @@ export default {
 
 .result-title {
   font-size: 40rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
   margin-bottom: 40rpx;
@@ -1193,13 +1228,13 @@ export default {
 
 .score-number {
   font-size: 120rpx;
-  font-weight: 900;
-  color: var(--primary);
+  font-weight: 800;
+  color: var(--info);
 }
 
 .score-unit {
   font-size: 36rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
   margin-left: 8rpx;
 }
 
@@ -1215,7 +1250,7 @@ export default {
 
 .stat-value {
   font-size: 48rpx;
-  font-weight: bold;
+  font-weight: 800;
   display: block;
 }
 
@@ -1229,15 +1264,15 @@ export default {
 
 .stat-label {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .result-message {
   padding: 30rpx;
-  background: rgba(255, 255, 255, 0.56);
+  background: var(--bg-card);
   border-radius: 24rpx;
   margin-bottom: 40rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .result-message text {
@@ -1258,24 +1293,29 @@ export default {
   height: 88rpx;
   border-radius: 999rpx;
   font-size: 28rpx;
-  font-weight: bold;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  font-weight: 800;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .action-btn.review {
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--bg-card);
   color: var(--text-primary);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .action-btn.retry {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--info);
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #0e8ac0;
+}
+
+.action-btn.retry:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #0e8ac0;
 }
 
 /* 错题列表 */
@@ -1285,7 +1325,7 @@ export default {
 
 .list-title {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
   margin-bottom: 30rpx;
@@ -1293,10 +1333,10 @@ export default {
 
 .wrong-item {
   padding: 24rpx;
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--bg-card);
   border-radius: 24rpx;
   margin-bottom: 20rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .wrong-question {

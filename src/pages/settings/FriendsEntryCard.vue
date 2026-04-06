@@ -13,7 +13,7 @@
           <text class="entry-desc ds-text-xs"> 添加好友，一起刷题 </text>
         </view>
       </view>
-      <text class="entry-arrow"> › </text>
+      <BaseIcon name="chevron-right" :size="24" class="entry-arrow" />
     </view>
   </view>
 </template>
@@ -51,16 +51,16 @@ function navigateToFriends() {
 
 <style lang="scss" scoped>
 .friend-entry-card {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, #e9ecef);
-  border-radius: 16px;
+  background-color: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
   padding: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .friend-entry-card:hover {
@@ -83,12 +83,13 @@ function navigateToFriends() {
 .entry-icon {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, var(--brand-color), var(--success-green));
-  border-radius: 16px;
+  background: rgba(28, 176, 246, 0.12);
+  border-radius: 18rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 56rpx;
+  color: var(--info);
   box-shadow: var(--shadow-success);
 }
 
@@ -100,13 +101,13 @@ function navigateToFriends() {
 
 .entry-title {
   font-size: 36rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .entry-desc {
   font-size: 26rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
   opacity: 0.8;
 }
 

@@ -220,12 +220,12 @@ function handleJump(idx) {
 
 .cell-correct .cell-num {
   background: var(--success, #10b981);
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .cell-wrong .cell-num {
   background: var(--danger, #ef4444);
-  color: #fff;
+  color: var(--text-inverse);
 }
 
 .cell-unanswered .cell-num {

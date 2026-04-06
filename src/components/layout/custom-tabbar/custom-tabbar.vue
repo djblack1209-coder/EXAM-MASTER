@@ -313,30 +313,28 @@ onBeforeUnmount(() => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 
-  /* 亮色模式：白色背景 + 底部边框 + 轻阴影 */
-  background: var(--bg-card, #ffffff);
+  /* 亮色模式：半透明白色背景 + 底部边框 + 轻阴影 */
+  background: rgba(255, 255, 255, 0.96);
   border: 1rpx solid var(--border);
   box-shadow: var(--shadow-sm, 0 2rpx 12rpx rgba(0, 0, 0, 0.08));
 }
 
-/* 深色模式：深色毛玻璃质感 + 霓虹顶线 */
+/* 深色模式：暖色半透明背景 */
 .tabbar-capsule.dark-mode {
-  background: rgba(26, 28, 35, 0.95);
-  backdrop-filter: blur(24rpx);
-  -webkit-backdrop-filter: blur(24rpx);
+  background: rgba(41, 37, 36, 0.96);
   border-color: transparent;
-  box-shadow: 0 -4rpx 24rpx rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
 }
 
-/* 暗色模式顶部霓虹渐变线 */
+/* 暗色模式顶部分割线（柔和） */
 .tabbar-capsule.dark-mode::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 24rpx;
+  right: 24rpx;
   height: 1rpx;
-  background: linear-gradient(90deg, transparent, var(--primary), var(--accent, #9b51e0), var(--primary), transparent);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 60rpx 60rpx 0 0;
 }
 
@@ -454,7 +452,7 @@ onBeforeUnmount(() => {
   right: -4rpx;
   width: 16rpx;
   height: 16rpx;
-  background-color: var(--danger, #ff3b30);
+  background-color: var(--danger, var(--danger));
   border-radius: 50%;
   border: 2rpx solid var(--bg-card, #ffffff);
   transition: border-color 0.3s ease;
@@ -462,6 +460,6 @@ onBeforeUnmount(() => {
 
 /* 深色模式下红点边框颜色 */
 .dark-mode .red-dot {
-  border-color: rgba(26, 28, 35, 0.95);
+  border-color: rgba(41, 37, 36, 0.96);
 }
 </style>

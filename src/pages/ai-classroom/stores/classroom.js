@@ -13,7 +13,15 @@
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { request } from '@/services/api/domains/_request-core.js';
+import {
+  listLessons,
+  createLesson as apiCreateLesson,
+  getLessonStatus,
+  deleteLesson as apiDeleteLesson,
+  startClassroomSession,
+  sendClassroomMessage,
+  endClassroomSession
+} from '@/services/api/domains/ai.api.js';
 import { logger } from '@/utils/logger.js';
 
 export const useClassroomStore = defineStore('classroom', () => {
@@ -28,7 +36,7 @@ export const useClassroomStore = defineStore('classroom', () => {
   /** 获取课程列表 */
   const fetchLessons = async (params = {}) => {
     try {
-      const res = await request('/agent-orchestrator', { action: 'list_lessons', ...params });
+      const res = await listLessons(params);
       if (res.code === 0 && res.data) {
         lessons.value = Array.isArray(res.data) ? res.data : res.data.list || [];
         return { success: true, data: lessons.value };
@@ -43,7 +51,7 @@ export const useClassroomStore = defineStore('classroom', () => {
   /** 创建课程 */
   const createLesson = async (lessonData) => {
     try {
-      const res = await request('/agent-orchestrator', { action: 'create_lesson', ...lessonData });
+      const res = await apiCreateLesson(lessonData);
       if (res.code === 0 && res.data) {
         return { success: true, data: res.data };
       }
@@ -57,7 +65,7 @@ export const useClassroomStore = defineStore('classroom', () => {
   /** 获取课程状态 */
   const fetchLessonStatus = async (lessonId) => {
     try {
-      const res = await request('/agent-orchestrator', { action: 'lesson_status', lessonId });
+      const res = await getLessonStatus(lessonId);
       if (res.code === 0 && res.data) {
         return { success: true, data: res.data };
       }
@@ -71,7 +79,7 @@ export const useClassroomStore = defineStore('classroom', () => {
   /** 删除课程 */
   const deleteLesson = async (lessonId) => {
     try {
-      const res = await request('/agent-orchestrator', { action: 'delete_lesson', lessonId });
+      const res = await apiDeleteLesson(lessonId);
       if (res.code === 0) {
         lessons.value = lessons.value.filter((l) => l._id !== lessonId);
         return { success: true };
@@ -88,7 +96,7 @@ export const useClassroomStore = defineStore('classroom', () => {
   /** 开始课堂会话 */
   const startSession = async (lessonId) => {
     try {
-      const res = await request('/agent-orchestrator', { action: 'start', lessonId });
+      const res = await startClassroomSession(lessonId);
       if (res.code === 0 && res.data) {
         currentSession.value = res.data;
         messages.value = [];
@@ -105,11 +113,7 @@ export const useClassroomStore = defineStore('classroom', () => {
   const sendMessage = async (content, sessionId = null) => {
     try {
       const sid = sessionId || currentSession.value?.sessionId;
-      const res = await request('/agent-orchestrator', {
-        action: 'message',
-        sessionId: sid,
-        content
-      });
+      const res = await sendClassroomMessage(sid, content);
       if (res.code === 0 && res.data) {
         messages.value.push(res.data);
         return { success: true, data: res.data };
@@ -125,7 +129,7 @@ export const useClassroomStore = defineStore('classroom', () => {
   const endSession = async (sessionId = null) => {
     try {
       const sid = sessionId || currentSession.value?.sessionId;
-      const res = await request('/agent-orchestrator', { action: 'end', sessionId: sid });
+      const res = await endClassroomSession(sid);
       if (res.code === 0) {
         currentSession.value = null;
         return { success: true, data: res.data };

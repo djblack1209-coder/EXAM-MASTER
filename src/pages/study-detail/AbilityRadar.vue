@@ -240,12 +240,13 @@ function barColor(score) {
   color: var(--text-secondary);
   border-radius: 12rpx;
   transition: all 0.2s;
+  font-weight: 600;
 }
 
 .range-tab.active {
   background: var(--bg-card);
-  color: var(--color-primary, #0f5f34);
-  font-weight: 600;
+  color: #58cc02;
+  font-weight: 700;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 
@@ -342,13 +343,14 @@ function barColor(score) {
 
 .dim-name {
   font-size: 24rpx;
-  color: var(--text-main);
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .dim-score {
   font-size: 24rpx;
-  font-weight: 600;
-  color: var(--color-primary, #0f5f34);
+  font-weight: 800;
+  color: #58cc02;
 }
 
 .dim-bar-bg {

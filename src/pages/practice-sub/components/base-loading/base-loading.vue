@@ -26,7 +26,7 @@ defineProps({
 .loading-spinner {
   width: 36px;
   height: 36px;
-  border: 3px solid rgba(52, 199, 89, 0.2);
+  border: 3px solid color-mix(in srgb, var(--success) 20%, transparent);
   border-top-color: var(--success);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

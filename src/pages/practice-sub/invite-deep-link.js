@@ -360,7 +360,7 @@ export function generateShareConfig(inviteInfo) {
     title: titles[type] || titles[LINK_TYPE.PK],
     desc: descriptions[type] || descriptions[LINK_TYPE.PK],
     path: `/pages/practice-sub/pk-battle?roomId=${roomId}&inviteCode=${inviteCode}`,
-    imageUrl: '/static/images/pk-share-cover.png'
+    imageUrl: './static/images/pk-share-cover.png'
   };
 }
 

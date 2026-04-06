@@ -8,7 +8,7 @@
     <!-- 导航栏 - 添加设计系统工具类 -->
     <view v-if="!isInitLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content ds-flex ds-flex-between" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <text class="nav-back ds-touchable" @tap="goBack"> ← </text>
+        <view class="nav-back ds-touchable" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
         <text class="nav-title ds-text-lg ds-font-semibold"> 我的错题本 </text>
         <view class="nav-actions">
           <!-- 移除垃圾桶图标 -->
@@ -188,7 +188,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import MistakeSkeleton from './components/mistake-skeleton/mistake-skeleton.vue';
@@ -203,555 +206,568 @@ import { normalizeMistakes as normalizeFields } from '@/utils/field-normalizer.j
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  components: {
-    MistakeSkeleton,
-    StatsCard,
-    MistakeCard,
-    MistakeReport,
-    BaseIcon
-  },
-  data() {
-    return {
-      isRefreshing: false,
-      statusBarHeight: 44,
-      capsuleSafeRight: 20,
-      mistakes: [],
-      mode: 'quiz', // 'quiz' 或 'recite'
-      userInfo: {},
-      isDark: false,
-      // 分页相关
-      currentPage: 1,
-      pageSize: 20,
-      hasMore: true,
-      isLoading: false,
-      isInitLoading: true, // 初始骨架屏加载状态
-      isClearing: false, // 防重复点击：清空错题
-      isReviewMode: false, // ✅ P1: 错题重练模式
-      reviewFilter: 'all', // ✅ 1.7: 筛选条件 all | high_freq | recent | cluster
-      maxDomItems: 80, // F007: DOM 上限，防止无限滚动导致 DOM 节点过多
-      errorClusters: [], // 知识点聚类数据
-      clusterLoading: false // 聚类加载状态
-    };
-  },
-  onLoad(options) {
-    this.studyEngineStore = useStudyEngineStore();
-    this.statusBarHeight = getStatusBarHeight();
-    this.capsuleSafeRight = getCapsuleSafeRight();
+// --- 非响应式属性（模块级变量） ---
+let studyEngineStore = null; // Pinia store 实例，在 onLoad 中初始化
+let _themeHandler = null; // 主题切换回调引用，用于 onUnload 精确移除
+let syncDelayTimer = null; // 同步延迟定时器 ID
+const PAGE_SIZE = 20; // 每页数量（常量）
+const MAX_DOM_ITEMS = 80; // F007: DOM 上限，防止无限滚动导致 DOM 节点过多
 
-    // 初始化主题
-    const savedTheme = storageService.get('theme_mode', 'light');
-    this.isDark = savedTheme === 'dark';
+// --- 响应式状态 ---
+const isRefreshing = ref(false);
+const statusBarHeight = ref(44);
+const capsuleSafeRight = ref(20);
+const mistakes = ref([]);
+const mode = ref('quiz'); // 'quiz' 或 'recite'
+const userInfo = ref({});
+const isDark = ref(false);
+const currentPage = ref(1);
+const hasMore = ref(true);
+const isLoading = ref(false);
+const isInitLoading = ref(true); // 初始骨架屏加载状态
+const isClearing = ref(false); // 防重复点击：清空错题
+const isReviewMode = ref(false); // ✅ P1: 错题重练模式
+const reviewFilter = ref('all'); // ✅ 1.7: 筛选条件 all | high_freq | recent | cluster
+const errorClusters = ref([]); // 知识点聚类数据
+const clusterLoading = ref(false); // 聚类加载状态
 
-    // F003: 存储回调引用，确保 $off 只移除自己的监听器
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
+// --- 计算属性 ---
 
-    // ✅ P1: 检查是否为重练模式
-    if (options && options.mode === 'review') {
-      this.mode = 'quiz';
-      this.isReviewMode = true;
-      logger.log('[mistake-book] 📝 进入错题重练模式');
-    }
-  },
-  onUnload() {
-    // 移除事件监听
-    uni.$off('themeUpdate', this._themeHandler);
-  },
-  computed: {
-    // 待复习错题数量（错误次数>=2的题目）
-    pendingReviewCount() {
-      return this.mistakes.filter((item) => (item.wrong_count || 1) >= 2).length;
-    },
-    // ✅ 1.7: 根据筛选条件过滤错题（兼容 camelCase 和 snake_case 字段名）
-    filteredReviewMistakes() {
-      if (this.reviewFilter === 'high_freq') {
-        return [...this.mistakes]
-          .filter((m) => (m.wrongCount || m.wrong_count || 1) >= 2)
-          .sort((a, b) => (b.wrongCount || b.wrong_count || 1) - (a.wrongCount || a.wrong_count || 1));
-      }
-      if (this.reviewFilter === 'recent') {
-        return [...this.mistakes]
-          .sort((a, b) => {
-            const ta = a.last_wrong_time || a.lastWrongTime || a.created_at || 0;
-            const tb = b.last_wrong_time || b.lastWrongTime || b.created_at || 0;
-            return tb - ta;
-          })
-          .slice(0, 20);
-      }
-      // 按分类筛选
-      if (this.reviewFilter.startsWith('cat_')) {
-        const cat = this.reviewFilter.slice(4);
-        return this.mistakes.filter((m) => (m.category || m.knowledge_point || '') === cat);
-      }
-      // 全部：按错误次数降序（优先复习高频错题）
-      return [...this.mistakes].sort(
-        (a, b) => (b.wrongCount || b.wrong_count || 1) - (a.wrongCount || a.wrong_count || 1)
-      );
-    },
-    // 错题分类列表（去重）
-    mistakeCategories() {
-      const cats = new Set();
-      this.mistakes.forEach((m) => {
-        const cat = m.category || m.knowledge_point || '';
-        if (cat) cats.add(cat);
-      });
-      return [...cats].sort();
-    },
-    // F007: 限制渲染到 DOM 的错题数量，防止无限滚动导致 DOM 过大
-    displayedMistakes() {
-      return this.mistakes.slice(0, this.maxDomItems);
-    }
-  },
-  onShow() {
-    this.loadData(true); // 重置并重新加载
-    this.loadUserInfo();
-    // 自动同步待同步的错题
-    this.syncPendingMistakes();
-  },
-  methods: {
-    async onPullRefresh() {
-      this.isRefreshing = true;
-      try {
-        await this.loadData(true);
-      } catch (_e) {
-        /* silent */
-      }
-      this.isRefreshing = false;
-    },
-    // 统一错题字段名，消除 wrongCount/wrong_count 等不一致
-    normalizeMistakes(list) {
-      return normalizeFields(list).map((item) => ({
-        ...item,
-        showAnalysis: item.showAnalysis ?? false
-      }));
-    },
-    loadMore() {
-      const nextPage = this.currentPage + 1;
-      logger.log(`[mistake-book] 📄 触底加载: page=${nextPage}, isLoading=${this.isLoading}, hasMore=${this.hasMore}`);
-      if (this.isLoading || !this.hasMore) {
-        logger.log(`[mistake-book] ⏸️ 分页加载被阻止 - isLoading: ${this.isLoading}, hasMore: ${this.hasMore}`);
-        return;
-      }
-      this.currentPage = nextPage;
-      logger.log(`[mistake-book] ➡️ 开始加载第 ${this.currentPage} 页（追加模式）`);
-      this.loadData(false);
-    },
-    loadUserInfo() {
-      this.userInfo = storageService.get('userInfo', { nickName: '考研人' });
-    },
-    async syncPendingMistakes() {
-      toast.loading('同步中...');
-      try {
-        logger.log('[mistake-book] 开始自动同步待同步错题...');
-        const result = await storageService.syncPendingMistakes();
-        if (result.synced > 0) {
-          logger.log(`[mistake-book] ✅ 同步完成: ${result.synced} 条错题已同步到云端`);
-          // 如果同步成功，重新加载列表以显示更新后的 ID
-          if (result.synced > 0) {
-            // 延迟一下，确保本地存储已更新
-            setTimeout(() => {
-              this.loadData(true);
-            }, 300);
-          }
-        } else if (result.failed > 0) {
-          logger.warn(`[mistake-book] ⚠️ 同步部分失败: ${result.failed} 条错题未能同步`);
-        }
-      } catch (error) {
-        logger.error('[mistake-book] 同步待同步错题异常:', error);
-      } finally {
-        toast.hide();
-      }
-    },
-    /**
-     * 加载错题列表数据（支持分页和重置）
-     * @param {boolean} [reset=false] - 是否重置到第一页重新加载
-     */
-    async loadData(reset = false) {
-      if (this.isLoading) {
-        logger.log('[mistake-book] ⏸️ 加载中，跳过重复请求');
-        return;
-      }
+// 待复习错题数量（错误次数>=2的题目）
+const pendingReviewCount = computed(() => {
+  return mistakes.value.filter((item) => (item.wrong_count || 1) >= 2).length;
+});
 
-      this.isLoading = true;
-      logger.log(
-        `[mistake-book] 开始加载数据 - reset: ${reset}, currentPage: ${this.currentPage}, pageSize: ${this.pageSize}`
-      );
-
-      try {
-        if (reset) {
-          this.currentPage = 1;
-          this.mistakes = [];
-          logger.log('[mistake-book] 🔄 重置状态，从第1页开始加载');
-        }
-
-        logger.log(`[mistake-book] 📡 调用 storageService.getMistakes(${this.currentPage}, ${this.pageSize})`);
-        // 使用云端方法获取错题列表
-        const result = await storageService.getMistakes(this.currentPage, this.pageSize);
-        logger.log('[mistake-book] ✅ 数据加载完成:', {
-          count: result?.list?.length || 0,
-          total: result?.total || 0,
-          page: result?.page || this.currentPage,
-          hasMore: result?.hasMore || false,
-          source: result?.source || 'unknown'
-        });
-
-        if (result && result.list) {
-          const normalizedList = this.normalizeMistakes(result.list);
-          const beforeCount = this.mistakes.length;
-          if (reset) {
-            this.mistakes = normalizedList;
-            logger.log(`[mistake-book] 重置模式：加载了 ${normalizedList.length} 条错题`);
-          } else {
-            // 追加数据（用于分页加载）
-            this.mistakes = [...this.mistakes, ...normalizedList];
-            logger.log(
-              `[mistake-book] 追加模式：从 ${beforeCount} 条增加到 ${this.mistakes.length} 条（新增 ${normalizedList.length} 条）`
-            );
-          }
-
-          // 如果本页返回空列表，强制终止分页，防止无限加载
-          this.hasMore = normalizedList.length > 0 && (result.hasMore || false);
-          logger.log(
-            `[mistake-book] 当前状态 - 总错题数: ${this.mistakes.length}, hasMore: ${this.hasMore}, currentPage: ${this.currentPage}`
-          );
-
-          // 空状态检查
-          if (this.mistakes.length === 0) {
-            logger.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
-          }
-
-          // 如果从云端获取，本地缓存已在 storageService.getMistakes 中更新（包含合并逻辑）
-          if (result.source === 'cloud' && this.currentPage === 1) {
-            logger.log('[mistake-book] ✅ 云端数据已加载并合并本地待同步数据');
-          }
-        } else {
-          // 降级到本地读取
-          this.mistakes = this.normalizeMistakes(storageService.get('mistake_book', []));
-        }
-      } catch (error) {
-        logger.error('加载错题列表失败:', error);
-        // 降级到本地读取
-        this.mistakes = this.normalizeMistakes(storageService.get('mistake_book', []));
-      } finally {
-        this.isLoading = false;
-        this.isInitLoading = false; // 隐藏骨架屏
-      }
-    },
-    goBack() {
-      // 从空状态跳转到刷题页面
-      uni.switchTab({
-        url: '/pages/practice/index',
-        fail: () => {
-          uni.reLaunch({ url: '/pages/practice/index' });
-        }
-      });
-    },
-
-    // ✅ P1 + 1.7: 开始顺序重练（使用筛选后的错题列表）
-    startSequentialReview() {
-      const source = this.isReviewMode ? this.filteredReviewMistakes : this.mistakes;
-      if (source.length === 0) {
-        toast.info('暂无错题');
-        return;
-      }
-
-      logger.log('[mistake-book] 📝 开始错题重练，共', source.length, '道题，筛选:', this.reviewFilter);
-
-      // 问题51修复：确保错题数据格式正确，兼容多种字段名
-      const reviewQuestions = source
-        .map((m, index) => {
-          // 获取题目内容（兼容多种字段名）
-          const questionContent = m.question || m.question_content || m.title || `错题 ${index + 1}`;
-
-          // 获取选项（确保是数组且有内容）
-          let options = m.options;
-          if (!Array.isArray(options) || options.length === 0) {
-            // 尝试从其他字段获取选项
-            options = m.choices || m.option_list || ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
-          }
-
-          // 获取正确答案（兼容多种格式）
-          let answer = m.answer || m.correct_answer || m.correctAnswer || 'A';
-          // 确保答案是单个字母
-          if (typeof answer === 'string' && answer.length > 1) {
-            answer = answer.charAt(0).toUpperCase();
-          }
-          if (typeof answer === 'number') {
-            answer = ['A', 'B', 'C', 'D'][answer] || 'A';
-          }
-
-          const reviewQuestion = {
-            id: m.id || m._id || `review_${index}_${Date.now()}`,
-            question: questionContent,
-            options: options,
-            answer: answer,
-            desc: m.desc || m.analysis || m.explanation || '暂无解析',
-            category: m.category || m.subject || '错题重练',
-            type: m.type || '单选',
-            difficulty: m.difficulty || 2,
-            wrongCount: m.wrong_count || 1,
-            isReview: true // 标记为复习题
-          };
-
-          logger.log(`[mistake-book] 📋 错题 ${index + 1}:`, {
-            id: reviewQuestion.id,
-            question: reviewQuestion.question.substring(0, 30) + '...',
-            optionsCount: reviewQuestion.options.length,
-            answer: reviewQuestion.answer
-          });
-
-          return reviewQuestion;
-        })
-        .filter((q) => q.question && q.options.length >= 2); // 过滤无效题目
-
-      if (reviewQuestions.length === 0) {
-        toast.info('错题数据格式异常');
-        logger.error('[mistake-book] ❌ 所有错题数据格式异常，无法开始重练');
-        return;
-      }
-
-      logger.log('[mistake-book] ✅ 有效错题数量:', reviewQuestions.length);
-
-      // 问题51修复：使用正确的存储键名，并同时更新题库
-      storageService.save('temp_review_questions', reviewQuestions);
-
-      // 同时将错题临时写入题库，确保 do-quiz 页面能读取
-      const currentBank = storageService.get('v30_bank', []);
-      if (currentBank.length > 0) {
-        storageService.save('v30_bank_backup', currentBank); // 备份原题库
-      }
-      storageService.save('v30_bank', reviewQuestions); // 临时替换为错题
-      storageService.save('is_review_mode', true); // 标记为复习模式
-
-      safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {
-        success: () => {
-          logger.log('[mistake-book] ✅ 成功跳转到答题页面');
-        },
-        fail: (err) => {
-          logger.error('[mistake-book] ❌ 跳转失败:', err);
-          // 立即恢复原题库
-          this._restoreOriginalBank();
-          storageService.remove('is_review_mode');
-        }
-      });
-    },
-
-    clearAllMistakes() {
-      // 防重复点击
-      if (this.isClearing) return;
-
-      // 一键清空所有错题
-      if (this.mistakes.length === 0) {
-        return toast.info('已经没有错题了');
-      }
-
-      uni.showModal({
-        title: '清空错题本',
-        content: `确定要清空所有 ${this.mistakes.length} 道错题吗？此操作不可恢复。`,
-        confirmColor: '#FF3B30',
-        success: async (res) => {
-          if (res.confirm) {
-            this.isClearing = true;
-            toast.loading('清空中...');
-
-            try {
-              logger.log('[mistake-book] 🧹 开始清空所有错题...');
-
-              // 获取所有错题的 ID
-              const mistakeIds = this.mistakes.map((m) => m.id || m._id).filter(Boolean);
-
-              // P2-4: 批量删除云端错题（单次请求替代 N+1 逐条删除）
-              // batchRemoveMistakes 内部已同步清理本地缓存
-              const result = await storageService.batchRemoveMistakes(mistakeIds);
-              const deletedCount = result.deleted || 0;
-
-              // 清空列表
-              this.mistakes = [];
-              this.currentPage = 1;
-              this.hasMore = false;
-
-              logger.log(
-                `[mistake-book] 清空完成: 已删除 ${deletedCount}/${mistakeIds.length} 条云端错题，本地缓存已清空`
-              );
-              logger.log(`[mistake-book] 空状态：错题列表为空，显示空状态UI`);
-
-              toast.hide();
-              const totalCount = mistakeIds.length;
-              toast.success(totalCount > 0 ? `已清空 ${totalCount} 道错题` : '已清空所有错题', 2000);
-
-              // 响应式数据已更新，Vue 会自动触发视图更新
-            } catch (error) {
-              logger.error('[mistake-book] ❌ 清空错题失败:', error);
-              toast.hide();
-              toast.info('清空失败，请重试');
-            } finally {
-              this.isClearing = false;
-            }
-          }
-        }
-      });
-    },
-    // 恢复原始题库（从备份中还原）
-    _restoreOriginalBank() {
-      try {
-        const backup = storageService.get('v30_bank_backup', []);
-        if (backup.length > 0) {
-          storageService.save('v30_bank', backup);
-          logger.log('[mistake-book] ✅ 原题库已恢复');
-        }
-        storageService.remove('v30_bank_backup');
-      } catch (e) {
-        logger.error('[mistake-book] ❌ 恢复原题库失败:', e);
-      }
-    },
-    switchMode(newMode) {
-      this.mode = newMode;
-    },
-
-    // === 知识点聚类功能 ===
-
-    /** 切换到聚类视图，首次切换时加载数据 */
-    async switchToClusterView() {
-      this.reviewFilter = 'cluster';
-      if (this.errorClusters.length === 0) {
-        await this.loadErrorClusters();
-      }
-    },
-
-    /** 调用后端 AI 错题聚类分析 */
-    async loadErrorClusters() {
-      this.clusterLoading = true;
-      try {
-        const result = await this.studyEngineStore.getErrorClusters();
-        if (result?.data?.clusters) {
-          this.errorClusters = result.data.clusters;
-        }
-      } catch (error) {
-        logger.error('[mistake-book] 错题聚类加载失败:', error);
-        toast.info('聚类分析暂时不可用');
-      } finally {
-        this.clusterLoading = false;
-      }
-    },
-
-    /** 基于聚类结果筛选错题，跳转到针对训练 */
-    startClusterTraining(cluster) {
-      const kpSet = new Set(cluster.knowledgePoints || []);
-      const filteredMistakes = this.mistakes.filter((m) => {
-        const cat = m.category || m.knowledge_point || '';
-        return kpSet.has(cat) || cat === cluster.errorTypeName;
-      });
-
-      if (filteredMistakes.length === 0) {
-        toast.info('该类型暂无可练习的错题');
-        return;
-      }
-
-      logger.log(
-        '[mistake-book] 开始聚类针对训练，知识点:',
-        cluster.knowledgePoints,
-        '共',
-        filteredMistakes.length,
-        '道题'
-      );
-
-      const reviewQuestions = filteredMistakes
-        .map((m, index) => {
-          const questionContent = m.question || m.question_content || m.title || `错题 ${index + 1}`;
-          let options = m.options;
-          if (!Array.isArray(options) || options.length === 0) {
-            options = m.choices || m.option_list || ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
-          }
-          let answer = m.answer || m.correct_answer || m.correctAnswer || 'A';
-          if (typeof answer === 'string' && answer.length > 1) answer = answer.charAt(0).toUpperCase();
-          if (typeof answer === 'number') answer = ['A', 'B', 'C', 'D'][answer] || 'A';
-
-          return {
-            id: m.id || m._id || `cluster_${index}_${Date.now()}`,
-            question: questionContent,
-            options,
-            answer,
-            desc: m.desc || m.analysis || m.explanation || '暂无解析',
-            category: m.category || m.subject || '针对训练',
-            type: m.type || '单选',
-            difficulty: m.difficulty || 2,
-            wrongCount: m.wrong_count || 1,
-            isReview: true
-          };
-        })
-        .filter((q) => q.question && q.options.length >= 2);
-
-      if (reviewQuestions.length === 0) {
-        toast.info('错题数据格式异常');
-        return;
-      }
-
-      storageService.save('temp_review_questions', reviewQuestions);
-      const currentBank = storageService.get('v30_bank', []);
-      if (currentBank.length > 0) {
-        storageService.save('v30_bank_backup', currentBank);
-      }
-      storageService.save('v30_bank', reviewQuestions);
-      storageService.save('is_review_mode', true);
-
-      safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {
-        success: () => logger.log('[mistake-book] ✅ 聚类训练跳转成功'),
-        fail: (err) => {
-          logger.error('[mistake-book] ❌ 聚类训练跳转失败:', err);
-          this._restoreOriginalBank();
-          storageService.remove('is_review_mode');
-        }
-      });
-    },
-    /** @param {number} index - 错题在列表中的索引 */
-    async removeMistake(index) {
-      const mistake = this.mistakes[index];
-      if (!mistake) return;
-
-      uni.showModal({
-        title: '移除题目',
-        content: '掌握了吗？移除后无法恢复。',
-        confirmColor: '#FF3B30',
-        success: async (res) => {
-          if (res.confirm) {
-            toast.loading('删除中...');
-
-            try {
-              // 使用云端方法删除
-              const mistakeId = mistake.id || mistake._id;
-              logger.log(`[mistake-book] 开始删除错题: ${mistakeId} (index: ${index})`);
-              const result = await storageService.removeMistake(mistakeId);
-
-              if (result.success) {
-                // 从列表中移除
-                this.mistakes.splice(index, 1);
-                logger.log(`[mistake-book] ✅ 删除成功，列表剩余 ${this.mistakes.length} 条错题`);
-                toast.success('已移除');
-              } else {
-                // 如果云端删除失败，尝试本地删除
-                logger.warn(`[mistake-book] ⚠️ 删除失败，降级到本地删除: ${result.error}`);
-                this.mistakes.splice(index, 1);
-                storageService.save('mistake_book', this.mistakes, true);
-                toast.info('已移除（本地）');
-              }
-            } catch (error) {
-              logger.error('[mistake-book] 删除错题异常:', error);
-              // 降级到本地删除
-              this.mistakes.splice(index, 1);
-              storageService.save('mistake_book', this.mistakes, true);
-              toast.info('已移除（本地）');
-            } finally {
-              toast.hide();
-            }
-          }
-        }
-      });
-    }
+// ✅ 1.7: 根据筛选条件过滤错题（兼容 camelCase 和 snake_case 字段名）
+const filteredReviewMistakes = computed(() => {
+  if (reviewFilter.value === 'high_freq') {
+    return [...mistakes.value]
+      .filter((m) => (m.wrongCount || m.wrong_count || 1) >= 2)
+      .sort((a, b) => (b.wrongCount || b.wrong_count || 1) - (a.wrongCount || a.wrong_count || 1));
   }
-};
+  if (reviewFilter.value === 'recent') {
+    return [...mistakes.value]
+      .sort((a, b) => {
+        const ta = a.last_wrong_time || a.lastWrongTime || a.created_at || 0;
+        const tb = b.last_wrong_time || b.lastWrongTime || b.created_at || 0;
+        return tb - ta;
+      })
+      .slice(0, 20);
+  }
+  // 按分类筛选
+  if (reviewFilter.value.startsWith('cat_')) {
+    const cat = reviewFilter.value.slice(4);
+    return mistakes.value.filter((m) => (m.category || m.knowledge_point || '') === cat);
+  }
+  // 全部：按错误次数降序（优先复习高频错题）
+  return [...mistakes.value].sort(
+    (a, b) => (b.wrongCount || b.wrong_count || 1) - (a.wrongCount || a.wrong_count || 1)
+  );
+});
+
+// 错题分类列表（去重）
+const mistakeCategories = computed(() => {
+  const cats = new Set();
+  mistakes.value.forEach((m) => {
+    const cat = m.category || m.knowledge_point || '';
+    if (cat) cats.add(cat);
+  });
+  return [...cats].sort();
+});
+
+// F007: 限制渲染到 DOM 的错题数量，防止无限滚动导致 DOM 过大
+const displayedMistakes = computed(() => {
+  return mistakes.value.slice(0, MAX_DOM_ITEMS);
+});
+
+// --- 方法 ---
+
+// 统一错题字段名，消除 wrongCount/wrong_count 等不一致
+function normalizeMistakes(list) {
+  return normalizeFields(list).map((item) => ({
+    ...item,
+    showAnalysis: item.showAnalysis ?? false
+  }));
+}
+
+// 下拉刷新
+async function onPullRefresh() {
+  isRefreshing.value = true;
+  try {
+    await loadData(true);
+  } catch (_e) {
+    /* 静默处理 */
+  }
+  isRefreshing.value = false;
+}
+
+// 触底加载更多
+function loadMore() {
+  const nextPage = currentPage.value + 1;
+  logger.log(`[mistake-book] 📄 触底加载: page=${nextPage}, isLoading=${isLoading.value}, hasMore=${hasMore.value}`);
+  if (isLoading.value || !hasMore.value) {
+    logger.log(`[mistake-book] ⏸️ 分页加载被阻止 - isLoading: ${isLoading.value}, hasMore: ${hasMore.value}`);
+    return;
+  }
+  currentPage.value = nextPage;
+  logger.log(`[mistake-book] ➡️ 开始加载第 ${currentPage.value} 页（追加模式）`);
+  loadData(false);
+}
+
+// 加载用户信息
+function loadUserInfo() {
+  userInfo.value = storageService.get('userInfo', { nickName: '考研人' });
+}
+
+// 自动同步待同步的错题
+async function syncPendingMistakes() {
+  toast.loading('同步中...');
+  try {
+    logger.log('[mistake-book] 开始自动同步待同步错题...');
+    const result = await storageService.syncPendingMistakes();
+    if (result.synced > 0) {
+      logger.log(`[mistake-book] ✅ 同步完成: ${result.synced} 条错题已同步到云端`);
+      // 延迟一下，确保本地存储已更新（追踪定时器，在 onUnload 中清理）
+      syncDelayTimer = setTimeout(() => {
+        loadData(true);
+      }, 300);
+    } else if (result.failed > 0) {
+      logger.warn(`[mistake-book] ⚠️ 同步部分失败: ${result.failed} 条错题未能同步`);
+    }
+  } catch (error) {
+    logger.error('[mistake-book] 同步待同步错题异常:', error);
+  } finally {
+    toast.hide();
+  }
+}
+
+/**
+ * 加载错题列表数据（支持分页和重置）
+ * @param {boolean} [reset=false] - 是否重置到第一页重新加载
+ */
+async function loadData(reset = false) {
+  if (isLoading.value) {
+    logger.log('[mistake-book] ⏸️ 加载中，跳过重复请求');
+    return;
+  }
+
+  isLoading.value = true;
+  logger.log(
+    `[mistake-book] 开始加载数据 - reset: ${reset}, currentPage: ${currentPage.value}, pageSize: ${PAGE_SIZE}`
+  );
+
+  try {
+    if (reset) {
+      currentPage.value = 1;
+      mistakes.value = [];
+      logger.log('[mistake-book] 🔄 重置状态，从第1页开始加载');
+    }
+
+    logger.log(`[mistake-book] 📡 调用 storageService.getMistakes(${currentPage.value}, ${PAGE_SIZE})`);
+    // 使用云端方法获取错题列表
+    const result = await storageService.getMistakes(currentPage.value, PAGE_SIZE);
+    logger.log('[mistake-book] ✅ 数据加载完成:', {
+      count: result?.list?.length || 0,
+      total: result?.total || 0,
+      page: result?.page || currentPage.value,
+      hasMore: result?.hasMore || false,
+      source: result?.source || 'unknown'
+    });
+
+    if (result && result.list) {
+      const normalizedList = normalizeMistakes(result.list);
+      const beforeCount = mistakes.value.length;
+      if (reset) {
+        mistakes.value = normalizedList;
+        logger.log(`[mistake-book] 重置模式：加载了 ${normalizedList.length} 条错题`);
+      } else {
+        // 追加数据（用于分页加载）
+        mistakes.value = [...mistakes.value, ...normalizedList];
+        logger.log(
+          `[mistake-book] 追加模式：从 ${beforeCount} 条增加到 ${mistakes.value.length} 条（新增 ${normalizedList.length} 条）`
+        );
+      }
+
+      // 如果本页返回空列表，强制终止分页，防止无限加载
+      hasMore.value = normalizedList.length > 0 && (result.hasMore || false);
+      logger.log(
+        `[mistake-book] 当前状态 - 总错题数: ${mistakes.value.length}, hasMore: ${hasMore.value}, currentPage: ${currentPage.value}`
+      );
+
+      // 空状态检查
+      if (mistakes.value.length === 0) {
+        logger.log(`[mistake-book] 📭 空状态：错题列表为空，显示空状态UI`);
+      }
+
+      // 如果从云端获取，本地缓存已在 storageService.getMistakes 中更新（包含合并逻辑）
+      if (result.source === 'cloud' && currentPage.value === 1) {
+        logger.log('[mistake-book] ✅ 云端数据已加载并合并本地待同步数据');
+      }
+    } else {
+      // 降级到本地读取
+      mistakes.value = normalizeMistakes(storageService.get('mistake_book', []));
+    }
+  } catch (error) {
+    logger.error('加载错题列表失败:', error);
+    // 降级到本地读取
+    mistakes.value = normalizeMistakes(storageService.get('mistake_book', []));
+  } finally {
+    isLoading.value = false;
+    isInitLoading.value = false; // 隐藏骨架屏
+  }
+}
+
+// 返回刷题页面
+function goBack() {
+  uni.switchTab({
+    url: '/pages/practice/index',
+    fail: () => {
+      uni.reLaunch({ url: '/pages/practice/index' });
+    }
+  });
+}
+
+// 恢复原始题库（从备份中还原）
+function _restoreOriginalBank() {
+  try {
+    const backup = storageService.get('v30_bank_backup', []);
+    if (backup.length > 0) {
+      storageService.save('v30_bank', backup);
+      logger.log('[mistake-book] ✅ 原题库已恢复');
+    }
+    storageService.remove('v30_bank_backup');
+  } catch (e) {
+    logger.error('[mistake-book] ❌ 恢复原题库失败:', e);
+  }
+}
+
+// ✅ P1 + 1.7: 开始顺序重练（使用筛选后的错题列表）
+function startSequentialReview() {
+  const source = isReviewMode.value ? filteredReviewMistakes.value : mistakes.value;
+  if (source.length === 0) {
+    toast.info('暂无错题');
+    return;
+  }
+
+  logger.log('[mistake-book] 📝 开始错题重练，共', source.length, '道题，筛选:', reviewFilter.value);
+
+  // 问题51修复：确保错题数据格式正确，兼容多种字段名
+  const reviewQuestions = source
+    .map((m, index) => {
+      // 获取题目内容（兼容多种字段名）
+      const questionContent = m.question || m.question_content || m.title || `错题 ${index + 1}`;
+
+      // 获取选项（确保是数组且有内容）
+      let options = m.options;
+      if (!Array.isArray(options) || options.length === 0) {
+        // 尝试从其他字段获取选项
+        options = m.choices || m.option_list || ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
+      }
+
+      // 获取正确答案（兼容多种格式）
+      let answer = m.answer || m.correct_answer || m.correctAnswer || 'A';
+      // 确保答案是单个字母
+      if (typeof answer === 'string' && answer.length > 1) {
+        answer = answer.charAt(0).toUpperCase();
+      }
+      if (typeof answer === 'number') {
+        answer = ['A', 'B', 'C', 'D'][answer] || 'A';
+      }
+
+      const reviewQuestion = {
+        id: m.id || m._id || `review_${index}_${Date.now()}`,
+        question: questionContent,
+        options: options,
+        answer: answer,
+        desc: m.desc || m.analysis || m.explanation || '暂无解析',
+        category: m.category || m.subject || '错题重练',
+        type: m.type || '单选',
+        difficulty: m.difficulty || 2,
+        wrongCount: m.wrong_count || 1,
+        isReview: true // 标记为复习题
+      };
+
+      logger.log(`[mistake-book] 📋 错题 ${index + 1}:`, {
+        id: reviewQuestion.id,
+        question: reviewQuestion.question.substring(0, 30) + '...',
+        optionsCount: reviewQuestion.options.length,
+        answer: reviewQuestion.answer
+      });
+
+      return reviewQuestion;
+    })
+    .filter((q) => q.question && q.options.length >= 2); // 过滤无效题目
+
+  if (reviewQuestions.length === 0) {
+    toast.info('错题数据格式异常');
+    logger.error('[mistake-book] ❌ 所有错题数据格式异常，无法开始重练');
+    return;
+  }
+
+  logger.log('[mistake-book] ✅ 有效错题数量:', reviewQuestions.length);
+
+  // 问题51修复：使用正确的存储键名，并同时更新题库
+  storageService.save('temp_review_questions', reviewQuestions);
+
+  // 同时将错题临时写入题库，确保 do-quiz 页面能读取
+  const currentBank = storageService.get('v30_bank', []);
+  if (currentBank.length > 0) {
+    storageService.save('v30_bank_backup', currentBank); // 备份原题库
+  }
+  storageService.save('v30_bank', reviewQuestions); // 临时替换为错题
+  storageService.save('is_review_mode', true); // 标记为复习模式
+
+  safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {
+    success: () => {
+      logger.log('[mistake-book] ✅ 成功跳转到答题页面');
+    },
+    fail: (err) => {
+      logger.error('[mistake-book] ❌ 跳转失败:', err);
+      // 立即恢复原题库
+      _restoreOriginalBank();
+      storageService.remove('is_review_mode');
+    }
+  });
+}
+
+// 一键清空所有错题
+function clearAllMistakes() {
+  // 防重复点击
+  if (isClearing.value) return;
+
+  if (mistakes.value.length === 0) {
+    return toast.info('已经没有错题了');
+  }
+
+  modal.show({
+    title: '清空错题本',
+    content: `确定要清空所有 ${mistakes.value.length} 道错题吗？此操作不可恢复。`,
+    confirmColor: 'var(--danger)',
+    success: async (res) => {
+      if (res.confirm) {
+        isClearing.value = true;
+        toast.loading('清空中...');
+
+        try {
+          logger.log('[mistake-book] 🧹 开始清空所有错题...');
+
+          // 获取所有错题的 ID
+          const mistakeIds = mistakes.value.map((m) => m.id || m._id).filter(Boolean);
+
+          // P2-4: 批量删除云端错题（单次请求替代 N+1 逐条删除）
+          // batchRemoveMistakes 内部已同步清理本地缓存
+          const result = await storageService.batchRemoveMistakes(mistakeIds);
+          const deletedCount = result.deleted || 0;
+
+          // 清空列表
+          mistakes.value = [];
+          currentPage.value = 1;
+          hasMore.value = false;
+
+          logger.log(`[mistake-book] 清空完成: 已删除 ${deletedCount}/${mistakeIds.length} 条云端错题，本地缓存已清空`);
+          logger.log(`[mistake-book] 空状态：错题列表为空，显示空状态UI`);
+
+          toast.hide();
+          const totalCount = mistakeIds.length;
+          toast.success(totalCount > 0 ? `已清空 ${totalCount} 道错题` : '已清空所有错题', 2000);
+
+          // 响应式数据已更新，Vue 会自动触发视图更新
+        } catch (error) {
+          logger.error('[mistake-book] ❌ 清空错题失败:', error);
+          toast.hide();
+          toast.info('清空失败，请重试');
+        } finally {
+          isClearing.value = false;
+        }
+      }
+    }
+  });
+}
+
+// 切换刷题/背诵模式
+function switchMode(newMode) {
+  mode.value = newMode;
+}
+
+// === 知识点聚类功能 ===
+
+// 切换到聚类视图，首次切换时加载数据
+async function switchToClusterView() {
+  reviewFilter.value = 'cluster';
+  if (errorClusters.value.length === 0) {
+    await loadErrorClusters();
+  }
+}
+
+// 调用后端 AI 错题聚类分析
+async function loadErrorClusters() {
+  clusterLoading.value = true;
+  try {
+    const result = await studyEngineStore.getErrorClusters();
+    if (result?.data?.clusters) {
+      errorClusters.value = result.data.clusters;
+    }
+  } catch (error) {
+    logger.error('[mistake-book] 错题聚类加载失败:', error);
+    toast.info('聚类分析暂时不可用');
+  } finally {
+    clusterLoading.value = false;
+  }
+}
+
+// 基于聚类结果筛选错题，跳转到针对训练
+function startClusterTraining(cluster) {
+  const kpSet = new Set(cluster.knowledgePoints || []);
+  const filteredMistakes = mistakes.value.filter((m) => {
+    const cat = m.category || m.knowledge_point || '';
+    return kpSet.has(cat) || cat === cluster.errorTypeName;
+  });
+
+  if (filteredMistakes.length === 0) {
+    toast.info('该类型暂无可练习的错题');
+    return;
+  }
+
+  logger.log(
+    '[mistake-book] 开始聚类针对训练，知识点:',
+    cluster.knowledgePoints,
+    '共',
+    filteredMistakes.length,
+    '道题'
+  );
+
+  const reviewQuestions = filteredMistakes
+    .map((m, index) => {
+      const questionContent = m.question || m.question_content || m.title || `错题 ${index + 1}`;
+      let options = m.options;
+      if (!Array.isArray(options) || options.length === 0) {
+        options = m.choices || m.option_list || ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'];
+      }
+      let answer = m.answer || m.correct_answer || m.correctAnswer || 'A';
+      if (typeof answer === 'string' && answer.length > 1) answer = answer.charAt(0).toUpperCase();
+      if (typeof answer === 'number') answer = ['A', 'B', 'C', 'D'][answer] || 'A';
+
+      return {
+        id: m.id || m._id || `cluster_${index}_${Date.now()}`,
+        question: questionContent,
+        options,
+        answer,
+        desc: m.desc || m.analysis || m.explanation || '暂无解析',
+        category: m.category || m.subject || '针对训练',
+        type: m.type || '单选',
+        difficulty: m.difficulty || 2,
+        wrongCount: m.wrong_count || 1,
+        isReview: true
+      };
+    })
+    .filter((q) => q.question && q.options.length >= 2);
+
+  if (reviewQuestions.length === 0) {
+    toast.info('错题数据格式异常');
+    return;
+  }
+
+  storageService.save('temp_review_questions', reviewQuestions);
+  const currentBank = storageService.get('v30_bank', []);
+  if (currentBank.length > 0) {
+    storageService.save('v30_bank_backup', currentBank);
+  }
+  storageService.save('v30_bank', reviewQuestions);
+  storageService.save('is_review_mode', true);
+
+  safeNavigateTo('/pages/practice-sub/do-quiz?mode=review', {
+    success: () => logger.log('[mistake-book] ✅ 聚类训练跳转成功'),
+    fail: (err) => {
+      logger.error('[mistake-book] ❌ 聚类训练跳转失败:', err);
+      _restoreOriginalBank();
+      storageService.remove('is_review_mode');
+    }
+  });
+}
+
+/** @param {number} index - 错题在列表中的索引 */
+async function removeMistake(index) {
+  const mistake = mistakes.value[index];
+  if (!mistake) return;
+
+  modal.show({
+    title: '移除题目',
+    content: '掌握了吗？移除后无法恢复。',
+    confirmColor: 'var(--danger)',
+    success: async (res) => {
+      if (res.confirm) {
+        toast.loading('删除中...');
+
+        try {
+          // 使用云端方法删除
+          const mistakeId = mistake.id || mistake._id;
+          logger.log(`[mistake-book] 开始删除错题: ${mistakeId} (index: ${index})`);
+          const result = await storageService.removeMistake(mistakeId);
+
+          if (result.success) {
+            // 从列表中移除
+            mistakes.value.splice(index, 1);
+            logger.log(`[mistake-book] ✅ 删除成功，列表剩余 ${mistakes.value.length} 条错题`);
+            toast.success('已移除');
+          } else {
+            // 如果云端删除失败，尝试本地删除
+            logger.warn(`[mistake-book] ⚠️ 删除失败，降级到本地删除: ${result.error}`);
+            mistakes.value.splice(index, 1);
+            storageService.save('mistake_book', mistakes.value, true);
+            toast.info('已移除（本地）');
+          }
+        } catch (error) {
+          logger.error('[mistake-book] 删除错题异常:', error);
+          // 降级到本地删除
+          mistakes.value.splice(index, 1);
+          storageService.save('mistake_book', mistakes.value, true);
+          toast.info('已移除（本地）');
+        } finally {
+          toast.hide();
+        }
+      }
+    }
+  });
+}
+
+// --- 生命周期钩子 ---
+
+onLoad((options) => {
+  studyEngineStore = useStudyEngineStore();
+  statusBarHeight.value = getStatusBarHeight();
+  capsuleSafeRight.value = getCapsuleSafeRight();
+
+  // 初始化主题
+  const savedTheme = storageService.get('theme_mode', 'light');
+  isDark.value = savedTheme === 'dark';
+
+  // F003: 存储回调引用，确保 $off 只移除自己的监听器
+  _themeHandler = (themeMode) => {
+    isDark.value = themeMode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+
+  // ✅ P1: 检查是否为重练模式
+  if (options && options.mode === 'review') {
+    mode.value = 'quiz';
+    isReviewMode.value = true;
+    logger.log('[mistake-book] 📝 进入错题重练模式');
+  }
+});
+
+onShow(() => {
+  loadData(true); // 重置并重新加载
+  loadUserInfo();
+  // 自动同步待同步的错题
+  syncPendingMistakes();
+});
+
+onUnload(() => {
+  // 移除事件监听
+  uni.$off('themeUpdate', _themeHandler);
+  // 清理同步延迟定时器，防止页面卸载后仍触发加载
+  if (syncDelayTimer) clearTimeout(syncDelayTimer);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -767,12 +783,7 @@ export default {
 .container {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 52%,
-    var(--page-gradient-bottom) 100%
-  );
+  background: var(--background);
   position: relative;
   overflow: hidden;
 }
@@ -782,7 +793,7 @@ export default {
   top: 0;
   width: 100%;
   height: 500rpx;
-  background: radial-gradient(circle at 18% 20%, var(--brand-tint-strong) 0%, transparent 70%);
+  background: radial-gradient(circle at 18% 20%, rgba(255, 75, 75, 0.12) 0%, transparent 70%);
   filter: blur(80px);
   opacity: 0.8;
   z-index: 0;
@@ -864,13 +875,11 @@ export default {
 
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 40rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 28rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .mode-switch {
@@ -922,20 +931,20 @@ export default {
   .empty-title {
     color: var(--text-primary);
     font-size: 40rpx;
-    font-weight: 700;
+    font-weight: 800;
     margin-bottom: 16rpx;
     display: block;
   }
 
   .empty-text {
-    color: var(--text-sub);
+    color: var(--text-secondary);
     font-size: 28rpx;
     margin-bottom: 16rpx;
     display: block;
   }
 
   .empty-hint {
-    color: var(--text-sub);
+    color: var(--text-secondary);
     font-size: 24rpx;
     opacity: 0.7;
     margin-bottom: 60rpx;
@@ -948,13 +957,13 @@ export default {
     justify-content: center;
     /* gap: 12rpx; -- replaced for Android WebView compat */
     padding: 24rpx 64rpx;
-    background: var(--cta-primary-bg);
-    color: var(--cta-primary-text);
+    background: var(--danger);
+    color: var(--text-inverse);
     border-radius: 50rpx;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 30rpx;
-    border: 1rpx solid var(--cta-primary-border);
-    box-shadow: var(--cta-primary-shadow);
+    border: none;
+    box-shadow: 0 8rpx 0 #cc3333;
     transition: all 0.3s ease;
   }
 
@@ -1098,25 +1107,26 @@ export default {
 .filter-chip {
   display: inline-block;
   padding: 16rpx 28rpx;
-  border-radius: 32rpx;
-  background: var(--bg-card, #f5f5f5);
-  border: 1px solid var(--border-light, #e0e0e0);
+  border-radius: 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   transition: all 0.2s;
   margin-right: 12rpx;
 }
 
 .filter-chip.active {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: var(--danger);
+  border-color: var(--danger);
 }
 
 .filter-chip.active .filter-text {
-  color: var(--primary-foreground);
+  color: var(--text-inverse);
 }
 
 .filter-text {
   font-size: 24rpx;
-  color: var(--text-sub, #666);
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 /* [AUDIT FIX R201] 筛选栏 .dark-mode 块已移除 — var(--bg-card)/var(--border-light)/var(--text-sub) 已自动适配 */
@@ -1217,14 +1227,15 @@ export default {
 
 .cluster-type {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   flex: 1;
 }
 
 .cluster-count {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 .cluster-kps {
@@ -1237,7 +1248,7 @@ export default {
   font-size: 24rpx;
   padding: 4rpx 14rpx;
   border-radius: 12rpx;
-  background: var(--bg-secondary, #f0f0f0);
+  background: var(--bg-secondary, var(--muted));
   color: var(--text-sub);
   margin-right: 8rpx;
   margin-bottom: 8rpx;
@@ -1270,13 +1281,13 @@ export default {
 .train-btn {
   width: 100%;
   padding: 20rpx;
-  border-radius: 20rpx;
-  background: var(--cta-primary-bg, var(--color-primary));
-  color: var(--cta-primary-text, #fff);
+  border-radius: 24rpx;
+  background: var(--danger);
+  color: var(--text-inverse);
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   border: none;
-  box-shadow: var(--cta-primary-shadow, none);
+  box-shadow: 0 8rpx 0 #cc3333;
 }
 .train-btn::after {
   border: none;

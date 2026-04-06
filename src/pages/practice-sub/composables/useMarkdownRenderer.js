@@ -36,7 +36,7 @@ async function getMarkdownRenderer() {
   _initPromise = (async () => {
     const [MarkdownItModule, markdownItKatexModule] = await Promise.all([
       import('markdown-it'),
-      import('markdown-it-katex')
+      import('@traptitech/markdown-it-katex')
     ]);
     const MarkdownIt = MarkdownItModule.default || MarkdownItModule;
     const markdownItKatex = markdownItKatexModule.default || markdownItKatexModule;
@@ -50,7 +50,10 @@ async function getMarkdownRenderer() {
 
     _md.use(markdownItKatex, {
       throwOnError: false, // 公式解析失败时不抛异常
-      errorColor: '#cc0000' // 错误公式标红
+      errorColor: '#cc0000', // 错误公式标红
+      maxSize: 10, // 限制公式最大渲染尺寸（em），防止恶意超大公式导致客户端卡死
+      maxExpand: 100, // 限制宏展开深度，防止递归/嵌套公式 DoS
+      strict: 'warn' // 非标准 LaTeX 命令仅警告不报错
     });
 
     return _md;

@@ -13,7 +13,8 @@ import { saveOfflineAnswer } from './offline-cache.js';
 import { logger } from '@/utils/logger.js';
 import { recordSmartAnswer } from './utils/smart-question-picker.js';
 import { recordAnswer as recordAnalyticsAnswer } from './utils/learning-analytics.js';
-import { request } from '@/services/api/domains/_request-core.js';
+// H026 FIX: 通过 API domain 层调用，不再直接导入 _request-core.js
+import { submitAnswer } from '@/services/api/domains/practice.api.js';
 
 /**
  * 记录答题数据到各个分析模块
@@ -89,8 +90,8 @@ export async function recordAnswerToAnalytics({
   if (sessionId) {
     try {
       const idempotencyKey = `${currentQuestion.id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-      await request('/answer-submit', {
-        action: 'submit',
+      // H026 FIX: 通过 practice.api.js 的 submitAnswer 调用
+      await submitAnswer({
         idempotencyKey,
         data: {
           question_id: currentQuestion.id,

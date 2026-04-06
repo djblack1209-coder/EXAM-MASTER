@@ -1,6 +1,11 @@
 <template>
   <view v-if="visible" class="result-overlay" :class="{ 'dark-mode': isDark }" @tap.stop>
     <view class="result-container">
+      <!-- 满分彩纸庆祝 — [AUDIT R432] confetti-burst.png 不存在，改用 emoji -->
+      <view v-if="accuracy >= 95" class="confetti-decoration confetti-text">
+        <text class="confetti-emoji">🎊</text>
+      </view>
+
       <!-- 顶部关闭 -->
       <view class="result-top-bar">
         <text class="result-title">练习报告</text>
@@ -12,6 +17,11 @@
       </view>
 
       <scroll-view scroll-y class="result-scroll">
+        <!-- [AUDIT R432] 高分庆祝：celebration.png 不存在，改用文字+emoji -->
+        <view v-if="accuracy >= 80" class="celebration-illustration celebration-text">
+          <text class="celebration-emoji">🎉</text>
+        </view>
+
         <!-- 正确率圆环 -->
         <view class="accuracy-section">
           <view class="ring-wrap">
@@ -89,6 +99,11 @@
               </text>
             </view>
           </view>
+        </view>
+
+        <!-- 卡通勾选图标装饰（答题完成标志）— [AUDIT R432] checkmark-circle.png 不存在，改用 emoji -->
+        <view v-if="accuracy >= 60" style="text-align: center; margin-bottom: 16rpx">
+          <text class="feature-cartoon-icon" style="font-size: 60rpx">✅</text>
         </view>
 
         <!-- 操作按钮 -->
@@ -350,7 +365,7 @@ const motivationalText = computed(() => {
   right: 0;
   bottom: 0;
   z-index: 1000;
-  background: var(--bg-secondary, #f5f5f7);
+  background: #fafafa;
   animation: resultSlideUp 0.45s cubic-bezier(0.22, 0.68, 0, 1.1);
 }
 @keyframes resultSlideUp {
@@ -367,6 +382,34 @@ const motivationalText = computed(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+/* 满分彩纸庆祝装饰 */
+.confetti-decoration {
+  position: absolute;
+  top: 20rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200rpx;
+  height: 200rpx;
+  opacity: 0.8;
+  z-index: 0;
+  animation: confetti-fade 2s ease-out forwards;
+}
+@keyframes confetti-fade {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  30% {
+    opacity: 0.9;
+    transform: translateX(-50%) scale(1.2);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
 }
 .result-top-bar {
   display: flex;
@@ -374,15 +417,13 @@ const motivationalText = computed(() => {
   justify-content: space-between;
   padding: 24rpx 40rpx;
   padding-top: calc(24rpx + env(safe-area-inset-top, 44px));
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
 }
 .result-title {
   font-size: 36rpx;
-  font-weight: bold;
-  color: var(--text-primary);
+  font-weight: 800;
+  color: #3c3c3c;
 }
 .close-btn {
   width: 56rpx;
@@ -391,13 +432,43 @@ const motivationalText = computed(() => {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--bg-secondary);
+  background: #f5f5f5;
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: #afafaf;
 }
 .result-scroll {
   flex: 1;
   padding: 0 40rpx;
+}
+
+/* 高分庆祝 */
+.celebration-illustration {
+  width: 280rpx;
+  height: 220rpx;
+  margin: 0 auto 16rpx;
+  display: block;
+  animation: celebration-bounce 0.8s ease-out;
+}
+.celebration-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.celebration-emoji {
+  font-size: 100rpx;
+}
+@keyframes celebration-bounce {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* 圆环 */
@@ -437,18 +508,18 @@ const motivationalText = computed(() => {
 .ring-number {
   font-size: 80rpx;
   font-weight: 900;
-  color: var(--text-primary);
+  color: #3c3c3c;
   line-height: 1;
 }
 .ring-unit {
   font-size: 32rpx;
   font-weight: 600;
-  color: var(--text-sub);
+  color: #afafaf;
   margin-top: 16rpx;
 }
 .accuracy-label {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: #afafaf;
   margin-top: 16rpx;
 }
 
@@ -457,14 +528,12 @@ const motivationalText = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-radius: 32rpx;
   padding: 32rpx 20rpx;
   margin-bottom: 32rpx;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .stat-item {
   display: flex;
@@ -475,11 +544,11 @@ const motivationalText = computed(() => {
 .stat-value {
   font-size: 40rpx;
   font-weight: 800;
-  color: var(--text-primary);
+  color: #3c3c3c;
 }
 .stat-label {
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: #afafaf;
   margin-top: 8rpx;
 }
 .stat-divider {
@@ -488,27 +557,25 @@ const motivationalText = computed(() => {
   background: var(--border);
 }
 .correct-text {
-  color: var(--success, #10b981);
+  color: #58cc02;
 }
 .wrong-text {
-  color: var(--danger, #ef4444);
+  color: #ff4b4b;
 }
 
 /* 分类 */
 .glass-card {
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-radius: 32rpx;
   padding: 32rpx;
   margin-bottom: 24rpx;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .section-title {
   font-size: 30rpx;
-  font-weight: bold;
-  color: var(--text-primary);
+  font-weight: 800;
+  color: #3c3c3c;
   margin-bottom: 24rpx;
   display: block;
 }
@@ -522,7 +589,7 @@ const motivationalText = computed(() => {
 }
 .cat-name {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: #afafaf;
   width: 120rpx;
   flex-shrink: 0;
   overflow: hidden;
@@ -541,12 +608,12 @@ const motivationalText = computed(() => {
   height: 100%;
   border-radius: 10rpx;
   transition: width 0.8s ease-out;
-  background: linear-gradient(90deg, var(--primary), var(--success, #10b981));
+  background: linear-gradient(90deg, #1cb0f6, #58cc02);
 }
 .cat-pct {
   font-size: 24rpx;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: 700;
+  color: #3c3c3c;
   width: 80rpx;
   text-align: right;
 }
@@ -557,7 +624,7 @@ const motivationalText = computed(() => {
 }
 .motivational-text {
   font-size: 28rpx;
-  color: var(--text-primary);
+  color: #3c3c3c;
   line-height: 1.6;
 }
 
@@ -577,21 +644,30 @@ const motivationalText = computed(() => {
   margin-bottom: 20rpx;
 }
 .primary-btn {
-  background: var(--cta-primary-bg, var(--primary));
-  color: var(--cta-primary-text, #fff);
-  box-shadow: var(--cta-primary-shadow, 0 4rpx 16rpx rgba(0, 0, 0, 0.1));
+  background: #1cb0f6;
+  color: #fff;
+  box-shadow: 0 6rpx 0 #1899d6;
+  border-radius: 20rpx;
 }
 .secondary-btn {
-  background: var(--bg-glass);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
+  background: #ffffff;
+  color: #3c3c3c;
+  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4rpx 0 #e0e0e0;
+  border-radius: 20rpx;
 }
 .btn-hover {
-  opacity: 0.8;
-  transform: scale(0.98);
+  transform: translateY(4rpx);
+  opacity: 0.9;
+  box-shadow: none;
 }
 .item-hover {
   opacity: 0.7;
+}
+/* 卡通图标通用样式 */
+.feature-cartoon-icon {
+  width: 80rpx;
+  height: 80rpx;
 }
 .bottom-safe {
   height: 60rpx;

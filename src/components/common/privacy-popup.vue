@@ -50,7 +50,9 @@ onMounted(() => {
         wx.getPrivacySetting({
           success: (res) => {
             if (res.privacyContractName) {
-              privacyContractName.value = `《${res.privacyContractName}》`;
+              // R411: 微信 API 返回的名称可能自带书名号，先去除再统一包裹
+              const rawName = res.privacyContractName.replace(/^《|》$/g, '');
+              privacyContractName.value = `《${rawName}》`;
             }
           }
         });

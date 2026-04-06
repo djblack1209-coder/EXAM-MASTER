@@ -25,7 +25,13 @@
         <view class="message-list">
           <view v-if="messages.length === 0" id="message-empty" class="welcome-card">
             <view class="welcome-avatar">
-              <BaseIcon name="robot" :size="30" />
+              <!-- AI助手欢迎插画（替换原 robot 图标） -->
+              <image
+                class="welcome-illustration"
+                src="/static/illustrations/ai-welcome.png"
+                mode="aspectFit"
+                lazy-load
+              />
             </view>
             <view class="welcome-bubble">
               <text class="message-text"> 你好！我是智能升学顾问，有关于 {{ schoolName }} 的任何问题都可以问我。 </text>
@@ -107,219 +113,225 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, watch, nextTick } from 'vue';
 import { useSchoolStore } from '@/stores/modules/school.js';
 // 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
 
-export default {
-  name: 'AiConsult',
-  components: { BaseIcon },
-  props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    schoolName: {
-      type: String,
-      default: '该院校'
-    },
-    schoolInfo: {
-      type: Object,
-      default: () => ({})
-    },
-    initialQuery: {
-      type: String,
-      default: ''
-    },
-    isDark: {
-      type: Boolean,
-      default: false
-    }
+// ==================== Props & Emits ====================
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false
   },
-  emits: ['close'],
-  data() {
-    return {
-      messages: [],
-      inputContent: '',
-      scrollToView: '',
-      isTyping: false,
-      canSend: false
-    };
+  schoolName: {
+    type: String,
+    default: '该院校'
   },
-  watch: {
-    visible(newVal) {
-      if (newVal) {
-        // 弹窗显示时，滚动到底部
-        this.$nextTick(() => {
-          this.scrollToBottom();
-          // 如果有初始问题，自动发送
-          if (this.initialQuery && this.messages.length === 0) {
-            this.inputContent = this.initialQuery;
-            this.canSend = true;
-            this.sendMessage();
-          }
-        });
-      }
-    },
-    messages() {
-      // 消息更新时，滚动到底部
-      this.$nextTick(() => {
-        this.scrollToBottom();
-      });
-    }
+  schoolInfo: {
+    type: Object,
+    default: () => ({})
   },
-  methods: {
-    // 滚动到底部
-    scrollToBottom() {
-      if (this.isTyping) {
-        this.scrollToView = 'message-typing';
-        return;
-      }
-      this.scrollToView = this.messages.length > 0 ? `message-${this.messages.length - 1}` : 'message-empty';
-    },
+  initialQuery: {
+    type: String,
+    default: ''
+  },
+  isDark: {
+    type: Boolean,
+    default: false
+  }
+});
 
-    // 输入内容变化
-    onInputChange(e) {
-      this.inputContent = e.detail.value;
-      this.canSend = this.inputContent.trim().length > 0;
-    },
+const emit = defineEmits(['close']);
 
-    // 发送消息
-    async sendMessage() {
-      if (!this.canSend || this.isTyping) return;
+// ==================== 响应式数据 ====================
+const messages = ref([]);
+const inputContent = ref('');
+const scrollToView = ref('');
+const isTyping = ref(false);
+const canSend = ref(false);
 
-      const content = sanitizeAIChatInput(this.inputContent.trim());
-      if (content.length === 0) return;
-
-      // 添加用户消息
-      this.messages.push({
-        role: 'user',
-        content: content,
-        time: this.getCurrentTime()
+// ==================== 侦听器 ====================
+watch(
+  () => props.visible,
+  (newVal) => {
+    if (newVal) {
+      // 弹窗显示时，滚动到底部
+      nextTick(() => {
+        scrollToBottom();
+        // 如果有初始问题，自动发送
+        if (props.initialQuery && messages.value.length === 0) {
+          inputContent.value = props.initialQuery;
+          canSend.value = true;
+          sendMessage();
+        }
       });
-
-      // 清空输入框
-      this.inputContent = '';
-      this.canSend = false;
-
-      // 显示正在输入状态
-      this.isTyping = true;
-
-      try {
-        // 调用智谱智能 API获取回复
-        const response = await this.callAIApi(content);
-
-        // 添加助手消息
-        this.messages.push({
-          role: 'assistant',
-          content: response,
-          time: this.getCurrentTime()
-        });
-      } catch (error) {
-        logger.error('智能回复失败:', error);
-
-        // 添加可重试的错误消息
-        this.messages.push({
-          role: 'assistant',
-          content: '抱歉，智能回复失败，请点击重试。',
-          time: this.getCurrentTime(),
-          failed: true,
-          _retryContent: content
-        });
-      } finally {
-        // 隐藏正在输入状态
-        this.isTyping = false;
-      }
-    },
-
-    // 重试失败的消息
-    async retryMessage(index) {
-      const failedMsg = this.messages[index];
-      if (!failedMsg || !failedMsg.failed || this.isTyping) return;
-
-      const content = failedMsg._retryContent;
-      if (!content) return;
-
-      // 移除失败消息
-      this.messages.splice(index, 1);
-
-      // 显示正在输入状态
-      this.isTyping = true;
-
-      try {
-        const response = await this.callAIApi(content);
-        this.messages.push({
-          role: 'assistant',
-          content: response,
-          time: this.getCurrentTime()
-        });
-      } catch (error) {
-        logger.error('智能重试失败:', error);
-        this.messages.push({
-          role: 'assistant',
-          content: '抱歉，智能回复仍然失败，请稍后再试。',
-          time: this.getCurrentTime(),
-          failed: true,
-          _retryContent: content
-        });
-      } finally {
-        this.isTyping = false;
-      }
-    },
-
-    // 调用智谱智能 API
-    async callAIApi(content) {
-      logger.log('[ai-consult] 🤖 调用后端代理进行智能咨询...');
-
-      // [F3-FIX] 构建多轮对话历史（最近 5 轮）
-      const recentHistory = this.messages
-        .filter((m) => !m.failed)
-        .slice(-10) // 最近 10 条消息（5 轮对话）
-        .map((m) => ({ role: m.role, content: m.content }));
-
-      // 通过 school store 调用 AI 咨询（遵循分层纪律）
-      const schoolStore = useSchoolStore();
-      const response = await schoolStore.aiRecommend('consult', {
-        content: content,
-        schoolName: this.schoolName,
-        question: content,
-        // [F3-FIX] 传递学校详情和对话历史
-        schoolInfo: this.schoolInfo || {},
-        history: recentHistory
-      });
-
-      logger.log('[ai-consult] 📥 后端代理响应:', {
-        code: response?.code,
-        hasData: !!response?.data
-      });
-
-      // 处理API响应
-      if (response && response.code === 0 && response.data) {
-        logger.log('[ai-consult] ✅ 智能咨询成功');
-        return response.data.trim();
-      } else {
-        logger.warn('[ai-consult] ⚠️ 智能咨询响应异常');
-        throw new Error('智能响应失败');
-      }
-    },
-
-    // 获取当前时间
-    getCurrentTime() {
-      const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      return `${hours}:${minutes}`;
-    },
-
-    // 关闭咨询弹窗
-    closeConsult() {
-      this.$emit('close');
     }
   }
-};
+);
+
+watch(
+  messages,
+  () => {
+    // 消息更新时，滚动到底部
+    nextTick(() => {
+      scrollToBottom();
+    });
+  },
+  { deep: true }
+);
+
+// ==================== 方法 ====================
+
+// 滚动到底部
+function scrollToBottom() {
+  if (isTyping.value) {
+    scrollToView.value = 'message-typing';
+    return;
+  }
+  scrollToView.value = messages.value.length > 0 ? `message-${messages.value.length - 1}` : 'message-empty';
+}
+
+// 输入内容变化
+function onInputChange(e) {
+  inputContent.value = e.detail.value;
+  canSend.value = inputContent.value.trim().length > 0;
+}
+
+// 发送消息
+async function sendMessage() {
+  if (!canSend.value || isTyping.value) return;
+
+  const content = sanitizeAIChatInput(inputContent.value.trim());
+  if (content.length === 0) return;
+
+  // 添加用户消息
+  messages.value.push({
+    role: 'user',
+    content: content,
+    time: getCurrentTime()
+  });
+
+  // 清空输入框
+  inputContent.value = '';
+  canSend.value = false;
+
+  // 显示正在输入状态
+  isTyping.value = true;
+
+  try {
+    // 调用智谱智能 API获取回复
+    const response = await callAIApi(content);
+
+    // 添加助手消息
+    messages.value.push({
+      role: 'assistant',
+      content: response,
+      time: getCurrentTime()
+    });
+  } catch (error) {
+    logger.error('智能回复失败:', error);
+
+    // 添加可重试的错误消息
+    messages.value.push({
+      role: 'assistant',
+      content: '抱歉，智能回复失败，请点击重试。',
+      time: getCurrentTime(),
+      failed: true,
+      _retryContent: content
+    });
+  } finally {
+    // 隐藏正在输入状态
+    isTyping.value = false;
+  }
+}
+
+// 重试失败的消息
+async function retryMessage(index) {
+  const failedMsg = messages.value[index];
+  if (!failedMsg || !failedMsg.failed || isTyping.value) return;
+
+  const content = failedMsg._retryContent;
+  if (!content) return;
+
+  // 移除失败消息
+  messages.value.splice(index, 1);
+
+  // 显示正在输入状态
+  isTyping.value = true;
+
+  try {
+    const response = await callAIApi(content);
+    messages.value.push({
+      role: 'assistant',
+      content: response,
+      time: getCurrentTime()
+    });
+  } catch (error) {
+    logger.error('智能重试失败:', error);
+    messages.value.push({
+      role: 'assistant',
+      content: '抱歉，智能回复仍然失败，请稍后再试。',
+      time: getCurrentTime(),
+      failed: true,
+      _retryContent: content
+    });
+  } finally {
+    isTyping.value = false;
+  }
+}
+
+// 调用智谱智能 API
+async function callAIApi(content) {
+  logger.log('[ai-consult] 调用后端代理进行智能咨询...');
+
+  // [F3-FIX] 构建多轮对话历史（最近 5 轮）
+  const recentHistory = messages.value
+    .filter((m) => !m.failed)
+    .slice(-10) // 最近 10 条消息（5 轮对话）
+    .map((m) => ({ role: m.role, content: m.content }));
+
+  // 通过 school store 调用 AI 咨询（遵循分层纪律）
+  const schoolStore = useSchoolStore();
+  const response = await schoolStore.aiRecommend('consult', {
+    content: content,
+    schoolName: props.schoolName,
+    question: content,
+    // [F3-FIX] 传递学校详情和对话历史
+    schoolInfo: props.schoolInfo || {},
+    history: recentHistory
+  });
+
+  logger.log('[ai-consult] 后端代理响应:', {
+    code: response?.code,
+    hasData: !!response?.data
+  });
+
+  // 处理API响应
+  if (response && response.code === 0 && response.data) {
+    logger.log('[ai-consult] 智能咨询成功');
+    return response.data.trim();
+  } else {
+    logger.warn('[ai-consult] 智能咨询响应异常');
+    throw new Error('智能响应失败');
+  }
+}
+
+// 获取当前时间
+function getCurrentTime() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+}
+
+// 关闭咨询弹窗
+function closeConsult() {
+  emit('close');
+}
 </script>
 
 <style lang="scss" scoped>
@@ -340,9 +352,7 @@ export default {
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(9, 18, 12, 0.26);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .consult-panel {
@@ -351,12 +361,10 @@ export default {
   width: 100%;
   max-height: 86vh;
   padding: 14rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
-  border-radius: 38rpx 38rpx 0 0;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: 0 -20rpx 70rpx rgba(21, 49, 28, 0.18);
+  border-radius: 28rpx 28rpx 0 0;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
 }
@@ -397,19 +405,19 @@ export default {
   font-size: 20rpx;
   letter-spacing: 3rpx;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--warning);
 }
 
 .header-title {
   font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .header-subtitle {
   margin-top: 6rpx;
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .close-btn,
@@ -425,32 +433,32 @@ export default {
   width: 64rpx;
   height: 64rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.44);
-  box-shadow: var(--apple-shadow-surface);
-  color: var(--text-main);
+  background: var(--bg-secondary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
 }
 
 .intro-card {
   margin-bottom: 20rpx;
   padding: 22rpx 24rpx;
-  border-radius: 26rpx;
-  background: rgba(255, 255, 255, 0.52);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border-radius: 24rpx;
+  background: rgba(255, 150, 0, 0.08);
+  border: 2rpx solid rgba(255, 150, 0, 0.12);
+  box-shadow: none;
 }
 
 .intro-title {
   font-size: 26rpx;
-  font-weight: 650;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .intro-text {
   margin-top: 10rpx;
   font-size: 24rpx;
   line-height: 1.6;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .chat-content {
@@ -486,10 +494,10 @@ export default {
   width: 56rpx;
   height: 56rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
-  color: var(--text-main);
+  background: rgba(255, 150, 0, 0.12);
+  border: none;
+  box-shadow: none;
+  color: var(--warning);
 }
 
 .welcome-avatar {
@@ -499,48 +507,54 @@ export default {
   flex-shrink: 0;
 }
 
+/* AI助手欢迎插画 */
+.welcome-illustration {
+  width: 200rpx;
+  height: 160rpx;
+}
+
 .message-bubble,
 .welcome-bubble,
 .typing-bubble {
   max-width: 72%;
   padding: 18rpx 22rpx;
-  border-radius: 26rpx;
-  box-shadow: var(--apple-shadow-surface);
+  border-radius: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
 }
 
 .assistant-bubble,
 .welcome-bubble,
 .typing-bubble {
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: var(--bg-secondary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .user-bubble {
-  background: var(--cta-primary-bg);
-  border: 1px solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--warning);
+  border: none;
+  box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
 }
 
 .message-text {
   font-size: 26rpx;
   line-height: 1.6;
   word-break: break-word;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .user-bubble .message-text {
-  color: var(--cta-primary-text);
+  color: var(--text-inverse);
 }
 
 .assistant-bubble.failed {
-  border-color: rgba(255, 59, 48, 0.35);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
   background: rgba(255, 99, 90, 0.1);
 }
 
 .retry-text {
   margin-top: 10rpx;
   font-size: 22rpx;
-  color: var(--ds-color-error, #ff3b30);
+  color: var(--ds-color-error, var(--danger));
 }
 
 .typing-bubble {
@@ -557,7 +571,7 @@ export default {
   width: 12rpx;
   height: 12rpx;
   border-radius: 50%;
-  background: var(--text-sub);
+  background: var(--text-secondary);
   animation: typing 1.4s infinite;
 }
 
@@ -575,10 +589,10 @@ export default {
 
 .input-shell {
   padding: 14rpx 16rpx 16rpx;
-  border-radius: 30rpx;
-  background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border-radius: 24rpx;
+  background: var(--bg-secondary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: none;
 }
 
 .message-input {
@@ -587,11 +601,11 @@ export default {
   max-height: 180rpx;
   font-size: 26rpx;
   line-height: 1.6;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .placeholder-text {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .input-footer {
@@ -604,7 +618,7 @@ export default {
 
 .char-count {
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .send-btn {
@@ -612,26 +626,26 @@ export default {
   height: 64rpx;
   padding: 0 24rpx;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: var(--bg-secondary);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   opacity: 0.6;
 }
 
 .send-btn.can-send {
-  background: var(--cta-primary-bg);
-  border-color: var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--warning);
+  border-color: var(--warning);
+  box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
   opacity: 1;
 }
 
 .send-text {
   font-size: 24rpx;
-  font-weight: 620;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 
 .send-btn.can-send .send-text {
-  color: var(--cta-primary-text);
+  color: var(--text-inverse);
 }
 
 .close-btn:active,

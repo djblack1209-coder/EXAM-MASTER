@@ -221,7 +221,7 @@ onMounted(() => {
 <style scoped>
 .mastery-container {
   min-height: 100vh;
-  background: var(--bg-page, linear-gradient(180deg, #f5f5f7 0%, #eeeef0 50%, #f5f5f7 100%));
+  background: var(--background);
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
@@ -240,7 +240,7 @@ onMounted(() => {
   width: 100%;
   height: 620rpx;
   background:
-    radial-gradient(circle at 18% 24%, rgba(52, 199, 89, 0.22) 0%, transparent 40%),
+    radial-gradient(circle at 18% 24%, rgba(206, 130, 255, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.32) 0%, transparent 28%);
   filter: blur(70px);
   opacity: 0.9;
@@ -260,10 +260,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 16rpx 32rpx;
-  -webkit-backdrop-filter: saturate(180%) blur(40rpx);
-  backdrop-filter: saturate(180%) blur(40rpx);
-  background: var(--apple-glass-nav-bg, rgba(245, 245, 247, 0.72));
-  border-bottom: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .dark-mode .top-nav {
   background: rgba(10, 10, 15, 0.72);
@@ -271,15 +270,15 @@ onMounted(() => {
 }
 .nav-back-arrow {
   font-size: 36rpx;
-  color: var(--text-main, #1a1a1a);
+  color: var(--text-primary);
   padding: 20rpx;
 }
 .nav-title {
   flex: 1;
   text-align: center;
   font-size: 34rpx;
-  font-weight: 600;
-  color: var(--text-primary, #1c1c1e);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .nav-right {
   width: 48rpx;
@@ -316,13 +315,12 @@ onMounted(() => {
 
 /* 玻璃卡片 */
 .apple-glass-card {
-  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.72));
-  border-radius: 32rpx;
+  background: var(--bg-card);
+  border-radius: 28rpx;
   padding: 32rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
-  -webkit-backdrop-filter: blur(20rpx);
-  backdrop-filter: blur(20rpx);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .dark-mode .apple-glass-card {
   background: rgba(255, 255, 255, 0.06);
@@ -357,13 +355,13 @@ onMounted(() => {
 }
 .ring-num {
   font-size: 52rpx;
-  font-weight: 700;
-  color: var(--text-primary, #1c1c1e);
+  font-weight: 800;
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
 .ring-label {
   font-size: 20rpx;
-  color: var(--text-secondary, #8e8e93);
+  color: var(--text-secondary);
   margin-top: 2rpx;
 }
 .hero-right {
@@ -371,7 +369,7 @@ onMounted(() => {
 }
 .hero-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
   margin-bottom: 16rpx;
@@ -388,7 +386,7 @@ onMounted(() => {
 }
 .stat-num {
   font-size: 40rpx;
-  font-weight: 700;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 .danger-text {
@@ -401,6 +399,7 @@ onMounted(() => {
   font-size: 22rpx;
   color: var(--text-secondary);
   margin-top: 4rpx;
+  font-weight: 600;
 }
 .stat-divider {
   width: 1rpx;
@@ -423,13 +422,14 @@ onMounted(() => {
 }
 .section-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .section-avg {
   font-size: 24rpx;
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 /* KP Cards */
@@ -458,7 +458,7 @@ onMounted(() => {
 }
 .kp-name {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   display: block;
 }
@@ -473,10 +473,10 @@ onMounted(() => {
   border-radius: 10rpx;
 }
 .trend-up {
-  background: rgba(52, 199, 89, 0.12);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
 }
 .trend-down {
-  background: rgba(255, 69, 58, 0.12);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 .trend-stable {
   background: var(--bg-secondary, rgba(0, 0, 0, 0.04));
@@ -500,7 +500,7 @@ onMounted(() => {
 .prereq-badge {
   padding: 2rpx 12rpx;
   border-radius: 10rpx;
-  background: rgba(255, 69, 58, 0.08);
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
 }
 .prereq-text {
   font-size: 20rpx;
@@ -517,7 +517,7 @@ onMounted(() => {
 }
 .kp-ring-num {
   font-size: 22rpx;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
@@ -545,7 +545,7 @@ onMounted(() => {
 }
 .empty-title {
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   margin-top: 32rpx;
 }

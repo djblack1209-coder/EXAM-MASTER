@@ -93,7 +93,13 @@
           style="display: flex; padding-right: 24rpx; align-items: center; white-space: nowrap"
         >
           <wd-button size="small" type="primary" plain @click="showMasteryStats">
-            <BaseIcon name="chart-bar" :size="24" style="margin-right: 4rpx" />掌握分布
+            <!-- 卡通图标替代装饰性 BaseIcon -->
+            <image
+              class="feature-cartoon-icon"
+              src="./static/icons/chart-trend.png"
+              mode="aspectFit"
+              style="width: 48rpx; height: 48rpx; margin-right: 4rpx; vertical-align: middle"
+            />掌握分布
           </wd-button>
           <wd-button size="small" type="primary" plain @click="showLearningPath">
             <BaseIcon name="path" :size="24" style="margin-right: 4rpx" />学习路径
@@ -316,7 +322,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { onLoad, onUnload } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
@@ -330,703 +339,697 @@ import {
   buildGraphFromQuestions,
   analyzeKnowledgeConnections,
   generatePersonalizedPlan,
-  getStrongConnections,
-  MASTERY_LEVELS
+  getStrongConnections
 } from './knowledge-graph.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import { getSmartStudyPath, getKnowledgeMapData, getNextRecommendedTopic } from './knowledge-engine.js';
 
-export default {
-  components: { BaseIcon },
-  data() {
-    return {
-      detailModalVisible: false,
-      activeNodeData: null,
-      statusBarHeight: 44,
-      isDark: false,
-      isLoading: true,
-      isRefreshing: false,
-      activeNodeId: null,
-      selectedNode: null,
-      expandedChildren: [],
+// ---- 响应式状态 ----
+const detailModalVisible = ref(false);
+const activeNodeData = ref(null);
+const statusBarHeight = ref(44);
+const isDark = ref(false);
+const isLoading = ref(true);
+const isRefreshing = ref(false);
+const activeNodeId = ref(null);
+const selectedNode = ref(null);
+const expandedChildren = ref([]);
 
-      // 知识节点数据（从 knowledge-graph.js 加载）
-      knowledgeNodes: [],
+// 知识节点数据（从 knowledge-graph.js 加载）
+const knowledgeNodes = ref([]);
+// 图谱边数据
+const graphEdges = ref([]);
+// 薄弱知识点
+const weakNodes = ref([]);
+// 学习路径建议
+const learningPath = ref([]);
+// 掌握度分布
+const masteryDistribution = ref(null);
+// 知识关联分析
+const connectionAnalysis = ref(null);
+// 个性化学习计划
+const personalizedPlan = ref(null);
+// 显示模式：'graph' | 'list' | 'path' | 'plan'
+const viewMode = ref('graph');
+// 知识引擎增强数据
+const studyPath = ref([]);
+const recommendedTopic = ref(null);
+const knowledgeMapNodes = ref([]);
+const knowledgeMapEdges = ref([]);
 
-      // 图谱边数据
-      graphEdges: [],
+// ---- 非响应式实例变量 ----
+let _themeHandler = null;
+let _pendingTimers = [];
 
-      // 薄弱知识点
-      weakNodes: [],
+// ---- 计算属性 ----
+const totalNodes = computed(() => knowledgeNodes.value.length);
 
-      // 学习路径建议
-      learningPath: [],
+// F016: 修复属性名 — 映射后的节点使用 count 而非 value/totalQuestions
+const totalQuestions = computed(() =>
+  knowledgeNodes.value.reduce((sum, node) => sum + (node.count || node.value || 0), 0)
+);
 
-      // 掌握度分布
-      masteryDistribution: null,
+// F016: 移除未使用的 sortedByMastery 计算属性
+const _weakNodesList = computed(() =>
+  [...knowledgeNodes.value].sort((a, b) => (a.correctRate || a.mastery || 0) - (b.correctRate || b.mastery || 0))
+);
 
-      // 知识关联分析
-      connectionAnalysis: null,
+// ---- 工具函数 ----
 
-      // 个性化学习计划
-      personalizedPlan: null,
+/** 获取分类图标 */
+function getCategoryIcon(category) {
+  const iconMap = {
+    politics: 'book',
+    english: 'notebook',
+    math: 'formula',
+    professional: 'pen',
+    错题集: 'target',
+    热门考点: 'flame',
+    练习题: 'note',
+    核心概念: 'brain',
+    公式定理: 'formula',
+    阅读理解: 'books'
+  };
+  return iconMap[category] || 'books';
+}
 
-      // 显示模式：'graph' | 'list' | 'path' | 'plan'
-      viewMode: 'graph',
+/** 根据掌握度获取颜色 */
+function getMasteryColor(accuracy) {
+  if (accuracy >= 80) return '#10B981'; // 已掌握 - 绿色
+  if (accuracy >= 60) return '#3B82F6'; // 熟练 - 蓝色
+  if (accuracy >= 40) return '#F59E0B'; // 学习中 - 橙色
+  return '#EF4444'; // 薄弱 - 红色
+}
 
-      // 掌握度等级配置
-      MASTERY_LEVELS,
+/** 获取默认节点数据 */
+function getDefaultNodes(questionCount, mistakeCount) {
+  const studyRecord = storageService.get('study_record', {});
+  const overallAccuracy =
+    studyRecord.totalAnswered > 0 ? Math.round((studyRecord.correctCount / studyRecord.totalAnswered) * 100) : 0;
 
-      // 知识引擎增强数据
-      studyPath: [],
-      recommendedTopic: null,
-      knowledgeMapNodes: [],
-      knowledgeMapEdges: []
-    };
-  },
-
-  computed: {
-    totalNodes() {
-      return this.knowledgeNodes.length;
+  return [
+    {
+      id: 'default_1',
+      title: '错题集',
+      count: mistakeCount,
+      icon: 'target',
+      mastery: mistakeCount > 0 ? Math.max(10, 100 - mistakeCount * 2) : 100,
+      color: '#EF4444',
+      level: 1,
+      correctRate: 0,
+      reviewCount: studyRecord.mistakeReviewCount || 0,
+      category: '错题集'
     },
-
-    totalQuestions() {
-      // F016: 修复属性名 — 映射后的节点使用 count 而非 value/totalQuestions
-      return this.knowledgeNodes.reduce((sum, node) => sum + (node.count || node.value || 0), 0);
+    {
+      id: 'default_2',
+      title: '热门考点',
+      count: Math.floor(questionCount * 0.3),
+      icon: 'flame',
+      mastery: Math.max(0, overallAccuracy - 10),
+      color: '#F59E0B',
+      level: 1,
+      correctRate: Math.max(0, overallAccuracy - 10),
+      reviewCount: 0,
+      category: '热门考点'
     },
-
-    // F016: 移除未使用的 sortedByMastery 计算属性
-    weakNodesList() {
-      return [...this.knowledgeNodes].sort(
-        (a, b) => (a.correctRate || a.mastery || 0) - (b.correctRate || b.mastery || 0)
-      );
+    {
+      id: 'default_3',
+      title: '练习题',
+      count: questionCount,
+      icon: 'note',
+      mastery: overallAccuracy,
+      color: '#00F2FF',
+      level: 1,
+      correctRate: overallAccuracy,
+      reviewCount: studyRecord.totalAnswered || 0,
+      category: '练习题'
+    },
+    {
+      id: 'default_4',
+      title: '核心概念',
+      count: Math.floor(questionCount * 0.4),
+      icon: 'brain',
+      mastery: Math.min(95, overallAccuracy + 5),
+      color: '#10B981',
+      level: 1,
+      correctRate: Math.min(95, overallAccuracy + 5),
+      reviewCount: 0,
+      category: '核心概念'
+    },
+    {
+      id: 'default_5',
+      title: '公式定理',
+      count: Math.floor(questionCount * 0.2),
+      icon: 'formula',
+      mastery: Math.max(0, overallAccuracy - 5),
+      color: '#A855F7',
+      level: 1,
+      correctRate: Math.max(0, overallAccuracy - 5),
+      reviewCount: 0,
+      category: '公式定理'
+    },
+    {
+      id: 'default_6',
+      title: '阅读理解',
+      count: Math.floor(questionCount * 0.15),
+      icon: 'books',
+      mastery: Math.max(0, overallAccuracy - 15),
+      color: '#EC4899',
+      level: 1,
+      correctRate: Math.max(0, overallAccuracy - 15),
+      reviewCount: 0,
+      category: '阅读理解'
     }
-  },
+  ];
+}
 
-  onLoad() {
-    const savedTheme = storageService.get('theme_mode', 'light');
-    this.isDark = savedTheme === 'dark';
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
+// ---- 数据加载 ----
 
-    this.initData();
-    this.loadKnowledgeData();
-  },
+/** 初始化基础数据 */
+function initData() {
+  statusBarHeight.value = getStatusBarHeight();
+}
 
-  onUnload() {
-    uni.$off('themeUpdate', this._themeHandler);
-    // 清理所有待执行的定时器
-    if (this._pendingTimers) {
-      this._pendingTimers.forEach((t) => clearTimeout(t));
-      this._pendingTimers = [];
+/** 加载知识图谱全量数据 */
+async function loadKnowledgeData() {
+  isLoading.value = true;
+
+  try {
+    // 初始化知识图谱管理器
+    knowledgeGraphManager.init();
+
+    // 从本地存储获取题库数据
+    const questionBank = storageService.get('v30_bank', []);
+    const mistakesResult = await storageService.getMistakes(1, 999);
+    const mistakes = mistakesResult?.list || [];
+
+    // 如果有题目数据，构建知识图谱
+    if (questionBank.length > 0 || mistakes.length > 0) {
+      buildGraphFromQuestions(questionBank, mistakes);
     }
-  },
 
-  methods: {
-    async onPullRefresh() {
-      this.isRefreshing = true;
-      try {
-        await this.loadKnowledgeData();
-      } catch (_e) {
-        /* silent */
-      }
-      this.isRefreshing = false;
-    },
-    summonAITutor(node) {
-      if (!node) return;
-      toast.loading('AI 导师组卷中...');
-      if (!this._pendingTimers) this._pendingTimers = [];
-      const t = setTimeout(() => {
-        toast.hide();
-        uni.navigateTo({
-          url: `/pages/practice-sub/do-quiz?mode=ai_tutor&topic=${encodeURIComponent(node.title)}`
-        });
-        this.detailModalVisible = false;
-      }, 1500);
-      this._pendingTimers.push(t);
-    },
-    initData() {
-      this.statusBarHeight = getStatusBarHeight();
-    },
-
-    async loadKnowledgeData() {
-      this.isLoading = true;
-
-      try {
-        // 初始化知识图谱管理器
-        knowledgeGraphManager.init();
-
-        // 从本地存储获取题库数据
-        const questionBank = storageService.get('v30_bank', []);
-        const mistakesResult = await storageService.getMistakes(1, 999);
-        const mistakes = mistakesResult?.list || [];
-
-        // 如果有题目数据，构建知识图谱
-        if (questionBank.length > 0 || mistakes.length > 0) {
-          buildGraphFromQuestions(questionBank, mistakes);
-        }
-
-        // 获取图谱可视化数据
-        const graphData = getGraphData();
-
-        // 转换节点数据格式 [AUDIT R300] 防止 nodes 为 undefined 导致 TypeError
-        this.knowledgeNodes = (graphData.nodes || []).map((node, _index) => ({
-          id: node.id,
-          title: node.name,
-          count: node.value || 0,
-          icon: this.getCategoryIcon(node.category),
-          mastery: node.accuracy || 0,
-          color: node.itemStyle?.color || this.getMasteryColor(node.accuracy || 0),
-          level: 1,
-          correctRate: node.accuracy || 0,
-          reviewCount: 0,
-          masteryLevel: node.masteryLevel || 'weak',
-          category: node.category
-        }));
-
-        // 获取边数据 [AUDIT R300] 防止 edges 为 undefined
-        this.graphEdges = graphData.edges || [];
-
-        // 获取薄弱知识点
-        this.weakNodes = getWeakNodes(5);
-
-        // 获取掌握度分布
-        this.masteryDistribution = getMasteryDistribution();
-
-        // 获取学习路径建议
-        this.learningPath = getLearningPath();
-
-        // 分析知识关联
-        this.connectionAnalysis = analyzeKnowledgeConnections();
-
-        // 生成个性化学习计划
-        this.personalizedPlan = generatePersonalizedPlan({
-          duration: 30,
-          dailyTime: 2,
-          focusAreas: Object.keys(
-            this.knowledgeNodes.reduce((acc, node) => {
-              acc[node.category] = true;
-              return acc;
-            }, {})
-          )
-        });
-
-        // 如果没有数据，显示默认节点
-        if (this.knowledgeNodes.length === 0) {
-          this.knowledgeNodes = this.getDefaultNodes(questionBank.length, mistakes.length);
-        }
-
-        // 知识引擎增强：加载学习路径和推荐
-        try {
-          const allQuestions = storageService.get('v30_bank', []);
-          this.studyPath = getSmartStudyPath(allQuestions);
-          this.recommendedTopic = getNextRecommendedTopic(allQuestions);
-          const mapData = getKnowledgeMapData(allQuestions);
-          this.knowledgeMapNodes = mapData.nodes;
-          this.knowledgeMapEdges = mapData.edges;
-        } catch (e) {
-          logger.warn('[KnowledgeGraph] 知识引擎加载失败:', e);
-        }
-
-        logger.log('[KnowledgeGraph] 数据加载完成:', {
-          nodes: this.knowledgeNodes.length,
-          edges: this.graphEdges.length,
-          weakNodes: this.weakNodes.length,
-          distribution: this.masteryDistribution,
-          connections: this.connectionAnalysis
-        });
-      } catch (error) {
-        logger.error('[KnowledgeGraph] 加载数据失败:', error);
-        // 降级到默认数据
-        this.knowledgeNodes = this.getDefaultNodes(0, 0);
-        toast.info('数据加载失败');
-      } finally {
-        this.isLoading = false;
-      }
-    },
-
-    // 获取分类图标
-    getCategoryIcon(category) {
-      const iconMap = {
-        politics: 'book',
-        english: 'notebook',
-        math: 'formula',
-        professional: 'pen',
-        错题集: 'target',
-        热门考点: 'flame',
-        练习题: 'note',
-        核心概念: 'brain',
-        公式定理: 'formula',
-        阅读理解: 'books'
-      };
-      return iconMap[category] || 'books';
-    },
-
-    // 根据掌握度获取颜色
-    getMasteryColor(accuracy) {
-      if (accuracy >= 80) return '#10B981'; // 已掌握 - 绿色
-      if (accuracy >= 60) return '#3B82F6'; // 熟练 - 蓝色
-      if (accuracy >= 40) return '#F59E0B'; // 学习中 - 橙色
-      return '#EF4444'; // 薄弱 - 红色
-    },
-
-    // 获取默认节点数据
-    getDefaultNodes(totalQuestions, mistakeCount) {
-      const studyRecord = storageService.get('study_record', {});
-      const overallAccuracy =
-        studyRecord.totalAnswered > 0 ? Math.round((studyRecord.correctCount / studyRecord.totalAnswered) * 100) : 0;
-
-      return [
-        {
-          id: 'default_1',
-          title: '错题集',
-          count: mistakeCount,
-          icon: 'target',
-          mastery: mistakeCount > 0 ? Math.max(10, 100 - mistakeCount * 2) : 100,
-          color: '#EF4444',
-          level: 1,
-          correctRate: 0,
-          reviewCount: studyRecord.mistakeReviewCount || 0,
-          category: '错题集'
-        },
-        {
-          id: 'default_2',
-          title: '热门考点',
-          count: Math.floor(totalQuestions * 0.3),
-          icon: 'flame',
-          mastery: Math.max(0, overallAccuracy - 10),
-          color: '#F59E0B',
-          level: 1,
-          correctRate: Math.max(0, overallAccuracy - 10),
-          reviewCount: 0,
-          category: '热门考点'
-        },
-        {
-          id: 'default_3',
-          title: '练习题',
-          count: totalQuestions,
-          icon: 'note',
-          mastery: overallAccuracy,
-          color: '#00F2FF',
-          level: 1,
-          correctRate: overallAccuracy,
-          reviewCount: studyRecord.totalAnswered || 0,
-          category: '练习题'
-        },
-        {
-          id: 'default_4',
-          title: '核心概念',
-          count: Math.floor(totalQuestions * 0.4),
-          icon: 'brain',
-          mastery: Math.min(95, overallAccuracy + 5),
-          color: '#10B981',
-          level: 1,
-          correctRate: Math.min(95, overallAccuracy + 5),
-          reviewCount: 0,
-          category: '核心概念'
-        },
-        {
-          id: 'default_5',
-          title: '公式定理',
-          count: Math.floor(totalQuestions * 0.2),
-          icon: 'formula',
-          mastery: Math.max(0, overallAccuracy - 5),
-          color: '#A855F7',
-          level: 1,
-          correctRate: Math.max(0, overallAccuracy - 5),
-          reviewCount: 0,
-          category: '公式定理'
-        },
-        {
-          id: 'default_6',
-          title: '阅读理解',
-          count: Math.floor(totalQuestions * 0.15),
-          icon: 'books',
-          mastery: Math.max(0, overallAccuracy - 15),
-          color: '#EC4899',
-          level: 1,
-          correctRate: Math.max(0, overallAccuracy - 15),
-          reviewCount: 0,
-          category: '阅读理解'
-        }
-      ];
-    },
-
-    // 获取节点位置样式
-    getNodeStyle(_node, index) {
-      const total = this.knowledgeNodes.length;
-      const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-      const radius = 280; // 距离中心的半径
-
-      const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * radius;
-
-      const opacity = Math.max(0.4, (_node.mastery || 50) / 100);
-      const dropShadow = `drop-shadow(0 0 ${(_node.mastery || 50) / 10}px ${_node.color})`;
-      return {
-        opacity,
-        filter: dropShadow,
-        transform: `translate(${x}rpx, ${y}rpx)`,
-        animationDelay: `${index * 100}ms`
-      };
-    },
-
-    // 获取连接线样式
-    getConnectorStyle(_node, index) {
-      const total = this.knowledgeNodes.length;
-      const angle = (index / total) * 360 - 90;
-
-      return {
-        transform: `rotate(${angle}deg)`,
-        width: '200rpx'
-      };
-    },
-
-    // 获取子节点样式
-    getChildNodeStyle(child, index) {
-      const angle = (index / this.expandedChildren.length) * 2 * Math.PI - Math.PI / 2;
-      const radius = 150;
-
-      const x = Math.cos(angle) * radius;
-      const y = Math.sin(angle) * radius;
-
-      return {
-        transform: `translate(${x}rpx, ${y}rpx)`,
-        animationDelay: `${index * 50}ms`
-      };
-    },
-
-    handleBack() {
-      safeNavigateBack();
-    },
-
-    handleRefresh() {
-      toast.loading('刷新中...');
-      this.loadKnowledgeData()
-        .then(() => {
-          toast.success('刷新成功');
-        })
-        .catch((error) => {
-          logger.error('[KnowledgeGraph] 刷新失败:', error);
-          toast.info('刷新失败');
-        })
-        .finally(() => {
-          toast.hide();
-        });
-    },
-
-    handleCenterClick() {
-      // 震动反馈
-      try {
-        uni.vibrateShort();
-      } catch (_e) {
-        /* vibrateShort not supported on this device */
-      }
-
-      toast.info(`共 ${this.totalNodes} 个知识点`);
-    },
-
-    handleNodeClick(node) {
-      if (this.activeNodeId === node.id) {
-        this.activeNodeId = null;
-        this.activeNodeData = null;
-        this.detailModalVisible = false;
-      } else {
-        this.activeNodeId = node.id;
-        this.activeNodeData = node;
-        this.detailModalVisible = true;
-        this.refreshChart(node);
-      }
-    },
-
-    handleChildClick(child) {
-      logger.log('[KnowledgeGraph] 子节点点击:', child.title);
-      toast.info(child.title);
-    },
-
-    startPractice(node) {
-      logger.log('[KnowledgeGraph] 开始练习:', node.title);
-
-      // 定义路由映射：tabBar 页面和普通页面分开处理
-      const tabBarPages = [
-        '/pages/practice/index',
-        '/pages/profile/index',
-        '/pages/index/index',
-        '/pages/school/index'
-      ];
-
-      const routeMap = {
-        错题集: '/pages/mistake/index',
-        练习题: '/pages/practice/index',
-        热门考点: '/pages/practice-sub/import-data?source=hotTopics',
-        核心概念: '/pages/practice-sub/import-data?source=concepts',
-        公式定理: '/pages/practice/index',
-        阅读理解: '/pages/practice/index'
-      };
-
-      const url = routeMap[node.title] || '/pages/practice/index';
-      const isTabBarPage = tabBarPages.some((page) => url === page || url.startsWith(page + '?'));
-
-      // 错题集需要登录守卫
-      if (url === '/pages/mistake/index') {
-        requireLogin(
-          () => {
-            safeNavigateTo(url);
-          },
-          { message: '请先登录后查看错题集' }
-        );
-        return;
-      }
-
-      if (isTabBarPage) {
-        // tabBar 页面使用 switchTab
-        uni.switchTab({
-          url: url.split('?')[0], // switchTab 不支持参数
-          fail: () => uni.reLaunch({ url })
-        });
-      } else {
-        // 普通页面使用 navigateTo
-        safeNavigateTo(url);
-      }
-    },
-
-    viewDetails(node) {
-      logger.log('[KnowledgeGraph] 查看详情:', node.title);
-
-      // 获取节点详情（包含关联节点）
-      const detail = knowledgeGraphManager.getNodeDetail(node.id);
-
-      const content = detail
-        ? `题目数量：${detail.totalQuestions || node.count}\n掌握度：${detail.accuracy || node.mastery}%\n正确率：${node.correctRate || 0}%\n复习次数：${node.reviewCount || 0}\n关联知识点：${detail.relatedCount || 0}个`
-        : `题目数量：${node.count}\n掌握度：${node.mastery}%\n正确率：${node.correctRate || 0}%\n复习次数：${node.reviewCount || 0}`;
-
-      uni.showModal({
-        title: node.title,
-        content,
-        showCancel: false,
-        confirmText: '知道了'
-      });
-    },
-
-    // 切换视图模式
-    switchViewMode(mode) {
-      this.viewMode = mode;
-      try {
-        uni.vibrateShort();
-      } catch (_e) {
-        /* vibrateShort not supported on this device */
-      }
-    },
-
-    // 显示学习路径
-    showLearningPath() {
-      if (this.learningPath.length === 0) {
-        toast.info('暂无学习建议');
-        return;
-      }
-
-      const pathText = this.learningPath
-        .map((item, index) => `${index + 1}. ${item.node.name} (${item.estimatedTime})`)
-        .join('\n');
-
-      uni.showModal({
-        title: '推荐学习路径',
-        content: pathText,
-        showCancel: false,
-        confirmText: '开始学习'
-      });
-    },
-
-    // 显示掌握度分布
-    showMasteryStats() {
-      if (!this.masteryDistribution) {
-        toast.info('暂无统计数据');
-        return;
-      }
-
-      const { percentages } = this.masteryDistribution;
-      const content = `已掌握 (≥80%): ${percentages.master}%\n熟练 (60-79%): ${percentages.proficient}%\n学习中 (40-59%): ${percentages.learning}%\n薄弱 (<40%): ${percentages.weak}%`;
-
-      uni.showModal({
-        title: '知识掌握度分布',
-        content,
-        showCancel: false,
-        confirmText: '知道了'
-      });
-    },
-
-    // 显示薄弱知识点
-    showWeakNodes() {
-      if (this.weakNodes.length === 0) {
-        toast.info('暂无薄弱知识点');
-        return;
-      }
-
-      const weakText = this.weakNodes
-        .map(
-          (node, index) =>
-            `${index + 1}. ${node.name} (${node.accuracy}%)\n   ${node.improvementSuggestion || '建议多做练习'}`
-        )
-        .join('\n\n');
-
-      uni.showModal({
-        title: '薄弱知识点',
-        content: weakText,
-        confirmText: '生成学习计划',
-        cancelText: '开始练习',
-        success: (res) => {
-          if (res.confirm) {
-            // 生成学习计划
-            this.generateLearningPlan();
-          } else if (res.cancel && this.weakNodes.length > 0) {
-            // 跳转到练习页面
-            uni.switchTab({
-              url: '/pages/practice/index',
-              fail: () => uni.reLaunch({ url: '/pages/practice/index' })
-            });
-          }
-        }
-      });
-    },
-
-    // 显示知识关联分析
-    showConnectionAnalysis() {
-      if (!this.connectionAnalysis) {
-        toast.info('暂无关联数据');
-        return;
-      }
-
-      const { totalEdges, edgeTypes, strongConnections, isolatedNodes } = this.connectionAnalysis;
-      const edgeTypesText = Object.entries(edgeTypes)
-        .map(([type, count]) => `${type}: ${count}个`)
-        .join('\n');
-
-      const content = `总关联数：${totalEdges}个\n\n关联类型：\n${edgeTypesText}\n\n强关联：${strongConnections.length}个\n孤立知识点：${isolatedNodes.length}个`;
-
-      uni.showModal({
-        title: '知识关联分析',
-        content,
-        showCancel: false,
-        confirmText: '知道了'
-      });
-    },
-
-    // 显示个性化学习计划
-    showPersonalizedPlan() {
-      if (!this.personalizedPlan) {
-        toast.info('暂无学习计划');
-        return;
-      }
-
-      const { title, duration, dailyTime, milestones } = this.personalizedPlan;
-      const milestonesText = milestones
-        .map(
-          (milestone, index) => `${index + 1}. ${milestone.title} (${milestone.days}天)\n   ${milestone.description}`
-        )
-        .join('\n\n');
-
-      const content = `计划时长：${duration}天\n每天学习：${dailyTime}小时\n\n里程碑：\n${milestonesText}`;
-
-      uni.showModal({
-        title,
-        content,
-        confirmText: '查看详情',
-        cancelText: '稍后再说',
-        success: (res) => {
-          if (res.confirm) {
-            this.switchViewMode('plan');
-          }
-        }
-      });
-    },
-
-    // 显示节点的强关联
-    showNodeConnections(node) {
-      const connections = getStrongConnections(node.id, 3);
-      if (connections.length === 0) {
-        toast.info('暂无关联知识点');
-        return;
-      }
-
-      const connectionsText = connections
-        .map((conn, index) => `${index + 1}. ${conn.node.name} (强度: ${conn.strength})\n   关系: ${conn.relationship}`)
-        .join('\n\n');
-
-      uni.showModal({
-        title: `${node.title} 的关联知识点`,
-        content: connectionsText,
-        showCancel: false,
-        confirmText: '知道了'
-      });
-    },
-
-    // 加载节点的子节点（关联知识点）
-    loadExpandedChildren(node) {
-      const connections = getStrongConnections(node.id, 5);
-      if (connections.length > 0) {
-        this.expandedChildren = connections.map((conn, idx) => ({
-          id: `child_${node.id}_${idx}`,
-          title: conn.node.name,
-          icon: this.getCategoryIcon(conn.node.category),
-          mastery: conn.node.accuracy || 0,
-          parentId: node.id
-        }));
-      } else {
-        // 没有关联数据时，根据同类别节点生成子节点
-        const sameCategory = this.knowledgeNodes.filter((n) => n.category === node.category && n.id !== node.id);
-        this.expandedChildren = sameCategory.slice(0, 4).map((n, idx) => ({
-          id: `child_${node.id}_${idx}`,
-          title: n.title,
-          icon: n.icon,
-          mastery: n.mastery,
-          parentId: node.id
-        }));
-      }
-    },
-
-    // 生成学习计划
-    generateLearningPlan() {
-      toast.loading('生成学习计划...');
-      if (!this._pendingTimers) this._pendingTimers = [];
-      const t = setTimeout(() => {
-        try {
-          const plan = generatePersonalizedPlan({
-            duration: 30,
-            dailyTime: 2,
-            focusAreas: this.weakNodes.map((node) => node.name),
-            learningStyle: 'balanced'
-          });
-
-          this.personalizedPlan = plan;
-          toast.hide();
-          toast.success('学习计划生成成功');
-          this.showPersonalizedPlan();
-        } catch (error) {
-          toast.hide();
-          logger.error('[KnowledgeGraph] 生成学习计划失败:', error);
-          toast.info('生成失败，请重试');
-        }
-      }, 1000);
-      this._pendingTimers.push(t);
+    // 获取图谱可视化数据
+    const graphData = getGraphData();
+
+    // 转换节点数据格式 [AUDIT R300] 防止 nodes 为 undefined 导致 TypeError
+    knowledgeNodes.value = (graphData.nodes || []).map((node, _index) => ({
+      id: node.id,
+      title: node.name,
+      count: node.value || 0,
+      icon: getCategoryIcon(node.category),
+      mastery: node.accuracy || 0,
+      color: node.itemStyle?.color || getMasteryColor(node.accuracy || 0),
+      level: 1,
+      correctRate: node.accuracy || 0,
+      reviewCount: 0,
+      masteryLevel: node.masteryLevel || 'weak',
+      category: node.category
+    }));
+
+    // 获取边数据 [AUDIT R300] 防止 edges 为 undefined
+    graphEdges.value = graphData.edges || [];
+
+    // 获取薄弱知识点
+    weakNodes.value = getWeakNodes(5);
+
+    // 获取掌握度分布
+    masteryDistribution.value = getMasteryDistribution();
+
+    // 获取学习路径建议
+    learningPath.value = getLearningPath();
+
+    // 分析知识关联
+    connectionAnalysis.value = analyzeKnowledgeConnections();
+
+    // 生成个性化学习计划
+    personalizedPlan.value = generatePersonalizedPlan({
+      duration: 30,
+      dailyTime: 2,
+      focusAreas: Object.keys(
+        knowledgeNodes.value.reduce((acc, node) => {
+          acc[node.category] = true;
+          return acc;
+        }, {})
+      )
+    });
+
+    // 如果没有数据，显示默认节点
+    if (knowledgeNodes.value.length === 0) {
+      knowledgeNodes.value = getDefaultNodes(questionBank.length, mistakes.length);
     }
+
+    // 知识引擎增强：加载学习路径和推荐
+    try {
+      const allQuestions = storageService.get('v30_bank', []);
+      studyPath.value = getSmartStudyPath(allQuestions);
+      recommendedTopic.value = getNextRecommendedTopic(allQuestions);
+      const mapData = getKnowledgeMapData(allQuestions);
+      knowledgeMapNodes.value = mapData.nodes;
+      knowledgeMapEdges.value = mapData.edges;
+    } catch (e) {
+      logger.warn('[KnowledgeGraph] 知识引擎加载失败:', e);
+    }
+
+    logger.log('[KnowledgeGraph] 数据加载完成:', {
+      nodes: knowledgeNodes.value.length,
+      edges: graphEdges.value.length,
+      weakNodes: weakNodes.value.length,
+      distribution: masteryDistribution.value,
+      connections: connectionAnalysis.value
+    });
+  } catch (error) {
+    logger.error('[KnowledgeGraph] 加载数据失败:', error);
+    // 降级到默认数据
+    knowledgeNodes.value = getDefaultNodes(0, 0);
+    toast.info('数据加载失败');
+  } finally {
+    isLoading.value = false;
   }
-};
+}
+
+// ---- 样式计算 ----
+
+/** 获取节点位置样式 */
+function getNodeStyle(_node, index) {
+  const total = knowledgeNodes.value.length;
+  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
+  // R411: 缩小半径避免右侧节点被屏幕边缘裁切（390px 屏幕宽度下 280rpx 过大）
+  const radius = 220;
+
+  const x = Math.cos(angle) * radius;
+  const y = Math.sin(angle) * radius;
+
+  const opacity = Math.max(0.4, (_node.mastery || 50) / 100);
+  const dropShadow = `drop-shadow(0 0 ${(_node.mastery || 50) / 10}px ${_node.color})`;
+  return {
+    opacity,
+    filter: dropShadow,
+    transform: `translate(${x}rpx, ${y}rpx)`,
+    animationDelay: `${index * 100}ms`
+  };
+}
+
+/** 获取连接线样式 */
+function getConnectorStyle(_node, index) {
+  const total = knowledgeNodes.value.length;
+  const angle = (index / total) * 360 - 90;
+
+  return {
+    transform: `rotate(${angle}deg)`,
+    width: '200rpx'
+  };
+}
+
+/** 获取子节点样式 */
+function getChildNodeStyle(_child, index) {
+  const angle = (index / expandedChildren.value.length) * 2 * Math.PI - Math.PI / 2;
+  const radius = 150;
+
+  const x = Math.cos(angle) * radius;
+  const y = Math.sin(angle) * radius;
+
+  return {
+    transform: `translate(${x}rpx, ${y}rpx)`,
+    animationDelay: `${index * 50}ms`
+  };
+}
+
+// ---- 交互处理 ----
+
+/** 下拉刷新 */
+async function onPullRefresh() {
+  isRefreshing.value = true;
+  try {
+    await loadKnowledgeData();
+  } catch (_e) {
+    /* 静默处理 */
+  }
+  isRefreshing.value = false;
+}
+
+/** 召唤 AI 导师 */
+function summonAITutor(node) {
+  if (!node) return;
+  toast.loading('AI 导师组卷中...');
+  const t = setTimeout(() => {
+    toast.hide();
+    uni.navigateTo({
+      url: `/pages/practice-sub/do-quiz?mode=ai_tutor&topic=${encodeURIComponent(node.title)}`
+    });
+    detailModalVisible.value = false;
+  }, 1500);
+  _pendingTimers.push(t);
+}
+
+/** 返回上一页 */
+function handleBack() {
+  safeNavigateBack();
+}
+
+/** 手动刷新 */
+function handleRefresh() {
+  toast.loading('刷新中...');
+  loadKnowledgeData()
+    .then(() => {
+      toast.success('刷新成功');
+    })
+    .catch((error) => {
+      logger.error('[KnowledgeGraph] 刷新失败:', error);
+      toast.info('刷新失败');
+    })
+    .finally(() => {
+      toast.hide();
+    });
+}
+
+/** 点击中心节点 */
+function handleCenterClick() {
+  // 震动反馈
+  try {
+    uni.vibrateShort();
+  } catch (_e) {
+    /* 设备不支持震动 */
+  }
+  toast.info(`共 ${totalNodes.value} 个知识点`);
+}
+
+/** 加载节点的子节点（关联知识点） */
+function loadExpandedChildren(node) {
+  const connections = getStrongConnections(node.id, 5);
+  if (connections.length > 0) {
+    expandedChildren.value = connections.map((conn, idx) => ({
+      id: `child_${node.id}_${idx}`,
+      title: conn.node.name,
+      icon: getCategoryIcon(conn.node.category),
+      mastery: conn.node.accuracy || 0,
+      parentId: node.id
+    }));
+  } else {
+    // 没有关联数据时，根据同类别节点生成子节点
+    const sameCategory = knowledgeNodes.value.filter((n) => n.category === node.category && n.id !== node.id);
+    expandedChildren.value = sameCategory.slice(0, 4).map((n, idx) => ({
+      id: `child_${node.id}_${idx}`,
+      title: n.title,
+      icon: n.icon,
+      mastery: n.mastery,
+      parentId: node.id
+    }));
+  }
+}
+
+/** 点击知识节点 */
+function handleNodeClick(node) {
+  if (activeNodeId.value === node.id) {
+    activeNodeId.value = null;
+    activeNodeData.value = null;
+    detailModalVisible.value = false;
+  } else {
+    activeNodeId.value = node.id;
+    activeNodeData.value = node;
+    detailModalVisible.value = true;
+    loadExpandedChildren(node);
+  }
+}
+
+/** 点击子节点 */
+function handleChildClick(child) {
+  logger.log('[KnowledgeGraph] 子节点点击:', child.title);
+  toast.info(child.title);
+}
+
+/** 开始练习 */
+function startPractice(node) {
+  logger.log('[KnowledgeGraph] 开始练习:', node.title);
+
+  // 定义路由映射：tabBar 页面和普通页面分开处理
+  const tabBarPages = ['/pages/practice/index', '/pages/profile/index', '/pages/index/index', '/pages/school/index'];
+
+  const routeMap = {
+    错题集: '/pages/mistake/index',
+    练习题: '/pages/practice/index',
+    热门考点: '/pages/practice-sub/import-data?source=hotTopics',
+    核心概念: '/pages/practice-sub/import-data?source=concepts',
+    公式定理: '/pages/practice/index',
+    阅读理解: '/pages/practice/index'
+  };
+
+  const url = routeMap[node.title] || '/pages/practice/index';
+  const isTabBarPage = tabBarPages.some((page) => url === page || url.startsWith(page + '?'));
+
+  // 错题集需要登录守卫
+  if (url === '/pages/mistake/index') {
+    requireLogin(
+      () => {
+        safeNavigateTo(url);
+      },
+      { message: '请先登录后查看错题集' }
+    );
+    return;
+  }
+
+  if (isTabBarPage) {
+    // tabBar 页面使用 switchTab
+    uni.switchTab({
+      url: url.split('?')[0], // switchTab 不支持参数
+      fail: () => uni.reLaunch({ url })
+    });
+  } else {
+    // 普通页面使用 navigateTo
+    safeNavigateTo(url);
+  }
+}
+
+/** 普通练习（模板中 goPractice 的实现） */
+function goPractice(node) {
+  if (!node) return;
+  startPractice(node);
+}
+
+/** 查看节点详情 */
+function viewDetails(node) {
+  logger.log('[KnowledgeGraph] 查看详情:', node.title);
+
+  // 获取节点详情（包含关联节点）
+  const detail = knowledgeGraphManager.getNodeDetail(node.id);
+
+  const content = detail
+    ? `题目数量：${detail.totalQuestions || node.count}\n掌握度：${detail.accuracy || node.mastery}%\n正确率：${node.correctRate || 0}%\n复习次数：${node.reviewCount || 0}\n关联知识点：${detail.relatedCount || 0}个`
+    : `题目数量：${node.count}\n掌握度：${node.mastery}%\n正确率：${node.correctRate || 0}%\n复习次数：${node.reviewCount || 0}`;
+
+  modal.show({
+    title: node.title,
+    content,
+    showCancel: false,
+    confirmText: '知道了'
+  });
+}
+
+/** 切换视图模式 */
+function switchViewMode(mode) {
+  viewMode.value = mode;
+  try {
+    uni.vibrateShort();
+  } catch (_e) {
+    /* 设备不支持震动 */
+  }
+}
+
+/** 显示学习路径 */
+function showLearningPath() {
+  if (learningPath.value.length === 0) {
+    toast.info('暂无学习建议');
+    return;
+  }
+
+  const pathText = learningPath.value
+    .map((item, index) => `${index + 1}. ${item.node.name} (${item.estimatedTime})`)
+    .join('\n');
+
+  modal.show({
+    title: '推荐学习路径',
+    content: pathText,
+    showCancel: false,
+    confirmText: '开始学习'
+  });
+}
+
+/** 显示掌握度分布 */
+function showMasteryStats() {
+  if (!masteryDistribution.value) {
+    toast.info('暂无统计数据');
+    return;
+  }
+
+  const { percentages } = masteryDistribution.value;
+  const content = `已掌握 (≥80%): ${percentages.master}%\n熟练 (60-79%): ${percentages.proficient}%\n学习中 (40-59%): ${percentages.learning}%\n薄弱 (<40%): ${percentages.weak}%`;
+
+  modal.show({
+    title: '知识掌握度分布',
+    content,
+    showCancel: false,
+    confirmText: '知道了'
+  });
+}
+
+/** 显示薄弱知识点 */
+function showWeakNodes() {
+  if (weakNodes.value.length === 0) {
+    toast.info('暂无薄弱知识点');
+    return;
+  }
+
+  const weakText = weakNodes.value
+    .map(
+      (node, index) =>
+        `${index + 1}. ${node.name} (${node.accuracy}%)\n   ${node.improvementSuggestion || '建议多做练习'}`
+    )
+    .join('\n\n');
+
+  modal.show({
+    title: '薄弱知识点',
+    content: weakText,
+    confirmText: '生成学习计划',
+    cancelText: '开始练习',
+    success: (res) => {
+      if (res.confirm) {
+        // 生成学习计划
+        generateLearningPlan();
+      } else if (res.cancel && weakNodes.value.length > 0) {
+        // 跳转到练习页面
+        uni.switchTab({
+          url: '/pages/practice/index',
+          fail: () => uni.reLaunch({ url: '/pages/practice/index' })
+        });
+      }
+    }
+  });
+}
+
+/** 显示知识关联分析 */
+function showConnectionAnalysis() {
+  if (!connectionAnalysis.value) {
+    toast.info('暂无关联数据');
+    return;
+  }
+
+  const { totalEdges, edgeTypes, strongConnections, isolatedNodes } = connectionAnalysis.value;
+  const edgeTypesText = Object.entries(edgeTypes)
+    .map(([type, count]) => `${type}: ${count}个`)
+    .join('\n');
+
+  const content = `总关联数：${totalEdges}个\n\n关联类型：\n${edgeTypesText}\n\n强关联：${strongConnections.length}个\n孤立知识点：${isolatedNodes.length}个`;
+
+  modal.show({
+    title: '知识关联分析',
+    content,
+    showCancel: false,
+    confirmText: '知道了'
+  });
+}
+
+/** 显示个性化学习计划 */
+function showPersonalizedPlan() {
+  if (!personalizedPlan.value) {
+    toast.info('暂无学习计划');
+    return;
+  }
+
+  const { title, duration, dailyTime, milestones } = personalizedPlan.value;
+  const milestonesText = milestones
+    .map((milestone, index) => `${index + 1}. ${milestone.title} (${milestone.days}天)\n   ${milestone.description}`)
+    .join('\n\n');
+
+  const content = `计划时长：${duration}天\n每天学习：${dailyTime}小时\n\n里程碑：\n${milestonesText}`;
+
+  modal.show({
+    title,
+    content,
+    confirmText: '查看详情',
+    cancelText: '稍后再说',
+    success: (res) => {
+      if (res.confirm) {
+        switchViewMode('plan');
+      }
+    }
+  });
+}
+
+/** 显示节点的强关联 */
+function showNodeConnections(node) {
+  const connections = getStrongConnections(node.id, 3);
+  if (connections.length === 0) {
+    toast.info('暂无关联知识点');
+    return;
+  }
+
+  const connectionsText = connections
+    .map((conn, index) => `${index + 1}. ${conn.node.name} (强度: ${conn.strength})\n   关系: ${conn.relationship}`)
+    .join('\n\n');
+
+  modal.show({
+    title: `${node.title} 的关联知识点`,
+    content: connectionsText,
+    showCancel: false,
+    confirmText: '知道了'
+  });
+}
+
+/** 生成学习计划 */
+function generateLearningPlan() {
+  toast.loading('生成学习计划...');
+  const t = setTimeout(() => {
+    try {
+      const plan = generatePersonalizedPlan({
+        duration: 30,
+        dailyTime: 2,
+        focusAreas: weakNodes.value.map((node) => node.name),
+        learningStyle: 'balanced'
+      });
+
+      personalizedPlan.value = plan;
+      toast.hide();
+      toast.success('学习计划生成成功');
+      showPersonalizedPlan();
+    } catch (error) {
+      toast.hide();
+      logger.error('[KnowledgeGraph] 生成学习计划失败:', error);
+      toast.info('生成失败，请重试');
+    }
+  }, 1000);
+  _pendingTimers.push(t);
+}
+
+// ---- 生命周期 ----
+
+onLoad(() => {
+  const savedTheme = storageService.get('theme_mode', 'light');
+  isDark.value = savedTheme === 'dark';
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+
+  initData();
+  loadKnowledgeData();
+});
+
+onUnload(() => {
+  uni.$off('themeUpdate', _themeHandler);
+  // 清理所有待执行的定时器
+  if (_pendingTimers.length > 0) {
+    _pendingTimers.forEach((t) => clearTimeout(t));
+    _pendingTimers = [];
+  }
+});
 </script>
 
 <style lang="scss" scoped>
 .knowledge-graph-page {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 54%,
-    var(--page-gradient-bottom) 100%
-  );
+  background: var(--background);
   position: relative;
   overflow: hidden;
 }
@@ -1038,9 +1041,9 @@ export default {
   bottom: 0;
   left: 0;
   background:
-    radial-gradient(circle at 16% 12%, rgba(107, 208, 150, 0.28) 0%, transparent 30%),
+    radial-gradient(circle at 16% 12%, rgba(206, 130, 255, 0.18) 0%, transparent 30%),
     radial-gradient(circle at 84% 18%, rgba(255, 255, 255, 0.34) 0%, transparent 24%),
-    radial-gradient(circle at 50% 82%, rgba(72, 190, 128, 0.18) 0%, transparent 28%);
+    radial-gradient(circle at 50% 82%, rgba(206, 130, 255, 0.1) 0%, transparent 28%);
   filter: blur(34px);
   pointer-events: none;
 }
@@ -1051,13 +1054,9 @@ export default {
   left: 0;
   right: 0;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 38%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .nav-content {
@@ -1076,9 +1075,9 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   flex-shrink: 0;
 }
 
@@ -1126,14 +1125,14 @@ export default {
 
 .nav-title {
   font-size: 32rpx;
-  font-weight: 650;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .nav-subtitle {
   margin-top: 4rpx;
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .page-scroll {
@@ -1152,11 +1151,9 @@ export default {
 .path-card,
 .loading-card,
 .floating-panel {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .hero-card {
@@ -1177,15 +1174,15 @@ export default {
 .hero-title {
   font-size: 42rpx;
   line-height: 1.22;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .hero-subtitle {
   margin-top: 14rpx;
   font-size: 26rpx;
   line-height: 1.6;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .hero-stats {
@@ -1198,9 +1195,9 @@ export default {
 .hero-stat,
 .quick-action,
 .panel-stat {
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .hero-stat {
@@ -1211,14 +1208,15 @@ export default {
 
 .hero-stat-value {
   font-size: 34rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--purple-light, #ce82ff);
 }
 
 .hero-stat-label {
   margin-top: 8rpx;
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 .action-strip {
@@ -1268,22 +1266,22 @@ export default {
   width: 76rpx;
   height: 76rpx;
   border-radius: 50%;
-  border: 4rpx solid rgba(52, 199, 89, 0.16);
-  border-top-color: rgba(52, 199, 89, 0.88);
+  border: 4rpx solid color-mix(in srgb, var(--success) 16%, transparent);
+  border-top-color: color-mix(in srgb, var(--success) 88%, transparent);
   animation: spin 1s linear infinite;
 }
 
 .loading-title {
   margin-top: 24rpx;
   font-size: 30rpx;
-  font-weight: 650;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .loading-text {
   margin-top: 10rpx;
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .section-header {
@@ -1296,8 +1294,8 @@ export default {
 
 .section-title {
   font-size: 30rpx;
-  font-weight: 650;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .graph-scroller {
@@ -1342,7 +1340,7 @@ export default {
   left: 100rpx;
   width: 220rpx;
   height: 220rpx;
-  background: rgba(52, 199, 89, 0.18);
+  background: color-mix(in srgb, var(--success) 18%, transparent);
 }
 
 .graph-glow-b {
@@ -1350,7 +1348,7 @@ export default {
   bottom: 180rpx;
   width: 260rpx;
   height: 260rpx;
-  background: rgba(10, 132, 255, 0.12);
+  background: color-mix(in srgb, var(--info) 12%, transparent);
 }
 
 .center-node {
@@ -1364,11 +1362,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 44%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(240, 250, 243, 0.5) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  box-shadow: 0 18rpx 48rpx rgba(32, 76, 44, 0.16);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(206, 130, 255, 0.25);
+  box-shadow: 0 18rpx 48rpx rgba(206, 130, 255, 0.16);
   z-index: 10;
 }
 
@@ -1397,8 +1393,8 @@ export default {
 
 .center-title {
   font-size: 28rpx;
-  font-weight: 680;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .center-subtitle {
@@ -1406,7 +1402,7 @@ export default {
   text-align: center;
   font-size: 22rpx;
   line-height: 1.4;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .knowledge-node,
@@ -1427,7 +1423,11 @@ export default {
   top: 50%;
   right: 100%;
   height: 2rpx;
-  background: linear-gradient(90deg, rgba(52, 199, 89, 0.06) 0%, rgba(52, 199, 89, 0.55) 100%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--success) 6%, transparent) 0%,
+    color-mix(in srgb, var(--success) 55%, transparent) 100%
+  );
   transform-origin: right center;
 }
 
@@ -1435,12 +1435,10 @@ export default {
   width: 176rpx;
   min-height: 176rpx;
   padding: 18rpx 14rpx;
-  border-radius: 38rpx;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, transparent 44%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(244, 248, 245, 0.52) 100%);
+  border-radius: 28rpx;
+  background: var(--bg-card);
   border: 2rpx solid;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1475,10 +1473,10 @@ export default {
 .node-title {
   margin-top: 8rpx;
   font-size: 22rpx;
-  font-weight: 620;
+  font-weight: 700;
   line-height: 1.3;
   text-align: center;
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .node-progress {
@@ -1505,7 +1503,7 @@ export default {
 .progress-text,
 .node-count {
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .node-count {
@@ -1526,10 +1524,10 @@ export default {
 .child-body {
   width: 116rpx;
   height: 116rpx;
-  border-radius: 30rpx;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.44);
-  box-shadow: var(--apple-shadow-surface);
+  border-radius: 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1545,13 +1543,14 @@ export default {
   margin-top: 6rpx;
   font-size: 22rpx;
   line-height: 1.2;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .child-mastery {
   margin-top: 4rpx;
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .info-grid {
@@ -1605,7 +1604,7 @@ export default {
 .weak-next,
 .path-time {
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .weak-summary {
@@ -1617,8 +1616,8 @@ export default {
 .weak-count {
   font-size: 56rpx;
   line-height: 1;
-  font-weight: 720;
-  color: var(--danger);
+  font-weight: 800;
+  color: var(--purple-light, #ce82ff);
 }
 
 .weak-next {
@@ -1629,9 +1628,9 @@ export default {
 .path-item {
   /* gap: 16rpx; -- replaced for Android WebView compat */
   padding: 18rpx 18rpx;
-  border-radius: 22rpx;
-  background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 24rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .path-index {
@@ -1647,8 +1646,8 @@ export default {
 
 .path-name {
   font-size: 26rpx;
-  font-weight: 620;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .path-time {
@@ -1695,14 +1694,14 @@ export default {
 
 .panel-title {
   font-size: 30rpx;
-  font-weight: 680;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .panel-subtitle {
   margin-top: 4rpx;
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .panel-close {
@@ -1712,8 +1711,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.56);
-  color: var(--text-main);
+  background: var(--background);
+  color: var(--text-primary);
   font-size: 36rpx;
 }
 
@@ -1732,14 +1731,15 @@ export default {
 
 .panel-stat-value {
   font-size: 32rpx;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--purple-light, #ce82ff);
 }
 
 .panel-stat-label {
   margin-top: 8rpx;
   font-size: 22rpx;
-  color: var(--text-sub);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 .panel-actions {
@@ -1757,18 +1757,18 @@ export default {
   text-align: center;
   padding: 18rpx 10rpx;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  color: var(--text-main);
+  background: var(--background);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
   font-size: 24rpx;
-  font-weight: 620;
+  font-weight: 700;
 }
 
 .panel-btn.primary {
-  background: var(--cta-primary-bg);
-  border-color: var(--cta-primary-border);
-  color: var(--cta-primary-text);
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--purple-light, #ce82ff);
+  border-color: #b065e6;
+  color: var(--text-inverse);
+  box-shadow: 0 8rpx 0 #a458d9;
 }
 
 .bottom-spacer {
@@ -2014,7 +2014,7 @@ export default {
   border-radius: 8rpx;
 }
 .badge-mastered {
-  background: rgba(52, 199, 89, 0.15);
+  background: color-mix(in srgb, var(--success) 15%, transparent);
   color: var(--success);
 }
 .badge-ready {

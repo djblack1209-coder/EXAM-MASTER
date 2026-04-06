@@ -94,7 +94,8 @@
 
         <!-- 空状态 -->
         <view v-if="!planData.summary && dailyPlans.length === 0" class="empty-state">
-          <BaseIcon name="note" :size="96" />
+          <!-- 卡通图标替代装饰性 BaseIcon -->
+          <image class="hero-cartoon-icon" src="./static/icons/notebook-pen.png" mode="aspectFit" />
           <text class="empty-title">暂无自适应计划</text>
           <text class="empty-sub">请先设置考试日期和每日学习时长</text>
           <WdButton type="primary" custom-style="margin-top: 40rpx; border-radius: 999rpx;" @click="generatePlan">
@@ -210,14 +211,14 @@ onMounted(() => {
 <style scoped>
 .adaptive-container {
   min-height: 100vh;
-  background: var(--bg-page, linear-gradient(180deg, #f5f5f7 0%, #eeeef0 50%, #f5f5f7 100%));
+  background: var(--background);
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
   position: relative;
   --red: var(--danger, #ff453a);
   --orange: var(--warning, #ff9f0a);
   --blue: var(--em-info, #32ade6);
-  --green: var(--success, #34c759);
+  --green: #58cc02;
 }
 .adaptive-container.dark-mode {
   background: linear-gradient(180deg, var(--background) 0%, var(--page-gradient-mid) 50%, var(--background) 100%);
@@ -229,7 +230,7 @@ onMounted(() => {
   width: 100%;
   height: 620rpx;
   background:
-    radial-gradient(circle at 18% 24%, rgba(52, 199, 89, 0.22) 0%, transparent 40%),
+    radial-gradient(circle at 18% 24%, color-mix(in srgb, var(--success) 22%, transparent) 0%, transparent 40%),
     radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.32) 0%, transparent 28%);
   filter: blur(70px);
   opacity: 0.9;
@@ -267,8 +268,8 @@ onMounted(() => {
   flex: 1;
   text-align: center;
   font-size: 34rpx;
-  font-weight: 600;
-  color: var(--text-primary, #1c1c1e);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .nav-right {
   width: 48rpx;
@@ -305,11 +306,12 @@ onMounted(() => {
 
 /* 玻璃卡片 */
 .apple-glass-card {
-  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.72));
-  border-radius: 32rpx;
+  background: var(--bg-card);
+  border-radius: 24rpx;
   padding: 32rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   -webkit-backdrop-filter: blur(20rpx);
   backdrop-filter: blur(20rpx);
 }
@@ -324,13 +326,13 @@ onMounted(() => {
 }
 .hero-title {
   font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-primary, #1c1c1e);
+  font-weight: 800;
+  color: var(--text-primary);
   display: block;
 }
 .hero-sub {
   font-size: 26rpx;
-  color: var(--text-secondary, #8e8e93);
+  color: var(--text-secondary);
   display: block;
   margin-top: 12rpx;
   line-height: 1.5;
@@ -349,10 +351,10 @@ onMounted(() => {
   background: rgba(50, 173, 230, 0.12);
 }
 .phase-intensive {
-  background: rgba(255, 159, 10, 0.12);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
 }
 .phase-sprint {
-  background: rgba(255, 69, 58, 0.12);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 .phase-text {
   font-size: 22rpx;
@@ -374,7 +376,7 @@ onMounted(() => {
 }
 .section-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
   margin-bottom: 20rpx;
@@ -432,7 +434,7 @@ onMounted(() => {
 }
 .timeline-name {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .phase-type-badge {
@@ -482,7 +484,7 @@ onMounted(() => {
 }
 .day-date {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
   margin-bottom: 20rpx;
@@ -503,7 +505,7 @@ onMounted(() => {
 }
 .task-kp {
   font-size: 26rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
   flex: 1;
 }
@@ -512,16 +514,16 @@ onMounted(() => {
   border-radius: 12rpx;
 }
 .action-new_learn {
-  background: rgba(52, 199, 89, 0.12);
+  background: color-mix(in srgb, var(--success) 12%, transparent);
 }
 .action-review {
   background: rgba(50, 173, 230, 0.12);
 }
 .action-drill {
-  background: rgba(255, 159, 10, 0.12);
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
 }
 .action-mock {
-  background: rgba(255, 69, 58, 0.12);
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 .action-text {
   font-size: 20rpx;
@@ -555,12 +557,17 @@ onMounted(() => {
   align-items: center;
   padding: 120rpx 0;
 }
+/* 英雄级卡通图标（替代 BaseIcon size>=80） */
+.hero-cartoon-icon {
+  width: 160rpx;
+  height: 160rpx;
+}
 .empty-icon {
   font-size: 96rpx;
 }
 .empty-title {
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--text-primary);
   margin-top: 32rpx;
 }

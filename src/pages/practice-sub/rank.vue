@@ -4,7 +4,7 @@
 
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleMargin + 'px' }">
-        <text class="nav-back" @tap="navBack"> ← </text>
+        <view class="nav-back" @tap="navBack"><BaseIcon name="arrow-left" :size="32" /></view>
         <text class="nav-title"> 考研学霸榜 </text>
         <view class="placeholder" />
       </view>
@@ -226,562 +226,594 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed } from 'vue';
+import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 import { toast } from '@/utils/toast.js';
 import { useSchoolStore } from '@/stores/modules/school.js';
 import { useUserStore } from '@/stores/modules/user.js';
 // 检查点4.1: 排行榜WebSocket实时更新
 import { rankingSocket } from './ranking-socket.js';
 import { selfPositionTracker } from './self-position-tracker.js';
-// ✅ 统一日志工具（生产环境自动禁用）
+// 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
-// 统一默认头像
-const DEFAULT_AVATAR = '/static/images/default-avatar.png';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { getStatusBarHeight, getWindowInfo as _getWindowInfo } from '@/utils/core/system.js';
-// ✅ F019: 统一使用 storageService
+// F019: 统一使用 storageService
 import storageService from '@/services/storageService.js';
+// 组件在 <script setup> 中自动注册
 import BaseLoading from './components/base-loading/base-loading.vue';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  components: {
-    BaseLoading,
-    BaseEmpty,
-    BaseIcon
-  },
-  data() {
-    return {
-      statusBarHeight: 44,
-      capsuleMargin: 100,
-      userInfo: {},
-      defaultAvatar: DEFAULT_AVATAR,
-      myScore: 0,
-      myRank: 999,
-      // rankGapText 已移至 computed 中，不再在 data 中定义
-      showFootprintModal: false,
-      activeUser: {},
-      aiAnalysisText: '智能正在调阅该学霸的学习档案...',
-      aiPersona: '正在分析',
-      isAnalyzing: false,
-      isDark: false,
-      // 排行榜数据
-      loading: false, // 加载状态
-      refreshing: false, // 下拉刷新状态
-      empty: false, // 空状态
-      rankList: [], // 前三名数据
-      otherRanks: [], // 其他排名数据
-      list: [], // 完整排行榜数据
-      apiData: null, // 原始 API 返回数据
-      // 检查点4.1: WebSocket实时更新相关
-      rankingWebsocketConnected: false, // ranking websocket连接状态
-      selfPositionHighlighted: false, // 自己位置是否高亮
-      isNavigating: false, // 防止重复跳转
-      displayRankCount: 30 // F007: 增量渲染，初始显示30条
-    };
-  },
-  computed: {
-    rankGapText() {
-      if (this.myRank <= 100) {
-        return `排名第 ${this.myRank} 名，继续加油！`;
-      }
-      const minScore = this.otherRanks.length > 0 ? this.otherRanks[this.otherRanks.length - 1].score : 1000;
-      const gap = minScore - this.myScore;
-      return gap > 0 ? `还差 ${gap} 分进入前百名` : '已进入前百名';
-    },
-    // F007: 增量渲染 — 只渲染前 displayRankCount 条到 DOM
-    displayedOtherRanks() {
-      return this.otherRanks.slice(0, this.displayRankCount);
+// 统一默认头像（常量，无需响应式）
+const DEFAULT_AVATAR = '/static/images/default-avatar.png';
+
+// --- 非响应式变量（定时器 / 标记位） ---
+let _showTimer = null;
+let _navTimer = null;
+let _highlightTimer = null;
+let _loadedOnce = false;
+let _themeHandler = null;
+
+// --- 响应式状态（等价于原 data） ---
+const statusBarHeight = ref(44);
+const capsuleMargin = ref(100);
+const userInfo = ref({});
+const defaultAvatar = DEFAULT_AVATAR;
+const myScore = ref(0);
+const myRank = ref(999);
+const showFootprintModal = ref(false);
+const activeUser = ref({});
+const aiAnalysisText = ref('智能正在调阅该学霸的学习档案...');
+const aiPersona = ref('正在分析');
+const isAnalyzing = ref(false);
+const isDark = ref(false);
+// 排行榜数据
+const loading = ref(false); // 加载状态
+const _refreshing = ref(false); // 下拉刷新状态（预留）
+const empty = ref(false); // 空状态
+const rankList = ref([]); // 前三名数据
+const otherRanks = ref([]); // 其他排名数据
+const list = ref([]); // 完整排行榜数据
+const apiData = ref(null); // 原始 API 返回数据
+// 检查点4.1: WebSocket实时更新相关
+const rankingWebsocketConnected = ref(false);
+const selfPositionHighlighted = ref(false);
+const isNavigating = ref(false); // 防止重复跳转
+const displayRankCount = ref(30); // F007: 增量渲染，初始显示30条
+
+// --- 计算属性 ---
+const rankGapText = computed(() => {
+  if (myRank.value <= 100) {
+    return `排名第 ${myRank.value} 名，继续加油！`;
+  }
+  const minScore = otherRanks.value.length > 0 ? otherRanks.value[otherRanks.value.length - 1].score : 1000;
+  const gap = minScore - myScore.value;
+  return gap > 0 ? `还差 ${gap} 分进入前百名` : '已进入前百名';
+});
+
+// F007: 增量渲染 — 只渲染前 displayRankCount 条到 DOM
+const displayedOtherRanks = computed(() => {
+  return otherRanks.value.slice(0, displayRankCount.value);
+});
+
+// --- 方法 ---
+
+// 图片加载失败处理
+function onAvatarError(e, user, key = 'avatar') {
+  if (user) {
+    user[key] = defaultAvatar;
+  }
+}
+
+// F007: 滚动到底部时加载更多排名
+function loadMoreRanks() {
+  if (displayRankCount.value < otherRanks.value.length) {
+    displayRankCount.value = Math.min(displayRankCount.value + 30, otherRanks.value.length);
+  }
+}
+
+// 初始化系统信息
+function initSystem() {
+  statusBarHeight.value = getStatusBarHeight();
+
+  // #ifdef MP-WEIXIN
+  try {
+    const capsule = uni.getMenuButtonBoundingClientRect();
+    if (capsule && capsule.width > 0) {
+      const windowWidth = _getWindowInfo().windowWidth;
+      capsuleMargin.value = windowWidth - capsule.left + 10;
+    } else {
+      capsuleMargin.value = 100;
     }
-  },
-  onLoad() {
-    this.initSystem();
-    this.loadUserData();
-    // 注意：calculateMyScore() 现在在 loadRankData() 完成后调用
-    this.loadRankData(); // 加载排行榜数据
-    this._loadedOnce = true;
+  } catch (e) {
+    logger.log('获取胶囊按钮信息失败', e);
+    capsuleMargin.value = 100;
+  }
+  // #endif
+  // #ifndef MP-WEIXIN
+  capsuleMargin.value = 20;
+  // #endif
+}
 
-    // 初始化主题
-    const savedTheme = storageService.get('theme_mode', 'light');
-    this.isDark = savedTheme === 'dark';
+// 加载排行榜数据
+async function loadRankData() {
+  loading.value = true;
+  empty.value = false;
 
-    // 监听全局主题更新事件
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
+  try {
+    const userId = storageService.get('EXAM_USER_ID', '');
+    // 调用 rank-center 云函数获取排行榜数据
+    const userStore = useUserStore();
+    const res = await userStore.fetchRankCenter({
+      action: 'get',
+      userId: userId
+    });
 
-    // 检查点4.1: 初始化WebSocket实时排行榜更新
-    this.initRankingWebsocket();
-  },
-  onShow() {
-    // 首次进入时 onLoad 已加载，跳过 onShow 的重复请求
-    if (this._loadedOnce) {
-      this._loadedOnce = false;
-      return;
+    // 打印完整的后端返回数据（用于调试）
+    if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
     }
-    // 从其他页面返回时刷新数据
-    setTimeout(() => {
-      this.loadRankData();
-    }, 300);
 
-    // 检查点4.1: 重新连接WebSocket（如果断开）
-    if (!this.rankingWebsocketConnected) {
-      this.initRankingWebsocket();
-    }
-  },
-  onUnload() {
-    // 移除事件监听
-    uni.$off('themeUpdate', this._themeHandler);
-    // 检查点4.1: 断开WebSocket连接
-    this.disconnectRankingWebsocket();
-    // [AUDIT R296] 清理高亮定时器
-    if (this._highlightTimer) {
-      clearTimeout(this._highlightTimer);
-      this._highlightTimer = null;
-    }
-  },
-  methods: {
-    // ✅ 图片加载失败处理
-    onAvatarError(e, user, key = 'avatar') {
-      if (user) {
-        user[key] = this.defaultAvatar;
-      }
-    },
+    apiData.value = res;
 
-    // F007: 滚动到底部时加载更多排名
-    loadMoreRanks() {
-      if (this.displayRankCount < this.otherRanks.length) {
-        this.displayRankCount = Math.min(this.displayRankCount + 30, this.otherRanks.length);
-      }
-    },
+    if (res && res.code === 0 && res.data) {
+      // 数据规范化：确保 data 是数组
+      let rawList = Array.isArray(res.data) ? res.data : [];
 
-    initSystem() {
-      this.statusBarHeight = getStatusBarHeight();
-
-      // #ifdef MP-WEIXIN
-      try {
-        const capsule = uni.getMenuButtonBoundingClientRect();
-        if (capsule && capsule.width > 0) {
-          const windowWidth = _getWindowInfo().windowWidth;
-          this.capsuleMargin = windowWidth - capsule.left + 10;
-        } else {
-          this.capsuleMargin = 100;
-        }
-      } catch (e) {
-        logger.log('获取胶囊按钮信息失败', e);
-        this.capsuleMargin = 100;
-      }
-      // #endif
-      // #ifndef MP-WEIXIN
-      this.capsuleMargin = 20;
-      // #endif
-    },
-
-    // 加载排行榜数据
-    async loadRankData() {
-      this.loading = true;
-      this.empty = false;
-
-      try {
-        const userId = storageService.get('EXAM_USER_ID', '');
-        // 调用 rank-center 云函数获取排行榜数据
-        const userStore = useUserStore();
-        const res = await userStore.fetchRankCenter({
-          action: 'get',
-          userId: userId
-        });
-
-        // 打印完整的后端返回数据（用于调试）
-        if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
-        }
-
-        this.apiData = res;
-
-        if (res && res.code === 0 && res.data) {
-          // 数据规范化：确保 data 是数组
-          let list = Array.isArray(res.data) ? res.data : [];
-
-          // 数据规范化：处理可能的对象格式 { list: [...], myRank: ... }
-          if (!Array.isArray(res.data) && res.data.list && Array.isArray(res.data.list)) {
-            list = res.data.list;
-            // 如果后端返回了 myRank，使用它
-            if (typeof res.data.myRank === 'number') {
-              this.myRank = res.data.myRank;
-            }
-          }
-
-          // 数据规范化：确保每个项目都有必要的字段
-          list = list.map((item, index) => {
-            // 调试：打印原始 item 的 score 值
-            if (index === 0) {
-            }
-
-            const normalizedItem = {
-              nickName: item.nickName || item.name || '匿名用户',
-              name: item.nickName || item.name || '匿名用户',
-              score: Number(item.score) || 0,
-              days: Number(item.days) || 0,
-              done: Number(item.done) || 0,
-              target: item.target || '',
-              avatarUrl: item.avatarUrl || item.avatar || this.defaultAvatar,
-              avatar: item.avatarUrl || item.avatar || this.defaultAvatar,
-              _id: item.uid || item._id || item.id || `user_${index}`
-            };
-
-            // 调试：打印规范化后的 score 值
-            if (index === 0) {
-            }
-
-            return normalizedItem;
-          });
-
-          // 排序验证：确保按分数降序排列
-          list = list.sort((a, b) => {
-            const scoreA = Number(a.score) || 0;
-            const scoreB = Number(b.score) || 0;
-            return scoreB - scoreA; // 降序
-          });
-
-          // 验证排序是否正确
-          const isSorted = this.validateSorting(list);
-          if (!isSorted) {
-            logger.warn('[PK] 数据未正确排序，已重新排序');
-          }
-
-          this.list = list;
-
-          // 处理前三名数据
-          this.rankList = list.slice(0, 3).map((item) => ({
-            name: item.name,
-            score: item.score,
-            days: item.days,
-            done: item.done,
-            target: item.target,
-            avatar: item.avatar
-          }));
-
-          // 处理其他排名数据
-          this.otherRanks = list.slice(3).map((item) => ({
-            name: item.name,
-            score: item.score,
-            days: item.days,
-            done: item.done,
-            target: item.target,
-            avatar: item.avatar
-          }));
-
-          // 计算我的排名和分数（在数据加载完成后）
-          // 优先使用后端返回的分数，而不是重新计算
-          this.calculateMyScoreAndRank();
-
-          // 处理空状态
-          this.empty = list.length === 0;
-        } else {
-          // 数据获取失败
-          this.empty = true;
-          logger.error('[PK] 获取排行榜数据失败:', {
-            code: res?.code,
-            message: res?.message,
-            data: res?.data
-          });
-        }
-      } catch (error) {
-        logger.error('[PK] 调用排行榜 API 失败:', error);
-        this.empty = true;
-        toast.info('获取排行榜数据失败');
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    // 验证排序是否正确（降序）
-    validateSorting(list) {
-      if (list.length <= 1) return true;
-      for (let i = 0; i < list.length - 1; i++) {
-        const current = Number(list[i].score) || 0;
-        const next = Number(list[i + 1].score) || 0;
-        if (current < next) {
-          return false;
-        }
-      }
-      return true;
-    },
-    loadUserData() {
-      this.userInfo = storageService.get('userInfo', { nickName: '考研人', avatarUrl: '' });
-    },
-    calculateMyScoreAndRank() {
-      const userId = storageService.get('EXAM_USER_ID', '');
-      const myUserInfo = storageService.get('userInfo', {});
-      const myNickName = myUserInfo.nickName || '';
-
-      // 优先从排行榜数据中查找我的记录（使用后端返回的真实分数）
-      if (this.list && this.list.length > 0) {
-        const myRecord = this.list.find(
-          (item) =>
-            item._id === userId || item.uid === userId || item.nickName === myNickName || item.name === myNickName
-        );
-
-        if (myRecord) {
-          // 如果找到了我的记录，检查后端返回的分数是否有效
-          const backendScore = Number(myRecord.score) || 0;
-
-          // 如果后端返回的分数有效（> 0），使用后端分数
-          // 否则使用本地计算的分数（降级方案）
-          if (backendScore > 0) {
-            this.myScore = backendScore;
-            this.myRank = this.list.indexOf(myRecord) + 1;
-            // 验证分数更新
-            return; // 使用后端数据，不再计算本地分数
-          } else {
-            logger.warn('[PK] 后端返回的分数无效（为 0 或不存在），使用本地计算的分数作为降级方案');
-            // 继续执行本地计算
-          }
-        } else {
+      // 数据规范化：处理可能的对象格式 { list: [...], myRank: ... }
+      if (!Array.isArray(res.data) && res.data.list && Array.isArray(res.data.list)) {
+        rawList = res.data.list;
+        // 如果后端返回了 myRank，使用它
+        if (typeof res.data.myRank === 'number') {
+          myRank.value = res.data.myRank;
         }
       }
 
-      // 如果没有在排行榜中找到我的记录，或后端分数无效，则计算本地分数
-      this.calculateMyScore();
-    },
-
-    calculateMyScore() {
-      // 计算用户得分：基于刷题数量、坚持天数、正确率（仅当后端没有数据时使用）
-      const stats = storageService.get('study_stats', {});
-      const mistakes = storageService.get('mistake_book', []);
-
-      // 计算坚持天数
-      const studyDays = Object.keys(stats).length || 1;
-
-      // 计算总刷题数
-      const totalDone = Object.values(stats).reduce((sum, count) => sum + (count || 0), 0);
-
-      // 计算正确率（假设错题本中的题目都是错的）
-      const correctCount = Math.max(0, totalDone - mistakes.length);
-      const accuracy = totalDone > 0 ? correctCount / totalDone : 0;
-
-      // 得分计算：刷题数 * 10 + 坚持天数 * 20 + 正确率 * 100
-      this.myScore = Math.round(totalDone * 10 + studyDays * 20 + accuracy * 100);
-
-      // 计算排名：基于分数计算排名
-      if (this.list && this.list.length > 0) {
-        const allScores = this.list.map((r) => Number(r.score) || 0);
-        allScores.push(this.myScore);
-        allScores.sort((a, b) => b - a);
-        this.myRank = allScores.indexOf(this.myScore) + 1;
-      } else {
-        this.myRank = 999;
-      }
-    },
-    navBack() {
-      safeNavigateBack();
-    },
-    toPractice() {
-      // 防止重复点击
-      if (this.isNavigating) return;
-      this.isNavigating = true;
-
-      uni.switchTab({
-        url: '/pages/practice/index',
-        complete: () => {
-          setTimeout(() => {
-            this.isNavigating = false;
-          }, 500);
+      // 数据规范化：确保每个项目都有必要的字段
+      rawList = rawList.map((item, index) => {
+        // 调试：打印原始 item 的 score 值
+        if (index === 0) {
         }
-      });
-    },
-    startPK() {
-      // 防止重复点击
-      if (this.isNavigating) return;
-      this.isNavigating = true;
 
-      this.closePopup();
-      // 确保 opponent 参数有效
-      const opponentName = this.activeUser?.name || this.activeUser?.nickName || '匿名用户';
-      safeNavigateTo(`/pages/practice-sub/pk-battle?opponent=${encodeURIComponent(opponentName)}`, {
-        complete: () => {
-          setTimeout(() => {
-            this.isNavigating = false;
-          }, 500);
+        const normalizedItem = {
+          nickName: item.nickName || item.name || '匿名用户',
+          name: item.nickName || item.name || '匿名用户',
+          score: Number(item.score) || 0,
+          days: Number(item.days) || 0,
+          done: Number(item.done) || 0,
+          target: item.target || '',
+          avatarUrl: item.avatarUrl || item.avatar || defaultAvatar,
+          avatar: item.avatarUrl || item.avatar || defaultAvatar,
+          _id: item.uid || item._id || item.id || `user_${index}`
+        };
+
+        // 调试：打印规范化后的 score 值
+        if (index === 0) {
         }
-      });
-    },
-    async showFootprint(user) {
-      this.activeUser = user;
-      this.showFootprintModal = true;
-      this.aiAnalysisText = '智能正在调阅该学霸的学习档案...';
-      this.aiPersona = '正在分析';
-      await this.fetchFootprintAnalysis(user);
-    },
-    async fetchFootprintAnalysis(user) {
-      this.isAnalyzing = true;
-      this.aiAnalysisText = '智能正在深度扫描足迹...';
-      toast.loading('分析中...');
 
-      logger.log('[rank] 🤖 调用后端代理进行学霸足迹分析...');
-
-      try {
-        // 通过 school store 调用 AI 足迹分析（遵循分层纪律）
-        const schoolStore = useSchoolStore();
-        const response = await schoolStore.aiRecommend('footprint', {
-          name: user.name,
-          days: user.days || 0,
-          score: user.score || 0,
-          done: user.done || 0,
-          target: user.target || '未设定'
-        });
-
-        logger.log('[rank] 📥 后端代理响应:', {
-          code: response?.code,
-          hasData: !!response?.data
-        });
-
-        if (response && response.code === 0 && response.data) {
-          const content = response.data.trim();
-          logger.log('[rank] ✅ 智能足迹分析成功');
-
-          // 尝试提取称号（第一句话或冒号前的内容）
-          const lines = content.split(/[。\n]/);
-          const firstLine = lines[0] || content;
-          if (firstLine.includes('：') || firstLine.includes(':')) {
-            this.aiPersona = firstLine.split(/[：:]/)[0].trim();
-            this.aiAnalysisText = content;
-          } else if (firstLine.length <= 12) {
-            this.aiPersona = firstLine;
-            this.aiAnalysisText = content;
-          } else {
-            this.aiPersona = '学霸先锋';
-            this.aiAnalysisText = content;
-          }
-        } else {
-          logger.warn('[rank] ⚠️ 智能足迹分析响应异常，使用默认文案');
-          this.aiPersona = '学霸先锋';
-          this.aiAnalysisText = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
-        }
-      } catch (e) {
-        logger.error('[rank] ❌ 智能足迹分析失败:', e);
-        this.aiPersona = '学霸先锋';
-        this.aiAnalysisText = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
-      } finally {
-        toast.hide();
-        this.isAnalyzing = false;
-      }
-    },
-    closePopup() {
-      this.showFootprintModal = false;
-      this.activeUser = {};
-      this.aiAnalysisText = '智能正在调阅该学霸的学习档案...';
-      this.aiPersona = '正在分析';
-    },
-
-    // 检查点4.1: 初始化WebSocket实时排行榜更新
-    initRankingWebsocket() {
-      const userId = storageService.get('EXAM_USER_ID', '');
-      if (!userId) {
-        logger.log('[Rank-WebSocket] 用户未登录，跳过WebSocket连接');
-        return;
-      }
-
-      logger.log('[Rank-WebSocket] 初始化排行榜WebSocket连接');
-
-      // 连接WebSocket
-      rankingSocket
-        .connect({
-          userId: userId,
-          rankType: 'daily'
-        })
-        .then(() => {
-          this.rankingWebsocketConnected = true;
-          logger.log('[Rank-WebSocket] WebSocket连接成功');
-
-          // 设置自己的用户ID用于位置追踪
-          selfPositionTracker.setUserId(userId);
-          selfPositionTracker.setScrollViewId('rank-scroll-view');
-        })
-        .catch((err) => {
-          logger.warn('[Rank-WebSocket] WebSocket连接失败，使用普通模式:', err);
-          // 不显示toast，静默处理
-        });
-
-      // 监听排行榜实时更新
-      rankingSocket.on('rankingUpdate', (data) => {
-        logger.log('[Rank-WebSocket] 收到排行榜更新推送:', data);
-        this.handleRankingWebsocketUpdate(data);
+        return normalizedItem;
       });
 
-      // 监听自己位置变化
-      rankingSocket.on('positionChange', (data) => {
-        logger.log('[Rank-WebSocket] 收到位置变化推送:', data);
-        this.handlePositionChange(data);
+      // 排序验证：确保按分数降序排列
+      rawList = rawList.sort((a, b) => {
+        const scoreA = Number(a.score) || 0;
+        const scoreB = Number(b.score) || 0;
+        return scoreB - scoreA; // 降序
       });
-    },
 
-    // 检查点4.1: 处理WebSocket排行榜更新
-    handleRankingWebsocketUpdate(data) {
-      if (data && data.list) {
-        // 更新排行榜数据
-        this.list = data.list;
-        this.rankList = data.list.slice(0, 3);
-        this.otherRanks = data.list.slice(3);
-
-        // 重新计算我的排名
-        this.calculateMyScoreAndRank();
-
-        logger.log('[Rank-WebSocket] 排行榜数据已实时更新');
+      // 验证排序是否正确
+      const isSorted = validateSorting(rawList);
+      if (!isSorted) {
+        logger.warn('[PK] 数据未正确排序，已重新排序');
       }
-    },
 
-    // 检查点4.1: 处理位置变化（自己位置高亮）
-    handlePositionChange(data) {
-      const userId = storageService.get('EXAM_USER_ID', '');
-      if (data.userId === userId) {
-        // 自己的位置发生变化，触发高亮
-        this.selfPositionHighlighted = true;
+      list.value = rawList;
 
-        // 滚动到自己位置
-        selfPositionTracker.scrollToSelf();
+      // 处理前三名数据
+      rankList.value = rawList.slice(0, 3).map((item) => ({
+        name: item.name,
+        score: item.score,
+        days: item.days,
+        done: item.done,
+        target: item.target,
+        avatar: item.avatar
+      }));
 
-        // 3秒后取消高亮 [AUDIT R296] 追踪定时器防止卸载后泄漏
-        if (this._highlightTimer) clearTimeout(this._highlightTimer);
-        this._highlightTimer = setTimeout(() => {
-          this.selfPositionHighlighted = false;
-          this._highlightTimer = null;
-        }, 3000);
+      // 处理其他排名数据
+      otherRanks.value = rawList.slice(3).map((item) => ({
+        name: item.name,
+        score: item.score,
+        days: item.days,
+        done: item.done,
+        target: item.target,
+        avatar: item.avatar
+      }));
 
-        // 显示排名变化提示
-        const change = data.previousRank - data.rank;
-        if (change > 0) {
-          toast.info(`排名上升 ${change} 位！`);
-        } else if (change < 0) {
-          toast.info(`排名下降 ${Math.abs(change)} 位`);
-        }
-      }
-    },
+      // 计算我的排名和分数（在数据加载完成后）
+      // 优先使用后端返回的分数，而不是重新计算
+      calculateMyScoreAndRank();
 
-    // 检查点4.1: 获取排行项的高亮样式类
-    getRankItemClass(item) {
-      const userId = storageService.get('EXAM_USER_ID', '');
-      const userInfo = storageService.get('userInfo', {});
-      const isSelf = item._id === userId || item.uid === userId || item.nickName === userInfo.nickName;
+      // 处理空状态
+      empty.value = rawList.length === 0;
+    } else {
+      // 数据获取失败
+      empty.value = true;
+      logger.error('[PK] 获取排行榜数据失败:', {
+        code: res?.code,
+        message: res?.message,
+        data: res?.data
+      });
+    }
+  } catch (error) {
+    logger.error('[PK] 调用排行榜 API 失败:', error);
+    empty.value = true;
+    toast.info('获取排行榜数据失败');
+  } finally {
+    loading.value = false;
+  }
+}
 
-      if (isSelf && this.selfPositionHighlighted) {
-        return selfPositionTracker.getHighlightClass(userId);
-      }
-      return isSelf ? 'self-position' : '';
-    },
-
-    // 检查点4.1: 断开WebSocket连接
-    disconnectRankingWebsocket() {
-      if (this.rankingWebsocketConnected) {
-        rankingSocket.disconnect();
-        this.rankingWebsocketConnected = false;
-        logger.log('[Rank-WebSocket] WebSocket已断开');
-      }
-      selfPositionTracker.destroy();
+// 验证排序是否正确（降序）
+function validateSorting(arr) {
+  if (arr.length <= 1) return true;
+  for (let i = 0; i < arr.length - 1; i++) {
+    const current = Number(arr[i].score) || 0;
+    const next = Number(arr[i + 1].score) || 0;
+    if (current < next) {
+      return false;
     }
   }
-};
+  return true;
+}
+
+// 加载用户数据
+function loadUserData() {
+  userInfo.value = storageService.get('userInfo', { nickName: '考研人', avatarUrl: '' });
+}
+
+// 计算我的排名和分数（优先使用后端数据）
+function calculateMyScoreAndRank() {
+  const userId = storageService.get('EXAM_USER_ID', '');
+  const myUserInfo = storageService.get('userInfo', {});
+  const myNickName = myUserInfo.nickName || '';
+
+  // 优先从排行榜数据中查找我的记录（使用后端返回的真实分数）
+  if (list.value && list.value.length > 0) {
+    const myRecord = list.value.find(
+      (item) => item._id === userId || item.uid === userId || item.nickName === myNickName || item.name === myNickName
+    );
+
+    if (myRecord) {
+      // 如果找到了我的记录，检查后端返回的分数是否有效
+      const backendScore = Number(myRecord.score) || 0;
+
+      // 如果后端返回的分数有效（> 0），使用后端分数
+      // 否则使用本地计算的分数（降级方案）
+      if (backendScore > 0) {
+        myScore.value = backendScore;
+        myRank.value = list.value.indexOf(myRecord) + 1;
+        // 验证分数更新
+        return; // 使用后端数据，不再计算本地分数
+      } else {
+        logger.warn('[PK] 后端返回的分数无效（为 0 或不存在），使用本地计算的分数作为降级方案');
+        // 继续执行本地计算
+      }
+    }
+  }
+
+  // 如果没有在排行榜中找到我的记录，或后端分数无效，则计算本地分数
+  calculateMyScore();
+}
+
+// 本地计算用户得分（降级方案）
+function calculateMyScore() {
+  // 计算用户得分：基于刷题数量、坚持天数、正确率（仅当后端没有数据时使用）
+  const stats = storageService.get('study_stats', {});
+  const mistakes = storageService.get('mistake_book', []);
+
+  // 计算坚持天数
+  const studyDays = Object.keys(stats).length || 1;
+
+  // 计算总刷题数
+  const totalDone = Object.values(stats).reduce((sum, count) => sum + (count || 0), 0);
+
+  // 计算正确率（假设错题本中的题目都是错的）
+  const correctCount = Math.max(0, totalDone - mistakes.length);
+  const accuracy = totalDone > 0 ? correctCount / totalDone : 0;
+
+  // 得分计算：刷题数 * 10 + 坚持天数 * 20 + 正确率 * 100
+  myScore.value = Math.round(totalDone * 10 + studyDays * 20 + accuracy * 100);
+
+  // 计算排名：基于分数计算排名
+  if (list.value && list.value.length > 0) {
+    const allScores = list.value.map((r) => Number(r.score) || 0);
+    allScores.push(myScore.value);
+    allScores.sort((a, b) => b - a);
+    myRank.value = allScores.indexOf(myScore.value) + 1;
+  } else {
+    myRank.value = 999;
+  }
+}
+
+// 返回上一页
+function navBack() {
+  safeNavigateBack();
+}
+
+// 跳转到刷题页
+function toPractice() {
+  // 防止重复点击
+  if (isNavigating.value) return;
+  isNavigating.value = true;
+
+  uni.switchTab({
+    url: '/pages/practice/index',
+    complete: () => {
+      _navTimer = setTimeout(() => {
+        isNavigating.value = false;
+      }, 500);
+    }
+  });
+}
+
+// 发起PK挑战
+function startPK() {
+  // 防止重复点击
+  if (isNavigating.value) return;
+  isNavigating.value = true;
+
+  closePopup();
+  // 确保 opponent 参数有效
+  const opponentName = activeUser.value?.name || activeUser.value?.nickName || '匿名用户';
+  safeNavigateTo(`/pages/practice-sub/pk-battle?opponent=${encodeURIComponent(opponentName)}`, {
+    complete: () => {
+      _navTimer = setTimeout(() => {
+        isNavigating.value = false;
+      }, 500);
+    }
+  });
+}
+
+// 展示学霸足迹弹窗
+async function showFootprint(user) {
+  activeUser.value = user;
+  showFootprintModal.value = true;
+  aiAnalysisText.value = '智能正在调阅该学霸的学习档案...';
+  aiPersona.value = '正在分析';
+  await fetchFootprintAnalysis(user);
+}
+
+// AI 足迹分析
+async function fetchFootprintAnalysis(user) {
+  isAnalyzing.value = true;
+  aiAnalysisText.value = '智能正在深度扫描足迹...';
+  toast.loading('分析中...');
+
+  logger.log('[rank] 调用后端代理进行学霸足迹分析...');
+
+  try {
+    // 通过 school store 调用 AI 足迹分析（遵循分层纪律）
+    const schoolStore = useSchoolStore();
+    const response = await schoolStore.aiRecommend('footprint', {
+      name: user.name,
+      days: user.days || 0,
+      score: user.score || 0,
+      done: user.done || 0,
+      target: user.target || '未设定'
+    });
+
+    logger.log('[rank] 后端代理响应:', {
+      code: response?.code,
+      hasData: !!response?.data
+    });
+
+    if (response && response.code === 0 && response.data) {
+      const content = response.data.trim();
+      logger.log('[rank] 智能足迹分析成功');
+
+      // 尝试提取称号（第一句话或冒号前的内容）
+      const lines = content.split(/[。\n]/);
+      const firstLine = lines[0] || content;
+      if (firstLine.includes('：') || firstLine.includes(':')) {
+        aiPersona.value = firstLine.split(/[：:]/)[0].trim();
+        aiAnalysisText.value = content;
+      } else if (firstLine.length <= 12) {
+        aiPersona.value = firstLine;
+        aiAnalysisText.value = content;
+      } else {
+        aiPersona.value = '学霸先锋';
+        aiAnalysisText.value = content;
+      }
+    } else {
+      logger.warn('[rank] 智能足迹分析响应异常，使用默认文案');
+      aiPersona.value = '学霸先锋';
+      aiAnalysisText.value = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
+    }
+  } catch (e) {
+    logger.error('[rank] 智能足迹分析失败:', e);
+    aiPersona.value = '学霸先锋';
+    aiAnalysisText.value = `${user.name} 是一位勤奋的考研人，坚持学习 ${user.days || 0} 天，已刷 ${user.done || 0} 题，展现了强大的学习毅力。继续加油，成功上岸！`;
+  } finally {
+    toast.hide();
+    isAnalyzing.value = false;
+  }
+}
+
+// 关闭弹窗
+function closePopup() {
+  showFootprintModal.value = false;
+  activeUser.value = {};
+  aiAnalysisText.value = '智能正在调阅该学霸的学习档案...';
+  aiPersona.value = '正在分析';
+}
+
+// 检查点4.1: 初始化WebSocket实时排行榜更新
+function initRankingWebsocket() {
+  const userId = storageService.get('EXAM_USER_ID', '');
+  if (!userId) {
+    logger.log('[Rank-WebSocket] 用户未登录，跳过WebSocket连接');
+    return;
+  }
+
+  logger.log('[Rank-WebSocket] 初始化排行榜WebSocket连接');
+
+  // 连接WebSocket
+  rankingSocket
+    .connect({
+      userId: userId,
+      rankType: 'daily'
+    })
+    .then(() => {
+      rankingWebsocketConnected.value = true;
+      logger.log('[Rank-WebSocket] WebSocket连接成功');
+
+      // 设置自己的用户ID用于位置追踪
+      selfPositionTracker.setUserId(userId);
+      selfPositionTracker.setScrollViewId('rank-scroll-view');
+    })
+    .catch((err) => {
+      logger.warn('[Rank-WebSocket] WebSocket连接失败，使用普通模式:', err);
+      // 不显示toast，静默处理
+    });
+
+  // 监听排行榜实时更新
+  rankingSocket.on('rankingUpdate', (data) => {
+    logger.log('[Rank-WebSocket] 收到排行榜更新推送:', data);
+    handleRankingWebsocketUpdate(data);
+  });
+
+  // 监听自己位置变化
+  rankingSocket.on('positionChange', (data) => {
+    logger.log('[Rank-WebSocket] 收到位置变化推送:', data);
+    handlePositionChange(data);
+  });
+}
+
+// 检查点4.1: 处理WebSocket排行榜更新
+function handleRankingWebsocketUpdate(data) {
+  if (data && data.list) {
+    // 更新排行榜数据
+    list.value = data.list;
+    rankList.value = data.list.slice(0, 3);
+    otherRanks.value = data.list.slice(3);
+
+    // 重新计算我的排名
+    calculateMyScoreAndRank();
+
+    logger.log('[Rank-WebSocket] 排行榜数据已实时更新');
+  }
+}
+
+// 检查点4.1: 处理位置变化（自己位置高亮）
+function handlePositionChange(data) {
+  const userId = storageService.get('EXAM_USER_ID', '');
+  if (data.userId === userId) {
+    // 自己的位置发生变化，触发高亮
+    selfPositionHighlighted.value = true;
+
+    // 滚动到自己位置
+    selfPositionTracker.scrollToSelf();
+
+    // 3秒后取消高亮 [AUDIT R296] 追踪定时器防止卸载后泄漏
+    if (_highlightTimer) clearTimeout(_highlightTimer);
+    _highlightTimer = setTimeout(() => {
+      selfPositionHighlighted.value = false;
+      _highlightTimer = null;
+    }, 3000);
+
+    // 显示排名变化提示
+    const change = data.previousRank - data.rank;
+    if (change > 0) {
+      toast.info(`排名上升 ${change} 位！`);
+    } else if (change < 0) {
+      toast.info(`排名下降 ${Math.abs(change)} 位`);
+    }
+  }
+}
+
+// 检查点4.1: 获取排行项的高亮样式类
+function getRankItemClass(item) {
+  const userId = storageService.get('EXAM_USER_ID', '');
+  const info = storageService.get('userInfo', {});
+  const isSelf = item._id === userId || item.uid === userId || item.nickName === info.nickName;
+
+  if (isSelf && selfPositionHighlighted.value) {
+    return selfPositionTracker.getHighlightClass(userId);
+  }
+  return isSelf ? 'self-position' : '';
+}
+
+// 检查点4.1: 断开WebSocket连接
+function disconnectRankingWebsocket() {
+  if (rankingWebsocketConnected.value) {
+    rankingSocket.disconnect();
+    rankingWebsocketConnected.value = false;
+    logger.log('[Rank-WebSocket] WebSocket已断开');
+  }
+  selfPositionTracker.destroy();
+}
+
+// --- 生命周期钩子 ---
+
+onLoad(() => {
+  initSystem();
+  loadUserData();
+  // 注意：calculateMyScore() 现在在 loadRankData() 完成后调用
+  loadRankData(); // 加载排行榜数据
+  _loadedOnce = true;
+
+  // 初始化主题
+  const savedTheme = storageService.get('theme_mode', 'light');
+  isDark.value = savedTheme === 'dark';
+
+  // 监听全局主题更新事件
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+
+  // 检查点4.1: 初始化WebSocket实时排行榜更新
+  initRankingWebsocket();
+});
+
+onShow(() => {
+  // 首次进入时 onLoad 已加载，跳过 onShow 的重复请求
+  if (_loadedOnce) {
+    _loadedOnce = false;
+    return;
+  }
+  // 从其他页面返回时刷新数据
+  _showTimer = setTimeout(() => {
+    loadRankData();
+  }, 300);
+
+  // 检查点4.1: 重新连接WebSocket（如果断开）
+  if (!rankingWebsocketConnected.value) {
+    initRankingWebsocket();
+  }
+});
+
+onUnload(() => {
+  // 移除事件监听
+  uni.$off('themeUpdate', _themeHandler);
+  // 检查点4.1: 断开WebSocket连接
+  disconnectRankingWebsocket();
+  // [AUDIT R296] 清理高亮定时器
+  if (_highlightTimer) {
+    clearTimeout(_highlightTimer);
+    _highlightTimer = null;
+  }
+  // [R397] 清理 onShow/导航 延迟定时器
+  if (_showTimer) {
+    clearTimeout(_showTimer);
+    _showTimer = null;
+  }
+  if (_navTimer) {
+    clearTimeout(_navTimer);
+    _navTimer = null;
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -790,18 +822,18 @@ export default {
   --neon-gold: var(--warning);
   --neon-silver: var(--text-tertiary);
   --neon-green: var(--success);
-  --neon-glow-gold: var(--warning-light);
+  --neon-glow-gold: var(--warning);
   --neon-glow-green: var(--success-light);
-  --bg-body: var(--bg-body);
-  --card-bg: var(--bg-glass);
-  --card-border: var(--border);
+  --bg-body: var(--background);
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.04);
   --text-primary: var(--text-primary);
-  --text-tertiary: var(--text-tertiary);
+  --text-tertiary: var(--text-secondary);
 
   height: 100%;
 
   height: 100vh;
-  background: var(--bg-body);
+  background: var(--background);
   position: relative;
   overflow: hidden;
   transition: background 0.3s;
@@ -827,7 +859,9 @@ export default {
   left: 0;
   width: 100%;
   height: 500rpx;
-  background: var(--gradient-aurora);
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 150, 0, 0.16) 0%, transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(255, 150, 0, 0.08) 0%, transparent 24%);
   filter: blur(60px);
   z-index: 0;
 }
@@ -842,10 +876,9 @@ export default {
   top: 0;
   width: 100%;
   z-index: 100;
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--card-border);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .nav-content {
   height: 44px;
@@ -861,7 +894,7 @@ export default {
 }
 .nav-title {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 800;
   color: var(--text-primary);
 }
 .placeholder {
@@ -993,12 +1026,10 @@ export default {
 
 /* 排行榜列表 */
 .glass-card {
-  background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  border-radius: 40rpx;
-  box-shadow: var(--shadow-md);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 /* 霓虹列表项 */
@@ -1007,7 +1038,7 @@ export default {
   align-items: center;
   padding: 30rpx;
   margin-bottom: 25rpx;
-  border: 1px solid var(--card-border);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
   transition: transform 0.2s;
 }
 .rank-item:active {
@@ -1025,9 +1056,9 @@ export default {
 }
 .rank-num {
   font-size: 36rpx;
-  font-weight: 900;
+  font-weight: 800;
   font-style: italic;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 /* 深色模式下的排名数字荧光效果 */
 .dark-mode .rank-num {
@@ -1048,25 +1079,25 @@ export default {
 }
 .item-name {
   color: var(--text-primary);
-  font-weight: bold;
+  font-weight: 800;
   font-size: 28rpx;
   display: block;
   margin-bottom: 4rpx;
 }
 .item-desc {
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: 20rpx;
   display: block;
 }
 .item-score {
-  color: var(--text-primary);
-  font-weight: 900;
+  color: var(--warning);
+  font-weight: 800;
   font-size: 32rpx;
   flex-shrink: 0;
   margin-left: 20rpx;
 }
 
-/* 底部我的排名卡片 - 荧光绿背景 */
+/* 底部我的排名卡片 - 橙色主题 */
 .my-rank-fixed {
   position: fixed;
   bottom: 40rpx;
@@ -1075,12 +1106,12 @@ export default {
   z-index: 100;
 }
 .my-rank-card {
-  background: var(--neon-green);
+  background: var(--warning);
   padding: 30rpx;
-  border-radius: 40rpx;
+  border-radius: 28rpx;
   display: flex;
   align-items: center;
-  box-shadow: var(--shadow-success);
+  box-shadow: 0 8rpx 0 var(--warning-dark, #cc7800);
 }
 .my-rank-card .rank-num,
 .my-rank-card .item-name {
@@ -1139,12 +1170,12 @@ export default {
   margin-top: 40rpx;
   width: 200rpx;
   height: 80rpx;
-  background: var(--neon-green);
-  color: var(--text-primary-foreground);
-  font-weight: bold;
+  background: var(--warning);
+  color: var(--text-inverse);
+  font-weight: 800;
   border: none;
   border-radius: 40rpx;
-  box-shadow: var(--shadow-success);
+  box-shadow: 0 8rpx 0 var(--warning-dark, #cc7800);
 }
 
 .go-practice-btn::after {
@@ -1272,13 +1303,13 @@ export default {
 }
 .data-item .val {
   font-size: 32rpx;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--text-primary);
   display: block;
 }
 .data-item .lbl {
   font-size: 20rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   margin-top: 6rpx;
   display: block;
 }
@@ -1361,14 +1392,9 @@ export default {
   }
 }
 
-/* Final polish: leaderboard unified with Apple / Liquid Glass */
+/* Final polish: leaderboard unified with Duolingo gamified design */
 .container {
-  background: linear-gradient(
-    180deg,
-    var(--page-gradient-top) 0%,
-    var(--page-gradient-mid) 52%,
-    var(--page-gradient-bottom) 100%
-  );
+  background: var(--background);
 }
 
 .container.dark-mode {
@@ -1378,9 +1404,8 @@ export default {
 .aurora-bg {
   height: 460rpx;
   background:
-    radial-gradient(circle at 12% 14%, rgba(107, 208, 150, 0.26) 0%, transparent 34%),
-    radial-gradient(circle at 84% 10%, rgba(255, 255, 255, 0.28) 0%, transparent 24%),
-    radial-gradient(circle at 58% 72%, rgba(72, 190, 128, 0.16) 0%, transparent 34%);
+    radial-gradient(circle at 12% 14%, rgba(255, 150, 0, 0.16) 0%, transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(255, 150, 0, 0.08) 0%, transparent 24%);
   filter: blur(72rpx);
 }
 
@@ -1392,11 +1417,9 @@ export default {
 }
 
 .nav-bar {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .nav-content {
@@ -1410,10 +1433,10 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
-  color: var(--text-main);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
 }
 
 .dark-mode .nav-back {
@@ -1425,7 +1448,7 @@ export default {
 }
 
 .nav-title {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .dark-mode .nav-title {
@@ -1441,11 +1464,9 @@ export default {
 .my-rank-card,
 .footprint-card,
 .go-practice-btn {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .dark-mode .podium-section,
@@ -1463,7 +1484,7 @@ export default {
   padding: 40rpx 20rpx 28rpx;
   margin-top: 8rpx;
   margin-bottom: 30rpx;
-  border-radius: 40rpx;
+  border-radius: 28rpx;
   align-items: stretch;
   /* gap: 12rpx; -- replaced for Android WebView compat */
 }
@@ -1479,11 +1500,9 @@ export default {
 }
 
 .avatar-wrap {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, transparent 40%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(240, 248, 243, 0.56) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.54);
-  box-shadow: var(--apple-shadow-surface);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .dark-mode .avatar-wrap {
@@ -1508,7 +1527,7 @@ export default {
 }
 
 .rank-3 .avatar-wrap {
-  border-color: rgba(255, 159, 10, 0.3);
+  border-color: color-mix(in srgb, var(--warning) 30%, transparent);
 }
 
 .crown-glow {
@@ -1540,7 +1559,7 @@ export default {
 }
 
 .rank-3 .badge {
-  background: rgba(255, 159, 10, 0.88);
+  background: color-mix(in srgb, var(--warning) 88%, transparent);
   color: #4b2d00;
 }
 
@@ -1552,7 +1571,7 @@ export default {
 .card-name,
 .data-item .val,
 .target-val {
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .dark-mode .podium-item .name,
@@ -1572,13 +1591,13 @@ export default {
 .data-item .lbl,
 .target-label,
 .analysis-text {
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .rank-item {
   padding: 24rpx 22rpx;
   margin-bottom: 18rpx;
-  border-radius: 28rpx;
+  border-radius: 24rpx;
   border-left: none;
 }
 
@@ -1589,7 +1608,7 @@ export default {
 
 .rank-num {
   font-style: normal;
-  color: var(--text-sub);
+  color: var(--text-secondary);
 }
 
 .dark-mode .rank-num {
@@ -1606,7 +1625,7 @@ export default {
 
 /* [AUDIT FIX R177] 硬编码分数颜色 → CSS变量，自动适配暗黑模式 */
 .item-score {
-  color: var(--success-dark, #22873a);
+  color: var(--warning);
 }
 
 .my-rank-fixed {
@@ -1618,14 +1637,14 @@ export default {
 .my-rank-card {
   padding: 22rpx;
   /* gap: 12rpx; -- replaced for Android WebView compat */
-  border-radius: 32rpx;
+  border-radius: 24rpx;
 }
 
 .my-rank-card .rank-num,
 .my-rank-card .item-name,
 .my-rank-card .item-desc,
 .my-rank-card .item-score-text {
-  color: var(--text-main);
+  color: var(--text-inverse);
 }
 
 .dark-mode .my-rank-card .rank-num,
@@ -1639,24 +1658,31 @@ export default {
 .go-practice-btn,
 .challenge-btn {
   border-radius: 999rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: var(--warning);
+  color: var(--text-inverse);
+  border: none;
+  box-shadow: 0 8rpx 0 var(--warning-dark, #cc7800);
+}
+
+.rank-btn:active,
+.go-practice-btn:active,
+.challenge-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 var(--warning-dark, #cc7800);
 }
 
 .rank-btn {
   width: auto;
   min-width: 160rpx;
   padding: 0 24rpx;
-  color: var(--cta-primary-text);
-  background: var(--cta-primary-bg);
+  color: var(--text-inverse);
+  background: var(--warning);
 }
 
 .go-practice-btn {
   width: 240rpx;
   height: 88rpx;
-  font-weight: 620;
+  font-weight: 800;
 }
 
 .footprint-mask {
@@ -1692,10 +1718,10 @@ export default {
   width: 88rpx;
   height: 88rpx;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.64);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
-  color: var(--text-main);
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  color: var(--text-primary);
 }
 
 .dark-mode .close-btn {
@@ -1714,9 +1740,9 @@ export default {
 .ai-label {
   padding: 8rpx 14rpx;
   border-radius: 999rpx;
-  background: rgba(52, 199, 89, 0.12);
-  color: var(--text-main);
-  border: 1px solid rgba(52, 199, 89, 0.18);
+  background: rgba(255, 150, 0, 0.12);
+  color: var(--warning);
+  border: none;
 }
 
 .dark-mode .ai-label {
@@ -1729,9 +1755,9 @@ export default {
   display: inline-flex;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  background: rgba(255, 255, 255, 0.72);
-  color: var(--text-main);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(255, 150, 0, 0.12);
+  color: var(--warning);
+  border: none;
   border-radius: 999rpx;
   padding: 8rpx 16rpx;
 }

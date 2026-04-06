@@ -32,9 +32,7 @@
       <view v-for="(file, index) in files" :key="index" class="file-item">
         <view class="file-left">
           <view class="file-icon">
-            <text class="emoji">
-              {{ getFileIcon(file.name) }}
-            </text>
+            <BaseIcon :name="getFileIcon(file.name)" :size="40" />
           </view>
           <view class="file-details">
             <text class="file-name">
@@ -83,218 +81,227 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue';
+import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
-// [勾] 统一日志工具（生产环境自动禁用）
+// 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
-// [勾] 文件处理工具
+// 文件处理工具
 import { fileHandler } from './file-handler.js';
 // F019: storageService
 import storageService from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  components: { BaseEmpty, BaseIcon },
-  data() {
-    return {
-      isDark: false,
-      files: [],
-      isPageLoading: true // F018: 页面加载状态
-    };
-  },
-  onLoad() {
-    // 初始化主题
-    const savedTheme = storageService.get('theme_mode', 'light');
-    this.isDark = savedTheme === 'dark';
+// --- 响应式状态 ---
+const isDark = ref(false);
+const files = ref([]);
+const isPageLoading = ref(true); // F018: 页面加载状态
 
-    // 监听全局主题更新事件
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
+// --- 非响应式实例变量 ---
+let _themeHandler = null;
+let _recoveryAttempted = false;
 
-    // E005: 不在 onLoad 调用 loadFiles，onShow 会覆盖
-  },
-  onShow() {
-    this.loadFiles();
-  },
-  onUnload() {
-    // 移除事件监听
-    uni.$off('themeUpdate', this._themeHandler);
-  },
-  methods: {
-    loadFiles() {
-      // 从本地存储加载文件列表
-      logger.log('[文件管理] [搜索] 开始加载文件列表');
+// --- 页面生命周期 ---
+
+onLoad(() => {
+  // 初始化主题
+  const savedTheme = storageService.get('theme_mode', 'light');
+  isDark.value = savedTheme === 'dark';
+
+  // 监听全局主题更新事件
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+
+  // E005: 不在 onLoad 调用 loadFiles，onShow 会覆盖
+});
+
+onShow(() => {
+  loadFiles();
+});
+
+onUnload(() => {
+  // 移除事件监听
+  uni.$off('themeUpdate', _themeHandler);
+});
+
+// --- 方法 ---
+
+/** 从本地存储加载文件列表 */
+function loadFiles() {
+  logger.log('[文件管理] [搜索] 开始加载文件列表');
+  try {
+    let savedFiles = storageService.get('imported_files', []);
+
+    // E005: 仅首次尝试备份恢复，避免每次 onShow 都执行
+    if (savedFiles.length === 0 && !_recoveryAttempted) {
+      _recoveryAttempted = true;
+      logger.warn('[文件管理] [警告] 文件列表为空，尝试从备份恢复...');
       try {
-        let savedFiles = storageService.get('imported_files', []);
-
-        // E005: 仅首次尝试备份恢复，避免每次 onShow 都执行
-        if (savedFiles.length === 0 && !this._recoveryAttempted) {
-          this._recoveryAttempted = true;
-          logger.warn('[文件管理] [警告] 文件列表为空，尝试从备份恢复...');
-          try {
-            const backup = storageService.get('imported_files_backup');
-            if (backup) {
-              const restored = JSON.parse(backup);
-              if (Array.isArray(restored) && restored.length > 0) {
-                logger.log('[文件管理] [恢复] 从备份恢复文件列表:', restored.length, '个文件');
-                storageService.save('imported_files', restored);
-                savedFiles = restored;
-                toast.success('已从备份恢复文件列表', 2000);
-              }
-            }
-          } catch (restoreErr) {
-            logger.error('[文件管理] [叉] 恢复备份失败:', restoreErr);
+        const backup = storageService.get('imported_files_backup');
+        if (backup) {
+          const restored = JSON.parse(backup);
+          if (Array.isArray(restored) && restored.length > 0) {
+            logger.log('[文件管理] [恢复] 从备份恢复文件列表:', restored.length, '个文件');
+            storageService.save('imported_files', restored);
+            savedFiles = restored;
+            toast.success('已从备份恢复文件列表', 2000);
           }
         }
-
-        this.files = savedFiles;
-      } catch (err) {
-        logger.error('[文件管理] [叉] 加载文件列表异常:', err);
-        this.files = [];
-      } finally {
-        this.isPageLoading = false;
+      } catch (restoreErr) {
+        logger.error('[文件管理] [叉] 恢复备份失败:', restoreErr);
       }
-    },
-
-    goBack() {
-      safeNavigateBack();
-    },
-
-    /** 跳转到导入页面 */
-    goToImport() {
-      uni.navigateTo({ url: '/pages/practice-sub/import-data' });
-    },
-
-    /**
-     * 获取文件图标
-     */
-    getFileIcon(fileName) {
-      return fileHandler.getFileIcon(fileName);
-    },
-
-    /**
-     * 查看文件 - 使用 fileHandler 统一处理
-     */
-    async viewFile(file) {
-      logger.log('[文件管理] [文档] 查看文件:', file.name);
-
-      const fileName = file.name || '';
-      const _ext = fileHandler.getFileExtension(fileName);
-      const filePath = file.path || file.tempFilePath || file.url;
-
-      // 如果有本地路径或 URL，尝试预览
-      if (filePath) {
-        // 显示 Loading
-        toast.loading('加载中...');
-
-        try {
-          const result = await fileHandler.previewFile({
-            name: fileName,
-            path: filePath
-          });
-
-          toast.hide();
-
-          if (!result.success && !result.error?.includes('unsupported')) {
-            // 预览失败，显示文件信息
-            this.showFileInfo(file);
-          }
-        } catch (err) {
-          toast.hide();
-          logger.error('[文件管理] [叉] 文件预览失败:', err);
-          this.showFileInfo(file);
-        }
-      } else {
-        // 没有本地路径，显示文件信息
-        this.showFileInfo(file);
-      }
-    },
-
-    showFileInfo(file) {
-      const ext = fileHandler.getFileExtension(file.name);
-      const icon = fileHandler.getFileIcon(file.name);
-
-      const info = `文件名：${file.name}\n类型：${ext.toUpperCase()}\n大小：${this.formatSize(file.size)}\n来源：${file.source || '本地文件'}\n状态：${this.getStatusLabel(file.status)}\n导入时间：${file.date || '未知'}`;
-
-      uni.showModal({
-        title: `${icon} 文件信息`,
-        content: info,
-        confirmText: '知道了',
-        showCancel: false
-      });
-    },
-
-    formatSize(size) {
-      if (!size) return '0 KB';
-      // 如果 size 已经是 KB 单位
-      if (typeof size === 'number' && size < 10000) {
-        return `${size} KB`;
-      }
-      // 如果 size 是字节单位
-      return fileHandler.formatFileSize(size);
-    },
-
-    getStatusLabel(status) {
-      const statusMap = {
-        generating: '生成中',
-        completed: '已完成',
-        paused: '已暂停',
-        failed: '失败',
-        ready: '待处理',
-        cancelled: '已取消'
-      };
-      return statusMap[status] || '待处理';
-    },
-
-    deleteFile(index) {
-      uni.showModal({
-        title: '确认删除',
-        content: `确定要删除文件 "${this.files[index].name}" 吗？`,
-        success: (res) => {
-          if (res.confirm) {
-            const file = this.files[index];
-            this.files.splice(index, 1);
-            storageService.save('imported_files', this.files);
-
-            // 如果删除的文件正在生成，停止生成并清理题库
-            if (file.status === 'generating') {
-              // 清理题库中由该文件生成的题目
-              const _bank = storageService.get('v30_bank', []);
-              // 注意：这里简化处理，实际应该根据文件ID关联题目
-              // 暂时不清空整个题库，只提示用户
-              toast.info('文件已删除，题库仍保留');
-            } else {
-              toast.success('删除成功');
-            }
-          }
-        }
-      });
-    },
-
-    clearAll() {
-      if (this.files.length === 0) {
-        toast.info('暂无文件可删除');
-        return;
-      }
-
-      uni.showModal({
-        title: '清空文件',
-        content: '确定要删除所有文件吗？此操作不可恢复。',
-        success: (res) => {
-          if (res.confirm) {
-            this.files = [];
-            storageService.save('imported_files', []);
-            toast.success('已清空所有文件');
-          }
-        }
-      });
     }
+
+    files.value = savedFiles;
+  } catch (err) {
+    logger.error('[文件管理] [叉] 加载文件列表异常:', err);
+    files.value = [];
+  } finally {
+    isPageLoading.value = false;
   }
-};
+}
+
+/** 返回上一页 */
+function goBack() {
+  safeNavigateBack();
+}
+
+/** 跳转到导入页面 */
+function goToImport() {
+  uni.navigateTo({ url: '/pages/practice-sub/import-data' });
+}
+
+/** 获取文件图标 */
+function getFileIcon(fileName) {
+  return fileHandler.getFileIcon(fileName);
+}
+
+/** 查看文件 - 使用 fileHandler 统一处理 */
+async function viewFile(file) {
+  logger.log('[文件管理] [文档] 查看文件:', file.name);
+
+  const fileName = file.name || '';
+  const _ext = fileHandler.getFileExtension(fileName);
+  const filePath = file.path || file.tempFilePath || file.url;
+
+  // 如果有本地路径或 URL，尝试预览
+  if (filePath) {
+    // 显示 Loading
+    toast.loading('加载中...');
+
+    try {
+      const result = await fileHandler.previewFile({
+        name: fileName,
+        path: filePath
+      });
+
+      toast.hide();
+
+      if (!result.success && !result.error?.includes('unsupported')) {
+        // 预览失败，显示文件信息
+        showFileInfo(file);
+      }
+    } catch (err) {
+      toast.hide();
+      logger.error('[文件管理] [叉] 文件预览失败:', err);
+      showFileInfo(file);
+    }
+  } else {
+    // 没有本地路径，显示文件信息
+    showFileInfo(file);
+  }
+}
+
+/** 显示文件详细信息弹窗 */
+function showFileInfo(file) {
+  const ext = fileHandler.getFileExtension(file.name);
+  const icon = fileHandler.getFileIcon(file.name);
+
+  const info = `文件名：${file.name}\n类型：${ext.toUpperCase()}\n大小：${formatSize(file.size)}\n来源：${file.source || '本地文件'}\n状态：${getStatusLabel(file.status)}\n导入时间：${file.date || '未知'}`;
+
+  modal.show({
+    title: `${icon} 文件信息`,
+    content: info,
+    confirmText: '知道了',
+    showCancel: false
+  });
+}
+
+/** 格式化文件大小 */
+function formatSize(size) {
+  if (!size) return '0 KB';
+  // 如果 size 已经是 KB 单位
+  if (typeof size === 'number' && size < 10000) {
+    return `${size} KB`;
+  }
+  // 如果 size 是字节单位
+  return fileHandler.formatFileSize(size);
+}
+
+/** 获取状态标签文本 */
+function getStatusLabel(status) {
+  const statusMap = {
+    generating: '生成中',
+    completed: '已完成',
+    paused: '已暂停',
+    failed: '失败',
+    ready: '待处理',
+    cancelled: '已取消'
+  };
+  return statusMap[status] || '待处理';
+}
+
+/** 删除单个文件 */
+function deleteFile(index) {
+  modal.show({
+    title: '确认删除',
+    content: `确定要删除文件 "${files.value[index].name}" 吗？`,
+    success: (res) => {
+      if (res.confirm) {
+        const file = files.value[index];
+        files.value.splice(index, 1);
+        storageService.save('imported_files', files.value);
+
+        // 如果删除的文件正在生成，停止生成并清理题库
+        if (file.status === 'generating') {
+          // 清理题库中由该文件生成的题目
+          const _bank = storageService.get('v30_bank', []);
+          // 注意：这里简化处理，实际应该根据文件ID关联题目
+          // 暂时不清空整个题库，只提示用户
+          toast.info('文件已删除，题库仍保留');
+        } else {
+          toast.success('删除成功');
+        }
+      }
+    }
+  });
+}
+
+/** 清空所有文件 */
+function clearAll() {
+  if (files.value.length === 0) {
+    toast.info('暂无文件可删除');
+    return;
+  }
+
+  modal.show({
+    title: '清空文件',
+    content: '确定要删除所有文件吗？此操作不可恢复。',
+    success: (res) => {
+      if (res.confirm) {
+        files.value = [];
+        storageService.save('imported_files', []);
+        toast.success('已清空所有文件');
+      }
+    }
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -302,10 +309,10 @@ export default {
 .file-manager-container {
   min-height: 100%;
   min-height: 100vh;
-  background-color: var(--bg-body, var(--bg-card));
+  background-color: var(--background);
   padding: 20px;
   box-sizing: border-box;
-  color: var(--text-secondary, #495057);
+  color: var(--text-primary);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   transition: background-color 0.3s ease;
 }
@@ -338,13 +345,13 @@ export default {
 
 .back-arrow {
   font-size: 48rpx;
-  color: var(--text-primary, var(--text-primary));
+  color: var(--text-primary);
 }
 
 .nav-title {
   font-size: 56rpx;
-  font-weight: 700;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .nav-right {
@@ -356,7 +363,7 @@ export default {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: var(--bg-info-light);
+  background-color: rgba(45, 201, 196, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -364,17 +371,17 @@ export default {
 }
 
 .icon-btn:active {
-  background-color: var(--bg-info);
+  background-color: rgba(45, 201, 196, 0.2);
   transform: scale(1.05);
 }
 
 /* 文件列表 */
 .file-list {
-  background-color: var(--card-bg, var(--bg-card));
-  border: 1px solid var(--card-border, var(--border-light));
-  border-radius: 16px;
+  background-color: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 28rpx;
   overflow: hidden;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .file-item {
@@ -382,7 +389,7 @@ export default {
   align-items: flex-start;
   justify-content: space-between;
   padding: 24px 20px;
-  border-bottom: 1px solid var(--card-border, #e9ecef);
+  border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
   transition: background-color 0.2s ease;
 }
 
@@ -404,10 +411,14 @@ export default {
 
 .file-icon {
   flex-shrink: 0;
-}
-
-.file-icon .emoji {
-  font-size: 80rpx;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  background: rgba(45, 201, 196, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2dc9c4;
 }
 
 .file-details {
@@ -420,8 +431,8 @@ export default {
 
 .file-name {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 800;
+  color: var(--text-primary);
   line-height: 1.4;
   word-break: break-all;
   display: block;
@@ -431,7 +442,7 @@ export default {
   display: flex;
   /* gap: 12px; -- replaced for Android WebView compat */
   font-size: 26rpx;
-  color: var(--text-secondary, #495057);
+  color: var(--text-secondary);
 }
 
 .file-size,
@@ -503,12 +514,12 @@ export default {
 }
 
 .view-btn {
-  background-color: var(--bg-info-light);
-  color: var(--info-blue);
+  background-color: rgba(45, 201, 196, 0.12);
+  color: #2dc9c4;
 }
 
 .view-btn:active {
-  background-color: var(--bg-info);
+  background-color: rgba(45, 201, 196, 0.2);
 }
 
 .delete-btn {
@@ -576,9 +587,9 @@ export default {
 .skeleton-pulse {
   background: linear-gradient(
     90deg,
-    var(--bg-secondary, #f0f0f0) 25%,
-    var(--bg-hover, #e0e0e0) 50%,
-    var(--bg-secondary, #f0f0f0) 75%
+    var(--bg-secondary, var(--muted)) 25%,
+    var(--bg-hover, var(--border)) 50%,
+    var(--bg-secondary, var(--muted)) 75%
   );
   background-size: 200% 100%;
   animation: skeletonPulse 1.5s ease-in-out infinite;
@@ -620,14 +631,14 @@ export default {
 
 .empty-title {
   font-size: 40rpx;
-  font-weight: 600;
-  color: var(--text-primary, var(--text-primary));
+  font-weight: 800;
+  color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .empty-desc {
   font-size: 28rpx;
   margin: 0;
-  opacity: 0.7;
+  color: var(--text-secondary);
 }
 </style>

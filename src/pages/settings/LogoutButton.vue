@@ -12,6 +12,7 @@
 </template>
 
 <script setup>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { ref } from 'vue';
 // [AUDIT FIX] storageService 使用 default export，需用默认导入
@@ -25,7 +26,7 @@ const isLoggingOut = ref(false);
 
 const handleLogout = () => {
   if (isLoggingOut.value) return;
-  uni.showModal({
+  modal.show({
     title: '提示',
     content: '确定要退出当前账号吗？',
     confirmColor: '#EF4444',
