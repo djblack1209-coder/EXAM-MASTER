@@ -323,7 +323,7 @@ class IntelligentPlanManager {
 
   // 生成每日任务描述
   generateDailyTaskDescription(plan, dayIndex, totalDays) {
-    const progressPercentage = (dayIndex / totalDays) * 100;
+    const progressPercentage = totalDays > 0 ? (dayIndex / totalDays) * 100 : 0;
     let description = `完成每日 ${plan.dailyDuration} 的学习任务`;
 
     if (progressPercentage < 33) {

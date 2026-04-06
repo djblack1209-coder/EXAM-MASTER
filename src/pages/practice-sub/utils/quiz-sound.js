@@ -293,14 +293,18 @@ export function destroySoundResources() {
   _audioPool.forEach((ctx) => {
     try {
       ctx.destroy();
-    } catch (_e) {}
+    } catch (_e) {
+      /* 音频资源释放失败不影响功能 */
+    }
   });
   _audioPool.length = 0;
 
   if (_audioCtx && _audioCtx.state !== 'closed') {
     try {
       _audioCtx.close();
-    } catch (_e) {}
+    } catch (_e) {
+      /* AudioContext 关闭失败不影响功能 */
+    }
     _audioCtx = null;
   }
 }

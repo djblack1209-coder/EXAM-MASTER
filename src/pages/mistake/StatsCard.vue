@@ -76,11 +76,11 @@ function handleClick() {
 
   &--light {
     background: var(--bg-card);
-    border: 1px solid var(--border-light);
-    box-shadow: var(--card-shadow);
+    border: 2rpx solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 
     &:active {
-      box-shadow: var(--card-shadow-hover);
+      box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
       transform: translateY(-2px);
     }
   }
@@ -127,13 +127,13 @@ function handleClick() {
   &__title {
     font-size: 28rpx;
     color: var(--text-secondary);
-    font-weight: var(--font-weight-medium);
+    font-weight: 600;
     line-height: var(--line-height-normal);
   }
 
   &__value {
     font-size: 48rpx;
-    font-weight: var(--font-weight-bold);
+    font-weight: 800;
     color: var(--text-primary);
     line-height: var(--line-height-tight);
     margin-top: 4px;
@@ -149,7 +149,7 @@ function handleClick() {
     }
 
     &--negative {
-      color: #ef4444;
+      color: var(--danger);
     }
 
     &--neutral {
@@ -166,7 +166,7 @@ function handleClick() {
     flex-shrink: 0;
 
     &--light {
-      background: rgba(159, 232, 112, 0.1);
+      background: rgba(255, 75, 75, 0.08);
     }
 
     &--dark {

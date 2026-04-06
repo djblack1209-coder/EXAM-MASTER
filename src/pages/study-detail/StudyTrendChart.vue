@@ -392,19 +392,19 @@ function getDateLabel(date) {
   flex: 1;
   padding: 16rpx 24rpx;
   text-align: center;
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--bg-card);
   border-radius: 999rpx;
   transition: all 0.2s ease;
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 
   &.active {
-    background: var(--cta-primary-bg);
-    border-color: var(--cta-primary-border);
-    box-shadow: var(--cta-primary-shadow);
+    background: #58cc02;
+    border-color: #46a302;
+    box-shadow: 0 8rpx 0 #46a302;
 
     .range-text {
-      color: var(--cta-primary-text);
+      color: var(--text-inverse);
     }
   }
 
@@ -415,17 +415,17 @@ function getDateLabel(date) {
 
 .range-text {
   font-size: 24rpx;
-  color: var(--text-sub, #666);
-  font-weight: 500;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* 图表区域 */
 .chart-wrapper {
   width: 100%;
   padding: 16rpx;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--bg-card);
   border-radius: 24rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .trend-canvas {
@@ -447,21 +447,22 @@ function getDateLabel(date) {
   flex-direction: column;
   align-items: center;
   /* gap: 8rpx; -- replaced for Android WebView compat */
-  background: rgba(255, 255, 255, 0.56);
+  background: var(--bg-card);
   border-radius: 20rpx;
   padding: 16rpx 20rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.44);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .summary-value {
   font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-main, #111);
+  font-weight: 800;
+  color: #58cc02;
 }
 
 .summary-label {
   font-size: 22rpx;
-  color: var(--text-sub, #666);
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* 趋势指示器 */
@@ -479,7 +480,7 @@ function getDateLabel(date) {
   &.down {
     .trend-arrow,
     .trend-percent {
-      color: var(--ds-color-error, #ff3b30);
+      color: var(--ds-color-error, var(--danger));
     }
   }
 

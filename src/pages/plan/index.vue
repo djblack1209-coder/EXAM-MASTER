@@ -19,7 +19,7 @@
 
     <view v-if="!isLoading" class="header-nav" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content" :style="{ paddingRight: capsuleSafeRight + 'px' }">
-        <text class="nav-back" @tap="goBack"> ← </text>
+        <view class="nav-back" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
         <text class="nav-title"> 学习计划 </text>
         <view class="nav-add" @tap="createPlan">
           <text class="nav-add-text"> + </text>
@@ -245,7 +245,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue';
+import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
@@ -258,214 +261,243 @@ import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import { requireLogin, isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 
-export default {
-  components: {
-    BaseEmpty,
-    BaseIcon,
-    PlanSkeleton
-  },
-  data() {
-    return {
-      isRefreshing: false,
-      statusBarHeight: 44,
-      capsuleSafeRight: 20,
-      isDark: false,
-      isLoading: true,
-      plans: [],
-      intelligentReminders: [],
-      // AI 自适应计划
-      aiPlan: null,
-      aiPlanLoading: false
-    };
-  },
-  onLoad() {
-    this.statusBarHeight = getStatusBarHeight();
-    this.capsuleSafeRight = getCapsuleSafeRight();
-    this.studyEngineStore = useStudyEngineStore();
+// ---- 响应式状态 ----
+const isRefreshing = ref(false);
+const statusBarHeight = ref(44);
+const capsuleSafeRight = ref(20);
+const isDark = ref(false);
+const isLoading = ref(true);
+const plans = ref([]);
+const intelligentReminders = ref([]);
+// AI 自适应计划
+const aiPlan = ref(null);
+const aiPlanLoading = ref(false);
 
-    const savedTheme = storageService.get('theme_mode', 'light');
-    this.isDark = savedTheme === 'dark';
+// ---- 非响应式变量 ----
+let studyEngineStore = null;
+let _themeHandler = null;
+let loadDelayTimer = null;
 
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
-  },
-  onUnload() {
-    uni.$off('themeUpdate', this._themeHandler);
-  },
-  onShow() {
-    this.loadPlans();
-    this.loadIntelligentReminders();
-    this.loadAIPlan();
-  },
-  methods: {
-    async onPullRefresh() {
-      this.isRefreshing = true;
-      try {
-        await this.loadPlans();
-      } catch (_e) {
-        /* silent */
-      }
-      this.isRefreshing = false;
-    },
-    loadPlans() {
-      try {
-        this.plans = intelligentPlanManager.getPlans();
-      } catch (e) {
-        logger.error('[plan] 加载计划失败:', e);
-        this.plans = [];
-      } finally {
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 300);
-      }
-    },
-    async loadIntelligentReminders() {
-      try {
-        this.intelligentReminders = await intelligentPlanManager.getIntelligentReminders();
-      } catch {
-        // 智能提醒加载失败不影响主流程，静默降级
-        this.intelligentReminders = [];
-      }
-    },
+// ---- 页面生命周期 ----
 
-    /** AI 自适应7天计划 — 调用后端 generate_plan API */
-    async loadAIPlan() {
-      // 检查缓存（1小时内有效）
-      const cached = storageService.get('ai_adaptive_plan', null);
-      if (cached && Date.now() - (cached._ts || 0) < 3600000) {
-        this.aiPlan = cached;
-        return;
-      }
+onLoad(() => {
+  statusBarHeight.value = getStatusBarHeight();
+  capsuleSafeRight.value = getCapsuleSafeRight();
+  studyEngineStore = useStudyEngineStore();
 
-      this.aiPlanLoading = true;
-      try {
-        const examDate = storageService.get('exam_date', '');
-        const dailyHours = storageService.get('daily_study_hours', 4);
-        const result = await this.studyEngineStore.generateStudyPlan(examDate, dailyHours);
-        if (result?.data?.plan) {
-          const plan = result.data.plan;
-          plan._ts = Date.now();
-          this.aiPlan = plan;
-          storageService.save('ai_adaptive_plan', plan);
-        }
-      } catch (err) {
-        logger.warn('[plan] AI 计划加载失败:', err);
-      } finally {
-        this.aiPlanLoading = false;
-      }
-    },
+  const savedTheme = storageService.get('theme_mode', 'light');
+  isDark.value = savedTheme === 'dark';
 
-    /** 开始AI计划中的某一天任务 */
-    startAIPlanDay(day) {
-      if (day.tasks && day.tasks.length > 0) {
-        const firstTask = day.tasks[0];
-        if (firstTask.type === 'review') {
-          safeNavigateTo('/pages/practice-sub/smart-review');
-        } else {
-          safeNavigateTo('/pages/practice-sub/do-quiz');
-        }
-      }
-    },
-    createPlan() {
-      requireLogin(() => safeNavigateTo('/pages/plan/create'), { message: '请先登录后创建计划' });
-    },
-    goBack() {
-      safeNavigateBack();
-    },
-    getStatusText(status) {
-      switch (status) {
-        case 'not_started':
-          return '未开始';
-        case 'in_progress':
-          return '进行中';
-        case 'completed':
-          return '已完成';
-        default:
-          return '未知';
-      }
-    },
-    getPriorityText(priority) {
-      switch (priority) {
-        case 'low':
-          return '低优先级';
-        case 'medium':
-          return '中优先级';
-        case 'high':
-          return '高优先级';
-        default:
-          return '未知';
-      }
-    },
-    getTrendClass(trend) {
-      if (trend > 0) return 'positive';
-      if (trend < 0) return 'negative';
-      return 'neutral';
-    },
-    viewPlanDetail(plan) {
-      logger.log('[Plan] 查看计划详情:', plan.id);
-      const tasksDone = plan.tasks ? plan.tasks.filter((t) => t.completed).length : 0;
-      const tasksTotal = plan.tasks ? plan.tasks.length : 0;
-      const lines = [
-        plan.name,
-        `目标：${plan.goal || '未设置'}`,
-        `${plan.startDate} → ${plan.endDate}`,
-        `每日 ${plan.dailyDuration || '未设置'}`,
-        tasksTotal > 0 ? `任务进度：${tasksDone}/${tasksTotal}` : null,
-        plan.analytics ? `完成率：${plan.analytics.completionRate}%` : null
-      ]
-        .filter(Boolean)
-        .join('\n');
-      uni.showModal({
-        title: '计划详情',
-        content: lines,
-        showCancel: false,
-        confirmText: '关闭'
-      });
-    },
-    adjustPlan(planId) {
-      if (!isUserLoggedIn()) {
-        toast.info('请先登录后调整计划');
-        return;
-      }
-      logger.log('[Plan] 智能调整计划:', planId);
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+});
 
-      const studyStats = storageService.get('study_stats', {});
-      const learningProgress = studyStats.completionRate || studyStats.progress || 0;
-      const adjustedPlan = intelligentPlanManager.adjustPlan(planId, learningProgress);
+onUnload(() => {
+  uni.$off('themeUpdate', _themeHandler);
+  // 清理加载延迟定时器，防止页面卸载后仍修改状态
+  if (loadDelayTimer) clearTimeout(loadDelayTimer);
+});
 
-      if (adjustedPlan) {
-        toast.success('计划已智能调整');
-        this.loadPlans();
-      } else {
-        toast.info('调整失败');
-      }
-    },
-    deletePlan(planId) {
-      if (!isUserLoggedIn()) {
-        toast.info('请先登录后删除计划');
-        return;
-      }
-      uni.showModal({
-        title: '删除计划',
-        content: '确定要删除这个学习计划吗？',
-        confirmColor: '#FF3B30',
-        success: (res) => {
-          if (res.confirm) {
-            const success = intelligentPlanManager.deletePlan(planId);
-            if (success) {
-              toast.success('计划已删除');
-              this.loadPlans();
-            } else {
-              toast.info('删除失败');
-            }
-          }
-        }
-      });
+onShow(() => {
+  loadPlans();
+  loadIntelligentReminders();
+  loadAIPlan();
+});
+
+// ---- 数据加载 ----
+
+/** 下拉刷新 */
+async function onPullRefresh() {
+  isRefreshing.value = true;
+  try {
+    await loadPlans();
+  } catch (_e) {
+    /* 静默处理 */
+  }
+  isRefreshing.value = false;
+}
+
+/** 加载计划列表 */
+function loadPlans() {
+  try {
+    plans.value = intelligentPlanManager.getPlans();
+  } catch (e) {
+    logger.error('[plan] 加载计划失败:', e);
+    plans.value = [];
+  } finally {
+    // 追踪定时器，在 onUnload 中清理
+    loadDelayTimer = setTimeout(() => {
+      isLoading.value = false;
+    }, 300);
+  }
+}
+
+/** 加载智能提醒 */
+async function loadIntelligentReminders() {
+  try {
+    intelligentReminders.value = await intelligentPlanManager.getIntelligentReminders();
+  } catch {
+    // 智能提醒加载失败不影响主流程，静默降级
+    intelligentReminders.value = [];
+  }
+}
+
+/** AI 自适应7天计划 — 调用后端 generate_plan API */
+async function loadAIPlan() {
+  // 检查缓存（1小时内有效）
+  const cached = storageService.get('ai_adaptive_plan', null);
+  if (cached && Date.now() - (cached._ts || 0) < 3600000) {
+    aiPlan.value = cached;
+    return;
+  }
+
+  aiPlanLoading.value = true;
+  try {
+    const examDate = storageService.get('exam_date', '');
+    const dailyHours = storageService.get('daily_study_hours', 4);
+    const result = await studyEngineStore.generateStudyPlan(examDate, dailyHours);
+    if (result?.data?.plan) {
+      const plan = result.data.plan;
+      plan._ts = Date.now();
+      aiPlan.value = plan;
+      storageService.save('ai_adaptive_plan', plan);
+    }
+  } catch (err) {
+    logger.warn('[plan] AI 计划加载失败:', err);
+  } finally {
+    aiPlanLoading.value = false;
+  }
+}
+
+// ---- 用户交互 ----
+
+/** 开始AI计划中的某一天任务 */
+function startAIPlanDay(day) {
+  if (day.tasks && day.tasks.length > 0) {
+    const firstTask = day.tasks[0];
+    if (firstTask.type === 'review') {
+      safeNavigateTo('/pages/practice-sub/smart-review');
+    } else {
+      safeNavigateTo('/pages/practice-sub/do-quiz');
     }
   }
-};
+}
+
+/** 创建计划 */
+function createPlan() {
+  requireLogin(() => safeNavigateTo('/pages/plan/create'), { message: '请先登录后创建计划' });
+}
+
+/** 返回上一页 */
+function goBack() {
+  safeNavigateBack();
+}
+
+// ---- 辅助函数 ----
+
+/** 获取状态文本 */
+function getStatusText(status) {
+  switch (status) {
+    case 'not_started':
+      return '未开始';
+    case 'in_progress':
+      return '进行中';
+    case 'completed':
+      return '已完成';
+    default:
+      return '未知';
+  }
+}
+
+/** 获取优先级文本 */
+function getPriorityText(priority) {
+  switch (priority) {
+    case 'low':
+      return '低优先级';
+    case 'medium':
+      return '中优先级';
+    case 'high':
+      return '高优先级';
+    default:
+      return '未知';
+  }
+}
+
+/** 获取趋势样式类名 */
+function getTrendClass(trend) {
+  if (trend > 0) return 'positive';
+  if (trend < 0) return 'negative';
+  return 'neutral';
+}
+
+/** 查看计划详情 */
+function viewPlanDetail(plan) {
+  logger.log('[Plan] 查看计划详情:', plan.id);
+  const tasksDone = plan.tasks ? plan.tasks.filter((t) => t.completed).length : 0;
+  const tasksTotal = plan.tasks ? plan.tasks.length : 0;
+  const lines = [
+    plan.name,
+    `目标：${plan.goal || '未设置'}`,
+    `${plan.startDate} → ${plan.endDate}`,
+    `每日 ${plan.dailyDuration || '未设置'}`,
+    tasksTotal > 0 ? `任务进度：${tasksDone}/${tasksTotal}` : null,
+    plan.analytics ? `完成率：${plan.analytics.completionRate}%` : null
+  ]
+    .filter(Boolean)
+    .join('\n');
+  modal.show({
+    title: '计划详情',
+    content: lines,
+    showCancel: false,
+    confirmText: '关闭'
+  });
+}
+
+/** 智能调整计划 */
+function adjustPlan(planId) {
+  if (!isUserLoggedIn()) {
+    toast.info('请先登录后调整计划');
+    return;
+  }
+  logger.log('[Plan] 智能调整计划:', planId);
+
+  const studyStats = storageService.get('study_stats', {});
+  const learningProgress = studyStats.completionRate || studyStats.progress || 0;
+  const adjustedPlan = intelligentPlanManager.adjustPlan(planId, learningProgress);
+
+  if (adjustedPlan) {
+    toast.success('计划已智能调整');
+    loadPlans();
+  } else {
+    toast.info('调整失败');
+  }
+}
+
+/** 删除计划 */
+function deletePlan(planId) {
+  if (!isUserLoggedIn()) {
+    toast.info('请先登录后删除计划');
+    return;
+  }
+  modal.show({
+    title: '删除计划',
+    content: '确定要删除这个学习计划吗？',
+    confirmColor: 'var(--danger)',
+    success: (res) => {
+      if (res.confirm) {
+        const success = intelligentPlanManager.deletePlan(planId);
+        if (success) {
+          toast.success('计划已删除');
+          loadPlans();
+        } else {
+          toast.info('删除失败');
+        }
+      }
+    }
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -592,8 +624,8 @@ export default {
   display: block;
   font-size: 44rpx;
   line-height: 1.2;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .hero-subtitle {
@@ -615,15 +647,20 @@ export default {
   min-width: 200rpx;
   padding: 22rpx 34rpx;
   border-radius: 999rpx;
-  background: var(--cta-primary-bg);
-  border: 1px solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: #58cc02;
+  border: none;
+  box-shadow: 0 8rpx 0 #46a302;
+}
+
+.hero-cta:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 .hero-cta-text {
   font-size: 26rpx;
-  font-weight: 620;
-  color: var(--cta-primary-text);
+  font-weight: 800;
+  color: var(--text-inverse);
 }
 
 .section-heading {
@@ -638,8 +675,8 @@ export default {
 
 .section-title {
   font-size: 34rpx;
-  font-weight: 680;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .plans-heading {
@@ -691,8 +728,8 @@ export default {
   flex: 1;
   margin-right: 20rpx;
   font-size: 32rpx;
-  font-weight: 650;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .plan-badge,
@@ -707,7 +744,7 @@ export default {
 .plan-badge-text,
 .tag-text {
   font-size: 24rpx;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .plan-badge {
@@ -715,12 +752,12 @@ export default {
 }
 
 .plan-badge.in_progress {
-  background: rgba(52, 199, 89, 0.14);
+  background: color-mix(in srgb, var(--success) 14%, transparent);
   color: var(--success, #34c759);
 }
 
 .plan-badge.completed {
-  background: rgba(10, 132, 255, 0.12);
+  background: color-mix(in srgb, var(--info) 12%, transparent);
   color: var(--info, #0a84ff);
 }
 
@@ -761,8 +798,8 @@ export default {
 
 .analytics-value {
   font-size: 28rpx;
-  font-weight: 650;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .analytics-value.positive {
@@ -770,7 +807,7 @@ export default {
 }
 
 .analytics-value.negative {
-  color: var(--danger, #ff3b30);
+  color: var(--danger, var(--danger));
 }
 
 .analytics-value.neutral {
@@ -836,8 +873,8 @@ export default {
 .meta-value {
   display: block;
   font-size: 26rpx;
-  font-weight: 620;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 
 .task-stats {
@@ -865,7 +902,11 @@ export default {
 .ta<REDACTED_SECRET> {
   height: 100%;
   border-radius: 999rpx;
-  background: linear-gradient(90deg, rgba(52, 199, 89, 0.88) 0%, rgba(101, 219, 138, 0.96) 100%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--success) 88%, transparent) 0%,
+    color-mix(in srgb, var(--success) 96%, transparent) 100%
+  );
   transition: width 0.3s ease;
 }
 
@@ -899,7 +940,7 @@ export default {
 
 .priority-tag.high {
   background: rgba(255, 99, 90, 0.12);
-  color: var(--danger, #ff3b30);
+  color: var(--danger, var(--danger));
 }
 
 .plan-actions {
@@ -919,15 +960,20 @@ export default {
 }
 
 .action-btn.cta {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border-color: var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: #58cc02;
+  color: var(--text-inverse);
+  border-color: transparent;
+  box-shadow: 0 8rpx 0 #46a302;
+}
+
+.action-btn.cta:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 .action-btn.danger {
   background: rgba(255, 99, 90, 0.12);
-  color: var(--danger, #ff3b30);
+  color: var(--danger, var(--danger));
 }
 
 .action-btn:active,
@@ -1001,15 +1047,16 @@ export default {
   font-weight: 600;
 }
 .ai-day-card {
-  background: var(--bg-card, #fff);
-  border: 1px solid var(--border, #e5e7eb);
-  border-radius: 16px;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
   padding: 16px;
   margin-bottom: 12px;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .ai-day-card.today {
-  border-color: var(--color-primary, #34d399);
-  box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.2);
+  border-color: #58cc02;
+  box-shadow: 0 0 0 1px rgba(88, 204, 2, 0.2);
 }
 .ai-day-card:active {
   opacity: 0.9;
@@ -1023,13 +1070,13 @@ export default {
 }
 .day-label {
   font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary, #1e293b);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .day-focus {
   font-size: 12px;
-  color: var(--color-primary, #34d399);
-  background: rgba(52, 211, 153, 0.1);
+  color: #58cc02;
+  background: rgba(88, 204, 2, 0.12);
   padding: 2px 10px;
   border-radius: 10px;
 }
@@ -1057,24 +1104,29 @@ export default {
 .task-name {
   flex: 1;
   font-size: 13px;
-  color: var(--text-primary, #1e293b);
+  color: var(--text-primary);
 }
 .task-time {
   font-size: 12px;
-  color: var(--text-sub, #64748b);
+  color: var(--text-secondary);
   margin-left: 8px;
 }
 .day-cta {
   text-align: center;
   padding: 10px;
-  background: linear-gradient(135deg, var(--success, #34d399), var(--success-dark, #059669)); /* [AUDIT FIX R192] */
+  background: #58cc02;
   border-radius: 12px;
   margin-top: 8px;
+  box-shadow: 0 6rpx 0 #46a302;
+}
+.day-cta:active {
+  transform: translateY(3rpx);
+  box-shadow: 0 3rpx 0 #46a302;
 }
 .day-cta-text {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--text-inverse, #fff); /* [AUDIT FIX R193] */
+  font-weight: 800;
+  color: var(--text-inverse);
 }
 /* [AUDIT FIX R194] 移除3个冗余 .dark-mode 覆盖块 — .day-label/.task-name 已使用 --text-primary 自动切换 */
 /* [AUDIT FIX R195] .ai-day-card dark override 已由 --bg-card/--border-color 处理 */

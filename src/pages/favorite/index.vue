@@ -5,7 +5,7 @@
     <!-- 导航栏 -->
     <view class="header-nav apple-glass" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
-        <text class="nav-back" @tap="goBack"> ← </text>
+        <view class="nav-back" @tap="goBack"><BaseIcon name="arrow-left" :size="32" /></view>
         <text class="nav-title"> 我的收藏 </text>
         <view class="nav-actions">
           <text class="nav-action" @tap="showFolderModal = true"> + </text>
@@ -87,7 +87,9 @@
               {{ folder.name }}
             </text>
             <text class="folder-count"> {{ folder.count }} 题 </text>
-            <view v-if="!folder.isDefault" class="folder-delete" @tap.stop="confirmDeleteFolder(folder)"> × </view>
+            <view v-if="!folder.isDefault" class="folder-delete" @tap.stop="confirmDeleteFolder(folder)">
+              <BaseIcon name="close" :size="20" />
+            </view>
           </view>
         </view>
       </view>
@@ -99,7 +101,7 @@
             {{ currentFolderName }}
           </text>
           <view class="sort-btn apple-glass-pill" @tap="toggleSort">
-            <text class="sort-icon"> ↕ </text>
+            <BaseIcon name="sort" :size="24" class="sort-icon" />
             <text class="sort-text">
               {{ sortLabel }}
             </text>
@@ -183,7 +185,7 @@
       <view class="modal-content apple-glass-card" @tap.stop>
         <view class="modal-header">
           <text class="modal-title"> 新建收藏夹 </text>
-          <text class="modal-close" @tap="showFolderModal = false"> × </text>
+          <view class="modal-close" @tap="showFolderModal = false"><BaseIcon name="close" :size="24" /></view>
         </view>
         <view class="modal-body">
           <input v-model="newFolderName" class="modal-input" placeholder="输入收藏夹名称" maxlength="10" />
@@ -214,7 +216,7 @@
       <view class="modal-content apple-glass-card" @tap.stop>
         <view class="modal-header">
           <text class="modal-title"> 移动到 </text>
-          <text class="modal-close" @tap="showMoveModal = false"> × </text>
+          <view class="modal-close" @tap="showMoveModal = false"><BaseIcon name="close" :size="24" /></view>
         </view>
         <view class="modal-body">
           <view
@@ -239,7 +241,7 @@
       <view class="modal-content apple-glass-card" @tap.stop>
         <view class="modal-header">
           <text class="modal-title"> 添加笔记 </text>
-          <text class="modal-close" @tap="showNoteModal = false"> × </text>
+          <view class="modal-close" @tap="showNoteModal = false"><BaseIcon name="close" :size="24" /></view>
         </view>
         <view class="modal-body">
           <textarea
@@ -258,7 +260,10 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, computed } from 'vue';
+import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
@@ -276,354 +281,382 @@ import { getStatusBarHeight } from '@/utils/core/system.js';
 import questionFavoriteManager from '@/utils/favorite/question-favorite.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  components: { BaseIcon },
-  data() {
-    return {
-      isRefreshing: false,
-      statusBarHeight: 44,
-      isDark: false,
-      isLoading: true, // ✅ F018: 加载状态
+// ── 响应式状态 ──
+const isRefreshing = ref(false);
+const statusBarHeight = ref(44);
+const isDark = ref(false);
+const isLoading = ref(true); // ✅ F018: 加载状态
 
-      // 收藏夹
-      folders: [],
-      currentFolderId: null,
+// 收藏夹
+const folders = ref([]);
+const currentFolderId = ref(null);
 
-      // 收藏列表
-      favorites: [],
-      showOptions: {},
+// 收藏列表
+const favorites = ref([]);
+const showOptions = reactive({});
 
-      // 排序
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
+// 排序
+const sortBy = ref('createdAt');
+const sortOrder = ref('desc');
 
-      // 弹窗状态
-      showFolderModal: false,
-      showMoveModal: false,
-      showNoteModal: false,
+// 弹窗状态
+const showFolderModal = ref(false);
+const showMoveModal = ref(false);
+const showNoteModal = ref(false);
 
-      // 新建收藏夹
-      newFolderName: '',
-      newFolderIcon: 'folder',
-      folderIcons: ['folder', 'star', 'flame', 'bulb', 'books', 'target', 'muscle', 'trophy', 'note', 'bookmark'],
+// 新建收藏夹
+const newFolderName = ref('');
+const newFolderIcon = ref('folder');
+const folderIcons = ['folder', 'star', 'flame', 'bulb', 'books', 'target', 'muscle', 'trophy', 'note', 'bookmark'];
 
-      // 移动操作
-      movingItem: null,
+// 移动操作
+const movingItem = ref(null);
 
-      // 笔记编辑
-      editingItem: null,
-      noteContent: '',
+// 笔记编辑
+const editingItem = ref(null);
+const noteContent = ref('');
 
-      // 统计数据
-      stats: {
-        totalCount: 0,
-        reviewedCount: 0,
-        needReviewCount: 0,
-        withNoteCount: 0
-      },
+// 统计数据
+const stats = ref({
+  totalCount: 0,
+  reviewedCount: 0,
+  needReviewCount: 0,
+  withNoteCount: 0
+});
 
-      // F007: 增量渲染 — 每次显示20条，滚动到底部加载更多
-      displayCount: 20
-    };
-  },
-  computed: {
-    currentFolderName() {
-      if (!this.currentFolderId) return '全部收藏';
-      const folder = this.folders.find((f) => f.id === this.currentFolderId);
-      return folder ? folder.name : '全部收藏';
-    },
-    filteredFavorites() {
-      let result = [...this.favorites];
+// F007: 增量渲染 — 每次显示20条，滚动到底部加载更多
+const displayCount = ref(20);
 
-      if (this.currentFolderId) {
-        result = result.filter((f) => f.folderId === this.currentFolderId);
-      }
+// 主题切换回调引用（非响应式，仅用于事件解绑）
+let _themeHandler = null;
 
-      result.sort((a, b) => {
-        const aVal = a[this.sortBy] || 0;
-        const bVal = b[this.sortBy] || 0;
-        return this.sortOrder === 'desc' ? bVal - aVal : aVal - bVal;
-      });
+// ── 计算属性 ──
 
-      return result;
-    },
-    // F007: 增量渲染 — 只渲染前 displayCount 条到 DOM
-    displayedFavorites() {
-      return this.filteredFavorites.slice(0, this.displayCount);
-    },
-    sortLabel() {
-      if (this.sortBy === 'createdAt') {
-        return this.sortOrder === 'desc' ? '最新' : '最早';
-      }
-      return '排序';
-    },
-    totalFavorites() {
-      return this.stats.totalCount || this.favorites.length;
-    },
-    reviewedCount() {
-      return this.stats.reviewedCount || 0;
-    },
-    needReviewCount() {
-      return this.stats.needReviewCount || 0;
-    },
-    withNoteCount() {
-      return this.stats.withNoteCount || 0;
-    }
-  },
-  onLoad() {
-    this.initSystemUI();
-    this.loadData();
+/** 当前选中收藏夹的名称 */
+const currentFolderName = computed(() => {
+  if (!currentFolderId.value) return '全部收藏';
+  const folder = folders.value.find((f) => f.id === currentFolderId.value);
+  return folder ? folder.name : '全部收藏';
+});
 
-    const savedTheme = storageService.get('theme_mode', 'light');
-    this.isDark = savedTheme === 'dark';
+/** 按收藏夹 + 排序条件过滤后的收藏列表 */
+const filteredFavorites = computed(() => {
+  let result = [...favorites.value];
 
-    // ✅ F024: 监听主题实时切换
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
-  },
-  onShow() {
-    this.loadData();
-  },
-  onUnload() {
-    uni.$off('themeUpdate', this._themeHandler);
-  },
-  methods: {
-    async onPullRefresh() {
-      this.isRefreshing = true;
-      try {
-        await this.loadData();
-      } catch (_e) {
-        /* silent */
-      }
-      this.isRefreshing = false;
-    },
-    initSystemUI() {
-      this.statusBarHeight = getStatusBarHeight();
-    },
-
-    loadData() {
-      try {
-        this.folders = getFolders();
-        this.favorites = getFavorites();
-        // 加载统计数据
-        this.stats = getFavoriteStats();
-        logger.log('[favorite] 数据加载完成:', {
-          folders: this.folders.length,
-          favorites: this.favorites.length,
-          stats: this.stats
-        });
-      } catch (e) {
-        logger.warn('[favorite] 加载数据失败:', e);
-      } finally {
-        this.isLoading = false; // ✅ F018
-      }
-    },
-
-    goBack() {
-      safeNavigateBack();
-    },
-
-    selectFolder(folderId) {
-      this.currentFolderId = folderId;
-      this.displayCount = 20; // F007: 切换收藏夹时重置增量渲染计数
-    },
-
-    toggleSort() {
-      if (this.sortOrder === 'desc') {
-        this.sortOrder = 'asc';
-      } else {
-        this.sortOrder = 'desc';
-      }
-      this.displayCount = 20; // F007: 切换排序时重置增量渲染计数
-    },
-
-    // F007: 滚动到底部时加载更多收藏
-    loadMoreFavorites() {
-      if (this.displayCount < this.filteredFavorites.length) {
-        this.displayCount = Math.min(this.displayCount + 20, this.filteredFavorites.length);
-      }
-    },
-
-    toggleOptions(itemId) {
-      // Vue 3 reactivity handles dynamic property addition natively
-      this.showOptions[itemId] = !this.showOptions[itemId];
-    },
-
-    formatDate(timestamp) {
-      if (!timestamp) return '';
-      const date = new Date(timestamp);
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      return `${month}月${day}日`;
-    },
-
-    // 显示收藏夹操作菜单
-    showFolderActions(folder) {
-      if (folder.isDefault) {
-        toast.info('默认收藏夹不可操作');
-        return;
-      }
-      uni.showActionSheet({
-        itemList: ['重命名', '删除收藏夹'],
-        success: (res) => {
-          if (res.tapIndex === 0) {
-            this.renameFolderPrompt(folder);
-          } else if (res.tapIndex === 1) {
-            this.confirmDeleteFolder(folder);
-          }
-        }
-      });
-    },
-
-    // 重命名收藏夹
-    renameFolderPrompt(folder) {
-      // 简单实现：使用 modal 输入
-      uni.showModal({
-        title: '重命名收藏夹',
-        editable: true,
-        placeholderText: folder.name,
-        success: (res) => {
-          if (res.confirm && res.content && res.content.trim()) {
-            // 更新收藏夹名称
-            const idx = this.folders.findIndex((f) => f.id === folder.id);
-            if (idx >= 0) {
-              this.folders[idx].name = res.content.trim();
-              storageService.save('favorite_folders', this.folders);
-              toast.success('重命名成功');
-              this.loadData();
-            }
-          }
-        }
-      });
-    },
-
-    // 确认删除收藏夹
-    confirmDeleteFolder(folder) {
-      uni.showModal({
-        title: '删除收藏夹',
-        content: `确定要删除"${folder.name}"吗？其中的收藏将移至默认收藏夹。`,
-        success: (res) => {
-          if (res.confirm) {
-            const result = questionFavoriteManager.deleteFolder(folder.id);
-            if (result.success) {
-              toast.success('删除成功');
-              this.loadData();
-            } else {
-              toast.info(result.error || '删除失败');
-            }
-          }
-        }
-      });
-    },
-
-    // 创建收藏夹
-    createFolder() {
-      if (!this.newFolderName.trim()) {
-        toast.info('请输入收藏夹名称');
-        return;
-      }
-
-      const result = createFavoriteFolder({
-        name: this.newFolderName.trim(),
-        icon: this.newFolderIcon
-      });
-
-      if (result.success) {
-        toast.success('创建成功');
-        this.showFolderModal = false;
-        this.newFolderName = '';
-        this.newFolderIcon = 'folder';
-        this.loadData();
-      } else {
-        toast.info(result.error || '创建失败');
-      }
-    },
-
-    // 移动到收藏夹
-    moveToFolder(item) {
-      this.movingItem = item;
-      this.showMoveModal = true;
-    },
-
-    confirmMove(folderId) {
-      if (!this.movingItem || folderId === this.movingItem.folderId) return;
-
-      const result = moveFavoriteToFolder(this.movingItem.id, folderId);
-
-      if (result.success) {
-        toast.success('移动成功');
-        this.showMoveModal = false;
-        this.movingItem = null;
-        this.loadData();
-      } else {
-        toast.info(result.error || '移动失败');
-      }
-    },
-
-    // 删除收藏
-    removeFavorite(item) {
-      uni.showModal({
-        title: '确认取消收藏',
-        content: '确定要取消收藏这道题吗？',
-        success: (res) => {
-          if (res.confirm) {
-            const result = removeFromFavorites(item.id);
-            if (result.success) {
-              toast.success('已取消收藏');
-              this.loadData();
-            } else {
-              toast.info(result.message || '取消收藏失败');
-            }
-          }
-        }
-      });
-    },
-
-    // 笔记相关
-    openNoteModal(item) {
-      this.editingItem = item;
-      this.noteContent = item.note || '';
-      this.showNoteModal = true;
-    },
-
-    saveNote() {
-      if (!this.editingItem) return;
-
-      const result = updateNote(this.editingItem.id, this.noteContent.trim());
-
-      if (result.success) {
-        toast.success('保存成功');
-        this.showNoteModal = false;
-        this.editingItem = null;
-        this.noteContent = '';
-        this.loadData();
-      } else {
-        toast.info('保存失败');
-      }
-    },
-
-    // 练习题目
-    practiceQuestion(item) {
-      try {
-        // 将题目存入临时存储，跳转到答题页面
-        storageService.save('temp_practice_question', {
-          id: item.questionId,
-          question: item.questionContent,
-          options: item.options,
-          answer: item.answer,
-          desc: item.analysis,
-          category: item.category
-        });
-
-        safeNavigateTo('/pages/practice-sub/do-quiz?mode=single');
-      } catch (_error) {
-        toast.info('跳转练习失败');
-      }
-    }
+  if (currentFolderId.value) {
+    result = result.filter((f) => f.folderId === currentFolderId.value);
   }
-};
+
+  result.sort((a, b) => {
+    const aVal = a[sortBy.value] || 0;
+    const bVal = b[sortBy.value] || 0;
+    return sortOrder.value === 'desc' ? bVal - aVal : aVal - bVal;
+  });
+
+  return result;
+});
+
+/** F007: 增量渲染 — 只渲染前 displayCount 条到 DOM */
+const displayedFavorites = computed(() => {
+  return filteredFavorites.value.slice(0, displayCount.value);
+});
+
+/** 排序按钮文案 */
+const sortLabel = computed(() => {
+  if (sortBy.value === 'createdAt') {
+    return sortOrder.value === 'desc' ? '最新' : '最早';
+  }
+  return '排序';
+});
+
+/** 总收藏数 */
+const totalFavorites = computed(() => {
+  return stats.value.totalCount || favorites.value.length;
+});
+
+/** 已复习数 */
+const reviewedCount = computed(() => {
+  return stats.value.reviewedCount || 0;
+});
+
+/** 待复习数 */
+const needReviewCount = computed(() => {
+  return stats.value.needReviewCount || 0;
+});
+
+/** 有笔记数 */
+const withNoteCount = computed(() => {
+  return stats.value.withNoteCount || 0;
+});
+
+// ── 方法 ──
+
+/** 下拉刷新 */
+async function onPullRefresh() {
+  isRefreshing.value = true;
+  try {
+    loadData();
+  } catch (_e) {
+    /* 静默处理 */
+  }
+  isRefreshing.value = false;
+}
+
+/** 初始化系统 UI 信息 */
+function initSystemUI() {
+  statusBarHeight.value = getStatusBarHeight();
+}
+
+/** 加载收藏数据 */
+function loadData() {
+  try {
+    folders.value = getFolders();
+    favorites.value = getFavorites();
+    // 加载统计数据
+    stats.value = getFavoriteStats();
+    logger.log('[favorite] 数据加载完成:', {
+      folders: folders.value.length,
+      favorites: favorites.value.length,
+      stats: stats.value
+    });
+  } catch (e) {
+    logger.warn('[favorite] 加载数据失败:', e);
+  } finally {
+    isLoading.value = false; // ✅ F018
+  }
+}
+
+/** 返回上一页 */
+function goBack() {
+  safeNavigateBack();
+}
+
+/** 选择收藏夹 */
+function selectFolder(folderId) {
+  currentFolderId.value = folderId;
+  displayCount.value = 20; // F007: 切换收藏夹时重置增量渲染计数
+}
+
+/** 切换排序方向 */
+function toggleSort() {
+  if (sortOrder.value === 'desc') {
+    sortOrder.value = 'asc';
+  } else {
+    sortOrder.value = 'desc';
+  }
+  displayCount.value = 20; // F007: 切换排序时重置增量渲染计数
+}
+
+/** F007: 滚动到底部时加载更多收藏 */
+function loadMoreFavorites() {
+  if (displayCount.value < filteredFavorites.value.length) {
+    displayCount.value = Math.min(displayCount.value + 20, filteredFavorites.value.length);
+  }
+}
+
+/** 切换答案/选项显示 */
+function toggleOptions(itemId) {
+  // Vue 3 reactive 可直接动态添加属性
+  showOptions[itemId] = !showOptions[itemId];
+}
+
+/** 格式化时间戳为 "X月X日" */
+function formatDate(timestamp) {
+  if (!timestamp) return '';
+  const date = new Date(timestamp);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${month}月${day}日`;
+}
+
+/** 显示收藏夹操作菜单（长按触发） */
+function showFolderActions(folder) {
+  if (folder.isDefault) {
+    toast.info('默认收藏夹不可操作');
+    return;
+  }
+  uni.showActionSheet({
+    itemList: ['重命名', '删除收藏夹'],
+    success: (res) => {
+      if (res.tapIndex === 0) {
+        renameFolderPrompt(folder);
+      } else if (res.tapIndex === 1) {
+        confirmDeleteFolder(folder);
+      }
+    }
+  });
+}
+
+/** 重命名收藏夹 */
+function renameFolderPrompt(folder) {
+  modal.show({
+    title: '重命名收藏夹',
+    editable: true,
+    placeholderText: folder.name,
+    success: (res) => {
+      if (res.confirm && res.content && res.content.trim()) {
+        // 更新收藏夹名称
+        const idx = folders.value.findIndex((f) => f.id === folder.id);
+        if (idx >= 0) {
+          folders.value[idx].name = res.content.trim();
+          storageService.save('favorite_folders', folders.value);
+          toast.success('重命名成功');
+          loadData();
+        }
+      }
+    }
+  });
+}
+
+/** 确认删除收藏夹 */
+function confirmDeleteFolder(folder) {
+  modal.show({
+    title: '删除收藏夹',
+    content: `确定要删除"${folder.name}"吗？其中的收藏将移至默认收藏夹。`,
+    success: (res) => {
+      if (res.confirm) {
+        const result = questionFavoriteManager.deleteFolder(folder.id);
+        if (result.success) {
+          toast.success('删除成功');
+          loadData();
+        } else {
+          toast.info(result.error || '删除失败');
+        }
+      }
+    }
+  });
+}
+
+/** 创建收藏夹 */
+function createFolder() {
+  if (!newFolderName.value.trim()) {
+    toast.info('请输入收藏夹名称');
+    return;
+  }
+
+  const result = createFavoriteFolder({
+    name: newFolderName.value.trim(),
+    icon: newFolderIcon.value
+  });
+
+  if (result.success) {
+    toast.success('创建成功');
+    showFolderModal.value = false;
+    newFolderName.value = '';
+    newFolderIcon.value = 'folder';
+    loadData();
+  } else {
+    toast.info(result.error || '创建失败');
+  }
+}
+
+/** 移动到收藏夹（打开弹窗） */
+function moveToFolder(item) {
+  movingItem.value = item;
+  showMoveModal.value = true;
+}
+
+/** 确认移动到指定收藏夹 */
+function confirmMove(folderId) {
+  if (!movingItem.value || folderId === movingItem.value.folderId) return;
+
+  const result = moveFavoriteToFolder(movingItem.value.id, folderId);
+
+  if (result.success) {
+    toast.success('移动成功');
+    showMoveModal.value = false;
+    movingItem.value = null;
+    loadData();
+  } else {
+    toast.info(result.error || '移动失败');
+  }
+}
+
+/** 删除收藏 */
+function removeFavorite(item) {
+  modal.show({
+    title: '确认取消收藏',
+    content: '确定要取消收藏这道题吗？',
+    success: (res) => {
+      if (res.confirm) {
+        const result = removeFromFavorites(item.id);
+        if (result.success) {
+          toast.success('已取消收藏');
+          loadData();
+        } else {
+          toast.info(result.message || '取消收藏失败');
+        }
+      }
+    }
+  });
+}
+
+/** 打开笔记编辑弹窗 */
+function openNoteModal(item) {
+  editingItem.value = item;
+  noteContent.value = item.note || '';
+  showNoteModal.value = true;
+}
+
+/** 保存笔记 */
+function saveNote() {
+  if (!editingItem.value) return;
+
+  const result = updateNote(editingItem.value.id, noteContent.value.trim());
+
+  if (result.success) {
+    toast.success('保存成功');
+    showNoteModal.value = false;
+    editingItem.value = null;
+    noteContent.value = '';
+    loadData();
+  } else {
+    toast.info('保存失败');
+  }
+}
+
+/** 练习题目（跳转答题页） */
+function practiceQuestion(item) {
+  try {
+    // 将题目存入临时存储，跳转到答题页面
+    storageService.save('temp_practice_question', {
+      id: item.questionId,
+      question: item.questionContent,
+      options: item.options,
+      answer: item.answer,
+      desc: item.analysis,
+      category: item.category
+    });
+
+    safeNavigateTo('/pages/practice-sub/do-quiz?mode=single');
+  } catch (_error) {
+    toast.info('跳转练习失败');
+  }
+}
+
+// ── 生命周期 ──
+
+onLoad(() => {
+  initSystemUI();
+  loadData();
+
+  const savedTheme = storageService.get('theme_mode', 'light');
+  isDark.value = savedTheme === 'dark';
+
+  // ✅ F024: 监听主题实时切换
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+});
+
+onShow(() => {
+  loadData();
+});
+
+onUnload(() => {
+  uni.$off('themeUpdate', _themeHandler);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -1275,7 +1308,7 @@ export default {
 .loading-spinner {
   width: 60rpx;
   height: 60rpx;
-  border: 4rpx solid var(--border, #e0e0e0);
+  border: 4rpx solid var(--border, var(--border));
   border-top-color: var(--primary, #4f46e5);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;

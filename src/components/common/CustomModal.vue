@@ -252,13 +252,13 @@ function handleCancel() {
   margin: 0 auto 24rpx;
 
   &.info {
-    background: rgba(52, 199, 89, 0.12);
+    background: color-mix(in srgb, var(--success) 12%, transparent);
   }
   &.success {
-    background: rgba(52, 199, 89, 0.12);
+    background: color-mix(in srgb, var(--success) 12%, transparent);
   }
   &.warning {
-    background: rgba(255, 159, 10, 0.14);
+    background: color-mix(in srgb, var(--warning) 14%, transparent);
   }
   &.error {
     background: rgba(255, 99, 90, 0.14);
@@ -266,7 +266,7 @@ function handleCancel() {
   &.empty,
   &.upload,
   &.study {
-    background: rgba(52, 199, 89, 0.12);
+    background: color-mix(in srgb, var(--success) 12%, transparent);
   }
 
   .custom-modal-container.dark & {
@@ -368,9 +368,9 @@ function handleCancel() {
 
   /* [AUDIT FIX R182] 警告/错误确认按钮文字色 → CSS变量 */
   &.warning {
-    background: rgba(255, 159, 10, 0.14);
+    background: color-mix(in srgb, var(--warning) 14%, transparent);
     color: var(--warning-dark, #b56a00);
-    border-color: rgba(255, 159, 10, 0.18);
+    border-color: color-mix(in srgb, var(--warning) 18%, transparent);
     box-shadow: var(--apple-shadow-surface);
   }
 

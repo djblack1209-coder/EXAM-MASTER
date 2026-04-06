@@ -186,11 +186,11 @@ onMounted(async () => {
 <style scoped>
 .fsrs-card {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 20rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
   padding: 32rpx;
   margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 .fsrs-header {
   margin-bottom: 24rpx;
@@ -209,8 +209,8 @@ onMounted(async () => {
 }
 .fsrs-title {
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-primary);
 }
 .fsrs-badge {
   font-size: 20rpx;
@@ -257,12 +257,13 @@ onMounted(async () => {
 }
 .fsrs-curve-title {
   font-size: 26rpx;
-  color: var(--text-main);
-  font-weight: 500;
+  color: var(--text-primary);
+  font-weight: 700;
 }
 .fsrs-retention-value {
   font-size: 22rpx;
-  color: var(--primary);
+  color: #58cc02;
+  font-weight: 600;
 }
 .fsrs-curve-chart {
   display: flex;
@@ -299,11 +300,12 @@ onMounted(async () => {
   line-height: 72rpx;
   text-align: center;
   font-size: 28rpx;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--text-inverse);
-  background: var(--primary);
-  border-radius: 16rpx;
+  background: #58cc02;
+  border-radius: 24rpx;
   border: none;
+  box-shadow: 0 8rpx 0 #46a302;
 }
 .fsrs-btn-disabled {
   background: var(--muted);

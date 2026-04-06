@@ -82,246 +82,248 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme';
 
-export default {
-  name: 'StudyHeatmap',
-  props: {
-    // 学习记录数据 { 'YYYY-MM-DD': minutes }
-    studyData: {
-      type: Object,
-      default: () => ({})
-    },
-    // 显示的周数（默认显示最近52周，即一年）
-    weeks: {
-      type: Number,
-      default: 52
-    }
+// ---- Props & Emits ----
+const props = defineProps({
+  // 学习记录数据 { 'YYYY-MM-DD': minutes }
+  studyData: {
+    type: Object,
+    default: () => ({})
   },
-  emits: ['day-tap'],
-  data() {
-    return {
-      heatmapData: [],
-      monthLabels: [],
-      selectedDay: null,
-      totalDays: 0,
-      currentStreak: 0,
-      maxStreak: 0,
-      isDark: false,
-      themeHandlerRef: null
-    };
-  },
-  watch: {
-    // [AUDIT FIX R135] 移除 deep: true —— 父组件替换整个 studyData 对象引用时
-    // 浅引用比较已能捕获变化，无需深度遍历 52×7 个属性
-    studyData: {
-      handler() {
-        this.generateHeatmapData();
-        this.calculateStats();
-      },
-      immediate: true
-    }
-  },
-  mounted() {
-    this.isDark = initTheme();
-    this.themeHandlerRef = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    onThemeUpdate(this.themeHandlerRef);
-  },
-  beforeUnmount() {
-    if (this.themeHandlerRef) {
-      offThemeUpdate(this.themeHandlerRef);
-    }
-  },
-  beforeUnmount() {
-    if (this._themeHandler) {
-      offThemeUpdate(this._themeHandler);
-    }
-  },
-  methods: {
-    /**
-     * 生成热力图数据
-     */
-    generateHeatmapData() {
-      const today = new Date();
-      const data = [];
-      const months = new Set();
+  // 显示的周数（默认显示最近52周，即一年）
+  weeks: {
+    type: Number,
+    default: 52
+  }
+});
 
-      // 计算起始日期（从最近的周日开始往前推）
-      const endDate = new Date(today);
-      const _dayOfWeek = endDate.getDay();
+const emit = defineEmits(['day-tap']);
 
-      // 计算需要显示的总天数
-      const totalDays = this.weeks * 7;
+// ---- 响应式状态 ----
+const heatmapData = ref([]);
+const monthLabels = ref([]);
+const selectedDay = ref(null);
+const totalDays = ref(0);
+const currentStreak = ref(0);
+const maxStreak = ref(0);
+const isDark = ref(false);
 
-      // 从今天往前推算
-      for (let i = totalDays - 1; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
+// 主题回调引用，用于卸载时取消监听
+let themeHandlerRef = null;
 
-        const weekIndex = Math.floor((totalDays - 1 - i) / 7);
-        const dayIndex = date.getDay();
+// ---- 工具函数 ----
 
-        if (!data[weekIndex]) {
-          data[weekIndex] = new Array(7).fill(null);
-        }
+/**
+ * 格式化日期为 YYYY-MM-DD
+ */
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
-        const dateStr = this.formatDate(date);
-        const minutes = this.studyData[dateStr] || 0;
+/**
+ * 格式化显示日期
+ */
+function formatDisplayDate(date) {
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  return `${month}月${day}日 ${weekDays[date.getDay()]}`;
+}
 
-        data[weekIndex][dayIndex] = {
-          date: date,
-          dateStr: this.formatDisplayDate(date),
-          key: dateStr,
-          minutes: minutes,
-          level: this.getLevel(minutes)
-        };
+/**
+ * 获取月份标签
+ */
+function getMonthLabel(date) {
+  const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+  return monthNames[date.getMonth()];
+}
 
-        // 收集月份标签
-        if (date.getDate() <= 7) {
-          months.add(this.getMonthLabel(date));
-        }
-      }
+/**
+ * 根据学习时长获取等级 (0-4)
+ */
+function getLevel(minutes) {
+  if (minutes === 0) return 0;
+  if (minutes < 15) return 1;
+  if (minutes < 30) return 2;
+  if (minutes < 60) return 3;
+  return 4;
+}
 
-      this.heatmapData = data;
-      this.generateMonthLabels();
-    },
+/**
+ * 获取日期格子的类名
+ */
+function getDayClass(day) {
+  if (!day) return 'empty';
+  return `level-${day.level}`;
+}
 
-    /**
-     * 生成月份标签
-     */
-    generateMonthLabels() {
-      const labels = [];
-      const today = new Date();
-      const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+/**
+ * 获取日期格子的样式
+ */
+function getDayStyle(day) {
+  if (!day) return {};
+  return {};
+}
 
-      for (let i = 0; i < this.weeks; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - (this.weeks - 1 - i) * 7);
+// ---- 核心逻辑 ----
 
-        if (i === 0 || date.getDate() <= 7) {
-          labels.push(monthNames[date.getMonth()]);
-        } else {
-          labels.push('');
-        }
-      }
+/**
+ * 生成月份标签
+ */
+function generateMonthLabels() {
+  const labels = [];
+  const today = new Date();
+  const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
 
-      this.monthLabels = labels;
-    },
+  for (let i = 0; i < props.weeks; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (props.weeks - 1 - i) * 7);
 
-    /**
-     * 计算统计数据
-     */
-    calculateStats() {
-      let totalDays = 0;
-      let currentStreak = 0;
-      let maxStreak = 0;
-      let tempStreak = 0;
-
-      const today = new Date();
-      const sortedDates = Object.keys(this.studyData).sort().reverse();
-
-      // 计算总学习天数
-      totalDays = sortedDates.filter((date) => this.studyData[date] > 0).length;
-
-      // 计算连续天数
-      const checkDate = new Date(today);
-      let isCurrentStreak = true;
-
-      for (let i = 0; i < 365; i++) {
-        const dateStr = this.formatDate(checkDate);
-        const minutes = this.studyData[dateStr] || 0;
-
-        if (minutes > 0) {
-          tempStreak++;
-          if (isCurrentStreak) {
-            currentStreak = tempStreak;
-          }
-        } else {
-          if (isCurrentStreak && i > 0) {
-            isCurrentStreak = false;
-          }
-          maxStreak = Math.max(maxStreak, tempStreak);
-          tempStreak = 0;
-        }
-
-        checkDate.setDate(checkDate.getDate() - 1);
-      }
-
-      maxStreak = Math.max(maxStreak, tempStreak, currentStreak);
-
-      this.totalDays = totalDays;
-      this.currentStreak = currentStreak;
-      this.maxStreak = maxStreak;
-    },
-
-    /**
-     * 根据学习时长获取等级 (0-4)
-     */
-    getLevel(minutes) {
-      if (minutes === 0) return 0;
-      if (minutes < 15) return 1;
-      if (minutes < 30) return 2;
-      if (minutes < 60) return 3;
-      return 4;
-    },
-
-    /**
-     * 获取日期格子的类名
-     */
-    getDayClass(day) {
-      if (!day) return 'empty';
-      return `level-${day.level}`;
-    },
-
-    /**
-     * 获取日期格子的样式
-     */
-    getDayStyle(day) {
-      if (!day) return {};
-      return {};
-    },
-
-    /**
-     * 格式化日期为 YYYY-MM-DD
-     */
-    formatDate(date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    },
-
-    /**
-     * 格式化显示日期
-     */
-    formatDisplayDate(date) {
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
-      const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-      return `${month}月${day}日 ${weekDays[date.getDay()]}`;
-    },
-
-    /**
-     * 获取月份标签
-     */
-    getMonthLabel(date) {
-      const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-      return monthNames[date.getMonth()];
-    },
-
-    /**
-     * 处理日期点击
-     */
-    handleDayTap(day) {
-      if (!day) return;
-      this.selectedDay = day;
-      this.$emit('day-tap', day);
+    if (i === 0 || date.getDate() <= 7) {
+      labels.push(monthNames[date.getMonth()]);
+    } else {
+      labels.push('');
     }
   }
-};
+
+  monthLabels.value = labels;
+}
+
+/**
+ * 生成热力图数据
+ */
+function generateHeatmapData() {
+  const today = new Date();
+  const data = [];
+  const months = new Set();
+
+  // 计算起始日期（从最近的周日开始往前推）
+  const endDate = new Date(today);
+  const _dayOfWeek = endDate.getDay();
+
+  // 计算需要显示的总天数
+  const total = props.weeks * 7;
+
+  // 从今天往前推算
+  for (let i = total - 1; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+
+    const weekIndex = Math.floor((total - 1 - i) / 7);
+    const dayIndex = date.getDay();
+
+    if (!data[weekIndex]) {
+      data[weekIndex] = new Array(7).fill(null);
+    }
+
+    const dateStr = formatDate(date);
+    const minutes = props.studyData[dateStr] || 0;
+
+    data[weekIndex][dayIndex] = {
+      date: date,
+      dateStr: formatDisplayDate(date),
+      key: dateStr,
+      minutes: minutes,
+      level: getLevel(minutes)
+    };
+
+    // 收集月份标签
+    if (date.getDate() <= 7) {
+      months.add(getMonthLabel(date));
+    }
+  }
+
+  heatmapData.value = data;
+  generateMonthLabels();
+}
+
+/**
+ * 计算统计数据
+ */
+function calculateStats() {
+  let _totalDays = 0;
+  let _currentStreak = 0;
+  let _maxStreak = 0;
+  let tempStreak = 0;
+
+  const today = new Date();
+  const sortedDates = Object.keys(props.studyData).sort().reverse();
+
+  // 计算总学习天数
+  _totalDays = sortedDates.filter((date) => props.studyData[date] > 0).length;
+
+  // 计算连续天数
+  const checkDate = new Date(today);
+  let isCurrentStreak = true;
+
+  for (let i = 0; i < 365; i++) {
+    const dateStr = formatDate(checkDate);
+    const minutes = props.studyData[dateStr] || 0;
+
+    if (minutes > 0) {
+      tempStreak++;
+      if (isCurrentStreak) {
+        _currentStreak = tempStreak;
+      }
+    } else {
+      if (isCurrentStreak && i > 0) {
+        isCurrentStreak = false;
+      }
+      _maxStreak = Math.max(_maxStreak, tempStreak);
+      tempStreak = 0;
+    }
+
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  _maxStreak = Math.max(_maxStreak, tempStreak, _currentStreak);
+
+  totalDays.value = _totalDays;
+  currentStreak.value = _currentStreak;
+  maxStreak.value = _maxStreak;
+}
+
+/**
+ * 处理日期点击
+ */
+function handleDayTap(day) {
+  if (!day) return;
+  selectedDay.value = day;
+  emit('day-tap', day);
+}
+
+// ---- 侦听器 ----
+// [AUDIT FIX R135] 移除 deep: true —— 父组件替换整个 studyData 对象引用时
+// 浅引用比较已能捕获变化，无需深度遍历 52×7 个属性
+watch(
+  () => props.studyData,
+  () => {
+    generateHeatmapData();
+    calculateStats();
+  },
+  { immediate: true }
+);
+
+// ---- 生命周期 ----
+onMounted(() => {
+  isDark.value = initTheme();
+  themeHandlerRef = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  onThemeUpdate(themeHandlerRef);
+});
+
+onBeforeUnmount(() => {
+  if (themeHandlerRef) {
+    offThemeUpdate(themeHandlerRef);
+  }
+});
 </script>
 
 <style lang="scss" scoped>

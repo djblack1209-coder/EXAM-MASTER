@@ -45,8 +45,8 @@ defineProps({
 .skeleton-container {
   --skeleton-bg: #e5e7eb;
   --skeleton-highlight: #d1d5db;
-  --card-bg: rgba(255, 255, 255, 0.75);
-  --card-border: rgba(255, 255, 255, 0.5);
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.04);
 
   padding: 30rpx;
 }
@@ -60,13 +60,11 @@ defineProps({
 
 .glass-card {
   background: var(--card-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--card-border);
-  border-radius: 40rpx;
+  border: 2rpx solid var(--card-border);
+  border-radius: 28rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 @keyframes skeleton-pulse {

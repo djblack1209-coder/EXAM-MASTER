@@ -212,7 +212,7 @@
         <!-- 答错时：一键问AI — 跳转上下文感知对话 -->
         <view v-if="resultStatus === 'wrong'" class="ask-ai-btn" @tap="askAIAboutThis">
           <text class="ask-ai-text">还是不懂？问 AI 导师</text>
-          <text class="a<REDACTED_SECRET>">›</text>
+          <BaseIcon name="chevron-right" :size="20" class="a<REDACTED_SECRET>" />
         </view>
 
         <!-- FSRS 智能评分 -->
@@ -257,6 +257,8 @@
       <!-- ✅ 连击特效显示 -->
       <view v-if="showComboEffect && comboDisplay" class="combo-effect">
         <view class="combo-content" :style="{ color: comboDisplay.color }">
+          <!-- 连击火焰特效 -->
+          <image class="combo-fire-icon" src="./static/effects/combo-fire.png" mode="aspectFit" />
           <text class="combo-count">
             {{ comboDisplay.count }}
           </text>
@@ -269,6 +271,8 @@
 
       <!-- ✅ [体感革命] XP飞入动画 -->
       <view v-if="showXpToast" class="xp-flyout">
+        <!-- XP金币特效 -->
+        <image class="xp-coins-icon" src="./static/effects/xp-coins.png" mode="aspectFit" />
         <text class="xp-flyout-text">+{{ xpEarned }} XP{{ xpBoostActive ? ' 2x加速' : '' }}</text>
       </view>
 
@@ -276,6 +280,12 @@
       <view v-if="xpBoostActive" class="xp-boost-indicator">
         <text class="xp-boost-text">2x XP</text>
         <text class="xp-boost-remaining">剩余 {{ xpBoostRemaining }} 题</text>
+      </view>
+
+      <!-- ✅ 升级箭头特效 -->
+      <view v-if="showLevelUp" class="level-up-overlay">
+        <image class="level-up-icon" src="./static/effects/level-up-arrow.png" mode="aspectFit" />
+        <text class="level-up-text">LEVEL UP!</text>
       </view>
 
       <!-- ✅ P0-2: 粒子特效 -->
@@ -409,6 +419,7 @@
 </template>
 
 <script>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import { safeImport } from '@/utils/helpers/safe-import.js';
@@ -607,6 +618,7 @@ export default {
       noteContent: '', // 笔记内容
       selectedNoteTags: [], // 选中的笔记标签
       showAnswerSheet: false, // 答题卡显示状态
+      showLevelUp: false, // 升级特效显示状态
       pendingTimers: [] // [AUDIT FIX R264] setTimeout 追踪，防止内存泄漏
     };
   },
@@ -693,7 +705,8 @@ export default {
   onShareAppMessage() {
     return {
       title: '智能刷题 - Exam-Master 考研备考',
-      path: '/pages/practice/index'
+      path: '/pages/practice/index',
+      imageUrl: '/static/images/app-share-cover.png'
     };
   },
 
@@ -1576,7 +1589,7 @@ export default {
             url: `/pages/practice-sub/diagnosis-report?diagnosisId=${diagnosisId}&sessionId=${this.sessionId}`,
             fail: () => {
               const d = res.data.diagnosis || {};
-              uni.showModal({
+              modal.show({
                 title: `诊断结果：${d.overallLevel || '完成'}`,
                 content: `正确率 ${d.accuracy || 0}%\n${d.encouragement || '继续加油！'}\n\n薄弱点：${(d.weakPoints || []).map((w) => w.knowledgePoint).join('、') || '无'}\n\n建议：${d.studyPlan?.immediate || '复习错题'}`,
                 confirmText: '开始复习',
@@ -1795,6 +1808,10 @@ export default {
         if (xpResult.levelUp && xpResult.newLevel) {
           this._safeTimeout(() => {
             toast.info(`升级！${xpResult.newLevel.title}`, 2500);
+            this.showLevelUp = true;
+            this._safeTimeout(() => {
+              this.showLevelUp = false;
+            }, 2000);
           }, 800);
         }
 
@@ -2003,7 +2020,7 @@ export default {
 .container {
   min-height: 100%;
   min-height: 100vh;
-  background: var(--bg-secondary, #f5f5f7);
+  background: var(--background);
   position: relative;
   overflow: hidden;
 }
@@ -2026,9 +2043,8 @@ export default {
   top: 0;
   width: 100%;
   z-index: 100;
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-card);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
 }
 .nav-content {
   height: 50px;
@@ -2049,13 +2065,13 @@ export default {
 }
 .progress-text {
   font-size: 28rpx;
-  font-weight: bold;
+  font-weight: 700;
   color: var(--text-primary);
 }
 .timer-box {
   font-size: 24rpx;
-  color: var(--text-sub);
-  background: var(--bg-secondary);
+  color: var(--info);
+  background: rgba(28, 176, 246, 0.12);
   padding: 4rpx 20rpx;
   border-radius: 20rpx;
   display: flex;
@@ -2149,14 +2165,12 @@ export default {
 
 /* 玻璃卡片通用样式 */
 .glass-card {
-  background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: 40rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  border-radius: 24rpx;
   padding: 40rpx;
   margin-bottom: 30rpx;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 /* Phase 3-4: 卡片堆叠样式 */
@@ -2247,16 +2261,17 @@ export default {
 /* 题目卡片 */
 .question-card .q-tag {
   display: inline-block;
-  background: var(--primary);
-  color: var(--text-primary-foreground);
+  background: rgba(28, 176, 246, 0.12);
+  color: var(--info);
   font-size: 24rpx;
+  font-weight: 700;
   padding: 4rpx 16rpx;
   border-radius: 10rpx;
   margin-bottom: 20rpx;
 }
 .question-card .q-content {
   font-size: 34rpx;
-  font-weight: bold;
+  font-weight: 700;
   line-height: 1.6;
   color: var(--text-primary);
   display: block;
@@ -2270,36 +2285,50 @@ export default {
   display: flex;
   align-items: center;
   padding: 30rpx 40rpx;
+  background: var(--bg-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.08);
+  border-radius: 20rpx;
   transition: all 0.2s;
   position: relative;
 }
+.option-item:active {
+  transform: scale(0.98);
+}
 .option-item.selected {
-  border-color: var(--primary);
-  background: var(--success-light);
+  border-color: var(--info);
+  background: rgba(28, 176, 246, 0.08);
 }
 .option-item.correct {
-  border-color: var(--primary);
-  background: var(--success-light);
+  border-color: #58cc02;
+  background: rgba(88, 204, 2, 0.08);
 }
 .option-item.wrong {
   border-color: var(--danger);
-  background: var(--danger-light);
+  background: rgba(255, 75, 75, 0.08);
 }
 .option-item.disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 .opt-index {
-  width: 50rpx;
-  font-weight: 900;
-  color: var(--primary);
+  font-weight: 800;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
   font-size: 32rpx;
   flex-shrink: 0;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-right: 20rpx;
 }
 .opt-text {
   flex: 1;
   font-size: 30rpx;
-  color: var(--text-sub);
+  color: var(--text-primary);
+  font-weight: 600;
   line-height: 1.5;
   word-break: break-all;
 }
@@ -2394,21 +2423,20 @@ export default {
   right: 30rpx;
   z-index: 300;
   padding: 40rpx;
-  border-radius: 40rpx;
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  box-shadow: var(--shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.12));
+  background: var(--bg-card);
+  border-radius: 28rpx;
+  box-shadow: 0 -8rpx 40rpx rgba(0, 0, 0, 0.1);
   animation: slideUpResult 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 
-  /* FSRS 按钮色彩变量 — 基于全局语义色 (--em-error/warning/success/info) 的半透明变体 */
-  --fsrs-again-bg: rgba(255, 59, 48, 0.3);
-  --fsrs-again-border: rgba(255, 59, 48, 0.5);
-  --fsrs-hard-bg: rgba(255, 179, 0, 0.3);
-  --fsrs-hard-border: rgba(255, 179, 0, 0.5);
-  --fsrs-good-bg: rgba(52, 199, 89, 0.25);
-  --fsrs-good-border: rgba(52, 199, 89, 0.4);
-  --fsrs-easy-bg: rgba(0, 122, 255, 0.25);
-  --fsrs-easy-border: rgba(0, 122, 255, 0.4);
+  /* FSRS 按钮色彩变量 — 基于全局语义色的半透明变体 */
+  --fsrs-again-bg: color-mix(in srgb, var(--danger) 30%, transparent);
+  --fsrs-again-border: color-mix(in srgb, var(--danger) 50%, transparent);
+  --fsrs-hard-bg: color-mix(in srgb, var(--warning) 30%, transparent);
+  --fsrs-hard-border: color-mix(in srgb, var(--warning) 50%, transparent);
+  --fsrs-good-bg: color-mix(in srgb, var(--success) 25%, transparent);
+  --fsrs-good-border: color-mix(in srgb, var(--success) 40%, transparent);
+  --fsrs-easy-bg: color-mix(in srgb, var(--info) 25%, transparent);
+  --fsrs-easy-border: color-mix(in srgb, var(--info) 40%, transparent);
 }
 @keyframes slideUpResult {
   from {
@@ -2526,7 +2554,7 @@ export default {
 .personal-hint-bar {
   margin: 8rpx 20rpx 16rpx;
   padding: 12rpx 16rpx;
-  background: rgba(245, 158, 11, 0.1);
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
   border-radius: 12rpx;
   border-left: 4rpx solid var(--warning, #f59e0b);
 }
@@ -2659,7 +2687,7 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--bg-secondary);
+  background: rgba(255, 150, 0, 0.12);
   transition: all 0.3s ease;
 }
 
@@ -2668,11 +2696,11 @@ export default {
 }
 
 .favorite-btn.is-favorited {
-  background: linear-gradient(135deg, var(--warning), var(--warning));
+  background: rgba(255, 150, 0, 0.2);
 }
 
 .favorite-btn.is-favorited .favorite-icon {
-  color: var(--text-inverse, #fff);
+  color: var(--warning);
 }
 
 .favorite-icon {
@@ -2696,7 +2724,8 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.3);
+  color: var(--warning);
+  text-shadow: 0 4rpx 20rpx rgba(255, 150, 0, 0.3);
 }
 
 .combo-count {
@@ -2762,6 +2791,8 @@ export default {
   z-index: 600;
   pointer-events: none;
   animation: xpFlyUp 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  display: flex;
+  align-items: center;
 }
 
 .xp-flyout-text {
@@ -3142,34 +3173,50 @@ export default {
 }
 
 .fsrs-again {
-  background: var(--fsrs-again-bg);
-  border: 2rpx solid var(--fsrs-again-border);
+  background: rgba(255, 75, 75, 0.12);
+  border: 2rpx solid transparent;
+  box-shadow: 0 4rpx 0 #e04343;
 }
 
 .fsrs-hard {
-  background: var(--fsrs-hard-bg);
-  border: 2rpx solid var(--fsrs-hard-border);
+  background: rgba(255, 150, 0, 0.12);
+  border: 2rpx solid transparent;
+  box-shadow: 0 4rpx 0 #d98000;
 }
 
 .fsrs-good {
-  background: var(--fsrs-good-bg);
-  border: 2rpx solid var(--fsrs-good-border);
+  background: rgba(88, 204, 2, 0.12);
+  border: 2rpx solid transparent;
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 .fsrs-easy {
-  background: var(--fsrs-easy-bg);
-  border: 2rpx solid var(--fsrs-easy-border);
+  background: rgba(28, 176, 246, 0.12);
+  border: 2rpx solid transparent;
+  box-shadow: 0 4rpx 0 var(--info-dark, #1899d6);
 }
 
 .fsrs-rating-label {
   font-size: 28rpx;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
+}
+
+.fsrs-again .fsrs-rating-label {
+  color: var(--danger);
+}
+.fsrs-hard .fsrs-rating-label {
+  color: var(--warning);
+}
+.fsrs-good .fsrs-rating-label {
+  color: #58cc02;
+}
+.fsrs-easy .fsrs-rating-label {
+  color: var(--info);
 }
 
 .fsrs-rating-interval {
   font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   margin-top: 6rpx;
 }
 
@@ -3219,5 +3266,70 @@ export default {
   background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
   animation: celebrateStars 2s ease-in-out infinite;
   pointer-events: none;
+}
+
+/* ==================== 连击火焰特效图标 ==================== */
+.combo-fire-icon {
+  width: 64rpx;
+  height: 64rpx;
+  animation: combo-fire-pulse 0.5s ease-in-out infinite alternate;
+}
+@keyframes combo-fire-pulse {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1.15);
+  }
+}
+
+/* ==================== XP金币特效图标 ==================== */
+.xp-coins-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 8rpx;
+}
+
+/* ==================== 升级箭头特效 ==================== */
+.level-up-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 999;
+  animation: level-up-appear 2s ease-out forwards;
+  pointer-events: none;
+}
+.level-up-icon {
+  width: 160rpx;
+  height: 160rpx;
+}
+.level-up-text {
+  font-size: 48rpx;
+  font-weight: 900;
+  color: var(--warning);
+  text-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.3);
+  margin-top: 16rpx;
+}
+@keyframes level-up-appear {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -70%) scale(0.8);
+  }
 }
 </style>
