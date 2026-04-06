@@ -11,9 +11,9 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate } from './_shared/validator.js';
-import { createLogger, checkRateLimit } from './_shared/api-response.js';
-import { requireAdminAccess } from './_shared/admin-auth.js';
+import { validate } from './_shared/validator';
+import { createLogger, checkRateLimit } from './_shared/api-response';
+import { requireAdminAccess } from './_shared/admin-auth';
 const logger = createLogger('[SchoolCrawler]');
 
 const db = cloud.database();

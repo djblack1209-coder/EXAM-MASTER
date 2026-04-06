@@ -1,6 +1,0 @@
-name: ai-quiz-grade
-desc: 'AI测验批改 - 实时批改+个性化反馈'
-methods:
-  - POST
-tags:
-  - ai-classroom

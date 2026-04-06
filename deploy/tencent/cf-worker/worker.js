@@ -64,10 +64,13 @@ export default {
       });
     }
 
-    // 验证代理认证
-    const proxyAuth = request.headers.get('X-Proxy-Auth') || env.WORKER_AUTH_TOKEN;
+    // 验证代理认证 — token 未配置时拒绝所有请求（安全优先）
     const expectedToken = env.WORKER_AUTH_TOKEN || AUTH_TOKEN;
-    if (expectedToken !== '%%WORKER_AUTH_TOKEN%%' && proxyAuth !== expectedToken) {
+    if (!expectedToken || expectedToken === '%%WORKER_AUTH_TOKEN%%' || expectedToken === 'CHANGE_ME_random_token_here') {
+      return Response.json({ error: 'Proxy auth token not configured. Deploy with a real WORKER_AUTH_TOKEN.' }, { status: 503 });
+    }
+    const proxyAuth = request.headers.get('X-Proxy-Auth');
+    if (proxyAuth !== expectedToken) {
       return Response.json({ error: 'Unauthorized proxy request' }, { status: 401 });
     }
 

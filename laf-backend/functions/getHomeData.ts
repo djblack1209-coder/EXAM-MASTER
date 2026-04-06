@@ -13,7 +13,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { success, serverError, generateRequestId, createLogger, checkRateLimit } from './_shared/api-response.js';
+import { success, serverError, generateRequestId, createLogger, checkRateLimit } from './_shared/api-response';
 
 const db = cloud.database();
 const logger = createLogger('[GetHomeData]');

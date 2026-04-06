@@ -17,8 +17,11 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { sanitizeString, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { sanitizeString, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
+
+// ✅ H019: 微信内容安全检测
+import { checkTextSecurity, ContentScene } from './_shared/wx-content-check';
 
 const db = cloud.database();
 const _ = db.command;
@@ -98,6 +101,17 @@ async function handleCreateGroup(userId, params, requestId) {
   }
 
   try {
+    // ✅ H019: 微信内容安全检测 — 小组名称和描述必须过审
+    const textsToCheck = [name.trim(), description?.trim()].filter(Boolean);
+    if (textsToCheck.length > 0) {
+      for (const text of textsToCheck) {
+        const check = await checkTextSecurity(text, userId, ContentScene.FORUM);
+        if (!check.pass) {
+          return { code: 403, success: false, message: check.reason || '内容包含敏感信息，请修改后重试', data: null };
+        }
+      }
+    }
+
     const groupId = generateId('group_');
     // [H-02 FIX] XSS sanitization — 对用户输入做消毒处理
     const group = {
@@ -480,6 +494,17 @@ async function handleShareResource(userId, params, requestId) {
   }
 
   try {
+    // ✅ H019: 微信内容安全检测 — 分享资源的标题和内容必须过审
+    const textsToCheck = [title.trim(), content?.trim()].filter(Boolean);
+    if (textsToCheck.length > 0) {
+      for (const text of textsToCheck) {
+        const check = await checkTextSecurity(text, userId, ContentScene.FORUM);
+        if (!check.pass) {
+          return { code: 403, success: false, message: check.reason || '内容包含敏感信息，请修改后重试', data: null };
+        }
+      }
+    }
+
     // 检查是否是小组成员
     const member = await db
       .collection('group_members')

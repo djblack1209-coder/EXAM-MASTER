@@ -10,27 +10,10 @@ import { logger } from '@/utils/logger.js';
 import { request, normalizeError } from './_request-core.js';
 
 // [AUDIT R275] 已删除 5 个无调用方的死代码函数:
-// getQuestionBank, submitAnswer, addFavorite, getFavorites, removeFavorite
+// submitAnswer, addFavorite, getFavorites, removeFavorite
+// [AUDIT R432] 补删 getQuestionBank（R275 遗漏）
 
 // ==================== 题库 ====================
-
-/**
- * 获取题库数据（带本地降级）
- * @param {string} userId - 用户ID
- * @returns {Promise} 返回题库数据
- */
-export async function getQuestionBank(userId) {
-  try {
-    const response = await request('/question-bank', {
-      action: 'get',
-      userId
-    });
-    return response;
-  } catch (error) {
-    logger.warn('[LafService] 获取题库失败:', error);
-    return normalizeError(error, '获取题库');
-  }
-}
 
 /**
  * 从后端随机获取题目
@@ -292,4 +275,27 @@ export async function updateMistakeFields(userId, id, fields) {
  */
 export async function batchSyncMistakes(userId, mistakes) {
   return mistakeManager({ action: 'batchSync', userId, data: { mistakes } });
+}
+
+// ==================== 答题提交 ====================
+
+/**
+ * 提交答题数据到后端（触发自动错题收集 + 会话数据累积）
+ * @param {Object} params - 提交参数
+ * @param {string} params.idempotencyKey - 幂等键（防重复提交）
+ * @param {Object} params.data - 答题数据 { question_id, user_answer, session_id, duration, practice_mode }
+ * @returns {Promise} 返回提交结果
+ */
+export async function submitAnswer(params) {
+  try {
+    const response = await request('/answer-submit', {
+      action: 'submit',
+      idempotencyKey: params.idempotencyKey,
+      data: params.data
+    });
+    return response;
+  } catch (error) {
+    logger.warn('[LafService] 答题提交失败:', error);
+    return normalizeError(error, '答题提交');
+  }
 }

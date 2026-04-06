@@ -59,7 +59,15 @@ export function sanitizeAIChatInput(input, maxLength = 8000) {
   result = result.replace(/<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi, '');
   result = result.replace(/<\s*style[^>]*>[\s\S]*?<\s*\/\s*style\s*>/gi, '');
   result = result.replace(/<\s*iframe[^>]*>[\s\S]*?<\s*\/\s*iframe\s*>/gi, '');
-  result = result.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
+  result = result.replace(/<\s*object[^>]*>[\s\S]*?<\s*\/\s*object\s*>/gi, '');
+  result = result.replace(/<\s*embed[^>]*\/?>/gi, '');
+  result = result.replace(/<\s*svg[^>]*>[\s\S]*?<\s*\/\s*svg\s*>/gi, '');
+  result = result.replace(/<\s*math[^>]*>[\s\S]*?<\s*\/\s*math\s*>/gi, '');
+  result = result.replace(/<\s*link[^>]*\/?>/gi, '');
+  result = result.replace(/<\s*meta[^>]*\/?>/gi, '');
+  result = result.replace(/<\s*base[^>]*\/?>/gi, '');
+  // 移除所有事件处理器属性（覆盖无引号值的情况）
+  result = result.replace(/\bon\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
 
   return result.trim().slice(0, maxLength);
 }

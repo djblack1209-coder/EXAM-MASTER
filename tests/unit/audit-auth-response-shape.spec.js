@@ -101,7 +101,7 @@ vi.mock('../../laf-backend/functions/_shared/auth-middleware', () => ({
   isAuthError: (result) => 'code' in result && result.code !== 0
 }));
 
-import studyStatsHandler from '../../laf-backend/functions/study-stats';
+// study-stats 已被 user-stats 替代并删除（H028），相关测试用例同步移除
 import aiFriendMemoryHandler from '../../laf-backend/functions/ai-friend-memory';
 import questionBankHandler from '../../laf-backend/functions/question-bank';
 
@@ -110,62 +110,7 @@ describe('[安全审计] 鉴权失败响应形态一致性', () => {
     mocked.resetScenario();
   });
 
-  it('study-stats 缺少 token 时应返回 success=false', async () => {
-    const result = /** @type {any} */ (
-      await studyStatsHandler({
-        headers: {},
-        body: { action: 'get', userId: 'user_auth_1' }
-      })
-    );
-
-    expect(result.code).toBe(401);
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('登录');
-  });
-
-  it('study-stats token 无效时应返回 success=false', async () => {
-    mocked.scenario.jwtPayload = null;
-
-    const result = /** @type {any} */ (
-      await studyStatsHandler({
-        headers: { authorization: 'Bearer invalid_token' },
-        body: { action: 'get', userId: 'user_auth_1' }
-      })
-    );
-
-    expect(result.code).toBe(401);
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('登录');
-  });
-
-  it('study-stats body userId 被忽略，始终使用 JWT userId（C-02 安全加固）', async () => {
-    mocked.scenario.jwtPayload = { userId: 'real_user' };
-
-    const result = /** @type {any} */ (
-      await studyStatsHandler({
-        headers: { authorization: 'Bearer valid_token' },
-        body: { action: 'get', userId: 'spoof_user' }
-      })
-    );
-
-    // C-02 修复后 body.userId 被完全忽略，函数使用 JWT 的 payload.userId
-    // 不再返回 403，而是正常执行（使用 real_user）
-    expect(result.code).not.toBe(403);
-    expect(result.success).toBeDefined();
-  });
-
-  it('study-stats 缺少 action 时应返回 400 且 success=false', async () => {
-    const result = /** @type {any} */ (
-      await studyStatsHandler({
-        headers: { authorization: 'Bearer valid_token' },
-        body: { userId: 'user_auth_1' }
-      })
-    );
-
-    expect(result.code).toBe(400);
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('缺少 action');
-  });
+  // study-stats 相关测试用例已移除（H028: 云函数被 user-stats 替代并删除）
 
   it('ai-friend-memory 缺少 token 时应返回 success=false', async () => {
     const result = /** @type {any} */ (

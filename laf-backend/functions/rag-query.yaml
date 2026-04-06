@@ -1,6 +1,0 @@
-name: rag-query
-desc: 'RAG 语义检索 - 向量相似度搜索，返回相关文档分块'
-methods:
-  - POST
-tags:
-  - rag

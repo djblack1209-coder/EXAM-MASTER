@@ -3,8 +3,8 @@
  * 消除所有云函数中重复的 auth 逻辑
  */
 
-import { verifyJWT, extractBearerToken, JwtPayload } from './auth.js';
-import { unauthorized, ApiResponse } from './api-response.js';
+import { verifyJWT, extractBearerToken, JwtPayload } from './auth';
+import { unauthorized, ApiResponse } from './api-response';
 
 export interface AuthResult {
   userId: string;

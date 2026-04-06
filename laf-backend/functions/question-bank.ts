@@ -4,9 +4,9 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { checkRateLimitDistributed, createLogger } from './_shared/api-response.js';
-import { requireAdminAccess } from './_shared/admin-auth.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { checkRateLimitDistributed, createLogger } from './_shared/api-response';
+import { requireAdminAccess } from './_shared/admin-auth';
 
 const db = cloud.database();
 const _ = db.command;

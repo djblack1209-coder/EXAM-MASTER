@@ -11,7 +11,7 @@ import config from '@/config/index.js';
 const APP_CONFIG = { cacheKeys: config.storage.cacheKeys };
 import { storageService } from '../../services/storageService.js';
 import { sendEmailCode as apiSendEmailCode, login as apiLogin } from '../../services/api/domains/auth.api.js';
-import { request } from '../../services/api/domains/_request-core.js';
+// [AUDIT R432] 移除 _request-core 直接导入，login() 改用 auth.api.js 的 apiLogin
 import tokenRefreshPlugin from '@/utils/auth/token-refresh-plugin.js';
 import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
@@ -70,8 +70,9 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       // 2. 调用 Laf 登录接口（skipAuth: true 避免登录请求携带过期 token）
+      // [AUDIT R432] 改用 auth.api.js 的 apiLogin，消除 _request-core 直接依赖
       try {
-        const res = await request('/login', { type: 'weixin', code }, { skipAuth: true });
+        const res = await apiLogin({ type: 'weixin', code });
 
         if (res.code === 0 && res.data && res.data.userId) {
           const userId = res.data.userId;
@@ -174,7 +175,8 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * 静默登录（应用启动时自动调用）
    */
-  const silentLogin = async () => {
+  // [AUDIT R432] 移除多余 async（函数体内无 await）
+  const silentLogin = () => {
     restoreUserInfo();
 
     if (isLogin.value) {

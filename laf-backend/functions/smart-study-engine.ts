@@ -16,7 +16,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   success,
   badRequest,
@@ -25,8 +25,8 @@ import {
   generateRequestId,
   checkRateLimitDistributed,
   createLogger
-} from './_shared/api-response.js';
-// import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory.js'; // 预留 AI 增强
+} from './_shared/api-response';
+// import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory'; // 预留 AI 增强
 
 const db = cloud.database();
 const logger = createLogger('[SmartStudyEngine]');

@@ -17,7 +17,7 @@
     "target": [
       {
         "target": "dmg",
-        "arch": ["arm64"]
+        "arch": ["universal"]
       }
     ],
     "darkModeSupport": true,
@@ -26,14 +26,14 @@
   },
   "dmg": {
     "title": "EXAM MASTER",
-    "artifactName": "EXAM-MASTER-${version}-mac.${ext}"
+    "artifactName": "EXAM-MASTER-${version}-mac-${arch}.${ext}"
   },
   "win": {
     "icon": "electron/icons/icon.ico",
     "target": [
       {
         "target": "nsis",
-        "arch": ["x64"]
+        "arch": ["x64", "arm64"]
       }
     ]
   },
@@ -41,14 +41,19 @@
     "oneClick": true,
     "perMachine": false,
     "allowToChangeInstallationDirectory": false,
-    "artifactName": "EXAM-MASTER-${version}-win-setup.${ext}",
+    "artifactName": "EXAM-MASTER-${version}-win-${arch}-setup.${ext}",
     "shortcutName": "EXAM MASTER",
     "uninstallDisplayName": "EXAM MASTER"
   },
   "linux": {
     "icon": "electron/icons",
-    "target": ["AppImage"],
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": ["x64", "arm64"]
+      }
+    ],
     "category": "Education",
-    "artifactName": "EXAM-MASTER-${version}-linux.${ext}"
+    "artifactName": "EXAM-MASTER-${version}-linux-${arch}.${ext}"
   }
 }

@@ -9,7 +9,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   success,
   badRequest,
@@ -21,7 +21,7 @@ import {
   sanitizeString,
   checkRateLimitDistributed,
   tooManyRequests
-} from './_shared/api-response.js';
+} from './_shared/api-response';
 
 const db = cloud.database();
 const logger = createLogger('[AnkiImport]');

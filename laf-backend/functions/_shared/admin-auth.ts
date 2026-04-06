@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { extractBearerToken, verifyJWT } from './auth.js';
+import { extractBearerToken, verifyJWT } from './auth';
 
 interface AdminAuthOptions {
   headerName?: string;

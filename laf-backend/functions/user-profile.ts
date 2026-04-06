@@ -14,12 +14,15 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 const db = cloud.database();
 
 // ==================== 环境配置 ====================
-import { createLogger, sanitizeString, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response.js';
+import { createLogger, sanitizeString, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
+
+// ✅ H019: 微信内容安全检测
+import { checkTextSecurity, ContentScene } from './_shared/wx-content-check';
 
 // 头像上传配置
 const AVATAR_MAX_SIZE = 2 * 1024 * 1024; // 2MB
@@ -252,6 +255,21 @@ async function handleUpdateProfile(body: UpdateProfileRequest, requestId: string
       success: false,
       message: '没有有效的更新字段'
     };
+  }
+
+  // ✅ H019: 微信内容安全检测 — 昵称/院校/专业等资料字段必须过审
+  const profileTexts = [updateData.nickname, updateData.target_school, updateData.target_major].filter(Boolean);
+  if (profileTexts.length > 0) {
+    for (const text of profileTexts) {
+      const check = await checkTextSecurity(text, userId, ContentScene.PROFILE);
+      if (!check.pass) {
+        return {
+          code: 403,
+          success: false,
+          message: check.reason || '资料内容包含敏感信息，请修改后重试'
+        };
+      }
+    }
   }
 
   // 执行更新

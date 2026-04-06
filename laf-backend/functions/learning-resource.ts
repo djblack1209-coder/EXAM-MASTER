@@ -17,9 +17,9 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate } from './_shared/validator.js';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { checkRateLimit, createLogger } from './_shared/api-response.js'; // 本地限流（单实例部署场景足够）
+import { validate } from './_shared/validator';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { checkRateLimit, createLogger } from './_shared/api-response'; // 本地限流（单实例部署场景足够）
 
 const db = cloud.database();
 const _ = db.command;

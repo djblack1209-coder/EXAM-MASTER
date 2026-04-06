@@ -15,7 +15,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   success,
   badRequest,
@@ -24,8 +24,8 @@ import {
   generateRequestId,
   checkRateLimitDistributed,
   createLogger
-} from './_shared/api-response.js';
-import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory.js';
+} from './_shared/api-response';
+import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory';
 
 const db = cloud.database();
 const _ = db.command;

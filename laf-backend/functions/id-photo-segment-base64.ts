@@ -1,5 +1,5 @@
-import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 const logger = createLogger('[IdPhoto]');
 
 export default async function (ctx) {

@@ -13,7 +13,7 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { createLogger } from './_shared/api-response.js';
+import { createLogger } from './_shared/api-response';
 
 const db = cloud.database();
 const _ = db.command;

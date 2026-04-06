@@ -10,8 +10,9 @@
  */
 
 import { logger } from '@/utils/logger.js';
-import { getUserId } from '../../auth-storage.js';
+import { getUserId, getToken } from '../../auth-storage.js';
 import { request, normalizeError } from './_request-core.js';
+import config from '../../../config/index.js';
 
 // [AUDIT R276] 已删除 1 个无调用方的死代码函数: updateUserProfile
 
@@ -247,5 +248,112 @@ export async function unlockAchievement(achievementId) {
     }
     // [AUDIT FIX R268] 统一 normalizeError
     return { ...normalizeError(error, '解锁成就'), message: '解锁失败，将自动重试' };
+  }
+}
+
+// ==================== 用户资料更新 ====================
+
+/**
+ * 通用用户资料更新（支持头像上传等）
+ * [AUDIT R432] 从 profile Store 中提取到 Service 层，消除分层违规
+ *
+ * @param {Object} data - 请求参数（action, userId, 等）
+ * @returns {Promise} 返回更新结果
+ */
+export async function updateProfile(data) {
+  try {
+    return await request('/user-profile', data);
+  } catch (error) {
+    logger.error('[UserAPI] updateProfile 失败:', error);
+    return normalizeError(error, '更新资料');
+  }
+}
+
+// ==================== 头像上传 ====================
+
+/**
+ * 上传用户头像到服务器
+ * H025 FIX: 从 profile/settings 页面抽取到 Service 层，消除分层违规
+ *
+ * 优先尝试 multipart/form-data 上传，失败时降级为 base64 方式
+ *
+ * @param {string} filePath - 本地文件临时路径
+ * @param {string} userId - 用户ID
+ * @param {Object} [options] - 可选参数
+ * @param {Function} [options.filePathToBase64] - base64 转换函数（用于降级）
+ * @param {Function} [options.inferImageMimeType] - 推断 MIME 类型的函数
+ * @returns {Promise<{success: boolean, avatarUrl?: string, message?: string}>}
+ */
+export async function uploadAvatar(filePath, userId, options = {}) {
+  const { filePathToBase64, inferImageMimeType } = options;
+
+  // base64 降级方案
+  const uploadByBase64 = async () => {
+    if (!filePathToBase64 || !inferImageMimeType) {
+      return { success: false, message: '缺少 base64 转换工具' };
+    }
+    try {
+      const avatarBase64 = await filePathToBase64(filePath);
+      const avatarType = inferImageMimeType(filePath);
+      const response = await request('/user-profile', {
+        action: 'upload_avatar',
+        userId,
+        avatar_base64: avatarBase64,
+        avatar_type: avatarType
+      });
+
+      if ((response.code === 0 || response.success) && response.data) {
+        return {
+          success: true,
+          avatarUrl: response.data.avatar_url || response.data.avatarUrl || response.data.url
+        };
+      }
+      return { success: false, message: response.message || '上传失败' };
+    } catch (e) {
+      logger.error('[UserAPI] base64 头像上传失败:', e);
+      return { success: false, message: '上传失败' };
+    }
+  };
+
+  // 优先尝试 multipart 上传
+  try {
+    const baseUrl = config.api.baseUrl;
+    const token = getToken() || '';
+
+    const result = await new Promise((resolve) => {
+      uni.uploadFile({
+        url: `${baseUrl}/upload-avatar`,
+        filePath,
+        name: 'file',
+        formData: { userId, type: 'avatar' },
+        header: { Authorization: `Bearer ${token}` },
+        success: async (res) => {
+          try {
+            const data = JSON.parse(res.data);
+            if (data.code === 0 || data.success) {
+              resolve({
+                success: true,
+                avatarUrl: data.data?.url || data.url || data.avatarUrl
+              });
+            } else {
+              logger.warn('[UserAPI] multipart 头像上传失败，降级 base64:', data.message || data.msg);
+              resolve(await uploadByBase64());
+            }
+          } catch (e) {
+            logger.error('[UserAPI] 解析上传响应失败:', e);
+            resolve(await uploadByBase64());
+          }
+        },
+        fail: async (err) => {
+          logger.error('[UserAPI] uploadFile 失败:', err);
+          resolve(await uploadByBase64());
+        }
+      });
+    });
+
+    return result;
+  } catch (e) {
+    logger.error('[UserAPI] 头像上传异常:', e);
+    return await uploadByBase64();
   }
 }

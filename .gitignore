@@ -196,3 +196,6 @@ scripts/optimize/
 
 # 数据目录（学校统计等大文件不纳入版本控制）
 data/schools/stats.json
+
+# AI 一次性提示词文档（含个人信息）
+docs/phase2-gemini-prompts.md

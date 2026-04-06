@@ -3,8 +3,8 @@
  * 搬运自 OpenMAIC agent 配置，适配考研场景
  */
 
-import { AgentConfig, AgentRole } from '../agents/agent-types.js';
-import { getProvider, getModelForRole, ChatMessage, CompletionOptions } from '../ai-providers/provider-factory.js';
+import { AgentConfig, AgentRole } from '../agents/agent-types';
+import { getProvider, getModelForRole, ChatMessage, CompletionOptions } from '../ai-providers/provider-factory';
 
 // 不同性格的AI同学模板
 export const STUDENT_PERSONAS = {

@@ -446,7 +446,7 @@ onMounted(() => {
 }
 
 .spinner {
-  border-color: rgba(52, 199, 89, 0.16);
+  border-color: color-mix(in srgb, var(--success) 16%, transparent);
   border-top-color: var(--success);
 }
 

@@ -1,6 +1,0 @@
-name: study-stats
-desc: ""
-methods:
-  - GET
-  - POST
-tags: []

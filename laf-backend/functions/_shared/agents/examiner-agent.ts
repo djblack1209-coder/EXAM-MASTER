@@ -3,8 +3,8 @@
  * 搬运自 OpenMAIC app/api/quiz-grade/ 的批改逻辑，适配考研场景
  */
 
-import { AgentConfig, AgentRole } from '../agents/agent-types.js';
-import { getProvider, getModelForRole, ChatMessage, CompletionOptions } from '../ai-providers/provider-factory.js';
+import { AgentConfig, AgentRole } from '../agents/agent-types';
+import { getProvider, getModelForRole, ChatMessage, CompletionOptions } from '../ai-providers/provider-factory';
 
 export const EXAMINER_CONFIG: AgentConfig = {
   role: 'examiner' as AgentRole,

@@ -1,5 +1,5 @@
 name: agent-orchestrator
-desc: '多Agent编排主函数 - AI互动课堂'
+desc: 多Agent编排主函数 - AI互动课堂
 methods:
   - POST
 tags:

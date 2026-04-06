@@ -14,6 +14,37 @@
 
 ---
 
+## [2026-04-06] 全站文件清理 + 累积修改统一提交（R452）
+
+- **Scope**: `frontend` `backend` `infra` `docs`
+- **Files Changed**: 157个文件
+- **Summary**: 清理全站冗余文件并将之前46轮修复（R393-R438）中累积的109个modified文件、16个新增核心资源、5个待删除后端空壳统一提交。
+- **新增纳入版本控制**:
+  - `src/utils/modal.js` — 全项目30+处import的模态框工具（P0紧急）
+  - `laf-backend/functions/_shared/ts-fsrs-bundle.ts/.yaml` — FSRS间隔重复核心依赖
+  - `laf-backend/functions/_shared/wx-content-check.ts/.yaml` — 微信内容安全检测模块
+  - `scripts/build/postcss-color-mix-fallback.js` — vite.config.js构建依赖
+  - `scripts/screenshot-all-pages.cjs` — 开发辅助截图工具
+  - `src/pages/common/404.vue` — pages.json已注册的404页面
+  - `src/static/badges/` (10个PNG) — 成就徽章资源集
+  - `src/static/effects/` — 动效资源
+  - `src/static/icons/` (11个PNG) — Duolingo风格卡通图标
+  - `src/static/illustrations/` (4个PNG) — 核心插画（猫头鹰/择校/AI/搜索）
+  - `src/static/images/app-share-cover.png` — 微信分享封面
+  - `src/static/sitemap.json` — 微信小程序sitemap配置
+  - `src/pages/login/static/illustrations/` — 引导页4步插画
+  - `src/pages/settings/static/icons/` — 设置页图标
+- **删除确认（后端空壳）**:
+  - `laf-backend/functions/study-stats.ts/.yaml` — 已被user-stats替代(R422)
+  - `laf-backend/functions/ai-quiz-grade.yaml` — 无对应.ts，前端无引用
+  - `laf-backend/functions/material-manager.yaml` — 无对应.ts，前端无引用
+  - `laf-backend/functions/rag-query.yaml` — 无对应.ts，前端无引用
+- **.gitignore更新**: 新增 `docs/phase2-gemini-prompts.md`（含个人信息不宜入库）
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1135 tests passed | H5 build OK
+
+---
+
 ## [2026-04-06] H5视觉质量全量审查 — 全站硬编码颜色清理（R444-R451）
 
 - **Scope**: `frontend`

@@ -25,8 +25,8 @@ const db = cloud.database();
 const _ = db.command;
 
 // ==================== 环境配置 ====================
-import { IS_PRODUCTION, createLogger } from './_shared/api-response.js';
-import { requireAdminAccess } from './_shared/admin-auth.js';
+import { IS_PRODUCTION, createLogger } from './_shared/api-response';
+import { requireAdminAccess } from './_shared/admin-auth';
 
 // ==================== 备份配置 (v2.0新增) ====================
 const BACKUP_COLLECTION = 'data_backups';

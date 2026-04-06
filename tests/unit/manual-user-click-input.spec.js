@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { shallowMount } from '@vue/test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { shallowMount, flushPromises } from '@vue/test-utils';
 
 const safeNavigateToMock = vi.hoisted(() => vi.fn());
 const proxyAIMock = vi.hoisted(() => vi.fn());
@@ -89,6 +89,27 @@ vi.mock('@/utils/core/system.js', () => ({
   getStatusBarHeight: vi.fn(() => 44)
 }));
 
+// Mock defineAsyncComponent 加载的模态框组件，
+// 防止它们的 SCSS 异步加载在环境销毁后触发 EnvironmentTeardownError
+vi.mock('@/components/common/ResumePracticeModal.vue', () => ({
+  default: { name: 'ResumePracticeModal', template: '<div />' }
+}));
+vi.mock('@/components/business/practice/GoalSettingModal.vue', () => ({
+  default: { name: 'GoalSettingModal', template: '<div />' }
+}));
+vi.mock('@/components/business/practice/AchievementModal.vue', () => ({
+  default: { name: 'AchievementModal', template: '<div />' }
+}));
+vi.mock('@/components/business/practice/PracticeModesModal.vue', () => ({
+  default: { name: 'PracticeModesModal', template: '<div />' }
+}));
+vi.mock('@/components/business/practice/QuizManageModal.vue', () => ({
+  default: { name: 'QuizManageModal', template: '<div />' }
+}));
+vi.mock('@/components/business/practice/SpeedReadyModal.vue', () => ({
+  default: { name: 'SpeedReadyModal', template: '<div />' }
+}));
+
 vi.mock('@/config/index.js', () => ({
   default: {
     isDev: true,
@@ -157,6 +178,9 @@ async function flushTicks(times = 3) {
 }
 
 describe('模拟用户真实点击与输入（组件交互层）', () => {
+  /** @type {import('@vue/test-utils').VueWrapper | null} */
+  let wrapper = null;
+
   beforeEach(() => {
     vi.clearAllMocks();
     global.__mockStorage = {};
@@ -170,8 +194,18 @@ describe('模拟用户真实点击与输入（组件交互层）', () => {
     });
   });
 
+  afterEach(async () => {
+    // 等待所有异步 defineAsyncComponent 导入（SCSS 样式加载）完成，
+    // 防止 EnvironmentTeardownError
+    await flushPromises();
+    if (wrapper) {
+      wrapper.unmount();
+      wrapper = null;
+    }
+  });
+
   it('刷题页：用户真实点击导入资料卡片后可立即进入导入页', async () => {
-    const wrapper = shallowMount(PracticePage);
+    wrapper = shallowMount(PracticePage);
     // ✅ [D002重构] isPageLoading, hasBank 现为 setup() 返回的 ref，
     // 需要直接修改 vm 属性而非 setData
     wrapper.vm.isPageLoading = false;
@@ -213,7 +247,7 @@ describe('模拟用户真实点击与输入（组件交互层）', () => {
       }
     });
 
-    const wrapper = shallowMount(SchoolPage);
+    wrapper = shallowMount(SchoolPage);
     await wrapper.setData({
       isLoading: false,
       currentStep: 1,

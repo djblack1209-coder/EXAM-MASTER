@@ -1,9 +1,11 @@
 /**
- * 任务列表 Store
+ * 任务列表 Store（Composition API）
  * 管理今日计划的任务数据
  * ✅ 2.2: 消除重复默认任务、统一存储 key
+ * ✅ H027: 从 Options API 迁移到 Composition API
  */
 
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { storageService } from '../../services/storageService.js';
 import { logger } from '@/utils/logger.js';
@@ -33,191 +35,189 @@ function createDefaultTasks() {
   ];
 }
 
-export const useTodoStore = defineStore('todo', {
-  state: () => ({
-    // 任务列表，包含 id、标题、完成状态、优先级、标签等信息
-    tasks: [],
-    // 任务加载状态
-    loading: false
-  }),
+export const useTodoStore = defineStore('todo', () => {
+  // ==================== 状态 ====================
+  const tasks = ref([]);
+  const loading = ref(false);
 
-  getters: {
-    /**
-     * 获取任务总数
-     */
-    totalTasks: (state) => state.tasks.length,
+  // ==================== 计算属性 ====================
 
-    /**
-     * 获取已完成任务数
-     */
-    completedTasks: (state) => state.tasks.filter((task) => task.done).length,
+  /** 获取任务总数 */
+  const totalTasks = computed(() => tasks.value.length);
 
-    /**
-     * 获取任务完成百分比
-     */
-    completionRate: (state) => {
-      if (state.tasks.length === 0) return 0;
-      return Math.round((state.tasks.filter((task) => task.done).length / state.tasks.length) * 100);
-    },
+  /** 获取已完成任务数 */
+  const completedTasks = computed(() => tasks.value.filter((task) => task.done).length);
 
-    /**
-     * 获取按优先级排序的任务列表
-     */
-    sortedTasks: (state) => {
-      // 优先级排序：high > medium > low
-      const priorityOrder = { high: 3, medium: 2, low: 1 };
-      return [...state.tasks].sort((a, b) => {
-        // 先按完成状态排序，未完成的在前面
-        if (a.done !== b.done) {
-          return a.done ? 1 : -1;
-        }
-        // 再按优先级排序
-        return priorityOrder[b.priority] - priorityOrder[a.priority];
-      });
-    }
-  },
+  /** 获取任务完成百分比 */
+  const completionRate = computed(() => {
+    if (tasks.value.length === 0) return 0;
+    return Math.round((tasks.value.filter((task) => task.done).length / tasks.value.length) * 100);
+  });
 
-  actions: {
-    /**
-     * 初始化任务列表，从本地存储加载数据
-     */
-    initTasks() {
-      this.loading = true;
-      try {
-        const savedTasks = storageService.get(STORAGE_KEY, []);
-        if (savedTasks && Array.isArray(savedTasks) && savedTasks.length > 0) {
-          // 检查并更新旧的标签格式
-          this.tasks = savedTasks.map((task) => {
-            if (task.tag === '高优') {
-              task.tag = '优先';
-              task.tagColor = 'red';
-            } else if (task.tag === '待办') {
-              task.tag = '重要';
-              task.tagColor = 'yellow';
-            }
-            return task;
-          });
-          this.saveTasks();
-        } else {
-          this.tasks = createDefaultTasks();
-          this.saveTasks();
-        }
-      } catch (error) {
-        logger.error('初始化任务列表失败:', error);
-        this.tasks = createDefaultTasks();
-      } finally {
-        this.loading = false;
+  /** 获取按优先级排序的任务列表 */
+  const sortedTasks = computed(() => {
+    const priorityOrder = { high: 3, medium: 2, low: 1 };
+    return [...tasks.value].sort((a, b) => {
+      // 先按完成状态排序，未完成的在前面
+      if (a.done !== b.done) {
+        return a.done ? 1 : -1;
       }
-    },
+      // 再按优先级排序
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    });
+  });
 
-    /**
-     * 保存任务列表到本地存储
-     */
-    saveTasks() {
-      storageService.save(STORAGE_KEY, this.tasks, true); // 静默失败
-    },
+  // ==================== 方法 ====================
 
-    /**
-     * 添加新任务
-     * @param {string} title - 任务标题
-     * @param {string} priority - 任务优先级，可选值：high, medium, low
-     * @param {string} tag - 任务标签
-     * @param {string} tagColor - 标签颜色
-     */
-    addTask(title, priority = 'medium', tag = '重要', tagColor = 'yellow') {
-      if (!title || title.trim() === '') {
-        logger.error('任务标题不能为空');
-        return;
+  /** 保存任务列表到本地存储 */
+  function saveTasks() {
+    storageService.save(STORAGE_KEY, tasks.value, true); // 静默失败
+  }
+
+  /** 初始化任务列表，从本地存储加载数据 */
+  function initTasks() {
+    loading.value = true;
+    try {
+      const savedTasks = storageService.get(STORAGE_KEY, []);
+      if (savedTasks && Array.isArray(savedTasks) && savedTasks.length > 0) {
+        // 检查并更新旧的标签格式
+        tasks.value = savedTasks.map((task) => {
+          if (task.tag === '高优') {
+            task.tag = '优先';
+            task.tagColor = 'red';
+          } else if (task.tag === '待办') {
+            task.tag = '重要';
+            task.tagColor = 'yellow';
+          }
+          return task;
+        });
+        saveTasks();
+      } else {
+        tasks.value = createDefaultTasks();
+        saveTasks();
       }
-
-      // 创建新任务对象
-      const newTask = {
-        id: generateTodoId(),
-        title: title.trim(),
-        done: false,
-        priority,
-        tag,
-        tagColor,
-        createdAt: new Date().toISOString()
-      };
-
-      // 添加到任务列表
-      this.tasks.unshift(newTask);
-
-      // 保存到本地存储
-      this.saveTasks();
-
-      return newTask;
-    },
-
-    /**
-     * 删除任务
-     * @param {number} id - 任务ID
-     */
-    removeTask(id) {
-      const index = this.tasks.findIndex((task) => task.id === id);
-      if (index !== -1) {
-        this.tasks.splice(index, 1);
-        this.saveTasks();
-        return true;
-      }
-      return false;
-    },
-
-    /**
-     * 切换任务完成状态
-     * @param {number} id - 任务ID
-     */
-    toggleTask(id) {
-      const task = this.tasks.find((task) => task.id === id);
-      if (task) {
-        task.done = !task.done;
-        this.saveTasks();
-        return true;
-      }
-      return false;
-    },
-
-    /**
-     * 更新任务
-     * @param {number} id - 任务ID
-     * @param {Object} updates - 要更新的任务属性，包含标题、优先级、标签等
-     */
-    updateTask(id, updates) {
-      const task = this.tasks.find((task) => task.id === id);
-      if (task) {
-        Object.assign(task, updates);
-        this.saveTasks();
-        return true;
-      }
-      return false;
-    },
-
-    /**
-     * 清空已完成任务
-     */
-    clearCompleted() {
-      this.tasks = this.tasks.filter((task) => !task.done);
-      this.saveTasks();
-    },
-
-    /**
-     * 批量添加任务
-     * @param {Array} newTasks - 要添加的任务数组
-     */
-    bulkAddTasks(newTasks) {
-      if (Array.isArray(newTasks) && newTasks.length > 0) {
-        // H-06 FIX: 使用 generateTodoId() 替代 Date.now() + index
-        const tasksToAdd = newTasks.map((task) => ({
-          id: generateTodoId(),
-          done: false,
-          createdAt: new Date().toISOString(),
-          ...task
-        }));
-
-        this.tasks.push(...tasksToAdd);
-        this.saveTasks();
-      }
+    } catch (error) {
+      logger.error('初始化任务列表失败:', error);
+      tasks.value = createDefaultTasks();
+    } finally {
+      loading.value = false;
     }
   }
+
+  /**
+   * 添加新任务
+   * @param {string} title - 任务标题
+   * @param {string} priority - 任务优先级，可选值：high, medium, low
+   * @param {string} tag - 任务标签
+   * @param {string} tagColor - 标签颜色
+   */
+  function addTask(title, priority = 'medium', tag = '重要', tagColor = 'yellow') {
+    if (!title || title.trim() === '') {
+      logger.error('任务标题不能为空');
+      return;
+    }
+
+    const newTask = {
+      id: generateTodoId(),
+      title: title.trim(),
+      done: false,
+      priority,
+      tag,
+      tagColor,
+      createdAt: new Date().toISOString()
+    };
+
+    tasks.value.unshift(newTask);
+    saveTasks();
+
+    return newTask;
+  }
+
+  /**
+   * 删除任务
+   * @param {number} id - 任务ID
+   */
+  function removeTask(id) {
+    const index = tasks.value.findIndex((task) => task.id === id);
+    if (index !== -1) {
+      tasks.value.splice(index, 1);
+      saveTasks();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 切换任务完成状态
+   * @param {number} id - 任务ID
+   */
+  function toggleTask(id) {
+    const task = tasks.value.find((task) => task.id === id);
+    if (task) {
+      task.done = !task.done;
+      saveTasks();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 更新任务
+   * @param {number} id - 任务ID
+   * @param {Object} updates - 要更新的任务属性
+   */
+  function updateTask(id, updates) {
+    const task = tasks.value.find((task) => task.id === id);
+    if (task) {
+      Object.assign(task, updates);
+      saveTasks();
+      return true;
+    }
+    return false;
+  }
+
+  /** 清空已完成任务 */
+  function clearCompleted() {
+    tasks.value = tasks.value.filter((task) => !task.done);
+    saveTasks();
+  }
+
+  /**
+   * 批量添加任务
+   * @param {Array} newTasks - 要添加的任务数组
+   */
+  function bulkAddTasks(newTasks) {
+    if (Array.isArray(newTasks) && newTasks.length > 0) {
+      // H-06 FIX: 使用 generateTodoId() 替代 Date.now() + index
+      const tasksToAdd = newTasks.map((task) => ({
+        id: generateTodoId(),
+        done: false,
+        createdAt: new Date().toISOString(),
+        ...task
+      }));
+
+      tasks.value.push(...tasksToAdd);
+      saveTasks();
+    }
+  }
+
+  return {
+    // 状态
+    tasks,
+    loading,
+    // 计算属性
+    totalTasks,
+    completedTasks,
+    completionRate,
+    sortedTasks,
+    // 方法
+    initTasks,
+    saveTasks,
+    addTask,
+    removeTask,
+    toggleTask,
+    updateTask,
+    clearCompleted,
+    bulkAddTasks
+  };
 });

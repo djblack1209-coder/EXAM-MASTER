@@ -1,6 +1,7 @@
 /**
- * 学习轨迹 Store（细粒度事件流）
+ * 学习轨迹 Store（Composition API）
  * 解决检查点1.4：知识点气泡轨迹记录问题
+ * ✅ H027: 从 Options API 迁移到 Composition API
  *
  * 功能：
  * 1. 学习轨迹记录（事件流：点击、答题、复习等）
@@ -14,6 +15,7 @@
  * 两者的 recordAnswer 语义不同：trajectory 记录事件流，study 更新聚合计数
  */
 
+import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
@@ -36,396 +38,402 @@ export const TRAJECTORY_EVENTS = {
   PAGE_VIEW: 'page_view'
 };
 
-export const useLearningTrajectoryStore = defineStore('learningTrajectory', {
-  state: () => ({
-    // 学习轨迹记录
-    trajectory: [],
+export const useLearningTrajectoryStore = defineStore('learningTrajectory', () => {
+  // ==================== 状态 ====================
+  const trajectory = ref([]);
+  const knowledgeMastery = ref({});
+  const sessions = ref([]);
+  const currentSession = ref(null);
+  const isInitialized = ref(false);
 
-    // 知识点掌握度
-    knowledgeMastery: {},
+  // 内部变量（非响应式，不暴露给外部）
+  let _debouncedSaveTrajectory = () => saveTrajectory();
+  let _bubbleClickHandler = null;
 
-    // 学习会话
-    sessions: [],
+  // ==================== 计算属性 ====================
 
-    // 当前会话
-    currentSession: null,
+  /** 今日轨迹 */
+  const todayTrajectory = computed(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return trajectory.value.filter((t) => t.date === today);
+  });
 
-    // 是否已初始化
-    isInitialized: false
-  }),
+  /** 今日学习时长（分钟） */
+  const todayStudyMinutes = computed(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const todaySessions = sessions.value.filter((s) => s.date === today);
+    return todaySessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+  });
 
-  getters: {
-    // 今日轨迹
-    todayTrajectory: (state) => {
-      const today = new Date().toISOString().split('T')[0];
-      return state.trajectory.filter((t) => t.date === today);
-    },
+  /** 本周学习天数 */
+  const weekStudyDays = computed(() => {
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
 
-    // 今日学习时长（分钟）
-    todayStudyMinutes: (state) => {
-      const today = new Date().toISOString().split('T')[0];
-      const todaySessions = state.sessions.filter((s) => s.date === today);
-      return todaySessions.reduce((sum, s) => sum + (s.duration || 0), 0);
-    },
+    const studyDates = new Set(sessions.value.filter((s) => new Date(s.startTime) >= weekStart).map((s) => s.date));
 
-    // 本周学习天数
-    weekStudyDays: (state) => {
-      const now = new Date();
-      const weekStart = new Date(now);
-      weekStart.setDate(now.getDate() - now.getDay());
-      weekStart.setHours(0, 0, 0, 0);
+    return studyDates.size;
+  });
 
-      const studyDates = new Set(state.sessions.filter((s) => new Date(s.startTime) >= weekStart).map((s) => s.date));
-
-      return studyDates.size;
-    },
-
-    // 最常访问的知识点
-    topKnowledgePoints: (state) => {
-      const counts = {};
-      state.trajectory
-        .filter((t) => t.type === TRAJECTORY_EVENTS.BUBBLE_CLICK)
-        .forEach((t) => {
-          const key = t.data.bubbleId || t.data.title;
-          counts[key] = (counts[key] || 0) + 1;
-        });
-
-      return Object.entries(counts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
-        .map(([key, count]) => ({ key, count }));
-    },
-
-    // 学习连续天数
-    streakDays: (state) => {
-      if (state.sessions.length === 0) return 0;
-
-      const dates = [...new Set(state.sessions.map((s) => s.date))].sort().reverse();
-      let streak = 0;
-      const currentDate = new Date();
-      currentDate.setHours(0, 0, 0, 0);
-
-      for (const dateStr of dates) {
-        const date = new Date(dateStr);
-        date.setHours(0, 0, 0, 0);
-
-        const diffDays = Math.floor((currentDate - date) / (1000 * 60 * 60 * 24));
-
-        if (diffDays === streak) {
-          streak++;
-        } else if (diffDays > streak) {
-          break;
-        }
-      }
-
-      return streak;
-    }
-  },
-
-  actions: {
-    /**
-     * 初始化
-     */
-    init() {
-      if (this.isInitialized) return;
-
-      try {
-        this.trajectory = storageService.get(STORAGE_KEYS.TRAJECTORY, []);
-        this.knowledgeMastery = storageService.get(STORAGE_KEYS.KNOWLEDGE_MASTERY, {});
-        this.sessions = storageService.get(STORAGE_KEYS.LEARNING_SESSIONS, []);
-        this.isInitialized = true;
-
-        // 初始化 debounced save
-        let _saveTimer = null;
-        this._debouncedSaveTrajectory = () => {
-          if (_saveTimer) clearTimeout(_saveTimer);
-          _saveTimer = setTimeout(() => {
-            this.saveTrajectory();
-            _saveTimer = null;
-          }, 2000);
-        };
-
-        // 监听气泡点击事件
-        this._bubbleClickHandler = this.handleBubbleClick.bind(this);
-        uni.$on('bubble:clicked', this._bubbleClickHandler);
-
-        logger.log('[LearningTrajectory] 初始化完成');
-      } catch (e) {
-        logger.error('[LearningTrajectory] 初始化失败:', e);
-        // 初始化失败时设置默认状态，避免后续操作异常
-        this.trajectory = [];
-        this.knowledgeMastery = {};
-        this.sessions = [];
-        this.isInitialized = true; // 标记为已初始化（降级模式）
-        this._debouncedSaveTrajectory = () => this.saveTrajectory();
-      }
-    },
-
-    /**
-     * 记录轨迹事件
-     * @param {string} type - 事件类型
-     * @param {Object} data - 事件数据
-     */
-    recordEvent(type, data = {}) {
-      const event = {
-        id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-        type,
-        data,
-        timestamp: Date.now(),
-        date: new Date().toISOString().split('T')[0],
-        sessionId: this.currentSession?.id
-      };
-
-      this.trajectory.unshift(event);
-
-      // 限制记录数量
-      if (this.trajectory.length > 1000) {
-        this.trajectory = this.trajectory.slice(0, 1000);
-      }
-
-      this._debouncedSaveTrajectory();
-
-      logger.log('[LearningTrajectory] 记录事件:', type, data);
-    },
-
-    /**
-     * 处理气泡点击事件
-     * @param {Object} clickData - 点击数据
-     */
-    handleBubbleClick(clickData) {
-      this.recordEvent(TRAJECTORY_EVENTS.BUBBLE_CLICK, clickData);
-
-      // 更新知识点掌握度
-      if (clickData.bubbleId) {
-        this.updateMastery(clickData.bubbleId, {
-          lastAccess: Date.now(),
-          accessCount: (this.knowledgeMastery[clickData.bubbleId]?.accessCount || 0) + 1
-        });
-      }
-    },
-
-    /**
-     * 记录答题事件
-     * @param {Object} answerData - 答题数据
-     */
-    recordAnswer(answerData) {
-      this.recordEvent(TRAJECTORY_EVENTS.QUESTION_ANSWER, answerData);
-
-      // 更新相关知识点掌握度
-      if (answerData.knowledgePoints) {
-        answerData.knowledgePoints.forEach((kp) => {
-          const currentMastery = this.knowledgeMastery[kp] || { mastery: 50 };
-          const delta = answerData.isCorrect ? 5 : -3;
-
-          this.updateMastery(kp, {
-            mastery: Math.max(0, Math.min(100, currentMastery.mastery + delta)),
-            lastPractice: Date.now(),
-            practiceCount: (currentMastery.practiceCount || 0) + 1,
-            correctCount: (currentMastery.correctCount || 0) + (answerData.isCorrect ? 1 : 0)
-          });
-        });
-      }
-    },
-
-    /**
-     * 更新知识点掌握度
-     * @param {string} knowledgeId - 知识点ID
-     * @param {Object} updates - 更新数据
-     */
-    updateMastery(knowledgeId, updates) {
-      if (!this.knowledgeMastery[knowledgeId]) {
-        this.knowledgeMastery[knowledgeId] = {
-          mastery: 50,
-          accessCount: 0,
-          practiceCount: 0,
-          correctCount: 0,
-          firstAccess: Date.now()
-        };
-      }
-
-      Object.assign(this.knowledgeMastery[knowledgeId], updates);
-      this.saveMastery();
-    },
-
-    /**
-     * 开始学习会话
-     */
-    startSession() {
-      const session = {
-        id: `session_${Date.now()}`,
-        startTime: Date.now(),
-        date: new Date().toISOString().split('T')[0],
-        events: [],
-        duration: 0
-      };
-
-      this.currentSession = session;
-      this.sessions.unshift(session);
-
-      logger.log('[LearningTrajectory] 开始会话:', session.id);
-
-      return session;
-    },
-
-    /**
-     * 结束学习会话
-     */
-    endSession() {
-      if (!this.currentSession) return null;
-
-      const session = this.currentSession;
-      session.endTime = Date.now();
-      session.duration = Math.floor((session.endTime - session.startTime) / 60000); // 分钟
-
-      // 更新会话列表
-      const index = this.sessions.findIndex((s) => s.id === session.id);
-      if (index !== -1) {
-        this.sessions[index] = session;
-      }
-
-      this.saveSessions();
-
-      logger.log('[LearningTrajectory] 结束会话:', session.id, '时长:', session.duration, '分钟');
-
-      this.currentSession = null;
-      return session;
-    },
-
-    /**
-     * 获取学习报告
-     * @param {string} period - 时间段 (today/week/month)
-     */
-    getReport(period = 'today') {
-      let startDate;
-      const now = new Date();
-
-      switch (period) {
-        case 'today':
-          startDate = new Date(now.toISOString().split('T')[0]);
-          break;
-        case 'week':
-          startDate = new Date(now);
-          startDate.setDate(now.getDate() - 7);
-          break;
-        case 'month':
-          startDate = new Date(now);
-          startDate.setMonth(now.getMonth() - 1);
-          break;
-        default:
-          startDate = new Date(0);
-      }
-
-      const filteredTrajectory = this.trajectory.filter((t) => new Date(t.timestamp) >= startDate);
-
-      const filteredSessions = this.sessions.filter((s) => new Date(s.startTime) >= startDate);
-
-      // 统计各类事件
-      const eventCounts = {};
-      filteredTrajectory.forEach((t) => {
-        eventCounts[t.type] = (eventCounts[t.type] || 0) + 1;
+  /** 最常访问的知识点 */
+  const topKnowledgePoints = computed(() => {
+    const counts = {};
+    trajectory.value
+      .filter((t) => t.type === TRAJECTORY_EVENTS.BUBBLE_CLICK)
+      .forEach((t) => {
+        const key = t.data.bubbleId || t.data.title;
+        counts[key] = (counts[key] || 0) + 1;
       });
 
-      // 计算总学习时长
-      const totalMinutes = filteredSessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([key, count]) => ({ key, count }));
+  });
 
-      // 计算学习天数
-      const studyDays = new Set(filteredSessions.map((s) => s.date)).size;
+  /** 学习连续天数 */
+  const streakDays = computed(() => {
+    if (sessions.value.length === 0) return 0;
 
-      return {
-        period,
-        totalMinutes,
-        studyDays,
-        eventCounts,
-        trajectoryCount: filteredTrajectory.length,
-        sessionCount: filteredSessions.length,
-        averageSessionMinutes: filteredSessions.length > 0 ? Math.round(totalMinutes / filteredSessions.length) : 0
-      };
-    },
+    const dates = [...new Set(sessions.value.map((s) => s.date))].sort().reverse();
+    let streak = 0;
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
 
-    /**
-     * 获取学习路径
-     * @param {number} limit - 返回数量
-     */
-    getLearningPath(limit = 20) {
-      return this.trajectory
-        .filter((t) =>
-          [
-            TRAJECTORY_EVENTS.BUBBLE_CLICK,
-            TRAJECTORY_EVENTS.QUESTION_ANSWER,
-            TRAJECTORY_EVENTS.KNOWLEDGE_VIEW
-          ].includes(t.type)
-        )
-        .slice(0, limit)
-        .map((t) => ({
-          type: t.type,
-          title: t.data.title || t.data.questionType || '未知',
-          timestamp: t.timestamp,
-          result: t.data.isCorrect
-        }));
-    },
+    for (const dateStr of dates) {
+      const date = new Date(dateStr);
+      date.setHours(0, 0, 0, 0);
 
-    /**
-     * 保存轨迹数据
-     */
-    saveTrajectory() {
-      try {
-        storageService.save(STORAGE_KEYS.TRAJECTORY, this.trajectory);
-      } catch (e) {
-        logger.error('[LearningTrajectory] 保存轨迹失败:', e);
+      const diffDays = Math.floor((currentDate - date) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === streak) {
+        streak++;
+      } else if (diffDays > streak) {
+        break;
       }
-    },
+    }
 
-    /**
-     * 保存掌握度数据
-     */
-    saveMastery() {
-      try {
-        storageService.save(STORAGE_KEYS.KNOWLEDGE_MASTERY, this.knowledgeMastery);
-      } catch (e) {
-        logger.error('[LearningTrajectory] 保存掌握度失败:', e);
-      }
-    },
+    return streak;
+  });
 
-    /**
-     * 保存会话数据
-     */
-    saveSessions() {
-      try {
-        // 只保留最近100个会话
-        const sessionsToSave = this.sessions.slice(0, 100);
-        storageService.save(STORAGE_KEYS.LEARNING_SESSIONS, sessionsToSave);
-      } catch (e) {
-        logger.error('[LearningTrajectory] 保存会话失败:', e);
-      }
-    },
+  // ==================== 方法 ====================
 
-    /**
-     * 清除所有数据
-     */
-    clearAll() {
-      this.trajectory = [];
-      this.knowledgeMastery = {};
-      this.sessions = [];
-      this.currentSession = null;
-
-      storageService.remove(STORAGE_KEYS.TRAJECTORY);
-      storageService.remove(STORAGE_KEYS.KNOWLEDGE_MASTERY);
-      storageService.remove(STORAGE_KEYS.LEARNING_SESSIONS);
-
-      logger.log('[LearningTrajectory] 数据已清除');
-    },
-
-    /**
-     * 销毁store，清理事件监听（防止内存泄漏）
-     */
-    destroy() {
-      if (this._bubbleClickHandler) {
-        uni.$off('bubble:clicked', this._bubbleClickHandler);
-        this._bubbleClickHandler = null;
-      }
-      this.isInitialized = false;
+  /** 保存轨迹数据 */
+  function saveTrajectory() {
+    try {
+      storageService.save(STORAGE_KEYS.TRAJECTORY, trajectory.value);
+    } catch (e) {
+      logger.error('[LearningTrajectory] 保存轨迹失败:', e);
     }
   }
+
+  /** 保存掌握度数据 */
+  function saveMastery() {
+    try {
+      storageService.save(STORAGE_KEYS.KNOWLEDGE_MASTERY, knowledgeMastery.value);
+    } catch (e) {
+      logger.error('[LearningTrajectory] 保存掌握度失败:', e);
+    }
+  }
+
+  /** 保存会话数据 */
+  function saveSessions() {
+    try {
+      // 只保留最近100个会话
+      const sessionsToSave = sessions.value.slice(0, 100);
+      storageService.save(STORAGE_KEYS.LEARNING_SESSIONS, sessionsToSave);
+    } catch (e) {
+      logger.error('[LearningTrajectory] 保存会话失败:', e);
+    }
+  }
+
+  /**
+   * 更新知识点掌握度
+   * @param {string} knowledgeId - 知识点ID
+   * @param {Object} updates - 更新数据
+   */
+  function updateMastery(knowledgeId, updates) {
+    if (!knowledgeMastery.value[knowledgeId]) {
+      knowledgeMastery.value[knowledgeId] = {
+        mastery: 50,
+        accessCount: 0,
+        practiceCount: 0,
+        correctCount: 0,
+        firstAccess: Date.now()
+      };
+    }
+
+    Object.assign(knowledgeMastery.value[knowledgeId], updates);
+    saveMastery();
+  }
+
+  /**
+   * 记录轨迹事件
+   * @param {string} type - 事件类型
+   * @param {Object} data - 事件数据
+   */
+  function recordEvent(type, data = {}) {
+    const event = {
+      id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      type,
+      data,
+      timestamp: Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      sessionId: currentSession.value?.id
+    };
+
+    trajectory.value.unshift(event);
+
+    // 限制记录数量
+    if (trajectory.value.length > 1000) {
+      trajectory.value = trajectory.value.slice(0, 1000);
+    }
+
+    _debouncedSaveTrajectory();
+
+    logger.log('[LearningTrajectory] 记录事件:', type, data);
+  }
+
+  /**
+   * 处理气泡点击事件
+   * @param {Object} clickData - 点击数据
+   */
+  function handleBubbleClick(clickData) {
+    recordEvent(TRAJECTORY_EVENTS.BUBBLE_CLICK, clickData);
+
+    // 更新知识点掌握度
+    if (clickData.bubbleId) {
+      updateMastery(clickData.bubbleId, {
+        lastAccess: Date.now(),
+        accessCount: (knowledgeMastery.value[clickData.bubbleId]?.accessCount || 0) + 1
+      });
+    }
+  }
+
+  /**
+   * 记录答题事件
+   * @param {Object} answerData - 答题数据
+   */
+  function recordAnswer(answerData) {
+    recordEvent(TRAJECTORY_EVENTS.QUESTION_ANSWER, answerData);
+
+    // 更新相关知识点掌握度
+    if (answerData.knowledgePoints) {
+      answerData.knowledgePoints.forEach((kp) => {
+        const currentMasteryVal = knowledgeMastery.value[kp] || { mastery: 50 };
+        const delta = answerData.isCorrect ? 5 : -3;
+
+        updateMastery(kp, {
+          mastery: Math.max(0, Math.min(100, currentMasteryVal.mastery + delta)),
+          lastPractice: Date.now(),
+          practiceCount: (currentMasteryVal.practiceCount || 0) + 1,
+          correctCount: (currentMasteryVal.correctCount || 0) + (answerData.isCorrect ? 1 : 0)
+        });
+      });
+    }
+  }
+
+  /** 初始化 */
+  function init() {
+    if (isInitialized.value) return;
+
+    try {
+      trajectory.value = storageService.get(STORAGE_KEYS.TRAJECTORY, []);
+      knowledgeMastery.value = storageService.get(STORAGE_KEYS.KNOWLEDGE_MASTERY, {});
+      sessions.value = storageService.get(STORAGE_KEYS.LEARNING_SESSIONS, []);
+      isInitialized.value = true;
+
+      // 初始化 debounced save
+      let _saveTimer = null;
+      _debouncedSaveTrajectory = () => {
+        if (_saveTimer) clearTimeout(_saveTimer);
+        _saveTimer = setTimeout(() => {
+          saveTrajectory();
+          _saveTimer = null;
+        }, 2000);
+      };
+
+      // 监听气泡点击事件
+      _bubbleClickHandler = handleBubbleClick;
+      uni.$on('bubble:clicked', _bubbleClickHandler);
+
+      logger.log('[LearningTrajectory] 初始化完成');
+    } catch (e) {
+      logger.error('[LearningTrajectory] 初始化失败:', e);
+      // 初始化失败时设置默认状态，避免后续操作异常
+      trajectory.value = [];
+      knowledgeMastery.value = {};
+      sessions.value = [];
+      isInitialized.value = true; // 标记为已初始化（降级模式）
+      _debouncedSaveTrajectory = () => saveTrajectory();
+    }
+  }
+
+  /** 开始学习会话 */
+  function startSession() {
+    const session = {
+      id: `session_${Date.now()}`,
+      startTime: Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      events: [],
+      duration: 0
+    };
+
+    currentSession.value = session;
+    sessions.value.unshift(session);
+
+    logger.log('[LearningTrajectory] 开始会话:', session.id);
+
+    return session;
+  }
+
+  /** 结束学习会话 */
+  function endSession() {
+    if (!currentSession.value) return null;
+
+    const session = currentSession.value;
+    session.endTime = Date.now();
+    session.duration = Math.floor((session.endTime - session.startTime) / 60000); // 分钟
+
+    // 更新会话列表
+    const index = sessions.value.findIndex((s) => s.id === session.id);
+    if (index !== -1) {
+      sessions.value[index] = session;
+    }
+
+    saveSessions();
+
+    logger.log('[LearningTrajectory] 结束会话:', session.id, '时长:', session.duration, '分钟');
+
+    currentSession.value = null;
+    return session;
+  }
+
+  /**
+   * 获取学习报告
+   * @param {string} period - 时间段 (today/week/month)
+   */
+  function getReport(period = 'today') {
+    let startDate;
+    const now = new Date();
+
+    switch (period) {
+      case 'today':
+        startDate = new Date(now.toISOString().split('T')[0]);
+        break;
+      case 'week':
+        startDate = new Date(now);
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case 'month':
+        startDate = new Date(now);
+        startDate.setMonth(now.getMonth() - 1);
+        break;
+      default:
+        startDate = new Date(0);
+    }
+
+    const filteredTrajectory = trajectory.value.filter((t) => new Date(t.timestamp) >= startDate);
+
+    const filteredSessions = sessions.value.filter((s) => new Date(s.startTime) >= startDate);
+
+    // 统计各类事件
+    const eventCounts = {};
+    filteredTrajectory.forEach((t) => {
+      eventCounts[t.type] = (eventCounts[t.type] || 0) + 1;
+    });
+
+    // 计算总学习时长
+    const totalMinutes = filteredSessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+
+    // 计算学习天数
+    const studyDays = new Set(filteredSessions.map((s) => s.date)).size;
+
+    return {
+      period,
+      totalMinutes,
+      studyDays,
+      eventCounts,
+      trajectoryCount: filteredTrajectory.length,
+      sessionCount: filteredSessions.length,
+      averageSessionMinutes: filteredSessions.length > 0 ? Math.round(totalMinutes / filteredSessions.length) : 0
+    };
+  }
+
+  /**
+   * 获取学习路径
+   * @param {number} limit - 返回数量
+   */
+  function getLearningPath(limit = 20) {
+    return trajectory.value
+      .filter((t) =>
+        [TRAJECTORY_EVENTS.BUBBLE_CLICK, TRAJECTORY_EVENTS.QUESTION_ANSWER, TRAJECTORY_EVENTS.KNOWLEDGE_VIEW].includes(
+          t.type
+        )
+      )
+      .slice(0, limit)
+      .map((t) => ({
+        type: t.type,
+        title: t.data.title || t.data.questionType || '未知',
+        timestamp: t.timestamp,
+        result: t.data.isCorrect
+      }));
+  }
+
+  /** 清除所有数据 */
+  function clearAll() {
+    trajectory.value = [];
+    knowledgeMastery.value = {};
+    sessions.value = [];
+    currentSession.value = null;
+
+    storageService.remove(STORAGE_KEYS.TRAJECTORY);
+    storageService.remove(STORAGE_KEYS.KNOWLEDGE_MASTERY);
+    storageService.remove(STORAGE_KEYS.LEARNING_SESSIONS);
+
+    logger.log('[LearningTrajectory] 数据已清除');
+  }
+
+  /** 销毁store，清理事件监听（防止内存泄漏） */
+  function destroy() {
+    if (_bubbleClickHandler) {
+      uni.$off('bubble:clicked', _bubbleClickHandler);
+      _bubbleClickHandler = null;
+    }
+    isInitialized.value = false;
+  }
+
+  return {
+    // 状态
+    trajectory,
+    knowledgeMastery,
+    sessions,
+    currentSession,
+    isInitialized,
+    // 计算属性
+    todayTrajectory,
+    todayStudyMinutes,
+    weekStudyDays,
+    topKnowledgePoints,
+    streakDays,
+    // 方法
+    init,
+    recordEvent,
+    handleBubbleClick,
+    recordAnswer,
+    updateMastery,
+    startSession,
+    endSession,
+    getReport,
+    getLearningPath,
+    saveTrajectory,
+    saveMastery,
+    saveSessions,
+    clearAll,
+    destroy
+  };
 });
 
 export default useLearningTrajectoryStore;

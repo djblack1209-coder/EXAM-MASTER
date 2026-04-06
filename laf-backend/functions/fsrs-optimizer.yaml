@@ -1,5 +1,5 @@
 name: fsrs-optimizer
-desc: 'FSRS个性化参数优化器 - 基于review_logs计算个性化记忆参数，支持optimize/get_params/get_review_stats'
+desc: FSRS个性化参数优化器 - 基于review_logs计算个性化记忆参数，支持optimize/get_params/get_review_stats
 methods:
   - POST
 tags: []

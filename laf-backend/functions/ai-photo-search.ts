@@ -18,9 +18,9 @@
 import cloud from '@lafjs/cloud';
 import { lookup } from 'dns/promises';
 import { isIP } from 'net';
-import { validate } from './_shared/validator.js';
-import { createLogger, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response.js';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { validate } from './_shared/validator';
+import { createLogger, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 const logger = createLogger('[AIPhotoSearch]');
 

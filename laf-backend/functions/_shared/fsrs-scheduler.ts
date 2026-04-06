@@ -12,7 +12,7 @@ import {
   type Grade,
   type FSRSParameters,
   type RecordLogItem
-} from 'ts-fsrs';
+} from './ts-fsrs-bundle';
 
 // ============ Types ============
 

@@ -411,6 +411,19 @@
           }
         }
       ]
+    },
+    {
+      "root": "pages/common",
+      "pages": [
+        {
+          "path": "404",
+          "style": {
+            "navigationBarTitleText": "页面未找到",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        }
+      ]
     }
   ],
   "preloadRule": {
@@ -464,19 +477,27 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/practice/index",
-        "text": "刷题"
+        "text": "刷题",
+        "iconPath": "static/tabbar/practice.png",
+        "selectedIconPath": "static/tabbar/practice-active.png"
       },
       {
         "pagePath": "pages/school/index",
-        "text": "择校"
+        "text": "择校",
+        "iconPath": "static/tabbar/school.png",
+        "selectedIconPath": "static/tabbar/school-active.png"
       },
       {
         "pagePath": "pages/profile/index",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "static/tabbar/profile.png",
+        "selectedIconPath": "static/tabbar/profile-active.png"
       }
     ]
   }

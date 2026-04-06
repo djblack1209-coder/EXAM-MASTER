@@ -300,3 +300,104 @@ export async function getSmartRecommendations(params = {}) {
     return normalizeError(error, '获取智能推荐');
   }
 }
+
+// ==================== AI 课堂（agent-orchestrator）====================
+
+/**
+ * 获取课程列表
+ * @param {Object} [params] - 可选的查询参数
+ * @returns {Promise} 返回 { code, data: { list } }
+ */
+export async function listLessons(params = {}) {
+  try {
+    return await request('/agent-orchestrator', { action: 'list_lessons', ...params });
+  } catch (error) {
+    logger.warn('[AI课堂] 获取课程列表失败:', error);
+    return normalizeError(error, '获取课程列表');
+  }
+}
+
+/**
+ * 创建课程
+ * @param {Object} lessonData - 课程信息
+ * @returns {Promise} 返回 { code, data }
+ */
+export async function createLesson(lessonData) {
+  try {
+    return await request('/agent-orchestrator', { action: 'create_lesson', ...lessonData });
+  } catch (error) {
+    logger.warn('[AI课堂] 创建课程失败:', error);
+    return normalizeError(error, '创建课程');
+  }
+}
+
+/**
+ * 获取课程状态
+ * @param {string} lessonId - 课程 ID
+ * @returns {Promise} 返回 { code, data }
+ */
+export async function getLessonStatus(lessonId) {
+  try {
+    return await request('/agent-orchestrator', { action: 'lesson_status', lessonId });
+  } catch (error) {
+    logger.warn('[AI课堂] 获取课程状态失败:', error);
+    return normalizeError(error, '获取课程状态');
+  }
+}
+
+/**
+ * 删除课程
+ * @param {string} lessonId - 课程 ID
+ * @returns {Promise} 返回 { code }
+ */
+export async function deleteLesson(lessonId) {
+  try {
+    return await request('/agent-orchestrator', { action: 'delete_lesson', lessonId });
+  } catch (error) {
+    logger.warn('[AI课堂] 删除课程失败:', error);
+    return normalizeError(error, '删除课程');
+  }
+}
+
+/**
+ * 开始课堂会话
+ * @param {string} lessonId - 课程 ID
+ * @returns {Promise} 返回 { code, data: sessionInfo }
+ */
+export async function startClassroomSession(lessonId) {
+  try {
+    return await request('/agent-orchestrator', { action: 'start', lessonId });
+  } catch (error) {
+    logger.warn('[AI课堂] 开始课堂失败:', error);
+    return normalizeError(error, '开始课堂');
+  }
+}
+
+/**
+ * 发送课堂消息
+ * @param {string} sessionId - 会话 ID
+ * @param {string} content - 消息内容
+ * @returns {Promise} 返回 { code, data: messageResult }
+ */
+export async function sendClassroomMessage(sessionId, content) {
+  try {
+    return await request('/agent-orchestrator', { action: 'message', sessionId, content });
+  } catch (error) {
+    logger.warn('[AI课堂] 发送消息失败:', error);
+    return normalizeError(error, '发送消息');
+  }
+}
+
+/**
+ * 结束课堂会话
+ * @param {string} sessionId - 会话 ID
+ * @returns {Promise} 返回 { code, data }
+ */
+export async function endClassroomSession(sessionId) {
+  try {
+    return await request('/agent-orchestrator', { action: 'end', sessionId });
+  } catch (error) {
+    logger.warn('[AI课堂] 结束课堂失败:', error);
+    return normalizeError(error, '结束课堂');
+  }
+}

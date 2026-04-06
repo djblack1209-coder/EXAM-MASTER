@@ -86,10 +86,10 @@ export const useReviewStore = defineStore('review', () => {
   const optimizeFSRS = async () => {
     try {
       const res = await apiOptimizeFSRS();
-      if (res.code === 0) {
+      if (res?.code === 0 && res.data) {
         return { success: true, data: res.data };
       }
-      throw new Error(res.message || 'FSRS 优化失败');
+      throw new Error(res?.message || 'FSRS 优化失败');
     } catch (error) {
       logger.error('[ReviewStore] optimizeFSRS:', error);
       return { success: false, error };
@@ -164,7 +164,7 @@ export const useReviewStore = defineStore('review', () => {
   const fetchQuestionBankStats = async () => {
     try {
       const res = await apiGetQuestionBankStats();
-      if (res?.code === 0) return { success: true, data: res.data };
+      if (res?.code === 0) return { success: true, data: res?.data ?? null };
       return { success: false, error: { message: res?.message || '获取题库统计失败' } };
     } catch (e) {
       logger.error('[reviewStore] fetchQuestionBankStats failed:', e);
@@ -176,7 +176,7 @@ export const useReviewStore = defineStore('review', () => {
   const browseQuestions = async (params) => {
     try {
       const res = await apiBrowseQuestions(params);
-      if (res?.code === 0) return { success: true, data: res.data };
+      if (res?.code === 0) return { success: true, data: res?.data ?? null };
       return { success: false, error: { message: res?.message || '加载题目失败' } };
     } catch (e) {
       logger.error('[reviewStore] browseQuestions failed:', e);
@@ -188,7 +188,7 @@ export const useReviewStore = defineStore('review', () => {
   const fetchQuestionBankRandom = async (params) => {
     try {
       const res = await apiGetQuestionBankRandom(params);
-      if (res?.code === 0) return { success: true, data: res.data };
+      if (res?.code === 0) return { success: true, data: res?.data ?? null };
       return { success: false, error: { message: res?.message || '获取随机题目失败' } };
     } catch (e) {
       logger.error('[reviewStore] fetchQuestionBankRandom failed:', e);
@@ -200,7 +200,7 @@ export const useReviewStore = defineStore('review', () => {
   const fetchRandomQuestions = async (params) => {
     try {
       const res = await apiGetRandomQuestions(params);
-      if (res?.code === 0) return { success: true, data: res.data };
+      if (res?.code === 0) return { success: true, data: res?.data ?? null };
       return { success: false, error: { message: res?.message || '获取随机题目失败' } };
     } catch (e) {
       logger.error('[reviewStore] fetchRandomQuestions failed:', e);

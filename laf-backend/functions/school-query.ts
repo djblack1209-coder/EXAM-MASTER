@@ -15,9 +15,9 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { verifyJWT, extractBearerToken } from './_shared/auth.js';
-import { requireAdminAccess } from './_shared/admin-auth.js';
-import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
+import { verifyJWT, extractBearerToken } from './_shared/auth';
+import { requireAdminAccess } from './_shared/admin-auth';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 
 const db = cloud.database();
 const _ = db.command;

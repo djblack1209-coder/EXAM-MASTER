@@ -12,7 +12,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   success,
   badRequest,
@@ -23,8 +23,8 @@ import {
   wrapResponse,
   checkRateLimitDistributed,
   tooManyRequests
-} from './_shared/api-response.js';
-import { getBatchEmbeddings, chunkText } from './_shared/embedding.js';
+} from './_shared/api-response';
+import { getBatchEmbeddings, chunkText } from './_shared/embedding';
 
 const db = cloud.database();
 const logger = createLogger('[RAGIngest]');

@@ -17,9 +17,9 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate } from './_shared/validator.js';
-import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { validate } from './_shared/validator';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 const logger = createLogger('[DocConvert]');
 const db = cloud.database();

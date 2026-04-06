@@ -36,8 +36,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { validate } from './_shared/validator.js';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { validate } from './_shared/validator';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   success,
   badRequest,
@@ -47,8 +47,8 @@ import {
   wrapResponse,
   checkRateLimitDistributed,
   tooManyRequests
-} from './_shared/api-response.js';
-import { createLogger } from './_shared/api-response.js';
+} from './_shared/api-response';
+import { createLogger } from './_shared/api-response';
 
 const logger = createLogger('[VoiceService]');
 

@@ -22,7 +22,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   logger,
   sanitizeString,
@@ -33,7 +33,7 @@ import {
   serverError,
   generateRequestId,
   checkRateLimitDistributed
-} from './_shared/api-response.js';
+} from './_shared/api-response';
 
 const db = cloud.database();
 const _ = db.command;

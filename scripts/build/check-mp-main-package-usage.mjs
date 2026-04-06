@@ -14,7 +14,7 @@ const mainPageFiles = [
 const requiredModules = [
   'utils/favorite/question-favorite.js',
   'utils/learning/adaptive-learning-engine.js',
-  'utils/analytics/learning-analytics.js'
+  'practice-sub/utils/learning-analytics.js'
 ];
 
 function readBuildFile(relativePath) {

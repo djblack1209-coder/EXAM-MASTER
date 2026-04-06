@@ -2,5 +2,6 @@ name = "exam-master-api-proxy"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
-[vars]
-TOKEN_PLACEHOLDER
+# WORKER_AUTH_TOKEN must be set as a Cloudflare secret:
+#   wrangler secret put WORKER_AUTH_TOKEN
+# Do NOT store real tokens in this file — it is tracked by git.

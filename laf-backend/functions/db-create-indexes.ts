@@ -22,8 +22,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { createLogger } from './_shared/api-response.js';
-import { requireAdminAccess } from './_shared/admin-auth.js';
+import { createLogger } from './_shared/api-response';
+import { requireAdminAccess } from './_shared/admin-auth';
 
 const logger = createLogger('[DbIndexes]');
 const db = cloud.database();

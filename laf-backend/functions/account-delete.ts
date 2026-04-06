@@ -15,8 +15,8 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
-import { createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
+import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
 
 const db = cloud.database();
 const logger = createLogger('[AccountDelete]');

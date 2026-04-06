@@ -27,29 +27,7 @@ describe('全链路: LafService 核心请求引擎', () => {
   // Phase 1 (收藏管理 addFavorite/getFavorites/removeFavorite) 已在 Round 28 移除死代码时删除
 
   describe('Phase 2: 题库接口', () => {
-    it('getQuestionBank - 正常请求', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockResolvedValue({
-        code: 0,
-        success: true,
-        data: { questions: [], total: 0 }
-      });
-
-      const result = await lafService.getQuestionBank('user_001');
-      expect(result.success).toBe(true);
-      expect(mockRequest).toHaveBeenCalledWith('/question-bank', {
-        action: 'get',
-        userId: 'user_001'
-      });
-    });
-
-    it('getQuestionBank - 网络失败返回错误', async () => {
-      const { lafService } = await import('@/services/lafService.js');
-      mockRequest.mockRejectedValue(new Error('网络错误'));
-
-      const result = await lafService.getQuestionBank('user_001');
-      expect(result.success).toBe(false);
-    });
+    // [AUDIT R432] getQuestionBank 已删除（死代码清理），测试移除
 
     it('getRandomQuestions - 默认参数', async () => {
       const { lafService } = await import('@/services/lafService.js');
@@ -141,7 +119,7 @@ describe('全链路: LafService 核心请求引擎', () => {
       // 模拟登录后存储 userId
       global.__mockStorage['EXAM_USER_ID'] = 'new_user_001';
 
-      // Step 2: 获取题库
+      // Step 2: 获取随机题目（getQuestionBank 已在 R432 删除）
       mockRequest.mockResolvedValueOnce({
         code: 0,
         success: true,
@@ -151,7 +129,7 @@ describe('全链路: LafService 核心请求引擎', () => {
         ]
       });
 
-      const bankResult = await lafService.getQuestionBank('new_user_001');
+      const bankResult = await lafService.getRandomQuestions({ count: 2 });
       expect(bankResult.success).toBe(true);
 
       // Step 3: 查看排行
@@ -174,9 +152,8 @@ describe('全链路: LafService 核心请求引擎', () => {
       // 模拟所有请求失败
       mockRequest.mockRejectedValue(new Error('网络连接失败'));
 
-      // 所有接口都不应该抛出未捕获异常
+      // 所有接口都不应该抛出未捕获异常（getQuestionBank 已在 R432 删除）
       const results = await Promise.all([
-        lafService.getQuestionBank('user_001'),
         lafService.getRandomQuestions(),
         lafService.getHotSchools(),
         lafService.rankCenter({ action: 'getAll' }),

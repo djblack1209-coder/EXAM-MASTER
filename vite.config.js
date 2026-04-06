@@ -6,6 +6,7 @@ import { createRequire } from 'module';
 import { normalizeAppRuntimeIndexFile } from './scripts/build/app-runtime-html.js';
 import { VitePWA } from 'vite-plugin-pwa';
 import { compression, defineAlgorithm } from 'vite-plugin-compression2';
+import postcssColorMixFallback from './scripts/build/postcss-color-mix-fallback.js';
 
 const require = createRequire(path.join(process.cwd(), 'vite.config.js'));
 const uniCliSharedUtils = require('@dcloudio/uni-cli-shared/dist/utils.js');
@@ -328,8 +329,15 @@ export default defineConfig(({ command, mode }) => {
       }
     },
 
-    // CSS 预处理器配置
+    // CSS 预处理器配置 + PostCSS color-mix() 降级
     css: {
+      postcss: {
+        plugins: [
+          // ✅ R409: 自定义插件 — 为含 var() 的 color-mix() 生成 rgba 回退值
+          // 旧浏览器用 rgba 回退，新浏览器 color-mix() 覆盖
+          postcssColorMixFallback()
+        ]
+      },
       preprocessorOptions: {
         scss: {
           silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin'],

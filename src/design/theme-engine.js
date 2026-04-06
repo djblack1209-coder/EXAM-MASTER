@@ -1,106 +1,106 @@
 /**
- * 双模设计令牌引擎 (Wise/Bitget) - v0 Enhanced
- * 生成时间: 2026-01-24
+ * 双模设计令牌引擎 (Wise-Light / Bitget-Dark) - v0 Enhanced
+ * 同步时间: 2026-04-04
  * 架构: Level 9 GEMINI-ARCHITECT + v0 Design System
- * 版本: v2.0.0 (v0 Integration)
+ * 版本: v4.0.0 (Wise-Light / Bitget-Dark 双模，与 App.vue + _dark-mode-vars.scss 严格对齐)
  */
 
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 export const tokens = {
-  // Wise模式 - 绿底白按钮风格 (v0 Light Mode)
+  // Wise-Light 模式 - 灰蓝底 + 白色卡片 + 柔和蓝强调 (对齐 App.vue :root)
   light: {
-    // 核心色系 (aligned with App.vue)
-    '--background': '#B8EB89',
-    '--foreground': '#10281A',
-    '--card': '#EAF9D5',
-    '--card-foreground': '#10281A',
-    '--primary': '#0F5F34',
-    '--primary-foreground': '#FFFFFF',
-    '--muted': '#D0ECAD',
-    '--muted-foreground': '#35533F',
-    '--border': '#98CD6F',
+    // 核心色系 (严格对齐 App.vue v4.0)
+    '--background': '#f5f7fa',
+    '--foreground': '#1a1d1f',
+    '--card': '#ffffff',
+    '--card-foreground': '#1a1d1f',
+    '--primary': '#4a90e2',
+    '--primary-foreground': '#ffffff',
+    '--muted': '#e8eef4',
+    '--muted-foreground': '#6b7280',
+    '--border': '#e2e8f0',
 
     // 背景色系
-    '--bg-body': '#B8EB89',
-    '--bg-page': '#B8EB89',
-    '--bg-card': '#EAF9D5',
-    '--bg-secondary': '#D4F2B4',
-    '--bg-hover': '#D4F2B4',
-    '--bg-active': '#C3E89C',
+    '--bg-body': '#f5f7fa',
+    '--bg-page': '#f5f7fa',
+    '--bg-card': '#ffffff',
+    '--bg-secondary': '#e8eef4',
+    '--bg-hover': '#e8eef4',
+    '--bg-active': '#dde3ea',
 
     // 文字色系
-    '--text-primary': '#10281A',
-    '--text-secondary': '#35533F',
-    '--text-sub': '#35533F',
-    '--text-tertiary': '#8E98A8',
-    '--text-disabled': '#A2B59F',
+    '--text-primary': '#1a1d1f',
+    '--text-secondary': '#6b7280',
+    '--text-sub': '#6b7280',
+    '--text-tertiary': '#9ca3af',
+    '--text-disabled': '#d1d5db',
 
     // 品牌色
-    '--brand-color': '#0F5F34',
-    '--brand-hover': '#157141',
-    '--brand-active': '#0D522E',
-    '--gradient-primary': 'linear-gradient(135deg, #1A8048 0%, #0F5F34 100%)',
-    '--brand-tint': 'rgba(15, 95, 52, 0.14)',
-    '--brand-tint-strong': 'rgba(15, 95, 52, 0.26)',
-    '--cta-primary-bg': 'rgba(255, 255, 255, 0.96)',
-    '--cta-primary-text': '#10281A',
-    '--cta-primary-border': 'rgba(16, 40, 26, 0.08)',
-    '--cta-primary-shadow': '0 10px 24px rgba(16, 40, 26, 0.16)',
-    '--apple-glass-nav-bg': 'rgba(250, 255, 246, 0.74)',
-    '--apple-glass-card-bg': 'rgba(255, 255, 255, 0.68)',
-    '--apple-glass-pill-bg': 'rgba(255, 255, 255, 0.82)',
-    '--apple-group-bg': 'rgba(247, 255, 239, 0.82)',
-    '--apple-glass-border-strong': 'rgba(255, 255, 255, 0.78)',
-    '--apple-specular-line': 'rgba(255, 255, 255, 0.68)',
-    '--apple-specular-soft': 'rgba(255, 255, 255, 0.24)',
-    '--apple-divider': 'rgba(16, 40, 26, 0.08)',
-    '--apple-shadow-floating': '0 18px 42px rgba(16, 40, 26, 0.18)',
-    '--apple-shadow-surface': '0 12px 32px rgba(16, 40, 26, 0.12)',
-    '--apple-shadow-card': '0 8px 24px rgba(16, 40, 26, 0.10)',
-    '--apple-chromatic-blue': 'rgba(0, 180, 255, 0.05)',
-    '--apple-chromatic-pink': 'rgba(255, 100, 200, 0.04)',
-    '--apple-chromatic-green': 'rgba(100, 255, 180, 0.035)',
+    '--brand-color': '#4a90e2',
+    '--brand-hover': '#5a9fe8',
+    '--brand-active': '#3a7bd5',
+    '--gradient-primary': 'linear-gradient(135deg, #5a9fe8 0%, #4a90e2 50%, #3a7bd5 100%)',
+    '--brand-tint': 'rgba(74, 144, 226, 0.08)',
+    '--brand-tint-strong': 'rgba(74, 144, 226, 0.16)',
+    '--cta-primary-bg': 'linear-gradient(135deg, #5a9fe8 0%, #4a90e2 50%, #3a7bd5 100%)',
+    '--cta-primary-text': '#ffffff',
+    '--cta-primary-border': 'transparent',
+    '--cta-primary-shadow': '0 12px 28px rgba(74, 144, 226, 0.22)',
+    '--apple-glass-nav-bg': 'rgba(245, 247, 250, 0.78)',
+    '--apple-glass-card-bg': 'rgba(255, 255, 255, 0.72)',
+    '--apple-glass-pill-bg': 'rgba(255, 255, 255, 0.86)',
+    '--apple-group-bg': 'rgba(255, 255, 255, 0.78)',
+    '--apple-glass-border-strong': 'rgba(226, 232, 240, 0.82)',
+    '--apple-specular-line': 'rgba(255, 255, 255, 0.72)',
+    '--apple-specular-soft': 'rgba(255, 255, 255, 0.28)',
+    '--apple-divider': 'rgba(0, 0, 0, 0.06)',
+    '--apple-shadow-floating': '0 18px 42px rgba(0, 0, 0, 0.08)',
+    '--apple-shadow-surface': '0 12px 32px rgba(0, 0, 0, 0.06)',
+    '--apple-shadow-card': '0 8px 24px rgba(0, 0, 0, 0.05)',
+    '--apple-chromatic-blue': 'rgba(74, 144, 226, 0.04)',
+    '--apple-chromatic-pink': 'rgba(255, 45, 85, 0.03)',
+    '--apple-chromatic-green': 'rgba(52, 211, 153, 0.03)',
 
     // 功能色
-    '--action-green': '#00B894',
-    '--action-blue': '#0984E3',
-    '--danger': '#EF4444',
-    '--warning': '#FFA502',
-    '--success': '#26DE81',
-    '--info': '#4B7BEC',
+    '--action-green': '#34d399',
+    '--action-blue': '#4a90e2',
+    '--danger': '#ef4444',
+    '--warning': '#f59e0b',
+    '--success': '#34d399',
+    '--info': '#4a90e2',
 
     // 点缀色系统
-    '--accent-warm': '#FFB84D',
-    '--accent-cool': '#4ECDC4',
-    '--accent-energy': '#FF6B6B',
+    '--accent-warm': '#f59e0b',
+    '--accent-cool': '#5ac8fa',
+    '--accent-energy': '#4a90e2',
 
     // 边框色 (v0 Compatible)
-    '--border-light': '#98CD6F',
-    '--border-medium': '#98CD6F',
-    '--border-dark': '#6FA14B',
+    '--border-light': '#e8eef4',
+    '--border-medium': '#e2e8f0',
+    '--border-dark': '#cbd5e1',
 
     // v0 特有变量
-    '--glass-bg': 'rgba(247, 255, 239, 0.66)',
-    '--glass-border': 'rgba(255, 255, 255, 0.72)',
-    '--brand-glow': 'rgba(15, 95, 52, 0.28)',
-    '--bg-card-alpha': 'rgba(247, 255, 239, 0.78)',
-    '--page-gradient-top': '#D5F8B2',
-    '--page-gradient-mid': '#B8EB89',
-    '--page-gradient-bottom': '#CAF2A4',
-    '--card-shadow': '0 4px 14px rgba(17, 17, 26, 0.07)',
-    '--card-shadow-hover': '0 10px 24px rgba(17, 17, 26, 0.12)',
+    '--glass-bg': 'rgba(255, 255, 255, 0.72)',
+    '--glass-border': 'rgba(255, 255, 255, 0.82)',
+    '--brand-glow': 'rgba(74, 144, 226, 0.18)',
+    '--bg-card-alpha': 'rgba(255, 255, 255, 0.88)',
+    '--page-gradient-top': '#f5f7fa',
+    '--page-gradient-mid': '#eef2f7',
+    '--page-gradient-bottom': '#e8edf3',
+    '--card-shadow': '0 1px 3px rgba(0,0,0,0.04)',
+    '--card-shadow-hover': '0 4px 14px rgba(0,0,0,0.06)',
 
-    // 圆角系统 (8点网格)
+    // 圆角系统
     '--radius-xs': '4px',
     '--radius-sm': '8px',
-    '--radius-md': '12px',
-    '--radius-lg': '16px',
-    '--radius-xl': '24px',
+    '--radius-md': '16px',
+    '--radius-lg': '24px',
+    '--radius-xl': '32px',
     '--radius-2xl': '32px',
     '--radius-full': '9999px',
 
-    // 间距系统 (8点网格)
+    // 间距系统
     '--spacing-xs': '4px',
     '--spacing-sm': '8px',
     '--spacing-md': '16px',
@@ -124,17 +124,17 @@ export const tokens = {
     '--letter-spacing-normal': '0.3px',
     '--letter-spacing-wide': '0.5px',
 
-    // 阴影系统
-    '--shadow-1': '0 2px 8px rgba(0,0,0,0.04)',
-    '--shadow-2': '0 4px 16px rgba(0,0,0,0.08)',
-    '--shadow-3': '0 8px 24px rgba(0,0,0,0.12)',
+    // 阴影系统（中性色调，对齐 App.vue）
+    '--shadow-1': '0 1px 3px rgba(0,0,0,0.04)',
+    '--shadow-2': '0 4px 14px rgba(0,0,0,0.06)',
+    '--shadow-3': '0 10px 24px rgba(0,0,0,0.1)',
 
     // 光晕阴影系统
-    '--shadow-glow-brand': '0 4px 12px rgba(15,95,52,0.24)',
-    '--shadow-glow-brand-strong': '0 4px 12px rgba(15,95,52,0.32), 0 0 20px rgba(15,95,52,0.16)',
-    '--shadow-glow-warm': '0 4px 12px rgba(255,184,77,0.3)',
-    '--shadow-glow-cool': '0 4px 12px rgba(78,205,196,0.3)',
-    '--shadow-glow-energy': '0 4px 12px rgba(255,107,107,0.3)',
+    '--shadow-glow-brand': '0 4px 14px rgba(74,144,226,0.2)',
+    '--shadow-glow-brand-strong': '0 4px 14px rgba(74,144,226,0.28), 0 0 20px rgba(74,144,226,0.12)',
+    '--shadow-glow-warm': '0 4px 12px rgba(245,158,11,0.3)',
+    '--shadow-glow-cool': '0 4px 12px rgba(90,200,250,0.3)',
+    '--shadow-glow-energy': '0 4px 12px rgba(74,144,226,0.3)',
 
     // 动画时长
     '--transition-fast': '0.15s',
@@ -148,95 +148,95 @@ export const tokens = {
     '--ease-in-out': 'cubic-bezier(0.4, 0, 0.2, 1)'
   },
 
-  // Bitget模式 - 黑底蓝色强调 (v0 Dark Mode)
+  // Bitget-Dark 模式 - 赛博朋克深蓝黑 + 霓虹青强调 (对齐 _dark-mode-vars.scss)
   dark: {
-    // 核心色系 (aligned with App.vue)
-    '--background': '#0B0B0F',
-    '--foreground': '#F5F5F7',
-    '--card': '#1C1C1E',
-    '--card-foreground': '#F5F5F7',
-    '--primary': '#0A84FF',
-    '--primary-foreground': '#FFFFFF',
-    '--muted': '#2C2C2E',
-    '--muted-foreground': '#9A9AA1',
-    '--border': '#3A3A3C',
+    // 核心色系 (严格对齐 _dark-mode-vars.scss)
+    '--background': '#1a1c23',
+    '--foreground': '#ffffff',
+    '--card': '#22252d',
+    '--card-foreground': '#ffffff',
+    '--primary': '#00e0ff',
+    '--primary-foreground': '#1a1c23',
+    '--muted': '#2a2d36',
+    '--muted-foreground': '#9ca3af',
+    '--border': '#3a3d47',
 
     // 背景色系
-    '--bg-body': '#0B0B0F',
-    '--bg-page': '#0B0B0F',
-    '--bg-card': '#1C1C1E',
-    '--bg-secondary': '#1C1C1E',
+    '--bg-body': '#1a1c23',
+    '--bg-page': '#1a1c23',
+    '--bg-card': '#22252d',
+    '--bg-secondary': '#22252d',
     '--bg-hover': 'rgba(255,255,255,0.06)',
     '--bg-active': 'rgba(255,255,255,0.09)',
 
     // 文字色系
-    '--text-primary': '#F5F5F7',
-    '--text-secondary': '#9A9AA1',
-    '--text-sub': '#9A9AA1',
-    '--text-tertiary': '#8B8B92',
-    '--text-disabled': '#4B5A74',
+    '--text-primary': '#ffffff',
+    '--text-secondary': '#9ca3af',
+    '--text-sub': '#9ca3af',
+    '--text-tertiary': '#6b7280',
+    '--text-disabled': '#4b5563',
 
     // 品牌色
-    '--brand-color': '#0A84FF',
-    '--brand-hover': '#2B95FF',
-    '--brand-active': '#0069D9',
-    '--gradient-primary': 'linear-gradient(135deg, #0A84FF 0%, #5AC8FA 100%)',
-    '--brand-tint': 'rgba(10, 132, 255, 0.14)',
-    '--brand-tint-strong': 'rgba(10, 132, 255, 0.26)',
-    '--cta-primary-bg': 'linear-gradient(135deg, #0A84FF 0%, #5AC8FA 100%)',
-    '--cta-primary-text': '#FFFFFF',
+    '--brand-color': '#00e0ff',
+    '--brand-hover': '#33e8ff',
+    '--brand-active': '#00b8d4',
+    '--gradient-primary': 'linear-gradient(135deg, #00e0ff 0%, #9b51e0 100%)',
+    '--brand-tint': 'rgba(0, 224, 255, 0.14)',
+    '--brand-tint-strong': 'rgba(0, 224, 255, 0.26)',
+    '--cta-primary-bg': 'linear-gradient(135deg, #00e0ff 0%, #9b51e0 100%)',
+    '--cta-primary-text': '#1a1c23',
     '--cta-primary-border': 'transparent',
-    '--cta-primary-shadow': '0 12px 30px rgba(10, 132, 255, 0.32)',
-    '--apple-glass-nav-bg': 'rgba(16, 18, 24, 0.76)',
-    '--apple-glass-card-bg': 'rgba(24, 26, 34, 0.72)',
-    '--apple-glass-pill-bg': 'rgba(34, 38, 48, 0.84)',
-    '--apple-group-bg': 'rgba(28, 28, 30, 0.82)',
-    '--apple-glass-border-strong': 'rgba(255, 255, 255, 0.16)',
-    '--apple-specular-line': 'rgba(255, 255, 255, 0.20)',
-    '--apple-specular-soft': 'rgba(255, 255, 255, 0.08)',
+    '--cta-primary-shadow': '0 12px 30px rgba(0, 224, 255, 0.32)',
+    '--apple-glass-nav-bg': 'rgba(26, 28, 35, 0.76)',
+    '--apple-glass-card-bg': 'rgba(34, 37, 45, 0.72)',
+    '--apple-glass-pill-bg': 'rgba(42, 45, 54, 0.84)',
+    '--apple-group-bg': 'rgba(34, 37, 45, 0.82)',
+    '--apple-glass-border-strong': 'rgba(0, 224, 255, 0.16)',
+    '--apple-specular-line': 'rgba(0, 224, 255, 0.12)',
+    '--apple-specular-soft': 'rgba(255, 255, 255, 0.06)',
     '--apple-divider': 'rgba(255, 255, 255, 0.08)',
     '--apple-shadow-floating': '0 22px 54px rgba(0, 0, 0, 0.46)',
     '--apple-shadow-surface': '0 16px 40px rgba(0, 0, 0, 0.34)',
     '--apple-shadow-card': '0 10px 28px rgba(0, 0, 0, 0.28)',
-    '--apple-chromatic-blue': 'rgba(10, 132, 255, 0.08)',
-    '--apple-chromatic-pink': 'rgba(255, 100, 200, 0.06)',
-    '--apple-chromatic-green': 'rgba(100, 255, 180, 0.04)',
+    '--apple-chromatic-blue': 'rgba(0, 224, 255, 0.08)',
+    '--apple-chromatic-pink': 'rgba(155, 81, 224, 0.06)',
+    '--apple-chromatic-green': 'rgba(52, 211, 153, 0.04)',
 
     // 功能色
-    '--action-green': '#00F5A0',
-    '--action-blue': '#4D9FFF',
-    '--danger': '#FF2D75',
-    '--warning': '#FFB800',
-    '--success': '#00F5A0',
-    '--info': '#4D9FFF',
+    '--action-green': '#34d399',
+    '--action-blue': '#00e0ff',
+    '--danger': '#f87171',
+    '--warning': '#f59e0b',
+    '--success': '#34d399',
+    '--info': '#00e0ff',
 
-    // 点缀色系统 (深色模式更鲜艳)
-    '--accent-warm': '#FFD700',
-    '--accent-cool': '#00F5FF',
-    '--accent-energy': '#FF3366',
+    // 点缀色系统 (赛博朋克风格)
+    '--accent-warm': '#f59e0b',
+    '--accent-cool': '#00e0ff',
+    '--accent-energy': '#00e0ff',
 
     // 边框色 (v0 Compatible)
-    '--border-light': '#2D2D2D',
+    '--border-light': '#3a3d47',
     '--border-medium': 'rgba(255,255,255,0.12)',
     '--border-dark': 'rgba(255,255,255,0.16)',
 
     // v0 特有变量
-    '--glass-bg': 'rgba(255, 255, 255, 0.05)',
-    '--glass-border': 'rgba(255, 255, 255, 0.14)',
-    '--brand-glow': 'rgba(10, 132, 255, 0.35)',
-    '--bg-card-alpha': 'rgba(28, 28, 30, 0.84)',
-    '--page-gradient-top': '#0B0B0F',
-    '--page-gradient-mid': '#111A2A',
-    '--page-gradient-bottom': '#0B0B0F',
-    '--card-shadow': '0 4px 16px rgba(0, 0, 0, 0.2)',
-    '--card-shadow-hover': '0 8px 32px rgba(0, 0, 0, 0.3)',
+    '--glass-bg': 'rgba(34, 37, 45, 0.74)',
+    '--glass-border': 'rgba(0, 224, 255, 0.14)',
+    '--brand-glow': 'rgba(0, 224, 255, 0.35)',
+    '--bg-card-alpha': 'rgba(34, 37, 45, 0.84)',
+    '--page-gradient-top': '#1a1c23',
+    '--page-gradient-mid': '#1e2029',
+    '--page-gradient-bottom': '#1a1c23',
+    '--card-shadow': '0 2px 8px rgba(0, 0, 0, 0.3)',
+    '--card-shadow-hover': '0 4px 16px rgba(0, 0, 0, 0.4)',
 
     // 圆角系统 (与light保持一致)
     '--radius-xs': '4px',
     '--radius-sm': '8px',
-    '--radius-md': '12px',
-    '--radius-lg': '16px',
-    '--radius-xl': '24px',
+    '--radius-md': '16px',
+    '--radius-lg': '24px',
+    '--radius-xl': '32px',
     '--radius-2xl': '32px',
     '--radius-full': '9999px',
 
@@ -249,7 +249,7 @@ export const tokens = {
     '--spacing-2xl': '32px',
     '--spacing-3xl': '40px',
 
-    // 字重系统 (深色模式字重更重)
+    // 字重系统 (深色模式字重更重以补偿对比度)
     '--font-weight-regular': '400',
     '--font-weight-medium': '600',
     '--font-weight-semibold': '700',
@@ -264,17 +264,17 @@ export const tokens = {
     '--letter-spacing-normal': '0.3px',
     '--letter-spacing-wide': '0.5px',
 
-    // 阴影系统 (深色模式无阴影，使用光晕)
-    '--shadow-1': 'none',
-    '--shadow-2': 'none',
-    '--shadow-3': 'none',
+    // 阴影系统 (深色模式用更深沉的阴影)
+    '--shadow-1': '0 1px 2px rgba(0,0,0,0.24)',
+    '--shadow-2': '0 4px 12px rgba(0,0,0,0.32)',
+    '--shadow-3': '0 10px 26px rgba(0,0,0,0.42)',
 
-    // 光晕阴影系统 (深色模式光晕更强)
-    '--shadow-glow-brand': '0 0 20px rgba(10,132,255,0.4), 0 0 40px rgba(10,132,255,0.2)',
-    '--shadow-glow-brand-strong': '0 0 30px rgba(10,132,255,0.6), 0 0 60px rgba(10,132,255,0.3)',
-    '--shadow-glow-warm': '0 0 20px rgba(255,215,0,0.4), 0 0 40px rgba(255,215,0,0.2)',
-    '--shadow-glow-cool': '0 0 20px rgba(0,245,255,0.4), 0 0 40px rgba(0,245,255,0.2)',
-    '--shadow-glow-energy': '0 0 20px rgba(255,51,102,0.4), 0 0 40px rgba(255,51,102,0.2)',
+    // 光晕阴影系统 (霓虹风格光晕)
+    '--shadow-glow-brand': '0 4px 20px rgba(0,224,255,0.3), 0 0 40px rgba(0,224,255,0.15)',
+    '--shadow-glow-brand-strong': '0 4px 20px rgba(0,224,255,0.45), 0 0 40px rgba(0,224,255,0.2)',
+    '--shadow-glow-warm': '0 0 20px rgba(245,158,11,0.4), 0 0 40px rgba(245,158,11,0.2)',
+    '--shadow-glow-cool': '0 0 20px rgba(0,224,255,0.4), 0 0 40px rgba(0,224,255,0.2)',
+    '--shadow-glow-energy': '0 0 20px rgba(155,81,224,0.4), 0 0 40px rgba(155,81,224,0.2)',
 
     // 动画时长 (深色模式稍慢)
     '--transition-fast': '0.2s',
@@ -387,7 +387,7 @@ export const v0Animations = `
 
 /* Gradient card for dark mode bubbles */
 .bubble-gradient {
-  background: linear-gradient(135deg, #1A1C1E 0%, #0D0E10 100%);
+  background: linear-gradient(135deg, #22252d 0%, #1a1c23 100%);
 }
 
 /* v0 Card hover effects */
@@ -451,8 +451,10 @@ export function applyTheme(theme = 'light') {
  */
 export function getCurrentTheme() {
   // #ifdef MP-WEIXIN
-  // 使用 getAppBaseInfo 获取主题
+  // 优先读取用户手动设置的主题，其次跟随系统
   try {
+    const saved = uni.getStorageSync('theme_mode');
+    if (saved === 'dark' || saved === 'light') return saved;
     const appBaseInfo = uni.getAppBaseInfo();
     return appBaseInfo.theme === 'dark' ? 'dark' : 'light';
   } catch (e) {

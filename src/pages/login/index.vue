@@ -12,13 +12,15 @@
     <!-- 顶部返回按钮 -->
     <view class="top-bar" :style="{ paddingTop: statusBarHeight + 'px', paddingRight: capsuleSafeRight + 'px' }">
       <view class="back-btn" hover-class="btn-hover" @tap="handleBack">
-        <text class="back-icon"> ← </text>
+        <BaseIcon name="arrow-left" :size="32" class="back-icon" />
       </view>
     </view>
 
     <!-- Logo区域 -->
     <view class="logo-section">
       <image class="app-logo" src="./static/logo.png" alt="Exam Master" mode="aspectFit" />
+      <!-- 吉祥物 -->
+      <image class="login-mascot" src="/static/illustrations/mascot-owl.png" mode="aspectFit" />
       <text class="app-name"> Exam-Master </text>
       <text class="app-slogan"> 智能助力，一战成硕 </text>
     </view>
@@ -40,7 +42,7 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信一键登录' }}
         </text>
-        <text class="btn-arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
       </view>
       <!-- #endif -->
 
@@ -59,7 +61,7 @@
           <text>微信</text>
         </view>
         <text class="btn-text"> 微信一键登录 </text>
-        <text class="btn-arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
       </view>
       <!-- #endif -->
       <!-- #ifdef H5 -->
@@ -77,7 +79,7 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : '微信授权登录' }}
         </text>
-        <text class="btn-arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
       </view>
       <!-- #endif -->
       <!-- #endif -->
@@ -94,7 +96,7 @@
           <text>E2E</text>
         </view>
         <text class="btn-text"> 测试一键登录 </text>
-        <text class="btn-arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
       </view>
 
       <!-- #ifndef MP-WEIXIN -->
@@ -110,7 +112,7 @@
         <text class="btn-text">
           {{ isLoading ? '登录中...' : 'QQ快捷登录' }}
         </text>
-        <text class="btn-arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
       </view>
       <!-- #endif -->
 
@@ -240,7 +242,7 @@
           <BaseIcon name="email" :size="36" />
         </view>
         <text class="btn-text"> 邮箱登录/注册 </text>
-        <text class="btn-arrow"> → </text>
+        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
       </view>
     </view>
 
@@ -267,6 +269,7 @@
 </template>
 
 <script setup>
+import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { storageService } from '@/services/storageService.js';
@@ -742,7 +745,7 @@ const handleQQLogin = async () => {
     // #ifdef MP-WEIXIN
     // 微信小程序环境不支持QQ登录，提示用户使用其他方式
     toast.hide();
-    uni.showModal({
+    modal.show({
       title: 'QQ登录',
       content: '微信小程序暂不支持QQ登录，请使用微信登录或邮箱登录',
       showCancel: false,
@@ -1214,16 +1217,23 @@ onUnmounted(() => {
   margin-bottom: 24rpx;
 }
 
+.login-mascot {
+  width: 200rpx;
+  height: 200rpx;
+  margin: 0 auto 20rpx;
+  display: block;
+}
+
 .app-name {
   font-size: 48rpx;
-  font-weight: 700;
-  color: var(--brand-color);
+  font-weight: 800;
+  color: #58cc02;
   margin-bottom: 12rpx;
 }
 
 .app-slogan {
   font-size: 28rpx;
-  color: var(--text-sub);
+  color: #afafaf;
 }
 
 /* 登录方式 */
@@ -1235,14 +1245,12 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   padding: 32rpx 36rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background: #ffffff;
   border-radius: 28rpx;
   margin-bottom: 24rpx;
-  box-shadow: var(--apple-shadow-card);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
-  border: 1rpx solid var(--apple-glass-border-strong);
   position: relative;
   overflow: hidden;
 }
@@ -1287,8 +1295,8 @@ onUnmounted(() => {
 .btn-text {
   flex: 1;
   font-size: 32rpx;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 800;
+  color: #3c3c3c;
 }
 
 .btn-arrow {
@@ -1333,21 +1341,21 @@ onUnmounted(() => {
 .form-label {
   display: block;
   font-size: 26rpx;
-  color: var(--text-sub);
+  color: #afafaf;
   margin-bottom: 12rpx;
 }
 
 .form-input {
   width: 100%;
   height: 88rpx;
-  background: var(--apple-glass-card-bg);
+  background: #ffffff;
   border-radius: 999rpx;
   padding: 0 24rpx;
   font-size: 30rpx;
-  color: var(--text-main);
+  color: #3c3c3c;
   box-sizing: border-box;
-  border: 1rpx solid var(--glass-border);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.68);
+  border: 2rpx solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
 .form-input-password {
@@ -1387,8 +1395,8 @@ onUnmounted(() => {
   min-width: 56rpx;
   text-align: center;
   font-size: 24rpx;
-  font-weight: 600;
-  color: var(--brand-color);
+  font-weight: 700;
+  color: #58cc02;
 }
 
 .dark-mode .password-toggle-btn {
@@ -1402,15 +1410,20 @@ onUnmounted(() => {
 .send-code-btn {
   min-width: 180rpx;
   height: 88rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
+  background: #58cc02;
+  color: #ffffff;
+  border: none;
   border-radius: 999rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 24rpx;
-  box-shadow: var(--cta-primary-shadow);
+  box-shadow: 0 6rpx 0 #46a302;
+}
+
+.send-code-btn:active {
+  transform: translateY(3rpx);
+  box-shadow: 0 3rpx 0 #46a302;
 }
 
 .send-code-btn text {
@@ -1424,12 +1437,17 @@ onUnmounted(() => {
 }
 
 .email-submit-btn {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background: #58cc02;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 8rpx 0 #46a302;
   justify-content: center;
   margin-top: 16rpx;
+}
+
+.email-submit-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 .email-submit-btn .btn-text {
@@ -1444,7 +1462,7 @@ onUnmounted(() => {
 
 .form-switch text {
   font-size: 26rpx;
-  color: var(--brand-color);
+  color: #58cc02;
 }
 
 /* 用户协议 */
@@ -1473,8 +1491,8 @@ onUnmounted(() => {
 }
 
 .checkbox.checked {
-  background: var(--brand-color);
-  border-color: var(--brand-color);
+  background: #58cc02;
+  border-color: #58cc02;
 }
 
 .checkbox text {
@@ -1485,12 +1503,12 @@ onUnmounted(() => {
 .agreement-text {
   flex: 1;
   font-size: 24rpx;
-  color: var(--text-sub);
+  color: #afafaf;
   line-height: 1.6;
 }
 
 .agreement-text .link {
-  color: var(--brand-color);
+  color: #58cc02;
 }
 
 /* 底部提示 */
@@ -1653,12 +1671,12 @@ onUnmounted(() => {
 }
 
 .wechat-icon {
-  background: rgba(52, 199, 89, 0.14);
+  background: color-mix(in srgb, var(--success) 14%, transparent);
   color: var(--primary);
 }
 
 .qq-icon {
-  background: rgba(10, 132, 255, 0.14);
+  background: color-mix(in srgb, var(--info) 14%, transparent);
   color: var(--primary);
 }
 
@@ -1668,7 +1686,7 @@ onUnmounted(() => {
 }
 
 .email-icon {
-  background: rgba(255, 159, 10, 0.14);
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
   color: var(--warning);
 }
 
