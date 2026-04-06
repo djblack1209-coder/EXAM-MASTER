@@ -26,16 +26,19 @@
 
 import cloud from '@lafjs/cloud';
 import crypto from 'crypto';
-import { perfMonitor } from './_shared/perf-monitor.js';
+import { perfMonitor } from './_shared/perf-monitor';
 
 // ✅ B020: 导入 JWT 验证函数
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
 // ✅ RAG: 导入向量嵌入与相似度计算
-import { getEmbedding, cosineSimilarity } from './_shared/embedding.js';
+import { getEmbedding, cosineSimilarity } from './_shared/embedding';
+
+// ✅ H019: 微信内容安全检测
+import { checkTextSecurity, ContentScene } from './_shared/wx-content-check';
 
 // ==================== 环境配置 ====================
-import { IS_PRODUCTION, createLogger, checkRateLimitDistributed } from './_shared/api-response.js';
+import { IS_PRODUCTION, createLogger, checkRateLimitDistributed } from './_shared/api-response';
 const logger = createLogger('[ProxyAI]');
 
 // 环境变量配置
@@ -123,12 +126,13 @@ function validateRequestSign(path: string, timestampHeader: string, requestSign:
     return false;
   }
 
+  // H029 FIX: SALT 未配置时拒绝签名校验，而非放行
   if (!REQUEST_SIGN_SALT) {
     if (!hasLoggedMissingRequestSignSalt) {
       hasLoggedMissingRequestSignSalt = true;
-      logger.warn('[Audit] REQUEST_SIGN_SALT 未配置，跳过 X-Request-Sign 校验（兼容模式）');
+      logger.error('[Audit] REQUEST_SIGN_SALT 未配置，拒绝 X-Request-Sign 校验');
     }
-    return true;
+    return false;
   }
 
   const raw = `${path}:${timestamp}:${REQUEST_SIGN_SALT}`;
@@ -167,15 +171,24 @@ function checkAuditMode(ctx: Record<string, unknown>): { valid: boolean; error?:
   }
 
   // 4. 生产非审核模式：
-  //    - 若携带 x-audit-token，则校验其合法性（防伪造）
-  //    - 若携带 X-Request-*，走前端签名兼容校验
-  //    - 两类头都未携带时，不阻断（依赖 JWT + 限流 + 业务校验）
-  if (auditToken && !validateAuditToken(auditToken)) {
-    logger.warn('[Audit] 审计令牌非法，拒绝请求');
-    return { valid: false, error: '审计校验失败，请刷新页面重试' };
+  //    - 若携带 x-audit-token，校验其合法性
+  //    - 否则必须携带 X-Request-* 签名头并通过 FNV-1a 校验
+  //    - H029 FIX: 不再允许两类头都不携带的情况（关闭绕过路径）
+  if (auditToken) {
+    if (!validateAuditToken(auditToken)) {
+      logger.warn('[Audit] 审计令牌非法，拒绝请求');
+      return { valid: false, error: '审计校验失败，请刷新页面重试' };
+    }
+    return { valid: true };
   }
 
-  if ((requestTimestamp || requestSign) && !validateRequestSign('/proxy-ai', requestTimestamp, requestSign)) {
+  // 必须携带请求签名
+  if (!requestTimestamp || !requestSign) {
+    logger.warn('[Audit] 生产环境缺少 X-Request-Timestamp/X-Request-Sign 头，拒绝请求');
+    return { valid: false, error: '请求签名缺失，请升级客户端后重试' };
+  }
+
+  if (!validateRequestSign('/proxy-ai', requestTimestamp, requestSign)) {
     logger.warn('[Audit] X-Request-Sign 校验失败，拒绝请求');
     return { valid: false, error: '请求签名校验失败，请刷新后重试' };
   }
@@ -549,6 +562,21 @@ export default async function (ctx: FunctionContext) {
       `[${requestId}] action: ${action}, contentLength: ${content.length}, rateLimit remaining: ${rateLimitResult.remaining}`
     );
 
+    // ✅ H019: 微信内容安全检测 — 用户输入在发给 AI 之前必须过微信审查
+    // 从 JWT payload 获取微信 openid（非微信登录用户使用 userId 作为降级标识）
+    const userOpenid = (authResult.payload?.openid as string) || authenticatedUserId;
+    const inputCheck = await checkTextSecurity(content, userOpenid, ContentScene.SOCIAL);
+    if (!inputCheck.pass) {
+      logger.warn(`[${requestId}] 用户输入未通过内容安全检测: label=${inputCheck.label}`);
+      endPerf();
+      return {
+        code: 403,
+        success: false,
+        message: inputCheck.reason || '内容包含敏感信息，请修改后重试',
+        requestId
+      };
+    }
+
     // [F4-FIX] 加载AI好友对话记忆（从DB补充前端localStorage可能丢失的上下文）
     // ✅ P0修复：使用 authenticatedUserId 替代客户端 userId，防止 IDOR 越权读写他人对话记忆
     if (action === 'friend_chat' && authenticatedUserId && friendType) {
@@ -662,6 +690,28 @@ export default async function (ctx: FunctionContext) {
       saveConversationMemory(authenticatedUserId, friendType, content, aiContent).catch((e) =>
         logger.error('[Memory] 后台保存对话记忆失败:', e)
       );
+    }
+
+    // ✅ H019: AI 生成内容安全检测 — AI 回复也必须过微信审查
+    // 对于聊天/咨询等用户可见的 AI 文本进行检测
+    const AI_CHECK_ACTIONS = ['chat', 'friend_chat', 'consult', 'analyze'];
+    if (AI_CHECK_ACTIONS.includes(action) && typeof aiContent === 'string' && aiContent.length > 0) {
+      const outputCheck = await checkTextSecurity(aiContent, userOpenid, ContentScene.SOCIAL);
+      if (!outputCheck.pass) {
+        logger.warn(`[${requestId}] AI 回复未通过内容安全检测: label=${outputCheck.label}`);
+        endPerf();
+        return {
+          code: 0,
+          success: true,
+          data: '抱歉，该回复内容暂时无法展示，请换个问题试试。',
+          message: '请求成功',
+          requestId,
+          duration: Date.now() - startTime,
+          model: finalModelName,
+          usage: aiData.usage || {},
+          _contentFiltered: true
+        };
+      }
     }
 
     // 9. 计算耗时并返回

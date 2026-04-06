@@ -1,5 +1,5 @@
 name: proxy-ai-stream
-desc: 'AI 流式代理接口'
+desc: AI 流式代理接口
 methods:
   - POST
 tags: []

@@ -88,7 +88,13 @@ function scanDirectory(dir, baseDir = dir) {
 
     for (const item of items) {
       const fullPath = path.join(currentDir, item);
-      const stat = fs.statSync(fullPath);
+      let stat;
+      try {
+        stat = fs.statSync(fullPath);
+      } catch {
+        // 跳过断裂的符号链接或不可访问的文件
+        continue;
+      }
 
       if (stat.isDirectory()) {
         if (!ignoreDirs.includes(item)) {

@@ -29,8 +29,8 @@ import {
   wrapResponse,
   logger,
   checkRateLimitDistributed
-} from './_shared/api-response.js';
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+} from './_shared/api-response';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import {
   createNewCard,
   scheduleReviewFSRS,
@@ -40,7 +40,7 @@ import {
   type ReviewLogRecord,
   type FSRSScheduleResult,
   type ReviewRating
-} from './_shared/fsrs-scheduler.js';
+} from './_shared/fsrs-scheduler';
 
 const db = cloud.database();
 const _ = db.command;
@@ -223,10 +223,10 @@ export default async function (ctx) {
     // 2. 路由处理
     if (action === 'submit') {
       const result = await handleSubmit(userId, idempotencyKey, data, requestId);
-      return wrapResponse(result as unknown as import('./_shared/api-response.js').ApiResponse, requestId, startTime);
+      return wrapResponse(result as unknown as import('./_shared/api-response').ApiResponse, requestId, startTime);
     } else if (action === 'getRecords') {
       const result = await handleGetRecords(userId, data, requestId);
-      return wrapResponse(result as unknown as import('./_shared/api-response.js').ApiResponse, requestId, startTime);
+      return wrapResponse(result as unknown as import('./_shared/api-response').ApiResponse, requestId, startTime);
     } else {
       return wrapResponse(badRequest(`不支持的操作: ${action}`), requestId, startTime);
     }

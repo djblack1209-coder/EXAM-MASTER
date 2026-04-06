@@ -57,16 +57,17 @@
     "electron:build": "npm run build:h5 && electron-builder --config electron-builder.config.json",
     "electron:build:mac": "npm run build:h5 && electron-builder --mac --config electron-builder.config.json",
     "electron:build:win": "npm run build:h5 && electron-builder --win --config electron-builder.config.json",
+    "electron:build:linux": "npm run build:h5 && electron-builder --linux --config electron-builder.config.json",
     "prepare": "husky"
   },
   "dependencies": {
     "@dcloudio/uni-app-plus": "^3.0.0-alpha-5000220260306001",
     "@dcloudio/uni-app-vite": "^3.0.0-alpha-5000220260306001",
     "@dcloudio/uni-components": "^3.0.0-alpha-5000220260306001",
+    "@traptitech/markdown-it-katex": "^3.6.0",
     "canvas-confetti": "^1.9.4",
     "katex": "^0.16.38",
     "markdown-it": "^14.1.1",
-    "markdown-it-katex": "^2.0.3",
     "pinia": "2.1.7",
     "ts-fsrs": "^5.3.1",
     "vue": "3.4.21",
@@ -74,6 +75,7 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^20.4.1",
+    "@csstools/postcss-color-mix-function": "^3.0.12",
     "@dcloudio/types": "^3.3.2",
     "@dcloudio/uni-app": "^3.0.0-alpha-5000220260306001",
     "@dcloudio/uni-cli-shared": "^3.0.0-alpha-5000220260306001",

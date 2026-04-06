@@ -13,9 +13,10 @@ import { storageService } from '../../services/storageService.js';
 import {
   requestAccountDeletion as apiRequestAccountDeletion,
   getAccountDeletionStatus as apiGetAccountDeletionStatus,
-  cancelAccountDeletion as apiCancelAccountDeletion
+  cancelAccountDeletion as apiCancelAccountDeletion,
+  updateProfile as apiUpdateProfile
 } from '../../services/api/domains/user.api.js';
-import { request } from '../../services/api/domains/_request-core.js';
+// [AUDIT R432] 移除 _request-core 直接导入，改用 user.api.js 的 updateProfile
 import { logger } from '@/utils/logger.js';
 
 export const useProfileStore = defineStore('profile', () => {
@@ -126,7 +127,7 @@ export const useProfileStore = defineStore('profile', () => {
    */
   const updateProfile = async (data) => {
     try {
-      return await request('/user-profile', data);
+      return await apiUpdateProfile(data);
     } catch (err) {
       logger.error('[ProfileStore] updateProfile 失败:', err);
       throw err; // 重新抛出让调用方处理

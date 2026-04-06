@@ -9,9 +9,12 @@
 
 import cloud from '@lafjs/cloud';
 // @ts-ignore — Laf runtime provides cloud.res but typings lag behind
-import { requireAuth, isAuthError } from './_shared/auth-middleware.js';
+import { requireAuth, isAuthError } from './_shared/auth-middleware';
 // @ts-ignore
-import { checkRateLimitDistributed, createLogger } from './_shared/api-response.js';
+import { checkRateLimitDistributed, createLogger } from './_shared/api-response';
+
+// ✅ H019: 微信内容安全检测
+import { checkTextSecurity, ContentScene } from './_shared/wx-content-check';
 
 const logger = createLogger('[ProxyAI-Stream]');
 
@@ -71,6 +74,18 @@ export default async function (ctx: FunctionContext) {
   }
   if (content.length > 10000) {
     return { code: 400, success: false, message: 'content 过长' };
+  }
+
+  // ✅ H019: 微信内容安全检测 — 流式场景也必须先检测用户输入
+  const userOpenid = (authResult.payload?.openid as string) || userId;
+  const inputCheck = await checkTextSecurity(content, userOpenid, ContentScene.SOCIAL);
+  if (!inputCheck.pass) {
+    logger.warn(`[Stream] 用户输入未通过内容安全检测: label=${inputCheck.label}`);
+    return {
+      code: 403,
+      success: false,
+      message: inputCheck.reason || '内容包含敏感信息，请修改后重试'
+    };
   }
 
   // --- 限流 ---

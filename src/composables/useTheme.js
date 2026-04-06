@@ -16,7 +16,7 @@
  *   toggleTheme(isDark) 切换主题
  */
 
-import { storageService } from '@/services/storageService.js';
+// storage key 和事件名直接使用 uni API，无需 storageService（避免 key 前缀不一致）
 
 const THEME_KEY = 'theme_mode';
 const THEME_EVENT = 'themeUpdate';
@@ -38,8 +38,14 @@ const _registeredCallbacks = new Set();
  * @returns {boolean} 是否为深色模式
  */
 export function initTheme() {
-  const saved = storageService.get(THEME_KEY, 'light');
-  return saved === 'dark';
+  // 直接用 uni.getStorageSync 读取，避免 storageService 前缀不一致问题
+  // App.vue switchTheme 用 uni.setStorageSync 写入，这里必须对齐
+  try {
+    const saved = uni.getStorageSync(THEME_KEY) || 'light';
+    return saved === 'dark';
+  } catch (_e) {
+    return false;
+  }
 }
 
 /**
@@ -50,7 +56,8 @@ export function initTheme() {
 export function toggleTheme(currentIsDark) {
   const newIsDark = !currentIsDark;
   const mode = newIsDark ? 'dark' : 'light';
-  storageService.save(THEME_KEY, mode);
+  // 直接用 uni.setStorageSync，与 App.vue switchTheme 保持一致
+  uni.setStorageSync(THEME_KEY, mode);
   uni.$emit(THEME_EVENT, mode);
   return newIsDark;
 }

@@ -128,11 +128,19 @@ async function loadFunction(name: string): Promise<FunctionModule | null> {
 // ==================== 路由注册 ====================
 
 // 健康检查 (优先级最高，不走云函数)
-// 注：仅返回状态，不暴露内部信息。详细诊断请使用 health-check 云函数（需 admin 鉴权）
+// 注：仅返回基础状态。详细诊断请使用 health-check 云函数（需 admin 鉴权）
 app.get('/health', (_req, res) => {
+  const mem = process.memoryUsage();
   res.json({
     status: 'ok',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    uptime: Math.floor(process.uptime()),
+    memory: {
+      rss: Math.round(mem.rss / 1024 / 1024), // 总占用 (MB)
+      heapUsed: Math.round(mem.heapUsed / 1024 / 1024), // 堆使用 (MB)
+      heapTotal: Math.round(mem.heapTotal / 1024 / 1024) // 堆总量 (MB)
+    },
+    functionsCached: functionCache.size
   });
 });
 
@@ -307,12 +315,44 @@ async function main() {
   console.log('EXAM-MASTER Standalone Server');
   console.log('='.repeat(50));
 
+  // ==================== 进程级异常防护 ====================
+  // 防止未捕获的异常导致进程崩溃 → PM2 频繁重启
+
+  // 未处理的 Promise 拒绝：记录日志但不崩溃
+  // Node 20+ 默认行为是 warning，但某些环境（--unhandled-rejections=throw）会崩溃
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error(`[unhandledRejection] ${reason instanceof Error ? reason.stack : reason}`);
+    // 不调用 process.exit() — 让进程继续运行
+  });
+
+  // 未捕获的同步异常：记录后优雅退出（让 PM2 重启）
+  // 此类异常说明代码有严重 bug，继续运行可能导致数据不一致
+  process.on('uncaughtException', (err) => {
+    console.error(`[uncaughtException] ${err.stack || err.message}`);
+    // 给进程 3 秒时间写入日志，然后退出让 PM2 重启
+    setTimeout(() => process.exit(1), 3000);
+  });
+
   // 注册云函数路由
   await registerFunctions();
 
   // 404 必须在所有路由注册之后
   app.use((_req, res) => {
     res.status(404).json({ code: 404, message: 'Not Found' });
+  });
+
+  // ==================== 全局错误处理中间件 ====================
+  // Express 要求错误处理中间件有 4 个参数 (err, req, res, next)
+  // 捕获所有路由/中间件中未处理的同步异常，防止进程崩溃
+  app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error(`[express-error] ${err.stack || err.message || err}`);
+    if (!res.headersSent) {
+      res.status(500).json({
+        code: 500,
+        success: false,
+        message: 'Internal Server Error'
+      });
+    }
   });
 
   const server = http.createServer(app);

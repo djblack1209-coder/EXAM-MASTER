@@ -115,7 +115,13 @@ function getAllFiles(dir, fileList = []) {
 
   files.forEach((file) => {
     const filePath = path.join(dir, file);
-    const stat = fs.statSync(filePath);
+    let stat;
+    try {
+      stat = fs.statSync(filePath);
+    } catch {
+      // 跳过断裂的符号链接或不可访问的文件
+      return;
+    }
 
     // 跳过忽略的目录
     if (CONFIG.ignorePatterns.some((pattern) => filePath.includes(pattern))) {

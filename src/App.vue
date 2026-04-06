@@ -73,8 +73,7 @@ export default {
         '/pages/school/index',
         '/pages/school-sub/detail',
         '/pages/practice/index',
-        '/pages/profile/index',
-        '/pages/practice-sub/import-data'
+        '/pages/profile/index'
       ];
 
       const checkAuth = (args) => {
@@ -101,6 +100,10 @@ export default {
       });
       // 拦截 redirectTo
       uni.addInterceptor('redirectTo', {
+        invoke: checkAuth
+      });
+      // 拦截 reLaunch（防止通过 reLaunch 绕过登录）
+      uni.addInterceptor('reLaunch', {
         invoke: checkAuth
       });
     },
@@ -290,7 +293,7 @@ page {
   --muted-foreground: #6b7280; /* 弱化文字：中性灰 */
   --border: #e2e8f0; /* 边框：浅灰（实色，更清晰） */
   --brand: #4a90e2; /* 品牌色：柔和蓝 */
-  --brand-glow: rgba(74, 144, 226, 0.18); /* 品牌光晕 */
+  --brand-glow: color-mix(in srgb, var(--primary) 18%, transparent); /* 品牌光晕 */
   --glass-bg: rgba(255, 255, 255, 0.72); /* 毛玻璃背景：白色透明 */
   --glass-border: rgba(255, 255, 255, 0.82); /* 毛玻璃边框 */
 
@@ -304,9 +307,9 @@ page {
   --text-sub: var(--muted-foreground);
   --text-secondary: var(--muted-foreground);
   --border-color: var(--border);
-  --primary-light: rgba(74, 144, 226, 0.08);
-  --success-light: rgba(52, 211, 153, 0.12);
-  --warning-light: rgba(245, 158, 11, 0.12);
+  --primary-light: color-mix(in srgb, var(--primary) 8%, transparent);
+  --success-light: color-mix(in srgb, var(--success) 12%, transparent);
+  --warning-light: color-mix(in srgb, var(--warning) 12%, transparent);
   --gradient-primary: linear-gradient(135deg, #5a9fe8 0%, #4a90e2 50%, #3a7bd5 100%);
   --page-gradient-top: #f5f7fa;
   --page-gradient-mid: #eef2f7;
@@ -338,11 +341,11 @@ page {
   --theme-card-bg: var(--bg-card);
   --theme-bg-secondary: var(--bg-secondary);
   --theme-bg-elevated: #ffffff;
-  --theme-primary-light: rgba(74, 144, 226, 0.08);
+  --theme-primary-light: color-mix(in srgb, var(--primary) 8%, transparent);
   --danger-red: var(--danger);
   --success-green: var(--success);
   --info-blue: var(--info);
-  --danger-light: rgba(239, 68, 68, 0.1);
+  --danger-light: color-mix(in srgb, var(--danger) 10%, transparent);
   --overlay: rgba(0, 0, 0, 0.3);
   --mask-dark: rgba(0, 0, 0, 0.5);
   --bg-overlay: rgba(0, 0, 0, 0.3);
@@ -358,9 +361,9 @@ page {
   --skeleton-bg: rgba(0, 0, 0, 0.04);
   --skeleton-line: rgba(0, 0, 0, 0.06);
   --skeleton-highlight: rgba(255, 255, 255, 0.96);
-  --brand-tint: rgba(74, 144, 226, 0.08);
-  --brand-tint-strong: rgba(74, 144, 226, 0.16);
-  --brand-tint-subtle: rgba(74, 144, 226, 0.04);
+  --brand-tint: color-mix(in srgb, var(--primary) 8%, transparent);
+  --brand-tint-strong: color-mix(in srgb, var(--primary) 16%, transparent);
+  --brand-tint-subtle: color-mix(in srgb, var(--primary) 4%, transparent);
   --shadow-brand-sm: 0 8rpx 18rpx rgba(74, 144, 226, 0.12);
   --shadow-brand: 0 12rpx 28rpx rgba(74, 144, 226, 0.18);
   --shadow-brand-strong: 0 16rpx 34rpx rgba(74, 144, 226, 0.24);
@@ -379,9 +382,9 @@ page {
   --apple-shadow-floating: 0 18rpx 42rpx rgba(0, 0, 0, 0.08);
   --apple-shadow-surface: 0 12rpx 32rpx rgba(0, 0, 0, 0.06);
   --apple-shadow-card: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
-  --apple-chromatic-blue: rgba(74, 144, 226, 0.04);
+  --apple-chromatic-blue: color-mix(in srgb, var(--primary) 4%, transparent);
   --apple-chromatic-pink: rgba(255, 45, 85, 0.03);
-  --apple-chromatic-green: rgba(52, 211, 153, 0.03);
+  --apple-chromatic-green: color-mix(in srgb, var(--success) 3%, transparent);
 
   /* ====== 设计系统令牌 ====== */
   /* 圆角系统 */
