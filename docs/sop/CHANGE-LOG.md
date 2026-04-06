@@ -14,6 +14,21 @@
 
 ---
 
+## [2026-04-06] H5视觉质量全量审查 — 全站硬编码颜色清理（R444-R451）
+
+- **Scope**: `frontend`
+- **Files Changed**: 56个Vue文件（7个主页面 + 48个子页面/组件 + 1个.gitignore）
+- **Summary**: H5端商业级视觉质量审查。对全站56个Vue文件中的 **~1030处** 硬编码CSS颜色进行系统性替换，全部改为CSS变量，使暗黑模式覆盖率从约60%提升至接近95%。
+- **替换规则（全站统一）**:
+  - 通用色: `#3c3c3c`→`var(--text-primary)`, `#afafaf`→`var(--text-secondary)`, `#ffffff`→`var(--bg-card)`/`var(--text-inverse)`, `#fafafa`→`var(--background)`, `#f5f5f5`→`var(--bg-secondary)`, `#f0f0f0`→`var(--muted)`, `#e0e0e0`→`var(--border)`
+  - 功能色: `#ff9600`→`var(--warning)`, `#ff4b4b`/`#FF3B30`→`var(--danger)`, `#1cb0f6`→`var(--info)`
+  - 带fallback: `#cc7800`→`var(--warning-dark, #cc7800)`, `#ce82ff`→`var(--purple-light, #ce82ff)`等
+  - 保留不动: `#58cc02`/`#46a302`等Duolingo游戏化品牌色
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1135 tests passed | H5 build OK
+
+---
+
 ## [2026-04-06] H5视觉质量审查 — 引导页P0-P4修复（R439-R443）
 
 - **Scope**: `frontend`
