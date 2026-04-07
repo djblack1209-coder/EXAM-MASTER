@@ -199,3 +199,7 @@ data/schools/stats.json
 
 # AI 一次性提示词文档（含个人信息）
 docs/phase2-gemini-prompts.md
+
+# 临时截图文件（Playwright/审计产物）
+dark-*.png
+live-*.png
