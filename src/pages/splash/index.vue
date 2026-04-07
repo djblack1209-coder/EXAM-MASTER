@@ -7,11 +7,18 @@
         <image class="logo-img" src="/static/images/logo-full.png" alt="Exam Master" mode="aspectFill" />
       </view>
 
-      <!-- 品牌名 -->
-      <text class="brand-name">Exam Master</text>
+      <!-- 品牌名：双色增强品牌辨识度 -->
+      <text class="brand-name"><text class="brand-exam">Exam</text> <text class="brand-master">Master</text></text>
 
       <!-- 品牌副标题 -->
       <text class="brand-slogan">AI 助力，一战成硕</text>
+    </view>
+
+    <!-- 加载进度暗示：三个脉动圆点 -->
+    <view class="loading-dots">
+      <view class="dot dot-1" />
+      <view class="dot dot-2" />
+      <view class="dot dot-3" />
     </view>
 
     <!-- 底部版权 -->
@@ -159,6 +166,31 @@ onBeforeUnmount(() => {
   }
 }
 
+/* Logo 呼吸辉光：入场后缓慢脉动，保持页面"活"的感觉 */
+@keyframes breathGlow {
+  0%,
+  100% {
+    box-shadow: var(--icon-highlight);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(88, 204, 2, 0.18);
+  }
+}
+
+/* 加载脉动圆点 */
+@keyframes dotPulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* 全屏容器 */
 .splash-container {
   position: fixed;
@@ -166,7 +198,8 @@ onBeforeUnmount(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: var(--background);
+  /* P1: 径向渐变背景增加空间深度感 */
+  background: radial-gradient(ellipse at 50% 40%, var(--bg-card) 0%, var(--background) 70%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -195,7 +228,9 @@ onBeforeUnmount(() => {
   box-shadow: var(--icon-highlight);
   /* 入场动画 */
   opacity: 0;
-  animation: logoEnter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+  animation:
+    logoEnter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards,
+    breathGlow 3s ease-in-out 1.2s infinite;
 }
 
 .logo-img {
@@ -206,8 +241,7 @@ onBeforeUnmount(() => {
 /* 品牌名 */
 .brand-name {
   font-size: 24px;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-weight: 700;
   letter-spacing: 1.5px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -216,11 +250,20 @@ onBeforeUnmount(() => {
   animation: fadeUp 0.5s ease-out 0.45s forwards;
 }
 
+/* P1: 品牌双色 — "Exam" 主色 + "Master" 品牌绿，增强辨识度 */
+.brand-exam {
+  color: var(--text-primary);
+}
+
+.brand-master {
+  color: #58cc02;
+}
+
 /* 品牌副标题 */
 .brand-slogan {
   font-size: 14px;
   color: var(--text-secondary);
-  margin-top: 10px;
+  margin-top: 12px;
   letter-spacing: 2px;
   font-weight: 400;
   /* 入场动画 */
@@ -236,14 +279,40 @@ onBeforeUnmount(() => {
   width: 100%;
   display: flex;
   justify-content: center;
-  /* 入场动画 */
+  /* P4: 与上方元素统一运动语言 */
   opacity: 0;
-  animation: fadeIn 0.5s ease-out 0.85s forwards;
+  animation: fadeUp 0.5s ease-out 0.85s forwards;
 }
 
 .copyright {
   font-size: 11px;
   color: var(--text-tertiary);
   letter-spacing: 0.5px;
+}
+
+/* P2: 加载进度暗示 — 三个脉动圆点 */
+.loading-dots {
+  position: absolute;
+  bottom: 100px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out 1s forwards;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+.dot-2 {
+  animation-delay: 0.2s;
+}
+
+.dot-3 {
+  animation-delay: 0.4s;
 }
 </style>
