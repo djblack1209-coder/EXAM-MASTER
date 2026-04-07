@@ -105,13 +105,19 @@ jobs:
 
       - name: Run Trivy filesystem scan
         uses: aquasecurity/trivy-action@v0.35.0
+        id: trivy-fs
+        continue-on-error: true
         with:
           scan-type: 'fs'
           scan-ref: '.'
           format: 'table'
           severity: 'CRITICAL,HIGH'
           trivyignores: '.trivyignore'
-          exit-code: '0'
+          exit-code: '1'
+
+      - name: Annotate Trivy filesystem result
+        if: steps.trivy-fs.outcome == 'failure'
+        run: echo "::warning title=Trivy Filesystem::发现 CRITICAL/HIGH 级别漏洞，请查看上方扫描报告。"
 
   # ==================== 容器镜像扫描 ====================
   container-scan:
@@ -138,11 +144,17 @@ jobs:
       - name: Run Trivy vulnerability scanner
         if: steps.docker-build.outcome == 'success'
         uses: aquasecurity/trivy-action@v0.35.0
+        id: trivy-container
+        continue-on-error: true
         with:
           image-ref: 'exam-master-backend:scan'
           format: 'table'
           severity: 'CRITICAL,HIGH'
-          exit-code: '0'
+          exit-code: '1'
+
+      - name: Annotate container Trivy result
+        if: steps.trivy-container.outcome == 'failure'
+        run: echo "::warning title=Container Trivy::后端镜像发现 CRITICAL/HIGH 级别漏洞，请查看上方扫描报告。"
 
       - name: Skip notice
         if: steps.docker-build.outcome != 'success'
