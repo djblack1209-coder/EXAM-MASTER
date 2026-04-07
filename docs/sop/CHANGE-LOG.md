@@ -14,6 +14,41 @@
 
 ---
 
+## [2026-04-07] P0构建阻断修复 + CI/CD全链路深度审计（R457）
+
+- **Scope**: `infra` `frontend`
+- **Files Changed**: 17个文件
+- **Summary**: 排查QA夜间回归连续11天全红+CI/CD最新构建失败的根因。发现自动存档提交(83cb83a)误删了11个关键文件，同时3处Trivy安全扫描仍是橡皮图章。
+
+### 根因分析
+
+- **QA夜间回归连续11天全红（3月27日→4月6日）**：
+  - 根因1：R453-R454的workflow修复代码未推送到remote（仅存在于本地），April 3-6的每夜运行都使用旧workflow
+  - 根因2：旧workflow中Vitest使用`--reporter=json`单reporter，Vitest JSON reporter已知会在某些情况下返回exit code 1即使所有测试通过
+  - 根因3：旧workflow中Maestro仍尝试启动Android模拟器，adb在GitHub Actions上100%失败
+  - 根因4：Vitest失败阻塞了后续E2E和密钥审计步骤
+
+- **CI/CD最新构建失败（4月7日）**：
+  - 根因：自动存档提交(83cb83a)误删了8个源文件+2个测试脚本+1个SOP文档
+  - 被删文件：share-modal.vue(908行)、PosterModal.vue(590行)、poster-generator.js(818行)、AbilityRadar.vue(404行)、StudyTrendChart.vue(504行)、focus-timer.vue、id-photo.vue、photo-search.vue、playwright.regression.compat.config.js、maestro-check-syntax.sh、WORKFLOW-PLAYBOOK.md
+  - 构建错误：`Cannot find module 'share-modal.vue'`
+
+### 修复内容（R457）
+
+- **恢复11个误删文件**：从83cb83a~1检出恢复所有被自动存档误删的源文件、测试配置和文档
+- **CI/CD Trivy橡皮图章修复**：
+  - `ci-cd.yml`：Docker镜像Trivy扫描 exit-code 0→1 + continue-on-error + 注解
+  - `security-scan.yml`：Filesystem Trivy扫描 exit-code 0→1 + continue-on-error + 注解
+  - `security-scan.yml`：Container Trivy扫描 exit-code 0→1 + continue-on-error + 注解
+- **Production URL修正**：`ci-cd.yml` Production environment URL从DNS封锁的`api.245334.xyz`改为实际主后端`nf98ia8qnt.sealosbja.site`
+- **临时文件清理**：删除根目录4个dark-\*.png临时截图 + .gitignore新增规则
+- **node_modules修复**：清理损坏的node_modules并重新安装
+
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1135 tests passed | H5 build OK
+
+---
+
 ## [2026-04-06] CI/CD P0修复 + H5视觉深度检验 — Splash/Login/Onboarding（R453-R456）
 
 - **Scope**: `infra` `frontend`
