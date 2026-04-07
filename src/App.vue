@@ -382,6 +382,7 @@ page {
   --apple-shadow-floating: 0 18rpx 42rpx rgba(0, 0, 0, 0.08);
   --apple-shadow-surface: 0 12rpx 32rpx rgba(0, 0, 0, 0.06);
   --apple-shadow-card: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
+  --icon-highlight: 0 4px 20px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
   --apple-chromatic-blue: color-mix(in srgb, var(--primary) 4%, transparent);
   --apple-chromatic-pink: rgba(255, 45, 85, 0.03);
   --apple-chromatic-green: color-mix(in srgb, var(--success) 3%, transparent);
