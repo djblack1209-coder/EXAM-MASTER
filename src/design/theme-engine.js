@@ -58,6 +58,9 @@ export const tokens = {
     '--apple-shadow-floating': '0 18px 42px rgba(0, 0, 0, 0.08)',
     '--apple-shadow-surface': '0 12px 32px rgba(0, 0, 0, 0.06)',
     '--apple-shadow-card': '0 8px 24px rgba(0, 0, 0, 0.05)',
+
+    // 图标高亮阴影 (Splash Logo / 功能入口图标)
+    '--icon-highlight': '0 4px 20px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04)',
     '--apple-chromatic-blue': 'rgba(74, 144, 226, 0.04)',
     '--apple-chromatic-pink': 'rgba(255, 45, 85, 0.03)',
     '--apple-chromatic-green': 'rgba(52, 211, 153, 0.03)',
@@ -198,6 +201,9 @@ export const tokens = {
     '--apple-shadow-floating': '0 22px 54px rgba(0, 0, 0, 0.46)',
     '--apple-shadow-surface': '0 16px 40px rgba(0, 0, 0, 0.34)',
     '--apple-shadow-card': '0 10px 28px rgba(0, 0, 0, 0.28)',
+
+    // 图标高亮阴影 (Splash Logo / 功能入口图标，暗色模式用品牌色辉光)
+    '--icon-highlight': '0 0 24px rgba(0, 224, 255, 0.12), 0 0 0 0.5px rgba(0, 224, 255, 0.18)',
     '--apple-chromatic-blue': 'rgba(0, 224, 255, 0.08)',
     '--apple-chromatic-pink': 'rgba(155, 81, 224, 0.06)',
     '--apple-chromatic-green': 'rgba(52, 211, 153, 0.04)',

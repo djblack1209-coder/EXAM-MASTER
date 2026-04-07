@@ -87,7 +87,7 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    # 移除对 lint-and-test 的依赖，改为并行执行
+    # 与 lint-and-test 并行执行，结果不阻断构建（但会产生可见告警）
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -102,11 +102,20 @@ jobs:
         run: npm install --ignore-scripts
         continue-on-error: true
 
+      # npm audit: 记录 critical 漏洞为 warning（不阻断但可见）
       - name: Run npm audit
-        run: npm audit --audit-level=critical || true
+        id: npm-audit
+        continue-on-error: true
+        run: npm audit --audit-level=critical
 
+      - name: Annotate npm audit result
+        if: steps.npm-audit.outcome == 'failure'
+        run: echo "::warning title=npm audit::发现 critical 级别依赖漏洞，请及时处理。运行 npm audit 查看详情。"
+
+      # Trivy: 扫描 CRITICAL/HIGH 漏洞，记录结果但不阻断构建
       - name: Run Trivy vulnerability scanner (filesystem)
         uses: aquasecurity/trivy-action@v0.35.0
+        id: trivy
         continue-on-error: true
         with:
           scan-type: 'fs'
@@ -114,7 +123,15 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
           trivyignores: '.trivyignore'
-          exit-code: '0'
+          exit-code: '1'
+
+      - name: Annotate Trivy result
+        if: steps.trivy.outcome == 'failure'
+        run: echo "::warning title=Trivy 安全扫描::发现 CRITICAL/HIGH 级别漏洞，请查看上方扫描报告。"
+
+      # 密钥泄露检查（硬性门禁 — 发现泄露必须阻断）
+      - name: Run tracked secrets audit
+        run: npm run audit:secrets:tracked
 
   # ==================== 构建前端 Docker 镜像 ====================
   build:
@@ -185,7 +202,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' && vars.DEPLOY_ENABLED == 'true'
     environment:
       name: staging
-      url: https://api.245334.xyz
+      url: https://staging.245334.xyz
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -210,7 +227,7 @@ jobs:
       - name: Run smoke tests
         run: |
           sleep 30
-          curl -f https://api.245334.xyz/health-check || exit 1
+          curl -f https://staging.245334.xyz/health-check || exit 1
 
   # ==================== 部署到生产 ====================
   deploy-production:

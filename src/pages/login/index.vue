@@ -1218,9 +1218,9 @@ onUnmounted(() => {
 }
 
 .login-mascot {
-  width: 200rpx;
-  height: 200rpx;
-  margin: 0 auto 20rpx;
+  width: 260rpx;
+  height: 142rpx;
+  margin: 0 auto 24rpx;
   display: block;
 }
 
@@ -1229,11 +1229,13 @@ onUnmounted(() => {
   font-weight: 800;
   color: #58cc02;
   margin-bottom: 12rpx;
+  letter-spacing: 1.5px;
 }
 
 .app-slogan {
   font-size: 28rpx;
-  color: #afafaf;
+  color: var(--text-sub);
+  letter-spacing: 2px;
 }
 
 /* 登录方式 */
@@ -1341,7 +1343,7 @@ onUnmounted(() => {
 .form-label {
   display: block;
   font-size: 26rpx;
-  color: #afafaf;
+  color: var(--text-sub);
   margin-bottom: 12rpx;
 }
 
@@ -1620,9 +1622,7 @@ onUnmounted(() => {
 }
 
 .back-icon,
-.btn-text,
-.app-name,
-.form-switch text {
+.btn-text {
   color: var(--text-main);
 }
 
@@ -1634,6 +1634,15 @@ onUnmounted(() => {
 
 .app-name {
   font-size: 52rpx;
+  color: #58cc02;
+}
+
+.form-switch text {
+  color: #58cc02;
+}
+
+.dark-mode .form-switch text {
+  color: var(--info-blue);
 }
 
 .app-slogan,

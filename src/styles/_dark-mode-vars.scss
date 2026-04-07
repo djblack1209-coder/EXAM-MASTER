@@ -116,4 +116,7 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.32);
   --shadow-lg: 0 10px 26px rgba(0, 0, 0, 0.42);
   --shadow-xl: 0 16px 36px rgba(0, 0, 0, 0.52);
+
+  /* 图标高亮阴影（Splash Logo / 功能入口图标，品牌色辉光） */
+  --icon-highlight: 0 0 24px rgba(0, 224, 255, 0.12), 0 0 0 0.5px rgba(0, 224, 255, 0.18);
 }

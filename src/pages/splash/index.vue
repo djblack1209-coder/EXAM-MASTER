@@ -2,7 +2,7 @@
   <view class="splash-container">
     <!-- 主内容：垂直水平居中 -->
     <view class="splash-main">
-      <!-- Logo：圆形裁切容器 -->
+      <!-- Logo：圆角方形裁切容器 -->
       <view class="logo-clip">
         <image class="logo-img" src="/static/images/logo-full.png" alt="Exam Master" mode="aspectFill" />
       </view>
@@ -180,24 +180,22 @@ onBeforeUnmount(() => {
   flex-direction: column;
   align-items: center;
   /* 稍微偏上一点，视觉重心更舒服 */
-  margin-top: -40px;
+  margin-top: -48px;
 }
 
-/* Logo 圆形裁切容器 —— iOS 风格圆角方形 */
+/* Logo 圆角方形裁切容器 —— iOS 风格圆角方形 */
 .logo-clip {
   width: 120px;
   height: 120px;
   border-radius: 28px;
   overflow: hidden;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   background: var(--bg-card);
-  /* 微妙的阴影 —— 暗黑模式下改为发光边框 */
-  box-shadow:
-    0 2px 16px rgba(0, 0, 0, 0.06),
-    0 0 0 0.5px rgba(0, 0, 0, 0.04);
+  /* 阴影随主题自动切换：亮色柔影 / 暗色品牌辉光 */
+  box-shadow: var(--icon-highlight);
   /* 入场动画 */
   opacity: 0;
-  animation: logoEnter 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
+  animation: logoEnter 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
 }
 
 .logo-img {
@@ -210,24 +208,24 @@ onBeforeUnmount(() => {
   font-size: 24px;
   font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   /* 入场动画 */
   opacity: 0;
-  animation: fadeUp 0.5s ease-out 0.35s forwards;
+  animation: fadeUp 0.5s ease-out 0.45s forwards;
 }
 
 /* 品牌副标题 */
 .brand-slogan {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
-  margin-top: 8px;
-  letter-spacing: 0.5px;
+  margin-top: 10px;
+  letter-spacing: 2px;
   font-weight: 400;
   /* 入场动画 */
   opacity: 0;
-  animation: fadeUp 0.5s ease-out 0.5s forwards;
+  animation: fadeUp 0.5s ease-out 0.65s forwards;
 }
 
 /* 底部版权 */
@@ -240,7 +238,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   /* 入场动画 */
   opacity: 0;
-  animation: fadeIn 0.5s ease-out 0.65s forwards;
+  animation: fadeIn 0.5s ease-out 0.85s forwards;
 }
 
 .copyright {

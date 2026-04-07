@@ -327,7 +327,7 @@ $duo-green-light: rgba(88, 204, 2, 0.1);
 $duo-green-glow: rgba(88, 204, 2, 0.25);
 $duo-title: var(--text-primary);
 $duo-desc: var(--text-secondary);
-$duo-hint: #c4c4c4;
+$duo-hint: var(--text-tertiary, #c4c4c4);
 $duo-radius: 28rpx;
 $duo-btn-radius: 24rpx;
 $duo-orange: var(--warning);
@@ -468,9 +468,9 @@ $duo-purple-dark: #a855f7;
   // ---- 浅色主题 ----
   &--light {
     background: var(--bg-card);
-    border: 2rpx solid #e5e5e5;
+    border: 2rpx solid var(--border, #e5e5e5);
     box-shadow:
-      0 4rpx 0 #e5e5e5,
+      0 4rpx 0 var(--border, #e5e5e5),
       0 12rpx 32rpx rgba(0, 0, 0, 0.06);
 
     .empty-state__title {
@@ -482,28 +482,29 @@ $duo-purple-dark: #a855f7;
     }
 
     .empty-state__hint {
-      color: $duo-hint;
+      color: var(--text-tertiary, #c4c4c4);
     }
   }
 
   // ---- 深色主题 ----
   &--dark {
-    background: #1f1f1f;
-    border: 2rpx solid #3a3a3a;
+    background: var(--bg-card, #1f1f1f);
+    border: 2rpx solid var(--border, #3a3a3a);
     box-shadow:
-      0 4rpx 0 #171717,
+      0 4rpx 0 rgba(0, 0, 0, 0.3),
       0 12rpx 32rpx rgba(0, 0, 0, 0.3);
 
     .empty-state__title {
-      color: var(--bg-secondary);
+      // [P0修复] 原值 var(--bg-secondary) 是背景色变量，暗色下解析为深色→文字不可见
+      color: var(--text-primary, #f0f0f0);
     }
 
     .empty-state__desc {
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-sub, rgba(255, 255, 255, 0.6));
     }
 
     .empty-state__hint {
-      color: rgba(255, 255, 255, 0.4);
+      color: var(--text-tertiary, rgba(255, 255, 255, 0.4));
     }
   }
 }
@@ -735,13 +736,13 @@ $duo-purple-dark: #a855f7;
   &--secondary,
   &--tertiary {
     .empty-state--light & {
-      background: #f7f7f7;
-      border: 2rpx solid #e5e5e5;
-      box-shadow: 0 4rpx 0 #e5e5e5;
+      background: var(--bg-secondary, #f7f7f7);
+      border: 2rpx solid var(--border, #e5e5e5);
+      box-shadow: 0 4rpx 0 var(--border, #e5e5e5);
 
       &:active {
         transform: translateY(3rpx);
-        box-shadow: 0 1rpx 0 #e5e5e5;
+        box-shadow: 0 1rpx 0 var(--border, #e5e5e5);
       }
 
       .guide-btn__title {
@@ -753,30 +754,31 @@ $duo-purple-dark: #a855f7;
       }
 
       .guide-btn__arrow {
-        color: $duo-hint;
+        color: var(--text-tertiary, #c4c4c4);
       }
     }
 
     .empty-state--dark & {
-      background: #2a2a2a;
-      border: 2rpx solid #3a3a3a;
-      box-shadow: 0 4rpx 0 #1a1a1a;
+      background: var(--muted, #2a2a2a);
+      border: 2rpx solid var(--border, #3a3a3a);
+      box-shadow: 0 4rpx 0 rgba(0, 0, 0, 0.3);
 
       &:active {
         transform: translateY(3rpx);
-        box-shadow: 0 1rpx 0 #1a1a1a;
+        box-shadow: 0 1rpx 0 rgba(0, 0, 0, 0.3);
       }
 
       .guide-btn__title {
-        color: var(--bg-secondary);
+        // [P0修复] 原值 var(--bg-secondary) 是背景色变量→暗色下文字不可见
+        color: var(--text-primary, #f0f0f0);
       }
 
       .guide-btn__desc {
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--text-sub, rgba(255, 255, 255, 0.6));
       }
 
       .guide-btn__arrow {
-        color: rgba(255, 255, 255, 0.3);
+        color: var(--text-tertiary, rgba(255, 255, 255, 0.3));
       }
     }
   }

@@ -264,4 +264,22 @@ function handleAvatarTap() {
     font-size: 24rpx;
   }
 }
+
+/* ---- 暗色模式覆盖 ---- */
+.page-dark .header-avatar {
+  border-color: var(--border, rgba(255, 255, 255, 0.12));
+  box-shadow: var(--shadow-sm, 0 4rpx 12rpx rgba(0, 0, 0, 0.3));
+}
+
+.page-dark .header-search {
+  border-color: var(--border, rgba(255, 255, 255, 0.12));
+}
+
+.page-dark .header-search:active {
+  box-shadow: var(--shadow-sm, 0 4rpx 12rpx rgba(0, 0, 0, 0.3));
+}
+
+.page-dark .search-icon-wrapper {
+  opacity: 0.85;
+}
 </style>
