@@ -158,7 +158,7 @@ async function loadLessons() {
   try {
     const res = await classroomStore.fetchLessons({ page: 1, limit: 50 });
     if (res.success && res.data) {
-      lessons.value = Array.isArray(res.data) ? res.data : res.data.list || [];
+      lessons.value = Array.isArray(res.data) ? res.data : res.data?.list || [];
     }
   } catch (_e) {
     logger.warn('[AI课堂] 加载课程列表失败:', _e);

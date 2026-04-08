@@ -219,10 +219,14 @@ async function loadQuestions() {
 
     const res = await reviewStore.browseQuestions(params);
     if (res?.success && res.data) {
+      const newList = res.data.list || [];
       if (currentPage.value === 1) {
-        questionList.value = res.data.list || [];
+        questionList.value = newList;
       } else {
-        questionList.value = [...questionList.value, ...(res.data.list || [])];
+        // 限制最大 DOM 节点数，防止列表无限增长导致内存告警
+        const MAX_DOM_ITEMS = 200;
+        const combined = [...questionList.value, ...newList];
+        questionList.value = combined.length > MAX_DOM_ITEMS ? combined.slice(-MAX_DOM_ITEMS) : combined;
       }
       hasMore.value = res.data.hasMore || false;
     }

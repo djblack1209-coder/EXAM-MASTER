@@ -437,7 +437,8 @@
         "pages/ai-classroom",
         "pages/login",
         "pages/tools",
-        "pages/mistake"
+        "pages/mistake",
+        "pages/knowledge-graph"
       ]
     },
     "pages/practice/index": {
