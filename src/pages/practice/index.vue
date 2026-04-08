@@ -401,6 +401,9 @@
 
     <!-- 底部导航栏 -->
     <CustomTabbar :is-dark="isDark" />
+
+    <!-- 离线状态指示器 -->
+    <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
   </view>
 </template>
 

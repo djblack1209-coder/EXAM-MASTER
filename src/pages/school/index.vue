@@ -432,6 +432,9 @@
         <button class="fp-confirm-btn ds-flex-center ds-font-bold" @click="showFilter = false">查看结果</button>
       </view>
     </view>
+
+    <!-- 离线状态指示器 -->
+    <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
   </view>
 </template>
 

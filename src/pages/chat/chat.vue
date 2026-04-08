@@ -264,6 +264,9 @@
         <BaseIcon name="arrow-right" :size="24" class="send-icon" style="transform: rotate(-90deg)" />
       </view>
     </view>
+
+    <!-- 离线状态指示器 -->
+    <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
   </view>
 </template>
 
