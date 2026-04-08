@@ -18,11 +18,15 @@
 
     <!-- Logo区域 -->
     <view class="logo-section">
-      <image class="app-logo" src="./static/logo.png" alt="Exam Master" mode="aspectFit" />
-      <!-- 吉祥物 -->
+      <!-- P0: 移除冗余logo.png，吉祥物即品牌符号 -->
       <image class="login-mascot" src="/static/illustrations/mascot-owl.png" mode="aspectFit" />
-      <text class="app-name"> Exam-Master </text>
-      <text class="app-slogan"> 智能助力，一战成硕 </text>
+      <!-- P1: 品牌名与Splash一致的双色风格 -->
+      <view class="app-name-row">
+        <text class="brand-exam">Exam</text>
+        <text class="brand-master"> Master</text>
+      </view>
+      <!-- P3: slogan与Splash统一 -->
+      <text class="app-slogan"> AI 助力，一战成硕 </text>
     </view>
 
     <!-- 登录方式选择 -->
@@ -1211,17 +1215,34 @@ onUnmounted(() => {
   padding: 60rpx 0 80rpx;
 }
 
-.app-logo {
-  width: 160rpx;
-  height: 160rpx;
-  margin-bottom: 24rpx;
+/* P0: 移除.app-logo，吉祥物即品牌符号 */
+
+/* P1: 吉祥物放大至视觉焦点尺寸 */
+.login-mascot {
+  width: 320rpx;
+  height: 175rpx;
+  margin: 0 auto 28rpx;
+  display: block;
 }
 
-.login-mascot {
-  width: 260rpx;
-  height: 142rpx;
-  margin: 0 auto 24rpx;
-  display: block;
+/* P1: 品牌名双色行 */
+.app-name-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 12rpx;
+  letter-spacing: 1.5px;
+}
+
+.brand-exam {
+  font-size: 52rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.brand-master {
+  font-size: 52rpx;
+  font-weight: 800;
+  color: #58cc02;
 }
 
 .app-name {
@@ -1342,9 +1363,10 @@ onUnmounted(() => {
 
 .form-label {
   display: block;
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: var(--text-sub);
-  margin-bottom: 12rpx;
+  margin-bottom: 16rpx;
+  font-weight: 500;
 }
 
 .form-input {
@@ -1626,6 +1648,11 @@ onUnmounted(() => {
   color: var(--text-main);
 }
 
+/* P1修复: 提交按钮白色文字不被通用.btn-text覆盖 */
+.email-submit-btn .btn-text {
+  color: #ffffff;
+}
+
 .logo-section {
   margin: 18rpx 12rpx 34rpx;
   padding: 36rpx 24rpx;
@@ -1685,8 +1712,10 @@ onUnmounted(() => {
 }
 
 .qq-icon {
-  background: color-mix(in srgb, var(--info) 14%, transparent);
+  background: color-mix(in srgb, var(--info) 18%, transparent);
   color: var(--primary);
+  font-size: 24rpx;
+  font-weight: 800;
 }
 
 .e2e-icon {
@@ -1695,7 +1724,7 @@ onUnmounted(() => {
 }
 
 .email-icon {
-  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  background: color-mix(in srgb, var(--warning) 22%, transparent);
   color: var(--warning);
 }
 
