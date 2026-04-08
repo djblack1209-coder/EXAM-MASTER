@@ -9,7 +9,14 @@
     </view>
 
     <!-- 图标/插图区域 -->
-    <image v-if="illustration" :src="illustration" class="empty-state__illustration" mode="aspectFit" lazy-load />
+    <image
+      v-if="illustration"
+      :src="illustration"
+      class="empty-state__illustration"
+      mode="aspectFit"
+      lazy-load
+      :alt="title || '空状态插图'"
+    />
     <view v-else class="empty-state__icon" :class="{ 'animate-float': animated }">
       <BaseIcon :name="icon" :size="80" />
     </view>

@@ -56,7 +56,7 @@
     <view v-if="!loading && lessons.length === 0" class="empty-state">
       <view class="empty-icon-wrap">
         <!-- 卡通图标替代装饰性 BaseIcon -->
-        <image class="feature-cartoon-icon" src="./static/icons/book-sparkle.png" mode="aspectFit" />
+        <image class="feature-cartoon-icon" src="./static/icons/book-sparkle.png" mode="aspectFit" alt="书本闪烁图标" />
       </view>
       <text class="empty-title">还没有课程</text>
       <text class="empty-desc">点击上方创建你的第一个 AI 互动课程</text>

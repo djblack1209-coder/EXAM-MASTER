@@ -8,7 +8,7 @@
           <text class="achievement-modal-title"> 我的成就 </text>
         </view>
         <!-- 成就星光特效 -->
-        <image class="achievement-sparkle" src="/static/effects/star-sparkle.png" mode="aspectFit" />
+        <image class="achievement-sparkle" src="/static/effects/star-sparkle.png" mode="aspectFit" alt="" />
         <view class="achievement-modal-close apple-glass-pill" @tap="$emit('close')">
           <BaseIcon name="close" :size="24" />
         </view>
@@ -19,7 +19,12 @@
           <view class="achievement-grid">
             <view v-for="ach in unlockedAchievements" :key="ach.id" class="achievement-item unlocked apple-group-card">
               <view class="achievement-item-icon">
-                <image :src="getBadgeImage(ach)" class="achievement-badge-img" mode="aspectFit" />
+                <image
+                  :src="getBadgeImage(ach)"
+                  class="achievement-badge-img"
+                  mode="aspectFit"
+                  :alt="ach.name + '徽章'"
+                />
               </view>
               <text class="achievement-item-name">
                 {{ ach.name }}

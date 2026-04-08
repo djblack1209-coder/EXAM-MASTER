@@ -315,7 +315,13 @@
 
         <view v-if="filteredSchools.length === 0" class="empty-tip ds-flex-col ds-flex-center ds-gap-sm">
           <!-- 择校引导插画 -->
-          <image class="empty-illustration" src="/static/illustrations/school-guide.png" mode="aspectFit" lazy-load />
+          <image
+            class="empty-illustration"
+            src="/static/illustrations/school-guide.png"
+            mode="aspectFit"
+            lazy-load
+            alt="择校引导插画"
+          />
           <text class="empty-title ds-text-base ds-font-semibold"> 暂无推荐院校数据 </text>
           <text v-if="hasActiveFilter" class="ds-text-sm ds-text-secondary"> 试试调整筛选条件 </text>
           <text v-else class="ds-text-sm ds-text-secondary"> 暂时没有找到匹配的院校，请稍后再试 </text>

@@ -130,7 +130,12 @@
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('days')">
               <view class="stat-icon-box">
                 <!-- 卡通图标替代装饰性 BaseIcon -->
-                <image class="feature-cartoon-icon" src="/static/icons/clock-timer.png" mode="aspectFit" />
+                <image
+                  class="feature-cartoon-icon"
+                  src="/static/icons/clock-timer.png"
+                  mode="aspectFit"
+                  alt="学习天数"
+                />
               </view>
               <text class="stat-value">
                 {{ studyDays }}
@@ -145,7 +150,12 @@
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('badges')">
               <view class="stat-icon-box">
                 <!-- 卡通图标替代装饰性 BaseIcon -->
-                <image class="feature-cartoon-icon" src="/static/icons/trophy-cup.png" mode="aspectFit" />
+                <image
+                  class="feature-cartoon-icon"
+                  src="/static/icons/trophy-cup.png"
+                  mode="aspectFit"
+                  alt="获得勋章"
+                />
               </view>
               <text class="stat-value">
                 {{ badgeCount }}
@@ -160,7 +170,12 @@
             <view class="stat-item" hover-class="stat-hover" @tap="handleStatTap('accuracy')">
               <view class="stat-icon-box">
                 <!-- 卡通图标替代装饰性 BaseIcon -->
-                <image class="feature-cartoon-icon" src="/static/icons/target-bullseye.png" mode="aspectFit" />
+                <image
+                  class="feature-cartoon-icon"
+                  src="/static/icons/target-bullseye.png"
+                  mode="aspectFit"
+                  alt="正确率"
+                />
               </view>
               <text class="stat-value"> {{ accuracyRate }}% </text>
               <text class="stat-label"> 正确率 </text>
@@ -220,7 +235,12 @@
               <text class="checkin-title"> 每日打卡 </text>
               <view v-if="checkInStreak > 0" class="checkin-streak">
                 <!-- 卡通火焰图标替代装饰性 BaseIcon -->
-                <image class="streak-flame-icon" src="/static/icons/flame-streak.png" mode="aspectFit" />
+                <image
+                  class="streak-flame-icon"
+                  src="/static/icons/flame-streak.png"
+                  mode="aspectFit"
+                  alt="连续打卡火焰"
+                />
                 <text>连续 {{ checkInStreak }} 天</text>
               </view>
             </view>
