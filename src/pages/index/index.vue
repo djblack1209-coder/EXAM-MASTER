@@ -191,7 +191,12 @@
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('id-photo')">
                 <view class="tool-card-icon-wrap">
                   <!-- 卡通图标替代装饰性 BaseIcon -->
-                  <image class="feature-cartoon-icon" src="/static/icons/camera-search.png" mode="aspectFit" />
+                  <image
+                    class="feature-cartoon-icon"
+                    src="/static/icons/camera-search.png"
+                    mode="aspectFit"
+                    alt="证件照换底色"
+                  />
                 </view>
                 <text class="tool-card-title">证件照换底色</text>
                 <text class="tool-card-desc">报名免裁剪</text>
@@ -202,7 +207,12 @@
               <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('doc-convert')">
                 <view class="tool-card-icon-wrap">
                   <!-- 卡通图标替代装饰性 BaseIcon -->
-                  <image class="feature-cartoon-icon" src="/static/icons/doc-convert.png" mode="aspectFit" />
+                  <image
+                    class="feature-cartoon-icon"
+                    src="/static/icons/doc-convert.png"
+                    mode="aspectFit"
+                    alt="文档格式转换"
+                  />
                 </view>
                 <text class="tool-card-title">文档格式转换</text>
                 <text class="tool-card-desc">PDF/Word 互转</text>

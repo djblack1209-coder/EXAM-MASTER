@@ -232,7 +232,7 @@
       <view id="e2e-practice-menu-ai-tutor" class="menu-item" @tap="goAITutor">
         <view class="menu-icon">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" src="/static/icons/ai-chat.png" mode="aspectFit" />
+          <image class="feature-cartoon-icon" src="/static/icons/ai-chat.png" mode="aspectFit" alt="智能导师" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 智能导师 </view>
@@ -259,7 +259,7 @@
       <view v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
         <view class="menu-icon">
           <!-- 卡通星标图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" src="/static/icons/star-badge.png" mode="aspectFit" />
+          <image class="feature-cartoon-icon" src="/static/icons/star-badge.png" mode="aspectFit" alt="错题重练" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 错题重练 </view>
@@ -274,7 +274,7 @@
       <view id="e2e-practice-menu-rank" class="menu-item" @tap="goRank">
         <view class="menu-icon">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" src="/static/icons/trophy-cup.png" mode="aspectFit" />
+          <image class="feature-cartoon-icon" src="/static/icons/trophy-cup.png" mode="aspectFit" alt="学霸排行榜" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 学霸排行榜 </view>
@@ -304,7 +304,7 @@
       <view v-if="favoriteCount > 0" class="menu-item" @tap="goFavorites">
         <view class="menu-icon">
           <!-- 卡通书签图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" src="/static/icons/bookmark-save.png" mode="aspectFit" />
+          <image class="feature-cartoon-icon" src="/static/icons/bookmark-save.png" mode="aspectFit" alt="我的收藏" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 我的收藏 </view>
