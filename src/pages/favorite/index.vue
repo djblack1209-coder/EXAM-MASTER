@@ -421,6 +421,7 @@ function loadData() {
     });
   } catch (e) {
     logger.warn('[favorite] 加载数据失败:', e);
+    toast.info('加载收藏数据失败，请稍后重试');
   } finally {
     isLoading.value = false; // ✅ F018
   }
