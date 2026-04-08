@@ -1248,7 +1248,7 @@ function formatSize(bytes) {
 
 // 按钮
 .btn-primary {
-  background: #2dc9c4;
+  background: var(--primary);
   color: var(--text-inverse);
   border: none;
   padding: 24rpx;

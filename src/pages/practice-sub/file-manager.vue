@@ -418,7 +418,7 @@ function clearAll() {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2dc9c4;
+  color: var(--primary);
 }
 
 .file-details {
@@ -515,7 +515,7 @@ function clearAll() {
 
 .view-btn {
   background-color: rgba(45, 201, 196, 0.12);
-  color: #2dc9c4;
+  color: var(--primary);
 }
 
 .view-btn:active {
