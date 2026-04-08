@@ -185,6 +185,9 @@
 
     <!-- 智能诊断报告组件 - ✅ 2.3: 仅在有错题时渲染，避免空数据时的无效组件挂载 -->
     <MistakeReport v-if="mistakes.length > 0" :mistakes="mistakes" :user-info="userInfo" :is-dark="isDark" />
+
+    <!-- 离线状态指示器 -->
+    <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
   </view>
 </template>
 

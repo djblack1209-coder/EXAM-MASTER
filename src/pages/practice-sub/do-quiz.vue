@@ -415,6 +415,9 @@
       @jump="handleJumpToQuestion"
       @close="showAnswerSheet = false"
     />
+
+    <!-- 离线状态指示器 -->
+    <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="0" />
   </view>
 </template>
 
