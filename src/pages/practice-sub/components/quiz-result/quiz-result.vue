@@ -548,7 +548,7 @@ const motivationalText = computed(() => {
 }
 .stat-label {
   font-size: 22rpx;
-  color: #afafaf;
+  color: var(--text-tertiary);
   margin-top: 8rpx;
 }
 .stat-divider {
@@ -560,12 +560,12 @@ const motivationalText = computed(() => {
   color: #58cc02;
 }
 .wrong-text {
-  color: #ff4b4b;
+  color: var(--danger);
 }
 
 /* 分类 */
 .glass-card {
-  background: #ffffff;
+  background: var(--bg-card);
   border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-radius: 32rpx;
   padding: 32rpx;
@@ -575,7 +575,7 @@ const motivationalText = computed(() => {
 .section-title {
   font-size: 30rpx;
   font-weight: 800;
-  color: #3c3c3c;
+  color: var(--text-primary);
   margin-bottom: 24rpx;
   display: block;
 }
@@ -589,7 +589,7 @@ const motivationalText = computed(() => {
 }
 .cat-name {
   font-size: 24rpx;
-  color: #afafaf;
+  color: var(--text-tertiary);
   width: 120rpx;
   flex-shrink: 0;
   overflow: hidden;
@@ -613,7 +613,7 @@ const motivationalText = computed(() => {
 .cat-pct {
   font-size: 24rpx;
   font-weight: 700;
-  color: #3c3c3c;
+  color: var(--text-primary);
   width: 80rpx;
   text-align: right;
 }
@@ -624,7 +624,7 @@ const motivationalText = computed(() => {
 }
 .motivational-text {
   font-size: 28rpx;
-  color: #3c3c3c;
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
@@ -645,13 +645,13 @@ const motivationalText = computed(() => {
 }
 .primary-btn {
   background: #1cb0f6;
-  color: #fff;
+  color: var(--text-inverse);
   box-shadow: 0 6rpx 0 #1899d6;
   border-radius: 20rpx;
 }
 .secondary-btn {
-  background: #ffffff;
-  color: #3c3c3c;
+  background: var(--bg-card);
+  color: var(--text-primary);
   border: 2rpx solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 4rpx 0 #e0e0e0;
   border-radius: 20rpx;
