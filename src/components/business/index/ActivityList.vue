@@ -2,7 +2,7 @@
   <view>
     <view class="section-header">
       <view class="section-title-group">
-        <view class="section-icon-dot"></view>
+        <view class="section-icon-dot" />
         <text class="section-title"> 学习轨迹 </text>
       </view>
       <text id="e2e-home-activity-view-all" class="section-action" @tap="$emit('view-all')"> 查看全部 </text>

@@ -11,12 +11,69 @@ import cloud from '@lafjs/cloud';
 // @ts-ignore — Laf runtime provides cloud.res but typings lag behind
 import { requireAuth, isAuthError } from './_shared/auth-middleware';
 // @ts-ignore
-import { checkRateLimitDistributed, createLogger } from './_shared/api-response';
+import { checkRateLimitDistributed, createLogger, IS_PRODUCTION } from './_shared/api-response';
 
 // ✅ H019: 微信内容安全检测
 import { checkTextSecurity, ContentScene } from './_shared/wx-content-check';
 
 const logger = createLogger('[ProxyAI-Stream]');
+
+// ==================== 签名校验（与 proxy-ai.ts 保持一致） ====================
+const REQUEST_SIGN_SALT = process.env.REQUEST_SIGN_SALT || process.env.VITE_REQUEST_SIGN_SALT || '';
+const AUDIT_TOKEN_MAX_AGE_MS = 5 * 60 * 1000;
+let hasLoggedMissingSalt = false;
+
+/** 读取请求头（大小写不敏感） */
+function getHeaderValue(ctx: Record<string, unknown>, headerName: string): string {
+  const headers = (ctx.headers || {}) as Record<string, unknown>;
+  const exactValue = headers[headerName];
+  if (typeof exactValue === 'string' && exactValue.trim()) return exactValue.trim();
+  const lowered = headerName.toLowerCase();
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() === lowered && typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+  return '';
+}
+
+/** FNV-1a 签名校验（与前端 _request-core.js 一致） */
+function validateRequestSign(path: string, timestampHeader: string, requestSign: string): boolean {
+  if (!timestampHeader || !requestSign) return false;
+  const timestamp = Number.parseInt(timestampHeader, 10);
+  if (!Number.isFinite(timestamp)) return false;
+  if (Math.abs(Date.now() - timestamp) > AUDIT_TOKEN_MAX_AGE_MS) return false;
+  if (!REQUEST_SIGN_SALT) {
+    if (!hasLoggedMissingSalt) {
+      hasLoggedMissingSalt = true;
+      logger.error('[Audit] REQUEST_SIGN_SALT 未配置，拒绝签名校验');
+    }
+    return false;
+  }
+  const raw = `${path}:${timestamp}:${REQUEST_SIGN_SALT}`;
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < raw.length; i++) {
+    hash ^= raw.charCodeAt(i);
+    hash = (hash * 0x01000193) >>> 0;
+  }
+  return requestSign === hash.toString(36);
+}
+
+/** 生产环境请求签名校验（与 proxy-ai.ts checkAuditMode 一致） */
+function checkRequestSignature(ctx: Record<string, unknown>): { valid: boolean; error?: string } {
+  if (!IS_PRODUCTION) return { valid: true };
+  const requestTimestamp = getHeaderValue(ctx, 'x-request-timestamp');
+  const requestSign = getHeaderValue(ctx, 'x-request-sign');
+  if (!requestTimestamp || !requestSign) {
+    logger.warn('[Audit] 生产环境缺少 X-Request-Timestamp/X-Request-Sign 头，拒绝请求');
+    return { valid: false, error: '请求签名缺失，请升级客户端后重试' };
+  }
+  if (!validateRequestSign('/proxy-ai-stream', requestTimestamp, requestSign)) {
+    logger.warn('[Audit] X-Request-Sign 校验失败，拒绝请求');
+    return { valid: false, error: '请求签名校验失败，请刷新后重试' };
+  }
+  return { valid: true };
+}
 
 const AI_PROVIDER_KEY_PLACEHOLDER
 const ZHIPU_API_URL = 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
@@ -54,6 +111,12 @@ export default async function (ctx: FunctionContext) {
   const res = (cloud as any).res;
 
   // --- 快速校验 ---
+  // ✅ P0: 签名校验（与 proxy-ai.ts 保持一致的安全标准）
+  const signCheck = checkRequestSignature(ctx as Record<string, unknown>);
+  if (!signCheck.valid) {
+    return { code: 403, success: false, message: signCheck.error || '签名校验失败' };
+  }
+
   const authResult = requireAuth(ctx);
   if (isAuthError(authResult)) {
     return { code: 401, success: false, message: '未登录或登录已过期' };

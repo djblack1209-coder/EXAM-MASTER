@@ -69,6 +69,9 @@ export function sanitizeAIChatInput(input, maxLength = 8000) {
   // 移除所有事件处理器属性（覆盖无引号值的情况）
   result = result.replace(/\bon\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
 
+  // 移除危险 URI 伪协议（防止 javascript:/data: 注入）
+  result = result.replace(/\b(?:javascript|data|vbscript)\s*:/gi, '');
+
   return result.trim().slice(0, maxLength);
 }
 

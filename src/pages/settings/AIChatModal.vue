@@ -91,7 +91,7 @@ import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
-import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
+import { sanitizeAIChatInput, escapeHtml } from '@/utils/security/sanitize.js';
 import { useSchoolStore } from '@/stores/modules/school.js';
 import { useToolsStore } from '@/stores/modules/tools.js';
 
@@ -461,20 +461,6 @@ function handleEmoji() {
 function selectEmoji(emoji) {
   userInput.value += emoji;
   showEmojiPicker.value = false;
-}
-
-/** HTML 实体转义 */
-function escapeHtml(text) {
-  if (!text) return '';
-  const htmlEntities = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#x27;',
-    '/': '&#x2F;'
-  };
-  return String(text).replace(/[&<>"'/]/g, (char) => htmlEntities[char]);
 }
 
 /** 简易 Markdown → rich-text nodes 渲染 */
