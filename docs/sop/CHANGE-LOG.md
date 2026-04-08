@@ -14,6 +14,52 @@
 
 ---
 
+## [2026-04-08] 第25轮全量审计 P0-P5 全阶段修复（R462-R475）
+
+- **Scope**: `security` `frontend` `backend` `infra`
+- **Files Changed**: 20+个文件
+- **Summary**: 第25轮全量审计覆盖 P0(安全)-P5(文档CI/CD)，修复14项问题。
+
+### P0 安全修复（R462-R465）
+
+- **`laf-backend/functions/proxy-ai-stream.ts`** — **R462 签名校验加固**：新增 FNV-1a 请求签名校验（checkRequestSignature），与 proxy-ai.ts 保持一致的安全标准。生产环境缺少 X-Request-Sign 头时返回 403
+- **`src/utils/security/sanitize.js`** — **R463 javascript: 伪协议过滤**：sanitizeAIChatInput 新增 `javascript:`/`data:`/`vbscript:` URI scheme 过滤
+- **`src/pages/settings/AIChatModal.vue`** — **R464 escapeHtml 去重**：移除本地 escapeHtml 实现，统一使用 `@/utils/security/sanitize.js` 全局版本
+- **`src/components/business/index/ActivityList.vue`** — **R465 ESLint警告修复**：`<view>` 自闭合标签
+
+### P1 功能完整性修复（R466-R469）
+
+- **`src/pages/favorite/index.vue`** — **R466**：loadData 失败时新增 toast 提示用户
+- **`src/pages/ai-classroom/index.vue`** — **R467**：loadLessons 失败时新增 toast 提示 + res.data.list 可选链保护
+- **`src/pages/practice-sub/question-bank.vue`** — **R468**：categories 为空时新增空状态 UI（BaseIcon + 引导文案）
+- **6个核心页面** — **R469 离线指示器全覆盖**：practice/school/profile/do-quiz/chat/mistake 6页面添加 OfflineIndicator；pages.json easycom 注册自动导入；do-quiz 使用 auto-hide-delay=0（答题中不自动隐藏）
+
+### P2 架构修复（R470-R471）
+
+- **根目录** — **R470**：git rm 28个 visual-_.png 临时截图（3.3MB），.gitignore 新增 visual-_.png 规则
+- **`src/common`** — **R471**：删除断裂符号链接（指向不存在的 ../common）
+
+### P3 性能修复（R472-R473）
+
+- **`src/pages.json`** — **R472**：preloadRule 新增 knowledge-graph 分包预加载（从首页）
+- **`src/pages/practice-sub/question-bank.vue`** — **R473**：题目列表新增 MAX_DOM_ITEMS=200 限制，防止分页加载时 DOM 无限增长
+
+### P4 UI/UX 修复（R474）
+
+- **R474 暗黑模式硬编码颜色修复**（29处）：
+  - `quiz-result.vue` — 20处：#fafafa→var(--bg-secondary)、#ffffff→var(--bg-card)、#3c3c3c→var(--text-primary)、#afafaf→var(--text-tertiary)、#ff4b4b→var(--danger)
+  - `StudyTimeCard.vue` — 7处：#8e8e93→var(--text-secondary)、#1c1c1e→var(--text-primary)、#f2f2f7→var(--bg-secondary)、#c7c7cc→var(--border)、#2dc9c4→var(--primary)
+  - `WelcomeBanner.vue` — 2处：渐变背景→CSS变量+fallback、边框→var(--border)
+
+### P5 安全加固（R475）
+
+- **`electron/main.cjs`** — **R475**：shell.openExternal 协议检查从 `startsWith('http')` 收紧为 `startsWith('https://') || startsWith('http://')`
+
+- **Breaking Changes**: proxy-ai-stream 端点现在在生产环境强制要求 X-Request-Sign 签名头（前端 \_request-core.js 已自动附加，无用户影响）
+- **Quality Gate**: ESLint 0 errors 0 warnings | 89 files / 1135 tests passed | H5 build OK
+
+---
+
 ## [2026-04-08] CI/CD深度审计 + 遗留问题全量修复（R461）
 
 - **Scope**: `infra` `frontend`

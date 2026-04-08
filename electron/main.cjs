@@ -57,7 +57,7 @@ function createWindow() {
 
   // 外部链接用系统浏览器打开
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('http')) {
+    if (url.startsWith('https://') || url.startsWith('http://')) {
       shell.openExternal(url);
     }
     return { action: 'deny' };
