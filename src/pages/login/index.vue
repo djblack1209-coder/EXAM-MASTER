@@ -1229,6 +1229,7 @@ onUnmounted(() => {
 .app-name-row {
   display: flex;
   align-items: baseline;
+  gap: 8rpx;
   margin-bottom: 12rpx;
   letter-spacing: 1.5px;
 }
@@ -1626,7 +1627,7 @@ onUnmounted(() => {
 .back-btn,
 .logo-section,
 .login-methods,
-.login-btn,
+.login-btn:not(.email-submit-btn),
 .agreement,
 .footer-tip text,
 .form-input {
@@ -1687,7 +1688,7 @@ onUnmounted(() => {
   border-radius: 38rpx;
 }
 
-.login-btn {
+.login-btn:not(.email-submit-btn) {
   padding: 26rpx 28rpx;
   margin-bottom: 18rpx;
   box-shadow: var(--apple-shadow-surface);
@@ -1696,6 +1697,21 @@ onUnmounted(() => {
 .login-btn:active {
   transform: scale(0.98);
   box-shadow: var(--apple-shadow-surface);
+}
+
+/* 提交按钮保持品牌绿色和3D阴影 */
+.email-submit-btn {
+  background: #58cc02;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 8rpx 0 #46a302;
+  padding: 26rpx 28rpx;
+  margin-bottom: 18rpx;
+}
+
+.email-submit-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #46a302;
 }
 
 .btn-icon {
