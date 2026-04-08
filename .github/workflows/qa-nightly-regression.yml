@@ -19,13 +19,13 @@ jobs:
   web-regression:
     name: Web Regression (Vitest + Playwright)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: '.node-version'
           cache: npm
@@ -64,11 +64,30 @@ jobs:
             " 2>/dev/null || echo "无法解析 JSON 报告"
           fi
 
+      # ---- 预构建 H5（供 E2E 使用静态服务，避免 dev server 编译等待） ----
+      - name: Build H5 for E2E
+        id: h5-build
+        continue-on-error: true
+        run: npm run build:h5
+
       # ---- E2E 兼容性回归 ----
+      # 使用预构建产物 + npx serve 替代 npm run dev:h5，大幅缩短启动时间
+      # timeout-minutes 限制 E2E 步骤最长运行 25 分钟，防止耗尽 job 时间
       - name: Run compatibility regression
         id: e2e-compat
         continue-on-error: true
-        run: npm run test:e2e:compat
+        timeout-minutes: 25
+        env:
+          E2E_BASE_URL: http://127.0.0.1:4173
+        run: |
+          if [ "${{ steps.h5-build.outcome }}" = "success" ]; then
+            # 使用 vite preview 提供预构建产物（端口 4173）
+            npx vite preview --port 4173 --host &
+            sleep 3
+            npx playwright test --config=playwright.regression.compat.config.js
+          else
+            echo "::warning title=E2E 跳过::H5 构建失败，无法执行 E2E 测试。"
+          fi
 
       - name: Summarize E2E result
         if: steps.e2e-compat.outcome == 'failure'
@@ -87,7 +106,7 @@ jobs:
 
       - name: Upload web regression artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: qa-nightly-web-reports
           path: |
@@ -109,16 +128,16 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: '.node-version'
           cache: npm
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v4.7.1
         with:
           distribution: temurin
           java-version: '17'
@@ -136,7 +155,7 @@ jobs:
 
       - name: Upload Maestro artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: qa-nightly-maestro-reports
           path: |

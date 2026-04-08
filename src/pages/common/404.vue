@@ -1,7 +1,12 @@
 <template>
   <view class="error-page">
     <!-- 吉祥物猫头鹰 -->
-    <image class="error-illustration" src="/static/illustrations/mascot-owl.png" mode="aspectFit" />
+    <image
+      class="error-illustration"
+      src="/static/illustrations/mascot-owl.png"
+      mode="aspectFit"
+      alt="页面未找到插画"
+    />
 
     <text class="error-code">404</text>
     <text class="error-title">页面走丢了</text>

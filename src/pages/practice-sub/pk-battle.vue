@@ -5,7 +5,13 @@
     <!-- 匹配阶段 -->
     <view v-if="gameState === 'matching'" class="matching-stage">
       <!-- PK对战等待插画 -->
-      <image class="pk-waiting-illustration" src="./static/illustrations/pk-waiting.png" mode="aspectFit" lazy-load />
+      <image
+        class="pk-waiting-illustration"
+        src="./static/illustrations/pk-waiting.png"
+        mode="aspectFit"
+        lazy-load
+        alt="PK对战匹配中"
+      />
       <view class="radar-scanner">
         <view class="radar-circle radar-1" />
         <view class="radar-circle radar-2" />

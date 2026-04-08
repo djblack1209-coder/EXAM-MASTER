@@ -27,7 +27,7 @@
 
       <view class="poster-content ds-flex-col ds-flex-center">
         <!-- 分享海报封面图 -->
-        <image class="poster-cover" src="/static/images/app-share-cover.png" mode="aspectFill" />
+        <image class="poster-cover" src="/static/images/app-share-cover.png" mode="aspectFill" alt="分享海报封面" />
 
         <view class="poster-header ds-flex ds-gap-xs">
           <!-- 品牌Logo（本地图片） -->

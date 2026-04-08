@@ -83,7 +83,7 @@
         <!-- 空状态 -->
         <view v-if="clusters.length === 0" class="empty-state">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="hero-cartoon-icon" src="./static/icons/lightbulb-idea.png" mode="aspectFit" />
+          <image class="hero-cartoon-icon" src="./static/icons/lightbulb-idea.png" mode="aspectFit" alt="灯泡创意" />
           <text class="empty-title">暂无错题聚类</text>
           <text class="empty-sub">多做几套题后，AI 会自动分析错题模式</text>
         </view>

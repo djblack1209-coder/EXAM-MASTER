@@ -104,7 +104,7 @@
         <!-- 空状态 -->
         <view v-if="sprintItems.length === 0" class="empty-state">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="hero-cartoon-icon" src="/static/icons/target-bullseye.png" mode="aspectFit" />
+          <image class="hero-cartoon-icon" src="/static/icons/target-bullseye.png" mode="aspectFit" alt="目标靶心" />
           <text class="empty-title">请先设置考试日期</text>
           <text class="empty-sub">设置后 AI 将生成最优冲刺优先级</text>
         </view>

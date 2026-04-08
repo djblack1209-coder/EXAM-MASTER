@@ -258,7 +258,7 @@
       <view v-if="showComboEffect && comboDisplay" class="combo-effect">
         <view class="combo-content" :style="{ color: comboDisplay.color }">
           <!-- 连击火焰特效 -->
-          <image class="combo-fire-icon" src="./static/effects/combo-fire.png" mode="aspectFit" />
+          <image class="combo-fire-icon" src="./static/effects/combo-fire.png" mode="aspectFit" alt="" />
           <text class="combo-count">
             {{ comboDisplay.count }}
           </text>
@@ -272,7 +272,7 @@
       <!-- ✅ [体感革命] XP飞入动画 -->
       <view v-if="showXpToast" class="xp-flyout">
         <!-- XP金币特效 -->
-        <image class="xp-coins-icon" src="./static/effects/xp-coins.png" mode="aspectFit" />
+        <image class="xp-coins-icon" src="./static/effects/xp-coins.png" mode="aspectFit" alt="" />
         <text class="xp-flyout-text">+{{ xpEarned }} XP{{ xpBoostActive ? ' 2x加速' : '' }}</text>
       </view>
 
@@ -284,7 +284,7 @@
 
       <!-- ✅ 升级箭头特效 -->
       <view v-if="showLevelUp" class="level-up-overlay">
-        <image class="level-up-icon" src="./static/effects/level-up-arrow.png" mode="aspectFit" />
+        <image class="level-up-icon" src="./static/effects/level-up-arrow.png" mode="aspectFit" alt="" />
         <text class="level-up-text">LEVEL UP!</text>
       </view>
 

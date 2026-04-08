@@ -86,7 +86,7 @@
             <view class="stat-divider" />
             <view class="stat-item">
               <!-- 生命值装饰 -->
-              <image class="heart-deco" src="./static/effects/heart-lives.png" mode="aspectFit" lazy-load />
+              <image class="heart-deco" src="./static/effects/heart-lives.png" mode="aspectFit" lazy-load alt="" />
               <text class="stat-value highlight">
                 {{ friendInfo.score || 0 }}
               </text>

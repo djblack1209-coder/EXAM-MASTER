@@ -197,7 +197,7 @@
         <!-- 空状态 -->
         <view v-else-if="!isLoadingRequests && requestList.length === 0" class="empty-state">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="hero-cartoon-icon" src="./static/icons/friends.png" mode="aspectFit" />
+          <image class="hero-cartoon-icon" src="./static/icons/friends.png" mode="aspectFit" alt="暂无好友请求" />
           <text class="empty-title"> 暂无好友请求 </text>
           <text class="empty-desc"> 当有人向你发送好友请求时，会显示在这里 </text>
         </view>

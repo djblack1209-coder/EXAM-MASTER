@@ -10,7 +10,13 @@
 
       <view class="header-brand ds-flex-col ds-flex-center ds-gap-xs">
         <!-- 品牌Logo -->
-        <image class="brand-logo-img" src="/static/images/logo-full.png" mode="aspectFit" lazy-load />
+        <image
+          class="brand-logo-img"
+          src="/static/images/logo-full.png"
+          mode="aspectFit"
+          lazy-load
+          alt="Exam Master 品牌标志"
+        />
         <text class="brand-name ds-text-lg ds-font-bold"> Exam-Master </text>
       </view>
       <text class="title ds-text-xl ds-font-bold ds-text-primary"> 邀请好友，研途有你 </text>

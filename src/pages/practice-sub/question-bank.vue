@@ -94,7 +94,13 @@
       <!-- 空状态 -->
       <view v-if="selectedCategory && !loading && questionList.length === 0" class="empty-state">
         <!-- 搜索无结果插图 -->
-        <image class="empty-illustration" src="/static/illustrations/empty-search.png" mode="aspectFit" lazy-load />
+        <image
+          class="empty-illustration"
+          src="/static/illustrations/empty-search.png"
+          mode="aspectFit"
+          lazy-load
+          alt="搜索无结果"
+        />
         <text class="empty-text">该分类暂无题目</text>
         <text class="empty-sub">可通过"资料导入"或管理后台添加题目</text>
       </view>

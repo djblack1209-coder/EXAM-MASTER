@@ -58,7 +58,13 @@
       <!-- Step 1: 设定每日目标 -->
       <view v-show="step === 1" :class="['step-container', { 'step-active': step === 1, 'step-hidden': step !== 1 }]">
         <!-- 引导插画：设定目标 -->
-        <image class="step-illustration" src="./static/illustrations/onboard-set-goal.png" mode="aspectFit" lazy-load />
+        <image
+          class="step-illustration"
+          src="./static/illustrations/onboard-set-goal.png"
+          mode="aspectFit"
+          lazy-load
+          alt="设定每日目标插画"
+        />
         <text class="step-title">每天想练多少题？</text>
         <text class="step-desc">设定一个适合自己的小目标</text>
 
@@ -89,7 +95,13 @@
       <!-- Step 2: 导入内容 -->
       <view v-show="step === 2" :class="['step-container', { 'step-active': step === 2, 'step-hidden': step !== 2 }]">
         <!-- 引导插画：导入资料 -->
-        <image class="step-illustration" src="./static/illustrations/onboard-import.png" mode="aspectFit" lazy-load />
+        <image
+          class="step-illustration"
+          src="./static/illustrations/onboard-import.png"
+          mode="aspectFit"
+          lazy-load
+          alt="导入学习资料插画"
+        />
         <text class="step-title">导入学习资料</text>
         <text class="step-desc">导入 Anki 牌组或上传学习资料，立即开始刷题</text>
 
@@ -125,7 +137,13 @@
       <!-- Step 3: 准备开始 -->
       <view v-show="step === 3" :class="['step-container', { 'step-active': step === 3, 'step-hidden': step !== 3 }]">
         <!-- 引导插画：准备开始 -->
-        <image class="step-illustration" src="./static/illustrations/onboard-ready.png" mode="aspectFit" lazy-load />
+        <image
+          class="step-illustration"
+          src="./static/illustrations/onboard-ready.png"
+          mode="aspectFit"
+          lazy-load
+          alt="准备开始插画"
+        />
         <text class="step-title">一切就绪！</text>
         <text class="step-desc">{{ readySummary }}</text>
 

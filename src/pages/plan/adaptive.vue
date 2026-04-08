@@ -95,7 +95,7 @@
         <!-- 空状态 -->
         <view v-if="!planData.summary && dailyPlans.length === 0" class="empty-state">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="hero-cartoon-icon" src="./static/icons/notebook-pen.png" mode="aspectFit" />
+          <image class="hero-cartoon-icon" src="./static/icons/notebook-pen.png" mode="aspectFit" alt="笔记本与笔" />
           <text class="empty-title">暂无自适应计划</text>
           <text class="empty-sub">请先设置考试日期和每日学习时长</text>
           <WdButton type="primary" custom-style="margin-top: 40rpx; border-radius: 999rpx;" @click="generatePlan">

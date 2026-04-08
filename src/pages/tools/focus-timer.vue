@@ -20,7 +20,7 @@
       </view>
 
       <!-- 卡通沙漏装饰图标 -->
-      <image class="timer-cartoon-icon" src="./static/icons/hourglass.png" mode="aspectFit" />
+      <image class="timer-cartoon-icon" src="./static/icons/hourglass.png" mode="aspectFit" alt="" />
 
       <!-- Main timer ring -->
       <view class="ring-wrapper">

@@ -18,7 +18,7 @@
       <view class="hero-card">
         <view class="hero-icon-wrapper">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="hero-cartoon-icon" src="./static/icons/id-card.png" mode="aspectFit" />
+          <image class="hero-cartoon-icon" src="./static/icons/id-card.png" mode="aspectFit" alt="" />
         </view>
         <text class="hero-title"> 智能证件照 </text>
         <text class="hero-desc"> 智能抠图换背景，支持多种证件照尺寸 </text>
@@ -55,7 +55,7 @@
       <view v-else-if="step === 1" class="section">
         <!-- 预览 -->
         <view class="preview-card">
-          <image :src="previewSrc" mode="aspectFit" class="preview-img" />
+          <image :src="previewSrc" mode="aspectFit" class="preview-img" alt="证件照预览" />
         </view>
 
         <!-- 尺寸选择 -->
@@ -130,7 +130,7 @@
       <!-- Step 3: 结果 -->
       <view v-else-if="step === 3" class="section">
         <view class="result-card">
-          <image :src="resultImage" mode="aspectFit" class="result-img" />
+          <image :src="resultImage" mode="aspectFit" class="result-img" alt="证件照生成结果" />
         </view>
         <view class="result-actions">
           <button id="e2e-id-photo-save" class="btn-primary" hover-class="btn-hover" @tap="saveResult">

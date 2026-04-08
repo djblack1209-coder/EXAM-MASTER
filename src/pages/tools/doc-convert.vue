@@ -17,7 +17,7 @@
       <view class="hero-card">
         <view class="hero-icon-wrapper">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="hero-cartoon-icon" src="/static/icons/doc-convert.png" mode="aspectFit" />
+          <image class="hero-cartoon-icon" src="/static/icons/doc-convert.png" mode="aspectFit" alt="" />
         </view>
         <text class="hero-title"> 智能文档转换 </text>
         <text class="hero-desc"> 支持 PDF、Word、Excel、PPT 等格式互转 </text>
