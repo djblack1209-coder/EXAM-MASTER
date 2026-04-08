@@ -359,7 +359,7 @@ onUnmounted(() => {
 }
 
 .type-focus {
-  color: #2dc9c4;
+  color: var(--primary);
   background: rgba(45, 201, 196, 0.12);
 }
 
@@ -391,7 +391,7 @@ onUnmounted(() => {
 
 .start-btn {
   padding: 24rpx 80rpx;
-  background: #2dc9c4;
+  background: var(--primary);
   border-radius: 999rpx;
   box-shadow: 0 8rpx 0 #22a09c;
 }
@@ -435,7 +435,7 @@ onUnmounted(() => {
 }
 
 .primary-btn {
-  background: #2dc9c4;
+  background: var(--primary);
   box-shadow: 0 8rpx 0 #22a09c;
 }
 
@@ -498,12 +498,12 @@ onUnmounted(() => {
 }
 
 .duration-chip.active {
-  border-color: #2dc9c4;
+  border-color: var(--primary);
   background: rgba(45, 201, 196, 0.12);
 }
 
 .duration-chip.active .chip-text {
-  color: #2dc9c4;
+  color: var(--primary);
   font-weight: 700;
 }
 

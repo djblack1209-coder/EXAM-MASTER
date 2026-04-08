@@ -1040,7 +1040,7 @@ function _searchSimilar() {
   margin-bottom: 16rpx;
   border: 2rpx solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  border-left: 6rpx solid #2dc9c4;
+  border-left: 6rpx solid var(--primary);
 
   .question-text {
     font-size: 28rpx;
@@ -1075,7 +1075,7 @@ function _searchSimilar() {
 
   .meta-tag-text {
     font-size: 20rpx;
-    color: #2dc9c4;
+    color: var(--primary);
     font-weight: 600;
   }
 }
@@ -1099,7 +1099,7 @@ function _searchSimilar() {
   .ai-block-title {
     font-size: 26rpx;
     font-weight: 800;
-    color: #2dc9c4;
+    color: var(--primary);
     margin-bottom: 12rpx;
     display: block;
   }
@@ -1277,7 +1277,7 @@ function _searchSimilar() {
   font-weight: 600;
 
   &.bar-btn-primary {
-    background: #2dc9c4;
+    background: var(--primary);
     color: var(--text-inverse);
     border: none;
     box-shadow: 0 8rpx 0 #22a09c;
