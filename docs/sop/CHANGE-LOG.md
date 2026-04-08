@@ -14,6 +14,38 @@
 
 ---
 
+## [2026-04-08] H5视觉深度检验 — Splash + Login 商业级优化（R458-R460）
+
+- **Scope**: `frontend`
+- **Files Changed**: 2个文件 (splash/index.vue, login/index.vue)
+- **Summary**: 对标多邻国/Apple/NanFu官网标准，逐页深度视觉检验。
+
+### Splash页 (R458) — 7项优化
+
+- 背景从纯色改为径向渐变（中心微亮增加深度感）
+- 品牌名双色化：Exam深色 + Master品牌绿 #58cc02
+- Logo添加呼吸辉光CSS动画（breathGlow 3s infinite）
+- 新增三个脉动加载圆点（dotPulse 1.4s）
+- 品牌名字重 600→700
+- 副标题间距 10→12px
+- 底部版权 fadeIn→fadeUp 统一运动语言
+
+### Login页 (R459-R460) — 8项优化
+
+- **P0 移除冗余logo.png**：吉祥物mascot-owl成为唯一品牌符号，减少视觉层次混乱
+- **P1 吉祥物放大**：260x142rpx → 320x175rpx，视觉冲击力显著提升
+- **P1 品牌名双色统一**：与Splash一致 "Exam"深色 + "Master"绿色，去连字符
+- **P1 提交按钮文字不可见修复**：`.login-btn`通用CSS覆盖链中排除`.email-submit-btn`，按钮背景恢复品牌绿
+- **P2 QQ图标加粗**：font-size 24rpx + font-weight 800
+- **P2 邮箱图标饱和度提升**：warning色混合 14%→22%
+- **P3 Slogan统一**："智能助力"→"AI 助力"与Splash一致
+- **P3 表单标签增大**：font-size 26→28rpx，间距 12→16rpx，添加font-weight 500
+
+- **Breaking Changes**: 无
+- **Quality Gate**: 89 files / 1135 tests passed | H5 build OK
+
+---
+
 ## [2026-04-07] P0构建阻断修复 + CI/CD全链路深度审计（R457）
 
 - **Scope**: `infra` `frontend`
