@@ -365,7 +365,7 @@ const motivationalText = computed(() => {
   right: 0;
   bottom: 0;
   z-index: 1000;
-  background: #fafafa;
+  background: var(--bg-secondary);
   animation: resultSlideUp 0.45s cubic-bezier(0.22, 0.68, 0, 1.1);
 }
 @keyframes resultSlideUp {

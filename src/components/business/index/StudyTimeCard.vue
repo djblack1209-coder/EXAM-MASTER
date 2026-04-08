@@ -143,7 +143,7 @@ defineEmits(['click']);
 }
 
 .card-light .time-label {
-  color: #8e8e93;
+  color: var(--text-secondary);
 }
 
 .card-dark .time-label {
@@ -157,7 +157,7 @@ defineEmits(['click']);
 }
 
 .card-light .time-value {
-  color: #1c1c1e;
+  color: var(--text-primary);
 }
 
 .card-dark .time-value {
@@ -178,7 +178,7 @@ defineEmits(['click']);
 }
 
 .card-light .time-indicator {
-  background: #f2f2f7;
+  background: var(--bg-secondary);
 }
 
 .card-dark .time-indicator {
@@ -202,7 +202,7 @@ defineEmits(['click']);
 }
 
 .card-light .indicator-dot {
-  background: #c7c7cc;
+  background: var(--border);
 }
 
 .card-dark .indicator-dot {
@@ -210,7 +210,7 @@ defineEmits(['click']);
 }
 
 .indicator-active .indicator-dot {
-  background: #2dc9c4;
+  background: var(--primary);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -221,7 +221,7 @@ defineEmits(['click']);
 }
 
 .card-light .indicator-text {
-  color: #8e8e93;
+  color: var(--text-secondary);
 }
 
 .card-dark .indicator-text {
@@ -229,7 +229,7 @@ defineEmits(['click']);
 }
 
 .indicator-active .indicator-text {
-  color: #2dc9c4;
+  color: var(--primary);
   font-weight: 700;
 }
 
