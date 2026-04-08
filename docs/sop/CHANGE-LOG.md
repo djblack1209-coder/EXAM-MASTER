@@ -14,6 +14,57 @@
 
 ---
 
+## [2026-04-08] CI/CD深度审计 + 遗留问题全量修复（R461）
+
+- **Scope**: `infra` `frontend`
+- **Files Changed**: 30+个文件
+- **Summary**: QA夜间测试与CI/CD全链路git历史追溯审计 + 4项遗留问题一次性修复。
+
+### CI/CD深度审计发现
+
+- **根因追溯**：本地6个提交（R457-R460）未推送到remote，远端停留在`83cb83a`（自动存档误删文件的提交）
+- **QA夜间回归连续失败根因**：3/30-4/3为Vitest JSON单reporter+Maestro模拟器问题；4/4-4/8为E2E Compat测试超时（`npm run dev:h5` webServer在CI启动慢+18个spec x 3浏览器 x retries超过45min job限制）
+- **CI/CD Pipeline 4/7构建失败**：`83cb83a`误删share-modal.vue等8个源文件
+
+### P1 — E2E Compat测试CI超时修复
+
+- **`.github/workflows/qa-nightly-regression.yml`**：
+  - Job超时 45min→60min
+  - 新增 "Build H5 for E2E" 预构建步骤（避免dev server实时编译等待）
+  - E2E步骤改用 `vite preview --port 4173` 提供静态产物 + 设置 `E2E_BASE_URL`
+  - E2E步骤新增 `timeout-minutes: 25` 限制（防止耗尽job时间）
+  - H5构建失败时跳过E2E并产生warning注解
+
+### P2 — Node.js 20 deprecation修复
+
+- **3个workflow文件全量升级actions版本**：
+  - `actions/checkout` v4 → v4.2.2
+  - `actions/setup-node` v4 → v4.4.0
+  - `actions/upload-artifact` v4 → v4.6.2
+  - `actions/setup-java` v4 → v4.7.1
+  - `actions/download-artifact` v4 → v4.3.0
+- 消除GitHub Actions "Node.js 20 actions are deprecated" 警告（2026-06-02强制切换前完成）
+
+### D033 — image标签alt属性全量修复
+
+- **24个Vue文件共37处`<image>`标签补充alt属性**：
+  - 有语义含义的图片使用中文描述（如 `alt="猫头鹰吉祥物"`、`alt="PK对战匹配中"`）
+  - 纯装饰性图标使用 `alt=""`（如特效动画、装饰图标）
+  - 动态内容使用绑定表达式（如 `:alt="ach.name + '徽章'"`）
+  - 无障碍覆盖率从约75%提升至100%
+
+### D034 — z-index全局层级规范
+
+- **`src/styles/_design-tokens.scss`** — 新增13级SCSS变量规范：
+  - `$em-z-background(-1)` → `$em-z-system(99999)` 完整层级体系
+  - 涵盖背景层、内容层、页头、浮动元素、面板、TabBar、模态框、系统级弹窗等
+  - 176处现有硬编码z-index作为技术债记录，新代码必须使用变量
+
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors | 89 files / 1135 tests passed | H5 build OK
+
+---
+
 ## [2026-04-08] H5视觉深度检验 — Splash + Login 商业级优化（R458-R460）
 
 - **Scope**: `frontend`
