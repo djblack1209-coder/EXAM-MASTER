@@ -162,6 +162,7 @@ async function loadLessons() {
     }
   } catch (_e) {
     logger.warn('[AI课堂] 加载课程列表失败:', _e);
+    toast.info('加载课程列表失败，请检查网络后重试');
   } finally {
     loading.value = false;
   }

@@ -24,7 +24,7 @@
       </view>
 
       <!-- 分类卡片 -->
-      <view v-if="!loading" class="category-list">
+      <view v-if="!loading && categories.length > 0" class="category-list">
         <view
           v-for="cat in categories"
           :key="cat.category"
@@ -45,6 +45,13 @@
             <view class="diff-bar hard" :style="{ flex: cat.difficulty.hard || 0 }" />
           </view>
         </view>
+      </view>
+
+      <!-- 题库为空 -->
+      <view v-if="!loading && categories.length === 0" class="empty-state">
+        <BaseIcon name="book" :size="56" />
+        <text class="empty-text">暂无题库数据</text>
+        <text class="empty-sub">请先通过「导入数据」添加题目</text>
       </view>
 
       <!-- 筛选栏 -->
