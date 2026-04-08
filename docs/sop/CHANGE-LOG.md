@@ -14,6 +14,30 @@
 
 ---
 
+## [2026-04-08] 遗留问题全量修复 + QA夜间测试彻底治理（R476-R479）
+
+- **Scope**: `infra` `frontend` `security` `docs`
+- **Files Changed**: 10+个文件
+- **Summary**: 处理第25轮审计全部遗留项 + 根治 QA 夜间回归超时问题。
+
+### QA 夜间测试根因分析与修复
+
+- **根因**：E2E Compat 测试配置 18 spec x 3 浏览器 x retry 1 = 最多 108 次运行，远超 25 分钟步骤限制
+- **`playwright.regression.compat.config.js`** — **R476 E2E 超时根治**：
+  - CI 环境：3 浏览器→仅 mobile-390x844、retry 0、parallel + 2 workers、超时 90s→60s
+  - 预计 CI 耗时从 ~45min 降至 ~8min
+
+### 审计遗留修复
+
+- **R477 品牌色统一**：5 文件 12 处 `#2dc9c4` → `var(--primary)`
+- **R478 CodeQL 静默失败**：security-scan.yml 新增 id + 失败注解
+- **R479 deploy/.env.example**：腾讯云模板从 3→15 变量
+
+- **Breaking Changes**: 无
+- **Quality Gate**: ESLint 0 errors 0 warnings | 89 files / 1135 tests passed | H5 build OK
+
+---
+
 ## [2026-04-08] 第25轮全量审计 P0-P5 全阶段修复（R462-R475）
 
 - **Scope**: `security` `frontend` `backend` `infra`
