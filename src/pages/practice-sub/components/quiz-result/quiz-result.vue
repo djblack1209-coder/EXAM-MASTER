@@ -417,13 +417,13 @@ const motivationalText = computed(() => {
   justify-content: space-between;
   padding: 24rpx 40rpx;
   padding-top: calc(24rpx + env(safe-area-inset-top, 44px));
-  background: #ffffff;
+  background: var(--bg-card);
   border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
 }
 .result-title {
   font-size: 36rpx;
   font-weight: 800;
-  color: #3c3c3c;
+  color: var(--text-primary);
 }
 .close-btn {
   width: 56rpx;
@@ -432,9 +432,9 @@ const motivationalText = computed(() => {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #f5f5f5;
+  background: var(--bg-tertiary, #f5f5f5);
   font-size: 28rpx;
-  color: #afafaf;
+  color: var(--text-tertiary);
 }
 .result-scroll {
   flex: 1;
@@ -508,18 +508,18 @@ const motivationalText = computed(() => {
 .ring-number {
   font-size: 80rpx;
   font-weight: 900;
-  color: #3c3c3c;
+  color: var(--text-primary);
   line-height: 1;
 }
 .ring-unit {
   font-size: 32rpx;
   font-weight: 600;
-  color: #afafaf;
+  color: var(--text-tertiary);
   margin-top: 16rpx;
 }
 .accuracy-label {
   font-size: 28rpx;
-  color: #afafaf;
+  color: var(--text-tertiary);
   margin-top: 16rpx;
 }
 
@@ -528,7 +528,7 @@ const motivationalText = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background: #ffffff;
+  background: var(--bg-card);
   border: 2rpx solid rgba(0, 0, 0, 0.04);
   border-radius: 32rpx;
   padding: 32rpx 20rpx;
@@ -544,7 +544,7 @@ const motivationalText = computed(() => {
 .stat-value {
   font-size: 40rpx;
   font-weight: 800;
-  color: #3c3c3c;
+  color: var(--text-primary);
 }
 .stat-label {
   font-size: 22rpx;

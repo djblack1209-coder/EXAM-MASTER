@@ -98,7 +98,12 @@ const examCountdown = computed(() => {
 
 /* ── 浅色模式：柔和多彩渐变 ── */
 .banner-light {
-  background: linear-gradient(135deg, #f0fce8 0%, #e8f7fe 50%, #fef3e8 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bg-success-light, #f0fce8) 0%,
+    var(--bg-info-light, #e8f7fe) 50%,
+    var(--bg-warning-light, #fef3e8) 100%
+  );
 }
 
 /* ── 深色模式 ── */
@@ -256,7 +261,7 @@ const examCountdown = computed(() => {
 /* ── 次按钮（3D 轮廓风格） ── */
 .btn-outline {
   background: var(--bg-card);
-  border: 3rpx solid #e5e5ea;
+  border: 3rpx solid var(--border);
   box-shadow: 0 6rpx 0 #e5e5ea;
   color: var(--text-primary);
   font-weight: 700;
