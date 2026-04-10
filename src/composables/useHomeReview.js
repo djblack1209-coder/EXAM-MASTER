@@ -6,6 +6,7 @@ import { ref } from 'vue';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { safeImport } from '@/utils/helpers/safe-import.js';
+import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 // 动态导入 — 避免 fsrs-service(5KB) 和 knowledge-engine(6KB) 拖进主包
 // import { getReviewStats } from '@/services/fsrs-service.js';
 // import { getNextRecommendedTopic } from '@/services/knowledge-engine.js';
@@ -27,6 +28,12 @@ export function useHomeReview({ reviewStore } = {}) {
    */
   async function loadReviewPending() {
     try {
+      if (!isUserLoggedIn()) {
+        reviewPending.value = 0;
+        reviewStats.value = { dueCount: 0, newCount: 0, learningCount: 0, overdueCount: 0 };
+        return;
+      }
+
       // 本地 FSRS 优先：从本地存储的题目计算待复习数量
       const allQuestions = storageService.get('v30_bank', []);
       if (allQuestions.length > 0) {
