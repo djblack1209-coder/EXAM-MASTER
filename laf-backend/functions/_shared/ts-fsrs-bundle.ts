@@ -1,18 +1,19 @@
+// @ts-nocheck
 'use strict';
 
 var State = /* @__PURE__ */ ((State2) => {
-  State2[State2["New"] = 0] = "New";
-  State2[State2["Learning"] = 1] = "Learning";
-  State2[State2["Review"] = 2] = "Review";
-  State2[State2["Relearning"] = 3] = "Relearning";
+  State2[(State2['New'] = 0)] = 'New';
+  State2[(State2['Learning'] = 1)] = 'Learning';
+  State2[(State2['Review'] = 2)] = 'Review';
+  State2[(State2['Relearning'] = 3)] = 'Relearning';
   return State2;
 })(State || {});
 var Rating = /* @__PURE__ */ ((Rating2) => {
-  Rating2[Rating2["Manual"] = 0] = "Manual";
-  Rating2[Rating2["Again"] = 1] = "Again";
-  Rating2[Rating2["Hard"] = 2] = "Hard";
-  Rating2[Rating2["Good"] = 3] = "Good";
-  Rating2[Rating2["Easy"] = 4] = "Easy";
+  Rating2[(Rating2['Manual'] = 0)] = 'Manual';
+  Rating2[(Rating2['Again'] = 1)] = 'Again';
+  Rating2[(Rating2['Hard'] = 2)] = 'Hard';
+  Rating2[(Rating2['Good'] = 3)] = 'Good';
+  Rating2[(Rating2['Easy'] = 4)] = 'Easy';
   return Rating2;
 })(Rating || {});
 
@@ -26,7 +27,7 @@ class TypeConvert {
     };
   }
   static rating(value) {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       const firstLetter = value.charAt(0).toUpperCase();
       const restOfString = value.slice(1).toLowerCase();
       const ret = Rating[`${firstLetter}${restOfString}`];
@@ -34,13 +35,13 @@ class TypeConvert {
         throw new Error(`Invalid rating:[${value}]`);
       }
       return ret;
-    } else if (typeof value === "number") {
+    } else if (typeof value === 'number') {
       return value;
     }
     throw new Error(`Invalid rating:[${value}]`);
   }
   static state(value) {
-    if (typeof value === "string") {
+    if (typeof value === 'string') {
       const firstLetter = value.charAt(0).toUpperCase();
       const restOfString = value.slice(1).toLowerCase();
       const ret = State[`${firstLetter}${restOfString}`];
@@ -48,7 +49,7 @@ class TypeConvert {
         throw new Error(`Invalid state:[${value}]`);
       }
       return ret;
-    } else if (typeof value === "number") {
+    } else if (typeof value === 'number') {
       return value;
     }
     throw new Error(`Invalid state:[${value}]`);
@@ -58,16 +59,16 @@ class TypeConvert {
       return value;
     }
     const date = new Date(value);
-    if (typeof value === "object" && value !== null && !Number.isNaN(Date.parse(value) || +date)) {
+    if (typeof value === 'object' && value !== null && !Number.isNaN(Date.parse(value) || +date)) {
       return date;
-    } else if (typeof value === "string") {
+    } else if (typeof value === 'string') {
       const timestamp = Date.parse(value);
       if (!Number.isNaN(timestamp)) {
         return new Date(timestamp);
       } else {
         throw new Error(`Invalid date:[${value}]`);
       }
-    } else if (typeof value === "number") {
+    } else if (typeof value === 'number') {
       return new Date(value);
     }
     throw new Error(`Invalid date:[${value}]`);
@@ -84,19 +85,19 @@ class TypeConvert {
 }
 
 /* istanbul ignore next -- @preserve */
-Date.prototype.scheduler = function(t, isDay) {
+Date.prototype.scheduler = function (t, isDay) {
   return date_scheduler(this, t, isDay);
 };
 /* istanbul ignore next -- @preserve */
-Date.prototype.diff = function(pre, unit) {
+Date.prototype.diff = function (pre, unit) {
   return date_diff(this, pre, unit);
 };
 /* istanbul ignore next -- @preserve */
-Date.prototype.format = function() {
+Date.prototype.format = function () {
   return formatDate(this);
 };
 /* istanbul ignore next -- @preserve */
-Date.prototype.dueFormat = function(last_review, unit, timeUnit) {
+Date.prototype.dueFormat = function (last_review, unit, timeUnit) {
   return show_diff_message(this, last_review, unit, timeUnit);
 };
 function date_scheduler(now, t, isDay) {
@@ -106,15 +107,15 @@ function date_scheduler(now, t, isDay) {
 }
 function date_diff(now, pre, unit) {
   if (!now || !pre) {
-    throw new Error("Invalid date");
+    throw new Error('Invalid date');
   }
   const diff = TypeConvert.time(now).getTime() - TypeConvert.time(pre).getTime();
   let r = 0;
   switch (unit) {
-    case "days":
+    case 'days':
       r = Math.floor(diff / (24 * 60 * 60 * 1e3));
       break;
-    case "minutes":
+    case 'minutes':
       r = Math.floor(diff / (60 * 1e3));
       break;
   }
@@ -128,15 +129,13 @@ function formatDate(dateInput) {
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
-  return `${year}-${padZero(month)}-${padZero(day)} ${padZero(hours)}:${padZero(
-    minutes
-  )}:${padZero(seconds)}`;
+  return `${year}-${padZero(month)}-${padZero(day)} ${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
 }
 function padZero(num) {
   return num < 10 ? `0${num}` : `${num}`;
 }
 const TIMEUNIT = [60, 60, 24, 31, 12];
-const TIMEUNITFORMAT = ["second", "min", "hour", "day", "month", "year"];
+const TIMEUNITFORMAT = ['second', 'min', 'hour', 'day', 'month', 'year'];
 function show_diff_message(due, last_review, unit, timeUnit = TIMEUNITFORMAT) {
   due = TypeConvert.time(due);
   last_review = TypeConvert.time(last_review);
@@ -153,7 +152,7 @@ function show_diff_message(due, last_review, unit, timeUnit = TIMEUNITFORMAT) {
       diff /= TIMEUNIT[i];
     }
   }
-  return `${Math.floor(diff)}${unit ? timeUnit[i] : ""}`;
+  return `${Math.floor(diff)}${unit ? timeUnit[i] : ''}`;
 }
 /* istanbul ignore next -- @preserve */
 function fixDate(value) {
@@ -167,12 +166,7 @@ function fixState(value) {
 function fixRating(value) {
   return TypeConvert.rating(value);
 }
-const Grades = Object.freeze([
-  Rating.Again,
-  Rating.Hard,
-  Rating.Good,
-  Rating.Easy
-]);
+const Grades = Object.freeze([Rating.Again, Rating.Hard, Rating.Good, Rating.Easy]);
 const FUZZ_RANGES = [
   {
     start: 2.5,
@@ -212,16 +206,8 @@ function roundTo(num, decimals) {
   return Math.round(num * factor) / factor;
 }
 function dateDiffInDays(last, cur) {
-  const utc1 = Date.UTC(
-    last.getUTCFullYear(),
-    last.getUTCMonth(),
-    last.getUTCDate()
-  );
-  const utc2 = Date.UTC(
-    cur.getUTCFullYear(),
-    cur.getUTCMonth(),
-    cur.getUTCDate()
-  );
+  const utc1 = Date.UTC(last.getUTCFullYear(), last.getUTCMonth(), last.getUTCDate());
+  const utc2 = Date.UTC(cur.getUTCFullYear(), cur.getUTCMonth(), cur.getUTCDate());
   return Math.floor(
     (utc2 - utc1) / 864e5
     /** 1000 * 60 * 60 * 24*/
@@ -235,18 +221,19 @@ const ConvertStepUnitToMinutes = (step) => {
     throw new Error(`Invalid step value: ${step}`);
   }
   switch (unit) {
-    case "m":
+    case 'm':
       return value;
-    case "h":
+    case 'h':
       return value * 60;
-    case "d":
+    case 'd':
       return value * 1440;
     default:
       throw new Error(`Invalid step unit: ${step}, expected m/h/d`);
   }
 };
 const BasicLearningStepsStrategy = (params, state, cur_step) => {
-  const learning_steps = state === State.Relearning || state === State.Review ? params.relearning_steps : params.learning_steps;
+  const learning_steps =
+    state === State.Relearning || state === State.Review ? params.relearning_steps : params.learning_steps;
   const steps_length = learning_steps.length;
   if (steps_length === 0 || cur_step >= steps_length) return {};
   const firstStep = learning_steps[0];
@@ -307,7 +294,7 @@ function DefaultInitSeedStrategy() {
   return `${time}_${reps}_${mul}`;
 }
 function GenSeedStrategyWithCardId(card_id_field) {
-  return function() {
+  return function () {
     const card_id = Reflect.get(this.current, card_id_field) ?? 0;
     const reps = this.current.reps;
     return String(card_id + reps || 0);
@@ -315,9 +302,9 @@ function GenSeedStrategyWithCardId(card_id_field) {
 }
 
 var StrategyMode = /* @__PURE__ */ ((StrategyMode2) => {
-  StrategyMode2["SCHEDULER"] = "Scheduler";
-  StrategyMode2["LEARNING_STEPS"] = "LearningSteps";
-  StrategyMode2["SEED"] = "Seed";
+  StrategyMode2['SCHEDULER'] = 'Scheduler';
+  StrategyMode2['LEARNING_STEPS'] = 'LearningSteps';
+  StrategyMode2['SEED'] = 'Seed';
   return StrategyMode2;
 })(StrategyMode || {});
 
@@ -419,9 +406,9 @@ class Alea {
   constructor(seed) {
     const mash = Mash();
     this.c = 1;
-    this.s0 = mash(" ");
-    this.s1 = mash(" ");
-    this.s2 = mash(" ");
+    this.s0 = mash(' ');
+    this.s1 = mash(' ');
+    this.s2 = mash(' ');
     if (seed == null) seed = Date.now();
     this.s0 -= mash(seed);
     if (this.s0 < 0) this.s0 += 1;
@@ -473,8 +460,8 @@ function Mash() {
 function alea(seed) {
   const xg = new Alea(seed);
   const prng = () => xg.next();
-  prng.int32 = () => xg.next() * 4294967296 | 0;
-  prng.double = () => prng() + (prng() * 2097152 | 0) * 11102230246251565e-32;
+  prng.int32 = () => (xg.next() * 4294967296) | 0;
+  prng.double = () => prng() + ((prng() * 2097152) | 0) * 11102230246251565e-32;
   prng.state = () => xg.state;
   prng.importState = (state) => {
     xg.state = state;
@@ -483,19 +470,14 @@ function alea(seed) {
   return prng;
 }
 
-const version="5.3.1";
+const version = '5.3.1';
 
 const default_request_retention = 0.9;
 const default_maximum_interval = 36500;
 const default_enable_fuzz = false;
 const default_enable_short_term = true;
-const default_learning_steps = Object.freeze([
-  "1m",
-  "10m"
-]);
-const default_relearning_steps = Object.freeze([
-  "10m"
-]);
+const default_learning_steps = Object.freeze(['1m', '10m']);
+const default_relearning_steps = Object.freeze(['10m']);
 const FSRSVersion = `v${version} using FSRS-6.0`;
 const S_MIN = 1e-3;
 const S_MAX = 36500;
@@ -546,31 +528,23 @@ const CLAMP_PARAMETERS = (w17_w18_ceiling, enable_short_term = default_enable_sh
   [1, 6],
   [0, w17_w18_ceiling],
   [0, w17_w18_ceiling],
-  [
-    enable_short_term ? 0.01 : 0,
-    0.8
-  ],
+  [enable_short_term ? 0.01 : 0, 0.8],
   [0.1, 0.8]
 ];
 
 const clipParameters = (parameters, numRelearningSteps, enableShortTerm = default_enable_short_term) => {
   let w17_w18_ceiling = W17_W18_Ceiling;
   if (Math.max(0, numRelearningSteps) > 1) {
-    const value = -(Math.log(parameters[11]) + Math.log(Math.pow(2, parameters[13]) - 1) + parameters[14] * 0.3) / numRelearningSteps;
+    const value =
+      -(Math.log(parameters[11]) + Math.log(Math.pow(2, parameters[13]) - 1) + parameters[14] * 0.3) /
+      numRelearningSteps;
     w17_w18_ceiling = clamp(+value.toFixed(8), 0.01, 2);
   }
-  const clip = CLAMP_PARAMETERS(w17_w18_ceiling, enableShortTerm).slice(
-    0,
-    parameters.length
-  );
-  return clip.map(
-    ([min, max], index) => clamp(parameters[index] || 0, min, max)
-  );
+  const clip = CLAMP_PARAMETERS(w17_w18_ceiling, enableShortTerm).slice(0, parameters.length);
+  return clip.map(([min, max], index) => clamp(parameters[index] || 0, min, max));
 };
 const checkParameters = (parameters) => {
-  const invalid = parameters.find(
-    (param) => !Number.isFinite(param) && !Number.isNaN(param)
-  );
+  const invalid = parameters.find((param) => !Number.isFinite(param) && !Number.isNaN(param));
   if (invalid !== void 0) {
     throw Error(`Non-finite or NaN value in parameters ${parameters}`);
   } else if (![17, 19, 21].includes(parameters.length)) {
@@ -586,32 +560,23 @@ const migrateParameters = (parameters, numRelearningSteps = 0, enableShortTerm =
   }
   switch (parameters.length) {
     case 21:
-      return clipParameters(
-        Array.from(parameters),
-        numRelearningSteps,
-        enableShortTerm
-      );
+      return clipParameters(Array.from(parameters), numRelearningSteps, enableShortTerm);
     case 19:
-      console.debug("[FSRS-6]auto fill w from 19 to 21 length");
-      return clipParameters(
-        Array.from(parameters),
-        numRelearningSteps,
-        enableShortTerm
-      ).concat([0, FSRS5_DEFAULT_DECAY]);
+      console.debug('[FSRS-6]auto fill w from 19 to 21 length');
+      return clipParameters(Array.from(parameters), numRelearningSteps, enableShortTerm).concat([
+        0,
+        FSRS5_DEFAULT_DECAY
+      ]);
     case 17: {
-      const w = clipParameters(
-        Array.from(parameters),
-        numRelearningSteps,
-        enableShortTerm
-      );
+      const w = clipParameters(Array.from(parameters), numRelearningSteps, enableShortTerm);
       w[4] = +(w[5] * 2 + w[4]).toFixed(8);
       w[5] = +(Math.log(w[5] * 3 + 1) / 3).toFixed(8);
       w[6] = +(w[6] + 0.5).toFixed(8);
-      console.debug("[FSRS-6]auto fill w from 17 to 21 length");
+      console.debug('[FSRS-6]auto fill w from 17 to 21 length');
       return w.concat([0, 0, 0, FSRS5_DEFAULT_DECAY]);
     }
     default:
-      console.warn("[FSRS]Invalid parameters length, using default parameters");
+      console.warn('[FSRS]Invalid parameters length, using default parameters');
       return [...default_w];
   }
 };
@@ -619,11 +584,7 @@ const generatorParameters = (props) => {
   const learning_steps = Array.isArray(props?.learning_steps) ? props.learning_steps : default_learning_steps;
   const relearning_steps = Array.isArray(props?.relearning_steps) ? props.relearning_steps : default_relearning_steps;
   const enable_short_term = props?.enable_short_term ?? default_enable_short_term;
-  const w = migrateParameters(
-    props?.w,
-    relearning_steps.length,
-    enable_short_term
-  );
+  const w = migrateParameters(props?.w, relearning_steps.length, enable_short_term);
   return {
     request_retention: props?.request_retention || default_request_retention,
     maximum_interval: props?.maximum_interval || default_maximum_interval,
@@ -647,7 +608,7 @@ function createEmptyCard(now, afterHandler) {
     state: State.New,
     last_review: void 0
   };
-  if (afterHandler && typeof afterHandler === "function") {
+  if (afterHandler && typeof afterHandler === 'function') {
     return afterHandler(emptyCard);
   } else {
     return emptyCard;
@@ -655,26 +616,21 @@ function createEmptyCard(now, afterHandler) {
 }
 
 const computeDecayFactor = (decayOrParams) => {
-  const decay = typeof decayOrParams === "number" ? -decayOrParams : -decayOrParams[20];
+  const decay = typeof decayOrParams === 'number' ? -decayOrParams : -decayOrParams[20];
   const factor = Math.exp(Math.pow(decay, -1) * Math.log(0.9)) - 1;
   return { decay, factor: roundTo(factor, 8) };
 };
 function forgetting_curve(decayOrParams, elapsed_days, stability) {
   const { decay, factor } = computeDecayFactor(decayOrParams);
-  return roundTo(Math.pow(1 + factor * elapsed_days / stability, decay), 8);
+  return roundTo(Math.pow(1 + (factor * elapsed_days) / stability, decay), 8);
 }
 class FSRSAlgorithm {
   param;
   intervalModifier;
   _seed;
   constructor(params) {
-    this.param = new Proxy(
-      generatorParameters(params),
-      this.params_handler_proxy()
-    );
-    this.intervalModifier = this.calculate_interval_modifier(
-      this.param.request_retention
-    );
+    this.param = new Proxy(generatorParameters(params), this.params_handler_proxy());
+    this.intervalModifier = this.calculate_interval_modifier(this.param.request_retention);
     this.forgetting_curve = forgetting_curve.bind(this, this.param.w);
   }
   get interval_modifier() {
@@ -692,7 +648,7 @@ class FSRSAlgorithm {
    */
   calculate_interval_modifier(request_retention) {
     if (request_retention <= 0 || request_retention > 1) {
-      throw new Error("Requested retention rate should be in the range (0,1]");
+      throw new Error('Requested retention rate should be in the range (0,1]');
     }
     const { decay, factor } = computeDecayFactor(this.param.w);
     return roundTo((Math.pow(request_retention, 1 / decay) - 1) / factor, 8);
@@ -713,21 +669,13 @@ class FSRSAlgorithm {
   params_handler_proxy() {
     const _this = this;
     return {
-      set: function(target, prop, value) {
-        if (prop === "request_retention" && Number.isFinite(value)) {
-          _this.intervalModifier = _this.calculate_interval_modifier(
-            Number(value)
-          );
-        } else if (prop === "w") {
-          value = migrateParameters(
-            value,
-            target.relearning_steps.length,
-            target.enable_short_term
-          );
+      set: function (target, prop, value) {
+        if (prop === 'request_retention' && Number.isFinite(value)) {
+          _this.intervalModifier = _this.calculate_interval_modifier(Number(value));
+        } else if (prop === 'w') {
+          value = migrateParameters(value, target.relearning_steps.length, target.enable_short_term);
           _this.forgetting_curve = forgetting_curve.bind(this, value);
-          _this.intervalModifier = _this.calculate_interval_modifier(
-            Number(target.request_retention)
-          );
+          _this.intervalModifier = _this.calculate_interval_modifier(Number(target.request_retention));
         }
         Reflect.set(target, prop, value);
         return true;
@@ -776,11 +724,7 @@ class FSRSAlgorithm {
     if (!this.param.enable_fuzz || ivl < 2.5) return Math.round(ivl);
     const generator = alea(this._seed);
     const fuzz_factor = generator();
-    const { min_ivl, max_ivl } = get_fuzz_range(
-      ivl,
-      elapsed_days,
-      this.param.maximum_interval
-    );
+    const { min_ivl, max_ivl } = get_fuzz_range(ivl, elapsed_days, this.param.maximum_interval);
     return Math.floor(fuzz_factor * (max_ivl - min_ivl + 1) + min_ivl);
   }
   /**
@@ -789,17 +733,14 @@ class FSRSAlgorithm {
    *   @param {number} elapsed_days t days since the last review
    */
   next_interval(s, elapsed_days) {
-    const newInterval = Math.min(
-      Math.max(1, Math.round(s * this.intervalModifier)),
-      this.param.maximum_interval
-    );
+    const newInterval = Math.min(Math.max(1, Math.round(s * this.intervalModifier)), this.param.maximum_interval);
     return this.apply_fuzz(newInterval, elapsed_days);
   }
   /**
    * @see https://github.com/open-spaced-repetition/fsrs4anki/issues/697
    */
   linear_damping(delta_d, old_d) {
-    return roundTo(delta_d * (10 - old_d) / 9, 8);
+    return roundTo((delta_d * (10 - old_d)) / 9, 8);
   }
   /**
    * The formula used is :
@@ -813,11 +754,7 @@ class FSRSAlgorithm {
   next_difficulty(d, g) {
     const delta_d = -this.param.w[6] * (g - 3);
     const next_d = d + this.linear_damping(delta_d, d);
-    return clamp(
-      this.mean_reversion(this.init_difficulty(Rating.Easy), next_d),
-      1,
-      10
-    );
+    return clamp(this.mean_reversion(this.init_difficulty(Rating.Easy), next_d), 1, 10);
   }
   /**
    * The formula used is :
@@ -845,7 +782,14 @@ class FSRSAlgorithm {
     const easy_bound = Rating.Easy === g ? w[16] : 1;
     return roundTo(
       clamp(
-        s * (1 + Math.exp(w[8]) * (11 - d) * Math.pow(s, -w[9]) * (Math.exp((1 - r) * w[10]) - 1) * hard_penalty * easy_bound),
+        s *
+          (1 +
+            Math.exp(w[8]) *
+              (11 - d) *
+              Math.pow(s, -w[9]) *
+              (Math.exp((1 - r) * w[10]) - 1) *
+              hard_penalty *
+              easy_bound),
         S_MIN,
         36500
       ),
@@ -865,11 +809,7 @@ class FSRSAlgorithm {
   next_forget_stability(d, s, r) {
     const w = this.param.w;
     return roundTo(
-      clamp(
-        w[11] * Math.pow(d, -w[12]) * (Math.pow(s + 1, w[13]) - 1) * Math.exp((1 - r) * w[14]),
-        S_MIN,
-        36500
-      ),
+      clamp(w[11] * Math.pow(d, -w[12]) * (Math.pow(s + 1, w[13]) - 1) * Math.exp((1 - r) * w[14]), S_MIN, 36500),
       8
     );
   }
@@ -926,12 +866,10 @@ class FSRSAlgorithm {
       };
     }
     if (d < 1 || s < S_MIN) {
-      throw new Error(
-        `Invalid memory state { difficulty: ${d}, stability: ${s} }`
-      );
+      throw new Error(`Invalid memory state { difficulty: ${d}, stability: ${s} }`);
     }
     const w = this.param.w;
-    r = typeof r === "number" ? r : this.forgetting_curve(t, s);
+    r = typeof r === 'number' ? r : this.forgetting_curve(t, s);
     let new_s;
     if (t === 0 && this.param.enable_short_term) {
       new_s = this.next_short_term_stability(s, g);
@@ -968,15 +906,8 @@ class BasicScheduler extends AbstractScheduler {
   getLearningInfo(card, grade) {
     const parameters = this.algorithm.parameters;
     card.learning_steps = card.learning_steps || 0;
-    const steps_strategy = this.learningStepsStrategy(
-      parameters,
-      card.state,
-      card.learning_steps
-    );
-    const scheduled_minutes = Math.max(
-      0,
-      steps_strategy[grade]?.scheduled_minutes ?? 0
-    );
+    const steps_strategy = this.learningStepsStrategy(parameters, card.state, card.learning_steps);
+    const scheduled_minutes = Math.max(0, steps_strategy[grade]?.scheduled_minutes ?? 0);
     const next_steps = Math.max(0, steps_strategy[grade]?.next_step ?? 0);
     return {
       scheduled_minutes,
@@ -987,10 +918,7 @@ class BasicScheduler extends AbstractScheduler {
    * @description This function applies the learning steps based on the current card's state and grade.
    */
   applyLearningSteps(nextCard, grade, to_state) {
-    const { scheduled_minutes, next_steps } = this.getLearningInfo(
-      this.current,
-      grade
-    );
+    const { scheduled_minutes, next_steps } = this.getLearningInfo(this.current, grade);
     if (scheduled_minutes > 0 && scheduled_minutes < 1440) {
       nextCard.learning_steps = next_steps;
       nextCard.scheduled_days = 0;
@@ -1014,10 +942,7 @@ class BasicScheduler extends AbstractScheduler {
         nextCard.scheduled_days = Math.floor(scheduled_minutes / 1440);
       } else {
         nextCard.learning_steps = 0;
-        const interval = this.algorithm.next_interval(
-          nextCard.stability,
-          this.elapsed_days
-        );
+        const interval = this.algorithm.next_interval(nextCard.stability, this.elapsed_days);
         nextCard.scheduled_days = interval;
         nextCard.due = date_scheduler(this.review_time, interval, true);
       }
@@ -1062,10 +987,7 @@ class BasicScheduler extends AbstractScheduler {
       return exist;
     }
     const interval = this.elapsed_days;
-    const retrievability = this.algorithm.forgetting_curve(
-      interval,
-      this.current.stability
-    );
+    const retrievability = this.algorithm.forgetting_curve(interval, this.current.stability);
     const next_again = this.next_ds(interval, Rating.Again, retrievability);
     const next_hard = this.next_ds(interval, Rating.Hard, retrievability);
     const next_good = this.next_ds(interval, Rating.Good, retrievability);
@@ -1123,10 +1045,7 @@ class BasicScheduler extends AbstractScheduler {
     good_interval = this.algorithm.next_interval(next_good.stability, interval);
     hard_interval = Math.min(hard_interval, good_interval);
     good_interval = Math.max(good_interval, hard_interval + 1);
-    const easy_interval = Math.max(
-      this.algorithm.next_interval(next_easy.stability, interval),
-      good_interval + 1
-    );
+    const easy_interval = Math.max(this.algorithm.next_interval(next_easy.stability, interval), good_interval + 1);
     next_hard.scheduled_days = hard_interval;
     next_hard.due = date_scheduler(this.review_time, hard_interval, true);
     next_good.scheduled_days = good_interval;
@@ -1160,13 +1079,7 @@ class LongTermScheduler extends AbstractScheduler {
     const next_hard = this.next_ds(first_interval, Rating.Hard);
     const next_good = this.next_ds(first_interval, Rating.Good);
     const next_easy = this.next_ds(first_interval, Rating.Easy);
-    this.next_interval(
-      next_again,
-      next_hard,
-      next_good,
-      next_easy,
-      first_interval
-    );
+    this.next_interval(next_again, next_hard, next_good, next_easy, first_interval);
     this.next_state(next_again, next_hard, next_good, next_easy);
     this.update_next(next_again, next_hard, next_good, next_easy);
     return this.next.get(grade);
@@ -1198,10 +1111,7 @@ class LongTermScheduler extends AbstractScheduler {
       return exist;
     }
     const interval = this.elapsed_days;
-    const retrievability = this.algorithm.forgetting_curve(
-      interval,
-      this.current.stability
-    );
+    const retrievability = this.algorithm.forgetting_curve(interval, this.current.stability);
     const next_again = this.next_ds(interval, Rating.Again, retrievability);
     const next_hard = this.next_ds(interval, Rating.Hard, retrievability);
     const next_good = this.next_ds(interval, Rating.Good, retrievability);
@@ -1217,10 +1127,7 @@ class LongTermScheduler extends AbstractScheduler {
    */
   next_interval(next_again, next_hard, next_good, next_easy, interval) {
     let again_interval, hard_interval, good_interval, easy_interval;
-    again_interval = this.algorithm.next_interval(
-      next_again.stability,
-      interval
-    );
+    again_interval = this.algorithm.next_interval(next_again.stability, interval);
     hard_interval = this.algorithm.next_interval(next_hard.stability, interval);
     good_interval = this.algorithm.next_interval(next_good.stability, interval);
     easy_interval = this.algorithm.next_interval(next_easy.stability, interval);
@@ -1306,8 +1213,8 @@ class Reschedule {
    * @throws Will throw an error if the state or due date is not provided when required.
    */
   handleManualRating(card, state, reviewed, elapsed_days, stability, difficulty, due) {
-    if (typeof state === "undefined") {
-      throw new Error("reschedule: state is required for manual rating");
+    if (typeof state === 'undefined') {
+      throw new Error('reschedule: state is required for manual rating');
     }
     let log;
     let next_card;
@@ -1327,10 +1234,10 @@ class Reschedule {
       next_card = createEmptyCard(reviewed);
       next_card.last_review = reviewed;
     } else {
-      if (typeof due === "undefined") {
-        throw new Error("reschedule: due is required for manual rating");
+      if (typeof due === 'undefined') {
+        throw new Error('reschedule: due is required for manual rating');
       }
-      const scheduled_days = date_diff(due, reviewed, "days");
+      const scheduled_days = date_diff(due, reviewed, 'days');
       log = {
         rating: Rating.Manual,
         state: card.state,
@@ -1373,7 +1280,7 @@ class Reschedule {
       if (review.rating === Rating.Manual) {
         let interval = 0;
         if (cur_card.state !== State.New && cur_card.last_review) {
-          interval = date_diff(review.review, cur_card.last_review, "days");
+          interval = date_diff(review.review, cur_card.last_review, 'days');
         }
         item = this.handleManualRating(
           cur_card,
@@ -1401,11 +1308,7 @@ class Reschedule {
     if (cur_card.due.getTime() === reschedule_card.due.getTime()) {
       return null;
     }
-    cur_card.scheduled_days = date_diff(
-      reschedule_card.due,
-      cur_card.due,
-      "days"
-    );
+    cur_card.scheduled_days = date_diff(reschedule_card.due, cur_card.due, 'days');
     return this.handleManualRating(
       cur_card,
       reschedule_card.state,
@@ -1429,23 +1332,15 @@ class FSRS extends FSRSAlgorithm {
   params_handler_proxy() {
     const _this = this;
     return {
-      set: function(target, prop, value) {
-        if (prop === "request_retention" && Number.isFinite(value)) {
-          _this.intervalModifier = _this.calculate_interval_modifier(
-            Number(value)
-          );
-        } else if (prop === "enable_short_term") {
+      set: function (target, prop, value) {
+        if (prop === 'request_retention' && Number.isFinite(value)) {
+          _this.intervalModifier = _this.calculate_interval_modifier(Number(value));
+        } else if (prop === 'enable_short_term') {
           _this.Scheduler = value === true ? BasicScheduler : LongTermScheduler;
-        } else if (prop === "w") {
-          value = migrateParameters(
-            value,
-            target.relearning_steps.length,
-            target.enable_short_term
-          );
+        } else if (prop === 'w') {
+          value = migrateParameters(value, target.relearning_steps.length, target.enable_short_term);
           _this.forgetting_curve = forgetting_curve.bind(this, value);
-          _this.intervalModifier = _this.calculate_interval_modifier(
-            Number(target.request_retention)
-          );
+          _this.intervalModifier = _this.calculate_interval_modifier(Number(target.request_retention));
         }
         Reflect.set(target, prop, value);
         return true;
@@ -1465,9 +1360,7 @@ class FSRS extends FSRSAlgorithm {
     return this;
   }
   getScheduler(card, now) {
-    const schedulerStrategy = this.strategyHandler.get(
-      StrategyMode.SCHEDULER
-    );
+    const schedulerStrategy = this.strategyHandler.get(StrategyMode.SCHEDULER);
     const Scheduler = schedulerStrategy || this.Scheduler;
     const instance = new Scheduler(card, now, this, this.strategyHandler);
     return instance;
@@ -1533,7 +1426,7 @@ class FSRS extends FSRSAlgorithm {
   repeat(card, now, afterHandler) {
     const instance = this.getScheduler(card, now);
     const recordLog = instance.preview();
-    if (afterHandler && typeof afterHandler === "function") {
+    if (afterHandler && typeof afterHandler === 'function') {
       return afterHandler(recordLog);
     } else {
       return recordLog;
@@ -1597,10 +1490,10 @@ class FSRS extends FSRSAlgorithm {
     const instance = this.getScheduler(card, now);
     const g = TypeConvert.rating(grade);
     if (g === Rating.Manual) {
-      throw new Error("Cannot review a manual rating");
+      throw new Error('Cannot review a manual rating');
     }
     const recordLogItem = instance.review(g);
-    if (afterHandler && typeof afterHandler === "function") {
+    if (afterHandler && typeof afterHandler === 'function') {
       return afterHandler(recordLogItem);
     } else {
       return recordLogItem;
@@ -1616,7 +1509,7 @@ class FSRS extends FSRSAlgorithm {
   get_retrievability(card, now, format = true) {
     const processedCard = TypeConvert.card(card);
     now = now ? TypeConvert.time(now) : /* @__PURE__ */ new Date();
-    const t = processedCard.state !== State.New ? Math.max(date_diff(now, processedCard.last_review, "days"), 0) : 0;
+    const t = processedCard.state !== State.New ? Math.max(date_diff(now, processedCard.last_review, 'days'), 0) : 0;
     const r = processedCard.state !== State.New ? this.forgetting_curve(t, +processedCard.stability.toFixed(8)) : 0;
     return format ? `${(r * 100).toFixed(2)}%` : r;
   }
@@ -1649,7 +1542,7 @@ class FSRS extends FSRSAlgorithm {
     const processedCard = TypeConvert.card(card);
     const processedLog = TypeConvert.review_log(log);
     if (processedLog.rating === Rating.Manual) {
-      throw new Error("Cannot rollback a manual rating");
+      throw new Error('Cannot rollback a manual rating');
     }
     let last_due;
     let last_review;
@@ -1665,7 +1558,8 @@ class FSRS extends FSRSAlgorithm {
       case State.Review:
         last_due = processedLog.review;
         last_review = processedLog.due;
-        last_lapses = processedCard.lapses - (processedLog.rating === Rating.Again && processedLog.state === State.Review ? 1 : 0);
+        last_lapses =
+          processedCard.lapses - (processedLog.rating === Rating.Again && processedLog.state === State.Review ? 1 : 0);
         break;
     }
     const prevCard = {
@@ -1681,7 +1575,7 @@ class FSRS extends FSRSAlgorithm {
       state: processedLog.state,
       last_review
     };
-    if (afterHandler && typeof afterHandler === "function") {
+    if (afterHandler && typeof afterHandler === 'function') {
       return afterHandler(prevCard);
     } else {
       return prevCard;
@@ -1741,7 +1635,7 @@ class FSRS extends FSRSAlgorithm {
   forget(card, now, reset_count = false, afterHandler) {
     const processedCard = TypeConvert.card(card);
     now = TypeConvert.time(now);
-    const scheduled_days = processedCard.state === State.New ? 0 : date_diff(now, processedCard.due, "days");
+    const scheduled_days = processedCard.state === State.New ? 0 : date_diff(now, processedCard.due, 'days');
     const forget_log = {
       rating: Rating.Manual,
       state: processedCard.state,
@@ -1768,7 +1662,7 @@ class FSRS extends FSRSAlgorithm {
       last_review: processedCard.last_review
     };
     const recordLogItem = { card: forget_card, log: forget_log };
-    if (afterHandler && typeof afterHandler === "function") {
+    if (afterHandler && typeof afterHandler === 'function') {
       return afterHandler(recordLogItem);
     } else {
       return recordLogItem;
@@ -1820,17 +1714,14 @@ class FSRS extends FSRSAlgorithm {
       now = /* @__PURE__ */ new Date(),
       update_memory_state: updateMemoryState = false
     } = options;
-    if (reviewsOrderBy && typeof reviewsOrderBy === "function") {
+    if (reviewsOrderBy && typeof reviewsOrderBy === 'function') {
       reviews.sort(reviewsOrderBy);
     }
     if (skipManual) {
       reviews = reviews.filter((review) => review.rating !== Rating.Manual);
     }
     const rescheduleSvc = new Reschedule(this);
-    const collections = rescheduleSvc.reschedule(
-      options.first_card || createEmptyCard(),
-      reviews
-    );
+    const collections = rescheduleSvc.reschedule(options.first_card || createEmptyCard(), reviews);
     const len = collections.length;
     const cur_card = TypeConvert.card(current_card);
     const manual_item = rescheduleSvc.calculateManualRecord(
@@ -1839,7 +1730,7 @@ class FSRS extends FSRSAlgorithm {
       len ? collections[len - 1] : void 0,
       updateMemoryState
     );
-    if (recordLogHandler && typeof recordLogHandler === "function") {
+    if (recordLogHandler && typeof recordLogHandler === 'function') {
       return {
         collections: collections.map(recordLogHandler),
         reschedule_item: manual_item ? recordLogHandler(manual_item) : null
@@ -1901,5 +1792,5 @@ exports.get_fuzz_range = get_fuzz_range;
 exports.migrateParameters = migrateParameters;
 exports.roundTo = roundTo;
 exports.show_diff_message = show_diff_message;
-module.exports = Object.assign(exports.default || {}, exports)
+module.exports = Object.assign(exports.default || {}, exports);
 //# sourceMappingURL=index.cjs.map
