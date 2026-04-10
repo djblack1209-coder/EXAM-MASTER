@@ -432,6 +432,7 @@ import { initTheme, toggleTheme, onThemeUpdate, offThemeUpdate } from '@/composa
 import { useTracking } from '@/composables/useTracking.js';
 // ✅ 统一日志工具（生产环境自动禁用）
 import { logger } from '@/utils/logger.js';
+import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { throttle } from '@/utils/throttle.js';
 // ✅ F002: Mixin 已全部迁移为 Composables
@@ -870,7 +871,9 @@ export default {
     this.startStudyTimer();
 
     // ✅ [闭环核心] 加载今日复习数量
-    this.loadReviewPending();
+    if (isUserLoggedIn()) {
+      this.loadReviewPending();
+    }
 
     // ✅ [零摩擦] 每次回到首页检测未完成进度
     this.checkUnfinishedProgress();
@@ -879,11 +882,13 @@ export default {
     this.loadRecommendedTopic();
 
     // [FSRS] 参数同步（非阻塞，动态导入）
-    safeImport(import('@/pages/practice-sub/services/fsrs-optimizer-client.js'))
-      .then(({ syncFSRSParams }) => syncFSRSParams())
-      .catch(() => {
-        /* 静默降级 */
-      });
+    if (isUserLoggedIn()) {
+      safeImport(import('@/pages/practice-sub/services/fsrs-optimizer-client.js'))
+        .then(({ syncFSRSParams }) => syncFSRSParams())
+        .catch(() => {
+          /* 静默降级 */
+        });
+    }
 
     // 微信订阅消息：智能请求授权（每天最多一次，动态导入）
     safeImport(import('@/services/subscribe-message.js'))
