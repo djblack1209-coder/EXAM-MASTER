@@ -13,7 +13,7 @@ async function clickVisible(locator) {
 }
 
 async function openEmailForm(page) {
-  await clickVisible(page.getByText('邮箱登录/注册', { exact: false }).first());
+  await clickVisible(page.locator('#e2e-login-email-entry').first());
   await expect(page.locator('#e2e-login-email').first()).toBeVisible({ timeout: 10_000 });
 }
 

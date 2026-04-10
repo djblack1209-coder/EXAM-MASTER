@@ -236,11 +236,12 @@
 
       <!-- 邮箱登录入口 -->
       <view
+        id="e2e-login-email-entry"
         v-else
         class="login-btn email-btn"
         hover-class="btn-hover"
-        @tap="showEmailForm = true"
-        @click="showEmailForm = true"
+        @tap="openEmailForm"
+        @click="openEmailForm"
       >
         <view class="btn-icon email-icon">
           <BaseIcon name="email" :size="36" />
@@ -351,6 +352,10 @@ const toggleRegister = () => {
   emailForm.value.code = '';
   showLoginPassword.value = false;
   showRegisterPassword.value = false;
+};
+
+const openEmailForm = () => {
+  showEmailForm.value = true;
 };
 
 const enterCodeCooldownFallback = (seconds = 60) => {

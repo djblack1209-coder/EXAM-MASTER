@@ -71,12 +71,26 @@ function show(options = {}) {
       confirmColor: options.confirmColor || '#34C759',
       cancelColor: options.cancelColor || '#8E8E93',
       success: (res) => {
+        if (typeof options.success === 'function') {
+          try {
+            options.success(res);
+          } catch {
+            // 兼容旧回调风格，避免单个业务回调异常阻断弹窗结果返回
+          }
+        }
         resolve({
           confirm: !!res.confirm,
           cancel: !!res.cancel
         });
       },
       fail: () => {
+        if (typeof options.fail === 'function') {
+          try {
+            options.fail();
+          } catch {
+            // 兼容旧回调风格，失败时保持静默返回
+          }
+        }
         resolve({ confirm: false, cancel: true });
       }
     });
