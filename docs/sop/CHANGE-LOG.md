@@ -14,6 +14,16 @@
 
 ---
 
+## [2026-04-10] 第26轮价值位阶审计 — P0阻断修复 + 核心回归链路校准
+
+- **Scope**: `frontend` `backend` `infra` `testing` `docs`
+- **Files Changed**: `.env.development`, `laf-backend/package.json`, `laf-backend/tsconfig.standalone.json`, `laf-backend/functions/_shared/ts-fsrs-bundle.ts`, `laf-backend/functions/_shared/ts-fsrs-bundle-types.ts`, `laf-backend/functions/_shared/fsrs-scheduler.ts`, `laf-backend/functions/fsrs-optimizer.ts`, `src/pages/practice-sub/invite-deep-link.js`, `src/composables/useHomeReview.js`, `src/pages/index/index.vue`, `src/utils/modal.js`, `src/pages/login/index.vue`, `tests/e2e-regression/fixtures/regression.fixture.js`, `tests/e2e-regression/specs/11-login-and-import-precision.spec.js`
+- **Summary**: 按价值位阶先清理发布前阻断与高风险链路。修复 `laf-backend` TypeScript 编译器损坏与 standalone 编译配置失配，恢复后端本地编译检查；收紧 PK 邀请码校验，禁止网络异常或后端未实现时按格式直接放行；修正开发环境主后端地址，避免首页继续命中已失效的腾讯云域名；收口首页未登录时的无意义复习计划/FSRS 参数请求；为 `modal` 工具补回旧回调兼容，修复设置页清缓存、目标院校删除、账号注销确认等交互确认后不执行的问题；校准 E2E 登录注册回归，将过宽的 `**/login*` mock 收紧为真实接口 `**/login`，恢复邮箱注册验证码倒计时与注册成功链路的真实性。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed | `npm run build:mp-weixin` passed | `cd laf-backend && npx tsc --project tsconfig.standalone.json` passed | `npm run test:e2e:regression -- --grep "login|index|practice|school|settings"` 11 passed / 1 skipped / 3 failed 后续已逐项修复，其中 `PROFILE-SET-003`、`PROFILE-SET-004`、`PREC-002`、`PREC-003` 复跑全部通过
+
+---
+
 ## [2026-04-08] 遗留问题全量修复 + QA夜间测试彻底治理（R476-R479）
 
 - **Scope**: `infra` `frontend` `security` `docs`

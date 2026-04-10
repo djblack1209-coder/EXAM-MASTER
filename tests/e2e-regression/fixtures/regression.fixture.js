@@ -71,6 +71,40 @@ class AppDriver {
     });
   }
 
+  async clearSession() {
+    await this.page.addInitScript(() => {
+      const prefix = '__exam_storage__:';
+      const keysToRemove = [];
+
+      for (let i = 0; i < localStorage.length; i += 1) {
+        const key = localStorage.key(i);
+        if (!key) continue;
+        if (
+          key.startsWith(prefix) ||
+          key.startsWith('EXAM_') ||
+          key.startsWith('u_') ||
+          key === 'redirect_after_login'
+        ) {
+          keysToRemove.push(key);
+        }
+      }
+
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
+
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.clear();
+      }
+
+      try {
+        if (typeof uni !== 'undefined' && typeof uni.clearStorageSync === 'function') {
+          uni.clearStorageSync();
+        }
+      } catch {
+        // ignore compat cleanup failures in e2e
+      }
+    });
+  }
+
   async setStorage(key, value) {
     if (!/^https?:/i.test(this.page.url())) {
       await this.page.goto('/#/pages/index/index');

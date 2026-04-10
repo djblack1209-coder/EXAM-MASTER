@@ -35,6 +35,8 @@ test.describe('A2-登录与资料导入精细回归', () => {
   });
 
   test('PREC-002 邮箱注册发送验证码后显示倒计时并可成功注册', async ({ app, page }) => {
+    await app.clearSession();
+
     await page.route('**/send-email-code*', async (route) => {
       await route.fulfill({
         status: 200,
@@ -43,7 +45,7 @@ test.describe('A2-登录与资料导入精细回归', () => {
       });
     });
 
-    await page.route('**/login*', async (route) => {
+    await page.route('**/login', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -80,6 +82,8 @@ test.describe('A2-登录与资料导入精细回归', () => {
   });
 
   test('PREC-003 验证码发送后按钮进入倒计时而不是假死', async ({ app, page }) => {
+    await app.clearSession();
+
     await page.route('**/send-email-code*', async (route) => {
       await route.fulfill({
         status: 200,
