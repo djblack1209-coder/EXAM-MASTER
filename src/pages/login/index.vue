@@ -236,8 +236,8 @@
 
       <!-- 邮箱登录入口 -->
       <view
-        id="e2e-login-email-entry"
         v-else
+        id="e2e-login-email-entry"
         class="login-btn email-btn"
         hover-class="btn-hover"
         @tap="openEmailForm"
