@@ -391,21 +391,9 @@ export async function validateInviteCode(code, roomId) {
       return true;
     }
 
-    // 后端未实现该 action 时，降级为格式校验：
-    // 邀请码长度正确且仅含合法字符（字母数字）即视为格式有效
-    if (res?.code === 400 && res?.message?.includes('未知')) {
-      logger.warn('[InviteDeepLink] 后端无 validate_invite_code，降级为格式校验');
-      return /^[A-Z0-9]+$/.test(code);
-    }
-
     return false;
   } catch (error) {
     logger.error('[InviteDeepLink] Validate error:', error);
-    // 网络异常时降级为格式校验，避免阻塞用户流程
-    if (code && code.length === CONFIG.codeLength && /^[A-Z0-9]+$/.test(code)) {
-      logger.warn('[InviteDeepLink] 网络异常，降级为格式校验');
-      return true;
-    }
     return false;
   }
 }

@@ -90,18 +90,16 @@ describe('invite-deep-link security', () => {
     });
   });
 
-  it('validateInviteCode calls backend API, falls back to format validation on error', async () => {
+  it('validateInviteCode rejects on network error instead of falling back to format-only pass', async () => {
     const { mod, logger } = await loadInviteModule({
       inviteSecret: 'test_invite_secret',
       enableMock: false
     });
 
-    // lafService.request 在测试环境会抛出错误
-    // catch 分支对格式合法的邀请码降级为格式校验，返回 true
     const valid = await mod.validateInviteCode('ABCD1234', 'room_1');
 
-    expect(valid).toBe(true);
-    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('降级为格式校验'));
+    expect(valid).toBe(false);
+    expect(logger.warn).not.toHaveBeenCalledWith(expect.stringContaining('降级为格式校验'));
   });
 
   it('validateInviteCode returns false for invalid format code on error', async () => {

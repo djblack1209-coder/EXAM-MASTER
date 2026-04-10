@@ -68,6 +68,9 @@ deploy/k8s/secrets.yaml
 # OpenCode
 .opencode/
 
+# Git worktrees
+.worktrees/
+
 # Sensitive files / certificates
 *.pem
 *.key

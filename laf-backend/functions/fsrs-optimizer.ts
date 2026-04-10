@@ -16,10 +16,12 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { fsrs, generatorParameters, State, createEmptyCard, type Grade, type RecordLogItem } from './_shared/ts-fsrs-bundle';
 import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import { generateRequestId, createLogger, checkRateLimitDistributed } from './_shared/api-response';
 import type { UserFSRSParams, ReviewLogRecord } from './_shared/fsrs-scheduler';
+import type { FSRSBundleExports, Grade, RecordLogItem } from './_shared/ts-fsrs-bundle-types';
+
+const { fsrs, generatorParameters, State, createEmptyCard } = require('./_shared/ts-fsrs-bundle') as FSRSBundleExports;
 
 const db = cloud.database();
 const logger = createLogger('[FSRSOptimizer]');
