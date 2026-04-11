@@ -844,9 +844,6 @@ export default {
   onShow() {
     // 原生 tabBar 已移除，无需隐藏
     // uni.hideTabBar({ animation: false });
-    // F005: 通知 CustomTabbar 重新检测路由
-    uni.$emit('tabbarRouteUpdate');
-
     // 重新注册登录状态监听（onHide 中已清理，防止累积）
     if (!this._loginHandler) {
       this._loginHandler = (isLoggedIn) => {

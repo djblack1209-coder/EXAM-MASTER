@@ -288,8 +288,7 @@ export const todoStorePatch = {
       cancelText: '稍后',
       success: (res) => {
         if (res.confirm) {
-          // 标记完成
-          uni.$emit('todo:complete', todo.id);
+          // 标记完成（事件已移除，后续可接入 store 方法）
         } else {
           // 延后提醒（15分钟后）
           setTimeout(

@@ -315,6 +315,19 @@
         </view>
       </view>
 
+      <!-- 学习资源 -->
+      <view class="menu-item" @tap="goToResource">
+        <view class="menu-icon">
+          <image class="feature-cartoon-icon" src="/static/icons/open-book.png" mode="aspectFit" alt="学习资源" />
+        </view>
+        <view class="menu-info">
+          <view class="menu-title"> 学习资源 </view>
+        </view>
+        <view class="menu-arrow">
+          <BaseIcon name="chevron-right" :size="24" class="arrow" />
+        </view>
+      </view>
+
       <!-- Anki 导出 -->
       <view class="menu-item" @tap="exportAnki">
         <view class="menu-icon">
@@ -587,9 +600,6 @@ export default {
   },
   async onShow() {
     // 原生 tabBar 已移除，无需隐藏
-    // F005: 通知 CustomTabbar 重新检测路由
-    uni.$emit('tabbarRouteUpdate');
-
     // 每次显示页面时重新读取主题状态
     this.isDark = initTheme();
     logger.log('[practice] onShow 刷新主题:', this.isDark);
@@ -907,6 +917,11 @@ export default {
         toast.hide();
         toast.info('导出失败');
       }
+    },
+
+    // 学习资源入口
+    goToResource() {
+      safeNavigateTo('/pages/resource/index');
     },
 
     // Phase 3-3: 考研题库入口

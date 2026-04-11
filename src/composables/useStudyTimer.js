@@ -19,7 +19,6 @@ export function useStudyTimer() {
   const sessionStartTime = ref(null);
 
   // 内部变量（不需要暴露给模板）
-  let _studyTimeHandler = null;
   let _appHideHandler = null;
 
   // ---- methods → 普通函数 ----
@@ -82,19 +81,6 @@ export function useStudyTimer() {
       todayStudyTime.value = Math.floor(savedTime);
     }
 
-    if (_studyTimeHandler) {
-      uni.$off('studyTimeUpdate', _studyTimeHandler);
-    }
-
-    // 监听刷题页面的计时事件
-    _studyTimeHandler = (data) => {
-      if (data && typeof data.minutes === 'number') {
-        todayStudyTime.value = Math.floor(data.minutes);
-        logger.log('[useStudyTimer] 收到学习时长更新:', todayStudyTime.value, '分钟');
-      }
-    };
-    uni.$on('studyTimeUpdate', _studyTimeHandler);
-
     logger.log('[useStudyTimer] 计时器状态检查，今日:', todayStudyTime.value, '分钟');
   }
 
@@ -109,10 +95,6 @@ export function useStudyTimer() {
     saveStudyTime();
     storageService.remove('session_start_time');
     storageService.remove('last_active_time');
-    if (_studyTimeHandler) {
-      uni.$off('studyTimeUpdate', _studyTimeHandler);
-      _studyTimeHandler = null;
-    }
     // 清理 onAppHide 监听
     if (_appHideHandler && uni.offAppHide) {
       uni.offAppHide(_appHideHandler);

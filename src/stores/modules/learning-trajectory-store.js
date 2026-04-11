@@ -48,7 +48,6 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', () =
 
   // 内部变量（非响应式，不暴露给外部）
   let _debouncedSaveTrajectory = () => saveTrajectory();
-  let _bubbleClickHandler = null;
 
   // ==================== 计算属性 ====================
 
@@ -255,10 +254,6 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', () =
         }, 2000);
       };
 
-      // 监听气泡点击事件
-      _bubbleClickHandler = handleBubbleClick;
-      uni.$on('bubble:clicked', _bubbleClickHandler);
-
       logger.log('[LearningTrajectory] 初始化完成');
     } catch (e) {
       logger.error('[LearningTrajectory] 初始化失败:', e);
@@ -398,10 +393,6 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', () =
 
   /** 销毁store，清理事件监听（防止内存泄漏） */
   function destroy() {
-    if (_bubbleClickHandler) {
-      uni.$off('bubble:clicked', _bubbleClickHandler);
-      _bubbleClickHandler = null;
-    }
     isInitialized.value = false;
   }
 

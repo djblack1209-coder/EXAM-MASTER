@@ -657,8 +657,6 @@ export default {
     // uni.hideTabBar({
     // 	animation: false
     // });
-    // F005: 通知 CustomTabbar 重新检测路由
-    uni.$emit('tabbarRouteUpdate');
   },
   onUnload() {
     // 移除事件监听

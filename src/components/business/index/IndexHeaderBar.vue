@@ -108,9 +108,6 @@ function doSearch() {
     storageService.save('search_keyword', keyword);
     uni.switchTab({
       url: '/pages/practice/index',
-      success: () => {
-        uni.$emit('searchResults', { keyword, count: results.length });
-      },
       fail: () => uni.reLaunch({ url: '/pages/practice/index' })
     });
   } else {

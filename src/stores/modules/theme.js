@@ -28,9 +28,6 @@ export const useThemeStore = defineStore('theme', () => {
     themeType.value = type;
     storageService.save('theme_type', type);
 
-    // 触发全局主题更新事件
-    uni.$emit('themeTypeUpdate', type);
-
     logger.log('[ThemeStore] 主题已切换至:', type);
   };
 
@@ -48,7 +45,6 @@ export const useThemeStore = defineStore('theme', () => {
 
     // 触发全局深色模式更新事件
     uni.$emit('themeUpdate', dark ? 'dark' : 'light');
-    uni.$emit('themeTypeUpdate', themeType.value);
 
     logger.log('[ThemeStore] 深色模式:', dark ? '开启 (Bitget)' : '关闭 (Wise)');
   };
