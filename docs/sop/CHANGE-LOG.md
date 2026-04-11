@@ -14,6 +14,27 @@
 
 ---
 
+## [2026-04-11] 学习小组 + 学习资源页面上线（P3+P4）
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **新建 API 服务层**:
+    - `src/services/api/domains/group.api.js` — 封装后端 `group-service` 云函数 7 个接口（create_group/join_group/get_groups/get_group_detail/leave_group/share_resource/get_resources）
+    - `src/services/api/domains/resource.api.js` — 封装后端 `learning-resource` 云函数 10 个接口（getRecommendations/getHotResources/getByCategory/search/favorite/getUserFavorites/recordProgress/getStats/getCategories/getSubjects）
+  - **新建 Pinia Store**:
+    - `src/stores/modules/group.js` — 学习小组状态中心，管理我的小组/发现小组/小组详情/资源列表
+    - `src/stores/modules/resource.js` — 学习资源状态中心，管理推荐/热门/分类浏览/搜索/收藏
+  - **新建页面**:
+    - `src/pages/group/index.vue` (1309行) — 学习小组页面：双标签页（我的小组/发现小组），小组卡片（名称/成员数/描述/标签），创建小组弹窗，详情模式（成员列表/共享资源/退出），骨架屏/暗色模式
+    - `src/pages/resource/index.vue` (1069行) — 学习资源页面：搜索栏（防抖500ms），横向分类标签（6类），学科筛选药丸（4科），推荐区+热门区（金银铜排名），资源卡片（标题/描述/分类彩色徽章/浏览量），搜索模式，骨架屏/暗色模式
+  - **路由注册**:
+    - `src/pages.json` — 新增 `pages/group` 和 `pages/resource` 两个分包
+- **Summary**: 将后端最后 2 个闲置云函数（group-service 719行 + learning-resource 793行）全部接入前端。新建 2 个完整页面（共 2378 行），用户可以创建/加入学习小组与同学协作备考，浏览/搜索/收藏学习资源。至此后端 6 个闲置云函数已全部接入前端。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-11] 邀请奖励系统接入 + 重复文件清理（P2+P5）
 
 - **Scope**: `frontend`

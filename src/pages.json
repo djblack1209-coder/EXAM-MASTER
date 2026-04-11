@@ -414,6 +414,32 @@
       ]
     },
     {
+      "root": "pages/group",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "学习小组",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/resource",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "学习资源",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#1A1A1A"
+          }
+        }
+      ]
+    },
+    {
       "root": "pages/common",
       "pages": [
         {

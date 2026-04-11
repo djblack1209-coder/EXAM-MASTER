@@ -38,14 +38,14 @@
 - **技术栈**: uni-app (Vue 3.4) + Express/PM2 + MongoDB
 - **平台**: 微信小程序(主), QQ小程序, H5(PWA), App, Electron
 - **前端**: JavaScript | **后端**: TypeScript (云函数) | **Node**: >= 20.17.0
-- **规模**: 36页面 / 53组件 / 16 Store / 18 Composable / 42云函数
+- **规模**: 38页面 / 53组件 / 18 Store / 18 Composable / 42云函数
 - **测试**: 89文件 / 1137用例 | **状态**: 生产环境
 
 ## 架构
 
 ```
 用户 → 微信小程序 / H5 / Electron
-    uni-app Vue 3 → 53组件 → 16 Pinia Store
+    uni-app Vue 3 → 53组件 → 18 Pinia Store
     → Service层 (api/domains/*.api.js → _request-core.js)
         ├─ 主: https://nf98ia8qnt.sealosbja.site (Sealos Laf 42云函数)
         └─ 备: https://api.245334.xyz (腾讯云 Nginx→PM2:3001→MongoDB, ICP备案中)
