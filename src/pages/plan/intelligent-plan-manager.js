@@ -3,7 +3,7 @@
 
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { getComprehensiveReport, getStreakData } from './utils/learning-analytics.js';
+import { getComprehensiveReport, getStreakData } from '../practice-sub/utils/learning-analytics.js';
 
 class IntelligentPlanManager {
   constructor() {
