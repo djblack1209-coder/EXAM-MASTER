@@ -846,8 +846,14 @@ function deletePlan(planId) {
 .plan-meta-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
   margin-bottom: 22rpx;
+}
+.plan-meta-grid > view:nth-child(even) {
+  margin-left: 16rpx;
+}
+.plan-meta-grid > view:nth-child(n + 3) {
+  margin-top: 16rpx;
 }
 
 .meta-item,

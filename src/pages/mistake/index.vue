@@ -778,9 +778,15 @@ onUnload(() => {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
   padding: 0 30rpx;
   margin-bottom: 30rpx;
+}
+.stats-grid > view:nth-child(even) {
+  margin-left: 24rpx;
+}
+.stats-grid > view:nth-child(n + 3) {
+  margin-top: 24rpx;
 }
 
 .container {

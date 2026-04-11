@@ -127,6 +127,7 @@
             class="combo-fire-badge"
             src="/static/effects/combo-fire.png"
             mode="aspectFit"
+            alt=""
           />
         </view>
 

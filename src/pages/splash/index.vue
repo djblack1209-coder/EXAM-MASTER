@@ -295,9 +295,12 @@ onBeforeUnmount(() => {
   position: absolute;
   bottom: 100px;
   display: flex;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
   opacity: 0;
   animation: fadeIn 0.4s ease-out 1s forwards;
+}
+.loading-dots > view + view {
+  margin-left: 8px;
 }
 
 .dot {
