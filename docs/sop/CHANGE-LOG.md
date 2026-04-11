@@ -14,6 +14,28 @@
 
 ---
 
+## [2026-04-11] 后端对接 — 收藏云端同步 + 用户统计接入（P0+P1）
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **新建 API 服务层**:
+    - `src/services/api/domains/favorite.api.js` — 封装后端 `favorite-manager` 云函数 8 个接口（add/get/remove/check/batchAdd/batchRemove/getCategories/getByCategory）
+    - `src/services/api/domains/stats.api.js` — 封装后端 `user-stats` 云函数 6 个接口（getOverview/getDailyStats/getTrend/recordStudyTime/updateStreak/getRankInfo）
+  - **新建 Pinia Store**:
+    - `src/stores/modules/favorite.js` — 收藏状态中心，已登录走后端 API / 未登录走本地 storageService，首次登录自动迁移本地收藏到云端（`syncLocalToCloud`），含字段映射（后端 snake_case ↔ 前端 camelCase）
+    - `src/stores/modules/stats.js` — 用户统计状态中心，overview 缓存 5 分钟 / trend 缓存 10 分钟，未登录返回空数据不报错
+  - **页面改造（分层违规修复）**:
+    - `src/pages/favorite/index.vue` — `import { getFavorites, ... } from question-favorite.js` → `useFavoriteStore()`，loadData/createFolder/moveToFolder/removeFavorite/updateNote 全部走 Store
+    - `src/pages/practice-sub/do-quiz.vue` — `import { toggleFavorite, isFavorited }` → `useFavoriteStore()`，handleToggleFavorite 和 updateFavoriteStatus 改为 async 走 Store
+    - `src/pages/practice/index.vue` — `import { getFavorites }` → `useFavoriteStore()`，hydrateMainPackageStats 改为 Store.loadStats()
+    - `src/pages/profile/index.vue` — 新增 `useStatsStore()`，studyDays/accuracyRate 计算属性优先使用后端数据，loadData 中异步拉取 fetchOverview
+    - `src/pages/study-detail/index.vue` — 新增 `useStatsStore()`，loadStudyData 改为 async 优先后端→降级本地，新增 `_loadDailyFromBackend` 用后端每日统计填充热力图
+- **Summary**: 将后端已有的 2 个完整云函数（favorite-manager 581行 + user-stats 390行，共 ~970 行后端代码）接入前端。收藏数据从"仅存手机本地（换机即丢）"升级为"云端持久化+离线降级"；用户统计从"本地散算"升级为"服务器聚合+跨设备同步"。全部遵守分层纪律：Page → Store → API Service → 后端。
+- **Breaking Changes**: 无（离线降级保证向后兼容，未登录用户行为完全不变）
+- **Quality Gate**: `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-10] 第26轮价值位阶审计 — P0阻断修复 + 核心回归链路校准
 
 - **Scope**: `frontend` `backend` `infra` `testing` `docs`
