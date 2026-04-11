@@ -10,8 +10,8 @@
 
     <!-- 图标/插图区域 -->
     <image
-      v-if="illustration"
-      :src="illustration"
+      v-if="effectiveIllustration"
+      :src="effectiveIllustration"
       class="empty-state__illustration"
       mode="aspectFit"
       lazy-load
@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue';
+import { ref, computed, onBeforeUnmount } from 'vue';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { logger } from '@/utils/logger.js';
@@ -108,17 +108,18 @@ import storageService from '@/services/storageService.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
 // ==================== Props 定义 ====================
-defineProps({
+const props = defineProps({
   /**
    * 组件类型
    * - simple: 简单空状态（默认）
    * - guide: 引导空状态
    * - home: 首页空状态（3个按钮）
+   * - search: 搜索空状态
    */
   type: {
     type: String,
     default: 'simple',
-    validator: (v) => ['simple', 'guide', 'home'].includes(v)
+    validator: (v) => ['simple', 'guide', 'home', 'search'].includes(v)
   },
 
   /**
@@ -208,6 +209,20 @@ defineProps({
 
 // ==================== Emits 定义 ====================
 const emit = defineEmits(['action', 'upload', 'quickStart', 'tutorial']);
+
+// ==================== 计算属性 ====================
+/**
+ * 根据组件类型自动匹配默认插图
+ * 优先使用外部传入的 illustration prop，否则使用类型默认插图
+ */
+const effectiveIllustration = computed(() => {
+  if (props.illustration) return props.illustration;
+  const defaults = {
+    home: '/static/illustrations/empty-journey.png',
+    search: '/static/illustrations/empty-search.png'
+  };
+  return defaults[props.type] || '';
+});
 
 // ==================== 响应式状态 ====================
 /** 导航定时器ID */

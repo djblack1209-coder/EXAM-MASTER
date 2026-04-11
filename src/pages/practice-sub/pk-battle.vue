@@ -7,7 +7,7 @@
       <!-- PK对战等待插画 -->
       <image
         class="pk-waiting-illustration"
-        src="./static/illustrations/pk-waiting.png"
+        src="/static/illustrations/pk-waiting.png"
         mode="aspectFit"
         lazy-load
         alt="PK对战匹配中"
