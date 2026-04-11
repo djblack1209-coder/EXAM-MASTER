@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-04-11 (全面遗留任务清理 — 导航入口/死代码/CSS兼容/无障碍) | Maintainer: AI-SOP
+> Last updated: 2026-04-11 (登出缓存清理 + 首页学习小组/资源入口) | Maintainer: AI-SOP
 
 ## Deployment Status
 

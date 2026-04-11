@@ -14,6 +14,18 @@
 
 ---
 
+## [2026-04-11] 登出缓存清理 + 首页学习小组/资源入口
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - `src/stores/modules/auth.js` — logout 函数新增 stats/favorite/invite 三个 Store 的缓存清理（动态 import + 自调用 async 包装，不改变 logout 同步签名）
+  - `src/pages/index/index.vue` — 备考工具箱 grid 新增「学习小组」「学习资源」两个入口卡片（crossed-swords.png / bookmark-save.png），methods 新增 goToGroup / goToResource
+- **Summary**: 修复用户切换账号时 stats/favorite/invite Store 缓存未清理导致的数据泄露风险；首页备考工具箱新增学习小组和学习资源两个功能入口，用户可直接从首页进入。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm run lint` passed | `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-11] 图标修复/预加载/登录同步/Options API迁移
 
 - **Scope**: `frontend` `testing`
