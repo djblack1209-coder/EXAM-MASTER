@@ -429,7 +429,7 @@ import { storageService } from '@/services/storageService.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { QUOTE_LIBRARY } from '@/config/home-data.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
-import { getFavorites } from '@/utils/favorite/question-favorite.js';
+import { useFavoriteStore } from '@/stores/modules/favorite.js';
 // adaptive-learning-engine.js — 动态导入减小主包体积（18KB）
 // study.api.js 动态导入 — 避免拖进主包
 // learning-analytics 动态导入 — 避免 16KB 拖进主包
@@ -748,8 +748,9 @@ export default {
 
     async hydrateMainPackageStats() {
       try {
-        const favorites = getFavorites();
-        this.favoriteCount = Array.isArray(favorites) ? favorites.length : 0;
+        const favoriteStore = useFavoriteStore();
+        favoriteStore.loadStats();
+        this.favoriteCount = favoriteStore.totalCount;
       } catch (e) {
         logger.warn('[practice] 预加载收藏统计失败:', e);
       }

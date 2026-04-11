@@ -453,8 +453,8 @@ import {
 import { analytics } from '@/utils/analytics/event-bus-analytics.js';
 import { getStatusBarHeight, getWindowInfo } from '@/utils/core/system.js';
 // ✅ 检查点 5.3: 自适应学习引擎（懒加载：仅在 isAdaptiveMode 时动态导入）
-// ✅ 导入题目收藏模块
-import { toggleFavorite, isFavorited } from '@/utils/favorite/question-favorite.js';
+// ✅ 导入题目收藏模块（通过 Store，自动走后端或本地）
+import { useFavoriteStore } from '@/stores/modules/favorite.js';
 // ✅ [P3] FSRS复习日程预览
 import { scheduleMistakeReview } from './utils/mistake-fsrs-scheduler.js';
 // ✅ 导入滑动手势模块
@@ -1752,12 +1752,13 @@ export default {
 
     // ==================== 收藏功能相关方法 ====================
 
-    // ✅ 切换收藏状态
-    handleToggleFavorite() {
+    // ✅ 切换收藏状态（通过 Store，登录时走后端）
+    async handleToggleFavorite() {
       if (!this.currentQuestion) return;
 
-      const result = toggleFavorite(this.currentQuestion);
-      this.isCurrentFavorited = !this.isCurrentFavorited;
+      const favoriteStore = useFavoriteStore();
+      const result = await favoriteStore.toggleFavorite(this.currentQuestion);
+      this.isCurrentFavorited = result.isFavorited;
 
       // 震动反馈
       try {
@@ -1772,9 +1773,12 @@ export default {
     },
 
     // ✅ 更新当前题目的收藏状态
-    updateFavoriteStatus() {
+    async updateFavoriteStatus() {
       if (this.currentQuestion) {
-        this.isCurrentFavorited = isFavorited(this.currentQuestion.id || this.currentQuestion.question);
+        const favoriteStore = useFavoriteStore();
+        this.isCurrentFavorited = await favoriteStore.checkIsFavorited(
+          this.currentQuestion.id || this.currentQuestion.question
+        );
       }
     },
 
