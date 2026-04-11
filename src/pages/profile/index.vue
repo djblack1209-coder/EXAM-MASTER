@@ -571,6 +571,8 @@ function loadData() {
     loadBadges();
     // 检查点4.4: 加载打卡数据
     loadCheckinData();
+    // P1: 从后端拉取统计数据（已登录时走后端，未登录时返回空数据）
+    statsStore.fetchOverview();
   } catch (error) {
     logger.error('[Profile] loadData error:', error);
     // P007: 提供用户反馈
