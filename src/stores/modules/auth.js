@@ -165,10 +165,6 @@ export const useAuthStore = defineStore('auth', () => {
       uni.$emit('auth:restore', { cachedUserInfo, cachedUserId });
     }
 
-    // 恢复 VIP 和邀请信息
-    uni.$emit('vip:restore');
-    uni.$emit('invite:restore');
-
     syncLoginStatus();
   };
 

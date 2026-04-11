@@ -178,7 +178,6 @@ const GLOBAL_KEYS = new Set([
   'wx_oauth_state',
   'qq_oauth_state',
   'qq_oauth_origin',
-  'invite_info',
   // 应用级 UI/设置
   'theme_mode',
   'theme_type',

@@ -317,6 +317,30 @@
           <!-- 分隔线 -->
           <view class="menu-divider" />
 
+          <!-- 学习小组 -->
+          <view class="menu-item" hover-class="menu-hover" @tap="goToGroup">
+            <view class="menu-icon-box">
+              <image class="feature-cartoon-icon" src="/static/icons/team-group.png" mode="aspectFit" alt="学习小组" />
+            </view>
+            <text class="menu-text"> 学习小组 </text>
+            <BaseIcon name="chevron-right" :size="24" class="menu-arrow" />
+          </view>
+
+          <!-- 分隔线 -->
+          <view class="menu-divider" />
+
+          <!-- 学习资源 -->
+          <view class="menu-item" hover-class="menu-hover" @tap="goToResource">
+            <view class="menu-icon-box">
+              <image class="feature-cartoon-icon" src="/static/icons/open-book.png" mode="aspectFit" alt="学习资源" />
+            </view>
+            <text class="menu-text"> 学习资源 </text>
+            <BaseIcon name="chevron-right" :size="24" class="menu-arrow" />
+          </view>
+
+          <!-- 分隔线 -->
+          <view class="menu-divider" />
+
           <!-- 系统设置 -->
           <view id="e2e-profile-menu-settings" class="menu-item" hover-class="menu-hover" @tap="navToSettings">
             <view class="menu-icon-box">
@@ -959,6 +983,14 @@ function navToStudyDetail() {
   requireLogin(() => safeNavigateTo('/pages/study-detail/index'), { message: '请先登录后查看学习详情' });
 }
 
+function goToGroup() {
+  safeNavigateTo('/pages/group/index');
+}
+
+function goToResource() {
+  safeNavigateTo('/pages/resource/index');
+}
+
 function navToSettings() {
   safeNavigateTo('/pages/settings/index');
 }
@@ -1061,8 +1093,6 @@ onMounted(async () => {
 
 onShow(() => {
   // 原生 tabBar 已移除，无需隐藏
-  // F005: 通知 CustomTabbar 重新检测路由
-  uni.$emit('tabbarRouteUpdate');
   // 每次进入页面强制刷新主题状态
   initTheme();
 
@@ -1507,13 +1537,23 @@ onBeforeUnmount(() => {
   background: rgba(88, 204, 2, 0.12);
 }
 
-/* 系统设置 — 设置类：蓝色 */
+/* 学习小组 — 社交类：橙色 */
 .menu-item:nth-child(5) .menu-icon-box {
+  background: rgba(255, 150, 0, 0.12);
+}
+
+/* 学习资源 — 知识类：紫色 */
+.menu-item:nth-child(7) .menu-icon-box {
+  background: rgba(155, 81, 224, 0.12);
+}
+
+/* 系统设置 — 设置类：蓝色 */
+.menu-item:nth-child(9) .menu-icon-box {
   background: rgba(28, 176, 246, 0.12);
 }
 
-/* 意见反馈 — 社交类：红色 */
-.menu-item:nth-child(7) .menu-icon-box {
+/* 意见反馈 — 反馈类：红色 */
+.menu-item:nth-child(11) .menu-icon-box {
   background: rgba(255, 75, 75, 0.12);
 }
 
