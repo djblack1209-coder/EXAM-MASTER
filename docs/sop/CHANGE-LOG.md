@@ -14,6 +14,19 @@
 
 ---
 
+## [2026-04-11] 图标修复/预加载/登录同步/Options API迁移
+
+- **Scope**: `frontend` `testing`
+- **Files Changed**:
+  - **图标修复**: `profile/index.vue`(team-group→crossed-swords, open-book→bookmark-save) `practice/index.vue`(open-book→doc-convert)
+  - **预加载规则**: `pages.json` — practice预加载+resource, profile预加载+group+resource
+  - **登录同步**: `auth.js` — 登录成功后动态import favorite.js触发syncLocalToCloud
+  - **Options API迁移**: `school-sub/detail.vue` — 617行脚本从Options API迁移至`<script setup>`（11个ref+3个computed+14个function）
+  - **测试同步**: `school-detail-page.spec.js` — 从methods.call(ctx)改为纯逻辑测试
+- **Summary**: 修复3处破图引用、补充2个新分包预加载规则、实现登录后自动同步本地收藏到云端、完成1个页面的Composition API迁移（Options API页面从7个降至6个）。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
 ## [2026-04-11] CSS gap 兼容性 + image alt 属性 + ESLint 格式修复
 
 - **Scope**: `frontend`

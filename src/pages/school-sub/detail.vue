@@ -225,623 +225,567 @@
   </view>
 </template>
 
-<script>
-import { modal } from '@/utils/modal.js';
-import { toast } from '@/utils/toast.js';
+<script setup>
+// ==================== 导入 ====================
+import { ref, computed, defineAsyncComponent } from 'vue';
+import { onLoad, onUnload } from '@dcloudio/uni-app';
 import { useSchoolStore } from '@/stores/modules/school';
-import { safeNavigateBack } from '@/utils/safe-navigate';
-import config from '@/config/index.js';
-// ✅ 统一日志工具（生产环境自动禁用）
+import { toast } from '@/utils/toast.js';
+import { modal } from '@/utils/modal.js';
 import { logger } from '@/utils/logger.js';
+import config from '@/config/index.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
-// ✅ F019: 统一使用 storageService
+import { safeNavigateBack } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 
-export default {
-  components: {
-    BaseIcon,
-    // ✅ 懒加载：AiConsult 620行组件，仅在用户点击"智能咨询"时才需要
-    AiConsult: () => import('./ai-consult.vue')
-  },
-  setup() {
-    // 初始化择校 Store，供 methods 中通过 this.schoolStore 调用
-    const schoolStore = useSchoolStore();
-    return { schoolStore };
-  },
-  data() {
-    return {
-      statusBarHeight: 44,
-      capsuleSafeRight: 20,
-      isDark: false,
-      schoolInfo: {},
-      isTarget: false,
-      schoolId: null,
-      probability: 0, // 录取概率 0-100
-      isAnalyzing: false,
-      aiReason: '',
-      showAIConsultPanel: false,
-      isPageLoading: true // 页面加载状态
-    };
-  },
-  computed: {
-    majorList() {
-      if (this.schoolInfo.majors && this.schoolInfo.majors.length > 0) {
-        return this.schoolInfo.majors;
-      }
-      return [
-        { name: '计算机科学与技术', code: '081200', type: '学硕' },
-        { name: '软件工程', code: '083500', type: '学硕' },
-        { name: '人工智能', code: '085410', type: '专硕' }
-      ];
-    },
-    statusText() {
-      if (this.probability >= 80) return '势在必得';
-      if (this.probability >= 50) return '大有可为';
-      return '仍需努力';
-    },
-    statusColor() {
-      if (this.probability >= 80) return 'var(--success-green)';
-      if (this.probability >= 50) return 'var(--info-blue)';
-      return 'var(--danger-red)';
-    }
-  },
-  onLoad(options) {
-    if (!options) options = {};
-    logger.log('[detail] 📄 详情页加载，接收参数:', options);
+// ✅ 懒加载：AiConsult 620行组件，仅在用户点击"智能咨询"时才需要
+const AiConsult = defineAsyncComponent(() => import('./ai-consult.vue'));
 
-    this.statusBarHeight = getStatusBarHeight();
-    this.capsuleSafeRight = getCapsuleSafeRight();
+// ==================== Store ====================
+const schoolStore = useSchoolStore();
 
-    // 初始化深色模式
-    this.isDark = storageService.get('theme_mode') === 'dark';
-    this._themeHandler = (mode) => {
-      this.isDark = mode === 'dark';
-    };
-    uni.$on('themeUpdate', this._themeHandler);
+// ==================== 响应式状态 ====================
+const statusBarHeight = ref(44);
+const capsuleSafeRight = ref(20);
+const isDark = ref(false);
+const schoolInfo = ref({});
+const isTarget = ref(false);
+const schoolId = ref(null);
+const probability = ref(0);
+const isAnalyzing = ref(false);
+const aiReason = ref('');
+const showAIConsultPanel = ref(false);
+const isPageLoading = ref(true);
 
-    // 兼容两种传递方式：缓存数据（优先）或 id 参数
-    const cachedData = options.id ? storageService.get(`school_detail_${options.id}`) : null;
-    if (cachedData) {
+// 非响应式
+let _themeHandler = null;
+let _openConsultQuery = '';
+
+// ==================== 计算属性 ====================
+const majorList = computed(() => {
+  if (schoolInfo.value.majors && schoolInfo.value.majors.length > 0) {
+    return schoolInfo.value.majors;
+  }
+  return [
+    { name: '计算机科学与技术', code: '081200', type: '学硕' },
+    { name: '软件工程', code: '083500', type: '学硕' },
+    { name: '人工智能', code: '085410', type: '专硕' }
+  ];
+});
+
+const statusText = computed(() => {
+  if (probability.value >= 80) return '势在必得';
+  if (probability.value >= 50) return '大有可为';
+  return '仍需努力';
+});
+
+const statusColor = computed(() => {
+  if (probability.value >= 80) return 'var(--success-green)';
+  if (probability.value >= 50) return 'var(--info-blue)';
+  return 'var(--danger-red)';
+});
+
+// ==================== 生命周期 ====================
+onLoad((options) => {
+  if (!options) options = {};
+  logger.log('[detail] 📄 详情页加载，接收参数:', options);
+
+  statusBarHeight.value = getStatusBarHeight();
+  capsuleSafeRight.value = getCapsuleSafeRight();
+
+  // 初始化深色模式
+  isDark.value = storageService.get('theme_mode') === 'dark';
+  _themeHandler = (mode) => {
+    isDark.value = mode === 'dark';
+  };
+  uni.$on('themeUpdate', _themeHandler);
+
+  // 兼容两种传递方式：缓存数据（优先）或 id 参数
+  const cachedData = options.id ? storageService.get(`school_detail_${options.id}`) : null;
+  if (cachedData) {
+    try {
+      schoolInfo.value = cachedData;
+      schoolId.value = schoolInfo.value.id;
+      logger.log('[detail] ✅ 从缓存解析院校信息:', {
+        id: schoolId.value,
+        name: schoolInfo.value.name,
+        location: schoolInfo.value.location,
+        matchRate: schoolInfo.value.matchRate,
+        hasMajors: !!schoolInfo.value.majors,
+        majorsCount: schoolInfo.value.majors?.length || 0
+      });
+      probability.value = schoolInfo.value.matchRate || 0;
+      isPageLoading.value = false;
       try {
-        this.schoolInfo = cachedData;
-        this.schoolId = this.schoolInfo.id;
-        logger.log('[detail] ✅ 从缓存解析院校信息:', {
-          id: this.schoolId,
-          name: this.schoolInfo.name,
-          location: this.schoolInfo.location,
-          matchRate: this.schoolInfo.matchRate,
-          hasMajors: !!this.schoolInfo.majors,
-          majorsCount: this.schoolInfo.majors?.length || 0
-        });
-        // 如果从列表页传递了完整数据，直接使用，不需要重新加载
-        this.probability = this.schoolInfo.matchRate || 0;
-        this.isPageLoading = false;
-        // 清理临时缓存
-        try {
-          storageService.remove(`school_detail_${options.id}`);
-        } catch (_e) {
-          /* cache cleanup non-critical */
-        }
+        storageService.remove(`school_detail_${options.id}`);
       } catch (_e) {
-        logger.error('[detail] ❌ 解析学校缓存数据失败:', _e);
-        // 解析失败时降级到 id 加载
-        if (options.id) {
-          this.schoolId = options.id;
-          this.loadSchoolDetail(options.id);
-        }
+        /* 缓存清理非关键 */
       }
-    } else if (options.data) {
-      // 兼容旧的 data 参数传递方式
-      try {
-        this.schoolInfo = JSON.parse(decodeURIComponent(options.data));
-        this.schoolId = this.schoolInfo.id;
-        this.probability = this.schoolInfo.matchRate || 0;
-        this.isPageLoading = false;
-      } catch (_e) {
-        logger.error('[detail] ❌ 解析学校数据失败:', _e);
-        if (options.id) {
-          this.schoolId = options.id;
-          this.loadSchoolDetail(options.id);
-        }
-      }
-    } else if (options.id) {
-      this.schoolId = options.id;
-      logger.log(`[detail] 🔍 开始加载院校详情: id=${options.id}`);
-      this.loadSchoolDetail(options.id);
-    } else {
-      // ✅ P001: Mock 数据仅在开发环境可用，生产环境显示错误提示
-      if (config.isDev) {
-        logger.warn('[detail] ⚠️ [DEV] 未提供 id 参数，使用默认 Mock 数据');
-        this.schoolInfo = {
-          id: '10001',
-          name: '北京大学（开发预览）',
-          logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=PKU&backgroundColor=990000`,
-          location: '北京',
-          tags: ['985', '211', '双一流', '自划线'],
-          type: '双一流 / 985',
-          rank: '1',
-          scoreLine: '385',
-          ratio: '12:1',
-          passRate: '15',
-          matchRate: 95
-        };
-        this.schoolId = this.schoolInfo.id;
-        this.isPageLoading = false;
-      } else {
-        logger.error('[detail] ❌ 未提供院校 id 参数');
-        this.showLoadError('unknown');
+    } catch (_e) {
+      logger.error('[detail] ❌ 解析学校缓存数据失败:', _e);
+      if (options.id) {
+        schoolId.value = options.id;
+        loadSchoolDetail(options.id);
       }
     }
-
-    // 检查是否需要自动打开智能咨询
-    if (options.openConsult === 'true') {
-      logger.log('[detail] 💬 自动打开智能咨询面板');
-      this.showAIConsultPanel = true;
-      this.openConsultQuery = '请介绍一下该校的招生简章和核心优势';
-    }
-
-    // 初始检查是否已在收藏夹
-    this.checkTargetStatus();
-    logger.log('[detail] ✅ 详情页初始化完成，院校信息:', { id: this.schoolId, name: this.schoolInfo.name });
-  },
-  onUnload() {
-    uni.$off('themeUpdate', this._themeHandler);
-  },
-  methods: {
-    async loadSchoolDetail(id) {
-      logger.log(`[detail] 🔍 开始加载院校详情: id=${id} (类型: ${typeof id})`);
-      this.isPageLoading = true;
-
-      try {
-        // 从后端获取学校详情
-        const response = await this.schoolStore.fetchSchoolDetail(id);
-
-        if (response && response.code === 0 && response.data) {
-          const school = response.data;
-          this.schoolInfo = {
-            id: school.code || school._id,
-            name: school.name,
-            logo:
-              school.logo ||
-              `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=${school.shortName || school.name}&backgroundColor=663399`,
-            location: school.province || school.city,
-            tags: school.tags || [],
-            scoreLine: school.latestScoreLines?.[0]?.total || '-',
-            ratio: school.graduateInfo?.admissionRatio || '-',
-            passRate: school.graduateInfo?.passRate || '-',
-            matchRate: this.calculateMatchRate(school), // ✅ P003: 基于用户画像的真实匹配算法
-            majors: school.colleges?.flatMap((c) => c.majors || []) || [],
-            desc: school.description
-          };
-
-          this.probability = this.schoolInfo.matchRate || 0;
-          logger.log(`[detail] ✅ 从后端加载院校详情成功:`, this.schoolInfo.name);
-          this.checkTargetStatus();
-          this.isPageLoading = false;
-          return;
-        } else {
-          // 后端返回错误，显示加载失败状态
-          logger.warn('[detail] ⚠️ 后端获取失败，显示加载失败状态');
-          this.showLoadError(id);
-        }
-      } catch (error) {
-        logger.warn('[detail] ⚠️ 后端获取异常，显示加载失败状态:', error);
-        this.showLoadError(id);
+  } else if (options.data) {
+    try {
+      schoolInfo.value = JSON.parse(decodeURIComponent(options.data));
+      schoolId.value = schoolInfo.value.id;
+      probability.value = schoolInfo.value.matchRate || 0;
+      isPageLoading.value = false;
+    } catch (_e) {
+      logger.error('[detail] ❌ 解析学校数据失败:', _e);
+      if (options.id) {
+        schoolId.value = options.id;
+        loadSchoolDetail(options.id);
       }
-    },
-
-    /**
-     * 显示加载失败状态
-     */
-    showLoadError(id) {
-      this.schoolInfo = {
-        id: id,
-        name: '数据加载失败',
-        logo: '/static/images/default-avatar.png',
-        location: '-',
-        tags: [],
-        scoreLine: '-',
-        ratio: '-',
-        passRate: '-',
-        matchRate: 0,
-        majors: [],
-        desc: '无法获取院校数据，请检查网络连接后重试。'
+    }
+  } else if (options.id) {
+    schoolId.value = options.id;
+    logger.log(`[detail] 🔍 开始加载院校详情: id=${options.id}`);
+    loadSchoolDetail(options.id);
+  } else {
+    if (config.isDev) {
+      logger.warn('[detail] ⚠️ [DEV] 未提供 id 参数，使用默认 Mock 数据');
+      schoolInfo.value = {
+        id: '10001',
+        name: '北京大学（开发预览）',
+        logo: `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=PKU&backgroundColor=990000`,
+        location: '北京',
+        tags: ['985', '211', '双一流', '自划线'],
+        type: '双一流 / 985',
+        rank: '1',
+        scoreLine: '385',
+        ratio: '12:1',
+        passRate: '15',
+        matchRate: 95
       };
-      this.probability = 0;
-      this.isPageLoading = false;
-
-      toast.info('数据加载失败，请稍后重试');
-    },
-
-    /**
-     * P003: 基于用户画像和院校数据的真实匹配度算法
-     * 综合考虑：用户学习数据、院校层次、分数线等维度
-     * Calculate match rate based on user study profile
-     * 基于用户画像的真实匹配算法
-     * @param {Object} school - School data object
-     * @param {string[]} [school.tags] - School tags (e.g. '985', '211')
-     * @param {string} [school.code] - School code
-     * @param {string} [school._id] - School ID
-     * @returns {number} Match rate 30-98
-     */
-    calculateMatchRate(school) {
-      try {
-        const statsData = storageService.get('study_stats', {});
-        const doneCount = storageService.get('v30_bank', []).length;
-        const mistakeCount = storageService.get('mistake_book', []).length;
-        const studyDays = Object.keys(statsData).length;
-        const targetSchools = storageService.get('target_schools', []);
-
-        // 基础分 60 分
-        let score = 60;
-
-        // 维度1: 学习投入度 (最高 +15)
-        if (studyDays >= 90) score += 15;
-        else if (studyDays >= 30) score += 10;
-        else if (studyDays >= 7) score += 5;
-
-        // 维度2: 刷题量 (最高 +10)
-        if (doneCount >= 500) score += 10;
-        else if (doneCount >= 200) score += 7;
-        else if (doneCount >= 50) score += 4;
-
-        // 维度3: 错题率控制 (最高 +5)
-        if (doneCount > 0) {
-          const errorRate = mistakeCount / doneCount;
-          if (errorRate < 0.2) score += 5;
-          else if (errorRate < 0.4) score += 3;
-        }
-
-        // 维度4: 院校层次匹配 (调整 -10 ~ +10)
-        const tags = school.tags || [];
-        const is985 = tags.includes('985');
-        const is211 = tags.includes('211');
-        if (is985) {
-          // 985 院校竞争激烈，适当降低匹配度
-          score -= studyDays < 30 || doneCount < 100 ? 10 : 3;
-        } else if (is211) {
-          score -= studyDays < 14 || doneCount < 50 ? 5 : 0;
-        } else {
-          score += 5; // 普通院校匹配度更高
-        }
-
-        // 维度5: 是否已设为目标院校 (+5 表示用户有明确意向)
-        const isTarget = targetSchools.some((t) => t.id === (school.code || school._id));
-        if (isTarget) score += 5;
-
-        // 限制范围 30-98
-        return Math.max(30, Math.min(98, Math.round(score)));
-      } catch (e) {
-        logger.warn('[detail] ⚠️ 匹配度计算异常，使用默认值:', e);
-        return 65;
-      }
-    },
-    getTypeTag(tags) {
-      if (!tags || tags.length === 0) return '综合类';
-      // 优先显示最重要的标签
-      if (tags.includes('985')) return '985';
-      if (tags.includes('211')) return '211';
-      return tags[0];
-    },
-    getSchoolDesc() {
-      if (this.schoolInfo.desc) return this.schoolInfo.desc;
-      const name = this.schoolInfo.name || '';
-      return `${name}是一所历史悠久、学术实力雄厚的知名高校。该校在多个学科领域享有盛誉，为研究生培养提供了优质的学术资源和良好的学习环境。智能正在持续搜集该校最新的考研招生简章、复试分数线等权威数据，为考生提供精准的择校参考。`;
-    },
-    checkTargetStatus() {
-      if (!this.schoolId) return;
-      const list = storageService.get('target_schools', []);
-      const currentId = String(this.schoolId);
-      this.isTarget = list.some((item) => String(item.id) === currentId);
-    },
-    toggleTarget() {
-      logger.log('[detail] 🎯 开始切换目标院校状态');
-
-      if (!this.schoolId && !this.schoolInfo.id) {
-        logger.warn('[detail] ⚠️ 院校数据未加载，无法操作');
-        toast.info('数据加载中，请稍候');
-        return;
-      }
-
-      try {
-        if (typeof uni.vibrateShort === 'function') {
-          uni.vibrateShort();
-        }
-      } catch (_e) {
-        logger.warn('Failed to trigger vibration on toggle target', _e);
-      }
-
-      let list = storageService.get('target_schools', []);
-      const schoolId = String(this.schoolId || this.schoolInfo.id || '');
-      if (!schoolId) {
-        toast.info('院校信息异常');
-        return;
-      }
-
-      logger.log('[detail] 📊 当前状态:', {
-        schoolId,
-        schoolName: this.schoolInfo.name,
-        isTarget: this.isTarget,
-        currentListCount: list.length
-      });
-
-      if (this.isTarget) {
-        // 移除
-        const beforeCount = list.length;
-        list = list.filter((item) => String(item.id) !== schoolId);
-        const afterCount = list.length;
-
-        logger.log('[detail] ➖ 从目标中移除:', {
-          schoolId,
-          schoolName: this.schoolInfo.name,
-          beforeCount,
-          afterCount,
-          removed: beforeCount > afterCount
-        });
-
-        storageService.save('target_schools', list);
-        this.isTarget = false;
-
-        toast.info('已取消关注');
-        logger.log('[detail] ✅ 移除成功，已保存到本地存储');
-      } else {
-        // 添加：确保数据完整
-        const schoolData = {
-          id: schoolId,
-          name: this.schoolInfo.name,
-          location: this.schoolInfo.location,
-          logo: this.schoolInfo.logo,
-          matchRate: this.schoolInfo.matchRate
-        };
-
-        const exists = list.some((item) => String(item.id) === schoolId);
-        if (!exists) {
-          list.push(schoolData);
-
-          logger.log('[detail] ➕ 添加到目标:', {
-            schoolData,
-            newListCount: list.length
-          });
-
-          storageService.save('target_schools', list);
-          this.isTarget = true;
-
-          toast.success('成功加入目标');
-          logger.log('[detail] ✅ 添加成功，已保存到本地存储');
-
-          // 验证保存结果
-          const savedList = storageService.get('target_schools', []);
-          const saved = savedList.some((item) => item.id === schoolId);
-          logger.log('[detail] 🔍 保存验证:', {
-            saved,
-            savedListCount: savedList.length
-          });
-        } else {
-          logger.warn('[detail] ⚠️ 院校已在目标列表中，无需重复添加');
-          this.isTarget = true; // 同步状态
-          toast.info('已在目标列表中');
-        }
-      }
-    },
-    navBack() {
-      safeNavigateBack();
-    },
-    handleShare() {
-      // #ifdef MP-WEIXIN
-      this.copySchoolInfo();
-      toast.info('已复制院校信息，可通过右上角继续分享', 2500);
-      // #endif
-
-      // #ifdef APP-PLUS
-      // App 环境：使用 uni.share
-      if (typeof uni.share !== 'undefined') {
-        uni.share({
-          provider: 'weixin',
-          scene: 'WXSceneSession',
-          type: 0,
-          href: `${config.deepLink.h5BaseUrl}/school/${this.schoolId}`,
-          title: `${this.schoolInfo.name} - 考研院校推荐`,
-          summary: `${this.schoolInfo.name}，${this.schoolInfo.location}，匹配度${this.schoolInfo.matchRate}%`,
-          imageUrl: this.schoolInfo.logo,
-          success: () => {
-            toast.success('分享成功');
-          },
-          fail: () => {
-            this.copySchoolInfo();
-          }
-        });
-      } else {
-        this.copySchoolInfo();
-      }
-      // #endif
-
-      // #ifdef H5
-      // H5 环境
-      if (navigator.share) {
-        navigator
-          .share({
-            title: `${this.schoolInfo.name} - 考研院校推荐`,
-            text: `${this.schoolInfo.name}，${this.schoolInfo.location}，匹配度${this.schoolInfo.matchRate}%`,
-            url: ''
-          })
-          .catch(() => {
-            this.copySchoolInfo();
-          });
-      } else {
-        this.copySchoolInfo();
-      }
-      // #endif
-    },
-    copySchoolInfo() {
-      const info = `【${this.schoolInfo.name}】\n${this.schoolInfo.location}\n匹配度：${this.schoolInfo.matchRate}%\n复试线：${this.schoolInfo.scoreLine || '---'}分\n报录比：${this.schoolInfo.ratio || '---'}\n\n来自 Exam-Master 考研神器`;
-      uni.setClipboardData({
-        data: info,
-        success: () => {
-          toast.success('院校信息已复制');
-        }
-      });
-    },
-    showAIConsult() {
-      this.showAIConsultPanel = true;
-    },
-    hideAIConsult() {
-      this.showAIConsultPanel = false;
-    },
-    viewMajorDetail(major) {
-      // 显示专业详情弹窗
-      modal.show({
-        title: `${major.name}`,
-        content: `专业代码：${major.code}\n类型：${major.type || '学硕'}\n\n该专业是${this.schoolInfo.name}的热门招生专业，每年吸引大量考生报考。\n\n建议：\n1. 关注该专业历年分数线\n2. 了解导师研究方向\n3. 准备专业课复习资料`,
-        confirmText: '查看更多',
-        cancelText: '关闭',
-        success: (res) => {
-          if (res.confirm) {
-            // 跳转到专业详情页或显示更多信息
-            toast.info('更多专业信息正在整理中');
-          }
-        }
-      });
-    },
-    async fetchAIPrediction() {
-      if (this.isAnalyzing) {
-        logger.log('[detail] ⚠️ 智能预测正在进行中，跳过重复请求');
-        return;
-      }
-
-      logger.log('[detail] 🎯 开始智能录取概率预测');
-      logger.log('[detail] 📊 目标院校:', {
-        id: this.schoolId,
-        name: this.schoolInfo.name,
-        currentProbability: this.probability
-      });
-
-      this.isAnalyzing = true;
-
-      try {
-        if (typeof uni.vibrateShort === 'function') {
-          uni.vibrateShort();
-        }
-      } catch (_e) {
-        logger.warn('Failed to trigger vibration on analyze probability', _e);
-      }
-
-      // 获取用户当前学习数据
-      const statsData = storageService.get('study_stats', {});
-      const doneCount = storageService.get('v30_bank', []).length;
-      const mistakeCount = storageService.get('mistake_book', []).length;
-      const studyDays = Object.keys(statsData).length;
-
-      logger.log('[detail] 📈 用户学习数据:', {
-        studyDays,
-        doneCount,
-        mistakeCount
-      });
-
-      const _prompt = `你是一个考研大数据分析专家。请根据以下背景预测学生进入【${this.schoolInfo.name}】的概率：
-- 学生已坚持刷题：${studyDays} 天
-- 累计刷题量：${doneCount} 道
-- 错题积压：${mistakeCount} 道
-
-要求：
-1. 给出一个 40 到 95 之间的整数作为录取概率。
-2. 提供一段 50 字以内的专业点评。
-3. 格式：概率|点评`;
-
-      try {
-        logger.log('[detail] 🤖 调用后端代理进行录取概率预测...');
-
-        // ✅ 使用后端代理调用（安全）- action: 'predict'
-        const response = await this.schoolStore.aiPredict('predict', {
-          content: `请预测以下考生的录取概率：目标院校${this.schoolInfo.name}，已备考${studyDays}天，完成${doneCount}题，错题${mistakeCount}道`,
-          schoolName: this.schoolInfo.name,
-          studyDays: studyDays,
-          doneCount: doneCount,
-          mistakeCount: mistakeCount
-        });
-
-        logger.log('[detail] 📥 后端代理响应:', {
-          code: response?.code,
-          hasData: !!response?.data
-        });
-
-        if (response && response.code === 0 && response.data) {
-          const raw =
-            response.data && typeof response.data === 'object' && typeof response.data.reply === 'string'
-              ? response.data.reply
-              : response.data;
-          const result = typeof raw === 'string' ? raw.trim() : '';
-          logger.log('[detail] 📄 智能返回内容:', result.substring(0, 100));
-
-          let parsedProbability = 60;
-          let parsedReason = '数据样本不足，建议增加模拟卷练习。';
-          if (!result && raw && typeof raw === 'object') {
-            const objectProbability = Number(raw.probability || raw.matchRate || raw.score);
-            if (Number.isFinite(objectProbability)) {
-              parsedProbability = objectProbability;
-            }
-            if (typeof raw.reason === 'string' && raw.reason.trim()) {
-              parsedReason = raw.reason.trim();
-            }
-          } else if (result) {
-            const parts = result
-              .split('|')
-              .map((part) => part.trim())
-              .filter(Boolean);
-            const mainText = parts[0] || result;
-            const numberMatch = mainText.match(/\d{2,3}/);
-            if (numberMatch) {
-              parsedProbability = parseInt(numberMatch[0], 10);
-            }
-            parsedReason = parts[1] || (parts.length > 1 ? parts.slice(1).join('；') : mainText) || parsedReason;
-          }
-
-          this.probability = Math.max(40, Math.min(95, parsedProbability));
-          this.aiReason = parsedReason;
-
-          logger.log('[detail] ✅ 智能预测成功:', {
-            probability: this.probability,
-            reason: this.aiReason.substring(0, 50)
-          });
-
-          toast.success(`预测完成：${this.probability}%`, 2000);
-        } else {
-          // 降级方案：基于数据简单计算
-          logger.warn('[detail] ⚠️ 智能 API 响应异常，使用降级算法计算概率');
-          const baseScore = Math.min(
-            95,
-            40 + studyDays * 2 + Math.min(doneCount / 10, 30) - Math.min(mistakeCount / 5, 20)
-          );
-          this.probability = Math.max(40, Math.min(95, Math.round(baseScore)));
-          this.aiReason = `基于您已坚持 ${studyDays} 天、刷题 ${doneCount} 道的数据，${this.schoolInfo.name} 上岸概率为 ${this.probability}%。建议继续巩固错题，提升正确率。`;
-
-          logger.log('[detail] ✅ 降级算法计算完成:', {
-            probability: this.probability,
-            reason: this.aiReason.substring(0, 50)
-          });
-
-          toast.success(`预测完成：${this.probability}%`, 2000);
-        }
-      } catch (_e) {
-        logger.error('[detail] ❌ 智能预测失败:', _e);
-        // 降级方案
-        const baseScore = Math.min(95, 40 + studyDays * 2 + Math.min(doneCount / 10, 30));
-        this.probability = Math.max(40, Math.min(95, Math.round(baseScore)));
-        this.aiReason = `基于您已坚持 ${studyDays} 天、刷题 ${doneCount} 道的数据，${this.schoolInfo.name} 上岸概率为 ${this.probability}%。建议继续巩固错题，提升正确率。`;
-
-        logger.log('[detail] ✅ 降级算法计算完成（异常情况）:', {
-          probability: this.probability,
-          reason: this.aiReason.substring(0, 50)
-        });
-
-        toast.success(`预测完成：${this.probability}%`, 2000);
-      } finally {
-        this.isAnalyzing = false;
-        logger.log('[detail] ✅ 智能预测流程结束');
-      }
+      schoolId.value = schoolInfo.value.id;
+      isPageLoading.value = false;
+    } else {
+      logger.error('[detail] ❌ 未提供院校 id 参数');
+      showLoadError('unknown');
     }
   }
-};
+
+  if (options.openConsult === 'true') {
+    logger.log('[detail] 💬 自动打开智能咨询面板');
+    showAIConsultPanel.value = true;
+    _openConsultQuery = '请介绍一下该校的招生简章和核心优势';
+  }
+
+  checkTargetStatus();
+  logger.log('[detail] ✅ 详情页初始化完成，院校信息:', { id: schoolId.value, name: schoolInfo.value.name });
+});
+
+onUnload(() => {
+  uni.$off('themeUpdate', _themeHandler);
+});
+
+// ==================== 方法 ====================
+
+/** 加载院校详情 */
+async function loadSchoolDetail(id) {
+  logger.log(`[detail] 🔍 开始加载院校详情: id=${id} (类型: ${typeof id})`);
+  isPageLoading.value = true;
+
+  try {
+    const response = await schoolStore.fetchSchoolDetail(id);
+
+    if (response && response.code === 0 && response.data) {
+      const school = response.data;
+      schoolInfo.value = {
+        id: school.code || school._id,
+        name: school.name,
+        logo:
+          school.logo ||
+          `${config.externalCdn.dicebearBaseUrl}/initials/svg?seed=${school.shortName || school.name}&backgroundColor=663399`,
+        location: school.province || school.city,
+        tags: school.tags || [],
+        scoreLine: school.latestScoreLines?.[0]?.total || '-',
+        ratio: school.graduateInfo?.admissionRatio || '-',
+        passRate: school.graduateInfo?.passRate || '-',
+        matchRate: calculateMatchRate(school),
+        majors: school.colleges?.flatMap((c) => c.majors || []) || [],
+        desc: school.description
+      };
+
+      probability.value = schoolInfo.value.matchRate || 0;
+      logger.log(`[detail] ✅ 从后端加载院校详情成功:`, schoolInfo.value.name);
+      checkTargetStatus();
+      isPageLoading.value = false;
+      return;
+    } else {
+      logger.warn('[detail] ⚠️ 后端获取失败，显示加载失败状态');
+      showLoadError(id);
+    }
+  } catch (error) {
+    logger.warn('[detail] ⚠️ 后端获取异常，显示加载失败状态:', error);
+    showLoadError(id);
+  }
+}
+
+/** 显示加载失败状态 */
+function showLoadError(id) {
+  schoolInfo.value = {
+    id: id,
+    name: '数据加载失败',
+    logo: '/static/images/default-avatar.png',
+    location: '-',
+    tags: [],
+    scoreLine: '-',
+    ratio: '-',
+    passRate: '-',
+    matchRate: 0,
+    majors: [],
+    desc: '无法获取院校数据，请检查网络连接后重试。'
+  };
+  probability.value = 0;
+  isPageLoading.value = false;
+  toast.info('数据加载失败，请稍后重试');
+}
+
+/** P003: 基于用户画像的真实匹配度算法 */
+function calculateMatchRate(school) {
+  try {
+    const statsData = storageService.get('study_stats', {});
+    const doneCount = storageService.get('v30_bank', []).length;
+    const mistakeCount = storageService.get('mistake_book', []).length;
+    const studyDays = Object.keys(statsData).length;
+    const targetSchools = storageService.get('target_schools', []);
+
+    let score = 60;
+    if (studyDays >= 90) score += 15;
+    else if (studyDays >= 30) score += 10;
+    else if (studyDays >= 7) score += 5;
+
+    if (doneCount >= 500) score += 10;
+    else if (doneCount >= 200) score += 7;
+    else if (doneCount >= 50) score += 4;
+
+    if (doneCount > 0) {
+      const errorRate = mistakeCount / doneCount;
+      if (errorRate < 0.2) score += 5;
+      else if (errorRate < 0.4) score += 3;
+    }
+
+    const tags = school.tags || [];
+    const is985 = tags.includes('985');
+    const is211 = tags.includes('211');
+    if (is985) {
+      score -= studyDays < 30 || doneCount < 100 ? 10 : 3;
+    } else if (is211) {
+      score -= studyDays < 14 || doneCount < 50 ? 5 : 0;
+    } else {
+      score += 5;
+    }
+
+    const isTargetSchool = targetSchools.some((t) => t.id === (school.code || school._id));
+    if (isTargetSchool) score += 5;
+
+    return Math.max(30, Math.min(98, Math.round(score)));
+  } catch (e) {
+    logger.warn('[detail] ⚠️ 匹配度计算异常，使用默认值:', e);
+    return 65;
+  }
+}
+
+/** 获取类型标签 */
+function getTypeTag(tags) {
+  if (!tags || tags.length === 0) return '综合类';
+  if (tags.includes('985')) return '985';
+  if (tags.includes('211')) return '211';
+  return tags[0];
+}
+
+/** 获取院校描述 */
+function getSchoolDesc() {
+  if (schoolInfo.value.desc) return schoolInfo.value.desc;
+  const name = schoolInfo.value.name || '';
+  return `${name}是一所历史悠久、学术实力雄厚的知名高校。该校在多个学科领域享有盛誉，为研究生培养提供了优质的学术资源和良好的学习环境。智能正在持续搜集该校最新的考研招生简章、复试分数线等权威数据，为考生提供精准的择校参考。`;
+}
+
+/** 检查是否已在目标院校列表 */
+function checkTargetStatus() {
+  if (!schoolId.value) return;
+  const list = storageService.get('target_schools', []);
+  const currentId = String(schoolId.value);
+  isTarget.value = list.some((item) => String(item.id) === currentId);
+}
+
+/** 切换目标院校状态 */
+function toggleTarget() {
+  logger.log('[detail] 🎯 开始切换目标院校状态');
+
+  if (!schoolId.value && !schoolInfo.value.id) {
+    logger.warn('[detail] ⚠️ 院校数据未加载，无法操作');
+    toast.info('数据加载中，请稍候');
+    return;
+  }
+
+  try {
+    if (typeof uni.vibrateShort === 'function') {
+      uni.vibrateShort();
+    }
+  } catch (_e) {
+    logger.warn('Failed to trigger vibration on toggle target', _e);
+  }
+
+  let list = storageService.get('target_schools', []);
+  const sid = String(schoolId.value || schoolInfo.value.id || '');
+  if (!sid) {
+    toast.info('院校信息异常');
+    return;
+  }
+
+  logger.log('[detail] 📊 当前状态:', {
+    schoolId: sid,
+    schoolName: schoolInfo.value.name,
+    isTarget: isTarget.value,
+    currentListCount: list.length
+  });
+
+  if (isTarget.value) {
+    const beforeCount = list.length;
+    list = list.filter((item) => String(item.id) !== sid);
+    const afterCount = list.length;
+
+    logger.log('[detail] ➖ 从目标中移除:', {
+      schoolId: sid,
+      schoolName: schoolInfo.value.name,
+      beforeCount,
+      afterCount,
+      removed: beforeCount > afterCount
+    });
+
+    storageService.save('target_schools', list);
+    isTarget.value = false;
+    toast.info('已取消关注');
+    logger.log('[detail] ✅ 移除成功，已保存到本地存储');
+  } else {
+    const schoolData = {
+      id: sid,
+      name: schoolInfo.value.name,
+      location: schoolInfo.value.location,
+      logo: schoolInfo.value.logo,
+      matchRate: schoolInfo.value.matchRate
+    };
+
+    const exists = list.some((item) => String(item.id) === sid);
+    if (!exists) {
+      list.push(schoolData);
+      logger.log('[detail] ➕ 添加到目标:', { schoolData, newListCount: list.length });
+
+      storageService.save('target_schools', list);
+      isTarget.value = true;
+      toast.success('成功加入目标');
+      logger.log('[detail] ✅ 添加成功，已保存到本地存储');
+
+      const savedList = storageService.get('target_schools', []);
+      const saved = savedList.some((item) => item.id === sid);
+      logger.log('[detail] 🔍 保存验证:', { saved, savedListCount: savedList.length });
+    } else {
+      logger.warn('[detail] ⚠️ 院校已在目标列表中，无需重复添加');
+      isTarget.value = true;
+      toast.info('已在目标列表中');
+    }
+  }
+}
+
+/** 返回上一页 */
+function navBack() {
+  safeNavigateBack();
+}
+
+/** 分享院校信息 */
+function handleShare() {
+  // #ifdef MP-WEIXIN
+  copySchoolInfo();
+  toast.info('已复制院校信息，可通过右上角继续分享', 2500);
+  // #endif
+
+  // #ifdef APP-PLUS
+  if (typeof uni.share !== 'undefined') {
+    uni.share({
+      provider: 'weixin',
+      scene: 'WXSceneSession',
+      type: 0,
+      href: `${config.deepLink.h5BaseUrl}/school/${schoolId.value}`,
+      title: `${schoolInfo.value.name} - 考研院校推荐`,
+      summary: `${schoolInfo.value.name}，${schoolInfo.value.location}，匹配度${schoolInfo.value.matchRate}%`,
+      imageUrl: schoolInfo.value.logo,
+      success: () => {
+        toast.success('分享成功');
+      },
+      fail: () => {
+        copySchoolInfo();
+      }
+    });
+  } else {
+    copySchoolInfo();
+  }
+  // #endif
+
+  // #ifdef H5
+  if (navigator.share) {
+    navigator
+      .share({
+        title: `${schoolInfo.value.name} - 考研院校推荐`,
+        text: `${schoolInfo.value.name}，${schoolInfo.value.location}，匹配度${schoolInfo.value.matchRate}%`,
+        url: ''
+      })
+      .catch(() => {
+        copySchoolInfo();
+      });
+  } else {
+    copySchoolInfo();
+  }
+  // #endif
+}
+
+/** 复制院校信息到剪贴板 */
+function copySchoolInfo() {
+  const info = `【${schoolInfo.value.name}】\n${schoolInfo.value.location}\n匹配度：${schoolInfo.value.matchRate}%\n复试线：${schoolInfo.value.scoreLine || '---'}分\n报录比：${schoolInfo.value.ratio || '---'}\n\n来自 Exam-Master 考研神器`;
+  uni.setClipboardData({
+    data: info,
+    success: () => {
+      toast.success('院校信息已复制');
+    }
+  });
+}
+
+/** 显示智能咨询面板 */
+function showAIConsult() {
+  showAIConsultPanel.value = true;
+}
+
+/** 隐藏智能咨询面板 */
+function hideAIConsult() {
+  showAIConsultPanel.value = false;
+}
+
+/** 查看专业详情弹窗 */
+function viewMajorDetail(major) {
+  modal.show({
+    title: `${major.name}`,
+    content: `专业代码：${major.code}\n类型：${major.type || '学硕'}\n\n该专业是${schoolInfo.value.name}的热门招生专业，每年吸引大量考生报考。\n\n建议：\n1. 关注该专业历年分数线\n2. 了解导师研究方向\n3. 准备专业课复习资料`,
+    confirmText: '查看更多',
+    cancelText: '关闭',
+    success: (res) => {
+      if (res.confirm) {
+        toast.info('更多专业信息正在整理中');
+      }
+    }
+  });
+}
+
+/** 智能录取概率预测 */
+async function fetchAIPrediction() {
+  if (isAnalyzing.value) {
+    logger.log('[detail] ⚠️ 智能预测正在进行中，跳过重复请求');
+    return;
+  }
+
+  logger.log('[detail] 🎯 开始智能录取概率预测');
+  logger.log('[detail] 📊 目标院校:', {
+    id: schoolId.value,
+    name: schoolInfo.value.name,
+    currentProbability: probability.value
+  });
+
+  isAnalyzing.value = true;
+
+  try {
+    if (typeof uni.vibrateShort === 'function') {
+      uni.vibrateShort();
+    }
+  } catch (_e) {
+    logger.warn('Failed to trigger vibration on analyze probability', _e);
+  }
+
+  const statsData = storageService.get('study_stats', {});
+  const doneCount = storageService.get('v30_bank', []).length;
+  const mistakeCount = storageService.get('mistake_book', []).length;
+  const studyDays = Object.keys(statsData).length;
+
+  logger.log('[detail] 📈 用户学习数据:', { studyDays, doneCount, mistakeCount });
+
+  try {
+    logger.log('[detail] 🤖 调用后端代理进行录取概率预测...');
+
+    const response = await schoolStore.aiPredict('predict', {
+      content: `请预测以下考生的录取概率：目标院校${schoolInfo.value.name}，已备考${studyDays}天，完成${doneCount}题，错题${mistakeCount}道`,
+      schoolName: schoolInfo.value.name,
+      studyDays: studyDays,
+      doneCount: doneCount,
+      mistakeCount: mistakeCount
+    });
+
+    logger.log('[detail] 📥 后端代理响应:', { code: response?.code, hasData: !!response?.data });
+
+    if (response && response.code === 0 && response.data) {
+      const raw =
+        response.data && typeof response.data === 'object' && typeof response.data.reply === 'string'
+          ? response.data.reply
+          : response.data;
+      const result = typeof raw === 'string' ? raw.trim() : '';
+      logger.log('[detail] 📄 智能返回内容:', result.substring(0, 100));
+
+      let parsedProbability = 60;
+      let parsedReason = '数据样本不足，建议增加模拟卷练习。';
+      if (!result && raw && typeof raw === 'object') {
+        const objectProbability = Number(raw.probability || raw.matchRate || raw.score);
+        if (Number.isFinite(objectProbability)) {
+          parsedProbability = objectProbability;
+        }
+        if (typeof raw.reason === 'string' && raw.reason.trim()) {
+          parsedReason = raw.reason.trim();
+        }
+      } else if (result) {
+        const parts = result
+          .split('|')
+          .map((part) => part.trim())
+          .filter(Boolean);
+        const mainText = parts[0] || result;
+        const numberMatch = mainText.match(/\d{2,3}/);
+        if (numberMatch) {
+          parsedProbability = parseInt(numberMatch[0], 10);
+        }
+        parsedReason = parts[1] || (parts.length > 1 ? parts.slice(1).join('；') : mainText) || parsedReason;
+      }
+
+      probability.value = Math.max(40, Math.min(95, parsedProbability));
+      aiReason.value = parsedReason;
+
+      logger.log('[detail] ✅ 智能预测成功:', {
+        probability: probability.value,
+        reason: aiReason.value.substring(0, 50)
+      });
+
+      toast.success(`预测完成：${probability.value}%`, 2000);
+    } else {
+      logger.warn('[detail] ⚠️ 智能 API 响应异常，使用降级算法计算概率');
+      const baseScore = Math.min(
+        95,
+        40 + studyDays * 2 + Math.min(doneCount / 10, 30) - Math.min(mistakeCount / 5, 20)
+      );
+      probability.value = Math.max(40, Math.min(95, Math.round(baseScore)));
+      aiReason.value = `基于您已坚持 ${studyDays} 天、刷题 ${doneCount} 道的数据，${schoolInfo.value.name} 上岸概率为 ${probability.value}%。建议继续巩固错题，提升正确率。`;
+      toast.success(`预测完成：${probability.value}%`, 2000);
+    }
+  } catch (_e) {
+    logger.error('[detail] ❌ 智能预测失败:', _e);
+    const baseScore = Math.min(95, 40 + studyDays * 2 + Math.min(doneCount / 10, 30));
+    probability.value = Math.max(40, Math.min(95, Math.round(baseScore)));
+    aiReason.value = `基于您已坚持 ${studyDays} 天、刷题 ${doneCount} 道的数据，${schoolInfo.value.name} 上岸概率为 ${probability.value}%。建议继续巩固错题，提升正确率。`;
+    toast.success(`预测完成：${probability.value}%`, 2000);
+  } finally {
+    isAnalyzing.value = false;
+    logger.log('[detail] ✅ 智能预测流程结束');
+  }
+}
 </script>
 
 <style lang="scss" scoped>
