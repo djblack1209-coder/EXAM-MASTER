@@ -1278,7 +1278,13 @@ const handleClosePosterModal = () => {
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  /* gap: 8px; -- replaced for Android WebView compat */
+}
+.info-grid > view:nth-child(even) {
+  margin-left: 8px;
+}
+.info-grid > view:nth-child(n + 3) {
+  margin-top: 8px;
 }
 
 .info-item {
@@ -1321,9 +1327,15 @@ const handleClosePosterModal = () => {
 .stats-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  /* gap: 10px; -- replaced for Android WebView compat */
   padding-top: 16px;
   border-top: 1px solid var(--border);
+}
+.stats-section > view:nth-child(even) {
+  margin-left: 10px;
+}
+.stats-section > view:nth-child(n + 3) {
+  margin-top: 10px;
 }
 
 .stat-card {

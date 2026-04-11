@@ -1188,8 +1188,15 @@ onUnload(() => {
 .hero-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14rpx;
+  /* gap: 14rpx; -- replaced for Android WebView compat */
   margin-top: 28rpx;
+}
+.hero-stats > view:nth-child(3n + 2),
+.hero-stats > view:nth-child(3n) {
+  margin-left: 14rpx;
+}
+.hero-stats > view:nth-child(n + 4) {
+  margin-top: 14rpx;
 }
 
 .hero-stat,
@@ -1555,15 +1562,22 @@ onUnload(() => {
 
 .info-grid {
   display: grid;
-  gap: 18rpx;
+  /* gap: 18rpx; -- replaced for Android WebView compat */
   margin-top: 20rpx;
+}
+.info-grid > view + view {
+  margin-top: 18rpx;
 }
 
 .legend-items,
 .path-list {
   display: flex;
   flex-direction: column;
-  gap: 14rpx;
+  /* gap: 14rpx; -- replaced for Android WebView compat */
+}
+.legend-items > view + view,
+.path-list > view + view {
+  margin-top: 14rpx;
 }
 
 .legend-item,
@@ -1719,8 +1733,15 @@ onUnload(() => {
 .panel-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
   margin-top: 18rpx;
+}
+.panel-stats > view:nth-child(3n + 2),
+.panel-stats > view:nth-child(3n) {
+  margin-left: 12rpx;
+}
+.panel-stats > view:nth-child(n + 4) {
+  margin-top: 12rpx;
 }
 
 .panel-stat {
@@ -1951,15 +1972,21 @@ onUnload(() => {
 .study-path-list {
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
+}
+.study-path-list > view + view {
+  margin-top: 12rpx;
 }
 .path-item {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
   padding: 20rpx 24rpx;
   border-radius: 16rpx;
   background: var(--bg-secondary);
+}
+.path-item > view + view {
+  margin-left: 16rpx;
 }
 .path-status-blocked {
   opacity: 0.5;

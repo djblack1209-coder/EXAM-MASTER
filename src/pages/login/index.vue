@@ -1234,9 +1234,12 @@ onUnmounted(() => {
 .app-name-row {
   display: flex;
   align-items: baseline;
-  gap: 8rpx;
+  /* gap: 8rpx; -- replaced for Android WebView compat */
   margin-bottom: 12rpx;
   letter-spacing: 1.5px;
+}
+.app-name-row > view + view {
+  margin-left: 8rpx;
 }
 
 .brand-exam {

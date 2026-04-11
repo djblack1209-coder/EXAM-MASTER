@@ -25,6 +25,7 @@
           src="./static/icons/magnify-question.png"
           mode="aspectFit"
           style="margin: 0 auto 16rpx; display: block"
+          alt="拍照搜题"
         />
         <text class="camera-eyebrow"> Photo Search </text>
         <text class="camera-hero-title"> 对准题目，一次拍清 </text>

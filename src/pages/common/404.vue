@@ -85,7 +85,10 @@ function goBack() {
 
 .error-actions {
   display: flex;
-  gap: 24rpx;
+  /* gap: 24rpx; -- replaced for Android WebView compat */
+}
+.error-actions > view + view {
+  margin-left: 24rpx;
 }
 
 .action-btn {

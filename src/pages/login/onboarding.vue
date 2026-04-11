@@ -28,6 +28,7 @@
           src="./static/illustrations/onboard-choose-exam.png"
           mode="aspectFit"
           lazy-load
+          alt="选择你的考试类型"
         />
         <text class="step-title">你在准备什么考试？</text>
         <text class="step-desc">我们会为你定制专属学习计划</text>

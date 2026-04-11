@@ -67,7 +67,9 @@
               :key="seg.type"
               class="phase-seg-label"
               :class="{ 'label-active': seg.active }"
-              >{{ seg.label }}</text
+              >
+{{ seg.label }}
+</text
             >
           </view>
         </view>
@@ -174,9 +176,11 @@
                   </view>
                 </view>
                 <text class="tl-date">{{ phase.startDate }} — {{ phase.endDate }}</text>
-                <text v-if="phase.description || phase.focus" class="tl-desc">{{
+                <text v-if="phase.description || phase.focus" class="tl-desc">
+{{
                   phase.description || phase.focus
-                }}</text>
+                }}
+</text>
               </view>
             </view>
           </view>

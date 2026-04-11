@@ -139,7 +139,9 @@
           <view class="detail-info">
             <text class="detail-name">{{ currentGroup.name }}</text>
             <text class="detail-meta"
-              >{{ currentGroup.member_count || 0 }} 名成员 · 创建于 {{ formatDate(currentGroup.created_at) }}</text
+              >
+{{ currentGroup.member_count || 0 }} 名成员 · 创建于 {{ formatDate(currentGroup.created_at) }}
+</text
             >
           </view>
         </view>

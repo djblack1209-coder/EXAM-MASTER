@@ -707,19 +707,28 @@ function copyQuote() {
 .share-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16rpx;
+  /* gap: 16rpx; -- replaced for Android WebView compat */
+}
+.share-options > view:nth-child(even) {
+  margin-left: 16rpx;
+}
+.share-options > view:nth-child(n + 3) {
+  margin-top: 16rpx;
 }
 
 .option-item {
   flex-direction: column;
   justify-content: center;
-  gap: 12rpx;
+  /* gap: 12rpx; -- replaced for Android WebView compat */
   min-height: 188rpx;
   padding: 24rpx 16rpx;
   border-radius: 28rpx;
   background: rgba(255, 255, 255, 0.58);
   border: 1px solid rgba(255, 255, 255, 0.42);
   box-shadow: var(--apple-shadow-surface);
+}
+.option-item > view + view {
+  margin-top: 12rpx;
 }
 
 .option-icon {
