@@ -469,7 +469,7 @@
     },
     "pages/practice/index": {
       "network": "all",
-      "packages": ["pages/practice-sub", "pages/mistake", "pages/tools"]
+      "packages": ["pages/practice-sub", "pages/mistake", "pages/tools", "pages/resource"]
     },
     "pages/school/index": {
       "network": "all",
@@ -483,7 +483,9 @@
         "pages/favorite",
         "pages/study-detail",
         "pages/login",
-        "pages/mistake"
+        "pages/mistake",
+        "pages/group",
+        "pages/resource"
       ]
     }
   },

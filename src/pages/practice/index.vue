@@ -318,7 +318,7 @@
       <!-- 学习资源 -->
       <view class="menu-item" @tap="goToResource">
         <view class="menu-icon">
-          <image class="feature-cartoon-icon" src="/static/icons/open-book.png" mode="aspectFit" alt="学习资源" />
+          <image class="feature-cartoon-icon" src="/static/icons/doc-convert.png" mode="aspectFit" alt="学习资源" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 学习资源 </view>

@@ -99,6 +99,15 @@ export const useAuthStore = defineStore('auth', () => {
           // ✅ 用户隔离：登录后迁移无前缀的旧数据到 u_${userId}_ 前缀
           storageService.migrateUserKeys();
 
+          // 登录成功后，将本地收藏同步到云端
+          try {
+            const { useFavoriteStore } = await import('./favorite.js');
+            const favoriteStore = useFavoriteStore();
+            favoriteStore.syncLocalToCloud();
+          } catch (_e) {
+            // 同步失败不影响登录流程
+          }
+
           return {
             success: true,
             userInfo: userData

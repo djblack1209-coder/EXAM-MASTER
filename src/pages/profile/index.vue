@@ -320,7 +320,12 @@
           <!-- 学习小组 -->
           <view class="menu-item" hover-class="menu-hover" @tap="goToGroup">
             <view class="menu-icon-box">
-              <image class="feature-cartoon-icon" src="/static/icons/team-group.png" mode="aspectFit" alt="学习小组" />
+              <image
+                class="feature-cartoon-icon"
+                src="/static/icons/crossed-swords.png"
+                mode="aspectFit"
+                alt="学习小组"
+              />
             </view>
             <text class="menu-text"> 学习小组 </text>
             <BaseIcon name="chevron-right" :size="24" class="menu-arrow" />
@@ -332,7 +337,12 @@
           <!-- 学习资源 -->
           <view class="menu-item" hover-class="menu-hover" @tap="goToResource">
             <view class="menu-icon-box">
-              <image class="feature-cartoon-icon" src="/static/icons/open-book.png" mode="aspectFit" alt="学习资源" />
+              <image
+                class="feature-cartoon-icon"
+                src="/static/icons/bookmark-save.png"
+                mode="aspectFit"
+                alt="学习资源"
+              />
             </view>
             <text class="menu-text"> 学习资源 </text>
             <BaseIcon name="chevron-right" :size="24" class="menu-arrow" />
