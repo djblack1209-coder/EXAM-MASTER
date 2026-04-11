@@ -121,6 +121,13 @@
             </view>
           </view>
           <RichText class="q-content" :content="currentQuestion.question" />
+          <!-- combo ≥5 火焰特效：题目右上角缩放+淡出 -->
+          <image
+            v-if="showComboEffect && comboDisplay && comboDisplay.count >= 5"
+            class="combo-fire-badge"
+            src="/static/effects/combo-fire.png"
+            mode="aspectFit"
+          />
         </view>
 
         <view v-if="currentQuestion && currentQuestion.options" class="options-list">
@@ -255,10 +262,16 @@
       <view class="footer-placeholder" />
 
       <!-- ✅ 连击特效显示 -->
-      <view v-if="showComboEffect && comboDisplay" class="combo-effect">
+      <view v-if="showComboEffect && comboDisplay" class="combo-effect" @animationend="showComboEffect = false">
         <view class="combo-content" :style="{ color: comboDisplay.color }">
           <!-- 连击火焰特效 -->
-          <image class="combo-fire-icon" src="./static/effects/combo-fire.png" mode="aspectFit" alt="" />
+          <image
+            v-if="comboDisplay.count >= 5"
+            class="combo-fire-icon"
+            src="/static/effects/combo-fire.png"
+            mode="aspectFit"
+            alt=""
+          />
           <text class="combo-count">
             {{ comboDisplay.count }}
           </text>
@@ -270,9 +283,9 @@
       </view>
 
       <!-- ✅ [体感革命] XP飞入动画 -->
-      <view v-if="showXpToast" class="xp-flyout">
+      <view v-if="showXpToast" class="xp-flyout" @animationend="showXpToast = false">
         <!-- XP金币特效 -->
-        <image class="xp-coins-icon" src="./static/effects/xp-coins.png" mode="aspectFit" alt="" />
+        <image class="xp-coins-icon" src="/static/effects/xp-coins.png" mode="aspectFit" alt="" />
         <text class="xp-flyout-text">+{{ xpEarned }} XP{{ xpBoostActive ? ' 2x加速' : '' }}</text>
       </view>
 
@@ -283,8 +296,8 @@
       </view>
 
       <!-- ✅ 升级箭头特效 -->
-      <view v-if="showLevelUp" class="level-up-overlay">
-        <image class="level-up-icon" src="./static/effects/level-up-arrow.png" mode="aspectFit" alt="" />
+      <view v-if="showLevelUp" class="level-up-overlay" @animationend="showLevelUp = false">
+        <image class="level-up-icon" src="/static/effects/levelup-arrow.png" mode="aspectFit" alt="" />
         <text class="level-up-text">LEVEL UP!</text>
       </view>
 
@@ -2201,6 +2214,8 @@ export default {
 }
 
 .question-card {
+  position: relative;
+  overflow: visible;
   transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -3286,6 +3301,43 @@ export default {
   }
 }
 
+/* ==================== combo ≥5 火焰徽章：题目右上角缩放+淡出 ==================== */
+.combo-fire-badge {
+  position: absolute;
+  top: -12rpx;
+  right: -12rpx;
+  width: 80rpx;
+  height: 80rpx;
+  z-index: 10;
+  pointer-events: none;
+  animation: combo-fire-burst 1.2s ease-out forwards;
+}
+@keyframes combo-fire-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-15deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.5) rotate(8deg);
+  }
+  40% {
+    transform: scale(1.1) rotate(-4deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.25) rotate(2deg);
+  }
+  80% {
+    opacity: 0.7;
+    transform: scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.6) translateY(-30rpx);
+  }
+}
+
 /* ==================== XP金币特效图标 ==================== */
 .xp-coins-icon {
   width: 48rpx;
@@ -3334,5 +3386,13 @@ export default {
     opacity: 0;
     transform: translate(-50%, -70%) scale(0.8);
   }
+}
+
+/* ==================== 暗色模式：特效降低亮度 ==================== */
+.dark-mode .combo-effect,
+.dark-mode .xp-flyout,
+.dark-mode .level-up-overlay,
+.dark-mode .combo-fire-badge {
+  opacity: 0.85;
 }
 </style>

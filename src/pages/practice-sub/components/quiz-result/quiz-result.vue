@@ -1,9 +1,10 @@
 <template>
   <view v-if="visible" class="result-overlay" :class="{ 'dark-mode': isDark }" @tap.stop>
     <view class="result-container">
-      <!-- 满分彩纸庆祝 — [AUDIT R432] confetti-burst.png 不存在，改用 emoji -->
-      <view v-if="accuracy >= 95" class="confetti-decoration confetti-text">
-        <text class="confetti-emoji">🎊</text>
+      <!-- 完美得分庆祝：confetti-burst + star-sparkle 叠加动画（100%正确率触发，2.5s后淡出） -->
+      <view v-if="showCelebration && accuracy >= 100" class="celebration-overlay" @animationend="onCelebrationEnd">
+        <image class="celebration-confetti" src="/static/effects/confetti-burst.png" mode="aspectFit" lazy-load />
+        <image class="celebration-sparkle" src="/static/effects/star-sparkle.png" mode="aspectFit" lazy-load />
       </view>
 
       <!-- 顶部关闭 -->
@@ -17,8 +18,13 @@
       </view>
 
       <scroll-view scroll-y class="result-scroll">
-        <!-- [AUDIT R432] 高分庆祝：celebration.png 不存在，改用文字+emoji -->
-        <view v-if="accuracy >= 80" class="celebration-illustration celebration-text">
+        <!-- 高分庆祝：star-sparkle 闪烁（80%~99% 正确率） -->
+        <view
+          v-if="showHighScore && accuracy >= 80 && accuracy < 100"
+          class="highscore-celebration"
+          @animationend="onHighScoreEnd"
+        >
+          <image class="highscore-sparkle" src="/static/effects/star-sparkle.png" mode="aspectFit" lazy-load />
           <text class="celebration-emoji">🎉</text>
         </view>
 
@@ -126,6 +132,12 @@
           <button class="action-btn secondary-btn" hover-class="btn-hover" @tap="emit('close')">返回</button>
         </view>
 
+        <!-- XP 金币飞出动画 -->
+        <view v-if="showXpCoins && accuracy > 0" class="xp-coins-flyout" @animationend="onXpCoinsEnd">
+          <image class="xp-coins-img" src="/static/effects/xp-coins.png" mode="aspectFit" lazy-load />
+          <text class="xp-coins-label">+XP</text>
+        </view>
+
         <view class="bottom-safe" />
       </scroll-view>
     </view>
@@ -180,6 +192,26 @@ const avgTimeDisplay = computed(() => {
 // --- 动画数字 ---
 const displayAccuracy = ref(0);
 let animHandle = null;
+
+// --- 特效动画状态（animationend 后从 DOM 移除） ---
+const showCelebration = ref(true);
+const showHighScore = ref(true);
+const showXpCoins = ref(true);
+
+/** 完美得分庆祝动画结束 — 从 DOM 移除 */
+function onCelebrationEnd() {
+  showCelebration.value = false;
+}
+
+/** 高分庆祝动画结束 — 从 DOM 移除 */
+function onHighScoreEnd() {
+  showHighScore.value = false;
+}
+
+/** XP 金币飞出动画结束 — 从 DOM 移除 */
+function onXpCoinsEnd() {
+  showXpCoins.value = false;
+}
 
 // --- AI 推荐下一步 ---
 const nextSteps = ref([]);
@@ -280,6 +312,10 @@ watch(
       _animDelayTimer = null;
     }
     if (val) {
+      // 重置特效动画状态（允许重新触发）
+      showCelebration.value = true;
+      showHighScore.value = true;
+      showXpCoins.value = true;
       displayAccuracy.value = 0;
       _animDelayTimer = setTimeout(() => {
         _animDelayTimer = null;
@@ -385,30 +421,128 @@ const motivationalText = computed(() => {
   position: relative;
 }
 
-/* 满分彩纸庆祝装饰 */
-.confetti-decoration {
+/* ==================== 完美得分庆祝叠加动画 ==================== */
+.celebration-overlay {
   position: absolute;
-  top: 20rpx;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 400rpx;
+  z-index: 0;
+  pointer-events: none;
+  animation: celebration-fadeout 2.5s ease-out forwards;
+}
+.celebration-confetti {
+  position: absolute;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 200rpx;
-  height: 200rpx;
-  opacity: 0.8;
-  z-index: 0;
-  animation: confetti-fade 2s ease-out forwards;
+  width: 360rpx;
+  height: 360rpx;
+  animation: confetti-pop 2.5s ease-out forwards;
 }
-@keyframes confetti-fade {
+.celebration-sparkle {
+  position: absolute;
+  top: 40rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 240rpx;
+  height: 240rpx;
+  animation: sparkle-twinkle 2.5s ease-in-out forwards;
+}
+@keyframes celebration-fadeout {
   0% {
     opacity: 0;
-    transform: translateX(-50%) scale(0.5);
   }
-  30% {
-    opacity: 0.9;
-    transform: translateX(-50%) scale(1.2);
+  15% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
   }
   100% {
-    opacity: 0.6;
-    transform: translateX(-50%) scale(1);
+    opacity: 0;
+  }
+}
+@keyframes confetti-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.2) rotate(-15deg);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.3) rotate(5deg);
+  }
+  50% {
+    transform: translateX(-50%) scale(1) rotate(-2deg);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9) translateY(40rpx);
+  }
+}
+@keyframes sparkle-twinkle {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.4) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.2) rotate(30deg);
+  }
+  40% {
+    transform: translateX(-50%) scale(0.95) rotate(60deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.1) rotate(120deg);
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8) rotate(180deg);
+  }
+}
+
+/* ==================== 高分庆祝（80%~99%） ==================== */
+.highscore-celebration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16rpx;
+  animation: highscore-appear 2s ease-out forwards;
+}
+.highscore-sparkle {
+  width: 120rpx;
+  height: 120rpx;
+  animation: sparkle-twinkle 2s ease-in-out forwards;
+}
+.celebration-emoji {
+  font-size: 80rpx;
+  animation: celebration-bounce 0.8s ease-out;
+}
+@keyframes highscore-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-10rpx);
   }
 }
 .result-top-bar {
@@ -441,22 +575,7 @@ const motivationalText = computed(() => {
   padding: 0 40rpx;
 }
 
-/* 高分庆祝 */
-.celebration-illustration {
-  width: 280rpx;
-  height: 220rpx;
-  margin: 0 auto 16rpx;
-  display: block;
-  animation: celebration-bounce 0.8s ease-out;
-}
-.celebration-text {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.celebration-emoji {
-  font-size: 100rpx;
-}
+/* 高分庆祝弹跳 */
 @keyframes celebration-bounce {
   0% {
     transform: scale(0.3);
@@ -469,6 +588,51 @@ const motivationalText = computed(() => {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* ==================== XP 金币飞出动画 ==================== */
+.xp-coins-flyout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16rpx auto;
+  pointer-events: none;
+  animation: xp-coins-fly 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.xp-coins-img {
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 8rpx;
+}
+.xp-coins-label {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--warning, #ff9600);
+  text-shadow: 0 2rpx 8rpx rgba(255, 215, 0, 0.5);
+}
+@keyframes xp-coins-fly {
+  0% {
+    opacity: 0;
+    transform: translateY(40rpx) scale(0.5);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(0) scale(1.2);
+  }
+  50% {
+    transform: translateY(-20rpx) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80rpx) scale(0.8);
+  }
+}
+
+/* ==================== 暗色模式特效降低亮度 ==================== */
+.dark-mode .celebration-overlay,
+.dark-mode .highscore-celebration,
+.dark-mode .xp-coins-flyout {
+  opacity: 0.85;
 }
 
 /* 圆环 */
