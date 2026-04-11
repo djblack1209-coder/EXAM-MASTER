@@ -14,6 +14,29 @@
 
 ---
 
+## [2026-04-11] CSS gap 兼容性 + image alt 属性 + ESLint 格式修复
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - `src/pages/login/index.vue` — gap: 8rpx → margin 替换
+  - `src/pages/splash/index.vue` — gap: 8px → margin 替换
+  - `src/pages/plan/index.vue` — gap: 16rpx → margin 替换（2-col grid）
+  - `src/pages/mistake/index.vue` — gap: 24rpx → margin 替换（2-col grid）
+  - `src/pages/knowledge-graph/index.vue` — 6 处 gap → margin 替换（3-col grid / flex column / flex row）
+  - `src/pages/settings/index.vue` — 2 处 gap → margin 替换（2-col grid）
+  - `src/pages/common/404.vue` — gap: 24rpx → margin 替换
+  - `src/components/common/share-modal.vue` — 2 处 gap → margin 替换（2-col grid + flex column）
+  - `src/pages/login/onboarding.vue` — 补充 alt="选择你的考试类型"
+  - `src/pages/practice-sub/do-quiz.vue` — 补充 alt=""（装饰性图片）
+  - `src/pages/tools/photo-search.vue` — 补充 alt="拍照搜题"
+  - `src/pages/group/index.vue` — ESLint vue/multiline-html-element-content-newline 自动修复
+  - `src/pages/plan/adaptive.vue` — ESLint vue/multiline-html-element-content-newline 自动修复
+- **Summary**: 三类质量修复：①15 处 CSS `gap` 属性替换为 margin 方案以兼容低版本 Android WebView；②3 处 `<image>` 标签补充 alt 属性提升无障碍覆盖率；③2 个文件 ESLint 格式警告自动修复。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm run lint` passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-11] 学习小组 + 学习资源页面上线（P3+P4）
 
 - **Scope**: `frontend`
