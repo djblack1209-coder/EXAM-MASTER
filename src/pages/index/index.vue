@@ -230,6 +230,36 @@
                   <text class="tool-tag-text">AI 驱动</text>
                 </view>
               </view>
+              <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="goToGroup">
+                <view class="tool-card-icon-wrap">
+                  <image
+                    class="feature-cartoon-icon"
+                    src="/static/icons/crossed-swords.png"
+                    mode="aspectFit"
+                    alt="学习小组"
+                  />
+                </view>
+                <text class="tool-card-title">学习小组</text>
+                <text class="tool-card-desc">组队备考更高效</text>
+                <view class="tool-card-tag">
+                  <text class="tool-tag-text">协作学习</text>
+                </view>
+              </view>
+              <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="goToResource">
+                <view class="tool-card-icon-wrap">
+                  <image
+                    class="feature-cartoon-icon"
+                    src="/static/icons/bookmark-save.png"
+                    mode="aspectFit"
+                    alt="学习资源"
+                  />
+                </view>
+                <text class="tool-card-title">学习资源</text>
+                <text class="tool-card-desc">精选备考资料</text>
+                <view class="tool-card-tag">
+                  <text class="tool-tag-text">推荐资源</text>
+                </view>
+              </view>
             </view>
           </view>
 
