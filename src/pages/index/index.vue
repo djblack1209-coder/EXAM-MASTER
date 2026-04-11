@@ -1114,6 +1114,16 @@ export default {
 
     // ✅ F002: handleEditPlan, handleToggleTodo 由 todoMixin 提供
 
+    // 学习小组入口
+    goToGroup() {
+      safeNavigateTo('/pages/group/index');
+    },
+
+    // 学习资源入口
+    goToResource() {
+      safeNavigateTo('/pages/resource/index');
+    },
+
     // 实用工具导航
     navToTool(name) {
       safeNavigateTo(`/pages/tools/${name}`);
