@@ -65,7 +65,7 @@ describe('useThemeStore', () => {
 
       expect(store.themeType).toBe('wise');
       expect(storageService.save).toHaveBeenCalledWith('theme_type', 'wise');
-      expect(mockEmit).toHaveBeenCalledWith('themeTypeUpdate', 'wise');
+      // themeTypeUpdate 事件已移除（无监听器，属死代码）
     });
 
     it('设置有效类型 bitget', () => {
@@ -105,7 +105,7 @@ describe('useThemeStore', () => {
       expect(storageService.save).toHaveBeenCalledWith('theme_mode', 'dark');
       expect(storageService.save).toHaveBeenCalledWith('theme_type', 'bitget');
       expect(mockEmit).toHaveBeenCalledWith('themeUpdate', 'dark');
-      expect(mockEmit).toHaveBeenCalledWith('themeTypeUpdate', 'bitget');
+      // themeTypeUpdate 事件已移除（无监听器，属死代码）
     });
 
     it('从深色切换到浅色', () => {

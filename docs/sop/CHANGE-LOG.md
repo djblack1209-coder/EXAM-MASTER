@@ -37,6 +37,21 @@
 
 ---
 
+## [2026-04-11] 全面遗留任务清理 — 导航入口/死代码/CSS兼容/无障碍
+
+- **Scope**: `frontend` `testing`
+- **Files Changed**:
+  - **P0 导航入口**: `profile/index.vue`(+学习小组/资源入口) `practice/index.vue`(+学习资源入口)
+  - **P1 死代码清理**: `auth.js`(-2emit) `IndexHeaderBar.vue`(-1emit) `todo-store-patch.js`(-1emit) `theme.js`(-2emit) 4个tabBar页(-tabbarRouteUpdate) `learning-trajectory-store.js`(-孤儿listener) `useStudyTimer.js`(-孤儿listener) `storageService.js`(-死键) `theme-store.spec.js`(同步断言)
+  - **P2 CSS gap兼容**: 15处gap→margin（login/splash/plan/mistake/knowledge-graph×6/settings×2/404/share-modal×2）
+  - **P3 无障碍**: 3处image补alt（onboarding/do-quiz/photo-search）
+  - **P4 ESLint**: group/index.vue + adaptive.vue 格式自动修复
+- **Summary**: 全面清理遗留技术债：修复2个新页面不可达（添加导航入口）、清除11处死代码、修复15处CSS gap微信兼容、补全3处alt属性、修复6处ESLint警告。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-11] 学习小组 + 学习资源页面上线（P3+P4）
 
 - **Scope**: `frontend`
