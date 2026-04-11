@@ -73,7 +73,9 @@ Service(api/domains/) → 调用 _request-core.js 发 API 请求
 后端云函数 → 操作 MongoDB，调用第三方 API
 ```
 
-已知违规（待重构）：`import-data.vue`, `pk-battle.vue`, `rank.vue`, `AIChatModal.vue`, `MistakeReport.vue`, `chat.vue`, `ai-consult.vue`
+已知违规（待重构）：~~`import-data.vue`~~(已修复→practice-engine store)
+
+已验证合规：`pk-battle.vue`, `rank.vue`, `AIChatModal.vue`, `MistakeReport.vue`, `chat.vue`, `ai-consult.vue`（均通过 Store 调后端，storageService 属本地工具类非后端调用）
 
 ## 任务完成后必做
 

@@ -196,7 +196,7 @@ import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { pageRequireLogin } from '@/utils/auth/loginGuard.js';
 import config from '@/config/index.js';
-import { ankiImport, ragIngest } from '@/services/api/domains/practice.api.js';
+import { usePracticeEngineStore } from '@/stores/modules/practice-engine.js';
 import { useSchoolStore } from '@/stores/modules/school.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import EnhancedProgress from './EnhancedProgress.vue';
@@ -543,7 +543,10 @@ export default {
           // 更新状态
           this.importStatus = 'uploading';
 
-          const response = await ankiImport(base64String, fileName, { timeout: config.ai.timeout, maxRetries: 1 });
+          const response = await usePracticeEngineStore().importAnkiDeck(base64String, fileName, {
+            timeout: config.ai.timeout,
+            maxRetries: 1
+          });
 
           toast.hide();
 
@@ -561,9 +564,11 @@ export default {
 
             // 后台触发 RAG 索引（非阻塞，不影响用户流程）
             if (result.bankId || result.questionBankId) {
-              ragIngest('index_questions', { bankId: result.bankId || result.questionBankId }).catch((err) => {
-                logger.warn('[Import] RAG indexing failed (non-critical):', err);
-              });
+              usePracticeEngineStore()
+                .triggerRagIngest('index_questions', { bankId: result.bankId || result.questionBankId })
+                .catch((err) => {
+                  logger.warn('[Import] RAG indexing failed (non-critical):', err);
+                });
             }
 
             modal.show({
