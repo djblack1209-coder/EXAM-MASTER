@@ -194,6 +194,7 @@ import storageService from '@/services/storageService.js';
 import { getNavBarHeight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
+import { useStatsStore } from '@/stores/modules/stats.js';
 
 defineOptions({ name: 'StudyDetail' });
 
@@ -201,6 +202,7 @@ defineOptions({ name: 'StudyDetail' });
 const themeStore = useThemeStore();
 const studyStore = useStudyStore();
 const studyEngineStore = useStudyEngineStore();
+const statsStore = useStatsStore();
 
 // 非响应式实例属性（事件回调引用，用于解绑）
 let _themeHandler = null;
@@ -335,75 +337,35 @@ function toggleTheme() {
   themeStore.toggleTheme();
 }
 
-/** 加载学习数据 */
-function loadStudyData() {
+/** 加载学习数据（优先后端，降级本地） */
+async function loadStudyData() {
   isLoading.value = true;
-  // 从本地存储加载真实数据
   try {
-    // 获取今日学习时长
-    const savedDate = storageService.get('study_date');
-    const today = new Date().toISOString().split('T')[0];
-    if (savedDate === today) {
-      studyTime.value = storageService.get('today_study_time', 0);
+    // 尝试从后端获取统计概览
+    const overview = await statsStore.fetchOverview();
+    if (overview && overview.totalQuestions > 0) {
+      // 后端数据可用：使用服务器端统计
+      studyTime.value = overview.totalStudyMinutes || overview.today?.studyMinutes || 0;
+      const totalQ = overview.totalQuestions || 0;
+      const correctQ = overview.correctQuestions || 0;
+      completionRate.value = totalQ > 0 ? overview.accuracy : 0;
+
+      // 能力评级基于后端综合数据
+      const accuracy = totalQ > 0 ? (correctQ / totalQ) * 100 : 0;
+      const volumeScore = Math.min(Math.log10(totalQ + 1) / Math.log10(51), 1) * 100;
+      const compositeScore = accuracy * 0.6 + volumeScore * 0.4;
+      if (compositeScore >= 85) abilityRank.value = 'S';
+      else if (compositeScore >= 72) abilityRank.value = 'A';
+      else if (compositeScore >= 58) abilityRank.value = 'B';
+      else if (compositeScore >= 42) abilityRank.value = 'C';
+      else abilityRank.value = 'D';
+
+      // 尝试加载每日趋势数据（用于热力图）
+      _loadDailyFromBackend();
     } else {
-      studyTime.value = 0;
+      // 后端无数据或未登录，降级到本地存储
+      _loadStatsFromLocal();
     }
-
-    // 获取完成率（从题库和学习记录计算）
-    const questionBank = storageService.get('v30_bank', []);
-    const studyRecord = storageService.get('study_record', {});
-    const totalQuestions = questionBank.length;
-    const completedQuestions = studyRecord.totalAnswered || 0;
-
-    if (totalQuestions > 0) {
-      completionRate.value = Math.round((completedQuestions / totalQuestions) * 100);
-    } else {
-      completionRate.value = 0;
-    }
-
-    // ✅ [P1重构] 能力评级 — 综合题量+正确率+一致性，不再只看正确率
-    const correctCount = studyRecord.correctCount || 0;
-    const totalAnswered = studyRecord.totalAnswered || 0;
-    if (totalAnswered > 0) {
-      const accuracy = (correctCount / totalAnswered) * 100;
-
-      // 题量权重：答题越多，评级越可信（对数增长，50题满分）
-      const volumeScore = Math.min(Math.log10(totalAnswered + 1) / Math.log10(51), 1) * 100;
-
-      // 一致性权重：最近10次答题的正确率波动（从study_stats推算）
-      let consistencyScore = 70; // 默认中等一致性
-      try {
-        const recentHistory = studyStore?.questionHistory || [];
-        if (recentHistory.length >= 5) {
-          const recent = recentHistory.slice(-10);
-          const recentAcc = (recent.filter((r) => r.isCorrect).length / recent.length) * 100;
-          // 一致性 = 100 - |整体正确率 - 近期正确率| 的差距
-          consistencyScore = Math.max(0, 100 - Math.abs(accuracy - recentAcc) * 2);
-        }
-      } catch (_e) {
-        /* 使用默认值 */
-      }
-
-      // 综合评分：正确率50% + 题量30% + 一致性20%
-      const compositeScore = accuracy * 0.5 + volumeScore * 0.3 + consistencyScore * 0.2;
-
-      if (compositeScore >= 85) {
-        abilityRank.value = 'S';
-      } else if (compositeScore >= 72) {
-        abilityRank.value = 'A';
-      } else if (compositeScore >= 58) {
-        abilityRank.value = 'B';
-      } else if (compositeScore >= 42) {
-        abilityRank.value = 'C';
-      } else {
-        abilityRank.value = 'D';
-      }
-    } else {
-      abilityRank.value = '-';
-    }
-
-    // 加载每日学习记录数据（用于热力图和趋势图）
-    loadDailyStudyRecords();
 
     // 加载知识点掌握度数据（用于能力雷达图）
     knowledgeMastery.value = storageService.get('knowledge_mastery', null);
@@ -415,9 +377,7 @@ function loadStudyData() {
     });
   } catch (error) {
     logger.error('[StudyDetail] 加载学习数据失败:', error);
-    // [AUDIT FIX R135] 加载失败时提示用户，而不是静默展示默认数据
     toast.error('学习数据加载失败');
-    // 使用默认值
     studyTime.value = 0;
     completionRate.value = 0;
     abilityRank.value = '-';
@@ -425,6 +385,97 @@ function loadStudyData() {
   } finally {
     isLoading.value = false;
   }
+}
+
+/** 从后端加载每日统计（用于热力图） */
+async function _loadDailyFromBackend() {
+  try {
+    const result = await statsStore.fetchDailyStats(30);
+    if (result?.stats?.length > 0) {
+      const records = {};
+      for (const day of result.stats) {
+        if (day.studyMinutes > 0 || day.questions > 0) {
+          records[day.date] = day.studyMinutes || day.questions;
+        }
+      }
+      studyRecordData.value = records;
+      return;
+    }
+  } catch (_err) {
+    /* 降级到本地 */
+  }
+  loadDailyStudyRecords();
+}
+
+/** 从本地存储加载统计数据（降级路径） */
+function _loadStatsFromLocal() {
+  // 获取今日学习时长
+  const savedDate = storageService.get('study_date');
+  const today = new Date().toISOString().split('T')[0];
+  if (savedDate === today) {
+    studyTime.value = storageService.get('today_study_time', 0);
+  } else {
+    studyTime.value = 0;
+  }
+
+  // 获取完成率（从题库和学习记录计算）
+  const questionBank = storageService.get('v30_bank', []);
+  const studyRecord = storageService.get('study_record', {});
+  const totalQuestions = questionBank.length;
+  const completedQuestions = studyRecord.totalAnswered || 0;
+
+  if (totalQuestions > 0) {
+    completionRate.value = Math.round((completedQuestions / totalQuestions) * 100);
+  } else {
+    completionRate.value = 0;
+  }
+
+  // ✅ [P1重构] 能力评级 — 综合题量+正确率+一致性，不再只看正确率
+  const correctCount = studyRecord.correctCount || 0;
+  const totalAnswered = studyRecord.totalAnswered || 0;
+  if (totalAnswered > 0) {
+    const accuracy = (correctCount / totalAnswered) * 100;
+
+    // 题量权重：答题越多，评级越可信（对数增长，50题满分）
+    const volumeScore = Math.min(Math.log10(totalAnswered + 1) / Math.log10(51), 1) * 100;
+
+    // 一致性权重：最近10次答题的正确率波动（从study_stats推算）
+    let consistencyScore = 70; // 默认中等一致性
+    try {
+      const recentHistory = studyStore?.questionHistory || [];
+      if (recentHistory.length >= 5) {
+        const recent = recentHistory.slice(-10);
+        const recentAcc = (recent.filter((r) => r.isCorrect).length / recent.length) * 100;
+        // 一致性 = 100 - |整体正确率 - 近期正确率| 的差距
+        consistencyScore = Math.max(0, 100 - Math.abs(accuracy - recentAcc) * 2);
+      }
+    } catch (_e) {
+      /* 使用默认值 */
+    }
+
+    // 综合评分：正确率50% + 题量30% + 一致性20%
+    const compositeScore = accuracy * 0.5 + volumeScore * 0.3 + consistencyScore * 0.2;
+
+    if (compositeScore >= 85) {
+      abilityRank.value = 'S';
+    } else if (compositeScore >= 72) {
+      abilityRank.value = 'A';
+    } else if (compositeScore >= 58) {
+      abilityRank.value = 'B';
+    } else if (compositeScore >= 42) {
+      abilityRank.value = 'C';
+    } else {
+      abilityRank.value = 'D';
+    }
+  } else {
+    abilityRank.value = '-';
+  }
+
+  // 加载每日学习记录数据（用于热力图和趋势图）
+  loadDailyStudyRecords();
+
+  // 加载知识点掌握度数据（用于能力雷达图）
+  knowledgeMastery.value = storageService.get('knowledge_mastery', null);
 }
 
 /** 加载每日学习记录 */
