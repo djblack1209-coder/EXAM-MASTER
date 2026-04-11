@@ -110,6 +110,17 @@ export function useStudyTimer() {
     storageService.save('today_study_time', timeToSave);
     storageService.save('study_date', getToday());
     logger.log('[useStudyTimer] 学习时长已保存:', timeToSave, '分钟');
+    // 同步上报后端（异步，不阻塞本地保存）
+    if (timeToSave > 0) {
+      import('@/stores/modules/stats.js')
+        .then(({ useStatsStore }) => {
+          const statsStore = useStatsStore();
+          statsStore.reportStudyTime(timeToSave);
+        })
+        .catch(() => {
+          // 上报失败不影响计时器
+        });
+    }
   }
 
   /**

@@ -1269,7 +1269,7 @@ export default {
         aiAnalysis
       });
     },
-    updateStudyStats() {
+    async updateStudyStats() {
       // 更新学习热力图数据
       const today = new Date().toISOString().split('T')[0];
       const stats = storageService.get('study_stats', {});
@@ -1284,6 +1284,17 @@ export default {
         uni.setStorageSync('today_answer_date', today);
       } else {
         uni.setStorageSync('today_answer_count', String(todayCount + 1));
+      }
+      // 上报后端统计（异步，不阻塞本地保存）
+      try {
+        const { useStatsStore } = await import('@/stores/modules/stats.js');
+        const statsStore = useStatsStore();
+        // 每次答题算1分钟学习时长（近似）
+        statsStore.reportStudyTime(1);
+        // 每日首次答题时更新连续学习天数
+        statsStore.reportStreak();
+      } catch (_e) {
+        // 上报失败不影响答题流程
       }
     },
     formatFsrsInterval(days) {
