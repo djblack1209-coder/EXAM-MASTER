@@ -196,7 +196,7 @@
             <text class="setting-desc ds-text-xs">邀请好友可获得 VIP 体验天数奖励</text>
           </view>
         </view>
-        <view class="invite-entry-badge" v-if="inviteClaimableCount > 0">
+        <view v-if="inviteClaimableCount > 0" class="invite-entry-badge">
           <text class="invite-badge-text">{{ inviteClaimableCount }}个奖励可领</text>
         </view>
         <BaseIcon v-else name="arrow-right" :size="28" />
