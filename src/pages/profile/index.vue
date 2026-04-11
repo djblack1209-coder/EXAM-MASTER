@@ -415,6 +415,7 @@ import { useStudyStore } from '@/stores/modules/study';
 import { useUserStore } from '@/stores/modules/user';
 // useGamificationStore — 动态导入减小主包体积
 import { useProfileStore } from '@/stores/modules/profile';
+import { useStatsStore } from '@/stores/modules/stats.js';
 // 打卡和补签动态导入 — 瘦身主包
 // import { checkinStreak } from '@/services/checkin-streak.js';
 // import { streakRecovery } from '@/services/streak-recovery.js';
@@ -475,6 +476,7 @@ const userStore = useUserStore();
 // gamificationStore 延迟加载（动态导入减小主包体积）
 const gamificationStore = shallowRef(null);
 const profileStore = useProfileStore();
+const statsStore = useStatsStore();
 
 // ========== 游戏化计算属性（带 null 保护） ==========
 const playerLevel = computed(() => gamificationStore.value?.level ?? 1);
@@ -498,8 +500,11 @@ const userId = computed(() => {
   if (!isLoggedIn.value) return '点击登录';
   return userStore.userInfo?.userId || userStore.userInfo?._id || storageService.get('EXAM_USER_ID', '100001');
 });
-const studyDays = computed(() => studyStore.studyProgress?.studyDays || 0);
+const studyDays = computed(() => statsStore.totalStudyDays || studyStore.studyProgress?.studyDays || 0);
 const accuracyRate = computed(() => {
+  // 优先使用后端统计数据
+  if (statsStore.accuracy > 0) return statsStore.accuracy;
+  // 降级到本地计算
   const progress = studyStore.studyProgress;
   if (!progress || !progress.totalQuestions || progress.totalQuestions === 0) {
     return 0;

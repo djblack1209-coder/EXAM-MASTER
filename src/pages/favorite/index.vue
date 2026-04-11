@@ -267,19 +267,14 @@ import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
-import {
-  getFavorites,
-  getFolders,
-  createFolder as createFavoriteFolder,
-  moveToFolder as moveFavoriteToFolder,
-  removeFavorite as removeFromFavorites,
-  updateNote,
-  getFavoriteStats
-} from '@/utils/favorite/question-favorite.js';
+import { useFavoriteStore } from '@/stores/modules/favorite.js';
+import questionFavoriteManager from '@/utils/favorite/question-favorite.js';
 import { logger } from '@/utils/logger.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
-import questionFavoriteManager from '@/utils/favorite/question-favorite.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+
+// 通过 Store 管理收藏（Store 内部自动判断登录状态走后端或本地）
+const favoriteStore = useFavoriteStore();
 
 // ── 响应式状态 ──
 const isRefreshing = ref(false);
@@ -407,13 +402,19 @@ function initSystemUI() {
   statusBarHeight.value = getStatusBarHeight();
 }
 
-/** 加载收藏数据 */
-function loadData() {
+/** 加载收藏数据（通过 Store，自动判断走后端或本地） */
+async function loadData() {
   try {
-    folders.value = getFolders();
-    favorites.value = getFavorites();
-    // 加载统计数据
-    stats.value = getFavoriteStats();
+    // Store 内部根据登录状态选择后端 API 或本地 storageService
+    await favoriteStore.loadFavorites();
+    favoriteStore.loadFolders();
+    favoriteStore.loadStats();
+
+    // 从 Store 同步到页面状态
+    favorites.value = favoriteStore.favorites;
+    folders.value = favoriteStore.folders;
+    stats.value = favoriteStore.stats;
+
     logger.log('[favorite] 数据加载完成:', {
       folders: folders.value.length,
       favorites: favorites.value.length,
@@ -535,7 +536,7 @@ function createFolder() {
     return;
   }
 
-  const result = createFavoriteFolder({
+  const result = favoriteStore.createFolder({
     name: newFolderName.value.trim(),
     icon: newFolderIcon.value
   });
@@ -561,7 +562,7 @@ function moveToFolder(item) {
 function confirmMove(folderId) {
   if (!movingItem.value || folderId === movingItem.value.folderId) return;
 
-  const result = moveFavoriteToFolder(movingItem.value.id, folderId);
+  const result = favoriteStore.moveToFolder(movingItem.value.id, folderId);
 
   if (result.success) {
     toast.success('移动成功');
@@ -578,9 +579,9 @@ function removeFavorite(item) {
   modal.show({
     title: '确认取消收藏',
     content: '确定要取消收藏这道题吗？',
-    success: (res) => {
+    success: async (res) => {
       if (res.confirm) {
-        const result = removeFromFavorites(item.id);
+        const result = await favoriteStore.removeFromFavorite(item.id);
         if (result.success) {
           toast.success('已取消收藏');
           loadData();
@@ -603,7 +604,7 @@ function openNoteModal(item) {
 function saveNote() {
   if (!editingItem.value) return;
 
-  const result = updateNote(editingItem.value.id, noteContent.value.trim());
+  const result = favoriteStore.updateNote(editingItem.value.id, noteContent.value.trim());
 
   if (result.success) {
     toast.success('保存成功');
