@@ -14,6 +14,26 @@
 
 ---
 
+## [2026-04-11] 邀请奖励系统接入 + 重复文件清理（P2+P5）
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **新建 API 服务层**:
+    - `src/services/api/domains/invite.api.js` — 封装后端 `invite-service` 云函数 3 个接口（get_info/handle/claim_reward）
+  - **新建 Pinia Store**:
+    - `src/stores/modules/invite.js` — 邀请状态中心，管理邀请码/已邀请人数/奖励列表及领取状态，含 claimableCount/nextThreshold/remainingToNext 计算属性
+  - **设置页修复（邀请入口不可达）**:
+    - `src/pages/settings/index.vue` — 新增邀请入口卡片（FriendsEntryCard 下方），含 share-arrow 卡通图标、可领奖励红色角标；新增 `openInviteModal` 方法从 Store 拉取真实邀请信息；`inviteCode` 从硬编码 `'EXAM8888'` 改为 `computed(() => inviteStore.inviteCode)`；新增 `computed` 导入、`useInviteStore` 导入
+  - **重复文件清理**:
+    - 删除 `src/pages/plan/utils/learning-analytics.js`（997 行，与 practice-sub 版完全相同）
+    - `src/pages/plan/intelligent-plan-manager.js` — 导入路径从 `./utils/learning-analytics.js` 改为 `../practice-sub/utils/learning-analytics.js`
+    - `src/pages/practice-sub/utils/learning-analytics.js` — 注释从"分包隔离副本"改为"唯一正本"
+- **Summary**: 修复邀请功能不可达问题（设置页无入口按钮→新增入口卡片+后端对接），邀请码从硬编码改为后端动态生成。清理 997 行重复代码（learning-analytics.js 两份合一）。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-11] 后端对接 — 收藏云端同步 + 用户统计接入（P0+P1）
 
 - **Scope**: `frontend`

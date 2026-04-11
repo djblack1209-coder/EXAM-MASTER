@@ -186,6 +186,23 @@
     <!-- F002: 好友入口（已提取为独立组件） -->
     <FriendsEntryCard />
 
+    <!-- 邀请好友入口卡片 -->
+    <view class="section">
+      <view class="invite-entry-card apple-group-card" @tap="openInviteModal">
+        <view class="invite-entry-left">
+          <image class="feature-cartoon-icon" src="/static/icons/share-arrow.png" mode="aspectFit" alt="邀请好友" />
+          <view class="invite-entry-info">
+            <text class="setting-title ds-text-sm ds-font-medium">邀请好友一起备考</text>
+            <text class="setting-desc ds-text-xs">邀请好友可获得 VIP 体验天数奖励</text>
+          </view>
+        </view>
+        <view class="invite-entry-badge" v-if="inviteClaimableCount > 0">
+          <text class="invite-badge-text">{{ inviteClaimableCount }}个奖励可领</text>
+        </view>
+        <BaseIcon v-else name="arrow-right" :size="28" />
+      </view>
+    </view>
+
     <!-- F002: 智能导师列表（已提取为独立组件） -->
     <AITutorList :target-schools="targetSchools" @start-chat="startAIChat" />
 
@@ -310,7 +327,7 @@
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 // Vue 原生钩子
-import { ref, onMounted, onUnmounted, onErrorCaptured } from 'vue';
+import { ref, computed, onMounted, onUnmounted, onErrorCaptured } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 // UniApp 特有钩子
 import { onShow } from '@dcloudio/uni-app';
@@ -326,6 +343,7 @@ import { setTheme, isNightTime } from './theme.js';
 import { storageService } from '@/services/storageService.js';
 import { useSchoolStore } from '@/stores/modules/school';
 import { useProfileStore } from '@/stores/modules/profile';
+import { useInviteStore } from '@/stores/modules/invite.js';
 import { useThemeStore } from '@/stores';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -367,8 +385,12 @@ const isPageLoading = ref(true); // F018: 页面加载状态
 const showTargetSchoolsModal = ref(false); // 目标院校管理弹窗
 const showInviteModal = ref(false); // 邀请好友弹窗
 const showPosterModal = ref(false); // 海报生成弹窗
-const inviteCode = ref('EXAM8888'); // 邀请码（可以从后端获取）
 const showThemeSelector = ref(false); // 主题选择器弹窗
+
+// 邀请系统（通过 Store 从后端获取真实邀请码）
+const inviteStore = useInviteStore();
+const inviteCode = computed(() => inviteStore.inviteCode || 'EXAM8888');
+const inviteClaimableCount = computed(() => inviteStore.claimableCount);
 // C5: 注销状态
 const deletionStatus = ref({ status: 'active', remainingDays: null });
 
@@ -965,6 +987,15 @@ const onAvatarError = (e) => {
   }
 };
 
+// 打开邀请弹窗（从后端获取真实邀请码）
+const openInviteModal = async () => {
+  showInviteModal.value = true;
+  // 异步拉取邀请信息（不阻塞弹窗打开）
+  inviteStore.fetchInviteInfo().catch((err) => {
+    logger.warn('[Settings] 拉取邀请信息失败:', err);
+  });
+};
+
 // 关闭邀请弹窗
 const handleCloseInviteModal = () => {
   showInviteModal.value = false;
@@ -1442,6 +1473,45 @@ const handleClosePosterModal = () => {
 }
 
 /* F002: online-badge 样式已移至 AITutorList.vue */
+
+/* 邀请好友入口卡片 */
+.invite-entry-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 28rpx;
+  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  border: 1px solid var(--apple-glass-border-strong);
+  border-radius: 28rpx;
+  box-shadow: var(--apple-shadow-card);
+}
+
+.invite-entry-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.invite-entry-info {
+  margin-left: 16rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.invite-entry-badge {
+  background: var(--danger, #ff4b4b);
+  color: #ffffff;
+  font-size: 20rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.invite-badge-text {
+  color: #ffffff;
+  font-size: 20rpx;
+}
 
 .invite-btn-small {
   display: flex;
