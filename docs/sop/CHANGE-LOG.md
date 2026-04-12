@@ -14,6 +14,33 @@
 
 ---
 
+## [2026-04-12] Store 健壮性加固 + shallowRef 性能优化 + 考试日期引导（R501-R503）
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **R501 — 7个 Store 补充 $reset() 方法**:
+    - `src/stores/modules/auth.js` — 新增 `$reset()`：重置 token/isLogin
+    - `src/stores/modules/user.js` — 新增 `$reset()`：重置 friendsList
+    - `src/stores/modules/review.js` — 新增 `$reset()`：重置 fsrsStatus/retentionCurve/currentDiagnosis/reviewPlan
+    - `src/stores/modules/tools.js` — 新增 `$reset()`：重置 photoConfig/activeDocJob
+    - `src/stores/modules/theme.js` — 新增 `$reset()`：重置 themeType/isDark；**修复 setDarkMode 未导出到 return 对象的 bug**
+    - `src/stores/modules/study.js` — 新增 `$reset()`：重置 studyProgress/questionHistory
+    - `src/pages/ai-classroom/stores/classroom.js` — 新增 `$reset()`：重置 lessons/currentSession/messages
+  - **R502 — 4个 Store 大数组 shallowRef 性能优化**:
+    - `src/stores/modules/favorite.js` — favorites/folders/categories 改为 shallowRef
+    - `src/stores/modules/stats.js` — dailyStats 改为 shallowRef
+    - `src/stores/modules/resource.js` — recommendations/hotResources/categoryResources/searchResults 改为 shallowRef
+    - `src/stores/modules/learning-trajectory-store.js` — trajectory/sessions 改为 shallowRef + 3处 triggerRef() 补充
+  - **R503 — D017 考试日期设置引导**:
+    - `src/pages/settings/index.vue` — 用户信息卡片新增考试日期 picker（含倒计时天数显示），新增 examDate ref + onExamDateChange 处理 + 暗色模式样式
+    - `src/components/business/index/AIDailyBriefing.vue` — 未设置考试日期时新增"设置考试日期"引导任务项，新增 go-settings emit + settings action 处理
+    - `src/pages/index/index.vue` — 新增 navToSettings 方法处理 go-settings 事件
+- **Summary**: 三项技术债清理：①7个 Setup Store 补充 `$reset()` 方法防止用户切换账号时状态泄露（附带修复 theme.js `setDarkMode` 未导出 bug）；②4个高影响 Store 共 10 个大数组从 `ref` 迁移到 `shallowRef`，减少深度响应式监听开销；③设置页新增考试日期选择器，AIDailyBriefing 新增引导任务，解决新用户无法发现考试日期设置入口的问题。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm run lint` passed | `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-12] 夜间审计系统升级至 v2（9阶段 + 6项增强）
 
 - **Scope**: `infra` | `docs`
