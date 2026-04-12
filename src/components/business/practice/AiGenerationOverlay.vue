@@ -66,20 +66,20 @@ const totalTarget = computed(() => {
   right: 0;
   bottom: 0;
   background-color: var(--overlay);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
 }
 .loading-card {
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 28px;
   padding: 40px;
   text-align: center;
-  box-shadow: var(--apple-shadow-floating);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
   max-width: 400px;
   width: 90%;
   animation: fadeInUp 0.3s ease-out;
@@ -195,10 +195,10 @@ const totalTarget = computed(() => {
   font-style: italic;
   margin: 0;
   max-width: 300px;
-  background: var(--glass-bg, rgba(255, 255, 255, 0.58));
+  background: var(--em3d-card-bg);
   padding: 12px 20px;
   border-radius: 999px;
-  border: 1px solid var(--border);
+  border: 2rpx solid var(--border);
   animation: fadeIn 0.5s ease;
 }
 @keyframes fadeIn {
@@ -215,8 +215,8 @@ const totalTarget = computed(() => {
   justify-content: center;
 }
 .pause-btn {
-  background: var(--glass-bg, rgba(255, 255, 255, 0.7));
-  border: 1px solid var(--border);
+  background: var(--em3d-card-bg);
+  border: 2rpx solid var(--border);
   color: var(--text-primary);
   border-radius: 999px;
   padding: 8px 14px;

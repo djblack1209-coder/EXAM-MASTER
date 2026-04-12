@@ -67,10 +67,9 @@
               :key="seg.type"
               class="phase-seg-label"
               :class="{ 'label-active': seg.active }"
-              >
-{{ seg.label }}
-</text
             >
+              {{ seg.label }}
+            </text>
           </view>
         </view>
 
@@ -177,10 +176,8 @@
                 </view>
                 <text class="tl-date">{{ phase.startDate }} — {{ phase.endDate }}</text>
                 <text v-if="phase.description || phase.focus" class="tl-desc">
-{{
-                  phase.description || phase.focus
-                }}
-</text>
+                  {{ phase.description || phase.focus }}
+                </text>
               </view>
             </view>
           </view>
@@ -679,7 +676,7 @@ onMounted(() => {
   width: 100%;
   height: 620rpx;
   background:
-    radial-gradient(circle at 18% 24%, color-mix(in srgb, var(--success) 22%, transparent) 0%, transparent 40%),
+    radial-gradient(circle at 18% 24%, var(--em3d-primary-light) 0%, transparent 40%),
     radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.32) 0%, transparent 28%);
   filter: blur(70px);
   opacity: 0.9;
@@ -701,10 +698,8 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 16rpx 32rpx;
-  -webkit-backdrop-filter: saturate(180%) blur(40rpx);
-  backdrop-filter: saturate(180%) blur(40rpx);
-  background: var(--apple-glass-nav-bg, rgba(245, 245, 247, 0.72));
-  border-bottom: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.06));
+  background-color: var(--em3d-card-bg);
+  border-bottom: 1rpx solid var(--em3d-border);
 }
 .dark-mode .top-nav {
   background: rgba(10, 10, 15, 0.72);
@@ -766,8 +761,6 @@ onMounted(() => {
   margin-bottom: 24rpx;
   border: 2rpx solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  -webkit-backdrop-filter: blur(20rpx);
-  backdrop-filter: blur(20rpx);
 }
 .dark-mode .glass-card {
   background: rgba(255, 255, 255, 0.06);
@@ -1009,7 +1002,7 @@ onMounted(() => {
 /* 任务项 */
 .task-item {
   padding: 20rpx 0;
-  border-top: 1rpx solid var(--apple-glass-border-strong, rgba(0, 0, 0, 0.04));
+  border-top: 1rpx solid var(--em3d-border);
 }
 .task-item:first-child {
   border-top: none;

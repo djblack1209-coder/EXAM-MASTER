@@ -61,8 +61,6 @@ defineEmits(['close']);
   justify-content: center;
   padding: 30rpx 24rpx calc(24rpx + env(safe-area-inset-bottom, 0px));
   background: rgba(9, 18, 12, 0.32);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .formula-content {
@@ -71,11 +69,9 @@ defineEmits(['close']);
   max-height: 78vh;
   padding: 14rpx 22rpx 22rpx;
   border-radius: 36rpx 36rpx 28rpx 28rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   animation: slideUp 0.26s ease;
 }
 
@@ -139,8 +135,8 @@ defineEmits(['close']);
   height: 60rpx;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   color: var(--text-main);
   font-size: 40rpx;
 }
@@ -155,8 +151,8 @@ defineEmits(['close']);
   padding: 22rpx;
   border-radius: 24rpx;
   background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .formula-category {
@@ -164,7 +160,7 @@ defineEmits(['close']);
   align-items: center;
   padding: 8rpx 16rpx;
   border-radius: 999rpx;
-  background: color-mix(in srgb, var(--success) 14%, transparent);
+  background: var(--em3d-primary-light);
   color: var(--primary);
   font-size: 20rpx;
   margin-bottom: 12rpx;
@@ -188,7 +184,7 @@ defineEmits(['close']);
 .formula-footer {
   margin-top: 16rpx;
   padding-top: 20rpx;
-  border-top: 1px solid var(--apple-divider);
+  border-top: 2rpx solid var(--em3d-border);
   text-align: center;
 }
 

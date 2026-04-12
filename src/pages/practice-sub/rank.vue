@@ -1222,9 +1222,7 @@ onUnload(() => {
   border-radius: 40rpx;
   position: relative;
   background: var(--card-bg);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid var(--card-border);
+  border: 2rpx solid var(--card-border);
   box-shadow: var(--shadow-xl);
   animation: slideUp 0.3s;
   max-height: 80vh;
@@ -1513,7 +1511,7 @@ onUnload(() => {
 .rank-1 .avatar-wrap,
 .rank-2 .avatar-wrap,
 .rank-3 .avatar-wrap {
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .rank-1 .avatar-wrap {
@@ -1525,7 +1523,7 @@ onUnload(() => {
 }
 
 .rank-3 .avatar-wrap {
-  border-color: color-mix(in srgb, var(--warning) 30%, transparent);
+  border-color: rgba(255, 200, 0, 0.15);
 }
 
 .crown-glow {

@@ -1296,9 +1296,7 @@ export default {
 
 .glass {
   background: var(--bg-card-alpha);
-  backdrop-filter: blur(16rpx) saturate(130%);
-  -webkit-backdrop-filter: blur(16rpx) saturate(130%);
-  border: 1rpx solid var(--glass-border, rgba(255, 255, 255, 0.16));
+  border: 1rpx solid var(--em3d-border);
 }
 
 .card-light {
@@ -1492,13 +1490,13 @@ export default {
   min-height: 88rpx;
   background: rgba(255, 255, 255, 0.78);
   border-color: rgba(255, 255, 255, 0.56);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .page-dark .section-header-apple .edit-plan-btn {
   background: rgba(16, 20, 28, 0.72);
   border-color: rgba(124, 176, 255, 0.2);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .edit-icon {
@@ -1524,21 +1522,10 @@ export default {
   min-height: 112rpx;
   border-radius: 28rpx;
   border: 1rpx solid var(--border);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-}
-
-.quick-tool-entry::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
-  pointer-events: none;
 }
 
 /* ==================== 实用工具入口（已降级，保留样式兼容） ==================== */
@@ -1556,7 +1543,7 @@ export default {
   min-height: 112rpx;
   border-radius: 28rpx;
   border: 1rpx solid var(--border);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -1565,17 +1552,6 @@ export default {
 .tool-entry-hover {
   transform: translateY(-2rpx);
   opacity: 0.92;
-}
-
-.tool-entry::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
-  pointer-events: none;
 }
 
 .tool-icon-wrapper {
@@ -2173,7 +2149,7 @@ export default {
   background: rgba(206, 130, 255, 0.12);
 }
 .page-dark .tool-card-icon-wrap {
-  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  background: var(--em3d-primary-light);
 }
 .tool-card-icon {
   color: var(--primary);
