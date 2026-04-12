@@ -373,21 +373,8 @@ page {
   --cta-primary-text: #ffffff;
   --cta-primary-border: transparent;
   --cta-primary-shadow: 0 12rpx 28rpx rgba(74, 144, 226, 0.22);
-  --apple-glass-nav-bg: rgba(245, 247, 250, 0.78);
-  --apple-glass-card-bg: rgba(255, 255, 255, 0.72);
-  --apple-glass-pill-bg: rgba(255, 255, 255, 0.86);
-  --apple-group-bg: rgba(255, 255, 255, 0.78);
-  --apple-glass-border-strong: rgba(226, 232, 240, 0.82);
-  --apple-specular-line: rgba(255, 255, 255, 0.72);
-  --apple-specular-soft: rgba(255, 255, 255, 0.28);
-  --apple-divider: rgba(0, 0, 0, 0.06);
-  --apple-shadow-floating: 0 18rpx 42rpx rgba(0, 0, 0, 0.08);
-  --apple-shadow-surface: 0 12rpx 32rpx rgba(0, 0, 0, 0.06);
-  --apple-shadow-card: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
+  /* [已迁移] Apple Glass 变量已被 em3d 设计系统替代，保留 icon-highlight 供个别组件使用 */
   --icon-highlight: 0 4px 20px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
-  --apple-chromatic-blue: color-mix(in srgb, var(--primary) 4%, transparent);
-  --apple-chromatic-pink: rgba(255, 45, 85, 0.03);
-  --apple-chromatic-green: color-mix(in srgb, var(--success) 3%, transparent);
 
   /* ====== 设计系统令牌 ====== */
   /* 圆角系统 */
