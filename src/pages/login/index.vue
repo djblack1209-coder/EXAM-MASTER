@@ -1143,7 +1143,7 @@ onUnmounted(() => {
 .login-container {
   min-height: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--page-gradient-top) 0%, var(--page-gradient-bottom) 100%);
+  background-color: var(--em3d-bg);
   padding: 0 40rpx;
   position: relative;
   overflow: hidden;
@@ -1201,10 +1201,16 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--apple-glass-card-bg);
+  background-color: var(--em3d-card-bg);
   border-radius: 50%;
-  box-shadow: var(--apple-shadow-surface);
-  border: 1rpx solid var(--glass-border);
+  box-shadow: 0 4rpx 0 var(--em3d-border-shadow);
+  border: 2rpx solid var(--em3d-border);
+  transition: var(--em3d-ease-press);
+}
+
+.back-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 2rpx 0 var(--em3d-border-shadow);
 }
 
 .back-icon {
@@ -1277,19 +1283,19 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   padding: 32rpx 36rpx;
-  background: #ffffff;
-  border-radius: 28rpx;
+  background-color: var(--em3d-card-bg);
+  border-radius: var(--em3d-radius-lg);
   margin-bottom: 24rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  transition: var(--em3d-ease-press);
   position: relative;
   overflow: hidden;
 }
 
 .login-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+  transform: translateY(3rpx);
+  box-shadow: 0 1rpx 0 var(--em3d-border-shadow);
 }
 
 .btn-icon {
@@ -1302,25 +1308,25 @@ onUnmounted(() => {
   margin-right: 24rpx;
   font-size: 28rpx;
   font-weight: 600;
-  color: var(--text-inverse);
-  border: 1rpx solid var(--glass-border);
-  box-shadow: var(--apple-shadow-surface);
+  color: var(--em3d-text-inv);
+  border: none;
+  box-shadow: 0 3rpx 0 rgba(0, 0, 0, 0.15);
 }
 
 .wechat-icon {
-  background: linear-gradient(135deg, var(--success) 0%, var(--wise-green-dark) 100%);
+  background-color: var(--em3d-primary);
 }
 
 .qq-icon {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
+  background-color: var(--em3d-secondary);
 }
 
 .e2e-icon {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
+  background-color: var(--em3d-secondary);
 }
 
 .email-icon {
-  background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
+  background-color: var(--em3d-warning);
   font-size: 36rpx;
 }
 
@@ -1328,12 +1334,12 @@ onUnmounted(() => {
   flex: 1;
   font-size: 32rpx;
   font-weight: 800;
-  color: #3c3c3c;
+  color: var(--em3d-text-1);
 }
 
 .btn-arrow {
   font-size: 32rpx;
-  color: var(--text-tertiary);
+  color: var(--em3d-text-3);
 }
 
 /* 分割线 */
@@ -1346,24 +1352,22 @@ onUnmounted(() => {
 .divider-line {
   flex: 1;
   height: 2rpx;
-  background: var(--apple-divider);
+  background: var(--em3d-border);
 }
 
 .divider-text {
   padding: 0 24rpx;
   font-size: 26rpx;
-  color: var(--text-sub);
+  color: var(--em3d-text-3);
 }
 
 /* 邮箱表单 */
 .email-form {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border-radius: 28rpx;
+  background-color: var(--em3d-card-bg);
+  border-radius: var(--em3d-radius-lg);
   padding: 32rpx;
-  box-shadow: var(--apple-shadow-card);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  border: 2rpx solid var(--em3d-border);
 }
 
 .form-item {
@@ -1381,14 +1385,22 @@ onUnmounted(() => {
 .form-input {
   width: 100%;
   height: 88rpx;
-  background: #ffffff;
-  border-radius: 999rpx;
+  background-color: var(--em3d-card-bg);
+  border-radius: var(--em3d-radius-md);
   padding: 0 24rpx;
   font-size: 30rpx;
-  color: #3c3c3c;
+  color: var(--em3d-text-1);
   box-sizing: border-box;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: inset 0 2rpx 4rpx var(--em3d-inset);
+  transition: var(--em3d-ease-smooth);
+}
+
+.form-input:focus {
+  border-color: var(--em3d-primary);
+  box-shadow:
+    inset 0 2rpx 4rpx var(--em3d-inset),
+    0 0 0 6rpx var(--em3d-primary-light);
 }
 
 .form-input-password {
@@ -1503,9 +1515,11 @@ onUnmounted(() => {
   display: flex;
   align-items: flex-start;
   padding: 40rpx 20rpx;
-  background: var(--apple-glass-card-bg);
-  border-radius: 24rpx;
+  background-color: var(--em3d-card-bg);
+  border-radius: var(--em3d-radius-lg);
   margin: 0 20rpx;
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .checkbox-wrapper {
@@ -1515,22 +1529,26 @@ onUnmounted(() => {
 .checkbox {
   width: 36rpx;
   height: 36rpx;
-  border: 2rpx solid var(--border-color);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 8rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 12rpx;
+  background-color: var(--em3d-card-bg);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
+  transition: var(--em3d-ease-bounce);
 }
 
 .checkbox.checked {
-  background: #58cc02;
-  border-color: #58cc02;
+  background: var(--em3d-primary);
+  border-color: var(--em3d-primary-shadow);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-primary-shadow);
 }
 
 .checkbox text {
   font-size: 24rpx;
-  color: var(--text-inverse);
+  color: var(--em3d-text-inv);
 }
 
 .agreement-text {
