@@ -686,13 +686,9 @@ onUnload(() => {
   left: 0;
   right: 0;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  border-bottom: 1rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .nav-content {
@@ -738,22 +734,12 @@ onUnload(() => {
   overflow: hidden;
   display: flex;
   justify-content: space-around;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 28rpx;
   padding: 24rpx 16rpx;
   margin-bottom: 30rpx;
-  box-shadow: var(--apple-shadow-card);
-}
-
-.stats-row::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .stat-item {
@@ -808,14 +794,14 @@ onUnload(() => {
   margin-right: 16rpx;
   margin-bottom: 16rpx;
   flex: 0 0 calc(25% - 12rpx);
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 24rpx;
   padding: 20rpx 16rpx;
   text-align: center;
   transition: all 0.2s ease;
   position: relative;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   overflow: hidden;
 }
 
@@ -883,7 +869,7 @@ onUnload(() => {
   background: rgba(255, 255, 255, 0.68);
   border-radius: 999rpx;
   border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .sort-icon {
@@ -926,22 +912,12 @@ onUnload(() => {
 .favorite-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 28rpx;
   padding: 24rpx;
   margin-bottom: 20rpx;
-  box-shadow: var(--apple-shadow-card);
-}
-
-.favorite-card::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .card-header {
@@ -1070,7 +1046,7 @@ onUnload(() => {
   background: rgba(255, 255, 255, 0.68);
   color: var(--text-primary);
   border: 1rpx solid rgba(255, 255, 255, 0.5);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .action-btn.primary {
@@ -1110,7 +1086,7 @@ onUnload(() => {
   margin-top: 16rpx;
   padding: 12rpx;
   text-align: center;
-  border: 1px dashed var(--apple-divider);
+  border: 2rpx dashed var(--em3d-border);
   border-radius: 20rpx;
 }
 
@@ -1137,11 +1113,13 @@ onUnload(() => {
 .modal-content {
   width: 100%;
   max-width: 600rpx;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 28rpx;
   overflow: hidden;
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  border: 1rpx solid var(--em3d-border);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
 }
 
 .modal-header {
@@ -1149,7 +1127,7 @@ onUnload(() => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2rpx solid var(--border);
 }
 
 .modal-title {
@@ -1172,7 +1150,7 @@ onUnload(() => {
   width: 100%;
   height: 80rpx;
   background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
   border-radius: 999rpx;
   padding: 0 20rpx;
   font-size: 28rpx;
@@ -1220,7 +1198,7 @@ onUnload(() => {
   display: flex;
   /* gap: 16rpx; -- replaced for Android WebView compat */
   padding: 24rpx;
-  border-top: 1px solid var(--apple-divider);
+  border-top: 2rpx solid var(--em3d-border);
 }
 
 .modal-btn + .modal-btn {
@@ -1257,7 +1235,7 @@ onUnload(() => {
   display: flex;
   align-items: center;
   padding: 20rpx;
-  border-bottom: 1px solid var(--apple-divider);
+  border-bottom: 2rpx solid var(--em3d-border);
 }
 
 .folder-option:last-child {
@@ -1290,7 +1268,7 @@ onUnload(() => {
   width: 100%;
   height: 200rpx;
   background: rgba(255, 255, 255, 0.68);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
   border-radius: 24rpx;
   padding: 16rpx;
   font-size: 28rpx;
