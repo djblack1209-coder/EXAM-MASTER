@@ -1567,7 +1567,7 @@ const handleClosePosterModal = () => {
   background-color: var(--em3d-card-bg);
   border: 1px solid var(--apple-glass-border-strong);
   border-radius: 28rpx;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .invite-entry-left {
@@ -1636,7 +1636,7 @@ const handleClosePosterModal = () => {
   border: 1px solid rgba(255, 255, 255, 0.38);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .setting-item {
@@ -1712,7 +1712,7 @@ const handleClosePosterModal = () => {
     linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 42%),
     linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(246, 236, 235, 0.72) 100%);
   border: 1px solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .delete-account-eyebrow,
@@ -1747,7 +1747,7 @@ const handleClosePosterModal = () => {
   border: 1px solid rgba(255, 99, 90, 0.24);
   border-radius: 28rpx;
   padding: 24rpx;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 .deletion-pending-header {
   display: flex;
@@ -1836,7 +1836,7 @@ const handleClosePosterModal = () => {
   max-width: 400px;
   max-height: 80vh;
   overflow: hidden;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .target-modal-card {
@@ -1883,7 +1883,7 @@ const handleClosePosterModal = () => {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   font-size: 42rpx;
   color: var(--text-main);
 }
@@ -1942,13 +1942,13 @@ const handleClosePosterModal = () => {
   border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: 22px;
   transition: all 0.2s ease;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .target-item:hover {
   background-color: rgba(255, 255, 255, 0.72);
   transform: translateY(-2px);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .target-avatar {

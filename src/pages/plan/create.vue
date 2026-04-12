@@ -424,7 +424,7 @@ function goBack() {
   z-index: 100;
   background-color: var(--em3d-card-bg);
   border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .nav-content {
@@ -448,7 +448,7 @@ function goBack() {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   font-size: 36rpx;
   color: var(--text-main);
   font-weight: 700;
@@ -475,7 +475,7 @@ function goBack() {
   border-radius: 32rpx;
   background-color: var(--em3d-card-bg);
   border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .hero-card {
@@ -562,7 +562,7 @@ function goBack() {
   box-sizing: border-box;
   font-size: 28rpx;
   color: var(--text-main);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .form-input:focus,
@@ -576,7 +576,7 @@ function goBack() {
   justify-content: space-between;
   padding: 24rpx;
   border-radius: 20rpx;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .picker-text {
@@ -605,7 +605,7 @@ function goBack() {
   font-size: 25rpx;
   color: var(--text-sub);
   text-align: center;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   /* R-UI: gap 替代方案，兼容 Android WebView */
   margin-right: 14rpx;
   margin-bottom: 14rpx;
@@ -637,7 +637,7 @@ function goBack() {
   font-size: 28rpx;
   font-weight: 700;
   color: var(--text-sub);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   /* R-UI: gap 替代方案，兼容 Android WebView */
   margin-right: 14rpx;
 }

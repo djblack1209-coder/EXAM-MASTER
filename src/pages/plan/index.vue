@@ -537,7 +537,7 @@ function deletePlan(planId) {
   z-index: 100;
   background-color: var(--em3d-card-bg);
   border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .nav-content {
@@ -558,7 +558,7 @@ function deletePlan(planId) {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .nav-back {
@@ -597,7 +597,7 @@ function deletePlan(planId) {
   border-radius: 32rpx;
   background-color: var(--em3d-card-bg);
   border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .hero-card {
