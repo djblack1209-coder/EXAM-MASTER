@@ -502,7 +502,7 @@ smoke_test() {
 
     # 检查提示词文件
     local missing=0
-    for i in $(seq 1 7); do
+    for i in $(seq 1 9); do
         local pfile="${PROMPT_DIR}/0${i}-*.md"
         if ! ls $pfile 1>/dev/null 2>&1; then
             log "${RED}[冒烟测试]${NC}" "缺少阶段${i}提示词文件"
@@ -510,7 +510,7 @@ smoke_test() {
         fi
     done
     if [ $missing -eq 0 ]; then
-        log "${GREEN}[冒烟测试]${NC}" "提示词文件: 7/7 完整"
+        log "${GREEN}[冒烟测试]${NC}" "提示词文件: 9/9 完整"
     fi
 
     log "${GREEN}[冒烟测试]${NC}" "所有预检通过"
@@ -536,6 +536,9 @@ main() {
 
     # 初始化 Node
     setup_node
+
+    # 清理超过30天的旧审计日志
+    cleanup_old_logs
 
     # 获取跨项目全局锁（排队等待其他项目完成）
     if ! acquire_global_lock; then
