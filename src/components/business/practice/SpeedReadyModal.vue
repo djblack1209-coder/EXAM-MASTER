@@ -30,8 +30,6 @@ defineEmits(['start']);
   right: 0;
   bottom: 0;
   background-color: var(--overlay);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;

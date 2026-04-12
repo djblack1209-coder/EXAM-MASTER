@@ -31,15 +31,6 @@ defineEmits(['resume']);
   box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
-.pause-banner::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
-}
 .pause-info {
   display: flex;
   flex-direction: column;

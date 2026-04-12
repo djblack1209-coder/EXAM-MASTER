@@ -70,12 +70,12 @@ const statusText = computed(() => {
 .generation-progress-bar {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 24px;
   padding: 20px;
   margin-bottom: 24px;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   display: flex;
   flex-direction: column;
   /* gap: 16px; -- replaced for Android WebView compat */
