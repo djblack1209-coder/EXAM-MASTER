@@ -115,8 +115,6 @@ function handleJump(idx) {
   width: 100%;
   max-height: 70vh;
   background: var(--bg-glass, rgba(247, 255, 239, 0.66));
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border, #98cd6f);
   border-bottom: none;
   border-radius: 40rpx 40rpx 0 0;
