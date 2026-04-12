@@ -131,6 +131,6 @@ AI渲染: ✅/❌ [详情]
 截图保存: logs/nightly-audit/YYYY-MM-DD/screenshots/
 ```
 
-如果做了修改：`git add -A && git commit -m "[审计] 阶段5：UI/UX视觉交互自动修复"`
+如果做了修改：`git add -A && git commit -m "audit: 阶段5：UI/UX视觉交互自动修复"`
 
 注意：截图文件不要提交到 git（已在 .gitignore 中排除 \*.png 类型）。

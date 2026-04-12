@@ -57,6 +57,17 @@ npm run build:h5
 - `.env.example` 是否包含所有必需变量（不含真实值）
 - 确认 `.env.local` 和 `.env.server` 在 `.gitignore` 中
 
+### 6. 环境变量交叉验证
+
+- 读取 `src/config/index.js` 中所有 `import.meta.env.VITE_*` 或 `getEnv()` 调用
+- 检查这些环境变量是否都在 `.env` / `.env.development` / `.env.production` 中有定义
+- 如果有环境变量在代码中使用但 `.env.example` 中缺失，补充到 `.env.example`
+
+### 7. 上轮审计遗留检查
+
+- 读取 `logs/nightly-audit/` 下最近一次审计报告的 `summary.md`
+- 如果上轮有「遗留」项，本轮优先处理
+
 ## 输出要求
 
 修复所有发现的问题后，输出简要报告：
@@ -71,4 +82,4 @@ ESLint: ✅ 0错误0警告 / ❌ N个问题
 遗留: [无法自动修复的问题]
 ```
 
-如果做了修改，执行 `git add -A && git commit -m "[审计] 阶段1：健康预检自动修复"`。
+如果做了修改，执行 `git add -A && git commit -m "audit: 阶段1健康预检自动修复"`。

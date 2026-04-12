@@ -86,4 +86,4 @@
 ```
 
 如果做了修改，确保通过 `npm run lint && npm test && npm run build:h5` 后再提交：
-`git add -A && git commit -m "[审计] 阶段2：安全审计自动修复"`
+`git add -A && git commit -m "audit: 阶段2：安全审计自动修复"`

@@ -138,4 +138,4 @@ npm test 2>&1 | tail -5
 遗留: [无法自动修复的问题]
 ```
 
-如果做了修改：`git add -A && git commit -m "[审计] 阶段6：文件治理+文档同步自动修复"`
+如果做了修改：`git add -A && git commit -m "audit: 阶段6：文件治理+文档同步自动修复"`

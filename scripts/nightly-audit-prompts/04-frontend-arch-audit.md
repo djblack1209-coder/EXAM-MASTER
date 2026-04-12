@@ -95,6 +95,23 @@
 - 搜索未被任何 Store/页面导入的 composable 和工具函数
 - 搜索孤儿事件：`uni.$on` 但无对应 `uni.$emit`，或反之
 
+### 8. 定时器/事件监听器泄漏检查（全局扫描）
+
+**重要：不要只查 composable，要扫描所有 .vue 文件和 .js 文件。**
+
+- 搜索所有 `setTimeout` / `setInterval` 调用
+- 检查每一处是否在 `onUnmounted` / `beforeUnmount` / 组件销毁时清理
+- 已知的安全模式：`safePendingTimers` 追踪数组 + 批量清理
+- 搜索 `addEventListener` 是否有对应的 `removeEventListener`
+- 搜索 `uni.$on` 是否有对应的 `uni.$off`
+- 列出所有未清理的定时器/监听器，并修复（添加清理逻辑）
+
+### 9. 前端错误监控检查
+
+- 检查 `src/config/index.js` 中是否有 `sentryDsn` 配置
+- 检查是否实际集成了 Sentry SDK 或其他错误监控
+- 如果配置有但未集成，记录到遗留项
+
 ## 修复规则
 
 - CSS gap → margin 替换
@@ -116,4 +133,4 @@ CSS 兼容性: N处修复
 遗留: [无法自动修复的问题]
 ```
 
-如果做了修改：`git add -A && git commit -m "[审计] 阶段4：前端架构合规自动修复"`
+如果做了修改：`git add -A && git commit -m "audit: 阶段4：前端架构合规自动修复"`

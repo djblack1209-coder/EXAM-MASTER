@@ -144,6 +144,36 @@ npm run build:h5 -- --report 2>/dev/null || echo "Bundle分析跳过"
 - 检查 `backups/` 目录是否有最近的备份
 - 检查 `database/` 目录的数据库导出/备份
 - 确认 `.gitignore` 包含了备份相关目录
+- 清理 backups/ 中的 .DS_Store 文件
+
+### 8. Kubernetes 配置审计
+
+- 检查 `deploy/k8s/` 目录下的 YAML 配置
+- 如果存在 Deployment/Service/Ingress 配置，检查：
+  - 镜像标签是否使用固定版本（不是 :latest）
+  - 资源限制（resources.limits/requests）是否设置
+  - 探活配置（livenessProbe/readinessProbe）是否合理
+  - 如果配置已过时且未使用，标记为遗留
+
+### 9. E2E 测试覆盖度检查
+
+- 检查 `e2e-tests/specs/` 下有多少个 spec 文件
+- 如果只有 1 个文件，记录为「E2E覆盖度不足」
+- 检查 `tests/` 下的单元测试文件是否覆盖了所有核心模块
+- 列出没有对应测试文件的核心 Store 和 Composable
+
+### 10. 监控体系检查
+
+- 检查 `deploy/monitoring/` 下的 Prometheus/Grafana 配置
+- 检查是否有前端性能监控（Web Vitals、错误上报等）
+- 检查 `src/config/index.js` 中 sentryDsn 是否配置且有效
+- 检查 GitHub Actions 中是否有自动化的健康检查 workflow
+
+### 11. 静态数据一致性
+
+- 检查 `data/schools/` 目录下的数据文件
+- 与 `laf-backend/database-schema/` 中的 schema 定义进行比对
+- 确认数据格式与代码中的使用方式一致
 
 ## 修复规则
 
@@ -168,9 +198,12 @@ H5构建: ✅ 大小: XMB | 用时: Xs
 小程序主包: ✅ < 2MB / ❌ 超限 [详情]
 CI/CD: ✅/❌ [详情]
 Electron: ✅/❌ [详情]
+K8s配置: ✅/❌ [详情]
 API可达性: Laf ✅/❌ | CF Worker ✅/❌
+E2E覆盖: N个spec文件 / 建议补充
+监控体系: ✅/❌ [详情]
 修复: [列出所有修复]
 遗留: [无法自动修复的问题]
 ```
 
-如果做了修改：`git add -A && git commit -m "[审计] 阶段7：运维+CI/CD自动修复"`
+如果做了修改：`git add -A && git commit -m "audit: 阶段7：运维+CI/CD自动修复"`

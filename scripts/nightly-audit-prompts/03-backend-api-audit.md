@@ -92,4 +92,4 @@
 遗留: [无法自动修复的问题]
 ```
 
-如果做了修改：`git add -A && git commit -m "[审计] 阶段3：后端API+数据完整性自动修复"`
+如果做了修改：`git add -A && git commit -m "audit: 阶段3：后端API+数据完整性自动修复"`
