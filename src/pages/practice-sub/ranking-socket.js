@@ -89,6 +89,12 @@ class RankingSocketService {
 
     this.manualClose = false;
 
+    // WebSocket 地址未配置时静默降级，不尝试连接
+    if (!this.wsUrl) {
+      logger.log('[RankingSocket] WebSocket 地址未配置，跳过连接（降级为 HTTP 轮询模式）');
+      return Promise.reject(new Error('WebSocket 地址未配置，降级为普通模式'));
+    }
+
     if (!userId) {
       return Promise.reject(new Error('连接失败：缺少 userId'));
     }

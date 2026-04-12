@@ -446,8 +446,11 @@ const config = {
 
     /**
      * WebSocket 地址（生产环境）
+     * ⚠️ Sealos Laf 为 serverless 平台，不支持 WebSocket
+     * 当前留空，排行榜页面会自动降级为 HTTP 轮询模式
+     * 未来若部署独立 WebSocket 服务，通过 VITE_WS_PROD_URL 环境变量配置
      */
-    prodUrl: getEnv('VITE_WS_PROD_URL', 'wss://api.exam-master.com/ws/ranking'),
+    prodUrl: getEnv('VITE_WS_PROD_URL', ''),
 
     /**
      * 最大重连次数
