@@ -147,6 +147,15 @@ export const useClassroomStore = defineStore('classroom', () => {
     messages.value = [];
   };
 
+  /**
+   * 重置 store 全部状态到初始值（Setup Store 手动实现）
+   */
+  const $reset = () => {
+    lessons.value = [];
+    currentSession.value = null;
+    messages.value = [];
+  };
+
   return {
     // state
     lessons,
@@ -162,6 +171,7 @@ export const useClassroomStore = defineStore('classroom', () => {
     startSession,
     sendMessage,
     endSession,
-    resetSession
+    resetSession,
+    $reset
   };
 });

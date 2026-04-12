@@ -157,6 +157,14 @@ export const useToolsStore = defineStore('tools', () => {
     }
   };
 
+  /**
+   * 重置 store 状态到初始值（Setup Store 手动实现）
+   */
+  const $reset = () => {
+    photoConfig.value = null;
+    activeDocJob.value = null;
+  };
+
   return {
     // state
     photoConfig,
@@ -169,6 +177,7 @@ export const useToolsStore = defineStore('tools', () => {
     fetchConvertResult,
     searchByPhoto,
     speechToText,
-    textToSpeech
+    textToSpeech,
+    $reset
   };
 });

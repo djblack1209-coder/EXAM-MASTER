@@ -12,7 +12,7 @@
  */
 
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, shallowRef, computed } from 'vue';
 import {
   getStatsOverview as apiGetOverview,
   getDailyStats as apiGetDailyStats,
@@ -33,8 +33,8 @@ export const useStatsStore = defineStore('stats', () => {
 
   /** 综合统计概览 */
   const overview = ref(null);
-  /** 每日统计数据 */
-  const dailyStats = ref([]);
+  /** 每日统计数据 — shallowRef 避免深度响应开销 */
+  const dailyStats = shallowRef([]);
   /** 学习趋势 */
   const trend = ref(null);
   /** 排名信息 */

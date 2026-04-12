@@ -294,6 +294,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  /**
+   * 重置 store 状态到初始值（Setup Store 手动实现）
+   */
+  const $reset = () => {
+    token.value = '';
+    isLogin.value = false;
+  };
+
   return {
     token,
     isLogin,
@@ -304,6 +312,7 @@ export const useAuthStore = defineStore('auth', () => {
     silentLogin,
     syncLoginStatus,
     _setUserInfoRef,
+    $reset,
     // B1: 新增登录/认证 action
     sendEmailCode,
     loginByWechat,

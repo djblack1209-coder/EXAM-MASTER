@@ -15,7 +15,7 @@
  * 两者的 recordAnswer 语义不同：trajectory 记录事件流，study 更新聚合计数
  */
 
-import { ref, computed } from 'vue';
+import { ref, shallowRef, triggerRef, computed } from 'vue';
 import { defineStore } from 'pinia';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
@@ -40,9 +40,11 @@ export const TRAJECTORY_EVENTS = {
 
 export const useLearningTrajectoryStore = defineStore('learningTrajectory', () => {
   // ==================== 状态 ====================
-  const trajectory = ref([]);
+  /** 学习轨迹事件流 — shallowRef 避免大数组(最多1000条)深度响应开销 */
+  const trajectory = shallowRef([]);
   const knowledgeMastery = ref({});
-  const sessions = ref([]);
+  /** 学习会话列表 — shallowRef 避免大数组(最多100条)深度响应开销 */
+  const sessions = shallowRef([]);
   const currentSession = ref(null);
   const isInitialized = ref(false);
 
@@ -184,6 +186,8 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', () =
     };
 
     trajectory.value.unshift(event);
+    // shallowRef 原地变更后手动触发响应式更新
+    triggerRef(trajectory);
 
     // 限制记录数量
     if (trajectory.value.length > 1000) {
@@ -278,6 +282,8 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', () =
 
     currentSession.value = session;
     sessions.value.unshift(session);
+    // shallowRef 原地变更后手动触发响应式更新
+    triggerRef(sessions);
 
     logger.log('[LearningTrajectory] 开始会话:', session.id);
 
@@ -296,6 +302,8 @@ export const useLearningTrajectoryStore = defineStore('learningTrajectory', () =
     const index = sessions.value.findIndex((s) => s.id === session.id);
     if (index !== -1) {
       sessions.value[index] = session;
+      // shallowRef 原地变更后手动触发响应式更新
+      triggerRef(sessions);
     }
 
     saveSessions();

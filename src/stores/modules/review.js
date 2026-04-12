@@ -208,6 +208,16 @@ export const useReviewStore = defineStore('review', () => {
     }
   };
 
+  /**
+   * 重置 store 状态到初始值（Setup Store 手动实现）
+   */
+  const $reset = () => {
+    fsrsStatus.value = null;
+    retentionCurve.value = null;
+    currentDiagnosis.value = null;
+    reviewPlan.value = null;
+  };
+
   return {
     // state
     fsrsStatus,
@@ -225,6 +235,7 @@ export const useReviewStore = defineStore('review', () => {
     fetchQuestionBankStats,
     browseQuestions,
     fetchQuestionBankRandom,
-    fetchRandomQuestions
+    fetchRandomQuestions,
+    $reset
   };
 });

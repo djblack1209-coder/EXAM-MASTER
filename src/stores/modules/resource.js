@@ -7,7 +7,7 @@
  */
 
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, shallowRef } from 'vue';
 import {
   getRecommendations as apiRecommend,
   getHotResources as apiHot,
@@ -22,14 +22,14 @@ import { logger } from '@/utils/logger.js';
 export const useResourceStore = defineStore('resource', () => {
   // ==================== State ====================
 
-  /** 推荐资源 */
-  const recommendations = ref([]);
-  /** 热门资源 */
-  const hotResources = ref([]);
-  /** 分类浏览结果 */
-  const categoryResources = ref([]);
-  /** 搜索结果 */
-  const searchResults = ref([]);
+  /** 推荐资源 — shallowRef 避免大数组深度响应开销 */
+  const recommendations = shallowRef([]);
+  /** 热门资源 — shallowRef 避免大数组深度响应开销 */
+  const hotResources = shallowRef([]);
+  /** 分类浏览结果 — shallowRef 避免大数组深度响应开销 */
+  const categoryResources = shallowRef([]);
+  /** 搜索结果 — shallowRef 避免大数组深度响应开销 */
+  const searchResults = shallowRef([]);
   /** 资源分类定义 */
   const categories = ref({});
   /** 学科定义 */

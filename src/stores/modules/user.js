@@ -104,6 +104,14 @@ export const useUserStore = defineStore('user', () => {
   };
   const updateUserInfo = profileStore.updateUserInfo;
 
+  /**
+   * 重置 store 自有状态到初始值（Setup Store 手动实现）
+   * 注：token/userInfo/isLogin/planProgress 由子 store 各自重置
+   */
+  const $reset = () => {
+    friendsList.value = [];
+  };
+
   return {
     // 状态
     token,
@@ -121,6 +129,7 @@ export const useUserStore = defineStore('user', () => {
     fetchFriends,
     fetchRankCenter,
     restoreUserInfo,
-    silentLogin
+    silentLogin,
+    $reset
   };
 });
