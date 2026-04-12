@@ -1,0 +1,605 @@
+// ============================================================
+// EXAM-MASTER 3D 立体设计系统 (em3d)
+// 参考 uiverse.io 3D Cartoon 风格 + Duolingo 设计语言
+// ============================================================
+
+// ==================== 设计令牌 ====================
+
+:root {
+  // --- 功能色 ---
+  --em3d-primary: #58cc02;
+  --em3d-primary-shadow: #46a302;
+  --em3d-primary-light: rgba(88, 204, 2, 0.15);
+  --em3d-secondary: #1cb0f6;
+  --em3d-secondary-shadow: #1899d6;
+  --em3d-secondary-light: rgba(28, 176, 246, 0.15);
+  --em3d-danger: #ff4b4b;
+  --em3d-danger-shadow: #e63946;
+  --em3d-danger-light: rgba(255, 75, 75, 0.15);
+  --em3d-warning: #ffc800;
+  --em3d-warning-shadow: #e6b400;
+  --em3d-purple: #ce82ff;
+  --em3d-purple-shadow: #a855f7;
+
+  // --- 表面色 ---
+  --em3d-bg: #f7f7f7;
+  --em3d-card-bg: #ffffff;
+  --em3d-border: #e5e5e5;
+  --em3d-border-shadow: #d0d0d0;
+  --em3d-inset: rgba(0, 0, 0, 0.06);
+
+  // --- 文字色 ---
+  --em3d-text-1: #3c3c3c;
+  --em3d-text-2: #777777;
+  --em3d-text-3: #afafaf;
+  --em3d-text-inv: #ffffff;
+
+  // --- 圆角 ---
+  --em3d-radius-sm: 12rpx;
+  --em3d-radius-md: 16rpx;
+  --em3d-radius-lg: 24rpx;
+  --em3d-radius-pill: 999rpx;
+
+  // --- 3D 阴影厚度 ---
+  --em3d-depth-sm: 3rpx;
+  --em3d-depth-md: 4rpx;
+  --em3d-depth-lg: 6rpx;
+  --em3d-depth-press: 2rpx;
+
+  // --- 过渡 ---
+  --em3d-ease-press: all 0.1s ease;
+  --em3d-ease-bounce: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --em3d-ease-smooth: all 0.2s ease;
+}
+
+// ==================== 暗色模式令牌 ====================
+
+.dark-mode {
+  --em3d-bg: #1b1b1b;
+  --em3d-card-bg: #2a2a2a;
+  --em3d-border: #3a3a3a;
+  --em3d-border-shadow: #2a2a2a;
+  --em3d-inset: rgba(0, 0, 0, 0.2);
+  --em3d-text-1: #f0f0f0;
+  --em3d-text-2: #a0a0a0;
+  --em3d-text-3: #666666;
+  --em3d-primary-shadow: #357a01;
+  --em3d-primary-light: rgba(88, 204, 2, 0.2);
+  --em3d-secondary-shadow: #1280ab;
+  --em3d-secondary-light: rgba(28, 176, 246, 0.2);
+  --em3d-danger-shadow: #b82e38;
+  --em3d-danger-light: rgba(255, 75, 75, 0.2);
+  --em3d-warning-shadow: #b89000;
+  --em3d-purple-shadow: #7c3aed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --em3d-bg: #1b1b1b;
+    --em3d-card-bg: #2a2a2a;
+    --em3d-border: #3a3a3a;
+    --em3d-border-shadow: #2a2a2a;
+    --em3d-inset: rgba(0, 0, 0, 0.2);
+    --em3d-text-1: #f0f0f0;
+    --em3d-text-2: #a0a0a0;
+    --em3d-text-3: #666666;
+    --em3d-primary-shadow: #357a01;
+    --em3d-primary-light: rgba(88, 204, 2, 0.2);
+    --em3d-secondary-shadow: #1280ab;
+    --em3d-secondary-light: rgba(28, 176, 246, 0.2);
+    --em3d-danger-shadow: #b82e38;
+    --em3d-danger-light: rgba(255, 75, 75, 0.2);
+    --em3d-warning-shadow: #b89000;
+    --em3d-purple-shadow: #7c3aed;
+  }
+}
+
+// ============================================================
+// 按钮 .em3d-btn
+// ============================================================
+
+.em3d-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  padding: 0 48rpx;
+  border-radius: var(--em3d-radius-pill);
+  font-size: 30rpx;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: var(--em3d-ease-press);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  line-height: 1;
+  white-space: nowrap;
+
+  &::after {
+    border: none; // 移除微信小程序默认 button 边框
+  }
+
+  // --- 尺寸 ---
+  &--sm {
+    height: 56rpx;
+    padding: 0 32rpx;
+    font-size: 24rpx;
+  }
+  &--md {
+    height: 72rpx;
+    padding: 0 40rpx;
+    font-size: 28rpx;
+  }
+  &--lg {
+    height: 96rpx;
+    padding: 0 56rpx;
+    font-size: 32rpx;
+  }
+  &--block {
+    display: flex;
+    width: 100%;
+  }
+
+  // --- 主按钮（绿色 3D） ---
+  &--primary {
+    background-color: var(--em3d-primary);
+    color: var(--em3d-text-inv);
+    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-primary-shadow);
+  }
+  &--primary:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-primary-shadow);
+  }
+
+  // --- 次要按钮（白色 3D） ---
+  &--secondary {
+    background-color: var(--em3d-card-bg);
+    color: var(--em3d-text-1);
+    border: 2rpx solid var(--em3d-border);
+    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-border-shadow);
+  }
+  &--secondary:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
+  }
+
+  // --- 危险按钮（红色 3D） ---
+  &--danger {
+    background-color: var(--em3d-danger);
+    color: var(--em3d-text-inv);
+    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-danger-shadow);
+  }
+  &--danger:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-danger-shadow);
+  }
+
+  // --- 蓝色按钮 ---
+  &--info {
+    background-color: var(--em3d-secondary);
+    color: var(--em3d-text-inv);
+    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-secondary-shadow);
+  }
+  &--info:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-secondary-shadow);
+  }
+
+  // --- 紫色按钮（AI 功能） ---
+  &--purple {
+    background-color: var(--em3d-purple);
+    color: var(--em3d-text-inv);
+    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-purple-shadow);
+  }
+  &--purple:active {
+    transform: translateY(4rpx);
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-purple-shadow);
+  }
+
+  // --- 幽灵按钮（无阴影） ---
+  &--ghost {
+    background-color: transparent;
+    color: var(--em3d-primary);
+    border: 2rpx solid var(--em3d-primary);
+    box-shadow: none;
+  }
+  &--ghost:active {
+    background-color: var(--em3d-primary-light);
+    transform: scale(0.97);
+  }
+
+  // --- 禁用态 ---
+  &--disabled,
+  &[disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  // --- 加载态 ---
+  &--loading {
+    pointer-events: none;
+    .em3d-btn__text {
+      visibility: hidden;
+    }
+    .em3d-btn__spinner {
+      display: block;
+    }
+  }
+}
+
+.em3d-btn__spinner {
+  display: none;
+  position: absolute;
+  width: 36rpx;
+  height: 36rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border-top-color: var(--em3d-text-inv);
+  border-radius: 50%;
+  animation: em3d-spin 0.6s linear infinite;
+}
+
+@keyframes em3d-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============================================================
+// 输入框 .em3d-input
+// ============================================================
+
+.em3d-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 88rpx;
+  padding: 0 28rpx;
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  border-radius: var(--em3d-radius-md);
+  box-shadow: inset 0 2rpx 4rpx var(--em3d-inset);
+  font-size: 28rpx;
+  font-weight: 400;
+  color: var(--em3d-text-1);
+  transition: var(--em3d-ease-smooth);
+  box-sizing: border-box;
+
+  &:focus,
+  &--focus {
+    border-color: var(--em3d-primary);
+    box-shadow:
+      inset 0 2rpx 4rpx var(--em3d-inset),
+      0 0 0 6rpx var(--em3d-primary-light);
+  }
+
+  &--error {
+    border-color: var(--em3d-danger);
+    box-shadow:
+      inset 0 2rpx 4rpx var(--em3d-inset),
+      0 0 0 6rpx var(--em3d-danger-light);
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    background-color: var(--em3d-bg);
+  }
+
+  // 多行文本
+  &--textarea {
+    height: auto;
+    min-height: 160rpx;
+    padding: 20rpx 28rpx;
+    align-items: flex-start;
+  }
+}
+
+// 输入框标签
+.em3d-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--em3d-text-1);
+  margin-bottom: 12rpx;
+}
+
+// 输入框提示文字
+.em3d-hint {
+  display: block;
+  font-size: 22rpx;
+  color: var(--em3d-text-3);
+  margin-top: 8rpx;
+}
+
+.em3d-error-text {
+  display: block;
+  font-size: 22rpx;
+  color: var(--em3d-danger);
+  margin-top: 8rpx;
+}
+
+// ============================================================
+// 卡片 .em3d-card
+// ============================================================
+
+.em3d-card {
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  border-radius: var(--em3d-radius-lg);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  padding: 32rpx;
+  position: relative;
+  transition: var(--em3d-ease-press);
+
+  // 可点击卡片
+  &--tap {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  &--tap:active {
+    transform: translateY(2rpx);
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
+  }
+
+  // 无内边距
+  &--flush {
+    padding: 0;
+  }
+
+  // 紧凑内边距
+  &--compact {
+    padding: 20rpx;
+  }
+
+  // 大内边距
+  &--spacious {
+    padding: 40rpx;
+  }
+
+  // 带顶部彩色条
+  &--accent-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6rpx;
+    background: var(--em3d-primary);
+    border-radius: var(--em3d-radius-lg) var(--em3d-radius-lg) 0 0;
+  }
+  &--accent-purple::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6rpx;
+    background: var(--em3d-purple);
+    border-radius: var(--em3d-radius-lg) var(--em3d-radius-lg) 0 0;
+  }
+  &--accent-danger::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6rpx;
+    background: var(--em3d-danger);
+    border-radius: var(--em3d-radius-lg) var(--em3d-radius-lg) 0 0;
+  }
+}
+
+// 卡片标题
+.em3d-card__title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--em3d-text-1);
+  margin-bottom: 16rpx;
+}
+
+// 卡片副标题
+.em3d-card__subtitle {
+  font-size: 24rpx;
+  color: var(--em3d-text-2);
+  margin-bottom: 24rpx;
+}
+
+// ============================================================
+// 徽章 .em3d-badge
+// ============================================================
+
+.em3d-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rpx 16rpx;
+  border-radius: var(--em3d-radius-pill);
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 1;
+
+  &--primary {
+    background-color: var(--em3d-primary-light);
+    color: var(--em3d-primary);
+  }
+  &--danger {
+    background-color: var(--em3d-danger-light);
+    color: var(--em3d-danger);
+  }
+  &--info {
+    background-color: var(--em3d-secondary-light);
+    color: var(--em3d-secondary);
+  }
+  &--purple {
+    background-color: rgba(206, 130, 255, 0.15);
+    color: var(--em3d-purple);
+  }
+  // 实心圆点角标（数字）
+  &--dot {
+    min-width: 36rpx;
+    height: 36rpx;
+    padding: 0 10rpx;
+    background-color: var(--em3d-danger);
+    color: var(--em3d-text-inv);
+    font-size: 20rpx;
+    border-radius: 50%;
+  }
+}
+
+// ============================================================
+// 分割线 .em3d-divider
+// ============================================================
+
+.em3d-divider {
+  width: 100%;
+  height: 2rpx;
+  background-color: var(--em3d-border);
+  margin: 24rpx 0;
+}
+
+// ============================================================
+// 3D 加载动画 .em3d-loader
+// ============================================================
+
+.em3d-loader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  // 弹跳圆点加载器
+  &--dots {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.em3d-loader__dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background-color: var(--em3d-primary);
+  margin-right: 12rpx;
+  animation: em3d-bounce 1.4s ease-in-out infinite;
+
+  &:nth-child(2) {
+    animation-delay: 0.16s;
+  }
+  &:nth-child(3) {
+    animation-delay: 0.32s;
+    margin-right: 0;
+  }
+}
+
+@keyframes em3d-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+// 旋转环加载器
+.em3d-loader__ring {
+  width: 48rpx;
+  height: 48rpx;
+  border: 5rpx solid var(--em3d-border);
+  border-top-color: var(--em3d-primary);
+  border-radius: 50%;
+  animation: em3d-spin 0.7s linear infinite;
+}
+
+// ============================================================
+// 工具提示 .em3d-tooltip
+// ============================================================
+
+.em3d-tooltip {
+  position: relative;
+  display: inline-block;
+
+  &__content {
+    position: absolute;
+    bottom: calc(100% + 12rpx);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    padding: 12rpx 20rpx;
+    background-color: var(--em3d-text-1);
+    color: var(--em3d-text-inv);
+    font-size: 22rpx;
+    font-weight: 500;
+    border-radius: var(--em3d-radius-sm);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--em3d-ease-bounce);
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+
+    // 底部小三角
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 10rpx solid transparent;
+      border-top-color: var(--em3d-text-1);
+    }
+  }
+
+  &--visible &__content {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    pointer-events: auto;
+  }
+}
+
+// ============================================================
+// 表单组 .em3d-form-group
+// ============================================================
+
+.em3d-form-group {
+  margin-bottom: 32rpx;
+}
+
+// ============================================================
+// 全局工具类
+// ============================================================
+
+.em3d-text-primary {
+  color: var(--em3d-text-1);
+}
+.em3d-text-secondary {
+  color: var(--em3d-text-2);
+}
+.em3d-text-muted {
+  color: var(--em3d-text-3);
+}
+.em3d-text-brand {
+  color: var(--em3d-primary);
+}
+.em3d-text-danger {
+  color: var(--em3d-danger);
+}
+
+.em3d-bg-page {
+  background-color: var(--em3d-bg);
+}
+.em3d-bg-card {
+  background-color: var(--em3d-card-bg);
+}
+
+.em3d-font-bold {
+  font-weight: 700;
+}
+.em3d-font-semi {
+  font-weight: 600;
+}
+.em3d-font-normal {
+  font-weight: 400;
+}

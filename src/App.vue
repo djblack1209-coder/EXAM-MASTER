@@ -266,6 +266,8 @@ export default {
 @use './styles/button-animations.scss';
 /* 深色模式变量 mixin（单一来源，消除3x重复） */
 @use './styles/_dark-mode-vars.scss' as *;
+/* 3D 立体设计系统 — uiverse.io 风格原子组件 */
+@use './styles/_em3d-design-system.scss';
 /* wot-design-uni 基础变量 */
 @import 'wot-design-uni/components/common/abstracts/variable.scss';
 
