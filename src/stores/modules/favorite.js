@@ -12,7 +12,7 @@
  */
 
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, shallowRef, computed } from 'vue';
 import {
   addFavorite as apiAdd,
   getFavorites as apiGet,
@@ -39,12 +39,12 @@ import { logger } from '@/utils/logger.js';
 export const useFavoriteStore = defineStore('favorite', () => {
   // ==================== State ====================
 
-  /** 收藏列表（当前页） */
-  const favorites = ref([]);
-  /** 收藏夹列表（本地管理） */
-  const folders = ref([]);
-  /** 分类统计 */
-  const categories = ref([]);
+  /** 收藏列表（当前页） — shallowRef 避免大数组深度响应开销 */
+  const favorites = shallowRef([]);
+  /** 收藏夹列表（本地管理） — shallowRef 避免深度响应开销 */
+  const folders = shallowRef([]);
+  /** 分类统计 — shallowRef 避免深度响应开销 */
+  const categories = shallowRef([]);
   /** 总收藏数 */
   const total = ref(0);
   /** 是否还有更多 */

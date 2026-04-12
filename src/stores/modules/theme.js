@@ -70,6 +70,15 @@ export const useThemeStore = defineStore('theme', () => {
     return classes.join(' ');
   });
 
+  /**
+   * 重置 store 状态到初始值（Setup Store 手动实现）
+   * 注：主题为设备偏好，通常不随登出重置，但提供方法以备不时之需
+   */
+  const $reset = () => {
+    themeType.value = 'wise';
+    isDark.value = false;
+  };
+
   return {
     // 状态
     themeType,
@@ -80,6 +89,8 @@ export const useThemeStore = defineStore('theme', () => {
 
     // 方法
     setThemeType,
-    toggleTheme
+    setDarkMode,
+    toggleTheme,
+    $reset
   };
 });

@@ -54,6 +54,21 @@ export const useStudyStore = defineStore('study', () => {
     }
   };
 
+  /**
+   * 重置 store 状态到初始值（Setup Store 手动实现）
+   */
+  const $reset = () => {
+    studyProgress.value = {
+      totalQuestions: 0,
+      completedQuestions: 0,
+      correctQuestions: 0,
+      studyDays: 0,
+      studyMinutes: 0,
+      lastStudyDate: null
+    };
+    questionHistory.value = [];
+  };
+
   return {
     // 状态
     studyProgress,
@@ -61,6 +76,7 @@ export const useStudyStore = defineStore('study', () => {
     accuracy,
 
     // 方法
-    restoreProgress
+    restoreProgress,
+    $reset
   };
 });
