@@ -1187,11 +1187,13 @@ const handleClosePosterModal = () => {
   position: relative;
   z-index: 1;
   background-color: var(--em3d-card-bg);
-  border: 1px solid var(--apple-glass-border-strong);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 24px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: var(--apple-shadow-floating);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -1273,13 +1275,13 @@ const handleClosePosterModal = () => {
 }
 
 .login-badge {
-  background: var(--apple-glass-pill-bg);
+  background: var(--em3d-card-bg);
   color: var(--text-primary);
   font-size: 24rpx;
   font-weight: 700;
   padding: 3px 10px;
   border-radius: 10px;
-  border: 1px solid var(--apple-divider);
+  border: 2rpx solid var(--em3d-border);
   text-align: center;
   width: 100%;
   box-shadow: 0 8rpx 18rpx rgba(16, 40, 26, 0.08);
@@ -1333,7 +1335,7 @@ const handleClosePosterModal = () => {
   padding: 10px;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.54);
+  border: 2rpx solid rgba(255, 255, 255, 0.54);
 }
 
 .info-item:active {
@@ -1372,7 +1374,7 @@ const handleClosePosterModal = () => {
   padding: 16rpx 20rpx;
   background: rgba(255, 255, 255, 0.52);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.54);
+  border: 2rpx solid rgba(255, 255, 255, 0.54);
 }
 
 .exam-date-picker {
@@ -1398,7 +1400,7 @@ const handleClosePosterModal = () => {
   grid-template-columns: 1fr 1fr;
   /* gap: 10px; -- replaced for Android WebView compat */
   padding-top: 16px;
-  border-top: 1px solid var(--border);
+  border-top: 2rpx solid var(--border);
 }
 .stats-section > view:nth-child(even) {
   margin-left: 10px;
@@ -1414,7 +1416,7 @@ const handleClosePosterModal = () => {
   text-align: center;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.58);
+  border: 2rpx solid rgba(255, 255, 255, 0.58);
 }
 
 .stat-card:active {
@@ -1450,7 +1452,9 @@ const handleClosePosterModal = () => {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 38%),
     linear-gradient(160deg, rgba(18, 24, 34, 0.84) 0%, rgba(13, 17, 24, 0.92) 100%);
-  box-shadow: var(--apple-shadow-floating);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
 }
 
 .dark-mode .user-card.wise-card::before {
@@ -1565,7 +1569,7 @@ const handleClosePosterModal = () => {
   justify-content: space-between;
   padding: 24rpx 28rpx;
   background-color: var(--em3d-card-bg);
-  border: 1px solid var(--apple-glass-border-strong);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 28rpx;
   box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
@@ -1604,7 +1608,7 @@ const handleClosePosterModal = () => {
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
   padding: 6px 12px;
-  border: 1px solid var(--cta-primary-border);
+  border: 2rpx solid var(--cta-primary-border);
   border-radius: 16px;
   font-size: 24rpx;
   font-weight: 500;
@@ -1633,7 +1637,7 @@ const handleClosePosterModal = () => {
 /* 设置选项列表 */
 .settings-list {
   background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  border: 2rpx solid rgba(255, 255, 255, 0.38);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
@@ -1645,7 +1649,7 @@ const handleClosePosterModal = () => {
   align-items: center;
   min-height: 96rpx;
   padding: 22px 20px;
-  border-bottom: 1px solid var(--apple-divider);
+  border-bottom: 2rpx solid var(--em3d-border);
   transition:
     background-color 0.2s ease,
     transform 0.2s ease;
@@ -1711,7 +1715,7 @@ const handleClosePosterModal = () => {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, transparent 42%),
     linear-gradient(160deg, rgba(255, 255, 255, 0.82) 0%, rgba(246, 236, 235, 0.72) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
+  border: 2rpx solid rgba(255, 255, 255, 0.48);
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
@@ -1744,7 +1748,7 @@ const handleClosePosterModal = () => {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 42%),
     linear-gradient(160deg, rgba(255, 248, 246, 0.84) 0%, rgba(248, 232, 230, 0.72) 100%);
-  border: 1px solid rgba(255, 99, 90, 0.24);
+  border: 2rpx solid rgba(255, 99, 90, 0.24);
   border-radius: 28rpx;
   padding: 24rpx;
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
@@ -1771,7 +1775,7 @@ const handleClosePosterModal = () => {
 }
 .deletion-cancel-btn {
   background: var(--cta-primary-bg);
-  border: 1px solid var(--cta-primary-border);
+  border: 2rpx solid var(--cta-primary-border);
   border-radius: 999rpx;
   padding: 16rpx 0;
   text-align: center;
@@ -1830,7 +1834,7 @@ const handleClosePosterModal = () => {
 
 .modal-content {
   background-color: var(--em3d-card-bg);
-  border: 1px solid var(--apple-glass-border-strong);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 28px;
   width: 90%;
   max-width: 400px;
@@ -1856,7 +1860,7 @@ const handleClosePosterModal = () => {
   justify-content: space-between;
   align-items: center;
   padding: 12px 12px 18px;
-  border-bottom: 1px solid var(--apple-divider);
+  border-bottom: 2rpx solid var(--em3d-border);
 }
 
 .modal-title {
@@ -1882,7 +1886,7 @@ const handleClosePosterModal = () => {
   justify-content: center;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   font-size: 42rpx;
   color: var(--text-main);
@@ -1913,7 +1917,7 @@ const handleClosePosterModal = () => {
   margin-top: 20px;
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
+  border: 2rpx solid var(--cta-primary-border);
   border-radius: 16px;
   padding: 12px 24px;
   font-size: 28rpx;
@@ -1939,7 +1943,7 @@ const handleClosePosterModal = () => {
   align-items: center;
   padding: 18px 16px;
   background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
   border-radius: 22px;
   transition: all 0.2s ease;
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
@@ -1993,7 +1997,7 @@ const handleClosePosterModal = () => {
 .delete-btn {
   color: var(--danger);
   background-color: rgba(255, 99, 90, 0.12);
-  border: 1px solid rgba(255, 99, 90, 0.24);
+  border: 2rpx solid rgba(255, 99, 90, 0.24);
 }
 
 .delete-btn:hover {
@@ -2013,7 +2017,7 @@ const handleClosePosterModal = () => {
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
   padding: 8px 16px;
-  border: 1px solid var(--cta-primary-border);
+  border: 2rpx solid var(--cta-primary-border);
   border-radius: 20px;
   font-size: 24rpx;
   font-weight: 600;

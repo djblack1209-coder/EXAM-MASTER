@@ -536,7 +536,7 @@ function deletePlan(planId) {
   width: 100%;
   z-index: 100;
   background-color: var(--em3d-card-bg);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
+  border-bottom: 2rpx solid var(--em3d-border);
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
@@ -557,7 +557,7 @@ function deletePlan(planId) {
   justify-content: center;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.46);
+  border: 2rpx solid rgba(255, 255, 255, 0.46);
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
@@ -596,7 +596,7 @@ function deletePlan(planId) {
   padding: 30rpx;
   border-radius: 32rpx;
   background-color: var(--em3d-card-bg);
-  border: 1px solid var(--apple-glass-border-strong);
+  border: 2rpx solid var(--em3d-border);
   box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
@@ -686,7 +686,7 @@ function deletePlan(planId) {
   border-radius: 22rpx;
   margin-bottom: 12rpx;
   background: rgba(255, 255, 255, 0.56);
-  border: 1px solid rgba(255, 255, 255, 0.44);
+  border: 2rpx solid rgba(255, 255, 255, 0.44);
 }
 
 .reminder-item.high {
@@ -731,7 +731,7 @@ function deletePlan(planId) {
 .priority-tag {
   padding: 10rpx 18rpx;
   border-radius: 999rpx;
-  border: 1px solid rgba(255, 255, 255, 0.44);
+  border: 2rpx solid rgba(255, 255, 255, 0.44);
   background: rgba(255, 255, 255, 0.62);
 }
 
@@ -746,7 +746,7 @@ function deletePlan(planId) {
 }
 
 .plan-badge.in_progress {
-  background: color-mix(in srgb, var(--success) 14%, transparent);
+  background: var(--em3d-primary-light);
   color: var(--success, #34c759);
 }
 
@@ -768,7 +768,7 @@ function deletePlan(planId) {
   padding: 20rpx;
   background: rgba(255, 255, 255, 0.54);
   border-radius: 24rpx;
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
 }
 
 .analytics-row {
@@ -854,7 +854,7 @@ function deletePlan(planId) {
 .task-stats,
 .action-btn {
   background: rgba(255, 255, 255, 0.52);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
 }
 
 .meta-item {
@@ -902,11 +902,7 @@ function deletePlan(planId) {
 .ta<REDACTED_SECRET> {
   height: 100%;
   border-radius: 999rpx;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--success) 88%, transparent) 0%,
-    color-mix(in srgb, var(--success) 96%, transparent) 100%
-  );
+  background: var(--em3d-primary-light);
   transition: width 0.3s ease;
 }
 
@@ -922,7 +918,7 @@ function deletePlan(planId) {
   /* gap: 16rpx; -- replaced for Android WebView compat */
   padding-top: 20rpx;
   margin-bottom: 20rpx;
-  border-top: 1px solid var(--apple-divider);
+  border-top: 2rpx solid var(--em3d-border);
 }
 
 .category-tag {
@@ -947,7 +943,7 @@ function deletePlan(planId) {
   display: flex;
   /* gap: 12rpx; -- replaced for Android WebView compat */
   padding-top: 20rpx;
-  border-top: 1px solid var(--apple-divider);
+  border-top: 2rpx solid var(--em3d-border);
 }
 
 .action-btn {

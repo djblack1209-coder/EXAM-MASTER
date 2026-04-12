@@ -423,7 +423,7 @@ function goBack() {
   width: 100%;
   z-index: 100;
   background-color: var(--em3d-card-bg);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
+  border-bottom: 2rpx solid var(--em3d-border);
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
@@ -447,7 +447,7 @@ function goBack() {
   justify-content: center;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.46);
+  border: 2rpx solid rgba(255, 255, 255, 0.46);
   box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   font-size: 36rpx;
   color: var(--text-main);
@@ -474,7 +474,7 @@ function goBack() {
   margin-bottom: 28rpx;
   border-radius: 32rpx;
   background-color: var(--em3d-card-bg);
-  border: 1px solid var(--apple-glass-border-strong);
+  border: 2rpx solid var(--em3d-border);
   box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
@@ -521,7 +521,7 @@ function goBack() {
   padding: 26rpx;
   border-radius: 26rpx;
   background: rgba(255, 255, 255, 0.48);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
   margin-bottom: 18rpx;
 }
 
@@ -551,7 +551,7 @@ function goBack() {
 .pill-btn,
 .priority-btn {
   background: rgba(255, 255, 255, 0.66);
-  border: 1px solid rgba(255, 255, 255, 0.44);
+  border: 2rpx solid rgba(255, 255, 255, 0.44);
 }
 
 .form-input,
@@ -647,7 +647,7 @@ function goBack() {
 }
 
 .priority-btn.low.active {
-  background: color-mix(in srgb, var(--success) 16%, transparent);
+  background: var(--em3d-primary-light);
   color: var(--success, #34c759);
 }
 
