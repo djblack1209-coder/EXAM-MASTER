@@ -226,12 +226,7 @@
             <text class="setting-title ds-text-sm ds-font-medium"> 智能语音伴学 </text>
             <text class="setting-desc ds-text-xs"> 导师回答后自动朗读 </text>
           </view>
-          <switch
-            id="e2e-settings-voice-switch"
-            :color="isDark ? 'var(--primary)' : 'var(--primary)'"
-            :checked="isVoiceEnabled"
-            @change="toggleVoice"
-          />
+          <em3d-switch id="e2e-settings-voice-switch" :model-value="isVoiceEnabled" @change="toggleVoice3d" />
         </view>
 
         <!-- 深色模式（自动切换 Wise/Bitget 主题） -->
@@ -240,12 +235,7 @@
             <text class="setting-title ds-text-sm ds-font-medium"> 深色模式 </text>
             <text class="setting-desc ds-text-xs"> 护眼模式，夜间更舒适 </text>
           </view>
-          <switch
-            id="e2e-settings-dark-switch"
-            :color="isDark ? 'var(--primary)' : 'var(--primary)'"
-            :checked="isDark"
-            @change="toggleDark"
-          />
+          <em3d-switch id="e2e-settings-dark-switch" :model-value="isDark" @change="toggleDark3d" />
         </view>
 
         <!-- 安全/隐私 -->
@@ -623,13 +613,20 @@ const onExamDateChange = (e) => {
   toast.success('考试日期已设置');
 };
 
-const toggleVoice = (e) => {
+const _toggleVoice = (e) => {
   isVoiceEnabled.value = e.detail.value;
   storageService.save('voice_enabled', isVoiceEnabled.value);
   toast.info(isVoiceEnabled.value ? '已开启语音伴学' : '已关闭语音伴学');
 };
 
-const toggleDark = (e) => {
+// Em3dSwitch 版本（直接接收布尔值）
+const toggleVoice3d = (val) => {
+  isVoiceEnabled.value = val;
+  storageService.save('voice_enabled', val);
+  toast.info(val ? '已开启语音伴学' : '已关闭语音伴学');
+};
+
+const _toggleDark = (e) => {
   isDark.value = e.detail.value;
   const mode = isDark.value ? 'dark' : 'light';
   // 使用主题工具函数统一处理
@@ -640,6 +637,15 @@ const toggleDark = (e) => {
       ? '已开启深色模式（护眼模式已激活）'
       : '已开启深色模式'
     : '已关闭深色模式';
+  toast.info(toastMsg);
+};
+
+// Em3dSwitch 版本（直接接收布尔值）
+const toggleDark3d = (val) => {
+  isDark.value = val;
+  const mode = val ? 'dark' : 'light';
+  setTheme(mode);
+  const toastMsg = val ? (isNightTime() ? '已开启深色模式（护眼模式已激活）' : '已开启深色模式') : '已关闭深色模式';
   toast.info(toastMsg);
 };
 
