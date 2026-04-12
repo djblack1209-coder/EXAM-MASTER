@@ -122,8 +122,10 @@ const lockedList = computed(() => {
   background-color: var(--em3d-card-bg);
   border-radius: 36rpx 36rpx 28rpx 28rpx;
   padding: 18rpx 22rpx 24rpx;
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
   animation: fadeInUp 0.3s ease-out;
   overflow-y: auto;
 }
@@ -184,8 +186,8 @@ const lockedList = computed(() => {
   cursor: pointer;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.66);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 .achievement-modal-body {
   padding-bottom: 16px;
@@ -223,8 +225,8 @@ const lockedList = computed(() => {
     linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
     linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 .achievement-item.unlocked {
   background:
