@@ -73,7 +73,8 @@ const emit = defineEmits([
   'go-correction',
   'go-chat',
   'go-weak-training',
-  'resume-session'
+  'resume-session',
+  'go-settings'
 ]);
 
 const loading = ref(false);
@@ -234,9 +235,9 @@ function _buildBriefing() {
         message += '新的一天，开始学习吧！';
       }
     } else {
-      // 没设考试日期
+      // 没设考试日期 — D017: 引导用户设置
       if (props.todayDone === 0) {
-        message = '新的一天开始了，先完成今日复习任务吧！';
+        message = '新的一天开始了！设置考试日期后，AI 可以为你定制倒计时和冲刺计划。';
       } else {
         message = `今天已做 ${props.todayDone} 题，正确率 ${props.accuracy}%。`;
         if (props.reviewPending > 0) {
@@ -245,6 +246,14 @@ function _buildBriefing() {
           message += '复习任务已清零，真厉害！';
         }
       }
+      // D017: 添加设置考试日期的引导任务
+      taskList.push({
+        title: '设置考试日期',
+        subtitle: '开启倒计时，解锁冲刺模式',
+        priority: 'normal',
+        action: 'settings',
+        actionText: '去设置'
+      });
     }
   }
 
@@ -463,6 +472,9 @@ function handleTaskTap(task) {
       break;
     case 'chat':
       emit('go-chat');
+      break;
+    case 'settings':
+      emit('go-settings');
       break;
   }
 }

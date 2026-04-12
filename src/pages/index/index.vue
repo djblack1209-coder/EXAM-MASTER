@@ -76,6 +76,7 @@
             @go-chat="navToChat"
             @go-weak-training="goSmartReview"
             @resume-session="resumeLastSession"
+            @go-settings="navToSettings"
           />
 
           <!-- 每日目标进度环（D022） -->
@@ -1137,6 +1138,11 @@ export default {
     // AI 简报导航：AI 聊天
     navToChat() {
       safeNavigateTo('/pages/chat/chat');
+    },
+
+    // AI 简报导航：设置页（D017: 引导设置考试日期）
+    navToSettings() {
+      safeNavigateTo('/pages/settings/index');
     },
 
     // ✅ [D002重构] loadReviewPending, loadHeatmapData, goSmartReview, resumeLastSession,

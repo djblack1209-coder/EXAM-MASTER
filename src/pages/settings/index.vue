@@ -108,6 +108,17 @@
               </text>
             </view>
           </view>
+          <!-- 考试日期设置（D017: 新用户引导设置） -->
+          <view class="exam-date-row">
+            <text class="info-label">考试日期</text>
+            <picker mode="date" :value="examDate" :start="todayDateStr" @change="onExamDateChange">
+              <view class="exam-date-picker">
+                <text v-if="examDate" class="exam-date-value">{{ examDateDisplay }}</text>
+                <text v-else class="exam-date-placeholder">点击设置考试日期</text>
+                <BaseIcon name="arrow-right" :size="24" />
+              </view>
+            </picker>
+          </view>
         </view>
 
         <!-- 目标院校管理弹窗 -->
@@ -393,6 +404,19 @@ const inviteCode = computed(() => inviteStore.inviteCode || 'EXAM8888');
 const inviteClaimableCount = computed(() => inviteStore.claimableCount);
 // C5: 注销状态
 const deletionStatus = ref({ status: 'active', remainingDays: null });
+// D017: 考试日期
+const examDate = ref('');
+/** 今天的日期字符串（picker 的最小可选日期） */
+const todayDateStr = computed(() => new Date().toISOString().slice(0, 10));
+/** 考试日期的友好显示（如 "2026-12-26 周六"） */
+const examDateDisplay = computed(() => {
+  if (!examDate.value) return '';
+  const d = new Date(examDate.value);
+  const weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  const diff = Math.ceil((d - new Date()) / 86400000);
+  const diffText = diff > 0 ? `（还有${diff}天）` : diff === 0 ? '（就是今天）' : '';
+  return `${examDate.value} ${weekDays[d.getDay()]}${diffText}`;
+});
 
 // 主题系统
 let _themeStore = null;
@@ -484,6 +508,8 @@ const loadData = () => {
     const stats = storageService.get('study_stats', {});
     studyDays.value = Object.keys(stats).length || 1;
     isVoiceEnabled.value = storageService.get('voice_enabled', true) !== false;
+    // D017: 加载考试日期
+    examDate.value = storageService.get('exam_date', '');
 
     uni.getStorageInfo({
       success: (res) => {
@@ -585,6 +611,16 @@ const handleEditMajor = () => {
       }
     }
   });
+};
+
+// D017: 考试日期变更处理
+const onExamDateChange = (e) => {
+  const dateStr = e.detail.value;
+  examDate.value = dateStr;
+  storageService.save('exam_date', dateStr);
+  // 同时写入 uni storage（兼容 sprint-mode.vue 的 uni.getStorageSync 读取）
+  uni.setStorageSync('exam_date', dateStr);
+  toast.success('考试日期已设置');
 };
 
 const toggleVoice = (e) => {
@@ -1324,6 +1360,37 @@ const handleClosePosterModal = () => {
   /* 添加呼吸感 */
 }
 
+/* D017: 考试日期设置行 */
+.exam-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background: rgba(255, 255, 255, 0.52);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.54);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44);
+}
+
+.exam-date-picker {
+  display: flex;
+  align-items: center;
+}
+
+.exam-date-value {
+  font-size: 26rpx;
+  color: var(--primary);
+  font-weight: 700;
+  margin-right: 8rpx;
+}
+
+.exam-date-placeholder {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  margin-right: 8rpx;
+}
+
 .stats-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1411,6 +1478,11 @@ const handleClosePosterModal = () => {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .exam-date-row {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .dark-mode .info-label,
