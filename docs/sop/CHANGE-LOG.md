@@ -14,6 +14,24 @@
 
 ---
 
+## [2026-04-12] 夜间自动审计系统配置
+
+- **Scope**: `infra` | `docs`
+- **Files Changed**:
+  - `scripts/nightly-audit.sh` — 新建：夜间审计主脚本（251行），分7个阶段调用 Claude Code -p 模式执行全量审计+自动修复，含API预检、超时控制、macOS通知、git自动提交推送
+  - `scripts/nightly-audit-prompts/01-health-precheck.md` — 阶段1提示词：构建验证+依赖检查+Git健康+密钥扫描+环境文件检查
+  - `scripts/nightly-audit-prompts/02-security-audit.md` — 阶段2提示词：认证授权+敏感数据+输入校验+后端安全+第三方依赖
+  - `scripts/nightly-audit-prompts/03-backend-api-audit.md` — 阶段3提示词：云函数完整性对照+API调用链路验证+数据模型一致性+半成品功能排查
+  - `scripts/nightly-audit-prompts/04-frontend-arch-audit.md` — 阶段4提示词：Options API迁移+组件质量+Store质量+Composable+路由+CSS兼容性+死代码
+  - `scripts/nightly-audit-prompts/05-ui-ux-visual-audit.md` — 阶段5提示词：全页面截图巡检+视觉问题检查+交互模拟+AI输出渲染
+  - `scripts/nightly-audit-prompts/06-file-governance.md` — 阶段6提示词：重复文件检测+命名规范+文档同步+配置一致性+HEALTH.md更新
+  - `scripts/nightly-audit-prompts/07-ops-cicd-audit.md` — 阶段7提示词：包体积+CI/CD+Electron+服务器可达性+性能基线+备份策略
+  - `~/Library/LaunchAgents/com.exam-master.nightly-audit.plist` — macOS LaunchAgent定时任务，每天00:00 CST触发
+- **Summary**: 配置完整的夜间自动审计系统，利用 Claude Code 非交互模式 (-p) 在中国时间00:00~08:00自动执行7个阶段的全量审计和修复，覆盖安全/后端/前端/UI/文件/运维全部维度。支持 `--test` 冒烟测试和 `--stage N` 单阶段执行。
+- **Breaking Changes**: 无
+
+---
+
 ## [2026-04-11] 登出缓存清理 + 首页学习小组/资源入口
 
 - **Scope**: `frontend`

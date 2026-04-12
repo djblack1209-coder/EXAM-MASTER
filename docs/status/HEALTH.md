@@ -1,6 +1,6 @@
 # EXAM-MASTER System Health Dashboard
 
-> Last updated: 2026-04-11 (登出缓存清理 + 首页学习小组/资源入口) | Maintainer: AI-SOP
+> Last updated: 2026-04-12 (夜间自动审计系统配置) | Maintainer: AI-SOP
 
 ## Deployment Status
 
@@ -20,6 +20,7 @@
 | -------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----- |
 | H024     | 🔴       | security | Sealos环境变量曾被调试函数明文暴露，所有密钥（JWT/DB密码/API Key）需要轮换                                                                                                                                                                                                                                          | 2026-04-03 | —     |
 | ~~D037~~ | ~~🔴~~   | infra    | ~~QA夜间回归连续11天全红+CI/CD构建失败~~ → **R457恢复误删文件+R461修复E2E超时+R476根治E2E超时（CI仅跑1浏览器+parallel+retry 0+60s超时，预计8min内完成）**                                                                                                                                                           | 2026-04-08 | ✅    |
+| N001     | 🟢       | infra    | 夜间自动审计系统已配置：macOS LaunchAgent 每天00:00 CST触发，Claude Code -p 模式7阶段全量审计（安全/后端/前端/UI/文件/运维），日志→logs/nightly-audit/，需确认API并发无冲突后实际验证                                                                                                                               | 2026-04-12 | —     |
 | D031     | 🟡       | frontend | npm audit 44个漏洞（3 critical/28 high/9 moderate/4 low），全部来自上游依赖（@dcloudio/uni-app系列+miniprogram-automator），需等待框架版本升级                                                                                                                                                                      | 2026-04-06 | —     |
 | D038     | 🟡       | security | `laf-backend/.env` 本地开发文件存在真实生产密钥与服务器凭据，虽未纳入 Git 但仍需完成密钥轮换与本地最小化收口                                                                                                                                                                                                        | 2026-04-10 | —     |
 | ~~D036~~ | ~~🔴~~   | infra    | ~~QA夜间回归连续10天全红：①Vitest JSON reporter exit code 1阻塞后续步骤②Maestro Android模拟器adb持续崩溃③安全扫描橡皮图章(npm audit\|\|true + Trivy exit-code 0)~~ → **R453-R454修复：Vitest双reporter+continue-on-error不阻塞密钥审计；Maestro降级为仅语法检查；安全扫描改为可见告警；Staging/Production URL区分** | 2026-04-06 | ✅    |
