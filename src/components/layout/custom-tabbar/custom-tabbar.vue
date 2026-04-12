@@ -297,7 +297,7 @@ onBeforeUnmount(() => {
   pointer-events: none;
 }
 
-/* 内层胶囊：唯一可见的实体元素 */
+/* 内层胶囊：唯一可见的实体元素 — 3D 立体风格 */
 .tabbar-capsule {
   margin-left: 24rpx;
   margin-right: 24rpx;
@@ -310,31 +310,35 @@ onBeforeUnmount(() => {
   justify-content: space-around;
   border-radius: 60rpx;
   pointer-events: auto;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   position: relative;
 
-  /* 亮色模式：半透明白色背景 + 底部边框 + 轻阴影 */
-  background: rgba(255, 255, 255, 0.96);
-  border: 1rpx solid var(--border);
-  box-shadow: var(--shadow-sm, 0 2rpx 12rpx rgba(0, 0, 0, 0.08));
+  /* 3D 实色胶囊：白底 + 边框 + 顶部阴影（从底部往上看的 3D 感） */
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow:
+    0 -4rpx 0 var(--em3d-border-shadow),
+    0 4rpx 16rpx rgba(0, 0, 0, 0.1);
 }
 
-/* 深色模式：暖色半透明背景 */
+/* 深色模式 */
 .tabbar-capsule.dark-mode {
-  background: rgba(41, 37, 36, 0.96);
-  border-color: transparent;
-  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
+  background-color: var(--em3d-card-bg);
+  border-color: var(--em3d-border);
+  box-shadow:
+    0 -4rpx 0 var(--em3d-border-shadow),
+    0 4rpx 16rpx rgba(0, 0, 0, 0.3);
 }
 
-/* 暗色模式顶部分割线（柔和） */
+/* 暗色模式顶部高光线（3D 立体感） */
 .tabbar-capsule.dark-mode::before {
   content: '';
   position: absolute;
   top: 0;
   left: 24rpx;
   right: 24rpx;
-  height: 1rpx;
-  background: rgba(255, 255, 255, 0.06);
+  height: 2rpx;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 60rpx 60rpx 0 0;
 }
 
@@ -352,21 +356,19 @@ onBeforeUnmount(() => {
 }
 
 .tab-item:active {
-  transform: scale(0.95);
+  transform: scale(0.9);
 }
 
+/* 选中态：3D 实色药丸 */
 .tab-item.active {
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
-  box-shadow:
-    inset 0 1rpx 0 color-mix(in srgb, var(--primary) 8%, transparent),
-    0 4rpx 16rpx color-mix(in srgb, var(--primary) 6%, transparent);
+  background-color: var(--em3d-primary-light);
+  box-shadow: inset 0 2rpx 4rpx rgba(0, 0, 0, 0.06);
+  border-radius: 42rpx;
 }
 
 .dark-mode .tab-item.active {
-  background: color-mix(in srgb, var(--primary) 18%, transparent);
-  box-shadow:
-    inset 0 1rpx 0 color-mix(in srgb, var(--primary) 10%, transparent),
-    0 6rpx 20rpx rgba(0, 0, 0, 0.28);
+  background-color: var(--em3d-primary-light);
+  box-shadow: inset 0 2rpx 4rpx rgba(0, 0, 0, 0.15);
 }
 
 .icon-wrapper {
@@ -404,46 +406,46 @@ onBeforeUnmount(() => {
   filter: brightness(0) invert(1) opacity(1);
 }
 
-/* 选中状态下的图标光晕效果 */
+/* 选中状态下的图标光晕效果 — 3D 实色圆 */
 .tab-item.active .icon-wrapper::after {
   content: '';
   position: absolute;
   width: 64rpx;
   height: 64rpx;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  background-color: var(--em3d-primary-light);
   opacity: 1;
   z-index: -1;
 }
 
 .dark-mode .tab-item.active .icon-wrapper::after {
-  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  background-color: var(--em3d-primary-light);
 }
 
-/* 未选中态文字：使用 --text-secondary */
+/* 未选中态文字 */
 .tab-label {
   font-size: 24rpx;
-  color: var(--text-secondary);
-  font-weight: 500;
+  color: var(--em3d-text-3);
+  font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 /* 深色模式下的未选中文字 */
 .dark-mode .tab-label {
-  color: var(--text-secondary);
+  color: var(--em3d-text-3);
 }
 
-/* 选中态文字：使用 --primary */
+/* 选中态文字 */
 .tab-item.active .tab-label {
-  color: var(--primary);
-  font-weight: 600;
+  color: var(--em3d-primary);
+  font-weight: 700;
 }
 
-/* 深色模式下选中文字 — 同样使用 --primary */
+/* 深色模式下选中文字 */
 .dark-mode .tab-item.active .tab-label {
-  color: var(--primary);
+  color: var(--em3d-primary);
 }
 
 .red-dot {
