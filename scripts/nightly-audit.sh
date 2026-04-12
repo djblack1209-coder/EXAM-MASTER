@@ -4,8 +4,8 @@
 # ============================================================================
 # 设计理念：
 #   每天中国时间 00:00 自动触发，利用 Claude Code 非交互模式 (-p) 分阶段执行
-#   全量审计 + 自动修复，覆盖安全/后端/前端/UI/文件/运维全部维度。
-#   8 小时窗口（00:00~08:00 CST），按价值位阶依次执行 7 个审计阶段。
+#   全量审计 + 自动修复，覆盖安全/后端/前端/UI/文件/运维/性能/隐私/无障碍全部维度。
+#   8 小时窗口（00:00~08:00 CST），按价值位阶依次执行 9 个审计阶段。
 #
 # 调用方式：
 #   手动运行:  ./scripts/nightly-audit.sh
@@ -91,6 +91,7 @@ done
 
 # 创建日志目录
 mkdir -p "$LOG_DIR"
+mkdir -p "${PROJECT_DIR}/logs/nightly-audit/metrics"
 
 # --- 工具函数 ---
 
@@ -209,6 +210,27 @@ release_global_lock() {
 cleanup_all() {
     release_global_lock
     release_self_lock
+}
+
+# 清理超过30天的旧审计日志
+cleanup_old_logs() {
+    log "${YELLOW}[清理]${NC}" "清理超过30天的旧审计日志..."
+    local cleaned=0
+    if [ -d "${PROJECT_DIR}/logs/nightly-audit" ]; then
+        # 清理超过30天的日期目录
+        while IFS= read -r old_dir; do
+            if [ -d "$old_dir" ]; then
+                rm -rf "$old_dir"
+                cleaned=$((cleaned + 1))
+            fi
+        done < <(find "${PROJECT_DIR}/logs/nightly-audit" -maxdepth 1 -type d -mtime +30 2>/dev/null)
+        
+        # 清理超过30天的旧格式日志文件
+        find "${PROJECT_DIR}/logs/nightly-audit" -maxdepth 1 -name "*.log" -mtime +30 -delete 2>/dev/null || true
+    fi
+    if [ $cleaned -gt 0 ]; then
+        log "${GREEN}[清理]${NC}" "已清理 ${cleaned} 个旧日志目录"
+    fi
 }
 
 # 清理可能残留的 Claude 非交互进程
@@ -333,8 +355,29 @@ run_stage() {
         return 1
     fi
 
+    # 注入项目红线规则（--bare 模式不会自动加载 CLAUDE.md）
+    local redlines
+    redlines="## 项目红线（必须遵守）
+
+1. 永远不要把 API 密钥写进前端代码
+2. 永远不要提交含真实密钥的 .env 文件
+3. 永远不要在需登录接口跳过 requireAuth(ctx)
+4. 永远不要让小程序主包超 2MB
+5. 永远不要前端直接调后端（必须走 Service 层 api/domains/）
+6. 永远不要未经构建验证就说完成了
+7. 永远不要把服务器密码/SSH密钥写在 Git 跟踪的文件中
+
+## 分层纪律
+Page → 只调用 组件/Store/Composable
+Component → props 接收数据，emit 事件
+Store(Pinia) → 调用 Service，管理全局状态
+Service(api/domains/) → 调用 _request-core.js 发 API 请求
+
+---
+
+"
     local prompt
-    prompt=$(cat "$prompt_file")
+    prompt="${redlines}$(cat "$prompt_file")"
 
     log "${GREEN}[开始]${NC}" "阶段 ${stage_num}: ${stage_name}"
     echo "## 阶段 ${stage_num}: ${stage_name}" >> "$SUMMARY_FILE"
@@ -529,7 +572,7 @@ EOF
     # 切换到项目目录
     cd "$PROJECT_DIR"
 
-    # --- 7 个审计阶段，按价值位阶排序 ---
+    # --- 9 个审计阶段，按价值位阶排序 ---
     run_stage 1 "health-precheck"    "${PROMPT_DIR}/01-health-precheck.md"    || true
     run_stage 2 "security-audit"     "${PROMPT_DIR}/02-security-audit.md"     || true
     run_stage 3 "backend-api-audit"  "${PROMPT_DIR}/03-backend-api-audit.md"  || true
@@ -537,6 +580,8 @@ EOF
     run_stage 5 "ui-ux-visual-audit" "${PROMPT_DIR}/05-ui-ux-visual-audit.md" || true
     run_stage 6 "file-governance"    "${PROMPT_DIR}/06-file-governance.md"    || true
     run_stage 7 "ops-cicd-audit"     "${PROMPT_DIR}/07-ops-cicd-audit.md"     || true
+    run_stage 8 "performance-audit"  "${PROMPT_DIR}/08-performance-audit.md"  || true
+    run_stage 9 "privacy-a11y-audit" "${PROMPT_DIR}/09-privacy-a11y-audit.md" || true
 
     # --- 收尾 ---
     cat >> "$SUMMARY_FILE" << EOF
