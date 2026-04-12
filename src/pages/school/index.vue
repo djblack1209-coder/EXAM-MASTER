@@ -2224,8 +2224,6 @@ export default {
   z-index: 200;
   display: flex;
   align-items: flex-end;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
   animation: fadeIn 0.3s;
 }
 

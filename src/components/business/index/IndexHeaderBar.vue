@@ -157,7 +157,6 @@ function handleAvatarTap() {
   border-bottom: 1rpx solid transparent;
   transition:
     background 0.3s ease,
-    backdrop-filter 0.3s ease,
     border-color 0.3s ease;
 }
 

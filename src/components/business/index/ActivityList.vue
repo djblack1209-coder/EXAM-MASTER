@@ -165,8 +165,6 @@ function getStatusText(status) {
 /* ---------- 暗色玻璃卡片 ---------- */
 .glass {
   background: var(--bg-card-alpha, rgba(255, 255, 255, 0.06));
-  backdrop-filter: blur(14rpx) saturate(130%);
-  -webkit-backdrop-filter: blur(14rpx) saturate(130%);
   border: 2rpx solid var(--border, rgba(255, 255, 255, 0.08));
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
 }

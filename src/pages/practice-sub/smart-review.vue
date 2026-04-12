@@ -507,7 +507,6 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 16rpx 32rpx;
-  backdrop-filter: saturate(180%) blur(40rpx);
   background: var(--bg-card);
   border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);

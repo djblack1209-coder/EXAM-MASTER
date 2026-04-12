@@ -1616,7 +1616,7 @@ onUnload(() => {
 .card-avatar,
 .my-rank-card .item-avatar {
   border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 /* [AUDIT FIX R177] 硬编码分数颜色 → CSS变量，自动适配暗黑模式 */
@@ -1730,7 +1730,7 @@ onUnload(() => {
 
 .card-avatar {
   border-color: rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .ai-label {

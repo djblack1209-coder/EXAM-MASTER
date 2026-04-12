@@ -2386,8 +2386,6 @@ export default {
   height: 100%;
   z-index: 200;
   background: var(--overlay);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2529,8 +2527,6 @@ export default {
   justify-content: center;
   border-radius: 50%;
   background: var(--overlay);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   transition: all 0.3s;
   flex-shrink: 0;
 }

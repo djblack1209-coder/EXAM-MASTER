@@ -637,8 +637,6 @@ function copyReportText() {
   width: 100%;
   height: 100%;
   background: var(--overlay);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -740,8 +738,6 @@ function copyReportText() {
     width: 100%;
     height: 100%;
     background: var(--mask-dark);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     z-index: 1;
   }
 

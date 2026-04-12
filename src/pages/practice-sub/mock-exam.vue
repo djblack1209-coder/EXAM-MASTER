@@ -812,8 +812,6 @@ onShareAppMessage(() => ({
   width: 100%;
   z-index: 100;
   background: var(--bg-card);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
   border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
@@ -885,7 +883,7 @@ onShareAppMessage(() => ({
   right: 24rpx;
   top: 0;
   height: 1rpx;
-  background: var(--apple-specular-soft);
+  background: var(--em3d-border);
 }
 
 /* 设置页面 */

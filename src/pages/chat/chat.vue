@@ -1220,7 +1220,7 @@ onUnmounted(() => {
   .left-bubble {
     background-color: transparent;
     color: var(--text-main, var(--ds-color-text-primary));
-    box-shadow: var(--apple-shadow-card);
+    box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   }
 
   .welcome-card {

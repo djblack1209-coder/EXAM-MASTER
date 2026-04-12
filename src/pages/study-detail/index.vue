@@ -726,16 +726,6 @@ function handleRangeChange(range) {
   overflow: hidden;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
-}
-
 .stat-card:active {
   transform: scale(0.98);
 }

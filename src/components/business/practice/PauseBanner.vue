@@ -19,8 +19,8 @@ defineEmits(['resume']);
 .pause-banner {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 24px;
   padding: 16px;
   margin-top: 16px;
@@ -28,7 +28,7 @@ defineEmits(['resume']);
   align-items: center;
   justify-content: space-between;
   /* gap: 12px; -- replaced for Android WebView compat */
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .pause-banner::before {

@@ -522,7 +522,7 @@ onMounted(() => {
   max-width: 720rpx;
   max-height: 80vh;
   overflow-y: auto;
-  background: var(--apple-glass-card-bg, rgba(255, 255, 255, 0.95));
+  background: var(--em3d-card-bg, rgba(255, 255, 255, 0.95));
 }
 .dark-mode .modal-content {
   background: rgba(30, 30, 36, 0.96);

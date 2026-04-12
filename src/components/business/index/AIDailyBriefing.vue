@@ -593,7 +593,7 @@ function handleTaskTap(task) {
   display: flex;
   align-items: center;
   padding: 18rpx 0;
-  border-bottom: 1rpx solid var(--apple-divider);
+  border-bottom: 1rpx solid var(--em3d-border);
 }
 
 .task-item:last-child {

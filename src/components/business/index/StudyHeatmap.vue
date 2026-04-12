@@ -336,7 +336,7 @@ onBeforeUnmount(() => {
   border-radius: 24rpx;
   background: var(--bg-card);
   border: 1rpx solid var(--border);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .month-strip {

@@ -86,10 +86,8 @@ function handleClick() {
   }
 
   &--dark {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 0.5px solid var(--border-light);
+    background: var(--em3d-card-bg);
+    border: 2rpx solid var(--border-light);
 
     &:active {
       border-color: var(--brand-color);

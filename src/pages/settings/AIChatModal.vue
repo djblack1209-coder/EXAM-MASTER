@@ -814,8 +814,6 @@ onBeforeUnmount(() => {
   align-items: flex-end;
   justify-content: center;
   background-color: var(--overlay-dark);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
 }
 
 .chat-panel {

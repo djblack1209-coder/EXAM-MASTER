@@ -111,8 +111,6 @@ defineEmits(['stat-click']);
 
 .glass {
   background: var(--bg-card-alpha);
-  backdrop-filter: blur(16rpx) saturate(130%);
-  -webkit-backdrop-filter: blur(16rpx) saturate(130%);
   border: 1rpx solid var(--border);
 }
 

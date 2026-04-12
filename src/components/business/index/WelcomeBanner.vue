@@ -109,7 +109,7 @@ const examCountdown = computed(() => {
 /* ── 深色模式 ── */
 .banner-dark {
   background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-page) 100%);
-  border-color: var(--apple-glass-border-strong);
+  border-color: var(--border);
 }
 
 .bubble-decoration {
