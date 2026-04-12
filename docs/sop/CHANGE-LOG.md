@@ -14,6 +14,21 @@
 
 ---
 
+## [2026-04-12] 夜间审计系统升级至 v2（9阶段 + 6项增强）
+
+- **Scope**: `infra` | `docs`
+- **Files Changed**:
+  - `scripts/nightly-audit.sh` — 升级至9阶段 + 日志自动清理（30天） + 红线注入（解决--bare不加载CLAUDE.md） + metrics目录创建 + 冒烟测试9阶段检查
+  - `scripts/nightly-audit-prompts/08-performance-audit.md` — 新建：阶段8性能审计提示词（首屏加载/API响应/包体积/Web Vitals/运行时/内存/数据库查询，含JSON趋势追踪）
+  - `scripts/nightly-audit-prompts/09-privacy-a11y-audit.md` — 新建：阶段9隐私合规+无障碍审计提示词（隐私指引/数据收集/注销/第三方SDK + alt/表单/对比度/触摸目标/语义化/动画，含JSON趋势追踪）
+  - `~/Library/LaunchAgents/com.exam-master.nightly-audit.plist` — 新增 TimeOut:28800 + Nice:10 + LowPriorityIO:true（与其他3个项目对齐）
+  - `docs/status/HEALTH.md` — 更新 N001 描述为9阶段版本
+- **Summary**: 夜间审计系统从7阶段升级至9阶段，新增性能审计和隐私合规+无障碍审计。6项增强：①日志30天自动清理防磁盘占满②红线规则注入到每个阶段的prompt（解决--bare模式下Claude不知道项目红线的问题）③LaunchAgent加超时/低优先级/低IO保护④metrics目录支持历史趋势追踪⑤阶段8覆盖首屏加载/API响应/包体积/Web Vitals/内存泄漏/数据库查询⑥阶段9覆盖微信隐私指引/用户数据审计/注销功能/图片alt/表单标签/颜色对比度/触摸目标/语义化标签/动画控制
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm run lint` passed | `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-12] WebSocket prodUrl 修复 + 空值降级防护
 
 - **Scope**: `frontend`
