@@ -1541,7 +1541,7 @@ onUnload(() => {
   min-width: 52rpx;
   height: 40rpx;
   padding: 0 14rpx;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .rank-1 .badge {
@@ -1555,7 +1555,7 @@ onUnload(() => {
 }
 
 .rank-3 .badge {
-  background: color-mix(in srgb, var(--warning) 88%, transparent);
+  background: rgba(255, 200, 0, 0.15);
   color: #4b2d00;
 }
 
@@ -1599,7 +1599,7 @@ onUnload(() => {
 
 .dark-mode .rank-item {
   border-left: none;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .rank-num {
