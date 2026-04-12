@@ -1206,8 +1206,6 @@ onUnload(() => {
   width: 100%;
   height: 100%;
   background: var(--overlay-dark);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   align-items: center;

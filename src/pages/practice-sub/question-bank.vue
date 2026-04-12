@@ -295,8 +295,6 @@ onMounted(() => {
   left: 0;
   right: 0;
   z-index: 100;
-  backdrop-filter: blur(40rpx);
-  -webkit-backdrop-filter: blur(40rpx);
   background: var(--bg-card);
   border-bottom: 2rpx solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
@@ -521,15 +519,15 @@ onMounted(() => {
   font-weight: 500;
 }
 .q-diff.easy {
-  background: color-mix(in srgb, var(--success) 12%, transparent);
+  background: var(--em3d-primary-light);
   color: var(--success);
 }
 .q-diff.medium {
-  background: color-mix(in srgb, var(--warning, #fbbf24) 12%, transparent);
+  background: rgba(255, 200, 0, 0.15);
   color: var(--warning, #d97706);
 }
 .q-diff.hard {
-  background: color-mix(in srgb, var(--danger, #f87171) 12%, transparent);
+  background: var(--em3d-danger-light);
   color: var(--danger, #dc2626);
 }
 .q-source,
@@ -604,8 +602,6 @@ onMounted(() => {
 }
 .dark-mode .navbar {
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(40rpx);
-  -webkit-backdrop-filter: blur(40rpx);
 }
 .dark-mode .nav-title,
 .dark-mode .nav-back {

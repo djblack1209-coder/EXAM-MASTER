@@ -132,11 +132,9 @@ function goBack() {
   padding-top: calc(env(safe-area-inset-top, 0px) + 20rpx);
   height: calc(constant(safe-area-inset-top) + 100rpx);
   height: calc(env(safe-area-inset-top, 0px) + 100rpx);
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border-bottom: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  border-bottom: 1rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 .nav-back {
   width: 72rpx;
@@ -147,7 +145,7 @@ function goBack() {
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.62);
   border: 1rpx solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 .back-icon {
   color: var(--text-main);
@@ -193,11 +191,9 @@ function goBack() {
   margin-bottom: 24rpx;
   padding: 26rpx 24rpx;
   border-radius: 28rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  background-color: var(--em3d-card-bg);
   border: 1rpx solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 .dark-mode .section {
   background:

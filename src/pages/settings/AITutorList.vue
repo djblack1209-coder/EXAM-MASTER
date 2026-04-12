@@ -82,17 +82,17 @@ const tutorList = computed(() => {
 <style lang="scss" scoped>
 .tutor-list {
   background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.36);
+  border: 2rpx solid rgba(255, 255, 255, 0.36);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .tutor-item {
   display: flex;
   align-items: center;
   padding: 20px;
-  border-bottom: 1px solid var(--apple-divider);
+  border-bottom: 2rpx solid var(--em3d-border);
   transition: background-color 0.2s ease;
 }
 
@@ -165,13 +165,11 @@ const tutorList = computed(() => {
 }
 
 .online-badge {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 48%),
-    linear-gradient(160deg, var(--apple-glass-pill-bg) 0%, rgba(255, 255, 255, 0.58) 100%);
+  background-color: var(--em3d-card-bg);
   color: var(--cta-primary-text);
   padding: 4px 12px;
   border-radius: 12px;
   font-weight: 500;
-  border: 1px solid var(--apple-divider);
+  border: 2rpx solid var(--em3d-border);
 }
 </style>
