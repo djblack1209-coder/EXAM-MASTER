@@ -14,6 +14,19 @@
 
 ---
 
+## [2026-04-12] WebSocket prodUrl 修复 + 空值降级防护
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - `src/config/index.js` — websocket.prodUrl 默认值从不存在的 `wss://api.exam-master.com/ws/ranking` 改为空字符串，添加注释说明 Sealos Laf 不支持 WebSocket
+  - `src/pages/practice-sub/ranking-socket.js` — connect() 增加空 URL 早期返回，避免无意义连接尝试和控制台报错
+  - `.env.example` — 更新示例 API URL 为 Sealos 域名格式，WebSocket 生产地址留空并说明原因
+- **Summary**: 移除不存在的 `api.exam-master.com` 域名引用，WebSocket 功能在 Sealos Laf 平台暂不可用，排行榜页面自动降级为 HTTP 轮询模式。rank.vue 原有 `.catch()` 错误处理已能正确处理降级。
+- **Breaking Changes**: 无
+- **Quality Gate**: `npm run lint` passed | `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-12] 夜间自动审计系统配置
 
 - **Scope**: `infra` | `docs`
