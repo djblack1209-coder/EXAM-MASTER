@@ -517,18 +517,14 @@ function copyQuote() {
   align-items: flex-end;
   justify-content: center;
   background: rgba(9, 18, 12, 0.32);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .share-modal-content {
   width: 100%;
   padding: 14rpx 24rpx calc(24rpx + env(safe-area-inset-bottom));
   border-radius: 38rpx 38rpx 0 0;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   box-shadow: 0 -20rpx 70rpx rgba(21, 49, 28, 0.18);
   animation: slideUp 0.26s ease;
 }
@@ -590,8 +586,8 @@ function copyQuote() {
   height: 60rpx;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .close-icon {
@@ -606,17 +602,13 @@ function copyQuote() {
 .quote-preview {
   padding: 28rpx;
   border-radius: 28rpx;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(245, 255, 248, 0.86) 0%, rgba(221, 242, 228, 0.68) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .quote-preview.preview-dark {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  background-color: var(--em3d-card-bg);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -665,8 +657,8 @@ function copyQuote() {
   padding: 18rpx 30rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .favorite-btn.is-favorite {
@@ -724,8 +716,8 @@ function copyQuote() {
   padding: 24rpx 16rpx;
   border-radius: 28rpx;
   background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 .option-item > view + view {
   margin-top: 12rpx;
@@ -742,7 +734,7 @@ function copyQuote() {
 }
 
 .icon-wechat {
-  background: color-mix(in srgb, var(--success) 16%, transparent);
+  background: var(--em3d-primary-light);
 }
 
 .icon-timeline {
@@ -750,7 +742,7 @@ function copyQuote() {
 }
 
 .icon-poster {
-  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  background: rgba(255, 200, 0, 0.15);
 }
 
 .icon-copy {
@@ -791,10 +783,8 @@ function copyQuote() {
   max-width: 680rpx;
   padding: 26rpx;
   border-radius: 30rpx;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -834,17 +824,15 @@ function copyQuote() {
 }
 
 .poster-btn.btn-cancel {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  background-color: var(--em3d-card-bg);
   color: var(--foreground);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .poster-btn.btn-save {
   background: var(--cta-primary-bg);
   color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
+  border: 2rpx solid var(--cta-primary-border);
   box-shadow: var(--cta-primary-shadow);
 }
 
@@ -852,16 +840,14 @@ function copyQuote() {
 .share-modal-content.modal-dark .favorite-btn,
 .share-modal-content.modal-dark .option-item,
 .share-modal-content.modal-dark .close-btn {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.92) 0%, rgba(10, 12, 18, 0.88) 100%);
+  background-color: var(--em3d-card-bg);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
 .share-modal-content.modal-dark .option-icon {
   background: rgba(10, 132, 255, 0.14);
-  border: 1px solid rgba(10, 132, 255, 0.18);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(10, 132, 255, 0.18);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .share-modal-content.modal-dark .icon-wechat {

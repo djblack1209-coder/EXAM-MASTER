@@ -126,8 +126,6 @@ function handleRestart() {
   right: 0;
   bottom: 0;
   background: rgba(9, 18, 12, 0.32);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -138,13 +136,11 @@ function handleRestart() {
 .resume-modal-content {
   width: 100%;
   max-width: 700rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 36rpx 36rpx 28rpx 28rpx;
   padding: 18rpx 28rpx 30rpx;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   animation: modalSlideUp 0.3s ease-out;
 }
 
@@ -187,14 +183,14 @@ function handleRestart() {
 .header-icon {
   width: 100rpx;
   height: 100rpx;
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
+  background: var(--em3d-primary-light);
+  border: 2rpx solid var(--em3d-primary-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20rpx;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .icon-emoji {
@@ -208,14 +204,12 @@ function handleRestart() {
 }
 
 .draft-info {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.46);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid rgba(255, 255, 255, 0.46);
   border-radius: 24rpx;
   padding: 24rpx;
   margin-bottom: 24rpx;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .info-row {
@@ -226,7 +220,7 @@ function handleRestart() {
 }
 
 .info-row:not(:last-child) {
-  border-bottom: 1px solid var(--apple-divider);
+  border-bottom: 2rpx solid var(--em3d-border);
 }
 
 .info-label {
@@ -280,12 +274,10 @@ function handleRestart() {
 }
 
 .btn-secondary {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+  background-color: var(--em3d-card-bg);
   color: var(--text-main);
-  border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .btn-secondary:active {
@@ -310,9 +302,7 @@ function handleRestart() {
 }
 
 .dark-mode .resume-modal-content {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  background-color: var(--em3d-card-bg);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -336,9 +326,7 @@ function handleRestart() {
 }
 
 .dark-mode .draft-info {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  background-color: var(--em3d-card-bg);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -351,9 +339,7 @@ function handleRestart() {
 }
 
 .dark-mode .btn-secondary {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  background-color: var(--em3d-card-bg);
   color: var(--text-inverse);
   border-color: rgba(255, 255, 255, 0.1);
 }

@@ -109,8 +109,6 @@ const lockedList = computed(() => {
   right: 0;
   bottom: 0;
   background: rgba(9, 18, 12, 0.32);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -121,9 +119,7 @@ const lockedList = computed(() => {
   width: 100%;
   max-width: 720rpx;
   max-height: 80vh;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 36rpx 36rpx 28rpx 28rpx;
   padding: 18rpx 22rpx 24rpx;
   border: 1px solid var(--apple-glass-border-strong);

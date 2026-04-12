@@ -367,8 +367,7 @@ defineExpose({ show, hide });
   background: rgba(0, 0, 0, 0.85);
   border-radius: 24rpx;
   padding: 16rpx 24rpx;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+
   transition: all 0.3s ease;
   max-width: 90vw;
 

@@ -113,20 +113,16 @@ function openPrivacyContract() {
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .privacy-dialog {
   width: 620rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 36rpx;
   padding: 18rpx 34rpx 30rpx;
   box-sizing: border-box;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .privacy-handle {
@@ -190,12 +186,10 @@ function openPrivacyContract() {
 }
 
 .privacy-btn-reject {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
+  background-color: var(--em3d-card-bg);
   color: var(--text-main);
-  border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .privacy-btn-agree {
@@ -211,10 +205,8 @@ function openPrivacyContract() {
 }
 
 .dark-mode .privacy-dialog {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--em3d-card-bg);
+  border-color: var(--em3d-border);
 }
 
 .dark-mode .privacy-handle {
@@ -235,10 +227,8 @@ function openPrivacyContract() {
 }
 
 .dark-mode .privacy-btn-reject {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  background-color: var(--em3d-card-bg);
   color: var(--text-inverse);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--em3d-border);
 }
 </style>
