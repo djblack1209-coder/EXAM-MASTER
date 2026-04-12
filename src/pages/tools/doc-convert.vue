@@ -803,13 +803,9 @@ function formatSize(bytes) {
   left: 0;
   right: 0;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  border-bottom: 1rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 
   .nav-content {
     display: flex;
@@ -860,12 +856,10 @@ function formatSize(bytes) {
   align-items: center;
   padding: 48rpx 32rpx 40rpx;
   margin-bottom: 32rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 28rpx;
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   position: relative;
   overflow: hidden;
 
@@ -873,12 +867,12 @@ function formatSize(bytes) {
     width: 100rpx;
     height: 100rpx;
     border-radius: 999rpx;
-    background: var(--apple-glass-pill-bg);
+    background: var(--em3d-card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20rpx;
-    box-shadow: var(--apple-shadow-surface);
+    box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
     border: 1rpx solid rgba(255, 255, 255, 0.5);
   }
 
@@ -932,10 +926,10 @@ function formatSize(bytes) {
   align-items: center;
   padding: 20rpx;
   margin-bottom: 16rpx;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 24rpx;
   border: 2rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   transition: all 0.25s ease;
 
   &.active {
@@ -953,14 +947,14 @@ function formatSize(bytes) {
     width: 64rpx;
     height: 64rpx;
     border-radius: 999rpx;
-    background: var(--apple-glass-pill-bg);
+    background: var(--em3d-card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     margin-right: 16rpx;
     border: 1rpx solid rgba(255, 255, 255, 0.5);
-    box-shadow: var(--apple-shadow-surface);
+    box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   }
 
   .type-icon {
@@ -991,21 +985,21 @@ function formatSize(bytes) {
 
 // 文件选择
 .file-placeholder {
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 2rpx dashed var(--apple-divider);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx dashed var(--em3d-border);
   border-radius: 24rpx;
   padding: 60rpx 30rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   transition: all 0.25s ease;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 
   .upload-icon-box {
     width: 80rpx;
     height: 80rpx;
     border-radius: 50%;
-    background: var(--apple-glass-pill-bg);
+    background: var(--em3d-card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1037,19 +1031,19 @@ function formatSize(bytes) {
 }
 
 .file-info-card {
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 24rpx;
   padding: 24rpx;
   display: flex;
   align-items: center;
-  box-shadow: var(--apple-shadow-card);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  border: 1rpx solid var(--em3d-border);
 
   .file-icon-box {
     width: 64rpx;
     height: 64rpx;
     border-radius: 999rpx;
-    background: var(--apple-glass-pill-bg);
+    background: var(--em3d-card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1124,7 +1118,7 @@ function formatSize(bytes) {
   & > text + view {
     margin-left: 20rpx;
   }
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 
   &.status-loading {
     background: rgba(91, 134, 229, 0.06);
@@ -1132,13 +1126,13 @@ function formatSize(bytes) {
   }
 
   &.status-done {
-    background: color-mix(in srgb, var(--success) 6%, transparent);
-    border: 1rpx solid color-mix(in srgb, var(--success) 12%, transparent);
+    background: var(--em3d-primary-light);
+    border: 1rpx solid var(--em3d-primary-light);
   }
 
   &.status-error {
-    background: color-mix(in srgb, var(--danger) 6%, transparent);
-    border: 1rpx solid color-mix(in srgb, var(--danger) 12%, transparent);
+    background: var(--em3d-danger-light);
+    border: 1rpx solid var(--em3d-danger-light);
   }
 }
 
@@ -1237,13 +1231,9 @@ function formatSize(bytes) {
   padding: 24rpx 32rpx;
   padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-top: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  background-color: var(--em3d-card-bg);
+  border-top: 1rpx solid var(--em3d-border);
+  box-shadow: 0 8rpx 0 var(--em3d-border-shadow), 0 16rpx 40rpx rgba(0,0,0,0.15);
 }
 
 // 按钮
@@ -1285,7 +1275,7 @@ function formatSize(bytes) {
   border-radius: 999rpx;
   font-size: 28rpx;
   text-align: center;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 
   &::after {
     border: none;
@@ -1319,7 +1309,7 @@ function formatSize(bytes) {
 
   .type-card {
     background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
-    box-shadow: var(--apple-shadow-card);
+    box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 
     &.active {
       background: var(--cta-primary-bg);
@@ -1333,7 +1323,7 @@ function formatSize(bytes) {
 
   .file-info-card {
     background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
-    box-shadow: var(--apple-shadow-card);
+    box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 
     .file-reading {
       color: var(--primary);
@@ -1428,11 +1418,9 @@ function formatSize(bytes) {
 .file-info-card,
 .status-card,
 .btn-secondary {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  background-color: var(--em3d-card-bg);
   border: 1rpx solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .hero-card,
@@ -1467,7 +1455,7 @@ function formatSize(bytes) {
 .file-info-card .file-remove {
   background: rgba(255, 255, 255, 0.72);
   border: 1rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .type-card .type-icon-box,
@@ -1526,7 +1514,7 @@ function formatSize(bytes) {
 .status-error-icon {
   background: rgba(255, 255, 255, 0.72);
   border: 1rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .status-done-icon,
@@ -1540,6 +1528,6 @@ function formatSize(bytes) {
   right: 24rpx;
   bottom: 20rpx;
   border-radius: 34rpx;
-  border: 1rpx solid var(--apple-glass-border-strong);
+  border: 1rpx solid var(--em3d-border);
 }
 </style>

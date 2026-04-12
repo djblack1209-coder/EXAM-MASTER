@@ -540,13 +540,9 @@ onUnload(() => {
   left: 0;
   right: 0;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  border-bottom: 1rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .nav-content {
@@ -584,13 +580,13 @@ onUnload(() => {
 .search-bar {
   display: flex;
   align-items: center;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 999rpx;
   padding: 0 24rpx;
   height: 80rpx;
   margin-bottom: 20rpx;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .search-icon {
@@ -634,7 +630,7 @@ onUnload(() => {
   border: 1rpx solid rgba(255, 255, 255, 0.5);
   margin-right: 16rpx;
   flex-shrink: 0;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .cat-tab:last-child {
@@ -726,22 +722,12 @@ onUnload(() => {
 .resource-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 28rpx;
   padding: 24rpx;
   margin-bottom: 20rpx;
-  box-shadow: var(--apple-shadow-card);
-}
-
-.resource-card::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .card-top-row {
@@ -825,12 +811,12 @@ onUnload(() => {
 .hot-item {
   display: flex;
   align-items: center;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 24rpx;
   padding: 20rpx;
   margin-bottom: 16rpx;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .rank-badge {
@@ -970,8 +956,8 @@ onUnload(() => {
 }
 
 .skeleton-card {
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 28rpx;
   padding: 28rpx;
   margin-bottom: 20rpx;

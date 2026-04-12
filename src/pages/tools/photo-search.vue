@@ -796,8 +796,6 @@ function _searchSimilar() {
   right: 0;
   z-index: 100;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 
   .nav-content {
     display: flex;
@@ -935,8 +933,6 @@ function _searchSimilar() {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1139,10 +1135,10 @@ function _searchSimilar() {
 }
 
 .answer-card {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--success) 6%, transparent), rgba(48, 209, 88, 0.06));
+  background: linear-gradient(135deg, var(--em3d-primary-light), rgba(48, 209, 88, 0.06));
   padding: 20rpx;
   border-radius: 16rpx;
-  border: 1rpx solid color-mix(in srgb, var(--success) 15%, transparent);
+  border: 1rpx solid var(--em3d-primary-light);
 
   .answer-text {
     font-size: 28rpx;
@@ -1214,8 +1210,6 @@ function _searchSimilar() {
   padding-bottom: calc(24rpx + constant(safe-area-inset-bottom));
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
   background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 
   button {
     border: none;
@@ -1384,18 +1378,16 @@ function _searchSimilar() {
 }
 
 .nav-header {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border-bottom: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  border-bottom: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .nav-header .nav-back,
 .nav-header .nav-action {
   background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .nav-header .back-icon,
@@ -1433,7 +1425,7 @@ function _searchSimilar() {
 .camera-preview,
 .preview-area {
   margin-top: 12rpx;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .viewfinder {
@@ -1446,11 +1438,9 @@ function _searchSimilar() {
 }
 
 .camera-tip {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   color: var(--text-main);
 }
 
@@ -1494,11 +1484,9 @@ function _searchSimilar() {
 .action-btn-side,
 .bar-btn.bar-btn-secondary,
 .bar-btn.bar-btn-ghost {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.76) 0%, rgba(241, 248, 243, 0.5) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .confidence-badge,
@@ -1532,13 +1520,13 @@ function _searchSimilar() {
 }
 
 .meta-tag {
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
+  background: var(--em3d-primary-light);
+  border: 2rpx solid var(--em3d-primary-light);
 }
 
 .meta-tag.meta-tag-diff {
-  background: color-mix(in srgb, var(--warning) 12%, transparent);
-  border-color: color-mix(in srgb, var(--warning) 18%, transparent);
+  background: rgba(255, 200, 0, 0.15);
+  border-color: rgba(255, 200, 0, 0.15);
 }
 
 .meta-tag .meta-tag-text {
@@ -1554,8 +1542,8 @@ function _searchSimilar() {
 }
 
 .answer-card {
-  background: color-mix(in srgb, var(--success) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
+  background: var(--em3d-primary-light);
+  border: 2rpx solid var(--em3d-primary-light);
 }
 
 .answer-card .answer-text {
@@ -1563,8 +1551,8 @@ function _searchSimilar() {
 }
 
 .kp-tag {
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
+  background: var(--em3d-primary-light);
+  border: 2rpx solid var(--em3d-primary-light);
 }
 
 .kp-tag .kp-tag-text {
@@ -1572,11 +1560,9 @@ function _searchSimilar() {
 }
 
 .action-bar {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border-top: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  border-top: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .action-btn-side {
@@ -1631,11 +1617,9 @@ function _searchSimilar() {
   margin-top: 8rpx;
   padding: 22rpx 24rpx;
   border-radius: 28rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .camera-hero {
@@ -1698,8 +1682,6 @@ function _searchSimilar() {
   width: calc(100% - 72rpx);
   height: 340rpx;
   border-radius: 30rpx;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
 }
 
 .camera-tip {
@@ -1714,11 +1696,9 @@ function _searchSimilar() {
 .result-section {
   padding: 20rpx;
   border-radius: 28rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid rgba(255, 255, 255, 0.48);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .result-section {
@@ -1757,7 +1737,7 @@ function _searchSimilar() {
 }
 
 .dark-mode .action-bar {
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .action-btn-side,

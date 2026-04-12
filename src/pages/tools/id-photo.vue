@@ -787,13 +787,9 @@ function resetAll() {
   left: 0;
   right: 0;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-bottom: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  border-bottom: 1rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 
   .nav-content {
     display: flex;
@@ -844,12 +840,10 @@ function resetAll() {
   align-items: center;
   padding: 48rpx 32rpx 40rpx;
   margin-bottom: 32rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 36%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 28rpx;
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  border: 1rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   position: relative;
   overflow: hidden;
 
@@ -857,12 +851,12 @@ function resetAll() {
     width: 100rpx;
     height: 100rpx;
     border-radius: 999rpx;
-    background: var(--apple-glass-pill-bg);
+    background: var(--em3d-card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 20rpx;
-    box-shadow: var(--apple-shadow-surface);
+    box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
     border: 1rpx solid rgba(255, 255, 255, 0.5);
   }
 
@@ -895,10 +889,10 @@ function resetAll() {
   align-items: flex-start;
   padding: 24rpx 16rpx;
   margin-bottom: 24rpx;
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 24rpx;
-  box-shadow: var(--apple-shadow-card);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  border: 1rpx solid var(--em3d-border);
 }
 
 .step-item {
@@ -988,20 +982,20 @@ function resetAll() {
 
 // 上传区域
 .upload-area {
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 2rpx dashed var(--apple-divider);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx dashed var(--em3d-border);
   border-radius: 24rpx;
   padding: 80rpx 30rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 
   .upload-icon-box {
     width: 96rpx;
     height: 96rpx;
     border-radius: 50%;
-    background: var(--apple-glass-pill-bg);
+    background: var(--em3d-card-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1037,7 +1031,7 @@ function resetAll() {
   display: flex;
   justify-content: center;
   border: 1rpx solid rgba(124, 176, 255, 0.18);
-  box-shadow: var(--apple-shadow-floating);
+  box-shadow: 0 8rpx 0 var(--em3d-border-shadow), 0 16rpx 40rpx rgba(0,0,0,0.15);
 
   .preview-img {
     width: 100%;
@@ -1075,7 +1069,7 @@ function resetAll() {
   background: rgba(255, 255, 255, 0.68);
   border-radius: 999rpx;
   border: 2rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   transition: all 0.25s ease;
 
   &.active {
@@ -1146,12 +1140,12 @@ function resetAll() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
+  background-color: var(--em3d-card-bg);
   padding: 24rpx;
   border-radius: 24rpx;
   margin-bottom: 32rpx;
-  box-shadow: var(--apple-shadow-card);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  border: 1rpx solid var(--em3d-border);
 
   .beauty-info {
     display: flex;
@@ -1177,11 +1171,11 @@ function resetAll() {
   flex-direction: column;
   align-items: center;
   padding: 60rpx 40rpx;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 28rpx;
-  box-shadow: var(--apple-shadow-floating);
+  box-shadow: 0 8rpx 0 var(--em3d-border-shadow), 0 16rpx 40rpx rgba(0,0,0,0.15);
   width: 100%;
-  border: 1rpx solid var(--apple-glass-border-strong);
+  border: 1rpx solid var(--em3d-border);
 
   .processing-spinner {
     width: 80rpx;
@@ -1214,14 +1208,14 @@ function resetAll() {
 
 // 结果
 .result-card {
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 24rpx;
   overflow: hidden;
   display: flex;
   justify-content: center;
   margin-bottom: 32rpx;
-  box-shadow: var(--apple-shadow-card);
-  border: 1rpx solid var(--apple-glass-border-strong);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  border: 1rpx solid var(--em3d-border);
 
   .result-img {
     width: 100%;
@@ -1271,7 +1265,7 @@ function resetAll() {
   border-radius: 999rpx;
   font-size: 28rpx;
   text-align: center;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 
   &::after {
     border: none;
@@ -1319,7 +1313,7 @@ function resetAll() {
 
   .steps-bar {
     background: linear-gradient(180deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
-    box-shadow: var(--apple-shadow-card);
+    box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   }
 
   .step-item .step-dot {
@@ -1333,7 +1327,7 @@ function resetAll() {
 
   .option-chip {
     background: rgba(16, 20, 28, 0.72);
-    box-shadow: var(--apple-shadow-surface);
+    box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 
     &.active {
       background: var(--cta-primary-bg);
@@ -1346,17 +1340,17 @@ function resetAll() {
 
   .beauty-card {
     background: linear-gradient(180deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
-    box-shadow: var(--apple-shadow-card);
+    box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   }
 
   .processing-card {
     background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
-    box-shadow: var(--apple-shadow-floating);
+    box-shadow: 0 8rpx 0 var(--em3d-border-shadow), 0 16rpx 40rpx rgba(0,0,0,0.15);
   }
 
   .result-card {
     background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
-    box-shadow: var(--apple-shadow-card);
+    box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
   }
 
   .preview-card {
@@ -1449,11 +1443,9 @@ function resetAll() {
 .result-card,
 .btn-secondary,
 .btn-ghost {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
+  background-color: var(--em3d-card-bg);
   border: 1rpx solid rgba(255, 255, 255, 0.48);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .steps-bar,
@@ -1480,8 +1472,8 @@ function resetAll() {
 }
 
 .step-item.done .step-dot {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--success) 88%, transparent), rgba(101, 219, 138, 0.96));
-  box-shadow: var(--apple-shadow-surface);
+  background: linear-gradient(135deg, var(--em3d-primary-light), rgba(101, 219, 138, 0.96));
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .preview-card {
@@ -1505,7 +1497,7 @@ function resetAll() {
 }
 
 .processing-card .processing-spinner {
-  border-color: color-mix(in srgb, var(--success) 16%, transparent);
+  border-color: var(--em3d-primary-light);
   border-top-color: var(--success);
 }
 

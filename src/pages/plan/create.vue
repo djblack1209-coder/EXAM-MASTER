@@ -422,11 +422,7 @@ function goBack() {
   left: 0;
   width: 100%;
   z-index: 100;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 38%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  background-color: var(--em3d-card-bg);
   border-bottom: 1px solid var(--apple-glass-border-strong);
   box-shadow: var(--apple-shadow-surface);
 }
@@ -477,9 +473,7 @@ function goBack() {
 .form-card {
   margin-bottom: 28rpx;
   border-radius: 32rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border: 1px solid var(--apple-glass-border-strong);
   box-shadow: var(--apple-shadow-card);
 }

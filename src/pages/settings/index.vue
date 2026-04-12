@@ -1186,9 +1186,7 @@ const handleClosePosterModal = () => {
 .user-card.wise-card {
   position: relative;
   z-index: 1;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft, rgba(255, 255, 255, 0.2)) 0%, transparent 42%),
-    linear-gradient(160deg, var(--bg-secondary) 0%, var(--bg-card) 48%, var(--bg-secondary) 100%);
+  background-color: var(--em3d-card-bg);
   border: 1px solid var(--apple-glass-border-strong);
   border-radius: 24px;
   padding: 20px;
@@ -1570,7 +1568,7 @@ const handleClosePosterModal = () => {
   align-items: center;
   justify-content: space-between;
   padding: 24rpx 28rpx;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border: 1px solid var(--apple-glass-border-strong);
   border-radius: 28rpx;
   box-shadow: var(--apple-shadow-card);
@@ -1828,8 +1826,6 @@ const handleClosePosterModal = () => {
   right: 0;
   bottom: 0;
   background-color: rgba(9, 18, 12, 0.3);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1837,9 +1833,7 @@ const handleClosePosterModal = () => {
 }
 
 .modal-content {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border: 1px solid var(--apple-glass-border-strong);
   border-radius: 28px;
   width: 90%;
