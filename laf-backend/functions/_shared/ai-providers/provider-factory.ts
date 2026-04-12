@@ -309,3 +309,82 @@ export function resetProviderCache(): void {
   _providerCache.clear();
   _poolIndex = 0;
 }
+
+// ==================== 余额监控 ====================
+
+/** 余额警戒阈值（元） */
+const BALANCE_ALERT_THRESHOLD = 30;
+
+export interface ProviderBalanceInfo {
+  provider: string;
+  balance: number | null;
+  currency: string;
+  status: 'ok' | 'warning' | 'error';
+  message: string;
+}
+
+/**
+ * 检查 SiliconFlow 官方账户余额
+ * API: GET https://api.siliconflow.cn/v1/user/info
+ * @returns 余额信息（元），余额 < 30 元时 status 为 warning
+ */
+export async function checkSiliconFlowBalance(): Promise<ProviderBalanceInfo> {
+  const apiKey = process.env.SILICONFLOW_OFFICIAL_API_KEY || process.env.SILICONFLOW_API_KEY_1;
+  if (!apiKey) {
+    return { provider: 'siliconflow', balance: null, currency: 'CNY', status: 'error', message: 'API Key 未配置' };
+  }
+
+  try {
+    const resp = await fetch('https://api.siliconflow.cn/v1/user/info', {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(10000)
+    });
+
+    if (!resp.ok) {
+      return {
+        provider: 'siliconflow',
+        balance: null,
+        currency: 'CNY',
+        status: 'error',
+        message: `HTTP ${resp.status}`
+      };
+    }
+
+    const data = (await resp.json()) as any;
+    const balance = parseFloat(data?.data?.balance ?? data?.balance ?? '0');
+
+    if (isNaN(balance)) {
+      return { provider: 'siliconflow', balance: null, currency: 'CNY', status: 'error', message: '余额解析失败' };
+    }
+
+    const isLow = balance < BALANCE_ALERT_THRESHOLD;
+    return {
+      provider: 'siliconflow',
+      balance,
+      currency: 'CNY',
+      status: isLow ? 'warning' : 'ok',
+      message: isLow
+        ? `⚠️ 余额不足！仅剩 ${balance} 元（警戒线 ${BALANCE_ALERT_THRESHOLD} 元）`
+        : `余额充足：${balance} 元`
+    };
+  } catch (err: any) {
+    return {
+      provider: 'siliconflow',
+      balance: null,
+      currency: 'CNY',
+      status: 'error',
+      message: err?.message || '网络异常'
+    };
+  }
+}
+
+/**
+ * 检查所有付费供应商的健康状态
+ * 目前仅支持 SiliconFlow，后续可扩展其他供应商
+ */
+export async function checkAllProviderBalances(): Promise<ProviderBalanceInfo[]> {
+  const results: ProviderBalanceInfo[] = [];
+  results.push(await checkSiliconFlowBalance());
+  return results;
+}
