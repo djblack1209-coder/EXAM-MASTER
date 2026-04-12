@@ -414,19 +414,15 @@ onMounted(() => {
   max-width: 640rpx;
   padding: 40rpx 32rpx;
   border-radius: 36rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1rpx solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-card);
+  background-color: var(--em3d-card-bg);
+  border: 1rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .loading-section,
 .dark-mode .success-section,
 .dark-mode .error-section {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  background-color: var(--em3d-card-bg);
   border-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -435,7 +431,7 @@ onMounted(() => {
 .error-icon {
   background: rgba(255, 255, 255, 0.7);
   border: 1rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .loading-icon,
@@ -446,7 +442,7 @@ onMounted(() => {
 }
 
 .spinner {
-  border-color: color-mix(in srgb, var(--success) 16%, transparent);
+  border-color: var(--em3d-primary-light);
   border-top-color: var(--success);
 }
 
