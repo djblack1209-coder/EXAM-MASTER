@@ -1334,7 +1334,6 @@ const handleClosePosterModal = () => {
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.54);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44);
 }
 
 .info-item:active {
@@ -1374,7 +1373,6 @@ const handleClosePosterModal = () => {
   background: rgba(255, 255, 255, 0.52);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.54);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44);
 }
 
 .exam-date-picker {
@@ -1417,7 +1415,6 @@ const handleClosePosterModal = () => {
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.58);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44);
 }
 
 .stat-card:active {
@@ -1481,7 +1478,6 @@ const handleClosePosterModal = () => {
 .dark-mode .stat-card {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.08);
 }
 
 .dark-mode .exam-date-row {
