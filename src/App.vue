@@ -506,33 +506,26 @@ scroll-view {
    全局工具类 (使用语义化变量)
    ============================================ */
 
-/* 卡片组件（Apple HIG 风格：大圆角 + 极细描边 + 弥散阴影） */
+/* 卡片组件（3D 立体风格：实色底 + 厚底阴影 + 大圆角） */
 .card {
-  background: var(--bg-card);
-  border: 0.5px solid var(--border-color);
-  border-radius: var(--radius-lg);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  border-radius: var(--em3d-radius-lg);
   padding: var(--spacing-md);
-  color: var(--text-main);
-  box-shadow: var(--shadow-md);
-  transition:
-    transform var(--transition-normal) var(--ease-default),
-    box-shadow var(--transition-normal) var(--ease-default),
-    opacity var(--transition-normal) var(--ease-default);
+  color: var(--em3d-text-1);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  transition: var(--em3d-ease-press);
 }
 
-/* 毛玻璃卡片（Apple HIG 风格：大圆角 + 极细描边） */
+/* 毛玻璃卡片 → 3D 立体卡片（保留类名兼容） */
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 0.5px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  border-radius: var(--em3d-radius-lg);
   padding: var(--spacing-md);
-  color: var(--text-main);
-  transition:
-    transform var(--transition-normal) var(--ease-default),
-    box-shadow var(--transition-normal) var(--ease-default),
-    opacity var(--transition-normal) var(--ease-default);
+  color: var(--em3d-text-1);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  transition: var(--em3d-ease-press);
 }
 
 .apple-glass,
@@ -544,124 +537,90 @@ scroll-view {
   overflow: hidden;
 }
 
+/* Apple Glass 导航 → 3D 实色导航 */
 .apple-glass {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(90deg, transparent 10%, var(--apple-specular-line) 50%, transparent 90%),
-    linear-gradient(160deg, var(--apple-glass-nav-bg) 0%, var(--apple-glass-card-bg) 100%);
-  background-repeat: no-repeat;
-  background-size:
-    100% 100%,
-    100% 1px,
-    100% 100%;
-  background-position:
-    0 0,
-    0 0,
-    0 0;
-  border: 1px solid var(--apple-glass-border-strong);
-  backdrop-filter: blur(24px) saturate(165%) brightness(1.04);
-  -webkit-backdrop-filter: blur(24px) saturate(165%) brightness(1.04);
-  box-shadow:
-    inset 1rpx 0 0 var(--apple-chromatic-blue),
-    inset -1rpx 0 0 var(--apple-chromatic-pink),
-    inset 0 1rpx 0 var(--apple-specular-soft),
-    var(--apple-shadow-floating);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
+/* Apple Glass Card → 3D 立体卡片（全站 200+ 处使用） */
 .apple-glass-card {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 38%),
-    linear-gradient(90deg, transparent 16%, var(--apple-specular-line) 50%, transparent 84%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  background-repeat: no-repeat;
-  background-size:
-    100% 100%,
-    100% 1px,
-    100% 100%;
-  background-position:
-    0 0,
-    0 0,
-    0 0;
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(22px) saturate(150%) brightness(1.03);
-  -webkit-backdrop-filter: blur(22px) saturate(150%) brightness(1.03);
-  box-shadow:
-    inset 1rpx 0 0 rgba(255, 255, 255, 0.08),
-    inset -1rpx 0 0 rgba(255, 255, 255, 0.04),
-    inset 0 1rpx 0 var(--apple-specular-soft),
-    var(--apple-shadow-card);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 
+/* Apple Group Card → 3D 内嵌卡片 */
 .apple-group-card {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 34%),
-    linear-gradient(180deg, var(--apple-group-bg) 0%, var(--apple-glass-card-bg) 100%);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(20px) saturate(145%);
-  -webkit-backdrop-filter: blur(20px) saturate(145%);
-  box-shadow:
-    inset 0 1rpx 0 var(--apple-specular-soft),
-    var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
+/* Apple Glass Pill → 3D 胶囊 */
 .apple-glass-pill {
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 50%),
-    linear-gradient(160deg, var(--apple-glass-pill-bg) 0%, rgba(255, 255, 255, 0.58) 100%);
-  border: 1px solid var(--apple-divider);
-  backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
-  -webkit-backdrop-filter: blur(18px) saturate(145%) brightness(1.03);
-  box-shadow:
-    inset 0 1rpx 0 var(--apple-specular-soft),
-    0 8rpx 20rpx rgba(0, 0, 0, 0.06);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
+/* CTA 按钮 → 3D 立体主按钮 */
 .apple-cta {
   min-height: 88rpx;
   border-radius: 999rpx;
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1px solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background-color: var(--em3d-primary);
+  color: var(--em3d-text-inv);
+  border: none;
+  box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-primary-shadow);
+  transition: var(--em3d-ease-press);
 }
 
-/* 按钮基础样式（Apple HIG 风格：胶囊圆角 + 中等字重） */
+.apple-cta:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-primary-shadow);
+}
+
+/* 按钮基础样式（3D 立体风格：胶囊圆角 + 厚底阴影） */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-sm) var(--spacing-xl);
-  border-radius: var(--radius-full);
-  font-weight: var(--font-weight-semibold);
+  border-radius: var(--em3d-radius-pill);
+  font-weight: 700;
   font-size: 14px;
   letter-spacing: -0.01em;
-  transition:
-    transform var(--transition-fast) var(--ease-default),
-    box-shadow var(--transition-fast) var(--ease-default),
-    filter var(--transition-fast) var(--ease-default),
-    opacity var(--transition-fast) var(--ease-default);
+  transition: var(--em3d-ease-press);
   cursor: pointer;
 }
 
 .btn:active {
-  transform: scale(0.97);
-  opacity: 0.85;
+  transform: translateY(3rpx);
 }
 
-/* 主色按钮（渐变背景 + 品牌阴影） */
+/* 主色按钮（3D 绿色立体） */
 .btn-primary {
-  background: var(--gradient-primary);
-  color: var(--primary-foreground);
+  background-color: var(--em3d-primary);
+  color: var(--em3d-text-inv);
   border: none;
-  box-shadow: var(--shadow-brand-sm);
+  box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-primary-shadow);
 }
 
-/* 次要按钮（白底 + 极细描边） */
+.btn-primary:active {
+  box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-primary-shadow);
+}
+
+/* 次要按钮（3D 白色立体） */
 .btn-secondary {
-  background: var(--bg-card);
-  color: var(--text-main);
-  border: 0.5px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--em3d-card-bg);
+  color: var(--em3d-text-1);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-border-shadow);
+}
+
+.btn-secondary:active {
+  box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
 }
 
 /* 文字颜色工具类 */
@@ -692,27 +651,30 @@ scroll-view {
   background-color: var(--bg-card);
 }
 
-/* 输入框通用样式（Apple HIG 风格：通透底色 + focus ring） */
+/* 输入框通用样式（3D 立体风格：凹陷内阴影 + 聚焦外发光） */
 /* 注意: 这里去掉了原生的 input, textarea 裸标签选择器，避免污染 wot-design-uni 内部的组件样式 */
 .input,
 .textarea {
-  background: var(--muted);
-  color: var(--text-main);
-  border: 0.5px solid transparent;
-  border-radius: var(--radius-md);
+  background-color: var(--em3d-card-bg);
+  color: var(--em3d-text-1);
+  border: 2rpx solid var(--em3d-border);
+  border-radius: var(--em3d-radius-md);
   padding: 24rpx 28rpx;
   font-size: 30rpx;
   line-height: 1.5;
-  transition: all 0.2s ease-out;
+  box-shadow: inset 0 2rpx 4rpx var(--em3d-inset);
+  transition: var(--em3d-ease-smooth);
   outline: none;
   -webkit-appearance: none;
 }
 
 .input:focus,
 .textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-light);
-  background: var(--bg-card);
+  border-color: var(--em3d-primary);
+  box-shadow:
+    inset 0 2rpx 4rpx var(--em3d-inset),
+    0 0 0 6rpx var(--em3d-primary-light);
+  background-color: var(--em3d-card-bg);
 }
 
 /* ============================================
