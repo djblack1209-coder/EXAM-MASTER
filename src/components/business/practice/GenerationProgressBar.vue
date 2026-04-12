@@ -81,15 +81,6 @@ const statusText = computed(() => {
   /* gap: 16px; -- replaced for Android WebView compat */
 }
 
-.generation-progress-bar::before {
-  content: '';
-  position: absolute;
-  left: 24rpx;
-  right: 24rpx;
-  top: 0;
-  height: 1rpx;
-  background: var(--apple-specular-soft);
-}
 .progress-header {
   display: flex;
   align-items: center;

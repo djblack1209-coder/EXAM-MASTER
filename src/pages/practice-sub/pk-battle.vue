@@ -1860,8 +1860,6 @@ export default {
   padding: 10rpx;
   background: var(--bg-overlay);
   position: relative;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 .user-avatar {
   width: 100%;
@@ -1961,8 +1959,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   transition: all 0.2s;
 }
 
@@ -2075,8 +2071,6 @@ export default {
 /* 题目卡片 */
 .question-card {
   background: var(--bg-card-alpha);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-radius: 20px;
   padding: 24px;
   min-height: 100px;
@@ -2337,8 +2331,6 @@ export default {
   padding: 60rpx 40rpx;
   text-align: center;
   background: rgba(22, 51, 0, 0.85);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
   border-radius: 32rpx;
   border: 1px solid rgba(159, 232, 112, 0.2);
   box-shadow:
@@ -2398,8 +2390,6 @@ export default {
   animation: fadeIn 0.5s ease;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .ai-report-box::before {
@@ -2897,19 +2887,11 @@ export default {
 }
 
 .progress-fill.me {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--success) 88%, transparent) 0%,
-    rgba(101, 219, 138, 0.96) 100%
-  );
+  background: linear-gradient(90deg, var(--em3d-primary-light) 0%, rgba(101, 219, 138, 0.96) 100%);
 }
 
 .progress-fill.opp {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--info) 88%, transparent) 0%,
-    rgba(95, 170, 255, 0.96) 100%
-  );
+  background: linear-gradient(90deg, var(--em3d-secondary-light) 0%, rgba(95, 170, 255, 0.96) 100%);
 }
 
 .question-card {
@@ -2990,21 +2972,21 @@ export default {
 }
 
 .opt-btn.correct .opt-btn-inner {
-  border-color: color-mix(in srgb, var(--success) 42%, transparent);
-  background: color-mix(in srgb, var(--success) 12%, transparent);
+  border-color: var(--em3d-primary-light);
+  background: var(--em3d-primary-light);
 }
 
 .opt-btn.wrong .opt-btn-inner {
-  border-color: color-mix(in srgb, var(--danger) 34%, transparent);
-  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  border-color: var(--em3d-danger-light);
+  background: var(--em3d-danger-light);
 }
 
 .opt-btn.correct .letter {
-  background: color-mix(in srgb, var(--success) 86%, transparent);
+  background: var(--em3d-primary-light);
 }
 
 .opt-btn.wrong .letter {
-  background: color-mix(in srgb, var(--danger) 86%, transparent);
+  background: var(--em3d-danger-light);
 }
 
 .opponent-status {

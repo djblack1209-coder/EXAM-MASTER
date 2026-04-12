@@ -1772,7 +1772,7 @@ export default {
 
 .upload-trigger:active {
   transform: scale(0.98);
-  background: var(--apple-glass-card-bg);
+  background-color: var(--em3d-card-bg);
 }
 
 .icon-circle {
@@ -1860,12 +1860,12 @@ export default {
 .meta-tag {
   font-size: 20rpx;
   padding: 6px 12px;
-  background: var(--apple-glass-card-bg);
+  background-color: var(--em3d-card-bg);
   border-radius: 999px;
   margin-right: 8px;
   font-weight: 700;
   color: var(--text-primary);
-  border: 1px solid var(--glass-border);
+  border: 2rpx solid var(--em3d-border);
 }
 
 .meta-size {
@@ -1876,7 +1876,7 @@ export default {
 .close-btn-circle {
   width: 44px;
   height: 44px;
-  background: var(--apple-glass-card-bg);
+  background-color: var(--em3d-card-bg);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1960,11 +1960,11 @@ export default {
 }
 
 .danger-ghost {
-  background: var(--apple-glass-card-bg);
+  background-color: var(--em3d-card-bg);
   color: var(--danger-red);
   height: 44px;
   font-size: 30rpx;
-  border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
+  border: 2rpx solid var(--em3d-danger-light);
 }
 
 .danger-ghost::after {
@@ -1973,8 +1973,6 @@ export default {
 
 /* 通用工具类 */
 .glass-morphism {
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
 .text-ellipsis {
@@ -2032,8 +2030,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
 }
 
 .ai-card {
@@ -2274,8 +2270,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(8px); /* 磨砂玻璃背景 */
-  -webkit-backdrop-filter: blur(8px);
 }
 
 /* 弹窗主体 */
@@ -2347,10 +2341,10 @@ export default {
 
 /* 按钮升级 */
 .glass-btn.ghost {
-  background: var(--apple-glass-card-bg);
+  background-color: var(--em3d-card-bg);
   color: var(--text-primary);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .glass-btn.ghost::after {
@@ -2369,11 +2363,11 @@ export default {
 }
 
 .glass-btn.danger {
-  background: var(--apple-glass-card-bg);
+  background-color: var(--em3d-card-bg);
   color: var(--danger-red);
-  border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
+  border: 2rpx solid var(--em3d-danger-light);
   margin-left: 10px;
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .glass-btn.danger::after {
@@ -2392,21 +2386,21 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .error-card {
   width: 300px;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid color-mix(in srgb, var(--danger) 34%, transparent);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-danger-light);
   border-radius: 28px;
   padding: 30px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: var(--apple-shadow-floating);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
 }
 
 .error-icon-box {
@@ -2666,7 +2660,7 @@ export default {
 }
 
 .apple-ai-glow {
-  background: linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 46%);
+  background-color: var(--em3d-card-bg);
   animation: none;
 }
 
@@ -2706,14 +2700,14 @@ export default {
 }
 
 .speed-icon-box {
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  border-color: color-mix(in srgb, var(--success) 18%, transparent);
+  background: var(--em3d-primary-light);
+  border-color: var(--em3d-primary-light);
   color: var(--success-dark);
 }
 
 .error-icon-box {
-  background: color-mix(in srgb, var(--danger) 12%, transparent);
-  border-color: color-mix(in srgb, var(--danger) 20%, transparent);
+  background: var(--em3d-danger-light);
+  border-color: var(--em3d-danger-light);
   color: var(--danger);
 }
 
