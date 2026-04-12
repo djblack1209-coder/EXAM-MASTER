@@ -111,8 +111,6 @@ function handleSave() {
   right: 0;
   bottom: 0;
   background: var(--overlay);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -122,11 +120,13 @@ function handleSave() {
 .goal-modal {
   width: 100%;
   max-width: 400px;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 28px;
   padding: 32px;
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
   animation: fadeInUp 0.3s ease-out;
 }
 .goal-modal-header {
@@ -167,7 +167,7 @@ function handleSave() {
   height: 48px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.66);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
   font-size: 56rpx;
   font-weight: 600;
   color: var(--text-primary);
@@ -211,7 +211,7 @@ function handleSave() {
   padding: 10px 20px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.48);
+  border: 2rpx solid rgba(255, 255, 255, 0.48);
   font-size: 28rpx;
   color: var(--text-sub);
   cursor: pointer;
@@ -231,7 +231,7 @@ function handleSave() {
   padding: 12px;
   background: rgba(255, 255, 255, 0.54);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.44);
+  border: 2rpx solid rgba(255, 255, 255, 0.44);
 }
 .goal-tip-text {
   font-size: 26rpx;
@@ -259,7 +259,7 @@ function handleSave() {
   font-size: 32rpx;
   font-weight: 600;
   border-radius: 999px;
-  border: 1px solid var(--cta-primary-border);
+  border: 2rpx solid var(--cta-primary-border);
   box-shadow: var(--cta-primary-shadow);
 }
 .goal-cancel-btn::after,

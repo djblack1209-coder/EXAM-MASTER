@@ -54,8 +54,6 @@ defineEmits(['close', 'select']);
   right: 0;
   bottom: 0;
   background: rgba(9, 18, 12, 0.32);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -65,13 +63,13 @@ defineEmits(['close', 'select']);
 .practice-modes-modal {
   width: 100%;
   max-width: 720rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 36rpx 36rpx 28rpx 28rpx;
   padding: 18rpx 22rpx 24rpx;
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
   animation: fadeInUp 0.3s ease-out;
 }
 .practice-modes-handle {
@@ -112,8 +110,8 @@ defineEmits(['close', 'select']);
   cursor: pointer;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.66);
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 .practice-modes-grid {
   display: grid;
@@ -138,14 +136,14 @@ defineEmits(['close', 'select']);
     linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
     linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  border: 2rpx solid rgba(255, 255, 255, 0.46);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
   transition: all 0.2s ease;
   cursor: pointer;
 }
 .practice-mode-item:active {
   transform: scale(0.97);
-  box-shadow: var(--apple-shadow-card);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 }
 .practice-mode-icon {
   width: 72rpx;
@@ -156,8 +154,8 @@ defineEmits(['close', 'select']);
   font-size: 42rpx;
   margin-bottom: 16rpx;
   border-radius: 999rpx;
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
+  background: var(--em3d-primary-light);
+  border: 2rpx solid var(--em3d-primary-light);
 }
 .practice-mode-name {
   font-size: 28rpx;

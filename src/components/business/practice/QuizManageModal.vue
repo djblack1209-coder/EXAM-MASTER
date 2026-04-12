@@ -51,18 +51,18 @@ defineEmits(['close', 'clear']);
   width: 100%;
   height: 100%;
   background: var(--overlay);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 .modal-content {
   position: relative;
   width: 85%;
   max-width: 400px;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
+  background-color: var(--em3d-card-bg);
   border-radius: 28px;
   padding: 32px;
-  border: 1px solid var(--apple-glass-border-strong);
-  box-shadow: var(--apple-shadow-floating);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
   animation: fadeInUp 0.3s ease-out;
   z-index: 1;
 }

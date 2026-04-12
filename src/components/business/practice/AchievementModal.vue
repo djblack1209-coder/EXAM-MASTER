@@ -230,9 +230,9 @@ const lockedList = computed(() => {
 }
 .achievement-item.unlocked {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--success) 16%, transparent) 0%, transparent 42%),
+    linear-gradient(180deg, var(--em3d-primary-light) 0%, transparent 42%),
     linear-gradient(160deg, rgba(255, 255, 255, 0.78) 0%, rgba(241, 248, 243, 0.54) 100%);
-  border-color: color-mix(in srgb, var(--success) 18%, transparent);
+  border-color: var(--em3d-primary-light);
 }
 .achievement-item.locked {
   opacity: 0.72;
@@ -246,8 +246,8 @@ const lockedList = computed(() => {
   font-size: 40rpx;
   margin-bottom: 10rpx;
   border-radius: 999rpx;
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--success) 18%, transparent);
+  background: var(--em3d-primary-light);
+  border: 2rpx solid var(--em3d-primary-light);
 }
 .achievement-item-name {
   font-size: 24rpx;

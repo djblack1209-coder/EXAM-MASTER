@@ -68,12 +68,14 @@ defineEmits(['open-goal-setting', 'go-mistake', 'show-achievement']);
 .learning-stats-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
   border-radius: 24px;
   padding: 20px;
   margin-bottom: 24px;
-  box-shadow: var(--apple-shadow-floating);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
 }
 
 .learning-stats-card::before {
@@ -83,7 +85,7 @@ defineEmits(['open-goal-setting', 'go-mistake', 'show-achievement']);
   right: 24rpx;
   top: 0;
   height: 1rpx;
-  background: var(--apple-specular-soft);
+  background: var(--em3d-border);
 }
 .stats-row {
   display: flex;
@@ -171,9 +173,9 @@ defineEmits(['open-goal-setting', 'go-mistake', 'show-achievement']);
   align-items: center;
   padding: 12px 16px;
   margin-top: 16px;
-  background: linear-gradient(160deg, var(--apple-glass-pill-bg) 0%, rgba(255, 255, 255, 0.56) 100%);
+  background: var(--em3d-card-bg);
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.48);
+  border: 2rpx solid rgba(255, 255, 255, 0.48);
   cursor: pointer;
   transition: all 0.2s ease;
 }
