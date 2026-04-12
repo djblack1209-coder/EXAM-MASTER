@@ -815,8 +815,6 @@ onUnload(() => {
   width: 100%;
   z-index: 100;
   background: var(--bg-glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
 
   .nav-content {
     height: 50px;

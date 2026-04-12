@@ -1817,7 +1817,7 @@ onBeforeUnmount(() => {
     linear-gradient(180deg, rgba(10, 132, 255, 0.12) 0%, transparent 42%),
     linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
   border-color: rgba(10, 132, 255, 0.18);
-  box-shadow: var(--apple-shadow-surface);
+  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
 }
 
 .dark-mode .avatar-edit-badge,

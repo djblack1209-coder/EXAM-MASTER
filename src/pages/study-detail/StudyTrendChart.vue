@@ -439,7 +439,7 @@ function getDateLabel(date) {
   justify-content: space-around;
   margin-top: 24rpx;
   padding-top: 24rpx;
-  border-top: 1px solid var(--apple-divider);
+  border-top: 1px solid var(--em3d-border);
 }
 
 .summary-item {
