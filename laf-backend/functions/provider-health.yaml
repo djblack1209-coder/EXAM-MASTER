@@ -1,0 +1,6 @@
+name: provider-health
+desc: 'AI供应商健康检查与余额监控'
+methods:
+  - GET
+  - POST
+tags: []
