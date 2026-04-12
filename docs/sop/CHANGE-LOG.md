@@ -14,6 +14,30 @@
 
 ---
 
+## [2026-04-12] 3D 立体卡通 UI 全面重构 — 第1批（R505-R509）
+
+- **Scope**: `frontend`
+- **Files Changed**:
+  - **R505 — 3D 设计系统基础**:
+    - `src/styles/_em3d-design-system.scss` — 新建完整 3D 设计令牌体系（色彩/阴影/圆角/过渡 + 暗色模式），含按钮(.em3d-btn 6色4尺寸)、输入框(.em3d-input)、卡片(.em3d-card)、徽章、分割线、加载器(弹跳圆点/旋转环)、工具提示 CSS 类
+    - `src/components/base/em3d-switch/em3d-switch.vue` — 3D 拨动开关（弹性过渡+滑块阴影）
+    - `src/components/base/em3d-checkbox/em3d-checkbox.vue` — 3D 复选框（勾号弹跳动画）
+    - `src/components/base/em3d-radio/em3d-radio.vue` — 3D 单选按钮（内圆弹入动画）
+    - `src/App.vue` — 全局引入设计系统 SCSS
+  - **R506 — 登录页 3D 改造**:
+    - `src/pages/login/index.vue` — 容器实色背景、按钮3D按压、输入框凹陷内阴影、复选框3D底阴影、图标圆圈纯色化
+  - **R507 — 全局样式 3D 化（影响 200+ 处）**:
+    - `src/App.vue` — apple-glass-card/apple-group-card/apple-glass-pill/apple-glass/apple-cta 全部从 backdrop-filter+渐变 替换为实色bg+厚底阴影; .card/.glass-card 统一3D; .btn/.btn-primary/.btn-secondary 从 scale 改为 translateY 按压; .input/.textarea 凹陷内阴影+聚焦外发光
+  - **R508 — 设置页 Em3dSwitch 替换**:
+    - `src/pages/settings/index.vue` — 语音伴学/深色模式两个原生 switch 替换为 Em3dSwitch 组件
+  - **R509 — CustomModal 弹窗 3D 化**:
+    - `src/components/common/CustomModal.vue` — 遮罩层纯色半透明、容器实色+厚底阴影+弹性入场、取消/确认按钮 3D 按压效果
+- **Summary**: 第1批 3D 立体卡通 UI 重构，参考 uiverse.io 设计理念。从 Apple 毛玻璃风格全面转向 Duolingo 式 3D 立体卡通风格：所有 backdrop-filter/渐变被移除，替换为实色背景+厚底阴影（创造物理按键感），按钮从 scale 缩放改为 translateY 按压（模拟真实按键），输入框新增凹陷内阴影（模拟雕刻感）。全局样式改造影响全站 200+ 处卡片/按钮/输入框。
+- **Breaking Changes**: 视觉风格全面变化（Apple Glass → 3D Cartoon），功能不受影响
+- **Quality Gate**: `npm run lint` passed | `npm test` 89 files / 1135 tests passed | `npm run build:h5` passed
+
+---
+
 ## [2026-04-12] Store 健壮性加固 + shallowRef 性能优化 + 考试日期引导（R501-R503）
 
 - **Scope**: `frontend`
