@@ -153,9 +153,7 @@ function handleCancel() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(9, 18, 12, 0.32);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -174,23 +172,20 @@ function handleCancel() {
 
 .custom-modal-container {
   width: 600rpx;
-  background:
-    linear-gradient(180deg, var(--apple-specular-soft) 0%, transparent 42%),
-    linear-gradient(160deg, var(--apple-glass-card-bg) 0%, var(--apple-group-bg) 100%);
-  border: 1px solid var(--apple-glass-border-strong);
-  border-radius: 36rpx;
+  background-color: var(--em3d-card-bg);
+  border: 2rpx solid var(--em3d-border);
+  border-radius: var(--em3d-radius-lg);
   padding: 18rpx 40rpx 40rpx;
   position: relative;
   overflow: hidden;
-  animation: slideUp 0.3s ease;
-  box-shadow: var(--apple-shadow-floating);
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
 
   &.dark {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-      linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: var(--apple-shadow-floating);
+    background-color: var(--em3d-card-bg);
+    border-color: var(--em3d-border);
   }
 }
 
@@ -329,67 +324,75 @@ function handleCancel() {
 .modal-btn {
   flex: 1;
   height: 88rpx;
-  border-radius: 44rpx;
+  border-radius: var(--em3d-radius-pill);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 30rpx;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-weight: 700;
+  transition: var(--em3d-ease-press);
 
   &:active {
-    transform: scale(0.95);
+    transform: translateY(3rpx);
   }
 }
 
 .cancel-btn {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.74) 0%, rgba(241, 248, 243, 0.52) 100%);
-  color: var(--text-main);
-  border: 1rpx solid rgba(255, 255, 255, 0.46);
-  box-shadow: var(--apple-shadow-surface);
+  background-color: var(--em3d-card-bg);
+  color: var(--em3d-text-1);
+  border: 2rpx solid var(--em3d-border);
+  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
 
-  /* [AUDIT FIX R181] 取消按钮暗黑文字 → CSS变量 */
   .custom-modal-container.dark & {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-      linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
-    color: var(--text-secondary, rgba(255, 255, 255, 0.8));
-    border-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--em3d-card-bg);
+    color: var(--em3d-text-1);
+    border-color: var(--em3d-border);
+  }
+
+  &:active {
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
   }
 }
 
 .confirm-btn {
-  background: var(--cta-primary-bg);
-  color: var(--cta-primary-text);
-  border: 1rpx solid var(--cta-primary-border);
-  box-shadow: var(--cta-primary-shadow);
+  background-color: var(--em3d-primary);
+  color: var(--em3d-text-inv);
+  border: none;
+  box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-primary-shadow);
 
-  /* [AUDIT FIX R182] 警告/错误确认按钮文字色 → CSS变量 */
+  &:active {
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-primary-shadow);
+  }
+
   &.warning {
-    background: color-mix(in srgb, var(--warning) 14%, transparent);
-    color: var(--warning-dark, #b56a00);
-    border-color: color-mix(in srgb, var(--warning) 18%, transparent);
-    box-shadow: var(--apple-shadow-surface);
+    background-color: var(--em3d-warning);
+    color: var(--em3d-text-1);
+    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-warning-shadow);
+  }
+
+  &.warning:active {
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-warning-shadow);
   }
 
   &.error {
-    background: rgba(255, 99, 90, 0.14);
-    color: var(--danger, #c53d35);
-    border-color: rgba(255, 99, 90, 0.18);
-    box-shadow: var(--apple-shadow-surface);
+    background-color: var(--em3d-danger);
+    color: var(--em3d-text-inv);
+    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-danger-shadow);
+  }
+
+  &.error:active {
+    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-danger-shadow);
   }
 }
 
 .custom-modal-container.dark .confirm-btn.warning {
-  background: rgba(255, 159, 10, 0.16);
-  color: var(--warning-text, #ffd29a);
+  background-color: var(--em3d-warning);
+  color: var(--em3d-text-1);
 }
 
 .custom-modal-container.dark .confirm-btn.error {
-  background: rgba(255, 99, 90, 0.16);
-  color: var(--danger-text, #ffb1ab);
+  background-color: var(--em3d-danger);
+  color: var(--em3d-text-inv);
 }
 
 .single .confirm-btn {
