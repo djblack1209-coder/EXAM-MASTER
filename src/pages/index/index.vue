@@ -1249,10 +1249,11 @@ export default {
   background-color: var(--bg-page);
 }
 
+/* 新拟物化：主容器背景统一为拟物底色 */
 .dashboard-container {
   min-height: 100%;
   min-height: 100vh;
-  background: var(--background);
+  background: var(--em3d-bg);
   position: relative;
   overflow: hidden;
   isolation: isolate;

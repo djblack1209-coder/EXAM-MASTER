@@ -172,13 +172,16 @@ function handleAvatarTap() {
   border-radius: 50%;
   overflow: hidden;
   padding: 4rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.36);
-  box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.1);
-  transition: transform 0.2s ease;
+  border: none; /* 新拟物化不需要边框 */
+  box-shadow: var(--neu-shadow-sm); /* 新拟物化凸起阴影 */
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .header-avatar:active {
   transform: scale(0.94);
+  box-shadow: var(--neu-shadow-inset-sm); /* 按下时凹陷效果 */
 }
 
 .avatar-img {
@@ -195,13 +198,14 @@ function handleAvatarTap() {
   border-radius: 999rpx;
   padding: 0 22rpx;
   /* gap: 12rpx; -- tag-name sibling selectors removed (WeChat WXSS restriction) */
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
+  border: none; /* 新拟物化不需要边框 */
+  box-shadow: var(--neu-shadow-sm); /* 新拟物化凸起阴影 */
   transition: all 0.3s ease;
 }
 
 .header-search:active {
   transform: scale(0.99);
-  box-shadow: 0 10rpx 24rpx rgba(16, 40, 26, 0.12);
+  box-shadow: var(--neu-shadow-inset-sm); /* 按下时凹陷效果 */
 }
 
 .search-icon-wrapper {
@@ -261,18 +265,18 @@ function handleAvatarTap() {
   }
 }
 
-/* ---- 暗色模式覆盖 ---- */
+/* ---- 暗色模式覆盖（新拟物化） ---- */
 .page-dark .header-avatar {
-  border-color: var(--border, rgba(255, 255, 255, 0.12));
-  box-shadow: var(--shadow-sm, 0 4rpx 12rpx rgba(0, 0, 0, 0.3));
+  border: none; /* 新拟物化不需要边框 */
+  box-shadow: var(--neu-shadow-sm); /* 暗色下同样使用新拟物化阴影 */
 }
 
 .page-dark .header-search {
-  border-color: var(--border, rgba(255, 255, 255, 0.12));
+  border: none; /* 新拟物化不需要边框 */
 }
 
 .page-dark .header-search:active {
-  box-shadow: var(--shadow-sm, 0 4rpx 12rpx rgba(0, 0, 0, 0.3));
+  box-shadow: var(--neu-shadow-inset-sm); /* 暗色下按压凹陷 */
 }
 
 .page-dark .search-icon-wrapper {

@@ -135,7 +135,7 @@ function getStatusText(status) {
   margin-bottom: 48rpx;
 }
 
-/* ---------- 卡片基础 ---------- */
+/* ---------- 卡片基础（新拟物化） ---------- */
 .activity-item {
   position: relative;
   display: flex;
@@ -143,8 +143,8 @@ function getStatusText(status) {
   padding: 28rpx;
   min-height: 116rpx;
   border-radius: 24rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  border: none; /* 新拟物化不需要边框，靠阴影区分层次 */
+  box-shadow: var(--neu-shadow-md); /* 新拟物化凸起阴影 */
   transition:
     transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -157,22 +157,22 @@ function getStatusText(status) {
   margin-top: 16rpx;
 }
 
-/* ---------- 亮色卡片 ---------- */
+/* ---------- 亮色卡片（新拟物化同色背景） ---------- */
 .card-light {
-  background: var(--bg-card);
+  background: var(--em3d-bg);
 }
 
-/* ---------- 暗色玻璃卡片 ---------- */
+/* ---------- 暗色玻璃卡片（新拟物化） ---------- */
 .glass {
-  background: var(--bg-card-alpha, rgba(255, 255, 255, 0.06));
-  border: 2rpx solid var(--border, rgba(255, 255, 255, 0.08));
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+  background: var(--em3d-bg); /* 新拟物化同色背景 */
+  border: none; /* 新拟物化不需要边框 */
+  box-shadow: var(--neu-shadow-md); /* 新拟物化凸起阴影 */
 }
 
-/* ---------- 按压反馈 ---------- */
+/* ---------- 按压反馈（新拟物化凹陷效果） ---------- */
 .card-hover:active {
   transform: scale(0.98);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  box-shadow: var(--neu-shadow-inset); /* 按下时从凸起变凹陷 */
 }
 
 /* ---------- 图标容器 ---------- */
