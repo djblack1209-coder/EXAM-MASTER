@@ -97,18 +97,19 @@ function handleStartPractice() {
 .daily-goal-ring {
   margin: 20rpx 30rpx;
   padding: 32rpx;
-  border-radius: 28rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  background: var(--bg-card);
+  border-radius: var(--em3d-radius-lg, 24rpx);
+  /* 新拟物化：同色背景 + 双向阴影凸起，不用 border */
+  border: none;
+  box-shadow: var(--neu-shadow-md, 6rpx 6rpx 12rpx #b8bec7, -6rpx -6rpx 12rpx #ffffff);
+  background-color: var(--em3d-bg, #e0e5ec);
   position: relative;
   overflow: hidden;
 }
 
 /* 深色模式 */
 .daily-goal-ring.dark {
-  border-color: var(--border);
-  background: var(--bg-card);
+  border: none;
+  background-color: var(--em3d-bg, #e0e5ec);
 }
 
 /* ==================== 上半部分：环 + 信息 ==================== */
@@ -126,6 +127,11 @@ function handleStartPractice() {
   flex-shrink: 0;
   margin-right: 28rpx;
   animation: ringPulseIn 0.5s ease-out both;
+  /* 新拟物化：圆形凸起效果 */
+  border-radius: 50%;
+  box-shadow: var(--neu-shadow-md, 6rpx 6rpx 12rpx #b8bec7, -6rpx -6rpx 12rpx #ffffff);
+  background-color: var(--em3d-bg, #e0e5ec);
+  padding: 8rpx;
 }
 
 .ring-svg {
@@ -215,7 +221,7 @@ function handleStartPractice() {
   color: var(--warning-light, #fbbf24);
 }
 
-/* ==================== 下半部分：CTA 按钮（3D 多邻国风格） ==================== */
+/* ==================== 下半部分：CTA 按钮（新拟物化风格） ==================== */
 .goal-cta {
   display: flex;
   align-items: center;
@@ -223,13 +229,16 @@ function handleStartPractice() {
   padding: 22rpx 0;
   border-radius: 18rpx;
   background: #58cc02;
-  box-shadow: 0 6rpx 0 #46a302;
+  /* 新拟物化：凸起效果 */
+  box-shadow: var(--neu-shadow-md, 6rpx 6rpx 12rpx #b8bec7, -6rpx -6rpx 12rpx #ffffff);
+  border: none;
   transition: all 0.15s ease;
 }
 
 .cta-hover {
-  transform: translateY(4rpx);
-  box-shadow: 0 2rpx 0 #46a302;
+  /* 新拟物化：按下变凹陷 */
+  transform: none;
+  box-shadow: var(--neu-shadow-inset, inset 4rpx 4rpx 8rpx #b8bec7, inset -4rpx -4rpx 8rpx #ffffff);
 }
 
 .cta-text {

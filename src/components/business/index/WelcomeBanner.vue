@@ -84,32 +84,33 @@ const examCountdown = computed(() => {
   }
 }
 
-/* ── 卡片容器 ── */
+/* ── 卡片容器（新拟物化风格） ── */
 .welcome-banner {
   position: relative;
   overflow: hidden;
-  border-radius: 32rpx;
+  border-radius: var(--em3d-radius-lg, 24rpx);
   padding: 44rpx;
   margin-bottom: 52rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  border: none;
+  box-shadow: var(--neu-shadow-md, 6rpx 6rpx 12rpx #b8bec7, -6rpx -6rpx 12rpx #ffffff);
   animation: bannerSlideIn 0.5s ease-out;
 }
 
-/* ── 浅色模式：柔和多彩渐变 ── */
+/* ── 浅色模式：新拟物化底色 + 柔和渐变叠加 ── */
 .banner-light {
-  background: linear-gradient(
+  background-color: var(--em3d-bg, #e0e5ec);
+  background-image: linear-gradient(
     135deg,
-    var(--bg-success-light, #f0fce8) 0%,
-    var(--bg-info-light, #e8f7fe) 50%,
-    var(--bg-warning-light, #fef3e8) 100%
+    rgba(240, 252, 232, 0.45) 0%,
+    rgba(232, 247, 254, 0.45) 50%,
+    rgba(254, 243, 232, 0.45) 100%
   );
 }
 
-/* ── 深色模式 ── */
+/* ── 深色模式（新拟物化） ── */
 .banner-dark {
   background: linear-gradient(160deg, var(--bg-card) 0%, var(--bg-page) 100%);
-  border-color: var(--border);
+  border: none;
 }
 
 .bubble-decoration {
@@ -233,55 +234,67 @@ const examCountdown = computed(() => {
   margin-left: 16rpx;
 }
 
-/* ── 主按钮（3D 多邻国风格） ── */
+/* ── 主按钮（新拟物化凸起风格） ── */
 .btn-primary {
   background: #58cc02;
   color: var(--text-inverse);
   font-weight: 800;
   border: none;
-  box-shadow: 0 8rpx 0 #46a302;
+  box-shadow: var(--neu-shadow-sm, 4rpx 4rpx 8rpx #b8bec7, -4rpx -4rpx 8rpx #ffffff);
 }
 
+/* 按下时从凸起变为凹陷 */
 .btn-primary:active {
-  transform: translateY(6rpx);
-  box-shadow: 0 2rpx 0 #46a302;
+  transform: none;
+  box-shadow: var(--neu-shadow-inset, inset 4rpx 4rpx 8rpx #b8bec7, inset -4rpx -4rpx 8rpx #ffffff);
 }
 
 .banner-dark .btn-primary {
   background: linear-gradient(135deg, #00e0ff, var(--purple-dark, #9b51e0));
   color: var(--text-inverse);
-  box-shadow: 0 8rpx 0 rgba(0, 0, 0, 0.3);
+  box-shadow: var(--neu-shadow-sm, 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.3), -4rpx -4rpx 8rpx rgba(255, 255, 255, 0.05));
 }
 
+/* 深色模式按下凹陷 */
 .banner-dark .btn-primary:active {
-  transform: translateY(6rpx);
-  box-shadow: 0 2rpx 0 rgba(0, 0, 0, 0.3);
+  transform: none;
+  box-shadow: var(
+    --neu-shadow-inset,
+    inset 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.3),
+    inset -4rpx -4rpx 8rpx rgba(255, 255, 255, 0.05)
+  );
 }
 
-/* ── 次按钮（3D 轮廓风格） ── */
+/* ── 次按钮（新拟物化凸起风格） ── */
 .btn-outline {
-  background: var(--bg-card);
-  border: 3rpx solid var(--border);
-  box-shadow: 0 6rpx 0 #e5e5ea;
+  background: var(--em3d-bg, #e0e5ec);
+  border: none;
+  box-shadow: var(--neu-shadow-sm, 4rpx 4rpx 8rpx #b8bec7, -4rpx -4rpx 8rpx #ffffff);
   color: var(--text-primary);
   font-weight: 700;
 }
 
+/* 按下时从凸起变为凹陷 */
 .btn-outline:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 2rpx 0 #e5e5ea;
+  transform: none;
+  box-shadow: var(--neu-shadow-inset, inset 4rpx 4rpx 8rpx #b8bec7, inset -4rpx -4rpx 8rpx #ffffff);
 }
 
 .banner-dark .btn-outline {
   background: var(--muted);
-  border-color: var(--border);
+  border: none;
   color: var(--text-primary);
-  box-shadow: 0 6rpx 0 var(--border);
+  box-shadow: var(--neu-shadow-sm, 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.3), -4rpx -4rpx 8rpx rgba(255, 255, 255, 0.05));
 }
 
+/* 深色模式按下凹陷 */
 .banner-dark .btn-outline:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 2rpx 0 var(--border);
+  transform: none;
+  box-shadow: var(
+    --neu-shadow-inset,
+    inset 4rpx 4rpx 8rpx rgba(0, 0, 0, 0.3),
+    inset -4rpx -4rpx 8rpx rgba(255, 255, 255, 0.05)
+  );
 }
 
 /* ── 按钮文字 ── */

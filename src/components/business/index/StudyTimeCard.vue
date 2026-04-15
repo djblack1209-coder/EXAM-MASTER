@@ -77,8 +77,9 @@ defineEmits(['click']);
     box-shadow 0.18s ease;
   animation: fadeSlideIn 0.35s ease-out both;
 
+  /* 按下时从凸起变凹陷（新拟物化交互） */
   &:active {
-    transform: scale(0.97);
+    box-shadow: var(--neu-shadow-inset);
   }
 }
 
@@ -91,18 +92,18 @@ defineEmits(['click']);
   margin-right: 24rpx;
 }
 
-/* ── 浅色模式 ── */
+/* 浅色模式：新拟物化凸起卡片 */
 .card-light {
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  background: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
 }
 
-/* ── 暗色模式 ── */
+/* 暗色模式：同样使用新拟物化凸起效果 */
 .card-dark {
-  background: var(--bg-card, #1e2028);
-  border: 2rpx solid var(--border, rgba(255, 255, 255, 0.08));
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.25);
+  background: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
 }
 
 /* ── 图标容器 ── */
@@ -177,12 +178,15 @@ defineEmits(['click']);
   margin-right: 10rpx;
 }
 
+/* 指示器区域使用新拟物化凹陷效果 */
 .card-light .time-indicator {
-  background: var(--bg-secondary);
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-inset-sm);
 }
 
 .card-dark .time-indicator {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-inset-sm);
 }
 
 /* 指示器激活态 */

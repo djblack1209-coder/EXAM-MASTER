@@ -484,9 +484,13 @@ function handleTaskTap(task) {
 .ai-briefing {
   margin: 0 30rpx 24rpx;
   padding: 28rpx;
-  border-radius: 28rpx;
+  border-radius: var(--em3d-radius-lg, 24rpx);
   overflow: hidden;
   position: relative;
+  /* 新拟物化：同色背景 + 双向阴影凸起 */
+  background-color: var(--em3d-bg, #e0e5ec);
+  border: none;
+  box-shadow: var(--neu-shadow-md, 6rpx 6rpx 12rpx #b8bec7, -6rpx -6rpx 12rpx #ffffff);
   /* 顶部渐变条 — AI 紫色标识 */
   &::before {
     content: '';
@@ -496,7 +500,7 @@ function handleTaskTap(task) {
     right: 0;
     height: 6rpx;
     background: linear-gradient(90deg, var(--purple-light, #ce82ff), #a855f7, #7c3aed);
-    border-radius: 28rpx 28rpx 0 0;
+    border-radius: var(--em3d-radius-lg, 24rpx) var(--em3d-radius-lg, 24rpx) 0 0;
   }
 }
 
@@ -510,7 +514,9 @@ function handleTaskTap(task) {
 .briefing-badge {
   display: flex;
   align-items: center;
-  background: rgba(206, 130, 255, 0.12);
+  /* 新拟物化：小凹陷效果代替半透明背景 */
+  background-color: var(--em3d-bg, #e0e5ec);
+  box-shadow: var(--neu-shadow-inset-sm, inset 2rpx 2rpx 5rpx #b8bec7, inset -2rpx -2rpx 5rpx #ffffff);
   padding: 8rpx 20rpx;
   border-radius: 20rpx;
 }
@@ -593,7 +599,8 @@ function handleTaskTap(task) {
   display: flex;
   align-items: center;
   padding: 18rpx 0;
-  border-bottom: 1rpx solid var(--em3d-border);
+  /* 新拟物化：用微弱分隔线代替 border，与背景融合 */
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
 }
 
 .task-item:last-child {
@@ -650,7 +657,7 @@ function handleTaskTap(task) {
   flex-shrink: 0;
 }
 
-/* 一键开始按钮 — 3D 立体风格（AI紫色） */
+/* 一键开始按钮 — 新拟物化风格（AI紫色） */
 .briefing-action {
   display: flex;
   align-items: center;
@@ -658,17 +665,16 @@ function handleTaskTap(task) {
   padding: 24rpx;
   border-radius: 18rpx;
   background: linear-gradient(135deg, var(--purple-light, #ce82ff), #a855f7);
-  box-shadow:
-    0 6rpx 0 #8b45d6,
-    0 10rpx 20rpx rgba(168, 85, 247, 0.25);
-  transition: all 0.08s ease;
+  /* 新拟物化：凸起效果 */
+  box-shadow: var(--neu-shadow-md, 6rpx 6rpx 12rpx #b8bec7, -6rpx -6rpx 12rpx #ffffff);
+  border: none;
+  transition: all 0.15s ease;
 }
 
 .briefing-action:active {
-  transform: translateY(4rpx);
-  box-shadow:
-    0 2rpx 0 #8b45d6,
-    0 4rpx 10rpx rgba(168, 85, 247, 0.2);
+  /* 新拟物化：按下变凹陷 */
+  transform: none;
+  box-shadow: var(--neu-shadow-inset, inset 4rpx 4rpx 8rpx #b8bec7, inset -4rpx -4rpx 8rpx #ffffff);
 }
 
 .action-icon {
@@ -685,7 +691,7 @@ function handleTaskTap(task) {
 /* 暗色模式 */
 .ai-briefing.dark {
   .task-item {
-    border-bottom-color: var(--border);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
   }
 }
 </style>

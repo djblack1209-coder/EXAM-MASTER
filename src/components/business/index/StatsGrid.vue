@@ -109,18 +109,20 @@ defineEmits(['stat-click']);
   margin-bottom: 44rpx;
 }
 
+/* 暗色模式也使用新拟物化背景 */
 .glass {
-  background: var(--bg-card-alpha);
-  border: 1rpx solid var(--border);
+  background: var(--em3d-bg);
+  border: none;
 }
 
+/* 浅色模式使用新拟物化背景 */
 .card-light {
-  background: var(--bg-card);
+  background: var(--em3d-bg);
 }
 
+/* 按下时从凸起变凹陷（新拟物化交互） */
 .card-hover:active {
-  transform: scale(0.96);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  box-shadow: var(--neu-shadow-inset);
 }
 
 .stat-card {
@@ -135,8 +137,9 @@ defineEmits(['stat-click']);
   /* gap: 16rpx; -- 微信 WXSS 不支持 */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 220rpx;
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  /* 新拟物化：无边框，靠阴影区分层次 */
+  border: none;
+  box-shadow: var(--neu-shadow-md);
 
   /* 交错入场动画 */
   opacity: 0;
