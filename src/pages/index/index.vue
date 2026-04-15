@@ -1903,7 +1903,7 @@ export default {
 }
 
 /* ✅ [闭环核心] 今日复习入口 */
-/* ==================== [零摩擦] 一键续刷入口 ==================== */
+/* ==================== [零摩擦] 一键续刷入口 — 新拟物化凸起 ==================== */
 .resume-banner {
   display: flex;
   align-items: center;
@@ -1911,22 +1911,17 @@ export default {
   padding: 28rpx 32rpx;
   margin: 20rpx 32rpx;
   border-radius: 20rpx;
-  background: linear-gradient(135deg, rgba(28, 176, 246, 0.1), rgba(28, 176, 246, 0.05));
-  border: 2rpx solid rgba(28, 176, 246, 0.15);
-  animation: resumePulse 2s ease-in-out infinite;
+  background-color: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
+  transition: box-shadow 0.2s ease;
+}
+/* 按下凹陷效果 */
+.resume-banner:active {
+  box-shadow: var(--neu-shadow-inset);
 }
 .page-dark .resume-banner {
-  background: linear-gradient(135deg, rgba(28, 176, 246, 0.08), rgba(28, 176, 246, 0.04));
-  border-color: rgba(28, 176, 246, 0.12);
-}
-@keyframes resumePulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(28, 176, 246, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 0 8rpx transparent;
-  }
+  background-color: var(--em3d-bg);
 }
 .resume-banner-left {
   display: flex;
@@ -1959,17 +1954,17 @@ export default {
   align-items: center;
 }
 
-/* ==================== [知识引擎] 智能学习推荐 — 橙色模块 ==================== */
+/* ==================== [知识引擎] 智能学习推荐 — 新拟物化凸起 ==================== */
 .smart-recommend {
   margin: 20rpx 30rpx;
   padding: 28rpx 30rpx;
   border-radius: 24rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  background-color: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
   position: relative;
   overflow: hidden;
-  transition: transform 0.15s ease;
+  transition: box-shadow 0.2s ease;
   animation: cardPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 .smart-recommend::before {
@@ -1982,13 +1977,13 @@ export default {
   background: linear-gradient(90deg, var(--warning), var(--warning-light, #ffb800));
   border-radius: 0 0 4rpx 4rpx;
 }
+/* 按下凹陷效果 */
 .smart-recommend:active {
-  transform: scale(0.97);
+  box-shadow: var(--neu-shadow-inset);
 }
 .page-dark .smart-recommend {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
+  background-color: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-md);
 }
 .smart-recommend-header {
   display: flex;
@@ -2038,23 +2033,25 @@ export default {
   overflow: hidden;
 }
 
-/* 加载失败重试卡片 — 多邻国风格 */
+/* 加载失败重试卡片 — 新拟物化凸起 */
 .load-error-card {
   display: flex;
   align-items: center;
   /* gap: 20rpx; -- replaced for Android WebView compat */
   margin: 30rpx;
   padding: 32rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(255, 75, 75, 0.15);
+  background-color: var(--em3d-bg);
+  border: none;
   border-radius: 24rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  box-shadow: var(--neu-shadow-md);
+  transition: box-shadow 0.2s ease;
 }
 .load-error-card > view + view {
   margin-left: 20rpx;
 }
+/* 按下凹陷效果 */
 .load-error-card:active {
-  transform: scale(0.98);
+  box-shadow: var(--neu-shadow-inset);
 }
 .load-error-icon {
   color: var(--danger, #ff3b30);
@@ -2113,6 +2110,7 @@ export default {
 .free-tools-grid > view + view {
   margin-left: 16rpx;
 }
+/* 新拟物化凸起工具卡片 */
 .free-tool-card {
   flex: 1;
   display: flex;
@@ -2120,37 +2118,42 @@ export default {
   align-items: center;
   padding: 28rpx 12rpx 20rpx;
   border-radius: 24rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  background-color: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
   position: relative;
   overflow: hidden;
-  transition: all 0.15s ease;
+  transition: box-shadow 0.2s ease;
 }
+/* 按下凹陷效果 */
 .tool-hover {
-  transform: scale(0.96);
+  box-shadow: var(--neu-shadow-inset);
 }
+/* 新拟物化圆形图标容器 */
 .tool-card-icon-wrap {
   width: 80rpx;
   height: 80rpx;
-  border-radius: 20rpx;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
+  background-color: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-sm);
 }
-/* 每个工具卡片独立配色 */
+/* 每个工具卡片图标容器 — 新拟物化统一底色 */
 .free-tool-card:nth-child(1) .tool-card-icon-wrap {
-  background: rgba(28, 176, 246, 0.12);
+  background-color: var(--em3d-bg);
 }
 .free-tool-card:nth-child(2) .tool-card-icon-wrap {
-  background: rgba(255, 150, 0, 0.12);
+  background-color: var(--em3d-bg);
 }
 .free-tool-card:nth-child(3) .tool-card-icon-wrap {
-  background: rgba(206, 130, 255, 0.12);
+  background-color: var(--em3d-bg);
 }
 .page-dark .tool-card-icon-wrap {
-  background: var(--em3d-primary-light);
+  background-color: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-sm);
 }
 .tool-card-icon {
   color: var(--primary);
@@ -2167,11 +2170,13 @@ export default {
   margin-top: 4rpx;
   text-align: center;
 }
+/* 新拟物化凹陷徽章标签 */
 .tool-card-tag {
   margin-top: 10rpx;
   padding: 2rpx 10rpx;
   border-radius: 8rpx;
-  background: rgba(255, 150, 0, 0.1);
+  background-color: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-inset-sm);
 }
 .tool-tag-text {
   font-size: 22rpx;
@@ -2179,7 +2184,7 @@ export default {
   font-weight: 600;
 }
 
-/* ==================== [闭环核心] 今日复习入口 — 多邻国绿色风格 ==================== */
+/* ==================== [闭环核心] 今日复习入口 — 新拟物化凸起 ==================== */
 .review-banner {
   display: flex;
   align-items: center;
@@ -2187,12 +2192,12 @@ export default {
   padding: 28rpx 32rpx;
   margin: 20rpx 32rpx;
   border-radius: 24rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  background-color: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
   position: relative;
   overflow: hidden;
-  transition: transform 0.15s ease;
+  transition: box-shadow 0.2s ease;
   /* 左侧绿色装饰条 */
 }
 .review-banner::before {
@@ -2205,13 +2210,13 @@ export default {
   background: #58cc02;
   border-radius: 0 4rpx 4rpx 0;
 }
+/* 按下凹陷效果 */
 .review-banner:active {
-  transform: scale(0.98);
+  box-shadow: var(--neu-shadow-inset);
 }
 .page-dark .review-banner {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
+  background-color: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-md);
 }
 .page-dark .review-banner::before {
   background: #58cc02;
