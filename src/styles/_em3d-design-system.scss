@@ -1,6 +1,6 @@
 // ============================================================
-// EXAM-MASTER 3D 立体设计系统 (em3d)
-// 参考 uiverse.io 3D Cartoon 风格 + Duolingo 设计语言
+// EXAM-MASTER 新拟物化设计系统 (em3d / Neumorphism)
+// 参考 uiverse.io 热门 Neumorphism 组件 + Duolingo 功能色
 // ============================================================
 
 // ==================== 设计令牌 ====================
@@ -21,12 +21,21 @@
   --em3d-purple: #ce82ff;
   --em3d-purple-shadow: #a855f7;
 
-  // --- 表面色 ---
-  --em3d-bg: #f7f7f7;
-  --em3d-card-bg: #ffffff;
+  // --- 表面色（新拟物化：卡片与背景同色，靠阴影区分层次） ---
+  --em3d-bg: #e0e5ec;
+  --em3d-card-bg: #e0e5ec;
   --em3d-border: #e5e5e5;
   --em3d-border-shadow: #d0d0d0;
   --em3d-inset: rgba(0, 0, 0, 0.06);
+
+  // --- 新拟物化阴影变量 ---
+  --neu-shadow-light: rgba(255, 255, 255, 0.8);
+  --neu-shadow-dark: rgba(163, 177, 198, 0.6);
+  --neu-shadow-sm: 4rpx 4rpx 8rpx var(--neu-shadow-dark), -4rpx -4rpx 8rpx var(--neu-shadow-light);
+  --neu-shadow-md: 6rpx 6rpx 12rpx var(--neu-shadow-dark), -6rpx -6rpx 12rpx var(--neu-shadow-light);
+  --neu-shadow-lg: 10rpx 10rpx 20rpx var(--neu-shadow-dark), -10rpx -10rpx 20rpx var(--neu-shadow-light);
+  --neu-shadow-inset: inset 4rpx 4rpx 8rpx var(--neu-shadow-dark), inset -4rpx -4rpx 8rpx var(--neu-shadow-light);
+  --neu-shadow-inset-sm: inset 2rpx 2rpx 5rpx var(--neu-shadow-dark), inset -2rpx -2rpx 5rpx var(--neu-shadow-light);
 
   // --- 文字色 ---
   --em3d-text-1: #3c3c3c;
@@ -40,12 +49,6 @@
   --em3d-radius-lg: 24rpx;
   --em3d-radius-pill: 999rpx;
 
-  // --- 3D 阴影厚度 ---
-  --em3d-depth-sm: 3rpx;
-  --em3d-depth-md: 4rpx;
-  --em3d-depth-lg: 6rpx;
-  --em3d-depth-press: 2rpx;
-
   // --- 过渡 ---
   --em3d-ease-press: all 0.1s ease;
   --em3d-ease-bounce: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -55,11 +58,13 @@
 // ==================== 暗色模式令牌 ====================
 
 .dark-mode {
-  --em3d-bg: #1b1b1b;
-  --em3d-card-bg: #2a2a2a;
-  --em3d-border: #3a3a3a;
-  --em3d-border-shadow: #2a2a2a;
+  --em3d-bg: #2d2d3a;
+  --em3d-card-bg: #2d2d3a;
+  --em3d-border: #3a3a4a;
+  --em3d-border-shadow: #232330;
   --em3d-inset: rgba(0, 0, 0, 0.2);
+  --neu-shadow-light: rgba(60, 60, 80, 0.5);
+  --neu-shadow-dark: rgba(20, 20, 30, 0.7);
   --em3d-text-1: #f0f0f0;
   --em3d-text-2: #a0a0a0;
   --em3d-text-3: #666666;
@@ -75,11 +80,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --em3d-bg: #1b1b1b;
-    --em3d-card-bg: #2a2a2a;
-    --em3d-border: #3a3a3a;
-    --em3d-border-shadow: #2a2a2a;
+    --em3d-bg: #2d2d3a;
+    --em3d-card-bg: #2d2d3a;
+    --em3d-border: #3a3a4a;
+    --em3d-border-shadow: #232330;
     --em3d-inset: rgba(0, 0, 0, 0.2);
+    --neu-shadow-light: rgba(60, 60, 80, 0.5);
+    --neu-shadow-dark: rgba(20, 20, 30, 0.7);
     --em3d-text-1: #f0f0f0;
     --em3d-text-2: #a0a0a0;
     --em3d-text-3: #666666;
@@ -141,60 +148,55 @@
     width: 100%;
   }
 
-  // --- 主按钮（绿色 3D） ---
+  // --- 主按钮（绿色新拟物化） ---
   &--primary {
     background-color: var(--em3d-primary);
     color: var(--em3d-text-inv);
-    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-primary-shadow);
+    box-shadow: var(--neu-shadow-md);
   }
   &--primary:active {
-    transform: translateY(4rpx);
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-primary-shadow);
+    box-shadow: var(--neu-shadow-inset);
   }
 
-  // --- 次要按钮（白色 3D） ---
+  // --- 次要按钮（新拟物化凸起） ---
   &--secondary {
     background-color: var(--em3d-card-bg);
     color: var(--em3d-text-1);
-    border: 2rpx solid var(--em3d-border);
-    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-border-shadow);
+    border: none;
+    box-shadow: var(--neu-shadow-md);
   }
   &--secondary:active {
-    transform: translateY(4rpx);
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
+    box-shadow: var(--neu-shadow-inset);
   }
 
-  // --- 危险按钮（红色 3D） ---
+  // --- 危险按钮（红色新拟物化） ---
   &--danger {
     background-color: var(--em3d-danger);
     color: var(--em3d-text-inv);
-    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-danger-shadow);
+    box-shadow: var(--neu-shadow-md);
   }
   &--danger:active {
-    transform: translateY(4rpx);
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-danger-shadow);
+    box-shadow: var(--neu-shadow-inset);
   }
 
-  // --- 蓝色按钮 ---
+  // --- 蓝色按钮（新拟物化） ---
   &--info {
     background-color: var(--em3d-secondary);
     color: var(--em3d-text-inv);
-    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-secondary-shadow);
+    box-shadow: var(--neu-shadow-md);
   }
   &--info:active {
-    transform: translateY(4rpx);
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-secondary-shadow);
+    box-shadow: var(--neu-shadow-inset);
   }
 
-  // --- 紫色按钮（AI 功能） ---
+  // --- 紫色按钮（AI 功能，新拟物化） ---
   &--purple {
     background-color: var(--em3d-purple);
     color: var(--em3d-text-inv);
-    box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-purple-shadow);
+    box-shadow: var(--neu-shadow-md);
   }
   &--purple:active {
-    transform: translateY(4rpx);
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-purple-shadow);
+    box-shadow: var(--neu-shadow-inset);
   }
 
   // --- 幽灵按钮（无阴影） ---
@@ -256,9 +258,9 @@
   height: 88rpx;
   padding: 0 28rpx;
   background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
+  border: none;
   border-radius: var(--em3d-radius-md);
-  box-shadow: inset 0 2rpx 4rpx var(--em3d-inset);
+  box-shadow: var(--neu-shadow-inset-sm);
   font-size: 28rpx;
   font-weight: 400;
   color: var(--em3d-text-1);
@@ -269,14 +271,14 @@
   &--focus {
     border-color: var(--em3d-primary);
     box-shadow:
-      inset 0 2rpx 4rpx var(--em3d-inset),
+      var(--neu-shadow-inset-sm),
       0 0 0 6rpx var(--em3d-primary-light);
   }
 
   &--error {
     border-color: var(--em3d-danger);
     box-shadow:
-      inset 0 2rpx 4rpx var(--em3d-inset),
+      var(--neu-shadow-inset-sm),
       0 0 0 6rpx var(--em3d-danger-light);
   }
 
@@ -325,21 +327,20 @@
 
 .em3d-card {
   background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
+  border: none;
   border-radius: var(--em3d-radius-lg);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  box-shadow: var(--neu-shadow-md);
   padding: 32rpx;
   position: relative;
   transition: var(--em3d-ease-press);
 
-  // 可点击卡片
+  // 可点击卡片（按下凹陷）
   &--tap {
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
   &--tap:active {
-    transform: translateY(2rpx);
-    box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
+    box-shadow: var(--neu-shadow-inset);
   }
 
   // 无内边距
@@ -602,4 +603,148 @@
 }
 .em3d-font-normal {
   font-weight: 400;
+}
+
+// ============================================================
+// 新拟物化（Neumorphism）专用工具类 — 来源 uiverse.io 热门组件
+// ============================================================
+
+// 凸起效果（默认）
+.neu-raised {
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-md);
+  border-radius: var(--em3d-radius-lg);
+  border: none;
+}
+
+// 凹陷效果
+.neu-inset {
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-inset);
+  border-radius: var(--em3d-radius-lg);
+  border: none;
+}
+
+// 扁平效果（无阴影，用于容器内嵌）
+.neu-flat {
+  background: var(--em3d-bg);
+  box-shadow: none;
+  border-radius: var(--em3d-radius-lg);
+  border: none;
+}
+
+// 新拟物化可点击卡片（点击时凸起→凹陷）
+.neu-card-tap {
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-md);
+  border-radius: var(--em3d-radius-lg);
+  border: none;
+  transition: var(--em3d-ease-press);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.neu-card-tap:active {
+  box-shadow: var(--neu-shadow-inset);
+}
+
+// 新拟物化圆形凸起（进度环、头像等）
+.neu-circle {
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-md);
+  border-radius: 50%;
+  border: none;
+}
+
+// 新拟物化进度条容器
+.neu-progress-track {
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-inset-sm);
+  border-radius: var(--em3d-radius-pill);
+  border: none;
+  overflow: hidden;
+}
+
+// 新拟物化进度条填充
+.neu-progress-fill {
+  background: linear-gradient(135deg, var(--em3d-primary), var(--em3d-secondary));
+  border-radius: var(--em3d-radius-pill);
+  height: 100%;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+// 新拟物化按钮（凸起态 + 按下凹陷）— 来源 uiverse.io 热门 neumorphism 按钮
+.neu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 40rpx;
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-md);
+  border-radius: var(--em3d-radius-pill);
+  border: none;
+  color: var(--em3d-text-1);
+  font-weight: 700;
+  font-size: 28rpx;
+  cursor: pointer;
+  transition: var(--em3d-ease-press);
+  -webkit-tap-highlight-color: transparent;
+}
+.neu-btn:active {
+  box-shadow: var(--neu-shadow-inset);
+}
+
+// 新拟物化主色按钮
+.neu-btn--primary {
+  background: var(--em3d-primary);
+  color: var(--em3d-text-inv);
+  box-shadow:
+    6rpx 6rpx 12rpx var(--em3d-primary-shadow),
+    -3rpx -3rpx 8rpx rgba(255, 255, 255, 0.15);
+}
+.neu-btn--primary:active {
+  box-shadow:
+    inset 4rpx 4rpx 8rpx var(--em3d-primary-shadow),
+    inset -2rpx -2rpx 6rpx rgba(255, 255, 255, 0.1);
+}
+
+// 新拟物化开关（参考 uiverse.io 热门 neumorphism toggle）
+.neu-toggle-track {
+  width: 100rpx;
+  height: 52rpx;
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-inset-sm);
+  border-radius: 26rpx;
+  position: relative;
+  transition: var(--em3d-ease-smooth);
+  border: none;
+}
+.neu-toggle-track--active {
+  background: var(--em3d-primary);
+}
+.neu-toggle-knob {
+  position: absolute;
+  top: 6rpx;
+  left: 6rpx;
+  width: 40rpx;
+  height: 40rpx;
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-sm);
+  border-radius: 50%;
+  transition: var(--em3d-ease-bounce);
+}
+.neu-toggle-track--active .neu-toggle-knob {
+  left: calc(100% - 46rpx);
+}
+
+// 新拟物化图标容器（来源 uiverse.io 热门 neumorphism icon container）
+.neu-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96rpx;
+  height: 96rpx;
+  background: var(--em3d-bg);
+  box-shadow: var(--neu-shadow-sm);
+  border-radius: var(--em3d-radius-md);
+  border: none;
 }

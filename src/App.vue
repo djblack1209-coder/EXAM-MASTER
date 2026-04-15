@@ -493,25 +493,25 @@ scroll-view {
    全局工具类 (使用语义化变量)
    ============================================ */
 
-/* 卡片组件（3D 立体风格：实色底 + 厚底阴影 + 大圆角） */
+/* 卡片组件（新拟物化风格：双向阴影凸起效果） */
 .card {
   background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
+  border: none;
   border-radius: var(--em3d-radius-lg);
   padding: var(--spacing-md);
   color: var(--em3d-text-1);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  box-shadow: var(--neu-shadow-md);
   transition: var(--em3d-ease-press);
 }
 
-/* 毛玻璃卡片 → 3D 立体卡片（保留类名兼容） */
+/* 毛玻璃卡片 → 新拟物化卡片（保留类名兼容） */
 .glass-card {
   background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
+  border: none;
   border-radius: var(--em3d-radius-lg);
   padding: var(--spacing-md);
   color: var(--em3d-text-1);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  box-shadow: var(--neu-shadow-md);
   transition: var(--em3d-ease-press);
 }
 
@@ -524,51 +524,54 @@ scroll-view {
   overflow: hidden;
 }
 
-/* Apple Glass 导航 → 3D 实色导航 */
+/* Apple Glass 导航 → 新拟物化导航 */
 .apple-glass {
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  background-color: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
 }
 
-/* Apple Glass Card → 3D 立体卡片（全站 200+ 处使用） */
+/* Apple Glass Card → 新拟物化卡片（全站 200+ 处使用） */
 .apple-glass-card {
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  background-color: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
 }
 
-/* Apple Group Card → 3D 内嵌卡片 */
+/* Apple Group Card → 新拟物化内嵌卡片 */
 .apple-group-card {
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
+  background-color: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-sm);
 }
 
-/* Apple Glass Pill → 3D 胶囊 */
+/* Apple Glass Pill → 新拟物化胶囊 */
 .apple-glass-pill {
-  background-color: var(--em3d-card-bg);
-  border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
+  background-color: var(--em3d-bg);
+  border: none;
+  box-shadow: var(--neu-shadow-sm);
 }
 
-/* CTA 按钮 → 3D 立体主按钮 */
+/* CTA 按钮 → 新拟物化主按钮 */
 .apple-cta {
   min-height: 88rpx;
   border-radius: 999rpx;
   background-color: var(--em3d-primary);
   color: var(--em3d-text-inv);
   border: none;
-  box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-primary-shadow);
+  box-shadow:
+    6rpx 6rpx 12rpx var(--em3d-primary-shadow),
+    -3rpx -3rpx 8rpx rgba(255, 255, 255, 0.15);
   transition: var(--em3d-ease-press);
 }
 
 .apple-cta:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-primary-shadow);
+  box-shadow:
+    inset 4rpx 4rpx 8rpx var(--em3d-primary-shadow),
+    inset -2rpx -2rpx 6rpx rgba(255, 255, 255, 0.1);
 }
 
-/* 按钮基础样式（3D 立体风格：胶囊圆角 + 厚底阴影） */
+/* 按钮基础样式（新拟物化风格：胶囊圆角 + 双向阴影） */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -583,31 +586,35 @@ scroll-view {
 }
 
 .btn:active {
-  transform: translateY(3rpx);
+  /* 新拟物化风格：不使用 translateY 位移 */
 }
 
-/* 主色按钮（3D 绿色立体） */
+/* 主色按钮（新拟物化绿色凸起） */
 .btn-primary {
   background-color: var(--em3d-primary);
   color: var(--em3d-text-inv);
   border: none;
-  box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-primary-shadow);
+  box-shadow:
+    6rpx 6rpx 12rpx var(--em3d-primary-shadow),
+    -3rpx -3rpx 8rpx rgba(255, 255, 255, 0.15);
 }
 
 .btn-primary:active {
-  box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-primary-shadow);
+  box-shadow:
+    inset 4rpx 4rpx 8rpx var(--em3d-primary-shadow),
+    inset -2rpx -2rpx 6rpx rgba(255, 255, 255, 0.1);
 }
 
-/* 次要按钮（3D 白色立体） */
+/* 次要按钮（新拟物化凸起） */
 .btn-secondary {
   background-color: var(--em3d-card-bg);
   color: var(--em3d-text-1);
-  border: 2rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-lg) 0 var(--em3d-border-shadow);
+  border: none;
+  box-shadow: var(--neu-shadow-md);
 }
 
 .btn-secondary:active {
-  box-shadow: 0 var(--em3d-depth-press) 0 var(--em3d-border-shadow);
+  box-shadow: var(--neu-shadow-inset);
 }
 
 /* 文字颜色工具类 */
@@ -638,18 +645,18 @@ scroll-view {
   background-color: var(--bg-card);
 }
 
-/* 输入框通用样式（3D 立体风格：凹陷内阴影 + 聚焦外发光） */
+/* 输入框通用样式（新拟物化风格：凹陷内阴影 + 聚焦外发光） */
 /* 注意: 这里去掉了原生的 input, textarea 裸标签选择器，避免污染 wot-design-uni 内部的组件样式 */
 .input,
 .textarea {
   background-color: var(--em3d-card-bg);
   color: var(--em3d-text-1);
-  border: 2rpx solid var(--em3d-border);
+  border: none;
   border-radius: var(--em3d-radius-md);
   padding: 24rpx 28rpx;
   font-size: 30rpx;
   line-height: 1.5;
-  box-shadow: inset 0 2rpx 4rpx var(--em3d-inset);
+  box-shadow: var(--neu-shadow-inset-sm);
   transition: var(--em3d-ease-smooth);
   outline: none;
   -webkit-appearance: none;
@@ -659,7 +666,7 @@ scroll-view {
 .textarea:focus {
   border-color: var(--em3d-primary);
   box-shadow:
-    inset 0 2rpx 4rpx var(--em3d-inset),
+    var(--neu-shadow-inset-sm),
     0 0 0 6rpx var(--em3d-primary-light);
   background-color: var(--em3d-card-bg);
 }
@@ -703,12 +710,12 @@ scroll-view {
   opacity: 0.8;
 }
 
-/* 卡片点击态 - 带阴影收缩效果 */
+/* 卡片点击态 - 新拟物化凹陷效果 */
 .card-hover:active,
 .glass-card:active,
 .stat-card:active {
-  transform: scale(0.98) translateY(2rpx);
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  transform: scale(0.98);
+  box-shadow: var(--neu-shadow-inset);
 }
 
 /* 按钮点击态 - 带亮度变化 */
