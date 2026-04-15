@@ -253,19 +253,17 @@ function handleStartPractice() {
   opacity: 0.85;
 }
 
-/* 深色模式 CTA：霓虹渐变 */
+/* 深色模式 CTA：新拟物化风格 */
 .dark .goal-cta {
   background: linear-gradient(135deg, #58cc02, #78e018);
-  box-shadow:
-    0 6rpx 0 #3a8a01,
-    0 0 16rpx rgba(88, 204, 2, 0.25);
+  /* 新拟物化：凸起效果 */
+  box-shadow: var(--neu-shadow-md, 6rpx 6rpx 12rpx #b8bec7, -6rpx -6rpx 12rpx #ffffff);
 }
 
 .dark .cta-hover {
-  transform: translateY(4rpx);
-  box-shadow:
-    0 2rpx 0 #3a8a01,
-    0 0 8rpx rgba(88, 204, 2, 0.15);
+  /* 新拟物化：按下变凹陷 */
+  transform: none;
+  box-shadow: var(--neu-shadow-inset, inset 4rpx 4rpx 8rpx #b8bec7, inset -4rpx -4rpx 8rpx #ffffff);
 }
 
 /* ==================== 入场动画 ==================== */
