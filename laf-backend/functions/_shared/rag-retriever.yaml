@@ -1,0 +1,4 @@
+name: _shared/rag-retriever
+desc: Shared module - not a cloud function
+methods: []
+tags: []
