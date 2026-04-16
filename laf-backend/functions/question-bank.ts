@@ -7,6 +7,8 @@ import cloud from '@lafjs/cloud';
 import { requireAuth, isAuthError } from './_shared/auth-middleware';
 import { checkRateLimitDistributed, createLogger } from './_shared/api-response';
 import { requireAdminAccess } from './_shared/admin-auth';
+// ✅ B8: 输入清洗工具（共享模块）
+import { escapeRegex } from './_shared/sanitize';
 
 const db = cloud.database();
 const _ = db.command;
@@ -14,10 +16,6 @@ const logger = createLogger('[QuestionBank]');
 
 const QUESTION_BANK_LIMIT_WINDOW_MS = 60 * 1000;
 const QUESTION_BANK_LIMIT_MAX = 90;
-
-function escapeRegex(str) {
-  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 function toSafeInt(value, fallback) {
   const parsed = Number.parseInt(String(value), 10);
