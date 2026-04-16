@@ -26,6 +26,7 @@ import {
   checkRateLimitDistributed,
   createLogger
 } from './_shared/api-response';
+import { retrievability } from './_shared/fsrs-scheduler';
 // import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory'; // 预留 AI 增强
 
 const db = cloud.database();
@@ -120,19 +121,7 @@ function getMasteryLevel(percentage: number): MasteryLevelDef {
   return level;
 }
 
-/** FSRS 遗忘曲线常数 */
-const FSRS_DECAY = -0.5;
-const FSRS_FACTOR = 19 / 81; // (0.9^(1/DECAY) - 1)
-
-/**
- * 可提取性 R(t) — 搬运自 open-spaced-repetition/fsrs4anki
- * @param elapsedDays 距上次复习的天数
- * @param stability 记忆稳定性
- */
-function retrievability(elapsedDays: number, stability: number): number {
-  if (stability <= 0) return 0;
-  return Math.pow(1 + (FSRS_FACTOR * elapsedDays) / stability, FSRS_DECAY);
-}
+// retrievability 函数已从 _shared/fsrs-scheduler 导入，不再内联
 
 /**
  * 拓扑排序 — 搬运自 teableio/teable topologicalSort.ts
