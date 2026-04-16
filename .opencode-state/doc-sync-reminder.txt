@@ -1,8 +1,8 @@
-文档同步提醒 (2026/4/17 00:53:50)
+文档同步提醒 (2026/4/17 00:56:59)
 ==================================================
 
 📝 docs/CHANGELOG.md
    原因：有代码变更，CHANGELOG 需要更新
-   触发文件：src/pages/practice-sub/composables/useQuizEffects.js, src/pages/practice-sub/composables/useQuizNotes.js
+   触发文件：src/pages/practice-sub/composables/useQuizTimer.js
 
 请在完成当前工作后，记得更新以上文档。
