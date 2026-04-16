@@ -25,19 +25,24 @@
  */
 
 import cloud from '@lafjs/cloud';
-import crypto from 'crypto';
 import { perfMonitor } from './_shared/perf-monitor';
 
 // ✅ B020: 导入 JWT 验证函数
 import { requireAuth, isAuthError } from './_shared/auth-middleware';
 
-// ✅ RAG: 导入向量嵌入与相似度计算
-import { getEmbedding, cosineSimilarity } from './_shared/embedding';
-
 // ✅ H019: 微信内容安全检测
 import { checkTextSecurity, ContentScene } from './_shared/wx-content-check';
 
-// ✅ B1: 统一提示词模块
+// ✅ B7: 请求签名 / 审计模式校验（从本文件提取到共享模块）
+import { checkAuditMode } from './_shared/request-guard';
+
+// ✅ B7: RAG 知识库检索（从本文件提取到共享模块）
+import { retrieveRAGContext } from './_shared/rag-retriever';
+
+// ✅ B7: AI 好友对话记忆（从本文件提取到共享模块）
+import { loadConversationMemory, saveConversationMemory } from './_shared/conversation-memory';
+
+// ✅ B1: 统一提示词模块（含 AI_FRIENDS 角色常量）
 import {
   buildGenerateQuestionsPrompt,
   buildGenerateQuestionsUserPrompt,
@@ -45,7 +50,6 @@ import {
   buildChatPrompt,
   buildDefaultPrompt,
   buildAdaptivePickPrompt,
-  sanitizePromptInput,
   buildAdaptivePickUserPrompt,
   buildMistakeAnalysisPrompt,
   buildMistakeAnalysisUserPrompt,
@@ -53,6 +57,7 @@ import {
   buildTrendPredictPrompt,
   buildTrendPredictUserPrompt,
   buildFriendChatPrompt,
+  AI_FRIENDS,
   buildOcrParsePrompt,
   buildVisionPrompt,
   buildConsultPrompt,
@@ -107,167 +112,7 @@ const RATE_LIMIT_MAX_REQUESTS = 20; // 每个用户每分钟最多20次请求
 // checkRateLimitDistributed（已在主函数中调用），此处仅保留 fallback 函数的本地 Map
 const localRateLimitFallback = new Map<string, { count: number; resetTime: number }>();
 
-const AUDIT_MODE_ENABLED =
-  String(process.env.AUDIT_MODE || '')
-    .trim()
-    .toLowerCase() === 'true';
-const REQUEST_SIGN_SALT = process.env.REQUEST_SIGN_SALT || process.env.VITE_REQUEST_SIGN_SALT || '';
-const AUDIT_TOKEN_MAX_AGE_MS = 5 * 60 * 1000;
-let hasLoggedMissingRequestSignSalt = false;
-
-function getHeaderValue(ctx: Record<string, unknown>, headerName: string): string {
-  const headers = (ctx.headers || {}) as Record<string, unknown>;
-  const exactValue = headers[headerName];
-  if (typeof exactValue === 'string' && exactValue.trim()) {
-    return exactValue.trim();
-  }
-
-  const lowered = headerName.toLowerCase();
-  for (const [key, value] of Object.entries(headers)) {
-    if (key.toLowerCase() === lowered && typeof value === 'string' && value.trim()) {
-      return value.trim();
-    }
-  }
-
-  return '';
-}
-
-/**
- * 兼容前端 X-Request-* 轻量签名（FNV-1a）
- * 说明：这是线上兼容兜底，生产审核模式仍以 x-audit-token 为准。
- */
-function validateRequestSign(path: string, timestampHeader: string, requestSign: string): boolean {
-  if (!timestampHeader || !requestSign) return false;
-
-  const timestamp = Number.parseInt(timestampHeader, 10);
-  if (!Number.isFinite(timestamp)) {
-    return false;
-  }
-
-  if (Math.abs(Date.now() - timestamp) > AUDIT_TOKEN_MAX_AGE_MS) {
-    return false;
-  }
-
-  // H029 FIX: SALT 未配置时拒绝签名校验，而非放行
-  if (!REQUEST_SIGN_SALT) {
-    if (!hasLoggedMissingRequestSignSalt) {
-      hasLoggedMissingRequestSignSalt = true;
-      logger.error('[Audit] REQUEST_SIGN_SALT 未配置，拒绝 X-Request-Sign 校验');
-    }
-    return false;
-  }
-
-  const raw = `${path}:${timestamp}:${REQUEST_SIGN_SALT}`;
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < raw.length; i++) {
-    hash ^= raw.charCodeAt(i);
-    hash = (hash * 0x01000193) >>> 0;
-  }
-
-  return requestSign === hash.toString(36);
-}
-
-// ==================== 审计模式检查 ====================
-/**
- * 检查请求是否通过审计模式校验
- * 后端必须是最后一道防线，即使前端被绕过也要拦截
- */
-function checkAuditMode(ctx: Record<string, unknown>): { valid: boolean; error?: string } {
-  // 1. 非生产环境直接放行
-  if (!IS_PRODUCTION) {
-    return { valid: true };
-  }
-
-  // 2. 读取请求头
-  const auditToken = getHeaderValue(ctx, 'x-audit-token');
-  const requestTimestamp = getHeaderValue(ctx, 'x-request-timestamp');
-  const requestSign = getHeaderValue(ctx, 'x-request-sign');
-
-  // 3. 审核模式下：必须严格校验 x-audit-token
-  if (AUDIT_MODE_ENABLED) {
-    if (!auditToken || !validateAuditToken(auditToken)) {
-      logger.warn('[Audit] 审核模式下审计令牌无效或缺失，拒绝请求');
-      return { valid: false, error: '审计校验失败，请刷新页面重试' };
-    }
-    return { valid: true };
-  }
-
-  // 4. 生产非审核模式：
-  //    - 若携带 x-audit-token，校验其合法性
-  //    - 否则必须携带 X-Request-* 签名头并通过 FNV-1a 校验
-  //    - H029 FIX: 不再允许两类头都不携带的情况（关闭绕过路径）
-  if (auditToken) {
-    if (!validateAuditToken(auditToken)) {
-      logger.warn('[Audit] 审计令牌非法，拒绝请求');
-      return { valid: false, error: '审计校验失败，请刷新页面重试' };
-    }
-    return { valid: true };
-  }
-
-  // 必须携带请求签名
-  if (!requestTimestamp || !requestSign) {
-    logger.warn('[Audit] 生产环境缺少 X-Request-Timestamp/X-Request-Sign 头，拒绝请求');
-    return { valid: false, error: '请求签名缺失，请升级客户端后重试' };
-  }
-
-  if (!validateRequestSign('/proxy-ai', requestTimestamp, requestSign)) {
-    logger.warn('[Audit] X-Request-Sign 校验失败，拒绝请求');
-    return { valid: false, error: '请求签名校验失败，请刷新后重试' };
-  }
-
-  return { valid: true };
-}
-
-/**
- * 验证审计令牌
- * ✅ B020: 使用 HMAC 签名验证，防止伪造
- */
-function validateAuditToken(token: string): boolean {
-  if (!token || typeof token !== 'string') return false;
-
-  try {
-    // 令牌格式: timestamp_hash
-    const parts = token.split('_');
-    if (parts.length !== 2) return false;
-
-    const [timestampStr, hash] = parts;
-    const timestamp = parseInt(timestampStr);
-    const now = Date.now();
-
-    // 令牌有效期：5分钟
-    if (isNaN(timestamp) || now - timestamp > AUDIT_TOKEN_MAX_AGE_MS) {
-      return false;
-    }
-
-    // HMAC 签名验证（使用 JWT_SECRET_PLACEHOLDER
-    // ✅ P0修复：JWT_SECRET_PLACEHOLDER
-    const secret = process.env.JWT_SECRET_PLACEHOLDER
-    if (!secret) {
-      logger.error('[Audit] JWT_SECRET_PLACEHOLDER
-      return false;
-    }
-    // H-10 FIX: 使用完整 HMAC hex 摘要（64 字符），不再截断以保持 256-bit 防伪造强度
-    const expectedHash = crypto.createHmac('sha256', secret).update(timestampStr).digest('hex');
-    // 使用 timingSafeEqual 防止时序攻击
-    if (hash.length !== expectedHash.length) {
-      logger.warn('[Audit] 审计令牌签名长度不匹配');
-      return false;
-    }
-    try {
-      if (!crypto.timingSafeEqual(Buffer.from(hash, 'utf8'), Buffer.from(expectedHash, 'utf8'))) {
-        logger.warn('[Audit] 审计令牌签名不匹配');
-        return false;
-      }
-    } catch {
-      logger.warn('[Audit] 审计令牌签名校验异常');
-      return false;
-    }
-
-    return true;
-  } catch {
-    return false;
-  }
-}
+// ✅ B7: 审计模式 / 请求签名校验已提取到 _shared/request-guard.ts
 
 /**
  * 检查请求频率限制
@@ -402,41 +247,7 @@ function selectAvailableModel(preferredModel: string): string {
   return 'glm-4-flash';
 }
 
-// AI好友角色配置
-const AI_FRIENDS = {
-  'yan-cong': {
-    name: '研聪',
-    role: '清华学霸学长',
-    personality: '严谨理性，数据驱动，喜欢列计划',
-    speakingStyle: '每句话带1个数据指标',
-    catchphrase: ['从数据看...', '我建议你...', '根据你最近的表现...'],
-    emotionalMode: '表面冷静，但会偷偷关心'
-  },
-  'yan-man': {
-    name: '研漫',
-    role: '心理学硕士研友',
-    personality: '温暖共情，情绪觉察力强',
-    speakingStyle: '先共情，再建议',
-    catchphrase: ['我能感受到...', '没关系...', '你已经很努力了...'],
-    emotionalMode: '高度敏感，能识别用户情绪低谷'
-  },
-  'yan-shi': {
-    name: '研师',
-    role: '资深考研名师',
-    personality: '专业严谨，考点精准',
-    speakingStyle: '直击要点，条理清晰',
-    catchphrase: ['这个考点...', '历年真题显示...', '重点记住...'],
-    emotionalMode: '严格但公正，适时鼓励'
-  },
-  'yan-you': {
-    name: '研友',
-    role: '同届考研伙伴',
-    personality: '轻松幽默，互相鼓励',
-    speakingStyle: '口语化，带表情',
-    catchphrase: ['哈哈...', '我也是...', '一起加油...'],
-    emotionalMode: '乐观积极，善于调节气氛'
-  }
-};
+// ✅ B7: AI_FRIENDS 角色配置已迁移至 _shared/prompts/friend-chat.ts
 
 export default async function (ctx: FunctionContext) {
   const startTime = Date.now();
@@ -902,75 +713,7 @@ async function callAIWithFallback({
   return { success: true, aiData, aiContent, modelName: actualModel };
 }
 
-/**
- * RAG 检索：从用户知识库中检索与查询相关的上下文
- * 优先使用 Atlas $vectorSearch（服务端高效检索），失败时降级为内存余弦相似度
- */
-async function retrieveRAGContext(userId: string, query: string, topK = 3): Promise<string> {
-  try {
-    const db = cloud.database();
-    const queryEmbedding = await getEmbedding(query);
-    let scored: Array<{ text: string; source: string; score: number }> = [];
-
-    // 优先尝试 Atlas $vectorSearch
-    try {
-      const pipeline = [
-        {
-          $vectorSearch: {
-            index: 'vector_index',
-            path: 'embedding',
-            queryVector: queryEmbedding,
-            numCandidates: topK * 10,
-            limit: topK,
-            filter: { user_id: userId }
-          }
-        },
-        {
-          $addFields: { score: { $meta: 'vectorSearchScore' } }
-        },
-        {
-          $project: { _id: 0, text: 1, score: 1, source_type: 1, metadata: 1 }
-        }
-      ];
-      const result = await db.collection('document_chunks').aggregate(pipeline).end();
-      const docs = result.data || [];
-      scored = docs
-        .filter((doc: any) => doc.score >= 0.35)
-        .map((doc: any) => ({
-          text: doc.text,
-          source: doc.metadata?.title || doc.source_type || '',
-          score: doc.score
-        }));
-    } catch (_atlasErr) {
-      // Atlas $vectorSearch 不可用，降级为内存暴力搜索
-      const chunks = await db.collection('document_chunks').where({ user_id: userId }).limit(500).get();
-
-      if (!chunks.data || chunks.data.length === 0) return '';
-
-      scored = chunks.data
-        .filter((c: any) => c.embedding && c.embedding.length > 0)
-        .map((chunk: any) => ({
-          text: chunk.text,
-          source: chunk.metadata?.title || chunk.source_type || '',
-          score: cosineSimilarity(queryEmbedding, chunk.embedding)
-        }))
-        .filter((item: any) => item.score > 0.35)
-        .sort((a: any, b: any) => b.score - a.score)
-        .slice(0, topK);
-    }
-
-    if (scored.length === 0) return '';
-
-    const context = scored
-      .map((s, i) => `[参考${i + 1}] (来源:${s.source || '学习资料'}, 相关度:${(s.score * 100).toFixed(0)}%) ${s.text}`)
-      .join('\n\n');
-
-    return `\n\n===== 以下是来自用户学习资料的相关参考内容 =====\n${context}\n===== 参考内容结束 =====\n\n请优先基于以上参考资料回答问题。如果参考资料中没有相关内容，再使用你的通用知识回答，并注明这不是来自用户的资料。`;
-  } catch (err: any) {
-    logger.warn('[RAG] 检索失败，降级为无增强模式:', err.message);
-    return '';
-  }
-}
+// ✅ B7: retrieveRAGContext 已迁移至 _shared/rag-retriever.ts
 
 /**
  * 构建提示词
@@ -1161,76 +904,4 @@ function parseJsonResponse(aiContent, action) {
   return parsed;
 }
 
-/**
- * [F4-FIX] 从数据库加载对话记忆
- */
-async function loadConversationMemory(userId, friendType) {
-  try {
-    const db = cloud.database();
-    const collection = db.collection('ai_friend_memory');
-    const result = await collection.where({ userId, friendType }).getOne();
-    if (result.data && result.data.conversations && result.data.conversations.length > 0) {
-      // 取最近10条，格式化为可读文本
-      const recent = result.data.conversations.slice(-10);
-      return recent.map((c) => `用户: ${c.userMessage}\n${friendType}: ${c.aiResponse}`).join('\n---\n');
-    }
-    return '';
-  } catch (error) {
-    logger.error('[Memory] 加载对话记忆失败:', error);
-    return '';
-  }
-}
-
-/**
- * 保存对话记忆到数据库
- * [Phase5a FIX] 使用原子 $push + $slice 替代 read-modify-write，防止并发丢写
- */
-async function saveConversationMemory(userId, friendType, userMessage, aiResponse) {
-  try {
-    const memDb = cloud.database();
-    const memCmd = memDb.command;
-    const collection = memDb.collection('ai_friend_memory');
-
-    const newConversation = {
-      userMessage: userMessage.substring(0, 200),
-      aiResponse: aiResponse.substring(0, 400),
-      timestamp: Date.now()
-    };
-
-    // 原子更新：push 新对话 + slice 保留最近20条，避免 read-modify-write 竞态
-    const updateResult = await collection.where({ userId, friendType }).update({
-      conversations: memCmd.push({
-        each: [newConversation],
-        slice: -20
-      }),
-      updatedAt: Date.now()
-    });
-
-    if (!updateResult.updated) {
-      // 不存在则创建（极端并发下可能重复，但 conversations 不会丢数据）
-      try {
-        await collection.add({
-          userId,
-          friendType,
-          conversations: [newConversation],
-          createdAt: Date.now(),
-          updatedAt: Date.now()
-        });
-      } catch (addErr) {
-        // 并发创建冲突，再尝试一次原子更新
-        await collection.where({ userId, friendType }).update({
-          conversations: memCmd.push({
-            each: [newConversation],
-            slice: -20
-          }),
-          updatedAt: Date.now()
-        });
-      }
-    }
-
-    logger.info(`[Memory] 保存对话记忆成功: ${userId} - ${friendType}`);
-  } catch (error) {
-    logger.error('[Memory] 保存对话记忆失败:', error);
-    // 不影响主流程
-  }
-}
+// ✅ B7: loadConversationMemory / saveConversationMemory 已迁移至 _shared/conversation-memory.ts
