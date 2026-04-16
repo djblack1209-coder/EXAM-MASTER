@@ -1,8 +1,8 @@
-文档同步提醒 (2026/4/16 17:35:57)
+文档同步提醒 (2026/4/16 18:16:03)
 ==================================================
 
 📝 docs/CHANGELOG.md
    原因：有代码变更，CHANGELOG 需要更新
-   触发文件：laf-backend/functions/_shared/fsrs-scheduler.ts, laf-backend/functions/smart-study-engine.ts
+   触发文件：laf-backend/functions/_shared/ai-providers/provider-factory.ts
 
 请在完成当前工作后，记得更新以上文档。
