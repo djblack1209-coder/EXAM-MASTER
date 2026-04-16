@@ -64,6 +64,7 @@
     "@dcloudio/uni-app-plus": "^3.0.0-alpha-5000220260306001",
     "@dcloudio/uni-app-vite": "^3.0.0-alpha-5000220260306001",
     "@dcloudio/uni-components": "^3.0.0-alpha-5000220260306001",
+    "@qiun/ucharts": "^2.5.0-20230101",
     "@traptitech/markdown-it-katex": "^3.6.0",
     "canvas-confetti": "^1.9.4",
     "katex": "^0.16.38",
