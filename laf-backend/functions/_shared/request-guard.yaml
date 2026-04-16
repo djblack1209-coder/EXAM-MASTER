@@ -1,0 +1,4 @@
+name: _shared/request-guard
+desc: Shared module - not a cloud function
+methods: []
+tags: []
