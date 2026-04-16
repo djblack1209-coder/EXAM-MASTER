@@ -33,6 +33,12 @@ import {
   generateRequestId,
   checkRateLimitDistributed
 } from './_shared/api-response';
+// ✅ 使用共享幂等性模块，消除与 answer-submit 的重复代码
+import {
+  checkIdempotency as _checkIdempotencyShared,
+  markCompleted as markIdempotencyCompleted,
+  markFailed as markIdempotencyFailed
+} from './_shared/idempotency';
 
 const db = cloud.database();
 const _ = db.command;
@@ -45,9 +51,7 @@ const ELO_BASE = 1000; // 初始 ELO 分数
 const POINTS_PER_CORRECT = 20; // 每道正确题目得分
 const MAX_QUESTIONS_PER_BATTLE = 10; // 单场最大题目数上限
 
-// ==================== 幂等性配置 ====================
-const IDEMPOTENCY_COLLECTION = 'idempotency_records';
-const IDEMPOTENCY_TTL = 24 * 60 * 60 * 1000; // 24小时
+// ✅ 幂等性配置和常量已迁移到 _shared/idempotency.ts
 const PK_BATTLE_SESSION_COLLECTION = 'pk_battles';
 
 // ==================== 防作弊配置 ====================
@@ -377,8 +381,12 @@ async function handleSubmitResult(params, requestId) {
     };
   }
 
-  // 3. 幂等性检查
-  const idempotencyResult = await checkIdempotency(battleId, 'pk_submit', idempotencyKey);
+  // 3. 幂等性检查 — 使用共享模块
+  const idempotencyResult = await _checkIdempotencyShared({
+    userId: battleId,
+    action: 'pk_submit',
+    idempotencyKey
+  });
 
   if (idempotencyResult.isDuplicate) {
     logger.info(`[${requestId}] 重复提交，返回缓存结果`);
@@ -446,22 +454,15 @@ async function handleSubmitResult(params, requestId) {
     };
 
     // 5. 标记幂等记录完成
-    await markIdempotencyCompleted(idempotencyResult.recordId, result);
+    await markIdempotencyCompleted(idempotencyResult.recordId!, result);
 
     return result;
   } catch (error) {
     logger.error(`[${requestId}] 提交对战结果失败:`, error);
 
-    // 标记失败（允许重试）
+    // 标记失败（允许重试） — 使用共享模块
     if (idempotencyResult.recordId) {
-      await db
-        .collection(IDEMPOTENCY_COLLECTION)
-        .doc(idempotencyResult.recordId)
-        .update({
-          status: 'failed',
-          result: { error: (error as Error).message },
-          completed_at: Date.now()
-        });
+      await markIdempotencyFailed(idempotencyResult.recordId, error);
     }
 
     return {
@@ -638,60 +639,8 @@ async function handleCalculateElo(params, requestId) {
   return success(result, 'ELO 计算完成');
 }
 
-// ==================== 幂等性工具函数 ====================
-
-async function checkIdempotency(userId: string, action: string, idempotencyKey: string) {
-  const fullKey = `${userId}:${action}:${idempotencyKey}`;
-  const collection = db.collection(IDEMPOTENCY_COLLECTION);
-  const now = Date.now();
-
-  try {
-    const existing = await collection
-      .where({
-        key: fullKey,
-        expires_at: _.gt(now)
-      })
-      .getOne();
-
-    if (existing.data) {
-      if (existing.data.status === 'completed') {
-        return { isDuplicate: true, previousResult: existing.data.result };
-      }
-      if (existing.data.status === 'processing' && now - existing.data.created_at < 30000) {
-        return { isDuplicate: true, previousResult: { code: 429, success: false, message: '请求正在处理中' } };
-      }
-      await collection.doc(existing.data._id).update({ status: 'processing', created_at: now });
-      return { isDuplicate: false, recordId: existing.data._id };
-    }
-
-    const insertResult = await collection.add({
-      key: fullKey,
-      user_id: userId,
-      action,
-      status: 'processing',
-      created_at: now,
-      expires_at: now + IDEMPOTENCY_TTL
-    });
-
-    return { isDuplicate: false, recordId: insertResult.id };
-  } catch (error) {
-    logger.error('[Idempotency] 检查失败:', error);
-    return { isDuplicate: false };
-  }
-}
-
-async function markIdempotencyCompleted(recordId: string, result: unknown) {
-  if (!recordId) return;
-  try {
-    await db.collection(IDEMPOTENCY_COLLECTION).doc(recordId).update({
-      status: 'completed',
-      result,
-      completed_at: Date.now()
-    });
-  } catch (error) {
-    logger.error('[Idempotency] 标记完成失败:', error);
-  }
-}
+// ✅ 幂等性工具函数已迁移到 _shared/idempotency.ts 共享模块
+// 通过顶部 import 引入 _checkIdempotencyShared / markIdempotencyCompleted / markIdempotencyFailed
 
 // ==================== 工具函数 ====================
 

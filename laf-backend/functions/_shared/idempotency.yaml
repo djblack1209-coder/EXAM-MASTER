@@ -1,0 +1,4 @@
+name: _shared/idempotency
+desc: Shared module - 幂等性工具库，防止网络重发导致重复操作
+methods: []
+tags: []

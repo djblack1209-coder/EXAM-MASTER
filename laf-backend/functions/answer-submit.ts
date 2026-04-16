@@ -41,6 +41,8 @@ import {
   type FSRSScheduleResult,
   type ReviewRating
 } from './_shared/fsrs-scheduler';
+// ✅ 共享幂等性模块（当前 handleSubmit 未启用幂等检查，需要时取消注释）
+// import { checkIdempotency, markCompleted as markIdempotencyCompleted } from './_shared/idempotency';
 
 const db = cloud.database();
 const _ = db.command;
@@ -48,63 +50,8 @@ const _ = db.command;
 const ANSWER_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const ANSWER_RATE_LIMIT_MAX = 120;
 
-// ==================== 幂等性工具（内联版本） ====================
-const IDEMPOTENCY_COLLECTION = 'idempotency_records';
-const IDEMPOTENCY_TTL = 24 * 60 * 60 * 1000;
-
-export async function checkIdempotency(userId: string, action: string, idempotencyKey: string) {
-  const fullKey = `${userId}:${action}:${idempotencyKey}`;
-  const collection = db.collection(IDEMPOTENCY_COLLECTION);
-  const now = Date.now();
-
-  try {
-    const existing = await collection
-      .where({
-        key: fullKey,
-        expires_at: _.gt(now)
-      })
-      .getOne();
-
-    if (existing.data) {
-      if (existing.data.status === 'completed') {
-        return { isDuplicate: true, previousResult: existing.data.result };
-      }
-      if (existing.data.status === 'processing' && now - existing.data.created_at < 30000) {
-        return { isDuplicate: true, previousResult: { code: 429, success: false, message: '请求正在处理中' } };
-      }
-      // 超时或失败，允许重试
-      await collection.doc(existing.data._id).update({ status: 'processing', created_at: now });
-      return { isDuplicate: false, recordId: existing.data._id };
-    }
-
-    const insertResult = await collection.add({
-      key: fullKey,
-      user_id: userId,
-      action,
-      status: 'processing',
-      created_at: now,
-      expires_at: now + IDEMPOTENCY_TTL
-    });
-
-    return { isDuplicate: false, recordId: insertResult.id };
-  } catch (error) {
-    logger.error('[Idempotency] 检查失败:', error);
-    return { isDuplicate: false };
-  }
-}
-
-export async function markIdempotencyCompleted(recordId: string, result: unknown) {
-  if (!recordId) return;
-  try {
-    await db.collection(IDEMPOTENCY_COLLECTION).doc(recordId).update({
-      status: 'completed',
-      result,
-      completed_at: Date.now()
-    });
-  } catch (error) {
-    logger.error('[Idempotency] 标记完成失败:', error);
-  }
-}
+// ✅ 幂等性逻辑已迁移到 _shared/idempotency.ts 共享模块
+// 通过顶部 import 引入 checkIdempotency 和 markIdempotencyCompleted
 
 // ==================== 参数校验 ====================
 export function validateSubmitParams(data: unknown): {
