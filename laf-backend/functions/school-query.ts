@@ -18,15 +18,12 @@ import cloud from '@lafjs/cloud';
 import { verifyJWT, extractBearerToken } from './_shared/auth';
 import { requireAdminAccess } from './_shared/admin-auth';
 import { createLogger, checkRateLimitDistributed } from './_shared/api-response';
+import { escapeRegex, clampInt, sanitizeFilterValue, sanitizeKeyword, sanitizeYear } from './_shared/sanitize';
+import { createMemoryCache } from './_shared/memory-cache';
 
 const db = cloud.database();
 const _ = db.command;
 const logger = createLogger('[SchoolQuery]');
-
-/** Escape user input for safe use in $regex (prevents ReDoS) */
-function escapeRegex(str) {
-  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 // 研招网923个研究生招生单位总数
 const TOTAL_GRADUATE_UNITS = 923;
@@ -43,28 +40,7 @@ const QUERY_LIMITS = {
   tagsMaxCount: 10
 };
 
-function clampInt(value, { min, max, defaultValue }) {
-  const parsed = Number.parseInt(String(value), 10);
-  if (!Number.isFinite(parsed)) return defaultValue;
-  return Math.min(max, Math.max(min, parsed));
-}
-
-function sanitizeFilterValue(value, maxLength = 64) {
-  if (typeof value !== 'string') return '';
-  return value.trim().slice(0, maxLength);
-}
-
-function sanitizeKeyword(value, maxLength = QUERY_LIMITS.keywordLength) {
-  if (typeof value !== 'string') return '';
-  return value.trim().slice(0, maxLength);
-}
-
-function sanitizeYear(value) {
-  const currentYear = new Date().getFullYear() + 1;
-  const parsed = Number.parseInt(String(value), 10);
-  if (!Number.isFinite(parsed)) return undefined;
-  return Math.min(currentYear, Math.max(2000, parsed));
-}
+// ✅ B8: 输入清洗工具已迁移至 _shared/sanitize.ts
 
 // ==================== 内存缓存系统 ====================
 
@@ -85,93 +61,8 @@ const CACHE_TTL = {
   nationalLines: 30 * 60 * 1000 // 30分钟（国家线数据基本不变）
 };
 
-// 缓存最大条目数，防止内存溢出
-const CACHE_MAX_SIZE = 500;
-
-// 缓存存储（模块级变量，在 Laf 云函数中会在实例生命周期内保持）
-const cache = new Map();
-
-/**
- * 获取缓存
- * @param {string} key - 缓存键
- * @returns {any|null} 缓存值，过期或不存在返回 null
- */
-function getCache(key) {
-  const entry = cache.get(key);
-  if (!entry) return null;
-
-  if (Date.now() > entry.expireAt) {
-    cache.delete(key);
-    return null;
-  }
-
-  entry.hits = (entry.hits || 0) + 1;
-  return entry.value;
-}
-
-/**
- * 设置缓存
- * @param {string} key - 缓存键
- * @param {any} value - 缓存值
- * @param {number} ttl - 过期时间（毫秒）
- */
-function setCache(key, value, ttl) {
-  // 如果缓存已满，清理过期条目；仍然的条目
-  if (cache.size >= CACHE_MAX_SIZE) {
-    evictExpiredEntries();
-    if (cache.size >= CACHE_MAX_SIZE) {
-      // LRU-like: 删除最早插入的条目（Map 保持插入顺序）
-      const firstKey = cache.keys().next().value;
-      cache.delete(firstKey);
-    }
-  }
-
-  cache.set(key, {
-    value,
-    expireAt: Date.now() + ttl,
-    createdAt: Date.now(),
-    hits: 0
-  });
-}
-
-/**
- * 清理所有过期缓存条目
- */
-function evictExpiredEntries() {
-  const now = Date.now();
-  for (const [key, entry] of cache) {
-    if (now > entry.expireAt) {
-      cache.delete(key);
-    }
-  }
-}
-
-/**
- * 使指定前缀的缓存失效（用于数据更新后清理相关缓存）
- * @param {string} prefix - 缓存键前缀
- */
-function invalidateCache(prefix) {
-  for (const key of cache.keys()) {
-    if (key.startsWith(prefix)) {
-      cache.delete(key);
-    }
-  }
-}
-
-/**
- * 生成缓存键
- * @param {string} namespace - 命名空间
- * @param {object} params - 参数对象
- * @returns {string} 缓存键
- */
-function buildCacheKey(namespace, params = {}) {
-  const sortedParams = Object.keys(params)
-    .filter((k) => params[k] !== undefined && params[k] !== null && params[k] !== '')
-    .sort()
-    .map((k) => `${k}=${JSON.stringify(params[k])}`)
-    .join('&');
-  return `${namespace}:${sortedParams}`;
-}
+// ✅ B8: 缓存实现已迁移至 _shared/memory-cache.ts
+const cache = createMemoryCache({ maxSize: 500 });
 
 export default async function (ctx) {
   const startTime = Date.now();
@@ -334,7 +225,7 @@ export default async function (ctx) {
  */
 async function checkDataCompleteness() {
   const cacheKey = 'completeness:check';
-  const cached = getCache(cacheKey);
+  const cached = cache.get(cacheKey);
   if (cached) return cached;
 
   const countResult = await db.collection('schools').count();
@@ -348,7 +239,7 @@ async function checkDataCompleteness() {
     needSync: !isComplete
   };
 
-  setCache(cacheKey, result, CACHE_TTL.completeness);
+  cache.set(cacheKey, result, CACHE_TTL.completeness);
   return result;
 }
 
@@ -560,8 +451,8 @@ async function getSchoolDetail(data, requestId) {
   }
 
   // 缓存命中检查
-  const cacheKey = buildCacheKey('detail', { schoolId: safeSchoolId, code: safeCode });
-  const cached = getCache(cacheKey);
+  const cacheKey = cache.buildKey('detail', { schoolId: safeSchoolId, code: safeCode });
+  const cached = cache.get(cacheKey);
   if (cached) {
     logger.info(`[${requestId}] 学校详情缓存命中: ${safeSchoolId || safeCode}`);
     return { ...cached, requestId };
@@ -592,7 +483,7 @@ async function getSchoolDetail(data, requestId) {
     requestId
   };
 
-  setCache(cacheKey, response, CACHE_TTL.schoolDetail);
+  cache.set(cacheKey, response, CACHE_TTL.schoolDetail);
   return response;
 }
 
@@ -609,8 +500,8 @@ async function searchSchools(data, requestId) {
   }
 
   // 缓存命中检查
-  const cacheKey = buildCacheKey('search', { keyword: searchTerm, limit: safeLimit });
-  const cached = getCache(cacheKey);
+  const cacheKey = cache.buildKey('search', { keyword: searchTerm, limit: safeLimit });
+  const cached = cache.get(cacheKey);
   if (cached) {
     logger.info(`[${requestId}] 搜索缓存命中: "${searchTerm}"`);
     return { ...cached, requestId };
@@ -661,7 +552,7 @@ async function searchSchools(data, requestId) {
     };
   }
 
-  setCache(cacheKey, response, CACHE_TTL.search);
+  cache.set(cacheKey, response, CACHE_TTL.search);
   return response;
 }
 
@@ -674,8 +565,8 @@ async function getHotSchools(data, requestId) {
   const safeProvince = sanitizeFilterValue(province);
 
   // 缓存命中检查
-  const cacheKey = buildCacheKey('hot', { limit: safeLimit, province: safeProvince });
-  const cached = getCache(cacheKey);
+  const cacheKey = cache.buildKey('hot', { limit: safeLimit, province: safeProvince });
+  const cached = cache.get(cacheKey);
   if (cached) {
     logger.info(`[${requestId}] 热门学校缓存命中`);
     return { ...cached, requestId };
@@ -713,7 +604,7 @@ async function getHotSchools(data, requestId) {
     requestId
   };
 
-  setCache(cacheKey, response, CACHE_TTL.hotSchools);
+  cache.set(cacheKey, response, CACHE_TTL.hotSchools);
   return response;
 }
 
@@ -748,7 +639,7 @@ async function getMajors(data, requestId) {
 
   // 缓存检查（无关键词搜索时缓存）
   const cacheKey = !safeKeyword
-    ? buildCacheKey('majors', {
+    ? cache.buildKey('majors', {
         schoolId: safeSchoolId,
         collegeId: safeCollegeId,
         category: safeCategory,
@@ -760,7 +651,7 @@ async function getMajors(data, requestId) {
       })
     : null;
   if (cacheKey) {
-    const cached = getCache(cacheKey);
+    const cached = cache.get(cacheKey);
     if (cached) return { ...cached, requestId };
   }
 
@@ -809,7 +700,7 @@ async function getMajors(data, requestId) {
   };
 
   if (cacheKey) {
-    setCache(cacheKey, response, CACHE_TTL.search);
+    cache.set(cacheKey, response, CACHE_TTL.search);
   }
   return response;
 }
@@ -825,8 +716,8 @@ async function getColleges(data, requestId) {
     return { code: 400, success: false, message: '缺少学校ID', requestId };
   }
 
-  const cacheKey = buildCacheKey('colleges', { schoolId: safeSchoolId });
-  const cached = getCache(cacheKey);
+  const cacheKey = cache.buildKey('colleges', { schoolId: safeSchoolId });
+  const cached = cache.get(cacheKey);
   if (cached) return { ...cached, requestId };
 
   // 查询该校所有专业，按学院分组统计
@@ -870,7 +761,7 @@ async function getColleges(data, requestId) {
     requestId
   };
 
-  setCache(cacheKey, response, CACHE_TTL.hotSchools);
+  cache.set(cacheKey, response, CACHE_TTL.hotSchools);
   return response;
 }
 
@@ -946,8 +837,8 @@ async function getNationalLines(data, requestId) {
   const safeRegion = sanitizeFilterValue(region, 64);
 
   // 缓存命中检查
-  const cacheKey = buildCacheKey('nationalLines', { year: safeYear, category: safeCategory, region: safeRegion });
-  const cached = getCache(cacheKey);
+  const cacheKey = cache.buildKey('nationalLines', { year: safeYear, category: safeCategory, region: safeRegion });
+  const cached = cache.get(cacheKey);
   if (cached) {
     logger.info(`[${requestId}] 国家线缓存命中`);
     return { ...cached, requestId };
@@ -968,7 +859,7 @@ async function getNationalLines(data, requestId) {
     requestId
   };
 
-  setCache(cacheKey, response, CACHE_TTL.nationalLines);
+  cache.set(cacheKey, response, CACHE_TTL.nationalLines);
   return response;
 }
 
@@ -1132,7 +1023,7 @@ async function getFavorites(ctx, data, requestId) {
  */
 async function getStats(requestId) {
   const cacheKey = 'stats:all';
-  const cached = getCache(cacheKey);
+  const cached = cache.get(cacheKey);
   if (cached) {
     logger.info(`[${requestId}] 统计数据缓存命中`);
     return { ...cached, requestId };
@@ -1160,7 +1051,7 @@ async function getStats(requestId) {
     requestId
   };
 
-  setCache(cacheKey, response, CACHE_TTL.stats);
+  cache.set(cacheKey, response, CACHE_TTL.stats);
   return response;
 }
 
@@ -1169,7 +1060,7 @@ async function getStats(requestId) {
  */
 async function getProvinces(requestId) {
   const cacheKey = 'provinces:all';
-  const cached = getCache(cacheKey);
+  const cached = cache.get(cacheKey);
   if (cached) {
     logger.info(`[${requestId}] 省份列表缓存命中`);
     return { ...cached, requestId };
@@ -1199,7 +1090,7 @@ async function getProvinces(requestId) {
     requestId
   };
 
-  setCache(cacheKey, response, CACHE_TTL.provinces);
+  cache.set(cacheKey, response, CACHE_TTL.provinces);
   return response;
 }
 
@@ -1295,12 +1186,12 @@ async function syncFromChsi(data, requestId) {
   }
 
   // 同步完成后清理所有相关缓存，确保下次查询获取最新数据
-  invalidateCache('completeness');
-  invalidateCache('stats');
-  invalidateCache('provinces');
-  invalidateCache('hot');
-  invalidateCache('search');
-  invalidateCache('detail');
+  cache.invalidateByPrefix('completeness');
+  cache.invalidateByPrefix('stats');
+  cache.invalidateByPrefix('provinces');
+  cache.invalidateByPrefix('hot');
+  cache.invalidateByPrefix('search');
+  cache.invalidateByPrefix('detail');
   logger.info(`[${requestId}] 已清理所有学校相关缓存`);
 
   // 获取同步后的状态（缓存已清理，会重新查询）

@@ -25,17 +25,14 @@ import {
   generateRequestId,
   checkRateLimitDistributed
 } from './_shared/api-response';
+// ✅ B8: 输入清洗工具（共享模块）
+import { escapeRegex } from './_shared/sanitize';
 
 const db = cloud.database();
 const _ = db.command;
 
 const SOCIAL_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const SOCIAL_RATE_LIMIT_MAX = 60;
-
-/** Escape user input for safe use in $regex (prevents ReDoS) */
-function escapeRegex(str: string): string {
-  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 export default async function (ctx) {
   const startTime = Date.now();

@@ -21,6 +21,8 @@ import { isIP } from 'net';
 import { validate } from './_shared/validator';
 import { createLogger, checkRateLimitDistributed, tooManyRequests } from './_shared/api-response';
 import { requireAuth, isAuthError } from './_shared/auth-middleware';
+// ✅ B8: 输入清洗工具（共享模块）
+import { escapeRegex } from './_shared/sanitize';
 
 const logger = createLogger('[AIPhotoSearch]');
 
@@ -580,13 +582,6 @@ function extractKeywords(text) {
     .filter((w) => w.length >= 2 && w.length <= 20) // 过滤过短或过长的词
     .filter((w) => !/^\d+$/.test(w)) // 过滤纯数字
     .slice(0, 15);
-}
-
-/**
- * 转义正则特殊字符
- */
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
