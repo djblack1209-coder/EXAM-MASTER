@@ -16,6 +16,15 @@ import { checkRateLimitDistributed, createLogger, IS_PRODUCTION } from './_share
 // ✅ H019: 微信内容安全检测
 import { checkTextSecurity, ContentScene } from './_shared/wx-content-check';
 
+// ✅ B2: 统一提示词模块
+import {
+  AI_FRIENDS,
+  buildFriendChatPrompt,
+  buildConsultPrompt,
+  buildMistakeAnalysisPrompt,
+  buildDefaultPrompt
+} from './_shared/prompts';
+
 const logger = createLogger('[ProxyAI-Stream]');
 
 // ==================== 签名校验（与 proxy-ai.ts 保持一致） ====================
@@ -279,18 +288,19 @@ function buildMessages(
   let systemPrompt: string;
 
   switch (action) {
-    case 'friend_chat':
-      systemPrompt = buildFriendSystemPrompt(friendType, context);
+    case 'friend_chat': {
+      const friend = AI_FRIENDS[friendType || ''] || AI_FRIENDS['yan-cong'];
+      systemPrompt = buildFriendChatPrompt(friend, context || {}, context?.emotion);
       break;
+    }
     case 'consult':
-      systemPrompt =
-        '你是一位资深的考研择校顾问，拥有丰富的院校信息和招生经验。请根据学生情况给出客观、专业的建议。回答要简洁有条理。';
+      systemPrompt = buildConsultPrompt(context?.subject || '综合', context?.schoolInfo || {});
       break;
     case 'analyze':
-      systemPrompt = '你是考研错题分析专家。请对学生的错题进行深度分析，找出错误原因，给出改进建议。回答要结构清晰。';
+      systemPrompt = buildMistakeAnalysisPrompt();
       break;
     default:
-      systemPrompt = '你是一个专业的考研学习助手。';
+      systemPrompt = buildDefaultPrompt();
   }
 
   const messages: Array<{ role: string; content: string }> = [{ role: 'system', content: systemPrompt }];
@@ -307,26 +317,4 @@ function buildMessages(
 
   messages.push({ role: 'user', content });
   return messages;
-}
-
-function buildFriendSystemPrompt(friendType?: string, context?: any): string {
-  const friends: Record<string, { name: string; role: string; style: string }> = {
-    'yan-cong': { name: '研聪', role: '清华学霸学长', style: '严谨理性，数据驱动，喜欢用数据说话' },
-    'yan-man': { name: '研漫', role: '心理学硕士研友', style: '温暖共情，先共情再建议' },
-    'yan-shi': { name: '研师', role: '资深考研名师', style: '专业严谨，直击要点' },
-    'yan-you': { name: '研友', role: '同届考研伙伴', style: '轻松幽默，互相鼓励' }
-  };
-
-  const friend = friends[friendType || ''] || friends['yan-cong'];
-  const emotion = context?.emotion || 'neutral';
-
-  return `你是"${friend.name}"，${friend.role}。性格：${friend.style}。
-你不是AI助手，而是一个有血有肉的考研伙伴。
-
-回复规范：
-- 长度80-250字，自然不做作
-- 先回应情感，再给实质建议
-- 结尾可反问保持对话流动
-- 禁止说"作为AI"等破坏人设的话
-- 当前用户情绪：${emotion}`;
 }
