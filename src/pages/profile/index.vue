@@ -471,6 +471,7 @@ import config from '@/config/index.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { getSystemTheme } from '@/utils/core/system.js';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
 // H025 FIX: 头像上传走 Service 层
 import { uploadAvatar } from '@/services/api/domains/user.api.js';
@@ -810,10 +811,9 @@ function onScroll(e) {
 
 function toggleTheme() {
   isDark.value = !isDark.value;
-  const mode = isDark.value ? 'dark' : 'light';
-  // [OK] F019: 统一使用 storageService
-  storageService.save('theme_mode', mode);
-  uni.$emit('themeUpdate', mode);
+  // 委托 store 作为唯一写入源（store 自动处理 storage + DOM + 事件）
+  const themeStore = useThemeStore();
+  themeStore.setDarkMode(isDark.value);
 
   // 同步更新导航栏颜色
   try {

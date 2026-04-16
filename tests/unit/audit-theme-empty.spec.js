@@ -375,63 +375,42 @@ describe('[Audit] getCurrentTheme Fallback', () => {
 });
 
 // ============================================================
-// PART 8: toggleTheme Persistence
+// PART 8: applyTheme DOM 渲染验证
+// （toggleTheme 已移至 useThemeStore.setDarkMode，此处仅测试纯渲染函数 applyTheme）
 // ============================================================
-describe('[Audit] toggleTheme Persistence', () => {
-  let toggleTheme;
+describe('[Audit] applyTheme DOM Rendering', () => {
+  let applyTheme;
 
   beforeEach(async () => {
     vi.resetModules();
     document.documentElement.style.cssText = '';
     window.localStorage.clear();
-    // 确保 uni.setStorageSync/getStorageSync 在测试环境中使用 localStorage 作为后备
-    if (typeof uni !== 'undefined') {
-      const _origSet = uni.setStorageSync;
-      uni.setStorageSync = (key, val) => {
-        try {
-          _origSet(key, val);
-        } catch (_e) {
-          /* ignore */
-        }
-        window.localStorage.setItem(key, val);
-      };
-      const _origGet = uni.getStorageSync;
-      uni.getStorageSync = (key) => {
-        try {
-          return _origGet(key) || window.localStorage.getItem(key);
-        } catch (_e) {
-          return window.localStorage.getItem(key);
-        }
-      };
-    }
     const mod = await import('@/design/theme-engine.js');
-    toggleTheme = mod.toggleTheme;
+    applyTheme = mod.applyTheme;
   });
 
-  it('saves theme to localStorage on toggle', () => {
-    toggleTheme('dark');
-    expect(window.localStorage.getItem('theme_mode')).toBe('dark');
-  });
-
-  it('applies theme tokens when toggling', () => {
-    toggleTheme('dark');
+  it('applies dark theme tokens to DOM', () => {
+    applyTheme('dark');
     expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#1a1c23');
   });
 
-  it('toggling back to light updates both storage and DOM', () => {
-    toggleTheme('dark');
-    toggleTheme('light');
-    expect(window.localStorage.getItem('theme_mode')).toBe('light');
+  it('applies light theme tokens to DOM', () => {
+    applyTheme('dark');
+    applyTheme('light');
     expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#f5f7fa');
   });
 
-  it('rapid toggle does not corrupt state', () => {
+  it('rapid apply does not corrupt DOM state', () => {
     for (let i = 0; i < 10; i++) {
-      toggleTheme(i % 2 === 0 ? 'dark' : 'light');
+      applyTheme(i % 2 === 0 ? 'dark' : 'light');
     }
-    // i=0 dark, i=1 light, ... i=9 light
-    expect(window.localStorage.getItem('theme_mode')).toBe('light');
+    // 最后一次是 i=9 → light
     expect(document.documentElement.style.getPropertyValue('--text-primary')).toBe('#1a1d1f');
+  });
+
+  it('defaults to light when given invalid theme', () => {
+    applyTheme('invalid');
+    expect(document.documentElement.style.getPropertyValue('--bg-body')).toBe('#f5f7fa');
   });
 });
 

@@ -10,6 +10,7 @@ import { logger } from '@/utils/logger.js';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
+import { useThemeStore } from '@/stores/modules/theme.js';
 
 export default {
   onLaunch() {
@@ -119,8 +120,14 @@ export default {
       this.globalData.currentTheme = currentTheme;
       this.globalData.isDarkMode = currentTheme === 'dark';
 
-      // 应用主题
-      applyTheme(currentTheme);
+      // 同步 store 状态（store 的 setDarkMode 会自动调用 applyTheme）
+      try {
+        const themeStore = useThemeStore();
+        themeStore.setDarkMode(currentTheme === 'dark');
+      } catch (_e) {
+        // store 未初始化时降级直接渲染
+        applyTheme(currentTheme);
+      }
 
       // 监听系统主题变化
       watchTheme((theme) => {
@@ -140,25 +147,29 @@ export default {
     },
 
     /**
-     * 切换主题
+     * 切换主题 — 委托给 useThemeStore 作为唯一写入源
+     * App.vue 仅负责同步 globalData 和导航栏颜色
      */
     switchTheme(theme) {
+      const isDark = theme === 'dark';
+
+      // 委托 store 完成：持久化 + DOM 渲染 + 事件通知
+      try {
+        const themeStore = useThemeStore();
+        themeStore.setDarkMode(isDark);
+      } catch (_e) {
+        // store 未初始化时降级（仅在极早期启动阶段可能发生）
+        applyTheme(theme);
+        uni.setStorageSync('theme_mode', theme);
+        uni.$emit('themeUpdate', theme);
+      }
+
+      // App.vue 独有职责：同步 globalData
       this.globalData.currentTheme = theme;
-      this.globalData.isDarkMode = theme === 'dark';
+      this.globalData.isDarkMode = isDark;
 
-      // 应用设计令牌
-      applyTheme(theme);
-
-      // 保存用户选择
-      uni.setStorageSync('theme_mode', theme);
-
-      // 触发全局主题更新事件
-      uni.$emit('themeUpdate', theme);
-
-      // 更新状态栏颜色
+      // App.vue 独有职责：更新导航栏颜色
       this.updateNavigationBarColor(theme);
-
-      // 主题切换完成
     },
 
     /**
