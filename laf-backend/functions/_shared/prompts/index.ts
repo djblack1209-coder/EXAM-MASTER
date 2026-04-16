@@ -11,3 +11,5 @@ export * from './trend-predict.js';
 export * from './friend-chat.js';
 export * from './vision.js';
 export * from './consult.js';
+export * from './deep-correction.js';
+export * from './diagnosis.js';

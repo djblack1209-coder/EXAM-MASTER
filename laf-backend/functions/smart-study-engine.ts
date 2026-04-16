@@ -27,7 +27,8 @@ import {
   createLogger
 } from './_shared/api-response';
 import { retrievability } from './_shared/fsrs-scheduler';
-// import { getProvider, ChatMessage } from './_shared/ai-providers/provider-factory'; // 预留 AI 增强
+// ✅ B3: 统一提示词模块
+import { buildDeepCorrectionSystemPrompt, buildDeepCorrectionUserPrompt } from './_shared/prompts';
 
 const db = cloud.database();
 const logger = createLogger('[SmartStudyEngine]');
@@ -550,12 +551,11 @@ async function deepCorrection(userId: string, knowledgePoint?: string): Promise<
       const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
         {
           role: 'system',
-          content:
-            '你是一位考研辅导专家。用户在某个知识点上反复出错，请分析根因并给出矫正方案。要求：1）根因一句话概括（为什么错）2）矫正建议一段话（正确的理解方式和关键区别）。直接输出JSON，不要markdown。格式：{"rootCause":"...","correction":"..."}'
+          content: buildDeepCorrectionSystemPrompt()
         },
         {
           role: 'user',
-          content: `知识点：${kp}\n\n以下是该用户最近的错题：\n\n${mistakeContext}`
+          content: buildDeepCorrectionUserPrompt(kp, mistakeContext)
         }
       ];
 
