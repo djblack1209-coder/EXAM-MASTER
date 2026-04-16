@@ -27,6 +27,8 @@ import {
   generateRequestId,
   checkRateLimitDistributed
 } from './_shared/api-response';
+// ✅ 使用共享日期工具，消除与 pk-battle 的重复
+import { getWeekStart, getMonthStart } from './_shared/date-utils';
 
 const db = cloud.database();
 const _ = db.command;
@@ -486,21 +488,4 @@ async function handleGetUserRank(params, requestId) {
   };
 }
 
-/**
- * 获取本周开始日期
- */
-function getWeekStart() {
-  const now = new Date();
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-  const weekStart = new Date(now.setDate(diff));
-  return weekStart.toISOString().split('T')[0];
-}
-
-/**
- * 获取本月开始日期
- */
-function getMonthStart() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
-}
+// ✅ getWeekStart / getMonthStart 已迁移到 _shared/date-utils.ts

@@ -39,6 +39,10 @@ import {
   markCompleted as markIdempotencyCompleted,
   markFailed as markIdempotencyFailed
 } from './_shared/idempotency';
+// ✅ 使用共享防作弊模块，消除内联重复代码
+import { performAntiCheatCheck } from './_shared/anti-cheat';
+// ✅ 使用共享日期工具，消除与 rank-center 的重复
+import { getWeekStart, getMonthStart } from './_shared/date-utils';
 
 const db = cloud.database();
 const _ = db.command;
@@ -54,21 +58,7 @@ const MAX_QUESTIONS_PER_BATTLE = 10; // 单场最大题目数上限
 // ✅ 幂等性配置和常量已迁移到 _shared/idempotency.ts
 const PK_BATTLE_SESSION_COLLECTION = 'pk_battles';
 
-// ==================== 防作弊配置 ====================
-const ANTI_CHEAT_CONFIG = {
-  // 每题最短答题时间（毫秒）- 低于此时间判定为可疑
-  MIN_TIME_PER_QUESTION: 2000, // 2秒
-  // 每题最长答题时间（毫秒）- 超过此时间判定为超时
-  MAX_TIME_PER_QUESTION: 120000, // 2分钟
-  // 连续高分检测阈值（连续N场正确率>90%触发检测）
-  CONSECUTIVE_HIGH_SCORE_THRESHOLD: 5,
-  // 高分定义（正确率）
-  HIGH_SCORE_RATE: 0.9,
-  // 作弊封禁时长（毫秒）
-  BAN_DURATION: 7 * 24 * 60 * 60 * 1000, // 7天
-  // 可疑行为累计阈值（达到此值触发封禁）
-  SUSPICIOUS_THRESHOLD: 3
-};
+// ✅ 防作弊配置已迁移到 _shared/anti-cheat.ts
 
 // ==================== 参数校验 ====================
 function validateScore(score: unknown): boolean {
@@ -642,214 +632,9 @@ async function handleCalculateElo(params, requestId) {
 // ✅ 幂等性工具函数已迁移到 _shared/idempotency.ts 共享模块
 // 通过顶部 import 引入 _checkIdempotencyShared / markIdempotencyCompleted / markIdempotencyFailed
 
-// ==================== 工具函数 ====================
-
-function getWeekStart() {
-  const now = new Date();
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-  const weekStart = new Date(now.setDate(diff));
-  return weekStart.toISOString().split('T')[0];
-}
-
-function getMonthStart() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
-}
-
-// ==================== 防作弊检测函数 (v2.0新增) ====================
-
-/**
- * 执行防作弊检测
- * @param player 玩家数据
- * @param questionCount 题目数量
- * @param clientInfo 客户端信息
- * @param requestId 请求ID
- */
-async function performAntiCheatCheck(
-  player: Record<string, unknown>,
-  questionCount: number,
-  clientInfo: Record<string, unknown>,
-  requestId: string
-) {
-  const result = {
-    suspicious: false,
-    reasons: [],
-    banned: false,
-    banExpires: null
-  };
-
-  const uid = typeof player.uid === 'string' ? player.uid : '';
-  const totalTime = Number(player.totalTime || 0);
-  const correctCount = Number(player.correctCount || 0);
-
-  if (!validateUserId(uid)) {
-    logger.warn(`[${requestId}] 防作弊检查跳过: 非法 uid`);
-    return result;
-  }
-
-  // 1. 检查用户是否已被封禁
-  const banRecord = await checkUserBan(uid);
-  if (banRecord) {
-    result.banned = true;
-    result.banExpires = banRecord.expires_at;
-    logger.warn(`[${requestId}] 用户已被封禁: ${uid}`);
-    return result;
-  }
-
-  // 2. 答题时间检测
-  if (questionCount > 0 && totalTime > 0) {
-    const avgTimePerQuestion = totalTime / questionCount;
-
-    // 答题过快检测
-    if (avgTimePerQuestion < ANTI_CHEAT_CONFIG.MIN_TIME_PER_QUESTION) {
-      result.suspicious = true;
-      result.reasons.push(`答题过快: 平均${Math.round(avgTimePerQuestion)}ms/题`);
-      logger.warn(`[${requestId}] 可疑行为-答题过快: ${uid}, ${avgTimePerQuestion}ms/题`);
-    }
-  }
-
-  // 3. 分数合理性检测
-  if (questionCount > 0) {
-    const correctRate = correctCount / questionCount;
-
-    // 检测连续高分
-    if (correctRate >= ANTI_CHEAT_CONFIG.HIGH_SCORE_RATE) {
-      const consecutiveHighScores = await checkConsecutiveHighScores(uid);
-      if (consecutiveHighScores >= ANTI_CHEAT_CONFIG.CONSECUTIVE_HIGH_SCORE_THRESHOLD) {
-        result.suspicious = true;
-        result.reasons.push(`连续${consecutiveHighScores}场高分(>${ANTI_CHEAT_CONFIG.HIGH_SCORE_RATE * 100}%)`);
-        logger.warn(`[${requestId}] 可疑行为-连续高分: ${uid}, ${consecutiveHighScores}场`);
-      }
-    }
-  }
-
-  // 4. 记录可疑行为
-  if (result.suspicious) {
-    const suspiciousCount = await recordSuspiciousBehavior(uid, result.reasons, clientInfo, requestId);
-
-    // 达到阈值则封禁
-    if (suspiciousCount >= ANTI_CHEAT_CONFIG.SUSPICIOUS_THRESHOLD) {
-      await banUser(uid, ANTI_CHEAT_CONFIG.BAN_DURATION, result.reasons.join('; '), requestId);
-      result.banned = true;
-      result.banExpires = Date.now() + ANTI_CHEAT_CONFIG.BAN_DURATION;
-      logger.warn(`[${requestId}] 用户被封禁: ${uid}, 原因: ${result.reasons.join('; ')}`);
-    }
-  }
-
-  return result;
-}
-
-/**
- * 检查用户是否被封禁
- */
-async function checkUserBan(uid: string) {
-  try {
-    const collection = db.collection('user_bans');
-    const ban = await collection
-      .where({
-        uid,
-        expires_at: _.gt(Date.now())
-      })
-      .getOne();
-    return ban.data;
-  } catch (e) {
-    return null;
-  }
-}
-
-/**
- * 检查连续高分场次
- */
-async function checkConsecutiveHighScores(uid: string) {
-  try {
-    const collection = db.collection('pk_records');
-    const recentRecords = await collection
-      .where(_.or([{ 'player1.uid': uid }, { 'player2.uid': uid }]))
-      .orderBy('created_at', 'desc')
-      .limit(ANTI_CHEAT_CONFIG.CONSECUTIVE_HIGH_SCORE_THRESHOLD + 2)
-      .get();
-
-    let consecutiveCount = 0;
-    for (const record of recentRecords.data) {
-      const isPlayer1 = record.player1.uid === uid;
-      const playerData = isPlayer1 ? record.player1 : record.player2;
-      const questionCount = record.question_count || 5;
-      const correctRate = (playerData.correct_count || 0) / questionCount;
-
-      if (correctRate >= ANTI_CHEAT_CONFIG.HIGH_SCORE_RATE) {
-        consecutiveCount++;
-      } else {
-        break;
-      }
-    }
-
-    return consecutiveCount;
-  } catch (e) {
-    return 0;
-  }
-}
-
-/**
- * 记录可疑行为
- */
-async function recordSuspiciousBehavior(
-  uid: string,
-  reasons: string[],
-  clientInfo: Record<string, unknown>,
-  requestId: string
-) {
-  try {
-    const collection = db.collection('suspicious_behaviors');
-    const now = Date.now();
-
-    // 记录本次可疑行为
-    await collection.add({
-      uid,
-      reasons,
-      client_ip: clientInfo?.ip || 'unknown',
-      device_id: clientInfo?.deviceId || 'unknown',
-      created_at: now,
-      request_id: requestId
-    });
-
-    // 统计最近7天的可疑行为次数
-    const sevenDaysAgo = now - 7 * 24 * 60 * 60 * 1000;
-    const countResult = await collection
-      .where({
-        uid,
-        created_at: _.gt(sevenDaysAgo)
-      })
-      .count();
-
-    return countResult.total;
-  } catch (e) {
-    logger.error('[AntiCheat] 记录可疑行为失败:', e);
-    return 0;
-  }
-}
-
-/**
- * 封禁用户
- */
-async function banUser(uid: string, duration: number, reason: string, requestId: string) {
-  try {
-    const collection = db.collection('user_bans');
-    const now = Date.now();
-
-    await collection.add({
-      uid,
-      reason,
-      banned_at: now,
-      expires_at: now + duration,
-      request_id: requestId
-    });
-
-    logger.info(`[${requestId}] 用户封禁成功: ${uid}, 时长: ${duration / 1000 / 60 / 60}小时`);
-  } catch (e) {
-    logger.error('[AntiCheat] 封禁用户失败:', e);
-  }
-}
+// ✅ getWeekStart / getMonthStart 已迁移到 _shared/date-utils.ts
+// ✅ 防作弊函数已迁移到 _shared/anti-cheat.ts
+// 通过顶部 import 引入 performAntiCheatCheck
 
 // ==================== Phase 3-2: 实时 PK 房间管理 ====================
 
