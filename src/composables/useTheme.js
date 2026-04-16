@@ -2,10 +2,8 @@
  * 主题管理组合式函数
  * ✅ 5.4: 提取 index 和 practice 页面重复的主题逻辑
  *
- * 注意：stores/modules/theme.js (useThemeStore) 也管理主题状态，
- * 两者共享同一个 storage key ('theme_mode') 和事件 ('themeUpdate')，
- * 因此数据是兼容的。本模块是轻量级读写工具，store 提供完整主题配置。
- * 后续可考虑让本模块内部委托给 useThemeStore 以消除双源。
+ * 单一数据源：所有主题状态的读写都委托给 useThemeStore (Pinia)，
+ * 本模块仅提供轻量级的事件桥接和生命周期工具函数。
  *
  * 使用方式（Options API）：
  *   import { initTheme, toggleTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme'
@@ -16,9 +14,8 @@
  *   toggleTheme(isDark) 切换主题
  */
 
-// storage key 和事件名直接使用 uni API，无需 storageService（避免 key 前缀不一致）
+import { useThemeStore } from '@/stores/modules/theme.js';
 
-const THEME_KEY = 'theme_mode';
 const THEME_EVENT = 'themeUpdate';
 
 /**
@@ -34,31 +31,40 @@ export const NAV_BAR_COLORS = {
 const _registeredCallbacks = new Set();
 
 /**
- * 从本地存储读取当前主题
+ * 从 store 读取当前主题
  * @returns {boolean} 是否为深色模式
  */
 export function initTheme() {
-  // 直接用 uni.getStorageSync 读取，避免 storageService 前缀不一致问题
-  // App.vue switchTheme 用 uni.setStorageSync 写入，这里必须对齐
   try {
-    const saved = uni.getStorageSync(THEME_KEY) || 'light';
-    return saved === 'dark';
+    const themeStore = useThemeStore();
+    return themeStore.isDark;
   } catch (_e) {
-    return false;
+    // store 未初始化时降级读 storage（首次启动场景）
+    try {
+      const saved = uni.getStorageSync('theme_mode') || 'light';
+      return saved === 'dark';
+    } catch {
+      return false;
+    }
   }
 }
 
 /**
- * 切换主题并持久化 + 广播事件
+ * 切换主题 — 委托给 store 作为唯一写入源
  * @param {boolean} currentIsDark - 当前是否深色（切换前）
  * @returns {boolean} 切换后的 isDark
  */
 export function toggleTheme(currentIsDark) {
   const newIsDark = !currentIsDark;
-  const mode = newIsDark ? 'dark' : 'light';
-  // 直接用 uni.setStorageSync，与 App.vue switchTheme 保持一致
-  uni.setStorageSync(THEME_KEY, mode);
-  uni.$emit(THEME_EVENT, mode);
+  try {
+    const themeStore = useThemeStore();
+    themeStore.setDarkMode(newIsDark);
+  } catch (_e) {
+    // store 未初始化时降级直接写 storage
+    const mode = newIsDark ? 'dark' : 'light';
+    uni.setStorageSync('theme_mode', mode);
+    uni.$emit(THEME_EVENT, mode);
+  }
   return newIsDark;
 }
 
@@ -81,9 +87,9 @@ export function offThemeUpdate(callback) {
     _registeredCallbacks.delete(callback);
   } else {
     // 兼容旧调用方式：无参数时移除所有已注册的回调
-    for (const cb of _registeredCallbacks) {
+    _registeredCallbacks.forEach((cb) => {
       uni.$off(THEME_EVENT, cb);
-    }
+    });
     _registeredCallbacks.clear();
   }
 }

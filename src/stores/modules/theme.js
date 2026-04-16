@@ -7,6 +7,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { applyTheme } from '@/design/theme-engine.js';
 
 export const useThemeStore = defineStore('theme', () => {
   // 主题类型：'wise' | 'bitget'
@@ -32,7 +33,8 @@ export const useThemeStore = defineStore('theme', () => {
   };
 
   /**
-   * 切换深色模式
+   * 切换深色模式 — 唯一的主题写入入口
+   * 职责：更新 store 状态 → 持久化 → 渲染 DOM CSS 变量 → 通知订阅者
    * @param {boolean} dark - true 为深色模式，false 为浅色模式
    */
   const setDarkMode = (dark) => {
@@ -40,11 +42,17 @@ export const useThemeStore = defineStore('theme', () => {
     // 深色模式自动切换到 Bitget，浅色模式自动切换到 Wise
     themeType.value = dark ? 'bitget' : 'wise';
 
-    storageService.save('theme_mode', dark ? 'dark' : 'light');
+    const mode = dark ? 'dark' : 'light';
+
+    // 1. 持久化
+    storageService.save('theme_mode', mode);
     storageService.save('theme_type', themeType.value);
 
-    // 触发全局深色模式更新事件
-    uni.$emit('themeUpdate', dark ? 'dark' : 'light');
+    // 2. 渲染 DOM CSS 变量（委托 theme-engine 的纯渲染函数）
+    applyTheme(mode);
+
+    // 3. 通知所有订阅者（页面通过 uni.$on('themeUpdate') 监听）
+    uni.$emit('themeUpdate', mode);
 
     logger.log('[ThemeStore] 深色模式:', dark ? '开启 (Bitget)' : '关闭 (Wise)');
   };

@@ -136,7 +136,7 @@ export async function checkIdempotency(options: IdempotencyOptions): Promise<Ide
         return {
           isNew: false,
           isDuplicate: true,
-          previousResult: { code: 429, message: '请求正在处理中，请稍后' }
+          previousResult: { code: 429, success: false, message: '请求正在处理中，请稍后' }
         };
       }
 

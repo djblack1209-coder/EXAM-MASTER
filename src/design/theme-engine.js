@@ -5,7 +5,6 @@
  * 版本: v4.0.0 (Wise-Light / Bitget-Dark 双模，与 App.vue + _dark-mode-vars.scss 严格对齐)
  */
 
-import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 export const tokens = {
   // Wise-Light 模式 - 灰蓝底 + 白色卡片 + 柔和蓝强调 (对齐 App.vue :root)
@@ -497,30 +496,13 @@ export function watchTheme(callback) {
   }
 }
 
-/**
- * 切换主题并持久化
- * @param {string} theme
- * @returns {string}
- */
-export function toggleTheme(theme) {
-  const nextTheme =
-    theme === 'dark' ? 'dark' : theme === 'light' ? 'light' : getCurrentTheme() === 'dark' ? 'light' : 'dark';
-
-  try {
-    uni.setStorageSync('theme_mode', nextTheme);
-  } catch (_e) {
-    storageService.save('theme_mode', nextTheme);
-  }
-
-  applyTheme(nextTheme);
-  return nextTheme;
-}
+// toggleTheme 已移除 — 主题写入统一由 useThemeStore.setDarkMode() 负责
+// theme-engine 仅保留纯渲染函数 applyTheme 和只读查询 getCurrentTheme / watchTheme
 
 export default {
   tokens,
   v0Animations,
   applyTheme,
   getCurrentTheme,
-  watchTheme,
-  toggleTheme
+  watchTheme
 };

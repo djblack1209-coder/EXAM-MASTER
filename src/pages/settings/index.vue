@@ -340,7 +340,7 @@ import FriendsEntryCard from './FriendsEntryCard.vue';
 import LogoutButton from './LogoutButton.vue';
 import InviteModal from './InviteModal.vue';
 import PosterModal from './PosterModal.vue';
-import { setTheme, isNightTime } from './theme.js';
+import { isNightTime } from './theme.js';
 import { storageService } from '@/services/storageService.js';
 import { useSchoolStore } from '@/stores/modules/school';
 import { useProfileStore } from '@/stores/modules/profile';
@@ -628,9 +628,9 @@ const toggleVoice3d = (val) => {
 
 const _toggleDark = (e) => {
   isDark.value = e.detail.value;
-  const mode = isDark.value ? 'dark' : 'light';
-  // 使用主题工具函数统一处理
-  setTheme(mode);
+  // 委托 store 作为唯一写入源
+  const themeStore = useThemeStore();
+  themeStore.setDarkMode(isDark.value);
 
   const toastMsg = isDark.value
     ? isNightTime()
@@ -643,8 +643,9 @@ const _toggleDark = (e) => {
 // Em3dSwitch 版本（直接接收布尔值）
 const toggleDark3d = (val) => {
   isDark.value = val;
-  const mode = val ? 'dark' : 'light';
-  setTheme(mode);
+  // 委托 store 作为唯一写入源
+  const themeStore = useThemeStore();
+  themeStore.setDarkMode(val);
   const toastMsg = val ? (isNightTime() ? '已开启深色模式（护眼模式已激活）' : '已开启深色模式') : '已关闭深色模式';
   toast.info(toastMsg);
 };

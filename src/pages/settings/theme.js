@@ -78,7 +78,8 @@ export function getCurrentTheme() {
 }
 
 /**
- * 设置主题模式
+ * @deprecated 请使用 useThemeStore().setDarkMode() 代替
+ * 设置主题模式 — 已废弃，保留仅为向后兼容
  * @param {string} mode - 主题模式 'light' | 'dark'
  */
 export function setTheme(mode) {
