@@ -37,7 +37,7 @@ const TAG = '[useQuizFSRS]';
  *   previewRatings: (questionId: string) => Object|null,
  *   rateAndSchedule: (questionId: string, rating: number) => Object|null,
  *   formatInterval: (days: number) => string,
- *   scheduleMistakeForReview: (mistakeData: Object) => Object|null,
+ *   scheduleMistakeForReview: (mistakeData: Object, rating: 'again'|'hard'|'good'|'easy') => Object|null,
  *   triggerOptimize: () => void,
  * }}
  */
@@ -171,16 +171,17 @@ export function useQuizFSRS() {
    * 将错题安排进 FSRS 复习调度
    *
    * @param {Object} mistakeData - 错题数据（需包含 questionId、用户作答等信息）
-   * @returns {Object|null} 调度结果，失败返回 null
+   * @param {'again'|'hard'|'good'|'easy'} rating - 评分字符串
+   * @returns {Object|null} 调度结果（FSRS 字段对象），失败返回 null
    */
-  function scheduleMistakeForReview(mistakeData) {
+  function scheduleMistakeForReview(mistakeData, rating) {
     try {
       if (!mistakeData) {
         logger.warn(TAG, 'scheduleMistakeForReview: mistakeData 为空');
         return null;
       }
 
-      const result = scheduleMistakeReview(mistakeData);
+      const result = scheduleMistakeReview(mistakeData, rating);
       logger.log(TAG, '错题已加入复习调度', mistakeData?.questionId);
       return result;
     } catch (error) {
