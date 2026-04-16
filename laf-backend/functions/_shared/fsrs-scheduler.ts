@@ -289,6 +289,26 @@ export function convertFromSM2(sm2: SM2CardState): FSRSCardState {
   };
 }
 
+// ============ FSRS 遗忘曲线 ============
+
+/** FSRS 遗忘曲线常数（与 ts-fsrs FSRS5 默认值一致） */
+const FSRS_DECAY = -0.5;
+const FSRS_FACTOR = 19 / 81; // (0.9^(1/DECAY) - 1)
+
+/**
+ * 可提取性 R(t) — FSRS 遗忘曲线
+ * 公式: R(t,S) = (1 + FACTOR × t/S)^DECAY
+ * 来源: open-spaced-repetition/fsrs4anki
+ *
+ * @param elapsedDays 距上次复习的天数
+ * @param stability 记忆稳定性（天数）
+ * @returns 0~1 之间的可提取性值
+ */
+export function retrievability(elapsedDays: number, stability: number): number {
+  if (stability <= 0) return 0;
+  return Math.pow(1 + (FSRS_FACTOR * elapsedDays) / stability, FSRS_DECAY);
+}
+
 // ============ Internal Helpers ============
 
 /** SM-2 字段 → ts-fsrs Card（旧版有损路径） */
