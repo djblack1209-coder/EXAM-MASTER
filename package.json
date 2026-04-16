@@ -68,10 +68,12 @@
     "@traptitech/markdown-it-katex": "^3.6.0",
     "canvas-confetti": "^1.9.4",
     "katex": "^0.16.38",
+    "lottie-miniprogram": "^1.0.12",
     "markdown-it": "^14.1.1",
     "pinia": "2.1.7",
     "ts-fsrs": "^5.3.1",
     "vue": "3.4.21",
+    "vue-countup-v3": "^1.4.2",
     "wot-design-uni": "^1.14.0"
   },
   "devDependencies": {
