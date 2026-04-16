@@ -243,6 +243,72 @@ const PROVIDER_CONFIGS: Record<string, { url: string; model: string }> = {
 let _poolIndex = 0;
 const _providerCache = new Map<string, AIProvider>();
 
+// ==================== 熔断器（Circuit Breaker） ====================
+// 从 proxy-ai.ts 搬运并泛化：按 provider 名称（而非模型名）追踪健康状态
+
+interface CircuitState {
+  failures: number;
+  lastFailure: number;
+  circuitOpen: boolean;
+}
+
+const _circuitStates = new Map<string, CircuitState>();
+const CIRCUIT_THRESHOLD = 3; // 连续失败 N 次后熔断
+const CIRCUIT_RESET_MS = 120_000; // 熔断恢复时间：2分钟
+const RETRY_BASE_DELAY_MS = 1000; // 重试基础延迟（指数退避）
+const MAX_RETRIES = 2; // 最大重试次数
+
+/** 检查 provider 是否健康（未熔断或已过恢复期） */
+function isProviderHealthy(providerName: string): boolean {
+  const state = _circuitStates.get(providerName);
+  if (!state) return true;
+  if (state.circuitOpen) {
+    // 半开状态：恢复期已过，允许尝试
+    if (Date.now() - state.lastFailure > CIRCUIT_RESET_MS) {
+      state.circuitOpen = false;
+      state.failures = 0;
+      return true;
+    }
+    return false;
+  }
+  return true;
+}
+
+/** 记录 provider 调用失败 */
+function recordProviderFailure(providerName: string): void {
+  const state = _circuitStates.get(providerName) || { failures: 0, lastFailure: 0, circuitOpen: false };
+  state.failures++;
+  state.lastFailure = Date.now();
+  if (state.failures >= CIRCUIT_THRESHOLD) {
+    state.circuitOpen = true;
+    console.warn(`[CircuitBreaker] Provider ${providerName} 熔断，${CIRCUIT_RESET_MS / 1000}秒后尝试恢复`);
+  }
+  _circuitStates.set(providerName, state);
+}
+
+/** 记录 provider 调用成功（重置熔断状态） */
+function recordProviderSuccess(providerName: string): void {
+  _circuitStates.delete(providerName);
+}
+
+/** 获取所有 provider 的熔断状态（用于健康检查接口） */
+export function getCircuitBreakerStates(): Record<string, CircuitState> {
+  const result: Record<string, CircuitState> = {};
+  _circuitStates.forEach((state, name) => {
+    result[name] = { ...state };
+  });
+  return result;
+}
+
+/** 手动重置指定 provider 的熔断状态 */
+export function resetCircuitBreaker(providerName?: string): void {
+  if (providerName) {
+    _circuitStates.delete(providerName);
+  } else {
+    _circuitStates.clear();
+  }
+}
+
 // Agent角色 → 默认模型映射
 const ROLE_MODEL_MAP: Record<string, string> = {
   teacher: process.env.DEFAULT_TEACHER_MODEL || 'glm-4-plus',
@@ -308,6 +374,123 @@ export function getModelForRole(role: string): string {
 export function resetProviderCache(): void {
   _providerCache.clear();
   _poolIndex = 0;
+}
+
+// ==================== 带重试和降级的高级调用 ====================
+
+export interface ChatWithRetryOptions extends CompletionOptions {
+  /** 首选 provider 名称，默认 'zhipu' */
+  preferredProvider?: string;
+  /** 降级 provider 列表（按优先级排列），默认使用号池 */
+  fallbackProviders?: string[];
+  /** 最大重试次数，默认 MAX_RETRIES */
+  maxRetries?: number;
+  /** 调用标识（用于日志追踪） */
+  requestId?: string;
+}
+
+export interface ChatWithRetryResult extends CompletionResult {
+  /** 实际使用的 provider 名称 */
+  actualProvider: string;
+  /** 是否发生了降级 */
+  wasFallback: boolean;
+  /** 重试次数 */
+  retryCount: number;
+}
+
+/**
+ * 带重试、熔断和自动降级的 AI 调用
+ *
+ * 相当于给 AI 调用加了"保险丝"：
+ * - 某个 AI 供应商连续失败 3 次就暂时拉黑（熔断），2 分钟后自动恢复
+ * - 失败后自动切换到备用供应商（降级）
+ * - 每次重试间隔递增（指数退避），避免雪崩
+ */
+export async function chatWithRetry(
+  messages: ChatMessage[],
+  options: ChatWithRetryOptions = {}
+): Promise<ChatWithRetryResult> {
+  const {
+    preferredProvider = 'zhipu',
+    fallbackProviders,
+    maxRetries = MAX_RETRIES,
+    requestId = '',
+    ...completionOptions
+  } = options;
+
+  // 构建候选 provider 列表：首选 + 降级列表
+  const candidates: string[] = [preferredProvider];
+  if (fallbackProviders && fallbackProviders.length > 0) {
+    candidates.push(...fallbackProviders.filter((p) => p !== preferredProvider));
+  } else {
+    // 没有指定降级列表时，使用默认降级链
+    const defaultFallbacks = ['siliconflow', 'groq', 'gemini', 'cerebras'].filter((p) => p !== preferredProvider);
+    candidates.push(...defaultFallbacks);
+  }
+
+  let lastError: Error | null = null;
+  let retryCount = 0;
+
+  for (const candidateName of candidates) {
+    // 跳过已熔断的 provider
+    if (!isProviderHealthy(candidateName)) {
+      const prefix = requestId ? `[${requestId}] ` : '';
+      console.warn(`${prefix}[ChatWithRetry] Provider ${candidateName} 已熔断，跳过`);
+      continue;
+    }
+
+    let provider: AIProvider;
+    try {
+      provider = getProvider(candidateName);
+    } catch (_e) {
+      // provider 不可用（API Key 未配置等），跳过
+      continue;
+    }
+
+    // 对当前 provider 进行最多 maxRetries 次重试
+    for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
+      try {
+        const result = await provider.chat(messages, completionOptions);
+
+        // 成功：重置熔断状态
+        recordProviderSuccess(candidateName);
+
+        return {
+          ...result,
+          actualProvider: candidateName,
+          wasFallback: candidateName !== preferredProvider,
+          retryCount
+        };
+      } catch (err: any) {
+        lastError = err;
+        retryCount++;
+
+        const prefix = requestId ? `[${requestId}] ` : '';
+        console.warn(
+          `${prefix}[ChatWithRetry] Provider ${candidateName} 失败` +
+            ` (尝试 ${attempt}/${maxRetries + 1}): ${err.message}`
+        );
+
+        recordProviderFailure(candidateName);
+
+        // 最后一次重试不需要等待
+        if (attempt <= maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, RETRY_BASE_DELAY_MS * attempt));
+        }
+      }
+    }
+
+    // 当前 provider 耗尽重试次数，尝试下一个
+    const prefix = requestId ? `[${requestId}] ` : '';
+    console.warn(`${prefix}[ChatWithRetry] Provider ${candidateName} 耗尽重试，尝试降级`);
+  }
+
+  // 所有候选 provider 都失败了
+  throw new Error(
+    `[ChatWithRetry] 所有 AI 供应商均不可用` +
+      ` (尝试了 ${candidates.length} 个供应商, 共重试 ${retryCount} 次)` +
+      (lastError ? `: ${lastError.message}` : '')
+  );
 }
 
 // ==================== 余额监控 ====================
