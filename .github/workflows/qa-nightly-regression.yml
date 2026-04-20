@@ -109,6 +109,8 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: qa-nightly-web-reports
+          # 找不到文件时仅发出警告而不报错，避免因报告文件缺失导致整个 job 失败
+          if-no-files-found: warn
           path: |
             docs/reports/e2e-compat-results.json
             docs/reports/e2e-compat-results.xml
@@ -158,6 +160,8 @@ jobs:
         uses: actions/upload-artifact@v4.6.2
         with:
           name: qa-nightly-maestro-reports
+          # 找不到文件时仅发出警告而不报错
+          if-no-files-found: warn
           path: |
             docs/reports/maestro-results.xml
             docs/reports/maestro-web-smoke.xml
