@@ -5,7 +5,7 @@
     <!-- #endif -->
 
     <!-- #ifdef H5 -->
-    <view :id="canvasId" class="base-lottie__canvas" :style="canvasStyle"></view>
+    <view :id="canvasId" class="base-lottie__canvas" :style="canvasStyle" />
     <!-- #endif -->
   </view>
 </template>
