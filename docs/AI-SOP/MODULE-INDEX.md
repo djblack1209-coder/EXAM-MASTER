@@ -1,6 +1,6 @@
 # Module Index
 
-> Last updated: 2026-03-29 | AI-SOP Version: 1.0
+> Last updated: 2026-04-23 | AI-SOP Version: 1.1
 >
 > Use this file to quickly locate relevant files when fixing bugs or adding features.
 > Pattern: **When you need to fix: [problem]** → Look at: [files]
@@ -22,6 +22,10 @@
 - **Backend JWT logic**: `laf-backend/functions/_shared/auth.ts`
 - **Silent login in App.vue**: `src/App.vue` → `performSilentLogin()`
 
+### Onboarding / 新用户引导
+
+- **新用户引导页**: `src/pages/login/onboarding.vue` (1068 行，首次登录后的学科选择 + 目标设定引导流程)
+
 ### Token expired / 401 errors
 
 - **Auth failure handler**: `src/App.vue` → `initApiErrorInterceptor()`
@@ -35,8 +39,6 @@
 
 - **Quiz engine page**: `src/pages/practice-sub/do-quiz.vue` (3131 lines)
 - **Practice hub**: `src/pages/practice/index.vue` (1955 lines)
-- **Question renderer**: `src/pages/practice-sub/components/question-renderer/question-renderer.vue`
-- **Question choice**: `src/pages/practice-sub/components/QuestionChoice.vue`
 - **Quiz progress bar**: `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`
 - **Answer sheet**: `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`
 - **Quiz result**: `src/pages/practice-sub/components/quiz-result/quiz-result.vue` (全屏结果页，含AI推荐下一步+个性化点评，由do-quiz.vue集成)
@@ -47,7 +49,7 @@
 ### FSRS scheduling / spaced repetition issues
 
 - **FSRS service (frontend)**: `src/services/fsrs-service.js` (640 lines, singleton scheduler)
-- **FSRS optimizer client**: `src/services/fsrs-optimizer-client.js`
+- **FSRS optimizer client**: `src/pages/practice-sub/services/fsrs-optimizer-client.js`
 - **FSRS optimizer page**: `src/pages/study-detail/FSRSOptimizer.vue`
 - **Smart review page**: `src/pages/practice-sub/smart-review.vue`
 - **Backend FSRS scheduler**: `laf-backend/functions/_shared/fsrs-scheduler.ts`
@@ -66,15 +68,26 @@
 - **Backend answer submit**: `laf-backend/functions/answer-submit.yaml`
 - **Backend question bank**: `laf-backend/functions/question-bank.yaml`
 
+### Sprint mode / 冲刺模式
+
+- **冲刺模式页面**: `src/pages/practice-sub/sprint-mode.vue` (1041 行，限时刷题 + 倒计时 + 连击机制)
+
+### Error clusters / 错题聚类
+
+- **错题聚类分析页**: `src/pages/practice-sub/error-clusters.vue` (1355 行，按知识点聚合错题 + 薄弱分析)
+
 ---
 
 ## Knowledge Graph
 
 ### Knowledge graph not rendering
 
-- **Knowledge graph page**: `src/pages/knowledge-graph/index.vue` (1961 lines)
-- **Force graph component**: `src/pages/knowledge-graph/components/ForceGraph.vue`
-- **Knowledge engine**: `src/services/knowledge-engine.js` (684 lines)
+- **Knowledge graph page**: `src/pages/knowledge-graph/index.vue` (1961 行)
+- **Knowledge engine**: `src/pages/knowledge-graph/knowledge-engine.js` (684 行)
+
+### Mastery / 掌握度总览
+
+- **掌握度总览页**: `src/pages/knowledge-graph/mastery.vue` (1441 行，知识点掌握度可视化 + 复习建议)
 
 ---
 
@@ -82,8 +95,7 @@
 
 ### Chat not working
 
-- **Chat page**: `src/pages/chat/chat.vue` (2024 lines)
-- **Stream service**: `src/services/streamService.js`
+- **Chat page**: `src/pages/chat/chat.vue` (2024 行)
 - **Backend AI proxy**: `laf-backend/functions/proxy-ai.ts`
 - **Backend AI provider factory**: `laf-backend/functions/_shared/ai-providers/provider-factory.ts`
 
@@ -131,7 +143,6 @@
 
 ### Charts not displaying
 
-- **Study trend chart**: `src/components/charts/StudyTrend.vue`
 - **Study trend (detail)**: `src/pages/study-detail/StudyTrendChart.vue`
 - **Ability radar (detail)**: `src/pages/study-detail/AbilityRadar.vue`
 - **ECharts dependency**: `echarts` + `uni-echarts` packages
@@ -241,6 +252,10 @@
 - **Backend doc convert**: `laf-backend/functions/doc-convert.yaml`
 - **Image base64 util**: `src/utils/helpers/image-base64.js`
 
+### Focus timer / 专注计时
+
+- **专注计时页**: `src/pages/tools/focus-timer.vue` (568 行，番茄钟 + 学习时长统计)
+
 ---
 
 ## Study Plan / Goals
@@ -254,6 +269,10 @@
 - **Learning goal util**: `src/utils/learning/learning-goal.js`
 - **Backend learning goal**: `laf-backend/functions/learning-goal.ts`
 
+### Adaptive plan / 自适应学习计划
+
+- **自适应计划页**: `src/pages/plan/adaptive.vue` (1240 行，AI 根据学习数据动态调整每日计划)
+
 ---
 
 ## Study Stats / Detail
@@ -266,7 +285,7 @@
 - **Study store**: `src/stores/modules/study.js`
 - **Learning trajectory store**: `src/stores/modules/learning-trajectory-store.js`
 - **Gamification store**: `src/stores/modules/gamification.js`
-- **Learning analytics**: `src/utils/analytics/learning-analytics.js`
+- **Learning analytics**: `src/pages/practice-sub/utils/learning-analytics.js`
 - **Backend study stats**: `laf-backend/functions/study-stats.ts`
 - **Backend user stats**: `laf-backend/functions/user-stats.ts`
 
@@ -280,7 +299,7 @@
 - **Logger**: `src/utils/logger.js`
 - **Network monitor**: `src/utils/core/network-monitor.js`
 - **Offline queue**: `src/utils/core/offline-queue.js`
-- **Offline cache service**: `src/services/offline-cache-service.js`
+- **Offline cache service**: `src/pages/practice-sub/services/offline-cache-service.js`
 - **Offline indicator**: `src/components/common/offline-indicator.vue`
 
 ---
@@ -292,11 +311,11 @@
 - **Vite config**: `vite.config.js`
 - **Vitest config**: `vitest.config.js`
 - **ESLint config**: `eslint.config.js`
-- **Manifest**: `manifest.json`
+- **Manifest**: `src/manifest.json`
 - **Pages config**: `pages.json`
 - **Environment vars**: `.env`, `.env.development`, `.env.production`
 - **Build scripts**: `scripts/build/`
-- **Playwright configs**: `playwright.regression.config.js`, `playwright.visual.config.js`
+- **Playwright configs**: `playwright.regression.config.js`, `playwright.regression.compat.config.js`
 
 ---
 
