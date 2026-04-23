@@ -22,6 +22,8 @@ export default [
       'logs/**',
       'deploy/**',
       'vps-optimizer/**',
+      'unpackage/**',
+      'public/**',
       '*.min.js'
     ]
   },
