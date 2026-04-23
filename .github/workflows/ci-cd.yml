@@ -50,6 +50,9 @@ jobs:
           npm -v
           node -e "const c=require('node:crypto'); if (typeof c.hash !== 'function') { console.error('crypto.hash is unavailable, require Node.js >= 20.12'); process.exit(1); }"
 
+      - name: Install dependencies
+        run: npm ci --ignore-scripts || npm install --ignore-scripts
+
       - name: Run Laf source audit
         run: |
           if [ "${LAF_SOURCE_AUDIT_STRICT}" = "true" ]; then
@@ -57,9 +60,6 @@ jobs:
           else
             npm run audit:laf:function-sources
           fi
-
-      - name: Install dependencies
-        run: npm ci --ignore-scripts || npm install --ignore-scripts
 
       # husky prepare 在 CI 中不需要，跳过 prepare 脚本
       - name: Run ESLint
