@@ -13,7 +13,7 @@
  */
 
 import cloud from '@lafjs/cloud';
-import { success, serverError, generateRequestId, createLogger, checkRateLimit } from './_shared/api-response';
+import { success, serverError, generateRequestId, createLogger, checkRateLimitDistributed } from './_shared/api-response';
 
 const db = cloud.database();
 const logger = createLogger('[GetHomeData]');
@@ -52,7 +52,7 @@ export default async function (_ctx) {
   try {
     // 0. IP 限流防刷（公开接口，60次/分钟）
     const clientIp = _ctx?.headers?.['x-forwarded-for'] || _ctx?.ip || 'unknown';
-    const rateLimit = checkRateLimit(`home:${clientIp}`, 60, 60000);
+    const rateLimit = await checkRateLimitDistributed(`home:${clientIp}`, 60, 60000);
     if (!rateLimit.allowed) {
       logger.info(`[${requestId}] IP限流触发: ${clientIp}`);
       return { code: 429, success: false, message: '请求过于频繁，请稍后再试', data: null };
