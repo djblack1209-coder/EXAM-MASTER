@@ -1,6 +1,6 @@
 # EXAM-MASTER System Architecture
 
-> Last updated: 2026-03-22 | AI-SOP Version: 1.0
+> Last updated: 2026-04-23 | AI-SOP Version: 1.1
 
 ## High-Level Architecture Diagram
 
@@ -10,7 +10,7 @@
 │                                                                    │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐          │
 │  │  Pages    │  │Components│  │  Stores  │  │Composable│          │
-│  │ (36 pgs) │  │ (50+ vue)│  │ (Pinia)  │  │ (hooks)  │          │
+│  │ (45 pgs) │  │ (31 vue) │  │ (Pinia)  │  │ (hooks)  │          │
 │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘          │
 │       │              │             │              │                │
 │       └──────────────┴─────────────┴──────────────┘                │
@@ -23,11 +23,13 @@
 │  │  └────┬─────┘  └──────────┘  └──────────────┘        │        │
 │  │       │                                                │        │
 │  │  ┌────┴─────────────────────────────────────────┐     │        │
-│  │  │  api/domains/ (6 domain service files)        │     │        │
+│  │  │  api/domains/ (15 domain service files)       │     │        │
 │  │  │  ai | auth | practice | school | fav | social │     │        │
+│  │  │  group | invite | resource | smart-study      │     │        │
+│  │  │  stats | study | tools | user | _request-core │     │        │
 │  │  └────┬─────────────────────────────────────────┘     │        │
 │  │       │  ┌────────────────────────────┐                │        │
-│  │       ├──┤ api/core/request.js        │                │        │
+│  │       ├──┤ api/domains/_request-core  │                │        │
 │  │       │  │ (retry, cache, sign, dedup)│                │        │
 │  │       │  └────────────────────────────┘                │        │
 │  └───────┴───────────────────────────────────────────────┘        │
@@ -89,110 +91,145 @@
 
 ### Page Organization
 
-Pages are organized into a main package (4 tab pages) and 14 subPackages for WeChat MP size optimization:
+Pages are organized into a main package (5 pages including splash) and 16 subPackages for WeChat MP size optimization, total 45 registered pages:
 
-| Package           | Pages                                                                                                                           | Purpose                       |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| Main              | `index`, `practice`, `school`, `profile`                                                                                        | Tab bar pages (always loaded) |
-| `practice-sub`    | `do-quiz`, `pk-battle`, `rank`, `import-data`, `file-manager`, `mock-exam`, `smart-review`, `question-bank`, `diagnosis-report` | Practice features (9 pages)   |
-| `login`           | `index`, `wechat-callback`, `qq-callback`                                                                                       | Authentication (3 pages)      |
-| `settings`        | `index`, `privacy`, `terms`                                                                                                     | App settings (3 pages)        |
-| `school-sub`      | `detail`                                                                                                                        | School detail page            |
-| `social`          | `friend-list`, `friend-profile`                                                                                                 | Social features (2 pages)     |
-| `chat`            | `chat`                                                                                                                          | AI chat page                  |
-| `mistake`         | `index`                                                                                                                         | Mistake book                  |
-| `favorite`        | `index`                                                                                                                         | Favorites collection          |
-| `plan`            | `index`, `create`                                                                                                               | Study plan (2 pages)          |
-| `study-detail`    | `index`                                                                                                                         | Study statistics detail       |
-| `tools`           | `photo-search`, `doc-convert`, `id-photo`                                                                                       | Utility tools (3 pages)       |
-| `knowledge-graph` | `index`                                                                                                                         | Knowledge graph visualization |
-| `ai-classroom`    | `index`, `classroom`                                                                                                            | AI classroom (2 pages)        |
-| `onboarding`      | `index`                                                                                                                         | New user guide                |
+| Package           | Pages                                                                                                                                               | Purpose                                |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| Main              | `splash/index`, `index`, `practice`, `school`, `profile`                                                                                            | 启动页 + Tab bar pages (5 pages)       |
+| `practice-sub`    | `do-quiz`, `pk-battle`, `rank`, `import-data`, `question-bank`, `file-manager`, `mock-exam`, `diagnosis-report`, `smart-review`, `error-clusters`, `sprint-mode` | 练习功能 (11 pages)                    |
+| `school-sub`      | `detail`, `ai-consult`                                                                                                                              | 院校详情 + AI 咨询 (2 pages)           |
+| `login`           | `index`, `wechat-callback`, `qq-callback`, `onboarding`                                                                                             | 认证 + 新用户引导 (4 pages)            |
+| `settings`        | `index`, `privacy`, `terms`                                                                                                                         | 设置页 (3 pages)                       |
+| `social`          | `friend-list`, `friend-profile`                                                                                                                     | 社交功能 (2 pages)                     |
+| `chat`            | `chat`                                                                                                                                              | AI 聊天                                |
+| `mistake`         | `index`                                                                                                                                             | 错题本                                 |
+| `favorite`        | `index`                                                                                                                                             | 收藏夹                                 |
+| `plan`            | `index`, `create`, `adaptive`                                                                                                                       | 学习计划 (3 pages)                     |
+| `study-detail`    | `index`                                                                                                                                             | 学习统计详情                           |
+| `tools`           | `photo-search`, `id-photo`, `doc-convert`, `focus-timer`                                                                                            | 工具集合 (4 pages)                     |
+| `knowledge-graph` | `index`, `mastery`                                                                                                                                  | 知识图谱 + 掌握度 (2 pages)            |
+| `ai-classroom`    | `index`, `classroom`                                                                                                                                | AI 课堂 (2 pages)                      |
+| `group`           | `index`                                                                                                                                             | 学习小组                               |
+| `resource`        | `index`                                                                                                                                             | 学习资源                               |
+| `common`          | `404`                                                                                                                                               | 通用错误页                             |
+
+> 注：onboarding（新用户引导）位于 login 子包内，不是独立子包。
 
 ### Component Architecture
 
-Components are organized into 5 categories:
+Components are organized into 4 categories（共 31 个 .vue 文件）:
 
 ```
 src/components/
-├── base/              # Pure UI primitives (no business logic)
-│   ├── base-card/     # Generic card container
-│   ├── base-empty/    # Empty state display
-│   ├── base-icon/     # Icon component
-│   ├── base-skeleton/ # Loading skeleton
-│   └── school-skeleton/ # School-specific skeleton
-├── business/          # Domain-specific components
-│   ├── chat/          # ChatBox, MessageActions, ThinkingBlock, MarkdownRenderer, SuggestedReplies, SessionList
-│   ├── index/         # DailyGoalRing, StatsGrid, StudyHeatmap, WelcomeBanner, KnowledgeBubbleField, etc.
-│   ├── practice/      # PracticeConfigPanel, AchievementModal, SpeedReadyModal, AiGenerationOverlay, etc.
-│   ├── knowledge/     # ForceGraph (D3-like force simulation)
-│   └── school/        # SchoolSearchInput
-├── charts/            # ECharts wrappers
-│   ├── StudyTrend.vue
-│   ├── ForgettingCurve.vue
-│   └── SkillRadar.vue
-├── common/            # Shared utility components
+├── base/              # 纯 UI 基础组件（无业务逻辑）
+│   ├── base-card/     # 通用卡片容器
+│   ├── base-empty/    # 空状态展示
+│   ├── base-icon/     # 图标组件
+│   ├── base-skeleton/ # 加载骨架屏
+│   ├── em3d-switch/   # 3D 切换效果
+│   └── school-skeleton/ # 院校专用骨架屏
+├── business/          # 业务领域组件
+│   ├── index/         # 首页: AIDailyBriefing, ActivityList, DailyGoalRing,
+│   │                  #   FormulaModal, IndexHeaderBar, StatsGrid,
+│   │                  #   StudyHeatmap, StudyTimeCard, WelcomeBanner
+│   ├── practice/      # 练习: AchievementModal, AiGenerationOverlay,
+│   │                  #   GenerationProgressBar, GoalSettingModal,
+│   │                  #   LearningStatsCard, PauseBanner,
+│   │                  #   PracticeModesModal, QuizManageModal, SpeedReadyModal
+│   └── school/        # （不存在，院校相关组件已内联到页面中）
+├── common/            # 共享工具组件
 │   ├── CustomModal.vue
 │   ├── EmptyState.vue
-│   ├── TodoList.vue
-│   ├── share-modal.vue
 │   ├── ResumePracticeModal.vue
 │   ├── offline-indicator.vue
 │   ├── privacy-popup.vue
-│   └── MiniGuide.vue
-├── layout/
-│   └── custom-tabbar/ # Custom tab bar component
-└── SwipeCard.vue      # Swipeable card interaction
+│   └── share-modal.vue
+└── layout/
+    └── custom-tabbar/ # 自定义底部 Tab 栏
 ```
+
+> 注：聊天相关组件（MessageActions、ThinkingBlock）位于 `src/pages/chat/components/`，不在全局 components 目录下。
 
 ### Service Layer
 
 ```
 src/services/
-├── lafService.js              # Facade: merges all domain services into single export
-├── fsrs-service.js            # FSRS-5 spaced repetition scheduler (singleton)
-├── knowledge-engine.js        # Knowledge graph x FSRS fusion engine
-├── storageService.js          # Local storage abstraction (uni.setStorage)
-├── streamService.js           # SSE/streaming for AI chat
-├── auth-storage.js            # Auth token persistence
-├── checkin-streak.js          # Daily check-in streak tracking
-├── streak-recovery.js         # Streak recovery logic
-├── fsrs-optimizer-client.js   # Client for cloud FSRS parameter optimization
-├── offline-cache-service.js   # Offline data caching
-└── subscribe-message.js       # WeChat subscription messages
+├── lafService.js              # 门面模式：合并所有领域服务为单一导出
+├── fsrs-service.js            # FSRS-5 间隔重复调度器（单例）
+├── storageService.js          # 本地存储抽象层 (uni.setStorage)
+├── auth-storage.js            # 认证 token 持久化
+├── checkin-streak.js          # 每日打卡连续记录
+├── streak-recovery.js         # 连续打卡恢复逻辑
+├── subscribe-message.js       # 微信订阅消息
+└── api/
+    └── domains/               # API 领域服务（15 个文件）
+        ├── _request-core.js   # 请求核心（重试、缓存、签名、去重）
+        ├── ai.api.js          # AI 相关 API
+        ├── auth.api.js        # 认证 API
+        ├── favorite.api.js    # 收藏 API
+        ├── group.api.js       # 学习小组 API
+        ├── invite.api.js      # 邀请 API
+        ├── practice.api.js    # 练习 API
+        ├── resource.api.js    # 学习资源 API
+        ├── school.api.js      # 院校 API
+        ├── smart-study.api.js # 智能学习 API
+        ├── social.api.js      # 社交 API
+        ├── stats.api.js       # 统计 API
+        ├── study.api.js       # 学习 API
+        ├── tools.api.js       # 工具 API
+        └── user.api.js        # 用户 API
 ```
+
+> 注：以下服务已迁移到页面子包内部：
+> - `knowledge-engine.js` → `src/pages/knowledge-graph/knowledge-engine.js`
+> - `fsrs-optimizer-client.js` → `src/pages/practice-sub/services/fsrs-optimizer-client.js`
+> - `offline-cache-service.js` → `src/pages/practice-sub/services/offline-cache-service.js`
 
 ### Composables (Vue 3 Hooks)
 
 ```
-src/composables/
-├── useQuizAutoSave.js         # Quiz auto-save with debouncing
-├── useNavigation.js           # Safe page navigation utilities
-├── useTodo.js                 # Todo list CRUD operations
-├── usePracticeNavigation.js   # Practice-specific navigation
-├── useRecommendations.js      # Learning recommendations engine
-├── useLearningStyle.js        # Adaptive learning style detection
-└── useTheme.js                # Theme switching hook
+src/composables/               # 共 15 个 composable
+├── useBankStatus.js           # 题库状态检查
+├── useDailyQuote.js           # 每日一言
+├── useDynamicMixin.js         # 动态混入
+├── useHomeReview.js           # 首页复习推荐
+├── useHomeStats.js            # 首页统计数据
+├── useLearningStyle.js        # 自适应学习风格检测
+├── useNavigation.js           # 安全页面导航工具
+├── usePracticeNavigation.js   # 练习专用导航
+├── useQuizAutoSave.js         # 答题自动保存（带防抖）
+├── useRecommendations.js      # 学习推荐引擎
+├── useStudyTimer.js           # 学习计时器
+├── useStyleOnboarding.js      # 学习风格引导
+├── useTheme.js                # 主题切换 hook
+├── useTodo.js                 # 待办清单 CRUD
+└── useTracking.js             # 学习行为追踪
 ```
 
 ### Store Architecture (Pinia)
 
 ```
 src/stores/
-├── index.js                           # Re-exports all stores
-└── modules/
-    ├── user.js                        # Facade: composes auth + profile + vip + invite + social
-    ├── auth.js                        # Authentication state (token, isLogin, silentLogin)
-    ├── profile.js                     # User profile data
-    ├── vip.js                         # VIP membership status
-    ├── invite.js                      # Invite code & rewards
-    ├── study.js                       # Aggregate study metrics (total, correct, days, minutes)
-    ├── gamification.js                # XP, streaks, achievements, daily challenges
-    ├── theme.js                       # Theme type (wise/bitget) + dark mode
-    ├── app.js                         # Device info, network status, navbar
-    ├── school.js                      # Target school selection
-    ├── todo.js                        # Daily task list
-    └── learning-trajectory-store.js   # Fine-grained learning event stream
+├── index.js                           # 统一导出所有 store
+└── modules/                           # 共 18 个 store 模块
+    ├── user.js                        # 门面：组合 auth + profile + invite + social
+    ├── auth.js                        # 认证状态（token、isLogin、silentLogin）
+    ├── profile.js                     # 用户个人资料
+    ├── invite.js                      # 邀请码与奖励
+    ├── study.js                       # 聚合学习指标（总数、正确率、天数、分钟数）
+    ├── stats.js                       # 学习统计数据
+    ├── gamification.js                # 经验值、连续打卡、成就、每日挑战
+    ├── theme.js                       # 主题类型 (wise/bitget) + 深色模式
+    ├── school.js                      # 目标院校选择
+    ├── todo.js                        # 每日任务清单
+    ├── favorite.js                    # 收藏管理
+    ├── group.js                       # 学习小组
+    ├── practice-engine.js             # 练习引擎状态
+    ├── resource.js                    # 学习资源
+    ├── review.js                      # 复习状态
+    ├── study-engine.js                # 学习引擎
+    ├── tools.js                       # 工具状态
+    └── learning-trajectory-store.js   # 细粒度学习事件流
 ```
 
 ---
@@ -257,7 +294,7 @@ Each cloud function is a standalone HTTP endpoint deployed to Laf Cloud (Sealos)
 | `orchestration/state-machine.ts`    | Multi-agent state machine                                                |
 | `agents/teacher-agent.ts`           | Teacher agent behavior                                                   |
 | `agents/student-agent.ts`           | Student agent behavior                                                   |
-| `agents/examiner-agent.ts`          | Examiner agent behavior                                                  |
+| `agents/examiner-agent.ts`         | Examiner agent behavior                                                  |
 | `agents/agent-types.ts`             | Agent type definitions                                                   |
 | `ai-providers/provider-factory.ts`  | Multi-provider AI API rotation                                           |
 | `services/agent.service.ts`         | Agent orchestration service                                              |
@@ -340,7 +377,6 @@ Each cloud function is a standalone HTTP endpoint deployed to Laf Cloud (Sealos)
 │  lafService.deepMistakeAnalysis(mistakes)             │
 │  lafService.photoSearch(imageBase64)                  │
 │  lafService.aiFriendChat(messages, friendId)          │
-│  streamService.streamChat(messages, onChunk)          │
 └─────────────────────┬────────────────────────────────┘
                       │ HTTP POST
                       ▼
@@ -380,16 +416,16 @@ agent-orchestrator.ts
 
 ```
 src/styles/
-├── _design-tokens.scss          # Core SCSS variables (auto-injected via vite.config.js additionalData)
-├── _dark-mode-vars.scss         # Dark mode CSS variable overrides (@mixin dark-mode-vars)
-├── _wot-theme.scss              # wot-design-uni theme overrides
-└── button-animations.scss       # Global button press animations
+├── _design-tokens.scss          # 核心 SCSS 变量（通过 vite.config.js additionalData 自动注入）
+├── _dark-mode-vars.scss         # 深色模式 CSS 变量覆盖（@mixin dark-mode-vars）
+├── _wot-theme.scss              # wot-design-uni 主题覆盖
+└── button-animations.scss       # 全局按钮按压动画
 
 src/design/
-└── theme-engine.js              # Runtime theme switching (CSS class + CSS vars)
+└── theme-engine.js              # 运行时主题切换（CSS class + CSS vars）
 
-src/App.vue                      # Global styles: :root CSS variables, utility classes,
-                                 # Apple Glass effects, click feedback, dark mode transitions
+src/App.vue                      # 全局样式：:root CSS 变量、工具类、
+                                 # Apple Glass 效果、点击反馈、深色模式过渡
 ```
 
 ### Theme System
