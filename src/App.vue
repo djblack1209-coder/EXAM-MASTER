@@ -51,15 +51,8 @@ export default {
     applyTheme(currentTheme);
   },
   onHide() {
-    // 应用进入后台 — 保存学习时长等状态到本地存储，防止被系统回收时数据丢失
-    try {
-      const userStore = useUserStore();
-      if (userStore?.isLogin) {
-        userStore.persistState?.();
-      }
-    } catch (_e) {
-      // 静默处理：后台保存失败不影响用户
-    }
+    // 应用进入后台 — uni-app 生命周期钩子
+    // 当前无需额外操作：主题/用户状态已在各自 store 中实时持久化
   },
   methods: {
     /**
