@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "user_profiles",
+  "description": "用户档案集合 - 存储用户个性化参数（FSRS记忆模型参数、学习偏好等），与users表分离以减少热点写入",
+  "type": "object",
+  "required": ["user_id", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID（关联 users._id）",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "fsrs_params": {
+      "type": ["object", "null"],
+      "description": "FSRS 个性化记忆模型参数",
+      "properties": {
+        "w": {
+          "type": "array",
+          "description": "FSRS-5 权重参数（21个浮点数）",
+          "items": { "type": "number" },
+          "minItems": 21,
+          "maxItems": 21
+        },
+        "request_retention": {
+          "type": "number",
+          "description": "目标留存率（0-1 之间，如 0.9 代表 90%）",
+          "minimum": 0.7,
+          "maximum": 0.99,
+          "default": 0.9
+        },
+        "maximum_interval": {
+          "type": "integer",
+          "description": "最大复习间隔天数",
+          "default": 180,
+          "minimum": 1,
+          "maximum": 365
+        },
+        "optimized_at": {
+          "type": ["integer", "null"],
+          "description": "最近一次优化时间戳（毫秒级），用于冷却期判断"
+        },
+        "optimize_count": {
+          "type": "integer",
+          "description": "累计优化次数",
+          "default": 0,
+          "minimum": 0
+        },
+        "review_log_count": {
+          "type": "integer",
+          "description": "最近一次优化时使用的复习日志数量",
+          "default": 0,
+          "minimum": 0
+        }
+      }
+    },
+    "preferred_subjects": {
+      "type": ["array", "null"],
+      "description": "用户偏好的学科列表（用于个性化推荐）",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "difficulty_preference": {
+      "type": ["string", "null"],
+      "description": "难度偏好",
+      "enum": ["easy", "medium", "hard", "adaptive", null],
+      "default": "adaptive"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳（毫秒级 Unix timestamp）"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳（毫秒级 Unix timestamp）"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1 }, "unique": true, "name": "idx_user_id" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" }
+  ],
+  "examples": [
+    {
+      "_id": "up_001",
+      "user_id": "user_001",
+      "fsrs_params": {
+        "w": [0.4072, 1.1829, 3.1262, 15.4722, 7.2102, 0.5316, 1.0651, 0.0589, 1.533, 0.1544, 1.0347, 1.9395, 0.1091, 0.2943, 2.4888, 0.2975, 2.6772, 0.0553, 0.5225, 0.5485, 0.0],
+        "request_retention": 0.9,
+        "maximum_interval": 180,
+        "optimized_at": 1737792000000,
+        "optimize_count": 3,
+        "review_log_count": 520
+      },
+      "preferred_subjects": ["政治", "英语"],
+      "difficulty_preference": "adaptive",
+      "created_at": 1737792000000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

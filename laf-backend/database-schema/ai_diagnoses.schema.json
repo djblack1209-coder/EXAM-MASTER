@@ -1,0 +1,196 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ai_diagnoses",
+  "description": "AI诊断报告集合 - 存储刷题后AI生成的个性化学习诊断报告",
+  "type": "object",
+  "required": ["userId", "sessionId", "stats", "diagnosis", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "userId": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "sessionId": {
+      "type": "string",
+      "description": "练习会话ID（关联 practice_session_cache）",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "stats": {
+      "type": "object",
+      "description": "答题统计分析数据",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "description": "总答题数",
+          "minimum": 0
+        },
+        "correct": {
+          "type": "integer",
+          "description": "正确题数",
+          "minimum": 0
+        },
+        "accuracyPercent": {
+          "type": "integer",
+          "description": "正确率百分比（0-100）",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "categoryStats": {
+          "type": "array",
+          "description": "各科目统计",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "total": { "type": "integer" },
+              "correct": { "type": "integer" },
+              "accuracy": { "type": "integer" }
+            }
+          }
+        },
+        "difficultyStats": {
+          "type": "array",
+          "description": "各难度统计",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "total": { "type": "integer" },
+              "correct": { "type": "integer" },
+              "accuracy": { "type": "integer" }
+            }
+          }
+        },
+        "weakKnowledgePoints": {
+          "type": "array",
+          "description": "薄弱知识点（按错误次数排序）",
+          "items": {
+            "type": "object",
+            "properties": {
+              "point": { "type": "string" },
+              "errorCount": { "type": "integer" }
+            }
+          }
+        },
+        "avgDuration": {
+          "type": "integer",
+          "description": "平均答题时间（秒）",
+          "minimum": 0
+        }
+      }
+    },
+    "diagnosis": {
+      "type": "object",
+      "description": "AI生成的诊断结论",
+      "properties": {
+        "overallLevel": {
+          "type": "string",
+          "description": "总体水平评价（良好/一般/薄弱）"
+        },
+        "accuracy": {
+          "type": "integer",
+          "description": "正确率百分比"
+        },
+        "weakPoints": {
+          "type": "array",
+          "description": "薄弱点详细分析",
+          "items": {
+            "type": "object",
+            "properties": {
+              "knowledgePoint": { "type": "string", "description": "知识点名称" },
+              "errorPattern": { "type": "string", "description": "错误模式描述" },
+              "severity": { "type": "string", "enum": ["high", "medium", "low"], "description": "严重程度" },
+              "suggestion": { "type": "string", "description": "改进建议" }
+            }
+          }
+        },
+        "strongPoints": {
+          "type": "array",
+          "description": "强项知识点列表",
+          "items": { "type": "string" }
+        },
+        "errorPatterns": {
+          "type": "array",
+          "description": "错误模式归纳",
+          "items": { "type": "string" }
+        },
+        "studyPlan": {
+          "type": "object",
+          "description": "学习计划建议",
+          "properties": {
+            "immediate": { "type": "string", "description": "立即要做的事" },
+            "thisWeek": { "type": "string", "description": "本周计划" },
+            "suggestion": { "type": "string", "description": "综合建议" }
+          }
+        },
+        "encouragement": {
+          "type": "string",
+          "description": "鼓励语"
+        }
+      }
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳（毫秒级 Unix timestamp）"
+    }
+  },
+  "indexes": [
+    { "key": { "userId": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "userId": 1, "sessionId": 1 }, "name": "idx_user_session" },
+    { "key": { "sessionId": 1 }, "name": "idx_session" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" }
+  ],
+  "examples": [
+    {
+      "_id": "diag_001",
+      "userId": "user_001",
+      "sessionId": "session_20260125_001",
+      "stats": {
+        "total": 20,
+        "correct": 14,
+        "accuracyPercent": 70,
+        "categoryStats": [
+          { "name": "政治", "total": 10, "correct": 8, "accuracy": 80 },
+          { "name": "英语", "total": 10, "correct": 6, "accuracy": 60 }
+        ],
+        "difficultyStats": [
+          { "name": "easy", "total": 5, "correct": 5, "accuracy": 100 },
+          { "name": "medium", "total": 10, "correct": 7, "accuracy": 70 },
+          { "name": "hard", "total": 5, "correct": 2, "accuracy": 40 }
+        ],
+        "weakKnowledgePoints": [
+          { "point": "完形填空", "errorCount": 3 },
+          { "point": "阅读理解", "errorCount": 2 }
+        ],
+        "avgDuration": 35
+      },
+      "diagnosis": {
+        "overallLevel": "一般",
+        "accuracy": 70,
+        "weakPoints": [
+          {
+            "knowledgePoint": "完形填空",
+            "errorPattern": "固定搭配记忆不牢",
+            "severity": "high",
+            "suggestion": "重点复习高频固定搭配"
+          }
+        ],
+        "strongPoints": ["政治基础知识"],
+        "errorPatterns": ["易混淆选项辨析能力不足"],
+        "studyPlan": {
+          "immediate": "复习今日错题",
+          "thisWeek": "完形填空专项练习",
+          "suggestion": "建议每天完成2篇完形填空练习"
+        },
+        "encouragement": "继续加油，进步很明显！"
+      },
+      "created_at": 1737878400000
+    }
+  ]
+}

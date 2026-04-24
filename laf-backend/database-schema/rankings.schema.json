@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "rankings",
+  "description": "排行榜集合 - 存储用户积分排名数据（日榜/周榜/月榜/总榜）",
+  "type": "object",
+  "required": ["uid", "total_score", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "uid": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "nick_name": {
+      "type": "string",
+      "description": "用户昵称",
+      "default": "考研学子",
+      "maxLength": 32
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "用户头像URL",
+      "default": "",
+      "maxLength": 500
+    },
+    "total_score": {
+      "type": "integer",
+      "description": "累计总分",
+      "default": 0,
+      "minimum": 0
+    },
+    "daily_score": {
+      "type": "integer",
+      "description": "当日得分",
+      "default": 0,
+      "minimum": 0
+    },
+    "daily_date": {
+      "type": "string",
+      "description": "当日日期 (YYYY-MM-DD)，用于判断是否需要重置日榜分数",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "weekly_score": {
+      "type": "integer",
+      "description": "本周得分",
+      "default": 0,
+      "minimum": 0
+    },
+    "weekly_start": {
+      "type": "string",
+      "description": "本周起始日期 (YYYY-MM-DD)，用于判断是否需要重置周榜分数",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "monthly_score": {
+      "type": "integer",
+      "description": "本月得分",
+      "default": 0,
+      "minimum": 0
+    },
+    "monthly_start": {
+      "type": "string",
+      "description": "本月起始日期 (YYYY-MM-DD)，用于判断是否需要重置月榜分数",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "elo_score": {
+      "type": "integer",
+      "description": "ELO 对战积分（PK 对战使用）",
+      "default": 1000,
+      "minimum": 0
+    },
+    "pk_count": {
+      "type": "integer",
+      "description": "PK 对战总场次",
+      "default": 0,
+      "minimum": 0
+    },
+    "pk_wins": {
+      "type": "integer",
+      "description": "PK 对战胜场数",
+      "default": 0,
+      "minimum": 0
+    },
+    "version": {
+      "type": "integer",
+      "description": "乐观锁版本号，用于并发更新控制",
+      "default": 0,
+      "minimum": 0
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳（毫秒级 Unix timestamp）"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳（毫秒级 Unix timestamp）"
+    }
+  },
+  "indexes": [
+    { "key": { "uid": 1 }, "unique": true, "name": "idx_uid" },
+    { "key": { "total_score": -1 }, "name": "idx_total_score" },
+    { "key": { "daily_score": -1, "daily_date": 1 }, "name": "idx_daily_rank" },
+    { "key": { "weekly_score": -1, "weekly_start": 1 }, "name": "idx_weekly_rank" },
+    { "key": { "monthly_score": -1, "monthly_start": 1 }, "name": "idx_monthly_rank" },
+    { "key": { "elo_score": -1 }, "name": "idx_elo_rank" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" },
+    { "key": { "updated_at": -1 }, "name": "idx_updated_at" }
+  ],
+  "examples": [
+    {
+      "_id": "rank_001",
+      "uid": "user_001",
+      "nick_name": "考研小王",
+      "avatar_url": "https://api.dicebear.com/7.x/avataaars/png?seed=user001",
+      "total_score": 1500,
+      "daily_score": 80,
+      "daily_date": "2026-01-25",
+      "weekly_score": 350,
+      "weekly_start": "2026-01-20",
+      "monthly_score": 1200,
+      "monthly_start": "2026-01-01",
+      "elo_score": 1045,
+      "pk_count": 10,
+      "pk_wins": 6,
+      "version": 15,
+      "created_at": 1737792000000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

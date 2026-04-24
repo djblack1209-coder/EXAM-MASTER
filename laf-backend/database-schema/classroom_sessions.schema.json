@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "classroom_sessions",
+  "description": "课堂会话集合 - 存储用户参与AI互动课堂的实时状态和进度",
+  "type": "object",
+  "required": ["lessonId", "userId", "state", "startedAt"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "lessonId": {
+      "type": "string",
+      "description": "关联的课程ID（lessons._id）",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "userId": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "state": {
+      "type": "object",
+      "description": "课堂状态机当前状态",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "description": "会话唯一标识"
+        },
+        "lessonId": {
+          "type": "string",
+          "description": "课程ID"
+        },
+        "phase": {
+          "type": "string",
+          "description": "当前阶段",
+          "enum": ["lecturing", "questioning", "feedback", "completed"]
+        },
+        "currentSceneIndex": {
+          "type": "integer",
+          "description": "当前场景索引（从0开始）",
+          "minimum": 0
+        },
+        "turnCount": {
+          "type": "integer",
+          "description": "当前场景的交互轮次计数",
+          "minimum": 0
+        },
+        "messages": {
+          "type": "array",
+          "description": "当前场景的消息历史",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": { "type": "string" },
+              "content": { "type": "string" }
+            }
+          },
+          "default": []
+        }
+      }
+    },
+    "startedAt": {
+      "type": "integer",
+      "description": "会话开始时间戳（毫秒级）"
+    },
+    "lastActiveAt": {
+      "type": "integer",
+      "description": "最后活跃时间戳（毫秒级）"
+    },
+    "completedAt": {
+      "type": ["integer", "null"],
+      "description": "会话完成时间戳（毫秒级），未完成时为 null"
+    }
+  },
+  "indexes": [
+    { "key": { "lessonId": 1, "userId": 1 }, "name": "idx_lesson_user" },
+    { "key": { "userId": 1, "startedAt": -1 }, "name": "idx_user_started" },
+    { "key": { "lessonId": 1, "userId": 1, "completedAt": 1 }, "name": "idx_lesson_user_active" },
+    { "key": { "lastActiveAt": -1 }, "name": "idx_last_active" }
+  ],
+  "examples": [
+    {
+      "_id": "cs_001",
+      "lessonId": "lesson_001",
+      "userId": "user_001",
+      "state": {
+        "sessionId": "session_1737792000000_abc123",
+        "lessonId": "lesson_001",
+        "phase": "lecturing",
+        "currentSceneIndex": 0,
+        "turnCount": 2,
+        "messages": [
+          { "role": "assistant", "content": "同学好，今天我们来学习马克思主义哲学的基础知识。" },
+          { "role": "user", "content": "好的老师，请开始吧。" }
+        ]
+      },
+      "startedAt": 1737792000000,
+      "lastActiveAt": 1737792300000,
+      "completedAt": null
+    }
+  ]
+}

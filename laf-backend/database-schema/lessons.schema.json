@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "lessons",
+  "description": "AI课程集合 - 存储AI生成的多场景互动课程内容",
+  "type": "object",
+  "required": ["userId", "title", "topic", "subject", "status", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "userId": {
+      "type": "string",
+      "description": "创建课程的用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "title": {
+      "type": "string",
+      "description": "课程标题（格式：科目 - 主题）",
+      "maxLength": 200
+    },
+    "topic": {
+      "type": "string",
+      "description": "课程主题",
+      "maxLength": 200
+    },
+    "subject": {
+      "type": "string",
+      "description": "考研科目",
+      "maxLength": 50
+    },
+    "outline": {
+      "type": "array",
+      "description": "课程大纲（AI生成的章节列表）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "description": "章节标题" },
+          "summary": { "type": "string", "description": "章节摘要" },
+          "type": { "type": "string", "description": "场景类型" }
+        }
+      },
+      "default": []
+    },
+    "scenes": {
+      "type": "array",
+      "description": "场景内容列表（每个场景包含幻灯片、对话、测验等）",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "description": "场景类型（slide/dialogue/quiz 等）" },
+          "content": { "type": "object", "description": "场景具体内容" }
+        }
+      },
+      "default": []
+    },
+    "status": {
+      "type": "string",
+      "description": "课程生成状态",
+      "enum": ["generating", "ready", "failed"]
+    },
+    "progress": {
+      "type": "integer",
+      "description": "生成进度百分比（0-100）",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 100
+    },
+    "error": {
+      "type": ["string", "null"],
+      "description": "生成失败时的错误描述",
+      "maxLength": 500
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳（毫秒级 Unix timestamp）"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳（毫秒级 Unix timestamp）"
+    }
+  },
+  "indexes": [
+    { "key": { "userId": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "userId": 1, "status": 1 }, "name": "idx_user_status" },
+    { "key": { "status": 1 }, "name": "idx_status" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" }
+  ],
+  "examples": [
+    {
+      "_id": "lesson_001",
+      "userId": "user_001",
+      "title": "政治 - 马克思主义哲学",
+      "topic": "马克思主义哲学",
+      "subject": "政治",
+      "outline": [
+        { "title": "唯物论基础", "summary": "物质与意识的关系", "type": "slide" },
+        { "title": "辩证法核心", "summary": "对立统一规律", "type": "dialogue" }
+      ],
+      "scenes": [],
+      "status": "generating",
+      "progress": 20,
+      "error": null,
+      "created_at": 1737792000000,
+      "updated_at": 1737792300000
+    }
+  ]
+}

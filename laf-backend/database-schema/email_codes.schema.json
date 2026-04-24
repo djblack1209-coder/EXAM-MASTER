@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "email_codes",
+  "description": "邮箱验证码集合 - 存储邮箱登录/注册时发送的验证码记录",
+  "type": "object",
+  "required": ["email", "code", "used", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "email": {
+      "type": "string",
+      "description": "邮箱地址（已转小写）",
+      "format": "email",
+      "maxLength": 128
+    },
+    "code": {
+      "type": "string",
+      "description": "6位数字验证码",
+      "pattern": "^\\d{6}$",
+      "minLength": 6,
+      "maxLength": 6
+    },
+    "client_ip": {
+      "type": ["string", "null"],
+      "description": "发送请求的客户端IP地址，用于IP级别限流",
+      "maxLength": 45
+    },
+    "used": {
+      "type": "boolean",
+      "description": "验证码是否已被使用",
+      "default": false
+    },
+    "used_at": {
+      "type": ["integer", "null"],
+      "description": "验证码被使用的时间戳（毫秒级）"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳（毫秒级 Unix timestamp），验证码有效期为10分钟"
+    }
+  },
+  "indexes": [
+    { "key": { "email": 1, "created_at": -1 }, "name": "idx_email_created" },
+    { "key": { "email": 1, "code": 1, "used": 1 }, "name": "idx_email_code_used" },
+    { "key": { "client_ip": 1, "created_at": -1 }, "sparse": true, "name": "idx_ip_created" },
+    { "key": { "created_at": 1 }, "expireAfterSeconds": 86400, "name": "idx_ttl_24h" }
+  ],
+  "examples": [
+    {
+      "_id": "ec_001",
+      "email": "test@example.com",
+      "code": "385927",
+      "client_ip": "192.168.1.100",
+      "used": false,
+      "used_at": null,
+      "created_at": 1737792000000
+    }
+  ]
+}

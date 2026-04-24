@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "review_logs",
+  "description": "FSRS 复习日志集合 - 记录每次间隔重复复习的详细数据，用于参数优化和留存率分析",
+  "type": "object",
+  "required": ["user_id", "card_id", "card_type", "rating", "state", "review", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "card_id": {
+      "type": "string",
+      "description": "卡片ID（mistake_book._id 或 question_id）",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "card_type": {
+      "type": "string",
+      "description": "卡片来源类型",
+      "enum": ["mistake", "question"]
+    },
+    "rating": {
+      "type": "integer",
+      "description": "用户评分（1=Again/忘记, 2=Hard/困难, 3=Good/良好, 4=Easy/简单）",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "state": {
+      "type": "integer",
+      "description": "复习前的卡片状态（0=New/新卡, 1=Learning/学习中, 2=Review/复习, 3=Relearning/重新学习）",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "due": {
+      "type": "integer",
+      "description": "下次复习到期时间戳（毫秒级）"
+    },
+    "stability": {
+      "type": "number",
+      "description": "FSRS 稳定性参数（记忆保持力，单位天）",
+      "minimum": 0
+    },
+    "difficulty": {
+      "type": "number",
+      "description": "FSRS 难度参数（0-10 范围）",
+      "minimum": 0,
+      "maximum": 10
+    },
+    "elapsed_days": {
+      "type": "number",
+      "description": "距上次复习的间隔天数",
+      "minimum": 0
+    },
+    "scheduled_days": {
+      "type": "number",
+      "description": "本次计划的间隔天数",
+      "minimum": 0
+    },
+    "review": {
+      "type": "integer",
+      "description": "复习时间戳（毫秒级 Unix timestamp）"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "记录创建时间戳（毫秒级 Unix timestamp）"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "review": 1 }, "name": "idx_user_review" },
+    { "key": { "user_id": 1, "card_id": 1 }, "name": "idx_user_card" },
+    { "key": { "user_id": 1, "card_type": 1 }, "name": "idx_user_card_type" },
+    { "key": { "user_id": 1, "state": 1 }, "name": "idx_user_state" },
+    { "key": { "card_id": 1 }, "name": "idx_card_id" },
+    { "key": { "review": 1 }, "name": "idx_review_time" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" }
+  ],
+  "examples": [
+    {
+      "_id": "rl_001",
+      "user_id": "user_001",
+      "card_id": "mistake_001",
+      "card_type": "question",
+      "rating": 1,
+      "state": 0,
+      "due": 1737878400000,
+      "stability": 0,
+      "difficulty": 0,
+      "elapsed_days": 0,
+      "scheduled_days": 0,
+      "review": 1737792000000,
+      "created_at": 1737792000000
+    }
+  ]
+}
