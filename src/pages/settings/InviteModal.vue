@@ -87,6 +87,8 @@ import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 import config from '@/config';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { ASSETS } from '@/config/static-assets.js';
 
 const props = defineProps({
   inviteCode: {
@@ -149,7 +151,7 @@ function shareToWechat() {
       href: inviteLink.value,
       title: 'Exam-Master 考研神器',
       summary: '输入我的邀请码 ' + props.inviteCode + ' 领取会员！',
-      imageUrl: '/static/images/app-share-cover.png',
+      imageUrl: ASSETS.appShareCover,
       success: () => {
         toast.success('分享成功');
       },

@@ -103,7 +103,7 @@
         <!-- 搜索无结果插图 -->
         <image
           class="empty-illustration"
-          src="/static/illustrations/empty-search.png"
+          :src="getAssetUrl('illustrations', 'empty-search')"
           mode="aspectFit"
           lazy-load
           alt="搜索无结果"
@@ -129,6 +129,8 @@ import { useReviewStore } from '@/stores/modules/review.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
 import { toast } from '@/utils/toast.js';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { getAssetUrl } from '@/config/static-assets.js';
 
 // 暗色模式
 const isDark = ref(storageService.get('theme_mode', 'light') === 'dark');

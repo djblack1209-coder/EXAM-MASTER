@@ -506,6 +506,8 @@ import { logger } from '@/utils/logger.js';
 import { useReviewStore } from '@/stores/modules/review.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { ASSETS } from '@/config/static-assets.js';
 import MemoryStatsRow from './components/quiz-result/MemoryStatsRow.vue';
 import TutorFeedbackCard from './components/quiz-result/TutorFeedbackCard.vue';
 import QuizResult from './components/quiz-result/quiz-result.vue';
@@ -723,7 +725,7 @@ export default {
     return {
       title: '智能刷题 - Exam-Master 考研备考',
       path: '/pages/practice/index',
-      imageUrl: '/static/images/app-share-cover.png'
+      imageUrl: ASSETS.appShareCover
     };
   },
 

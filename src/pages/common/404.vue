@@ -3,7 +3,7 @@
     <!-- 吉祥物猫头鹰 -->
     <image
       class="error-illustration"
-      src="/static/illustrations/mascot-owl.png"
+      :src="getAssetUrl('illustrations', 'mascot-owl')"
       mode="aspectFit"
       alt="页面未找到插画"
     />
@@ -27,6 +27,8 @@
 /**
  * 404 错误页面 - 页面未找到
  */
+// 静态资源 CDN 映射（大图已迁出主包）
+import { getAssetUrl } from '@/config/static-assets.js';
 
 /** 返回首页 */
 function goHome() {

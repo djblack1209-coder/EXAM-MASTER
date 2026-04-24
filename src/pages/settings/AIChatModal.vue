@@ -17,7 +17,7 @@
         <view v-if="chatHistory.length <= 1" class="ai-welcome-block">
           <image
             class="ai-welcome-illustration"
-            src="/static/illustrations/ai-welcome.png"
+            :src="getAssetUrl('illustrations', 'ai-welcome')"
             mode="aspectFit"
             lazy-load
           />
@@ -94,6 +94,8 @@ import { logger } from '@/utils/logger.js';
 import { sanitizeAIChatInput, escapeHtml } from '@/utils/security/sanitize.js';
 import { useSchoolStore } from '@/stores/modules/school.js';
 import { useToolsStore } from '@/stores/modules/tools.js';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { getAssetUrl } from '@/config/static-assets.js';
 
 // 是否启用微信语音识别插件
 const ENABLE_WECHAT_SI_PLUGIN = false;

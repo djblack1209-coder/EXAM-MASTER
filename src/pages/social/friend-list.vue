@@ -110,7 +110,7 @@
           <!-- 搜索无结果插图 -->
           <image
             class="empty-search-illustration"
-            src="/static/illustrations/empty-search.png"
+            :src="getAssetUrl('illustrations', 'empty-search')"
             mode="aspectFit"
             lazy-load
           />
@@ -272,6 +272,8 @@ import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { getAssetUrl } from '@/config/static-assets.js';
 
 // ==================== 常量 ====================
 

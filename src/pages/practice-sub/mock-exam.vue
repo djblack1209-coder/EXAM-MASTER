@@ -316,6 +316,8 @@ import storageService from '@/services/storageService.js';
 import { useReviewStore } from '@/stores/modules/review.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { ASSETS } from '@/config/static-assets.js';
 
 // Store 实例
 const reviewStore = useReviewStore();
@@ -794,7 +796,7 @@ onHide(() => {
 onShareAppMessage(() => ({
   title: '模拟考试 - Exam-Master 考研备考',
   path: '/pages/practice-sub/mock-exam',
-  imageUrl: '/static/images/app-share-cover.png'
+  imageUrl: ASSETS.appShareCover
 }));
 </script>
 

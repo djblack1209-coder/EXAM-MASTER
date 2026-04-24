@@ -317,7 +317,7 @@
           <!-- 择校引导插画 -->
           <image
             class="empty-illustration"
-            src="/static/illustrations/school-guide.png"
+            :src="getAssetUrl('illustrations', 'school-guide')"
             mode="aspectFit"
             lazy-load
             alt="择校引导插画"
@@ -455,6 +455,8 @@ import config from '@/config/index.js';
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { getAssetUrl, ASSETS } from '@/config/static-assets.js';
 
 // P2-6: 默认院校列表提取为模块级冻结常量，避免每次调用创建新数组
 let _defaultSchools = null;
@@ -617,7 +619,7 @@ export default {
     return {
       title: '择校分析 - Exam-Master 考研备考',
       path: '/pages/school/index',
-      imageUrl: '/static/images/app-share-cover.png'
+      imageUrl: ASSETS.appShareCover
     };
   },
 
@@ -670,6 +672,8 @@ export default {
     }
   },
   methods: {
+    // 静态资源 CDN 映射（暴露给模板使用）
+    getAssetUrl,
     resetAnalysisMeta() {
       this.analysisMeta = {
         visible: false,

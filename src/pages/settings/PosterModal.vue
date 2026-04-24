@@ -27,7 +27,7 @@
 
       <view class="poster-content ds-flex-col ds-flex-center">
         <!-- 分享海报封面图 -->
-        <image class="poster-cover" src="/static/images/app-share-cover.png" mode="aspectFill" alt="分享海报封面" />
+        <image class="poster-cover" :src="ASSETS.appShareCover" mode="aspectFill" alt="分享海报封面" />
 
         <view class="poster-header ds-flex ds-gap-xs">
           <!-- 品牌Logo（本地图片） -->
@@ -98,6 +98,8 @@ import { posterGenerator } from './poster-generator.js';
 import { permissionHandler } from '@/utils/helpers/permission-handler.js';
 import config from '@/config';
 import { logger } from '@/utils/logger.js';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { ASSETS } from '@/config/static-assets.js';
 
 // icons8 图标 URL 生成器
 const icons8 = (style, size, color, name) =>
@@ -241,7 +243,7 @@ const handleShare = () => {
       type: 5, // 小程序类型
       title: 'Exam-Master 考研神器',
       summary: `输入邀请码 ${props.inviteCode} 领取会员！`,
-      imageUrl: '/static/images/app-share-cover.png',
+      imageUrl: ASSETS.appShareCover,
       success: () => {
         toast.success('分享成功');
         emit('shared');

@@ -28,7 +28,7 @@
               <!-- AI助手欢迎插画（替换原 robot 图标） -->
               <image
                 class="welcome-illustration"
-                src="/static/illustrations/ai-welcome.png"
+                :src="getAssetUrl('illustrations', 'ai-welcome')"
                 mode="aspectFit"
                 lazy-load
               />
@@ -120,6 +120,8 @@ import { useSchoolStore } from '@/stores/modules/school.js';
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { sanitizeAIChatInput } from '@/utils/security/sanitize.js';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { getAssetUrl } from '@/config/static-assets.js';
 
 // ==================== Props & Emits ====================
 const props = defineProps({
