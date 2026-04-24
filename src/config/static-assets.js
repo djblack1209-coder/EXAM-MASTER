@@ -51,15 +51,9 @@ const ASSET_REGISTRY = {
     'mascot-owl': 'illustrations/mascot-owl.png',
     'ai-welcome': 'illustrations/ai-welcome.png',
     'empty-search': 'illustrations/empty-search.png',
-    'empty-journey': 'illustrations/empty-journey.png',
-    'school-guide': 'illustrations/school-guide.png',
-    // 引导页插画（login 子包本地也有副本，CDN 作为备选）
-    'onboard-choose-exam': 'illustrations/onboard-choose-exam.png',
-    'onboard-set-goal': 'illustrations/onboard-set-goal.png',
-    'onboard-import': 'illustrations/onboard-import.png',
-    'onboard-ready': 'illustrations/onboard-ready.png',
-    // PK 对战等待插画（practice-sub 子包本地也有副本）
-    'pk-waiting': 'illustrations/pk-waiting.png'
+    'school-guide': 'illustrations/school-guide.png'
+    // 注意：empty-journey, onboard-*, pk-waiting 等插画
+    // 存在于各子包本地 static/ 目录，使用相对路径引用，不走 CDN
   },
 
   // ==================== 通用图片 ====================
