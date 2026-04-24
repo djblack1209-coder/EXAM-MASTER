@@ -69,39 +69,33 @@ export default async function (_ctx) {
     let formulas = DEFAULT_FORMULAS;
     let announcements: any[] = [];
 
-    try {
-      // 尝试读取金句集合
-      const quotesRes = await db.collection('home_quotes').where({ active: true }).limit(30).get();
-      if (quotesRes.data && quotesRes.data.length > 0) {
-        quotes = quotesRes.data.map((q: any) => ({
-          text: q.text,
-          author: q.author || '佚名'
-        }));
-      }
-    } catch (_e) {
-      // 集合不存在或查询失败，使用默认数据
-      logger.info(`[${requestId}] 金句集合不可用，使用默认数据`);
+    // 并行查询金句和公告，减少响应时间
+    const [quotesResult, announcementsResult] = await Promise.all([
+      db.collection('home_quotes').where({ active: true }).limit(30).get().catch((_e) => {
+        logger.info(`[${requestId}] 金句集合不可用，使用默认数据`);
+        return { data: [] };
+      }),
+      db.collection('announcements').where({ active: true }).orderBy('created_at', 'desc').limit(5).get().catch((_e) => {
+        // 公告集合不存在，返回空数组
+        return { data: [] };
+      })
+    ]);
+
+    if (quotesResult.data && quotesResult.data.length > 0) {
+      quotes = quotesResult.data.map((q: any) => ({
+        text: q.text,
+        author: q.author || '佚名'
+      }));
     }
 
-    try {
-      // 尝试读取公告
-      const announcementsRes = await db
-        .collection('announcements')
-        .where({ active: true })
-        .orderBy('created_at', 'desc')
-        .limit(5)
-        .get();
-      if (announcementsRes.data) {
-        announcements = announcementsRes.data.map((a: any) => ({
-          id: a._id,
-          title: a.title,
-          content: a.content,
-          type: a.type || 'info',
-          created_at: a.created_at
-        }));
-      }
-    } catch (_e) {
-      // 公告集合不存在，返回空数组
+    if (announcementsResult.data) {
+      announcements = announcementsResult.data.map((a: any) => ({
+        id: a._id,
+        title: a.title,
+        content: a.content,
+        type: a.type || 'info',
+        created_at: a.created_at
+      }));
     }
 
     const responseData = {
