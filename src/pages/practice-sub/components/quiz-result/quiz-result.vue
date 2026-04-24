@@ -134,7 +134,7 @@
 
         <!-- XP 金币飞出动画 -->
         <view v-if="showXpCoins && accuracy > 0" class="xp-coins-flyout" @animationend="onXpCoinsEnd">
-          <image class="xp-coins-img" src="/static/effects/xp-coins.png" mode="aspectFit" lazy-load />
+          <image class="xp-coins-img" src="../../static/effects/xp-coins.png" mode="aspectFit" lazy-load />
           <text class="xp-coins-label">+XP</text>
         </view>
 
