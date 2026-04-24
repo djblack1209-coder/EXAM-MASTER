@@ -19,7 +19,7 @@
     <!-- Logo区域 -->
     <view class="logo-section">
       <!-- P0: 移除冗余logo.png，吉祥物即品牌符号 -->
-      <image class="login-mascot" src="/static/illustrations/mascot-owl.png" mode="aspectFit" alt="猫头鹰吉祥物" />
+      <image class="login-mascot" :src="getAssetUrl('illustrations', 'mascot-owl')" mode="aspectFit" alt="猫头鹰吉祥物" />
       <!-- P1: 品牌名与Splash一致的双色风格 -->
       <view class="app-name-row">
         <text class="brand-exam">Exam</text>
@@ -290,6 +290,8 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import { getRetryCooldownSeconds, normalizeEmailAddress, resolveEmailAuthErrorMessage } from './email-auth-utils.js';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { getAssetUrl } from '@/config/static-assets.js';
 
 // 主题状态
 const isDark = ref(false);

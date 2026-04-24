@@ -141,7 +141,7 @@
         <image
           v-else
           class="feature-cartoon-icon btn-icon-img"
-          src="/static/icons/rocket-launch.png"
+          :src="getAssetUrl('icons', 'rocket-launch')"
           mode="aspectFit"
         />
         <text class="btn-text">
@@ -163,7 +163,7 @@
         <image
           v-else
           class="feature-cartoon-icon btn-icon-img"
-          src="/static/icons/crossed-swords.png"
+          :src="getAssetUrl('icons', 'crossed-swords')"
           mode="aspectFit"
         />
         <text class="btn-text"> PK 对战 </text>
@@ -232,7 +232,7 @@
       <view id="e2e-practice-menu-ai-tutor" class="menu-item" @tap="goAITutor">
         <view class="menu-icon">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" src="/static/icons/ai-chat.png" mode="aspectFit" alt="智能导师" />
+          <image class="feature-cartoon-icon" :src="getAssetUrl('icons', 'ai-chat')" mode="aspectFit" alt="智能导师" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 智能导师 </view>
@@ -259,7 +259,7 @@
       <view v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
         <view class="menu-icon">
           <!-- 卡通星标图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" src="/static/icons/star-badge.png" mode="aspectFit" alt="错题重练" />
+          <image class="feature-cartoon-icon" :src="getAssetUrl('icons', 'star-badge')" mode="aspectFit" alt="错题重练" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 错题重练 </view>
@@ -274,7 +274,7 @@
       <view id="e2e-practice-menu-rank" class="menu-item" @tap="goRank">
         <view class="menu-icon">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" src="/static/icons/trophy-cup.png" mode="aspectFit" alt="学霸排行榜" />
+          <image class="feature-cartoon-icon" :src="getAssetUrl('icons', 'trophy-cup')" mode="aspectFit" alt="学霸排行榜" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 学霸排行榜 </view>
@@ -457,6 +457,8 @@ import { usePracticeNavigation } from '@/composables/usePracticeNavigation.js';
 // ✅ [D002重构] 题库状态管理和动态 mixin 加载
 import { useBankStatus } from '@/composables/useBankStatus.js';
 import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
+// 静态资源 CDN 映射
+import { getAssetUrl, ASSETS } from '@/config/static-assets.js';
 
 export default {
   components: {
@@ -520,7 +522,10 @@ export default {
       _checkGenerationWithData: bankStatus.checkGenerationWithData,
       // ✅ [D002重构] 动态 mixin 方法
       _dynamicMixin: dynamicMixin,
-      dynamicMethodsCache: dynamicMixin.dynamicMethodsCache
+      dynamicMethodsCache: dynamicMixin.dynamicMethodsCache,
+      // 静态资源 CDN 映射（暴露给模板使用）
+      getAssetUrl,
+      ASSETS
     };
   },
   data() {
@@ -693,7 +698,7 @@ export default {
     return {
       title: '智能刷题 - Exam-Master 考研备考',
       path: '/pages/practice/index',
-      imageUrl: '/static/images/app-share-cover.png'
+      imageUrl: ASSETS.appShareCover
     };
   },
 

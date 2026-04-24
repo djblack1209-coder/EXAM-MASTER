@@ -3,8 +3,8 @@
     <view class="result-container">
       <!-- 完美得分庆祝：confetti-burst + star-sparkle 叠加动画（100%正确率触发，2.5s后淡出） -->
       <view v-if="showCelebration && accuracy >= 100" class="celebration-overlay" @animationend="onCelebrationEnd">
-        <image class="celebration-confetti" src="/static/effects/confetti-burst.png" mode="aspectFit" lazy-load />
-        <image class="celebration-sparkle" src="/static/effects/star-sparkle.png" mode="aspectFit" lazy-load />
+        <image class="celebration-confetti" src="../../static/effects/confetti-burst.png" mode="aspectFit" lazy-load />
+        <image class="celebration-sparkle" :src="getAssetUrl('effects', 'star-sparkle')" mode="aspectFit" lazy-load />
       </view>
 
       <!-- 顶部关闭 -->
@@ -24,7 +24,7 @@
           class="highscore-celebration"
           @animationend="onHighScoreEnd"
         >
-          <image class="highscore-sparkle" src="/static/effects/star-sparkle.png" mode="aspectFit" lazy-load />
+          <image class="highscore-sparkle" :src="getAssetUrl('effects', 'star-sparkle')" mode="aspectFit" lazy-load />
           <text class="celebration-emoji">🎉</text>
         </view>
 
@@ -148,6 +148,8 @@
 import { ref, computed, watch, onUnmounted } from 'vue';
 import { animateNumber } from '../../utils/micro-interactions.js';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
+// 静态资源 CDN 映射（大图已迁出主包）
+import { getAssetUrl } from '@/config/static-assets.js';
 
 const studyEngineStore = useStudyEngineStore();
 
