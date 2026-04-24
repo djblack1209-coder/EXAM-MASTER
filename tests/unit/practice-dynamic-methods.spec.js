@@ -92,7 +92,7 @@ describe('practice 动态方法加载', () => {
 
   it('_loadAIGenerationMixin 应先加载分包再注入方法', async () => {
     // ✅ [D002重构] 此方法已由 useDynamicMixin composable 提供
-    // 通过组件方法测试，需要提供 _dynamicMixin 上下文
+    // 通过组件方法测试，需要提供 dynamicMixinHelper 上下文
     const chooseImportSource = vi.fn(() => 'ok');
     const loadLearningStats = vi.fn(() => Promise.resolve());
 
@@ -108,7 +108,7 @@ describe('practice 动态方法加载', () => {
     const ctx = {
       _mixinLoaded: false,
       dynamicMethodsCache: {},
-      _dynamicMixin: mockDynamicMixin
+      dynamicMixinHelper: mockDynamicMixin
     };
 
     await PracticePage.methods._loadAIGenerationMixin.call(ctx);

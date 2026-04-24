@@ -518,10 +518,10 @@ export default {
       goFavorites,
       // ✅ [D002重构] 题库状态方法
       refreshBankStatus: bankStatus.refreshBankStatus,
-      _refreshBankWithData: bankStatus.refreshBankWithData,
-      _checkGenerationWithData: bankStatus.checkGenerationWithData,
+      refreshBankWithData: bankStatus.refreshBankWithData,
+      checkGenerationWithData: bankStatus.checkGenerationWithData,
       // ✅ [D002重构] 动态 mixin 方法
-      _dynamicMixin: dynamicMixin,
+      dynamicMixinHelper: dynamicMixin,
       dynamicMethodsCache: dynamicMixin.dynamicMethodsCache,
       // 静态资源 CDN 映射（暴露给模板使用）
       getAssetUrl,
@@ -624,8 +624,8 @@ export default {
     }
 
     // 关键路径：题库状态（UI 需要立即展示）
-    this._refreshBankWithData(bankData, userAnswers);
-    this._checkGenerationWithData(importedFiles, {
+    this.refreshBankWithData(bankData, userAnswers);
+    this.checkGenerationWithData(importedFiles, {
       isLooping: this.isLooping,
       startProgressTimer: () => this.startProgressTimer(),
       progressTimer: this.progressTimer
@@ -758,7 +758,7 @@ export default {
       return undefined;
     },
 
-    // ✅ [D002重构] refreshBankStatus, _refreshBankWithData, _checkGenerationWithData
+    // ✅ [D002重构] refreshBankStatus, refreshBankWithData, checkGenerationWithData
     // 已由 useBankStatus composable 提供（setup 返回）
 
     async hydrateMainPackageStats() {
@@ -1009,7 +1009,7 @@ export default {
 
     // ==================== 动态注入 Mixin 方法（由 useDynamicMixin composable 驱动）====================
     async _loadAIGenerationMixin(retryCount = 0) {
-      return this._dynamicMixin.loadAIGenerationMixin(this, retryCount);
+      return this.dynamicMixinHelper.loadAIGenerationMixin(this, retryCount);
     },
 
     // ==================== 以下方法由分包 mixin 动态注入 ====================
