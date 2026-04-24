@@ -118,11 +118,11 @@
 | School Detail | `src/pages/school-sub/detail.vue`     | 1417  | 院校详情 | Score lines, major info, admission stats |
 | AI Consult    | `src/pages/school-sub/ai-consult.vue` | —     | —        | AI school counseling                     |
 
-## Sub-Package: onboarding
+## Sub-Package: login (含 onboarding)
 
-| Page       | Path                             | Lines | Title    | Key Features                |
-| ---------- | -------------------------------- | ----- | -------- | --------------------------- |
-| Onboarding | `src/pages/onboarding/index.vue` | 742   | 新手引导 | Feature tour with driver.js |
+| Page       | Path                                | Lines | Title    | Key Features                |
+| ---------- | ----------------------------------- | ----- | -------- | --------------------------- |
+| Onboarding | `src/pages/login/onboarding.vue`    | —     | 新手引导 | Feature tour with driver.js |
 
 ## Page-Local Components
 
@@ -130,8 +130,6 @@ Some pages have co-located components in their directories:
 
 | Component          | Path                                                                        | Parent Page     |
 | ------------------ | --------------------------------------------------------------------------- | --------------- |
-| QuestionChoice     | `src/pages/practice-sub/components/QuestionChoice.vue`                      | do-quiz         |
-| question-renderer  | `src/pages/practice-sub/components/question-renderer/question-renderer.vue` | do-quiz         |
 | quiz-progress      | `src/pages/practice-sub/components/quiz-progress/quiz-progress.vue`         | do-quiz         |
 | answer-sheet       | `src/pages/practice-sub/components/answer-sheet/answer-sheet.vue`           | do-quiz         |
 | quiz-result        | `src/pages/practice-sub/components/quiz-result/quiz-result.vue`             | do-quiz         |
@@ -141,7 +139,7 @@ Some pages have co-located components in their directories:
 | base-loading       | `src/pages/practice-sub/components/base-loading/base-loading.vue`           | do-quiz         |
 | RichText           | `src/pages/practice-sub/components/RichText.vue`                            | do-quiz         |
 | EnhancedProgress   | `src/pages/practice-sub/EnhancedProgress.vue`                               | do-quiz         |
-| ForceGraph         | `src/pages/knowledge-graph/components/ForceGraph.vue`                       | knowledge-graph |
+| knowledge-graph.js | `src/pages/knowledge-graph/knowledge-graph.js`                             | knowledge-graph |
 | plan-skeleton      | `src/pages/plan/components/plan-skeleton/plan-skeleton.vue`                 | plan            |
 | mistake-skeleton   | `src/pages/mistake/components/mistake-skeleton/mistake-skeleton.vue`        | mistake         |
 | MistakeCard        | `src/pages/mistake/MistakeCard.vue`                                         | mistake         |

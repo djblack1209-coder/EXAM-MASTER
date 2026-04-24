@@ -318,14 +318,12 @@ This runs in sequence:
 
 ### Unit Tests (Vitest)
 
-- **Current Status**: Failing (254 failing tests out of ~300)
-- **Failure Reasons**:
+- **Current Status**: All passing (91 suites, 1168 tests)
+- **Historical Issues (已修复)**:
   - `JWT_SECRET_PLACEHOLDER
-  - Missing `JWT_SECRET_PLACEHOLDER
-  - `ReferenceError: logger is not defined` inside `src/services/api/domains/social.service.js` which breaks test cases (like `audit-ai-reality.spec.js`).
-  - Import errors. For instance, `regression-critical-fixes.spec.js` fails completely because it tries to import `@/pages/practice-sub/useQuizAutoSave.js` which no longer exists (moved to `composables/`).
-  - `TypeError: query.count is not a function` in `group-service` causing tests expecting valid responses to fail.
-  - Some expected HTTP response shapes and status codes do not match actual implementations (e.g. returning 500 instead of 400 or 404).
+  - `social.service.js` 已重命名为 `social.api.js`，import 路径已对齐。
+  - `useQuizAutoSave.js` 已迁移到 `composables/`，测试 import 已更新。
+  - HTTP 响应状态码已对齐实际实现。
 
 ### Visual Regression Tests (Playwright)
 

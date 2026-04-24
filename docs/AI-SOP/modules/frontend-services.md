@@ -77,7 +77,7 @@ const schools = await lafService.getSchoolList(params);
 
 | File                | Path                               | Lines | Purpose                              |
 | ------------------- | ---------------------------------- | ----- | ------------------------------------ |
-| knowledge-engine.js | `src/services/knowledge-engine.js` | 684   | Knowledge graph x FSRS fusion engine |
+| knowledge-engine.js | `src/pages/knowledge-graph/knowledge-engine.js` | —     | Knowledge graph x FSRS fusion engine |
 
 **Key exports:**
 
@@ -103,17 +103,9 @@ const schools = await lafService.getSchoolList(params);
 - `getUserId()` — Get current user ID from storage
 - `getStorageInfo()` — Get storage usage stats
 
-### Stream Service
+### Stream Service (已移除)
 
-| File             | Path                            | Lines | Purpose                   |
-| ---------------- | ------------------------------- | ----- | ------------------------- |
-| streamService.js | `src/services/streamService.js` | ~320  | SSE streaming for AI chat |
-
-**Key exports:**
-
-- `streamChat(messages, onChunk, onDone, onError)` — Stream AI response chunks
-- `parseSSEChunk(chunk)` — Parse Server-Sent Events format
-- `abortStream()` — Cancel ongoing stream
+> SSE 流式服务已移除，AI 聊天打字效果现由 `src/composables/useTypewriter.js` 纯前端实现。
 
 ---
 
@@ -125,8 +117,8 @@ const schools = await lafService.getSchoolList(params);
 | auth-storage.js          | `src/services/auth-storage.js`          | Auth token persistence (R18: 修复 `uni.getItem` → `localStorage.getItem`)                           |
 | checkin-streak.js        | `src/services/checkin-streak.js`        | Daily check-in streak calculation                                                                   |
 | streak-recovery.js       | `src/services/streak-recovery.js`       | Streak recovery (freeze, skip) logic                                                                |
-| fsrs-optimizer-client.js | `src/services/fsrs-optimizer-client.js` | Client for cloud FSRS parameter optimization                                                        |
-| offline-cache-service.js | `src/services/offline-cache-service.js` | Offline data caching + answer queue + sync; exports `saveOfflineAnswer`, `checkOfflineAvailability` |
+| fsrs-optimizer-client.js | `src/pages/practice-sub/services/fsrs-optimizer-client.js` | Client for cloud FSRS parameter optimization                                                        |
+| offline-cache-service.js | `src/pages/practice-sub/services/offline-cache-service.js` | Offline data caching + answer queue + sync; exports `saveOfflineAnswer`, `checkOfflineAvailability` |
 | subscribe-message.js     | `src/services/subscribe-message.js`     | WeChat subscription message API                                                                     |
 
 ---

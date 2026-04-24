@@ -45,13 +45,9 @@ useUserStore (facade)
 | State    | `userInfo` (ref), `planProgress` (ref)                  | Profile & learning progress |
 | Actions  | `setUserInfo()`, `updateProfile()`, `loadFromStorage()` | Profile management          |
 
-### useVipStore
+### useVipStore (已移除)
 
-| Property | Path                                                | Purpose         |
-| -------- | --------------------------------------------------- | --------------- |
-| File     | `src/stores/modules/vip.js`                         | VIP membership  |
-| State    | `vipStatus`, `vipLevel`, `vipExpiry`, `vipBenefits` | Membership info |
-| Computed | `isVip`, `vipDaysLeft`, `vipLevelName`              | Derived status  |
+> VIP 功能已整体移除。相关状态已合并到 useUserStore facade 中，独立的 vip.js 文件已删除。
 
 ### useInviteStore
 
@@ -92,13 +88,9 @@ useUserStore (facade)
 | Actions  | `setThemeType()`, `setDarkMode()`, `initFromStorage()`, `getThemeTokens()` | Theme switching     |
 | Events   | Emits `themeTypeUpdate` via uni.$emit                                      | Global notification |
 
-### useAppStore
+### useAppStore (已移除)
 
-| Property | Path                                                                                     | Purpose             |
-| -------- | ---------------------------------------------------------------------------------------- | ------------------- |
-| File     | `src/stores/modules/app.js`                                                              | App runtime context |
-| State    | `systemInfo`, `networkType`, `isLoading`, `navbarInfo`                                   | Device & network    |
-| Actions  | `setSystemInfo()`, `setNetworkType()`, `showLoading()`, `hideLoading()`, `initAppInfo()` | Runtime info        |
+> App 运行时上下文 store 已移除。系统信息和网络状态现由各 composable 局部管理。
 
 ### useSchoolStore
 
