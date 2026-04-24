@@ -3,7 +3,7 @@
  * 使用ts-fsrs实现科学的间隔重复复习调度，替代简单的+20/-10线性掌握度系统
  * 支持加载用户个性化FSRS参数（由后端 fsrs-optimizer 计算）
  *
- * [分包隔离副本] 与 pages/practice-sub/utils/mistake-fsrs-scheduler.js 内容完全相同。
+ * [分包隔离副本] 与 pages/study-detail/utils/mistake-fsrs-scheduler.js 内容完全相同。
  * 因微信小程序分包不能跨包引用，需在各分包维护独立副本。
  * 修改时请同步更新对应副本。
  */
