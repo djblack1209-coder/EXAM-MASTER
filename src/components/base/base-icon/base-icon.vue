@@ -8,6 +8,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { getIconPath } from './icons.js';
 import storageService from '@/services/storageService.js';
+import { logger } from '@/utils/logger.js';
 
 const props = defineProps({
   name: { type: String, default: 'info' },
@@ -43,6 +44,8 @@ function syncTheme() {
   try {
     themeMode.value = storageService.get('theme_mode', 'light') || 'light';
   } catch (_e) {
+    // 静默降级：图标加载失败不打扰用户
+    logger.warn('[BaseIcon] 主题读取失败，使用默认主题');
     themeMode.value = 'light';
   }
 }
