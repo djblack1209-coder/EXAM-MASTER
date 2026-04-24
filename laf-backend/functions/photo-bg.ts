@@ -46,6 +46,16 @@ const CONFIG = {
   maxFileSize: 10 * 1024 * 1024 // 最大 10MB
 };
 
+// ==================== 环境变量完整性检查 ====================
+const TENCENT_ENV_CHECK = [
+  { key: 'TENCENT_SECRET_ID', present: !!process.env.TENCENT_SECRET_ID },
+  { key: 'TENCENT_SECRET_KEY', present: !!process.env.TENCENT_SECRET_KEY }
+];
+const missingTencentVars = TENCENT_ENV_CHECK.filter((r) => !r.present).map((r) => r.key);
+if (missingTencentVars.length > 0) {
+  logger.warn(`⚠️ 缺少环境变量: ${missingTencentVars.join(', ')}。证件照换背景功能将不可用。`);
+}
+
 // 证件照尺寸配置（单位：像素，300dpi）
 const PHOTO_SIZES = {
   '1inch': { width: 295, height: 413, name: '一寸', desc: '25×35mm', ratio: 0.714 },

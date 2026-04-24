@@ -409,6 +409,8 @@ async function handleCheck(userId: string, _data: Record<string, unknown>, reque
   // 检查每个未解锁成就
   const newlyUnlocked = [];
 
+  const now = Date.now();
+
   for (const ach of ACHIEVEMENTS) {
     if (unlockedIds.has(ach.id)) continue;
 
@@ -416,24 +418,28 @@ async function handleCheck(userId: string, _data: Record<string, unknown>, reque
     const currentValue = metrics[type] || 0;
 
     if (currentValue >= value) {
-      // 满足条件，自动解锁
-      const now = Date.now();
-      await db
-        .collection('users')
-        .doc(userId)
-        .update({
-          achievements: _.push({
-            id: ach.id,
-            name: ach.name,
-            icon: ach.icon,
-            unlocked_at: now
-          }),
-          updated_at: now
-        });
-
+      // 满足条件，记录待解锁成就
       newlyUnlocked.push({ ...ach, unlocked_at: now });
       logger.info(`[${requestId}] 自动解锁成就: ${ach.id}`);
     }
+  }
+
+  // 批量写入：将所有新解锁的成就合并为一次数据库更新，避免 N+1 写入问题
+  if (newlyUnlocked.length > 0) {
+    const achievementRecords = newlyUnlocked.map((ach) => ({
+      id: ach.id,
+      name: ach.name,
+      icon: ach.icon,
+      unlocked_at: now
+    }));
+
+    await db
+      .collection('users')
+      .doc(userId)
+      .update({
+        achievements: _.push(...achievementRecords),
+        updated_at: now
+      });
   }
 
   return success(
