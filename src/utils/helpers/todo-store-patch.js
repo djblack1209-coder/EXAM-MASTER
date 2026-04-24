@@ -13,6 +13,7 @@
 // 存储键名
 import storageService from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
+import { useTodoStore } from '@/stores/modules/todo.js';
 const STORAGE_KEY = 'todo_tasks_v2';
 
 /**
@@ -288,7 +289,21 @@ export const todoStorePatch = {
       cancelText: '稍后',
       success: (res) => {
         if (res.confirm) {
-          // 标记完成（事件已移除，后续可接入 store 方法）
+          // 用户点击"完成"，将该待办标记为已完成
+          try {
+            const todoStore = useTodoStore();
+            const task = todoStore.tasks.find((t) => t.id === todo.id);
+            if (task && !task.done) {
+              // 任务未完成时才切换状态，避免重复操作
+              todoStore.toggleTask(todo.id);
+            }
+            // 取消该待办的后续提醒
+            this.cancelReminder(todo.id);
+            uni.showToast({ title: '已完成', icon: 'success' });
+            logger.log('[TodoStorePatch] 提醒确认完成:', todo.title);
+          } catch (e) {
+            logger.error('[TodoStorePatch] 标记完成失败:', e);
+          }
         } else {
           // 延后提醒（15分钟后）
           setTimeout(
