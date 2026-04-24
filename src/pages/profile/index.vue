@@ -93,7 +93,7 @@
               <image
                 v-else
                 class="avatar-image avatar-default"
-                src="/static/images/default-avatar.png"
+                :src="ASSETS.defaultAvatar"
                 alt="头像"
                 mode="aspectFill"
               />
@@ -132,7 +132,7 @@
                 <!-- 卡通图标替代装饰性 BaseIcon -->
                 <image
                   class="feature-cartoon-icon"
-                  src="/static/icons/clock-timer.png"
+                  :src="getAssetUrl('icons', 'clock-timer')"
                   mode="aspectFit"
                   alt="学习天数"
                 />
@@ -152,7 +152,7 @@
                 <!-- 卡通图标替代装饰性 BaseIcon -->
                 <image
                   class="feature-cartoon-icon"
-                  src="/static/icons/trophy-cup.png"
+                  :src="getAssetUrl('icons', 'trophy-cup')"
                   mode="aspectFit"
                   alt="获得勋章"
                 />
@@ -172,7 +172,7 @@
                 <!-- 卡通图标替代装饰性 BaseIcon -->
                 <image
                   class="feature-cartoon-icon"
-                  src="/static/icons/target-bullseye.png"
+                  :src="getAssetUrl('icons', 'target-bullseye')"
                   mode="aspectFit"
                   alt="正确率"
                 />
@@ -237,7 +237,7 @@
                 <!-- 卡通火焰图标替代装饰性 BaseIcon -->
                 <image
                   class="streak-flame-icon"
-                  src="/static/icons/flame-streak.png"
+                  :src="getAssetUrl('icons', 'flame-streak')"
                   mode="aspectFit"
                   alt="连续打卡火焰"
                 />
@@ -322,7 +322,7 @@
             <view class="menu-icon-box">
               <image
                 class="feature-cartoon-icon"
-                src="/static/icons/crossed-swords.png"
+                :src="getAssetUrl('icons', 'crossed-swords')"
                 mode="aspectFit"
                 alt="学习小组"
               />
@@ -339,7 +339,7 @@
             <view class="menu-icon-box">
               <image
                 class="feature-cartoon-icon"
-                src="/static/icons/bookmark-save.png"
+                :src="getAssetUrl('icons', 'bookmark-save')"
                 mode="aspectFit"
                 alt="学习资源"
               />
@@ -475,6 +475,8 @@ import { useThemeStore } from '@/stores/modules/theme.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
 // H025 FIX: 头像上传走 Service 层
 import { uploadAvatar } from '@/services/api/domains/user.api.js';
+// 静态资源 CDN 映射
+import { getAssetUrl, ASSETS } from '@/config/static-assets.js';
 
 // L6: 版本号从统一配置读取
 const appVersion = config.appVersion || '1.0.0';
@@ -1067,7 +1069,7 @@ const _userInfoHandler = (info) => {
 onShareAppMessage(() => ({
   title: '个人中心 - Exam-Master 考研备考',
   path: '/pages/profile/index',
-  imageUrl: '/static/images/app-share-cover.png'
+  imageUrl: ASSETS.appShareCover
 }));
 
 onMounted(async () => {
