@@ -1,6 +1,6 @@
 {
   "name": "exam-master",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "考研备考小程序 - AI助力，一战成硕",
   "type": "module",
   "main": "main.js",

@@ -49,7 +49,7 @@ export default async function (ctx) {
     const authResult = requireAuth(ctx);
     if (!isAuthError(authResult)) {
       if (claimedUserId && authResult.userId !== claimedUserId) {
-        return { code: 403, success: false, message: '身份验证失败', requestId };
+        return { code: 403, success: false, message: '身份验证失败', requestId, timestamp: Date.now() };
       }
       authUserId = authResult.userId;
     }
@@ -58,14 +58,14 @@ export default async function (ctx) {
     if (!action) {
       // 未认证且缺少action → 返回401，不暴露参数要求
       if (!authUserId) {
-        return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
+        return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId, timestamp: Date.now() };
       }
-      return { code: 400, success: false, message: '缺少 action 参数', requestId };
+      return { code: 400, success: false, message: '缺少 action 参数', requestId, timestamp: Date.now() };
     }
 
     // 非公开操作需要认证
     if (!authUserId && !publicActions.has(action)) {
-      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId };
+      return { code: 401, success: false, message: '缺少认证 token，请重新登录', requestId, timestamp: Date.now() };
     }
 
     const clientIp =
@@ -85,33 +85,44 @@ export default async function (ctx) {
         success: false,
         message: '请求过于频繁，请稍后再试',
         retryAfter: Math.max(1, Math.ceil((rateLimit.resetAt - Date.now()) / 1000)),
-        requestId
+        requestId,
+        timestamp: Date.now()
       };
     }
 
     logger.info(`[${requestId}] 题库查询: action=${action}`);
 
+    // 统一为所有响应注入 timestamp，保持与 api-response 标准格式一致
+    let result;
+
     switch (action) {
       case 'get':
-        return await getQuestions(data, requestId, Boolean(authUserId));
+        result = await getQuestions(data, requestId, Boolean(authUserId));
+        break;
       case 'random':
-        return await getRandomQuestions(data, requestId, Boolean(authUserId));
+        result = await getRandomQuestions(data, requestId, Boolean(authUserId));
+        break;
       case 'getByIds':
-        return await getQuestionsByIds(data, requestId, Boolean(authUserId));
+        result = await getQuestionsByIds(data, requestId, Boolean(authUserId));
+        break;
       case 'get_stats':
-        return await getCategoryStats(requestId);
+        result = await getCategoryStats(requestId);
+        break;
       case 'seed_preset': {
         // 预置题目导入是危险操作，必须验证管理员权限
         const adminAuth = requireAdminAccess(ctx, { allowBodyFallback: true });
         if (!adminAuth.ok) {
-          return { code: adminAuth.code, success: false, message: adminAuth.message || '需要管理员权限', requestId };
+          return { code: adminAuth.code, success: false, message: adminAuth.message || '需要管理员权限', requestId, timestamp: Date.now() };
         }
-        return await seedPresetQuestions(data, requestId);
+        result = await seedPresetQuestions(data, requestId);
+        break;
       }
 
       default:
-        return { code: 400, success: false, message: `未知的 action: ${action}`, requestId };
+        return { code: 400, success: false, message: `未知的 action: ${action}`, requestId, timestamp: Date.now() };
     }
+
+    return { ...result, timestamp: Date.now() };
   } catch (error) {
     logger.error(`[${requestId}] 题库查询异常:`, error);
     return {
@@ -119,7 +130,8 @@ export default async function (ctx) {
       success: false,
       message: '服务异常，请稍后重试',
       requestId,
-      duration: Date.now() - startTime
+      duration: Date.now() - startTime,
+      timestamp: Date.now()
     };
   }
 }
