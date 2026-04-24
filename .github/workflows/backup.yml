@@ -48,7 +48,7 @@ jobs:
     environment: production
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v3
@@ -97,7 +97,7 @@ jobs:
           echo "Backup uploaded: ${{ steps.backup.outputs.backup_file }}"
 
       - name: Upload backup artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: ${{ steps.backup.outputs.backup_name }}
           path: ${{ steps.backup.outputs.backup_file }}

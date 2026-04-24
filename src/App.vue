@@ -51,7 +51,15 @@ export default {
     applyTheme(currentTheme);
   },
   onHide() {
-    // 应用进入后台
+    // 应用进入后台 — 保存学习时长等状态到本地存储，防止被系统回收时数据丢失
+    try {
+      const userStore = useUserStore();
+      if (userStore?.isLogin) {
+        userStore.persistState?.();
+      }
+    } catch (_e) {
+      // 静默处理：后台保存失败不影响用户
+    }
   },
   methods: {
     /**
