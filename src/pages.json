@@ -3,7 +3,9 @@
     "autoscan": true,
     "custom": {
       "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue",
-      "^OfflineIndicator$": "@/components/common/offline-indicator.vue"
+      "^OfflineIndicator$": "@/components/common/offline-indicator.vue",
+      "^BaseIcon$": "@/components/base/base-icon/base-icon.vue",
+      "^[Ee]m3d-switch$": "@/components/base/em3d-switch/em3d-switch.vue"
     }
   },
   "pages": [
