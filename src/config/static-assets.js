@@ -19,7 +19,7 @@ import config from '@/config';
  * CDN 基础地址（末尾不含斜杠）
  * 例如：https://nf98ia8qnt.sealosbja.site/static
  */
-const CDN_BASE = config.cdn.url ? config.cdn.url.replace(/\/+$/, '') : '';
+const CDN_BASE = config?.cdn?.url ? config.cdn.url.replace(/\/+$/, '') : '';
 
 /**
  * 是否启用 CDN（配置了 CDN 地址则启用）

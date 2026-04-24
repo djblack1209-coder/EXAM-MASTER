@@ -151,13 +151,13 @@
                 >
                   <image
                     class="target-avatar"
-                    :src="school.logo || '/static/images/default-avatar.png'"
+                    :src="school.logo || DEFAULT_AVATAR"
                     alt="Exam Master"
                     mode="aspectFill"
                     lazy-load
                     @error="
                       (e) => {
-                        e.target && (e.target.src = '/static/images/default-avatar.png');
+                        e.target && (e.target.src = DEFAULT_AVATAR);
                       }
                     "
                   />
@@ -201,7 +201,7 @@
     <view class="section">
       <view class="invite-entry-card apple-group-card" @tap="openInviteModal">
         <view class="invite-entry-left">
-          <image class="feature-cartoon-icon" src="/static/icons/share-arrow.png" mode="aspectFit" alt="邀请好友" />
+          <image class="feature-cartoon-icon" src="./static/icons/share-arrow.png" mode="aspectFit" alt="邀请好友" />
           <view class="invite-entry-info">
             <text class="setting-title ds-text-sm ds-font-medium">邀请好友一起备考</text>
             <text class="setting-desc ds-text-xs">邀请好友可获得 VIP 体验天数奖励</text>
@@ -357,7 +357,7 @@ onErrorCaptured((err, instance, info) => {
 });
 
 // 统一默认头像
-const DEFAULT_AVATAR = '/static/images/default-avatar.png';
+const DEFAULT_AVATAR = ASSETS.defaultAvatar;
 import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { filePathToBase64, inferImageMimeType } from '@/utils/helpers/image-base64.js';
 // H025 FIX: 头像上传走 Service 层
@@ -365,6 +365,8 @@ import { uploadAvatar } from '@/services/api/domains/user.api.js';
 import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { sanitizeInput } from '@/utils/security/sanitize.js';
+// 静态资源 CDN 映射
+import { ASSETS } from '@/config/static-assets.js';
 
 // 初始化 Store
 const schoolStore = useSchoolStore();

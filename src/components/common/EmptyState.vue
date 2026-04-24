@@ -106,6 +106,7 @@ import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import storageService from '@/services/storageService.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { getAssetUrl } from '@/config/static-assets.js';
 
 // ==================== Props 定义 ====================
 const props = defineProps({
@@ -218,8 +219,8 @@ const emit = defineEmits(['action', 'upload', 'quickStart', 'tutorial']);
 const effectiveIllustration = computed(() => {
   if (props.illustration) return props.illustration;
   const defaults = {
-    home: '/static/illustrations/empty-journey.png',
-    search: '/static/illustrations/empty-search.png'
+    home: getAssetUrl('illustrations', 'empty-journey'),
+    search: getAssetUrl('illustrations', 'empty-search')
   };
   return defaults[props.type] || '';
 });

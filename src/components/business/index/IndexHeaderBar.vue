@@ -40,12 +40,13 @@ import { safeNavigateTo } from '@/utils/safe-navigate';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { logger } from '@/utils/logger.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { ASSETS } from '@/config/static-assets.js';
 
 const props = defineProps({
   /** 当前滚动偏移量，用于毛玻璃效果 */
   scrollY: { type: Number, default: 0 },
   /** 用户头像URL */
-  avatarUrl: { type: String, default: '/static/images/default-avatar.png' },
+  avatarUrl: { type: String, default: '' },
   /** 是否已登录 */
   isLoggedIn: { type: Boolean, default: false }
 });
@@ -58,9 +59,9 @@ const avatarLoadFailed = ref(false);
 /** 实际显示的头像URL：加载失败时降级为默认头像 */
 const displayAvatarUrl = computed(() => {
   if (avatarLoadFailed.value) {
-    return '/static/images/default-avatar.png';
+    return ASSETS.defaultAvatar;
   }
-  return props.avatarUrl || '/static/images/default-avatar.png';
+  return props.avatarUrl || ASSETS.defaultAvatar;
 });
 
 // 当外部传入新的 avatarUrl 时，重置失败状态以重新尝试加载

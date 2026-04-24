@@ -40,6 +40,8 @@ import config from '@/config/index.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // 系统信息工具
 import { getWindowInfo } from '@/utils/core/system.js';
+// 静态资源 CDN 映射
+import { getAssetUrl } from '@/config/static-assets.js';
 
 function getUniApi() {
   if (typeof uni !== 'undefined') return uni;
@@ -120,32 +122,32 @@ const tabList = computed(() => {
     {
       text: '首页',
       path: '/pages/index/index',
-      icon: '/static/tabbar/home.png',
-      selectedIcon: '/static/tabbar/home-active.png',
+      icon: getAssetUrl('tabbar', 'home'),
+      selectedIcon: getAssetUrl('tabbar', 'home-active'),
       showDot: false,
       isTabBar: true
     },
     {
       text: '刷题',
       path: '/pages/practice/index',
-      icon: '/static/tabbar/practice.png',
-      selectedIcon: '/static/tabbar/practice-active.png',
+      icon: getAssetUrl('tabbar', 'practice'),
+      selectedIcon: getAssetUrl('tabbar', 'practice-active'),
       showDot: mistakeDot.value,
       isTabBar: true
     },
     {
       text: '择校',
       path: '/pages/school/index',
-      icon: '/static/tabbar/school.png',
-      selectedIcon: '/static/tabbar/school-active.png',
+      icon: getAssetUrl('tabbar', 'school'),
+      selectedIcon: getAssetUrl('tabbar', 'school-active'),
       showDot: false,
       isTabBar: true
     },
     {
       text: '我的',
       path: '/pages/profile/index',
-      icon: '/static/tabbar/profile.png',
-      selectedIcon: '/static/tabbar/profile-active.png',
+      icon: getAssetUrl('tabbar', 'profile'),
+      selectedIcon: getAssetUrl('tabbar', 'profile-active'),
       showDot: false,
       isTabBar: true
     }

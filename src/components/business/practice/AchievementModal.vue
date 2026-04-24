@@ -8,7 +8,7 @@
           <text class="achievement-modal-title"> 我的成就 </text>
         </view>
         <!-- 成就星光特效 -->
-        <image class="achievement-sparkle" src="/static/effects/star-sparkle.png" mode="aspectFit" alt="" />
+        <image class="achievement-sparkle" :src="ASSETS.starSparkle" mode="aspectFit" alt="" />
         <view class="achievement-modal-close apple-glass-pill" @tap="$emit('close')">
           <BaseIcon name="close" :size="24" />
         </view>
@@ -63,19 +63,20 @@
 <script setup>
 import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { getAssetUrl, ASSETS } from '@/config/static-assets.js';
 
-// 成就徽章图片映射
+// 成就徽章图片映射（通过 CDN 模块获取地址）
 const BADGE_IMAGES = {
-  'streak-7': '/static/badges/streak-7day.png',
-  'streak-30': '/static/badges/streak-30day.png',
-  accuracy: '/static/badges/accuracy-90.png',
-  'first-100': '/static/badges/first-100.png',
-  master: '/static/badges/master-500.png',
-  'pk-victory': '/static/badges/pk-victory.png',
-  scholar: '/static/badges/scholar.png',
-  speed: '/static/badges/speed-demon.png',
-  perfect: '/static/badges/perfect-score.png',
-  explorer: '/static/badges/knowledge-explorer.png'
+  'streak-7': getAssetUrl('badges', 'streak-7day'),
+  'streak-30': getAssetUrl('badges', 'streak-30day'),
+  accuracy: getAssetUrl('badges', 'accuracy-90'),
+  'first-100': getAssetUrl('badges', 'first-100'),
+  master: getAssetUrl('badges', 'master-500'),
+  'pk-victory': getAssetUrl('badges', 'pk-victory'),
+  scholar: getAssetUrl('badges', 'scholar'),
+  speed: getAssetUrl('badges', 'speed-demon'),
+  perfect: getAssetUrl('badges', 'perfect-score'),
+  explorer: getAssetUrl('badges', 'knowledge-explorer')
 };
 
 // 根据成就类型获取徽章图片路径
@@ -85,7 +86,7 @@ function getBadgeImage(achievement) {
     if (key.includes(prefix)) return path;
   }
   // 默认返回通用徽章图标
-  return '/static/badges/scholar.png';
+  return getAssetUrl('badges', 'scholar');
 }
 
 const props = defineProps({

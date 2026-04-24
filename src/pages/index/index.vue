@@ -194,7 +194,7 @@
                   <!-- 卡通图标替代装饰性 BaseIcon -->
                   <image
                     class="feature-cartoon-icon"
-                    src="/static/icons/camera-search.png"
+                    :src="getAssetUrl('icons', 'camera-search')"
                     mode="aspectFit"
                     alt="证件照换底色"
                   />
@@ -210,7 +210,7 @@
                   <!-- 卡通图标替代装饰性 BaseIcon -->
                   <image
                     class="feature-cartoon-icon"
-                    src="/static/icons/doc-convert.png"
+                    :src="getAssetUrl('icons', 'doc-convert')"
                     mode="aspectFit"
                     alt="文档格式转换"
                   />
@@ -235,7 +235,7 @@
                 <view class="tool-card-icon-wrap">
                   <image
                     class="feature-cartoon-icon"
-                    src="/static/icons/crossed-swords.png"
+                    :src="getAssetUrl('icons', 'crossed-swords')"
                     mode="aspectFit"
                     alt="学习小组"
                   />
@@ -250,7 +250,7 @@
                 <view class="tool-card-icon-wrap">
                   <image
                     class="feature-cartoon-icon"
-                    src="/static/icons/bookmark-save.png"
+                    :src="getAssetUrl('icons', 'bookmark-save')"
                     mode="aspectFit"
                     alt="学习资源"
                   />
@@ -482,6 +482,8 @@ import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS } from '@/config/
 // F002-I1a: 共享格式化工具
 import { formatRelativeTime, getInitials as _getInitials } from '@/utils/formatters.js';
 import PrivacyPopup from '@/components/common/privacy-popup.vue';
+// 静态资源 CDN 映射
+import { getAssetUrl, ASSETS } from '@/config/static-assets.js';
 // syncFSRSParams, smartRequestSubscription — 动态导入减小主包体积
 
 export default {
@@ -676,7 +678,10 @@ export default {
       styleDepths: styleOnboarding.styleDepths,
       styleTones: styleOnboarding.styleTones,
       checkShowOnboarding: styleOnboarding.checkShowOnboarding,
-      nextOnboardingStep: styleOnboarding.nextOnboardingStep
+      nextOnboardingStep: styleOnboarding.nextOnboardingStep,
+      // 静态资源 CDN 映射（暴露给模板使用）
+      getAssetUrl,
+      ASSETS
     };
   },
 
@@ -767,7 +772,7 @@ export default {
 
     // 用户头像URL
     userAvatarUrl() {
-      return this.userStore?.userInfo?.avatarUrl || '/static/images/default-avatar.png';
+      return this.userStore?.userInfo?.avatarUrl || ASSETS.defaultAvatar;
     },
 
     isNewUser() {
@@ -806,7 +811,7 @@ export default {
     return {
       title: 'Exam-Master — 智能助力，一战成硕',
       path: '/pages/index/index',
-      imageUrl: '/static/images/app-share-cover.png'
+      imageUrl: ASSETS.appShareCover
     };
   },
 
