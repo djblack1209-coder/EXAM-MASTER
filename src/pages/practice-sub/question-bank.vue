@@ -129,6 +129,7 @@ import { useReviewStore } from '@/stores/modules/review.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
 import { toast } from '@/utils/toast.js';
+import { logger } from '@/utils/logger.js';
 // 静态资源 CDN 映射（大图已迁出主包）
 import { getAssetUrl } from '@/config/static-assets.js';
 
@@ -192,6 +193,7 @@ async function loadStats() {
       totalCount.value = res.data.total || 0;
     }
   } catch (_e) {
+    logger.error('[QuestionBank] 题库统计数据加载失败', _e);
     toast.error('题库加载失败，请检查网络');
   }
   loading.value = false;
@@ -233,6 +235,7 @@ async function loadQuestions() {
       hasMore.value = res.data.hasMore || false;
     }
   } catch (_e) {
+    logger.error('[QuestionBank] 题目列表加载失败', _e);
     toast.error('题目加载失败，请检查网络');
   }
   loading.value = false;
@@ -276,6 +279,7 @@ async function startPractice() {
       toast.info('该分类暂无题目');
     }
   } catch (_e) {
+    logger.error('[QuestionBank] 随机练习题加载失败', _e);
     toast.info('加载失败，请重试');
   }
   loading.value = false;

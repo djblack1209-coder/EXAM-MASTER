@@ -76,6 +76,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useReviewStore } from '@/stores/modules/review.js';
 import { loadUserFSRSParams } from './utils/mistake-fsrs-scheduler';
 import { toast } from '@/utils/toast.js';
+import { logger } from '@/utils/logger.js';
 
 const reviewStore = useReviewStore();
 
@@ -130,6 +131,7 @@ async function loadStatus() {
       status.value = res.data;
     }
   } catch (_e) {
+    logger.error('[FSRSOptimizer] 记忆模型状态加载失败', _e);
     toast.error('记忆模型状态加载失败');
   }
 }
@@ -141,6 +143,7 @@ async function loadCurve() {
       curve.value = res.data.curve;
     }
   } catch (_e) {
+    logger.error('[FSRSOptimizer] 留存率曲线数据加载失败', _e);
     toast.error('留存率数据加载失败');
   }
 }
@@ -170,6 +173,7 @@ async function handleOptimize() {
       toast.info(res?.message || '优化失败');
     }
   } catch (_e) {
+    logger.error('[FSRSOptimizer] FSRS优化执行失败', _e);
     toast.info('优化失败，请稍后重试');
   } finally {
     optimizing.value = false;

@@ -198,6 +198,10 @@
         </view>
 
         <view class="action-btns">
+          <!-- 分享海报处理中遮罩 -->
+          <view v-if="isGeneratingShare" class="share-processing-tip">
+            <text>处理中...</text>
+          </view>
           <wd-button type="info" custom-class="btn-share" @click.stop="handleShare">分享战报</wd-button>
           <wd-button type="warning" custom-class="btn-rank" @click.stop="goToRank">查看排行榜</wd-button>
           <wd-button type="primary" custom-class="btn-again" @click.stop="resetGame">再来一局</wd-button>
@@ -2479,6 +2483,24 @@ export default {
   flex-wrap: wrap;
   /* gap: 20rpx; -- replaced for Android WebView compat */
   margin-top: 40rpx;
+  position: relative;
+}
+/* 分享海报生成中提示 */
+.share-processing-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 16rpx;
+  z-index: 10;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 600;
 }
 .btn-share {
   flex: 1;

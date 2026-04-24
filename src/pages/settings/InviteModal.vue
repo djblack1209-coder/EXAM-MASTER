@@ -156,7 +156,7 @@ function shareToWechat() {
         toast.success('分享成功');
       },
       fail: (err) => {
-        logger.log('分享失败:', err);
+        logger.warn('分享失败:', err);
         toast.info('分享失败，已复制邀请链接');
         // 降级到复制链接
         copyLink();

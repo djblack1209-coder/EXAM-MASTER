@@ -150,6 +150,7 @@ import { animateNumber } from '../../utils/micro-interactions.js';
 import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 // 静态资源 CDN 映射（大图已迁出主包）
 import { getAssetUrl } from '@/config/static-assets.js';
+import { logger } from '@/utils/logger.js';
 
 const studyEngineStore = useStudyEngineStore();
 
@@ -273,8 +274,9 @@ async function loadNextSteps() {
           priority: 'urgent'
         });
       }
-    } catch {
+    } catch (_e) {
       // 后端调用失败，静默降级（只用本地规则）
+      logger.warn('[QuizResult] AI掌握度分析请求失败，使用本地推荐规则');
     }
 
     // 最多显示3条

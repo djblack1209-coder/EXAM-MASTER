@@ -39,6 +39,7 @@
 <script setup>
 import { computed } from 'vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
+import { logger } from '@/utils/logger.js';
 
 defineProps({
   isDark: { type: Boolean, default: false },
@@ -66,6 +67,8 @@ const examCountdown = computed(() => {
     if (now > examDate) examDate.setFullYear(examYear + 1);
     return Math.ceil((examDate - now) / 86400000);
   } catch (_e) {
+    // 静默降级：倒计时计算失败不影响核心功能
+    logger.warn('[WelcomeBanner] 考研倒计时计算失败，使用默认值');
     return 0;
   }
 });
