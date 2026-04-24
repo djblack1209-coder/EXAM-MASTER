@@ -126,7 +126,7 @@
             v-if="showComboEffect && comboDisplay && comboDisplay.count >= 5"
             class="combo-fire-badge"
             src="./static/effects/combo-fire.png"
-            mode="aspectFit"
+            :mode="'aspectFit'"
             alt=""
           />
         </view>
@@ -270,7 +270,7 @@
             v-if="comboDisplay.count >= 5"
             class="combo-fire-icon"
             src="./static/effects/combo-fire.png"
-            mode="aspectFit"
+            :mode="'aspectFit'"
             alt=""
           />
           <text class="combo-count">

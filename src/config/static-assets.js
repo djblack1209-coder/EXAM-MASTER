@@ -14,6 +14,7 @@
  */
 
 import config from '@/config';
+import { logger } from '@/utils/logger.js';
 
 /**
  * CDN 基础地址（末尾不含斜杠）
@@ -132,13 +133,13 @@ const LOCAL_ONLY_CATEGORIES = ['tabbar'];
 export function getAssetUrl(category, name) {
   const categoryMap = ASSET_REGISTRY[category];
   if (!categoryMap) {
-    console.warn(`[static-assets] 未知的资源分类: ${category}`);
+    logger.warn(`[static-assets] 未知的资源分类: ${category}`);
     return '';
   }
 
   const relativePath = categoryMap[name];
   if (!relativePath) {
-    console.warn(`[static-assets] 未找到资源: ${category}/${name}`);
+    logger.warn(`[static-assets] 未找到资源: ${category}/${name}`);
     return '';
   }
 
@@ -168,7 +169,7 @@ export function getAssetUrl(category, name) {
 export function getAssetUrls(category) {
   const categoryMap = ASSET_REGISTRY[category];
   if (!categoryMap) {
-    console.warn(`[static-assets] 未知的资源分类: ${category}`);
+    logger.warn(`[static-assets] 未知的资源分类: ${category}`);
     return {};
   }
 

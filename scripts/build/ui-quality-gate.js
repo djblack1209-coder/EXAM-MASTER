@@ -363,7 +363,7 @@ function checkAccessibility(content, filePath) {
 
   // 检查图片是否有 alt 或 mode
   const imgTags = content.match(/<image[^>]*>/g) || [];
-  const imgsWithoutAlt = imgTags.filter((tag) => !tag.includes('mode=') && !tag.includes('alt='));
+  const imgsWithoutAlt = imgTags.filter((tag) => !/\s:?mode=/.test(tag) && !tag.includes('alt='));
 
   if (imgsWithoutAlt.length > 0) {
     checks.push({
