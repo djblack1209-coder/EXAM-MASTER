@@ -386,17 +386,20 @@ async function handleBatchAdd(userId: string, data: Record<string, unknown>, req
   let skipped = 0;
   const results = [];
 
+  // 收集需要新增的收藏记录
+  const toAdd: { qId: string; favorite: Record<string, unknown> }[] = [];
+
   for (const q of batch) {
     const qId = (q.questionId || q.id) as string;
-    try {
-      if (qId && existingSet.has(qId)) {
-        skipped++;
-        results.push({ id: qId, success: true, skipped: true });
-        continue;
-      }
+    if (qId && existingSet.has(qId)) {
+      skipped++;
+      results.push({ id: qId, success: true, skipped: true });
+      continue;
+    }
 
-      // 添加收藏
-      const favorite = {
+    toAdd.push({
+      qId,
+      favorite: {
         user_id: userId,
         question_id: qId || null,
         question_content: sanitizeString(String(q.question || q.content || ''), 2000),
@@ -410,13 +413,26 @@ async function handleBatchAdd(userId: string, data: Record<string, unknown>, req
         last_review_time: null,
         created_at: now,
         updated_at: now
-      };
+      }
+    });
+  }
 
-      const result = await collection.add(favorite);
-      added++;
-      results.push({ id: qId, newId: result.id, success: true });
-    } catch (error) {
-      results.push({ id: qId, success: false, error: 'add_failed' });
+  // 并发写入，限制并发数为 10 避免过载
+  const CONCURRENCY = 10;
+  for (let i = 0; i < toAdd.length; i += CONCURRENCY) {
+    const chunk = toAdd.slice(i, i + CONCURRENCY);
+    const settled = await Promise.allSettled(
+      chunk.map((item) => collection.add(item.favorite))
+    );
+    for (let j = 0; j < settled.length; j++) {
+      const s = settled[j];
+      const qId = chunk[j].qId;
+      if (s.status === 'fulfilled') {
+        added++;
+        results.push({ id: qId, newId: s.value.id, success: true });
+      } else {
+        results.push({ id: qId, success: false, error: 'add_failed' });
+      }
     }
   }
 

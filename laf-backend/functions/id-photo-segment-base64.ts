@@ -2,6 +2,16 @@ import { createLogger, checkRateLimitDistributed } from './_shared/api-response'
 import { requireAuth, isAuthError } from './_shared/auth-middleware';
 const logger = createLogger('[IdPhoto]');
 
+// ==================== 环境变量完整性检查 ====================
+const TENCENT_ENV_CHECK = [
+  { key: 'TENCENT_SECRET_ID', present: !!process.env.TENCENT_SECRET_ID },
+  { key: 'TENCENT_SECRET_KEY', present: !!process.env.TENCENT_SECRET_KEY }
+];
+const missingTencentVars = TENCENT_ENV_CHECK.filter((r) => !r.present).map((r) => r.key);
+if (missingTencentVars.length > 0) {
+  logger.warn(`⚠️ 缺少环境变量: ${missingTencentVars.join(', ')}。证件照抠图功能将不可用。`);
+}
+
 export default async function (ctx) {
   const requestId = `id_photo_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
