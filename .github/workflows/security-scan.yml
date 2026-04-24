@@ -23,7 +23,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  NODE_VERSION: '20.17.0'
+  NODE_VERSION: '20.19.0'
 
 jobs:
   # ==================== 依赖漏洞扫描 ====================

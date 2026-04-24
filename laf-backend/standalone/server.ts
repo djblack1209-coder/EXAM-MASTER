@@ -130,17 +130,9 @@ async function loadFunction(name: string): Promise<FunctionModule | null> {
 // 健康检查 (优先级最高，不走云函数)
 // 注：仅返回基础状态。详细诊断请使用 health-check 云函数（需 admin 鉴权）
 app.get('/health', (_req, res) => {
-  const mem = process.memoryUsage();
   res.json({
     status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: Math.floor(process.uptime()),
-    memory: {
-      rss: Math.round(mem.rss / 1024 / 1024), // 总占用 (MB)
-      heapUsed: Math.round(mem.heapUsed / 1024 / 1024), // 堆使用 (MB)
-      heapTotal: Math.round(mem.heapTotal / 1024 / 1024) // 堆总量 (MB)
-    },
-    functionsCached: functionCache.size
+    timestamp: new Date().toISOString()
   });
 });
 
