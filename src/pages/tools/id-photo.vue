@@ -1031,7 +1031,9 @@ function resetAll() {
   display: flex;
   justify-content: center;
   border: 1rpx solid rgba(124, 176, 255, 0.18);
-  box-shadow: 0 8rpx 0 var(--em3d-border-shadow), 0 16rpx 40rpx rgba(0,0,0,0.15);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
 
   .preview-img {
     width: 100%;
@@ -1173,7 +1175,9 @@ function resetAll() {
   padding: 60rpx 40rpx;
   background-color: var(--em3d-card-bg);
   border-radius: 28rpx;
-  box-shadow: 0 8rpx 0 var(--em3d-border-shadow), 0 16rpx 40rpx rgba(0,0,0,0.15);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
   width: 100%;
   border: 1rpx solid var(--em3d-border);
 
@@ -1345,7 +1349,9 @@ function resetAll() {
 
   .processing-card {
     background: linear-gradient(160deg, rgba(16, 20, 28, 0.94) 0%, rgba(12, 15, 22, 0.98) 100%);
-    box-shadow: 0 8rpx 0 var(--em3d-border-shadow), 0 16rpx 40rpx rgba(0,0,0,0.15);
+    box-shadow:
+      0 8rpx 0 var(--em3d-border-shadow),
+      0 16rpx 40rpx rgba(0, 0, 0, 0.15);
   }
 
   .result-card {

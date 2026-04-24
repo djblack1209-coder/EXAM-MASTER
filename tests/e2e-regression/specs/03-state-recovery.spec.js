@@ -38,6 +38,7 @@ test.describe('A2-状态恢复与幂等', () => {
   });
 
   test('STATE-003 切后台再回来页面仍可继续操作', async ({ app, page }) => {
+    await app.setLoggedInSession();
     await app.goto('/pages/chat/chat');
     await skipWhenRuntimeNotReady(test, page);
 

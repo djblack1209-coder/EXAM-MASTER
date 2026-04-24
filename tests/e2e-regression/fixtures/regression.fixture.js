@@ -455,6 +455,24 @@ export const test = base.extend({
       });
     });
 
+    await page.route('**/id-photo-segment-base64', async (route) => {
+      const pngBase64 =
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==';
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          code: 0,
+          data: {
+            resultImage: `data:image/png;base64,${pngBase64}`,
+            foreground: pngBase64,
+            needComposite: false,
+            bgColorHex: '#438EDB'
+          }
+        })
+      });
+    });
+
     await page.route('**/ai-photo-search', async (route) => {
       await route.fulfill({
         status: 200,
@@ -484,6 +502,40 @@ export const test = base.extend({
             }
           }
         })
+      });
+    });
+
+    await page.route('**/ai-diagnosis', async (route) => {
+      let payload = {};
+      try {
+        payload = JSON.parse(route.request().postData() || '{}');
+      } catch {
+        payload = {};
+      }
+
+      const action = payload.action || '';
+      const dataByAction = {
+        generate: {
+          diagnosisId: 'e2e-diagnosis',
+          summary: 'E2E 诊断：基础掌握稳定，建议继续练习错题。'
+        },
+        get: {
+          diagnosisId: 'e2e-diagnosis',
+          summary: 'E2E 诊断报告',
+          weaknesses: ['英语阅读', '数学基础']
+        },
+        get_review_plan: {
+          plan: [{ title: '复盘错题', duration: 20 }]
+        },
+        smart_recommend: {
+          questions: []
+        }
+      };
+
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ code: 0, success: true, data: dataByAction[action] || {} })
       });
     });
 

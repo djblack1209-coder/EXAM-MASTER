@@ -75,11 +75,13 @@ test.describe('A2-异常流程', () => {
       await skipWhenRuntimeNotReady(test, page);
 
       // 等待聊天页骨架屏消失、输入区域可见（骨架屏最长 8s + 安全裕量）
-      const chatInput = page.locator('#e2e-chat-input, .msg-input, input[type="text"]').first();
-      await chatInput.waitFor({ state: 'visible', timeout: 25000 });
+      const chatInputHost = page.locator('#e2e-chat-input, .msg-input, input[type="text"]').first();
+      const chatInput = chatInputHost.locator('input, textarea, [contenteditable="true"]').first();
+      const inputTarget = (await chatInput.count()) > 0 ? chatInput : chatInputHost;
+      await inputTarget.waitFor({ state: 'visible', timeout: 25000 });
 
-      await chatInput.click();
-      await chatInput.fill('接口异常回归测试');
+      await inputTarget.click();
+      await inputTarget.fill('接口异常回归测试');
       await page.locator('#e2e-chat-send, .send-btn').first().click();
 
       // 根据 lafService 对 500 的处理方式，可能出现以下任一文本：

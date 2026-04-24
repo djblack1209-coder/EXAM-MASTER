@@ -117,52 +117,29 @@ test.describe('A2-更细颗粒度真实点击覆盖', () => {
     await expectAnyTextVisible(page, ['个人中心', '每日打卡', '系统设置']);
   });
 
-  test('DETAIL-003 首页学习卡、推荐卡、金句卡与计划编辑真实点击可响应', async ({ app, page }) => {
+  test('DETAIL-003 首页学习轨迹与工具卡当前精简版真实点击可响应', async ({ app, page }) => {
     await app.setLoggedInSession();
     await seedHomeState(app);
     await app.gotoHome();
     await skipWhenRuntimeNotReady(test, page);
 
-    await clickVisible(page.locator('#e2e-home-study-time-card').first());
-    await expect(page).toHaveURL(/#\/pages\/(study-detail\/index|profile\/index)$/);
-
-    await app.gotoHome();
-    await skipWhenRuntimeNotReady(test, page);
     await clickVisible(page.locator('#e2e-home-activity-view-all').first());
     await expectRoute(page, '/pages/study-detail/index');
 
     await app.gotoHome();
     await skipWhenRuntimeNotReady(test, page);
-    await clickVisible(page.locator('#e2e-home-recommendation-mistake').first());
-    await expectRoute(page, '/pages/mistake/index');
+    await clickVisible(page.locator('#e2e-home-tool-doc').first());
+    await expectRoute(page, '/pages/tools/doc-convert');
 
     await app.gotoHome();
     await skipWhenRuntimeNotReady(test, page);
-    await clickVisible(page.locator('#e2e-home-recommendation-mock').first());
-    await expectRoute(page, '/pages/practice-sub/mock-exam');
+    await clickVisible(page.locator('#e2e-home-tool-photo-search').first());
+    await expectRoute(page, '/pages/tools/photo-search');
 
     await app.gotoHome();
     await skipWhenRuntimeNotReady(test, page);
-    await clickVisible(page.locator('#e2e-home-daily-quote').first());
-    await expectAnyTextVisible(page, ['生成海报', '复制文案', '分享给朋友']);
-    await page
-      .locator('.share-modal-mask')
-      .first()
-      .click({ position: { x: 8, y: 8 }, force: true })
-      .catch(() => {});
-    await page.waitForTimeout(300);
-
-    await clickVisible(page.locator('#e2e-home-edit-plan').first());
-    await expectAnyTextVisible(page, ['新建待办', '优先级']);
-    const todoInput = page.locator('.todo-editor-mask input').first();
-    await todoInput.fill('E2E 新增待办事项');
-    await clickVisible(page.getByText('添加', { exact: false }).first());
-    await expect(page.getByText('E2E 新增待办事项', { exact: false }).first()).toBeVisible({ timeout: 10_000 });
-
-    const firstTodo = page.locator('.todo-item').first();
-    await expect(firstTodo).not.toHaveClass(/item-completed/);
-    await clickVisible(firstTodo);
-    await expect(firstTodo).toHaveClass(/item-completed/);
+    await clickVisible(page.getByText('快速开始', { exact: false }).first());
+    await expect(page).toHaveURL(/#\/pages\/(practice\/index|practice-sub\/do-quiz)$/);
   });
 
   test('DETAIL-004 TabBar 四页真实点击切换可达', async ({ app, page }) => {

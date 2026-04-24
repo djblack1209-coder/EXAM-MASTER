@@ -20,7 +20,7 @@ test.describe('A2-人工手势模拟', () => {
     await app.actions.swipeUp();
     await app.actions.swipeUp();
 
-    await expectAnyTextVisible(page, ['实用工具', '待办事项', '文档转换']);
+    await expectAnyTextVisible(page, ['实用工具', '待办事项', '文档格式转换']);
     await app.screenshot('human-gesture-home-swipe-up');
   });
 });

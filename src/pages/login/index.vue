@@ -19,7 +19,12 @@
     <!-- Logo区域 -->
     <view class="logo-section">
       <!-- P0: 移除冗余logo.png，吉祥物即品牌符号 -->
-      <image class="login-mascot" :src="getAssetUrl('illustrations', 'mascot-owl')" mode="aspectFit" alt="猫头鹰吉祥物" />
+      <image
+        class="login-mascot"
+        :src="getAssetUrl('illustrations', 'mascot-owl')"
+        mode="aspectFit"
+        alt="猫头鹰吉祥物"
+      />
       <!-- P1: 品牌名与Splash一致的双色风格 -->
       <view class="app-name-row">
         <text class="brand-exam">Exam</text>

@@ -189,7 +189,12 @@
               <text class="free-tools-badge">全部免费</text>
             </view>
             <view class="free-tools-grid">
-              <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('id-photo')">
+              <view
+                id="e2e-home-tool-id-photo"
+                class="free-tool-card apple-glass-card"
+                hover-class="tool-hover"
+                @tap="navToTool('id-photo')"
+              >
                 <view class="tool-card-icon-wrap">
                   <!-- 卡通图标替代装饰性 BaseIcon -->
                   <image
@@ -205,7 +210,12 @@
                   <text class="tool-tag-text">考研报名必备</text>
                 </view>
               </view>
-              <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('doc-convert')">
+              <view
+                id="e2e-home-tool-doc"
+                class="free-tool-card apple-glass-card"
+                hover-class="tool-hover"
+                @tap="navToTool('doc-convert')"
+              >
                 <view class="tool-card-icon-wrap">
                   <!-- 卡通图标替代装饰性 BaseIcon -->
                   <image
@@ -221,7 +231,12 @@
                   <text class="tool-tag-text">资料整理必备</text>
                 </view>
               </view>
-              <view class="free-tool-card apple-glass-card" hover-class="tool-hover" @tap="navToTool('photo-search')">
+              <view
+                id="e2e-home-tool-photo-search"
+                class="free-tool-card apple-glass-card"
+                hover-class="tool-hover"
+                @tap="navToTool('photo-search')"
+              >
                 <view class="tool-card-icon-wrap">
                   <BaseIcon name="search" :size="48" />
                 </view>

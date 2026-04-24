@@ -1233,7 +1233,9 @@ function formatSize(bytes) {
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom, 0px));
   background-color: var(--em3d-card-bg);
   border-top: 1rpx solid var(--em3d-border);
-  box-shadow: 0 8rpx 0 var(--em3d-border-shadow), 0 16rpx 40rpx rgba(0,0,0,0.15);
+  box-shadow:
+    0 8rpx 0 var(--em3d-border-shadow),
+    0 16rpx 40rpx rgba(0, 0, 0, 0.15);
 }
 
 // 按钮

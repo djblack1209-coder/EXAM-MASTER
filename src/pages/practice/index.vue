@@ -259,7 +259,12 @@
       <view v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
         <view class="menu-icon">
           <!-- 卡通星标图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" :src="getAssetUrl('icons', 'star-badge')" mode="aspectFit" alt="错题重练" />
+          <image
+            class="feature-cartoon-icon"
+            :src="getAssetUrl('icons', 'star-badge')"
+            mode="aspectFit"
+            alt="错题重练"
+          />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 错题重练 </view>
@@ -274,7 +279,12 @@
       <view id="e2e-practice-menu-rank" class="menu-item" @tap="goRank">
         <view class="menu-icon">
           <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" :src="getAssetUrl('icons', 'trophy-cup')" mode="aspectFit" alt="学霸排行榜" />
+          <image
+            class="feature-cartoon-icon"
+            :src="getAssetUrl('icons', 'trophy-cup')"
+            mode="aspectFit"
+            alt="学霸排行榜"
+          />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 学霸排行榜 </view>
