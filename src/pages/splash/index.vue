@@ -4,7 +4,7 @@
     <view class="splash-main">
       <!-- Logo：圆角方形裁切容器 -->
       <view class="logo-clip">
-        <image class="logo-img" src="/static/images/logo-full.png" alt="Exam Master" mode="aspectFill" />
+        <image class="logo-img" src="/static/images/logo.png" alt="Exam Master" mode="aspectFit" />
       </view>
 
       <!-- 品牌名：双色增强品牌辨识度 -->

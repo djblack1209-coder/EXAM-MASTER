@@ -31,7 +31,7 @@
 
         <view class="poster-header ds-flex ds-gap-xs">
           <!-- 品牌Logo（本地图片） -->
-          <image class="poster-logo" src="/static/images/logo-full.png" alt="Exam Master" mode="aspectFit" />
+          <image class="poster-logo" src="/static/images/logo.png" alt="Exam Master" mode="aspectFit" />
           <text class="poster-app-name ds-font-semibold"> Exam-Master </text>
         </view>
 

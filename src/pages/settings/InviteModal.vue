@@ -12,7 +12,7 @@
         <!-- 品牌Logo -->
         <image
           class="brand-logo-img"
-          src="/static/images/logo-full.png"
+          src="/static/images/logo.png"
           mode="aspectFit"
           lazy-load
           alt="Exam Master 品牌标志"

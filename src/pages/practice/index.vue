@@ -314,7 +314,7 @@
       <view v-if="favoriteCount > 0" class="menu-item" @tap="goFavorites">
         <view class="menu-icon">
           <!-- 卡通书签图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" src="/static/icons/bookmark-save.png" mode="aspectFit" alt="我的收藏" />
+          <BaseIcon name="bookmark" :size="36" class="menu-icon-img" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 我的收藏 </view>
@@ -328,7 +328,7 @@
       <!-- 学习资源 -->
       <view class="menu-item" @tap="goToResource">
         <view class="menu-icon">
-          <image class="feature-cartoon-icon" src="/static/icons/doc-convert.png" mode="aspectFit" alt="学习资源" />
+          <BaseIcon name="file-text" :size="36" class="menu-icon-img" />
         </view>
         <view class="menu-info">
           <view class="menu-title"> 学习资源 </view>
