@@ -25,7 +25,7 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  NODE_VERSION: '20.17.0'
+  NODE_VERSION: '20.19.0'
   LAF_SOURCE_AUDIT_STRICT: 'true'
 
 jobs:

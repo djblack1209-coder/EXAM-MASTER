@@ -75,7 +75,7 @@ echo "步骤 3/5: 同步 Nginx 配置..."
 # 上传主配置
 scp deploy/tencent/nginx/nginx.conf "$SERVER:$REMOTE_NGINX_DIR/nginx.conf"
 # 上传站点配置（API + H5）
-scp deploy/tencent/nginx/conf.d/exam-master.conf "$SERVER:$REMOTE_NGINX_DIR/conf.d/exam-master.conf"
+scp deploy/tencent/nginx/exam-master.conf "$SERVER:$REMOTE_NGINX_DIR/conf.d/exam-master.conf"
 scp deploy/tencent/nginx/conf.d/exam-master-h5.conf "$SERVER:$REMOTE_NGINX_DIR/conf.d/exam-master-h5.conf"
 
 log "Nginx 配置已同步"

@@ -41,7 +41,8 @@ import {
   type FSRSScheduleResult,
   type ReviewRating
 } from './_shared/fsrs-scheduler';
-// ✅ 共享幂等性模块（当前 handleSubmit 未启用幂等检查，需要时取消注释）
+// 幂等性模块可用但当前未启用 — 答案提交通过 DB upsert 天然幂等
+// 如需请求级去重（如弱网重试场景），取消以下注释：
 // import { checkIdempotency, markCompleted as markIdempotencyCompleted } from './_shared/idempotency';
 
 const db = cloud.database();
@@ -50,8 +51,8 @@ const _ = db.command;
 const ANSWER_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const ANSWER_RATE_LIMIT_MAX = 120;
 
-// ✅ 幂等性逻辑已迁移到 _shared/idempotency.ts 共享模块
-// 通过顶部 import 引入 checkIdempotency 和 markIdempotencyCompleted
+// 幂等性共享模块位于 _shared/idempotency.ts（pk-battle 已在使用）
+// 本函数通过 DB upsert 保证天然幂等，无需额外请求级去重
 
 // ==================== 参数校验 ====================
 export function validateSubmitParams(data: unknown): {
