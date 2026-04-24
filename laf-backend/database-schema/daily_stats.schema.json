@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "daily_stats",
+  "description": "每日统计集合 - 存储用户每天的学习数据（做题数、正确数、学习时长）",
+  "type": "object",
+  "required": ["user_id", "date_key", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "date_key": {
+      "type": "string",
+      "description": "日期键 (YYYY-MM-DD)，用于快速查找某天的记录",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "date": {
+      "type": "integer",
+      "description": "日期对应的时间戳（毫秒级，当天 00:00:00 的时间戳），用于范围查询"
+    },
+    "questions": {
+      "type": "integer",
+      "description": "当天做题总数",
+      "default": 0,
+      "minimum": 0
+    },
+    "correct": {
+      "type": "integer",
+      "description": "当天答对题数",
+      "default": 0,
+      "minimum": 0
+    },
+    "study_minutes": {
+      "type": "integer",
+      "description": "当天学习时长（分钟）",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1440
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳（毫秒级 Unix timestamp）"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳（毫秒级 Unix timestamp）"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "date_key": 1 }, "unique": true, "name": "idx_user_date_key" },
+    { "key": { "user_id": 1, "date": -1 }, "name": "idx_user_date" },
+    { "key": { "date": -1 }, "name": "idx_date" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" }
+  ],
+  "examples": [
+    {
+      "_id": "ds_001",
+      "user_id": "user_001",
+      "date_key": "2026-01-25",
+      "date": 1737763200000,
+      "questions": 45,
+      "correct": 38,
+      "study_minutes": 120,
+      "created_at": 1737792000000,
+      "updated_at": 1737878400000
+    }
+  ]
+}

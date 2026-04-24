@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "question_banks",
+  "description": "题库集合 - 存储用户创建或导入的题库信息（如 Anki 导入的牌组）",
+  "type": "object",
+  "required": ["name", "user_id", "created_at"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "name": {
+      "type": "string",
+      "description": "题库名称",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "题库描述",
+      "maxLength": 1000
+    },
+    "source": {
+      "type": "string",
+      "description": "题库来源",
+      "enum": ["manual", "anki_import", "system"],
+      "default": "manual"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "创建者用户ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "question_count": {
+      "type": "integer",
+      "description": "题库中的题目数量",
+      "default": 0,
+      "minimum": 0
+    },
+    "is_public": {
+      "type": "boolean",
+      "description": "是否为公共题库（公共题库其他用户也可导出）",
+      "default": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "是否启用",
+      "default": true
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳（毫秒级 Unix timestamp）"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳（毫秒级 Unix timestamp）"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "created_at": -1 }, "name": "idx_user_created" },
+    { "key": { "user_id": 1, "is_active": 1 }, "name": "idx_user_active" },
+    { "key": { "is_public": 1 }, "name": "idx_public" },
+    { "key": { "source": 1 }, "name": "idx_source" },
+    { "key": { "created_at": -1 }, "name": "idx_created_at" }
+  ],
+  "examples": [
+    {
+      "_id": "qb_001",
+      "name": "考研政治核心知识点",
+      "description": "从 Anki 牌组 \"考研政治核心知识点\" 导入",
+      "source": "anki_import",
+      "user_id": "user_001",
+      "question_count": 350,
+      "is_public": false,
+      "is_active": true,
+      "created_at": 1737792000000,
+      "updated_at": 1737792000000
+    }
+  ]
+}
