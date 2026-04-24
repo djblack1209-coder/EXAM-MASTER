@@ -1,7 +1,7 @@
 /**
  * 打字机效果 Composable
  *
- * [分包隔离副本] 与 pages/chat/composables/useTypewriter.js 内容完全相同。
+ * [分包隔离副本] 与 pages/practice-sub/composables/useTypewriter.js 内容完全相同。
  * 因微信小程序分包不能跨包引用，需在各分包维护独立副本。
  * 修改时请同步更新对应副本。
  *

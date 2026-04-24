@@ -1,7 +1,7 @@
 /**
  * 微信小程序隐私授权与权限检查工具
  *
- * [分包隔离副本] 与 pages/chat/privacy-authorization.js 内容完全相同。
+ * [分包隔离副本] 与 pages/tools/privacy-authorization.js 内容完全相同。
  * 分包本地副本 — 避免从 @/utils/auth/ 拉入主包。
  * 修改时请同步更新对应副本。
  */
