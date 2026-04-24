@@ -439,37 +439,33 @@ async function handleBatchRemove(userId: string, data: Record<string, unknown>, 
   const collection = db.collection('favorites');
   let deleted = 0;
 
-  // 按收藏ID删除
+  // 按收藏ID批量删除（单次查询代替逐条删除）
   if (Array.isArray(ids) && ids.length > 0) {
-    for (const id of ids.slice(0, 100)) {
-      try {
-        const result = await collection
-          .where({
-            _id: id,
-            user_id: userId
-          })
-          .remove();
-        deleted += result.deleted || 0;
-      } catch (e) {
-        logger.warn(`[${requestId}] 删除收藏失败: ${id}`, e);
-      }
+    try {
+      const result = await collection
+        .where({
+          _id: _.in(ids.slice(0, 100)),
+          user_id: userId
+        })
+        .remove();
+      deleted += result.deleted || 0;
+    } catch (e) {
+      logger.warn(`[${requestId}] 批量按ID删除收藏失败`, e);
     }
   }
 
-  // 按题目ID删除
+  // 按题目ID批量删除（单次查询代替逐条删除）
   if (Array.isArray(questionIds) && questionIds.length > 0) {
-    for (const qid of questionIds.slice(0, 100)) {
-      try {
-        const result = await collection
-          .where({
-            question_id: qid,
-            user_id: userId
-          })
-          .remove();
-        deleted += result.deleted || 0;
-      } catch (e) {
-        logger.warn(`[${requestId}] 删除收藏失败: ${qid}`, e);
-      }
+    try {
+      const result = await collection
+        .where({
+          question_id: _.in(questionIds.slice(0, 100)),
+          user_id: userId
+        })
+        .remove();
+      deleted += result.deleted || 0;
+    } catch (e) {
+      logger.warn(`[${requestId}] 批量按题目ID删除收藏失败`, e);
     }
   }
 
