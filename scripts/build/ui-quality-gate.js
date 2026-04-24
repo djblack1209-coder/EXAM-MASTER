@@ -362,7 +362,33 @@ function checkAccessibility(content, filePath) {
   const displayPath = toDisplayPath(filePath);
 
   // 检查图片是否有 alt 或 mode
-  const imgTags = content.match(/<image[^>]*>/g) || [];
+  // 使用引号感知的正则：匹配 <image ... > 或 <image ... />，
+  // 跳过引号内的 > 字符（Vue 模板中 v-if="count > 5" 会包含 >）
+  const imgTags = [];
+  const imgOpenRe = /<image\b/g;
+  let imgMatch;
+  while ((imgMatch = imgOpenRe.exec(content)) !== null) {
+    let inQuote = false;
+    let quoteChar = '';
+    let endIdx = -1;
+    for (let i = imgMatch.index + 6; i < content.length; i++) {
+      const ch = content[i];
+      if (inQuote) {
+        if (ch === quoteChar) inQuote = false;
+        continue;
+      }
+      if (ch === '"' || ch === "'") {
+        inQuote = true;
+        quoteChar = ch;
+        continue;
+      }
+      if (ch === '>' || (ch === '/' && i + 1 < content.length && content[i + 1] === '>')) {
+        endIdx = ch === '/' ? i + 2 : i + 1;
+        break;
+      }
+    }
+    if (endIdx > 0) imgTags.push(content.slice(imgMatch.index, endIdx));
+  }
   const imgsWithoutAlt = imgTags.filter((tag) => !/\s:?mode=/.test(tag) && !tag.includes('alt='));
 
   if (imgsWithoutAlt.length > 0) {
