@@ -20,14 +20,9 @@
 
 EXAM-MASTER has a comprehensive multi-layer testing setup:
 
-| Layer               | Framework                    | Config                                   | Location                |
-| ------------------- | ---------------------------- | ---------------------------------------- | ----------------------- |
-| Unit Tests          | Vitest 4.0                   | `vitest.config.js`                       | `tests/unit/`           |
-| Visual Regression   | Playwright                   | `playwright.visual.config.js`            | `tests/visual/`         |
-| E2E Regression (H5) | Playwright                   | `playwright.regression.config.js`        | `tests/e2e-regression/` |
-| E2E Compat (H5)     | Playwright                   | `playwright.regression.compat.config.js` | `tests/e2e-regression/` |
-| E2E (WeChat MP)     | miniprogram-automator + Jest | `e2e-tests/jest.config.js`               | `e2e-tests/`            |
-| Mobile E2E          | Maestro                      | YAML flows                               | `tests/maestro/`        |
+| Layer      | Framework  | Config             | Location      |
+| ---------- | ---------- | ------------------ | ------------- |
+| Unit Tests | Vitest 4.0 | `vitest.config.js` | `tests/unit/` |
 
 ---
 
@@ -143,160 +138,20 @@ npx vitest run tests/unit/api.spec.js  # Run single test
 
 ---
 
-## Visual Regression Tests (Playwright)
+## QA Gate
 
-### Configuration
-
-- **Config**: `playwright.visual.config.js`
-- **Test files**: `tests/visual/`
-- **Snapshots**: `tests/visual/ui-pages.spec.js-snapshots/`
-
-### Test Files
-
-- `ui-pages.spec.js` — Core page screenshots (home, practice, profile, school, mistake, etc.)
-- `full-feature-pages.spec.js` — Full feature page screenshots
-
-### Run Commands
+发布前运行核心质量检查：
 
 ```bash
-npm run test:visual              # Run visual tests
-npm run test:visual:update       # Update baseline snapshots
-npm run test:visual:ui           # Interactive Playwright UI
+npm run lint                          # ESLint
+npm run format:check                  # Prettier check
+npm run audit:laf:function-sources -- --strict  # Backend function audit
+npm run build:h5                      # H5 build
+npm run test                          # Unit tests (Vitest)
+npm run audit:secrets:tracked         # Secret scanning
+npm run deps:audit:prod               # Dependency vulnerabilities
+npm run audit:mp-main-usage           # MP main package size
 ```
-
----
-
-## E2E Regression Tests (Playwright - H5)
-
-### Configuration
-
-- **Config**: `playwright.regression.config.js`
-- **Compat config**: `playwright.regression.compat.config.js`
-- **Test files**: `tests/e2e-regression/specs/`
-- **Fixtures**: `tests/e2e-regression/fixtures/regression.fixture.js`
-- **Test data**: `tests/e2e-regression/data/test-data.js`
-- **Helpers**: `tests/e2e-regression/helpers/`
-
-### Test Suites (18 spec files)
-
-| File                                    | Purpose                    |
-| --------------------------------------- | -------------------------- |
-| `00-smoke.spec.js`                      | Basic smoke test           |
-| `01-core-flow.spec.js`                  | Core user flows            |
-| `02-exception-flow.spec.js`             | Error handling flows       |
-| `03-state-recovery.spec.js`             | State persistence          |
-| `04-performance.spec.js`                | Performance benchmarks     |
-| `05-high-risk-pages.spec.js`            | Complex page testing       |
-| `06-human-gesture.spec.js`              | Touch/gesture interactions |
-| `07-full-route-coverage.spec.js`        | All routes accessible      |
-| `08-clickable-actions.spec.js`          | All click targets work     |
-| `09-detailed-click-coverage.spec.js`    | Detailed click coverage    |
-| `10-backend-driven-flows.spec.js`       | Backend integration        |
-| `11-login-and-import-precision.spec.js` | Login + import flow        |
-| `12-full-page-scroll-audit.spec.js`     | Scroll behavior audit      |
-| `13-profile-settings-actions.spec.js`   | Profile/settings flows     |
-| `14-share-and-native-fallbacks.spec.js` | Share + native APIs        |
-| `15-long-tail-pages.spec.js`            | Rarely visited pages       |
-| `16-gap-coverage.spec.js`               | Coverage gaps              |
-| `17-deep-feature-flows.spec.js`         | Deep feature testing       |
-
-### Helper Utilities
-
-| File                | Purpose                           |
-| ------------------- | --------------------------------- |
-| `human-actions.js`  | Human-like interaction simulation |
-| `assertions.js`     | Custom assertion helpers          |
-| `network-logger.js` | Network request logging           |
-
-### Run Commands
-
-```bash
-npm run test:e2e:regression          # Run all E2E tests
-npm run test:e2e:regression:ui       # Interactive UI mode
-npm run test:e2e:regression:headed   # Visible browser
-npm run test:e2e:regression:debug    # Debug mode
-npm run test:e2e:compat              # Compatibility tests
-```
-
----
-
-## WeChat MP E2E Tests (miniprogram-automator)
-
-### Configuration
-
-- **Config**: `e2e-tests/jest.config.js`
-- **Setup**: `e2e-tests/setup.js`
-- **Framework**: Jest 30 + miniprogram-automator
-
-### Test Files
-
-- `e2e-tests/specs/exam-flow.spec.js` — Full exam flow in real WeChat dev tools
-- `e2e-tests/helpers/mini-utils.js` — WeChat MP test utilities
-- `e2e-tests/helpers/fixtures.js` — Test data fixtures
-- `e2e-tests/app/` — App-specific E2E (CDP, Appium tests)
-
-### Run Commands
-
-```bash
-npm run test:e2e                 # Build MP + run Jest E2E
-npm run test:e2e:report          # With JUnit report output
-```
-
----
-
-## Maestro Mobile E2E Tests
-
-### Configuration
-
-- **Location**: `tests/maestro/flows/`
-- **Framework**: Maestro (YAML-based mobile testing)
-
-### Flows
-
-| File                      | Purpose                     |
-| ------------------------- | --------------------------- |
-| `00-smoke.yaml`           | Basic app launch smoke test |
-| `01-login-input.yaml`     | Login form interaction      |
-| `02-core-practice.yaml`   | Core practice flow          |
-| `03-high-risk-tools.yaml` | Tool pages testing          |
-| `04-state-recovery.yaml`  | State persistence           |
-| `10-web-h5-smoke.yaml`    | H5 web mode smoke           |
-
-### Run Commands
-
-```bash
-npm run test:maestro                 # Run all Maestro flows
-npm run test:maestro:syntax          # Syntax check only
-npm run test:maestro:preflight       # Pre-flight check
-npm run test:maestro:native          # Native device required
-npm run test:maestro:web:h5          # H5 web testing
-```
-
----
-
-## Full QA Regression Gate
-
-Run the complete test suite before releases:
-
-```bash
-npm run test:qa:full-regression
-```
-
-This runs in sequence:
-
-1. `npm run lint` — ESLint
-2. `npm run format:check` — Prettier check
-3. `npm run audit:laf:function-sources -- --strict` — Backend function audit
-4. `npm run build:h5` — H5 build
-5. `npm run test` — Unit tests (Vitest)
-6. `npm run test:visual` — Visual regression
-7. `npm run test:e2e:regression` — E2E regression
-8. `npm run test:e2e:compat` — Compat tests
-9. `npm run test:maestro` — Maestro mobile
-10. `npm run audit:secrets:tracked` — Secret scanning
-11. `npm run deps:audit:prod` — Dependency vulnerabilities
-12. `npm run audit:mp-main-usage` — MP main package size
-13. `npm run test:e2e:report` — E2E with JUnit output
 
 ---
 
@@ -325,25 +180,9 @@ This runs in sequence:
   - `useQuizAutoSave.js` 已迁移到 `composables/`，测试 import 已更新。
   - HTTP 响应状态码已对齐实际实现。
 
-### Visual Regression Tests (Playwright)
-
-- **Current Status**: Failing (11 failing tests out of 48)
-- **Failure Reasons**:
-  - Snapshot differences on core pages (`home`, `practice`, `settings`). These pages likely had legitimate UI changes that were not captured by running `npm run test:visual:update`. Outdated snapshots on core pages.
-  - Missing snapshots for newer pages like `pages-ai-classroom-classroom` and `pages-onboarding-index`. These tests throw "A snapshot doesn't exist" error. 2 pages completely missing snapshots (`ai-classroom-classroom`, `onboarding`).
-
-### E2E Regression Tests (Playwright)
-
-- **Current Status**: Failing (2 failures out of ~30 tests ran)
-- **Failure Reasons**:
-  - Timeout error in `02-exception-flow.spec.js` (`EXC-005 智能接口500时聊天页可降级并保持可交互`). EXC-005 timeout.
-  - Concurrency/idempotency error in `03-state-recovery.spec.js` (`STATE-005 登录按钮快速多次点击仅触发一次请求`) showing multiple requests were fired. STATE-005 idempotency failure.
-
 ### Known Infrastructure Gaps & Improvements Needed
 
 1. **Test Environment Variables**: The testing suite currently lacks a proper `.env.test` setup, specifically missing mock values for `JWT_SECRET_PLACEHOLDER
 2. **Missing Mocks**: Certain global variables like `logger` used in services are not being mocked or provided in the Vitest test context.
 3. **Outdated Imports**: Need automated tools to verify test imports when files are refactored (e.g., `useQuizAutoSave.js`).
-4. **Visual Baseline Workflow**: The process of updating visual baselines is manual. The CI/CD pipeline needs an automated way to alert developers when visual baselines are out of sync due to intentional UI changes.
-5. **E2E Flakiness/Timeout**: E2E tests exhibit timeout flakiness (like the 30s timeout on exception flows). The infrastructure may need retry logic configurations or extended timeouts for network-dependent tests.
-6. **Backend Unit Coverage Gap**: Specifically, errors like `TypeError: query.count is not a function` in `group-service` went uncaught by backend TypeScript compilation and unit tests, indicating a gap in backend-specific testing logic.
+4. **Backend Unit Coverage Gap**: Specifically, errors like `TypeError: query.count is not a function` in `group-service` went uncaught by backend TypeScript compilation and unit tests, indicating a gap in backend-specific testing logic.
