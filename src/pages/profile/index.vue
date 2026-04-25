@@ -1076,14 +1076,7 @@ onMounted(async () => {
   initLayoutInfo();
   initTheme();
 
-  // 动态导入 gamificationStore（减小主包体积）
-  try {
-    const gamMod = await safeImport(import('@/stores/modules/gamification'));
-    const useGamificationStore = gamMod.useGamificationStore || gamMod.default?.useGamificationStore;
-    gamificationStore.value = useGamificationStore();
-  } catch {
-    /* 游戏化功能降级 */
-  }
+  // gamification store 已删除，跳过动态导入
 
   loadData();
 

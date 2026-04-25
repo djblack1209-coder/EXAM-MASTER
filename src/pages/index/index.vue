@@ -59,26 +59,6 @@
             @nav-to-mock-exam="navToMockExam"
           />
 
-          <!-- AI 每日学习助手 — 首页核心 AI 入口 -->
-          <AIDailyBriefing
-            :is-dark="isDark"
-            :is-new-user="isNewUser"
-            :review-pending="reviewPending"
-            :overdue-count="reviewStats.overdueCount || 0"
-            :today-done="todayQuestionCount"
-            :accuracy="realAccuracy"
-            :exam-date="examDate || ''"
-            :pending-corrections="0"
-            :has-unfinished="hasUnfinished"
-            @go-review="goSmartReview"
-            @go-practice="navToPractice"
-            @go-correction="navToMistakes"
-            @go-chat="navToChat"
-            @go-weak-training="goSmartReview"
-            @resume-session="resumeLastSession"
-            @go-settings="navToSettings"
-          />
-
           <!-- 每日目标进度环（D022） -->
           <DailyGoalRing
             v-if="!isNewUser"
@@ -341,75 +321,7 @@
         @cancel="showLoginModal = false"
       />
 
-      <!-- ✅ [差异化壁垒] 学习风格Onboarding — 首次使用3步配置 -->
-      <view v-if="showStyleOnboarding" class="onboarding-overlay">
-        <view class="onboarding-card" :class="{ 'dark-mode': isDark }">
-          <!-- Step指示器 -->
-          <view class="onboarding-steps">
-            <view
-              v-for="i in 3"
-              :key="i"
-              :class="['step-dot', { active: onboardingStep === i, done: onboardingStep > i }]"
-            />
-          </view>
-
-          <!-- Step 1: 目标分数 -->
-          <view v-if="onboardingStep === 1" class="onboarding-content">
-            <text class="onboarding-title">你的目标分数是？</text>
-            <text class="onboarding-desc">帮助AI调整解析深度</text>
-            <view class="onboarding-options">
-              <view
-                v-for="s in [300, 350, 400, 450]"
-                :key="s"
-                :class="['ob-option', { selected: obTargetScore === s }]"
-                @tap="obTargetScore = s"
-              >
-                <text>{{ s }}+</text>
-              </view>
-            </view>
-          </view>
-
-          <!-- Step 2: 学习深度 -->
-          <view v-if="onboardingStep === 2" class="onboarding-content">
-            <text class="onboarding-title">你目前的水平？</text>
-            <text class="onboarding-desc">AI会匹配你的节奏</text>
-            <view class="onboarding-options vertical">
-              <view
-                v-for="d in styleDepths"
-                :key="d.id"
-                :class="['ob-option-row', { selected: obDepth === d.id }]"
-                @tap="obDepth = d.id"
-              >
-                <text class="ob-option-label">{{ d.label }}</text>
-                <text class="ob-option-desc">{{ d.desc }}</text>
-              </view>
-            </view>
-          </view>
-
-          <!-- Step 3: AI语气 -->
-          <view v-if="onboardingStep === 3" class="onboarding-content">
-            <text class="onboarding-title">你喜欢什么风格的AI？</text>
-            <text class="onboarding-desc">答错时AI怎么跟你说</text>
-            <view class="onboarding-options">
-              <view
-                v-for="t in styleTones"
-                :key="t.id"
-                :class="['ob-option', { selected: obTone === t.id }]"
-                @tap="obTone = t.id"
-              >
-                <text>{{ t.label }}</text>
-              </view>
-            </view>
-          </view>
-
-          <view class="onboarding-actions">
-            <button v-if="onboardingStep > 1" class="ob-btn-skip" @tap="onboardingStep--">上一步</button>
-            <button class="ob-btn-next" @tap="nextOnboardingStep">
-              {{ onboardingStep === 3 ? '开始学习' : '下一步' }}
-            </button>
-          </view>
-        </view>
-      </view>
+      <!-- ✅ [差异化壁垒] 学习风格Onboarding — 已移除 -->
 
       <!-- ✅ 检查点1.2: 每日金句分享弹窗 -->
       <ShareModal
@@ -465,7 +377,6 @@ import StudyHeatmap from '@/components/business/index/StudyHeatmap.vue';
 import ActivityList from '@/components/business/index/ActivityList.vue';
 // RecommendationsList — 已从首页移除（smart-recommend 替代）
 import IndexHeaderBar from '@/components/business/index/IndexHeaderBar.vue';
-import AIDailyBriefing from '@/components/business/index/AIDailyBriefing.vue';
 import DailyGoalRing from '@/components/business/index/DailyGoalRing.vue';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import { useStudyStore } from '@/stores/modules/study';
@@ -485,13 +396,11 @@ import { throttle } from '@/utils/throttle.js';
 import { useStudyTimer } from '@/composables/useStudyTimer.js';
 import { useDailyQuote } from '@/composables/useDailyQuote.js';
 // ✅ [P0重构] 迁移为Composables的模块
-import { useRecommendations } from '@/composables/useRecommendations.js';
 import { useNavigation } from '@/composables/useNavigation.js';
 import { useTodo } from '@/composables/useTodo.js';
 // ✅ [D002重构] 提取的 Composables
 import { useHomeStats } from '@/composables/useHomeStats.js';
 import { useHomeReview } from '@/composables/useHomeReview.js';
-import { useStyleOnboarding } from '@/composables/useStyleOnboarding.js';
 // ✅ P0-3: 从配置文件导入静态数据（消除硬编码）
 import { QUOTE_LIBRARY, FORMULA_LIST, DEFAULT_KNOWLEDGE_POINTS } from '@/config/home-data.js';
 // F002-I1a: 共享格式化工具
@@ -518,19 +427,11 @@ export default {
     StudyHeatmap,
     ActivityList,
     IndexHeaderBar,
-    AIDailyBriefing,
     DailyGoalRing
   },
 
   // ✅ [P0重构] Composables桥接到Options API
   setup() {
-    const {
-      personalizedRecommendations,
-      userPreferences,
-      loadPersonalizedRecommendations,
-      loadUserPreferences,
-      handleRecommendationClick
-    } = useRecommendations();
     const {
       isNavigating,
       showEmptyBankModal,
@@ -602,15 +503,8 @@ export default {
     const studyStoreInstance = useStudyStore();
     const homeStats = useHomeStats({ studyStore: studyStoreInstance });
     const homeReview = useHomeReview({ reviewStore });
-    const styleOnboarding = useStyleOnboarding();
 
     return {
-      // recommendations
-      personalizedRecommendations,
-      userPreferences,
-      loadPersonalizedRecommendations,
-      loadUserPreferences,
-      handleRecommendationClick,
       // navigation
       isNavigating,
       showEmptyBankModal,
@@ -684,16 +578,6 @@ export default {
       checkUnfinishedProgress: homeReview.checkUnfinishedProgress,
       goSmartReview: homeReview.goSmartReview,
       resumeLastSession: homeReview.resumeLastSession,
-      // ✅ [D002重构] 学习风格引导 composable
-      showStyleOnboarding: styleOnboarding.showStyleOnboarding,
-      onboardingStep: styleOnboarding.onboardingStep,
-      obTargetScore: styleOnboarding.obTargetScore,
-      obDepth: styleOnboarding.obDepth,
-      obTone: styleOnboarding.obTone,
-      styleDepths: styleOnboarding.styleDepths,
-      styleTones: styleOnboarding.styleTones,
-      checkShowOnboarding: styleOnboarding.checkShowOnboarding,
-      nextOnboardingStep: styleOnboarding.nextOnboardingStep,
       // 静态资源 CDN 映射（暴露给模板使用）
       getAssetUrl,
       ASSETS
@@ -732,8 +616,7 @@ export default {
       // ✅ [D002重构] reviewPending, reviewStats, recommendedTopic,
       //    hasUnfinished, resumeSummary 已由 useHomeReview composable 提供
 
-      // ✅ [D002重构] showStyleOnboarding, onboardingStep, obTargetScore, obDepth, obTone,
-      //    styleDepths, styleTones 已由 useStyleOnboarding composable 提供
+      // ✅ [D002重构] showStyleOnboarding, onboardingStep 等已移除（useStyleOnboarding 已删除）
 
       // 知识点数据 - ✅ P0-3: 初始值从配置导入
       knowledgePoints: DEFAULT_KNOWLEDGE_POINTS.map((p) => ({ ...p, count: 0, mastery: 0 })),
@@ -1028,9 +911,7 @@ export default {
         // 4-8: 并行加载所有异步/独立数据
         const results = await Promise.allSettled([
           this.loadAchievements(),
-          this.loadRecentActivities(),
-          this.loadPersonalizedRecommendations(),
-          this.loadUserPreferences()
+          this.loadRecentActivities()
         ]);
 
         // 记录失败的模块（不阻断页面展示）

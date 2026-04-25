@@ -4,7 +4,6 @@
  * 包含：文件导入、智能生成、题库持久化与备份
  */
 import { storageService } from '@/services/storageService.js';
-import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // [勾] 以下模块从分包本地引用，避免打入主包
@@ -17,6 +16,11 @@ import {
   normalizeAndValidateQuestions,
   sanitizeAIInput
 } from '../utils/question-normalizer.js';
+// ai.api 已移除，proxyAI 降级为 stub
+async function proxyAI(_action, _data) {
+  logger.warn('[ai-generation-mixin] proxyAI: ai.api 已移除，功能降级');
+  return { code: -1, message: 'AI 服务已下线' };
+}
 
 export const aiGenerationMixin = {
   methods: {

@@ -90,7 +90,6 @@
 import { ref, computed, nextTick, getCurrentInstance, onBeforeUnmount } from 'vue';
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
-import { useSchoolStore } from '@/stores/modules/school.js';
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import {
@@ -200,36 +199,22 @@ async function prepareReport() {
   }, 30000);
 
   try {
-    const schoolStore = useSchoolStore();
-    const response = await schoolStore.aiRecommend('report', {
-      userName: props.userInfo.nickName || '考研人',
-      mistakeSummary: mistakeSummary,
-      mistakeCount: props.mistakes.length
-    });
-
+    // school store 已移除，AI推荐功能降级
     clearTimeout(timeoutId);
     if (isTimeoutHandled) {
-      logger.log('[MistakeReport] 超时已处理，跳过正常响应处理');
       return;
     }
+    // 使用本地降级方案
+    const reportText = `错题分析报告\n共${props.mistakes.length}道错题\n\n建议：针对薄弱知识点加强练习`;
+    const finalReportText = typeof reportText === 'string' ? reportText : JSON.stringify(reportText);
 
-    if (response.code === 0 && response.data) {
-      const reportText = response.data.trim();
-      const finalReportText = typeof reportText === 'string' ? reportText : JSON.stringify(reportText);
-
-      try {
-        await drawReport(finalReportText);
-        logger.log('[MistakeReport] 报告生成完成');
-      } catch (drawError) {
-        logger.error('[MistakeReport] 绘制报告失败:', drawError);
-        showCustomLoading.value = false;
-        isGenerating.value = false;
-      }
-    } else {
-      logger.error('[MistakeReport] 智能报告生成失败:', response.message);
+    try {
+      await drawReport(finalReportText);
+      logger.log('[MistakeReport] 报告生成完成');
+    } catch (drawError) {
+      logger.error('[MistakeReport] 绘制报告失败:', drawError);
       showCustomLoading.value = false;
       isGenerating.value = false;
-      toast.info('报告生成失败，请重试', 3000);
     }
   } catch (_e) {
     logger.error('[MistakeReport] 智能报告生成失败', _e);

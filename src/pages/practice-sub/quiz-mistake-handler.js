@@ -10,7 +10,6 @@
 
 import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
-import { proxyAI } from '@/services/api/domains/ai.api.js';
 import { toast } from '@/utils/toast.js';
 
 /**
@@ -165,52 +164,7 @@ export function updateMistakeWithAI({ currentQuestion, aiAnalysis }) {
  */
 export async function generateMnemonic({ currentQuestion, correctAnswer }) {
   if (!currentQuestion) return;
-
-  const questionText = currentQuestion.question || currentQuestion.title || '';
-  const answer = correctAnswer || currentQuestion.answer || '';
-
-  try {
-    // 读取用户学习风格配置
-    let styleHint = '';
-    try {
-      const config = storageService.get('learning_style_config');
-      if (config?.style === 'visual') styleHint = '用图形化/表格化的方式呈现助记符。';
-      else if (config?.style === 'verbal') styleHint = '用押韵或顺口溜的方式。';
-      else if (config?.style === 'example') styleHint = '用一个生动的类比或故事。';
-    } catch (_e) {
-      /* use default */
-    }
-
-    const response = await proxyAI('analyze', {
-      question: questionText,
-      options: currentQuestion.options || [],
-      correctAnswer: answer,
-      userAnswer: '',
-      mnemonicMode: true,
-      learningStyleHint: `[助记符生成] 请为这道题的正确答案生成一个简短的记忆口诀或助记符（不超过30字），帮助学生快速记住关键知识点。要求朗朗上口、容易联想。${styleHint}`
-    });
-
-    if (response.code === 0 && response.data) {
-      const mnemonic = response.data.trim();
-
-      // 保存到错题记录
-      const mistakes = storageService.get('mistake_book', []);
-      const idx = mistakes.findIndex(
-        (m) =>
-          m.question === questionText || m.question_content === questionText || (m.id && m.id === currentQuestion.id)
-      );
-
-      if (idx >= 0) {
-        mistakes[idx].mnemonic = mnemonic;
-        mistakes[idx].hasMnemonic = true;
-        storageService.save('mistake_book', mistakes, true);
-        logger.log('[quiz-mistake] 助记符已生成:', mnemonic);
-      }
-
-      return mnemonic;
-    }
-  } catch (e) {
-    logger.warn('[quiz-mistake] 助记符生成失败（不影响主流程）:', e);
-  }
+  // ai.api 已移除，助记符生成功能降级
+  logger.warn('[quiz-mistake] generateMnemonic: ai.api 已移除，功能降级');
   return null;
 }

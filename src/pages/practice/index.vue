@@ -99,7 +99,6 @@
       :unlocked-achievements="unlockedAchievements"
       @open-goal-setting="openGoalSetting"
       @go-mistake="goMistake"
-      @show-achievement="showAchievementModal = true"
     />
 
     <!-- AI 今日推荐训练 — 零决策一键开始 -->
@@ -378,8 +377,7 @@
       @pause="pauseGeneration"
     />
 
-    <!-- 极速体验弹窗 -->
-    <SpeedReadyModal :visible="showSpeedModal" @start="closeSpeedModalAndPlay" />
+    <!-- 极速体验弹窗（已移除） -->
 
     <!-- 题库管理弹窗 -->
     <QuizManageModal
@@ -406,13 +404,7 @@
       @saved="onGoalSaved"
     />
 
-    <!-- 成就展示弹窗 -->
-    <AchievementModal
-      :visible="showAchievementModal"
-      :unlocked-achievements="unlockedAchievements"
-      :all-achievements="allAchievements"
-      @close="showAchievementModal = false"
-    />
+    <!-- 成就展示弹窗（已移除） -->
 
     <!-- 练习模式选择弹窗 -->
     <PracticeModesModal
@@ -439,10 +431,8 @@ import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
 // 导致组件无法渲染。全部改为静态 import。
 import ResumePracticeModal from '@/components/common/ResumePracticeModal.vue';
 import GoalSettingModal from '@/components/business/practice/GoalSettingModal.vue';
-import AchievementModal from '@/components/business/practice/AchievementModal.vue';
 import PracticeModesModal from '@/components/business/practice/PracticeModesModal.vue';
 import QuizManageModal from '@/components/business/practice/QuizManageModal.vue';
-import SpeedReadyModal from '@/components/business/practice/SpeedReadyModal.vue';
 import LearningStatsCard from '@/components/business/practice/LearningStatsCard.vue';
 import GenerationProgressBar from '@/components/business/practice/GenerationProgressBar.vue';
 import AiGenerationOverlay from '@/components/business/practice/AiGenerationOverlay.vue';
@@ -477,13 +467,11 @@ export default {
     CustomTabbar,
     ResumePracticeModal,
     GoalSettingModal,
-    AchievementModal,
     PracticeModesModal,
     QuizManageModal,
     LearningStatsCard,
     GenerationProgressBar,
     AiGenerationOverlay,
-    SpeedReadyModal,
     PauseBanner
   },
   // ✅ 2.1: 导航逻辑提取为 composable
