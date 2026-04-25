@@ -1,148 +1,102 @@
-# Exam-Master
+# Exam-Master 考研大师
 
-> 考研备考小程序 — AI 助力，一战成硕
+> 基于百度网盘资源库的考研备考闪卡刷题工具
 
-基于 uni-app + Vue 3 + Laf Cloud 的全栈考研备考应用，支持微信小程序、QQ 小程序和 H5。
+## 产品定位
 
-## 功能概览
+将百度网盘中的机构 PDF 资料**离线加工**为结构化闪卡题目，用户在 APP 内刷闪卡复习，FSRS 算法智能安排间隔重复。
 
-- **智能刷题** — 题库练习、模拟考试、错题本、收藏夹，支持自适应学习引擎
-- **AI 助手** — AI 对话答疑、拍照搜题、AI 自动生成题目
-- **学习管理** — 学习目标设定、成就系统、学习统计、签到打卡
-- **社交功能** — PK 对战、排行榜、好友系统、学习小组
-- **院校工具** — 院校查询、AI 择校咨询、学习资源库
-- **实用工具** — 证件照处理、文档转换
+**不做内容生产者，做内容加工工具。**
+
+## 核心链路
+
+```
+闲鱼资源 → baidu-autosave 自动转存 → 你的百度网盘
+    → AI 离线加工(PDF→结构化闪卡JSON)
+    → 用户 APP 刷闪卡 + FSRS 复习调度
+```
+
+## 平台策略
+
+| 平台 | 定位 | 状态 |
+|------|------|------|
+| 微信小程序 | 轻量入口（3页面，<500KB） | 已上线(ICP备案)，重构中 |
+| iOS / Android | 主力产品（全功能） | 规划中 |
 
 ## 技术栈
 
-| 层级     | 技术                                   |
-| -------- | -------------------------------------- |
-| 前端框架 | uni-app + Vue 3 + Pinia                |
-| 后端服务 | Laf Cloud (Sealos) + TypeScript        |
-| 数据库   | MongoDB (Laf 内置)                     |
-| AI 能力  | 智谱 GLM-4-Plus / SiliconFlow          |
-| 构建工具 | Vite                                   |
-| 测试     | Vitest + Playwright                    |
-| 代码规范 | ESLint + Prettier + Husky + Commitlint |
+| 层级 | 技术 |
+|------|------|
+| 前端 | uni-app 3.x + Vue 3.4 + Pinia + Vite 5 |
+| UI | wot-design-uni |
+| 后端 | Laf 云函数 (TypeScript) |
+| 数据库 | MongoDB |
+| 算法 | FSRS (ts-fsrs) — 间隔重复记忆调度 |
+| 存储 | 百度网盘 SVIP (通过开放API读取) |
 
 ## 项目结构
 
 ```
-exam-master/
-├── src/                    # 前端源码
-│   ├── pages/              #   页面（主包）
-│   ├── pages/practice-sub/ #   练习子包
-│   ├── pages/school-sub/   #   院校子包
-│   ├── components/         #   组件（base / business）
-│   ├── composables/        #   组合式函数
-│   ├── services/           #   服务层（HTTP / 存储 / 错误处理）
-│   ├── stores/             #   Pinia 状态管理
-│   ├── utils/              #   工具函数
-│   ├── config/             #   应用配置
-│   └── styles/             #   全局样式 / 设计令牌
-├── laf-backend/            # 后端云函数（独立子项目）
-│   ├── functions/          #   云函数入口（35 个）
-│   ├── functions/_shared/  #   共享模块（响应码 / 日志 / 限流）
-│   ├── database-schema/    #   数据库 Schema
-│   └── README.md           #   后端文档
-├── docs/                   # 项目文档（当前 + 归档）
-│   ├── README.md            #  文档导航（当前文档入口）
-│   ├── BASELINE-START-2026-02-28.md # 新基线说明
-│   ├── AI-SOP/modules/      #  模块化文档（API / 组件 / 工具函数 / 脚本等）
-│   └── archive/             #  历史审计/交付文档归档
-├── deploy/                 # 部署配置与运维文档
-├── tests/                  # 测试用例
-├── .env.example            # 环境变量模板（前端）
-└── laf-backend/.env.example #  环境变量模板（后端）
+├── src/                 # 前端源码
+│   ├── pages/           # 页面
+│   ├── components/      # 组件
+│   ├── stores/          # Pinia 状态管理
+│   ├── services/        # API 调用层
+│   ├── composables/     # Vue 3 组合式函数
+│   ├── styles/          # 全局样式/主题
+│   ├── config/          # 配置
+│   └── utils/           # 工具函数
+├── laf-backend/         # 后端云函数
+│   ├── functions/       # 云函数
+│   └── database-schema/ # 数据库结构
+├── docs/                # 文档（编号体系，见下方）
+├── deploy/              # 部署配置
+├── tests/unit/          # 单元测试
+├── cdn-assets/          # CDN 图片资源
+└── scripts/build/       # 构建脚本
 ```
+
+## 文档体系
+
+所有文档在 `docs/` 下按编号排列，详见 [docs/00-INDEX.md](./docs/00-INDEX.md)：
+
+| 编号 | 内容 |
+|------|------|
+| 01 | 产品愿景与战略 |
+| 02 | 系统架构 |
+| 03 | 模块索引 |
+| 04 | API 文档 |
+| 05 | 数据库结构 |
+| 06 | 前端参考手册 |
+| 07 | 样式系统 |
+| 08 | 测试基础设施 |
+| 09 | 部署运维指南 |
+| 10 | 开发规范 |
+| 11 | 发布记录 |
+| 12 | 变更日志 |
 
 ## 快速开始
 
-### 环境要求
-
-- Node.js >= 20.17（与 CI 保持一致）
-- npm >= 10
-- 微信开发者工具（小程序开发）
-- [Laf CLI](https://docs.laf.run/guide/cli/)（后端部署）
-
-### 前端
-
 ```bash
-# 使用仓库内固定版本（nvm）
-nvm use
-
-# 或（fnm）
-fnm use 20.17.0
-
 # 安装依赖
-npm install
+npm install --legacy-peer-deps
 
-# 复制环境变量并填入配置
-cp .env.example .env.local
-
-# 启动开发服务器（H5）
+# H5 开发
 npm run dev:h5
 
-# 构建微信小程序
+# 微信小程序开发
+npm run dev:mp-weixin
+
+# 运行测试
+npm test
+
+# 构建
+npm run build:h5
 npm run build:mp-weixin
 ```
 
-### 后端
-
-```bash
-cd laf-backend
-
-# 安装依赖
-npm install
-
-# 复制环境变量并填入配置
-cp .env.example .env
-
-# 部署到 Laf
-laf login && laf init <appid> && laf deploy
-```
-
-详见 [laf-backend/README.md](./laf-backend/README.md)。
-
-## 常用命令
-
-| 命令                                    | 说明                    |
-| --------------------------------------- | ----------------------- |
-| `npm run dev:h5`                        | H5 开发服务器           |
-| `npm run dev:mp-weixin`                 | 微信小程序开发          |
-| `npm run build:mp-weixin`               | 构建微信小程序          |
-| `npm run test`                          | 运行单元测试            |
-| `npm run test:coverage`                 | 测试覆盖率报告          |
-| `npm run lint:fix`                      | ESLint 自动修复         |
-| `npm run format`                        | Prettier 格式化         |
-| `npm run test:qa:full-regression:clean` | Node20 交付级全链路门禁 |
-
-`test:qa:full-regression:clean` 当前会执行：`lint(0 warning)`、`format:check`、`laf 源码严格审计`、`build:h5`、`vitest`、`visual`、`e2e regression/compat`、`maestro`、`tracked secrets`、`prod deps audit(非阻断)`、`mp 主包引用审计`、`mini program e2e report`。
-
-## 文档
-
-- [文档导航](./docs/README.md) — 当前文档总入口（含归档说明）
-- [新起点基线](./docs/archive/2026-02-reset/BASELINE-START-2026-02-28.md) — 以当前状态重新开始的执行基线
-- [API 文档](./docs/AI-SOP/modules/api-documentation.md) — 完整 API 参考（含快速速查表 + 详细示例）
-- [备份状态](./docs/archive/2026-02-reset/BACKUP-STATUS-2026-02-28.md) — 备份保障现状与证据清单
-- [部署指南](./laf-backend/DEPLOYMENT_GUIDE.md) — Laf 发布与线上验证
-- [组件文档](./docs/AI-SOP/modules/frontend-components.md) — 前端组件说明
-- [工具函数](./docs/AI-SOP/modules/utils-reference.md) — 工具函数说明
-- [脚本与 CI/CD](./docs/AI-SOP/modules/scripts-reference.md) — 构建脚本与流水线
-- [应急响应](./deploy/docs/EMERGENCY-RESPONSE.md) — 故障处理预案
-- [后端文档](./laf-backend/README.md) — 云函数开发指南
-
 ## 环境变量
 
-前端环境变量详见 [.env.example](./.env.example)，后端环境变量详见 [laf-backend/.env.example](./laf-backend/.env.example)。
+复制 `.env.example` → `.env.development`，填入必要的 API 密钥。
 
-关键配置项：
-
-- `VITE_API_BASE_URL` — 后端 API 地址
-- `VITE_WECHAT_APPID` — 微信小程序 AppID
-- `VITE_QQ_APPID` — QQ 小程序 AppID
-- `VITE_AI_*` — AI 服务配置
-
-## License
-
-Private — 仅供内部使用。
+**敏感文件（不在版本控制中）**：`.env`、`.env.local`、`.env.server`
