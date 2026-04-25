@@ -191,3 +191,7 @@ uiverse-*.png
 
 # Python linter 缓存
 .ruff_cache/
+
+# 闪卡生成物（由管线脚本生成）
+data/flashcards/
+scripts/pipeline/.card-hashes.json
