@@ -102,8 +102,11 @@ describe('全链路: LafService 核心请求引擎', () => {
     });
   });
 
+  // [已删除] Phase 7 端到端场景中的 rankCenter / socialService / getHotSchools
+  // 已在死代码清理中移除，相关 case 删除
+
   describe('Phase 7: 端到端场景 - 完整用户旅程', () => {
-    it('新用户完整旅程: 登录 -> 刷题 -> 查看排行', async () => {
+    it('新用户完整旅程: 登录 -> 刷题', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
       // Step 1: 登录
@@ -119,7 +122,7 @@ describe('全链路: LafService 核心请求引擎', () => {
       // 模拟登录后存储 userId
       global.__mockStorage['EXAM_USER_ID'] = 'new_user_001';
 
-      // Step 2: 获取随机题目（getQuestionBank 已在 R432 删除）
+      // Step 2: 获取随机题目
       mockRequest.mockResolvedValueOnce({
         code: 0,
         success: true,
@@ -132,32 +135,19 @@ describe('全链路: LafService 核心请求引擎', () => {
       const bankResult = await lafService.getRandomQuestions({ count: 2 });
       expect(bankResult.success).toBe(true);
 
-      // Step 3: 查看排行
-      mockRequest.mockResolvedValueOnce({
-        code: 0,
-        success: true,
-        data: { rank: 1, score: 100 }
-      });
-
-      const rankResult = await lafService.rankCenter({ action: 'getAll', userId: 'new_user_001' });
-      expect(rankResult.success).toBe(true);
-
-      // 验证总共发了 3 次请求
-      expect(mockRequest).toHaveBeenCalledTimes(3);
+      // 验证总共发了 2 次请求
+      expect(mockRequest).toHaveBeenCalledTimes(2);
     });
 
-    it('离线用户旅程: 所有接口优雅降级', async () => {
+    it('离线用户旅程: 核心接口优雅降级', async () => {
       const { lafService } = await import('@/services/lafService.js');
 
       // 模拟所有请求失败
       mockRequest.mockRejectedValue(new Error('网络连接失败'));
 
-      // 所有接口都不应该抛出未捕获异常（getQuestionBank 已在 R432 删除）
+      // 所有接口都不应该抛出未捕获异常
       const results = await Promise.all([
-        lafService.getRandomQuestions(),
-        lafService.getHotSchools(),
-        lafService.rankCenter({ action: 'getAll' }),
-        lafService.socialService({ action: 'get_friend_list' })
+        lafService.getRandomQuestions()
       ]);
 
       // 所有结果都应该是标准错误格式

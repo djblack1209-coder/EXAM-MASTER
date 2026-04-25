@@ -588,19 +588,7 @@ describe('[审计] 401 处理链 — Token 过期响应处理', () => {
     setActivePinia(createPinia());
   });
 
-  it('lafService 收到 401 — 不自动重试（由 token-refresh-plugin 处理）', async () => {
-    const { lafService } = await import('@/services/lafService.js');
-
-    // proxyAI 内部使用 aiService.request 的闭包引用，vi.spyOn(lafService, 'request')
-    // 无法拦截（lafService 是 aiService 的展开副本）
-    // 验证 proxyAI 对 401 不会无限重试：在合理时间内能返回
-    const result = await lafService.proxyAI('chat', { content: '测试 401 处理' });
-
-    // proxyAI 不会自动重试 401，由上层 token-refresh-plugin 统一处理
-    // 这里只验证 proxyAI 能正常返回一个结果对象（不死循环）
-    expect(result).toBeDefined();
-    expect(typeof result).toBe('object');
-  });
+  // [已删除] lafService.proxyAI 已在死代码清理中移除，case 删除
 
   it('token-refresh-plugin wrapRequest — 401 触发刷新', async () => {
     const mod = await import('@/utils/auth/token-refresh-plugin.js');
