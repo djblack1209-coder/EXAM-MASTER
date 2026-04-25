@@ -34,14 +34,6 @@
       }
     },
     {
-      "path": "pages/school/index",
-      "style": {
-        "navigationBarTitleText": "择校分析",
-        "navigationBarBackgroundColor": "#1A1A1A",
-        "navigationStyle": "custom"
-      }
-    },
-    {
       "path": "pages/profile/index",
       "style": {
         "navigationBarTitleText": "个人中心",
@@ -58,30 +50,6 @@
           "path": "do-quiz",
           "style": {
             "navigationBarTitleText": "刷题进行中",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "pk-battle",
-          "style": {
-            "navigationBarTitleText": "PK 对战",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "rank",
-          "style": {
-            "navigationBarTitleText": "学霸排行榜",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "import-data",
-          "style": {
-            "navigationBarTitleText": "资料导入",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
@@ -111,14 +79,6 @@
           }
         },
         {
-          "path": "diagnosis-report",
-          "style": {
-            "navigationBarTitleText": "学习诊断",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
           "path": "smart-review",
           "style": {
             "navigationBarTitleText": "智能复习",
@@ -138,27 +98,6 @@
           "path": "sprint-mode",
           "style": {
             "navigationBarTitleText": "冲刺模式",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/school-sub",
-      "pages": [
-        {
-          "path": "detail",
-          "style": {
-            "navigationBarTitleText": "院校详情",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "ai-consult",
-          "style": {
-            "navigationBarTitleText": "AI择校咨询",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
@@ -225,40 +164,6 @@
           "path": "terms",
           "style": {
             "navigationBarTitleText": "用户协议",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/social",
-      "pages": [
-        {
-          "path": "friend-list",
-          "style": {
-            "navigationBarTitleText": "我的好友",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "friend-profile",
-          "style": {
-            "navigationBarTitleText": "好友资料",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/chat",
-      "pages": [
-        {
-          "path": "chat",
-          "style": {
-            "navigationBarTitleText": "智能对话",
             "navigationStyle": "custom",
             "navigationBarBackgroundColor": "#1A1A1A"
           }
@@ -334,101 +239,6 @@
       ]
     },
     {
-      "root": "pages/tools",
-      "pages": [
-        {
-          "path": "photo-search",
-          "style": {
-            "navigationBarTitleText": "拍照搜题",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A",
-            "enablePullDownRefresh": false
-          }
-        },
-        {
-          "path": "id-photo",
-          "style": {
-            "navigationBarTitleText": "免费证件照换底色",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A",
-            "enablePullDownRefresh": false
-          }
-        },
-        {
-          "path": "doc-convert",
-          "style": {
-            "navigationBarTitleText": "文档格式转换",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A",
-            "enablePullDownRefresh": false
-          }
-        },
-        {
-          "path": "focus-timer",
-          "style": {
-            "navigationBarTitleText": "专注计时",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/knowledge-graph",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "知识图谱",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "mastery",
-          "style": {
-            "navigationBarTitleText": "掌握度总览",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/ai-classroom",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "AI 课堂",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "classroom",
-          "style": {
-            "navigationBarTitleText": "互动课堂",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/group",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "学习小组",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
       "root": "pages/resource",
       "pages": [
         {
@@ -459,34 +269,24 @@
     "pages/index/index": {
       "network": "all",
       "packages": [
-        "pages/chat",
         "pages/practice-sub",
         "pages/plan",
-        "pages/ai-classroom",
         "pages/login",
-        "pages/tools",
-        "pages/mistake",
-        "pages/knowledge-graph"
+        "pages/mistake"
       ]
     },
     "pages/practice/index": {
       "network": "all",
-      "packages": ["pages/practice-sub", "pages/mistake", "pages/tools", "pages/resource"]
-    },
-    "pages/school/index": {
-      "network": "all",
-      "packages": ["pages/school-sub"]
+      "packages": ["pages/practice-sub", "pages/mistake", "pages/resource"]
     },
     "pages/profile/index": {
       "network": "all",
       "packages": [
         "pages/settings",
-        "pages/social",
         "pages/favorite",
         "pages/study-detail",
         "pages/login",
         "pages/mistake",
-        "pages/group",
         "pages/resource"
       ]
     }
@@ -518,12 +318,6 @@
         "text": "刷题",
         "iconPath": "static/tabbar/practice.png",
         "selectedIconPath": "static/tabbar/practice-active.png"
-      },
-      {
-        "pagePath": "pages/school/index",
-        "text": "择校",
-        "iconPath": "static/tabbar/school.png",
-        "selectedIconPath": "static/tabbar/school-active.png"
       },
       {
         "pagePath": "pages/profile/index",
