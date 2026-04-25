@@ -14,11 +14,14 @@ let _storeRef = null;
 function _getStore() {
   if (!_storeRef) {
     try {
-      // 直接从模块文件导入，不经过 barrel（stores/index.js 不导出分包 store 以避免拖入主包）
-      const { useGamificationStore } = require('@/stores/modules/gamification');
-      _storeRef = useGamificationStore();
+      // gamification store 已移除，尝试动态加载（降级处理）
+      const mod = require('@/stores/modules/gamification');
+      const useGamificationStore = mod.useGamificationStore || mod.default?.useGamificationStore;
+      if (typeof useGamificationStore === 'function') {
+        _storeRef = useGamificationStore();
+      }
     } catch {
-      /* pinia 未就绪 */
+      /* gamification store 已移除，静默降级 */
     }
   }
   return _storeRef;

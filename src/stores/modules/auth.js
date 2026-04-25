@@ -159,10 +159,9 @@ export const useAuthStore = defineStore('auth', () => {
     // 清理新增 Store 缓存，防止用户切换时数据泄露
     (async () => {
       try {
-        const [{ useStatsStore }, { useFavoriteStore }, { useInviteStore }] = await Promise.all([
+        const [{ useStatsStore }, { useFavoriteStore }] = await Promise.all([
           import('./stats.js'),
-          import('./favorite.js'),
-          import('./invite.js')
+          import('./favorite.js')
         ]);
         useStatsStore().clearCache();
         // favorite store 没有 clearCache，手动重置
@@ -170,12 +169,7 @@ export const useAuthStore = defineStore('auth', () => {
         favStore.favorites = [];
         favStore.total = 0;
         favStore.stats = { totalCount: 0, reviewedCount: 0, needReviewCount: 0, withNoteCount: 0 };
-        // invite store 重置
-        const invStore = useInviteStore();
-        invStore.inviteCode = '';
-        invStore.inviteCount = 0;
-        invStore.rewards = [];
-        invStore.loaded = false;
+        // invite store 已移除
       } catch (_e) {
         // 清理失败不影响登出流程
       }

@@ -1,17 +1,10 @@
 /**
- * Review Store — 复习 & 诊断 & 题库状态管理
+ * Review Store — 复习 & 题库状态管理
  *
- * 集中管理 FSRS 复习、AI 诊断、复习计划、题库浏览相关的后端调用，
- * 替代页面直接调用 lafService 的架构违规。
+ * 集中管理 FSRS 复习、题库浏览相关的后端调用。
+ * AI 诊断/复习计划/智能推荐功能因 ai.api 移除已降级。
  *
- * 覆盖 14 个调用点：
- *   - getFSRSStatus ×2, getFSRSRetentionCurve, optimizeFSRS
- *   - getDiagnosis ×2, generateDiagnosis ×2
- *   - getReviewPlan ×3
- *   - getQuestionBankStats, browseQuestions, getQuestionBankRandom (question-bank.vue)
- *   - getRandomQuestions (mock-exam.vue)
- *
- * 数据流：Page → Store → Domain API (practice.api / ai.api)
+ * 数据流：Page -> Store -> Domain API (practice.api)
  *
  * @module stores/review
  */
@@ -27,12 +20,6 @@ import {
   getQuestionBankRandom as apiGetQuestionBankRandom,
   getRandomQuestions as apiGetRandomQuestions
 } from '@/services/api/domains/practice.api.js';
-import {
-  generateDiagnosis as apiGenerateDiagnosis,
-  getDiagnosis as apiGetDiagnosis,
-  getReviewPlan as apiGetReviewPlan,
-  getSmartRecommendations as apiGetSmartRecommendations
-} from '@/services/api/domains/ai.api.js';
 import { logger } from '@/utils/logger.js';
 
 export const useReviewStore = defineStore('review', () => {
@@ -44,11 +31,7 @@ export const useReviewStore = defineStore('review', () => {
 
   // ==================== Actions ====================
 
-  /**
-   * 获取 FSRS 状态
-   * 注：domain API 使用 action: 'getStatus'（后端正确的 action name），
-   * 修复了原先 action: 'status' 导致后端 400 错误的潜在 bug
-   */
+  /** 获取 FSRS 状态 */
   const fetchFSRSStatus = async () => {
     try {
       const res = await apiFSRSStatus();
@@ -63,11 +46,7 @@ export const useReviewStore = defineStore('review', () => {
     }
   };
 
-  /**
-   * 获取 FSRS 留存率曲线
-   * 注：domain API 使用 action: 'getRetentionCurve'（后端正确的 action name），
-   * 修复了原先 action: 'retention_curve' 导致后端 400 错误的潜在 bug
-   */
+  /** 获取 FSRS 留存率曲线 */
   const fetchRetentionCurve = async () => {
     try {
       const res = await apiFSRSRetentionCurve();
@@ -96,68 +75,28 @@ export const useReviewStore = defineStore('review', () => {
     }
   };
 
-  /**
-   * 生成 AI 诊断报告
-   * @param {Object} sessionData - 调用方传 { sessionId: '...' }
-   * 注：ai.api.js 的 generateDiagnosis 接受 sessionId 字符串参数，
-   * 这里从 sessionData 对象中提取 sessionId 进行适配
-   */
-  const generateDiagnosis = async (sessionData = {}) => {
-    try {
-      const res = await apiGenerateDiagnosis(sessionData.sessionId);
-      if (res.code === 0 && res.data) {
-        currentDiagnosis.value = res.data;
-        return { success: true, data: res.data };
-      }
-      throw new Error(res.message || '诊断生成失败');
-    } catch (error) {
-      logger.error('[ReviewStore] generateDiagnosis:', error);
-      return { success: false, error };
-    }
+  /** 生成 AI 诊断报告（ai.api 已移除，返回降级结果） */
+  const generateDiagnosis = async (_sessionData = {}) => {
+    logger.warn('[ReviewStore] generateDiagnosis: ai.api 已移除，功能降级');
+    return { success: false, error: { message: 'AI 诊断功能已下线' } };
   };
 
-  /** 获取诊断报告（by ID 或 sessionId） */
-  const fetchDiagnosis = async (params = {}) => {
-    try {
-      const res = await apiGetDiagnosis(params);
-      if (res.code === 0 && res.data) {
-        currentDiagnosis.value = res.data;
-        return { success: true, data: res.data };
-      }
-      throw new Error(res.message || '获取诊断失败');
-    } catch (error) {
-      logger.error('[ReviewStore] fetchDiagnosis:', error);
-      return { success: false, error };
-    }
+  /** 获取诊断报告（ai.api 已移除，返回降级结果） */
+  const fetchDiagnosis = async (_params = {}) => {
+    logger.warn('[ReviewStore] fetchDiagnosis: ai.api 已移除，功能降级');
+    return { success: false, error: { message: 'AI 诊断功能已下线' } };
   };
 
-  /** 获取复习计划 */
+  /** 获取复习计划（ai.api 已移除，返回降级结果） */
   const fetchReviewPlan = async () => {
-    try {
-      const res = await apiGetReviewPlan();
-      if (res.code === 0 && res.data) {
-        reviewPlan.value = res.data;
-        return { success: true, data: res.data };
-      }
-      throw new Error(res.message || '获取复习计划失败');
-    } catch (error) {
-      logger.error('[ReviewStore] fetchReviewPlan:', error);
-      return { success: false, error };
-    }
+    logger.warn('[ReviewStore] fetchReviewPlan: ai.api 已移除，功能降级');
+    return { success: false, error: { message: '复习计划功能已下线' } };
   };
 
-  /** 获取智能推荐题目 */
-  const fetchSmartRecommendations = async (params = {}) => {
-    try {
-      const res = await apiGetSmartRecommendations(params);
-      if (res.code === 0 && res.data) {
-        return { success: true, data: res.data };
-      }
-      throw new Error(res.message || '获取推荐失败');
-    } catch (error) {
-      logger.error('[ReviewStore] fetchSmartRecommendations:', error);
-      return { success: false, error };
-    }
+  /** 获取智能推荐题目（ai.api 已移除，返回降级结果） */
+  const fetchSmartRecommendations = async (_params = {}) => {
+    logger.warn('[ReviewStore] fetchSmartRecommendations: ai.api 已移除，功能降级');
+    return { success: false, error: { message: '智能推荐功能已下线' } };
   };
 
   /** 获取题库统计 (分类/难度分布) */
@@ -208,9 +147,7 @@ export const useReviewStore = defineStore('review', () => {
     }
   };
 
-  /**
-   * 重置 store 状态到初始值（Setup Store 手动实现）
-   */
+  /** 重置 store 状态到初始值 */
   const $reset = () => {
     fsrsStatus.value = null;
     retentionCurve.value = null;

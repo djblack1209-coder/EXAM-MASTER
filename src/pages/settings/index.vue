@@ -342,9 +342,7 @@ import InviteModal from './InviteModal.vue';
 import PosterModal from './PosterModal.vue';
 import { isNightTime } from './theme.js';
 import { storageService } from '@/services/storageService.js';
-import { useSchoolStore } from '@/stores/modules/school';
 import { useProfileStore } from '@/stores/modules/profile';
-import { useInviteStore } from '@/stores/modules/invite.js';
 import { useThemeStore } from '@/stores';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 // ✅ 统一日志工具（生产环境自动禁用）
@@ -369,7 +367,6 @@ import { sanitizeInput } from '@/utils/security/sanitize.js';
 import { ASSETS } from '@/config/static-assets.js';
 
 // 初始化 Store
-const schoolStore = useSchoolStore();
 const profileStore = useProfileStore();
 
 // 基础状态
@@ -390,10 +387,9 @@ const showInviteModal = ref(false); // 邀请好友弹窗
 const showPosterModal = ref(false); // 海报生成弹窗
 const showThemeSelector = ref(false); // 主题选择器弹窗
 
-// 邀请系统（通过 Store 从后端获取真实邀请码）
-const inviteStore = useInviteStore();
-const inviteCode = computed(() => inviteStore.inviteCode || 'EXAM8888');
-const inviteClaimableCount = computed(() => inviteStore.claimableCount);
+// 邀请系统（invite store 已移除，使用默认值）
+const inviteCode = computed(() => 'EXAM8888');
+const inviteClaimableCount = computed(() => 0);
 // C5: 注销状态
 const deletionStatus = ref({ status: 'active', remainingDays: null });
 // D017: 考试日期
@@ -547,26 +543,9 @@ const showSchoolSearchModal = () => {
         toast.loading('搜索中...');
         try {
           // 调用后端搜索院校
-          const response = await schoolStore.searchSchools(keyword, 10);
+          // school store 已移除，院校搜索功能降级
           toast.hide();
-
-          if (response.code === 0 && response.data && response.data.length > 0) {
-            // 显示搜索结果供用户选择
-            const schools = response.data;
-            const itemList = schools.map((s) => `${s.name} (${s.code || s.location || ''})`);
-            uni.showActionSheet({
-              itemList,
-              success: (selectRes) => {
-                const selectedSchool = schools[selectRes.tapIndex];
-                userSchoolInfo.value.school = selectedSchool.name;
-                userSchoolInfo.value.schoolCode = selectedSchool.code || '';
-                storageService.save('user_school_info', userSchoolInfo.value);
-                toast.success('院校已更新');
-              }
-            });
-          } else {
-            toast.info('未找到匹配的院校');
-          }
+          toast.info('院校搜索功能暂未开放');
         } catch (error) {
           toast.hide();
           logger.error('[Settings] 搜索院校失败:', error);

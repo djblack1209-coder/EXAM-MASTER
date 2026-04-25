@@ -97,16 +97,8 @@ export function useHomeReview({ reviewStore } = {}) {
    * 加载推荐学习主题
    */
   async function loadRecommendedTopic() {
-    try {
-      const allQuestions = storageService.get('v30_bank', []);
-      if (allQuestions.length > 0) {
-        const keMod = await safeImport(import('@/pages/knowledge-graph/knowledge-engine.js'));
-        const getNextRecommendedTopic = keMod.getNextRecommendedTopic || keMod.default?.getNextRecommendedTopic;
-        recommendedTopic.value = getNextRecommendedTopic(allQuestions);
-      }
-    } catch (_e) {
-      /* silent */
-    }
+    // knowledge-engine 已移除，推荐学习主题功能降级
+    recommendedTopic.value = null;
   }
 
   /**

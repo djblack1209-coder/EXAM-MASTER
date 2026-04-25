@@ -3,8 +3,13 @@
  * 基于Laf云函数轮询实现轻量级实时对战
  */
 import { ref, onUnmounted } from 'vue';
-import { pkBattle } from '@/services/api/domains/social.api.js';
 import { logger } from '@/utils/logger.js';
+
+// social.api 已移除，pkBattle 降级为空实现
+async function pkBattle(_data) {
+  logger.warn('[PKRoom] pkBattle: social.api 已移除，功能降级');
+  return { code: -1, message: 'PK对战功能已下线' };
+}
 
 const POLL_INTERVAL = 1000; // 1秒轮询
 
