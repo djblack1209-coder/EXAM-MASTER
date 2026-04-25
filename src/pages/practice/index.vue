@@ -75,15 +75,34 @@
       </view>
 
       <!-- 空状态 - 居中显示 -->
-      <view v-else class="empty-state-content" @tap="chooseImportSource">
+      <view v-else class="empty-state-content">
         <view class="empty-icon">
           <BaseIcon name="books" :size="64" />
         </view>
-        <view class="empty-title"> 题库空空如也 </view>
-        <view class="empty-desc"> 导入学习资料，智能为您智能生成专属题库 </view>
-        <view class="empty-action apple-cta">
+        <view class="empty-title"> 选择题库开始刷题 </view>
+        <view class="empty-desc"> 以下题库已就绪，点击即可加载 </view>
+        <!-- 闪卡题库列表 -->
+        <view class="flashcard-bank-list">
+          <view
+            v-for="bank in flashcardBanks"
+            :key="bank.id"
+            class="flashcard-bank-item apple-glass-card"
+            @tap="handleLoadBank(bank.id)"
+          >
+            <view class="bank-info">
+              <text class="bank-name">{{ bank.name }}</text>
+              <text class="bank-desc">{{ bank.description }}</text>
+            </view>
+            <view class="bank-action">
+              <text v-if="flashcardLoadedIds.has(bank.id)" class="bank-loaded">已加载</text>
+              <text v-else class="bank-load-btn">加载</text>
+            </view>
+          </view>
+        </view>
+        <!-- 自定义导入入口 -->
+        <view class="empty-action apple-cta" @tap="chooseImportSource">
           <BaseIcon name="upload" :size="18" />
-          <text class="action-text"> 点击导入资料 </text>
+          <text class="action-text"> 或导入自有资料 </text>
         </view>
       </view>
     </view>
@@ -453,6 +472,7 @@ import { logger } from '@/utils/logger.js';
 // ✅ 2.1: 导航逻辑提取为 composable，减少主组件方法数量
 import { ref } from 'vue';
 import { usePracticeNavigation } from '@/composables/usePracticeNavigation.js';
+import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
 // useReviewStore — 仅在用户点击时需要，改为动态导入减小主包体积
 // ✅ [D002重构] 题库状态管理和动态 mixin 加载
 import { useBankStatus } from '@/composables/useBankStatus.js';
@@ -479,6 +499,20 @@ export default {
     // ✅ [D002重构] 题库状态管理由 composable 提供
     const bankStatus = useBankStatus();
     const { hasBank, totalQuestions, progressPercent, isPageLoading, isGeneratingQuestions } = bankStatus;
+
+    // 闪卡题库
+    const {
+      availableBanks: flashcardBanks,
+      loadedBankIds: flashcardLoadedIds,
+      loadFlashcardBank,
+    } = useFlashcardBank();
+
+    // 加载闪卡题库并刷新页面状态
+    const handleLoadBank = async (bankId) => {
+      await loadFlashcardBank(bankId);
+      // 重新检查题库状态
+      bankStatus.refresh?.();
+    };
     const mistakeCount = ref(0);
 
     const {
@@ -514,6 +548,10 @@ export default {
       goRank,
       goToStudyDetail,
       goFavorites,
+      // 闪卡题库
+      flashcardBanks,
+      flashcardLoadedIds,
+      handleLoadBank,
       // ✅ [D002重构] 题库状态方法
       refreshBankStatus: bankStatus.refreshBankStatus,
       refreshBankWithData: bankStatus.refreshBankWithData,
@@ -1358,6 +1396,55 @@ export default {
   color: var(--text-inverse);
   letter-spacing: 0.3px;
   margin-left: 10px;
+}
+
+/* 闪卡题库列表 */
+.flashcard-bank-list {
+  width: 100%;
+  margin: 20rpx 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+.flashcard-bank-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 28rpx;
+  border-radius: 16rpx;
+  background: var(--card-bg, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.flashcard-bank-item:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+.bank-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+.bank-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary, #1a1d26);
+}
+.bank-desc {
+  font-size: 24rpx;
+  color: var(--text-tertiary, #9ca3af);
+}
+.bank-load-btn {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #00B86B, #00D68F);
+  padding: 10rpx 28rpx;
+  border-radius: 99rpx;
+}
+.bank-loaded {
+  font-size: 24rpx;
+  color: var(--text-tertiary, #9ca3af);
 }
 
 .status-content {
