@@ -27,8 +27,13 @@ import {
   createLogger
 } from './_shared/api-response';
 import { retrievability } from './_shared/fsrs-scheduler';
-// ✅ B3: 统一提示词模块
-import { buildDeepCorrectionSystemPrompt, buildDeepCorrectionUserPrompt } from './_shared/prompts';
+// ✅ 深度纠正提示词（内联，原 prompts/deep-correction.ts 已清理）
+function buildDeepCorrectionSystemPrompt(): string {
+  return '你是一位考研辅导专家。用户在某个知识点上反复出错，请分析根因并给出矫正方案。要求：1）根因一句话概括（为什么错）2）矫正建议一段话（正确的理解方式和关键区别）。直接输出JSON，不要markdown。格式：{"rootCause":"...","correction":"..."}';
+}
+function buildDeepCorrectionUserPrompt(knowledgePoint: string, mistakeContext: string): string {
+  return `知识点：${knowledgePoint}\n\n以下是该用户最近的错题：\n\n${mistakeContext}`;
+}
 
 const db = cloud.database();
 const logger = createLogger('[SmartStudyEngine]');
@@ -522,7 +527,6 @@ async function deepCorrection(userId: string, knowledgePoint?: string): Promise<
 
   // 4. 对每个需要矫正的知识点生成诊断
   const results: DeepCorrectionResult[] = [];
-  const { getEmbedding, cosineSimilarity: cosineSimEmbed } = await import('./_shared/embedding.js');
 
   for (const [kp, kpMistakes] of Object.entries(grouped)) {
     if (recentKPs.has(kp)) continue; // 7天内已诊断，跳过
@@ -581,10 +585,10 @@ async function deepCorrection(userId: string, knowledgePoint?: string): Promise<
       correction = '建议回顾基础概念并进行同类题练习';
     }
 
-    // 4b. 从题库中推荐同类题（基于知识点匹配 + embedding相似度）
+    // 4b. 从题库中推荐同类题（基于知识点匹配）
     let similarQuestions: DeepCorrectionResult['similarQuestions'] = [];
     try {
-      // 先按知识点/分类简单匹配
+      // 按知识点/分类简单匹配
       const { data: candidates } = await db
         .collection('question_bank')
         .where({
@@ -594,35 +598,6 @@ async function deepCorrection(userId: string, knowledgePoint?: string): Promise<
         .get();
 
       if (candidates && candidates.length > 0) {
-        // 排除已错过的题目
-        const mistakeIds = new Set(kpMistakes.map((m: any) => m.question_id));
-        const filtered = candidates.filter((c: any) => !mistakeIds.has(c._id));
-
-        if (filtered.length > 0) {
-          // 用 embedding 计算与错题的相似度，取最相似的 3 道
-          const errorText = recent5.map((m: any) => m.question_content || m.question || '').join(' ');
-          const errorVec = await getEmbedding(errorText.substring(0, 2000));
-
-          const scored = [];
-          for (const cand of filtered.slice(0, 10)) {
-            try {
-              const candVec = await getEmbedding((cand.content || cand.question || '').substring(0, 2000));
-              scored.push({
-                questionId: cand._id,
-                content: (cand.content || cand.question || '').substring(0, 150),
-                similarity: cosineSimEmbed(errorVec, candVec)
-              });
-            } catch {
-              /* skip failed embeddings */
-            }
-          }
-
-          similarQuestions = scored.sort((a, b) => b.similarity - a.similarity).slice(0, 3);
-        }
-      }
-
-      // 如果 embedding 没找到足够结果，回退到纯知识点匹配
-      if (similarQuestions.length === 0 && candidates && candidates.length > 0) {
         const mistakeIds = new Set(kpMistakes.map((m: any) => m.question_id));
         similarQuestions = candidates
           .filter((c: any) => !mistakeIds.has(c._id))
@@ -630,7 +605,7 @@ async function deepCorrection(userId: string, knowledgePoint?: string): Promise<
           .map((c: any) => ({
             questionId: c._id,
             content: (c.content || c.question || '').substring(0, 150),
-            similarity: 0.5 // 知识点匹配但未计算embedding
+            similarity: 0.5 // 知识点匹配，未计算 embedding
           }));
       }
     } catch (embErr: any) {
