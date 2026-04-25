@@ -11,14 +11,6 @@ Last updated: 2026-03-25
 - `npm run test:qa:full-regression`: delivery-grade chain gate (lint/format/laf strict/build/tests/e2e/maestro/secrets/prod-audit/mp-usage).
 - `npm run test:qa:full-regression:clean`: wrapper gate, auto-runs under Node 20.17.0 and ensures Playwright Chromium.
 
-## Electron / 桌面端 (Round 38 新增)
-
-- `npm run electron:dev`: 构建 H5 + 启动 Electron 开发模式
-- `npm run electron:build:mac`: 构建 macOS .dmg 安装包
-- `npm run electron:build:win`: 构建 Windows .exe 安装包
-- `npm run electron:build:all`: 同时构建 Mac + Win
-- `node scripts/build/build-all-platforms.mjs`: 一键全平台构建 (Mac/Win/H5/MP/Android/iOS)
-
 ## App 构建
 
 - `npm run app:build:android`: 构建 Android APK

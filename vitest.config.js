@@ -30,7 +30,7 @@ export default defineConfig({
     include: ['tests/unit/**/*.{test,spec}.{js,ts,vue}', 'src/**/*.{test,spec}.{js,ts}'],
 
     // 排除目录
-    exclude: ['node_modules', 'dist', 'tests/visual/**/*'],
+    exclude: ['node_modules', 'dist'],
 
     // 覆盖率配置
     coverage: {

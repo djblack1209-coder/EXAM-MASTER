@@ -58,10 +58,6 @@ laf-backend/.env*
 # Logs directory
 logs/
 
-# [C-04 FIX] Kubernetes secrets (use sealed-secrets in production)
-# 只保留模板文件，排除实际的 secrets.yaml
-deploy/k8s/secrets.yaml
-
 # IDE - Trae
 .trae/
 
@@ -87,8 +83,6 @@ deploy/k8s/secrets.yaml
 coverage/
 .nyc_output/
 test-results/
-e2e-tests/error-screenshots/
-e2e-tests/ui-snapshots/
 audit-screenshots/
 
 # Backup files
@@ -123,34 +117,17 @@ data/schools/schools-fixed.json
 common/zhipu.js
 common/styles/common.scss
 
-# One-time scripts (fix/refactor/crawlers/data-sync/test)
+# One-time scripts (fix/refactor/crawlers/data-sync)
 scripts/fix/
 scripts/refactor/
 scripts/crawlers/
 scripts/data-sync/
-scripts/test/
-!scripts/test/
-scripts/test/*
-!scripts/test/maestro-check-syntax.sh
-!scripts/test/maestro-env.sh
-!scripts/test/maestro-preflight.sh
-!scripts/test/run-maestro-suite.sh
-!scripts/test/run-maestro-web-h5.sh
-!scripts/test/setup-maestro-macos.sh
 
 # laf-backend one-time scripts & fix artifacts
 laf-backend/scripts/
 laf-backend/test-connection.js
 laf-backend/data/schools/fix-report.json
 laf-backend/data/schools/schools-fixed.json
-
-# Visual / Playwright tests (not used in CI)
-playwright.visual.config.js
-tests/visual/
-tests/debug-selectors.js
-.vscode/visual-report/
-.vscode/visual-results.json
-.vscode/ui-quality-report.json
 
 # Generated quality reports
 docs/reports/PROJECT_DEEP_SCAN_REPORT.md

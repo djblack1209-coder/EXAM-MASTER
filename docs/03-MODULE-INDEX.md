@@ -315,7 +315,7 @@
 - **Pages config**: `pages.json`
 - **Environment vars**: `.env`, `.env.development`, `.env.production`
 - **Build scripts**: `scripts/build/`
-- **Playwright configs**: `playwright.regression.config.js`, `playwright.regression.compat.config.js`
+
 
 ---
 

@@ -133,79 +133,11 @@ jobs:
       - name: Run tracked secrets audit
         run: npm run audit:secrets:tracked
 
-  # ==================== 构建前端 Docker 镜像 ====================
-  build:
-    name: Build Frontend Image
-    runs-on: ubuntu-latest
-    needs: [lint-and-test, security-scan]
-    # 安全扫描失败不应阻断构建，仅要求 lint-and-test 成功
-    if: github.event_name == 'push' && always() && needs.lint-and-test.result == 'success'
-    permissions:
-      contents: read
-      packages: write
-    outputs:
-      version: ${{ steps.meta.outputs.version }}
-      tags: ${{ steps.meta.outputs.tags }}
-      image_name: ${{ steps.repo.outputs.image_name }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-
-      - name: Lowercase image name
-        id: repo
-        run: echo "image_name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ steps.repo.outputs.image_name }}
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix=
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: deploy/docker/Dockerfile.frontend
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ steps.repo.outputs.image_name }}-frontend:${{ steps.meta.outputs.version }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          labels: ${{ steps.meta.outputs.labels }}
-
-      # Docker 镜像 Trivy 扫描：与 filesystem 扫描策略一致，发现漏洞产生告警
-      - name: Run Trivy vulnerability scanner (frontend image)
-        uses: aquasecurity/trivy-action@v0.35.0
-        id: trivy-image
-        continue-on-error: true
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ steps.repo.outputs.image_name }}-frontend:${{ steps.meta.outputs.version }}
-          format: 'table'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'
-
-      - name: Annotate Docker image Trivy result
-        if: steps.trivy-image.outcome == 'failure'
-        run: echo "::warning title=Docker Image Trivy::前端镜像发现 CRITICAL/HIGH 级别漏洞，请查看上方扫描报告。"
-
   # ==================== 部署到 Staging ====================
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: build
+    needs: [lint-and-test, security-scan]
     if: github.ref == 'refs/heads/develop' && vars.DEPLOY_ENABLED == 'true'
     environment:
       name: staging
@@ -224,10 +156,15 @@ jobs:
           mkdir -p ~/.kube
           echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > ~/.kube/config
 
+      - name: Lowercase image name
+        id: repo
+        run: echo "image_name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Deploy frontend to staging
         run: |
+          IMAGE_TAG="${GITHUB_SHA::7}"
           kubectl set image deployment/exam-master-frontend \
-            frontend=${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}-frontend:${{ needs.build.outputs.version }} \
+            frontend=${{ env.REGISTRY }}/${{ steps.repo.outputs.image_name }}-frontend:${IMAGE_TAG} \
             -n exam-master-staging
           kubectl rollout status deployment/exam-master-frontend -n exam-master-staging --timeout=300s
 
@@ -240,7 +177,7 @@ jobs:
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: build
+    needs: [lint-and-test, security-scan]
     if: github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
     environment:
       name: production
@@ -254,6 +191,10 @@ jobs:
         with:
           version: 'v1.28.0'
 
+      - name: Lowercase image name
+        id: repo
+        run: echo "image_name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Configure kubectl
         run: |
           mkdir -p ~/.kube
@@ -261,8 +202,9 @@ jobs:
 
       - name: Deploy frontend to production
         run: |
+          IMAGE_TAG="${GITHUB_SHA::7}"
           kubectl set image deployment/exam-master-frontend \
-            frontend=${{ env.REGISTRY }}/${{ needs.build.outputs.image_name }}-frontend:${{ needs.build.outputs.version }} \
+            frontend=${{ env.REGISTRY }}/${{ steps.repo.outputs.image_name }}-frontend:${IMAGE_TAG} \
             -n exam-master
           kubectl rollout status deployment/exam-master-frontend -n exam-master --timeout=300s
 
