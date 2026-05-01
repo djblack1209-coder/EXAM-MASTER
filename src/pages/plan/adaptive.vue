@@ -121,9 +121,9 @@
             <!-- 任务列表 -->
             <view v-for="(task, tIdx) in day.tasks" :key="task.knowledgePoint + tIdx" class="task-item">
               <view class="task-header">
-                <view class="ta<REDACTED_SECRET>">
+                <view class="task-name-col">
                   <text class="task-kp">{{ task.knowledgePoint }}</text>
-                  <view v-if="task.mastery != null" class="ta<REDACTED_SECRET>">
+                  <view v-if="task.mastery != null" class="task-mastery-row">
                     <view class="mini-bar-bg">
                       <view
                         class="mini-bar-fill"
@@ -1014,7 +1014,7 @@ onMounted(() => {
   align-items: flex-start;
   margin-bottom: 8rpx;
 }
-.ta<REDACTED_SECRET> {
+.task-name-col {
   flex: 1;
   margin-right: 12rpx;
 }
@@ -1026,7 +1026,7 @@ onMounted(() => {
 }
 
 /* 知识点掌握度迷你进度条 */
-.ta<REDACTED_SECRET> {
+.task-mastery-row {
   display: flex;
   align-items: center;
   margin-top: 8rpx;

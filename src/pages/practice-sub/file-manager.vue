@@ -174,7 +174,7 @@ function goBack() {
 
 /** 跳转到导入页面 */
 function goToImport() {
-  uni.navigateTo({ url: '/pages/practice-sub/import-data' });
+  uni.navigateTo({ url: '/pages/practice-sub/question-bank' });
 }
 
 /** 获取文件图标 */

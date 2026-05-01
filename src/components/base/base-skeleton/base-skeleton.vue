@@ -79,7 +79,7 @@
       </view>
       <view class="skeleton-card skeleton-task ds-card ds-p-md">
         <view v-for="i in 3" :key="i" class="skeleton-task-item ds-flex ds-gap-sm">
-          <view class="skeleton-ta<REDACTED_SECRET> ds-rounded-sm" />
+          <view class="skeleton-task-checkbox ds-rounded-sm" />
           <view class="skeleton-task-text ds-rounded-md" />
           <view class="skeleton-task-tag ds-rounded-full" />
         </view>
@@ -434,7 +434,7 @@ defineProps({
   }
 }
 
-.skeleton-ta<REDACTED_SECRET> {
+.skeleton-task-checkbox {
   width: 48rpx;
   /* 24px */
   height: 48rpx;

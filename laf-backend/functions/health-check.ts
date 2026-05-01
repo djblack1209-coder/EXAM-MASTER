@@ -64,7 +64,7 @@ export default async function (ctx: any) {
     try {
       const aiStart = Date.now();
       checks.ai = {
-        status: process.env.AI_PROVIDER_KEY_PLACEHOLDER
+        status: process.env.ZHIPU_API_KEY ? 'configured' : 'not_configured',
         latency: Date.now() - aiStart
       };
     } catch (error) {

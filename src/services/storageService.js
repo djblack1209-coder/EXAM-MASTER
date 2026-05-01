@@ -182,6 +182,10 @@ const GLOBAL_KEYS = new Set([
   'theme_mode',
   'theme_type',
   'voice_enabled',
+  'onboarding_completed',
+  'exam_type',
+  'exam_profile',
+  'daily_goal',
   // 应用级瞬态
   'runtime_errors',
   '_pendingSearch',

@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "source_evidence",
+  "description": "题目来源证据集合 - 记录题目与原始资料切片、页码、哈希和答案证据状态",
+  "type": "object",
+  "required": ["question_id", "source_id", "answer_evidence_status", "question_text_hash"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "question_id": {
+      "type": "string",
+      "description": "题目 ID",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "source_id": {
+      "type": "string",
+      "description": "Source Manifest 中的 sourceId",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "remote_path": {
+      "type": ["string", "null"],
+      "description": "原始资料在网盘或清洗暂存区的路径",
+      "maxLength": 1000
+    },
+    "page_start": {
+      "type": ["integer", "null"],
+      "description": "证据起始页码",
+      "minimum": 1
+    },
+    "page_end": {
+      "type": ["integer", "null"],
+      "description": "证据结束页码",
+      "minimum": 1
+    },
+    "question_text_hash": {
+      "type": "string",
+      "description": "题干原文切片 sha256",
+      "minLength": 16,
+      "maxLength": 128
+    },
+    "answer_text_hash": {
+      "type": ["string", "null"],
+      "description": "答案原文切片 sha256",
+      "maxLength": 128
+    },
+    "raw_text_slice_path": {
+      "type": ["string", "null"],
+      "description": "清洗后证据文本切片存储路径",
+      "maxLength": 1000
+    },
+    "ocr_confidence": {
+      "type": ["number", "null"],
+      "description": "OCR 置信度，0-1",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "answer_evidence_status": {
+      "type": "string",
+      "description": "答案证据匹配状态，只有 matched 可进入发布题库",
+      "enum": ["matched", "missing", "unmatched", "conflict", "manual_review"]
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "question_id": 1 }, "name": "idx_question" },
+    { "key": { "source_id": 1 }, "name": "idx_source" },
+    { "key": { "answer_evidence_status": 1 }, "name": "idx_answer_evidence" },
+    { "key": { "question_text_hash": 1 }, "name": "idx_question_hash" }
+  ]
+}

@@ -237,12 +237,12 @@ describe('FT004: 练习做题流程', () => {
 describe('FT009-FT011: 安全验证', () => {
   describe('FT010: 环境变量安全', () => {
     it('敏感配置不应硬编码在前端', () => {
-      // JWT_SECRET_PLACEHOLDER
+      // JWT_SECRET 不应出现在前端代码中
       const frontendConfig = {
         apiBaseUrl: 'https://api.example.com',
         wxAppId: 'wx123'
       };
-      expect(frontendConfig).not.toHaveProperty('JWT_SECRET_PLACEHOLDER
+      expect(frontendConfig).not.toHaveProperty('JWT_SECRET');
       expect(frontendConfig).not.toHaveProperty('DB_PASSWORD');
       expect(frontendConfig).not.toHaveProperty('AI_API_KEY');
     });

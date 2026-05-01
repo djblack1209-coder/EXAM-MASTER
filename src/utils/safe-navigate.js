@@ -18,7 +18,7 @@ import { logger } from '@/utils/logger.js';
 import { toast } from '@/utils/toast.js';
 
 // tabBar 页面路径列表（与 pages.json 中 tabBar.list 保持一致）
-const TAB_BAR_PAGES = ['/pages/index/index', '/pages/practice/index', '/pages/school/index', '/pages/profile/index'];
+const TAB_BAR_PAGES = ['/pages/index/index', '/pages/practice/index', '/pages/profile/index'];
 
 // 默认转场动画配置
 const ANIMATION = {

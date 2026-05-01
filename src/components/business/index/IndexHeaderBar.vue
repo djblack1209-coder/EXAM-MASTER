@@ -125,7 +125,7 @@ function handleAvatarTap() {
     uni.switchTab({
       url: '/pages/profile/index',
       fail: () => {
-        safeNavigateTo('/pages/settings/index');
+        safeNavigateTo('/pages/profile/index');
       }
     });
   }

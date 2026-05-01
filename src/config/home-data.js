@@ -97,7 +97,7 @@ export const DEMO_QUESTIONS = [
     id: 'demo_1',
     question: '马克思主义哲学的直接理论来源是？',
     options: ['A. 德国古典哲学', 'B. 英国古典政治经济学', 'C. 法国空想社会主义', 'D. 古希腊哲学'],
-    answer: 0,
+    answer: 'A',
     category: '政治',
     explanation: '马克思主义哲学的直接理论来源是德国古典哲学，特别是黑格尔的辩证法和费尔巴哈的唯物主义。'
   },
@@ -110,7 +110,7 @@ export const DEMO_QUESTIONS = [
       'C. 极限存在则左右极限必相等',
       'D. 左右极限存在则极限必存在'
     ],
-    answer: 2,
+    answer: 'C',
     category: '数学',
     explanation: '函数极限存在的充要条件是左极限和右极限都存在且相等。'
   },
@@ -118,7 +118,7 @@ export const DEMO_QUESTIONS = [
     id: 'demo_3',
     question: 'The word "ubiquitous" most probably means ___.',
     options: ['A. rare', 'B. everywhere', 'C. dangerous', 'D. expensive'],
-    answer: 1,
+    answer: 'B',
     category: '英语',
     explanation: 'ubiquitous 意为"无处不在的"，与 everywhere 含义最接近。'
   }

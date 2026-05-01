@@ -15,14 +15,6 @@ const DUPLICATE_PAIRS = [
   [
     'src/pages/practice-sub/utils/mistake-fsrs-scheduler.js',
     'src/pages/study-detail/utils/mistake-fsrs-scheduler.js'
-  ],
-  [
-    'src/pages/chat/composables/useTypewriter.js',
-    'src/pages/practice-sub/composables/useTypewriter.js'
-  ],
-  [
-    'src/pages/chat/privacy-authorization.js',
-    'src/pages/tools/privacy-authorization.js'
   ]
 ];
 

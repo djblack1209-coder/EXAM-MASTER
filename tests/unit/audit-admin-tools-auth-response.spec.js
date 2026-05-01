@@ -40,7 +40,7 @@ import dbMigrateTimestampsHandler from '../../laf-backend/functions/db-migrate-t
 
 describe('[安全审计] 管理工具函数响应形态一致性', () => {
   beforeEach(() => {
-    process.env.SECRET_PLACEHOLDER
+    process.env.ADMIN_SECRET = 'admin_test_secret';
   });
 
   it('db-create-indexes 缺少管理员凭据时返回 403 + success=false + requestId', async () => {

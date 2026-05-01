@@ -260,7 +260,7 @@ function handleAction() {
 function handleUpload() {
   vibrate();
   emit('upload');
-  safeNavigateTo('/pages/practice-sub/import-data');
+  safeNavigateTo('/pages/practice-sub/question-bank');
 }
 
 // 快速开始

@@ -11,10 +11,6 @@
     },
     {
       "action": "allow",
-      "page": "pages/school/index"
-    },
-    {
-      "action": "allow",
       "page": "pages/profile/index"
     },
     {

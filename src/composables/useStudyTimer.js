@@ -154,7 +154,7 @@ export function useStudyTimer() {
 
     requireLogin(
       () =>
-        safeNavigateTo('/pages/study-detail/index', {
+        safeNavigateTo('/pages/profile/index', {
           fail: (err) => {
             logger.error('[useStudyTimer] 跳转学习详情失败:', err);
             uni.switchTab({

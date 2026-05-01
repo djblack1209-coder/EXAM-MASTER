@@ -11,7 +11,7 @@ import { logger } from '@/utils/logger.js';
  * @param {string} params.userChoice - 用户选择
  * @returns {{ success: boolean, comment: string }}
  */
-export async function fetchAIDeepAnalysis({ question, userChoice }) {
+export async function fetchAIDeepAnalysis({ question, userChoice: _userChoice }) {
   logger.warn('[quiz-ai-analysis] AI 深度解析已降级，使用题目自带解析');
   const comment = question?.desc || question?.analysis || '暂无解析';
   return { success: false, comment };

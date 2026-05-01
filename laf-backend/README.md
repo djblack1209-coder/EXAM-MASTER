@@ -46,6 +46,12 @@ cp .env.example .env
 laf deploy
 ```
 
+## 运维文档
+
+- 当前 Sealos/Laf 部署与发布后验证：[`../docs/09A-LAF-BACKEND-DEPLOYMENT.md`](../docs/09A-LAF-BACKEND-DEPLOYMENT.md)
+- 后端拆分独立仓库迁移步骤：[`../docs/09B-BACKEND-MIGRATION-GUIDE.md`](../docs/09B-BACKEND-MIGRATION-GUIDE.md)
+- 全仓部署运维总览：[`../docs/09-DEPLOYMENT-GUIDE.md`](../docs/09-DEPLOYMENT-GUIDE.md)
+
 ## 云函数列表
 
 | 函数                      | 说明                        |

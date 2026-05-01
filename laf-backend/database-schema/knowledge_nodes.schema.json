@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "knowledge_nodes",
+  "description": "公共课知识神经图谱节点集合",
+  "type": "object",
+  "required": ["node_id", "level", "name", "tracks"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "node_id": {
+      "type": "string",
+      "description": "稳定节点 ID，与前端知识图谱 ID 保持一致",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "graph_version": {
+      "type": "string",
+      "description": "图谱版本",
+      "default": "2026.04-public-courses-v1",
+      "maxLength": 80
+    },
+    "subject": {
+      "type": "string",
+      "description": "科目",
+      "enum": ["politics", "english", "math"]
+    },
+    "tracks": {
+      "type": "array",
+      "description": "适用公共课轨道",
+      "items": {
+        "type": "string",
+        "enum": ["politics", "english1", "english2", "math1", "math2", "math3"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "level": {
+      "type": "string",
+      "description": "节点层级",
+      "enum": ["subject", "track", "module", "topic", "micro_point"]
+    },
+    "name": {
+      "type": "string",
+      "description": "用户可见节点名，不包含机构或老师信息",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "parent_id": {
+      "type": ["string", "null"],
+      "description": "父节点 ID",
+      "maxLength": 160
+    },
+    "exam_weight": {
+      "type": "number",
+      "description": "考试权重，0-1",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1
+    },
+    "prerequisites": {
+      "type": "array",
+      "description": "前置知识节点 ID",
+      "items": { "type": "string", "maxLength": 160 },
+      "default": []
+    },
+    "confusable_with": {
+      "type": "array",
+      "description": "易混淆知识节点 ID",
+      "items": { "type": "string", "maxLength": 160 },
+      "default": []
+    },
+    "question_count": {
+      "type": "integer",
+      "description": "挂接题目数",
+      "default": 0,
+      "minimum": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "是否启用",
+      "default": true
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "node_id": 1 }, "unique": true, "name": "idx_node_id" },
+    { "key": { "parent_id": 1 }, "name": "idx_parent" },
+    { "key": { "tracks": 1, "level": 1 }, "name": "idx_tracks_level" },
+    { "key": { "graph_version": 1, "is_active": 1 }, "name": "idx_graph_active" }
+  ]
+}

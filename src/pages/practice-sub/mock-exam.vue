@@ -795,7 +795,7 @@ onHide(() => {
 // [F2-FIX] 微信分享配置
 onShareAppMessage(() => ({
   title: '模拟考试 - Exam-Master 考研备考',
-  path: '/pages/practice-sub/mock-exam',
+  path: '/pages/practice-sub/do-quiz',
   imageUrl: ASSETS.appShareCover
 }));
 </script>

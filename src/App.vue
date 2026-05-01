@@ -11,6 +11,7 @@ import { isUserLoggedIn } from '@/utils/auth/loginGuard.js';
 import { safeNavigateTo } from '@/utils/safe-navigate.js';
 import { NAV_BAR_COLORS } from '@/composables/useTheme.js';
 import { useThemeStore } from '@/stores/modules/theme.js';
+import { restoreUserParams as restoreFsrsParams } from '@/services/fsrs-service.js';
 
 export default {
   onLaunch() {
@@ -32,6 +33,9 @@ export default {
 
     // 初始化双模主题系统
     this.initThemeSystem();
+
+    // 恢复 FSRS 间隔重复参数
+    restoreFsrsParams();
 
     // 执行静默登录
     this.performSilentLogin();
@@ -65,16 +69,14 @@ export default {
       const PUBLIC_PAGES = [
         '/pages/splash/index',
         '/pages/index/index',
-        '/pages/login/onboarding',
         '/pages/login/index',
+        '/pages/login/onboarding',
         '/pages/login/wechat-callback',
-        '/pages/login/qq-callback',
         '/pages/settings/privacy',
         '/pages/settings/terms',
-        '/pages/settings/index',
-        '/pages/school/index',
-        '/pages/school-sub/detail',
         '/pages/practice/index',
+        '/pages/practice-sub/do-quiz',
+        '/pages/practice-sub/question-bank',
         '/pages/profile/index'
       ];
 

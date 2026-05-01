@@ -120,7 +120,7 @@ describe('practice 动态方法加载', () => {
     expect(ctx.dynamicMethodsCache.chooseImportSource()).toBe('ok');
   });
 
-  it('chooseImportSource 在分包方法缺失时应回退到导入页', () => {
+  it('chooseImportSource 在分包方法缺失时应回退到题库页', () => {
     const ctx = {
       dynamicMethodsCache: {}
     };
@@ -128,6 +128,6 @@ describe('practice 动态方法加载', () => {
     PracticePage.methods.chooseImportSource.call(ctx);
 
     expect(uni.navigateTo).toHaveBeenCalledTimes(1);
-    expect(uni.navigateTo.mock.calls[0][0].url).toBe('/pages/practice-sub/import-data');
+    expect(uni.navigateTo.mock.calls[0][0].url).toBe('/pages/practice-sub/question-bank');
   });
 });

@@ -49,7 +49,7 @@ export function usePracticeNavigation(deps = {}) {
       },
       {
         message: '请先登录后开始刷题',
-        loginUrl: '/pages/settings/index',
+        loginUrl: '/pages/login/index',
         onCancel: () => {
           isNavigating.value = false;
         }
@@ -67,13 +67,12 @@ export function usePracticeNavigation(deps = {}) {
           isNavigating.value = false;
           return toast.info('请先导入题库');
         }
-        safeNavigateTo('/pages/practice-sub/pk-battle', {
-          complete: () => _resetNav()
-        });
+        toast.info('小程序版已下线 PK 对战，请使用刷题练习');
+        _resetNav();
       },
       {
         message: '请先登录后参与PK对战',
-        loginUrl: '/pages/settings/index',
+        loginUrl: '/pages/login/index',
         onCancel: () => {
           isNavigating.value = false;
         }
@@ -90,25 +89,25 @@ export function usePracticeNavigation(deps = {}) {
         }
         safeNavigateTo('/pages/mistake/index?mode=review');
       },
-      { message: '请先登录后查看错题', loginUrl: '/pages/settings/index' }
+      { message: '请先登录后查看错题', loginUrl: '/pages/login/index' }
     );
   }
 
   function goFileManager() {
     requireLogin(
       () => {
-        safeNavigateTo('/pages/practice-sub/file-manager');
+        safeNavigateTo('/pages/practice-sub/question-bank');
       },
-      { message: '请先登录后管理文件', loginUrl: '/pages/settings/index' }
+      { message: '请先登录后查看题库', loginUrl: '/pages/login/index' }
     );
   }
 
   function goAITutor() {
     requireLogin(
       () => {
-        safeNavigateTo('/pages/chat/chat');
+        toast.info('小程序版已关闭 AI 导师，请先查看题目解析');
       },
-      { message: '请先登录后使用智能辅导', loginUrl: '/pages/settings/index' }
+      { message: '请先登录后使用智能辅导', loginUrl: '/pages/login/index' }
     );
   }
 
@@ -117,34 +116,34 @@ export function usePracticeNavigation(deps = {}) {
       () => {
         safeNavigateTo('/pages/mistake/index');
       },
-      { message: '请先登录后查看错题本', loginUrl: '/pages/settings/index' }
+      { message: '请先登录后查看错题本', loginUrl: '/pages/login/index' }
     );
   }
 
   function goRank() {
     requireLogin(
       () => {
-        safeNavigateTo('/pages/practice-sub/rank');
+        toast.info('小程序版已下线排行榜，请专注个人练习');
       },
-      { message: '请先登录后查看排行榜', loginUrl: '/pages/settings/index' }
+      { message: '请先登录后查看排行榜', loginUrl: '/pages/login/index' }
     );
   }
 
   function goToStudyDetail() {
     requireLogin(
       () => {
-        safeNavigateTo('/pages/study-detail/index');
+        safeNavigateTo('/pages/profile/index');
       },
-      { message: '请先登录后查看学习详情', loginUrl: '/pages/settings/index' }
+      { message: '请先登录后查看学习详情', loginUrl: '/pages/login/index' }
     );
   }
 
   function goFavorites() {
     requireLogin(
       () => {
-        safeNavigateTo('/pages/favorite/index');
+        toast.info('小程序版暂不提供收藏夹入口');
       },
-      { message: '请先登录后查看收藏', loginUrl: '/pages/settings/index' }
+      { message: '请先登录后查看收藏', loginUrl: '/pages/login/index' }
     );
   }
 

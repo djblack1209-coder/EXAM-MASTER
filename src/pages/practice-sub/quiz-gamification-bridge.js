@@ -4,15 +4,21 @@
  */
 
 /** 刷题会话开始（降级：空操作） */
-export function onQuizSessionStart() {}
+export function onQuizSessionStart() {
+  return undefined;
+}
 
 /** 答题结果回调（降级：空操作） */
-export function onAnswerResult(_result) {}
+export function onAnswerResult(_result) {
+  return undefined;
+}
 
 /** 刷题会话结束（降级：空操作） */
-export function onQuizSessionEnd() {}
+export function onQuizSessionEnd() {
+  return undefined;
+}
 
 /** 绑定游戏化事件（降级：返回空清理函数） */
 export function bindGamificationEvents() {
-  return () => {};
+  return () => undefined;
 }

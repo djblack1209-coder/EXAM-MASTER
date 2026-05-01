@@ -43,13 +43,27 @@
 
     <scroll-view
       id="e2e-quiz-scroll"
-      scroll-y
+      :scroll-y="!showResult"
       class="quiz-scroll"
       :style="{ paddingTop: navBarHeight + 'px' }"
       @touchstart="onTouchStart"
       @touchmove="onTouchMove"
       @touchend="onTouchEnd"
     >
+      <view v-if="showQuizLoading" class="quiz-loading-overlay glass-card">
+        <view class="quiz-loading-orbit">
+          <view class="quiz-loading-dot" />
+          <view class="quiz-loading-dot secondary" />
+        </view>
+        <text class="quiz-loading-title">正在准备题目</text>
+        <text class="quiz-loading-subtitle">同步进度、题目顺序与计时器</text>
+        <view class="quiz-loading-skeleton">
+          <view class="quiz-loading-line long" />
+          <view class="quiz-loading-line" />
+          <view class="quiz-loading-line short" />
+        </view>
+      </view>
+
       <!-- Phase 3-4: 卡片堆叠 — 下一题预览（第二层） -->
       <view
         v-if="questions[currentIndex + 1] && cardStack"
@@ -90,7 +104,7 @@
         >
           <view class="q-header">
             <view class="q-tag">
-              {{ currentQuestion.type || '单选题' }}
+              {{ questionTypeLabel }}
             </view>
             <view class="q-actions">
               <!-- 笔记按钮 -->
@@ -131,7 +145,7 @@
           />
         </view>
 
-        <view v-if="currentQuestion && currentQuestion.options" class="options-list">
+        <view v-if="hasSelectableOptions" class="options-list">
           <view
             v-for="(opt, idx) in currentQuestion.options"
             :id="`e2e-quiz-option-${idx}`"
@@ -160,104 +174,56 @@
             </view>
           </view>
         </view>
-      </view>
 
-      <!-- ✅ [P0重构] AI分析已改为非阻塞，移除全屏遮罩 -->
-      <!-- AI解析在结果弹窗内异步加载，用户可随时点击下一题 -->
-
-      <!-- 结果弹窗背景遮罩 -->
-      <view v-if="showResult" class="result-backdrop" @tap.stop="closeResult" />
-
-      <!-- 结果弹窗 -->
-      <view v-if="showResult" :class="['result-pop', resultStatus]" @tap.stop>
-        <view class="result-header" @tap.stop>
-          <!-- 左侧图标作为关闭按钮 -->
-          <view class="result-icon-btn" @tap.stop="closeResult">
-            <view class="result-icon">
-              <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'cross'" :size="36" />
+        <!-- 经典闪卡模式：翻转卡片 + FSRS 四级自评 -->
+        <view v-if="isFlashcardMode" class="flashcard-area">
+          <!-- 翻转前：显示"翻转查看答案"按钮 -->
+          <view v-if="!flashcardFlipped" class="flashcard-reveal">
+            <view class="flashcard-hint">想好答案了吗？</view>
+            <view class="flashcard-reveal-btn" hover-class="item-hover" @tap="flipFlashcard">
+              <BaseIcon name="eye" :size="32" />
+              <text class="flashcard-reveal-text">翻转查看答案</text>
             </view>
           </view>
-          <text class="status-title">
-            {{ resultStatus === 'correct' ? '回答正确' : '再想想' }}
-          </text>
-        </view>
 
-        <scroll-view v-if="resultStatus === 'wrong'" scroll-y class="ai-analysis-scroll">
-          <view class="analysis-tag">
-            <view class="sparkle-icon">
-              <BaseIcon name="sparkle" :size="28" />
+          <!-- 翻转后：显示答案 + FSRS 四级评分 -->
+          <view v-else class="flashcard-answer-area">
+            <view class="flashcard-answer-card glass-card">
+              <view class="flashcard-answer-label">
+                <BaseIcon name="check" :size="24" />
+                <text>参考答案</text>
+              </view>
+              <scroll-view scroll-y class="flashcard-answer-scroll">
+                <RichText class="flashcard-answer-content" :content="currentQuestion.answer || '暂无答案'" />
+              </scroll-view>
+              <view v-if="currentQuestion.desc && currentQuestion.desc !== '暂无解析'" class="flashcard-explanation">
+                <text class="flashcard-explanation-label">解析</text>
+                <RichText class="flashcard-explanation-content" :content="currentQuestion.desc" />
+              </view>
             </view>
-            <text>智能深度诊断</text>
-            <!-- ✅ [P0重构] 内联AI加载指示器 -->
-            <text v-if="!aiComment" class="ai-loading-hint">分析中...</text>
+
+            <!-- FSRS 四级自评按钮 -->
+            <view class="flashcard-rate-hint">根据记忆情况自评：</view>
+            <view class="fsrs-rating-row flashcard-rating">
+              <view class="fsrs-rating-btn fsrs-again" @tap="rateFlashcardAndNext(1)">
+                <text class="fsrs-rating-label">忘了</text>
+                <text class="fsrs-rating-interval">{{ getFlashcardInterval('again') }}</text>
+              </view>
+              <view class="fsrs-rating-btn fsrs-hard" @tap="rateFlashcardAndNext(2)">
+                <text class="fsrs-rating-label">模糊</text>
+                <text class="fsrs-rating-interval">{{ getFlashcardInterval('hard') }}</text>
+              </view>
+              <view class="fsrs-rating-btn fsrs-good" @tap="rateFlashcardAndNext(3)">
+                <text class="fsrs-rating-label">记得</text>
+                <text class="fsrs-rating-interval">{{ getFlashcardInterval('good') }}</text>
+              </view>
+              <view class="fsrs-rating-btn fsrs-easy" @tap="rateFlashcardAndNext(4)">
+                <text class="fsrs-rating-label">简单</text>
+                <text class="fsrs-rating-interval">{{ getFlashcardInterval('easy') }}</text>
+              </view>
+            </view>
           </view>
-          <!-- AI 个人历史微反馈 — 基于错题历史的一句话上下文提醒 -->
-          <view v-if="personalHint" class="personal-hint-bar">
-            <text class="personal-hint-text">{{ personalHint }}</text>
-          </view>
-          <view class="answer-display">
-            <text class="answer-label"> 正确答案： </text>
-            <text class="answer-value">
-              {{ currentQuestion ? currentQuestion.answer : 'A' }}
-            </text>
-          </view>
-          <RichText
-            class="analysis-body"
-            :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')"
-          />
-        </scroll-view>
-
-        <view v-else class="ai-analysis-brief">
-          <text class="label"> 智能简评： </text>
-          <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
         </view>
-        <!-- 新增: FSRS 记忆引擎状态展示 -->
-        <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
-
-        <!-- 新增: AI Tutor 智能体辅导反馈 -->
-        <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
-
-        <!-- 答错时：一键问AI — 跳转上下文感知对话 -->
-        <view v-if="resultStatus === 'wrong'" class="ask-ai-btn" @tap="askAIAboutThis">
-          <text class="ask-ai-text">还是不懂？问 AI 导师</text>
-          <BaseIcon name="chevron-right" :size="20" class="a<REDACTED_SECRET>" />
-        </view>
-
-        <!-- FSRS 智能评分 -->
-        <view v-if="fsrsPreview" class="fsrs-rating-row">
-          <template v-if="resultStatus === 'correct'">
-            <view class="fsrs-rating-btn fsrs-good" @tap="rateAndNext(3)">
-              <text class="fsrs-rating-label">还行</text>
-              <text class="fsrs-rating-interval">{{ formatFsrsInterval(fsrsPreview.good.intervalDays) }}</text>
-            </view>
-            <view class="fsrs-rating-btn fsrs-easy" @tap="rateAndNext(4)">
-              <text class="fsrs-rating-label">简单</text>
-              <text class="fsrs-rating-interval">{{ formatFsrsInterval(fsrsPreview.easy.intervalDays) }}</text>
-            </view>
-          </template>
-          <template v-else>
-            <view class="fsrs-rating-btn fsrs-again" @tap="rateAndNext(1)">
-              <text class="fsrs-rating-label">没印象</text>
-              <text class="fsrs-rating-interval">{{ formatFsrsInterval(fsrsPreview.again.intervalDays) }}</text>
-            </view>
-            <view class="fsrs-rating-btn fsrs-hard" @tap="rateAndNext(2)">
-              <text class="fsrs-rating-label">有点印象</text>
-              <text class="fsrs-rating-interval">{{ formatFsrsInterval(fsrsPreview.hard.intervalDays) }}</text>
-            </view>
-          </template>
-        </view>
-        <!-- 无 FSRS 数据时的降级按钮 -->
-        <wd-button
-          v-else
-          id="e2e-quiz-next-btn"
-          block
-          size="large"
-          :disabled="isNavigating"
-          :loading="isNavigating"
-          @click="rateAndNext(3)"
-        >
-          {{ isNavigating ? '加载中...' : resultStatus === 'correct' ? '进入下一题' : '继续挑战' }}
-        </wd-button>
       </view>
 
       <view class="footer-placeholder" />
@@ -324,13 +290,99 @@
       <XpToast />
     </scroll-view>
 
+    <!-- ✅ [P0重构] AI分析已改为非阻塞，移除全屏遮罩 -->
+    <!-- AI解析在结果弹窗内异步加载，用户可随时点击下一题 -->
+
+    <!-- 结果弹窗背景遮罩 -->
+    <view v-if="showResult" class="result-backdrop" @tap.stop="closeResult" />
+
+    <!-- 结果弹窗 -->
+    <view v-if="showResult" :class="['result-pop', resultStatus]">
+      <view class="result-header">
+        <!-- 左侧图标作为关闭按钮 -->
+        <view
+          id="e2e-quiz-next-btn"
+          class="result-icon-btn result-primary-action"
+          :class="{ disabled: isNavigating }"
+          hover-class="result-primary-action-hover"
+          role="button"
+          :aria-disabled="isNavigating ? 'true' : 'false'"
+          @tap.stop="closeResult"
+        >
+          <view class="result-icon">
+            <BaseIcon :name="resultStatus === 'correct' ? 'check' : 'cross'" :size="36" />
+          </view>
+          <text class="result-primary-label">
+            {{ isNavigating ? '加载中' : resultStatus === 'correct' ? '下一题' : '继续' }}
+          </text>
+        </view>
+        <text class="status-title">
+          {{ resultStatus === 'correct' ? '回答正确' : '再想想' }}
+        </text>
+      </view>
+
+      <view
+        v-if="lastKnowledgeFeedback"
+        class="knowledge-feedback-card"
+        hover-class="knowledge-feedback-hover"
+        @tap.stop="goKnowledgeLink"
+      >
+        <view class="knowledge-feedback-main">
+          <text class="knowledge-feedback-kicker">知识定位</text>
+          <text class="knowledge-feedback-title">{{ lastKnowledgeFeedback.label }}</text>
+          <text class="knowledge-feedback-desc">{{ lastKnowledgeFeedback.summary }}</text>
+          <text v-if="lastKnowledgeFeedback.chainText" class="knowledge-feedback-chain">
+            {{ lastKnowledgeFeedback.chainText }}
+          </text>
+        </view>
+        <view class="knowledge-feedback-side">
+          <view class="knowledge-state-dot" :style="{ background: lastKnowledgeFeedback.color }" />
+          <text class="knowledge-speed">{{ lastKnowledgeFeedback.speedScore }}</text>
+          <text class="knowledge-speed-label">速度分</text>
+          <text class="knowledge-link-label">查看链路</text>
+        </view>
+      </view>
+
+      <scroll-view v-if="resultStatus === 'wrong'" scroll-y class="ai-analysis-scroll">
+        <view class="analysis-tag">
+          <view class="sparkle-icon">
+            <BaseIcon name="sparkle" :size="28" />
+          </view>
+          <text>智能深度诊断</text>
+          <!-- ✅ [P0重构] 内联AI加载指示器 -->
+          <text v-if="!aiComment" class="ai-loading-hint">分析中...</text>
+        </view>
+        <!-- AI 个人历史微反馈 — 基于错题历史的一句话上下文提醒 -->
+        <view v-if="personalHint" class="personal-hint-bar">
+          <text class="personal-hint-text">{{ personalHint }}</text>
+        </view>
+        <view class="answer-display">
+          <text class="answer-label"> 正确答案： </text>
+          <text class="answer-value">
+            {{ currentQuestion ? currentQuestion.answer : 'A' }}
+          </text>
+        </view>
+        <RichText class="analysis-body" :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
+      </scroll-view>
+
+      <view v-else class="ai-analysis-brief">
+        <text class="label"> 智能简评： </text>
+        <RichText :content="aiComment || (currentQuestion ? currentQuestion.desc : '暂无解析')" />
+      </view>
+      <!-- 新增: FSRS 记忆引擎状态展示 -->
+      <MemoryStatsRow v-if="memoryState" :memory-state="memoryState" />
+
+      <!-- 新增: AI Tutor 智能体辅导反馈 -->
+      <TutorFeedbackCard v-if="tutorFeedback" :feedback="tutorFeedback" />
+    </view>
+
     <!-- ✅ 自定义弹窗：题库为空 -->
     <CustomModal
       :visible="showEmptyBankModal"
       type="upload"
       title="题库空空如也"
-      content="请先去资料库导入学习资料，智能将为您生成专属题目。"
-      confirm-text="去导入"
+      content="请先到刷题中心加载题库，再开始练习。"
+      confirm-text="去加载"
       :show-cancel="false"
       :is-dark="isDark"
       @confirm="handleEmptyBankConfirm"
@@ -381,9 +433,9 @@
       @close="handleCompleteConfirm"
       @continue-next="handleCompleteAction"
       @go-mistakes="navigateFromResult('/pages/mistake/index')"
-      @go-weak-training="navigateFromResult('/pages/practice-sub/smart-review')"
+      @go-weak-training="navigateFromResult('/pages/practice-sub/do-quiz?mode=smart_review')"
       @go-new-practice="handleCompleteConfirm"
-      @go-a-i-plan="navigateFromResult('/pages/practice-sub/smart-review')"
+      @go-a-i-plan="navigateFromResult('/pages/practice-sub/do-quiz?mode=smart_review')"
     />
 
     <!-- ✅ 笔记输入弹窗 -->
@@ -439,7 +491,6 @@
 import { modal } from '@/utils/modal.js';
 import { toast } from '@/utils/toast.js';
 import { storageService } from '@/services/storageService.js';
-import { safeImport } from '@/utils/helpers/safe-import.js';
 import CustomModal from '@/components/common/CustomModal.vue';
 
 // ✅ P0-3: 导入自动保存功能
@@ -504,7 +555,17 @@ import { useTypewriter } from './composables/useTypewriter.js';
 import { logger } from '@/utils/logger.js';
 
 import { useReviewStore } from '@/stores/modules/review.js';
+import { useLearningTrajectoryStore } from '@/stores/modules/learning-trajectory-store.js';
+import { getKnowledgeNodeTrail, KNOWLEDGE_NODES } from '@/config/knowledge-graph.js';
 import { safeNavigateTo, safeNavigateBack } from '@/utils/safe-navigate';
+import {
+  calculateSpeedScore as calculateQuizSpeedScore,
+  getQuestionEloRating,
+  rankQuestionsByEloMatch,
+  readEloState,
+  saveEloState,
+  updateEloRating
+} from '@/utils/quiz-elo.js';
 import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 // 静态资源 CDN 映射（大图已迁出主包）
 import { ASSETS } from '@/config/static-assets.js';
@@ -526,6 +587,8 @@ import {
 } from '@/services/fsrs-service.js';
 import { triggerOptimization } from './services/fsrs-optimizer-client.js';
 
+const KNOWLEDGE_NODE_BY_ID = new Map(KNOWLEDGE_NODES.map((item) => [item.id, item]));
+
 export default {
   components: {
     CustomModal,
@@ -544,6 +607,7 @@ export default {
     const engine = useQuizEngine({ smartPicker: true, adaptiveMode: true });
     const xpSystem = useXPSystem();
     const reviewStore = useReviewStore();
+    const learningTrajectoryStore = useLearningTrajectoryStore();
     return {
       _engine: engine,
       engineGetOptionLabel: engine.getOptionLabel,
@@ -553,7 +617,8 @@ export default {
       xpCurrentLevel: xpSystem.currentLevel,
       xpLevelProgress: xpSystem.levelProgress,
       // ✅ reviewStore — 替代页面直接调用 lafService
-      reviewStore
+      reviewStore,
+      learningTrajectoryStore
     };
   },
   data() {
@@ -561,6 +626,9 @@ export default {
       memoryState: null,
       fsrsPreview: null, // { again: {intervalDays}, hard: {intervalDays}, good: {intervalDays}, easy: {intervalDays} }
       tutorFeedback: '',
+      // 经典闪卡模式状态
+      flashcardFlipped: false,
+      flashcardFsrsPreview: null,
       statusBarHeight: 44,
       navBarHeight: 88, // 标准导航栏高度 = 44 + 44
       capsuleMargin: 100,
@@ -574,6 +642,7 @@ export default {
       showResult: false,
       resultStatus: '', // 'correct' or 'wrong'
       aiComment: '',
+      lastKnowledgeFeedback: null,
       personalHint: '', // 基于个人历史的AI微反馈
       showBreakReminder: false, // 休息提醒显示状态
       breakReminderShown: false, // 是否已提醒过（每次练习只提醒一次）
@@ -638,10 +707,15 @@ export default {
       selectedNoteTags: [], // 选中的笔记标签
       showAnswerSheet: false, // 答题卡显示状态
       showLevelUp: false, // 升级特效显示状态
+      mode: '', // 刷题模式：'' | 'single' | 'temp_bank' | 'smart_review'
+      eloState: { userRating: 1500, questionRatings: {} },
       pendingTimers: [] // [AUDIT FIX R264] setTimeout 追踪，防止内存泄漏
     };
   },
   computed: {
+    showQuizLoading() {
+      return !this.currentQuestion && !this.showEmptyBankModal && !this.showResumeModal && !this.showCompleteModal;
+    },
     completeModalContent() {
       const total = this.questions.length;
       const correct = this.answeredQuestions ? this.answeredQuestions.filter((a) => a.isCorrect).length : 0;
@@ -680,17 +754,45 @@ export default {
       const q = this.questions[this.currentIndex];
       if (!q) return null;
 
+      // 判断是否为闪卡/分析题模式
+      const type = q.type || '单选';
+      const isFlashcard = type === 'analysis' || type === 'flashcard';
+
       // 确保数据格式完整
       return {
         id: q.id || `q_${this.currentIndex}`,
         question: q.question || q.title || '题目加载中...',
         options: Array.isArray(q.options) ? q.options : [],
-        answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-        desc: q.desc || q.description || q.analysis || '暂无解析',
+        // 闪卡/分析题保留完整答案文本，选择题只取首字母
+        answer: isFlashcard ? q.answer || '暂无答案' : (q.answer || 'A').toString().toUpperCase().charAt(0),
+        desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
         category: q.category || '未分类',
-        type: q.type || '单选',
-        difficulty: q.difficulty || 2
+        type: type,
+        difficulty: q.difficulty || 2,
+        source: q.source || '',
+        year: q.year || '',
+        knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
+        knowledge_points: q.knowledge_points || q.knowledgeNodeIds || [],
+        eloRating: q.eloRating || getQuestionEloRating(q, this.eloState.questionRatings)
       };
+    },
+    // 是否为闪卡模式（分析题或经典闪卡，无选项可选）
+    isFlashcardMode() {
+      if (!this.currentQuestion) return false;
+      const type = this.currentQuestion.type;
+      return type === 'analysis' || type === 'flashcard' || this.currentQuestion.options.length === 0;
+    },
+    questionTypeLabel() {
+      const labels = {
+        single_choice: '单选题',
+        multi_choice: '多选题',
+        analysis: '分析题',
+        flashcard: '闪卡'
+      };
+      return labels[this.currentQuestion?.type] || this.currentQuestion?.type || '单选题';
+    },
+    hasSelectableOptions() {
+      return Boolean(this.currentQuestion?.options?.length) && !this.isFlashcardMode;
     },
     isCorrectOption() {
       return (idx) => {
@@ -765,6 +867,7 @@ export default {
     const pages = getCurrentPages();
     const currentPage = pages[pages.length - 1];
     const query = currentPage?.$page?.options || currentPage?.options || {};
+    this.mode = query.mode || '';
     if (query.mode === 'single') {
       this._singleMode = true;
     }
@@ -772,6 +875,7 @@ export default {
     if (query.mode === 'smart_review') {
       this._smartReviewMode = true;
     }
+    this.eloState = readEloState(storageService);
 
     // E005: 延迟重计算，让 UI 先渲染
     this._safeTimeout(() => {
@@ -865,6 +969,10 @@ export default {
         // 静默处理，不影响页面退出
       }
     },
+    getFlashcardInterval(ratingKey) {
+      const intervalDays = this.flashcardFsrsPreview?.[ratingKey]?.intervalDays;
+      return intervalDays == null ? '' : this.formatFsrsInterval(intervalDays);
+    },
     // ✅ P0-3: 检查未完成的进度
     checkUnfinishedProgress() {
       if (hasUnfinishedProgress()) {
@@ -894,6 +1002,7 @@ export default {
         this.hasAnswered = false;
         this.userChoice = null;
         this.showResult = false;
+        this.lastKnowledgeFeedback = null;
 
         logger.log('[do-quiz] ✅ 进度已恢复:', {
           currentIndex: this.currentIndex,
@@ -1001,7 +1110,9 @@ export default {
             category: q.category || '拍照搜题',
             type: '单选',
             difficulty: q.difficulty || 2,
-            source: q.source || 'temp'
+            source: q.source || 'temp',
+            knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
+            knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
           }));
           storageService.remove('temp_practice_questions');
           this.startTimer();
@@ -1025,10 +1136,14 @@ export default {
                   ? q.options
                   : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
               answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-              desc: q.desc || q.description || q.analysis || '暂无解析',
+              desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
               category: q.category || '未分类',
               type: q.type || '单选',
-              difficulty: q.difficulty || 2
+              difficulty: q.difficulty || 2,
+              source: q.source || '',
+              year: q.year || '',
+              knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
+              knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
             }));
           if (reviewQuestions.length > 0) {
             this.questions = reviewQuestions;
@@ -1060,10 +1175,14 @@ export default {
               ? q.options
               : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
           answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-          desc: q.desc || q.description || q.analysis || '暂无解析',
+          desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
           category: q.category || '未分类',
           type: q.type || '单选',
-          difficulty: q.difficulty || 2
+          difficulty: q.difficulty || 2,
+          source: q.source || '',
+          year: q.year || '',
+          knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
+          knowledge_points: q.knowledge_points || q.knowledgeNodeIds || []
         }))
         .filter((q) => q.question && !/^题目 \d+$/.test(q.question)); // 过滤无效占位题目
 
@@ -1086,7 +1205,7 @@ export default {
         logger.log('[do-quiz] ✅ 自适应学习模式已启用，题目序列已优化');
       }
 
-      this.questions = questions;
+      this.questions = this.applyEloMatching(questions);
 
       if (this.questions.length === 0) {
         // ✅ 使用自定义弹窗
@@ -1160,13 +1279,18 @@ export default {
       }
 
       // ✅ 记录已答题目
+      const speedScore = this.calculateSpeedScore(isCorrect, timeSpent);
+      const elo = this.updateQuestionElo(isCorrect, speedScore);
       this.answeredQuestions.push({
         questionId: this.currentQuestion?.id,
         index: this.currentIndex,
         userChoice: idx,
         isCorrect,
-        timeSpent
+        timeSpent,
+        speedScore,
+        elo
       });
+      this.recordKnowledgeAttempt(isCorrect, timeSpent, { speedScore, elo });
 
       // ✅ 记录答题数据到各个分析模块
       this.recordAnswerToAnalytics(isCorrect, timeSpent).catch((_err) => {
@@ -1305,9 +1429,11 @@ export default {
     rateAndNext(rating) {
       const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
       if (questionId) {
-        scheduleAndSave(questionId, rating).catch((err) => {
+        try {
+          scheduleAndSave(questionId, rating);
+        } catch (err) {
           logger.warn('[DoQuiz] FSRS schedule failed:', err);
-        });
+        }
       }
       // 每 50 次答题触发一次 FSRS 参数优化（非阻塞）
       const reviewCount = parseInt(uni.getStorageSync('fsrs_review_count') || '0') + 1;
@@ -1318,6 +1444,78 @@ export default {
         });
       }
       this.fsrsPreview = null;
+      this.toNext();
+    },
+    // 经典闪卡：翻转查看答案
+    flipFlashcard() {
+      this.flashcardFlipped = true;
+      this.hasAnswered = true;
+
+      // 停止单题计时器
+      const timerResult = stopQuestionTimer();
+      const timeSpent = timerResult.elapsed * 1000;
+
+      // 计算 FSRS 预览（四级评分的下次复习时间）
+      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
+      if (questionId) {
+        try {
+          const card = loadCardState(questionId) || createNewCard();
+          this.flashcardFsrsPreview = previewSchedule(card);
+        } catch (err) {
+          logger.warn('[DoQuiz] Flashcard FSRS preview failed:', err);
+          this.flashcardFsrsPreview = null;
+        }
+      }
+
+      // 记录已答题目（闪卡模式不判断对错，由用户自评）
+      this.answeredQuestions.push({
+        questionId: this.currentQuestion?.id,
+        index: this.currentIndex,
+        userChoice: 'flashcard_flip',
+        isCorrect: null, // 闪卡模式无对错之分
+        timeSpent
+      });
+
+      // 震动反馈
+      try {
+        if (typeof uni.vibrateShort === 'function') {
+          uni.vibrateShort();
+        }
+      } catch (_e) {
+        // silent
+      }
+    },
+    // 经典闪卡：自评后进入下一题
+    rateFlashcardAndNext(rating) {
+      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
+      if (questionId) {
+        try {
+          scheduleAndSave(questionId, rating);
+        } catch (err) {
+          logger.warn('[DoQuiz] Flashcard FSRS schedule failed:', err);
+        }
+      }
+
+      // 更新学习统计
+      this.updateStudyStats();
+      const latestAnswer = [...this.answeredQuestions].reverse().find((item) => item.index === this.currentIndex);
+      this.recordKnowledgeAttempt(rating >= 3, latestAnswer?.timeSpent || 0, { rating });
+
+      // 游戏化反馈：评分 ≥ 3 视为"记得"，给予正面反馈
+      if (rating >= 3) {
+        this.playCorrectEffect();
+      }
+
+      // FSRS 优化计数
+      const reviewCount = parseInt(uni.getStorageSync('fsrs_review_count') || '0') + 1;
+      uni.setStorageSync('fsrs_review_count', String(reviewCount));
+      if (reviewCount % 50 === 0) {
+        triggerOptimization().catch((_err) => {
+          /* silent optimization failure */
+        });
+      }
+
+      this.flashcardFsrsPreview = null;
       this.toNext();
     },
     async toNext() {
@@ -1355,6 +1553,10 @@ export default {
         this.userChoice = null;
         this.showResult = false;
         this.aiComment = '';
+        this.lastKnowledgeFeedback = null;
+        // 重置闪卡翻转状态
+        this.flashcardFlipped = false;
+        this.flashcardFsrsPreview = null;
 
         // ✅ 重置答题开始时间
         this.answerStartTime = Date.now();
@@ -1400,34 +1602,7 @@ export default {
         }
         // ✅ [体感革命] 完成fanfare + confetti
         playCompleteFanfare();
-        safeImport(import('canvas-confetti'))
-          .then((mod) => {
-            const confetti = mod.default || mod;
-            if (confetti) {
-              const end = Date.now() + 2000;
-              const frame = () => {
-                confetti({
-                  particleCount: 4,
-                  angle: 60,
-                  spread: 55,
-                  origin: { x: 0 },
-                  colors: ['#FFD700', '#26C6DA', '#FF1744', '#4CAF50']
-                });
-                confetti({
-                  particleCount: 4,
-                  angle: 120,
-                  spread: 55,
-                  origin: { x: 1 },
-                  colors: ['#FFD700', '#26C6DA', '#FF1744', '#4CAF50']
-                });
-                if (Date.now() < end) requestAnimationFrame(frame);
-              };
-              frame();
-            }
-          })
-          .catch((error) => {
-            logger.warn('[do-quiz] save mistake summary failed:', error);
-          });
+        // canvas-confetti removed for MVP (reduces bundle ~50KB)
         this.autoDiagnose();
       }
     },
@@ -1452,7 +1627,7 @@ export default {
     // ✅ 处理题库为空确认
     handleEmptyBankConfirm() {
       this.showEmptyBankModal = false;
-      safeNavigateTo('/pages/practice-sub/import-data');
+      safeNavigateTo('/pages/practice/index');
     },
 
     // ✅ 处理恢复进度确认
@@ -1529,8 +1704,18 @@ export default {
     viewDiagnosisReport() {
       this.showCompleteModal = false;
       if (this.diagnosisId) {
-        uni.navigateTo({
-          url: `/pages/practice-sub/diagnosis-report?diagnosisId=${this.diagnosisId}&sessionId=${this.sessionId}`
+        modal.show({
+          title: '练习诊断',
+          content: this.diagnosisSummary || '诊断已完成，请继续复习错题并保持练习节奏。',
+          confirmText: '开始复习',
+          cancelText: '返回',
+          success: (res) => {
+            if (res.confirm) {
+              safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
+            } else {
+              safeNavigateBack();
+            }
+          }
         });
       } else if (this.diagnosisLoading) {
         // 还在诊断中，等一下
@@ -1556,17 +1741,11 @@ export default {
     },
 
     /**
-     * 答错后"问AI导师" — 保存题目上下文，跳转到AI聊天页
-     * 聊天页会自动读取上下文并发送第一条消息
+     * 小程序版不再提供付费 AI 导师跳转。
+     * 保留方法用于兼容旧组件事件，避免误触时进入不存在页面。
      */
     askAIAboutThis() {
-      if (!this.currentQuestion) return;
-      const q = this.currentQuestion;
-      // 构建上下文消息
-      const contextMsg = `我刚刚做错了一道${q.category || ''}的题目，帮我解释一下：\n\n题目：${(q.question || '').substring(0, 300)}\n\n我选了错误答案，正确答案是${q.answer}。\n\n请用简单易懂的方式帮我理解为什么正确答案是${q.answer}，以及这道题考查的核心知识点。`;
-
-      storageService.save('chat_context_question', contextMsg);
-      safeNavigateTo('/pages/chat/chat?context=question');
+      toast.info('小程序版已关闭 AI 导师，请先查看解析并加入错题复习');
     },
 
     /**
@@ -1614,24 +1793,18 @@ export default {
         const res = await this.reviewStore.generateDiagnosis({ sessionId: this.sessionId });
         if (res.success && res.data) {
           this.showCompleteModal = false;
-          const diagnosisId = res.data._id;
-          uni.navigateTo({
-            url: `/pages/practice-sub/diagnosis-report?diagnosisId=${diagnosisId}&sessionId=${this.sessionId}`,
-            fail: () => {
-              const d = res.data.diagnosis || {};
-              modal.show({
-                title: `诊断结果：${d.overallLevel || '完成'}`,
-                content: `正确率 ${d.accuracy || 0}%\n${d.encouragement || '继续加油！'}\n\n薄弱点：${(d.weakPoints || []).map((w) => w.knowledgePoint).join('、') || '无'}\n\n建议：${d.studyPlan?.immediate || '复习错题'}`,
-                confirmText: '开始复习',
-                cancelText: '返回',
-                success: (modalRes) => {
-                  if (modalRes.confirm) {
-                    uni.navigateTo({ url: '/pages/mistake/index' });
-                  } else {
-                    safeNavigateBack();
-                  }
-                }
-              });
+          const d = res.data.diagnosis || {};
+          modal.show({
+            title: `诊断结果：${d.overallLevel || '完成'}`,
+            content: `正确率 ${d.accuracy || 0}%\n${d.encouragement || '继续加油！'}\n\n薄弱点：${(d.weakPoints || []).map((w) => w.knowledgePoint).join('、') || '无'}\n\n建议：${d.studyPlan?.immediate || '复习错题'}`,
+            confirmText: '开始复习',
+            cancelText: '返回',
+            success: (modalRes) => {
+              if (modalRes.confirm) {
+                uni.navigateTo({ url: '/pages/mistake/index' });
+              } else {
+                safeNavigateBack();
+              }
             }
           });
         } else {
@@ -1647,7 +1820,7 @@ export default {
 
     closeResult() {
       if (this.hasAnswered) {
-        this.toNext();
+        this.rateAndNext(this.resultStatus === 'correct' ? 3 : 1);
         return;
       }
       this.showResult = false;
@@ -1752,6 +1925,7 @@ export default {
       this.userChoice = null;
       this.showResult = false;
       this.aiComment = '';
+      this.lastKnowledgeFeedback = null;
       this.answerStartTime = Date.now();
       this.correctAnimationClass = '';
       this.wrongAnimationClass = '';
@@ -1949,15 +2123,119 @@ export default {
         sessionId: this.sessionId
       });
 
-      // 添加到已答题目列表（组件状态，不可外移）
+      // 答题进度已在 selectOption 中写入；这里仅回填分析状态，避免进度翻倍。
       if (questionData) {
-        this.answeredQuestions.push({
-          questionId: this.currentQuestion.id,
+        const recordIndex = this.answeredQuestions.findIndex((item) => {
+          return item.index === this.currentIndex && item.questionId === this.currentQuestion.id;
+        });
+        if (recordIndex >= 0) {
+          this.answeredQuestions.splice(recordIndex, 1, {
+            ...this.answeredQuestions[recordIndex],
+            analyticsRecordedAt: Date.now()
+          });
+        }
+      }
+    },
+    recordKnowledgeAttempt(isCorrect, timeSpent, extra = {}) {
+      try {
+        if (!this.learningTrajectoryStore || !this.currentQuestion) return;
+        const activity = this.learningTrajectoryStore.recordQuestionAttempt(this.currentQuestion, {
           isCorrect,
           timeSpent,
-          timestamp: Date.now()
+          sessionId: this.sessionId,
+          mode: this.practiceMode || this.mode || 'practice',
+          ...extra
         });
+        this.lastKnowledgeFeedback = this.buildKnowledgeFeedback(activity, isCorrect, timeSpent);
+      } catch (err) {
+        logger.warn('[do-quiz] 知识神经状态记录失败:', err);
       }
+    },
+
+    buildKnowledgeFeedback(activity, isCorrect, timeSpent) {
+      const nodeId = activity?.nodeIds?.[0] || '';
+      const node = KNOWLEDGE_NODE_BY_ID.get(nodeId);
+      const trail = nodeId ? getKnowledgeNodeTrail(nodeId) : [];
+      const visual = nodeId
+        ? this.learningTrajectoryStore.getNodeVisualState(nodeId)
+        : { state: 'unknown', color: '#DDE8DD', mastery: 0 };
+      const stateLabelMap = {
+        unknown: '待点亮',
+        primed: '接近掌握',
+        strong: '稳定掌握',
+        watch: '需要观察',
+        weak: '薄弱点'
+      };
+      const stateText = stateLabelMap[visual.state] || '已记录';
+      const masteryText = `${visual.mastery || 0}%`;
+      return {
+        nodeId,
+        label: node?.label || this.currentQuestion.category || '公共课综合',
+        color: visual.color || '#DDE8DD',
+        speedScore: activity?.speedScore || this.calculateSpeedScore(isCorrect, timeSpent),
+        tracks: node?.tracks || [],
+        trail: trail.map((item) => ({
+          id: item.id,
+          label: item.label,
+          type: item.type,
+          tracks: item.tracks || []
+        })),
+        chainText: trail.length > 1 ? trail.map((item) => item.label).join(' / ') : '',
+        summary: `${stateText}，当前掌握 ${masteryText}，已同步到首页图谱`
+      };
+    },
+
+    calculateSpeedScore(isCorrect, timeSpent) {
+      return calculateQuizSpeedScore({
+        isCorrect,
+        timeSpentMs: timeSpent,
+        timeLimitMs: Number(this.questionTimeLimit || 120) * 1000,
+        difficulty: this.currentQuestion?.difficulty || 3
+      });
+    },
+
+    applyEloMatching(questions = []) {
+      return rankQuestionsByEloMatch(questions, {
+        userRating: this.eloState.userRating,
+        questionRatings: this.eloState.questionRatings
+      });
+    },
+
+    updateQuestionElo(isCorrect, speedScore) {
+      const questionId = this.currentQuestion?.id || this.currentQuestion?._id;
+      const currentQuestionRating = getQuestionEloRating(this.currentQuestion || {}, this.eloState.questionRatings);
+      const result = updateEloRating({
+        userRating: this.eloState.userRating,
+        questionRating: currentQuestionRating,
+        isCorrect,
+        speedScore
+      });
+      this.eloState.userRating = result.userRating;
+      if (questionId) {
+        this.eloState.questionRatings = {
+          ...this.eloState.questionRatings,
+          [questionId]: result.questionRating
+        };
+      }
+      saveEloState(storageService, this.eloState);
+      return result;
+    },
+
+    goKnowledgeLink() {
+      if (!this.lastKnowledgeFeedback?.nodeId) {
+        toast.info('本题暂未定位到具体知识链路');
+        return;
+      }
+      storageService.save('practice_focus_knowledge_node', {
+        nodeId: this.lastKnowledgeFeedback.nodeId,
+        label: this.lastKnowledgeFeedback.label,
+        tracks: this.lastKnowledgeFeedback.tracks || [],
+        trail: this.lastKnowledgeFeedback.trail || [],
+        fromQuestionId: this.currentQuestion?.id || '',
+        savedAt: Date.now()
+      });
+      this.showResult = false;
+      safeNavigateTo('/pages/practice/index');
     },
 
     // ==================== 离线缓存相关方法 ====================
@@ -2207,6 +2485,103 @@ export default {
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
 }
 
+.quiz-loading-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 28rpx;
+  overflow: hidden;
+}
+
+.quiz-loading-orbit {
+  position: relative;
+  width: 70rpx;
+  height: 70rpx;
+  margin-bottom: 28rpx;
+  border: 2rpx solid rgba(0, 184, 107, 0.18);
+  border-radius: 50%;
+}
+
+.quiz-loading-dot {
+  position: absolute;
+  top: 8rpx;
+  left: 50%;
+  width: 18rpx;
+  height: 18rpx;
+  margin-left: -9rpx;
+  border-radius: 50%;
+  background: #00b86b;
+  transform-origin: 9rpx 27rpx;
+  animation: quizLoadingOrbit 1.1s linear infinite;
+}
+
+.quiz-loading-dot.secondary {
+  top: auto;
+  bottom: 8rpx;
+  opacity: 0.32;
+  animation-delay: -0.55s;
+}
+
+.quiz-loading-title {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.28;
+}
+
+.quiz-loading-subtitle {
+  margin-top: 10rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.quiz-loading-skeleton {
+  width: 100%;
+  margin-top: 34rpx;
+}
+
+.quiz-loading-line {
+  width: 72%;
+  height: 18rpx;
+  margin-top: 18rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, rgba(0, 184, 107, 0.1), rgba(0, 184, 107, 0.2), rgba(0, 184, 107, 0.1));
+  background-size: 220% 100%;
+  animation: quizLoadingPulse 1.25s ease-in-out infinite;
+}
+
+.quiz-loading-line.long {
+  width: 92%;
+}
+
+.quiz-loading-line.short {
+  width: 48%;
+}
+
+@keyframes quizLoadingOrbit {
+  from {
+    transform: rotate(0deg) translateY(-27rpx);
+  }
+  to {
+    transform: rotate(360deg) translateY(-27rpx);
+  }
+}
+
+@keyframes quizLoadingPulse {
+  0% {
+    background-position: 120% 0;
+    opacity: 0.58;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    background-position: -120% 0;
+    opacity: 0.58;
+  }
+}
+
 /* Phase 3-4: 卡片堆叠样式 */
 .stack-card {
   position: absolute;
@@ -2379,6 +2754,77 @@ export default {
   flex-shrink: 0;
 }
 
+.knowledge-feedback-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20rpx;
+  padding: 24rpx 28rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(244, 250, 239, 0.92));
+  box-shadow: 0 12rpx 32rpx rgba(20, 32, 23, 0.08);
+}
+
+.knowledge-feedback-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.knowledge-feedback-kicker {
+  display: block;
+  color: rgba(20, 32, 23, 0.42);
+  font-size: 19rpx;
+  font-weight: 900;
+  letter-spacing: 1.4rpx;
+}
+
+.knowledge-feedback-title {
+  display: block;
+  margin-top: 8rpx;
+  color: #142017;
+  font-size: 30rpx;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.knowledge-feedback-desc {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(20, 32, 23, 0.58);
+  font-size: 23rpx;
+  line-height: 1.42;
+}
+
+.knowledge-feedback-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 104rpx;
+  margin-left: 18rpx;
+}
+
+.knowledge-state-dot {
+  width: 22rpx;
+  height: 22rpx;
+  border-radius: 50%;
+  box-shadow: 0 6rpx 14rpx rgba(20, 32, 23, 0.12);
+}
+
+.knowledge-speed {
+  margin-top: 10rpx;
+  color: #142017;
+  font-size: 36rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.knowledge-speed-label {
+  margin-top: 4rpx;
+  color: rgba(20, 32, 23, 0.48);
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
 /* 智能反馈图层动画 */
 .ai-feedback-layer {
   position: fixed;
@@ -2451,8 +2897,8 @@ export default {
 .result-pop {
   position: fixed;
   /* 适配 iPhone 14/15 Pro 底部安全区域：使用 env() 动态计算 bottom 值 */
-  bottom: calc(40rpx + constant(safe-area-inset-bottom));
-  bottom: calc(40rpx + env(safe-area-inset-bottom));
+  bottom: calc(150rpx + constant(safe-area-inset-bottom));
+  bottom: calc(150rpx + env(safe-area-inset-bottom));
   left: 30rpx;
   right: 30rpx;
   z-index: 300;
@@ -2522,7 +2968,7 @@ export default {
 }
 
 .result-icon-btn {
-  width: 80rpx;
+  min-width: 80rpx;
   height: 80rpx;
   display: flex;
   align-items: center;
@@ -2533,18 +2979,47 @@ export default {
   flex-shrink: 0;
 }
 
+.result-primary-action {
+  width: auto;
+  padding: 0 22rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1a1d26;
+  box-shadow: 0 4rpx 0 rgba(26, 29, 38, 0.16);
+}
+
 .result-icon-btn:active {
   background: var(--bg-secondary);
   transform: scale(0.95);
 }
 
+.result-primary-action-hover,
+.result-primary-action:active {
+  transform: translateY(2rpx) scale(0.98);
+  opacity: 0.9;
+  box-shadow: 0 2rpx 0 rgba(26, 29, 38, 0.18);
+}
+
+.result-primary-action.disabled {
+  opacity: 0.72;
+}
+
 .result-icon {
   font-size: 60rpx;
   font-weight: bold;
-  color: var(--text-primary-foreground);
+  color: #1a1d26;
+}
+
+.result-primary-label {
+  margin-left: 10rpx;
+  font-size: 26rpx;
+  font-weight: 800;
+  color: #1a1d26;
 }
 
 .status-title {
+  position: relative;
+  z-index: 1;
   font-size: 36rpx;
   font-weight: 800;
   flex: 1;
@@ -2553,6 +3028,8 @@ export default {
 
 /* 智能深度诊断区域 */
 .ai-analysis-scroll {
+  position: relative;
+  z-index: 1;
   max-height: 400rpx;
   margin-bottom: 30rpx;
   padding: 20rpx 0;
@@ -2650,14 +3127,14 @@ export default {
   font-weight: 600;
   color: var(--success, #059669);
 }
-.a<REDACTED_SECRET> {
+.ask-ai-arrow {
   font-size: 32rpx;
   color: var(--success, #059669);
 }
 .dark-mode .ask-ai-text {
   color: var(--success, #34d399);
 }
-.dark-mode .a<REDACTED_SECRET> {
+.dark-mode .ask-ai-arrow {
   color: var(--success, #34d399);
 }
 .dark-mode .ask-ai-btn {
@@ -2682,6 +3159,8 @@ export default {
 }
 
 .ai-analysis-brief {
+  position: relative;
+  z-index: 1;
   font-size: 26rpx;
   margin-bottom: 30rpx;
   line-height: 1.5;
@@ -3194,14 +3673,33 @@ export default {
   padding: 20rpx 8rpx;
   border-radius: 20rpx;
   min-height: 100rpx;
+  margin: 0;
+  line-height: 1.3;
   transition:
     transform 0.15s,
     opacity 0.15s;
 }
 
+.fsrs-rating-btn::after {
+  border: 0;
+}
+
 .fsrs-rating-btn:active {
   transform: scale(0.95);
   opacity: 0.85;
+}
+
+.result-pop .fsrs-rating-btn {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
+.result-pop .fsrs-rating-label {
+  color: #1a1d26;
+}
+
+.result-pop .fsrs-rating-interval {
+  color: rgba(26, 29, 38, 0.68);
 }
 
 .fsrs-again {
@@ -3250,6 +3748,154 @@ export default {
   font-size: 22rpx;
   color: var(--text-secondary);
   margin-top: 6rpx;
+}
+
+/* ==================== 经典闪卡模式 ==================== */
+.flashcard-area {
+  padding: 0 30rpx 40rpx;
+}
+
+/* 翻转前：查看答案按钮 */
+.flashcard-reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 0;
+}
+
+.flashcard-hint {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  margin-bottom: 30rpx;
+}
+
+.flashcard-reveal-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28rpx 60rpx;
+  background: linear-gradient(135deg, #00b86b, #00a65e);
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 0 #008a4c;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
+}
+
+.flashcard-reveal-btn:active {
+  transform: translateY(4rpx);
+  box-shadow: 0 4rpx 0 #008a4c;
+}
+
+.flashcard-reveal-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+  margin-left: 12rpx;
+}
+
+.flashcard-reveal-btn .base-icon {
+  color: #fff;
+}
+
+/* 翻转后：答案卡片 */
+.flashcard-answer-area {
+  animation: flashcardReveal 0.35s ease-out;
+}
+
+@keyframes flashcardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.flashcard-answer-card {
+  padding: 30rpx;
+  border-left: 6rpx solid #00b86b;
+}
+
+.flashcard-answer-label {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #00b86b;
+  margin-bottom: 20rpx;
+}
+
+.flashcard-answer-label text {
+  margin-left: 8rpx;
+}
+
+.flashcard-answer-scroll {
+  max-height: 500rpx;
+}
+
+.flashcard-answer-content {
+  font-size: 28rpx;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: var(--text-primary);
+}
+
+.flashcard-explanation {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid var(--overlay);
+}
+
+.flashcard-explanation-label {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.flashcard-explanation-content {
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* 闪卡模式评分提示 */
+.flashcard-rate-hint {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 30rpx;
+  margin-bottom: 12rpx;
+}
+
+/* 闪卡模式四级评分按钮（全部显示，不分对错） */
+.flashcard-rating {
+  margin-top: 0;
+}
+
+.flashcard-rating .fsrs-rating-btn {
+  min-height: 110rpx;
+}
+
+/* 暗色模式适配 */
+.dark-mode .flashcard-reveal-btn {
+  background: linear-gradient(135deg, #00a65e, #008a4c);
+  box-shadow: 0 8rpx 0 #006b38;
+}
+
+.dark-mode .flashcard-answer-card {
+  border-left-color: #00a65e;
+}
+
+.dark-mode .flashcard-answer-label {
+  color: #58cc02;
 }
 
 /* ✅ 完成庆祝动画 */

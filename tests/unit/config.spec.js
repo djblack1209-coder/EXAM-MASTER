@@ -15,44 +15,42 @@ describe('config/index.js', () => {
   });
 
   describe('getEnv / getEnvNumber / getEnvBoolean', () => {
-    it('getEnv 返回环境变量值', async () => {
-      import.meta.env.VITE_TEST_KEY = 'test_value';
+    it('getEnv 返回白名单客户端环境变量值', async () => {
       const { getEnv } = await import('@/config/index.js');
-      expect(getEnv('VITE_TEST_KEY', 'default')).toBe('test_value');
-      delete import.meta.env.VITE_TEST_KEY;
+      expect(getEnv('VITE_APP_NAME', 'default')).toBe('Exam-Master-Test');
+    });
+
+    it('getEnv 不暴露服务端专用 VITE 变量', async () => {
+      const { getEnv } = await import('@/config/index.js');
+      expect(getEnv('VITE_INVITE_SECRET', 'fallback')).toBe('fallback');
+    });
+
+    it('getEnv 不暴露客户端包内不应承载的安全种子', async () => {
+      const { getEnv } = await import('@/config/index.js');
+
+      expect(getEnv('VITE_OBFUSCATION_KEY', 'fallback')).toBe('fallback');
+      expect(getEnv('VITE_REQUEST_SIGN_SALT', 'fallback')).toBe('fallback');
     });
 
     it('getEnv 缺失时返回默认值', async () => {
-      delete import.meta.env.VITE_NONEXISTENT;
       const { getEnv } = await import('@/config/index.js');
       expect(getEnv('VITE_NONEXISTENT', 'fallback')).toBe('fallback');
     });
 
     it('getEnvNumber 解析数字', async () => {
-      import.meta.env.VITE_NUM_TEST = '42';
       const { getEnvNumber } = await import('@/config/index.js');
-      expect(getEnvNumber('VITE_NUM_TEST', 0)).toBe(42);
-      delete import.meta.env.VITE_NUM_TEST;
+      expect(getEnvNumber('VITE_PAGE_SIZE', 0)).toBe(20);
     });
 
-    it('getEnvNumber 非数字返回默认值', async () => {
-      import.meta.env.VITE_NUM_BAD = 'abc';
+    it('getEnvNumber 缺失时返回默认值', async () => {
       const { getEnvNumber } = await import('@/config/index.js');
-      expect(getEnvNumber('VITE_NUM_BAD', 99)).toBe(99);
-      delete import.meta.env.VITE_NUM_BAD;
+      expect(getEnvNumber('VITE_NUM_MISSING', 99)).toBe(99);
     });
 
     it('getEnvBoolean 解析布尔值', async () => {
-      import.meta.env.VITE_BOOL_TRUE = 'true';
-      import.meta.env.VITE_BOOL_ONE = '1';
-      import.meta.env.VITE_BOOL_FALSE = 'false';
       const { getEnvBoolean } = await import('@/config/index.js');
-      expect(getEnvBoolean('VITE_BOOL_TRUE', false)).toBe(true);
-      expect(getEnvBoolean('VITE_BOOL_ONE', false)).toBe(true);
-      expect(getEnvBoolean('VITE_BOOL_FALSE', true)).toBe(false);
-      delete import.meta.env.VITE_BOOL_TRUE;
-      delete import.meta.env.VITE_BOOL_ONE;
-      delete import.meta.env.VITE_BOOL_FALSE;
+      expect(getEnvBoolean('VITE_DEBUG_MODE', false)).toBe(true);
+      expect(getEnvBoolean('VITE_ENABLE_MOCK', true)).toBe(false);
     });
   });
 
@@ -89,6 +87,11 @@ describe('config/index.js', () => {
       expect(config.websocket.devUrl).toContain('ws');
       expect(config.websocket.prodUrl).toContain('ws');
       expect(config.websocket.maxReconnect).toBeGreaterThan(0);
+    });
+
+    it('客户端深链配置不暴露邀请签名密钥', async () => {
+      const { default: config } = await import('@/config/index.js');
+      expect(config.deepLink).not.toHaveProperty('inviteSecret');
     });
 
     it('upload 配置有合理的大小限制', async () => {

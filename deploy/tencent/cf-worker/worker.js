@@ -35,7 +35,7 @@ const PROVIDER_ROUTES = {
 };
 
 // 认证 token — 防止被滥用
-const TOKEN_PLACEHOLDER
+const AUTH_TOKEN = '%%WORKER_AUTH_TOKEN%%'; // 部署时替换
 
 export default {
   async fetch(request, env) {

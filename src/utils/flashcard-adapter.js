@@ -10,23 +10,30 @@
  * @returns {Object} - v30_bank格式 {id, question, options: ['A. xxx'], answer, desc, ...}
  */
 export function adaptCard(card) {
+  // 判断是否为闪卡/分析题（无选项或类型明确为 analysis/flashcard）
+  const isFlashcard =
+    card.type === 'analysis' || card.type === 'flashcard' || !card.options || card.options.length === 0;
+
   return {
     id: card.id,
     question: card.question || '',
     // 关键转换：{label, text}[] → 'A. xxx' 字符串数组
-    options: (card.options || []).map(opt =>
-      typeof opt === 'string' ? opt : `${opt.label}. ${opt.text}`
-    ),
-    answer: (card.answer || '').charAt(0).toUpperCase(),
+    options: (card.options || []).map((opt) => (typeof opt === 'string' ? opt : `${opt.label}. ${opt.text}`)),
+    // 闪卡/分析题保留完整答案，选择题只取首字母
+    answer: isFlashcard ? card.answer || '' : (card.answer || '').charAt(0).toUpperCase(),
     desc: card.explanation || card.desc || '暂无解析',
     category: card.subject || card.tags?.[0] || '未分类',
-    type: card.type === 'choice' ? '单选' : card.type === 'analysis' ? '分析' : '单选',
+    // 保留原始 type 字段，do-quiz.vue 会根据它决定交互模式
+    type: card.type || 'single_choice',
     difficulty: card.difficulty || 2,
+    knowledgeNodeIds: card.knowledgeNodeIds || card.knowledge_points || [],
+    knowledge_points: card.knowledge_points || card.knowledgeNodeIds || [],
+    eloRating: card.eloRating || card.elo_rating || undefined,
     // 保留原始标签用于筛选
     tags: card.tags || [],
     year: card.year || '',
-    source: card.source || '',
-  }
+    source: card.source || ''
+  };
 }
 
 /**
@@ -35,7 +42,7 @@ export function adaptCard(card) {
  * @returns {Array} - v30_bank格式数组
  */
 export function adaptFlashcards(cards) {
-  return cards.filter(c => c.question && c.question.length > 5).map(adaptCard)
+  return cards.filter((c) => c.question && c.question.length > 5).map(adaptCard);
 }
 
 /**
@@ -46,36 +53,36 @@ export function adaptFlashcards(cards) {
  */
 export function importFlashcardsToBank(flashcardData, storageService) {
   // 读取现有题库
-  const existingBank = storageService.get('v30_bank') || []
-  const existingIds = new Set(existingBank.map(q => q.id))
+  const existingBank = storageService.get('v30_bank') || [];
+  const existingIds = new Set(existingBank.map((q) => q.id));
 
   // 转换格式
-  const adapted = adaptFlashcards(flashcardData.cards || [])
+  const adapted = adaptFlashcards(flashcardData.cards || []);
 
   // 去重导入
-  let imported = 0
-  let skipped = 0
+  let imported = 0;
+  let skipped = 0;
 
   for (const card of adapted) {
     if (existingIds.has(card.id)) {
-      skipped++
+      skipped++;
     } else {
-      existingBank.push(card)
-      existingIds.add(card.id)
-      imported++
+      existingBank.push(card);
+      existingIds.add(card.id);
+      imported++;
     }
   }
 
   // 写回存储
-  storageService.set('v30_bank', existingBank)
+  storageService.set('v30_bank', existingBank);
 
   return {
     imported,
     skipped,
     total: existingBank.length,
     subject: flashcardData.subject || '未知',
-    year: flashcardData.year || '',
-  }
+    year: flashcardData.year || ''
+  };
 }
 
 /**
@@ -84,20 +91,20 @@ export function importFlashcardsToBank(flashcardData, storageService) {
  * @returns {Object} - 统计数据
  */
 export function getBankStats(storageService) {
-  const bank = storageService.get('v30_bank') || []
-  const bySubject = {}
-  const byYear = {}
+  const bank = storageService.get('v30_bank') || [];
+  const bySubject = {};
+  const byYear = {};
 
   for (const q of bank) {
-    const subj = q.category || '未分类'
-    const year = q.year || '未知'
-    bySubject[subj] = (bySubject[subj] || 0) + 1
-    byYear[year] = (byYear[year] || 0) + 1
+    const subj = q.category || '未分类';
+    const year = q.year || '未知';
+    bySubject[subj] = (bySubject[subj] || 0) + 1;
+    byYear[year] = (byYear[year] || 0) + 1;
   }
 
   return {
     total: bank.length,
     bySubject,
-    byYear,
-  }
+    byYear
+  };
 }

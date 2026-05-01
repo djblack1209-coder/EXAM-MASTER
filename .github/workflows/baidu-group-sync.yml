@@ -1,0 +1,189 @@
+# ============================================
+# Exam-Master 百度网盘资源增量同步
+# 默认每天北京时间凌晨 2 点执行；未配置 secrets 时自动跳过
+# ============================================
+name: Baidu Resource Incremental Sync
+
+on:
+  schedule:
+    - cron: '0 18 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Preview only, do not transfer or write manifest files'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      scan_dirs:
+        description: 'Full netdisk directories separated by |'
+        required: true
+        default: '/EXAM-MASTER/考研历年真题/01.考研政治|/EXAM-MASTER/考研历年真题/02.考研英语|/EXAM-MASTER/考研历年真题/03.考研数学'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Preflight Check
+    runs-on: ubuntu-latest
+    outputs:
+      token_ready: ${{ steps.check.outputs.token_ready }}
+      group_ready: ${{ steps.check.outputs.group_ready }}
+    steps:
+      - name: Check required secrets
+        id: check
+        env:
+          HAS_BAIDU_ACCESS_TOKEN: ${{ secrets.BAIDU_ACCESS_TOKEN != '' }}
+          HAS_BAIDU_LINK_REGISTRY_JSON: ${{ secrets.BAIDU_LINK_REGISTRY_JSON != '' }}
+        run: |
+          if [ "$HAS_BAIDU_ACCESS_TOKEN" != "true" ]; then
+            echo "::notice::Baidu resource sync skipped - BAIDU_ACCESS_TOKEN is not configured."
+            echo "token_ready=false" >> "$GITHUB_OUTPUT"
+            echo "group_ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "token_ready=true" >> "$GITHUB_OUTPUT"
+            if [ "$HAS_BAIDU_LINK_REGISTRY_JSON" = "true" ]; then
+              echo "group_ready=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "::notice::Baidu group share-link sync skipped - BAIDU_LINK_REGISTRY_JSON is not configured."
+              echo "group_ready=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+  sync:
+    name: Share-Link Sync
+    runs-on: ubuntu-latest
+    needs: preflight
+    if: needs.preflight.outputs.group_ready == 'true'
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5.6.0
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade requests python-dotenv
+
+      - name: Materialize local link registry
+        env:
+          BAIDU_LINK_REGISTRY_JSON: ${{ secrets.BAIDU_LINK_REGISTRY_JSON }}
+        run: |
+          mkdir -p data
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = json.loads(os.environ["BAIDU_LINK_REGISTRY_JSON"])
+          Path("data/link-registry.json").write_text(
+              json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Validate registry
+        run: python3 scripts/baidu/group_sync.py --validate-registry
+
+      - name: Run share-link sync
+        env:
+          BAIDU_ACCESS_TOKEN: ${{ secrets.BAIDU_ACCESS_TOKEN }}
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            python3 scripts/baidu/group_sync.py --mode=sharelink --dry-run --no-incremental-sync
+          else
+            python3 scripts/baidu/group_sync.py --mode=sharelink
+          fi
+
+      - name: Analyze manifest quality
+        run: |
+          if [ -f data/source-manifest.json ]; then
+            python3 scripts/baidu/manifest_quality.py
+            python3 scripts/baidu/cleaning_queue.py
+          else
+            echo "::notice::data/source-manifest.json was not generated in this run."
+          fi
+
+      - name: Upload sync artifacts
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: baidu-group-sync-${{ github.run_id }}
+          retention-days: 14
+          if-no-files-found: ignore
+          path: |
+            data/group-sync-report.json
+            data/group-export-latest.json
+            data/source-manifest-report.json
+            data/source-manifest-quality.json
+            data/cleaning-queue.json
+
+  netdisk-scan:
+    name: Full Netdisk Daily Scan
+    runs-on: ubuntu-latest
+    needs: preflight
+    if: needs.preflight.outputs.token_ready == 'true'
+    timeout-minutes: 45
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5.6.0
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: python -m pip install --upgrade requests python-dotenv
+
+      - name: Run full-path incremental scan
+        env:
+          BAIDU_ACCESS_TOKEN: ${{ secrets.BAIDU_ACCESS_TOKEN }}
+          BAIDU_SCAN_DIRS: ${{ github.event.inputs.scan_dirs || '/EXAM-MASTER/考研历年真题/01.考研政治|/EXAM-MASTER/考研历年真题/02.考研英语|/EXAM-MASTER/考研历年真题/03.考研数学' }}
+        run: |
+          IFS='|' read -ra DIRS <<< "$BAIDU_SCAN_DIRS"
+          ARGS=()
+          for dir in "${DIRS[@]}"; do
+            if [ -n "$dir" ]; then
+              ARGS+=(--scan-dir "$dir")
+            fi
+          done
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            python3 scripts/baidu/incremental_sync.py --dry-run "${ARGS[@]}"
+          else
+            python3 scripts/baidu/incremental_sync.py "${ARGS[@]}"
+          fi
+
+      - name: Analyze manifest and build cleaning queue
+        run: |
+          if [ -f data/source-manifest.json ]; then
+            python3 scripts/baidu/manifest_quality.py
+            python3 scripts/baidu/public_course_candidate_coverage.py
+            python3 scripts/baidu/cleaning_queue.py
+          else
+            echo "::notice::data/source-manifest.json was not generated in this run."
+          fi
+
+      - name: Upload scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: baidu-netdisk-scan-${{ github.run_id }}
+          retention-days: 14
+          if-no-files-found: ignore
+          path: |
+            data/source-manifest-report.json
+            data/source-manifest-quality.json
+            data/public-course-netdisk-candidate-coverage.json
+            data/cleaning-queue.json

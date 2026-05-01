@@ -1,5 +1,9 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import {
+  formatForbiddenClientSecretFindings,
+  scanForbiddenClientSecrets
+} from './wechat-artifact-secret-scan.mjs';
 
 const outputRoot = resolve(process.cwd(), 'dist/build/mp-weixin');
 
@@ -57,6 +61,11 @@ if (!customTabbarPath) {
 const customTabbarJsonPath = resolve(outputRoot, 'pages/index', `${customTabbarPath}.json`);
 if (!existsSync(customTabbarJsonPath)) {
   fail(`custom-tabbar component target not found: ${customTabbarPath}.json`);
+}
+
+const secretFindings = scanForbiddenClientSecrets(outputRoot);
+if (secretFindings.length > 0) {
+  fail(`server-only env names found in client artifacts:\n${formatForbiddenClientSecretFindings(secretFindings)}`);
 }
 
 console.log('[wx:verify] OK: WeChat mini-program artifacts are valid.');

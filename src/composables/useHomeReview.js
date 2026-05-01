@@ -128,7 +128,7 @@ export function useHomeReview({ reviewStore } = {}) {
    * 跳转智能复习
    */
   function goSmartReview() {
-    safeNavigateTo('/pages/practice-sub/smart-review');
+    safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
   }
 
   /**

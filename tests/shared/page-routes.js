@@ -15,7 +15,7 @@ const ROUTE_QUERY_MAP = {
 };
 
 const ROUTE_EXPECTATION_MAP = {
-  'pages/splash/index': ['pages/splash/index', 'pages/index/index'],
+  'pages/splash/index': ['pages/splash/index', 'pages/login/onboarding', 'pages/index/index'],
   'pages/login/index': ['pages/login/index', 'pages/index/index'],
   'pages/login/wechat-callback': ['pages/login/wechat-callback', 'pages/login/index', 'pages/index/index'],
   'pages/login/qq-callback': ['pages/login/qq-callback', 'pages/login/index', 'pages/index/index'],

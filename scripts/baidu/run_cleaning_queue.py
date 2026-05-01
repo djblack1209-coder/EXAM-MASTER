@@ -1,0 +1,324 @@
+#!/usr/bin/env python3
+"""
+Run a small batch from data/cleaning-queue.json.
+
+This runner intentionally processes only explicit pending
+download_and_extract tasks. Scheduled scans should generate the queue; a
+separate operator/worker should run this file with a small --limit and a
+configured free or low-cost OpenAI-compatible LLM endpoint.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+from copy import deepcopy
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Callable
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BAIDU_DIR = PROJECT_ROOT / "scripts" / "baidu"
+sys.path.insert(0, str(BAIDU_DIR))
+
+from pan import BaiduPan  # noqa: E402
+
+
+DEFAULT_QUEUE = PROJECT_ROOT / "data" / "cleaning-queue.json"
+PDF2FLASHCARD = PROJECT_ROOT / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
+DEFAULT_ENV_FILES = [PROJECT_ROOT / ".env", PROJECT_ROOT / "laf-backend" / ".env"]
+LLM_PROVIDER_KEY_ENVS = [
+    "LLM_API_KEY",
+    "OPENAI_API_KEY",
+    "IFLOW_API_KEY",
+    "NVIDIA_API_KEY",
+    "GROQ_API_KEY",
+    "GEMINI_API_KEY",
+    "GOOGLE_API_KEY",
+    "OPENROUTER_API_KEY",
+    "CEREBRAS_API_KEY",
+    "MISTRAL_API_KEY",
+    "GITHUB_MODELS_TOKEN",
+    "HF_TOKEN",
+    "HUGGINGFACE_API_KEY",
+    "GPT_API_FREE_KEY",
+    "VERCEL_AI_GATEWAY_API_KEY",
+    "SILICONFLOW_OFFICIAL_API_KEY",
+    *[f"SILICONFLOW_DS_KEY_{index}" for index in range(1, 11)],
+]
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def read_json(path: Path, default: Any | None = None) -> Any:
+    if not path.exists():
+        return default
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def write_json(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+
+
+def strip_inline_comment(value: str) -> str:
+    quote = ""
+    for index, char in enumerate(value):
+        previous = value[index - 1] if index > 0 else " "
+        if char in ("'", '"') and previous != "\\":
+            quote = "" if quote == char else quote or char
+        if char == "#" and not quote and previous.isspace():
+            return value[:index].strip()
+    return value.strip()
+
+
+def normalize_env_value(raw_value: str) -> str:
+    value = strip_inline_comment(str(raw_value or "").strip())
+    if len(value) >= 2 and value[0] in ("'", '"') and value[-1] == value[0]:
+        value = value[1:-1]
+    if raw_value.strip().startswith('"'):
+        value = value.replace("\\n", "\n").replace("\\r", "\r").replace('\\"', '"')
+    return value
+
+
+def load_env_files(paths: list[Path], *, override: bool = False) -> dict[str, str]:
+    loaded: dict[str, str] = {}
+    pattern = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
+    for path in paths:
+        if not path.exists() or not path.is_file():
+            continue
+        for line in path.read_text(encoding="utf-8").splitlines():
+            match = pattern.match(line.strip())
+            if not match:
+                continue
+            key, raw_value = match.groups()
+            value = normalize_env_value(raw_value)
+            loaded[key] = value
+            if override or key not in os.environ:
+                os.environ[key] = value
+    return loaded
+
+
+def select_pending_tasks(
+    queue: dict[str, Any],
+    *,
+    limit: int,
+    task_id: str | None = None,
+    source_id: str | None = None,
+) -> list[dict[str, Any]]:
+    tasks = [
+        task for task in queue.get("tasks", [])
+        if isinstance(task, dict)
+        and task.get("status") == "pending"
+        and task.get("action") == "download_and_extract"
+    ]
+    if task_id:
+        tasks = [task for task in tasks if task.get("taskId") == task_id]
+    if source_id:
+        tasks = [task for task in tasks if task.get("sourceId") == source_id]
+    tasks.sort(
+        key=lambda row: (
+            -int(row.get("priority") or 0),
+            str(row.get("track") or ""),
+            str(row.get("year") or ""),
+            str(row.get("safeDisplayName") or row.get("fileName") or ""),
+        )
+    )
+    return tasks[:limit] if limit > 0 else tasks
+
+
+def default_downloader(tasks: list[dict[str, Any]]) -> BaiduPan:
+    allow_full_path = any(
+        task.get("sourceChannel") == "netdisk_full_path"
+        or str(task.get("remotePath") or "").startswith("/EXAM-MASTER/")
+        for task in tasks
+    )
+    return BaiduPan(allow_full_path=allow_full_path)
+
+
+def output_subject_for_task(task: dict[str, Any]) -> str:
+    track = str(task.get("track") or "").strip()
+    if track and track.lower() != "unknown":
+        return track
+    subject = str(task.get("subject") or "").strip()
+    source_id = re.sub(r"[^A-Za-z0-9]+", "", str(task.get("sourceId") or ""))
+    if subject and source_id:
+        return f"{subject}-support-{source_id[-8:]}"
+    return subject or "unknown"
+
+
+def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
+    subject = output_subject_for_task(task)
+    year = str(task.get("year") or "unknown")
+    subprocess.run(
+        [sys.executable, str(PDF2FLASHCARD), str(local_path), subject, year],
+        cwd=str(PROJECT_ROOT),
+        check=True,
+    )
+
+    output_path = PROJECT_ROOT / "data" / "flashcards" / f"{subject}-{year}.json"
+    question_count = 0
+    missing_answer_count = 0
+    if output_path.exists():
+        payload = read_json(output_path, {})
+        cards = payload.get("cards", [])
+        question_count = int(payload.get("total_cards") or len(cards) or 0)
+        if isinstance(cards, list):
+            missing_answer_count = sum(1 for card in cards if not str(card.get("answer") or "").strip())
+
+    return {
+        "outputPath": str(output_path),
+        "questionCount": question_count,
+        "missingAnswerCount": missing_answer_count,
+        "answerEvidenceStatus": "missing_answers" if missing_answer_count else "manual_review",
+    }
+
+
+def run_queue_once(
+    queue: dict[str, Any],
+    *,
+    limit: int,
+    now: str | None = None,
+    task_id: str | None = None,
+    source_id: str | None = None,
+    downloader: Any | None = None,
+    processor: Callable[[dict[str, Any], Path], dict[str, Any]] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    now = now or utc_now()
+    updated = deepcopy(queue)
+    planned = select_pending_tasks(updated, limit=limit, task_id=task_id, source_id=source_id)
+    active_downloader = downloader or (default_downloader(planned) if planned else None)
+    active_processor = processor or default_processor
+    by_task_id = {task.get("taskId"): task for task in updated.get("tasks", [])}
+
+    report = {
+        "runAt": now,
+        "planned": len(planned),
+        "completed": 0,
+        "failed": 0,
+        "skippedExistingLocal": 0,
+        "tasks": [],
+    }
+
+    for planned_task in planned:
+        task = by_task_id.get(planned_task.get("taskId"))
+        if not task:
+            continue
+        local_path = Path(task["expectedLocalPath"])
+        task["attempts"] = int(task.get("attempts") or 0) + 1
+        task["updatedAt"] = now
+        try:
+            if local_path.exists() and local_path.stat().st_size > 0:
+                report["skippedExistingLocal"] += 1
+            else:
+                local_path.parent.mkdir(parents=True, exist_ok=True)
+                if active_downloader is None:
+                    raise RuntimeError("downloader is not configured")
+                active_downloader.download(task["remotePath"], str(local_path), overwrite=False)
+
+            result = active_processor(task, local_path)
+            question_count = int(result.get("questionCount") or 0)
+            if question_count <= 0:
+                raise RuntimeError(f"processor produced 0 questions for {task.get('taskId')}")
+            missing_answer_count = int(result.get("missingAnswerCount") or 0)
+            answer_evidence_status = result.get("answerEvidenceStatus", "manual_review")
+            if missing_answer_count > 0:
+                answer_evidence_status = "missing_answers"
+            task["status"] = "completed"
+            task["completedAt"] = now
+            task.pop("lastError", None)
+            task.update(
+                {
+                    "localPath": str(local_path),
+                    "outputPath": result.get("outputPath"),
+                    "questionCount": question_count,
+                    "missingAnswerCount": missing_answer_count,
+                    "answerEvidenceStatus": answer_evidence_status,
+                }
+            )
+            report["completed"] += 1
+            report["tasks"].append({"taskId": task["taskId"], "status": "completed"})
+        except Exception as exc:  # noqa: BLE001 - batch runner records per-task failures.
+            task["status"] = "failed"
+            task["failedAt"] = now
+            task["lastError"] = str(exc)
+            report["failed"] += 1
+            report["tasks"].append({"taskId": task.get("taskId"), "status": "failed", "error": str(exc)})
+
+    updated["lastRunnerReport"] = report
+    return updated, report
+
+
+def ensure_llm_configured() -> None:
+    if any(os.environ.get(key) for key in LLM_PROVIDER_KEY_ENVS):
+        return
+    raise SystemExit(
+        "At least one LLM provider key is required before running cleaning tasks. "
+        "Use any free or low-cost OpenAI-compatible endpoint through LLM_BASE_URL/LLM_MODEL "
+        "or provider envs such as GROQ_API_KEY, GEMINI_API_KEY, OPENROUTER_API_KEY."
+    )
+
+
+def run_self_test() -> None:
+    queue = {
+        "tasks": [
+            {"taskId": "t1", "action": "manual_review", "status": "pending", "priority": 100},
+            {"taskId": "t2", "action": "download_and_extract", "status": "pending", "priority": 90},
+        ]
+    }
+    assert [task["taskId"] for task in select_pending_tasks(queue, limit=10)] == ["t2"]
+    print("[cleaning-runner] self-test passed")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run a small batch from data/cleaning-queue.json.")
+    parser.add_argument("--queue", type=Path, default=DEFAULT_QUEUE)
+    parser.add_argument("--output", type=Path, default=DEFAULT_QUEUE)
+    parser.add_argument("--limit", type=int, default=1)
+    parser.add_argument("--task-id", help="Run one explicit pending download_and_extract task.")
+    parser.add_argument("--source-id", help="Run pending download_and_extract tasks for one explicit sourceId.")
+    parser.add_argument("--env-file", action="append", type=Path, default=[])
+    parser.add_argument("--no-default-env-files", action="store_true")
+    parser.add_argument("--override-env", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--self-test", action="store_true")
+    args = parser.parse_args()
+
+    if args.self_test:
+        run_self_test()
+        return
+
+    env_files = ([] if args.no_default_env_files else DEFAULT_ENV_FILES) + args.env_file
+    load_env_files(env_files, override=args.override_env)
+
+    queue = read_json(args.queue, {"tasks": []})
+    planned = select_pending_tasks(queue, limit=args.limit, task_id=args.task_id, source_id=args.source_id)
+    print(f"[cleaning-runner] planned={len(planned)} limit={args.limit}")
+    for task in planned[:20]:
+        print(f"[cleaning-runner] plan {task.get('taskId')} {task.get('safeDisplayName') or task.get('fileName')}")
+    if args.dry_run:
+        print("[cleaning-runner] dry-run, queue not changed")
+        return
+
+    ensure_llm_configured()
+    updated, report = run_queue_once(queue, limit=args.limit, task_id=args.task_id, source_id=args.source_id)
+    write_json(args.output, updated)
+    print(
+        "[cleaning-runner] "
+        + " ".join(f"{key}={value}" for key, value in report.items() if key != "tasks")
+    )
+    print(f"[cleaning-runner] wrote {args.output}")
+
+
+if __name__ == "__main__":
+    main()

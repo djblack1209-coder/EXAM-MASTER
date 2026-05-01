@@ -162,7 +162,7 @@ export function updateMistakeWithAI({ currentQuestion, aiAnalysis }) {
  * @param {Object} params.currentQuestion - 当前题目对象
  * @param {string} params.correctAnswer - 正确答案
  */
-export async function generateMnemonic({ currentQuestion, correctAnswer }) {
+export async function generateMnemonic({ currentQuestion, correctAnswer: _correctAnswer }) {
   if (!currentQuestion) return;
   // ai.api 已移除，助记符生成功能降级
   logger.warn('[quiz-mistake] generateMnemonic: ai.api 已移除，功能降级');

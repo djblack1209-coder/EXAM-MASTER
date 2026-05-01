@@ -24,11 +24,9 @@ const FEISTEL_ROUNDS = 8;
 if (!OBFUSCATION_KEY) {
   const isProduction = Boolean(config.isProd) || config.env === 'production';
   if (isProduction) {
-    throw new Error(
-      '[Cipher] FATAL: VITE_OBFUSCATION_KEY 未配置，生产环境禁止以空密钥运行。请在 .env.production 中设置该变量。'
-    );
+    throw new Error('[Cipher] FATAL: 客户端存储混淆种子未配置，生产环境禁止以空种子运行。');
   }
-  logger.warn('[Cipher] ⚠️ VITE_OBFUSCATION_KEY 未配置，本地存储加密已禁用。请在 .env 文件中设置该变量。');
+  logger.warn('[Cipher] 客户端存储混淆种子未配置，本地存储加密已禁用。');
 }
 
 // ==================== 跨平台 Base64 ====================

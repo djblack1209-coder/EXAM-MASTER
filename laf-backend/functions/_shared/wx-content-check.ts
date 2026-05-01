@@ -18,7 +18,7 @@ const logger = createLogger('[WxContentCheck]');
 
 // ==================== 环境变量 ====================
 const WX_APPID = process.env.WX_APPID || '';
-const WX_SECRET_PLACEHOLDER
+const WX_SECRET = process.env.WX_SECRET || '';
 
 // ==================== access_token 缓存 ====================
 // 微信 access_token 有效期 7200 秒（2小时），提前 5 分钟刷新
@@ -36,8 +36,8 @@ async function getAccessToken(): Promise<string> {
     return cachedAccessToken;
   }
 
-  if (!WX_APPID || !WX_SECRET_PLACEHOLDER
-    logger.warn('WX_APPID 或 WX_SECRET_PLACEHOLDER
+  if (!WX_APPID || !WX_SECRET) {
+    logger.warn('WX_APPID 或 WX_SECRET 未配置，无法获取 access_token');
     return '';
   }
 
@@ -46,7 +46,7 @@ async function getAccessToken(): Promise<string> {
       `https://api.weixin.qq.com/cgi-bin/token` +
       `?grant_type=client_credential` +
       `&appid=${encodeURIComponent(WX_APPID)}` +
-      `&secret=${encodeURIComponent(WX_SECRET_PLACEHOLDER
+      `&secret=${encodeURIComponent(WX_SECRET)}`;
 
     const response = await fetch(url, { method: 'GET' });
     const data = (await response.json()) as {
@@ -145,7 +145,7 @@ export async function checkTextSecurity(
   }
 
   // 环境变量缺失时降级放行（开发环境/未配置场景）
-  if (!WX_APPID || !WX_SECRET_PLACEHOLDER
+  if (!WX_APPID || !WX_SECRET) {
     logger.warn('微信凭证未配置，内容安全检测降级放行');
     return { pass: true };
   }

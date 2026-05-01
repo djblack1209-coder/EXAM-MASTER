@@ -7,8 +7,57 @@ import crypto from 'crypto';
 
 const globalScope = /** @type {any} */ (globalThis);
 
+function createMemoryLocalStorage() {
+  const store = new Map();
+
+  return {
+    get length() {
+      return store.size;
+    },
+    key: vi.fn((index) => Array.from(store.keys())[index] ?? null),
+    getItem: vi.fn((key) => {
+      const normalizedKey = String(key);
+      return store.has(normalizedKey) ? store.get(normalizedKey) : null;
+    }),
+    setItem: vi.fn((key, value) => {
+      store.set(String(key), String(value));
+    }),
+    removeItem: vi.fn((key) => {
+      store.delete(String(key));
+    }),
+    clear: vi.fn(() => {
+      store.clear();
+    })
+  };
+}
+
+const testLocalStorage = createMemoryLocalStorage();
+
+function defineLocalStorage(storage) {
+  Object.defineProperty(globalScope, 'localStorage', {
+    value: storage,
+    configurable: true,
+    writable: true
+  });
+
+  if (globalScope.window) {
+    Object.defineProperty(globalScope.window, 'localStorage', {
+      value: storage,
+      configurable: true,
+      writable: true
+    });
+  }
+}
+
+function ensureLocalStorage() {
+  defineLocalStorage(testLocalStorage);
+  return testLocalStorage;
+}
+
+ensureLocalStorage();
+
 // 后端审计测试需要的环境变量（JWT认证等）
-process.env.JWT_SECRET_PLACEHOLDER
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret-for-vitest-at-least-64-chars-long-0123456789abcdef';
 process.env.PASSWORD_SALT = process.env.PASSWORD_SALT || 'test-password-salt-for-vitest';
 process.env.NODE_ENV = process.env.NODE_ENV || 'test';
 
@@ -209,6 +258,8 @@ globalScope.getApp = vi.fn(() => ({
 
 // 清理函数 - 每个测试后重置
 beforeEach(() => {
+  const localStorage = ensureLocalStorage();
+  localStorage.clear();
   global.__mockStorage = {};
   vi.clearAllMocks();
 });

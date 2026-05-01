@@ -1,6 +1,6 @@
 <template>
   <view class="error-page">
-    <!-- 吉祥物猫头鹰 -->
+    <!-- 品牌知识系统插画 -->
     <image
       class="error-illustration"
       :src="getAssetUrl('illustrations', 'mascot-owl')"

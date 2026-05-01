@@ -1,0 +1,124 @@
+from pathlib import Path
+import sys
+import unittest
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from scripts.baidu.source_manifest import merge_manifest, normalize_record  # noqa: E402
+
+
+class SourceManifestYearTest(unittest.TestCase):
+    def test_file_name_year_wins_over_parent_directory_year_range(self):
+        item = normalize_record(
+            {
+                "fs_id": 1,
+                "path": "/EXAM-MASTER/考研历年真题/02.考研英语/【真题】1999-2024/英语一考研历年真题/2004年考研英语真题.pdf",
+                "server_filename": "2004年考研英语真题.pdf",
+                "size": 200_000,
+                "server_mtime": 1,
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now="2026-04-30T00:00:00Z",
+        )
+
+        self.assertEqual(item["year"], 2004)
+
+    def test_file_name_year_wins_over_course_package_year(self):
+        item = normalize_record(
+            {
+                "fs_id": 2,
+                "path": "/EXAM-MASTER/考研历年真题/02.考研英语/2026 黄皮书PDF/2001年真题解析及复习思路.pdf",
+                "server_filename": "2001年真题解析及复习思路.pdf",
+                "size": 200_000,
+                "server_mtime": 1,
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now="2026-04-30T00:00:00Z",
+        )
+
+        self.assertEqual(item["year"], 2001)
+
+    def test_english_page_range_does_not_match_politics_exam_code(self):
+        item = normalize_record(
+            {
+                "fs_id": 3,
+                "path": "/EXAM-MASTER/考研历年真题/02.考研英语/02.考研英语【电子讲义】/2026 田静PDF/25句句真言和每日一句PDF/25年每日一句/25年田静《每日一句》101-120.pdf",
+                "server_filename": "25年田静《每日一句》101-120.pdf",
+                "size": 200_000,
+                "server_mtime": 1,
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now="2026-04-30T00:00:00Z",
+        )
+
+        self.assertEqual(item["subject"], "english")
+        self.assertEqual(item["track"], "unknown")
+
+    def test_branded_course_material_under_history_parent_is_not_official_paper(self):
+        item = normalize_record(
+            {
+                "fs_id": 4,
+                "path": "/EXAM-MASTER/考研历年真题/02.考研英语/02.考研英语【电子讲义】/2026 田静PDF/25句句真言和每日一句PDF/25年每日一句/25年田静《每日一句》101-120.pdf",
+                "server_filename": "25年田静《每日一句》101-120.pdf",
+                "size": 200_000,
+                "server_mtime": 1,
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now="2026-04-30T00:00:00Z",
+        )
+
+        self.assertEqual(item["sourceType"], "institution_candidate")
+        self.assertIn("copyright_review_required", item["riskFlags"])
+
+    def test_parenthesized_math_track_names_are_recognized(self):
+        item = normalize_record(
+            {
+                "fs_id": 5,
+                "path": "/EXAM-MASTER/考研历年真题/03.考研数学/【真题】2010/2010年全国硕士研究生招生考试数学（一）试题.pdf",
+                "server_filename": "2010年全国硕士研究生招生考试数学（一）试题.pdf",
+                "size": 200_000,
+                "server_mtime": 1,
+            },
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now="2026-04-30T00:00:00Z",
+        )
+
+        self.assertEqual(item["subject"], "math")
+        self.assertEqual(item["track"], "math1")
+
+    def test_manifest_merge_refreshes_derived_fields_for_unchanged_files(self):
+        now = "2026-04-30T00:00:00Z"
+        raw = {
+            "fs_id": 6,
+            "path": "/EXAM-MASTER/考研历年真题/01.考研政治/01.考研政治【历年真题】/【解析】1994-2024/1995年政治考研真题(理科)及参考答案.pdf",
+            "server_filename": "1995年政治考研真题(理科)及参考答案.pdf",
+            "size": 200_000,
+            "server_mtime": 1,
+        }
+        corrected = normalize_record(
+            raw,
+            provider="baidu_pan",
+            source_channel="netdisk_full_path",
+            now=now,
+        )
+        stale = dict(corrected)
+        stale["year"] = 1994
+        stale["track"] = "unknown"
+
+        merged, summary = merge_manifest({"version": 1, "items": [stale]}, [corrected], now)
+        item = merged["items"][0]
+
+        self.assertEqual(summary["unchanged"], 1)
+        self.assertEqual(item["year"], 1995)
+        self.assertEqual(item["track"], "politics")
+
+
+if __name__ == "__main__":
+    unittest.main()

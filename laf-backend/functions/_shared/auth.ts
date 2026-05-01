@@ -11,7 +11,7 @@ function logMissingSecretOnce() {
   try {
     // 避免与 api-response 模块形成隐式耦合
     // eslint-disable-next-line no-console
-    console.error('[Auth] JWT_SECRET_PLACEHOLDER
+    console.error('[Auth] JWT_SECRET 未配置，拒绝 token 验证');
   } catch {
     // ignore logging failure
   }
@@ -68,14 +68,14 @@ export function extractBearerToken(rawToken: unknown): string {
 }
 
 export function isJwtSecretConfigured(): boolean {
-  return !!process.env.JWT_SECRET_PLACEHOLDER
+  return !!process.env.JWT_SECRET;
 }
 
 export function verifyJWT(token: string): JwtPayload | null {
   try {
     if (!token) return null;
 
-    const secret = process.env.JWT_SECRET_PLACEHOLDER
+    const secret = process.env.JWT_SECRET || '';
     if (!secret) {
       logMissingSecretOnce();
       return null;

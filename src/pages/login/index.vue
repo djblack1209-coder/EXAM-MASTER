@@ -18,20 +18,22 @@
 
     <!-- Logo区域 -->
     <view class="logo-section">
-      <!-- P0: 移除冗余logo.png，吉祥物即品牌符号 -->
       <image
-        class="login-mascot"
-        :src="getAssetUrl('illustrations', 'mascot-owl')"
+        class="login-logo-mark"
+        :src="getAssetUrl('images', 'logo')"
         mode="aspectFit"
-        alt="猫头鹰吉祥物"
+        alt="EXAM-MASTER brand mark"
       />
-      <!-- P1: 品牌名与Splash一致的双色风格 -->
       <view class="app-name-row">
-        <text class="brand-exam">Exam</text>
-        <text class="brand-master"> Master</text>
+        <text class="brand-exam">EXAM</text>
+        <text class="brand-master">-MASTER</text>
       </view>
-      <!-- P3: slogan与Splash统一 -->
-      <text class="app-slogan"> AI 助力，一战成硕 </text>
+      <text class="app-slogan">真题训练、错题复习、知识图谱，一条路径完成</text>
+      <view class="login-proof-row">
+        <text class="proof-chip">公共课题库</text>
+        <text class="proof-chip">限时刷题</text>
+        <text class="proof-chip">FSRS复习</text>
+      </view>
     </view>
 
     <!-- 登录方式选择 -->
@@ -254,6 +256,17 @@
         <text class="btn-text"> 邮箱登录/注册 </text>
         <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
       </view>
+
+      <view id="e2e-login-demo-btn" class="login-demo-entry" hover-class="btn-hover" @tap="handleGuestDemoPractice">
+        <view class="demo-icon">
+          <BaseIcon name="book-open" :size="34" />
+        </view>
+        <view class="demo-copy">
+          <text class="demo-title">先体验示例题</text>
+          <text class="demo-subtitle">无需登录，3 道题感受限时刷题与即时反馈</text>
+        </view>
+        <BaseIcon name="arrow-right" :size="24" class="btn-arrow" />
+      </view>
     </view>
 
     <!-- 用户协议 -->
@@ -297,6 +310,7 @@ import { getStatusBarHeight, getCapsuleSafeRight } from '@/utils/core/system.js'
 import { getRetryCooldownSeconds, normalizeEmailAddress, resolveEmailAuthErrorMessage } from './email-auth-utils.js';
 // 静态资源 CDN 映射（大图已迁出主包）
 import { getAssetUrl } from '@/config/static-assets.js';
+import { startGuestDemoPractice } from '@/utils/practice/demo-bank.js';
 
 // 主题状态
 const isDark = ref(false);
@@ -485,6 +499,10 @@ const handleE2EMockLogin = () => {
     isLoading.value = false;
     navigateAfterLogin();
   }, 300);
+};
+
+const handleGuestDemoPractice = () => {
+  startGuestDemoPractice({ destination: 'quiz' });
 };
 
 // 微信登录
@@ -1150,7 +1168,7 @@ onUnmounted(() => {
 .login-container {
   min-height: 100%;
   min-height: 100vh;
-  background-color: var(--em3d-bg);
+  background: linear-gradient(180deg, #f9fcf7 0%, #eff7ef 100%);
   padding: 0 40rpx;
   position: relative;
   overflow: hidden;
@@ -1170,7 +1188,7 @@ onUnmounted(() => {
 .bg-circle {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.1;
+  opacity: 0.18;
 }
 
 .bg-circle-1 {
@@ -1230,41 +1248,39 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60rpx 0 80rpx;
+  padding: 52rpx 0 62rpx;
 }
 
-/* P0: 移除.app-logo，吉祥物即品牌符号 */
-
-/* P1: 吉祥物放大至视觉焦点尺寸 */
-.login-mascot {
-  width: 320rpx;
-  height: 175rpx;
+/* 品牌标识 */
+.login-logo-mark {
+  width: 156rpx;
+  height: 156rpx;
   margin: 0 auto 28rpx;
   display: block;
 }
 
-/* P1: 品牌名双色行 */
+/* 品牌名 */
 .app-name-row {
   display: flex;
   align-items: baseline;
   /* gap: 8rpx; -- replaced for Android WebView compat */
   margin-bottom: 12rpx;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.5rpx;
 }
 .app-name-row > view + view {
   margin-left: 8rpx;
 }
 
 .brand-exam {
-  font-size: 52rpx;
+  font-size: 50rpx;
   font-weight: 800;
-  color: var(--text-primary);
+  color: #163300;
 }
 
 .brand-master {
-  font-size: 52rpx;
+  font-size: 50rpx;
   font-weight: 800;
-  color: #58cc02;
+  color: #00b86b;
 }
 
 .app-name {
@@ -1276,9 +1292,30 @@ onUnmounted(() => {
 }
 
 .app-slogan {
-  font-size: 28rpx;
-  color: var(--text-sub);
-  letter-spacing: 2px;
+  max-width: 560rpx;
+  font-size: 27rpx;
+  color: #5f6672;
+  line-height: 1.55;
+  text-align: center;
+  letter-spacing: 0;
+}
+
+.login-proof-row {
+  display: flex;
+  margin-top: 24rpx;
+}
+
+.proof-chip {
+  padding: 9rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(159, 232, 112, 0.24);
+  color: #163300;
+  font-size: 21rpx;
+  font-weight: 700;
+}
+
+.proof-chip + .proof-chip {
+  margin-left: 10rpx;
 }
 
 /* 登录方式 */
@@ -1335,6 +1372,19 @@ onUnmounted(() => {
 .email-icon {
   background-color: var(--em3d-warning);
   font-size: 36rpx;
+}
+
+.demo-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  color: #163300;
+  background: rgba(159, 232, 112, 0.32);
+  box-shadow: inset 0 0 0 2rpx rgba(22, 51, 0, 0.08);
 }
 
 .btn-text {
@@ -1505,6 +1555,42 @@ onUnmounted(() => {
 .email-submit-btn .btn-text {
   color: inherit;
   flex: none;
+}
+
+.login-demo-entry {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 28rpx;
+  margin-top: 4rpx;
+  margin-bottom: 18rpx;
+  border-radius: var(--em3d-radius-lg);
+  background: linear-gradient(135deg, rgba(159, 232, 112, 0.26), rgba(255, 255, 255, 0.94));
+  border: 2rpx solid rgba(22, 51, 0, 0.1);
+  box-shadow: 0 var(--em3d-depth-sm) 0 rgba(22, 51, 0, 0.12);
+}
+
+.login-demo-entry:active {
+  transform: translateY(3rpx);
+  box-shadow: 0 var(--em3d-depth-press) 0 rgba(22, 51, 0, 0.12);
+}
+
+.demo-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-title {
+  font-size: 30rpx;
+  font-weight: 800;
+  color: #163300;
+}
+
+.demo-subtitle {
+  margin-top: 6rpx;
+  font-size: 23rpx;
+  line-height: 1.35;
+  color: #5d6b61;
 }
 
 .form-switch {
@@ -1775,8 +1861,22 @@ onUnmounted(() => {
 .dark-mode .wechat-icon,
 .dark-mode .qq-icon,
 .dark-mode .e2e-icon,
-.dark-mode .email-icon {
+.dark-mode .email-icon,
+.dark-mode .demo-icon {
   color: var(--em3d-text-inv);
+}
+
+.dark-mode .login-demo-entry {
+  background: rgba(34, 48, 34, 0.92);
+  border-color: var(--em3d-border);
+}
+
+.dark-mode .demo-title {
+  color: var(--em3d-text-1);
+}
+
+.dark-mode .demo-subtitle {
+  color: var(--em3d-text-2);
 }
 
 .divider-line {

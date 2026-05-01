@@ -11,18 +11,10 @@
 import { logger } from '@/utils/logger.js';
 import { playCorrectSound, playWrongSound, playComboSound } from './utils/quiz-sound.js';
 
-// ✅ [体感革命] 引入 canvas-confetti（12.5k stars）
-let confettiModule = null;
+// canvas-confetti removed for MVP (reduces bundle ~50KB)
+// Will be restored in APP version
 async function getConfetti() {
-  if (confettiModule) return confettiModule;
-  try {
-    // 动态导入，避免SSR/小程序环境报错
-    const mod = await import('canvas-confetti');
-    confettiModule = mod.default || mod;
-    return confettiModule;
-  } catch (_e) {
-    return null;
-  }
+  return null;
 }
 
 // ✅ [体感革命] 真正的confetti爆炸 — 答对时调用
@@ -63,6 +55,15 @@ async function fireConfetti(intensity = 'normal') {
       origin: { y: 0.65 },
       colors: ['#4CAF50', '#8BC34A', '#FFD700', '#26C6DA']
     });
+  }
+}
+
+function readSoundPreference() {
+  try {
+    const stored = uni.getStorageSync('quiz_sound_enabled');
+    return stored === false || stored === 'false' ? false : true;
+  } catch (_e) {
+    return true;
   }
 }
 
@@ -112,7 +113,7 @@ class QuizAnimationManager {
       showCombo: true,
       showMilestone: true,
       vibration: true,
-      sound: uni.getStorageSync('quiz_sound_enabled') || false
+      sound: readSoundPreference()
     };
   }
 

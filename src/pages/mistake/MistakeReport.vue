@@ -166,16 +166,6 @@ async function prepareReport() {
   reportImagePath.value = '';
   reportTextContent.value = '';
 
-  const mistakeSummary = props.mistakes
-    .map((m, i) => {
-      const questionText = (m.question || m.question_content || m.title || '题目内容').substring(0, 50);
-      const safeQuestionText = questionText.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
-      const category = m.category || '未分类';
-      const safeCategory = category.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u200B]/g, '').trim();
-      return i + 1 + '. [' + safeCategory + '] ' + safeQuestionText;
-    })
-    .join('\n');
-
   let isTimeoutHandled = false;
   const timeoutId = setTimeout(() => {
     if (isTimeoutHandled) return;

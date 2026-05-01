@@ -2,13 +2,13 @@
  * 游戏化视觉/触觉反馈层
  *
  * 提供 XP 浮动文字、连续学习庆祝、成就 toast、答题反馈等效果。
- * 依赖 canvas-confetti（动态导入，不影响首屏体积）和 uni 振动 API。
+ * 依赖 uni 振动 API。canvas-confetti removed for MVP.
  *
  * @module composables/useGamificationEffects
  */
 
 import { toast } from '@/utils/toast.js';
-let _confetti = null;
+const _confetti = null;
 let _storeRef = null;
 
 function _getStore() {
@@ -27,15 +27,9 @@ function _getStore() {
   return _storeRef;
 }
 
+// canvas-confetti removed for MVP
 async function getConfetti() {
-  if (_confetti) return _confetti;
-  try {
-    const mod = await import('canvas-confetti');
-    _confetti = mod.default || mod;
-    return _confetti;
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 function vibrate(type = 'light') {

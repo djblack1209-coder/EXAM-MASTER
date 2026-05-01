@@ -748,9 +748,9 @@ const handleTargetSchoolClick = () => {
 // 处理添加目标院校
 const handleAddTargetSchool = () => {
   showTargetSchoolsModal.value = false;
-  // 跳转到择校页面（TabBar页面，使用switchTab）
+  // 小程序版已下线择校页，回到刷题入口
   uni.switchTab({
-    url: '/pages/school/index',
+    url: '/pages/practice/index',
     success: () => {
       logger.log('[Settings] ✅ 已跳转到择校页面');
     },

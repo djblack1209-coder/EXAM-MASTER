@@ -6,7 +6,7 @@
  *
  * 请求示例:
  *   POST /upload-static-assets
- *   Headers: { Authorization: ${AUTH_HEADER} }
+ *   Headers: { Authorization: AUTH_HEADER }
  *   Body: { files: [{ path: "badges/perfect-score.png", data: "<base64>" }] }
  */
 

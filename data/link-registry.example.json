@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "links": [
+    {
+      "id": "lnk_20260429_public_001",
+      "url": "https://pan.baidu.com/s/1example-share-id",
+      "pwd": "abcd",
+      "label": "英语一历年真题示例",
+      "subject": "english",
+      "track": "english1",
+      "year": 2018,
+      "added_at": "2026-04-29T00:00:00Z",
+      "added_by": "admin",
+      "filter": {
+        "extensions": [".pdf", ".doc", ".docx", ".txt", ".md", ".json"],
+        "min_size_kb": 50,
+        "exclude_keywords": ["报名", "咨询", "加群", "广告", "二维码", "扫码", "客服"]
+      }
+    }
+  ]
+}

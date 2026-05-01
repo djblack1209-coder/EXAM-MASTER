@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "question_knowledge_edges",
+  "description": "题目与知识节点映射集合",
+  "type": "object",
+  "required": ["question_id", "node_id", "confidence", "source"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "question_id": {
+      "type": "string",
+      "description": "题目 ID",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "node_id": {
+      "type": "string",
+      "description": "知识节点 ID",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "confidence": {
+      "type": "number",
+      "description": "映射置信度，0-1",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "source": {
+      "type": "string",
+      "description": "映射来源",
+      "enum": ["rule", "ai", "manual"]
+    },
+    "is_primary": {
+      "type": "boolean",
+      "description": "是否为该题主知识点",
+      "default": false
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "question_id": 1 }, "name": "idx_question" },
+    { "key": { "node_id": 1 }, "name": "idx_node" },
+    { "key": { "question_id": 1, "node_id": 1 }, "unique": true, "name": "idx_question_node_unique" },
+    { "key": { "question_id": 1, "is_primary": 1 }, "name": "idx_primary" }
+  ]
+}

@@ -114,7 +114,7 @@
 ```http
 POST /云函数名称
 Content-Type: application/json
-Authorization: ${AUTH_HEADER}  // 需要认证的接口
+Authorization: Bearer <token>  // 需要认证的接口
 
 {
   "action": "操作类型",
@@ -920,7 +920,7 @@ Authorization: ${AUTH_HEADER}  // 需要认证的接口
 
 ## 安全说明
 
-1. **认证**: 需要认证的接口必须在请求头携带 `Authorization: ${AUTH_HEADER}
+1. **认证**: 需要认证的接口必须在请求头携带 `Authorization: ${AUTH_HEADER}`，其中 `AUTH_HEADER` 为运行时注入的 Bearer token
 2. **HTTPS**: 所有请求必须使用 HTTPS
 3. **审计模式**: 部分AI功能在审计期间不可用，返回 `403` 错误
 4. **数据隔离**: 用户只能访问自己的数据

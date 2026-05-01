@@ -1,7 +1,7 @@
 /**
  * 上传 cdn-assets 到 Laf 云存储
  *
- * 用法: TOKEN_PLACEHOLDER
+ * 用法: ADMIN_TOKEN=xxx node scripts/build/upload-cdn-assets.mjs
  *
  * 注意: 需要先将 upload-static-assets 函数部署到 Laf
  */
@@ -11,13 +11,13 @@ import { request } from 'https';
 import { request as httpRequest } from 'http';
 
 const API_BASE = 'https://nf98ia8qnt.sealosbja.site';
-const TOKEN_PLACEHOLDER
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const CDN_DIR = 'cdn-assets';
 const BATCH_SIZE = 3; // 每批上传3个文件
 
 if (!ADMIN_TOKEN) {
   console.error('请设置 ADMIN_TOKEN 环境变量');
-  console.error('用法: TOKEN_PLACEHOLDER
+  console.error('用法: ADMIN_TOKEN=你的admin密钥 node scripts/build/upload-cdn-assets.mjs');
   process.exit(1);
 }
 

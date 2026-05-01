@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "official_english2_2024",
+      "localPath": "data/raw-inbox/official/2024-english2.pdf",
+      "sourceUrl": "https://example.edu.cn/official/2024-english2.pdf",
+      "subject": "english",
+      "track": "english2",
+      "year": 2024,
+      "sourceType": "official_paper",
+      "answerEvidenceStatus": "matched",
+      "verifiedBy": "release-operator",
+      "evidenceNote": "Replace this example with a real official source URL and a locally retained source file."
+    }
+  ]
+}

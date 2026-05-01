@@ -12,9 +12,9 @@
     {
       "path": "pages/splash/index",
       "style": {
-        "navigationBarTitleText": "Exam Master",
+        "navigationBarTitleText": "EXAM-MASTER",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#1A1A1A"
+        "navigationBarBackgroundColor": "#F5F7FA"
       }
     },
     {
@@ -22,7 +22,7 @@
       "style": {
         "navigationBarTitleText": "",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#1A1A1A"
+        "navigationBarBackgroundColor": "#F5F7FA"
       }
     },
     {
@@ -30,7 +30,7 @@
       "style": {
         "navigationBarTitleText": "智能刷题",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#1A1A1A"
+        "navigationBarBackgroundColor": "#F5F7FA"
       }
     },
     {
@@ -38,7 +38,7 @@
       "style": {
         "navigationBarTitleText": "个人中心",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#1A1A1A"
+        "navigationBarBackgroundColor": "#F5F7FA"
       }
     }
   ],
@@ -51,7 +51,7 @@
           "style": {
             "navigationBarTitleText": "刷题进行中",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
+            "navigationBarBackgroundColor": "#F5F7FA"
           }
         },
         {
@@ -59,47 +59,7 @@
           "style": {
             "navigationBarTitleText": "考研题库",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "file-manager",
-          "style": {
-            "navigationBarTitleText": "文件管理",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "mock-exam",
-          "style": {
-            "navigationBarTitleText": "模拟考试",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "smart-review",
-          "style": {
-            "navigationBarTitleText": "智能复习",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "error-clusters",
-          "style": {
-            "navigationBarTitleText": "错题聚类分析",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "sprint-mode",
-          "style": {
-            "navigationBarTitleText": "冲刺模式",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
+            "navigationBarBackgroundColor": "#F5F7FA"
           }
         }
       ]
@@ -112,7 +72,15 @@
           "style": {
             "navigationBarTitleText": "登录",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
+            "navigationBarBackgroundColor": "#F5F7FA"
+          }
+        },
+        {
+          "path": "onboarding",
+          "style": {
+            "navigationBarTitleText": "开始使用",
+            "navigationStyle": "custom",
+            "navigationBarBackgroundColor": "#F5F7FA"
           }
         },
         {
@@ -120,23 +88,7 @@
           "style": {
             "navigationBarTitleText": "微信登录",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "qq-callback",
-          "style": {
-            "navigationBarTitleText": "QQ登录",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "onboarding",
-          "style": {
-            "navigationBarTitleText": "欢迎",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
+            "navigationBarBackgroundColor": "#F5F7FA"
           }
         }
       ]
@@ -145,19 +97,11 @@
       "root": "pages/settings",
       "pages": [
         {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "系统设置",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
           "path": "privacy",
           "style": {
             "navigationBarTitleText": "隐私政策",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
+            "navigationBarBackgroundColor": "#F5F7FA"
           }
         },
         {
@@ -165,7 +109,7 @@
           "style": {
             "navigationBarTitleText": "用户协议",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
+            "navigationBarBackgroundColor": "#F5F7FA"
           }
         }
       ]
@@ -178,125 +122,24 @@
           "style": {
             "navigationBarTitleText": "错题本",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/favorite",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "我的收藏",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/plan",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "我的学习计划",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "create",
-          "style": {
-            "navigationBarTitleText": "创建学习计划",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        },
-        {
-          "path": "adaptive",
-          "style": {
-            "navigationBarTitleText": "自适应学习计划",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/study-detail",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "学习详情",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/resource",
-      "pages": [
-        {
-          "path": "index",
-          "style": {
-            "navigationBarTitleText": "学习资源",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
-          }
-        }
-      ]
-    },
-    {
-      "root": "pages/common",
-      "pages": [
-        {
-          "path": "404",
-          "style": {
-            "navigationBarTitleText": "页面未找到",
-            "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#1A1A1A"
+            "navigationBarBackgroundColor": "#F5F7FA"
           }
         }
       ]
     }
   ],
   "preloadRule": {
-    "pages/index/index": {
-      "network": "all",
-      "packages": [
-        "pages/practice-sub",
-        "pages/plan",
-        "pages/login",
-        "pages/mistake"
-      ]
-    },
     "pages/practice/index": {
       "network": "all",
-      "packages": ["pages/practice-sub", "pages/mistake", "pages/resource"]
-    },
-    "pages/profile/index": {
-      "network": "all",
-      "packages": [
-        "pages/settings",
-        "pages/favorite",
-        "pages/study-detail",
-        "pages/login",
-        "pages/mistake",
-        "pages/resource"
-      ]
+      "packages": ["pages/practice-sub"]
     }
   },
   "globalStyle": {
-    "navigationBarTextStyle": "white",
-    "navigationBarTitleText": "Exam Master",
-    "navigationBarBackgroundColor": "#1A1A1A",
-    "backgroundColor": "#121212",
-    "backgroundTextStyle": "light",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "EXAM-MASTER",
+    "navigationBarBackgroundColor": "#F5F7FA",
+    "backgroundColor": "#F5F7FA",
+    "backgroundTextStyle": "dark",
     "enablePullDownRefresh": false
   },
 

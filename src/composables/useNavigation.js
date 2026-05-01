@@ -7,9 +7,8 @@ import { storageService } from '@/services/storageService.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 import { vibrateLight } from '@/utils/helpers/haptic.js';
 import { logger } from '@/utils/logger.js';
-import { DEMO_QUESTIONS } from '@/config/home-data.js';
 import { requireLogin } from '@/utils/auth/loginGuard.js';
-import { toast } from '@/utils/toast.js';
+import { startGuestDemoPractice } from '@/utils/practice/demo-bank.js';
 
 export function useNavigation() {
   const isNavigating = ref(false);
@@ -59,16 +58,16 @@ export function useNavigation() {
       uni.showModal({
         title: '题目数量不足',
         content: `当前题库仅有 ${bank.length} 道题，建议至少 10 道题目后再进行模拟考试。`,
-        confirmText: '继续上传',
+        confirmText: '加载题库',
         cancelText: '先刷题',
         success: (res) => {
-          if (res.confirm) safeNavigateTo('/pages/practice-sub/import-data');
+          if (res.confirm) safeNavigateTo('/pages/practice-sub/question-bank');
           else
             uni.switchTab({ url: '/pages/practice/index', fail: () => uni.reLaunch({ url: '/pages/practice/index' }) });
         }
       });
     } else {
-      safeNavigateTo('/pages/practice-sub/mock-exam', {
+      safeNavigateTo('/pages/practice-sub/do-quiz', {
         complete: () => {
           isNavigating.value = false;
         }
@@ -77,14 +76,14 @@ export function useNavigation() {
   }
 
   function navToStudyDetail() {
-    requireLogin(() => safeNavigateTo('/pages/study-detail/index'), { message: '请先登录后查看学习详情' });
+    requireLogin(() => safeNavigateTo('/pages/profile/index'), { message: '请先登录后查看学习详情' });
   }
 
   function handleStatClick(type) {
     const routes = {
       questions: '/pages/practice/index',
       accuracy: '/pages/mistake/index',
-      streak: '/pages/study-detail/index',
+      streak: '/pages/profile/index',
       achievements: '/pages/profile/index'
     };
     if (!routes[type]) return;
@@ -98,30 +97,17 @@ export function useNavigation() {
   }
 
   function handleQuickStart() {
-    toast.loading('加载示例题库...');
-    try {
-      storageService.save('v30_bank', DEMO_QUESTIONS);
-    } catch (_e) {
-      toast.hide();
-      toast.info('加载失败，请重试');
-      return;
-    }
-    toast.hide();
-    toast.success('示例题库已加载');
-    setTimeout(() => {
-      uni.switchTab({ url: '/pages/practice/index', fail: () => uni.reLaunch({ url: '/pages/practice/index' }) });
-    }, 1500);
+    startGuestDemoPractice({ destination: 'practice' });
   }
 
   function handleTutorial() {
     uni.showModal({
       title: '快速上手教程',
-      content:
-        '1. 上传学习资料（PDF/Word/图片）\n2. 智能自动提取知识点生成题目\n3. 开始刷题，错题自动收录\n4. 查看学习报告，持续进步',
-      confirmText: '开始上传',
+      content: '1. 在刷题中心加载内置题库\n2. 开始刷题，错题自动收录\n3. 使用智能复习持续巩固',
+      confirmText: '去加载',
       cancelText: '稍后再说',
       success: (res) => {
-        if (res.confirm) safeNavigateTo('/pages/practice-sub/import-data');
+        if (res.confirm) safeNavigateTo('/pages/practice-sub/question-bank');
       }
     });
   }
