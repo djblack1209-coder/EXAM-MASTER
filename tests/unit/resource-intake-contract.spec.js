@@ -87,4 +87,44 @@ describe('resource intake contract', () => {
     expect(result.total).toBe(2);
     expect(result.hasMore).toBe(true);
   });
+
+  it('keeps numeric fields stable when local fallback inputs are invalid', () => {
+    const record = createImportRecord(
+      { name: 'bad-size.pdf', size: 'unknown', source: 'local' },
+      { now: new Date('2026-04-30T08:15:00Z'), idFactory: () => 'upload_bad_size' }
+    );
+    expect(record.size).toBe(0);
+
+    const bank = [
+      { id: 'q1', question: '英语阅读', category: '英语' },
+      { id: 'q2', question: '数学极限', category: '数学' }
+    ];
+    const result = filterBankQuestions(bank, { page: 'bad', pageSize: 'bad' });
+    expect(result).toMatchObject({
+      page: 1,
+      pageSize: 20,
+      total: 2,
+      hasMore: false
+    });
+    expect(result.list).toHaveLength(2);
+
+    const snapshot = buildIntakeSnapshot({
+      releaseCoverage: {
+        summary: {
+          coverageRate: 'bad',
+          publishedSlots: 'bad',
+          pendingSlots: 'bad',
+          requiredSlots: 'bad'
+        }
+      }
+    });
+
+    expect(snapshot.release).toMatchObject({
+      state: 'empty',
+      coverageRate: 0,
+      publishedSlots: 0,
+      pendingSlots: 0,
+      requiredSlots: 0
+    });
+  });
 });

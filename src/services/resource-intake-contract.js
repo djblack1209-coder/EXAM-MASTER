@@ -30,6 +30,15 @@ function dayString(value) {
   return isoDate(value).slice(0, 10);
 }
 
+function finiteNumber(value, fallback = 0) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function numberAtLeast(value, min, fallback = min) {
+  return Math.max(min, finiteNumber(value, fallback));
+}
+
 function createDefaultId() {
   return `upload_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 }
@@ -77,7 +86,7 @@ export function createImportRecord(input = {}, options = {}) {
   return {
     id: input.id || idFactory(),
     name: input.name || '未命名资料',
-    size: Number(input.size || 0),
+    size: finiteNumber(input.size || 0),
     date: input.date || dayString(now),
     source,
     sourceKey,
@@ -143,8 +152,8 @@ export function buildQuestionBankStats(bank = []) {
 }
 
 export function filterBankQuestions(bank = [], params = {}) {
-  const page = Math.max(1, Number(params.page || 1));
-  const pageSize = Math.max(1, Number(params.pageSize || params.limit || 20));
+  const page = numberAtLeast(params.page || 1, 1, 1);
+  const pageSize = numberAtLeast(params.pageSize || params.limit || 20, 1, 20);
   const category = params.category || '';
   const difficulty = params.difficulty ? normalizeDifficulty(params.difficulty) : '';
 
@@ -167,7 +176,7 @@ export function filterBankQuestions(bank = [], params = {}) {
 }
 
 export function sampleBankQuestions(bank = [], params = {}) {
-  const count = Math.max(1, Number(params.count || params.pageSize || params.limit || 20));
+  const count = numberAtLeast(params.count || params.pageSize || params.limit || 20, 1, 20);
   return filterBankQuestions(bank, { ...params, page: 1, pageSize: count }).list.slice(0, count);
 }
 
@@ -221,10 +230,10 @@ export function buildIntakeSnapshot({ records = [], bank = [], releaseCoverage =
     },
     release: {
       state: releaseState,
-      coverageRate: Number(summary.coverageRate || 0),
-      publishedSlots: Number(summary.publishedSlots || 0),
-      pendingSlots: Number(summary.pendingSlots || 0),
-      requiredSlots: Number(summary.requiredSlots || 0),
+      coverageRate: finiteNumber(summary.coverageRate || 0),
+      publishedSlots: finiteNumber(summary.publishedSlots || 0),
+      pendingSlots: finiteNumber(summary.pendingSlots || 0),
+      requiredSlots: finiteNumber(summary.requiredSlots || 0),
       tracks
     }
   };
