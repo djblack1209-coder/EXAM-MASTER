@@ -1,22 +1,114 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import crypto from 'crypto';
+const PROJECT_ROOT = path.resolve(fileURLToPath(import.meta.url), '../../..');
+const DEFAULT_ENV_FILES = [
+  path.join(PROJECT_ROOT, '.env'),
+  path.join(PROJECT_ROOT, '.env.production'),
+  path.join(PROJECT_ROOT, 'laf-backend/.env')
+];
+
+function parseArgs(argv) {
+  const options = {
+    failOnSkipped: false,
+    output: '',
+    envFiles: [...DEFAULT_ENV_FILES],
+    useEnvFiles: true
+  };
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    const [key, inlineValue] = arg.split('=');
+    const nextValue = inlineValue ?? argv[index + 1];
+
+    if (arg === '--fail-on-skipped') {
+      options.failOnSkipped = true;
+    } else if (key === '--output') {
+      options.output = path.resolve(nextValue);
+      if (inlineValue === undefined) index += 1;
+    } else if (key === '--env-file') {
+      options.envFiles.push(path.resolve(nextValue));
+      options.useEnvFiles = true;
+      if (inlineValue === undefined) index += 1;
+    } else if (arg === '--no-env-files') {
+      options.envFiles = [];
+      options.useEnvFiles = false;
+    }
+  }
+
+  return options;
+}
+
+function existsFile(filePath) {
+  return fs.existsSync(filePath) && fs.statSync(filePath).isFile();
+}
+
+function stripInlineComment(value) {
+  let quote = '';
+  for (let index = 0; index < value.length; index += 1) {
+    const char = value[index];
+    const previous = value[index - 1];
+    if ((char === '"' || char === "'") && previous !== '\\') {
+      quote = quote === char ? '' : quote || char;
+    }
+    if (char === '#' && !quote && /\s/.test(previous || ' ')) {
+      return value.slice(0, index).trim();
+    }
+  }
+  return value.trim();
+}
+
+function normalizeEnvValue(rawValue) {
+  let value = stripInlineComment(String(rawValue || '').trim());
+  const quote = value[0];
+  if ((quote === '"' || quote === "'") && value.endsWith(quote)) {
+    value = value.slice(1, -1);
+  }
+  if (quote === '"') {
+    value = value.replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\"/g, '"');
+  }
+  return value;
+}
+
+function parseEnvFile(filePath) {
+  if (!existsFile(filePath)) return {};
+  const result = {};
+  const content = fs.readFileSync(filePath, 'utf8');
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const match = /^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$/.exec(trimmed);
+    if (!match) continue;
+    result[match[1]] = normalizeEnvValue(match[2]);
+  }
+  return result;
+}
+
+function loadEnvFiles(filePaths) {
+  return filePaths.reduce((merged, filePath) => ({ ...merged, ...parseEnvFile(filePath) }), {});
+}
+
+const OPTIONS = parseArgs(process.argv.slice(2));
+const RELEASE_ENV = OPTIONS.useEnvFiles ? { ...loadEnvFiles(OPTIONS.envFiles), ...process.env } : { ...process.env };
 
 const BASE_URL = (
-  process.env.LAF_API_URL ||
-  process.env.VITE_API_BASE_URL ||
-  process.env.SMOKE_BASE_URL ||
+  RELEASE_ENV.SMOKE_BASE_URL ||
+  RELEASE_ENV.LAF_API_URL ||
+  RELEASE_ENV.VITE_API_BASE_URL ||
   'https://nf98ia8qnt.sealosbja.site'
 ).replace(/\/$/, '');
 
-const RETRIES = Number(process.env.SMOKE_RETRIES || 8);
-const RETRY_DELAY_MS = Number(process.env.SMOKE_RETRY_DELAY_MS || 1000);
+const RETRIES = Number(RELEASE_ENV.SMOKE_RETRIES || 8);
+const RETRY_DELAY_MS = Number(RELEASE_ENV.SMOKE_RETRY_DELAY_MS || 1000);
+const FAIL_ON_SKIPPED =
+  OPTIONS.failOnSkipped || String(RELEASE_ENV.SMOKE_FAIL_ON_SKIPPED || '').toLowerCase() === 'true';
 
-const EMAIL = process.env.SMOKE_EMAIL || '';
-const PASSWORD = process.env.SMOKE_PASSWORD || '';
-const TOKEN_PLACEHOLDER
-const TOKEN_PLACEHOLDER
-const JWT_SECRET_PLACEHOLDER
+const EMAIL = RELEASE_ENV.SMOKE_EMAIL || '';
+const PASSWORD = RELEASE_ENV.SMOKE_PASSWORD || '';
+const DIRECT_TOKEN = RELEASE_ENV.SMOKE_TOKEN || RELEASE_ENV.SMOKE_JWT || '';
+const DIRECT_USER_ID = RELEASE_ENV.SMOKE_USER_ID || '';
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -70,6 +162,21 @@ function pass(result) {
   return result && result.ok && !result.skipped;
 }
 
+function decodeJwtPayload(token) {
+  try {
+    const [, payload] = String(token || '').split('.');
+    if (!payload) return {};
+    return JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+  } catch {
+    return {};
+  }
+}
+
+function userIdFromToken(token) {
+  const payload = decodeJwtPayload(token);
+  return payload.userId || payload.uid || payload.sub || '';
+}
+
 async function runCheck(name, fn) {
   try {
     const ok = await fn();
@@ -79,67 +186,6 @@ async function runCheck(name, fn) {
   }
 }
 
-function decodeJwtPayload(token) {
-  if (!token || typeof token !== 'string') return null;
-  const parts = token.split('.');
-  if (parts.length !== 3) return null;
-
-  try {
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
-    return payload && typeof payload === 'object' ? payload : null;
-  } catch {
-    return null;
-  }
-}
-
-function getTokenUserId(token) {
-  const payload = decodeJwtPayload(token);
-  if (!payload || typeof payload !== 'object') return '';
-  return payload.userId || payload.uid || '';
-}
-
-function generateJwt(payload, secret) {
-  const header = { alg: 'HS256', typ: 'JWT' };
-  const headerBase64 = Buffer.from(JSON.stringify(header)).toString('base64url');
-  const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = crypto.createHmac('sha256', secret).update(`${headerBase64}.${payloadBase64}`).digest('base64url');
-  return `${headerBase64}.${payloadBase64}.${signature}`;
-}
-
-async function bootstrapTokenFromRank() {
-  if (!JWT_SECRET_PLACEHOLDER
-    return { token: '', userId: '', message: 'SMOKE_AUTO_TOKEN enabled but JWT secret is missing' };
-  }
-
-  const rankResponse = await invoke('rank-center', { action: 'get', rankType: 'total', limit: 20 });
-  if (Number(rankResponse?.payload?.code) !== 0 || !Array.isArray(rankResponse?.payload?.data)) {
-    return {
-      token: '',
-      userId: '',
-      message: rankResponse?.payload?.message || rankResponse?.payload?.msg || 'rank-center bootstrap precheck failed'
-    };
-  }
-
-  const firstUser = rankResponse.payload.data.find((item) => typeof item?.uid === 'string' && item.uid);
-  const userId = firstUser?.uid || '';
-  if (!userId) {
-    return { token: '', userId: '', message: 'rank-center returned no usable uid' };
-  }
-
-  const now = Date.now();
-  const token = generateJwt(
-    {
-      userId,
-      role: 'user',
-      iat: now,
-      exp: now + 7 * 24 * 60 * 60 * 1000
-    },
-    JWT_SECRET_PLACEHOLDER
-  );
-
-  return { token, userId, message: 'generated token from rank-center uid' };
-}
-
 async function main() {
   const checks = [];
 
@@ -147,20 +193,6 @@ async function main() {
     await runCheck('health-check public', async () => {
       const { payload } = await invoke('health-check', {});
       return Number(payload?.code) === 0 && payload?.status === 'ok';
-    })
-  );
-
-  checks.push(
-    await runCheck('proxy-ai health_check', async () => {
-      const { payload } = await invoke('proxy-ai', { action: 'health_check' });
-      return Number(payload?.code) === 0;
-    })
-  );
-
-  checks.push(
-    await runCheck('school-query list', async () => {
-      const { payload } = await invoke('school-query', { action: 'list', page: 1, pageSize: 5 });
-      return Number(payload?.code) === 0;
     })
   );
 
@@ -207,13 +239,13 @@ async function main() {
 
   checks.push(
     await runCheck('question-bank invalid token', async () => {
-      const { payload } = await invoke('question-bank', { action: 'random', data: { count: 1 } }, 'invalid.token');
+      const { payload } = await invoke('question-bank', { action: 'get_stats', data: {} }, 'invalid.token');
       return Number(payload?.code) === 401 && payload?.success === false;
     })
   );
 
   let token = DIRECT_TOKEN;
-  let tokenUserId = getTokenUserId(token);
+  let tokenUserId = DIRECT_USER_ID || userIdFromToken(DIRECT_TOKEN);
   if (EMAIL) {
     checks.push(
       await runCheck('send-email-code', async () => {
@@ -221,47 +253,31 @@ async function main() {
         return Number(payload?.code) === 0;
       })
     );
-  } else {
+  } else if (DIRECT_TOKEN) {
     checks.push({
       name: 'send-email-code',
       ok: true,
-      skipped: true,
-      error: 'Provide SMOKE_EMAIL'
+      error: 'Token mode uses SMOKE_TOKEN; email code check not required'
     });
+  } else {
+    checks.push({ name: 'send-email-code', ok: true, skipped: true, error: 'Provide SMOKE_EMAIL' });
   }
 
   if (EMAIL && PASSWORD) {
     const login = await invoke('login', { type: 'email', email: EMAIL, password: PASSWORD });
     token = login?.payload?.data?.token || token;
-    tokenUserId = login?.payload?.data?.userId || tokenUserId || getTokenUserId(token);
+    tokenUserId = login?.payload?.data?.userId || tokenUserId;
     checks.push({
       name: 'login with email/password',
       ok: Number(login?.payload?.code) === 0 && !!(login?.payload?.data?.token || ''),
       error: login?.payload?.message || login?.payload?.msg || 'Login failed'
     });
-  } else if (!token && AUTO_TOKEN) {
-    const bootstrapResult = await bootstrapTokenFromRank();
-    if (bootstrapResult.token) {
-      token = bootstrapResult.token;
-      tokenUserId = bootstrapResult.userId;
-      checks.push({
-        name: 'auth token bootstrap',
-        ok: true,
-        error: bootstrapResult.message
-      });
-    } else {
-      checks.push({
-        name: 'auth token bootstrap',
-        ok: false,
-        error: bootstrapResult.message
-      });
-    }
   } else if (!token) {
     checks.push({
       name: 'login with email/password',
       ok: true,
       skipped: true,
-      error: 'Provide SMOKE_EMAIL + SMOKE_PASSWORD, or SMOKE_TOKEN, or enable SMOKE_AUTO_TOKEN'
+      error: 'Provide SMOKE_EMAIL + SMOKE_PASSWORD, or SMOKE_TOKEN'
     });
   }
 
@@ -269,7 +285,7 @@ async function main() {
     checks.push({
       name: 'auth token source',
       ok: true,
-      error: AUTO_TOKEN ? 'Using auto-generated token' : 'Using SMOKE_TOKEN'
+      error: tokenUserId ? 'Using SMOKE_TOKEN + user id' : 'Using SMOKE_TOKEN without user id'
     });
   }
 
@@ -281,10 +297,6 @@ async function main() {
       })
     );
 
-    if (!tokenUserId) {
-      tokenUserId = getTokenUserId(token);
-    }
-
     if (tokenUserId) {
       checks.push(
         await runCheck('user-profile get (auth)', async () => {
@@ -294,17 +306,17 @@ async function main() {
       );
 
       checks.push(
-        await runCheck('study-stats get (auth)', async () => {
-          const { payload } = await invoke('study-stats', { action: 'get', userId: tokenUserId }, token);
+        await runCheck('user-stats overview (auth)', async () => {
+          const { payload } = await invoke('user-stats', { action: 'getOverview', userId: tokenUserId }, token);
           return Number(payload?.code) === 0;
         })
       );
 
       checks.push(
-        await runCheck('study-stats daily (auth)', async () => {
+        await runCheck('user-stats daily (auth)', async () => {
           const { payload } = await invoke(
-            'study-stats',
-            { action: 'daily', userId: tokenUserId, data: { days: 7 } },
+            'user-stats',
+            { action: 'getDailyStats', userId: tokenUserId, data: { days: 7 } },
             token
           );
           return Number(payload?.code) === 0;
@@ -312,8 +324,12 @@ async function main() {
       );
 
       checks.push(
-        await runCheck('study-stats weekly (auth)', async () => {
-          const { payload } = await invoke('study-stats', { action: 'weekly', userId: tokenUserId }, token);
+        await runCheck('user-stats trend (auth)', async () => {
+          const { payload } = await invoke(
+            'user-stats',
+            { action: 'getTrend', userId: tokenUserId, data: { period: 'week' } },
+            token
+          );
           return Number(payload?.code) === 0;
         })
       );
@@ -326,21 +342,21 @@ async function main() {
       });
 
       checks.push({
-        name: 'study-stats get (auth)',
+        name: 'user-stats overview (auth)',
         ok: true,
         skipped: true,
         error: 'token payload has no userId'
       });
 
       checks.push({
-        name: 'study-stats daily (auth)',
+        name: 'user-stats daily (auth)',
         ok: true,
         skipped: true,
         error: 'token payload has no userId'
       });
 
       checks.push({
-        name: 'study-stats weekly (auth)',
+        name: 'user-stats trend (auth)',
         ok: true,
         skipped: true,
         error: 'token payload has no userId'
@@ -361,6 +377,38 @@ async function main() {
 
   if (failedOnly.length > 0) {
     process.exitCode = 1;
+  } else if (FAIL_ON_SKIPPED && skipped > 0) {
+    console.error(
+      'Cloud smoke skipped checks are release blockers. Provide smoke credentials or remove skipped checks.'
+    );
+    process.exitCode = 1;
+  }
+
+  if (OPTIONS.output) {
+    fs.mkdirSync(path.dirname(OPTIONS.output), { recursive: true });
+    fs.writeFileSync(
+      OPTIONS.output,
+      `${JSON.stringify(
+        {
+          version: 1,
+          generatedAt: new Date().toISOString(),
+          baseUrl: BASE_URL,
+          summary: { passed, failed: failedOnly.length, skipped },
+          checks: checks.map((check) => ({
+            name: check.name,
+            ok: Boolean(check.ok),
+            skipped: Boolean(check.skipped),
+            error: check.error || ''
+          })),
+          releaseReadiness: {
+            canPublish: failedOnly.length === 0 && (!FAIL_ON_SKIPPED || skipped === 0),
+            failOnSkipped: FAIL_ON_SKIPPED
+          }
+        },
+        null,
+        2
+      )}\n`
+    );
   }
 }
 

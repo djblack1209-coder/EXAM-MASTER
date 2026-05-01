@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { createRequire } from 'module';
 import { normalizeAppRuntimeIndexFile } from './scripts/build/app-runtime-html.js';
+import { copyPwaIconAssets } from './scripts/build/pwa-assets.mjs';
 import { VitePWA } from 'vite-plugin-pwa';
 import { compression, defineAlgorithm } from 'vite-plugin-compression2';
 import postcssColorMixFallback from './scripts/build/postcss-color-mix-fallback.js';
@@ -184,6 +185,29 @@ function forceAppInlineDynamicImports() {
   };
 }
 
+function copyH5PwaIcons() {
+  return {
+    name: 'copy-h5-pwa-icons',
+    writeBundle(options) {
+      try {
+        const outDir = options.dir || '';
+        if (!/[/\\]dist[/\\](build|dev)[/\\]h5$/.test(outDir)) return;
+
+        const copied = copyPwaIconAssets({
+          sourceDir: path.resolve(__dirname, 'public/static/pwa-icons'),
+          outDir
+        });
+
+        if (copied.length) {
+          console.log(`[PWA Assets Plugin] Copied ${copied.length} icon files to ${outDir}/static/pwa-icons`);
+        }
+      } catch (err) {
+        console.error('[PWA Assets Plugin] Failed to copy PWA icon assets:', err.message);
+      }
+    }
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   // 加载环境变量
@@ -221,6 +245,7 @@ export default defineConfig(({ command, mode }) => {
       emitAppPackManifest(),
       normalizeAppRuntimeIndex(),
       forceAppInlineDynamicImports(),
+      copyH5PwaIcons(),
       // Phase 3-6: PWA 离线体验（仅 H5 平台启用）
       ...(isH5
         ? [

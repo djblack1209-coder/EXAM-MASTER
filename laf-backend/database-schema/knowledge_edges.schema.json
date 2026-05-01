@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "knowledge_edges",
+  "description": "公共课知识神经图谱边集合",
+  "type": "object",
+  "required": ["edge_id", "source_node_id", "target_node_id", "relation"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "edge_id": {
+      "type": "string",
+      "description": "稳定边 ID",
+      "minLength": 1,
+      "maxLength": 220
+    },
+    "source_node_id": {
+      "type": "string",
+      "description": "起点节点 ID",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "target_node_id": {
+      "type": "string",
+      "description": "终点节点 ID",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "relation": {
+      "type": "string",
+      "description": "边关系类型",
+      "enum": ["contains", "prerequisite", "confusable_with", "related"]
+    },
+    "weight": {
+      "type": "number",
+      "description": "边权重，0-1",
+      "default": 1,
+      "minimum": 0,
+      "maximum": 1
+    },
+    "graph_version": {
+      "type": "string",
+      "description": "图谱版本",
+      "default": "2026.04-public-courses-v1",
+      "maxLength": 80
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "edge_id": 1 }, "unique": true, "name": "idx_edge_id" },
+    { "key": { "source_node_id": 1, "relation": 1 }, "name": "idx_source_relation" },
+    { "key": { "target_node_id": 1, "relation": 1 }, "name": "idx_target_relation" },
+    { "key": { "graph_version": 1 }, "name": "idx_graph_version" }
+  ]
+}

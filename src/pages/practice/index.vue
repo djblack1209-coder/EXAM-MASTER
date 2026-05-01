@@ -1,2043 +1,1687 @@
 <template>
-  <view id="e2e-practice-root" class="practice-container" :class="{ 'dark-mode': isDark }">
-    <!-- 微信隐私保护弹窗 -->
-    <PrivacyPopup />
-    <!-- 顶部导航 -->
-    <view class="top-nav apple-glass">
-      <text class="nav-title"> 刷题中心 </text>
-      <view class="nav-actions">
-        <!-- 移除垃圾桶图标，避免与微信原生胶囊按钮重叠 -->
+  <view class="page">
+    <!-- 自定义导航栏 -->
+    <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
+      <view class="nav-content">
+        <text class="nav-title">刷题中心</text>
       </view>
     </view>
 
-    <!-- 骨架屏加载状态 -->
-    <!-- #ifdef APP-PLUS -->
-    <view v-if="isPageLoading" class="skeleton-container">
-      <view class="skeleton-status-card skeleton-animate" />
-      <view class="skeleton-actions">
-        <view class="skeleton-btn skeleton-animate" />
-        <view class="skeleton-btn skeleton-animate" />
-      </view>
-      <view class="skeleton-import-card skeleton-animate" />
-      <view class="skeleton-menu">
-        <view v-for="i in 5" :key="i" class="skeleton-menu-item skeleton-animate" />
-      </view>
-    </view>
-    <!-- #endif -->
-    <!-- #ifndef APP-PLUS -->
-    <!-- #ifndef APP-NVUE -->
-    <transition name="skeleton-fade">
-      <view v-if="isPageLoading" class="skeleton-container">
-        <view class="skeleton-status-card skeleton-animate" />
-        <view class="skeleton-actions">
-          <view class="skeleton-btn skeleton-animate" />
-          <view class="skeleton-btn skeleton-animate" />
-        </view>
-        <view class="skeleton-import-card skeleton-animate" />
-        <view class="skeleton-menu">
-          <view v-for="i in 5" :key="i" class="skeleton-menu-item skeleton-animate" />
-        </view>
-      </view>
-    </transition>
-    <!-- #endif -->
-    <!-- #ifdef APP-NVUE -->
-    <view v-if="isPageLoading" class="skeleton-container">
-      <view class="skeleton-status-card skeleton-animate" />
-      <view class="skeleton-actions">
-        <view class="skeleton-btn skeleton-animate" />
-        <view class="skeleton-btn skeleton-animate" />
-      </view>
-      <view class="skeleton-import-card skeleton-animate" />
-      <view class="skeleton-menu">
-        <view v-for="i in 5" :key="i" class="skeleton-menu-item skeleton-animate" />
-      </view>
-    </view>
-    <!-- #endif -->
-    <!-- #endif -->
-
-    <!-- 状态卡片 -->
-    <view v-if="!isPageLoading" class="status-card apple-glass-card" :class="{ 'empty-state': !hasBank }">
-      <!-- 有题库状态 -->
-      <view v-if="hasBank" class="status-content">
-        <view class="status-icon">
-          <BaseIcon name="books" :size="48" class="icon-image" />
-        </view>
-        <view class="status-info">
-          <view class="status-title"> 题库就绪 </view>
-          <view class="status-desc"> 当前已收录 {{ totalQuestions }} 道真题 </view>
-        </view>
-        <view class="status-actions">
-          <view class="manage-btn apple-glass-pill" @tap="showQuizManage">
-            <BaseIcon name="settings" :size="28" class="manage-icon-img" />
-            <text class="manage-text"> 题库管理 </text>
+    <!-- 主内容 -->
+    <scroll-view
+      scroll-y
+      scroll-with-animation
+      class="main-scroll"
+      :scroll-into-view="scrollIntoViewId"
+      :style="{ paddingTop: statusBarHeight + 44 + 'px' }"
+    >
+      <!-- 可用题库列表 -->
+      <view class="section practice-hero-section">
+        <view class="practice-hero">
+          <text class="practice-kicker">{{ practiceHeroKicker }}</text>
+          <text class="practice-title">{{ practiceHeroTitle }}</text>
+          <text class="practice-subtitle">{{ practiceHeroSubtitle }}</text>
+          <view class="practice-signal-row">
+            <view class="practice-signal">
+              <text class="signal-value">{{ loadedBankCount }}</text>
+              <text class="signal-label">已加载</text>
+            </view>
+            <view class="practice-signal">
+              <text class="signal-value">{{ totalQuestions }}</text>
+              <text class="signal-label">可训练题</text>
+            </view>
+            <view class="practice-signal">
+              <text class="signal-value">{{ trackCount }}</text>
+              <text class="signal-label">公共课轨道</text>
+            </view>
+          </view>
+          <view v-if="hasBank" class="practice-hero-action" hover-class="btn-hover" @tap="goDoQuiz">
+            <text class="practice-hero-action-text">进入限时训练</text>
           </view>
         </view>
       </view>
 
-      <!-- 空状态 - 居中显示 -->
-      <view v-else class="empty-state-content">
-        <view class="empty-icon">
-          <BaseIcon name="books" :size="64" />
+      <view v-if="!hasPublishedBanks" class="section">
+        <view class="release-guard-card">
+          <view class="release-guard-copy">
+            <text class="release-guard-kicker">PUBLIC RELEASE GUARD</text>
+            <text class="release-guard-title">官方真题题库暂未公开</text>
+            <text class="release-guard-desc">
+              当前仅开放公共课轨道和知识地图预览。题源证据、答案 hash、解析校验全部通过后，题库才会进入训练流。
+            </text>
+          </view>
+          <view class="release-guard-grid">
+            <view v-for="item in releaseGuardItems" :key="item.code" class="release-guard-step">
+              <text class="release-guard-step-code">{{ item.code }}</text>
+              <text class="release-guard-step-label">{{ item.label }}</text>
+            </view>
+          </view>
         </view>
-        <view class="empty-title"> 选择题库开始刷题 </view>
-        <view class="empty-desc"> 以下题库已就绪，点击即可加载 </view>
-        <!-- 闪卡题库列表 -->
-        <view class="flashcard-bank-list">
+      </view>
+
+      <view v-if="focusedKnowledgeNode" class="section">
+        <view class="focus-card">
+          <view class="focus-copy">
+            <text class="focus-kicker">KNOWLEDGE LINK</text>
+            <text class="focus-title">{{ focusedKnowledgeNode.label }}</text>
+            <text class="focus-trail">{{ focusedKnowledgeTrailText }}</text>
+          </view>
+          <view class="focus-actions">
+            <view class="focus-action primary" hover-class="btn-hover" @tap="startKnowledgeNodeTraining">
+              <text>节点强化</text>
+            </view>
+            <view class="focus-action ghost" hover-class="btn-hover" @tap="clearFocusedKnowledgeNode">
+              <text>关闭</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="section-head navigator-head">
+          <view>
+            <text class="section-title">公共课导航</text>
+            <text class="section-hint">科目 / 版本 / 训练模式</text>
+          </view>
+          <text class="section-meta">{{ bankAvailabilityText }}</text>
+        </view>
+
+        <view class="subject-tabs">
           <view
-            v-for="bank in flashcardBanks"
-            :key="bank.id"
-            class="flashcard-bank-item apple-glass-card"
-            @tap="handleLoadBank(bank.id)"
+            v-for="subject in navigationTree"
+            :key="subject.id"
+            class="subject-tab"
+            :class="{ active: selectedSubject?.id === subject.id }"
+            @tap="selectSubject(subject.id)"
           >
+            <text>{{ subject.label }}</text>
+          </view>
+        </view>
+
+        <view class="track-rail">
+          <view
+            v-for="track in selectedSubject?.tracks || []"
+            :key="track.id"
+            class="track-pill"
+            :class="{ active: selectedTrack?.id === track.id }"
+            @tap="selectTrack(track.id)"
+          >
+            <text class="track-code">{{ track.code }}</text>
+            <text class="track-label">{{ track.label }}</text>
+            <text class="track-count">{{ track.banks.length }}</text>
+          </view>
+        </view>
+
+        <view class="mode-row">
+          <view
+            v-for="mode in selectedModes"
+            :key="mode.id"
+            class="mode-chip"
+            :class="{ active: selectedModeId === mode.id }"
+            @tap="selectMode(mode.id)"
+          >
+            <text>{{ mode.label }}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="section-head">
+          <view>
+            <text class="section-title">{{ selectedTrack?.label || '公共课' }}</text>
+            <text class="section-hint">{{ selectedModeLabel }}</text>
+          </view>
+          <text class="section-meta">{{ selectedTrackReleaseLabel }}</text>
+        </view>
+
+        <view v-if="isKnowledgeGraphMode" id="knowledge-graph-section" class="knowledge-map-panel">
+          <view class="knowledge-map-head">
+            <view>
+              <text class="knowledge-map-kicker">KNOWLEDGE MAP</text>
+              <text class="knowledge-map-title">{{ knowledgeGraphSummaryText }}</text>
+            </view>
+            <view class="knowledge-map-track-badge">
+              <text>{{ selectedTrack?.code || 'PUBLIC' }}</text>
+            </view>
+          </view>
+
+          <view class="knowledge-map-status-row">
+            <view v-for="item in knowledgeGraphLegend" :key="item.state" class="knowledge-map-status">
+              <view class="knowledge-map-status-dot" :class="`state-${item.state}`" />
+              <text>{{ item.label }}</text>
+            </view>
+          </view>
+
+          <view class="knowledge-map-path">
+            <view
+              v-for="module in knowledgeGraphModules"
+              :key="module.id"
+              class="knowledge-module-card"
+              :class="{ focused: module.focused }"
+            >
+              <view class="knowledge-module-rail">
+                <view class="knowledge-module-dot" :class="`state-${module.state}`" />
+                <view v-if="!module.isLast" class="knowledge-module-line" />
+              </view>
+              <view class="knowledge-module-body">
+                <view class="knowledge-module-top">
+                  <view class="knowledge-module-copy">
+                    <text class="knowledge-module-name">{{ module.label }}</text>
+                    <text class="knowledge-module-meta">{{ module.metaText }}</text>
+                  </view>
+                  <text class="knowledge-module-state">{{ module.stateLabel }}</text>
+                </view>
+                <view class="knowledge-topic-row">
+                  <view v-for="topic in module.topics" :key="topic.id" class="knowledge-topic-chip">
+                    <text>{{ topic.label }}</text>
+                  </view>
+                  <view v-if="module.extraTopicCount > 0" class="knowledge-topic-chip muted">
+                    <text>+{{ module.extraTopicCount }}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view v-else-if="selectedBanks.length > 0" class="bank-list">
+          <view v-for="bank in selectedBanks" :key="bank.id" class="card bank-card">
             <view class="bank-info">
+              <text class="bank-track">{{ bank.year }} PAST EXAM</text>
               <text class="bank-name">{{ bank.name }}</text>
               <text class="bank-desc">{{ bank.description }}</text>
             </view>
-            <view class="bank-action">
-              <text v-if="flashcardLoadedIds.has(bank.id)" class="bank-loaded">已加载</text>
-              <text v-else class="bank-load-btn">加载</text>
+            <view
+              v-if="!isBankLoaded(bank.id)"
+              class="bank-btn load-btn"
+              hover-class="btn-hover"
+              @tap="handleLoadBank(bank.id)"
+            >
+              <text class="bank-btn-text">{{ loadingBankId === bank.id ? '加载中' : '加载' }}</text>
+            </view>
+            <view v-else class="bank-loaded">
+              <text class="bank-loaded-text">已加载</text>
             </view>
           </view>
         </view>
-        <!-- 自定义导入入口 -->
-        <view class="empty-action apple-cta" @tap="chooseImportSource">
-          <BaseIcon name="upload" :size="18" />
-          <text class="action-text"> 或导入自有资料 </text>
-        </view>
-      </view>
-    </view>
 
-    <!-- 学习数据统计卡片 -->
-    <LearningStatsCard
-      v-if="hasBank && !isPageLoading"
-      :today-questions="todayQuestions"
-      :today-goal="todayGoal"
-      :current-streak="currentStreak"
-      :weekly-accuracy="weeklyAccuracy"
-      :weak-points-count="weakPointsCount"
-      :unlocked-achievements="unlockedAchievements"
-      @open-goal-setting="openGoalSetting"
-      @go-mistake="goMistake"
-    />
-
-    <!-- AI 今日推荐训练 — 零决策一键开始 -->
-    <view v-if="hasBank && !isPageLoading && aiRecommendTopic" class="ai-recommend-card" @tap="startAIRecommend">
-      <view class="ai-recommend-badge">
-        <text class="ai-recommend-badge-text">AI 推荐</text>
-      </view>
-      <view class="ai-recommend-body">
-        <text class="ai-recommend-title">{{ aiRecommendTopic.title }}</text>
-        <text class="ai-recommend-reason">{{ aiRecommendTopic.reason }}</text>
-      </view>
-      <view class="ai-recommend-action">
-        <text class="ai-recommend-btn-text">一键开始</text>
-      </view>
-    </view>
-
-    <!-- 题库生成进度条 -->
-    <GenerationProgressBar
-      v-if="isGeneratingQuestions && !isPageLoading"
-      :progress="generationProgress"
-      :file-name="fileName"
-      :generated-question-count="getGeneratedQuestionCount()"
-      @pause="pauseGeneration"
-    />
-
-    <!-- 主要操作区 -->
-    <view v-if="!isPageLoading" class="main-actions">
-      <!-- 开始刷题按钮 - ✅ F022: 添加加载状态和点击反馈 -->
-      <button
-        v-if="hasBank"
-        id="e2e-practice-start-btn"
-        class="primary-btn apple-cta"
-        :class="{ 'btn-loading': isNavigating }"
-        :disabled="isNavigating"
-        @tap="goPractice"
-      >
-        <view v-if="isNavigating" class="btn-spinner" />
-        <!-- 卡通火箭图标替代装饰性 BaseIcon -->
-        <image
-          v-else
-          class="feature-cartoon-icon btn-icon-img"
-          :src="getAssetUrl('icons', 'rocket-launch')"
-          mode="aspectFit"
-        />
-        <text class="btn-text">
-          {{ isNavigating ? '加载中...' : '开始刷题' }}
-        </text>
-      </button>
-
-      <!-- PK对战入口 - ✅ F022: 添加加载状态和点击反馈 -->
-      <button
-        v-if="hasBank"
-        id="e2e-practice-battle-btn"
-        class="secondary-btn apple-glass-pill"
-        :class="{ 'btn-loading': isNavigating }"
-        :disabled="isNavigating"
-        @tap="goBattle"
-      >
-        <view v-if="isNavigating" class="btn-spinner" />
-        <!-- 卡通图标替代装饰性 BaseIcon -->
-        <image
-          v-else
-          class="feature-cartoon-icon btn-icon-img"
-          :src="getAssetUrl('icons', 'crossed-swords')"
-          mode="aspectFit"
-        />
-        <text class="btn-text"> PK 对战 </text>
-      </button>
-
-      <!-- Phase 3-7: AI智能推题入口 -->
-      <button
-        v-if="hasBank"
-        class="secondary-btn apple-glass-pill"
-        :class="{ 'btn-loading': isLoadingRecommend }"
-        :disabled="isLoadingRecommend"
-        @tap="goSmartRecommend"
-      >
-        <view v-if="isLoadingRecommend" class="btn-spinner" />
-        <text class="btn-text">{{ isLoadingRecommend ? '分析中...' : 'AI 推题' }}</text>
-      </button>
-
-      <!-- Phase 3-3: 考研题库入口 -->
-      <button class="secondary-btn apple-glass-pill" @tap="goQuestionBank">
-        <text class="btn-text"> 考研题库 </text>
-      </button>
-
-      <!-- 导入资料卡片 -->
-      <view
-        id="e2e-practice-import-card"
-        class="import-card apple-glass-card"
-        :class="{ 'import-loading': isUploadingFile }"
-        @tap="chooseImportSource"
-      >
-        <view class="import-icon">
-          <BaseIcon v-if="!isUploadingFile" name="upload" :size="32" />
-          <view v-else class="import-spinner" />
-        </view>
-        <view class="import-info">
-          <view class="import-title">
-            {{ isUploadingFile ? '正在读取文件...' : '导入学习资料' }}
+        <view v-else class="empty-track-card">
+          <text class="empty-track-title">{{ emptyTrackTitle }}</text>
+          <text class="empty-track-desc">{{ emptyTrackDesc }}</text>
+          <view class="empty-track-stats">
+            <view v-for="item in selectedTrackStats" :key="item.label" class="empty-track-stat">
+              <text class="empty-track-stat-value">{{ item.value }}</text>
+              <text class="empty-track-stat-label">{{ item.label }}</text>
+            </view>
           </view>
-          <view class="import-desc">
-            {{ isUploadingFile ? fileName : '智能分析 · 即刻出题' }}
+          <view class="empty-track-action" hover-class="btn-hover" @tap="selectMode('knowledge_graph')">
+            <text>查看知识地图</text>
           </view>
         </view>
-        <view class="import-arrow">
-          <BaseIcon v-if="!isUploadingFile" name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-    </view>
 
-    <PauseBanner :visible="isPaused" @resume="resumeGeneration" />
-
-    <!-- 功能菜单 -->
-    <view v-if="!isPageLoading" class="feature-menu apple-group-card">
-      <!-- 文件管理 -->
-      <view id="e2e-practice-menu-file-manager" class="menu-item" @tap="goFileManager">
-        <view class="menu-icon">
-          <BaseIcon name="folder" :size="44" class="menu-icon-img" />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 文件管理 </view>
-        </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-
-      <!-- 智能导师 -->
-      <view id="e2e-practice-menu-ai-tutor" class="menu-item" @tap="goAITutor">
-        <view class="menu-icon">
-          <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image class="feature-cartoon-icon" :src="getAssetUrl('icons', 'ai-chat')" mode="aspectFit" alt="智能导师" />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 智能导师 </view>
-        </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-
-      <!-- 错题本 -->
-      <view id="e2e-practice-menu-mistake" class="menu-item" @tap="goMistake">
-        <view class="menu-icon">
-          <BaseIcon name="error" :size="44" class="menu-icon-img" />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 错题本 </view>
-        </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-
-      <!-- ✅ P1: 错题重练入口 -->
-      <view v-if="mistakeCount > 0" class="menu-item mistake-review" @tap="goMistakeReview">
-        <view class="menu-icon">
-          <!-- 卡通星标图标替代装饰性 BaseIcon -->
-          <image
-            class="feature-cartoon-icon"
-            :src="getAssetUrl('icons', 'star-badge')"
-            mode="aspectFit"
-            alt="错题重练"
-          />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 错题重练 </view>
-          <view class="menu-subtitle"> {{ mistakeCount }} 道错题待巩固 </view>
-        </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-
-      <!-- 排行榜 -->
-      <view id="e2e-practice-menu-rank" class="menu-item" @tap="goRank">
-        <view class="menu-icon">
-          <!-- 卡通图标替代装饰性 BaseIcon -->
-          <image
-            class="feature-cartoon-icon"
-            :src="getAssetUrl('icons', 'trophy-cup')"
-            mode="aspectFit"
-            alt="学霸排行榜"
-          />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 学霸排行榜 </view>
-        </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-
-      <!-- 学习进度 -->
-      <view id="e2e-practice-menu-study-detail" class="menu-item" @tap="goToStudyDetail">
-        <view class="menu-icon">
-          <BaseIcon name="check" :size="44" class="menu-icon-img" />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 总学习进度 </view>
-        </view>
-        <view class="progress-info">
-          <view class="progress-bar">
-            <view class="progress-fill" :style="{ width: progressPercent + '%' }" />
+        <view v-if="pendingBanks.length > 0" class="pending-list">
+          <text class="pending-title">清洗队列</text>
+          <view v-for="bank in pendingBanks" :key="bank.id" class="pending-item">
+            <text class="pending-name">{{ bank.name }}</text>
+            <text class="pending-reason">{{ bank.disabledReason || '等待答案校验' }}</text>
           </view>
-          <text class="progress-text"> {{ progressPercent }}% </text>
         </view>
       </view>
 
-      <!-- ✅ P2: 收藏夹管理入口 -->
-      <view v-if="favoriteCount > 0" class="menu-item" @tap="goFavorites">
-        <view class="menu-icon">
-          <!-- 卡通书签图标替代装饰性 BaseIcon -->
-          <BaseIcon name="bookmark" :size="36" class="menu-icon-img" />
+      <!-- 已加载统计 + 操作按钮 -->
+      <view class="section">
+        <view v-if="hasBank" class="card status-card">
+          <text class="status-text">已加载 {{ totalQuestions }} 题</text>
+          <view class="progress-mini">
+            <view class="progress-bar-sm">
+              <view class="progress-fill-sm" :style="{ width: progressPercent + '%' }" />
+            </view>
+            <text class="progress-label">已做 {{ progressPercent }}%</text>
+          </view>
         </view>
-        <view class="menu-info">
-          <view class="menu-title"> 我的收藏 </view>
-          <view class="menu-subtitle-normal"> {{ favoriteCount }} 道题目 </view>
+
+        <!-- 开始刷题 -->
+        <view v-if="hasBank" class="action-btn primary-btn" hover-class="btn-hover" @tap="goDoQuiz">
+          <text class="action-btn-text">开始刷题</text>
         </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
+
+        <!-- 智能复习 -->
+        <view v-if="hasBank" class="action-btn secondary-btn" hover-class="btn-hover" @tap="goSmartReview">
+          <text class="action-btn-text secondary-text">智能复习</text>
         </view>
       </view>
 
-      <!-- 学习资源 -->
-      <view class="menu-item" @tap="goToResource">
-        <view class="menu-icon">
-          <BaseIcon name="file-text" :size="36" class="menu-icon-img" />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 学习资源 </view>
-        </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-
-      <!-- Anki 导出 -->
-      <view class="menu-item" @tap="exportAnki">
-        <view class="menu-icon">
-          <BaseIcon name="download" :size="36" />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 导出 Anki 牌组 </view>
-          <view class="menu-subtitle-normal"> 导出为 .apkg 文件 </view>
-        </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-
-      <!-- ✅ P1: 练习模式入口 -->
-      <view id="e2e-practice-menu-modes" class="menu-item" @tap="showPracticeModes">
-        <view class="menu-icon">
-          <BaseIcon name="target" :size="36" />
-        </view>
-        <view class="menu-info">
-          <view class="menu-title"> 练习模式 </view>
-          <view class="menu-subtitle-normal"> 专项突破 · 限时训练 </view>
-        </view>
-        <view class="menu-arrow">
-          <BaseIcon name="chevron-right" :size="24" class="arrow" />
-        </view>
-      </view>
-    </view>
-
-    <!-- 智能加载遮罩 -->
-    <AiGenerationOverlay
-      :visible="showMask"
-      :file-name="fileName"
-      :generated-count="generatedCount"
-      :total-questions-limit="totalQuestionsLimit"
-      :batch-question-count="batchQuestionCount"
-      :current-soup="currentSoup"
-      @pause="pauseGeneration"
-    />
-
-    <!-- 极速体验弹窗（已移除） -->
-
-    <!-- 题库管理弹窗 -->
-    <QuizManageModal
-      :visible="showQuizManageModal"
-      :total-questions="totalQuestions"
-      @close="closeQuizManage"
-      @clear="clearQuizBank"
-    />
-
-    <!-- ✅ 检查点2.2：断点恢复弹窗 -->
-    <ResumePracticeModal
-      :visible="showResumeModal"
-      :draft-info="draftInfo"
-      type="quiz"
-      @resume="handleResumePractice"
-      @restart="handleRestartPractice"
-    />
-
-    <!-- 学习目标设置弹窗 -->
-    <GoalSettingModal
-      :visible="showGoalSettingModal"
-      :current-goal="todayGoal"
-      @close="showGoalSettingModal = false"
-      @saved="onGoalSaved"
-    />
-
-    <!-- 成就展示弹窗（已移除） -->
-
-    <!-- 练习模式选择弹窗 -->
-    <PracticeModesModal
-      :visible="showPracticeModesModal"
-      :modes="practiceModes"
-      @close="showPracticeModesModal = false"
-      @select="selectPracticeMode"
-    />
+      <!-- 底部占位 -->
+      <view :style="{ height: tabBarHeight + 96 + 'px' }" />
+    </scroll-view>
 
     <!-- 底部导航栏 -->
-    <CustomTabbar :is-dark="isDark" />
-
-    <!-- 离线状态指示器 -->
-    <OfflineIndicator :auto-show="true" position="top" :auto-hide-delay="5000" />
+    <CustomTabbar :active-index="1" />
   </view>
 </template>
 
 <script>
-import { toast } from '@/utils/toast.js';
-import { safeImport } from '@/utils/helpers/safe-import.js';
-import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 import CustomTabbar from '@/components/layout/custom-tabbar/custom-tabbar.vue';
-// ✅ [BUG-FIX] defineAsyncComponent 在微信小程序中不生成 usingComponents 注册，
-// 导致组件无法渲染。全部改为静态 import。
-import ResumePracticeModal from '@/components/common/ResumePracticeModal.vue';
-import GoalSettingModal from '@/components/business/practice/GoalSettingModal.vue';
-import PracticeModesModal from '@/components/business/practice/PracticeModesModal.vue';
-import QuizManageModal from '@/components/business/practice/QuizManageModal.vue';
-import LearningStatsCard from '@/components/business/practice/LearningStatsCard.vue';
-import GenerationProgressBar from '@/components/business/practice/GenerationProgressBar.vue';
-import AiGenerationOverlay from '@/components/business/practice/AiGenerationOverlay.vue';
-import PauseBanner from '@/components/business/practice/PauseBanner.vue';
-import { safeNavigateTo } from '@/utils/safe-navigate';
-import { storageService } from '@/services/storageService.js';
-import PrivacyPopup from '@/components/common/privacy-popup.vue';
-import { QUOTE_LIBRARY } from '@/config/home-data.js';
-import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme.js';
-import { useFavoriteStore } from '@/stores/modules/favorite.js';
-// adaptive-learning-engine.js — 动态导入减小主包体积（18KB）
-// study.api.js 动态导入 — 避免拖进主包
-// learning-analytics 动态导入 — 避免 16KB 拖进主包
-// ✅ 检查点2.2：导入草稿检测器
-import { detectUnfinishedPractice, clearDraft } from '@/utils/practice/draft-detector.js';
-// ✅ 统一日志工具（生产环境自动禁用）
-import { logger } from '@/utils/logger.js';
-// ✅ 2.1: 导航逻辑提取为 composable，减少主组件方法数量
-import { ref } from 'vue';
-import { usePracticeNavigation } from '@/composables/usePracticeNavigation.js';
 import { useFlashcardBank } from '@/composables/useFlashcardBank.js';
-// useReviewStore — 仅在用户点击时需要，改为动态导入减小主包体积
-// ✅ [D002重构] 题库状态管理和动态 mixin 加载
 import { useBankStatus } from '@/composables/useBankStatus.js';
 import { useDynamicMixin } from '@/composables/useDynamicMixin.js';
-// 静态资源 CDN 映射
-import { getAssetUrl, ASSETS } from '@/config/static-assets.js';
+import { getPracticeNavigationTree } from '@/config/bank-registry.js';
+import {
+  buildKnowledgeGraph,
+  getKnowledgeNodeTrail,
+  KNOWLEDGE_NODES,
+  PUBLIC_COURSE_TRACKS,
+  resolveQuestionKnowledge
+} from '@/config/knowledge-graph.js';
+import { storageService } from '@/services/storageService.js';
+import { safeNavigateTo } from '@/utils/safe-navigate';
+import { logger } from '@/utils/logger.js';
+
+const KNOWLEDGE_MAP_LEGEND = [
+  { state: 'strong', label: '已掌握' },
+  { state: 'watch', label: '需复盘' },
+  { state: 'unknown', label: '待训练' }
+];
+
+function knowledgeStateLabel(state = '') {
+  if (state === 'strong') return '当前定位';
+  if (state === 'watch') return '重点复盘';
+  return '待训练';
+}
 
 export default {
-  components: {
-    PrivacyPopup,
-    BaseIcon,
-    CustomTabbar,
-    ResumePracticeModal,
-    GoalSettingModal,
-    PracticeModesModal,
-    QuizManageModal,
-    LearningStatsCard,
-    GenerationProgressBar,
-    AiGenerationOverlay,
-    PauseBanner
-  },
-  // ✅ 2.1: 导航逻辑提取为 composable
+  components: { CustomTabbar },
+
   setup() {
-    // ✅ [D002重构] 题库状态管理由 composable 提供
-    const bankStatus = useBankStatus();
-    const { hasBank, totalQuestions, progressPercent, isPageLoading, isGeneratingQuestions } = bankStatus;
+    const dynamicMixinHelper = useDynamicMixin();
+    const { loading, availableBanks, loadedBankIds: loadedIds, loadFlashcardBank } = useFlashcardBank();
 
-    // 闪卡题库
-    const {
-      availableBanks: flashcardBanks,
-      loadedBankIds: flashcardLoadedIds,
-      loadFlashcardBank,
-    } = useFlashcardBank();
-
-    // 加载闪卡题库并刷新页面状态
-    const handleLoadBank = async (bankId) => {
-      await loadFlashcardBank(bankId);
-      // 重新检查题库状态
-      bankStatus.refresh?.();
-    };
-    const mistakeCount = ref(0);
-
-    const {
-      isNavigating,
-      goPractice,
-      goBattle,
-      goMistakeReview,
-      goFileManager,
-      goAITutor,
-      goMistake,
-      goRank,
-      goToStudyDetail,
-      goFavorites
-    } = usePracticeNavigation({ hasBank, totalQuestions, mistakeCount });
-
-    // ✅ [D002重构] 分包动态加载由 composable 提供
-    const dynamicMixin = useDynamicMixin();
+    const { hasBank, totalQuestions, progressPercent, isPageLoading, refreshBankStatus } = useBankStatus();
 
     return {
+      loading,
+      availableBanks,
+      loadedIds,
+      loadFlashcardBank,
       hasBank,
       totalQuestions,
       progressPercent,
       isPageLoading,
-      isGeneratingQuestions,
-      mistakeCount,
-      isNavigating,
-      goPractice,
-      goBattle,
-      goMistakeReview,
-      goFileManager,
-      goAITutor,
-      goMistake,
-      goRank,
-      goToStudyDetail,
-      goFavorites,
-      // 闪卡题库
-      flashcardBanks,
-      flashcardLoadedIds,
-      handleLoadBank,
-      // ✅ [D002重构] 题库状态方法
-      refreshBankStatus: bankStatus.refreshBankStatus,
-      refreshBankWithData: bankStatus.refreshBankWithData,
-      checkGenerationWithData: bankStatus.checkGenerationWithData,
-      // ✅ [D002重构] 动态 mixin 方法
-      dynamicMixinHelper: dynamicMixin,
-      dynamicMethodsCache: dynamicMixin.dynamicMethodsCache,
-      // 静态资源 CDN 映射（暴露给模板使用）
-      getAssetUrl,
-      ASSETS
+      refreshBankStatus,
+      dynamicMixinHelper,
+      dynamicMethodsCache: dynamicMixinHelper.dynamicMethodsCache
     };
   },
+
   data() {
     return {
-      // 页面状态（hasBank, totalQuestions, mistakeCount, progressPercent,
-      //   isPageLoading, isGeneratingQuestions 已由 setup() composable 提供）
-      isDark: false,
-
-      // 智能引擎状态
-      fileName: '',
-      fullFileContent: '',
-      readOffset: 0,
-      chunkSize: 1000,
-      generatedCount: 0,
-      totalQuestionsLimit: 10,
-      isLooping: false,
-      isPaused: false,
-      showMask: false,
-      showSpeedModal: false,
-      isRequestInFlight: false,
-      batchQuestionCount: 5,
-      uploadHistoryKey: 'imported_files',
-      currentUploadSource: '',
-      currentUploadId: '',
-      bankSizeAtGenStart: 0,
-      isUploadingFile: false,
-
-      // 题库生成进度
-      generationProgress: 0,
-      progressTimer: null,
-      showQuizManageModal: false,
-
-      // ✅ 检查点2.2：断点恢复弹窗状态
-      showResumeModal: false,
-      draftInfo: null,
-
-      // Phase 3-7: AI推题加载状态
-      isLoadingRecommend: false,
-      // AI 推荐今日训练的知识点
-      aiRecommendTopic: null,
-
-      // ✅ P0-2: 学习数据统计
-      todayQuestions: 0,
-      todayGoal: 20,
-      currentStreak: 0,
-      weeklyAccuracy: 0,
-      weakPointsCount: 0,
-
-      // ✅ P1: 学习目标设置弹窗
-      showGoalSettingModal: false,
-
-      // ✅ P2: 成就系统
-      unlockedAchievements: [],
-      allAchievements: [],
-      showAchievementModal: false,
-
-      // ✅ P2: 收藏数量
-      favoriteCount: 0,
-
-      // ✅ P1: 练习模式
-      showPracticeModesModal: false,
-      practiceModes: [],
-
-      // 励志语录（从配置文件加载）
-      currentSoup: '',
-      soupList: QUOTE_LIBRARY.map((q) => q.text),
-      soupTimer: null,
-
-      // ✅ [D002重构] dynamicMethodsCache 已由 useDynamicMixin composable 提供
-      subPackageLoaded: false
+      statusBarHeight: 44,
+      tabBarHeight: 90,
+      loadingBankId: null,
+      selectedSubjectKey: '',
+      selectedTrackId: '',
+      selectedModeId: 'past_exam',
+      focusedKnowledgeNode: null,
+      scrollIntoViewId: ''
     };
   },
-  // 错误边界：捕获子组件运行时错误，防止整个页面白屏
-  errorCaptured(err, instance, info) {
-    logger.error('[刷题] 子组件运行时错误:', err?.message || err, '| 来源:', info);
-    return false;
-  },
-  async onShow() {
-    // 原生 tabBar 已移除，无需隐藏
-    // 每次显示页面时重新读取主题状态
-    this.isDark = initTheme();
-    logger.log('[practice] onShow 刷新主题:', this.isDark);
 
-    // E005: 批量读取 storage，使用 nextTick 释放主线程让 UI 先渲染
-    let bankData = [];
-    let userAnswers = {};
-    let importedFiles = [];
-    try {
-      // 先让 UI 骨架屏渲染出来，再读取大数据
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      bankData = storageService.get('v30_bank', []);
-      userAnswers = storageService.get('v30_user_answers', {});
-      importedFiles = storageService.get('imported_files', []);
-    } catch (e) {
-      logger.error('[practice] onShow 读取存储失败:', e);
-    }
+  computed: {
+    navigationTree() {
+      const profile = storageService.get('exam_profile', null) || {};
+      return getPracticeNavigationTree(profile);
+    },
 
-    // 关键路径：题库状态（UI 需要立即展示）
-    this.refreshBankWithData(bankData, userAnswers);
-    this.checkGenerationWithData(importedFiles, {
-      isLooping: this.isLooping,
-      startProgressTimer: () => this.startProgressTimer(),
-      progressTimer: this.progressTimer
-    });
+    availableBankCount() {
+      return this.navigationTree.reduce((sum, subject) => {
+        return sum + subject.tracks.reduce((trackSum, track) => trackSum + track.banks.length, 0);
+      }, 0);
+    },
 
-    // 检查是否有来自其他页面的待处理搜索（tabBar 页面无法通过 query 传参）
-    try {
-      const pendingSearch = storageService.get('_pendingSearch');
-      if (pendingSearch && pendingSearch.keyword && Date.now() - pendingSearch.timestamp < 30000) {
-        storageService.remove('_pendingSearch');
-        // 延迟执行搜索，等 UI 渲染完成
-        setTimeout(() => {
-          this._searchBankByKeyword(pendingSearch.keyword);
-        }, 300);
-      } else if (pendingSearch) {
-        storageService.remove('_pendingSearch'); // 过期清理
+    loadedBankCount() {
+      return this.loadedIds?.size || 0;
+    },
+
+    trackCount() {
+      return this.navigationTree.reduce((sum, subject) => sum + subject.tracks.length, 0);
+    },
+
+    hasPublishedBanks() {
+      return this.availableBankCount > 0;
+    },
+
+    practiceHeroKicker() {
+      return this.hasPublishedBanks ? 'TRAINING CONTROL' : 'RELEASE REVIEW';
+    },
+
+    practiceHeroTitle() {
+      return this.hasPublishedBanks ? '真题训练中枢' : '题库校验中';
+    },
+
+    practiceHeroSubtitle() {
+      if (this.hasPublishedBanks) {
+        return '按公共课、考试版本和训练模式进入题库。错题、速度和复习间隔会同步进知识地图。';
       }
-    } catch (e) {
-      logger.warn('[practice] 读取待处理搜索失败:', e);
-    }
+      return '公共课导航和知识地图已就绪；正式真题会在题源、答案和解析校验完成后开放训练。';
+    },
 
-    // E005: 延迟非关键读取，让 UI 先渲染
-    this.hydrateMainPackageStats();
+    bankAvailabilityText() {
+      return this.hasPublishedBanks ? `${this.availableBankCount} 个可用题库` : '题库校验中';
+    },
 
-    // ✅ P1-3: 等待 mixin 加载完成后再调用 mixin 方法，避免竞态
-    setTimeout(async () => {
-      try {
-        const mistakeBook = storageService.get('mistake_book', []);
-        this.mistakeCount = mistakeBook.length;
-        this.checkUnfinishedPractice();
-        // 等待 mixin 就绪后再调用其方法
-        if (this._mixinReady) {
-          await this._mixinReady.catch(() => undefined);
-        }
+    releaseGuardItems() {
+      return [
+        { code: '01', label: '题源证据' },
+        { code: '02', label: '答案校验' },
+        { code: '03', label: '真机验收' }
+      ];
+    },
 
-        const settled = await Promise.allSettled([
-          Promise.resolve().then(() => this.loadLearningStats()),
-          Promise.resolve().then(() => this.loadFavoriteCount()),
-          Promise.resolve().then(() => this.loadAIRecommend())
-        ]);
-        const failedTasks = settled.filter((item) => item.status === 'rejected');
-        if (failedTasks.length > 0) {
-          logger.warn(
-            '[practice] 页面恢复时部分统计加载失败:',
-            failedTasks.map((item) => item.reason)
-          );
-        }
-      } catch (e) {
-        logger.error('[practice] onShow 恢复统计失败:', e);
+    selectedSubject() {
+      return (
+        this.navigationTree.find((subject) => subject.id === this.selectedSubjectKey) || this.navigationTree[0] || null
+      );
+    },
+
+    selectedTrack() {
+      const tracks = this.selectedSubject?.tracks || [];
+      return tracks.find((track) => track.id === this.selectedTrackId) || tracks[0] || null;
+    },
+
+    selectedBanks() {
+      return this.selectedTrack?.banks || [];
+    },
+
+    pendingBanks() {
+      return this.selectedTrack?.pendingBanks || [];
+    },
+
+    selectedTrackCoverage() {
+      return this.selectedTrack?.coverage || null;
+    },
+
+    selectedModes() {
+      return this.selectedTrack?.modes || [];
+    },
+
+    selectedModeLabel() {
+      return this.selectedModes.find((mode) => mode.id === this.selectedModeId)?.label || '历年真题';
+    },
+
+    selectedTrackReleaseLabel() {
+      const coverage = this.selectedTrackCoverage;
+      if (!coverage) return this.selectedModeLabel;
+      if (coverage.publishedCount > 0) {
+        return `${coverage.publishedCount}/${coverage.requiredCount} 已发布`;
       }
-    }, 50);
+      if (coverage.pendingCount > 0) {
+        return `${coverage.pendingCount} 套清洗中`;
+      }
+      return '等待入库';
+    },
 
-    // 恢复后台生成
-    if (this.isLooping && this.generatedCount < this.totalQuestionsLimit && !this.isRequestInFlight) {
-      setTimeout(async () => {
-        try {
-          if (this._mixinReady) {
-            await this._mixinReady.catch(() => undefined);
-          }
-          await Promise.resolve(this.generateNextBatch());
-        } catch (e) {
-          logger.error('[practice] 恢复后台生成失败:', e);
-        }
-      }, 500);
+    selectedTrackStats() {
+      const coverage = this.selectedTrackCoverage || {};
+      return [
+        { label: '已发布', value: coverage.publishedCount || 0 },
+        { label: '清洗中', value: coverage.pendingCount || 0 },
+        { label: '待入库年份', value: coverage.missingYears?.length || 0 }
+      ];
+    },
+
+    emptyTrackTitle() {
+      if (this.pendingBanks.length > 0) return '该轨道正在清洗';
+      return '该轨道等待入库';
+    },
+
+    emptyTrackDesc() {
+      if (this.pendingBanks.length > 0) {
+        return '题目、答案和解析未完成校验前不会发布到刷题中心，避免错误答案污染复习轨迹。';
+      }
+      return '当前轨道还没有进入 Source Manifest 的可校验资料，先用知识地图确认考试范围和知识层级。';
+    },
+
+    isKnowledgeGraphMode() {
+      return this.selectedModeId === 'knowledge_graph';
+    },
+
+    knowledgeGraphModel() {
+      const profile = { tracks: [this.selectedTrack?.id].filter(Boolean) };
+      return buildKnowledgeGraph(profile);
+    },
+
+    knowledgeGraphLegend() {
+      return KNOWLEDGE_MAP_LEGEND;
+    },
+
+    knowledgeGraphModules() {
+      const focusTrailIds = new Set((this.focusedKnowledgeNode?.trail || []).map((item) => item.id));
+      const focusNodeId = this.focusedKnowledgeNode?.nodeId || '';
+      const nodes = this.knowledgeGraphModel.nodes;
+      const topicsByModule = new Map();
+      const microByTopic = new Map();
+
+      nodes
+        .filter((node) => node.type === 'topic')
+        .forEach((topic) => {
+          const list = topicsByModule.get(topic.parentId) || [];
+          list.push(topic);
+          topicsByModule.set(topic.parentId, list);
+        });
+
+      nodes
+        .filter((node) => node.type === 'micro')
+        .forEach((micro) => {
+          const list = microByTopic.get(micro.parentId) || [];
+          list.push(micro);
+          microByTopic.set(micro.parentId, list);
+        });
+
+      const modules = nodes.filter((node) => node.type === 'module');
+
+      return modules.map((module, index) => {
+        const topics = topicsByModule.get(module.id) || [];
+        const focused = module.id === focusNodeId || focusTrailIds.has(module.id);
+        const weakCandidate =
+          !focused && topics.some((topic) => topic.id === focusNodeId || focusTrailIds.has(topic.id));
+        const state = focused ? 'strong' : weakCandidate ? 'watch' : 'unknown';
+        const microCount = topics.reduce((sum, topic) => sum + (microByTopic.get(topic.id)?.length || 0), 0);
+        const visibleTopics = topics.slice(0, 4);
+
+        return {
+          id: module.id,
+          state,
+          focused,
+          label: module.label,
+          stateLabel: knowledgeStateLabel(state),
+          metaText: `${topics.length} 个专题 · ${microCount} 个微知识点`,
+          topics: visibleTopics,
+          extraTopicCount: Math.max(0, topics.length - visibleTopics.length),
+          isLast: index === modules.length - 1
+        };
+      });
+    },
+
+    knowledgeGraphSummaryText() {
+      const trackLabel = this.selectedTrack?.label || '公共课';
+      return `${trackLabel} · ${this.knowledgeGraphModules.length} 个模块`;
+    },
+
+    focusedKnowledgeTrailText() {
+      const trail = this.focusedKnowledgeNode?.trail || [];
+      return trail.length ? trail.map((item) => item.label).join(' / ') : '已从答题结果定位到当前节点';
     }
-  },
-
-  // [F2-FIX] 微信分享配置
-  onShareAppMessage() {
-    return {
-      title: '智能刷题 - Exam-Master 考研备考',
-      path: '/pages/practice/index',
-      imageUrl: ASSETS.appShareCover
-    };
   },
 
   onLoad() {
-    // 初始化主题
-    this.isDark = initTheme();
-    logger.log('[practice] 🎨 初始化主题:', this.isDark);
-
-    // 初始化动态方法容器
-    this.dynamicMethodsCache = Object.create(null);
-
-    // 监听全局主题更新事件（仅注册一次）
-    onThemeUpdate((mode) => {
-      this.isDark = mode === 'dark';
-      logger.log('[practice] 🎨 主题更新:', mode, 'isDark:', this.isDark);
-    });
-
-    // ✅ 注入智能生成与学习统计 mixin 方法
-    // ✅ P1-3: 保存 Promise，onShow 可等待加载完成后再调用 mixin 方法
-    this._mixinReady = this._loadAIGenerationMixin();
+    this.initLayout();
+    this.refreshBankStatus();
+    this.restoreFocusedKnowledgeNode();
+    this.ensureNavigationSelection();
+    this.preloadPracticeSubPackage();
   },
-  onUnload() {
-    // 刷新所有防抖待写入数据，确保不丢失
-    storageService.flushPendingWrites();
-    // 清理定时器和事件监听
-    if (this.soupTimer) {
-      clearInterval(this.soupTimer);
-      this.soupTimer = null;
+
+  onShow() {
+    // 每次切回刷新题库状态（可能在do-quiz中答了题）
+    this.refreshBankStatus();
+    this.restoreFocusedKnowledgeNode();
+    this.ensureNavigationSelection();
+  },
+
+  onReady() {
+    if (this.isKnowledgeGraphMode) {
+      this.scrollKnowledgeGraphIntoView();
     }
-    offThemeUpdate();
   },
+
+  onShareAppMessage() {
+    return {
+      title: 'EXAM-MASTER — 刷题中心',
+      path: '/pages/practice/index'
+    };
+  },
+
   methods: {
     async _invokeDynamicMethod(methodName, args = [], options = {}) {
       const { silent = false } = options;
+      let cached = this.dynamicMethodsCache?.[methodName];
 
-      const cached = this.dynamicMethodsCache?.[methodName];
+      if (typeof cached !== 'function' && this._mixinReady) {
+        await this._mixinReady;
+        cached = this.dynamicMethodsCache?.[methodName];
+      }
+
       if (typeof cached === 'function') {
         return cached(...args);
       }
 
-      if (this._mixinReady) {
-        try {
-          await this._mixinReady;
-        } catch (e) {
-          logger.warn(`[practice] 等待动态方法 ${methodName} 加载失败:`, e);
-        }
-      }
-
-      const loaded = this.dynamicMethodsCache?.[methodName];
-      if (typeof loaded === 'function') {
-        return loaded(...args);
-      }
-
       if (!silent) {
-        toast.info('功能初始化失败，请稍后重试');
+        uni.showToast({ title: '功能初始化失败，请稍后重试', icon: 'none' });
       }
+
       return undefined;
     },
 
-    // ✅ [D002重构] refreshBankStatus, refreshBankWithData, checkGenerationWithData
-    // 已由 useBankStatus composable 提供（setup 返回）
-
-    async hydrateMainPackageStats() {
-      try {
-        const favoriteStore = useFavoriteStore();
-        favoriteStore.loadStats();
-        this.favoriteCount = favoriteStore.totalCount;
-      } catch (e) {
-        logger.warn('[practice] 预加载收藏统计失败:', e);
-      }
-
-      try {
-        const { getLearningStats, getWeakKnowledgePoints } = await safeImport(
-          import('@/utils/learning/adaptive-learning-engine.js')
-        );
-        const stats = getLearningStats();
-        const weakPoints = getWeakKnowledgePoints();
-        const todayQuestions = Number(stats.todayQuestions || 0);
-        const weeklyAccuracy = Number(stats.overallAccuracy || 0);
-
-        this.todayQuestions = Number.isFinite(todayQuestions) ? todayQuestions : this.todayQuestions;
-        this.weeklyAccuracy = Number.isFinite(weeklyAccuracy) ? weeklyAccuracy : this.weeklyAccuracy;
-        this.weakPointsCount = Array.isArray(weakPoints) ? weakPoints.length : this.weakPointsCount;
-
-        const mod = await safeImport(import('../practice-sub/utils/learning-analytics.js'));
-        const getStreakData = mod.getStreakData || mod.default?.getStreakData;
-        const streakData = getStreakData();
-        const currentStreak = Number(streakData?.currentStreak || 0);
-        this.currentStreak = Number.isFinite(currentStreak) ? currentStreak : this.currentStreak;
-      } catch (e) {
-        logger.warn('[practice] 预加载学习统计失败:', e);
-      }
+    async _loadAIGenerationMixin() {
+      this.dynamicMethodsCache = this.dynamicMethodsCache || {};
+      const helper = this.dynamicMixinHelper || useDynamicMixin();
+      await helper.loadAIGenerationMixin(this);
+      this._mixinLoaded = true;
     },
 
-    // ✅ [D002重构] 题库状态管理已由 useBankStatus composable 提供
+    preloadPracticeSubPackage() {
+      const helper = this.dynamicMixinHelper;
+      if (!helper || typeof helper.ensurePracticeSubPackageLoaded !== 'function') return;
 
-    /**
-     * 在本地题库中搜索匹配关键词的题目
-     * 匹配题目的 question/answer/options 字段，找到后跳转到答题页
-     */
-    _searchBankByKeyword(keyword) {
-      if (!keyword || !this.hasBank) {
-        toast.info(this.hasBank ? '搜索关键词为空' : '请先导入题库');
-        return;
-      }
-
-      const bank = storageService.get('v30_bank', []);
-      const kw = keyword.toLowerCase().substring(0, 50);
-
-      // 在题目、选项、解析中搜索关键词
-      const matched = bank.filter((q) => {
-        const text = [
-          q.question || q.title || '',
-          q.answer || '',
-          q.analysis || q.explanation || '',
-          ...(Array.isArray(q.options)
-            ? q.options.map((o) => (typeof o === 'string' ? o : o.text || o.label || ''))
-            : [])
-        ]
-          .join(' ')
-          .toLowerCase();
-        return text.includes(kw);
+      helper.ensurePracticeSubPackageLoaded().catch((e) => {
+        logger.warn('[Practice] preload practice subpackage failed:', e);
       });
+    },
 
-      if (matched.length === 0) {
-        toast.info(`未找到与"${keyword.substring(0, 10)}"相关的题目`);
+    chooseImportSource() {
+      const cached = this.dynamicMethodsCache?.chooseImportSource;
+      if (typeof cached === 'function') {
+        return cached();
+      }
+      safeNavigateTo('/pages/practice-sub/question-bank');
+      return undefined;
+    },
+
+    ensureNavigationSelection() {
+      const tree = this.navigationTree;
+      if (!tree.length) return;
+
+      if (this.focusedKnowledgeNode) {
+        this.selectTrackForFocusedNode();
+      }
+
+      const preferredSubject =
+        tree.find((subject) => subject.tracks.some((track) => track.banks.length > 0)) || tree[0];
+      if (!this.selectedSubjectKey || !tree.some((subject) => subject.id === this.selectedSubjectKey)) {
+        this.selectedSubjectKey = preferredSubject.id;
+      }
+
+      const subject = tree.find((item) => item.id === this.selectedSubjectKey) || preferredSubject;
+      const preferredTrack = subject.tracks.find((track) => track.banks.length > 0) || subject.tracks[0];
+      if (!this.selectedTrackId || !subject.tracks.some((track) => track.id === this.selectedTrackId)) {
+        this.selectedTrackId = preferredTrack?.id || '';
+      }
+
+      const modes = preferredTrack?.modes || [];
+      if (modes.length && !modes.some((mode) => mode.id === this.selectedModeId)) {
+        this.selectedModeId = modes[0].id;
+      }
+    },
+
+    restoreFocusedKnowledgeNode() {
+      const focus = storageService.get('practice_focus_knowledge_node', null);
+      if (!focus?.nodeId) {
+        this.focusedKnowledgeNode = null;
         return;
       }
 
-      // 将搜索结果存入临时存储，答题页读取
-      storageService.save('v30_search_result', matched);
-      toast.success(`找到 ${matched.length} 道相关题目`);
-
-      setTimeout(() => {
-        safeNavigateTo('/pages/practice-sub/do-quiz?mode=search');
-      }, 800);
+      const node = KNOWLEDGE_NODES.find((item) => item.id === focus.nodeId);
+      const trail = focus.trail?.length ? focus.trail : getKnowledgeNodeTrail(focus.nodeId);
+      this.focusedKnowledgeNode = {
+        nodeId: focus.nodeId,
+        label: focus.label || node?.label || '知识节点',
+        tracks: Array.isArray(focus.tracks) && focus.tracks.length ? focus.tracks : node?.tracks || [],
+        trail,
+        fromQuestionId: focus.fromQuestionId || ''
+      };
+      this.selectedModeId = 'knowledge_graph';
+      this.selectTrackForFocusedNode();
     },
 
-    // ==================== 页面导航（由 usePracticeNavigation composable 提供）====================
-    // goPractice, goBattle, goMistakeReview, goFileManager, goAITutor,
-    // goMistake, goRank, goToStudyDetail, goFavorites, isNavigating
+    selectTrackForFocusedNode() {
+      if (!this.focusedKnowledgeNode) return;
+      const trail = this.focusedKnowledgeNode.trail || [];
+      const node = KNOWLEDGE_NODES.find((item) => item.id === this.focusedKnowledgeNode.nodeId);
+      const trackNode = trail.find((item) => item.type === 'track');
+      const subjectNode = trail.find((item) => item.type === 'subject');
+      const candidateTracks = [
+        trackNode?.id?.replace('track:', ''),
+        ...(this.focusedKnowledgeNode.tracks || []),
+        ...(node?.tracks || []),
+        ...trail.flatMap((item) => item.tracks || [])
+      ].filter(Boolean);
+      const availableTracks = this.navigationTree.flatMap((subject) => subject.tracks.map((track) => track.id));
+      const trackId =
+        candidateTracks.find((id) => id === this.selectedTrackId) ||
+        candidateTracks.find((id) => availableTracks.includes(id)) ||
+        '';
+      const trackMeta = PUBLIC_COURSE_TRACKS.find((item) => item.id === trackId);
+      const subjectId = subjectNode?.id?.replace('subject:', '') || trackMeta?.subject || '';
 
-    // ✅ 检查点2.2：检测未完成的练习
-    checkUnfinishedPractice() {
-      const draft = detectUnfinishedPractice();
-      if (draft && draft.currentIndex > 0) {
-        this.draftInfo = draft;
-        this.showResumeModal = true;
-        logger.log('[practice] 📝 检测到未完成的练习:', draft);
+      if (subjectId && this.navigationTree.some((subject) => subject.id === subjectId)) {
+        this.selectedSubjectKey = subjectId;
+      }
+
+      const selectedSubject = this.navigationTree.find((subject) => subject.id === this.selectedSubjectKey);
+      if (trackId && selectedSubject?.tracks?.some((track) => track.id === trackId)) {
+        this.selectedTrackId = trackId;
+      }
+      this.selectedModeId = 'knowledge_graph';
+    },
+
+    selectSubject(subjectId) {
+      this.selectedSubjectKey = subjectId;
+      const subject = this.navigationTree.find((item) => item.id === subjectId);
+      const track = subject?.tracks?.find((item) => item.banks.length > 0) || subject?.tracks?.[0];
+      this.selectedTrackId = track?.id || '';
+      this.selectedModeId = track?.modes?.[0]?.id || 'past_exam';
+    },
+
+    selectTrack(trackId) {
+      this.selectedTrackId = trackId;
+      const track = this.selectedSubject?.tracks?.find((item) => item.id === trackId);
+      this.selectedModeId = track?.modes?.[0]?.id || 'past_exam';
+    },
+
+    selectMode(modeId) {
+      this.selectedModeId = modeId;
+      if (modeId === 'knowledge_graph') {
+        this.scrollKnowledgeGraphIntoView();
       }
     },
 
-    // ✅ 检查点2.2：处理恢复练习
-    handleResumePractice(draftInfo) {
-      this.showResumeModal = false;
-      logger.log('[practice] ▶️ 恢复练习:', draftInfo);
-      // 跳转到答题页面，答题页面会自动恢复进度
-      safeNavigateTo('/pages/practice-sub/do-quiz');
+    scrollKnowledgeGraphIntoView() {
+      this.scrollIntoViewId = '';
+      this.$nextTick(() => {
+        this.scrollIntoViewId = 'knowledge-graph-section';
+      });
     },
 
-    // ✅ 检查点2.2：处理重新开始
-    handleRestartPractice() {
-      this.showResumeModal = false;
-      clearDraft('quiz');
-      logger.log('[practice] 🔄 重新开始练习');
-      safeNavigateTo('/pages/practice-sub/do-quiz');
+    isBankLoaded(bankId) {
+      return Boolean(this.loadedIds?.has?.(bankId));
     },
 
-    // goBattle 由 usePracticeNavigation composable 提供
-
-    // goFileManager, goAITutor, goMistake, goRank, goToStudyDetail 由 usePracticeNavigation composable 提供
-
-    // ==================== 学习数据与统计（由分包 mixin 动态注入）====================
-    // loadLearningStats, loadTodayGoal, loadAchievements, openGoalSetting,
-    // onGoalSaved, loadFavoriteCount, showPracticeModes, selectPracticeMode
-    // 在 _loadLearningStatsMixin 加载前提供占位
-    async loadLearningStats() {
-      return this._invokeDynamicMethod('loadLearningStats', [], { silent: true });
-    },
-    async loadFavoriteCount() {
-      return this._invokeDynamicMethod('loadFavoriteCount', [], { silent: true });
-    },
-
-    // ✅ P1: goMistakeReview 由 usePracticeNavigation composable 提供
-
-    // ✅ P2: goFavorites 由 usePracticeNavigation composable 提供
-
-    // Anki 导出（使用 practice.api.js 的封装函数）
-    async exportAnki() {
+    initLayout() {
       try {
-        toast.loading('导出中...');
-        const ankiMod = await safeImport(import('@/services/api/domains/practice.api.js'));
-        const ankiExport = ankiMod.exportAnki || ankiMod.default?.exportAnki;
-        const res = await ankiExport('我的考研题库');
-        toast.hide();
-        if (res.code === 0 && res.data?.fileData) {
-          // #ifdef MP-WEIXIN
-          const fs = uni.getFileSystemManager();
-          const filePath = `${wx.env.USER_DATA_PATH}/${res.data.fileName || 'export.apkg'}`;
-          fs.writeFile({
-            filePath,
-            data: res.data.fileData,
-            encoding: 'base64',
-            success: () => {
-              uni.shareFileMessage({
-                filePath,
-                success: () => toast.success('导出成功'),
-                fail: () => toast.success('已保存')
-              });
-            },
-            fail: () => toast.info('保存失败')
-          });
-          // #endif
-          // #ifndef MP-WEIXIN
-          toast.success('导出成功');
-          // #endif
-        } else {
-          toast.info(res.message || '导出失败');
-        }
+        const info = uni.getWindowInfo();
+        this.statusBarHeight = info.statusBarHeight || 44;
+        const safeBottom = info.safeAreaInsets?.bottom || 0;
+        this.tabBarHeight = 60 + 12 + safeBottom;
       } catch (_e) {
-        toast.hide();
-        toast.info('导出失败');
+        logger.warn('[Practice] layout init failed');
       }
     },
 
-    // 学习资源入口
-    goToResource() {
-      safeNavigateTo('/pages/resource/index');
-    },
-
-    // Phase 3-3: 考研题库入口
-    goQuestionBank() {
-      safeNavigateTo('/pages/practice-sub/question-bank');
-    },
-
-    // AI 今日推荐训练 — 异步加载薄弱知识点
-    async loadAIRecommend() {
+    async handleLoadBank(bankId) {
       try {
-        const smartStudyMod = await safeImport(import('@/services/api/domains/smart-study.api.js'));
-        const analyzeMastery = smartStudyMod.analyzeMastery || smartStudyMod.default?.analyzeMastery;
-        if (typeof analyzeMastery !== 'function') throw new Error('analyzeMastery 未正确加载');
-        const result = await analyzeMastery();
-        if (result?.data?.mastery?.length > 0) {
-          // 找到最薄弱且先修条件已满足的知识点
-          const weak = result.data.mastery.find((k) => k.isWeak && k.prerequisitesMet);
-          if (weak) {
-            this.aiRecommendTopic = {
-              title: `今日重点：${weak.knowledgePoint}`,
-              reason: `掌握度${weak.mastery}%，${weak.recentTrend === 'declining' ? '且近期在下滑' : '需要重点突破'}`,
-              knowledgePoint: weak.knowledgePoint,
-              subject: weak.subject
-            };
-          } else if (result?.data?.summary?.weakestPoint) {
-            this.aiRecommendTopic = {
-              title: `今日重点：${result.data.summary.weakestPoint}`,
-              reason: `${result.data.summary.weakCount}个薄弱点待攻克`,
-              knowledgePoint: result.data.summary.weakestPoint
-            };
-          }
-        }
-      } catch (err) {
-        // 静默降级，不显示推荐卡片
-        logger.warn('[practice] AI 推荐加载失败:', err);
-      }
-    },
-
-    // AI 推荐卡片的一键开始
-    startAIRecommend() {
-      // 复用已有的 AI 推题逻辑
-      this.goSmartRecommend();
-    },
-
-    // Phase 3-7: AI智能推题
-    async goSmartRecommend() {
-      if (this.isLoadingRecommend) return;
-      this.isLoadingRecommend = true;
-      try {
-        const reviewMod = await safeImport(import('@/stores/modules/review.js'));
-        const useReviewStore = reviewMod.useReviewStore || reviewMod.default?.useReviewStore;
-        const reviewStore = useReviewStore();
-        const res = await reviewStore.fetchSmartRecommendations({ count: 10 });
-        if (res?.success && res.data?.questions?.length > 0) {
-          const formatted = res.data.questions.map((q, i) => ({
-            id: q._id || `ai_${i}`,
-            question: q.question || q.content || '',
-            options: q.options || [],
-            answer: q.answer || 'A',
-            desc: q.analysis || '',
-            category: q.category || '综合',
-            type: q.type || '单选',
-            difficulty: q.difficulty || 'medium',
-            _recommend_reason: q._recommend_reason || '',
-            _fromAI: true
-          }));
-          const storageMod = await safeImport(import('@/services/storageService.js'));
-          const storageService = storageMod.default || storageMod.storageService || storageMod;
-          storageService.save('v30_temp_practice', formatted);
-          safeNavigateTo('/pages/practice-sub/do-quiz?source=ai-recommend&mode=normal');
-        } else {
-          toast.info(res?.data?.ai_advice || '暂无推荐，请多做几道题');
-        }
-      } catch (_e) {
-        toast.info('推题失败，请稍后重试');
+        this.loadingBankId = bankId;
+        await this.loadFlashcardBank(bankId);
+        this.refreshBankStatus();
+      } catch (e) {
+        logger.error('[Practice] load bank failed:', e);
+        uni.showToast({ title: '加载失败，请重试', icon: 'none' });
       } finally {
-        this.isLoadingRecommend = false;
+        this.loadingBankId = null;
       }
     },
 
-    // ==================== 动态注入 Mixin 方法（由 useDynamicMixin composable 驱动）====================
-    async _loadAIGenerationMixin(retryCount = 0) {
-      return this.dynamicMixinHelper.loadAIGenerationMixin(this, retryCount);
+    goDoQuiz() {
+      safeNavigateTo('/pages/practice-sub/do-quiz');
     },
 
-    // ==================== 以下方法由分包 mixin 动态注入 ====================
-    // chooseImportSource, chooseLocalFile, importFromChat, importFromBaidu,
-    // handleUpload, startAI, generateNextBatch, pauseGeneration, resumeGeneration,
-    // finishGeneration, clearAll, clearQuizBank, showQuizManage, closeQuizManage,
-    // closeSpeedModndPlay, getGeneratedQuestionCount, startProgressTimer,
-    // updateGenerationProgress, startSoupRotation, 等
+    goSmartReview() {
+      // 智能复习：跳转到 do-quiz 的复习模式
+      safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
+    },
 
-    // 占位方法：在 mixin 加载前提供默认行为
-    chooseImportSource() {
-      const dynamicMethod = this.dynamicMethodsCache?.chooseImportSource;
-      if (typeof dynamicMethod === 'function') {
-        return dynamicMethod();
+    startKnowledgeNodeTraining() {
+      if (!this.focusedKnowledgeNode?.nodeId) return;
+      const bank = storageService.get('v30_bank', []);
+      const profile = { tracks: [this.selectedTrack?.id].filter(Boolean) };
+      const targetNodeId = this.focusedKnowledgeNode.nodeId;
+      const matchedIds = bank
+        .filter((question) => {
+          const nodeIds = resolveQuestionKnowledge(question, profile);
+          return nodeIds.some((nodeId) => getKnowledgeNodeTrail(nodeId).some((node) => node.id === targetNodeId));
+        })
+        .map((question) => question.id || question._id)
+        .filter(Boolean);
+
+      if (!matchedIds.length) {
+        uni.showToast({ title: '该节点暂无可训练题', icon: 'none' });
+        return;
       }
 
-      // 分包方法未就绪时，直接进入导入页，确保点击必有反馈
-      safeNavigateTo('/pages/practice-sub/import-data');
-      return undefined;
+      uni.setStorageSync('smart_review_ids', matchedIds.slice(0, 20));
+      safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
     },
-    showQuizManage() {
-      return this._invokeDynamicMethod('showQuizManage');
-    },
-    closeQuizManage() {
-      this.showQuizManageModal = false;
-    },
-    clearQuizBank() {
-      return this._invokeDynamicMethod('clearQuizBank');
-    },
-    clearAll() {
-      return this._invokeDynamicMethod('clearAll');
-    },
-    pauseGeneration() {
-      return this._invokeDynamicMethod('pauseGeneration', [], { silent: false });
-    },
-    resumeGeneration() {
-      return this._invokeDynamicMethod('resumeGeneration', [], { silent: false });
-    },
-    closeSpeedModalAndPlay() {
-      const method = this.dynamicMethodsCache?.closeSpeedModalAndPlay;
-      if (typeof method === 'function') {
-        return method();
-      }
-      this.showSpeedModal = false;
-      this.goPractice();
-    },
-    startProgressTimer() {
-      return this._invokeDynamicMethod('startProgressTimer', [], { silent: true });
-    },
-    updateGenerationProgress() {
-      return this._invokeDynamicMethod('updateGenerationProgress', [], { silent: true });
-    },
-    startSoupRotation() {
-      return this._invokeDynamicMethod('startSoupRotation', [], { silent: true });
-    },
-    generateNextBatch() {
-      return this._invokeDynamicMethod('generateNextBatch', [], { silent: true });
-    },
-    getGeneratedQuestionCount() {
-      const method = this.dynamicMethodsCache?.getGeneratedQuestionCount;
-      if (typeof method === 'function') {
-        return method();
-      }
-      return Math.max(0, this.totalQuestions - (this.bankSizeAtGenStart || 0));
-    },
-    openGoalSetting() {
-      return this._invokeDynamicMethod('openGoalSetting');
-    },
-    onGoalSaved(value) {
-      this.todayGoal = value;
-      this.showGoalSettingModal = false;
-    },
-    showPracticeModes() {
-      return this._invokeDynamicMethod('showPracticeModes');
-    },
-    selectPracticeMode(mode) {
-      return this._invokeDynamicMethod('selectPracticeMode', [mode]);
+
+    clearFocusedKnowledgeNode() {
+      storageService.remove('practice_focus_knowledge_node');
+      this.focusedKnowledgeNode = null;
+      this.selectedModeId = 'past_exam';
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-/* ============================================
-   多邻国风格刷题页面样式 - Design System 2.0
-   模块色: var(--info) 天蓝
-   ============================================ */
+$primary: #9fe870;
+$primary-light: #eafbe2;
+$primary-deep: #142017;
+$action-green: #18a957;
+$bg: #f5f7f1;
+$card-bg: #ffffff;
+$text-main: #1a1d26;
+$text-sub: #5f6672;
+$text-weak: #9ca3af;
+$radius-lg: 24rpx;
+$radius-sm: 12rpx;
+$spacing-page: 32rpx;
+$spacing-card: 32rpx;
+$spacing-section: 24rpx;
 
-/* 基础容器 — 暖白背景 */
-.practice-container {
-  min-height: 100%;
+.page {
   min-height: 100vh;
-  background: var(--background);
-  padding: 22rpx;
-  /* E008: 使用 safe-area-inset-bottom 适配刘海屏/底部指示条 */
-  padding-bottom: calc(140px + constant(safe-area-inset-bottom, 0px));
-  padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
-  box-sizing: border-box;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  color: var(--text-secondary);
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'SF Pro Text', 'Noto Sans SC', 'Roboto', sans-serif;
-}
-.practice-container.dark-mode {
-  background: var(--bg-page);
-  color: var(--text-sub);
+  background: linear-gradient(180deg, #fcfdf8 0%, $bg 42%, #eff3ed 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', sans-serif;
 }
 
-/* 装饰光斑 */
-.practice-container::before,
-.practice-container::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  z-index: -1;
-  pointer-events: none;
-}
-.practice-container::before {
-  width: 420rpx;
-  height: 420rpx;
-  right: -150rpx;
-  top: 80rpx;
-  background: radial-gradient(circle, rgba(28, 176, 246, 0.08) 0%, transparent 70%);
-  filter: blur(10rpx);
-}
-.practice-container::after {
-  width: 360rpx;
-  height: 360rpx;
-  left: -120rpx;
-  top: 520rpx;
-  background: radial-gradient(circle, rgba(88, 204, 2, 0.06) 0%, transparent 72%);
-  filter: blur(10rpx);
-}
-
-/* ============================================
-   顶部导航 — 加粗标题
-   ============================================ */
-.top-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: calc(var(--status-bar-height, 44px) + 6px);
-  margin-bottom: 22px;
-  padding: 14rpx 18rpx;
-  border-radius: 32rpx;
-}
-
-.nav-title {
-  font-size: 58rpx;
-  font-weight: 800;
-  letter-spacing: -0.5rpx;
-  color: var(--text-primary);
-  line-height: 1.2;
-}
-.dark-mode .nav-title {
-  color: var(--text-primary);
-}
-
-.nav-actions {
-  display: flex;
-  /* gap: 12px; -- replaced for Android WebView compat */
-}
-
-.icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: var(--primary-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-/* 小程序不支持 :hover，使用 active 替代 */
-.icon-btn:active {
-  background-color: var(--primary);
-  transform: scale(1.05);
-}
-
-.icon-btn.danger {
-  background-color: var(--danger-light);
-}
-
-.icon-btn.danger:active {
-  background-color: var(--danger);
-}
-
-/* 状态卡片 — 白底卡片 + clean阴影 */
-.status-card {
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  border-radius: 28px;
-  padding: 24px;
-  margin-bottom: 18px;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  transition: transform 0.15s ease;
-}
-.status-card::before {
-  content: '';
-  position: absolute;
+/* 导航栏 */
+.nav-bar {
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 6rpx;
-  background: linear-gradient(90deg, var(--info), #58cc02);
-  border-radius: 0 0 4rpx 4rpx;
+  z-index: 100;
+  background: rgba(250, 252, 248, 0.92);
+  border-bottom: 1rpx solid rgba(22, 51, 0, 0.06);
 }
-.status-card:active {
-  transform: scale(0.98);
-}
-.dark-mode .status-card {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-
-/* 空状态样式 */
-.status-card.empty-state {
-  min-height: 280px;
+.nav-content {
+  height: 44px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 0 $spacing-page;
 }
-.status-card.empty-state:active {
-  transform: scale(0.98);
-}
-.dark-mode .status-card.empty-state {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.empty-state-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-  width: 100%;
-}
-
-.empty-icon {
-  margin-bottom: 20px;
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 30rpx;
-  background: rgba(28, 176, 246, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: float 3s ease-in-out infinite;
-}
-
-.dark-mode .empty-icon,
-.dark-mode .import-icon,
-.dark-mode .menu-icon {
-  background: rgba(28, 176, 246, 0.15) !important;
-}
-
-.dark-mode .empty-icon {
-  width: 120rpx;
-  height: 120rpx;
-  margin: 0 auto 20px;
-  border-radius: 30rpx;
-  background: rgba(28, 176, 246, 0.15) !important;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.empty-icon-img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  opacity: 0.8;
-}
-
-/* Emoji图标样式 - 深色模式自动适配 */
-/* ✅ F028: font-size 使用 rpx 相对单位 */
-.empty-icon-emoji {
-  font-size: 128rpx;
-  display: block;
-  line-height: 1;
-}
-
-.action-icon-emoji {
+.nav-title {
   font-size: 36rpx;
-  display: inline-block;
-  line-height: 1;
+  font-weight: 700;
+  color: $primary-deep;
 }
 
-.import-icon-emoji {
-  font-size: 64rpx;
+.main-scroll {
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.section {
+  padding: 0 $spacing-page;
+  margin-bottom: $spacing-section;
+}
+.section:first-child {
+  padding-top: 28rpx;
+}
+
+.practice-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 36rpx;
+  padding: 36rpx;
+  background: linear-gradient(145deg, #ffffff 0%, #f7f9f3 55%, #edf4ea 100%);
+  border: 1rpx solid rgba(22, 51, 0, 0.07);
+  box-shadow: 0 20rpx 56rpx rgba(20, 32, 23, 0.09);
+}
+
+.practice-hero::after {
+  content: '';
+  position: absolute;
+  right: -72rpx;
+  top: -88rpx;
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 50%;
+  background: rgba(159, 232, 112, 0.22);
+}
+
+.practice-kicker {
+  position: relative;
+  z-index: 1;
   display: block;
+  color: rgba(22, 51, 0, 0.48);
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 2.2rpx;
+}
+
+.practice-title {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 14rpx;
+  color: $primary-deep;
+  font-size: 52rpx;
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.practice-subtitle {
+  position: relative;
+  z-index: 1;
+  display: block;
+  max-width: 590rpx;
+  margin-top: 18rpx;
+  color: $text-sub;
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.practice-signal-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  margin-top: 30rpx;
+}
+
+.practice-signal {
+  flex: 1;
+  padding: 18rpx 14rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1rpx solid rgba(22, 51, 0, 0.06);
+}
+
+.practice-signal + .practice-signal {
+  margin-left: 12rpx;
+}
+
+.signal-value {
+  display: block;
+  color: $primary-deep;
+  font-size: 34rpx;
+  font-weight: 900;
   line-height: 1;
 }
 
-.empty-title {
-  font-size: 42rpx;
+.signal-label {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(22, 51, 0, 0.55);
+  font-size: 21rpx;
+  font-weight: 600;
+}
+
+.practice-hero-action {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  margin-top: 30rpx;
+  padding: 22rpx 32rpx;
+  border-radius: 999rpx;
+  background: $primary-deep;
+  box-shadow: 0 14rpx 30rpx rgba(22, 51, 0, 0.18);
+}
+
+.practice-hero-action-text {
+  color: #ffffff;
+  font-size: 28rpx;
   font-weight: 800;
-  color: var(--text-primary);
-  margin: 0 0 24rpx 0;
-  letter-spacing: 0;
-}
-.dark-mode .empty-title {
-  color: var(--text-primary);
 }
 
-.empty-desc {
-  font-size: 30rpx;
-  color: var(--text-secondary);
-  margin: 0 0 48rpx 0;
-  line-height: 1.6;
-  max-width: 280px;
-}
-
-/* 空状态操作按钮 — 3D蓝色按钮 */
-.empty-action {
+.release-guard-card {
   display: flex;
-  align-items: center;
-  /* gap: 10px; -- replaced for Android WebView compat */
-  padding: 12px 28px;
-  min-height: 88rpx;
-  background: var(--info);
-  border-radius: 20rpx;
-  border: none;
-  box-shadow: 0 6rpx 0 var(--info-dark, #1899d6);
-  transition: all 0.1s ease;
-}
-.empty-action:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 2rpx 0 var(--info-dark, #1899d6);
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-radius: 30rpx;
+  background: #182015;
+  box-shadow: 0 18rpx 42rpx rgba(20, 32, 23, 0.14);
 }
 
-.action-text {
-  font-size: 32rpx;
-  font-weight: 800;
-  color: var(--text-inverse);
-  letter-spacing: 0.3px;
-  margin-left: 10px;
+.release-guard-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 22rpx;
 }
 
-/* 闪卡题库列表 */
-.flashcard-bank-list {
-  width: 100%;
-  margin: 20rpx 0;
+.release-guard-kicker {
+  display: block;
+  color: rgba(234, 251, 226, 0.58);
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 1.8rpx;
+}
+
+.release-guard-title {
+  display: block;
+  margin-top: 10rpx;
+  color: #f7fff1;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.release-guard-desc {
+  display: block;
+  margin-top: 10rpx;
+  color: rgba(247, 255, 241, 0.72);
+  font-size: 23rpx;
+  line-height: 1.48;
+}
+
+.release-guard-grid {
+  flex-shrink: 0;
+  width: 196rpx;
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
 }
-.flashcard-bank-item {
+
+.release-guard-step {
+  display: flex;
+  align-items: center;
+  min-height: 48rpx;
+  padding: 8rpx 10rpx;
+  border-radius: 16rpx;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.release-guard-step + .release-guard-step {
+  margin-top: 10rpx;
+}
+
+.release-guard-step-code {
+  width: 38rpx;
+  color: $primary;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.release-guard-step-label {
+  flex: 1;
+  min-width: 0;
+  color: rgba(247, 255, 241, 0.86);
+  font-size: 22rpx;
+  font-weight: 800;
+}
+
+.focus-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx 28rpx;
-  border-radius: 16rpx;
-  background: var(--card-bg, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 30rpx;
+  border-radius: 30rpx;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(247, 250, 244, 0.9) 56%,
+    rgba(236, 246, 231, 0.88) 100%
+  );
+  border: 1rpx solid rgba(20, 32, 23, 0.07);
+  box-shadow: 0 18rpx 46rpx rgba(20, 32, 23, 0.08);
 }
-.flashcard-bank-item:active {
-  transform: scale(0.98);
-  opacity: 0.8;
+
+.focus-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 22rpx;
+  bottom: 22rpx;
+  width: 8rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, $primary 0%, $action-green 100%);
 }
+
+.focus-copy {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+  padding-left: 8rpx;
+}
+
+.focus-kicker {
+  display: block;
+  color: rgba(20, 32, 23, 0.42);
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 1.8rpx;
+}
+
+.focus-title {
+  display: block;
+  margin-top: 8rpx;
+  color: $primary-deep;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1.22;
+}
+
+.focus-trail {
+  display: block;
+  margin-top: 8rpx;
+  color: $text-sub;
+  font-size: 23rpx;
+  line-height: 1.42;
+}
+
+.focus-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 144rpx;
+  margin-left: 22rpx;
+}
+
+.focus-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58rpx;
+  border-radius: 999rpx;
+  font-size: 23rpx;
+  font-weight: 850;
+  transition:
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 160ms ease;
+}
+
+.focus-action.primary {
+  color: #ffffff;
+  background: $primary-deep;
+  box-shadow: 0 10rpx 24rpx rgba(20, 32, 23, 0.16);
+}
+
+.focus-action.ghost {
+  margin-top: 12rpx;
+  color: rgba(20, 32, 23, 0.64);
+  background: rgba(255, 255, 255, 0.68);
+  border: 1rpx solid rgba(20, 32, 23, 0.07);
+}
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.navigator-head {
+  align-items: flex-start;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $text-main;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.section-head .section-title {
+  margin-bottom: 0;
+}
+
+.section-meta {
+  color: $text-weak;
+  font-size: 23rpx;
+}
+
+.section-hint {
+  display: block;
+  margin-top: 6rpx;
+  color: $text-weak;
+  font-size: 22rpx;
+}
+
+.subject-tabs {
+  display: flex;
+  padding: 8rpx;
+  border-radius: 28rpx;
+  background: rgba(20, 32, 23, 0.06);
+}
+
+.subject-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72rpx;
+  border-radius: 22rpx;
+  color: $text-sub;
+  font-size: 26rpx;
+  font-weight: 750;
+}
+
+.subject-tab.active {
+  background: #ffffff;
+  color: $primary-deep;
+  box-shadow: 0 10rpx 24rpx rgba(20, 32, 23, 0.08);
+}
+
+.track-rail {
+  display: flex;
+  margin-top: 18rpx;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.track-pill {
+  display: inline-flex;
+  align-items: center;
+  min-width: 212rpx;
+  margin-right: 14rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 26rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 24rpx rgba(20, 32, 23, 0.06);
+}
+
+.track-pill.active {
+  background: $primary-deep;
+  box-shadow: 0 14rpx 32rpx rgba(20, 32, 23, 0.16);
+}
+
+.track-code {
+  color: rgba(20, 32, 23, 0.42);
+  font-size: 21rpx;
+  font-weight: 900;
+}
+
+.track-label {
+  margin-left: 10rpx;
+  color: $text-main;
+  font-size: 25rpx;
+  font-weight: 850;
+}
+
+.track-count {
+  margin-left: 12rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  background: rgba(159, 232, 112, 0.2);
+  color: $primary-deep;
+  font-size: 20rpx;
+  font-weight: 900;
+}
+
+.track-pill.active .track-code,
+.track-pill.active .track-label {
+  color: #f8fff2;
+}
+
+.track-pill.active .track-count {
+  background: $primary;
+  color: $primary-deep;
+}
+
+.mode-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 18rpx;
+}
+
+.mode-chip {
+  margin-right: 12rpx;
+  margin-bottom: 12rpx;
+  padding: 13rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(20, 32, 23, 0.06);
+  color: $text-sub;
+  font-size: 23rpx;
+  font-weight: 700;
+}
+
+.mode-chip.active {
+  background: rgba(159, 232, 112, 0.3);
+  color: $primary-deep;
+}
+
+.knowledge-map-panel {
+  overflow: hidden;
+  border-radius: 30rpx;
+  padding: 30rpx 28rpx 24rpx;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f9f3 100%);
+  border: 1rpx solid rgba(20, 32, 23, 0.07);
+  box-shadow: 0 18rpx 46rpx rgba(20, 32, 23, 0.08);
+}
+
+.knowledge-map-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.knowledge-map-kicker {
+  display: block;
+  color: rgba(20, 32, 23, 0.42);
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 1.8rpx;
+}
+
+.knowledge-map-title {
+  display: block;
+  margin-top: 8rpx;
+  color: $primary-deep;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1.18;
+}
+
+.knowledge-map-track-badge {
+  flex-shrink: 0;
+  min-width: 84rpx;
+  padding: 13rpx 18rpx;
+  border-radius: 999rpx;
+  background: $primary-deep;
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: 900;
+  text-align: center;
+}
+
+.knowledge-map-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 22rpx;
+}
+
+.knowledge-map-status {
+  display: flex;
+  align-items: center;
+  margin-right: 18rpx;
+  margin-bottom: 10rpx;
+  color: $text-sub;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.knowledge-map-status-dot,
+.knowledge-module-dot {
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 999rpx;
+  border: 3rpx solid rgba(20, 32, 23, 0.1);
+}
+
+.knowledge-map-status-dot {
+  margin-right: 8rpx;
+}
+
+.state-strong {
+  background: $primary;
+}
+
+.state-watch {
+  background: #ffd166;
+}
+
+.state-unknown {
+  background: #dfe8dc;
+}
+
+.knowledge-map-path {
+  margin-top: 8rpx;
+}
+
+.knowledge-module-card {
+  display: flex;
+  align-items: stretch;
+  min-height: 132rpx;
+}
+
+.knowledge-module-rail {
+  position: relative;
+  width: 34rpx;
+  display: flex;
+  justify-content: center;
+  padding-top: 30rpx;
+}
+
+.knowledge-module-line {
+  position: absolute;
+  top: 54rpx;
+  bottom: -12rpx;
+  left: 50%;
+  width: 3rpx;
+  border-radius: 999rpx;
+  background: rgba(20, 32, 23, 0.12);
+  transform: translateX(-50%);
+}
+
+.knowledge-module-body {
+  flex: 1;
+  min-width: 0;
+  margin-left: 14rpx;
+  margin-bottom: 16rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1rpx solid rgba(20, 32, 23, 0.06);
+  box-shadow: 0 8rpx 22rpx rgba(20, 32, 23, 0.05);
+}
+
+.knowledge-module-card.focused .knowledge-module-body {
+  background: rgba(248, 255, 243, 0.95);
+  border-color: rgba(24, 169, 87, 0.22);
+}
+
+.knowledge-module-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.knowledge-module-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.knowledge-module-name {
+  display: block;
+  color: $primary-deep;
+  font-size: 29rpx;
+  font-weight: 900;
+  line-height: 1.28;
+}
+
+.knowledge-module-meta {
+  display: block;
+  margin-top: 8rpx;
+  color: $text-weak;
+  font-size: 22rpx;
+  line-height: 1.35;
+}
+
+.knowledge-module-state {
+  flex-shrink: 0;
+  margin-left: 18rpx;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(20, 32, 23, 0.06);
+  color: rgba(20, 32, 23, 0.64);
+  font-size: 21rpx;
+  font-weight: 850;
+}
+
+.knowledge-module-card.focused .knowledge-module-state {
+  background: rgba(159, 232, 112, 0.36);
+  color: $primary-deep;
+}
+
+.knowledge-topic-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+
+.knowledge-topic-chip {
+  margin-right: 10rpx;
+  margin-bottom: 10rpx;
+  padding: 9rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(20, 32, 23, 0.055);
+  color: $text-sub;
+  font-size: 22rpx;
+  font-weight: 720;
+}
+
+.knowledge-topic-chip.muted {
+  color: $text-weak;
+}
+
+.card {
+  background: $card-bg;
+  border-radius: $radius-lg;
+  padding: $spacing-card;
+  border: 1rpx solid rgba(22, 51, 0, 0.05);
+  box-shadow: 0 10rpx 30rpx rgba(22, 51, 0, 0.06);
+}
+
+/* 题库列表 */
+.bank-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.bank-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+  transition-property: transform, opacity;
+  transition-duration: 160ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .bank-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4rpx;
+  margin-right: 20rpx;
 }
+
 .bank-name {
   font-size: 30rpx;
-  font-weight: 600;
-  color: var(--text-primary, #1a1d26);
+  font-weight: 800;
+  color: $text-main;
 }
+
+.bank-track {
+  color: rgba(22, 51, 0, 0.38);
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 1.4rpx;
+  margin-bottom: 8rpx;
+}
+
 .bank-desc {
   font-size: 24rpx;
-  color: var(--text-tertiary, #9ca3af);
-}
-.bank-load-btn {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #00B86B, #00D68F);
-  padding: 10rpx 28rpx;
-  border-radius: 99rpx;
-}
-.bank-loaded {
-  font-size: 24rpx;
-  color: var(--text-tertiary, #9ca3af);
+  color: $text-sub;
+  margin-top: 6rpx;
 }
 
-.status-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* gap: 12px; -- replaced for Android WebView compat */
-}
-
-.status-actions {
+.bank-btn {
+  padding: 12rpx 28rpx;
+  border-radius: $radius-sm;
   flex-shrink: 0;
-  margin-left: 16px;
 }
 
-.manage-btn {
+.load-btn {
+  background: $primary-deep;
+}
+
+.bank-btn-text {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.bank-loaded {
+  padding: 12rpx 28rpx;
+}
+
+.bank-loaded-text {
+  font-size: 26rpx;
+  color: $action-green;
+  font-weight: 500;
+}
+
+.empty-track-card {
+  padding: 32rpx;
+  border-radius: $radius-lg;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1rpx rgba(20, 32, 23, 0.06);
+}
+
+.empty-track-title {
+  display: block;
+  color: $text-main;
+  font-size: 30rpx;
+  font-weight: 850;
+}
+
+.empty-track-desc {
+  display: block;
+  margin-top: 10rpx;
+  color: $text-sub;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.empty-track-stats {
   display: flex;
-  align-items: center;
-  /* gap: 6px; -- replaced for Android WebView compat */
-  padding: 10px 18px;
-  background: rgba(28, 176, 246, 0.1);
-  border-radius: 20rpx;
-  border: none;
-  transition: all 0.15s ease;
-}
-.manage-btn:active {
-  transform: scale(0.95);
-  background: rgba(28, 176, 246, 0.18);
-}
-.manage-text {
-  font-size: 28rpx;
-  color: var(--info);
-  font-weight: 700;
-  margin-left: 6px;
+  margin-top: 22rpx;
 }
 
-.status-icon {
-  margin-right: 16px;
-  width: 88rpx;
-  height: 88rpx;
-  border-radius: 22rpx;
-  background: rgba(28, 176, 246, 0.12);
+.empty-track-stat {
+  flex: 1;
+  padding: 16rpx 12rpx;
+  border-radius: 18rpx;
+  background: rgba(20, 32, 23, 0.045);
+}
+
+.empty-track-stat + .empty-track-stat {
+  margin-left: 10rpx;
+}
+
+.empty-track-stat-value {
+  display: block;
+  color: $primary-deep;
+  font-size: 30rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.empty-track-stat-label {
+  display: block;
+  margin-top: 8rpx;
+  color: $text-weak;
+  font-size: 20rpx;
+  font-weight: 750;
+}
+
+.empty-track-action {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  min-height: 72rpx;
+  margin-top: 22rpx;
+  border-radius: 20rpx;
+  background: $primary-deep;
+  color: #ffffff;
+  font-size: 25rpx;
+  font-weight: 850;
 }
 
-/* 图标图片样式 */
-.icon-image {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
+.empty-track-action text {
+  color: #ffffff;
 }
 
-.manage-icon-img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
-.status-icon .emoji {
-  font-size: 96rpx;
-}
-
-.status-info {
-  flex: 1;
-}
-
-.status-title {
-  font-size: 38rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin: 0 0 8px 0;
-}
-.dark-mode .status-title {
-  color: var(--text-primary);
-}
-
-.status-desc {
-  font-size: 28rpx;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-/* AI 推荐今日训练卡片 — 紫色AI模块 */
-.ai-recommend-card {
-  margin: 0 16px 16px;
-  padding: 20px;
+.pending-list {
+  margin-top: 18rpx;
+  padding: 24rpx;
   border-radius: 24rpx;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.15s ease;
-}
-.ai-recommend-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6rpx;
-  background: linear-gradient(90deg, var(--purple-light, #ce82ff), var(--purple-dark, #9b51e0));
-  border-radius: 0 0 4rpx 4rpx;
-}
-.ai-recommend-card:active {
-  transform: scale(0.98);
-}
-.ai-recommend-badge {
-  background: linear-gradient(135deg, var(--purple-light, #ce82ff), var(--purple-dark, #9b51e0));
-  padding: 4px 12px;
-  border-radius: 12px;
-  margin-right: 14px;
-  flex-shrink: 0;
-}
-.ai-recommend-badge-text {
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--text-inverse);
-}
-.ai-recommend-body {
-  flex: 1;
-  min-width: 0;
-}
-.ai-recommend-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-primary);
-  display: block;
-}
-.dark-mode .ai-recommend-title {
-  color: var(--text-primary);
-}
-.ai-recommend-reason {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-top: 4px;
-  display: block;
-}
-.ai-recommend-action {
-  background: var(--purple-light, #ce82ff);
-  padding: 8px 18px;
-  border-radius: 16rpx;
-  flex-shrink: 0;
-  margin-left: 12px;
-  box-shadow: 0 4rpx 0 var(--purple, #a855c7);
-  transition: all 0.1s ease;
-}
-.ai-recommend-action:active {
-  transform: translateY(2rpx);
-  box-shadow: 0 2rpx 0 var(--purple, #a855c7);
-}
-.ai-recommend-btn-text {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-inverse);
-  white-space: nowrap;
-}
-.dark-mode .ai-recommend-card {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
+  background: rgba(20, 32, 23, 0.045);
 }
 
-/* 主要操作区 */
-.main-actions {
+.pending-title {
+  display: block;
+  color: rgba(20, 32, 23, 0.46);
+  font-size: 20rpx;
+  font-weight: 900;
+  letter-spacing: 1.2rpx;
+}
+
+.pending-item {
   display: flex;
   flex-direction: column;
-  /* gap: 12px; -- replaced for Android WebView compat */
-  margin-bottom: 22px;
-}
-.main-actions > view + view {
-  margin-top: 12px;
+  margin-top: 14rpx;
 }
 
-/* 主要按钮 — 3D蓝色刷题按钮 */
-.primary-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* gap: 12px; -- replaced for Android WebView compat */
-  background: var(--info);
-  color: var(--text-inverse);
-  border: none;
-  border-radius: 20rpx;
-  padding: 20px 40px;
-  font-size: 40rpx;
+.pending-name {
+  color: $text-main;
+  font-size: 25rpx;
   font-weight: 800;
-  box-shadow: 0 8rpx 0 var(--info-dark, #1899d6);
-  width: 100%;
-  max-width: 360px;
-  margin: 0 auto;
-  min-height: 96rpx;
-  transition: all 0.1s ease;
-}
-.primary-btn:active {
-  transform: translateY(6rpx);
-  box-shadow: 0 2rpx 0 var(--info-dark, #1899d6);
 }
 
-/* [AUDIT FIX R187] 主按钮暗黑覆盖块冗余(已使用CTA变量) → 移除 */
-
-/* ✅ F022: 按钮加载状态 */
-.primary-btn.btn-loading,
-.secondary-btn.btn-loading {
-  opacity: 0.7;
-  pointer-events: none;
+.pending-reason {
+  margin-top: 5rpx;
+  color: $text-weak;
+  font-size: 22rpx;
+  line-height: 1.4;
 }
 
-/* [AUDIT FIX R188] 加载spinner → CSS变量 */
-.btn-spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: var(--text-inverse, #fff);
-  border-radius: 50%;
-  animation: btn-spin 0.6s linear infinite;
+/* 状态卡片 */
+.status-card {
+  margin-bottom: 24rpx;
 }
 
-@keyframes btn-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.btn-icon {
-  font-size: 56rpx;
-}
-
-/* 按钮图标图片样式 */
-.btn-icon-img {
-  width: 64rpx;
-  height: 64rpx;
-  object-fit: contain;
-  margin-right: 12px;
-}
-
-.menu-icon-img {
-  width: 72rpx;
-  height: 72rpx;
-  object-fit: contain;
-}
-
-/* 次要按钮 — 白色3D按钮 */
-.secondary-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* gap: 12px; -- replaced for Android WebView compat */
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border: 2rpx solid rgba(0, 0, 0, 0.08);
-  border-radius: 20rpx;
-  padding: 20px 40px;
-  font-size: 40rpx;
-  font-weight: 700;
-  box-shadow: 0 6rpx 0 var(--border);
-  width: 100%;
-  max-width: 360px;
-  margin: 0 auto;
-  min-height: 96rpx;
-  transition: all 0.1s ease;
-}
-.secondary-btn:active {
-  transform: translateY(4rpx);
-  box-shadow: 0 2rpx 0 var(--border);
-}
-.dark-mode .secondary-btn {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-inverse);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 6rpx 0 rgba(0, 0, 0, 0.3);
-}
-
-.btn-icon {
-  font-size: 56rpx;
-}
-
-/* 导入资料卡片 — 白底clean风格 */
-.import-card {
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  border-radius: 24rpx;
-  padding: 20px;
-  transition: transform 0.15s ease;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-}
-.import-card:active {
-  transform: scale(0.98);
-}
-.dark-mode .import-card {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-
-/* ✅ F026: 文件读取中状态 */
-.import-card.import-loading {
-  opacity: 0.8;
-  pointer-events: none;
-  border-color: var(--info);
-}
-
-.import-spinner {
-  width: 48rpx;
-  height: 48rpx;
-  border: 4rpx solid rgba(28, 176, 246, 0.2);
-  border-top-color: var(--info);
-  border-radius: 50%;
-  animation: importSpin 0.8s linear infinite;
-}
-
-@keyframes importSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.import-card:hover {
-  transform: scale(0.98);
-}
-
-.import-icon {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 18rpx;
-  background: rgba(28, 176, 246, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  flex-shrink: 0;
-}
-
-.import-icon .emoji {
-  font-size: 64rpx;
-}
-
-.import-info {
-  flex: 1;
-}
-
-.import-title {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 4px 0;
-}
-.dark-mode .import-title {
-  color: var(--text-primary);
-}
-
-.import-desc {
-  font-size: 28rpx;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.import-arrow {
-  color: var(--text-secondary);
-}
-
-.arrow {
-  font-size: 48rpx;
+.status-text {
+  font-size: 30rpx;
   font-weight: 600;
+  color: $text-main;
+  display: block;
+  margin-bottom: 16rpx;
 }
 
-/* 功能菜单 — 白底卡片 + 彩色图标 */
-.feature-menu {
-  background: var(--bg-card);
-  border: 2rpx solid rgba(0, 0, 0, 0.04);
-  border-radius: 24rpx;
-  overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-}
-.dark-mode .feature-menu {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
-
-.menu-item {
+.progress-mini {
   display: flex;
   align-items: center;
-  min-height: 96rpx;
-  padding: 18px 20px;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
-  transition: background-color 0.15s ease;
-}
-.menu-item:last-child {
-  border-bottom: none;
-}
-.menu-item:active {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-.dark-mode .menu-item {
-  border-bottom-color: rgba(255, 255, 255, 0.06);
-}
-.dark-mode .menu-item:active {
-  background-color: rgba(255, 255, 255, 0.04);
 }
 
-/* 每个菜单项独立图标色 */
-.menu-icon {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 18rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  flex-shrink: 0;
-}
-/* 文件管理 — 蓝色 */
-.menu-item:nth-child(1) .menu-icon {
-  background: rgba(28, 176, 246, 0.12);
-  color: var(--info);
-}
-/* 智能导师 — 紫色 */
-.menu-item:nth-child(2) .menu-icon {
-  background: rgba(206, 130, 255, 0.12);
-  color: var(--purple-light, #ce82ff);
-}
-/* 错题本 — 红色 */
-.menu-item:nth-child(3) .menu-icon {
-  background: rgba(255, 75, 75, 0.12);
-  color: var(--danger);
-}
-/* 错题重练(动态) / 排行榜 — 橙色 */
-.menu-item.mistake-review .menu-icon,
-.menu-item:nth-child(4) .menu-icon {
-  background: rgba(255, 150, 0, 0.12);
-  color: var(--warning);
-}
-/* 排行榜 — 金色 */
-.menu-item:nth-child(5) .menu-icon {
-  background: rgba(255, 150, 0, 0.12);
-  color: var(--warning);
-}
-/* 学习进度 — 绿色 */
-.menu-item:nth-child(6) .menu-icon {
-  background: rgba(88, 204, 2, 0.12);
-  color: #58cc02;
-}
-/* 收藏/Anki/练习模式 — 青色 */
-.menu-item:nth-child(7) .menu-icon,
-.menu-item:nth-child(8) .menu-icon,
-.menu-item:nth-child(9) .menu-icon {
-  background: rgba(45, 201, 196, 0.12);
-  color: var(--teal, #2dc9c4);
-}
-
-.menu-icon .emoji {
-  font-size: 56rpx;
-}
-
-.menu-info {
+.progress-bar-sm {
   flex: 1;
-}
-
-.menu-title {
-  font-size: 31rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-}
-.dark-mode .menu-title {
-  color: var(--text-primary);
-}
-
-.menu-subtitle {
-  font-size: 24rpx;
-  color: var(--danger);
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-.menu-subtitle-normal {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-.menu-arrow {
-  color: var(--text-secondary);
-}
-
-/* 进度条 — 绿色 */
-.progress-info {
-  display: flex;
-  align-items: center;
-  /* gap: 12px; -- replaced for Android WebView compat */
-}
-
-.progress-bar {
-  width: 120px;
   height: 12rpx;
-  background-color: rgba(88, 204, 2, 0.15);
-  border-radius: 6rpx;
+  background: rgba($primary, 0.12);
+  border-radius: 99rpx;
   overflow: hidden;
 }
 
-.progress-fill {
+.progress-fill-sm {
   height: 100%;
-  background: #58cc02;
-  border-radius: 6rpx;
+  background: $action-green;
+  border-radius: 99rpx;
   transition: width 0.3s ease;
 }
 
-.progress-text {
-  font-size: 28rpx;
-  font-weight: 800;
-  color: #58cc02;
-  margin-left: 12px;
+.progress-label {
+  margin-left: 16rpx;
+  font-size: 24rpx;
+  color: $text-sub;
+  white-space: nowrap;
 }
 
-.skeleton-import-card {
-  height: 80px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-}
-
-.skeleton-status-card {
-  height: 120px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-}
-
-.skeleton-actions {
+/* 按钮 */
+.action-btn {
+  border-radius: $radius-sm;
+  padding: 24rpx;
   display: flex;
-  /* gap: 12px; -- replaced for Android WebView compat */
-  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16rpx;
 }
 
-.skeleton-btn {
-  flex: 1;
-  height: 48px;
-  border-radius: 12px;
+.primary-btn {
+  background: $primary-deep;
+  box-shadow: 0 14rpx 30rpx rgba(22, 51, 0, 0.18);
 }
 
-.skeleton-menu {
-  display: flex;
-  flex-direction: column;
-  /* gap: 12px; -- replaced for Android WebView compat */
+.secondary-btn {
+  background: $primary-light;
+  border: 1rpx solid rgba(22, 51, 0, 0.08);
 }
 
-.skeleton-menu-item {
-  height: 64px;
-  border-radius: 16px;
+.action-btn-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #ffffff;
 }
 
-.skeleton-animate {
-  background: linear-gradient(90deg, var(--muted) 25%, var(--background) 50%, var(--muted) 75%);
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s infinite;
-}
-.dark-mode .skeleton-animate {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 75%
-  );
-  background-size: 200% 100%;
+.secondary-text {
+  color: $primary-deep;
 }
 
-@keyframes skeleton-loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* 骨架屏淡出过渡 */
-.skeleton-fade-leave-active {
-  transition: opacity 0.35s ease-out;
-}
-.skeleton-fade-leave-to {
-  opacity: 0;
-}
-
-/* 功能级卡通图标（替代 BaseIcon size 36-79） */
-.feature-cartoon-icon {
-  width: 80rpx;
-  height: 80rpx;
+.btn-hover {
+  opacity: 0.85;
+  transform: scale(0.98);
 }
 </style>

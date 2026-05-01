@@ -113,7 +113,7 @@ export const learningStatsMixin = {
     async selectPracticeMode(mode) {
       const loginOptions = /** @type {any} */ ({
         message: '请先登录后选择练习模式',
-        loginUrl: '/pages/settings/index',
+        loginUrl: '/pages/login/index',
         onCancel: () => {
           this.isNavigating = false;
         }

@@ -1,5 +1,55 @@
 # 发布记录
 
+---
+
+# EXAM-MASTER V1.1.0 闪卡重构版
+
+更新时间: 2026-04-27
+目标: 微信小程序迭代提审（产品转型为闪卡刷题工具）
+
+## 1. 发布范围
+
+### 产品转型
+- 从"全功能考研小程序"转型为"百度网盘驱动的闪卡刷题工具"
+- 小程序精简为 3 页面 MVP：首页 / 刷题中心 / 我的
+- 题库来源：PDF → AI 离线加工 → 结构化闪卡 JSON（4 题库 153 题）
+
+### Phase 2.5: 多科目题库
+- 4 个闪卡题库：政治-2025(52题)、政治-2024(39题)、英语-2025(34题)、数学-2025(28题)
+- bank-registry.js 动态注册 + flashcard-adapter.js 格式转换
+
+### Phase 3: 经典闪卡模式 + FSRS
+- 翻转查看答案 + FSRS 四级自评（忘了/模糊/记得/简单）
+- 分析题/闪卡类型自动进入闪卡模式
+- FSRS 间隔重复调度真正驱动复习计划
+
+### Phase 4: 生产提审就绪
+- 15 项审核阻塞修复（详见 12-CHANGELOG.md）
+- TabBar 4→3 tabs、pages[0] 改为首页、权限声明清理、全页面浅色主题
+- 构建体积 1.5MB（主包 589KB）
+
+### Phase 5: 关键流程 Bug 修复
+- useFlashcardBank.js 存储键不一致（CRITICAL）——写入 `v30_bank`，读取 `u_${userId}_v30_bank`
+- loadedBankIds 无响应式更新
+- goSmartReview 路由参数不匹配
+- do-quiz.vue `this.mode` 未声明
+
+## 2. 构建验证
+
+- `npm run build:mp-weixin`: 通过
+- 总体积: 1.5MB（主包 589KB）
+- app.json: permission 为空、requiredPrivateInfos 为空、__usePrivacyCheck__ = true
+- project.config.json: projectname = 考研大师, appid = wxd634d50ad63e14ed, libVersion = 2.32.3
+
+## 3. 提审检查项
+
+1. 微信开发者工具导入 `dist/build/mp-weixin`
+2. 清理开发者工具缓存后重新编译
+3. 验证题库加载流程：加载 → 进入刷题 → 闪卡翻转 → FSRS 评分
+4. 验证未登录状态可正常刷题（不强制登录）
+
+---
+
 # EXAM-MASTER V1.0.0 正式版发布说明
 
 更新时间: 2026-03-02

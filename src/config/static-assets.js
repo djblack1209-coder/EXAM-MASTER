@@ -97,8 +97,6 @@ const ASSET_REGISTRY = {
     'home-active': 'tabbar/home-active.png',
     practice: 'tabbar/practice.png',
     'practice-active': 'tabbar/practice-active.png',
-    school: 'tabbar/school.png',
-    'school-active': 'tabbar/school-active.png',
     profile: 'tabbar/profile.png',
     'profile-active': 'tabbar/profile-active.png'
   }

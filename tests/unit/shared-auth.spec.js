@@ -10,23 +10,23 @@ function buildJwt(payload, secret) {
   return `${headerBase64}.${payloadBase64}.${signature}`;
 }
 
-const originalJwtSecret = process.env.JWT_SECRET_PLACEHOLDER
+const originalJwtSecret = process.env.JWT_SECRET;
 
 afterEach(() => {
   if (originalJwtSecret === undefined) {
-    delete process.env.JWT_SECRET_PLACEHOLDER
+    delete process.env.JWT_SECRET;
   } else {
-    process.env.JWT_SECRET_PLACEHOLDER
+    process.env.JWT_SECRET = originalJwtSecret;
   }
 });
 
 describe('shared auth verifyJWT', () => {
   it('returns payload for valid token', async () => {
-    process.env.JWT_SECRET_PLACEHOLDER
+    process.env.JWT_SECRET = 'unit_test_secret';
     const { verifyJWT } = await import('../../laf-backend/functions/_shared/auth');
 
     const exp = Date.now() + 60_000;
-    const token = buildJwt({ userId: 'u_auth_1', role: 'user', exp }, process.env.JWT_SECRET_PLACEHOLDER
+    const token = buildJwt({ userId: 'u_auth_1', role: 'user', exp }, process.env.JWT_SECRET);
 
     const payload = verifyJWT(token);
     expect(payload).toBeTruthy();
@@ -34,8 +34,8 @@ describe('shared auth verifyJWT', () => {
     expect(payload.role).toBe('user');
   });
 
-  it('returns null when JWT_SECRET_PLACEHOLDER
-    delete process.env.JWT_SECRET_PLACEHOLDER
+  it('returns null when JWT_SECRET is missing', async () => {
+    delete process.env.JWT_SECRET;
     const { verifyJWT } = await import('../../laf-backend/functions/_shared/auth');
 
     const token = buildJwt({ userId: 'u_auth_2', exp: Date.now() + 60_000 }, 'another_secret');
@@ -43,10 +43,10 @@ describe('shared auth verifyJWT', () => {
   });
 
   it('returns null when signature length mismatches', async () => {
-    process.env.JWT_SECRET_PLACEHOLDER
+    process.env.JWT_SECRET = 'unit_test_secret';
     const { verifyJWT } = await import('../../laf-backend/functions/_shared/auth');
 
-    const token = buildJwt({ userId: 'u_auth_3', exp: Date.now() + 60_000 }, process.env.JWT_SECRET_PLACEHOLDER
+    const token = buildJwt({ userId: 'u_auth_3', exp: Date.now() + 60_000 }, process.env.JWT_SECRET);
     const [h, p, s] = token.split('.');
     const tampered = `${h}.${p}.${s.slice(0, -1)}`;
 
@@ -54,7 +54,7 @@ describe('shared auth verifyJWT', () => {
   });
 
   it('supports bearer extraction and secret config check', async () => {
-    process.env.JWT_SECRET_PLACEHOLDER
+    process.env.JWT_SECRET = 'unit_test_secret';
     const { extractBearerToken, isJwtSecretConfigured } = await import('../../laf-backend/functions/_shared/auth');
 
     expect(extractBearerToken('Bearer abc.def.ghi')).toBe('abc.def.ghi');

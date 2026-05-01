@@ -22,6 +22,11 @@
 | `learning_progress`   | `learning_progress.schema.json`   | User learning resource progress                                   |
 | `learning_resources`  | `learning_resources.schema.json`  | Recommended learning resources                                    |
 | `resource_favorites`  | `resource_favorites.schema.json`  | User-favorited learning resources                                 |
+| `source_evidence`     | `source_evidence.schema.json`     | Question source evidence, page spans, text hashes, answer status  |
+| `knowledge_nodes`     | `knowledge_nodes.schema.json`     | Public-course knowledge graph nodes                               |
+| `knowledge_edges`     | `knowledge_edges.schema.json`     | Knowledge graph edges and relations                               |
+| `question_knowledge_edges` | `question_knowledge_edges.schema.json` | Question-to-knowledge-node mappings                         |
+| `user_knowledge_state` | `user_knowledge_state.schema.json` | User mastery state per knowledge node                            |
 | `groups`              | `groups.schema.json`              | Study group basic info                                            |
 | `group_members`       | `group_members.schema.json`       | User-group membership                                             |
 | `group_resources`     | `group_resources.schema.json`     | Shared resources within groups                                    |
@@ -229,12 +234,29 @@
 }
 ```
 
+### source_evidence
+
+Stores the publish gate for extracted public-course questions. A question can be published only when `answer_evidence_status = matched`; each record keeps the Source Manifest ID, optional page span, OCR confidence, question text hash, answer text hash, and raw evidence slice path.
+
+### knowledge_nodes / knowledge_edges
+
+`knowledge_nodes` stores the backend version of the public-course knowledge graph: subject, track, module, topic, and micro-point nodes. `knowledge_edges` stores containment, prerequisite, related, and confusable relations so the graph can be sliced for WeChat MP and rendered fully in H5/App.
+
+### question_knowledge_edges / user_knowledge_state
+
+`question_knowledge_edges` maps each question to one or more knowledge nodes with rule, AI, or manual confidence. `user_knowledge_state` stores each user's attempts, correct rate, streak, FSRS retrievability, ability estimate, mastery level, and color state for the knowledge neural graph.
+
 ## Indexes
 
 Key indexes (created via cloud function `db-create-indexes`):
 
 - `users`: `{ email: 1 }` (unique), `{ openId: 1 }`, `{ unionId: 1 }`
 - `questions`: `{ userId: 1, subject: 1 }`, `{ "fsrsState.due": 1 }`
+- `source_evidence`: `{ question_id: 1 }`, `{ source_id: 1 }`, `{ answer_evidence_status: 1 }`
+- `knowledge_nodes`: `{ node_id: 1 }` unique, `{ parent_id: 1 }`, `{ tracks: 1, level: 1 }`
+- `knowledge_edges`: `{ edge_id: 1 }` unique, `{ source_node_id: 1, relation: 1 }`
+- `question_knowledge_edges`: `{ question_id: 1, node_id: 1 }` unique, `{ node_id: 1 }`
+- `user_knowledge_state`: `{ user_id: 1, node_id: 1 }` unique, `{ user_id: 1, color_state: 1 }`
 - `practice_records`: `{ userId: 1, createdAt: -1 }`, `{ sessionId: 1 }`
 - `mistake_book`: `{ userId: 1, isResolved: 1 }`, `{ userId: 1, subject: 1 }`
 - `favorites`: `{ userId: 1, questionId: 1 }` (unique compound)

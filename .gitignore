@@ -35,13 +35,12 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local env files
-.env
-.env.local
-.env.*.local
-.env.server
-# ✅ P0-2 改造：排除开发/生产环境配置文件（包含敏感信息）
-.env.development
-.env.production
+.env*
+!.env.example
+!.env.test
+!deploy/**/.env.example
+!laf-backend/.env.example
+!laf-backend/.env.local.example
 
 # Cache
 .cache/
@@ -54,6 +53,7 @@ yarn-error.log*
 laf-backend/.app.yaml
 laf-backend/.env*
 !laf-backend/.env.example
+!laf-backend/.env.local.example
 
 # Logs directory
 logs/
@@ -91,6 +91,8 @@ audit-screenshots/
 # Python cache
 __pycache__/
 *.pyc
+.venv/
+.venv-*/
 
 # Unrelated scripts / tools (contain sensitive data)
 test_api_keys.py
@@ -104,10 +106,8 @@ backups/
 # Database schemas (not used by app)
 database/
 
-# Claude Code skills / agents / commands (dev tooling, not app code)
-.claude/skills/
-.claude/agents/
-.claude/commands/
+# Claude / agent runtime state (dev tooling, not app code)
+.claude/
 
 # One-time data fix artifacts
 data/schools/fix-report.json
@@ -144,8 +144,10 @@ docs/reports/*.xml
 docs/reports/e2e-compat-html/
 docs/reports/e2e-regression-html/
 release/
+!docs/release/
+!docs/release/README.md
 
-# Playwright/测试运行时产物
+# Playwright/测试/安全扫描运行时产物
 output/
 
 # Playwright MCP 运行时日志
@@ -195,3 +197,38 @@ uiverse-*.png
 # 闪卡生成物（由管线脚本生成）
 data/flashcards/
 scripts/pipeline/.card-hashes.json
+
+# 管线运行产物（百度网盘下载的原始 PDF + 处理日志）
+data/raw-pdf/
+data/raw-inbox/
+data/ai-cache/
+data/source-manifest.json
+data/source-manifest-report.json
+data/source-manifest-quality.json
+data/question-bank-release-audit.json
+data/question-bank-release-report.json
+data/release-external-audit.json
+data/release-external-audit-with-smoke-token.json
+data/cloud-smoke-release.json
+data/exam-master-netdisk-scan-report.json
+data/public-course-netdisk-candidate-coverage.json
+data/flashcard-quality-report.json
+data/answer-evidence-repair-report.json
+data/answer-evidence-repair-*.json
+data/cleaning-queue.json
+data/.source-manifest-app-stage.json
+data/.processed-pdfs.json
+data/pipeline-report.json
+data/link-registry.json
+data/verified-source-registry.json
+data/verified-source-export.json
+data/transferred-links.json
+data/group-export-latest.json
+data/group-sync-report.json
+data/smoke-token.env
+
+# AI 批量生成图片中间产物
+asset-inbox/
+
+# 临时登录二维码 / 审计二维码
+*-wechat-login-qr.png

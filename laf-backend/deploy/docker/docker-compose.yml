@@ -21,7 +21,7 @@ services:
       - PORT=3000
       - TZ=Asia/Shanghai
       - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/exam-master}
-      - AI_PROVIDER_KEY_PLACEHOLDER
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
     depends_on:
       mongo:
         condition: service_healthy

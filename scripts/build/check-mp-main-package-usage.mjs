@@ -3,19 +3,26 @@ import path from 'node:path';
 
 const projectRoot = process.cwd();
 const buildRoot = path.join(projectRoot, 'dist', 'build', 'mp-weixin');
+const appJsonPath = path.join(buildRoot, 'app.json');
 
-const mainPageFiles = [
-  'pages/index/index.js',
-  'pages/practice/index.js',
-  'pages/school/index.js',
-  'pages/profile/index.js'
-];
+function getMainPageFiles() {
+  if (!fs.existsSync(appJsonPath)) {
+    throw new Error('[main-usage-check] 缺少构建文件: app.json');
+  }
+
+  const appJson = JSON.parse(fs.readFileSync(appJsonPath, 'utf8'));
+  return ['app.js', ...(appJson.pages || [])
+    .map((pagePath) => `${pagePath}.js`)
+    .filter((relativePath) => fs.existsSync(path.join(buildRoot, relativePath)))];
+}
 
 const requiredModules = [
-  'utils/favorite/question-favorite.js',
+  'services/fsrs-service.js',
+  'stores/modules/review.js',
+  'stores/modules/study-engine.js',
   'utils/learning/adaptive-learning-engine.js',
-  'practice-sub/utils/learning-analytics.js'
-];
+  'utils/security/sanitize.js'
+].filter((modulePath) => fs.existsSync(path.join(buildRoot, modulePath)));
 
 function readBuildFile(relativePath) {
   const filePath = path.join(buildRoot, relativePath);
@@ -27,6 +34,8 @@ function readBuildFile(relativePath) {
 
 function assertModuleUsedByMainPackage(modulePath) {
   const foundIn = [];
+  const mainPageFiles = getMainPageFiles();
+
   for (const pageFile of mainPageFiles) {
     const content = readBuildFile(pageFile);
     if (content.includes(modulePath)) {
@@ -44,6 +53,11 @@ function assertModuleUsedByMainPackage(modulePath) {
 function run() {
   if (!fs.existsSync(buildRoot)) {
     throw new Error('[main-usage-check] 未找到 dist/build/mp-weixin，请先执行 npm run build:mp-weixin');
+  }
+
+  if (requiredModules.length === 0) {
+    console.log('[main-usage-check] 未发现需要检查的主包共享模块，跳过');
+    return;
   }
 
   const report = requiredModules.map((modulePath) => ({

@@ -1,10 +1,9 @@
 <template>
   <view v-if="visible" class="result-overlay" :class="{ 'dark-mode': isDark }" @tap.stop>
     <view class="result-container">
-      <!-- 完美得分庆祝：confetti-burst + star-sparkle 叠加动画（100%正确率触发，2.5s后淡出） -->
+      <!-- 完美得分庆祝：纯CSS动画（100%正确率触发，2.5s后淡出） -->
       <view v-if="showCelebration && accuracy >= 100" class="celebration-overlay" @animationend="onCelebrationEnd">
-        <image class="celebration-confetti" src="../../static/effects/confetti-burst.png" mode="aspectFit" lazy-load />
-        <image class="celebration-sparkle" :src="getAssetUrl('effects', 'star-sparkle')" mode="aspectFit" lazy-load />
+        <text class="celebration-emoji">🎉</text>
       </view>
 
       <!-- 顶部关闭 -->
@@ -61,6 +60,48 @@
           <view class="stat-item">
             <text class="stat-value">{{ avgTimeDisplay }}</text>
             <text class="stat-label">平均用时</text>
+          </view>
+        </view>
+
+        <!-- 知识神经定位 -->
+        <view v-if="knowledgeInsights.focusNodes.length > 0" class="knowledge-insight-section glass-card">
+          <view class="knowledge-insight-head">
+            <view>
+              <text class="knowledge-kicker">KNOWLEDGE MAP</text>
+              <text class="section-title knowledge-title">知识神经定位</text>
+            </view>
+            <view class="knowledge-summary-pill">
+              <text>{{ knowledgeInsights.summary.averageMastery }}%</text>
+            </view>
+          </view>
+          <text class="knowledge-headline">{{ knowledgeInsights.headline }}</text>
+
+          <view class="knowledge-node-list">
+            <view v-for="node in knowledgeInsights.focusNodes" :key="node.nodeId" class="knowledge-node-row">
+              <view class="knowledge-node-dot" :style="{ background: node.color }" />
+              <view class="knowledge-node-main">
+                <view class="knowledge-node-title-row">
+                  <text class="knowledge-node-title">{{ node.label }}</text>
+                  <text class="knowledge-node-state">{{ knowledgeStateLabel(node.state) }}</text>
+                </view>
+                <text class="knowledge-node-chain">{{ node.chainText }}</text>
+                <view class="knowledge-node-meter">
+                  <view
+                    class="knowledge-node-meter-fill"
+                    :style="{ width: node.mastery + '%', background: node.color }"
+                  />
+                </view>
+              </view>
+              <view class="knowledge-node-score">
+                <text class="knowledge-node-accuracy">{{ node.accuracy }}%</text>
+                <text class="knowledge-node-meta">{{ node.wrong }}错 / {{ node.attempts }}题</text>
+              </view>
+            </view>
+          </view>
+
+          <view class="knowledge-action" hover-class="btn-hover" @tap="emit('goWeakTraining')">
+            <text>按薄弱链路继续练</text>
+            <BaseIcon name="chevron-right" :size="22" />
           </view>
         </view>
 
@@ -151,6 +192,8 @@ import { useStudyEngineStore } from '@/stores/modules/study-engine.js';
 // 静态资源 CDN 映射（大图已迁出主包）
 import { getAssetUrl } from '@/config/static-assets.js';
 import { logger } from '@/utils/logger.js';
+import { buildSessionKnowledgeInsights } from '@/config/knowledge-graph.js';
+import { storageService } from '@/services/storageService.js';
 
 const studyEngineStore = useStudyEngineStore();
 
@@ -191,6 +234,22 @@ const avgTimeDisplay = computed(() => {
   const avgSec = Math.round(totalMs / props.answeredQuestions.length / 1000);
   return avgSec >= 60 ? `${Math.floor(avgSec / 60)}m${avgSec % 60}s` : `${avgSec}s`;
 });
+
+const examProfile = computed(() => storageService.get('exam_profile', null) || {});
+const knowledgeInsights = computed(() =>
+  buildSessionKnowledgeInsights(props.questions, props.answeredQuestions, examProfile.value)
+);
+
+function knowledgeStateLabel(state) {
+  const labels = {
+    weak: '薄弱',
+    watch: '观察',
+    primed: '点亮',
+    strong: '掌握',
+    unknown: '待练'
+  };
+  return labels[state] || '已记录';
+}
 
 // --- 动画数字 ---
 const displayAccuracy = ref(0);
@@ -784,6 +843,158 @@ const motivationalText = computed(() => {
   color: var(--text-primary);
   width: 80rpx;
   text-align: right;
+}
+
+/* 知识神经定位 */
+.knowledge-insight-section {
+  border-color: rgba(28, 176, 246, 0.16);
+}
+.knowledge-insight-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin-bottom: 10rpx;
+}
+.knowledge-kicker {
+  display: block;
+  font-size: 20rpx;
+  line-height: 1;
+  font-weight: 800;
+  color: #1cb0f6;
+  margin-bottom: 10rpx;
+  letter-spacing: 0;
+}
+.knowledge-title {
+  margin-bottom: 0;
+}
+.knowledge-summary-pill {
+  min-width: 104rpx;
+  height: 56rpx;
+  padding: 0 18rpx;
+  border-radius: 18rpx;
+  background: rgba(28, 176, 246, 0.1);
+  color: #0f7fb5;
+  font-size: 26rpx;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.knowledge-headline {
+  display: block;
+  font-size: 24rpx;
+  line-height: 1.45;
+  color: var(--text-secondary, #4b5563);
+  margin-bottom: 24rpx;
+}
+.knowledge-node-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+.knowledge-node-row {
+  display: flex;
+  align-items: center;
+  min-height: 112rpx;
+  padding: 18rpx;
+  border-radius: 20rpx;
+  background: var(--bg-secondary, #f5f7fb);
+}
+.knowledge-node-dot {
+  width: 24rpx;
+  height: 80rpx;
+  border-radius: 999rpx;
+  flex-shrink: 0;
+  margin-right: 18rpx;
+  border: 2rpx solid rgba(0, 0, 0, 0.06);
+}
+.knowledge-node-main {
+  min-width: 0;
+  flex: 1;
+}
+.knowledge-node-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-width: 0;
+}
+.knowledge-node-title {
+  font-size: 28rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.knowledge-node-state {
+  flex-shrink: 0;
+  padding: 4rpx 10rpx;
+  border-radius: 10rpx;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text-secondary, #4b5563);
+  font-size: 20rpx;
+  font-weight: 700;
+}
+.knowledge-node-chain {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.knowledge-node-meter {
+  height: 10rpx;
+  margin-top: 14rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.knowledge-node-meter-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  min-width: 8rpx;
+  transition: width 0.8s ease-out;
+}
+.knowledge-node-score {
+  width: 112rpx;
+  flex-shrink: 0;
+  text-align: right;
+  margin-left: 18rpx;
+}
+.knowledge-node-accuracy {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 900;
+  color: var(--text-primary);
+}
+.knowledge-node-meta {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+}
+.knowledge-action {
+  height: 72rpx;
+  margin-top: 24rpx;
+  border-radius: 18rpx;
+  background: #111827;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  font-weight: 800;
+}
+.dark-mode .knowledge-node-row {
+  background: rgba(255, 255, 255, 0.06);
+}
+.dark-mode .knowledge-action {
+  background: #ffffff;
+  color: #111827;
 }
 
 /* 激励 */

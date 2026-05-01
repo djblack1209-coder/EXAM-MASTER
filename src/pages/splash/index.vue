@@ -31,8 +31,8 @@
 <script setup>
 import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { logger } from '@/utils/logger.js';
-import { storageService } from '@/services/storageService.js';
 import { initTheme, onThemeUpdate, offThemeUpdate } from '@/composables/useTheme';
+import { storageService } from '@/services/storageService.js';
 
 // 主题（暂留接口，极简白净版暂不区分深色）
 const isDark = ref(initTheme());
@@ -50,22 +50,29 @@ function isVisualSnapshot() {
   return /visual=1/.test(location.hash || '') || /visual=1/.test(location.search || '');
 }
 
-// 导航逻辑
 function navigateAfterSplash() {
-  const hasOnboarded = storageService.get('onboarding_completed', false);
-
-  if (!hasOnboarded) {
-    logger.log('[Splash] New user, navigate to onboarding');
-    uni.redirectTo({
-      url: '/pages/login/onboarding',
-      fail: (err) => {
-        logger.warn('[Splash] onboarding redirect failed, fallback to home', err);
-        openHomeTab();
-      }
-    });
-  } else {
+  const completed = storageService.get('onboarding_completed', false);
+  if (completed) {
     openHomeTab();
+    return;
   }
+  openOnboarding();
+}
+
+function openOnboarding() {
+  uni.redirectTo({
+    url: '/pages/login/onboarding',
+    fail: (err1) => {
+      logger.warn('[Splash] onboarding redirect failed, try reLaunch', err1);
+      uni.reLaunch({
+        url: '/pages/login/onboarding',
+        fail: (err2) => {
+          logger.warn('[Splash] onboarding reLaunch failed, open home', err2);
+          openHomeTab();
+        }
+      });
+    }
+  });
 }
 
 function openHomeTab() {

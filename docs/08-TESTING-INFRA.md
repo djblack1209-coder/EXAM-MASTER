@@ -13,7 +13,7 @@
 > **Round 49/50 变更**:
 >
 > - 新增 `tests/__mocks__/api-response-mock.js`：后端 api-response 完整 mock factory
-> - `tests/setup.js` 新增 `JWT_SECRET_PLACEHOLDER
+> - `tests/setup.js` 新增 `JWT_SECRET`/`PASSWORD_SALT` 环境变量配置
 > - integration 测试 mock 策略：直接突变 `aiService.request` 而非 mock `_request-core.js`
 
 ## Overview
@@ -175,14 +175,14 @@ npm run audit:mp-main-usage           # MP main package size
 
 - **Current Status**: All passing (91 suites, 1168 tests)
 - **Historical Issues (已修复)**:
-  - `JWT_SECRET_PLACEHOLDER
+  - `JWT_SECRET` 环境变量已通过 `.env.test` 配置。
   - `social.service.js` 已重命名为 `social.api.js`，import 路径已对齐。
   - `useQuizAutoSave.js` 已迁移到 `composables/`，测试 import 已更新。
   - HTTP 响应状态码已对齐实际实现。
 
 ### Known Infrastructure Gaps & Improvements Needed
 
-1. **Test Environment Variables**: The testing suite currently lacks a proper `.env.test` setup, specifically missing mock values for `JWT_SECRET_PLACEHOLDER
+1. **Test Environment Variables**: The testing suite currently lacks a proper `.env.test` setup, specifically missing mock values for `JWT_SECRET`, which completely invalidates security and API unit tests.
 2. **Missing Mocks**: Certain global variables like `logger` used in services are not being mocked or provided in the Vitest test context.
 3. **Outdated Imports**: Need automated tools to verify test imports when files are refactored (e.g., `useQuizAutoSave.js`).
 4. **Backend Unit Coverage Gap**: Specifically, errors like `TypeError: query.count is not a function` in `group-service` went uncaught by backend TypeScript compilation and unit tests, indicating a gap in backend-specific testing logic.

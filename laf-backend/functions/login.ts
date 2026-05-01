@@ -11,11 +11,11 @@
  *
  * 环境变量要求：
  * - WX_APPID: 微信小程序 AppID
- * - WX_SECRET_PLACEHOLDER
+ * - WX_SECRET: 微信小程序密钥
  * - QQ_APPID: QQ互联/QQ小程序 AppID
  * - QQ_SECRET: QQ互联/QQ小程序密钥
  * - QQ_REDIRECT_URI: QQ H5 OAuth 回调地址（可选，建议配置）
- * - JWT_SECRET_PLACEHOLDER
+ * - JWT_SECRET: JWT签名密钥
  *
  * 请求参数：
  * - type: string (可选) - 登录类型: 'wechat'(默认) | 'wechat_h5' | 'qq' | 'email'
@@ -42,29 +42,29 @@ const logger = createLogger('[Login]');
 // 重要：请确保在后端控制台配置了正确的环境变量
 // 安全提示：敏感信息必须通过环境变量配置，禁止硬编码
 const WX_APPID = process.env.WX_APPID || '';
-const WX_SECRET_PLACEHOLDER
+const WX_SECRET = process.env.WX_SECRET || '';
 // E007: 微信公众号配置（H5网页授权）
 const WX_GZH_APPID = process.env.WX_GZH_APPID || '';
-const SECRET_PLACEHOLDER
+const WX_GZH_SECRET = process.env.WX_GZH_SECRET || '';
 // QQ 登录配置（H5/App/QQ小程序）
 const QQ_APPID = process.env.QQ_APPID || '';
-const SECRET_PLACEHOLDER
+const QQ_SECRET = process.env.QQ_SECRET || '';
 const QQ_REDIRECT_URI = process.env.QQ_REDIRECT_URI || '';
-// ✅ B017: JWT_SECRET_PLACEHOLDER
-const JWT_SECRET_PLACEHOLDER
-if (!process.env.JWT_SECRET_PLACEHOLDER
+// ✅ B017: JWT_SECRET 必须通过环境变量配置，不再提供任何硬编码默认值
+const JWT_SECRET = process.env.JWT_SECRET || '';
+if (!process.env.JWT_SECRET) {
   // 避免模块加载阶段抛错导致所有依赖 verifyJWT 的云函数无法启动
-  logger.error('❌ 严重安全警告：JWT_SECRET_PLACEHOLDER
+  logger.error('❌ 严重安全警告：JWT_SECRET 未配置！登录与鉴权请求将被拒绝。');
 }
 const JWT_EXPIRES_IN = 7 * 24 * 60 * 60 * 1000; // 7天
 
 // ==================== 环境变量完整性检查 ====================
 const ENV_CHECK_RESULTS: { key: string; present: boolean }[] = [
   { key: 'WX_APPID', present: !!process.env.WX_APPID },
-  { key: 'WX_SECRET_PLACEHOLDER
+  { key: 'WX_SECRET', present: !!process.env.WX_SECRET },
   { key: 'QQ_APPID', present: !!process.env.QQ_APPID },
   { key: 'QQ_SECRET', present: !!process.env.QQ_SECRET },
-  { key: 'JWT_SECRET_PLACEHOLDER
+  { key: 'JWT_SECRET', present: !!process.env.JWT_SECRET },
   { key: 'WX_GZH_APPID', present: !!process.env.WX_GZH_APPID },
   { key: 'WX_GZH_SECRET', present: !!process.env.WX_GZH_SECRET }
 ];
@@ -479,7 +479,7 @@ export default async function (ctx) {
 
   try {
     // 缺少密钥时仅拒绝当前请求，不阻断其他云函数模块加载
-    if (!JWT_SECRET_PLACEHOLDER
+    if (!JWT_SECRET) {
       return {
         code: 500,
         success: false,
@@ -909,7 +909,7 @@ async function handleQQLogin(ctx, requestId: string, startTime: number) {
     };
   }
 
-  if (!JWT_SECRET_PLACEHOLDER
+  if (!JWT_SECRET) {
     return { code: 500, success: false, message: '服务配置错误：缺少 JWT 签名密钥', requestId };
   }
 
@@ -1211,19 +1211,19 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
   const { code } = validation.sanitized;
 
   // 2. 环境变量检查
-  if (!WX_APPID || !WX_SECRET_PLACEHOLDER
-    logger.error(`[${requestId}] 缺少微信配置: WX_APPID=${!!WX_APPID}, WX_SECRET_PLACEHOLDER
+  if (!WX_APPID || !WX_SECRET) {
+    logger.error(`[${requestId}] 缺少微信配置: WX_APPID=${!!WX_APPID}, WX_SECRET=${!!WX_SECRET}`);
     return {
       code: 500,
       success: false,
-      message: '服务配置错误：缺少微信小程序配置（WX_APPID/WX_SECRET_PLACEHOLDER
+      message: '服务配置错误：缺少微信小程序配置（WX_APPID/WX_SECRET），请联系管理员',
       requestId
     };
   }
 
-  // ✅ P0-2: 生产环境必须配置 JWT_SECRET_PLACEHOLDER
-  if (!JWT_SECRET_PLACEHOLDER
-    logger.error(`[${requestId}] 生产环境缺少 JWT_SECRET_PLACEHOLDER
+  // ✅ P0-2: 生产环境必须配置 JWT_SECRET
+  if (!JWT_SECRET) {
+    logger.error(`[${requestId}] 生产环境缺少 JWT_SECRET 配置`);
     return {
       code: 500,
       success: false,
@@ -1235,7 +1235,7 @@ async function handleWechatLogin(ctx, requestId: string, startTime: number) {
   // 3. 调用微信接口获取 openid
   logger.info(`[${requestId}] 开始获取微信 openid...`);
 
-  const wxLoginUrl = `https://api.weixin.qq.com/sns/jscode2session?appid=${WX_APPID}&secret=${WX_SECRET_PLACEHOLDER
+  const wxLoginUrl = `https://api.weixin.qq.com/sns/jscode2session?appid=${WX_APPID}&secret=${WX_SECRET}&js_code=${encodeURIComponent(code as string)}&grant_type=authorization_code`;
 
   const wxRes = await cloud.fetch({
     url: wxLoginUrl,
@@ -1353,7 +1353,7 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
 
   // 2. 环境变量检查
   if (!WX_GZH_APPID || !WX_GZH_SECRET) {
-    logger.error(`[${requestId}] 缺少微信公众号配置: WX_GZH_APPID=${!!WX_GZH_APPID}, SECRET_PLACEHOLDER
+    logger.error(`[${requestId}] 缺少微信公众号配置: WX_GZH_APPID=${!!WX_GZH_APPID}, WX_GZH_SECRET=${!!WX_GZH_SECRET}`);
     return {
       code: 500,
       success: false,
@@ -1362,7 +1362,7 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
     };
   }
 
-  if (!JWT_SECRET_PLACEHOLDER
+  if (!JWT_SECRET) {
     return { code: 500, success: false, message: '服务配置错误：缺少 JWT 签名密钥', requestId };
   }
 
@@ -1486,8 +1486,8 @@ async function handleWechatH5Login(ctx, requestId: string, startTime: number) {
  * @returns {string} JWT token
  */
 function generateJWT(payload) {
-  if (!JWT_SECRET_PLACEHOLDER
-    throw new Error('JWT_SECRET_PLACEHOLDER
+  if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET 未配置，禁止签发 token');
   }
 
   const header = {
@@ -1506,7 +1506,7 @@ function generateJWT(payload) {
   const payloadBase64 = Buffer.from(JSON.stringify(tokenPayload)).toString('base64url');
 
   const signature = crypto
-    .createHmac('sha256', JWT_SECRET_PLACEHOLDER
+    .createHmac('sha256', JWT_SECRET)
     .update(`${headerBase64}.${payloadBase64}`)
     .digest('base64url');
 

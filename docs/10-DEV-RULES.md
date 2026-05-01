@@ -649,7 +649,7 @@ Before every commit:
 - [ ] No API keys in frontend code
 - [ ] No `.env` files with real keys committed
 - [ ] `requireAuth(ctx)` on all authenticated endpoints
-- [ ] No `JWT_SECRET_PLACEHOLDER
+- [ ] No `JWT_SECRET`, `ADMIN_SECRET` exposed to frontend
 - [ ] scrypt for passwords, never SHA256/MD5
 
 ## Rule 6: WeChat MP Size Budget

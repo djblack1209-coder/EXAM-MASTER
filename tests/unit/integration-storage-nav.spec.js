@@ -283,7 +283,7 @@ describe('全链路: 存储服务 & 导航 & 安全', () => {
     it('所有 tabBar 页面路径都能识别', async () => {
       const { safeNavigateTo } = await import('@/utils/safe-navigate.js');
 
-      const tabPages = ['/pages/index/index', '/pages/practice/index', '/pages/school/index', '/pages/profile/index'];
+      const tabPages = ['/pages/index/index', '/pages/practice/index', '/pages/profile/index'];
 
       for (const page of tabPages) {
         vi.clearAllMocks();

@@ -7,7 +7,6 @@ import { storageService } from '@/services/storageService.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // [勾] 以下模块从分包本地引用，避免打入主包
-import { requireLogin } from '@/utils/auth/loginGuard.js';
 import { deduplicateQuestions } from '../utils/question-dedup-worker.js';
 import { toast } from '@/utils/toast.js';
 import {
@@ -26,35 +25,8 @@ export const aiGenerationMixin = {
   methods: {
     // ==================== 文件导入 ====================
     chooseImportSource() {
-      const fallbackToImportPage = () => {
-        safeNavigateTo('/pages/practice-sub/import-data');
-      };
-
-      requireLogin(
-        () => {
-          if (typeof uni.showActionSheet !== 'function') {
-            fallbackToImportPage();
-            return;
-          }
-
-          uni.showActionSheet({
-            itemList: ['本地文件', '聊天记录', '百度网盘'],
-            success: (res) => {
-              if (res.tapIndex === 0) this.chooseLocalFile();
-              if (res.tapIndex === 1) this.importFromChat();
-              if (res.tapIndex === 2) this.importFromBaidu();
-            },
-            fail: (err) => {
-              logger.warn('[practice] 导入来源弹窗拉起失败，回退到导入页:', err);
-              fallbackToImportPage();
-            }
-          });
-        },
-        {
-          message: '请先登录后上传资料',
-          loginUrl: '/pages/settings/index'
-        }
-      );
+      toast.info('小程序版使用内置题库，资料加工请在离线管线完成');
+      safeNavigateTo('/pages/practice-sub/question-bank');
     },
 
     chooseLocalFile() {

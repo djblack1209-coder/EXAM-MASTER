@@ -4,7 +4,7 @@ async function loadHealthHandler({ adminSecret = 'unit_admin_secret', countThrow
   vi.resetModules();
 
   const originalAdminSecret = process.env.ADMIN_SECRET;
-  process.env.SECRET_PLACEHOLDER
+  process.env.ADMIN_SECRET = adminSecret;
 
   const count = vi.fn(async () => {
     if (countThrows) {
@@ -30,7 +30,7 @@ async function loadHealthHandler({ adminSecret = 'unit_admin_secret', countThrow
     if (originalAdminSecret === undefined) {
       delete process.env.ADMIN_SECRET;
     } else {
-      process.env.SECRET_PLACEHOLDER
+      process.env.ADMIN_SECRET = originalAdminSecret;
     }
   };
 

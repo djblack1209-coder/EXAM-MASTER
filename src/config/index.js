@@ -5,7 +5,7 @@ import { logger } from '@/utils/logger.js';
  * ✅ 已启用环境变量支持，同时保留 fallback 值确保兼容性
  *
  * 📝 使用说明：
- * 1. 优先读取 import.meta.env.VITE_* 环境变量
+ * 1. 优先读取白名单内的客户端环境变量
  * 2. 如果环境变量不存在，使用默认值（当前硬编码值）
  * 3. 支持开发/生产环境自动切换
  *
@@ -22,21 +22,72 @@ import { logger } from '@/utils/logger.js';
  */
 
 /**
- * 安全获取环境变量（兼容 SSR 和客户端）
+ * 客户端允许内联的环境变量。
+ *
+ * 注意：禁止直接读取完整的 import.meta.env 对象，否则 Vite 会把所有 VITE_* 变量
+ * 内联进小程序产物。服务端密钥必须使用非 VITE_ 前缀，并且不得加入这里。
+ */
+const CLIENT_ENV = {
+  BASE_URL: import.meta.env.BASE_URL,
+  MODE: import.meta.env.MODE,
+  DEV: import.meta.env.DEV,
+  PROD: import.meta.env.PROD,
+  SSR: import.meta.env.SSR,
+  VITE_WX_APP_ID: import.meta.env.VITE_WX_APP_ID,
+  VITE_WX_GZH_APP_ID: import.meta.env.VITE_WX_GZH_APP_ID,
+  VITE_QQ_APP_ID: import.meta.env.VITE_QQ_APP_ID,
+  VITE_QQ_REDIRECT_URI: import.meta.env.VITE_QQ_REDIRECT_URI,
+  VITE_API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
+  VITE_API_FALLBACK_URL: import.meta.env.VITE_API_FALLBACK_URL,
+  VITE_API_TIMEOUT: import.meta.env.VITE_API_TIMEOUT,
+  VITE_AI_MODEL: import.meta.env.VITE_AI_MODEL,
+  VITE_AI_TIMEOUT: import.meta.env.VITE_AI_TIMEOUT,
+  VITE_APP_NAME: import.meta.env.VITE_APP_NAME,
+  VITE_APP_VERSION: import.meta.env.VITE_APP_VERSION,
+  VITE_PAGE_SIZE: import.meta.env.VITE_PAGE_SIZE,
+  VITE_DEBUG_MODE: import.meta.env.VITE_DEBUG_MODE,
+  VITE_ENABLE_MOCK: import.meta.env.VITE_ENABLE_MOCK,
+  VITE_STORAGE_PREFIX: import.meta.env.VITE_STORAGE_PREFIX,
+  VITE_CACHE_EXPIRE: import.meta.env.VITE_CACHE_EXPIRE,
+  VITE_CACHE_DEFAULT_TTL: import.meta.env.VITE_CACHE_DEFAULT_TTL,
+  VITE_CACHE_LONG_TTL: import.meta.env.VITE_CACHE_LONG_TTL,
+  VITE_CACHE_MAX_SIZE: import.meta.env.VITE_CACHE_MAX_SIZE,
+  VITE_AVATAR_MAX_SIZE: import.meta.env.VITE_AVATAR_MAX_SIZE,
+  VITE_FILE_MAX_SIZE: import.meta.env.VITE_FILE_MAX_SIZE,
+  VITE_ALLOWED_IMAGE_TYPES: import.meta.env.VITE_ALLOWED_IMAGE_TYPES,
+  VITE_ENABLE_PK: import.meta.env.VITE_ENABLE_PK,
+  VITE_ENABLE_AI_DIAGNOSIS: import.meta.env.VITE_ENABLE_AI_DIAGNOSIS,
+  VITE_ENABLE_OFFLINE: import.meta.env.VITE_ENABLE_OFFLINE,
+  VITE_ENABLE_SYNC: import.meta.env.VITE_ENABLE_SYNC,
+  VITE_AUDIT_MODE: import.meta.env.VITE_AUDIT_MODE,
+  VITE_ENABLE_HEAVY_FEATURES: import.meta.env.VITE_ENABLE_HEAVY_FEATURES,
+  VITE_WS_DEV_URL: import.meta.env.VITE_WS_DEV_URL,
+  VITE_WS_PROD_URL: import.meta.env.VITE_WS_PROD_URL,
+  VITE_WS_MAX_RECONNECT: import.meta.env.VITE_WS_MAX_RECONNECT,
+  VITE_H5_BASE_URL: import.meta.env.VITE_H5_BASE_URL,
+  VITE_APP_SCHEME: import.meta.env.VITE_APP_SCHEME,
+  VITE_PING_URL: import.meta.env.VITE_PING_URL,
+  VITE_SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN,
+  VITE_ANALYTICS_ID: import.meta.env.VITE_ANALYTICS_ID,
+  VITE_CDN_URL: import.meta.env.VITE_CDN_URL,
+  VITE_DICEBEAR_BASE_URL: import.meta.env.VITE_DICEBEAR_BASE_URL,
+  VITE_ICONS8_BASE_URL: import.meta.env.VITE_ICONS8_BASE_URL,
+  VITE_QR_SERVER_BASE_URL: import.meta.env.VITE_QR_SERVER_BASE_URL
+};
+
+const PUBLIC_CLIENT_OBFUSCATION_KEY = 'exam-client-cache-v2';
+const PUBLIC_CLIENT_REQUEST_SIGN_SALT = 'exam-client-sign-v1';
+
+/**
+ * 安全获取客户端环境变量（兼容 SSR 和客户端）
  * @param {string} key - 环境变量键名
  * @param {any} defaultValue - 默认值
  * @returns {any} 环境变量值或默认值
  */
 function getEnv(key, defaultValue) {
-  // Vite 在构建时会将 import.meta.env 替换为具体对象
-  // 不要用 typeof import.meta !== 'undefined' 守卫，
-  // 因为 CJS 编译后会生成 require("url") 调用，在微信小程序环境中不存在该模块
-  const env = import.meta.env;
-  if (env) {
-    const value = env[key];
-    if (value !== undefined && value !== '') {
-      return value;
-    }
+  const value = CLIENT_ENV[key];
+  if (value !== undefined && value !== '') {
+    return value;
   }
   return defaultValue;
 }
@@ -250,19 +301,16 @@ const config = {
    */
   security: {
     /**
-     * 本地存储混淆密钥（非密码学安全，防止直接读取 localStorage 明文）
-     * ⚠️ 生产环境务必通过 VITE_OBFUSCATION_KEY 环境变量覆盖此默认值
-     * 配置方式：VITE_OBFUSCATION_KEY=your_custom_key
+     * 本地存储混淆种子。
+     * 注意：小程序客户端包内的任何值都不是秘密，只能用于降低明文可读性。
      */
-    // [v1.2.0 审核修复] 移除硬编码敏感 fallback，改为空字符串，生产环境必须通过环境变量配置
-    obfuscationKey: getEnv('VITE_OBFUSCATION_KEY', ''),
+    obfuscationKey: PUBLIC_CLIENT_OBFUSCATION_KEY,
 
     /**
-     * 请求签名盐值（FNV-1a 防篡改）
-     * 配置方式：VITE_REQUEST_SIGN_SALT=your_salt
+     * 请求签名公开兼容种子。
+     * 注意：这不是鉴权密钥，只用于保留旧 X-Request-Sign 协议的轻量防重放能力。
      */
-    // [v1.2.0 审核修复] 移除硬编码敏感 fallback，改为空字符串，生产环境必须通过环境变量配置
-    requestSignSalt: getEnv('VITE_REQUEST_SIGN_SALT', '')
+    requestSignSalt: PUBLIC_CLIENT_REQUEST_SIGN_SALT
   },
 
   // ==================== 存储配置 ====================
@@ -487,7 +535,7 @@ const config = {
     /**
      * 小程序 PK 对战路径
      */
-    miniProgramPkPath: '/pages/practice-sub/pk-battle',
+    miniProgramPkPath: '/pages/practice-sub/do-quiz',
 
     /**
      * 邀请码有效期（毫秒）
@@ -497,13 +545,11 @@ const config = {
     /**
      * 邀请码长度
      */
-    inviteCodeLength: 8,
+    inviteCodeLength: 8
 
     /**
-     * 邀请签名密钥
-     * 配置方式：SECRET_PLACEHOLDER
+     * 邀请签名必须在服务端完成，客户端只保留跳转和展示所需配置。
      */
-    inviteSecret: getEnv('VITE_INVITE_SECRET', '')
   },
 
   // ==================== P006: 网络检测配置 ====================
@@ -652,36 +698,16 @@ if (config.debug.enabled) {
     { key: 'VITE_API_BASE_URL', label: 'API基础地址', value: config.api.baseUrl },
     { key: 'VITE_WX_APP_ID', label: '微信AppID', value: config.wx.appId }
   ];
-  const inviteSecretKey = { key: 'VITE_INVITE_SECRET', label: '邀请签名密钥', value: config.deepLink.inviteSecret };
   // [v1.2.0 审核修复] 将安全密钥从 optional 提升为 required，防止空值运行
-  const optionalKeys = [
-    { key: 'VITE_QQ_APP_ID', label: 'QQ AppID', value: config.qq.appId },
-    { key: 'VITE_OBFUSCATION_KEY', label: '存储混淆密钥', value: config.security.obfuscationKey },
-    { key: 'VITE_REQUEST_SIGN_SALT', label: '请求签名盐值', value: config.security.requestSignSalt }
-  ];
+  const optionalKeys = [{ key: 'VITE_QQ_APP_ID', label: 'QQ AppID', value: config.qq.appId }];
   const missing = requiredKeys.filter((k) => !k.value);
   const warnings = optionalKeys.filter((k) => {
-    try {
-      return !import.meta.env[k.key];
-    } catch (_e) {
-      return true;
-    }
+    return !CLIENT_ENV[k.key];
   });
   if (missing.length > 0) {
     logger.error(`[Config] ❌ 缺少必需的环境变量: ${missing.map((k) => `${k.key}(${k.label})`).join(', ')}`);
   }
 
-  if (!inviteSecretKey.value) {
-    if (config.isProd) {
-      logger.error(
-        `[Config] ❌ 缺少必需的环境变量: ${inviteSecretKey.key}(${inviteSecretKey.label})。邀请链接签名与验签功能将不可用`
-      );
-    } else {
-      logger.warn(
-        `[Config] ⚠️ 未配置 ${inviteSecretKey.key}(${inviteSecretKey.label})。邀请链接签名与验签功能将不可用（开发环境可临时忽略）`
-      );
-    }
-  }
   if (config.isProd && warnings.length > 0) {
     logger.warn(`[Config] ⚠️ 生产环境建议配置: ${warnings.map((k) => `${k.key}(${k.label})`).join(', ')}。`);
   }

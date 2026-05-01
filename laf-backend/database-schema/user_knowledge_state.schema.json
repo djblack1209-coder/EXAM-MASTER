@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "user_knowledge_state",
+  "description": "用户在知识神经图谱上的掌握状态集合",
+  "type": "object",
+  "required": ["user_id", "node_id", "attempts", "color_state"],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "MongoDB ObjectId"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "用户 ID",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "node_id": {
+      "type": "string",
+      "description": "知识节点 ID",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "attempts": {
+      "type": "integer",
+      "description": "累计作答次数",
+      "default": 0,
+      "minimum": 0
+    },
+    "correct_count": {
+      "type": "integer",
+      "description": "累计答对次数",
+      "default": 0,
+      "minimum": 0
+    },
+    "correct_rate": {
+      "type": "number",
+      "description": "累计正确率，0-1",
+      "default": 0,
+      "minimum": 0,
+      "maximum": 1
+    },
+    "avg_time_ms": {
+      "type": "integer",
+      "description": "平均作答耗时毫秒",
+      "default": 0,
+      "minimum": 0
+    },
+    "recent_correct_streak": {
+      "type": "integer",
+      "description": "最近连续答对次数",
+      "default": 0,
+      "minimum": 0
+    },
+    "fsrs_retrievability": {
+      "type": ["number", "null"],
+      "description": "FSRS 可提取率估计，0-1",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "ability_theta": {
+      "type": ["number", "null"],
+      "description": "IRT/ELO 能力估计"
+    },
+    "mastery_level": {
+      "type": "string",
+      "description": "掌握层级",
+      "enum": ["unknown", "initial", "stable", "watch", "weak"],
+      "default": "unknown"
+    },
+    "color_state": {
+      "type": "string",
+      "description": "前端知识神经图颜色状态",
+      "enum": ["unknown", "primed", "strong", "watch", "weak"],
+      "default": "unknown"
+    },
+    "last_practiced_at": {
+      "type": ["integer", "null"],
+      "description": "最近练习时间戳"
+    },
+    "created_at": {
+      "type": "integer",
+      "description": "创建时间戳"
+    },
+    "updated_at": {
+      "type": "integer",
+      "description": "更新时间戳"
+    }
+  },
+  "indexes": [
+    { "key": { "user_id": 1, "node_id": 1 }, "unique": true, "name": "idx_user_node" },
+    { "key": { "user_id": 1, "color_state": 1 }, "name": "idx_user_color" },
+    { "key": { "user_id": 1, "updated_at": -1 }, "name": "idx_user_updated" },
+    { "key": { "node_id": 1, "color_state": 1 }, "name": "idx_node_color" }
+  ]
+}

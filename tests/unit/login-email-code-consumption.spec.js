@@ -111,16 +111,16 @@ vi.mock('../../laf-backend/functions/_shared/auth', () => ({
 }));
 
 describe('邮箱验证码注册安全链路', () => {
-  const originalJwtSecret = process.env.JWT_SECRET_PLACEHOLDER
+  const originalJwtSecret = process.env.JWT_SECRET;
 
   beforeEach(() => {
     mocked.resetScenario();
-    process.env.JWT_SECRET_PLACEHOLDER
+    process.env.JWT_SECRET = 'unit_test_secret';
     vi.resetModules();
   });
 
   afterAll(() => {
-    process.env.JWT_SECRET_PLACEHOLDER
+    process.env.JWT_SECRET = originalJwtSecret;
   });
 
   it('弱密码注册失败时不应先消耗验证码', async () => {

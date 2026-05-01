@@ -4,22 +4,22 @@ async function loadLoginHandler({ jwtSecret = 'unit_test_jwt', rateLimitAllowed 
   vi.resetModules();
 
   const originalEnv = {
-    JWT_SECRET_PLACEHOLDER
+    JWT_SECRET: process.env.JWT_SECRET,
     WX_APPID: process.env.WX_APPID,
-    WX_SECRET_PLACEHOLDER
+    WX_SECRET: process.env.WX_SECRET,
     WX_GZH_APPID: process.env.WX_GZH_APPID,
     WX_GZH_SECRET: process.env.WX_GZH_SECRET
   };
 
   if (jwtSecret) {
-    process.env.JWT_SECRET_PLACEHOLDER
+    process.env.JWT_SECRET = jwtSecret;
   } else {
-    delete process.env.JWT_SECRET_PLACEHOLDER
+    delete process.env.JWT_SECRET;
   }
   process.env.WX_APPID = process.env.WX_APPID || 'unit_wx_appid';
-  process.env.WX_SECRET_PLACEHOLDER
+  process.env.WX_SECRET = process.env.WX_SECRET || 'unit_wx_secret';
   process.env.WX_GZH_APPID = process.env.WX_GZH_APPID || 'unit_wx_gzh_appid';
-  process.env.SECRET_PLACEHOLDER
+  process.env.WX_GZH_SECRET = process.env.WX_GZH_SECRET || 'unit_wx_gzh_secret';
 
   const cloudMock = {
     default: {
@@ -60,16 +60,16 @@ async function loadLoginHandler({ jwtSecret = 'unit_test_jwt', rateLimitAllowed 
   const mod = await import('../../laf-backend/functions/login');
 
   const restoreEnv = () => {
-    if (originalEnv.JWT_SECRET_PLACEHOLDER
-    else process.env.JWT_SECRET_PLACEHOLDER
+    if (originalEnv.JWT_SECRET === undefined) delete process.env.JWT_SECRET;
+    else process.env.JWT_SECRET = originalEnv.JWT_SECRET;
     if (originalEnv.WX_APPID === undefined) delete process.env.WX_APPID;
     else process.env.WX_APPID = originalEnv.WX_APPID;
-    if (originalEnv.WX_SECRET_PLACEHOLDER
-    else process.env.WX_SECRET_PLACEHOLDER
+    if (originalEnv.WX_SECRET === undefined) delete process.env.WX_SECRET;
+    else process.env.WX_SECRET = originalEnv.WX_SECRET;
     if (originalEnv.WX_GZH_APPID === undefined) delete process.env.WX_GZH_APPID;
     else process.env.WX_GZH_APPID = originalEnv.WX_GZH_APPID;
-    if (originalEnv.SECRET_PLACEHOLDER
-    else process.env.SECRET_PLACEHOLDER
+    if (originalEnv.WX_GZH_SECRET === undefined) delete process.env.WX_GZH_SECRET;
+    else process.env.WX_GZH_SECRET = originalEnv.WX_GZH_SECRET;
   };
 
   return { handler: mod.default, restoreEnv };
@@ -80,7 +80,7 @@ describe('[安全审计] login 错误响应形态一致性', () => {
     vi.clearAllMocks();
   });
 
-  it('缺少 JWT_SECRET_PLACEHOLDER
+  it('缺少 JWT_SECRET 时应返回 500 且 success=false', async () => {
     const { handler, restoreEnv } = await loadLoginHandler({ jwtSecret: '' });
 
     try {

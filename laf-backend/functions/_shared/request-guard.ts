@@ -22,8 +22,15 @@ export const AUDIT_MODE_ENABLED =
     .trim()
     .toLowerCase() === 'true';
 
-/** 请求签名盐值（前后端共享，用于 FNV-1a 签名计算） */
-export const REQUEST_SIGN_SALT = process.env.REQUEST_SIGN_SALT || process.env.VITE_REQUEST_SIGN_SALT || '';
+/**
+ * 请求签名盐值。
+ *
+ * 说明：小程序客户端中的 X-Request-Sign 只能作为轻量防重放/兼容信号，
+ * 不能承载真正秘密。生产安全边界仍应依赖登录态、服务端权限和审计令牌。
+ */
+const PUBLIC_CLIENT_REQUEST_SIGN_SALT = 'exam-client-sign-v1';
+export const REQUEST_SIGN_SALT = process.env.REQUEST_SIGN_SALT || '';
+const ACCEPTED_REQUEST_SIGN_SALTS = [REQUEST_SIGN_SALT, PUBLIC_CLIENT_REQUEST_SIGN_SALT].filter(Boolean);
 
 /** 审计令牌 / 请求签名最大有效期：5 分钟 */
 export const AUDIT_TOKEN_MAX_AGE_MS = 5 * 60 * 1000;
@@ -83,8 +90,7 @@ export function validateRequestSign(path: string, timestampHeader: string, reque
     return false;
   }
 
-  // H029 FIX: SALT 未配置时拒绝签名校验，而非放行
-  if (!REQUEST_SIGN_SALT) {
+  if (ACCEPTED_REQUEST_SIGN_SALTS.length === 0) {
     if (!hasLoggedMissingSalt) {
       hasLoggedMissingSalt = true;
       logger.error('[Audit] REQUEST_SIGN_SALT 未配置，拒绝 X-Request-Sign 校验');
@@ -92,15 +98,15 @@ export function validateRequestSign(path: string, timestampHeader: string, reque
     return false;
   }
 
-  // FNV-1a 哈希计算
-  const raw = `${path}:${timestamp}:${REQUEST_SIGN_SALT}`;
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < raw.length; i++) {
-    hash ^= raw.charCodeAt(i);
-    hash = (hash * 0x01000193) >>> 0;
-  }
-
-  return requestSign === hash.toString(36);
+  return ACCEPTED_REQUEST_SIGN_SALTS.some((salt) => {
+    const raw = `${path}:${timestamp}:${salt}`;
+    let hash = 0x811c9dc5;
+    for (let i = 0; i < raw.length; i++) {
+      hash ^= raw.charCodeAt(i);
+      hash = (hash * 0x01000193) >>> 0;
+    }
+    return requestSign === hash.toString(36);
+  });
 }
 
 // ==================== 审计令牌校验 ====================
@@ -109,7 +115,7 @@ export function validateRequestSign(path: string, timestampHeader: string, reque
  * 验证审计令牌（HMAC-SHA256 签名）
  * 令牌格式：timestamp_hash
  * - timestamp: 生成时的毫秒时间戳
- * - hash: 以 JWT_SECRET_PLACEHOLDER
+ * - hash: 以 JWT_SECRET 为密钥对 timestamp 做 HMAC-SHA256 的 hex 摘要
  *
  * @param token  完整的审计令牌字符串
  * @returns 令牌是否有效
@@ -131,11 +137,11 @@ export function validateAuditToken(token: string): boolean {
       return false;
     }
 
-    // HMAC 签名验证（使用 JWT_SECRET_PLACEHOLDER
-    // P0修复：JWT_SECRET_PLACEHOLDER
-    const secret = process.env.JWT_SECRET_PLACEHOLDER
+    // HMAC 签名验证（使用 JWT_SECRET 作为密钥）
+    // P0修复：JWT_SECRET 为空时拒绝验证，而非静默跳过
+    const secret = process.env.JWT_SECRET || '';
     if (!secret) {
-      logger.error('[Audit] JWT_SECRET_PLACEHOLDER
+      logger.error('[Audit] JWT_SECRET 未配置，拒绝审计令牌验证');
       return false;
     }
 

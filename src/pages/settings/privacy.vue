@@ -29,9 +29,6 @@
             2. 学习数据：您的刷题记录、错题本、收藏、学习计划等，用于提供个性化学习服务。
           </text>
           <text class="section-text"> 3. 设备信息：设备型号、操作系统版本、屏幕分辨率，用于适配显示和优化性能。 </text>
-          <text class="section-text"> 4. 相机与相册：仅在您主动使用拍照搜题、证件照换底色或更换头像功能时调用。 </text>
-          <text class="section-text"> 5. 麦克风：仅在您主动使用智能语音对话功能时调用。 </text>
-          <text class="section-text"> 6. 剪贴板：仅在您主动复制分享内容或题目信息时使用。 </text>
         </view>
 
         <view class="section">
@@ -132,9 +129,9 @@ function goBack() {
   padding-top: calc(env(safe-area-inset-top, 0px) + 20rpx);
   height: calc(constant(safe-area-inset-top) + 100rpx);
   height: calc(env(safe-area-inset-top, 0px) + 100rpx);
-  background-color: var(--em3d-card-bg);
-  border-bottom: 1rpx solid var(--em3d-border);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
+  background-color: #ffffff;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 .nav-back {
   width: 72rpx;
@@ -143,18 +140,15 @@ function goBack() {
   align-items: center;
   justify-content: center;
   border-radius: 999rpx;
-  background: rgba(255, 255, 255, 0.62);
-  border: 1rpx solid rgba(255, 255, 255, 0.42);
-  box-shadow: 0 var(--em3d-depth-sm) 0 var(--em3d-border-shadow);
+  background: #f5f7fa;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
 }
 .back-icon {
-  color: var(--text-main);
+  color: #1a1d26;
   font-size: 36rpx;
 }
 .dark-mode .nav-back {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 42%),
-    linear-gradient(160deg, rgba(18, 20, 28, 0.94) 0%, rgba(10, 12, 18, 0.9) 100%);
+  background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.1);
 }
 .dark-mode .back-icon {
@@ -191,9 +185,9 @@ function goBack() {
   margin-bottom: 24rpx;
   padding: 26rpx 24rpx;
   border-radius: 28rpx;
-  background-color: var(--em3d-card-bg);
-  border: 1rpx solid rgba(255, 255, 255, 0.48);
-  box-shadow: 0 var(--em3d-depth-md) 0 var(--em3d-border-shadow);
+  background-color: #ffffff;
+  border: 1rpx solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 .dark-mode .section {
   background:

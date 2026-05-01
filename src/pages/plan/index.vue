@@ -210,11 +210,11 @@
         </view>
 
         <view v-if="plan.tasks && plan.tasks.length > 0" class="task-stats">
-          <text class="ta<REDACTED_SECRET>"> 任务进度 </text>
-          <view class="ta<REDACTED_SECRET>">
-            <view class="ta<REDACTED_SECRET>" :style="{ width: (plan.progress || 0) + '%' }" />
+          <text class="task-stats-label"> 任务进度 </text>
+          <view class="task-progress-bar">
+            <view class="task-progress-fill" :style="{ width: (plan.progress || 0) + '%' }" />
           </view>
-          <text class="ta<REDACTED_SECRET>">
+          <text class="task-stats-text">
             {{ plan.tasks ? plan.tasks.reduce((n, t) => n + (t.completed ? 1 : 0), 0) : 0 }}/{{
               plan.tasks ? plan.tasks.length : 0
             }}
@@ -378,7 +378,7 @@ function startAIPlanDay(day) {
   if (day.tasks && day.tasks.length > 0) {
     const firstTask = day.tasks[0];
     if (firstTask.type === 'review') {
-      safeNavigateTo('/pages/practice-sub/smart-review');
+      safeNavigateTo('/pages/practice-sub/do-quiz?mode=smart_review');
     } else {
       safeNavigateTo('/pages/practice-sub/do-quiz');
     }
@@ -387,7 +387,7 @@ function startAIPlanDay(day) {
 
 /** 创建计划 */
 function createPlan() {
-  requireLogin(() => safeNavigateTo('/pages/plan/create'), { message: '请先登录后创建计划' });
+  requireLogin(() => safeNavigateTo('/pages/practice/index'), { message: '请先登录后创建计划' });
 }
 
 /** 返回上一页 */
@@ -883,7 +883,7 @@ function deletePlan(planId) {
   border-radius: 24rpx;
 }
 
-.ta<REDACTED_SECRET> {
+.task-stats-label {
   display: block;
   margin-bottom: 12rpx;
   font-size: 24rpx;
@@ -891,7 +891,7 @@ function deletePlan(planId) {
   color: var(--text-main);
 }
 
-.ta<REDACTED_SECRET> {
+.task-progress-bar {
   height: 10rpx;
   margin-bottom: 10rpx;
   border-radius: 999rpx;
@@ -899,14 +899,14 @@ function deletePlan(planId) {
   overflow: hidden;
 }
 
-.ta<REDACTED_SECRET> {
+.task-progress-fill {
   height: 100%;
   border-radius: 999rpx;
   background: var(--em3d-primary-light);
   transition: width 0.3s ease;
 }
 
-.ta<REDACTED_SECRET> {
+.task-stats-text {
   font-size: 22rpx;
   color: var(--text-sub);
 }

@@ -27,14 +27,9 @@ try {
   // 注入 __usePrivacyCheck__（开启隐私保护弹窗）
   appJson.__usePrivacyCheck__ = true;
 
-  // 注入 permission（相机用于拍照搜题，相册用于保存海报）
+  // 注入 permission — MVP 版本不使用相机/相册，不声明避免审核被拒
+  // 未来新增拍照搜题/保存海报功能时再添加对应权限
   appJson.permission = appJson.permission || {};
-  appJson.permission['scope.camera'] = {
-    desc: '用于拍照搜题功能'
-  };
-  appJson.permission['scope.writePhotosAlbum'] = {
-    desc: '用于保存学习海报到相册'
-  };
 
   writeFileSync(appJsonPath, JSON.stringify(appJson, null, 2), 'utf-8');
   console.log('✅ app.json: permission + requiredPrivateInfos + __usePrivacyCheck__ 注入成功');
