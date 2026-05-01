@@ -35,8 +35,18 @@
               <text class="signal-label">公共课轨道</text>
             </view>
           </view>
-          <view v-if="hasBank" class="practice-hero-action" hover-class="btn-hover" @tap="goDoQuiz">
-            <text class="practice-hero-action-text">进入限时训练</text>
+
+          <view class="practice-command-row">
+            <view
+              class="practice-command primary"
+              hover-class="btn-hover"
+              @tap="hasBank ? goDoQuiz() : chooseImportSource()"
+            >
+              <text>{{ hasBank ? '进入限时训练' : '导入资料解析' }}</text>
+            </view>
+            <view class="practice-command secondary" hover-class="btn-hover" @tap="chooseImportSource">
+              <text>题库发布台</text>
+            </view>
           </view>
         </view>
       </view>
@@ -699,7 +709,8 @@ export default {
     initLayout() {
       try {
         const info = uni.getWindowInfo();
-        this.statusBarHeight = info.statusBarHeight || 44;
+        const statusBarHeight = Number(info.statusBarHeight || 0);
+        this.statusBarHeight = statusBarHeight > 0 ? statusBarHeight : 16;
         const safeBottom = info.safeAreaInsets?.bottom || 0;
         this.tabBarHeight = 60 + 12 + safeBottom;
       } catch (_e) {
@@ -777,9 +788,7 @@ $spacing-card: 32rpx;
 $spacing-section: 24rpx;
 
 .page {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #fcfdf8 0%, $bg 42%, #eff3ed 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  @include em-mobile-canvas;
 }
 
 /* 导航栏 */
@@ -789,8 +798,7 @@ $spacing-section: 24rpx;
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(250, 252, 248, 0.92);
-  border-bottom: 1rpx solid rgba(22, 51, 0, 0.06);
+  @include em-mobile-topbar;
 }
 .nav-content {
   height: 44px;
@@ -818,13 +826,7 @@ $spacing-section: 24rpx;
 }
 
 .practice-hero {
-  position: relative;
-  overflow: hidden;
-  border-radius: 36rpx;
-  padding: 36rpx;
-  background: linear-gradient(145deg, #ffffff 0%, #f7f9f3 55%, #edf4ea 100%);
-  border: 1rpx solid rgba(22, 51, 0, 0.07);
-  box-shadow: 0 20rpx 56rpx rgba(20, 32, 23, 0.09);
+  @include em-mobile-deep-panel(38rpx, 36rpx);
 }
 
 .practice-hero::after {
@@ -832,17 +834,17 @@ $spacing-section: 24rpx;
   position: absolute;
   right: -72rpx;
   top: -88rpx;
-  width: 240rpx;
-  height: 240rpx;
+  width: 300rpx;
+  height: 300rpx;
   border-radius: 50%;
-  background: rgba(159, 232, 112, 0.22);
+  background: radial-gradient(circle, rgba(117, 221, 255, 0.2) 0%, rgba(117, 221, 255, 0) 68%);
 }
 
 .practice-kicker {
   position: relative;
   z-index: 1;
   display: block;
-  color: rgba(22, 51, 0, 0.48);
+  color: rgba(255, 255, 255, 0.48);
   font-size: 18rpx;
   font-weight: 900;
   letter-spacing: 2.2rpx;
@@ -853,7 +855,7 @@ $spacing-section: 24rpx;
   z-index: 1;
   display: block;
   margin-top: 14rpx;
-  color: $primary-deep;
+  color: rgba(255, 255, 255, 0.94);
   font-size: 52rpx;
   font-weight: 900;
   line-height: 1.08;
@@ -865,7 +867,7 @@ $spacing-section: 24rpx;
   display: block;
   max-width: 590rpx;
   margin-top: 18rpx;
-  color: $text-sub;
+  color: rgba(255, 255, 255, 0.66);
   font-size: 26rpx;
   line-height: 1.55;
 }
@@ -881,8 +883,8 @@ $spacing-section: 24rpx;
   flex: 1;
   padding: 18rpx 14rpx;
   border-radius: 22rpx;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1rpx solid rgba(22, 51, 0, 0.06);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.12);
 }
 
 .practice-signal + .practice-signal {
@@ -890,8 +892,9 @@ $spacing-section: 24rpx;
 }
 
 .signal-value {
+  @include em-mobile-number;
   display: block;
-  color: $primary-deep;
+  color: #ffffff;
   font-size: 34rpx;
   font-weight: 900;
   line-height: 1;
@@ -900,26 +903,40 @@ $spacing-section: 24rpx;
 .signal-label {
   display: block;
   margin-top: 8rpx;
-  color: rgba(22, 51, 0, 0.55);
+  color: rgba(255, 255, 255, 0.56);
   font-size: 21rpx;
   font-weight: 600;
 }
 
-.practice-hero-action {
+.practice-command-row {
   position: relative;
   z-index: 1;
-  align-self: flex-start;
+  display: flex;
+  align-items: center;
   margin-top: 30rpx;
-  padding: 22rpx 32rpx;
-  border-radius: 999rpx;
-  background: $primary-deep;
-  box-shadow: 0 14rpx 30rpx rgba(22, 51, 0, 0.18);
 }
 
-.practice-hero-action-text {
-  color: #ffffff;
-  font-size: 28rpx;
-  font-weight: 800;
+.practice-command {
+  @include em-mobile-pressable;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72rpx;
+  padding: 22rpx 32rpx;
+  border-radius: 999rpx;
+  font-size: 27rpx;
+  font-weight: 900;
+}
+
+.practice-command.primary {
+  @include em-mobile-primary-action;
+}
+
+.practice-command.secondary {
+  margin-left: 14rpx;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.86);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.12);
 }
 
 .release-guard-card {
@@ -1006,14 +1023,7 @@ $spacing-section: 24rpx;
   justify-content: space-between;
   padding: 30rpx;
   border-radius: 30rpx;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.94) 0%,
-    rgba(247, 250, 244, 0.9) 56%,
-    rgba(236, 246, 231, 0.88) 100%
-  );
-  border: 1rpx solid rgba(20, 32, 23, 0.07);
-  box-shadow: 0 18rpx 46rpx rgba(20, 32, 23, 0.08);
+  @include em-mobile-glass-surface(30rpx, 30rpx);
 }
 
 .focus-card::before {
@@ -1135,7 +1145,8 @@ $spacing-section: 24rpx;
   display: flex;
   padding: 8rpx;
   border-radius: 28rpx;
-  background: rgba(20, 32, 23, 0.06);
+  background: rgba(255, 255, 255, 0.38);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.54);
 }
 
 .subject-tab {
@@ -1151,7 +1162,7 @@ $spacing-section: 24rpx;
 }
 
 .subject-tab.active {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.9);
   color: $primary-deep;
   box-shadow: 0 10rpx 24rpx rgba(20, 32, 23, 0.08);
 }
@@ -1164,14 +1175,11 @@ $spacing-section: 24rpx;
 }
 
 .track-pill {
+  @include em-mobile-glass-surface(26rpx, 18rpx 20rpx);
   display: inline-flex;
   align-items: center;
   min-width: 212rpx;
   margin-right: 14rpx;
-  padding: 18rpx 20rpx;
-  border-radius: 26rpx;
-  background: #ffffff;
-  box-shadow: 0 8rpx 24rpx rgba(20, 32, 23, 0.06);
 }
 
 .track-pill.active {
@@ -1236,11 +1244,7 @@ $spacing-section: 24rpx;
 
 .knowledge-map-panel {
   overflow: hidden;
-  border-radius: 30rpx;
-  padding: 30rpx 28rpx 24rpx;
-  background: linear-gradient(180deg, #ffffff 0%, #f6f9f3 100%);
-  border: 1rpx solid rgba(20, 32, 23, 0.07);
-  box-shadow: 0 18rpx 46rpx rgba(20, 32, 23, 0.08);
+  @include em-mobile-glass-surface(30rpx, 30rpx 28rpx 24rpx);
 }
 
 .knowledge-map-head {
@@ -1429,11 +1433,7 @@ $spacing-section: 24rpx;
 }
 
 .card {
-  background: $card-bg;
-  border-radius: $radius-lg;
-  padding: $spacing-card;
-  border: 1rpx solid rgba(22, 51, 0, 0.05);
-  box-shadow: 0 10rpx 30rpx rgba(22, 51, 0, 0.06);
+  @include em-mobile-glass-surface($radius-lg, $spacing-card);
 }
 
 /* 题库列表 */
@@ -1443,6 +1443,7 @@ $spacing-section: 24rpx;
 }
 
 .bank-card {
+  @include em-mobile-pressable;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1480,6 +1481,7 @@ $spacing-section: 24rpx;
 }
 
 .bank-btn {
+  @include em-mobile-pressable;
   padding: 12rpx 28rpx;
   border-radius: $radius-sm;
   flex-shrink: 0;
@@ -1506,10 +1508,7 @@ $spacing-section: 24rpx;
 }
 
 .empty-track-card {
-  padding: 32rpx;
-  border-radius: $radius-lg;
-  background: #ffffff;
-  box-shadow: inset 0 0 0 1rpx rgba(20, 32, 23, 0.06);
+  @include em-mobile-glass-surface($radius-lg, 32rpx);
 }
 
 .empty-track-title {
@@ -1560,20 +1559,20 @@ $spacing-section: 24rpx;
 }
 
 .empty-track-action {
+  @include em-mobile-primary-action;
+  @include em-mobile-pressable;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 72rpx;
   margin-top: 22rpx;
   border-radius: 20rpx;
-  background: $primary-deep;
-  color: #ffffff;
   font-size: 25rpx;
   font-weight: 850;
 }
 
 .empty-track-action text {
-  color: #ffffff;
+  color: $primary-deep;
 }
 
 .pending-list {
@@ -1616,6 +1615,7 @@ $spacing-section: 24rpx;
 }
 
 .status-text {
+  @include em-mobile-number;
   font-size: 30rpx;
   font-weight: 600;
   color: $text-main;
@@ -1652,6 +1652,7 @@ $spacing-section: 24rpx;
 
 /* 按钮 */
 .action-btn {
+  @include em-mobile-pressable;
   border-radius: $radius-sm;
   padding: 24rpx;
   display: flex;
@@ -1661,19 +1662,18 @@ $spacing-section: 24rpx;
 }
 
 .primary-btn {
-  background: $primary-deep;
-  box-shadow: 0 14rpx 30rpx rgba(22, 51, 0, 0.18);
+  @include em-mobile-primary-action;
 }
 
 .secondary-btn {
-  background: $primary-light;
-  border: 1rpx solid rgba(22, 51, 0, 0.08);
+  background: rgba(255, 255, 255, 0.56);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.68);
 }
 
 .action-btn-text {
   font-size: 32rpx;
   font-weight: 600;
-  color: #ffffff;
+  color: $primary-deep;
 }
 
 .secondary-text {

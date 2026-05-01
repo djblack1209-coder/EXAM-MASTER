@@ -73,7 +73,10 @@ function createNetworkUniCompat() {
 }
 
 const globalRef = typeof globalThis !== 'undefined' ? globalThis : {};
-const uni = globalRef['uni'] || createNetworkUniCompat();
+const uni = {
+  ...createNetworkUniCompat(),
+  ...(globalRef['uni'] || {})
+};
 
 /**
  * 网络类型定义

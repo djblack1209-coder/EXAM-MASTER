@@ -179,7 +179,8 @@ export default {
     initLayout() {
       try {
         const info = uni.getWindowInfo();
-        this.statusBarHeight = info.statusBarHeight || 44;
+        const statusBarHeight = Number(info.statusBarHeight || 0);
+        this.statusBarHeight = statusBarHeight > 0 ? statusBarHeight : 16;
         const safeBottom = info.safeAreaInsets?.bottom || 0;
         this.tabBarHeight = 60 + 12 + safeBottom;
       } catch (_e) {
@@ -249,9 +250,7 @@ $spacing-card: 32rpx;
 $spacing-section: 24rpx;
 
 .page {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #fafcf8 0%, $bg 44%, #eef5f0 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  @include em-mobile-canvas;
 }
 
 /* 导航栏 */
@@ -261,8 +260,7 @@ $spacing-section: 24rpx;
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(250, 252, 248, 0.92);
-  border-bottom: 1rpx solid rgba(22, 51, 0, 0.06);
+  @include em-mobile-topbar;
 }
 .nav-content {
   height: 44px;
@@ -287,11 +285,7 @@ $spacing-section: 24rpx;
 }
 
 .card {
-  background: $card-bg;
-  border-radius: $radius-lg;
-  padding: $spacing-card;
-  border: 1rpx solid rgba(22, 51, 0, 0.05);
-  box-shadow: 0 10rpx 30rpx rgba(22, 51, 0, 0.06);
+  @include em-mobile-glass-surface($radius-lg, $spacing-card);
 }
 
 /* 用户信息 */
@@ -301,13 +295,8 @@ $spacing-section: 24rpx;
 }
 
 .profile-command-card {
+  @include em-mobile-glass-surface(36rpx, 34rpx);
   width: 100%;
-  box-sizing: border-box;
-  padding: 34rpx;
-  border-radius: 36rpx;
-  background: linear-gradient(145deg, #ffffff 0%, #f3fdeb 100%);
-  border: 1rpx solid rgba(22, 51, 0, 0.07);
-  box-shadow: 0 20rpx 54rpx rgba(22, 51, 0, 0.1);
 }
 
 .profile-top {
@@ -406,6 +395,7 @@ $spacing-section: 24rpx;
 }
 
 .stat-val {
+  @include em-mobile-number;
   font-size: 40rpx;
   font-weight: 700;
   color: $text-main;
@@ -430,6 +420,7 @@ $spacing-section: 24rpx;
 }
 
 .menu-item {
+  @include em-mobile-pressable;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -461,7 +452,9 @@ $spacing-section: 24rpx;
   flex-direction: column;
   align-items: center;
   align-items: flex-start;
-  background: linear-gradient(135deg, $primary-light 0%, $card-bg 100%);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.82) 0%, rgba(234, 251, 226, 0.74) 100%),
+    rgba(255, 255, 255, 0.68);
   padding: 40rpx $spacing-card;
 }
 
@@ -480,12 +473,10 @@ $spacing-section: 24rpx;
 
 /* 退出登录 */
 .logout-btn {
-  padding: 24rpx;
+  @include em-mobile-glass-surface($radius-sm, 24rpx);
+  @include em-mobile-pressable;
   display: flex;
   justify-content: center;
-  border-radius: $radius-sm;
-  background: $card-bg;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .logout-text {

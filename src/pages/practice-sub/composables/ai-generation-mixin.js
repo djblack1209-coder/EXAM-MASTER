@@ -4,6 +4,7 @@
  * 包含：文件导入、智能生成、题库持久化与备份
  */
 import { storageService } from '@/services/storageService.js';
+import { createImportRecord, updateImportRecordStatus } from '@/services/resource-intake-contract.js';
 import { logger } from '@/utils/logger.js';
 import { safeNavigateTo } from '@/utils/safe-navigate';
 // [勾] 以下模块从分包本地引用，避免打入主包
@@ -152,30 +153,17 @@ export const aiGenerationMixin = {
 
     saveUploadRecord(record) {
       const records = storageService.get(this.uploadHistoryKey, []);
-      const id = `${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      records.unshift({
-        id,
-        name: record.name,
-        size: record.size || 0,
-        date: new Date().toISOString().slice(0, 10),
-        source: record.source,
-        status: 'ready'
-      });
+      const nextRecord = createImportRecord(record);
+      records.unshift(nextRecord);
       storageService.saveDebounced(this.uploadHistoryKey, records);
-      return id;
+      return nextRecord.id;
     },
 
     updateUploadRecordStatus(status) {
       if (!this.currentUploadId) return;
       const records = storageService.get(this.uploadHistoryKey, []);
-      const index = records.findIndex((item) => item.id === this.currentUploadId);
-      if (index === -1) return;
-      records[index] = {
-        ...records[index],
-        status,
-        updatedAt: Date.now()
-      };
-      storageService.saveDebounced(this.uploadHistoryKey, records);
+      const nextRecords = updateImportRecordStatus(records, this.currentUploadId, status);
+      storageService.saveDebounced(this.uploadHistoryKey, nextRecords);
     },
 
     handleUpload(file) {
