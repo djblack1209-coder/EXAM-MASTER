@@ -91,6 +91,7 @@ import { logger } from '@/utils/logger.js';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 // 文件处理工具
 import { fileHandler } from './file-handler.js';
+import { useResourceStore } from '@/stores/modules/resource.js';
 // F019: storageService
 import storageService from '@/services/storageService.js';
 import BaseEmpty from '@/components/base/base-empty/base-empty.vue';
@@ -100,6 +101,7 @@ import BaseIcon from '@/components/base/base-icon/base-icon.vue';
 const isDark = ref(false);
 const files = ref([]);
 const isPageLoading = ref(true); // F018: 页面加载状态
+const resourceStore = useResourceStore();
 
 // --- 非响应式实例变量 ---
 let _themeHandler = null;
@@ -136,7 +138,7 @@ onUnload(() => {
 function loadFiles() {
   logger.log('[文件管理] [搜索] 开始加载文件列表');
   try {
-    let savedFiles = storageService.get('imported_files', []);
+    let savedFiles = resourceStore.listImportRecords();
 
     // E005: 仅首次尝试备份恢复，避免每次 onShow 都执行
     if (savedFiles.length === 0 && !_recoveryAttempted) {
@@ -148,8 +150,7 @@ function loadFiles() {
           const restored = JSON.parse(backup);
           if (Array.isArray(restored) && restored.length > 0) {
             logger.log('[文件管理] [恢复] 从备份恢复文件列表:', restored.length, '个文件');
-            storageService.save('imported_files', restored);
-            savedFiles = restored;
+            savedFiles = resourceStore.replaceImportRecords(restored);
             toast.success('已从备份恢复文件列表', 2000);
           }
         }
@@ -265,8 +266,8 @@ function deleteFile(index) {
     success: (res) => {
       if (res.confirm) {
         const file = files.value[index];
-        files.value.splice(index, 1);
-        storageService.save('imported_files', files.value);
+        resourceStore.removeImportRecord(file.id);
+        files.value = resourceStore.listImportRecords();
 
         // 如果删除的文件正在生成，停止生成并清理题库
         if (file.status === 'generating') {
@@ -295,8 +296,8 @@ function clearAll() {
     content: '确定要删除所有文件吗？此操作不可恢复。',
     success: (res) => {
       if (res.confirm) {
+        resourceStore.clearImportRecords();
         files.value = [];
-        storageService.save('imported_files', []);
         toast.success('已清空所有文件');
       }
     }

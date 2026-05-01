@@ -17,6 +17,34 @@
       :style="{ paddingTop: statusBarHeight + 44 + 'px' }"
       @scrolltolower="loadMore"
     >
+      <view class="intake-panel">
+        <view class="intake-copy">
+          <text class="intake-kicker">RESOURCE INTAKE</text>
+          <text class="intake-title">资料导入与题库发布台</text>
+          <text class="intake-desc">上传解析、清洗进度和公开发布状态统一收口，页面只消费可审计结果。</text>
+        </view>
+        <view class="intake-metrics">
+          <view class="intake-metric">
+            <text class="metric-value">{{ intakeSnapshot.imports.total }}</text>
+            <text class="metric-label">导入记录</text>
+          </view>
+          <view class="intake-metric">
+            <text class="metric-value">{{ intakeSnapshot.bank.totalQuestions }}</text>
+            <text class="metric-label">本地题量</text>
+          </view>
+          <view class="intake-metric">
+            <text class="metric-value">{{ releaseCoverageText }}</text>
+            <text class="metric-label">发布覆盖</text>
+          </view>
+        </view>
+        <view class="intake-status-row">
+          <view class="intake-status-pill" :class="'status-' + intakeSnapshot.generation.status">
+            <text>{{ intakeSnapshot.generation.label }}</text>
+          </view>
+          <text class="intake-status-copy">{{ latestImportText }}</text>
+        </view>
+      </view>
+
       <!-- 题库总览 -->
       <view class="stats-header">
         <text class="stats-total">共 {{ totalCount }} 题</text>
@@ -51,7 +79,7 @@
       <view v-if="!loading && categories.length === 0" class="empty-state">
         <BaseIcon name="book" :size="56" />
         <text class="empty-text">暂无题库数据</text>
-        <text class="empty-sub">请先通过「导入数据」添加题目</text>
+        <text class="empty-sub">资料入口已统一到题库发布台，清洗通过后才进入训练流</text>
       </view>
 
       <!-- 筛选栏 -->
@@ -123,9 +151,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { safeNavigateBack } from '@/utils/safe-navigate';
 import { useReviewStore } from '@/stores/modules/review.js';
+import { useResourceStore } from '@/stores/modules/resource.js';
+import { formatIntakeStatusLabel } from '@/services/resource-intake-contract.js';
 import { getStatusBarHeight } from '@/utils/core/system.js';
 import storageService from '@/services/storageService.js';
 import { toast } from '@/utils/toast.js';
@@ -144,6 +174,7 @@ onBeforeUnmount(() => {
 });
 
 const reviewStore = useReviewStore();
+const resourceStore = useResourceStore();
 
 const statusBarHeight = ref(getStatusBarHeight());
 const loading = ref(false);
@@ -155,6 +186,13 @@ const questionList = ref([]);
 const currentPage = ref(1);
 const pageSize = 20;
 const hasMore = ref(false);
+const intakeSnapshot = computed(() => resourceStore.intakeSnapshot);
+const releaseCoverageText = computed(() => `${Math.round(intakeSnapshot.value.release.coverageRate * 100)}%`);
+const latestImportText = computed(() => {
+  const active = intakeSnapshot.value.generation.activeRecord;
+  if (!active) return '暂无导入任务';
+  return `${active.name} · ${formatIntakeStatusLabel(active.status)}`;
+});
 
 const difficultyOptions = [
   { label: '全部', value: '' },
@@ -286,6 +324,7 @@ async function startPractice() {
 }
 
 onMounted(() => {
+  resourceStore.refreshIntakeSnapshot();
   loadStats();
 });
 </script>
@@ -329,6 +368,111 @@ onMounted(() => {
 
 .scroll-body {
   min-height: 100vh;
+}
+.intake-panel {
+  position: relative;
+  margin: 24rpx;
+  padding: 34rpx 32rpx;
+  border-radius: 34rpx;
+  background: linear-gradient(135deg, rgba(20, 71, 45, 0.96), rgba(13, 45, 63, 0.92));
+  box-shadow: 0 22rpx 46rpx rgba(12, 42, 30, 0.2);
+  overflow: hidden;
+}
+.intake-panel::after {
+  content: '';
+  position: absolute;
+  right: -80rpx;
+  top: -92rpx;
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: 999rpx;
+  background: radial-gradient(circle, rgba(143, 232, 191, 0.24), rgba(143, 232, 191, 0));
+}
+.intake-copy,
+.intake-metrics,
+.intake-status-row {
+  position: relative;
+  z-index: 1;
+}
+.intake-kicker {
+  display: block;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 2rpx;
+}
+.intake-title {
+  display: block;
+  margin-top: 12rpx;
+  color: #ffffff;
+  font-size: 42rpx;
+  font-weight: 900;
+  line-height: 1.15;
+}
+.intake-desc {
+  display: block;
+  margin-top: 14rpx;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+.intake-metrics {
+  display: flex;
+  margin-top: 28rpx;
+}
+.intake-metric {
+  flex: 1;
+  padding: 18rpx 14rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.14);
+}
+.intake-metric + .intake-metric {
+  margin-left: 12rpx;
+}
+.metric-value {
+  display: block;
+  color: #ffffff;
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1;
+}
+.metric-label {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 21rpx;
+  font-weight: 700;
+}
+.intake-status-row {
+  display: flex;
+  align-items: center;
+  margin-top: 22rpx;
+}
+.intake-status-pill {
+  flex-shrink: 0;
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(158, 232, 112, 0.18);
+  color: #d8ffc5;
+  font-size: 22rpx;
+  font-weight: 800;
+}
+.intake-status-pill.status-failed {
+  background: rgba(255, 97, 97, 0.18);
+  color: #ffd2d2;
+}
+.intake-status-pill.status-paused,
+.intake-status-pill.status-ready {
+  background: rgba(103, 196, 255, 0.17);
+  color: #c8efff;
+}
+.intake-status-copy {
+  min-width: 0;
+  margin-left: 14rpx;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 23rpx;
+  line-height: 1.4;
 }
 .stats-header {
   padding: 24rpx 32rpx 16rpx;

@@ -101,7 +101,7 @@ Source Manifest 源清单
 - `scripts/baidu/incremental_sync.py`：扫描 `/apps/考研大师/raw-pdf/` 或绝对网盘路径如 `/EXAM-MASTER/考研历年真题/01.考研政治`；支持多个 `--scan-dir` 一次合并，避免分批扫描时把其他目录误标为 missing；可合并 `--group-export` 导出的群文件清单，并生成增量处理计划。
 - `scripts/baidu/cleaning_queue.py`：读取 Source Manifest，保留已完成任务状态，只对新增或 fingerprint 变化的文件重新置为 `pending`；输出 `data/cleaning-queue.json`，区分 `download_and_extract`、`manual_review`、`transfer_or_direct_download` 等动作。
 - `scripts/baidu/run_cleaning_queue.py`：小批量消费 `download_and_extract` 任务，下载文件到 `raw-inbox`，再调用 `scripts/pipeline/pdf2flashcard-v2.py`；没有配置 `LLM_API_KEY`/`OPENAI_API_KEY` 时不执行真实清洗，避免定时任务无预算失控；未知轨道/答案解析类文件使用 `*-support-<sourceId>` 隔离输出，避免覆盖正式题面文件。
-- `scripts/baidu/answer_evidence_repair.py`：按年份 + 题号从 companion 答案/解析清洗产物补缺失答案，生成 `data/answer-evidence-repair*.json` 报告，并把 companion 标记为 `supportingEvidenceOnly`；补出的答案只标记为 `candidate_matched`，不能直接公开发布。
+- `scripts/baidu/answer_evidence_repair.py`：按年份 + 题号从 companion 答案/解析清洗产物补缺失答案，也可读取 companion 原始 PDF/text 中 `21-25 BADAB` 一类答案速查表；生成 `data/answer-evidence-repair*.json` 报告，并把 companion 标记为 `supportingEvidenceOnly`；补出的答案只标记为 `candidate_matched`，不能直接公开发布。
 - `scripts/baidu/manifest_quality.py`：输出公共课年份覆盖缺口、风险文件统计和下一步处理队列，作为题库发布门禁。
 - `scripts/baidu/public_course_candidate_coverage.py`：输出 `data/public-course-netdisk-candidate-coverage.json`，用于区分“网盘原始候选资源是否覆盖”和“是否已达到可发布题库证据标准”。
 - `scripts/baidu/pan.py`：递归文件列表已补充分页能力，避免目录超过 1000 条时漏扫。
@@ -424,9 +424,10 @@ score = correctnessBase * difficultyMultiplier * speedMultiplier + streakBonus
 - `scripts/baidu/source_manifest.py` 已新增 `safeDisplayName`、`canonicalKey`、`legalReview`，对文件名中的机构/老师/广告风险做前置标记，并用安全展示名进入后续队列。
 - `scripts/baidu/manifest_quality.py` 已新增 `cleaningPlan` 与 `releaseReadiness`，把公共课覆盖缺口、品牌风险队列、答案证据缺失、发布阻断项集中输出。
 - `scripts/baidu/cleaning_queue.py` 已新增可执行增量队列：当前 `data/source-manifest.json` 生成 `1608` 个待处理任务，其中 `430` 个可自动下载抽取，`1178` 个因机构/版权/品牌风险进入人工或规则复核。
-- `scripts/baidu/run_cleaning_queue.py` 已新增小批量清洗执行器：`npm run baidu:cleaning:run:dry` 只预览任务，`npm run baidu:cleaning:run` 默认每次只跑 1 个任务，并强制要求外部 LLM 环境变量；未知轨道任务已用 sourceId 隔离输出，防止 support 文件覆盖正式题面。
-- `scripts/baidu/answer_evidence_repair.py` 已新增答案候选修复器：`npm run baidu:flashcards:repair:answers -- --target <target.json> --companion <answer.json> --write --mark-companions-supporting` 会修补缺答案、写入 candidate hash，并把 companion 文件从晋级门禁中隔离。
-- `scripts/baidu/flashcard_quality.py` 已新增清洗产物质量门禁：`npm run baidu:flashcards:quality` 生成 `data/flashcard-quality-report.json`，`npm run baidu:flashcards:quality:release` 在缺答案、选择题选项异常、`sourceEvidenceId`、`answerEvidenceStatus=matched`、`questionTextHash` 或 `answerTextHash` 缺失时失败。当前英语 2000 与英语一 2001 晋级候选共 80 题，缺答案已修为 0，但仍因 `answerEvidenceStatus` 只到 `candidate_*` 被阻断。
+- `scripts/baidu/run_cleaning_queue.py` 已新增小批量清洗执行器：`npm run baidu:cleaning:run:dry` 只预览任务，`npm run baidu:cleaning:run` 默认每次只跑 1 个任务，并强制要求外部 LLM 环境变量；当系统 `python3` 缺少 Baidu 依赖时会自动切换到 `.venv-baidu/bin/python`；未知轨道与答案/解析/support 类文件已用 sourceId 隔离输出，防止 support 文件覆盖正式题面。
+- `scripts/pipeline/pdf2flashcard-v2.py` 已补去重保护：当 OCR/AI 解析到题目但 hash 去重后全部为已存在题目时，不再用 0 卡 JSON 覆盖已有清洗产物。
+- `scripts/baidu/answer_evidence_repair.py` 已新增答案候选修复器：`npm run baidu:flashcards:repair:answers -- --target <target.json> --companion <answer.json> --write --mark-companions-supporting` 会修补缺答案、从答案速查表补候选答案、写入 candidate hash，并把 companion 文件从晋级门禁中隔离。
+- `scripts/baidu/flashcard_quality.py` 已新增清洗产物质量门禁：`npm run baidu:flashcards:quality` 生成 `data/flashcard-quality-report.json`，`npm run baidu:flashcards:quality:release` 在缺答案、选择题选项异常、`sourceEvidenceId`、`answerEvidenceStatus=matched`、`questionTextHash` 或 `answerTextHash` 缺失时失败。当前英语 2000、英语一 2001、英语一 2010 晋级候选共 117 题，缺答案已修为 0，但仍因 `answerEvidenceStatus` 只到 `candidate_*` 被阻断。
 - `.github/workflows/baidu-group-sync.yml` 已扩展为每日百度资源增量同步，未提供分享链接时也会扫描 `/EXAM-MASTER/考研历年真题/01.考研政治`、`02.考研英语`、`03.考研数学`，并上传 Source Manifest、候选覆盖报告和 Cleaning Queue artifacts。
 - `scripts/build/question-bank-release-gate.mjs` 已新增静态发布门禁，基于题库注册表和已发布 JSON 题目生成 `data/question-bank-release-audit.json`；`npm run audit:question-bank:release` 会在覆盖缺口或 `answerEvidenceStatus=matched` 缺失时失败。
 - `src/config/bank-registry.js` 已将缺少 SourceEvidence/hash 的静态题库全部转入清洗队列，避免未校验题目被用户加载。

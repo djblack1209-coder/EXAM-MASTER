@@ -161,6 +161,65 @@ class AnswerEvidenceRepairTest(unittest.TestCase):
         self.assertEqual(report["summary"]["repairedAnswers"], 0)
         self.assertEqual(card["answer"], "")
 
+    def test_repair_fills_missing_answers_from_companion_answer_key_text(self):
+        from scripts.baidu.answer_evidence_repair import repair_bank
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_dir = Path(tmp)
+            target = tmp_dir / "target.json"
+            companion = tmp_dir / "companion.json"
+            answer_key_text = tmp_dir / "answer-key.txt"
+            queue = tmp_dir / "cleaning-queue.json"
+            answer_key_text.write_text(
+                "2010年考研英语（一）真题答案速查表\n"
+                "21-25 BADAB  36 -40 ADCBD 41 ~45 BFDGA\n",
+                encoding="utf-8",
+            )
+            write_json(
+                target,
+                bank_payload(
+                    "target.pdf",
+                    "english1",
+                    2010,
+                    [
+                        {"id": "q21", "number": 21, "type": "single_choice", "question": "Q21", "answer": ""},
+                        {"id": "q22", "number": 22, "type": "single_choice", "question": "Q22", "answer": ""},
+                        {"id": "q36", "number": 36, "type": "single_choice", "question": "Q36", "answer": ""},
+                        {
+                            "id": "q41",
+                            "number": 41,
+                            "type": "analysis",
+                            "question": "For questions 41-45, choose the most suitable paragraphs.",
+                            "answer": "完整的参考答案全文",
+                        },
+                    ],
+                ),
+            )
+            write_json(companion, bank_payload("answers.pdf", "english", 2010, []))
+            write_json(
+                queue,
+                {
+                    "tasks": [
+                        {"sourceId": "src_answer_key", "outputPath": str(companion), "localPath": str(answer_key_text)}
+                    ]
+                },
+            )
+
+            report = repair_bank(
+                target,
+                [companion],
+                queue_path=queue,
+                write=True,
+                now="2026-04-30T00:00:00Z",
+            )
+            repaired_cards = json.loads(target.read_text(encoding="utf-8"))["cards"]
+
+        self.assertEqual(report["summary"]["repairedAnswers"], 4)
+        self.assertEqual(report["summary"]["answerKeyTextCandidates"], 11)
+        self.assertEqual([card["answer"] for card in repaired_cards], ["B", "A", "A", "BFDGA"])
+        self.assertTrue(all(card["answerEvidenceStatus"] == "candidate_matched" for card in repaired_cards))
+        self.assertEqual(repaired_cards[0]["answerEvidence"]["method"], "companion_answer_key_text")
+
     def test_cli_writes_report_and_requires_write_flag_to_mutate(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp_dir = Path(tmp)

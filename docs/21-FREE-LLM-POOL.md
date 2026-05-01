@@ -67,7 +67,7 @@ LLM_DISABLED_PROVIDERS=llm_primary,iflow AI_PROVIDER_DISABLED_LIST=iflow,silicon
 npm run baidu:flashcards:quality
 ```
 
-当前 `data/flashcard-quality-report.json` 显示 `canPromoteToPublic=false`、晋级候选 `cards=80`、`missingAnswers=0`、`sourceEvidenceBlockers=80`；2 个 companion/support 文件已标记 `supportingEvidenceOnly` 并从晋级门禁中跳过。也就是说，AI 抽取和候选答案修复已跑通，但该批数据仍停留在清洗中间态，不能进入公开题库；下一步必须补原文切片、答案来源校验和 `answerEvidenceStatus=matched`。
+当前 `data/flashcard-quality-report.json` 显示 `canPromoteToPublic=false`、晋级候选 `cards=117`、`missingAnswers=0`、`sourceEvidenceBlockers=117`；4 个 companion/support 文件已标记 `supportingEvidenceOnly` 并从晋级门禁中跳过。也就是说，AI 抽取和候选答案修复已跑通，但该批数据仍停留在清洗中间态，不能进入公开题库；下一步必须补原文切片、答案来源校验和 `answerEvidenceStatus=matched`。
 
 ## 官方/相关文档记录
 

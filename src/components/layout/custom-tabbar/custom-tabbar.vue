@@ -403,9 +403,9 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  width: 80vw;
+  width: calc(100vw - 56rpx);
   min-width: 300rpx;
-  max-width: 600rpx;
+  max-width: 650rpx;
   height: 118rpx;
   margin-right: auto;
   margin-bottom: calc(22rpx + constant(safe-area-inset-bottom, 0px));
@@ -415,12 +415,14 @@ onBeforeUnmount(() => {
   overflow: hidden;
   pointer-events: auto;
   border-radius: 999rpx;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(246, 248, 241, 0.88)), rgba(255, 255, 255, 0.9);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.88), rgba(240, 255, 228, 0.68)),
+    rgba(255, 255, 255, 0.58);
   box-shadow:
-    0 24rpx 64rpx rgba(20, 32, 23, 0.14),
-    0 10rpx 24rpx rgba(20, 32, 23, 0.08),
-    inset 0 1rpx 0 rgba(255, 255, 255, 0.96),
-    inset 0 -1rpx 0 rgba(20, 32, 23, 0.05);
+    0 26rpx 70rpx rgba(13, 71, 36, 0.18),
+    0 10rpx 26rpx rgba(13, 71, 36, 0.1),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1rpx 0 rgba(18, 64, 30, 0.06);
   backdrop-filter: blur(20px) saturate(132%);
   -webkit-backdrop-filter: blur(20px) saturate(132%);
   touch-action: pan-x;
@@ -463,11 +465,11 @@ onBeforeUnmount(() => {
   border-radius: 999rpx;
   background:
     radial-gradient(circle at 30% 16%, rgba(255, 255, 255, 0.92), transparent 34%),
-    linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(239, 246, 232, 0.9));
+    linear-gradient(135deg, #f7ffe9 0%, #d9ffc1 48%, #b7f7e1 100%);
   box-shadow:
-    0 14rpx 32rpx rgba(20, 32, 23, 0.12),
+    0 14rpx 32rpx rgba(13, 71, 36, 0.15),
     inset 0 1rpx 0 rgba(255, 255, 255, 0.82),
-    inset 0 -2rpx 4rpx rgba(20, 32, 23, 0.06);
+    inset 0 -2rpx 4rpx rgba(18, 64, 30, 0.07);
   pointer-events: none;
   transition-property: transform, opacity;
   transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -481,8 +483,8 @@ onBeforeUnmount(() => {
   left: 34rpx;
   height: 7rpx;
   border-radius: 999rpx;
-  background: #9fe870;
-  box-shadow: 0 6rpx 16rpx rgba(39, 180, 95, 0.24);
+  background: #18552f;
+  box-shadow: 0 6rpx 16rpx rgba(24, 85, 47, 0.24);
 }
 
 .tab-item {

@@ -7,13 +7,122 @@
  * 用法: node scripts/build/inject-mp-weixin-privacy.mjs
  * 或在 package.json 的 build:mp-weixin 后自动执行
  */
-import { readFileSync, writeFileSync, copyFileSync, existsSync } from 'fs';
-import { resolve, dirname } from 'path';
+import {
+  copyFileSync,
+  existsSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync
+} from 'fs';
+import { dirname, extname, relative, resolve, sep } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const distRoot = resolve(__dirname, '../../dist/build/mp-weixin');
 const appJsonPath = resolve(distRoot, 'app.json');
+const wechatMediaBudgetBytes = 200 * 1024;
+const mediaExtensions = new Set([
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.webp',
+  '.svg',
+  '.mp3',
+  '.wav',
+  '.aac',
+  '.m4a'
+]);
+
+function toPosixPath(filePath) {
+  return filePath.split(sep).join('/');
+}
+
+function walkFiles(rootDir) {
+  if (!existsSync(rootDir)) {
+    return [];
+  }
+
+  const result = [];
+  for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
+    const fullPath = resolve(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      result.push(...walkFiles(fullPath));
+    } else if (entry.isFile()) {
+      result.push(fullPath);
+    }
+  }
+  return result;
+}
+
+function isMediaFile(filePath) {
+  return mediaExtensions.has(extname(filePath).toLowerCase());
+}
+
+function detectCdnEnabled() {
+  const configPath = resolve(distRoot, 'config/index.js');
+  if (!existsSync(configPath)) {
+    return false;
+  }
+  const configJs = readFileSync(configPath, 'utf-8');
+  return /VITE_CDN_URL:"[^"]+"/.test(configJs);
+}
+
+function buildLocalReferenceText() {
+  return walkFiles(distRoot)
+    .filter((filePath) => !isMediaFile(filePath))
+    // static-assets.js contains the CDN/local registry. It is not a local package reference
+    // when CDN is enabled, so keeping it in the scan would block pruning unused copies.
+    .filter((filePath) => toPosixPath(relative(distRoot, filePath)) !== 'config/static-assets.js')
+    .map((filePath) => readFileSync(filePath, 'utf-8'))
+    .join('\n');
+}
+
+function hasLocalReference(referenceText, relativePath) {
+  return referenceText.includes(relativePath) || referenceText.includes(`/${relativePath}`);
+}
+
+function pruneUnusedMediaForWechatQuality() {
+  const cdnEnabled = detectCdnEnabled();
+  const referenceText = buildLocalReferenceText();
+  const removed = [];
+
+  for (const filePath of walkFiles(distRoot).filter(isMediaFile)) {
+    const relativePath = toPosixPath(relative(distRoot, filePath));
+
+    if (hasLocalReference(referenceText, relativePath)) {
+      continue;
+    }
+
+    // Without CDN, config/static-assets.js may resolve /static/* paths at runtime.
+    // Keep those local copies in that mode even if they are not literal references.
+    if (!cdnEnabled && relativePath.startsWith('static/')) {
+      continue;
+    }
+
+    const size = statSync(filePath).size;
+    rmSync(filePath, { force: true });
+    removed.push({ relativePath, size });
+  }
+
+  const mediaFiles = walkFiles(distRoot).filter(isMediaFile);
+  const totalBytes = mediaFiles.reduce((sum, filePath) => sum + statSync(filePath).size, 0);
+
+  if (removed.length > 0) {
+    const removedBytes = removed.reduce((sum, item) => sum + item.size, 0);
+    console.log(`✅ 微信代码质量: 已移除 ${removed.length} 个未引用图片/音频资源（${removedBytes} bytes）`);
+  } else {
+    console.log('✅ 微信代码质量: 未发现可移除的未引用图片/音频资源');
+  }
+
+  console.log(`✅ 微信代码质量: 图片/音频资源 ${mediaFiles.length} 个，共 ${totalBytes} bytes`);
+
+  if (totalBytes > wechatMediaBudgetBytes) {
+    throw new Error(`图片/音频资源共 ${totalBytes} bytes，超过微信代码质量阈值 ${wechatMediaBudgetBytes} bytes`);
+  }
+}
 
 try {
   // ====== 1. 注入 app.json ======
@@ -70,12 +179,18 @@ try {
   if (existsSync(appJsPath)) {
     // 这些文件被 DevTools 标记为「主包未使用」但实际被分包引用
     const mainPkgSharedFiles = [
+      './config/game-constants.js',
       './services/fsrs-service.js',
+      './stores/modules/favorite.js',
       './stores/modules/gamification.js',
       './stores/modules/review.js',
       './stores/modules/study-engine.js',
       './stores/modules/tools.js',
+      './utils/helpers/haptic.js',
       './utils/learning/adaptive-learning-engine.js',
+      './utils/modal.js',
+      './utils/practice/demo-bank.js',
+      './utils/quiz-elo.js',
       './utils/security/sanitize.js',
     ];
     // 过滤掉不存在的文件
@@ -91,6 +206,12 @@ try {
       console.log(`✅ app.js: ${validFiles.length} 个主包共享模块已预加载（消除 DevTools 未使用警告）`);
     }
   }
+
+  // ====== 5. 移除未引用图片/音频，满足 DevTools 代码质量 200K 阈值 ======
+  // uni 构建会把页面 static 目录和 CDN 备份资源一并复制到 dist。
+  // 微信开发者工具的 IMAGE_AND_AUDIO_LIMIT 按代码包内图片/音频总量检测，
+  // 不是单文件大小；因此构建产物需要只保留当前版本真实会本地加载的资源。
+  pruneUnusedMediaForWechatQuality();
 } catch (err) {
   console.error('❌ 注入失败:', err.message);
   process.exit(1);

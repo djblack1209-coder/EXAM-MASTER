@@ -119,6 +119,39 @@ class Pdf2FlashcardV2Test(unittest.TestCase):
         self.assertTrue(module.provider_disabled("iflow", "IFLOW_API_KEY"))
         self.assertTrue(module.provider_disabled("llm_primary", "LLM_API_KEY"))
 
+    def test_process_pdf_does_not_overwrite_existing_output_when_all_cards_are_duplicates(self):
+        module = load_pdf2flashcard_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "flashcards"
+            output_dir.mkdir()
+            hash_db = Path(tmp) / "hashes.json"
+            existing_output = output_dir / "english1-2001.json"
+            existing_output.write_text(
+                '{"total_cards": 1, "cards": [{"id": "existing", "answer": "A"}]}\n',
+                encoding="utf-8",
+            )
+            duplicate_card = {
+                "number": 1,
+                "type": "single_choice",
+                "question": "Duplicate question",
+                "options": [],
+                "answer": "A",
+                "explanation": "",
+            }
+
+            module.OUTPUT_DIR = output_dir
+            module.HASH_DB_PATH = hash_db
+            module.ocr_pdf = lambda _path: "1. Duplicate question"
+            module.sanitize_text = lambda text: text
+            module.ai_parse_text = lambda _text, _subject, _year: [dict(duplicate_card)]
+            hash_db.write_text(f'["{module.card_hash(duplicate_card)}"]', encoding="utf-8")
+
+            result = module.process_pdf("/tmp/source.pdf", "english1", "2001")
+
+            self.assertEqual(result["total_cards"], 1)
+            self.assertEqual(result["cards"][0]["id"], "existing")
+            self.assertEqual(existing_output.read_text(encoding="utf-8").count("existing"), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

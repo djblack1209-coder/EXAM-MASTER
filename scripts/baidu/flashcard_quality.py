@@ -21,6 +21,12 @@ DEFAULT_FLASHCARD_DIR = PROJECT_ROOT / "data" / "flashcards"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "flashcard-quality-report.json"
 VALID_TYPES = {"single_choice", "multi_choice", "analysis", "short_answer", "essay", "translation", "cloze"}
 CHOICE_TYPES = {"single_choice", "multi_choice"}
+ANSWER_PLACEHOLDERS = {
+    "完整的参考答案全文",
+    "完整的答案解析文本",
+    "参考答案全文",
+    "答案解析文本",
+}
 
 
 def utc_now() -> str:
@@ -74,6 +80,11 @@ def answer_text_hash(card: dict[str, Any]) -> str:
     )
 
 
+def has_usable_answer(card: dict[str, Any]) -> bool:
+    answer = first_non_empty(card.get("answer"))
+    return bool(answer) and answer not in ANSWER_PLACEHOLDERS
+
+
 def card_id(card: dict[str, Any], index: int) -> str:
     return first_non_empty(card.get("id"), card.get("questionId"), card.get("question_id"), card.get("number")) or (
         f"card-{index + 1}"
@@ -107,7 +118,7 @@ def audit_card(card: dict[str, Any], index: int, seen_ids: set[str]) -> dict[str
         missing_fields.append("type")
     if not first_non_empty(card.get("question"), card.get("stem")):
         missing_fields.append("question")
-    if not first_non_empty(card.get("answer")):
+    if not has_usable_answer(card):
         missing_fields.append("answer")
     if card_type in CHOICE_TYPES and sorted(option_labels(card)) != ["A", "B", "C", "D"]:
         missing_fields.append("options=A-D")
@@ -154,7 +165,7 @@ def audit_flashcard_file(path: Path, payload: Any | None = None) -> dict[str, An
         if card_report["missingFields"]:
             blocked_cards.append(card_report)
 
-    missing_answer_count = sum(1 for card in cards if not first_non_empty(card.get("answer")))
+    missing_answer_count = sum(1 for card in cards if not has_usable_answer(card))
     source_evidence_blocker_count = sum(
         1
         for card in cards

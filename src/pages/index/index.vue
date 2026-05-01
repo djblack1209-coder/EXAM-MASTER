@@ -7,7 +7,7 @@
     <view class="nav-bar" :style="{ paddingTop: statusBarHeight + 'px' }">
       <view class="nav-content">
         <text class="nav-title">EXAM-MASTER</text>
-        <text class="nav-status">PUBLIC BETA</text>
+        <text class="nav-status">{{ navStatusText }}</text>
       </view>
     </view>
 
@@ -29,6 +29,38 @@
           </view>
           <text class="hero-title">{{ greeting }}，进入今天的备考主线</text>
           <text class="hero-subtitle">把真题、错题和复习节奏压缩成一条可执行路径。</text>
+
+          <view class="dashboard-tabs">
+            <view
+              v-for="tab in dashboardTabs"
+              :key="tab.id"
+              class="dashboard-tab"
+              :class="{ active: activeDashboardTab === tab.id }"
+              hover-class="btn-hover"
+              @tap="selectDashboardTab(tab.id)"
+            >
+              <text>{{ tab.label }}</text>
+            </view>
+          </view>
+
+          <view class="today-focus-panel">
+            <view class="today-focus-copy">
+              <text class="today-focus-kicker">TODAY FOCUS</text>
+              <text class="today-focus-title">{{ focusPanelTitle }}</text>
+              <text class="today-focus-desc">{{ todayMomentumText }}</text>
+            </view>
+            <view class="mastery-orb">
+              <text class="mastery-orb-value">{{ todayProgressPercent }}%</text>
+              <text class="mastery-orb-label">today</text>
+            </view>
+          </view>
+
+          <view class="focus-chip-row">
+            <view v-for="card in todayFocusCards" :key="card.label" class="focus-chip">
+              <text class="focus-chip-value">{{ card.value }}</text>
+              <text class="focus-chip-label">{{ card.label }}</text>
+            </view>
+          </view>
 
           <view class="knowledge-stage">
             <view class="knowledge-stage-head">
@@ -125,6 +157,28 @@
         </view>
       </view>
 
+      <view class="section">
+        <view class="pipeline-panel">
+          <view class="pipeline-head">
+            <view>
+              <text class="pipeline-kicker">RESOURCE PIPELINE</text>
+              <text class="pipeline-title">资料到训练的发布链路</text>
+            </view>
+            <text class="pipeline-status">{{ evidenceStatusText }}</text>
+          </view>
+          <view class="pipeline-list">
+            <view v-for="step in resourcePipeline" :key="step.id" class="pipeline-step" :class="`state-${step.state}`">
+              <view class="pipeline-dot" />
+              <view class="pipeline-copy">
+                <text class="pipeline-step-title">{{ step.title }}</text>
+                <text class="pipeline-step-desc">{{ step.desc }}</text>
+              </view>
+              <text class="pipeline-step-state">{{ step.stateLabel }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
       <!-- 最近学习 -->
       <view v-if="recentActivities.length > 0" class="section">
         <text class="section-title">最近学习</text>
@@ -208,7 +262,19 @@ export default {
       streakDays: 0,
       totalQuestions: 0,
       accuracy: 0,
-      recentActivities: []
+      recentActivities: [],
+      activeDashboardTab: 'today',
+      dashboardTabs: [
+        { id: 'today', label: 'Today' },
+        { id: 'bank', label: 'Bank' },
+        { id: 'review', label: 'Review' }
+      ],
+      resourcePipeline: [
+        { id: 'intake', title: '资料导入', desc: '上传 / 网盘 / 管理端统一入口', state: 'done', stateLabel: 'ready' },
+        { id: 'cleaning', title: '清洗与解析', desc: 'PDF 切题、答案候选、解析校验', state: 'active', stateLabel: 'running' },
+        { id: 'evidence', title: '证据门禁', desc: '只发布来源和答案可审计的题库', state: 'review', stateLabel: 'gated' },
+        { id: 'training', title: '训练同步', desc: '刷题、错题、复习间隔回流知识图谱', state: 'done', stateLabel: 'linked' }
+      ]
     };
   },
 
@@ -231,6 +297,12 @@ export default {
       return this.totalQuestions === 0 && this.streakDays === 0;
     },
 
+    navStatusText() {
+      if (this.todayProgressPercent >= 100) return 'TODAY CLEAR';
+      if (this.totalQuestions > 0) return 'TRAINING READY';
+      return 'PUBLIC BETA';
+    },
+
     remainingToday() {
       return Math.max(0, this.dailyGoal - this.todayCount);
     },
@@ -246,6 +318,26 @@ export default {
       if (this.isNewUser) return '先加载示例题库，2 分钟进入第一轮训练';
       if (this.todayProgressPercent >= 100) return '今天目标已达成，可以进入错题巩固';
       return `再完成 ${this.remainingToday} 题，形成今天的记忆闭环`;
+    },
+
+    focusPanelTitle() {
+      if (this.activeDashboardTab === 'bank') return '先确认可训练题库与发布状态';
+      if (this.activeDashboardTab === 'review') return '先处理错题与间隔复习队列';
+      if (this.isNewUser) return '从第一组公共课真题开始';
+      return '继续推进今日训练窗口';
+    },
+
+    todayFocusCards() {
+      return [
+        { label: '剩余题量', value: this.remainingToday },
+        { label: '连续天数', value: `${this.streakDays}d` },
+        { label: '正确率', value: `${this.accuracy}%` }
+      ];
+    },
+
+    evidenceStatusText() {
+      if (this.totalQuestions > 0) return 'local ready';
+      return 'source gated';
     },
 
     knowledgeSummary() {
@@ -324,7 +416,8 @@ export default {
     initLayout() {
       try {
         const info = uni.getWindowInfo();
-        this.statusBarHeight = info.statusBarHeight || 44;
+        const statusBarHeight = Number(info.statusBarHeight || 0);
+        this.statusBarHeight = statusBarHeight > 0 ? statusBarHeight : 16;
         const safeBottom = info.safeAreaInsets?.bottom || 0;
         this.tabBarHeight = 60 + 12 + safeBottom;
       } catch (_e) {
@@ -428,6 +521,10 @@ export default {
 
     goOnboarding() {
       uni.navigateTo({ url: '/pages/login/onboarding?source=home' });
+    },
+
+    selectDashboardTab(tabId) {
+      this.activeDashboardTab = tabId;
     }
   }
 };
@@ -454,9 +551,7 @@ $spacing-section: 24rpx;
 
 /* ==================== 页面 ==================== */
 .page {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #fcfdf8 0%, $bg 42%, #eff3ed 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', sans-serif;
+  @include em-mobile-canvas;
 }
 
 /* ==================== 导航栏 ==================== */
@@ -466,8 +561,7 @@ $spacing-section: 24rpx;
   left: 0;
   right: 0;
   z-index: 100;
-  background: rgba(249, 252, 247, 0.92);
-  border-bottom: 1rpx solid rgba(22, 51, 0, 0.06);
+  @include em-mobile-topbar;
 }
 
 .nav-content {
@@ -517,10 +611,7 @@ $spacing-section: 24rpx;
 }
 
 .card {
-  background: $card-bg;
-  border-radius: $radius-lg;
-  padding: $spacing-card;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  @include em-mobile-glass-surface($radius-lg, $spacing-card);
 }
 
 /* ==================== 品牌冲击首屏 ==================== */
@@ -529,12 +620,7 @@ $spacing-section: 24rpx;
 }
 
 .hero-panel {
-  position: relative;
-  overflow: hidden;
-  border-radius: 36rpx;
-  padding: 36rpx;
-  background: linear-gradient(150deg, #16301f 0%, #102415 52%, #0b1713 100%);
-  box-shadow: 0 28rpx 70rpx rgba(20, 33, 23, 0.18);
+  @include em-mobile-deep-panel(38rpx, 34rpx);
 }
 
 .hero-panel::before {
@@ -545,7 +631,7 @@ $spacing-section: 24rpx;
   width: 360rpx;
   height: 360rpx;
   border-radius: 50%;
-  background: rgba(159, 232, 112, 0.18);
+  background: radial-gradient(circle, rgba(178, 255, 106, 0.26) 0%, rgba(178, 255, 106, 0) 68%);
 }
 
 .hero-panel::after {
@@ -559,6 +645,9 @@ $spacing-section: 24rpx;
 }
 
 .hero-topline,
+.dashboard-tabs,
+.today-focus-panel,
+.focus-chip-row,
 .knowledge-stage,
 .hero-metric-strip,
 .onboarding-entry,
@@ -609,6 +698,147 @@ $spacing-section: 24rpx;
   color: rgba(255, 255, 255, 0.68);
   font-size: 26rpx;
   line-height: 1.55;
+}
+
+.dashboard-tabs {
+  display: flex;
+  margin-top: 26rpx;
+  padding: 7rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1rpx 0 rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-tab {
+  @include em-mobile-pressable;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 58rpx;
+  border-radius: 999rpx;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 23rpx;
+  font-weight: 850;
+}
+
+.dashboard-tab.active {
+  background: rgba(255, 255, 255, 0.9);
+  color: $primary-dark;
+  box-shadow: 0 12rpx 28rpx rgba(0, 0, 0, 0.12);
+}
+
+.today-focus-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18rpx;
+  padding: 24rpx;
+  border-radius: 30rpx;
+  background: rgba(255, 255, 255, 0.11);
+  box-shadow:
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.12),
+    0 18rpx 44rpx rgba(0, 0, 0, 0.08);
+}
+
+.today-focus-copy {
+  flex: 1;
+  min-width: 0;
+  padding-right: 22rpx;
+}
+
+.today-focus-kicker {
+  display: block;
+  color: rgba(255, 255, 255, 0.44);
+  font-size: 17rpx;
+  font-weight: 900;
+  letter-spacing: 1.9rpx;
+}
+
+.today-focus-title {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 34rpx;
+  font-weight: 900;
+  line-height: 1.18;
+}
+
+.today-focus-desc {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 22rpx;
+  line-height: 1.45;
+}
+
+.mastery-orb {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 136rpx;
+  height: 136rpx;
+  border-radius: 999rpx;
+  background:
+    radial-gradient(
+      circle at 34% 26%,
+      rgba(255, 255, 255, 0.88) 0,
+      rgba(255, 255, 255, 0.18) 34%,
+      rgba(178, 255, 106, 0.18) 100%
+    ),
+    rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 16rpx 34rpx rgba(0, 0, 0, 0.16),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.32);
+}
+
+.mastery-orb-value {
+  @include em-mobile-number;
+  color: #f8fff2;
+  font-size: 34rpx;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.mastery-orb-label {
+  margin-top: 6rpx;
+  color: rgba(255, 255, 255, 0.54);
+  font-size: 18rpx;
+  font-weight: 800;
+}
+
+.focus-chip-row {
+  display: flex;
+  margin-top: 14rpx;
+}
+
+.focus-chip {
+  flex: 1;
+  padding: 14rpx 12rpx;
+  border-radius: 22rpx;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.focus-chip + .focus-chip {
+  margin-left: 12rpx;
+}
+
+.focus-chip-value {
+  @include em-mobile-number;
+  display: block;
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.focus-chip-label {
+  display: block;
+  margin-top: 5rpx;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 19rpx;
+  font-weight: 650;
 }
 
 .knowledge-stage {
@@ -751,6 +981,7 @@ $spacing-section: 24rpx;
 }
 
 .metric-value {
+  @include em-mobile-number;
   display: block;
   margin-top: 6rpx;
   color: #ffffff;
@@ -805,10 +1036,9 @@ $spacing-section: 24rpx;
 }
 
 .hero-primary {
+  @include em-mobile-primary-action;
+  @include em-mobile-pressable;
   padding: 22rpx 30rpx;
-  border-radius: 999rpx;
-  background: $primary;
-  box-shadow: 0 12rpx 28rpx rgba(159, 232, 112, 0.24);
 }
 
 .hero-primary-text {
@@ -827,8 +1057,9 @@ $spacing-section: 24rpx;
 
 /* ==================== 今日进度卡片 ==================== */
 .progress-card {
-  background: linear-gradient(135deg, $primary-light 0%, $card-bg 100%);
-  border: 1rpx solid rgba(22, 51, 0, 0.06);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(234, 251, 226, 0.78) 100%),
+    rgba(255, 255, 255, 0.72);
 }
 
 .card-header {
@@ -888,15 +1119,11 @@ $spacing-section: 24rpx;
 }
 
 .stat-card {
+  @include em-mobile-glass-surface($radius-lg, $spacing-card);
   flex: 1;
-  background: $card-bg;
-  border-radius: $radius-lg;
-  padding: $spacing-card;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1rpx solid rgba(22, 51, 0, 0.05);
-  box-shadow: 0 10rpx 28rpx rgba(22, 51, 0, 0.06);
 }
 
 .stat-card + .stat-card {
@@ -904,6 +1131,7 @@ $spacing-section: 24rpx;
 }
 
 .stat-value {
+  @include em-mobile-number;
   font-size: 48rpx;
   font-weight: 700;
   color: $text-main;
@@ -916,6 +1144,112 @@ $spacing-section: 24rpx;
   font-size: 18rpx;
   font-weight: 900;
   letter-spacing: 1.4rpx;
+}
+
+.pipeline-panel {
+  @include em-mobile-glass-surface(32rpx, 30rpx);
+}
+
+.pipeline-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.pipeline-kicker {
+  display: block;
+  color: rgba(22, 51, 0, 0.42);
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 1.8rpx;
+}
+
+.pipeline-title {
+  display: block;
+  margin-top: 8rpx;
+  color: $primary-dark;
+  font-size: 31rpx;
+  font-weight: 900;
+  line-height: 1.18;
+}
+
+.pipeline-status {
+  flex-shrink: 0;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  background: rgba(117, 221, 255, 0.22);
+  color: #0c5064;
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 0.8rpx;
+}
+
+.pipeline-list {
+  margin-top: 22rpx;
+}
+
+.pipeline-step {
+  display: flex;
+  align-items: center;
+  min-height: 76rpx;
+}
+
+.pipeline-step + .pipeline-step {
+  margin-top: 14rpx;
+}
+
+.pipeline-dot {
+  flex-shrink: 0;
+  width: 18rpx;
+  height: 18rpx;
+  margin-right: 18rpx;
+  border-radius: 999rpx;
+  background: rgba(22, 51, 0, 0.24);
+  box-shadow: 0 0 0 8rpx rgba(22, 51, 0, 0.06);
+}
+
+.pipeline-step.state-done .pipeline-dot {
+  background: $action-green;
+  box-shadow: 0 0 0 8rpx rgba(24, 169, 87, 0.11);
+}
+
+.pipeline-step.state-active .pipeline-dot {
+  background: $primary;
+  box-shadow: 0 0 0 8rpx rgba(159, 232, 112, 0.16);
+}
+
+.pipeline-step.state-review .pipeline-dot {
+  background: #75ddff;
+  box-shadow: 0 0 0 8rpx rgba(117, 221, 255, 0.16);
+}
+
+.pipeline-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.pipeline-step-title {
+  display: block;
+  color: $text-main;
+  font-size: 25rpx;
+  font-weight: 850;
+}
+
+.pipeline-step-desc {
+  display: block;
+  margin-top: 4rpx;
+  color: rgba(22, 51, 0, 0.56);
+  font-size: 21rpx;
+  line-height: 1.35;
+}
+
+.pipeline-step-state {
+  flex-shrink: 0;
+  margin-left: 14rpx;
+  color: rgba(22, 51, 0, 0.48);
+  font-size: 18rpx;
+  font-weight: 900;
+  letter-spacing: 0.8rpx;
 }
 
 .stat-label {

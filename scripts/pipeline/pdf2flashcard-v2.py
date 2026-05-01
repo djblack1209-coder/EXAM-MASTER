@@ -347,6 +347,15 @@ def card_hash(card: dict) -> str:
     return hashlib.md5(q.encode("utf-8")).hexdigest()
 
 
+def load_existing_output(out_file: Path) -> dict | None:
+    if not out_file.exists():
+        return None
+    with open(out_file, "r", encoding="utf-8") as f:
+        payload = json.load(f)
+    cards = payload.get("cards") if isinstance(payload, dict) else None
+    return payload if isinstance(cards, list) and cards else None
+
+
 # ============================================================
 # AI 缓存与预算
 # ============================================================
@@ -824,6 +833,13 @@ def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dic
     print(f"  去重: {dup_count}张重复, {len(new_cards)}张新增")
 
     # 6. 输出
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_file = OUTPUT_DIR / f"{subject}-{year}.json"
+    existing_output = load_existing_output(out_file)
+    if cards and not new_cards and existing_output:
+        print(f"  跳过输出: 解析结果均为重复题，保留已有 {out_file}")
+        return existing_output
+
     result = {
         "source": src,
         "subject": subject,
@@ -833,8 +849,6 @@ def process_pdf(pdf_path: str, subject: str, year: str, source: str = "") -> dic
         "cards": new_cards,
     }
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUTPUT_DIR / f"{subject}-{year}.json"
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
 

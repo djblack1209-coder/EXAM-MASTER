@@ -324,6 +324,7 @@ function initSystemUI() {
 async function loadData() {
   isLoading.value = true;
   try {
+    resourceStore.refreshIntakeSnapshot();
     // 并行加载推荐和热门
     await Promise.all([resourceStore.fetchRecommendations(), resourceStore.fetchHotResources()]);
     logger.log('[resource] 数据加载完成:', {
@@ -508,6 +509,7 @@ onLoad(() => {
 
 onShow(() => {
   // 页面再次展示时静默刷新
+  resourceStore.refreshIntakeSnapshot();
 });
 
 onUnload(() => {

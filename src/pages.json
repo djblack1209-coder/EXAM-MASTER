@@ -14,7 +14,7 @@
       "style": {
         "navigationBarTitleText": "EXAM-MASTER",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#F5F7FA"
+        "navigationBarBackgroundColor": "#C9F6A8"
       }
     },
     {
@@ -22,7 +22,7 @@
       "style": {
         "navigationBarTitleText": "",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#F5F7FA"
+        "navigationBarBackgroundColor": "#C9F6A8"
       }
     },
     {
@@ -30,7 +30,7 @@
       "style": {
         "navigationBarTitleText": "智能刷题",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#F5F7FA"
+        "navigationBarBackgroundColor": "#C9F6A8"
       }
     },
     {
@@ -38,7 +38,7 @@
       "style": {
         "navigationBarTitleText": "个人中心",
         "navigationStyle": "custom",
-        "navigationBarBackgroundColor": "#F5F7FA"
+        "navigationBarBackgroundColor": "#C9F6A8"
       }
     }
   ],
@@ -51,7 +51,7 @@
           "style": {
             "navigationBarTitleText": "刷题进行中",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "#C9F6A8"
           }
         },
         {
@@ -59,7 +59,7 @@
           "style": {
             "navigationBarTitleText": "考研题库",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "#C9F6A8"
           }
         }
       ]
@@ -72,7 +72,7 @@
           "style": {
             "navigationBarTitleText": "登录",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "#C9F6A8"
           }
         },
         {
@@ -80,7 +80,7 @@
           "style": {
             "navigationBarTitleText": "开始使用",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "#C9F6A8"
           }
         },
         {
@@ -88,7 +88,7 @@
           "style": {
             "navigationBarTitleText": "微信登录",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "#C9F6A8"
           }
         }
       ]
@@ -101,7 +101,7 @@
           "style": {
             "navigationBarTitleText": "隐私政策",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "#C9F6A8"
           }
         },
         {
@@ -109,7 +109,7 @@
           "style": {
             "navigationBarTitleText": "用户协议",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "#C9F6A8"
           }
         }
       ]
@@ -122,7 +122,7 @@
           "style": {
             "navigationBarTitleText": "错题本",
             "navigationStyle": "custom",
-            "navigationBarBackgroundColor": "#F5F7FA"
+            "navigationBarBackgroundColor": "#C9F6A8"
           }
         }
       ]
@@ -137,8 +137,8 @@
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "EXAM-MASTER",
-    "navigationBarBackgroundColor": "#F5F7FA",
-    "backgroundColor": "#F5F7FA",
+    "navigationBarBackgroundColor": "#C9F6A8",
+    "backgroundColor": "#C9F6A8",
     "backgroundTextStyle": "dark",
     "enablePullDownRefresh": false
   },

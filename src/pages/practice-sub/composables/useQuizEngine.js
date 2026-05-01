@@ -17,6 +17,12 @@ import { storageService } from '@/services/storageService.js';
 import { pickQuestions } from '@/pages/practice-sub/utils/smart-question-picker.js';
 import { generateAdaptiveSequence, getNextRecommendedQuestion } from '@/utils/learning/adaptive-learning-engine.js';
 import { logger } from '@/utils/logger.js';
+import {
+  buildQuizCompletionContent,
+  getQuizOptionLabel,
+  isCorrectQuizOption,
+  normalizeQuizQuestion
+} from '@/services/quiz-session-contract.js';
 
 /**
  * @param {Object} [options]
@@ -44,66 +50,37 @@ export function useQuizEngine(options = {}) {
   const currentQuestion = computed(() => {
     const q = questions.value[currentIndex.value];
     if (!q) return null;
-    return {
-      id: q.id || `q_${currentIndex.value}`,
-      question: q.question || q.title || '题目加载中...',
-      options: Array.isArray(q.options) ? q.options : [],
-      answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-      desc: q.desc || q.description || q.analysis || '暂无解析',
-      category: q.category || '未分类',
-      type: q.type || '单选',
-      difficulty: q.difficulty || 2
-    };
+    return normalizeQuizQuestion(q, currentIndex.value, {
+      defaultQuestion: '题目加载中...'
+    });
   });
 
   /** 完成弹窗文案（由外部传入 answeredQuestions 计算） */
   function getCompleteModalContent(answeredQuestions, diagnosisLoading, diagnosisReady, diagnosisSummary) {
-    const total = questions.value.length;
-    const correct = answeredQuestions.filter((a) => a.isCorrect).length;
-    const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-    const base = `本次完成 ${total} 题，正确率 ${accuracy}%`;
-    if (diagnosisLoading) return `${base}\n\nAI 正在分析你的答题数据...`;
-    if (diagnosisReady && diagnosisSummary) return `${base}\n\n${diagnosisSummary}`;
-    return `${base}\n\n点击查看 AI 诊断报告`;
+    return buildQuizCompletionContent({
+      questions: questions.value,
+      answeredQuestions,
+      diagnosisLoading,
+      diagnosisReady,
+      diagnosisSummary
+    });
   }
 
   // ---- helpers ----
 
   /** 从选项文本提取标签 A/B/C/D */
   function getOptionLabel(idx) {
-    if (!currentQuestion.value?.options) return '';
-    const option = currentQuestion.value.options[idx] || '';
-    const match = option.match(/^([A-D])\./);
-    return match ? match[1].toUpperCase() : ['A', 'B', 'C', 'D'][idx] || 'A';
+    return getQuizOptionLabel(currentQuestion.value, idx);
   }
 
   /** 判断某选项是否为正确答案 */
   function isCorrectOption(idx) {
-    if (!currentQuestion.value) return false;
-    const correctAnswer = currentQuestion.value.answer;
-    const optionLabel = getOptionLabel(idx);
-    if (['A', 'B', 'C', 'D'].includes(correctAnswer)) {
-      return optionLabel === correctAnswer;
-    }
-    const optionText = currentQuestion.value.options[idx] || '';
-    return optionText.startsWith(correctAnswer) || optionText.includes(correctAnswer);
+    return isCorrectQuizOption(currentQuestion.value, idx);
   }
 
   /** 标准化单个题目对象 */
   function _normalizeQuestion(q, index) {
-    return {
-      id: q.id || `q_${index}`,
-      question: q.question || q.title || `题目 ${index + 1}`,
-      options:
-        Array.isArray(q.options) && q.options.length >= 4
-          ? q.options
-          : ['A. 选项A', 'B. 选项B', 'C. 选项C', 'D. 选项D'],
-      answer: (q.answer || 'A').toString().toUpperCase().charAt(0),
-      desc: q.desc || q.description || q.analysis || '暂无解析',
-      category: q.category || '未分类',
-      type: q.type || '单选',
-      difficulty: q.difficulty || 2
-    };
+    return normalizeQuizQuestion(q, index, { fillMissingChoiceOptions: true });
   }
 
   // ---- core methods ----

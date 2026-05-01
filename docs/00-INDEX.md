@@ -40,6 +40,7 @@
 | 20 | [发布就绪清单](./20-RELEASE-READINESS.md) | 上线剩余任务、百度清洗队列、当前门禁结果、P0/P1/P2 发布阻断项 |
 | 21 | [Free LLM API 号池与降级策略](./21-FREE-LLM-POOL.md) | 免费/免费额度 AI provider 优先级、限额文档、降级和禁用无余额 key 策略 |
 | 22 | [工作区清理方案](./22-WORKSPACE-CLEANUP-PLAN.md) | 文档集中、审计归档、运行产物忽略和提交前清洁规则 |
+| 23 | [移动端设计方向与解耦准则](./23-MOBILE-APP-DESIGN-DIRECTION.md) | iOS/Android 主力产品的现代商业审美、模块解耦、动效、组件和美术资产策略 |
 
 ## 辅助目录
 

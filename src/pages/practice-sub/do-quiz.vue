@@ -579,6 +579,18 @@ import QuizProgress from './components/quiz-progress/quiz-progress.vue';
 // ✅ [P0重构] 核心引擎 composable
 import { useQuizEngine } from './composables/useQuizEngine.js';
 import {
+  buildQuizCompletionContent,
+  buildQuizAnswerRecord,
+  getQuizOptionLabel,
+  getQuizQuestionTypeLabel,
+  hasQuizSelectableOptions,
+  isCorrectQuizOption,
+  isQuizFlashcardMode,
+  buildQuizKnowledgeFeedback,
+  normalizeQuizQuestion,
+  upsertQuizAnswerRecord
+} from '@/services/quiz-session-contract.js';
+import {
   scheduleAndSave,
   previewSchedule,
   formatInterval,
@@ -717,97 +729,38 @@ export default {
       return !this.currentQuestion && !this.showEmptyBankModal && !this.showResumeModal && !this.showCompleteModal;
     },
     completeModalContent() {
-      const total = this.questions.length;
-      const correct = this.answeredQuestions ? this.answeredQuestions.filter((a) => a.isCorrect).length : 0;
-      const wrong = total - correct;
-      const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
-      const base = `本次完成 ${total} 题，正确率 ${accuracy}%`;
-
-      // ✅ [P3] 复习日程预览 — 让用户感知"这个App在帮我安排"
-      let scheduleHint = '';
-      if (wrong > 0) {
-        try {
-          // 模拟一次 \"Again\" 评分，预测下次复习时间
-          const previewMistake = { fsrs_due: Date.now() };
-          const result = scheduleMistakeReview(previewMistake, 'again');
-          if (result.fsrs_due) {
-            const nextDue = result.fsrs_due - Date.now();
-            const mins = Math.round(nextDue / 60000);
-            if (mins < 60) {
-              scheduleHint = `\n${wrong} 道错题已加入复习计划，约 ${mins} 分钟后首次复习`;
-            } else {
-              const hours = Math.round(nextDue / 3600000);
-              scheduleHint = `\n${wrong} 道错题已加入复习计划，约 ${hours} 小时后首次复习`;
-            }
-          }
-        } catch (_e) {
-          // 静默，不影响主流程
-        }
-      }
-
-      if (this.diagnosisLoading) return `${base}\n\nAI 正在分析你的答题数据...`;
-      if (this.diagnosisReady && this.diagnosisSummary) return `${base}\n\n${this.diagnosisSummary}${scheduleHint}`;
-      if (this.hasNextRecommendation) return `${base}${scheduleHint}\n\nAI 已根据薄弱点为你准备了下一组练习`;
-      return `${base}${scheduleHint}\n\n点击查看 AI 诊断报告`;
+      return buildQuizCompletionContent({
+        questions: this.questions,
+        answeredQuestions: this.answeredQuestions || [],
+        diagnosisLoading: this.diagnosisLoading,
+        diagnosisReady: this.diagnosisReady,
+        diagnosisSummary: this.diagnosisSummary,
+        hasNextRecommendation: this.hasNextRecommendation,
+        nextReviewDelayMs: this.getCompletionNextReviewDelayMs()
+      });
     },
     currentQuestion() {
       const q = this.questions[this.currentIndex];
       if (!q) return null;
 
-      // 判断是否为闪卡/分析题模式
-      const type = q.type || '单选';
-      const isFlashcard = type === 'analysis' || type === 'flashcard';
-
-      // 确保数据格式完整
-      return {
-        id: q.id || `q_${this.currentIndex}`,
-        question: q.question || q.title || '题目加载中...',
-        options: Array.isArray(q.options) ? q.options : [],
-        // 闪卡/分析题保留完整答案文本，选择题只取首字母
-        answer: isFlashcard ? q.answer || '暂无答案' : (q.answer || 'A').toString().toUpperCase().charAt(0),
-        desc: q.desc || q.description || q.explanation || q.analysis || '暂无解析',
-        category: q.category || '未分类',
-        type: type,
-        difficulty: q.difficulty || 2,
-        source: q.source || '',
-        year: q.year || '',
-        knowledgeNodeIds: q.knowledgeNodeIds || q.knowledge_points || [],
-        knowledge_points: q.knowledge_points || q.knowledgeNodeIds || [],
-        eloRating: q.eloRating || getQuestionEloRating(q, this.eloState.questionRatings)
-      };
+      return normalizeQuizQuestion(q, this.currentIndex, {
+        defaultQuestion: '题目加载中...',
+        resolveEloRating: (question) => getQuestionEloRating(question, this.eloState.questionRatings)
+      });
     },
     // 是否为闪卡模式（分析题或经典闪卡，无选项可选）
     isFlashcardMode() {
-      if (!this.currentQuestion) return false;
-      const type = this.currentQuestion.type;
-      return type === 'analysis' || type === 'flashcard' || this.currentQuestion.options.length === 0;
+      return isQuizFlashcardMode(this.currentQuestion);
     },
     questionTypeLabel() {
-      const labels = {
-        single_choice: '单选题',
-        multi_choice: '多选题',
-        analysis: '分析题',
-        flashcard: '闪卡'
-      };
-      return labels[this.currentQuestion?.type] || this.currentQuestion?.type || '单选题';
+      return getQuizQuestionTypeLabel(this.currentQuestion);
     },
     hasSelectableOptions() {
-      return Boolean(this.currentQuestion?.options?.length) && !this.isFlashcardMode;
+      return hasQuizSelectableOptions(this.currentQuestion);
     },
     isCorrectOption() {
       return (idx) => {
-        if (!this.currentQuestion) return false;
-        const correctAnswer = this.currentQuestion.answer;
-        const optionLabel = this.getOptionLabel(idx);
-
-        // 支持 answer 为 'A'/'B'/'C'/'D'
-        if (['A', 'B', 'C', 'D'].includes(correctAnswer)) {
-          return optionLabel === correctAnswer;
-        }
-
-        // 兼容选项内容匹配（如果answer不是A/B/C/D，可能是选项内容）
-        const optionText = this.currentQuestion.options[idx] || '';
-        return optionText.startsWith(correctAnswer) || optionText.includes(correctAnswer);
+        return isCorrectQuizOption(this.currentQuestion, idx);
       };
     },
     // ✅ 完美全对检测（用于庆祝动画）
@@ -1223,15 +1176,7 @@ export default {
     },
     // 从选项文本中提取标签（如 "A. 选项内容" -> "A"）
     getOptionLabel(idx) {
-      if (!this.currentQuestion || !this.currentQuestion.options) return '';
-      const option = this.currentQuestion.options[idx] || '';
-      // 提取第一个字母作为标签
-      const match = option.match(/^([A-D])\./);
-      if (match) {
-        return match[1].toUpperCase();
-      }
-      // 如果没有 "A." 格式，使用索引对应
-      return ['A', 'B', 'C', 'D'][idx] || 'A';
+      return getQuizOptionLabel(this.currentQuestion, idx);
     },
     startTimer() {
       // 防重入：清除已有定时器，避免多次调用导致计时加速
@@ -1252,6 +1197,18 @@ export default {
       const m = Math.floor(s / 60);
       const rs = s % 60;
       return `${m < 10 ? '0' + m : m}:${rs < 10 ? '0' + rs : rs}`;
+    },
+    getCompletionNextReviewDelayMs() {
+      const wrongCount = (this.answeredQuestions || []).filter((answer) => answer.isCorrect === false).length;
+      if (wrongCount <= 0) return null;
+
+      try {
+        const previewMistake = { fsrs_due: Date.now() };
+        const result = scheduleMistakeReview(previewMistake, 'again');
+        return result.fsrs_due ? result.fsrs_due - Date.now() : null;
+      } catch (_e) {
+        return null;
+      }
     },
     async selectOption(idx) {
       if (this.isAnalyzing || this.showResult || this.hasAnswered) return;
@@ -1281,15 +1238,18 @@ export default {
       // ✅ 记录已答题目
       const speedScore = this.calculateSpeedScore(isCorrect, timeSpent);
       const elo = this.updateQuestionElo(isCorrect, speedScore);
-      this.answeredQuestions.push({
-        questionId: this.currentQuestion?.id,
-        index: this.currentIndex,
-        userChoice: idx,
-        isCorrect,
-        timeSpent,
-        speedScore,
-        elo
-      });
+      this.answeredQuestions = upsertQuizAnswerRecord(
+        this.answeredQuestions,
+        buildQuizAnswerRecord({
+          question: this.currentQuestion,
+          index: this.currentIndex,
+          userChoice: idx,
+          isCorrect,
+          timeSpent,
+          speedScore,
+          elo
+        })
+      );
       this.recordKnowledgeAttempt(isCorrect, timeSpent, { speedScore, elo });
 
       // ✅ 记录答题数据到各个分析模块
@@ -1468,13 +1428,16 @@ export default {
       }
 
       // 记录已答题目（闪卡模式不判断对错，由用户自评）
-      this.answeredQuestions.push({
-        questionId: this.currentQuestion?.id,
-        index: this.currentIndex,
-        userChoice: 'flashcard_flip',
-        isCorrect: null, // 闪卡模式无对错之分
-        timeSpent
-      });
+      this.answeredQuestions = upsertQuizAnswerRecord(
+        this.answeredQuestions,
+        buildQuizAnswerRecord({
+          question: this.currentQuestion,
+          index: this.currentIndex,
+          userChoice: 'flashcard_flip',
+          isCorrect: null,
+          timeSpent
+        })
+      );
 
       // 震动反馈
       try {
@@ -1496,10 +1459,23 @@ export default {
         }
       }
 
+      const latestAnswer = [...this.answeredQuestions].reverse().find((item) => item.index === this.currentIndex);
+      const timeSpent = latestAnswer?.timeSpent || 0;
+      this.answeredQuestions = upsertQuizAnswerRecord(
+        this.answeredQuestions,
+        buildQuizAnswerRecord({
+          question: this.currentQuestion,
+          index: this.currentIndex,
+          userChoice: `flashcard_rating_${rating}`,
+          isCorrect: rating >= 3,
+          timeSpent,
+          rating
+        })
+      );
+
       // 更新学习统计
       this.updateStudyStats();
-      const latestAnswer = [...this.answeredQuestions].reverse().find((item) => item.index === this.currentIndex);
-      this.recordKnowledgeAttempt(rating >= 3, latestAnswer?.timeSpent || 0, { rating });
+      this.recordKnowledgeAttempt(rating >= 3, timeSpent, { rating });
 
       // 游戏化反馈：评分 ≥ 3 视为"记得"，给予正面反馈
       if (rating >= 3) {
@@ -2159,30 +2135,14 @@ export default {
       const visual = nodeId
         ? this.learningTrajectoryStore.getNodeVisualState(nodeId)
         : { state: 'unknown', color: '#DDE8DD', mastery: 0 };
-      const stateLabelMap = {
-        unknown: '待点亮',
-        primed: '接近掌握',
-        strong: '稳定掌握',
-        watch: '需要观察',
-        weak: '薄弱点'
-      };
-      const stateText = stateLabelMap[visual.state] || '已记录';
-      const masteryText = `${visual.mastery || 0}%`;
-      return {
-        nodeId,
-        label: node?.label || this.currentQuestion.category || '公共课综合',
-        color: visual.color || '#DDE8DD',
-        speedScore: activity?.speedScore || this.calculateSpeedScore(isCorrect, timeSpent),
-        tracks: node?.tracks || [],
-        trail: trail.map((item) => ({
-          id: item.id,
-          label: item.label,
-          type: item.type,
-          tracks: item.tracks || []
-        })),
-        chainText: trail.length > 1 ? trail.map((item) => item.label).join(' / ') : '',
-        summary: `${stateText}，当前掌握 ${masteryText}，已同步到首页图谱`
-      };
+      return buildQuizKnowledgeFeedback({
+        activity,
+        question: this.currentQuestion,
+        node,
+        trail,
+        visual,
+        speedScore: this.calculateSpeedScore(isCorrect, timeSpent)
+      });
     },
 
     calculateSpeedScore(isCorrect, timeSpent) {

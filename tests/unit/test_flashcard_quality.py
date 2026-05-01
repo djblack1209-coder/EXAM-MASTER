@@ -78,6 +78,30 @@ class FlashcardQualityTest(unittest.TestCase):
         self.assertEqual(report["files"][0]["blockedCards"][1]["cardId"], "english-2024-002")
         self.assertIn("answer", report["files"][0]["blockedCards"][1]["missingFields"])
 
+    def test_report_treats_known_answer_placeholders_as_missing(self):
+        from scripts.baidu.flashcard_quality import build_quality_report
+
+        with tempfile.TemporaryDirectory() as tmp:
+            flashcard_dir = Path(tmp)
+            write_bank(
+                flashcard_dir,
+                "english-2024.json",
+                [
+                    {
+                        "id": "english-2024-041",
+                        "type": "analysis",
+                        "question": "Question 41",
+                        "options": [],
+                        "answer": "完整的参考答案全文",
+                    }
+                ],
+            )
+
+            report = build_quality_report(flashcard_dir)
+
+        self.assertEqual(report["summary"]["missingAnswerCount"], 1)
+        self.assertIn("answer", report["files"][0]["blockedCards"][0]["missingFields"])
+
     def test_report_allows_answer_matched_cards_with_hashes(self):
         from scripts.baidu.flashcard_quality import build_quality_report
 

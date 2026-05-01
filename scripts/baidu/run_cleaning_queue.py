@@ -11,6 +11,7 @@ configured free or low-cost OpenAI-compatible LLM endpoint.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import re
@@ -51,6 +52,49 @@ LLM_PROVIDER_KEY_ENVS = [
     "SILICONFLOW_OFFICIAL_API_KEY",
     *[f"SILICONFLOW_DS_KEY_{index}" for index in range(1, 11)],
 ]
+SUPPORT_EVIDENCE_NAME_PATTERNS = (
+    "答案",
+    "解析",
+    "逐题",
+    "逐词",
+    "细解",
+    "精讲",
+    "答题卡",
+    "answer",
+    "analysis",
+    "explanation",
+)
+ANSWER_PLACEHOLDERS = {
+    "完整的参考答案全文",
+    "完整的答案解析文本",
+    "参考答案全文",
+    "答案解析文本",
+}
+
+
+def ensure_baidu_runtime(
+    argv: list[str],
+    *,
+    current_executable: str | None = None,
+    module_available: Callable[[str], bool] | None = None,
+    execv: Callable[[str, list[str]], None] | None = None,
+) -> None:
+    current_executable = current_executable or sys.executable
+    module_available = module_available or (lambda name: importlib.util.find_spec(name) is not None)
+    execv = execv or os.execv
+    if module_available("requests"):
+        return
+
+    venv_python = PROJECT_ROOT / ".venv-baidu" / "bin" / "python"
+    if venv_python.exists() and os.path.abspath(current_executable) != os.path.abspath(str(venv_python)):
+        execv(str(venv_python), [str(venv_python), str(Path(__file__).resolve()), *argv])
+        return
+
+    raise SystemExit(
+        "requests is required for Baidu Pan API calls. Install Baidu cleaning dependencies with "
+        "`python3 -m venv .venv-baidu && .venv-baidu/bin/pip install -r requirements-baidu.txt` "
+        "or run this script with `.venv-baidu/bin/python`."
+    )
 
 
 def utc_now() -> str:
@@ -148,13 +192,23 @@ def default_downloader(tasks: list[dict[str, Any]]) -> BaiduPan:
 
 def output_subject_for_task(task: dict[str, Any]) -> str:
     track = str(task.get("track") or "").strip()
-    if track and track.lower() != "unknown":
-        return track
     subject = str(task.get("subject") or "").strip()
     source_id = re.sub(r"[^A-Za-z0-9]+", "", str(task.get("sourceId") or ""))
+    evidence_name = " ".join(
+        str(task.get(key) or "")
+        for key in ("safeDisplayName", "fileName", "remotePath")
+    ).lower()
+    is_support_evidence = any(pattern.lower() in evidence_name for pattern in SUPPORT_EVIDENCE_NAME_PATTERNS)
+    if track and track.lower() != "unknown" and not is_support_evidence:
+        return track
     if subject and source_id:
         return f"{subject}-support-{source_id[-8:]}"
     return subject or "unknown"
+
+
+def has_usable_answer(card: dict[str, Any]) -> bool:
+    answer = str(card.get("answer") or "").strip()
+    return bool(answer) and answer not in ANSWER_PLACEHOLDERS
 
 
 def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
@@ -174,7 +228,7 @@ def default_processor(task: dict[str, Any], local_path: Path) -> dict[str, Any]:
         cards = payload.get("cards", [])
         question_count = int(payload.get("total_cards") or len(cards) or 0)
         if isinstance(cards, list):
-            missing_answer_count = sum(1 for card in cards if not str(card.get("answer") or "").strip())
+            missing_answer_count = sum(1 for card in cards if not has_usable_answer(card))
 
     return {
         "outputPath": str(output_path),
@@ -297,6 +351,9 @@ def main() -> None:
     if args.self_test:
         run_self_test()
         return
+
+    if not args.dry_run:
+        ensure_baidu_runtime(sys.argv[1:])
 
     env_files = ([] if args.no_default_env_files else DEFAULT_ENV_FILES) + args.env_file
     load_env_files(env_files, override=args.override_env)

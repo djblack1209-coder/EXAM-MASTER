@@ -72,6 +72,71 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertEqual([task["taskId"] for task in by_task], ["t_answer"])
         self.assertEqual([task["taskId"] for task in by_source], ["t_answer"])
 
+    def test_reexecs_with_baidu_virtualenv_when_requests_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            tmp_root = Path(tmp)
+            venv_python = tmp_root / ".venv-baidu" / "bin" / "python"
+            venv_python.parent.mkdir(parents=True)
+            venv_python.write_text("#!/bin/sh\n", encoding="utf-8")
+            calls = []
+
+            class ReexecCalled(Exception):
+                pass
+
+            def fake_execv(executable, args):
+                calls.append((executable, args))
+                raise ReexecCalled()
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                with self.assertRaises(ReexecCalled):
+                    runner.ensure_baidu_runtime(
+                        ["--limit", "1"],
+                        current_executable="/usr/bin/python3",
+                        module_available=lambda _name: False,
+                        execv=fake_execv,
+                    )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+
+        self.assertEqual(calls[0][0], str(venv_python))
+        self.assertEqual(calls[0][1][0], str(venv_python))
+        self.assertIn("--limit", calls[0][1])
+
+    def test_reexecs_when_current_python_resolves_to_same_base_binary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            tmp_root = Path(tmp)
+            base_python = tmp_root / "base" / "python3.14"
+            base_python.parent.mkdir(parents=True)
+            base_python.write_text("#!/bin/sh\n", encoding="utf-8")
+            venv_python = tmp_root / ".venv-baidu" / "bin" / "python"
+            venv_python.parent.mkdir(parents=True)
+            venv_python.symlink_to(base_python)
+            calls = []
+
+            class ReexecCalled(Exception):
+                pass
+
+            def fake_execv(executable, args):
+                calls.append((executable, args))
+                raise ReexecCalled()
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                with self.assertRaises(ReexecCalled):
+                    runner.ensure_baidu_runtime(
+                        ["--limit", "1"],
+                        current_executable=str(base_python),
+                        module_available=lambda _name: False,
+                        execv=fake_execv,
+                    )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+
+        self.assertEqual(calls[0][0], str(venv_python))
+
     def test_run_queue_once_downloads_and_marks_completed(self):
         with tempfile.TemporaryDirectory() as tmp:
             local_pdf = Path(tmp) / "raw" / "src_1-2018英语一.pdf"
@@ -259,6 +324,39 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertEqual(calls[0][0][-2:], ["english1", "2001"])
         self.assertTrue(result["outputPath"].endswith("data/flashcards/english1-2001.json"))
 
+    def test_default_processor_counts_known_answer_placeholders_as_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            original_pdf2flashcard = runner.PDF2FLASHCARD
+            original_subprocess_run = runner.subprocess.run
+            tmp_root = Path(tmp)
+            output_dir = tmp_root / "data" / "flashcards"
+            output_dir.mkdir(parents=True)
+            (output_dir / "english1-2010.json").write_text(
+                '{"total_cards":1,"cards":[{"id":"english1-2010-041","answer":"完整的参考答案全文"}]}',
+                encoding="utf-8",
+            )
+
+            def fake_run(args, cwd, check):
+                return None
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                runner.PDF2FLASHCARD = tmp_root / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
+                runner.subprocess.run = fake_run
+
+                result = runner.default_processor(
+                    {"subject": "english", "track": "english1", "year": 2010},
+                    tmp_root / "raw" / "2010.pdf",
+                )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+                runner.PDF2FLASHCARD = original_pdf2flashcard
+                runner.subprocess.run = original_subprocess_run
+
+        self.assertEqual(result["missingAnswerCount"], 1)
+        self.assertEqual(result["answerEvidenceStatus"], "missing_answers")
+
     def test_default_processor_isolates_unknown_track_outputs_by_source_id(self):
         with tempfile.TemporaryDirectory() as tmp:
             original_project_root = runner.PROJECT_ROOT
@@ -298,6 +396,46 @@ class BaiduCleaningRunnerTest(unittest.TestCase):
         self.assertEqual(calls[0][0][-2:], ["english-support-abcdef12", "2001"])
         self.assertTrue(result["outputPath"].endswith("data/flashcards/english-support-abcdef12-2001.json"))
         self.assertEqual(result["questionCount"], 1)
+
+    def test_default_processor_isolates_answer_analysis_outputs_even_when_track_known(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            original_project_root = runner.PROJECT_ROOT
+            original_pdf2flashcard = runner.PDF2FLASHCARD
+            original_subprocess_run = runner.subprocess.run
+            tmp_root = Path(tmp)
+            output_dir = tmp_root / "data" / "flashcards"
+            output_dir.mkdir(parents=True)
+            (output_dir / "english-support-abcdef12-2010.json").write_text(
+                '{"total_cards":1,"cards":[{"id":"support-001","answer":"A"}]}',
+                encoding="utf-8",
+            )
+            calls = []
+
+            def fake_run(args, cwd, check):
+                calls.append((args, cwd, check))
+
+            try:
+                runner.PROJECT_ROOT = tmp_root
+                runner.PDF2FLASHCARD = tmp_root / "scripts" / "pipeline" / "pdf2flashcard-v2.py"
+                runner.subprocess.run = fake_run
+
+                result = runner.default_processor(
+                    {
+                        "subject": "english",
+                        "track": "english1",
+                        "sourceId": "src_1234567890abcdef12",
+                        "year": 2010,
+                        "safeDisplayName": "2010年真题逐题细解.pdf",
+                    },
+                    tmp_root / "raw" / "2010-answer.pdf",
+                )
+            finally:
+                runner.PROJECT_ROOT = original_project_root
+                runner.PDF2FLASHCARD = original_pdf2flashcard
+                runner.subprocess.run = original_subprocess_run
+
+        self.assertEqual(calls[0][0][-2:], ["english-support-abcdef12", "2010"])
+        self.assertTrue(result["outputPath"].endswith("data/flashcards/english-support-abcdef12-2010.json"))
 
     def test_default_processor_falls_back_to_subject_when_track_unknown(self):
         with tempfile.TemporaryDirectory() as tmp:
