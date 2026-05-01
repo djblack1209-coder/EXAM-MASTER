@@ -38,6 +38,7 @@ describe('mobile module inventory', () => {
     expect(inventory.historicalModules.plan.pages).toEqual(['pages/plan/index']);
     expect(inventory.historicalModules.studyDetail.pages).toEqual(['pages/study-detail/index']);
     expect(inventory.orphanedCommonPages).toEqual(['pages/common/404']);
+    expect(inventory).not.toHaveProperty('generatedAt');
   });
 
   it('excludes colocated page components from page route inventory', () => {

@@ -93,7 +93,6 @@ export function buildMobileModuleInventory({ pagesConfig, pageFiles }) {
   const historicalSet = new Set(Object.values(historicalModules).flatMap((module) => module.pages));
 
   return {
-    generatedAt: new Date().toISOString(),
     exposedRoutes,
     hiddenPageFiles,
     historicalModules,
