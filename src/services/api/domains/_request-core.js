@@ -434,6 +434,7 @@ export async function request(path, data = {}, options = {}) {
     headers['X-Request-Timestamp'] = String(timestamp);
     headers['X-Request-Sign'] = _requestSign(path, timestamp);
 
+    let requestData = data;
     if (!options.skipAuth) {
       try {
         const token = getToken();
@@ -443,7 +444,7 @@ export async function request(path, data = {}, options = {}) {
         } else if (userId) {
           headers['X-User-Id'] = userId;
           if (data && typeof data === 'object' && !Array.isArray(data)) {
-            data.userId = userId;
+            requestData = { ...data, userId };
           }
         }
       } catch (e) {
@@ -463,7 +464,7 @@ export async function request(path, data = {}, options = {}) {
           uni.request({
             url: getActiveBaseUrl() + path,
             method: 'POST',
-            data: data,
+            data: requestData,
             header: headers,
             timeout: options.timeout || config.api.timeout,
             success: (res) => {

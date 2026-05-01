@@ -199,6 +199,12 @@ const GLOBAL_KEYS = new Set([
   'cached_schools_time'
 ]);
 
+const UNSCOPED_KEY_PREFIXES = ['_enc_', 'school_detail_', 'recovery_daily_reset_', 'recovery_monthly_reset_'];
+
+function isUnscopedKey(key) {
+  return GLOBAL_KEYS.has(key) || UNSCOPED_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
+}
+
 /**
  * 解析存储键：对用户级 key 自动加 userId 前缀
  * 全局 key 原样返回，用户级 key 返回 `u_${userId}_${key}`
@@ -208,11 +214,7 @@ const GLOBAL_KEYS = new Set([
  */
 function resolveKey(key) {
   // 全局键 / 内部加密前缀 / 动态全局模式 → 原样返回
-  if (GLOBAL_KEYS.has(key)) return key;
-  if (key.startsWith('_enc_')) return key;
-  if (key.startsWith('school_detail_')) return key;
-  if (key.startsWith('recovery_daily_reset_')) return key;
-  if (key.startsWith('recovery_monthly_reset_')) return key;
+  if (isUnscopedKey(key)) return key;
 
   const uid = getUserId();
   if (!uid) return key; // 未登录降级
@@ -223,6 +225,13 @@ function resolveKey(key) {
 // 高频写入场景（如练习状态保存）使用防抖，减少 I/O 操作
 const _pendingWrites = new Map(); // key -> { value, timer }
 const DEBOUNCE_DELAY = 500; // 防抖延迟 500ms
+
+function clearPendingWrites() {
+  _pendingWrites.forEach(({ timer }) => {
+    clearTimeout(timer);
+  });
+  _pendingWrites.clear();
+}
 
 /**
  * 存储服务类
@@ -538,7 +547,7 @@ class StorageService {
 
       if (!preserveGlobal && preserveKeys.length === 0) {
         uni.clearStorageSync();
-        _pendingWrites.clear();
+        clearPendingWrites();
         return true;
       }
 
@@ -563,7 +572,7 @@ class StorageService {
         uni.removeStorageSync(key);
       }
 
-      _pendingWrites.clear();
+      clearPendingWrites();
       return true;
     } catch (error) {
       logger.error('[StorageService] 清空存储失败', error);
@@ -620,11 +629,7 @@ class StorageService {
       for (const rawKey of allKeys) {
         // 跳过已有前缀的、全局的、加密前缀的
         if (rawKey.startsWith('u_')) continue;
-        if (rawKey.startsWith('_enc_')) continue;
-        if (GLOBAL_KEYS.has(rawKey)) continue;
-        if (rawKey.startsWith('school_detail_')) continue;
-        if (rawKey.startsWith('recovery_daily_reset_')) continue;
-        if (rawKey.startsWith('recovery_monthly_reset_')) continue;
+        if (isUnscopedKey(rawKey)) continue;
 
         const prefixedKey = `u_${uid}_${rawKey}`;
         // 如果带前缀的 key 已存在，不覆盖（用户可能已有新数据）
@@ -1187,7 +1192,7 @@ class StorageService {
       const allMistakes = this.get('mistake_book', []);
 
       // 应用筛选条件
-      let filteredMistakes = allMistakes;
+      let filteredMistakes = Array.isArray(allMistakes) ? [...allMistakes] : [];
       if (filters.is_mastered !== undefined) {
         filteredMistakes = filteredMistakes.filter((m) => m.is_mastered === filters.is_mastered);
       }
