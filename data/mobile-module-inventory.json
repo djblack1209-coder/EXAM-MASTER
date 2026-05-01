@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-05-01T19:38:23.075Z",
+  "exposedRoutes": [
+    "pages/splash/index",
+    "pages/index/index",
+    "pages/practice/index",
+    "pages/profile/index",
+    "pages/practice-sub/do-quiz",
+    "pages/practice-sub/question-bank",
+    "pages/login/index",
+    "pages/login/onboarding",
+    "pages/login/wechat-callback",
+    "pages/settings/privacy",
+    "pages/settings/terms",
+    "pages/mistake/index"
+  ],
+  "hiddenPageFiles": [
+    "pages/common/404",
+    "pages/favorite/index",
+    "pages/login/qq-callback",
+    "pages/plan/adaptive",
+    "pages/plan/create",
+    "pages/plan/index",
+    "pages/practice-sub/error-clusters",
+    "pages/practice-sub/file-manager",
+    "pages/practice-sub/mock-exam",
+    "pages/practice-sub/smart-review",
+    "pages/practice-sub/sprint-mode",
+    "pages/resource/index",
+    "pages/settings/index",
+    "pages/study-detail/index"
+  ],
+  "historicalModules": {
+    "resource": {
+      "pages": [
+        "pages/resource/index"
+      ]
+    },
+    "plan": {
+      "pages": [
+        "pages/plan/adaptive",
+        "pages/plan/create",
+        "pages/plan/index"
+      ]
+    },
+    "favorite": {
+      "pages": [
+        "pages/favorite/index"
+      ]
+    },
+    "studyDetail": {
+      "pages": [
+        "pages/study-detail/index"
+      ]
+    },
+    "practiceExtended": {
+      "pages": [
+        "pages/practice-sub/error-clusters",
+        "pages/practice-sub/file-manager",
+        "pages/practice-sub/mock-exam",
+        "pages/practice-sub/smart-review",
+        "pages/practice-sub/sprint-mode"
+      ]
+    }
+  },
+  "orphanedCommonPages": [
+    "pages/common/404"
+  ]
+}
