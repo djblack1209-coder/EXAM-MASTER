@@ -24,18 +24,26 @@ function isDateString(value) {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
 
+function createDefaultCheckinData() {
+  return {
+    currentStreak: 0,
+    longestStreak: 0,
+    totalCheckins: 0,
+    lastCheckinDate: null,
+    checkinHistory: [],
+    todayChecked: false,
+    missedDays: 0,
+    recoveryCards: 0
+  };
+}
+
+function resetCheckinData(target) {
+  Object.assign(target, createDefaultCheckinData());
+}
+
 export class CheckinStreakService {
   constructor() {
-    this.data = reactive({
-      currentStreak: 0,
-      longestStreak: 0,
-      totalCheckins: 0,
-      lastCheckinDate: null,
-      checkinHistory: [],
-      todayChecked: false,
-      missedDays: 0,
-      recoveryCards: 0
-    });
+    this.data = reactive(createDefaultCheckinData());
     this.userId = null;
     this.listeners = new Map();
   }
@@ -149,11 +157,15 @@ export class CheckinStreakService {
 
   async _loadData() {
     try {
+      resetCheckinData(this.data);
       const saved = storageService.get(`checkin_${this.userId}`);
       if (saved && typeof saved === 'object') {
         Object.assign(this.data, saved);
       } else if (typeof saved === 'string') {
-        Object.assign(this.data, JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          Object.assign(this.data, parsed);
+        }
       }
       this._normalizeLoadedData();
     } catch (error) {
@@ -163,6 +175,7 @@ export class CheckinStreakService {
       } catch {
         /* ignore cleanup failure */
       }
+      resetCheckinData(this.data);
       this._normalizeLoadedData();
     }
   }

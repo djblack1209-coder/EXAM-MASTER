@@ -50,6 +50,40 @@ describe('checkin-streak persistence hardening', () => {
     expect(service.data.checkinHistory).toEqual([]);
   });
 
+  it('resets in-memory state when initializing a different user without persisted data', async () => {
+    storageMock.get.mockReturnValueOnce({
+      currentStreak: 12,
+      longestStreak: 15,
+      totalCheckins: 33,
+      recoveryCards: 4,
+      checkinHistory: [{ date: '2026-04-30', status: 'checked' }],
+      lastCheckinDate: null
+    });
+    storageMock.get.mockReturnValueOnce(null);
+
+    const { CheckinStreakService } = await import('@/services/checkin-streak.js');
+    const service = new CheckinStreakService();
+
+    await service.init('first_user');
+    expect(service.getCheckinInfo()).toMatchObject({
+      currentStreak: 12,
+      longestStreak: 15,
+      totalCheckins: 33,
+      recoveryCards: 4
+    });
+
+    await service.init('second_user');
+    expect(service.getCheckinInfo()).toMatchObject({
+      currentStreak: 0,
+      longestStreak: 0,
+      totalCheckins: 0,
+      recoveryCards: 0,
+      lastCheckinDate: null,
+      missedDays: 0
+    });
+    expect(service.data.checkinHistory).toEqual([]);
+  });
+
   it('sanitizes state before save to storage', async () => {
     const { CheckinStreakService } = await import('@/services/checkin-streak.js');
     const service = new CheckinStreakService();
