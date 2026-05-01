@@ -24,6 +24,7 @@
     "audit:release:external:report": "node scripts/build/release-external-gate.mjs",
     "audit:release:external": "node scripts/build/release-external-gate.mjs --fail-on-blockers",
     "audit:wechat:artifacts": "node scripts/build/verify-wechat-artifacts.mjs",
+    "audit:app:artifacts": "node scripts/build/verify-app-artifacts.mjs",
     "smoke:jwt": "node scripts/build/create-smoke-jwt.mjs",
     "test:cloud:smoke": "node scripts/build/live-cloud-smoke.mjs",
     "test:cloud:smoke:release": "node scripts/build/live-cloud-smoke.mjs --fail-on-skipped",
