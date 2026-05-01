@@ -58,6 +58,21 @@ describe('storageService', () => {
     });
   });
 
+  describe('saveDebounced', () => {
+    it('clear 会取消待执行的防抖写入，避免清空后恢复旧数据', () => {
+      vi.useFakeTimers();
+      try {
+        storageService.saveDebounced('temp_cache_key', 'stale_value');
+        storageService.clear(true, { preserveGlobal: false });
+        vi.advanceTimersByTime(600);
+
+        expect(global.__mockStorage.temp_cache_key).toBeUndefined();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
+
   describe('remove / clear', () => {
     it('remove 删除指定键', () => {
       storageService.remove('some_key');
@@ -144,6 +159,21 @@ describe('storageService', () => {
     it('返回键名数组', () => {
       const keys = storageService.getAllKeys();
       expect(Array.isArray(keys)).toBe(true);
+    });
+  });
+
+  describe('getMistakes 本地降级', () => {
+    it('返回按时间排序的分页结果时不改变本地缓存原始顺序', async () => {
+      const originalMistakes = [
+        { id: 'old', created_at: 1, is_mastered: false },
+        { id: 'new', created_at: 2, is_mastered: false }
+      ];
+      storageService.save('mistake_book', originalMistakes, true);
+
+      const result = await storageService.getMistakes(1, 20);
+
+      expect(result.list.map((item) => item.id)).toEqual(['new', 'old']);
+      expect(storageService.get('mistake_book').map((item) => item.id)).toEqual(['old', 'new']);
     });
   });
 });

@@ -68,12 +68,9 @@ function safeGetStorageSync(key) {
   return '';
 }
 
-/**
- * 获取当前用户ID（统一入口）
- */
-export const getUserId = () => {
+function getStoredAuthValue(key) {
   try {
-    const encrypted = normalizeStringValue(safeGetStorageSync('_enc_EXAM_USER_ID'));
+    const encrypted = normalizeStringValue(safeGetStorageSync(`_enc_${key}`));
     if (encrypted) {
       const decrypted = deobfuscate(encrypted);
       if (decrypted !== null) return decrypted;
@@ -82,24 +79,16 @@ export const getUserId = () => {
     /* ignore */
   }
 
-  const plainUserId = normalizeStringValue(safeGetStorageSync('EXAM_USER_ID'));
-  return plainUserId || null;
-};
+  const plainValue = normalizeStringValue(safeGetStorageSync(key));
+  return plainValue || null;
+}
+
+/**
+ * 获取当前用户ID（统一入口）
+ */
+export const getUserId = () => getStoredAuthValue('EXAM_USER_ID');
 
 /**
  * 获取当前用户Token（统一入口）
  */
-export const getToken = () => {
-  try {
-    const encrypted = normalizeStringValue(safeGetStorageSync('_enc_EXAM_TOKEN'));
-    if (encrypted) {
-      const decrypted = deobfuscate(encrypted);
-      if (decrypted !== null) return decrypted;
-    }
-  } catch {
-    /* ignore */
-  }
-
-  const plainToken = normalizeStringValue(safeGetStorageSync('EXAM_TOKEN'));
-  return plainToken || null;
-};
+export const getToken = () => getStoredAuthValue('EXAM_TOKEN');
