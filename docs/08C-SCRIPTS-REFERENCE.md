@@ -1,6 +1,6 @@
 # Scripts Reference
 
-Last updated: 2026-04-29
+Last updated: 2026-05-02
 
 ## Core quality gates
 
@@ -43,7 +43,7 @@ Notes:
 - `npm run deps:audit:prod`: npm dependency audit for production dependencies only (non-blocking).
 - `npm run audit:question-bank:report`: writes `data/question-bank-release-audit.json` with public-course coverage gaps and published-card answer-evidence blockers.
 - `npm run audit:question-bank:release`: same audit in release mode; exits non-zero while coverage or answer-evidence blockers remain.
-- `npm run audit:release:external:report`: writes `data/release-external-audit.json` for production env, auth smoke credentials, Baidu sync inputs, WeChat device evidence, and ops evidence.
+- `npm run audit:release:external:report`: writes `data/release-external-audit.json` for production env, auth smoke credentials, Baidu sync inputs, WeChat device evidence, and ops evidence. Long-running release evidence defaults to `data/release-evidence/` and stays outside the core docs set.
 - `npm run audit:release:external`: same external audit in release mode; exits non-zero while external blockers remain.
 - `npm run audit:wechat:artifacts`: verifies the generated `dist/build/mp-weixin` artifact has required app files and no server-only secret names.
 - `npm run test:cloud:smoke:release`: cloud smoke in release mode; skipped checks fail the command, so auth coverage cannot be accidentally treated as passing.
@@ -95,7 +95,7 @@ AI cost controls:
 
 ## PNG asset generation
 
-- `npm run assets:png:dry-run`: parses `docs/16-PNG-ASSET-PROMPTS.md` and prints all planned PNG jobs.
+- `npm run assets:png:dry-run`: reads PNG prompt rows from `docs/07-STYLING-SYSTEM.md` when present; otherwise derives planned PNG jobs from the current tracked asset inventory.
 - `npm run assets:png:generate`: generates all assets through the OpenAI-compatible image API using `IMAGE_API_KEY` from the environment.
 - `npm run assets:png:validate`: validates generated PNG dimensions and alpha-channel requirements under `asset-inbox/png-redesign/`.
 
@@ -112,7 +112,7 @@ Notes:
 
 ## Generated report outputs
 
-Runtime-generated reports are written to `docs/reports/` and are git-ignored.
+Runtime-generated reports are written to `data/reports/` and are git-ignored.
 
 - Deep scan/UI: `PROJECT_DEEP_SCAN_REPORT.md`, `ui-quality-report.json`
 - Visual: `visual-report/`, `visual-results.json`

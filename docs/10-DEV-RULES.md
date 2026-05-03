@@ -1,6 +1,6 @@
 # 开发规范与标准操作流程
 
-> 合并自原 docs/sop/ 目录下 8 个文件
+> 合并自旧 SOP 目录下 8 个文件
 
 ---
 
@@ -593,7 +593,7 @@
 - **关联文件**：`vite.config.js`, `/etc/nginx/conf.d/exam-master.conf`
 # AI Development Rules — Iron Laws
 
-> Version: 2.0 | 迁移自 `docs/AI-SOP/SOP-RULES.md`
+> Version: 2.0 | 迁移自旧 AI-SOP 规则
 >
 > These rules govern how AI assistants work with the EXAM-MASTER codebase.
 > **Violation of any rule = immediate rollback.**
@@ -604,14 +604,14 @@
 
 Before writing ANY code, read these files in order:
 
-1. `CLAUDE.md` — 30-second project overview
-2. `docs/status/HEALTH.md` — current bugs and deploy status
-3. `docs/AI-SOP/MODULE-INDEX.md` — locate relevant files
-4. 按 `docs/sop/DOC-FETCH-RULES.md` 第一条分级判断，查阅对应技术的官方文档（优先用 Context7 → 本地缓存 `docs/doc-cache/` → web_fetch 兜底）
+1. `docs/00-INDEX.md` — project overview and current document map
+2. `docs/03-MODULE-INDEX.md` — locate relevant files
+3. `docs/10-DEV-RULES.md` — workflow, testing, and verification policy
+4. 按本文“官方文档强制查阅规则”判断是否需要查阅官方文档（优先用 Context7 或官方文档，避免依赖过期缓存）
 
 ## Rule 2: Locate Before Fix
 
-Never guess file locations. Use `docs/AI-SOP/MODULE-INDEX.md` to find the exact file for your task.
+Never guess file locations. Use `docs/03-MODULE-INDEX.md` to find the exact file for your task.
 
 ## Rule 3: Layer Discipline
 
@@ -628,19 +628,23 @@ Router/Page → Component → Store → Service → Backend
 
 | Document type    | Must go in                | Naming                                |
 | ---------------- | ------------------------- | ------------------------------------- |
-| Project overview | `docs/AI-SOP/`            | `PROJECT-BRIEF.md`, `ARCHITECTURE.md` |
-| Module reports   | `docs/AI-SOP/modules/`    | `kebab-case.md`                       |
-| Change log       | `docs/sop/CHANGE-LOG.md`  | Append only                           |
-| Bug tracking     | `docs/status/HEALTH.md`   | Edit in place                         |
-| Design specs     | `docs/superpowers/specs/` | `YYYY-MM-DD-name-design.md`           |
-| Release notes    | `docs/releases/`          | `release-vX.Y.Z.md`                   |
+| Document type       | Must go in | Naming |
+| ------------------- | ---------- | ------ |
+| Project overview    | `docs/00-INDEX.md` / `docs/01-PRODUCT-VISION.md` | Edit in place |
+| Architecture/module | `docs/02-ARCHITECTURE.md` / `docs/03-MODULE-INDEX.md` | Edit in place |
+| API/data/frontend   | `docs/04-API-DOCUMENTATION.md` / `docs/05-DATABASE-SCHEMAS.md` / `docs/06-FRONTEND-REFERENCE.md` | Edit in place |
+| Style/design        | `docs/07-STYLING-SYSTEM.md` | Edit in place |
+| Test/scripts        | `docs/08-TESTING-INFRA.md` / `docs/08B-UTILS-REFERENCE.md` / `docs/08C-SCRIPTS-REFERENCE.md` | Edit in place |
+| Deploy/release      | `docs/09-DEPLOYMENT-GUIDE.md` / `docs/09A-LAF-BACKEND-DEPLOYMENT.md` / `docs/11-RELEASE-NOTES.md` | Edit in place |
+| Decisions/changelog | `docs/10-DEV-RULES.md` / `docs/12-CHANGELOG.md` | Edit in place |
 
 ### FORBIDDEN
 
-- `.md` files at project root (except `README.md`, `CLAUDE.md`)
+- `.md` files at project root
 - Docs inside `src/`
 - Chinese filenames (use kebab-case English, content can be Chinese)
-- New doc directories outside `docs/`
+- New project documentation directories outside `docs/`
+- New long-term docs unless an existing core doc cannot absorb the content and the total project-doc count remains below 20
 
 ## Rule 5: Security Checklist
 
@@ -685,10 +689,10 @@ Main package MUST stay under **2MB**.
 After finishing ANY task:
 
 1. 质量关卡 → `npm run lint` + `npm test` + `npm run build:h5`（全过才算完）
-2. 按 `docs/sop/REGRESSION-TEST-STRATEGY.md` 触发矩阵执行对应级别回归测试
-3. 新功能 → 按 `docs/sop/ACCEPTANCE-CHECKLIST.md` 对照相关条目验收
-4. 重大决策 → 记入 `docs/sop/AI-DECISION-LOG.md`
-5. 更新 `docs/sop/CHANGE-LOG.md` + `docs/status/HEALTH.md`
+2. 按本文“回归测试策略”触发矩阵执行对应级别回归测试
+3. 新功能 → 按本文“验收清单”或相关核心文档对照验收
+4. 重大决策 → 记入本文“决策记录”章节
+5. 更新 `docs/12-CHANGELOG.md`，正式发布再更新 `docs/11-RELEASE-NOTES.md`
 6. 自检 → 构建通过？没泄露密钥？文档更新了？
 
 ## Rule 10: Verify Before Claim
@@ -927,21 +931,20 @@ context7_query_docs("/vuejs/pinia", "在路由守卫中使用 store 的正确方
 
 **适用场景**：查特定 API 用法、查特定功能的代码示例。
 
-### 第 2 层：本地文档摘要缓存
+### 第 2 层：项目核心文档
 
-高频易错点的关键结论预存在 `docs/doc-cache/` 目录中，AI 优先读本地缓存。
+高频项目结论保存在 20 个以内的核心文档中，不再维护独立文档缓存目录：
 
-```
-# 目录结构
-docs/doc-cache/
-├── README.md          ← 缓存使用说明
-├── vue3.md            ← Vue 3 高频易错点摘要
-├── pinia.md           ← Pinia 关键用法摘要
-├── uniapp.md          ← uni-app 平台差异摘要
-├── mongodb.md         ← MongoDB 查询/聚合摘要
-├── wechat-mp.md       ← 微信小程序 API 摘要
-├── eslint-v9.md       ← ESLint v9 flat config 摘要
-└── typescript.md      ← TypeScript 配置和类型工具摘要
+```text
+docs/02-ARCHITECTURE.md          技术栈与数据流
+docs/03-MODULE-INDEX.md          文件定位
+docs/04-API-DOCUMENTATION.md     接口契约
+docs/05-DATABASE-SCHEMAS.md      MongoDB schema
+docs/06-FRONTEND-REFERENCE.md    前端页面、组件、Store、Service
+docs/07-STYLING-SYSTEM.md        视觉、token、资产方向
+docs/08-TESTING-INFRA.md         测试基础设施
+docs/08B-UTILS-REFERENCE.md      工具函数
+docs/08C-SCRIPTS-REFERENCE.md    脚本与运行产物
 ```
 
 **适用场景**：已知的高频坑点、项目特有的配置约定。
@@ -1035,11 +1038,11 @@ web_fetch("https://pinia.vuejs.org/zh/")
   │     ├─ 第1层：Context7 精准查询（优先）
   │     │     └─ 找到 → 确认 API 签名 → 开始写代码
   │     │
-  │     ├─ 第2层：读 docs/doc-cache/ 对应文件
+  │     ├─ 第2层：读 docs/ 中对应核心文档
   │     │     └─ 有对应条目 → 确认后开始写代码
   │     │
   │     └─ 第3层：web_fetch 拉取官方特定页面
-  │           └─ 找到 → 确认 + 把关键结论追加到 doc-cache → 开始写代码
+  │           └─ 找到 → 确认 + 把长期结论合并进对应核心文档 → 开始写代码
   │
   └─ 🟢 不用查 → 直接写代码（参考项目中已有正确用例）
 ```
@@ -1078,12 +1081,12 @@ web_fetch("https://pinia.vuejs.org/zh/")
 
 ---
 
-## 第七条：文档缓存维护规则
+## 第七条：核心文档维护规则
 
-`docs/doc-cache/` 目录是"经验库"——每次通过查文档解决了问题，把结论沉淀下来：
+不再维护散落缓存文档。每次通过官方文档解决了长期有效的问题，只把结论沉淀到对应核心文档，避免新增 Markdown 文件。
 
 ```markdown
-# 追加格式示例（追加到 docs/doc-cache/pinia.md）
+# 追加格式示例（追加到 docs/06-FRONTEND-REFERENCE.md 或 docs/08C-SCRIPTS-REFERENCE.md）
 
 ## storeToRefs 在 setup store 中的用法
 
@@ -1107,19 +1110,19 @@ web_fetch("https://pinia.vuejs.org/zh/")
 
 ## 第八条：与现有规则的集成
 
-本规则与 `CLAUDE.md` 和 `AI-DEV-RULES.md` 并行生效：
+本规则与项目当前 17 个核心文档并行生效：
 
-**AI-DEV-RULES Rule 1（Read Before Code）扩展为**：
+**Read Before Code 扩展为**：
 
 ```
-1. 读 CLAUDE.md
-2. 读 docs/status/HEALTH.md
-3. 读 docs/AI-SOP/MODULE-INDEX.md
+1. 读 docs/00-INDEX.md
+2. 读 docs/03-MODULE-INDEX.md
+3. 读 docs/10-DEV-RULES.md
 4.【新增】按第一条分级判断，查阅对应技术的官方文档
 5. 开始写代码
 ```
 
-**CHANGE-LOG 更新时**，如果本次修改参考了文档，追加一行：
+**docs/12-CHANGELOG.md 更新时**，如果本次修改参考了文档，追加一行：
 
 ```markdown
 - 参考文档：[文档名称](URL)
@@ -1132,7 +1135,7 @@ web_fetch("https://pinia.vuejs.org/zh/")
 每次升级 `package.json` 中的依赖版本后，必须同步更新：
 
 1. 本文件第三条中的"项目版本"列
-2. `docs/doc-cache/` 中对应技术的缓存文件（标记旧版内容、补充新版变化）
+2. `docs/` 中对应核心文档（标记旧版内容、补充新版变化）
 3. 运行完整质量关卡（lint + test + build）确认升级无破坏
 # 回归测试策略
 
@@ -1301,27 +1304,25 @@ npm run test:visual
 
 | When you...                                      | Update these docs                                      |
 | ------------------------------------------------ | ------------------------------------------------------ |
-| Change frontend page (`src/pages/`)              | `modules/frontend-pages.md` + CHANGE-LOG               |
-| Change component (`src/components/`)             | `modules/frontend-components.md` + CHANGE-LOG          |
-| Change service (`src/services/`)                 | `modules/frontend-services.md` + CHANGE-LOG            |
-| Change store (`src/stores/`)                     | `modules/frontend-stores.md` + CHANGE-LOG              |
-| Change cloud function (`laf-backend/functions/`) | `modules/backend-functions.md` + CHANGE-LOG            |
-| Change DB schema                                 | `modules/backend-schemas.md` + CHANGE-LOG              |
-| Change API contract                              | `modules/api-documentation.md` + CHANGE-LOG            |
-| Add/remove dependency                            | `PROJECT-BRIEF.md` + CHANGE-LOG                        |
-| Change build/deploy config                       | `ARCHITECTURE.md` + CHANGE-LOG                         |
-| Discover a bug                                   | `docs/status/HEALTH.md` → Active Issues                |
-| Fix a bug                                        | `docs/status/HEALTH.md` → move to Resolved             |
-| Identify tech debt                               | `docs/status/HEALTH.md` → Tech Debt                    |
-| Change styles/theme                              | `modules/styling-system.md` + CHANGE-LOG               |
-| Change test infra                                | `modules/testing-infra.md` + CHANGE-LOG                |
-| Add new LLM provider                             | `modules/backend-functions.md` (号池章节) + CHANGE-LOG |
-| Change server config                             | CHANGE-LOG (scope: `deploy` or `infra`)                |
-| Make a major technical decision                  | `AI-DECISION-LOG.md` → 追加决策记录                    |
-| Complete a new feature                           | `ACCEPTANCE-CHECKLIST.md` → 对照相关条目验收           |
-| Fix a bug that may affect other features         | `REGRESSION-TEST-STRATEGY.md` → 按触发矩阵执行测试     |
-| Modify code that affects multiple files          | `CHANGE-IMPACT-ANALYSIS.md` → 填写影响分析报告         |
-| Change SOP rules or create new SOP doc           | `WORKFLOW-PLAYBOOK.md` + CLAUDE.md 文档体系表          |
+| Change frontend page (`src/pages/`)              | `docs/06-FRONTEND-REFERENCE.md` + `docs/12-CHANGELOG.md` |
+| Change component (`src/components/`)             | `docs/06-FRONTEND-REFERENCE.md` + `docs/12-CHANGELOG.md` |
+| Change service (`src/services/`)                 | `docs/06-FRONTEND-REFERENCE.md` + `docs/12-CHANGELOG.md` |
+| Change store (`src/stores/`)                     | `docs/06-FRONTEND-REFERENCE.md` + `docs/12-CHANGELOG.md` |
+| Change cloud function (`laf-backend/functions/`) | `docs/04-API-DOCUMENTATION.md` + `docs/09A-LAF-BACKEND-DEPLOYMENT.md` |
+| Change DB schema                                 | `docs/05-DATABASE-SCHEMAS.md` + `docs/12-CHANGELOG.md` |
+| Change API contract                              | `docs/04-API-DOCUMENTATION.md` + `docs/12-CHANGELOG.md` |
+| Add/remove dependency                            | `docs/02-ARCHITECTURE.md` + `docs/12-CHANGELOG.md` |
+| Discover or fix a bug                            | `docs/12-CHANGELOG.md`; only long-term policy goes into `docs/10-DEV-RULES.md` |
+| Identify tech debt                               | `docs/10-DEV-RULES.md` decision/debt section or current issue tracker |
+| Change styles/theme                              | `docs/07-STYLING-SYSTEM.md` + `docs/12-CHANGELOG.md` |
+| Change test infra                                | `docs/08-TESTING-INFRA.md` + `docs/12-CHANGELOG.md` |
+| Add new LLM provider                             | `docs/02-ARCHITECTURE.md` + `docs/04-API-DOCUMENTATION.md` |
+| Change server config                             | `docs/09-DEPLOYMENT-GUIDE.md` + `docs/12-CHANGELOG.md` |
+| Make a major technical decision                  | `docs/10-DEV-RULES.md` decision/debt section |
+| Complete a new feature                           | Relevant core doc + `docs/12-CHANGELOG.md` |
+| Fix a bug that may affect other features         | 本文“回归测试策略” + `docs/12-CHANGELOG.md` |
+| Modify code that affects multiple files          | 本文“变更影响范围分析规则” |
+| Change documentation rules                       | `docs/00-INDEX.md` + `docs/10-DEV-RULES.md` |
 
 ## CHANGE-LOG Entry Format
 
@@ -1347,28 +1348,28 @@ npm run test:visual
 | `docs`     | Documentation-only changes                      |
 | `infra`    | CI/CD, monitoring, backup, security             |
 
-## Bug Lifecycle in HEALTH.md
+## Bug Lifecycle
 
 ```
 发现 Bug
-  → 记录到 HEALTH.md「Active Issues」
+  → 记录到当前 issue tracker 或本次任务记录
   → 分配 ID: H{NNN}
   → 标注严重度: 🔴 Blocker | 🟠 Important | 🟡 Normal | 🔵 Low
   → 标注领域: frontend | backend | deploy | auth | database | infra
 
 修复 Bug
-  → 移至「Recently Resolved」
+  → 在 issue tracker 或 `docs/12-CHANGELOG.md` 记录解决方案
   → 标注解决方案 + 日期
   → ID 改为 R{NNN}
 
 识别深层问题
-  → 记入「Tech Debt」
+  → 记入 issue tracker；长期技术决策写入本文“决策记录”
   → ID: D{NNN}
   → 评估优先级和影响
 ```
 # 工作流剧本 & 参考手册
 
-> 本文件包含 CLAUDE.md 的详细执行流程和参考信息。
+> 本文件包含当前核心开发流程和参考信息。
 > AI 在识别任务类型后按需加载本文件，不必每次会话全部阅读。
 
 ---
@@ -1381,15 +1382,15 @@ npm run test:visual
 3. 搜索开源 → 检查 GitHub 上是否有成熟的高 Star 项目可以直接搬运/集成
    - 有成熟方案 → 直接搬运，去除无关依赖，适配本项目风格
    - 无成熟方案 → 自己实现，但参考同类项目的设计思路
-4. 影响分析 → 读 docs/sop/CHANGE-IMPACT-ANALYSIS.md，填写影响报告模板
+4. 影响分析 → 按本文“变更影响范围分析规则”确认影响范围
 5. 拆分任务 → TodoWrite 列出步骤（颗粒度到单个文件级别）
 6. 逐步实施 → 每完成一步标记完成 + 汇报进度（"一共5步，做到第3步"）
 7. 截图展示 → Playwright 截图给客户看效果
 8. 质量关卡 → npm run lint + npm test + npm run build:h5（三个全过才算完）
-9. 回归测试 → 按 docs/sop/REGRESSION-TEST-STRATEGY.md 执行对应级别测试
-10. 验收 → 按 docs/sop/ACCEPTANCE-CHECKLIST.md 对照相关功能条目
-11. 决策记录 → 重大决策写入 docs/sop/AI-DECISION-LOG.md
-12. 收尾 → 更新 CHANGE-LOG + HEALTH.md
+9. 回归测试 → 按本文“回归测试策略”执行对应级别测试
+10. 验收 → 按相关核心文档和验收清单对照功能条目
+11. 决策记录 → 重大决策写入本文“决策记录”
+12. 收尾 → 更新 `docs/12-CHANGELOG.md`
 ```
 
 ## 流程 B: UI/UX改进（设计师角色）
@@ -1408,10 +1409,10 @@ npm run test:visual
 ```
 1. 一句话告诉客户 → "哪里坏了"
 2. 根因调查 → 使用 systematic-debugging skill
-3. 影响分析 → 读 docs/sop/CHANGE-IMPACT-ANALYSIS.md 确认修复范围
+3. 影响分析 → 按本文“变更影响范围分析规则”确认修复范围
 4. 修复 → 直接修
 5. 验证 → 跑相关测试/截图证明
-6. 回归测试 → 按 docs/sop/REGRESSION-TEST-STRATEGY.md 执行
+6. 回归测试 → 按本文“回归测试策略”执行
 7. 告诉客户 → "修好了，原因是...（类比解释）"
 ```
 
@@ -1428,7 +1429,7 @@ npm run test:visual
 ## 流程 E: 状态查询
 
 ```
-1. 读 docs/status/HEALTH.md
+1. 读 `docs/00-INDEX.md`、`docs/11-RELEASE-NOTES.md`、`docs/12-CHANGELOG.md`
 2. SSH 检查服务器状态
 3. 用大白话汇报：系统状态、最近变更、待处理问题
 ```
@@ -1439,9 +1440,9 @@ npm run test:visual
 1. npm run lint + npm test + npm run build:h5（前端三道关卡）
 2. 后端 TS 编译检查
 3. 服务器 health-check + pm2 + SSL 检查
-4. 按 docs/sop/ACCEPTANCE-CHECKLIST.md 逐一验证核心功能
+4. 按本文验收规则逐一验证核心功能
 5. 汇报发现的问题并逐一修复
-6. 更新 HEALTH.md
+6. 更新 `docs/12-CHANGELOG.md` 或外部 issue tracker
 ```
 
 ## 流程 G: 技术咨询
@@ -1458,7 +1459,7 @@ npm run test:visual
 ```
 1. 使用 Playwright 测量页面加载时间
 2. 分析瓶颈（网络请求、组件渲染、包体积）
-3. 影响分析 → 读 docs/sop/CHANGE-IMPACT-ANALYSIS.md
+3. 影响分析 → 按本文“变更影响范围分析规则”
 4. 实施优化
 5. 前后对比数据
 6. 告诉客户 → "快了多少、怎么做到的"

@@ -1,18 +1,23 @@
 #!/usr/bin/env node
 
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { homedir } from 'node:os';
 
 const PROJECT_ROOT = resolve(new URL('../..', import.meta.url).pathname);
-const DEFAULT_PROMPT_DOC = resolve(PROJECT_ROOT, 'docs/16-PNG-ASSET-PROMPTS.md');
+const DEFAULT_PROMPT_DOC = resolve(PROJECT_ROOT, 'docs/07-STYLING-SYSTEM.md');
 const DEFAULT_OUTPUT_ROOT = resolve(PROJECT_ROOT, 'asset-inbox/png-redesign');
 const DEFAULT_API_BASE_URL = 'https://api1.zhongzhuan.win';
 const DEFAULT_IMAGE_MODEL = 'gpt-image-2';
 const DEFAULT_IMAGE_MODEL_2K = 'gpt-image-2-2k';
 const DEFAULT_MANIFEST_NAME = 'manifest.json';
+const DEFAULT_GLOBAL_DIRECTION =
+  'Modern premium exam preparation app asset, mature green education product, white and mint palette, primary green #9FE870, deep green #163300, glass-like depth where useful, crisp mobile-app details, quiet and professional.';
+const DEFAULT_NEGATIVE_PROMPT =
+  'No owl, no bird mascot, no childish mascot, no emoji, no sticker style, no graduation cap, no trophy, no rocket, no flame, no coins, no swords, no institution names, no teacher names, no QR code, no watermark, no readable text, no purple blue gradient, no beige brown theme, no clutter, no low resolution.';
+const DEFAULT_PNG_SCAN_ROOTS = ['src', 'public/static', 'cdn-assets'];
 
 function parseArgs(argv) {
   const args = {
@@ -65,10 +70,11 @@ Environment:
   IMAGE_MODEL_2K      Default: ${DEFAULT_IMAGE_MODEL_2K}
 
 Options:
-  --dry-run                 Parse prompts and print planned jobs only.
+  --dry-run                 Parse prompts or current PNG inventory and print planned jobs only.
   --only <path-substring>   Generate matching asset paths only.
   --limit <n>               Limit number of jobs after filtering.
   --output-root <dir>       Default: asset-inbox/png-redesign
+  --prompt-doc <path>       Optional Markdown table source. Defaults to docs/07-STYLING-SYSTEM.md.
   --model-policy <auto|base|2k>
   --request-size <size>     API generation size before local resize. Default: 1024x1024
   --retries <n>             Default: 2
@@ -116,6 +122,79 @@ function parseAssetRows(markdown) {
     });
   }
   return rows;
+}
+
+function listPngFiles(dirPath, output = []) {
+  if (!existsSync(dirPath)) return output;
+  for (const entry of readdirSync(dirPath, { withFileTypes: true })) {
+    const fullPath = join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      listPngFiles(fullPath, output);
+    } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.png')) {
+      output.push(fullPath);
+    }
+  }
+  return output;
+}
+
+function backgroundForPath(assetPath) {
+  if (
+    assetPath.includes('/icons/') ||
+    assetPath.includes('/tabbar/') ||
+    assetPath.includes('/badges/') ||
+    assetPath.includes('/effects/') ||
+    assetPath.endsWith('/logo.png')
+  ) {
+    return '透明';
+  }
+  return '浅绿或透明';
+}
+
+function promptForPath(assetPath) {
+  if (assetPath.includes('/tabbar/')) {
+    return 'Minimal mobile tab bar icon for a serious study product, rounded geometric linework, strong silhouette at small size, green active-state compatible, no text.';
+  }
+  if (assetPath.includes('/badges/')) {
+    return 'Achievement badge based on knowledge nodes, progress rings, and glass material, mature study-product style, no trophy, no coins, no text.';
+  }
+  if (assetPath.includes('/effects/')) {
+    return 'Subtle feedback effect for quiz progress, green-white particles or motion arcs, mature and premium, transparent background, no cartoon symbols.';
+  }
+  if (assetPath.includes('/illustrations/')) {
+    return 'Modern exam-preparation illustration with study cards, progress paths, and abstract knowledge nodes, white and mint background, no people, no readable text.';
+  }
+  if (assetPath.includes('/images/') || assetPath.includes('/pwa-icons/')) {
+    return 'Brand or app image for EXAM-MASTER, abstract open book and upward progress path, mature fintech education style, no readable text.';
+  }
+  return 'Modern green study app asset, crisp mobile UI style, centered composition, no readable text.';
+}
+
+function getPngDimensions(filePath) {
+  const buffer = readFileSync(filePath);
+  const pngSignature = '89504e470d0a1a0a';
+  if (buffer.subarray(0, 8).toString('hex') !== pngSignature) {
+    throw new Error(`不是 PNG 文件: ${filePath}`);
+  }
+  return {
+    width: buffer.readUInt32BE(16),
+    height: buffer.readUInt32BE(20)
+  };
+}
+
+function discoverExistingPngAssets() {
+  return DEFAULT_PNG_SCAN_ROOTS.flatMap((root) => listPngFiles(resolve(PROJECT_ROOT, root)))
+    .sort()
+    .map((filePath) => {
+      const info = getPngDimensions(filePath);
+      const path = filePath.slice(PROJECT_ROOT.length + 1).replace(/\\/g, '/');
+      return {
+        path,
+        width: info.width,
+        height: info.height,
+        background: backgroundForPath(path),
+        prompt: promptForPath(path)
+      };
+    });
 }
 
 function buildPrompt(asset, globalDirection, negativePrompt) {
@@ -341,12 +420,13 @@ function writeManifest(manifestPath, records) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const markdown = readFileSync(args.promptDoc, 'utf8');
+  const markdown = existsSync(args.promptDoc) ? readFileSync(args.promptDoc, 'utf8') : '';
   if (!args.manifestPath) args.manifestPath = join(args.outputRoot, DEFAULT_MANIFEST_NAME);
-  const globalDirection = extractCodeBlockAfter(markdown, '### 1.2 全局视觉方向');
-  const negativePrompt = extractCodeBlockAfter(markdown, '### 1.3 全局负面提示词');
+  const globalDirection = extractCodeBlockAfter(markdown, '### 1.2 全局视觉方向') || DEFAULT_GLOBAL_DIRECTION;
+  const negativePrompt = extractCodeBlockAfter(markdown, '### 1.3 全局负面提示词') || DEFAULT_NEGATIVE_PROMPT;
 
   let assets = parseAssetRows(markdown);
+  if (assets.length === 0) assets = discoverExistingPngAssets();
   if (args.only) assets = assets.filter((asset) => asset.path.includes(args.only));
   if (args.limit > 0) assets = assets.slice(0, args.limit);
 

@@ -7,7 +7,7 @@
 - 本文件保留全仓部署、运维和应急响应总览。
 - 当前 Sealos/Laf 后端云函数部署、发布后 smoke 和平台现象见 [09A-LAF-BACKEND-DEPLOYMENT.md](./09A-LAF-BACKEND-DEPLOYMENT.md)。
 - 后端分仓迁移步骤见 [09B-BACKEND-MIGRATION-GUIDE.md](./09B-BACKEND-MIGRATION-GUIDE.md)。
-- 发布状态和剩余阻断项以 [20-RELEASE-READINESS.md](./20-RELEASE-READINESS.md) 为准。
+- 发布状态和剩余阻断项以 `npm run release:gate:report`、`data/release-external-audit.json`、本文件和 [11-RELEASE-NOTES.md](./11-RELEASE-NOTES.md) 为准。长期结论写回核心文档，临时证据留在 `data/release-evidence/`。
 
 ---
 

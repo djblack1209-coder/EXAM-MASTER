@@ -1,65 +1,73 @@
 # 考研大师 — 文档总索引
 
-> 最后更新：2026-04-30
+> 最后更新：2026-05-02
 
-## 命名规范
+本项目文档统一保存在 `docs/` 下。当前保留 17 个核心文档，删除了 2026 年 5 月前的审计/发布证据、历史归档、文档缓存、分散设计报告和临时清理计划。
 
-- 文件名：`NN-KEBAB-CASE.md`（编号-大写短横线命名）
-- 子编号：`NNA-NAME.md`（如 08B、08C）
-- 归档目录：`archive/YYYY-MM-label/`
-- 缓存目录：`cache/technology-name.md`（小写短横线）
+## 项目定位
 
-## 文档清单
+`EXAM-MASTER` 是基于百度网盘资源库的考研备考闪卡刷题工具。核心链路是将管理员网盘中的机构 PDF 资料离线加工为结构化闪卡题目，用户在 App 或小程序内通过 FSRS 间隔重复、错题复练和知识图谱完成复习闭环。
+
+## 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 前端 | uni-app 3.x、Vue 3、Pinia、Vite |
+| UI | wot-design-uni、自研主题与动效 token |
+| 后端 | Laf 云函数、TypeScript |
+| 数据库 | MongoDB |
+| 算法 | FSRS、题库质量门禁、知识点掌握度模型 |
+| 资源管线 | 百度网盘 API、离线 PDF -> 闪卡 JSON 管线 |
+
+## 快速开始
+
+```bash
+npm install --legacy-peer-deps
+npm run dev:h5
+npm run dev:mp-weixin
+npm test
+```
+
+后端部署、Laf CLI、线上 smoke 与云函数发布见 `09A-LAF-BACKEND-DEPLOYMENT.md`。
+
+## 目录结构
+
+```text
+src/                 前端源码
+laf-backend/         Laf 云函数、数据库 schema、后端工具
+docs/                项目核心文档
+deploy/              部署配置
+tests/unit/          Vitest 单元与安全回归测试
+cdn-assets/          CDN 图片资源
+scripts/             构建、百度网盘、PDF 处理与质量门禁脚本
+data/                题库处理输入/输出数据，不放临时审计报告
+```
+
+## 核心文档
 
 | 编号 | 文档 | 说明 |
 |------|------|------|
-| 00 | 本文件 | 文档总索引 |
-| 01 | [产品愿景](./01-PRODUCT-VISION.md) | 产品定位、技术架构、平台策略、商业模式 |
+| 00 | [文档总索引](./00-INDEX.md) | 项目入口、文档政策、快速开始 |
+| 01 | [产品愿景](./01-PRODUCT-VISION.md) | 产品定位、平台策略、商业模式 |
 | 02 | [系统架构](./02-ARCHITECTURE.md) | 技术栈、数据流、模块关系 |
-| 03 | [模块索引](./03-MODULE-INDEX.md) | 所有前后端模块快速定位表 |
-| 04 | [API文档](./04-API-DOCUMENTATION.md) | 全部接口定义与用法 |
-| 05 | [数据库结构](./05-DATABASE-SCHEMAS.md) | MongoDB集合结构 |
-| 06 | [前端参考手册](./06-FRONTEND-REFERENCE.md) | 组件、页面、Store、Service 合集 |
-| 07 | [样式系统](./07-STYLING-SYSTEM.md) | 主题、变量、设计规范 |
-| 08 | [测试基础设施](./08-TESTING-INFRA.md) | Vitest配置、E2E框架 |
-| 08B | [工具函数参考](./08B-UTILS-REFERENCE.md) | src/utils/ 下各工具说明 |
-| 08C | [脚本参考](./08C-SCRIPTS-REFERENCE.md) | 构建/审计脚本说明 |
+| 03 | [模块索引](./03-MODULE-INDEX.md) | 前后端模块快速定位 |
+| 04 | [API 文档](./04-API-DOCUMENTATION.md) | 接口定义与调用方式 |
+| 05 | [数据库结构](./05-DATABASE-SCHEMAS.md) | MongoDB 集合结构 |
+| 06 | [前端参考手册](./06-FRONTEND-REFERENCE.md) | 页面、组件、Store、Service 合集 |
+| 07 | [样式系统](./07-STYLING-SYSTEM.md) | 主题、token、设计基线与 UI 质量口径 |
+| 08 | [测试基础设施](./08-TESTING-INFRA.md) | Vitest、mock、audit 测试与质量门禁 |
+| 08B | [工具函数参考](./08B-UTILS-REFERENCE.md) | `src/utils/` 工具说明 |
+| 08C | [脚本参考](./08C-SCRIPTS-REFERENCE.md) | 构建、审计、资源管线脚本说明 |
 | 09 | [部署运维指南](./09-DEPLOYMENT-GUIDE.md) | 前端部署、后端部署、应急响应 |
-| 09A | [Laf 后端部署指南](./09A-LAF-BACKEND-DEPLOYMENT.md) | 当前 Sealos/Laf 云函数部署、smoke、平台现象与发布后验证 |
-| 09B | [后端分仓迁移指南](./09B-BACKEND-MIGRATION-GUIDE.md) | 将 `laf-backend/` 拆分为独立仓库时使用的迁移步骤 |
-| 10 | [开发规范](./10-DEV-RULES.md) | AI开发铁律、变更分析、验收清单、测试策略 |
+| 09A | [Laf 后端部署指南](./09A-LAF-BACKEND-DEPLOYMENT.md) | Laf 云函数部署、验证与后端启动 |
+| 09B | [后端分仓迁移指南](./09B-BACKEND-MIGRATION-GUIDE.md) | `laf-backend/` 独立仓库迁移步骤 |
+| 10 | [开发规范](./10-DEV-RULES.md) | 开发铁律、变更分析、验收清单、测试策略 |
 | 11 | [发布记录](./11-RELEASE-NOTES.md) | 版本发布说明 |
 | 12 | [变更日志](./12-CHANGELOG.md) | 项目变更记录 |
-| 13 | [源码审计清单](./13-CODE-AUDIT-CHECKLIST.md) | 死代码标记（保留/移除判定） |
-| 14 | [小程序UI重设计规格](./14-MP-UI-REDESIGN-SPEC.md) | Wise绿成熟视觉、PNG物料、分阶段小程序重构规格 |
-| 15 | [百度API验证报告](./15-BAIDU-API-VALIDATION.md) | 百度网盘开放API技术验证 |
-| 16 | [PNG物料生成提示词清单](./16-PNG-ASSET-PROMPTS.md) | 全量PNG替换路径、尺寸、生成提示词与验收标准 |
-| 17 | [题库资源采集与知识神经架构方案](./17-QUESTION-BANK-KNOWLEDGE-GRAPH-SPEC.md) | `/EXAM-MASTER` 日扫、增量清洗队列、公共课题库、多级导航、知识神经图谱与刷题体验 |
-| 18 | [小程序视觉体验与增长护城河优化报告](./18-MP-VISUAL-GROWTH-OPTIMIZATION.md) | Nanfu式冲击力转译、学生体验、投资视角、护城河与本轮落地清单 |
-| 19 | [敏感信息泄露审计报告](./19-SECURITY-LEAK-AUDIT.md) | 公开仓库风险、Git历史扫描、本地凭据处置、轮换与历史清洗方案 |
-| 20 | [发布就绪清单](./20-RELEASE-READINESS.md) | 上线剩余任务、百度清洗队列、当前门禁结果、P0/P1/P2 发布阻断项 |
-| 21 | [Free LLM API 号池与降级策略](./21-FREE-LLM-POOL.md) | 免费/免费额度 AI provider 优先级、限额文档、降级和禁用无余额 key 策略 |
-| 22 | [工作区清理方案](./22-WORKSPACE-CLEANUP-PLAN.md) | 文档集中、审计归档、运行产物忽略和提交前清洁规则 |
-| 23 | [移动端设计方向与解耦准则](./23-MOBILE-APP-DESIGN-DIRECTION.md) | iOS/Android 主力产品的现代商业审美、模块解耦、动效、组件和美术资产策略 |
 
-## 辅助目录
+## 文档维护规则
 
-| 目录 | 说明 |
-|------|------|
-| [cache/](./cache/) | 技术文档速查缓存(Vue3/Pinia/uni-app等) |
-| [release/](./release/) | 发布证据模板与人工验收记录 |
-| [archive/](./archive/) | 历史归档文档(只读) |
-
-## 已清理与合并
-
-以下旧目录的内容已合并到上述编号文档中：
-- `docs/sop/` → 合并到 10-DEV-RULES.md
-- `docs/AI-SOP/modules/` → 合并到 04/05/06/07/08
-- `docs/AI-SOP/` → 合并到 02/03
-- `docs/releases/` → 合并到 11
-- `deploy/docs/` → 合并到 09
-- `laf-backend/deployment-guide.md` → 移入 09A
-- `laf-backend/MIGRATION-GUIDE.md` → 移入 09B
-- `docs/archive/2026-02-reset/*.md` → 合并为 2026-02 修复记录
-- `docs/archive/2026-03-review/*.md` → 合并为 2026-03 修复记录
-- `docs/archive/2026-04-review/` → 重复草稿删除，正式内容保留在 18/19
+- 新文档必须先判断能否合并到现有 17 个核心文档。
+- 临时审计、发布证据、截图记录、外部文档缓存不进入 `docs/`，运行完成后清理。
+- 如果确需新增长期文档，必须先删除或合并一个旧文档，确保项目核心文档数少于 20。
+- 根目录和子模块目录不再放项目说明文档；需要入口说明时更新本文件。

@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 const PROJECT_ROOT = path.resolve(fileURLToPath(import.meta.url), '../../..');
 const DEFAULT_OUTPUT = path.join(PROJECT_ROOT, 'data/release-external-audit.json');
 const DEFAULT_MP_DIR = path.join(PROJECT_ROOT, 'dist/build/mp-weixin');
-const DEFAULT_WECHAT_EVIDENCE = path.join(PROJECT_ROOT, 'docs/release/wechat-device-smoke.md');
-const DEFAULT_BACKUP_EVIDENCE = path.join(PROJECT_ROOT, 'docs/release/backup-restore-drill.md');
-const DEFAULT_MONITORING_EVIDENCE = path.join(PROJECT_ROOT, 'docs/release/monitoring-health-alert.md');
+const DEFAULT_WECHAT_EVIDENCE = path.join(PROJECT_ROOT, 'data/release-evidence/wechat-device-smoke.md');
+const DEFAULT_BACKUP_EVIDENCE = path.join(PROJECT_ROOT, 'data/release-evidence/backup-restore-drill.md');
+const DEFAULT_MONITORING_EVIDENCE = path.join(PROJECT_ROOT, 'data/release-evidence/monitoring-health-alert.md');
 const DEFAULT_LINK_REGISTRY = path.join(PROJECT_ROOT, 'data/link-registry.json');
 const DEFAULT_SOURCE_MANIFEST = path.join(PROJECT_ROOT, 'data/source-manifest.json');
 const DEFAULT_ENV_FILES = [
