@@ -130,22 +130,10 @@ laf-backend/data/schools/fix-report.json
 laf-backend/data/schools/schools-fixed.json
 
 # Generated quality reports
-docs/reports/PROJECT_DEEP_SCAN_REPORT.md
-docs/reports/ui-quality-report.json
-docs/reports/visual-results.json
-docs/reports/visual-report/
+data/reports/
 
 # Generated QA runtime artifacts
-docs/reports/e2e-regression-results.json
-docs/reports/e2e-regression-results.xml
-# 测试结果产物（运行时生成，不纳入版本控制）
-docs/reports/*.json
-docs/reports/*.xml
-docs/reports/e2e-compat-html/
-docs/reports/e2e-regression-html/
 release/
-!docs/release/
-!docs/release/README.md
 
 # Playwright/测试/安全扫描运行时产物
 output/
@@ -209,6 +197,7 @@ data/question-bank-release-audit.json
 data/question-bank-release-report.json
 data/release-external-audit.json
 data/release-external-audit-with-smoke-token.json
+data/release-evidence/
 data/cloud-smoke-release.json
 data/exam-master-netdisk-scan-report.json
 data/public-course-netdisk-candidate-coverage.json

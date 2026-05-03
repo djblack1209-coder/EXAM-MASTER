@@ -13,7 +13,34 @@
 - 关键函数均已可调用（见“验证结果”）
 - 函数入口采用 **TS-only** 策略（`laf-backend/functions/*.ts`），不再维护同名 `.js` 入口
 
-当前交付状态以 `docs/20-RELEASE-READINESS.md` 和 `docs/release/` 证据文件为准。本文件只维护 Laf 后端部署与验证操作。
+交付状态以本文件、`09-DEPLOYMENT-GUIDE.md`、`11-RELEASE-NOTES.md` 和当前 CI/smoke 输出为准。本文件只维护 Laf 后端部署与验证操作。
+
+## 1.1 后端目录与本地启动
+
+`laf-backend/` 是考研备考小程序后端云函数服务，基于 Laf Cloud：
+
+```text
+laf-backend/
+  functions/          云函数入口，TS-only
+  functions/_shared/  函数间共享模块
+  database-schema/    MongoDB collection schema
+  triggers/           数据库触发器
+  types/              TypeScript 类型
+  utils/              日志、校验、幂等工具
+```
+
+运行时要求 Node.js >= 18.20，推荐 20.17 LTS。首次本地维护：
+
+```bash
+cd laf-backend
+npm install
+npm i -g laf-cli
+laf login
+laf init <appid>
+cp .env.example .env
+```
+
+环境变量只维护在 `.env`、Laf 控制台或团队密钥管理工具，不写入文档、提交信息或运行报告。
 
 ---
 
@@ -125,7 +152,7 @@ curl -sS "https://nf98ia8qnt.sealosbja.site/question-bank" \
 
 - QQ OAuth 仍需在 QQ 平台后台确认回调域与上线审核
 - 前端端到端（真机/浏览器）全流程回归尚未完成
-- 生产环境备份恢复演练记录需补齐（参考 `docs/release/backup-restore-drill.md`）
+- 生产环境备份恢复演练需在外部工单或临时运行记录中保留证据，完成后只把长期结论写回本文件或 `09-DEPLOYMENT-GUIDE.md`
 
 ---
 
@@ -142,7 +169,6 @@ curl -sS "https://nf98ia8qnt.sealosbja.site/question-bank" \
 - 不要在文档中记录 PAT、API Key、Secret 明文
 - 仅在 `.env` / 平台环境变量中维护密钥
 - 每次发布后更新：
-  - `docs/20-RELEASE-READINESS.md`
-  - `docs/release/backup-restore-drill.md`
-  - `docs/release/monitoring-health-alert.md`
-  - 本文件（若部署基线或验证结论发生变化）
+  - 本文件（部署基线、验证命令、已知平台现象变化）
+  - `docs/09-DEPLOYMENT-GUIDE.md`（运维流程变化）
+  - `docs/11-RELEASE-NOTES.md`（正式版本变化）

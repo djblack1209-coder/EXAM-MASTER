@@ -192,3 +192,16 @@ The project maintains UI quality through an automated gate check (`npm run audit
   - `src/pages/settings/InviteModal.vue`
 - Missing loading states for asynchronous operations:
   - `src/pages/study-detail/FSRSOptimizer.vue`
+
+## Current Design Baseline
+
+The retired mini-program and mobile design reports are consolidated here as long-term styling policy. The product direction is mature, commercial, and task-first:
+
+- Use Wise-style green as the brand/action color, with white, mint, deep green, and small amounts of calm blue for status and sync states.
+- Keep the first screen useful: users should be able to continue study, start practice, import resources, or inspect the next review task without reading marketing copy.
+- Use glass and soft material effects only for navigation, floating actions, or primary surfaces. Repeated list rows and dense data should stay compact and readable.
+- Prefer vector/icon components for functional recognition. Generated PNGs are limited to brand, onboarding, empty state, sharing, and milestone scenes.
+- Preserve mature learning-product tone: no emoji-as-icons, childish mascot, owl, graduation cap, rocket, trophy, coin, fire, fantasy AI orb, or decorative purple-blue glow.
+- Keep page structure stable on mobile: no nested cards, no text overflow, no layout shift when timers, feedback, or loading states update.
+
+Mini-program remains the lightweight entry product. iOS, Android, and H5 mobile shells are the full product surface and must share the same resource intake, question-bank release gate, quiz, FSRS, mistake, and knowledge-graph contracts.
